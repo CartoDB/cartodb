@@ -1,9 +1,164 @@
+/*
+ * CSS Styles that are needed by jScrollPane for it to operate correctly.
+ *
+ * Include this stylesheet in your site or copy and paste the styles below into your stylesheet - jScrollPane
+ * may not operate correctly without them.
+ */
 
+.jspContainer
+{
+  overflow: hidden;
+  position: relative;
+  outline: none;
+}
+
+
+
+.jspContainer * {
+  outline: none;
+}
+
+.jspPane
+{
+  position: absolute;
+  z-index:1;
+}
+
+.jspVerticalBar
+{
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 6px;
+  height: 100%;
+  background: none;
+  z-index:10;
+}
+
+.jspHorizontalBar
+{
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 6px;
+  background: none;
+}
+
+.jspVerticalBar *,
+.jspHorizontalBar *
+{
+  margin: 0;
+  padding: 0;
+}
+
+.jspCap
+{
+  display: none;
+}
+
+.jspHorizontalBar .jspCap
+{
+  float: left;
+}
+
+.jspTrack
+{
+  background: none;
+  position: relative;
+  cursor: pointer;
+}
+
+.jspDrag
+{
+  background: #999999;
+  background: rgba(0,0,0,0.16);
+  position: relative;
+  top: 0;
+  left: 0;
+  cursor: pointer;
+  border-radius:10px;
+  -moz-border-radius:10px;
+  -webkit-border-radius:10px;
+}
+
+.jspDrag:hover
+{
+  background: #666666;
+  background: rgba(0,0,0,0.5);
+  cursor: pointer;
+}
+
+.jspHorizontalBar .jspTrack,
+.jspHorizontalBar .jspDrag
+{
+  float: left;
+  height: 100%;
+}
+
+.jspArrow
+{
+  background: #50506d;
+  text-indent: -20000px;
+  display: block;
+  cursor: pointer;
+}
+
+.jspArrow.jspDisabled
+{
+  cursor: default;
+  background: #80808d;
+}
+
+.jspVerticalBar .jspArrow
+{
+  height: 16px;
+}
+
+.jspHorizontalBar .jspArrow
+{
+  width: 16px;
+  float: left;
+  height: 100%;
+}
+
+.jspVerticalBar .jspArrow:focus
+{
+  outline: none;
+}
+
+.jspCorner
+{
+  background: #eeeef4;
+  float: left;
+  height: 100%;
+}
+
+/* Yuk! CSS Hack for IE6 3 pixel bug :( */
+* html .jspCorner
+{
+  margin: 0 -3px 0 0;
+}
 /**
  *  CartoDB2.0 theme dark
  */
 
 /* INFOWINDOW */
+div.cartodb-popup.dark .jspContainer:after {
+  background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, rgba(0,0,0,0)), color-stop(100%, rgba(0,0,0,1)));
+  background: -webkit-linear-gradient(top, rgba(0,0,0,0), rgba(0,0,0,1));
+  background: -moz-linear-gradient(top, rgba(0,0,0,0), rgba(0,0,0,1));
+  background: -o-linear-gradient(top, rgba(0,0,0,0), rgba(0,0,0,1));
+  background: linear-gradient(top, rgba(0,0,0,0), rgba(0,0,0,1));
+}
+
+div.cartodb-popup.dark .jspContainer:before {
+  background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, rgba(0,0,0,1)), color-stop(100%, rgba(0,0,0,0)));
+  background: -webkit-linear-gradient(top, rgba(0,0,0,1), rgba(0,0,0,0));
+  background: -moz-linear-gradient(top, rgba(0,0,0,1), rgba(0,0,0,0));
+  background: -o-linear-gradient(top, rgba(0,0,0,1), rgba(0,0,0,0));
+  background: linear-gradient(top, rgba(0,0,0,1), rgba(0,0,0,0));
+}
 
 div.cartodb-popup.dark {
   background:url('../img/dark.png') no-repeat -226px 0;
@@ -27,6 +182,23 @@ div.cartodb-popup.dark h4 {
 
 div.cartodb-popup.dark p {
   color:#FFFFFF;
+}
+
+div.cartodb-popup.dark p.empty {
+  font-style:italic;
+  color:#AAA;
+}
+
+div.cartodb-popup.dark .jspDrag
+{
+  background: #AAAAAA;
+  background: rgba(255,255,255,0.5);
+}
+
+div.cartodb-popup.dark .jspDrag:hover
+{
+  background: #DEDEDE;
+  background: rgba(255,255,255,0.8);
 }
 
 
@@ -653,6 +825,7 @@ div.header.yellow h1 a:hover {
   /* INFOWINDOW */
   div.infowindow {
     position: absolute;
+    z-index: 2;
   }
 
   div.cartodb-popup {
@@ -665,21 +838,57 @@ div.header.yellow h1 a:hover {
   }
 
   div.cartodb-popup-content-wrapper {
-    width:197px;
-    padding:12px 12px 12px 19px;
+    position:relative;
+    width:190px;
+    max-width: 190px;
+    padding:12px 19px 12px 19px;
+    overflow-x: hidden;
     background:url('../img/light.png') repeat-y -452px 0;
   }
 
   div.cartodb-popup div.cartodb-popup-content {
     display:block;
-    width:100%;
+    width:190px;
+    max-width: 190px;
     min-height:5px;
     height:auto;
-    max-height:175px;
+    max-height:185px;
     margin: 0;
-    padding:0;
+    padding: 5px 0 0 0;
     overflow-y: auto;
-    overflow-x: hidden;
+    overflow-x: hidden!important;
+    outline: none;
+  }
+
+  /* Custom gradients for scroll content */
+  .jspContainer:after,
+  .jspContainer:before {
+    content:'';
+    position:absolute;
+    left:0;
+    right:12px;
+    display:block;
+    height:10px;
+    width:190px;
+    z-index: 5;
+  }
+
+  .jspContainer:after {
+    bottom:0px;
+    background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, rgba(255,255,255,0)), color-stop(100%, rgba(255,255,255,1)));
+    background: -webkit-linear-gradient(top, rgba(255,255,255,0), rgba(255,255,255,1));
+    background: -moz-linear-gradient(top, rgba(255,255,255,0), rgba(255,255,255,1));
+    background: -o-linear-gradient(top, rgba(255,255,255,0), rgba(255,255,255,1));
+    background: linear-gradient(top, rgba(255,255,255,0), rgba(255,255,255,1));
+  }
+
+  .jspContainer:before {
+    top:0px;
+    background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, rgba(255,255,255,1)), color-stop(100%, rgba(255,255,255,0)));
+    background: -webkit-linear-gradient(top, rgba(255,255,255,1), rgba(255,255,255,0));
+    background: -moz-linear-gradient(top, rgba(255,255,255,1), rgba(255,255,255,0));
+    background: -o-linear-gradient(top, rgba(255,255,255,1), rgba(255,255,255,0));
+    background: linear-gradient(top, rgba(255,255,255,1), rgba(255,255,255,0));
   }
 
   div.cartodb-popup-tip-container {
@@ -704,15 +913,35 @@ div.header.yellow h1 a:hover {
   }
 
   div.cartodb-popup h4 {
+    display:block;
+    width:190px;
+    margin: 0;
+    padding: 0;
     font:bold 11px "Helvetica Neue","Helvetica",Arial;
     color:#CCCCCC;
     text-transform:uppercase;
+    text-overflow:ellipsis;
+    overflow:hidden;
+    white-space:nowrap;
   }
 
   div.cartodb-popup p {
+    display:block;
+    width:190px;
+    max-width: 190px;
+    margin: 0;
+    padding: 0;
     font:normal 13px "Helvetica",Arial;
     color:#333333;
     padding:0 0 7px;
+    text-overflow:ellipsis;
+    overflow:hidden;
+    white-space:nowrap;
+  }
+
+  div.cartodb-popup p.empty {
+    color:#999999;
+    font-style: italic;
   }
 
 
@@ -722,6 +951,7 @@ div.header.yellow h1 a:hover {
     display: block;
     background: #FFF;
     border: none;
+    border-bottom: 1px solid #999999; /*IE*/
     border-bottom: 1px solid rgba(0, 0, 0, 0.2);
     margin:0;
     padding:20px;
@@ -739,11 +969,11 @@ div.header.yellow h1 a:hover {
     -ms-transform: translateZ(10px);
     -o-transform: translateZ(10px);
     transform: translateZ(10px);
-    z-index: 2;
+    z-index: 3;
     font-family: 'Helvetica Neue', Helvetica, sans-serif;
   }
 
-  div.header * {
+  div.header *, div.cartodb-popup * {
     -webkit-margin-before:0em;
     -webkit-margin-after:0em;
   }
@@ -768,8 +998,9 @@ div.header.yellow h1 a:hover {
     text-decoration: underline;
   }
 
-  div.header p {
-    margin-top:5px;
+  div.header > p {
+    margin-top:5px 0 0 0;
+    padding: 0;
     font-weight: normal;
     font-size: 13px;
     color: #999999;
@@ -795,6 +1026,7 @@ div.header.yellow h1 a:hover {
     display: -moz-inline-stack;
     vertical-align: top;
     text-indent: -9999px;
+    *text-indent:0px;
     font-size: 0;
     line-height: 0;
     text-transform: uppercase;
@@ -810,8 +1042,9 @@ div.header.yellow h1 a:hover {
   div#zoom {
     position: relative;
     float:left;
+    display:block;
     margin: 20px 0 0 20px;
-    width: 29px;
+    width: 28px;
     -webkit-box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
     -moz-box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
     box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
@@ -825,27 +1058,54 @@ div.header.yellow h1 a:hover {
     border: 1px solid #999999;
   }
   div#zoom a {
+    position:relative;
     display: block;
-    width: 29px;
-    padding: 4px 0;
+    width: 28px;
+    height: 28px;
+    padding: 0;
     font: bold 20px "Arial";
     color: #999999;
     text-align: center;
     line-height: normal;
     text-decoration: none;
+    text-indent: -9999px;
+    line-height: 0;
+    font-size: 0;
+    background:url('../img/other.png') no-repeat 0 0;
   }
   div#zoom a.zoom_in {
-    border-bottom: 1px solid rgba(153, 153, 153, 0.25);
+    border-bottom: 1px solid #E6E6E6;
+    background-position:-68px 10px;
+    -webkit-border-top-left-radius: 4px;
+    -webkit-border-top-right-radius: 4px;
+    -moz-border-radius-topleft: 4px;
+    -moz-border-radius-topright: 4px;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
   }
-  div#zoom a.zoom_out {
-    padding: 0 0 2px;
-    line-height: 28px;
-  }
-  div#zoom a:hover {
+
+  div#zoom a.zoom_in:hover {
+    background-position:-68px -14px;
     cursor: pointer;
-    color: #666666;
   }
+
+  div#zoom a.zoom_out {
+    background-position:-94px 10px;
+    -webkit-border-bottom-left-radius: 4px;
+    -webkit-border-bottom-right-radius: 4px;
+    -moz-border-radius-bottomleft: 4px;
+    -moz-border-radius-bottomright: 4px;
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+  }
+
+  div#zoom a.zoom_out:hover {
+    background-position:-94px -14px;
+    cursor: pointer;
+  }
+
   div#zoom a.disabled {
+    filter: alpha(opacity=20);
     filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=20);
     opacity: 0.2;
   }
@@ -854,6 +1114,37 @@ div.header.yellow h1 a:hover {
     cursor: default;
     color: #999999;
   }
+
+  div#tiles_loader {
+    position:relative;
+    float:left;
+    display:block;
+    left:0;
+    top:0;
+  }
+
+  div#tiles_loader div.loader {
+    position:absolute;
+    display:none;
+    top:70px;
+    left:-30px;
+    margin:20px 0 0 0;
+    width: 28px;
+    height:28px;
+    -webkit-box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
+    -moz-box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
+    box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
+    z-index: 5;
+    background: white;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    -ms-border-radius: 4px;
+    -o-border-radius: 4px;
+    border-radius: 4px;
+    border: 1px solid #999999;
+  }
+
+  div#tiles_loader div.spinner {top:14px!important; left:14px!important;}
 
   div.search_box {
     position: relative;

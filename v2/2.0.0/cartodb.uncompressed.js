@@ -1608,6 +1608,8 @@ L.Util = {
 
 (function () {
 
+  // inspired by http://paulirish.com/2011/requestanimationframe-for-smart-animating/
+
   function getPrefixed(name) {
     var i, fn,
       prefixes = ['webkit', 'moz', 'o', 'ms'];
@@ -1619,8 +1621,14 @@ L.Util = {
     return fn;
   }
 
+  var lastTime = 0;
+
   function timeoutDefer(fn) {
-    return window.setTimeout(fn, 1000 / 60);
+    var time = +new Date(),
+      timeToCall = Math.max(0, 16 - (time - lastTime));
+
+    lastTime = time + timeToCall;
+    return window.setTimeout(fn, timeToCall);
   }
 
   var requestFn = window.requestAnimationFrame ||
@@ -1835,10 +1843,17 @@ L.Mixin.Events.fire = L.Mixin.Events.fireEvent;
     ie3d = ie && ('transition' in doc.style),
     webkit3d = webkit && ('WebKitCSSMatrix' in window) && ('m11' in new window.WebKitCSSMatrix()),
     gecko3d = gecko && ('MozPerspective' in doc.style),
-    opera3d = opera && ('OTransition' in doc.style);
+    opera3d = opera && ('OTransition' in doc.style),
+
+    msTouch = (window.navigator && window.navigator.msPointerEnabled && window.navigator.msMaxTouchPoints);
 
   var touch = !window.L_NO_TOUCH && (function () {
     var startName = 'ontouchstart';
+
+    // IE10+ (We simulate these into touch* events in L.DomEvent and L.DomEvent.MsTouch)
+    if (msTouch) {
+      return true;
+    }
 
     // WebKit, etc
     if (startName in doc) {
@@ -1890,6 +1905,7 @@ L.Mixin.Events.fire = L.Mixin.Events.fireEvent;
     mobileOpera: mobile && opera,
 
     touch: touch,
+    msTouch: msTouch,
 
     retina: retina
   };
@@ -1906,10 +1922,17 @@ L.Point = function (/*Number*/ x, /*Number*/ y, /*Boolean*/ round) {
 };
 
 L.Point.prototype = {
+
+  clone: function () {
+    return new L.Point(this.x, this.y);
+  },
+
+  // non-destructive, returns a new point
   add: function (point) {
     return this.clone()._add(L.point(point));
   },
 
+  // destructive, used directly for performance in situations where it's safe to modify existing point
   _add: function (point) {
     this.x += point.x;
     this.y += point.y;
@@ -1920,35 +1943,36 @@ L.Point.prototype = {
     return this.clone()._subtract(L.point(point));
   },
 
-  // destructive subtract (faster)
   _subtract: function (point) {
     this.x -= point.x;
     this.y -= point.y;
     return this;
   },
 
-  divideBy: function (num, round) {
-    return new L.Point(this.x / num, this.y / num, round);
+  divideBy: function (num) {
+    return this.clone()._divideBy(num);
   },
 
-  multiplyBy: function (num, round) {
-    return new L.Point(this.x * num, this.y * num, round);
+  _divideBy: function (num) {
+    this.x /= num;
+    this.y /= num;
+    return this;
   },
 
-  distanceTo: function (point) {
-    point = L.point(point);
+  multiplyBy: function (num) {
+    return this.clone()._multiplyBy(num);
+  },
 
-    var x = point.x - this.x,
-      y = point.y - this.y;
-
-    return Math.sqrt(x * x + y * y);
+  _multiplyBy: function (num) {
+    this.x *= num;
+    this.y *= num;
+    return this;
   },
 
   round: function () {
     return this.clone()._round();
   },
 
-  // destructive round
   _round: function () {
     this.x = Math.round(this.x);
     this.y = Math.round(this.y);
@@ -1965,8 +1989,13 @@ L.Point.prototype = {
     return this;
   },
 
-  clone: function () {
-    return new L.Point(this.x, this.y);
+  distanceTo: function (point) {
+    point = L.point(point);
+
+    var x = point.x - this.x,
+      y = point.y - this.y;
+
+    return Math.sqrt(x * x + y * y);
   },
 
   toString: function () {
@@ -2070,8 +2099,11 @@ L.Bounds = L.Class.extend({
       yIntersects = (max2.y >= min.y) && (min2.y <= max.y);
 
     return xIntersects && yIntersects;
-  }
+  },
 
+  isValid: function () {
+    return !!(this.min && this.max);
+  }
 });
 
 L.bounds = function (a, b) { // (Bounds) or (Point, Point) or (Point[])
@@ -2116,7 +2148,7 @@ L.Transformation = L.Class.extend({
 
 
 /*
- * L.DomUtil contains various utility functions for working with DOM
+ * L.DomUtil contains various utility functions for working with DOM.
  */
 
 L.DomUtil = {
@@ -2125,48 +2157,51 @@ L.DomUtil = {
   },
 
   getStyle: function (el, style) {
+
     var value = el.style[style];
+
     if (!value && el.currentStyle) {
       value = el.currentStyle[style];
     }
+
     if (!value || value === 'auto') {
       var css = document.defaultView.getComputedStyle(el, null);
       value = css ? css[style] : null;
     }
-    return (value === 'auto' ? null : value);
+
+    return value === 'auto' ? null : value;
   },
 
   getViewportOffset: function (element) {
+
     var top = 0,
       left = 0,
       el = element,
-      docBody = document.body;
+      docBody = document.body,
+      pos;
 
     do {
       top += el.offsetTop || 0;
       left += el.offsetLeft || 0;
+      pos = L.DomUtil.getStyle(el, 'position');
 
-      if (el.offsetParent === docBody &&
-          L.DomUtil.getStyle(el, 'position') === 'absolute') {
-        break;
-      }
-      if (L.DomUtil.getStyle(el, 'position') === 'fixed') {
-        top += docBody.scrollTop || 0;
+      if (el.offsetParent === docBody && pos === 'absolute') { break; }
+
+      if (pos === 'fixed') {
+        top  += docBody.scrollTop  || 0;
         left += docBody.scrollLeft || 0;
         break;
       }
-
       el = el.offsetParent;
+
     } while (el);
 
     el = element;
 
     do {
-      if (el === docBody) {
-        break;
-      }
+      if (el === docBody) { break; }
 
-      top -= el.scrollTop || 0;
+      top  -= el.scrollTop  || 0;
       left -= el.scrollLeft || 0;
 
       el = el.parentNode;
@@ -2176,11 +2211,14 @@ L.DomUtil = {
   },
 
   create: function (tagName, className, container) {
+
     var el = document.createElement(tagName);
     el.className = className;
+
     if (container) {
       container.appendChild(el);
     }
+
     return el;
   },
 
@@ -2195,8 +2233,10 @@ L.DomUtil = {
   },
 
   enableTextSelection: function () {
-    document.onselectstart = this._onselectstart;
-    this._onselectstart = null;
+    if (document.onselectstart === L.Util.falseFn) {
+      document.onselectstart = this._onselectstart;
+      this._onselectstart = null;
+    }
   },
 
   hasClass: function (el, name) {
@@ -2211,12 +2251,12 @@ L.DomUtil = {
   },
 
   removeClass: function (el, name) {
+
     function replaceFn(w, match) {
-      if (match === name) {
-        return '';
-      }
+      if (match === name) { return ''; }
       return w;
     }
+
     el.className = el.className
         .replace(/(\S+)\s*/g, replaceFn)
         .replace(/(^\s+|\s+$)/, '');
@@ -2241,12 +2281,14 @@ L.DomUtil = {
         filter.Enabled = (value !== 100);
         filter.Opacity = value;
       } else {
-        el.style.filter += ' progid:' + filterName + '(opacity=' + value + ')';
+        //el.style.filter += ' progid:' + filterName + '(opacity=' + value + ')';
+        el.style.filter = 'filter:alpha(opacity=' + value + ')';
       }
     }
   },
 
   testProp: function (props) {
+
     var style = document.documentElement.style;
 
     for (var i = 0; i < props.length; i++) {
@@ -2258,7 +2300,7 @@ L.DomUtil = {
   },
 
   getTranslateString: function (point) {
-    // On webkit browsers (Chrome/Safari/MobileSafari/Android) using translate3d instead of translate
+    // on WebKit browsers (Chrome/Safari/iOS Safari/Android) using translate3d instead of translate
     // makes animation smoother as it ensures HW accel is used. Firefox 13 doesn't care
     // (same speed either way), Opera 12 doesn't support translate3d
 
@@ -2270,15 +2312,17 @@ L.DomUtil = {
   },
 
   getScaleString: function (scale, origin) {
-    var preTranslateStr = L.DomUtil.getTranslateString(origin),
-      scaleStr = ' scale(' + scale + ') ',
-      postTranslateStr = L.DomUtil.getTranslateString(origin.multiplyBy(-1));
 
-    return preTranslateStr + scaleStr + postTranslateStr;
+    var preTranslateStr = L.DomUtil.getTranslateString(origin.add(origin.multiplyBy(-1 * scale))),
+        scaleStr = ' scale(' + scale + ') ';
+
+    return preTranslateStr + scaleStr;
   },
 
-  setPosition: function (el, point, disable3D) {
+  setPosition: function (el, point, disable3D) { // (HTMLElement, Point[, Boolean])
+
     el._leaflet_pos = point;
+
     if (!disable3D && L.Browser.any3d) {
       el.style[L.DomUtil.TRANSFORM] =  L.DomUtil.getTranslateString(point);
 
@@ -2293,14 +2337,24 @@ L.DomUtil = {
   },
 
   getPosition: function (el) {
+    // this method is only used for elements previously positioned using setPosition,
+    // so it's safe to cache the position for performance
     return el._leaflet_pos;
   }
 };
 
-L.Util.extend(L.DomUtil, {
-  TRANSITION: L.DomUtil.testProp(['transition', 'webkitTransition', 'OTransition', 'MozTransition', 'msTransition']),
-  TRANSFORM: L.DomUtil.testProp(['transform', 'WebkitTransform', 'OTransform', 'MozTransform', 'msTransform'])
-});
+
+// prefix style property names
+
+L.DomUtil.TRANSFORM = L.DomUtil.testProp(
+    ['transform', 'WebkitTransform', 'OTransform', 'MozTransform', 'msTransform']);
+
+L.DomUtil.TRANSITION = L.DomUtil.testProp(
+    ['transition', 'webkitTransition', 'OTransition', 'MozTransition', 'msTransition']);
+
+L.DomUtil.TRANSITION_END =
+    L.DomUtil.TRANSITION === 'webkitTransition' || L.DomUtil.TRANSITION === 'OTransition' ?
+    L.DomUtil.TRANSITION + 'End' : 'transitionend';
 
 
 /*
@@ -2340,10 +2394,10 @@ L.LatLng.prototype = {
     return margin <= L.LatLng.MAX_MARGIN;
   },
 
-  toString: function () { // -> String
+  toString: function (precision) { // -> String
     return 'LatLng(' +
-        L.Util.formatNum(this.lat) + ', ' +
-        L.Util.formatNum(this.lng) + ')';
+        L.Util.formatNum(this.lat, precision) + ', ' +
+        L.Util.formatNum(this.lng, precision) + ')';
   },
 
   // Haversine distance formula, see http://en.wikipedia.org/wiki/Haversine_formula
@@ -2377,7 +2431,8 @@ L.latLng = function (a, b, c) { // (LatLng) or ([Number, Number]) or (Number, Nu
   }
   return new L.LatLng(a, b, c);
 };
- 
+
+
 
 /*
  * L.LatLngBounds represents a rectangular area on the map in geographical coordinates.
@@ -2503,6 +2558,10 @@ L.LatLngBounds = L.Class.extend({
 
     return this._southWest.equals(bounds.getSouthWest()) &&
            this._northEast.equals(bounds.getNorthEast());
+  },
+
+  isValid: function () {
+    return !!(this._southWest && this._northEast);
   }
 });
 
@@ -2669,12 +2728,12 @@ L.Map = L.Class.extend({
     return this.setView(this.getCenter(), zoom);
   },
 
-  zoomIn: function () {
-    return this.setZoom(this._zoom + 1);
+  zoomIn: function (delta) {
+    return this.setZoom(this._zoom + (delta || 1));
   },
 
-  zoomOut: function () {
-    return this.setZoom(this._zoom - 1);
+  zoomOut: function (delta) {
+    return this.setZoom(this._zoom - (delta || 1));
   },
 
   fitBounds: function (bounds) { // (LatLngBounds)
@@ -2779,16 +2838,10 @@ L.Map = L.Class.extend({
             layer.on('load', this._onTileLayerLoad, this);
     }
 
-    var onMapLoad = function () {
+    this.whenReady(function () {
       layer.onAdd(this);
       this.fire('layeradd', {layer: layer});
-    };
-
-    if (this._loaded) {
-      onMapLoad.call(this);
-    } else {
-      this.on('load', onMapLoad, this);
-    }
+    }, this);
 
     return this;
   },
@@ -2828,7 +2881,7 @@ L.Map = L.Class.extend({
 
     if (!this._loaded) { return this; }
 
-    var offset = oldSize.subtract(this.getSize()).divideBy(2, true);
+    var offset = oldSize._subtract(this.getSize())._divideBy(2)._round();
 
     if (animate === true) {
       this.panBy(offset);
@@ -2935,7 +2988,7 @@ L.Map = L.Class.extend({
 
       this._sizeChanged = false;
     }
-    return this._size;
+    return this._size.clone();
   },
 
   getPixelBounds: function () {
@@ -3134,6 +3187,9 @@ L.Map = L.Class.extend({
 
     this._tileLayersToLoad = this._tileLayersNum;
 
+    var loading = !this._loaded;
+    this._loaded = true;
+
     this.fire('viewreset', {hard: !preserveMapOffset});
 
     this.fire('move');
@@ -3144,8 +3200,7 @@ L.Map = L.Class.extend({
 
     this.fire('moveend', {hard: !preserveMapOffset});
 
-    if (!this._loaded) {
-      this._loaded = true;
+    if (loading) {
       this.fire('load');
     }
   },
@@ -3221,6 +3276,15 @@ L.Map = L.Class.extend({
     }
   },
 
+  whenReady: function (callback, context) {
+    if (this._loaded) {
+      callback.call(context || this, this);
+    } else {
+      this.on('load', callback, context);
+    }
+    return this;
+  },
+
 
   // private methods for getting map state
 
@@ -3237,7 +3301,7 @@ L.Map = L.Class.extend({
   },
 
   _getNewTopLeftPoint: function (center, zoom) {
-    var viewHalf = this.getSize().divideBy(2);
+    var viewHalf = this.getSize()._divideBy(2);
     // TODO round on display, not calculation to increase precision?
     return this.project(center, zoom)._subtract(viewHalf)._round();
   },
@@ -3248,7 +3312,7 @@ L.Map = L.Class.extend({
   },
 
   _getCenterLayerPoint: function () {
-    return this.containerPointToLayerPoint(this.getSize().divideBy(2));
+    return this.containerPointToLayerPoint(this.getSize()._divideBy(2));
   },
 
   _getCenterOffset: function (center) {
@@ -3530,7 +3594,7 @@ L.TileLayer = L.Class.extend({
       }
     }
 
-    this._container.style.zIndex = isFinite(edgeZIndex) ? edgeZIndex + compare(1, -1) : '';
+    this.options.zIndex = this._container.style.zIndex = (isFinite(edgeZIndex) ? edgeZIndex : 0) + compare(1, -1);
   },
 
   _updateOpacity: function () {
@@ -3594,7 +3658,8 @@ L.TileLayer = L.Class.extend({
   },
 
   _update: function (e) {
-    if (this._map._panTransition && this._map._panTransition._inProgress) { return; }
+
+    if (!this._map) { return; }
 
     var bounds   = this._map.getPixelBounds(),
         zoom     = this._map.getZoom(),
@@ -4112,10 +4177,11 @@ L.ImageOverlay = L.Class.extend({
         scale = map.getZoomScale(e.zoom),
         nw = this._bounds.getNorthWest(),
         se = this._bounds.getSouthEast(),
+
         topLeft = map._latLngToNewLayerPoint(nw, e.zoom, e.center),
-        size = map._latLngToNewLayerPoint(se, e.zoom, e.center).subtract(topLeft),
-        currentSize = map.latLngToLayerPoint(se).subtract(map.latLngToLayerPoint(nw)),
-        origin = topLeft.add(size.subtract(currentSize).divideBy(2));
+        size = map._latLngToNewLayerPoint(se, e.zoom, e.center)._subtract(topLeft),
+        currentSize = map.latLngToLayerPoint(se)._subtract(map.latLngToLayerPoint(nw)),
+        origin = topLeft._add(size._subtract(currentSize)._divideBy(2));
 
     image.style[L.DomUtil.TRANSFORM] = L.DomUtil.getTranslateString(origin) + ' scale(' + scale + ') ';
   },
@@ -4123,7 +4189,7 @@ L.ImageOverlay = L.Class.extend({
   _reset: function () {
     var image   = this._image,
         topLeft = this._map.latLngToLayerPoint(this._bounds.getNorthWest()),
-        size    = this._map.latLngToLayerPoint(this._bounds.getSouthEast()).subtract(topLeft);
+        size    = this._map.latLngToLayerPoint(this._bounds.getSouthEast())._subtract(topLeft);
 
     L.DomUtil.setPosition(image, topLeft);
 
@@ -4243,7 +4309,7 @@ L.Icon.Default = L.Icon.extend({
 
   options: {
     iconSize: new L.Point(25, 41),
-    iconAnchor: new L.Point(13, 41),
+    iconAnchor: new L.Point(12, 41),
     popupAnchor: new L.Point(1, -34),
 
     shadowSize: new L.Point(41, 41)
@@ -4326,10 +4392,7 @@ L.Marker = L.Class.extend({
   onRemove: function (map) {
     this._removeIcon();
 
-    // TODO move to Marker.Popup.js
-    if (this.closePopup) {
-      this.closePopup();
-    }
+    this.fire('remove');
 
     map.off({
       'viewreset': this.update,
@@ -4348,9 +4411,7 @@ L.Marker = L.Class.extend({
 
     this.update();
 
-    if (this._popup) {
-      this._popup.setLatLng(latlng);
-    }
+    this.fire('move', { latlng: this._latlng });
   },
 
   setZIndexOffset: function (offset) {
@@ -4472,7 +4533,9 @@ L.Marker = L.Class.extend({
   },
 
   _onMouseClick: function (e) {
-    L.DomEvent.stopPropagation(e);
+    if (this.hasEventListeners(e.type)) {
+      L.DomEvent.stopPropagation(e);
+    }
     if (this.dragging && this.dragging.moved()) { return; }
     if (this._map.dragging && this._map.dragging.moved()) { return; }
     this.fire(e.type, {
@@ -4842,7 +4905,10 @@ L.Marker.include({
     options = L.Util.extend({offset: anchor}, options);
 
     if (!this._popup) {
-      this.on('click', this.openPopup, this);
+      this
+        .on('click', this.openPopup, this)
+        .on('remove', this.closePopup, this)
+        .on('move', this._movePopup, this);
     }
 
     this._popup = new L.Popup(options, this)
@@ -4854,9 +4920,16 @@ L.Marker.include({
   unbindPopup: function () {
     if (this._popup) {
       this._popup = null;
-      this.off('click', this.openPopup);
+      this
+        .off('click', this.openPopup)
+        .off('remove', this.closePopup)
+        .off('move', this._movePopup);
     }
     return this;
+  },
+
+  _movePopup: function (e) {
+    this._popup.setLatLng(e.latlng);
   }
 });
 
@@ -5118,6 +5191,8 @@ L.Path = L.Class.extend({
       this._fill = null;
     }
 
+    this.fire('remove');
+
     map.off({
       'viewreset': this.projectLatlngs,
       'moveend': this._updatePath
@@ -5152,8 +5227,8 @@ L.Map.include({
     var p = L.Path.CLIP_PADDING,
       size = this.getSize(),
       panePos = L.DomUtil.getPosition(this._mapPane),
-      min = panePos.multiplyBy(-1)._subtract(size.multiplyBy(p)),
-      max = min.add(size.multiplyBy(1 + p * 2));
+      min = panePos.multiplyBy(-1)._subtract(size.multiplyBy(p)._round()),
+      max = min.add(size.multiplyBy(1 + p * 2)._round());
 
     this._pathViewport = new L.Bounds(min, max);
   }
@@ -5170,16 +5245,22 @@ L.Path = L.Path.extend({
   },
 
   bringToFront: function () {
-    if (this._container) {
-      this._map._pathRoot.appendChild(this._container);
+    var root = this._map._pathRoot,
+      path = this._container;
+
+    if (path && root.lastChild !== path) {
+      root.appendChild(path);
     }
     return this;
   },
 
   bringToBack: function () {
-    if (this._container) {
-      var root = this._map._pathRoot;
-      root.insertBefore(this._container, root.firstChild);
+    var root = this._map._pathRoot,
+      path = this._container,
+      first = root.firstChild;
+
+    if (path && first !== path) {
+      root.insertBefore(path, first);
     }
     return this;
   },
@@ -5268,17 +5349,11 @@ L.Path = L.Path.extend({
     }
 
     this._fireMouseEvent(e);
-
-    L.DomEvent.stopPropagation(e);
   },
 
   _fireMouseEvent: function (e) {
     if (!this.hasEventListeners(e.type)) {
       return;
-    }
-
-    if (e.type === 'contextmenu') {
-      L.DomEvent.preventDefault(e);
     }
 
     var map = this._map,
@@ -5292,6 +5367,11 @@ L.Path = L.Path.extend({
       containerPoint: containerPoint,
       originalEvent: e
     });
+
+    if (e.type === 'contextmenu') {
+      L.DomEvent.preventDefault(e);
+    }
+    L.DomEvent.stopPropagation(e);
   }
 });
 
@@ -5381,11 +5461,23 @@ L.Path.include({
 
     this._popup.setContent(content);
 
-    if (!this._openPopupAdded) {
-      this.on('click', this._openPopup, this);
-      this._openPopupAdded = true;
+    if (!this._popupHandlersAdded) {
+      this
+        .on('click', this._openPopup, this)
+        .on('remove', this._closePopup, this);
+      this._popupHandlersAdded = true;
     }
 
+    return this;
+  },
+
+  unbindPopup: function () {
+    if (this._popup) {
+      this._popup = null;
+      this
+        .off('click', this.openPopup)
+        .off('remove', this.closePopup);
+    }
     return this;
   },
 
@@ -5404,6 +5496,10 @@ L.Path.include({
   _openPopup: function (e) {
     this._popup.setLatLng(e.latlng);
     this._map.openPopup(this._popup);
+  },
+
+  _closePopup: function () {
+    this._popup._close();
   }
 });
 
@@ -5413,7 +5509,7 @@ L.Path.include({
  * Thanks to Dmitry Baranovsky and his Raphael library for inspiration!
  */
 
-L.Browser.vml = (function () {
+L.Browser.vml = !L.Browser.svg && (function () {
   try {
     var div = document.createElement('div');
     div.innerHTML = '<v:shape adj="1"/>';
@@ -5572,13 +5668,13 @@ L.Path = (L.Path.SVG && !window.L_PREFER_CANVAS) || !L.Browser.canvas ? L.Path :
   },
 
   _requestUpdate: function () {
-    if (this._map) {
-      L.Util.cancelAnimFrame(this._fireMapMoveEnd);
-      this._updateRequest = L.Util.requestAnimFrame(this._fireMapMoveEnd, this._map);
+    if (this._map && !L.Path._updateRequest) {
+      L.Path._updateRequest = L.Util.requestAnimFrame(this._fireMapMoveEnd, this._map);
     }
   },
 
   _fireMapMoveEnd: function () {
+    L.Path._updateRequest = null;
     this.fire('moveend');
   },
 
@@ -6354,13 +6450,11 @@ L.Circle = L.Path.extend({
   },
 
   getBounds: function () {
-    var map = this._map,
-      delta = this._radius * Math.cos(Math.PI / 4),
-      point = map.project(this._latlng),
-      swPoint = new L.Point(point.x - delta, point.y + delta),
-      nePoint = new L.Point(point.x + delta, point.y - delta),
-      sw = map.unproject(swPoint),
-      ne = map.unproject(nePoint);
+    var lngRadius = this._getLngRadius(),
+      latRadius = (this._mRadius / 40075017) * 360,
+      latlng = this._latlng,
+      sw = new L.LatLng(latlng.lat - latRadius, latlng.lng - lngRadius),
+      ne = new L.LatLng(latlng.lat + latRadius, latlng.lng + lngRadius);
 
     return new L.LatLngBounds(sw, ne);
   },
@@ -6392,11 +6486,14 @@ L.Circle = L.Path.extend({
     return this._mRadius;
   },
 
-  _getLngRadius: function () {
-    var equatorLength = 40075017,
-      hLength = equatorLength * Math.cos(L.LatLng.DEG_TO_RAD * this._latlng.lat);
+  // TODO Earth hardcoded, move into projection code!
 
-    return (this._mRadius / hLength) * 360;
+  _getLatRadius: function () {
+    return (this._mRadius / 40075017) * 360;
+  },
+
+  _getLngRadius: function () {
+    return this._getLatRadius() / Math.cos(L.LatLng.DEG_TO_RAD * this._latlng.lat);
   },
 
   _checkIfEmpty: function () {
@@ -6688,7 +6785,9 @@ L.DomEvent = {
       return fn.call(context || obj, e || L.DomEvent._getEvent());
     };
 
-    if (L.Browser.touch && (type === 'dblclick') && this.addDoubleTapListener) {
+    if (L.Browser.msTouch && type.indexOf('touch') === 0) {
+      return this.addMsTouchListener(obj, type, handler, id);
+    } else if (L.Browser.touch && (type === 'dblclick') && this.addDoubleTapListener) {
       return this.addDoubleTapListener(obj, handler, id);
 
     } else if ('addEventListener' in obj) {
@@ -6730,7 +6829,9 @@ L.DomEvent = {
 
     if (!handler) { return; }
 
-    if (L.Browser.touch && (type === 'dblclick') && this.removeDoubleTapListener) {
+    if (L.Browser.msTouch && type.indexOf('touch') === 0) {
+      this.removeMsTouchListener(obj, type, id);
+    } else if (L.Browser.touch && (type === 'dblclick') && this.removeDoubleTapListener) {
       this.removeDoubleTapListener(obj, id);
 
     } else if ('removeEventListener' in obj) {
@@ -6887,9 +6988,12 @@ L.Draggable = L.Class.extend({
   },
 
   _onDown: function (e) {
-    if ((!L.Browser.touch && e.shiftKey) || ((e.which !== 1) && (e.button !== 1) && !e.touches)) {
-      return;
-    }
+    if ((!L.Browser.touch && e.shiftKey) ||
+      ((e.which !== 1) && (e.button !== 1) && !e.touches)) { return; }
+
+    L.DomEvent.preventDefault(e);
+
+    if (L.Draggable._disabled) { return; }
 
     this._simulateClick = true;
 
@@ -6901,8 +7005,6 @@ L.Draggable = L.Class.extend({
     var first = (e.touches && e.touches.length === 1 ? e.touches[0] : e),
       el = first.target;
 
-    L.DomEvent.preventDefault(e);
-
     if (L.Browser.touch && el.tagName.toLowerCase() === 'a') {
       L.DomUtil.addClass(el, 'leaflet-active');
     }
@@ -6912,8 +7014,8 @@ L.Draggable = L.Class.extend({
       return;
     }
 
-    this._startPos = this._newPos = L.DomUtil.getPosition(this._element);
     this._startPoint = new L.Point(first.clientX, first.clientY);
+    this._startPos = this._newPos = L.DomUtil.getPosition(this._element);
 
     L.DomEvent.on(document, L.Draggable.MOVE, this._onMove, this);
     L.DomEvent.on(document, L.Draggable.END, this._onUp, this);
@@ -6933,6 +7035,8 @@ L.Draggable = L.Class.extend({
     if (!this._moved) {
       this.fire('dragstart');
       this._moved = true;
+
+      this._startPos = L.DomUtil.getPosition(this._element).subtract(diffVec);
 
       if (!L.Browser.touch) {
         L.DomUtil.disableTextSelection();
@@ -6954,6 +7058,7 @@ L.Draggable = L.Class.extend({
   },
 
   _onUp: function (e) {
+    var simulateClickTouch;
     if (this._simulateClick && e.changedTouches) {
       var first = e.changedTouches[0],
         el = first.target,
@@ -6964,7 +7069,7 @@ L.Draggable = L.Class.extend({
       }
 
       if (dist < L.Draggable.TAP_TOLERANCE) {
-        this._simulateEvent('click', first);
+        simulateClickTouch = first;
       }
     }
 
@@ -6983,6 +7088,11 @@ L.Draggable = L.Class.extend({
       this.fire('dragend');
     }
     this._moving = false;
+
+    if (simulateClickTouch) {
+      this._moved = false;
+      this._simulateEvent('click', simulateClickTouch);
+    }
   },
 
   _setMovingCursor: function () {
@@ -7044,9 +7154,9 @@ L.Map.mergeOptions({
   dragging: true,
 
   inertia: !L.Browser.android23,
-  inertiaDeceleration: 3000, // px/s^2
-  inertiaMaxSpeed: 1500, // px/s
-  inertiaThreshold: L.Browser.touch ? 32 : 14, // ms
+  inertiaDeceleration: 3400, // px/s^2
+  inertiaMaxSpeed: 6000, // px/s
+  inertiaThreshold: L.Browser.touch ? 32 : 18, // ms
 
   // TODO refactor, move to CRS
   worldCopyJump: true
@@ -7084,13 +7194,13 @@ L.Map.Drag = L.Handler.extend({
   _onDragStart: function () {
     var map = this._map;
 
+    if (map._panAnim) {
+      map._panAnim.stop();
+    }
+
     map
       .fire('movestart')
       .fire('dragstart');
-
-    if (map._panTransition) {
-      map._panTransition._onTransitionEnd(true);
-    }
 
     if (map.options.inertia) {
       this._positions = [];
@@ -7118,7 +7228,7 @@ L.Map.Drag = L.Handler.extend({
   },
 
   _onViewReset: function () {
-    var pxCenter = this._map.getSize().divideBy(2),
+    var pxCenter = this._map.getSize()._divideBy(2),
       pxWorldCenter = this._map.latLngToLayerPoint(new L.LatLng(0, 0));
 
     this._initialWorldOffset = pxWorldCenter.subtract(pxCenter).x;
@@ -7165,13 +7275,8 @@ L.Map.Drag = L.Handler.extend({
         decelerationDuration = limitedSpeed / options.inertiaDeceleration,
         offset = limitedSpeedVector.multiplyBy(-decelerationDuration / 2).round();
 
-      var panOptions = {
-        duration: decelerationDuration,
-        easing: 'ease-out'
-      };
-
       L.Util.requestAnimFrame(L.Util.bind(function () {
-        this._map.panBy(offset, panOptions);
+        this._map.panBy(offset, decelerationDuration);
       }, this));
     }
 
@@ -7220,7 +7325,7 @@ L.Map.addInitHook('addHandler', 'doubleClickZoom', L.Map.DoubleClickZoom);
  */
 
 L.Map.mergeOptions({
-  scrollWheelZoom: !L.Browser.touch
+  scrollWheelZoom: !L.Browser.touch || L.Browser.msTouch
 });
 
 L.Map.ScrollWheelZoom = L.Handler.extend({
@@ -7239,10 +7344,17 @@ L.Map.ScrollWheelZoom = L.Handler.extend({
     this._delta += delta;
     this._lastMousePos = this._map.mouseEventToContainerPoint(e);
 
+    if (!this._startTime) {
+      this._startTime = +new Date();
+    }
+
+    var left = Math.max(40 - (+new Date() - this._startTime), 0);
+
     clearTimeout(this._timer);
-    this._timer = setTimeout(L.Util.bind(this._performZoom, this), 40);
+    this._timer = setTimeout(L.Util.bind(this._performZoom, this), left);
 
     L.DomEvent.preventDefault(e);
+    L.DomEvent.stopPropagation(e);
   },
 
   _performZoom: function () {
@@ -7255,20 +7367,22 @@ L.Map.ScrollWheelZoom = L.Handler.extend({
 
     this._delta = 0;
 
+    this._startTime = null;
+
     if (!delta) { return; }
 
     var newZoom = zoom + delta,
-      newCenter = this._getCenterForScrollWheelZoom(this._lastMousePos, newZoom);
+      newCenter = this._getCenterForScrollWheelZoom(newZoom);
 
     map.setView(newCenter, newZoom);
   },
 
-  _getCenterForScrollWheelZoom: function (mousePos, newZoom) {
+  _getCenterForScrollWheelZoom: function (newZoom) {
     var map = this._map,
       scale = map.getZoomScale(newZoom),
-      viewHalf = map.getSize().divideBy(2),
-      centerOffset = mousePos.subtract(viewHalf).multiplyBy(1 - 1 / scale),
-      newCenterPoint = map._getTopLeftPoint().add(viewHalf).add(centerOffset);
+      viewHalf = map.getSize()._divideBy(2),
+      centerOffset = this._lastMousePos._subtract(viewHalf)._multiplyBy(1 - 1 / scale),
+      newCenterPoint = map._getTopLeftPoint()._add(viewHalf)._add(centerOffset);
 
     return map.unproject(newCenterPoint);
   }
@@ -7278,6 +7392,10 @@ L.Map.addInitHook('addHandler', 'scrollWheelZoom', L.Map.ScrollWheelZoom);
 
 
 L.Util.extend(L.DomEvent, {
+
+  _touchstart: L.Browser.msTouch ? 'MSPointerDown' : 'touchstart',
+  _touchend: L.Browser.msTouch ? 'MSPointerUp' : 'touchend',
+
   // inspired by Zepto touch code by Thomas Fuchs
   addDoubleTapListener: function (obj, handler, id) {
     var last,
@@ -7285,23 +7403,55 @@ L.Util.extend(L.DomEvent, {
       delay = 250,
       touch,
       pre = '_leaflet_',
-      touchstart = 'touchstart',
-      touchend = 'touchend';
+      touchstart = this._touchstart,
+      touchend = this._touchend,
+      trackedTouches = [];
 
     function onTouchStart(e) {
-      if (e.touches.length !== 1) {
+      var count;
+      if (L.Browser.msTouch) {
+        trackedTouches.push(e.pointerId);
+        count = trackedTouches.length;
+      } else {
+        count = e.touches.length;
+      }
+      if (count > 1) {
         return;
       }
 
       var now = Date.now(),
         delta = now - (last || now);
 
-      touch = e.touches[0];
+      touch = e.touches ? e.touches[0] : e;
       doubleTap = (delta > 0 && delta <= delay);
       last = now;
     }
     function onTouchEnd(e) {
+      if (L.Browser.msTouch) {
+        var idx = trackedTouches.indexOf(e.pointerId);
+        if (idx === -1) {
+          return;
+        }
+        trackedTouches.splice(idx, 1);
+      }
+
       if (doubleTap) {
+        if (L.Browser.msTouch) {
+          //Work around .type being readonly with MSPointer* events
+          var newTouch = { },
+            prop;
+          for (var i in touch) {
+            if (true) { //Make JSHint happy, we want to copy all properties
+              prop = touch[i];
+              if (typeof prop === 'function') {
+                newTouch[i] = prop.bind(touch);
+              } else {
+                newTouch[i] = prop;
+              }
+            }
+          }
+          touch = newTouch;
+        }
         touch.type = 'dblclick';
         handler(touch);
         last = null;
@@ -7310,15 +7460,171 @@ L.Util.extend(L.DomEvent, {
     obj[pre + touchstart + id] = onTouchStart;
     obj[pre + touchend + id] = onTouchEnd;
 
+    //On msTouch we need to listen on the document otherwise a drag starting on the map and moving off screen will not come through to us
+    // so we will lose track of how many touches are ongoing
+    var endElement = L.Browser.msTouch ? document.documentElement : obj;
+
     obj.addEventListener(touchstart, onTouchStart, false);
-    obj.addEventListener(touchend, onTouchEnd, false);
+    endElement.addEventListener(touchend, onTouchEnd, false);
+    if (L.Browser.msTouch) {
+      endElement.addEventListener('MSPointerCancel', onTouchEnd, false);
+    }
     return this;
   },
 
   removeDoubleTapListener: function (obj, id) {
     var pre = '_leaflet_';
-    obj.removeEventListener(obj, obj[pre + 'touchstart' + id], false);
-    obj.removeEventListener(obj, obj[pre + 'touchend' + id], false);
+    obj.removeEventListener(this._touchstart, obj[pre + this._touchstart + id], false);
+    (L.Browser.msTouch ? document.documentElement : obj).removeEventListener(this._touchend, obj[pre + this._touchend + id], false);
+    if (L.Browser.msTouch) {
+      document.documentElement.removeEventListener('MSPointerCancel', obj[pre + this._touchend + id], false);
+    }
+    return this;
+  }
+});
+
+
+L.Util.extend(L.DomEvent, {
+
+  _msTouches: [],
+  _msDocumentListener: false,
+
+  // Provides a touch events wrapper for msPointer events.
+  // Based on changes by veproza https://github.com/CloudMade/Leaflet/pull/1019
+
+  addMsTouchListener: function (obj, type, handler, id) {
+
+    switch (type) {
+    case 'touchstart':
+      return this.addMsTouchListenerStart(obj, type, handler, id);
+    case 'touchend':
+      return this.addMsTouchListenerEnd(obj, type, handler, id);
+    case 'touchmove':
+      return this.addMsTouchListenerMove(obj, type, handler, id);
+    default:
+      throw 'Unknown touch event type';
+    }
+  },
+
+  addMsTouchListenerStart: function (obj, type, handler, id) {
+    var pre = '_leaflet_',
+      touches = this._msTouches;
+
+    var cb = function (e) {
+
+      var alreadyInArray = false;
+      for (var i = 0; i < touches.length; i++) {
+        if (touches[i].pointerId === e.pointerId) {
+          alreadyInArray = true;
+          break;
+        }
+      }
+      if (!alreadyInArray) {
+        touches.push(e);
+      }
+
+      e.touches = touches.slice();
+      e.changedTouches = [e];
+
+      handler(e);
+    };
+
+    obj[pre + 'touchstart' + id] = cb;
+    obj.addEventListener('MSPointerDown', cb, false);
+
+    //Need to also listen for end events to keep the _msTouches list accurate
+    //this needs to be on the body and never go away
+    if (!this._msDocumentListener) {
+      var internalCb = function (e) {
+        for (var i = 0; i < touches.length; i++) {
+          if (touches[i].pointerId === e.pointerId) {
+            touches.splice(i, 1);
+            break;
+          }
+        }
+      };
+      //We listen on the documentElement as any drags that end by moving the touch off the screen get fired there
+      document.documentElement.addEventListener('MSPointerUp', internalCb, false);
+      document.documentElement.addEventListener('MSPointerCancel', internalCb, false);
+
+      this._msDocumentListener = true;
+    }
+
+    return this;
+  },
+
+  addMsTouchListenerMove: function (obj, type, handler, id) {
+    var pre = '_leaflet_';
+
+    var touches = this._msTouches;
+    var cb = function (e) {
+
+      //Don't fire touch moves when mouse isn't down
+      if (e.pointerType === e.MSPOINTER_TYPE_MOUSE && e.buttons === 0) {
+        return;
+      }
+
+      for (var i = 0; i < touches.length; i++) {
+        if (touches[i].pointerId === e.pointerId) {
+          touches[i] = e;
+          break;
+        }
+      }
+
+      e.touches = touches.slice();
+      e.changedTouches = [e];
+
+      handler(e);
+    };
+
+    obj[pre + 'touchmove' + id] = cb;
+    obj.addEventListener('MSPointerMove', cb, false);
+
+    return this;
+  },
+
+  addMsTouchListenerEnd: function (obj, type, handler, id) {
+    var pre = '_leaflet_',
+      touches = this._msTouches;
+
+    var cb = function (e) {
+      for (var i = 0; i < touches.length; i++) {
+        if (touches[i].pointerId === e.pointerId) {
+          touches.splice(i, 1);
+          break;
+        }
+      }
+
+      e.touches = touches.slice();
+      e.changedTouches = [e];
+
+      handler(e);
+    };
+
+    obj[pre + 'touchend' + id] = cb;
+    obj.addEventListener('MSPointerUp', cb, false);
+    obj.addEventListener('MSPointerCancel', cb, false);
+
+    return this;
+  },
+
+  removeMsTouchListener: function (obj, type, id) {
+    var pre = '_leaflet_',
+        cb = obj[pre + type + id];
+
+    switch (type) {
+    case 'touchstart':
+      obj.removeEventListener('MSPointerDown', cb, false);
+      break;
+    case 'touchmove':
+      obj.removeEventListener('MSPointerMove', cb, false);
+      break;
+    case 'touchend':
+      obj.removeEventListener('MSPointerUp', cb, false);
+      obj.removeEventListener('MSPointerCancel', cb, false);
+      break;
+    }
+
     return this;
   }
 });
@@ -7350,13 +7656,17 @@ L.Map.TouchZoom = L.Handler.extend({
       p2 = map.mouseEventToLayerPoint(e.touches[1]),
       viewCenter = map._getCenterLayerPoint();
 
-    this._startCenter = p1.add(p2).divideBy(2, true);
+    this._startCenter = p1.add(p2)._divideBy(2);
     this._startDist = p1.distanceTo(p2);
 
     this._moved = false;
     this._zooming = true;
 
     this._centerOffset = viewCenter.subtract(this._startCenter);
+
+    if (map._panAnim) {
+      map._panAnim.stop();
+    }
 
     L.DomEvent
       .on(document, 'touchmove', this._onTouchMove, this)
@@ -7374,7 +7684,7 @@ L.Map.TouchZoom = L.Handler.extend({
       p2 = map.mouseEventToLayerPoint(e.touches[1]);
 
     this._scale = p1.distanceTo(p2) / this._startDist;
-    this._delta = p1.add(p2).divideBy(2, true).subtract(this._startCenter);
+    this._delta = p1._add(p2)._divideBy(2)._subtract(this._startCenter);
 
     if (this._scale === 1) { return; }
 
@@ -7508,8 +7818,8 @@ L.Map.BoxZoom = L.Handler.extend({
     L.DomUtil.setPosition(box, newPos);
 
     // TODO refactor: remove hardcoded 4 pixels
-    box.style.width  = (Math.abs(offset.x) - 4) + 'px';
-    box.style.height = (Math.abs(offset.y) - 4) + 'px';
+    box.style.width  = (Math.max(0, Math.abs(offset.x) - 4)) + 'px';
+    box.style.height = (Math.max(0, Math.abs(offset.y) - 4)) + 'px';
   },
 
   _onMouseUp: function (e) {
@@ -7709,16 +8019,20 @@ L.Handler.MarkerDrag = L.Handler.extend({
   },
 
   _onDrag: function (e) {
+    var marker = this._marker,
+      shadow = marker._shadow,
+      iconPos = L.DomUtil.getPosition(marker._icon),
+      latlng = marker._map.layerPointToLatLng(iconPos);
+
     // update shadow position
-    var iconPos = L.DomUtil.getPosition(this._marker._icon);
-    if (this._marker._shadow) {
-      L.DomUtil.setPosition(this._marker._shadow, iconPos);
+    if (shadow) {
+      L.DomUtil.setPosition(shadow, iconPos);
     }
 
-    this._marker._latlng = this._marker._map.layerPointToLatLng(iconPos);
+    marker._latlng = latlng;
 
-    this._marker
-      .fire('move')
+    marker
+      .fire('move', { latlng: latlng })
       .fire('drag');
   },
 
@@ -7846,8 +8160,12 @@ L.Handler.PolyEdit = L.Handler.extend({
     // Check existence of previous and next markers since they wouldn't exist for edge points on the polyline
     if (marker._prev && marker._next) {
       this._createMiddleMarker(marker._prev, marker._next);
-      this._updatePrevNext(marker._prev, marker._next);
+    } else if (!marker._prev) {
+      marker._next._middleLeft = null;
+    } else if (!marker._next) {
+      marker._prev._middleRight = null;
     }
+    this._updatePrevNext(marker._prev, marker._next);
 
     // The marker itself is guaranteed to exist and present in the layer, since we managed to click on it
     this._markerGroup.removeLayer(marker);
@@ -7928,8 +8246,12 @@ L.Handler.PolyEdit = L.Handler.extend({
   },
 
   _updatePrevNext: function (marker1, marker2) {
-    marker1._next = marker2;
-    marker2._prev = marker1;
+    if (marker1) {
+      marker1._next = marker2;
+    }
+    if (marker2) {
+      marker2._prev = marker1;
+    }
   },
 
   _getMiddleLatLng: function (marker1, marker2) {
@@ -7937,7 +8259,7 @@ L.Handler.PolyEdit = L.Handler.extend({
         p1 = map.latLngToLayerPoint(marker1.getLatLng()),
         p2 = map.latLngToLayerPoint(marker2.getLatLng());
 
-    return map.layerPointToLatLng(p1._add(p2).divideBy(2));
+    return map.layerPointToLatLng(p1._add(p2)._divideBy(2));
   }
 });
 
@@ -8051,10 +8373,20 @@ L.Control.Zoom = L.Control.extend({
     var className = 'leaflet-control-zoom',
         container = L.DomUtil.create('div', className);
 
-    this._createButton('Zoom in', className + '-in', container, map.zoomIn, map);
-    this._createButton('Zoom out', className + '-out', container, map.zoomOut, map);
+    this._map = map;
+
+    this._createButton('Zoom in', className + '-in', container, this._zoomIn, this);
+    this._createButton('Zoom out', className + '-out', container, this._zoomOut, this);
 
     return container;
+  },
+
+  _zoomIn: function (e) {
+    this._map.zoomIn(e.shiftKey ? 3 : 1);
+  },
+
+  _zoomOut: function (e) {
+    this._map.zoomOut(e.shiftKey ? 3 : 1);
   },
 
   _createButton: function (title, className, container, fn, context) {
@@ -8064,9 +8396,10 @@ L.Control.Zoom = L.Control.extend({
 
     L.DomEvent
       .on(link, 'click', L.DomEvent.stopPropagation)
+      .on(link, 'mousedown', L.DomEvent.stopPropagation)
+      .on(link, 'dblclick', L.DomEvent.stopPropagation)
       .on(link, 'click', L.DomEvent.preventDefault)
-      .on(link, 'click', fn, context)
-      .on(link, 'dblclick', L.DomEvent.stopPropagation);
+      .on(link, 'click', fn, context);
 
     return link;
   }
@@ -8086,6 +8419,8 @@ L.Map.addInitHook(function () {
 L.control.zoom = function (options) {
   return new L.Control.Zoom(options);
 };
+
+
 
 L.Control.Attribution = L.Control.extend({
   options: {
@@ -8217,7 +8552,7 @@ L.Control.Scale = L.Control.extend({
     this._addScales(options, className, container);
 
     map.on(options.updateWhenIdle ? 'moveend' : 'move', this._update, this);
-    this._update();
+    map.whenReady(this._update, this);
 
     return container;
   },
@@ -8306,7 +8641,6 @@ L.Control.Scale = L.Control.extend({
 L.control.scale = function (options) {
   return new L.Control.Scale(options);
 };
-
 
 
 L.Control.Layers = L.Control.extend({
@@ -8446,7 +8780,7 @@ L.Control.Layers = L.Control.extend({
   // IE7 bugs out if you create a radio dynamically, so you have to do it this hacky way (see http://bit.ly/PqYLBe)
   _createRadioElement: function (name, checked) {
 
-    var radioHtml = '<input type="radio" name="' + name + '"';
+    var radioHtml = '<input type="radio" class="leaflet-control-layers-selector" name="' + name + '"';
     if (checked) {
       radioHtml += ' checked="checked"';
     }
@@ -8466,6 +8800,7 @@ L.Control.Layers = L.Control.extend({
     if (obj.overlay) {
       input = document.createElement('input');
       input.type = 'checkbox';
+      input.className = 'leaflet-control-layers-selector';
       input.defaultChecked = checked;
     } else {
       input = this._createRadioElement('leaflet-base-layers', checked);
@@ -8475,7 +8810,8 @@ L.Control.Layers = L.Control.extend({
 
     L.DomEvent.on(input, 'click', this._onInputClick, this);
 
-    var name = document.createTextNode(' ' + obj.name);
+    var name = document.createElement('span');
+    name.innerHTML = ' ' + obj.name;
 
     label.appendChild(input);
     label.appendChild(name);
@@ -8487,17 +8823,25 @@ L.Control.Layers = L.Control.extend({
   _onInputClick: function () {
     var i, input, obj,
       inputs = this._form.getElementsByTagName('input'),
-      inputsLen = inputs.length;
+      inputsLen = inputs.length,
+      baseLayer;
 
     for (i = 0; i < inputsLen; i++) {
       input = inputs[i];
       obj = this._layers[input.layerId];
 
-      if (input.checked) {
-        this._map.addLayer(obj.layer, !obj.overlay);
-      } else {
+      if (input.checked && !this._map.hasLayer(obj.layer)) {
+        this._map.addLayer(obj.layer);
+        if (!obj.overlay) {
+          baseLayer = obj.layer;
+        }
+      } else if (!input.checked && this._map.hasLayer(obj.layer)) {
         this._map.removeLayer(obj.layer);
       }
+    }
+
+    if (baseLayer) {
+      this._map.fire('baselayerchange', {layer: baseLayer});
     }
   },
 
@@ -8515,270 +8859,83 @@ L.control.layers = function (baseLayers, overlays, options) {
 };
 
 
-L.Transition = L.Class.extend({
+/*
+ * L.PosAnimation is used by Leaflet internally for pan animations.
+ */
+
+L.PosAnimation = L.Class.extend({
   includes: L.Mixin.Events,
 
-  statics: {
-    CUSTOM_PROPS_SETTERS: {
-      position: L.DomUtil.setPosition
-      //TODO transform custom attr
-    },
+  run: function (el, newPos, duration, easing) { // (HTMLElement, Point[, Number, String])
+    this.stop();
 
-    implemented: function () {
-      return L.Transition.NATIVE || L.Transition.TIMER;
-    }
-  },
-
-  options: {
-    easing: 'ease',
-    duration: 0.5
-  },
-
-  _setProperty: function (prop, value) {
-    var setters = L.Transition.CUSTOM_PROPS_SETTERS;
-    if (prop in setters) {
-      setters[prop](this._el, value);
-    } else {
-      this._el.style[prop] = value;
-    }
-  }
-});
-
-
-/*
- * L.Transition native implementation that powers Leaflet animation
- * in browsers that support CSS3 Transitions
- */
-
-L.Transition = L.Transition.extend({
-  statics: (function () {
-    var transition = L.DomUtil.TRANSITION,
-      transitionEnd = (transition === 'webkitTransition' || transition === 'OTransition' ?
-        transition + 'End' : 'transitionend');
-
-    return {
-      NATIVE: !!transition,
-
-      TRANSITION: transition,
-      PROPERTY: transition + 'Property',
-      DURATION: transition + 'Duration',
-      EASING: transition + 'TimingFunction',
-      END: transitionEnd,
-
-      // transition-property value to use with each particular custom property
-      CUSTOM_PROPS_PROPERTIES: {
-        position: L.Browser.any3d ? L.DomUtil.TRANSFORM : 'top, left'
-      }
-    };
-  }()),
-
-  options: {
-    fakeStepInterval: 100
-  },
-
-  initialize: function (/*HTMLElement*/ el, /*Object*/ options) {
     this._el = el;
-    L.Util.setOptions(this, options);
-
-    L.DomEvent.on(el, L.Transition.END, this._onTransitionEnd, this);
-    this._onFakeStep = L.Util.bind(this._onFakeStep, this);
-  },
-
-  run: function (/*Object*/ props) {
-    var prop,
-      propsList = [],
-      customProp = L.Transition.CUSTOM_PROPS_PROPERTIES;
-
-    for (prop in props) {
-      if (props.hasOwnProperty(prop)) {
-        prop = customProp[prop] ? customProp[prop] : prop;
-        prop = this._dasherize(prop);
-        propsList.push(prop);
-      }
-    }
-
-    this._el.style[L.Transition.DURATION] = this.options.duration + 's';
-    this._el.style[L.Transition.EASING] = this.options.easing;
-    this._el.style[L.Transition.PROPERTY] = 'all';
-
-    for (prop in props) {
-      if (props.hasOwnProperty(prop)) {
-        this._setProperty(prop, props[prop]);
-      }
-    }
-
-    // Chrome flickers for some reason if you don't do this
-    L.Util.falseFn(this._el.offsetWidth);
-
     this._inProgress = true;
-
-    if (L.Browser.mobileWebkit) {
-      // Set up a slightly delayed call to a backup event if webkitTransitionEnd doesn't fire properly
-      this.backupEventFire = setTimeout(L.Util.bind(this._onBackupFireEnd, this), this.options.duration * 1.2 * 1000);
-    }
-
-    if (L.Transition.NATIVE) {
-      clearInterval(this._timer);
-      this._timer = setInterval(this._onFakeStep, this.options.fakeStepInterval);
-    } else {
-      this._onTransitionEnd();
-    }
-  },
-
-  _dasherize: (function () {
-    var re = /([A-Z])/g;
-
-    function replaceFn(w) {
-      return '-' + w.toLowerCase();
-    }
-
-    return function (str) {
-      return str.replace(re, replaceFn);
-    };
-  }()),
-
-  _onFakeStep: function () {
-    this.fire('step');
-  },
-
-  _onTransitionEnd: function (e) {
-    if (this._inProgress) {
-      this._inProgress = false;
-      clearInterval(this._timer);
-
-      this._el.style[L.Transition.TRANSITION] = '';
-
-      // Clear the delayed call to the backup event, we have recieved some form of webkitTransitionEnd
-      clearTimeout(this.backupEventFire);
-      delete this.backupEventFire;
-
-      this.fire('step');
-
-      if (e && e.type) {
-        this.fire('end');
-      }
-    }
-  },
-
-  _onBackupFireEnd: function () {
-    // Create and fire a transitionEnd event on the element.
-
-    var event = document.createEvent("Event");
-    event.initEvent(L.Transition.END, true, false);
-    this._el.dispatchEvent(event);
-  }
-});
-
-
-/*
- * L.Transition fallback implementation that powers Leaflet animation
- * in browsers that don't support CSS3 Transitions
- */
-
-L.Transition = L.Transition.NATIVE ? L.Transition : L.Transition.extend({
-  statics: {
-    getTime: Date.now || function () {
-      return +new Date();
-    },
-
-    TIMER: true,
-
-    EASINGS: {
-      'linear': function (t) { return t; },
-      'ease-out': function (t) { return t * (2 - t); }
-    },
-
-    CUSTOM_PROPS_GETTERS: {
-      position: L.DomUtil.getPosition
-    },
-
-    //used to get units from strings like "10.5px" (->px)
-    UNIT_RE: /^[\d\.]+(\D*)$/
-  },
-
-  options: {
-    fps: 50
-  },
-
-  initialize: function (el, options) {
-    this._el = el;
-    L.Util.extend(this.options, options);
-
-    this._easing = L.Transition.EASINGS[this.options.easing] || L.Transition.EASINGS['ease-out'];
-
-    this._step = L.Util.bind(this._step, this);
-    this._interval = Math.round(1000 / this.options.fps);
-  },
-
-  run: function (props) {
-    this._props = {};
-
-    var getters = L.Transition.CUSTOM_PROPS_GETTERS,
-      re = L.Transition.UNIT_RE;
 
     this.fire('start');
 
-    for (var prop in props) {
-      if (props.hasOwnProperty(prop)) {
-        var p = {};
-        if (prop in getters) {
-          p.from = getters[prop](this._el);
-        } else {
-          var matches = this._el.style[prop].match(re);
-          p.from = parseFloat(matches[0]);
-          p.unit = matches[1];
-        }
-        p.to = props[prop];
-        this._props[prop] = p;
-      }
-    }
+    el.style[L.DomUtil.TRANSITION] = 'all ' + (duration || 0.25) + 's ' + (easing || 'ease-out');
 
-    clearInterval(this._timer);
-    this._timer = setInterval(this._step, this._interval);
-    this._startTime = L.Transition.getTime();
+    L.DomEvent.on(el, L.DomUtil.TRANSITION_END, this._onTransitionEnd, this);
+    L.DomUtil.setPosition(el, newPos);
+
+    // toggle reflow, Chrome flickers for some reason if you don't do this
+    L.Util.falseFn(el.offsetWidth);
+
+    // there's no native way to track value updates of tranisitioned properties, so we imitate this
+    this._stepTimer = setInterval(L.Util.bind(this.fire, this, 'step'), 50);
   },
 
-  _step: function () {
-    var time = L.Transition.getTime(),
-      elapsed = time - this._startTime,
-      duration = this.options.duration * 1000;
+  stop: function () {
+    if (!this._inProgress) { return; }
 
-    if (elapsed < duration) {
-      this._runFrame(this._easing(elapsed / duration));
+    // if we just removed the transition property, the element would jump to its final position,
+    // so we need to make it stay at the current position
+
+    L.DomUtil.setPosition(this._el, this._getPos());
+    this._onTransitionEnd();
+  },
+
+  // you can't easily get intermediate values of properties animated with CSS3 Transitions,
+  // we need to parse computed style (in case of transform it returns matrix string)
+
+  _transformRe: /(-?[\d\.]+), (-?[\d\.]+)\)/,
+
+  _getPos: function () {
+    var left, top, matches,
+      el = this._el,
+      style = window.getComputedStyle(el);
+
+    if (L.Browser.any3d) {
+      matches = style[L.DomUtil.TRANSFORM].match(this._transformRe);
+      left = parseFloat(matches[1]);
+      top  = parseFloat(matches[2]);
     } else {
-      this._runFrame(1);
-      this._complete();
+      left = parseFloat(style.left);
+      top  = parseFloat(style.top);
     }
+
+    return new L.Point(left, top, true);
   },
 
-  _runFrame: function (percentComplete) {
-    var setters = L.Transition.CUSTOM_PROPS_SETTERS,
-      prop, p, value;
+  _onTransitionEnd: function () {
+    L.DomEvent.off(this._el, L.DomUtil.TRANSITION_END, this._onTransitionEnd, this);
 
-    for (prop in this._props) {
-      if (this._props.hasOwnProperty(prop)) {
-        p = this._props[prop];
-        if (prop in setters) {
-          value = p.to.subtract(p.from).multiplyBy(percentComplete).add(p.from);
-          setters[prop](this._el, value);
-        } else {
-          this._el.style[prop] =
-              ((p.to - p.from) * percentComplete + p.from) + p.unit;
-        }
-      }
-    }
-    this.fire('step');
-  },
+    if (!this._inProgress) { return; }
+    this._inProgress = false;
 
-  _complete: function () {
-    clearInterval(this._timer);
-    this.fire('end');
+    this._el.style[L.DomUtil.TRANSITION] = '';
+
+    clearInterval(this._stepTimer);
+
+    this.fire('step').fire('end');
   }
+
 });
 
 
 
-L.Map.include(!(L.Transition && L.Transition.implemented()) ? {} : {
+L.Map.include({
 
   setView: function (center, zoom, forceReset) {
     zoom = this._limitZoom(zoom);
@@ -8786,6 +8943,11 @@ L.Map.include(!(L.Transition && L.Transition.implemented()) ? {} : {
     var zoomChanged = (this._zoom !== zoom);
 
     if (this._loaded && !forceReset && this._layers) {
+
+      if (this._panAnim) {
+        this._panAnim.stop();
+      }
+
       var done = (zoomChanged ?
           this._zoomToIfClose && this._zoomToIfClose(center, zoom) :
           this._panByIfClose(center));
@@ -8803,31 +8965,28 @@ L.Map.include(!(L.Transition && L.Transition.implemented()) ? {} : {
     return this;
   },
 
-  panBy: function (offset, options) {
+  panBy: function (offset, duration) {
     offset = L.point(offset);
 
     if (!(offset.x || offset.y)) {
       return this;
     }
 
-    if (!this._panTransition) {
-      this._panTransition = new L.Transition(this._mapPane);
+    if (!this._panAnim) {
+      this._panAnim = new L.PosAnimation();
 
-      this._panTransition.on({
+      this._panAnim.on({
         'step': this._onPanTransitionStep,
         'end': this._onPanTransitionEnd
       }, this);
     }
 
-    L.Util.setOptions(this._panTransition, L.Util.extend({duration: 0.25}, options));
-
     this.fire('movestart');
 
     L.DomUtil.addClass(this._mapPane, 'leaflet-pan-anim');
 
-    this._panTransition.run({
-      position: L.DomUtil.getPosition(this._mapPane).subtract(offset)
-    });
+    var newPos = L.DomUtil.getPosition(this._mapPane).subtract(offset);
+    this._panAnim.run(this._mapPane, newPos, duration || 0.25);
 
     return this;
   },
@@ -8862,13 +9021,85 @@ L.Map.include(!(L.Transition && L.Transition.implemented()) ? {} : {
 });
 
 
+/*
+ * L.PosAnimation fallback implementation that powers Leaflet pan animations
+ * in browsers that don't support CSS3 Transitions.
+ */
+
+L.PosAnimation = L.DomUtil.TRANSITION ? L.PosAnimation : L.PosAnimation.extend({
+
+  run: function (el, newPos, duration, easing) { // (HTMLElement, Point[, Number, String])
+    this.stop();
+
+    this._el = el;
+    this._inProgress = true;
+    this._duration = duration || 0.25;
+    this._ease = this._easings[easing || 'ease-out'];
+
+    this._startPos = L.DomUtil.getPosition(el);
+    this._offset = newPos.subtract(this._startPos);
+    this._startTime = +new Date();
+
+    this.fire('start');
+
+    this._animate();
+  },
+
+  stop: function () {
+    if (!this._inProgress) { return; }
+
+    this._step();
+    this._complete();
+  },
+
+  _animate: function () {
+    // animation loop
+    this._animId = L.Util.requestAnimFrame(this._animate, this);
+    this._step();
+  },
+
+  _step: function () {
+    var elapsed = (+new Date()) - this._startTime,
+      duration = this._duration * 1000;
+
+    if (elapsed < duration) {
+      this._runFrame(this._ease(elapsed / duration));
+    } else {
+      this._runFrame(1);
+      this._complete();
+    }
+  },
+
+  _runFrame: function (progress) {
+    var pos = this._startPos.add(this._offset.multiplyBy(progress));
+    L.DomUtil.setPosition(this._el, pos);
+
+    this.fire('step');
+  },
+
+  _complete: function () {
+    L.Util.cancelAnimFrame(this._animId);
+
+    this._inProgress = false;
+    this.fire('end');
+  },
+
+  // easing functions, they map time progress to movement progress
+  _easings: {
+    'ease-out': function (t) { return t * (2 - t); },
+    'linear':   function (t) { return t; }
+  }
+
+});
+
+
 L.Map.mergeOptions({
   zoomAnimation: L.DomUtil.TRANSITION && !L.Browser.android23 && !L.Browser.mobileOpera
 });
 
 if (L.DomUtil.TRANSITION) {
   L.Map.addInitHook(function () {
-    L.DomEvent.on(this._mapPane, L.Transition.END, this._catchTransitionEnd, this);
+    L.DomEvent.on(this._mapPane, L.DomUtil.TRANSITION_END, this._catchTransitionEnd, this);
   });
 }
 
@@ -8881,7 +9112,7 @@ L.Map.include(!L.DomUtil.TRANSITION ? {} : {
     if (!this.options.zoomAnimation) { return false; }
 
     var scale = this.getZoomScale(zoom),
-      offset = this._getCenterOffset(center).divideBy(1 - 1 / scale);
+      offset = this._getCenterOffset(center)._divideBy(1 - 1 / scale);
 
     // if offset does not exceed half of the view
     if (!this._offsetIsWithinView(offset, 1)) { return false; }
@@ -8916,28 +9147,23 @@ L.Map.include(!L.DomUtil.TRANSITION ? {} : {
     this._animateToZoom = zoom;
     this._animatingZoom = true;
 
+    if (L.Draggable) {
+      L.Draggable._disabled = true;
+    }
+
     var transform = L.DomUtil.TRANSFORM,
       tileBg = this._tileBg;
 
     clearTimeout(this._clearTileBgTimer);
-
-    //dumb FireFox hack, I have no idea why this magic zero translate fixes the scale transition problem
-    if (L.Browser.gecko || window.opera) {
-      tileBg.style[transform] += ' translate(0,0)';
-    }
 
     L.Util.falseFn(tileBg.offsetWidth); //hack to make sure transform is updated before running animation
 
     var scaleStr = L.DomUtil.getScaleString(scale, origin),
       oldTransform = tileBg.style[transform];
 
-    var s = backwardsTransform ?
+    tileBg.style[transform] = backwardsTransform ?
       oldTransform + ' ' + scaleStr :
       scaleStr + ' ' + oldTransform;
-
-    //tileBg.style["-webkit-transition-duration"] = "1s";
-    tileBg.style[transform] = s;
-
   },
 
   _prepareTileBg: function () {
@@ -9014,6 +9240,10 @@ L.Map.include(!L.DomUtil.TRANSITION ? {} : {
 
     L.DomUtil.removeClass(this._mapPane, 'leaflet-zoom-anim');
     this._animatingZoom = false;
+
+    if (L.Draggable) {
+      L.Draggable._disabled = false;
+    }
   },
 
   _restoreTileFront: function () {
@@ -9121,8 +9351,7 @@ L.Map.include({
 
 
 
-}(this));
-/* wax - 7.0.0dev10 - v6.0.4-112-g94e91cb */
+}(this));/* wax - 7.0.0dev10 - v6.0.4-112-g94e91cb */
 
 
 !function (name, context, definition) {
@@ -15888,7 +16117,1829 @@ wax.g.connector.prototype.getTileUrl = function(coord, z) {
                 .replace(/\{x\}/g, x)
                 .replace(/\{y\}/g, y);
 };
+var GeoJSON = function( geojson, options ){
 
+	var _geometryToGoogleMaps = function( geojsonGeometry, opts, geojsonProperties ){
+		
+		var googleObj;
+		
+		switch ( geojsonGeometry.type ){
+			case "Point":
+				opts.position = new google.maps.LatLng(geojsonGeometry.coordinates[1], geojsonGeometry.coordinates[0]);
+				googleObj = new google.maps.Marker(opts);
+				if (geojsonProperties) {
+					googleObj.set("geojsonProperties", geojsonProperties);
+				}
+				break;
+				
+			case "MultiPoint":
+				googleObj = [];
+				for (var i = 0; i < geojsonGeometry.coordinates.length; i++){
+					opts.position = new google.maps.LatLng(geojsonGeometry.coordinates[i][1], geojsonGeometry.coordinates[i][0]);
+					googleObj.push(new google.maps.Marker(opts));
+				}
+				if (geojsonProperties) {
+					for (var k = 0; k < googleObj.length; k++){
+						googleObj[k].set("geojsonProperties", geojsonProperties);
+					}
+				}
+				break;
+				
+			case "LineString":
+				var path = [];
+				for (var i = 0; i < geojsonGeometry.coordinates.length; i++){
+					var coord = geojsonGeometry.coordinates[i];
+					var ll = new google.maps.LatLng(coord[1], coord[0]);
+					path.push(ll);
+				}
+				opts.path = path;
+				googleObj = new google.maps.Polyline(opts);
+				if (geojsonProperties) {
+					googleObj.set("geojsonProperties", geojsonProperties);
+				}
+				break;
+				
+			case "MultiLineString":
+				googleObj = [];
+				for (var i = 0; i < geojsonGeometry.coordinates.length; i++){
+					var path = [];
+					for (var j = 0; j < geojsonGeometry.coordinates[i].length; j++){
+						var coord = geojsonGeometry.coordinates[i][j];
+						var ll = new google.maps.LatLng(coord[1], coord[0]);
+						path.push(ll);
+					}
+					opts.path = path;
+					googleObj.push(new google.maps.Polyline(opts));
+				}
+				if (geojsonProperties) {
+					for (var k = 0; k < googleObj.length; k++){
+						googleObj[k].set("geojsonProperties", geojsonProperties);
+					}
+				}
+				break;
+				
+			case "Polygon":
+				var paths = [];
+				var exteriorDirection;
+				var interiorDirection;
+				for (var i = 0; i < geojsonGeometry.coordinates.length; i++){
+					var path = [];
+					for (var j = 0; j < geojsonGeometry.coordinates[i].length; j++){
+						var ll = new google.maps.LatLng(geojsonGeometry.coordinates[i][j][1], geojsonGeometry.coordinates[i][j][0]);
+						path.push(ll);
+					}
+					if(!i){
+						exteriorDirection = _ccw(path);
+						paths.push(path);
+					}else if(i == 1){
+						interiorDirection = _ccw(path);
+						if(exteriorDirection == interiorDirection){
+							paths.push(path.reverse());
+						}else{
+							paths.push(path);
+						}
+					}else{
+						if(exteriorDirection == interiorDirection){
+							paths.push(path.reverse());
+						}else{
+							paths.push(path);
+						}
+					}
+				}
+				opts.paths = paths;
+				googleObj = new google.maps.Polygon(opts);
+				if (geojsonProperties) {
+					googleObj.set("geojsonProperties", geojsonProperties);
+				}
+				break;
+				
+			case "MultiPolygon":
+				googleObj = [];
+				for (var i = 0; i < geojsonGeometry.coordinates.length; i++){
+					var paths = [];
+					var exteriorDirection;
+					var interiorDirection;
+					for (var j = 0; j < geojsonGeometry.coordinates[i].length; j++){
+						var path = [];
+						for (var k = 0; k < geojsonGeometry.coordinates[i][j].length; k++){
+							var ll = new google.maps.LatLng(geojsonGeometry.coordinates[i][j][k][1], geojsonGeometry.coordinates[i][j][k][0]);
+							path.push(ll);
+						}
+						if(!j){
+							exteriorDirection = _ccw(path);
+							paths.push(path);
+						}else if(j == 1){
+							interiorDirection = _ccw(path);
+							if(exteriorDirection == interiorDirection){
+								paths.push(path.reverse());
+							}else{
+								paths.push(path);
+							}
+						}else{
+							if(exteriorDirection == interiorDirection){
+								paths.push(path.reverse());
+							}else{
+								paths.push(path);
+							}
+						}
+					}
+					opts.paths = paths;
+					googleObj.push(new google.maps.Polygon(opts));
+				}
+				if (geojsonProperties) {
+					for (var k = 0; k < googleObj.length; k++){
+						googleObj[k].set("geojsonProperties", geojsonProperties);
+					}
+				}
+				break;
+				
+			case "GeometryCollection":
+				googleObj = [];
+				if (!geojsonGeometry.geometries){
+					googleObj = _error("Invalid GeoJSON object: GeometryCollection object missing \"geometries\" member.");
+				}else{
+					for (var i = 0; i < geojsonGeometry.geometries.length; i++){
+						googleObj.push(_geometryToGoogleMaps(geojsonGeometry.geometries[i], opts, geojsonProperties || null));
+					}
+				}
+				break;
+				
+			default:
+				googleObj = _error("Invalid GeoJSON object: Geometry object must be one of \"Point\", \"LineString\", \"Polygon\" or \"MultiPolygon\".");
+		}
+		
+		return googleObj;
+		
+	};
+	
+	var _error = function( message ){
+	
+		return {
+			type: "Error",
+			message: message
+		};
+	
+	};
+
+	var _ccw = function( path ){
+		var isCCW;
+		var a = 0;
+		for (var i = 0; i < path.length-2; i++){
+			a += ((path[i+1].lat() - path[i].lat()) * (path[i+2].lng() - path[i].lng()) - (path[i+2].lat() - path[i].lat()) * (path[i+1].lng() - path[i].lng()));
+		}
+		if(a > 0){
+			isCCW = true;
+		}
+		else{
+			isCCW = false;
+		}
+		return isCCW;
+	};
+		
+	var obj;
+	
+	var opts = options || {};
+	
+	switch ( geojson.type ){
+	
+		case "FeatureCollection":
+			if (!geojson.features){
+				obj = _error("Invalid GeoJSON object: FeatureCollection object missing \"features\" member.");
+			}else{
+				obj = [];
+				for (var i = 0; i < geojson.features.length; i++){
+					obj.push(_geometryToGoogleMaps(geojson.features[i].geometry, opts, geojson.features[i].properties));
+				}
+			}
+			break;
+		
+		case "GeometryCollection":
+			if (!geojson.geometries){
+				obj = _error("Invalid GeoJSON object: GeometryCollection object missing \"geometries\" member.");
+			}else{
+				obj = [];
+				for (var i = 0; i < geojson.geometries.length; i++){
+					obj.push(_geometryToGoogleMaps(geojson.geometries[i], opts));
+				}
+			}
+			break;
+		
+		case "Feature":
+			if (!( geojson.properties && geojson.geometry )){
+				obj = _error("Invalid GeoJSON object: Feature object missing \"properties\" or \"geometry\" member.");
+			}else{
+				obj = _geometryToGoogleMaps(geojson.geometry, opts, geojson.properties);
+			}
+			break;
+		
+		case "Point": case "MultiPoint": case "LineString": case "MultiLineString": case "Polygon": case "MultiPolygon":
+			obj = geojson.coordinates
+				? obj = _geometryToGoogleMaps(geojson, opts)
+				: _error("Invalid GeoJSON object: Geometry object missing \"coordinates\" member.");
+			break;
+		
+		default:
+			obj = _error("Invalid GeoJSON object: GeoJSON object must be one of \"Point\", \"LineString\", \"Polygon\", \"MultiPolygon\", \"Feature\", \"FeatureCollection\" or \"GeometryCollection\".");
+	
+	}
+	
+	return obj;
+	
+};
+/*!
+ * jScrollPane - v2.0.0beta12 - 2012-09-27
+ * http://jscrollpane.kelvinluck.com/
+ *
+ * Copyright (c) 2010 Kelvin Luck
+ * Dual licensed under the MIT or GPL licenses.
+ */
+
+// Script: jScrollPane - cross browser customisable scrollbars
+//
+// *Version: 2.0.0beta12, Last updated: 2012-09-27*
+//
+// Project Home - http://jscrollpane.kelvinluck.com/
+// GitHub       - http://github.com/vitch/jScrollPane
+// Source       - http://github.com/vitch/jScrollPane/raw/master/script/jquery.jscrollpane.js
+// (Minified)   - http://github.com/vitch/jScrollPane/raw/master/script/jquery.jscrollpane.min.js
+//
+// About: License
+//
+// Copyright (c) 2012 Kelvin Luck
+// Dual licensed under the MIT or GPL Version 2 licenses.
+// http://jscrollpane.kelvinluck.com/MIT-LICENSE.txt
+// http://jscrollpane.kelvinluck.com/GPL-LICENSE.txt
+//
+// About: Examples
+//
+// All examples and demos are available through the jScrollPane example site at:
+// http://jscrollpane.kelvinluck.com/
+//
+// About: Support and Testing
+//
+// This plugin is tested on the browsers below and has been found to work reliably on them. If you run
+// into a problem on one of the supported browsers then please visit the support section on the jScrollPane
+// website (http://jscrollpane.kelvinluck.com/) for more information on getting support. You are also
+// welcome to fork the project on GitHub if you can contribute a fix for a given issue. 
+//
+// jQuery Versions - tested in 1.4.2+ - reported to work in 1.3.x
+// Browsers Tested - Firefox 3.6.8, Safari 5, Opera 10.6, Chrome 5.0, IE 6, 7, 8
+//
+// About: Release History
+//
+// 2.0.0beta12 - (2012-09-27) fix for jQuery 1.8+
+// 2.0.0beta11 - (2012-05-14)
+// 2.0.0beta10 - (2011-04-17) cleaner required size calculation, improved keyboard support, stickToBottom/Left, other small fixes
+// 2.0.0beta9 - (2011-01-31) new API methods, bug fixes and correct keyboard support for FF/OSX
+// 2.0.0beta8 - (2011-01-29) touchscreen support, improved keyboard support
+// 2.0.0beta7 - (2011-01-23) scroll speed consistent (thanks Aivo Paas)
+// 2.0.0beta6 - (2010-12-07) scrollToElement horizontal support
+// 2.0.0beta5 - (2010-10-18) jQuery 1.4.3 support, various bug fixes
+// 2.0.0beta4 - (2010-09-17) clickOnTrack support, bug fixes
+// 2.0.0beta3 - (2010-08-27) Horizontal mousewheel, mwheelIntent, keyboard support, bug fixes
+// 2.0.0beta2 - (2010-08-21) Bug fixes
+// 2.0.0beta1 - (2010-08-17) Rewrite to follow modern best practices and enable horizontal scrolling, initially hidden
+//               elements and dynamically sized elements.
+// 1.x - (2006-12-31 - 2010-07-31) Initial version, hosted at googlecode, deprecated
+
+(function($,window,undefined){
+
+  $.fn.jScrollPane = function(settings)
+  {
+    // JScrollPane "class" - public methods are available through $('selector').data('jsp')
+    function JScrollPane(elem, s)
+    {
+      var settings, jsp = this, pane, paneWidth, paneHeight, container, contentWidth, contentHeight,
+        percentInViewH, percentInViewV, isScrollableV, isScrollableH, verticalDrag, dragMaxY,
+        verticalDragPosition, horizontalDrag, dragMaxX, horizontalDragPosition,
+        verticalBar, verticalTrack, scrollbarWidth, verticalTrackHeight, verticalDragHeight, arrowUp, arrowDown,
+        horizontalBar, horizontalTrack, horizontalTrackWidth, horizontalDragWidth, arrowLeft, arrowRight,
+        reinitialiseInterval, originalPadding, originalPaddingTotalWidth, previousContentWidth,
+        wasAtTop = true, wasAtLeft = true, wasAtBottom = false, wasAtRight = false,
+        originalElement = elem.clone(false, false).empty(),
+        mwEvent = $.fn.mwheelIntent ? 'mwheelIntent.jsp' : 'mousewheel.jsp';
+
+      originalPadding = elem.css('paddingTop') + ' ' +
+                elem.css('paddingRight') + ' ' +
+                elem.css('paddingBottom') + ' ' +
+                elem.css('paddingLeft');
+      originalPaddingTotalWidth = (parseInt(elem.css('paddingLeft'), 10) || 0) +
+                    (parseInt(elem.css('paddingRight'), 10) || 0);
+
+      function initialise(s)
+      {
+
+        var /*firstChild, lastChild, */isMaintainingPositon, lastContentX, lastContentY,
+            hasContainingSpaceChanged, originalScrollTop, originalScrollLeft,
+            maintainAtBottom = false, maintainAtRight = false;
+
+        settings = s;
+
+        if (pane === undefined) {
+          originalScrollTop = elem.scrollTop();
+          originalScrollLeft = elem.scrollLeft();
+
+          elem.css(
+            {
+              overflow: 'hidden',
+              padding: 0
+            }
+          );
+          // TODO: Deal with where width/ height is 0 as it probably means the element is hidden and we should
+          // come back to it later and check once it is unhidden...
+          paneWidth = elem.innerWidth() + originalPaddingTotalWidth;
+          paneHeight = elem.innerHeight();
+
+          elem.width(paneWidth);
+          
+          pane = $('<div class="jspPane" />').css('padding', originalPadding).append(elem.children());
+          container = $('<div class="jspContainer" />')
+            .css({
+              'width': paneWidth + 'px',
+              'height': paneHeight + 'px'
+            }
+          ).append(pane).appendTo(elem);
+
+          /*
+          // Move any margins from the first and last children up to the container so they can still
+          // collapse with neighbouring elements as they would before jScrollPane 
+          firstChild = pane.find(':first-child');
+          lastChild = pane.find(':last-child');
+          elem.css(
+            {
+              'margin-top': firstChild.css('margin-top'),
+              'margin-bottom': lastChild.css('margin-bottom')
+            }
+          );
+          firstChild.css('margin-top', 0);
+          lastChild.css('margin-bottom', 0);
+          */
+        } else {
+          elem.css('width', '');
+
+          maintainAtBottom = settings.stickToBottom && isCloseToBottom();
+          maintainAtRight  = settings.stickToRight  && isCloseToRight();
+
+          hasContainingSpaceChanged = elem.innerWidth() + originalPaddingTotalWidth != paneWidth || elem.outerHeight() != paneHeight;
+
+          if (hasContainingSpaceChanged) {
+            paneWidth = elem.innerWidth() + originalPaddingTotalWidth;
+            paneHeight = elem.innerHeight();
+            container.css({
+              width: paneWidth + 'px',
+              height: paneHeight + 'px'
+            });
+          }
+
+          // If nothing changed since last check...
+          if (!hasContainingSpaceChanged && previousContentWidth == contentWidth && pane.outerHeight() == contentHeight) {
+            elem.width(paneWidth);
+            return;
+          }
+          previousContentWidth = contentWidth;
+          
+          pane.css('width', '');
+          elem.width(paneWidth);
+
+          container.find('>.jspVerticalBar,>.jspHorizontalBar').remove().end();
+        }
+
+        pane.css('overflow', 'auto');
+        if (s.contentWidth) {
+          contentWidth = s.contentWidth;
+        } else {
+          contentWidth = pane[0].scrollWidth;
+        }
+        contentHeight = pane[0].scrollHeight;
+        pane.css('overflow', '');
+
+        percentInViewH = contentWidth / paneWidth;
+        percentInViewV = contentHeight / paneHeight;
+        isScrollableV = percentInViewV > 1;
+
+        isScrollableH = percentInViewH > 1;
+
+        //console.log(paneWidth, paneHeight, contentWidth, contentHeight, percentInViewH, percentInViewV, isScrollableH, isScrollableV);
+
+        if (!(isScrollableH || isScrollableV)) {
+          elem.removeClass('jspScrollable');
+          pane.css({
+            top: 0,
+            width: container.width() - originalPaddingTotalWidth
+          });
+          removeMousewheel();
+          removeFocusHandler();
+          removeKeyboardNav();
+          removeClickOnTrack();
+        } else {
+          elem.addClass('jspScrollable');
+
+          isMaintainingPositon = settings.maintainPosition && (verticalDragPosition || horizontalDragPosition);
+          if (isMaintainingPositon) {
+            lastContentX = contentPositionX();
+            lastContentY = contentPositionY();
+          }
+
+          initialiseVerticalScroll();
+          initialiseHorizontalScroll();
+          resizeScrollbars();
+
+          if (isMaintainingPositon) {
+            scrollToX(maintainAtRight  ? (contentWidth  - paneWidth ) : lastContentX, false);
+            scrollToY(maintainAtBottom ? (contentHeight - paneHeight) : lastContentY, false);
+          }
+
+          initFocusHandler();
+          initMousewheel();
+          initTouch();
+          
+          if (settings.enableKeyboardNavigation) {
+            initKeyboardNav();
+          }
+          if (settings.clickOnTrack) {
+            initClickOnTrack();
+          }
+          
+          observeHash();
+          if (settings.hijackInternalLinks) {
+            hijackInternalLinks();
+          }
+        }
+
+        if (settings.autoReinitialise && !reinitialiseInterval) {
+          reinitialiseInterval = setInterval(
+            function()
+            {
+              initialise(settings);
+            },
+            settings.autoReinitialiseDelay
+          );
+        } else if (!settings.autoReinitialise && reinitialiseInterval) {
+          clearInterval(reinitialiseInterval);
+        }
+
+        originalScrollTop && elem.scrollTop(0) && scrollToY(originalScrollTop, false);
+        originalScrollLeft && elem.scrollLeft(0) && scrollToX(originalScrollLeft, false);
+
+        elem.trigger('jsp-initialised', [isScrollableH || isScrollableV]);
+      }
+
+      function initialiseVerticalScroll()
+      {
+        if (isScrollableV) {
+
+          container.append(
+            $('<div class="jspVerticalBar" />').append(
+              $('<div class="jspCap jspCapTop" />'),
+              $('<div class="jspTrack" />').append(
+                $('<div class="jspDrag" />').append(
+                  $('<div class="jspDragTop" />'),
+                  $('<div class="jspDragBottom" />')
+                )
+              ),
+              $('<div class="jspCap jspCapBottom" />')
+            )
+          );
+
+          verticalBar = container.find('>.jspVerticalBar');
+          verticalTrack = verticalBar.find('>.jspTrack');
+          verticalDrag = verticalTrack.find('>.jspDrag');
+
+          if (settings.showArrows) {
+            arrowUp = $('<a class="jspArrow jspArrowUp" />').bind(
+              'mousedown.jsp', getArrowScroll(0, -1)
+            ).bind('click.jsp', nil);
+            arrowDown = $('<a class="jspArrow jspArrowDown" />').bind(
+              'mousedown.jsp', getArrowScroll(0, 1)
+            ).bind('click.jsp', nil);
+            if (settings.arrowScrollOnHover) {
+              arrowUp.bind('mouseover.jsp', getArrowScroll(0, -1, arrowUp));
+              arrowDown.bind('mouseover.jsp', getArrowScroll(0, 1, arrowDown));
+            }
+
+            appendArrows(verticalTrack, settings.verticalArrowPositions, arrowUp, arrowDown);
+          }
+
+          verticalTrackHeight = paneHeight;
+          container.find('>.jspVerticalBar>.jspCap:visible,>.jspVerticalBar>.jspArrow').each(
+            function()
+            {
+              verticalTrackHeight -= $(this).outerHeight();
+            }
+          );
+
+
+          verticalDrag.hover(
+            function()
+            {
+              verticalDrag.addClass('jspHover');
+            },
+            function()
+            {
+              verticalDrag.removeClass('jspHover');
+            }
+          ).bind(
+            'mousedown.jsp',
+            function(e)
+            {
+              // Stop IE from allowing text selection
+              $('html').bind('dragstart.jsp selectstart.jsp', nil);
+
+              verticalDrag.addClass('jspActive');
+
+              var startY = e.pageY - verticalDrag.position().top;
+
+              $('html').bind(
+                'mousemove.jsp',
+                function(e)
+                {
+                  positionDragY(e.pageY - startY, false);
+                }
+              ).bind('mouseup.jsp mouseleave.jsp', cancelDrag);
+              return false;
+            }
+          );
+          sizeVerticalScrollbar();
+        }
+      }
+
+      function sizeVerticalScrollbar()
+      {
+        verticalTrack.height(verticalTrackHeight + 'px');
+        verticalDragPosition = 0;
+        scrollbarWidth = settings.verticalGutter + verticalTrack.outerWidth();
+
+        // Make the pane thinner to allow for the vertical scrollbar
+        pane.width(paneWidth - scrollbarWidth - originalPaddingTotalWidth);
+
+        // Add margin to the left of the pane if scrollbars are on that side (to position
+        // the scrollbar on the left or right set it's left or right property in CSS)
+        try {
+          if (verticalBar.position().left === 0) {
+            pane.css('margin-left', scrollbarWidth + 'px');
+          }
+        } catch (err) {
+        }
+      }
+
+      function initialiseHorizontalScroll()
+      {
+        if (isScrollableH) {
+
+          container.append(
+            $('<div class="jspHorizontalBar" />').append(
+              $('<div class="jspCap jspCapLeft" />'),
+              $('<div class="jspTrack" />').append(
+                $('<div class="jspDrag" />').append(
+                  $('<div class="jspDragLeft" />'),
+                  $('<div class="jspDragRight" />')
+                )
+              ),
+              $('<div class="jspCap jspCapRight" />')
+            )
+          );
+
+          horizontalBar = container.find('>.jspHorizontalBar');
+          horizontalTrack = horizontalBar.find('>.jspTrack');
+          horizontalDrag = horizontalTrack.find('>.jspDrag');
+
+          if (settings.showArrows) {
+            arrowLeft = $('<a class="jspArrow jspArrowLeft" />').bind(
+              'mousedown.jsp', getArrowScroll(-1, 0)
+            ).bind('click.jsp', nil);
+            arrowRight = $('<a class="jspArrow jspArrowRight" />').bind(
+              'mousedown.jsp', getArrowScroll(1, 0)
+            ).bind('click.jsp', nil);
+            if (settings.arrowScrollOnHover) {
+              arrowLeft.bind('mouseover.jsp', getArrowScroll(-1, 0, arrowLeft));
+              arrowRight.bind('mouseover.jsp', getArrowScroll(1, 0, arrowRight));
+            }
+            appendArrows(horizontalTrack, settings.horizontalArrowPositions, arrowLeft, arrowRight);
+          }
+
+          horizontalDrag.hover(
+            function()
+            {
+              horizontalDrag.addClass('jspHover');
+            },
+            function()
+            {
+              horizontalDrag.removeClass('jspHover');
+            }
+          ).bind(
+            'mousedown.jsp',
+            function(e)
+            {
+              // Stop IE from allowing text selection
+              $('html').bind('dragstart.jsp selectstart.jsp', nil);
+
+              horizontalDrag.addClass('jspActive');
+
+              var startX = e.pageX - horizontalDrag.position().left;
+
+              $('html').bind(
+                'mousemove.jsp',
+                function(e)
+                {
+                  positionDragX(e.pageX - startX, false);
+                }
+              ).bind('mouseup.jsp mouseleave.jsp', cancelDrag);
+              return false;
+            }
+          );
+          horizontalTrackWidth = container.innerWidth();
+          sizeHorizontalScrollbar();
+        }
+      }
+
+      function sizeHorizontalScrollbar()
+      {
+        container.find('>.jspHorizontalBar>.jspCap:visible,>.jspHorizontalBar>.jspArrow').each(
+          function()
+          {
+            horizontalTrackWidth -= $(this).outerWidth();
+          }
+        );
+
+        horizontalTrack.width(horizontalTrackWidth + 'px');
+        horizontalDragPosition = 0;
+      }
+
+      function resizeScrollbars()
+      {
+        if (isScrollableH && isScrollableV) {
+          var horizontalTrackHeight = horizontalTrack.outerHeight(),
+            verticalTrackWidth = verticalTrack.outerWidth();
+          verticalTrackHeight -= horizontalTrackHeight;
+          $(horizontalBar).find('>.jspCap:visible,>.jspArrow').each(
+            function()
+            {
+              horizontalTrackWidth += $(this).outerWidth();
+            }
+          );
+          horizontalTrackWidth -= verticalTrackWidth;
+          paneHeight -= verticalTrackWidth;
+          paneWidth -= horizontalTrackHeight;
+          horizontalTrack.parent().append(
+            $('<div class="jspCorner" />').css('width', horizontalTrackHeight + 'px')
+          );
+          sizeVerticalScrollbar();
+          sizeHorizontalScrollbar();
+        }
+        // reflow content
+        if (isScrollableH) {
+          pane.width((container.outerWidth() - originalPaddingTotalWidth) + 'px');
+        }
+        contentHeight = pane.outerHeight();
+        percentInViewV = contentHeight / paneHeight;
+
+        if (isScrollableH) {
+          horizontalDragWidth = Math.ceil(1 / percentInViewH * horizontalTrackWidth);
+          if (horizontalDragWidth > settings.horizontalDragMaxWidth) {
+            horizontalDragWidth = settings.horizontalDragMaxWidth;
+          } else if (horizontalDragWidth < settings.horizontalDragMinWidth) {
+            horizontalDragWidth = settings.horizontalDragMinWidth;
+          }
+          horizontalDrag.width(horizontalDragWidth + 'px');
+          dragMaxX = horizontalTrackWidth - horizontalDragWidth;
+          _positionDragX(horizontalDragPosition); // To update the state for the arrow buttons
+        }
+        if (isScrollableV) {
+          verticalDragHeight = Math.ceil(1 / percentInViewV * verticalTrackHeight);
+          if (verticalDragHeight > settings.verticalDragMaxHeight) {
+            verticalDragHeight = settings.verticalDragMaxHeight;
+          } else if (verticalDragHeight < settings.verticalDragMinHeight) {
+            verticalDragHeight = settings.verticalDragMinHeight;
+          }
+          verticalDrag.height(verticalDragHeight + 'px');
+          dragMaxY = verticalTrackHeight - verticalDragHeight;
+          _positionDragY(verticalDragPosition); // To update the state for the arrow buttons
+        }
+      }
+
+      function appendArrows(ele, p, a1, a2)
+      {
+        var p1 = "before", p2 = "after", aTemp;
+        
+        // Sniff for mac... Is there a better way to determine whether the arrows would naturally appear
+        // at the top or the bottom of the bar?
+        if (p == "os") {
+          p = /Mac/.test(navigator.platform) ? "after" : "split";
+        }
+        if (p == p1) {
+          p2 = p;
+        } else if (p == p2) {
+          p1 = p;
+          aTemp = a1;
+          a1 = a2;
+          a2 = aTemp;
+        }
+
+        ele[p1](a1)[p2](a2);
+      }
+
+      function getArrowScroll(dirX, dirY, ele)
+      {
+        return function()
+        {
+          arrowScroll(dirX, dirY, this, ele);
+          this.blur();
+          return false;
+        };
+      }
+
+      function arrowScroll(dirX, dirY, arrow, ele)
+      {
+        arrow = $(arrow).addClass('jspActive');
+
+        var eve,
+          scrollTimeout,
+          isFirst = true,
+          doScroll = function()
+          {
+            if (dirX !== 0) {
+              jsp.scrollByX(dirX * settings.arrowButtonSpeed);
+            }
+            if (dirY !== 0) {
+              jsp.scrollByY(dirY * settings.arrowButtonSpeed);
+            }
+            scrollTimeout = setTimeout(doScroll, isFirst ? settings.initialDelay : settings.arrowRepeatFreq);
+            isFirst = false;
+          };
+
+        doScroll();
+
+        eve = ele ? 'mouseout.jsp' : 'mouseup.jsp';
+        ele = ele || $('html');
+        ele.bind(
+          eve,
+          function()
+          {
+            arrow.removeClass('jspActive');
+            scrollTimeout && clearTimeout(scrollTimeout);
+            scrollTimeout = null;
+            ele.unbind(eve);
+          }
+        );
+      }
+
+      function initClickOnTrack()
+      {
+        removeClickOnTrack();
+        if (isScrollableV) {
+          verticalTrack.bind(
+            'mousedown.jsp',
+            function(e)
+            {
+              if (e.originalTarget === undefined || e.originalTarget == e.currentTarget) {
+                var clickedTrack = $(this),
+                  offset = clickedTrack.offset(),
+                  direction = e.pageY - offset.top - verticalDragPosition,
+                  scrollTimeout,
+                  isFirst = true,
+                  doScroll = function()
+                  {
+                    var offset = clickedTrack.offset(),
+                      pos = e.pageY - offset.top - verticalDragHeight / 2,
+                      contentDragY = paneHeight * settings.scrollPagePercent,
+                      dragY = dragMaxY * contentDragY / (contentHeight - paneHeight);
+                    if (direction < 0) {
+                      if (verticalDragPosition - dragY > pos) {
+                        jsp.scrollByY(-contentDragY);
+                      } else {
+                        positionDragY(pos);
+                      }
+                    } else if (direction > 0) {
+                      if (verticalDragPosition + dragY < pos) {
+                        jsp.scrollByY(contentDragY);
+                      } else {
+                        positionDragY(pos);
+                      }
+                    } else {
+                      cancelClick();
+                      return;
+                    }
+                    scrollTimeout = setTimeout(doScroll, isFirst ? settings.initialDelay : settings.trackClickRepeatFreq);
+                    isFirst = false;
+                  },
+                  cancelClick = function()
+                  {
+                    scrollTimeout && clearTimeout(scrollTimeout);
+                    scrollTimeout = null;
+                    $(document).unbind('mouseup.jsp', cancelClick);
+                  };
+                doScroll();
+                $(document).bind('mouseup.jsp', cancelClick);
+                return false;
+              }
+            }
+          );
+        }
+        
+        if (isScrollableH) {
+          horizontalTrack.bind(
+            'mousedown.jsp',
+            function(e)
+            {
+              if (e.originalTarget === undefined || e.originalTarget == e.currentTarget) {
+                var clickedTrack = $(this),
+                  offset = clickedTrack.offset(),
+                  direction = e.pageX - offset.left - horizontalDragPosition,
+                  scrollTimeout,
+                  isFirst = true,
+                  doScroll = function()
+                  {
+                    var offset = clickedTrack.offset(),
+                      pos = e.pageX - offset.left - horizontalDragWidth / 2,
+                      contentDragX = paneWidth * settings.scrollPagePercent,
+                      dragX = dragMaxX * contentDragX / (contentWidth - paneWidth);
+                    if (direction < 0) {
+                      if (horizontalDragPosition - dragX > pos) {
+                        jsp.scrollByX(-contentDragX);
+                      } else {
+                        positionDragX(pos);
+                      }
+                    } else if (direction > 0) {
+                      if (horizontalDragPosition + dragX < pos) {
+                        jsp.scrollByX(contentDragX);
+                      } else {
+                        positionDragX(pos);
+                      }
+                    } else {
+                      cancelClick();
+                      return;
+                    }
+                    scrollTimeout = setTimeout(doScroll, isFirst ? settings.initialDelay : settings.trackClickRepeatFreq);
+                    isFirst = false;
+                  },
+                  cancelClick = function()
+                  {
+                    scrollTimeout && clearTimeout(scrollTimeout);
+                    scrollTimeout = null;
+                    $(document).unbind('mouseup.jsp', cancelClick);
+                  };
+                doScroll();
+                $(document).bind('mouseup.jsp', cancelClick);
+                return false;
+              }
+            }
+          );
+        }
+      }
+
+      function removeClickOnTrack()
+      {
+        if (horizontalTrack) {
+          horizontalTrack.unbind('mousedown.jsp');
+        }
+        if (verticalTrack) {
+          verticalTrack.unbind('mousedown.jsp');
+        }
+      }
+
+      function cancelDrag()
+      {
+        $('html').unbind('dragstart.jsp selectstart.jsp mousemove.jsp mouseup.jsp mouseleave.jsp');
+
+        if (verticalDrag) {
+          verticalDrag.removeClass('jspActive');
+        }
+        if (horizontalDrag) {
+          horizontalDrag.removeClass('jspActive');
+        }
+      }
+
+      function positionDragY(destY, animate)
+      {
+        if (!isScrollableV) {
+          return;
+        }
+        if (destY < 0) {
+          destY = 0;
+        } else if (destY > dragMaxY) {
+          destY = dragMaxY;
+        }
+
+        // can't just check if(animate) because false is a valid value that could be passed in...
+        if (animate === undefined) {
+          animate = settings.animateScroll;
+        }
+        if (animate) {
+          jsp.animate(verticalDrag, 'top', destY, _positionDragY);
+        } else {
+          verticalDrag.css('top', destY);
+          _positionDragY(destY);
+        }
+
+      }
+
+      function _positionDragY(destY)
+      {
+        if (destY === undefined) {
+          destY = verticalDrag.position().top;
+        }
+
+        container.scrollTop(0);
+        verticalDragPosition = destY;
+
+        var isAtTop = verticalDragPosition === 0,
+          isAtBottom = verticalDragPosition == dragMaxY,
+          percentScrolled = destY/ dragMaxY,
+          destTop = -percentScrolled * (contentHeight - paneHeight);
+
+        if (wasAtTop != isAtTop || wasAtBottom != isAtBottom) {
+          wasAtTop = isAtTop;
+          wasAtBottom = isAtBottom;
+          elem.trigger('jsp-arrow-change', [wasAtTop, wasAtBottom, wasAtLeft, wasAtRight]);
+        }
+        
+        updateVerticalArrows(isAtTop, isAtBottom);
+        pane.css('top', destTop);
+        elem.trigger('jsp-scroll-y', [-destTop, isAtTop, isAtBottom]).trigger('scroll');
+      }
+
+      function positionDragX(destX, animate)
+      {
+        if (!isScrollableH) {
+          return;
+        }
+        if (destX < 0) {
+          destX = 0;
+        } else if (destX > dragMaxX) {
+          destX = dragMaxX;
+        }
+
+        if (animate === undefined) {
+          animate = settings.animateScroll;
+        }
+        if (animate) {
+          jsp.animate(horizontalDrag, 'left', destX,  _positionDragX);
+        } else {
+          horizontalDrag.css('left', destX);
+          _positionDragX(destX);
+        }
+      }
+
+      function _positionDragX(destX)
+      {
+        if (destX === undefined) {
+          destX = horizontalDrag.position().left;
+        }
+
+        container.scrollTop(0);
+        horizontalDragPosition = destX;
+
+        var isAtLeft = horizontalDragPosition === 0,
+          isAtRight = horizontalDragPosition == dragMaxX,
+          percentScrolled = destX / dragMaxX,
+          destLeft = -percentScrolled * (contentWidth - paneWidth);
+
+        if (wasAtLeft != isAtLeft || wasAtRight != isAtRight) {
+          wasAtLeft = isAtLeft;
+          wasAtRight = isAtRight;
+          elem.trigger('jsp-arrow-change', [wasAtTop, wasAtBottom, wasAtLeft, wasAtRight]);
+        }
+        
+        updateHorizontalArrows(isAtLeft, isAtRight);
+        pane.css('left', destLeft);
+        elem.trigger('jsp-scroll-x', [-destLeft, isAtLeft, isAtRight]).trigger('scroll');
+      }
+
+      function updateVerticalArrows(isAtTop, isAtBottom)
+      {
+        if (settings.showArrows) {
+          arrowUp[isAtTop ? 'addClass' : 'removeClass']('jspDisabled');
+          arrowDown[isAtBottom ? 'addClass' : 'removeClass']('jspDisabled');
+        }
+      }
+
+      function updateHorizontalArrows(isAtLeft, isAtRight)
+      {
+        if (settings.showArrows) {
+          arrowLeft[isAtLeft ? 'addClass' : 'removeClass']('jspDisabled');
+          arrowRight[isAtRight ? 'addClass' : 'removeClass']('jspDisabled');
+        }
+      }
+
+      function scrollToY(destY, animate)
+      {
+        var percentScrolled = destY / (contentHeight - paneHeight);
+        positionDragY(percentScrolled * dragMaxY, animate);
+      }
+
+      function scrollToX(destX, animate)
+      {
+        var percentScrolled = destX / (contentWidth - paneWidth);
+        positionDragX(percentScrolled * dragMaxX, animate);
+      }
+
+      function scrollToElement(ele, stickToTop, animate)
+      {
+        var e, eleHeight, eleWidth, eleTop = 0, eleLeft = 0, viewportTop, viewportLeft, maxVisibleEleTop, maxVisibleEleLeft, destY, destX;
+
+        // Legal hash values aren't necessarily legal jQuery selectors so we need to catch any
+        // errors from the lookup...
+        try {
+          e = $(ele);
+        } catch (err) {
+          return;
+        }
+        eleHeight = e.outerHeight();
+        eleWidth= e.outerWidth();
+
+        container.scrollTop(0);
+        container.scrollLeft(0);
+        
+        // loop through parents adding the offset top of any elements that are relatively positioned between
+        // the focused element and the jspPane so we can get the true distance from the top
+        // of the focused element to the top of the scrollpane...
+        while (!e.is('.jspPane')) {
+          eleTop += e.position().top;
+          eleLeft += e.position().left;
+          e = e.offsetParent();
+          if (/^body|html$/i.test(e[0].nodeName)) {
+            // we ended up too high in the document structure. Quit!
+            return;
+          }
+        }
+
+        viewportTop = contentPositionY();
+        maxVisibleEleTop = viewportTop + paneHeight;
+        if (eleTop < viewportTop || stickToTop) { // element is above viewport
+          destY = eleTop - settings.verticalGutter;
+        } else if (eleTop + eleHeight > maxVisibleEleTop) { // element is below viewport
+          destY = eleTop - paneHeight + eleHeight + settings.verticalGutter;
+        }
+        if (destY) {
+          scrollToY(destY, animate);
+        }
+        
+        viewportLeft = contentPositionX();
+              maxVisibleEleLeft = viewportLeft + paneWidth;
+              if (eleLeft < viewportLeft || stickToTop) { // element is to the left of viewport
+                  destX = eleLeft - settings.horizontalGutter;
+              } else if (eleLeft + eleWidth > maxVisibleEleLeft) { // element is to the right viewport
+                  destX = eleLeft - paneWidth + eleWidth + settings.horizontalGutter;
+              }
+              if (destX) {
+                  scrollToX(destX, animate);
+              }
+
+      }
+
+      function contentPositionX()
+      {
+        return -pane.position().left;
+      }
+
+      function contentPositionY()
+      {
+        return -pane.position().top;
+      }
+
+      function isCloseToBottom()
+      {
+        var scrollableHeight = contentHeight - paneHeight;
+        return (scrollableHeight > 20) && (scrollableHeight - contentPositionY() < 10);
+      }
+
+      function isCloseToRight()
+      {
+        var scrollableWidth = contentWidth - paneWidth;
+        return (scrollableWidth > 20) && (scrollableWidth - contentPositionX() < 10);
+      }
+
+      function initMousewheel()
+      {
+        container.unbind(mwEvent).bind(
+          mwEvent,
+          function (event, delta, deltaX, deltaY) {
+            var dX = horizontalDragPosition, dY = verticalDragPosition;
+            jsp.scrollBy(deltaX * settings.mouseWheelSpeed, -deltaY * settings.mouseWheelSpeed, false);
+            // return true if there was no movement so rest of screen can scroll
+            return dX == horizontalDragPosition && dY == verticalDragPosition;
+          }
+        );
+      }
+
+      function removeMousewheel()
+      {
+        container.unbind(mwEvent);
+      }
+
+      function nil()
+      {
+        return false;
+      }
+
+      function initFocusHandler()
+      {
+        pane.find(':input,a').unbind('focus.jsp').bind(
+          'focus.jsp',
+          function(e)
+          {
+            scrollToElement(e.target, false);
+          }
+        );
+      }
+
+      function removeFocusHandler()
+      {
+        pane.find(':input,a').unbind('focus.jsp');
+      }
+      
+      function initKeyboardNav()
+      {
+        var keyDown, elementHasScrolled, validParents = [];
+        isScrollableH && validParents.push(horizontalBar[0]);
+        isScrollableV && validParents.push(verticalBar[0]);
+        
+        // IE also focuses elements that don't have tabindex set.
+        pane.focus(
+          function()
+          {
+            elem.focus();
+          }
+        );
+        
+        elem.attr('tabindex', 0)
+          .unbind('keydown.jsp keypress.jsp')
+          .bind(
+            'keydown.jsp',
+            function(e)
+            {
+              if (e.target !== this && !(validParents.length && $(e.target).closest(validParents).length)){
+                return;
+              }
+              var dX = horizontalDragPosition, dY = verticalDragPosition;
+              switch(e.keyCode) {
+                case 40: // down
+                case 38: // up
+                case 34: // page down
+                case 32: // space
+                case 33: // page up
+                case 39: // right
+                case 37: // left
+                  keyDown = e.keyCode;
+                  keyDownHandler();
+                  break;
+                case 35: // end
+                  scrollToY(contentHeight - paneHeight);
+                  keyDown = null;
+                  break;
+                case 36: // home
+                  scrollToY(0);
+                  keyDown = null;
+                  break;
+              }
+
+              elementHasScrolled = e.keyCode == keyDown && dX != horizontalDragPosition || dY != verticalDragPosition;
+              return !elementHasScrolled;
+            }
+          ).bind(
+            'keypress.jsp', // For FF/ OSX so that we can cancel the repeat key presses if the JSP scrolls...
+            function(e)
+            {
+              if (e.keyCode == keyDown) {
+                keyDownHandler();
+              }
+              return !elementHasScrolled;
+            }
+          );
+        
+        if (settings.hideFocus) {
+          elem.css('outline', 'none');
+          if ('hideFocus' in container[0]){
+            elem.attr('hideFocus', true);
+          }
+        } else {
+          elem.css('outline', '');
+          if ('hideFocus' in container[0]){
+            elem.attr('hideFocus', false);
+          }
+        }
+        
+        function keyDownHandler()
+        {
+          var dX = horizontalDragPosition, dY = verticalDragPosition;
+          switch(keyDown) {
+            case 40: // down
+              jsp.scrollByY(settings.keyboardSpeed, false);
+              break;
+            case 38: // up
+              jsp.scrollByY(-settings.keyboardSpeed, false);
+              break;
+            case 34: // page down
+            case 32: // space
+              jsp.scrollByY(paneHeight * settings.scrollPagePercent, false);
+              break;
+            case 33: // page up
+              jsp.scrollByY(-paneHeight * settings.scrollPagePercent, false);
+              break;
+            case 39: // right
+              jsp.scrollByX(settings.keyboardSpeed, false);
+              break;
+            case 37: // left
+              jsp.scrollByX(-settings.keyboardSpeed, false);
+              break;
+          }
+
+          elementHasScrolled = dX != horizontalDragPosition || dY != verticalDragPosition;
+          return elementHasScrolled;
+        }
+      }
+      
+      function removeKeyboardNav()
+      {
+        elem.attr('tabindex', '-1')
+          .removeAttr('tabindex')
+          .unbind('keydown.jsp keypress.jsp');
+      }
+
+      function observeHash()
+      {
+        if (location.hash && location.hash.length > 1) {
+          var e,
+            retryInt,
+            hash = escape(location.hash.substr(1)) // hash must be escaped to prevent XSS
+            ;
+          try {
+            e = $('#' + hash + ', a[name="' + hash + '"]');
+          } catch (err) {
+            return;
+          }
+
+          if (e.length && pane.find(hash)) {
+            // nasty workaround but it appears to take a little while before the hash has done its thing
+            // to the rendered page so we just wait until the container's scrollTop has been messed up.
+            if (container.scrollTop() === 0) {
+              retryInt = setInterval(
+                function()
+                {
+                  if (container.scrollTop() > 0) {
+                    scrollToElement(e, true);
+                    $(document).scrollTop(container.position().top);
+                    clearInterval(retryInt);
+                  }
+                },
+                50
+              );
+            } else {
+              scrollToElement(e, true);
+              $(document).scrollTop(container.position().top);
+            }
+          }
+        }
+      }
+
+      function hijackInternalLinks()
+      {
+        // only register the link handler once
+        if ($(document.body).data('jspHijack')) {
+          return;
+        }
+
+        // remember that the handler was bound
+        $(document.body).data('jspHijack', true);
+
+        // use live handler to also capture newly created links
+        $(document.body).delegate('a[href*=#]', 'click', function(event) {
+          // does the link point to the same page?
+          // this also takes care of cases with a <base>-Tag or Links not starting with the hash #
+          // e.g. <a href="index.html#test"> when the current url already is index.html
+          var href = this.href.substr(0, this.href.indexOf('#')),
+            locationHref = location.href,
+            hash,
+            element,
+            container,
+            jsp,
+            scrollTop,
+            elementTop;
+          if (location.href.indexOf('#') !== -1) {
+            locationHref = location.href.substr(0, location.href.indexOf('#'));
+          }
+          if (href !== locationHref) {
+            // the link points to another page
+            return;
+          }
+
+          // check if jScrollPane should handle this click event
+          hash = escape(this.href.substr(this.href.indexOf('#') + 1));
+
+          // find the element on the page
+          element;
+          try {
+            element = $('#' + hash + ', a[name="' + hash + '"]');
+          } catch (e) {
+            // hash is not a valid jQuery identifier
+            return;
+          }
+
+          if (!element.length) {
+            // this link does not point to an element on this page
+            return;
+          }
+
+          container = element.closest('.jspScrollable');
+          jsp = container.data('jsp');
+
+          // jsp might be another jsp instance than the one, that bound this event
+          // remember: this event is only bound once for all instances.
+          jsp.scrollToElement(element, true);
+
+          if (container[0].scrollIntoView) {
+            // also scroll to the top of the container (if it is not visible)
+            scrollTop = $(window).scrollTop();
+            elementTop = element.offset().top;
+            if (elementTop < scrollTop || elementTop > scrollTop + $(window).height()) {
+              container[0].scrollIntoView();
+            }
+          }
+
+          // jsp handled this event, prevent the browser default (scrolling :P)
+          event.preventDefault();
+        });
+      }
+      
+      // Init touch on iPad, iPhone, iPod, Android
+      function initTouch()
+      {
+        var startX,
+          startY,
+          touchStartX,
+          touchStartY,
+          moved,
+          moving = false;
+  
+        container.unbind('touchstart.jsp touchmove.jsp touchend.jsp click.jsp-touchclick').bind(
+          'touchstart.jsp',
+          function(e)
+          {
+            var touch = e.originalEvent.touches[0];
+            startX = contentPositionX();
+            startY = contentPositionY();
+            touchStartX = touch.pageX;
+            touchStartY = touch.pageY;
+            moved = false;
+            moving = true;
+          }
+        ).bind(
+          'touchmove.jsp',
+          function(ev)
+          {
+            if(!moving) {
+              return;
+            }
+            
+            var touchPos = ev.originalEvent.touches[0],
+              dX = horizontalDragPosition, dY = verticalDragPosition;
+            
+            jsp.scrollTo(startX + touchStartX - touchPos.pageX, startY + touchStartY - touchPos.pageY);
+            
+            moved = moved || Math.abs(touchStartX - touchPos.pageX) > 5 || Math.abs(touchStartY - touchPos.pageY) > 5;
+            
+            // return true if there was no movement so rest of screen can scroll
+            return dX == horizontalDragPosition && dY == verticalDragPosition;
+          }
+        ).bind(
+          'touchend.jsp',
+          function(e)
+          {
+            moving = false;
+            /*if(moved) {
+              return false;
+            }*/
+          }
+        ).bind(
+          'click.jsp-touchclick',
+          function(e)
+          {
+            if(moved) {
+              moved = false;
+              return false;
+            }
+          }
+        );
+      }
+      
+      function destroy(){
+        var currentY = contentPositionY(),
+          currentX = contentPositionX();
+        elem.removeClass('jspScrollable').unbind('.jsp');
+        elem.replaceWith(originalElement.append(pane.children()));
+        originalElement.scrollTop(currentY);
+        originalElement.scrollLeft(currentX);
+
+        // clear reinitialize timer if active
+        if (reinitialiseInterval) {
+          clearInterval(reinitialiseInterval);
+        }
+      }
+
+      // Public API
+      $.extend(
+        jsp,
+        {
+          // Reinitialises the scroll pane (if it's internal dimensions have changed since the last time it
+          // was initialised). The settings object which is passed in will override any settings from the
+          // previous time it was initialised - if you don't pass any settings then the ones from the previous
+          // initialisation will be used.
+          reinitialise: function(s)
+          {
+            s = $.extend({}, settings, s);
+            initialise(s);
+          },
+          // Scrolls the specified element (a jQuery object, DOM node or jQuery selector string) into view so
+          // that it can be seen within the viewport. If stickToTop is true then the element will appear at
+          // the top of the viewport, if it is false then the viewport will scroll as little as possible to
+          // show the element. You can also specify if you want animation to occur. If you don't provide this
+          // argument then the animateScroll value from the settings object is used instead.
+          scrollToElement: function(ele, stickToTop, animate)
+          {
+            scrollToElement(ele, stickToTop, animate);
+          },
+          // Scrolls the pane so that the specified co-ordinates within the content are at the top left
+          // of the viewport. animate is optional and if not passed then the value of animateScroll from
+          // the settings object this jScrollPane was initialised with is used.
+          scrollTo: function(destX, destY, animate)
+          {
+            scrollToX(destX, animate);
+            scrollToY(destY, animate);
+          },
+          // Scrolls the pane so that the specified co-ordinate within the content is at the left of the
+          // viewport. animate is optional and if not passed then the value of animateScroll from the settings
+          // object this jScrollPane was initialised with is used.
+          scrollToX: function(destX, animate)
+          {
+            scrollToX(destX, animate);
+          },
+          // Scrolls the pane so that the specified co-ordinate within the content is at the top of the
+          // viewport. animate is optional and if not passed then the value of animateScroll from the settings
+          // object this jScrollPane was initialised with is used.
+          scrollToY: function(destY, animate)
+          {
+            scrollToY(destY, animate);
+          },
+          // Scrolls the pane to the specified percentage of its maximum horizontal scroll position. animate
+          // is optional and if not passed then the value of animateScroll from the settings object this
+          // jScrollPane was initialised with is used.
+          scrollToPercentX: function(destPercentX, animate)
+          {
+            scrollToX(destPercentX * (contentWidth - paneWidth), animate);
+          },
+          // Scrolls the pane to the specified percentage of its maximum vertical scroll position. animate
+          // is optional and if not passed then the value of animateScroll from the settings object this
+          // jScrollPane was initialised with is used.
+          scrollToPercentY: function(destPercentY, animate)
+          {
+            scrollToY(destPercentY * (contentHeight - paneHeight), animate);
+          },
+          // Scrolls the pane by the specified amount of pixels. animate is optional and if not passed then
+          // the value of animateScroll from the settings object this jScrollPane was initialised with is used.
+          scrollBy: function(deltaX, deltaY, animate)
+          {
+            jsp.scrollByX(deltaX, animate);
+            jsp.scrollByY(deltaY, animate);
+          },
+          // Scrolls the pane by the specified amount of pixels. animate is optional and if not passed then
+          // the value of animateScroll from the settings object this jScrollPane was initialised with is used.
+          scrollByX: function(deltaX, animate)
+          {
+            var destX = contentPositionX() + Math[deltaX<0 ? 'floor' : 'ceil'](deltaX),
+              percentScrolled = destX / (contentWidth - paneWidth);
+            positionDragX(percentScrolled * dragMaxX, animate);
+          },
+          // Scrolls the pane by the specified amount of pixels. animate is optional and if not passed then
+          // the value of animateScroll from the settings object this jScrollPane was initialised with is used.
+          scrollByY: function(deltaY, animate)
+          {
+            var destY = contentPositionY() + Math[deltaY<0 ? 'floor' : 'ceil'](deltaY),
+              percentScrolled = destY / (contentHeight - paneHeight);
+            positionDragY(percentScrolled * dragMaxY, animate);
+          },
+          // Positions the horizontal drag at the specified x position (and updates the viewport to reflect
+          // this). animate is optional and if not passed then the value of animateScroll from the settings
+          // object this jScrollPane was initialised with is used.
+          positionDragX: function(x, animate)
+          {
+            positionDragX(x, animate);
+          },
+          // Positions the vertical drag at the specified y position (and updates the viewport to reflect
+          // this). animate is optional and if not passed then the value of animateScroll from the settings
+          // object this jScrollPane was initialised with is used.
+          positionDragY: function(y, animate)
+          {
+            positionDragY(y, animate);
+          },
+          // This method is called when jScrollPane is trying to animate to a new position. You can override
+          // it if you want to provide advanced animation functionality. It is passed the following arguments:
+          //  * ele          - the element whose position is being animated
+          //  * prop         - the property that is being animated
+          //  * value        - the value it's being animated to
+          //  * stepCallback - a function that you must execute each time you update the value of the property
+          // You can use the default implementation (below) as a starting point for your own implementation.
+          animate: function(ele, prop, value, stepCallback)
+          {
+            var params = {};
+            params[prop] = value;
+            ele.animate(
+              params,
+              {
+                'duration'  : settings.animateDuration,
+                'easing'  : settings.animateEase,
+                'queue'   : false,
+                'step'    : stepCallback
+              }
+            );
+          },
+          // Returns the current x position of the viewport with regards to the content pane.
+          getContentPositionX: function()
+          {
+            return contentPositionX();
+          },
+          // Returns the current y position of the viewport with regards to the content pane.
+          getContentPositionY: function()
+          {
+            return contentPositionY();
+          },
+          // Returns the width of the content within the scroll pane.
+          getContentWidth: function()
+          {
+            return contentWidth;
+          },
+          // Returns the height of the content within the scroll pane.
+          getContentHeight: function()
+          {
+            return contentHeight;
+          },
+          // Returns the horizontal position of the viewport within the pane content.
+          getPercentScrolledX: function()
+          {
+            return contentPositionX() / (contentWidth - paneWidth);
+          },
+          // Returns the vertical position of the viewport within the pane content.
+          getPercentScrolledY: function()
+          {
+            return contentPositionY() / (contentHeight - paneHeight);
+          },
+          // Returns whether or not this scrollpane has a horizontal scrollbar.
+          getIsScrollableH: function()
+          {
+            return isScrollableH;
+          },
+          // Returns whether or not this scrollpane has a vertical scrollbar.
+          getIsScrollableV: function()
+          {
+            return isScrollableV;
+          },
+          // Gets a reference to the content pane. It is important that you use this method if you want to
+          // edit the content of your jScrollPane as if you access the element directly then you may have some
+          // problems (as your original element has had additional elements for the scrollbars etc added into
+          // it).
+          getContentPane: function()
+          {
+            return pane;
+          },
+          // Scrolls this jScrollPane down as far as it can currently scroll. If animate isn't passed then the
+          // animateScroll value from settings is used instead.
+          scrollToBottom: function(animate)
+          {
+            positionDragY(dragMaxY, animate);
+          },
+          // Hijacks the links on the page which link to content inside the scrollpane. If you have changed
+          // the content of your page (e.g. via AJAX) and want to make sure any new anchor links to the
+          // contents of your scroll pane will work then call this function.
+          hijackInternalLinks: $.noop,
+          // Removes the jScrollPane and returns the page to the state it was in before jScrollPane was
+          // initialised.
+          destroy: function()
+          {
+              destroy();
+          }
+        }
+      );
+      
+      initialise(s);
+    }
+
+    // Pluginifying code...
+    settings = $.extend({}, $.fn.jScrollPane.defaults, settings);
+    
+    // Apply default speed
+    $.each(['mouseWheelSpeed', 'arrowButtonSpeed', 'trackClickSpeed', 'keyboardSpeed'], function() {
+      settings[this] = settings[this] || settings.speed;
+    });
+
+    return this.each(
+      function()
+      {
+        var elem = $(this), jspApi = elem.data('jsp');
+        if (jspApi) {
+          jspApi.reinitialise(settings);
+        } else {
+          $("script",elem).filter('[type="text/javascript"],:not([type])').remove();
+          jspApi = new JScrollPane(elem, settings);
+          elem.data('jsp', jspApi);
+        }
+      }
+    );
+  };
+
+  $.fn.jScrollPane.defaults = {
+    showArrows          : false,
+    maintainPosition      : true,
+    stickToBottom       : false,
+    stickToRight        : false,
+    clickOnTrack        : true,
+    autoReinitialise      : false,
+    autoReinitialiseDelay   : 500,
+    verticalDragMinHeight   : 0,
+    verticalDragMaxHeight   : 99999,
+    horizontalDragMinWidth    : 0,
+    horizontalDragMaxWidth    : 99999,
+    contentWidth        : undefined,
+    animateScroll       : false,
+    animateDuration       : 300,
+    animateEase         : 'linear',
+    hijackInternalLinks     : false,
+    verticalGutter        : 4,
+    horizontalGutter      : 4,
+    mouseWheelSpeed       : 0,
+    arrowButtonSpeed      : 0,
+    arrowRepeatFreq       : 50,
+    arrowScrollOnHover      : false,
+    trackClickSpeed       : 0,
+    trackClickRepeatFreq    : 70,
+    verticalArrowPositions    : 'split',
+    horizontalArrowPositions  : 'split',
+    enableKeyboardNavigation  : true,
+    hideFocus         : false,
+    keyboardSpeed       : 0,
+    initialDelay                : 300,        // Delay before starting repeating
+    speed           : 30,   // Default speed when others falsey
+    scrollPagePercent     : .8    // Percent of visible area scrolled when pageUp/Down or track area pressed
+  };
+
+})(jQuery,this);
+/*! Copyright (c) 2011 Brandon Aaron (http://brandonaaron.net)
+ * Licensed under the MIT License (LICENSE.txt).
+ *
+ * Thanks to: http://adomas.org/javascript-mouse-wheel/ for some pointers.
+ * Thanks to: Mathias Bank(http://www.mathias-bank.de) for a scope bug fix.
+ * Thanks to: Seamus Leahy for adding deltaX and deltaY
+ *
+ * Version: 3.0.6
+ * 
+ * Requires: 1.2.2+
+ */
+
+(function($) {
+
+var types = ['DOMMouseScroll', 'mousewheel'];
+
+if ($.event.fixHooks) {
+    for ( var i=types.length; i; ) {
+        $.event.fixHooks[ types[--i] ] = $.event.mouseHooks;
+    }
+}
+
+$.event.special.mousewheel = {
+    setup: function() {
+        if ( this.addEventListener ) {
+            for ( var i=types.length; i; ) {
+                this.addEventListener( types[--i], handler, false );
+            }
+        } else {
+            this.onmousewheel = handler;
+        }
+    },
+    
+    teardown: function() {
+        if ( this.removeEventListener ) {
+            for ( var i=types.length; i; ) {
+                this.removeEventListener( types[--i], handler, false );
+            }
+        } else {
+            this.onmousewheel = null;
+        }
+    }
+};
+
+$.fn.extend({
+    mousewheel: function(fn) {
+        return fn ? this.bind("mousewheel", fn) : this.trigger("mousewheel");
+    },
+    
+    unmousewheel: function(fn) {
+        return this.unbind("mousewheel", fn);
+    }
+});
+
+
+function handler(event) {
+    var orgEvent = event || window.event, args = [].slice.call( arguments, 1 ), delta = 0, returnValue = true, deltaX = 0, deltaY = 0;
+    event = $.event.fix(orgEvent);
+    event.type = "mousewheel";
+    
+    // Old school scrollwheel delta
+    if ( orgEvent.wheelDelta ) { delta = orgEvent.wheelDelta/120; }
+    if ( orgEvent.detail     ) { delta = -orgEvent.detail/3; }
+    
+    // New school multidimensional scroll (touchpads) deltas
+    deltaY = delta;
+    
+    // Gecko
+    if ( orgEvent.axis !== undefined && orgEvent.axis === orgEvent.HORIZONTAL_AXIS ) {
+        deltaY = 0;
+        deltaX = -1*delta;
+    }
+    
+    // Webkit
+    if ( orgEvent.wheelDeltaY !== undefined ) { deltaY = orgEvent.wheelDeltaY/120; }
+    if ( orgEvent.wheelDeltaX !== undefined ) { deltaX = -1*orgEvent.wheelDeltaX/120; }
+    
+    // Add event and delta to the front of the arguments
+    args.unshift(event, delta, deltaX, deltaY);
+    
+    return ($.event.dispatch || $.event.handle).apply(this, args);
+}
+
+})(jQuery);/**
+ * @author trixta
+ * @version 1.2
+ */
+(function($){
+
+var mwheelI = {
+      pos: [-260, -260]
+    },
+  minDif  = 3,
+  doc   = document,
+  root  = doc.documentElement,
+  body  = doc.body,
+  longDelay, shortDelay
+;
+
+function unsetPos(){
+  if(this === mwheelI.elem){
+    mwheelI.pos = [-260, -260];
+    mwheelI.elem = false;
+    minDif = 3;
+  }
+}
+
+$.event.special.mwheelIntent = {
+  setup: function(){
+    var jElm = $(this).bind('mousewheel', $.event.special.mwheelIntent.handler);
+    if( this !== doc && this !== root && this !== body ){
+      jElm.bind('mouseleave', unsetPos);
+    }
+    jElm = null;
+        return true;
+    },
+  teardown: function(){
+        $(this)
+      .unbind('mousewheel', $.event.special.mwheelIntent.handler)
+      .unbind('mouseleave', unsetPos)
+    ;
+        return true;
+    },
+    handler: function(e, d){
+    var pos = [e.clientX, e.clientY];
+    if( this === mwheelI.elem || Math.abs(mwheelI.pos[0] - pos[0]) > minDif || Math.abs(mwheelI.pos[1] - pos[1]) > minDif ){
+            mwheelI.elem = this;
+      mwheelI.pos = pos;
+      minDif = 250;
+      
+      clearTimeout(shortDelay);
+      shortDelay = setTimeout(function(){
+        minDif = 10;
+      }, 200);
+      clearTimeout(longDelay);
+      longDelay = setTimeout(function(){
+        minDif = 3;
+      }, 1500);
+      e = $.extend({}, e, {type: 'mwheelIntent'});
+            return $.event.handle.apply(this, arguments);
+    }
+    }
+};
+$.fn.extend({
+  mwheelIntent: function(fn) {
+    return fn ? this.bind("mwheelIntent", fn) : this.trigger("mwheelIntent");
+  },
+  
+  unmwheelIntent: function(fn) {
+    return this.unbind("mwheelIntent", fn);
+  }
+});
+
+$(function(){
+  body = doc.body;
+  //assume that document is always scrollable, doesn't hurt if not
+  $(doc).bind('mwheelIntent.mwheelIntentDefault', $.noop);
+});
+})(jQuery);
 
 
 
@@ -15948,6 +17999,11 @@ wax.g.connector.prototype.getTileUrl = function(coord, z) {
         "../vendor/leaflet.js",
         "../vendor/wax.leaf.js",
         "../vendor/wax.g.js",
+        "../vendor/GeoJSON.js", //geojson gmaps lib
+
+        "../vendor/jscrollpane.js",
+        "../vendor/mousewheel.js",
+        "../vendor/mwheelIntent.js",
 
         'core/decorator.js',
         'core/config.js',
@@ -15964,7 +18020,6 @@ wax.g.connector.prototype.getTileUrl = function(coord, z) {
         'geo/ui/zoom.js',
         'geo/ui/legend.js',
         'geo/ui/switcher.js',
-        //'geo/ui/selector.js',
         'geo/ui/infowindow.js',
         'geo/ui/header.js',
         'geo/ui/search.js',
@@ -16502,12 +18557,29 @@ cdb._loadJST = function() {
 
 (function() {
 
+  cdb._debugCallbacks= function(o) {
+    var callbacks = o._callbacks;
+    for(var i in callbacks) {
+      var node = callbacks[i];
+      console.log(" * ", i);
+      var end = node.tail;
+      while ((node = node.next) !== end) {
+        console.log("    - ", node.context, (node.context && node.context.el) || 'none');
+      }
+    }
+  }
+
   /**
    * Base Model for all CartoDB model.
    * DO NOT USE Backbone.Model directly
    * @class cdb.core.Model
    */
   var Model = cdb.core.Model = Backbone.Model.extend({
+
+    initialize: function(options) {
+      _.bindAll(this, 'fetch',  'save', 'retrigger');
+      return Backbone.Model.prototype.initialize.call(this, options);
+    },
     /**
     * We are redefining fetch to be able to trigger an event when the ajax call ends, no matter if there's
     * a change in the data or not. Why don't backbone does this by default? ahh, my friend, who knows.
@@ -16551,6 +18623,26 @@ cdb._loadJST = function() {
         self.trigger(retrigEvent);
       })
     },
+
+    /**
+     * We need to override backbone save method to be able to introduce new kind of triggers that
+     * for some reason are not present in the original library. Because you know, it would be nice
+     * to be able to differenciate "a model has been updated" of "a model is being saved".
+     * @param  {object} opt1
+     * @param  {object} opt2
+     * @return {$.Deferred}
+     */
+    save: function(opt1, opt2) {
+      var self = this;
+      this.trigger('saving');
+      $promise = Backbone.Model.prototype.save.call(this, opt1, opt2);
+      $.when($promise).done(function() {
+        self.trigger('saved');
+      }).fail(function() {
+        self.trigger('errorSaving')
+      })
+      return $promise;
+    }
   });
 })();
 (function() {
@@ -16614,6 +18706,7 @@ cdb._loadJST = function() {
       this._models = [];
       View.viewCount--;
       delete View.views[this.cid];
+      return this;
     },
 
     /**
@@ -16792,7 +18885,7 @@ cdb._loadJST = function() {
     },
     setQuery: function(params) {
       this.set({query: params});
-    },
+    }
   });
 })()
 
@@ -16815,7 +18908,7 @@ cdb.geo.geocoder.YAHOO = {
       .replace(/ú/g,'u')
       .replace(/ /g,'+');
 
-      $.getJSON('http://query.yahooapis.com/v1/public/yql?q='+encodeURIComponent('SELECT * FROM json WHERE url="http://where.yahooapis.com/geocode?q=' + address + '&appid=nLQPTdTV34FB9L3yK2dCXydWXRv3ZKzyu_BdCSrmCBAM1HgGErsCyCbBbVP2Yg--&flags=JX"') + '&format=json&callback=?', function(data) {
+      $.getJSON('//query.yahooapis.com/v1/public/yql?q='+encodeURIComponent('SELECT * FROM json WHERE url="http://where.yahooapis.com/geocode?q=' + address + '&appid=nLQPTdTV34FB9L3yK2dCXydWXRv3ZKzyu_BdCSrmCBAM1HgGErsCyCbBbVP2Yg--&flags=JX"') + '&format=json&callback=?', function(data) {
 
          var coordinates = [];
          if (data && data.query && data.query.results && data.query.results.ResultSet && data.query.results.ResultSet.Found != "0") {
@@ -16846,7 +18939,6 @@ cdb.geo.geocoder.YAHOO = {
           }
         }
 
-
         callback(coordinates);
       });
   }
@@ -16868,6 +18960,20 @@ cdb.geo.Geometry = cdb.core.Model.extend({
 });
 
 cdb.geo.Geometries = Backbone.Collection.extend({});
+
+/**
+ * create a geometry
+ * @param geometryModel geojson based geometry model, see cdb.geo.Geometry
+ */
+function GeometryView() { }
+
+_.extend(GeometryView.prototype, Backbone.Events,{
+
+  edit: function() {
+    throw new Error("to be implemented");
+  }
+
+});
 /**
 * Classes to manage maps
 */
@@ -16948,6 +19054,7 @@ cdb.geo.PlainLayer = cdb.geo.MapLayer.extend({
 
 // CartoDB layer
 cdb.geo.CartoDBLayer = cdb.geo.MapLayer.extend({
+
   defaults: {
     type: 'CartoDB',
     active: true,
@@ -16956,7 +19063,6 @@ cdb.geo.CartoDBLayer = cdb.geo.MapLayer.extend({
     auto_bound: false,
     interactivity: null,
     debug: false,
-    visible: true,
     tiler_domain: "cartodb.com",
     tiler_port: "80",
     tiler_protocol: "http",
@@ -16975,16 +19081,23 @@ cdb.geo.CartoDBLayer = cdb.geo.MapLayer.extend({
     this.set({active: false, opacity: 0, visible: false})
   },
 
+  /**
+   * refresh the layer
+   */
+  invalidate: function() {
+    var e = this.get('extra_params') || e;
+    e.cache_buster = new Date().getTime();
+    this.set('extra_params', e);
+    this.trigger('change');
+  },
+
   toggle: function() {
     if(this.get('active')) {
       this.deactivate();
     } else {
       this.activate();
     }
-  },
-
-
-
+  }
 });
 
 cdb.geo.Layers = Backbone.Collection.extend({
@@ -17200,10 +19313,15 @@ cdb.geo.Map = cdb.core.Model.extend({
     var old = this.layers.at(0);
 
     if (old) { // defensive programming FTW!!
-
-      old.destroy({
+      //remove layer from the view
+      //change all the attributes and save it again
+      //it will saved in the server and recreated in the client
+      self.layers.remove(old);
+      layer.set('id', old.get('id'));
+      layer.set('order', old.get('order'));
+      this.layers.add(layer, { at: 0 });
+      layer.save(null, {
         success: function() {
-          self.layers.add(layer, { at: 0 });
           self.trigger('baseLayerAdded');
           self._adjustZoomtoLayer(layer);
           opts.success && opts.success();
@@ -17227,6 +19345,72 @@ cdb.geo.Map = cdb.core.Model.extend({
 
   removeGeometry: function(geom) {
     this.geometries.remove(geom);
+  },
+
+  setBounds: function(b) {
+    this.attributes.view_bounds_sw = [
+        b[0][0],
+        b[0][1]
+    ];
+    this.attributes.view_bounds_ne = [
+        b[1][0],
+        b[1][1]
+    ];
+
+    // change both at the same time
+    this.trigger('change:view_bounds_ne', this);
+
+  },
+
+  // set center and zoom according to fit bounds
+  fitBounds: function(bounds, mapSize) {
+    var z = this.getBoundsZoom(bounds, mapSize);
+    if(z == null) {
+      return;
+    }
+    var lat = (bounds[0][0] + bounds[1][0])/2;
+    var lon = (bounds[0][1] + bounds[1][1])/2;
+    this.set({
+      center: [lat, lon],
+      zoom: z
+    })
+  },
+
+  // adapted from leaflat src
+  getBoundsZoom: function(boundsSWNE, mapSize) {
+    var size = [mapSize.x, mapSize.y],
+        zoom = this.get('minZoom') || 0,
+        maxZoom = this.get('maxZoom') || 24,
+        ne = boundsSWNE[1],
+        sw = boundsSWNE[0],
+        boundsSize = [],
+        nePoint,
+        swPoint,
+        zoomNotFound = true;
+
+    do {
+      zoom++;
+      nePoint = cdb.geo.Map.latlngToMercator(ne, zoom);
+      swPoint = cdb.geo.Map.latlngToMercator(sw, zoom);
+      boundsSize[0] = Math.abs(nePoint[0] - swPoint[0]);
+      boundsSize[1] = Math.abs(swPoint[1] - nePoint[1]);
+      zoomNotFound = boundsSize[0] < size[0] || boundsSize[1] < size[1];
+    } while (zoomNotFound && zoom <= maxZoom);
+
+    if (zoomNotFound) {
+      return null;
+    }
+
+    return zoom - 1;
+
+  }
+
+}, {
+
+  latlngToMercator: function(latlng, zoom) {
+    var ll = new L.LatLng(latlng[0], latlng[1]);
+    var pp = L.CRS.EPSG3857.latLngToPoint(ll, zoom);
+    return [pp.x, pp.y];
   }
 
 });
@@ -17246,6 +19430,8 @@ cdb.geo.MapView = cdb.core.View.extend({
     this.map = this.options.map;
     this.add_related_model(this.map);
     this.add_related_model(this.map.layers);
+
+    this.autoSaveBounds = false;
 
     // this var stores views information for each model
     this.layers = {};
@@ -17297,19 +19483,52 @@ cdb.geo.MapView = cdb.core.View.extend({
   _setModelProperty: function(prop) {
     this._unbindModel();
     this.map.set(prop);
+    if(prop.center !== undefined || prop.zoom !== undefined) {
+      var b = this.getBounds();
+      this.map.set({
+        view_bounds_sw: b[0],
+        view_bounds_ne: b[1]
+      });
+      if(this.autoSaveBounds) {
+        this._saveLocation();
+      }
+    }
     this._bindModel();
   },
 
   /** bind model properties */
   _bindModel: function() {
+    this._unbindModel();
+    this.map.bind('change:view_bounds_sw', this._changeBounds, this);
+    this.map.bind('change:view_bounds_ne', this._changeBounds, this);
     this.map.bind('change:zoom',   this._setZoom, this);
     this.map.bind('change:center', this._setCenter, this);
   },
 
   /** unbind model properties */
   _unbindModel: function() {
+    /*
     this.map.unbind('change:zoom',   this._setZoom, this);
     this.map.unbind('change:center', this._setCenter, this);
+    this.map.unbind('change:view_bounds_sw', this._changeBounds, this);
+    this.map.unbind('change:view_bounds_ne', this._changeBounds, this);
+    */
+
+    this.map.unbind('change:zoom',   null, this);
+    this.map.unbind('change:center', null, this);
+    this.map.unbind('change:view_bounds_sw', null, this);
+    this.map.unbind('change:view_bounds_ne', null, this);
+  },
+
+  _changeBounds: function() {
+    var bounds = this.map.getViewBounds();
+    if(bounds) {
+      this.showBounds(bounds);
+    }
+  },
+
+  showBounds: function(bounds) {
+    this.map.fitBounds(bounds, this.getSize())
   },
 
   _addLayers: function() {
@@ -17340,10 +19559,6 @@ cdb.geo.MapView = cdb.core.View.extend({
     return l;
   },
 
-  addGeometry: function(geom) {
-    throw "to be implemented";
-  },
-
   _setZoom: function(model, z) {
     throw "to be implemented";
   },
@@ -17354,6 +19569,34 @@ cdb.geo.MapView = cdb.core.View.extend({
 
   _addLayer: function(layer, layers, opts) {
     throw "to be implemented";
+  },
+
+  _addGeomToMap: function(geom) {
+    throw "to be implemented";
+  },
+
+  _removeGeomFromMap: function(geo) {
+    throw "to be implemented";
+  },
+
+  setAutoSaveBounds: function() {
+    var self = this;
+    this.autoSaveBounds = true;
+  },
+
+  _saveLocation: _.debounce(function() {
+      this.map.save(null, { silent: true });
+  }, 1000),
+
+  _addGeometry: function(geom) {
+    var view = this._addGeomToMap(geom);
+    this.geometries[geom.cid] = view;
+  },
+
+  _removeGeometry: function(geo) {
+    var geo_view = this.geometries[geo.cid];
+    this._removeGeomFromMap(geo_view);
+    delete this.geometries[geo.cid];
   }
 
 
@@ -17378,6 +19621,7 @@ cdb.geo.MapView = cdb.core.View.extend({
       map: mapModel
     });
   }
+
 }
 );
 /**
@@ -17758,16 +20002,22 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
 
     this.add_related_model(this.model);
 
-    this.model.bind('change:content', this.render, this);
+    this.model.bind('change:content',       this.render, this);
     this.model.bind('change:template_name', this.changeTemplate, this);
-    this.model.bind('change:latlng', this.render, this);
-    this.model.bind('change:visibility', this.toggle, this);
+    this.model.bind('change:latlng',        this._update, this);
+    this.model.bind('change:visibility',    this.toggle, this);
 
-    this.mapView.map.bind('change', this._updatePosition, this);
+    this.mapView.map.bind('change',         this._updatePosition, this);
     //this.map.on('viewreset', this._updatePosition, this);
-    this.mapView.bind('drag', this._updatePosition, this);
-    this.mapView.bind('zoomstart', this.hide, this);
-    this.mapView.bind('zoomend', this.show, this);
+    this.mapView.bind('drag',               this._updatePosition, this);
+
+    var that = this;
+    this.mapView.bind('zoomstart', function(){
+      that.hide(true);
+    });
+    this.mapView.bind('zoomend', function() {
+      that.show(true);
+    });
 
     this.render();
     this.$el.hide();
@@ -17775,16 +20025,30 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
   },
 
   changeTemplate: function(template_name) {
-
     this.template = cdb.templates.getTemplate(this.model.get("template_name"));
     this.render();
-
   },
 
   render: function() {
     if(this.template) {
+
+      // If there is content, destroy the jscrollpane first, then remove the content.
+      if (this.$el.html().length > 0) {
+        this.$el.find(".cartodb-popup-content").jScrollPane() 
+        && this.$el.find(".cartodb-popup-content").jScrollPane().data().jsp.destroy();
+      }
+
       this.$el.html($(this.template(_.clone(this.model.attributes))));
-      this._update();
+      
+      // Hello jscrollpane hacks!
+      // It needs some time to initialize, if not it doesn't render properly the fields
+      var that = this;
+      setTimeout(function() {
+        that.$el.find(".cartodb-popup-content").jScrollPane({
+          maintainPosition:       false,
+          verticalDragMinHeight:  20
+        });
+      },1)
     }
     return this;
   },
@@ -17819,16 +20083,13 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     this.model.set("visibility", true);
   },
 
-  show: function () {
+  show: function (no_pan) {
     var that = this;
 
     if (this.model.get("visibility")) {
       that.$el.css({ left: -5000 });
-      that.$el.fadeIn(250, function() {
-        that._update();
-      });
+      that._update(no_pan);
     }
-
   },
 
   isHidden: function () {
@@ -17836,14 +20097,58 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
   },
 
   hide: function (force) {
-    if (force || !this.model.get("visibility")) this.$el.fadeOut(250);
+    if (force || !this.model.get("visibility")) this._animateOut();
   },
 
-  _update: function () {
+  _update: function (no_pan) {
+    
     if(!this.isHidden()) {
-      this._adjustPan();
+      var delay = 0;
+      
+      if (!no_pan) {
+        var delay = this._adjustPan();
+      }
+
       this._updatePosition();
+      this._animateIn(delay);
     }
+  },
+
+  _animateIn: function(delay) {
+    if (!$.browser.msie || ($.browser.msie && $.browser.version.search("9.") != -1)) {
+      this.$el.css({
+        'marginBottom':'-10px',
+        'display':'block',
+        opacity:0
+      });
+
+      this.$el
+        .delay(delay)
+        .animate({
+          opacity: 1,
+          marginBottom: 0
+        },300);  
+    } else {
+      this.$el.show();
+    }
+  },
+
+  _animateOut: function() {
+
+    if (!$.browser.msie || ($.browser.msie && $.browser.version.search("9.") != -1)) {
+      var that = this;
+      this.$el.animate({
+        marginBottom: "-10px",
+        opacity:      "0",
+        display:      "block"
+      }, 180, function() {
+        that.$el.css({display: "none"});
+      }); 
+    } else {
+      this.$el.hide();
+    }
+
+
   },
 
   /**
@@ -17851,9 +20156,8 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
   */
   _updatePosition: function () {
 
-    var offset = this.model.get("offset");
-
     var
+    offset          = this.model.get("offset")
     pos             = this.mapView.latLonToPixel(this.model.get("latlng")),
     x               = this.$el.position().left,
     y               = this.$el.position().top,
@@ -17866,7 +20170,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     this.$el.css({ bottom: bottom, left: left });
   },
 
-  _adjustPan: function () {
+  _adjustPan: function (callback) {
 
     var offset = this.model.get("offset");
 
@@ -17875,11 +20179,12 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     var
       x               = this.$el.position().left,
       y               = this.$el.position().top,
-      containerHeight = this.$el.outerHeight(true),
+      containerHeight = 280, //this.$el.outerHeight(true),
       containerWidth  = this.$el.width(),
       pos             = this.mapView.latLonToPixel(this.model.get("latlng")),
       adjustOffset    = {x: 0, y: 0};
-      size            = this.mapView.getSize();
+      size            = this.mapView.getSize()
+      wait_callback   = 0;
 
     if (pos.x - offset[0] < 0) {
       adjustOffset.x = pos.x - offset[0] - 10;
@@ -17899,7 +20204,10 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
 
     if (adjustOffset.x || adjustOffset.y) {
       this.mapView.panBy(adjustOffset);
+      wait_callback = 300;
     }
+
+    return wait_callback;
   }
 
 });
@@ -17954,10 +20262,16 @@ cdb.geo.ui.Search = cdb.core.View.extend({
     cdb.geo.geocoder.YAHOO.geocode(address, function(coords) {
       if (coords.length>0) {
         if (coords[0].boundingbox) {
-          self.model.set({
-            "view_bounds_sw": [coords[0].boundingbox.south,coords[0].boundingbox.west],
-            "view_bounds_ne": [coords[0].boundingbox.north,coords[0].boundingbox.east]
-          });
+          self.model.setBounds([
+            [
+              parseFloat(coords[0].boundingbox.south),
+              parseFloat(coords[0].boundingbox.west)
+            ],
+            [
+              parseFloat(coords[0].boundingbox.north),
+              parseFloat(coords[0].boundingbox.east)
+            ]
+          ]);
         } else if (coords[0].lat && coords[0].lon) {
           self.model.setCenter([coords[0].lat, coords[0].lon]);
           self.model.setZoom(10);  
@@ -17966,6 +20280,7 @@ cdb.geo.ui.Search = cdb.core.View.extend({
     });
   }
 });
+
 /*
  *  common functions for cartodb connector
  */
@@ -18019,10 +20334,10 @@ CartoDBLayerCommon.prototype = {
   //
   // param ext tile extension, i.e png, json
   // 
-  _tilesUrl: function(ext) {
+  _tilesUrl: function(ext, subdomain) {
     var opts = this.options;
     ext = ext || 'png';
-    var cartodb_url = this._host() + '/tiles/' + opts.table_name + '/{z}/{x}/{y}.' + ext + '?';
+    var cartodb_url = this._host(subdomain) + '/tiles/' + opts.table_name + '/{z}/{x}/{y}.' + ext + '?';
 
     // set params
     var params = {};
@@ -18032,7 +20347,8 @@ CartoDBLayerCommon.prototype = {
     if(opts.tile_style) {
       params.style = opts.tile_style;
     }
-    if(opts.style_version) {
+    // style_version is only valid when tile_style is present
+    if(opts.tile_style && opts.style_version) {
       params.style_version = opts.style_version;
     }
     if(ext === 'grid.json') {
@@ -18049,31 +20365,53 @@ CartoDBLayerCommon.prototype = {
     var url_params = [];
     for(var k in params) {
       var p = params[k];
-      var q = encodeURIComponent(
-        p.replace ? 
-          p.replace(/\{\{table_name\}\}/g, opts.table_name):
-          p
-      );
-      q = q.replace(/%7Bx%7D/g,"{x}").replace(/%7By%7D/g,"{y}").replace(/%7Bz%7D/g,"{z}");
-      url_params.push(k + "=" + q);
+      if(p) {
+        var q = encodeURIComponent(
+          p.replace ? 
+            p.replace(/\{\{table_name\}\}/g, opts.table_name):
+            p
+        );
+        q = q.replace(/%7Bx%7D/g,"{x}").replace(/%7By%7D/g,"{y}").replace(/%7Bz%7D/g,"{z}");
+        url_params.push(k + "=" + q);
+      }
     }
     cartodb_url += url_params.join('&');
 
     return cartodb_url;
   },
 
+  isHttps: function() {
+    return this.options.tiler_protocol === 'https';
+  },
+
   _tileJSON: function () {
+    var grids = [];
+    var tiles = [];
+    var subdomains = this.options.subdomains || ['0', '1', '2', '3'];
+    if(this.isHttps()) {
+      subdomains = [null]; // no subdomain
+    } 
+
+    // use subdomains
+    for(var i = 0; i < subdomains.length; ++i) {
+      var s = subdomains[i]
+      grids.push(this._tilesUrl('grid.json', s));
+      tiles.push(this._tilesUrl('png', s));
+    }
     return {
         tilejson: '2.0.0',
         scheme: 'xyz',
-        grids: [this._tilesUrl('grid.json')],
-        tiles: [this._tilesUrl()],
+        grids: grids,
+        tiles: tiles,
         formatter: function(options, data) { return data; }
     };
   },
 
   error: function(e) {
     console.log(e.error);
+  },
+
+  tilesOk: function() {
   },
 
   /**
@@ -18094,6 +20432,7 @@ CartoDBLayerCommon.prototype = {
       crossDomain: true,
       dataType: 'json',
       success: function() {
+        self.tilesOk();
         clearTimeout(timeout)
       },
       error: function(xhr, msg, data) {
@@ -18112,6 +20451,7 @@ CartoDBLayerCommon.prototype = {
 
 };
 
+(function() {
 /**
  * this module implements all the features related to overlay geometries
  * in leaflet: markers, polygons, lines and so on
@@ -18196,23 +20536,6 @@ L.Util.extend(L.GeoJSON, {
   }
 });
 
-/**
- * create a geometry
- * @param geometryModel geojson based geometry model, see cdb.geo.Geometry
- */
-function GeometryView() { }
-
-_.extend(GeometryView.prototype, Backbone.Events);
-
-/**
- * create the view for the geometry model
- */
-GeometryView.create = function(geometryModel) {
-  if(geometryModel.isPoint()) {
-    return new PointView(geometryModel);
-  }
-  return new PathView(geometryModel);
-};
 
 
 
@@ -18332,8 +20655,13 @@ PathView.prototype.edit = function(enable) {
   });
 };
 
+cdb.geo.leaflet = cdb.geo.leaflet || {};
+
+cdb.geo.leaflet.PointView = PointView;
+cdb.geo.leaflet.PathView = PathView;
 
 
+})();
 
 (function() {
   /**
@@ -18343,6 +20671,7 @@ PathView.prototype.edit = function(enable) {
     this.leafletLayer = leafletLayer;
     this.leafletMap = leafletMap;
     this.model = layerModel;
+
     this.model.bind('change', this._modelUpdated, this);
     this.type = layerModel.get('type') || layerModel.get('kind');
     this.type = this.type.toLowerCase();
@@ -18507,7 +20836,26 @@ L.CartoDBLayer = L.TileLayer.extend({
     // Add cartodb logo, yes sir!
     this._addWadus();
 
+    this.fire = this.trigger;
+
     L.TileLayer.prototype.initialize.call(this);
+  },
+
+
+  // overwrite getTileUrl in order to
+  // support different tiles subdomains in tilejson way
+  getTileUrl: function (tilePoint) {
+    this._adjustTilePoint(tilePoint);
+
+    var tiles = this.tilejson.tiles;
+
+    var index = (tilePoint.x + tilePoint.y) % tiles.length;
+
+    return L.Util.template(tiles[index], L.Util.extend({
+      z: this._getZoomForUrl(),
+      x: tilePoint.x,
+      y: tilePoint.y
+    }, this.options));
   },
 
   /**
@@ -18812,10 +21160,10 @@ L.CartoDBLayer = L.TileLayer.extend({
     if (!document.getElementById('cartodb_logo')) {
       var cartodb_link = document.createElement("a");
       cartodb_link.setAttribute('id','cartodb_logo');
-      cartodb_link.setAttribute('style',"position:absolute; bottom:8px; left:8px; display:block; z-index:10000;");
+      cartodb_link.setAttribute('style',"position:absolute; bottom:0; left:0; display:block; z-index:10000;");
       cartodb_link.setAttribute('href','http://www.cartodb.com');
       cartodb_link.setAttribute('target','_blank');
-      cartodb_link.innerHTML = "<img src='http://cartodb.s3.amazonaws.com/static/new_logo.png' style='border:none; outline:none' alt='CartoDB' title='CartoDB' />";
+      cartodb_link.innerHTML = "<img src='http://cartodb.s3.amazonaws.com/static/new_logo.png' style='position:absolute; bottom:8px; left:8px; display:block; border:none; outline:none' alt='CartoDB' title='CartoDB' />";
       this.options.map._container.appendChild(cartodb_link);
     }
   },
@@ -18880,7 +21228,7 @@ L.CartoDBLayer = L.TileLayer.extend({
       // IE
       return map.mouseEventToLayerPoint(o.e)
     }
-  },
+  }
 
 });
 
@@ -18894,6 +21242,9 @@ var LeafLetLayerCartoDBView = function(layerModel, leafletMap) {
   _.bindAll(this, 'featureOut', 'featureOver', 'featureClick');
 
   var opts = _.clone(layerModel.attributes);
+  if(layerModel.get('use_server_style')) {
+    opts.tile_style = null;
+  }
 
   opts.map =  leafletMap;
 
@@ -18937,7 +21288,7 @@ _.extend(
     // we should remove it from layer options
     if(this.model.get('use_server_style')) {
       attrs.tile_style = null;
-    }
+    } 
     this.leafletLayer.setOptions(attrs);
   },
 
@@ -18956,11 +21307,17 @@ _.extend(
   },
 
   reload: function() {
-    this.redraw();
+    this.model.invalidate();
+    //this.redraw();
   },
 
   error: function(e) {
     this.trigger('error', e?e.error:'unknown error');
+    this.model.trigger('tileError', e?e.error:'unknown error');
+  },
+
+  tilesOk: function(e) {
+    this.model.trigger('tileOk');
   }
 
 });
@@ -19016,11 +21373,6 @@ cdb.geo.LeafletMapView = cdb.geo.MapView.extend({
       self._setModelProperty({ zoom: self.map_leaflet.getZoom() });
     }
 
-    // looks like leaflet dont like to change the bounds just after the inicialization
-    var bounds = this.map.getViewBounds();
-    if(bounds) {
-      this.showBounds(bounds);
-    }
 
     this.map.bind('set_view', this._setView, this);
     this.map.layers.bind('add', this._addLayer, this);
@@ -19072,46 +21424,50 @@ cdb.geo.LeafletMapView = cdb.geo.MapView.extend({
 
     this.map.bind('change:maxZoom', function() {
       L.Util.setOptions(self.map_leaflet, { maxZoom: self.map.get('maxZoom') });
-    });
+    }, this);
 
     this.map.bind('change:minZoom', function() {
       L.Util.setOptions(self.map_leaflet, { minZoom: self.map.get('minZoom') });
-    });
-
-    /*this.map.bind('change:view_bounds_sw change:view_bounds_ne', function() {
-      var bounds = this.map.getViewBounds();
-      if(bounds) {
-        this.showBounds(bounds);
-      }
     }, this);
-    */
 
     this.trigger('ready');
 
+    // looks like leaflet dont like to change the bounds just after the inicialization
+    var bounds = this.map.getViewBounds();
+    if(bounds) {
+      this.showBounds(bounds);
+    }
+
+  },
+
+
+  clean: function() {
+    //see https://github.com/CloudMade/Leaflet/issues/1101
+    L.DomEvent.off(window, 'resize', this.map_leaflet._onResize, this.map_leaflet);
+    // do not change by elder
+    cdb.core.View.prototype.clean.call(this);
   },
 
   _setZoom: function(model, z) {
-    this.map_leaflet.setZoom(z);
+    this._setView();
   },
 
   _setCenter: function(model, center) {
-    this.map_leaflet.panTo(new L.LatLng(center[0], center[1]));
+    this._setView();
   },
 
   _setView: function() {
-    this.map_leaflet.setView(this.map.get("center"), this.map.get("zoom"));
+    this.map_leaflet.setView(this.map.get("center"), this.map.get("zoom") || 0 );
   },
 
-  _addGeometry: function(geom) {
-    var geo = GeometryView.create(geom);
+  _addGeomToMap: function(geom) {
+    var geo = cdb.geo.LeafletMapView.createGeometry(geom);
     geo.geom.addTo(this.map_leaflet);
-    this.geometries[geom.cid] = geo;
+    return geo;
   },
 
-  _removeGeometry: function(geo) {
-    var geo_view = this.geometries[geo.cid];
-    this.map_leaflet.removeLayer(geo_view.geom);
-    delete this.geometries[geo.cid];
+  _removeGeomFromMap: function(geo) {
+    this.map_leaflet.removeLayer(geo.geom);
   },
 
   createLayer: function(layer) {
@@ -19150,12 +21506,12 @@ cdb.geo.LeafletMapView = cdb.geo.MapView.extend({
         }
       });
     }
-
-    // update all
-    //for(var i in this.layers) {
-      //this.layers[i].reload();
-    //}
-
+    /*
+    var attr = layer.get('attribution');
+    if(attr) {
+      this.addAttribution(attr);
+    }
+    */
 
     this.trigger('newLayerView', layer_view, this);
   },
@@ -19176,14 +21532,6 @@ cdb.geo.LeafletMapView = cdb.geo.MapView.extend({
     ];
   },
 
-  showBounds: function(bounds) {
-    var sw = bounds[0];
-    var ne = bounds[1];
-    var southWest = new L.LatLng(sw[0], sw[1]);
-    var northEast = new L.LatLng(ne[0], ne[1]);
-    this.map_leaflet.fitBounds(new L.LatLngBounds(southWest, northEast));
-  },
-
   getSize: function() {
     return this.map_leaflet.getSize();
   },
@@ -19192,16 +21540,8 @@ cdb.geo.LeafletMapView = cdb.geo.MapView.extend({
     this.map_leaflet.panBy(new L.Point(p.x, p.y));
   },
 
-  setAutoSaveBounds: function() {
-    var self = this;
-    // save on change
-    this.map.bind('change:center change:zoom', _.debounce(function() {
-      var b = self.getBounds();
-      self.map.save({
-        view_bounds_sw: b[0],
-        view_bounds_ne: b[1]
-      }, { silent: true });
-    }, 1000), this);
+  setCursor: function(cursor) {
+    $(this.map_leaflet.getContainer()).css('cursor', cursor);
   }
 
 }, {
@@ -19209,6 +21549,7 @@ cdb.geo.LeafletMapView = cdb.geo.MapView.extend({
   layerTypeMap: {
     "tiled": cdb.geo.LeafLetTiledLayerView,
     "cartodb": cdb.geo.LeafLetLayerCartoDBView,
+    "carto": cdb.geo.LeafLetLayerCartoDBView,
     "plain": cdb.geo.LeafLetPlainLayerView,
     // for google maps create a plain layer
     "gmapsbase": cdb.geo.LeafLetPlainLayerView
@@ -19228,7 +21569,19 @@ cdb.geo.LeafletMapView = cdb.geo.MapView.extend({
 
   addLayerToMap: function(layer_view, map) {
     map.addLayer(layer_view.leafletLayer);
+  },
+
+  /**
+   * create the view for the geometry model
+   */
+  createGeometry: function(geometryModel) {
+    if(geometryModel.isPoint()) {
+      return new cdb.geo.leaflet.PointView(geometryModel);
+    }
+    return new cdb.geo.leaflet.PathView(geometryModel);
   }
+
+
 });
 
 })();
@@ -19247,6 +21600,7 @@ var GMapsLayerView = function(layerModel, gmapsLayer, gmapsMap) {
   this.map = this.gmapsMap = gmapsMap;
   this.model = layerModel;
   this.model.bind('change', this._update, this);
+
   this.type = layerModel.get('type') || layerModel.get('kind');
   this.type = this.type.toLowerCase();
 };
@@ -19285,6 +21639,8 @@ _.extend(GMapsLayerView.prototype, {
     }
   },
 
+  /*
+
   show: function() {
     this.gmapsLayer.show();
   },
@@ -19292,6 +21648,7 @@ _.extend(GMapsLayerView.prototype, {
   hide: function() {
     this.gmapsLayer.hide();
   },
+  */
 
   reload: function() { this.refreshView() ; },
   _update: function() { this.refreshView(); }
@@ -19373,7 +21730,7 @@ _.extend(
   maxZoom: 100,
   minZoom: 0,
   name:"plain layer",
-  alt: "plain layer",
+  alt: "plain layer"
 });
 
 cdb.geo.GMapsPlainLayerView = GMapsPlainLayerView;
@@ -19420,9 +21777,7 @@ _.extend(
                   .replace("{x}",x)
                   .replace("{y}",y)
                   .replace("{z}",zoom);
-    },
-
-
+    }
 });
 
 cdb.geo.GMapsTiledLayerView = GMapsTiledLayerView;
@@ -19478,6 +21833,10 @@ var CartoDBLayer = function(opts) {
   opts.tiles = [
     this._tilesUrl()
   ];
+
+  // Set init
+  this.tiles = 0;
+
   wax.g.connector.call(this, opts);
 
   // lovely wax connector overwrites options so set them again
@@ -19485,6 +21844,7 @@ var CartoDBLayer = function(opts) {
    _.extend(this.options, opts);
   this.projector = new Projector(opts.map);
   this._addInteraction();
+  this._checkTiles();
 };
 
 CartoDBLayer.Projector = Projector;
@@ -19511,8 +21871,29 @@ CartoDBLayer.prototype.setOpacity = function(opacity) {
 };
 
 CartoDBLayer.prototype.getTile = function(coord, zoom, ownerDocument) {
+
+  var self = this;
+
   this.options.added = true;
-  return wax.g.connector.prototype.getTile.call(this, coord, zoom, ownerDocument);
+
+  var im = wax.g.connector.prototype.getTile.call(this, coord, zoom, ownerDocument);
+  
+  if (this.tiles == 0) {
+    this.loading && this.loading();
+    //this.trigger("loading");
+  }
+
+  this.tiles++;
+
+  
+  im.onload = im.onerror = function() {
+    self.tiles--;
+    if (self.tiles == 0) {
+      self.finishLoading && self.finishLoading();
+    }
+  }
+
+  return im;
 }
 
 CartoDBLayer.prototype._addInteraction = function () {
@@ -19532,6 +21913,7 @@ CartoDBLayer.prototype.clear = function () {
     this._interaction.remove();
     delete this._interaction;
   }
+  self.finishLoading && self.finishLoading();
 };
 
 CartoDBLayer.prototype.update = function () {
@@ -19683,9 +22065,7 @@ CartoDBLayer.prototype._manageOffEvents = function(){
 
 CartoDBLayer.prototype._manageOnEvents = function(map,o) {
   var point  = this._findPos(map, o);
-
-  console.log(point);
-  var      latlng = this.projector.pixelToLatLng(point);
+  var latlng = this.projector.pixelToLatLng(point);
 
   switch (o.e.type) {
     case 'mousemove':
@@ -19760,6 +22140,10 @@ _.extend(
     this.update();
   },
 
+  reload: function() {
+    this.model.invalidate();
+  },
+
   remove: function() {
     cdb.geo.GMapsLayerView.prototype.remove.call(this);
     this.clear();
@@ -19780,8 +22164,23 @@ _.extend(
   },
 
   error: function(e) {
-    this.trigger('error', e?e.error:'unknown error');
+    //trigger the error form _checkTiles in the model
+    this.model.trigger('error', e?e.error:'unknown error');
+    this.model.trigger('tileError', e?e.error:'unknown error');
+  },
+
+  tilesOk: function(e) {
+    this.model.trigger('tileOk');
+  },
+
+  loading: function() {
+    this.trigger("loading");
+  },
+
+  finishLoading: function() {
+    this.trigger("load");
   }
+
 
 });
 
@@ -19799,6 +22198,7 @@ cdb.geo.GoogleMapsMapView = cdb.geo.MapView.extend({
   layerTypeMap: {
     "tiled": cdb.geo.GMapsTiledLayerView,
     "cartodb": cdb.geo.GMapsCartoDBLayerView,
+    "carto": cdb.geo.GMapsCartoDBLayerView,
     "plain": cdb.geo.GMapsPlainLayerView,
     "gmapsbase": cdb.geo.GMapsBaseLayerView
   },
@@ -19809,6 +22209,11 @@ cdb.geo.GoogleMapsMapView = cdb.geo.MapView.extend({
     var self = this;
 
     cdb.geo.MapView.prototype.initialize.call(this);
+
+    var bounds = this.map.getViewBounds();
+    if(bounds) {
+      this.showBounds(bounds);
+    }
     var center = this.map.get('center');
     if(!this.options.map_object) {
       this.map_googlemaps = new google.maps.Map(this.el, {
@@ -19818,7 +22223,8 @@ cdb.geo.GoogleMapsMapView = cdb.geo.MapView.extend({
         maxZoom: this.map.get('maxZoom'),
         disableDefaultUI: true,
         mapTypeControl:false,
-        mapTypeId: google.maps.MapTypeId.ROADMAP
+        mapTypeId: google.maps.MapTypeId.ROADMAP,
+        backgroundColor: 'white'
       });
     } else {
       this.map_googlemaps = this.options.map_object;
@@ -19829,6 +22235,10 @@ cdb.geo.GoogleMapsMapView = cdb.geo.MapView.extend({
       self._setModelProperty({ center: [c.lat(), c.lng()] });
       self._setModelProperty({ zoom: self.map_googlemaps.getZoom() });
     }
+
+
+    this.map.geometries.bind('add', this._addGeometry, this);
+    this.map.geometries.bind('remove', this._removeGeometry, this);
 
 
     this._bindModel();
@@ -19867,13 +22277,10 @@ cdb.geo.GoogleMapsMapView = cdb.geo.MapView.extend({
     this.projector.draw = function() {};
     this.trigger('ready');
     this._isReady = true;
-    var bounds = this.map.getViewBounds();
-    if(bounds) {
-      this.showBounds(bounds);
-    }
   },
 
   _setZoom: function(model, z) {
+    z = z || 0;
     this.map_googlemaps.setZoom(z);
   },
 
@@ -19952,37 +22359,56 @@ cdb.geo.GoogleMapsMapView = cdb.geo.MapView.extend({
   },
 
   getBounds: function() {
-    var b = this.map_googlemaps.getBounds();
-    var sw = b.getSouthWest();
-    var ne = b.getNorthEast();
-    return [
-      [sw.lat(), sw.lng()],
-      [ne.lat(), ne.lng()]
-    ];
+    if(this._isReady) {
+      var b = this.map_googlemaps.getBounds();
+      var sw = b.getSouthWest();
+      var ne = b.getNorthEast();
+      return [
+        [sw.lat(), sw.lng()],
+        [ne.lat(), ne.lng()]
+      ];
+    }
+    return [ [0,0], [0,0] ];
   },
 
-  showBounds: function(bounds) {
-    var sw = bounds[0];
-    var ne = bounds[1];
-    var southWest = new google.maps.LatLng(sw[0], sw[1]);
-    var northEast = new google.maps.LatLng(ne[0], ne[1]);
-    this.map_googlemaps.fitBounds(new google.maps.LatLngBounds(southWest, northEast));
+
+  setCursor: function(cursor) {
+    this.map_googlemaps.setOptions({ draggableCursor: cursor });
   },
 
-  setAutoSaveBounds: function() {
-    var self = this;
-    // save on change
-    this.map.bind('change:center change:zoom', _.debounce(function() {
-      if(self._isReady) {
-        var b = self.getBounds();
-        self.map.save({
-          view_bounds_sw: b[0],
-          view_bounds_ne: b[1]
-        }, { silent: true });
+  _addGeomToMap: function(geom) {
+    var geo = cdb.geo.GoogleMapsMapView.createGeometry(geom);
+    if(geo.geom.length) {
+      for(var i = 0 ; i < geo.geom.length; ++i) {
+        geo.geom[i].setMap(this.map_googlemaps);
       }
-    }, 1000), this);
+    } else {
+        geo.geom.setMap(this.map_googlemaps);
+    }
+    return geo;
+  },
+
+  _removeGeomFromMap: function(geo) {
+    if(geo.geom.length) {
+      for(var i = 0 ; i < geo.geom.length; ++i) {
+        geo.geom[i].setMap(null);
+      }
+    } else {
+      geo.geom.setMap(null);
+    }
   }
 
+}, {
+
+  /**
+   * create the view for the geometry model
+   */
+  createGeometry: function(geometryModel) {
+    if(geometryModel.isPoint()) {
+      return new cdb.geo.gmaps.PointView(geometryModel);
+    }
+    return new cdb.geo.gmaps.PathView(geometryModel);
+  }
 });
 
 }
@@ -20040,7 +22466,8 @@ cdb.ui.common.Dialog = cdb.core.View.extend({
     cancel_button_classes: '',
     modal_type: '',
     modal_class: '',
-    include_footer: true
+    include_footer: true,
+    additionalButtons: []
   },
 
   initialize: function() {
@@ -20079,7 +22506,7 @@ cdb.ui.common.Dialog = cdb.core.View.extend({
 
 
   _keydown: function(e) {
-    if (e.keyCode === 27) { 
+    if (e.keyCode === 27) {
       this._cancel();
     }
   },
@@ -20195,25 +22622,28 @@ cdb.ui.common.Notification = cdb.core.View.extend({
     if(this.options.hideMethod != '' && this.$el.is(":visible") ) {
       this.$el[this.options.hideMethod](this.options.duration, 'swing', function() {
         self.$el.html('');
+        self.trigger('notificationDeleted');
         self.remove();
       });
     } else {
       this.$el.hide();
       self.$el.html('');
+      self.trigger('notificationDeleted');
       self.remove();
     }
 
   },
 
-  open: function() {
+  open: function(method, options) {
     this.render();
-    this.$el.show();
+    this.$el.show(method, options);
     if(this.options.timeout) {
         this.closeTimeout = setTimeout(_.bind(this.hide, this), this.options.timeout);
     }
   }
 
 });
+
 /**
  * generic table
  *
@@ -20249,6 +22679,10 @@ cdb.ui.common.TableData = Backbone.Collection.extend({
         return null;
       }
       return r.get(columnName);
+    },
+
+    isEmpty: function() {
+      return this.length === 0;
     }
 
 });
@@ -20395,7 +22829,7 @@ cdb.ui.common.Table = cdb.core.View.extend({
     this.add_related_model(this.dataModel);
     this.add_related_model(this.model);
 
-    this.dataModel.bind('remove', function() {
+    this.dataModel.bind('destroy', function() {
       self.rowDestroyed();
       if(self.dataModel.length == 0) {
         self.emptyTable();
@@ -20471,6 +22905,8 @@ cdb.ui.common.Table = cdb.core.View.extend({
     tr.bind('changeRow', this.rowChanged);
     tr.bind('syncRow', this.rowSynched);
     tr.bind('errorRow', this.rowFailed);
+    tr.bind('saving', this.rowSaving);
+    this.retrigger('saving', tr);
     // tr.bind('destroyRow', this.rowDestroyed);
     // tr.model.bind('destroy', this.rowDestroyed);
 
@@ -20514,6 +22950,12 @@ cdb.ui.common.Table = cdb.core.View.extend({
   * @abstract
   */
   rowFailed: function() {},
+
+  /**
+  * Callback executed when a row send a POST to the server
+  * @abstract
+  */
+  rowSaving: function() {},
 
   /**
   * Callback executed when a row gets destroyed
@@ -20651,6 +23093,7 @@ var Layers = {
     var t = this._types[type.toLowerCase()];
 
     var c = {};
+    c.type = type;
     _.extend(c, data, data.options);
     return new t(vis, c);
   }
@@ -20665,6 +23108,8 @@ cdb.vis.Layers = Layers;
 var Vis = cdb.core.View.extend({
 
   initialize: function() {
+    _.bindAll(this, 'loadingTiles', 'loadTiles');
+
     if(this.options.mapView) {
       this.mapView = this.options.mapView;
       this.map = this.mapView.map;
@@ -20681,13 +23126,24 @@ var Vis = cdb.core.View.extend({
       description: data.description,
       maxZoom: data.maxZoom,
       minZoom: data.minZoom,
-      provider: data.provider
+      provider: data.map_provider
     };
 
     // if the boundaries are defined, we add them to the map
     if(data.bounding_box_sw && data.bounding_box_ne) {
       mapConfig.bounding_box_sw = data.bounding_box_sw;
       mapConfig.bounding_box_ne = data.bounding_box_ne;
+    }
+    if(data.bounds) {
+      mapConfig.view_bounds_sw = data.bounds[0];
+      mapConfig.view_bounds_ne = data.bounds[1];
+    } else {
+      var center = data.center;
+      if (typeof(center) === "string") {
+        center = $.parseJSON(center);
+      }
+      mapConfig.center = center || [0, 0];
+      mapConfig.zoom = data.zoom || 4;
     }
 
     var map = new cdb.geo.Map(mapConfig);
@@ -20701,12 +23157,17 @@ var Vis = cdb.core.View.extend({
     this.map = map;
     this.mapView = mapView;
 
-
     // overlays
     for(var i in data.overlays) {
       var overlay = data.overlays[i];
       overlay.map = map;
       var v = Overlay.create(overlay.type, this, overlay);
+
+      // Save tiles loader view for later
+      if (overlay.type == "loader") {
+        this.loader = v;
+      }
+
       this.addView(v);
       this.mapView.$el.append(v.el);
     }
@@ -20717,17 +23178,6 @@ var Vis = cdb.core.View.extend({
       this.loadLayer(layerData);
     }
 
-    if(data.bounds) {
-      mapView.showBounds(data.bounds);
-    } else {
-      var center = data.center;
-      if (typeof(center) === "string") {
-        center = JSON.parse(center);
-      }
-
-      map.setCenter(center || [0, 0]);
-      map.setZoom(data.zoom || 4);
-    }
   },
 
   createLayer: function(layerData, opts) {
@@ -20739,7 +23189,8 @@ var Vis = cdb.core.View.extend({
     var model = layerView.model;
     var eventType = layerView.model.get('eventType') || 'featureClick';
     var infowindow = Overlay.create('infowindow', this, model.get('infowindow'), true);
-    this.mapView.addInfowindow(infowindow);
+    var mapView = this.mapView;
+    mapView.addInfowindow(infowindow);
 
     var infowindowFields = layerView.model.get('infowindow');
 
@@ -20763,6 +23214,14 @@ var Vis = cdb.core.View.extend({
         infowindow.model.set({ content:  { fields: content} });
         infowindow.setLatLng(latlng).showInfowindow();
     });
+
+    layerView.bind('featureOver', function(e, latlon, pxPos, data) {
+      mapView.setCursor('pointer');
+    });
+    layerView.bind('featureOut', function() {
+      mapView.setCursor('auto');
+    });
+
   },
 
   loadLayer: function(layerData, opts) {
@@ -20772,19 +23231,27 @@ var Vis = cdb.core.View.extend({
     var layer_cid = map.addLayer(Layers.create(layerData.type || layerData.kind, this, layerData), opts);
 
     var layerView = mapView.getLayerByCid(layer_cid);
+    
     // add the associated overlays
     if(layerData.infowindow) {
       this.addInfowindow(layerView);
-      layerView.bind('featureOver', function(e, latlon, pxPos, data) {
-        $(document.body).css('cursor', 'pointer');
-      });
-      layerView.bind('featureOut', function() {
-        $(document.body).css('cursor', 'auto');
-      });
+    }
+
+    if (layerView) {
+      layerView.bind('loading', this.loadingTiles);
+      layerView.bind('load',    this.loadTiles);
     }
 
     return layerView;
 
+  },
+
+  loadingTiles: function() {
+    this.loader.show()
+  },
+
+  loadTiles: function() {
+    this.loader.hide();
   }
 
 });
@@ -20804,6 +23271,16 @@ cdb.vis.Overlay.register('zoom', function(data) {
   });
 
   return zoom.render();
+});
+
+// Tiles loader
+cdb.vis.Overlay.register('loader', function(data) {
+
+  var tilesLoader = new cdb.admin.TilesLoader({
+    template: cdb.core.Template.compile(data.template)
+  });
+
+  return tilesLoader.render();
 });
 
 // Header to show informtion (title and description)
@@ -20891,6 +23368,10 @@ Layers.register('plain', function(vis, data) {
   return new cdb.geo.PlainLayer(data);
 });
 
+Layers.register('background', function(vis, data) {
+  return new cdb.geo.PlainLayer(data);
+});
+
 var cartoLayer = function(vis, data) {
 
   if(data.infowindow && data.infowindow.fields) {
@@ -20917,8 +23398,19 @@ Layers.register('carto', cartoLayer);
 
 (function() {
 
-  function _Promise() {}
-  _.extend(_Promise.prototype,  Backbone.Events);
+  function _Promise() {
+
+  }
+  _.extend(_Promise.prototype,  Backbone.Events, {
+    done: function(fn) {
+      return this.bind('done', fn);
+    }, 
+    error: function(fn) {
+      return this.bind('error', fn);
+    }
+  });
+
+  cdb._Promise = _Promise;
 
   /**
    * compose cartodb url

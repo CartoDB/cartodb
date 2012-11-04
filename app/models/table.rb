@@ -382,9 +382,10 @@ class Table < Sequel::Model(:user_tables)
     data_layer = Layer.new(Cartodb.config[:layer_opts]["data"])
     data_layer.options["table_name"] = self.name
     data_layer.options["user_name"] = self.owner.username
+    data_layer.options["tile_style_history"] << "##{self.name} #{Cartodb.config[:layer_opts]["default_tile_style"]}"
     data_layer.infowindow ||= {}
     data_layer.infowindow['fields'] = self.schema(reload: true)
-      .map { |i| i.first }.select { |k, v|
+      .map { |i| i.first.to_s }.select { |k, v|
         !["the_geom", "updated_at", "created_at"].include?(k.to_s.downcase)
       }
       .each_with_index.map { |column_name, i|
@@ -435,17 +436,27 @@ class Table < Sequel::Model(:user_tables)
         user_database.run(%Q{ALTER TABLE "#{self.name}" ADD COLUMN #{field.to_s} timestamp DEFAULT NOW()})
     end
 
-    if !schema.nil?
+    if schema.present?
       field_type = Hash[schema][field]
       # if column already exists, cast to timestamp value and set default
       if field_type == 'string' && schema.flatten.include?(field)
           #TODO: check type
-          sql = <<-ALTERCREATEDAT
+
+          #if date is in milliseconds
+          begin
+            user_database.run(<<-ALTERCREATEDAT)
               ALTER TABLE "#{self.name}" ALTER COLUMN #{field.to_s} TYPE timestamp without time zone
-              USING to_timestamp(#{field.to_s}, 'YYYY-MM-DD HH24:MI:SS.MS.US'),
-              ALTER COLUMN #{field.to_s} SET DEFAULT now();
-          ALTERCREATEDAT
-          user_database.run(sql)
+              USING to_timestamp(#{field.to_s}::float / 1000);
+            ALTERCREATEDAT
+          #if date is a string
+          rescue
+            user_database.run(<<-ALTERCREATEDAT)
+              ALTER TABLE "#{self.name}" ALTER COLUMN #{field.to_s} TYPE timestamp without time zone
+              USING to_timestamp(#{field.to_s}, 'YYYY-MM-DD HH24:MI:SS.MS.US');
+            ALTERCREATEDAT
+          end
+
+          user_database.run(%Q{ALTER TABLE "#{self.name}" ALTER COLUMN #{field.to_s} SET DEFAULT now();})
       end
     end
   end
@@ -876,14 +887,14 @@ class Table < Sequel::Model(:user_tables)
 
       column_names = user_database[columns_sql_builder].first[:column_names].split(',')
       if the_geom_index = column_names.index("\"#{name}\".the_geom")
-        #if the geometry type of the table is POINT we send the data,
-        #if not we will send an string and will have to be requested on demand
-        if user_database["SELECT type from geometry_columns where f_table_name = '#{name}'
-             and f_geometry_column = 'the_geom'"].first[:type] == "POINT"
-          column_names[the_geom_index] = "ST_AsGeoJSON(the_geom,6) as the_geom"
-        else
-          column_names[the_geom_index] = "'GeoJSON' as the_geom"
-        end
+        column_names[the_geom_index] = <<-STR
+            CASE
+            WHEN GeometryType(the_geom) = 'POINT' THEN
+              ST_AsGeoJSON(the_geom,6)
+            ELSE
+              'GeoJSON'
+            END the_geom
+        STR
       end
       select_columns = column_names.join(',')
 

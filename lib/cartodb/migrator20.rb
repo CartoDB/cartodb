@@ -29,8 +29,9 @@ class Migrator20
           migrated!(table)
         rescue => e
           log "!! Exception on #{table.name}\n#{e.inspect}"
-          @tables_with_errors[table.owner.username] ||= []
-          @tables_with_errors[table.owner.username] << table.name
+          username = table.owner.username rescue ""
+          @tables_with_errors[username] ||= []
+          @tables_with_errors[username] << [table.name, e]
         end      
       end
     end
@@ -80,8 +81,8 @@ class Migrator20
       $tables_metadata.get("map_style|#{table.database_name}|#{table.name}")
     )['style'] rescue nil
 
-    infowindow_fields = infowindow_metadata.select { |k,v| v.to_s == "true" && !['created_at', 'updated_at', 'the_geom'].include?(k) }
-    infowindow_fields = table.schema(reload: true).map { |i| i.first }.select { |k, v|
+    infowindow_fields = infowindow_metadata.select { |k,v| v.to_s == "true" && !['created_at', 'updated_at', 'the_geom'].include?(k) }.map {|k,v| k }
+    infowindow_fields = table.schema(reload: true).map { |i| i.first.to_s }.select { |k, v|
       !["the_geom", "updated_at", "created_at"].include?(k.to_s.downcase)
     } if infowindow_fields.blank?
     data_layer.infowindow = {

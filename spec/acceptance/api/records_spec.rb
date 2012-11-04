@@ -18,7 +18,7 @@ feature "API 1.0 records management" do
     CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "select", any_parameters).times(3)
     
     10.times do
-      @table.insert_row!({:name => String.random(10), :description => String.random(50), :the_geom => %Q{\{"type":"Point","coordinates":[#{Float.random_longitude},#{Float.random_latitude}]\}}})
+      @table.insert_row!({:name => String.random(10), :description => String.random(50), :the_geom => %Q{\{"type":"Point","coordinates":[40.392949,-3.69084]\}}})
     end
 
     content = @user.run_query("select * from \"#{@table.name}\"")[:rows]
@@ -32,7 +32,7 @@ feature "API 1.0 records management" do
         should == content[0].slice(:cartodb_id, :name, :location, :description)
       response.body[:rows][1].symbolize_keys.slice(:cartodb_id, :name, :location, :description).
         should == content[1].slice(:cartodb_id, :name, :location, :description)
-      response.body[:rows][1]["the_geom"].should == "GeoJSON"
+      response.body[:rows][1]["the_geom"].should == "{\"type\":\"Point\",\"coordinates\":[40.392949,-3.69084]}"
     end
 
     get_json api_table_records_url(@table.name, :rows_per_page => 2, :page => 1) do |response|

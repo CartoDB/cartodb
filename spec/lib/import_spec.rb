@@ -21,6 +21,20 @@ describe CartoDB::Importer do
       results[0].import_type.should   == '.csv'
       errors.length.should            == 0
     end
+    
+    it "should correctly handle encodings" do
+      importer = create_importer 'clubbing_export.zip', 'fucked_encoding'
+      results, errors   = importer.import!
+
+      # Assertions
+      results.length.should           == 1
+      results[0].name.should          == 'fucked_encoding'
+      results[0].rows_imported.should == 1998
+      results[0].import_type.should   == '.csv'
+      errors.length.should            == 0
+      @db.select(:artistas).from(:fucked_encoding).all.first[:artistas].should be == 'MisteriosonorA + Dj Bombín'
+    end
+    
     it "should remove the table from the database if an exception happens" do
       importer = create_importer 'empty.csv'
       results, errors = importer.import!

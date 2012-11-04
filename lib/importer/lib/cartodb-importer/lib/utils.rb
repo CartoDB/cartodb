@@ -102,8 +102,12 @@ module CartoDB
               `mv -f #{tf.path} #{@path}` if $?.exitstatus == 0
               tf.close!
             elsif !['utf-8'].include?(cd.encoding.to_s.downcase)
-              # Fall back to LATIN1
-              encoding_to_try = "LATIN1"
+              # Fallbacks
+              encoding_to_try = if ["", "ascii"].include?(cd.encoding.to_s)
+                "UTF-8"
+              else
+                cd.encoding.to_s
+              end
             end
           end
 

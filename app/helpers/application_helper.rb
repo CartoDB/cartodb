@@ -23,17 +23,6 @@ module ApplicationHelper
     condition ? 'selected' : ''
   end
 
-  def tag_width(count, min, max)
-    if count >= max
-      "-100"
-    elsif count <= min
-      "-250"
-    else
-      rangeUnit = 130 / (max)
-      -100 - (count * rangeUnit)
-    end
-  end
-
   def paginate(collection)
     return if collection.empty?
     if collection.is_a?(Hash)
@@ -46,42 +35,6 @@ module ApplicationHelper
       end
     end
   end
-
-  def headjs_include_tag(*sources)
-    sources.unshift("environments/#{Rails.env}.js")
-    keys = []
-    coder = HTMLEntities.new
-    content_tag :script, { :type => Mime::JS }, false do
-      "head.js( #{javascript_include_tag(*sources).scan(/src="([^"]+)"/).flatten.map { |src|
-        src = coder.decode(src)
-        key = URI.parse(src).path[%r{[^/]+\z}].gsub(/\.js$/,'').gsub(/\.min$/,'')
-        while keys.include?(key) do
-          key += '_' + key
-        end
-        keys << key
-        "{ '#{key}': '#{src}' }"
-      }.join(', ')} );".html_safe
-    end
-  end
-
-
-  def disk_usage_class(usage)
-    result = ''
-    result << if usage < 74
-      "fine"
-    elsif usage >= 74 && usage < 95
-      "be_careful"
-    else
-      "boom"
-    end
-  end
-
-  # capped percent indicator
-  def disk_usage_percent(usage, quota)
-    return 100 if usage > quota
-    (usage / quota) * 100
-  end
-
 
   def last_blog_posts
     # Data generated from Rake task in lib/tasks/blog.rake
@@ -117,4 +70,37 @@ module ApplicationHelper
   def stringified_member_type
     current_user.present? ? current_user.account_type.to_s.upcase : 'UNAUTHENTICATED'
   end
+
+  ##
+  # Checks that the precompile list contains this file or raises an error, in dev only
+  # Note: You will need to move config.assets.precompile to application.rb from production.rb
+  def javascript_include_tag *sources
+    raise_on_asset_absence sources
+    super *sources
+  end
+
+  def stylesheet_link_tag *sources
+    raise_on_asset_absence sources
+    super *sources
+  end
+
+  def raise_on_asset_absence *sources
+    sources.each do |source|
+      CartoDB::Logger.info "SOURCE #{source}"
+      next if source == {:media => "all"}
+      raise "Hey, #{source} is not in the precompile list. This will fall apart in production." unless Rails.application.config.assets.precompile.any? do |matcher|
+        if matcher.is_a? Proc
+          matcher.call(source)
+        elsif matcher.is_a? Regexp
+          matcher.match(source)
+        else
+          rx = /(\.css)|(\.js)/
+          [source].flatten.each do |s|
+            matcher.to_s.gsub(rx,'') == s.to_s.gsub(rx,'')
+          end
+        end
+      end
+    end if Rails.env.development?
+  end
+
 end

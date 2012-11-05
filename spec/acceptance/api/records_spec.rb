@@ -114,13 +114,17 @@ feature "API 1.0 records management" do
   scenario "Update a row" do
     CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "update", any_parameters).once
     
-    pk = @table.insert_row!({:name => String.random(10), :description => String.random(50), :the_geom => %Q{\{"type":"Point","coordinates":[#{Float.random_longitude},#{Float.random_latitude}]\}}})
+    pk = @table.insert_row!({:name => String.random(10), :description => String.random(50), :the_geom => %Q{\{"type":"Point","coordinates":[0.966797,55.91843]\}}})
 
     put_json api_table_record_url(@table.name,pk), {
       :name => "Name updated",
-      :description => "Description updated"
+      :description => "Description updated",
+      :the_geom => "{\"type\":\"Point\",\"coordinates\":[-3.010254,55.973798]}"
     } do |response|
       response.status.should == 200
+      response.body[:description].should == "Description updated"
+      response.body[:name].should        == "Name updated"
+      response.body[:the_geom].should    == "{\"type\":\"Point\",\"coordinates\":[-3.010254,55.973798]}"
     end
   end
 

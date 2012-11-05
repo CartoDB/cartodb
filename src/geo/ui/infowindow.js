@@ -143,6 +143,9 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
       that.show(true);
     });
 
+    // Set min height to show the scroll
+    this.minHeightToScroll = 180;
+
     this.render();
     this.$el.hide();
 
@@ -176,10 +179,12 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
       // It needs some time to initialize, if not it doesn't render properly the fields
       var that = this;
       setTimeout(function() {
-        that.$el.find(".cartodb-popup-content").jScrollPane({
-          maintainPosition:       false,
-          verticalDragMinHeight:  20
-        });
+        var actual_height = that.$el.find(".cartodb-popup-content").outerHeight(); 
+        if (that.minHeightToScroll <= actual_height)
+          that.$el.find(".cartodb-popup-content").jScrollPane({
+            maintainPosition:       false,
+            verticalDragMinHeight:  20
+          });
       },1)
     }
     return this;

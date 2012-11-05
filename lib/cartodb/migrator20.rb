@@ -67,7 +67,7 @@ class Migrator20
 
   def migrate_table_layers(table)
     map_metadata = JSON.parse($tables_metadata.hget(table.key, 'map_metadata')) rescue {}
-    infowindow_metadata = JSON.parse($tables_metadata.hget(key, 'infowindow')) rescue {}
+    infowindow_metadata = JSON.parse($tables_metadata.hget(table.key, 'infowindow')) rescue {}
 
     
     # Data layer setup

@@ -266,7 +266,7 @@
         width:100%;
         border:none;
         background:white;
-        z-index:0;
+        // z-index:1;
 
         tr.empty_table {
         }
@@ -456,16 +456,16 @@
       }
 
       div.float_info, div.float_action {
-        @include inline-block();
-        background: image-url('layout/loading_page_static.png') no-repeat 0 0;
         position:fixed;
+        @include inline-block();
         left:50%;
-        z-index:-1;
-        margin:0 0 0 -120px;
-        padding:0 0 0 45px;
         width:195px;
         height:36px;
+        margin:0 0 0 -120px;
+        padding:0 0 0 45px;
+        background: image-url('layout/loading_page_static.png') no-repeat 0 0;
         vertical-align:top;
+        z-index:-1;
 
         h5 {display:block; color:#7B7B7B; font-size:15px; line-height:normal;}
         p {display:block; font-size:13px;}

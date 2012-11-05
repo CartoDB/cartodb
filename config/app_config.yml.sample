@@ -32,6 +32,7 @@ defaults: &defaults
                   "tiler_port", "tiler_protocol", "sql_domain", "sql_port", 
                   "sql_protocol", "extra_params", "cdn_url", "table_name", 
                   "user_name"]
+    default_tile_style: "{\n   marker-fill: #FF6600;\n   marker-opacity: 1;\n   marker-width: 8;\n   marker-line-color: white;\n   marker-line-width: 3;\n   marker-line-opacity: 0.9;\n   marker-placement: point;\n   marker-type: ellipse;\n   marker-allow-overlap: true;\n}"
     data:
       kind: "carto"
       options:

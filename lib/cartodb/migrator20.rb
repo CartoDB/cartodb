@@ -82,9 +82,11 @@ class Migrator20
     )['style'] rescue nil
 
     infowindow_fields = infowindow_metadata.select { |k,v| v.to_s == "true" && !['created_at', 'updated_at', 'the_geom'].include?(k) }.map {|k,v| k }
-    infowindow_fields = table.schema(reload: true).map { |i| i.first.to_s }.select { |k, v|
-      !["the_geom", "updated_at", "created_at"].include?(k.to_s.downcase)
-    } if infowindow_fields.blank?
+    infowindow_fields = table.schema(reload: true).map { |field| 
+      if !["the_geom", "updated_at", "created_at"].include?(field.first.to_s.downcase) && !(field[1].to_s =~ /^geo/)
+        field.first.to_s
+      end
+    }.compact if infowindow_fields.blank?
     data_layer.infowindow = {
       "fields"         => infowindow_fields
                             .each_with_index

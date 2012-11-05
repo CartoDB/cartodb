@@ -1,8 +1,6 @@
 /*
  * CSS Styles that are needed by jScrollPane for it to operate correctly.
  *
- * Include this stylesheet in your site or copy and paste the styles below into your stylesheet - jScrollPane
- * may not operate correctly without them.
  */
 
 .jspContainer
@@ -12,8 +10,6 @@
   outline: none;
 }
 
-
-
 .jspContainer * {
   outline: none;
 }
@@ -21,6 +17,7 @@
 .jspPane
 {
   position: absolute;
+  padding:4px 0 0 0!important;
   z-index:1;
 }
 
@@ -854,7 +851,7 @@ div.header.yellow h1 a:hover {
     height:auto;
     max-height:185px;
     margin: 0;
-    padding: 5px 0 0 0;
+    padding: 0;
     overflow-y: auto;
     overflow-x: hidden!important;
     outline: none;

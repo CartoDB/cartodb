@@ -55,7 +55,11 @@ div.map {
         letter-spacing:0;
         overflow:hidden;
 
+        &.selected {
+          a:before { border: 1px solid rgba(0,0,0, 0.5); }
+        }
 
+        &:hover { @include box-shadow(0px 0px 3px #CCC); }
 
         a {
           position:relative;
@@ -66,6 +70,13 @@ div.map {
           background-position:-22px -22px;//!important;
           @include border-radius(4px);
           @include text-indent();
+
+          &:hover {
+            cursor:pointer;
+
+            &:before { border: 1px solid rgba(0,0,0, 0.5); }
+            span.remove_layer { display: block; }
+          }
 
           span.color {
             position:absolute;
@@ -145,16 +156,6 @@ div.map {
             @include border-radius(4px);
           }
 
-          &:hover {
-            cursor:pointer;
-            &:before {
-              border:1px solid rgba(#999999,1);
-            }
-            span.remove_layer {
-              display: block;
-            }
-          }
-
           &.mapbox_graphite {
             background-size:auto;
             @include icons-sprite(gmaps_gray_roadmap);
@@ -178,6 +179,11 @@ div.map {
           &.gmaps_satellite {
             background-size:auto;
             @include icons-sprite(gmaps_satellite);
+          }
+
+          &.gmaps_hybrid {
+            background-size:auto;
+            @include icons-sprite(gmaps_hybrid);
           }
 
           // Add new base map
@@ -251,11 +257,6 @@ div.map {
           } // a.add
         } // a
 
-        &.selected a{
-          border: 1px solid rgba(0,0,0, 0.5);
-          width: 42px;
-          height: 42px;
-        }
       }
     }
   }
@@ -272,12 +273,23 @@ div.map {
     z-index:1;
   }
 
+  // Zoom in core map
   div#zoom {top:65px;}
 
-  div#tiles_loader div.loader{
+  // Tiler in core map
+  div#tiles_loader div.loader {
     top:135px;
   }
 
+  // Search box in core map
+  div.search_box {
+    position:relative;
+    float:right;
+    top:65px;
+    right:58px;
+  }
+
+  // Public map
   div#map.public {
     top: 55px;
     border-top:1px solid #999999;

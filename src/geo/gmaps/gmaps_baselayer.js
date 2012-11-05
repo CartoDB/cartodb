@@ -1,7 +1,7 @@
 
 (function() {
 
-if(typeof(google) == "undefined" || typeof(google.maps) == "undefined") 
+if(typeof(google) == "undefined" || typeof(google.maps) == "undefined")
   return;
 
 var GMapsBaseLayerView = function(layerModel, gmapsMap) {
@@ -17,6 +17,7 @@ _.extend(
     var types = {
       "roadmap":      google.maps.MapTypeId.ROADMAP,
       "gray_roadmap": google.maps.MapTypeId.ROADMAP,
+      "hybrid":       google.maps.MapTypeId.HYBRID,
       "satellite":    google.maps.MapTypeId.SATELLITE,
       "terrain":      google.maps.MapTypeId.TERRAIN
     };

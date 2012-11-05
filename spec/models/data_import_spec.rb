@@ -103,4 +103,19 @@ describe DataImport do
     table = Table.filter(:name => 'clubbing').first
     table.records.count.should be == 4
   end
+
+  it "don't touch created_at/updated_at fields if already present in the imported file" do
+    DataImport.create(
+      :user_id       => @user.id,
+      :data_source   => '/../db/fake_data/created_at_update_at_fields_present.csv',
+      :updated_at    => Time.now )
+
+    table = Table.all.last
+
+    table.records[:rows].first[:created_at].to_s.should == Time.at(1351698386234 / 1000).to_s
+    table.records[:rows].first[:updated_at].to_s.should == Time.at(1351698386234 / 1000).to_s
+    table.records[:rows].last[:created_at].to_s.should  == Time.at(1351698390354 / 1000).to_s
+    table.records[:rows].last[:updated_at].to_s.should  == Time.at(1351698390354 / 1000).to_s
+
+  end
 end

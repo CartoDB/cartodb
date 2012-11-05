@@ -382,7 +382,7 @@ class Table < Sequel::Model(:user_tables)
     data_layer = Layer.new(Cartodb.config[:layer_opts]["data"])
     data_layer.options["table_name"] = self.name
     data_layer.options["user_name"] = self.owner.username
-    data_layer.options["tile_style_history"] << "##{self.name} #{Cartodb.config[:layer_opts]["default_tile_style"]}"
+    data_layer.options["tile_style"] = "##{self.name} #{Cartodb.config[:layer_opts]["default_tile_style"]}"
     data_layer.infowindow ||= {}
     data_layer.infowindow['fields'] = self.schema(reload: true).map { |field|
         if !["the_geom", "updated_at", "created_at"].include?(field.first.to_s.downcase) && !(field[1].to_s =~ /^geo/)

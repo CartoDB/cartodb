@@ -102,26 +102,9 @@
   &.geometry_dialog {
     textarea.error, input.error {border-color:rgba(red,0.5);}
 
-
     .selector {
       display: none;
       width: 100%;
-    }
-
-    div.point {
-      margin-bottom: 1em;
-      width: 100%;
-      position: relative;
-
-      span {
-        position: relative;
-        display: inline-block;
-        width: 100%;
-
-        input {
-          float:left;
-        }
-      }
     }
 
     .geoJSON {
@@ -133,7 +116,6 @@
       color: #AAA;
     }
 
-
     div.loader {
       display:block;
       width:100%;
@@ -142,30 +124,36 @@
     }
     div.rest {display:none;}
     div.point {
+      position:relative;
       display:none;
-      width:100%;
+      width:auto;
+      max-width:322px;
       height:30px;
+      margin:10px 0 0 0;
+
+      & > span, & > p {
+        position:relative;
+        display:table-cell;
+        margin:0;
+      }
+
+
       input {
-        position:absolute;
-        top:10px;
-        width:31%;
-        padding:5px 5px 5px 36px;
+        display:block;
         height:19px;
+        min-width:30px;
+        padding:5px 5px 5px 36px;
+        margin:0;
         font-size:15px;
         line-height:19px;
-        border-color:#9E9E9E;
         text-align:right;
-        &.latitude {right:0px; top:-15px;}
-        &.longitude {left:0px; top:0px;}
         &.error {border-color:rgba(red,0.5);}
       }
 
-      p {position:absolute; top:15px; left:50%; margin-left:-3px; font-size:20px;}
+      p {padding:0 5px; font-size:20px;}
 
       label {
-        position:absolute; top:20px; font-style:italic; color:#AAAAAA; z-index:10; font-size:13px;
-        &.latitude {right: 100px; top: -5px;}
-        &.longitude {left:18px; top: 10px;}
+        position:absolute; top:10px; left:8px; font-style:italic; color:#AAAAAA; z-index:10; font-size:13px; pointer-events:none;
       }
     }
   }

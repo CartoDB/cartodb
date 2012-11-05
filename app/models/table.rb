@@ -480,6 +480,7 @@ class Table < Sequel::Model(:user_tables)
 
     # Do not keep track of name changes until table has been saved
     @name_changed_from = self.name if !new? && self.name.present?
+    self.invalidate_varnish_cache
     self[:name] = new_name
   end
 

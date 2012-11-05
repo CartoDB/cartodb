@@ -55,8 +55,6 @@ div.map {
         letter-spacing:0;
         overflow:hidden;
 
-
-
         a {
           position:relative;
           @include inline-block();
@@ -277,12 +275,15 @@ div.map {
     z-index:1;
   }
 
+  // Zoom in core map
   div#zoom {top:65px;}
 
+  // Tiler in core map
   div#tiles_loader div.loader {
     top:135px;
   }
 
+  // Search box in core map
   div.search_box {
     position:relative;
     float:right;
@@ -290,6 +291,7 @@ div.map {
     right:58px;
   }
 
+  // Public map
   div#map.public {
     top: 55px;
     border-top:1px solid #999999;

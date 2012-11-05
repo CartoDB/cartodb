@@ -60,4 +60,28 @@ describe('common', function() {
     expect(t.tiles[1]).toEqual('http://b.tiles.cartocdn.com/rambo/tiles/test/{z}/{x}/{y}.png?');
   });
 
+  it("when use_server_style is true inline styles should not be used", function() {
+    common.options = {
+      tiler_domain:   "cartodb.com",
+      tiler_port:     "8081",
+      tiler_protocol: "http",
+      tile_style:   "TEST",
+      use_server_style: true
+    }
+    var t = common._tileJSON();
+    expect(t.tiles[0].indexOf('style')).toEqual(-1);
+    expect(t.grids[0].indexOf('style')).toEqual(-1);
+
+    common.options = {
+      tile_style:   "TEST",
+      use_server_style: false
+    }
+
+    t = common._tileJSON();
+    expect(t.tiles[0].indexOf('style')).not.toEqual(-1);
+    expect(t.grids[0].indexOf('style')).not.toEqual(-1);
+
+
+  });
+
 });

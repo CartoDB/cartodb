@@ -62,13 +62,14 @@ CartoDBLayerCommon.prototype = {
     if(opts.query) {
       params.sql = opts.query;
     }
-    if(opts.tile_style) {
+    if(opts.tile_style && !opts.use_server_style) {
       params.style = opts.tile_style;
     }
     // style_version is only valid when tile_style is present
-    if(opts.tile_style && opts.style_version) {
+    if(opts.tile_style && opts.style_version && !opts.use_server_style) {
       params.style_version = opts.style_version;
     }
+
     if(ext === 'grid.json') {
       if(opts.interactivity) {
         params.interactivity = opts.interactivity.replace(/ /g, '');

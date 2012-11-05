@@ -275,8 +275,15 @@ div.map {
 
   div#zoom {top:65px;}
 
-  div#tiles_loader div.loader{
+  div#tiles_loader div.loader {
     top:135px;
+  }
+
+  div.search_box {
+    position:relative;
+    float:right;
+    top:65px;
+    right:58px;
   }
 
   div#map.public {

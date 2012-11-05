@@ -254,11 +254,11 @@
 
       // Table body
       tbody {
-        // position:relative;
-        // display:inline-block;
+        position:relative;
         width:100%;
         border:none;
         background:white;
+        z-index:0;
 
         tr.empty_table {
         }
@@ -307,6 +307,7 @@
 
 
         tr {
+          // position:relative;
           width:100%;
           border-top:1px solid #ECECEC;
 
@@ -432,16 +433,15 @@
     }
 
 
-
     // Loaders
     tfoot.page_loader {
       position:relative;
-      z-index:1;
       padding:100px 0;
       border:1px solid #ECECEC;
       border-right:0;
       border-left:0;
       background:white;
+      z-index:-1;
 
       th {
         padding:70px 0;

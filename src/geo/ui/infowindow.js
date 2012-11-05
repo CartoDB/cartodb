@@ -107,8 +107,8 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
 
   events: {
     "click .close":   "_closeInfowindow",
-    "mousedown":      "_stopPropagation",
-    "mouseup":        "_stopPropagation",
+    "mousedown":      "_checkOrigin",
+    "mouseup":        "_checkOrigin",
     "mousewheel":     "_stopPropagation",
     "DOMMouseScroll": "_stopPropagation",
     "dbclick":        "_stopPropagation",
@@ -162,6 +162,16 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
        type: this.model.get('template_type') || 'mustache'
     }).asFunction()
     this.render();
+  },
+
+  _checkOrigin: function(ev) {
+    // If the mouse down come from jspVerticalBar
+    // dont stop the propagation
+    var come_from_scroll = ($(ev.target).closest(".jspVerticalBar").length > 0 );
+    
+    if (!come_from_scroll) {
+      ev.stopPropagation();
+    }
   },
 
   render: function() {

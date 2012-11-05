@@ -55,7 +55,11 @@ div.map {
         letter-spacing:0;
         overflow:hidden;
 
+        &.selected {
+          a:before { border: 1px solid rgba(0,0,0, 0.5); }
+        }
 
+        &:hover { @include box-shadow(0px 0px 3px #CCC); }
 
         a {
           position:relative;
@@ -66,6 +70,13 @@ div.map {
           background-position:-22px -22px;//!important;
           @include border-radius(4px);
           @include text-indent();
+
+          &:hover {
+            cursor:pointer;
+
+            &:before { border: 1px solid rgba(0,0,0, 0.5); }
+            span.remove_layer { display: block; }
+          }
 
           span.color {
             position:absolute;
@@ -143,16 +154,6 @@ div.map {
             background:none;
             border:1px solid rgba(#999999,0.5);
             @include border-radius(4px);
-          }
-
-          &:hover {
-            cursor:pointer;
-            &:before {
-              border:1px solid rgba(#999999,1);
-            }
-            span.remove_layer {
-              display: block;
-            }
           }
 
           &.mapbox_graphite {
@@ -256,11 +257,6 @@ div.map {
           } // a.add
         } // a
 
-        &.selected a{
-          border: 1px solid rgba(0,0,0, 0.5);
-          width: 42px;
-          height: 42px;
-        }
       }
     }
   }

@@ -31,7 +31,7 @@ class Migrator20
           log "!! Exception on #{table.name}\n#{e.inspect}"
           username = table.owner.username rescue ""
           @tables_with_errors[username] ||= []
-          @tables_with_errors[username] << [table.name, e]
+          @tables_with_errors[username] << [table.name, e.inspect]
         end      
       end
     end

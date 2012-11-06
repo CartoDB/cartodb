@@ -87,7 +87,11 @@ class Map < Sequel::Model
   end
 
   def get_map_bounds
-    result = user.in_database.fetch("SELECT ST_XMin(ST_Extent(the_geom)) as minx,ST_YMin(ST_Extent(the_geom)) as miny, ST_XMax(ST_Extent(the_geom)) as maxx,ST_YMax(ST_Extent(the_geom)) as maxy from #{self.tables.first.name} as subq").first
+    begin
+      result = user.in_database.fetch("SELECT ST_XMin(ST_Extent(the_geom)) as minx,ST_YMin(ST_Extent(the_geom)) as miny, ST_XMax(ST_Extent(the_geom)) as maxx,ST_YMax(ST_Extent(the_geom)) as maxy from #{self.tables.first.name} as subq").first
+    rescue Sequel::DatabaseError
+      result = {}
+    end
     
     result[:maxx] = result[:maxx].to_f < DEFAULT_BOUNDS[:minlon] ? DEFAULT_BOUNDS[:minlon] : result[:maxx].to_f > DEFAULT_BOUNDS[:maxlon] ? DEFAULT_BOUNDS[:maxlon] : result[:maxx].to_f
     result[:maxy] = result[:maxy].to_f < DEFAULT_BOUNDS[:minlat] ? DEFAULT_BOUNDS[:minlat] : result[:maxy].to_f > DEFAULT_BOUNDS[:maxlat] ? DEFAULT_BOUNDS[:maxlat] : result[:maxy].to_f

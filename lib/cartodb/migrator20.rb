@@ -60,7 +60,21 @@ class Migrator20
 
     # All previous maps were based on google maps
     map.provider = "googlemaps"
-    map.center = (map_metadata["latitude"].blank? ? "[0, 0]" : "[#{map_metadata["latitude"]},#{map_metadata["longitude"]}]")
+
+    # Copy center from redis, set map bounds if not set there
+    if map_metadata["latitude"].blank? || map_metadata["longitude"].blank?
+      bounds = map.get_map_bounds
+
+      long = (bounds[:minx] + bounds[:maxx]) / 2
+      lat  = (bounds[:miny] + bounds[:maxy]) / 2
+      map.center =  "[#{long}, #{lat}]"
+
+      map.view_bounds_sw = nil
+      map.view_bounds_ne = nil
+    else
+      map.center = "[#{map_metadata["latitude"]},#{map_metadata["longitude"]}]"
+    end
+
     map.zoom = (map_metadata["zoom"].blank? ? 2 : map_metadata["zoom"])
     map.save
   end

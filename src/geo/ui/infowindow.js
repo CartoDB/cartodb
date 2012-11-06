@@ -187,9 +187,10 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
       
       // Hello jscrollpane hacks!
       // It needs some time to initialize, if not it doesn't render properly the fields
+      // Check the height of the content + the header if exists
       var that = this;
       setTimeout(function() {
-        var actual_height = that.$el.find(".cartodb-popup-content").outerHeight(); 
+        var actual_height = that.$el.find(".cartodb-popup-content").outerHeight() + that.$el.find(".cartodb-popup-header").outerHeight();
         if (that.minHeightToScroll <= actual_height)
           that.$el.find(".cartodb-popup-content").jScrollPane({
             maintainPosition:       false,

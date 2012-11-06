@@ -265,11 +265,9 @@
         //position:relative;
         width:100%;
         border:none;
-        background:white;
         z-index:1;
 
-        tr.empty_table {
-        }
+        tr.empty_table {}
 
         tr.placeholder, tr.placeholder td {
           height: 40px;
@@ -318,6 +316,8 @@
           // position:relative;
           width:100%;
           border-top:1px solid #ECECEC;
+          background:white;
+          -moz-transform: translateZ(10px);
 
           &:first-child {
             border-top:none;
@@ -356,6 +356,7 @@
               text-overflow: ellipsis;
               white-space: nowrap;
               font-size:13px;
+
               &.disabled {
                 color: #AAA;
               }
@@ -450,7 +451,6 @@
 
     // Loaders
     tfoot.page_loader {
-      //position:relative;
       padding:100px 0;
       border:1px solid #ECECEC;
       border-right:0;
@@ -474,7 +474,7 @@
         background: image-url('layout/loading_page_static.png') no-repeat 0 0;
         vertical-align:top;
         -moz-transform:translateZ(-10px);
-        z-index:-1;
+        z-index:-10;
 
         h5 {display:block; color:#7B7B7B; font-size:15px; line-height:normal;}
         p {display:block; font-size:13px;}
@@ -503,7 +503,7 @@
 
       &.active {
         div.float_info {display:none;}
-        div.float_action {display:block; background: image-url('layout/loading_page_animation.gif') no-repeat 0 0;}
+        div.float_action {@include inline-block(); background: image-url('layout/loading_page_animation.gif') no-repeat 0 0;}
       }
     }
   }
@@ -572,7 +572,36 @@
 }
 
 
-
+// Hello hacks for Firefox in the table...
+@-moz-document url-prefix() {
+  table tbody tr {
+    background:none!important;
+    overflow:hidden;
+  }
+  table tbody tr td {
+    overflow:hidden;
+  }
+  table tbody tr td div.cell {
+    width:100%;
+    background:white;
+  }
+  table tbody tr:hover + tr td div.cell {
+    background:none!important;
+  }
+  table tbody tr:hover td div.cell {
+    background:#E8F9EC!important;
+  }
+  table tbody tr:hover td.rowHeader {
+    background:#E8F9EC!important; 
+  }
+  table tbody tr:hover td.rowHeader div.cell {
+    background:linear-gradient(#fafafa, #e8e8e8)!important;
+    padding-bottom:0px!important;
+  }
+  table tbody tr:hover td.rowHeader div.cell:hover {
+    background:linear-gradient(#fafafa, #e3d3e3)!important;
+  }
+}
 
 
 /* keyframes for animation;  simple 0 to 360 */

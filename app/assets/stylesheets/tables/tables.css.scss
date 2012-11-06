@@ -220,8 +220,6 @@
                 display:block;
                 width:100%;
 
-
-
                 h3 {
                   @include inline-block();
                   width:auto;
@@ -232,7 +230,7 @@
                   vertical-align:middle;
 
                   a {
-                    max-width: 285px;
+                    max-width: 280px;
                     padding:0 1px 0 0;
                     margin:0;
                     vertical-align:top;

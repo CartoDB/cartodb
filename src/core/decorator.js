@@ -21,10 +21,13 @@ cdb.decorators.elder = (function() {
           // another call to elder (super), we need to provide a way of
           // redirecting to the grandparent
           this.parent = this.parent.parent;
+          var options = Array.prototype.slice.call(arguments, 1);
+
           if (currentParent.hasOwnProperty(method)) {
               result = currentParent[method].apply(this, options);
           } else {
-              result = currentParent.elder.call(this, method, options);
+              options.splice(0,0, method);
+              result = currentParent.elder.apply(this, options);
           }
           this.parent = currentParent;
       }
@@ -37,7 +40,8 @@ cdb.decorators.elder = (function() {
       child.prototype.elder = function(method) {
           var options = Array.prototype.slice.call(arguments, 1);
           if (method) {
-              return superMethod.call(this, method, options);
+              options.splice(0,0, method)
+              return superMethod.apply(this, options);
           } else {
               return child.prototype.parent;
           }

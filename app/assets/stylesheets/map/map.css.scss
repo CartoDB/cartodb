@@ -34,10 +34,12 @@ div.map {
     right:57px;
     @include inline-block();
     padding:8px 20px 8px 30px;
-    @include background(linear-gradient(rgba(#F2F2F2,0.01), rgba(#F2F2F2,0.2) 15%));
     z-index:50;
 
-    a {float:left;}
+    a {
+      float:left;
+      @include box-shadow(rgba(white,1) 0 0 8px 5px);
+    }
   }
 
   div.base_maps {

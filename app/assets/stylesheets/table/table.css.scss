@@ -262,11 +262,11 @@
 
       // Table body
       tbody {
-        position:relative;
+        //position:relative;
         width:100%;
         border:none;
         background:white;
-        // z-index:1;
+        z-index:1;
 
         tr.empty_table {
         }
@@ -370,7 +370,9 @@
               position:relative;
 
               & > div.row_header {
+                //position:relative;
                 @include border-radius(3px);
+                background:#FAFAFA;
                 @include background(linear-gradient(#FAFAFA,#E8E8E8));
                 display:none;
                 margin:10px;
@@ -378,30 +380,35 @@
                 width:12px;
                 height:12px;
                 border:1px solid #999999;
-                background:#FAFAFA;
 
                 &:before {
+                  position:relative;
                   @include opacity(1);
-                  position:absolute;
-                  top:20px;
-                  left:15px;
+                  top:9px;
+                  left:4px;
                   width:0;
                   height:0;
                   border-top:3px solid #666666;
                   border-right:2px solid transparent;
                   border-left:2px solid transparent;
-                  content:' ';
+                  content:'';
+                  z-index:1;
+                  line-height:16px;
+                }
+
+                &:after {
+                  display:none;
                 }
 
                 &:hover {
-                  @include background(linear-gradient(#FAFAFA,#E3D3E3));
                   background:#E8E8E8;
+                  @include background(linear-gradient(#FAFAFA,#E3D3E3));
                   cursor:pointer;
                 }
 
                 &:active {
+                  background:#E3D3E3;                  
                   @include background(linear-gradient(#E3D3E3,#FAFAFA));
-                  background:#E3D3E3;
                 }
               }
 
@@ -443,13 +450,14 @@
 
     // Loaders
     tfoot.page_loader {
-      position:relative;
+      //position:relative;
       padding:100px 0;
       border:1px solid #ECECEC;
       border-right:0;
       border-left:0;
       background:white;
       z-index:-1;
+      -moz-transform: translateZ(-10px); /* Hack for Firefox, page loaders are always on top */
 
       th {
         padding:70px 0;
@@ -465,6 +473,7 @@
         padding:0 0 0 45px;
         background: image-url('layout/loading_page_static.png') no-repeat 0 0;
         vertical-align:top;
+        -moz-transform:translateZ(-10px);
         z-index:-1;
 
         h5 {display:block; color:#7B7B7B; font-size:15px; line-height:normal;}

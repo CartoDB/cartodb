@@ -119,7 +119,7 @@
           }
 
           &:hover {color:white}
-          &.selected {color:#264565; text-shadow:0 1px rgba(white,0.4); &:hover {text-decoration:none; cursor:default;} &:after {color:rgba(#264565,0.5);} &:before {border-top-color:#264565;}}
+          &.selected {color:#264565; text-shadow:0 1px rgba(white,0.25); &:hover {text-decoration:none; cursor:default;} &:after {color:rgba(#264565,0.5);} &:before {border-top-color:#264565;}}
           &:focus {outline:none; text-decoration:underline;}
 
           &.rounded_white {text-shadow:none; &:hover {color:#333333;}}

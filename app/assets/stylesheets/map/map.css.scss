@@ -296,8 +296,12 @@ div.map {
     top: 55px;
     border-top:1px solid #999999;
     div#zoom {top: 0px;}
-    div#tiles_loader div.loader{
+    div#tiles_loader div.loader {
       top:135px - 65px;
+    }
+    div.search_box{
+      top: 0px;
+      left: 0px;
     }
   }
 

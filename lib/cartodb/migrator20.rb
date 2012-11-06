@@ -95,12 +95,23 @@ class Migrator20
       $tables_metadata.get("map_style|#{table.database_name}|#{table.name}")
     )['style'] rescue nil
 
-    infowindow_fields = infowindow_metadata.select { |k,v| v.to_s == "true" && !['created_at', 'updated_at', 'the_geom'].include?(k) }.map {|k,v| k }
-    infowindow_fields = table.schema(reload: true).map { |field| 
-      if !["the_geom", "updated_at", "created_at"].include?(field.first.to_s.downcase) && !(field[1].to_s =~ /^geo/)
-        field.first.to_s
-      end
-    }.compact if infowindow_fields.blank?
+    # First, try to read infowindow fields from Redis
+    infowindow_fields = infowindow_metadata.select { |k,v| 
+      v.to_s == "true" && !['created_at', 'updated_at', 'the_geom'].include?(k) 
+    }.map {|k,v| k }
+    
+    # Fill with default infowindow fields if ge got nothing before
+    if infowindow_fields.blank?
+      infowindow_fields = table.schema(reload: true).map { |field| 
+        if !["the_geom", "updated_at", "created_at"].include?(field.first.to_s.downcase) && !(field[1].to_s =~ /^geo/)
+          field.first.to_s
+        end
+      }.compact 
+    end
+
+    # Remove all fields only when all fields have been marked as not included
+    infowindow_fields = [] if (infowindow_metadata.present? && infowindow_metadata.all? { |k,v| v == false })
+
     data_layer.infowindow = {
       "fields"         => infowindow_fields
                             .each_with_index

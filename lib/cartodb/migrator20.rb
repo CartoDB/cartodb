@@ -67,7 +67,7 @@ class Migrator20
 
       long = (bounds[:minx] + bounds[:maxx]) / 2
       lat  = (bounds[:miny] + bounds[:maxy]) / 2
-      map.center =  "[#{long}, #{lat}]"
+      map.center =  "[#{lat}, #{long}]"
 
       map.view_bounds_sw = nil
       map.view_bounds_ne = nil

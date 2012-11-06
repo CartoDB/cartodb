@@ -77,12 +77,12 @@
      */
     save: function(opt1, opt2) {
       var self = this;
-      this.trigger('saving');
+      if(!opt2 || !opt2.silent) this.trigger('saving');
       $promise = Backbone.Model.prototype.save.call(this, opt1, opt2);
       $.when($promise).done(function() {
-        self.trigger('saved');
+        if(!opt2 || !opt2.silent) self.trigger('saved');
       }).fail(function() {
-        self.trigger('errorSaving')
+        if(!opt2 || !opt2.silent) self.trigger('errorSaving')
       })
       return $promise;
     }

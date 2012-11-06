@@ -257,7 +257,7 @@ cdb.ui.common.Table = cdb.core.View.extend({
       }
     });
     tr.bind('changeRow', this.rowChanged);
-    tr.bind('syncRow', this.rowSynched);
+    tr.bind('saved', this.rowSynched);
     tr.bind('errorRow', this.rowFailed);
     tr.bind('saving', this.rowSaving);
     this.retrigger('saving', tr);

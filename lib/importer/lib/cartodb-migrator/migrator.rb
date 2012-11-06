@@ -76,6 +76,7 @@ module CartoDB
       if column_names.include? "the_geom"
         begin
           if srid = @db_connection["select st_srid(the_geom) from #{@suggested_name} limit 1"].first
+            srid = srid[:st_srid] if srid.is_a?(Hash)
             begin
               if srid != 4326
                 @data_import.log_update("transforming the_geom from #{srid} to 4326")

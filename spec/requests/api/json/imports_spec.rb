@@ -209,4 +209,30 @@ describe "Imports API" do
   it 'allows users to get a list of succeeded imports'
   it 'allows users to kill pending imports'
 
+  it 'imports all the sample data' do
+    ["http://cartodb.s3.amazonaws.com/static/stop_frisk_bedford.zip",
+    "http://cartodb.s3.amazonaws.com/static/TM_WORLD_BORDERS_SIMPL-0.3.zip",
+    "http://cartodb.s3.amazonaws.com/static/european_countries.zip",
+    "http://cartodb.s3.amazonaws.com/static/counties_ny.zip",
+    "http://cartodb.s3.amazonaws.com/static/nyc_subway_entrance.zip"].each do |url|
+
+      post v1_imports_url(:host    => 'test.localhost.lan',
+                          :url  => url,
+                          :api_key => @user.get_map_key,
+                          :table_name => "wadus")
+
+
+      response.code.should be == '200'
+
+      response_json = JSON.parse(response.body)
+      response_json.should_not be_nil
+      response_json['item_queue_id'].should_not be_empty
+
+      last_import = DataImport.order(:updated_at.desc).first
+
+      last_import.queue_id.should be == response_json['item_queue_id']
+      last_import.state.should be == 'complete'
+    end
+  end
+
 end

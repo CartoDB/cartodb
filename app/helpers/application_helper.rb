@@ -86,7 +86,6 @@ module ApplicationHelper
 
   def raise_on_asset_absence *sources
     sources.each do |source|
-      CartoDB::Logger.info "SOURCE #{source}"
       next if source == {:media => "all"}
       raise "Hey, #{source} is not in the precompile list. This will fall apart in production." unless Rails.application.config.assets.precompile.any? do |matcher|
         if matcher.is_a? Proc

@@ -259,6 +259,20 @@ describe Table do
       end
     end
 
+    it "should remove varnish cache when the table is renamed" do
+      delete_user_data @user
+      @user.private_tables_enabled = false
+      @user.save
+
+      table = create_table({:name => 'Wadus table', :user_id => @user.id})
+
+      CartoDB::Varnish.any_instance.expects(:purge).with("obj.http.X-Cache-Channel ~ #{table.owner.database_name}:wadus_table_23:vizjson").returns(true)
+      CartoDB::Varnish.any_instance.expects(:purge).with("obj.http.X-Cache-Channel ~ #{table.owner.database_name}:wadus_table_23.*").returns(true)
+      CartoDB::Varnish.any_instance.expects(:purge).with("obj.http.X-Cache-Channel ~ #{table.owner.database_name}:wadus_table.*").returns(true)
+      table.name = 'Wadus table #23'
+      table.save
+    end
+
     it "should store the identifier of its owner when created" do
       table = create_table(:user_id => @user.id)
       $tables_metadata.hget(table.key,"user_id").should == table.user_id.to_s

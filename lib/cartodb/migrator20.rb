@@ -108,7 +108,7 @@ class Migrator20
   end
 
   def already_migrated?(table)
-    $tables_metadata.hget(table.key, 'migrated_to_20').to_s == "true"
+    $tables_metadata.hget(table.key, 'migrated_to_20').to_s == "true" || (table.owner.present? && table.owner.username == "carbon-tool-beta")
   end
 
   def migrated!(table)

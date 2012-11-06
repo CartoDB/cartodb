@@ -382,13 +382,13 @@ class Table < Sequel::Model(:user_tables)
     data_layer = Layer.new(Cartodb.config[:layer_opts]["data"])
     data_layer.options["table_name"] = self.name
     data_layer.options["user_name"] = self.owner.username
-    data_layer.options["tile_style_history"] << "##{self.name} #{Cartodb.config[:layer_opts]["default_tile_style"]}"
+    data_layer.options["tile_style"] = "##{self.name} #{Cartodb.config[:layer_opts]["default_tile_style"]}"
     data_layer.infowindow ||= {}
-    data_layer.infowindow['fields'] = self.schema(reload: true)
-      .map { |i| i.first.to_s }.select { |k, v|
-        !["the_geom", "updated_at", "created_at"].include?(k.to_s.downcase)
-      }
-      .each_with_index.map { |column_name, i|
+    data_layer.infowindow['fields'] = self.schema(reload: true).map { |field|
+        if !["the_geom", "updated_at", "created_at"].include?(field.first.to_s.downcase) && !(field[1].to_s =~ /^geo/)
+          field.first.to_s
+        end
+      }.compact.each_with_index.map { |column_name, i|
         { name: column_name, title: true, position: i+1 }
       }
 
@@ -480,6 +480,7 @@ class Table < Sequel::Model(:user_tables)
 
     # Do not keep track of name changes until table has been saved
     @name_changed_from = self.name if !new? && self.name.present?
+    self.invalidate_varnish_cache
     self[:name] = new_name
   end
 

@@ -79,14 +79,25 @@ class Map < Sequel::Model
 
   def recalculate_bounds!
     begin
-      result = user.in_database.fetch("SELECT ST_XMin(ST_Extent(the_geom)) as minx,ST_YMin(ST_Extent(the_geom)) as miny, ST_XMax(ST_Extent(the_geom)) as maxx,ST_YMax(ST_Extent(the_geom)) as maxy from #{self.tables.first.name} as subq").first
-      result[:maxx] = result[:maxx].to_f < DEFAULT_BOUNDS[:minlon] ? DEFAULT_BOUNDS[:minlon] : result[:maxx].to_f > DEFAULT_BOUNDS[:maxlon] ? DEFAULT_BOUNDS[:maxlon] : result[:maxx].to_f
-      result[:maxy] = result[:maxy].to_f < DEFAULT_BOUNDS[:minlat] ? DEFAULT_BOUNDS[:minlat] : result[:maxy].to_f > DEFAULT_BOUNDS[:maxlat] ? DEFAULT_BOUNDS[:maxlat] : result[:maxy].to_f
-      result[:minx] = result[:minx].to_f < DEFAULT_BOUNDS[:minlon] ? DEFAULT_BOUNDS[:minlon] : result[:minx].to_f > DEFAULT_BOUNDS[:maxlon] ? DEFAULT_BOUNDS[:maxlon] : result[:minx].to_f
-      result[:miny] = result[:miny].to_f < DEFAULT_BOUNDS[:minlat] ? DEFAULT_BOUNDS[:minlat] : result[:miny].to_f > DEFAULT_BOUNDS[:maxlat] ? DEFAULT_BOUNDS[:maxlat] : result[:miny].to_f
+      result = get_map_bounds
       self.update(view_bounds_ne: "[#{result[:maxy]}, #{result[:maxx]}]", view_bounds_sw: "[#{result[:miny]}, #{result[:minx]}]")
     rescue Sequel::DatabaseError => ex
       notify_airbrake(ex)
     end
+  end
+
+  def get_map_bounds
+    begin
+      result = user.in_database.fetch("SELECT ST_XMin(ST_Extent(the_geom)) as minx,ST_YMin(ST_Extent(the_geom)) as miny, ST_XMax(ST_Extent(the_geom)) as maxx,ST_YMax(ST_Extent(the_geom)) as maxy from #{self.tables.first.name} as subq").first
+    rescue Sequel::DatabaseError
+      result = {}
+    end
+    
+    result[:maxx] = result[:maxx].to_f < DEFAULT_BOUNDS[:minlon] ? DEFAULT_BOUNDS[:minlon] : result[:maxx].to_f > DEFAULT_BOUNDS[:maxlon] ? DEFAULT_BOUNDS[:maxlon] : result[:maxx].to_f
+    result[:maxy] = result[:maxy].to_f < DEFAULT_BOUNDS[:minlat] ? DEFAULT_BOUNDS[:minlat] : result[:maxy].to_f > DEFAULT_BOUNDS[:maxlat] ? DEFAULT_BOUNDS[:maxlat] : result[:maxy].to_f
+    result[:minx] = result[:minx].to_f < DEFAULT_BOUNDS[:minlon] ? DEFAULT_BOUNDS[:minlon] : result[:minx].to_f > DEFAULT_BOUNDS[:maxlon] ? DEFAULT_BOUNDS[:maxlon] : result[:minx].to_f
+    result[:miny] = result[:miny].to_f < DEFAULT_BOUNDS[:minlat] ? DEFAULT_BOUNDS[:minlat] : result[:miny].to_f > DEFAULT_BOUNDS[:maxlat] ? DEFAULT_BOUNDS[:maxlat] : result[:miny].to_f
+
+    return result
   end
 end

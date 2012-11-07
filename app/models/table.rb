@@ -28,7 +28,7 @@ class Table < Sequel::Model(:user_tables)
 
   def_dataset_method(:search) do |query|
     conditions = <<-EOS
-      to_tsvector('english', coalesce(name, '') || ' ' || coalesce(description, '')) @@ plainto_tsquery('english', ?) OR name LIKE ?
+      to_tsvector('english', coalesce(name, '') || ' ' || coalesce(description, '')) @@ plainto_tsquery('english', ?) OR name ILIKE ?
       EOS
     where(conditions, query, "%#{query}%")
   end

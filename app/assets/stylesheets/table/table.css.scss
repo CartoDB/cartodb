@@ -97,6 +97,7 @@
             font-size: 13px;
             font-family: $text-fonts;
             text-indent:0;
+            z-index:2;
             @include transform-style("linear");
             @include transition-property("text-indent");
             @include transition-duration(300ms);
@@ -445,6 +446,9 @@
       }
       tbody tr:first-child {
         border-top:1px solid #ECECEC;
+      }
+      thead div.sqlview p {
+        margin-top:-168px;
       }
     }
 

@@ -31,7 +31,7 @@ class Migrator20
           log "!! Exception on #{table.name}\n#{e.inspect}"
           username = table.owner.username rescue ""
           @tables_with_errors[username] ||= []
-          @tables_with_errors[username] << [table.name, e]
+          @tables_with_errors[username] << [table.name, e.inspect]
         end      
       end
     end
@@ -60,7 +60,21 @@ class Migrator20
 
     # All previous maps were based on google maps
     map.provider = "googlemaps"
-    map.center = (map_metadata["latitude"].blank? ? "[0, 0]" : "[#{map_metadata["latitude"]},#{map_metadata["longitude"]}]")
+
+    # Copy center from redis, set map bounds if not set there
+    if map_metadata["latitude"].blank? || map_metadata["longitude"].blank?
+      bounds = map.get_map_bounds
+
+      long = (bounds[:minx] + bounds[:maxx]) / 2
+      lat  = (bounds[:miny] + bounds[:maxy]) / 2
+      map.center =  "[#{lat}, #{long}]"
+
+      map.view_bounds_sw = nil
+      map.view_bounds_ne = nil
+    else
+      map.center = "[#{map_metadata["latitude"]},#{map_metadata["longitude"]}]"
+    end
+
     map.zoom = (map_metadata["zoom"].blank? ? 2 : map_metadata["zoom"])
     map.save
   end
@@ -81,12 +95,23 @@ class Migrator20
       $tables_metadata.get("map_style|#{table.database_name}|#{table.name}")
     )['style'] rescue nil
 
-    infowindow_fields = infowindow_metadata.select { |k,v| v.to_s == "true" && !['created_at', 'updated_at', 'the_geom'].include?(k) }.map {|k,v| k }
-    infowindow_fields = table.schema(reload: true).map { |field| 
-      if !["the_geom", "updated_at", "created_at"].include?(field.first.to_s.downcase) && !(field[1].to_s =~ /^geo/)
-        field.first.to_s
-      end
-    }.compact if infowindow_fields.blank?
+    # First, try to read infowindow fields from Redis
+    infowindow_fields = infowindow_metadata.select { |k,v| 
+      v.to_s == "true" && !['created_at', 'updated_at', 'the_geom'].include?(k) 
+    }.map {|k,v| k }
+    
+    # Fill with default infowindow fields if ge got nothing before
+    if infowindow_fields.blank?
+      infowindow_fields = table.schema(reload: true).map { |field| 
+        if !["the_geom", "updated_at", "created_at"].include?(field.first.to_s.downcase) && !(field[1].to_s =~ /^geo/)
+          field.first.to_s
+        end
+      }.compact 
+    end
+
+    # Remove all fields only when all fields have been marked as not included
+    infowindow_fields = [] if (infowindow_metadata.present? && infowindow_metadata.all? { |k,v| v == false })
+
     data_layer.infowindow = {
       "fields"         => infowindow_fields
                             .each_with_index

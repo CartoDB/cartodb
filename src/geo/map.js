@@ -61,7 +61,7 @@ cdb.geo.GMapsBaseLayer = cdb.geo.MapLayer.extend({
   OPTIONS: ['roadmap', 'satellite', 'terrain', 'custom'],
   defaults: {
     type: 'GMapsBase',
-    base_type: 'roadmap',
+    base_type: 'gray_roadmap',
     style: null
   }
 });
@@ -72,6 +72,8 @@ cdb.geo.GMapsBaseLayer = cdb.geo.MapLayer.extend({
 cdb.geo.PlainLayer = cdb.geo.MapLayer.extend({
   defaults: {
     type: 'Plain',
+    base_type: "plain",
+    className: "plain",
     color: '#FFFFFF'
   }
 });

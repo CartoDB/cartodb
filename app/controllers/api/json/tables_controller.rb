@@ -10,7 +10,8 @@ class Api::Json::TablesController < Api::ApplicationController
 
   def index
     @tables = unless params[:tag_name].blank?
-      tag_name = CGI::unescape(params[:tag_name]).sanitize.tr('_',' ')
+      tag_name = CGI::unescape(params[:tag_name]).sanitize_sql
+
       Table.fetch("select user_tables.*,
                       array_to_string(array(select tags.name from tags where tags.table_id = user_tables.id),',') as tags_names
                           from user_tables, tags

@@ -222,6 +222,10 @@
                   padding:0 10px 0 0;
                   color:#999999;
 
+                  &.disabled {
+                    color: #666666;
+                  }
+
                   &:hover {
                     position:relative;
                     padding:0 10px 0 0;
@@ -248,7 +252,7 @@
             }
           }
         }
-        
+
         // Horizontal movement
         &.horizontal {
           tr th > div > div {
@@ -409,7 +413,7 @@
                 }
 
                 &:active {
-                  background:#E3D3E3;                  
+                  background:#E3D3E3;
                   @include background(linear-gradient(#E3D3E3,#FAFAFA));
                 }
               }
@@ -429,7 +433,7 @@
 
 
     /* PAGINATION ZONE - CAUTION */
-    
+
     // If the user can paginate up (we are removing cells in the process)
     // Let's add some top spacing as well to show the pagination loader ;)
 
@@ -596,7 +600,7 @@
     background:#E8F9EC!important;
   }
   table tbody tr:hover td.rowHeader {
-    background:#E8F9EC!important; 
+    background:#E8F9EC!important;
   }
   table tbody tr:hover td.rowHeader div.cell {
     background:linear-gradient(#fafafa, #e8e8e8)!important;

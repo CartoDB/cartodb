@@ -76,6 +76,10 @@
               font-size:8px;
               line-height:10px;
             }
+
+            &.sql_mod {
+              span.error {top:20px; left:39px;}
+            }
           }
 
         }

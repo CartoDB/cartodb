@@ -158,32 +158,22 @@ div.map {
             @include border-radius(4px);
           }
 
-          &.mapbox_graphite {
+          &.gray_roadmap {
             background-size:auto;
             @include icons-sprite(gmaps_gray_roadmap);
           }
 
-          &.mapbox_warden {
-            background-size:auto;
-            @include icons-sprite(gmaps_gray_roadmap);
-          }
-
-          &.gmaps_gray_roadmap {
-            background-size:auto;
-            @include icons-sprite(gmaps_gray_roadmap);
-          }
-
-          &.gmaps_roadmap {
+          &.roadmap {
             background-size:auto;
             @include icons-sprite(gmaps_roadmap);
           }
 
-          &.gmaps_satellite {
+          &.satellite {
             background-size:auto;
             @include icons-sprite(gmaps_satellite);
           }
 
-          &.gmaps_hybrid {
+          &.hybrid {
             background-size:auto;
             @include icons-sprite(gmaps_hybrid);
           }

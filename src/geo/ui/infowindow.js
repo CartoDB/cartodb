@@ -303,7 +303,6 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
   * Update the position (private)
   */
   _updatePosition: function () {
-
     var
     offset          = this.model.get("offset")
     pos             = this.mapView.latLonToPixel(this.model.get("latlng")),
@@ -327,7 +326,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     var
       x               = this.$el.position().left,
       y               = this.$el.position().top,
-      containerHeight = 280, //this.$el.outerHeight(true),
+      containerHeight = this.$el.outerHeight(true) + 15, // Adding some more space
       containerWidth  = this.$el.width(),
       pos             = this.mapView.latLonToPixel(this.model.get("latlng")),
       adjustOffset    = {x: 0, y: 0};

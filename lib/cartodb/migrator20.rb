@@ -125,6 +125,10 @@ class Migrator20
     base_layer = table.map.base_layers.first
 
     base_layer.kind = 'gmapsbase'
+
+    # Former satellite maps are now hybrid
+    # satellite maps now don't show any labels
+    map_metadata["google_maps_base_type"] = 'hybrid' if map_metadata["google_maps_base_type"] == 'satellite'
     base_layer.options = {
       'style'     => map_metadata["google_maps_customization_style"],
       'base_type' => (map_metadata["google_maps_base_type"].blank? ? 'roadmap' : map_metadata["google_maps_base_type"])

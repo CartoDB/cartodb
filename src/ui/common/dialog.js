@@ -47,6 +47,7 @@ cdb.ui.common.Dialog = cdb.core.View.extend({
     width: 300,
     height: 200,
     clean_on_hide: false,
+    enter_to_confirm: false,
     template_name: 'common/views/dialog_base',
     ok_button_classes: 'button green',
     cancel_button_classes: '',
@@ -61,7 +62,11 @@ cdb.ui.common.Dialog = cdb.core.View.extend({
 
     _.bindAll(this, 'render', '_keydown');
 
+    // Keydown bindings for the dialog
     $(document).bind('keydown', this._keydown);
+
+    // After removing the dialog, cleaning other bindings
+    this.bind("clean", this._reClean);
 
     this.template_base = this.options.template_base ? _.template(this.options.template_base) : cdb.templates.getTemplate(this.options.template_name);
   },
@@ -92,8 +97,12 @@ cdb.ui.common.Dialog = cdb.core.View.extend({
 
 
   _keydown: function(e) {
+    // If clicks esc, goodbye!
     if (e.keyCode === 27) {
       this._cancel();
+    // If clicks enter, same as you click on ok button.
+    } else if (e.keyCode === 13 && this.options.enter_to_confirm) {
+      this._ok();
     }
   },
 
@@ -145,6 +154,12 @@ cdb.ui.common.Dialog = cdb.core.View.extend({
   open: function() {
 
     this.$el.show();
+
+  },
+
+  _reClean: function() {
+
+    $(document).unbind('keydown', this._keydown);
 
   }
 

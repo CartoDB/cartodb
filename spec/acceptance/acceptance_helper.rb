@@ -10,10 +10,11 @@ Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each {|f| require f}
 
 #Capybara.default_driver    = :selenium
 #Capybara.javascript_driver = :poltergeist
-Capybara.javascript_driver = :selenium
+Capybara.default_driver = :selenium
 Capybara.default_host      = Cartodb.hostname
 Capybara.app_host          = Cartodb.hostname
 Capybara.server_port       = 53716
+Capybara.default_wait_time = 5
 
 RSpec.configure do |config|
   config.include Warden::Test::Helpers

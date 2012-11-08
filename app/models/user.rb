@@ -278,7 +278,7 @@ class User < Sequel::Model
       api_calls = JSON.parse(
         open("#{Cartodb.config[:api_requests_service_url]}?username=#{self.username}").read
       ) rescue {}
-      
+
       # Manually set updated_at
       api_calls["updated_at"] = Time.now.to_i
       $users_metadata.HMSET key, 'api_calls', api_calls.to_json
@@ -497,7 +497,6 @@ class User < Sequel::Model
 
   # Cartodb functions
   def load_cartodb_functions
-    puts "Loading functions in db '#{database_name}' (#{username})"
     in_database(:as => :superuser) do |user_database|
       user_database.transaction do
         glob = Rails.root.join('lib/sql/*.sql')

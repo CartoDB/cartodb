@@ -95,12 +95,21 @@ class Migrator20
       $tables_metadata.get("map_style|#{table.database_name}|#{table.name}")
     )['style'] rescue nil
 
+    # Fix for bubblemaps
+    # We have to apply an SQL to bubble maps until Mapnik 2.1.1 is released
+    if data_layer.options['tile_style'].present? && 
+       table.the_geom_type == "multipolygon" &&
+       data_layer.options['tile_style'] =~ /.*marker-placement:\s*point.*/
+      fields = table.schema(:reload => true).map {|i| i.first.to_s } - ["the_geom_webmercator"]
+      data_layer.options['sql'] = "SELECT #{fields.join(',')}, ST_PointOnSurface(the_geom_webmercator) as the_geom_webmercator FROM #{table.name}"
+    end
+
     # First, try to read infowindow fields from Redis
     infowindow_fields = infowindow_metadata.select { |k,v| 
       v.to_s == "true" && !['created_at', 'updated_at', 'the_geom'].include?(k) 
     }.map {|k,v| k }
     
-    # Fill with default infowindow fields if ge got nothing before
+    # Fill with default infowindow fields if we got nothing before
     if infowindow_fields.blank?
       infowindow_fields = table.schema(reload: true).map { |field| 
         if !["the_geom", "updated_at", "created_at"].include?(field.first.to_s.downcase) && !(field[1].to_s =~ /^geo/)
@@ -126,8 +135,7 @@ class Migrator20
 
     base_layer.kind = 'gmapsbase'
 
-    # Former satellite maps are now hybrid
-    # satellite maps now don't show any labels
+    # Former satellite maps are now hybrid (satellite maps now don't show any labels)
     map_metadata["google_maps_base_type"] = 'hybrid' if map_metadata["google_maps_base_type"] == 'satellite'
     base_layer.options = {
       'style'     => map_metadata["google_maps_customization_style"],
@@ -137,7 +145,7 @@ class Migrator20
   end
 
   def already_migrated?(table)
-    $tables_metadata.hget(table.key, 'migrated_to_20').to_s == "true" || (table.owner.present? && table.owner.username == "carbon-tool-beta")
+    $tables_metadata.hget(table.key, 'migrated_to_20').to_s == "true"
   end
 
   def migrated!(table)

@@ -2,234 +2,137 @@
 
 require File.expand_path(File.dirname(__FILE__) + '/acceptance_helper')
 
-feature "Dashboard", %q{
-  In order to allow users to manage their databases
-  As a User
-  I want to be able to visit my databases and manage them
-} do
+feature 'Dashboard' do
 
-  scenario "Login and visit my dashboard" do
-    user = create_user({:quota_in_bytes => 50000000,
-                        :table_quota    => 100,
-                        :account_type   => 'Coronelli',
-                        :private_tables_enabled => true})
-    the_other = create_user({:quota_in_bytes => 50000000,
-                             :table_quota    => 100,
-                             :account_type   => 'Coronelli',
-                             :private_tables_enabled => true})
-    Timecop.travel(6.minutes.ago)
-    20.times do |i|
-      create_table :user_id => user.id, :name => "Table ##{20 - i}", :privacy => Table::PRIVATE, :tags => 'personal'
-    end
-    20.times do |i|
-      create_table :user_id => the_other.id, :name => "Other Table ##{20 - i}", :privacy => Table::PRIVATE, :tags => 'vodka'
-    end
-    Timecop.travel(5.minutes.ago)
-    create_table :user_id => user.id, :name => 'My check-ins', :privacy => Table::PRIVATE,
-                 :tags => "4sq, personal, feed aggregator"
-    Timecop.travel(4.minutes.ago)
-    create_table :user_id => user.id, :name => 'Downloaded movies', :privacy => Table::PRIVATE,
-                 :tags => "movies, personal"
-    Timecop.travel(3.minutes.ago)
-    create_table :user_id => the_other.id, :name => 'Favourite restaurants', :privacy => Table::PRIVATE,
-                 :tags => "restaurants"
-    Timecop.travel(2.minutes.ago)
-    create_table :user_id => the_other.id, :name => 'Secret vodkas', :privacy => Table::PRIVATE,
-                 :tags => "vodka, drinking"
-
-    Timecop.return
-
-    log_in_as user
-
-    within(:css, "header") do
-      page.should have_link("CartoDB")
-    end
-
-    page.should have_css("footer")
-
-    page.should have_css("ul#tablelist")
-
-    peich
-    page.should have_content("22 tables in your account")
-
-    within("ul#tablelist li:eq(1)") do
-      page.should have_link("downloaded_movies")
-      page.should have_content("PRIVATE")
-      # page.should have_content("4 minutes ago")
-      within(:css, "span.tags") do
-        page.should have_content("movies")
-        page.should have_content("personal")
-      end
-    end
-
-    within("ul.your_tables li:eq(2)") do
-      page.should have_link("my_check_ins")
-      page.should have_content("PRIVATE")
-      # page.should have_content("5 minutes ago")
-      within(:css, "span.tags") do
-        page.should have_content("4sq")
-        page.should have_content("personal")
-        page.should have_content("feed aggregator")
-      end
-    end
-
-    within("ul.your_tables li:eq(22).last") do
-      page.should have_link("table_20")
-      page.should have_content("PRIVATE")
-      # page.should have_content("6 minutes ago")
-      within(:css, "span.tags") do
-        page.should have_content("personal")
-      end
-    end
-
-    page.should have_content("BROWSE BY TAGS")
-
-    page.should have_css("ul li:eq(1) a span", :text => "personal")
-    page.should have_css("ul li a span", :text => "4sq")
-    page.should have_css("ul li a span", :text => "feed aggregator")
-    page.should have_css("ul li a span", :text => "movies")
-
-    click_link_or_button('downloaded_movies')
-
-    page.should have_css("h2 a", :text => 'downloaded_movies')
-    page.should have_css("p.status", :text => 'PRIVATE')
-    within(:css, "span.tags") do
-      page.should have_content("movies")
-      page.should have_content("personal")
-    end
-
-    page.should have_no_selector("footer")
-
-    visit '/dashboard'
-    click_link_or_button('log out')
-    page.current_path.should == '/login'
+  background do
+    @user = FactoryGirl.create(:user, :table_quota => 6)
+    @tables = []
+    @tables << FactoryGirl.create(:table, :user_id => @user.id, :tags => 'tag 1, wadus')
+    @tables << FactoryGirl.create(:table, :user_id => @user.id, :tags => 'wadus')
+    @tables << FactoryGirl.create(:table, :user_id => @user.id, :tags => 'tag 2')
+    @tables << FactoryGirl.create(:table, :user_id => @user.id, :tags => 'tag 1, tag 2')
+    @tables << FactoryGirl.create(:table, :user_id => @user.id, :tags => 'tag 2, wadus')
   end
 
-  scenario "Browse by tags" do
-    user = create_user
-    the_other = create_user
-    Timecop.travel(6.minutes.ago)
-    20.times do |i|
-      create_table :user_id => user.id, :name => "Table ##{20 - i}", :privacy => Table::PRIVATE, :tags => 'personal'
-    end
-    20.times do |i|
-      create_table :user_id => the_other.id, :name => "Other Table ##{20 - i}", :privacy => Table::PRIVATE, :tags => 'vodka'
-    end
-    Timecop.travel(5.minutes.ago)
-    create_table :user_id => user.id, :name => 'My check-ins', :privacy => Table::PRIVATE,
-                 :tags => "4sq, personal, feed aggregator"
-    Timecop.travel(4.minutes.ago)
-    create_table :user_id => user.id, :name => 'Downloaded movies', :privacy => Table::PRIVATE,
-                 :tags => "movies"
-    Timecop.travel(3.minutes.ago)
-    create_table :user_id => the_other.id, :name => 'Favourite restaurants', :privacy => Table::PRIVATE,
-                 :tags => "restaurants"
-    Timecop.travel(2.minutes.ago)
-    create_table :user_id => the_other.id, :name => 'Secret vodkas', :privacy => Table::PRIVATE,
-                 :tags => "vodka, drinking"
+  scenario 'allows user to login and see their tables' do
+    log_in_as(@user)
 
-    Timecop.return
+    page.should have_content "Welcome #{@user.username}"
+    page.should have_content '5 tables in your account'
+    page.should have_css 'div.table_info div.left hgroup h3 a', :length => 5
+  end
 
-    log_in_as user
+  scenario 'allows users to browse their tables by tags' do
+    log_in_as(@user)
 
-    within(:css, "header") do
-      page.should have_link("CartoDB")
-      page.should have_content(user.email)
-    end
+    page.should have_content '5 tables in your account'
 
-    page.find("ul li a span", :text => "4sq").click
+    click_on 'wadus'
 
-    page.should have_content("1 table in your account")
+    page.should have_content '3 tables with tag wadus'
 
-    page.should have_css("ul li:eq(1) a", :text => "view all tables")
-    page.should have_css("ul li:eq(2) a span", :text => "personal")
-    page.should have_css("ul li a span", :text => "4sq")
-    page.should have_css("ul li a span", :text => "feed aggregator")
-    page.should have_css("ul li a span", :text => "movies")
+    page.should have_link @tables[0].name
+    page.should have_link @tables[1].name
+    page.should have_link @tables[4].name
 
-    within("ul.your_tables li:eq(1)") do
-      page.should have_link("my_check_ins")
-      page.should have_content("PRIVATE")
-      within(:css, "span.tags") do
-        page.should have_content("4sq")
-      end
+    page.should_not have_link @tables[2].name
+    page.should_not have_link @tables[3].name
+
+    click_on 'tag 1'
+
+    page.should have_content '2 tables with tag tag 1'
+
+    page.should have_link @tables[0].name
+    page.should have_link @tables[3].name
+
+    page.should_not have_link @tables[1].name
+    page.should_not have_link @tables[2].name
+    page.should_not have_link @tables[4].name
+  end
+
+  scenario 'allows users to remove a table' do
+    log_in_as(@user)
+
+    page.should have_content '5 tables in your account'
+
+    within '.table_info' do
+      click_on 'delete'
     end
 
-    page.find("ul li a span", :text => "personal").click
+    expect do
+      click_on 'Delete this table'
+    end.to change{ Table.count }.from(5).to(4)
 
-    page.should have_content("21 tables in your account")
+    page.should have_content '4 tables in your account'
+  end
 
-    within("ul.your_tables li:eq(1)") do
-      page.should have_link("my_check_ins")
-      page.should have_content("PRIVATE")
-      # page.should have_content("5 minutes ago")
-      within(:css, "span.tags") do
-        page.should have_content("4sq")
-        page.should have_content("personal")
-        page.should have_content("feed aggregator")
-      end
-    end
+  scenario 'allows users to create a table with default attributes' do
+    log_in_as(@user)
 
-    within("ul.your_tables li:eq(2)") do
-      page.should have_link("table_1")
-      page.should have_content("PRIVATE")
-    end
+    click_on 'Create a new table'
+
+    click_on 'Start from scratch'
+
+    expect do
+      click_on 'Create table'
+      sleep 3
+    end.to change{ Table.count }.from(5).to(6)
+
+    created_table = Table.all.last
+
+    page.should have_link created_table.name
+
+    current_path.should match table_path(created_table)
+  end
+
+  scenario 'shows users a link to upgrade their accounts' do
+    log_in_as(@user)
+
+    page.should have_content "Hey #{@user.username}, looks like you're about to reach your account limit. Start thinking about upgrading your plan."
+
+    page.should have_link 'upgrading your plan', :href => "http://localhost:3000/account/#{@user.username}/upgrade"
+  end
+
+  scenario 'allows users to obtain their security keys' do
+    log_in_as(@user)
+
+    click_on @user.username
+
+    click_on 'Your API keys'
+
+    page.should have_content 'Your Api key'
+
+    click_on 'Request a new key'
+
+    click_on 'Regenerate Api key'
+
+    page.should have_content @user.get_map_key
+
+    click_on 'OAUTH'
+
+    click_on 'Request a new key'
+
+    click_on 'Regenerate Oauth and secret keys'
+
+    page.should have_content @user.client_application.key
+    page.should have_content @user.client_application.secret
 
   end
 
-  # TODO: implement it
-  # scenario "Remove a table" do
-  #   user = create_user
-  #   create_table :user_id => user.id, :name => 'My check-ins', :privacy => Table::PUBLIC,
-  #                :tags => "4sq, personal, feed aggregator"
-  #   create_table :user_id => user.id, :name => 'Downloaded movies', :privacy => Table::PRIVATE,
-  #                :tags => "movies, personal"
-  #
-  #   log_in_as user
-  #
-  #   # debugger
-  #
-  #   page.driver.browser.execute_script("$('ul.your_tables li:eq(1)').trigger('mouseover')")
-  #   page.find("ul.your_tables li a.delete").click
-  #
-  #   page.find("div.delete_window a.cancel").click
-  #   # page.find("ul.your_tables li:eq(1) p.status").click
-  #   page.find("ul.your_tables li:eq(1) a.delete").click
-  #   page.find("ul.your_tables li:eq(1) a.confirm_delete").click
-  # end
+  scenario 'allows users to create a table from a imported file'
 
-  scenario "Create a new table with default attributes" do
-    user = create_user
+  scenario 'allows users to create a table from a URL pointing to a data file'
 
-    log_in_as user
+  scenario 'allows to import a previously exported table as SHP (.zip extension)'
 
-    page.find('a.new_table').click
-    page.find('div.create_window span.bottom input#create_table').click
+  scenario 'allows to import a previously exported table as SHP (.tgz extension)'
 
-    page.should have_css("h2 a", :text => 'untitled_table')
-  end
+  scenario 'allows to import a previously exported table as SHP (.tar.gz extension)'
 
-  scenario "Get OAuth credentials" do
-    user = create_user
+  scenario 'allows to import a previously exported table as CSV'
 
-    log_in_as user
+  scenario 'allows to import a previously exported table as KML'
 
-    click "Your api keys"
-    page.should have_content("Using the key and secret you can access CartoDB from external applications.")
-
-    within("span.form_block") do
-      page.should have_content("CONSUMER KEY")
-      page.should have_css("input[@value='#{user.client_application.key}']")
-    end
-
-    within("span.form_block.last") do
-      page.should have_content("CONSUMER SECRET")
-      page.should have_css("input[@value='#{user.client_application.secret}']")
-    end
-
-    old_key = user.client_application.key
-    page.find("span.end_key a.submit").click
-    user.reload
-  end
+  scenario 'allows to import a previously exported table as SQL'
 
 end

@@ -149,7 +149,6 @@ CartoDBLayerCommon.prototype = {
       method: "get",
       url: grid_url,
       crossDomain: true,
-      dataType: 'json',
       success: function() {
         self.tilesOk();
         clearTimeout(timeout)

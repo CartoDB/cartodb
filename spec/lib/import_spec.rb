@@ -517,8 +517,9 @@ describe CartoDB::Importer do
       results[0].name.should          == 'cartodb_query'
       results[0].rows_imported.should == 46
       results[0].import_type.should   == '.csv'
-      errors.length.should            == 0
 
+      @db.schema(results[0].name).map {|i| i.first }.should_not include(:invalid_the_geom)
+      errors.length.should            == 0
     end
 
     it "can import shp files" do
@@ -589,11 +590,7 @@ describe CartoDB::Importer do
     # build importer
     CartoDB::Importer.new opts.reverse_merge(@db_opts)
   end
-  def check_schema(table, expected_schema, options={})
-    table_schema = table.schema(:cartodb_types => options[:cartodb_types] || false)
-    schema_differences = (expected_schema - table_schema) + (table_schema - expected_schema)
-    schema_differences.should be_empty, "difference: #{schema_differences.inspect}"
-  end
+
   def get_data_import_id()
     @data_import  = DataImport.new(:user_id => 0)
     @data_import.updated_at = Time.now

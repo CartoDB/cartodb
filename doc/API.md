@@ -25,6 +25,7 @@ This library allows you to use visualizations created on [CartoDB](http://cartod
 
 ## SQL
   - execute(sql, vars, options, callback)
+  - getBounds(sql [,vars][, options][, callback])
 
 
 

@@ -351,8 +351,12 @@
           td {
             border-right:1px solid #ECECEC;
             border-left:1px solid #ECECEC;
-            cursor: pointer;
+            &:not(.row_header) {
+              div.cell:not(.disabled) {
+                cursor: pointer;
+              }
 
+            }
             div.cell {
               @include inline-block();
               overflow: hidden;

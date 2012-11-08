@@ -351,6 +351,7 @@
           td {
             border-right:1px solid #ECECEC;
             border-left:1px solid #ECECEC;
+            cursor: pointer;
 
             div.cell {
               @include inline-block();
@@ -362,6 +363,7 @@
               text-overflow: ellipsis;
               white-space: nowrap;
               font-size:13px;
+
 
               &.disabled {
                 color: #AAA;

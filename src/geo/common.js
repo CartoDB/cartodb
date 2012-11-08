@@ -142,7 +142,7 @@ CartoDBLayerCommon.prototype = {
       , img = new Image()
       , urls = this._tileJSON()
 
-    var grid_url = urls.grids[0].replace(/\{z\}/g,xyz.z).replace(/\{x\}/g,xyz.x).replace(/\{y\}/g,xyz.y);
+    var grid_url = urls.tiles[0].replace(/\{z\}/g,xyz.z).replace(/\{x\}/g,xyz.x).replace(/\{y\}/g,xyz.y);
 
 
     $.ajax({

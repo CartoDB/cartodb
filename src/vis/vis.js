@@ -103,12 +103,23 @@ var Vis = cdb.core.View.extend({
       width: '100%',
       height: '100%'
     });
-    this.$el.append(div);
-    var mapView = new cdb.geo.MapView.create(div, map);
-    this.map = map;
-    this.mapView = mapView;
 
-    // overlays
+    // Another div to prevent leaflet grabs the div
+    var div_hack = $('<div>')
+      .addClass("map-wrapper")
+      .css({
+        position: "absolute",
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        width: '100%'
+      });
+
+    div.append(div_hack);
+    this.$el.append(div);
+
+    // Create the overlays
     for(var i in data.overlays) {
       var overlay = data.overlays[i];
       overlay.map = map;
@@ -120,15 +131,33 @@ var Vis = cdb.core.View.extend({
       }
 
       this.addView(v);
-      this.mapView.$el.append(v.el);
+      div.append(v.el);
     }
 
-    // layers
+    // Set map position correctly taking into account
+    // header height
+    this.setMapPosition();
+
+    // Create the map
+    var mapView = new cdb.geo.MapView.create(div_hack, map);
+    this.map = map;
+    this.mapView = mapView;
+
+    // Add layers
     for(var i in data.layers) {
       var layerData = data.layers[i];
       this.loadLayer(layerData);
     }
 
+  },
+
+  // Set map top position taking into account header height
+  setMapPosition: function() {
+    var header_h = this.$el.parent().find(".header").outerHeight();
+  
+    this.$el
+      .find("div.map-wrapper")
+      .css("top", header_h);
   },
 
   createLayer: function(layerData, opts) {

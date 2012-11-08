@@ -17,7 +17,8 @@
     <meta property="og:image" content="<%= asset_path "layout/cartofante_blue.png" %>"/>
 
     <style type="text/css">
-      html, body, #map {height: 100%; padding: 0; margin: 0;}
+      html, body {height: 100%; padding: 0; margin: 0;}
+      #map {position:absolute; width:100%; top:0; right:0; bottom:0; left:0;}
     </style>
 
     <%= stylesheet_link_tag :leaflet, 'cdb/themes/css/cartodb', 'plugins/tipsy' %>

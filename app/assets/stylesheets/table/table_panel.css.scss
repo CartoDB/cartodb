@@ -101,7 +101,7 @@
           @include opacity(0.75);
 
           &.sql_mod        { @include icons-sprite(table_icons, $offset-x:20px, $offset-y:-3px);}
-          &.carto_mod      { @include icons-sprite(table_icons, $offset-x:21px, $offset-y:-370px);}
+          &.style_mod      { @include icons-sprite(table_icons, $offset-x:21px, $offset-y:-370px);}
           &.infowindow_mod { @include icons-sprite(table_icons, $offset-x:20px, $offset-y:-430px);}
 
           // tool buttons
@@ -197,7 +197,7 @@
       }
 
       // SQL PANEL & CARTO PANEL
-      .sql_panel, .carto_mod {
+      .sql_panel, .style_mod {
         @include inline-block();
         width:535px;
         height:100%;
@@ -377,7 +377,7 @@
 
 
       // CARTO PANEL
-      .carto_mod {
+      .style_mod {
 
         nav {
           display:block;

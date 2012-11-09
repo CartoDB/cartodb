@@ -892,6 +892,8 @@ class Table < Sequel::Model(:user_tables)
             CASE
             WHEN GeometryType(the_geom) = 'POINT' THEN
               ST_AsGeoJSON(the_geom,6)
+            WHEN (the_geom IS NULL) THEN
+              ''
             ELSE
               'GeoJSON'
             END the_geom

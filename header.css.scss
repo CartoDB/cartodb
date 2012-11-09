@@ -427,7 +427,7 @@
       a.clearview {color:#FF9900!important;}
       h2 a:hover {text-decoration:none; cursor:default;}
       span.table_description p {
-        i {font-style:italic;}
+        i {font-style:italic; @include opacity(0.7);}
         &:hover {text-decoration:none; color:rgba(white, 0.5)!important; cursor:default!important;}
       }
     }

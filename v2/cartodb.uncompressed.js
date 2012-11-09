@@ -18111,10 +18111,13 @@ cdb.decorators.elder = (function() {
           // another call to elder (super), we need to provide a way of
           // redirecting to the grandparent
           this.parent = this.parent.parent;
+          var options = Array.prototype.slice.call(arguments, 1);
+
           if (currentParent.hasOwnProperty(method)) {
               result = currentParent[method].apply(this, options);
           } else {
-              result = currentParent.elder.call(this, method, options);
+              options.splice(0,0, method);
+              result = currentParent.elder.apply(this, options);
           }
           this.parent = currentParent;
       }
@@ -18127,7 +18130,8 @@ cdb.decorators.elder = (function() {
       child.prototype.elder = function(method) {
           var options = Array.prototype.slice.call(arguments, 1);
           if (method) {
-              return superMethod.call(this, method, options);
+              options.splice(0,0, method)
+              return superMethod.apply(this, options);
           } else {
               return child.prototype.parent;
           }
@@ -18634,12 +18638,12 @@ cdb._loadJST = function() {
      */
     save: function(opt1, opt2) {
       var self = this;
-      this.trigger('saving');
+      if(!opt2 || !opt2.silent) this.trigger('saving');
       $promise = Backbone.Model.prototype.save.call(this, opt1, opt2);
       $.when($promise).done(function() {
-        self.trigger('saved');
+        if(!opt2 || !opt2.silent) self.trigger('saved');
       }).fail(function() {
-        self.trigger('errorSaving')
+        if(!opt2 || !opt2.silent) self.trigger('errorSaving')
       })
       return $promise;
     }
@@ -19037,7 +19041,7 @@ cdb.geo.GMapsBaseLayer = cdb.geo.MapLayer.extend({
   OPTIONS: ['roadmap', 'satellite', 'terrain', 'custom'],
   defaults: {
     type: 'GMapsBase',
-    base_type: 'roadmap',
+    base_type: 'gray_roadmap',
     style: null
   }
 });
@@ -19048,6 +19052,8 @@ cdb.geo.GMapsBaseLayer = cdb.geo.MapLayer.extend({
 cdb.geo.PlainLayer = cdb.geo.MapLayer.extend({
   defaults: {
     type: 'Plain',
+    base_type: "plain",
+    className: "plain",
     color: '#FFFFFF'
   }
 });
@@ -19984,8 +19990,8 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
 
   events: {
     "click .close":   "_closeInfowindow",
-    "mousedown":      "_stopPropagation",
-    "mouseup":        "_stopPropagation",
+    "dragstart":      "_checkOrigin",
+    "mousedown":      "_checkOrigin",
     "mousewheel":     "_stopPropagation",
     "DOMMouseScroll": "_stopPropagation",
     "dbclick":        "_stopPropagation",
@@ -20006,6 +20012,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     this.model.bind('change:template_name', this.changeTemplate, this);
     this.model.bind('change:latlng',        this._update, this);
     this.model.bind('change:visibility',    this.toggle, this);
+    this.model.bind('change:template',      this._compileTemplate, this);
 
     this.mapView.map.bind('change',         this._updatePosition, this);
     //this.map.on('viewreset', this._updatePosition, this);
@@ -20019,6 +20026,9 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
       that.show(true);
     });
 
+    // Set min height to show the scroll
+    this.minHeightToScroll = 180;
+
     this.render();
     this.$el.hide();
 
@@ -20029,12 +20039,30 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     this.render();
   },
 
+  _compileTemplate: function() {
+    this.template = new cdb.core.Template({ 
+       template: this.model.get('template'),
+       type: this.model.get('template_type') || 'mustache'
+    }).asFunction()
+    this.render();
+  },
+
+  _checkOrigin: function(ev) {
+    // If the mouse down come from jspVerticalBar
+    // dont stop the propagation
+    var come_from_scroll = ($(ev.target).closest(".jspVerticalBar").length > 0 );
+    
+    if (!come_from_scroll) {
+      ev.stopPropagation();
+    }
+  },
+
   render: function() {
     if(this.template) {
 
       // If there is content, destroy the jscrollpane first, then remove the content.
       if (this.$el.html().length > 0) {
-        this.$el.find(".cartodb-popup-content").jScrollPane() 
+        this.$el.find(".cartodb-popup-content").jScrollPane().length
         && this.$el.find(".cartodb-popup-content").jScrollPane().data().jsp.destroy();
       }
 
@@ -20042,12 +20070,15 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
       
       // Hello jscrollpane hacks!
       // It needs some time to initialize, if not it doesn't render properly the fields
+      // Check the height of the content + the header if exists
       var that = this;
       setTimeout(function() {
-        that.$el.find(".cartodb-popup-content").jScrollPane({
-          maintainPosition:       false,
-          verticalDragMinHeight:  20
-        });
+        var actual_height = that.$el.find(".cartodb-popup-content").outerHeight() + that.$el.find(".cartodb-popup-header").outerHeight();
+        if (that.minHeightToScroll <= actual_height)
+          that.$el.find(".cartodb-popup-content").jScrollPane({
+            maintainPosition:       false,
+            verticalDragMinHeight:  20
+          });
       },1)
     }
     return this;
@@ -20155,7 +20186,6 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
   * Update the position (private)
   */
   _updatePosition: function () {
-
     var
     offset          = this.model.get("offset")
     pos             = this.mapView.latLonToPixel(this.model.get("latlng")),
@@ -20179,7 +20209,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     var
       x               = this.$el.position().left,
       y               = this.$el.position().top,
-      containerHeight = 280, //this.$el.outerHeight(true),
+      containerHeight = this.$el.outerHeight(true) + 15, // Adding some more space
       containerWidth  = this.$el.width(),
       pos             = this.mapView.latLonToPixel(this.model.get("latlng")),
       adjustOffset    = {x: 0, y: 0};
@@ -20261,7 +20291,15 @@ cdb.geo.ui.Search = cdb.core.View.extend({
     var address = this.$('input.text').val();
     cdb.geo.geocoder.YAHOO.geocode(address, function(coords) {
       if (coords.length>0) {
-        if (coords[0].boundingbox) {
+        var validBBox = true;
+        // check bounding box is valid
+        if(coords[0].boundingbox.south == coords[0].boundingbox.north ||
+          coords[0].boundingbox.east == coords[0].boundingbox.west) {
+          validBBox = false;
+        }
+
+
+        if (validBBox && coords[0].boundingbox) {
           self.model.setBounds([
             [
               parseFloat(coords[0].boundingbox.south),
@@ -20274,7 +20312,7 @@ cdb.geo.ui.Search = cdb.core.View.extend({
           ]);
         } else if (coords[0].lat && coords[0].lon) {
           self.model.setCenter([coords[0].lat, coords[0].lon]);
-          self.model.setZoom(10);  
+          self.model.setZoom(10);
         }
       }
     });
@@ -20344,13 +20382,14 @@ CartoDBLayerCommon.prototype = {
     if(opts.query) {
       params.sql = opts.query;
     }
-    if(opts.tile_style) {
+    if(opts.tile_style && !opts.use_server_style) {
       params.style = opts.tile_style;
     }
     // style_version is only valid when tile_style is present
-    if(opts.tile_style && opts.style_version) {
+    if(opts.tile_style && opts.style_version && !opts.use_server_style) {
       params.style_version = opts.style_version;
     }
+
     if(ext === 'grid.json') {
       if(opts.interactivity) {
         params.interactivity = opts.interactivity.replace(/ /g, '');
@@ -20423,14 +20462,13 @@ CartoDBLayerCommon.prototype = {
       , img = new Image()
       , urls = this._tileJSON()
 
-    var grid_url = urls.grids[0].replace(/\{z\}/g,xyz.z).replace(/\{x\}/g,xyz.x).replace(/\{y\}/g,xyz.y);
+    var grid_url = urls.tiles[0].replace(/\{z\}/g,xyz.z).replace(/\{x\}/g,xyz.x).replace(/\{y\}/g,xyz.y);
 
 
     $.ajax({
       method: "get",
       url: grid_url,
       crossDomain: true,
-      dataType: 'json',
       success: function() {
         self.tilesOk();
         clearTimeout(timeout)
@@ -20445,7 +20483,7 @@ CartoDBLayerCommon.prototype = {
     var timeout = setTimeout(function(){
       clearTimeout(timeout);
       self.error("tile timeout");
-    }, 2000);
+    }, 30000);
 
   }
 
@@ -20725,7 +20763,7 @@ var LeafLetPlainLayerView = L.TileLayer.extend({
   },
 
   _redrawTile: function (tile) {
-    tile.style['background-color'] = this.model.get('color');
+    tile.style.backgroundColor = this.model.get('color');
   },
 
   _createTileProto: function () {
@@ -21662,7 +21700,7 @@ cdb.geo.GMapsLayerView = GMapsLayerView;
 
 (function() {
 
-if(typeof(google) == "undefined" || typeof(google.maps) == "undefined") 
+if(typeof(google) == "undefined" || typeof(google.maps) == "undefined")
   return;
 
 var GMapsBaseLayerView = function(layerModel, gmapsMap) {
@@ -21678,6 +21716,7 @@ _.extend(
     var types = {
       "roadmap":      google.maps.MapTypeId.ROADMAP,
       "gray_roadmap": google.maps.MapTypeId.ROADMAP,
+      "hybrid":       google.maps.MapTypeId.HYBRID,
       "satellite":    google.maps.MapTypeId.SATELLITE,
       "terrain":      google.maps.MapTypeId.TERRAIN
     };
@@ -22461,6 +22500,7 @@ cdb.ui.common.Dialog = cdb.core.View.extend({
     width: 300,
     height: 200,
     clean_on_hide: false,
+    enter_to_confirm: false,
     template_name: 'common/views/dialog_base',
     ok_button_classes: 'button green',
     cancel_button_classes: '',
@@ -22475,7 +22515,11 @@ cdb.ui.common.Dialog = cdb.core.View.extend({
 
     _.bindAll(this, 'render', '_keydown');
 
+    // Keydown bindings for the dialog
     $(document).bind('keydown', this._keydown);
+
+    // After removing the dialog, cleaning other bindings
+    this.bind("clean", this._reClean);
 
     this.template_base = this.options.template_base ? _.template(this.options.template_base) : cdb.templates.getTemplate(this.options.template_name);
   },
@@ -22506,8 +22550,12 @@ cdb.ui.common.Dialog = cdb.core.View.extend({
 
 
   _keydown: function(e) {
+    // If clicks esc, goodbye!
     if (e.keyCode === 27) {
       this._cancel();
+    // If clicks enter, same as you click on ok button.
+    } else if (e.keyCode === 13 && this.options.enter_to_confirm) {
+      this._ok();
     }
   },
 
@@ -22559,6 +22607,12 @@ cdb.ui.common.Dialog = cdb.core.View.extend({
   open: function() {
 
     this.$el.show();
+
+  },
+
+  _reClean: function() {
+
+    $(document).unbind('keydown', this._keydown);
 
   }
 
@@ -22903,7 +22957,7 @@ cdb.ui.common.Table = cdb.core.View.extend({
       }
     });
     tr.bind('changeRow', this.rowChanged);
-    tr.bind('syncRow', this.rowSynched);
+    tr.bind('saved', this.rowSynched);
     tr.bind('errorRow', this.rowFailed);
     tr.bind('saving', this.rowSaving);
     this.retrigger('saving', tr);
@@ -23152,12 +23206,23 @@ var Vis = cdb.core.View.extend({
       width: '100%',
       height: '100%'
     });
-    this.$el.append(div);
-    var mapView = new cdb.geo.MapView.create(div, map);
-    this.map = map;
-    this.mapView = mapView;
 
-    // overlays
+    // Another div to prevent leaflet grabs the div
+    var div_hack = $('<div>')
+      .addClass("map-wrapper")
+      .css({
+        position: "absolute",
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        width: '100%'
+      });
+
+    div.append(div_hack);
+    this.$el.append(div);
+
+    // Create the overlays
     for(var i in data.overlays) {
       var overlay = data.overlays[i];
       overlay.map = map;
@@ -23169,15 +23234,33 @@ var Vis = cdb.core.View.extend({
       }
 
       this.addView(v);
-      this.mapView.$el.append(v.el);
+      div.append(v.el);
     }
 
-    // layers
+    // Set map position correctly taking into account
+    // header height
+    this.setMapPosition();
+
+    // Create the map
+    var mapView = new cdb.geo.MapView.create(div_hack, map);
+    this.map = map;
+    this.mapView = mapView;
+
+    // Add layers
     for(var i in data.layers) {
       var layerData = data.layers[i];
       this.loadLayer(layerData);
     }
 
+  },
+
+  // Set map top position taking into account header height
+  setMapPosition: function() {
+    var header_h = this.$el.parent().find(".header").outerHeight();
+  
+    this.$el
+      .find("div.map-wrapper")
+      .css("top", header_h);
   },
 
   createLayer: function(layerData, opts) {
@@ -23221,6 +23304,8 @@ var Vis = cdb.core.View.extend({
     layerView.bind('featureOut', function() {
       mapView.setCursor('auto');
     });
+
+    layerView.infowindow = infowindow.model;
 
   },
 
@@ -23285,6 +23370,11 @@ cdb.vis.Overlay.register('loader', function(data) {
 
 // Header to show informtion (title and description)
 cdb.vis.Overlay.register('header', function(data, vis) {
+
+  // Add the complete url for facebook and twitter
+  if (location.href) {
+    data.url = encodeURIComponent(location.href);
+  }
 
   var template = cdb.core.Template.compile(
     data.template || "\
@@ -23471,7 +23561,7 @@ Layers.register('carto', cartoLayer);
     
     _getLayerJson(layer, function(visData) {
 
-      var layerData;
+      var layerData, MapType;
 
       if(!visData) {
         promise.trigger('error');
@@ -23505,7 +23595,7 @@ Layers.register('carto', cartoLayer);
 
       // update options
       if(options && !_.isFunction(options)) {
-        _.extend(layerData, options);
+        _.extend(layerData.options, options);
       } else {
         options = {
           infowindow: true

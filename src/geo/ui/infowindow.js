@@ -178,9 +178,9 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     if(this.template) {
 
       // If there is content, destroy the jscrollpane first, then remove the content.
-      if (this.$el.html().length > 0) {
-        this.$el.find(".cartodb-popup-content").jScrollPane().length
-        && this.$el.find(".cartodb-popup-content").jScrollPane().data().jsp.destroy();
+      var $jscrollpane = this.$el.find(".cartodb-popup-content");
+      if ($jscrollpane.length > 0 && $jscrollpane.data() != null) {
+        $jscrollpane.data().jsp && $jscrollpane.data().jsp.destroy();
       }
 
       this.$el.html($(this.template(_.clone(this.model.attributes))));

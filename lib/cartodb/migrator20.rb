@@ -101,7 +101,7 @@ class Migrator20
        table.the_geom_type == "multipolygon" &&
        data_layer.options['tile_style'] =~ /.*marker-placement:\s*point.*/
       fields = table.schema(:reload => true).map {|i| i.first.to_s } - ["the_geom_webmercator"]
-      data_layer.options['sql'] = "SELECT #{fields.join(',')}, ST_PointOnSurface(the_geom_webmercator) as the_geom_webmercator FROM #{table.name}"
+      data_layer.options['query'] = "SELECT #{fields.join(',')}, ST_PointOnSurface(the_geom_webmercator) as the_geom_webmercator FROM #{table.name}"
     end
 
     # First, try to read infowindow fields from Redis

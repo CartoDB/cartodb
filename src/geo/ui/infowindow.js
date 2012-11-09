@@ -107,8 +107,8 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
 
   events: {
     "click .close":   "_closeInfowindow",
-    "mousedown":      "_stopPropagation",
-    "mouseup":        "_stopPropagation",
+    "dragstart":      "_checkOrigin",
+    "mousedown":      "_checkOrigin",
     "mousewheel":     "_stopPropagation",
     "DOMMouseScroll": "_stopPropagation",
     "dbclick":        "_stopPropagation",
@@ -129,6 +129,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     this.model.bind('change:template_name', this.changeTemplate, this);
     this.model.bind('change:latlng',        this._update, this);
     this.model.bind('change:visibility',    this.toggle, this);
+    this.model.bind('change:template',      this._compileTemplate, this);
 
     this.mapView.map.bind('change',         this._updatePosition, this);
     //this.map.on('viewreset', this._updatePosition, this);
@@ -142,6 +143,9 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
       that.show(true);
     });
 
+    // Set min height to show the scroll
+    this.minHeightToScroll = 180;
+
     this.render();
     this.$el.hide();
 
@@ -152,12 +156,30 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     this.render();
   },
 
+  _compileTemplate: function() {
+    this.template = new cdb.core.Template({ 
+       template: this.model.get('template'),
+       type: this.model.get('template_type') || 'mustache'
+    }).asFunction()
+    this.render();
+  },
+
+  _checkOrigin: function(ev) {
+    // If the mouse down come from jspVerticalBar
+    // dont stop the propagation
+    var come_from_scroll = ($(ev.target).closest(".jspVerticalBar").length > 0 );
+    
+    if (!come_from_scroll) {
+      ev.stopPropagation();
+    }
+  },
+
   render: function() {
     if(this.template) {
 
       // If there is content, destroy the jscrollpane first, then remove the content.
       if (this.$el.html().length > 0) {
-        this.$el.find(".cartodb-popup-content").jScrollPane() 
+        this.$el.find(".cartodb-popup-content").jScrollPane().length
         && this.$el.find(".cartodb-popup-content").jScrollPane().data().jsp.destroy();
       }
 
@@ -165,12 +187,15 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
       
       // Hello jscrollpane hacks!
       // It needs some time to initialize, if not it doesn't render properly the fields
+      // Check the height of the content + the header if exists
       var that = this;
       setTimeout(function() {
-        that.$el.find(".cartodb-popup-content").jScrollPane({
-          maintainPosition:       false,
-          verticalDragMinHeight:  20
-        });
+        var actual_height = that.$el.find(".cartodb-popup-content").outerHeight() + that.$el.find(".cartodb-popup-header").outerHeight();
+        if (that.minHeightToScroll <= actual_height)
+          that.$el.find(".cartodb-popup-content").jScrollPane({
+            maintainPosition:       false,
+            verticalDragMinHeight:  20
+          });
       },1)
     }
     return this;
@@ -278,7 +303,6 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
   * Update the position (private)
   */
   _updatePosition: function () {
-
     var
     offset          = this.model.get("offset")
     pos             = this.mapView.latLonToPixel(this.model.get("latlng")),
@@ -302,7 +326,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     var
       x               = this.$el.position().left,
       y               = this.$el.position().top,
-      containerHeight = 280, //this.$el.outerHeight(true),
+      containerHeight = this.$el.outerHeight(true) + 15, // Adding some more space
       containerWidth  = this.$el.width(),
       pos             = this.mapView.latLonToPixel(this.model.get("latlng")),
       adjustOffset    = {x: 0, y: 0};

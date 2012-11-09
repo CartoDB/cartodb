@@ -139,8 +139,33 @@ describe('api.layers.cartodb', function() {
         expect(opts.interactivity).toEqual('cartodb_id,test');
 
       });
+    });
 
-
+    it("should add a infowindow", function() {
+      //cdb.templates.add(new cdb.core.Template({
+        //name: 'test',
+      //}));
+      runs(function() {
+        cartodb.createLayer(map, { 
+            kind: 'cartodb', 
+            options: { 
+              table_name: 'test'
+            },
+            infowindow: { 
+              template: '<div></div>',
+              fields: [{name: 'test', title: true, order: 0}] 
+            }
+        }, function(l) {
+          addFn(map, l);
+          layer = l;
+        });
+      });
+      waits(100);
+      runs(function() {
+        expect(layer.infowindow).not.toEqual(undefined);
+        expect(layer.infowindow.get('fields').length).toEqual(1);
+        expect(layer.infowindow.get('fields')[0].name).toEqual('test');
+      });
     });
 
 

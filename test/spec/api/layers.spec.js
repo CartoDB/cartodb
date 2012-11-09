@@ -77,6 +77,19 @@ describe('api.layers', function() {
         });
       });
 
+      it("should create a layer with options", function() {
+        var layer;
+        runs(function() {
+          cartodb.createLayer(map, { kind: 'cartodb', options: {} }, {query: 'select test'}, function(l) {
+            layer = l;
+          });
+        });
+        waits(100);
+        runs(function() {
+          expect(layer.options.query).toEqual('select test');
+        });
+      });
+
 
       it("should manage errors", function() {
         var s = sinon.spy();
@@ -100,7 +113,7 @@ describe('api.layers', function() {
         waits(10);
         runs(function() {
           expect(s.called).toEqual(true);
-          expect(layer.rambo).toEqual('thebest');
+          expect(layer.options.rambo).toEqual('thebest');
           expect(s2.called).toEqual(true);
         });
 

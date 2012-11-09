@@ -36,7 +36,15 @@ cdb.geo.ui.Search = cdb.core.View.extend({
     var address = this.$('input.text').val();
     cdb.geo.geocoder.YAHOO.geocode(address, function(coords) {
       if (coords.length>0) {
-        if (coords[0].boundingbox) {
+        var validBBox = true;
+        // check bounding box is valid
+        if(coords[0].boundingbox.south == coords[0].boundingbox.north ||
+          coords[0].boundingbox.east == coords[0].boundingbox.west) {
+          validBBox = false;
+        }
+
+
+        if (validBBox && coords[0].boundingbox) {
           self.model.setBounds([
             [
               parseFloat(coords[0].boundingbox.south),
@@ -49,7 +57,7 @@ cdb.geo.ui.Search = cdb.core.View.extend({
           ]);
         } else if (coords[0].lat && coords[0].lon) {
           self.model.setCenter([coords[0].lat, coords[0].lon]);
-          self.model.setZoom(10);  
+          self.model.setZoom(10);
         }
       }
     });

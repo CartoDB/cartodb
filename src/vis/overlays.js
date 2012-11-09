@@ -25,6 +25,11 @@ cdb.vis.Overlay.register('loader', function(data) {
 // Header to show informtion (title and description)
 cdb.vis.Overlay.register('header', function(data, vis) {
 
+  // Add the complete url for facebook and twitter
+  if (location.href) {
+    data.url = encodeURIComponent(location.href);
+  }
+
   var template = cdb.core.Template.compile(
     data.template || "\
       {{#title}}<h1><a href='{{url}}'>{{title}}</a></h1>{{/title}}\

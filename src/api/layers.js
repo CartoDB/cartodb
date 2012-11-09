@@ -77,7 +77,7 @@
     
     _getLayerJson(layer, function(visData) {
 
-      var layerData;
+      var layerData, MapType;
 
       if(!visData) {
         promise.trigger('error');
@@ -111,7 +111,7 @@
 
       // update options
       if(options && !_.isFunction(options)) {
-        _.extend(layerData, options);
+        _.extend(layerData.options, options);
       } else {
         options = {
           infowindow: true

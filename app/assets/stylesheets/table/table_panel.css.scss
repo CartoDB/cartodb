@@ -202,6 +202,30 @@
         width:535px;
         height:100%;
 
+        // Info icon
+        a.doc_info {
+          position:absolute;
+          top:22px;
+          right:18px;
+          width:16px;
+          height:16px;
+          padding:0!important;
+          line-height:16px;
+          font-size:12px;
+          color:white;
+          text-align:center;
+          @include border-radius(20px);
+          background:#E5E5E5;
+          border:none;
+          &:hover {
+            text-decoration:none;
+            background:#AAA;
+          }
+          &:active {
+            background:#898989;
+          }
+        }
+
         h3 {padding-left:52px;}
 
         div.actions {
@@ -265,6 +289,7 @@
           bottom:78px;
           right:0;
           left:0;
+          max-height:30%;
           padding:17px 17px 17px 52px;
           background:rgba(yellow,0.3);
           color:#888;
@@ -272,11 +297,11 @@
           font-size:13px;
           border-top:1px solid #EBDCE0;
 
-          p {line-height:17px;}
+          p {line-height:17px; word-wrap: break-word}
 
           &.error {
             background:rgba(#FFD7E3,0.5);
-            color:#EB2466;
+            p {color:#EB2466;}
           }
         }
       }

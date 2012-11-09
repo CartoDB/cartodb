@@ -111,7 +111,7 @@
 
       // update options
       if(options && !_.isFunction(options)) {
-        _.extend(layerData, options);
+        _.extend(layerData.options, options);
       } else {
         options = {
           infowindow: true

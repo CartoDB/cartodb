@@ -24,12 +24,6 @@
     @include transition-property("background-color");
     @include transition-duration(500ms);
 
-    &.query {
-      background-color:#FF9900;
-      a {margin:0 3px;}
-      a.clearview {color:#FF9900!important;}
-    }
-
     &:before {
       position:absolute;
       content:' ';
@@ -425,6 +419,17 @@
             &:after {display:none}
           }
         }
+      }
+    }
+
+    &.query {
+      background-color:#FF9900;
+      a {margin:0 3px;}
+      a.clearview {color:#FF9900!important;}
+      h2 a:hover {text-decoration:none; cursor:default;}
+      span.table_description p {
+        i {font-style:italic;}
+        &:hover {text-decoration:none; color:rgba(white, 0.5)!important; cursor:default!important;}
       }
     }
   }

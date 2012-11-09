@@ -1043,7 +1043,7 @@ div.header.yellow h1 a:hover {
   }
 
   div.header > p {
-    margin-top:5px 0 0 0;
+    margin:5px 0 0 0;
     padding: 0;
     font-weight: normal;
     font-size: 13px;

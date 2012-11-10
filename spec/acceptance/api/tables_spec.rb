@@ -143,7 +143,7 @@ feature "API 1.0 tables management" do
     get_json api_tables_tag_url("tag 1", :page => 1, :per_page => 10) do |response|
       response.status.should be_success
       response.body[:total_entries].should == 2
-      response.body[:tables].map{ |t| t['name'] }.should == ["my_table_3", "my_table_1"]
+      response.body[:tables].map{ |t| t['name'] }.should include("my_table_3", "my_table_1")
     end
 
     get_json api_tables_tag_url("tag 1", :page => 1, :per_page => 1) do |response|

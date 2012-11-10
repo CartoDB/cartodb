@@ -1,7 +1,7 @@
 # coding: utf-8
 
 class Admin::TablesController < ApplicationController
-  ssl_required :index, :show, :embed_map, :show_public, :index_public
+  ssl_required :index, :show
 
   skip_before_filter :browser_is_html5_compliant?, :only => [:embed_map]
   before_filter      :login_required,              :only => [:index]

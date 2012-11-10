@@ -24,3 +24,5 @@ if Rails.env.test?
 end
 
 task :default => ["spec:models", "spec:cartodb_lib", "spec:acceptance"]
+
+task "resque:setup" => :environment

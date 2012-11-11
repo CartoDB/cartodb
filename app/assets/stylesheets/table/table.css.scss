@@ -323,7 +323,7 @@
           width:100%;
           border-top:1px solid #ECECEC;
           background:white;
-          -moz-transform: translateZ(10px);
+          // -moz-transform: translateZ(10px);
 
           &:first-child {
             border-top:none;
@@ -615,6 +615,12 @@
   }
   table tbody tr:hover td.rowHeader div.cell:hover {
     background:linear-gradient(#fafafa, #e3d3e3)!important;
+  }
+
+  table tbody tr td.rowHeader .row_header {
+    border-color: red;
+    display: block;
+
   }
 }
 

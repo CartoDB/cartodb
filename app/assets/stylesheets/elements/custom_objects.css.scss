@@ -571,6 +571,13 @@
     }
 
     &:hover {cursor:pointer!important;}
+    
+    &.working {
+      @include opacity(0.5);
+      &:hover {cursor:default!important;}
+    }
+
+    
   }
 
 

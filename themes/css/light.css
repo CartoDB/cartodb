@@ -306,7 +306,7 @@
 
   div#tiles_loader div.loader {
     position:absolute;
-    display:none;
+    display:block;
     top:70px;
     left:-30px;
     margin:20px 0 0 0;
@@ -316,7 +316,7 @@
     -moz-box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
     box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
     z-index: 5;
-    background: white;
+    background: url('../img/loader.gif') no-repeat center center white;
     -webkit-border-radius: 4px;
     -moz-border-radius: 4px;
     -ms-border-radius: 4px;
@@ -324,8 +324,6 @@
     border-radius: 4px;
     border: 1px solid #999999;
   }
-
-  div#tiles_loader div.spinner {top:14px!important; left:14px!important;}
 
   div.search_box {
     position: relative;

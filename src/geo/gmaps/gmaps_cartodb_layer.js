@@ -91,7 +91,7 @@ CartoDBLayer.prototype.getTile = function(coord, zoom, ownerDocument) {
   this.options.added = true;
 
   var im = wax.g.connector.prototype.getTile.call(this, coord, zoom, ownerDocument);
-  
+
   if (this.tiles == 0) {
     this.loading && this.loading();
     //this.trigger("loading");
@@ -99,7 +99,7 @@ CartoDBLayer.prototype.getTile = function(coord, zoom, ownerDocument) {
 
   this.tiles++;
 
-  
+
   im.onload = im.onerror = function() {
     self.tiles--;
     if (self.tiles == 0) {
@@ -351,7 +351,14 @@ _.extend(
 
   _update: function() {
     _.extend(this.options, this.model.attributes);
-    this.update();
+
+    // If we are undoing/redoing don't update the map
+    if (this.model.get("dont_update_map")){
+      this.model.set("dont_update_map", false);
+    } else {
+      this.update();
+    }
+
   },
 
   reload: function() {

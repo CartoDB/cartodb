@@ -120,7 +120,7 @@ var Vis = cdb.core.View.extend({
     this.$el.append(div);
 
     // Create the overlays
-    for(var i in data.overlays) {
+    for (var i in data.overlays) {
       var overlay = data.overlays[i];
       overlay.map = map;
       var v = Overlay.create(overlay.type, this, overlay);
@@ -132,11 +132,13 @@ var Vis = cdb.core.View.extend({
 
       this.addView(v);
       div.append(v.el);
-    }
 
-    // Set map position correctly taking into account
-    // header height
-    this.setMapPosition();
+      // Set map position correctly taking into account
+      // header height
+      if (overlay.type == "header") {
+        this.setMapPosition();
+      }
+    }
 
     // Create the map
     var mapView = new cdb.geo.MapView.create(div_hack, map);
@@ -148,7 +150,6 @@ var Vis = cdb.core.View.extend({
       var layerData = data.layers[i];
       this.loadLayer(layerData);
     }
-
   },
 
   // Set map top position taking into account header height

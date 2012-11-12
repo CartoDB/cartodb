@@ -8,7 +8,6 @@
 //= require jquery.caret
 //= require ZeroClipboard
 //= require tag-it
-//= require spin.min
 //= require jquery.tipsy
 //= require ../../../lib/assets/javascripts/utils/postgres.codemirror
 //= require ../../../lib/assets/javascripts/utils/carto.codemirror

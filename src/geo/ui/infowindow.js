@@ -106,13 +106,17 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
   className: "infowindow",
 
   events: {
-    "click .close":   "_closeInfowindow",
-    "dragstart":      "_checkOrigin",
-    "mousedown":      "_checkOrigin",
-    "mousewheel":     "_stopPropagation",
-    "DOMMouseScroll": "_stopPropagation",
-    "dbclick":        "_stopPropagation",
-    "click":          "_stopPropagation"
+    // Close bindings
+    "click .close":       "_closeInfowindow",
+    "touchstart .close":  "_closeInfowindow",
+    // Rest infowindow bindings
+    "dragstart":          "_checkOrigin",
+    "mousedown":          "_checkOrigin",
+    "touchstart":         "_checkOrigin",
+    "mousewheel":         "_stopPropagation",
+    "DOMMouseScroll":     "_stopPropagation",
+    "dbclick":            "_stopPropagation",
+    "click":              "_stopPropagation"
   },
 
   initialize: function(){
@@ -166,8 +170,9 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
 
   _checkOrigin: function(ev) {
     // If the mouse down come from jspVerticalBar
-    // dont stop the propagation
-    var come_from_scroll = ($(ev.target).closest(".jspVerticalBar").length > 0 );
+    // dont stop the propagation, but if the event
+    // is a touchstart, stop the propagation
+    var come_from_scroll = (($(ev.target).closest(".jspVerticalBar").length > 0) && (ev.type != "touchstart"));
     
     if (!come_from_scroll) {
       ev.stopPropagation();

@@ -101,9 +101,7 @@
     font:bold 11px "Helvetica Neue","Helvetica",Arial;
     color:#CCCCCC;
     text-transform:uppercase;
-    text-overflow:ellipsis;
-    overflow:hidden;
-    white-space:nowrap;
+    word-wrap: break-word;
   }
 
   div.cartodb-popup p {
@@ -115,9 +113,7 @@
     font:normal 13px "Helvetica",Arial;
     color:#333333;
     padding:0 0 7px;
-    text-overflow:ellipsis;
-    overflow:hidden;
-    white-space:nowrap;
+    word-wrap: break-word;
   }
 
   div.cartodb-popup p.empty {

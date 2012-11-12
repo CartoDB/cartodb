@@ -30,7 +30,7 @@
         left:12px;
         height:24px;
         width:24px;
-        background:white;
+        @include background(image-url('layout/mini-loader.gif') no-repeat center center white);
       }
 
       span.type {

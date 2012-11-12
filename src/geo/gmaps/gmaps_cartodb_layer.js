@@ -352,12 +352,7 @@ _.extend(
   _update: function() {
     _.extend(this.options, this.model.attributes);
 
-    // If we are undoing/redoing don't update the map
-    if (this.model.get("dont_update_map")){
-      this.model.set("dont_update_map", false);
-    } else {
-      this.update();
-    }
+    this.update();
 
   },
 

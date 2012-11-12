@@ -507,12 +507,7 @@ _.extend(
       attrs.tile_style = null;
     }
 
-    // If we are undoing/redoing don't update the map
-    if (this.model.get("dont_update_map")){
-      this.model.set("dont_update_map", false);
-    } else {
-      this.leafletLayer.setOptions(attrs);
-    }
+    this.leafletLayer.setOptions(attrs);
 
   },
 

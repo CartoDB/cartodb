@@ -20,7 +20,11 @@
     overflow:hidden!important;
 
     .map {
-      height: auto;
+      position:absolute;
+      top:65px;
+      bottom:0;
+      right:0;
+      left:0;
       width: 100%;
       @include border-radius(3px);
       overflow:hidden!important;

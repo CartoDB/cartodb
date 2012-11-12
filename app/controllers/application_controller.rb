@@ -30,7 +30,7 @@ class ApplicationController < ActionController::Base
   def set_asset_debugging
     #
     # IF YOU CHANGE AND COMMIT THIS YOU WILL GO DIRECTLY TO THE HELL WITH ALL THE RUBY PEOPLE
-    CartoDB::Application.config.assets.debug = true if Rails.env.development?
+    CartoDB::Application.config.assets.debug = false if Rails.env.development?
     #
     #
   end

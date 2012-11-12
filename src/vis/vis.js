@@ -98,6 +98,7 @@ var Vis = cdb.core.View.extend({
     }
 
     var map = new cdb.geo.Map(mapConfig);
+    this.map = map;
 
     var div = $('<div>').css({
       width: '100%',
@@ -142,7 +143,6 @@ var Vis = cdb.core.View.extend({
 
     // Create the map
     var mapView = new cdb.geo.MapView.create(div_hack, map);
-    this.map = map;
     this.mapView = mapView;
 
     // Add layers

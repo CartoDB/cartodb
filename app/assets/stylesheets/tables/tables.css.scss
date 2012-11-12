@@ -443,6 +443,21 @@
     }
 
     aside {
+      @include inline-block();
+      margin:0 0 0 40px;
+      z-index:1;
+
+      // When scroll, aside has to be fixed
+      &.moving {
+        position:fixed;
+        margin-left:41px;
+      }
+
+      // Too much scroll -> positionate to the bottom
+      &.bottom {
+        position:relative;
+      }
+
       div.head {
         padding-top:40px;
         border:none;

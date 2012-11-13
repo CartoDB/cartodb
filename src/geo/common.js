@@ -47,7 +47,7 @@ CartoDBLayerCommon.prototype = {
         cartodb_link.innerHTML = "<img src='http://cartodb.s3.amazonaws.com/static/new_logo.png' style='position:absolute; bottom:" + 
           ( position.bottom || 0 ) + "px; left:" + ( position.left || 0 ) + "px; display:block; border:none; outline:none' alt='CartoDB' title='CartoDB' />";
         container.appendChild(cartodb_link);
-      },( timeout || 0 ));
+      },( timeout || 0 ));
     }
   },
 

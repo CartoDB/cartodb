@@ -420,7 +420,7 @@ cdb.geo.Map = cdb.core.Model.extend({
       swPoint = cdb.geo.Map.latlngToMercator(sw, zoom);
       boundsSize[0] = Math.abs(nePoint[0] - swPoint[0]);
       boundsSize[1] = Math.abs(swPoint[1] - nePoint[1]);
-      zoomNotFound = boundsSize[0] < size[0] || boundsSize[1] < size[1];
+      zoomNotFound = boundsSize[0] <= size[0] || boundsSize[1] <= size[1];
     } while (zoomNotFound && zoom <= maxZoom);
 
     if (zoomNotFound) {

@@ -18903,6 +18903,11 @@ cdb._loadJST = function() {
  */
 
 cdb.geo.geocoder.YAHOO = {
+
+  keys: {
+    app_id: "nLQPTdTV34FB9L3yK2dCXydWXRv3ZKzyu_BdCSrmCBAM1HgGErsCyCbBbVP2Yg--"
+  },
+
   geocode: function(address, callback) {
     address = address.toLowerCase()
       .replace(/é/g,'e')
@@ -18912,7 +18917,7 @@ cdb.geo.geocoder.YAHOO = {
       .replace(/ú/g,'u')
       .replace(/ /g,'+');
 
-      $.getJSON('//query.yahooapis.com/v1/public/yql?q='+encodeURIComponent('SELECT * FROM json WHERE url="http://where.yahooapis.com/geocode?q=' + address + '&appid=nLQPTdTV34FB9L3yK2dCXydWXRv3ZKzyu_BdCSrmCBAM1HgGErsCyCbBbVP2Yg--&flags=JX"') + '&format=json&callback=?', function(data) {
+      $.getJSON('//query.yahooapis.com/v1/public/yql?q='+encodeURIComponent('SELECT * FROM json WHERE url="http://where.yahooapis.com/geocode?q=' + address + '&appid=' + this.keys.app_id + '&flags=JX"') + '&format=json&callback=?', function(data) {
 
          var coordinates = [];
          if (data && data.query && data.query.results && data.query.results.ResultSet && data.query.results.ResultSet.Found != "0") {
@@ -18937,6 +18942,58 @@ cdb.geo.geocoder.YAHOO = {
 
             if (r.boundingbox) {
               position.boundingbox = r.boundingbox;
+            }
+
+            coordinates.push(position);
+          }
+        }
+
+        callback(coordinates);
+      });
+  }
+}
+
+
+
+cdb.geo.geocoder.NOKIA = {
+
+  keys: {
+    app_id:   "qIWDkliFCtLntLma2e6O",
+    app_code: "61YWYROufLu_f8ylE0vn0Q"
+  },
+
+  geocode: function(address, callback) {
+    address = address.toLowerCase()
+      .replace(/é/g,'e')
+      .replace(/á/g,'a')
+      .replace(/í/g,'i')
+      .replace(/ó/g,'o')
+      .replace(/ú/g,'u')
+      .replace(/ /g,'+');
+
+      $.getJSON('//places.nlp.nokia.com/places/v1/discover/search/?q=' + address + '&app_id=' + this.keys.app_id + '&app_code=' + this.keys.app_code + '&Accept-Language=en-US&at=0,0&callback=?', function(data) {
+
+         var coordinates = [];
+         if (data && data.results && data.results.items && data.results.items.length > 0) {
+
+          var res = data.results.items;
+
+          for(var i in res) {
+            var r = res[i]
+              , position;
+
+            position = {
+              lat: r.position[0],
+              lon: r.position[1]
+            };
+
+            if (r.bbox) {
+              position.boundingbox = {
+                north: r.bbox[3],
+                south: r.bbox[1],
+                east: r.bbox[2],
+                west: r.bbox[0] 
+              }
             }
 
             coordinates.push(position);
@@ -20314,15 +20371,15 @@ cdb.geo.ui.Search = cdb.core.View.extend({
     var self = this;
 
     var address = this.$('input.text').val();
-    cdb.geo.geocoder.YAHOO.geocode(address, function(coords) {
+    cdb.geo.geocoder.NOKIA.geocode(address, function(coords) {
       if (coords.length>0) {
         var validBBox = true;
+        
         // check bounding box is valid
-        if(coords[0].boundingbox.south == coords[0].boundingbox.north ||
+        if(!coords[0].boundingbox || coords[0].boundingbox.south == coords[0].boundingbox.north ||
           coords[0].boundingbox.east == coords[0].boundingbox.west) {
           validBBox = false;
         }
-
 
         if (validBBox && coords[0].boundingbox) {
           self.model.setBounds([
@@ -20374,6 +20431,26 @@ CartoDBLayerCommon.prototype = {
     this.setInteraction(false);
 
     this.options.visible = false;
+  },
+
+  /**
+   * Add Cartodb logo
+   * It needs a position, timeout if it is needed and the container where add it
+   */
+  _addWadus: function(position, timeout, container) {
+    if (!document.getElementById('cartodb_logo')) {
+      var self = this;
+      setTimeout(function() {
+        var cartodb_link = document.createElement("a");
+        cartodb_link.setAttribute('id','cartodb_logo');
+        cartodb_link.setAttribute('style',"position:absolute; bottom:0; left:0; display:block; border:none; z-index:10000;");
+        cartodb_link.setAttribute('href','http://www.cartodb.com');
+        cartodb_link.setAttribute('target','_blank');
+        cartodb_link.innerHTML = "<img src='http://cartodb.s3.amazonaws.com/static/new_logo.png' style='position:absolute; bottom:" + 
+          ( position.bottom || 0 ) + "px; left:" + ( position.left || 0 ) + "px; display:block; border:none; outline:none' alt='CartoDB' title='CartoDB' />";
+        container.appendChild(cartodb_link);
+      },( timeout || 0 ));
+    }
   },
 
 
@@ -20897,7 +20974,7 @@ L.CartoDBLayer = L.TileLayer.extend({
       this.setBounds();
 
     // Add cartodb logo, yes sir!
-    this._addWadus();
+    this._addWadus({left:8, bottom:8}, 0, this.options.map._container);
 
     this.fire = this.trigger;
 
@@ -21214,23 +21291,6 @@ L.CartoDBLayer = L.TileLayer.extend({
       }
     });
   },
-
-
-  /**
-   * Add Cartodb logo
-   */
-  _addWadus: function() {
-    if (!document.getElementById('cartodb_logo')) {
-      var cartodb_link = document.createElement("a");
-      cartodb_link.setAttribute('id','cartodb_logo');
-      cartodb_link.setAttribute('style',"position:absolute; bottom:0; left:0; display:block; z-index:10000;");
-      cartodb_link.setAttribute('href','http://www.cartodb.com');
-      cartodb_link.setAttribute('target','_blank');
-      cartodb_link.innerHTML = "<img src='http://cartodb.s3.amazonaws.com/static/new_logo.png' style='position:absolute; bottom:8px; left:8px; display:block; border:none; outline:none' alt='CartoDB' title='CartoDB' />";
-      this.options.map._container.appendChild(cartodb_link);
-    }
-  },
-
 
   /**
    * Bind events for wax interaction
@@ -21903,6 +21963,9 @@ var CartoDBLayer = function(opts) {
   // Set init
   this.tiles = 0;
 
+  // Add CartoDB logo
+  this._addWadus({left: 74, bottom:8}, 2000, this.options.map.getDiv());
+
   wax.g.connector.call(this, opts);
 
   // lovely wax connector overwrites options so set them again
@@ -21917,6 +21980,7 @@ CartoDBLayer.Projector = Projector;
 
 CartoDBLayer.prototype = new wax.g.connector();
 _.extend(CartoDBLayer.prototype, CartoDBLayerCommon.prototype);
+
 
 CartoDBLayer.prototype.setOpacity = function(opacity) {
 

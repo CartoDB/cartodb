@@ -103,6 +103,10 @@ module CartoDB
       title: 'Multifile import errors',
       what_about: ""
     },
+    1008 => {
+      title: 'Unable to download file',
+      what_about: "We couldn't download your file, check the URL and try again."
+    },
     2000 => {
       title: 'File conversion errors',
       what_about: "To process your file, we tried to convert it to a more common geospatial format and failed. Try converting it to a Shapefile or a CSV locally before you upload."

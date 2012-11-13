@@ -416,7 +416,7 @@ describe CartoDB::Importer do
       end
     end
 
-    pending "Import from URL" do
+    describe "Import from URL" do
       it "should import a shapefile from NaturalEarthData.com" do
         importer = create_importer "http://www.nacis.org/naturalearth/10m/cultural/10m_parks_and_protected_areas.zip", "_10m_us_parks", true
         results,errors = importer.import!
@@ -425,6 +425,34 @@ describe CartoDB::Importer do
         results[0].name.should          == '_10m_us_parks'
         results[0].rows_imported.should == 312
         results[0].import_type.should   == '.shp'
+      end
+
+      it "should infer file extension from http content-disposition header" do
+        serve_file Rails.root.join('spec/support/data/MGL0905'), 
+          :headers => {"Content-Disposition" => "attachment; filename=MGL0905.json"} do |url|
+          importer = create_importer url, nil, true
+          results,errors = importer.import!
+
+          @db.tables.should include(:mgl0905)
+          errors.should be_empty
+          results[0].name.should          == 'mgl0905'
+          results[0].rows_imported.should == 1
+          results[0].import_type.should   == '.json'
+        end
+      end
+
+      it "should infer file extension from http content-type header" do
+        serve_file Rails.root.join('spec/support/data/MGL0905'), 
+          :headers => {"content-type" => "application/json"} do |url|
+          importer = create_importer url, nil, true
+          results,errors = importer.import!
+
+          @db.tables.should include(:mgl0905)
+          errors.should be_empty
+          results[0].name.should          == 'mgl0905'
+          results[0].rows_imported.should == 1
+          results[0].import_type.should   == '.json'
+        end
       end
     end
 

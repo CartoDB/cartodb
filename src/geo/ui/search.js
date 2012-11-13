@@ -34,15 +34,15 @@ cdb.geo.ui.Search = cdb.core.View.extend({
     var self = this;
 
     var address = this.$('input.text').val();
-    cdb.geo.geocoder.YAHOO.geocode(address, function(coords) {
+    cdb.geo.geocoder.NOKIA.geocode(address, function(coords) {
       if (coords.length>0) {
         var validBBox = true;
+        
         // check bounding box is valid
-        if(coords[0].boundingbox.south == coords[0].boundingbox.north ||
+        if(!coords[0].boundingbox || coords[0].boundingbox.south == coords[0].boundingbox.north ||
           coords[0].boundingbox.east == coords[0].boundingbox.west) {
           validBBox = false;
         }
-
 
         if (validBBox && coords[0].boundingbox) {
           self.model.setBounds([

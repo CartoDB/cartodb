@@ -1,20 +1,34 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <style>
+      html, body, #map {
+        height: 100%;
+        padding: 0;
+        margin: 0;
+      }
+    </style>
+    <link rel="stylesheet" href="http://libs.cartodb.com/cartodb.js/v2/themes/css/cartodb.css" />
+    <!--[if lte IE 8]>
+        <link rel="stylesheet" href="http://libs.cartodb.com/cartodb.js/v2/themes/css/cartodb.ie.css" />
+    <![endif]-->
     <link rel="stylesheet" href="../v2/themes/css/cartodb.css" />
-    <script src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
-    <script src="../v2/cartodb.uncompressed.js"></script>
   </head>
     
   <body>
-    <div id="map" style="height: 800px"></div>
+    <div id="map"></div>
   </body>
+
+  <script src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
+  <script src="http://libs.cartocdn.com/cartodb.js/v2/cartodb.js"></script>
 
   <script>
 
     function main() {
 
         var map;
+
+        // create google maps map
         var mapOptions = {
           zoom: 2,
           center: new google.maps.LatLng(43, 0),
@@ -22,28 +36,35 @@
         };
         map = new google.maps.Map(document.getElementById('map'),  mapOptions);
 
+<<<<<<< HEAD
         cartodb.createLayer(map, 'http://staging20.cartodb.com/api/v1/viz/table_10m_reefs_3/viz.json')
+=======
+        // load cartodb layer
+        cartodb.createLayer(map, 'http://examples-beta.cartodb.com/api/v1/viz/219/viz.json')
+>>>>>>> develop
          .on('done', function(layer) {
-          window.layer = layer;
           map.overlayMapTypes.setAt(0, layer);
+
           layer.on('featureOver', function(e, pos, latlng, data) {
             console.log(e, pos, latlng, data);
           });
+
           layer.on('error', function(err) {
             console.log('error: ' + err);
           });
+
         }).on('error', function() {
           console.log("some error occurred");
         });
 
     }
 
-
-    document.body.onload = function() {
-      main();
-    }
+    window.onload = main;
 
   </script>
+<<<<<<< HEAD
 
+=======
+>>>>>>> develop
 
 </html>

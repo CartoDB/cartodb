@@ -152,6 +152,7 @@ module CartoDB
       #
       def import!
         begin
+
           fs = File.size(@path)
           if fs.to_i == 0
             @data_import.set_error_code(1005)

@@ -21,7 +21,7 @@ describe CartoDB::Importer do
       results[0].import_type.should   == '.csv'
       errors.length.should            == 0
     end
-    
+
     it "should correctly handle encodings" do
       importer = create_importer 'clubbing_export.zip', 'fucked_encoding'
       results, errors   = importer.import!
@@ -34,7 +34,7 @@ describe CartoDB::Importer do
       errors.length.should            == 0
       @db.select(:artistas).from(:fucked_encoding).all.first[:artistas].should be == 'MisteriosonorA + Dj Bombín'
     end
-    
+
     it "should remove the table from the database if an exception happens" do
       importer = create_importer 'empty.csv'
       results, errors = importer.import!
@@ -254,6 +254,7 @@ describe CartoDB::Importer do
 
         results[0].import_type.should == '.csv'
       end
+
     end
 
     describe "#XLSX" do
@@ -542,8 +543,8 @@ describe CartoDB::Importer do
       results, errors   = importer.import!
 
       results.length.should           == 1
-      results[0].name.should          == 'cartodb_query'
-      results[0].rows_imported.should == 46
+      results[0].name.should          == 'cartodb_20_export_cs'
+      results[0].rows_imported.should == 3
       results[0].import_type.should   == '.csv'
 
       @db.schema(results[0].name).map {|i| i.first }.should_not include(:invalid_the_geom)
@@ -552,28 +553,41 @@ describe CartoDB::Importer do
 
     it "can import shp files" do
 
-      importer = create_importer 'cartodb_20_export_shp.zip'
+      importer = create_importer 'tm_world_borders_s_1.zip'
       results, errors   = importer.import!
 
       results.length.should           == 1
-      results[0].name.should          == 'clubbing_export'
-      results[0].rows_imported.should == 1998
-      results[0].import_type.should   == '.csv'
+      results[0].name.should          == 'tm_world_borders_s_1'
+      results[0].rows_imported.should == 246
+      results[0].import_type.should   == '.shp'
       errors.length.should            == 0
 
     end
 
     it "can import KML files" do
 
-      importer = create_importer 'cartodb_20_export_kml.kml'
+      importer = create_importer 'tm_world_borders_s_11.kml'
       results, errors   = importer.import!
 
       results.length.should           == 1
-      results[0].name.should          == 'gadm1_light_export'
+      results[0].name.should          == 'tm_world_borders_s_11'
       results[0].rows_imported.should == 10
       results[0].import_type.should   == '.kml'
       errors.length.should            == 0
 
+    end
+
+    it "can import a csv with polygons" do
+      importer = create_importer 'polygons.csv.zip'
+      results, errors   = importer.import!
+
+      results.length.should           == 1
+      results[0].name.should          == 'polygons'
+      results[0].rows_imported.should == 20
+      results[0].import_type.should   == '.csv'
+      errors.length.should            == 0
+
+      @db.fetch("SELECT GeometryType(the_geom) FROM polygons").all.select{|r| r[:geometrytype] == 'MULTIPOLYGON'}.should have(20).items
     end
   end
   ##################################################

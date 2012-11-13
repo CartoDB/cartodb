@@ -492,7 +492,7 @@ var LeafLetLayerCartoDBView = function(layerModel, leafletMap) {
 _.extend(L.CartoDBLayer.prototype, CartoDBLayerCommon.prototype);
 
 _.extend(
-  LeafLetLayerCartoDBView.prototype, 
+  LeafLetLayerCartoDBView.prototype,
   cdb.geo.LeafLetLayerView.prototype,
   L.CartoDBLayer.prototype,
   Backbone.Events, // be sure this is here to not use the on/off from leaflet
@@ -505,8 +505,10 @@ _.extend(
     // we should remove it from layer options
     if(this.model.get('use_server_style')) {
       attrs.tile_style = null;
-    } 
+    }
+
     this.leafletLayer.setOptions(attrs);
+
   },
 
   featureOver: function(e, latlon, pixelPos, data) {

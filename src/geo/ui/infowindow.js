@@ -56,6 +56,26 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
     return this;
   },
 
+  // addField: function(fieldName, at) {
+  //   if(!this.containsField(fieldName)) {
+  //     //var fields = this._cloneFields() || [];
+      
+  //     var fields = this.get('fields')
+  //       , sort = at === undefined;
+
+  //     at = at === undefined ? fields.length: at;
+  //     fields.push({name: fieldName, title: true, position: at});
+  //     // if (sort)
+  //     //   fields.sort(function(a, b) { return a.position -  b.position; });
+  //     this.trigger('changeFields')
+  //     //this.set({'fields': f});
+
+  //     //sort fields
+  //     //this._setFields(fields);
+  //   }
+  //   return this;
+  // },
+
   getFieldProperty: function(fieldName, k) {
     if(this.containsField(fieldName)) {
       var fields = this.get('fields') || [];
@@ -106,13 +126,17 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
   className: "infowindow",
 
   events: {
-    "click .close":   "_closeInfowindow",
-    "dragstart":      "_checkOrigin",
-    "mousedown":      "_checkOrigin",
-    "mousewheel":     "_stopPropagation",
-    "DOMMouseScroll": "_stopPropagation",
-    "dbclick":        "_stopPropagation",
-    "click":          "_stopPropagation"
+    // Close bindings
+    "click .close":       "_closeInfowindow",
+    "touchstart .close":  "_closeInfowindow",
+    // Rest infowindow bindings
+    "dragstart":          "_checkOrigin",
+    "mousedown":          "_checkOrigin",
+    "touchstart":         "_checkOrigin",
+    "mousewheel":         "_stopPropagation",
+    "DOMMouseScroll":     "_stopPropagation",
+    "dbclick":            "_stopPropagation",
+    "click":              "_stopPropagation"
   },
 
   initialize: function(){
@@ -166,8 +190,9 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
 
   _checkOrigin: function(ev) {
     // If the mouse down come from jspVerticalBar
-    // dont stop the propagation
-    var come_from_scroll = ($(ev.target).closest(".jspVerticalBar").length > 0 );
+    // dont stop the propagation, but if the event
+    // is a touchstart, stop the propagation
+    var come_from_scroll = (($(ev.target).closest(".jspVerticalBar").length > 0) && (ev.type != "touchstart"));
     
     if (!come_from_scroll) {
       ev.stopPropagation();

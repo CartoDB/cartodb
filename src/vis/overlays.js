@@ -27,14 +27,16 @@ cdb.vis.Overlay.register('header', function(data, vis) {
 
   // Add the complete url for facebook and twitter
   if (location.href) {
-    data.url = encodeURIComponent(location.href);
+    data.share_url = encodeURIComponent(location.href);
+  } else {
+    data.share_url = data.url;
   }
 
   var template = cdb.core.Template.compile(
     data.template || "\
       {{#title}}<h1><a href='{{url}}'>{{title}}</a></h1>{{/title}}\
       {{#description}}<p>{{description}}</p>{{/description}}\
-      {{#shareable}}<div class='social'><a class='facebook' target='_blank' href='http://www.facebook.com/sharer.php?u={{url}}&text={{title}}'>F</a><a class='twitter' href='https://twitter.com/share?url={{url}}&text={{title}} %7C CartoDB %7C ' target='_blank'>T</a></div>{{/shareable}}\
+      {{#shareable}}<div class='social'><a class='facebook' target='_blank' href='http://www.facebook.com/sharer.php?u={{share_url}}&text={{title}}'>F</a><a class='twitter' href='https://twitter.com/share?url={{share_url}}&text={{title}} %7C CartoDB %7C ' target='_blank'>T</a></div>{{/shareable}}\
     ",
     data.templateType || 'mustache'
   );
@@ -43,6 +45,7 @@ cdb.vis.Overlay.register('header', function(data, vis) {
     title: data.map.get('title'),
     description: data.map.get('description'),
     url: data.url,
+    share_url: data.share_url,
     shareable: (data.shareable == "false" || !data.shareable) ? null : data.shareable,
     template: template
   });

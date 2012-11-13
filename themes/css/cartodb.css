@@ -964,9 +964,7 @@ div.header.yellow h1 a:hover {
     font:bold 11px "Helvetica Neue","Helvetica",Arial;
     color:#CCCCCC;
     text-transform:uppercase;
-    text-overflow:ellipsis;
-    overflow:hidden;
-    white-space:nowrap;
+    word-wrap: break-word;
   }
 
   div.cartodb-popup p {
@@ -978,9 +976,7 @@ div.header.yellow h1 a:hover {
     font:normal 13px "Helvetica",Arial;
     color:#333333;
     padding:0 0 7px;
-    text-overflow:ellipsis;
-    overflow:hidden;
-    white-space:nowrap;
+    word-wrap: break-word;
   }
 
   div.cartodb-popup p.empty {
@@ -995,8 +991,8 @@ div.header.yellow h1 a:hover {
     display: block;
     background: #FFF;
     border: none;
-    border-bottom: 1px solid #999999; /*IE*/
-    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+    border-bottom: 1px solid #808080; /*IE*/
+    border-bottom: 1px solid rgba(0, 0, 0, 0.5);
     margin:0;
     padding:20px;
     -moz-border-radius-topleft: 1px;
@@ -1169,7 +1165,7 @@ div.header.yellow h1 a:hover {
 
   div#tiles_loader div.loader {
     position:absolute;
-    display:none;
+    display:block;
     top:70px;
     left:-30px;
     margin:20px 0 0 0;
@@ -1179,7 +1175,7 @@ div.header.yellow h1 a:hover {
     -moz-box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
     box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
     z-index: 5;
-    background: white;
+    background: url('../img/loader.gif') no-repeat center center white;
     -webkit-border-radius: 4px;
     -moz-border-radius: 4px;
     -ms-border-radius: 4px;
@@ -1187,8 +1183,6 @@ div.header.yellow h1 a:hover {
     border-radius: 4px;
     border: 1px solid #999999;
   }
-
-  div#tiles_loader div.spinner {top:14px!important; left:14px!important;}
 
   div.search_box {
     position: relative;

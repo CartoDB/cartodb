@@ -32,6 +32,12 @@
 
     <%=CDB_LIB%>
 
+    cdb.$ = $;
+    cdb.L = L;
+    cdb.Mustache = Mustache;
+    cdb.Backbone = Backbone;
+    cdb._ = _;
+
   })();
 
 
@@ -39,7 +45,10 @@
 
   ;
   for(var i in __prev) {
-    window[i] = __prev[i];
+    // keep it at global context if it didn't exist
+    if(__prev[i]) {
+      window[i] = __prev[i];
+    }
   }
 
 

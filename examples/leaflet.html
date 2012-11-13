@@ -21,13 +21,16 @@
   </body>
 
 
-  <!--<script src="http://libs.cartocdn.com/cartodb.js/v2/cartodb.js"></script>-->
-  <script src="../v2/cartodb.js"></script>
+  <script src="http://libs.cartocdn.com/cartodb.js/v2/cartodb.js"></script>
   <script>
 
     function main() {
 
-      var map = L.map('map', { boxZoom: false }).setView([0, 0], 3);
+      var map = L.map('map', { 
+        zoomControl: false,
+        center: [0, 0],
+        zoom: 3
+      })
 
       // add a nice baselayer from mapbox
       L.tileLayer('http://a.tiles.mapbox.com/v3/mapbox.mapbox-streets/{z}/{x}/{y}.png', {

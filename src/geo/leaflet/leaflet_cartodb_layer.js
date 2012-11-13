@@ -51,7 +51,7 @@ L.CartoDBLayer = L.TileLayer.extend({
       this.setBounds();
 
     // Add cartodb logo, yes sir!
-    this._addWadus();
+    this._addWadus({left:8, bottom:8}, 0, this.options.map._container);
 
     this.fire = this.trigger;
 
@@ -368,23 +368,6 @@ L.CartoDBLayer = L.TileLayer.extend({
       }
     });
   },
-
-
-  /**
-   * Add Cartodb logo
-   */
-  _addWadus: function() {
-    if (!document.getElementById('cartodb_logo')) {
-      var cartodb_link = document.createElement("a");
-      cartodb_link.setAttribute('id','cartodb_logo');
-      cartodb_link.setAttribute('style',"position:absolute; bottom:0; left:0; display:block; z-index:10000;");
-      cartodb_link.setAttribute('href','http://www.cartodb.com');
-      cartodb_link.setAttribute('target','_blank');
-      cartodb_link.innerHTML = "<img src='http://cartodb.s3.amazonaws.com/static/new_logo.png' style='position:absolute; bottom:8px; left:8px; display:block; border:none; outline:none' alt='CartoDB' title='CartoDB' />";
-      this.options.map._container.appendChild(cartodb_link);
-    }
-  },
-
 
   /**
    * Bind events for wax interaction

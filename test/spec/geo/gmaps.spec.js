@@ -3,8 +3,9 @@
     var mapView;
     var map;
     var spy;
+    var container;
     beforeEach(function() {
-      var container = $('<div>').css('height', '200px');
+      container = $('<div>').css('height', '200px');
       //$('body').append(container);
       map = new cdb.geo.Map();
       mapView = new cdb.geo.GoogleMapsMapView({
@@ -112,6 +113,18 @@
       var lyr = map.addLayer(layer);
       var layerView = mapView.getLayerByCid(lyr);
       expect(layerView.__proto__.constructor).toEqual(cdb.geo.GMapsCartoDBLayerView);
+    });
+
+    it("should create a cartodb logo when layer is cartodb", function() {
+      runs(function() {
+        layer = new cdb.geo.CartoDBLayer({ table_name: "INVENTADO"});
+        var lyr = map.addLayer(layer);
+        var layerView = mapView.getLayerByCid(lyr);
+      });
+      waits(2000);
+      runs(function() {
+        expect(container.find("a#cartodb_logo").length).toEqual(1);
+      });
     });
 
     it("should create a PlaiLayer when the layer is cartodb", function() {

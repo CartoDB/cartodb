@@ -159,8 +159,9 @@ describe("geo.map", function() {
     var mapView;
     var map;
     var spy;
+    var container;
     beforeEach(function() {
-      var container = $('<div>').css({
+      container = $('<div>').css({
           'height': '200px',
           'width': '200px'
       });
@@ -268,6 +269,18 @@ describe("geo.map", function() {
       var lyr = map.addLayer(layer);
       var layerView = mapView.getLayerByCid(lyr);
       expect(layerView.setQuery).not.toEqual(undefined);
+    });
+
+    it("should create the cartodb logo", function() {
+      runs(function() {
+        layer = new cdb.geo.CartoDBLayer({ table_name: "INVENTADO"});
+        var lyr = map.addLayer(layer);
+        var layerView = mapView.getLayerByCid(lyr);
+      });
+      waits(1);
+      runs(function() {
+        expect(container.find("a#cartodb_logo").length).toEqual(1);
+      });
     });
 
     it("should create a PlaiLayer when the layer is cartodb", function() {

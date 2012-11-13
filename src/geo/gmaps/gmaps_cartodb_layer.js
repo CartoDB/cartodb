@@ -75,6 +75,7 @@ _.extend(CartoDBLayer.prototype, CartoDBLayerCommon.prototype);
  */
 CartoDBLayer.prototype._addWadus =  function() {
   var self = this;
+  // Need some time until google logo is added and the block created
   setTimeout(function(){
     if (!document.getElementById('cartodb_logo')) {
       var cartodb_link = document.createElement("a");

@@ -18,7 +18,7 @@ quick start
         <![endif]-->
 
         <script src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
-        <script src="http://libs.cartocdn.com/cartodb.js/v2/cartodb.uncompressed.js"></script>
+        <script src="http://libs.cartocdn.com/cartodb.js/v2/cartodb.js"></script>
 
         <!-- use these links if you are using https -->
         <!--

@@ -19939,6 +19939,26 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
     return this;
   },
 
+  // addField: function(fieldName, at) {
+  //   if(!this.containsField(fieldName)) {
+  //     //var fields = this._cloneFields() || [];
+      
+  //     var fields = this.get('fields')
+  //       , sort = at === undefined;
+
+  //     at = at === undefined ? fields.length: at;
+  //     fields.push({name: fieldName, title: true, position: at});
+  //     // if (sort)
+  //     //   fields.sort(function(a, b) { return a.position -  b.position; });
+  //     this.trigger('changeFields')
+  //     //this.set({'fields': f});
+
+  //     //sort fields
+  //     //this._setFields(fields);
+  //   }
+  //   return this;
+  // },
+
   getFieldProperty: function(fieldName, k) {
     if(this.containsField(fieldName)) {
       var fields = this.get('fields') || [];
@@ -19989,13 +20009,17 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
   className: "infowindow",
 
   events: {
-    "click .close":   "_closeInfowindow",
-    "dragstart":      "_checkOrigin",
-    "mousedown":      "_checkOrigin",
-    "mousewheel":     "_stopPropagation",
-    "DOMMouseScroll": "_stopPropagation",
-    "dbclick":        "_stopPropagation",
-    "click":          "_stopPropagation"
+    // Close bindings
+    "click .close":       "_closeInfowindow",
+    "touchstart .close":  "_closeInfowindow",
+    // Rest infowindow bindings
+    "dragstart":          "_checkOrigin",
+    "mousedown":          "_checkOrigin",
+    "touchstart":         "_checkOrigin",
+    "mousewheel":         "_stopPropagation",
+    "DOMMouseScroll":     "_stopPropagation",
+    "dbclick":            "_stopPropagation",
+    "click":              "_stopPropagation"
   },
 
   initialize: function(){
@@ -20049,8 +20073,9 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
 
   _checkOrigin: function(ev) {
     // If the mouse down come from jspVerticalBar
-    // dont stop the propagation
-    var come_from_scroll = ($(ev.target).closest(".jspVerticalBar").length > 0 );
+    // dont stop the propagation, but if the event
+    // is a touchstart, stop the propagation
+    var come_from_scroll = (($(ev.target).closest(".jspVerticalBar").length > 0) && (ev.type != "touchstart"));
     
     if (!come_from_scroll) {
       ev.stopPropagation();
@@ -21313,7 +21338,7 @@ var LeafLetLayerCartoDBView = function(layerModel, leafletMap) {
 _.extend(L.CartoDBLayer.prototype, CartoDBLayerCommon.prototype);
 
 _.extend(
-  LeafLetLayerCartoDBView.prototype, 
+  LeafLetLayerCartoDBView.prototype,
   cdb.geo.LeafLetLayerView.prototype,
   L.CartoDBLayer.prototype,
   Backbone.Events, // be sure this is here to not use the on/off from leaflet
@@ -21326,8 +21351,10 @@ _.extend(
     // we should remove it from layer options
     if(this.model.get('use_server_style')) {
       attrs.tile_style = null;
-    } 
+    }
+
     this.leafletLayer.setOptions(attrs);
+
   },
 
   featureOver: function(e, latlon, pixelPos, data) {
@@ -21916,7 +21943,7 @@ CartoDBLayer.prototype.getTile = function(coord, zoom, ownerDocument) {
   this.options.added = true;
 
   var im = wax.g.connector.prototype.getTile.call(this, coord, zoom, ownerDocument);
-  
+
   if (this.tiles == 0) {
     this.loading && this.loading();
     //this.trigger("loading");
@@ -21924,7 +21951,7 @@ CartoDBLayer.prototype.getTile = function(coord, zoom, ownerDocument) {
 
   this.tiles++;
 
-  
+
   im.onload = im.onerror = function() {
     self.tiles--;
     if (self.tiles == 0) {
@@ -22176,7 +22203,9 @@ _.extend(
 
   _update: function() {
     _.extend(this.options, this.model.attributes);
+
     this.update();
+
   },
 
   reload: function() {
@@ -23201,6 +23230,7 @@ var Vis = cdb.core.View.extend({
     }
 
     var map = new cdb.geo.Map(mapConfig);
+    this.map = map;
 
     var div = $('<div>').css({
       width: '100%',
@@ -23223,7 +23253,7 @@ var Vis = cdb.core.View.extend({
     this.$el.append(div);
 
     // Create the overlays
-    for(var i in data.overlays) {
+    for (var i in data.overlays) {
       var overlay = data.overlays[i];
       overlay.map = map;
       var v = Overlay.create(overlay.type, this, overlay);
@@ -23235,15 +23265,16 @@ var Vis = cdb.core.View.extend({
 
       this.addView(v);
       div.append(v.el);
-    }
 
-    // Set map position correctly taking into account
-    // header height
-    this.setMapPosition();
+      // Set map position correctly taking into account
+      // header height
+      if (overlay.type == "header") {
+        this.setMapPosition();
+      }
+    }
 
     // Create the map
     var mapView = new cdb.geo.MapView.create(div_hack, map);
-    this.map = map;
     this.mapView = mapView;
 
     // Add layers
@@ -23251,7 +23282,6 @@ var Vis = cdb.core.View.extend({
       var layerData = data.layers[i];
       this.loadLayer(layerData);
     }
-
   },
 
   // Set map top position taking into account header height
@@ -23373,14 +23403,16 @@ cdb.vis.Overlay.register('header', function(data, vis) {
 
   // Add the complete url for facebook and twitter
   if (location.href) {
-    data.url = encodeURIComponent(location.href);
+    data.share_url = encodeURIComponent(location.href);
+  } else {
+    data.share_url = data.url;
   }
 
   var template = cdb.core.Template.compile(
     data.template || "\
       {{#title}}<h1><a href='{{url}}'>{{title}}</a></h1>{{/title}}\
       {{#description}}<p>{{description}}</p>{{/description}}\
-      {{#shareable}}<div class='social'><a class='facebook' target='_blank' href='http://www.facebook.com/sharer.php?u={{url}}&text={{title}}'>F</a><a class='twitter' href='https://twitter.com/share?url={{url}}&text={{title}} %7C CartoDB %7C ' target='_blank'>T</a></div>{{/shareable}}\
+      {{#shareable}}<div class='social'><a class='facebook' target='_blank' href='http://www.facebook.com/sharer.php?u={{share_url}}&text={{title}}'>F</a><a class='twitter' href='https://twitter.com/share?url={{share_url}}&text={{title}} %7C CartoDB %7C ' target='_blank'>T</a></div>{{/shareable}}\
     ",
     data.templateType || 'mustache'
   );
@@ -23389,6 +23421,7 @@ cdb.vis.Overlay.register('header', function(data, vis) {
     title: data.map.get('title'),
     description: data.map.get('description'),
     url: data.url,
+    share_url: data.share_url,
     shareable: (data.shareable == "false" || !data.shareable) ? null : data.shareable,
     template: template
   });
@@ -23631,6 +23664,12 @@ Layers.register('carto', cartoLayer);
 })();
 
 
+    cdb.$ = $;
+    cdb.L = L;
+    cdb.Mustache = Mustache;
+    cdb.Backbone = Backbone;
+    cdb._ = _;
+
   })();
 
 
@@ -23638,7 +23677,10 @@ Layers.register('carto', cartoLayer);
 
   ;
   for(var i in __prev) {
-    window[i] = __prev[i];
+    // keep it at global context if it didn't exist
+    if(__prev[i]) {
+      window[i] = __prev[i];
+    }
   }
 
 

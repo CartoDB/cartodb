@@ -19457,7 +19457,7 @@ cdb.geo.Map = cdb.core.Model.extend({
       swPoint = cdb.geo.Map.latlngToMercator(sw, zoom);
       boundsSize[0] = Math.abs(nePoint[0] - swPoint[0]);
       boundsSize[1] = Math.abs(swPoint[1] - nePoint[1]);
-      zoomNotFound = boundsSize[0] < size[0] || boundsSize[1] < size[1];
+      zoomNotFound = boundsSize[0] <= size[0] || boundsSize[1] <= size[1];
     } while (zoomNotFound && zoom <= maxZoom);
 
     if (zoomNotFound) {
@@ -20449,7 +20449,7 @@ CartoDBLayerCommon.prototype = {
         cartodb_link.innerHTML = "<img src='http://cartodb.s3.amazonaws.com/static/new_logo.png' style='position:absolute; bottom:" + 
           ( position.bottom || 0 ) + "px; left:" + ( position.left || 0 ) + "px; display:block; border:none; outline:none' alt='CartoDB' title='CartoDB' />";
         container.appendChild(cartodb_link);
-      },( timeout || 0 ));
+      },( timeout || 0 ));
     }
   },
 
@@ -23625,7 +23625,12 @@ Layers.register('carto', cartoLayer);
       url = layer;
     }
     if(url) {
-      $.getJSON(url + "?callback=?", callback);
+      window.vizjson = callback;
+      $.ajax({
+        url: url + "?callback=vizjson",
+        dataType: "script",
+        cache: true 
+      });
     } else {
       _.defer(function() { callback(null); });
     }

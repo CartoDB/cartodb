@@ -84,16 +84,19 @@
 
           // Adds a TileLayer
           var URL = 'http://a.tiles.mapbox.com/v3/mapbox.mapbox-streets/{z}/{x}/{y}.png';
+          var URL = 'http://a.tiles.mapbox.com/v3/mapbox.mapbox-streets/2/0/2.png';
 
-          map.addLayer(new cdb.geo.TileLayer({urlTemplate: URL}));
+          //map.addLayer(new cdb.geo.TileLayer({urlTemplate: URL}));
+          map.addLayer(new cdb.geo.PlainLayer({ color: '#8AC'}));
 
           // Adds a CartoDBLayer
           var options = {
-            user_name: 'examples',
-            table_name: 'earthquakes',
-            query: 'SELECT * FROM {{table_name}}',
-            tile_style: "#{{table_name}}{marker-fill:red}",
-            interactivity: "cartodb_id, magnitude"
+            user_name: 'staging20',
+            table_name: 'tm_world_borders_s_11',
+            extra_params: {
+              cache_policy: 'persist'
+            },
+            subdomains: [null]
           };
 
 

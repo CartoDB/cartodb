@@ -26,4 +26,16 @@
         }
       }
     }
+
+    .generating {
+      width:100%;
+      p {
+        text-align:center;
+        color: #AAA;
+        padding-top: 1em;
+      }
+      &.hidden {
+        display: none;
+      }
+    }
   }

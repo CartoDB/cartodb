@@ -194,6 +194,7 @@
 
         div.wrapper {position:absolute; top:0; left:0; bottom:0; right:0; padding:0 30px; overflow:auto;}
         div.content {left:30px; right:30px!important; overflow-x:visible;}
+        div.no_content {margin:20px 0 0 0; border:1px solid #E6E6E6; @include border-radius(4px); padding:20px; color:#666666; text-align:center; line-height:18px;}
       }
 
       // SQL PANEL & CARTO PANEL

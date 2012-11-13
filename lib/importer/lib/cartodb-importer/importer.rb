@@ -43,15 +43,8 @@ module CartoDB
 
         # Setup candidate file
         @import_from_file = options[:import_from_file]
-        if options[:import_from_url]
-          begin
-            @import_from_file = temporary_filename() + File.basename(options[:import_from_url])
-            `wget \"#{options[:import_from_url]}\" -O #{@import_from_file}`
-          rescue => e
-            log e
-            raise e
-          end
-        end
+        
+        @import_from_file = options[:import_from_url] if options[:import_from_url]
 
         raise "data_import_id can't be blank" if @data_import.blank?
         raise "import_from_file value can't be blank" if @import_from_file.blank?
@@ -89,6 +82,17 @@ module CartoDB
               file_name = File.basename(@import_from_file)
               @ext = File.extname(file_name).downcase
 
+              # Try to infer file extension from http Content-Disposition
+              if @ext.blank? && res.meta.present? && res.meta["content-disposition"].present?
+                  @ext = /filename=.*(\..*)/.match(res.meta["content-disposition"])[1].to_s.downcase
+              end
+              
+              # If the former didn't work, try to infer file extension from http Content-Type
+              if @ext.blank? && res.meta.present? && res.meta["content-type"].present?
+                  set = Mime::LOOKUP[res.meta["content-type"]]
+                  @ext = ".#{set.instance_variable_get("@symbol").to_s}" if set
+              end
+
               # Fix for extensionless fusiontables files
               if @filesrc == "fusiontables"
                 @ext = ".kml"
@@ -105,13 +109,10 @@ module CartoDB
               @import_from_file.write res.read.force_encoding("UTF-8")
               @import_from_file.close
             end
-          rescue e
-            if @import_from_file =~ /^http/
-              uri = $!.uri
-              retry
-            else
-              @data_import.log_error(e)
-            end
+          rescue OpenURI::HTTPError => e
+            @data_import.set_error_code(1008)
+            @data_import.log_error("")
+            raise "Couldn't download the file, check the URL and try again."
           end
 
         else
@@ -126,8 +127,8 @@ module CartoDB
 
         # finally setup current path
         @path = @import_from_file.respond_to?(:tempfile) ? @import_from_file.tempfile.path : @import_from_file.path
-
-        #final ext check in case the file was falsely transfered as .SHP for example
+        
+        # Final ext check in case the file was falsely transfered as .SHP for example
         if ['','.shp','.csv'].include? @ext
           @ext = check_if_archive(@path, @ext)
           if @ext==""

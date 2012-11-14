@@ -38,7 +38,7 @@ gem "ejs",                     "~> 1.1.1"
 gem "turbo-sprockets-rails3",  "0.1.16"
 group :assets do
   gem 'sass-rails',            "~> 3.2.3"
-  gem 'uglifier',              "~> 1.0.3"
+  gem 'uglifier',              "~> 1.3.0"
   gem 'therubyracer',          "~> 0.9.10"
   gem 'compass',               "~> 0.12.1"
   gem 'compass-rails',         "~> 1.0.1"

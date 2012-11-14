@@ -44,12 +44,7 @@
       url = layer;
     }
     if(url) {
-      window.vizjson = callback;
-      $.ajax({
-        url: url + "?callback=vizjson",
-        dataType: "script",
-        cache: true 
-      });
+      $.getJSON(url + "?callback=?", callback);
     } else {
       _.defer(function() { callback(null); });
     }

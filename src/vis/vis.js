@@ -192,7 +192,7 @@ var Vis = cdb.core.View.extend({
           }
           content = render_fields;
         }
-        infowindow.model.set({ content:  { fields: content} });
+        infowindow.model.set({ content:  { fields: content, data: interact_data} });
         infowindow.setLatLng(latlng).showInfowindow();
     });
 

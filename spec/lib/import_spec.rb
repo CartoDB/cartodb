@@ -349,6 +349,26 @@ describe CartoDB::Importer do
         results.map(&:rows_imported).should be == [1, 1, 18, 18, 51, 51, 368, 368, 8298, 8298]
         results.map(&:import_type).should be   == [".csv", ".shp", ".csv", ".shp", ".csv", ".shp", ".csv", ".shp", ".csv", ".shp"]
       end
+
+      it 'can import the file ne_10m_coastline.zip' do
+        importer = create_importer 'ne_10m_coastline.zip'
+        results,errors = importer.import!
+
+        results.length.should              == 1
+        results[0].name.should be          == 'ne_10m_coastline'
+        results[0].rows_imported.should be == 4102
+        results[0].import_type.should be   == '.shp'
+      end
+
+      it 'can import the file ne_10m_admin_0_countries.zip' do
+        importer = create_importer 'ne_10m_admin_0_countries.zip'
+        results,errors = importer.import!
+
+        results.length.should              == 1
+        results[0].name.should be          == 'ne_10m_admin_0_count'
+        results[0].rows_imported.should be == 254
+        results[0].import_type.should be   == '.shp'
+      end
     end
 
     describe "#GPX file" do

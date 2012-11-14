@@ -70,6 +70,7 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
     $.when(this._addField(fieldName, at)).then(function() {
       self.sortFields();
       self.trigger('change:fields');
+      self.trigger('add:fields');
     });
     return this;
   },
@@ -134,6 +135,7 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
         fields.splice(idx, 1);
       }
       this._setFields(fields);
+      this.trigger('remove:fields')
     }
     return this;
   }

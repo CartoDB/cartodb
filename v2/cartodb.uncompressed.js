@@ -19985,21 +19985,40 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
     this.set({'fields': f});
   },
 
-  addField: function(fieldName, at) {
+  sortFields: function() {
+    this.get('fields').sort(function(a, b) { return a.position -  b.position; });
+  },
+
+  _addField: function(fieldName, at) {
+    var dfd = $.Deferred();
     if(!this.containsField(fieldName)) {
-      var fields = this._cloneFields() || [];
-      at = at === undefined ? fields.length: at;
-      fields.push({name: fieldName, title: true, position: at});
-      //sort fields
-      this._setFields(fields);
+      var fields = this.get('fields');
+      if(fields) {
+        at = at === undefined ? fields.length: at;
+        fields.push({name: fieldName, title: true, position: at});
+      } else {
+        at = at === undefined ? 0 : at;
+        this.set('fields', [{name: fieldName, title: true, position: at}])
+      }
     }
+    dfd.resolve();
+    return dfd.promise();
+  },
+
+  addField: function(fieldName, at) {
+    var self = this;
+    $.when(this._addField(fieldName, at)).then(function() {
+      self.sortFields();
+      self.trigger('change:fields');
+      self.trigger('add:fields');
+    });
     return this;
   },
 
   // addField: function(fieldName, at) {
   //   if(!this.containsField(fieldName)) {
   //     //var fields = this._cloneFields() || [];
-      
+
   //     var fields = this.get('fields')
   //       , sort = at === undefined;
 
@@ -20056,6 +20075,7 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
         fields.splice(idx, 1);
       }
       this._setFields(fields);
+      this.trigger('remove:fields')
     }
     return this;
   }
@@ -20121,7 +20141,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
   },
 
   _compileTemplate: function() {
-    this.template = new cdb.core.Template({ 
+    this.template = new cdb.core.Template({
        template: this.model.get('template'),
        type: this.model.get('template_type') || 'mustache'
     }).asFunction()
@@ -20133,7 +20153,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     // dont stop the propagation, but if the event
     // is a touchstart, stop the propagation
     var come_from_scroll = (($(ev.target).closest(".jspVerticalBar").length > 0) && (ev.type != "touchstart"));
-    
+
     if (!come_from_scroll) {
       ev.stopPropagation();
     }
@@ -20149,7 +20169,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
       }
 
       this.$el.html($(this.template(_.clone(this.model.attributes))));
-      
+
       // Hello jscrollpane hacks!
       // It needs some time to initialize, if not it doesn't render properly the fields
       // Check the height of the content + the header if exists
@@ -20179,7 +20199,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
       ev.preventDefault()
       ev.stopPropagation();
     }
-      
+
     this.model.set("visibility",false);
   },
 
@@ -20214,10 +20234,10 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
   },
 
   _update: function (no_pan) {
-    
+
     if(!this.isHidden()) {
       var delay = 0;
-      
+
       if (!no_pan) {
         var delay = this._adjustPan();
       }
@@ -20240,7 +20260,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
         .animate({
           opacity: 1,
           marginBottom: 0
-        },300);  
+        },300);
     } else {
       this.$el.show();
     }
@@ -20256,7 +20276,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
         display:      "block"
       }, 180, function() {
         that.$el.css({display: "none"});
-      }); 
+      });
     } else {
       this.$el.hide();
     }
@@ -20439,16 +20459,15 @@ CartoDBLayerCommon.prototype = {
    */
   _addWadus: function(position, timeout, container) {
     if (!document.getElementById('cartodb_logo')) {
-      var self = this;
+      var cartodb_link = document.createElement("a");
+      container.appendChild(cartodb_link);
       setTimeout(function() {
-        var cartodb_link = document.createElement("a");
         cartodb_link.setAttribute('id','cartodb_logo');
         cartodb_link.setAttribute('style',"position:absolute; bottom:0; left:0; display:block; border:none; z-index:10000;");
         cartodb_link.setAttribute('href','http://www.cartodb.com');
         cartodb_link.setAttribute('target','_blank');
         cartodb_link.innerHTML = "<img src='http://cartodb.s3.amazonaws.com/static/new_logo.png' style='position:absolute; bottom:" + 
           ( position.bottom || 0 ) + "px; left:" + ( position.left || 0 ) + "px; display:block; border:none; outline:none' alt='CartoDB' title='CartoDB' />";
-        container.appendChild(cartodb_link);
       },( timeout || 0 ));
     }
   },

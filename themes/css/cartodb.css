@@ -1244,3 +1244,11 @@ div.header.yellow h1 a:hover {
   div.search_box input.submit:hover {
     cursor:pointer;
   }
+
+  div.cartodb-popup h4.noFields {
+    font-size: 13px;
+    text-align: center;
+    padding:12px 0;
+    font-weight: normal;
+    text-transform: none;
+  }

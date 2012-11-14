@@ -329,6 +329,46 @@ describe CartoDB::Importer do
         results[0].rows_imported.should == 246
         results[0].import_type.should   == '.shp'
       end
+
+      it 'can import a Spain GADM file' do
+        importer = create_importer 'ESP_adm.zip'
+        results,errors = importer.import!
+
+        results.length.should                  == 10
+        results.map(&:name).should be          == ["esp_adm0", "esp_adm0_1", "esp_adm1", "esp_adm1_1", "esp_adm2", "esp_adm2_1", "esp_adm3", "esp_adm3_1", "esp_adm4", "esp_adm4_1"]
+        results.map(&:rows_imported).should be == [1, 1, 18, 18, 51, 51, 368, 368, 8298, 8298]
+        results.map(&:import_type).should be   == [".csv", ".shp", ".csv", ".shp", ".csv", ".shp", ".csv", ".shp", ".csv", ".shp"]
+      end
+
+      it 'can import a Spain GADM file' do
+        importer = create_importer 'http://www.filefactory.com/file/13m5trz7vkzb/n/ESP_adm_zip', 'esp_adm', true
+        results,errors = importer.import!
+
+        results.length.should                  == 10
+        results.map(&:name).should be          == ["esp_adm", "esp_adm_1", "esp_adm_2", "esp_adm_3", "esp_adm_4", "esp_adm_5", "esp_adm_6", "esp_adm_7", "esp_adm_8", "esp_adm_9"]
+        results.map(&:rows_imported).should be == [1, 1, 18, 18, 51, 51, 368, 368, 8298, 8298]
+        results.map(&:import_type).should be   == [".csv", ".shp", ".csv", ".shp", ".csv", ".shp", ".csv", ".shp", ".csv", ".shp"]
+      end
+
+      it 'can import the file ne_10m_coastline.zip' do
+        importer = create_importer 'ne_10m_coastline.zip'
+        results,errors = importer.import!
+
+        results.length.should              == 1
+        results[0].name.should be          == 'ne_10m_coastline'
+        results[0].rows_imported.should be == 4102
+        results[0].import_type.should be   == '.shp'
+      end
+
+      it 'can import the file ne_10m_admin_0_countries.zip' do
+        importer = create_importer 'ne_10m_admin_0_countries.zip'
+        results,errors = importer.import!
+
+        results.length.should              == 1
+        results[0].name.should be          == 'ne_10m_admin_0_count'
+        results[0].rows_imported.should be == 254
+        results[0].import_type.should be   == '.shp'
+      end
     end
 
     describe "#GPX file" do
@@ -336,7 +376,7 @@ describe CartoDB::Importer do
         importer = create_importer 'activity_234497933.gpx'
         results,errors = importer.import!
 
-        errors.length.should              == 3
+        errors.length.should            == 3
         results.length.should           == 2
         results[0].name.should          == 'activity_234497933_t'
         results[0].rows_imported.should == 440
@@ -429,7 +469,7 @@ describe CartoDB::Importer do
       end
 
       it "should infer file extension from http content-disposition header" do
-        serve_file Rails.root.join('spec/support/data/MGL0905'), 
+        serve_file Rails.root.join('spec/support/data/MGL0905'),
           :headers => {"Content-Disposition" => "attachment; filename=MGL0905.json"} do |url|
           importer = create_importer url, nil, true
           results,errors = importer.import!
@@ -443,7 +483,7 @@ describe CartoDB::Importer do
       end
 
       it "should infer file extension from http content-type header" do
-        serve_file Rails.root.join('spec/support/data/MGL0905'), 
+        serve_file Rails.root.join('spec/support/data/MGL0905'),
           :headers => {"content-type" => "application/json"} do |url|
           importer = create_importer url, nil, true
           results,errors = importer.import!

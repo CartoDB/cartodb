@@ -20,8 +20,24 @@
     <div id="map"></div>
   </body>
 
+  <script type="infowindow/html" id="infowindow_template">
+    <div class="cartodb-popup">
 
-  <script src="http://libs.cartocdn.com/cartodb.js/v2/cartodb.js"></script>
+      <a href="#close" class="cartodb-popup-close-button close">x</a>
+
+       <div class="cartodb-popup-content-wrapper">
+         <div class="cartodb-popup-content">
+           <img style="width: 100%" src="http://rambo.webcindario.com/images/18447755.jpg"></src>
+           <!-- content.data contains the field info -->
+           <h4>{{content.data.name}}</h4>
+         </div>
+       </div>
+       <div class="cartodb-popup-tip-container"></div>
+    </div>
+  </script>
+
+  <!--<script src="http://libs.cartocdn.com/cartodb.js/v2/cartodb.js"></script>-->
+  <script src="../v2/cartodb.uncompressed.js"></script>
   <script>
 
     function main() {
@@ -39,7 +55,10 @@
 
       cartodb.createLayer(map, 'http://examples-beta.cartodb.com/api/v1/viz/219/viz.json')
        .on('done', function(layer) {
+
         map.addLayer(layer);
+
+        layer.infowindow.set('template', $('#infowindow_template').html());
 
         layer.on('featureOver', function(e, pos, latlng, data) {
           console.log(e, pos, latlng, data);

@@ -51,6 +51,9 @@ var CartoDBLayer = function(opts) {
   // Set init
   this.tiles = 0;
 
+  // Add CartoDB logo
+  this._addWadus({left: 74, bottom:8}, 2000, this.options.map.getDiv());
+
   wax.g.connector.call(this, opts);
 
   // lovely wax connector overwrites options so set them again
@@ -65,6 +68,7 @@ CartoDBLayer.Projector = Projector;
 
 CartoDBLayer.prototype = new wax.g.connector();
 _.extend(CartoDBLayer.prototype, CartoDBLayerCommon.prototype);
+
 
 CartoDBLayer.prototype.setOpacity = function(opacity) {
 

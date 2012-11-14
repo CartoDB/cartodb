@@ -73,4 +73,16 @@ describe("Vis", function() {
     expect(this.vis.mapView.map_googlemaps).not.toEqual(undefined);
   });
 
+  it("should pass map to overlays", function() {
+    var _map;
+    cdb.vis.Overlay.register('jaja', function(data, vis){
+      _map = vis.map
+      return new cdb.core.View()
+    })
+    var vis = new cdb.vis.Vis({el: this.container});
+    this.mapConfig.overlays = [ {type: 'jaja'}];
+    vis.load(this.mapConfig);
+    expect(_map).not.toEqual(undefined);
+  });
+
 })

@@ -11,19 +11,31 @@ quick start
   1. add cartodb.js and css to your site (and google maps if you are using it):
 
     ```html
+
         <link rel="stylesheet" href="http://libs.cartodb.com/cartodb.js/v2/themes/css/cartodb.css" />
+        <!--[if lte IE 8]>
+            <link rel="stylesheet" href="http://libs.cartodb.com/cartodb.js/v2/themes/css/cartodb.ie.css" />
+        <![endif]-->
+
         <script src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
-        <script src="http://libs.cartocdn.com/cartodb.js/v2/cartodb.uncompressed.js"></script>
+        <script src="http://libs.cartocdn.com/cartodb.js/v2/cartodb.js"></script>
 
         <!-- use these links if you are using https -->
         <!--
+
         <link rel="stylesheet" href="https://d3voyrscnb0slx.cloudfront.net/cartodb.js/v2/themes/cartodb.css" />
+        <!--[if lte IE 8]>
+            <link rel="stylesheet" href="https://d3voyrscnb0slx.cloudfront.net/cartodb.js/v2/themes/css/cartodb.ie.css" />
+        <![endif]-->
+
         <script src="https://d3voyrscnb0slx.cloudfront.net/cartodb.js/v2/cartodb.js"></script>
         -->
     ```
 
 
-  2. create the map and add the layer
+  2. create the map and add the layer 
+  
+    **gmaps**
 
     ```javascript
 
@@ -37,14 +49,34 @@ quick start
         map = new google.maps.Map(document.getElementById('map'),  mapOptions);
 
         // add the cartodb layer
-        var layerUrl = 'http://staging20.cartodb.com/api/v1/viz/nh_final/viz.json';
+        // you can find this url in CartoDB interface:
+        // - go to map
+        // - click on share
+        // - API tab
+        var layerUrl = 'http://examples-beta.cartodb.com/api/v1/viz/219/viz.json';
         cartodb.createLayer(map, layerUrl, function(layer) {
             map.overlayMapTypes.setAt(0, layer);
         });
 
     ```
 
-    
+    **leaflet**
+
+    ```javascript
+      var map = L.map('map').setView([0, 0], 3);
+
+      // set a base layer
+      L.tileLayer('http://a.tile.stamen.com/toner/{z}/{x}/{y}.png', {
+        attribution: 'stamen'
+      }).addTo(map);
+      
+      // add the cartodb layer
+      var layerUrl = 'http://examples-beta.cartodb.com/api/v1/viz/219/viz.json';
+      cartodb.createLayer(map, layerUrl, function(layer) {
+        map.overlayMapTypes.setAt(0, layer);
+      });
+    ```
+
 
 
 next steps

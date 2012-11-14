@@ -393,6 +393,14 @@ class Table < Sequel::Model(:user_tables)
       }
 
     m.add_layer(data_layer)
+
+    # Post the style to the tiler
+    tiler_post_url = "#{Cartodb.config[:tile_protocol]}://#{Cartodb.config[:tile_host]}:#{Cartodb.config[:tile_port]}/tiles/#{self.name}"
+    CartoDB::Logger.info tiler_post_url
+    Net::HTTP.post_form(
+      URI.parse(tiler_post_url), 
+      { 'style_version' => data_layer.options["style_version"], 'style' => data_layer.options["tile_style"] }
+    )
   end
 
   def after_update

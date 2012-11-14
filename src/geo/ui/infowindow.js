@@ -53,24 +53,30 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
     var dfd = $.Deferred();
     if(!this.containsField(fieldName)) {
       var fields = this.get('fields');
-      at = at === undefined ? fields.length: at;
-
-      fields.push({name: fieldName, title: true, position: at});
+      if(fields) {
+        at = at === undefined ? fields.length: at;
+        fields.push({name: fieldName, title: true, position: at});
+      } else {
+        at = at === undefined ? 0 : at;
+        this.set('fields', [{name: fieldName, title: true, position: at}])
+      }
     }
     dfd.resolve();
     return dfd.promise();
   },
 
   addField: function(fieldName, at) {
-    this._addField(fieldName, at);
-    this.sortFields();
-    this.trigger('change:fields');
+    var self = this;
+    $.when(this._addField(fieldName, at)).then(function() {
+      self.sortFields();
+      self.trigger('change:fields');
+    });
   },
 
   // addField: function(fieldName, at) {
   //   if(!this.containsField(fieldName)) {
   //     //var fields = this._cloneFields() || [];
-      
+
   //     var fields = this.get('fields')
   //       , sort = at === undefined;
 

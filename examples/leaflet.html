@@ -52,6 +52,22 @@
         console.log("some error occurred");
       });
 
+      cartodb.createLayer(map, 'http://examples-beta.cartodb.com/api/v1/viz/219/viz.json')
+       .on('done', function(layer) {
+        map.addLayer(layer);
+
+        layer.on('featureOver', function(e, pos, latlng, data) {
+          console.log(e, pos, latlng, data);
+        });
+
+        layer.on('error', function(err) {
+          console.log('error: ' + err);
+        });
+
+      }).on('error', function() {
+        console.log("some error occurred");
+      });
+
     }
 
     window.onload = main;

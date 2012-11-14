@@ -37,16 +37,15 @@ CartoDBLayerCommon.prototype = {
    */
   _addWadus: function(position, timeout, container) {
     if (!document.getElementById('cartodb_logo')) {
-      var self = this;
+      var cartodb_link = document.createElement("a");
+      container.appendChild(cartodb_link);
       setTimeout(function() {
-        var cartodb_link = document.createElement("a");
         cartodb_link.setAttribute('id','cartodb_logo');
         cartodb_link.setAttribute('style',"position:absolute; bottom:0; left:0; display:block; border:none; z-index:10000;");
         cartodb_link.setAttribute('href','http://www.cartodb.com');
         cartodb_link.setAttribute('target','_blank');
         cartodb_link.innerHTML = "<img src='http://cartodb.s3.amazonaws.com/static/new_logo.png' style='position:absolute; bottom:" + 
           ( position.bottom || 0 ) + "px; left:" + ( position.left || 0 ) + "px; display:block; border:none; outline:none' alt='CartoDB' title='CartoDB' />";
-        container.appendChild(cartodb_link);
       },( timeout || 0 ));
     }
   },

@@ -84,10 +84,10 @@ describe DataImport do
       :data_source   => '/../db/fake_data/clubbing.csv',
       :updated_at    => Time.now )
 
-    table = Table.filter(:name => 'clubbing').first
+    table = Table.filter(:name => 'clubbing').all.last
     table.records.count.should be == 4
 
-    file = File.new(Rails.root.join('tmp/clubbing.sql.zip', ), 'w+')
+    file = File.new(Rails.root.join('tmp/clubbing.sql.zip'), 'w+')
     file.write table.to_sql
     file.close
 
@@ -100,7 +100,7 @@ describe DataImport do
 
     File.delete(file.path)
 
-    table = Table.filter(:name => 'clubbing').first
+    table = Table.filter(:name => 'clubbing').all.last
     table.records.count.should be == 4
   end
 
@@ -118,4 +118,5 @@ describe DataImport do
     table.records[:rows].last[:updated_at].to_s.should  == Time.at(1351698390354 / 1000).to_s
 
   end
+
 end

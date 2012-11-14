@@ -23388,7 +23388,7 @@ var Vis = cdb.core.View.extend({
           }
           content = render_fields;
         }
-        infowindow.model.set({ content:  { fields: content} });
+        infowindow.model.set({ content:  { fields: content, data: interact_data} });
         infowindow.setLatLng(latlng).showInfowindow();
     });
 
@@ -23625,12 +23625,7 @@ Layers.register('carto', cartoLayer);
       url = layer;
     }
     if(url) {
-      window.vizjson = callback;
-      $.ajax({
-        url: url + "?callback=vizjson",
-        dataType: "script",
-        cache: true 
-      });
+      $.getJSON(url + "?callback=?", callback);
     } else {
       _.defer(function() { callback(null); });
     }

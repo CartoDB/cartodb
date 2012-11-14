@@ -1,15 +1,15 @@
-# coding: utf-8 
+# coding: utf-8
 
 module CartoDB
   module Import
     module Util
       def temporary_filename(prefix="")
         tf = Tempfile.new(prefix)
-        tempname = tf.path 
-        tf.close! 
+        tempname = tf.path
+        tf.close!
         return tempname
       end
-    
+
       # datatype that is passed around
       def to_import_hash
         {
@@ -20,7 +20,7 @@ module CartoDB
           :force_name       => @force_name,
           :suggested_name   => @suggested_name,
           :ext              => @ext,
-          :path             => @path,
+          :path             => @data_path || @path,
           :working_data     => @working_data,
           :suggested_names  => @suggested_names,
           :exts             => @exts,
@@ -33,15 +33,15 @@ module CartoDB
           :import_type      => @import_type,
           :data_import_id   => @data_import_id
         }
-      end  
-          
+      end
+
       # updates instance variables with return values from decompressors, preprocessors and loaders
       def update_self obj
         obj.each do |k,v|
           instance_variable_set("@#{k}", v) if v
         end
-      end    
-      
+      end
+
       def get_valid_name(name)
         #check if the table name starts with a number
         if !(name[0,1].to_s.match(/\A[+-]?\d+?(\.\d+)?\Z/) == nil)
@@ -77,7 +77,7 @@ module CartoDB
             # text/plain; charset=iso-8859-1
             charset = nil
             charset_data = is_utf.split('harset=')
-            
+
             if 1<charset_data.length
               charset = charset_data[1].split(';')[0].strip
               if charset == ""
@@ -112,17 +112,17 @@ module CartoDB
           end
 
           return encoding_to_try
-        
+
         rescue => e
           # Silently fail here and try importing anyway
           log "ICONV failed for CSV #{@path}: #{e.message} #{e.backtrace}"
         end
-      end  
-      
-      def log str            
+      end
+
+      def log str
         #puts str # if @@debug
       end
-        
+
       def reproject_import random_table_name
         @db_connection.run("ALTER TABLE #{random_table_name} RENAME COLUMN the_geom TO the_geom_orig;")
         geom_type_row = @db_connection["SELECT GeometryType(ST_Force_2D(the_geom_orig)) as type from #{random_table_name} WHERE the_geom_orig IS NOT NULL LIMIT 1"].first
@@ -148,7 +148,7 @@ module CartoDB
       def drop_index random_index_name
         @db_connection.run("DROP INDEX IF EXISTS \"#{random_index_name}\"")
       end
-        
+
       def sanitize_table_columns table_name
         # Sanitize column names where needed
         column_names = @db_connection.schema(table_name).map{ |s| s[0].to_s }
@@ -159,5 +159,5 @@ module CartoDB
         end
       end
     end
-  end    
+  end
 end

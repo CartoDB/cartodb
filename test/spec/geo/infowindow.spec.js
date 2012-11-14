@@ -22,7 +22,6 @@ describe("cdb.geo.ui.infowindow", function() {
     it("should add a field in order", function() {
       model.addField('test', 1);
       model.addField('test2', 0);
-      waits(2500);
       expect(model.get('fields')[0].name).toEqual('test2');
       expect(model.get('fields')[1].name).toEqual('test');
     });

@@ -43,7 +43,7 @@ module CartoDB
 
         # Setup candidate file
         @import_from_file = options[:import_from_file]
-        
+
         @import_from_file = options[:import_from_url] if options[:import_from_url]
 
         raise "data_import_id can't be blank" if @data_import.blank?
@@ -84,9 +84,9 @@ module CartoDB
 
               # Try to infer file extension from http Content-Disposition
               if @ext.blank? && res.meta.present? && res.meta["content-disposition"].present?
-                  @ext = /filename=.*(\..*)/.match(res.meta["content-disposition"])[1].to_s.downcase
+                @ext = res.meta["content-disposition"][/filename=".*(\..*)"/, 1].to_s.downcase
               end
-              
+
               # If the former didn't work, try to infer file extension from http Content-Type
               if @ext.blank? && res.meta.present? && res.meta["content-type"].present?
                   set = Mime::LOOKUP[res.meta["content-type"]]
@@ -127,7 +127,7 @@ module CartoDB
 
         # finally setup current path
         @path = @import_from_file.respond_to?(:tempfile) ? @import_from_file.tempfile.path : @import_from_file.path
-        
+
         # Final ext check in case the file was falsely transfered as .SHP for example
         if ['','.shp','.csv'].include? @ext
           @ext = check_if_archive(@path, @ext)
@@ -236,6 +236,7 @@ module CartoDB
             # re-check suggested_name in the case that it has been taken by another in this import
             @working_data[:suggested_name] = @suggested_name.nil? ? get_valid_name(@working_data[:suggested_name]) : get_valid_name(@suggested_name)
 
+            @data_path = data[:path]
             loader = CartoDB::Import::Loader.create(data[:ext], self.to_import_hash)
 
             if !loader

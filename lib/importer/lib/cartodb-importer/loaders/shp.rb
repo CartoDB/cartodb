@@ -153,7 +153,9 @@ module CartoDB
             raise "ERROR: unable to rename \"#{random_table_name}\" to \"#{@working_data[:suggested_name]}\""
           end
 
-          @entries.each{ |e| FileUtils.rm_rf(e) } if @entries.any?
+          remove_shp_related_files
+
+
           @import_from_file.unlink
 
           @data_import.save
@@ -187,6 +189,13 @@ module CartoDB
           raise e
         end
       end
+
+      private
+
+      def remove_shp_related_files
+        Dir[@working_data[:path].gsub('.shp', '.*')].each{ |e| FileUtils.rm_rf(e) }
+      end
+
     end
   end
 end

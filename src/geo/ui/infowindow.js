@@ -71,6 +71,7 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
       self.sortFields();
       self.trigger('change:fields');
     });
+    return this;
   },
 
   // addField: function(fieldName, at) {

@@ -139,6 +139,8 @@
       @include transition-property("all");
       @include transition-duration(500ms);
 
+      p.upgraded {display:none;}
+
       a.close {
         position:absolute;
         right:0;
@@ -150,6 +152,12 @@
 
         &:hover {@include icons-sprite(close_flash, $offset-y: -13px);}
         &:active {@include icons-sprite(close_flash, $offset-y: -26px);}
+      }
+
+      &.upgraded {
+        background:rgba(#8DB73F,0.15);
+        p.limit {display:none;}
+        p.upgraded {display:block;}
       }
 
       &.visible {

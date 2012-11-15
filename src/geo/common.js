@@ -38,9 +38,9 @@ CartoDBLayerCommon.prototype = {
   _addWadus: function(position, timeout, container) {
     if (!document.getElementById('cartodb_logo')) {
       var cartodb_link = document.createElement("a");
+      cartodb_link.setAttribute('id','cartodb_logo');
       container.appendChild(cartodb_link);
       setTimeout(function() {
-        cartodb_link.setAttribute('id','cartodb_logo');
         cartodb_link.setAttribute('style',"position:absolute; bottom:0; left:0; display:block; border:none; z-index:10000;");
         cartodb_link.setAttribute('href','http://www.cartodb.com');
         cartodb_link.setAttribute('target','_blank');

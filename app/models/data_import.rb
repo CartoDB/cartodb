@@ -5,7 +5,7 @@ class DataImport < Sequel::Model
 
   attr_accessor :append, :migrate_table, :table_copy, :from_query
 
-  PUBLIC_ATTRIBUTES = %W{ id user_id table_id data_type table_name state success error_code queue_id get_error_text }
+  PUBLIC_ATTRIBUTES = %W{ id user_id table_id data_type table_name state success error_code queue_id get_error_text tables_created_count }
 
   def public_values
     Hash[PUBLIC_ATTRIBUTES.map{ |a| [a, self.send(a)] }]

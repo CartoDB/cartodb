@@ -360,7 +360,12 @@ cdb.geo.Map = cdb.core.Model.extend({
       self.trigger('baseLayerAdded');
       self._adjustZoomtoLayer(layer);
       opts.success && opts.success();
-    };
+    }
+
+    // Set new attribution if exists
+    this.set({
+      attribution: layer.attributes.attribution || ''
+    });
 
     return layer;
   },
@@ -525,10 +530,11 @@ cdb.geo.MapView = cdb.core.View.extend({
   /** bind model properties */
   _bindModel: function() {
     this._unbindModel();
-    this.map.bind('change:view_bounds_sw', this._changeBounds, this);
-    this.map.bind('change:view_bounds_ne', this._changeBounds, this);
-    this.map.bind('change:zoom',   this._setZoom, this);
-    this.map.bind('change:center', this._setCenter, this);
+    this.map.bind('change:view_bounds_sw',  this._changeBounds, this);
+    this.map.bind('change:view_bounds_ne',  this._changeBounds, this);
+    this.map.bind('change:zoom',            this._setZoom, this);
+    this.map.bind('change:center',          this._setCenter, this);
+    this.map.bind('change:attribution',     this._setAttribution, this);
   },
 
   /** unbind model properties */
@@ -540,10 +546,11 @@ cdb.geo.MapView = cdb.core.View.extend({
     this.map.unbind('change:view_bounds_ne', this._changeBounds, this);
     */
 
-    this.map.unbind('change:zoom',   null, this);
-    this.map.unbind('change:center', null, this);
-    this.map.unbind('change:view_bounds_sw', null, this);
-    this.map.unbind('change:view_bounds_ne', null, this);
+    this.map.unbind('change:zoom',            null, this);
+    this.map.unbind('change:center',          null, this);
+    this.map.unbind('change:view_bounds_sw',  null, this);
+    this.map.unbind('change:view_bounds_ne',  null, this);
+    this.map.unbind('change:attribution',     null, this);
   },
 
   _changeBounds: function() {
@@ -555,6 +562,10 @@ cdb.geo.MapView = cdb.core.View.extend({
 
   showBounds: function(bounds) {
     this.map.fitBounds(bounds, this.getSize())
+  },
+
+  _setAttribution: function(m,attr) {
+    this.setAttribution(m._previousAttributes.attribution,attr);
   },
 
   _addLayers: function() {

@@ -184,6 +184,7 @@ cdb.geo.GoogleMapsMapView = cdb.geo.MapView.extend({
     return [ [0,0], [0,0] ];
   },
 
+  setAttribution: function(){},
 
   setCursor: function(cursor) {
     this.map_googlemaps.setOptions({ draggableCursor: cursor });

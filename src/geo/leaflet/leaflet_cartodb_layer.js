@@ -20,7 +20,7 @@ L.CartoDBLayer = L.TileLayer.extend({
     query:          "SELECT * FROM {{table_name}}",
     opacity:        0.99,
     auto_bound:     false,
-    attribution:    "CartoDB",
+    attribution:    "",
     debug:          false,
     visible:        true,
     added:          false,

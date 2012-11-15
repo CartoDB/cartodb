@@ -74,6 +74,7 @@ defaults: &defaults
         base_type: "roadmap"
         style: ""
   cartodb_com_hosted: true
+  cartodb_central_domain_name: 'cartodb.com'
   aws:
     s3:
       access_key_id: "test"

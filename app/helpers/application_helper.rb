@@ -55,15 +55,16 @@ module ApplicationHelper
 
   def frontend_config
     {
-      tiler_protocol:     Cartodb.config[:tile_protocol],
-      tiler_port:         Cartodb.config[:tile_port],
-      tiler_domain:       Cartodb.config[:tile_host],
-      sql_api_protocol:   Cartodb.config[:sql_api_protocol],
-      sql_api_domain:     "#{request.subdomain}.#{Cartodb.config[:sql_api_domain]}",
-      sql_api_endpoint:   Cartodb.config[:sql_api_endpoint],
-      sql_api_port:       Cartodb.config[:sql_api_port],
-      cartodb_com_hosted: Cartodb.config[:cartodb_com_hosted],
-      account_host:       Cartodb.config[:account_host]
+      tiler_protocol:              Cartodb.config[:tile_protocol],
+      tiler_port:                  Cartodb.config[:tile_port],
+      tiler_domain:                Cartodb.config[:tile_host],
+      sql_api_protocol:            Cartodb.config[:sql_api_protocol],
+      sql_api_domain:              "#{request.subdomain}.#{Cartodb.config[:sql_api_domain]}",
+      sql_api_endpoint:            Cartodb.config[:sql_api_endpoint],
+      sql_api_port:                Cartodb.config[:sql_api_port],
+      cartodb_com_hosted:          Cartodb.config[:cartodb_com_hosted],
+      account_host:                Cartodb.config[:account_host],
+      cartodb_central_domain_name: Cartodb.config[:cartodb_central_domain_name]
     }.to_json
   end
 

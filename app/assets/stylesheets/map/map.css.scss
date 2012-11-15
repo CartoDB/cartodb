@@ -263,6 +263,11 @@ div.map {
     width:100%;
     height:auto;
     z-index:1;
+
+    // Move attribution some right when is Leaflet provider
+    .leaflet-right .leaflet-control {
+      margin-right: 65px!important;
+    }
   }
 
   // Zoom in core map

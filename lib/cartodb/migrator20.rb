@@ -87,10 +87,28 @@ class Migrator20
     # Data layer setup
     data_layer = table.map.data_layers.first    
 
-    data_layer.options               = data_layer.options.except('style_version')
     data_layer.options['kind']       = 'carto'
     data_layer.options["table_name"] = table.name
     data_layer.options["user_name"]  = table.owner.username
+
+    # Try to read the legacy style for this table    
+    if data_layer.options['legacy_tile_style'].blank?
+      data_layer.options['legacy_tile_style'] = JSON.parse(
+        $tables_metadata.get("map_style|#{table.database_name}|#{table.name}")
+      )['style'] rescue nil
+    end
+
+    # Send a style conversion request to the tiler
+    tiler_post_url = "#{Cartodb.config[:tile_protocol]}://#{table.owner.username}.#{Cartodb.config[:tile_host]}:#{Cartodb.config[:tile_port]}/tiles/#{self.name}/style"
+    Net::HTTP.post_form(
+      URI.parse(tiler_post_url), { 
+        'style' => data_layer.options["legacy_tile_style"],
+        'style_version' => '2.0.0', 
+        'style_convert' => 1
+      }
+    )
+
+    # Save the converted style on the model
     data_layer.options['tile_style'] = JSON.parse(
       $tables_metadata.get("map_style|#{table.database_name}|#{table.name}")
     )['style'] rescue nil

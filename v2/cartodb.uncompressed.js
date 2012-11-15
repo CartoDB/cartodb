@@ -23849,7 +23849,7 @@ Layers.register('carto', cartoLayer);
     return promise;
   }
 
-  SQL.prototype.getBounds = function(sql, vars, options) {
+  SQL.prototype.getBounds = function(sql, vars, options, callback) {
       var promise = new cdb._Promise();
       var args = arguments,
       fn = args[args.length -1];

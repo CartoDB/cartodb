@@ -116,7 +116,6 @@ describe('SQL api client', function() {
             ' from (select * from rambo where id=2) as subq';
     s = new cartodb.SQL({ user: 'jaja' });
     s.getBounds('select * from rambo where id={{id}}', {id: 2});
-    console.log(ajaxParams.url)
     expect(ajaxParams.url.indexOf(encodeURIComponent(sql))).not.toEqual(-1);
   });
 });

@@ -215,11 +215,12 @@ cdb.geo.Map = cdb.core.Model.extend({
     var m = new cdb.geo.Map(_.clone(this.attributes));
     // clone lists
     m.set({
-      center: _.clone(this.attributes.center),
-      bounding_box_sw: _.clone(this.attributes.bounding_box_sw),
-      bounding_box_ne: _.clone(this.attributes.bounding_box_ne),
-      view_bounds_sw: _.clone(this.attributes.view_bounds_sw),
-      view_bounds_ne: _.clone(this.attributes.view_bounds_ne)
+      center:           _.clone(this.attributes.center),
+      bounding_box_sw:  _.clone(this.attributes.bounding_box_sw),
+      bounding_box_ne:  _.clone(this.attributes.bounding_box_ne),
+      view_bounds_sw:   _.clone(this.attributes.view_bounds_sw),
+      view_bounds_ne:   _.clone(this.attributes.view_bounds_ne),
+      attribution:      _.clone(this.attributes.attribution)
     });
     // layers
     m.layers = this.layers.clone();

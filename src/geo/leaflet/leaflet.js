@@ -182,8 +182,10 @@
 
       var attr = layer.get('attribution');
 
-      if(attr) {
-        this.setAttribution(null,attr);
+      if (attr) {
+        // Setting attribution in map model
+        // it doesn't persist in the backend, so this is needed.
+        this.map.set({ attribution:attr });
       }
 
       this.trigger('newLayerView', layer_view, this);

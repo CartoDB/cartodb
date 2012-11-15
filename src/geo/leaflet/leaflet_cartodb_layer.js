@@ -20,7 +20,7 @@ L.CartoDBLayer = L.TileLayer.extend({
     query:          "SELECT * FROM {{table_name}}",
     opacity:        0.99,
     auto_bound:     false,
-    attribution:    "",
+    attribution:    "CartoDB",
     debug:          false,
     visible:        true,
     added:          false,
@@ -447,6 +447,9 @@ var LeafLetLayerCartoDBView = function(layerModel, leafletMap) {
   }
 
   opts.map =  leafletMap;
+  // No CartoDB in attribution control,
+  // we have the logo
+  opts.attribution = '';
 
   var // preserve the user's callbacks
   _featureOver  = opts.featureOver,

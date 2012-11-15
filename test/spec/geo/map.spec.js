@@ -83,6 +83,19 @@ describe("geo.map", function() {
       expect(map.layers.at(0)).toEqual(base);
     });
 
+    it("should set a new attribution after change base layer", function() {
+      var old = new cdb.geo.CartoDBLayer({ attribution: 'CartoDB1.0' });
+      map.setBaseLayer(old);
+      var old_attribution = map.get('attribution');
+
+      var base = new cdb.geo.CartoDBLayer({ attribution: 'CartoDB2.0' });
+      sinon.stub(base, "save").yieldsTo("success");
+      var r = map.setBaseLayer(base);
+      var new_attribution = map.get('attribution');
+      
+      expect(old_attribution).not.toEqual(new_attribution);
+    });
+
     it("should change bounds according to base layer", function() {
       var layer = new cdb.geo.CartoDBLayer({
         maxZoom: 8,

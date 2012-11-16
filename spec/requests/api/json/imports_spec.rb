@@ -235,4 +235,34 @@ describe "Imports API" do
     end
   end
 
+  it 'returns info for each created table' do
+    serve_file(Rails.root.join('spec/support/data/ESP_adm.zip')) do |url|
+      post v1_imports_url(:host       => 'test.localhost.lan',
+                          :url        => url,
+                          :api_key    => @user.get_map_key,
+                          :table_name => "wadus")
+    end
+
+    response.code.should be == '200'
+
+    response_json = JSON.parse(response.body)
+    response_json.should_not be_nil
+    response_json['item_queue_id'].should_not be_empty
+
+    last_import = DataImport.order(:updated_at.desc).first
+    last_import.queue_id.should be == response_json['item_queue_id']
+    last_import.state.should be == 'complete'
+    last_import.tables_created_count.should be == 10
+
+    item_queue_id = response_json['item_queue_id']
+
+    get v1_import_url(:host => 'test.localhost.lan', :id => item_queue_id), :api_key => @user.get_map_key
+
+    response.code.should be == '200'
+
+    import = JSON.parse(response.body)
+    import['state'].should be == 'complete'
+    import['tables_created_count'].should be == 10
+  end
+
 end

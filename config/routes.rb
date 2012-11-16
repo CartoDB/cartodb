@@ -63,6 +63,7 @@ CartoDB::Application.routes.draw do
       delete '/tables/:table_id/columns/:id'                    => 'columns#delete'
       get    '/tables/:table_id/records/:record_id/columns/:id' => 'records#show_column'
       put    '/tables/:table_id/records/:record_id/columns/:id' => 'records#update_column'
+      get    '/queries'                                         => 'queries#run'
       put    '/queries'                                         => 'queries#run'
 
       # imports

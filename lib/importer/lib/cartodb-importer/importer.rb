@@ -262,6 +262,7 @@ module CartoDB
 
           # Flag the data import as failed
           if payloads.length > 0
+            @data_import.tables_created_count = payloads.size
             @data_import.log_update("#{payloads.size} tables imported")
           else
             @data_import.failed

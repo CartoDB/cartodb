@@ -1,4 +1,4 @@
-/* wax - 7.0.0dev10 - v6.0.4-113-g1ace597 */
+/* wax - 7.0.0dev10 - v6.0.4-117-gebb151e */
 
 
 !function (name, context, definition) {
@@ -2248,7 +2248,7 @@ wax.gm = function() {
         if (typeof template === 'string') template = [template];
         return function templatedGridFinder(url) {
             if (!url) return;
-            var rx = new RegExp('/(\\d+)\\/(\\d+)\\/(\\d+)\\.[\\w\\._]+');
+            var rx = new RegExp(manager.tileRegexp())
             var xyz = rx.exec(url);
             if (!xyz) return;
             return template[parseInt(xyz[2], 10) % template.length]
@@ -2256,6 +2256,21 @@ wax.gm = function() {
                 .replace(/\{x\}/g, xyz[2])
                 .replace(/\{y\}/g, xyz[3]);
         };
+    }
+
+    // return the regexp to catch the tile number given the url
+    manager.tileRegexp = function() {
+      var tileTemplate = tilejson.tiles[0];
+      // remove from the url all the special characters
+      // replacing them by a dot (dont mind the character)
+      tileTemplate = tileTemplate.
+                        replace(/[\/\?\$\*\+\^]/g,'.')
+
+      // replace the first {x}{y}{z} by (\\d+)
+      return tileTemplate
+        .replace(/\{x\}/,'(\\d+)')
+        .replace(/\{y\}/,'(\\d+)')
+        .replace(/\{z\}/,'(\\d+)')
     }
 
     manager.formatter = function(x) {
@@ -2419,12 +2434,17 @@ wax.interaction = function() {
     // grid[ [x, y, tile] ] structure.
     function getTile(e) {
         var g = grid();
+        var regExp = new RegExp(gm.tileRegexp());
         for (var i = 0; i < g.length; i++) {
-            if (e)
-                if ((g[i][0] < e.y) &&
-                   ((g[i][0] + 256) > e.y) &&
-                    (g[i][1] < e.x) &&
-                   ((g[i][1] + 256) > e.x)) return g[i][2];
+            if (e) {
+                var isInside = ((g[i][0] < e.y) &&
+                     ((g[i][0] + 256) > e.y) &&
+                      (g[i][1] < e.x) &&
+                     ((g[i][1] + 256) > e.x));
+                if(isInside && regExp.exec(g[i][2].src)) {
+                    return g[i][2];
+                }
+            }
         }
         return false;
     }
@@ -2523,7 +2543,7 @@ wax.interaction = function() {
               _clickTimeout = window.setTimeout(function() {
                   _clickTimeout = null;
                   interaction.click(evt, pos);
-              }, 300);
+              }, 150);
             } else {
               killTimeout();
             }

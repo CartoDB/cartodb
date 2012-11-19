@@ -815,6 +815,16 @@ class Table < Sequel::Model(:user_tables)
           )
         end
 
+        # string => datetime
+        if (old_type == 'string' && %w(date datetime timestamp).include?(new_type))
+          # normalise empty string to NULL
+          user_database.run(<<-EOF
+            UPDATE "#{table_name}"
+            SET "#{column_name}" = NULL
+            WHERE \"#{column_name}\" = ''
+            EOF
+          )
+        end
 
         # number => boolean
         # normalise 0 to falsy else truthy
@@ -846,7 +856,6 @@ class Table < Sequel::Model(:user_tables)
         end
 
         # TODO:
-        # * string  => datetime
         # * number  => datetime
         # * boolean => datetime
         #

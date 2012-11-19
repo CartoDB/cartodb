@@ -83,6 +83,17 @@ describe("geo.map", function() {
       expect(map.layers.at(0)).toEqual(base);
     });
 
+    it("shouldn't set base layer if the old base layer is the same", function() {
+      var old = new cdb.geo.TileLayer({ type: 'Tiled', url: '' })
+        , opts = { alreadyAdded: function(){ console.log("base layer already added"); }};
+
+      spyOn(opts, 'alreadyAdded');
+      
+      expect(map.setBaseLayer(old)).not.toBeFalsy();
+      expect(map.setBaseLayer(old, opts)).toBeFalsy();
+      expect(opts.alreadyAdded).toHaveBeenCalled();
+    });
+
     it("should set a new attribution after change base layer", function() {
       var old = new cdb.geo.CartoDBLayer({ attribution: 'CartoDB1.0' });
       map.setBaseLayer(old);

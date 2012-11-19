@@ -321,6 +321,36 @@ cdb.geo.Map = cdb.core.Model.extend({
   },
 
   /**
+   * Checks if the layer is a base layer
+   */
+  isBaseLayer: function(layer) {
+    var layer_type = layer.get('type').toLowerCase();
+    return _.contains(["tiled", "gmapsbase"],layer_type);
+  },
+
+  /**
+   * Checks if the base layer is already in the map as base map
+   */
+  isBaseLayerAdded: function(layer) {
+    var self = this;
+
+    if (self.isBaseLayer(layer)) {
+      for (var i in this.layers.models) {
+        var l = this.layers.models[i];
+        if (layer.get("className") == l.get("className")
+          && layer.get("base_type") == l.get("base_type")
+          && layer.get("name") == l.get("name")
+          && layer.get("type") == l.get("type"))
+          return true;
+      }
+    } else {
+      return false;
+    }
+
+    return false;
+  },
+
+  /**
   * gets the url of the template of the tile layer
   * @method getLayerTemplate
   */
@@ -338,6 +368,12 @@ cdb.geo.Map = cdb.core.Model.extend({
     opts = opts || {};
     var self = this;
     var old = this.layers.at(0);
+
+    // Check if the selected base layer is already selected
+    if (this.isBaseLayerAdded(layer)) {
+      opts.alreadyAdded && opts.alreadyAdded();
+      return false;
+    }
 
     if (old) { // defensive programming FTW!!
       //remove layer from the view

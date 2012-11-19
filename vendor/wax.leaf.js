@@ -1,4 +1,4 @@
-/* wax - 7.0.0dev10 - v6.0.4-117-gebb151e */
+/* wax - 7.0.0dev10 - v6.0.4-118-g3dc6327 */
 
 
 !function (name, context, definition) {
@@ -2264,7 +2264,7 @@ wax.gm = function() {
       // remove from the url all the special characters
       // replacing them by a dot (dont mind the character)
       tileTemplate = tileTemplate.
-                        replace(/[\/\?\$\*\+\^]/g,'.')
+                        replace(/[\(\)\?\$\*\+\^]/g,'.')
 
       // replace the first {x}{y}{z} by (\\d+)
       return tileTemplate

@@ -44,9 +44,7 @@ var CartoDBLayer = function(opts) {
   };
 
   this.options = _.defaults(opts, default_options);
-  opts.tiles = [
-    this._tilesUrl()
-  ];
+  opts.tiles = this._tileJSON().tiles;
 
   // Set init
   this.tiles = 0;

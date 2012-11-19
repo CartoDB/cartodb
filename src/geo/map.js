@@ -324,8 +324,7 @@ cdb.geo.Map = cdb.core.Model.extend({
    * Checks if the layer is a base layer
    */
   isBaseLayer: function(layer) {
-    var layer_type = layer.get('type').toLowerCase();
-    return _.contains(["tiled", "gmapsbase"],layer_type);
+    return layer.isEqual(this.getBaseLayer())
   },
 
   /**
@@ -337,17 +336,14 @@ cdb.geo.Map = cdb.core.Model.extend({
     if (self.isBaseLayer(layer)) {
       for (var i in this.layers.models) {
         var l = this.layers.models[i];
-        if (layer.get("className") == l.get("className")
-          && layer.get("base_type") == l.get("base_type")
-          && layer.get("name") == l.get("name")
-          && layer.get("type") == l.get("type"))
+        if (l.isEqual(layer)) {
           return true;
+        }
       }
+      return false;
     } else {
       return false;
     }
-
-    return false;
   },
 
   /**

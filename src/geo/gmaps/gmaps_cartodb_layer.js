@@ -317,12 +317,13 @@ var GMapsCartoDBLayerView = function(layerModel, gmapsMap) {
 
   _.bindAll(this, 'featureOut', 'featureOver', 'featureClick');
 
+  // CartoDB new attribution,
+  // also we have the logo
+  layerModel.attributes.attribution = "CartoDB <a href='http://cartodb.com/attributions' target='_blank'>attribution</a>";
+
   var opts = _.clone(layerModel.attributes);
 
   opts.map =  gmapsMap;
-  // CartoDB new attribution,
-  // also we have the logo
-  opts.attribution = "CartoDB <a href='http://cartodb.com/attributions' target='_blank'>attribution</a>";
 
   var // preserve the user's callbacks
   _featureOver  = opts.featureOver,

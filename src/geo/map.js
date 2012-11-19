@@ -39,7 +39,7 @@ cdb.geo.MapLayer = cdb.core.Model.extend({
           } else {
             return false;
           }
-        } else { // not gmail
+        } else { // not gmaps
           return true;
         }
 
@@ -321,29 +321,11 @@ cdb.geo.Map = cdb.core.Model.extend({
   },
 
   /**
-   * Checks if the layer is a base layer
-   */
-  isBaseLayer: function(layer) {
-    return layer.isEqual(this.getBaseLayer())
-  },
-
-  /**
    * Checks if the base layer is already in the map as base map
    */
   isBaseLayerAdded: function(layer) {
-    var self = this;
-
-    if (self.isBaseLayer(layer)) {
-      for (var i in this.layers.models) {
-        var l = this.layers.models[i];
-        if (l.isEqual(layer)) {
-          return true;
-        }
-      }
-      return false;
-    } else {
-      return false;
-    }
+    var baselayer = this.getBaseLayer()
+    return baselayer && layer.isEqual(baselayer);
   },
 
   /**

@@ -27,7 +27,7 @@
       }
     }
 
-    .generating {
+    .generating, .geospatial {
       width:100%;
       p {
         text-align:center;
@@ -38,4 +38,6 @@
         display: none;
       }
     }
+
+
   }

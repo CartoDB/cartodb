@@ -71,11 +71,11 @@ describe("geo.map", function() {
 
 
     it("should set base layer", function() {
-      var old = new cdb.geo.CartoDBLayer({});
+      var old = new cdb.geo.CartoDBLayer({ urlTemplate:'x', base_type: "x" });
       map.addLayer(old);
-      var layer    = new cdb.geo.CartoDBLayer({});
+      var layer    = new cdb.geo.CartoDBLayer({ urlTemplate:'y', base_type: "y" });
       map.addLayer(layer);
-      var base = new cdb.geo.CartoDBLayer({});
+      var base = new cdb.geo.CartoDBLayer({ urlTemplate:'z', base_type: "z" });
 
       sinon.stub(base, "save").yieldsTo("success");
       var r = map.setBaseLayer(base);
@@ -83,12 +83,23 @@ describe("geo.map", function() {
       expect(map.layers.at(0)).toEqual(base);
     });
 
+    it("shouldn't set base layer if the old base layer is the same", function() {
+      var old = new cdb.geo.TileLayer({ type: 'Tiled', urlTemplate: 'x', base_type: 'x' })
+        , opts = { alreadyAdded: function(){ console.log("base layer already added"); }};
+
+      spyOn(opts, 'alreadyAdded');
+
+      expect(map.setBaseLayer(old)).not.toBeFalsy();
+      expect(map.setBaseLayer(old, opts)).toBeFalsy();
+      expect(opts.alreadyAdded).toHaveBeenCalled();
+    });
+
     it("should set a new attribution after change base layer", function() {
-      var old = new cdb.geo.CartoDBLayer({ attribution: 'CartoDB1.0' });
+      var old = new cdb.geo.CartoDBLayer({ attribution: 'CartoDB1.0', type: 'Tiled', urlTemplate: 'x', base_type: 'x' });
       map.setBaseLayer(old);
       var old_attribution = map.get('attribution');
 
-      var base = new cdb.geo.CartoDBLayer({ attribution: 'CartoDB2.0' });
+      var base = new cdb.geo.CartoDBLayer({ attribution: 'CartoDB2.0', type: 'Tiled', urlTemplate: 'y', base_type: 'y' });
       sinon.stub(base, "save").yieldsTo("success");
       var r = map.setBaseLayer(base);
       var new_attribution = map.get('attribution');
@@ -99,14 +110,20 @@ describe("geo.map", function() {
     it("should change bounds according to base layer", function() {
       var layer = new cdb.geo.CartoDBLayer({
         maxZoom: 8,
-        minZoom: 7
+        minZoom: 7,
+        type: 'Tiled',
+        urlTemplate: 'x',
+        base_type: 'x'
       });
       map.addLayer(layer);
       expect(map.get('maxZoom')).toEqual(8);
       expect(map.get('minZoom')).toEqual(7);
       var layerbase = new cdb.geo.CartoDBLayer({
         maxZoom: 10,
-        minZoom: 9
+        minZoom: 9,
+        type: 'Tiled',
+        urlTemplate: 'y',
+        base_type: 'y'
       });
       sinon.stub(layerbase, "save").yieldsTo("success");
       map.setBaseLayer(layerbase);

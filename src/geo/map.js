@@ -39,7 +39,7 @@ cdb.geo.MapLayer = cdb.core.Model.extend({
           } else {
             return false;
           }
-        } else { // not gmail
+        } else { // not gmaps
           return true;
         }
 
@@ -321,6 +321,14 @@ cdb.geo.Map = cdb.core.Model.extend({
   },
 
   /**
+   * Checks if the base layer is already in the map as base map
+   */
+  isBaseLayerAdded: function(layer) {
+    var baselayer = this.getBaseLayer()
+    return baselayer && layer.isEqual(baselayer);
+  },
+
+  /**
   * gets the url of the template of the tile layer
   * @method getLayerTemplate
   */
@@ -338,6 +346,12 @@ cdb.geo.Map = cdb.core.Model.extend({
     opts = opts || {};
     var self = this;
     var old = this.layers.at(0);
+
+    // Check if the selected base layer is already selected
+    if (this.isBaseLayerAdded(layer)) {
+      opts.alreadyAdded && opts.alreadyAdded();
+      return false;
+    }
 
     if (old) { // defensive programming FTW!!
       //remove layer from the view

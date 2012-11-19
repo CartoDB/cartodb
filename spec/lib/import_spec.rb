@@ -495,6 +495,17 @@ describe CartoDB::Importer do
           results[0].import_type.should   == '.json'
         end
       end
+
+      it "can import urls from OSM" do
+        importer = create_importer "http://www.openstreetmap.org/?lat=40.01005&lon=-105.27517&zoom=15&layers=M", "osm", true
+        results,errors = importer.import!
+
+        results.should include(OpenStruct.new(name: 'osm_line',    rows_imported: 752, import_type: '.osm', log: ''),
+                               OpenStruct.new(name: 'osm_polygon', rows_imported: 252, import_type: '.osm', log: ''),
+                               OpenStruct.new(name: 'osm_roads',   rows_imported: 43,  import_type: '.osm', log: ''),
+                               OpenStruct.new(name: 'osm_point',   rows_imported: 259, import_type: '.osm', log: ''))
+      end
+
     end
 
     it "should import dbf with wrong encoding" do

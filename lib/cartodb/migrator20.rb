@@ -99,7 +99,7 @@ class Migrator20
     end
 
     # Send a style conversion request to the tiler
-    `#{Rails.root.join('../../node-windshaft/current/tools')}/convert_database_style #{table.owner.username} #{table.name}`
+    `#{Rails.root.join('../../../node-windshaft/current/tools')}/convert_database_styles #{table.owner.database_name} #{table.name} 2.1.0`
 
     # Save the converted style on the model (reading it again from redis)
     new_tile_style = JSON.parse(

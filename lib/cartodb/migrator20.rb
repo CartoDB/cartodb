@@ -99,20 +99,18 @@ class Migrator20
     end
 
     # Send a style conversion request to the tiler
-    tiler_post_url = "#{Cartodb.config[:tile_protocol]}://#{table.owner.username}.#{Cartodb.config[:tile_host]}:#{Cartodb.config[:tile_port]}/tiles/#{self.name}/style"
-    Net::HTTP.post_form(
-      URI.parse(tiler_post_url), { 
-        'style' => data_layer.options["legacy_tile_style"],
-        'style_version' => '2.0.0', 
-        'style_convert' => 1
-      }
-    )
+    `#{Rails.root.join('../../node-windshaft/current/tools')}/convert_database_style #{table.owner.username} #{table.name}`
 
-    # Save the converted style on the model
-    data_layer.options['tile_style'] = JSON.parse(
+    # Save the converted style on the model (reading it again from redis)
+    new_tile_style = JSON.parse(
       $tables_metadata.get("map_style|#{table.database_name}|#{table.name}")
     )['style'] rescue nil
-
+    unless new_tile_style.blank?
+      differ = RSpec::Expectations::Differ.new
+      log differ.diff_as_object data_layer.options['tile_style'], new_tile_style
+      data_layer.options['tile_style'] = new_tile_style 
+    end
+    
     # Fix for bubblemaps
     # We have to apply an SQL to bubble maps until Mapnik 2.1.1 is released
     if data_layer.options['tile_style'].present? && 

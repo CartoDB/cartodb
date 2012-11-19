@@ -449,7 +449,7 @@ var LeafLetLayerCartoDBView = function(layerModel, leafletMap) {
   opts.map =  leafletMap;
   // CartoDB new attribution,
   // also we have the logo
-  opts.attribution = 'CartoDB <a href="http://cartodb.com/attributions" target="_blank">attribution</a>';
+  opts.attribution = "CartoDB <a href='http://cartodb.com/attributions' target='_blank'>attribution</a>";
 
   var // preserve the user's callbacks
   _featureOver  = opts.featureOver,

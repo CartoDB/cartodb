@@ -149,6 +149,13 @@ cdb.geo.GoogleMapsMapView = cdb.geo.MapView.extend({
     } else {
       cdb.log.error("layer type not supported");
     }
+
+    var attr = layer.get('attribution');
+    if (attr) {
+      // Setting attribution in map model
+      // it doesn't persist in the backend, so this is needed.
+      this.map.set({ attribution:attr });
+    }
   },
 
   latLonToPixel: function(latlon) {
@@ -184,7 +191,30 @@ cdb.geo.GoogleMapsMapView = cdb.geo.MapView.extend({
     return [ [0,0], [0,0] ];
   },
 
-  setAttribution: function(){},
+  setAttribution: function(old_attr,new_attr) {
+    // No new attribution, out!
+    if (!new_attr || new_attr=="") return false;
+
+    // Remove old one
+    var old = document.getElementById("cartodb_attribution");
+    if (old)
+      old.parentNode.removeChild(old);
+
+    // Add new one
+    var container = this.map_googlemaps.getDiv()
+      , timeout = 1000
+      , style = "height: 19px; line-height: 19px; padding-right: 6px; padding-left: 50px; background:white; background: -webkit-linear-gradient(left, rgba(255, 255, 255, 0) 0px,\
+                rgba(255, 255, 255, 0.498039) 50px); background: linear-gradient(left, rgba(255, 255, 255, 0) 0px, rgba(255, 255, 255, 0.498039) 50px); background: \
+                -moz-inear-gradient(left, rgba(255, 255, 255, 0) 0px, rgba(255, 255, 255, 0.498039) 50px); font-family: Arial, sans-serif; font-size: 10px; color: rgb(68, 68, 68);\
+                white-space: nowrap; direction: ltr; text-align: right; background-position: initial initial; background-repeat: initial initial; position:absolute; bottom:19px;\
+                right:0; display:block; border:none; z-index:10000;"
+
+    var cartodb_attribution = document.createElement("div");
+    cartodb_attribution.setAttribute('id','cartodb_attribution');
+    container.appendChild(cartodb_attribution);
+    cartodb_attribution.setAttribute('style',style);
+    cartodb_attribution.innerHTML = new_attr;
+  },
 
   setCursor: function(cursor) {
     this.map_googlemaps.setOptions({ draggableCursor: cursor });

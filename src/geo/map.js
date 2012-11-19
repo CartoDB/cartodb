@@ -82,6 +82,7 @@ cdb.geo.PlainLayer = cdb.geo.MapLayer.extend({
 cdb.geo.CartoDBLayer = cdb.geo.MapLayer.extend({
 
   defaults: {
+    attribution: 'CartoDB',
     type: 'CartoDB',
     active: true,
     query: null,
@@ -213,6 +214,7 @@ cdb.geo.Map = cdb.core.Model.extend({
 
   clone: function() {
     var m = new cdb.geo.Map(_.clone(this.attributes));
+
     // clone lists
     m.set({
       center:           _.clone(this.attributes.center),

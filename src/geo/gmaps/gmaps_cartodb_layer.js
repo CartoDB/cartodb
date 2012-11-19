@@ -27,6 +27,7 @@ var CartoDBLayer = function(opts) {
 
   var default_options = {
     query:          "SELECT * FROM {{table_name}}",
+    attribution:    "CartoDB",
     opacity:        1,
     auto_bound:     false,
     debug:          false,
@@ -87,6 +88,8 @@ CartoDBLayer.prototype.setOpacity = function(opacity) {
   }
 
 };
+
+CartoDBLayer.prototype.setAttribution = function() {};
 
 CartoDBLayer.prototype.getTile = function(coord, zoom, ownerDocument) {
 
@@ -319,6 +322,9 @@ var GMapsCartoDBLayerView = function(layerModel, gmapsMap) {
   var opts = _.clone(layerModel.attributes);
 
   opts.map =  gmapsMap;
+  // CartoDB new attribution,
+  // also we have the logo
+  opts.attribution = "CartoDB <a href='http://cartodb.com/attributions' target='_blank'>attribution</a>";
 
   var // preserve the user's callbacks
   _featureOver  = opts.featureOver,

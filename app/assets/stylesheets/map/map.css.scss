@@ -264,8 +264,8 @@ div.map {
     height:auto;
     z-index:1;
 
-    // Move attribution some right when is Leaflet provider
-    .leaflet-right .leaflet-control {
+    // Move attributions in different providers
+    .leaflet-right .leaflet-control, #cartodb_attribution {
       margin-right: 62px!important;
     }
   }

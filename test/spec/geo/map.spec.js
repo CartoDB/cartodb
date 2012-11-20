@@ -104,7 +104,7 @@ describe("geo.map", function() {
       var r = map.setBaseLayer(base);
       var new_attribution = map.get('attribution');
       
-      expect(old_attribution).not.toEqual(new_attribution);
+      expect(old_attribution[0]).not.toEqual(new_attribution[0]);
     });
 
     it("should change bounds according to base layer", function() {

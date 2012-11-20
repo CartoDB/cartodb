@@ -179,13 +179,16 @@
         });
       }
       
+      var attribution = layer.get('attribution');
 
-      var attr = layer.get('attribution');
-
-      if (attr) {
+      if (attribution) {
         // Setting attribution in map model
-        // it doesn't persist in the backend, so this is needed.
-        this.map.set({ attribution:attr });
+        var attributions = this.map.get('attribution') || [];
+        if (!_.contains(attributions, attribution)) {
+          attributions.push(attribution);
+        }
+
+        this.map.set({ attribution: attributions });
       }
 
       this.trigger('newLayerView', layer_view, this);
@@ -207,9 +210,8 @@
       ];
     },
 
-    setAttribution: function(old_attr, new_attr) {
-      if (old_attr) this.map_leaflet.attributionControl.removeAttribution(old_attr);
-      this.map_leaflet.attributionControl.addAttribution(new_attr);
+    setAttribution: function(m) {
+      // Leaflet takes care of attribution by its own.
     },
 
     getSize: function() {

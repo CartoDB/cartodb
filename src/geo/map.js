@@ -379,12 +379,28 @@ cdb.geo.Map = cdb.core.Model.extend({
       opts.success && opts.success();
     }
 
-    // Set new attribution if exists
-    this.set({
-      attribution: layer.attributes.attribution || ''
-    });
+    // Update attribution removing old one and adding new one
+    this.updateAttribution(old,layer);
 
     return layer;
+  },
+
+  updateAttribution: function(old,new_) {
+    var attributions = this.get("attribution") || [];
+
+    // Remove the old one
+    if (old && old.get("attribution")) {
+      attributions = _.without(attributions, old.get("attribution"));
+    }
+
+    // Save the new one
+    if (new_.get("attribution")) {
+      if (!_.contains(attributions, new_.get("attribution"))) {
+        attributions.push(new_.get("attribution"));
+      }
+    }
+
+    this.set({ attribution: attributions });
   },
 
   addGeometry: function(geom) {
@@ -582,7 +598,7 @@ cdb.geo.MapView = cdb.core.View.extend({
   },
 
   _setAttribution: function(m,attr) {
-    this.setAttribution(m._previousAttributes.attribution,attr);
+    this.setAttribution(m);
   },
 
   _addLayers: function() {

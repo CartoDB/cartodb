@@ -9351,7 +9351,7 @@ L.Map.include({
 
 
 
-}(this));/* wax - 7.0.0dev10 - v6.0.4-112-g94e91cb */
+}(this));/* wax - 7.0.0dev10 - v6.0.4-124-g4fcec4d */
 
 
 !function (name, context, definition) {
@@ -11601,7 +11601,7 @@ wax.gm = function() {
         if (typeof template === 'string') template = [template];
         return function templatedGridFinder(url) {
             if (!url) return;
-            var rx = new RegExp('/(\\d+)\\/(\\d+)\\/(\\d+)\\.[\\w\\._]+');
+            var rx = new RegExp(manager.tileRegexp())
             var xyz = rx.exec(url);
             if (!xyz) return;
             return template[parseInt(xyz[2], 10) % template.length]
@@ -11609,6 +11609,29 @@ wax.gm = function() {
                 .replace(/\{x\}/g, xyz[2])
                 .replace(/\{y\}/g, xyz[3]);
         };
+    }
+
+    // return the regexp to catch the tile number given the url
+    manager.tileRegexp = function() {
+      var tileTemplate = tilejson.tiles[0];
+      // remove from the url all the special characters
+      // replacing them by a dot (dont mind the character)
+      tileTemplate = tileTemplate.
+                        replace(/[\(\)\?\$\*\+\^]/g,'.')
+
+      // the browser removes the port in the case it matchs with
+      // the default port of the protocol
+      if(tileTemplate.indexOf('https') === 0) {
+        tileTemplate = tileTemplate.replace(':443', '[:0-9]*')
+      } else if(tileTemplate.indexOf('http') === 0) {
+        tileTemplate = tileTemplate.replace(':80', '[:0-9]*')
+      }
+
+      // replace the first {x}{y}{z} by (\\d+)
+      return tileTemplate
+        .replace(/\{x\}/,'(\\d+)')
+        .replace(/\{y\}/,'(\\d+)')
+        .replace(/\{z\}/,'(\\d+)')
     }
 
     manager.formatter = function(x) {
@@ -11772,12 +11795,17 @@ wax.interaction = function() {
     // grid[ [x, y, tile] ] structure.
     function getTile(e) {
         var g = grid();
+        var regExp = new RegExp(gm.tileRegexp());
         for (var i = 0; i < g.length; i++) {
-            if (e)
-                if ((g[i][0] < e.y) &&
-                   ((g[i][0] + 256) > e.y) &&
-                    (g[i][1] < e.x) &&
-                   ((g[i][1] + 256) > e.x)) return g[i][2];
+            if (e) {
+                var isInside = ((g[i][0] < e.y) &&
+                     ((g[i][0] + 256) > e.y) &&
+                      (g[i][1] < e.x) &&
+                     ((g[i][1] + 256) > e.x));
+                if(isInside && regExp.exec(g[i][2].src)) {
+                    return g[i][2];
+                }
+            }
         }
         return false;
     }
@@ -11876,7 +11904,7 @@ wax.interaction = function() {
               _clickTimeout = window.setTimeout(function() {
                   _clickTimeout = null;
                   interaction.click(evt, pos);
-              }, 300);
+              }, 150);
             } else {
               killTimeout();
             }
@@ -12671,7 +12699,7 @@ wax.leaf.connector = L.TileLayer.extend({
         L.TileLayer.prototype.initialize.call(this, options.tiles[0], options);
     }
 });
-/* wax - 7.0.0dev10 - v6.0.4-113-g1ace597 */
+/* wax - 7.0.0dev10 - v6.0.4-124-g4fcec4d */
 
 
 !function (name, context, definition) {
@@ -14921,7 +14949,7 @@ wax.gm = function() {
         if (typeof template === 'string') template = [template];
         return function templatedGridFinder(url) {
             if (!url) return;
-            var rx = new RegExp('/(\\d+)\\/(\\d+)\\/(\\d+)\\.[\\w\\._]+');
+            var rx = new RegExp(manager.tileRegexp())
             var xyz = rx.exec(url);
             if (!xyz) return;
             return template[parseInt(xyz[2], 10) % template.length]
@@ -14929,6 +14957,29 @@ wax.gm = function() {
                 .replace(/\{x\}/g, xyz[2])
                 .replace(/\{y\}/g, xyz[3]);
         };
+    }
+
+    // return the regexp to catch the tile number given the url
+    manager.tileRegexp = function() {
+      var tileTemplate = tilejson.tiles[0];
+      // remove from the url all the special characters
+      // replacing them by a dot (dont mind the character)
+      tileTemplate = tileTemplate.
+                        replace(/[\(\)\?\$\*\+\^]/g,'.')
+
+      // the browser removes the port in the case it matchs with
+      // the default port of the protocol
+      if(tileTemplate.indexOf('https') === 0) {
+        tileTemplate = tileTemplate.replace(':443', '[:0-9]*')
+      } else if(tileTemplate.indexOf('http') === 0) {
+        tileTemplate = tileTemplate.replace(':80', '[:0-9]*')
+      }
+
+      // replace the first {x}{y}{z} by (\\d+)
+      return tileTemplate
+        .replace(/\{x\}/,'(\\d+)')
+        .replace(/\{y\}/,'(\\d+)')
+        .replace(/\{z\}/,'(\\d+)')
     }
 
     manager.formatter = function(x) {
@@ -15092,12 +15143,17 @@ wax.interaction = function() {
     // grid[ [x, y, tile] ] structure.
     function getTile(e) {
         var g = grid();
+        var regExp = new RegExp(gm.tileRegexp());
         for (var i = 0; i < g.length; i++) {
-            if (e)
-                if ((g[i][0] < e.y) &&
-                   ((g[i][0] + 256) > e.y) &&
-                    (g[i][1] < e.x) &&
-                   ((g[i][1] + 256) > e.x)) return g[i][2];
+            if (e) {
+                var isInside = ((g[i][0] < e.y) &&
+                     ((g[i][0] + 256) > e.y) &&
+                      (g[i][1] < e.x) &&
+                     ((g[i][1] + 256) > e.x));
+                if(isInside && regExp.exec(g[i][2].src)) {
+                    return g[i][2];
+                }
+            }
         }
         return false;
     }
@@ -15196,7 +15252,7 @@ wax.interaction = function() {
               _clickTimeout = window.setTimeout(function() {
                   _clickTimeout = null;
                   interaction.click(evt, pos);
-              }, 300);
+              }, 150);
             } else {
               killTimeout();
             }
@@ -19077,7 +19133,7 @@ cdb.geo.MapLayer = cdb.core.Model.extend({
           } else {
             return false;
           }
-        } else { // not gmail
+        } else { // not gmaps
           return true;
         }
 
@@ -19120,6 +19176,7 @@ cdb.geo.PlainLayer = cdb.geo.MapLayer.extend({
 cdb.geo.CartoDBLayer = cdb.geo.MapLayer.extend({
 
   defaults: {
+    attribution: 'CartoDB',
     type: 'CartoDB',
     active: true,
     query: null,
@@ -19251,13 +19308,15 @@ cdb.geo.Map = cdb.core.Model.extend({
 
   clone: function() {
     var m = new cdb.geo.Map(_.clone(this.attributes));
+
     // clone lists
     m.set({
-      center: _.clone(this.attributes.center),
-      bounding_box_sw: _.clone(this.attributes.bounding_box_sw),
-      bounding_box_ne: _.clone(this.attributes.bounding_box_ne),
-      view_bounds_sw: _.clone(this.attributes.view_bounds_sw),
-      view_bounds_ne: _.clone(this.attributes.view_bounds_ne)
+      center:           _.clone(this.attributes.center),
+      bounding_box_sw:  _.clone(this.attributes.bounding_box_sw),
+      bounding_box_ne:  _.clone(this.attributes.bounding_box_ne),
+      view_bounds_sw:   _.clone(this.attributes.view_bounds_sw),
+      view_bounds_ne:   _.clone(this.attributes.view_bounds_ne),
+      attribution:      _.clone(this.attributes.attribution)
     });
     // layers
     m.layers = this.layers.clone();
@@ -19358,6 +19417,14 @@ cdb.geo.Map = cdb.core.Model.extend({
   },
 
   /**
+   * Checks if the base layer is already in the map as base map
+   */
+  isBaseLayerAdded: function(layer) {
+    var baselayer = this.getBaseLayer()
+    return baselayer && layer.isEqual(baselayer);
+  },
+
+  /**
   * gets the url of the template of the tile layer
   * @method getLayerTemplate
   */
@@ -19375,6 +19442,12 @@ cdb.geo.Map = cdb.core.Model.extend({
     opts = opts || {};
     var self = this;
     var old = this.layers.at(0);
+
+    // Check if the selected base layer is already selected
+    if (this.isBaseLayerAdded(layer)) {
+      opts.alreadyAdded && opts.alreadyAdded();
+      return false;
+    }
 
     if (old) { // defensive programming FTW!!
       //remove layer from the view
@@ -19398,9 +19471,30 @@ cdb.geo.Map = cdb.core.Model.extend({
       self.trigger('baseLayerAdded');
       self._adjustZoomtoLayer(layer);
       opts.success && opts.success();
-    };
+    }
+
+    // Update attribution removing old one and adding new one
+    this.updateAttribution(old,layer);
 
     return layer;
+  },
+
+  updateAttribution: function(old,new_) {
+    var attributions = this.get("attribution") || [];
+
+    // Remove the old one
+    if (old && old.get("attribution")) {
+      attributions = _.without(attributions, old.get("attribution"));
+    }
+
+    // Save the new one
+    if (new_.get("attribution")) {
+      if (!_.contains(attributions, new_.get("attribution"))) {
+        attributions.push(new_.get("attribution"));
+      }
+    }
+
+    this.set({ attribution: attributions });
   },
 
   addGeometry: function(geom) {
@@ -19512,9 +19606,10 @@ cdb.geo.MapView = cdb.core.View.extend({
    * add a infowindow to the map
    */
   addInfowindow: function(infoWindowView) {
-
-    this.$el.append(infoWindowView.render().el);
-    this.addView(infoWindowView);
+    if (infoWindowView) {
+      this.$el.append(infoWindowView.render().el);
+      this.addView(infoWindowView);
+    }
   },
 
   /**
@@ -19563,10 +19658,11 @@ cdb.geo.MapView = cdb.core.View.extend({
   /** bind model properties */
   _bindModel: function() {
     this._unbindModel();
-    this.map.bind('change:view_bounds_sw', this._changeBounds, this);
-    this.map.bind('change:view_bounds_ne', this._changeBounds, this);
-    this.map.bind('change:zoom',   this._setZoom, this);
-    this.map.bind('change:center', this._setCenter, this);
+    this.map.bind('change:view_bounds_sw',  this._changeBounds, this);
+    this.map.bind('change:view_bounds_ne',  this._changeBounds, this);
+    this.map.bind('change:zoom',            this._setZoom, this);
+    this.map.bind('change:center',          this._setCenter, this);
+    this.map.bind('change:attribution',     this._setAttribution, this);
   },
 
   /** unbind model properties */
@@ -19578,10 +19674,11 @@ cdb.geo.MapView = cdb.core.View.extend({
     this.map.unbind('change:view_bounds_ne', this._changeBounds, this);
     */
 
-    this.map.unbind('change:zoom',   null, this);
-    this.map.unbind('change:center', null, this);
-    this.map.unbind('change:view_bounds_sw', null, this);
-    this.map.unbind('change:view_bounds_ne', null, this);
+    this.map.unbind('change:zoom',            null, this);
+    this.map.unbind('change:center',          null, this);
+    this.map.unbind('change:view_bounds_sw',  null, this);
+    this.map.unbind('change:view_bounds_ne',  null, this);
+    this.map.unbind('change:attribution',     null, this);
   },
 
   _changeBounds: function() {
@@ -19593,6 +19690,10 @@ cdb.geo.MapView = cdb.core.View.extend({
 
   showBounds: function(bounds) {
     this.map.fitBounds(bounds, this.getSize())
+  },
+
+  _setAttribution: function(m,attr) {
+    this.setAttribution(m);
   },
 
   _addLayers: function() {
@@ -20440,7 +20541,6 @@ CartoDBLayerCommon.prototype = {
     this.setOpacity(this.options.previous_opacity);
     delete this.options.previous_opacity;
     this.setInteraction(true);
-
   },
 
   hide: function() {
@@ -20919,10 +21019,15 @@ if(typeof(L) == "undefined")
   return;
 
 var LeafLetTiledLayerView = L.TileLayer.extend({
-
   initialize: function(layerModel, leafletMap) {
     L.TileLayer.prototype.initialize.call(this, layerModel.get('urlTemplate'), {
-      tms: layerModel.get('tms')
+      tms:          layerModel.get('tms'),
+      attribution:  layerModel.get('attribution'),
+      minZoom:      layerModel.get('minZomm'),
+      maxZoom:      layerModel.get('maxZoom'),
+      subdomains:   layerModel.get('subdomains') || '',
+      errorTileUrl: layerModel.get('errorTileUrl'),
+      opacity:      layerModel.get('opacity')
     });
     cdb.geo.LeafLetLayerView.call(this, layerModel, this, leafletMap);
   }
@@ -21190,7 +21295,6 @@ L.CartoDBLayer = L.TileLayer.extend({
    * @params {String} New attribution string
    */
   setAttribution: function(attribution) {
-
     this._checkLayer();
 
     // Remove old one
@@ -21384,6 +21488,11 @@ var LeafLetLayerCartoDBView = function(layerModel, leafletMap) {
 
   _.bindAll(this, 'featureOut', 'featureOver', 'featureClick');
 
+  
+  // CartoDB new attribution,
+  // also we have the logo
+  layerModel.attributes.attribution = "CartoDB <a href='http://cartodb.com/attributions' target='_blank'>attribution</a>";
+
   var opts = _.clone(layerModel.attributes);
   if(layerModel.get('use_server_style')) {
     opts.tile_style = null;
@@ -21475,260 +21584,266 @@ cdb.geo.LeafLetLayerCartoDBView = LeafLetLayerCartoDBView;
 */
 (function() {
 
-if(typeof(L) == "undefined") 
-  return;
-
-/**
- * leatlef impl
- */
-cdb.geo.LeafletMapView = cdb.geo.MapView.extend({
-
-
-  initialize: function() {
-
-    _.bindAll(this, '_addLayer', '_removeLayer', '_setZoom', '_setCenter', '_setView');
-
-    cdb.geo.MapView.prototype.initialize.call(this);
-
-    var self = this;
-
-    var center = this.map.get('center');
-
-    var mapConfig = {
-      zoomControl: false,
-      center: new L.LatLng(center[0], center[1]),
-      zoom: this.map.get('zoom'),
-      minZoom: this.map.get('minZoom'),
-      maxZoom: this.map.get('maxZoom')
-    };
-    if (this.map.get('bounding_box_ne')) {
-      //mapConfig.maxBounds = [this.map.get('bounding_box_ne'), this.map.get('bounding_box_sw')];
-    }
-
-    if(!this.options.map_object) {
-      this.map_leaflet = new L.Map(this.el, mapConfig);
-
-      // remove the "powered by leaflet" 
-      this.map_leaflet.attributionControl.setPrefix('');
-    } else {
-      this.map_leaflet = this.options.map_object;
-      this.setElement(this.map_leaflet.getContainer());
-      var c = self.map_leaflet.getCenter();
-      self._setModelProperty({ center: [c.lat, c.lng] });
-      self._setModelProperty({ zoom: self.map_leaflet.getZoom() });
-    }
-
-
-    this.map.bind('set_view', this._setView, this);
-    this.map.layers.bind('add', this._addLayer, this);
-    this.map.layers.bind('remove', this._removeLayer, this);
-    this.map.layers.bind('reset', this._addLayers, this);
-
-    this.map.geometries.bind('add', this._addGeometry, this);
-    this.map.geometries.bind('remove', this._removeGeometry, this);
-
-    this._bindModel();
-
-    this._addLayers();
-
-    this.map_leaflet.on('layeradd', function(lyr) {
-      this.trigger('layeradd', lyr, self);
-    }, this);
-
-    this.map_leaflet.on('zoomstart', function() {
-      self.trigger('zoomstart');
-    });
-
-    this.map_leaflet.on('click', function(e) {
-      self.trigger('click', e.originalEvent, [e.latlng.lat, e.latlng.lng]);
-    });
-
-    this.map_leaflet.on('dblclick', function(e) {
-      self.trigger('dblclick', e.originalEvent);
-    });
-
-    this.map_leaflet.on('zoomend', function() {
-      self._setModelProperty({
-        zoom: self.map_leaflet.getZoom()
-      });
-      self.trigger('zoomend');
-    }, this);
-
-    this.map_leaflet.on('move', function() {
-      var c = self.map_leaflet.getCenter();
-      self._setModelProperty({ center: [c.lat, c.lng] });
-    });
-
-    this.map_leaflet.on('drag', function() {
-      var c = self.map_leaflet.getCenter();
-      self._setModelProperty({
-        center: [c.lat, c.lng]
-      });
-      self.trigger('drag');
-    }, this);
-
-    this.map.bind('change:maxZoom', function() {
-      L.Util.setOptions(self.map_leaflet, { maxZoom: self.map.get('maxZoom') });
-    }, this);
-
-    this.map.bind('change:minZoom', function() {
-      L.Util.setOptions(self.map_leaflet, { minZoom: self.map.get('minZoom') });
-    }, this);
-
-    this.trigger('ready');
-
-    // looks like leaflet dont like to change the bounds just after the inicialization
-    var bounds = this.map.getViewBounds();
-    if(bounds) {
-      this.showBounds(bounds);
-    }
-
-  },
-
-
-  clean: function() {
-    //see https://github.com/CloudMade/Leaflet/issues/1101
-    L.DomEvent.off(window, 'resize', this.map_leaflet._onResize, this.map_leaflet);
-    // do not change by elder
-    cdb.core.View.prototype.clean.call(this);
-  },
-
-  _setZoom: function(model, z) {
-    this._setView();
-  },
-
-  _setCenter: function(model, center) {
-    this._setView();
-  },
-
-  _setView: function() {
-    this.map_leaflet.setView(this.map.get("center"), this.map.get("zoom") || 0 );
-  },
-
-  _addGeomToMap: function(geom) {
-    var geo = cdb.geo.LeafletMapView.createGeometry(geom);
-    geo.geom.addTo(this.map_leaflet);
-    return geo;
-  },
-
-  _removeGeomFromMap: function(geo) {
-    this.map_leaflet.removeLayer(geo.geom);
-  },
-
-  createLayer: function(layer) {
-    return cdb.geo.LeafletMapView.createLayer(layer, this.map_leaflet);
-  },
-
-  _addLayer: function(layer, layers, opts) {
-    var self = this;
-    var lyr, layer_view;
-
-    layer_view = cdb.geo.LeafletMapView.createLayer(layer, this.map_leaflet);
-    if(!layer_view) {
-      return;
-    }
-
-    var appending = !opts || opts.index === undefined;
-    // since leaflet does not support layer ordering 
-    // add the layers should be removed and added again
-    // if the layer is being appended do not clear
-    if(!appending) {
-      for(var i in this.layers) {
-        this.map_leaflet.removeLayer(this.layers[i]);
-      }
-    }
-
-    this.layers[layer.cid] = layer_view;
-
-    // add them again, in correct order
-    if(appending) {
-      cdb.geo.LeafletMapView.addLayerToMap(layer_view, self.map_leaflet);
-    } else {
-      this.map.layers.each(function(layerModel) {
-        var v = self.layers[layerModel.cid];
-        if(v) {
-          cdb.geo.LeafletMapView.addLayerToMap(v, self.map_leaflet);
-        }
-      });
-    }
-    /*
-    var attr = layer.get('attribution');
-    if(attr) {
-      this.addAttribution(attr);
-    }
-    */
-
-    this.trigger('newLayerView', layer_view, this);
-  },
-
-  latLonToPixel: function(latlon) {
-    var point = this.map_leaflet.latLngToLayerPoint(new L.LatLng(latlon[0], latlon[1]));
-    return this.map_leaflet.layerPointToContainerPoint(point);
-  },
-
-  // return the current bounds of the map view
-  getBounds: function() {
-    var b = this.map_leaflet.getBounds();
-    var sw = b.getSouthWest();
-    var ne = b.getNorthEast();
-    return [
-      [sw.lat, sw.lng],
-      [ne.lat, ne.lng]
-    ];
-  },
-
-  getSize: function() {
-    return this.map_leaflet.getSize();
-  },
-
-  panBy: function(p) {
-    this.map_leaflet.panBy(new L.Point(p.x, p.y));
-  },
-
-  setCursor: function(cursor) {
-    $(this.map_leaflet.getContainer()).css('cursor', cursor);
-  }
-
-}, {
-
-  layerTypeMap: {
-    "tiled": cdb.geo.LeafLetTiledLayerView,
-    "cartodb": cdb.geo.LeafLetLayerCartoDBView,
-    "carto": cdb.geo.LeafLetLayerCartoDBView,
-    "plain": cdb.geo.LeafLetPlainLayerView,
-    // for google maps create a plain layer
-    "gmapsbase": cdb.geo.LeafLetPlainLayerView
-  },
-
-  createLayer: function(layer, map) {
-    var layer_view = null;
-    var layerClass = this.layerTypeMap[layer.get('type').toLowerCase()];
-
-    if (layerClass) {
-      layer_view = new layerClass(layer, map);
-    } else {
-      cdb.log.error("MAP: " + layer.get('type') + " can't be created");
-    }
-    return layer_view;
-  },
-
-  addLayerToMap: function(layer_view, map) {
-    map.addLayer(layer_view.leafletLayer);
-  },
+  if(typeof(L) == "undefined") 
+    return;
 
   /**
-   * create the view for the geometry model
+   * leatlef impl
    */
-  createGeometry: function(geometryModel) {
-    if(geometryModel.isPoint()) {
-      return new cdb.geo.leaflet.PointView(geometryModel);
+  cdb.geo.LeafletMapView = cdb.geo.MapView.extend({
+
+
+    initialize: function() {
+
+      _.bindAll(this, '_addLayer', '_removeLayer', '_setZoom', '_setCenter', '_setView');
+
+      cdb.geo.MapView.prototype.initialize.call(this);
+
+      var self = this;
+
+      var center = this.map.get('center');
+
+      var mapConfig = {
+        zoomControl: false,
+        center: new L.LatLng(center[0], center[1]),
+        zoom: this.map.get('zoom'),
+        minZoom: this.map.get('minZoom'),
+        maxZoom: this.map.get('maxZoom')
+      };
+      if (this.map.get('bounding_box_ne')) {
+        //mapConfig.maxBounds = [this.map.get('bounding_box_ne'), this.map.get('bounding_box_sw')];
+      }
+
+      if(!this.options.map_object) {
+        this.map_leaflet = new L.Map(this.el, mapConfig);
+
+        // remove the "powered by leaflet" 
+        this.map_leaflet.attributionControl.setPrefix('');
+      } else {
+        this.map_leaflet = this.options.map_object;
+        this.setElement(this.map_leaflet.getContainer());
+        var c = self.map_leaflet.getCenter();
+        self._setModelProperty({ center: [c.lat, c.lng] });
+        self._setModelProperty({ zoom: self.map_leaflet.getZoom() });
+      }
+
+
+      this.map.bind('set_view', this._setView, this);
+      this.map.layers.bind('add', this._addLayer, this);
+      this.map.layers.bind('remove', this._removeLayer, this);
+      this.map.layers.bind('reset', this._addLayers, this);
+
+      this.map.geometries.bind('add', this._addGeometry, this);
+      this.map.geometries.bind('remove', this._removeGeometry, this);
+
+      this._bindModel();
+
+      this._addLayers();
+
+      this.map_leaflet.on('layeradd', function(lyr) {
+        this.trigger('layeradd', lyr, self);
+      }, this);
+
+      this.map_leaflet.on('zoomstart', function() {
+        self.trigger('zoomstart');
+      });
+
+      this.map_leaflet.on('click', function(e) {
+        self.trigger('click', e.originalEvent, [e.latlng.lat, e.latlng.lng]);
+      });
+
+      this.map_leaflet.on('dblclick', function(e) {
+        self.trigger('dblclick', e.originalEvent);
+      });
+
+      this.map_leaflet.on('zoomend', function() {
+        self._setModelProperty({
+          zoom: self.map_leaflet.getZoom()
+        });
+        self.trigger('zoomend');
+      }, this);
+
+      this.map_leaflet.on('move', function() {
+        var c = self.map_leaflet.getCenter();
+        self._setModelProperty({ center: [c.lat, c.lng] });
+      });
+
+      this.map_leaflet.on('drag', function() {
+        var c = self.map_leaflet.getCenter();
+        self._setModelProperty({
+          center: [c.lat, c.lng]
+        });
+        self.trigger('drag');
+      }, this);
+
+      this.map.bind('change:maxZoom', function() {
+        L.Util.setOptions(self.map_leaflet, { maxZoom: self.map.get('maxZoom') });
+      }, this);
+
+      this.map.bind('change:minZoom', function() {
+        L.Util.setOptions(self.map_leaflet, { minZoom: self.map.get('minZoom') });
+      }, this);
+
+      this.trigger('ready');
+
+      // looks like leaflet dont like to change the bounds just after the inicialization
+      var bounds = this.map.getViewBounds();
+      if(bounds) {
+        this.showBounds(bounds);
+      }
+    },
+
+
+    clean: function() {
+      //see https://github.com/CloudMade/Leaflet/issues/1101
+      L.DomEvent.off(window, 'resize', this.map_leaflet._onResize, this.map_leaflet);
+      // do not change by elder
+      cdb.core.View.prototype.clean.call(this);
+    },
+
+    _setZoom: function(model, z) {
+      this._setView();
+    },
+
+    _setCenter: function(model, center) {
+      this._setView();
+    },
+
+    _setView: function() {
+      this.map_leaflet.setView(this.map.get("center"), this.map.get("zoom") || 0 );
+    },
+
+    _addGeomToMap: function(geom) {
+      var geo = cdb.geo.LeafletMapView.createGeometry(geom);
+      geo.geom.addTo(this.map_leaflet);
+      return geo;
+    },
+
+    _removeGeomFromMap: function(geo) {
+      this.map_leaflet.removeLayer(geo.geom);
+    },
+
+    createLayer: function(layer) {
+      return cdb.geo.LeafletMapView.createLayer(layer, this.map_leaflet);
+    },
+
+    _addLayer: function(layer, layers, opts) {
+      var self = this;
+      var lyr, layer_view;
+
+      layer_view = cdb.geo.LeafletMapView.createLayer(layer, this.map_leaflet);
+      if(!layer_view) {
+        return;
+      }
+
+      var appending = !opts || opts.index === undefined || opts.index === _.size(this.layers);
+      // since leaflet does not support layer ordering 
+      // add the layers should be removed and added again
+      // if the layer is being appended do not clear
+      if(!appending) {
+        for(var i in this.layers) {
+          this.map_leaflet.removeLayer(this.layers[i]);
+        }
+      }
+
+      this.layers[layer.cid] = layer_view;
+
+      // add them again, in correct order
+      if(appending) {
+        cdb.geo.LeafletMapView.addLayerToMap(layer_view, self.map_leaflet);
+      } else {
+        this.map.layers.each(function(layerModel) {
+          var v = self.layers[layerModel.cid];
+          if(v) {
+            cdb.geo.LeafletMapView.addLayerToMap(v, self.map_leaflet);
+          }
+        });
+      }
+      
+      var attribution = layer.get('attribution');
+
+      if (attribution) {
+        // Setting attribution in map model
+        var attributions = this.map.get('attribution') || [];
+        if (!_.contains(attributions, attribution)) {
+          attributions.push(attribution);
+        }
+
+        this.map.set({ attribution: attributions });
+      }
+
+      this.trigger('newLayerView', layer_view, this);
+    },
+
+    latLonToPixel: function(latlon) {
+      var point = this.map_leaflet.latLngToLayerPoint(new L.LatLng(latlon[0], latlon[1]));
+      return this.map_leaflet.layerPointToContainerPoint(point);
+    },
+
+    // return the current bounds of the map view
+    getBounds: function() {
+      var b = this.map_leaflet.getBounds();
+      var sw = b.getSouthWest();
+      var ne = b.getNorthEast();
+      return [
+        [sw.lat, sw.lng],
+        [ne.lat, ne.lng]
+      ];
+    },
+
+    setAttribution: function(m) {
+      // Leaflet takes care of attribution by its own.
+    },
+
+    getSize: function() {
+      return this.map_leaflet.getSize();
+    },
+
+    panBy: function(p) {
+      this.map_leaflet.panBy(new L.Point(p.x, p.y));
+    },
+
+    setCursor: function(cursor) {
+      $(this.map_leaflet.getContainer()).css('cursor', cursor);
     }
-    return new cdb.geo.leaflet.PathView(geometryModel);
-  }
 
+  }, {
 
-});
+    layerTypeMap: {
+      "tiled": cdb.geo.LeafLetTiledLayerView,
+      "cartodb": cdb.geo.LeafLetLayerCartoDBView,
+      "carto": cdb.geo.LeafLetLayerCartoDBView,
+      "plain": cdb.geo.LeafLetPlainLayerView,
+      // for google maps create a plain layer
+      "gmapsbase": cdb.geo.LeafLetPlainLayerView
+    },
 
+    createLayer: function(layer, map) {
+      var layer_view = null;
+      var layerClass = this.layerTypeMap[layer.get('type').toLowerCase()];
+
+      if (layerClass) {
+        layer_view = new layerClass(layer, map);
+      } else {
+        cdb.log.error("MAP: " + layer.get('type') + " can't be created");
+      }
+      return layer_view;
+    },
+
+    addLayerToMap: function(layer_view, map) {
+      map.addLayer(layer_view.leafletLayer);
+    },
+
+    /**
+     * create the view for the geometry model
+     */
+    createGeometry: function(geometryModel) {
+      if(geometryModel.isPoint()) {
+        return new cdb.geo.leaflet.PointView(geometryModel);
+      }
+      return new cdb.geo.leaflet.PathView(geometryModel);
+    }
+  });
 })();
 
 (function() {
@@ -21959,6 +22074,7 @@ var CartoDBLayer = function(opts) {
 
   var default_options = {
     query:          "SELECT * FROM {{table_name}}",
+    attribution:    "CartoDB",
     opacity:        1,
     auto_bound:     false,
     debug:          false,
@@ -21976,9 +22092,7 @@ var CartoDBLayer = function(opts) {
   };
 
   this.options = _.defaults(opts, default_options);
-  opts.tiles = [
-    this._tilesUrl()
-  ];
+  opts.tiles = this._tileJSON().tiles;
 
   // Set init
   this.tiles = 0;
@@ -22019,6 +22133,8 @@ CartoDBLayer.prototype.setOpacity = function(opacity) {
   }
 
 };
+
+CartoDBLayer.prototype.setAttribution = function() {};
 
 CartoDBLayer.prototype.getTile = function(coord, zoom, ownerDocument) {
 
@@ -22247,6 +22363,10 @@ var GMapsCartoDBLayerView = function(layerModel, gmapsMap) {
   var self = this;
 
   _.bindAll(this, 'featureOut', 'featureOver', 'featureClick');
+
+  // CartoDB new attribution,
+  // also we have the logo
+  layerModel.attributes.attribution = "CartoDB <a href='http://cartodb.com/attributions' target='_blank'>attribution</a>";
 
   var opts = _.clone(layerModel.attributes);
 
@@ -22488,6 +22608,21 @@ cdb.geo.GoogleMapsMapView = cdb.geo.MapView.extend({
     } else {
       cdb.log.error("layer type not supported");
     }
+
+
+    var attribution = layer.get('attribution');
+
+    if (attribution) {
+      // Setting attribution in map model
+      // it doesn't persist in the backend, so this is needed.
+      var attributions = this.map.get('attribution') || [];
+      if (!_.contains(attributions, attribution)) {
+        attributions.push(attribution);
+      }
+
+      this.map.set({ attribution: attributions });
+    }
+
   },
 
   latLonToPixel: function(latlon) {
@@ -22523,6 +22658,30 @@ cdb.geo.GoogleMapsMapView = cdb.geo.MapView.extend({
     return [ [0,0], [0,0] ];
   },
 
+  setAttribution: function(m) {
+    // Remove old one
+    var old = document.getElementById("cartodb_attribution")
+      , attribution = m.get("attribution").join(", ");
+
+    // If div already exists, remove it
+    if (old) {
+      old.parentNode.removeChild(old);
+    }
+
+    // Add new one
+    var container           = this.map_googlemaps.getDiv()
+      , style               = "height: 19px; line-height: 19px; padding-right: 6px; padding-left: 50px; background:white; background: -webkit-linear-gradient(left, rgba(255, 255, 255, 0) 0px,\
+                              rgba(255, 255, 255, 0.498039) 50px); background: linear-gradient(left, rgba(255, 255, 255, 0) 0px, rgba(255, 255, 255, 0.498039) 50px); background: \
+                              -moz-inear-gradient(left, rgba(255, 255, 255, 0) 0px, rgba(255, 255, 255, 0.498039) 50px); font-family: Arial, sans-serif; font-size: 10px; color: rgb(68, 68, 68);\
+                              white-space: nowrap; direction: ltr; text-align: right; background-position: initial initial; background-repeat: initial initial; position:absolute; bottom:19px;\
+                              right:0; display:block; border:none; z-index:10000;"
+      , cartodb_attribution = document.createElement("div");
+
+    cartodb_attribution.setAttribute('id','cartodb_attribution');
+    container.appendChild(cartodb_attribution);
+    cartodb_attribution.setAttribute('style',style);
+    cartodb_attribution.innerHTML = attribution;
+  },
 
   setCursor: function(cursor) {
     this.map_googlemaps.setOptions({ draggableCursor: cursor });
@@ -23342,18 +23501,20 @@ var Vis = cdb.core.View.extend({
       overlay.map = map;
       var v = Overlay.create(overlay.type, this, overlay);
 
-      // Save tiles loader view for later
-      if (overlay.type == "loader") {
-        this.loader = v;
-      }
+      if (v) {
+        // Save tiles loader view for later
+        if (overlay.type == "loader") {
+          this.loader = v;
+        }
 
-      this.addView(v);
-      div.append(v.el);
+        this.addView(v);
+        div.append(v.el);
 
-      // Set map position correctly taking into account
-      // header height
-      if (overlay.type == "header") {
-        this.setMapPosition();
+        // Set map position correctly taking into account
+        // header height
+        if (overlay.type == "header") {
+          this.setMapPosition();
+        }
       }
     }
 
@@ -23420,7 +23581,6 @@ var Vis = cdb.core.View.extend({
     });
 
     layerView.infowindow = infowindow.model;
-
   },
 
   loadLayer: function(layerData, opts) {
@@ -23432,7 +23592,9 @@ var Vis = cdb.core.View.extend({
     var layerView = mapView.getLayerByCid(layer_cid);
     
     // add the associated overlays
-    if(layerData.infowindow) {
+    if(layerData.infowindow &&
+      layerData.infowindow.fields &&
+      layerData.infowindow.fields.length > 0) {
       this.addInfowindow(layerView);
     }
 
@@ -23515,6 +23677,10 @@ cdb.vis.Overlay.register('header', function(data, vis) {
 
 // infowindow
 cdb.vis.Overlay.register('infowindow', function(data, vis) {
+
+  if (_.size(data.fields) == 0) {
+    return null;
+  }
 
   var infowindowModel = new cdb.geo.ui.InfowindowModel({
     fields: data.fields
@@ -23691,8 +23857,8 @@ Layers.register('carto', cartoLayer);
         }
         layerData = visData.layers[1];
         // add the timestamp to options
-        layerData.options.extra_data = layerData.options.extra_data || {};
-        layerData.options.extra_data.cache_buster = visData.updated_at;
+        layerData.options.extra_params = layerData.options.extra_params || {};
+        layerData.options.extra_params.cache_buster = visData.updated_at;
       } else {
         layerData = visData;
       }
@@ -23769,9 +23935,14 @@ Layers.register('carto', cartoLayer);
 
   SQL.prototype._host = function() {
     var opts = this.options;
-    var host = opts.host || 'cartodb.com';
-    var protocol = opts.protocol || 'https';
-    return protocol + '://' + opts.user + '.' + host + '/api/' +  opts.version + '/sql';
+    if(opts && opts.completeDomain) {
+      return opts.completeDomain + '/api/' +  opts.version + '/sql'
+    } else {
+      var host = opts.host || 'cartodb.com';
+      var protocol = opts.protocol || 'https';
+
+      return protocol + '://' + opts.user + '.' + host + '/api/' +  opts.version + '/sql';
+    }
   }
 
   /**
@@ -23808,7 +23979,7 @@ Layers.register('carto', cartoLayer);
     var query = Mustache.render(sql, vars);
     var q = 'q=' + encodeURIComponent(query);
 
-    // request params 
+    // request params
     var reqParams = ['format', 'dp'];
     for(var i in reqParams) {
       var r = reqParams[i];
@@ -23843,8 +24014,8 @@ Layers.register('carto', cartoLayer);
       if(callback) callback(resp);
     }
 
-    // call ajax 
-    delete options.jsonp; 
+    // call ajax
+    delete options.jsonp;
     $.ajax(_.extend(params, options));
     return promise;
   }
@@ -23856,9 +24027,9 @@ Layers.register('carto', cartoLayer);
       if(_.isFunction(fn)) {
         callback = fn;
       }
-      var s = 'SELECT ST_XMin(ST_Extent(the_geom)) as minx,' + 
+      var s = 'SELECT ST_XMin(ST_Extent(the_geom)) as minx,' +
               '       ST_YMin(ST_Extent(the_geom)) as miny,'+
-              '       ST_XMax(ST_Extent(the_geom)) as maxx,' + 
+              '       ST_XMax(ST_Extent(the_geom)) as maxx,' +
               '       ST_YMax(ST_Extent(the_geom)) as maxy' +
               ' from ({{sql}}) as subq';
       sql = Mustache.render(sql, vars);

@@ -129,11 +129,14 @@ describe('api.layers', function() {
               null,
               {kind: 'plain', options: {} }
             ]
-          }, s);
+          }, s).done(function(lyr) {
+            layer = lyr;
+          });
         });
         waits(10);
         runs(function() {
           expect(s.called).toEqual(true);
+          expect(layer.model.attributes.extra_params.cache_buster).toEqual('jaja');
         });
       });
     });

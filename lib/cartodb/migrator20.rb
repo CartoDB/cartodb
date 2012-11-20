@@ -2,14 +2,17 @@ class Migrator20
 
   def migrate!
     @logger = Logger.new(STDOUT)
-    @tables_skipped     = 0
-    @tables_migrated    = 0
-    @tables_with_errors = {}
+    @stats = {
+      :tables_skipped     => 0,
+      :tables_migrated    => 0,
+      :tables_with_errors => {},
+      :bubble_maps_hacks  => 0
+    }
 
     Table.select(:id, :database_name, :name, :user_id).all.each do |table|
       if already_migrated?(table)
         log "* Skipping: #{table.name}"
-        @tables_skipped += 1
+        @stats[:tables_skipped] += 1
       else
         begin
           log "* Migrating: #{table.name}"
@@ -30,18 +33,19 @@ class Migrator20
         rescue => e
           log "!! Exception on #{table.name}\n#{e.inspect}"
           username = table.owner.username rescue ""
-          @tables_with_errors[username] ||= []
-          @tables_with_errors[username] << [table.name, e.inspect]
+          @stats[:tables_with_errors][username] ||= []
+          @stats[:tables_with_errors][username] << [table.name, e.inspect]
         end      
       end
     end
 
     log("\n=================================")
     log("Done!")
-    log("- Tables migrated:       #{@tables_migrated}")
-    log("- Tables skipped:        #{@tables_skipped}")
+    log("- Tables migrated:       #{@stats[:tables_migrated]}")
+    log("- Tables skipped:        #{@stats[:tables_skipped]}")
+    log("- Bubble maps hacks:     #{@stats[:bubble_maps_hacks]}")
     log("- Tables with errors:")
-    log("#{y(@tables_with_errors)}")
+    log("#{y(@stats[:tables_with_errors])}")
   end
 
   def add_table_id(table)
@@ -99,15 +103,16 @@ class Migrator20
     end
 
     # Send a style conversion request to the tiler
-    `#{Rails.root.join('../../node-windshaft/current/tools')}/convert_database_style #{table.owner.username} #{table.name}`
+    conversion_cmd = "#{Rails.root.join('../../../node-windshaft/current/tools')}/convert_database_styles #{table.owner.database_name} #{table.name} 2.1.0"
+    log('- Converting table style to 2.1.0')
+    log(`#{conversion_cmd}`)
+    log("Conversion result: #{$?}")
 
     # Save the converted style on the model (reading it again from redis)
     new_tile_style = JSON.parse(
       $tables_metadata.get("map_style|#{table.database_name}|#{table.name}")
     )['style'] rescue nil
     unless new_tile_style.blank?
-      differ = RSpec::Expectations::Differ.new
-      log differ.diff_as_object data_layer.options['tile_style'], new_tile_style
       data_layer.options['tile_style'] = new_tile_style 
     end
     
@@ -116,6 +121,8 @@ class Migrator20
     if data_layer.options['tile_style'].present? && 
        table.the_geom_type == "multipolygon" &&
        data_layer.options['tile_style'] =~ /.*marker-placement:\s*point.*/
+
+      @stats[:bubble_maps_hacks] += 1
       fields = table.schema(:reload => true).map {|i| i.first.to_s } - ["the_geom_webmercator"]
       data_layer.options['query'] = "SELECT #{fields.join(',')}, ST_PointOnSurface(the_geom_webmercator) as the_geom_webmercator FROM #{table.name}"
     end
@@ -165,7 +172,7 @@ class Migrator20
   end
 
   def migrated!(table)
-    @tables_migrated += 1
+    @stats[:tables_migrated] += 1
     $tables_metadata.hset(table.key, 'migrated_to_20', true)
   end
 

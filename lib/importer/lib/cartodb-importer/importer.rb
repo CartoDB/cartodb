@@ -64,13 +64,12 @@ module CartoDB
           @fromuri = false
 
           # URL cleaning stuff
-          if @import_from_file =~ /^http/
+        if @import_from_file =~ /^http/
+            @import_from_file = fix_openstreetmap_url(@import_from_file) if @import_from_file =~ /openstreetmap.org/
             @import_from_file = parse_url(URI.escape(@import_from_file.strip))
 
             # KML from FusionTables urls were not coming with extensions
-            if @import_from_file =~ /fusiontables/
-              @filesrc = "fusiontables"
-            end
+            @filesrc = "fusiontables" if @import_from_file =~ /fusiontables/
 
             @fromuri = true
           end
@@ -97,7 +96,7 @@ module CartoDB
               if @filesrc == "fusiontables"
                 @ext = ".kml"
               elsif @import_from_file =~ /openstreetmap.org/
-                @ext = ".osm"
+                @ext              = ".osm"
               elsif @ext==".gz" and @import_from_file.include?(".tar.gz")
                 @ext=".tgz"
               end
@@ -330,7 +329,37 @@ module CartoDB
     def parse_url(url)
       return url unless url.starts_with?('http')
       uri = URI(url)
-      "#{uri.scheme}://#{uri.host}:#{uri.port}#{uri.path}"
+      url = "#{uri.scheme}://#{uri.host}:#{uri.port}#{uri.path}"
+      url += "?#{uri.query}" if uri.query.present?
+      url
+    end
+
+    def fix_openstreetmap_url url
+      return url if url =~ /api.openstreetmap.org/
+
+      params = Rack::Utils.parse_query(url.split('?')[1])
+      #2h, 6w
+      lon = params['lon'].to_f
+      lat = params['lat'].to_f
+      zm = params['zoom'].to_i
+
+      dw = 1200.0/2.0
+      dh = 1000.0/2.0
+
+      res = 180 / 256.0 / 2**zm
+      py = (90 + lat) / res
+      px = (180 + lon) / res
+      lpx = px - dw
+      lpy = py - dh
+      upx = px + dw
+      upy = py + dh
+
+      lon1 = (res * lpx) - 180
+      lat1 = (res * lpy) - 90
+      lon2 = (res * upx) - 180
+      lat2 = (res * upy) - 90
+
+      return "http://api.openstreetmap.org/api/0.6/map?bbox=#{lon1},#{lat1},#{lon2},#{lat2}"
     end
 
   end

@@ -113,8 +113,6 @@ class Migrator20
       $tables_metadata.get("map_style|#{table.database_name}|#{table.name}")
     )['style'] rescue nil
     unless new_tile_style.blank?
-      differ = RSpec::Expectations::Differ.new
-      log differ.diff_as_object data_layer.options['tile_style'], new_tile_style
       data_layer.options['tile_style'] = new_tile_style 
     end
     

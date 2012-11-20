@@ -155,7 +155,7 @@
         return;
       }
 
-      var appending = !opts || opts.index === undefined;
+      var appending = !opts || opts.index === undefined || opts.index === _.size(this.layers);
       // since leaflet does not support layer ordering 
       // add the layers should be removed and added again
       // if the layer is being appended do not clear

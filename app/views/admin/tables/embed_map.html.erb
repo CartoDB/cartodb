@@ -111,6 +111,9 @@
     if(opt.sql) {
       vizjson.layers[1].options.query = opt.sql;
     }
+    if(opt.style) {
+      vizjson.layers[1].options.tile_style = opt.style;
+    }
 
     vizjson.layers[1].options.no_cdn = debug;
 

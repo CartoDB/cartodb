@@ -2269,9 +2269,9 @@ wax.gm = function() {
       // the browser removes the port in the case it matchs with
       // the default port of the protocol
       if(tileTemplate.indexOf('https') === 0) {
-        tileTemplate.replace(':443', '....')
+        tileTemplate = tileTemplate.replace(':443', '[:0-9]*')
       } else if(tileTemplate.indexOf('http') === 0) {
-        tileTemplate.replace(':80', '...')
+        tileTemplate = tileTemplate.replace(':80', '[:0-9]*')
       }
 
       // replace the first {x}{y}{z} by (\\d+)

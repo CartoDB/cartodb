@@ -126,18 +126,20 @@ var Vis = cdb.core.View.extend({
       overlay.map = map;
       var v = Overlay.create(overlay.type, this, overlay);
 
-      // Save tiles loader view for later
-      if (overlay.type == "loader") {
-        this.loader = v;
-      }
+      if (v) {
+        // Save tiles loader view for later
+        if (overlay.type == "loader") {
+          this.loader = v;
+        }
 
-      this.addView(v);
-      div.append(v.el);
+        this.addView(v);
+        div.append(v.el);
 
-      // Set map position correctly taking into account
-      // header height
-      if (overlay.type == "header") {
-        this.setMapPosition();
+        // Set map position correctly taking into account
+        // header height
+        if (overlay.type == "header") {
+          this.setMapPosition();
+        }
       }
     }
 
@@ -204,7 +206,6 @@ var Vis = cdb.core.View.extend({
     });
 
     layerView.infowindow = infowindow.model;
-
   },
 
   loadLayer: function(layerData, opts) {
@@ -216,7 +217,9 @@ var Vis = cdb.core.View.extend({
     var layerView = mapView.getLayerByCid(layer_cid);
     
     // add the associated overlays
-    if(layerData.infowindow) {
+    if(layerData.infowindow &&
+      layerData.infowindow.fields &&
+      layerData.infowindow.fields.length > 0) {
       this.addInfowindow(layerView);
     }
 

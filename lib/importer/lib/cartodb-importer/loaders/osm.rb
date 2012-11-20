@@ -5,6 +5,9 @@ module CartoDB
       register_loader :bz2
       register_loader :osm
 
+      API_LIMIT_REACHED_ERROR_MESSAGE = /You requested too many nodes \(limit is 50000\)\. Either request a smaller area, or use planet\.osm/
+
+
       def process!
         @data_import = DataImport.find(:id=>@data_import_id)
 

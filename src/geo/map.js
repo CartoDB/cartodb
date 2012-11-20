@@ -512,9 +512,10 @@ cdb.geo.MapView = cdb.core.View.extend({
    * add a infowindow to the map
    */
   addInfowindow: function(infoWindowView) {
-
-    this.$el.append(infoWindowView.render().el);
-    this.addView(infoWindowView);
+    if (infoWindowView) {
+      this.$el.append(infoWindowView.render().el);
+      this.addView(infoWindowView);
+    }
   },
 
   /**

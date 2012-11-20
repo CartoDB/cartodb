@@ -56,6 +56,10 @@ cdb.vis.Overlay.register('header', function(data, vis) {
 // infowindow
 cdb.vis.Overlay.register('infowindow', function(data, vis) {
 
+  if (_.size(data.fields) == 0) {
+    return null;
+  }
+
   var infowindowModel = new cdb.geo.ui.InfowindowModel({
     fields: data.fields
   });

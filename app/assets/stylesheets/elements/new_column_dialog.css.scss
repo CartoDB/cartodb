@@ -5,9 +5,9 @@
 
 .new_column_dialog {
 
-  @include default-input;
-  @include default-form-info;
-  @include default-select;
+  @include default-input();
+  @include default-form-info();
+  @include default-select();
 
   input {
     width: 253px - 11*2px;

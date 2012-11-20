@@ -71,7 +71,11 @@ module CartoDB
       def fix_encoding
         begin
           encoding_to_try = "UTF-8"
-          is_utf = `file -bi #{@path}`
+          is_utf = if `uname` =~ /Darwin/
+                     `file -bI #{@path}`
+                   else
+                     `file -bi #{@path}`
+                   end
           unless is_utf.include? 'utf-8'
             # sample first 500 lines from source
             # text/plain; charset=iso-8859-1
@@ -104,10 +108,10 @@ module CartoDB
             elsif !['utf-8'].include?(cd.encoding.to_s.downcase)
               # Fallbacks
               encoding_to_try = if ["", "ascii"].include?(cd.encoding.to_s)
-                "UTF-8"
-              else
-                cd.encoding.to_s
-              end
+                                  "UTF-8"
+                                else
+                                  cd.encoding.to_s
+                                end
             end
           end
 

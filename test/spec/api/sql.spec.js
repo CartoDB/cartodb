@@ -32,6 +32,21 @@ describe('SQL api client', function() {
     $.ajax = jquery_ajax;
   });
 
+  it("should compile the url if not completeDomain passed", function() {
+    expect(sql._host()).toEqual('https://rambo.cartodb.com/api/v2/sql');
+  });
+
+  it("should compile the url if completeDomain passed", function() {
+    var sqlBis = new cartodb.SQL({
+      user: USER,
+      protocol: 'https',
+      completeDomain: 'http://troloroloro.com'
+    })
+
+    expect(sqlBis._host()).toEqual('http://troloroloro.com/api/v2/sql');
+  });
+
+
   it("should execute a query", function() {
     sql.execute('select * from table');
     expect(ajaxParams.url).toEqual(
@@ -109,9 +124,9 @@ describe('SQL api client', function() {
   });
 
   it("should get bounds for query", function() {
-    var sql = 'SELECT ST_XMin(ST_Extent(the_geom)) as minx,' + 
+    var sql = 'SELECT ST_XMin(ST_Extent(the_geom)) as minx,' +
             '       ST_YMin(ST_Extent(the_geom)) as miny,'+
-            '       ST_XMax(ST_Extent(the_geom)) as maxx,' + 
+            '       ST_XMax(ST_Extent(the_geom)) as maxx,' +
             '       ST_YMax(ST_Extent(the_geom)) as maxy' +
             ' from (select * from rambo where id=2) as subq';
     s = new cartodb.SQL({ user: 'jaja' });

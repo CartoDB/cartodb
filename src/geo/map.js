@@ -386,7 +386,7 @@ cdb.geo.Map = cdb.core.Model.extend({
   },
 
   updateAttribution: function(old,new_) {
-    var attributions = this.get("attribution") || [];
+    var attributions = this.get("attribution") || [];
 
     // Remove the old one
     if (old && old.get("attribution")) {

@@ -223,6 +223,12 @@ describe CartoDB::Importer do
       end
 
       it "should import a CSV file with only one column" do
+        pending <<-EOF.gsub('          ', '')
+          ogr2ogr doesn't support csv with a single column. A posible workaround is to
+          manually add an empty column at the end of csv with only one column. But looks
+          like this solution could add further problems with regular csv files which works
+           well.
+        EOF
         importer = create_importer 'csv_with_one_column.csv', 'csv_with_one_column'
         results, errors = importer.import!
 
@@ -306,8 +312,8 @@ describe CartoDB::Importer do
       it "should import GeoJSON files from URLs with non-UTF-8 chars converting if needed" do
         importer = create_importer "https://raw.github.com/gist/1374824/d508009ce631483363e1b493b00b7fd743b8d008/unicode.json", 'geojson_utf8', true
         results, errors = importer.import!
-        results.length.should           == 1
-        @db[:geojson_utf8].get(:reg_symbol).should == "In here -> ® <-- this here"
+        results.length.should == 1
+        @db[:geojson_utf8].get(:reg_symbol).force_encoding('UTF-8').should == "In here -> ® <-- this here"
       end
     end
 
@@ -459,13 +465,16 @@ describe CartoDB::Importer do
 
     describe "Import from URL" do
       it "should import a shapefile from NaturalEarthData.com" do
-        importer = create_importer "http://www.nacis.org/naturalearth/10m/cultural/10m_parks_and_protected_areas.zip", "_10m_us_parks", true
-        results,errors = importer.import!
+        serve_file Rails.root.join('spec/support/data/ne_10m_parks_and_protected_lands.zip'),
+          :headers => {"content-type" => "application/zip"} do |url|
+            importer = create_importer url, "_10m_us_parks", true
+            results,errors = importer.import!
 
-        @db.tables.should include(:_10m_us_parks)
-        results[0].name.should          == '_10m_us_parks'
-        results[0].rows_imported.should == 312
-        results[0].import_type.should   == '.shp'
+            @db.tables.should include(:_10m_us_parks)
+            results[0].name.should          == '_10m_us_parks'
+            results[0].rows_imported.should == 61
+            results[0].import_type.should   == '.shp'
+        end
       end
 
       it "should infer file extension from http content-disposition header" do
@@ -504,6 +513,20 @@ describe CartoDB::Importer do
                                OpenStruct.new(name: 'osm_polygon', rows_imported: 252, import_type: '.osm', log: ''),
                                OpenStruct.new(name: 'osm_roads',   rows_imported: 43,  import_type: '.osm', log: ''),
                                OpenStruct.new(name: 'osm_point',   rows_imported: 259, import_type: '.osm', log: ''))
+      end
+
+      it "throws an error for OSM imports when the zoom is too big" do
+        expect{
+          create_importer "http://www.openstreetmap.org/?lat=37.39170&lon=-5.985950&zoom=13&layers=M", "osm", true
+        }.to raise_error('You requested too many nodes (limit is 50000). Either request a smaller area, or use planet.osm')
+
+        importer = create_importer "http://www.openstreetmap.org/?lat=37.39170&lon=-5.985950&zoom=17&layers=M", "osm", true
+        results,errors = importer.import!
+
+        results.should include(OpenStruct.new(name: 'osm_line',    rows_imported: 140, import_type: '.osm', log: ''),
+                               OpenStruct.new(name: 'osm_polygon', rows_imported: 31,  import_type: '.osm', log: ''),
+                               OpenStruct.new(name: 'osm_roads',   rows_imported: 6,   import_type: '.osm', log: ''),
+                               OpenStruct.new(name: 'osm_point',   rows_imported: 136, import_type: '.osm', log: ''))
       end
 
     end

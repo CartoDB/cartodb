@@ -11,7 +11,7 @@ module CartoDB
         import_data = []
 
         begin
-          json_data = ::JSON.parse(File.open(@working_data[:path]).read)
+          json_data = ::JSON.parse(File.open(@working_data[:path]).read.force_encoding('UTF-8'))
         rescue ::JSON::ParserError => e
           # Ignore file, fall back to loader
           return false

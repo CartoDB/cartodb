@@ -1,41 +1,41 @@
 module CartoDB
-  
+
   def self.session_domain
     Cartodb.config[:session_domain]
   end
-  
+
   def self.secret_token
     Cartodb.config[:secret_token]
   end
-  
+
   def self.domain
     @@domain ||= if Rails.env.production? || Rails.env.staging?
       `hostname -f`.strip
     elsif Rails.env.development?
       "vizzuality#{session_domain}"
     else
-      "test#{session_domain}"      
+      "test#{session_domain}"
     end
   end
-  
+
   def self.hostname
     @@hostname ||= if Rails.env.production? || Rails.env.staging?
       "https://#{domain}"
     elsif Rails.env.development?
       "http://#{domain}:3000"
     else
-      "http://#{domain}:53716"      
+      "http://#{domain}:53716"
     end
   end
-  
+
   def self.account_host
     Cartodb.config[:account_host]
   end
-  
+
   def self.account_path
     Cartodb.config[:account_path]
   end
-  
+
   module API
     VERSION_1 = "v1"
   end
@@ -52,46 +52,46 @@ module CartoDB
     "date"    => ["timestamp", "timestamp without time zone"],
     "boolean" => ["boolean"]
   }
-  
+
   NEXT_TYPE = {
     "number" => "double precision",
     "string" => "text"
   }
-  
+
   VALID_GEOMETRY_TYPES = %W{ geometry multipolygon point multilinestring }
-  
-  POSTGRESQL_RESERVED_WORDS = %W{ ALL ANALYSE ANALYZE AND ANY ARRAY AS ASC ASYMMETRIC AUTHORIZATION BETWEEN BINARY BOTH CASE CAST 
-                                  CHECK COLLATE COLUMN CONSTRAINT CREATE CROSS CURRENT_DATE CURRENT_ROLE CURRENT_TIME CURRENT_TIMESTAMP 
+
+  POSTGRESQL_RESERVED_WORDS = %W{ ALL ANALYSE ANALYZE AND ANY ARRAY AS ASC ASYMMETRIC AUTHORIZATION BETWEEN BINARY BOTH CASE CAST
+                                  CHECK COLLATE COLUMN CONSTRAINT CREATE CROSS CURRENT_DATE CURRENT_ROLE CURRENT_TIME CURRENT_TIMESTAMP
                                   CURRENT_USER DEFAULT DEFERRABLE DESC DISTINCT DO ELSE END EXCEPT FALSE FOR FOREIGN FREEZE FROM FULL
-                                  GRANT GROUP HAVING ILIKE IN INITIALLY INNER INTERSECT INTO IS ISNULL JOIN LEADING LEFT LIKE LIMIT LOCALTIME 
-                                  LOCALTIMESTAMP NATURAL NEW NOT NOTNULL NULL OFF OFFSET OLD ON ONLY OR ORDER OUTER OVERLAPS PLACING PRIMARY 
-                                  REFERENCES RIGHT SELECT SESSION_USER SIMILAR SOME SYMMETRIC TABLE THEN TO TRAILING TRUE UNION UNIQUE USER 
+                                  GRANT GROUP HAVING ILIKE IN INITIALLY INNER INTERSECT INTO IS ISNULL JOIN LEADING LEFT LIKE LIMIT LOCALTIME
+                                  LOCALTIMESTAMP NATURAL NEW NOT NOTNULL NULL OFF OFFSET OLD ON ONLY OR ORDER OUTER OVERLAPS PLACING PRIMARY
+                                  REFERENCES RIGHT SELECT SESSION_USER SIMILAR SOME SYMMETRIC TABLE THEN TO TRAILING TRUE UNION UNIQUE USER
                                   USING VERBOSE WHEN WHERE XMIN XMAX }
-  
+
   LAST_BLOG_POSTS_FILE_PATH = "#{Rails.root}/public/system/last_blog_posts.html"
 
   IMPORTER_ERROR_CODES = {
-    1000 => { 
-      title: 'File I/O error', 
+    1000 => {
+      title: 'File I/O error',
       what_about: "Something seems to be wrong with the file you uploaded. Check that it is loading fine locally and try uploading it again."
     },
-    1001 => { 
-      title: 'Unable to open file', 
+    1001 => {
+      title: 'Unable to open file',
       what_about: "Something seems to be wrong with the file you uploaded. Check that it is loading fine locally and try uploading it again."
     },
-    1002 => { 
-      title: 'Unsupported file type', 
+    1002 => {
+      title: 'Unsupported file type',
       what_about: "Should we support this filetype? Email our user thread and let us know!"
     },
-    1003 => { 
-      title: 'Decompression error', 
+    1003 => {
+      title: 'Decompression error',
       what_about: "The archive you uploaded didn't seem to unpack properly. Try recreating it from the original files again and uploading the new version."
     },
-    1004 => { 
+    1004 => {
       title: 'File encoding error',
       what_about: "CartoDB tried to make the encoding of your file work but failed. Try changing the encoding locally first to something sure to work. For reference see. https://vimeo.com/32228078."
     },
-    1005 => { 
+    1005 => {
       title: 'Zero byte file',
       what_about: "The file appears to have no information. Double check using a local tool such as QGIS that the file is indeed correct. If everything appears fine, try uploading it again or emailing our support thread."
     },
@@ -106,6 +106,10 @@ module CartoDB
     1008 => {
       title: 'Unable to download file',
       what_about: "We couldn't download your file, check the URL and try again."
+    },
+    1009 => {
+      title: 'OpenStreetMaps API limit reached',
+      what_about: "You requested too many nodes (limit is 50000). Either request a smaller area, or use planet.osm"
     },
     2000 => {
       title: 'File conversion errors',

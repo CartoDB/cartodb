@@ -517,7 +517,9 @@ disabled look for already selected choices in the results dropdown
 
 
 // COLOR RAMPS
-.select2-choice {
+.color_ramp .select2-choice {
+  padding: 0 10px 0 8px;
+
   ul {
     position:absolute;
     top:0;
@@ -552,8 +554,21 @@ disabled look for already selected choices in the results dropdown
     display:table;
     width:100%;
     padding:0!important;
-    border:1px solid rgba(black,0.25);
-    @include border-radius(4px);  
+    margin:0!important;
+
+    &:before {
+      content:'';
+      position:absolute!important;
+      top:0;
+      left:6px;
+      left:0\9;
+      right:0;
+      bottom:0;
+      display:block;
+      border:1px solid rgba(black,0.25);
+      @include border-radius(2px);
+      z-index:1;
+    }
 
     li {
       width:auto;
@@ -570,7 +585,10 @@ disabled look for already selected choices in the results dropdown
         @include border-right-radius(2px);
       }
     }
-
-
   }
+}
+
+
+@-moz-document url-prefix(){
+  .select2-result-label ul:before {left:0!important;}
 }

@@ -247,7 +247,6 @@ L.CartoDBLayer = L.TileLayer.extend({
    * @params {String} New attribution string
    */
   setAttribution: function(attribution) {
-
     this._checkLayer();
 
     // Remove old one
@@ -440,6 +439,11 @@ var LeafLetLayerCartoDBView = function(layerModel, leafletMap) {
   var self = this;
 
   _.bindAll(this, 'featureOut', 'featureOver', 'featureClick');
+
+  
+  // CartoDB new attribution,
+  // also we have the logo
+  layerModel.attributes.attribution = "CartoDB <a href='http://cartodb.com/attributions' target='_blank'>attribution</a>";
 
   var opts = _.clone(layerModel.attributes);
   if(layerModel.get('use_server_style')) {

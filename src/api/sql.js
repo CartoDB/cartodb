@@ -21,9 +21,14 @@
 
   SQL.prototype._host = function() {
     var opts = this.options;
-    var host = opts.host || 'cartodb.com';
-    var protocol = opts.protocol || 'https';
-    return protocol + '://' + opts.user + '.' + host + '/api/' +  opts.version + '/sql';
+    if(opts && opts.completeDomain) {
+      return opts.completeDomain + '/api/' +  opts.version + '/sql'
+    } else {
+      var host = opts.host || 'cartodb.com';
+      var protocol = opts.protocol || 'https';
+
+      return protocol + '://' + opts.user + '.' + host + '/api/' +  opts.version + '/sql';
+    }
   }
 
   /**
@@ -60,7 +65,7 @@
     var query = Mustache.render(sql, vars);
     var q = 'q=' + encodeURIComponent(query);
 
-    // request params 
+    // request params
     var reqParams = ['format', 'dp'];
     for(var i in reqParams) {
       var r = reqParams[i];
@@ -95,8 +100,8 @@
       if(callback) callback(resp);
     }
 
-    // call ajax 
-    delete options.jsonp; 
+    // call ajax
+    delete options.jsonp;
     $.ajax(_.extend(params, options));
     return promise;
   }
@@ -108,9 +113,9 @@
       if(_.isFunction(fn)) {
         callback = fn;
       }
-      var s = 'SELECT ST_XMin(ST_Extent(the_geom)) as minx,' + 
+      var s = 'SELECT ST_XMin(ST_Extent(the_geom)) as minx,' +
               '       ST_YMin(ST_Extent(the_geom)) as miny,'+
-              '       ST_XMax(ST_Extent(the_geom)) as maxx,' + 
+              '       ST_XMax(ST_Extent(the_geom)) as maxx,' +
               '       ST_YMax(ST_Extent(the_geom)) as maxy' +
               ' from ({{sql}}) as subq';
       sql = Mustache.render(sql, vars);

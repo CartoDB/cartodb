@@ -62,6 +62,13 @@ describe("cdb.geo.ui.infowindow", function() {
       expect(view.render).toHaveBeenCalled()
     });
 
+    it("should be null when there isn't any field", function() {
+      spyOn(view, 'render');
+      model.set('fields', []);
+      expect(view.render).not.toHaveBeenCalled();
+      expect(view.$el.html()).toEqual('');
+    });
+
   });
 
 

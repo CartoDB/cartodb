@@ -39,7 +39,7 @@ cdb.geo.MapLayer = cdb.core.Model.extend({
           } else {
             return false;
           }
-        } else { // not gmail
+        } else { // not gmaps
           return true;
         }
 
@@ -82,6 +82,7 @@ cdb.geo.PlainLayer = cdb.geo.MapLayer.extend({
 cdb.geo.CartoDBLayer = cdb.geo.MapLayer.extend({
 
   defaults: {
+    attribution: 'CartoDB',
     type: 'CartoDB',
     active: true,
     query: null,
@@ -213,13 +214,15 @@ cdb.geo.Map = cdb.core.Model.extend({
 
   clone: function() {
     var m = new cdb.geo.Map(_.clone(this.attributes));
+
     // clone lists
     m.set({
-      center: _.clone(this.attributes.center),
-      bounding_box_sw: _.clone(this.attributes.bounding_box_sw),
-      bounding_box_ne: _.clone(this.attributes.bounding_box_ne),
-      view_bounds_sw: _.clone(this.attributes.view_bounds_sw),
-      view_bounds_ne: _.clone(this.attributes.view_bounds_ne)
+      center:           _.clone(this.attributes.center),
+      bounding_box_sw:  _.clone(this.attributes.bounding_box_sw),
+      bounding_box_ne:  _.clone(this.attributes.bounding_box_ne),
+      view_bounds_sw:   _.clone(this.attributes.view_bounds_sw),
+      view_bounds_ne:   _.clone(this.attributes.view_bounds_ne),
+      attribution:      _.clone(this.attributes.attribution)
     });
     // layers
     m.layers = this.layers.clone();
@@ -320,6 +323,14 @@ cdb.geo.Map = cdb.core.Model.extend({
   },
 
   /**
+   * Checks if the base layer is already in the map as base map
+   */
+  isBaseLayerAdded: function(layer) {
+    var baselayer = this.getBaseLayer()
+    return baselayer && layer.isEqual(baselayer);
+  },
+
+  /**
   * gets the url of the template of the tile layer
   * @method getLayerTemplate
   */
@@ -337,6 +348,12 @@ cdb.geo.Map = cdb.core.Model.extend({
     opts = opts || {};
     var self = this;
     var old = this.layers.at(0);
+
+    // Check if the selected base layer is already selected
+    if (this.isBaseLayerAdded(layer)) {
+      opts.alreadyAdded && opts.alreadyAdded();
+      return false;
+    }
 
     if (old) { // defensive programming FTW!!
       //remove layer from the view
@@ -360,9 +377,30 @@ cdb.geo.Map = cdb.core.Model.extend({
       self.trigger('baseLayerAdded');
       self._adjustZoomtoLayer(layer);
       opts.success && opts.success();
-    };
+    }
+
+    // Update attribution removing old one and adding new one
+    this.updateAttribution(old,layer);
 
     return layer;
+  },
+
+  updateAttribution: function(old,new_) {
+    var attributions = this.get("attribution") || [];
+
+    // Remove the old one
+    if (old && old.get("attribution")) {
+      attributions = _.without(attributions, old.get("attribution"));
+    }
+
+    // Save the new one
+    if (new_.get("attribution")) {
+      if (!_.contains(attributions, new_.get("attribution"))) {
+        attributions.push(new_.get("attribution"));
+      }
+    }
+
+    this.set({ attribution: attributions });
   },
 
   addGeometry: function(geom) {
@@ -474,9 +512,10 @@ cdb.geo.MapView = cdb.core.View.extend({
    * add a infowindow to the map
    */
   addInfowindow: function(infoWindowView) {
-
-    this.$el.append(infoWindowView.render().el);
-    this.addView(infoWindowView);
+    if (infoWindowView) {
+      this.$el.append(infoWindowView.render().el);
+      this.addView(infoWindowView);
+    }
   },
 
   /**
@@ -525,10 +564,11 @@ cdb.geo.MapView = cdb.core.View.extend({
   /** bind model properties */
   _bindModel: function() {
     this._unbindModel();
-    this.map.bind('change:view_bounds_sw', this._changeBounds, this);
-    this.map.bind('change:view_bounds_ne', this._changeBounds, this);
-    this.map.bind('change:zoom',   this._setZoom, this);
-    this.map.bind('change:center', this._setCenter, this);
+    this.map.bind('change:view_bounds_sw',  this._changeBounds, this);
+    this.map.bind('change:view_bounds_ne',  this._changeBounds, this);
+    this.map.bind('change:zoom',            this._setZoom, this);
+    this.map.bind('change:center',          this._setCenter, this);
+    this.map.bind('change:attribution',     this._setAttribution, this);
   },
 
   /** unbind model properties */
@@ -540,10 +580,11 @@ cdb.geo.MapView = cdb.core.View.extend({
     this.map.unbind('change:view_bounds_ne', this._changeBounds, this);
     */
 
-    this.map.unbind('change:zoom',   null, this);
-    this.map.unbind('change:center', null, this);
-    this.map.unbind('change:view_bounds_sw', null, this);
-    this.map.unbind('change:view_bounds_ne', null, this);
+    this.map.unbind('change:zoom',            null, this);
+    this.map.unbind('change:center',          null, this);
+    this.map.unbind('change:view_bounds_sw',  null, this);
+    this.map.unbind('change:view_bounds_ne',  null, this);
+    this.map.unbind('change:attribution',     null, this);
   },
 
   _changeBounds: function() {
@@ -555,6 +596,10 @@ cdb.geo.MapView = cdb.core.View.extend({
 
   showBounds: function(bounds) {
     this.map.fitBounds(bounds, this.getSize())
+  },
+
+  _setAttribution: function(m,attr) {
+    this.setAttribution(m);
   },
 
   _addLayers: function() {

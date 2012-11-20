@@ -5,10 +5,15 @@ if(typeof(L) == "undefined")
   return;
 
 var LeafLetTiledLayerView = L.TileLayer.extend({
-
   initialize: function(layerModel, leafletMap) {
     L.TileLayer.prototype.initialize.call(this, layerModel.get('urlTemplate'), {
-      tms: layerModel.get('tms')
+      tms:          layerModel.get('tms'),
+      attribution:  layerModel.get('attribution'),
+      minZoom:      layerModel.get('minZomm'),
+      maxZoom:      layerModel.get('maxZoom'),
+      subdomains:   layerModel.get('subdomains') || '',
+      errorTileUrl: layerModel.get('errorTileUrl'),
+      opacity:      layerModel.get('opacity')
     });
     cdb.geo.LeafLetLayerView.call(this, layerModel, this, leafletMap);
   }

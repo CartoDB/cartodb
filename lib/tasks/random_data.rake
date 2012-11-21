@@ -21,5 +21,14 @@ namespace :cartodb do
     puts '...done!'
     puts "Created random table with name #{table.name}"
     puts '========================'
-end
+  end
+
+  desc "Imports a multi-table file"
+  task :import_multitable_file => :environment do
+    data_import = DataImport.create(
+      :user_id       => User.first.id,
+      :data_source   => '/../spec/support/data/ESP_adm.zip',
+      :updated_at    => Time.now )
+  end
+
 end

@@ -207,11 +207,12 @@ class User < Sequel::Model
       }
     end
     {
-      :time => time.real,
-      :total_rows => res.ntuples,
-      :rows     => pg_to_hash(res, translation_proc),
-      :results  => pg_results?(res),
-      :modified => pg_modified?(res)
+      :time          => time.real,
+      :total_rows    => res.ntuples,
+      :rows          => pg_to_hash(res, translation_proc),
+      :results       => pg_results?(res),
+      :modified      => pg_modified?(res),
+      :affected_rows => pg_size(res)
     }
     rescue => e
     if e.is_a? PGError

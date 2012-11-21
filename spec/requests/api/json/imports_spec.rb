@@ -54,14 +54,18 @@ describe "Imports API" do
 
   it 'allows users to perform synchronous imports'
 
-  it 'allows users to get a list of all performed imports' do
-    %w(column_number_to_boolean column_string_to_boolean).each do |file_name|
-      post v1_imports_url(:host => 'test.localhost.lan',
-                          :api_key => @user.get_map_key,
-                          :table_name => file_name,
-                          :filename => File.basename('wadus.csv')),
-                          upload_file("db/fake_data/#{file_name}.csv", 'text/csv').read
+  it 'allows users to get a list of all pending imports' do
+
+    thread = Thread.new do |number|
+      serve_file(Rails.root.join('spec/support/data/ESP_adm.zip')) do |url|
+        post v1_imports_url(:host       => 'test.localhost.lan',
+                            :url        => url,
+                            :api_key    => @user.get_map_key,
+                            :table_name => "wadus")
+      end
     end
+
+    thread.join
 
     get v1_imports_url(:host => 'test.localhost.lan'), :api_key => @user.get_map_key
 
@@ -70,7 +74,8 @@ describe "Imports API" do
     response_json = JSON.parse(response.body)
     response_json.should_not be_nil
     imports = response_json['imports']
-    imports.should have(2).items
+    imports.should have(1).items
+
   end
 
   it 'allows users to get the detail of an import' do

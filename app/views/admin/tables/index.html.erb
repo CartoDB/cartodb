@@ -24,6 +24,16 @@
   <section id="content">
     <div id="hugeUploader"></div>
     <div class="inner_content">
+
+      <div class="requests_info cartodb20 section white_content padding">
+        <a class="close" href="#close_stats">close</a>
+        <div class="left">
+          <h2>CartoDB2.0 is coming!</h2>
+          <p class="margin">The application is going to be inactive since xx, Nov during 6 hours. Your embed maps and API will work as usual.</p>
+          <p class="margin">More information will come at <a href="http://blog.cartodb.com">CartoDB blog</a></p>
+        </div>
+      </div>
+
       <% if @tables_count == 0 && params["q"].blank? %>
         <div class="requests_info section white_content padding">
           <a class="close" href="#close_stats">close</a>

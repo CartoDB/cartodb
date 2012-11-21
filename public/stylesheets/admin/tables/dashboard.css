@@ -33,6 +33,7 @@ div.white_content table a {color:#F89600;}
 div.white_content table a:hover {color:#FF6600;}
 div.white_content img.star_table {position:absolute; bottom:0; right:42px;}
 
+section#content div.inner_content div.cartodb20 {background: url('/images/admin/dashboard/cartodb20.png') no-repeat right 0 white;}
 section#content div.inner_content div.requests_info h2 {padding:0 0 3px;}
 section#content div.inner_content div.requests_info p a {color:#666666;}
 section#content div.inner_content div.requests_info p a:hover {color:#333333;}

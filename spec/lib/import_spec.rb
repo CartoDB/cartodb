@@ -529,6 +529,16 @@ describe CartoDB::Importer do
                                OpenStruct.new(name: 'osm_point',   rows_imported: 136, import_type: '.osm', log: ''))
       end
 
+      it "can import an specific OSM url" do
+        importer = create_importer "http://www.openstreetmap.org/?lat=37.39296&lon=-5.99099&zoom=15&layers=M", "osm", true
+        results,errors = importer.import!
+
+        results.should include(OpenStruct.new(name: 'osm_line',    rows_imported: 140, import_type: '.osm', log: ''),
+                               OpenStruct.new(name: 'osm_polygon', rows_imported: 31,  import_type: '.osm', log: ''),
+                               OpenStruct.new(name: 'osm_roads',   rows_imported: 6,   import_type: '.osm', log: ''),
+                               OpenStruct.new(name: 'osm_point',   rows_imported: 136, import_type: '.osm', log: ''))
+      end
+
     end
 
     it "should import dbf with wrong encoding" do

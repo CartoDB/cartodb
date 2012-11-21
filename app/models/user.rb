@@ -452,6 +452,14 @@ class User < Sequel::Model
     end
   end
 
+  def importing_jobs
+    Resque::Plugins::JobTracking.running_jobs(job_tracking_identifier) + Resque::Plugins::JobTracking.pending_jobs(job_tracking_identifier)
+  end
+
+  def job_tracking_identifier
+    "account#{self.username}"
+  end
+
   ## User's databases setup methods
   def setup_user
     return if disabled?

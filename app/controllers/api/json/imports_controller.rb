@@ -3,7 +3,7 @@ class Api::Json::ImportsController < Api::ApplicationController
   ssl_required :index, :show, :create
 
   def index
-    imports = DataImport.filter(:user_id => current_user.id).exclude(:state => ['failure', 'complete']).all
+    imports = current_user.importing_jobs
     render :json => {:imports => imports, :success => true}
   end
 

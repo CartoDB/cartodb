@@ -86,7 +86,7 @@ module ApplicationHelper
   end
 
   def raise_on_asset_absence *sources
-    sources.each do |source|
+    sources.flatten.each do |source|
       next if source == {:media => "all"}
       raise "Hey, #{source} is not in the precompile list. This will fall apart in production." unless Rails.application.config.assets.precompile.any? do |matcher|
         if matcher.is_a? Proc
@@ -95,9 +95,7 @@ module ApplicationHelper
           matcher.match(source)
         else
           rx = /(\.css)|(\.js)/
-          [source].flatten.each do |s|
-            matcher.to_s.gsub(rx,'') == s.to_s.gsub(rx,'')
-          end
+          matcher.to_s.gsub(rx,'') == source.to_s.gsub(rx,'')
         end
       end
     end if Rails.env.development?

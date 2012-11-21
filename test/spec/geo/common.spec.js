@@ -84,4 +84,32 @@ describe('common', function() {
 
   });
 
+  it("when query_wrapper is present the query should be wrapped", function() {
+    common.options = {
+      table_name: 'test',
+      tiler_domain:   "cartodb.com",
+      tiler_port:     "8081",
+      tiler_protocol: "http",
+      tile_style:   "TEST",
+      query: 'select jaja',
+      query_wrapper: 'select * from (<%=sql%>)'
+    }
+    var t = common._tileJSON();
+    expect(t.tiles[0].indexOf('sql='+encodeURIComponent('select * from (select jaja)'))).not.toEqual(-1);
+    expect(t.grids[0].indexOf('sql='+encodeURIComponent('select * from (select jaja)'))).not.toEqual(-1);
+    
+    common.options = {
+      table_name: 'test',
+      tiler_domain:   "cartodb.com",
+      tiler_port:     "8081",
+      tiler_protocol: "http",
+      tile_style:   "TEST",
+      query: null,
+      query_wrapper: 'select * from (<%=sql%>)'
+    }
+    var t = common._tileJSON();
+    expect(t.tiles[0].indexOf('sql='+encodeURIComponent('select * from (select * from test)'))).not.toEqual(-1);
+    expect(t.grids[0].indexOf('sql='+encodeURIComponent('select * from (select * from test)'))).not.toEqual(-1);
+  });
+
 });

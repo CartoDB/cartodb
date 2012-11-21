@@ -213,8 +213,8 @@
               border-top:1px solid #EDEDED;
               overflow:hidden;
 
-              .left {width:65%;}
-              .right {width:35%;}
+              .left {width:32%;}
+              .right {width:66%;}
 
               hgroup {
                 display:block;
@@ -278,21 +278,21 @@
                   &:hover {@include opacity(0.8)}
                 }
 
-                &.right {
+                &.options {
+                  position:absolute;
+                  top:32px;
+                  right:40px;
                   display:block;
                   width:auto;
                   margin:5px 0 0;
-                  filter: alpha(opacity=0)!important;
-                  opacity:0;
+                  @include opacity(0);
                 }
               }
-
-              div.full {width:100%;}
 
               span.tags {
                 display:block;
                 width:auto!important;
-                margin:20px 0 0 0!important;
+                margin:14px 0 0 0!important;
 
                 a {
                   float:right;

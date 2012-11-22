@@ -65,7 +65,8 @@ describe DataImport do
 
   it 'should allow to create a table from a url with params' do
     data_import = nil
-    serve_file Rails.root.join('db/fake_data/clubbing.csv?param=wadus') do |url|
+    serve_file Rails.root.join('db/fake_data/clubbing.csv?param=wadus'),
+          :headers => {"content-type" => "text/plain"}  do |url|
       data_import = DataImport.create(
         :user_id       => @user.id,
         :data_source   => url,
@@ -119,4 +120,22 @@ describe DataImport do
 
   end
 
+  it "can create a table from a query selecting only the cartodb_id" do
+    data_import = DataImport.create(
+      :user_id       => @user.id,
+      :data_source   => '/../db/fake_data/clubbing.csv',
+      :updated_at    => Time.now )
+
+    data_import = DataImport.create(
+      :user_id       => @user.id,
+      :table_name    => 'from_query',
+      :updated_at    => Time.now,
+      :from_query    => "SELECT cartodb_id FROM #{data_import.table_name} LIMIT 5" )
+    data_import.state.should be == 'complete'
+
+    duplicated_table = Table[data_import.table_id]
+    duplicated_table.should_not be_nil
+    duplicated_table.name.should be == 'from_query'
+    duplicated_table.records[:rows].should have(5).items
+  end
 end

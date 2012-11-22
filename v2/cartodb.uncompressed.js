@@ -18217,7 +18217,15 @@ cdb.decorators.elder(Backbone.Collection);
 
         //error track
         REPORT_ERROR_URL: '/api/v0/error',
-        ERROR_TRACK_ENABLED: false
+        ERROR_TRACK_ENABLED: false,
+
+        getSqlApiUrl: function() {
+          var url = this.get('sql_api_protocol') + '://' +
+            this.get('sql_api_domain') + ':' +
+            this.get('sql_api_port');
+          return url;
+        }
+
 
     });
 
@@ -19480,7 +19488,7 @@ cdb.geo.Map = cdb.core.Model.extend({
   },
 
   updateAttribution: function(old,new_) {
-    var attributions = this.get("attribution") || [];
+    var attributions = this.get("attribution") || [];
 
     // Remove the old one
     if (old && old.get("attribution")) {
@@ -20261,6 +20269,30 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     }
   },
 
+  /**
+   *  Convert values to string unless value is NULL
+   */ 
+  _fieldsToString: function(attrs) {
+    if (attrs.content && attrs.content.fields) {
+      attrs.content.fields = _.map(attrs.content.fields, function(attr) {
+        // Cast all values to string due to problems with Mustache 0 number rendering
+        var new_value = attr.value.toString();
+
+        // But if we have some empty values (null)
+        // we must make them null to display them correctly
+        // ARGGG!
+        if (new_value == "") new_value = null;
+        
+        // store attribute
+        attr.value = new_value;
+
+        return attr;
+      });
+    }
+
+    return attrs;
+  },
+
   render: function() {
     if(this.template) {
 
@@ -20270,7 +20302,11 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
         $jscrollpane.data().jsp && $jscrollpane.data().jsp.destroy();
       }
 
-      this.$el.html($(this.template(_.clone(this.model.attributes))));
+      var attrs = _.clone(this.model.attributes);
+
+      // Mustache doesn't support 0 values, we have to convert number to strings
+      // before apply the template
+      this.$el.html($(this.template(this._fieldsToString(attrs))));
 
       // Hello jscrollpane hacks!
       // It needs some time to initialize, if not it doesn't render properly the fields
@@ -20604,6 +20640,11 @@ CartoDBLayerCommon.prototype = {
     if(opts.query) {
       params.sql = opts.query;
     }
+
+    if(opts.query_wrapper) {
+      params.sql = _.template(opts.query_wrapper)({ sql: params.sql || "select * from " + opts.table_name });
+    }
+
     if(opts.tile_style && !opts.use_server_style) {
       params.style = opts.tile_style;
     }
@@ -21483,55 +21524,48 @@ L.CartoDBLayer = L.TileLayer.extend({
  * leatlet cartodb layer
  */
 
-var LeafLetLayerCartoDBView = function(layerModel, leafletMap) {
-  var self = this;
+var LeafLetLayerCartoDBView = L.CartoDBLayer.extend({
+  //var LeafLetLayerCartoDBView = function(layerModel, leafletMap) {
+  initialize: function(layerModel, leafletMap) {
+    var self = this;
 
-  _.bindAll(this, 'featureOut', 'featureOver', 'featureClick');
+    _.bindAll(this, 'featureOut', 'featureOver', 'featureClick');
 
-  
-  // CartoDB new attribution,
-  // also we have the logo
-  layerModel.attributes.attribution = "CartoDB <a href='http://cartodb.com/attributions' target='_blank'>attribution</a>";
+    // CartoDB new attribution,
+    // also we have the logo
+    layerModel.attributes.attribution = "CartoDB <a href='http://cartodb.com/attributions' target='_blank'>attribution</a>";
 
-  var opts = _.clone(layerModel.attributes);
-  if(layerModel.get('use_server_style')) {
-    opts.tile_style = null;
-  }
+    var opts = _.clone(layerModel.attributes);
+    if(layerModel.get('use_server_style')) {
+      opts.tile_style = null;
+    }
 
-  opts.map =  leafletMap;
+    opts.map =  leafletMap;
 
-  var // preserve the user's callbacks
-  _featureOver  = opts.featureOver,
-  _featureOut   = opts.featureOut,
-  _featureClick = opts.featureClick;
+    var // preserve the user's callbacks
+    _featureOver  = opts.featureOver,
+    _featureOut   = opts.featureOut,
+    _featureClick = opts.featureClick;
 
-  opts.featureOver  = function() {
-    _featureOver  && _featureOver.apply(this, arguments);
-    self.featureOver  && self.featureOver.apply(this, arguments);
-  };
+    opts.featureOver  = function() {
+      _featureOver  && _featureOver.apply(this, arguments);
+      self.featureOver  && self.featureOver.apply(this, arguments);
+    };
 
-  opts.featureOut  = function() {
-    _featureOut  && _featureOut.apply(this, arguments);
-    self.featureOut  && self.featureOut.apply(this, arguments);
-  };
+    opts.featureOut  = function() {
+      _featureOut  && _featureOut.apply(this, arguments);
+      self.featureOut  && self.featureOut.apply(this, arguments);
+    };
 
-  opts.featureClick  = function() {
-    _featureClick  && _featureClick.apply(this, arguments);
-    self.featureClick  && self.featureClick.apply(opts, arguments);
-  };
+    opts.featureClick  = function() {
+      _featureClick  && _featureClick.apply(this, arguments);
+      self.featureClick  && self.featureClick.apply(opts, arguments);
+    };
 
-  L.CartoDBLayer.call(this, opts);
-  cdb.geo.LeafLetLayerView.call(this, layerModel, this, leafletMap);
-};
+    L.CartoDBLayer.prototype.initialize.call(this, opts);
+    cdb.geo.LeafLetLayerView.call(this, layerModel, this, leafletMap);
 
-_.extend(L.CartoDBLayer.prototype, CartoDBLayerCommon.prototype);
-
-_.extend(
-  LeafLetLayerCartoDBView.prototype,
-  cdb.geo.LeafLetLayerView.prototype,
-  L.CartoDBLayer.prototype,
-  Backbone.Events, // be sure this is here to not use the on/off from leaflet
-  {
+  },
 
   _modelUpdated: function() {
     var attrs = _.clone(this.model.attributes);
@@ -21572,10 +21606,25 @@ _.extend(
 
   tilesOk: function(e) {
     this.model.trigger('tileOk');
-  }
+  },
+
+  includes: [
+    cdb.geo.LeafLetLayerView.prototype,
+    CartoDBLayerCommon.prototype,
+    Backbone.Events
+  ]
 
 });
 
+/*_.extend(L.CartoDBLayer.prototype, CartoDBLayerCommon.prototype);
+
+_.extend(
+  LeafLetLayerCartoDBView.prototype,
+  cdb.geo.LeafLetLayerView.prototype,
+  L.CartoDBLayer.prototype,
+  Backbone.Events, // be sure this is here to not use the on/off from leaflet
+
+  */
 cdb.geo.LeafLetLayerCartoDBView = LeafLetLayerCartoDBView;
 
 })();
@@ -23926,6 +23975,10 @@ Layers.register('carto', cartoLayer);
       loc = 'https';
     }
 
+    if(options.api_key) {
+      this.api_key = options.api_key;
+    }
+
     this.options = _.defaults(options, {
       version: 'v2',
       protocol: loc,
@@ -23989,12 +24042,21 @@ Layers.register('carto', cartoLayer);
       }
     }
 
+
+    var isGetRequest = options.type == 'get' || params.type == 'get';
     // generate url depending on the http method
     params.url = this._host() ;
-    if(options.type == 'get' || params.type == 'get') {
+    if(isGetRequest) {
       params.url += '?' + q
     } else {
       params.data = q;
+    }
+    if(this.api_key) {
+      if(isGetRequest) {
+        params.url += '&api_key=' + this.api_key;
+      } else {
+        darams.data['api_key'] = this.api_key;
+      }
     }
 
     // wrap success and error functions

@@ -192,7 +192,7 @@ describe "Imports API" do
 
     post v1_imports_url(:host       => 'test.localhost.lan',
                         :api_key    => @user.get_map_key,
-                        :table_name => 'wadus_copy',
+                        :table_name => 'wadus_copy__copy',
                         :table_copy => @table_from_import.name)
 
     response.code.should be == '200'

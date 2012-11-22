@@ -435,55 +435,48 @@ L.CartoDBLayer = L.TileLayer.extend({
  * leatlet cartodb layer
  */
 
-var LeafLetLayerCartoDBView = function(layerModel, leafletMap) {
-  var self = this;
+var LeafLetLayerCartoDBView = L.CartoDBLayer.extend({
+  //var LeafLetLayerCartoDBView = function(layerModel, leafletMap) {
+  initialize: function(layerModel, leafletMap) {
+    var self = this;
 
-  _.bindAll(this, 'featureOut', 'featureOver', 'featureClick');
+    _.bindAll(this, 'featureOut', 'featureOver', 'featureClick');
 
-  
-  // CartoDB new attribution,
-  // also we have the logo
-  layerModel.attributes.attribution = "CartoDB <a href='http://cartodb.com/attributions' target='_blank'>attribution</a>";
+    // CartoDB new attribution,
+    // also we have the logo
+    layerModel.attributes.attribution = "CartoDB <a href='http://cartodb.com/attributions' target='_blank'>attribution</a>";
 
-  var opts = _.clone(layerModel.attributes);
-  if(layerModel.get('use_server_style')) {
-    opts.tile_style = null;
-  }
+    var opts = _.clone(layerModel.attributes);
+    if(layerModel.get('use_server_style')) {
+      opts.tile_style = null;
+    }
 
-  opts.map =  leafletMap;
+    opts.map =  leafletMap;
 
-  var // preserve the user's callbacks
-  _featureOver  = opts.featureOver,
-  _featureOut   = opts.featureOut,
-  _featureClick = opts.featureClick;
+    var // preserve the user's callbacks
+    _featureOver  = opts.featureOver,
+    _featureOut   = opts.featureOut,
+    _featureClick = opts.featureClick;
 
-  opts.featureOver  = function() {
-    _featureOver  && _featureOver.apply(this, arguments);
-    self.featureOver  && self.featureOver.apply(this, arguments);
-  };
+    opts.featureOver  = function() {
+      _featureOver  && _featureOver.apply(this, arguments);
+      self.featureOver  && self.featureOver.apply(this, arguments);
+    };
 
-  opts.featureOut  = function() {
-    _featureOut  && _featureOut.apply(this, arguments);
-    self.featureOut  && self.featureOut.apply(this, arguments);
-  };
+    opts.featureOut  = function() {
+      _featureOut  && _featureOut.apply(this, arguments);
+      self.featureOut  && self.featureOut.apply(this, arguments);
+    };
 
-  opts.featureClick  = function() {
-    _featureClick  && _featureClick.apply(this, arguments);
-    self.featureClick  && self.featureClick.apply(opts, arguments);
-  };
+    opts.featureClick  = function() {
+      _featureClick  && _featureClick.apply(this, arguments);
+      self.featureClick  && self.featureClick.apply(opts, arguments);
+    };
 
-  L.CartoDBLayer.call(this, opts);
-  cdb.geo.LeafLetLayerView.call(this, layerModel, this, leafletMap);
-};
+    L.CartoDBLayer.prototype.initialize.call(this, opts);
+    cdb.geo.LeafLetLayerView.call(this, layerModel, this, leafletMap);
 
-_.extend(L.CartoDBLayer.prototype, CartoDBLayerCommon.prototype);
-
-_.extend(
-  LeafLetLayerCartoDBView.prototype,
-  cdb.geo.LeafLetLayerView.prototype,
-  L.CartoDBLayer.prototype,
-  Backbone.Events, // be sure this is here to not use the on/off from leaflet
-  {
+  },
 
   _modelUpdated: function() {
     var attrs = _.clone(this.model.attributes);
@@ -524,10 +517,25 @@ _.extend(
 
   tilesOk: function(e) {
     this.model.trigger('tileOk');
-  }
+  },
+
+  includes: [
+    cdb.geo.LeafLetLayerView.prototype,
+    CartoDBLayerCommon.prototype,
+    Backbone.Events
+  ]
 
 });
 
+/*_.extend(L.CartoDBLayer.prototype, CartoDBLayerCommon.prototype);
+
+_.extend(
+  LeafLetLayerCartoDBView.prototype,
+  cdb.geo.LeafLetLayerView.prototype,
+  L.CartoDBLayer.prototype,
+  Backbone.Events, // be sure this is here to not use the on/off from leaflet
+
+  */
 cdb.geo.LeafLetLayerCartoDBView = LeafLetLayerCartoDBView;
 
 })();

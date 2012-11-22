@@ -219,6 +219,30 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     }
   },
 
+  /**
+   *  Convert values to string unless value is NULL
+   */ 
+  _fieldsToString: function(attrs) {
+    if (attrs.content && attrs.content.fields) {
+      attrs.content.fields = _.map(attrs.content.fields, function(attr) {
+        // Cast all values to string due to problems with Mustache 0 number rendering
+        var new_value = attr.value.toString();
+
+        // But if we have some empty values (null)
+        // we must make them null to display them correctly
+        // ARGGG!
+        if (new_value == "") new_value = null;
+        
+        // store attribute
+        attr.value = new_value;
+
+        return attr;
+      });
+    }
+
+    return attrs;
+  },
+
   render: function() {
     if(this.template) {
 
@@ -228,7 +252,11 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
         $jscrollpane.data().jsp && $jscrollpane.data().jsp.destroy();
       }
 
-      this.$el.html($(this.template(_.clone(this.model.attributes))));
+      var attrs = _.clone(this.model.attributes);
+
+      // Mustache doesn't support 0 values, we have to convert number to strings
+      // before apply the template
+      this.$el.html($(this.template(this._fieldsToString(attrs))));
 
       // Hello jscrollpane hacks!
       // It needs some time to initialize, if not it doesn't render properly the fields

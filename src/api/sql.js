@@ -12,6 +12,10 @@
       loc = 'https';
     }
 
+    if(options.api_key) {
+      this.api_key = options.api_key;
+    }
+
     this.options = _.defaults(options, {
       version: 'v2',
       protocol: loc,
@@ -75,12 +79,21 @@
       }
     }
 
+
+    var isGetRequest = options.type == 'get' || params.type == 'get';
     // generate url depending on the http method
     params.url = this._host() ;
-    if(options.type == 'get' || params.type == 'get') {
+    if(isGetRequest) {
       params.url += '?' + q
     } else {
       params.data = q;
+    }
+    if(this.api_key) {
+      if(isGetRequest) {
+        params.url += '&api_key=' + this.api_key;
+      } else {
+        darams.data['api_key'] = this.api_key;
+      }
     }
 
     // wrap success and error functions

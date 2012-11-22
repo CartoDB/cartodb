@@ -80,6 +80,11 @@ CartoDBLayerCommon.prototype = {
     if(opts.query) {
       params.sql = opts.query;
     }
+
+    if(opts.query_wrapper) {
+      params.sql = _.template(opts.query_wrapper)({ sql: params.sql || "select * from " + opts.table_name });
+    }
+
     if(opts.tile_style && !opts.use_server_style) {
       params.style = opts.tile_style;
     }

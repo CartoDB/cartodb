@@ -905,18 +905,6 @@ div.header.yellow h1 a:hover {
 	font: 12px/1.4 "Helvetica Neue", Arial, Helvetica, sans-serif;
 	}
 
-#legend { position: absolute; right: 50px; top: 20px; width: 250px; padding: 10px; background: white; z-index: 99; }
-#legend .title, 
-#legend .row { position: relative; float: left; width: 240px; background: none; padding: 5; margin: 0; }
-#legend .title {font-weight: bold; font-size: 24px;}
-#legend .row span { float: left; padding: 0; margin: 0; }
-
-#legend .row span.box { width: 20px; height: 20px; background: black; margin: 2px; border: 1px solid #BBB; }
-#legend .row span.line { width: 20px; height: 6px; background: black; margin: 2px; border: 1px solid #BBB;  margin-top: 11px;}
-#legend .row span.circle { width: 20px; height: 20px; background: black; margin: 2px; border: 1px solid #BBB;  border-radius: 50%;}
-
-#legend .row span.value { line-height: 18px; margin: 5px; max-width: 192px;}
-
 /**
  *  CartoDB2.0 theme (DEFAULT)
  */
@@ -1208,6 +1196,31 @@ div.header.yellow h1 a:hover {
   div#zoom a.disabled:hover {
     cursor: default;
     color: #999999;
+  }
+
+  div#zoom_info {
+    position:absolute;
+    display:block;
+    top:100px;
+    left:20px;
+    margin:20px 0 0 0;
+    width: 28px;
+    height:28px;
+    font:normal 13px "Helvetica",Arial;
+    color:#858585;
+    text-align: center;
+    line-height: 28px;
+    -webkit-box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
+    -moz-box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
+    box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
+    z-index: 5;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    -ms-border-radius: 4px;
+    -o-border-radius: 4px;
+    border-radius: 4px;
+    border: 1px solid #999999;
+    background: white;
   }
 
   div#tiles_loader {

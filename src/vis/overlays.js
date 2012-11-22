@@ -15,7 +15,7 @@ cdb.vis.Overlay.register('zoom', function(data) {
 // Tiles loader
 cdb.vis.Overlay.register('loader', function(data) {
 
-  var tilesLoader = new cdb.admin.TilesLoader({
+  var tilesLoader = new cdb.geo.ui.TilesLoader({
     template: cdb.core.Template.compile(data.template)
   });
 
@@ -24,6 +24,7 @@ cdb.vis.Overlay.register('loader', function(data) {
 
 // Header to show informtion (title and description)
 cdb.vis.Overlay.register('header', function(data, vis) {
+  var MAX_SHORT_DESCRIPTION_LENGTH = 100;
 
   // Add the complete url for facebook and twitter
   if (location.href) {
@@ -36,14 +37,34 @@ cdb.vis.Overlay.register('header', function(data, vis) {
     data.template || "\
       {{#title}}<h1><a href='{{url}}'>{{title}}</a></h1>{{/title}}\
       {{#description}}<p>{{description}}</p>{{/description}}\
-      {{#shareable}}<div class='social'><a class='facebook' target='_blank' href='http://www.facebook.com/sharer.php?u={{share_url}}&text={{title}}'>F</a><a class='twitter' href='https://twitter.com/share?url={{share_url}}&text={{title}} %7C CartoDB %7C ' target='_blank'>T</a></div>{{/shareable}}\
+      {{#shareable}}\
+        <div class='social'>\
+          <a class='facebook' target='_blank'\
+            href='http://www.facebook.com/sharer.php?u={{share_url}}&text=Map of {{title}}: {{description}}'>F</a>\
+          <a class='twitter' href='https://twitter.com/share?url={{share_url}}&text=Map of {{title}}: {{descriptionShort}}... '\
+           target='_blank'>T</a>\
+          </div>\
+      {{/shareable}}\
     ",
     data.templateType || 'mustache'
   );
 
+  var maxDescriptionLength = MAX_SHORT_DESCRIPTION_LENGTH - data.map.get('title').length;
+  var description = data.map.get('description');
+  var descriptionShort = description;
+
+  if(description.length > maxDescriptionLength) {
+    var descriptionShort = description.substr(0, maxDescriptionLength);
+    // @todo (@johnhackworth): Improvement; Not sure if there's someway of doing thins with a regexp
+    descriptionShort = descriptionShort.split(' ');
+    descriptionShort.pop();
+    descriptionShort = descriptionShort.join(' ');
+  }
+
   var header = new cdb.geo.ui.Header({
     title: data.map.get('title'),
-    description: data.map.get('description'),
+    description: description,
+    descriptionShort: descriptionShort,
     url: data.url,
     share_url: data.share_url,
     shareable: (data.shareable == "false" || !data.shareable) ? null : data.shareable,

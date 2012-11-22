@@ -47,11 +47,13 @@
 //= require cdb/src/geo/gmaps/gmaps
 //
 //= require cdb/src/geo/ui/zoom
+//= require cdb/src/geo/ui/zoom_info
 //= require cdb/src/geo/ui/legend
 //= require cdb/src/geo/ui/switcher
 //= require cdb/src/geo/ui/infowindow
 //= require cdb/src/geo/ui/header
 //= require cdb/src/geo/ui/search
+//= require cdb/src/geo/ui/tiles_loader
 //
 //= require cdb/src/ui/common/tabpane
 //= require cdb/src/ui/common/dialog

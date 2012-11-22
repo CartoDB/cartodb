@@ -49,6 +49,10 @@ module NavigationHelpers
     api_req "#{api_url_prefix}/tables/#{table_identifier}/records/#{row_identifier}#{params.empty? ? '' : '?' }#{params.to_query}"
   end
 
+  def api_queries_url(params = {})
+    api_req "#{api_url_prefix}/queries#{params.empty? ? '' : '?' }#{params.to_query}"
+  end
+
   def api_table_columns_url(table_identifier)
     api_req "#{api_url_prefix}/tables/#{table_identifier}/columns"
   end

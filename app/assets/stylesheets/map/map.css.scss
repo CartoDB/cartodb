@@ -232,12 +232,15 @@ div.map {
     }
   }
 
+  // Zoom info
+  div#zoom_info {top:135px;}
+
   // Zoom in core map
   div#zoom {top:65px;}
 
   // Tiler in core map
   div#tiles_loader div.loader {
-    top:135px;
+    top:175px;
   }
 
   // Search box in core map

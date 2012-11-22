@@ -153,6 +153,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     "dragstart":          "_checkOrigin",
     "mousedown":          "_checkOrigin",
     "touchstart":         "_checkOrigin",
+    "dblclick":           "_stopPropagation",
     "mousewheel":         "_stopPropagation",
     "DOMMouseScroll":     "_stopPropagation",
     "dbclick":            "_stopPropagation",

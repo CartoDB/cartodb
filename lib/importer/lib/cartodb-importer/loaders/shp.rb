@@ -1,3 +1,5 @@
+require 'open3'
+
 module CartoDB
   module Import
     class SHP < CartoDB::Import::Loader
@@ -64,6 +66,10 @@ module CartoDB
             @data_import.log_error(stderr.read)
             @data_import.log_error("ERROR: failed to generate SQL from #{@working_data[:path]}")
             raise "ERROR: failed to generate SQL from #{@working_data[:path]}"
+          elsif (sderr = stderr.read) =~ /invalid SRID/
+            @data_import.set_error_code(3008)
+            @data_import.log_error(sderr)
+            raise @data_import.get_error_text[:what_about]
           elsif (sdout = stdout.read).downcase.include? "failure"
             @data_import.set_error_code(3005)
             @data_import.log_error(sdout)

@@ -297,6 +297,38 @@
       height:100%;
       width:100%;
       background: image-url('layout/relief.png') repeat 0 0 #519FD9; // IE
-      @include background(image-url("layout/relief.png") repeat 0 0, linear-gradient(#519FD9,#1E5496));
+      @include background(image-url("layout/relief.png") repeat center center, linear-gradient(#519FD9,#1E5496));
+
+      header {
+        position:relative;
+        border:none;
+        box-shadow:none;
+        background:none;
+        width:480px;
+        height:42px;
+        margin: 0 auto;
+        padding:40px 0;
+
+        &:before {
+          display:none;
+          background:none;
+        }
+
+        h1 {
+          margin:0;
+          a {display:block; width:124px; height:42px; @include text-indent(); @include icons-sprite(cartodb_dark);}
+        } 
+      }
+
+      section {
+        margin-top:0;
+        width:505px;
+        background: image-url('layout/cartodb20.png') no-repeat right 0 white; // IE
+
+        .content {
+          padding-right:190px;
+          h2 {font-size:34px;}
+        }
+      }
     }
   }

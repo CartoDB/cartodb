@@ -25,10 +25,17 @@ namespace :cartodb do
 
   desc "Imports a multi-table file"
   task :import_multitable_file => :environment do
-    data_import = DataImport.create(
-      :user_id       => User.first.id,
-      :data_source   => '/../spec/support/data/ESP_adm.zip',
-      :updated_at    => Time.now )
+    require_relative '../../spec/support/helpers'
+    include HelperMethods
+
+      Resque::ImporterJobs.enqueue(User.first.id, 
+        'wadus', 
+        '/uploads/0b4186c852395c0c16b2/ESP_adm.zip', 
+        nil, 
+        nil, 
+        nil, 
+        nil, 
+        nil)
   end
 
 end

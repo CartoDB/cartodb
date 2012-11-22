@@ -6,11 +6,10 @@
         height: 100%;
         padding: 0;
         margin: 0;
-        background: white;
       }
     </style>
 
-    <link rel="stylesheet" href="../v2/themes/css/cartodb.css" />
+    <link rel="stylesheet" href="http://libs.cartodb.com/cartodb.js/v2/themes/css/cartodb.css" />
     <!--[if lte IE 8]>
         <link rel="stylesheet" href="http://libs.cartodb.com/cartodb.js/v2/themes/css/cartodb.ie.css" />
     <![endif]-->
@@ -22,7 +21,7 @@
   </body>
 
 
-  <script src="../v2/cartodb.uncompressed.js"></script>
+  <script src="http://libs.cartocdn.com/cartodb.js/v2/cartodb.js"></script>
   <script>
 
     function main() {
@@ -34,18 +33,11 @@
       })
 
       // add a nice baselayer from mapbox
-      /*L.tileLayer('http://a.tiles.mapbox.com/v3/mapbox.mapbox-streets/{z}/{x}/{y}.png', {
+      L.tileLayer('http://a.tiles.mapbox.com/v3/mapbox.mapbox-streets/{z}/{x}/{y}.png', {
         attribution: 'MapBox'
       }).addTo(map);
-      */
 
-      /*
-      L.tileLayer('http://development.localhost.lan:8181/tiles/nyc_subway_entrance_/{z}/{x}/{y}.png?cache_policy=persist', {
-        attribution: 'MapBox'
-      }).addTo(map);
-      */
-
-      cartodb.createLayer(map, 'http://development.localhost.lan:3000/api/v1/viz/126/viz.json', {no_cdn: true})
+      cartodb.createLayer(map, 'http://examples-beta.cartodb.com/api/v1/viz/219/viz.json')
        .on('done', function(layer) {
         map.addLayer(layer);
 
@@ -61,6 +53,21 @@
         console.log("some error occurred");
       });
 
+      cartodb.createLayer(map, 'http://examples-beta.cartodb.com/api/v1/viz/219/viz.json')
+       .on('done', function(layer) {
+        map.addLayer(layer);
+
+        layer.on('featureOver', function(e, pos, latlng, data) {
+          console.log(e, pos, latlng, data);
+        });
+
+        layer.on('error', function(err) {
+          console.log('error: ' + err);
+        });
+
+      }).on('error', function() {
+        console.log("some error occurred");
+      });
 
     }
 

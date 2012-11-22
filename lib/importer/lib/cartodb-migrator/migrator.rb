@@ -67,10 +67,10 @@ module CartoDB
         @current_name = @suggested_name
       end
 
-      if column_names.include? "cartodb_id"
-        # We could also just alter the column name here, but users shouldn't be bothered with this column at all
-        @db_connection.run("ALTER TABLE #{@current_name} DROP COLUMN cartodb_id")
-      end
+      #if column_names.include? "cartodb_id"
+        ## We could also just alter the column name here, but users shouldn't be bothered with this column at all
+        #@db_connection.run("ALTER TABLE #{@current_name} DROP COLUMN cartodb_id")
+      #end
 
       # attempt to transform the_geom to 4326
       if column_names.include? "the_geom"

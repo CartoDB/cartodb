@@ -135,6 +135,10 @@ module CartoDB
       title: 'JSON may not be valid GeoJSON',
       what_about: "We can only import GeoJSON formated JSON files. See if the source of this data supports GeoJSON or another file format for download."
     },
+    3008 => {
+      title: 'Unknown SRID',
+      what_about: "The SRID of the provided file it's not in the spatial_ref_sys table. You can get rid of this error inserting the SRID specific data in the spatial_ref_sys table."
+    },
     3100 => {
       title: 'Projection error',
       what_about: "Try converting your file to a common projection, such as EPSG:4326, prior to uploading. You can do that with OGR or QGIS."

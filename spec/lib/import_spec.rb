@@ -551,6 +551,14 @@ describe CartoDB::Importer do
       results[0].import_type.should   == '.shp'
       @db.select(:comarca).from(:cb_municipios_5000_e).all.first[:comarca].should be == 'MONTAÑA ALAVESA'
     end
+
+    it "throws an error when importing an shp with unknown srid" do
+      importer = create_importer "unknown_srid_shp.zip"
+      results, errors = importer.import!
+
+      errors.should have(1).item
+      errors[0].code.should be == 3008
+    end
   end
 
   context "expected error results" do

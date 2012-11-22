@@ -15,8 +15,8 @@ feature "API 1.0 assets management" do
   end
 
   scenario "Create a new asset" do
-    post v1_user_assets_url(@user, host: 'test.localhost.lan'), 
-      :file => Rack::Test::UploadedFile.new(Rails.root.join('db/fake_data/column_number_to_boolean.csv'), 'text/csv'), 
+    post v1_user_assets_url(@user, host: 'test.localhost.lan'),
+      :file => Rack::Test::UploadedFile.new(Rails.root.join('db/fake_data/column_number_to_boolean.csv'), 'text/csv'),
       :api_key => api_key
 
     response.status.should be_success

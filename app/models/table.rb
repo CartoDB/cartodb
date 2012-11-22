@@ -531,7 +531,7 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def sequel
-    owner.in_database[name.to_sym]
+    owner.in_database.from(name)
   end
 
   def rows_estimated_query(query)
@@ -592,13 +592,13 @@ class Table < Sequel::Model(:user_tables)
   def insert_row!(raw_attributes)
     primary_key = nil
     owner.in_database do |user_database|
-      schema = user_database.schema(name.to_sym, :reload => true).map{|c| c.first}
+      schema = user_database.schema(name, :reload => true).map{|c| c.first}
       attributes = raw_attributes.dup.select{ |k,v| schema.include?(k.to_sym) }
       if attributes.keys.size != raw_attributes.keys.size
         raise CartoDB::InvalidAttributes, "Invalid rows: #{(raw_attributes.keys - attributes.keys).join(',')}"
       end
       begin
-        primary_key = user_database[name.to_sym].insert(make_sequel_compatible(attributes))
+        primary_key = user_database.from(name).insert(make_sequel_compatible(attributes))
       rescue Sequel::DatabaseError => e
         message = e.message.split("\n")[0]
 
@@ -615,7 +615,7 @@ class Table < Sequel::Model(:user_tables)
         end
 
         if new_column_type = get_new_column_type(invalid_column)
-          user_database.set_column_type self.name.to_sym, invalid_column.to_sym, new_column_type
+          user_database.set_column_type self.name, invalid_column.to_sym, new_column_type
           retry
         else
           raise e
@@ -629,7 +629,7 @@ class Table < Sequel::Model(:user_tables)
   def update_row!(row_id, raw_attributes)
     rows_updated = 0
     owner.in_database do |user_database|
-      schema = user_database.schema(name.to_sym, :reload => true).map{|c| c.first}
+      schema = user_database.schema(name, :reload => true).map{|c| c.first}
       attributes = raw_attributes.dup.select{ |k,v| schema.include?(k.to_sym) }
       if attributes.keys.size != raw_attributes.keys.size
         raise CartoDB::InvalidAttributes, "Invalid rows: #{(raw_attributes.keys - attributes.keys).join(',')}"
@@ -637,7 +637,7 @@ class Table < Sequel::Model(:user_tables)
       if !attributes.except(THE_GEOM).empty?
         begin
           # update row
-          rows_updated = user_database[name.to_sym].filter(:cartodb_id => row_id).update(make_sequel_compatible(attributes))
+          rows_updated = user_database.from(name).filter(:cartodb_id => row_id).update(make_sequel_compatible(attributes))
         rescue Sequel::DatabaseError => e
           # If the type don't match the schema of the table is modified for the next valid type
           # TODO: STOP THIS MADNESS
@@ -648,7 +648,7 @@ class Table < Sequel::Model(:user_tables)
             invalid_column = attributes.invert[invalid_value] # which is the column of the name that raises error
 
             if new_column_type = get_new_column_type(invalid_column)
-              user_database.set_column_type self.name.to_sym, invalid_column.to_sym, new_column_type
+              user_database.set_column_type self.name, invalid_column.to_sym, new_column_type
               retry
             end
           else
@@ -675,7 +675,7 @@ class Table < Sequel::Model(:user_tables)
     raise CartoDB::InvalidColumnName if RESERVED_COLUMN_NAMES.include?(options[:name]) || options[:name] =~ /^[0-9_]/
     type = options[:type].convert_to_db_type
     cartodb_type = options[:type].convert_to_cartodb_type
-    owner.in_database.add_column name.to_sym, options[:name].to_s.sanitize, type
+    owner.in_database.add_column name, options[:name].to_s.sanitize, type
     return {:name => options[:name].to_s.sanitize, :type => type, :cartodb_type => cartodb_type}
   rescue => e
     if e.message =~ /^PGError/
@@ -687,7 +687,7 @@ class Table < Sequel::Model(:user_tables)
 
   def drop_column!(options)
     raise if CARTODB_COLUMNS.include?(options[:name].to_s)
-    owner.in_database.drop_column name.to_sym, options[:name].to_s
+    owner.in_database.drop_column name, options[:name].to_s
   end
 
   def modify_column!(options)
@@ -699,14 +699,14 @@ class Table < Sequel::Model(:user_tables)
       if options[:old_name] && options[:new_name]
         raise CartoDB::InvalidColumnName if options[:new_name] =~ /^[0-9_]/ || RESERVED_COLUMN_NAMES.include?(options[:new_name])
         raise if CARTODB_COLUMNS.include?(options[:old_name].to_s)
-        user_database.rename_column name.to_sym, options[:old_name].to_sym, options[:new_name].sanitize.to_sym
+        user_database.rename_column name, options[:old_name].to_sym, options[:new_name].sanitize.to_sym
         new_name = options[:new_name].sanitize
       end
       if options[:type]
         column_name = (options[:new_name] || options[:name]).sanitize
         raise if CARTODB_COLUMNS.include?(column_name)
         begin
-          user_database.set_column_type name.to_sym, column_name.to_sym, new_type
+          user_database.set_column_type name, column_name.to_sym, new_type
         rescue => e
           message = e.message.split("\n").first
           if message =~ /cannot be cast to type/
@@ -1363,7 +1363,7 @@ TRIGGER
             type = row[:geometrytype]
           end
         else
-          owner.in_database.rename_column(self.name.to_sym, THE_GEOM, :the_geom_str)
+          owner.in_database.rename_column(self.name, THE_GEOM, :the_geom_str)
         end
       else # Ensure a the_geom column, of type point by default
         type = DEFAULT_THE_GEOM_TYPE
@@ -1402,13 +1402,13 @@ TRIGGER
     updates = false
     type = type.to_s.upcase
     owner.in_database do |user_database|
-      return if !force_schema.blank? && !user_database.schema(name.to_sym, :reload => true).flatten.include?(THE_GEOM)
-      unless user_database.schema(name.to_sym, :reload => true).flatten.include?(THE_GEOM)
+      return if !force_schema.blank? && !user_database.schema(name, :reload => true).flatten.include?(THE_GEOM)
+      unless user_database.schema(name, :reload => true).flatten.include?(THE_GEOM)
         updates = true
         user_database.run("SELECT AddGeometryColumn ('#{self.name}','#{THE_GEOM}',#{CartoDB::SRID},'#{type}',2)")
         user_database.run(%Q{CREATE INDEX ON "#{self.name}" USING GIST(the_geom)})
       end
-      unless user_database.schema(name.to_sym, :reload => true).flatten.include?(THE_GEOM_WEBMERCATOR)
+      unless user_database.schema(name, :reload => true).flatten.include?(THE_GEOM_WEBMERCATOR)
         updates = true
         user_database.run("SELECT AddGeometryColumn ('#{self.name}','#{THE_GEOM_WEBMERCATOR}',#{CartoDB::GOOGLE_SRID},'#{type}',2)")
         # make timeout here long, but not infinite. 10mins = 600000 ms.
@@ -1430,7 +1430,7 @@ TRIGGER
 
     owner.in_database do |user_database|
       if force_schema.blank?
-        user_database.create_table self.name.to_sym do
+        user_database.create_table self.name do
           column :cartodb_id, "SERIAL PRIMARY KEY"
           String :name
           String :description, :text => true

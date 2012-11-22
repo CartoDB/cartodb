@@ -263,6 +263,10 @@ div.map {
       top: 0px;
       left: 0px;
     }
+
+    .leaflet-right .leaflet-control, #cartodb_attribution {
+      margin-right: 0px!important;
+    }  
   }
 
   // [done | discard] dialog shown when a geometry is being edited or created

@@ -61,11 +61,13 @@
         'geo/geometry.js',
         'geo/map.js',
         'geo/ui/zoom.js',
+        'geo/ui/zoom_info.js',        
         'geo/ui/legend.js',
         'geo/ui/switcher.js',
         'geo/ui/infowindow.js',
         'geo/ui/header.js',
         'geo/ui/search.js',
+        'geo/ui/tiles_loader.js',
 
         'geo/common.js',
 

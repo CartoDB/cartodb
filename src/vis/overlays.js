@@ -15,7 +15,7 @@ cdb.vis.Overlay.register('zoom', function(data) {
 // Tiles loader
 cdb.vis.Overlay.register('loader', function(data) {
 
-  var tilesLoader = new cdb.admin.TilesLoader({
+  var tilesLoader = new cdb.geo.ui.TilesLoader({
     template: cdb.core.Template.compile(data.template)
   });
 

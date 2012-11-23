@@ -217,6 +217,12 @@ describe("common.ui.Table", function() {
       expect(cell.html()).toEqual('100');
     });
 
+    it("should clear rows after a reset", function() {
+      expect(table.render().$('tr').length).toEqual(3);
+      cols.reset([]);
+      expect(table.$('tr').length).toEqual(1); // only the header
+    });
+
   });
 
 });

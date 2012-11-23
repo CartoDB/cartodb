@@ -46,8 +46,19 @@ cdb.geo.MapLayer = cdb.core.Model.extend({
       }
     }
     return false; // different type
-  }
+  },
 
+  /**
+   * Updates the style chaging the table name for a new one
+   * @param  {String} previousName
+   * @param  {String} newName
+   */
+  updateCartoCss: function(previousName, newName) {
+    var tileStyle = this.get('tile_style');
+    var replaceRegexp = new RegExp('#'+previousName, 'g');
+    tileStyle = tileStyle.replace(replaceRegexp, '#'+newName);
+    this.save({'tile_style': tileStyle});
+  }
 
 });
 
@@ -432,10 +443,16 @@ cdb.geo.Map = cdb.core.Model.extend({
     if(z == null) {
       return;
     }
-    var lat = (bounds[0][0] + bounds[1][0])/2;
-    var lon = (bounds[0][1] + bounds[1][1])/2;
+    // project -> calculate center -> unproject
+    var swPoint = cdb.geo.Map.latlngToMercator(bounds[0], z);
+    var nePoint = cdb.geo.Map.latlngToMercator(bounds[1], z);
+
+    var center = cdb.geo.Map.mercatorToLatLng({
+      x: (swPoint[0] + nePoint[0])*0.5,
+      y: (swPoint[1] + nePoint[1])*0.5
+    }, z);
     this.set({
-      center: [lat, lon],
+      center: center,
       zoom: z
     })
   },
@@ -475,6 +492,11 @@ cdb.geo.Map = cdb.core.Model.extend({
     var ll = new L.LatLng(latlng[0], latlng[1]);
     var pp = L.CRS.EPSG3857.latLngToPoint(ll, zoom);
     return [pp.x, pp.y];
+  },
+
+  mercatorToLatLng: function(point, zoom) {
+    var ll = L.CRS.EPSG3857.pointToLatLng(point, zoom);
+    return [ll.lat, ll.lng]
   }
 
 });

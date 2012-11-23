@@ -73,6 +73,20 @@ describe("cdb.geo.ui.infowindow", function() {
       expect(render_fields[1].value).toEqual("1");
     });
 
+    it("should convert value to null when it is undefined", function() {
+      model.set('content', { fields: [{ title: 'jamon', value: undefined}] }, {silent: true});
+      
+      var render_fields = view._fieldsToString(model.attributes).content.fields;
+      expect(render_fields[0].value).toEqual(null);
+    });
+
+    it("should convert value to null when it is null", function() {
+      model.set('content', { fields: [{ title: 'jamon', value: null}] }, {silent: true});
+      
+      var render_fields = view._fieldsToString(model.attributes).content.fields;
+      expect(render_fields[0].value).toEqual(null);
+    });
+
     it("should convert value to null when it is empty", function() {
       model.set('content', { fields: [{ title: 'jamon', value: ''}] }, {silent: true});
       

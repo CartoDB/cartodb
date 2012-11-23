@@ -153,6 +153,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     "dragstart":          "_checkOrigin",
     "mousedown":          "_checkOrigin",
     "touchstart":         "_checkOrigin",
+    "dblclick":           "_stopPropagation",
     "mousewheel":         "_stopPropagation",
     "DOMMouseScroll":     "_stopPropagation",
     "dbclick":            "_stopPropagation",
@@ -225,6 +226,11 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
   _fieldsToString: function(attrs) {
     if (attrs.content && attrs.content.fields) {
       attrs.content.fields = _.map(attrs.content.fields, function(attr) {
+        // Check null or undefined :| and set both to empty == ''
+        if (attr.value == null || attr.value == undefined) {
+          attr.value = '';
+        }
+
         // Cast all values to string due to problems with Mustache 0 number rendering
         var new_value = attr.value.toString();
 

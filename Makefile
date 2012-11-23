@@ -30,7 +30,8 @@ release: dist css
 	node scripts/release.js
 
 publish: 
-	./scripts/publish.sh
+	#./scripts/publish.sh
+	node scripts/publish.js
 
 
 PHONY: clean themes dist

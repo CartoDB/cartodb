@@ -77,7 +77,9 @@ var Vis = cdb.core.View.extend({
       });
     }
 
-    this._applyOptions(data, options);
+    if(options) {
+      this._applyOptions(data, options);
+    }
 
     // map
     data.maxZoom || (data.maxZoom = 20);
@@ -168,6 +170,7 @@ var Vis = cdb.core.View.extend({
 
   // change vizjson based on options
   _applyOptions: function(vizjson, opt) {
+    opt = opt || {};
 
     function search_overlay(name) {
       for(var i = 0; i < vizjson.overlays.length; ++i) {

@@ -292,12 +292,25 @@
 
     /* NEW VERSION */
     &.new_version {
-      padding:0;
-      margin:0;
-      height:100%;
+      position:relative;
       width:100%;
-      background: image-url('layout/relief.png') repeat 0 0 #519FD9; // IE
-      @include background(image-url("layout/relief.png") repeat center center, linear-gradient(#519FD9,#1E5496));
+      height:100%;
+      margin:0;
+      padding:0;
+      background-color: #377CB9; // IE
+      filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#519FD9', endColorstr='#1E5496');// For IE7-8-9
+      @include background(linear-gradient(#519FD9,#1E5496));
+      
+      div.bkg {
+        position:absolute;
+        top:0;
+        left:0;
+        right:0;
+        bottom:0;
+        width:100%;
+        height:100%;
+        @include background(image-url("layout/relief.png") repeat 0 0);
+      }
 
       header {
         position:relative;
@@ -327,7 +340,8 @@
 
         .content {
           padding-right:190px;
-          h2 {font-size:34px;}
+          h2 {font-size:34px; line-height:36px;}
+          p {line-height:19px;}
         }
       }
     }

@@ -120,6 +120,7 @@ module CartoDB
         rescue => e
           # Silently fail here and try importing anyway
           log "ICONV failed for CSV #{@path}: #{e.message} #{e.backtrace}"
+          return "UTF-8"
         end
       end
 

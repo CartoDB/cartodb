@@ -72,7 +72,7 @@ feature "API 1.0 maps management" do
     map = create_map(:user_id => @user.id, :table_id => table.id)
     
     delete_json v1_map_url(:host => CartoDB.hostname.sub('http://', ''), :api_key => api_key, :id => map.id) do |response|
-      response.status.should eql(200)
+      response.status.should eql(204)
     end
   end
 end

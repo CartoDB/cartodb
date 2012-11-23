@@ -296,14 +296,17 @@ class Table < Sequel::Model(:user_tables)
       @data_import.reload
       @data_import.log_error("Table error, #{e.inspect}")
     end
-    unless self.name.blank?
+
+    # Remove the table, except if it already exists
+    unless self.name.blank? || e.message =~ /relation .* already exists/
       $tables_metadata.del key
+
       owner.in_database(:as => :superuser).run(%Q{DROP TABLE IF EXISTS "#{self.name}"})
       if @data_import
         @data_import.log_update("dropping table #{self.name}")
       end
     end
-
+    
     if @import_from_file
       @import_from_file = URI.escape(@import_from_file) if @import_from_file =~ /^http/
       open(@import_from_file) do |res|

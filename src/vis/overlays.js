@@ -50,7 +50,7 @@ cdb.vis.Overlay.register('header', function(data, vis) {
   );
 
   var titleLength = data.map.get('title') ? data.map.get('title').length : 0;
-  var descLength = data.map.get('description') ? data.map.get('decription').length : 0;
+  var descLength = data.map.get('description') ? data.map.get('description').length : 0;
 
   var maxDescriptionLength = MAX_SHORT_DESCRIPTION_LENGTH - titleLength;
   var description = data.map.get('description');

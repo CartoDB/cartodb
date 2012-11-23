@@ -3399,3 +3399,74 @@ body.error div.browsers a {
 body.error div.browsers a img {
   margin: 0!important;
 }
+
+html {
+  width:100%;
+  height:100%;
+}
+
+body.new_version {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: #377CB9;
+  filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#519FD9', endColorstr='#1E5496');
+  background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #519fd9), color-stop(100%, #1e5496));
+  background: -webkit-linear-gradient(#519fd9, #1e5496);
+  background: -moz-linear-gradient(#519fd9, #1e5496);
+  background: -o-linear-gradient(#519fd9, #1e5496);
+  background: linear-gradient(#519fd9, #1e5496);
+}
+body.new_version div.bkg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  background: url("/images/new/backgrounds/white-carto.png") repeat 0 0;
+}
+body.new_version header {
+  position: relative;
+  border: none;
+  box-shadow: none;
+  background: none;
+  width: 480px;
+  height: 42px;
+  margin: 0 auto;
+  padding: 40px 0;
+}
+body.new_version section {
+  margin-top: 0;
+  width: 505px;
+  background: white url("/images/new/backgrounds/cartodb20.png") no-repeat right 0;
+}
+body.new_version section .content {
+  padding-right: 190px;
+}
+body.new_version section .content h2 {
+  font-size: 34px;
+  font-weight: bold;
+  font-family: "Segoe UI Bold", "Helvetica Bold", "Helvetica", Arial;
+  color: #333333;
+  line-height: 36px;
+  text-shadow: none;
+  letter-spacing: -1px;
+  word-spacing: -1px;
+}
+body.new_version section .content p {
+  line-height: 19px;
+  color:#666666;
+}
+body.new_version section .content p.margin20 {
+  margin-top:20px;
+}
+body.new_version section .content p.margin30 {
+  margin-top:30px;
+}
+body.new_version section .content p strong {
+  font-weight: bold;
+}

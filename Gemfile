@@ -53,7 +53,7 @@ gem "rchardet19",              "1.3.5"
 gem "roo",                     "1.9.7"
 gem "spreadsheet",             "0.6.5.9"
 gem "google-spreadsheet-ruby", "0.1.8"
-gem "rubyzip",                 "0.9.6.1"
+gem "rubyzip",                 "0.9.9"
 gem "builder",                 "3.0.0"
 gem "state_machine",           "1.1.2"
 

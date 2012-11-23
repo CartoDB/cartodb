@@ -199,7 +199,9 @@ module CartoDB
       private
 
       def remove_shp_related_files
-        Dir[@working_data[:path].gsub('.shp', '.*')].each{ |e| FileUtils.rm_rf(e) }
+        ['.wadus', '.shp', '.prj', '.dbf', '.shx'].each do |ext|
+          Dir[@working_data[:path].gsub('.shp', ext)].each{ |e| FileUtils.rm_rf(e) }
+        end
       end
 
     end

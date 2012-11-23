@@ -338,9 +338,9 @@ cdb.ui.common.Table = cdb.core.View.extend({
    * render only data rows
    */
   _renderRows: function() {
+    this.clear_rows();
     if(! this.isEmptyTable()) {
       var self = this;
-      this.clear_rows();
 
       this.dataModel.each(function(row) {
         self.addRow(row);

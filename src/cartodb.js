@@ -61,7 +61,7 @@
         'geo/geometry.js',
         'geo/map.js',
         'geo/ui/zoom.js',
-        'geo/ui/zoom_info.js',        
+        'geo/ui/zoom_info.js',
         'geo/ui/legend.js',
         'geo/ui/switcher.js',
         'geo/ui/infowindow.js',

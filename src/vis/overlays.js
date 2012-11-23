@@ -49,7 +49,9 @@ cdb.vis.Overlay.register('header', function(data, vis) {
     data.templateType || 'mustache'
   );
 
-  var maxDescriptionLength = MAX_SHORT_DESCRIPTION_LENGTH - data.map.get('title').length;
+  var descLength = data.map.get('title') ? data.map.get('title').length : 0;
+
+  var maxDescriptionLength = MAX_SHORT_DESCRIPTION_LENGTH - descLength;
   var description = data.map.get('description');
   var descriptionShort = description;
 

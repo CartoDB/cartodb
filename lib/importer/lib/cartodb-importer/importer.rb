@@ -242,6 +242,7 @@ module CartoDB
             #raise "no importer for this type of data"
           else
             begin
+
               out = loader.process!
 
               out.each{ |d| payloads << d }

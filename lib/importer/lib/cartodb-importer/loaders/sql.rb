@@ -12,16 +12,6 @@ module CartoDB
           # run Chardet + Iconv
           fix_encoding
 
-          # Check if file has only one header, add a blank column
-          # if so. See Vizzuality/CartoDB#202
-          begin
-          headers = File.open("#{@path}") {|f| f.readline}
-          unless headers =~ /[\,\;]/
-            `sed -ie "1 s/$/;/" #{@path}`
-          end
-          rescue
-          end
-
           @data_import.log_update("psql #{@working_data[:suggested_name]}")
           psql_bin_path = `which psql`.strip
           psql_command = %Q{#{psql_bin_path} --host=#{@db_configuration[:host]} --port=#{@db_configuration[:port]} --username=#{@db_configuration[:username]} #{@db_configuration[:database]} -f #{@working_data[:path]}}

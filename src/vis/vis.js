@@ -20,7 +20,8 @@ var Overlay = {
     if(!t) {
       cdb.log.error("Overlay: " + type + " does not exist");
     }
-    var widget = t(data, vis);
+      var widget = t(data, vis);
+
     return widget;
   }
 };
@@ -67,7 +68,17 @@ var Vis = cdb.core.View.extend({
     }
   },
 
-  load: function(data) {
+
+  load: function(data, options) {
+    if(typeof(data) === 'string') {
+      var self = this;
+      $.getJSON(data, function(d) {
+        self.load(d, options);
+      });
+    }
+
+    this._applyOptions(data, options);
+
     // map
     data.maxZoom || (data.maxZoom = 20);
     data.minZoom || (data.minZoom = 0);
@@ -152,6 +163,69 @@ var Vis = cdb.core.View.extend({
       var layerData = data.layers[i];
       this.loadLayer(layerData);
     }
+  },
+
+
+  // change vizjson based on options
+  _applyOptions: function(vizjson, opt) {
+
+    function search_overlay(name) {
+      for(var i = 0; i < vizjson.overlays.length; ++i) {
+        if(vizjson.overlays[i].type === name) {
+          return vizjson.overlays[i];
+        }
+      }
+    }
+
+    function remove_overlay(name) {
+      for(var i = 0; i < vizjson.overlays.length; ++i) {
+        if(vizjson.overlays[i].type === name) {
+          vizjson.overlays.splice(i, 1);
+          return;
+        }
+      }
+    }
+
+    // remove search if the vizualization does not contain it
+    if (!opt.search) {
+      remove_overlay('search');
+    }
+
+    if(!opt.title  && !opt.description  && !opt.shareable) {
+      remove_overlay('header');
+    }
+
+    if(!opt.title) {
+      vizjson.title = null;
+    }
+
+    if(!opt.description) {
+      vizjson.description = null;
+    }
+
+    if(!opt.shareable) {
+      var s = search_overlay('header');
+      if(s) {
+        s.shareable = false;
+      }
+    }
+
+    if(opt.sw_lat !== undefined) {
+      vizjson.bounds = [
+        [parseFloat(opt.sw_lat), parseFloat(opt.sw_lon)],
+        [parseFloat(opt.ne_lat), parseFloat(opt.ne_lon)],
+      ];
+    }
+
+    if(opt.sql) {
+      vizjson.layers[1].options.query = opt.sql;
+    }
+    if(opt.style) {
+      vizjson.layers[1].options.tile_style = opt.style;
+    }
+
+    vizjson.layers[1].options.no_cdn = opt.no_cdn;
+
   },
 
   // Set map top position taking into account header height

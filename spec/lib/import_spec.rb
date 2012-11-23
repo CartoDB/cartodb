@@ -341,19 +341,19 @@ describe CartoDB::Importer do
         results,errors = importer.import!
 
         results.length.should                  == 10
-        results.map(&:name).should be          == ["esp_adm0", "esp_adm0_1", "esp_adm1", "esp_adm1_1", "esp_adm2", "esp_adm2_1", "esp_adm3", "esp_adm3_1", "esp_adm4", "esp_adm4_1"]
-        results.map(&:rows_imported).should be == [1, 1, 18, 18, 51, 51, 368, 368, 8298, 8298]
-        results.map(&:import_type).should be   == [".csv", ".shp", ".csv", ".shp", ".csv", ".shp", ".csv", ".shp", ".csv", ".shp"]
+        results.map(&:name).should be          =~ ["esp_adm0", "esp_adm0_1", "esp_adm1", "esp_adm1_1", "esp_adm2", "esp_adm2_1", "esp_adm3", "esp_adm3_1", "esp_adm4", "esp_adm4_1"]
+        results.map(&:rows_imported).should be =~ [1, 1, 18, 18, 51, 51, 368, 368, 8298, 8298]
+        results.map(&:import_type).should be   =~ [".csv", ".shp", ".csv", ".shp", ".csv", ".shp", ".csv", ".shp", ".csv", ".shp"]
       end
 
-      it 'can import a Spain GADM file' do
+      it 'can import a Spain GADM file from an url' do
         importer = create_importer 'http://www.filefactory.com/file/13m5trz7vkzb/n/ESP_adm_zip', 'esp_adm', true
         results,errors = importer.import!
 
         results.length.should                  == 10
-        results.map(&:name).should be          == ["esp_adm", "esp_adm_1", "esp_adm_2", "esp_adm_3", "esp_adm_4", "esp_adm_5", "esp_adm_6", "esp_adm_7", "esp_adm_8", "esp_adm_9"]
-        results.map(&:rows_imported).should be == [1, 1, 18, 18, 51, 51, 368, 368, 8298, 8298]
-        results.map(&:import_type).should be   == [".csv", ".shp", ".csv", ".shp", ".csv", ".shp", ".csv", ".shp", ".csv", ".shp"]
+        results.map(&:name).should be          =~ ["esp_adm", "esp_adm_1", "esp_adm_2", "esp_adm_3", "esp_adm_4", "esp_adm_5", "esp_adm_6", "esp_adm_7", "esp_adm_8", "esp_adm_9"]
+        results.map(&:rows_imported).should be =~ [1, 1, 18, 18, 51, 51, 368, 368, 8298, 8298]
+        results.map(&:import_type).should be   =~ [".csv", ".shp", ".csv", ".shp", ".csv", ".shp", ".csv", ".shp", ".csv", ".shp"]
       end
 
       it 'can import the file ne_10m_coastline.zip' do

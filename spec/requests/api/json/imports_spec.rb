@@ -219,6 +219,7 @@ describe "Imports API" do
     "http://cartodb.s3.amazonaws.com/static/TM_WORLD_BORDERS_SIMPL-0.3.zip",
     "http://cartodb.s3.amazonaws.com/static/european_countries.zip",
     "http://cartodb.s3.amazonaws.com/static/counties_ny.zip",
+    "http://cartodb.s3.amazonaws.com/static/10m-populated-places-simple.zip",
     "http://cartodb.s3.amazonaws.com/static/nyc_subway_entrance.zip"].each do |url|
 
       post v1_imports_url(:host    => 'test.localhost.lan',

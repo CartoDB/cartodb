@@ -396,6 +396,17 @@ class Table < Sequel::Model(:user_tables)
       }
 
     m.add_layer(data_layer)
+    
+    # Post the style to the tiler
+    begin
+      tile_request('POST', "/tiles/#{self.name}/style?map_key=#{owner.get_map_key}", { 
+        'style_version' => data_layer.options["style_version"], 
+        'style'         => data_layer.options["tile_style"] 
+      })
+    rescue => e
+      raise e if Rails.env.production? || Rails.env.staging?
+    end
+
   end
 
   def after_update
@@ -1560,6 +1571,8 @@ SQL
     ip   = Cartodb.config[:tile_ip] || '127.0.0.1'
     port = Cartodb.config[:tile_port] || 80
     http_req = Net::HTTP.new ip, port
+    http_req.use_ssl = Cartodb.config[:tile_protocol] == 'https' ? true : false
+    http_req.verify_mode = OpenSSL::SSL::VERIFY_NONE
     request_headers = {'Host' => "#{owner.username}.#{Cartodb.config[:tile_host]}"}
     case request_method
       when 'GET'
@@ -1571,6 +1584,7 @@ SQL
         http_res = http_req.delete(request_uri, request_headers.merge(extra_delete_headers))
       else
     end
+    raise "#{http_res.inspect}" unless http_res.is_a?(Net::HTTPOK)
     http_res
   end
 

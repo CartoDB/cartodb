@@ -34,8 +34,8 @@ defaults: &defaults
                   "sql_protocol", "extra_params", "cdn_url", "table_name", 
                   "user_name"]
     default_tile_styles:
-      point: "{\n  marker-fill: #FF6600;\n  marker-opacity: 1;\n  marker-width: 8;\n  marker-line-color: white;\n  marker-line-width: 3;\n  marker-line-opacity: 0.9;\n  marker-placement: point;\n  marker-type: ellipse;\n  marker-allow-overlap: true;\n}"
-      geometry: "{\n  marker-fill: #FF6600;\n  marker-opacity: 1;\n  marker-width: 8;\n  marker-line-color: white;\n  marker-line-width: 3;\n  marker-line-opacity: 0.9;\n  marker-placement: point;\n  marker-type: ellipse;\n  marker-allow-overlap: true;\n}"
+      point: "{\n  marker-fill: #FF6600;\n  marker-opacity: 0.9;\n  marker-width: 12;\n  marker-line-color: white;\n  marker-line-width: 3;\n  marker-line-opacity: 0.9;\n  marker-placement: point;\n  marker-type: ellipse;\n  marker-allow-overlap: true;\n}"
+      geometry: "{\n  marker-fill: #FF6600;\n  marker-opacity: 0.9;\n  marker-width: 12;\n  marker-line-color: white;\n  marker-line-width: 3;\n  marker-line-opacity: 0.9;\n  marker-placement: point;\n  marker-type: ellipse;\n  marker-allow-overlap: true;\n}"
       polygon: "{\n  polygon-fill:#FF6600;\n  polygon-opacity: 0.7;\n  line-opacity:1;\n  line-color: #FFFFFF;\n}"
       multipolygon: "{\n  polygon-fill:#FF6600;\n  polygon-opacity: 0.7;\n  line-opacity:1;\n  line-color: #FFFFFF;\n}"
       multilinestring: "{\n  line-color:#FF6600;\n  line-width:1;\n  line-opacity: 0.7;\n}"

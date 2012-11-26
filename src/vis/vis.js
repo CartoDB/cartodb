@@ -62,6 +62,8 @@ var Vis = cdb.core.View.extend({
   initialize: function() {
     _.bindAll(this, 'loadingTiles', 'loadTiles');
 
+    this.https = false;
+
     if(this.options.mapView) {
       this.mapView = this.options.mapView;
       this.map = this.mapView.map;
@@ -72,9 +74,19 @@ var Vis = cdb.core.View.extend({
   load: function(data, options) {
     if(typeof(data) === 'string') {
       var self = this;
-      $.getJSON(data, function(d) {
+      $.getJSON(data + "?callback=?", function(d) {
         self.load(d, options);
       });
+      return;
+    }
+
+    // configure the vis in http or https
+    if(window && window.location.protocol && window.location.protocol === 'https:') {
+      this.https = true;
+    }
+
+    if(data.https) {
+      this.https = data.https;
     }
 
     if(options) {
@@ -171,8 +183,14 @@ var Vis = cdb.core.View.extend({
   // change vizjson based on options
   _applyOptions: function(vizjson, opt) {
     opt = opt || {};
+    opt = _.defaults(opt, {
+      search: true,
+      title: true,
+      description: true
+    });
 
     function search_overlay(name) {
+      if(!vizjson.overlays) return null;
       for(var i = 0; i < vizjson.overlays.length; ++i) {
         if(vizjson.overlays[i].type === name) {
           return vizjson.overlays[i];
@@ -181,6 +199,7 @@ var Vis = cdb.core.View.extend({
     }
 
     function remove_overlay(name) {
+      if(!vizjson.overlays) return;
       for(var i = 0; i < vizjson.overlays.length; ++i) {
         if(vizjson.overlays[i].type === name) {
           vizjson.overlays.splice(i, 1);
@@ -189,8 +208,12 @@ var Vis = cdb.core.View.extend({
       }
     }
 
+    if(opt.https) {
+      this.https = true;
+    }
+
     // remove search if the vizualization does not contain it
-    if (!opt.search) {
+    if (opt.search != undefined && !opt.search) {
       remove_overlay('search');
     }
 
@@ -213,12 +236,22 @@ var Vis = cdb.core.View.extend({
       }
     }
 
+    // if bounds are present zoom and center will not taken into account
+    if(opt.zoom !== undefined) {
+      vizjson.zoom = parseFloat(opt.zoom);
+    }
+
+    if(opt.center_lat !== undefined) {
+      vizjson.center = [parseFloat(opt.center_lat), parseFloat(opt.center_lon)];
+    }
+
     if(opt.sw_lat !== undefined) {
       vizjson.bounds = [
         [parseFloat(opt.sw_lat), parseFloat(opt.sw_lon)],
         [parseFloat(opt.ne_lat), parseFloat(opt.ne_lon)],
       ];
     }
+
 
     if(opt.sql) {
       vizjson.layers[1].options.query = opt.sql;

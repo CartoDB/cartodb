@@ -64,7 +64,10 @@ var cartoLayer = function(vis, data) {
   }
 
   data.tiler_protocol = vis.https ? 'https': 'http';
-  data.tiler_port = vis.https ? 443: 80;
+  if(!data.no_cdn) {
+    data.tiler_protocol = vis.https ? 'https': 'http';
+    data.tiler_port = vis.https ? 443: 80;
+  }
 
   return new cdb.geo.CartoDBLayer(data);
 };

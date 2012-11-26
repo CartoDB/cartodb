@@ -31,7 +31,8 @@ L.CartoDBLayer = L.TileLayer.extend({
     sql_port:       "80",
     sql_protocol:   "http",
     extra_params:   {},
-    cdn_url:        null
+    cdn_url:        null,
+    subdomains:     null
   },
 
 

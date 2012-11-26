@@ -85,4 +85,18 @@ describe("Vis", function() {
     expect(_map).not.toEqual(undefined);
   });
 
+  it("when https is false all the urls should be transformed to http", function() {
+    this.vis.https = false;
+    this.mapConfig.layers = [{
+      kind: 'tiled',
+      options: {
+        urlTemplate: 'https://dnv9my2eseobd.cloudfront.net/v3/{z}/{x}/{y}.png'
+      }
+    }]
+    this.vis.load(this.mapConfig);
+    expect(this.vis.map.layers.at(0).get('urlTemplate')).toEqual(
+        'http://a.tiles.mapbox.com/v3/{z}/{x}/{y}.png'
+    )
+  });
+
 })

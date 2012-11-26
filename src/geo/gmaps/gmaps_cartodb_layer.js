@@ -41,7 +41,8 @@ var CartoDBLayer = function(opts) {
     tiler_protocol: "http",
     sql_domain:     "cartodb.com",
     sql_port:       "80",
-    sql_protocol:   "http"
+    sql_protocol:   "http",
+    subdomains:      null
   };
 
   this.options = _.defaults(opts, default_options);

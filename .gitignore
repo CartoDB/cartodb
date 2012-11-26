@@ -3,3 +3,4 @@
 node_modules
 themes/css/all.css
 themes/css/cartodb.ie.css
+secrets.json

@@ -138,7 +138,7 @@
       @include transition-property("all");
       @include transition-duration(500ms);
 
-      p.upgraded {display:none;}
+      p.upgraded, p.cartodb20 {display:none;}
 
       a.close {
         position:absolute;
@@ -155,8 +155,14 @@
 
       &.upgraded {
         background:rgba(#8DB73F,0.15);
-        p.limit {display:none;}
+        p.limit, p.cartodb20 {display:none;}
         p.upgraded {display:block;}
+      }
+
+      &.cartodb20 {
+        background:rgba(#8DB73F,0.15);
+        p.limit, p.upgraded {display:none;}
+        p.cartodb20 {display:block;}
       }
 
       &.visible {

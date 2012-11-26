@@ -29,7 +29,7 @@ css: $(CSS_FILES)
 release: dist css
 	node scripts/release.js
 
-publish: 
+publish: release
 	#./scripts/publish.sh
 	node scripts/publish.js
 

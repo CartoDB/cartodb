@@ -61,10 +61,10 @@ var CSS_FILES = [
 
 var IMG_FILES = fs.readdirSync('themes/img')
 
-put_files(JS_FILES, 'v2', 'v2')
-put_files(CSS_FILES, 'v2/themes/css', 'v2/themes/css')
-put_files(IMG_FILES, 'v2/themes/img', 'v2/themes/img')
+put_files(JS_FILES, 'v2', 'cartodb.js/v2')
+put_files(CSS_FILES, 'v2/themes/css', 'cartodb.js/v2/themes/css')
+put_files(IMG_FILES, 'v2/themes/img', 'cartodb.js/v2/themes/img')
 
-put_files(JS_FILES, 'v2', 'v2/' + package_.version)
-put_files(CSS_FILES, 'v2/themes/css', 'v2/' + package_.version + '/themes/css')
-put_files(IMG_FILES, 'v2/themes/img', 'v2/' + package_.version + '/themes/img')
+put_files(JS_FILES, 'v2', 'cartodb.js/v2/' + package_.version)
+put_files(CSS_FILES, 'v2/themes/css', 'cartodb.js/v2/' + package_.version + '/themes/css')
+put_files(IMG_FILES, 'v2/themes/img', 'cartodb.js/v2/' + package_.version + '/themes/img')

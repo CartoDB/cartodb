@@ -9351,7 +9351,7 @@ L.Map.include({
 
 
 
-}(this));/* wax - 7.0.0dev10 - v6.0.4-124-g4fcec4d */
+}(this));/* wax - 7.0.0dev10 - v6.0.4-126-g7c323cd */
 
 
 !function (name, context, definition) {
@@ -11627,8 +11627,22 @@ wax.gm = function() {
         tileTemplate = tileTemplate.replace(':80', '[:0-9]*')
       }
 
+      var r = '';
+      if(tilejson.tiles.length > 1) {
+        var t0 = tilejson.tiles[0];
+        var t1 = tilejson.tiles[1];
+        //search characters where differs
+        for(var i = 0; i < t0.length; ++i) {
+          if(t0[i] != t1[i]) {
+            r += '.';
+          } else {
+            r += tileTemplate[i];
+          }
+        }
+      }
+
       // replace the first {x}{y}{z} by (\\d+)
-      return tileTemplate
+      return r
         .replace(/\{x\}/,'(\\d+)')
         .replace(/\{y\}/,'(\\d+)')
         .replace(/\{z\}/,'(\\d+)')
@@ -12699,7 +12713,7 @@ wax.leaf.connector = L.TileLayer.extend({
         L.TileLayer.prototype.initialize.call(this, options.tiles[0], options);
     }
 });
-/* wax - 7.0.0dev10 - v6.0.4-124-g4fcec4d */
+/* wax - 7.0.0dev10 - v6.0.4-126-g7c323cd */
 
 
 !function (name, context, definition) {
@@ -14975,8 +14989,22 @@ wax.gm = function() {
         tileTemplate = tileTemplate.replace(':80', '[:0-9]*')
       }
 
+      var r = '';
+      if(tilejson.tiles.length > 1) {
+        var t0 = tilejson.tiles[0];
+        var t1 = tilejson.tiles[1];
+        //search characters where differs
+        for(var i = 0; i < t0.length; ++i) {
+          if(t0[i] != t1[i]) {
+            r += '.';
+          } else {
+            r += tileTemplate[i];
+          }
+        }
+      }
+
       // replace the first {x}{y}{z} by (\\d+)
-      return tileTemplate
+      return r
         .replace(/\{x\}/,'(\\d+)')
         .replace(/\{y\}/,'(\\d+)')
         .replace(/\{z\}/,'(\\d+)')
@@ -24079,7 +24107,10 @@ var cartoLayer = function(vis, data) {
   }
 
   data.tiler_protocol = vis.https ? 'https': 'http';
-  data.tiler_port = vis.https ? 443: 80;
+  if(!data.no_cdn) {
+    data.tiler_protocol = vis.https ? 'https': 'http';
+    data.tiler_port = vis.https ? 443: 80;
+  }
 
   return new cdb.geo.CartoDBLayer(data);
 };
@@ -24108,6 +24139,8 @@ Layers.register('carto', cartoLayer);
 
   cdb._Promise = _Promise;
 
+  var _requestCache = {};
+
   /**
    * compose cartodb url
    */
@@ -24134,7 +24167,15 @@ Layers.register('carto', cartoLayer);
       url = layer;
     }
     if(url) {
-      $.getJSON(url + "?callback=?", callback);
+      _requestCache[url] = callback;
+     reqwest({
+        url: url + (~url.indexOf('?') ? '&' : '?') + 'callback=vizjson',
+        type: 'jsonp',
+        jsonpCallback: 'callback',
+        success: function(data) {
+          _requestCache[url](data);
+        }
+     });
     } else {
       _.defer(function() { callback(null); });
     }
@@ -24202,11 +24243,11 @@ Layers.register('carto', cartoLayer);
       // update options
       if(options && !_.isFunction(options)) {
         _.extend(layerData.options, options);
-      } else {
-        options = {
+      } 
+
+      options = _.defaults(options, {
           infowindow: true
-        };
-      }
+      })
 
       // create a dummy viz
       var viz = map.viz;

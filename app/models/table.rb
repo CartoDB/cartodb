@@ -1533,16 +1533,16 @@ SQL
       # update tile styles
       begin
         # get old tile style
-        old_style = tile_request('GET', "/tiles/#{@name_changed_from}/style?map_key=#{owner.get_map_key}").try(:body)
+        #old_style = tile_request('GET', "/tiles/#{@name_changed_from}/style?map_key=#{owner.get_map_key}").try(:body)
 
         # parse old CartoCSS style out
-        old_style = JSON.parse(old_style).with_indifferent_access[:style]
+        #old_style = JSON.parse(old_style).with_indifferent_access[:style]
 
         # rename common table name based variables
-        old_style.gsub!(@name_changed_from, self.name)
+        #old_style.gsub!(@name_changed_from, self.name)
 
         # post new style
-        tile_request('POST', "/tiles/#{self.name}/style?map_key=#{owner.get_map_key}", {"style" => old_style})
+        #tile_request('POST', "/tiles/#{self.name}/style?map_key=#{owner.get_map_key}", {"style" => old_style})
       rescue => e
         CartoDB::Logger.info "tilestyle#rename error for", "#{e.inspect}"
       end
@@ -1552,7 +1552,7 @@ SQL
 
   def delete_tile_style
     begin
-      tile_request('DELETE', "/tiles/#{self.name}/style?map_key=#{owner.get_map_key}")
+      #tile_request('DELETE', "/tiles/#{self.name}/style?map_key=#{owner.get_map_key}")
     rescue => e
       CartoDB::Logger.info "tilestyle#delete error", "#{e.inspect}"
     end
@@ -1560,7 +1560,7 @@ SQL
 
   def flush_cache
     begin
-      tile_request('DELETE', "/tiles/#{self.name}/flush_cache?map_key=#{owner.get_map_key}")
+      #tile_request('DELETE', "/tiles/#{self.name}/flush_cache?map_key=#{owner.get_map_key}")
     rescue => e
       CartoDB::Logger.info "cache#flush error", "#{e.inspect}"
     end

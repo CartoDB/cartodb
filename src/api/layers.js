@@ -18,6 +18,8 @@
 
   cdb._Promise = _Promise;
 
+  var _requestCache = {};
+
   /**
    * compose cartodb url
    */
@@ -44,7 +46,15 @@
       url = layer;
     }
     if(url) {
-      $.getJSON(url + "?callback=?", callback);
+      _requestCache[url] = callback;
+     reqwest({
+        url: url + (~url.indexOf('?') ? '&' : '?') + 'callback=vizjson',
+        type: 'jsonp',
+        jsonpCallback: 'callback',
+        success: function(data) {
+          _requestCache[url](data);
+        }
+     });
     } else {
       _.defer(function() { callback(null); });
     }
@@ -112,11 +122,11 @@
       // update options
       if(options && !_.isFunction(options)) {
         _.extend(layerData.options, options);
-      } else {
-        options = {
+      } 
+
+      options = _.defaults(options, {
           infowindow: true
-        };
-      }
+      })
 
       // create a dummy viz
       var viz = map.viz;

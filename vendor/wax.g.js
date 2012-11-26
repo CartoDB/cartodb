@@ -1,4 +1,4 @@
-/* wax - 7.0.0dev10 - v6.0.4-124-g4fcec4d */
+/* wax - 7.0.0dev10 - v6.0.4-126-g7c323cd */
 
 
 !function (name, context, definition) {
@@ -2274,8 +2274,22 @@ wax.gm = function() {
         tileTemplate = tileTemplate.replace(':80', '[:0-9]*')
       }
 
+      var r = '';
+      if(tilejson.tiles.length > 1) {
+        var t0 = tilejson.tiles[0];
+        var t1 = tilejson.tiles[1];
+        //search characters where differs
+        for(var i = 0; i < t0.length; ++i) {
+          if(t0[i] != t1[i]) {
+            r += '.';
+          } else {
+            r += tileTemplate[i];
+          }
+        }
+      }
+
       // replace the first {x}{y}{z} by (\\d+)
-      return tileTemplate
+      return r
         .replace(/\{x\}/,'(\\d+)')
         .replace(/\{y\}/,'(\\d+)')
         .replace(/\{z\}/,'(\\d+)')

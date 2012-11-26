@@ -28,26 +28,26 @@ describe('api.layers', function() {
       });
 
       it("should fecth layer when user and pass are specified", function() {
-        spyOn($, 'getJSON');
+        spyOn(window, 'reqwest');
         cartodb.createLayer(map, {
           user: 'development',
           table: 'clubbing',
           host: 'localhost.lan:3000',
           protocol: 'http'
         });
-        expect($.getJSON).toHaveBeenCalled();
+        expect(window.reqwest).toHaveBeenCalled();
       });
 
       it("should fecth layer when a url is specified", function() {
-        spyOn($, 'getJSON');
+        spyOn(window, 'reqwest');
         cartodb.createLayer(map, 'http://test.com/layer.json');
-        expect($.getJSON).toHaveBeenCalled();
+        expect(window.reqwest).toHaveBeenCalled();
       });
 
       it("should not fecth layer when kind and options are specified", function() {
-        spyOn($, 'getJSON');
+        spyOn(window, 'reqwest');
         cartodb.createLayer(map, { kind: 'plain', options: {} });
-        expect($.getJSON).not.toHaveBeenCalled();
+        expect(window.reqwest).not.toHaveBeenCalled();
       });
 
       it("should create a layer", function() {

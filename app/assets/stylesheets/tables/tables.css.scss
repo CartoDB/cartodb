@@ -292,7 +292,10 @@
               span.tags {
                 display:block;
                 width:auto!important;
-                margin:14px 0 0 0!important;
+
+                // Space when there is description or not
+                &.more {margin:13px 0 0;}
+                &.less {margin:3px 0 0;}
 
                 a {
                   float:right;

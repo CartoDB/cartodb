@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      html, body, #map {
+        height: 100%;
+        padding: 0;
+        margin: 0;
+      }
+    </style>
+
+    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/themes/css/cartodb.css" />
+    <!--[if lte IE 8]>
+        <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/themes/css/cartodb.ie.css" />
+    <![endif]-->
+
+  </head>
+    
+  <body>
+    <div id="map"></div>
+  </body>
+
+  <!-- include cartodb.js library -->
+  <script src="http://libs.cartocdn.com/cartodb.js/v2/cartodb.js"></script>
+
+  <script>
+
+    function main() {
+      var vis = new cartodb.vis.Vis({el: document.getElementById('map') });
+      vis
+        .load('http://examples-beta.cartodb.com/api/v1/viz/791/viz.json', {
+          shareable: false,
+          search: true,
+          tiles_loader: true,
+          center_lat: 0,
+          center_lon: 0,
+          zoom: 2
+        })
+        .error(function(err) {
+          console.log(err);
+        });
+    }
+
+    var fn = function() { cdb.load('../src/', main); }
+    window.onload = fn;
+
+  </script>
+
+
+</html>

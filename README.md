@@ -12,9 +12,9 @@ quick start
 
     ```html
 
-        <link rel="stylesheet" href="http://libs.cartodb.com/cartodb.js/v2/themes/css/cartodb.css" />
+        <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/themes/css/cartodb.css" />
         <!--[if lte IE 8]>
-            <link rel="stylesheet" href="http://libs.cartodb.com/cartodb.js/v2/themes/css/cartodb.ie.css" />
+            <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/themes/css/cartodb.ie.css" />
         <![endif]-->
 
         <script src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
@@ -65,9 +65,9 @@ quick start
     ```javascript
       var map = L.map('map').setView([0, 0], 3);
 
-      // set a base layer
+      // set a base layer 
       L.tileLayer('http://a.tile.stamen.com/toner/{z}/{x}/{y}.png', {
-        attribution: 'stamen'
+        attribution: 'stamen http://maps.stamen.com/'
       }).addTo(map);
       
       // add the cartodb layer
@@ -91,7 +91,9 @@ next steps
 how to build
 ============
 
+    
     ```
+    open test/SpecRunner.html
     make release
     ```
 

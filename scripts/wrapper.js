@@ -4,7 +4,7 @@
 (function() {
   var root = this;
 
-  // save current libraryes
+  // save current libraries
   var __prev = {
     jQuery: root.jQuery,
     $: root.$,

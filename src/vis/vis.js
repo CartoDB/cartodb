@@ -1,5 +1,7 @@
 (function() {
 
+var _requestCache = {};
+
 /**
  * defines the container for an overlay.
  * It places the overlay
@@ -74,10 +76,20 @@ var Vis = cdb.core.View.extend({
   load: function(data, options) {
     if(typeof(data) === 'string') {
       var self = this;
-      $.getJSON(data + "?callback=?", function(d) {
-        self.load(d, options);
+      var url = data;
+      reqwest({
+          url: url + (~url.indexOf('?') ? '&' : '?') + 'callback=vizjson',
+          type: 'jsonp',
+          jsonpCallback: 'callback',
+          success: function(data) {
+            if(data) {
+              self.load(data, options);
+            } else {
+              self.trigger('error', 'error fetching viz.json file');
+            }
+          }
       });
-      return;
+      return this;
     }
 
     // configure the vis in http or https
@@ -177,6 +189,8 @@ var Vis = cdb.core.View.extend({
       var layerData = data.layers[i];
       this.loadLayer(layerData);
     }
+
+    return this;
   },
 
 
@@ -186,7 +200,8 @@ var Vis = cdb.core.View.extend({
     opt = _.defaults(opt, {
       search: true,
       title: true,
-      description: true
+      description: true,
+      tiles_loader: true
     });
 
     function search_overlay(name) {
@@ -227,6 +242,10 @@ var Vis = cdb.core.View.extend({
 
     if(!opt.description) {
       vizjson.description = null;
+    }
+
+    if(!opt.tiles_loader) {
+      remove_overlay('loader');
     }
 
     if(!opt.shareable) {
@@ -343,11 +362,19 @@ var Vis = cdb.core.View.extend({
   },
 
   loadingTiles: function() {
-    this.loader.show()
+    if(this.loader) {
+      this.loader.show()
+    }
   },
 
   loadTiles: function() {
-    this.loader.hide();
+    if(this.loader) {
+      this.loader.hide();
+    }
+  },
+
+  error: function(fn) {
+    this.bind('error', fn);
   }
 
 });

@@ -1,5 +1,6 @@
 // cartodb.js version: <%= version %>
 // uncompressed version: cartodb.uncompressed.js
+// sha: <%= sha %>
 (function() {
   var root = this;
 

@@ -349,6 +349,7 @@ class Table < Sequel::Model(:user_tables)
     super
 
     self.create_default_map_and_layers
+    self.send_tile_style_request
 
     User.filter(:id => user_id).update(:tables_count => :tables_count + 1)
     owner.in_database(:as => :superuser).run(%Q{GRANT SELECT ON "#{self.name}" TO #{CartoDB::TILE_DB_USER};})
@@ -396,17 +397,21 @@ class Table < Sequel::Model(:user_tables)
       }
 
     m.add_layer(data_layer)
-    
-    # Post the style to the tiler
+  end
+
+  ##
+  # Post the style to the tiler
+  #
+  def send_tile_style_request
     begin
-      tile_request('POST', "/tiles/#{self.name}/style?map_key=#{owner.get_map_key}", { 
-        'style_version' => data_layer.options["style_version"], 
-        'style'         => data_layer.options["tile_style"] 
+      data_layer = self.map.data_layers.first
+      tile_request('POST', "/tiles/#{self.name}/style?map_key=#{owner.get_map_key}", {
+        'style_version' => data_layer.options["style_version"],
+        'style'         => data_layer.options["tile_style"]
       })
     rescue => e
       raise e if Rails.env.production? || Rails.env.staging?
     end
-
   end
 
   def after_update

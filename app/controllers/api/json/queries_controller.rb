@@ -14,7 +14,8 @@ class Api::Json::QueriesController < Api::ApplicationController
     q = if /alter|insert|update|delete|create|drop/i.match params[:sql]
       params[:sql]
     else
-      "SELECT * FROM (#{params[:sql]}) AS subq LIMIT #{params[:rows_per_page]} OFFSET #{params[:page]}"
+      page, per_page = CartoDB::Pagination.get_page_and_per_page(params)
+      "SELECT * FROM (#{params[:sql].gsub(/;\s*$/, '')}) AS subq LIMIT #{per_page} OFFSET #{page}"
     end
 
     # Run query

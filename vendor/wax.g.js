@@ -1,4 +1,4 @@
-/* wax - 7.0.0dev10 - v6.0.4-128-g1c67a53 */
+/* wax - 7.0.0dev10 - v6.0.4-129-g273c946 */
 
 
 !function (name, context, definition) {
@@ -2285,10 +2285,10 @@ wax.gm = function() {
         var t1 = tilejson.tiles[1];
         //search characters where differs
         for(var i = 0; i < t0.length; ++i) {
-          if(t0[i] != t1[i]) {
+          if(t0.charAt(i) != t1.charAt(i)) {
             r += '.';
           } else {
-            r += tileTemplate[i] || '';
+            r += tileTemplate.charAt(i) || '';
           }
         }
       } else {

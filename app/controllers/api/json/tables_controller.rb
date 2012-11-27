@@ -130,7 +130,7 @@ class Api::Json::TablesController < Api::ApplicationController
     if @table.present? && (@table.public? || (current_user.present? && @table.owner.id == current_user.id))
       response.headers['X-Cache-Channel'] = "#{@table.varnish_key}:vizjson"
       response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
-      render_jsonp(view_context.map_vizzjson(@table.map, full: false))
+      render_jsonp(view_context.map_vizzjson(@table.map, full: false), 200, callback: 'vizjson')
     else
       head :forbidden
     end

@@ -124,6 +124,7 @@
         _.extend(layerData.options, options);
       } 
 
+      options = options || {};
       options = _.defaults(options, {
           infowindow: true
       })

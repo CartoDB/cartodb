@@ -242,6 +242,9 @@
                     }
                   }
                 }
+
+                // Fake column name added to each th
+                &.auto {@include opacity(0); padding:0;}
               }
             }
 

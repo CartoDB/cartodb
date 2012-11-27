@@ -118,7 +118,6 @@
 
           th {
             position:relative;
-            //min-width:180px;
             vertical-align: top;
 
             & > div {
@@ -253,10 +252,17 @@
               width:35px;
             }
 
+            &:last-child {
+              @include transform-style("linear");
+              @include transition-property("padding-right");
+              @include transition-duration(500ms);
+              padding-right:62px;
+            }
+
             // Column options
             div.dropdown {
               width:147px!important;
-            }    
+            }  
           }
         }
 
@@ -266,6 +272,12 @@
             position:absolute;
             left:0;
             top:0;
+          }
+        }
+
+        &.displaced {
+          th:last-child {
+            padding-right:600px;
           }
         }
       }
@@ -435,9 +447,6 @@
 
             &:last-child {
               border-right:none;
-              div {
-                padding-right:76px;
-              }
             }
           }
         }

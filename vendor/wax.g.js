@@ -1,4 +1,4 @@
-/* wax - 7.0.0dev10 - v6.0.4-126-g7c323cd */
+/* wax - 7.0.0dev10 - v6.0.4-128-g1c67a53 */
 
 
 !function (name, context, definition) {
@@ -2286,6 +2286,8 @@ wax.gm = function() {
             r += tileTemplate[i];
           }
         }
+      } else {
+        r = tileTemplate;
       }
 
       // replace the first {x}{y}{z} by (\\d+)

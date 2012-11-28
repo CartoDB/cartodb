@@ -7,7 +7,7 @@
     <script type="text/javascript">
       var username = "<%= current_user.username %>"
         , user_data = <%=raw current_user.data.to_json.html_safe %>
-        , config = <%=raw frontend_config.to_json.html_safe %>;
+        , config = <%=raw frontend_config.html_safe %>;
     </script>
   <% end %>
   <%= content_for(:css) do %>

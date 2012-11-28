@@ -10,7 +10,7 @@
     position:relative;
     @include inline-block();
     width:100%;
-    margin-top:-180px;
+    margin-top:-240px;
     padding:0;
     @include transform-style("linear");
     @include transition-property("all");

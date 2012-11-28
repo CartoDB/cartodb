@@ -2,6 +2,8 @@ module MapsHelper
   def map_vizzjson(map, options = {})
     options.reverse_merge! full: true
 
+    bounds = JSON.parse("[#{map.view_bounds_sw}, #{map.view_bounds_ne}]") rescue []
+
     CartoDB::Logger.info(map.inspect)
     {
       version: "0.1.0",
@@ -27,9 +29,11 @@ module MapsHelper
       description: map.tables.first.description,
       title: map.tables.first.name,
 
+      url: table_path(map.tables.first),
+
       map_provider: map.provider,
 
-      bounds: JSON.parse("[#{map.view_bounds_sw}, #{map.view_bounds_ne}]"),
+      bounds: bounds,
       center: map.center,
       zoom: map.zoom
     }

@@ -1,5 +1,5 @@
 
-var secrets = require('./secrets.json')
+var secrets = require('../secrets.json')
 var fs = require('fs')
 var package_ = require('../package')
 var _exec = require('child_process').exec;

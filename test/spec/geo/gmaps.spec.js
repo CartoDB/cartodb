@@ -104,15 +104,15 @@
     it("should create a TiledLayerView when the layer is Tiled", function() {
       var lyr = map.addLayer(layer);
       var layerView = mapView.getLayerByCid(lyr);
-      expect(layerView.__proto__.constructor).toEqual(cdb.geo.GMapsTiledLayerView);
+      expect(cdb.geo.GMapsTiledLayerView.prototype.isPrototypeOf(layerView)).toBeTruthy();
     });
 
     it("should create a CartoDBLayer when the layer is cartodb", function() {
-      layer    = new cdb.geo.CartoDBLayer({});
+      layer = new cdb.geo.CartoDBLayer({});
       map.addLayer(new cdb.geo.PlainLayer({}));
       var lyr = map.addLayer(layer);
       var layerView = mapView.getLayerByCid(lyr);
-      expect(layerView.__proto__.constructor).toEqual(cdb.geo.GMapsCartoDBLayerView);
+      expect(cdb.geo.GMapsCartoDBLayerView.prototype.isPrototypeOf(layerView)).toBeTruthy();
     });
 
     it("should create a cartodb logo when layer is cartodb", function() {
@@ -185,7 +185,7 @@
 
     it("should convert to geojson", function() {
       var geo = new cdb.geo.Geometry({
-        geojson: multipoly 
+        geojson: multipoly
       });
       map.addGeometry(geo);
       var v = mapView.geometries[geo.cid];

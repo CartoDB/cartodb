@@ -99,4 +99,8 @@ describe("Vis", function() {
     )
   });
 
+  it("should return the native map obj", function() {
+    expect(this.vis.getNativeMap()).toEqual(this.vis.mapView.map_leaflet);
+  })
+
 })

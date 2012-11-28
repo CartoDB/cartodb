@@ -56,6 +56,44 @@ var Layers = {
 
 cdb.vis.Layers = Layers;
 
+var Loader = cdb.vis.Loader = {
+
+  queue: [],
+  current: undefined,
+  _script: null,
+  head: null,
+
+  get: function(url, callback) {
+    if(!Loader._script) {
+      Loader.current = callback;
+      var script = document.createElement('script');
+      script.type = 'text/javascript';
+      script.src = url + (~url.indexOf('?') ? '&' : '?') + 'callback=vizjson';
+      script.async = true
+      Loader._script = script;
+      if(!Loader.head) {
+        Loader.head = document.getElementsByTagName('head')[0];
+      }
+      Loader.head.appendChild(script);
+    } else {
+      Loader.queue.push([url, callback]);
+    }
+  }
+
+};
+
+window.vizjson = function(data) {
+  Loader.current && Loader.current(data);
+  // remove script
+  Loader.head.removeChild(Loader._script);
+  Loader._script = null;
+  // next element
+  var a = Loader.queue.shift();
+  if(a) {
+    Loader.get(a[0], a[1]);
+  }
+};
+
 /**
  * visulization creation
  */
@@ -375,6 +413,10 @@ var Vis = cdb.core.View.extend({
 
   error: function(fn) {
     this.bind('error', fn);
+  },
+
+  getNativeMap: function() {
+    return this.mapView.getNativeMap();
   }
 
 });

@@ -65,6 +65,9 @@ describe("core.Model", function() {
   })
 
   it("should add the correct response from server", function() {
+    model.sync = function(method, model, options) {
+      options.success({ "response": true });
+    }
     model.fetch();
     this.server.respond();
     expect(model.get('response')).toBeTruthy();
@@ -81,6 +84,12 @@ describe("core.Model", function() {
 
   it("should trigger 'loadModelCompleted' event when fetched", function() {
     var triggered = false;
+    model.sync = function(method, model, options) {
+      var dfd = $.Deferred();
+      options.success({ "response": true });
+      dfd.resolve();
+      return dfd.promise();
+    }
     model.bind('loadModelCompleted', function() {
       triggered = true;
     })
@@ -124,6 +133,12 @@ describe("core.Model", function() {
 
   it("should trigger 'saved' event when saved", function() {
     var triggered = false;
+    model.sync = function(method, model, options) {
+      var dfd = $.Deferred();
+      options.success({ "response": true });
+      dfd.resolve();
+      return dfd.promise();
+    }
     model.bind('saved', function() {
       triggered = true;
     })

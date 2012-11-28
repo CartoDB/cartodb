@@ -32,27 +32,30 @@
 
         // create google maps map
         var mapOptions = {
-          zoom: 2,
+          zoom: 3,
           center: new google.maps.LatLng(43, 0),
           mapTypeId: google.maps.MapTypeId.ROADMAP
         };
         map = new google.maps.Map(document.getElementById('map'),  mapOptions);
 
         // load cartodb layer
-        cartodb.createLayer(map, 'http://examples-beta.cartodb.com/api/v1/viz/791/viz.json')
+        cartodb.createLayer(map, 'http://examples-beta.cartodb.com/api/v1/viz/791/viz.json', {
+          query: 'select * from {{table_name}} where area::float > 10000' // if you remove this the query applied in the editor will be used
+          
+        })
          .on('done', function(layer) {
           map.overlayMapTypes.setAt(0, layer);
 
           layer.on('featureOver', function(e, pos, latlng, data) {
-            console.log(e, pos, latlng, data);
+            cartodb.log.log(e, pos, latlng, data);
           });
 
           layer.on('error', function(err) {
-            console.log('error: ' + err);
+            cartodb.log.log('error: ' + err);
           });
 
         }).on('error', function() {
-          console.log("some error occurred");
+          cartodb.log.log("some error occurred");
         });
 
     }

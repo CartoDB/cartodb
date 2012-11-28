@@ -224,6 +224,10 @@
 
     setCursor: function(cursor) {
       $(this.map_leaflet.getContainer()).css('cursor', cursor);
+    },
+
+    getNativeMap: function() {
+      return this.map_leaflet;
     }
 
   }, {
@@ -262,5 +266,6 @@
       }
       return new cdb.geo.leaflet.PathView(geometryModel);
     }
+
   });
 })();

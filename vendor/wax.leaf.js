@@ -1,4 +1,4 @@
-/* wax - 7.0.0dev10 - v6.0.4-126-g7c323cd */
+/* wax - 7.0.0dev10 - v6.0.4-129-g273c946 */
 
 
 !function (name, context, definition) {
@@ -2261,6 +2261,11 @@ wax.gm = function() {
     // return the regexp to catch the tile number given the url
     manager.tileRegexp = function() {
       var tileTemplate = tilejson.tiles[0];
+      // remove params
+      var p = tileTemplate.indexOf('?');
+      if(p !== -1) {
+        tileTemplate = tileTemplate.substr(0, p);
+      }
       // remove from the url all the special characters
       // replacing them by a dot (dont mind the character)
       tileTemplate = tileTemplate.
@@ -2280,12 +2285,14 @@ wax.gm = function() {
         var t1 = tilejson.tiles[1];
         //search characters where differs
         for(var i = 0; i < t0.length; ++i) {
-          if(t0[i] != t1[i]) {
+          if(t0.charAt(i) != t1.charAt(i)) {
             r += '.';
           } else {
-            r += tileTemplate[i];
+            r += tileTemplate.charAt(i) || '';
           }
         }
+      } else {
+        r = tileTemplate;
       }
 
       // replace the first {x}{y}{z} by (\\d+)

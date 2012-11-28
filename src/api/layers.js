@@ -4,6 +4,7 @@
 
 (function() {
 
+
   function _Promise() {
 
   }
@@ -46,15 +47,7 @@
       url = layer;
     }
     if(url) {
-      _requestCache[url] = callback;
-     reqwest({
-        url: url + (~url.indexOf('?') ? '&' : '?') + 'callback=vizjson',
-        type: 'jsonp',
-        jsonpCallback: 'callback',
-        success: function(data) {
-          _requestCache[url](data);
-        }
-     });
+      cdb.vis.Loader.get(url, callback);
     } else {
       _.defer(function() { callback(null); });
     }

@@ -29,7 +29,7 @@
 
       var map = L.map('map', { 
         zoomControl: false,
-        center: [0, 0],
+        center: [43, 0],
         zoom: 3
       })
 
@@ -38,20 +38,23 @@
         attribution: 'MapBox'
       }).addTo(map);
 
-      cartodb.createLayer(map, 'http://examples-beta.cartodb.com/api/v1/viz/791/viz.json')
+      cartodb.createLayer(map, 'http://examples-beta.cartodb.com/api/v1/viz/791/viz.json', {
+        query: 'select * from {{table_name}} where area::float > 10000' // if you remove this the query applied in the editor will be used
+
+      })
        .on('done', function(layer) {
         map.addLayer(layer);
 
         layer.on('featureOver', function(e, pos, latlng, data) {
-          console.log(e, pos, latlng, data);
+          cartodb.log.log(e, pos, latlng, data);
         });
 
         layer.on('error', function(err) {
-          console.log('error: ' + err);
+          cartodb.log.log('error: ' + err);
         });
 
       }).on('error', function() {
-        console.log("some error occurred");
+        cartodb.log.log("some error occurred");
       });
 
     }

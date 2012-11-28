@@ -1573,7 +1573,7 @@ SQL
 
   def tile_request(request_method, request_uri, form = {})
     uri  = "#{owner.username}.#{Cartodb.config[:tile_host]}"
-    ip   = Cartodb.config[:tile_ip] || '127.0.0.1'
+    ip   = '127.0.0.1'
     port = Cartodb.config[:tile_port] || 80
     http_req = Net::HTTP.new ip, port
     http_req.use_ssl = Cartodb.config[:tile_protocol] == 'https' ? true : false

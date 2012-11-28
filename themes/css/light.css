@@ -93,6 +93,22 @@
     z-index:3;
   }
 
+  /* When there are no fields in header popup themes */
+  div.cartodb-popup.header.no_fields div.cartodb-popup-content {
+    display:none;
+  }
+  div.cartodb-popup.header.no_fields 
+  div.cartodb-popup-content-wrapper
+  div.cartodb-edit-buttons {
+    padding-top:5px;
+    margin-top:0;
+  }
+  div.cartodb-popup.header.no_fields div.cartodb-edit-buttons {
+    border: none;
+    padding-top:0;
+  }
+
+
   div.cartodb-popup h4 {
     display:block;
     width:190px;

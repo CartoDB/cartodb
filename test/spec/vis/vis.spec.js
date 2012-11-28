@@ -103,4 +103,11 @@ describe("Vis", function() {
     expect(this.vis.getNativeMap()).toEqual(this.vis.mapView.map_leaflet);
   })
 
+  it("should add header", function() {
+    this.vis.load(this.mapConfig, {
+      title: true
+    });
+    expect(this.vis.$('.header').length).toEqual(1);
+  });
+
 })

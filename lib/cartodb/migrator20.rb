@@ -14,11 +14,11 @@ class Migrator20
     
     tables_to_migrate.all.each_with_index do |table, index|
       if already_migrated?(table)
-        log "* Skipping: #{table.owner.username}/#{table.name} (id #{table.id})"
         @stats[:tables_skipped] += 1
+        log "* Skipping: #{table.owner.username}/#{table.name} (id #{table.id})"
       else
         begin
-          log "* Migrating: #{table.owner.username}/#{table.name} id #{table.id} (#{index+1}/#{total_tables})"
+          log "* (#{index+1}/#{total_tables}) Migrating: #{table.owner.username}/#{table.name} id #{table.id}"
 
           log "  - Adding table_id"
           add_table_id(table)
@@ -112,17 +112,6 @@ class Migrator20
     unless new_tile_style.blank?
       data_layer.options['tile_style'] = new_tile_style 
     end
-    
-    # Fix for bubblemaps
-    # We have to apply an SQL to bubble maps until Mapnik 2.1.1 is released
-    if data_layer.options['tile_style'].present? && 
-       table.the_geom_type == "multipolygon" &&
-       data_layer.options['tile_style'] =~ /.*marker-placement:\s*point.*/
-
-      @stats[:bubble_maps_hacks] += 1
-      fields = table.schema(:reload => true).map {|i| i.first.to_s } - ["the_geom_webmercator"]
-      data_layer.options['query'] = "SELECT #{fields.join(',')}, ST_PointOnSurface(the_geom_webmercator) as the_geom_webmercator FROM #{table.name}"
-    end
 
     # First, try to read infowindow fields from Redis
     infowindow_fields = infowindow_metadata.select { |k,v| 
@@ -147,8 +136,8 @@ class Migrator20
                             .map { |column_name, i| { name: column_name, title: true, position: i+1 } },
       "template_name"  => "table/views/infowindow_light"
     }
-    data_layer.save
 
+    data_layer.save
 
     # Base layer setup
     base_layer = table.map.base_layers.first

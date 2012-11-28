@@ -307,7 +307,7 @@ describe("geo.map", function() {
     it("should create a TiledLayerView when the layer is Tiled", function() {
       var lyr = map.addLayer(layer);
       var layerView = mapView.getLayerByCid(lyr);
-      expect(layerView.__proto__.constructor).toEqual(cdb.geo.LeafLetTiledLayerView);
+      expect(cdb.geo.LeafLetTiledLayerView.prototype.isPrototypeOf(layerView)).isPrototypeOf();
     });
 
     it("should create a CartoDBLayer when the layer is cartodb", function() {

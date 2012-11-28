@@ -1,8 +1,8 @@
 <div class="cartodb-popup header yellow">
   <a href="#close" class="cartodb-popup-close-button close">x</a>
-  {{#content.fields}}
-    {{^index}}
-      <div class="cartodb-popup-header">
+  <div class="cartodb-popup-header">
+    {{#content.fields}}
+      {{^index}}
         {{#title}}<h4>{{title}}</h4>{{/title}}
         {{#value}}
           <h1>{{ value }}</h1>
@@ -11,9 +11,9 @@
           <h1 class="empty">null</h1>
         {{/value}}
         <span class="separator"></span>
-      </div>
-    {{/index}}
-  {{/content.fields}}
+      {{/index}}
+    {{/content.fields}}
+  </div>
   <div class="cartodb-popup-content-wrapper">
     <div class="cartodb-popup-content">
       {{#content.fields}}

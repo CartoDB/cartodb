@@ -71,7 +71,7 @@ class Migrator20
 
     # Copy center from redis, set map bounds if not set there
     if map_metadata["latitude"].blank? || map_metadata["longitude"].blank?
-      bounds = map.get_map_bounds
+      bounds = map.recalculate_bounds!
     else
       map.center = "[#{map_metadata["latitude"]},#{map_metadata["longitude"]}]"
     end

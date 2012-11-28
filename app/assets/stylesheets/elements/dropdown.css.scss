@@ -137,7 +137,9 @@
       &.tick_right:after {right:12px;}
     }
 
-
+    &.short {
+      width:164px!important;
+    }
 
     ul {
       position:relative;

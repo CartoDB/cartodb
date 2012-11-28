@@ -9,13 +9,16 @@ class Migrator20
       :bubble_maps_hacks  => 0
     }
 
-    Table.select(:id, :database_name, :name, :user_id).all.each do |table|
+    tables_to_migrate = Table.select(:id, :database_name, :name, :user_id)
+    total_tables = tables_to_migrate.count
+    
+    tables_to_migrate.all.each_with_index do |table, index|
       if already_migrated?(table)
-        log "* Skipping: #{table.name}"
+        log "* Skipping: #{table.owner.username}/#{table.name} (id #{table.id})"
         @stats[:tables_skipped] += 1
       else
         begin
-          log "* Migrating: #{table.name}"
+          log "* Migrating: #{table.owner.username}/#{table.name} id #{table.id} (#{index+1}/#{total_tables})"
 
           log "  - Adding table_id"
           add_table_id(table)
@@ -41,6 +44,7 @@ class Migrator20
 
     log("\n=================================")
     log("Done!")
+    log("- Tables processed:      #{total_tables}")
     log("- Tables migrated:       #{@stats[:tables_migrated]}")
     log("- Tables skipped:        #{@stats[:tables_skipped]}")
     log("- Bubble maps hacks:     #{@stats[:bubble_maps_hacks]}")
@@ -104,9 +108,9 @@ class Migrator20
 
     # Send a style conversion request to the tiler
     conversion_cmd = "#{Rails.root.join('../../../node-windshaft/current/tools')}/convert_database_styles #{table.owner.database_name} #{table.name} 2.1.0"
-    log('- Converting table style to 2.1.0')
-    log(`#{conversion_cmd}`)
-    log("Conversion result: #{$?}")
+    log('  - Converting table style to 2.1.0')
+    `#{conversion_cmd}`
+    log("    Conversion result: #{$?}")
 
     # Save the converted style on the model (reading it again from redis)
     new_tile_style = JSON.parse(

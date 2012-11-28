@@ -28,26 +28,26 @@ describe('api.layers', function() {
       });
 
       it("should fecth layer when user and pass are specified", function() {
-        spyOn(window, 'reqwest');
+        spyOn(cdb.vis.Loader, 'get');
         cartodb.createLayer(map, {
           user: 'development',
           table: 'clubbing',
           host: 'localhost.lan:3000',
           protocol: 'http'
         });
-        expect(window.reqwest).toHaveBeenCalled();
+        expect(cdb.vis.Loader.get).toHaveBeenCalled();
       });
 
       it("should fecth layer when a url is specified", function() {
-        spyOn(window, 'reqwest');
+        spyOn(cdb.vis.Loader, 'get');
         cartodb.createLayer(map, 'http://test.com/layer.json');
-        expect(window.reqwest).toHaveBeenCalled();
+        expect(cdb.vis.Loader.get).toHaveBeenCalled();
       });
 
       it("should not fecth layer when kind and options are specified", function() {
-        spyOn(window, 'reqwest');
+        spyOn(cdb.vis.Loader, 'get');
         cartodb.createLayer(map, { kind: 'plain', options: {} });
-        expect(window.reqwest).not.toHaveBeenCalled();
+        expect(cdb.vis.Loader.get).not.toHaveBeenCalled();
       });
 
       it("should create a layer", function() {

@@ -34,8 +34,6 @@ feature "API 1.0 tables management" do
       response.body[:tables][1]['tags'].split(',').should include('tag 3')
       response.body[:tables][1]['tags'].split(',').should include('tag 2')
       response.body[:tables][1]['tags'].split(',').should include('tag 1')
-      response.body[:tables][1]['geometry_types'].should == []
-      (response.body[:tables][1]['schema'] - default_schema).should be_empty
       response.body[:tables].map{ |t| t['name'] }.should_not include("another_table_3")
     end
 

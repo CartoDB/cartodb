@@ -27,7 +27,7 @@ class Api::Json::TablesController < Api::ApplicationController
 
     page     = params[:page].to_i > 0 ? params[:page].to_i : 1
     per_page = params[:per_page].to_i > 0 ? params[:per_page].to_i : 1000
-    render_jsonp({ :tables => @tables.paginate(page, per_page).all.map(&:public_values),
+    render_jsonp({ :tables => @tables.paginate(page, per_page).all.map { |t| t.public_values(except: [ :schema, :geometry_types ]) },
                    :total_entries => @tables.count })
   end
 

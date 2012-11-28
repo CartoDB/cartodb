@@ -21,8 +21,8 @@ describe('Geocoder', function() {
   it('we should get a direction that exists using NOKIA', function() {
     cdb.geo.geocoder.NOKIA.geocode('Madrid, Spain', function(data) {
       expect(data.length).toEqual(1);
-      expect(data[0].lat).toEqual('40.420300');
-      expect(data[0].lon).toEqual('-3.705774');
+      expect(data[0].lat).toEqual(parseFloat('40.4203'));
+      expect(data[0].lon).toEqual(parseFloat('-3.70577'));
       expect(data[0].boundingbox).toBeTruthy();
     });
   });

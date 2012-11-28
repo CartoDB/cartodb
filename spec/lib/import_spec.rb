@@ -681,6 +681,17 @@ describe CartoDB::Importer do
 
       @db.fetch("SELECT GeometryType(the_geom) FROM polygons").all.select{|r| r[:geometrytype] == 'MULTIPOLYGON'}.should have(20).items
     end
+
+    it "can import a csv with empty geojson cells" do
+      importer = create_importer 'table_50m_rivers_l_3.csv'
+      results, errors   = importer.import!
+
+      results.length.should           == 1
+      results[0].name.should          == 'table_50m_rivers_l_3'
+      results[0].rows_imported.should == 6
+      results[0].import_type.should   == '.csv'
+      errors.length.should            == 0
+    end
   end
   ##################################################
   # configuration & helpers for tests

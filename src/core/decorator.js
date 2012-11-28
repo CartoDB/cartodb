@@ -75,7 +75,7 @@ if(!window.JSON) {
           res += JSON.stringify(param[n]);
         }
         res += ']'
-
+        return res;
       } else {
         var res = '{';
         for(var p in param) {
@@ -84,6 +84,7 @@ if(!window.JSON) {
           }
         }
         res += '}'
+        return res;
       }
       // no, we're no gonna stringify regexp, fuckoff.
     },

@@ -21,10 +21,13 @@
       display: inline-block;
       width:100%;
       text-align: center;
+      @include transform-style("linear");
+      @include transition-property("text-indent");
+      @include transition-duration(300ms);
 
       .emptynessInfo {
         position: relative;
-        top: 5em;
+        top: 1.5em;
         display: inline-block;
         width: 600px;
         height: 375px;
@@ -45,6 +48,7 @@
           font-weight: bold;
           font-size: 17px;
           font-family: helvetica;
+          text-indent:0;
         }
 
         p {
@@ -52,6 +56,7 @@
           width: 325px;
           color: #999;
           font-size: 15px;
+          text-indent:0;
 
           a {text-decoration:underline;}
         }
@@ -526,7 +531,6 @@
 
 
       &.displaced {
-
         // Last column of the table
         tbody tr td:last-child, thead tr th:last-child {
           border-right:none;
@@ -541,6 +545,12 @@
         // When a query is applied, the loader should be moved some pixels
         tfoot.sql_loader div.float_info {
           margin-left:-420px;
+        }
+
+        // When there is no results, move the block
+        tfoot div.emptyTableContainer {
+          text-indent:-600px;
+          p, h4 {text-indent:0;}
         }
       } // table.displaced
     } // table

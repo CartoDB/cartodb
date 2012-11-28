@@ -72,13 +72,6 @@ class Migrator20
     # Copy center from redis, set map bounds if not set there
     if map_metadata["latitude"].blank? || map_metadata["longitude"].blank?
       bounds = map.get_map_bounds
-
-      long = (bounds[:minx] + bounds[:maxx]) / 2
-      lat  = (bounds[:miny] + bounds[:maxy]) / 2
-      map.center =  "[#{lat}, #{long}]"
-
-      map.view_bounds_sw = nil
-      map.view_bounds_ne = nil
     else
       map.center = "[#{map_metadata["latitude"]},#{map_metadata["longitude"]}]"
     end

@@ -15,16 +15,8 @@ module MapsHelper
 
       overlays: [
         {
-          type: "header",
-          shareable: true,
-          url: table_url(map.tables.first)
-        },
-        {
           type: "zoom",
           template: '<a class="zoom_in">+</a><a class="zoom_out">-</a>'
-        },
-        {
-          type: "search",
         },
         {
           type: "loader",
@@ -37,6 +29,7 @@ module MapsHelper
 
       map_provider: map.provider,
 
+      bounds: JSON.parse("[#{map.view_bounds_sw}, #{map.view_bounds_ne}]"),
       center: map.center,
       zoom: map.zoom
     }

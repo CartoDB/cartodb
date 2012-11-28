@@ -101,13 +101,7 @@
             @include transform-style("linear");
             @include transition-property("text-indent");
             @include transition-duration(300ms);
-
             @include box-shadow(rgba(0, 0, 0, 0.055) 0 3px 1px 0);
-
-            // When a query is applied, the text should be moved some pixels
-            &.displaced {
-              text-indent:-600px;
-            }
           }
         }
 
@@ -274,15 +268,7 @@
             top:0;
           }
         }
-
-        &.displaced {
-          th:last-child {
-            padding-right:600px;
-          }
-        }
-      }
-
-
+      } // thead
 
       // Table body
       tbody {
@@ -442,16 +428,122 @@
                   @include background(linear-gradient(#E3D3E3,#FAFAFA));
                 }
               }
-
             }
 
             &:last-child {
+              @include transform-style("linear");
+              @include transition-property("padding-right");
+              @include transition-duration(500ms);
               border-right:none;
+              padding-right:65px;
             }
           }
         }
-      }
-    }
+      } // tbody
+
+      // Loaders
+      tfoot {
+        padding:100px 0;
+
+        &.sql_loader {
+
+          div.float_info {
+            position:fixed;
+            @include inline-block();
+            left:50%;
+            top:50%;
+            width:240px;
+            height:36px;
+            margin:-100px 0 0 -120px;
+            padding:0;
+            vertical-align:top;
+            @include transform-style("linear");
+            @include transition-property("margin");
+            @include transition-duration(300ms);
+
+            img {margin-left:101px;}
+            h5 {display:block; margin:15px 0 0 0; color:#7B7B7B; font-size:15px; line-height:normal; text-align:center;}
+          }
+        }
+
+        &.page_loader {
+          border:1px solid #ECECEC;
+          border-right:0;
+          border-left:0;
+          background:white;
+          z-index:-1;
+          -moz-transform: translateZ(-10px); /* Hack for Firefox, page loaders are always on top */
+
+          th {
+            padding:70px 0;
+          }
+
+
+          div.float_info, div.float_action {
+            position:fixed;
+            @include inline-block();
+            left:50%;
+            width:195px;
+            height:36px;
+            margin:0 0 0 -120px;
+            padding:0 0 0 45px;
+            background: image-url('layout/loading_page_static.png') no-repeat 0 0;
+            vertical-align:top;
+            -moz-transform:translateZ(-10px);
+            z-index:-10;
+
+            h5 {display:block; color:#7B7B7B; font-size:15px; line-height:normal;}
+            p {display:block; font-size:13px;}
+          }
+
+          div.float_action {
+            display:none;
+            background:white;
+          }
+
+          &.up {
+            th {
+              padding:20px 0;
+            }
+
+            div.float_info, div.float_action {
+              top:285px;
+            }
+          }
+
+          &.down {
+            div.float_info, div.float_action {
+              bottom:65px;
+            }
+          }
+
+          &.active {
+            div.float_info {display:none;}
+            div.float_action {@include inline-block(); background: image-url('layout/loading_page_animation.gif') no-repeat 0 0;}
+          }
+        }
+      } // tfoot
+
+
+      &.displaced {
+
+        // Last column of the table
+        tbody tr td:last-child, thead tr th:last-child {
+          border-right:none;
+          padding-right:600px;
+        }
+
+        // When a query is applied, the text should be moved some pixels
+        div.sqlview p {
+          text-indent:-600px;
+        }
+
+        // When a query is applied, the loader should be moved some pixels
+        tfoot.sql_loader div.float_info {
+          margin-left:-420px;
+        }
+      } // table.displaced
+    } // table
 
 
     /* PAGINATION ZONE - CAUTION */
@@ -478,95 +570,7 @@
       }
     }
 
-
-    // Loaders
-    tfoot {
-      padding:100px 0;
-
-      &.sql_loader {
-
-        div.float_info {
-          position:fixed;
-          @include inline-block();
-          left:50%;
-          top:50%;
-          width:240px;
-          height:36px;
-          margin:-100px 0 0 -120px;
-          padding:0;
-          vertical-align:top;
-          @include transform-style("linear");
-          @include transition-property("margin");
-          @include transition-duration(300ms);
-
-          img {margin-left:101px;}
-          h5 {display:block; margin:15px 0 0 0; color:#7B7B7B; font-size:15px; line-height:normal; text-align:center;}
-
-          // When a query is applied, the loader should be moved some pixels
-          &.displaced {
-            margin-left:-420px;
-          }
-        }
-      }
-
-      &.page_loader {
-        border:1px solid #ECECEC;
-        border-right:0;
-        border-left:0;
-        background:white;
-        z-index:-1;
-        -moz-transform: translateZ(-10px); /* Hack for Firefox, page loaders are always on top */
-
-        th {
-          padding:70px 0;
-        }
-
-
-        div.float_info, div.float_action {
-          position:fixed;
-          @include inline-block();
-          left:50%;
-          width:195px;
-          height:36px;
-          margin:0 0 0 -120px;
-          padding:0 0 0 45px;
-          background: image-url('layout/loading_page_static.png') no-repeat 0 0;
-          vertical-align:top;
-          -moz-transform:translateZ(-10px);
-          z-index:-10;
-
-          h5 {display:block; color:#7B7B7B; font-size:15px; line-height:normal;}
-          p {display:block; font-size:13px;}
-        }
-
-        div.float_action {
-          display:none;
-          background:white;
-        }
-
-        &.up {
-          th {
-            padding:20px 0;
-          }
-
-          div.float_info, div.float_action {
-            top:285px;
-          }
-        }
-
-        &.down {
-          div.float_info, div.float_action {
-            bottom:65px;
-          }
-        }
-
-        &.active {
-          div.float_info {display:none;}
-          div.float_action {@include inline-block(); background: image-url('layout/loading_page_animation.gif') no-repeat 0 0;}
-        }
-      }
-    }
-  }
+  } // div.table
 
 
 
@@ -605,28 +609,28 @@
     }
   }
 
-.iconClock {
-  display: inline-block;
-  margin-right: 8px;
-  width: 15px;
-  height: 15px;
-  background: image-url('layout/clock.png') no-repeat 0 0 transparent;
-}
-
-.data_download {
-  cursor: pointer;
-
-  span.icon {
-    @include inline-block();
-    vertical-align:middle;
-    height: 9px;
-    width: 13px;
-    margin:0 0 1px;
-    padding:0;
-    @include icons-sprite(download_blue);
+  .iconClock {
+    display: inline-block;
+    margin-right: 8px;
+    width: 15px;
+    height: 15px;
+    background: image-url('layout/clock.png') no-repeat 0 0 transparent;
   }
 
-  &:hover span.icon {
-    @include icons-sprite(download_dark);
+  .data_download {
+    cursor: pointer;
+
+    span.icon {
+      @include inline-block();
+      vertical-align:middle;
+      height: 9px;
+      width: 13px;
+      margin:0 0 1px;
+      padding:0;
+      @include icons-sprite(download_blue);
+    }
+
+    &:hover span.icon {
+      @include icons-sprite(download_dark);
+    }
   }
-}

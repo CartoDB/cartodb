@@ -80,9 +80,12 @@ defaults: &defaults
     base:
       kind: "tiled"
       options:
-        visible:     true
-        type:        "Tiled"
-        urlTemplate: "http://a.tiles.mapbox.com/v3/mapbox.mapbox-streets/{z}/{x}/{y}.png"
+        visible:      true
+        type:         "Tiled"
+        urlTemplate:  "http://a.tiles.mapbox.com/v3/mapbox.mapbox-streets/{z}/{x}/{y}.png"
+        name:         'Streets (Mapbox)'
+        className:    "mapbox_streets"
+        attribution:  "Mapbox <a href='http://mapbox.com/about/maps' target='_blank'>Terms &amp; Feedback</a>"
     gmaps:
       kind: "gmapsbase"
       options:

@@ -443,92 +443,92 @@
 
       // Loaders
       tfoot {
-      padding:100px 0;
+        padding:100px 0;
 
-      &.sql_loader {
+        &.sql_loader {
 
-        div.float_info {
-          position:fixed;
-          @include inline-block();
-          left:50%;
-          top:50%;
-          width:240px;
-          height:36px;
-          margin:-100px 0 0 -120px;
-          padding:0;
-          vertical-align:top;
-          @include transform-style("linear");
-          @include transition-property("margin");
-          @include transition-duration(300ms);
+          div.float_info {
+            position:fixed;
+            @include inline-block();
+            left:50%;
+            top:50%;
+            width:240px;
+            height:36px;
+            margin:-100px 0 0 -120px;
+            padding:0;
+            vertical-align:top;
+            @include transform-style("linear");
+            @include transition-property("margin");
+            @include transition-duration(300ms);
 
-          img {margin-left:101px;}
-          h5 {display:block; margin:15px 0 0 0; color:#7B7B7B; font-size:15px; line-height:normal; text-align:center;}
-        }
-      }
-
-      &.page_loader {
-        border:1px solid #ECECEC;
-        border-right:0;
-        border-left:0;
-        background:white;
-        z-index:-1;
-        -moz-transform: translateZ(-10px); /* Hack for Firefox, page loaders are always on top */
-
-        th {
-          padding:70px 0;
+            img {margin-left:101px;}
+            h5 {display:block; margin:15px 0 0 0; color:#7B7B7B; font-size:15px; line-height:normal; text-align:center;}
+          }
         }
 
-
-        div.float_info, div.float_action {
-          position:fixed;
-          @include inline-block();
-          left:50%;
-          width:195px;
-          height:36px;
-          margin:0 0 0 -120px;
-          padding:0 0 0 45px;
-          background: image-url('layout/loading_page_static.png') no-repeat 0 0;
-          vertical-align:top;
-          -moz-transform:translateZ(-10px);
-          z-index:-10;
-
-          h5 {display:block; color:#7B7B7B; font-size:15px; line-height:normal;}
-          p {display:block; font-size:13px;}
-        }
-
-        div.float_action {
-          display:none;
+        &.page_loader {
+          border:1px solid #ECECEC;
+          border-right:0;
+          border-left:0;
           background:white;
-        }
+          z-index:-1;
+          -moz-transform: translateZ(-10px); /* Hack for Firefox, page loaders are always on top */
 
-        &.up {
           th {
-            padding:20px 0;
+            padding:70px 0;
           }
+
 
           div.float_info, div.float_action {
-            top:285px;
+            position:fixed;
+            @include inline-block();
+            left:50%;
+            width:195px;
+            height:36px;
+            margin:0 0 0 -120px;
+            padding:0 0 0 45px;
+            background: image-url('layout/loading_page_static.png') no-repeat 0 0;
+            vertical-align:top;
+            -moz-transform:translateZ(-10px);
+            z-index:-10;
+
+            h5 {display:block; color:#7B7B7B; font-size:15px; line-height:normal;}
+            p {display:block; font-size:13px;}
+          }
+
+          div.float_action {
+            display:none;
+            background:white;
+          }
+
+          &.up {
+            th {
+              padding:20px 0;
+            }
+
+            div.float_info, div.float_action {
+              top:285px;
+            }
+          }
+
+          &.down {
+            div.float_info, div.float_action {
+              bottom:65px;
+            }
+          }
+
+          &.active {
+            div.float_info {display:none;}
+            div.float_action {@include inline-block(); background: image-url('layout/loading_page_animation.gif') no-repeat 0 0;}
           }
         }
-
-        &.down {
-          div.float_info, div.float_action {
-            bottom:65px;
-          }
-        }
-
-        &.active {
-          div.float_info {display:none;}
-          div.float_action {@include inline-block(); background: image-url('layout/loading_page_animation.gif') no-repeat 0 0;}
-        }
-      }
       } // tfoot
 
 
       &.displaced {
 
         // Last column of the table
-        tr td:last-child {
+        tbody tr td:last-child, thead tr th:last-child {
           border-right:none;
           padding-right:600px;
         }

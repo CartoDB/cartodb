@@ -248,6 +248,10 @@ cdb.geo.GoogleMapsMapView = cdb.geo.MapView.extend({
     } else {
       geo.geom.setMap(null);
     }
+  },
+
+  getNativeMap: function() {
+    return this.map_googlemaps;
   }
 
 }, {

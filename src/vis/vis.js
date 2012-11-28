@@ -413,6 +413,10 @@ var Vis = cdb.core.View.extend({
 
   error: function(fn) {
     this.bind('error', fn);
+  },
+
+  getNativeMap: function() {
+    return this.mapView.getNativeMap();
   }
 
 });

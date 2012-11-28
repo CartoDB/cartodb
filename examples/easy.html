@@ -28,8 +28,10 @@
     function main() {
       var vis = new cartodb.vis.Vis({el: document.getElementById('map') });
       vis
-        .load('http://examples-beta.cartodb.com/api/v1/viz/791/viz.json', {
-          shareable: false,
+        .load('http://development.localhost.lan:3000/api/v1/viz/152/viz.json', {
+          shareable: true,
+          title: true,
+          description: true,
           search: true,
           tiles_loader: true,
           center_lat: 0,

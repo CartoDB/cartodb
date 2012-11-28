@@ -33,7 +33,7 @@ module MapsHelper
 
       map_provider: map.provider,
 
-      bounds: bounds,
+      bounds: (bounds.blank? ? nil : bounds),
       center: map.center,
       zoom: map.zoom
     }

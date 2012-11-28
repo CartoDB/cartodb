@@ -556,32 +556,21 @@ disabled look for already selected choices in the results dropdown
     padding:0!important;
     margin:0!important;
 
-    &:before {
-      content:'';
-      position:absolute!important;
-      top:0;
-      left:6px;
-      left:0\9;
-      right:0;
-      bottom:0;
-      display:block;
-      border:1px solid rgba(black,0.25);
-      @include border-radius(2px);
-      z-index:1;
-    }
-
     li {
       width:auto;
       height:10px;
       padding:0!important;
       display:table-cell;
-      border:1px solid transparent;
+      
+      border-top:1px solid rgba(black,0.25)!important;
+      border-bottom:1px solid rgba(black,0.25);
 
       &:first-child {
-        @include border-left-radius(2px);  
+        border-left:1px solid rgba(black,0.25);
+        @include border-left-radius(2px);
       }
       &:last-child {
-        border-bottom:1px solid transparent;
+        border-right:1px solid rgba(black,0.25);
         @include border-right-radius(2px);
       }
     }

@@ -124,7 +124,7 @@
               display:block;
               width:100%;
               height:66px;
-              z-index:1;          
+              z-index:1;
 
               & > div {
                 position:fixed;
@@ -261,13 +261,13 @@
             // Column options
             div.dropdown {
               width:147px!important;
-            }  
+            }
           }
         }
 
         // Horizontal movement
         &.horizontal {
-          tr th > div > div { 
+          tr th > div > div {
             position:absolute;
             left:0;
             top:0;
@@ -379,6 +379,12 @@
 
               &.disabled {
                 color: #AAA;
+              }
+
+              &.isNull {
+                color: #AAA;
+                font-weight: lighter;
+                font-style: italic;
               }
             }
 

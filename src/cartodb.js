@@ -1,18 +1,38 @@
 // entry point
 (function() {
-    var cdb = window.cdb = {};
-    window.cdb.config = {};
-    window.cdb.core = {};
-    window.cdb.geo = {};
-    window.cdb.geo.ui = {};
-    window.cdb.ui = {};
-    window.cdb.ui.common = {};
-    window.cdb.vis = {};
-    window.cdb.decorators = {};
+
+    var root = this;
+
+    var cdb = root.cdb = {};
+
+    cdb.VERSION = '2.0.0';
+
+    cdb.CARTOCSS_VERSIONS = {
+      '2.0.0': '',
+      '2.1.0': ''
+    };
+
+    cdb.CARTOCSS_DEFAULT_VERSION = '2.0.0';
+
+    cdb.CDB_HOST = {
+      'http': 'tiles.cartocdn.com',
+      'https': 'd3pu9mtm6f0hk5.cloudfront.net'
+    };
+
+    root.cdb.config = {};
+    root.cdb.core = {};
+    root.cdb.geo = {};
+    root.cdb.geo.ui = {};
+    root.cdb.geo.geocoder = {};
+    root.cdb.ui = {};
+    root.cdb.ui.common = {};
+    root.cdb.vis = {};
+    root.cdb.decorators = {};
     /**
      * global variables
      */
-    window.JST = window.JST || {};
+    root.JST = root.JST || {};
+    root.cartodb = cdb;
 
     cdb.files = [
         "../vendor/jquery.min.js",
@@ -21,23 +41,50 @@
 
         "../vendor/leaflet.js",
         "../vendor/wax.leaf.js",
-        "../vendor/cartodb-leaflet.js",
+        "../vendor/wax.g.js",
+        "../vendor/GeoJSON.js", //geojson gmaps lib
+
+        "../vendor/jscrollpane.js",
+        "../vendor/mousewheel.js",
+        "../vendor/mwheelIntent.js",
 
         'core/decorator.js',
         'core/config.js',
         'core/log.js',
         'core/profiler.js',
         'core/template.js',
+        'core/model.js',
         'core/view.js',
+        'core/sql.js',
 
+        'geo/geocoder.js',
+        'geo/geometry.js',
         'geo/map.js',
         'geo/ui/zoom.js',
+        'geo/ui/zoom_info.js',
         'geo/ui/legend.js',
         'geo/ui/switcher.js',
-        //'geo/ui/selector.js',
         'geo/ui/infowindow.js',
         'geo/ui/header.js',
-        'geo/leaflet.js',
+        'geo/ui/search.js',
+        'geo/ui/tiles_loader.js',
+
+        'geo/common.js',
+
+        'geo/leaflet/leaflet.geometry.js',
+        'geo/leaflet/leaflet_base.js',
+        'geo/leaflet/leaflet_plainlayer.js',
+        'geo/leaflet/leaflet_tiledlayer.js',
+        'geo/leaflet/leaflet_cartodb_layer.js',
+        'geo/leaflet/leaflet.js',
+
+
+        'geo/gmaps/gmaps_base.js',
+        'geo/gmaps/gmaps_baselayer.js',
+        'geo/gmaps/gmaps_plainlayer.js',
+        'geo/gmaps/gmaps_tiledlayer.js',
+        'geo/gmaps/gmaps_cartodb_layer.js',
+        'geo/gmaps/gmaps.js',
 
         'ui/common/dialog.js',
         'ui/common/notification.js',
@@ -45,7 +92,11 @@
 
         'vis/vis.js',
         'vis/overlays.js',
-        'vis/layers.js'
+        'vis/layers.js',
+
+        // PUBLIC API
+        'api/layers.js',
+        'api/sql.js'
     ];
 
     cdb.init = function(ready) {
@@ -54,7 +105,7 @@
       _.extend(Class.prototype, Backbone.Events);
 
       cdb._loadJST();
-      window.cdb.god = new Backbone.Model();
+      root.cdb.god = new Backbone.Model();
 
       ready && ready();
     };

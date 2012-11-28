@@ -38,16 +38,19 @@ cdb.geo.ui.Zoom = cdb.core.View.extend({
   },
 
   zoom_in: function(ev) {
-    if (this.map.get("maxZoom") <= this.map.getZoom()) return;
+    if (this.map.get("maxZoom") > this.map.getZoom()) {
+      this.map.setZoom(this.map.getZoom() + 1);
+    }
     ev.preventDefault();
     ev.stopPropagation();
-    this.map.setZoom(this.map.getZoom() + 1);
   },
 
   zoom_out: function(ev) {
-    if (this.map.get("minZoom") >= this.map.getZoom()) return;
+    if (this.map.get("minZoom") < this.map.getZoom()) {
+      this.map.setZoom(this.map.getZoom() - 1);
+    }
     ev.preventDefault();
     ev.stopPropagation();
-    this.map.setZoom(this.map.getZoom() - 1);
   }
+
 });

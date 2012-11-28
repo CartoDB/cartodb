@@ -1,6 +1,6 @@
 describe("decorators", function() {
 
-  describe("cbd.decorators.super", function() {
+  describe("cbd.decorators.elder", function() {
       var getMocks = function() {
         this.plane = Backbone.Model.extend({
           speed: 0,
@@ -22,8 +22,8 @@ describe("decorators", function() {
         this.spitfire = this.plane.extend({
           weapons: 2,
           turn: function(direction) {
-            this.super('turn', direction);
-            this.super('accelerate');
+            this.elder('turn', direction);
+            this.elder('accelerate');
           },
           fire: function() {
             return 'ratatata x ' + this.weapons;
@@ -33,19 +33,19 @@ describe("decorators", function() {
         this.seafire = this.spitfire.extend({
           weapons: 4,
           accelerate: function() {
-            this.super('accelerate');
+            this.elder('accelerate');
             this.speed += 2;
           }
         })
       }
 
       beforeEach(function() {
-        cdb.decorators.super(Backbone.Model);
+        cdb.decorators.elder(Backbone.Model);
         getMocks.apply(this);
       });
 
-      it("Should be able to add super method ", function() {
-          expect(Backbone.Model.prototype.super).toBeTruthy();
+      it("Should be able to add elder method ", function() {
+          expect(Backbone.Model.prototype.elder).toBeTruthy();
       });
 
       it("Should be able to call a method from a parent class", function() {

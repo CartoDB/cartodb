@@ -1,3 +1,7 @@
+(function() {
+
+var _requestCache = {};
+
 /**
  * defines the container for an overlay.
  * It places the overlay
@@ -18,7 +22,8 @@ var Overlay = {
     if(!t) {
       cdb.log.error("Overlay: " + type + " does not exist");
     }
-    var widget = t(data, vis);
+      var widget = t(data, vis);
+
     return widget;
   }
 };
@@ -40,12 +45,54 @@ var Layers = {
       return null;
     }
     var t = this._types[type.toLowerCase()];
-    return new t(vis, data);
+
+    var c = {};
+    c.type = type;
+    _.extend(c, data, data.options);
+    return new t(vis, c);
   }
 
 };
 
 cdb.vis.Layers = Layers;
+
+var Loader = cdb.vis.Loader = {
+
+  queue: [],
+  current: undefined,
+  _script: null,
+  head: null,
+
+  get: function(url, callback) {
+    if(!Loader._script) {
+      Loader.current = callback;
+      var script = document.createElement('script');
+      script.type = 'text/javascript';
+      script.src = url + (~url.indexOf('?') ? '&' : '?') + 'callback=vizjson';
+      script.async = true
+      Loader._script = script;
+      if(!Loader.head) {
+        Loader.head = document.getElementsByTagName('head')[0];
+      }
+      Loader.head.appendChild(script);
+    } else {
+      Loader.queue.push([url, callback]);
+    }
+  }
+
+};
+
+window.vizjson = function(data) {
+  Loader.current && Loader.current(data);
+  // remove script
+  Loader.head.removeChild(Loader._script);
+  Loader._script = null;
+  // next element
+  var a = Loader.queue.shift();
+  if(a) {
+    Loader.get(a[0], a[1]);
+  }
+};
 
 /**
  * visulization creation
@@ -53,84 +100,327 @@ cdb.vis.Layers = Layers;
 var Vis = cdb.core.View.extend({
 
   initialize: function() {
+    _.bindAll(this, 'loadingTiles', 'loadTiles');
+
+    this.https = false;
+
+    if(this.options.mapView) {
+      this.mapView = this.options.mapView;
+      this.map = this.mapView.map;
+    }
   },
 
-  load: function(data) {
+
+  load: function(data, options) {
+    if(typeof(data) === 'string') {
+      var self = this;
+      var url = data;
+      reqwest({
+          url: url + (~url.indexOf('?') ? '&' : '?') + 'callback=vizjson',
+          type: 'jsonp',
+          jsonpCallback: 'callback',
+          success: function(data) {
+            if(data) {
+              self.load(data, options);
+            } else {
+              self.trigger('error', 'error fetching viz.json file');
+            }
+          }
+      });
+      return this;
+    }
+
+    // configure the vis in http or https
+    if(window && window.location.protocol && window.location.protocol === 'https:') {
+      this.https = true;
+    }
+
+    if(data.https) {
+      this.https = data.https;
+    }
+
+    if(options) {
+      this._applyOptions(data, options);
+    }
+
     // map
     data.maxZoom || (data.maxZoom = 20);
     data.minZoom || (data.minZoom = 0);
-    data.bounding_box_sw || (data.bounding_box_sw = [0,0]);
-    data.bounding_box_ne || (data.bounding_box_ne= [0,0]);
-    var map = new cdb.geo.Map({
+
+    var mapConfig = {
       title: data.title,
       description: data.description,
       maxZoom: data.maxZoom,
       minZoom: data.minZoom,
-      bounding_box_sw: data.bounding_box_sw,
-      bounding_box_ne: data.bounding_box_ne
-    });
+      provider: data.map_provider
+    };
+
+    // if the boundaries are defined, we add them to the map
+    if(data.bounding_box_sw && data.bounding_box_ne) {
+      mapConfig.bounding_box_sw = data.bounding_box_sw;
+      mapConfig.bounding_box_ne = data.bounding_box_ne;
+    }
+    if(data.bounds) {
+      mapConfig.view_bounds_sw = data.bounds[0];
+      mapConfig.view_bounds_ne = data.bounds[1];
+    } else {
+      var center = data.center;
+      if (typeof(center) === "string") {
+        center = $.parseJSON(center);
+      }
+      mapConfig.center = center || [0, 0];
+      mapConfig.zoom = data.zoom || 4;
+    }
+
+    var map = new cdb.geo.Map(mapConfig);
+    this.map = map;
+
     var div = $('<div>').css({
       width: '100%',
       height: '100%'
     });
+
+    // Another div to prevent leaflet grabs the div
+    var div_hack = $('<div>')
+      .addClass("map-wrapper")
+      .css({
+        position: "absolute",
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        width: '100%'
+      });
+
+    div.append(div_hack);
     this.$el.append(div);
-    var mapView = new cdb.geo.LeafletMapView({
-      el: div,
-      map: map
-    });
-    this.map = map;
-    this.mapView = mapView;
 
-
-    // overlays
-    for(var i in data.overlays) {
+    // Create the overlays
+    for (var i in data.overlays) {
       var overlay = data.overlays[i];
       overlay.map = map;
       var v = Overlay.create(overlay.type, this, overlay);
-      this.addView(v);
-      this.mapView.$el.append(v.el);
-    }
 
-    // layers
-    for(var i in data.layers) {
-      var layerData = data.layers[i];
-      var layer_cid = map.addLayer(Layers.create(layerData.type, this, layerData));
+      if (v) {
+        // Save tiles loader view for later
+        if (overlay.type == "loader") {
+          this.loader = v;
+        }
 
-      // add the associated overlays
-      if(layerData.type.toLowerCase() == 'cartodb' && layerData.infowindow) {
-          var infowindow = Overlay.create('infowindow', this, layerData.infowindow, true);
-          mapView.addInfowindow(infowindow);
-          var dataLayer = mapView.getLayerByCid(layer_cid);
-          dataLayer.cid = layer_cid;
-          dataLayer.bind('featureClick', function(e, latlng, pos, interact_data) {
-            // prepare data
-            var layer = map.layers.getByCid(this.cid);
-            // infoWindow only shows if the layer is active
-            if(layer.get('active')) {
-              var render_fields= [];
-              var fields = layer.get('infowindow').fields;
-              for(var j = 0; j < fields.length; ++j) {
-                var f = fields[j];
-                render_fields.push({
-                  title: f.title ? f.name: null,
-                  value: interact_data[f.name]
-                });
-              }
-              infowindow.model.set({ content:  { fields: render_fields } });
-              infowindow.setLatLng(latlng).showInfowindow();
-            }
-          });
+        this.addView(v);
+        div.append(v.el);
+
+        // Set map position correctly taking into account
+        // header height
+        if (overlay.type == "header") {
+          this.setMapPosition();
+        }
       }
     }
 
-    if(data.bounds) {
-      mapView.showBounds(data.bounds);
-    } else {
-      map.setCenter(data.center || [0, 0]);
-      map.setZoom(data.zoom || 4);
+    // Create the map
+    var mapView = new cdb.geo.MapView.create(div_hack, map);
+    this.mapView = mapView;
+
+    // Add layers
+    for(var i in data.layers) {
+      var layerData = data.layers[i];
+      this.loadLayer(layerData);
+    }
+
+    return this;
+  },
+
+
+  // change vizjson based on options
+  _applyOptions: function(vizjson, opt) {
+    opt = opt || {};
+    opt = _.defaults(opt, {
+      search: true,
+      title: true,
+      description: true,
+      tiles_loader: true
+    });
+
+    function search_overlay(name) {
+      if(!vizjson.overlays) return null;
+      for(var i = 0; i < vizjson.overlays.length; ++i) {
+        if(vizjson.overlays[i].type === name) {
+          return vizjson.overlays[i];
+        }
+      }
+    }
+
+    function remove_overlay(name) {
+      if(!vizjson.overlays) return;
+      for(var i = 0; i < vizjson.overlays.length; ++i) {
+        if(vizjson.overlays[i].type === name) {
+          vizjson.overlays.splice(i, 1);
+          return;
+        }
+      }
+    }
+
+    if(opt.https) {
+      this.https = true;
+    }
+
+    // remove search if the vizualization does not contain it
+    if (opt.search != undefined && !opt.search) {
+      remove_overlay('search');
+    }
+
+    if(!opt.title  && !opt.description  && !opt.shareable) {
+      remove_overlay('header');
+    }
+
+    if(!opt.title) {
+      vizjson.title = null;
+    }
+
+    if(!opt.description) {
+      vizjson.description = null;
+    }
+
+    if(!opt.tiles_loader) {
+      remove_overlay('loader');
+    }
+
+    if(!opt.shareable) {
+      var s = search_overlay('header');
+      if(s) {
+        s.shareable = false;
+      }
+    }
+
+    // if bounds are present zoom and center will not taken into account
+    if(opt.zoom !== undefined) {
+      vizjson.zoom = parseFloat(opt.zoom);
+    }
+
+    if(opt.center_lat !== undefined) {
+      vizjson.center = [parseFloat(opt.center_lat), parseFloat(opt.center_lon)];
+    }
+
+    if(opt.sw_lat !== undefined) {
+      vizjson.bounds = [
+        [parseFloat(opt.sw_lat), parseFloat(opt.sw_lon)],
+        [parseFloat(opt.ne_lat), parseFloat(opt.ne_lon)],
+      ];
+    }
+
+
+    if(opt.sql) {
+      vizjson.layers[1].options.query = opt.sql;
+    }
+    if(opt.style) {
+      vizjson.layers[1].options.tile_style = opt.style;
+    }
+
+    vizjson.layers[1].options.no_cdn = opt.no_cdn;
+
+  },
+
+  // Set map top position taking into account header height
+  setMapPosition: function() {
+    var header_h = this.$el.parent().find(".header").outerHeight();
+  
+    this.$el
+      .find("div.map-wrapper")
+      .css("top", header_h);
+  },
+
+  createLayer: function(layerData, opts) {
+    var layerModel = Layers.create(layerData.type || layerData.kind, this, layerData);
+    return this.mapView.createLayer(layerModel);
+  },
+
+  addInfowindow: function(layerView) {
+    var model = layerView.model;
+    var eventType = layerView.model.get('eventType') || 'featureClick';
+    var infowindow = Overlay.create('infowindow', this, model.get('infowindow'), true);
+    var mapView = this.mapView;
+    mapView.addInfowindow(infowindow);
+
+    var infowindowFields = layerView.model.get('infowindow');
+
+    // if the layer has no infowindow just pass the interaction
+    // data to the infowindow
+    layerView.bind(eventType, function(e, latlng, pos, interact_data) {
+        var content = interact_data;
+        if(infowindowFields) {
+          var render_fields = [];
+          var fields = infowindowFields.fields;
+          for(var j = 0; j < fields.length; ++j) {
+            var f = fields[j];
+            render_fields.push({
+              title: f.title ? f.name: null,
+              value: interact_data[f.name],
+              index: j ? j:null // mustache does not recognize 0 as false :( 
+            });
+          }
+          content = render_fields;
+        }
+        infowindow.model.set({ content:  { fields: content, data: interact_data} });
+        infowindow.setLatLng(latlng).showInfowindow();
+    });
+
+    layerView.bind('featureOver', function(e, latlon, pxPos, data) {
+      mapView.setCursor('pointer');
+    });
+    layerView.bind('featureOut', function() {
+      mapView.setCursor('auto');
+    });
+
+    layerView.infowindow = infowindow.model;
+  },
+
+  loadLayer: function(layerData, opts) {
+    var map = this.map;
+    var mapView = this.mapView;
+    layerData.type = layerData.kind;
+    var layer_cid = map.addLayer(Layers.create(layerData.type || layerData.kind, this, layerData), opts);
+
+    var layerView = mapView.getLayerByCid(layer_cid);
+    
+    // add the associated overlays
+    if(layerData.infowindow &&
+      layerData.infowindow.fields &&
+      layerData.infowindow.fields.length > 0) {
+      this.addInfowindow(layerView);
+    }
+
+    if (layerView) {
+      layerView.bind('loading', this.loadingTiles);
+      layerView.bind('load',    this.loadTiles);
+    }
+
+    return layerView;
+
+  },
+
+  loadingTiles: function() {
+    if(this.loader) {
+      this.loader.show()
     }
   },
+
+  loadTiles: function() {
+    if(this.loader) {
+      this.loader.hide();
+    }
+  },
+
+  error: function(fn) {
+    this.bind('error', fn);
+  },
+
+  getNativeMap: function() {
+    return this.mapView.getNativeMap();
+  }
 
 });
 
 cdb.vis.Vis = Vis;
+
+})();

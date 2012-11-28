@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      html, body, #map {
+        height: 100%;
+        padding: 0;
+        margin: 0;
+      }
+    </style>
+
+    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/themes/css/cartodb.css" />
+    <!--[if lte IE 8]>
+        <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/themes/css/cartodb.ie.css" />
+    <![endif]-->
+
+  </head>
+    
+  <body>
+    <div id="map"></div>
+  </body>
+
+
+  <!-- include cartodb.js library -->
+  <script src="http://libs.cartocdn.com/cartodb.js/v2/cartodb.js"></script>
+  <script>
+
+    function main() {
+
+      var map = L.map('map', { 
+        zoomControl: false,
+        center: [43, 0],
+        zoom: 3
+      })
+
+      // add a nice baselayer from mapbox
+      L.tileLayer('http://a.tiles.mapbox.com/v3/mapbox.mapbox-streets/{z}/{x}/{y}.png', {
+        attribution: 'MapBox'
+      }).addTo(map);
+
+      cartodb.createLayer(map, 'http://examples-beta.cartodb.com/api/v1/viz/791/viz.json', {
+        query: 'select * from {{table_name}} where area::float > 10000' // if you remove this the query applied in the editor will be used
+
+      })
+       .on('done', function(layer) {
+        map.addLayer(layer);
+
+        layer.on('featureOver', function(e, pos, latlng, data) {
+          cartodb.log.log(e, pos, latlng, data);
+        });
+
+        layer.on('error', function(err) {
+          cartodb.log.log('error: ' + err);
+        });
+
+      }).on('error', function() {
+        cartodb.log.log("some error occurred");
+      });
+
+    }
+
+    // you could use $(window).load(main);
+    window.onload = main;
+
+  </script>
+
+
+</html>

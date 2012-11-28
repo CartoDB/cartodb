@@ -1,4 +1,4 @@
-cdb.geo.ui.LegendItemModel = Backbone.Model.extend({ });
+cdb.geo.ui.LegendItemModel = cdb.core.Model.extend({ });
 
 cdb.geo.ui.LegendItems = Backbone.Collection.extend({
   model: cdb.geo.ui.LegendItemModel

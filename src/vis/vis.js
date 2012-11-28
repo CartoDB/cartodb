@@ -231,16 +231,17 @@ var Vis = cdb.core.View.extend({
     return this;
   },
 
-
   // change vizjson based on options
   _applyOptions: function(vizjson, opt) {
     opt = opt || {};
     opt = _.defaults(opt, {
-      search: true,
-      title: true,
-      description: true,
+      search: false,
+      title: false,
+      description: false,
       tiles_loader: true
     });
+    vizjson.overlays = vizjson.overlays || [];
+    vizjson.layers = vizjson.layers || [];
 
     function search_overlay(name) {
       if(!vizjson.overlays) return null;
@@ -266,12 +267,18 @@ var Vis = cdb.core.View.extend({
     }
 
     // remove search if the vizualization does not contain it
-    if (opt.search != undefined && !opt.search) {
-      remove_overlay('search');
+    if (opt.search) {
+      vizjson.overlays.push({
+         type: "search"
+      });
     }
 
-    if(!opt.title  && !opt.description  && !opt.shareable) {
-      remove_overlay('header');
+    if(opt.title  || opt.description || opt.shareable) {
+      vizjson.overlays.unshift({
+        type: "header",
+        shareable: opt.shareable ? true: false,
+        url: vizjson.url
+      });
     }
 
     if(!opt.title) {
@@ -284,13 +291,6 @@ var Vis = cdb.core.View.extend({
 
     if(!opt.tiles_loader) {
       remove_overlay('loader');
-    }
-
-    if(!opt.shareable) {
-      var s = search_overlay('header');
-      if(s) {
-        s.shareable = false;
-      }
     }
 
     // if bounds are present zoom and center will not taken into account
@@ -309,15 +309,16 @@ var Vis = cdb.core.View.extend({
       ];
     }
 
+    if(vizjson.layers.length > 1) {
+      if(opt.sql) {
+        vizjson.layers[1].options.query = opt.sql;
+      }
+      if(opt.style) {
+        vizjson.layers[1].options.tile_style = opt.style;
+      }
 
-    if(opt.sql) {
-      vizjson.layers[1].options.query = opt.sql;
+      vizjson.layers[1].options.no_cdn = opt.no_cdn;
     }
-    if(opt.style) {
-      vizjson.layers[1].options.tile_style = opt.style;
-    }
-
-    vizjson.layers[1].options.no_cdn = opt.no_cdn;
 
   },
 

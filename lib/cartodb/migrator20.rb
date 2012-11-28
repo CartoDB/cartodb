@@ -14,11 +14,11 @@ class Migrator20
     
     tables_to_migrate.all.each_with_index do |table, index|
       if already_migrated?(table)
-        log "* Skipping: #{table.owner.username}/#{table.name} (id #{table.id})"
         @stats[:tables_skipped] += 1
+        log "* Skipping: #{table.owner.username}/#{table.name} (id #{table.id})"
       else
         begin
-          log "* Migrating: #{table.owner.username}/#{table.name} id #{table.id} (#{index+1}/#{total_tables})"
+          log "* (#{index+1}/#{total_tables}) Migrating: #{table.owner.username}/#{table.name} id #{table.id}"
 
           log "  - Adding table_id"
           add_table_id(table)
@@ -136,8 +136,8 @@ class Migrator20
                             .map { |column_name, i| { name: column_name, title: true, position: i+1 } },
       "template_name"  => "table/views/infowindow_light"
     }
-    data_layer.save
 
+    data_layer.save
 
     # Base layer setup
     base_layer = table.map.base_layers.first

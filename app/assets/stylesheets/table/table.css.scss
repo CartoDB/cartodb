@@ -101,13 +101,7 @@
             @include transform-style("linear");
             @include transition-property("text-indent");
             @include transition-duration(300ms);
-
             @include box-shadow(rgba(0, 0, 0, 0.055) 0 3px 1px 0);
-
-            // When a query is applied, the text should be moved some pixels
-            &.displaced {
-              text-indent:-600px;
-            }
           }
         }
 
@@ -274,15 +268,7 @@
             top:0;
           }
         }
-
-        &.displaced {
-          th:last-child {
-            padding-right:600px;
-          }
-        }
-      }
-
-
+      } // thead
 
       // Table body
       tbody {
@@ -442,45 +428,21 @@
                   @include background(linear-gradient(#E3D3E3,#FAFAFA));
                 }
               }
-
             }
 
             &:last-child {
+              @include transform-style("linear");
+              @include transition-property("padding-right");
+              @include transition-duration(500ms);
               border-right:none;
+              padding-right:65px;
             }
           }
         }
-      }
-    }
+      } // tbody
 
-
-    /* PAGINATION ZONE - CAUTION */
-
-    // If the user can paginate up (we are removing cells in the process)
-    // Let's add some top spacing as well to show the pagination loader ;)
-
-    // Let's add some bottom spacing to show always when it's neccessary the pagination loader
-    &.page_down {
-      padding-bottom:30px; // More space due to the thead height
-    }
-
-    &.page_up {
-      padding-bottom:0;
-      padding-top:180px; // More space due to the thead height
-      thead tr th div > div {
-        margin-top:-180px;
-      }
-      tbody tr:first-child {
-        border-top:1px solid #ECECEC;
-      }
-      thead div.sqlview p {
-        margin-top:-168px;
-      }
-    }
-
-
-    // Loaders
-    tfoot {
+      // Loaders
+      tfoot {
       padding:100px 0;
 
       &.sql_loader {
@@ -501,11 +463,6 @@
 
           img {margin-left:101px;}
           h5 {display:block; margin:15px 0 0 0; color:#7B7B7B; font-size:15px; line-height:normal; text-align:center;}
-
-          // When a query is applied, the loader should be moved some pixels
-          &.displaced {
-            margin-left:-420px;
-          }
         }
       }
 
@@ -565,8 +522,55 @@
           div.float_action {@include inline-block(); background: image-url('layout/loading_page_animation.gif') no-repeat 0 0;}
         }
       }
+      } // tfoot
+
+
+      &.displaced {
+
+        // Last column of the table
+        tr td:last-child {
+          border-right:none;
+          padding-right:600px;
+        }
+
+        // When a query is applied, the text should be moved some pixels
+        div.sqlview p {
+          text-indent:-600px;
+        }
+
+        // When a query is applied, the loader should be moved some pixels
+        tfoot.sql_loader div.float_info {
+          margin-left:-420px;
+        }
+      } // table.displaced
+    } // table
+
+
+    /* PAGINATION ZONE - CAUTION */
+
+    // If the user can paginate up (we are removing cells in the process)
+    // Let's add some top spacing as well to show the pagination loader ;)
+
+    // Let's add some bottom spacing to show always when it's neccessary the pagination loader
+    &.page_down {
+      padding-bottom:30px; // More space due to the thead height
     }
-  }
+
+    &.page_up {
+      padding-bottom:0;
+      padding-top:180px; // More space due to the thead height
+      thead tr th div > div {
+        margin-top:-180px;
+      }
+      tbody tr:first-child {
+        border-top:1px solid #ECECEC;
+      }
+      thead div.sqlview p {
+        margin-top:-168px;
+      }
+    }
+
+  } // div.table
 
 
 
@@ -605,28 +609,28 @@
     }
   }
 
-.iconClock {
-  display: inline-block;
-  margin-right: 8px;
-  width: 15px;
-  height: 15px;
-  background: image-url('layout/clock.png') no-repeat 0 0 transparent;
-}
-
-.data_download {
-  cursor: pointer;
-
-  span.icon {
-    @include inline-block();
-    vertical-align:middle;
-    height: 9px;
-    width: 13px;
-    margin:0 0 1px;
-    padding:0;
-    @include icons-sprite(download_blue);
+  .iconClock {
+    display: inline-block;
+    margin-right: 8px;
+    width: 15px;
+    height: 15px;
+    background: image-url('layout/clock.png') no-repeat 0 0 transparent;
   }
 
-  &:hover span.icon {
-    @include icons-sprite(download_dark);
+  .data_download {
+    cursor: pointer;
+
+    span.icon {
+      @include inline-block();
+      vertical-align:middle;
+      height: 9px;
+      width: 13px;
+      margin:0 0 1px;
+      padding:0;
+      @include icons-sprite(download_blue);
+    }
+
+    &:hover span.icon {
+      @include icons-sprite(download_dark);
+    }
   }
-}

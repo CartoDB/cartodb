@@ -339,7 +339,7 @@ cdb.ui.common.Table = cdb.core.View.extend({
   * @returns boolean
   */
   isEmptyTable: function() {
-    return (this.dataModel.length === 0 )//&& this.dataModel.fetched)
+    return (this.dataModel.length === 0 && this.dataModel.fetched)
   },
 
   /**

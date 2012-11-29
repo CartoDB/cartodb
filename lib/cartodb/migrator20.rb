@@ -15,7 +15,7 @@ class Migrator20
     tables_to_migrate.all.each_with_index do |table, index|
       if already_migrated?(table)
         @stats[:tables_skipped] += 1
-        log "* Skipping: #{table.owner.username}/#{table.name} (id #{table.id})"
+        log "* Skipping: #{table.owner.username}/#{table.name} (id #{table.id})" rescue ""
       else
         begin
           log "* (#{index+1}/#{total_tables}) Migrating: #{table.owner.username}/#{table.name} id #{table.id}"

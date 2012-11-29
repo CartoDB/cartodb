@@ -100,8 +100,8 @@ class Migrator20
     end
 
     # Send a style conversion request to the tiler
-    conversion_cmd = "#{Rails.root.join('../../../node-windshaft/current/tools')}/convert_database_styles #{table.owner.database_name} #{table.name} 2.1.0"
-    log('  - Converting table style to 2.1.0')
+    conversion_cmd = "#{Rails.root.join('../../../node-windshaft/current/tools')}/convert_database_styles #{table.owner.database_name} #{table.name} 2.1.1"
+    log('  - Converting table style to 2.1.1')
     `#{conversion_cmd}`
     log("    Conversion result: #{$?}")
 

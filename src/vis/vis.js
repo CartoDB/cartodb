@@ -344,12 +344,22 @@ var Vis = cdb.core.View.extend({
     mapView.addInfowindow(infowindow);
 
     var infowindowFields = layerView.model.get('infowindow');
+    // HACK: REMOVE
+    var port = model.get('sql_port');
+    var domain = model.get('sql_domain') + port ? ':' + port: ''
+    var protocol = model.get('sql_protocol');
+    var version = 'v1';
+    if(domain.indexOf('cartodb.com') === -1) {
+      protocol = 'http';
+      domain = "cartodb.com";
+      version = 'v2';
+    }
+
     var sql = new cartodb.SQL({
-      user: model.get('user_name') /*,
-      version: 'v1',
-      protocol: 'http',
-      host: 'localhost.lan:8080'
-      */
+      user: model.get('user_name'),
+      protocol: protocol,
+      host: domain,
+      version: version
     });
 
     // if the layer has no infowindow just pass the interaction

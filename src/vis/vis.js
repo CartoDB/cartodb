@@ -169,7 +169,7 @@ var Vis = cdb.core.View.extend({
         center = $.parseJSON(center);
       }
       mapConfig.center = center || [0, 0];
-      mapConfig.zoom = data.zoom || 4;
+      mapConfig.zoom = data.zoom == undefined ? 4: data.zoom;
     }
 
     var map = new cdb.geo.Map(mapConfig);

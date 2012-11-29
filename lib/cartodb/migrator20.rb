@@ -15,7 +15,7 @@ class Migrator20
     tables_to_migrate.all.each_with_index do |table, index|
       if already_migrated?(table)
         @stats[:tables_skipped] += 1
-        log "* Skipping: #{table.owner.username}/#{table.name} (id #{table.id})"
+        log "* Skipping: #{table.owner.username}/#{table.name} (id #{table.id})" rescue ""
       else
         begin
           log "* (#{index+1}/#{total_tables}) Migrating: #{table.owner.username}/#{table.name} id #{table.id}"
@@ -100,8 +100,8 @@ class Migrator20
     end
 
     # Send a style conversion request to the tiler
-    conversion_cmd = "#{Rails.root.join('../../../node-windshaft/current/tools')}/convert_database_styles #{table.owner.database_name} #{table.name} 2.1.0"
-    log('  - Converting table style to 2.1.0')
+    conversion_cmd = "#{Rails.root.join('../../../node-windshaft/current/tools')}/convert_database_styles #{table.owner.database_name} #{table.name} 2.1.1"
+    log('  - Converting table style to 2.1.1')
     `#{conversion_cmd}`
     log("    Conversion result: #{$?}")
 

@@ -46,7 +46,7 @@ defaults: &defaults
                   "interactivity", "debug", "visible", "tiler_domain", 
                   "tiler_port", "tiler_protocol", "sql_domain", "sql_port", 
                   "sql_protocol", "extra_params", "cdn_url", "table_name", 
-                  "user_name"]
+                  "user_name", "style_version"]
     default_tile_styles:
       point: "{\n  marker-fill: #FF6600;\n  marker-opacity: 0.9;\n  marker-width: 12;\n  marker-line-color: white;\n  marker-line-width: 3;\n  marker-line-opacity: 0.9;\n  marker-placement: point;\n  marker-type: ellipse;\n  marker-allow-overlap: true;\n}"
       geometry: "{\n  marker-fill: #FF6600;\n  marker-opacity: 0.9;\n  marker-width: 12;\n  marker-line-color: white;\n  marker-line-width: 3;\n  marker-line-opacity: 0.9;\n  marker-placement: point;\n  marker-type: ellipse;\n  marker-allow-overlap: true;\n}"

@@ -53,6 +53,10 @@ Layers.register('background', function(vis, data) {
 var cartoLayer = function(vis, data) {
 
   if(data.infowindow && data.infowindow.fields) {
+    data.interactivity = 'cartodb_id';
+  }
+  /*
+  if(data.infowindow && data.infowindow.fields) {
     var names = [];
     var fields = data.infowindow.fields;
     for(var i = 0; i < fields.length; ++i) {
@@ -62,6 +66,7 @@ var cartoLayer = function(vis, data) {
      data.interactivity = data.interactivity + ',' + names.join(','):
      data.interactivity = names.join(',');
   }
+  */
 
   data.tiler_protocol = vis.https ? 'https': 'http';
   if(!data.no_cdn) {

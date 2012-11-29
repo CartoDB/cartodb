@@ -527,7 +527,7 @@ disabled look for already selected choices in the results dropdown
     right:0;
     height:20px;
     margin:0!important;
-    padding-right:8px;
+    padding-right:0;
     display:table;
     overflow:hidden;
 
@@ -549,35 +549,38 @@ disabled look for already selected choices in the results dropdown
 }
 
 .select2-result-label {
-  ul {
-    position:relative;
-    display:table;
+  table {
     width:100%;
-    padding:0!important;
-    margin:0!important;
+    empty-cells:show;
+    border-collapse:separate;
+  }
+  tbody {width:100%;}
+  tr {width:100%; height:10px;}
+  td {
+    border-top:1px solid rgba(black,0.25)!important;
+    border-bottom:1px solid rgba(black,0.25);
 
-    li {
-      width:auto;
-      height:10px;
-      padding:0!important;
-      display:table-cell;
-      
-      border-top:1px solid rgba(black,0.25)!important;
-      border-bottom:1px solid rgba(black,0.25);
-
-      &:first-child {
-        border-left:1px solid rgba(black,0.25);
-        @include border-left-radius(2px);
-      }
-      &:last-child {
-        border-right:1px solid rgba(black,0.25);
-        @include border-right-radius(2px);
-      }
+    &:first-child {
+      border-left:1px solid rgba(black,0.25);
+      @include border-left-radius(2px);
+    }
+    &:last-child {
+      border-right:1px solid rgba(black,0.25);
+      @include border-right-radius(2px);
     }
   }
 }
 
 
 @-moz-document url-prefix(){
-  .select2-result-label ul:before {left:0!important;}
+  .color_ramp .select2-choice ul {right:12px!important; width:86%!important;}
+  .select2-result-label table tbody tr td,
+  .select2-result-label table tbody tr td:first-child,
+  .select2-result-label table tbody tr td:last-child {
+    border:none!important;
+  }
+  .select2-result-label table {
+    border:1px solid rgba(black,0.25);
+    @include border-radius(3px);
+  }
 }

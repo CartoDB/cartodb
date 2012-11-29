@@ -344,26 +344,58 @@ var Vis = cdb.core.View.extend({
     mapView.addInfowindow(infowindow);
 
     var infowindowFields = layerView.model.get('infowindow');
+    // HACK: REMOVE
+    var port = model.get('sql_port');
+    var domain = model.get('sql_domain') + port ? ':' + port: ''
+    var protocol = model.get('sql_protocol');
+    var version = 'v1';
+    if(domain.indexOf('cartodb.com') === -1) {
+      protocol = 'http';
+      domain = "cartodb.com";
+      version = 'v2';
+    }
+
+    var sql = new cartodb.SQL({
+      user: model.get('user_name'),
+      protocol: protocol,
+      host: domain,
+      version: version
+    });
 
     // if the layer has no infowindow just pass the interaction
     // data to the infowindow
-    layerView.bind(eventType, function(e, latlng, pos, interact_data) {
-        var content = interact_data;
-        if(infowindowFields) {
-          var render_fields = [];
-          var fields = infowindowFields.fields;
-          for(var j = 0; j < fields.length; ++j) {
-            var f = fields[j];
-            render_fields.push({
-              title: f.title ? f.name: null,
-              value: interact_data[f.name],
-              index: j ? j:null // mustache does not recognize 0 as false :( 
-            });
+    layerView.bind(eventType, function(e, latlng, pos, data) {
+        var cartodb_id = data.cartodb_id
+        var fields = infowindowFields.fields;
+        sql.execute("select {{fields}} from {{table_name}} where cartodb_id = {{cartodb_id }}", {
+          fields: _.pluck(fields, 'name').join(','),
+          cartodb_id: cartodb_id,
+          table_name: model.get('table_name')
+        }).done(function(interact_data) {
+          if(interact_data.rows.length == 0 ) return;
+          interact_data = interact_data.rows[0];
+          if(infowindowFields) {
+            var render_fields = [];
+            var fields = infowindowFields.fields;
+            for(var j = 0; j < fields.length; ++j) {
+              var f = fields[j];
+              render_fields.push({
+                title: f.title ? f.name: null,
+                value: interact_data[f.name],
+                index: j ? j:null // mustache does not recognize 0 as false :( 
+              });
+            }
+            content = render_fields;
           }
-          content = render_fields;
-        }
-        infowindow.model.set({ content:  { fields: content, data: interact_data} });
-        infowindow.setLatLng(latlng).showInfowindow();
+          infowindow.model.set({ 
+            content:  { 
+              fields: content, 
+              data: interact_data
+            } 
+          });
+          infowindow.setLatLng(latlng).showInfowindow();
+        });
+
     });
 
     layerView.bind('featureOver', function(e, latlon, pxPos, data) {

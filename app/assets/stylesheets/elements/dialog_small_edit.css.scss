@@ -93,6 +93,7 @@
       line-height:19px;
       border-color:#9E9E9E;
       &.error {border-color:rgba(red,0.5);}
+      &[disabled] {border-color:#DDDDDD;}
     }
   }
 

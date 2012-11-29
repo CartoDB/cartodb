@@ -532,6 +532,10 @@
             div.float_action {@include inline-block(); background: image-url('layout/loading_page_animation.gif') no-repeat 0 0;}
           }
         }
+
+        .loading img {
+          margin-top:30px;
+        }
       } // tfoot
 
 

@@ -149,7 +149,8 @@ describe('api.layers.cartodb', function() {
         cartodb.createLayer(map, { 
             kind: 'cartodb', 
             options: { 
-              table_name: 'test'
+              table_name: 'test',
+              user_name: 'test'
             },
             infowindow: { 
               template: '<div></div>',
@@ -165,6 +166,7 @@ describe('api.layers.cartodb', function() {
         expect(layer.infowindow).not.toEqual(undefined);
         expect(layer.infowindow.get('fields').length).toEqual(1);
         expect(layer.infowindow.get('fields')[0].name).toEqual('test');
+        expect(layer.options.interactivity).toEqual('cartodb_id');
       });
     });
 

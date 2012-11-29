@@ -73,6 +73,8 @@ var cartoLayer = function(vis, data) {
     data.tiler_protocol = vis.https ? 'https': 'http';
     data.tiler_port = vis.https ? 443: 80;
   }
+  data.extra_params = data.extra_params || {};
+  data.extra_params.cache_buster = vis.updated_at;
 
   return new cdb.geo.CartoDBLayer(data);
 };

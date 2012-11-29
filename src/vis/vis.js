@@ -174,6 +174,7 @@ var Vis = cdb.core.View.extend({
 
     var map = new cdb.geo.Map(mapConfig);
     this.map = map;
+    this.updated_at = data.updated_at || new Date().getTime();
 
     var div = $('<div>').css({
       width: '100%',

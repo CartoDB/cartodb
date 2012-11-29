@@ -346,10 +346,10 @@ var Vis = cdb.core.View.extend({
     var infowindowFields = layerView.model.get('infowindow');
     // HACK: REMOVE
     var port = model.get('sql_port');
-    var domain = model.get('sql_domain') + port ? ':' + port: ''
+    var domain = model.get('sql_domain') + (port ? ':' + port: '')
     var protocol = model.get('sql_protocol');
     var version = 'v1';
-    if(domain.indexOf('cartodb.com') === -1) {
+    if(domain.indexOf('cartodb.com') !== -1) {
       protocol = 'http';
       domain = "cartodb.com";
       version = 'v2';

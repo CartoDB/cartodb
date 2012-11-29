@@ -28,7 +28,7 @@
     function main() {
       var vis = new cartodb.vis.Vis({el: document.getElementById('map') });
       vis
-        .load('http://development.localhost.lan:3000/api/v1/viz/152/viz.json', {
+        .load('http://examples-beta.cartodb.com/api/v1/viz/791/viz.json', {
           shareable: true,
           title: true,
           description: true,
@@ -43,8 +43,7 @@
         });
     }
 
-    var fn = function() { cdb.load('../src/', main); }
-    window.onload = fn;
+    window.onload = main;
 
   </script>
 

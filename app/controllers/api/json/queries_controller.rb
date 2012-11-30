@@ -11,11 +11,12 @@ class Api::Json::QueriesController < Api::ApplicationController
     params[:page] = 0 unless params[:page].present?
 
     # Window SELECT queries, run the others straight ahead
-    q = if /alter|insert|update|delete|create|drop/i.match params[:sql]
-      params[:sql]
-    else
+    # Window SELECT queries, run the others straight ahead
+    q = if /^\s*(select)/i.match params[:sql]
       page, per_page = CartoDB::Pagination.get_page_and_per_page(params)
       "SELECT * FROM (#{params[:sql].gsub(/;\s*$/, '')}) AS subq LIMIT #{per_page} OFFSET #{page}"
+    else
+      params[:sql]
     end
 
     # Run query

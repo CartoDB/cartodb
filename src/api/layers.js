@@ -136,7 +136,7 @@
       }
 
       layerView = viz.createLayer(layerData, { no_base_layer: true });
-      if(options.infowindow && layerView.model.get('infowindow')) {
+      if(options.infowindow && layerView.model.get('infowindow') && layerView.model.get('infowindow').fields.length > 0) {
         viz.addInfowindow(layerView);
       }
       callback && callback(layerView);

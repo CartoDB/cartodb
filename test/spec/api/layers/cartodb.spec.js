@@ -170,6 +170,32 @@ describe('api.layers.cartodb', function() {
       });
     });
 
+    it("should add interactivity if there is infowindow", function() {
+      runs(function() {
+        cartodb.createLayer(map, { 
+            kind: 'cartodb', 
+            options: { 
+              table_name: 'test',
+              user_name: 'test'
+            },
+            infowindow: { 
+              template: '<div></div>',
+              fields: [{name: 'test', title: true, order: 0}] 
+            }
+        }, {
+          interactivity: 'myname,jaja'
+        }, function(l) {
+          addFn(map, l);
+          layer = l;
+        });
+      });
+      waits(100);
+      runs(function() {
+        expect(layer.infowindow).not.toEqual(undefined);
+        expect(layer.options.interactivity).toEqual('myname,jaja,cartodb_id');
+      });
+    });
+
 
   };
 

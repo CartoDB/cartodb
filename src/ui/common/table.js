@@ -23,6 +23,14 @@ cdb.ui.common.Row = cdb.core.Model.extend({
 
 cdb.ui.common.TableData = Backbone.Collection.extend({
     model: cdb.ui.common.Row,
+    fetched: false,
+
+    initialize: function() {
+      var self = this;
+      this.bind('reset', function() {
+        self.fetched = true;
+      })
+    },
 
     /**
      * get value for row index and columnName
@@ -261,8 +269,6 @@ cdb.ui.common.Table = cdb.core.View.extend({
     tr.bind('errorRow', this.rowFailed);
     tr.bind('saving', this.rowSaving);
     this.retrigger('saving', tr);
-    // tr.bind('destroyRow', this.rowDestroyed);
-    // tr.model.bind('destroy', this.rowDestroyed);
 
     tr.render();
     if(options && options.index !== undefined && options.index != self.rowViews.length) {
@@ -331,7 +337,7 @@ cdb.ui.common.Table = cdb.core.View.extend({
   * @returns boolean
   */
   isEmptyTable: function() {
-    return (this.dataModel.length === 0)
+    return (this.dataModel.length === 0 && this.dataModel.fetched)
   },
 
   /**
@@ -340,15 +346,22 @@ cdb.ui.common.Table = cdb.core.View.extend({
   _renderRows: function() {
     this.clear_rows();
     if(! this.isEmptyTable()) {
-      var self = this;
+      if(this.dataModel.fetched) {
+        var self = this;
 
-      this.dataModel.each(function(row) {
-        self.addRow(row);
-      });
+        this.dataModel.each(function(row) {
+          self.addRow(row);
+        });
+      } else {
+        this._renderLoading();
+      }
     } else {
       this._renderEmpty();
     }
 
+  },
+
+  _renderLoading: function() {
   },
 
   _renderEmpty: function() {

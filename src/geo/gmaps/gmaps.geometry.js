@@ -145,13 +145,7 @@ function PathView(geometryModel) {
 
 PathView.prototype = new GeometryView();
 
-PathView.prototype._getGeoJSON= function(geom) {
-
-  var geomType = {
-    'google.maps.Polygon': ['Polygon', 'MultiPolygon'],
-    'google.maps.Polyline': ['LineString', 'MultiLineString'],
-    'google.maps.Marker': ['Point', 'MultiPoint']
-  };
+PathView.getGeoJSON = function(geom, gType) {
 
   var coordFn = {
     'Polygon': 'getPath',
@@ -174,20 +168,27 @@ PathView.prototype._getGeoJSON= function(geom) {
     return c;
   }
 
-  var gType = this.model.get('geojson').type;
   // single
   if(!geom.length || geom.length == 1) {
     var g = geom.length ? geom[0]: geom;
     var coords;
-    if(gType == 'Point' || gType == 'MultiPoint') {
+    if(gType == 'Point') {
       coords = _coord(g.getPosition());
-    } else if(gType == 'Polygon' || gType == 'MultiPolygon') {
+    } else if(gType == 'MultiPoint') {
+      coords = [_coord(g.getPosition())]
+    } else if(gType == 'Polygon') {
+      coords = [_coords(g.getPath())];
+    } else if(gType == 'MultiPolygon') {
       coords = [];
       for(var p = 0; p < g.getPaths().length; ++p) {
         coords.push(_coords(g.getPaths().getAt(p)));
       }
-    } else if(gType == 'LineString' || gType == 'MultiLineString') {
+      coords = [coords]
+    } else if(gType == 'LineString') {
       coords = _coords(g.getPath());
+    } else if(gType == 'MultiLineString') {
+      //TODO: redo
+      coords = [_coords(g.getPath())];
     }
     return {
       type: gType,
@@ -197,7 +198,7 @@ PathView.prototype._getGeoJSON= function(geom) {
     // poly
     var c = [];
     for(var i = 0; i < geom.length; ++i) {
-      c.push(this._getGeoJSON(geom[i]).coordinates);
+      c.push(PathView.getGeoJSON(geom[i], gType).coordinates[0]);
     }
     return  {
       type: gType,
@@ -209,7 +210,7 @@ PathView.prototype._getGeoJSON= function(geom) {
 PathView.prototype._updateModel = function(e) {
   var self = this;
   setTimeout(function() {
-  self.model.set('geojson', self._getGeoJSON(self.geom));
+  self.model.set('geojson', PathView.getGeoJSON(self.geom, self.model.get('geojson').type ));
   }, 100)
 }
 
@@ -221,7 +222,7 @@ PathView.prototype.edit = function(enable) {
     g[i].setEditable(enable);
   }
   if(!enable) {
-    this.model.set('geojson', this._getGeoJSON(this.geom));
+    this.model.set('geojson', PathView.getGeoJSON(this.geom, this.model.get('geojson').type));
   }
 };
 

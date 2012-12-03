@@ -189,7 +189,7 @@
       });
       map.addGeometry(geo);
       var v = mapView.geometries[geo.cid];
-      var geojson = v._getGeoJSON(v.geom);
+      var geojson = cdb.geo.gmaps.PathView.getGeoJSON(v.geom, 'MultiPolygon');
       expect(geojson).toEqual(multipoly);
     });
 

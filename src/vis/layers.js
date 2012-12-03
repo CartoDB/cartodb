@@ -53,7 +53,13 @@ Layers.register('background', function(vis, data) {
 var cartoLayer = function(vis, data) {
 
   if(data.infowindow && data.infowindow.fields) {
-    data.interactivity = 'cartodb_id';
+    if(data.interactivity) {
+      if(data.interactivity.indexOf('cartodb_id') === -1) {
+        data.interactivity = data.interactivity + ",cartodb_id"
+      }
+    } else {
+      data.interactivity = 'cartodb_id';
+    }
   }
   /*
   if(data.infowindow && data.infowindow.fields) {
@@ -73,6 +79,8 @@ var cartoLayer = function(vis, data) {
     data.tiler_protocol = vis.https ? 'https': 'http';
     data.tiler_port = vis.https ? 443: 80;
   }
+  data.extra_params = data.extra_params || {};
+  data.extra_params.cache_buster = vis.updated_at;
 
   return new cdb.geo.CartoDBLayer(data);
 };

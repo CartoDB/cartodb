@@ -169,11 +169,12 @@ var Vis = cdb.core.View.extend({
         center = $.parseJSON(center);
       }
       mapConfig.center = center || [0, 0];
-      mapConfig.zoom = data.zoom || 4;
+      mapConfig.zoom = data.zoom == undefined ? 4: data.zoom;
     }
 
     var map = new cdb.geo.Map(mapConfig);
     this.map = map;
+    this.updated_at = data.updated_at || new Date().getTime();
 
     var div = $('<div>').css({
       width: '100%',
@@ -296,10 +297,12 @@ var Vis = cdb.core.View.extend({
     // if bounds are present zoom and center will not taken into account
     if(opt.zoom !== undefined) {
       vizjson.zoom = parseFloat(opt.zoom);
+      vizjson.bounds = null;
     }
 
     if(opt.center_lat !== undefined) {
       vizjson.center = [parseFloat(opt.center_lat), parseFloat(opt.center_lon)];
+      vizjson.bounds = null;
     }
 
     if(opt.sw_lat !== undefined) {

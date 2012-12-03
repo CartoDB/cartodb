@@ -269,8 +269,6 @@ cdb.ui.common.Table = cdb.core.View.extend({
     tr.bind('errorRow', this.rowFailed);
     tr.bind('saving', this.rowSaving);
     this.retrigger('saving', tr);
-    // tr.bind('destroyRow', this.rowDestroyed);
-    // tr.model.bind('destroy', this.rowDestroyed);
 
     tr.render();
     if(options && options.index !== undefined && options.index != self.rowViews.length) {

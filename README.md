@@ -82,8 +82,8 @@ quick start
 next steps
 ==========
 
-  - see our [examples](tree/develop/examples)
-  - read the [API reference](tree/develop/doc/API.md)
+  - see our [examples](https://github.com/CartoDB/cartodb.js/tree/develop/examples)
+  - read the [API reference](https://github.com/CartoDB/cartodb.js/tree/develop/doc/API.md)
   - read our mailing list
 
 

@@ -128,7 +128,7 @@ describe("Vis", function() {
     }]
     this.vis.load(this.mapConfig);
     expect(this.vis.map.layers.at(0).attributes.extra_params.cache_buster).toEqual('cachebuster');
-
   });
+
 
 })

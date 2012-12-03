@@ -92,4 +92,26 @@ feature "Sessions" do
       page.should have_content("Login to your CartoDB")
     end
   end
+
+  scenario "doesn't allow to login from a different domain than user account domain" do
+    user1  = FactoryGirl.create(:user_with_private_tables, :username => 'email1')
+    user2  = FactoryGirl.create(:user_with_private_tables, :username => 'email2')
+
+    visit login_url(:subdomain => user2.username, :port => Capybara.server_port)
+
+    fill_in 'email', :with => user1.email
+    fill_in 'password', :with => user1.email.split('@').first
+    click_link_or_button 'Sign in'
+
+    page.should have_css("input[@type=text].error")
+    page.should have_css("input[@type=password].error")
+    page.should have_content("Your account or your password is not ok")
+
+    fill_in 'email', :with => user2.email
+    fill_in 'password', :with => user2.email.split('@').first
+
+    click_link_or_button 'Sign in'
+
+    page.should_not have_content("Your account or your password is not ok")
+  end
 end

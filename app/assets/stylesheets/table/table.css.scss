@@ -124,7 +124,7 @@
               display:block;
               width:100%;
               height:66px;
-              z-index:1;          
+              z-index:1;
 
               & > div {
                 position:fixed;
@@ -261,13 +261,13 @@
             // Column options
             div.dropdown {
               width:147px!important;
-            }  
+            }
           }
         }
 
         // Horizontal movement
         &.horizontal {
-          tr th > div > div { 
+          tr th > div > div {
             position:absolute;
             left:0;
             top:0;
@@ -379,6 +379,11 @@
 
               &.disabled {
                 color: #AAA;
+              }
+
+              &.isNull {
+                color: #AAA;
+                font-style: italic;
               }
             }
 
@@ -526,6 +531,10 @@
             div.float_info {display:none;}
             div.float_action {@include inline-block(); background: image-url('layout/loading_page_animation.gif') no-repeat 0 0;}
           }
+        }
+
+        .loading img {
+          margin-top:30px;
         }
       } // tfoot
 

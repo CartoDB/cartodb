@@ -8,6 +8,7 @@ module CartoDB
       register_loader :geojson
       register_loader :js
       register_loader :json
+      register_loader :gml
       #register_loader :kml
 
       def process!
@@ -100,7 +101,7 @@ module CartoDB
                   add_index @working_data[:suggested_name], random_index_name
 
                   @data_import.log_update("converting GeoJSON to the_geom")
-                  @db_connection.run("UPDATE #{@working_data[:suggested_name]} SET the_geom = ST_SetSRID(ST_GeomFromGeoJSON(geojson), 4326) WHERE geojson IS NOT NULL");
+                  @db_connection.run("UPDATE #{@working_data[:suggested_name]} SET the_geom = ST_SetSRID(ST_GeomFromGeoJSON(geojson), 4326) WHERE geojson IS NOT NULL AND geojson != ''");
 
                   # Drop original the_geom column
                   @db_connection.run("ALTER TABLE #{@working_data[:suggested_name]} DROP COLUMN geojson")

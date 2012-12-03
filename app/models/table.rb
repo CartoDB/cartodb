@@ -18,8 +18,9 @@ class Table < Sequel::Model(:user_tables)
 
   many_to_one :map
 
-  def public_values
-    Hash[PUBLIC_ATTRIBUTES.map{ |k, v| [k, (self.send(v) rescue self[v].to_s)] }]
+  def public_values(options = {})
+    selected_attrs = options[:except].present? ? PUBLIC_ATTRIBUTES.select { |k, v| !options[:except].include?(k.to_sym) } : PUBLIC_ATTRIBUTES
+    Hash[selected_attrs.map{ |k, v| [k, (self.send(v) rescue self[v].to_s)] }]
   end
 
   def geometry_types
@@ -341,8 +342,8 @@ class Table < Sequel::Model(:user_tables)
     manage_tags
     update_name_changes
     manage_privacy
-    #map.invalidate_varnish_cache
-    #self.invalidate_varnish_cache
+    map.invalidate_varnish_cache
+    self.invalidate_varnish_cache
   end
 
   def after_create

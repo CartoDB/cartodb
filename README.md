@@ -82,8 +82,8 @@ quick start
 next steps
 ==========
 
-  - see our [examples](examples)
-  - read the [API reference](doc/API.md)
+  - see our [examples](tree/develop/examples)
+  - read the [API reference](tree/develop/doc/API.md)
   - read our mailing list
 
 

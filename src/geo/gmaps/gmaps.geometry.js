@@ -172,15 +172,22 @@ PathView.getGeoJSON = function(geom, gType) {
   if(!geom.length || geom.length == 1) {
     var g = geom.length ? geom[0]: geom;
     var coords;
-    if(gType == 'Point' || gType == 'MultiPoint') {
+    if(gType == 'Point') {
       coords = _coord(g.getPosition());
-    } else if(gType == 'Polygon' || gType == 'MultiPolygon') {
+    } else if(gType == 'MultiPoint') {
+      coords = [_coord(g.getPosition())]
+    } else if(gType == 'Polygon') {
+      coords = [_coords(g.getPath())];
+    } else if(gType == 'MultiPolygon') {
       coords = [];
       for(var p = 0; p < g.getPaths().length; ++p) {
-        coords.push(_coords(g.getPaths().getAt(p)));
+        coords.push([_coords(g.getPaths().getAt(p))]);
       }
-    } else if(gType == 'LineString' || gType == 'MultiLineString') {
+    } else if(gType == 'LineString') {
       coords = _coords(g.getPath());
+    } else if(gType == 'MultiLineString') {
+      //TODO: redo
+      coords = [_coords(g.getPath())];
     }
     return {
       type: gType,
@@ -202,7 +209,7 @@ PathView.getGeoJSON = function(geom, gType) {
 PathView.prototype._updateModel = function(e) {
   var self = this;
   setTimeout(function() {
-  self.model.set('geojson', PathView.getGeoJSON(self.geom, this.model.get('geojson').type ));
+  self.model.set('geojson', PathView.getGeoJSON(self.geom, self.model.get('geojson').type ));
   }, 100)
 }
 

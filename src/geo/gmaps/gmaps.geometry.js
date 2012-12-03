@@ -181,8 +181,9 @@ PathView.getGeoJSON = function(geom, gType) {
     } else if(gType == 'MultiPolygon') {
       coords = [];
       for(var p = 0; p < g.getPaths().length; ++p) {
-        coords.push([_coords(g.getPaths().getAt(p))]);
+        coords.push(_coords(g.getPaths().getAt(p)));
       }
+      coords = [coords]
     } else if(gType == 'LineString') {
       coords = _coords(g.getPath());
     } else if(gType == 'MultiLineString') {
@@ -197,7 +198,7 @@ PathView.getGeoJSON = function(geom, gType) {
     // poly
     var c = [];
     for(var i = 0; i < geom.length; ++i) {
-      c.push(PathView.getGeoJSON(geom[i], gType).coordinates);
+      c.push(PathView.getGeoJSON(geom[i], gType).coordinates[0]);
     }
     return  {
       type: gType,

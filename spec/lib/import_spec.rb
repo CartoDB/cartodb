@@ -404,6 +404,17 @@ describe CartoDB::Importer do
       end
     end
 
+    describe "#GML" do
+      it "should import a GML file" do
+        importer = create_importer 'data.gml'
+        results,errors = importer.import!
+
+        results[0].name.should          == 'data'
+        results[0].rows_imported.should == 1
+        results[0].import_type.should   == '.gml'
+      end
+    end
+
     describe "#JSON" do
       it "should import a JSON file in the given database in a table named like the file" do
         importer = create_importer 'clubbing.json', 'clubsaregood'
@@ -680,6 +691,17 @@ describe CartoDB::Importer do
       errors.length.should            == 0
 
       @db.fetch("SELECT GeometryType(the_geom) FROM polygons").all.select{|r| r[:geometrytype] == 'MULTIPOLYGON'}.should have(20).items
+    end
+
+    it "can import a csv with empty geojson cells" do
+      importer = create_importer 'table_50m_rivers_l_3.csv'
+      results, errors   = importer.import!
+
+      results.length.should           == 1
+      results[0].name.should          == 'table_50m_rivers_l_3'
+      results[0].rows_imported.should == 6
+      results[0].import_type.should   == '.csv'
+      errors.length.should            == 0
     end
   end
   ##################################################

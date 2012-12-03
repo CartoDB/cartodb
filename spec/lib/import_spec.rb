@@ -404,6 +404,17 @@ describe CartoDB::Importer do
       end
     end
 
+    describe "#GML" do
+      it "should import a GML file" do
+        importer = create_importer 'data.gml'
+        results,errors = importer.import!
+
+        results[0].name.should          == 'data'
+        results[0].rows_imported.should == 1
+        results[0].import_type.should   == '.gml'
+      end
+    end
+
     describe "#JSON" do
       it "should import a JSON file in the given database in a table named like the file" do
         importer = create_importer 'clubbing.json', 'clubsaregood'

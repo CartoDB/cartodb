@@ -116,6 +116,14 @@
     clean: function() {
       //see https://github.com/CloudMade/Leaflet/issues/1101
       L.DomEvent.off(window, 'resize', this.map_leaflet._onResize, this.map_leaflet);
+
+      // remove layer views
+      for(var layer in this.layers) {
+        var layer_view = this.layers[layer];
+        layer_view.remove();
+        delete this.layers[layer];
+      }
+
       // do not change by elder
       cdb.core.View.prototype.clean.call(this);
     },

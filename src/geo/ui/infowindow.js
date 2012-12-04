@@ -178,7 +178,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
 
     this.mapView.map.bind('change',         this._updatePosition, this);
     //this.map.on('viewreset', this._updatePosition, this);
-    this.mapView.bind('drag',               this._updatePosition, this);
+    //this.mapView.bind('drag',               this._updatePosition, this);
 
     var that = this;
     this.mapView.bind('zoomstart', function(){
@@ -382,6 +382,8 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
   * Update the position (private)
   */
   _updatePosition: function () {
+    if(this.isHidden()) return;
+
     var
     offset          = this.model.get("offset")
     pos             = this.mapView.latLonToPixel(this.model.get("latlng")),

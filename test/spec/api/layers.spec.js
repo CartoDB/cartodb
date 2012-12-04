@@ -139,6 +139,26 @@ describe('api.layers', function() {
           expect(layer.model.attributes.extra_params.cache_buster).toEqual('jaja');
         });
       });
+
+      it("should load vis.json without infowindows", function() {
+        var layer;
+        var s = sinon.spy();
+        runs(function() {
+          cartodb.createLayer(map, { 
+            updated_at: 'jaja',
+            layers: [
+              null,
+              {kind: 'cartodb', options: { user_name: 'test'}, infowindow: { fields: [], template: '' } }
+            ]
+          }, s).done(function(lyr) {
+            layer = lyr;
+          });
+        });
+        waits(10);
+        runs(function() {
+          expect(s.called).toEqual(true);
+        });
+      });
     });
 
   };

@@ -338,7 +338,7 @@ class User < Sequel::Model
       AND table_name != 'spatial_ref_sys' AND table_type = 'BASE TABLE'").first[:sum]
 
     # hack for the_geom_webmercator
-    size / 2
+    size.to_i / 2
   end
 
   def real_tables

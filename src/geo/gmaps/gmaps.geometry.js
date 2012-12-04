@@ -34,7 +34,7 @@ function PointView(geometryModel) {
     {
       icon: {
           url: '/assets/icons/default_marker.png',
-          anchor: {x: 11, y: 11}
+          anchor: {x: 10, y: 10}
       }
     }
   );
@@ -99,6 +99,7 @@ function PathView(geometryModel) {
   
 
   var style = _.clone(geometryModel.get('style')) || {};
+  console.log(style);
 
   this.geom = new GeoJSON (
     geometryModel.get('geojson'),

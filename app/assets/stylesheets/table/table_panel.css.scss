@@ -107,6 +107,7 @@
           // tool buttons
           &.add_row {@include icons-sprite(table_icons, $offset-x:22px, $offset-y:-307px);}
           &.add_column {@include icons-sprite(table_icons, $offset-x:22px, $offset-y:-247px);}
+          &.add_feature {@include icons-sprite(table_icons, $offset-x:19px, $offset-y:-489px);}
 
           &:hover {
             cursor:pointer;

@@ -275,7 +275,7 @@ div.map {
     @include inline-block;
     top: 20px;
     left: 50%;
-    margin-left:-67px;
+    margin-left:-120px;
     padding:11px;
     background: #FFF;
     border:1px solid #999999;
@@ -287,6 +287,7 @@ div.map {
     a {
       position:relative;
       @include inline-block();
+      vertical-align: top;
     }
   }
 

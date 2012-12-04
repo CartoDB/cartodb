@@ -191,12 +191,24 @@ cdb.ui.common.Table = cdb.core.View.extend({
     this.add_related_model(this.dataModel);
     this.add_related_model(this.model);
 
-    this.dataModel.bind('destroy', function() {
-      self.rowDestroyed();
-      if(self.dataModel.length == 0) {
-        self.emptyTable();
+    // we need to use custom signals to make the tableview aware of a row being deleted,
+    // because when you delete a point from the map view, sometimes it isn't on the dataModel
+    // collection, so its destroy doesn't bubble throught there.
+    // Also, the only non-custom way to acknowledge that a row has been correctly deleted from a server is with
+    // a sync, that doesn't bubble through the table
+    this.model.bind('removing:row', function() {
+      self.rowsBeingDeleted = self.rowsBeingDeleted ? self.rowsBeingDeleted +1 : 1;
+      self.rowDestroying();
+    });
+    this.model.bind('remove:row', function() {
+      if(self.rowsBeingDeleted > 0) {
+        self.rowsBeingDeleted--;
+        self.rowDestroyed();
+        if(self.dataModel.length == 0) {
+          self.emptyTable();
+        }
       }
-    })
+    });
 
   },
 
@@ -253,7 +265,6 @@ cdb.ui.common.Table = cdb.core.View.extend({
       order: this.model.columnNames(),
       row_header: this.options.row_header
     });
-    self.retrigger('destroyRow', tr);
     tr.tableView = this;
 
     tr.bind('clean', function() {
@@ -316,6 +327,13 @@ cdb.ui.common.Table = cdb.core.View.extend({
   * @abstract
   */
   rowSaving: function() {},
+
+  /**
+  * Callback executed when a row is being destroyed
+  * @method rowDestroyed
+  * @abstract
+  */
+  rowDestroying: function() {},
 
   /**
   * Callback executed when a row gets destroyed

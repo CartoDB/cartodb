@@ -11,7 +11,7 @@
     display:block;
     width:108px;
     top:-10px;
-    max-width:130px;
+    max-width:140px;
     height:auto;
     max-height:120px;
     background:white;
@@ -29,6 +29,9 @@
         line-height:35px;
         padding:0 10px;
         font-size:13px;
+        text-overflow:ellipsis;
+        overflow:hidden;
+        white-space:nowrap;
       }
 
       &:first-child {@include border-top-radius(3px)}

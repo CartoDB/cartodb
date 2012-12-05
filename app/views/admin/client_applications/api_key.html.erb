@@ -20,7 +20,7 @@
       <div class="head">
         <h3>Your Api key</h3>
         <nav>
-          <%= link_to "SIMPLE KEY", "/your_apps/api_key", :class => "strong smaller uppercase selected" %>
+          <%= link_to "API KEY", "/your_apps/api_key", :class => "strong smaller uppercase selected" %>
           <%= link_to "OAUTH", "/your_apps/oauth", :class => "strong smaller uppercase" %>
         </nav>
       </div>
@@ -37,7 +37,7 @@
           <li class="dark">
             <div class="list">
               <label class="dark strong small">Example write:</label>
-              <p class="small margin5">http://<%= current_user.username %>.cartodb.com/api/v2/sql?q=INSERT INTO table_name (the_geom, observation) VALUES (ST_GeomFromText(’POINT(-71.2 42.5)’, 4326),’rare bird spotted’)&api_key=<%= current_user.get_map_key %></p>
+              <p class="small margin5">http://<%= current_user.username %>.cartodb.com/api/v2/sql?q=INSERT INTO table_name (the_geom, observation) VALUES (ST_GeomFromText(’POINT(-71.2 42.5)’, 4326),'rare bird spotted')&api_key=<%= current_user.get_map_key %></p>
             </div>
             <div class="list margin15">
               <label class="dark strong small">Example private table read:</label>

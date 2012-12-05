@@ -21,7 +21,7 @@ module CartoDB
           @data_import.log_update("ogr2ogr #{@working_data[:suggested_name]}")
 
           ogr2ogr_bin_path = `which ogr2ogr`.strip
-          ogr2ogr_command = %Q{PGCLIENTENCODING=#{encoding_to_try} #{ogr2ogr_bin_path} -f "PostgreSQL" PG:"host=#{@db_configuration[:host]} port=#{@db_configuration[:port]} user=#{@db_configuration[:username]} dbname=#{@db_configuration[:database]}" #{@working_data[:path]} -nln #{@working_data[:suggested_name]}}
+          ogr2ogr_command = %Q{PGCLIENTENCODING=#{encoding_to_try} #{ogr2ogr_bin_path} -lco FID=cartodb_id -f "PostgreSQL" PG:"host=#{@db_configuration[:host]} port=#{@db_configuration[:port]} user=#{@db_configuration[:username]} dbname=#{@db_configuration[:database]}" #{@working_data[:path]} -nln #{@working_data[:suggested_name]}}
 
           stdin,  stdout, stderr = Open3.popen3(ogr2ogr_command)
 
@@ -88,25 +88,47 @@ module CartoDB
           column_names = @db_connection.schema(@working_data[:suggested_name]).map{ |s| s[0].to_s }
           if column_names.include? "geojson"
             @data_import.log_update("update the_geom")
-            if res = @db_connection["select GeometryType(ST_GeomFromGeoJSON(geojson)) as geometry_type from #{@working_data[:suggested_name]} WHERE geojson is not null and geojson != '' limit 1"].first
 
+            if res = @db_connection["select geojson from #{@working_data[:suggested_name]} WHERE geojson is not null and geojson != '' limit 1"].first
               # attempt to read as geojson. If it fails, continue
               begin
-                geometry_type = res[:geometry_type]
+                geojson       = RGeo::GeoJSON.decode(res[:geojson], :json_parser => :json)
+                geometry_type = geojson.geometry_type.type_name.upcase
 
                 if geometry_type
                   # move original geometry column around
-                  @db_connection.run("SELECT AddGeometryColumn('#{@working_data[:suggested_name]}','the_geom',4326, '#{geometry_type}', 2)")
+                  @db_connection.run("SELECT AddGeometryColumn('#{@working_data[:suggested_name]}', 'the_geom', 4326, 'geometry', 2)")
+
+                  @data_import.log_update("converting GeoJSON to the_geom")
+
+                  sql_values = []
+                  @db_connection["select geojson, cartodb_id from #{@working_data[:suggested_name]} where geojson != '' and geojson is not null "].each do |res|
+                    begin
+                      geojson = RGeo::GeoJSON.decode(res[:geojson], :json_parser => :json)
+                      
+                      if geojson
+                        sql_values << "(ST_SetSRID(ST_GeomFromText('#{geojson.as_text}'), 4326), #{res[:cartodb_id]})"
+                      end
+                    rescue => e
+                      @runlog.err << "silently fail conversion #{geojson.inspect} to #{@working_data[:suggested_name]}. #{e.inspect}"
+                      @data_import.log_error("ERROR: silently fail conversion #{geojson.inspect} to #{@working_data[:suggested_name]}. #{e.inspect}")
+                    end
+                  end
+                  
+                  @db_connection.run(<<-GEOREF
+                    UPDATE #{@working_data[:suggested_name]} o SET the_geom = n.the_geom
+                      FROM ( VALUES
+                      #{sql_values.join(',')}
+                      ) AS n(the_geom, cartodb_id)
+                      WHERE o.cartodb_id = n.cartodb_id;
+                  GEOREF
+                  )
 
                   add_index @working_data[:suggested_name], random_index_name
 
-                  @data_import.log_update("converting GeoJSON to the_geom")
-                  @db_connection.run("UPDATE #{@working_data[:suggested_name]} SET the_geom = ST_SetSRID(ST_GeomFromGeoJSON(geojson), 4326) WHERE geojson IS NOT NULL AND geojson != ''");
-
-                  # Drop original the_geom column
-                  @db_connection.run("ALTER TABLE #{@working_data[:suggested_name]} DROP COLUMN geojson")
-
                   column_names << 'the_geom'
+                  column_names.delete('geojson')
+                  @db_connection.run("ALTER TABLE #{@working_data[:suggested_name]} DROP COLUMN geojson;")
                 end
               rescue => e
                 column_names.delete('the_geom')

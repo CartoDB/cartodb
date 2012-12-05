@@ -17,6 +17,7 @@ class Table < Sequel::Model(:user_tables)
   DEFAULT_THE_GEOM_TYPE = "geometry"
 
   many_to_one :map
+  plugin :association_dependencies, :map => :destroy
 
   def public_values(options = {})
     selected_attrs = options[:except].present? ? PUBLIC_ATTRIBUTES.select { |k, v| !options[:except].include?(k.to_sym) } : PUBLIC_ATTRIBUTES
@@ -355,7 +356,6 @@ class Table < Sequel::Model(:user_tables)
     User.filter(:id => user_id).update(:tables_count => :tables_count + 1)
     owner.in_database(:as => :superuser).run(%Q{GRANT SELECT ON "#{self.name}" TO #{CartoDB::TILE_DB_USER};})
     add_python
-    delete_tile_style
     flush_cache
     set_trigger_update_updated_at
     set_trigger_cache_timestamp
@@ -438,6 +438,7 @@ class Table < Sequel::Model(:user_tables)
     end
     remove_table_from_stats
     invalidate_varnish_cache
+    delete_tile_style
   end
   ## End of Callbacks
 
@@ -1302,6 +1303,14 @@ TRIGGER
     @owner ||= User.select(:id,:database_name,:crypted_password,:quota_in_bytes,:username, :private_tables_enabled, :table_quota, :account_type).filter(:id => self.user_id).first
   end
 
+  def table_style
+    self.map.data_layers.first.options['tile_style']
+  end
+
+  def table_style_from_redis
+    $tables_metadata.get("map_style|#{self.database_name}|#{self.name}")
+  end
+
   private
 
   def update_updated_at
@@ -1558,7 +1567,7 @@ SQL
 
   def delete_tile_style
     begin
-      #tile_request('DELETE', "/tiles/#{self.name}/style?map_key=#{owner.get_map_key}")
+      tile_request('DELETE', "/tiles/#{self.name}/style?map_key=#{owner.get_map_key}")
     rescue => e
       CartoDB::Logger.info "tilestyle#delete error", "#{e.inspect}"
     end

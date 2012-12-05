@@ -112,8 +112,8 @@ var Vis = cdb.core.View.extend({
 
 
   load: function(data, options) {
+    var self = this;
     if(typeof(data) === 'string') {
-      var self = this;
       var url = data;
       reqwest({
           url: url + (~url.indexOf('?') ? '&' : '?') + 'callback=vizjson',
@@ -228,6 +228,10 @@ var Vis = cdb.core.View.extend({
       var layerData = data.layers[i];
       this.loadLayer(layerData);
     }
+
+    _.defer(function() {
+      self.trigger('done', self, self.getLayers());
+    })
 
     return this;
   },
@@ -448,12 +452,30 @@ var Vis = cdb.core.View.extend({
   },
 
   error: function(fn) {
-    this.bind('error', fn);
+    return this.bind('error', fn);
   },
 
+  done: function(fn) {
+    return this.bind('done', fn);
+  },
+
+  // public methods
+  //
+
+  // get the native map used behind the scenes
   getNativeMap: function() {
     return this.mapView.getNativeMap();
+  },
+
+  // returns an array of layers
+  getLayers: function() {
+    var self = this;
+    return this.map.layers.map(function(layer) {
+      return self.mapView.getLayerByCid(layer.cid);
+    });
   }
+
+
 
 });
 

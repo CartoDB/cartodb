@@ -104,6 +104,24 @@ describe("Vis", function() {
     expect(this.vis.getNativeMap()).toEqual(this.vis.mapView.map_leaflet);
   })
 
+  it("load should call done", function() {
+    this.mapConfig.layers = [{
+      kind: 'tiled',
+      options: {
+        urlTemplate: 'https://dnv9my2eseobd.cloudfront.net/v3/{z}/{x}/{y}.png'
+      }
+    }]
+    layers = null;
+    runs(function() {
+      this.vis.load(this.mapConfig, { }).done(function(vis, lys){  layers = lys;});
+    })
+    waits(100);
+    runs(function() {
+      expect(layers.length).toEqual(1);
+    });
+
+  });
+
   it("should add header", function() {
     this.vis.load(this.mapConfig, {
       title: true

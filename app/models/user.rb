@@ -59,10 +59,18 @@ class User < Sequel::Model
     save_metadata
   end
 
-  def after_destroy_commit
+  def before_destroy
+    # Remove user tables
+    self.tables.all.each { |t| t.destroy }
+
     # Remove metadata from redis
     $users_metadata.DEL(self.key)
 
+    # Invalidate user cache
+    self.invalidate_varnish_cache
+  end
+
+  def after_destroy_commit
     # Remove database
     Thread.new do
       conn = Rails::Sequel.connection
@@ -71,9 +79,6 @@ class User < Sequel::Model
         conn.run("DROP DATABASE #{database_name}")
         conn.run("DROP USER #{database_username}")
     end.join
-
-    # Invalidate user cache
-    self.invalidate_varnish_cache
   end
 
   def invalidate_varnish_cache

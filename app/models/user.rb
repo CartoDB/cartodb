@@ -59,10 +59,18 @@ class User < Sequel::Model
     save_metadata
   end
 
-  def after_destroy_commit
+  def before_destroy
+    # Remove user tables
+    self.tables.all.each { |t| t.destroy }
+
     # Remove metadata from redis
     $users_metadata.DEL(self.key)
 
+    # Invalidate user cache
+    self.invalidate_varnish_cache
+  end
+
+  def after_destroy_commit
     # Remove database
     Thread.new do
       conn = Rails::Sequel.connection
@@ -71,9 +79,6 @@ class User < Sequel::Model
         conn.run("DROP DATABASE #{database_name}")
         conn.run("DROP USER #{database_username}")
     end.join
-
-    # Invalidate user cache
-    self.invalidate_varnish_cache
   end
 
   def invalidate_varnish_cache
@@ -332,10 +337,17 @@ class User < Sequel::Model
   # TODO: Without a full table scan, ignoring the_geom_webmercator, we cannot accuratly asses table size
   # Needs to go on a background job.
   def db_size_in_bytes
-    size = in_database(:as => :superuser).fetch("SELECT sum(pg_relation_size(quote_ident(table_name)))
-      FROM information_schema.tables
-      WHERE table_catalog = '#{database_name}' AND table_schema = 'public'
-      AND table_name != 'spatial_ref_sys' AND table_type = 'BASE TABLE'").first[:sum]
+    attempts = 0
+    begin
+      size = in_database(:as => :superuser).fetch("SELECT sum(pg_relation_size(quote_ident(table_name)))
+        FROM information_schema.tables
+        WHERE table_catalog = '#{database_name}' AND table_schema = 'public'
+        AND table_name != 'spatial_ref_sys' AND table_type = 'BASE TABLE'").first[:sum] rescue 0
+    rescue
+      attempts += 1
+      in_database(:as => :superuser).fetch("ANALYZE")
+      retry unless attempts > 1
+    end
 
     # hack for the_geom_webmercator
     size.to_i / 2

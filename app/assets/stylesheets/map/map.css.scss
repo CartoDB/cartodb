@@ -275,7 +275,7 @@ div.map {
     @include inline-block;
     top: 20px;
     left: 50%;
-    margin-left:-67px;
+    margin-left:-120px;
     padding:11px;
     background: #FFF;
     border:1px solid #999999;
@@ -287,6 +287,32 @@ div.map {
     a {
       position:relative;
       @include inline-block();
+      vertical-align: top;
+    }
+
+    span.tooltip {
+      position:absolute;
+      width:313px;
+      top:65px;
+      left:-90px;
+      background:rgba(0,0,0,0.8);
+      @include border-radius(2px);
+      text-align:center;
+
+      p {line-height:35px; font-size:13px;}
+
+      &:before {
+        position:absolute;
+        content:'';
+        width:0;
+        height:0;
+        left:50%;
+        top:-6px;
+        margin-left:-3px;
+        border-left:6px solid transparent;
+        border-right:6px solid transparent;
+        border-bottom:6px solid rgba(0,0,0,0.8);
+      }
     }
   }
 

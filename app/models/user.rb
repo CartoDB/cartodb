@@ -337,10 +337,17 @@ class User < Sequel::Model
   # TODO: Without a full table scan, ignoring the_geom_webmercator, we cannot accuratly asses table size
   # Needs to go on a background job.
   def db_size_in_bytes
-    size = in_database(:as => :superuser).fetch("SELECT sum(pg_relation_size(quote_ident(table_name)))
-      FROM information_schema.tables
-      WHERE table_catalog = '#{database_name}' AND table_schema = 'public'
-      AND table_name != 'spatial_ref_sys' AND table_type = 'BASE TABLE'").first[:sum]
+    attempts = 0
+    begin
+      size = in_database(:as => :superuser).fetch("SELECT sum(pg_relation_size(quote_ident(table_name)))
+        FROM information_schema.tables
+        WHERE table_catalog = '#{database_name}' AND table_schema = 'public'
+        AND table_name != 'spatial_ref_sys' AND table_type = 'BASE TABLE'").first[:sum] rescue 0
+    rescue
+      attempts += 1
+      in_database(:as => :superuser).fetch("ANALYZE")
+      retry unless attempts > 1
+    end
 
     # hack for the_geom_webmercator
     size.to_i / 2

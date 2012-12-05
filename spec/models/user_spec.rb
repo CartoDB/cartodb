@@ -318,9 +318,7 @@ describe User do
   it "should allow multiple queries in the format: insert_query; select_query" do
     query_result = @user.run_query("insert into import_csv_1 (name_of_species,family) values ('cristata barrukia','Polynoidae'); select * from import_csv_1 where family='Polynoidae' ORDER BY name_of_species ASC limit 10")
     query_result[:total_rows].should == 3
-    query_result[:rows][0][:name_of_species].should == "Barrukia cristata"
-    query_result[:rows][1][:name_of_species].should == "Eulagisca gigantea"
-    query_result[:rows][2][:name_of_species].should == "cristata barrukia"
+    query_result[:rows].map { |i| i[:name_of_species] }.should =~ ["Barrukia cristata", "Eulagisca gigantea", "cristata barrukia"]
   end
 
   it "should fail with error if table doesn't exist" do
@@ -375,5 +373,14 @@ describe User do
     CartoDB::Varnish.any_instance.expects(:purge).with("obj.http.X-Cache-Channel ~ #{doomed_user.database_name}.*").returns(true)
 
     doomed_user.destroy
+  end
+
+  it "should remove its user tables after deletion" do
+    doomed_user = create_user :email => 'doomed2@example.com', :username => 'doomed2', :password => 'doomed123'
+    CartoDB::Varnish.any_instance.expects(:purge).with("obj.http.X-Cache-Channel ~ #{doomed_user.database_name}.*").returns(true)
+
+    doomed_user.destroy
+
+    Table.filter(:user_id => doomed_user.id).count.should == 0
   end
 end

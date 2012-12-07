@@ -38,6 +38,17 @@
         display: none;
       }
     }
-
+    div.loader {
+      display:block;
+      width:100%;
+      height:50px;
+      text-align: center;
+      .loading {
+        img {
+          display: block;
+          margin: 0 auto 5px;
+        }
+      }
+    }
 
   }

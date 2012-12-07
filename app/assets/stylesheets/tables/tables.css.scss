@@ -506,6 +506,10 @@
               }
             }
             &:last-child {margin:0}
+
+            &.view_all {
+              a {color:#2483B4;}
+            }
           }
 
           &:last-child {margin:25px 0 0 0; border:none;}

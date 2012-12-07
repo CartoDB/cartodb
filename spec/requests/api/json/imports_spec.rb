@@ -178,15 +178,13 @@ describe "Imports API" do
 
     @table_from_sql = Table.all.last
     @table_from_sql.rows_counted.should be == @table_from_import.rows_counted
+    @table_from_sql.has_trigger?('update_the_geom_webmercator_trigger').should == true
   end
 
   it 'allows users to duplicate tables' do
-    f = upload_file('db/fake_data/column_number_to_boolean.csv', 'text/csv')
-    post v1_imports_url(:host       => 'test.localhost.lan',
-                        :filename   => 'column_number_to_boolean.csv',
-                        :api_key    => @user.get_map_key,
-                        :table_name => "wadus"), f.read.force_encoding('UTF-8')
-
+    post v1_imports_url(:host => 'test.localhost.lan'),
+      :filename       => upload_file('spec/support/data/_penguins_below_80 (2).tgz', 'application/octet-stream'),
+      :api_key        => @user.get_map_key
 
     @table_from_import = Table.all.last
 
@@ -207,6 +205,7 @@ describe "Imports API" do
 
     @table_from_sql = Table.all.last
     @table_from_sql.rows_counted.should be == @table_from_import.rows_counted
+    @table_from_sql.has_trigger?('update_the_geom_webmercator_trigger').should == true
   end
 
   it 'allows users to get a list of pending imports'

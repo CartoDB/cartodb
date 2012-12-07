@@ -113,6 +113,7 @@ cdb.geo.CartoDBLayer = cdb.geo.MapLayer.extend({
     opacity: 0.99,
     auto_bound: false,
     interactivity: null,
+    interaction: true,
     debug: false,
     tiler_domain: "cartodb.com",
     tiler_port: "80",

@@ -133,6 +133,8 @@
         map.viz = viz = new cdb.vis.Vis({
           mapView: mapView
         });
+
+        viz.updated_at = visData.updated_at;
       }
 
       layerView = viz.createLayer(layerData, { no_base_layer: true });

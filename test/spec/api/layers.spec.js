@@ -127,7 +127,8 @@ describe('api.layers', function() {
             updated_at: 'jaja',
             layers: [
               null,
-              {kind: 'plain', options: {} }
+              //{kind: 'plain', options: {} }
+              {kind: 'cartodb', options: { user_name: 'test', table: 'test'} }
             ]
           }, s).done(function(lyr) {
             layer = lyr;

@@ -307,7 +307,7 @@ class Table < Sequel::Model(:user_tables)
         @data_import.log_update("dropping table #{self.name}")
       end
     end
-    
+
     if @import_from_file
       @import_from_file = URI.escape(@import_from_file) if @import_from_file =~ /^http/
       open(@import_from_file) do |res|
@@ -1190,8 +1190,8 @@ class Table < Sequel::Model(:user_tables)
 
   def has_trigger?(trigger_name)
     owner.in_database(:as => :superuser).select('trigger_name').from(:information_schema__triggers)
-      .where(:event_object_catalog => owner.database_name, 
-             :event_object_table => self.name, 
+      .where(:event_object_catalog => owner.database_name,
+             :event_object_table => self.name,
              :trigger_name => trigger_name).count > 0
   end
 
@@ -1454,9 +1454,7 @@ TRIGGER
       end
 
       # Ensure we add the webmercator trigger when is needed
-      if !updates 
-         && user_database.schema(name, :reload => true).flatten.include?(THE_GEOM_WEBMERCATOR) 
-         && !self.has_trigger?("update_the_geom_webmercator_trigger")
+      if !updates && user_database.schema(name, :reload => true).flatten.include?(THE_GEOM_WEBMERCATOR) && !self.has_trigger?("update_the_geom_webmercator_trigger")
         updates = true
       end
     end

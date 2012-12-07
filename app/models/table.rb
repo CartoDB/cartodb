@@ -239,7 +239,6 @@ class Table < Sequel::Model(:user_tables)
 
     # The Table model only migrates now, never imports
     if migrate_existing_table.present?
-
       #init state machine
       if self.data_import_id.nil? #needed for non ui-created tables
         @data_import  = DataImport.new(:user_id => self.user_id)
@@ -1189,6 +1188,13 @@ class Table < Sequel::Model(:user_tables)
     )
   end
 
+  def has_trigger?(trigger_name)
+    owner.in_database(:as => :superuser).select('trigger_name').from(:information_schema__triggers)
+      .where(:event_object_catalog => owner.database_name, 
+             :event_object_table => self.name, 
+             :trigger_name => trigger_name).count > 0
+  end
+
   def set_trigger_the_geom_webmercator
     return true unless self.schema(:reload => true).flatten.include?(THE_GEOM)
     owner.in_database(:as => :superuser) do |user_database|
@@ -1445,6 +1451,13 @@ TRIGGER
         user_database.run(%Q{CREATE INDEX ON "#{self.name}" USING GIST(#{THE_GEOM_WEBMERCATOR})})
 
         # user_database.run(%Q{ALTER TABLE "#{self.name}" ADD CONSTRAINT geometry_valid_check CHECK (ST_IsValid(#{THE_GEOM}))})
+      end
+
+      # Ensure we add the webmercator trigger when is needed
+      if !updates 
+         && user_database.schema(name, :reload => true).flatten.include?(THE_GEOM_WEBMERCATOR) 
+         && !self.has_trigger?("update_the_geom_webmercator_trigger")
+        updates = true
       end
     end
     self.the_geom_type = type.downcase

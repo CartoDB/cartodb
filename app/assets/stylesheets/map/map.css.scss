@@ -72,6 +72,7 @@ div.map {
           background-position:-22px -22px;//!important;
           @include border-radius(4px);
           @include text-indent();
+          text-decoration:none;
 
           &:hover {
             cursor:pointer;
@@ -80,12 +81,11 @@ div.map {
           }
 
           span.color {
-            position:absolute;
+            position:relative;
             display:block;
-            top:50%;
-            left:0;
             width:100%;
-            margin:-6px 0 0 0;
+            height:14px;
+            padding:15px 0;
             text-indent:0;
             font:bold 9px $text-fonts;
             color:rgba(#999,0.8);

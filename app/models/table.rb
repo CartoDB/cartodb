@@ -25,7 +25,7 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def geometry_types
-    owner.in_database.fetch(%Q{SELECT distinct(ST_GeometryType(the_geom)) from "#{self.name}"}).all.map {|r| r[:st_geometrytype] }
+    owner.in_database.fetch(%Q{SELECT distinct(ST_GeometryType(the_geom)) from "#{self.name}" LIMIT 1}).all.map {|r| r[:st_geometrytype] }
   end
 
   def_dataset_method(:search) do |query|

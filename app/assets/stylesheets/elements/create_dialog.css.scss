@@ -88,6 +88,12 @@
               background:white;
               z-index:10;
 
+              &.active {
+                outline:none;
+                border-color:#999999;
+                @include box-shadow(rgba(0,0,0,0.1) 0 0 2px 2px);
+              }
+
               span.drop {
                 display:none;
                 position:absolute;

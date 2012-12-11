@@ -4,7 +4,6 @@
 
 This library allows you to use visualizations created on [CartoDB](http://cartodb.com/ "cartodb") in your website and in your maps. Below are descriptions for each of the methods. Also check the examples page to see the API in action.
 
-<span class="separate"></span>
 
 ### Globals
 
@@ -73,7 +72,6 @@ Promise object. You can listen for the following events:
 ```
 
 
-<span class="separate"></span>
 
 ### CartoDB layer
 
@@ -223,7 +221,6 @@ Here are each of the layer types you can get:
   Same as **featureOver**.
 
 
-<span class="separate"></span>
 
 
 ### SQL

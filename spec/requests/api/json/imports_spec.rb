@@ -206,6 +206,7 @@ describe "Imports API" do
     @table_from_sql = Table.all.last
     @table_from_sql.rows_counted.should be == @table_from_import.rows_counted
     @table_from_sql.has_trigger?('update_the_geom_webmercator_trigger').should == true
+    @table_from_sql.has_trigger?('update_updated_at_trigger').should == true
   end
 
   it 'allows users to get a list of pending imports'

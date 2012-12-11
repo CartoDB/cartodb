@@ -6,7 +6,9 @@
   @import "compass";
 
   .all_tags .modal div.content {
+    overflow:auto;
     max-height:250px;
+    
     ul {
       display:block;
       width:100%;
@@ -15,6 +17,7 @@
 
       li {
         @include inline-block();
+        vertical-align: top;
         width:190px;
         margin:0 10px 0 0;
         padding:9px 0;

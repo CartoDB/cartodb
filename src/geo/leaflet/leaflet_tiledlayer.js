@@ -11,7 +11,7 @@ var LeafLetTiledLayerView = L.TileLayer.extend({
       attribution:  layerModel.get('attribution'),
       minZoom:      layerModel.get('minZomm'),
       maxZoom:      layerModel.get('maxZoom'),
-      subdomains:   layerModel.get('subdomains') || '',
+      subdomains:   layerModel.get('subdomains') || 'abc',
       errorTileUrl: layerModel.get('errorTileUrl'),
       opacity:      layerModel.get('opacity')
     });

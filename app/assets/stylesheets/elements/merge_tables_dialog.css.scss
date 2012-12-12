@@ -1,0 +1,24 @@
+
+  /**
+   *  Merge tables dialog
+   */
+  @import "compass";
+
+  .merge_tables_dialog {
+
+    .modal.merging {
+      display:none;
+      width:300px!important;
+
+      div.loader {
+        padding-top:40px;
+        @include background(image-url('layout/loader.gif') no-repeat center top);
+        p {text-align:center;}  
+      }
+    }
+
+    .modal.error {
+      display:none;
+      width:600px!important;
+    }
+  }

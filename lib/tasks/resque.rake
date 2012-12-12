@@ -1,4 +1,5 @@
 namespace :resque do
+
   desc "Quit running workers"
   task :stop_workers => :environment do
     pids = []

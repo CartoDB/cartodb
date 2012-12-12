@@ -1,5 +1,7 @@
 (function() {
 
+var _requestCache = {};
+
 /**
  * defines the container for an overlay.
  * It places the overlay
@@ -54,6 +56,44 @@ var Layers = {
 
 cdb.vis.Layers = Layers;
 
+var Loader = cdb.vis.Loader = {
+
+  queue: [],
+  current: undefined,
+  _script: null,
+  head: null,
+
+  get: function(url, callback) {
+    if(!Loader._script) {
+      Loader.current = callback;
+      var script = document.createElement('script');
+      script.type = 'text/javascript';
+      script.src = url + (~url.indexOf('?') ? '&' : '?') + 'callback=vizjson';
+      script.async = true
+      Loader._script = script;
+      if(!Loader.head) {
+        Loader.head = document.getElementsByTagName('head')[0];
+      }
+      Loader.head.appendChild(script);
+    } else {
+      Loader.queue.push([url, callback]);
+    }
+  }
+
+};
+
+window.vizjson = function(data) {
+  Loader.current && Loader.current(data);
+  // remove script
+  Loader.head.removeChild(Loader._script);
+  Loader._script = null;
+  // next element
+  var a = Loader.queue.shift();
+  if(a) {
+    Loader.get(a[0], a[1]);
+  }
+};
+
 /**
  * visulization creation
  */
@@ -72,12 +112,22 @@ var Vis = cdb.core.View.extend({
 
 
   load: function(data, options) {
+    var self = this;
     if(typeof(data) === 'string') {
-      var self = this;
-      $.getJSON(data + "?callback=?", function(d) {
-        self.load(d, options);
+      var url = data;
+      reqwest({
+          url: url + (~url.indexOf('?') ? '&' : '?') + 'callback=vizjson',
+          type: 'jsonp',
+          jsonpCallback: 'callback',
+          success: function(data) {
+            if(data) {
+              self.load(data, options);
+            } else {
+              self.trigger('error', 'error fetching viz.json file');
+            }
+          }
       });
-      return;
+      return this;
     }
 
     // configure the vis in http or https
@@ -119,11 +169,12 @@ var Vis = cdb.core.View.extend({
         center = $.parseJSON(center);
       }
       mapConfig.center = center || [0, 0];
-      mapConfig.zoom = data.zoom || 4;
+      mapConfig.zoom = data.zoom == undefined ? 4: data.zoom;
     }
 
     var map = new cdb.geo.Map(mapConfig);
     this.map = map;
+    this.updated_at = data.updated_at || new Date().getTime();
 
     var div = $('<div>').css({
       width: '100%',
@@ -177,17 +228,25 @@ var Vis = cdb.core.View.extend({
       var layerData = data.layers[i];
       this.loadLayer(layerData);
     }
-  },
 
+    _.defer(function() {
+      self.trigger('done', self, self.getLayers());
+    })
+
+    return this;
+  },
 
   // change vizjson based on options
   _applyOptions: function(vizjson, opt) {
     opt = opt || {};
     opt = _.defaults(opt, {
-      search: true,
-      title: true,
-      description: true
+      search: false,
+      title: false,
+      description: false,
+      tiles_loader: true
     });
+    vizjson.overlays = vizjson.overlays || [];
+    vizjson.layers = vizjson.layers || [];
 
     function search_overlay(name) {
       if(!vizjson.overlays) return null;
@@ -213,12 +272,18 @@ var Vis = cdb.core.View.extend({
     }
 
     // remove search if the vizualization does not contain it
-    if (opt.search != undefined && !opt.search) {
-      remove_overlay('search');
+    if (opt.search) {
+      vizjson.overlays.push({
+         type: "search"
+      });
     }
 
-    if(!opt.title  && !opt.description  && !opt.shareable) {
-      remove_overlay('header');
+    if(opt.title  || opt.description || opt.shareable) {
+      vizjson.overlays.unshift({
+        type: "header",
+        shareable: opt.shareable ? true: false,
+        url: vizjson.url
+      });
     }
 
     if(!opt.title) {
@@ -229,20 +294,19 @@ var Vis = cdb.core.View.extend({
       vizjson.description = null;
     }
 
-    if(!opt.shareable) {
-      var s = search_overlay('header');
-      if(s) {
-        s.shareable = false;
-      }
+    if(!opt.tiles_loader) {
+      remove_overlay('loader');
     }
 
     // if bounds are present zoom and center will not taken into account
     if(opt.zoom !== undefined) {
       vizjson.zoom = parseFloat(opt.zoom);
+      vizjson.bounds = null;
     }
 
     if(opt.center_lat !== undefined) {
       vizjson.center = [parseFloat(opt.center_lat), parseFloat(opt.center_lon)];
+      vizjson.bounds = null;
     }
 
     if(opt.sw_lat !== undefined) {
@@ -252,15 +316,16 @@ var Vis = cdb.core.View.extend({
       ];
     }
 
+    if(vizjson.layers.length > 1) {
+      if(opt.sql) {
+        vizjson.layers[1].options.query = opt.sql;
+      }
+      if(opt.style) {
+        vizjson.layers[1].options.tile_style = opt.style;
+      }
 
-    if(opt.sql) {
-      vizjson.layers[1].options.query = opt.sql;
+      vizjson.layers[1].options.no_cdn = opt.no_cdn;
     }
-    if(opt.style) {
-      vizjson.layers[1].options.tile_style = opt.style;
-    }
-
-    vizjson.layers[1].options.no_cdn = opt.no_cdn;
 
   },
 
@@ -286,26 +351,58 @@ var Vis = cdb.core.View.extend({
     mapView.addInfowindow(infowindow);
 
     var infowindowFields = layerView.model.get('infowindow');
+    // HACK: REMOVE
+    var port = model.get('sql_port');
+    var domain = model.get('sql_domain') + (port ? ':' + port: '')
+    var protocol = model.get('sql_protocol');
+    var version = 'v1';
+    if(domain.indexOf('cartodb.com') !== -1) {
+      protocol = 'http';
+      domain = "cartodb.com";
+      version = 'v2';
+    }
+
+    var sql = new cartodb.SQL({
+      user: model.get('user_name'),
+      protocol: protocol,
+      host: domain,
+      version: version
+    });
 
     // if the layer has no infowindow just pass the interaction
     // data to the infowindow
-    layerView.bind(eventType, function(e, latlng, pos, interact_data) {
-        var content = interact_data;
-        if(infowindowFields) {
-          var render_fields = [];
-          var fields = infowindowFields.fields;
-          for(var j = 0; j < fields.length; ++j) {
-            var f = fields[j];
-            render_fields.push({
-              title: f.title ? f.name: null,
-              value: interact_data[f.name],
-              index: j ? j:null // mustache does not recognize 0 as false :( 
-            });
+    layerView.bind(eventType, function(e, latlng, pos, data) {
+        var cartodb_id = data.cartodb_id
+        var fields = infowindowFields.fields;
+        sql.execute("select {{fields}} from {{table_name}} where cartodb_id = {{cartodb_id }}", {
+          fields: _.pluck(fields, 'name').join(','),
+          cartodb_id: cartodb_id,
+          table_name: model.get('table_name')
+        }).done(function(interact_data) {
+          if(interact_data.rows.length == 0 ) return;
+          interact_data = interact_data.rows[0];
+          if(infowindowFields) {
+            var render_fields = [];
+            var fields = infowindowFields.fields;
+            for(var j = 0; j < fields.length; ++j) {
+              var f = fields[j];
+              render_fields.push({
+                title: f.title ? f.name: null,
+                value: interact_data[f.name],
+                index: j ? j:null // mustache does not recognize 0 as false :( 
+              });
+            }
+            content = render_fields;
           }
-          content = render_fields;
-        }
-        infowindow.model.set({ content:  { fields: content, data: interact_data} });
-        infowindow.setLatLng(latlng).showInfowindow();
+          infowindow.model.set({ 
+            content:  { 
+              fields: content, 
+              data: interact_data
+            } 
+          });
+          infowindow.setLatLng(latlng).showInfowindow();
+        });
+
     });
 
     layerView.bind('featureOver', function(e, latlon, pxPos, data) {
@@ -343,12 +440,42 @@ var Vis = cdb.core.View.extend({
   },
 
   loadingTiles: function() {
-    this.loader.show()
+    if(this.loader) {
+      this.loader.show()
+    }
   },
 
   loadTiles: function() {
-    this.loader.hide();
+    if(this.loader) {
+      this.loader.hide();
+    }
+  },
+
+  error: function(fn) {
+    return this.bind('error', fn);
+  },
+
+  done: function(fn) {
+    return this.bind('done', fn);
+  },
+
+  // public methods
+  //
+
+  // get the native map used behind the scenes
+  getNativeMap: function() {
+    return this.mapView.getNativeMap();
+  },
+
+  // returns an array of layers
+  getLayers: function() {
+    var self = this;
+    return this.map.layers.map(function(layer) {
+      return self.mapView.getLayerByCid(layer.cid);
+    });
   }
+
+
 
 });
 

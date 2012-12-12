@@ -23,6 +23,14 @@ cdb.ui.common.Row = cdb.core.Model.extend({
 
 cdb.ui.common.TableData = Backbone.Collection.extend({
     model: cdb.ui.common.Row,
+    fetched: false,
+
+    initialize: function() {
+      var self = this;
+      this.bind('reset', function() {
+        self.fetched = true;
+      })
+    },
 
     /**
      * get value for row index and columnName
@@ -183,12 +191,24 @@ cdb.ui.common.Table = cdb.core.View.extend({
     this.add_related_model(this.dataModel);
     this.add_related_model(this.model);
 
-    this.dataModel.bind('destroy', function() {
-      self.rowDestroyed();
-      if(self.dataModel.length == 0) {
-        self.emptyTable();
+    // we need to use custom signals to make the tableview aware of a row being deleted,
+    // because when you delete a point from the map view, sometimes it isn't on the dataModel
+    // collection, so its destroy doesn't bubble throught there.
+    // Also, the only non-custom way to acknowledge that a row has been correctly deleted from a server is with
+    // a sync, that doesn't bubble through the table
+    this.model.bind('removing:row', function() {
+      self.rowsBeingDeleted = self.rowsBeingDeleted ? self.rowsBeingDeleted +1 : 1;
+      self.rowDestroying();
+    });
+    this.model.bind('remove:row', function() {
+      if(self.rowsBeingDeleted > 0) {
+        self.rowsBeingDeleted--;
+        self.rowDestroyed();
+        if(self.dataModel.length == 0) {
+          self.emptyTable();
+        }
       }
-    })
+    });
 
   },
 
@@ -245,7 +265,6 @@ cdb.ui.common.Table = cdb.core.View.extend({
       order: this.model.columnNames(),
       row_header: this.options.row_header
     });
-    self.retrigger('destroyRow', tr);
     tr.tableView = this;
 
     tr.bind('clean', function() {
@@ -261,8 +280,6 @@ cdb.ui.common.Table = cdb.core.View.extend({
     tr.bind('errorRow', this.rowFailed);
     tr.bind('saving', this.rowSaving);
     this.retrigger('saving', tr);
-    // tr.bind('destroyRow', this.rowDestroyed);
-    // tr.model.bind('destroy', this.rowDestroyed);
 
     tr.render();
     if(options && options.index !== undefined && options.index != self.rowViews.length) {
@@ -312,6 +329,13 @@ cdb.ui.common.Table = cdb.core.View.extend({
   rowSaving: function() {},
 
   /**
+  * Callback executed when a row is being destroyed
+  * @method rowDestroyed
+  * @abstract
+  */
+  rowDestroying: function() {},
+
+  /**
   * Callback executed when a row gets destroyed
   * @method rowDestroyed
   * @abstract
@@ -331,7 +355,7 @@ cdb.ui.common.Table = cdb.core.View.extend({
   * @returns boolean
   */
   isEmptyTable: function() {
-    return (this.dataModel.length === 0)
+    return (this.dataModel.length === 0 && this.dataModel.fetched)
   },
 
   /**
@@ -340,15 +364,22 @@ cdb.ui.common.Table = cdb.core.View.extend({
   _renderRows: function() {
     this.clear_rows();
     if(! this.isEmptyTable()) {
-      var self = this;
+      if(this.dataModel.fetched) {
+        var self = this;
 
-      this.dataModel.each(function(row) {
-        self.addRow(row);
-      });
+        this.dataModel.each(function(row) {
+          self.addRow(row);
+        });
+      } else {
+        this._renderLoading();
+      }
     } else {
       this._renderEmpty();
     }
 
+  },
+
+  _renderLoading: function() {
   },
 
   _renderEmpty: function() {

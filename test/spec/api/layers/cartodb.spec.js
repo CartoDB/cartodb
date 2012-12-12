@@ -70,7 +70,7 @@ describe('api.layers.cartodb', function() {
 
     it("should add style to the tile url", function() {
       runs(function() {
-        cartodb.createLayer(map, { kind: 'cartodb', options: { table_name: 'test'} }, function(l) {
+        cartodb.createLayer(map, { kind: 'cartodb', options: { table_name: 'test'} }).done(function(l) {
           addFn(map, l);
           layer = l;
         });
@@ -149,7 +149,8 @@ describe('api.layers.cartodb', function() {
         cartodb.createLayer(map, { 
             kind: 'cartodb', 
             options: { 
-              table_name: 'test'
+              table_name: 'test',
+              user_name: 'test'
             },
             infowindow: { 
               template: '<div></div>',
@@ -165,6 +166,33 @@ describe('api.layers.cartodb', function() {
         expect(layer.infowindow).not.toEqual(undefined);
         expect(layer.infowindow.get('fields').length).toEqual(1);
         expect(layer.infowindow.get('fields')[0].name).toEqual('test');
+        expect(layer.options.interactivity).toEqual('cartodb_id');
+      });
+    });
+
+    it("should add interactivity if there is infowindow", function() {
+      runs(function() {
+        cartodb.createLayer(map, { 
+            kind: 'cartodb', 
+            options: { 
+              table_name: 'test',
+              user_name: 'test'
+            },
+            infowindow: { 
+              template: '<div></div>',
+              fields: [{name: 'test', title: true, order: 0}] 
+            }
+        }, {
+          interactivity: 'myname,jaja'
+        }, function(l) {
+          addFn(map, l);
+          layer = l;
+        });
+      });
+      waits(100);
+      runs(function() {
+        expect(layer.infowindow).not.toEqual(undefined);
+        expect(layer.options.interactivity).toEqual('myname,jaja,cartodb_id');
       });
     });
 

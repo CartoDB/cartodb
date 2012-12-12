@@ -17,14 +17,29 @@ cdb.geo.MapLayer = cdb.core.Model.extend({
   * @param layer {Layer}
   */
   isEqual: function(layer) {
-    var me = this.toJSON();
-    var other = layer.toJSON();
-    var myType = me.type? me.type : me.options.type;
-    var itsType = other.type? other.type : other.options.type;
-    var myTemplate = me.urlTemplate? me.urlTemplate : me.options.urlTemplate;
-    var itsTemplate = other.urlTemplate? other.urlTemplate : other.options.urlTemplate;
+
+    var me          = this.toJSON()
+      , other       = layer.toJSON()
+      // Select params generated when layer is added to the map
+      , map_params  = ['id', 'order'];
+
+    // Delete from the layers copy
+    _.each(map_params, function(param){
+      delete me[param];
+      delete other[param];
+      if (me.options)     delete me.options[param];
+      if (other.options)  delete other.options[param];
+    });
+
+    var myType  = me.type? me.type : me.options.type
+      , itsType = other.type? other.type : other.options.type;
+    
     if(myType && (myType === itsType)) {
+
       if(myType === 'Tiled') {
+        var myTemplate  = me.urlTemplate? me.urlTemplate : me.options.urlTemplate
+          , itsTemplate = other.urlTemplate? other.urlTemplate : other.options.urlTemplate;
+
         if(myTemplate === itsTemplate) {
           return true; // tiled and same template
         } else {
@@ -34,7 +49,7 @@ cdb.geo.MapLayer = cdb.core.Model.extend({
         var myBaseType = me.base_type? me.base_type : me.options.base_type;
         var itsBaseType = other.base_type? other.base_type : other.options.base_type;
         if(myBaseType) {
-          if(myBaseType === itsBaseType) {
+          if(_.isEqual(me,other)) {
             return true;
           } else {
             return false;

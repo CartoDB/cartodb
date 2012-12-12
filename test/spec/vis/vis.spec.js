@@ -22,6 +22,7 @@ describe("Vis", function() {
   beforeEach(function(){
     this.container = $('<div>').css('height', '200px');
     this.mapConfig = {
+      updated_at: 'cachebuster',
       title: "irrelevant",
       center: [40.044, -101.95],
       bounding_box_sw: [20, -140],
@@ -98,5 +99,54 @@ describe("Vis", function() {
         'http://a.tiles.mapbox.com/v3/{z}/{x}/{y}.png'
     )
   });
+
+  it("should return the native map obj", function() {
+    expect(this.vis.getNativeMap()).toEqual(this.vis.mapView.map_leaflet);
+  })
+
+  it("load should call done", function() {
+    this.mapConfig.layers = [{
+      kind: 'tiled',
+      options: {
+        urlTemplate: 'https://dnv9my2eseobd.cloudfront.net/v3/{z}/{x}/{y}.png'
+      }
+    }]
+    layers = null;
+    runs(function() {
+      this.vis.load(this.mapConfig, { }).done(function(vis, lys){  layers = lys;});
+    })
+    waits(100);
+    runs(function() {
+      expect(layers.length).toEqual(1);
+    });
+
+  });
+
+  it("should add header", function() {
+    this.vis.load(this.mapConfig, {
+      title: true
+    });
+    expect(this.vis.$('.header').length).toEqual(1);
+  });
+  
+  it("should use zoom", function() {
+    this.vis.load(this.mapConfig, {
+      zoom: 10,
+      bounds: [[24.206889622398023,-84.0234375],[76.9206135182968,169.1015625]]
+    });
+    expect(this.vis.map.getZoom()).toEqual(10);
+  });
+
+  it("cartodb layers should include the cache buster", function() {
+    this.mapConfig.layers = [{
+      kind: 'cartodb',
+      options: {
+        table_name: 'test'
+      }
+    }]
+    this.vis.load(this.mapConfig);
+    expect(this.vis.map.layers.at(0).attributes.extra_params.cache_buster).toEqual('cachebuster');
+  });
+
 
 })

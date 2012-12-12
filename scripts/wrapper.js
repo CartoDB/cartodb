@@ -1,9 +1,10 @@
 // cartodb.js version: <%= version %>
 // uncompressed version: cartodb.uncompressed.js
+// sha: <%= sha %>
 (function() {
   var root = this;
 
-  // save current libraryes
+  // save current libraries
   var __prev = {
     jQuery: root.jQuery,
     $: root.$,

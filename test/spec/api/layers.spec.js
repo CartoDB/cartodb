@@ -28,26 +28,26 @@ describe('api.layers', function() {
       });
 
       it("should fecth layer when user and pass are specified", function() {
-        spyOn(window, 'reqwest');
+        spyOn(cdb.vis.Loader, 'get');
         cartodb.createLayer(map, {
           user: 'development',
           table: 'clubbing',
           host: 'localhost.lan:3000',
           protocol: 'http'
         });
-        expect(window.reqwest).toHaveBeenCalled();
+        expect(cdb.vis.Loader.get).toHaveBeenCalled();
       });
 
       it("should fecth layer when a url is specified", function() {
-        spyOn(window, 'reqwest');
+        spyOn(cdb.vis.Loader, 'get');
         cartodb.createLayer(map, 'http://test.com/layer.json');
-        expect(window.reqwest).toHaveBeenCalled();
+        expect(cdb.vis.Loader.get).toHaveBeenCalled();
       });
 
       it("should not fecth layer when kind and options are specified", function() {
-        spyOn(window, 'reqwest');
+        spyOn(cdb.vis.Loader, 'get');
         cartodb.createLayer(map, { kind: 'plain', options: {} });
-        expect(window.reqwest).not.toHaveBeenCalled();
+        expect(cdb.vis.Loader.get).not.toHaveBeenCalled();
       });
 
       it("should create a layer", function() {
@@ -127,7 +127,8 @@ describe('api.layers', function() {
             updated_at: 'jaja',
             layers: [
               null,
-              {kind: 'plain', options: {} }
+              //{kind: 'plain', options: {} }
+              {kind: 'cartodb', options: { user_name: 'test', table: 'test'} }
             ]
           }, s).done(function(lyr) {
             layer = lyr;
@@ -137,6 +138,26 @@ describe('api.layers', function() {
         runs(function() {
           expect(s.called).toEqual(true);
           expect(layer.model.attributes.extra_params.cache_buster).toEqual('jaja');
+        });
+      });
+
+      it("should load vis.json without infowindows", function() {
+        var layer;
+        var s = sinon.spy();
+        runs(function() {
+          cartodb.createLayer(map, { 
+            updated_at: 'jaja',
+            layers: [
+              null,
+              {kind: 'cartodb', options: { user_name: 'test'}, infowindow: { fields: [], template: '' } }
+            ]
+          }, s).done(function(lyr) {
+            layer = lyr;
+          });
+        });
+        waits(10);
+        runs(function() {
+          expect(s.called).toEqual(true);
         });
       });
     });

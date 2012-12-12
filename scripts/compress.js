@@ -48,14 +48,17 @@ for(var i = 0; i < files.length; ++i) {
   }
 }
 
-concat_files(vendor_files, function(vendor_js) {
-  concat_files(cdb_files, function(cdb_js) {
-    fs.readFile('scripts/wrapper.js', 'utf8', function (err, final_js) {
-      fs.writeFile("dist/_cartodb.js", _.template(final_js)({
-        CDB_DEPS: vendor_js,
-        CDB_LIB: cdb_js,
-        version: package_.version
-      }));
+require('git-rev').long(function (sha) {
+  concat_files(vendor_files, function(vendor_js) {
+    concat_files(cdb_files, function(cdb_js) {
+      fs.readFile('scripts/wrapper.js', 'utf8', function (err, final_js) {
+        fs.writeFile("dist/_cartodb.js", _.template(final_js)({
+          CDB_DEPS: vendor_js,
+          CDB_LIB: cdb_js,
+          version: package_.version,
+          sha: sha
+        }));
+      });
     });
   });
 });

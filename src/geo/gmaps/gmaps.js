@@ -69,7 +69,7 @@ cdb.geo.GoogleMapsMapView = cdb.geo.MapView.extend({
     });
 
     google.maps.event.addListener(this.map_googlemaps, 'click', function(e) {
-        self.trigger('click', e);
+        self.trigger('click', e, [e.latLng.lat(), e.latLng.lng()]);
     });
 
     google.maps.event.addListener(this.map_googlemaps, 'dblclick', function(e) {
@@ -248,6 +248,10 @@ cdb.geo.GoogleMapsMapView = cdb.geo.MapView.extend({
     } else {
       geo.geom.setMap(null);
     }
+  },
+
+  getNativeMap: function() {
+    return this.map_googlemaps;
   }
 
 }, {

@@ -62,11 +62,18 @@ describe("geo.map", function() {
     });
 
     it("should compare equal layers correctly", function() {
-      var layer = new cdb.geo.CartoDBLayer({options: {urlTemplate: 'irrelevant'}});
-      layers.add(layer);
-      var copy = layer.clone();
-      expect(layer.isEqual(copy)).toBeTruthy();
+      var layer1 = new cdb.geo.PlainLayer({color: '#zipote'});
+      var layer2 = new cdb.geo.PlainLayer({});
+      var layer3 = new cdb.geo.PlainLayer({});
+      var layer4 = new cdb.geo.PlainLayer({});
+      
+      expect(layer3.isEqual(layer4)).toBeTruthy();
+      expect(layer1.isEqual(layer2)).not.toBeTruthy();
 
+      layers.add(layer4);
+      layers.add(layer3);
+
+      expect(layer3.isEqual(layer4)).toBeTruthy();
     })
 
   });
@@ -307,7 +314,7 @@ describe("geo.map", function() {
     it("should create a TiledLayerView when the layer is Tiled", function() {
       var lyr = map.addLayer(layer);
       var layerView = mapView.getLayerByCid(lyr);
-      expect(layerView.__proto__.constructor).toEqual(cdb.geo.LeafLetTiledLayerView);
+      expect(cdb.geo.LeafLetTiledLayerView.prototype.isPrototypeOf(layerView)).isPrototypeOf();
     });
 
     it("should create a CartoDBLayer when the layer is cartodb", function() {

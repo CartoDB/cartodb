@@ -390,9 +390,11 @@ _.extend(
   },
 
   error: function(e) {
-    //trigger the error form _checkTiles in the model
-    this.model.trigger('error', e?e.error:'unknown error');
-    this.model.trigger('tileError', e?e.error:'unknown error');
+    if(this.model) {
+      //trigger the error form _checkTiles in the model
+      this.model.trigger('error', e?e.error:'unknown error');
+      this.model.trigger('tileError', e?e.error:'unknown error');
+    }
   },
 
   tilesOk: function(e) {

@@ -23,7 +23,12 @@ cdb.geo.geocoder.YAHOO = {
       .replace(/ú/g,'u')
       .replace(/ /g,'+');
 
-      $.getJSON('//query.yahooapis.com/v1/public/yql?q='+encodeURIComponent('SELECT * FROM json WHERE url="http://where.yahooapis.com/geocode?q=' + address + '&appid=' + this.keys.app_id + '&flags=JX"') + '&format=json&callback=?', function(data) {
+      var protocol = '';
+      if(location.protocol.indexOf('http') === -1) {
+        protocol = 'http:';
+      }
+
+      $.getJSON(protocol + '//query.yahooapis.com/v1/public/yql?q='+encodeURIComponent('SELECT * FROM json WHERE url="http://where.yahooapis.com/geocode?q=' + address + '&appid=' + this.keys.app_id + '&flags=JX"') + '&format=json&callback=?', function(data) {
 
          var coordinates = [];
          if (data && data.query && data.query.results && data.query.results.ResultSet && data.query.results.ResultSet.Found != "0") {
@@ -77,7 +82,12 @@ cdb.geo.geocoder.NOKIA = {
       .replace(/ú/g,'u')
       .replace(/ /g,'+');
 
-      $.getJSON('//places.nlp.nokia.com/places/v1/discover/search/?q=' + address + '&app_id=' + this.keys.app_id + '&app_code=' + this.keys.app_code + '&Accept-Language=en-US&at=0,0&callback=?', function(data) {
+      var protocol = '';
+      if(location.protocol.indexOf('http') === -1) {
+        protocol = 'http:';
+      }
+      
+      $.getJSON(protocol + '//places.nlp.nokia.com/places/v1/discover/search/?q=' + address + '&app_id=' + this.keys.app_id + '&app_code=' + this.keys.app_code + '&Accept-Language=en-US&at=0,0&callback=?', function(data) {
 
          var coordinates = [];
          if (data && data.results && data.results.items && data.results.items.length > 0) {

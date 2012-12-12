@@ -4,6 +4,7 @@
 
 (function() {
 
+
   function _Promise() {
 
   }
@@ -46,15 +47,7 @@
       url = layer;
     }
     if(url) {
-      _requestCache[url] = callback;
-     reqwest({
-        url: url + (~url.indexOf('?') ? '&' : '?') + 'callback=vizjson',
-        type: 'jsonp',
-        jsonpCallback: 'callback',
-        success: function(data) {
-          _requestCache[url](data);
-        }
-     });
+      cdb.vis.Loader.get(url, callback);
     } else {
       _.defer(function() { callback(null); });
     }
@@ -124,6 +117,7 @@
         _.extend(layerData.options, options);
       } 
 
+      options = options || {};
       options = _.defaults(options, {
           infowindow: true
       })
@@ -139,10 +133,12 @@
         map.viz = viz = new cdb.vis.Vis({
           mapView: mapView
         });
+
+        viz.updated_at = visData.updated_at;
       }
 
       layerView = viz.createLayer(layerData, { no_base_layer: true });
-      if(options.infowindow && layerView.model.get('infowindow')) {
+      if(options.infowindow && layerView.model.get('infowindow') && layerView.model.get('infowindow').fields.length > 0) {
         viz.addInfowindow(layerView);
       }
       callback && callback(layerView);

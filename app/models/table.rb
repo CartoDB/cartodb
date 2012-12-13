@@ -1196,11 +1196,13 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def has_index? index_name
-    self.pg_indexes.stringify_keys.keys.include? index_name.to_s
+    self.pg_indexes.include? index_name.to_s
   end
 
   def pg_indexes
-    owner.in_database.indexes self.name
+    owner.in_database(:as => :superuser).select(:indexname)
+      .from(:pg_indexes).where(:tablename => self.name)
+      .all.map { |t| t[:indexname] }
   end
 
   def set_trigger_the_geom_webmercator
@@ -1441,7 +1443,7 @@ TRIGGER
     end
 
     raise "Error: unsupported geometry type #{type.to_s.downcase} in CartoDB" unless CartoDB::VALID_GEOMETRY_TYPES.include?(type.to_s.downcase)
-    #raise InvalidArgument unless CartoDB::VALID_GEOMETRY_TYPES.include?(type.to_s.downcase)
+
     updates = false
     type = type.to_s.upcase
     owner.in_database do |user_database|
@@ -1454,16 +1456,22 @@ TRIGGER
       unless user_database.schema(name, :reload => true).flatten.include?(THE_GEOM_WEBMERCATOR)
         updates = true
         user_database.run("SELECT AddGeometryColumn ('#{self.name}','#{THE_GEOM_WEBMERCATOR}',#{CartoDB::GOOGLE_SRID},'#{type}',2)")
-        # make timeout here long, but not infinite. 10mins = 600000 ms.
         user_database.run(%Q{SET statement_timeout TO 600000;UPDATE "#{self.name}" SET #{THE_GEOM_WEBMERCATOR}=CDB_TransformToWebmercator(#{THE_GEOM}) WHERE #{THE_GEOM} IS NOT NULL;SET statement_timeout TO DEFAULT})
-        user_database.run(%Q{CREATE INDEX ON "#{self.name}" USING GIST(#{THE_GEOM_WEBMERCATOR})})
+      end
 
-        # user_database.run(%Q{ALTER TABLE "#{self.name}" ADD CONSTRAINT geometry_valid_check CHECK (ST_IsValid(#{THE_GEOM}))})
+      # Ensure we add triggers and indexes when required
+      if user_database.schema(name, :reload => true).flatten.include?(THE_GEOM_WEBMERCATOR)
+        updates = true unless self.has_trigger?("update_the_geom_webmercator_trigger")
+        unless self.has_index? "#{self.name}_the_geom_webmercator_idx"
+          user_database.run(%Q{CREATE INDEX ON "#{self.name}" USING GIST(#{THE_GEOM_WEBMERCATOR})})
+        end
       end
-      # Ensure we add the webmercator trigger when is needed
-      if !updates && user_database.schema(name, :reload => true).flatten.include?(THE_GEOM_WEBMERCATOR) && !self.has_trigger?("update_the_geom_webmercator_trigger")
-        updates = true
+      if user_database.schema(name, :reload => true).flatten.include?(THE_GEOM)
+        unless self.has_index? "#{self.name}_the_geom_idx"
+          user_database.run(%Q{CREATE INDEX ON "#{self.name}" USING GIST(the_geom)})
+        end
       end
+
     end
     self.the_geom_type = type.downcase
     save_changes unless new?

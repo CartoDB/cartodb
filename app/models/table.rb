@@ -1188,11 +1188,19 @@ class Table < Sequel::Model(:user_tables)
     )
   end
 
-  def has_trigger?(trigger_name)
+  def has_trigger? trigger_name
     owner.in_database(:as => :superuser).select('trigger_name').from(:information_schema__triggers)
       .where(:event_object_catalog => owner.database_name,
              :event_object_table => self.name,
              :trigger_name => trigger_name).count > 0
+  end
+
+  def has_index? index_name
+    self.pg_indexes.stringify_keys.keys.include? index_name.to_s
+  end
+
+  def pg_indexes
+    owner.in_database.indexes self.name
   end
 
   def set_trigger_the_geom_webmercator
@@ -1452,7 +1460,6 @@ TRIGGER
 
         # user_database.run(%Q{ALTER TABLE "#{self.name}" ADD CONSTRAINT geometry_valid_check CHECK (ST_IsValid(#{THE_GEOM}))})
       end
-
       # Ensure we add the webmercator trigger when is needed
       if !updates && user_database.schema(name, :reload => true).flatten.include?(THE_GEOM_WEBMERCATOR) && !self.has_trigger?("update_the_geom_webmercator_trigger")
         updates = true

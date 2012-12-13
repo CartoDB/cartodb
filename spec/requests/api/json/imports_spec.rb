@@ -176,9 +176,9 @@ describe "Imports API" do
     last_import.queue_id.should be == response_json['item_queue_id']
     last_import.state.should be == 'complete'
 
-    @table_from_sql = Table.all.last
-    @table_from_sql.rows_counted.should be == @table_from_import.rows_counted
-    @table_from_sql.has_trigger?('update_the_geom_webmercator_trigger').should == true
+    import_table = Table.all.last
+    import_table.rows_counted.should be == @table_from_import.rows_counted
+    import_table.should have_required_indexes_and_triggers
   end
 
   it 'allows users to duplicate tables' do
@@ -203,10 +203,9 @@ describe "Imports API" do
     last_import.queue_id.should be == response_json['item_queue_id']
     last_import.state.should be == 'complete'
 
-    @table_from_sql = Table.all.last
-    @table_from_sql.rows_counted.should be == @table_from_import.rows_counted
-    @table_from_sql.has_trigger?('update_the_geom_webmercator_trigger').should == true
-    @table_from_sql.has_trigger?('update_updated_at_trigger').should == true
+    import_table = Table.all.last
+    import_table.rows_counted.should be == @table_from_import.rows_counted
+    import_table.should have_required_indexes_and_triggers
   end
 
   it 'allows users to get a list of pending imports'

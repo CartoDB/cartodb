@@ -57,7 +57,7 @@ feature "API 1.0 tables management" do
     end
   end
 
-  pending "Should update metadata of orphans tables created via SQL API" do
+  it "Should update metadata of orphans tables created via SQL API" do
     @user.in_database.run(
       <<-SQL
         CREATE TABLE my_new_ghost_table (id integer);
@@ -71,7 +71,7 @@ feature "API 1.0 tables management" do
     end
   end
 
-  pending "Should remove metadata of tables destroyed via SQL API" do
+  it "Should remove metadata of tables destroyed via SQL API" do
     table = FactoryGirl.create(:table, :user_id => @user.id)
 
     get_json api_tables_url do |response|
@@ -92,7 +92,7 @@ feature "API 1.0 tables management" do
     end
   end
 
-  pending "Should update metadata of tables renamed via SQL API" do
+  it "Should update metadata of tables renamed via SQL API" do
     table = FactoryGirl.create(:table, :user_id => @user.id)
 
     get_json api_tables_url do |response|
@@ -114,7 +114,7 @@ feature "API 1.0 tables management" do
     end
   end
 
-  pending "Should update metadata of outdated tables" do
+  it "Should update metadata of outdated tables" do
     Table.destroy
     3.times { FactoryGirl.create(:table, :user_id => @user.id) }
 
@@ -177,7 +177,9 @@ feature "API 1.0 tables management" do
 
   scenario "Create a new table without schema when a table of the same name exists on the database" do
     @user.in_database.run "CREATE TABLE untitled_table (wadus INTEGER)"
-    expect(post_json api_tables_url).to raise_error
+    post_json api_tables_url
+
+    @user.tables.count.should == 2
   end
 
   scenario "Create a new table specifing a name, description and a schema" do
@@ -373,20 +375,6 @@ feature "API 1.0 tables management" do
       response.status.should be_success
       response.body[:schema].should include(["aggregated_address", "string", "address"])
     end
-  end
-
-  scenario "Download a table in shp format" do
-    table1 = create_table :user_id => @user.id, :name => 'My table #1', :privacy => Table::PRIVATE, :tags => "tag 1, tag 2,tag 3, tag 3"
-
-    visit "#{api_table_url(table1.name, :format => 'shp')}"
-    current_path.should be == '/api/v1/tables/my_table_1.shp'
-  end
-
-  scenario "Download a table in csv format" do
-    table1 = create_table :user_id => @user.id, :name => 'My table #1', :privacy => Table::PRIVATE, :tags => "tag 1, tag 2,tag 3, tag 3"
-    table1.insert_row!({:name => "El Estocolmo"})
-    visit "#{api_table_url(table1.name, :format => 'csv')}"
-    current_path.should be == '/api/v1/tables/my_table_1.csv'
   end
 
   scenario "Download table metadata" do

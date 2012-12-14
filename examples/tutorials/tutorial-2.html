@@ -25,8 +25,6 @@
     </div>
   </script>
 
-
-
 	<script>
 
 var map;
@@ -41,7 +39,7 @@ function init(){
     attribution: 'Mapbox <a href="http://mapbox.com/about/maps" target="_blank">Terms &amp; Feedback</a>'
   }).addTo(map);
 
-  var layerUrl = 'http://damagedgoods.cartodb.com/api/v1/viz/15170/viz.json';
+  var layerUrl = 'http://examples-beta.cartodb.com/api/v1/viz/936/viz.json';
   var layerOptions = {
         query: "SELECT * FROM {{table_name}} where adm0_a3 = 'USA'",
         tile_style: "#{{table_name}}{marker-fill: #109DCD; marker-width: 5; marker-line-color: white; marker-line-width: 0;}"

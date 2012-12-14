@@ -106,8 +106,7 @@ div#pointTT p{
      1px 1px 0 #FFF;
 }
 
-/*CUSTOMIZING THE INFOWINDOW*/
-/*I encourage you to explore the actual styling using Chrome Developer Tools or Firebug*/
+/*SYLES FOR THE CUSTOM INFOWINDOW*/
 
 div.cartodb-popup{
 	background: transparent;

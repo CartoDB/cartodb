@@ -10,22 +10,24 @@ function main() {
     zoom: 6
   })
 
-  // add a nice baselayer from mapbox
+  // Add the baselayer
   L.tileLayer('http://a.tiles.mapbox.com/v3/cartodb.map-ygd8rje5/{z}/{x}/{y}.png', {
     attribution: 'MapBox'
   }).addTo(map);
 
+  // Create the cartodb layer using the vizjson.
   cartodb.createLayer(map, 'http://saleiva.cartodb.com/api/v1/viz/14863/viz.json', {
     query: 'select * from {{table_name}}',
     interactivity: 'cartodb_id, name_to_display'
   })
-
   .on('done', function(layer) {
     map.addLayer(layer);
     map.setView(center,6);
 
+    // Set the custom infowindow template defined on the html
     layer.infowindow.set('template', $('#infowindow_template').html());
 
+    // Defines what to do on the over event
     layer.on('featureOver', function(e, latlng, pos, data) {
       $('#pointTT > p').text(data.name_to_display);
       $('#pointTT').show();

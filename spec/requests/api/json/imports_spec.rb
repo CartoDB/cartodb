@@ -150,19 +150,17 @@ describe "Imports API" do
     @table.reload.rows_counted.should be == 4
   end
 
-  it 'allows users to create a table from an sql query' do
-    f = upload_file('db/fake_data/column_number_to_boolean.csv', 'text/csv')
-    post v1_imports_url(:host       => 'test.localhost.lan',
-                        :filename   => 'column_number_to_boolean.csv',
-                        :api_key    => @user.get_map_key,
-                        :table_name => "wadus"), f.read.force_encoding('UTF-8')
+  it 'allows users to create a table from a sql query' do
+    post v1_imports_url(:host => 'test.localhost.lan'),
+      :filename       => upload_file('spec/support/data/_penguins_below_80 (2).tgz', 'application/octet-stream'),
+      :api_key        => @user.get_map_key
 
 
     @table_from_import = Table.all.last
 
     post v1_imports_url(:host       => 'test.localhost.lan',
                         :api_key    => @user.get_map_key,
-                        :table_name => 'wadus',
+                        :table_name => 'wadus_2',
                         :sql        => "SELECT * FROM #{@table_from_import.name}")
 
 
@@ -176,9 +174,9 @@ describe "Imports API" do
     last_import.queue_id.should be == response_json['item_queue_id']
     last_import.state.should be == 'complete'
 
-    @table_from_sql = Table.all.last
-    @table_from_sql.rows_counted.should be == @table_from_import.rows_counted
-    @table_from_sql.has_trigger?('update_the_geom_webmercator_trigger').should == true
+    import_table = Table.all.last
+    import_table.rows_counted.should be == @table_from_import.rows_counted
+    import_table.should have_required_indexes_and_triggers
   end
 
   it 'allows users to duplicate tables' do
@@ -203,10 +201,9 @@ describe "Imports API" do
     last_import.queue_id.should be == response_json['item_queue_id']
     last_import.state.should be == 'complete'
 
-    @table_from_sql = Table.all.last
-    @table_from_sql.rows_counted.should be == @table_from_import.rows_counted
-    @table_from_sql.has_trigger?('update_the_geom_webmercator_trigger').should == true
-    @table_from_sql.has_trigger?('update_updated_at_trigger').should == true
+    import_table = Table.all.last
+    import_table.rows_counted.should be == @table_from_import.rows_counted
+    import_table.should have_required_indexes_and_triggers
   end
 
   it 'allows users to get a list of pending imports'
@@ -215,8 +212,7 @@ describe "Imports API" do
   it 'allows users to kill pending imports'
 
   it 'imports all the sample data' do
-    ["http://cartodb.s3.amazonaws.com/static/stop_frisk_bedford.zip",
-    "http://cartodb.s3.amazonaws.com/static/TM_WORLD_BORDERS_SIMPL-0.3.zip",
+    ["http://cartodb.s3.amazonaws.com/static/TM_WORLD_BORDERS_SIMPL-0.3.zip",
     "http://cartodb.s3.amazonaws.com/static/european_countries.zip",
     "http://cartodb.s3.amazonaws.com/static/counties_ny.zip",
     "http://cartodb.s3.amazonaws.com/static/10m-populated-places-simple.zip",
@@ -238,6 +234,8 @@ describe "Imports API" do
 
       last_import.queue_id.should be == response_json['item_queue_id']
       last_import.state.should be == 'complete'
+      table = Table.order(:id).last
+      table.should have_required_indexes_and_triggers
     end
   end
 

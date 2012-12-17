@@ -42,11 +42,13 @@ cdb.geo.GoogleMapsMapView = cdb.geo.MapView.extend({
     } else {
       this.map_googlemaps = this.options.map_object;
       this.setElement(this.map_googlemaps.getDiv());
-
       // fill variables
       var c = self.map_googlemaps.getCenter();
       self._setModelProperty({ center: [c.lat(), c.lng()] });
       self._setModelProperty({ zoom: self.map_googlemaps.getZoom() });
+      // unset bounds to not change mapbounds
+      self.map.unset('view_bounds_sw', { silent: true });
+      self.map.unset('view_bounds_ne', { silent: true });
     }
 
 

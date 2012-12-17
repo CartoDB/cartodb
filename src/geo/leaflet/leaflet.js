@@ -44,6 +44,9 @@
         var c = self.map_leaflet.getCenter();
         self._setModelProperty({ center: [c.lat, c.lng] });
         self._setModelProperty({ zoom: self.map_leaflet.getZoom() });
+        // unset bounds to not change mapbounds
+        self.map.unset('view_bounds_sw', { silent: true });
+        self.map.unset('view_bounds_ne', { silent: true });
       }
 
 

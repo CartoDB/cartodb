@@ -6,49 +6,76 @@
 
 When you add CartoDB.js to your websites you get some great new tools to make maps or power your content with data. Let’s take a look.
 
-
 ### Getting started
 
-You can start implementing CartoDB visualizations within your web-pages today, just include CartoDB.css, and CartoDB.js inside the <head> tag of your page:
+To use CartoDB.js in your web-page, you no longer need to host the library on your servers, instead we have made a fast and lightweight version of it available for you online. You can start interacting with your CartoDB hosted tables by including the CartoDB.js inside the HEAD tag of your page:
 
+``` html
+    <script src="http://libs.cartocdn.com/cartodb.js/v2/cartodb.js"></script>
+```
+
+The library is being mirrored on servers all over the world, so you be sure that no matter where your website viewers are, they will get CartoDB.js loaded the fastest way possible. 
+
+### Creating maps
+
+We’ve also made it easier than ever for you to build maps using the mapping library of your choice. Whether you are using Leaflet or Google Maps your CartoDB.js code remains the same. This makes our API documentation simple and straightforward. It also makes it easy for you to remember and keep consistent if you development or maintain multiple maps online. 
+
+##### Leaflet integration
+
+If you want to use Leaflet it gets even easier, CartoDB.js handles loading all the necessary libraries for you! just include CartoDB.js and CartoDB.css in the HEAD of your web-page and you are ready to go! The CartoDB.css document isn’t mandatory, however if you are making a map and are not familiar with writing your own CSS for the various needed elements, it can vastly help jumpstart the process. Adding it is as simple as adding the main JavaScript library,
 
 ``` html
     <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/themes/css/cartodb.css" />
     <script src="http://libs.cartocdn.com/cartodb.js/v2/cartodb.js"></script>
 ```
 
-You may notice that we offer the JS library over a CDN, this makes CartoDB lightning fast, and available at the same speed to your viewers anywhere in the world. 
+##### Creating a map layer
 
-The CartoDB.css document isn’t mandatory, however if you are making a map and are not familiar with writing your own CSS for the various needed elements, it can vastly help jumpstart the process.
+cartodb.createLayer is probably going to be the most important instrument in your toolbox. 
 
+With visualizations already created through the CartoDB console, you can simply use the createLayer function to add them into your web pages. This method works the same whether you are using Google Maps or Leaflet. Learn the details and different uses of layers in our API documentation below.
 
-### Leaflet or Google Maps
+##### Basic example
 
-We’ve made it easier than ever for you to build maps using the mapping library of your choice. Using CartoDB.js you can build maps using Leaflet or Google Maps using the exact same functions, nothing will change. This makes it easy for you to remember and remain consistent in your development of online maps.
+To show you just how simple CartoDB.js, let's put it all together. In the HEAD of your HTML, include the libraries,
 
-If you want to create maps using Google Maps, you’ll still need to include the GMaps V3 library in your HTML to make them work. If you want to use Leaflet though, CartoDB.js handles loading all the necessary libraries for you, just include CartoDB.js in the <head> of your web-page and you are ready to go!
+``` html
+    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/themes/css/cartodb.ie.css" />
+    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/themes/css/cartodb.css" />
+    <script src="http://libs.cartocdn.com/cartodb.js/v2/cartodb.js"></script>
+```
 
+Next, in the BODY of your HTML include a DIV for your map and the minimum CartoDB.js script to load some data into it,
 
-### Example usage
+``` html
+    <div id="map"></div>
+    <script>
+        var map = new L.Map('map', { 
+          center: [0,0],
+          zoom: 2
+        })
+        cartodb.loadLayer(map, 'http://examples-beta.cartodb.com/api/v1/viz/766/viz.json')
+          .on('error', function(err) {
+            alert("some error occurred: " + err);
+          });
+    </script>
+```
 
+That's it! That is all the code you need to start developing your own maps with CartoDB.js. If you want to start building applications straight away, head over to our tutorials to see start making your own maps.
 
-
-
-
-### Advance functionality
+### Advanced functionality
 
 The CartoDB.js has many great features for you to use in your applications. Let’s take a look at the most important for your application development.
 
 ##### Viz JSON support
 
-A big change from the first release of CartoDB and CartoDB 2.0 is the integration of Viz JSON files. The Viz JSON file is served for each map you create in your CartoDB admin console. It tells the browser things like the style you want to use for your data and the filters you want to apply with SQL. All the stored values are also easy to override with CartoDB.js if you want to do something completely different than what you design in your console. Loading a Viz JSON is as simple as,
+The Viz.JSON document tells CartoDB.js all the information about your map, including the style you want to use for your data and the filters you want to apply with SQL. The Viz JSON file is served for each map you create in your CartoDB account. Although the Viz JSON file stores all your maps settings, all the values are easy to override with CartoDB.js if you want to do something completely different than what you design in your console. Loading the Viz JSON is as simple as,
 
 ``` javascript
     cartodb.loadLayer(map, 'http://examples.cartodb.com/api/v1/viz/0001/viz.json')
 ```
 
-
-##### getBounds wrapper
+##### Bounds wrapper
 
 We have added a wrapper method to get the bounding box for any dataset or filtered query using the CartoDB.js library. The **getBounds** function can be useful for guiding users to the right location on a map or for loading only the right data at the right time based on user actions.
 
@@ -63,7 +90,7 @@ We have added a wrapper method to get the bounding box for any dataset or filter
 
 The CartoDB.js is highly asynchronous, meaning your application can get on with what it needs to do while the library efficiently does what you request in the background. This is useful for loading maps or getting query results. At the same time, we have made it very simple to add listeners and callbacks to the async portions of the library.
 
-###### loadLayer listeners
+###### Loading events
 
 The loadLayer function returns two important events for you to take advantage of: the first is ‘done’, which will let your code know that a layer has loaded and the library has successfully read the information from the Viz JSON you requested. The second is ‘error’, which lets you know something did not go as expected when loading a requested layer:
 
@@ -76,7 +103,7 @@ The loadLayer function returns two important events for you to take advantage of
       });
 ```
 
-###### layer event listeners
+###### Active layer events
 
 The next important set of events for you to use happen on those layers that are already loaded (returned by the ‘done’ event above). Three events are triggered by layers on your webpage, each requires the layer to include an **interactivity** layer. The first event is **featureClick**, which lets you set up events after the user clicks anything that you have mapped.
 
@@ -112,7 +139,6 @@ We have worked hard to support Internet Explorer with CartoDB.js. It currently w
     <script src="http://libs.cartocdn.com/cartodb.js/v2/cartodb.js"></script>
 ```
 
-
 ##### Persistent version hosting
 
 We are committed to making sure your website works as intended no matter what changes in the future. While we may find more efficient or more useful features to add to the library as time progresses. We never want to break things you have already developed, for this reason, we make versioned CartoDB.js libraries available to you, meaning that the way they function will never unexpectedly change on you.
@@ -147,12 +173,9 @@ You can do the same for the CSS documents we provide,
     http://libs.cartocdn.com/cartodb.js/v2/2.0.11/themes/css/cartodb.css
 ```
 
-
-
-
 ### API
 
-This reference reflects CartoDB.js 2.0.11. It is intended for developers that need to know all methods available on the library. For any questions regarding the usage of the library or for problems with the documentation please contact us at support@cartodb.com
+The documentation below reflects CartoDB.js for the 2.0.x library versions. For major changes in the library we will update the documentation here. This documentation is meant to help developers find specific methods for using the CartoDB.js library. For any questions regarding the usage of the library or for problems with the documentation please contact us at support@cartodb.com
 
 ##### cartodb.createLayer(map, layerSource [, options] [, callback])
 
@@ -269,7 +292,7 @@ Promise object. You can listen for the following events:
 ###### ARGUMENTS
 
   + **cartoCSS**: Changes the cartoCSS style applied to the tiles.
-  + **version**: cartoCSS version. You usually do not need to change this.
+  + **version**: cartoCSS version. You usually do not need to include this.
 
 ###### EXAMPLE
 
@@ -283,8 +306,8 @@ Promise object. You can listen for the following events:
   Get the visibility of the layer. Returns true or false.
 
 ###### RETURNS
-  true: if layer is visible.
 
+  true: if layer is visible.
 
 ##### setInteractivity(fieldsArray)
 
@@ -304,7 +327,6 @@ Promise object. You can listen for the following events:
 ###### EXAMPLE
 
 ``` javascript
-
     layer.setOptions({
        query: "SELECT * FROM {{table_name}} WHERE cartodb_id < 100",
        interactivity: "cartodb_id,the_geom,magnitude"

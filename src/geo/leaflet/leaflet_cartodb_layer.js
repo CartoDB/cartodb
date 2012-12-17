@@ -133,12 +133,13 @@ L.CartoDBLayer = L.TileLayer.extend({
     // check the tiles
     this._checkTiles();
 
+    if(this.interaction) {
+      this.interaction.remove();
+      this.interaction = null;
+    }
+
     // add the interaction?
-    if (this.options.interactivity) {
-      if(this.interaction) {
-        this.interaction.remove();
-        this.interaction = null;
-      }
+    if (this.options.interactivity && this.options.interaction) {
       this.interaction = wax.leaf.interaction()
         .map(this.options.map)
         .tilejson(this.tilejson)
@@ -223,23 +224,9 @@ L.CartoDBLayer = L.TileLayer.extend({
    * @params {Boolean} Choose if wants interaction or not
    */
   setInteraction: function(enable) {
-    var self = this;
-
-    this._checkLayer();
-
-    if (this.interaction) {
-      if (enable) {
-        this.interaction.on('on', function(o) {
-          self._bindWaxOnEvents(self.options.map, o)
-        });
-        this.interaction.on('off', function(o) {
-          self._bindWaxOffEvents()
-        });
-      } else {
-        this.interaction.off('on');
-        this.interaction.off('off');
-      }
-    }
+    this.setOptions({
+      interaction: enable
+    })
   },
 
 
@@ -286,12 +273,9 @@ L.CartoDBLayer = L.TileLayer.extend({
     if(opts.opacity !== undefined) {
       this.setOpacity(this.options.opacity);
     }
-    if(opts.interaction !== undefined) {
-      this.setInteraction(this.options.interaction);
-    }
 
     // Update tiles
-    if(opts.query || opts.style || opts.tile_style || opts.interactivity) {
+    if(opts.query || opts.style || opts.tile_style || opts.interactivity || opts.interaction != undefined) {
       this.__update();
     }
   },

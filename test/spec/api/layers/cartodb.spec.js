@@ -196,6 +196,35 @@ describe('api.layers.cartodb', function() {
       });
     });
 
+    it("should not add interactivity when interaction is false", function() {
+      runs(function() {
+        cartodb.createLayer(map, { 
+            kind: 'cartodb', 
+            options: { 
+              table_name: 'test',
+              user_name: 'test'
+            },
+            infowindow: { 
+              template: '<div></div>',
+              fields: [{name: 'test', title: true, order: 0}] 
+            }
+        }, {
+          interactivity: 'myname,jaja',
+          interaction: false
+        }, function(l) {
+          addFn(map, l);
+          layer = l;
+        });
+      });
+      waits(100);
+      runs(function() {
+        expect(layer.infowindow).not.toEqual(undefined);
+        expect(layer.options.interactivity).toEqual('myname,jaja,cartodb_id');
+        expect(layer.options.interaction).toEqual(false);
+        expect(layer.interaction).toEqual(null);
+      });
+    });
+
 
   };
 

@@ -22,7 +22,6 @@ function main() {
   })
   .on('done', function(layer) {
     map.addLayer(layer);
-    map.setView(center,6);
 
     // Set the custom infowindow template defined on the html
     layer.infowindow.set('template', $('#infowindow_template').html());

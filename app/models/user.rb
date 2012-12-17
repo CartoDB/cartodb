@@ -1,5 +1,4 @@
 # coding: UTF-8
-
 class User < Sequel::Model
   include CartoDB::MiniSequel
 

@@ -3,6 +3,9 @@
   var root = this;
 
   function SQL(options) {
+    if(cdb === this || window === this) {
+      return new SQL(options);
+    }
     if(!options.user) {
       throw new Error("user should be provided");
     }

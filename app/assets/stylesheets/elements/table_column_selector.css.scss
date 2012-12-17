@@ -1,0 +1,52 @@
+
+
+  /**
+   *  Table column selector plugin
+   */
+
+  @import "compass";
+  
+  .table_preview {
+
+    div.table {
+      display:block;
+      height:100%;
+      padding:14px;
+      background:#F2F2F2;
+      @include transform-style("linear");
+      @include transition-property("height");
+      @include transition-duration(320ms);
+
+      div.select.tables {
+        @include transform-style("linear");
+        @include transition-property("margin");
+        @include transition-duration(320ms);
+        margin-top:60px;
+      }
+
+      p {margin-top:5px; text-align:center;}
+
+      &.chosen {
+        height:22px;
+        border-bottom:1px solid rgba(#CCCCCC,0.5);
+        div.select.tables {margin:0;}
+        p {display:none;}
+      }
+    }
+
+    div.columns {
+         
+      ul {
+        width:100%;
+        max-height:180px;
+        overflow: auto;
+        li {
+          padding:13px;
+          margin-bottom:0!important;
+          border-bottom:1px solid rgba(#CCCCCC,0.5)!important;
+
+          &:last-child {border-bottom:none!important;}
+        }
+      }
+    }
+  }

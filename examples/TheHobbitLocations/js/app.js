@@ -1,11 +1,13 @@
 var map;
 
 function main() {
+
   var vis = new cartodb.vis.Vis({ el: $('#map') });
+
   var options = {
     center: [-42.27730877423707, 172.63916015625],
     zoom: 6
-  }
+  };
 
   vis
     .load('http://saleiva.cartodb.com/api/v1/viz/14863/viz.json', options)
@@ -20,22 +22,16 @@ function main() {
       // Set the custom infowindow template defined on the html
       layer.infowindow.set('template', $('#infowindow_template').html());
 
-      // Defines what to do on the over event
-      layer.on('featureOver', function(e, latlng, pos, data) {
-        $('#pointTT > p').text(data.name_to_display);
-        $('#pointTT').show();
-        $('#pointTT').css({
-            'left':(pos.x-$('#pointTT').width()/2)+'px',
-            'top':(pos.y-30)+'px'
-        });
+      vis.addOverlay({
+        type: 'tooltip',
+        template: '<p>{{name_to_display}}</p>'
       });
 
-      layer.on('featureOut', function(e, latlng, pos, data) {
-        $('#pointTT').hide();
-      });
     });
 
-  /*var center = new L.LatLng(-42.27730877423707, 172.63916015625);
+  /*
+
+  var center = new L.LatLng(-42.27730877423707, 172.63916015625);
 
   map = L.map('map', { 
     zoomControl: false,
@@ -84,5 +80,8 @@ function main() {
 
 }
 
-// you could use $(window).load(main);
-window.onload = main;
+window.onload = function() {
+  cartodb.load('../../src/', function() {
+    main();
+  });
+}

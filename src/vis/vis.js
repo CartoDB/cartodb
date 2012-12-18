@@ -69,7 +69,7 @@ var Loader = cdb.vis.Loader = {
       var script = document.createElement('script');
       script.type = 'text/javascript';
       script.src = url + (~url.indexOf('?') ? '&' : '?') + 'callback=vizjson';
-      script.async = true
+      script.async = true;
       Loader._script = script;
       if(!Loader.head) {
         Loader.head = document.getElementsByTagName('head')[0];
@@ -181,6 +181,7 @@ var Vis = cdb.core.View.extend({
       width: '100%',
       height: '100%'
     });
+    this.container = div;
 
     // Another div to prevent leaflet grabs the div
     var div_hack = $('<div>')
@@ -197,30 +198,6 @@ var Vis = cdb.core.View.extend({
     div.append(div_hack);
     this.$el.append(div);
 
-    // Create the overlays
-    for (var i in data.overlays) {
-      var overlay = data.overlays[i];
-      overlay.map = map;
-      var v = Overlay.create(overlay.type, this, overlay);
-
-      if (v) {
-        // Save tiles loader view for later
-        if (overlay.type == "loader") {
-          this.loader = v;
-        }
-
-        this.addView(v);
-        div.append(v.el);
-        this.overlays.push(v);
-
-        // Set map position correctly taking into account
-        // header height
-        if (overlay.type == "header") {
-          this.setMapPosition();
-        }
-      }
-    }
-
     // Create the map
     var mapView = new cdb.geo.MapView.create(div_hack, map);
     this.mapView = mapView;
@@ -231,11 +208,38 @@ var Vis = cdb.core.View.extend({
       this.loadLayer(layerData);
     }
 
+    // Create the overlays
+    for (var i in data.overlays) {
+      this.addOverlay(data.overlays[i]);
+    }
+
     _.defer(function() {
       self.trigger('done', self, self.getLayers());
     })
 
     return this;
+  },
+
+  addOverlay: function(overlay) {
+    overlay.map = map;
+    var v = Overlay.create(overlay.type, this, overlay);
+
+    if (v) {
+      // Save tiles loader view for later
+      if (overlay.type == "loader") {
+        this.loader = v;
+      }
+
+      this.addView(v);
+      this.container.append(v.el);
+      this.overlays.push(v);
+
+      // Set map position correctly taking into account
+      // header height
+      if (overlay.type == "header") {
+        this.setMapPosition();
+      }
+    }
   },
 
   // change vizjson based on options

@@ -121,4 +121,17 @@ cdb.vis.Overlay.register('search', function(data, vis) {
   return search.render();
 });
 
+// tooltip 
+cdb.vis.Overlay.register('tooltip', function(data, vis) {
+  var layer;
+  var layers = vis.getLayers();
+  if(layers.length > 1) {
+    layer = layers[1];
+  }
+  data.layer = layer;
+  var tooltip = new cdb.geo.ui.Tooltip(data);
+  return tooltip;
+
+});
+
 })();

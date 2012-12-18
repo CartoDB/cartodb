@@ -1,8 +1,41 @@
 var map;
 
 function main() {
+  var vis = new cartodb.vis.Vis({ el: $('#map') });
+  var options = {
+    center: [-42.27730877423707, 172.63916015625],
+    zoom: 6
+  }
 
-  var center = new L.LatLng(-42.27730877423707, 172.63916015625);
+  vis
+    .load('http://saleiva.cartodb.com/api/v1/viz/14863/viz.json', options)
+    .done(function(vis, layers) {
+      // there are two layers, base layer and points layer
+      var layer = layers[1];
+      layer.setInteractivity(['cartodb_id', 'name_to_display']);
+
+      // remove the zoom overlay (it is added by default)
+      vis.getOverlay('zoom').clean();
+
+      // Set the custom infowindow template defined on the html
+      layer.infowindow.set('template', $('#infowindow_template').html());
+
+      // Defines what to do on the over event
+      layer.on('featureOver', function(e, latlng, pos, data) {
+        $('#pointTT > p').text(data.name_to_display);
+        $('#pointTT').show();
+        $('#pointTT').css({
+            'left':(pos.x-$('#pointTT').width()/2)+'px',
+            'top':(pos.y-30)+'px'
+        });
+      });
+
+      layer.on('featureOut', function(e, latlng, pos, data) {
+        $('#pointTT').hide();
+      });
+    });
+
+  /*var center = new L.LatLng(-42.27730877423707, 172.63916015625);
 
   map = L.map('map', { 
     zoomControl: false,
@@ -47,6 +80,7 @@ function main() {
   }).on('error', function() {
     console.log("some error occurred");
   });
+  */
 
 }
 

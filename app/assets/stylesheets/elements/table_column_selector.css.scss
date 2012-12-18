@@ -95,6 +95,11 @@
 
     // Small radiobutton
     .radiobutton {
+      width:180px;
+      white-space:nowrap;
+      text-overflow:ellipsis;
+      overflow:hidden;
+
 
       span.radio {
         width:8px;

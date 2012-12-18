@@ -21,8 +21,6 @@ class DataImport < Sequel::Model
     #after_transition  :uploading => :preparing, :preparing => :importing, :importing => :cleaning do
     #end
     after_transition any => :complete do
-      table = Table[table_id]
-      table.map.recalculate_bounds!
       self.success = true
       self.logger << "SUCCESS!\n"
       self.save
@@ -98,6 +96,7 @@ class DataImport < Sequel::Model
       elsif table_copy.present? || from_query.present?
         query = table_copy ? "SELECT * FROM #{table_copy}" : from_query
         new_table_name = import_from_query table_name, query
+        self.update :table_names => new_table_name
         migrate_existing new_table_name
 
       elsif %w(url file).include?(data_type)
@@ -125,6 +124,12 @@ class DataImport < Sequel::Model
 
       #true # FIXME: our exception handler returns true so that the after_create method doesnt rollback
     end
+
+    # Recalculate map bounds on every imported table
+    self.table_names.to_s.split(',').each do |table_name|
+      table = Table.filter(:user_id => current_user.id, :name => table_name).first
+      table.map.recalculate_bounds!
+    end    
   end
 
   def before_save
@@ -191,6 +196,10 @@ class DataImport < Sequel::Model
   def append_to_existing
 
     imports, errors = import_to_cartodb data_type, data_source
+    # table_names is null, since we're just appending data to
+    # an existing table, not creating a new one
+    self.update :table_names => nil
+    
     @table = Table.filter(:user_id => current_user.id, :id => table_id).first
     (imports || []).each do |import|
       migrate_existing import.name, table_name

@@ -7,14 +7,22 @@
 
   .merge_tables_dialog {
 
+
+
     // Tables selector
     .tables_selector {
       display:block;
+
+      // Content
+      div.content {
+        height:140px;
+      }
 
       // Join types
       ul.join_types {
         width:100%;
         padding-bottom:30px;
+        margin:40px 0 0 0;
         letter-spacing: -4px;
         word-spacing: -4px;
         border-bottom:1px solid rgba(#CCCCCC,0.5);
@@ -29,6 +37,8 @@
 
           &:first-child {margin-right:41px;}
 
+          a.radiobutton.inactive {@include opacity(0.6)}
+
           p {
             margin-top:7px;
             padding-left:20px;
@@ -39,6 +49,7 @@
       // Table columns selector/preview
       div.tables {
         width:100%;
+        @include opacity(0);
         display:block;
         margin-top:34px;
         letter-spacing: -4px;
@@ -58,6 +69,11 @@
 
           &:first-child {margin-right:41px;}
         }  
+      }
+
+      p.approx_rows {
+        display:none;
+        margin-right:10px;
       }
       
     }

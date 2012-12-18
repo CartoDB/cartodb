@@ -245,7 +245,7 @@ module CartoDB
 
               out = loader.process!
 
-              out.each{ |d| payloads << d }
+              out.each { |d| payloads << d }
               @data_import.log_update("#{data[:ext]} successfully loaded")
             rescue => e
               @data_import.reload
@@ -261,6 +261,7 @@ module CartoDB
         # Flag the data import as failed
         if payloads.length > 0
           @data_import.tables_created_count = payloads.size
+          @data_import.table_names = payloads.map(&:name).join(',')
           @data_import.log_update("#{payloads.size} tables imported")
         else
           @data_import.failed

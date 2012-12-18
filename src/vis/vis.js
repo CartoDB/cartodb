@@ -22,8 +22,8 @@ var Overlay = {
     if(!t) {
       cdb.log.error("Overlay: " + type + " does not exist");
     }
-      var widget = t(data, vis);
-
+    var widget = t(data, vis);
+    widget.type = type;
     return widget;
   }
 };
@@ -103,6 +103,7 @@ var Vis = cdb.core.View.extend({
     _.bindAll(this, 'loadingTiles', 'loadTiles');
 
     this.https = false;
+    this.overlays = [];
 
     if(this.options.mapView) {
       this.mapView = this.options.mapView;
@@ -210,6 +211,7 @@ var Vis = cdb.core.View.extend({
 
         this.addView(v);
         div.append(v.el);
+        this.overlays.push(v);
 
         // Set map position correctly taking into account
         // header height
@@ -306,6 +308,11 @@ var Vis = cdb.core.View.extend({
 
     if(opt.center_lat !== undefined) {
       vizjson.center = [parseFloat(opt.center_lat), parseFloat(opt.center_lon)];
+      vizjson.bounds = null;
+    }
+
+    if(opt.center !== undefined) {
+      vizjson.center = opt.center;
       vizjson.bounds = null;
     }
 
@@ -472,6 +479,16 @@ var Vis = cdb.core.View.extend({
     var self = this;
     return this.map.layers.map(function(layer) {
       return self.mapView.getLayerByCid(layer.cid);
+    });
+  },
+
+  getOverlays: function() {
+    return this.overlays;
+  },
+
+  getOverlay: function(type) {
+    return _(this.overlays).find(function(v) {
+      return v.type == type;
     });
   }
 

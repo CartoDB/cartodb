@@ -5,7 +5,7 @@ gem "rails",                   "3.2.2"
 gem "rake",                    "0.9.2.2"
 gem "pg",                      "0.11"
 gem "sequel",                  "3.42.0"
-gem "sequel_pg",               "1.2.0", :require => "sequel"
+gem "sequel_pg",               "1.6.3", :require => "sequel"
 
 gem "vizzuality-sequel-rails", "0.3.6", :git => 'https://github.com/Vizzuality/sequel-rails.git'
 
@@ -28,6 +28,8 @@ gem "nokogiri",                "1.5.3"
 gem "statsd-client",           "0.0.7", :require => "statsd"
 
 gem "addressable",             "2.2.8", :require => "addressable/uri"
+
+gem "newrelic_rpm"
 
 gem "ejs",                     "~> 1.1.1"
 gem "turbo-sprockets-rails3",  "0.1.16"
@@ -56,7 +58,7 @@ gem "state_machine",           "1.1.2"
 #      Rails routes DSL
 gem "bartt-ssl_requirement",   "~>1.4.0", :require => "ssl_requirement"
 
-gem "simplecov",               "0.6.4", :require => false, :group => :test
+gem "simplecov",               "0.7.1", :require => false, :group => :test
 gem "spin",                    "0.5.3", :require => false, :group => :test
 
 group :development, :test do

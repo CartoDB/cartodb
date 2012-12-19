@@ -134,4 +134,16 @@ cdb.vis.Overlay.register('tooltip', function(data, vis) {
 
 });
 
+cdb.vis.Overlay.register('infobox', function(data, vis) {
+  var layer;
+  var layers = vis.getLayers();
+  if(layers.length > 1) {
+    layer = layers[1];
+  }
+  data.layer = layer;
+  var infobox = new cdb.geo.ui.InfoBox(data);
+  return infobox;
+
+});
+
 })();

@@ -1,16 +1,14 @@
 
-cdb.geo.ui.Tooltip = cdb.core.View.extend({
+cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
 
   DEFAULT_OFFSET_TOP: 30,
   defaultTemplate: '<p>{{text}}</p>',
   className: 'cartodb_tooltip',
 
   initialize: function() {
-    var self = this;
-    if(this.options.layer) {
-      this.enable();
-    }
-    this.template = cdb.core.Template.compile(this.options.template || this.defaultTemplate, 'mustache');
+    this.options.template = this.options.template || defaultTemplate;
+    this.options.position = 'none';
+    cdb.geo.ui.InfoBox.prototype.initialize.call(this);
   },
 
   enable: function() {
@@ -23,17 +21,6 @@ cdb.geo.ui.Tooltip = cdb.core.View.extend({
           this.hide();
         }, this);
     }
-  },
-
-  disable: function() {
-    if(this.options.layer) {
-      this.options.layer.on(null, null, this);
-    }
-  },
-
-  render: function(data) {
-    this.$el.html( this.template(data) );
-    return this;
   },
 
   show: function(pos, data) {

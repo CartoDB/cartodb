@@ -240,6 +240,7 @@ var Vis = cdb.core.View.extend({
         this.setMapPosition();
       }
     }
+    return v;
   },
 
   // change vizjson based on options

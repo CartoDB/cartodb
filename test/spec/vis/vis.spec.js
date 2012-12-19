@@ -149,4 +149,15 @@ describe("Vis", function() {
   });
 
 
-})
+  it("should add an overlay", function() {
+    var v = this.vis.addOverlay({
+      type: 'tooltip',
+      template: 'test'
+    });
+    expect(this.vis.getOverlay('tooltip')).toEqual(v);
+    expect(this.vis.getOverlays().length).toEqual(1);
+    v.clean();
+    expect(this.vis.getOverlays().length).toEqual(0);
+  });
+
+});

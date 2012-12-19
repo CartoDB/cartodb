@@ -4,6 +4,11 @@
     if(!el) {
       throw new TypeError("an dom element should be provided");
     }
+    var args = arguments,
+    fn = args[args.length -1];
+    if(_.isFunction(fn)) {
+      callback = fn;
+    }
     el = (typeof el === 'string' ? document.getElementById(el) : el);
     var vis = new cartodb.vis.Vis({ el: el });
     if(vizjson) {

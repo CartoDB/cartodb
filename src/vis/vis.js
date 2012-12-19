@@ -221,7 +221,7 @@ var Vis = cdb.core.View.extend({
   },
 
   addOverlay: function(overlay) {
-    overlay.map = map;
+    overlay.map = this.map;
     var v = Overlay.create(overlay.type, this, overlay);
 
     if (v) {
@@ -233,6 +233,16 @@ var Vis = cdb.core.View.extend({
       this.addView(v);
       this.container.append(v.el);
       this.overlays.push(v);
+
+      v.bind('clean', function() {
+        for(var i in this.overlays) {
+          var o = this.overlays[i];
+          if(v.cid === o.cid) {
+            this.overlays.splice(i, 1)
+            return; 
+          }
+        }
+      }, this);
 
       // Set map position correctly taking into account
       // header height

@@ -359,21 +359,23 @@ L.CartoDBLayer = L.TileLayer.extend({
    * @param {Event} Wax event
    */
   _bindWaxOnEvents: function(map,o) {
-    var layer_point = this._findPos(map,o)
-      , latlng = map.layerPointToLatLng(layer_point);
+    var layer_point = this._findPos(map,o),
+        latlng = map.layerPointToLatLng(layer_point);
+
+    var screenPos = map.layerPointToContainerPoint(layer_point);
 
     switch (o.e.type) {
 
       case 'mousemove':
         if (this.options.featureOver) {
-          return this.options.featureOver(o.e,latlng, { x: o.e.clientX, y: o.e.clientY }, o.data);
+          return this.options.featureOver(o.e,latlng, screenPos, o.data);
         }
         break;
 
       case 'click':
       case 'touchend':
         if (this.options.featureClick) {
-          this.options.featureClick(o.e,latlng, { x: o.e.clientX, y: o.e.clientY }, o.data);
+          this.options.featureClick(o.e,latlng, screenPos, o.data);
         }
         break;
       default:
@@ -397,8 +399,8 @@ L.CartoDBLayer = L.TileLayer.extend({
    * @params {Object} Wax event object
    */
   _findPos: function (map,o) {
-    var curleft = curtop = 0;
-    var obj = map._container;
+    var curleft = 0, curtop = 0;
+    var obj = map.getContainer();
 
 
     if (obj.offsetParent) {

@@ -14,7 +14,7 @@ function main() {
     .done(function(vis, layers) {
       // there are two layers, base layer and points layer
       var layer = layers[1];
-      layer.setInteractivity(['cartodb_id', 'name_to_display']);
+      layer.setInteractivity(['cartodb_id', 'name_to_display', 'description']);
 
       // remove the zoom overlay (it is added by default)
       vis.getOverlay('zoom').clean();
@@ -22,9 +22,17 @@ function main() {
       // Set the custom infowindow template defined on the html
       layer.infowindow.set('template', $('#infowindow_template').html());
 
+      // add the tooltip show when hover on the point
       vis.addOverlay({
         type: 'tooltip',
         template: '<p>{{name_to_display}}</p>'
+      });
+
+      vis.addOverlay({
+        type: 'infobox',
+        template: '<h3>{{name_to_display}}</h3><p>{{description}}</p>',
+        width: 200,
+        position: 'bottom|right'
       });
 
     });

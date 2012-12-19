@@ -89,13 +89,13 @@ div.left div#legendBox ul li{
 	opacity: .5;
 }
 
-div#pointTT{
+div.cartodb_tooltip {
 	position: absolute;
-	z-index: 2;
+	z-index: 5;
 	display: none;
 }
 
-div#pointTT p{
+div.cartodb_tooltip p {
 	font-family: "robotoregular", Helvetica, Arial, Sans-serif;
 	font-size: 15px;
 	color: #333;

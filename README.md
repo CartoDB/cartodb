@@ -12,9 +12,8 @@ If you would like to see some live demos, check out our
 [videos](http://www.vimeo.com/channels/cartodb) on Vimeo.
 We hope you like it!
 
-<img src="http://dl.dropbox.com/u/193220/CartoDB/bus_map.jpg" width="900px"/>
-
-<img src="http://dl.dropbox.com/u/193220/CartoDB/bus_table.png" width="900px"/>
+<img src="http://dl.dropbox.com/u/538411/readmeCartodb/map.png" width="900px"/>
+<img src="http://dl.dropbox.com/u/538411/readmeCartodb/table.png" width="900px"/>
 
 
 # What can I do with CartoDB? #
@@ -32,6 +31,9 @@ In other words, with CartoDB you can make awesome maps and build
 powerful geospatial applications! Definitely check out the [CartoDB
 Gallery](http://developers.cartodb.com/gallery) for interactive examples
 and code.
+
+<img src="http://dl.dropbox.com/u/538411/readmeCartodb/mapWizard.png" width="900px"/>
+<img src="http://dl.dropbox.com/u/538411/readmeCartodb/tableSQL.png" width="900px"/>
 
 # What are the components of CartoDB? #
 

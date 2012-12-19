@@ -299,7 +299,6 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
 
   /**
   * Set the correct position for the popup
-  * @params {latlng} A new Leaflet LatLng object
   */
   setLatLng: function (latlng) {
     this.model.set("latlng", latlng);

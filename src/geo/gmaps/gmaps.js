@@ -254,6 +254,10 @@ cdb.geo.GoogleMapsMapView = cdb.geo.MapView.extend({
 
   getNativeMap: function() {
     return this.map_googlemaps;
+  },
+
+  invalidateSize: function() {
+    google.maps.event.trigger(this.map_googlemaps, 'resize');
   }
 
 }, {

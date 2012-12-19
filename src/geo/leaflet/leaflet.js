@@ -239,6 +239,10 @@
 
     getNativeMap: function() {
       return this.map_leaflet;
+    },
+
+    invalidateSize: function() {
+      this.map_leaflet.invalidateSize();
     }
 
   }, {

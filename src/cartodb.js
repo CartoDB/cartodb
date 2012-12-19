@@ -98,7 +98,8 @@
 
         // PUBLIC API
         'api/layers.js',
-        'api/sql.js'
+        'api/sql.js',
+        'api/vis.js'
     ];
 
     cdb.init = function(ready) {

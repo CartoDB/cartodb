@@ -4,13 +4,13 @@ cdb.geo.ui.InfoBox = cdb.core.View.extend({
   className: 'cartodb_infobox',
   defaults: {
     pos_margin: 20,
-    position: 'bottom|right'
+    position: 'bottom|right',
+    width: 200
   },
 
   initialize: function() {
     var self = this;
     _.defaults(this.options, this.defaults);
-    debugger;
     if(this.options.layer) {
       this.enable();
     }

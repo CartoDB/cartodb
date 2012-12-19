@@ -8,6 +8,7 @@ cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
   initialize: function() {
     this.options.template = this.options.template || defaultTemplate;
     this.options.position = 'none';
+    this.options.width = null;
     cdb.geo.ui.InfoBox.prototype.initialize.call(this);
   },
 
@@ -30,6 +31,10 @@ cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
       'left': (pos.x - this.$el.width()/2),
       'top': (pos.y - (this.options.offset_top || this.DEFAULT_OFFSET_TOP))
     });
+  },
+
+  render: function(data) {
+    this.$el.html( this.template(data) );
   }
 
 });

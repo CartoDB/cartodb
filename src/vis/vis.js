@@ -250,7 +250,10 @@ var Vis = cdb.core.View.extend({
       search: false,
       title: false,
       description: false,
-      tiles_loader: true
+      tiles_loader: true,
+      zoomControl: true,
+      loaderControl: true,
+      searchControl: false
     });
     vizjson.overlays = vizjson.overlays || [];
     vizjson.layers = vizjson.layers || [];
@@ -279,7 +282,7 @@ var Vis = cdb.core.View.extend({
     }
 
     // remove search if the vizualization does not contain it
-    if (opt.search) {
+    if (opt.search || opt.searchControl) {
       vizjson.overlays.push({
          type: "search"
       });
@@ -302,6 +305,14 @@ var Vis = cdb.core.View.extend({
     }
 
     if(!opt.tiles_loader) {
+      remove_overlay('loader');
+    }
+
+    if(!opt.zoomControl) {
+      remove_overlay('zoom');
+    }
+
+    if(!opt.loaderControl) {
       remove_overlay('loader');
     }
 

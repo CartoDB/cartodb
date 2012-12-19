@@ -166,6 +166,95 @@
 
   }
 
+  /**
+   * var people_under_10 = sql
+   *    .table('test')
+   *    .columns(['age', 'column2'])
+   *    .filter('age < 10')
+   *    .limit(15)
+   *    .order_by('age')
+   *
+   *  people_under_10(function(results) {
+   *  })
+   */
+
+  SQL.prototype.table = function(name) {
+
+    var _name = name;
+    var _filters;
+    var _columns = [];
+    var _limit;
+    var _order;
+    var _orderDir;
+    var _sql = this;
+
+    function _table(callback) {
+      _table.fetch(callback);
+    }
+
+    _table.fetch = function(callback) {
+      _sql.execute(_table.sql(), {}, callback);
+    }
+
+    _table.sql = function() {
+      var s = "select "
+      if(_columns.length) {
+        s += ' ' + _columns.join(',') + ' '
+      } else {
+        s += ' * '
+      }
+      
+      s += "from " + _name;
+
+      if(_filters) {
+        s += " where " + _filters;
+      }
+      if(_order) {
+        s += " order by " + _order;
+      }
+      if(_orderDir) {
+        s += ' ' + _orderDir;
+      }
+      if(_limit) {
+        s += " limit " + _limit;
+      }
+
+      return s;
+    }
+
+    _table.filter = function(f) {
+      _filters = f;
+      return _table;
+    }
+
+    _table.order_by= function(o) {
+      _order = o;
+      return _table;
+    }
+    _table.asc = function() {
+      _orderDir = 'asc'
+      return _table;
+    }
+
+    _table.desc = function() {
+      _orderDir = 'desc'
+      return _table;
+    }
+
+    _table.columns = function(c) {
+      _columns = c;
+      return _table;
+    }
+
+    _table.limit = function(l) {
+      _limit = l;
+      return _table;
+    }
+
+    return _table;
+
+  }
+
   cartodb.SQL = SQL;
 
 })();

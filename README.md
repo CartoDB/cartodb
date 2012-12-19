@@ -13,7 +13,6 @@ If you would like to see some live demos, check out our
 We hope you like it!
 
 <img src="http://dl.dropbox.com/u/538411/readmeCartodb/map.png" width="900px"/>
-<img src="http://dl.dropbox.com/u/538411/readmeCartodb/table.png" width="900px"/>
 
 
 # What can I do with CartoDB? #

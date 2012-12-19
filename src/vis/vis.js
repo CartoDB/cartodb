@@ -369,6 +369,9 @@ var Vis = cdb.core.View.extend({
     this.$el
       .find("div.map-wrapper")
       .css("top", header_h);
+
+    this.mapView.invalidateSize();
+
   },
 
   createLayer: function(layerData, opts) {

@@ -23,7 +23,7 @@ gem "resque",                  "1.23.0"
 gem "resque-meta",             "1.0.3"
 gem "resque-job-tracking",     "0.0.4"
 gem "yajl-ruby",               "1.1.0", :require => "yajl"
-gem "airbrake",                "3.0.9"
+gem "airbrake",                "3.1.6"
 gem "nokogiri",                "1.5.3"
 gem "statsd-client",           "0.0.7", :require => "statsd"
 

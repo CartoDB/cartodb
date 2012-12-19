@@ -44,9 +44,9 @@ GEM
       i18n (~> 0.6)
       multi_json (~> 1.0)
     addressable (2.2.8)
-    airbrake (3.0.9)
-      activesupport
+    airbrake (3.1.6)
       builder
+      girl_friday
     arel (3.0.2)
     aws-sdk (1.5.2)
       httparty (~> 0.7)
@@ -73,6 +73,7 @@ GEM
       sass (~> 3.1)
     compass-rails (1.0.3)
       compass (>= 0.12.2, < 0.14)
+    connection_pool (0.9.3)
     debugger (1.2.0)
       columnize (>= 0.3.1)
       debugger-linecache (~> 1.1.1)
@@ -102,6 +103,9 @@ GEM
     foreman (0.46.0)
       thor (>= 0.13.6)
     fssm (0.2.9)
+    girl_friday (0.11.1)
+      connection_pool (~> 0.9.0)
+      rubinius-actor
     google-spreadsheet-ruby (0.1.8)
       nokogiri (>= 1.4.3.1)
       oauth (>= 0.3.6)
@@ -226,6 +230,9 @@ GEM
       activesupport (>= 3.0)
       railties (>= 3.0)
       rspec (~> 2.10.0)
+    rubinius-actor (0.0.2)
+      rubinius-core-api
+    rubinius-core-api (0.0.1)
     ruby-ole (1.2.11.3)
     rubyzip (0.9.9)
     sass (3.2.3)
@@ -294,7 +301,7 @@ PLATFORMS
 
 DEPENDENCIES
   addressable (= 2.2.8)
-  airbrake (= 3.0.9)
+  airbrake (= 3.1.6)
   aws-sdk (= 1.5.2)
   bartt-ssl_requirement (~> 1.4.0)
   builder (= 3.0.0)

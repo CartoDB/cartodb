@@ -26,9 +26,7 @@
   <script>
 
     function main() {
-      var vis = new cartodb.vis.Vis({el: document.getElementById('map') });
-      vis
-        .load('http://examples-beta.cartodb.com/api/v1/viz/791/viz.json', {
+      cartodb.createVis('map', 'http://examples-beta.cartodb.com/api/v1/viz/791/viz.json', {
           shareable: true,
           title: true,
           description: true,
@@ -37,22 +35,22 @@
           center_lat: 0,
           center_lon: 0,
           zoom: 2
-        })
-        .done(function(vis, layers) {
-          // layer 0 is the base layer, layer 1 is cartodb layer
-          layers[1].on('featureOver', function(e, pos, latlng, data) {
-            cartodb.log.log(e, pos, latlng, data);
-          });
-
-          // you can get the native map to work with it
-          // depending if you use google maps or leaflet
-          map = vis.getNativeMap();
-          // map.setZoom(3)
-          // map.setCenter(new google.maps.Latlng(...))
-        })
-        .error(function(err) {
-          console.log(err);
+      })
+      .done(function(vis, layers) {
+        // layer 0 is the base layer, layer 1 is cartodb layer
+        layers[1].on('featureOver', function(e, pos, latlng, data) {
+          cartodb.log.log(e, pos, latlng, data);
         });
+
+        // you can get the native map to work with it
+        // depending if you use google maps or leaflet
+        map = vis.getNativeMap();
+        // map.setZoom(3)
+        // map.setCenter(new google.maps.Latlng(...))
+      })
+      .error(function(err) {
+        console.log(err);
+      });
 
 
     }

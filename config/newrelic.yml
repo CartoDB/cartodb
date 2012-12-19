@@ -33,7 +33,7 @@ common: &default_settings
   # "All UI" then specify a semicolon-separated list of up to three
   # distinct names.  If you comment this out, it defaults to the 
   # capitalized RAILS_ENV (i.e., Production, Staging, etc)
-  app_name: My Application
+  app_name: CartoDB
 
   # When "true", the agent collects performance data about your 
   # application and reports this data to the New Relic service at
@@ -188,7 +188,7 @@ development:
   # executed since starting the app server.
   # NOTE: There is substantial overhead when running in developer mode.
   # Do not use for production or load testing.  
-  developer_mode: true
+  developer_mode: false
   
   # Enable textmate links
   # textmate: true
@@ -213,4 +213,4 @@ production:
 staging:
   <<: *default_settings
   monitor_mode: true
-  app_name: My Application (Staging)
+  app_name: CartoDB (Staging)

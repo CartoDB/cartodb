@@ -23,6 +23,7 @@
     "devDependencies": {
       "uglify-js": "1.3.3",
       "knox": "",
-      "git-rev": ""
+      "git-rev": "",
+      "underscore": ""
     }
 }

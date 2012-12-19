@@ -159,6 +159,7 @@ class Table < Sequel::Model(:user_tables)
         :suggested_name => uniname,
         :debug => (Rails.env.development?),
         :remaining_quota => owner.remaining_quota,
+        :remaining_tables => owner.remaining_table_quota,
         :data_import_id => @data_import.id
       ).symbolize_keys
       importer = CartoDB::Migrator.new hash_in

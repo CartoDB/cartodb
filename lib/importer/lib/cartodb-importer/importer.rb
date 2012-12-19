@@ -35,6 +35,7 @@ module CartoDB
       @data_import_id   = options[:data_import_id]
       @data_import      = DataImport.find(:id=>@data_import_id)
       @remaining_quota  = options[:remaining_quota]
+      @remaining_tables = options[:remaining_tables]
       @append_to_table  = options[:append_to_table] || nil
       @db_configuration = options.slice :database, :username, :password, :host, :port
       @db_configuration = {:port => 5432, :host => '127.0.0.1'}.merge @db_configuration
@@ -239,7 +240,6 @@ module CartoDB
           if !loader
             @data_import.log_update("no importer for this type of data, #{@ext}")
             @data_import.set_error_code(1002)
-            #raise "no importer for this type of data"
           else
             begin
 
@@ -256,9 +256,17 @@ module CartoDB
           end
         end
 
+        # Check if user is over table quota, raise the appropiate error
+        if @remaining_tables.to_i < payloads.length
+          @data_import.set_error_code(8002)
+          @data_import.log_error("Over account table limit, please upgrade")
+          raise CartoDB::QuotaExceeded, "More tables required"
+        end
+
         @data_import.refresh
 
-        # Flag the data import as failed
+        # Flag the data import as failed when no files were imported,
+        # save imported table names otherwise
         if payloads.length > 0
           @data_import.tables_created_count = payloads.size
           @data_import.table_names = payloads.map(&:name).join(',')
@@ -267,23 +275,11 @@ module CartoDB
           @data_import.failed
         end
 
-        #remove all files from disk
-        cleanup_disk
-
         @data_import.save
         return [payloads, errors]
       rescue => e
-        @data_import.refresh #reload incase errors were written
-        #@data_import.log_error(e)
-        log "====================="
-        log e
-        log e.backtrace
-        log "====================="
-        begin  # TODO: Do we really mean nil here? What if a table is created?
-          @db_connection.drop_table @suggested_name.nil? ? suggested : @suggested_name
-        rescue # silent try to drop the table
-        end
-
+        @data_import.refresh
+        drop_created_tables payloads.map(&:name)
         raise e
       ensure
         @db_connection.disconnect
@@ -298,7 +294,18 @@ module CartoDB
         end
       end
     end
-    #https://viz2.cartodb.com/tables/1255.shp
+
+
+    def drop_created_tables(table_names)
+      begin
+        table_names.each do |name|
+          @db_connection.drop_table name
+        end
+      rescue # silent try to drop the table
+      end
+    end
+
+
     def cleanup_disk
       @entries = @entries.sort_by {|x| x.length}.reverse
       @entries.each { |filename|
@@ -314,6 +321,8 @@ module CartoDB
         end
       }
     end
+
+
     def check_if_zip_or_gzip(path, ext)
       is_utf = if `uname` =~ /Darwin/
                  `file -bI #{@path}`

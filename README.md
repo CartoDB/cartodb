@@ -73,7 +73,7 @@ quick start
       // add the cartodb layer
       var layerUrl = 'http://examples-beta.cartodb.com/api/v1/viz/219/viz.json';
       cartodb.createLayer(map, layerUrl, function(layer) {
-        map.overlayMapTypes.setAt(0, layer);
+         map.addLayer(layer);
       });
     ```
 

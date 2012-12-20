@@ -52,7 +52,7 @@
         attribution: 'MapBox'
       }).addTo(map);
 
-      cartodb.createLayer(map, 'http://examples-beta.cartodb.com/api/v1/viz/219/viz.json')
+      cartodb.createLayer(map, 'http://examples.cartodb.com/api/v1/viz/european_countries_e/viz.json')
        .on('done', function(layer) {
 
         map.addLayer(layer);

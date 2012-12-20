@@ -9,7 +9,7 @@ function main() {
     loaderControl: false //dont show tiles loader
   };
 
-  cartodb.createVis('map', 'http://saleiva.cartodb.com/api/v1/viz/14863/viz.json', options)
+  cartodb.createVis('map', 'http://saleiva.cartodb.com/api/v1/viz/thehobbit_filmingloc/viz.json', options)
     .done(function(vis, layers) {
       // there are two layers, base layer and points layer
       var layer = layers[1];

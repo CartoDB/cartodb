@@ -1,13 +1,16 @@
 <html>
 <head>
   <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/themes/css/cartodb.css" />
-	<script src="http://libs.cartocdn.com/cartodb.js/v2/cartodb.js"></script>
-	<style>
+  <script src="http://libs.cartocdn.com/cartodb.js/v2/cartodb.js"></script>
+  <!--[if lte IE 8]>
+    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/themes/css/cartodb.ie.css" />
+  <![endif]-->
+  <style>
     html, body {padding: 0; margin: 0;}
     #cartodb-map { width: 100%; height:100%; background: black;}
-	</style>
+  </style>
 
-	<script>
+  <script>
 
 var map;
 function init(){
@@ -35,7 +38,7 @@ function init(){
   });
 }
   
-	</script>
+  </script>
 </head>
 
 <body onload="init()">

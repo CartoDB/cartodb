@@ -29,10 +29,9 @@ quick start
             <link rel="stylesheet" href="https://d3voyrscnb0slx.cloudfront.net/cartodb.js/v2/themes/css/cartodb.ie.css" />
         <![endif]-->
 
-
         -->
 
-        <!-- use this cartodb.js links if you are using https -->
+        <!-- use this cartodb.js link if you are using https -->
         <!--
         <script src="https://d3voyrscnb0slx.cloudfront.net/cartodb.js/v2/cartodb.js"></script>
         -->

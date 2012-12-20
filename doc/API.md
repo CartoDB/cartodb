@@ -133,7 +133,7 @@ The CartoDB.js has many great features for you to use in your applications. Letâ
 The Viz.JSON document tells CartoDB.js all the information about your map, including the style you want to use for your data and the filters you want to apply with SQL. The Viz JSON file is served for each map you create in your CartoDB account. Although the Viz JSON file stores all your maps settings, all the values are easy to override with CartoDB.js if you want to do something completely different than what you design in your console. Loading the Viz JSON is as simple as,
 
 ``` javascript
-    cartodb.loadLayer(map, 'http://examples.cartodb.com/api/v1/viz/0001/viz.json')
+    cartodb.loadLayer(map, 'http://examples.cartodb.com/api/v1/viz/ne_10m_populated_p_1/viz.json')
 ```
 
 ##### Bounds wrapper
@@ -271,7 +271,20 @@ With visualizations already created through the CartoDB console, you can simply 
 
           cartodb.createLayer(map, { ... layer metadata ... });
       ```
+      layer metadata is always in the form: { type: 'LAYER_TYPE_NAME', options: {....} }
+        - for type ``cartodb`` options should be:
+            - user_name: your username in cartodb, username.cartodb.com (mandatory)
+            - table_name: the table you want to display (mandatory)
+            - query: sql query applied
+            - tile_style: cartocss applied
+            - interactivity: data available in interactivity (see featureOver and featureClick)
+            - featureOver: callback called when pointer is on a feature
+            - featureClick: callback called when user cliks on a feature
+            - featureOut: called then the pointer gets out of a feature
+            - interaction: default true, set it to false when you don't want interactivity layer yo be loaded (recomended if you don't user interaction)
+
   + **options**: each type of layer has different options.
+
   + **callback(layer)**: if a function is specified is called when the layer is created passing it as argument.
 
 

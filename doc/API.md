@@ -8,40 +8,79 @@ When you add CartoDB.js to your websites you get some great new tools to make ma
 
 ### Getting started
 
+The simplest way to use a visualization created in CartoDB is:
+
+``` html
+...
+<body>
+    <div id="map"></div>
+</body>
+...
+<script>
+    // get the viz.json url from the CartoDB UI
+    // - go to the map tab
+    // - click on share
+    // - go to API tab
+    window.onload = function() {
+      cartodb.createVis('map', http://examples-beta.cartodb.com/api/v1/viz/219/viz.json);
+    }
+</script>
+```
+get the complete example [here](https://github.com/CartoDB/cartodb.js/blob/develop/examples/easy.html)
+
+
+### Creating maps
+
+CartoDB.js can be used in case you want to create a map visualization from scratch and when you want to add the visualization to an existing map. If you want to create new visualizations start reading "using CartoDB visualizations in your webpage", if you want to add the visualization to your map, read "Add CartoDB layer to an existing map". If you want to create your own visualizations using javascript just read "create visualizations at runtime", this will allow to more advanced users create visualizations without using the CartoDB UI.
+
+We’ve also made it easier than ever for you to build maps using the mapping library of your choice. Whether you are using Leaflet or Google Maps your CartoDB.js code remains the same. This makes our API documentation simple and straightforward. It also makes it easy for you to remember and keep consistent if you development or maintain multiple maps online. 
+
 To use CartoDB.js in your web-page, you no longer need to host the library on your servers, instead we have made a fast and lightweight version of it available for you online. You can start interacting with your CartoDB hosted tables by including the CartoDB.js inside the HEAD tag of your page:
 
 ``` html
+    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/themes/css/cartodb.css" />
+    <!--[if lte IE 8]>
+        <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/themes/css/cartodb.ie.css" />
+    <![endif]-->
     <script src="http://libs.cartocdn.com/cartodb.js/v2/cartodb.js"></script>
 ```
 
 The library is being mirrored on servers all over the world, so you be sure that no matter where your website viewers are, they will get CartoDB.js loaded the fastest way possible. 
 
-### Creating maps
 
-We’ve also made it easier than ever for you to build maps using the mapping library of your choice. Whether you are using Leaflet or Google Maps your CartoDB.js code remains the same. This makes our API documentation simple and straightforward. It also makes it easy for you to remember and keep consistent if you development or maintain multiple maps online. 
+#### using CartoDB visualizations in your webpage
 
-##### Leaflet integration
+This kind of visualization allows to create a complete map wihtout having to create the map, insert controls, layers and so on. It just creates for you the map, add the controls you want (zoom, loader, infowindows...) and then left you the control to manage them. See ``cartodb.createLayer`` in the API section or see a [simple example](https://github.com/CartoDB/cartodb.js/blob/develop/examples/easy.html)
 
-If you want to use Leaflet it gets even easier, CartoDB.js handles loading all the necessary libraries for you! just include CartoDB.js and CartoDB.css in the HEAD of your web-page and you are ready to go! The CartoDB.css document isn’t mandatory, however if you are making a map and are not familiar with writing your own CSS for the various needed elements, it can vastly help jumpstart the process. Adding it is as simple as adding the main JavaScript library,
+```
+  cartodb.createVis('map', 'http://examples-beta.cartodb.com/api/v1/viz/791/viz.json')
+      .done(function(vis, layers) {
+        // layer 0 is the base layer, layer 1 is cartodb layer
+        layers[1].on('featureOver', function(e, pos, latlng, data) {
+          cartodb.log.log(e, pos, latlng, data);
+        });
 
-``` html
-    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/themes/css/cartodb.css" />
-    <script src="http://libs.cartocdn.com/cartodb.js/v2/cartodb.js"></script>
+        // you can get the native map to work with it
+        // depending if you use google maps or leaflet
+        map = vis.getNativeMap();
+        // map.setZoom(3)
+        // map.setCenter(new google.maps.Latlng(...))
 ```
 
-##### Creating a map layer
+
+##### Add CartoDB layer to an existing map
 
 cartodb.createLayer is probably going to be the most important instrument in your toolbox. 
 
 With visualizations already created through the CartoDB console, you can simply use the createLayer function to add them into your web pages. This method works the same whether you are using Google Maps or Leaflet. Learn the details and different uses of layers in our API documentation below.
 
-##### Basic example
-
 To show you just how simple CartoDB.js, let's put it all together. In the HEAD of your HTML, include the libraries,
 
 ``` html
-    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/themes/css/cartodb.ie.css" />
     <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/themes/css/cartodb.css" />
+    <!--[if lte IE 8]>
+        <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/themes/css/cartodb.ie.css" />
+    <![endif]-->
     <script src="http://libs.cartocdn.com/cartodb.js/v2/cartodb.js"></script>
 ```
 
@@ -60,6 +99,28 @@ Next, in the BODY of your HTML include a DIV for your map and the minimum CartoD
           });
     </script>
 ```
+
+##### creating visualizations at runtime (advanced)
+
+The library also supports the [previous way](https://github.com/Vizzuality/cartodb-leaflet) to a create layer. This way requires more knoledge about CartoDB infraestructure. In this case you dont need viz.json file so you don't need to create a visualization in CartoDB UI, just import your table and use the data in your map.
+
+``` javascript
+        cartodb.loadLayer(map, {
+          type: 'cartodb',
+          options: {
+            table: 'mytable',
+            user_name: 'cartodb_username'
+            query: 'select * from mytable where age > 10'
+          }
+        }).done(function(layer) {
+          map.addLayer(layer);
+        });
+
+```
+
+see all the available options
+
+
 
 That's it! That is all the code you need to start developing your own maps with CartoDB.js. If you want to start building applications straight away, head over to our tutorials to see start making your own maps.
 
@@ -129,13 +190,24 @@ Similarly, there is the **featureOut** event. This is best used if you do things
     });
 ```
 
+##### Leaflet integration
+
+If you want to use Leaflet it gets even easier, CartoDB.js handles loading all the necessary libraries for you! just include CartoDB.js and CartoDB.css in the HEAD of your web-page and you are ready to go! The CartoDB.css document isn’t mandatory, however if you are making a map and are not familiar with writing your own CSS for the various needed elements, it can vastly help jumpstart the process. Adding it is as simple as adding the main JavaScript library,
+
+``` html
+    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/themes/css/cartodb.css" />
+    <script src="http://libs.cartocdn.com/cartodb.js/v2/cartodb.js"></script>
+```
+
 ##### IE support
 
 We have worked hard to support Internet Explorer with CartoDB.js. It currently works for version X.X onward. The biggest change you should note is that for the CSS you will need to include an additional IE CSS document we have made available. Your <head> tag should now house links to three documents, as follows,
 
 ``` html
-    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/themes/css/cartodb.ie.css" />
     <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/themes/css/cartodb.css" />
+    <!--[if lte IE 8]>
+        <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/themes/css/cartodb.ie.css" />
+    <![endif]-->
     <script src="http://libs.cartocdn.com/cartodb.js/v2/cartodb.js"></script>
 ```
 

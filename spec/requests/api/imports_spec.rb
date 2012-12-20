@@ -1,6 +1,6 @@
 #encoding: UTF-8
 
-require File.expand_path(File.dirname(__FILE__) + '/../../../spec_helper')
+require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 
 describe "Imports API" do
 
@@ -196,6 +196,7 @@ describe "Imports API" do
   it 'allows users to kill pending imports'
 
   it 'imports all the sample data' do
+    @user.update table_quota: 10
     ["http://cartodb.s3.amazonaws.com/static/TM_WORLD_BORDERS_SIMPL-0.3.zip",
     "http://cartodb.s3.amazonaws.com/static/european_countries.zip",
     "http://cartodb.s3.amazonaws.com/static/counties_ny.zip",
@@ -223,7 +224,25 @@ describe "Imports API" do
     end
   end
 
+  it 'raises an error if the user attempts to import tables over his quota' do
+    @user.update table_quota: 5
+
+    # This file contains 10 data sources
+    serve_file(Rails.root.join('spec/support/data/ESP_adm.zip')) do |url|
+      post v1_imports_url(:host       => 'test.localhost.lan',
+                          :url        => url,
+                          :api_key    => @user.get_map_key,
+                          :table_name => "wadus")
+    end
+    response.code.should be == '200'
+    last_import = DataImport.order(:updated_at.desc).first
+    last_import.state.should be == 'failure'
+    last_import.error_code.should be == 8002
+    @user.reload.tables.count.should == 0
+  end
+
   it 'returns info for each created table' do
+    @user.update table_quota: 10
     serve_file(Rails.root.join('spec/support/data/ESP_adm.zip')) do |url|
       post v1_imports_url(:host       => 'test.localhost.lan',
                           :url        => url,

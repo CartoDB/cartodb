@@ -17,10 +17,11 @@ quick start
             <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/themes/css/cartodb.ie.css" />
         <![endif]-->
 
+
         <script src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
         <script src="http://libs.cartocdn.com/cartodb.js/v2/cartodb.js"></script>
 
-        <!-- use these links if you are using https -->
+        <!-- use these cartodb.css links if you are using https -->
         <!--
 
         <link rel="stylesheet" href="https://d3voyrscnb0slx.cloudfront.net/cartodb.js/v2/themes/cartodb.css" />
@@ -28,6 +29,11 @@ quick start
             <link rel="stylesheet" href="https://d3voyrscnb0slx.cloudfront.net/cartodb.js/v2/themes/css/cartodb.ie.css" />
         <![endif]-->
 
+
+        -->
+
+        <!-- use this cartodb.js links if you are using https -->
+        <!--
         <script src="https://d3voyrscnb0slx.cloudfront.net/cartodb.js/v2/cartodb.js"></script>
         -->
     ```

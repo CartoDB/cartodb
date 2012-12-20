@@ -121,8 +121,6 @@ class DataImport < Sequel::Model
         e = CartoDB::TableCopyError.new e.message    if table_copy?
       end
       CartoDB::Logger.info "Exception on tables#create", e.inspect
-
-      #true # FIXME: our exception handler returns true so that the after_create method doesnt rollback
     end
 
     # Recalculate map bounds on every imported table
@@ -222,6 +220,7 @@ class DataImport < Sequel::Model
       :import_from_file => import_source,
       :debug            => (Rails.env.development?),
       :remaining_quota  => current_user.remaining_quota,
+      :remaining_tables => current_user.remaining_table_quota,
       :data_import_id   => id
     )
     importer = CartoDB::Importer.new hash_in

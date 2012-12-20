@@ -186,17 +186,17 @@ describe CartoDB::Importer do
         results[0].import_type.should == '.csv'
       end
 
-      pending "should import CSV export with latitude & longitude columns" do
-        importer = create_importer 'CartoDB_csv_export.zip', 'cartodb_csv_export'
+      it "should import CSV with latitude & longitude columns" do
+        importer = create_importer 'csv_with_lat_lon.csv', 'csv_with_lat_lon'
         results,errors = importer.import!
 
         errors.should be_empty
-        results[0].name.should == 'cartodb_csv_export'
+        results[0].name.should == 'csv_with_lat_lon'
         results[0].rows_imported.should == 155
         results[0].import_type.should == '.csv'
 
         # test auto generation of geom from lat/long fields
-        res = @db[:cartodb_csv_export].select{[st_x(the_geom), st_y(the_geom), latitude, longitude]}.limit(1).first
+        res = @db[:csv_with_lat_lon].select{[st_x(the_geom), st_y(the_geom), latitude, longitude]}.limit(1).first
         res[:st_x].should == res[:longitude].to_f
         res[:st_y].should == res[:latitude].to_f
       end

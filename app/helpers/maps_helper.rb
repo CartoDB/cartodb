@@ -29,7 +29,7 @@ module MapsHelper
       description: map.tables.first.description,
       title: map.tables.first.name,
 
-      url: table_path(map.tables.first),
+      url: table_url(map.tables.first),
 
       map_provider: map.provider,
 

@@ -25,7 +25,9 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def geometry_types
-    owner.in_database.fetch(%Q{SELECT distinct(ST_GeometryType(the_geom)) from "#{self.name}" LIMIT 1}).all.map {|r| r[:st_geometrytype] }
+    owner.in_database.select("ST_GeometryType(#{Table::THE_GEOM})".lit)
+      .distinct.from(self.name).where("#{Table::THE_GEOM} is not null")
+      .limit(10).all.map {|r| r[:st_geometrytype] }
   end
 
   def_dataset_method(:search) do |query|
@@ -157,6 +159,7 @@ class Table < Sequel::Model(:user_tables)
         :suggested_name => uniname,
         :debug => (Rails.env.development?),
         :remaining_quota => owner.remaining_quota,
+        :remaining_tables => owner.remaining_table_quota,
         :data_import_id => @data_import.id
       ).symbolize_keys
       importer = CartoDB::Migrator.new hash_in

@@ -68,14 +68,6 @@ module NavigationHelpers
   def api_table_records_pending_addresses_url(table_identifier)
     "#{api_url_prefix}/tables/#{table_identifier}/records/pending_addresses"
   end
-  
-  def api_table_export_to_csv_url(table_identifier)
-    api_req "#{api_url_prefix}/tables/#{table_identifier}/export/csv"
-  end
-
-  def api_table_export_to_shp_url(table_identifier)
-    api_req "#{api_url_prefix}/tables/#{table_identifier}/export/shp"
-  end
 
   def api_user_url (user_id)
     api_req "#{api_url_prefix}/users/#{user_id}"
@@ -87,6 +79,10 @@ module NavigationHelpers
 
   def superadmin_user_path(user)
     "/superadmin/users/#{user.id}"
+  end
+
+  def api_imports_path(params = {})
+    api_req "#{api_url_prefix}/tables/#{table_identifier}/export/shp"
   end
   
   private

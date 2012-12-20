@@ -23,7 +23,8 @@ describe('Interaction funcionality', function() {
       opacity:0.8,
       interactivity: "cartodb_id",
       auto_bound: false,
-      debug: true
+      debug: true,
+      interaction: true
     });
 
 
@@ -70,7 +71,7 @@ describe('Interaction funcionality', function() {
       e.clientY = 10;
       $(div).trigger(e);
 
-      cdb_layer._interaction.click(e,{x:100,y:100});
+      cdb_layer.interaction.click(e,{x:100,y:100});
     });
 
     waits(3000);
@@ -108,16 +109,16 @@ describe('Interaction funcionality', function() {
       $(div).trigger(e);
 
       var pos = wax.u.eventoffset(e);
-      cdb_layer._interaction.screen_feature(pos, function(feature) {
+      cdb_layer.interaction.screen_feature(pos, function(feature) {
         if (feature) {
-          bean.fire(cdb_layer._interaction, 'on', {
+          bean.fire(cdb_layer.interaction, 'on', {
             parent: map,
             data: feature,
             formatter: null,
             e: e
           });
         } else {
-          bean.fire(cdb_layer._interaction, 'off');
+          bean.fire(cdb_layer.interaction, 'off');
         }
       });
     });
@@ -158,16 +159,16 @@ describe('Interaction funcionality', function() {
       $(div).trigger(e);
 
       var pos = wax.u.eventoffset(e);
-      cdb_layer._interaction.screen_feature(pos, function(feature) {
+      cdb_layer.interaction.screen_feature(pos, function(feature) {
         if (feature) {
-          bean.fire(cdb_layer._interaction, 'on', {
+          bean.fire(cdb_layer.interaction, 'on', {
             parent: map,
             data: feature,
             formatter: null,
             e: e
           });
         } else {
-          bean.fire(cdb_layer._interaction, 'off');
+          bean.fire(cdb_layer.interaction, 'off');
         }
       });
     });
@@ -219,7 +220,7 @@ describe('Interaction funcionality', function() {
 
       $(div).trigger(e);
 
-      cdb_layer._interaction.click(e,{x:100,y:100});
+      cdb_layer.interaction.click(e,{x:100,y:100});
     });
   });
 
@@ -261,21 +262,34 @@ describe('Interaction funcionality', function() {
       $(div).trigger(e);
 
       var pos = wax.u.eventoffset(e);
-      cdb_layer._interaction.screen_feature(pos, function(feature) {
+      cdb_layer.interaction.screen_feature(pos, function(feature) {
         if (feature) {
-          bean.fire(cdb_layer._interaction, 'on', {
+          bean.fire(cdb_layer.interaction, 'on', {
             parent: map,
             data: feature,
             formatter: null,
             e: e
           });
         } else {
-          bean.fire(cdb_layer._interaction, 'off');
+          bean.fire(cdb_layer.interaction, 'off');
         }
       });
     });
   });
 
+  it('A setInteraction(false) should disable interactivity', function() {
+    waits(500);
+
+    runs(function () {
+      cdb_layer.setInteraction(false);
+    });
+
+    waits(500);
+
+    runs(function() {
+      expect(cdb_layer.interaction).toEqual(null);
+    });
+  });
 
   it('A mouseout action should arrive', function() {
     waits(500);
@@ -311,16 +325,16 @@ describe('Interaction funcionality', function() {
       $(div).trigger(e);
 
       var pos = wax.u.eventoffset(e);
-      cdb_layer._interaction.screen_feature(pos, function(feature) {
+      cdb_layer.interaction.screen_feature(pos, function(feature) {
         if (feature) {
-          bean.fire(cdb_layer._interaction, 'on', {
+          bean.fire(cdb_layer.interaction, 'on', {
             parent: map,
             data: feature,
             formatter: null,
             e: e
           });
         } else {
-          bean.fire(cdb_layer._interaction, 'off');
+          bean.fire(cdb_layer.interaction, 'off');
         }
       });
     });

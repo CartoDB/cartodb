@@ -109,11 +109,15 @@ describe('api.layers.cartodb', function() {
         var t = layer._tileJSON();
         var opts = get_url_options(t.tiles[0]);
         expect(opts.sql).toEqual('select * from jaja');
+        expect(opts.cache_buster).toEqual(undefined);
+        expect(layer.options.no_cdn).toEqual(true);
 
         layer.setQuery(null);
         var t = layer._tileJSON();
         opts = get_url_options(t.tiles[0]);
         expect(opts.sql).toEqual(undefined);
+        expect(opts.cache_buster).toEqual(undefined);
+        expect(layer.options.no_cdn).toEqual(true);
       });
 
 
@@ -193,6 +197,35 @@ describe('api.layers.cartodb', function() {
       runs(function() {
         expect(layer.infowindow).not.toEqual(undefined);
         expect(layer.options.interactivity).toEqual('myname,jaja,cartodb_id');
+      });
+    });
+
+    it("should not add interactivity when interaction is false", function() {
+      runs(function() {
+        cartodb.createLayer(map, { 
+            kind: 'cartodb', 
+            options: { 
+              table_name: 'test',
+              user_name: 'test'
+            },
+            infowindow: { 
+              template: '<div></div>',
+              fields: [{name: 'test', title: true, order: 0}] 
+            }
+        }, {
+          interactivity: 'myname,jaja',
+          interaction: false
+        }, function(l) {
+          addFn(map, l);
+          layer = l;
+        });
+      });
+      waits(100);
+      runs(function() {
+        expect(layer.infowindow).not.toEqual(undefined);
+        expect(layer.options.interactivity).toEqual('myname,jaja,cartodb_id');
+        expect(layer.options.interaction).toEqual(false);
+        expect(layer.interaction).toEqual(null);
       });
     });
 

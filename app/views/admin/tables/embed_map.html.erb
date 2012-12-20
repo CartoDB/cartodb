@@ -78,8 +78,9 @@
           opt.no_cdn = true;
         <% end %>
 
-        var vis = new cdb.vis.Vis({el: $('#map') });
-        vis.load('<%= v1_vizjson_url(@tabla) %>', opt); 
+        cartodb.createVis('map', '<%= v1_vizjson_url(@tabla) %>', opt, function(vis) {
+          // add here  your code
+        });
       });
     </script>
 

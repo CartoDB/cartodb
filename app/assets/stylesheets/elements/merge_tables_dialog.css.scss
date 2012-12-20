@@ -1,0 +1,116 @@
+
+  /**
+   *  Merge tables dialog
+   */
+  @import "compass";
+  @import "../common/forms";
+
+  .merge_tables_dialog {
+
+
+
+    // Tables selector
+    .tables_selector {
+      display:block;
+
+      // Content
+      div.content {
+        height:140px;
+      }
+
+      // Join types
+      ul.join_types {
+        width:100%;
+        padding-bottom:30px;
+        margin:40px 0 0 0;
+        letter-spacing: -4px;
+        word-spacing: -4px;
+        border-bottom:1px solid rgba(#CCCCCC,0.5);
+
+        li {
+          @include inline-block();
+          vertical-align:top;
+          width:256px;
+          letter-spacing: 0;
+          word-spacing: 0;
+          border-bottom:0;
+
+          &:first-child {margin-right:41px;}
+
+          a.radiobutton.inactive {@include opacity(0.6)}
+
+          p {
+            margin-top:7px;
+            padding-left:20px;
+          }
+        }
+      }
+
+      // Table columns selector/preview
+      div.tables {
+        width:100%;
+        @include opacity(0);
+        display:block;
+        margin-top:34px;
+        letter-spacing: -4px;
+        word-spacing: -4px;
+
+        .table_preview {
+          @include inline-block();
+          width:254px;
+          height:230px;
+          border:1px solid #CCCCCC;
+          @include border-radius(3px);
+          letter-spacing: 0;
+          word-spacing: 0;
+          background:white;
+
+          * {letter-spacing: 0; word-spacing: 0;}
+
+          &:first-child {margin-right:41px;}
+        }  
+      }
+
+      p.approx_rows {
+        display:none;
+        margin-right:10px;
+      }
+      
+    }
+
+    // Table name
+    .modal.naming {
+      display:none;
+      width:525px!important;
+
+      @include default-input;
+      @include default-form-info;
+
+      div.merge_content {
+        display:block;
+        padding:40px;
+        input.text {display:block; width:422px;}
+      }
+    }
+
+    // Merging process
+    .modal.merging {
+      display:none;
+      width:300px!important;
+      height:217px;
+
+      div.loader {
+        display:inline-block;
+        margin:60px 0 0;
+        padding:40px;
+        @include background(image-url('layout/loader.gif') no-repeat center top);
+        p {text-align:center;}  
+      }
+    }
+
+    // Error?
+    .modal.error {
+      display:none;
+      width:600px!important;
+    }
+  }

@@ -4,16 +4,10 @@ gem "rails",                   "3.2.2"
 
 gem "rake",                    "0.9.2.2"
 gem "pg",                      "0.11"
-gem "sequel",                  "3.37.0"
-gem "sequel_pg",               "1.2.0", :require => "sequel"
+gem "sequel",                  "3.42.0"
+gem "sequel_pg",               "1.6.3", :require => "sequel"
 
-# TODO remove this when everything works
-# gem "sequel_column_type_array", "0.0.4"
-# gem "sequel-rails", :git => "git://github.com/tokumine/sequel-rails.git", :tag => '0.3.6'
-# gem "sequel-rails-cartodb", "~> 0.1.7", :require => "sequel-rails"
-# gem "text-hyphen", "1.2.0"
-
-gem "vizzuality-sequel-rails", "0.3.5"
+gem "vizzuality-sequel-rails", "0.3.6", :git => 'https://github.com/Vizzuality/sequel-rails.git'
 
 gem "rails_warden",            "0.5.2" # Auth via the Warden Rack framework
 gem "oauth",                   "0.4.5"
@@ -25,14 +19,17 @@ gem "rgeo",                    "0.3.2" # Geospatial data library
 gem "rgeo-geojson",            "0.2.1", :require => "rgeo/geo_json"
 
 gem "redis",                   "2.2.2"
-gem "resque",                  "1.19.0"
+gem "resque",                  "1.23.0"
+gem "resque-meta",             "1.0.3"
 gem "resque-job-tracking",     "0.0.4"
 gem "yajl-ruby",               "1.1.0", :require => "yajl"
-gem "airbrake",                "3.0.9"
+gem "airbrake",                "3.1.6"
 gem "nokogiri",                "1.5.3"
 gem "statsd-client",           "0.0.7", :require => "statsd"
 
 gem "addressable",             "2.2.8", :require => "addressable/uri"
+
+gem "newrelic_rpm"
 
 gem "ejs",                     "~> 1.1.1"
 gem "turbo-sprockets-rails3",  "0.1.16"
@@ -61,7 +58,7 @@ gem "state_machine",           "1.1.2"
 #      Rails routes DSL
 gem "bartt-ssl_requirement",   "~>1.4.0", :require => "ssl_requirement"
 
-gem "simplecov",               "0.6.4", :require => false, :group => :test
+gem "simplecov",               "0.7.1", :require => false, :group => :test
 gem "spin",                    "0.5.3", :require => false, :group => :test
 
 group :development, :test do

@@ -17,6 +17,7 @@ class Table < Sequel::Model(:user_tables)
   DEFAULT_THE_GEOM_TYPE = "geometry"
 
   many_to_one :map
+  plugin :association_dependencies, :map => :destroy
 
   def public_values(options = {})
     selected_attrs = options[:except].present? ? PUBLIC_ATTRIBUTES.select { |k, v| !options[:except].include?(k.to_sym) } : PUBLIC_ATTRIBUTES
@@ -24,7 +25,9 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def geometry_types
-    owner.in_database.fetch(%Q{SELECT distinct(ST_GeometryType(the_geom)) from "#{self.name}"}).all.map {|r| r[:st_geometrytype] }
+    owner.in_database.select("ST_GeometryType(#{Table::THE_GEOM})".lit)
+      .distinct.from(self.name).where("#{Table::THE_GEOM} is not null")
+      .limit(10).all.map {|r| r[:st_geometrytype] }
   end
 
   def_dataset_method(:search) do |query|
@@ -156,6 +159,7 @@ class Table < Sequel::Model(:user_tables)
         :suggested_name => uniname,
         :debug => (Rails.env.development?),
         :remaining_quota => owner.remaining_quota,
+        :remaining_tables => owner.remaining_table_quota,
         :data_import_id => @data_import.id
       ).symbolize_keys
       importer = CartoDB::Migrator.new hash_in
@@ -238,7 +242,6 @@ class Table < Sequel::Model(:user_tables)
 
     # The Table model only migrates now, never imports
     if migrate_existing_table.present?
-
       #init state machine
       if self.data_import_id.nil? #needed for non ui-created tables
         @data_import  = DataImport.new(:user_id => self.user_id)
@@ -307,7 +310,7 @@ class Table < Sequel::Model(:user_tables)
         @data_import.log_update("dropping table #{self.name}")
       end
     end
-    
+
     if @import_from_file
       @import_from_file = URI.escape(@import_from_file) if @import_from_file =~ /^http/
       open(@import_from_file) do |res|
@@ -355,7 +358,6 @@ class Table < Sequel::Model(:user_tables)
     User.filter(:id => user_id).update(:tables_count => :tables_count + 1)
     owner.in_database(:as => :superuser).run(%Q{GRANT SELECT ON "#{self.name}" TO #{CartoDB::TILE_DB_USER};})
     add_python
-    delete_tile_style
     flush_cache
     set_trigger_update_updated_at
     set_trigger_cache_timestamp
@@ -438,6 +440,7 @@ class Table < Sequel::Model(:user_tables)
     end
     remove_table_from_stats
     invalidate_varnish_cache
+    delete_tile_style
   end
   ## End of Callbacks
 
@@ -1188,6 +1191,23 @@ class Table < Sequel::Model(:user_tables)
     )
   end
 
+  def has_trigger? trigger_name
+    owner.in_database(:as => :superuser).select('trigger_name').from(:information_schema__triggers)
+      .where(:event_object_catalog => owner.database_name,
+             :event_object_table => self.name,
+             :trigger_name => trigger_name).count > 0
+  end
+
+  def has_index? index_name
+    self.pg_indexes.include? index_name.to_s
+  end
+
+  def pg_indexes
+    owner.in_database(:as => :superuser).select(:indexname)
+      .from(:pg_indexes).where(:tablename => self.name)
+      .all.map { |t| t[:indexname] }
+  end
+
   def set_trigger_the_geom_webmercator
     return true unless self.schema(:reload => true).flatten.include?(THE_GEOM)
     owner.in_database(:as => :superuser) do |user_database|
@@ -1300,6 +1320,14 @@ TRIGGER
 
   def owner
     @owner ||= User.select(:id,:database_name,:crypted_password,:quota_in_bytes,:username, :private_tables_enabled, :table_quota, :account_type).filter(:id => self.user_id).first
+  end
+
+  def table_style
+    self.map.data_layers.first.options['tile_style']
+  end
+
+  def table_style_from_redis
+    $tables_metadata.get("map_style|#{self.database_name}|#{self.name}")
   end
 
   private
@@ -1418,7 +1446,7 @@ TRIGGER
     end
 
     raise "Error: unsupported geometry type #{type.to_s.downcase} in CartoDB" unless CartoDB::VALID_GEOMETRY_TYPES.include?(type.to_s.downcase)
-    #raise InvalidArgument unless CartoDB::VALID_GEOMETRY_TYPES.include?(type.to_s.downcase)
+
     updates = false
     type = type.to_s.upcase
     owner.in_database do |user_database|
@@ -1431,12 +1459,22 @@ TRIGGER
       unless user_database.schema(name, :reload => true).flatten.include?(THE_GEOM_WEBMERCATOR)
         updates = true
         user_database.run("SELECT AddGeometryColumn ('#{self.name}','#{THE_GEOM_WEBMERCATOR}',#{CartoDB::GOOGLE_SRID},'#{type}',2)")
-        # make timeout here long, but not infinite. 10mins = 600000 ms.
         user_database.run(%Q{SET statement_timeout TO 600000;UPDATE "#{self.name}" SET #{THE_GEOM_WEBMERCATOR}=CDB_TransformToWebmercator(#{THE_GEOM}) WHERE #{THE_GEOM} IS NOT NULL;SET statement_timeout TO DEFAULT})
-        user_database.run(%Q{CREATE INDEX ON "#{self.name}" USING GIST(#{THE_GEOM_WEBMERCATOR})})
-
-        # user_database.run(%Q{ALTER TABLE "#{self.name}" ADD CONSTRAINT geometry_valid_check CHECK (ST_IsValid(#{THE_GEOM}))})
       end
+
+      # Ensure we add triggers and indexes when required
+      if user_database.schema(name, :reload => true).flatten.include?(THE_GEOM_WEBMERCATOR)
+        updates = true unless self.has_trigger?("update_the_geom_webmercator_trigger")
+        unless self.has_index? "#{self.name}_the_geom_webmercator_idx"
+          user_database.run(%Q{CREATE INDEX ON "#{self.name}" USING GIST(#{THE_GEOM_WEBMERCATOR})})
+        end
+      end
+      if user_database.schema(name, :reload => true).flatten.include?(THE_GEOM)
+        unless self.has_index? "#{self.name}_the_geom_idx"
+          user_database.run(%Q{CREATE INDEX ON "#{self.name}" USING GIST(the_geom)})
+        end
+      end
+
     end
     self.the_geom_type = type.downcase
     save_changes unless new?
@@ -1558,7 +1596,7 @@ SQL
 
   def delete_tile_style
     begin
-      #tile_request('DELETE', "/tiles/#{self.name}/style?map_key=#{owner.get_map_key}")
+      tile_request('DELETE', "/tiles/#{self.name}/style?map_key=#{owner.get_map_key}")
     rescue => e
       CartoDB::Logger.info "tilestyle#delete error", "#{e.inspect}"
     end

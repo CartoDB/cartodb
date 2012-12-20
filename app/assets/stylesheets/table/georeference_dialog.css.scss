@@ -21,9 +21,14 @@
     width:100%;
     margin-left: 20px;
 
+    div.info {
+      margin-left:0!important;
+      margin-right:20px!important;
+    }
+
     div.hint {
       position:relative;
-      display:block;
+      width:472px;
       margin-top:15px;
       background:image-url('layout/hint_line_bkg.png') repeat 0 -3px;
 

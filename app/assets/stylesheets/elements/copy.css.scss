@@ -12,14 +12,18 @@
 	@import "compass";
 	@import "../common/sprites";
 	@import "../common/mixins";
+	@import "../common/forms";
 
 	div.copy {
 		position:relative;
 		display:block;
 
+		@include default-input();
+
 		label {display:block;}
-		p {
+		input {
 			display:block;
+			margin-top:5px;
 			padding:14px 50px 14px 14px;
 			@include border-radius(3px);
 			line-height:normal;
@@ -28,6 +32,7 @@
 			text-overflow:ellipsis;
 			overflow:hidden;
 			white-space:nowrap;
+			font-size:15px;
 
 			&:hover {
 				border-color:#999999;
@@ -41,7 +46,7 @@
 			height:27px;
 			@include text-indent();
 			@include icons-sprite(copy_button);
-			z-index:1;
+			z-index:3;
 			&.hover {@include icons-sprite(copy_button, $offset-y:-27px);}
 			&.focus {@include icons-sprite(copy_button,$offset-y:-27px);}
 			&.active {@include icons-sprite(copy_button,$offset-y:-54px);}

@@ -87,7 +87,7 @@ cdb.geo.geocoder.NOKIA = {
         protocol = 'http:';
       }
       
-      $.getJSON(protocol + '//places.nlp.nokia.com/places/v1/discover/search/?q=' + address + '&app_id=' + this.keys.app_id + '&app_code=' + this.keys.app_code + '&Accept-Language=en-US&at=0,0&callback=?', function(data) {
+      $.getJSON(protocol + '//places.nlp.nokia.com/places/v1/discover/search/?q=' + encodeURIComponent(address) + '&app_id=' + this.keys.app_id + '&app_code=' + this.keys.app_code + '&Accept-Language=en-US&at=0,0&callback=?', function(data) {
 
          var coordinates = [];
          if (data && data.results && data.results.items && data.results.items.length > 0) {

@@ -30,7 +30,7 @@
           <li>
             <div class="copy">
               <label class="uppercase smaller strong lighter">YOUR API KEY</label>
-              <p class="margin5 <%= "light italic" if !current_user.get_map_key %>"><%= current_user.get_map_key || "No api key" %></p>
+              <input class="margin5" type="text" value="<%= current_user.get_map_key || "No api key" %>" readonly>
               <a class="tooltip copy" href="#copy" title="Copy this">copy</a>
             </div>
           </li>

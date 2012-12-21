@@ -110,5 +110,13 @@
           height:4px;
         }
       }
+
+      &.disabled {
+        @include opacity(1);
+
+        span.radio {
+          @include opacity(0.35);
+        }
+      }
     }
   }

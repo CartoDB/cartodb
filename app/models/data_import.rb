@@ -185,7 +185,7 @@ class DataImport < Sequel::Model
   end
 
   def raise_error_if_over_quota number_of_tables
-    if current_user.remaining_table_quota.to_i < number_of_tables
+    if !current_user.remaining_table_quota.nil? && current_user.remaining_table_quota.to_i < number_of_tables
       self.set_error_code(8002)
       self.log_error("Over account table limit, please upgrade")
       raise CartoDB::QuotaExceeded, "More tables required"

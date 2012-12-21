@@ -94,6 +94,12 @@ class DataImport < Sequel::Model
         migrate_existing migrate_table
 
       elsif table_copy.present? || from_query.present?
+        # Raise an error if user is over table quota
+        if current_user.remaining_table_quota.to_i < 1
+          self.set_error_code(8002)
+          self.log_error("Over account table limit, please upgrade")
+          raise CartoDB::QuotaExceeded, "More tables required"
+        end
         query = table_copy ? "SELECT * FROM #{table_copy}" : from_query
         new_table_name = import_from_query table_name, query
         self.update :table_names => new_table_name

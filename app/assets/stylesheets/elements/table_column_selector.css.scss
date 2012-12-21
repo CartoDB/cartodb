@@ -1,0 +1,122 @@
+
+
+  /**
+   *  Table column selector plugin
+   */
+
+  @import "compass";
+  
+  .table_preview {
+    position:relative;
+
+    div.table {
+      display:block;
+      //height:202px;
+      padding:14px;
+      background:#F2F2F2;
+      @include transform-style("linear");
+      @include transition-property("height");
+      @include transition-duration(320ms);
+
+      div.select.tables {
+        @include transform-style("linear");
+        @include transition-property("margin");
+        @include transition-duration(320ms);
+        margin-top:60px;
+      }
+
+      p {margin-top:5px; text-align:center;}
+
+      &.chosen {
+        height:22px;
+        border-bottom:1px solid rgba(#CCCCCC,0.5);
+        div.select.tables {margin:0;}
+        p {display:none;}
+      }
+    }
+
+    div.columns {
+         
+      ul {
+        position:relative;
+        width:100%;
+        max-height:180px;
+        overflow: auto;
+
+        &:before {
+          content:'Loading columns';
+          position:absolute;
+          top:10px;
+          left:55px;
+          padding:2px 0 2px 25px;
+          @include background(image-url('layout/mini-loader.gif') no-repeat top left white);
+          z-index:-1;
+          color:#999999;
+          font-size:13px;
+        }
+
+        li {
+          position:relative;
+          padding:13px;
+          margin-bottom:0!important;
+          border-bottom:1px solid rgba(#CCCCCC,0.5)!important;
+          z-index:1;
+
+          &:last-child {border-bottom:none!important;}
+        }
+      }
+    }
+
+    div.merge_all {
+      position:absolute;
+      display:none;
+      bottom:-25px;
+      right:28px!important;
+      width:140px;
+      label {color:#999999; font-size:13px;}
+    }
+
+    // Small switch
+    .switch, .form_switch {
+      margin-top:2px;
+      width:21px;
+      height:12px;
+
+      span.handle {
+        top:0px;
+        width:10px;
+        height:10px;
+        left:9px;
+      }
+
+      &.enabled span.handle {left:9px;}
+      &.disabled span.handle {left:1px;}
+    }
+
+    // Small radiobutton
+    .radiobutton {
+      width:180px;
+      white-space:nowrap;
+      text-overflow:ellipsis;
+      overflow:hidden;
+
+
+      span.radio {
+        width:8px;
+        height:8px;
+
+        &:before {
+          width:4px;
+          height:4px;
+        }
+      }
+
+      &.disabled {
+        @include opacity(1);
+
+        span.radio {
+          @include opacity(0.35);
+        }
+      }
+    }
+  }

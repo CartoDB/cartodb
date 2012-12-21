@@ -57,7 +57,7 @@ feature "API 1.0 tables management" do
     end
   end
 
-  it "Should update metadata of orphans tables created via SQL API" do
+  pending "Should update metadata of orphans tables created via SQL API" do
     @user.in_database.run(
       <<-SQL
         CREATE TABLE my_new_ghost_table (id integer);
@@ -71,7 +71,7 @@ feature "API 1.0 tables management" do
     end
   end
 
-  it "Should remove metadata of tables destroyed via SQL API" do
+  pending "Should remove metadata of tables destroyed via SQL API" do
     table = FactoryGirl.create(:table, :user_id => @user.id)
 
     get_json api_tables_url do |response|
@@ -92,7 +92,7 @@ feature "API 1.0 tables management" do
     end
   end
 
-  it "Should update metadata of tables renamed via SQL API" do
+  pending "Should update metadata of tables renamed via SQL API" do
     table = FactoryGirl.create(:table, :user_id => @user.id)
 
     get_json api_tables_url do |response|
@@ -114,7 +114,7 @@ feature "API 1.0 tables management" do
     end
   end
 
-  it "Should update metadata of outdated tables" do
+  pending "Should update metadata of outdated tables" do
     Table.destroy
     3.times { FactoryGirl.create(:table, :user_id => @user.id) }
 

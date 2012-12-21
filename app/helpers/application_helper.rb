@@ -63,8 +63,7 @@ module ApplicationHelper
       sql_api_endpoint:            Cartodb.config[:sql_api_endpoint],
       sql_api_port:                Cartodb.config[:sql_api_port],
       cartodb_com_hosted:          Cartodb.config[:cartodb_com_hosted],
-      account_host:                Cartodb.config[:account_host],
-      cartodb_central_domain_name: Cartodb.config[:cartodb_central_domain_name]
+      account_host:                Cartodb.config[:account_host]
     }.to_json
   end
 

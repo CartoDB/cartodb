@@ -108,8 +108,8 @@ div.cartodb_tooltip p {
 
 /*SYLES FOR THE CUSTOM INFOWINDOW*/
 
-div.cartodb-popup{
-	background: transparent;
+div.cartodb-popup {
+	background: none;
 	width: 240px;
 	padding: 0;
 	-moz-border-radius-topright: 4px;
@@ -124,7 +124,7 @@ div.cartodb-popup a.cartodb-popup-close-button{
 	right: -13px;
 }
 
-div.cartodb-popup-content-wrapper{
+div.cartodb-popup div.cartodb-popup-content-wrapper{
 	padding: 0;
 	width: 240px;
 	max-width: none;
@@ -177,7 +177,7 @@ div.cartodb-popup div.cartodb-popup-cont p{
 	opacity: .5;
 }
 
-div.cartodb-popup-tip-container{
+div.cartodb-popup div.cartodb-popup-tip-container{
 	background: none;
 	background-color: #FFF;
 	width: 240px;
@@ -189,7 +189,7 @@ div.cartodb-popup-tip-container{
 	margin-bottom: 10px;
 }
 
-div.cartodb-popup-tip-container::after {
+div.cartodb-popup div.cartodb-popup-tip-container::after {
 	position: absolute;
 	bottom: -10px;
 	left: 26px;

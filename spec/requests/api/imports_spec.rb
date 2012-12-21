@@ -241,6 +241,27 @@ describe "Imports API" do
     @user.reload.tables.count.should == 0
   end
 
+  it 'raises an error if the user attempts to duplicate a table when being over quota' do
+    @user.update table_quota: 1
+
+    post v1_imports_url(:host => 'test.localhost.lan'),
+      :filename       => upload_file('spec/support/data/_penguins_below_80 (2).tgz', 'application/octet-stream'),
+      :api_key        => @user.get_map_key
+
+    @table_from_import = Table.all.last
+
+    post v1_imports_url(:host       => 'test.localhost.lan',
+                        :api_key    => @user.get_map_key,
+                        :table_name => 'wadus_copy__copy',
+                        :table_copy => @table_from_import.name)
+
+    response.code.should be == '200'
+    last_import = DataImport.order(:updated_at.desc).first
+    last_import.state.should be == 'failure'
+    last_import.error_code.should be == 8002
+    @user.reload.tables.count.should == 1
+  end
+
   it 'returns info for each created table' do
     @user.update table_quota: 10
     serve_file(Rails.root.join('spec/support/data/ESP_adm.zip')) do |url|

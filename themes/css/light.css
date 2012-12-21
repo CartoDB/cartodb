@@ -18,7 +18,7 @@
     background:url('../img/light.png') no-repeat -226px 0;
   }
 
-  div.cartodb-popup-content-wrapper {
+  div.cartodb-popup div.cartodb-popup-content-wrapper {
     position:relative;
     width:190px;
     max-width: 190px;
@@ -42,8 +42,8 @@
   }
 
   /* Custom gradients for scroll content */
-  .jspContainer:after,
-  .jspContainer:before {
+  div.cartodb-popup .jspContainer:after,
+  div.cartodb-popup .jspContainer:before {
     content:'';
     position:absolute;
     left:0;
@@ -54,7 +54,7 @@
     z-index: 5;
   }
 
-  .jspContainer:after {
+  div.cartodb-popup .jspContainer:after {
     bottom:0px;
     background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, rgba(255,255,255,0)), color-stop(100%, rgba(255,255,255,1)));
     background: -webkit-linear-gradient(top, rgba(255,255,255,0), rgba(255,255,255,1));
@@ -63,7 +63,7 @@
     background: linear-gradient(top, rgba(255,255,255,0), rgba(255,255,255,1));
   }
 
-  .jspContainer:before {
+  div.cartodb-popup .jspContainer:before {
     top:0px;
     background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, rgba(255,255,255,1)), color-stop(100%, rgba(255,255,255,0)));
     background: -webkit-linear-gradient(top, rgba(255,255,255,1), rgba(255,255,255,0));
@@ -72,7 +72,7 @@
     background: linear-gradient(top, rgba(255,255,255,1), rgba(255,255,255,0));
   }
 
-  div.cartodb-popup-tip-container {
+  div.cartodb-popup div.cartodb-popup-tip-container {
     width:226px;
     height:20px;
     background:url('../img/light.png') no-repeat 0 0;
@@ -89,6 +89,9 @@
     text-indent:-9999px;
     font-size:0;
     line-height:0;
+    opacity:1;
+    filter: alpha(opacity=100);
+    filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=1)
     text-transform:uppercase;
     z-index:3;
   }

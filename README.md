@@ -45,78 +45,137 @@ and code.
 
 # What does CartoDB depend on? #
 
-  - CartoDB-SQL-API
-  - Mapnik 2.0
-  - NodeJS 0.4.10+
-  - PostGIS 2.0
+  - Ubuntu 10.04
   - Postgres 9.1.x
   - Redis 2.2+
-  - Varnish 3.0+
-  - Ruby 1.9.2+
+  - Ruby 1.9.2
+  - NodeJS 0.8.x
+  - CartoDB-SQL-API
+  - GEOS 3.3.4
+  - GDAL 1.9.0
+  - PostGIS 2.0.x
+  - Mapnik 2.1.1
   - Windshaft-cartodb
+  - Varnish 2.1+
 
 # How do I install CartoDB? #
 
-CartoDB is under heavy development, so the installation process is only
-for hardy souls.
-That said, there are many successful installations on Amazon EC2, Linode,
+This is README is intended for Ubuntu 10.04. This doesn't mean that it can't 
+be installed in other Linux versions or OSX systems, but that it's guaranteed 
+to work only in Ubuntu 10.04.
+If anyone wants to share with us the installation process for any other system 
+we will be more than happy to point it from this README.
+That said, there are also many successful installations on Amazon EC2, Linode,
 dedicated instances and development machines running OS X and Ubuntu 10.04+.
+
+CartoDB is under heavy development. This means that at some point this README 
+can fail at some point. If you detect it, please let us know and we will fix 
+it as soon as we can. Also if you feel that something is wrong or even it's 
+missing we will be also happy to fix it.
+
+For any doubt about the process you can ask in our [Google 
+Group](https://groups.google.com/forum/#!forum/cartodb)
 
 If you want to give it a try, download CartoDB by cloning this repository:
 
 ```bash
-$ git clone https://github.com/Vizzuality/cartodb.git
+$ git clone https://github.com/CartoDB/cartodb20.git
 ```
 
 Or you can just [download the CartoDB zip
-file](https://github.com/Vizzuality/cartodb/zipball/master).
+file](https://github.com/CartoDB/cartodb20/archive/develop.zip).
 
-## Install Ruby ##
+## Add CartoDB PPAs ##
 
-We implemented CartoDB in the [Ruby](http://ruby-lang.org) programming language,
-so you'll need to install Ruby 1.9.2+.
+Add CartoDB GIS PPA
+```bash
+sudo add-apt-repository ppa:cartodb/gis
+```
 
-  - unp is required for archive file upload support (e.g., `sudo apt-get install unp`)
-    
-## Install Node.js ##
+Add CartoDB Mapnik PPA
+```bash
+sudo add-apt-repository ppa:cartodb/mapnik
+```
 
-Components of CartoDB, like Windshaft, depend on [Node.js](http://nodejs.org)
-(version greater than or equal to 0.4.1 but less than version
-0.5.0). 
+Add CartoDB Node PPA
+```bash
+sudo add-apt-repository ppa:cartodb/node
+```
 
-You can install Node.js and NPM (the
-Node.js package manager) by [following these
-instructions](https://github.com/joyent/node/wiki/Installation) on Node's
-GitHub wiki site.
+Add CartoDB Redis PPA
+```bash
+sudo add-apt-repository ppa:cartodb/redis
+```
 
-Alternatively, you can install Node.js using `brew install node`, but
-NPM has to be installed using the wiki instructions above.
+## Some dependencies ##
 
-** WARNING. CartoDB only supports node 0.4.x at this time. master npm no longer 
-supports this version of node so you will need to manually install the correct 
-version of npm. We're updating our packages to hit node 0.6, but in the meantime 
-recommend you use the nvm (node version manager) to install the 0.4.11 version of nodejs 
-CartoDB needs.**
+unp is required for archive file upload support
 
-## Install PostgreSQL and PostGIS ##
+```bash
+sudo apt-get install unp
+```
 
+zip is required for table exports
+```bash
+sudo apt-get install zip
+```
+
+## Install GEOS ##
+[GEOS](http://trac.osgeo.org/geos) is required for geometry function support.
+
+```bash
+sudo apt-get install libgeos-c1 libgeos-dev
+```
+
+## Install GDAL ##
+[GDAL](http://www.gdal.org) is requires for raster support.
+
+```bash
+sudo apt-get install gdal-bin libgdal1-dev
+```
+
+## Install JSON-C ##
+[JSON-C](http://oss.metaparadigm.com/json-c) is required for GeoJSON support.
+
+```bash
+sudo apt-get install libjson0 python-simplejson libjson0-dev
+```
+
+## Install PROJ ##
+[PROJ4](http://trac.osgeo.org/proj) is required for reprojection support.
+
+```bash
+sudo apt-get install proj-bin proj-data libproj-dev
+```
+
+## Install PostgreSQL ##
 [PostgreSQL](http://www.postgresql.org) is the relational database
-that powers CartoDB. [PostGIS](http://postgis.refractions.net) is
+that powers CartoDB.
+
+```bash
+sudo apt-get install postgresql-9.1 postgresql-client-9.1 postgresql-contrib-9.1 postgresql-server-dev-9.1
+```
+
+plpython is required for Python support
+
+```bash
+sudo apt-get install postgresql-plpython-9.1
+```
+
+## Install PostGIS ##
+[PostGIS](http://postgis.refractions.net) is
 the geospatial extension that allows PostgreSQL to support geospatial
 queries. This is the heart of CartoDB!
 
-First you'll need to install a few dependencies.
-
-  - [GDAL](http://www.gdal.org) is requires for raster support.
-  - [GEOS](http://trac.osgeo.org/geos) is required for geometry function
-    support.
-  - [JSON-C](http://oss.metaparadigm.com/json-c) is required for GeoJSON
-    support.
-  - [PROJ4](http://trac.osgeo.org/proj) is required for reprojection support.
-  - plpython is required for Python support (e.g., `sudo apt-get install
-    postgresql-plpython-9.1`)
-
-Next install PostgreSQL 9.1.x and PostGIS 2.0.x.
+```bash
+cd /usr/local/src
+wget http://download.osgeo.org/postgis/source/postgis-2.0.2.tar.gz
+tar xzf postgis-2.0.2.tar.gz
+cd postgis-2.0.2
+./configure --with-raster --with-topology
+make
+make install
+```
 
 Finally, CartoDB depends on a geospatial database template named
 `template_postgis`. In the example script below, make sure that the
@@ -132,20 +191,33 @@ psql -d postgres -c \
 psql -d template_postgis -f $POSTGIS_SQL_PATH/postgis.sql
 psql -d template_postgis -f $POSTGIS_SQL_PATH/spatial_ref_sys.sql
 psql -d template_postgis -f $POSTGIS_SQL_PATH/legacy.sql
+psql -d template_postgis -f $POSTGIS_SQL_PATH/rtpostgis.sql
+psql -d template_postgis -f $POSTGIS_SQL_PATH/topology.sql
 psql -d template_postgis -c "GRANT ALL ON geometry_columns TO PUBLIC;"
 psql -d template_postgis -c "GRANT ALL ON spatial_ref_sys TO PUBLIC;"
 ```
 
+## Install Ruby ##
+We implemented CartoDB in the [Ruby](http://ruby-lang.org) programming language,
+so you'll need to install Ruby 1.9.2.
+
+    
+## Install Node.js ##
+The tiler API and the SQL API are both [Node.js](http://nodejs.org) apps.
+
+```bash
+sudo apt-get install nodejs npm
+```
+
 ## Install Redis ##
+Components of CartoDB, like Windshaft or the SQL API depend on [Redis](http://redis.io).
 
-Components of CartoDB, like Windshaft, depend on [Redis](http://redis.io).
-
-To install Redis 2.2+, You can [download it here](http://redis.io/download)
-or you can use `brew install redis`.
-
+```bash
+sudo apt-get install redis-server
+```
 
 ## Install Python dependencies ##
-
+This need to be done from the cartodb20 local copy.
 To install the Python modules that CartoDB depends on, you can use
 `easy_install`:
 
@@ -154,61 +226,55 @@ $ easy_install pip
 $ pip install -r python_requirements.txt
 ```
 
-If this fails, try doing `export ARCHFLAGS='-arch i386 -arch x86_64'` 
-beforehand.
-
-
 ## Install Varnish
-
 [Varish](https://www.varnish-cache.org) is a web application
 accelerator. Components like Windshaft use it to speed up serving tiles
 via the Maps API. 
 
 ```bash
-$ pip install -e
-$ git+https://github.com/RealGeeks/python-varnish.git@0971d6024fbb2614350853a5e0f8736ba3fb1f0d#egg=python-varnish
+sudo pip install varnish
+sudo pip install varnish
 ```
 
 ## Install Mapnik ##
-
-Mapnik is an API for creating beautiful maps. CartoDB uses Mapnik 2.0
+[Mapnik](http://mapnik.org) is an API for creating beautiful maps. CartoDB uses Mapnik 2.0
 for creating and styling map tiles.
 
-To install it using OS X, here is a nice [Homebrew
-recipe](http://trac.mapnik.org/wiki/MacInstallation/Homebrew).
-
-To install it using ubuntu, you can check the [mapnik website](http://mapnik.org/download/)
+```bash
+sudo apt-get install libmapnik-dev python-mapnik mapnik-utils
+```
 
 ## Install CartoDB SQL API ##
-
-The CartoDB SQL API component powers the SQL queries over HTTP. To install it:
+The [CartoDB SQL API](https://github.com/Vizzuality/CartoDB-SQL-API) 
+component powers the SQL queries over HTTP. To install it:
 
 ```bash
-$ git clone git@github.com:Vizzuality/CartoDB-SQL-API.git
-$ cd CartoDB-SQL-API
-$ npm install
+git clone git@github.com:Vizzuality/CartoDB-SQL-API.git
+cd CartoDB-SQL-API
+git checkout master
+npm install
 ```
 
 To run CartoDB SQL API in development mode, simply type:
 
 ```bash
-$ node app.js development
+node app.js development
 ```
 
 ## Install Windshaft-cartodb ##
-
 The [Windshaft-cartodb](https://github.com/Vizzuality/Windshaft-cartodb)
 component powers the CartoDB Maps API. To install it:
 
 ```bash
-$ git clone git@github.com:Vizzuality/Windshaft-cartodb.git
-$ cd Windshaft-cartodb
-$ npm install
+git clone git@github.com:Vizzuality/Windshaft-cartodb.git
+cd Windshaft-cartodb
+git checkout master
+npm install
 ```
 To run Windshaft-cartodb in development mode, simply type:
 
 ```bash
-$ node app.js development
+node app.js development
 ```
 
 ## Install local instance of cold beer ##
@@ -221,33 +287,32 @@ Celebrate by drinking a cold beer before continuing. :)
 
 # Running CartoDB #
 
-Time to run your development version of CartoDB.
+Time to run your development version of CartoDB. Let's suppose that
+we are going to create a development env and that our user/subdomain
+is going to be 'development'
 
 ```bash
-# [mysubdomain] = replace with the subdomain/username of your choice
-#                 (in cartodb, username == subdomain)
+export SUBDOMAIN=development
 
 # Enter the `cartodb` directory.
-cd cartodb
+cd cartodb20
 
-# Create a new gemset
-rvm use 1.9.2@cartodb --create
+# If you are using rvm, create a new gemset
+rvm use 1.9.2@cartodb --create && bundle install
 
-# Install local dependencies
-bundle install --binstubs
+# If it's a system wide installation
+sudo bundle install
 
 # Configure the application constants
 mv config/app_config.yml.sample config/app_config.yml
-nano config/app_config.yml
+vim config/app_config.yml
 
-# Configure your postgis database connection details
+# Configure your postgres database connection details
 mv config/database.yml.sample config/database.yml
-nano config/database.yml
+vim config/database.yml
 
 # Add entries to /etc/hosts needed in development
-echo "127.0.0.1 admin.localhost.lan" | sudo tee -a /etc/hosts
-echo "127.0.0.1 admin.testhost.lan" | sudo tee -a /etc/hosts
-echo "127.0.0.1 [mysubdomain].localhost.lan" | sudo tee -a /etc/hosts
+echo "127.0.0.1 ${SUBDOMAIN}.localhost.lan" | sudo tee -a /etc/hosts
 
 # Create a development user
 #
@@ -256,7 +321,7 @@ echo "127.0.0.1 [mysubdomain].localhost.lan" | sudo tee -a /etc/hosts
 # Read the script for more informations about how to perform
 # individual steps of user creation and settings management
 #
-sh script/create_dev_user [mysubdomain]
+sh script/create_dev_user ${SUBDOMAIN}
 ```
 
 Finally, start the CartoDB development server on port 3000:
@@ -266,7 +331,7 @@ $ rails server -p 3000
 ```
 
 You should now be able to access
-**`http://[mysubdomain].localhost.lan:3000`**
+**`http://<mysubdomain>.localhost.lan:3000`**
 in your browser and login with the password specified above.
 
 # Handy tasks #
@@ -318,3 +383,4 @@ CartoDB is a large app. We reccomend you use the [spin gem](https://github.com/j
   - Luis Bosque (@luisico)
   - Sandro Santilli (@strk)
   - David Arango (@demimismo)
+  - Xabel Álvarez (@johnhackworth)

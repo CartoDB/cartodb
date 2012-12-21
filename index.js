@@ -66,3 +66,4 @@
 //
 //= require cdb/src/api/layers
 //= require cdb/src/api/sql
+//= require cdb/src/api/vis.js

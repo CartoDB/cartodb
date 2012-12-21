@@ -80,7 +80,11 @@ var cartoLayer = function(vis, data) {
     data.tiler_port = vis.https ? 443: 80;
   }
   data.extra_params = data.extra_params || {};
-  data.extra_params.cache_buster = vis.updated_at;
+  if(vis.updated_at) {
+    data.extra_params.cache_buster = vis.updated_at;
+  } else {
+    data.no_cdn = true;
+  }
 
   return new cdb.geo.CartoDBLayer(data);
 };

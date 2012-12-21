@@ -11,7 +11,7 @@
 
     div.table {
       display:block;
-      height:202px;
+      //height:202px;
       padding:14px;
       background:#F2F2F2;
       @include transform-style("linear");
@@ -71,8 +71,8 @@
       position:absolute;
       display:none;
       bottom:-25px;
-      right:28px;
-      width:150px;
+      right:28px!important;
+      width:140px;
       label {color:#999999; font-size:13px;}
     }
 
@@ -108,6 +108,14 @@
         &:before {
           width:4px;
           height:4px;
+        }
+      }
+
+      &.disabled {
+        @include opacity(1);
+
+        span.radio {
+          @include opacity(0.35);
         }
       }
     }

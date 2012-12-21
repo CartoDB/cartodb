@@ -224,7 +224,7 @@ describe "Imports API" do
     end
   end
 
-  it 'raises an error if the user attempts to import tables over his quota' do
+  it 'raises an error if the user attempts to import tables when being over quota' do
     @user.update table_quota: 5
 
     # This file contains 10 data sources

@@ -10,6 +10,7 @@ When you add CartoDB.js to your websites you get some great new tools to make ma
 
 The simplest way to use a visualization created in CartoDB is:
 
+
 ``` html
 ...
 <body>
@@ -26,16 +27,17 @@ The simplest way to use a visualization created in CartoDB is:
     }
 </script>
 ```
+
 get the complete example [here](https://github.com/CartoDB/cartodb.js/blob/develop/examples/easy.html)
 
 
 ### Creating maps
 
-CartoDB.js can be used when you want to create a map visualizations from scratch or when you want to add a visualization to an existing map. If you want to create new visualizations to to "using CartoDB visualizations in your webpage", if you want to add visualizations to your maps, read "Add CartoDB layer to an existing map". If you want to create your own visualizations without defining them on the CartoDB website skip to, "create visualizations at runtime", this will allow more advanced users create visualizations without defining them on the CartoDB UI.
+CartoDB.js can be used when you want to create a map visualization from scratch or when you want to add a visualization you designed in your CartoDB account to an existing map. If you want to create new maps on your webpage, jump to "using CartoDB visualizations in your webpage". If you already have maps on your webpage and want to add CartoDB visualizations to them, read "Add CartoDB layer to an existing map". If you want to create your own visualizations without having to define them on the CartoDB website, skip to, "create visualizations at runtime", this method allows more advanced users to create visualizations without defining having to use the online CartoDB interface.
 
 We’ve also made it easier than ever for you to build maps using the mapping library of your choice. Whether you are using Leaflet or Google Maps your CartoDB.js code remains the same. This makes our API documentation simple and straightforward. It also makes it easy for you to remember and keep consistent if you development or maintain multiple maps online. 
 
-To use CartoDB.js in your web-page, you no longer need to host the library on your servers, instead we have made a fast and lightweight version of it available for you online. You can start interacting with your CartoDB hosted tables by including the CartoDB.js inside the HEAD tag of your page:
+To use CartoDB.js in your web-page, you no longer need to host the library on your servers, instead we have made a fast and lightweight version of it available for you online. To start building maps with your CartoDB hosted tables, just including the CartoDB.js inside the HEAD tag of your page:
 
 ``` html
     <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/themes/css/cartodb.css" />
@@ -45,14 +47,22 @@ To use CartoDB.js in your web-page, you no longer need to host the library on yo
     <script src="http://libs.cartocdn.com/cartodb.js/v2/cartodb.js"></script>
 ```
 
-The library is being mirrored on servers all over the world, so you can be sure that no matter where your website viewers are, they will get CartoDB.js loaded the fastest way possible. 
+The library is being mirrored on servers all over the world, so you can be sure that no matter where your website viewers are, they will get CartoDB.js loaded in the fastest way possible. 
 
 
 #### using CartoDB visualizations in your webpage
 
-This kind of visualization allows to create a complete map without having to create the map, insert controls, layers and so on. It just creates for you the map, add the controls you want (zoom, loader, infowindows...) and then left you the control to manage them. See ``cartodb.createLayer`` in the API section or see a [simple example](https://github.com/CartoDB/cartodb.js/blob/develop/examples/easy.html)
+The ``cartodb.createVis`` method is probably going to be the most important one in your CartoDB toolbox. 
 
+This is the easiest way to quickly get a CartoDB map onto your webpage. It handles all the details of loading a map interface, basemap, and your CartoDB data visualization. You can start by giving cartodb.js the DIV ID from your HTML where you want to place your map and the Viz JSON URL from your CartoDB map. 
+
+``` javascript
+  cartodb.createVis('map', 'http://examples-beta.cartodb.com/api/v1/viz/791/viz.json');
 ```
+
+That's it! No need to create the map instance, insert controls, or load layers, it handles it all for you. You just give cartodb.js a set of options (zoom, loader, infowindows...) to modify how your final map looks, see ``cartodb.Vis`` in the API section for the full list of options. You can also use the returned ``layer`` to build functionality (show/hide, click, hover, custom infowindows) using the new layer,
+
+``` javasript
   cartodb.createVis('map', 'http://examples-beta.cartodb.com/api/v1/viz/791/viz.json')
       .done(function(vis, layers) {
         // layer 0 is the base layer, layer 1 is cartodb layer
@@ -60,21 +70,22 @@ This kind of visualization allows to create a complete map without having to cre
           cartodb.log.log(e, pos, latlng, data);
         });
 
-        // you can get the native map to work with it
-        // depending if you use google maps or leaflet
+        // you can also get the map object created by cartodb.js
         map = vis.getNativeMap();
+        // Now, perform any operations you need
         // map.setZoom(3)
         // map.setCenter(new google.maps.Latlng(...))
 ```
 
+If you have used Google Maps for you basemap in your CartoDB account, using ``createViz`` requires that you load the Google Maps V3 JavaScript libarary in the HEAD of your HTML. If you use other basemaps, cartodb.js will load the Leaflet library for you automatically. 
 
 ##### Add CartoDB layer to an existing map
 
-cartodb.createLayer is probably going to be the most important instrument in your toolbox. 
+With visualizations already created through the CartoDB console, you can simply use the ``createLayer`` function to add them into your web pages. Unlike the ``cartodb.createVis``, you will use this method if you create you ``map`` instance independantly of cartodb.js. 
 
-With visualizations already created through the CartoDB console, you can simply use the createLayer function to add them into your web pages. This method works the same whether you are using Google Maps or Leaflet. Learn the details and different uses of layers in our API documentation below.
+This method works the same whether you are using Google Maps or Leaflet. Learn the details and different uses of layers in our API documentation below.
 
-To show you just how simple CartoDB.js, let's put it all together. In the HEAD of your HTML, include the libraries,
+To show you just how simple CartoDB.js can be, let's put it all together. Start by including the necessary libararies in the HEAD of your HTML (remember the Google Maps JS library if you are using a Google Maps basemap),
 
 ``` html
     <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/themes/css/cartodb.css" />
@@ -84,7 +95,7 @@ To show you just how simple CartoDB.js, let's put it all together. In the HEAD o
     <script src="http://libs.cartocdn.com/cartodb.js/v2/cartodb.js"></script>
 ```
 
-Next, in the BODY of your HTML include a DIV for your map and the minimum CartoDB.js script to load some data into it,
+Next, in the BODY of your HTML include a DIV for your map and the minimum CartoDB.js script to load your data.
 
 ``` html
     <div id="map"></div>
@@ -100,9 +111,15 @@ Next, in the BODY of your HTML include a DIV for your map and the minimum CartoD
     </script>
 ```
 
+In the above case, we create a new map, but in your case you probably already have the instance of ```map``` available in your code. 
+
+See ``cartodb.createLayer`` in the API section or see a [simple example](https://github.com/CartoDB/cartodb.js/blob/develop/examples/easy.html)
+
+
+
 ##### creating visualizations at runtime (advanced)
 
-The library also supports the [previous way](https://github.com/Vizzuality/cartodb-leaflet) to a create layer. This way requires more knoledge about CartoDB infraestructure. In this case you dont need viz.json file so you don't need to create a visualization in CartoDB UI, just import your table and use the data in your map.
+The library also supports the [previous way](https://github.com/Vizzuality/cartodb-leaflet) of creating a CartoDB layer on your maps. This way requires more knoledge about CartoDB infraestructure. In this case you don't need the viz.json file, so you don't need to do anything in the CartoDB UI, just import your table and use the data in your map.
 
 ``` javascript
         cartodb.loadLayer(map, {
@@ -118,11 +135,11 @@ The library also supports the [previous way](https://github.com/Vizzuality/carto
 
 ```
 
-see all the available options
+See all the available options!
 
 
 
-That's it! That is all the code you need to start developing your own maps with CartoDB.js. If you want to start building applications straight away, head over to our tutorials to see start making your own maps.
+That's it! That is all the code you need to start developing your own maps with CartoDB.js. If you want to start building applications straight away, head over to our tutorials to see how start making your own maps.
 
 ### Advanced functionality
 

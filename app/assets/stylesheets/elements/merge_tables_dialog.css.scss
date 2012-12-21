@@ -15,7 +15,7 @@
 
       // Content
       div.content {
-        height:140px;
+        //height:140px;
       }
 
       // Join types
@@ -49,7 +49,7 @@
       // Table columns selector/preview
       div.tables {
         width:100%;
-        @include opacity(0);
+        // @include opacity(0);
         display:block;
         margin-top:34px;
         letter-spacing: -4px;

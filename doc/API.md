@@ -119,7 +119,7 @@ See ``cartodb.createLayer`` in the API section or see a [simple example](https:/
 
 ##### creating visualizations at runtime (advanced)
 
-The library also supports the [previous way](https://github.com/Vizzuality/cartodb-leaflet) of creating a CartoDB layer on your maps. This way requires more knoledge about CartoDB infraestructure. In this case you don't need the viz.json file, so you don't need to do anything in the CartoDB UI, just import your table and use the data in your map.
+The library also supports the [previous way](https://github.com/Vizzuality/cartodb-leaflet) of creating a CartoDB layer on your maps. This way requires more knowledge about the CartoDB APIs. In this case you don't need the viz.json file, so you don't need to do anything in the CartoDB user-interface, just import your table and use the data in your map.
 
 ``` javascript
         cartodb.loadLayer(map, {
@@ -135,11 +135,7 @@ The library also supports the [previous way](https://github.com/Vizzuality/carto
 
 ```
 
-See all the available options!
-
-
-
-That's it! That is all the code you need to start developing your own maps with CartoDB.js. If you want to start building applications straight away, head over to our tutorials to see how start making your own maps.
+That's it! That is all the code you need to start developing your own maps with CartoDB.js. If you want to start building applications straight away, head over to our tutorials to see how to start making your own maps.
 
 ### Advanced functionality
 
@@ -147,19 +143,19 @@ The CartoDB.js has many great features for you to use in your applications. Let�
 
 ##### Viz JSON support
 
-The Viz.JSON document tells CartoDB.js all the information about your map, including the style you want to use for your data and the filters you want to apply with SQL. The Viz JSON file is served for each map you create in your CartoDB account. Although the Viz JSON file stores all your maps settings, all the values are easy to override with CartoDB.js if you want to do something completely different than what you design in your console. Loading the Viz JSON is as simple as,
+The Viz.JSON document tells CartoDB.js all the information about your map, including the style you want to use for your data and the filters you want to apply with SQL. The Viz JSON file is served with each map you create in your CartoDB account. Although the Viz JSON file stores all your map settings, all the values are also easy to customize with CartoDB.js if you want to do something completely different than what you designed in your console. Loading the Viz JSON is as simple as,
 
 ``` javascript
-    cartodb.loadLayer(map, 'http://examples.cartodb.com/api/v1/viz/ne_10m_populated_p_1/viz.json')
+    cartodb.createVis('map', 'http://examples.cartodb.com/api/v1/viz/ne_10m_populated_p_1/viz.json')
 ```
 
 ##### Bounds wrapper
 
-We have added a wrapper method to get the bounding box for any dataset or filtered query using the CartoDB.js library. The **getBounds** function can be useful for guiding users to the right location on a map or for loading only the right data at the right time based on user actions.
+We have added easy method to get the bounding box for any dataset or filtered query using the CartoDB.js library. The **getBounds** function can be useful for guiding users to the right location on a map or for loading only the right data at the right time based on user actions.
 
 ```javascript
     var sql = cartodb.SQL({ user: 'cartodb_user' });
-    sql.getBounds('select * form table').done(function(bounds) {
+    sql.getBounds('select * from table').done(function(bounds) {
         console.log(bounds);
     });
 ```
@@ -170,7 +166,7 @@ The CartoDB.js is highly asynchronous, meaning your application can get on with 
 
 ###### Loading events
 
-The loadLayer function returns two important events for you to take advantage of: the first is ‘done’, which will let your code know that a layer has loaded and the library has successfully read the information from the Viz JSON you requested. The second is ‘error’, which lets you know something did not go as expected when loading a requested layer:
+The ``loadLayer`` and ``createVis`` functions returns two important events for you to take advantage of: the first is ‘done’, which will let your code know that the library has successfully read the information from the Viz JSON and loaded the layer you requested. The second is ‘error’, which lets you know something did not go as expected when loading a requested layer:
 
 ``` javascript
     cartodb.loadLayer(map, 'http://examples.cartodb.com/api/v1/viz/0001/viz.json')
@@ -209,7 +205,7 @@ Similarly, there is the **featureOut** event. This is best used if you do things
 
 ##### Leaflet integration
 
-If you want to use Leaflet it gets even easier, CartoDB.js handles loading all the necessary libraries for you! just include CartoDB.js and CartoDB.css in the HEAD of your web-page and you are ready to go! The CartoDB.css document isn’t mandatory, however if you are making a map and are not familiar with writing your own CSS for the various needed elements, it can vastly help jumpstart the process. Adding it is as simple as adding the main JavaScript library,
+If you want to use Leaflet it gets even easier, CartoDB.js handles loading all the necessary libraries for you! just include CartoDB.js and CartoDB.css in the HEAD of your website and you are ready to go! The CartoDB.css document isn’t mandatory, however if you are making a map and are not familiar with writing your own CSS for the various needed elements, it can greatly help to jumpstart the process. Adding it is as simple as adding the main JavaScript library,
 
 ``` html
     <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/themes/css/cartodb.css" />
@@ -218,7 +214,7 @@ If you want to use Leaflet it gets even easier, CartoDB.js handles loading all t
 
 ##### IE support
 
-We have worked hard to support Internet Explorer with CartoDB.js. It currently works for version X.X onward. The biggest change you should note is that for the CSS you will need to include an additional IE CSS document we have made available. Your <head> tag should now house links to three documents, as follows,
+We have worked hard to support Internet Explorer with CartoDB.js. It currently works for IE7 through IE10. The biggest change you should note is that for the CSS you will need to include an additional IE CSS document we have made available. Your <head> tag should now house links to three documents, as follows,
 
 ``` html
     <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/themes/css/cartodb.css" />

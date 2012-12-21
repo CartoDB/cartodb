@@ -262,13 +262,73 @@ You can do the same for the CSS documents we provide,
 
 The documentation below reflects CartoDB.js for the 2.0.x library versions. For major changes in the library we will update the documentation here. This documentation is meant to help developers find specific methods for using the CartoDB.js library. For any questions regarding the usage of the library or for problems with the documentation please contact us at support@cartodb.com
 
-##### cartodb.createLayer(map, layerSource [, options] [, callback])
+#### Creating maps
 
-**cartodb.createLayer** is probably going to be the most important instrument in your toolbox.
+##### cartodb.Vis
 
-With visualizations already created through the CartoDB console, you can simply use the **createLayer** function to add them into your web pages. This method works the same whether you are using Google Maps or Leaflet.
+**cartodb.Vis** is probably going to be the most important instrument in your toolbox. This moethod allows to do a complete visualization, managing everything for the map and layer creation. In addition, it allows you to add easily modify widgets like zoom, loader, infowindow, tooltips, and overlays.
+
+##### cartodb.createVis(map_id, vizjson_url[, options] [, callback])
+
+creates a visualization inside the map_id DOM object
+
+```javascript
+    var url = 'http://examples-beta.cartodb.com/api/v1/viz/791/viz.json';
+    cartodb.createVis('map', url)
+      .done(function(vis, layers) {
+      });
+```
 
 ###### ARGUMENTS
+  + **map_id**: a DOM object, for example ``$('#map')`` or a DOM id
+  + **vizjson_url**: url of the vizjson object
+  + **options**:
+    - shareable: add facebook and twitter share buttons
+    - title: adds a header with the title of the visualization
+    - description: adds description to the header (as you set in the UI)
+    - searchControl: adds a search control (default: false)
+    - zoomControl: adds zoom control (default: true)
+    - loaderControl: adds loading control (default: true)
+    - center_lat: center coordinates where the map is initializated
+    - center_lon
+    - zoom: initial zoom
+
+##### cartodb.Vis.getNativeMap ()
+returns the native map object being used. It can be google.maps.Map or L.Map depending on the provider you setup in the UI
+
+##### cartodb.Vis.getOverlays()
+returns a list of overlays currently on the screen (see overlays description)
+
+##### cartodb.Vis.getOverlay(type)
+return the first overlay with the specified ``type``
+
+```javascript
+  var zoom = vis.getOverlay('zoom')
+  zoom.clean() # remove it from the screen
+```
+
+##### cartodb.Vis.getLayers()
+return an array of layers in the map. The first is the base layer
+
+##### cartodb.Vis.addOverlay(options)
+add an overlay to the map, these are the overlays you can add: zoom, tooltip, infobox
+
+###### RETURNS
+an overlay object, depending on the options.type different object will be returned, see cartodb.vis.Overlays
+
+##### cartodb.vis.Overlays
+An overlay is a control shown on top of the map.
+
+Overlay objects are always created using method ``addOverlay`` of cartodb.Vis object.
+
+An overlay is internally a ``Backbone.View`` so if you know how backbone works you can use it. If you want to use plain DOM objects you can access to ``overlay.el`` (``overlay.$el`` for jquery object).
+
+
+##### cartodb.createLayer(map, layerSource [, options] [, callback])
+
+With visualizations already created through the CartoDB console, you can simply use the **createLayer** function to add them into your web pages. Unlike ``createVis``, this method requires an already activated ``map`` object and it does not load a basemap for you. The method works the same whether your map object is Google Maps or Leaflet.
+
+##### ARGUMENTS
 
   + **map**: leaflet L.Map or google maps google.maps.Map object. The map should be initialized before calling this function
   + **layerSource**: contains information about the layer. It can be specified in 2 ways:
@@ -439,9 +499,9 @@ Promise object. You can listen for the following events:
 
   + **opacity**: value in range [0, 1].
 
+#### Creating layer Events
 
-
-#### Events
+You can add custom functions to layer events. This is useful for integrating your website with your maps, adding events for mouseovers and click events.
 
 ##### featureOver -> (event, latlng, pos, data)
 
@@ -475,6 +535,61 @@ Promise object. You can listen for the following events:
 
   Same as **featureOver**.
 
+#### Specific UI functions
+
+There are a few functions in CartoDB.js for creating, enabling, and disabling pieces of the user-interface.
+
+##### cartodb.geo.ui.Tooltip
+shows a small tooltip on hover
+
+```javascript
+var tooltip = vis.addOverlay({
+  type: 'tooltip'
+  template: '<p>{{variable}}</p>' // mustache template
+});
+```
+
+##### cartodb.geo.ui.Tooltip.enable
+the tooltip is shown when hover on feature when is called
+
+##### cartodb.geo.ui.Tooltip.disable
+the tooltip is not shown when hover on feature
+
+
+##### cartodb.geo.ui.InfoBox
+show an small box when the user hovers on a map feature. The position is fixed
+
+```javascript
+var box = vis.addOverlay({
+  type: 'infobox',
+  template: '<p>{{name_to_display}}</p>'
+  width: 200, // width of the box
+  position: 'bottom|right' // top, bottom, left and right are available
+});
+```
+
+##### cartodb.geo.ui.InfoBox.enable
+the tooltip is shown when hover on feature when is called
+
+##### cartodb.geo.ui.InfoBox.disable
+the tooltip is not shown when hover on feature
+
+
+
+##### cartodb.geo.ui.Zoom
+shows the zoom control
+
+```javascript
+vis.addOverlay({ type: 'zoom' });
+```
+##### cartodb.geo.ui.Zoom.show()
+##### cartodb.geo.ui.Zoom.hide()
+
+
+
+#### Getting data with SQL
+
+CartoDB offers a powerful SQL API for you to query and retreive data from your CartoDB tables. The CartoDB.js offers a simple to use wrapper for sending those requests and using the results. 
 
 
 ##### cartodb.SQL
@@ -543,111 +658,15 @@ Return the bounds [ [sw_lat, sw_lon], [ne_lat, ne_lon ] ] for the geometry resul
   + **sql**: a string with the sql query to calculate the bounds from.
 
 
-##### cartodb.Vis
-
-this oject allow to do a complete visualization, it manages the map and layer creation. In addiction to that allows to add different widgets like zoom, loader, infowindow, tooltips, info boxes and so on
-
-##### cartodb.createVis(map_id, vizjson_url[, options] [, callback])
-
-creates a visualization inside the map_id DOM object
-
-```javascript
-    var url = 'http://examples-beta.cartodb.com/api/v1/viz/791/viz.json';
-    cartodb.createVis('map', url)
-      .done(function(vis, layers) {
-      });
-```
-
-###### ARGUMENTS
-  + **map_id**: a DOM object, for example ``$('#map')`` or a DOM id
-  + **vizjson_url**: url of the vizjson object
-  + **options**:
-    - shareable: add facebook and twitter share buttons
-    - title: adds a header with the title of the visualization
-    - description: adds description to the header (as you set in the UI)
-    - searchControl: adds a search control (default: false)
-    - zoomControl: adds zoom control (default: true)
-    - loaderControl: adds loading control (default: true)
-    - center_lat: center coordinates where the map is initializated
-    - center_lon
-    - zoom: initial zoom
-
-##### cartodb.Vis.getNativeMap ()
-returns the native map object being used. It can be google.maps.Map or L.Map depending on the provider you setup in the UI
-
-##### cartodb.Vis.getOverlays()
-returns a list of overlays currently on the screen (see overlays description)
-
-##### cartodb.Vis.getOverlay(type)
-return the first overlay with the specified ``type``
-
-```javascript
-  var zoom = vis.getOverlay('zoom')
-  zoom.clean() # remove it from the screen
-```
-
-##### cartodb.Vis.getLayers()
-return an array of layers in the map. The first is the base layer
-
-##### cartodb.Vis.addOverlay(options)
-add an overlay to the map, these are the overlays you can add: zoom, tooltip, infobox
-
-###### RETURNS
-an overlay object, depending on the options.type different object will be returned, see cartodb.vis.Overlays
-
-##### cartodb.vis.Overlays
-An overlay is a control shown on top of the map.
-
-Overlay objects are always created using method ``addOverlay`` of cartodb.Vis object.
-
-An overlay is internally a ``Backbone.View`` so if you know how backbone works you can use it. If you want to use plain DOM objects you can access to ``overlay.el`` (``overlay.$el`` for jquery object).
-
-##### cartodb.geo.ui.Tooltip
-shows a small tooltip on hover
-
-```javascript
-var tooltip = vis.addOverlay({
-  type: 'tooltip'
-  template: '<p>{{variable}}</p>' // mustache template
-});
-```
-
-##### cartodb.geo.ui.Tooltip.enable
-the tooltip is shown when hover on feature when is called
-
-##### cartodb.geo.ui.Tooltip.disable
-the tooltip is not shown when hover on feature
 
 
-##### cartodb.geo.ui.InfoBox
-show an small box when the user hovers on a map feature. The position is fixed
+#### Versions
 
-```javascript
-var box = vis.addOverlay({
-  type: 'infobox',
-  template: '<p>{{name_to_display}}</p>'
-  width: 200, // width of the box
-  position: 'bottom|right' // top, bottom, left and right are available
-});
-```
-
-##### cartodb.geo.ui.InfoBox.enable
-the tooltip is shown when hover on feature when is called
-
-##### cartodb.geo.ui.InfoBox.disable
-the tooltip is not shown when hover on feature
-
-
-
-##### cartodb.geo.ui.Zoom
-shows the zoom control
-
-```javascript
-vis.addOverlay({ type: 'zoom' });
-```
-##### cartodb.geo.ui.Zoom.show()
-##### cartodb.geo.ui.Zoom.hide()
+Keep in mind the version of CartoDB.js you are using for development. For any live code, we recommend you link directly to the tested CartoDB.js version from your development. You can find the version at anytime as follows,
 
 ##### **cartodb.VERSION**
 
-Contains the library version, should be something like '2.0.1'.
+Contains the library version, should be something like '2.0.11'.
+
+
+

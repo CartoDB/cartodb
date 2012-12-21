@@ -18,11 +18,19 @@
 /**
  * represents a table row
  */
-cdb.ui.common.Row = Backbone.Model.extend({
+cdb.ui.common.Row = cdb.core.Model.extend({
 });
 
 cdb.ui.common.TableData = Backbone.Collection.extend({
     model: cdb.ui.common.Row,
+    fetched: false,
+
+    initialize: function() {
+      var self = this;
+      this.bind('reset', function() {
+        self.fetched = true;
+      })
+    },
 
     /**
      * get value for row index and columnName
@@ -33,6 +41,10 @@ cdb.ui.common.TableData = Backbone.Collection.extend({
         return null;
       }
       return r.get(columnName);
+    },
+
+    isEmpty: function() {
+      return this.length === 0;
     }
 
 });
@@ -40,7 +52,7 @@ cdb.ui.common.TableData = Backbone.Collection.extend({
 /**
  * contains information about the table, mainly the schema
  */
-cdb.ui.common.TableProperties = Backbone.Model.extend({
+cdb.ui.common.TableProperties = cdb.core.Model.extend({
 
   columnNames: function() {
     return _.map(this.get('schema'), function(c) {
@@ -60,11 +72,31 @@ cdb.ui.common.RowView = cdb.core.View.extend({
   tagName: 'tr',
 
   initialize: function() {
+    _.bindAll(this, "triggerChange", "triggerSync", "triggerError");
+
     this.model.bind('change', this.render, this);
     this.model.bind('destroy', this.clean, this);
     this.model.bind('remove', this.clean, this);
+    this.model.bind('change', this.triggerChange);
+    this.model.bind('sync', this.triggerSync);
+    this.model.bind('error', this.triggerError);
+
+
+
     this.add_related_model(this.model);
     this.order = this.options.order;
+  },
+
+  triggerChange: function() {
+    this.trigger('changeRow');
+  },
+
+  triggerSync: function() {
+    this.trigger('syncRow');
+  },
+
+  triggerError: function() {
+    this.trigger('errorRow')
   },
 
   valueView: function(colName, value) {
@@ -80,7 +112,13 @@ cdb.ui.common.RowView = cdb.core.View.extend({
 
     var tdIndex = 0;
     if(this.options.row_header) {
-        var td = $('<td>');
+        var td = $('<td class="rowHeader">');
+        td.append(self.valueView('', ''));
+        td.attr('data-x', tdIndex);
+        tdIndex++;
+        tr.append(td);
+    } else {
+        var td = $('<td class="EmptyRowHeader">');
         td.append(self.valueView('', ''));
         td.attr('data-x', tdIndex);
         tdIndex++;
@@ -128,13 +166,15 @@ cdb.ui.common.Table = cdb.core.View.extend({
   rowView: cdb.ui.common.RowView,
 
   events: {
-      'click td': '_cellClick'
+      'click td': '_cellClick',
+      'dblclick td': '_cellDblClick'
   },
 
   default_options: {
   },
 
   initialize: function() {
+    var self = this;
     _.defaults(this.options, this.default_options);
     this.dataModel = this.options.dataModel;
     this.rowViews = [];
@@ -150,6 +190,26 @@ cdb.ui.common.Table = cdb.core.View.extend({
     // prepare for cleaning
     this.add_related_model(this.dataModel);
     this.add_related_model(this.model);
+
+    // we need to use custom signals to make the tableview aware of a row being deleted,
+    // because when you delete a point from the map view, sometimes it isn't on the dataModel
+    // collection, so its destroy doesn't bubble throught there.
+    // Also, the only non-custom way to acknowledge that a row has been correctly deleted from a server is with
+    // a sync, that doesn't bubble through the table
+    this.model.bind('removing:row', function() {
+      self.rowsBeingDeleted = self.rowsBeingDeleted ? self.rowsBeingDeleted +1 : 1;
+      self.rowDestroying();
+    });
+    this.model.bind('remove:row', function() {
+      if(self.rowsBeingDeleted > 0) {
+        self.rowsBeingDeleted--;
+        self.rowDestroyed();
+        if(self.dataModel.length == 0) {
+          self.emptyTable();
+        }
+      }
+    });
+
   },
 
   headerView: function(column) {
@@ -171,6 +231,8 @@ cdb.ui.common.Table = cdb.core.View.extend({
     var tr = $("<tr>");
     if(this.options.row_header) {
       tr.append($("<th>").append(self.headerView(['', 'header'])));
+    } else {
+      tr.append($("<th>").append(self.headerView(['', 'header'])));
     }
     _(this.model.get('schema')).each(function(col) {
       tr.append($("<th>").append(self.headerView(col)));
@@ -183,6 +245,9 @@ cdb.ui.common.Table = cdb.core.View.extend({
    * remove all rows
    */
   clear_rows: function() {
+    this.$('tfoot').remove();
+    this.$('tr.noRows').remove();
+
     while(this.rowViews.length) {
       // each element removes itself from rowViews
       this.rowViews[0].clean();
@@ -210,6 +275,11 @@ cdb.ui.common.Table = cdb.core.View.extend({
         self.rowViews[i].$el.attr('data-y', i);
       }
     });
+    tr.bind('changeRow', this.rowChanged);
+    tr.bind('saved', this.rowSynched);
+    tr.bind('errorRow', this.rowFailed);
+    tr.bind('saving', this.rowSaving);
+    this.retrigger('saving', tr);
 
     tr.render();
     if(options && options.index !== undefined && options.index != self.rowViews.length) {
@@ -227,17 +297,101 @@ cdb.ui.common.Table = cdb.core.View.extend({
       self.$el.append(tr.el);
       self.rowViews.push(tr);
     }
+
+    this.trigger('createRow');
+  },
+
+  /**
+  * Callback executed when a row change
+  * @method rowChanged
+  * @abstract
+  */
+  rowChanged: function() {},
+
+  /**
+  * Callback executed when a row is sync
+  * @method rowSynched
+  * @abstract
+  */
+  rowSynched: function() {},
+
+  /**
+  * Callback executed when a row fails to reach the server
+  * @method rowFailed
+  * @abstract
+  */
+  rowFailed: function() {},
+
+  /**
+  * Callback executed when a row send a POST to the server
+  * @abstract
+  */
+  rowSaving: function() {},
+
+  /**
+  * Callback executed when a row is being destroyed
+  * @method rowDestroyed
+  * @abstract
+  */
+  rowDestroying: function() {},
+
+  /**
+  * Callback executed when a row gets destroyed
+  * @method rowDestroyed
+  * @abstract
+  */
+  rowDestroyed: function() {},
+
+  /**
+  * Callback executed when a row gets destroyed and the table data is empty
+  * @method emptyTable
+  * @abstract
+  */
+  emptyTable: function() {},
+
+  /**
+  * Checks if the table is empty
+  * @method isEmptyTable
+  * @returns boolean
+  */
+  isEmptyTable: function() {
+    return (this.dataModel.length === 0 && this.dataModel.fetched)
   },
 
   /**
    * render only data rows
    */
   _renderRows: function() {
-    var self = this;
     this.clear_rows();
-    this.dataModel.each(function(row) {
-      self.addRow(row);
-    });
+    if(! this.isEmptyTable()) {
+      if(this.dataModel.fetched) {
+        var self = this;
+
+        this.dataModel.each(function(row) {
+          self.addRow(row);
+        });
+      } else {
+        this._renderLoading();
+      }
+    } else {
+      this._renderEmpty();
+    }
+
+  },
+
+  _renderLoading: function() {
+  },
+
+  _renderEmpty: function() {
+  },
+
+  /**
+  * Method for the children to redefine with the table behaviour when it has no rows.
+  * @method addEmptyTableInfo
+  * @abstract
+  */
+  addEmptyTableInfo: function() {
+    // #to be overwrite by descendant classes
   },
 
   /**
@@ -268,12 +422,17 @@ cdb.ui.common.Table = cdb.core.View.extend({
     return this.rowViews[y].getCell(x);
   },
 
-  _cellClick: function(e) {
+  _cellClick: function(e, evtName) {
+    evtName = evtName || 'cellClick';
     e.preventDefault();
     var cell = $(e.currentTarget || e.target);
     var x = parseInt(cell.attr('data-x'), 10);
     var y = parseInt(cell.parent().attr('data-y'), 10);
-    this.trigger('cellClick', e, cell, x, y);
+    this.trigger(evtName, e, cell, x, y);
+  },
+
+  _cellDblClick: function(e) {
+    this._cellClick(e, 'cellDblClick');
   }
 
 

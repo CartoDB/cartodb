@@ -7,7 +7,7 @@
    });
    console.log(tmpl.render({name: 'rambo'})));
    // prints "hi, my name is rambo"
-  
+
 
    you could pass the compiled tempalte directly:
 
@@ -71,7 +71,7 @@ cdb.core.Template = Backbone.Model.extend({
   compilers: {
     'underscore': _.template,
     'mustache': typeof(Mustache) === 'undefined' ? null: Mustache.compile
-  }, 
+  },
   compile: function(tmpl, type) {
     var t = new cdb.core.Template({
       template: tmpl,

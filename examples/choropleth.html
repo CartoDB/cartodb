@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      html, body, #map {padding: 0; margin: 0;}
+      #map {position:absolute; top:80px; left:0; right:0; bottom:0; width:100%;}
+      div.legend {position:absolute; bottom:30px; right:20px; background:white; border: 1px solid #808080; margin:0;
+                  padding:20px; -moz-border-radius: 3px; -webkit-border-radius: 3px; border-radius: 3px; box-shadow: rgba(0, 0, 0, 0.1) 0 0 4px 4px;
+                  -webkit-box-shadow: rgba(0, 0, 0, 0.1) 0 0 4px 4px; -moz-box-shadow: rgba(0, 0, 0, 0.1) 0 0 4px 4px; }
+    </style>
+
+    <link rel="stylesheet" href="http://libs.cartodb.com/cartodb.js/v2/themes/css/cartodb.css" />
+    <!--[if lte IE 8]>
+        <link rel="stylesheet" href="http://libs.cartodb.com/cartodb.js/v2/themes/css/cartodb.ie.css" />
+    <![endif]-->
+  </head>
+  <body>
+    <div class="header">
+      <h1></h1>
+      <select>
+        <option value="0">Average domestic consumption</option>
+        <option value="1">Total domestic consumption</option>
+      </select>
+      <div class="social">
+        <a href="" class="facebook"></a>
+        <a href="" class="twitter"></a>
+      </div>
+    </div>
+    <div id="map"></div>
+    <div id="zoom"><a class="zoom_in">+</a><a class="zoom_out">-</a></div>
+    <div class="search_box">
+      <form>
+        <input type="text" class="text" value="" />
+        <input type="submit" class="submit" value="" />
+      </form>
+    </div>
+    <div class="legend">
+      <span class="choropleth"></span>
+    </div>
+
+    <script type="infowindow/html" id="infowindow_template">
+      <div class="cartodb-popup">
+        <a href="#close" class="cartodb-popup-close-button close">x</a>
+        <div class="cartodb-popup-content-wrapper">
+          <div class="cartodb-popup-content">
+            {{content.data.av_consumption_dom}}
+          </div>
+        </div>
+        <div class="cartodb-popup-tip-container"></div>
+      </div>
+    </script>
+
+    <script src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
+    <script src="http://libs.cartocdn.com/cartodb.js/v2/cartodb.js"></script>
+    <script src="choropleth.js"></script>
+    <script>
+
+      var map, geocoder, layer;
+
+      function main() {
+
+        geocoder = new google.maps.Geocoder();
+
+        map = new google.maps.Map(document.getElementById('map'),  {
+          center: new google.maps.LatLng(55.378051, -3.435973),
+          zoom: 5,
+          disableDefaultUI: true,
+          mapTypeId: google.maps.MapTypeId.ROADMAP
+        });
+
+
+        // Zoom controls
+        $("a.zoom_in").click(function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          map.setZoom(map.getZoom() + 1);
+        });
+        $("a.zoom_out").click(function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          var zoom = map.getZoom();
+          map.setZoom(map.getZoom() - 1);
+        });
+
+        // Search
+        $('div.search_box form').submit(function(e) {
+          e.preventDefault();
+
+          var address = $(this).find("input[type='text']").val();
+          geocoder.geocode( { 'address': address}, function(results, status) {
+            if (status == google.maps.GeocoderStatus.OK) {
+              map.setCenter(results[0].geometry.location);
+            } else {
+              alert('Geocode was not successful for the following reason: ' + status);
+            }
+          });
+        });
+
+        // Domestic comsuption change
+        $("select").change(function() {
+          var index = $(this).val();
+          buildLayer(index);
+        });
+
+        buildLayer(0);
+      }
+
+      function buildLayer(index) {
+
+        if (!layer) {
+          cartodb.createLayer(map, 'http://simonrogers.cartodb.com/api/v1/viz/11090/viz.json', {
+            query: choropleths[index].sql,
+            tile_style: choropleths[index].cartocss,
+            interactivity: 'cartodb_id, ' + choropleths[index].data_column
+          })
+          .on('done', function(cdb_layer) {
+
+            layer = cdb_layer;
+
+            map.overlayMapTypes.setAt(0, layer);
+
+            layer.infowindow.set('template', $('#infowindow_template').html());
+
+            // layer.on('featureOver', function(e, pos, latlng, data) {
+            //   console.log(e, pos, latlng, data);
+            // });
+
+            // layer.on('error', function(err) {
+            //   console.log('error: ' + err);
+            // });
+
+          }).on('error', function() {
+            //console.log("some error occurred");
+          });
+        } else {
+          layer.setOptions({
+            query: choropleths[index].sql,
+            tile_style: choropleths[index].cartocss,
+            interactivity: 'cartodb_id, ' + choropleths[index].data_column
+          });
+        }
+
+
+      }
+
+      function buildTitle() {
+
+      }
+
+      function buildLegend() {
+
+      }
+
+      window.onload = main;
+
+    </script>
+
+  </body>
+</html>

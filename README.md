@@ -80,7 +80,7 @@ Group](https://groups.google.com/forum/#!forum/cartodb)
 If you want to give it a try, download CartoDB by cloning this repository:
 
 ```bash
-$ git clone https://github.com/CartoDB/cartodb20.git
+$ git clone --recursive https://github.com/CartoDB/cartodb20.git
 ```
 
 Or you can just [download the CartoDB zip
@@ -228,12 +228,11 @@ $ pip install -r python_requirements.txt
 ```
 
 ## Install Varnish
-[Varish](https://www.varnish-cache.org) is a web application
+[Varnish](https://www.varnish-cache.org) is a web application
 accelerator. Components like Windshaft use it to speed up serving tiles
 via the Maps API. 
 
 ```bash
-sudo pip install varnish
 sudo pip install varnish
 ```
 

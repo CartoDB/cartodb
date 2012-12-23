@@ -100,7 +100,7 @@ sudo add-apt-repository ppa:cartodb/mapnik
 
 Add CartoDB Node PPA
 ```bash
-sudo add-apt-repository ppa:cartodb/node
+sudo add-apt-repository ppa:cartodb/nodejs
 ```
 
 Add CartoDB Redis PPA

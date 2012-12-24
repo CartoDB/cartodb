@@ -71,7 +71,7 @@ That's it! No need to create the map instance, insert controls, or load layers, 
 You can also use the returned **layer** to build functionality (show/hide, click, hover, custom infowindows) using the new layer:
 
 <div class="margin20"></div>
-``` javasript
+``` javascript
     cartodb.createVis('map', 'http://examples-beta.cartodb.com/api/v1/viz/791/viz.json')
         .done(function(vis, layers) {
             // layer 0 is the base layer, layer 1 is cartodb layer

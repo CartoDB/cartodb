@@ -29,10 +29,9 @@ quick start
             <link rel="stylesheet" href="https://d3voyrscnb0slx.cloudfront.net/cartodb.js/v2/themes/css/cartodb.ie.css" />
         <![endif]-->
 
-
         -->
 
-        <!-- use this cartodb.js links if you are using https -->
+        <!-- use this cartodb.js link if you are using https -->
         <!--
         <script src="https://d3voyrscnb0slx.cloudfront.net/cartodb.js/v2/cartodb.js"></script>
         -->
@@ -83,6 +82,16 @@ quick start
       });
     ```
 
+
+examples
+========
+
+ - [Load a layer with google maps](http://cartodb.github.com/cartodb.js/examples/gmaps.html)
+ - [Load a layer with Leaflet](http://cartodb.github.com/cartodb.js/examples/leaflet.html)
+ - [Show a complete visualization](http://cartodb.github.com/cartodb.js/examples/easy.html)
+ - [A visulization with a layer selector](http://cartodb.github.com/cartodb.js/examples/layer_selector.html)
+ - [How to create a custom infowindow](http://cartodb.github.com/cartodb.js/examples/custom_infowindow.html)
+ - [The Hobbit filming location paths](http://cartodb.github.com/cartodb.js/examples/TheHobbitLocations/) a full example with some widgets
 
 
 next steps

@@ -197,11 +197,14 @@ describe "Imports API" do
 
   it 'imports all the sample data' do
     @user.update table_quota: 10
-    ["http://cartodb.s3.amazonaws.com/static/TM_WORLD_BORDERS_SIMPL-0.3.zip",
+    import_files = ["http://cartodb.s3.amazonaws.com/static/TM_WORLD_BORDERS_SIMPL-0.3.zip",
     "http://cartodb.s3.amazonaws.com/static/european_countries.zip",
     "http://cartodb.s3.amazonaws.com/static/counties_ny.zip",
+    "http://cartodb.s3.amazonaws.com/static/50m-urban-area.zip",
     "http://cartodb.s3.amazonaws.com/static/10m-populated-places-simple.zip",
-    "http://cartodb.s3.amazonaws.com/static/nyc_subway_entrance.zip"].each do |url|
+    "http://cartodb.s3.amazonaws.com/static/nyc_subway_entrance.zip"]
+
+    import_files.each do |url|
 
       post v1_imports_url(:host    => 'test.localhost.lan',
                           :url  => url,
@@ -222,6 +225,9 @@ describe "Imports API" do
       table = Table.order(:id).last
       table.should have_required_indexes_and_triggers
     end
+    
+    DataImport.count.should == import_files.size
+    Map.count.should == import_files.size
   end
 
   it 'raises an error if the user attempts to import tables when being over quota' do

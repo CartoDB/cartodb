@@ -4,10 +4,13 @@ require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 
 describe "Imports API" do
 
-  before(:each) do
-    User.all.each(&:destroy)
+  before(:all) do
     @user = create_user(:username => 'test', :email => "client@example.com", :password => "clientex")
     @user.set_map_key
+  end
+
+  before(:each) do
+    delete_user_data @user
   end
 
   it 'allows users to perform asynchronous imports' do

@@ -311,7 +311,7 @@ For any questions regarding the usage of the library or for problems with the do
 
 ##### cartodb.Vis
 
-**cartodb.Vis** is probably going to be the most important instrument in your toolbox. This moethod allows to do a complete visualization, managing everything for the map and layer creation. In addition, it allows you to add easily modify widgets like zoom, loader, infowindow, tooltips, and overlays.
+**cartodb.Vis** is probably going to be the most important instrument in your toolbox. This method allows to do a complete visualization, managing everything for the map and layer creation. In addition, it allows you to add easily modify widgets like zoom, loader, infowindow, tooltips, and overlays.
 
 ##### cartodb.createVis(map_id, vizjson_url[, options] [, callback])
 

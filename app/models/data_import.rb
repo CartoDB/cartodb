@@ -125,12 +125,6 @@ class DataImport < Sequel::Model
       end
       CartoDB::Logger.info "Exception on tables#create", e.inspect
     end
-
-    # Recalculate map bounds on every imported table
-    self.table_names.to_s.split(',').each do |table_name|
-      table = Table.filter(:user_id => current_user.id, :name => table_name).first
-      table.map.recalculate_bounds!
-    end    
   end
 
   def before_save
@@ -267,6 +261,7 @@ class DataImport < Sequel::Model
 
     if @new_table.valid?
       @new_table.save
+      @new_table.map.recalculate_bounds!
       refresh
     else
       reload

@@ -651,7 +651,7 @@ CartoDB offers a powerful SQL API for you to query and retreive data from your C
 
 <div class="margin20"></div>
 ``` javascript
-    var sql = cartodb.SQL({ user: 'cartodb_user' });
+    var sql = new cartodb.SQL({ user: 'cartodb_user' });
     sql.execute("select * from table where id > {{id}}", { id: 3 })
       .done(function(data) {
         console.log(data.rows);

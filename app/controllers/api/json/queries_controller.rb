@@ -11,10 +11,10 @@ class Api::Json::QueriesController < Api::ApplicationController
     params[:page] = 0 unless params[:page].present?
 
     # Window SELECT queries, run the others straight ahead
-    # Window SELECT queries, run the others straight ahead
     q = if /\Aselect/i.match params[:sql].strip
       page, per_page = CartoDB::Pagination.get_page_and_per_page(params)
-      "SELECT * FROM (#{params[:sql].gsub(/;\s*$/, '')}) AS subq LIMIT #{per_page} OFFSET #{page}"
+      order_fragment = (params[:order_by].blank? ? "" : "ORDER BY #{params[:order_by]} #{(params[:mode] == 'des' ? 'DESC' : 'ASC')}")
+      "SELECT * FROM (#{params[:sql].gsub(/;\s*$/, '')}) AS subq #{order_fragment} LIMIT #{per_page} OFFSET #{page}"
     else
       params[:sql]
     end

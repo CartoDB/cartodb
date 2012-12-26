@@ -56,7 +56,7 @@ To use CartoDB.js in your web-page, you no longer need to host the library on yo
 The library is being mirrored on servers all over the world (using a CDN), so you can be sure that no matter where your website viewers are, they will get CartoDB.js loaded in the fastest way possible. 
 
 
-#### Using CartoDB visualizations in your webpage
+##### Using CartoDB visualizations in your webpage
 
 The **cartodb.createVis** method is probably going to be the most important one in your CartoDB toolbox. 
 
@@ -302,13 +302,25 @@ You can do the same for the CSS documents we provide:
 ```
 <div class="margin20"></div>
 
+### Usage examples
+If you want to start playing with the library, there are several examples to start with:
+
+  <div class="margin20"></div>
+
+  + An easy example using the library ( [live](http://cartodb.github.com/cartodb.js/examples/easy.html) | [code](https://github.com/CartoDB/cartodb.js/blob/develop/examples/easy.html) ).
+  + Leaflet integration ( [live](http://cartodb.github.com/cartodb.js/examples/leaflet.html) | [code](https://github.com/CartoDB/cartodb.js/blob/develop/examples/leaflet.html) ).
+  + Google Maps v3 integration ( [live](http://cartodb.github.com/cartodb.js/examples/gmaps.html) | [code](https://github.com/CartoDB/cartodb.js/blob/develop/examples/gmaps.html) ).  
+  + Customizing the infowindow data ( [live](http://cartodb.github.com/cartodb.js/examples/custom_infowindow.html) | [code](https://github.com/CartoDB/cartodb.js/blob/develop/examples/custom_infowinfow.html) ).
+  + An example using a layer selector ( [live](http://cartodb.github.com/cartodb.js/examples/layer_selector.html) | [code](https://github.com/CartoDB/cartodb.js/blob/develop/examples/layer_selector.html) ).
+  + The Hobbit map done with the library ( [live](http://cartodb.github.com/cartodb.js/examples/TheHobbitLocations/) | [code](https://github.com/CartoDB/cartodb.js/tree/develop/examples/TheHobbitLocations) ).
+
+
 
 ### API
 
 The documentation below reflects CartoDB.js for the 2.0.x library versions. For major changes in the library we will update the documentation here. This documentation is meant to help developers find specific methods for using the CartoDB.js library.
 
 For any questions regarding the usage of the library or for problems with the documentation please contact us at [support@cartodb.com](mailto:support@cartodb.com).
-
 
 
 ### Creating maps

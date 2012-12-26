@@ -3,7 +3,6 @@
 //= require jquery.fileupload
 //= require jquery.fileupload-fp
 //= require jquery.fileupload-ui
-//= require jquery.cookie
 //= require_tree ../../../lib/assets/javascripts/cartodb/models
 //= require ../../../lib/assets/javascripts/cartodb/common/dropdown_menu
 //= require_tree ../../../lib/assets/javascripts/cartodb/common

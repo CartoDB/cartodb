@@ -17,10 +17,11 @@ quick start
             <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/themes/css/cartodb.ie.css" />
         <![endif]-->
 
+
         <script src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
         <script src="http://libs.cartocdn.com/cartodb.js/v2/cartodb.js"></script>
 
-        <!-- use these links if you are using https -->
+        <!-- use these cartodb.css links if you are using https -->
         <!--
 
         <link rel="stylesheet" href="https://d3voyrscnb0slx.cloudfront.net/cartodb.js/v2/themes/cartodb.css" />
@@ -28,6 +29,10 @@ quick start
             <link rel="stylesheet" href="https://d3voyrscnb0slx.cloudfront.net/cartodb.js/v2/themes/css/cartodb.ie.css" />
         <![endif]-->
 
+        -->
+
+        <!-- use this cartodb.js link if you are using https -->
+        <!--
         <script src="https://d3voyrscnb0slx.cloudfront.net/cartodb.js/v2/cartodb.js"></script>
         -->
     ```
@@ -73,10 +78,20 @@ quick start
       // add the cartodb layer
       var layerUrl = 'http://examples-beta.cartodb.com/api/v1/viz/219/viz.json';
       cartodb.createLayer(map, layerUrl, function(layer) {
-        map.overlayMapTypes.setAt(0, layer);
+         map.addLayer(layer);
       });
     ```
 
+
+examples
+========
+
+ - [Load a layer with google maps](http://cartodb.github.com/cartodb.js/examples/gmaps.html)
+ - [Load a layer with Leaflet](http://cartodb.github.com/cartodb.js/examples/leaflet.html)
+ - [Show a complete visualization](http://cartodb.github.com/cartodb.js/examples/easy.html)
+ - [A visulization with a layer selector](http://cartodb.github.com/cartodb.js/examples/layer_selector.html)
+ - [How to create a custom infowindow](http://cartodb.github.com/cartodb.js/examples/custom_infowindow.html)
+ - [The Hobbit filming location paths](http://cartodb.github.com/cartodb.js/examples/TheHobbitLocations/) a full example with some widgets
 
 
 next steps

@@ -31,9 +31,7 @@ quick start
         -->
 
         <!-- use this cartodb.js link if you are using https -->
-        <!--
-        <script src="http://libs.cartocdn.com/cartodb.js/v2/cartodb.js"></script>
-        -->
+        <!-- script src="http://d3voyrscnb0slx.cloudfront.net/cartodb.js/v2/cartodb.js"></script -->
     ```
 
 

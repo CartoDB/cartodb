@@ -33,7 +33,7 @@ The simplest way to use a visualization created in CartoDB on an external site i
 get the complete example [here](https://github.com/CartoDB/cartodb.js/blob/develop/examples/easy.html).
 
 
-### Creating maps
+### Using the library
 
 CartoDB.js can be used when you want to embed and use a visualization you have designed using CartoDB user interface, or to create visualizations from scratch dynamically using your data. If you want to create new maps on your webpage, jump to "using CartoDB visualizations in your webpage". If you already have maps on your webpage and want to add CartoDB visualizations to them, read "Add CartoDB layer to an existing map".
 

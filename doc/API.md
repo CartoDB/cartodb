@@ -6,11 +6,13 @@
 
 When you add CartoDB.js to your websites you get some great new tools to make maps or power your content with data. Let’s take a look.
 
+If you want to check out the source code or contribute, please visit the [project Github page](http://github.com/cartodb/cartodb.js)
+
 ### Getting started
 
 The simplest way to use a visualization created in CartoDB on an external site is:
 
-
+<div class="margin20"></div>
 ``` javascript
     ...
     <body>

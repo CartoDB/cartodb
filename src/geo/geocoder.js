@@ -31,15 +31,15 @@ cdb.geo.geocoder.YAHOO = {
       $.getJSON(protocol + '//query.yahooapis.com/v1/public/yql?q='+encodeURIComponent('SELECT * FROM json WHERE url="http://where.yahooapis.com/geocode?q=' + address + '&appid=' + this.keys.app_id + '&flags=JX"') + '&format=json&callback=?', function(data) {
 
          var coordinates = [];
-         if (data && data.query && data.query.results && data.query.results.ResultSet && data.query.results.ResultSet.Found != "0") {
+         if (data && data.query && data.query.results && data.query.results.json && data.query.results.json.ResultSet && data.query.results.json.ResultSet.Found != "0") {
 
           // Could be an array or an object |arg!
           var res;
 
-          if (_.isArray(data.query.results.ResultSet.Results)) {
-            res = data.query.results.ResultSet.Results;
+          if (_.isArray(data.query.results.json.ResultSet.Results)) {
+            res = data.query.results.json.ResultSet.Results;
           } else {
-            res = [data.query.results.ResultSet.Results];
+            res = [data.query.results.json.ResultSet.Results];
           }
 
           for(var i in res) {

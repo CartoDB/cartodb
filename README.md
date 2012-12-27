@@ -233,7 +233,7 @@ accelerator. Components like Windshaft use it to speed up serving tiles
 via the Maps API. 
 
 ```bash
-sudo pip install varnish
+sudo pip install -e git+https://github.com/RealGeeks/python-varnish.git@0971d6024fbb2614350853a5e0f8736ba3fb1f0d#egg=python-varnish
 ```
 
 ## Install Mapnik ##

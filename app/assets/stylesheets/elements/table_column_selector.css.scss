@@ -11,7 +11,7 @@
 
     div.table {
       display:block;
-      //height:202px;
+      height:202px;
       padding:14px;
       background:#F2F2F2;
       @include transform-style("linear");
@@ -57,7 +57,7 @@
 
         li {
           position:relative;
-          padding:13px;
+          padding:9px 13px;
           margin-bottom:0!important;
           border-bottom:1px solid rgba(#CCCCCC,0.5)!important;
           z-index:1;
@@ -71,9 +71,11 @@
       position:absolute;
       display:none;
       bottom:-25px;
-      right:28px!important;
+      right:13px;
       width:140px;
-      label {color:#999999; font-size:13px;}
+      label {float:right; color:#999999; font-size:13px; line-height:18px;}
+      a.switch {float:right; margin-left:10px;}
+      &.moveRight {right:28px;}
     }
 
     // Small switch

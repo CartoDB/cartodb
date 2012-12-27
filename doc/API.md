@@ -356,11 +356,14 @@ Creates a visualization inside the map_id DOM object:
     - center_lon.
     - zoom: initial zoom.
 
-##### cartodb.Vis.getNativeMap ()
-Returns the native map object being used. It can be google.maps.Map or L.Map depending on the provider you setup in the UI.
+##### cartodb.Vis.getLayers()
+Return an array of layers in the map. The first is the base layer.
 
-##### cartodb.Vis.getOverlays()
-Returns a list of overlays currently on the screen (see overlays description).
+##### cartodb.Vis.addOverlay(options)
+Add an overlay to the map, these are the overlays you can add: zoom, tooltip, infobox.
+
+###### RETURNS
+An overlay object, depending on the options.type different object will be returned, see cartodb.vis.Overlays.
 
 ##### cartodb.Vis.getOverlay(type)
 Return the first overlay with the specified **type**.
@@ -372,14 +375,12 @@ Return the first overlay with the specified **type**.
 ```
 <div class="margin20"></div>
 
-##### cartodb.Vis.getLayers()
-Return an array of layers in the map. The first is the base layer.
 
-##### cartodb.Vis.addOverlay(options)
-Add an overlay to the map, these are the overlays you can add: zoom, tooltip, infobox.
+##### cartodb.Vis.getOverlays()
+Returns a list of overlays currently on the screen (see overlays description).
 
-###### RETURNS
-An overlay object, depending on the options.type different object will be returned, see cartodb.vis.Overlays.
+##### cartodb.Vis.getNativeMap ()
+Returns the native map object being used. It can be google.maps.Map or L.Map depending on the provider you setup in the UI.
 
 ##### cartodb.vis.Overlays
 An overlay is a control shown on top of the map.
@@ -479,6 +480,22 @@ Promise object. You can listen for the following events:
 
   Show the cartodb layer in the map if it was previously added. Enables the interaction if it was enabled.
 
+##### layer.isVisible()
+
+  Get the visibility of the layer. Returns true or false.
+
+###### RETURNS
+
+  true: if layer is visible.
+
+##### layer.setOpacity(opacity)
+
+  Change the opacity of the layer.
+
+###### ARGUMENTS
+
+  + **opacity**: value in range [0, 1].
+
 ##### **layer.setInteraction(enable)**
 
   Sets the interaction of your layer to true (enabled) or false (disabled). When is disabled **featureOver**, **featureClick** and **featureOut** are **not** triggered.
@@ -526,14 +543,6 @@ Promise object. You can listen for the following events:
     layer.setCartoCSS("#{{table_name}}{ marker-fill:blue }");
 ```
 
-##### layer.isVisible()
-
-  Get the visibility of the layer. Returns true or false.
-
-###### RETURNS
-
-  true: if layer is visible.
-
 ##### layer.setInteractivity(fieldsArray)
 
   Change the columns you want to get data.
@@ -560,14 +569,6 @@ Promise object. You can listen for the following events:
        interactivity: "cartodb_id,the_geom,magnitude"
     });
 ```
-
-##### layer.setOpacity(opacity)
-
-  Change the opacity of the layer.
-
-###### ARGUMENTS
-
-  + **opacity**: value in range [0, 1].
 
 
 ### Creating layer events

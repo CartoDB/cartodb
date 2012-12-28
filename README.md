@@ -28,7 +28,7 @@ to a file.
 
 In other words, with CartoDB you can make awesome maps and build
 powerful geospatial applications! Definitely check out the [CartoDB
-Gallery](http://developers.cartodb.com/gallery) for interactive examples
+Maps](http://cartodb.com/maps) gallery for interactive examples
 and code.
 
 <img src="http://dl.dropbox.com/u/538411/readmeCartodb/mapWizard.png" width="900px"/>

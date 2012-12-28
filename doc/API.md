@@ -77,8 +77,8 @@ You can also use the returned **layer** to build functionality (show/hide, click
     cartodb.createVis('map', 'http://examples-beta.cartodb.com/api/v1/viz/791/viz.json')
         .done(function(vis, layers) {
             // layer 0 is the base layer, layer 1 is cartodb layer
-            layers[1].on('featureOver', function(e, pos, latlng, data) {
-              cartodb.log.log(e, pos, latlng, data);
+            layers[1].on('featureOver', function(e, latlng, pos, data) {
+              cartodb.log.log(e, latlng, pos, data);
             });
     
             // you can also get the map object created by cartodb.js
@@ -456,8 +456,8 @@ Promise object. You can listen for the following events:
     cartodb.loadLayer(map, 'http://examples.cartodb.com/tables/TODO/cartodb.js')
       .on('done', function(layer) {
         layer
-          .on('featureOver', function(e, pos, latlng, data) {
-            console.log(e, pos, latlng, data);
+          .on('featureOver', function(e, latlng, pos, data) {
+            console.log(e, latlng, pos, data);
           })
           .on('error', function(err) {
             console.log('error: ' + err);

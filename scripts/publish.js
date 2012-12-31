@@ -56,11 +56,15 @@ function invalidate_files(files, remote_path) {
     return remote_path + '/' + f;
   });
 
-  var cmd = 'ruby ./scripts/cdn_invalidation.rb ' + to_invalidate.join(' ');
-  _exec(cmd, function (error){
-    if(error) console.log(error);
-  });
-  console.log(cmd);
+  for(var i in to_invalidate) {
+    var cmd = 'ruby ./scripts/cdn_invalidation.rb ' + to_invalidate[i];
+    _exec(cmd, function (error, stdout, stderr){
+      console.log('stdout: ' + stdout);
+      console.log('stderr: ' + stderr);
+      if(error) console.log(error);
+    });
+    console.log(cmd);
+  }
 }
 
 

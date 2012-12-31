@@ -28,7 +28,7 @@ var LeafLetPlainLayerView = L.Class.extend({
 
   redraw: function() {
     var div = this.leafletMap.getContainer()
-    div.style.backgroundColor = this.model.get('color');
+    div.style.backgroundColor = this.model.get('color') || '#FFF';
     if(this.model.get('image')) {
       var st = 'url(' + this.model.get('image') + ') repeat center center';
       if(this.model.get('color')) {

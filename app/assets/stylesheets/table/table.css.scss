@@ -188,15 +188,21 @@
                       &:after {border-top-color:#565656;}
                     }
 
-                    span.geo {
-                      @include border-radius(2px);
-                      margin:0 0 0 3px;
-                      padding:1px 2px;
-                      border:1px solid #C17400;
-                      background:orange;
-                      color:white;
-                      text-decoration:uppercase;
-                    }
+
+                  }
+                }
+                a {
+                  @include inline-block();
+                  margin:6px 0 5px 5px;
+                  color:#7C7C7C;
+                  span.geo {
+                    @include border-radius(2px);
+                    margin:0 0 0 3px;
+                    padding:1px 2px;
+                    border:1px solid #C17400;
+                    background:orange;
+                    color:white;
+                    text-decoration:uppercase;
                   }
                 }
                 // Default and then replace it

@@ -75,18 +75,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
   end
 
   def show
-    respond_with(:superadmin, {
-      :id => @user.id,
-      :email => @user.email,
-      :username => @user.username,
-      :tables_count => @user.tables_count,
-      :tables_size => @user.tables.map(&:table_size).sum / (1024.0*1024*1024),
-      :enabled => @user.enabled,
-      :quota_in_bytes => @user.quota_in_bytes,
-      :table_quota => @user.table_quota,
-      :account_type => @user.account_type,
-      :private_tables_enabled => @user.private_tables_enabled
-    })
+    respond_with(:superadmin, @user.data)
   end
 
   private

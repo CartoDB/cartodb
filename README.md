@@ -331,10 +331,16 @@ echo "127.0.0.1 ${SUBDOMAIN}.localhost.lan" | sudo tee -a /etc/hosts
 sh script/create_dev_user ${SUBDOMAIN}
 ```
 
+Start the resque daemon (needed for import jobs):
+
+```bash
+$ QUEUE=* bundle exec rake resque:work
+```
+
 Finally, start the CartoDB development server on port 3000:
 
 ```bash
-$ rails server -p 3000
+$ bundle exec rails s -p 3000
 ```
 
 You should now be able to access

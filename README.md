@@ -297,6 +297,13 @@ export SUBDOMAIN=development
 # Enter the `cartodb` directory.
 cd cartodb20
 
+# Start redis, if you haven't done so yet
+# Redis must be running when starting either the
+# node apps or rails or runnin the ``create_dev_user script``
+# NOTE: the default server port is 6379, and the default
+#       configuration expects redis to be listening there
+redis-server
+
 # If you are using rvm, create a new gemset
 rvm use 1.9.2@cartodb --create && bundle install
 

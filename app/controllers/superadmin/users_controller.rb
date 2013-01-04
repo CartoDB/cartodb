@@ -1,8 +1,8 @@
 class Superadmin::UsersController < Superadmin::SuperadminController
   respond_to :json
 
-  ssl_required :create, :update, :destroy if Rails.env.production? || Rails.env.staging?
-  before_filter :get_user, :only => [:update, :destroy]
+  ssl_required :create, :update, :destroy, :show if Rails.env.production? || Rails.env.staging?
+  before_filter :get_user, :only => [:update, :destroy, :show]
 
   def create
     # BEWARE. don't get clever. This is all explicit because of mass assignment limitations
@@ -74,6 +74,20 @@ class Superadmin::UsersController < Superadmin::SuperadminController
     respond_with(:superadmin, @user)
   end
 
+  def show
+    respond_with(:superadmin, {
+      :id => @user.id,
+      :email => @user.email,
+      :username => @user.username,
+      :tables_count => @user.tables_count,
+      :tables_size => @user.tables.map(&:table_size).sum / (1024.0*1024*1024),
+      :enabled => @user.enabled,
+      :quota_in_bytes => @user.quota_in_bytes,
+      :table_quota => @user.table_quota,
+      :account_type => @user.account_type,
+      :private_tables_enabled => @user.private_tables_enabled
+    })
+  end
 
   private
 

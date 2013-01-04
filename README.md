@@ -297,6 +297,13 @@ export SUBDOMAIN=development
 # Enter the `cartodb` directory.
 cd cartodb20
 
+# Start redis, if you haven't done so yet
+# Redis must be running when starting either the
+# node apps or rails or runnin the ``create_dev_user script``
+# NOTE: the default server port is 6379, and the default
+#       configuration expects redis to be listening there
+redis-server
+
 # If you are using rvm, create a new gemset
 rvm use 1.9.2@cartodb --create && bundle install
 
@@ -324,10 +331,16 @@ echo "127.0.0.1 ${SUBDOMAIN}.localhost.lan" | sudo tee -a /etc/hosts
 sh script/create_dev_user ${SUBDOMAIN}
 ```
 
+Start the resque daemon (needed for import jobs):
+
+```bash
+$ QUEUE=* bundle exec rake resque:work
+```
+
 Finally, start the CartoDB development server on port 3000:
 
 ```bash
-$ rails server -p 3000
+$ bundle exec rails s -p 3000
 ```
 
 You should now be able to access

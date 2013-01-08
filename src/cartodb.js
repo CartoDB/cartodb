@@ -40,8 +40,7 @@
         "../vendor/backbone.js",
 
         "../vendor/leaflet.js",
-        "../vendor/wax.leaf.js",
-        "../vendor/wax.g.js",
+        "../vendor/wax.cartodb.js",
         "../vendor/GeoJSON.js", //geojson gmaps lib
 
         "../vendor/jscrollpane.js",

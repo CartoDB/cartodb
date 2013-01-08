@@ -108,6 +108,13 @@ Add CartoDB Redis PPA
 sudo add-apt-repository ppa:cartodb/redis
 ```
 
+Add CartoDB PostgreSQL PPA
+```bash
+sudo add-apt-repository  ppa:cartodb/postgresql
+```
+
+## Some dependencies ##
+
 ## Some dependencies ##
 
 unp is required for archive file upload support

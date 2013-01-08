@@ -275,7 +275,7 @@ L.CartoDBLayer = L.TileLayer.extend({
     }
 
     // Update tiles
-    if(opts.query || opts.style || opts.tile_style || opts.interactivity || opts.interaction != undefined) {
+    if(opts.query != undefined || opts.style != undefined || opts.tile_style != undefined || opts.interactivity != undefined || opts.interaction != undefined) {
       this.__update();
     }
   },

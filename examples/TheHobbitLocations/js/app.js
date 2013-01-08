@@ -35,8 +35,4 @@ function main() {
 
 }
 
-window.onload = function() {
-  cartodb.load('../../src/', function() {
-    main();
-  });
-}
+window.onload = main;

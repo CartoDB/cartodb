@@ -39,6 +39,9 @@ publish: release
 	#./scripts/publish.sh
 	node scripts/publish.js
 
+invalidate: 
+	#./scripts/publish.sh
+	node scripts/publish.js --invalidate
 
 PHONY: clean themes dist
 

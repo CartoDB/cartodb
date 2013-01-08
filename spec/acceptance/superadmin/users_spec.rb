@@ -159,8 +159,8 @@ feature "Superadmin's users API" do
     user = create_user
     get_json superadmin_user_path(user), {}, default_headers do |response|
       response.status.should == 200
+      response.body[:id].should == user.id
     end
-    User[user.id].should_not be_nil
   end
 
   private

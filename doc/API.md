@@ -310,7 +310,7 @@ If you want to start playing with the library, there are several examples to sta
   + An easy example using the library ( [live](http://cartodb.github.com/cartodb.js/examples/easy.html) | [code](https://github.com/CartoDB/cartodb.js/blob/develop/examples/easy.html) ).
   + Leaflet integration ( [live](http://cartodb.github.com/cartodb.js/examples/leaflet.html) | [code](https://github.com/CartoDB/cartodb.js/blob/develop/examples/leaflet.html) ).
   + Google Maps v3 integration ( [live](http://cartodb.github.com/cartodb.js/examples/gmaps.html) | [code](https://github.com/CartoDB/cartodb.js/blob/develop/examples/gmaps.html) ).  
-  + Customizing the infowindow data ( [live](http://cartodb.github.com/cartodb.js/examples/custom_infowindow.html) | [code](https://github.com/CartoDB/cartodb.js/blob/develop/examples/custom_infowinfow.html) ).
+  + Customizing the infowindow data ( [live](http://cartodb.github.com/cartodb.js/examples/custom_infowindow.html) | [code](https://github.com/CartoDB/cartodb.js/blob/develop/examples/custom_infowindow.html) ).
   + An example using a layer selector ( [live](http://cartodb.github.com/cartodb.js/examples/layer_selector.html) | [code](https://github.com/CartoDB/cartodb.js/blob/develop/examples/layer_selector.html) ).
   + The Hobbit map done with the library ( [live](http://cartodb.github.com/cartodb.js/examples/TheHobbitLocations/) | [code](https://github.com/CartoDB/cartodb.js/tree/develop/examples/TheHobbitLocations) ).
 

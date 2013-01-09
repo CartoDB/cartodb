@@ -150,7 +150,6 @@ module CartoDB
     #
     def import!
       begin
-
         fs = File.size(@path)
         if fs.to_i == 0
           @data_import.set_error_code(1005)
@@ -257,11 +256,7 @@ module CartoDB
         end
 
         # Check if user is over table quota, raise the appropiate error
-        if @remaining_tables.to_i < payloads.length
-          @data_import.set_error_code(8002)
-          @data_import.log_error("Over account table limit, please upgrade")
-          raise CartoDB::QuotaExceeded, "More tables required"
-        end
+        @data_import.raise_error_if_over_quota payloads.length
 
         @data_import.refresh
 

@@ -882,8 +882,9 @@ div.header.yellow h1 a:hover {
     font-size:0;
     line-height:0;
     opacity:1;
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
+    filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=1);
     filter: alpha(opacity=100);
-    filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=1)
     text-transform:uppercase;
     z-index:3;
   }

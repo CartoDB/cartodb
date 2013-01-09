@@ -86,8 +86,8 @@
 
         &.edit {
           bottom:0;
-          a:first-child {border-top:1px solid rgba(#999999,0.25);}
-          &:last-child {border:none;}
+          a.merge_tables {border-top:1px solid rgba(#999999,0.25);}
+          a:last-child {border:none;}
         }
 
         a {
@@ -108,6 +108,7 @@
           &.add_row {@include icons-sprite(table_icons, $offset-x:22px, $offset-y:-307px);}
           &.add_column {@include icons-sprite(table_icons, $offset-x:22px, $offset-y:-247px);}
           &.add_feature {@include icons-sprite(table_icons, $offset-x:19px, $offset-y:-489px);}
+          &.merge_tables {@include icons-sprite(table_icons, $offset-x:21px, $offset-y:-186px);}
 
           &:hover {
             cursor:pointer;

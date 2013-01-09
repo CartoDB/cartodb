@@ -94,6 +94,9 @@ class DataImport < Sequel::Model
         migrate_existing migrate_table
 
       elsif table_copy.present? || from_query.present?
+        # Raise an error if user is over table quota
+        self.raise_error_if_over_quota 1
+
         query = table_copy ? "SELECT * FROM #{table_copy}" : from_query
         new_table_name = import_from_query table_name, query
         self.update :table_names => new_table_name
@@ -122,12 +125,6 @@ class DataImport < Sequel::Model
       end
       CartoDB::Logger.info "Exception on tables#create", e.inspect
     end
-
-    # Recalculate map bounds on every imported table
-    self.table_names.to_s.split(',').each do |table_name|
-      table = Table.filter(:user_id => current_user.id, :name => table_name).first
-      table.map.recalculate_bounds!
-    end    
   end
 
   def before_save
@@ -179,6 +176,14 @@ class DataImport < Sequel::Model
 
   def get_error_text
     self.error_code.blank? ? CartoDB::IMPORTER_ERROR_CODES[99999] : CartoDB::IMPORTER_ERROR_CODES[self.error_code]
+  end
+
+  def raise_error_if_over_quota number_of_tables
+    if !current_user.remaining_table_quota.nil? && current_user.remaining_table_quota.to_i < number_of_tables
+      self.set_error_code(8002)
+      self.log_error("Over account table limit, please upgrade")
+      raise CartoDB::QuotaExceeded, "More tables required"
+    end
   end
 
   def log_json
@@ -256,6 +261,7 @@ class DataImport < Sequel::Model
 
     if @new_table.valid?
       @new_table.save
+      @new_table.map.recalculate_bounds!
       refresh
     else
       reload

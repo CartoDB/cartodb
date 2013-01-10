@@ -15,7 +15,7 @@
     display: block;
     width: 100%;
     height: 36px;
-    padding: 20px 0;
+    padding: 0 0;
 
     $bkgColor: #428AC6;
 
@@ -239,13 +239,13 @@
         position:relative;
         width:65%;
         height:131px;
-        margin-left:35px;
+        margin-left:27px;
 
         z-index: 10;
 
         hgroup {
           @include inline-block();
-          margin:4px 0 0 -15px;
+          margin: 0 0 0 -15px;
           width:100%;
 
           .author {
@@ -307,7 +307,7 @@
 
         span.table_description {
           display:block;
-          margin: 3px 0 0 13px;
+          margin: 3px 0 0 12px;
 
           p {
             @include inline-block();

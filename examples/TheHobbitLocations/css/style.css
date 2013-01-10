@@ -89,13 +89,13 @@ div.left div#legendBox ul li{
 	opacity: .5;
 }
 
-div#pointTT{
+div.cartodb_tooltip {
 	position: absolute;
-	z-index: 2;
+	z-index: 5;
 	display: none;
 }
 
-div#pointTT p{
+div.cartodb_tooltip p {
 	font-family: "robotoregular", Helvetica, Arial, Sans-serif;
 	font-size: 15px;
 	color: #333;
@@ -106,11 +106,10 @@ div#pointTT p{
      1px 1px 0 #FFF;
 }
 
-/*CUSTOMIZING THE INFOWINDOW*/
-/*I encourage you to explore the actual styling using Chrome Developer Tools or Firebug*/
+/*SYLES FOR THE CUSTOM INFOWINDOW*/
 
-div.cartodb-popup{
-	background: transparent;
+div.cartodb-popup {
+	background: none;
 	width: 240px;
 	padding: 0;
 	-moz-border-radius-topright: 4px;
@@ -125,7 +124,7 @@ div.cartodb-popup a.cartodb-popup-close-button{
 	right: -13px;
 }
 
-div.cartodb-popup-content-wrapper{
+div.cartodb-popup div.cartodb-popup-content-wrapper{
 	padding: 0;
 	width: 240px;
 	max-width: none;
@@ -178,7 +177,7 @@ div.cartodb-popup div.cartodb-popup-cont p{
 	opacity: .5;
 }
 
-div.cartodb-popup-tip-container{
+div.cartodb-popup div.cartodb-popup-tip-container{
 	background: none;
 	background-color: #FFF;
 	width: 240px;
@@ -190,7 +189,7 @@ div.cartodb-popup-tip-container{
 	margin-bottom: 10px;
 }
 
-div.cartodb-popup-tip-container::after {
+div.cartodb-popup div.cartodb-popup-tip-container::after {
 	position: absolute;
 	bottom: -10px;
 	left: 26px;
@@ -200,4 +199,22 @@ div.cartodb-popup-tip-container::after {
 	width: 0;
 	height: 0;
 	z-index: 1;
+}
+
+div.cartodb_infobox {
+	bottom:35px!important;
+	font-family: "Helvetica",Arial;
+}
+
+div.cartodb_infobox h3 {
+	color:#333333;
+	font-size:15px;
+}
+
+div.cartodb_infobox p {
+	display:block;
+	margin:10px 0 0 0;
+	color:#788787;
+	font-size:13px;
+	line-height:16px;
 }

@@ -119,19 +119,28 @@ CartoDBLayer.prototype.getTile = function(coord, zoom, ownerDocument) {
 CartoDBLayer.prototype._addInteraction = function () {
   var self = this;
   // add interaction
-  if(this._interaction) {
-    return;
+  if(this.interaction) {
+    this.interaction.remove();
+    this.interaction = null;
   }
-  this._interaction = wax.g.interaction()
-    .map(this.options.map)
-    .tilejson(this._tileJSON());
-  this.setInteraction(true);
+
+  if(this.options.interaction) {
+    this.interaction = wax.g.interaction()
+      .map(this.options.map)
+      .tilejson(this._tileJSON())
+      .on('on',function(o) {
+        self._manageOnEvents(self.options.map, o);
+      })
+      .on('off', function(o) {
+        self._manageOffEvents();
+      });
+  }
 };
 
 CartoDBLayer.prototype.clear = function () {
-  if (this._interaction) {
-    this._interaction.remove();
-    delete this._interaction;
+  if (this.interaction) {
+    this.interaction.remove();
+    delete this.interaction;
   }
   self.finishLoading && self.finishLoading();
 };
@@ -142,7 +151,7 @@ CartoDBLayer.prototype.update = function () {
   this.cache = {};
   // set new tiles to wax
   this.options.tiles = tilejson.tiles;
-  this._interaction.tilejson(tilejson);
+  this._addInteraction();
 
   this._checkTiles();
 
@@ -159,22 +168,10 @@ CartoDBLayer.prototype.refreshView = function() {
  * @params {Boolean} Choose if wants interaction or not
  */
 CartoDBLayer.prototype.setInteraction = function(enable) {
-  var self = this;
+  this.setOptions({
+    interaction: enable
+  });
 
-  if (this._interaction) {
-    if (enable) {
-      this._interaction
-        .on('on',function(o) {
-          self._manageOnEvents(self.options.map, o);
-        })
-        .on('off', function(o) {
-          self._manageOffEvents();
-        });
-    } else {
-      this._interaction.off('on');
-      this._interaction.off('off');
-    }
-  }
 };
 
 
@@ -192,12 +189,9 @@ CartoDBLayer.prototype.setOptions = function (opts) {
   if(opts.opacity !== undefined) {
     this.setOpacity(this.options.opacity);
   }
-  if(opts.interaction !== undefined) {
-    this.setInteraction(this.options.interaction);
-  }
 
   // Update tiles
-  if(opts.query || opts.style || opts.tile_style || opts.interactivity) {
+  if(opts.query != undefined || opts.style != undefined || opts.tile_style != undefined || opts.interactivity != undefined || opts.interaction != undefined) {
     this.update();
   }
 }

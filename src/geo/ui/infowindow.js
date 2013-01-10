@@ -19,6 +19,7 @@
 */
 
 cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
+  SYSTEM_COLUMNS: ['the_geom', 'the_geom_webmercator', 'created_at', 'updated_at', 'cartodb_id', 'cartodb_georef_status'],
 
   defaults: {
     template_name: 'geo/infowindow',
@@ -222,7 +223,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
 
   /**
    *  Convert values to string unless value is NULL
-   */ 
+   */
   _fieldsToString: function(attrs) {
     if (attrs.content && attrs.content.fields) {
       attrs.content.fields = _.map(attrs.content.fields, function(attr) {
@@ -238,7 +239,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
         // we must make them null to display them correctly
         // ARGGG!
         if (new_value == "") new_value = null;
-        
+
         // store attribute
         attr.value = new_value;
 
@@ -299,7 +300,6 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
 
   /**
   * Set the correct position for the popup
-  * @params {latlng} A new Leaflet LatLng object
   */
   setLatLng: function (latlng) {
     this.model.set("latlng", latlng);

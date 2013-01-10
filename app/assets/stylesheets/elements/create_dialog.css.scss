@@ -129,9 +129,9 @@
 
               div.url {
                 position:relative;
-                p {
-                  z-index:0;
-                }
+                pointer-events:none;
+
+                p {z-index:0;}
               }
 
 

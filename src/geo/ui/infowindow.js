@@ -402,7 +402,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
 
     var offset = this.model.get("offset");
 
-    if (!this.model.get("autoPan")) { return; }
+    if (!this.model.get("autoPan") || this.isHidden()) { return; }
 
     var
       x               = this.$el.position().left,

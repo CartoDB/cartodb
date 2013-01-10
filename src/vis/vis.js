@@ -140,8 +140,10 @@ var Vis = cdb.core.View.extend({
       this.https = data.https;
     }
 
+
     if(options) {
       this._applyOptions(data, options);
+      this.cartodb_logo = options.cartodb_logo;
     }
 
     // map

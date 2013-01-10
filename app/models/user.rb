@@ -336,10 +336,10 @@ class User < Sequel::Model
   #
   # TODO: Without a full table scan, ignoring the_geom_webmercator, we cannot accuratly asses table size
   # Needs to go on a background job.
-  def db_size_in_bytes
+  def db_size_in_bytes(use_total = false)
     attempts = 0
     begin
-      size = in_database(:as => :superuser).fetch("SELECT sum(pg_relation_size(quote_ident(table_name)))
+      size = in_database(:as => :superuser).fetch("SELECT sum(pg_#{('total_' if use_total)}relation_size(quote_ident(table_name)))
         FROM information_schema.tables
         WHERE table_catalog = '#{database_name}' AND table_schema = 'public'
         AND table_name != 'spatial_ref_sys' AND table_type = 'BASE TABLE'").first[:sum] rescue 0
@@ -430,8 +430,8 @@ class User < Sequel::Model
     self.over_disk_quota? || self.over_table_quota?
   end
 
-  def remaining_quota
-    self.quota_in_bytes - self.db_size_in_bytes
+  def remaining_quota(use_total = false)
+    self.quota_in_bytes - self.db_size_in_bytes(use_total)
   end
 
   def disk_quota_overspend
@@ -565,18 +565,19 @@ class User < Sequel::Model
 
   def data
     {
-      :id => self.id,
-      :username => self.username,
-      :account_type => self.account_type,
-      :private_tables => self.private_tables_enabled,
-      :table_quota => self.table_quota,
-      :table_count => self.table_count,
-      :byte_quota => self.quota_in_bytes,
-      :remaining_table_quota => self.remaining_table_quota,
-      :remaining_byte_quota => self.remaining_quota.to_f,
-      :api_calls => self.get_api_calls["per_day"],
-      :api_key => self.get_map_key,
-      :layers => self.layers.map(&:public_values)
+      :id                         => self.id,
+      :username                   => self.username,
+      :account_type               => self.account_type,
+      :private_tables             => self.private_tables_enabled,
+      :table_quota                => self.table_quota,
+      :table_count                => self.table_count,
+      :byte_quota                 => self.quota_in_bytes,
+      :remaining_table_quota      => self.remaining_table_quota,
+      :total_remaining_byte_quota => self.remaining_quota(true).to_f,
+      :remaining_byte_quota       => self.remaining_quota.to_f,
+      :api_calls                  => self.get_api_calls["per_day"],
+      :api_key                    => self.get_map_key,
+      :layers                     => self.layers.map(&:public_values)
     }
   end
 

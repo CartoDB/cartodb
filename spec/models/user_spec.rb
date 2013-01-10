@@ -111,6 +111,24 @@ describe User do
     @user2.tables.all.should == [Table.first(:user_id => @user2.id)]
   end
 
+  it "should generate a data report" do
+    @user2.data.should == {
+      :id => @user2.id,
+      :username => "user",
+      :account_type => "FREE",
+      :private_tables => true,
+      :table_quota => 5,
+      :table_count => 1,
+      :byte_quota  => 104857600, 
+      :remaining_table_quota => 4, 
+      :total_remaining_byte_quota => 104841216.0, 
+      :remaining_byte_quota => 104857600.0, 
+      :api_calls => nil, 
+      :api_key => @user2.get_map_key, 
+      :layers => []
+    }
+  end
+
   it "should update remaining quotas when adding or removing tables" do
     initial_quota = @user2.remaining_quota
 

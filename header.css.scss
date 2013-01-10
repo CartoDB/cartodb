@@ -320,7 +320,7 @@
 
         span.tags {
           display:block;
-          margin:7px 0 0 12px;
+          margin:7px 0 0 15px;
           @include inline-block();
 
           &:before {
@@ -328,7 +328,7 @@
             content:'|';
             font-weight:100;
             top:1px;
-            left:-7px;
+            left:-9px;
             font-size: 17px;
             color:rgba(255,255,255, .3);
           }

@@ -178,6 +178,7 @@ var Vis = cdb.core.View.extend({
     this.updated_at = data.updated_at || new Date().getTime();
 
     var div = $('<div>').css({
+      position: 'relative',
       width: '100%',
       height: '100%'
     });

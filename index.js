@@ -6,8 +6,7 @@
 **/
 
 //= require cdb/vendor/leaflet
-//= require cdb/vendor/wax.leaf
-//= require cdb/vendor/wax.g
+//= require cdb/vendor/wax.cartodb
 //= require cdb/vendor/GeoJSON
 //
 //= require cdb/vendor/mousewheel

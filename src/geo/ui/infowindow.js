@@ -361,7 +361,6 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
   },
 
   _animateOut: function() {
-
     if (!$.browser.msie || ($.browser.msie && $.browser.version.search("9.") != -1)) {
       var that = this;
       this.$el.animate({
@@ -374,8 +373,6 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     } else {
       this.$el.hide();
     }
-
-
   },
 
   /**

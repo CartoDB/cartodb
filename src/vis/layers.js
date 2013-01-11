@@ -61,18 +61,6 @@ var cartoLayer = function(vis, data) {
       data.interactivity = 'cartodb_id';
     }
   }
-  /*
-  if(data.infowindow && data.infowindow.fields) {
-    var names = [];
-    var fields = data.infowindow.fields;
-    for(var i = 0; i < fields.length; ++i) {
-      names.push(fields[i].name);
-    }
-    data.interactivity?
-     data.interactivity = data.interactivity + ',' + names.join(','):
-     data.interactivity = names.join(',');
-  }
-  */
 
   data.tiler_protocol = vis.https ? 'https': 'http';
   if(!data.no_cdn) {
@@ -85,6 +73,7 @@ var cartoLayer = function(vis, data) {
   } else {
     data.no_cdn = true;
   }
+  data.cartodb_logo = vis.cartodb_logo;
 
   return new cdb.geo.CartoDBLayer(data);
 };

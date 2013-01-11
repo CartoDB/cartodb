@@ -2021,11 +2021,11 @@ var Mustache = (typeof module !== "undefined" && module.exports) || {};
 })(Mustache);
 /*!
   * Reqwest! A general purpose XHR connection manager
-  * (c) Dustin Diaz 2012
+  * (c) Dustin Diaz 2011
   * https://github.com/ded/reqwest
   * license MIT
   */
-!function(e,t){typeof module!="undefined"?module.exports=t():typeof define=="function"&&define.amd?define(t):this[e]=t()}("reqwest",function(){function handleReadyState(e,t,n){return function(){e&&e[readyState]==4&&(twoHundo.test(e.status)?t(e):n(e))}}function setHeaders(e,t){var n=t.headers||{},r;n.Accept=n.Accept||defaultHeaders.accept[t.type]||defaultHeaders.accept["*"],!t.crossOrigin&&!n[requestedWith]&&(n[requestedWith]=defaultHeaders.requestedWith),n[contentType]||(n[contentType]=t.contentType||defaultHeaders.contentType);for(r in n)n.hasOwnProperty(r)&&e.setRequestHeader(r,n[r])}function setCredentials(e,t){typeof t.withCredentials!="undefined"&&typeof e.withCredentials!="undefined"&&(e.withCredentials=!!t.withCredentials)}function generalCallback(e){lastValue=e}function urlappend(e,t){return e+(/\?/.test(e)?"&":"?")+t}function handleJsonp(e,t,n,r){var i=uniqid++,s=e.jsonpCallback||"callback",o=e.jsonpCallbackName||reqwest.getcallbackPrefix(i),u=new RegExp("((^|\\?|&)"+s+")=([^&]+)"),a=r.match(u),f=doc.createElement("script"),l=0,c=navigator.userAgent.indexOf("MSIE 10.0")!==-1;a?a[3]==="?"?r=r.replace(u,"$1="+o):o=a[3]:r=urlappend(r,s+"="+o),win[o]=generalCallback,f.type="text/javascript",f.src=r,f.async=!0,typeof f.onreadystatechange!="undefined"&&!c&&(f.event="onclick",f.htmlFor=f.id="_reqwest_"+i),f.onload=f.onreadystatechange=function(){if(f[readyState]&&f[readyState]!=="complete"&&f[readyState]!=="loaded"||l)return!1;f.onload=f.onreadystatechange=null,f.onclick&&f.onclick(),e.success&&e.success(lastValue),lastValue=undefined,head.removeChild(f),l=1},head.appendChild(f)}function getRequest(e,t,n){var r=(e.method||"GET").toUpperCase(),i=typeof e=="string"?e:e.url,s=e.processData!==!1&&e.data&&typeof e.data!="string"?reqwest.toQueryString(e.data):e.data||null,o;return(e.type=="jsonp"||r=="GET")&&s&&(i=urlappend(i,s),s=null),e.type=="jsonp"?handleJsonp(e,t,n,i):(o=xhr(),o.open(r,i,!0),setHeaders(o,e),setCredentials(o,e),o.onreadystatechange=handleReadyState(o,t,n),e.before&&e.before(o),o.send(s),o)}function Reqwest(e,t){this.o=e,this.fn=t,init.apply(this,arguments)}function setType(e){var t=e.match(/\.(json|jsonp|html|xml)(\?|$)/);return t?t[1]:"js"}function init(o,fn){function complete(e){o.timeout&&clearTimeout(self.timeout),self.timeout=null;while(self._completeHandlers.length>0)self._completeHandlers.shift()(e)}function success(resp){var r=resp.responseText;if(r)switch(type){case"json":try{resp=win.JSON?win.JSON.parse(r):eval("("+r+")")}catch(err){return error(resp,"Could not parse JSON in response",err)}break;case"js":resp=eval(r);break;case"html":resp=r;break;case"xml":resp=resp.responseXML}self._responseArgs.resp=resp,self._fulfilled=!0,fn(resp);while(self._fulfillmentHandlers.length>0)self._fulfillmentHandlers.shift()(resp);complete(resp)}function error(e,t,n){self._responseArgs.resp=e,self._responseArgs.msg=t,self._responseArgs.t=n,self._erred=!0;while(self._errorHandlers.length>0)self._errorHandlers.shift()(e,t,n);complete(e)}this.url=typeof o=="string"?o:o.url,this.timeout=null,this._fulfilled=!1,this._fulfillmentHandlers=[],this._errorHandlers=[],this._completeHandlers=[],this._erred=!1,this._responseArgs={};var self=this,type=o.type||setType(this.url);fn=fn||function(){},o.timeout&&(this.timeout=setTimeout(function(){self.abort()},o.timeout)),o.success&&this._fulfillmentHandlers.push(function(){o.success.apply(o,arguments)}),o.error&&this._errorHandlers.push(function(){o.error.apply(o,arguments)}),o.complete&&this._completeHandlers.push(function(){o.complete.apply(o,arguments)}),this.request=getRequest(o,success,error)}function reqwest(e,t){return new Reqwest(e,t)}function normalize(e){return e?e.replace(/\r?\n/g,"\r\n"):""}function serial(e,t){var n=e.name,r=e.tagName.toLowerCase(),i=function(e){e&&!e.disabled&&t(n,normalize(e.attributes.value&&e.attributes.value.specified?e.value:e.text))};if(e.disabled||!n)return;switch(r){case"input":if(!/reset|button|image|file/i.test(e.type)){var s=/checkbox/i.test(e.type),o=/radio/i.test(e.type),u=e.value;(!s&&!o||e.checked)&&t(n,normalize(s&&u===""?"on":u))}break;case"textarea":t(n,normalize(e.value));break;case"select":if(e.type.toLowerCase()==="select-one")i(e.selectedIndex>=0?e.options[e.selectedIndex]:null);else for(var a=0;e.length&&a<e.length;a++)e.options[a].selected&&i(e.options[a])}}function eachFormElement(){var e=this,t,n,r,i=function(t,n){for(var i=0;i<n.length;i++){var s=t[byTag](n[i]);for(r=0;r<s.length;r++)serial(s[r],e)}};for(n=0;n<arguments.length;n++)t=arguments[n],/input|select|textarea/i.test(t.tagName)&&serial(t,e),i(t,["input","select","textarea"])}function serializeQueryString(){return reqwest.toQueryString(reqwest.serializeArray.apply(null,arguments))}function serializeHash(){var e={};return eachFormElement.apply(function(t,n){t in e?(e[t]&&!isArray(e[t])&&(e[t]=[e[t]]),e[t].push(n)):e[t]=n},arguments),e}var win=window,doc=document,twoHundo=/^20\d$/,byTag="getElementsByTagName",readyState="readyState",contentType="Content-Type",requestedWith="X-Requested-With",head=doc[byTag]("head")[0],uniqid=0,callbackPrefix="reqwest_"+ +(new Date),lastValue,xmlHttpRequest="XMLHttpRequest",isArray=typeof Array.isArray=="function"?Array.isArray:function(e){return e instanceof Array},defaultHeaders={contentType:"application/x-www-form-urlencoded",requestedWith:xmlHttpRequest,accept:{"*":"text/javascript, text/html, application/xml, text/xml, */*",xml:"application/xml, text/xml",html:"text/html",text:"text/plain",json:"application/json, text/javascript",js:"application/javascript, text/javascript"}},xhr=win[xmlHttpRequest]?function(){return new XMLHttpRequest}:function(){return new ActiveXObject("Microsoft.XMLHTTP")};return Reqwest.prototype={abort:function(){this.request.abort()},retry:function(){init.call(this,this.o,this.fn)},then:function(e,t){return this._fulfilled?e(this._responseArgs.resp):this._erred?t(this._responseArgs.resp,this._responseArgs.msg,this._responseArgs.t):(this._fulfillmentHandlers.push(e),this._errorHandlers.push(t)),this},always:function(e){return this._fulfilled||this._erred?e(this._responseArgs.resp):this._completeHandlers.push(e),this},fail:function(e){return this._erred?e(this._responseArgs.resp,this._responseArgs.msg,this._responseArgs.t):this._errorHandlers.push(e),this}},reqwest.serializeArray=function(){var e=[];return eachFormElement.apply(function(t,n){e.push({name:t,value:n})},arguments),e},reqwest.serialize=function(){if(arguments.length===0)return"";var e,t,n=Array.prototype.slice.call(arguments,0);return e=n.pop(),e&&e.nodeType&&n.push(e)&&(e=null),e&&(e=e.type),e=="map"?t=serializeHash:e=="array"?t=reqwest.serializeArray:t=serializeQueryString,t.apply(null,n)},reqwest.toQueryString=function(e){var t="",n,r=encodeURIComponent,i=function(e,n){t+=r(e)+"="+r(n)+"&"};if(isArray(e))for(n=0;e&&n<e.length;n++)i(e[n].name,e[n].value);else for(var s in e){if(!Object.hasOwnProperty.call(e,s))continue;var o=e[s];if(isArray(o))for(n=0;n<o.length;n++)i(s,o[n]);else i(s,e[s])}return t.replace(/&$/,"").replace(/%20/g,"+")},reqwest.getcallbackPrefix=function(e){return callbackPrefix},reqwest.compat=function(e,t){return e&&(e.type&&(e.method=e.type)&&delete e.type,e.dataType&&(e.type=e.dataType),e.jsonpCallback&&(e.jsonpCallbackName=e.jsonpCallback)&&delete e.jsonpCallback,e.jsonp&&(e.jsonpCallback=e.jsonp)),new Reqwest(e,t)},reqwest});wax = wax || {};
+!function(a,b){typeof module!="undefined"?module.exports=b():typeof define=="function"&&define.amd?define(a,b):this[a]=b()}("reqwest",function(){function handleReadyState(a,b,c){return function(){a&&a[readyState]==4&&(twoHundo.test(a.status)?b(a):c(a))}}function setHeaders(a,b){var c=b.headers||{},d;c.Accept=c.Accept||defaultHeaders.accept[b.type]||defaultHeaders.accept["*"],!b.crossOrigin&&!c[requestedWith]&&(c[requestedWith]=defaultHeaders.requestedWith),c[contentType]||(c[contentType]=b.contentType||defaultHeaders.contentType);for(d in c)c.hasOwnProperty(d)&&a.setRequestHeader(d,c[d])}function generalCallback(a){lastValue=a}function urlappend(a,b){return a+(/\?/.test(a)?"&":"?")+b}function handleJsonp(a,b,c,d){var e=uniqid++,f=a.jsonpCallback||"callback",g=a.jsonpCallbackName||"reqwest_"+e,h=new RegExp("((^|\\?|&)"+f+")=([^&]+)"),i=d.match(h),j=doc.createElement("script"),k=0;i?i[3]==="?"?d=d.replace(h,"$1="+g):g=i[3]:d=urlappend(d,f+"="+g),win[g]=generalCallback,j.type="text/javascript",j.src=d,j.async=!0,typeof j.onreadystatechange!="undefined"&&(j.event="onclick",j.htmlFor=j.id="_reqwest_"+e),j.onload=j.onreadystatechange=function(){if(j[readyState]&&j[readyState]!=="complete"&&j[readyState]!=="loaded"||k)return!1;j.onload=j.onreadystatechange=null,j.onclick&&j.onclick(),a.success&&a.success(lastValue),lastValue=undefined,head.removeChild(j),k=1},head.appendChild(j)}function getRequest(a,b,c){var d=(a.method||"GET").toUpperCase(),e=typeof a=="string"?a:a.url,f=a.processData!==!1&&a.data&&typeof a.data!="string"?reqwest.toQueryString(a.data):a.data||null,g;return(a.type=="jsonp"||d=="GET")&&f&&(e=urlappend(e,f),f=null),a.type=="jsonp"?handleJsonp(a,b,c,e):(g=xhr(),g.open(d,e,!0),setHeaders(g,a),g.onreadystatechange=handleReadyState(g,b,c),a.before&&a.before(g),g.send(f),g)}function Reqwest(a,b){this.o=a,this.fn=b,init.apply(this,arguments)}function setType(a){var b=a.match(/\.(json|jsonp|html|xml)(\?|$)/);return b?b[1]:"js"}function init(o,fn){function complete(a){o.timeout&&clearTimeout(self.timeout),self.timeout=null,o.complete&&o.complete(a)}function success(resp){var r=resp.responseText;if(r)switch(type){case"json":try{resp=win.JSON?win.JSON.parse(r):eval("("+r+")")}catch(err){return error(resp,"Could not parse JSON in response",err)}break;case"js":resp=eval(r);break;case"html":resp=r}fn(resp),o.success&&o.success(resp),complete(resp)}function error(a,b,c){o.error&&o.error(a,b,c),complete(a)}this.url=typeof o=="string"?o:o.url,this.timeout=null;var type=o.type||setType(this.url),self=this;fn=fn||function(){},o.timeout&&(this.timeout=setTimeout(function(){self.abort()},o.timeout)),this.request=getRequest(o,success,error)}function reqwest(a,b){return new Reqwest(a,b)}function normalize(a){return a?a.replace(/\r?\n/g,"\r\n"):""}function serial(a,b){var c=a.name,d=a.tagName.toLowerCase(),e=function(a){a&&!a.disabled&&b(c,normalize(a.attributes.value&&a.attributes.value.specified?a.value:a.text))};if(a.disabled||!c)return;switch(d){case"input":if(!/reset|button|image|file/i.test(a.type)){var f=/checkbox/i.test(a.type),g=/radio/i.test(a.type),h=a.value;(!f&&!g||a.checked)&&b(c,normalize(f&&h===""?"on":h))}break;case"textarea":b(c,normalize(a.value));break;case"select":if(a.type.toLowerCase()==="select-one")e(a.selectedIndex>=0?a.options[a.selectedIndex]:null);else for(var i=0;a.length&&i<a.length;i++)a.options[i].selected&&e(a.options[i])}}function eachFormElement(){var a=this,b,c,d,e=function(b,c){for(var e=0;e<c.length;e++){var f=b[byTag](c[e]);for(d=0;d<f.length;d++)serial(f[d],a)}};for(c=0;c<arguments.length;c++)b=arguments[c],/input|select|textarea/i.test(b.tagName)&&serial(b,a),e(b,["input","select","textarea"])}function serializeQueryString(){return reqwest.toQueryString(reqwest.serializeArray.apply(null,arguments))}function serializeHash(){var a={};return eachFormElement.apply(function(b,c){b in a?(a[b]&&!isArray(a[b])&&(a[b]=[a[b]]),a[b].push(c)):a[b]=c},arguments),a}var win=window,doc=document,twoHundo=/^20\d$/,byTag="getElementsByTagName",readyState="readyState",contentType="Content-Type",requestedWith="X-Requested-With",head=doc[byTag]("head")[0],uniqid=0,lastValue,xmlHttpRequest="XMLHttpRequest",isArray=typeof Array.isArray=="function"?Array.isArray:function(a){return a instanceof Array},defaultHeaders={contentType:"application/x-www-form-urlencoded",accept:{"*":"text/javascript, text/html, application/xml, text/xml, */*",xml:"application/xml, text/xml",html:"text/html",text:"text/plain",json:"application/json, text/javascript",js:"application/javascript, text/javascript"},requestedWith:xmlHttpRequest},xhr=win[xmlHttpRequest]?function(){return new XMLHttpRequest}:function(){return new ActiveXObject("Microsoft.XMLHTTP")};return Reqwest.prototype={abort:function(){this.request.abort()},retry:function(){init.call(this,this.o,this.fn)}},reqwest.serializeArray=function(){var a=[];return eachFormElement.apply(function(b,c){a.push({name:b,value:c})},arguments),a},reqwest.serialize=function(){if(arguments.length===0)return"";var a,b,c=Array.prototype.slice.call(arguments,0);return a=c.pop(),a&&a.nodeType&&c.push(a)&&(a=null),a&&(a=a.type),a=="map"?b=serializeHash:a=="array"?b=reqwest.serializeArray:b=serializeQueryString,b.apply(null,c)},reqwest.toQueryString=function(a){var b="",c,d=encodeURIComponent,e=function(a,c){b+=d(a)+"="+d(c)+"&"};if(isArray(a))for(c=0;a&&c<a.length;c++)e(a[c].name,a[c].value);else for(var f in a){if(!Object.hasOwnProperty.call(a,f))continue;var g=a[f];if(isArray(g))for(c=0;c<g.length;c++)e(f,g[c]);else e(f,a[f])}return b.replace(/&$/,"").replace(/%20/g,"+")},reqwest.compat=function(a,b){return a&&(a.type&&(a.method=a.type)&&delete a.type,a.dataType&&(a.type=a.dataType),a.jsonpCallback&&(a.jsonpCallbackName=a.jsonpCallback)&&delete a.jsonpCallback,a.jsonp&&(a.jsonpCallback=a.jsonp)),new Reqwest(a,b)},reqwest});wax = wax || {};
 
 // Attribution
 // -----------
@@ -2682,45 +2682,6 @@ wax.interaction = function() {
 
     return interaction;
 };
-// Wax Legend
-// ----------
-
-// Wax header
-var wax = wax || {};
-
-wax.legend = function() {
-    var element,
-        legend = {},
-        container;
-
-    legend.element = function() {
-        return container;
-    };
-
-    legend.content = function(content) {
-        if (!arguments.length) return element.innerHTML;
-
-        element.innerHTML = wax.u.sanitize(content);
-        element.style.display = 'block';
-        if (element.innerHTML === '') {
-            element.style.display = 'none';
-        }
-
-        return legend;
-    };
-
-    legend.add = function() {
-        container = document.createElement('div');
-        container.className = 'map-legends wax-legends';
-
-        element = container.appendChild(document.createElement('div'));
-        element.className = 'map-legend wax-legend';
-        element.style.display = 'none';
-        return legend;
-    };
-
-    return legend.add();
-};
 var wax = wax || {};
 
 wax.location = function() {
@@ -2747,119 +2708,6 @@ wax.location = function() {
     return t;
 
 };
-var wax = wax || {};
-wax.movetip = {};
-
-wax.movetip = function() {
-    var popped = false,
-        t = {},
-        _tooltipOffset,
-        _contextOffset,
-        tooltip,
-        parent;
-
-    function moveTooltip(e) {
-       var eo = wax.u.eventoffset(e);
-       // faux-positioning
-       if ((_tooltipOffset.height + eo.y) >
-           (_contextOffset.top + _contextOffset.height) &&
-           (_contextOffset.height > _tooltipOffset.height)) {
-           eo.y -= _tooltipOffset.height;
-           tooltip.className += ' flip-y';
-       }
-
-       // faux-positioning
-       if ((_tooltipOffset.width + eo.x) >
-           (_contextOffset.left + _contextOffset.width)) {
-           eo.x -= _tooltipOffset.width;
-           tooltip.className += ' flip-x';
-       }
-
-       tooltip.style.left = eo.x + 'px';
-       tooltip.style.top = eo.y + 'px';
-    }
-
-    // Get the active tooltip for a layer or create a new one if no tooltip exists.
-    // Hide any tooltips on layers underneath this one.
-    function getTooltip(feature) {
-        var tooltip = document.createElement('div');
-        tooltip.className = 'map-tooltip map-tooltip-0';
-        tooltip.innerHTML = feature;
-        return tooltip;
-    }
-
-    // Hide a given tooltip.
-    function hide() {
-        if (tooltip) {
-          tooltip.parentNode.removeChild(tooltip);
-          tooltip = null;
-        }
-    }
-
-    function on(o) {
-        var content;
-        if (popped) return;
-        if ((o.e.type === 'mousemove' || !o.e.type)) {
-            content = o.formatter({ format: 'teaser' }, o.data);
-            if (!content) return;
-            hide();
-            parent.style.cursor = 'pointer';
-            tooltip = document.body.appendChild(getTooltip(content));
-        } else {
-            content = o.formatter({ format: 'teaser' }, o.data);
-            if (!content) return;
-            hide();
-            var tt = document.body.appendChild(getTooltip(content));
-            tt.className += ' map-popup';
-
-            var close = tt.appendChild(document.createElement('a'));
-            close.href = '#close';
-            close.className = 'close';
-            close.innerHTML = 'Close';
-
-            popped = true;
-
-            tooltip = tt;
-
-            _tooltipOffset = wax.u.offset(tooltip);
-            _contextOffset = wax.u.offset(parent);
-            moveTooltip(o.e);
-
-            bean.add(close, 'click touchend', function closeClick(e) {
-                e.stop();
-                hide();
-                popped = false;
-            });
-        }
-        if (tooltip) {
-          _tooltipOffset = wax.u.offset(tooltip);
-          _contextOffset = wax.u.offset(parent);
-          moveTooltip(o.e);
-        }
-
-    }
-
-    function off() {
-        parent.style.cursor = 'default';
-        if (!popped) hide();
-    }
-
-    t.parent = function(x) {
-        if (!arguments.length) return parent;
-        parent = x;
-        return t;
-    };
-
-    t.events = function() {
-        return {
-            on: on,
-            off: off
-        };
-    };
-
-    return t;
-};
-
 // Wax GridUtil
 // ------------
 
@@ -2939,125 +2787,6 @@ wax.tilejson = function(url, callback) {
         success: callback,
         error: callback
     });
-};
-var wax = wax || {};
-wax.tooltip = {};
-
-wax.tooltip = function() {
-    var popped = false,
-        animate = false,
-        t = {},
-        tooltips = [],
-        _currentContent,
-        transitionEvent,
-        parent;
-
-    if (document.body.style['-webkit-transition'] !== undefined) {
-        transitionEvent = 'webkitTransitionEnd';
-    } else if (document.body.style.MozTransition !== undefined) {
-        transitionEvent = 'transitionend';
-    }
-
-    // Get the active tooltip for a layer or create a new one if no tooltip exists.
-    // Hide any tooltips on layers underneath this one.
-    function getTooltip(feature) {
-        var tooltip = document.createElement('div');
-        tooltip.className = 'map-tooltip map-tooltip-0 wax-tooltip';
-        tooltip.innerHTML = feature;
-        return tooltip;
-    }
-
-    function remove() {
-        if (this.parentNode) this.parentNode.removeChild(this);
-    }
-
-    // Hide a given tooltip.
-    function hide() {
-        var _ct;
-        while (_ct = tooltips.pop()) {
-            if (animate && transitionEvent) {
-                // This code assumes that transform-supporting browsers
-                // also support proper events. IE9 does both.
-                  bean.add(_ct, transitionEvent, remove);
-                  _ct.className += ' map-fade';
-            } else {
-                if (_ct.parentNode) _ct.parentNode.removeChild(_ct);
-            }
-        }
-    }
-
-    function on(o) {
-        var content;
-        if (o.e.type === 'mousemove' || !o.e.type) {
-            if (!popped) {
-                content = o.content || o.formatter({ format: 'teaser' }, o.data);
-                if (!content || content == _currentContent) return;
-                hide();
-                parent.style.cursor = 'pointer';
-                tooltips.push(parent.appendChild(getTooltip(content)));
-                _currentContent = content;
-            }
-        } else {
-            content = o.content || o.formatter({ format: 'full' }, o.data);
-            if (!content) {
-              if (o.e.type && o.e.type.match(/touch/)) {
-                // fallback possible
-                content = o.content || o.formatter({ format: 'teaser' }, o.data);
-              }
-              // but if that fails, return just the same.
-              if (!content) return;
-            }
-            hide();
-            parent.style.cursor = 'pointer';
-            var tt = parent.appendChild(getTooltip(content));
-            tt.className += ' map-popup wax-popup';
-
-            var close = tt.appendChild(document.createElement('a'));
-            close.href = '#close';
-            close.className = 'close';
-            close.innerHTML = 'Close';
-            popped = true;
-
-            tooltips.push(tt);
-
-            bean.add(close, 'touchstart mousedown', function(e) {
-                e.stop();
-            });
-
-            bean.add(close, 'click touchend', function closeClick(e) {
-                e.stop();
-                hide();
-                popped = false;
-            });
-        }
-    }
-
-    function off() {
-        parent.style.cursor = 'default';
-        _currentContent = null;
-        if (!popped) hide();
-    }
-
-    t.parent = function(x) {
-        if (!arguments.length) return parent;
-        parent = x;
-        return t;
-    };
-
-    t.animate = function(x) {
-        if (!arguments.length) return animate;
-        animate = x;
-        return t;
-    };
-
-    t.events = function() {
-        return {
-            on: on,
-            off: off
-        };
-    };
-
-    return t;
 };
 var wax = wax || {};
 
@@ -3229,6 +2958,112 @@ wax.u = {
     }
 };
 wax = wax || {};
+wax.leaf = wax.leaf || {};
+
+wax.leaf.hash = function(map) {
+    return wax.hash({
+        getCenterZoom: function () {
+            var center = map.getCenter(),
+                zoom = map.getZoom(),
+                precision = Math.max(
+                    0,
+                    Math.ceil(Math.log(zoom) / Math.LN2));
+
+            return [
+                zoom,
+                center.lat.toFixed(precision),
+                center.lng.toFixed(precision)
+            ].join('/');
+        },
+
+        setCenterZoom: function (args) {
+            map.setView(new L.LatLng(args[1], args[2]), args[0]);
+        },
+
+        bindChange: function (fn) {
+            map.on('moveend', fn);
+        },
+
+        unbindChange: function (fn) {
+            map.off('moveend', fn);
+        }
+    });
+};
+wax = wax || {};
+wax.leaf = wax.leaf || {};
+
+wax.leaf.interaction = function() {
+    var dirty = false, _grid, map;
+
+    function setdirty() { dirty = true; }
+
+    function grid() {
+        // TODO: don't build for tiles outside of viewport
+        // Touch interaction leads to intermediate
+        //var zoomLayer = map.createOrGetLayer(Math.round(map.getZoom())); //?what is this doing?
+        // Calculate a tile grid and cache it, by using the `.tiles`
+        // element on this map.
+        if (!dirty && _grid) {
+            return _grid;
+        } else {
+            return (_grid = (function(layers) {
+                var o = [];
+                for (var layerId in layers) {
+                    // This only supports tiled layers
+                    if (layers[layerId]._tiles) {
+                        for (var tile in layers[layerId]._tiles) {
+                            var _tile = layers[layerId]._tiles[tile];
+                            // avoid adding tiles without src, grid url can't be found for them
+                            if(_tile.src) {
+                              var offset = wax.u.offset(_tile);
+                              o.push([offset.top, offset.left, _tile]);
+                            }
+                        }
+                    }
+                }
+                return o;
+            })(map._layers));
+        }
+    }
+
+    function attach(x) {
+        if (!arguments.length) return map;
+        map = x;
+        var l = ['moveend'];
+        for (var i = 0; i < l.length; i++) {
+            map.on(l[i], setdirty);
+        }
+    }
+
+    function detach(x) {
+        if (!arguments.length) return map;
+        map = x;
+        var l = ['moveend'];
+        for (var i = 0; i < l.length; i++) {
+            map.off(l[i], setdirty);
+        }
+    }
+
+    return wax.interaction()
+        .attach(attach)
+        .detach(detach)
+        .parent(function() {
+          return map._container;
+        })
+        .grid(grid);
+};
+wax = wax || {};
+wax.leaf = wax.leaf || {};
+
+wax.leaf.connector = L.TileLayer.extend({
+    initialize: function(options) {
+        options = options || {};
+        options.minZoom = options.minzoom || 0;
+        options.maxZoom = options.maxzoom || 22;
+        L.TileLayer.prototype.initialize.call(this, options.tiles[0], options);
+    }
+});
+wax = wax || {};
 wax.g = wax.g || {};
 
 // Attribution
@@ -3381,34 +3216,6 @@ wax.g.interaction = function() {
           return map.getDiv();
         })
         .grid(grid);
-};
-wax = wax || {};
-wax.g = wax.g || {};
-
-// Legend Control
-// --------------
-// Adds legends to a google Map object.
-wax.g.legend = function(map, tilejson) {
-    tilejson = tilejson || {};
-    var l, // parent legend
-        legend = {};
-
-    legend.add = function() {
-        l = wax.legend()
-            .content(tilejson.legend || '');
-        return legend;
-    };
-
-    legend.element = function() {
-        return l.element();
-    };
-
-    legend.appendTo = function(elem) {
-        wax.u.$(elem).appendChild(l.element());
-        return legend;
-    };
-
-    return legend.add();
 };
 // Wax for Google Maps API v3
 // --------------------------

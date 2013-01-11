@@ -336,6 +336,18 @@ describe("geo.map", function() {
       });
     });
 
+    it("should not add the cartodb logo when cartodb_logo = fase", function() {
+      runs(function() {
+        layer = new cdb.geo.CartoDBLayer({ table_name: "INVENTADO", cartodb_logo: false});
+        var lyr = map.addLayer(layer);
+        var layerView = mapView.getLayerByCid(lyr);
+      });
+      waits(1);
+      runs(function() {
+        expect(container.find("a#cartodb_logo").length).toEqual(0);
+      });
+    });
+
     it("should create a PlaiLayer when the layer is cartodb", function() {
       layer    = new cdb.geo.PlainLayer({});
       var lyr = map.addLayer(layer);

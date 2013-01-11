@@ -19,6 +19,7 @@
 */
 
 cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
+  SYSTEM_COLUMNS: ['the_geom', 'the_geom_webmercator', 'created_at', 'updated_at', 'cartodb_id', 'cartodb_georef_status'],
 
   defaults: {
     template_name: 'geo/infowindow',
@@ -222,7 +223,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
 
   /**
    *  Convert values to string unless value is NULL
-   */ 
+   */
   _fieldsToString: function(attrs) {
     if (attrs.content && attrs.content.fields) {
       attrs.content.fields = _.map(attrs.content.fields, function(attr) {
@@ -238,7 +239,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
         // we must make them null to display them correctly
         // ARGGG!
         if (new_value == "") new_value = null;
-        
+
         // store attribute
         attr.value = new_value;
 
@@ -360,7 +361,6 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
   },
 
   _animateOut: function() {
-
     if (!$.browser.msie || ($.browser.msie && $.browser.version.search("9.") != -1)) {
       var that = this;
       this.$el.animate({
@@ -373,8 +373,6 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     } else {
       this.$el.hide();
     }
-
-
   },
 
   /**
@@ -401,7 +399,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
 
     var offset = this.model.get("offset");
 
-    if (!this.model.get("autoPan")) { return; }
+    if (!this.model.get("autoPan") || this.isHidden()) { return; }
 
     var
       x               = this.$el.position().left,

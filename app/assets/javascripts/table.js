@@ -14,6 +14,7 @@
 //= require_tree ../../../lib/assets/javascripts/cartodb/models
 //= require ../../../lib/assets/javascripts/cartodb/common/dropdown_menu
 //= require_tree ../../../lib/assets/javascripts/cartodb/common
+//= require ../../../lib/assets/javascripts/cartodb/table/right_menu
 //= require_tree ../../../lib/assets/javascripts/cartodb/table
 //= require ../../../lib/assets/javascripts/cartodb/table/table
 //= require_tree ../../../lib/assets/javascripts/cartodb/table/views

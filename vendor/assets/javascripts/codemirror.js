@@ -971,7 +971,20 @@ window.CodeMirror = (function() {
         prevInput = "";
         input.value = getSelection();
         if (focused) selectInput(input);
-      } else if (user) prevInput = input.value = "";
+      } else if (user) {
+        prevInput = '';
+        // for some reason webkit has a bug: when the input value is set to '' the
+        // DOM object which contains is not rendered the frame is set
+        // setting opacity to 0 tells the browser to not refresh so there is no flickering
+        // this is an epic hack
+        if(webkit) {
+          input.style.opacity = 0;
+          input.value = '';
+          input.style.opacity = 1.0;
+        } else {
+          input.value = '';
+        }
+      }
     }
 
     function focusInput() {

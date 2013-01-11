@@ -1,13 +1,13 @@
-
-  <% content_for :head do %>
-    <%= stylesheet_link_tag('reset.css','front/oauth') %>
-  <% end %>
-
-  <div class="glow">
-    <div class="section">
-      <h1>Authorization denied</h1>
-      <div class="sad_table"></div>
-      <p>You have denied the oauth access for <%= @token.client_application.user.username %>. You can consider you decission in any moment.</p>
-    </div>
-    <div class="footer">CartoDB is a product from <a href="http://www.vizzuality.com" target="_blank">vizzuality</a> | <a href="http://cartodb.com/terms">Terms of service</a></div>
+<section class="sessions shadow">
+  <div class="content">
+    <h2>Authorization denied</h2>
+    <p class="margin15 light">You have denied the oauth access for <%= @token.client_application.user.username %>. You can consider you decission in any moment.</p>
   </div>
+  <div class="footer">
+    <p class="center light"><%= link_to "Forgot password?",forget_password_url %> · <%= link_to "Create an account", "http://cartodb.com/signup" %></p>
+  </div>
+</section>
+
+<footer class="short">
+  <h1><%= link_to 'CartoDB', root_path, :class => "cartodb" %></h1>
+</footer>

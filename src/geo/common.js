@@ -35,7 +35,7 @@ CartoDBLayerCommon.prototype = {
    * It needs a position, timeout if it is needed and the container where add it
    */
   _addWadus: function(position, timeout, container) {
-    if (!document.getElementById('cartodb_logo')) {
+    if (this.options.cartodb_logo !== false && !document.getElementById('cartodb_logo')) {
       var cartodb_link = document.createElement("a");
       cartodb_link.setAttribute('id','cartodb_logo');
       container.appendChild(cartodb_link);

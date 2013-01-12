@@ -135,8 +135,10 @@ var Vis = cdb.core.View.extend({
       this.https = data.https;
     }
 
+
     if(options) {
       this._applyOptions(data, options);
+      this.cartodb_logo = options.cartodb_logo;
     }
 
     // map
@@ -173,6 +175,7 @@ var Vis = cdb.core.View.extend({
     this.updated_at = data.updated_at || new Date().getTime();
 
     var div = $('<div>').css({
+      position: 'relative',
       width: '100%',
       height: '100%'
     });

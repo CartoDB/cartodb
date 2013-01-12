@@ -361,7 +361,6 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
   },
 
   _animateOut: function() {
-
     if (!$.browser.msie || ($.browser.msie && $.browser.version.search("9.") != -1)) {
       var that = this;
       this.$el.animate({
@@ -374,8 +373,6 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     } else {
       this.$el.hide();
     }
-
-
   },
 
   /**
@@ -402,7 +399,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
 
     var offset = this.model.get("offset");
 
-    if (!this.model.get("autoPan")) { return; }
+    if (!this.model.get("autoPan") || this.isHidden()) { return; }
 
     var
       x               = this.$el.position().left,

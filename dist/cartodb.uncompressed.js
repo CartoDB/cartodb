@@ -1,6 +1,6 @@
 // cartodb.js version: 2.0.14
 // uncompressed version: cartodb.uncompressed.js
-// sha: c4389229856444be2e39026ff3ef37b79f8b7f1c
+// sha: 529b08d69504cfaa51c3b202e2c68b06993c0875
 (function() {
   var root = this;
 
@@ -20349,17 +20349,12 @@ var Vis = cdb.core.View.extend({
     var self = this;
     if(typeof(data) === 'string') {
       var url = data;
-      reqwest({
-          url: url + (~url.indexOf('?') ? '&' : '?') + 'callback=vizjson',
-          type: 'jsonp',
-          jsonpCallback: 'callback',
-          success: function(data) {
-            if(data) {
-              self.load(data, options);
-            } else {
-              self.trigger('error', 'error fetching viz.json file');
-            }
-          }
+      cdb.vis.Loader.get(url, function(data) {
+        if(data) {
+          self.load(data, options);
+        } else {
+          self.trigger('error', 'error fetching viz.json file');
+        }
       });
       return this;
     }

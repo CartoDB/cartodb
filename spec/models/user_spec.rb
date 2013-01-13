@@ -114,6 +114,7 @@ describe User do
   it "should generate a data report" do
     @user2.data.should == {
       :id => @user2.id,
+      :email => "user@example.com",
       :username => "user",
       :account_type => "FREE",
       :private_tables => true,
@@ -121,11 +122,13 @@ describe User do
       :table_count => 1,
       :byte_quota  => 104857600, 
       :remaining_table_quota => 4, 
-      :total_remaining_byte_quota => 104841216.0, 
       :remaining_byte_quota => 104857600.0, 
       :api_calls => nil, 
       :api_key => @user2.get_map_key, 
-      :layers => []
+      :layers => [],
+      :last_active_time => nil,
+      :db_size_in_bytes => 0,
+      :total_db_size_in_bytes => 16384  
     }
   end
 

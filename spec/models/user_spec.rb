@@ -119,7 +119,7 @@ describe User do
   end
 
   it "should generate a data report" do
-    @user2.data.should == {
+    @user2.data(:extended => true).should == {
       :id => @user2.id,
       :email => "user@example.com",
       :username => "user",
@@ -136,8 +136,12 @@ describe User do
       :last_active_time => nil,
       :db_size_in_bytes => 0,
       :total_db_size_in_bytes => 16384,
-      :real_table_count => 1
+      :real_table_count => 1,
+      :biggest_table_name => "my_first_table",
+      :biggest_table_size_diff => -10
     }
+
+    @user2.data.keys.should =~ [:id, :email, :username, :account_type, :private_tables, :table_quota, :table_count, :byte_quota, :remaining_table_quota, :remaining_byte_quota, :api_calls, :api_key, :layers]
   end
 
   it "should update remaining quotas when adding or removing tables" do

@@ -101,7 +101,8 @@
           @include opacity(0.75);
 
           &.sql_mod        { @include icons-sprite(table_icons, $offset-x:20px, $offset-y:-3px);}
-          &.style_mod      { @include icons-sprite(table_icons, $offset-x:21px, $offset-y:-370px);}
+          &.wizards_mod { @include icons-sprite(table_icons, $offset-x:21px, $offset-y:-370px);}
+          &.cartocss_mod      { @include icons-sprite(table_icons, $offset-x:21px, $offset-y:-370px);}
           &.infowindow_mod { @include icons-sprite(table_icons, $offset-x:20px, $offset-y:-430px);}
 
           // tool buttons
@@ -200,7 +201,7 @@
       }
 
       // SQL PANEL & CARTO PANEL
-      .sql_panel, .style_mod {
+      .sql_panel, .wizards_panel, .csseditor_panel {
         @include inline-block();
         width:535px;
         height:100%;
@@ -317,7 +318,7 @@
 
 
       // SQL PANEL
-      .sql_panel {
+      .sql_panel, .csseditor_panel {
         &:after {
           position:absolute;
           content:' ';
@@ -410,272 +411,224 @@
       }
 
 
-      // CARTO PANEL
-      .style_mod {
+      /* wizard */
+      div.wizards_panel {
+        display:block;
+        width:100%;
+        overflow:hidden;
 
-        nav {
-          display:block;
-          width:100%;
-          height:60px;
-          padding:0 0 0 20px;
-          border-bottom:1px solid rgba(#999999,0.25);
+        h3 {
+          padding-left: 30px;
+        }
+
+        div.wizard_wrap {
+          position:absolute;
+          overflow:hidden;
+          top:60px;
+          left:0;
+          right:0;
+          height:151px;
+
+          &:after {
+            content:'';
+            position:absolute;
+            top:5px;
+            bottom:5px;
+            right:0px;
+            width:30px;
+            @include background(linear-gradient(left, rgba(white,0), rgba(white,1)));
+            z-index:1;
+          }
+          &:before {
+            content:'';
+            position:absolute;
+            top:5px;
+            bottom:5px;
+            left:0px;
+            width:30px;
+            @include background(linear-gradient(left, rgba(white,1), rgba(white,0)));
+            z-index:1;
+          }
+        }
+
+        div.wizard_arrows {
           a {
-            position:relative;
-            @include inline-block();
-            vertical-align:bottom;
-            margin:16px 4px 0 0;
-            padding:14px 10px;
-            height:17px;
-            line-height:normal;
-            border:1px solid #E5E5E5;
-            border-bottom:0;
-            @include border-radius(3px);
+            position:absolute;
+            top:55px;
+            width:43px;
+            height:43px;
+            z-index:10;
+            @include icons-sprite(wizard-arrows);
 
-            &.selected {
-              color:#333;
-              text-decoration:none;
-
-              &:before {
-                position:absolute;
-                content:' ';
-                bottom:1px;
-                left:0;
-                right:0;
-                height:1px;
-                width:100%;
-                background:white;
-              }
+            &.left {
+              left:8px;
               &:hover {
-                cursor:default;
-                text-decoration:none;
+                @include icons-sprite(wizard-arrows, $offset-y:-43px);
+              }
+            }
+
+            &.right {
+              @include icons-sprite(wizard-arrows, $offset-x:-43px);
+              right:8px;
+              &:hover {
+                @include icons-sprite(wizard-arrows, $offset-x:-43px, $offset-y:-43px);
               }
             }
 
             &.disabled {
-              @include opacity(0.3);
-              &:hover {
-                color:$link-color;
-                text-decoration:none;
+              @include opacity(0);
+              &.left:hover {
+                @include icons-sprite(wizard-arrows);
+              }
+
+              &.right:hover {
+                @include icons-sprite(wizard-arrows, $offset-x:-43px);
               }
             }
           }
         }
 
-        /* wizard */
-        div.wizard {
+        ul.vis_options {
+          position:absolute;
+          top:0; left:0; bottom:0;
           display:block;
-          width:100%;
-          overflow:hidden;
+          padding:0 30px;
+          width:1000px;
+          letter-spacing:-4px;
+          border-bottom:1px solid #E5E5E5;
+          @include box-shadow(rgba(0,0,0,0.05) 0 -4px 8px 0 inset);
 
-          div.wizard_wrap {
-            position:absolute;
-            overflow:hidden;
-            top:60px;
-            left:0;
-            right:0;
-            height:151px;
+          li {
+            position:relative;
+            @include inline-block();
+            padding:0 1px 0 0;
+            margin:0 4px 0 0;
+            word-space: 0;
+            letter-spacing:0;
 
-            &:after {
-              content:'';
-              position:absolute;
-              top:5px;
-              bottom:5px;
-              right:0px;
-              width:30px;
-              @include background(linear-gradient(left, rgba(white,0), rgba(white,1)));
-              z-index:1;
-            }
-            &:before {
-              content:'';
-              position:absolute;
-              top:5px;
-              bottom:5px;
-              left:0px;
-              width:30px;
-              @include background(linear-gradient(left, rgba(white,1), rgba(white,0)));
-              z-index:1;
-            }
-          }
-
-          div.wizard_arrows {
             a {
-              position:absolute;
-              top:55px;
-              width:43px;
-              height:43px;
-              z-index:10;
-              @include icons-sprite(wizard-arrows);
+              display:block;
+              width:92px;
+              height:82px;
+              margin:30px 0;
+              padding:3px;
+              border:1px solid #CCCCCC;
+              @include border-radius(5px);
+              @include text-indent();
 
-              &.left {
-                left:8px;
-                &:hover {
-                  @include icons-sprite(wizard-arrows, $offset-y:-43px);
-                }
+              &.simple {
+                background: image-url('layout/wizard-simple.png') no-repeat 3px 3px;
+                &.polygon {background: image-url('layout/wizard-simple-polygon.png') no-repeat 3px 3px;}
+                &.line {background: image-url('layout/wizard-simple-polyline.png') no-repeat 3px 3px;}
+              }
+              &.choropleth {
+                background: image-url('layout/wizard-choropleth.png') no-repeat 3px 3px;
+                &.line {background: image-url('layout/wizard-choropleth-polyline.png') no-repeat 3px 3px;}
+              }
+              &.bubble {background: image-url('layout/wizard-bubble.png') no-repeat 3px 3px;}
+              &.density {background: image-url('layout/wizard-density-hex.png') no-repeat 3px 3px;}
+
+              &:hover {
+                border-color:#666666;
               }
 
-              &.right {
-                @include icons-sprite(wizard-arrows, $offset-x:-43px);
-                right:8px;
-                &:hover {
-                  @include icons-sprite(wizard-arrows, $offset-x:-43px, $offset-y:-43px);
+              &.selected {
+                border-color:#666666;
+
+                &:before, &:after {
+                  content: '';
+                  position:absolute;
+                  left:50%;
+                  margin-left:-13px;
+                  width:0;
+                  height:0;
+                  border-left:10px solid transparent;
+                  border-right:10px solid transparent;
+                  z-index:5;
+                }
+
+                &:before {
+                  bottom:-1px;
+                  border-bottom:10px solid white;
+                  z-index:10;
+                }
+                &:after {
+                  bottom:0;
+                  border-bottom:10px solid #CCCCCC;
                 }
               }
 
               &.disabled {
-                @include opacity(0);
-                &.left:hover {
-                  @include icons-sprite(wizard-arrows);
-                }
-
-                &.right:hover {
-                  @include icons-sprite(wizard-arrows, $offset-x:-43px);
-                }
-              }
-            }
-          }
-
-          ul.vis_options {
-            position:absolute;
-            top:0; left:0; bottom:0;
-            display:block;
-            padding:0 30px;
-            width:1000px;
-            letter-spacing:-4px;
-            border-bottom:1px solid #E5E5E5;
-            @include box-shadow(rgba(0,0,0,0.05) 0 -4px 8px 0 inset);
-
-            li {
-              position:relative;
-              @include inline-block();
-              padding:0 1px 0 0;
-              margin:0 4px 0 0;
-              word-space: 0;
-              letter-spacing:0;
-
-              a {
-                display:block;
-                width:92px;
-                height:82px;
-                margin:30px 0;
-                padding:3px;
-                border:1px solid #CCCCCC;
-                @include border-radius(5px);
-                @include text-indent();
-
-                &.simple {
-                  background: image-url('layout/wizard-simple.png') no-repeat 3px 3px;
-                  &.polygon {background: image-url('layout/wizard-simple-polygon.png') no-repeat 3px 3px;}
-                  &.line {background: image-url('layout/wizard-simple-polyline.png') no-repeat 3px 3px;}
-                }
-                &.choropleth {
-                  background: image-url('layout/wizard-choropleth.png') no-repeat 3px 3px;
-                  &.line {background: image-url('layout/wizard-choropleth-polyline.png') no-repeat 3px 3px;}
-                }
-                &.bubble {background: image-url('layout/wizard-bubble.png') no-repeat 3px 3px;}
-                &.density {background: image-url('layout/wizard-density-hex.png') no-repeat 3px 3px;}
-
+                display: none;
                 &:hover {
-                  border-color:#666666;
-                }
-
-                &.selected {
-                  border-color:#666666;
-
-                  &:before, &:after {
-                    content: '';
-                    position:absolute;
-                    left:50%;
-                    margin-left:-13px;
-                    width:0;
-                    height:0;
-                    border-left:10px solid transparent;
-                    border-right:10px solid transparent;
-                    z-index:5;
-                  }
-
-                  &:before {
-                    bottom:-1px;
-                    border-bottom:10px solid white;
-                    z-index:10;
-                  }
-                  &:after {
-                    bottom:0;
-                    border-bottom:10px solid #CCCCCC;
-                  }
-                }
-
-                &.disabled {
-                  display: none;
-                  &:hover {
-                    border:1px solid #CCCCCC;
-                  }
+                  border:1px solid #CCCCCC;
                 }
               }
-            }
-          }
-
-          div.forms {
-            ul {
-              width:100%;
-              margin:15px 0 0 0;
-
-              li {
-                overflow:hidden;
-                display:block;
-                width:100%;
-                padding:13px 0;
-                border-bottom:1px solid rgba(#E5E5E5,0.5);
-
-                & > span:first-child {
-                  float:left;
-                  margin-top:2px;
-                  color:#CCCCCC;
-                }
-
-                & > span:last-child {
-                  float:right;
-                }
-
-                .form_combo {
-                  @include inline-block();
-                }
-
-                &:last-child {border:none;}
-
-                span.field > div {margin-left:5px;}
-
-                span.field span.text {margin:0 10px 0 13px;}
-              }
-            }
-
-            &.panel_content {
-              top:212px;
             }
           }
         }
 
-        /* carto css editor */
-        div.editor {
-          &:after {
-            position:absolute;
-            content:' ';
-            top:61px;
-            left:34px;
-            bottom:0;
-            width:1px;
-            height:100%;
-            background:rgba(#CCCCCC,0.50);
+        div.forms {
+          ul {
+            width:100%;
+            margin:15px 0 0 0;
+
+            li {
+              overflow:hidden;
+              display:block;
+              width:100%;
+              padding:13px 0;
+              border-bottom:1px solid rgba(#E5E5E5,0.5);
+
+              & > span:first-child {
+                float:left;
+                margin-top:2px;
+                color:#CCCCCC;
+              }
+
+              & > span:last-child {
+                float:right;
+              }
+
+              .form_combo {
+                @include inline-block();
+              }
+
+              &:last-child {border:none;}
+
+              span.field > div {margin-left:5px;}
+
+              span.field span.text {margin:0 10px 0 13px;}
+            }
           }
-          &:before {
-            position:absolute;
-            content:' ';
-            top:61px;
-            left:36px;
-            bottom:0;
-            width:1px;
-            height:100%;
-            background:rgba(#509DD7,0.25);
+
+          &.panel_content {
+            top:212px;
           }
+        }
+      }
+
+      /* carto css editor */
+      div.editor {
+        &:after {
+          position:absolute;
+          content:' ';
+          top:61px;
+          left:34px;
+          bottom:0;
+          width:1px;
+          height:100%;
+          background:rgba(#CCCCCC,0.50);
+        }
+        &:before {
+          position:absolute;
+          content:' ';
+          top:61px;
+          left:36px;
+          bottom:0;
+          width:1px;
+          height:100%;
+          background:rgba(#509DD7,0.25);
         }
       }
     }

@@ -576,6 +576,7 @@ class User < Sequel::Model
       :private_tables             => self.private_tables_enabled,
       :table_quota                => self.table_quota,
       :table_count                => self.table_count,
+      :real_table_count           => self.real_tables.size,
       :byte_quota                 => self.quota_in_bytes,
       :remaining_table_quota      => self.remaining_table_quota,
       :remaining_byte_quota       => self.remaining_quota.to_f,

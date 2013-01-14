@@ -283,4 +283,23 @@
     }
 
   });
+
+  // set the image path in order to be able to get leaflet icons
+  // code adapted from leaflet
+  L.Icon.Default.imagePath = (function () {
+    var scripts = document.getElementsByTagName('script'),
+        leafletRe = /\/?cartodb[\-\._]?([\w\-\._]*)\.js\??/;
+
+    var i, len, src, matches;
+
+    for (i = 0, len = scripts.length; i < len; i++) {
+      src = scripts[i].src;
+      matches = src.match(leafletRe);
+
+      if (matches) {
+        return src.split(leafletRe)[0] + '/themes/css/images/';
+      }
+    }
+  }());
+
 })();

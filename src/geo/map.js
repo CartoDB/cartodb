@@ -21,12 +21,14 @@ cdb.geo.MapLayer = cdb.core.Model.extend({
     var me          = this.toJSON()
       , other       = layer.toJSON()
       // Select params generated when layer is added to the map
-      , map_params  = ['id', 'order']
+      , map_params  = ['id', 'order'];
 
     // Delete from the layers copy
     _.each(map_params, function(param){
       delete me[param];
       delete other[param];
+      if (me.options)     delete me.options[param];
+      if (other.options)  delete other.options[param];
     });
 
     var myType  = me.type? me.type : me.options.type
@@ -113,6 +115,7 @@ cdb.geo.CartoDBLayer = cdb.geo.MapLayer.extend({
     opacity: 0.99,
     auto_bound: false,
     interactivity: null,
+    interaction: true,
     debug: false,
     tiler_domain: "cartodb.com",
     tiler_port: "80",

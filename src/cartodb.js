@@ -5,7 +5,7 @@
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '2.0.11';
+    cdb.VERSION = '2.0.15';
 
     cdb.CARTOCSS_VERSIONS = {
       '2.0.0': '',
@@ -40,8 +40,7 @@
         "../vendor/backbone.js",
 
         "../vendor/leaflet.js",
-        "../vendor/wax.leaf.js",
-        "../vendor/wax.g.js",
+        "../vendor/wax.cartodb.js",
         "../vendor/GeoJSON.js", //geojson gmaps lib
 
         "../vendor/jscrollpane.js",
@@ -68,6 +67,8 @@
         'geo/ui/header.js',
         'geo/ui/search.js',
         'geo/ui/tiles_loader.js',
+        'geo/ui/infobox.js',
+        'geo/ui/tooltip.js',
 
         'geo/common.js',
 
@@ -96,7 +97,8 @@
 
         // PUBLIC API
         'api/layers.js',
-        'api/sql.js'
+        'api/sql.js',
+        'api/vis.js'
     ];
 
     cdb.init = function(ready) {

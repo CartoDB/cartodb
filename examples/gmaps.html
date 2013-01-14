@@ -38,8 +38,7 @@
         };
         map = new google.maps.Map(document.getElementById('map'),  mapOptions);
 
-        // load cartodb layer
-        cartodb.createLayer(map, 'http://examples-beta.cartodb.com/api/v1/viz/791/viz.json', {
+        cartodb.createLayer(map, 'http://examples.cartodb.com/api/v1/viz/european_countries_e/viz.json', {
           query: 'select * from {{table_name}} where area::float > 10000' // if you remove this the query applied in the editor will be used
           
         })

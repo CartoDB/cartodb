@@ -1,0 +1,13 @@
+
+2.0.15 (01//14//2013)
+-----
+- fixed problem fetching viz.json when createVis and createLayer are called in the same script
+
+2.0.14 (01//11//2013)
+-----
+- improvements in the documentation 
+- reduced the final file size by 58kb 
+- added cartodb_logo option to remove cartodb logo on visualizations 
+- fixed problem with the map always in fullscreen (#20)
+- fixed bootstrap conflicts (#16)
+- fixed autobounds in the map when user calls to createLayer (#11)

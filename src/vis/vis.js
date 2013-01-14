@@ -22,8 +22,8 @@ var Overlay = {
     if(!t) {
       cdb.log.error("Overlay: " + type + " does not exist");
     }
-      var widget = t(data, vis);
-
+    var widget = t(data, vis);
+    widget.type = type;
     return widget;
   }
 };
@@ -69,7 +69,7 @@ var Loader = cdb.vis.Loader = {
       var script = document.createElement('script');
       script.type = 'text/javascript';
       script.src = url + (~url.indexOf('?') ? '&' : '?') + 'callback=vizjson';
-      script.async = true
+      script.async = true;
       Loader._script = script;
       if(!Loader.head) {
         Loader.head = document.getElementsByTagName('head')[0];
@@ -103,6 +103,7 @@ var Vis = cdb.core.View.extend({
     _.bindAll(this, 'loadingTiles', 'loadTiles');
 
     this.https = false;
+    this.overlays = [];
 
     if(this.options.mapView) {
       this.mapView = this.options.mapView;
@@ -115,17 +116,12 @@ var Vis = cdb.core.View.extend({
     var self = this;
     if(typeof(data) === 'string') {
       var url = data;
-      reqwest({
-          url: url + (~url.indexOf('?') ? '&' : '?') + 'callback=vizjson',
-          type: 'jsonp',
-          jsonpCallback: 'callback',
-          success: function(data) {
-            if(data) {
-              self.load(data, options);
-            } else {
-              self.trigger('error', 'error fetching viz.json file');
-            }
-          }
+      cdb.vis.Loader.get(url, function(data) {
+        if(data) {
+          self.load(data, options);
+        } else {
+          self.trigger('error', 'error fetching viz.json file');
+        }
       });
       return this;
     }
@@ -139,8 +135,10 @@ var Vis = cdb.core.View.extend({
       this.https = data.https;
     }
 
+
     if(options) {
       this._applyOptions(data, options);
+      this.cartodb_logo = options.cartodb_logo;
     }
 
     // map
@@ -177,9 +175,11 @@ var Vis = cdb.core.View.extend({
     this.updated_at = data.updated_at || new Date().getTime();
 
     var div = $('<div>').css({
+      position: 'relative',
       width: '100%',
       height: '100%'
     });
+    this.container = div;
 
     // Another div to prevent leaflet grabs the div
     var div_hack = $('<div>')
@@ -196,29 +196,6 @@ var Vis = cdb.core.View.extend({
     div.append(div_hack);
     this.$el.append(div);
 
-    // Create the overlays
-    for (var i in data.overlays) {
-      var overlay = data.overlays[i];
-      overlay.map = map;
-      var v = Overlay.create(overlay.type, this, overlay);
-
-      if (v) {
-        // Save tiles loader view for later
-        if (overlay.type == "loader") {
-          this.loader = v;
-        }
-
-        this.addView(v);
-        div.append(v.el);
-
-        // Set map position correctly taking into account
-        // header height
-        if (overlay.type == "header") {
-          this.setMapPosition();
-        }
-      }
-    }
-
     // Create the map
     var mapView = new cdb.geo.MapView.create(div_hack, map);
     this.mapView = mapView;
@@ -229,11 +206,49 @@ var Vis = cdb.core.View.extend({
       this.loadLayer(layerData);
     }
 
+    // Create the overlays
+    for (var i in data.overlays) {
+      this.addOverlay(data.overlays[i]);
+    }
+
     _.defer(function() {
       self.trigger('done', self, self.getLayers());
     })
 
     return this;
+  },
+
+  addOverlay: function(overlay) {
+    overlay.map = this.map;
+    var v = Overlay.create(overlay.type, this, overlay);
+
+    if (v) {
+      // Save tiles loader view for later
+      if (overlay.type == "loader") {
+        this.loader = v;
+      }
+
+      this.addView(v);
+      this.container.append(v.el);
+      this.overlays.push(v);
+
+      v.bind('clean', function() {
+        for(var i in this.overlays) {
+          var o = this.overlays[i];
+          if(v.cid === o.cid) {
+            this.overlays.splice(i, 1)
+            return; 
+          }
+        }
+      }, this);
+
+      // Set map position correctly taking into account
+      // header height
+      if (overlay.type == "header") {
+        this.setMapPosition();
+      }
+    }
+    return v;
   },
 
   // change vizjson based on options
@@ -243,7 +258,10 @@ var Vis = cdb.core.View.extend({
       search: false,
       title: false,
       description: false,
-      tiles_loader: true
+      tiles_loader: true,
+      zoomControl: true,
+      loaderControl: true,
+      searchControl: false
     });
     vizjson.overlays = vizjson.overlays || [];
     vizjson.layers = vizjson.layers || [];
@@ -272,7 +290,7 @@ var Vis = cdb.core.View.extend({
     }
 
     // remove search if the vizualization does not contain it
-    if (opt.search) {
+    if (opt.search || opt.searchControl) {
       vizjson.overlays.push({
          type: "search"
       });
@@ -298,6 +316,14 @@ var Vis = cdb.core.View.extend({
       remove_overlay('loader');
     }
 
+    if(!opt.zoomControl) {
+      remove_overlay('zoom');
+    }
+
+    if(!opt.loaderControl) {
+      remove_overlay('loader');
+    }
+
     // if bounds are present zoom and center will not taken into account
     if(opt.zoom !== undefined) {
       vizjson.zoom = parseFloat(opt.zoom);
@@ -306,6 +332,11 @@ var Vis = cdb.core.View.extend({
 
     if(opt.center_lat !== undefined) {
       vizjson.center = [parseFloat(opt.center_lat), parseFloat(opt.center_lon)];
+      vizjson.bounds = null;
+    }
+
+    if(opt.center !== undefined) {
+      vizjson.center = opt.center;
       vizjson.bounds = null;
     }
 
@@ -336,6 +367,9 @@ var Vis = cdb.core.View.extend({
     this.$el
       .find("div.map-wrapper")
       .css("top", header_h);
+
+    this.mapView.invalidateSize();
+
   },
 
   createLayer: function(layerData, opts) {
@@ -472,6 +506,16 @@ var Vis = cdb.core.View.extend({
     var self = this;
     return this.map.layers.map(function(layer) {
       return self.mapView.getLayerByCid(layer.cid);
+    });
+  },
+
+  getOverlays: function() {
+    return this.overlays;
+  },
+
+  getOverlay: function(type) {
+    return _(this.overlays).find(function(v) {
+      return v.type == type;
     });
   }
 

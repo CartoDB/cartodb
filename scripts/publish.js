@@ -56,11 +56,15 @@ function invalidate_files(files, remote_path) {
     return remote_path + '/' + f;
   });
 
-  var cmd = 'ruby ./scripts/cdn_invalidation.rb ' + to_invalidate.join(' ');
-  _exec(cmd, function (error){
-    if(error) console.log(error);
-  });
-  console.log(cmd);
+  for(var i in to_invalidate) {
+    var cmd = 'ruby ./scripts/cdn_invalidation.rb ' + to_invalidate[i];
+    _exec(cmd, function (error, stdout, stderr){
+      console.log('stdout: ' + stdout);
+      console.log('stderr: ' + stderr);
+      if(error) console.log(error);
+    });
+    console.log(cmd);
+  }
 }
 
 
@@ -78,15 +82,19 @@ var CSS_IMAGE_FILES = fs.readdirSync('themes/css/images')
 
 var IMG_FILES = fs.readdirSync('themes/img')
 
-put_files(JS_FILES, 'v2', 'cartodb.js/v2')
-put_files(CSS_FILES, 'v2/themes/css', 'cartodb.js/v2/themes/css')
-put_files(CSS_IMAGE_FILES, 'v2/themes/css/images', 'cartodb.js/v2/themes/css/images')
-put_files(IMG_FILES, 'v2/themes/img', 'cartodb.js/v2/themes/img')
+var only_invalidate = process.argv.length > 2 && process.argv[2] == '--invalidate';
 
-put_files(JS_FILES, 'v2', 'cartodb.js/v2/' + package_.version)
-put_files(CSS_FILES, 'v2/themes/css', 'cartodb.js/v2/' + package_.version + '/themes/css')
-put_files(CSS_IMAGE_FILES, 'v2/themes/css/images', 'cartodb.js/v2/' + package_.version + '/themes/css/images')
-put_files(IMG_FILES, 'v2/themes/img', 'cartodb.js/v2/' + package_.version + '/themes/img')
+if(!only_invalidate) {
+  put_files(JS_FILES, 'v2', 'cartodb.js/v2')
+  put_files(CSS_FILES, 'v2/themes/css', 'cartodb.js/v2/themes/css')
+  put_files(CSS_IMAGE_FILES, 'v2/themes/css/images', 'cartodb.js/v2/themes/css/images')
+  put_files(IMG_FILES, 'v2/themes/img', 'cartodb.js/v2/themes/img')
+
+  put_files(JS_FILES, 'v2', 'cartodb.js/v2/' + package_.version)
+  put_files(CSS_FILES, 'v2/themes/css', 'cartodb.js/v2/' + package_.version + '/themes/css')
+  put_files(CSS_IMAGE_FILES, 'v2/themes/css/images', 'cartodb.js/v2/' + package_.version + '/themes/css/images')
+  put_files(IMG_FILES, 'v2/themes/img', 'cartodb.js/v2/' + package_.version + '/themes/img')
+}
 
 
 console.log(" *** flushing cdn cache")

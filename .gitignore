@@ -1,7 +1,6 @@
 .DS_store
 *.swp
 node_modules
-v2
 themes/css/all.css
 themes/css/cartodb.ie.css
 secrets.json

@@ -1,6 +1,6 @@
 {
     "name": "cartodb.js",
-    "version": "2.0.11",
+    "version": "2.0.15",
     "description": "CartoDB javascript library",
     "repository": {
         "type": "git",
@@ -23,6 +23,7 @@
     "devDependencies": {
       "uglify-js": "1.3.3",
       "knox": "",
-      "git-rev": ""
+      "git-rev": "",
+      "underscore": ""
     }
 }

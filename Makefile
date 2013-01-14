@@ -5,7 +5,7 @@ CSS_FILES = $(wildcard themes/css/*.css)
 CSS_FILES_IE = $(wildcard themes/css/ie/*.css)
 
 #dist:  dist/cartodb.js dist/cartodb.full.js themes
-dist:  dist/cartodb.js themes
+dist:  dist/cartodb.js  dist/cartodb.css dist/cartodb.ie.css
 
 
 dist_folder:
@@ -17,6 +17,12 @@ dist/cartodb.uncompressed.js: dist_folder
 
 dist/cartodb.js: dist/cartodb.uncompressed.js
 	$(UGLIFYJS) dist/cartodb.uncompressed.js > dist/cartodb.js
+
+dist/cartodb.css: css
+	cp themes/css/cartodb.css dist
+
+dist/cartodb.ie.css: css
+	cp themes/css/cartodb.ie.css dist
 
 clean: 
 	rm -rf dist/*
@@ -33,6 +39,9 @@ publish: release
 	#./scripts/publish.sh
 	node scripts/publish.js
 
+invalidate: 
+	#./scripts/publish.sh
+	node scripts/publish.js --invalidate
 
 PHONY: clean themes dist
 

@@ -111,8 +111,15 @@ describe User do
     @user2.tables.all.should == [Table.first(:user_id => @user2.id)]
   end
 
+  it "should correctly count real tables" do
+    @user.in_database.run('create table ghost_table (test integer)')
+    @user.real_tables.map { |c| c[:relname] }.should =~ ["import_csv_1", "twitters", "ghost_table"]
+    @user.real_tables.size.should == 3
+    @user.tables.count.should == 2
+  end
+
   it "should generate a data report" do
-    @user2.data.should == {
+    @user2.data(:extended => true).should == {
       :id => @user2.id,
       :email => "user@example.com",
       :username => "user",
@@ -128,8 +135,13 @@ describe User do
       :layers => [],
       :last_active_time => nil,
       :db_size_in_bytes => 0,
-      :total_db_size_in_bytes => 16384  
+      :total_db_size_in_bytes => 16384,
+      :real_table_count => 1,
+      :biggest_table_name => "my_first_table",
+      :biggest_table_size_diff => -10
     }
+
+    @user2.data.keys.should =~ [:id, :email, :username, :account_type, :private_tables, :table_quota, :table_count, :byte_quota, :remaining_table_quota, :remaining_byte_quota, :api_calls, :api_key, :layers]
   end
 
   it "should update remaining quotas when adding or removing tables" do

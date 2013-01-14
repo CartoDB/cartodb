@@ -111,6 +111,13 @@ describe User do
     @user2.tables.all.should == [Table.first(:user_id => @user2.id)]
   end
 
+  it "should correctly count real tables" do
+    @user.in_database.run('create table ghost_table (test integer)')
+    @user.real_tables.map { |c| c[:relname] }.should =~ ["import_csv_1", "twitters", "ghost_table"]
+    @user.real_tables.size.should == 3
+    @user.tables.count.should == 2
+  end
+
   it "should generate a data report" do
     @user2.data.should == {
       :id => @user2.id,
@@ -128,7 +135,8 @@ describe User do
       :layers => [],
       :last_active_time => nil,
       :db_size_in_bytes => 0,
-      :total_db_size_in_bytes => 16384  
+      :total_db_size_in_bytes => 16384,
+      :real_table_count => 1
     }
   end
 

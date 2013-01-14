@@ -1,6 +1,6 @@
-// cartodb.js version: 2.0.14
+// cartodb.js version: 2.0.15
 // uncompressed version: cartodb.uncompressed.js
-// sha: 529b08d69504cfaa51c3b202e2c68b06993c0875
+// sha: 06273c4b59b6c5186a464bc8f220e989d3a1aaba
 (function() {
   var root = this;
 
@@ -14499,7 +14499,7 @@ $(function(){
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '2.0.14';
+    cdb.VERSION = '2.0.15';
 
     cdb.CARTOCSS_VERSIONS = {
       '2.0.0': '',

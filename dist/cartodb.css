@@ -791,6 +791,18 @@ div.header.yellow h1 a:hover {
 	font: 12px/1.4 "Helvetica Neue", Arial, Helvetica, sans-serif;
 	}
 
+#legend { position: absolute; right: 50px; top: 20px; width: 250px; padding: 10px; background: white; z-index: 99; }
+#legend .title, 
+#legend .row { position: relative; float: left; width: 240px; background: none; padding: 5; margin: 0; }
+#legend .title {font-weight: bold; font-size: 24px;}
+#legend .row span { float: left; padding: 0; margin: 0; }
+
+#legend .row span.box { width: 20px; height: 20px; background: black; margin: 2px; border: 1px solid #BBB; }
+#legend .row span.line { width: 20px; height: 6px; background: black; margin: 2px; border: 1px solid #BBB;  margin-top: 11px;}
+#legend .row span.circle { width: 20px; height: 20px; background: black; margin: 2px; border: 1px solid #BBB;  border-radius: 50%;}
+
+#legend .row span.value { line-height: 18px; margin: 5px; max-width: 192px;}
+
 /**
  *  CartoDB2.0 theme (DEFAULT)
  */

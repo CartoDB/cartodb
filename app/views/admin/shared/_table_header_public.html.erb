@@ -1,26 +1,26 @@
 <header class="table">
-  <div class="inner">
-    <div class="left">
-      <hgroup>
-        <h1><%= link_to "CartoDB", root_path %></h1>
-        <h2 class="special"><a></a></h2>
-        <label class="small author">
-          <span></span>
-        </label>
-      </hgroup>
-      <span class="table_description"><p></p></span>
-      <span class="tags"></span>
-      <nav>
-        <%= link_to "table",        "#/table",   :class => "smaller strong uppercase tab selected" %>
-        <%= link_to "map view",     "#/map",     :class => "smaller strong uppercase tab" %>
-      </nav>
-    </div>
-    <div>
-      <ul class="right options">
-        <li><a class="button_header rounded_white data_download"><span class="icon"></span>download this data</a></li>
-        <li><a href="/login">sign in</a></li>
-      </ul>
-    </div>
+<div class="inner">
+  <div class="left">
+    <hgroup>
+    <h1><%= link_to "CartoDB", root_path %></h1>
+    <h2 class="special"><a></a></h2>
+    <label class="small author">
+      <span></span>
+    </label>
+    </hgroup>
+    <span class="table_description"><p></p></span>
+    <nav>
+    <%= link_to "Table",    "#/table", :class => "smaller strong tab selected" %>
+    <%= link_to "Map view", "#/map",   :class => "smaller strong tab" %>
+    </nav>
   </div>
+  <div>
+    <ul class="right options">
+      <li><a class="button_header rounded_white data_download"><span class="icon"></span>download this data</a></li>
+      <li><a href="/login">sign in</a></li>
+    </ul>
+    <div class="shadow"></div>
+  </div>
+</div>
 </header>
 

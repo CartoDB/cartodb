@@ -102,7 +102,7 @@
 
           &.sql_mod        { @include icons-sprite(table_icons, $offset-x:20px, $offset-y:-3px);}
           &.wizards_mod { @include icons-sprite(table_icons, $offset-x:21px, $offset-y:-370px);}
-          &.cartocss_mod      { @include icons-sprite(table_icons, $offset-x:21px, $offset-y:-370px);}
+          &.cartocss_mod      { @include icons-sprite(table_icons, $offset-x:21px, $offset-y:-549px);}
           &.infowindow_mod { @include icons-sprite(table_icons, $offset-x:20px, $offset-y:-430px);}
 
           // tool buttons
@@ -110,6 +110,7 @@
           &.add_column {@include icons-sprite(table_icons, $offset-x:22px, $offset-y:-247px);}
           &.add_feature {@include icons-sprite(table_icons, $offset-x:19px, $offset-y:-489px);}
           &.merge_tables {@include icons-sprite(table_icons, $offset-x:21px, $offset-y:-186px);}
+
 
           &:hover {
             cursor:pointer;

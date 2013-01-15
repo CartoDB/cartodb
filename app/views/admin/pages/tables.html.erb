@@ -2,6 +2,19 @@
   <%= current_user.username %> |
 <% end %>
 
+<%= content_for(:js) do %>
+  <%= javascript_include_tag :application %>
+  <script type="text/javascript">
+    $(function() {
+
+      var $a = $("a.copy");
+      $a.attr('data-tipsy', 'Copy to your tables');
+      $a.tipsy({ title:"data-tipsy", fade: true, gravity: 's' });
+
+    });
+  </script>
+<% end %>
+
 <%= content_for(:css) do %>
   <%= stylesheet_link_tag :common, :tables, :pages, :media => 'all' %>
 <% end %>
@@ -11,7 +24,7 @@
   <div class="inner">   
 
     <div class="header">
-      <h2>16 Common data tables</h2>
+      <h2><i class="table"></i>16 Common data tables</h2>
       <p>Import any of them to your account and start playing with them</p>
     </div>
 
@@ -20,16 +33,19 @@
       <tr>
 
         <td class="name">
-          <a href="#" class="name">esp_adm1_export</a>
-          <p>Wadus description wadus ells</p>
+          <a href="#" class="name">World borders</a>
+          <p>World countries borders</p>
         </td>
 
         <td class="info">
-          <div class="stats">1 KB &middot; 13 ROWS</div>
-          <div class="author">by <a href="#">naturalearthdata.com</a></div>
+          <div class="stats">231 KB &middot; 13 ROWS</div>
         </td>
 
-        <td>
+        <td class="separator">
+          <div class="separator"></div>
+        </td>
+
+        <td class="copy">
           <a href="#" class="copy">copy</a>
         </td>
 
@@ -38,40 +54,69 @@
       <tr>
 
         <td class="name">
-          <a href="#" class="name">esp_adm1_export</a>
-          <p>Wadus description wadus ells</p>
+          <a href="#" class="name">European countries</a>
+          <p>European countries geometries</p>
         </td>
 
         <td class="info">
-          <div class="stats">1 KB &middot; 13 ROWS</div>
-          <div class="author">by <a href="#">naturalearthdata.com</a></div>
+          <div class="stats">165 KB &middot; 13 ROWS</div>
         </td>
 
-        <td>
+        <td class="separator">
+          <div class="separator"></div>
+        </td>
+
+        <td class="copy">
           <a href="#" class="copy">copy</a>
         </td>
 
       </tr>
 
       <tr>
-
         <td class="name">
-          <a href="#" class="name">esp_adm1_export</a>
-          <p>Wadus description wadus ells</p>
+          <a href="#" class="name">Urban Areas</a>
+          <p>Areas of human habitation</p>
         </td>
-
         <td class="info">
-          <div class="stats">1 KB &middot; 13 ROWS</div>
-          <div class="author">by <a href="#">naturalearthdata.com</a></div>
+          <div class="stats">449 KB &middot; 13 ROWS</div>
+          <div class="author">by <a href="http://naturalearthdata.com">naturalearthdata.com</a></div>
         </td>
-
-        <td>
+        <td class="separator">
+          <div class="separator"></div>
+        </td>
+        <td class="copy">
           <a href="#" class="copy">copy</a>
         </td>
-
       </tr>
+
+      <tr>
+        <td class="name">
+          <a href="#" class="name">Populated places</a>
+          <p>Most populated places</p>
+        </td>
+        <td class="info">
+          <div class="stats">682 KB &middot; 13 ROWS</div>
+          <div class="author">by <a href="http://naturalearthdata.com">naturalearthdata.com</a></div>
+        </td>
+        <td class="separator">
+          <div class="separator"></div>
+        </td>
+        <td class="copy">
+          <a href="#" class="copy">copy</a>
+        </td>
+      </tr>
+
     </table>
 
   </div>
+  </article>
+
+  <article class="support" style="display: inline-block;">
+    <div class="inner">   
+      <section class="left">
+        <h3>Don’t find what you are looking for?</h3>
+        <p>Try in our <a href="https://groups.google.com/forum/#!forum/cartodb" title="CartoDB Google Group">Google Group</a>, there may be some users looking forward to help you.</p>
+      </section>
+    </div>
   </article>
 </div>

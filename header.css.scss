@@ -199,7 +199,13 @@ header { // general header
         height:13px;
         @include icons-sprite(back);
         @include text-indent();
-        &:focus,&:hover {outline:none; @include icons-sprite(back); }
+          opacity: .5;
+
+        &:focus,&:hover {
+          outline:none;
+          @include icons-sprite(back);
+          opacity: 1;
+        }
       }
     }
 
@@ -333,7 +339,7 @@ header { // general header
 
       span.tags {
         display:block;
-        margin:7px 0 0 15px;
+        margin:3px 0 0 15px;
         @include inline-block();
 
         &:before {

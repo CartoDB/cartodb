@@ -1,42 +1,133 @@
-  
-  /*
-   * Lovely help functions
-   */
 
-  @import "compass";
+/*
+ * Lovely help functions
+ */
 
-  @mixin text-indent() {
-    text-indent:-9999px;
-    line-height:0px;
-    font-size:0px;
-    text-transform:uppercase;
-  }
+@import "compass";
 
-  @mixin user-select($val) {
-   	-webkit-touch-callout: $val;
-   	-webkit-user-select: $val;
-   	-khtml-user-select: $val;
-   	-moz-user-select: $val;
-   	-ms-user-select: $val;
-   	user-select: $val;
-  }
+@mixin text-indent() {
+  text-indent:-9999px;
+  line-height:0px;
+  font-size:0px;
+  text-transform:uppercase;
+}
 
-  @mixin progress-background($rgba) {
-    background-image: -webkit-linear-gradient(-45deg,$rgba 25%,transparent 25%,transparent 50%,$rgba 50%,$rgba 75%,transparent 75%,transparent);
-    background-image: -moz-linear-gradient(-45deg,$rgba 25%,transparent 25%,transparent 50%,$rgba 50%,$rgba 75%,transparent 75%,transparent);
-    background-image: -ms-linear-gradient(-45deg,$rgba 25%,transparent 25%,transparent 50%,$rgba 50%,$rgba 75%,transparent 75%,transparent);
-    background-image: linear-gradient(-45deg,$rgba 25%,transparent 25%,transparent 50%,$rgba 50%,$rgba 75%,transparent 75%,transparent);
-  }
+@mixin user-select($val) {
+  -webkit-touch-callout: $val;
+  -webkit-user-select: $val;
+  -khtml-user-select: $val;
+  -moz-user-select: $val;
+  -ms-user-select: $val;
+  user-select: $val;
+}
 
-  @mixin size($width, $height:$width) {
-    @if $width  != false { width:  $width; }
-    @if $height != false { height: $height; }
-  }
+@mixin progress-background($rgba) {
+  background-image: -webkit-linear-gradient(-45deg,$rgba 25%,transparent 25%,transparent 50%,$rgba 50%,$rgba 75%,transparent 75%,transparent);
+  background-image: -moz-linear-gradient(-45deg,$rgba 25%,transparent 25%,transparent 50%,$rgba 50%,$rgba 75%,transparent 75%,transparent);
+  background-image: -ms-linear-gradient(-45deg,$rgba 25%,transparent 25%,transparent 50%,$rgba 50%,$rgba 75%,transparent 75%,transparent);
+  background-image: linear-gradient(-45deg,$rgba 25%,transparent 25%,transparent 50%,$rgba 50%,$rgba 75%,transparent 75%,transparent);
+}
 
-  @mixin position($top, $right, $bottom, $left) {
-    position: absolute;
-    @if $top    != false { top:    $top; }
-    @if $right  != false { right:  $right; }
-    @if $bottom != false { bottom: $bottom; }
-    @if $left   != false { left:   $left; }
-  }
+@mixin dark-glow($opacity) {
+  -moz-box-shadow:0px 0px 6px 1px rgba(0, 0, 0, $opacity); /* Firefox v3.5+ */
+  -webkit-box-shadow:0px 0px 6px 1px rgba(0,0,0, $opacity); /* Safari v3.0+ and by Chrome v0.2+ */
+  box-shadow:0px 0px 6px 1px rgba(0,0,0, $opacity); /* Firefox v4.0+ , Safari v5.1+ , Chrome v10.0+  and by Opera v10.5+ */
+  -ms-filter:"progid:DXImageTransform.Microsoft.Glow(Color = #33000000 ,Strength = $opacity * 10)";
+  filter:progid:DXImageTransform.Microsoft.Glow(Color = #33000000 ,Strength = $opacity * 10);
+}
+@mixin glow($opacity) {
+  -moz-box-shadow:0px 0px 6px 1px rgba(255, 255, 255, $opacity); /* Firefox v3.5+ */
+  -webkit-box-shadow:0px 0px 6px 1px rgba(255, 255, 255, $opacity); /* Safari v3.0+ and by Chrome v0.2+ */
+  box-shadow:0px 0px 6px 1px rgba(255, 255, 255, $opacity); /* Firefox v4.0+ , Safari v5.1+ , Chrome v10.0+  and by Opera v10.5+ */
+  -ms-filter:"progid:DXImageTransform.Microsoft.Glow(Color = #33ffffff ,Strength = $opacity * 10)";
+  filter:progid:DXImageTransform.Microsoft.Glow(Color = #33ffffff ,Strength = $opacity * 10);
+}
+
+@mixin size($width, $height:$width) {
+
+  @if $width  != false { width:  $width; }
+  @if $height != false { height: $height; }
+
+}
+
+@mixin position($top, $right, $bottom, $left) {
+
+  position: absolute;
+
+  @if $top    != false { top:    $top; }
+  @if $right  != false { right:  $right; }
+  @if $bottom != false { bottom: $bottom; }
+  @if $left   != false { left:   $left; }
+
+}
+
+@mixin absolute-portrait-center($height) {
+  position:absolute;
+  top:50%;
+  height: $height;
+  margin-top: -1*$height/2;
+}
+
+@mixin absolute-landscape-center($width) {
+  @include absolute-left-center($width);
+}
+
+@mixin absolute-left-center($width) {
+  position:absolute;
+  left:50%;
+  width: $width;
+  margin-left: -1*$width/2;
+}
+
+@mixin absolute-center($width, $height:$width) {
+
+  position:absolute;
+  left:50%;
+  top: 50%;
+
+  margin-left: -1*$width/2;
+  margin-top:  -1*$height/2;
+
+  @if $width  != false { width:  $width; }
+  @if $height != false { height: $height; }
+
+}
+
+@mixin clearfix() {
+  & { *zoom: 1; }
+  &:before, &:after { content: ""; display: table; }
+  &:after { clear: both; }
+}
+
+@mixin simple-transition($property, $duration: 250ms, $easing-method: ease-in) {
+
+  @if not $easing-method { $easing-method: ease-in; }
+  @if not $duration      { $duration: 250ms; }
+
+  @include transition-property($property);
+  @include transition-duration($duration);
+  @include transition-timing-function($easing-method);
+
+}
+
+.shadow-transition {
+  -webkit-transition: -webkit-box-shadow 0.3s ease-out;
+  -moz-transition: -moz-box-shadow 0.3s ease-out;
+  -o-transition: box-shadow 0.3s ease-out;
+}
+
+.no-glow {
+  -moz-box-shadow: none;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+
+.disable-selection {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+

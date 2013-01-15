@@ -3,18 +3,30 @@
 @import "../common/sprites";
 @import "../common/mixins";
 
+.tipsy { font-size: 13px;}
+
 article.public_tables {
 
   margin: auto;
   letter-spacing: 0;
 
+  i {
+    @include inline-block();
+    @include size(23px, 17px);
+    @include icons-sprite(t);
+
+    margin: 0 5px 5px 0;
+  }
 
   .header {
 
     width:1023px;
     padding: 30px 0;
 
+    @include clearfix();
+
     h2 {
+      float:left;
 
       font-size: 25px;
       color: #B8B8B8;
@@ -22,6 +34,8 @@ article.public_tables {
     }
 
     p {
+      float:right;
+      margin: 14px 0 0 0;
 
       color: #868686;
       font: italic 15px "Helvetica", Arial;
@@ -29,61 +43,103 @@ article.public_tables {
 
   }
 
-
   table {
     width:1023px;
     margin: 0 0 40px 0;
 
-    border-top: 1px solid rgba(#ccc, .5);
+    border-top: 1px solid rgba($cGray4, .5);
+
+    tr {
+
+      &:hover td {
+
+        background-color:$cWhite;
+        @include simple-transition(background-color);
+
+        .name { color: $cGray1; }
+        .copy { opacity: 1; }
+
+      }
+
+      &:last-child td { border:none; }
+
+    }
 
     td {
-      padding: 30px;
-      border-bottom: 1px solid rgba(#ccc, .5);
+      padding: 25px;
+      border-bottom: 1px solid rgba($cGray4, .5);
 
       &.name { width: 720px; }
+      &.copy { width: 30px; text-align: center; }
+      &.separator { padding-left: 0; padding-right: 0; }
 
       &.info {
         width: 150px;
         text-align: right;
       }
     }
-
-
-    tr:hover td {
-      background-color:#fff;
-      @include simple-transition(background-color);
-    }
   }
 
   td {
+
+    .separator {
+      @include size(1px, 64px);
+      border-right: 1px solid rgba($cGray4, .5);
+    }
+
     a.name {
-      display:block;
+      @include inline-block();
       margin: 0 0 7px 0;
 
       font-size: 21px;
       color: #2483B2;
-      font-family: "Segoe UI Bold", "Helvetica";
+      font-family: "Segoe UI Bold", "Helvetica Neue", "Helvetica", Arial, sans-serif;
+      @include simple-transition(color);
+
+      &:hover {
+        text-decoration:none;
+      }
+
     }
 
     p {
       color: #878787;
-      font: normal 15px "Helvetica", Arial;
+      font: normal 15px "Helvetica Neue", "Helvetica", Arial, sans-serif;
     }
 
     .stats {
       margin: 0 0 5px 0;
 
       font-size: 11px;
-      color: #999;
+      color: $cGray3;
       text-transform: uppercase;
     }
 
     .author {
       &, a {
-        font: normal 11px "Helvetica", Arial;
+        font: normal 13px "Helvetica Neue", "Helvetica", Arial, sans-serif;
         color: #868686;
       }
       a { text-decoration: underline; }
+    }
+
+    .copy {
+      display:block;
+      margin: auto;
+
+      @include size(35px);
+      @include icons-sprite(plus);
+      @include text-indent();
+
+      @include simple-transition(opacity);
+
+      border: none;
+      text-decoration:none;
+      opacity: .5;
+
+      &:hover {
+        opacity: 1;
+      }
     }
   }
 

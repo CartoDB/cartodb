@@ -75,7 +75,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
   end
 
   def show
-    respond_with(@user.data)
+    respond_with(@user.data(:extended => true))
   end
 
   private

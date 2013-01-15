@@ -13,10 +13,10 @@
               margin: 15px 10px 0 0;
               float: right;
               vertical-align: baseline;
-              width: 70px;
+              width: 30px;
               padding: 10px;
               text-align: center;
-              font: bold 11px "Helvetica",Arial;
+              font: bold 15px "Helvetica",Arial;
               line-height: normal;
               color: #555;
               border-radius: 4px;
@@ -25,14 +25,13 @@
               text-decoration: none;
               cursor: pointer;
             }
-    #menu a.selected,
-    #menu a:hover { 
-              color: #F84F40;
-            }
+
 	</style>
 	<script>
   var map;
+
   function init(){
+
     // initiate leaflet map
     map = new L.Map('map', { 
       center: [20,-20],
@@ -42,16 +41,17 @@
     L.tileLayer('https://dnv9my2eseobd.cloudfront.net/v3/cartodb.map-4xtxp73f/{z}/{x}/{y}.png', {
       attribution: 'MapBox'
     }).addTo(map);
-    
+
   }
 	</script>
 </head>
 <body onload="init()">
   <div id='map'></div>
   <div id='menu'>
-      <a href="#megacities" id="megacities" class="button megacities">MEGACITIES</a> 
-      <a href="#capitals" id="capitals" class="button capitals">CAPITALS</a> 
-      <a href="#all" id="all" class="button all">ALL CITIES</a>
+      <a href="#500" id="500" value=500 class="button 500">500</a> 
+      <a href="#100" id="100" value=100 class="button 100">100</a> 
+      <a href="#50" id="50" value=50 class="button 50">50</a> 
+      <a href="#10" id="10" value=10 class="button 10 selected">10</a> 
   </div>
 </body>
 </html>

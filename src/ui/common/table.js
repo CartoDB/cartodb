@@ -72,16 +72,13 @@ cdb.ui.common.RowView = cdb.core.View.extend({
   tagName: 'tr',
 
   initialize: function() {
-    _.bindAll(this, "triggerChange", "triggerSync", "triggerError");
 
     this.model.bind('change', this.render, this);
     this.model.bind('destroy', this.clean, this);
     this.model.bind('remove', this.clean, this);
-    this.model.bind('change', this.triggerChange);
-    this.model.bind('sync', this.triggerSync);
-    this.model.bind('error', this.triggerError);
-
-
+    this.model.bind('change', this.triggerChange, this);
+    this.model.bind('sync', this.triggerSync, this);
+    this.model.bind('error', this.triggerError, this);
 
     this.add_related_model(this.model);
     this.order = this.options.order;
@@ -275,10 +272,10 @@ cdb.ui.common.Table = cdb.core.View.extend({
         self.rowViews[i].$el.attr('data-y', i);
       }
     });
-    tr.bind('changeRow', this.rowChanged);
-    tr.bind('saved', this.rowSynched);
-    tr.bind('errorRow', this.rowFailed);
-    tr.bind('saving', this.rowSaving);
+    tr.bind('changeRow', this.rowChanged, this);
+    tr.bind('saved', this.rowSynched, this);
+    tr.bind('errorRow', this.rowFailed, this);
+    tr.bind('saving', this.rowSaving, this);
     this.retrigger('saving', tr);
 
     tr.render();

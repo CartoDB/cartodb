@@ -2,10 +2,76 @@
   <%= current_user.username %> |
 <% end %>
 
-<%= content_for(:js) do %>
-<% end %>
-
 <%= content_for(:css) do %>
-  <%= stylesheet_link_tag :common, :tables, :media => 'all' %>
+  <%= stylesheet_link_tag :common, :tables, :pages, :media => 'all' %>
 <% end %>
 
+<div class="content">
+  <article class="public_tables">
+  <div class="inner">   
+
+    <div class="header">
+      <h2>16 Common data tables</h2>
+      <p>Import any of them to your account and start playing with them</p>
+    </div>
+
+    <table>
+
+      <tr>
+
+        <td class="name">
+          <a href="#" class="name">esp_adm1_export</a>
+          <p>Wadus description wadus ells</p>
+        </td>
+
+        <td class="info">
+          <div class="stats">1 KB &middot; 13 ROWS</div>
+          <div class="author">by <a href="#">naturalearthdata.com</a></div>
+        </td>
+
+        <td>
+          <a href="#" class="copy">copy</a>
+        </td>
+
+      </tr>
+
+      <tr>
+
+        <td class="name">
+          <a href="#" class="name">esp_adm1_export</a>
+          <p>Wadus description wadus ells</p>
+        </td>
+
+        <td class="info">
+          <div class="stats">1 KB &middot; 13 ROWS</div>
+          <div class="author">by <a href="#">naturalearthdata.com</a></div>
+        </td>
+
+        <td>
+          <a href="#" class="copy">copy</a>
+        </td>
+
+      </tr>
+
+      <tr>
+
+        <td class="name">
+          <a href="#" class="name">esp_adm1_export</a>
+          <p>Wadus description wadus ells</p>
+        </td>
+
+        <td class="info">
+          <div class="stats">1 KB &middot; 13 ROWS</div>
+          <div class="author">by <a href="#">naturalearthdata.com</a></div>
+        </td>
+
+        <td>
+          <a href="#" class="copy">copy</a>
+        </td>
+
+      </tr>
+    </table>
+
+  </div>
+  </article>
+</div>

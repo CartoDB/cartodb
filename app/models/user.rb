@@ -595,8 +595,8 @@ class User < Sequel::Model
         :last_active_time           => self.get_last_active_time,
         :db_size_in_bytes           => self.db_size_in_bytes,
         :total_db_size_in_bytes     => self.db_size_in_bytes(true),
-        :biggest_table_name         => biggest_table[:name],
-        :biggest_table_size_diff    => biggest_table[:size_diff]
+        :biggest_table_name         => (biggest_table.blank? ? nil : biggest_table[:name]),
+        :biggest_table_size_diff    => (biggest_table.blank? ? nil : biggest_table[:size_diff])
       })
     end
   end

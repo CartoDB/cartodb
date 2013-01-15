@@ -578,6 +578,10 @@ class Table < Sequel::Model(:user_tables)
     @table_size ||= owner.in_database["SELECT pg_relation_size('#{self.name}') as size"].first[:size] / 2
   end
 
+  def total_table_size
+    @total_table_size ||= owner.in_database["SELECT pg_total_relation_size('#{self.name}') as size"].first[:size] / 2
+  end
+
   # TODO: make predictable. Alphabetical would be better
   def schema(options = {})
     first_columns     = []

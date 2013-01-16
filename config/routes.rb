@@ -11,7 +11,7 @@ CartoDB::Application.routes.draw do
 
   scope :module => "admin" do
     match '/dashboard/'               => 'tables#index', :as => :dashboard
-    match '/dashboard/public_tables'  => 'pages#tables'
+    match '/dashboard/public_tables'  => 'pages#public_tables'
 
     resources :tables, :only => [:show] do
       get 'embed_map', :on => :member

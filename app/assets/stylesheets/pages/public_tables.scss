@@ -15,7 +15,7 @@ article.public_tables {
     @include size(23px, 17px);
     @include icons-sprite(t);
 
-    margin: 0 5px 5px 0;
+    margin: 0 7px 5px 0;
   }
 
   .header {
@@ -66,11 +66,11 @@ article.public_tables {
     }
 
     td {
-      padding: 25px;
+      padding: 17px 30px;
       border-bottom: 1px solid rgba($cGray4, .5);
 
       &.name { width: 720px; }
-      &.copy { width: 30px; text-align: center; }
+      &.copy { width: 20px; text-align: center; }
       &.separator { padding-left: 0; padding-right: 0; }
 
       &.info {
@@ -108,7 +108,7 @@ article.public_tables {
     }
 
     .stats {
-      margin: 0 0 5px 0;
+      margin: 0 0 7px 0;
 
       font: normal 11px "Helvetica Neue", "Helvetica", Arial, sans-serif;
       font-weight: 500;

@@ -120,6 +120,10 @@
             @include opacity(1);
           }
 
+          &.disabled {
+            @include opacity(0.15);
+          }
+
           &.selected {
             @include opacity(1);
 

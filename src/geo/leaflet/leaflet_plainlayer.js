@@ -20,6 +20,8 @@ var LeafLetPlainLayerView = L.Class.extend({
   },
 
   onRemove: function() { 
+    var div = this.leafletMap.getContainer()
+    div.style.background = 'none';
   },
 
   _modelUpdated: function() {

@@ -1,3 +1,8 @@
+2.X.X (xx/xx/xx)
+-----
+* Added composite operations combo in style wizards
+
+
 2.0.1 (5/12/12)
 -----
 * Fixing a bug when adding a XYZ url as a base layer.

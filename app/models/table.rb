@@ -226,7 +226,19 @@ class Table < Sequel::Model(:user_tables)
         end
         @data_import.log_update('cleaning supplied cartodb_id')
       end
-      user_database.run(%Q{ALTER TABLE "#{self.name}" ADD PRIMARY KEY (cartodb_id)})
+
+      # Try to use the selected cartodb_id column as primary key,
+      # generate a new one if we can't (duplicated values for instance)
+      begin
+        user_database.run(%Q{ALTER TABLE "#{self.name}" ADD PRIMARY KEY (cartodb_id)})
+      rescue
+        user_database.run(%Q{ALTER TABLE "#{self.name}" ALTER COLUMN cartodb_id DROP DEFAULT})
+        user_database.run(%Q{ALTER TABLE "#{self.name}" ALTER COLUMN cartodb_id DROP NOT NULL})
+        user_database.run(%Q{DROP SEQUENCE IF EXISTS #{self.name}_cartodb_id_seq})
+        user_database.run(%Q{ALTER TABLE "#{self.name}" RENAME COLUMN cartodb_id TO invalid_cartodb_id})
+        user_database.run(%Q{ALTER TABLE "#{self.name}" ADD COLUMN cartodb_id SERIAL})
+        user_database.run(%Q{ALTER TABLE "#{self.name}" ADD PRIMARY KEY (cartodb_id)})
+      end
 
       normalize_timestamp_field!(:created_at, user_database)
       normalize_timestamp_field!(:updated_at, user_database)

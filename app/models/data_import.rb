@@ -7,6 +7,15 @@ class DataImport < Sequel::Model
 
   PUBLIC_ATTRIBUTES = %W{ id user_id table_id data_type table_name state success error_code queue_id get_error_text tables_created_count }
 
+  def before_destroy
+    # Remove uploaded file if present
+    if file_sha = self.data_source.to_s.match(/uploads\/([a-z0-9]{20})\/.*/)
+      path = Rails.root.join("public", "uploads", file_sha[1])
+      FileUtils.rm_rf(path) if Dir.exists?(path)
+    end
+  end
+
+
   def public_values
     Hash[PUBLIC_ATTRIBUTES.map{ |a| [a, self.send(a)] }]
   end
@@ -80,8 +89,6 @@ class DataImport < Sequel::Model
     elsif Addressable::URI.parse(data_source).host.present?
       self.values[:data_type] = 'url'
       self.values[:data_source] = data_source
-    else
-      # TODO: handle invalid uri or missing file
     end
   end
 

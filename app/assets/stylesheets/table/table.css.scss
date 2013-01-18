@@ -333,11 +333,9 @@
 
 
         tr {
-          // position:relative;
           width:100%;
-          border-top:1px solid #ECECEC;
+          //border-top:1px solid #ECECEC;
           background:white;
-          // -moz-transform: translateZ(10px);
 
           &:first-child {
             border-top:none;
@@ -363,24 +361,25 @@
           }
 
           td {
-            border-right:1px solid #ECECEC;
-            border-left:1px solid #ECECEC;
             &:not(.row_header) {
               div.cell:not(.disabled) {
                 cursor: pointer;
               }
-
             }
+
             div.cell {
-              @include inline-block();
+              display:block;
               overflow: hidden;
               padding:15px 10px;
-              max-width:300px;
+              max-width:280px;
+              min-height:13px;
               max-height:26px;
               color:#666666;
               text-overflow: ellipsis;
               white-space: nowrap;
               font-size:13px;
+              border-bottom:1px solid #ECECEC;
+              border-left:1px solid #ECECEC;
 
               &.disabled {
                 color: #AAA;
@@ -399,6 +398,7 @@
 
             &.rowHeader:first-child {
               position:relative;
+              border-top:1px solid #ECECEC;
 
               & > div.row_header {
                 //position:relative;
@@ -430,6 +430,7 @@
 
                 &:after {
                   display:none;
+                  content:'';
                 }
 
                 &:hover {
@@ -668,7 +669,6 @@
   // Hello hacks for Firefox
   @-moz-document url-prefix() { 
     div.cell {
-      display:block!important;
       background:white;
     }
 

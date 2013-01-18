@@ -206,7 +206,7 @@ describe CartoDB::Importer do
         results,errors = importer.import!
 
         errors.should be_empty
-        results[0].name.should == 'cartodb_csv_multipol'
+        results[0].name.should == 'cartodb_csv_multipoly_export'
         results[0].rows_imported.should == 601
         results[0].import_type.should == '.csv'
       end
@@ -216,7 +216,7 @@ describe CartoDB::Importer do
         results,errors = importer.import!
 
         errors.should be_empty
-        results[0].name.should == 'csv_with_number_colu'
+        results[0].name.should == 'csv_with_number_columns'
         results[0].rows_imported.should == 177
 
         results[0].import_type.should == '.csv'
@@ -244,7 +244,7 @@ describe CartoDB::Importer do
         results, errors = importer.import!
 
         errors.should be_empty
-        results[0].name.should == 'soy_bean_cleaned_wah'
+        results[0].name.should == 'soy_bean_cleaned_wahwah'
         results[0].rows_imported.should == 238
 
         results[0].import_type.should == '.csv'
@@ -255,7 +255,7 @@ describe CartoDB::Importer do
         results, errors = importer.import!
 
         errors.should be_empty
-        results[0].name.should == 'cambodia_pop_tabbed_'
+        results[0].name.should == 'cambodia_pop_tabbed_data'
         results[0].rows_imported.should == 99
 
         results[0].import_type.should == '.csv'
@@ -322,7 +322,7 @@ describe CartoDB::Importer do
         importer = create_importer 'TM_WORLD_BORDERS_SIMPL-0.3.zip'
         results,errors = importer.import!
 
-        results[0].name.should          == 'tm_world_borders_sim'
+        results[0].name.should          == 'tm_world_borders_simpl_0_3'
         results[0].rows_imported.should == 246
         results[0].import_type.should   == '.shp'
       end
@@ -371,7 +371,7 @@ describe CartoDB::Importer do
         results,errors = importer.import!
 
         results.length.should              == 1
-        results[0].name.should be          == 'ne_10m_admin_0_count'
+        results[0].name.should be          == 'ne_10m_admin_0_countries'
         results[0].rows_imported.should be == 254
         results[0].import_type.should be   == '.shp'
       end
@@ -384,10 +384,10 @@ describe CartoDB::Importer do
 
         errors.length.should            == 3
         results.length.should           == 2
-        results[0].name.should          == 'activity_234497933_t'
+        results[0].name.should          == 'activity_234497933_track_points'
         results[0].rows_imported.should == 440
         results[0].import_type.should   == '.gpx'
-        results[1].name.should          == 'activity_234497933_1'
+        results[1].name.should          == 'activity_234497933_tracks'
         results[1].rows_imported.should == 1
         results[1].import_type.should   == '.gpx'
       end
@@ -398,7 +398,7 @@ describe CartoDB::Importer do
         importer = create_importer 'GLOBAL_ELEVATION_SIMPLE.zip'
         results,errors = importer.import!
 
-        results[0].name.should          == 'global_elevation_sim'
+        results[0].name.should          == 'global_elevation_simple'
         results[0].rows_imported.should == 774
         results[0].import_type.should   == '.tif'
       end
@@ -456,7 +456,7 @@ describe CartoDB::Importer do
         importer = create_importer 'csv_with_number_columns.json', 'csv_with_number_columns'
         results,errors = importer.import!
 
-        results[0].name.should == 'csv_with_number_colu'
+        results[0].name.should == 'csv_with_number_columns'
         results[0].rows_imported.should == 177
 
         results[0].import_type.should == '.json'
@@ -482,8 +482,8 @@ describe CartoDB::Importer do
             results,errors = importer.import!
 
             @db.tables.should include(:_10m_us_parks)
-            results[0].name.should          == '_10m_us_parks'
-            results[0].rows_imported.should == 61
+            results.map(&:name).should          =~ ['_10m_us_parks', '_10m_us_parks_1', '_10m_us_parks_2', '_10m_us_parks_3']
+            results.map(&:rows_imported).should =~ [29, 110, 315, 61]
             results[0].import_type.should   == '.shp'
         end
       end
@@ -556,11 +556,11 @@ describe CartoDB::Importer do
       importer = create_importer "Municipios.zip"
       results, errors = importer.import!
 
-      @db.tables.should include(:cb_municipios_5000_e)
-      results[0].name.should          == 'cb_municipios_5000_e'
+      @db.tables.should include(:cb_municipios_5000_etrs89)
+      results[0].name.should          == 'cb_municipios_5000_etrs89'
       results[0].rows_imported.should == 258
       results[0].import_type.should   == '.shp'
-      @db.select(:comarca).from(:cb_municipios_5000_e).all.first[:comarca].should be == 'MONTAÑA ALAVESA'
+      @db.select(:comarca).from(:cb_municipios_5000_etrs89).all.first[:comarca].should be == 'MONTAÑA ALAVESA'
     end
 
     it "throws an error when importing an shp with unknown srid" do
@@ -568,7 +568,7 @@ describe CartoDB::Importer do
       results, errors = importer.import!
 
       errors.should have(1).item
-      errors[0].code.should be == 3008
+      errors[0].code.should be == 3102
     end
   end
 
@@ -646,7 +646,7 @@ describe CartoDB::Importer do
       results, errors   = importer.import!
 
       results.length.should           == 1
-      results[0].name.should          == 'cartodb_20_export_cs'
+      results[0].name.should          == 'cartodb_20_export_csv'
       results[0].rows_imported.should == 3
       results[0].import_type.should   == '.csv'
 
@@ -660,7 +660,7 @@ describe CartoDB::Importer do
       results, errors   = importer.import!
 
       results.length.should           == 1
-      results[0].name.should          == 'tm_world_borders_s_1'
+      results[0].name.should          == 'tm_world_borders_s_11'
       results[0].rows_imported.should == 246
       results[0].import_type.should   == '.shp'
       errors.length.should            == 0
@@ -713,6 +713,8 @@ describe CartoDB::Importer do
                 :username => "postgres", :password => '',
                 :host => 'localhost',
                 :port => 5432}
+    create_user(:username => 'test', :email => "client@example.com", :password => "clientex", :table_quota => 100, :disk_quota => 500.megabytes)
+    @user = User.first
   end
 
   after(:all) do
@@ -743,12 +745,13 @@ describe CartoDB::Importer do
     opts[:suggested_name] = suggested_name if suggested_name.present?
     opts[:data_import_id] = get_data_import_id()
     opts[:remaining_quota] = 50000000
+    opts[:user_id] = @user.id
     # build importer
     CartoDB::Importer.new opts.reverse_merge(@db_opts)
   end
 
   def get_data_import_id()
-    @data_import  = DataImport.new(:user_id => 0)
+    @data_import  = DataImport.new(:user_id => @user.id)
     @data_import.updated_at = Time.now
     @data_import.save
     @data_import.id

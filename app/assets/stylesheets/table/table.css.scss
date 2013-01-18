@@ -382,7 +382,6 @@
               white-space: nowrap;
               font-size:13px;
 
-
               &.disabled {
                 color: #AAA;
               }
@@ -488,7 +487,6 @@
           border-left:0;
           background:white;
           z-index:-1;
-          -moz-transform: translateZ(-10px); /* Hack for Firefox, page loaders are always on top */
 
           th {
             padding:70px 0;
@@ -505,7 +503,6 @@
             padding:0 0 0 45px;
             background: image-url('layout/loading_page_static.png') no-repeat 0 0;
             vertical-align:top;
-            -moz-transform:translateZ(-10px);
             z-index:-10;
 
             h5 {display:block; color:#7B7B7B; font-size:15px; line-height:normal;}
@@ -664,5 +661,18 @@
 
     &:hover span.icon {
       @include icons-sprite(download_dark);
+    }
+  }
+
+
+  // Hello hacks for Firefox
+  @-moz-document url-prefix() { 
+    div.cell {
+      display:block!important;
+      background:white;
+    }
+
+    tr:hover div.cell {
+      background:#E8F9EC;
     }
   }

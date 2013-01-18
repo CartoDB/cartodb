@@ -36,7 +36,7 @@ div.cartodb-popup.header div.cartodb-popup-header h1 {
   margin:0;
   font:bold 21px "Helvetica Neue", "Helvetica", Arial;
   color:#FFFFFF;
-  line-height:normal;
+  line-height:23px;
 }
 
 div.cartodb-popup.header div.cartodb-popup-header span.separator {

@@ -394,6 +394,7 @@ class Table < Sequel::Model(:user_tables)
 
   def after_commit
     owner.in_database.run("VACUUM FULL \"#{self.name}\"")
+  rescue Sequel::DatabaseError => e
   end
 
   def create_default_map_and_layers

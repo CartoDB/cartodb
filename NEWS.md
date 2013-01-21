@@ -1,8 +1,7 @@
 2.0.3 (xx/xx/xx)
 -----
 
-
-2.0.2 (21/12/12)
+2.0.2 (21/01/13)
 -----
 * Added composite operations combo in style wizards
 * The list of public tables has been moved to a new page and is now accesible from the header
@@ -13,7 +12,6 @@
 * Removed 20 char table limit on the importer
 * Fixed error when importing shapefiles with invalid cartodb_id columns
 * Fixed the incorrect "missing prj" error on the importer
-
 
 2.0.1 (5/12/12)
 -----
@@ -30,7 +28,6 @@
 * Fixed a bug when renaming a table.
 * Adding loader events when deleting features from the map.
 * Fixed a bug with the sign-in on FF 15.0.1
-
 
 2.0.0 (30/11/12)
 -----

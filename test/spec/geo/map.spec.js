@@ -332,11 +332,11 @@ describe("geo.map", function() {
       });
       waits(1);
       runs(function() {
-        expect(container.find("a#cartodb_logo").length).toEqual(1);
+        expect(container.find("a.cartodb_logo").length).toEqual(1);
       });
     });
 
-    it("should not add the cartodb logo when cartodb_logo = fase", function() {
+    it("should not add the cartodb logo when cartodb_logo = false", function() {
       runs(function() {
         layer = new cdb.geo.CartoDBLayer({ table_name: "INVENTADO", cartodb_logo: false});
         var lyr = map.addLayer(layer);
@@ -344,7 +344,7 @@ describe("geo.map", function() {
       });
       waits(1);
       runs(function() {
-        expect(container.find("a#cartodb_logo").length).toEqual(0);
+        expect(container.find("a.cartodb_logo").length).toEqual(0);
       });
     });
 

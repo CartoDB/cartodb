@@ -19,7 +19,9 @@ module Resque
 
     def self.perform(meta_id, options)
       begin
-        DataImport.create options.symbolize_keys.merge(:updated_at => Time.now, :queue_id => meta_id)
+        DataImport.
+          create(options.symbolize_keys.merge(:updated_at => Time.now, :queue_id => meta_id)).
+          run_import!
       rescue => e
         # TODO handle some common exceptions here
         raise e

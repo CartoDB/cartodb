@@ -85,7 +85,7 @@ class DataImport < Sequel::Model
     end
   end
 
-  def after_create
+  def run_import!
     begin
       if append.present?
         append_to_existing
@@ -113,6 +113,7 @@ class DataImport < Sequel::Model
         failed!
       end
 
+      self
     rescue => e
       reload
       failed!
@@ -202,7 +203,7 @@ class DataImport < Sequel::Model
     # table_names is null, since we're just appending data to
     # an existing table, not creating a new one
     self.update :table_names => nil
-    
+
     @table = Table.filter(:user_id => current_user.id, :id => table_id).first
     (imports || []).each do |import|
       migrate_existing import.name, table_name

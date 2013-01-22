@@ -24,10 +24,11 @@ div.map {
     width:100%;
     height:64px;
     display:block;
-    z-index:2;
+    z-index:6;
     @include box-shadow(rgba(black,0.15) 0 3px 3px 0);
     @include background(linear-gradient(top,#FDFDFD,#F2F2F2));
   }
+
   div.share {
     position:absolute;
     top:0;
@@ -65,12 +66,12 @@ div.map {
 
       & > .thumb {
         @include inline-block();
-        width: 25px;
-        height:25px;
+        @include size(24px);
         margin: 0 2px 0 0;
 
         border: 1px solid rgba(0,0,0,.2);
         @include border-radius(3px);
+        background-size: 24px 24px;
       }
 
       .info {
@@ -124,6 +125,8 @@ div.map {
 
       padding: 11px 10px;
 
+      &.selected .name { color: #7B7B7B; }
+
       a {
 
         display:block;
@@ -134,17 +137,24 @@ div.map {
         .name {
           @include inline-block();
           font-size:13px;
-          width: 96px;
+          width: 100px;
+
+          text-overflow:ellipsis;
+          white-space: normal;
+          overflow: hidden;
+        }
+
+        &.button {
+          .name { margin: 0 0 0 4px; }
         }
 
         .thumb {
           position:relative;
           @include inline-block();
-          width:22px;
-          height:22px;
+          @include size(24px);
           @include border-radius(3px);
           @include text-indent();
-          background-size: 22px 22px;
+          background-size: 24px 24px;
 
           text-decoration:none;
 
@@ -178,6 +188,10 @@ div.map {
           @include icons-sprite(gmaps_hybrid);
         }
 
+        &.add .thumb {
+          background-size:auto;
+          @include icons-sprite(plus);
+        }
 
         span.color {
           position:relative;
@@ -383,3 +397,4 @@ div.cartodb-edit-buttons .cartodb_id {
   font-size: 13px;
   margin-top:8px;
 }
+

@@ -1,3 +1,5 @@
+SET client_min_messages TO error;
+
 -- Run psql with -tA switches and expect
 -- CDB_TransformToWebmercatorTest_expect
 select '1', ST_AsEWKT(ST_SnapToGrid(CDB_TransformToWebmercator(
@@ -17,3 +19,6 @@ select '7', ST_AsEWKT(ST_SnapToGrid(CDB_TransformToWebmercator(
 -- See https://github.com/Vizzuality/cartodb/issues/901
 select '8', ST_AsEWKT(ST_SnapToGrid(CDB_TransformToWebmercator(
  'SRID=4326;POLYGON((100 0, -100 -100, 100 -100, -100 0, 100 00))'), 1));
+-- See https://github.com/Vizzuality/cartodb/issues/931
+select '9', CDB_TransformToWebmercator(
+ '0106000020E61000000100000001030000000100000007000000010000000000F87F9CDFD01E32095341010000000000F87F193B6F0A30095341010000000000F87FA10FBF4C1D095341010000000000F87F38E258111C095341010000000000F87F5196BAFF17095341010000000000F87F4F0550911B095341010000000000F87F9CDFD01E32095341'::geometry);

@@ -22,7 +22,6 @@ module CartoDB
 
           ogr2ogr_bin_path = `which ogr2ogr`.strip
           ogr2ogr_command = %Q{PGCLIENTENCODING=#{encoding_to_try} #{ogr2ogr_bin_path} -lco FID=cartodb_id -f "PostgreSQL" PG:"host=#{@db_configuration[:host]} port=#{@db_configuration[:port]} user=#{@db_configuration[:username]} dbname=#{@db_configuration[:database]}" #{@working_data[:path]} -nln #{@working_data[:suggested_name]}}
-
           stdin,  stdout, stderr = Open3.popen3(ogr2ogr_command)
 
           unless (err = stderr.read).empty?
@@ -70,7 +69,7 @@ module CartoDB
           # Result in a column called wkb_geometry
           # Start by renaming this column to the_geom
           # And then the next steps all follow the methods for CSV
-          column_names = @db_connection.schema(@working_data[:suggested_name]).map{ |s| s[0].to_s }
+          column_names = @db_connection.schema(@working_data[:suggested_name], :reload => true).map{ |s| s[0].to_s }
           if column_names.include? "wkb_geometry"
             @db_connection.run("ALTER TABLE #{@working_data[:suggested_name]} RENAME COLUMN wkb_geometry TO the_geom;")
           end
@@ -85,7 +84,7 @@ module CartoDB
           #
 
           random_index_name = "importing_#{Time.now.to_i}_#{@working_data[:suggested_name]}"
-          column_names = @db_connection.schema(@working_data[:suggested_name]).map{ |s| s[0].to_s }
+          column_names = @db_connection.schema(@working_data[:suggested_name], :reload => true).map{ |s| s[0].to_s }
           if column_names.include? "geojson"
             @data_import.log_update("update the_geom")
 

@@ -30,14 +30,30 @@ CartoDBLayerCommon.prototype = {
     this.options.visible = false;
   },
 
+
+  /**
+   * Check if CartoDB logo already exists
+   */
+  _isWadusAdded: function(container, className) {
+    // Check if any cartodb-logo exists within container
+    var a = [];
+    var re = new RegExp('\\b' + className + '\\b');
+    var els = container.getElementsByTagName("*");
+    for(var i=0,j=els.length; i<j; i++)
+      if(re.test(els[i].className))a.push(els[i]);
+
+    return a.length > 0;
+  },
+
+
   /**
    * Add Cartodb logo
    * It needs a position, timeout if it is needed and the container where add it
    */
   _addWadus: function(position, timeout, container) {
-    if (this.options.cartodb_logo !== false && !document.getElementById('cartodb_logo')) {
+    if (this.options.cartodb_logo !== false && !this._isWadusAdded(container, 'cartodb_logo')) {
       var cartodb_link = document.createElement("a");
-      cartodb_link.setAttribute('id','cartodb_logo');
+      cartodb_link.setAttribute('class','cartodb_logo');
       container.appendChild(cartodb_link);
       setTimeout(function() {
         cartodb_link.setAttribute('style',"position:absolute; bottom:0; left:0; display:block; border:none; z-index:10000;");

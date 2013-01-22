@@ -39,18 +39,23 @@ BEGIN
   -- Since we're going to use ST_Intersection on input
   -- we'd better ensure the input is valid
   -- TODO: only do this if the first ST_Intersection fails ?
-  latlon_input := CASE
-    -- See http://trac.osgeo.org/postgis/ticket/1719
-    WHEN ST_Dimension(geom) = 0 OR
-      GeometryType(geom) = 'GEOMETRYCOLLECTION' THEN latlon_input
-      ELSE ST_CollectionExtract(
-        ST_MakeValid(latlon_input),
-        ST_Dimension(latlon_input)+1
-        )
+  IF ST_Dimension(geom) != 0 AND 
+      -- See http://trac.osgeo.org/postgis/ticket/1719
+     GeometryType(geom) != 'GEOMETRYCOLLECTION'
+  THEN
+    BEGIN
+      latlon_input := ST_MakeValid(latlon_input);
+    EXCEPTION
+      WHEN OTHERS THEN
+        -- See http://github.com/Vizzuality/cartodb/issues/931
+        RAISE WARNING 'Could not clean input geometry: %', SQLERRM;
+        RETURN NULL; 
     END;
+    latlon_input := ST_CollectionExtract(latlon_input, ST_Dimension(geom)+1);
+  END IF;
 
   -- Then we clip, trying to retain the input type
-  -- 
+  -- TODO: catch exceptions here too ?
   clipped_input := ST_Intersection(latlon_input, valid_extent);
 
   -- We transform to web mercator

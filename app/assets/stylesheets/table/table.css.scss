@@ -11,7 +11,7 @@
 
   div.panes {
     position:absolute;
-    top:150px;
+    top:148px;
     right:0;
     bottom:0;
     left:0;
@@ -283,7 +283,6 @@
 
       // Table body
       tbody {
-        //position:relative;
         width:100%;
         border:none;
         z-index:1;
@@ -291,6 +290,7 @@
         tr.empty_table {}
 
         tr.placeholder, tr.placeholder td {
+          border:1px solid #ECECEC;
           height: 40px;
           cursor:pointer;
 
@@ -324,64 +324,47 @@
           border-bottom:0px;
 
           &:hover {
-            border-color:'#ECECEC';
+            border-color:#ECECEC;
             border-top: 0px;
-            border-top-color:'#ECECEC';
+            border-top-color:#ECECEC;
             background:inherit;
           }
         }
 
 
         tr {
-          // position:relative;
           width:100%;
-          border-top:1px solid #ECECEC;
           background:white;
-          // -moz-transform: translateZ(10px);
-
-          &:first-child {
-            border-top:none;
-          }
-          &:last-child {
-            border-bottom:1px solid #ECECEC;
-          }
 
           &:hover {
-            border-color:#CCCCCC;
             background:#E8F9EC;
 
-            & + tr {
-              border-top-color:#CCCCCC;
-            }
-
-            td:first-child > div {display:block;}
-
-            div.row_header {
-                display: inline-block !important;
+            div.row_header:before, div.row_header:after {
+              display: block !important;
             }
 
           }
 
           td {
-            border-right:1px solid #ECECEC;
-            border-left:1px solid #ECECEC;
             &:not(.row_header) {
               div.cell:not(.disabled) {
                 cursor: pointer;
               }
-
             }
+
             div.cell {
-              @include inline-block();
+              display:block;
               overflow: hidden;
               padding:15px 10px;
-              max-width:300px;
+              max-width:280px;
+              min-height:13px;
               max-height:26px;
               color:#666666;
               text-overflow: ellipsis;
               white-space: nowrap;
               font-size:13px;
-
+              border-bottom:1px solid #ECECEC;
+              border-left:1px solid #ECECEC;
 
               &.disabled {
                 color: #AAA;
@@ -399,47 +382,53 @@
             }
 
             &.rowHeader:first-child {
-              position:relative;
 
               & > div.row_header {
-                //position:relative;
-                @include border-radius(3px);
-                background:#FAFAFA;
-                @include background(linear-gradient(#FAFAFA,#E8E8E8));
-                display:none;
-                margin:10px;
-                padding:0;
-                width:12px;
-                height:12px;
-                border:1px solid #999999;
-                z-index:1;
+                position:relative;
+                display:block;
+                height:100%;
+                overflow:visible;
+                border-bottom:1px solid #ECECEC;
 
                 &:before {
-                  position:relative;
-                  @include opacity(1);
-                  top:9px;
-                  left:4px;
+                  content:'';
+                  position:absolute;
+                  top:15px;
+                  left:10px;
+                  @include border-radius(3px);
+                  background:#FAFAFA;
+                  @include background(linear-gradient(#FAFAFA,#E8E8E8));
+                  display:none;
+                  padding:0;
+                  width:12px;
+                  height:12px;
+                  border:1px solid #999999;
+                  z-index:0;
+                }
+
+                &:after {
+                  position:absolute;
+                  display:none;
+                  content:'';
+                  top:21px;
+                  left:15px;
                   width:0;
                   height:0;
                   border-top:3px solid #666666;
                   border-right:2px solid transparent;
                   border-left:2px solid transparent;
-                  content:'';
+                  @include opacity(1);
                   z-index:0;
                   line-height:16px;
                 }
 
-                &:after {
-                  display:none;
-                }
-
-                &:hover {
+                &:hover:before {
                   background:#E8E8E8;
                   @include background(linear-gradient(#FAFAFA,#E3D3E3));
                   cursor:pointer;
                 }
 
-                &:active {
+                &:active:before {
                   background:#E3D3E3;
                   @include background(linear-gradient(#E3D3E3,#FAFAFA));
                 }
@@ -488,7 +477,6 @@
           border-left:0;
           background:white;
           z-index:-1;
-          -moz-transform: translateZ(-10px); /* Hack for Firefox, page loaders are always on top */
 
           th {
             padding:70px 0;
@@ -505,7 +493,6 @@
             padding:0 0 0 45px;
             background: image-url('layout/loading_page_static.png') no-repeat 0 0;
             vertical-align:top;
-            -moz-transform:translateZ(-10px);
             z-index:-10;
 
             h5 {display:block; color:#7B7B7B; font-size:15px; line-height:normal;}
@@ -664,5 +651,17 @@
 
     &:hover span.icon {
       @include icons-sprite(download_dark);
+    }
+  }
+
+
+  // Hello hacks for Firefox
+  @-moz-document url-prefix() { 
+    div.cell {
+      background:white;
+    }
+
+    tr:hover div.cell {
+      background:#E8F9EC;
     }
   }

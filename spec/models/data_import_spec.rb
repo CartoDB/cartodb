@@ -138,4 +138,18 @@ describe DataImport do
     duplicated_table.name.should be == 'from_query'
     duplicated_table.records[:rows].should have(5).items
   end
+
+  it "should remove any uploaded files after deletion" do
+    upload_path = FileUtils.mkdir_p Rails.root.join('public', 'uploads', 'test0000000000000000')
+    file_path = File.join(upload_path, 'wadus.csv')
+    FileUtils.cp Rails.root.join('db/fake_data/clubbing.csv'), file_path
+    data_import = DataImport.create(
+      :user_id       => @user.id,
+      :data_source   => file_path,
+      :updated_at    => Time.now )
+
+    data_import.destroy
+
+    Dir.exists?(file_path).should be_false
+  end
 end

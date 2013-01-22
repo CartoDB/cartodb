@@ -884,6 +884,14 @@ describe Table do
   end
 
   context "post import processing tests" do
+
+    it "should run vacuum full" do
+      data_import = DataImport.create( :user_id       => @user.id,
+                                       :data_source   => '/../db/fake_data/SHP1.zip' )
+      table = Table[data_import.table_id]
+      table.table_size.should == 12288
+    end
+
     it "should add a point the_geom column after importing a CSV" do
       data_import = DataImport.create( :user_id       => @user.id,
                                        :data_source   => '/../db/fake_data/twitters.csv' )
@@ -975,9 +983,27 @@ describe Table do
       cartodb_id_schema.should be_present
       cartodb_id_schema = cartodb_id_schema[1]
       cartodb_id_schema[:db_type].should == "integer"
+      cartodb_id_schema[:default].should == "nextval('#{table.name}_cartodb_id_seq1'::regclass)"
+      cartodb_id_schema[:primary_key].should == true
+      cartodb_id_schema[:allow_null].should == false
+    end
+
+    it "should add an invalid_cartodb_id column when importing a file with invalid data on the cartodb_id column" do
+      data_import = DataImport.create( :user_id       => @user.id,
+                                       :data_source   =>  '/../db/fake_data/duplicated_cartodb_id.zip')
+      table = Table[data_import.table_id]
+
+      table_schema = @user.in_database.schema(table.name)
+
+      cartodb_id_schema = table_schema.detect {|s| s[0].to_s == "cartodb_id"}
+      cartodb_id_schema.should be_present
+      cartodb_id_schema = cartodb_id_schema[1]
+      cartodb_id_schema[:db_type].should == "integer"
       cartodb_id_schema[:default].should == "nextval('#{table.name}_cartodb_id_seq'::regclass)"
       cartodb_id_schema[:primary_key].should == true
       cartodb_id_schema[:allow_null].should == false
+      invalid_cartodb_id_schema = table_schema.detect {|s| s[0].to_s == "invalid_cartodb_id"}
+      invalid_cartodb_id_schema.should be_present
     end
 
     it "should return geometry types" do

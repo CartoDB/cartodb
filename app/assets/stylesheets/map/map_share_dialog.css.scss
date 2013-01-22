@@ -7,11 +7,18 @@
 @import "../common/sprites";
 @import "../common/mixins";
 
+// Map preview
 .map_share_dialog {
+  div.head {
+    padding:30px 40px!important;
+  }
+
   .map_wrapper {
     position: relative;
-    display:block;
-    height: 249px;
+    @include inline-block();
+    vertical-align:top;
+    width:480px;
+    height: 290px;
     border: 1px solid #CCC;
     margin:0;
     @include translateZ(10px);
@@ -52,30 +59,46 @@
     div#zoom {top:0;}
   }
 
-  ul.switches {
-    margin-top: 18px;
-    letter-spacing:-4px;
-    word-spacing:-4px;
+  // Sharing options
+  div.sharing_options {
+    display:inline-block!important;
+    vertical-align:top;
+    width:156px;
+    margin-left:25px;
 
-    li {
-      @include inline-block();
-      border: none !important;
-      width: 130px;
-      color: #999999;
-      margin-right: 24px;
-      letter-spacing:0px;
-      word-spacing:0px;
-      font:normal 15px $text-fonts;
-
-      &:last-child {
-        margin-right: 0;
-      }
-
-      a.form_switch {
-        float: right;
-      }
+    h5 {
+      font-size:17px;
+      line-height:67px;
+      border-bottom:1px solid rgba(204, 204, 204, 0.75);
+      letter-spacing:-1px;
     }
-  } // ul.switches
+
+    ul.switches {
+      display:block;
+      letter-spacing:-4px;
+      word-spacing:-4px;
+
+      li {
+        @include inline-block();
+        width: 100%;
+        padding:12px 0;
+        color: #999999;
+        letter-spacing:0px;
+        word-spacing:0px;
+        font:normal 15px $text-fonts;
+        // border: none !important;
+
+        &:last-child {
+          margin-right: 0;
+          border:none;
+        }
+
+        a.form_switch {
+          float: right;
+        }
+      }
+    } // ul.switches
+  }
 
   ul.format_selector {
     float:right;
@@ -85,7 +108,7 @@
   } // ul.format_selector
 
   input.url {
-    width:526px;
+    width:604px;
   }
 
   div.description {

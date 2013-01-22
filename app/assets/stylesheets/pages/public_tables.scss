@@ -5,6 +5,8 @@
 
 .tipsy { font-size: 13px;}
 
+header .inner .right li.search { display: none; }
+
 article.public_tables {
 
   margin: auto;
@@ -15,13 +17,13 @@ article.public_tables {
     @include size(23px, 17px);
     @include icons-sprite(t);
 
-    margin: 0 5px 5px 0;
+    margin: 0 7px 5px 0;
   }
 
   .header {
 
-    width:1023px;
-    padding: 30px 0;
+    width:960px;
+    padding: 27px 0 25px 0;
 
     @include clearfix();
 
@@ -44,8 +46,8 @@ article.public_tables {
   }
 
   table {
-    width:1023px;
-    margin: 0 0 40px 0;
+    width:960px;
+    margin: 0 0 70px 0;
 
     border-top: 1px solid rgba($cGray4, .5);
 
@@ -66,11 +68,11 @@ article.public_tables {
     }
 
     td {
-      padding: 25px;
+      padding: 17px 30px;
       border-bottom: 1px solid rgba($cGray4, .5);
 
       &.name { width: 720px; }
-      &.copy { width: 30px; text-align: center; }
+      &.copy { width: 20px; text-align: center; }
       &.separator { padding-left: 0; padding-right: 0; }
 
       &.info {
@@ -108,7 +110,7 @@ article.public_tables {
     }
 
     .stats {
-      margin: 0 0 5px 0;
+      margin: 0 0 7px 0;
 
       font: normal 11px "Helvetica Neue", "Helvetica", Arial, sans-serif;
       font-weight: 500;

@@ -22,7 +22,7 @@ article.public_tables {
 
   .header {
 
-    width:1023px;
+    width:960px;
     padding: 27px 0 25px 0;
 
     @include clearfix();
@@ -46,7 +46,7 @@ article.public_tables {
   }
 
   table {
-    width:1023px;
+    width:960px;
     margin: 0 0 70px 0;
 
     border-top: 1px solid rgba($cGray4, .5);

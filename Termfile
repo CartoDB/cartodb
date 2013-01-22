@@ -27,7 +27,7 @@ end
 
 tab "cartodb textmate" do
   run "cd $CARTODB20_PATH"
-  run "mate ."
+  run "subl ."
 end
 
 tab "cartodb sql api" do

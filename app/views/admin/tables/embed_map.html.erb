@@ -71,9 +71,7 @@
         var bool_fn = function(v) { return v == 'true' }
           , is_custom_install = <%= Cartodb.config[:cartodb_com_hosted].present? %>
           , logo_fn = function(v) {
-                        return ("<%= current_user.account_type %>" == "FREE" || is_custom_install)
-                          ? true
-                          : v == 'true'
+                        return true
                       };
 
         var opt = get_url_params({

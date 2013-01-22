@@ -67,11 +67,15 @@
         return params;
       }
 
+
       $(document).ready(function(){
         var bool_fn = function(v) { return v == 'true' }
           , is_custom_install = <%= Cartodb.config[:cartodb_com_hosted].present? %>
           , logo_fn = function(v) {
-                        return true
+                        return
+                          ("<%= @table.owner.account_type %>" == "FREE" || is_custom_install)
+                          ? true
+                          : v == 'true'
                       };
 
         var opt = get_url_params({

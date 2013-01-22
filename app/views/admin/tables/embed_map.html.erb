@@ -68,12 +68,20 @@
       }
 
       $(document).ready(function(){
-        var bool_fn = function(v) { return v == 'true' };
+        var bool_fn = function(v) { return v == 'true' }
+          , is_custom_install = <%= Cartodb.config[:cartodb_com_hosted] || false %>
+          , logo_fn = function(v) {
+                        return ("<%= current_user.account_type %>" == "FREE" || is_custom_install)
+                          ? true
+                          : v == 'true'
+                      };
+
         var opt = get_url_params({
           'search': bool_fn,
           'title': bool_fn,
           'description': bool_fn,
-          'shareable': bool_fn
+          'shareable': bool_fn,
+          'cartodb_logo': logo_fn
         });
 
         <% if Rails.env.development? %>
@@ -81,7 +89,7 @@
         <% end %>
 
         cartodb.createVis('map', '<%= v1_vizjson_url(@tabla) %>', opt, function(vis) {
-          // add here  your code
+          // add here your code
         });
       });
     </script>

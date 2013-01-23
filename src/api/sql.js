@@ -83,7 +83,7 @@
     }
 
 
-    var isGetRequest = options.type == 'get' || params.type == 'get';
+    var isGetRequest = options.type == 'get';
     // generate url depending on the http method
     params.url = this._host() ;
     if(isGetRequest) {
@@ -95,7 +95,7 @@
       if(isGetRequest) {
         params.url += '&api_key=' + this.api_key;
       } else {
-        darams.data['api_key'] = this.api_key;
+        params.data['api_key'] = this.api_key;
       }
     }
 

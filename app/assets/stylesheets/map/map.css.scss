@@ -119,7 +119,15 @@ div.map {
   } // .dropdowns
 
   div.dropdown.basemap {
+
+    width:auto;
     border: 1px solid #999999;
+
+    ul {
+      width:200px;
+      @include inline-block();
+      vertical-align:top;
+    }
 
     ul li {
 
@@ -137,7 +145,7 @@ div.map {
         .name {
           @include inline-block();
           font-size:13px;
-          width: 100px;
+          width: 150px;
 
           text-overflow:ellipsis;
           white-space: normal;
@@ -159,6 +167,15 @@ div.map {
           text-decoration:none;
 
           border: 1px solid rgba(0,0,0, 0.3);
+
+
+            span.remove_layer {
+              display:block;
+              width: 10px;
+              height: 10px;
+              background:red;
+              @include position(false, 0, 0, false);
+            }
 
           &:hover {
             cursor:pointer;

@@ -22,6 +22,11 @@ CREATE OR REPLACE FUNCTION CDB_TableMetadata_Trigger()
 RETURNS trigger AS
 $$
 BEGIN
+  -- Guard against infinite loop
+  IF TG_RELID = 'public.CDB_TableMetadata'::regclass::oid THEN
+    RETURN NULL;
+  END IF;
+
   WITH nv as (
     SELECT TG_RELID as tabname, NOW() as t
   ), updated as (

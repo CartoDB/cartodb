@@ -342,6 +342,8 @@ header { // general header
         margin:3px 0 0 15px;
         @include inline-block();
 
+        &.empty:before { content: ''; }
+
         &:before {
           position:relative;
           content:'|';
@@ -443,13 +445,26 @@ header { // general header
     }
   }
 
-  &.query {
-    background-color:#FF9900;
-    a.clearview {color:#FF9900!important;}
-    h2 a:hover {text-decoration:none; cursor:default;}
+  &.query { // add this class when the table has a query applied
+
+    background-color:$cOrange;
+
+    a.clearview { color:$cOrange!important;}
+    h2 a:hover  { text-decoration:none; cursor:default; }
+
     span.table_description p {
-      i {font-style:italic; @include opacity(0.7);}
-      &:hover {text-decoration:none; color:rgba(white, 0.5)!important; cursor:default!important;}
+
+      i {
+        font-style:italic;
+        @include opacity(0.7);
+      }
+
+      &:hover {
+        text-decoration:none;
+        color:rgba(white, 0.5)!important;
+        cursor:default!important;
+      }
+
     }
-  }
+  } // query
 }

@@ -658,11 +658,11 @@ class Table < Sequel::Model(:user_tables)
           end
         end
 
-        if new_column_type = get_new_column_type(invalid_column)
+        if invalid_column.nil? || new_column_type != get_new_column_type(invalid_column)
+          raise e
+        else
           user_database.set_column_type self.name, invalid_column.to_sym, new_column_type
           retry
-        else
-          raise e
         end
       end
     end

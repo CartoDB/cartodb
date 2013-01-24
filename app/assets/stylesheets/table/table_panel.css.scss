@@ -498,10 +498,11 @@
 
         ul.vis_options {
           position:absolute;
-          top:0; left:0; bottom:0;
+          @include position(0, 0, false, 0);
           display:block;
-          padding:0 30px;
           width:1000px;
+          padding:0 30px;
+
           letter-spacing:-4px;
           border-bottom:1px solid #E5E5E5;
           @include box-shadow(rgba(0,0,0,0.05) 0 -4px 8px 0 inset);
@@ -516,40 +517,50 @@
 
             a {
               display:block;
-              width:92px;
-              height:82px;
+              @include size(92px, 82px);
               margin:30px 0;
               padding:3px;
+
               border:1px solid #CCCCCC;
+
               @include border-radius(5px);
               @include text-indent();
 
+              @include simple-transition(opacity, 200ms);
+
+              opacity: .7;
+
+              // Wizard icons
               &.simple {
                 background: image-url('layout/wizard-simple.png') no-repeat 3px 3px;
-                &.polygon {background: image-url('layout/wizard-simple-polygon.png') no-repeat 3px 3px;}
-                &.line {background: image-url('layout/wizard-simple-polyline.png') no-repeat 3px 3px;}
+                &.polygon { background: image-url('layout/wizard-simple-polygon.png') no-repeat 3px 3px;}
+                &.line { background: image-url('layout/wizard-simple-polyline.png') no-repeat 3px 3px;}
               }
+
               &.choropleth {
                 background: image-url('layout/wizard-choropleth.png') no-repeat 3px 3px;
-                &.line {background: image-url('layout/wizard-choropleth-polyline.png') no-repeat 3px 3px;}
+                &.line { background: image-url('layout/wizard-choropleth-polyline.png') no-repeat 3px 3px;}
               }
-              &.bubble {background: image-url('layout/wizard-bubble.png') no-repeat 3px 3px;}
-              &.density {background: image-url('layout/wizard-density-hex.png') no-repeat 3px 3px;}
+
+              &.bubble  { background: image-url('layout/wizard-bubble.png') no-repeat 3px 3px;}
+              &.density { background: image-url('layout/wizard-density-hex.png') no-repeat 3px 3px;}
 
               &:hover {
                 border-color:#666666;
+                opacity: 1;
               }
 
               &.selected {
                 border-color:#666666;
 
+                opacity: 1;
+
                 &:before, &:after {
-                  content: '';
+                  @include size(0);
                   position:absolute;
+                  content: '';
                   left:50%;
                   margin-left:-13px;
-                  width:0;
-                  height:0;
                   border-left:10px solid transparent;
                   border-right:10px solid transparent;
                   z-index:5;
@@ -560,6 +571,7 @@
                   border-bottom:10px solid white;
                   z-index:10;
                 }
+
                 &:after {
                   bottom:0;
                   border-bottom:10px solid #CCCCCC;

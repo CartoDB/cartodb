@@ -223,6 +223,13 @@ namespace :cartodb do
       end
     end
 
+    desc "Update test_quota trigger"
+    task :update_test_quota_trigger => :environment do
+      User.all.each do |user|
+        user.rebuild_quota_trigger
+      end
+    end
+
     desc "Update update_the_geom_webmercator_trigger"
     task :update_the_geom_webmercator_trigger => :environment do
       User.all.each do |user|

@@ -124,7 +124,8 @@ cdb.geo.CartoDBLayer = cdb.geo.MapLayer.extend({
     sql_port: "80",
     sql_protocol: "http",
     extra_params: {},
-    cdn_url: null
+    cdn_url: null,
+    maxZoom: 28
   },
 
   activate: function() {
@@ -198,7 +199,7 @@ cdb.geo.Map = cdb.core.Model.extend({
     center: [0, 0],
     zoom: 3,
     minZoom: 0,
-    maxZoom: 20,
+    maxZoom: 28,
     provider: 'leaflet'
   },
 
@@ -298,6 +299,8 @@ cdb.geo.Map = cdb.core.Model.extend({
 
   _adjustZoomtoLayer: function(layer) {
     //set zoom
+    //
+    /*
     var z = layer.get('maxZoom');
     if(_.isNumber(z)) {
       this.set({ maxZoom: z });
@@ -306,6 +309,7 @@ cdb.geo.Map = cdb.core.Model.extend({
     if(_.isNumber(z)) {
       this.set({ minZoom: z });
     }
+    */
   },
 
   addLayer: function(layer, opts) {

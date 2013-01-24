@@ -38,6 +38,20 @@ describe("cdb.geo.ui.infowindow", function() {
       expect(t).toEqual(false);
       expect(spy.called).toEqual(true);
     });
+
+    it("should save and restore fields", function() {
+      model.addField('test', 1);
+      model.addField('test2', 0);
+      model.addField('test3', 3);
+      model.saveFields();
+      expect(model.get('old_fields')).toEqual(model.get('fields'));
+      model.clearFields();
+      model.restoreFields();
+      expect(model.get('old_fields')).toEqual(undefined);
+      expect(model.get('fields')[0].name).toEqual('test2');
+      expect(model.get('fields')[1].name).toEqual('test');
+      expect(model.get('fields')[2].name).toEqual('test3');
+    });
   });
 
   describe("view", function() {

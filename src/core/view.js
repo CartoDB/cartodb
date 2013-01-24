@@ -95,7 +95,9 @@
       var self = this;
       obj.bind && obj.bind(ev, function() {
         self.trigger(retrigEvent);
-      })
+      }, self)
+      // add it as related model//object
+      this.add_related_model(obj);
     },
     /**
     * Captures an event and prevents the default behaviour and stops it from bubbling

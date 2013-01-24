@@ -1,7 +1,7 @@
 /**
  * Show a dropdown from the target
  *
- * It shows the several options of the user settings 
+ * It shows the several options of the user settings
  *
  * usage example:
  *
@@ -32,6 +32,7 @@ cdb.ui.common.Dropdown = cdb.core.View.extend({
     vertical_position: "down",
     horizontal_position: "right",
     tick: "right",
+    vertical_offset: 0,
     horizontal_offset: 0
   },
 
@@ -81,7 +82,7 @@ cdb.ui.common.Dropdown = cdb.core.View.extend({
   },
 
   _keydown: function(e) {
-    if (e.keyCode === 27) { 
+    if (e.keyCode === 27) {
       this.hide();
     }
   },
@@ -113,12 +114,12 @@ cdb.ui.common.Dropdown = cdb.core.View.extend({
       , self = this;
 
     this.$el.css({
-      top: targetPos.top + parseInt((self.options.vertical_position == "up") ? (- elementHeight - 10) : (targetHeight + 10)),
+      top: targetPos.top + parseInt((self.options.vertical_position == "up") ? (- elementHeight - 10 - self.options.vertical_offset) : (targetHeight + 10 - self.options.vertical_offset)),
       left: targetPos.left + parseInt((self.options.horizontal_position == "left") ? (self.options.horizontal_offset - 15) : (targetWidth - elementWidth + 15 - self.options.horizontal_offset))
     })
     .addClass(
       // Add vertical and horizontal position class
-      (this.options.vertical_position == "up" ? "vertical_top" : "vertical_bottom" ) 
+      (this.options.vertical_position == "up" ? "vertical_top" : "vertical_bottom" )
       + " " +
       (this.options.horizontal_position == "right" ? "horizontal_right" : "horizontal_left" )
       + " " +

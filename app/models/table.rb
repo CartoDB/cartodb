@@ -1318,8 +1318,9 @@ TRIGGER
     DROP TRIGGER IF EXISTS cache_checkpoint ON "#{self.name}";
     CREATE TRIGGER cache_checkpoint BEFORE UPDATE OR INSERT OR DELETE OR TRUNCATE ON "#{self.name}" EXECUTE PROCEDURE update_timestamp();
 
+    DROP TRIGGER IF EXISTS track_updates ON "#{self.name}";
     CREATE trigger track_updates
-      AFTER INSERT OR UPDATE OR TRUNCATE ON "#{self.name}"
+      AFTER INSERT OR UPDATE OR DELETE OR TRUNCATE ON "#{self.name}"
       FOR EACH STATEMENT
       EXECUTE PROCEDURE cdb_tablemetadata_trigger();
 

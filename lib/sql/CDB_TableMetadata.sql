@@ -12,7 +12,7 @@ GRANT SELECT ON public.CDB_TableMetadata TO public;
 -- Attach to tables like this:
 --
 --   CREATE trigger track_updates
---    AFTER INSERT OR UPDATE OR TRUNCATE ON <tablename>
+--    AFTER INSERT OR UPDATE OR TRUNCATE OR DELETE ON <tablename>
 --    FOR EACH STATEMENT
 --    EXECUTE PROCEDURE cdb_tablemetadata_trigger(); 
 --
@@ -26,6 +26,12 @@ BEGIN
   IF TG_RELID = 'public.CDB_TableMetadata'::regclass::oid THEN
     RETURN NULL;
   END IF;
+
+  -- Cleanup stale entries
+  DELETE FROM public.CDB_TableMetadata
+   WHERE NOT EXISTS (
+    SELECT oid FROM pg_class WHERE oid = tabname
+  );
 
   WITH nv as (
     SELECT TG_RELID as tabname, NOW() as t

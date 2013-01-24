@@ -884,6 +884,14 @@ describe Table do
   end
 
   context "post import processing tests" do
+
+    it "should run vacuum full" do
+      data_import = DataImport.create( :user_id       => @user.id,
+                                       :data_source   => '/../db/fake_data/SHP1.zip' )
+      table = Table[data_import.table_id]
+      table.table_size.should == 12288
+    end
+
     it "should add a point the_geom column after importing a CSV" do
       data_import = DataImport.create( :user_id       => @user.id,
                                        :data_source   => '/../db/fake_data/twitters.csv' )

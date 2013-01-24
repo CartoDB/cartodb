@@ -392,6 +392,11 @@ class Table < Sequel::Model(:user_tables)
     add_table_to_stats
   end
 
+  def after_commit
+    owner.in_database.run("VACUUM FULL \"#{self.name}\"")
+  rescue Sequel::DatabaseError => e
+  end
+
   def create_default_map_and_layers
     m = Map.create(Map::DEFAULT_OPTIONS.merge(table_id: self.id, user_id: self.user_id))
     self.map_id = m.id

@@ -408,12 +408,20 @@ describe User do
     doomed_user.destroy
   end
 
-  it "should remove its user tables after deletion" do
+  it "should remove its user tables, layers and data imports after deletion" do
     doomed_user = create_user :email => 'doomed2@example.com', :username => 'doomed2', :password => 'doomed123'
-    CartoDB::Varnish.any_instance.expects(:purge).with("obj.http.X-Cache-Channel ~ #{doomed_user.database_name}.*").returns(true)
-
+    DataImport.create(:user_id     => doomed_user.id,
+                      :data_source => '/../db/fake_data/SHP1.zip')
+    doomed_user.add_layer Layer.create(:kind => 'carto')
+    
+    #CartoDB::Varnish.any_instance.expects(:purge).with("obj.http.X-Cache-Channel ~ #{doomed_user.database_name}.*").returns(true)
+    Table.any_instance.expects(:delete_tile_style).returns(true)
+    
     doomed_user.destroy
 
-    Table.filter(:user_id => doomed_user.id).count.should == 0
+    DataImport.where(:user_id => doomed_user.id).count.should == 0
+    Table.where(:user_id => doomed_user.id).count.should == 0
+    Layer.db["SELECT * from layers_users WHERE user_id = #{doomed_user.id}"].count.should == 0
   end
+
 end

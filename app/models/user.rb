@@ -12,8 +12,6 @@ class User < Sequel::Model
     layer.set_default_order(user)
   }
 
-  plugin :association_dependencies, :maps => :destroy, :layers => :nullify
-
   # Sequel setup & plugins
   set_allowed_columns :email, :map_enabled, :password_confirmation, :quota_in_bytes, :table_quota, :account_type, :private_tables_enabled
   plugin :validation_helpers
@@ -62,6 +60,11 @@ class User < Sequel::Model
   def before_destroy
     # Remove user tables
     self.tables.all.each { |t| t.destroy }
+    
+    # Remove user data imports, maps and layers
+    self.data_imports.each { |d| d.destroy }
+    self.maps.each { |m| m.destroy }
+    self.layers.each { |l| self.remove_layer l }
 
     # Remove metadata from redis
     $users_metadata.DEL(self.key)

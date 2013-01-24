@@ -1,5 +1,6 @@
 2.0.3 (xx/xx/xx)
 -----
+* Add cartodb:db:update_test_quota_trigger rake task
 
 2.0.2 (21/01/13)
 -----

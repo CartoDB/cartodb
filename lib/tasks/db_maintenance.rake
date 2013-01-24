@@ -223,6 +223,20 @@ namespace :cartodb do
       end
     end
 
+    desc "Update test_quota trigger"
+    task :update_test_quota_trigger => :environment do
+      User.all.each do |user|
+        user.load_cartodb_functions 
+        
+        tables = Table.filter(:user_id => user.id).all
+        next if tables.empty?
+        puts "Updating tables in db '#{user.database_name}' (#{user.username})"
+        tables.each do |table|
+          table.set_trigger_check_quota
+        end
+      end
+    end
+
     desc "Update update_the_geom_webmercator_trigger"
     task :update_the_geom_webmercator_trigger => :environment do
       User.all.each do |user|

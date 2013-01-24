@@ -73,7 +73,7 @@
           , is_custom_install = <%= Cartodb.config[:cartodb_com_hosted].present? %>
           , logo_fn = function(v) {
                         return
-                          ("<%= @table.owner.account_type %>" == "FREE" || is_custom_install)
+                          ("<%= @table.owner.account_type.downcase %>" != "coronelli" || is_custom_install)
                           ? true
                           : v == 'true'
                       };

@@ -8,7 +8,10 @@ CREATE TABLE IF NOT EXISTS
 -- the security definer trigger
 GRANT SELECT ON public.CDB_TableMetadata TO public;
 
+--
 -- Trigger logging updated_at in the CDB_TableMetadata
+-- and notifying cdb_tabledata_update with table name as payload.
+--
 -- Attach to tables like this:
 --
 --   CREATE trigger track_updates
@@ -44,7 +47,8 @@ BEGIN
   FROM nv LEFT JOIN updated USING(tabname)
   WHERE updated.tabname IS NULL;
 
-  -- TODO: PERFORM NOTIFY something ?
+  -- Notify table data update
+  PERFORM pg_notify('cdb_tabledata_update', TG_TABLE_NAME);
 
   RETURN NULL;
 END;

@@ -1,33 +1,34 @@
-<div class="cartodb-popup header with-image">
+<div class="cartodb-popup header with-image" data-cover="true">
   <a href="#close" class="cartodb-popup-close-button close">x</a>
   <div class="cartodb-popup-header">
-  <div class="cover" data-src="{{#content.fields}}{{^index}}{{#value}}{{ value }}{{/value}}{{/index}}{{/content.fields}}">
-  <div id="spinner"></div>
+  <div class="cover">
+    <div id="spinner"></div>
 
-  <div class="image_not_found"> <i></i> <span>Non-valid picture URL</span> </div>
+    <div class="image_not_found"> <i></i> <span>Non-valid picture URL</span> </div>
 
     {{#content.fields}}
 
 
         {{#index}}
           {{#value}}
-            <p>{{ value }}</p>
+            <h1 class="order{{index}}">{{ value }}</h1>
           {{/value}}
-      {{/index}}
+        {{/index}}
 
 
       {{^index}}
         {{^value}}
           <h1 class="empty">null</h1>
         {{/value}}
-        <span class="separator"></span>
+        <span class="separator"></span>      
       {{/index}}
     {{/content.fields}}
     </div>
+
   </div>
   <div class="cartodb-popup-content-wrapper">
-    <div class="cartodb-popup-content">
       {{#content.fields}}
+    <div class="cartodb-popup-content order{{index}}">
         {{#index}}
           {{#title}}<h4>{{title}}</h4>{{/title}}
           {{#value}}
@@ -37,8 +38,8 @@
             <p class="empty">null</p>
           {{/value}}
         {{/index}}
-      {{/content.fields}}
     </div>
+      {{/content.fields}}
   </div>
   <div class="cartodb-popup-tip-container">
   </div>

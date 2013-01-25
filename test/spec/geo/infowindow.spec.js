@@ -145,18 +145,20 @@ describe("cdb.geo.ui.infowindow", function() {
 
 
   describe("image template", function() {
-    var model, view, container, fields, fields2;
+    var model, view, container, fields, fieldsWithoutURL, url;
 
     beforeEach(function() {
+
+      url = "http://assets.javierarce.com/lion.png";
 
       container = $('<div>').css('height', '200px');
 
       fields = [
-        { name: 'test1', position: 1, title: true, value: "http://assets.javierarce.com/lion.png" },
+        { name: 'test1', position: 1, title: true, value: url },
         { name: 'test2', position: 2, title: true, value: "b"}
       ];
 
-      fields2 = [
+      fieldsWithoutURL = [
         { name: 'test1', position: 1, title: true, value: "x" },
         { name: 'test2', position: 2, title: true, value: "b"}
       ];
@@ -182,7 +184,7 @@ describe("cdb.geo.ui.infowindow", function() {
     });
 
     it("should get the cover url", function() {
-      expect(view._getCoverURL()).toEqual("http://assets.javierarce.com/lion.png");
+      expect(view._getCoverURL()).toEqual(url);
     });
 
     it("should validate the cover url", function() {
@@ -191,12 +193,18 @@ describe("cdb.geo.ui.infowindow", function() {
     });
 
     it("should append the image", function() {
-      model.set('template', '<div class="cover"></div>');
+      model.set('template', '<div class="cartodb-popup header" data-cover="true"><div class="cover"></div></div>');
       expect(view.$el.find("img").length).toEqual(1);
     });
 
     it("if the image is invalid it shouldn't append it", function() {
-      model.set("content", { fields: fields2 });
+      model.set("content", { fields: fieldsWithoutURL });
+      model.set('template', '<div class="cartodb-popup header" data-cover="true"><div class="cover"></div></div>');
+      expect(view.$el.find("img").length).toEqual(0);
+    });
+
+    it("if the theme doesn't have cover don't append the image", function() {
+      model.set("content", { fields: fields });
       model.set('template', '<div class="cover"></div>');
       expect(view.$el.find("img").length).toEqual(0);
     });

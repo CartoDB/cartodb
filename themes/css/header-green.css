@@ -5,7 +5,7 @@
 
 /* INFOWINDOW */
 div.cartodb-popup.header.green div.cartodb-popup-header {
-  background:url('../img/headers.png') no-repeat -252px 0;
+  background:url('../img/headers.png') no-repeat -252px -40px;
 }
 
 div.cartodb-popup.header.green div.cartodb-popup-header h4 {
@@ -17,11 +17,11 @@ div.cartodb-popup.header.green div.cartodb-popup-header span.separator {
 }
 
 div.cartodb-popup.header.green a.cartodb-popup-close-button {
-  background:url('../img/headers.png') no-repeat -478px 0;
+  background:url('../img/headers.png') no-repeat -478px -40px;
 }
 
 div.cartodb-popup.header.green a.cartodb-popup-close-button:hover {
-  background-position:-478px -26px;
+  background-position:-478px -66px;
 }
 
 /* EMBED MAP */

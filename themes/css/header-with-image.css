@@ -28,13 +28,8 @@ div.cartodb-popup.header.with-image div.cartodb-popup-header .cover #spinner {
 }
 
 div.cartodb-popup.header.with-image div.cartodb-popup-header .cover img {
-  width: 218px;
-  height:135px;
-  top: 4px;
-  left: 4px;
+  position:absolute;
   border-radius: 4px 4px 0 0;
-  /*max-width:218px;*/
-  max-height:135px;
   display:none;
 }
 
@@ -70,7 +65,7 @@ div.cartodb-popup.header.with-image div.cartodb-popup-header h1 {
 }
 
 div.cartodb-popup.header.with-image div.cartodb-popup-header h4 {
-  color:#D8832A;
+  color:#CCC;
 }
 
 div.cartodb-popup.header.with-image div.cartodb-popup-header span.separator {
@@ -85,16 +80,30 @@ div.cartodb-popup.header.with-image a.cartodb-popup-close-button:hover {
   background-position:-1235px -66px;
 }
 
+div.cartodb-popup.header.with-image .cartodb-popup-header h1 {
+  display:none;
+}
+
+div.cartodb-popup.header.with-image .cartodb-popup-header h1.order1 {
+  display:block;
+}
+
+div.cartodb-popup.header.with-image .cartodb-popup-content-wrapper .cartodb-popup-content.order1 {
+  display:none;
+}
+
 /* EMBED MAP */
 div.header.with-image h1 {
-  color: #D8832A;
+  color: #CCC;
+  z-index: 100;
 }
 
 div.header.with-image h1 a {
-  color: #D8832A;
+  color: #CCC;
 }
 
 div.header.with-image h1 a:hover {
-  color: #CC7A29;
+  color: #333;
   text-decoration: underline;
 }
+

@@ -1,0 +1,100 @@
+/**
+ *  CartoDB2.0 Infowindow header theme with-image
+ */
+
+/* INFOWINDOW */
+div.cartodb-popup.header.with-image div.cartodb-popup-header {
+  position:relative;
+
+  background:url('../img/headers.png') no-repeat -1008px 0;
+  height:138px;
+  max-height:104px;
+}
+
+div.cartodb-popup.header.with-image div.cartodb-popup-header .cover {
+  display:block;
+  position:absolute;
+  width: 218px;
+  height:135px;
+  top: 4px;
+  left: 4px;
+  border-radius: 4px 4px 0 0;
+}
+
+div.cartodb-popup.header.with-image div.cartodb-popup-header .cover #spinner {
+  position:absolute;
+  top: 67px;
+  left: 109px;
+}
+
+div.cartodb-popup.header.with-image div.cartodb-popup-header .cover img {
+  width: 218px;
+  height:135px;
+  top: 4px;
+  left: 4px;
+  border-radius: 4px 4px 0 0;
+  /*max-width:218px;*/
+  max-height:135px;
+  display:none;
+}
+
+div.cartodb-popup.header.with-image div.cartodb-popup-header .image_not_found {
+  position:absolute;
+  top: 15px;
+  left: 15px;
+  width: 200px;
+  display:none;
+}
+
+div.cartodb-popup.header.with-image div.cartodb-popup-header .image_not_found span {
+  display:-moz-inline-stack;display:inline-block;vertical-align:top;*vertical-align:auto;zoom:1;*display:inline;
+  margin: 3px 0 0 -2px;
+  color: #878787;
+  font-size:13px;
+  font-family: "Helvetica", "Helvetica Neue", Arial, sans-serif;
+}
+
+div.cartodb-popup.header.with-image div.cartodb-popup-header .cover .image_not_found i {
+  display:-moz-inline-stack;display:inline-block;vertical-align:top;*vertical-align:auto;zoom:1;*display:inline;
+  width: 31px;
+  height: 22px;
+  background:transparent url('../img/image_not_found.png');
+}
+
+div.cartodb-popup.header.with-image div.cartodb-popup-header h1 {
+  position:absolute;
+  bottom: 13px;
+  left: 18px;
+
+  width: 188px;
+}
+
+div.cartodb-popup.header.with-image div.cartodb-popup-header h4 {
+  color:#D8832A;
+}
+
+div.cartodb-popup.header.with-image div.cartodb-popup-header span.separator {
+  background:#CCC;
+}
+
+div.cartodb-popup.header.with-image a.cartodb-popup-close-button {
+  background:url('../img/headers.png') no-repeat -1235px -40px;
+}
+
+div.cartodb-popup.header.with-image a.cartodb-popup-close-button:hover {
+  background-position:-1235px -66px;
+}
+
+/* EMBED MAP */
+div.header.with-image h1 {
+  color: #D8832A;
+}
+
+div.header.with-image h1 a {
+  color: #D8832A;
+}
+
+div.header.with-image h1 a:hover {
+  color: #CC7A29;
+  text-decoration: underline;
+}

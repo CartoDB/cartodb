@@ -226,14 +226,7 @@ namespace :cartodb do
     desc "Update test_quota trigger"
     task :update_test_quota_trigger => :environment do
       User.all.each do |user|
-        user.load_cartodb_functions 
-        
-        tables = Table.filter(:user_id => user.id).all
-        next if tables.empty?
-        puts "Updating tables in db '#{user.database_name}' (#{user.username})"
-        tables.each do |table|
-          table.set_trigger_check_quota
-        end
+        user.rebuild_quota_trigger
       end
     end
 

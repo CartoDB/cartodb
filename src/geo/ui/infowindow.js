@@ -68,7 +68,7 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
   },
 
   sortFields: function() {
-    this.get('fields').sort(function(a, b) { return a.position -  b.position; });
+    this.get('fields').sort(function(a, b) { return a.position - b.position; });
   },
 
   _addField: function(fieldName, at) {
@@ -96,26 +96,6 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
     });
     return this;
   },
-
-  // addField: function(fieldName, at) {
-  //   if(!this.containsField(fieldName)) {
-  //     //var fields = this._cloneFields() || [];
-
-  //     var fields = this.get('fields')
-  //       , sort = at === undefined;
-
-  //     at = at === undefined ? fields.length: at;
-  //     fields.push({name: fieldName, title: true, position: at});
-  //     // if (sort)
-  //     //   fields.sort(function(a, b) { return a.position -  b.position; });
-  //     this.trigger('changeFields')
-  //     //this.set({'fields': f});
-
-  //     //sort fields
-  //     //this._setFields(fields);
-  //   }
-  //   return this;
-  // },
 
   getFieldProperty: function(fieldName, k) {
     if(this.containsField(fieldName)) {
@@ -184,6 +164,8 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
 
   initialize: function(){
 
+    var that = this;
+
     _.bindAll(this, "render", "setLatLng", "changeTemplate", "_updatePosition", "_update", "toggle", "show", "hide");
 
     this.mapView = this.options.mapView;
@@ -199,10 +181,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     this.model.bind('change:template',      this._compileTemplate, this);
 
     this.mapView.map.bind('change',         this._updatePosition, this);
-    //this.map.on('viewreset', this._updatePosition, this);
-    //this.mapView.bind('drag',               this._updatePosition, this);
 
-    var that = this;
     this.mapView.bind('zoomstart', function(){
       that.hide(true);
     });
@@ -228,6 +207,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
        template: this.model.get('template'),
        type: this.model.get('template_type') || 'mustache'
     }).asFunction()
+
     this.render();
   },
 
@@ -272,6 +252,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
   },
 
   render: function() {
+
     if(this.template) {
 
       // If there is content, destroy the jscrollpane first, then remove the content.
@@ -284,7 +265,10 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
 
       // Mustache doesn't support 0 values, we have to convert number to strings
       // before apply the template
-      this.$el.html($(this.template(this._fieldsToString(attrs))));
+
+      var fields = this._fieldsToString(attrs);
+
+      this.$el.html($(this.template(fields)));
 
       // Hello jscrollpane hacks!
       // It needs some time to initialize, if not it doesn't render properly the fields
@@ -297,9 +281,107 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
             maintainPosition:       false,
             verticalDragMinHeight:  20
           });
-      },1)
-    }
+      }, 1);
+
+      this._loadCover();
+
+    };
+
     return this;
+  },
+
+  _containsCover: function() {
+    return this.$el.find(".cartodb-popup.header").attr("data-cover");
+  },
+
+  _getCoverURL: function() {
+
+    var content = this.model.get("content");
+
+    if (content && content.fields) {
+
+      if (content.fields && content.fields.length > 0) {
+        return content.fields[0].value;
+      }
+      return false;
+    }
+
+    return false;
+
+  },
+
+  /**
+  * Attempts to load the cover URL and show it
+  */
+  _loadCover: function() {
+
+    if (!this._containsCover()) return;
+
+    var self = this;
+
+    var
+    $cover         = this.$el.find(".cover"),
+    $imageNotFound = this.$el.find(".image_not_found");
+
+    var url = this._getCoverURL();
+
+    if (!this._isValidURL(url)) {
+      $imageNotFound.fadeIn(250);
+      return;
+    }
+
+    // configure spinner
+    var
+    target  = document.getElementById('spinner'),
+    opts    = { lines: 9, length: 4, width: 2, radius: 4, corners: 1, rotate: 0, color: '#ccc', speed: 1, trail: 60, shadow: true, hwaccel: false, zIndex: 2e9 },
+    spinner = new Spinner(opts).spin(target);
+
+    // create the image
+    var $img = $cover.find("img");
+
+    $imageNotFound.hide();
+
+    $img.hide(function() {
+      this.remove();
+    });
+
+    $img = $("<img />").attr("src", url);
+    $cover.append($img);
+
+    $img.load(function(){
+      spinner.stop();
+
+      var w  = $img.width();
+      var h  = $img.height();
+      var cW = $cover.width();
+      var cH = $cover.height();
+
+      // Resize rules
+      if ( (w < cW && h < cH) ) $img.css({ top: "50%", left: "50%", marginTop: -1*h/2, marginLeft: -1*w/2 });
+      else if ( w > cW && h > cH && h > w )  $img.css({ height: cH });
+      else $img.css({ width: cW });
+
+      $img.fadeIn(300);
+    })
+    .error(function(){
+      spinner.stop();
+      $imageNotFound.fadeIn(250);
+    });
+
+  },
+
+  /**
+  * Return true if the provided URL is valid
+  */
+  _isValidURL: function(url) {
+
+    if (url) {
+      var urlPattern = /(http|ftp|https):\/\/[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:\/~+#-]*[\w@?^=%&amp;\/~+#-])?/
+      return url.match(urlPattern) != null ? true : false;
+    }
+
+    return false;
+
   },
 
   toggle: function() {
@@ -371,11 +453,11 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
       });
 
       this.$el
-        .delay(delay)
-        .animate({
-          opacity: 1,
-          marginBottom: 0
-        },300);
+      .delay(delay)
+      .animate({
+        opacity: 1,
+        marginBottom: 0
+      },300);
     } else {
       this.$el.show();
     }
@@ -423,14 +505,14 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     if (!this.model.get("autoPan") || this.isHidden()) { return; }
 
     var
-      x               = this.$el.position().left,
-      y               = this.$el.position().top,
-      containerHeight = this.$el.outerHeight(true) + 15, // Adding some more space
-      containerWidth  = this.$el.width(),
-      pos             = this.mapView.latLonToPixel(this.model.get("latlng")),
-      adjustOffset    = {x: 0, y: 0};
-      size            = this.mapView.getSize()
-      wait_callback   = 0;
+    x               = this.$el.position().left,
+    y               = this.$el.position().top,
+    containerHeight = this.$el.outerHeight(true) + 15, // Adding some more space
+    containerWidth  = this.$el.width(),
+    pos             = this.mapView.latLonToPixel(this.model.get("latlng")),
+    adjustOffset    = {x: 0, y: 0};
+    size            = this.mapView.getSize()
+    wait_callback   = 0;
 
     if (pos.x - offset[0] < 0) {
       adjustOffset.x = pos.x - offset[0] - 10;

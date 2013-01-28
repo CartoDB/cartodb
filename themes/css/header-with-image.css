@@ -41,12 +41,17 @@ div.cartodb-popup.header.with-image div.cartodb-popup-header .image_not_found {
   display:none;
 }
 
-div.cartodb-popup.header.with-image div.cartodb-popup-header .image_not_found span {
+div.cartodb-popup.header.with-image div.cartodb-popup-header .image_not_found a {
   display:-moz-inline-stack;display:inline-block;vertical-align:top;*vertical-align:auto;zoom:1;*display:inline;
   margin: 3px 0 0 -2px;
-  color: #878787;
+  color: #888888;
   font-size:13px;
   font-family: "Helvetica", "Helvetica Neue", Arial, sans-serif;
+}
+
+div.cartodb-popup.header.with-image div.cartodb-popup-header .image_not_found a:hover {
+  color: #888888;
+  text-decoration:underline;
 }
 
 div.cartodb-popup.header.with-image div.cartodb-popup-header .cover .image_not_found i {

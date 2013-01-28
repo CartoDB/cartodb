@@ -185,6 +185,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     this.mapView.bind('zoomstart', function(){
       that.hide(true);
     });
+
     this.mapView.bind('zoomend', function() {
       that.show(true);
     });
@@ -283,6 +284,8 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
           });
       }, 1);
 
+
+      // If the template is 'cover-enabled', load the cover
       this._loadCover();
 
     };
@@ -357,8 +360,8 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
       var cH = $cover.height();
 
       // Resize rules
-      if ( (w < cW && h < cH) ) $img.css({ top: "50%", left: "50%", marginTop: -1*h/2, marginLeft: -1*w/2 });
-      else if ( w > cW && h > cH && h > w )  $img.css({ height: cH });
+      //if ( (w < cW && h < cH) ) $img.css({ top: "50%", left: "50%", marginTop: -1*h/2, marginLeft: -1*w/2 });
+      if ( w > cW && h > cH && h > w )  $img.css({ height: cH });
       else $img.css({ width: cW });
 
       $img.fadeIn(300);
@@ -420,6 +423,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
       that.$el.css({ left: -5000 });
       that._update(no_pan);
     }
+
   },
 
   isHidden: function () {

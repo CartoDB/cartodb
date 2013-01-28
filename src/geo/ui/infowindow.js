@@ -294,7 +294,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
   },
 
   _containsCover: function() {
-    return this.$el.find(".cartodb-popup.header").attr("data-cover");
+    return this.$el.find(".cartodb-popup.header").attr("data-cover") ? true : false;
   },
 
   _getCoverURL: function() {

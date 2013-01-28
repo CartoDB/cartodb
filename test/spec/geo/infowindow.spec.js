@@ -192,6 +192,11 @@ describe("cdb.geo.ui.infowindow", function() {
       expect(view._isValidURL(url)).toEqual(true);
     });
 
+    it("should detect if the infowindow has a cover", function() {
+      model.set('template', '<div class="cartodb-popup header" data-cover="true"><div class="cover"></div></div>');
+      expect(view._containsCover()).toEqual(true);
+    });
+
     it("should append the image", function() {
       model.set('template', '<div class="cartodb-popup header" data-cover="true"><div class="cover"></div></div>');
       expect(view.$el.find("img").length).toEqual(1);

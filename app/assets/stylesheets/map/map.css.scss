@@ -145,14 +145,15 @@ div.map {
 
     ul li {
 
-      padding: 11px 10px;
-
       &.selected .name { color: #7B7B7B; }
+
+      &.hidden { display: none; }
 
       a {
 
+
         display:block;
-        padding: 0;
+      padding: 11px 10px;
 
         line-height: normal;
 

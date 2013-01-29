@@ -1,6 +1,6 @@
 #encoding: UTF-8
 
-require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
+require 'spec_helper'
 
 describe "Imports API" do
 
@@ -57,7 +57,7 @@ describe "Imports API" do
 
   it 'performs synchronous imports'
 
-  it 'gets a list of all pending imports' do
+  pending 'gets a list of all pending imports' do
 
     thread = Thread.new do |number|
       serve_file(Rails.root.join('spec/support/data/ESP_adm.zip')) do |url|

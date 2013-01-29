@@ -88,6 +88,7 @@ div.map {
           display:block;
           font-family: "Helvetica", Arial;
           font-weight:normal;
+          line-height:12px;
 
           &:before {
             position:absolute;
@@ -123,10 +124,23 @@ div.map {
     width:auto;
     border: 1px solid #999999;
 
+
+    .custom {
+      width:200px;
+      display:inline;
+      vertical-align:top;
+    }
+
+
     ul {
       width:200px;
       @include inline-block();
       vertical-align:top;
+
+      &.special {
+        background:#F6F6F6;
+        border-left: 1px solid #E7E7E7;
+      }
     }
 
     ul li {

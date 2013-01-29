@@ -14,6 +14,7 @@
 * Fixed error when importing shapefiles with invalid cartodb_id columns
 * Fixed the incorrect "missing prj" error on the importer
 * Added 'show/hide' CartoDB logo in embed maps
+* Added new infowindow theme: 'header with image'.
 
 2.0.1 (5/12/12)
 -----

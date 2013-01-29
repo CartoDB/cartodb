@@ -46,6 +46,7 @@
         "../vendor/jscrollpane.js",
         "../vendor/mousewheel.js",
         "../vendor/mwheelIntent.js",
+        "../vendor/spin.js",
 
         'core/decorator.js',
         'core/config.js',

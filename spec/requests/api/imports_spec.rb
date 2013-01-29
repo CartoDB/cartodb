@@ -34,8 +34,8 @@ describe "Imports API" do
     last_import.queue_id.should be == response_json['item_queue_id']
     last_import.state.should be == 'complete'
     table = Table[last_import.table_id]
-    table.name.should == "column_number_to_boo"
-    table.map.data_layers.first.options["table_name"].should == "column_number_to_boo"
+    table.name.should == "column_number_to_boolean"
+    table.map.data_layers.first.options["table_name"].should == "column_number_to_boolean"
   end
 
   it 'performs asynchronous url imports' do
@@ -183,7 +183,6 @@ describe "Imports API" do
     import_table.should have_required_indexes_and_triggers
   end
 
-  it 'gets a list of pending imports'
   it 'gets a list of failed imports'
   it 'gets a list of succeeded imports'
   it 'kills pending imports'
@@ -191,17 +190,15 @@ describe "Imports API" do
   it 'imports all the sample data' do
     @user.update table_quota: 10
     import_files = ["http://cartodb.s3.amazonaws.com/static/TM_WORLD_BORDERS_SIMPL-0.3.zip",
-    "http://cartodb.s3.amazonaws.com/static/european_countries.zip",
-    "http://cartodb.s3.amazonaws.com/static/counties_ny.zip",
-    "http://cartodb.s3.amazonaws.com/static/50m-urban-area.zip",
-    "http://cartodb.s3.amazonaws.com/static/10m-populated-places-simple.zip",
-    "http://cartodb.s3.amazonaws.com/static/nyc_subway_entrance.zip"]
+                    "http://cartodb.s3.amazonaws.com/static/european_countries.zip",
+                    "http://cartodb.s3.amazonaws.com/static/50m-urban-area.zip",
+                    "http://cartodb.s3.amazonaws.com/static/10m-populated-places-simple.zip",
+                    "http://cartodb.s3.amazonaws.com/static/50m-rivers-lake-centerlines-with-scale-ranks.zip",
+                    "http://cartodb.s3.amazonaws.com/static/counties_ny.zip",
+                    "http://cartodb.s3.amazonaws.com/static/nyc_subway_entrance.zip"]
 
     import_files.each do |url|
-
-      post v1_imports_url(params.merge(:url        => url,
-                                       :table_name => "wadus"))
-
+      post v1_imports_url(params.merge(:url => url, :table_name => "wadus"))
 
       response.code.should be == '200'
 

@@ -10,7 +10,8 @@ CartoDB::Application.routes.draw do
   get   '/test' => 'test#index', :as => :test
 
   scope :module => "admin" do
-    match '/dashboard/'        => 'tables#index', :as => :dashboard
+    match '/dashboard/'               => 'tables#index', :as => :dashboard
+    match '/dashboard/common_data'  => 'pages#common_data'
 
     resources :tables, :only => [:show] do
       get 'embed_map', :on => :member
@@ -19,6 +20,7 @@ CartoDB::Application.routes.draw do
     match '/your_apps/oauth'   => 'client_applications#oauth',   :as => :oauth_credentials
     match '/your_apps/api_key' => 'client_applications#api_key', :as => :api_key_credentials
     post  '/your_apps/api_key/regenerate' => 'client_applications#regenerate_api_key', :as => :regenerate_api_key
+
   end
 
   namespace :superadmin do

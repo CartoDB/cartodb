@@ -26,11 +26,10 @@
     &:before {
       content:'';
       position:absolute;
+      @include size(100%, 10px);
       top:-1px;
       right:-1px;
       left:-1px;
-      width:100%;
-      height:10px;
       border-top:1px solid rgba(black,0.5);
       border-left:1px solid rgba(black,0.5);
       z-index:0;
@@ -43,8 +42,7 @@
       bottom:0;
       left:0;
       @include inline-block();
-      width:65px;
-      height:100%;
+      @include size(65px, 100%);
       background:#EDEDED;
       letter-spacing:0;
       @include border-left-radius(4px);
@@ -108,13 +106,20 @@
           // tool buttons
           &.add_row {@include icons-sprite(table_icons, $offset-x:22px, $offset-y:-307px);}
           &.add_column {@include icons-sprite(table_icons, $offset-x:22px, $offset-y:-247px);}
-          &.add_feature {@include icons-sprite(table_icons, $offset-x:19px, $offset-y:-489px);}
           &.merge_tables {@include icons-sprite(table_icons, $offset-x:21px, $offset-y:-186px);}
 
+          &.add_feature {
+            border-top:1px solid rgba(#999999,0.25);
+            @include icons-sprite(table_icons, $offset-x:19px, $offset-y:-489px);
+          }
 
           &:hover {
             cursor:pointer;
             @include opacity(1);
+          }
+
+          &.disabled {
+            @include opacity(0.15);
           }
 
           &.selected {
@@ -328,7 +333,7 @@
           bottom:0;
           width:1px;
           height:100%;
-          background:rgba(#CCCCCC,0.50);
+          background:rgba($cGray4,0.50);
         }
         &:before {
           position:absolute;
@@ -354,7 +359,7 @@
           li {
             padding:13px 0;
             font-size: 15px;
-            color: #CCCCCC;
+            color: $cGray4;
             border-bottom:1px solid rgba(#999999,0.25);
             overflow:hidden;
 
@@ -370,7 +375,7 @@
               float:right;
               width:auto;
 
-              .select2-container {width:130px;}
+              .select2-container {width:143px;}
             }
 
             .form_combo ~ span {
@@ -491,10 +496,11 @@
 
         ul.vis_options {
           position:absolute;
-          top:0; left:0; bottom:0;
+          @include position(0, 0, false, 0);
           display:block;
-          padding:0 30px;
           width:1000px;
+          padding:0 30px;
+
           letter-spacing:-4px;
           border-bottom:1px solid #E5E5E5;
           @include box-shadow(rgba(0,0,0,0.05) 0 -4px 8px 0 inset);
@@ -509,40 +515,50 @@
 
             a {
               display:block;
-              width:92px;
-              height:82px;
+              @include size(92px, 82px);
               margin:30px 0;
               padding:3px;
-              border:1px solid #CCCCCC;
+
+              border:1px solid $cGray4;
+
               @include border-radius(5px);
               @include text-indent();
 
+              @include simple-transition(opacity, 200ms);
+
+              @include opacity(.7);
+
+              // Wizard icons
               &.simple {
                 background: image-url('layout/wizard-simple.png') no-repeat 3px 3px;
-                &.polygon {background: image-url('layout/wizard-simple-polygon.png') no-repeat 3px 3px;}
-                &.line {background: image-url('layout/wizard-simple-polyline.png') no-repeat 3px 3px;}
+                &.polygon { background: image-url('layout/wizard-simple-polygon.png') no-repeat 3px 3px;}
+                &.line { background: image-url('layout/wizard-simple-polyline.png') no-repeat 3px 3px;}
               }
+
               &.choropleth {
                 background: image-url('layout/wizard-choropleth.png') no-repeat 3px 3px;
-                &.line {background: image-url('layout/wizard-choropleth-polyline.png') no-repeat 3px 3px;}
+                &.line { background: image-url('layout/wizard-choropleth-polyline.png') no-repeat 3px 3px;}
               }
-              &.bubble {background: image-url('layout/wizard-bubble.png') no-repeat 3px 3px;}
-              &.density {background: image-url('layout/wizard-density-hex.png') no-repeat 3px 3px;}
+
+              &.bubble  { background: image-url('layout/wizard-bubble.png') no-repeat 3px 3px;}
+              &.density { background: image-url('layout/wizard-density-hex.png') no-repeat 3px 3px;}
 
               &:hover {
-                border-color:#666666;
+                border-color:$cGray2;
+                @include opacity(1);
               }
 
               &.selected {
-                border-color:#666666;
+                border-color:$cGray2;
+
+                @include opacity(1);
 
                 &:before, &:after {
-                  content: '';
+                  @include size(0);
                   position:absolute;
+                  content: '';
                   left:50%;
                   margin-left:-13px;
-                  width:0;
-                  height:0;
                   border-left:10px solid transparent;
                   border-right:10px solid transparent;
                   z-index:5;
@@ -553,16 +569,17 @@
                   border-bottom:10px solid white;
                   z-index:10;
                 }
+
                 &:after {
                   bottom:0;
-                  border-bottom:10px solid #CCCCCC;
+                  border-bottom:10px solid $cGray4;
                 }
               }
 
               &.disabled {
                 display: none;
                 &:hover {
-                  border:1px solid #CCCCCC;
+                  border:1px solid $cGray4;
                 }
               }
             }
@@ -584,7 +601,7 @@
               & > span:first-child {
                 float:left;
                 margin-top:2px;
-                color:#CCCCCC;
+                color:$cGray4;
               }
 
               & > span:last-child {
@@ -613,22 +630,20 @@
       div.editor {
         &:after {
           position:absolute;
+          @include size(1px, 100%);
           content:' ';
           top:61px;
           left:34px;
           bottom:0;
-          width:1px;
-          height:100%;
-          background:rgba(#CCCCCC,0.50);
+          background:rgba($cGray4,0.50);
         }
         &:before {
           position:absolute;
+          @include size(1px, 100%);
           content:' ';
           top:61px;
           left:36px;
           bottom:0;
-          width:1px;
-          height:100%;
           background:rgba(#509DD7,0.25);
         }
       }

@@ -92,7 +92,7 @@ module CartoDB
             end
 
             #fixes problem of different SHP archive files with different case patterns
-            `mv #{tmp_path} #{dirname}/#{name.downcase}` unless File.basename(tmp_path) == name.downcase
+            FileUtils.mv("#{tmp_path}", "#{dirname}/#{name.downcase}", :force => true) unless File.basename(tmp_path) == name.downcase
             name = name
             if CartoDB::Importer::SUPPORTED_FORMATS.include?(File.extname(name))
               unless @suggested_name.nil?

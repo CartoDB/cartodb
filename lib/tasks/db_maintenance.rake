@@ -69,7 +69,7 @@ namespace :cartodb do
         
           # reset quota trigger
           table.add_python
-          table.set_trigger_check_quota
+          table.set_trigger_check_quota rescue puts("FAIL #{table.name}")
         end  
       end
     end

@@ -346,7 +346,7 @@ class User < Sequel::Model
   def db_size_in_bytes(use_total = false)
     attempts = 0
     begin
-      size = in_database(:as => :superuser).fetch("SELECT sum(pg_#{('total_' if use_total)}relation_size(quote_ident(table_name)))
+      size = in_database(:as => :superuser).fetch("SELECT sum(pg_total_relation_size(quote_ident(table_name)))
         FROM information_schema.tables
         WHERE table_catalog = '#{database_name}' AND table_schema = 'public'
         AND table_name != 'spatial_ref_sys' AND table_type = 'BASE TABLE'").first[:sum] rescue 0

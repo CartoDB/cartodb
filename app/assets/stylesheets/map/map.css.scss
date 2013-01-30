@@ -149,33 +149,32 @@ div.map {
 
       &.hidden { display: none; }
 
-      a {
-
-
+      & > a {
         display:block;
-      padding: 11px 10px;
+        padding: 11px 10px;
 
         line-height: normal;
+        @include clearfix();
 
         .name {
-          @include inline-block();
+          float:left;
           font-size:13px;
-          width: 150px;
+          width: 145px;
+          margin: 5px 0 0 5px;
 
           text-overflow:ellipsis;
           white-space: normal;
           overflow: hidden;
         }
 
-        &.button {
-          .name { margin: 0 0 0 4px; }
-        }
+        &.add .thumb { border-color: #397DB8; }
+        &:hover .thumb .remove_layer { opacity: 1; }
 
         .thumb {
           position:relative;
-          @include inline-block();
+          float:left;
           @include size(24px);
-          @include border-radius(3px);
+          @include border-radius(2px);
           @include text-indent();
           background-size: 24px 24px;
 
@@ -183,19 +182,18 @@ div.map {
 
           border: 1px solid rgba(0,0,0, 0.3);
 
-
-            span.remove_layer {
-              display:block;
-              width: 10px;
-              height: 10px;
-              background:red;
+            .remove_layer {
+              @include size(10px);
               @include position(false, 0, 0, false);
+              padding: 0;
+              opacity: 0;
+              background:#333;
+              @include simple-transition(opacity, 100ms);
             }
 
           &:hover {
             cursor:pointer;
             &:before { border: 1px solid rgba(0,0,0, 0.5); }
-            span.remove_layer { display: block; }
           }
 
         }

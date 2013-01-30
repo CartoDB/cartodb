@@ -150,9 +150,7 @@ div.map {
 
       &.hidden { display: none; }
 
-
-      &:hover { background: none; text-decoration: underline; }
-      &:hover a { background: none; text-decoration: underline; }
+      &:hover { background: none; }
 
       & > a {
         display:block;
@@ -181,7 +179,8 @@ div.map {
           @include size(24px);
           @include border-radius(2px);
           @include text-indent();
-          background-size: 24px 24px;
+          background-size: 34px 34px;
+          background-position: 50% 50%;
 
           text-decoration:none;
           border: 1px solid rgba(0,0,0, 0.3);

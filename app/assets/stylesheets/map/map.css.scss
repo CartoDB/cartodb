@@ -136,7 +136,7 @@ div.map {
       width:200px;
       @include inline-block();
       vertical-align:top;
-      padding: 0 10px;
+      padding: 0 5px 0 10px;
 
       &.special {
         background:#F6F6F6;
@@ -149,6 +149,10 @@ div.map {
       &.selected .name { color: #7B7B7B; }
 
       &.hidden { display: none; }
+
+
+      &:hover { background: none; text-decoration: underline; }
+      &:hover a { background: none; text-decoration: underline; }
 
       & > a {
         display:block;

@@ -592,7 +592,7 @@ class Table < Sequel::Model(:user_tables)
 
   # returns table size in bytes
   def table_size
-    @table_size ||= owner.in_database["SELECT pg_relation_size('#{self.name}') as size"].first[:size] / 2
+    @table_size ||= owner.in_database["SELECT pg_total_relation_size('#{self.name}') as size"].first[:size] / 2
   end
 
   def total_table_size
@@ -1336,7 +1336,7 @@ TRIGGER
     QUOTA_MAX = #{self.owner.quota_in_bytes}
 
     if c%m == 0:
-        s = plpy.execute("SELECT sum(pg_relation_size(quote_ident(table_name))) FROM information_schema.tables WHERE table_catalog = '#{self.database_name}' AND table_schema = 'public'")[0]['sum'] / 2
+        s = plpy.execute("SELECT sum(pg_total_relation_size(quote_ident(table_name))) FROM information_schema.tables WHERE table_catalog = '#{self.database_name}' AND table_schema = 'public'")[0]['sum'] / 2
         int_s = int(s)
         diff = int_s - QUOTA_MAX
         SD['quota_mod'] = min(1000, max(1, diff))

@@ -62,7 +62,7 @@ namespace :cartodb do
       User.all.each do |user|
         next if !user.respond_to?('database_name') || user.database_name.blank?
         
-        user.update(:quota_in_bytes => 104857600) if user.quota_in_bytes.blank?
+        #user.update(:quota_in_bytes => 104857600) if user.quota_in_bytes.blank?
                 
         # rebuild quota trigger
         user.tables.all.each do |table|

@@ -60,7 +60,9 @@ div.map {
 
       padding: 0 15px 0 0;
       margin: 0 5px 0 0;
+
       border-right: 1px solid rgba(#D9D9D9, .8);
+      &:last-child { border: none; }
 
       cursor: pointer;
 
@@ -124,18 +126,17 @@ div.map {
     width:auto;
     border: 1px solid #999999;
 
-
     .custom {
       width:200px;
       display:inline;
       vertical-align:top;
     }
 
-
     ul {
       width:200px;
       @include inline-block();
       vertical-align:top;
+      padding: 0 10px;
 
       &.special {
         background:#F6F6F6;
@@ -151,7 +152,7 @@ div.map {
 
       & > a {
         display:block;
-        padding: 11px 10px;
+        padding: 11px 10px 11px 0;
 
         line-height: normal;
         @include clearfix();

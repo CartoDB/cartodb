@@ -1,4 +1,4 @@
-2.0.15 (01//31//2013)
+2.0.16 (01//31//2013)
 -----
 - Added support for new infowindow' theme: 'header with image'.
 - fixed loading more than one viz.json in the same application.

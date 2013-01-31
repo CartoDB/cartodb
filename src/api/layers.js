@@ -94,7 +94,7 @@
         layerData = visData.layers[1];
         // add the timestamp to options
         layerData.options.extra_params = layerData.options.extra_params || {};
-        layerData.options.extra_params.cache_buster = visData.updated_at;
+        layerData.options.extra_params.updated_at = visData.updated_at;
       } else {
         layerData = visData;
       }

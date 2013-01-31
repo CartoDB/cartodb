@@ -1,5 +1,14 @@
+2.0.16 (01//31//2013)
+-----
+- Added support for new infowindow' theme: 'header with image'.
+- fixed loading more than one viz.json in the same application.
+- documentation fixes
 
-2.0.14 (11//01//13)
+2.0.15 (01//14//2013)
+-----
+- fixed problem fetching viz.json when createVis and createLayer are called in the same script
+
+2.0.14 (01//11//2013)
 -----
 - improvements in the documentation 
 - reduced the final file size by 58kb 

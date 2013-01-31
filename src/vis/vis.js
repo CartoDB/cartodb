@@ -116,17 +116,12 @@ var Vis = cdb.core.View.extend({
     var self = this;
     if(typeof(data) === 'string') {
       var url = data;
-      reqwest({
-          url: url + (~url.indexOf('?') ? '&' : '?') + 'callback=vizjson',
-          type: 'jsonp',
-          jsonpCallback: 'callback',
-          success: function(data) {
-            if(data) {
-              self.load(data, options);
-            } else {
-              self.trigger('error', 'error fetching viz.json file');
-            }
-          }
+      cdb.vis.Loader.get(url, function(data) {
+        if(data) {
+          self.load(data, options);
+        } else {
+          self.trigger('error', 'error fetching viz.json file');
+        }
       });
       return this;
     }

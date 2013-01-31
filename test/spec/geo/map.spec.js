@@ -130,7 +130,7 @@ describe("geo.map", function() {
       expect(old_attribution[0]).not.toEqual(new_attribution[0]);
     });
 
-    it("should change bounds according to base layer", function() {
+    it("should not change bounds according to base layer", function() {
       var layer = new cdb.geo.CartoDBLayer({
         maxZoom: 8,
         minZoom: 7,
@@ -139,8 +139,8 @@ describe("geo.map", function() {
         base_type: 'x'
       });
       map.addLayer(layer);
-      expect(map.get('maxZoom')).toEqual(8);
-      expect(map.get('minZoom')).toEqual(7);
+      expect(map.get('maxZoom')).toEqual(28);
+      expect(map.get('minZoom')).toEqual(0);
       var layerbase = new cdb.geo.CartoDBLayer({
         maxZoom: 10,
         minZoom: 9,
@@ -150,8 +150,8 @@ describe("geo.map", function() {
       });
       sinon.stub(layerbase, "save").yieldsTo("success");
       map.setBaseLayer(layerbase);
-      expect(map.get('maxZoom')).toEqual(10);
-      expect(map.get('minZoom')).toEqual(9);
+      expect(map.get('maxZoom')).toEqual(28);
+      expect(map.get('minZoom')).toEqual(0);
     });
 
     it("should raise only one change event on setBounds", function() {
@@ -332,11 +332,11 @@ describe("geo.map", function() {
       });
       waits(1);
       runs(function() {
-        expect(container.find("a#cartodb_logo").length).toEqual(1);
+        expect(container.find("a.cartodb_logo").length).toEqual(1);
       });
     });
 
-    it("should not add the cartodb logo when cartodb_logo = fase", function() {
+    it("should not add the cartodb logo when cartodb_logo = false", function() {
       runs(function() {
         layer = new cdb.geo.CartoDBLayer({ table_name: "INVENTADO", cartodb_logo: false});
         var lyr = map.addLayer(layer);
@@ -344,7 +344,7 @@ describe("geo.map", function() {
       });
       waits(1);
       runs(function() {
-        expect(container.find("a#cartodb_logo").length).toEqual(0);
+        expect(container.find("a.cartodb_logo").length).toEqual(0);
       });
     });
 

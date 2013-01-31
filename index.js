@@ -12,6 +12,7 @@
 //= require cdb/vendor/mousewheel
 //= require cdb/vendor/mwheelIntent
 //= require cdb/vendor/jscrollpane
+//= require cdb/vendor/spin
 //
 //= require cdb/src/cartodb
 //
@@ -22,7 +23,6 @@
 //= require cdb/src/core/template
 //= require cdb/src/core/model
 //= require cdb/src/core/view
-//= require cdb/src/core/sql
 //
 //= require cdb/src/geo/geocoder
 //= require cdb/src/geo/geometry

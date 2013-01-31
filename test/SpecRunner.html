@@ -12,6 +12,8 @@
   </script>
 
   <script type="text/javascript" src="../vendor/jquery.min.js"></script>
+  <script type="text/javascript" src="../vendor/jquery.faviconNotify.js"></script>
+
   <script type="text/javascript" src="../vendor/underscore-min.js"></script>
   <script type="text/javascript" src="../vendor/backbone.js"></script>
   <script type="text/javascript" src="../vendor/leaflet.js"></script>
@@ -21,12 +23,12 @@
   <script type="text/javascript" src="../vendor/mustache.js"></script>
   <script type="text/javascript" src="../vendor/GeoJSON.js"></script>
   <script type="text/javascript" src="../vendor/jscrollpane.js"></script>
+  <script type="text/javascript" src="../vendor/spin.js"></script>
 
   <script type="text/javascript" src="lib/jasmine-1.2.0/jasmine.js"></script>
   <script type="text/javascript" src="lib/jasmine-1.2.0/jasmine-html.js"></script>
   <script type="text/javascript" src="lib/sinon-1.3.4.js"></script>
   <script type="text/javascript" src="lib/sinon-ie.js"></script>
-
 
   <!-- SOURCE -->
   <script type="text/javascript" src="../src/cartodb.js"></script>
@@ -39,7 +41,6 @@
   <script type="text/javascript" src="../src/core/template.js"></script>
   <script type="text/javascript" src="../src/core/model.js"></script>
   <script type="text/javascript" src="../src/core/view.js"></script>
-  <script type="text/javascript" src="../src/core/sql.js"></script>
 
   <!-- Geo source -->
   <script type="text/javascript" src="../src/geo/geometry.js"></script>
@@ -95,7 +96,6 @@
   <script type="text/javascript" src="spec/core/model.spec.js"></script>
   <script type="text/javascript" src="spec/core/view.spec.js"></script>
   <script type="text/javascript" src="spec/core/template.spec.js"></script>
-  <script type="text/javascript" src="spec/core/sql.spec.js"></script>
 
   <!-- Common specs -->
   <script type="text/javascript" src="spec/ui/common/dialog.spec.js"></script>
@@ -110,7 +110,6 @@
   <script type="text/javascript" src="spec/geo/geometry.spec.js"></script>
   <script type="text/javascript" src="spec/geo/legend.spec.js"></script>
   <script type="text/javascript" src="spec/geo/infowindow.spec.js"></script>
-  <script type="text/javascript" src="spec/geo/ui/tooltip.js"></script>
   <script type="text/javascript" src="spec/geo/gmaps.spec.js"></script>
   <script type="text/javascript" src="spec/geo/geocoder.spec.js"></script>
 
@@ -126,35 +125,52 @@
   <script type="text/javascript" src="spec/api/layers.spec.js"></script>
   <script type="text/javascript" src="spec/api/layers/cartodb.spec.js"></script>
   <script type="text/javascript" src="spec/api/sql.spec.js"></script>
-  <script type="text/javascript" src="spec/api/vis.spec.js"></script>
-
 
 
   <script type="text/javascript">
-    (function() {
-      var jasmineEnv = jasmine.getEnv();
-      jasmineEnv.updateInterval = 1000;
 
+    (function() {
+      // Let's start
+      $.faviconNotify('../src/tests/cartofante_grey.png');
+
+      var jasmineEnv = jasmine.getEnv();
       var htmlReporter = new jasmine.HtmlReporter();
+      var reportRunnerResults = htmlReporter.reportRunnerResults;
+
+      htmlReporter.reportRunnerResults = function(runner) {
+        reportRunnerResults(runner);
+
+        var specs = runner.specs();
+        var specResults;
+        var assertionCount = {total: 0, passed: 0, failed: 0};
+
+        for (var i = 0; i < specs.length; ++i) {
+          if (this.specFilter(specs[i])) {
+            specResults = specs[i].results();
+            assertionCount.total  += specResults.totalCount;
+            assertionCount.passed += specResults.passedCount;
+            assertionCount.failed += specResults.failedCount;
+          }
+        }
+
+        if (assertionCount.failed > 0) {
+          // Buhh!
+          $.faviconNotify('../src/tests/cartofante_red.png');
+        } else {
+          // Yay!
+         $.faviconNotify('../src/tests/cartofante_green.png');
+        }
+
+      };
 
       jasmineEnv.addReporter(htmlReporter);
-
       jasmineEnv.specFilter = function(spec) {
         return htmlReporter.specFilter(spec);
       };
 
-      var currentWindowOnload = window.onload;
-
       window.onload = function() {
-        if (currentWindowOnload) {
-          currentWindowOnload();
-        }
-        execJasmine();
-      };
-
-      function execJasmine() {
         jasmineEnv.execute();
-      }
+      };
 
     })();
   </script>

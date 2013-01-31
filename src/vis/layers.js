@@ -69,7 +69,7 @@ var cartoLayer = function(vis, data) {
   }
   data.extra_params = data.extra_params || {};
   if(vis.updated_at) {
-    data.extra_params.cache_buster = vis.updated_at;
+    data.extra_params.updated_at = vis.updated_at;
   } else {
     data.no_cdn = true;
   }

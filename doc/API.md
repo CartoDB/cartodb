@@ -120,7 +120,7 @@ Next, in the BODY of your HTML include a DIV for your map and the minimum CartoD
           center: [0,0],
           zoom: 2
         })
-        cartodb.loadLayer(map, 'http://examples-beta.cartodb.com/api/v1/viz/766/viz.json')
+        cartodb.createLayer(map, 'http://examples-beta.cartodb.com/api/v1/viz/766/viz.json')
           .on('error', function(err) {
             alert("some error occurred: " + err);
           });
@@ -142,7 +142,7 @@ When you create a visualization using the CartoDB website, you get automatically
 
 <div class="margin20"></div>
 ``` javascript
-    cartodb.loadLayer(map, {
+    cartodb.createLayer(map, {
         type: 'cartodb',
         options: {
             table: 'mytable',
@@ -190,11 +190,11 @@ The CartoDB.js is highly asynchronous, meaning your application can get on with 
 
 ###### Loading events
 
-The **loadLayer** and **createVis** functions returns two important events for you to take advantage of: the first is **done**, which will let your code know that the library has successfully read the information from the Viz JSON and loaded the layer you requested. The second is ‘error’, which lets you know something did not go as expected when loading a requested layer:
+The **createLayer** and **createVis** functions returns two important events for you to take advantage of: the first is **done**, which will let your code know that the library has successfully read the information from the Viz JSON and loaded the layer you requested. The second is ‘error’, which lets you know something did not go as expected when loading a requested layer:
 
 <div class="margin20"></div>
 ``` javascript
-    cartodb.loadLayer(map, 'http://examples.cartodb.com/api/v1/viz/0001/viz.json')
+    cartodb.createLayer(map, 'http://examples.cartodb.com/api/v1/viz/0001/viz.json')
       .on('done', function(layer) {
         alert(‘CartoDB layer loaded!’);
       }).on('error', function(err) {
@@ -355,6 +355,7 @@ Creates a visualization inside the map_id DOM object:
     - center_lat: center coordinates where the map is initializated.
     - center_lon.
     - zoom: initial zoom.
+    - cartodb_logo: default to true, set to false if you want to remove the cartodb logo
 
 ##### cartodb.Vis.getLayers()
 Return an array of layers in the map. The first is the base layer.
@@ -426,6 +427,7 @@ With visualizations already created through the CartoDB console, you can simply 
             - featureClick: callback called when user cliks on a feature.
             - featureOut: called then the pointer gets out of a feature.
             - interaction: default true, set it to false when you don't want interactivity layer yo be loaded (recomended if you don't user interaction).
+            - cartodb_logo: default to true, set to false if you want to remove the cartodb logo
 
   + **options**: each type of layer has different options.
 
@@ -453,7 +455,7 @@ Promise object. You can listen for the following events:
 
     map = new google.maps.Map(document.getElementById('map'),  mapOptions);
 
-    cartodb.loadLayer(map, 'http://examples.cartodb.com/tables/TODO/cartodb.js')
+    cartodb.createLayer(map, 'http://examples.cartodb.com/tables/TODO/cartodb.js')
       .on('done', function(layer) {
         layer
           .on('featureOver', function(e, latlng, pos, data) {

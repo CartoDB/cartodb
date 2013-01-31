@@ -128,7 +128,7 @@ describe('api.layers', function() {
             layers: [
               null,
               //{kind: 'plain', options: {} }
-              {kind: 'cartodb', options: { user_name: 'test', table: 'test'} }
+              {kind: 'cartodb', options: { user_name: 'test', table: 'test', extra_params: { cache_buster: 'cb' }} }
             ]
           }, s).done(function(lyr) {
             layer = lyr;
@@ -138,6 +138,7 @@ describe('api.layers', function() {
         runs(function() {
           expect(s.called).toEqual(true);
           expect(layer.model.attributes.extra_params.updated_at).toEqual('jaja');
+          expect(layer.model.attributes.extra_params.cache_buster).toEqual(undefined);
         });
       });
 

@@ -1,6 +1,6 @@
-// cartodb.js version: 2.0.15
+// cartodb.js version: 2.0.16
 // uncompressed version: cartodb.uncompressed.js
-// sha: 06273c4b59b6c5186a464bc8f220e989d3a1aaba
+// sha: e9d4f20b29ae6297b3fc7f80d02486a7a31c920b
 (function() {
   var root = this;
 
@@ -14476,7 +14476,9 @@ $(function(){
   //assume that document is always scrollable, doesn't hurt if not
   $(doc).bind('mwheelIntent.mwheelIntentDefault', $.noop);
 });
-})(jQuery);
+})(jQuery);//fgnass.github.com/spin.js#v1.2.5
+(function(a,b,c){function g(a,c){var d=b.createElement(a||"div"),e;for(e in c)d[e]=c[e];return d}function h(a){for(var b=1,c=arguments.length;b<c;b++)a.appendChild(arguments[b]);return a}function j(a,b,c,d){var g=["opacity",b,~~(a*100),c,d].join("-"),h=.01+c/d*100,j=Math.max(1-(1-a)/b*(100-h),a),k=f.substring(0,f.indexOf("Animation")).toLowerCase(),l=k&&"-"+k+"-"||"";return e[g]||(i.insertRule("@"+l+"keyframes "+g+"{"+"0%{opacity:"+j+"}"+h+"%{opacity:"+a+"}"+(h+.01)+"%{opacity:1}"+(h+b)%100+"%{opacity:"+a+"}"+"100%{opacity:"+j+"}"+"}",0),e[g]=1),g}function k(a,b){var e=a.style,f,g;if(e[b]!==c)return b;b=b.charAt(0).toUpperCase()+b.slice(1);for(g=0;g<d.length;g++){f=d[g]+b;if(e[f]!==c)return f}}function l(a,b){for(var c in b)a.style[k(a,c)||c]=b[c];return a}function m(a){for(var b=1;b<arguments.length;b++){var d=arguments[b];for(var e in d)a[e]===c&&(a[e]=d[e])}return a}function n(a){var b={x:a.offsetLeft,y:a.offsetTop};while(a=a.offsetParent)b.x+=a.offsetLeft,b.y+=a.offsetTop;return b}var d=["webkit","Moz","ms","O"],e={},f,i=function(){var a=g("style");return h(b.getElementsByTagName("head")[0],a),a.sheet||a.styleSheet}(),o={lines:12,length:7,width:5,radius:10,rotate:0,color:"#000",speed:1,trail:100,opacity:.25,fps:20,zIndex:2e9,className:"spinner",top:"auto",left:"auto"},p=function q(a){if(!this.spin)return new q(a);this.opts=m(a||{},q.defaults,o)};p.defaults={},m(p.prototype,{spin:function(a){this.stop();var b=this,c=b.opts,d=b.el=l(g(0,{className:c.className}),{position:"relative",zIndex:c.zIndex}),e=c.radius+c.length+c.width,h,i;a&&(a.insertBefore(d,a.firstChild||null),i=n(a),h=n(d),l(d,{left:(c.left=="auto"?i.x-h.x+(a.offsetWidth>>1):c.left+e)+"px",top:(c.top=="auto"?i.y-h.y+(a.offsetHeight>>1):c.top+e)+"px"})),d.setAttribute("aria-role","progressbar"),b.lines(d,b.opts);if(!f){var j=0,k=c.fps,m=k/c.speed,o=(1-c.opacity)/(m*c.trail/100),p=m/c.lines;!function q(){j++;for(var a=c.lines;a;a--){var e=Math.max(1-(j+a*p)%m*o,c.opacity);b.opacity(d,c.lines-a,e,c)}b.timeout=b.el&&setTimeout(q,~~(1e3/k))}()}return b},stop:function(){var a=this.el;return a&&(clearTimeout(this.timeout),a.parentNode&&a.parentNode.removeChild(a),this.el=c),this},lines:function(a,b){function e(a,d){return l(g(),{position:"absolute",width:b.length+b.width+"px",height:b.width+"px",background:a,boxShadow:d,transformOrigin:"left",transform:"rotate("+~~(360/b.lines*c+b.rotate)+"deg) translate("+b.radius+"px"+",0)",borderRadius:(b.width>>1)+"px"})}var c=0,d;for(;c<b.lines;c++)d=l(g(),{position:"absolute",top:1+~(b.width/2)+"px",transform:b.hwaccel?"translate3d(0,0,0)":"",opacity:b.opacity,animation:f&&j(b.opacity,b.trail,c,b.lines)+" "+1/b.speed+"s linear infinite"}),b.shadow&&h(d,l(e("#000","0 0 4px #000"),{top:"2px"})),h(a,h(d,e(b.color,"0 0 1px rgba(0,0,0,.1)")));return a},opacity:function(a,b,c){b<a.childNodes.length&&(a.childNodes[b].style.opacity=c)}}),!function(){function a(a,b){return g("<"+a+' xmlns="urn:schemas-microsoft.com:vml" class="spin-vml">',b)}var b=l(g("group"),{behavior:"url(#default#VML)"});!k(b,"transform")&&b.adj?(i.addRule(".spin-vml","behavior:url(#default#VML)"),p.prototype.lines=function(b,c){function f(){return l(a("group",{coordsize:e+" "+e,coordorigin:-d+" "+ -d}),{width:e,height:e})}function k(b,e,g){h(i,h(l(f(),{rotation:360/c.lines*b+"deg",left:~~e}),h(l(a("roundrect",{arcsize:1}),{width:d,height:c.width,left:c.radius,top:-c.width>>1,filter:g}),a("fill",{color:c.color,opacity:c.opacity}),a("stroke",{opacity:0}))))}var d=c.length+c.width,e=2*d,g=-(c.width+c.length)*2+"px",i=l(f(),{position:"absolute",top:g,left:g}),j;if(c.shadow)for(j=1;j<=c.lines;j++)k(j,-2,"progid:DXImageTransform.Microsoft.Blur(pixelradius=2,makeshadow=1,shadowopacity=.3)");for(j=1;j<=c.lines;j++)k(j);return h(b,i)},p.prototype.opacity=function(a,b,c,d){var e=a.firstChild;d=d.shadow&&d.lines||0,e&&b+d<e.childNodes.length&&(e=e.childNodes[b+d],e=e&&e.firstChild,e=e&&e.firstChild,e&&(e.opacity=c))}):f=k(b,"animation")}(),a.Spinner=p})(window,document);
+
 
 
 
@@ -14499,7 +14501,7 @@ $(function(){
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '2.0.15';
+    cdb.VERSION = '2.0.16';
 
     cdb.CARTOCSS_VERSIONS = {
       '2.0.0': '',
@@ -14540,6 +14542,7 @@ $(function(){
         "../vendor/jscrollpane.js",
         "../vendor/mousewheel.js",
         "../vendor/mwheelIntent.js",
+        "../vendor/spin.js",
 
         'core/decorator.js',
         'core/config.js',
@@ -14548,7 +14551,6 @@ $(function(){
         'core/template.js',
         'core/model.js',
         'core/view.js',
-        'core/sql.js',
 
         'geo/geocoder.js',
         'geo/geometry.js',
@@ -15109,16 +15111,21 @@ cdb.core.TemplateList = Backbone.Collection.extend({
   model: cdb.core.Template,
 
   getTemplate: function(template_name) {
-    if(this.namespace) {
+
+    if (this.namespace) {
       template_name = this.namespace + template_name;
     }
+
     var t = this.find(function(t) {
         return t.get('name') === template_name;
     });
+
     if(t) {
-        return _.bind(t.render, t);
+      return _.bind(t.render, t);
     }
-    cdb.log.error(template_name+" not found");
+
+    cdb.log.error(template_name + " not found");
+
     return null;
   }
 });
@@ -15330,7 +15337,9 @@ cdb._loadJST = function() {
       var self = this;
       obj.bind && obj.bind(ev, function() {
         self.trigger(retrigEvent);
-      })
+      }, self)
+      // add it as related model//object
+      this.add_related_model(obj);
     },
     /**
     * Captures an event and prevents the default behaviour and stops it from bubbling
@@ -15399,83 +15408,6 @@ cdb._loadJST = function() {
   });
 
 })();
-/**
-* Encapsules the access to the sql API
-*
-*/
-(function() {
-  cdb.core.SqlApi = cdb.core.Model.extend({
-    classLabel: 'cdb.core.SqlApi',
-    defaults: {
-      key: '',
-      url: '',
-      protocol: 'http://',
-      tableName: ''
-    },
-    initialize: function(options) {
-      this.elder('initialize');
-
-      if(!options || options.useGlobals) {
-        this.initializeFromGlobals();
-      } else {
-        this.initializeFromOptions(options)
-      };
-
-      this.log = [];
-    },
-    initializeFromOptions: function(options) {
-      if (options && options.api_key) {
-        this.set('key', options.api_key)
-      };
-      if (options && options.url){
-        this.set('url', options.url)
-      } else {
-        throw "Invalid init options. You need to provide an URL"
-      }
-      if (options && options.tableName){
-        this.set('tableName', options.tableName)
-      }
-    },
-    initializeFromGlobals: function() {
-      if(! window.config) {
-        throw "window.config doesn't exists! please, provide some values to initialize the object"
-      }
-      var api_key = null;
-      if(window.user_data) {
-        api_key = user_data.api_key;
-      }
-      this.set({
-        key: api_key,
-        url: config.sql_api_domain + ':' + config.sql_api_port + config.sql_api_endpoint
-      })
-    },
-    url: function() {
-      var url = this.get('url');
-      return this.get('protocol') + url + this.getParams();
-    },
-    getParams: function(extraParams) {
-      var params = [];
-      if(this.get('query')) {
-        params.push("q=" + this.get('query'))
-      };
-      if(this.get('key')) {
-        params.push("api_key=" + this.get('key'))
-      }
-      if(extraParams) {
-        params.push(extraParams);
-      }
-      return '?' + params.join('&');
-    },
-    query: function(params) {
-      this.log.append(this.url() + ' - ' + (new Date()));
-      this.setQuery(params);
-      this.fetch();
-    },
-    setQuery: function(params) {
-      this.set({query: params});
-    }
-  });
-})()
 
 
 /**
@@ -15755,7 +15687,8 @@ cdb.geo.CartoDBLayer = cdb.geo.MapLayer.extend({
     sql_port: "80",
     sql_protocol: "http",
     extra_params: {},
-    cdn_url: null
+    cdn_url: null,
+    maxZoom: 28
   },
 
   activate: function() {
@@ -15829,7 +15762,7 @@ cdb.geo.Map = cdb.core.Model.extend({
     center: [0, 0],
     zoom: 3,
     minZoom: 0,
-    maxZoom: 20,
+    maxZoom: 28,
     provider: 'leaflet'
   },
 
@@ -15929,6 +15862,8 @@ cdb.geo.Map = cdb.core.Model.extend({
 
   _adjustZoomtoLayer: function(layer) {
     //set zoom
+    //
+    /*
     var z = layer.get('maxZoom');
     if(_.isNumber(z)) {
       this.set({ maxZoom: z });
@@ -15937,6 +15872,7 @@ cdb.geo.Map = cdb.core.Model.extend({
     if(_.isNumber(z)) {
       this.set({ minZoom: z });
     }
+    */
   },
 
   addLayer: function(layer, opts) {
@@ -16676,6 +16612,27 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
     this.set({fields: []});
   },
 
+  saveFields: function() {
+    this.set('old_fields', _.clone(this.get('fields')));
+  },
+
+  fieldCount: function() {
+    return this.get('fields').length
+  },
+
+  restoreFields: function(whiteList) {
+     var fields = this.get('old_fields')
+     if(whiteList) {
+       fields = fields.filter(function(f) {
+          return _.contains(whiteList, f.name);
+       });
+     }
+     if(fields && fields.length) {
+       this._setFields(fields);
+     }
+     this.unset('old_fields');
+  },
+
   _cloneFields: function() {
     return _(this.get('fields')).map(function(v) {
       return _.clone(v);
@@ -16688,7 +16645,7 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
   },
 
   sortFields: function() {
-    this.get('fields').sort(function(a, b) { return a.position -  b.position; });
+    this.get('fields').sort(function(a, b) { return a.position - b.position; });
   },
 
   _addField: function(fieldName, at) {
@@ -16716,26 +16673,6 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
     });
     return this;
   },
-
-  // addField: function(fieldName, at) {
-  //   if(!this.containsField(fieldName)) {
-  //     //var fields = this._cloneFields() || [];
-
-  //     var fields = this.get('fields')
-  //       , sort = at === undefined;
-
-  //     at = at === undefined ? fields.length: at;
-  //     fields.push({name: fieldName, title: true, position: at});
-  //     // if (sort)
-  //     //   fields.sort(function(a, b) { return a.position -  b.position; });
-  //     this.trigger('changeFields')
-  //     //this.set({'fields': f});
-
-  //     //sort fields
-  //     //this._setFields(fields);
-  //   }
-  //   return this;
-  // },
 
   getFieldProperty: function(fieldName, k) {
     if(this.containsField(fieldName)) {
@@ -16804,6 +16741,8 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
 
   initialize: function(){
 
+    var that = this;
+
     _.bindAll(this, "render", "setLatLng", "changeTemplate", "_updatePosition", "_update", "toggle", "show", "hide");
 
     this.mapView = this.options.mapView;
@@ -16819,13 +16758,11 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     this.model.bind('change:template',      this._compileTemplate, this);
 
     this.mapView.map.bind('change',         this._updatePosition, this);
-    //this.map.on('viewreset', this._updatePosition, this);
-    //this.mapView.bind('drag',               this._updatePosition, this);
 
-    var that = this;
     this.mapView.bind('zoomstart', function(){
       that.hide(true);
     });
+
     this.mapView.bind('zoomend', function() {
       that.show(true);
     });
@@ -16848,6 +16785,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
        template: this.model.get('template'),
        type: this.model.get('template_type') || 'mustache'
     }).asFunction()
+
     this.render();
   },
 
@@ -16892,6 +16830,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
   },
 
   render: function() {
+
     if(this.template) {
 
       // If there is content, destroy the jscrollpane first, then remove the content.
@@ -16904,7 +16843,10 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
 
       // Mustache doesn't support 0 values, we have to convert number to strings
       // before apply the template
-      this.$el.html($(this.template(this._fieldsToString(attrs))));
+
+      var fields = this._fieldsToString(attrs);
+
+      this.$el.html($(this.template(fields)));
 
       // Hello jscrollpane hacks!
       // It needs some time to initialize, if not it doesn't render properly the fields
@@ -16917,9 +16859,109 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
             maintainPosition:       false,
             verticalDragMinHeight:  20
           });
-      },1)
-    }
+      }, 1);
+
+
+      // If the template is 'cover-enabled', load the cover
+      this._loadCover();
+
+    };
+
     return this;
+  },
+
+  _containsCover: function() {
+    return this.$el.find(".cartodb-popup.header").attr("data-cover") ? true : false;
+  },
+
+  _getCoverURL: function() {
+
+    var content = this.model.get("content");
+
+    if (content && content.fields) {
+
+      if (content.fields && content.fields.length > 0) {
+        return content.fields[0].value;
+      }
+      return false;
+    }
+
+    return false;
+
+  },
+
+  /**
+  * Attempts to load the cover URL and show it
+  */
+  _loadCover: function() {
+
+    if (!this._containsCover()) return;
+
+    var self = this;
+
+    var
+    $cover         = this.$el.find(".cover"),
+    $imageNotFound = this.$el.find(".image_not_found");
+
+    var url = this._getCoverURL();
+
+    if (!this._isValidURL(url)) {
+      $imageNotFound.fadeIn(250);
+      return;
+    }
+
+    // configure spinner
+    var
+    target  = document.getElementById('spinner'),
+    opts    = { lines: 9, length: 4, width: 2, radius: 4, corners: 1, rotate: 0, color: '#ccc', speed: 1, trail: 60, shadow: true, hwaccel: false, zIndex: 2e9 },
+    spinner = new Spinner(opts).spin(target);
+
+    // create the image
+    var $img = $cover.find("img");
+
+    $imageNotFound.hide();
+
+    $img.hide(function() {
+      this.remove();
+    });
+
+    $img = $("<img />").attr("src", url);
+    $cover.append($img);
+
+    $img.load(function(){
+      spinner.stop();
+
+      var w  = $img.width();
+      var h  = $img.height();
+      var cW = $cover.width();
+      var cH = $cover.height();
+
+      // Resize rules
+      //if ( (w < cW && h < cH) ) $img.css({ top: "50%", left: "50%", marginTop: -1*h/2, marginLeft: -1*w/2 });
+      if ( w > cW && h > cH && h > w )  $img.css({ height: cH });
+      else $img.css({ width: cW });
+
+      $img.fadeIn(300);
+    })
+    .error(function(){
+      spinner.stop();
+      $imageNotFound.fadeIn(250);
+    });
+
+  },
+
+  /**
+  * Return true if the provided URL is valid
+  */
+  _isValidURL: function(url) {
+
+    if (url) {
+      var urlPattern = /(http|ftp|https):\/\/[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:\/~+#-]*[\w@?^=%&amp;\/~+#-])?/
+      return url.match(urlPattern) != null ? true : false;
+    }
+
+    return false;
+
   },
 
   toggle: function() {
@@ -16958,6 +17000,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
       that.$el.css({ left: -5000 });
       that._update(no_pan);
     }
+
   },
 
   isHidden: function () {
@@ -16991,11 +17034,11 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
       });
 
       this.$el
-        .delay(delay)
-        .animate({
-          opacity: 1,
-          marginBottom: 0
-        },300);
+      .delay(delay)
+      .animate({
+        opacity: 1,
+        marginBottom: 0
+      },300);
     } else {
       this.$el.show();
     }
@@ -17043,14 +17086,14 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     if (!this.model.get("autoPan") || this.isHidden()) { return; }
 
     var
-      x               = this.$el.position().left,
-      y               = this.$el.position().top,
-      containerHeight = this.$el.outerHeight(true) + 15, // Adding some more space
-      containerWidth  = this.$el.width(),
-      pos             = this.mapView.latLonToPixel(this.model.get("latlng")),
-      adjustOffset    = {x: 0, y: 0};
-      size            = this.mapView.getSize()
-      wait_callback   = 0;
+    x               = this.$el.position().left,
+    y               = this.$el.position().top,
+    containerHeight = this.$el.outerHeight(true) + 15, // Adding some more space
+    containerWidth  = this.$el.width(),
+    pos             = this.mapView.latLonToPixel(this.model.get("latlng")),
+    adjustOffset    = {x: 0, y: 0};
+    size            = this.mapView.getSize()
+    wait_callback   = 0;
 
     if (pos.x - offset[0] < 0) {
       adjustOffset.x = pos.x - offset[0] - 10;
@@ -17344,14 +17387,30 @@ CartoDBLayerCommon.prototype = {
     this.options.visible = false;
   },
 
+
+  /**
+   * Check if CartoDB logo already exists
+   */
+  _isWadusAdded: function(container, className) {
+    // Check if any cartodb-logo exists within container
+    var a = [];
+    var re = new RegExp('\\b' + className + '\\b');
+    var els = container.getElementsByTagName("*");
+    for(var i=0,j=els.length; i<j; i++)
+      if(re.test(els[i].className))a.push(els[i]);
+
+    return a.length > 0;
+  },
+
+
   /**
    * Add Cartodb logo
    * It needs a position, timeout if it is needed and the container where add it
    */
   _addWadus: function(position, timeout, container) {
-    if (this.options.cartodb_logo !== false && !document.getElementById('cartodb_logo')) {
+    if (this.options.cartodb_logo !== false && !this._isWadusAdded(container, 'cartodb_logo')) {
       var cartodb_link = document.createElement("a");
-      cartodb_link.setAttribute('id','cartodb_logo');
+      cartodb_link.setAttribute('class','cartodb_logo');
       container.appendChild(cartodb_link);
       setTimeout(function() {
         cartodb_link.setAttribute('style',"position:absolute; bottom:0; left:0; display:block; border:none; z-index:10000;");
@@ -17789,6 +17848,8 @@ var LeafLetPlainLayerView = L.Class.extend({
   },
 
   onRemove: function() { 
+    var div = this.leafletMap.getContainer()
+    div.style.background = 'none';
   },
 
   _modelUpdated: function() {
@@ -18659,6 +18720,25 @@ cdb.geo.LeafLetLayerCartoDBView = LeafLetLayerCartoDBView;
     }
 
   });
+
+  // set the image path in order to be able to get leaflet icons
+  // code adapted from leaflet
+  L.Icon.Default.imagePath = (function () {
+    var scripts = document.getElementsByTagName('script'),
+        leafletRe = /\/?cartodb[\-\._]?([\w\-\._]*)\.js\??/;
+
+    var i, len, src, matches;
+
+    for (i = 0, len = scripts.length; i < len; i++) {
+      src = scripts[i].src;
+      matches = src.match(leafletRe);
+
+      if (matches) {
+        return src.split(leafletRe)[0] + '/themes/css/images/';
+      }
+    }
+  }());
+
 })();
 
 (function() {
@@ -19866,16 +19946,13 @@ cdb.ui.common.RowView = cdb.core.View.extend({
   tagName: 'tr',
 
   initialize: function() {
-    _.bindAll(this, "triggerChange", "triggerSync", "triggerError");
 
     this.model.bind('change', this.render, this);
     this.model.bind('destroy', this.clean, this);
     this.model.bind('remove', this.clean, this);
-    this.model.bind('change', this.triggerChange);
-    this.model.bind('sync', this.triggerSync);
-    this.model.bind('error', this.triggerError);
-
-
+    this.model.bind('change', this.triggerChange, this);
+    this.model.bind('sync', this.triggerSync, this);
+    this.model.bind('error', this.triggerError, this);
 
     this.add_related_model(this.model);
     this.order = this.options.order;
@@ -20069,10 +20146,10 @@ cdb.ui.common.Table = cdb.core.View.extend({
         self.rowViews[i].$el.attr('data-y', i);
       }
     });
-    tr.bind('changeRow', this.rowChanged);
-    tr.bind('saved', this.rowSynched);
-    tr.bind('errorRow', this.rowFailed);
-    tr.bind('saving', this.rowSaving);
+    tr.bind('changeRow', this.rowChanged, this);
+    tr.bind('saved', this.rowSynched, this);
+    tr.bind('errorRow', this.rowFailed, this);
+    tr.bind('saving', this.rowSaving, this);
     this.retrigger('saving', tr);
 
     tr.render();
@@ -20979,7 +21056,7 @@ var cartoLayer = function(vis, data) {
   }
   data.extra_params = data.extra_params || {};
   if(vis.updated_at) {
-    data.extra_params.cache_buster = vis.updated_at;
+    data.extra_params.updated_at = vis.updated_at;
   } else {
     data.no_cdn = true;
   }
@@ -21088,7 +21165,7 @@ Layers.register('carto', cartoLayer);
         layerData = visData.layers[1];
         // add the timestamp to options
         layerData.options.extra_params = layerData.options.extra_params || {};
-        layerData.options.extra_params.cache_buster = visData.updated_at;
+        layerData.options.extra_params.updated_at = visData.updated_at;
       } else {
         layerData = visData;
       }

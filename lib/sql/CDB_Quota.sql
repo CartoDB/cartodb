@@ -19,7 +19,7 @@ BEGIN
     RAISE DEBUG 'Checking quota on table % (dice:%, needed:<%)', TG_RELID::text, dice, pbfact;
     -- TODO: double check this query. Maybe use CDB_TableMetadata for lookup ?
     --       also, it's "table_name" sounds sensible to search_path
-    SELECT sum(pg_relation_size(quote_ident(table_name))) / 2
+    SELECT sum(pg_total_relation_size(quote_ident(table_name))) / 2
       FROM information_schema.tables
       WHERE table_catalog = quote_ident(current_database())
       AND table_schema = 'public'

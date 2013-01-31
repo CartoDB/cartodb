@@ -53,24 +53,24 @@ namespace :cartodb do
       end
     end
 
-
-    ################
-    # SET DISK QUOTA
-    ################
-    desc "reset all users quota to 100mb or use current setting"
-    task :reset_quotas => :environment do
+    ##########################
+    # SET TRIGGER CHECK QUOTA
+    ##########################
+    desc "reset check quota trigger on all user tables"
+    task :reset_trigger_check_quota => :environment do
       User.all.each do |user|
         next if !user.respond_to?('database_name') || user.database_name.blank?
-        
-        #user.update(:quota_in_bytes => 104857600) if user.quota_in_bytes.blank?
-                
+
         # rebuild quota trigger
         user.tables.all.each do |table|
-        
-          # reset quota trigger
-          table.add_python
-          table.set_trigger_check_quota rescue puts("FAIL #{table.name}")
-        end  
+          begin
+            table.add_python
+            table.set_trigger_check_quota
+            puts "OK #{user.username} => #{table.name}"
+          rescue => e
+            puts "FAIL #{user.username} => #{table.name} #{e.message}"
+          end
+        end
       end
     end
 

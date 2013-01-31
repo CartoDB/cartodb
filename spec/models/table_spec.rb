@@ -889,7 +889,7 @@ describe Table do
       data_import = DataImport.create( :user_id       => @user.id,
                                        :data_source   => '/../db/fake_data/SHP1.zip' )
       table = Table[data_import.table_id]
-      table.table_size.should == 12288
+      table.table_size.should == 2351104
     end
 
     it "should add a point the_geom column after importing a CSV" do

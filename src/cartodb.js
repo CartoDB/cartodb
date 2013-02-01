@@ -5,7 +5,7 @@
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '2.0.15';
+    cdb.VERSION = '2.0.16';
 
     cdb.CARTOCSS_VERSIONS = {
       '2.0.0': '',
@@ -46,6 +46,7 @@
         "../vendor/jscrollpane.js",
         "../vendor/mousewheel.js",
         "../vendor/mwheelIntent.js",
+        "../vendor/spin.js",
 
         'core/decorator.js',
         'core/config.js',

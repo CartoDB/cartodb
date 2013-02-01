@@ -5,7 +5,7 @@ CSS_FILES = $(wildcard themes/css/*.css)
 CSS_FILES_IE = $(wildcard themes/css/ie/*.css)
 
 #dist:  dist/cartodb.js dist/cartodb.full.js themes
-dist:  dist/cartodb.js  dist/cartodb.css dist/cartodb.ie.css
+dist:  dist/cartodb.js  dist/cartodb.sql.js dist/cartodb.css dist/cartodb.ie.css
 
 
 dist_folder:
@@ -17,6 +17,11 @@ dist/cartodb.uncompressed.js: dist_folder
 
 dist/cartodb.js: dist/cartodb.uncompressed.js
 	$(UGLIFYJS) dist/cartodb.uncompressed.js > dist/cartodb.js
+
+dist/cartodb.sql.js:  vendor/mustache.js vendor/reqwest.min.js src/api/sql.js
+	cat vendor/mustache.js vendor/reqwest.min.js src/api/sql.js > dist/cartodb.sql.uncompressed.js
+	$(UGLIFYJS) dist/cartodb.sql.uncompressed.js > dist/cartodb.sql.js
+
 
 dist/cartodb.css: css
 	cp themes/css/cartodb.css dist

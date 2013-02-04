@@ -342,8 +342,6 @@ header { // general header
         margin:3px 0 0 15px;
         @include inline-block();
 
-        &.empty:before { content: ''; }
-
         &:before {
           position:relative;
           content:'|';
@@ -451,6 +449,8 @@ header { // general header
 
     a.clearview { color:$cOrange!important;}
     h2 a:hover  { text-decoration:none; cursor:default; }
+
+    hgroup span.tags.empty:before { content: ''; }
 
     span.table_description p {
 

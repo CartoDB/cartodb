@@ -10,6 +10,16 @@
 
       .back { display:none; }
 
+
+      @include default-input;
+      @include default-form-info;
+
+      .table_name {
+        display:none;
+
+        input.text { display:block; width:529px;}
+      }
+
     // Tables selector
     .tables_selector {
       display:block;

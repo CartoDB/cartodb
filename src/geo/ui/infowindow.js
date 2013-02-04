@@ -361,7 +361,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
 
       // Resize rules
       if ( w > coverWidth && h > coverHeight && h < w )  $img.css({ height: coverHeight });
-      else if ( h > w )  $img.css({ width: coverWidth });
+      else if ( h > w )  $img.css({ width: coverWidth, top: "50%", position: "absolute", "margin-top": -1*coverHeight });
       else $img.css({ width: coverWidth });
 
       $img.fadeIn(300);

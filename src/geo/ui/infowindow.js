@@ -359,10 +359,20 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
       var coverWidth = $cover.width();
       var coverHeight = $cover.height();
 
+      var ratio = h / w;
+      var coverRatio = coverHeight / coverWidth;
+
       // Resize rules
-      if ( w > coverWidth && h > coverHeight && h < w )  $img.css({ height: coverHeight });
-      else if ( h > w )  $img.css({ width: coverWidth, top: "50%", position: "absolute", "margin-top": -1*coverHeight });
-      else $img.css({ width: coverWidth });
+      if ( w > coverWidth && h > coverHeight) { // bigger image
+        if ( ratio < coverRatio ) $img.css({ height: coverHeight });
+        else {
+          var calculatedHeight = h / (w / coverWidth);
+          $img.css({ width: coverWidth, top: "50%", position: "absolute", "margin-top": -1*parseInt(calculatedHeight, 10)/2 });
+        }
+      } else {
+        var calculatedHeight = h / (w / coverWidth);
+        $img.css({ width: coverWidth, top: "50%", position: "absolute", "margin-top": -1*parseInt(calculatedHeight, 10)/2 });
+      }
 
       $img.fadeIn(300);
     })

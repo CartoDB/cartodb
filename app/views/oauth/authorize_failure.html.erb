@@ -1,7 +1,7 @@
 <section class="sessions shadow">
   <div class="content">
     <h2>Authorization denied</h2>
-    <p class="margin15 light">You have denied the oauth access for <%= @token.client_application.user.username %>. You can consider you decission in any moment.</p>
+    <p class="margin15 light">You have denied the oauth access for <%= @token.client_application.user.username %>. You can change this setting later if you reconsider.</p>
   </div>
   <div class="footer">
     <p class="center light"><%= link_to "Forgot password?",forget_password_url %> · <%= link_to "Create an account", "http://cartodb.com/signup" %></p>

@@ -466,10 +466,18 @@ class User < Sequel::Model
   end
 
   def rebuild_quota_trigger
+    load_cartodb_functions
+    puts "Rebuilding quota trigger in db '#{database_name}' (#{username})"
     tables.all.each do |table|
       table.add_python
       table.set_trigger_check_quota
     end
+    # Clean old legacy function.
+    # TODO: should proably be in a migration task instead
+    in_database(:as => :superuser).run(<<-CLEANUP
+      DROP FUNCTION IF EXISTS check_quota(); -- old, legacy function
+CLEANUP
+    )
   end
 
   def importing_jobs

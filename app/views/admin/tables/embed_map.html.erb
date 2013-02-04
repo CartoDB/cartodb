@@ -67,12 +67,11 @@
         return params;
       }
 
+
       $(document).ready(function(){
         var bool_fn = function(v) { return v == 'true' }
           , is_custom_install = <%= Cartodb.config[:cartodb_com_hosted].present? %>
-          , logo_fn = function(v) {
-                        return true
-                      };
+          , logo_fn = function(v) { return ("<%= @table.owner.account_type.downcase %>" != "coronelli" || is_custom_install) ? true : v == 'true' };
 
         var opt = get_url_params({
           'search': bool_fn,

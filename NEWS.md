@@ -1,8 +1,13 @@
+2.0.4 (DD/MM/YY)
+-----
+
 2.0.3 (31/01/13)
 -----
-* Add cartodb:db:update_test_quota_trigger rake task
+* Add cartodb:db:update_test_quota_trigger rake task.
 * Added new infowindow theme: 'header with image'.
 * Brand new basemap layer selector. 
+* Changed user quota calculation method.
+* Changed default basemap to Nokia.
 
 2.0.2 (21/01/13)
 -----

@@ -23,12 +23,16 @@
         <span class="separator"></span>      
       {{/index}}
     {{/content.fields}}
+
+    <div class="shadow"></div>
     </div>
 
   </div>
   <div class="cartodb-popup-content-wrapper">
+
+    <div class="cartodb-popup-content">
       {{#content.fields}}
-    <div class="cartodb-popup-content order{{index}}">
+    <div class="order{{index}}">
         {{#index}}
           {{#title}}<h4>{{title}}</h4>{{/title}}
           {{#value}}
@@ -40,6 +44,7 @@
         {{/index}}
     </div>
       {{/content.fields}}
+    </div>
   </div>
   <div class="cartodb-popup-tip-container">
   </div>

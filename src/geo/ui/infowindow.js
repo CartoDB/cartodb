@@ -276,7 +276,9 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
       // Check the height of the content + the header if exists
       var that = this;
       setTimeout(function() {
+
         var actual_height = that.$el.find(".cartodb-popup-content").outerHeight() + that.$el.find(".cartodb-popup-header").outerHeight();
+
         if (that.minHeightToScroll <= actual_height)
           that.$el.find(".cartodb-popup-content").jScrollPane({
             maintainPosition:       false,

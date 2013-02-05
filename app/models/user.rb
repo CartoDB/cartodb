@@ -346,7 +346,7 @@ class User < Sequel::Model
   def db_size_in_bytes(use_total = false)
     attempts = 0
     begin
-      size = in_database(:as => :superuser).fetch("SELECT sum(pg_#{('total_' if use_total)}relation_size(quote_ident(table_name)))
+      size = in_database(:as => :superuser).fetch("SELECT sum(pg_total_relation_size(quote_ident(table_name)))
         FROM information_schema.tables
         WHERE table_catalog = '#{database_name}' AND table_schema = 'public'
         AND table_name != 'spatial_ref_sys' AND table_type = 'BASE TABLE'").first[:sum] rescue 0
@@ -466,10 +466,18 @@ class User < Sequel::Model
   end
 
   def rebuild_quota_trigger
+    load_cartodb_functions
+    puts "Rebuilding quota trigger in db '#{database_name}' (#{username})"
     tables.all.each do |table|
       table.add_python
       table.set_trigger_check_quota
     end
+    # Clean old legacy function.
+    # TODO: should proably be in a migration task instead
+    in_database(:as => :superuser).run(<<-CLEANUP
+      DROP FUNCTION IF EXISTS check_quota(); -- old, legacy function
+CLEANUP
+    )
   end
 
   def importing_jobs

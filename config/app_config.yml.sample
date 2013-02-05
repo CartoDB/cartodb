@@ -82,10 +82,10 @@ defaults: &defaults
       options:
         visible:      true
         type:         "Tiled"
-        urlTemplate:  "https://dnv9my2eseobd.cloudfront.net/v3/cartodb.map-eeoepub0/{z}/{x}/{y}.png"
-        name:         'Streets (Mapbox)'
-        className:    "mapbox_streets"
-        attribution:  "Mapbox <a href='http://mapbox.com/about/maps' target='_blank'>Terms &amp; Feedback</a>"
+        urlTemplate:  "https://maps.nlp.nokia.com/maptiler/v2/maptile/newest/normal.day/{z}/{x}/{y}/256/png8?lg=eng&token=61YWYROufLu_f8ylE0vn0Q&app_id=qIWDkliFCtLntLma2e6O"
+        name:         'Nokia Day'
+        className:    "nokia_day"
+        attribution:  "©2012 Nokia <a href='http://here.net/services/terms' target='_blank'>Terms of use</a>"
     gmaps:
       kind: "gmapsbase"
       options:

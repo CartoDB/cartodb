@@ -58,6 +58,7 @@ div.cartodb-popup.header.with-image div.cartodb-popup-header .image_not_found a 
   color: #888888;
   font-size:13px;
   font-family: "Helvetica", "Helvetica Neue", Arial, sans-serif;
+  text-decoration: underline;
 }
 
 div.cartodb-popup.header.with-image div.cartodb-popup-header .image_not_found a:hover {

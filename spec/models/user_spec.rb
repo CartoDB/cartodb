@@ -129,16 +129,16 @@ describe User do
       :table_count => 1,
       :byte_quota  => 104857600, 
       :remaining_table_quota => 4, 
-      :remaining_byte_quota => 104857600.0, 
+      :remaining_byte_quota => 104841216.0, 
       :api_calls => nil, 
       :api_key => @user2.get_map_key, 
       :layers => [],
       :last_active_time => nil,
-      :db_size_in_bytes => 0,
+      :db_size_in_bytes => 16384,
       :total_db_size_in_bytes => 16384,
       :real_table_count => 1,
       :biggest_table_name => "my_first_table",
-      :biggest_table_size_diff => -10
+      :biggest_table_size_diff => 16374
     }
 
     @user2.data.keys.should =~ [:id, :email, :username, :account_type, :private_tables, :table_quota, :table_count, :byte_quota, :remaining_table_quota, :remaining_byte_quota, :api_calls, :api_key, :layers]

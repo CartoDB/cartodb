@@ -592,7 +592,7 @@ class Table < Sequel::Model(:user_tables)
 
   # returns table size in bytes
   def table_size
-    @table_size ||= owner.in_database["SELECT pg_relation_size('#{self.name}') as size"].first[:size] / 2
+    @table_size ||= owner.in_database["SELECT pg_total_relation_size('#{self.name}') as size"].first[:size] / 2
   end
 
   def total_table_size
@@ -658,11 +658,11 @@ class Table < Sequel::Model(:user_tables)
           end
         end
 
-        if new_column_type = get_new_column_type(invalid_column)
+        if invalid_column.nil? || new_column_type != get_new_column_type(invalid_column)
+          raise e
+        else
           user_database.set_column_type self.name, invalid_column.to_sym, new_column_type
           retry
-        else
-          raise e
         end
       end
     end
@@ -1205,6 +1205,7 @@ class Table < Sequel::Model(:user_tables)
   end
 
   # DB Triggers and things
+  # TODO: move to user (is db-wide, not table-wide)
   def add_python
     owner.in_database(:as => :superuser).run(<<-SQL
       CREATE OR REPLACE PROCEDURAL LANGUAGE 'plpythonu' HANDLER plpython_call_handler;
@@ -1326,28 +1327,20 @@ TRIGGER
     owner.in_database[%Q{ANALYZE "#{self.name}";}]
   end
 
-  # move to C
+  # Set quota checking trigger for this table
   def set_trigger_check_quota
+    # probability factor of running the check for each row
+    # (it'll always run before each statement)
+    check_probability_factor = 0.001 # TODO: base on database usage ?
     owner.in_database(:as => :superuser).run(<<-TRIGGER
-    CREATE OR REPLACE FUNCTION check_quota() RETURNS trigger AS
-    $$
-    c = SD.get('quota_counter', 0)
-    m = SD.get('quota_mod', 1000)
-    QUOTA_MAX = #{self.owner.quota_in_bytes}
-
-    if c%m == 0:
-        s = plpy.execute("SELECT sum(pg_relation_size(quote_ident(table_name))) FROM information_schema.tables WHERE table_catalog = '#{self.database_name}' AND table_schema = 'public'")[0]['sum'] / 2
-        int_s = int(s)
-        diff = int_s - QUOTA_MAX
-        SD['quota_mod'] = min(1000, max(1, diff))
-        if int_s > QUOTA_MAX:
-            raise Exception("Quota exceeded by %sKB" % (diff/1024))
-    SD['quota_counter'] = c + 1
-    $$
-    LANGUAGE 'plpythonu' VOLATILE;
-
     DROP TRIGGER IF EXISTS test_quota ON "#{self.name}";
-    CREATE TRIGGER test_quota BEFORE UPDATE OR INSERT ON "#{self.name}" EXECUTE PROCEDURE check_quota();
+    CREATE TRIGGER test_quota BEFORE UPDATE OR INSERT ON "#{self.name}"
+      EXECUTE PROCEDURE CDB_CheckQuota(1, #{self.owner.quota_in_bytes});
+    DROP TRIGGER IF EXISTS test_quota_per_row ON "#{self.name}";
+    CREATE TRIGGER test_quota_per_row BEFORE UPDATE OR INSERT ON "#{self.name}"
+      FOR EACH ROW
+      EXECUTE PROCEDURE CDB_CheckQuota( #{check_probability_factor},
+                                        #{self.owner.quota_in_bytes} );
   TRIGGER
   )
   end

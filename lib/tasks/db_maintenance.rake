@@ -6,13 +6,19 @@ namespace :cartodb do
     ########################
     desc "Install/upgrade CARTODB SQL functions"
     task :load_functions => :environment do
-      User.all.each do |user|
+      count = User.count
+      User.all.each_with_index do |user, i|
         begin
           user.load_cartodb_functions
-          puts "#{user.username} => OK"
+          user.tables.all.each do |table|
+              table.add_python
+              table.set_trigger_check_quota
+          end
+          printf "OK %-#{20}s (%-#{4}s/%-#{4}s)\n", user.username, i, count
         rescue => e
-          puts "#{user.username} => KO #{e.message}"
+          printf "FAIL %-#{20}s (%-#{4}s/%-#{4}s) #{e.message}\n", user.username, i, count
         end
+        sleep(1.0/5.0)
       end
     end
 
@@ -26,6 +32,7 @@ namespace :cartodb do
         next if !user.respond_to?('database_name') || user.database_name.blank?
         
         user.test_cartodb_functions
+        sleep(1.0/4.0)
       end
     end
         
@@ -62,9 +69,8 @@ namespace :cartodb do
     ##########################
     desc "reset check quota trigger on all user tables"
     task :reset_trigger_check_quota => :environment do
-      User.all.each do |user|
-        next if !user.respond_to?('database_name') || user.database_name.blank?
-
+      count = User.count
+      User.all.each_with_index do |user, i|
         # rebuild quota trigger
         user.tables.all.each do |table|
           begin

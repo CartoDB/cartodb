@@ -393,6 +393,7 @@ div.cartodb-popup.header.with-image div.cartodb-popup-header {
 div.cartodb-popup.header.with-image div.cartodb-popup-header .cover {
   display:block;
   position:absolute;
+  overflow:hidden;
   width: 218px;
   height:135px;
   top: 4px;

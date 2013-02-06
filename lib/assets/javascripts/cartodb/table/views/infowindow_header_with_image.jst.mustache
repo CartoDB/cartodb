@@ -13,6 +13,9 @@
           {{#value}}
             <h1 class="order{{index}}">{{ value }}</h1>
           {{/value}}
+        {{^value}}
+            <h1 class="order{{index}}">null</h1>
+        {{/value}}
         {{/index}}
 
 

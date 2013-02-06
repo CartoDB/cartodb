@@ -1,6 +1,6 @@
 // cartodb.js version: 2.0.16
 // uncompressed version: cartodb.uncompressed.js
-// sha: e9d4f20b29ae6297b3fc7f80d02486a7a31c920b
+// sha: dd98a8eacee8e9238ed897d757023348da301d50
 (function() {
   var root = this;
 
@@ -2271,7 +2271,8 @@ L.DomUtil = {
     } else if (L.Browser.ie) {
 
       var filter = false,
-        filterName = 'DXImageTransform.Microsoft.Alpha';
+        filterName = 'DXImageTransform.Microsoft.Alpha',
+        oldIE = (L.Browser.ie6 || (L.Browser.ua.search("msie 7") != -1)) ? true : false;
 
       // filters collection throws an error if we try to retrieve a filter that doesn't exist
       try { filter = el.filters.item(filterName); } catch (e) {}
@@ -2282,8 +2283,14 @@ L.DomUtil = {
         filter.Enabled = (value !== 100);
         filter.Opacity = value;
       } else {
-        //el.style.filter += ' progid:' + filterName + '(opacity=' + value + ')';
-        el.style.filter = 'filter:alpha(opacity=' + value + ')';
+        //el.style.filter = ' progid:' + filterName + '(opacity=' + value + ')';
+        // Hack for support IE8 (embed and cartodb.js maps) and IE7 (embed maps)
+        if (!oldIE) {
+          el.style.filter = 'alpha(opacity=' + value + ')';
+        } else {
+          // IE7 is not working for now in Leaflet...
+          // https://github.com/Leaflet/Leaflet/issues/1084
+        }
       }
     }
   },
@@ -21057,6 +21064,7 @@ var cartoLayer = function(vis, data) {
   data.extra_params = data.extra_params || {};
   if(vis.updated_at) {
     data.extra_params.updated_at = vis.updated_at;
+    delete data.extra_params.cache_buster;
   } else {
     data.no_cdn = true;
   }
@@ -21166,6 +21174,7 @@ Layers.register('carto', cartoLayer);
         // add the timestamp to options
         layerData.options.extra_params = layerData.options.extra_params || {};
         layerData.options.extra_params.updated_at = visData.updated_at;
+        delete layerData.options.cache_buster;
       } else {
         layerData = visData;
       }
@@ -21421,7 +21430,7 @@ Layers.register('carto', cartoLayer);
     }
 
     _table.sql = function() {
-      var s = "select "
+      var s = "select"
       if(_columns.length) {
         s += ' ' + _columns.join(',') + ' '
       } else {
@@ -21433,14 +21442,14 @@ Layers.register('carto', cartoLayer);
       if(_filters) {
         s += " where " + _filters;
       }
+      if(_limit) {
+        s += " limit " + _limit;
+      }
       if(_order) {
         s += " order by " + _order;
       }
       if(_orderDir) {
         s += ' ' + _orderDir;
-      }
-      if(_limit) {
-        s += " limit " + _limit;
       }
 
       return s;

@@ -788,7 +788,8 @@ L.DomUtil = {
     } else if (L.Browser.ie) {
 
       var filter = false,
-        filterName = 'DXImageTransform.Microsoft.Alpha';
+        filterName = 'DXImageTransform.Microsoft.Alpha',
+        oldIE = (L.Browser.ie6 || (L.Browser.ua.search("msie 7") != -1)) ? true : false;
 
       // filters collection throws an error if we try to retrieve a filter that doesn't exist
       try { filter = el.filters.item(filterName); } catch (e) {}
@@ -799,8 +800,14 @@ L.DomUtil = {
         filter.Enabled = (value !== 100);
         filter.Opacity = value;
       } else {
-        //el.style.filter += ' progid:' + filterName + '(opacity=' + value + ')';
-        el.style.filter = 'filter:alpha(opacity=' + value + ')';
+        //el.style.filter = ' progid:' + filterName + '(opacity=' + value + ')';
+        // Hack for support IE8 (embed and cartodb.js maps) and IE7 (embed maps)
+        if (!oldIE) {
+          el.style.filter = 'alpha(opacity=' + value + ')';
+        } else {
+          // IE7 is not working for now in Leaflet...
+          // https://github.com/Leaflet/Leaflet/issues/1084
+        }
       }
     }
   },

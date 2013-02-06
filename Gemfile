@@ -54,6 +54,11 @@ gem "rubyzip",                 "0.9.9"
 gem "builder",                 "3.0.0"
 gem "state_machine",           "1.1.2"
 
+# Workman
+gem "virtus"
+gem "aequitas"
+gem "uuidtools"
+
 # TODO we should be able to remove this using the new
 #      Rails routes DSL
 gem "bartt-ssl_requirement",   "~>1.4.0", :require => "ssl_requirement"
@@ -78,6 +83,7 @@ group :development, :test do
   gem "timecop",               "0.3.5"
   gem "email_spec",            "1.2.1"
   gem "rack-reverse-proxy",    "0.4.4", :require => 'rack/reverse_proxy'
+  gem "rack-test"
   gem "foreman",               "0.46.0"
   gem "aws-sdk",               "1.5.2"
   gem "factory_girl_rails",    "~> 4.0.0"

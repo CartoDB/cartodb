@@ -404,3 +404,4 @@ CartoDB is a large app. We reccomend you use the [spin gem](https://github.com/j
   - Sandro Santilli (@strk)
   - David Arango (@demimismo)
   - Xabel Álvarez (@johnhackworth)
+  - Lorenzo Planas (@lorenzoplanas)

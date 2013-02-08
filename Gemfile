@@ -89,7 +89,7 @@ group :development, :test do
   gem "factory_girl_rails",    "~> 4.0.0"
 
   # Guard
-  gem "rb-inotify", :require => false
+  gem 'rb-inotify', '~> 0.8.8', :require => false
   gem "rb-fsevent", :require => false
   gem "rb-fchange", :require => false
   gem "guard"

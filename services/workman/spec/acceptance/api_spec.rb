@@ -1,6 +1,7 @@
 # encoding: utf-8
 require 'minitest/autorun'
 require 'rack/test'
+require_relative '../spec_helper'
 require_relative '../../api'
 require_relative '../factories/job_data'
 

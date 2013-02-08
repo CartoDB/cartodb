@@ -3,6 +3,7 @@
 
 guard 'minitest', test_folders: 'services' do
   # with Minitest::Spec
+  
   watch(%r|^services/.*/spec/(.*)_spec\.rb|)
   watch(%r|^services/(.*)([^/]+)\.rb|)     { |m| "spec/#{m[1]}#{m[2]}_spec.rb" }
   # watch(%r|^spec/spec_helper\.rb|)    { "spec" }

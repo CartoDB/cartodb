@@ -1,5 +1,6 @@
 # encoding: utf-8
 require 'minitest/autorun'
+require_relative '../spec_helper'
 require_relative '../../../data-repository/repository'
 require_relative '../../track_record'
 

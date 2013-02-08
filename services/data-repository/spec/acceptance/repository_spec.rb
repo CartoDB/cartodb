@@ -1,6 +1,7 @@
 # encoding: utf-8
 require 'minitest/autorun'
 require 'redis'
+require_relative '../spec_helper'
 require_relative '../../repository'
 
 describe DataRepository do

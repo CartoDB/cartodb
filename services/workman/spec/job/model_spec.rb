@@ -18,7 +18,7 @@ describe Job::Model do
 
   describe 'Job::Model.repository' do
     it 'returns the repository instance for persistence operations' do
-      Job::Model.repository.must_be_instance_of Job::Repository
+      Job::Model.repository.must_be_instance_of DataRepository::Repository
     end
   end # Job::Model.repository
 

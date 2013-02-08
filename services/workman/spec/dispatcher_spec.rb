@@ -27,7 +27,7 @@ describe Dispatcher do
 
     it 'tells the queueing backend to enqueue the job' do
       job_data    = Factory.job_data
-      queue       = Minitest::Mock.new
+      queue       = MiniTest::Mock.new
       dispatcher  = Dispatcher.new(queue)
 
       queue.expect :enqueue, nil, [Job::Model, job_data.fetch(:id)]
@@ -50,7 +50,7 @@ describe Dispatcher do
 
     it 'tells the queueing backend to abort the job' do
       job         = Dispatcher.new(fake_queue).schedule(Factory.job_data)
-      queue       = Minitest::Mock.new
+      queue       = MiniTest::Mock.new
       dispatcher  = Dispatcher.new(queue)
 
       queue.expect :dequeue, nil, [Job::Model, job.id]

@@ -2,7 +2,8 @@
 require 'uuidtools'
 require 'virtus'
 require 'aequitas'
-require_relative './repository'
+#require_relative './repository'
+require_relative '../../data-repository/repository'
 
 module Workman
   module Job
@@ -14,7 +15,7 @@ module Workman
         attr_accessor :repository
       end
 
-      @repository = Job::Repository.new
+      @repository = DataRepository::Repository.new
       @queue      = :jobs
 
       def self.next_id
@@ -34,12 +35,12 @@ module Workman
 
       def persist
         raise unless valid?
-        repository.store(id, attributes.to_hash)
+        repository.store(storage_key, attributes.to_hash)
         self
       end #persist
 
       def fetch
-        self.attributes = repository.fetch(id)
+        self.attributes = repository.fetch(storage_key)
         self
       end #fetch
 
@@ -49,6 +50,10 @@ module Workman
       end #transition 
 
       private
+
+      def storage_key
+        "workman:job:#{id}"
+      end #storage_key
 
       def repository
         self.class.repository

@@ -1,45 +1,11 @@
 # encoding: utf-8
-require 'json'
 require 'redis'
+require_relative 'redis/set'
+require_relative 'redis/string'
 
 module DataRepository
   module Backend
     class Redis
-      class String
-        def initialize(redis=Redis.new)
-          @redis = redis
-        end #initialize
-
-        def store(key, data)
-          redis.set key, data.to_json
-        end #store
-
-        def fetch(key)
-          JSON.parse redis.get(key)
-        end #fetch
-
-        private
-
-        attr_reader :redis
-      end # String
-
-      class Set
-        def initialize(redis=Redis.new)
-          @redis = redis
-        end #initialize
-
-        def store(key, data)
-          redis.sadd key, *(data.to_a)
-        end #store
-
-        def fetch(key)
-          redis.smembers key
-        end #fetch
-
-        private
-
-        attr_reader :redis
-      end # Set
 
       HANDLERS =  {
         'set'     => Backend::Redis::Set,

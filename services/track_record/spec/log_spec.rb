@@ -7,7 +7,36 @@ require_relative '../../data-repository/backend/memory'
 include TrackRecord
 
 describe Log do
+  describe 'Log.repository' do
+    it 'returns the default data repository' do
+      Log.repository.must_be_instance_of DataRepository::Repository
+    end
+  end # Log.repository
+
+  describe 'Log.repository=' do
+    it 'assigns the default data repository' do
+      fake_repository = Object.new
+      Log.repository  = fake_repository
+      Log.repository.must_equal fake_repository
+    end
+  end # Log.repository=
+
+  describe '#repository' do
+    it 'returns the default Log.repository if none passed at initialization' do
+      Log.repository = nil
+      Log.new.repository.must_be_instance_of DataRepository::Repository
+    end
+
+    it "returns this object's repository if specified at initialization" do
+      fake_repository = Object.new
+      log             = Log.new(repository: fake_repository)
+
+      log.repository.must_equal fake_repository
+    end
+  end #repository
+
   describe '#id' do
+
     it 'is assigned by default' do
       log = Log.new
       UUIDTools::UUID.parse(log.id).valid?.must_equal true
@@ -51,7 +80,7 @@ describe Log do
 
   describe '#fetch' do
     it 'retrieves the entries from the repository' do
-      repository = DataRepository::Handler.new
+      repository = DataRepository::Repository.new
 
       log = Log.new(repository: repository)
       log.append(text: 'first message')
@@ -75,7 +104,7 @@ describe Log do
       connection.flushdb
       
       backend     = DataRepository::Backend::Redis.new(connection)
-      repository  = DataRepository::Handler.new(backend)
+      repository  = DataRepository::Repository.new(backend)
 
       log = Log.new(repository: repository)
       log.append(text: 'first message')

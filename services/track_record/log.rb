@@ -34,6 +34,7 @@ module TrackRecord
 
     def fetch
       @entries.merge repository.fetch(storage_key)
+      self
     end #fetch
 
     def storage_key

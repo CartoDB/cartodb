@@ -1,4 +1,5 @@
 # encoding: utf-8
+require_relative 'backend/memory'
 
 module DataRepository
   class Handler

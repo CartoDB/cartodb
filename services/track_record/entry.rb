@@ -2,7 +2,7 @@
 require 'virtus'
 require 'uuidtools'
 require 'json'
-require_relative '../data-repository/handler'
+require_relative '../data-repository/repository'
 
 module TrackRecord
   class Entry
@@ -15,7 +15,7 @@ module TrackRecord
     attribute :timestamp,   Float
     attribute :created_at,  Time
 
-    def initialize(payload, repository=DataRepository::Handler.new)
+    def initialize(payload, repository=DataRepository::Repository.new)
       raise(ArgumentError, PAYLOAD_TYPE_ERROR) unless payload.is_a?(Hash)
       @repository = repository
       payload     = JSON.parse(payload.to_json)

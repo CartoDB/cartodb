@@ -2,18 +2,28 @@
 require 'set'
 require 'virtus'
 require_relative './entry'
-require_relative '../data-repository/handler'
+require_relative '../data-repository/repository'
 
 module TrackRecord
   class Log
     include Enumerable
     include Virtus
 
-    attribute :id,    String
+    attr_reader :repository
+
+    attribute   :id, String
+
+    def self.repository
+      @repository ||= DataRepository::Repository.new
+    end # Log.repository
+
+    def self.repository=(repository)
+      @repository = repository
+    end # Log.repository=
 
     def initialize(arguments={})
       self.id     = arguments.fetch(:id, next_id)
-      @repository = arguments.fetch(:repository, DataRepository::Handler.new)
+      @repository = arguments.fetch(:repository, self.class.repository)
       @entries    = Set.new
     end #initialize
 
@@ -34,6 +44,7 @@ module TrackRecord
 
     def fetch
       @entries.merge repository.fetch(storage_key)
+      self
     end #fetch
 
     def storage_key
@@ -42,7 +53,7 @@ module TrackRecord
 
     private
 
-    attr_reader :entries, :repository
+    attr_reader :entries
     
     def next_id
       UUIDTools::UUID.timestamp_create.to_s

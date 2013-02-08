@@ -8,17 +8,16 @@
 
   .merge_tables_dialog {
 
-      .back { display:none; }
+    .back { display:none; }
 
+    @include default-input;
+    @include default-form-info;
 
-      @include default-input;
-      @include default-form-info;
+    .table_name {
+      display:none;
 
-      .table_name {
-        display:none;
-
-        input.text { display:block; width:529px;}
-      }
+      input.text { display:block; width:529px;}
+    }
 
     // Tables selector
     .tables_selector {
@@ -76,6 +75,7 @@
         display:none;
         letter-spacing: -4px;
         word-spacing: -4px;
+        margin: 0 0 30px 0;
 
         .table_preview {
           @include inline-block();

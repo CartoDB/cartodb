@@ -2,7 +2,7 @@
 require_relative 'backend/memory'
 
 module DataRepository
-  class Handler
+  class Repository
     def initialize(storage=Backend::Memory.new)
       @storage = storage
     end #initialize

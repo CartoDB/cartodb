@@ -1,15 +1,15 @@
 # encoding: utf-8
 require 'minitest/autorun'
 require 'ostruct'
-require_relative '../handler'
+require_relative '../repository'
 require_relative '../backend/redis'
 require_relative '../backend/memory'
 
 include DataRepository
 
-describe Handler do
+describe Repository do
   before do
-    @repository  = Handler.new
+    @repository = Repository.new
   end
 
   describe '#store' do
@@ -54,7 +54,7 @@ describe Handler do
       @repository.keys.must_equal [key.to_s]
     end
   end #keys
-end # Handler
+end # Repository
 
 describe Backend::Redis do
   before do
@@ -62,8 +62,8 @@ describe Backend::Redis do
     connection.select 8
     connection.flushdb
 
-    storage = Backend::Redis.new(connection)
-    @repository = Handler.new(storage)
+    storage     = Backend::Redis.new(connection)
+    @repository = Repository.new(storage)
   end
 
   describe '#store' do

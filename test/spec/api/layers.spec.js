@@ -16,6 +16,25 @@ describe('api.layers', function() {
     });
   });
 
+
+  describe('loadLayer unknow', function() {
+    it("shoudl return an error for unknow map types", function() {
+      var map = {};
+      var err = false;
+      runs(function() {
+        cartodb.createLayer(map, { kind: 'plain', options: {} }, function(l) {
+          layer = l;
+        }).error(function() {
+          err = true;
+        });
+      })
+      waits(10);
+      runs(function() {
+        expect(err).toEqual(true);
+      });
+    })
+  });
+
   //
   // shared specs for each map
   //

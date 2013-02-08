@@ -1,7 +1,7 @@
 # encoding: utf-8
 require 'minitest/autorun'
 require_relative '../../../data-repository/repository'
-require_relative '../../log'
+require_relative '../../track_record'
 
 describe 'example usage for a log with an in-memory backend' do
   it 'should append entries to a log' do

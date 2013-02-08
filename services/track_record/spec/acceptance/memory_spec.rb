@@ -5,9 +5,7 @@ require_relative '../../track_record'
 
 describe 'example usage for a log with an in-memory backend' do
   it 'should append entries to a log' do
-    
-    backend     = DataRepository::Backend::Memory.new
-    repository  = DataRepository::Repository.new(backend)
+    repository  = DataRepository.new
     log         = TrackRecord::Log.new(repository: repository)
 
     log.append(message: 'sample message')

@@ -1,18 +1,17 @@
 # encoding: utf-8
 require 'minitest/autorun'
 require_relative '../../../data-repository/repository'
-require_relative '../../../data-repository/backend/redis'
 require_relative '../../track_record'
 
 describe 'example usage with an in-memory backend' do
-  it 'should append entries to a log' do
-    
-    connection  = Redis.new
-    connection.select 8
-    connection.flushdb
+  before do
+    @redis = Redis.new
+    @redis.select 8
+    @redis.flushdb
+  end
 
-    backend     = DataRepository::Backend::Redis.new(connection)
-    repository  = DataRepository::Repository.new(backend)
+  it 'should append entries to a log' do
+    repository  = DataRepository.new(@redis)
     log         = TrackRecord::Log.new(repository: repository)
 
     log.append(message: 'sample message')
@@ -23,9 +22,7 @@ describe 'example usage with an in-memory backend' do
   end
 
   it 'should reuse the default repository' do
-    backend         = DataRepository::Backend::Redis.new(Redis.new)
-    repository      = DataRepository::Repository.new(backend)
-
+    repository      = DataRepository.new(@redis)
     TrackRecord::Log.repository = repository
 
     log         = TrackRecord::Log.new

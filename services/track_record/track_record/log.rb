@@ -14,7 +14,7 @@ module TrackRecord
     attribute   :id, String
 
     def self.repository
-      @repository ||= DataRepository::Repository.new
+      @repository ||= DataRepository.new
     end # Log.repository
 
     def self.repository=(repository)

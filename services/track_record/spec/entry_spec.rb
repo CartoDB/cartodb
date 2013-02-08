@@ -111,7 +111,7 @@ describe Entry do
 
   describe '#persist' do
     it 'persists this entry in the data repository' do
-      repository  = DataRepository::Handler.new
+      repository  = DataRepository::Repository.new
       entry       = Entry.new({ text: 'bogus' }, repository)
 
       entry.persist
@@ -121,7 +121,7 @@ describe Entry do
 
   describe '#fetch' do
     it 'updates the entry with data retrieved from the repository' do
-      repository      = DataRepository::Handler.new
+      repository      = DataRepository::Repository.new
       entry           = Entry.new({ text: 'bogus' }, repository)
 
       entry.persist

@@ -54,7 +54,7 @@ gem "rubyzip",                 "0.9.9"
 gem "builder",                 "3.0.0"
 gem "state_machine",           "1.1.2"
 
-# Workman
+# Service components (/services)
 gem "virtus"
 gem "aequitas"
 gem "uuidtools"
@@ -87,4 +87,11 @@ group :development, :test do
   gem "foreman",               "0.46.0"
   gem "aws-sdk",               "1.5.2"
   gem "factory_girl_rails",    "~> 4.0.0"
+
+  # Guard
+  gem "rb-inotify", :require => false
+  gem "rb-fsevent", :require => false
+  gem "rb-fchange", :require => false
+  gem "guard"
+  gem "guard-minitest"
 end

@@ -1,7 +1,7 @@
 # encoding: utf-8
 require 'minitest/autorun'
-require_relative '../dispatcher'
-require_relative './factories/job_data'
+require_relative '../../dispatcher'
+require_relative '../factories/job_data'
 
 include Workman
 

@@ -1,6 +1,6 @@
 # encoding: utf-8
 require 'minitest/autorun'
-require_relative '../../job/model'
+require_relative '../../../job/model'
 
 include Workman
 

@@ -1,8 +1,8 @@
 # encoding: utf-8
 require 'minitest/autorun'
 require 'rack/test'
-require_relative '../api'
-require_relative './factories/job_data'
+require_relative '../../api'
+require_relative '../factories/job_data'
 
 include Workman
 

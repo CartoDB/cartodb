@@ -1,8 +1,7 @@
 # encoding: utf-8
 require 'minitest/autorun'
-require_relative '../log'
-require_relative '../../data-repository/backend/redis'
-require_relative '../../data-repository/backend/memory'
+require_relative '../../track_record/log'
+require_relative '../../../data-repository/backend/redis'
 
 include TrackRecord
 

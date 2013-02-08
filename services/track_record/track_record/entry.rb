@@ -2,7 +2,7 @@
 require 'virtus'
 require 'uuidtools'
 require 'json'
-require_relative '../data-repository/repository'
+require_relative '../../data-repository/repository'
 
 module TrackRecord
   class Entry

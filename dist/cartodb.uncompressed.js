@@ -1,6 +1,6 @@
 // cartodb.js version: 2.0.16
 // uncompressed version: cartodb.uncompressed.js
-// sha: 41fc6cc3836b2a3f3792bbcb207a45c4c5fc5404
+// sha: 19ece4118a080fb3eb9ba62b438a33c0500345ef
 (function() {
   var root = this;
 
@@ -21658,8 +21658,11 @@ Layers.register('carto', cartoLayer);
       // TODO: improve checking
       if(typeof(map.overlayMapTypes) !== "undefined") {
         MapType = cdb.geo.GoogleMapsMapView;
-      } else if(map._mapPane.className === "leaflet-map-pane") {
+      } else if(map instanceof L.Map) {
         MapType = cdb.geo.LeafletMapView;
+      } else {
+        promise.trigger('error', "cartodb.js can't guess the map type");
+        return;
       }
 
       // update options

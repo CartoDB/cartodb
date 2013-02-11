@@ -53,7 +53,7 @@ module Workman
       end #transition 
 
       def execute(command=nil)
-        command     = command || command_from(command, arguments)
+        command     ||= command_from(self.command, arguments)
         self.result = command.execute
         persist
       end #execute

@@ -122,6 +122,11 @@ describe Log do
 
       log.tail.to_s.must_match /latest/
     end
+
+    it 'returns an empty array if log is empty' do
+      log = Log.new
+      log.tail.must_be_empty
+    end
   end #latest
 end # Log
 

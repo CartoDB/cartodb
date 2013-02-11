@@ -1,3 +1,16 @@
+--
+-- Determine the Jenks classifications from a numeric array
+--
+-- @param in_array A numeric array of numbers to determine the best
+--            bins based on the Jenks method.
+--
+-- @param breaks The number of bins you want to find.
+--
+-- @param invert Optional wheter to return the top of each bin (default)
+--               or the bottom. BOOLEAN, default=FALSE.
+--  
+--
+
 CREATE OR REPLACE FUNCTION CDB_JenksBins ( in_array NUMERIC[], breaks INT, invert BOOLEAN DEFAULT FALSE) RETURNS NUMERIC[] as $$ 
 DECLARE 
     element_count INT4; 

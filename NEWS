@@ -1,4 +1,4 @@
-2.0.xx (xx//xx//2013)
+2.0.17 (11//02//2013)
 -----
 - fixed problem with hide method on layers for IE8
 - migrated to leaflet 0.5.1

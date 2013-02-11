@@ -170,7 +170,7 @@
       }
 
       &.disabled {
-        @include opacity(1);
+        @include opacity(0.35);
 
         span.radio {
           @include opacity(0.35);

@@ -35,6 +35,6 @@ RSpec::Matchers.define :have_required_indexes_and_triggers do
   end
 
   failure_message_for_should do |actual|
-    "missing #{@diff.inspect}"
+    "missing #{@diff.inspect} on #{actual.name}"
   end
 end

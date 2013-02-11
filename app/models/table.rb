@@ -45,7 +45,7 @@ class Table < Sequel::Model(:user_tables)
 
   attr_accessor :force_schema, :import_from_file,:import_from_url, :import_from_query,
                 :import_from_table_copy, :importing_encoding,
-                :temporal_the_geom_type, :migrate_existing_table
+                :temporal_the_geom_type, :migrate_existing_table, :new_table
 
   ## Callbacks
 
@@ -246,11 +246,9 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def before_create
+    super
     update_updated_at
     self.database_name = owner.database_name
-
-    #import from file
-    # if import_from_file.present? or import_from_url.present? or import_from_query.present? or import_from_table_copy.present? or migrate_existing_table.present?
 
     # The Table model only migrates now, never imports
     if migrate_existing_table.present?
@@ -286,70 +284,8 @@ class Table < Sequel::Model(:user_tables)
       end
       set_the_geom_column!(self.the_geom_type)
     end
-
-
-    # test for exceeding of table quota after creation - needed as no way to test future db size pre-creation
-    if owner.over_disk_quota?
-      unless @data_import.nil?
-        @data_import.reload
-        @data_import.set_error_code(8001)
-        @data_import.log_error("#{owner.disk_quota_overspend / 1024}KB more space is required" )
-      end
-      raise CartoDB::QuotaExceeded, "#{owner.disk_quota_overspend / 1024}KB more space is required"
-    end
-
-    # all looks ok, so ANALYZE for correct statistics
-    owner.in_database.run(%Q{ANALYZE "#{self.name}"})
-
-    # TODO: insert geometry checking and fixing here https://github.com/Vizzuality/cartodb/issues/511
-    super
-    if @data_import
-      CartodbStats.increment_imports()
-    end
   rescue => e
-    CartoDB::Logger.info "table#create error", "#{e.inspect}"
-    if @data_import
-      @data_import.reload
-      @data_import.log_error("Table error, #{e.inspect}")
-    end
-
-    # Remove the table, except if it already exists
-    unless self.name.blank? || e.message =~ /relation .* already exists/
-      $tables_metadata.del key
-
-      owner.in_database(:as => :superuser).run(%Q{DROP TABLE IF EXISTS "#{self.name}"})
-      if @data_import
-        @data_import.log_update("dropping table #{self.name}")
-      end
-    end
-
-    if @import_from_file
-      @import_from_file = URI.escape(@import_from_file) if @import_from_file =~ /^http/
-      open(@import_from_file) do |res|
-        filename = "#{File.basename(@import_from_file).split('.').first}_#{Time.now.to_i}#{File.extname(@import_from_file)}"
-        @import_from_file = File.new Rails.root.join('public', 'uploads', 'failed_imports', filename), 'w'
-        @import_from_file.write res.read.force_encoding('utf-8')
-        @import_from_file.close
-      end
-
-      if @data_import
-        @data_import.log_error("Import Error: #{e.try(:message)}")
-        CartodbStats.increment_failed_imports()
-      end
-
-      # nill required for this bug https://github.com/airbrake/airbrake/issues/34
-      Airbrake.notify(nil,
-        :error_class   => "Import Error",
-        :error_message => "Import Error: #{e.try(:message)}",
-        :backtrace     => e.try(:backtrace),
-        :parameters    => {
-          :database  => database_name,
-          :username  => owner.database_username,
-          :temp_file => @import_from_file.path
-        }
-      )
-    end
-    raise e
+    self.handle_creation_error(e)
   end
 
   def after_save
@@ -363,38 +299,73 @@ class Table < Sequel::Model(:user_tables)
 
   def after_create
     super
-
     self.create_default_map_and_layers
     self.send_tile_style_request
 
-    User.filter(:id => user_id).update(:tables_count => :tables_count + 1)
     owner.in_database(:as => :superuser).run(%Q{GRANT SELECT ON "#{self.name}" TO #{CartoDB::TILE_DB_USER};})
-    add_python
-    flush_cache
-    set_trigger_update_updated_at
-    set_trigger_cache_timestamp
-    set_trigger_check_quota
     set_default_table_privacy
-    # make_geom_valid # too expensive to do on import, leave to the user
 
     @force_schema = nil
     $tables_metadata.hset key, "user_id", user_id
-
-    update_table_pg_stats
+    self.new_table = true
 
     # finally, close off the data import
     if data_import_id
-      @data_import = DataImport.find(:id=>data_import_id)
+      @data_import = DataImport.find(id: data_import_id)
       @data_import.table_id   = id
       @data_import.table_name = name
       @data_import.finished
     end
     add_table_to_stats
+  rescue => e
+    self.handle_creation_error(e)
   end
 
   def after_commit
-    owner.in_database.run("VACUUM FULL \"#{self.name}\"")
-  rescue Sequel::DatabaseError => e
+    super
+    if self.new_table
+      begin
+        # VACUUM can't be run inside a transaction, so we have to perform
+        # this operation after the transaction has been commited
+        owner.in_database.run("VACUUM FULL \"#{self.name}\"") rescue ""
+        update_table_pg_stats
+
+        # Check if owner is over quota, raise an exception if so
+        if owner.over_disk_quota?
+          unless @data_import.nil?
+            @data_import.reload
+            @data_import.set_error_code(8001)
+            @data_import.log_error("#{owner.disk_quota_overspend / 1024}KB more space is required" )
+          end
+          raise CartoDB::QuotaExceeded, "#{owner.disk_quota_overspend / 1024}KB more space is required"
+        end
+
+        # Set default triggers
+        add_python
+        set_trigger_update_updated_at
+        set_trigger_cache_timestamp
+        set_trigger_check_quota
+      rescue => e
+        self.handle_creation_error(e)
+      end
+    end
+  end
+
+  def handle_creation_error(e)
+    CartoDB::Logger.info "table#create error", "#{e.inspect}"
+
+    # Remove the table, except if it already exists
+    unless self.name.blank? || e.message =~ /relation .* already exists/
+      $tables_metadata.del key
+
+      self.remove_table_from_user_database
+      
+      @data_import.log_update("Dropping table #{self.name}") if @data_import
+    end
+
+    @data_import.log_error("Import Error: #{e.try(:message)}") if @data_import
+
+    raise e
   end
 
   def create_default_map_and_layers
@@ -434,19 +405,17 @@ class Table < Sequel::Model(:user_tables)
     end
   end
 
-  def after_update
-    flush_cache
-  end
-
-  def before_destroy
-    $tables_metadata.del key
-  end
-
   def after_destroy
-    # TODO add a delete table check in the cases where a table has become ghost
     super
+    $tables_metadata.del key
     Tag.filter(:user_id => user_id, :table_id => id).delete
-    User.filter(:id => user_id).update(:tables_count => :tables_count - 1)
+    remove_table_from_user_database
+    remove_table_from_stats
+    invalidate_varnish_cache
+    delete_tile_style
+  end
+
+  def remove_table_from_user_database
     owner.in_database(:as => :superuser) do |user_database|
       begin
         user_database.run("DROP SEQUENCE IF EXISTS cartodb_id_#{oid}_seq")
@@ -455,9 +424,6 @@ class Table < Sequel::Model(:user_tables)
       end
       user_database.run(%Q{DROP TABLE IF EXISTS "#{self.name}"})
     end
-    remove_table_from_stats
-    invalidate_varnish_cache
-    delete_tile_style
   end
   ## End of Callbacks
 
@@ -1638,7 +1604,7 @@ SQL
 
   def flush_cache
     begin
-      #tile_request('DELETE', "/tiles/#{self.name}/flush_cache?map_key=#{owner.get_map_key}")
+      tile_request('DELETE', "/tiles/#{self.name}/flush_cache?map_key=#{owner.get_map_key}")
     rescue => e
       CartoDB::Logger.info "cache#flush error", "#{e.inspect}"
     end

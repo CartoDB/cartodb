@@ -52,6 +52,7 @@ module TrackRecord
     end #storage_key
 
     def tail
+      return [] if entries.empty?
       entry_from(entries.to_a.last)
     end #tail
 

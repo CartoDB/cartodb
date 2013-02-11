@@ -196,7 +196,11 @@
         }
         // Update the favicon
         $('link[rel$=icon]').replaceWith('');
-        $('head').append($('<link rel="shortcut icon" type="image/x-icon"/>').attr('href', canvas.toDataURL('image/png')));
+        // stupid DOM security exception
+        try {
+          $('head').append($('<link rel="shortcut icon" type="image/x-icon"/>').attr('href', canvas.toDataURL('image/png')));
+        } catch(e) {}
+
       };
       img.src = icon;
     }

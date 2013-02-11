@@ -16,7 +16,9 @@ describe Job::Presenter do
 
   describe '#as_json' do
     it 'renders a JSON representation of the job' do
-      presenter       = Job::Presenter.new(Factory.job_data)
+      presenter       = Job::Presenter.new(
+                          Factory.job_data.merge(state: 'queued')
+                        )
       representation  = JSON.parse(presenter.as_json)
 
       representation.fetch('id')        .wont_be_nil

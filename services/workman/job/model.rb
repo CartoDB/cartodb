@@ -2,7 +2,6 @@
 require 'uuidtools'
 require 'virtus'
 require 'aequitas'
-#require_relative './repository'
 require_relative '../../data-repository/repository'
 
 module Workman
@@ -11,7 +10,10 @@ module Workman
       include Virtus
       include Aequitas
 
-      @queue      = :jobs
+      STATES      = %w{ queued running success failure aborted }
+      ENTRY_STATE = 'queued'
+
+      @queue = :jobs
 
       def self.repository
         @repository ||= DataRepository.new
@@ -19,25 +21,23 @@ module Workman
 
       def self.repository=(repository)
         @repository = repository
-      end #repository=
+      end #self.repository=
 
       def self.next_id
         UUIDTools::UUID.timestamp_create.to_s
       end # self.next_id
 
-      STATES      = %w{ queued running success failure aborted }
-      ENTRY_STATE = 'queued'
-
       attribute :id,          String, default: next_id
       attribute :state,       String, default: ENTRY_STATE
       attribute :command,     String
       attribute :arguments,   Hash
+      attribute :result,      Hash
 
       validates_presence_of   :id, :state, :command
       validates_within        :state, set: STATES
 
       def persist
-        raise unless valid?
+        raise 'Invalid job' unless valid?
         repository.store(storage_key, attributes.to_hash)
         self
       end #persist
@@ -52,6 +52,12 @@ module Workman
         persist
       end #transition 
 
+      def execute(command=nil)
+        command     = command || command_from(command, arguments)
+        self.result = command.execute
+        persist
+      end #execute
+
       private
 
       def storage_key
@@ -61,6 +67,10 @@ module Workman
       def repository
         self.class.repository
       end #repository
+
+      def command_from(command, arguments)
+        Command.new(command, arguments)
+      end #command_from
     end # Model
   end # Job
 end # Workman

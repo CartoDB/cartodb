@@ -107,7 +107,6 @@ describe User do
     @user2.tables.should be_empty
     create_table :user_id => @user2.id, :name => 'My first table', :privacy => Table::PUBLIC
     @user2.reload
-    @user2.tables_count.should == 1
     @user2.tables.all.should == [Table.first(:user_id => @user2.id)]
   end
 

@@ -138,7 +138,6 @@ module CartoDB
         end
       end
 
-
       @table_created = true
       @data_import.log_update("table created")
       rows_imported = @db_connection["SELECT count(*) as count from #{@suggested_name}"].first[:count]

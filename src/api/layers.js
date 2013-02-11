@@ -95,6 +95,7 @@
         // add the timestamp to options
         layerData.options.extra_params = layerData.options.extra_params || {};
         layerData.options.extra_params.updated_at = visData.updated_at;
+        delete layerData.options.cache_buster;
       } else {
         layerData = visData;
       }
@@ -108,8 +109,11 @@
       // TODO: improve checking
       if(typeof(map.overlayMapTypes) !== "undefined") {
         MapType = cdb.geo.GoogleMapsMapView;
-      } else if(map._mapPane.className === "leaflet-map-pane") {
+      } else if(map instanceof L.Map) {
         MapType = cdb.geo.LeafletMapView;
+      } else {
+        promise.trigger('error', "cartodb.js can't guess the map type");
+        return;
       }
 
       // update options

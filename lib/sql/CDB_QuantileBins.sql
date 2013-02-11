@@ -1,3 +1,12 @@
+--
+-- Determine the Quantile classifications from a numeric array
+--
+-- @param in_array A numeric array of numbers to determine the best
+--            bins based on the Quantile method.
+--
+-- @param breaks The number of bins you want to find.
+--  
+--
 CREATE OR REPLACE FUNCTION CDB_QuantileBins ( in_array NUMERIC[], breaks INT) RETURNS NUMERIC[] as $$ 
 DECLARE 
     element_count INT4; 

@@ -7,6 +7,10 @@ require_relative '../factories/job_data'
 include Workman
 
 describe Dispatcher do
+  before do
+    @job = Job::Model.new(Factory.job_data)
+  end
+
   describe '#initialize' do
     it 'takes an optional queueing backend' do
       queue       = Object.new
@@ -19,26 +23,25 @@ describe Dispatcher do
   describe '#schedule' do
     it 'tells the job it has been queued' do
       dispatcher  = Dispatcher.new(fake_queue)
-      job         = dispatcher.schedule(Factory.job_data)
+      dispatcher.schedule(@job)
 
-      rehydrated_job = Job::Model.new(id: job.id)
+      rehydrated_job = Job::Model.new(id: @job.id)
       rehydrated_job.fetch
       rehydrated_job.state.must_equal 'queued'
     end
 
     it 'tells the queueing backend to enqueue the job' do
-      job_data    = Factory.job_data
       queue       = MiniTest::Mock.new
       dispatcher  = Dispatcher.new(queue)
 
-      queue.expect :enqueue, nil, [Job::Model, job_data.fetch(:id)]
-      dispatcher.schedule(job_data)
+      queue.expect :enqueue, nil, [Job::Model, @job.id]
+      dispatcher.schedule(@job)
       queue.verify
     end
 
     it 'logs the state change' do
       dispatcher  = Dispatcher.new
-      job         = dispatcher.schedule(Factory.job_data)
+      dispatcher.schedule(@job)
 
       dispatcher.log.tail.to_s.must_match /queued/
     end
@@ -47,30 +50,31 @@ describe Dispatcher do
   describe '#abort' do
     it 'tells the job it has been aborted' do
       dispatcher  = Dispatcher.new(fake_queue)
-      job         = dispatcher.schedule(Factory.job_data)
+      dispatcher.schedule(@job)
 
-      dispatcher.abort(job.id)
+      dispatcher.abort(@job)
 
-      rehydrated_job = Job::Model.new(id: job.id)
+      rehydrated_job = Job::Model.new(id: @job.id)
       rehydrated_job.fetch
       rehydrated_job.state.must_equal 'aborted'
     end
 
     it 'tells the queueing backend to abort the job' do
-      job         = Dispatcher.new(fake_queue).schedule(Factory.job_data)
+      Dispatcher.new(fake_queue).schedule(@job)
+
       queue       = MiniTest::Mock.new
       dispatcher  = Dispatcher.new(queue)
 
-      queue.expect :dequeue, nil, [Job::Model, job.id]
-      dispatcher.abort(job.id)
+      queue.expect :dequeue, nil, [Job::Model, @job.id]
+      dispatcher.abort(@job)
       queue.verify
     end
 
     it 'logs the state change' do
       dispatcher  = Dispatcher.new
-      job         = dispatcher.schedule(Factory.job_data)
+      dispatcher.schedule(@job)
 
-      dispatcher.abort(job.id)
+      dispatcher.abort(@job)
       dispatcher.log.tail.to_s.must_match /aborted/
     end
   end #abort

@@ -6,7 +6,8 @@ DECLARE
     classes int[][];
     new_classes int[][];
     tmp_class int[];
-    i INT := 1; side INT := 1;
+    i INT := 1; 
+    side INT := 2;
     bot INT;
     top INT;
     sdam numeric; 
@@ -109,7 +110,7 @@ BEGIN
     i = 1;
     LOOP  
         IF invert = TRUE THEN
-            side = 2; --default returns bottom side of breaks, invert returns top side
+            side = 1; --default returns bottom side of breaks, invert returns top side
         END IF;
         reply = array_append(reply, in_array[classes[i][side]]);  
         i = i+1;  

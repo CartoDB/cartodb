@@ -297,10 +297,7 @@ div.map {
     width:100%;
     height:auto;
     z-index:1;
-
-    // Hide "Powered by CartoDB" in private maps
-    .cartodb_logo {display:none!important;}
-
+    
     // Move attributions in different providers
     .leaflet-right .leaflet-control, #cartodb_attribution {
       margin-right: 62px!important;

@@ -51,6 +51,10 @@ module TrackRecord
       "log:#{id}"
     end #storage_key
 
+    def tail
+      entry_from(entries.to_a.last)
+    end #tail
+
     private
 
     attr_reader :entries

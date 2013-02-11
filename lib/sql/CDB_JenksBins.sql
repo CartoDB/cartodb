@@ -59,8 +59,6 @@ BEGIN
     --Identify the breaks for the lowest GVF
     LOOP   
         i = 1; 
-        class_max = -1;  
-        class_min = 1000000000000; 
         LOOP 
             -- get our mean
             SELECT avg(e) INTO class_avg FROM ( SELECT unnest(in_array[classes[i][1]:classes[i][2]]) as e) x;  
@@ -68,6 +66,11 @@ BEGIN
             SELECT sum((class_avg-e)^2) INTO tmp_val FROM (   SELECT unnest(in_array[classes[i][1]:classes[i][2]]) as e  ) x;  
             IF i = 1 THEN 
                 arr_gvf = ARRAY[tmp_val]; 
+                -- init our min/max map for later
+                class_max = arr_gvf[i];  
+                class_min = arr_gvf[i];  
+                class_min_i = 1;   
+                class_max_i = 1;  
             ELSE 
                 arr_gvf = array_append(arr_gvf, tmp_val); 
             END IF;

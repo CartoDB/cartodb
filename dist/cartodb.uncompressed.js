@@ -1,6 +1,6 @@
-// cartodb.js version: 2.0.16
+// cartodb.js version: 2.0.17
 // uncompressed version: cartodb.uncompressed.js
-// sha: 19ece4118a080fb3eb9ba62b438a33c0500345ef
+// sha: 0fdf836e466bbf9a7294b79cebf39614d0c450b6
 (function() {
   var root = this;
 
@@ -14968,7 +14968,7 @@ $(function(){
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '2.0.16';
+    cdb.VERSION = '2.0.17';
 
     cdb.CARTOCSS_VERSIONS = {
       '2.0.0': '',
@@ -21207,9 +21207,19 @@ var Vis = cdb.core.View.extend({
             var fields = infowindowFields.fields;
             for(var j = 0; j < fields.length; ++j) {
               var f = fields[j];
+              if(interact_data[f.name] != undefined) {
+                render_fields.push({
+                  title: f.title ? f.name: null,
+                  value: interact_data[f.name],
+                  index: j ? j:null // mustache does not recognize 0 as false :( 
+                });
+              }
+            }
+            // manage when there is no data to render
+            if(render_fields.length === 0) {
               render_fields.push({
-                title: f.title ? f.name: null,
-                value: interact_data[f.name],
+                title: null,
+                value: 'No data available',
                 index: j ? j:null // mustache does not recognize 0 as false :( 
               });
             }

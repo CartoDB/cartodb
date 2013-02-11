@@ -118,5 +118,5 @@ BEGIN
     END LOOP; 
     RETURN reply; 
 END; 
-$$ language plpgsql; 
+$$ language plpgsql IMMUTABLE;
 

@@ -23,6 +23,15 @@ describe Job::Model do
     end
   end # Job::Model.repository
 
+  describe 'Job::Model.repository=' do
+    it 'sets the repository for job instances' do
+      previous_repository   = Job::Model.repository
+      Job::Model.repository = Object.new
+      Job::Model.new.send(:repository).must_equal Job::Model.repository
+      Job::Model.repository = previous_repository
+    end
+  end # Job::Model.repository=
+
   describe 'validations' do
     describe '#id' do
       it 'must be present' do

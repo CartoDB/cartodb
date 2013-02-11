@@ -35,6 +35,13 @@ describe Dispatcher do
       dispatcher.schedule(job_data)
       queue.verify
     end
+
+    it 'logs the state change' do
+      dispatcher  = Dispatcher.new
+      job         = dispatcher.schedule(Factory.job_data)
+
+      dispatcher.log.tail.to_s.must_match /queued/
+    end
   end #schedule
 
   describe '#abort' do
@@ -57,6 +64,14 @@ describe Dispatcher do
       queue.expect :dequeue, nil, [Job::Model, job.id]
       dispatcher.abort(job.id)
       queue.verify
+    end
+
+    it 'logs the state change' do
+      dispatcher  = Dispatcher.new
+      job         = dispatcher.schedule(Factory.job_data)
+
+      dispatcher.abort(job.id)
+      dispatcher.log.tail.to_s.must_match /aborted/
     end
   end #abort
 

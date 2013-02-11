@@ -11,12 +11,15 @@ module Workman
       include Virtus
       include Aequitas
 
-      class << self
-        attr_accessor :repository
-      end
-
-      @repository = DataRepository::Repository.new
       @queue      = :jobs
+
+      def self.repository
+        @repository ||= DataRepository.new
+      end # self.repository
+
+      def self.repository=(repository)
+        @repository = repository
+      end #repository=
 
       def self.next_id
         UUIDTools::UUID.timestamp_create.to_s

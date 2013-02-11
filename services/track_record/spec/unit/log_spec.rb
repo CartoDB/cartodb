@@ -114,5 +114,14 @@ describe Log do
       rehydrated_log.to_s.must_match /first/
     end
   end #fetch
+
+  describe '#tail' do
+    it 'returns the latest log entry' do
+      log = Log.new
+      log.append(text: 'latest entry')
+
+      log.tail.to_s.must_match /latest/
+    end
+  end #latest
 end # Log
 

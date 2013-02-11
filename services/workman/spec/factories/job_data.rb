@@ -3,12 +3,11 @@ require 'uuidtools'
 
 module Workman
   class Factory
-    def self.job_data
+    def self.job_data(arguments={})
       {
-        id:         random_uuid,
-        command:    random_string,
-        arguments:  { database: random_string },
-        state:      random_string
+        id:         arguments.fetch(:id, random_uuid),
+        command:    arguments.fetch(:command, random_string),
+        arguments:  arguments.fetch(:arguments, { database: random_string })
       }
     end # self.job_data
 

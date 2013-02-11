@@ -98,7 +98,7 @@
    *    id: '1'
    * })
    */
-  SQL.prototype.execute= function(sql, vars, options, callback) {
+  SQL.prototype.execute = function(sql, vars, options, callback) {
     var promise = new cartodb._Promise();
     if(!sql) {
       throw new TypeError("sql should not be null");
@@ -183,7 +183,7 @@
   }
 
   SQL.prototype.getBounds = function(sql, vars, options, callback) {
-      var promise = new cartdob._Promise();
+      var promise = new cartodb._Promise();
       var args = arguments,
       fn = args[args.length -1];
       if(_.isFunction(fn)) {
@@ -248,12 +248,19 @@
     var _orderDir;
     var _sql = this;
 
-    function _table(callback) {
-      _table.fetch(callback);
+    function _table() {
+      _table.fetch.apply(_table, arguments);
     }
 
-    _table.fetch = function(callback) {
-      _sql.execute(_table.sql(), {}, callback);
+    _table.fetch = function(vars) {
+      vars = vars || {}
+      var args = arguments,
+      fn = args[args.length -1];
+      if(_.isFunction(fn)) {
+        callback = fn;
+        if(args.length === 1) vars = {};
+      }
+      _sql.execute(_table.sql(), vars, callback);
     }
 
     _table.sql = function() {

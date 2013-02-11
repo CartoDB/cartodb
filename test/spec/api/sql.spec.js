@@ -8,17 +8,13 @@ describe('SQL api client', function() {
   var jquery_ajax;
   beforeEach(function() {
     ajaxParams = null;
-    sql = new cartodb.SQL({
-      user: USER,
-      protocol: 'https'
-    })
 
     jquery_ajax = $.ajax;
     $.ajax = function(params) {
 
       ajaxParams = params;
       _.defer(function() {
-        if(!throwError && params.success) params.success(TEST_DATA);
+        if(!throwError && params.success) params.success(TEST_DATA, 200, {});
         throwError && params.error && params.error({
           responseText: JSON.stringify({
             error: ['jaja']
@@ -26,6 +22,12 @@ describe('SQL api client', function() {
         });
       });
     }
+
+    sql = new cartodb.SQL({
+      user: USER,
+      protocol: 'https'
+    })
+
   });
 
   afterEach(function() {
@@ -158,5 +160,8 @@ describe('sql.table', function() {
     s.order_by('age')
     expect(s.sql()).toEqual('select age,jeta from test where age < 10 limit 15 order by age');
   })
+
+  it("should render function columns", function() {
+  });
 
 });

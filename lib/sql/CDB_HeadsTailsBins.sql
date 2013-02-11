@@ -1,3 +1,13 @@
+--
+-- Determine the Heads/Tails classifications from a numeric array
+--
+-- @param in_array A numeric array of numbers to determine the best
+--            bins based on the Heads/Tails method.
+--
+-- @param breaks The number of bins you want to find.
+--  
+--
+
 CREATE OR REPLACE FUNCTION CDB_HeadsTailsBins ( in_array NUMERIC[], breaks INT) RETURNS NUMERIC[] as $$ 
 DECLARE 
     element_count INT4; 

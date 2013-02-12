@@ -132,7 +132,7 @@ article.public_tables {
       margin: auto;
 
       @include size(35px);
-      @include icons-sprite(plus);
+      @include icons-sprite(plus_big, $offset-x: 5px, $offset-y: 5px);
       @include text-indent();
 
       @include simple-transition(opacity);

@@ -101,7 +101,7 @@ namespace :cartodb do
         table.set_trigger_check_quota
       end  
       
-      puts "User: #{user.username} quota updated to: #{args[:quota_in_mb]}MB. #{user.tables_count} tables updated."
+      puts "User: #{user.username} quota updated to: #{args[:quota_in_mb]}MB. #{user.tables.count} tables updated."
     end
 
 

@@ -197,7 +197,7 @@
     }
 
     _table.sql = function() {
-      var s = "select "
+      var s = "select"
       if(_columns.length) {
         s += ' ' + _columns.join(',') + ' '
       } else {
@@ -209,14 +209,14 @@
       if(_filters) {
         s += " where " + _filters;
       }
+      if(_limit) {
+        s += " limit " + _limit;
+      }
       if(_order) {
         s += " order by " + _order;
       }
       if(_orderDir) {
         s += ' ' + _orderDir;
-      }
-      if(_limit) {
-        s += " limit " + _limit;
       }
 
       return s;

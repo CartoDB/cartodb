@@ -134,3 +134,29 @@ describe('SQL api client', function() {
     expect(ajaxParams.url.indexOf(encodeURIComponent(sql))).not.toEqual(-1);
   });
 });
+
+describe('sql.table', function() {
+  var USER = 'rambo';
+  var sql;
+  beforeEach(function() {
+    ajaxParams = null;
+    sql = new cartodb.SQL({
+      user: USER,
+      protocol: 'https'
+    })
+  });
+
+  it("sql", function() {
+    var s = sql.table('test');
+    expect(s.sql()).toEqual('select * from test');
+    s.columns(['age', 'jeta'])
+    expect(s.sql()).toEqual('select age,jeta from test');
+    s.filter('age < 10')
+    expect(s.sql()).toEqual('select age,jeta from test where age < 10');
+    s.limit(15)
+    expect(s.sql()).toEqual('select age,jeta from test where age < 10 limit 15');
+    s.order_by('age')
+    expect(s.sql()).toEqual('select age,jeta from test where age < 10 limit 15 order by age');
+  })
+
+});

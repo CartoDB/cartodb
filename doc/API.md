@@ -355,6 +355,8 @@ Creates a visualization inside the map_id DOM object:
     - center_lat: center coordinates where the map is initializated.
     - center_lon.
     - zoom: initial zoom.
+    - cartodb_logo: default to true, set to false if you want to remove the cartodb logo
+    - infowindow: set to false if you want to disable the infowindow (enabled by default)
 
 ##### cartodb.Vis.getLayers()
 Return an array of layers in the map. The first is the base layer.
@@ -426,6 +428,7 @@ With visualizations already created through the CartoDB console, you can simply 
             - featureClick: callback called when user cliks on a feature.
             - featureOut: called then the pointer gets out of a feature.
             - interaction: default true, set it to false when you don't want interactivity layer yo be loaded (recomended if you don't user interaction).
+            - cartodb_logo: default to true, set to false if you want to remove the cartodb logo
 
   + **options**: each type of layer has different options.
 

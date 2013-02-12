@@ -109,14 +109,14 @@ describe('api.layers.cartodb', function() {
         var t = layer._tileJSON();
         var opts = get_url_options(t.tiles[0]);
         expect(opts.sql).toEqual('select * from jaja');
-        expect(opts.cache_buster).toEqual(undefined);
+        expect(opts.updated_at).toEqual(undefined);
         expect(layer.options.no_cdn).toEqual(true);
 
         layer.setQuery(null);
         var t = layer._tileJSON();
         opts = get_url_options(t.tiles[0]);
         expect(opts.sql).toEqual(undefined);
-        expect(opts.cache_buster).toEqual(undefined);
+        expect(opts.updated_at).toEqual(undefined);
         expect(layer.options.no_cdn).toEqual(true);
       });
 

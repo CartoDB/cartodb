@@ -16,6 +16,25 @@ describe('api.layers', function() {
     });
   });
 
+
+  describe('loadLayer unknow', function() {
+    it("shoudl return an error for unknow map types", function() {
+      var map = {};
+      var err = false;
+      runs(function() {
+        cartodb.createLayer(map, { kind: 'plain', options: {} }, function(l) {
+          layer = l;
+        }).error(function() {
+          err = true;
+        });
+      })
+      waits(10);
+      runs(function() {
+        expect(err).toEqual(true);
+      });
+    })
+  });
+
   //
   // shared specs for each map
   //
@@ -128,7 +147,7 @@ describe('api.layers', function() {
             layers: [
               null,
               //{kind: 'plain', options: {} }
-              {kind: 'cartodb', options: { user_name: 'test', table: 'test'} }
+              {kind: 'cartodb', options: { user_name: 'test', table: 'test', extra_params: { cache_buster: 'cb' }} }
             ]
           }, s).done(function(lyr) {
             layer = lyr;
@@ -137,7 +156,8 @@ describe('api.layers', function() {
         waits(10);
         runs(function() {
           expect(s.called).toEqual(true);
-          expect(layer.model.attributes.extra_params.cache_buster).toEqual('jaja');
+          expect(layer.model.attributes.extra_params.updated_at).toEqual('jaja');
+          expect(layer.model.attributes.extra_params.cache_buster).toEqual(undefined);
         });
       });
 

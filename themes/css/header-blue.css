@@ -25,7 +25,7 @@ div.cartodb-popup.header div.cartodb-popup-header {
   max-height:62px;
   overflow:hidden;
   padding:17px 19px 17px 19px;
-  background:url('../img/headers.png') no-repeat 0 0;
+  background:url('../img/headers.png') no-repeat 0 -40px;
 }
 
 div.cartodb-popup.header div.cartodb-popup-header h4 {
@@ -36,7 +36,8 @@ div.cartodb-popup.header div.cartodb-popup-header h1 {
   margin:0;
   font:bold 21px "Helvetica Neue", "Helvetica", Arial;
   color:#FFFFFF;
-  line-height:normal;
+  line-height:23px;
+  text-shadow: 1px 1px 1px #333;
 }
 
 div.cartodb-popup.header div.cartodb-popup-header span.separator {
@@ -53,11 +54,11 @@ div.cartodb-popup.header div.cartodb-popup-content {
 }
 
 div.cartodb-popup.header a.cartodb-popup-close-button {
-  background:url('../img/headers.png') no-repeat -226px 0;
+  background:url('../img/headers.png') no-repeat -226px -40px;
 }
 
 div.cartodb-popup.header a.cartodb-popup-close-button:hover {
-  background-position:-226px -26px;
+  background-position:-226px -66px;
 }
 
 

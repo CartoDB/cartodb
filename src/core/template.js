@@ -87,16 +87,21 @@ cdb.core.TemplateList = Backbone.Collection.extend({
   model: cdb.core.Template,
 
   getTemplate: function(template_name) {
-    if(this.namespace) {
+
+    if (this.namespace) {
       template_name = this.namespace + template_name;
     }
+
     var t = this.find(function(t) {
         return t.get('name') === template_name;
     });
+
     if(t) {
-        return _.bind(t.render, t);
+      return _.bind(t.render, t);
     }
-    cdb.log.error(template_name+" not found");
+
+    cdb.log.error(template_name + " not found");
+
     return null;
   }
 });

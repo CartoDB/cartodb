@@ -28,12 +28,23 @@ cdb.geo.ui.Search = cdb.core.View.extend({
     $(ev.target).focus();
   },
 
+  _showLoader: function() {
+    this.$('span.loader').show();
+  },
+
+  _hideLoader: function() {
+    this.$('span.loader').hide();
+  },
+
   _submit: function(ev) {
     ev.preventDefault();
 
-    var self = this;
+    var self = this
+      , address = this.$('input.text').val();
 
-    var address = this.$('input.text').val();
+    // Show geocoder loader
+    this._showLoader();
+     
     cdb.geo.geocoder.NOKIA.geocode(address, function(coords) {
       if (coords.length>0) {
         var validBBox = true;
@@ -60,6 +71,9 @@ cdb.geo.ui.Search = cdb.core.View.extend({
           self.model.setZoom(10);
         }
       }
+
+      // Hide geocoder loader
+      self._hideLoader();
     });
   }
 });

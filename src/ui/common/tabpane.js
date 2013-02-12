@@ -26,7 +26,8 @@ cdb.ui.common.TabPane = cdb.core.View.extend({
       this.activePane = null;
   },
 
-  addTab: function(name, view) {
+  addTab: function(name, view, options) {
+    options = options || { active: true };
     if(this.tabs[name] !== undefined) {
       cdb.log.debug(name + "already added");
     } else {
@@ -34,7 +35,11 @@ cdb.ui.common.TabPane = cdb.core.View.extend({
       this.addView(view);
       this.$el.append(view.el);
       this.trigger('tabAdded', name, view);
-      this.active(name);
+      if(options.active) {
+        this.active(name);
+      } else {
+        view.hide();
+      }
     }
   },
 
@@ -83,6 +88,15 @@ cdb.ui.common.TabPane = cdb.core.View.extend({
         this.active(_.keys(this.tabs)[0]);
       }
     }
+  },
+
+  removeTabs: function() {
+    for(var name in this.tabs) {
+      var vid = this.tabs[name];
+      this._subviews[vid].clean();
+      delete this.tabs[name];
+    }
+    this.activeTab = null;
   },
 
   active: function(name) {

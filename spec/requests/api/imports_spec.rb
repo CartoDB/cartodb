@@ -57,7 +57,7 @@ describe "Imports API" do
 
   it 'performs synchronous imports'
 
-  it 'gets a list of all pending imports' do
+  pending 'gets a list of all pending imports' do
 
     thread = Thread.new do |number|
       serve_file(Rails.root.join('spec/support/data/ESP_adm.zip')) do |url|
@@ -233,8 +233,21 @@ describe "Imports API" do
     @user.reload.tables.count.should == 0
   end
 
+  it 'raises an error if the user attempts to import tables when being over disk quota' do
+    @user.update quota_in_bytes: 1000, table_quota: 200
+    serve_file(Rails.root.join('spec/support/data/ESP_adm.zip')) do |url|
+      post v1_imports_url, params.merge(:url        => url,
+                                       :table_name => "wadus")
+    end
+    response.code.should be == '200'
+    last_import = DataImport.order(:updated_at.desc).first
+    last_import.state.should be == 'failure'
+    last_import.error_code.should be == 8001
+    @user.reload.tables.count.should == 0
+  end
+
   it 'raises an error if the user attempts to duplicate a table when being over quota' do
-    @user.update table_quota: 1
+    @user.update table_quota: 1, quota_in_bytes: 100.megabytes
 
     post v1_imports_url,
       params.merge(:filename => upload_file('spec/support/data/_penguins_below_80 (2).tgz', 'application/octet-stream'))

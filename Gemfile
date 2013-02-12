@@ -29,7 +29,7 @@ gem "statsd-client",           "0.0.7", :require => "statsd"
 
 gem "addressable",             "2.2.8", :require => "addressable/uri"
 
-gem "newrelic_rpm"
+gem "newrelic_rpm",            "~> 3.5.5"
 
 gem "ejs",                     "~> 1.1.1"
 gem "turbo-sprockets-rails3",  "0.1.16"
@@ -73,8 +73,7 @@ group :development, :test do
 
   gem "mocha",                 "0.10.5"
 
-  # TODO fix debugger readline conflicts with resque
-  gem "debugger", "1.2.0"
+  gem "debugger",              "1.3.0"
 
   gem "steak",                 "2.0.0"
   gem "rspec-rails",           "2.10.1"
@@ -82,6 +81,7 @@ group :development, :test do
   gem "capybara",              "1.1.2"
   gem "timecop",               "0.3.5"
   gem "email_spec",            "1.2.1"
+  gem "rack",                  "1.4.1"
   gem "rack-reverse-proxy",    "0.4.4", :require => 'rack/reverse_proxy'
   gem "rack-test"
   gem "foreman",               "0.46.0"

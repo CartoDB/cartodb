@@ -177,6 +177,19 @@ describe('core.ui.common.TabPane', function() {
 
   });
 
+  it("should remove all panels ", function() {
+    var v1 = new cdb.core.View(),
+    var v2 = new cdb.core.View();
+    spyOn(v1, 'clean');
+    spyOn(v2, 'clean');
+    pane.addTab('tab1', v1);
+    pane.addTab('tab2', v2);
+    pane.removeTabs();
+    expect(_.keys(pane.tabs).length).toEqual(0);
+    expect(v1.clean).toHaveBeenCalled()
+    expect(v2.clean).toHaveBeenCalled()
+  });
+
   it("should trigger on activate", function() {
 
     var // Let's create the views

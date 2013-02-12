@@ -814,15 +814,6 @@ describe Table do
   end
 
   context "counter updates" do
-    it "should increase the tables_count counter from owner" do
-      delete_user_data(@user) && @user.reload
-      @user.tables_count.should == 0
-
-      table = create_table(:user_id => @user.id)
-      @user.reload
-      @user.tables_count.should == 1
-    end
-
     it "should remove and updating the denormalized counters when removed" do
       delete_user_data(@user) && @user.reload
       table = create_table :user_id => @user.id, :tags => 'tag 1, tag2'
@@ -892,25 +883,15 @@ describe Table do
       table.table_size.should == 2351104
     end
 
-    it "should add a point the_geom column after importing a CSV" do
+    it "should add a the_geom column after importing a CSV" do
       data_import = DataImport.create( :user_id       => @user.id,
                                        :data_source   => '/../db/fake_data/twitters.csv' )
 
       table = Table[data_import.table_id]
       table.name.should match(/^twitters/)
       table.rows_counted.should == 7
-      check_schema(table, [
-        [:cartodb_id, "integer"], [:url, "text"], [:login, "text"],
-        [:country, "text"], [:followers_count, "text"],
-        [:created_at, "timestamp without time zone"], [:updated_at, "timestamp without time zone"], [:the_geom, "geometry", "geometry", "geometry"],
-        [:field_5, "text"]
-      ])
-
-      row = table.records[:rows][0]
-      row[:url].should == "http://twitter.com/vzlaturistica/statuses/23424668752936961"
-      row[:login].should == "vzlaturistica "
-      row[:country].should == " Venezuela "
-      row[:followers_count].should == "211"
+      debugger
+      table.schema.should include([:the_geom, "geometry", "geometry", "geometry"])
     end
 
     it "should not drop a table that exists when upload fails" do
@@ -1336,6 +1317,7 @@ describe Table do
       check_schema(table, [[:cartodb_id, "integer"], [:bed, "text"], [:created_at, "timestamp without time zone"], [:updated_at, "timestamp without time zone"], [:the_geom, "geometry", "geometry", "point"]])
     end
   end
+
   context "merging two+ tables" do
     it "should merge two twitters.csv" do
       # load a table to treat as our 'existing' table
@@ -1362,8 +1344,10 @@ describe Table do
       table.name.should match(/^twitters/)
       table.rows_counted.should == 2005
     end
+  end
 
-    it "should import and then export file twitters.csv" do
+  context "imports" do
+    it "file twitters.csv" do
       delete_user_data @user
       data_import = DataImport.create( :user_id       => @user.id,
                                        :data_source   => '/../db/fake_data/twitters.csv' )
@@ -1371,79 +1355,31 @@ describe Table do
 
       table.name.should match(/^twitters/)
       table.rows_counted.should == 7
-
-      # write CSV to tempfile and read it back
-      csv_content = nil
-      zip = table.to_csv
-      file = Tempfile.new('zip')
-      File.open(file,'w+') { |f| f.write(zip) }
-
-      Zip::ZipFile.foreach(file) do |entry|
-        entry.name.should == "twitters.csv"
-        csv_content = entry.get_input_stream.read
-      end
-      file.close
-
-      # parse constructed CSV and test
-      parsed = CSV.parse(csv_content)
-      parsed[0].should == ["cartodb_id", "country", "field_5", "followers_count", "login", "url", "created_at", "updated_at", "the_geom"]
-      parsed[1].first.should == "1"
     end
 
-    it "should import and then export file SHP1.zip" do
+    it "file SHP1.zip" do
       data_import = DataImport.create( :user_id       => @user.id,
                                        :data_source   => '/../db/fake_data/SHP1.zip' )
       table = Table[data_import.table_id]
       table.name.should == "esp_adm1"
-
-      # write CSV to tempfile and read it back
-      shp_content = nil
-      zip = table.to_shp
-      file_ct = 0
-      file = Tempfile.new('zip')
-      File.open(file,'w+') { |f| f.write(zip) }
-      Zip::ZipFile.foreach(file) do |entry|
-        file_ct = file_ct + 1
-      end
-      file.close
-      file_ct.should == 4
+      table.rows_counted.should == 18
     end
 
-    it "should import and then export file SHP1.zip as kml" do
+    it "file SHP1.zip as kml" do
       data_import = DataImport.create( :user_id       => @user.id,
                                        :data_source   => '/../db/fake_data/SHP1.zip' )
       table = Table[data_import.table_id]
-
-      # write CSV to tempfile and read it back
-      shp_content = nil
-      zip = table.to_kml
-      file_ct = 0
-      file = Tempfile.new('zip')
-      File.open(file,'w+') { |f| f.write(zip) }
-      Zip::ZipFile.foreach(file) do |entry|
-        file_ct = file_ct + 1
-      end
-      file.close
-      file_ct.should == 1
+      table.name.should == "esp_adm1_1"
+      table.rows_counted.should == 18
     end
 
-    it "should import and then export file SHP1.zip as sql" do
+    it "file SHP1.zip as sql" do
       data_import = DataImport.create( :user_id       => @user.id,
                                        :table_name    => 'esp_adm1',
                                        :data_source   => '/../db/fake_data/SHP1.zip' )
       table = Table[data_import.table_id]
-
-      # write SQL to tempfile and read it back
-      shp_content = nil
-      zip = table.to_sql
-      file_ct = 0
-      file = Tempfile.new('zip')
-      File.open(file,'w+') { |f| f.write(zip) }
-      Zip::ZipFile.foreach(file) do |entry|
-        file_ct = file_ct + 1
-      end
-      file.close
-      file_ct.should == 1
+      table.name.should == "esp_adm1_2"
+      table.rows_counted.should == 18
     end
   end
 

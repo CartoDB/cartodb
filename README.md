@@ -115,8 +115,6 @@ sudo add-apt-repository  ppa:cartodb/postgresql
 
 ## Some dependencies ##
 
-## Some dependencies ##
-
 unp is required for archive file upload support
 
 ```bash

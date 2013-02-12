@@ -84,7 +84,7 @@ module CartoDB
 
             # Try to infer file extension from http Content-Disposition
             if @ext.blank? && res.meta.present? && res.meta["content-disposition"].present?
-              @ext = res.meta["content-disposition"][/filename=".*(\..*)"/, 1].to_s.downcase
+              @ext = res.meta["content-disposition"][/filename="?.*(\.[a-zA-Z1-9]*)"?/, 1].to_s.downcase
             end
 
             # If the former didn't work, try to infer file extension from http Content-Type

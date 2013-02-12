@@ -618,7 +618,15 @@
 
               span.field > div {margin-left:5px;}
 
-              span.field span.text {margin:0 10px 0 13px;}
+              // Text between fields like " - to - "
+              span.field span.text {
+                @include inline-block();
+                vertical-align:top;
+                width:43px;
+                margin-left:5px;
+                line-height:21px;
+                text-align:center;
+              }
             }
           }
 

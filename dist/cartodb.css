@@ -1003,6 +1003,18 @@ div.header.yellow h1 a:hover {
 	        border-radius: 2px;
 	}
 
+#legend { position: absolute; right: 50px; top: 20px; width: 250px; padding: 10px; background: white; z-index: 99; }
+#legend .title, 
+#legend .row { position: relative; float: left; width: 240px; background: none; padding: 5; margin: 0; }
+#legend .title {font-weight: bold; font-size: 24px;}
+#legend .row span { float: left; padding: 0; margin: 0; }
+
+#legend .row span.box { width: 20px; height: 20px; background: black; margin: 2px; border: 1px solid #BBB; }
+#legend .row span.line { width: 20px; height: 6px; background: black; margin: 2px; border: 1px solid #BBB;  margin-top: 11px;}
+#legend .row span.circle { width: 20px; height: 20px; background: black; margin: 2px; border: 1px solid #BBB;  border-radius: 50%;}
+
+#legend .row span.value { line-height: 18px; margin: 5px; max-width: 192px;}
+
 /**
  *  CartoDB2.0 theme (DEFAULT)
  */
@@ -1180,6 +1192,7 @@ div.header.yellow h1 a:hover {
   }
 
   div.header h1 {
+    width:80%; /* Necessary to support small iframes or displays*/
     padding:0;
     margin:0;
     font-weight: bold;
@@ -1192,14 +1205,17 @@ div.header.yellow h1 a:hover {
     font-weight: bold;
     font-size: 17px;
     color: #397DBA;
+    word-wrap: break-word;
     text-decoration: none;
   }
+
 
   div.header h1 a:hover {
     text-decoration: underline;
   }
 
   div.header > p {
+    width:80%; /* Necessary to support small iframes or displays*/
     margin:5px 0 0 0;
     padding: 0;
     font-weight: normal;
@@ -1391,6 +1407,17 @@ div.header.yellow h1 a:hover {
     z-index:5;
   }
 
+  div.search_box span.loader {
+    position: absolute;
+    display:none;
+    top:3px;
+    left:3px;
+    width:22px;
+    height:22px;
+    background: url('../img/loader.gif') no-repeat center center white;
+    z-index:5;
+  }
+
   div.search_box input.text {
     position: absolute;
     top:6px;
@@ -1425,6 +1452,7 @@ div.header.yellow h1 a:hover {
     text-transform: uppercase;
     border:none;
     background: url('../img/other.png') no-repeat -56px 0;
+    z-index:1;
   }
 
   div.search_box input.submit:hover {

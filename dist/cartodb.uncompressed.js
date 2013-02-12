@@ -1,6 +1,6 @@
 // cartodb.js version: 2.0.17
 // uncompressed version: cartodb.uncompressed.js
-// sha: 0fdf836e466bbf9a7294b79cebf39614d0c450b6
+// sha: 0158b31880e4bafa66fd8f790f95039e85fa4c0e
 (function() {
   var root = this;
 
@@ -17639,12 +17639,23 @@ cdb.geo.ui.Search = cdb.core.View.extend({
     $(ev.target).focus();
   },
 
+  _showLoader: function() {
+    this.$('span.loader').show();
+  },
+
+  _hideLoader: function() {
+    this.$('span.loader').hide();
+  },
+
   _submit: function(ev) {
     ev.preventDefault();
 
-    var self = this;
+    var self = this
+      , address = this.$('input.text').val();
 
-    var address = this.$('input.text').val();
+    // Show geocoder loader
+    this._showLoader();
+     
     cdb.geo.geocoder.NOKIA.geocode(address, function(coords) {
       if (coords.length>0) {
         var validBBox = true;
@@ -17671,6 +17682,9 @@ cdb.geo.ui.Search = cdb.core.View.extend({
           self.model.setZoom(10);
         }
       }
+
+      // Hide geocoder loader
+      self._hideLoader();
     });
   }
 });
@@ -21431,6 +21445,7 @@ cdb.vis.Overlay.register('search', function(data, vis) {
   var template = cdb.core.Template.compile(
     data.template || '\
       <form>\
+        <span class="loader"></span>\
         <input type="text" class="text" value="" />\
         <input type="submit" class="submit" value="" />\
       </form>\
@@ -21668,7 +21683,8 @@ Layers.register('carto', cartoLayer);
       // TODO: improve checking
       if(typeof(map.overlayMapTypes) !== "undefined") {
         MapType = cdb.geo.GoogleMapsMapView;
-      } else if(map instanceof L.Map) {
+        // check if leaflet is loaded globally
+      } else if(map instanceof L.Map || (window.L && map instanceof window.L.Map)) {
         MapType = cdb.geo.LeafletMapView;
       } else {
         promise.trigger('error', "cartodb.js can't guess the map type");

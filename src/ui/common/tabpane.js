@@ -90,6 +90,15 @@ cdb.ui.common.TabPane = cdb.core.View.extend({
     }
   },
 
+  removeTabs: function() {
+    for(var name in this.tabs) {
+      var vid = this.tabs[name];
+      this._subviews[vid].clean();
+      delete this.tabs[name];
+    }
+    this.activeTab = null;
+  },
+
   active: function(name) {
     var
     self = this,

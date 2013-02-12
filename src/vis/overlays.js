@@ -106,6 +106,7 @@ cdb.vis.Overlay.register('search', function(data, vis) {
   var template = cdb.core.Template.compile(
     data.template || '\
       <form>\
+        <span class="loader"></span>\
         <input type="text" class="text" value="" />\
         <input type="submit" class="submit" value="" />\
       </form>\

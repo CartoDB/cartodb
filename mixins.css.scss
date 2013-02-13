@@ -131,3 +131,63 @@
   user-select: none;
 }
 
+/* BASE TEMPLATE FOR BLOCKS: DO NOT CHANGE HERE */
+
+/*
+* How to use it:
+*
+*  HTML:
+*
+*   <div class="my_soon_to_be_cool_element">
+*     <div class="content">(…)</div>
+*   </div>
+*
+*  CSS:
+*
+* .my_soon_to_be_cool_element {
+*
+*   @extend .cdb-block;
+*
+*    // Outer style properties & overwrites go here
+*    (…)
+*
+*   .content {
+*      // Inner style properties & overwrites go here
+*      (…)
+*   }
+*
+* }
+*
+*/
+
+.cdb-block {
+
+  // defaults
+  $INNER_PADDING: 25px;
+  $OUTER_PADDING: 5px;
+  $BORDER_RADIUS: 4px;
+
+  $OUTER_BKG_COLOR: #fff;
+  $INNER_BKG_COLOR: #fff;
+
+  @include box-sizing(border-box);
+  padding: $OUTER_PADDING;
+
+  background: $OUTER_BKG_COLOR;
+
+  @include border-radius($BORDER_RADIUS);
+  @include box-shadow(rgba(0, 0, 0, 0.07) 0 0 4px 3px);
+  h3, p, a, label { letter-spacing:0; }
+
+  &.border {
+    border: 1px solid #CCC;
+  }
+
+  .content  {
+    @include box-sizing(border-box);
+    @include size(100%);
+    padding: $INNER_PADDING;
+
+    background: $INNER_BKG_COLOR;
+  }
+}

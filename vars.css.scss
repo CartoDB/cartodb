@@ -3,7 +3,8 @@
  *  General vars for the project
  */
 
-$w: 960px; // Min width
+$w: 960px;   // Min width (TODO: replace when 2.1 is released)
+$nW: 1026px; // New min width for 2.1
 
 /* Fonts */
 
@@ -31,6 +32,7 @@ $cBlack:                 $cGray0;
 /* Custom colors */
 
 $cOrange:                #FF9900;
+$cBlue:                  #2483B4;
 
 $link-color:             #397DBA;
 $link-hover-color:       #2B6191;

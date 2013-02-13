@@ -300,6 +300,9 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     return this;
   },
 
+  /**
+   *  Check if infowindow is loading the row content
+   */
   _checkLoading: function() {
     var content = this.model.get("content");
 
@@ -310,11 +313,17 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     }
   },
 
+  /**
+   *  Stop loading spinner
+   */
   _stopSpinner: function() {
     if (this.spinner)
       this.spinner.stop()
   },
 
+  /**
+   *  Start loading spinner
+   */
   _startSpinner: function($el) {
     this._stopSpinner();
 
@@ -335,10 +344,17 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     }
   },
 
+  /**
+   *  Stop loading spinner
+   */
   _containsCover: function() {
     return this.$el.find(".cartodb-popup.header").attr("data-cover") ? true : false;
   },
 
+
+  /**
+   *  Get cover URL
+   */
   _getCoverURL: function() {
 
     var content = this.model.get("content");
@@ -352,12 +368,11 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     }
 
     return false;
-
   },
 
   /**
-  * Attempts to load the cover URL and show it
-  */
+   *  Attempts to load the cover URL and show it
+   */
   _loadCover: function() {
 
     if (!this._containsCover()) return;
@@ -422,38 +437,32 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
       spinner.stop();
       $imageNotFound.fadeIn(250);
     });
-
   },
 
   /**
-  * Return true if the provided URL is valid
-  */
+   *  Return true if the provided URL is valid
+   */
   _isValidURL: function(url) {
-
     if (url) {
       var urlPattern = /(http|ftp|https):\/\/[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:\/~+#-]*[\w@?^=%&amp;\/~+#-])?/
       return url.match(urlPattern) != null ? true : false;
     }
 
     return false;
-
   },
 
+  /**
+   *  Toggle infowindow visibility
+   */
   toggle: function() {
     this.model.get("visibility") ? this.show() : this.hide();
   },
 
+  /**
+   *  Stop event propagation
+   */
   _stopPropagation: function(ev) {
     ev.stopPropagation();
-  },
-
-  _closeInfowindow: function(ev) {
-    if (ev) {
-      ev.preventDefault()
-      ev.stopPropagation();
-    }
-
-    this.model.set("visibility",false);
   },
 
   /**
@@ -475,17 +484,35 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
   },
 
   /**
-  * Set the correct position for the popup
-  */
+   * Set the correct position for the popup
+   */
   setLatLng: function (latlng) {
     this.model.set("latlng", latlng);
     return this;
   },
 
+  /**
+   *  Close infowindow
+   */
+  _closeInfowindow: function(ev) {
+    if (ev) {
+      ev.preventDefault()
+      ev.stopPropagation();
+    }
+
+    this.model.set("visibility",false);
+  },
+
+  /**
+   *  Set visibility infowindow
+   */
   showInfowindow: function() {
     this.model.set("visibility", true);
   },
 
+  /**
+   *  Show infowindow (update, pan, etc)
+   */
   show: function (no_pan) {
     var self = this;
 
@@ -493,17 +520,25 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
       self.$el.css({ left: -5000 });
       self._update(no_pan);
     }
-
   },
 
+  /**
+   *  Get infowindow visibility
+   */
   isHidden: function () {
     return !this.model.get("visibility");
   },
 
+  /**
+   *  Set infowindow to hidden
+   */
   hide: function (force) {
     if (force || !this.model.get("visibility")) this._animateOut();
   },
 
+  /**
+   *  Update infowindow
+   */
   _update: function (no_pan) {
 
     if(!this.isHidden()) {
@@ -518,6 +553,9 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     }
   },
 
+  /**
+   *  Animate infowindow to show up
+   */
   _animateIn: function(delay) {
     if (!$.browser.msie || ($.browser.msie && $.browser.version.search("9.") != -1)) {
       this.$el.css({
@@ -537,6 +575,9 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     }
   },
 
+  /**
+   *  Animate infowindow to disappear
+   */
   _animateOut: function() {
     if (!$.browser.msie || ($.browser.msie && $.browser.version.search("9.") != -1)) {
       var self = this;
@@ -553,8 +594,8 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
   },
 
   /**
-  * Update the position (private)
-  */
+   *  Update the position (private)
+   */
   _updatePosition: function () {
     if(this.isHidden()) return;
 
@@ -572,8 +613,10 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     this.$el.css({ bottom: bottom, left: left });
   },
 
+  /**
+   *  Adjust pan to show correctly the infowindow
+   */
   adjustPan: function (callback) {
-
     var offset = this.model.get("offset");
 
     if (!this.model.get("autoPan") || this.isHidden()) { return; }

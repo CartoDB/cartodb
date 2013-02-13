@@ -7,10 +7,10 @@ module Workman
     class S3Uploader
       def initialize(config={})
         AWSConfigurator.new(config).configure
-        @bucket_name = config.fetch(:bucket_name, ENV['S3_BUCKET'])
       end #initialize
 
-      def upload(filepath)
+      def upload(filepath, bucket=nil)
+        bucket        ||= default_bucket
         basename      = File.basename(filepath)
         uploaded_file = bucket.objects[basename]
 
@@ -22,9 +22,9 @@ module Workman
 
       attr_reader :bucket_name
 
-      def bucket
-        @bucket ||= AWS::S3.new.buckets[bucket_name]
-      end #bucket
+      def default_bucket
+        @default_bucket ||= AWS::S3.new.buckets[ENV.fetch('S3_BUCKET')]
+      end #default_bucket
     end # S3Uploader
   end # Commands
 end # Workman

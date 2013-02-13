@@ -5,6 +5,13 @@ require_relative '../../../commands/postgres_dumper'
 include Workman::Commands
 
 describe PostgresDumper do
+  before do
+    AWS.config(
+      access_key_id:      nil,
+      secret_access_key:  nil
+    )
+  end
+
   describe '#initialize' do
     it 'requires a database name' do
       lambda { PostgresDumper.new }.must_raise ArgumentError

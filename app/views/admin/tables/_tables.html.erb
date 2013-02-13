@@ -1,0 +1,56 @@
+
+<article class="no_tables <%= 'active' if @tables_count == 0 %>">
+<div class="inner">
+  <section class="block longer empty">
+  <div class="content">
+    <div class="left">
+      <h2>Welcome <%= current_user.username %>!</h2>
+      <p class="margin20">Start by dragging and dropping your data onto the browser to create your first table, or start from scratch. </br></br>  Once your data is imported you will be able to see your first map.</p>
+      <p class="margin40"><a href="#create_a_table" class="green button create_new">Create your first table</a></p>
+    </div>
+    <div class="right">
+      <%= image_tag "layout/empty_dashboard.png", :title => "Drop here!", :alt => "Drop here!" %>
+    </div>
+  </div>
+  <div class="foot">
+    <ul>
+      <li><h3>Need sample data?</h3></li>
+      <li><a class="population import_example" href="http://cartodb.s3.amazonaws.com/static/TM_WORLD_BORDERS_SIMPL-0.3.zip">Import country borders<br/>with population numbers</a></li>
+      <li><a class="twitter import_example" href="http://cartodb.s3.amazonaws.com/static/10m-populated-places-simple.zip">Import populated places<br/>around the world</a></li>
+    </ul>
+  </div>
+  </section>
+</div>
+</article>
+
+<%= render 'admin/tables/visualizations' %>
+
+<article class="tables <%= 'active' if @tables_count > 0 %>">
+<div class="inner">
+  <section class="left tables">
+  <div class="head">
+    <h2>
+      <%= pluralize(@tables_count, 'table', 'tables') %>
+    </h2>
+    <div class="loader"></div>
+  </div>
+  <div class="content">
+    <ul id="tablelist">
+      <%= render :partial => 'shared/flash_message' %>
+    </ul>
+  </div>
+  </section>
+  <aside class="right">
+  <div class="head">
+    <a href="#" class="create border create_new">
+      <div class="content"></div>
+      <div class="title">New table</div>
+    </a>
+  </div>
+  <div class="content">
+    <ul></ul>
+  </div>
+  </aside>
+  <div class="paginator"></div>
+</div>
+</article>

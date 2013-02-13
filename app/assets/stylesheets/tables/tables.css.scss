@@ -1,6 +1,7 @@
 
   /*
-   * List of tables for your dashboard or public tables
+   * List of tables or visualizations for your dashboard or public tables
+   * TODO: Update file name
    */
 
   @import "compass";
@@ -9,38 +10,45 @@
   @import "../common/sprites";
   @import "../common/vars";
 
-
   article {
+
     @include inline-block();
     width:100%;
     background: image-url('layout/bkg.jpg') repeat 0 0;
     letter-spacing:-4px;
 
     // Empty dashboard -> article
+
     &.no_tables {
       margin:-750px 0 0 0;
       padding:0;
       @include transform-style("linear");
       @include transition-property("margin");
       @include transition-duration(1000ms);
+
       // If there is NO tables, this section is active
       &.active {
         margin:-15px 0 -15px 0; // Hacky hacky
         padding:40px 0 80px;
       }
-    }
+    } // .no_tables
 
-    // Tables dashboard -> article
+    // Common elements for visualizations and tables
+    &.visualizations,
     &.tables {
+
       height:0;
       margin:0;
       padding:0;
       overflow:hidden;
+
       @include opacity(0);
+
       @include transform-style("linear");
       @include transition-property("all");
       @include transition-duration(1000ms);
-      // If there is NO tables, this section is active
+
+      // If there are tables or visualizations, this section will become .active
       &.active {
         height:auto;
         margin:-15px 0 0 0; // Hacky hacky
@@ -48,6 +56,188 @@
         padding:40px 0 80px;
       }
 
+      aside {
+        width: 94px;
+        /*background:red;*/
+      }
+
+      // Create tables or visualization button
+      a.create {
+        display:block;
+        @include size(90px);
+        @extend .cdb-block;
+
+        background:#EEF5E2;
+
+        text-decoration:none;
+        .title {
+          margin: 15px 0 0 0;
+
+          line-height:normal;
+          text-align:center;
+        }
+
+        .content { }
+      }
+
+      div.tags {
+        display:block;
+        width:auto!important; // TODO: try to remove this
+
+        // Space when there is description or not
+        &.more { margin:13px 0 0; }
+        &.less { margin:3px 0 0; }
+
+        a {
+
+          padding:2px 7px;
+
+          @include size(auto, 14px);
+          margin:0 0 4px 0;
+
+          font:normal 11px $text-fonts2;
+          color:#666666;
+          line-height:14px;
+          background:rgba(57,125,187,0.15);
+          @include border-radius(2px);
+          border:1px solid #C7D1D9;
+
+          &:hover { color:#333333; }
+
+        }
+
+        a.exists {
+          -webkit-animation: pulsate 0.5s linear;
+          -webkit-animation-iteration-count: 1;
+          -webkit-animation-delay: 0.5s;
+          -moz-animation: pulsate 0.5s linear;
+          -moz-animation-iteration-count: 1;
+          -moz-animation-delay: 0.5s;
+        }
+      } // span.tags
+
+      section.visualizations > .head {
+
+        @include box-sizing(border-box);
+        margin: 0 0 27px 0;
+        /*width: 885px;*/
+
+        clear:both;
+        overflow:hidden;
+      }
+
+      section > .head > .order {
+        float:right;
+        margin: 14px 0 0 0;
+      }
+
+      section > .head > h2 {
+        float:left;
+
+        @include opacity(0.25);
+        width:auto;
+
+        color:#B9B9B9;
+
+        font-size:25px;
+        letter-spacing:-1px;
+        color:#333333;
+        line-height:normal;
+      }
+
+      // List of visualizations
+      section.visualizations > .content > ul {
+
+        @include box-sizing(border-box);
+
+        & > li {
+          @extend .cdb-block; /* Lovely box */
+
+          @include inline-block();
+          @include size(274px, 222px);
+
+          margin: 0 25px 29px 0;
+
+          &:hover > .content { background: #F7F7F7; }
+          &:hover > .content h3 .remove { display:block; @include opacity(1); }
+
+          &:nth-child(3n)  { margin-right: 0; }
+
+          .content  {
+            position:relative;
+            @include simple-transition(background-color, 250ms);
+
+            padding: 20px 26px;
+
+            .footer {
+
+              @include box-sizing(border-box);
+              @include size(100%, auto);
+              @include position(none, none, 0, 0);
+              padding: 27px;
+
+              .graph {
+                float:left;
+                @include size(128px, 34px);
+                background:#ddd;
+              }
+
+              .colors {
+                float:right;
+                @include size(33px, 34px);
+                background:#ddd;
+              }
+
+            } // .footer
+
+            h3 {
+              position:relative;
+              margin: 0 0 5px 0;
+              font-size: 21px;
+
+              a {
+
+                color: $cBlue;
+                @include simple-transition(color, 150ms);
+
+                &:hover { color: $cGray1; text-decoration:none; }
+
+              }
+
+              .remove {
+                @include position(5px, 0, none, none);
+                @include size(13px, 14px);
+                @include simple-transition(opacity, 250ms);
+
+                @include icons-sprite(trash);
+                @include opacity(0);
+              }
+
+            } // h3
+
+            p {
+              margin: 0 0 10px 0;
+              font-size: 15px;
+              color: #999999;
+            }
+          }
+        } // li
+      } // ul
+
+    }
+
+    // Visualizations dashboard -> article
+    &.visualizations {
+
+      section.visualizations {
+        @include inline-block();
+        width: 880px;
+        letter-spacing:0px;
+      }
+    }
+
+    // Tables dashboard -> article
+    &.tables {
       .removeTags {
         width: 215px;
         height:0px;
@@ -64,21 +254,10 @@
         @include transition-property("all");
         @include transition-duration(500ms);
 
-
-
-        &.illuminate {
-          color: #666;
-          background-color: #FFE;
-
-        }
-
-        &.drop {
-          background-color: #FFC;
-          color: #333;
-        }
+        &.illuminate { color: #666; background-color: #FFE; }
+        &.drop       { color: #333; background-color: #FFC; }
       }
     }
-
 
     section.empty {
       margin: 0;
@@ -123,8 +302,7 @@
 
     section.tables {
       @include inline-block();
-      width:638px;
-      border:1px solid #D1D1D1;
+        width: 880px;
       letter-spacing:0px;
 
       div.head {
@@ -289,40 +467,6 @@
                 }
               }
 
-              span.tags {
-                display:block;
-                width:auto!important;
-
-                // Space when there is description or not
-                &.more {margin:13px 0 0;}
-                &.less {margin:3px 0 0;}
-
-                a {
-                  float:right;
-                  width:auto;
-                  padding:2px 7px;
-                  height:14px;
-                  margin:0 0 4px 4px;
-                  font:normal 11px $text-fonts2;
-                  color:#666666;
-                  line-height:14px;
-                  background:rgba(57,125,187,0.15);
-                  @include border-radius(2px);
-                  border:1px solid #C7D1D9;
-                  &:hover {color:#333333;}
-                }
-
-                a.exists {
-                  -webkit-animation: pulsate 0.5s linear;
-                  -webkit-animation-iteration-count: 1;
-                  -webkit-animation-delay: 0.5s;
-                  -moz-animation: pulsate 0.5s linear;
-                  -moz-animation-iteration-count: 1;
-                  -moz-animation-delay: 0.5s;
-
-                }
-              }
-
               .status {
                 padding:3px 10px 2px;
                 @include border-radius(25px);
@@ -379,6 +523,7 @@
               & + li div.table_info {border-color:white}
               &:after {content:' '; position:absolute; left:0; bottom:0px; width:100%; height:1px; background:#E8E8E8;}
               &:before {content:' '; position:absolute; left:0; top:0px; width:100%; height:1px; background:#E8E8E8}
+
               span.tags {
                 position:relative;
 

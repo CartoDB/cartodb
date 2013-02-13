@@ -1180,6 +1180,7 @@ div.header.yellow h1 a:hover {
   }
 
   div.header h1 {
+    width:80%; /* Necessary to support small iframes or displays*/
     padding:0;
     margin:0;
     font-weight: bold;
@@ -1192,14 +1193,17 @@ div.header.yellow h1 a:hover {
     font-weight: bold;
     font-size: 17px;
     color: #397DBA;
+    word-wrap: break-word;
     text-decoration: none;
   }
+
 
   div.header h1 a:hover {
     text-decoration: underline;
   }
 
   div.header > p {
+    width:80%; /* Necessary to support small iframes or displays*/
     margin:5px 0 0 0;
     padding: 0;
     font-weight: normal;
@@ -1391,6 +1395,17 @@ div.header.yellow h1 a:hover {
     z-index:5;
   }
 
+  div.search_box span.loader {
+    position: absolute;
+    display:none;
+    top:3px;
+    left:3px;
+    width:22px;
+    height:22px;
+    background: url('../img/loader.gif') no-repeat center center white;
+    z-index:5;
+  }
+
   div.search_box input.text {
     position: absolute;
     top:6px;
@@ -1425,6 +1440,7 @@ div.header.yellow h1 a:hover {
     text-transform: uppercase;
     border:none;
     background: url('../img/other.png') no-repeat -56px 0;
+    z-index:1;
   }
 
   div.search_box input.submit:hover {

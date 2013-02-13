@@ -457,7 +457,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
   },
 
   /**
-   *  Set loading state adding the its content
+   *  Set loading state adding its content
    */
   setLoading: function() {
     this.model.set({

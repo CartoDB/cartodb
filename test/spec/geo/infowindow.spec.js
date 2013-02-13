@@ -144,6 +144,87 @@ describe("cdb.geo.ui.infowindow", function() {
   });
 
 
+  describe("loading state", function() {
+    var model, view;
+
+    beforeEach(function() {
+
+      var container = $('<div>').css('height', '200px');
+
+      map = new cdb.geo.Map();
+
+      mapView = new cdb.geo.MapView({
+        el: container,
+        map: map
+      });
+
+      model = new cdb.geo.ui.InfowindowModel({
+        fields: [
+          { value: 'Loading content...', index: null, title: null, type: 'loading'}
+        ]
+      });
+
+      view = new cdb.geo.ui.Infowindow({
+        model: model,
+        mapView: mapView
+      });
+
+    });
+
+    it("should show loading state", function() {
+      spyOn(view, '_startSpinner');
+      model.set({
+        'template': 'jaja',
+        'content': {
+          fields: [
+            { value: 'Loading content...', index: null, title: null, type: 'loading'}
+          ]
+        }
+      });
+      expect(view._startSpinner).toHaveBeenCalled();
+    });
+
+    it("should hide loading state", function() {
+      model.set({
+        'template': 'jaja',
+        'content': {
+          fields: [
+            { value: 'Loading content...', index: null, title: null, type: 'loading'}
+          ]
+        }
+      });
+
+      spyOn(view, '_stopSpinner');
+      model.set({
+        'template': 'jaja',
+        'content': {
+          fields: [
+            { value: 'Any kind of value', index: 0, title: 'TITLE'}
+          ]
+        }
+      });
+      expect(view._stopSpinner).toHaveBeenCalled();
+    });
+
+    it("shouldn't show the loader if there are several fields", function() {
+      spyOn(view, '_stopSpinner');
+      spyOn(view, '_startSpinner');
+      model.set({
+        'template': 'jaja',
+        'content': {
+          fields: [
+            { value: 'Loading content...', index: null, title: null, type: 'loading'},
+            { value: 'Loading content...', index: null, title: null, type: 'loading'}
+          ]
+        }
+      });
+      expect(view._stopSpinner).toHaveBeenCalled();
+      expect(view._startSpinner).not.toHaveBeenCalled();
+    });
+  });
+
+
+
   describe("image template", function() {
     var model, view, container, fields, fieldsWithoutURL, url;
 

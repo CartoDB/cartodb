@@ -262,9 +262,6 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
 
     if(this.template) {
 
-      // Stop spinner in any case
-      this._stopSpinner();
-
       // If there is content, destroy the jscrollpane first, then remove the content.
       var $jscrollpane = this.$el.find(".cartodb-popup-content");
       if ($jscrollpane.length > 0 && $jscrollpane.data() != null) {
@@ -294,7 +291,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
       }, 1);
 
       // If the infowindow is loading, show spin
-      this._loadSpinner();
+      this._checkLoading();
 
       // If the template is 'cover-enabled', load the cover
       this._loadCover();
@@ -303,12 +300,13 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     return this;
   },
 
-  _loadSpinner: function() {
-    var $el = this.$el.find('.loading');
-    if ($el.length == 0) {
-      this._stopSpinner()
+  _checkLoading: function() {
+    var content = this.model.get("content");
+
+    if (content.fields && content.fields.length == 1 && content.fields[0].type == "loading") {
+      this._startSpinner()
     } else {
-      this._startSpinner($el);
+      this._stopSpinner()
     }
   },
 
@@ -318,14 +316,14 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
   },
 
   _startSpinner: function($el) {
-    if (this.spinner) {
-      this.spinner.stop();
-    }
+    this._stopSpinner();
 
-    // Set correct template color
-    var template = this.model.get("template_type");
-    this.spinner = new Spinner(this.spin_options).spin();
-    $el.append(this.spinner.el);
+    var $el = this.$el.find('.loading');
+
+    if ($el) {
+      this.spinner = new Spinner(this.spin_options).spin();
+      $el.append(this.spinner.el);
+    }
   },
 
   _containsCover: function() {

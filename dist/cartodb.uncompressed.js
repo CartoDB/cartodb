@@ -1,6 +1,6 @@
-// cartodb.js version: 2.0.19
+// cartodb.js version: 2.0.20
 // uncompressed version: cartodb.uncompressed.js
-// sha: 85ee7a62ce333b9d6272f9d72264a10bc61b5493
+// sha: 042fd665735940c94a7f4dab58ff9f553f009749
 (function() {
   var root = this;
 
@@ -1955,6 +1955,7 @@ L.Mixin.Events.fire = L.Mixin.Events.fireEvent;
 	    android = ua.indexOf('android') !== -1,
 	    android23 = ua.search('android [23]') !== -1,
 	    ie7 = ie && !document.querySelector && ua.search('msie 7') !== -1,
+	    ie8 = ie && ua.search('msie 8') !== -1,
 
 	    mobile = typeof orientation !== undefined + '',
 	    msTouch = window.navigator && window.navigator.msPointerEnabled &&
@@ -2004,6 +2005,7 @@ L.Mixin.Events.fire = L.Mixin.Events.fireEvent;
 		ie: ie,
 		ie6: ie6,
 		ie7: ie7,
+        ie8: ie8,
 		webkit: webkit,
 
 		android: android,
@@ -2417,18 +2419,12 @@ L.DomUtil = {
 	},
 
 	setOpacity: function (el, value) {
-
 		if ('opacity' in el.style) {
 			el.style.opacity = value;
-
 		} else if ('filter' in el.style) {
-
-			var filter = false,
-			    filterName = 'DXImageTransform.Microsoft.Alpha';
-
+			var filterName = 'alpha';
 			value = Math.round(value * 100);
-
-			el.style.filter = ' progid:' + filterName + '(opacity=' + value + ')';
+			el.style.filter = filterName + '(opacity=' + value + ')';
 		}
 	},
 
@@ -3819,14 +3815,20 @@ L.TileLayer = L.Class.extend({
 	},
 
 	_updateOpacity: function () {
-		if (!L.Browser.ie7) {
-			L.DomUtil.setOpacity(this._container, this.options.opacity);
-		}
-
-		// stupid webkit hack to force redrawing of tiles
 		var i,
 		    tiles = this._tiles;
 
+		if (!L.Browser.ie7 && !L.Browser.ie8) {
+			L.DomUtil.setOpacity(this._container, this.options.opacity);
+		} else {
+			for (i in tiles) {
+				if (tiles.hasOwnProperty(i)) {
+					L.DomUtil.setOpacity(tiles[i], this.options.opacity);
+				}
+			}
+        }
+
+		// stupid webkit hack to force redrawing of tiles
 		if (L.Browser.webkit) {
 			for (i in tiles) {
 				if (tiles.hasOwnProperty(i)) {
@@ -3835,13 +3837,6 @@ L.TileLayer = L.Class.extend({
 			}
 		}
 
-		if (L.Browser.ie7) {
-			for (i in tiles) {
-				if (tiles.hasOwnProperty(i)) {
-					tiles[i].style.filter = 'alpha(opacity=' + (this.options.opacity * 100) + ')';
-				}
-			}
-		}
 
 	},
 
@@ -4115,8 +4110,9 @@ L.TileLayer = L.Class.extend({
 	_createTile: function () {
 		var tile = this._tileImg.cloneNode(false);
 		tile.onselectstart = tile.onmousemove = L.Util.falseFn;
-		if (L.Browser.ie7 && this.options.opacity !== undefined) {
-			tile.style.filter = 'alpha(opacity=' + (this.options.opacity * 100) + ')';
+		// in IE7 and IE8 should be set per tile
+		if ((L.Browser.ie7 || L.Browser.ie8) && this.options.opacity !== undefined) {
+			L.DomUtil.setOpacity(tile, this.options.opacity);
 		}
 
 		return tile;
@@ -14837,7 +14833,7 @@ $(function(){
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '2.0.19';
+    cdb.VERSION = '2.0.20';
 
     cdb.CARTOCSS_VERSIONS = {
       '2.0.0': '',

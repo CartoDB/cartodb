@@ -6,36 +6,29 @@
 --
 -- @param breaks The number of bins you want to find.
 --
+-- @param iterations The number of different starting positions to test.
+--
 -- @param invert Optional wheter to return the top of each bin (default)
 --               or the bottom. BOOLEAN, default=FALSE.
 --  
 --
 
-CREATE OR REPLACE FUNCTION CDB_JenksBins ( in_array NUMERIC[], breaks INT, invert BOOLEAN DEFAULT FALSE) RETURNS NUMERIC[] as $$ 
+
+CREATE OR REPLACE FUNCTION CDB_JenksBins ( in_array NUMERIC[], breaks INT, iterations INT DEFAULT 5, invert BOOLEAN DEFAULT FALSE) RETURNS NUMERIC[] as $$ 
 DECLARE 
     element_count INT4; 
-    tmp_val numeric; 
-    arr_mean numeric; 
-    classes int[][];
-    new_classes int[][];
-    tmp_class int[];
-    i INT := 1; 
-    side INT := 2;
+    arr_mean NUMERIC;
     bot INT;
     top INT;
-    sdam numeric; 
-    gvf numeric := 0.0; 
-    new_gvf numeric; 
-    arr_gvf numeric[]; 
-    class_avg numeric; 
-    class_max_i INT; 
-    class_min_i INT; 
-    class_max numeric; 
-    class_min numeric; 
-    reply numeric[]; 
-BEGIN 
+    tops INT[];
+    classes INT[][];
+    i INT := 1; j INT := 1; 
+    curr_result NUMERIC[];
+    best_result NUMERIC[];
+    seedtarget TEXT;
+BEGIN
     -- get the total size of our row
-    element_count := array_upper(in_array, 1) - array_lower(in_array, 1); 
+    element_count := array_length(in_array, 1); --array_upper(in_array, 1) - array_lower(in_array, 1); 
     -- ensure the ordering of in_array
     SELECT array_agg(e) INTO in_array FROM (SELECT unnest(in_array) e ORDER BY e) x;
     -- stop if no rows 
@@ -52,8 +45,6 @@ BEGIN
 
     LOOP  
         IF i > breaks THEN  EXIT;  END IF;  
-
-
         bot = floor((element_count / breaks) * (i - 1)) + 1;
         IF i = breaks THEN
             top = array_upper(in_array, 1);
@@ -67,6 +58,76 @@ BEGIN
         END IF;
         i := i+1; 
     END LOOP; 
+
+    best_result = axh_JenksBinsIteration( in_array, breaks, classes, invert, element_count, arr_mean);
+
+    --set the seed so we can ensure the same results
+    SELECT setseed(0.4567) INTO seedtarget;
+    --loop through random starting positions
+    LOOP
+        IF j > iterations-1 THEN  EXIT;  END IF;  
+        i = 1;
+        tops = ARRAY[element_count];
+        LOOP
+            IF i = breaks THEN  EXIT;  END IF;  
+            SELECT array_agg(distinct e) INTO tops FROM (SELECT unnest(array_cat(tops, ARRAY[floor(random()*element_count::float)::int])) as e ORDER BY e) x WHERE e != 1;
+            i = array_length(tops, 1); 
+        END LOOP; 
+        i = 1;
+        LOOP  
+            IF i > breaks THEN  EXIT;  END IF;  
+            IF i = 1 THEN
+                bot = 1;
+            ELSE
+                bot = top+1;
+            END IF;
+            top = tops[i];
+            IF i = 1 THEN 
+                classes = ARRAY[ARRAY[bot,top]]; 
+            ELSE 
+                classes = ARRAY_CAT(classes,ARRAY[bot,top]); 
+            END IF;
+            i := i+1; 
+        END LOOP; 
+        curr_result = CDB_JenksBinsIteration( in_array, breaks, classes, invert, element_count, arr_mean);
+
+        IF curr_result[1] > best_result[1] THEN
+            best_result = curr_result;
+            j = j-1; -- if we found a better result, add one more search
+        END IF;
+        j = j+1;
+    END LOOP;
+
+    RETURN (best_result)[2:array_upper(best_result, 1)];
+END;
+$$ language plpgsql IMMUTABLE;
+
+
+
+--
+-- Perform a single iteration of the Jenks classification
+--
+
+CREATE OR REPLACE FUNCTION CDB_JenksBinsIteration ( in_array NUMERIC[], breaks INT, classes INT[][], invert BOOLEAN, element_count INT4, arr_mean NUMERIC, max_search INT DEFAULT 250) RETURNS NUMERIC[] as $$ 
+DECLARE 
+    tmp_val numeric; 
+    new_classes int[][];
+    tmp_class int[];
+    i INT := 1; 
+    j INT := 1; 
+    side INT := 2;
+    sdam numeric; 
+    gvf numeric := 0.0; 
+    new_gvf numeric; 
+    arr_gvf numeric[]; 
+    class_avg numeric; 
+    class_max_i INT; 
+    class_min_i INT; 
+    class_max numeric; 
+    class_min numeric; 
+    reply numeric[]; 
+BEGIN 
+
     -- Calculate the sum of squared deviations from the array mean (SDAM).
     SELECT sum((arr_mean - e)^2) INTO sdam FROM (  SELECT unnest(in_array) as e ) x; 
     --Identify the breaks for the lowest GVF
@@ -95,6 +156,8 @@ BEGIN
         -- if no improvement was made, exit
         IF new_gvf < gvf THEN EXIT; END IF; 
         gvf = new_gvf;  
+        IF j > max_search THEN EXIT; END IF; 
+        j = j+1;
         i = 1;  
         LOOP  
             --establish directionality (uppward through classes or downward)
@@ -123,6 +186,7 @@ BEGIN
                 classes[class_min_i][1] = classes[class_min_i][1] - 1;
             END IF;
     END LOOP; 
+
     i = 1;
     LOOP  
         IF invert = TRUE THEN
@@ -132,7 +196,9 @@ BEGIN
         i = i+1;  
         IF i > breaks THEN  EXIT; END IF; 
     END LOOP; 
-    RETURN reply; 
+    
+    RETURN array_prepend(gvf, reply); 
+
 END; 
 $$ language plpgsql IMMUTABLE;
 

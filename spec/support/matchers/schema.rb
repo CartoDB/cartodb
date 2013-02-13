@@ -29,6 +29,7 @@ RSpec::Matchers.define :have_required_indexes_and_triggers do
     @diff = []
     @diff << "update_the_geom_webmercator_trigger" unless actual.has_trigger?('update_the_geom_webmercator_trigger')
     @diff << "update_updated_at_trigger"           unless actual.has_trigger?('update_updated_at_trigger')
+    @diff << "track_updates"                       unless actual.has_trigger?('track_updates')
     @diff << "the_geom_idx"                        unless actual.has_index?("#{actual.name}_the_geom_idx")
     @diff << "the_geom_webmercator_idx"            unless actual.has_index?("#{actual.name}_the_geom_webmercator_idx")
     @diff.should == []

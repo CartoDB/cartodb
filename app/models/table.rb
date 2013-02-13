@@ -18,6 +18,7 @@ class Table < Sequel::Model(:user_tables)
 
   many_to_one :map
   plugin :association_dependencies, :map => :destroy
+  plugin :dirty
 
   def public_values(options = {})
     selected_attrs = options[:except].present? ? PUBLIC_ATTRIBUTES.select { |k, v| !options[:except].include?(k.to_sym) } : PUBLIC_ATTRIBUTES
@@ -292,9 +293,13 @@ class Table < Sequel::Model(:user_tables)
     super
     manage_tags
     update_name_changes
-    manage_privacy
-    map.invalidate_varnish_cache
-    self.invalidate_varnish_cache
+    self.manage_privacy
+    self.map.save
+
+    # Privacy changes should invalidate varnish cache
+    if self.previous_changes.keys.include?(:privacy)
+      self.invalidate_varnish_cache
+    end
   end
 
   def after_create
@@ -386,7 +391,6 @@ class Table < Sequel::Model(:user_tables)
       }.compact.each_with_index.map { |column_name, i|
         { name: column_name, title: true, position: i+1 }
       }
-
     m.add_layer(data_layer)
   end
 
@@ -427,6 +431,10 @@ class Table < Sequel::Model(:user_tables)
   end
   ## End of Callbacks
 
+  ##
+  # This method removes all the vanish cached objects for the table,
+  # tiles included. Use with care O:-)
+  #
   def invalidate_varnish_cache
     CartoDB::Varnish.new.purge("obj.http.X-Cache-Channel ~ #{varnish_key}.*")
   end
@@ -1328,6 +1336,14 @@ TRIGGER
 
   def table_style_from_redis
     $tables_metadata.get("map_style|#{self.database_name}|#{self.name}")
+  end
+
+  def data_last_modified
+    owner.in_database.select(:updated_at)
+      .from(:cdb_tablemetadata)
+      .where(tabname: "'#{self.name}'::regclass".lit).first[:updated_at]
+  rescue
+    nil
   end
 
   private

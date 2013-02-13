@@ -265,10 +265,12 @@ describe Table do
       @user.save
 
       table = create_table({:name => 'Wadus table', :user_id => @user.id})
-
-      CartoDB::Varnish.any_instance.expects(:purge).with("obj.http.X-Cache-Channel ~ #{table.owner.database_name}:wadus_table_23:vizjson").returns(true)
-      CartoDB::Varnish.any_instance.expects(:purge).with("obj.http.X-Cache-Channel ~ #{table.owner.database_name}:wadus_table_23.*").returns(true)
-      CartoDB::Varnish.any_instance.expects(:purge).with("obj.http.X-Cache-Channel ~ #{table.owner.database_name}:wadus_table.*").returns(true)
+      CartoDB::Varnish.any_instance.expects(:purge)
+        .with("obj.http.X-Cache-Channel ~ #{@user.database_name}:wadus_table_23:vizjson").returns(true)
+      #CartoDB::Varnish.any_instance.expects(:purge)
+      #  .with("obj.http.X-Cache-Channel ~ #{@user.database_name}:wadus_table_23.*").returns(true)
+      CartoDB::Varnish.any_instance.expects(:purge)
+        .with("obj.http.X-Cache-Channel ~ #{@user.database_name}:wadus_table.*").returns(true)
       table.name = 'Wadus table #23'
       table.save
     end
@@ -364,8 +366,15 @@ describe Table do
       table.destroy
     end
 
-    it "should remove varnish cache when updating the table" do
-      table = create_table(:user_id => @user.id)
+    it "should remove varnish cache when updating the table privacy" do
+      @user.private_tables_enabled = true
+      @user.save
+      table = create_table(user_id: @user.id, name: "varnish_privacy", privacy: Table::PRIVATE)
+      CartoDB::Varnish.any_instance.expects(:purge).times(1).with("obj.http.X-Cache-Channel ~ #{table.varnish_key}:vizjson").returns(true)
+      CartoDB::Varnish.any_instance.expects(:purge).times(0).with("obj.http.X-Cache-Channel ~ #{table.varnish_key}.*").returns(true)
+      table.save
+
+      table.privacy = Table::PUBLIC
       CartoDB::Varnish.any_instance.expects(:purge).times(1).with("obj.http.X-Cache-Channel ~ #{table.varnish_key}:vizjson").returns(true)
       CartoDB::Varnish.any_instance.expects(:purge).times(1).with("obj.http.X-Cache-Channel ~ #{table.varnish_key}.*").returns(true)
       table.save
@@ -701,6 +710,13 @@ describe Table do
       }.should raise_error(CartoDB::InvalidAttributes)
     end
 
+    it "updates data_last_modified when changing data" do
+      table = create_table(:user_id => @user.id)
+      table.data_last_modified.should be_nil
+      table.insert_row!({})
+      table.data_last_modified.to_s.should == Time.now.to_s
+    end
+
     it "should be able to insert a row with a geometry value" do
       table = new_table(:user_id => @user.id)
       table.save.reload
@@ -890,7 +906,7 @@ describe Table do
       table = Table[data_import.table_id]
       table.name.should match(/^twitters/)
       table.rows_counted.should == 7
-      debugger
+
       table.schema.should include([:the_geom, "geometry", "geometry", "geometry"])
     end
 

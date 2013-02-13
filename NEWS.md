@@ -1,5 +1,6 @@
 2.0.4 (DD/MM/YY)
 -----
+* Add new quantification methods, CDB_JenksBins etc.
 
 2.0.3 (31/01/13)
 -----

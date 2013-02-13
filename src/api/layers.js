@@ -109,7 +109,8 @@
       // TODO: improve checking
       if(typeof(map.overlayMapTypes) !== "undefined") {
         MapType = cdb.geo.GoogleMapsMapView;
-      } else if(map instanceof L.Map) {
+        // check if leaflet is loaded globally
+      } else if(map instanceof L.Map || (window.L && map instanceof window.L.Map)) {
         MapType = cdb.geo.LeafletMapView;
       } else {
         promise.trigger('error', "cartodb.js can't guess the map type");

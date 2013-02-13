@@ -28,11 +28,11 @@ module Workman
       end #secret_access_key_id
 
       def get_access_key_id
-        config.fetch('access_key_id', ENV['AWS_ACCESS_KEY_ID'])
+        config.fetch(:access_key_id, ENV['AWS_ACCESS_KEY_ID'])
       end #get_access_key_id
 
       def get_secret_access_key
-        config.fetch('secret_access_key', ENV['AWS_SECRET_ACCESS_KEY'])
+        config.fetch(:secret_access_key, ENV['AWS_SECRET_ACCESS_KEY'])
       end #get_secret_access_key
     end # AWSConfigurator
   end # Commands

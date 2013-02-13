@@ -170,7 +170,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
 
   initialize: function(){
 
-    var that = this;
+    var self = this;
 
     _.bindAll(this, "render", "setLatLng", "changeTemplate", "_updatePosition", "_update", "toggle", "show", "hide");
 
@@ -189,11 +189,11 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     this.mapView.map.bind('change',         this._updatePosition, this);
 
     this.mapView.bind('zoomstart', function(){
-      that.hide(true);
+      self.hide(true);
     });
 
     this.mapView.bind('zoomend', function() {
-      that.show(true);
+      self.show(true);
     });
 
     // Set min height to show the scroll
@@ -283,11 +283,11 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
       // Hello jscrollpane hacks!
       // It needs some time to initialize, if not it doesn't render properly the fields
       // Check the height of the content + the header if exists
-      var that = this;
+      var self = this;
       setTimeout(function() {
-        var actual_height = that.$el.find(".cartodb-popup-content").outerHeight() + that.$el.find(".cartodb-popup-header").outerHeight();
-        if (that.minHeightToScroll <= actual_height)
-          that.$el.find(".cartodb-popup-content").jScrollPane({
+        var actual_height = self.$el.find(".cartodb-popup-content").outerHeight() + self.$el.find(".cartodb-popup-header").outerHeight();
+        if (self.minHeightToScroll <= actual_height)
+          self.$el.find(".cartodb-popup-content").jScrollPane({
             maintainPosition:       false,
             verticalDragMinHeight:  20
           });
@@ -480,11 +480,11 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
   },
 
   show: function (no_pan) {
-    var that = this;
+    var self = this;
 
     if (this.model.get("visibility")) {
-      that.$el.css({ left: -5000 });
-      that._update(no_pan);
+      self.$el.css({ left: -5000 });
+      self._update(no_pan);
     }
 
   },
@@ -532,13 +532,13 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
 
   _animateOut: function() {
     if (!$.browser.msie || ($.browser.msie && $.browser.version.search("9.") != -1)) {
-      var that = this;
+      var self = this;
       this.$el.animate({
         marginBottom: "-10px",
         opacity:      "0",
         display:      "block"
       }, 180, function() {
-        that.$el.css({display: "none"});
+        self.$el.css({display: "none"});
       });
     } else {
       this.$el.hide();

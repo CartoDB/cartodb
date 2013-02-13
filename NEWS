@@ -1,3 +1,7 @@
+2.0.20 (02//13//2013)
+-----
+- fixed problem with setOpacity in IE8
+
 2.0.19 (02//13//2013)
 -----
 - fixed problem with setOpacity in IE7 and IE8. It replaces leaflet with a custom one.

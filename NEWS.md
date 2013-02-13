@@ -1,6 +1,16 @@
 2.0.4 (DD/MM/YY)
 -----
 
+You'll need to run database migrations and reload sql functions after upgrating:
+
+bundle exec rake db:migrate
+bundle exec rake cartodb:db:load_functions
+
+* Adds a track_updates trigger to keep track of the last time any table is modified
+* Persisted updated_at on vizjson, this saves a lot of traffic to the tiler if Varnish crashes or is not running
+* Fixes a importer bug when decoding content-disposition http header
+* Fixes a bug that causes VACUUM FULL to be run more than once after table creation
+
 2.0.3 (31/01/13)
 -----
 * Add cartodb:db:update_test_quota_trigger rake task.

@@ -169,7 +169,6 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
   },
 
   initialize: function(){
-
     var self = this;
 
     _.bindAll(this, "render", "setLatLng", "changeTemplate", "_updatePosition", "_update", "toggle", "show", "hide");
@@ -201,65 +200,12 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
 
     this.render();
     this.$el.hide();
-
-  },
-
-  changeTemplate: function(template_name) {
-    this.template = cdb.templates.getTemplate(this.model.get("template_name"));
-    this.render();
-  },
-
-  _compileTemplate: function() {
-    this.template = new cdb.core.Template({
-       template: this.model.get('template'),
-       type: this.model.get('template_type') || 'mustache'
-    }).asFunction()
-
-    this.render();
-  },
-
-  _checkOrigin: function(ev) {
-    // If the mouse down come from jspVerticalBar
-    // dont stop the propagation, but if the event
-    // is a touchstart, stop the propagation
-    var come_from_scroll = (($(ev.target).closest(".jspVerticalBar").length > 0) && (ev.type != "touchstart"));
-
-    if (!come_from_scroll) {
-      ev.stopPropagation();
-    }
   },
 
   /**
-   *  Convert values to string unless value is NULL
+   *  Render infowindow content
    */
-  _fieldsToString: function(attrs) {
-    if (attrs.content && attrs.content.fields) {
-      attrs.content.fields = _.map(attrs.content.fields, function(attr) {
-        // Check null or undefined :| and set both to empty == ''
-        if (attr.value == null || attr.value == undefined) {
-          attr.value = '';
-        }
-
-        // Cast all values to string due to problems with Mustache 0 number rendering
-        var new_value = attr.value.toString();
-
-        // But if we have some empty values (null)
-        // we must make them null to display them correctly
-        // ARGGG!
-        if (new_value == "") new_value = null;
-
-        // store attribute
-        attr.value = new_value;
-
-        return attr;
-      });
-    }
-
-    return attrs;
-  },
-
   render: function() {
-
     if(this.template) {
 
       // If there is content, destroy the jscrollpane first, then remove the content.
@@ -298,6 +244,69 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     };
 
     return this;
+  },
+
+  /**
+   *  Change template of the infowindow
+   */
+  changeTemplate: function(template_name) {
+    this.template = cdb.templates.getTemplate(this.model.get("template_name"));
+    this.render();
+  },
+
+  /**
+   *  Compile template of the infowindow
+   */
+  _compileTemplate: function() {
+    this.template = new cdb.core.Template({
+       template: this.model.get('template'),
+       type: this.model.get('template_type') || 'mustache'
+    }).asFunction()
+
+    this.render();
+  },
+
+  /**
+   *  Check event origin
+   */
+  _checkOrigin: function(ev) {
+    // If the mouse down come from jspVerticalBar
+    // dont stop the propagation, but if the event
+    // is a touchstart, stop the propagation
+    var come_from_scroll = (($(ev.target).closest(".jspVerticalBar").length > 0) && (ev.type != "touchstart"));
+
+    if (!come_from_scroll) {
+      ev.stopPropagation();
+    }
+  },
+
+  /**
+   *  Convert values to string unless value is NULL
+   */
+  _fieldsToString: function(attrs) {
+    if (attrs.content && attrs.content.fields) {
+      attrs.content.fields = _.map(attrs.content.fields, function(attr) {
+        // Check null or undefined :| and set both to empty == ''
+        if (attr.value == null || attr.value == undefined) {
+          attr.value = '';
+        }
+
+        // Cast all values to string due to problems with Mustache 0 number rendering
+        var new_value = attr.value.toString();
+
+        // But if we have some empty values (null)
+        // we must make them null to display them correctly
+        // ARGGG!
+        if (new_value == "") new_value = null;
+
+        // store attribute
+        attr.value = new_value;
+
+        return attr;
+      });
+    }
+
+    return attrs;
   },
 
   /**

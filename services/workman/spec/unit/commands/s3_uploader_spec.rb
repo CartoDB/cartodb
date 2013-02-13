@@ -7,7 +7,7 @@ include Workman::Commands
 
 describe S3Uploader do
   describe '#initialize' do
-    it 'set the (optionally) passed AWS configuration using the
+    it 'sets the (optionally) passed AWS configuration using the
     AWSConfigurator' do
       AWS.config(access_key_id: 'bogus')
       S3Uploader.new
@@ -21,8 +21,13 @@ describe S3Uploader do
 
   describe '#upload' do
     before do
-      @fake_file    = fake_file_factory
-      @fake_bucket  = fake_bucket_factory
+      AWS.config(
+        access_key_id:      nil,
+        secret_access_key:  nil
+      )
+
+      @fake_file                    = fake_file_factory
+      @fake_bucket                  = fake_bucket_factory
     end
 
     it 'strips the path from the uploaded file name' do

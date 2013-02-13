@@ -27,7 +27,7 @@ module Workman
       end #dump
 
       def upload_to(dump_repository)
-        send "#{dump_repository}_upload"
+        dump_url_or_path = send "#{dump_repository}_upload"
       end #upload_to
 
       def dump_filepath
@@ -46,13 +46,13 @@ module Workman
         File.join('/', 'var', 'tmp', 'workman')
       end #dumps_dir
 
-      def dump_id
-        @dump_id ||= Time.now.utc.to_f
-      end #dump_id
-
       def dump_filename
         "#{database}_#{dump_id}.dump"
       end #dump_filename
+
+      def dump_id
+        @dump_id ||= Time.now.utc.to_f
+      end #dump_id
 
       def user_option
         "-U #{user}" if user
@@ -77,8 +77,7 @@ module Workman
       end #local_upload
 
       def s3_upload
-        dump_url = S3Uploader.new.upload(dump_filepath)
-        dump_url.to_s
+        S3Uploader.new.upload(dump_filepath).to_s
       end #s3_upload
     end # PostgresDump
   end # Commands

@@ -44,12 +44,17 @@ describe AWSConfigurator do
         secret_access_key:  nil 
       )
 
+      previous_access_key_id        = ENV['AWS_ACCESS_KEY_ID']  
+      previous_secret_access_key    = ENV['AWS_SECRET_ACCESS_KEY'] 
       ENV['AWS_ACCESS_KEY_ID']      = 'environment_access_key_id'
       ENV['AWS_SECRET_ACCESS_KEY']  = 'environment_secret_access_key'
 
       AWSConfigurator.new.configure
       AWS.config.access_key_id.must_match /environment_access/
       AWS.config.secret_access_key.must_match /environment_secret/
+
+      ENV['AWS_ACCESS_KEY_ID']      = previous_access_key_id        
+      ENV['AWS_SECRET_ACCESS_KEY']  = previous_secret_access_key  
     end
   end #configure
 end # AWSConfigurator

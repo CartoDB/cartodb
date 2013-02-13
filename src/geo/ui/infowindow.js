@@ -147,6 +147,12 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
 cdb.geo.ui.Infowindow = cdb.core.View.extend({
   className: "infowindow",
 
+  spin_options: {
+    lines: 10, length: 0, width: 4, radius: 6, corners: 1, rotate: 0, color: '#777',
+    speed: 1, trail: 60, shadow: false, hwaccel: true, className: 'spinner', zIndex: 2e9,
+    top: 'auto', left: 'auto', position: 'absolute'
+  },
+
   events: {
     // Close bindings
     "click .close":       "_closeInfowindow",
@@ -256,6 +262,9 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
 
     if(this.template) {
 
+      // Stop spinner in any case
+      this._stopSpinner();
+
       // If there is content, destroy the jscrollpane first, then remove the content.
       var $jscrollpane = this.$el.find(".cartodb-popup-content");
       if ($jscrollpane.length > 0 && $jscrollpane.data() != null) {
@@ -284,13 +293,39 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
           });
       }, 1);
 
+      // If the infowindow is loading, show spin
+      this._loadSpinner();
 
       // If the template is 'cover-enabled', load the cover
       this._loadCover();
-
     };
 
     return this;
+  },
+
+  _loadSpinner: function() {
+    var $el = this.$el.find('.loading');
+    if ($el.length == 0) {
+      this._stopSpinner()
+    } else {
+      this._startSpinner($el);
+    }
+  },
+
+  _stopSpinner: function() {
+    if (this.spinner)
+      this.spinner.stop()
+  },
+
+  _startSpinner: function($el) {
+    if (this.spinner) {
+      this.spinner.stop();
+    }
+
+    // Set correct template color
+    var template = this.model.get("template_type");
+    this.spinner = new Spinner(this.spin_options).spin();
+    $el.append(this.spinner.el);
   },
 
   _containsCover: function() {
@@ -412,6 +447,24 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     }
 
     this.model.set("visibility",false);
+  },
+
+  /**
+   *  Set loading state adding the correct content
+   */
+  setLoading: function() {
+    this.model.set({
+      content:  { 
+        fields: [{
+          title: null,
+          value: 'Loading content...',
+          index: null,
+          type: 'loading'
+        }],
+        data: {}
+      }
+    })
+    return this;
   },
 
   /**

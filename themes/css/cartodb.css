@@ -275,8 +275,17 @@ div.cartodb-popup.header div.cartodb-popup-header h1 {
   font:bold 21px "Helvetica Neue", "Helvetica", Arial;
   color:#FFFFFF;
   line-height:23px;
-  text-shadow: 1px 1px 1px #333;
+  text-shadow: 0 1px rgba(0,0,0,0.5);
 }
+
+div.cartodb-popup.header div.cartodb-popup-header h1.loading {
+  position:relative;
+  font-size:14px;
+  font-weight:normal;
+  padding-right:0;
+  padding-left:30px;
+}
+
 
 div.cartodb-popup.header div.cartodb-popup-header span.separator {
   position:absolute;
@@ -1133,14 +1142,36 @@ div.header.yellow h1 a:hover {
     width:190px;
     max-width: 190px;
     margin: 0;
-    padding: 0;
+    padding:0 0 7px;
     font:normal 13px "Helvetica",Arial;
     color:#333333;
-    padding:0 0 7px;
     word-wrap: break-word;
   }
 
+  div.cartodb-popup p.loading {
+    position:relative;
+    display:block;
+    width:170px;
+    max-width: 170px;
+    margin: 0;
+    padding:0 0 0 30px;
+    font:normal 13px "Helvetica",Arial;
+    color:#888;
+    font-style:italic;
+    word-wrap: break-word;
+    line-height:21px;
+  }
+
+  div.cartodb-popup div.spinner {
+    position:absolute!important;
+    display:inline;
+    top:0;
+    left:0;
+    margin:10px 0 0 10px;
+  }
+
   div.cartodb-popup p.empty {
+    padding-bottom:0;
     color:#999999;
     font-style: italic;
   }

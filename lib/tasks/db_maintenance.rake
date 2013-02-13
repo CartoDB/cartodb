@@ -13,6 +13,8 @@ namespace :cartodb do
           user.tables.all.each do |table|
               table.add_python
               table.set_trigger_check_quota
+              table.set_trigger_update_updated_at
+              table.set_trigger_cache_timestamp
           end
           printf "OK %-#{20}s (%-#{4}s/%-#{4}s)\n", user.username, i, count
         rescue => e

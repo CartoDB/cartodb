@@ -148,7 +148,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
   className: "infowindow",
 
   spin_options: {
-    lines: 10, length: 0, width: 4, radius: 6, corners: 1, rotate: 0, color: '#777',
+    lines: 10, length: 0, width: 4, radius: 6, corners: 1, rotate: 0, color: 'rgba(0,0,0,0.5)',
     speed: 1, trail: 60, shadow: false, hwaccel: true, className: 'spinner', zIndex: 2e9,
     top: 'auto', left: 'auto', position: 'absolute'
   },
@@ -303,7 +303,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
   _checkLoading: function() {
     var content = this.model.get("content");
 
-    if (content.fields && content.fields.length == 1 && content.fields[0].type == "loading") {
+    if (content.fields && content.fields.length == 1 && content.fields[0].loading) {
       this._startSpinner()
     } else {
       this._stopSpinner()
@@ -321,6 +321,15 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     var $el = this.$el.find('.loading');
 
     if ($el) {
+      // Check if it is dark or other to change color
+      var template_dark = this.model.get('template_name').search('dark') != -1; 
+
+      if (template_dark) {
+        this.spin_options.color = '#FFF';
+      } else {
+        this.spin_options.color = 'rgba(0,0,0,0.5)';
+      }
+
       this.spinner = new Spinner(this.spin_options).spin();
       $el.append(this.spinner.el);
     }
@@ -448,7 +457,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
   },
 
   /**
-   *  Set loading state adding the correct content
+   *  Set loading state adding the its content
    */
   setLoading: function() {
     this.model.set({
@@ -456,8 +465,8 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
         fields: [{
           title: null,
           value: 'Loading content...',
-          index: null,
-          type: 'loading'
+          index: 0,
+          loading: true
         }],
         data: {}
       }
@@ -501,7 +510,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
       var delay = 0;
 
       if (!no_pan) {
-        var delay = this._adjustPan();
+        var delay = this.adjustPan();
       }
 
       this._updatePosition();
@@ -563,7 +572,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     this.$el.css({ bottom: bottom, left: left });
   },
 
-  _adjustPan: function (callback) {
+  adjustPan: function (callback) {
 
     var offset = this.model.get("offset");
 

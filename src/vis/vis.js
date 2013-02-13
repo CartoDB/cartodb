@@ -448,7 +448,8 @@ var Vis = cdb.core.View.extend({
               fields: content, 
               data: interact_data
             } 
-          });
+          })
+          infowindow.adjustPan();
         });
 
         // Show infowindow with loading state

@@ -177,7 +177,7 @@ describe("cdb.geo.ui.infowindow", function() {
         'template': 'jaja',
         'content': {
           fields: [
-            { value: 'Loading content...', index: null, title: null, type: 'loading'}
+            { value: 'Loading content...', index: null, title: null, loading: true}
           ]
         }
       });
@@ -189,7 +189,7 @@ describe("cdb.geo.ui.infowindow", function() {
         'template': 'jaja',
         'content': {
           fields: [
-            { value: 'Loading content...', index: null, title: null, type: 'loading'}
+            { value: 'Loading content...', index: null, title: null, loading: true}
           ]
         }
       });
@@ -213,8 +213,8 @@ describe("cdb.geo.ui.infowindow", function() {
         'template': 'jaja',
         'content': {
           fields: [
-            { value: 'Loading content...', index: null, title: null, type: 'loading'},
-            { value: 'Loading content...', index: null, title: null, type: 'loading'}
+            { value: 'Loading content...', index: null, title: null, loading: true},
+            { value: 'Loading content...', index: null, title: null, loading: true}
           ]
         }
       });

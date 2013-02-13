@@ -362,14 +362,13 @@ var Vis = cdb.core.View.extend({
 
   // Set map top position taking into account header height
   setMapPosition: function() {
-    var header_h = this.$el.parent().find(".header").outerHeight();
-  
+    var header_h = this.$el.find(".header:not(.cartodb-popup)").outerHeight();
+
     this.$el
       .find("div.map-wrapper")
       .css("top", header_h);
 
     this.mapView.invalidateSize();
-
   },
 
   createLayer: function(layerData, opts) {

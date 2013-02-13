@@ -337,8 +337,7 @@ header { // general header
         }
       }
 
-      span.tags {
-        display:block;
+      .tags {
         margin:3px 0 0 15px;
         @include inline-block();
 

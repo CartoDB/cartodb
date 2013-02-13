@@ -5,7 +5,7 @@
       {{^index}}
         {{#title}}<h4>{{title}}</h4>{{/title}}
         {{#value}}
-          <h1>{{ value }}</h1>
+          <h1 {{#loading}}class="loading"{{/loading}}>{{ value }}</h1>
         {{/value}}
         {{^value}}
           <h1 class="empty">null</h1>

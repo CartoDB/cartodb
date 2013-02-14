@@ -83,6 +83,15 @@ describe Log do
       log.append(text: 'sample message')
       log.to_s.must_match /sample message/
     end
+
+    it 'insert new lines between entries' do
+      log = Log.new
+      log.append(text: 'sample message 1')
+      log.append(text: 'sample message 2')
+
+      log.to_s.lines.to_a.first .must_match /sample message 1/
+      log.to_s.lines.to_a.last  .must_match /sample message 2/
+    end
   end #to_s
 
   describe '#fetch' do

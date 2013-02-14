@@ -8,6 +8,8 @@ module TrackRecord
   class Entry
     include Virtus
 
+    FIELD_SEPARATOR         = ' || '
+
     attribute :id,          String
     attribute :payload,     Hash, default: {}
     attribute :timestamp,   Float
@@ -43,7 +45,7 @@ module TrackRecord
     end #to_hash
 
     def to_s
-      [created_at, payload.values].join(' || ')
+      [created_at.utc.iso8601, payload.values].join(FIELD_SEPARATOR)
     end #to_s
 
     def persist

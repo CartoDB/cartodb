@@ -41,7 +41,7 @@ module TrackRecord
     end #each
 
     def to_s
-      self.map(&:to_s).join
+      self.map(&:to_s).join("\n")
     end #to_s
 
     def fetch

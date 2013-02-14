@@ -29,7 +29,7 @@ gem "statsd-client",           "0.0.7", :require => "statsd"
 
 gem "addressable",             "2.2.8", :require => "addressable/uri"
 
-gem "newrelic_rpm",            "~> 3.5.5"
+#gem "newrelic_rpm",            "~> 3.5.5"
 
 gem "ejs",                     "~> 1.1.1"
 gem "turbo-sprockets-rails3",  "0.1.16"

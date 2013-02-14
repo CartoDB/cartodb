@@ -1,6 +1,6 @@
-// cartodb.js version: 2.0.20
+// cartodb.js version: 2.0.21-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: 042fd665735940c94a7f4dab58ff9f553f009749
+// sha: b42303f1e83b4555f23f22fb96413a8873eb5707
 (function() {
   var root = this;
 
@@ -1506,7 +1506,7 @@ if (typeof exports !== undefined + '') {
 	window.L = L;
 }
 
-L.version = '0.6-dev';
+L.version = '0.5.1';
 
 
 /*
@@ -1592,7 +1592,7 @@ L.Util = {
 		var params = [];
 		for (var i in obj) {
 			if (obj.hasOwnProperty(i)) {
-				params.push(encodeURIComponent(i) + '=' + encodeURIComponent(obj[i]));
+				params.push(i + '=' + obj[i]);
 			}
 		}
 		return ((!existingUrl || existingUrl.indexOf('?') === -1) ? '?' : '&') + params.join('&');
@@ -1736,7 +1736,6 @@ L.Class.extend = function (props) {
 	proto._initHooks = [];
 
 	var parent = this;
-	NewClass.__super__ = parent.prototype;
 	// add method for calling all hooks
 	proto.callInitHooks = function () {
 
@@ -1791,12 +1790,10 @@ L.Mixin = {};
 L.Mixin.Events = {
 
 	addEventListener: function (types, fn, context) { // (String, Function[, Object]) or (Object[, Object])
-		
 		var events = this[key] = this[key] || {},
-		    type, i, len, evt,
-		    contextId, objKey, objLenKey, eventsObj;
+			type, i, len;
 
-		// types can be a map of types/handlers
+		// Types can be a map of types/handlers
 		if (typeof types === 'object') {
 			for (type in types) {
 				if (types.hasOwnProperty(type)) {
@@ -1807,50 +1804,26 @@ L.Mixin.Events = {
 			return this;
 		}
 
-		// types can be a string of space-separated words
 		types = L.Util.splitWords(types);
 
 		for (i = 0, len = types.length; i < len; i++) {
-			evt = {
+			events[types[i]] = events[types[i]] || [];
+			events[types[i]].push({
 				action: fn,
 				context: context || this
-			};
-			contextId = context && context._leaflet_id;
-
-			if (contextId) {
-				// store listeners of a particular context in a separate hash (if it has an id)
-				// gives a major performance boost when removing thousands of map layers
-
-				objKey = types[i] + '_idx',
-				objLenKey = objKey + '_len',
-				eventsObj = events[objKey] = events[objKey] || {};
-
-				if (eventsObj[contextId]) {
-					eventsObj[contextId].push(evt);
-				} else {
-					eventsObj[contextId] = [evt];
-					events[objLenKey] = (events[objLenKey] || 0) + 1;
-				}
-
-			} else {
-				events[types[i]] = events[types[i]] || [];
-				events[types[i]].push(evt);
-			}
+			});
 		}
 
 		return this;
 	},
 
 	hasEventListeners: function (type) { // (String) -> Boolean
-		return (key in this) &&
-		       (((type in this[key]) && this[key][type].length > 0) ||
-		        (this[key][type + '_idx_len'] > 0));
+		return (key in this) && (type in this[key]) && (this[key][type].length > 0);
 	},
 
 	removeEventListener: function (types, fn, context) { // (String[, Function, Object]) or (Object[, Object])
 		var events = this[key],
-			type, i, len, listeners, j,
-			contextId, objKey, objLenKey;
+			type, i, len, listeners, j;
 
 		if (typeof types === 'object') {
 			for (type in types) {
@@ -1858,34 +1831,24 @@ L.Mixin.Events = {
 					this.removeEventListener(type, types[type], fn);
 				}
 			}
+
 			return this;
 		}
 
 		types = L.Util.splitWords(types);
 
 		for (i = 0, len = types.length; i < len; i++) {
+
 			if (this.hasEventListeners(types[i])) {
-
-				// if the context has an id, use it to find the listeners
-				contextId = context && context._leaflet_id;
-				objKey = types[i] + '_idx';
-
-				if (contextId && events[objKey]) {
-					listeners =  events[objKey][contextId] || [];
-				} else {
-					listeners = events[types[i]] || [];
-				}
+				listeners = events[types[i]];
 
 				for (j = listeners.length - 1; j >= 0; j--) {
-					if ((!fn || listeners[j].action === fn) && (!context || (listeners[j].context === context))) {
+					if (
+						(!fn || listeners[j].action === fn) &&
+						(!context || (listeners[j].context === context))
+					) {
 						listeners.splice(j, 1);
 					}
-				}
-
-				if (contextId && listeners.length === 0) {
-					objLenKey = objKey + '_len';
-					delete events[objKey][contextId];
-					events[objLenKey] = (events[objLenKey] || 1) - 1;
 				}
 			}
 		}
@@ -1898,36 +1861,15 @@ L.Mixin.Events = {
 			return this;
 		}
 
-		var event = L.Util.extend({
+		var event = L.extend({
 			type: type,
 			target: this
 		}, data);
 
-		var listeners, i, len, eventsObj, contextId;
+		var listeners = this[key][type].slice();
 
-		if (this[key][type]) {
-			listeners = this[key][type].slice();
-
-			for (i = 0, len = listeners.length; i < len; i++) {
-				listeners[i].action.call(listeners[i].context || this, event);
-			}
-		}
-
-		// fire event for the context-indexed listeners as well
-		
-		eventsObj = this[key][type + '_idx'];
-
-		if (eventsObj) {
-			for (contextId in eventsObj) {
-				if (eventsObj.hasOwnProperty(contextId)) {
-					listeners = eventsObj[contextId];
-					if (listeners) {
-						for (i = 0, len = listeners.length; i < len; i++) {
-							listeners[i].action.call(listeners[i].context || this, event);
-						}
-					}
-				}
-			}
+		for (var i = 0, len = listeners.length; i < len; i++) {
+			listeners[i].action.call(listeners[i].context || this, event);
 		}
 
 		return this;
@@ -2138,7 +2080,7 @@ L.point = function (x, y, round) {
 	if (L.Util.isArray(x)) {
 		return new L.Point(x[0], x[1]);
 	}
-	if (x === undefined || x === null) {
+	if (isNaN(x)) {
 		return x;
 	}
 	return new L.Point(x, y, round);
@@ -2306,7 +2248,6 @@ L.DomUtil = {
 		    left = 0,
 		    el = element,
 		    docBody = document.body,
-		    docEl = document.documentElement,
 		    pos,
 		    ie7 = L.Browser.ie7;
 
@@ -2323,8 +2264,8 @@ L.DomUtil = {
 			if (el.offsetParent === docBody && pos === 'absolute') { break; }
 
 			if (pos === 'fixed') {
-				top  += docBody.scrollTop  || docEl.scrollTop  || 0;
-				left += docBody.scrollLeft || docEl.scrollLeft || 0;
+				top  += docBody.scrollTop  || 0;
+				left += docBody.scrollLeft || 0;
 				break;
 			}
 			el = el.offsetParent;
@@ -2580,7 +2521,7 @@ L.latLng = function (a, b) { // (LatLng) or ([Number, Number]) or (Number, Numbe
 	if (L.Util.isArray(a)) {
 		return new L.LatLng(a[0], a[1]);
 	}
-	if (a === undefined || a === null) {
+	if (isNaN(a)) {
 		return a;
 	}
 	return new L.LatLng(a, b);
@@ -2656,27 +2597,11 @@ L.LatLngBounds.prototype = {
 	},
 
 	getNorthWest: function () {
-		return new L.LatLng(this.getNorth(), this.getWest());
+		return new L.LatLng(this._northEast.lat, this._southWest.lng);
 	},
 
 	getSouthEast: function () {
-		return new L.LatLng(this.getSouth(), this.getEast());
-	},
-
-	getWest: function () {
-		return this._southWest.lng;
-	},
-
-	getSouth: function () {
-		return this._southWest.lat;
-	},
-
-	getEast: function () {
-		return this._northEast.lng;
-	},
-
-	getNorth: function () {
-		return this._northEast.lat;
+		return new L.LatLng(this._southWest.lat, this._northEast.lng);
 	},
 
 	contains: function (obj) { // (LatLngBounds) or (LatLng) -> Boolean
@@ -2716,7 +2641,10 @@ L.LatLngBounds.prototype = {
 	},
 
 	toBBoxString: function () {
-		return [this.getWest(), this.getSouth(), this.getEast(), this.getNorth()].join(',');
+		var sw = this._southWest,
+		    ne = this._northEast;
+
+		return [sw.lng, sw.lat, ne.lng, ne.lat].join(',');
 	},
 
 	equals: function (bounds) { // (LatLngBounds)
@@ -3066,8 +2994,6 @@ L.Map = L.Class.extend({
 	},
 
 	hasLayer: function (layer) {
-		if (!layer) { return false; }
-
 		var id = L.stamp(layer);
 		return this._layers.hasOwnProperty(id);
 	},
@@ -4279,7 +4205,6 @@ L.TileLayer.Canvas = L.TileLayer.extend({
 				this._redrawTile(tiles[i]);
 			}
 		}
-		return this;
 	},
 
 	_redrawTile: function (tile) {
@@ -4599,15 +4524,14 @@ L.Icon.Default.imagePath = (function () {
 	var scripts = document.getElementsByTagName('script'),
 	    leafletRe = /\/?leaflet[\-\._]?([\w\-\._]*)\.js\??/;
 
-	var i, len, src, matches, path;
+	var i, len, src, matches;
 
 	for (i = 0, len = scripts.length; i < len; i++) {
 		src = scripts[i].src;
 		matches = src.match(leafletRe);
 
 		if (matches) {
-			path = src.split(leafletRe)[0];
-			return (path ? path + '/' : '') + 'images';
+			return src.split(leafletRe)[0] + '/images';
 		}
 	}
 }());
@@ -5328,13 +5252,6 @@ L.LayerGroup = L.Class.extend({
 		return this;
 	},
 
-	hasLayer: function (layer) {
-		if (!layer) { return false; }
-
-		var id = L.stamp(layer);
-		return this._layers.hasOwnProperty(id);
-	},
-
 	clearLayers: function () {
 		this.eachLayer(this.removeLayer, this);
 		return this;
@@ -5460,9 +5377,7 @@ L.FeatureGroup = L.LayerGroup.extend({
 	},
 
 	_propagateEvent: function (e) {
-		if (!e.layer) {
-			e.layer = e.target;
-		}
+		e.layer  = e.target;
 		e.target = this;
 
 		this.fire(e.type, e);
@@ -5653,9 +5568,6 @@ L.Path = L.Path.extend({
 		}
 		if (this.options.fill) {
 			this._path.setAttribute('fill-rule', 'evenodd');
-		}
-		if (this.options.pointerEvents) {
-			this._path.setAttribute('pointer-events', this.options.pointerEvents);
 		}
 		this._updateStyle();
 	},
@@ -6392,7 +6304,7 @@ L.LineUtil = {
 
 
 /*
- * L.Polyline is used to display polylines on a map.
+ * L.Polygon is used to display polylines on a map.
  */
 
 L.Polyline = L.Path.extend({
@@ -6636,13 +6548,6 @@ L.Polygon = L.Polyline.extend({
 		if (latlngs && L.Util.isArray(latlngs[0]) && (typeof latlngs[0][0] !== 'number')) {
 			this._latlngs = this._convertLatLngs(latlngs[0]);
 			this._holes = latlngs.slice(1);
-		}
-
-		// filter out last point if its equal to the first one
-		latlngs = this._latlngs;
-
-		if (latlngs[0].equals(latlngs[latlngs.length - 1])) {
-			latlngs.pop();
 		}
 	},
 
@@ -7196,13 +7101,6 @@ L.DomEvent = {
 
 				obj.addEventListener(newType, handler, false);
 
-			} else if (type === 'click' && L.Browser.android) {
-				originalHandler = handler;
-				handler = function (e) {
-					return L.DomEvent._filterClick(e, originalHandler);
-				};
-
-				obj.addEventListener(type, handler, false);
 			} else {
 				obj.addEventListener(type, handler, false);
 			}
@@ -7341,23 +7239,6 @@ L.DomEvent = {
 			}
 		}
 		return e;
-	},
-
-	// this solves a bug in Android WebView where a single touch triggers two click events.
-	_filterClick: function (e, handler) {
-		var elapsed = L.DomEvent._lastClick && (e.timeStamp - L.DomEvent._lastClick);
-
-		// are they closer together than 400ms yet more than 100ms?
-		// Android typically triggers them ~300ms apart while multiple listeners
-		// on the same event should be triggered far faster.
-
-		if (elapsed && elapsed > 100 && elapsed < 400) {
-			L.DomEvent.stop(e);
-			return;
-		}
-		L.DomEvent._lastClick = e.timeStamp;
-
-		return handler(e);
 	}
 };
 
@@ -8515,6 +8396,257 @@ L.Handler.MarkerDrag = L.Handler.extend({
 
 
 /*
+ * L.Handler.PolyEdit is an editing handler for polylines and polygons.
+ */
+
+L.Handler.PolyEdit = L.Handler.extend({
+	options: {
+		icon: new L.DivIcon({
+			iconSize: new L.Point(8, 8),
+			className: 'leaflet-div-icon leaflet-editing-icon'
+		})
+	},
+
+	initialize: function (poly, options) {
+		this._poly = poly;
+		L.setOptions(this, options);
+	},
+
+	addHooks: function () {
+		if (this._poly._map) {
+			if (!this._markerGroup) {
+				this._initMarkers();
+			}
+			this._poly._map.addLayer(this._markerGroup);
+		}
+	},
+
+	removeHooks: function () {
+		if (this._poly._map) {
+			this._poly._map.removeLayer(this._markerGroup);
+			delete this._markerGroup;
+			delete this._markers;
+		}
+	},
+
+	updateMarkers: function () {
+		this._markerGroup.clearLayers();
+		this._initMarkers();
+	},
+
+	_initMarkers: function () {
+		if (!this._markerGroup) {
+			this._markerGroup = new L.LayerGroup();
+		}
+		this._markers = [];
+
+		var latlngs = this._poly._latlngs,
+		    i, j, len, marker;
+
+		// TODO refactor holes implementation in Polygon to support it here
+
+		for (i = 0, len = latlngs.length; i < len; i++) {
+
+			marker = this._createMarker(latlngs[i], i);
+			marker.on('click', this._onMarkerClick, this);
+			this._markers.push(marker);
+		}
+
+		var markerLeft, markerRight;
+
+		for (i = 0, j = len - 1; i < len; j = i++) {
+			if (i === 0 && !(L.Polygon && (this._poly instanceof L.Polygon))) {
+				continue;
+			}
+
+			markerLeft = this._markers[j];
+			markerRight = this._markers[i];
+
+			this._createMiddleMarker(markerLeft, markerRight);
+			this._updatePrevNext(markerLeft, markerRight);
+		}
+	},
+
+	_createMarker: function (latlng, index) {
+		var marker = new L.Marker(latlng, {
+			draggable: true,
+			icon: this.options.icon
+		});
+
+		marker._origLatLng = latlng;
+		marker._index = index;
+
+		marker.on('drag', this._onMarkerDrag, this);
+		marker.on('dragend', this._fireEdit, this);
+
+		this._markerGroup.addLayer(marker);
+
+		return marker;
+	},
+
+	_fireEdit: function () {
+		this._poly.fire('edit');
+	},
+
+	_onMarkerDrag: function (e) {
+		var marker = e.target;
+
+		L.extend(marker._origLatLng, marker._latlng);
+
+		if (marker._middleLeft) {
+			marker._middleLeft.setLatLng(this._getMiddleLatLng(marker._prev, marker));
+		}
+		if (marker._middleRight) {
+			marker._middleRight.setLatLng(this._getMiddleLatLng(marker, marker._next));
+		}
+
+		this._poly.redraw();
+	},
+
+	_onMarkerClick: function (e) {
+		// we want to remove the marker on click, but if latlng count < 3, polyline would be invalid
+		if (this._poly._latlngs.length < 3) { return; }
+
+		var marker = e.target,
+		    i = marker._index;
+
+		// remove the marker
+		this._markerGroup.removeLayer(marker);
+		this._markers.splice(i, 1);
+		this._poly.spliceLatLngs(i, 1);
+		this._updateIndexes(i, -1);
+
+		// update prev/next links of adjacent markers
+		this._updatePrevNext(marker._prev, marker._next);
+
+		// remove ghost markers near the removed marker
+		if (marker._middleLeft) {
+			this._markerGroup.removeLayer(marker._middleLeft);
+		}
+		if (marker._middleRight) {
+			this._markerGroup.removeLayer(marker._middleRight);
+		}
+
+		// create a ghost marker in place of the removed one
+		if (marker._prev && marker._next) {
+			this._createMiddleMarker(marker._prev, marker._next);
+
+		} else if (!marker._prev) {
+			marker._next._middleLeft = null;
+
+		} else if (!marker._next) {
+			marker._prev._middleRight = null;
+		}
+
+		this._poly.fire('edit');
+	},
+
+	_updateIndexes: function (index, delta) {
+		this._markerGroup.eachLayer(function (marker) {
+			if (marker._index > index) {
+				marker._index += delta;
+			}
+		});
+	},
+
+	_createMiddleMarker: function (marker1, marker2) {
+		var latlng = this._getMiddleLatLng(marker1, marker2),
+		    marker = this._createMarker(latlng),
+		    onClick,
+		    onDragStart,
+		    onDragEnd;
+
+		marker.setOpacity(0.6);
+
+		marker1._middleRight = marker2._middleLeft = marker;
+
+		onDragStart = function () {
+			var i = marker2._index;
+
+			marker._index = i;
+
+			marker
+			    .off('click', onClick)
+			    .on('click', this._onMarkerClick, this);
+
+			latlng.lat = marker.getLatLng().lat;
+			latlng.lng = marker.getLatLng().lng;
+			this._poly.spliceLatLngs(i, 0, latlng);
+			this._markers.splice(i, 0, marker);
+
+			marker.setOpacity(1);
+
+			this._updateIndexes(i, 1);
+			marker2._index++;
+			this._updatePrevNext(marker1, marker);
+			this._updatePrevNext(marker, marker2);
+		};
+
+		onDragEnd = function () {
+			marker.off('dragstart', onDragStart, this);
+			marker.off('dragend', onDragEnd, this);
+
+			this._createMiddleMarker(marker1, marker);
+			this._createMiddleMarker(marker, marker2);
+		};
+
+		onClick = function () {
+			onDragStart.call(this);
+			onDragEnd.call(this);
+			this._poly.fire('edit');
+		};
+
+		marker
+		    .on('click', onClick, this)
+		    .on('dragstart', onDragStart, this)
+		    .on('dragend', onDragEnd, this);
+
+		this._markerGroup.addLayer(marker);
+	},
+
+	_updatePrevNext: function (marker1, marker2) {
+		if (marker1) {
+			marker1._next = marker2;
+		}
+		if (marker2) {
+			marker2._prev = marker1;
+		}
+	},
+
+	_getMiddleLatLng: function (marker1, marker2) {
+		var map = this._poly._map,
+		    p1 = map.latLngToLayerPoint(marker1.getLatLng()),
+		    p2 = map.latLngToLayerPoint(marker2.getLatLng());
+
+		return map.layerPointToLatLng(p1._add(p2)._divideBy(2));
+	}
+});
+
+L.Polyline.addInitHook(function () {
+
+	if (L.Handler.PolyEdit) {
+		this.editing = new L.Handler.PolyEdit(this);
+
+		if (this.options.editable) {
+			this.editing.enable();
+		}
+	}
+
+	this.on('add', function () {
+		if (this.editing && this.editing.enabled()) {
+			this.editing.addHooks();
+		}
+	});
+
+	this.on('remove', function () {
+		if (this.editing && this.editing.enabled()) {
+			this.editing.removeHooks();
+		}
+	});
+});
+
+
+/*
  * L.Control is a base class for implementing map controls. Handles positioning.
  * All other controls extend from this class.
  */
@@ -8632,14 +8764,23 @@ L.Control.Zoom = L.Control.extend({
 
 	onAdd: function (map) {
 		var zoomName = 'leaflet-control-zoom',
-		    container = L.DomUtil.create('div', zoomName + ' leaflet-bar');
+		    barName = 'leaflet-bar',
+		    partName = barName + '-part',
+		    container = L.DomUtil.create('div', zoomName + ' ' + barName);
 
 		this._map = map;
 
-		this._zoomInButton  = this._createButton(
-		        '+', 'Zoom in',  zoomName + '-in',  container, this._zoomIn,  this);
-		this._zoomOutButton = this._createButton(
-		        '-', 'Zoom out', zoomName + '-out', container, this._zoomOut, this);
+		this._zoomInButton = this._createButton('+', 'Zoom in',
+		        zoomName + '-in ' +
+		        partName + ' ' +
+		        partName + '-top',
+		        container, this._zoomIn,  this);
+
+		this._zoomOutButton = this._createButton('-', 'Zoom out',
+		        zoomName + '-out ' +
+		        partName + ' ' +
+		        partName + '-bottom',
+		        container, this._zoomOut, this);
 
 		map.on('zoomend', this._updateDisabled, this);
 
@@ -8678,7 +8819,7 @@ L.Control.Zoom = L.Control.extend({
 
 	_updateDisabled: function () {
 		var map = this._map,
-			className = 'leaflet-disabled';
+			className = 'leaflet-control-zoom-disabled';
 
 		L.DomUtil.removeClass(this._zoomInButton, className);
 		L.DomUtil.removeClass(this._zoomOutButton, className);
@@ -9157,12 +9298,9 @@ L.Control.Layers = L.Control.extend({
 				this._map.addLayer(obj.layer);
 				if (!obj.overlay) {
 					baseLayer = obj.layer;
-				} else {
-					this._map.fire('overlayadd', {layer: obj});
 				}
 			} else if (!input.checked && this._map.hasLayer(obj.layer)) {
 				this._map.removeLayer(obj.layer);
-				this._map.fire('overlayremove', {layer: obj});
 			}
 		}
 
@@ -9684,7 +9822,7 @@ L.Map.include({
 });
 
 
-}(this, document));/* wax - 7.0.0dev10 - v6.0.4-130-g0ab39a0 */
+}(this, document));/* wax - 7.0.0dev10 - v6.0.4-132-g86c33ce */
 
 
 !function (name, context, definition) {
@@ -11707,11 +11845,491 @@ var Mustache = (typeof module !== "undefined" && module.exports) || {};
 })(Mustache);
 /*!
   * Reqwest! A general purpose XHR connection manager
-  * (c) Dustin Diaz 2011
+  * (c) Dustin Diaz 2012
   * https://github.com/ded/reqwest
   * license MIT
   */
-!function(a,b){typeof module!="undefined"?module.exports=b():typeof define=="function"&&define.amd?define(a,b):this[a]=b()}("reqwest",function(){function handleReadyState(a,b,c){return function(){a&&a[readyState]==4&&(twoHundo.test(a.status)?b(a):c(a))}}function setHeaders(a,b){var c=b.headers||{},d;c.Accept=c.Accept||defaultHeaders.accept[b.type]||defaultHeaders.accept["*"],!b.crossOrigin&&!c[requestedWith]&&(c[requestedWith]=defaultHeaders.requestedWith),c[contentType]||(c[contentType]=b.contentType||defaultHeaders.contentType);for(d in c)c.hasOwnProperty(d)&&a.setRequestHeader(d,c[d])}function generalCallback(a){lastValue=a}function urlappend(a,b){return a+(/\?/.test(a)?"&":"?")+b}function handleJsonp(a,b,c,d){var e=uniqid++,f=a.jsonpCallback||"callback",g=a.jsonpCallbackName||"reqwest_"+e,h=new RegExp("((^|\\?|&)"+f+")=([^&]+)"),i=d.match(h),j=doc.createElement("script"),k=0;i?i[3]==="?"?d=d.replace(h,"$1="+g):g=i[3]:d=urlappend(d,f+"="+g),win[g]=generalCallback,j.type="text/javascript",j.src=d,j.async=!0,typeof j.onreadystatechange!="undefined"&&(j.event="onclick",j.htmlFor=j.id="_reqwest_"+e),j.onload=j.onreadystatechange=function(){if(j[readyState]&&j[readyState]!=="complete"&&j[readyState]!=="loaded"||k)return!1;j.onload=j.onreadystatechange=null,j.onclick&&j.onclick(),a.success&&a.success(lastValue),lastValue=undefined,head.removeChild(j),k=1},head.appendChild(j)}function getRequest(a,b,c){var d=(a.method||"GET").toUpperCase(),e=typeof a=="string"?a:a.url,f=a.processData!==!1&&a.data&&typeof a.data!="string"?reqwest.toQueryString(a.data):a.data||null,g;return(a.type=="jsonp"||d=="GET")&&f&&(e=urlappend(e,f),f=null),a.type=="jsonp"?handleJsonp(a,b,c,e):(g=xhr(),g.open(d,e,!0),setHeaders(g,a),g.onreadystatechange=handleReadyState(g,b,c),a.before&&a.before(g),g.send(f),g)}function Reqwest(a,b){this.o=a,this.fn=b,init.apply(this,arguments)}function setType(a){var b=a.match(/\.(json|jsonp|html|xml)(\?|$)/);return b?b[1]:"js"}function init(o,fn){function complete(a){o.timeout&&clearTimeout(self.timeout),self.timeout=null,o.complete&&o.complete(a)}function success(resp){var r=resp.responseText;if(r)switch(type){case"json":try{resp=win.JSON?win.JSON.parse(r):eval("("+r+")")}catch(err){return error(resp,"Could not parse JSON in response",err)}break;case"js":resp=eval(r);break;case"html":resp=r}fn(resp),o.success&&o.success(resp),complete(resp)}function error(a,b,c){o.error&&o.error(a,b,c),complete(a)}this.url=typeof o=="string"?o:o.url,this.timeout=null;var type=o.type||setType(this.url),self=this;fn=fn||function(){},o.timeout&&(this.timeout=setTimeout(function(){self.abort()},o.timeout)),this.request=getRequest(o,success,error)}function reqwest(a,b){return new Reqwest(a,b)}function normalize(a){return a?a.replace(/\r?\n/g,"\r\n"):""}function serial(a,b){var c=a.name,d=a.tagName.toLowerCase(),e=function(a){a&&!a.disabled&&b(c,normalize(a.attributes.value&&a.attributes.value.specified?a.value:a.text))};if(a.disabled||!c)return;switch(d){case"input":if(!/reset|button|image|file/i.test(a.type)){var f=/checkbox/i.test(a.type),g=/radio/i.test(a.type),h=a.value;(!f&&!g||a.checked)&&b(c,normalize(f&&h===""?"on":h))}break;case"textarea":b(c,normalize(a.value));break;case"select":if(a.type.toLowerCase()==="select-one")e(a.selectedIndex>=0?a.options[a.selectedIndex]:null);else for(var i=0;a.length&&i<a.length;i++)a.options[i].selected&&e(a.options[i])}}function eachFormElement(){var a=this,b,c,d,e=function(b,c){for(var e=0;e<c.length;e++){var f=b[byTag](c[e]);for(d=0;d<f.length;d++)serial(f[d],a)}};for(c=0;c<arguments.length;c++)b=arguments[c],/input|select|textarea/i.test(b.tagName)&&serial(b,a),e(b,["input","select","textarea"])}function serializeQueryString(){return reqwest.toQueryString(reqwest.serializeArray.apply(null,arguments))}function serializeHash(){var a={};return eachFormElement.apply(function(b,c){b in a?(a[b]&&!isArray(a[b])&&(a[b]=[a[b]]),a[b].push(c)):a[b]=c},arguments),a}var win=window,doc=document,twoHundo=/^20\d$/,byTag="getElementsByTagName",readyState="readyState",contentType="Content-Type",requestedWith="X-Requested-With",head=doc[byTag]("head")[0],uniqid=0,lastValue,xmlHttpRequest="XMLHttpRequest",isArray=typeof Array.isArray=="function"?Array.isArray:function(a){return a instanceof Array},defaultHeaders={contentType:"application/x-www-form-urlencoded",accept:{"*":"text/javascript, text/html, application/xml, text/xml, */*",xml:"application/xml, text/xml",html:"text/html",text:"text/plain",json:"application/json, text/javascript",js:"application/javascript, text/javascript"},requestedWith:xmlHttpRequest},xhr=win[xmlHttpRequest]?function(){return new XMLHttpRequest}:function(){return new ActiveXObject("Microsoft.XMLHTTP")};return Reqwest.prototype={abort:function(){this.request.abort()},retry:function(){init.call(this,this.o,this.fn)}},reqwest.serializeArray=function(){var a=[];return eachFormElement.apply(function(b,c){a.push({name:b,value:c})},arguments),a},reqwest.serialize=function(){if(arguments.length===0)return"";var a,b,c=Array.prototype.slice.call(arguments,0);return a=c.pop(),a&&a.nodeType&&c.push(a)&&(a=null),a&&(a=a.type),a=="map"?b=serializeHash:a=="array"?b=reqwest.serializeArray:b=serializeQueryString,b.apply(null,c)},reqwest.toQueryString=function(a){var b="",c,d=encodeURIComponent,e=function(a,c){b+=d(a)+"="+d(c)+"&"};if(isArray(a))for(c=0;a&&c<a.length;c++)e(a[c].name,a[c].value);else for(var f in a){if(!Object.hasOwnProperty.call(a,f))continue;var g=a[f];if(isArray(g))for(c=0;c<g.length;c++)e(f,g[c]);else e(f,a[f])}return b.replace(/&$/,"").replace(/%20/g,"+")},reqwest.compat=function(a,b){return a&&(a.type&&(a.method=a.type)&&delete a.type,a.dataType&&(a.type=a.dataType),a.jsonpCallback&&(a.jsonpCallbackName=a.jsonpCallback)&&delete a.jsonpCallback,a.jsonp&&(a.jsonpCallback=a.jsonp)),new Reqwest(a,b)},reqwest});wax = wax || {};
+(function (name, context, definition) {
+  if (typeof module != 'undefined' && module.exports) module.exports = definition()
+  else if (typeof define == 'function' && define.amd) define(definition)
+  else context[name] = definition()
+})('reqwest', this, function () {
+
+  var win = window
+    , doc = document
+    , twoHundo = /^20\d$/
+    , byTag = 'getElementsByTagName'
+    , readyState = 'readyState'
+    , contentType = 'Content-Type'
+    , requestedWith = 'X-Requested-With'
+    , head = doc[byTag]('head')[0]
+    , uniqid = 0
+    , callbackPrefix = 'reqwest_' + (+new Date())
+    , lastValue // data stored by the most recent JSONP callback
+    , xmlHttpRequest = 'XMLHttpRequest'
+    , noop = function () {}
+
+  var isArray = typeof Array.isArray == 'function' ? Array.isArray : function (a) {
+    return a instanceof Array
+  }
+  var defaultHeaders = {
+      contentType: 'application/x-www-form-urlencoded'
+    , requestedWith: xmlHttpRequest
+    , accept: {
+        '*':  'text/javascript, text/html, application/xml, text/xml, */*'
+      , xml:  'application/xml, text/xml'
+      , html: 'text/html'
+      , text: 'text/plain'
+      , json: 'application/json, text/javascript'
+      , js:   'application/javascript, text/javascript'
+      }
+    }
+  var xhr = win[xmlHttpRequest] ?
+    function () {
+      return new XMLHttpRequest()
+    } :
+    function () {
+      return new ActiveXObject('Microsoft.XMLHTTP')
+    }
+
+  function handleReadyState(o, success, error) {
+    return function () {
+      if (o && o[readyState] == 4) {
+        o.onreadystatechange = noop;
+        if (twoHundo.test(o.status)) {
+          success(o)
+        } else {
+          error(o)
+        }
+      }
+    }
+  }
+
+  function setHeaders(http, o) {
+    var headers = o.headers || {}, h
+    headers.Accept = headers.Accept || defaultHeaders.accept[o.type] || defaultHeaders.accept['*']
+    // breaks cross-origin requests with legacy browsers
+    if (!o.crossOrigin && !headers[requestedWith]) headers[requestedWith] = defaultHeaders.requestedWith
+    if (!headers[contentType]) headers[contentType] = o.contentType || defaultHeaders.contentType
+    for (h in headers) {
+      headers.hasOwnProperty(h) && http.setRequestHeader(h, headers[h])
+    }
+  }
+
+  function setCredentials(http, o) {
+    if (typeof o.withCredentials !== "undefined" && typeof http.withCredentials !== "undefined") {
+      http.withCredentials = !!o.withCredentials
+    }
+  }
+
+  function generalCallback(data) {
+    lastValue = data
+  }
+
+  function urlappend(url, s) {
+    return url + (/\?/.test(url) ? '&' : '?') + s
+  }
+
+  function handleJsonp(o, fn, err, url) {
+    var reqId = uniqid++
+      , cbkey = o.jsonpCallback || 'callback' // the 'callback' key
+      , cbval = o.jsonpCallbackName || reqwest.getcallbackPrefix(reqId)
+      // , cbval = o.jsonpCallbackName || ('reqwest_' + reqId) // the 'callback' value
+      , cbreg = new RegExp('((^|\\?|&)' + cbkey + ')=([^&]+)')
+      , match = url.match(cbreg)
+      , script = doc.createElement('script')
+      , loaded = 0
+      , isIE10 = navigator.userAgent.indexOf('MSIE 10.0') !== -1
+      , isIE9 = navigator.userAgent.indexOf('MSIE 9') !== -1
+
+    if (match) {
+      if (match[3] === '?') {
+        url = url.replace(cbreg, '$1=' + cbval) // wildcard callback func name
+      } else {
+        cbval = match[3] // provided callback func name
+      }
+    } else {
+      url = urlappend(url, cbkey + '=' + cbval) // no callback details, add 'em
+    }
+
+    win[cbval] = generalCallback
+
+    script.type = 'text/javascript'
+    script.src = url
+    script.async = true
+    if (typeof script.onreadystatechange !== 'undefined' && !isIE10 && !isIE9) {
+      // need this for IE due to out-of-order onreadystatechange(), binding script
+      // execution to an event listener gives us control over when the script
+      // is executed. See http://jaubourg.net/2010/07/loading-script-as-onclick-handler-of.html
+      //
+      // if this hack is used in IE10 jsonp callback are never called
+      script.event = 'onclick'
+      script.htmlFor = script.id = '_reqwest_' + reqId
+    }
+
+    script.onload = script.onreadystatechange = function () {
+      if ((script[readyState] && script[readyState] !== 'complete' && script[readyState] !== 'loaded') || loaded) {
+        return false
+      }
+      script.onload = script.onreadystatechange = null
+      script.onclick && script.onclick()
+      // Call the user callback with the last value stored and clean up values and scripts.
+      o.success && o.success(lastValue)
+      lastValue = undefined
+      head.removeChild(script)
+      loaded = 1
+    }
+
+    // Add the script to the DOM head
+    head.appendChild(script)
+  }
+
+  function getRequest(o, fn, err) {
+    var method = (o.method || 'GET').toUpperCase()
+      , url = typeof o === 'string' ? o : o.url
+      // convert non-string objects to query-string form unless o.processData is false
+      , data = (o.processData !== false && o.data && typeof o.data !== 'string')
+        ? reqwest.toQueryString(o.data)
+        : (o.data || null)
+      , http
+
+    // if we're working on a GET request and we have data then we should append
+    // query string to end of URL and not post data
+    if ((o.type == 'jsonp' || method == 'GET') && data) {
+      url = urlappend(url, data)
+      data = null
+    }
+
+    if (o.type == 'jsonp') return handleJsonp(o, fn, err, url)
+
+    http = xhr()
+    http.open(method, url, true)
+    setHeaders(http, o)
+    setCredentials(http, o)
+    http.onreadystatechange = handleReadyState(http, fn, err)
+    o.before && o.before(http)
+    http.send(data)
+    return http
+  }
+
+  function Reqwest(o, fn) {
+    this.o = o
+    this.fn = fn
+
+    init.apply(this, arguments)
+  }
+
+  function setType(url) {
+    var m = url.match(/\.(json|jsonp|html|xml)(\?|$)/)
+    return m ? m[1] : 'js'
+  }
+
+  function init(o, fn) {
+
+    this.url = typeof o == 'string' ? o : o.url
+    this.timeout = null
+
+    // whether request has been fulfilled for purpose
+    // of tracking the Promises
+    this._fulfilled = false
+    // success handlers
+    this._fulfillmentHandlers = []
+    // error handlers
+    this._errorHandlers = []
+    // complete (both success and fail) handlers
+    this._completeHandlers = []
+    this._erred = false
+    this._responseArgs = {}
+
+    var self = this
+      , type = o.type || setType(this.url)
+
+    fn = fn || function () {}
+
+    if (o.timeout) {
+      this.timeout = setTimeout(function () {
+        self.abort()
+      }, o.timeout)
+    }
+
+    if (o.success) {
+      this._fulfillmentHandlers.push(function () {
+        o.success.apply(o, arguments)
+      })
+    }
+
+    if (o.error) {
+      this._errorHandlers.push(function () {
+        o.error.apply(o, arguments)
+      })
+    }
+
+    if (o.complete) {
+      this._completeHandlers.push(function () {
+        o.complete.apply(o, arguments)
+      })
+    }
+
+    function complete(resp) {
+      o.timeout && clearTimeout(self.timeout)
+      self.timeout = null
+      while (self._completeHandlers.length > 0) {
+        self._completeHandlers.shift()(resp)
+      }
+    }
+
+    function success(resp) {
+      var r = resp.responseText
+      if (r) {
+        switch (type) {
+        case 'json':
+          try {
+            resp = win.JSON ? win.JSON.parse(r) : eval('(' + r + ')')
+          } catch (err) {
+            return error(resp, 'Could not parse JSON in response', err)
+          }
+          break;
+        case 'js':
+          resp = eval(r)
+          break;
+        case 'html':
+          resp = r
+          break;
+        case 'xml':
+          resp = resp.responseXML;
+          break;
+        }
+      }
+
+      self._responseArgs.resp = resp
+      self._fulfilled = true
+      fn(resp)
+      while (self._fulfillmentHandlers.length > 0) {
+        self._fulfillmentHandlers.shift()(resp)
+      }
+
+      complete(resp)
+    }
+
+    function error(resp, msg, t) {
+      self._responseArgs.resp = resp
+      self._responseArgs.msg = msg
+      self._responseArgs.t = t
+      self._erred = true
+      while (self._errorHandlers.length > 0) {
+        self._errorHandlers.shift()(resp, msg, t)
+      }
+      complete(resp)
+    }
+
+    this.request = getRequest(o, success, error)
+  }
+
+  Reqwest.prototype = {
+    abort: function () {
+      this.request.abort()
+    }
+
+  , retry: function () {
+      init.call(this, this.o, this.fn)
+    }
+
+    /**
+     * Small deviation from the Promises A CommonJs specification
+     * http://wiki.commonjs.org/wiki/Promises/A
+     */
+
+    /**
+     * `then` will execute upon successful requests
+     */
+  , then: function (success, fail) {
+      if (this._fulfilled) {
+        success(this._responseArgs.resp)
+      } else if (this._erred) {
+        fail(this._responseArgs.resp, this._responseArgs.msg, this._responseArgs.t)
+      } else {
+        this._fulfillmentHandlers.push(success)
+        this._errorHandlers.push(fail)
+      }
+      return this
+    }
+
+    /**
+     * `always` will execute whether the request succeeds or fails
+     */
+  , always: function (fn) {
+      if (this._fulfilled || this._erred) {
+        fn(this._responseArgs.resp)
+      } else {
+        this._completeHandlers.push(fn)
+      }
+      return this
+    }
+
+    /**
+     * `fail` will execute when the request fails
+     */
+  , fail: function (fn) {
+      if (this._erred) {
+        fn(this._responseArgs.resp, this._responseArgs.msg, this._responseArgs.t)
+      } else {
+        this._errorHandlers.push(fn)
+      }
+      return this
+    }
+  }
+
+  function reqwest(o, fn) {
+    return new Reqwest(o, fn)
+  }
+
+  // normalize newline variants according to spec -> CRLF
+  function normalize(s) {
+    return s ? s.replace(/\r?\n/g, '\r\n') : ''
+  }
+
+  function serial(el, cb) {
+    var n = el.name
+      , t = el.tagName.toLowerCase()
+      , optCb = function (o) {
+          // IE gives value="" even where there is no value attribute
+          // 'specified' ref: http://www.w3.org/TR/DOM-Level-3-Core/core.html#ID-862529273
+          if (o && !o.disabled)
+            cb(n, normalize(o.attributes.value && o.attributes.value.specified ? o.value : o.text))
+        }
+
+    // don't serialize elements that are disabled or without a name
+    if (el.disabled || !n) return;
+
+    switch (t) {
+    case 'input':
+      if (!/reset|button|image|file/i.test(el.type)) {
+        var ch = /checkbox/i.test(el.type)
+          , ra = /radio/i.test(el.type)
+          , val = el.value;
+        // WebKit gives us "" instead of "on" if a checkbox has no value, so correct it here
+        (!(ch || ra) || el.checked) && cb(n, normalize(ch && val === '' ? 'on' : val))
+      }
+      break;
+    case 'textarea':
+      cb(n, normalize(el.value))
+      break;
+    case 'select':
+      if (el.type.toLowerCase() === 'select-one') {
+        optCb(el.selectedIndex >= 0 ? el.options[el.selectedIndex] : null)
+      } else {
+        for (var i = 0; el.length && i < el.length; i++) {
+          el.options[i].selected && optCb(el.options[i])
+        }
+      }
+      break;
+    }
+  }
+
+  // collect up all form elements found from the passed argument elements all
+  // the way down to child elements; pass a '<form>' or form fields.
+  // called with 'this'=callback to use for serial() on each element
+  function eachFormElement() {
+    var cb = this
+      , e, i, j
+      , serializeSubtags = function (e, tags) {
+        for (var i = 0; i < tags.length; i++) {
+          var fa = e[byTag](tags[i])
+          for (j = 0; j < fa.length; j++) serial(fa[j], cb)
+        }
+      }
+
+    for (i = 0; i < arguments.length; i++) {
+      e = arguments[i]
+      if (/input|select|textarea/i.test(e.tagName)) serial(e, cb)
+      serializeSubtags(e, [ 'input', 'select', 'textarea' ])
+    }
+  }
+
+  // standard query string style serialization
+  function serializeQueryString() {
+    return reqwest.toQueryString(reqwest.serializeArray.apply(null, arguments))
+  }
+
+  // { 'name': 'value', ... } style serialization
+  function serializeHash() {
+    var hash = {}
+    eachFormElement.apply(function (name, value) {
+      if (name in hash) {
+        hash[name] && !isArray(hash[name]) && (hash[name] = [hash[name]])
+        hash[name].push(value)
+      } else hash[name] = value
+    }, arguments)
+    return hash
+  }
+
+  // [ { name: 'name', value: 'value' }, ... ] style serialization
+  reqwest.serializeArray = function () {
+    var arr = []
+    eachFormElement.apply(function (name, value) {
+      arr.push({name: name, value: value})
+    }, arguments)
+    return arr
+  }
+
+  reqwest.serialize = function () {
+    if (arguments.length === 0) return ''
+    var opt, fn
+      , args = Array.prototype.slice.call(arguments, 0)
+
+    opt = args.pop()
+    opt && opt.nodeType && args.push(opt) && (opt = null)
+    opt && (opt = opt.type)
+
+    if (opt == 'map') fn = serializeHash
+    else if (opt == 'array') fn = reqwest.serializeArray
+    else fn = serializeQueryString
+
+    return fn.apply(null, args)
+  }
+
+  reqwest.toQueryString = function (o) {
+    var qs = '', i
+      , enc = encodeURIComponent
+      , push = function (k, v) {
+          qs += enc(k) + '=' + enc(v) + '&'
+        }
+
+    if (isArray(o)) {
+      for (i = 0; o && i < o.length; i++) push(o[i].name, o[i].value)
+    } else {
+      for (var k in o) {
+        if (!Object.hasOwnProperty.call(o, k)) continue;
+        var v = o[k]
+        if (isArray(v)) {
+          for (i = 0; i < v.length; i++) push(k, v[i])
+        } else push(k, o[k])
+      }
+    }
+
+    // spaces should be + according to spec
+    return qs.replace(/&$/, '').replace(/%20/g, '+')
+  }
+
+  reqwest.getcallbackPrefix = function (reqId) {
+    return callbackPrefix
+  }
+
+  // jQuery and Zepto compatibility, differences can be remapped here so you can call
+  // .ajax.compat(options, callback)
+  reqwest.compat = function (o, fn) {
+    if (o) {
+      o.type && (o.method = o.type) && delete o.type
+      o.dataType && (o.type = o.dataType)
+      o.jsonpCallback && (o.jsonpCallbackName = o.jsonpCallback) && delete o.jsonpCallback
+      o.jsonp && (o.jsonpCallback = o.jsonp)
+    }
+    return new Reqwest(o, fn)
+  }
+
+  return reqwest
+});
+;wax = wax || {};
 
 // Attribution
 // -----------
@@ -14833,7 +15451,7 @@ $(function(){
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '2.0.20';
+    cdb.VERSION = '2.0.21-dev';
 
     cdb.CARTOCSS_VERSIONS = {
       '2.0.0': '',
@@ -17056,6 +17674,12 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
 cdb.geo.ui.Infowindow = cdb.core.View.extend({
   className: "infowindow",
 
+  spin_options: {
+    lines: 10, length: 0, width: 4, radius: 6, corners: 1, rotate: 0, color: 'rgba(0,0,0,0.5)',
+    speed: 1, trail: 60, shadow: false, hwaccel: true, className: 'spinner', zIndex: 2e9,
+    top: 'auto', left: 'auto', position: 'absolute'
+  },
+
   events: {
     // Close bindings
     "click .close":       "_closeInfowindow",
@@ -17072,8 +17696,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
   },
 
   initialize: function(){
-
-    var that = this;
+    var self = this;
 
     _.bindAll(this, "render", "setLatLng", "changeTemplate", "_updatePosition", "_update", "toggle", "show", "hide");
 
@@ -17092,11 +17715,11 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     this.mapView.map.bind('change',         this._updatePosition, this);
 
     this.mapView.bind('zoomstart', function(){
-      that.hide(true);
+      self.hide(true);
     });
 
     this.mapView.bind('zoomend', function() {
-      that.show(true);
+      self.show(true);
     });
 
     // Set min height to show the scroll
@@ -17104,14 +17727,63 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
 
     this.render();
     this.$el.hide();
-
   },
 
+  /**
+   *  Render infowindow content
+   */
+  render: function() {
+    if(this.template) {
+
+      // If there is content, destroy the jscrollpane first, then remove the content.
+      var $jscrollpane = this.$el.find(".cartodb-popup-content");
+      if ($jscrollpane.length > 0 && $jscrollpane.data() != null) {
+        $jscrollpane.data().jsp && $jscrollpane.data().jsp.destroy();
+      }
+
+      var attrs = _.clone(this.model.attributes);
+
+      // Mustache doesn't support 0 values, we have to convert number to strings
+      // before apply the template
+
+      var fields = this._fieldsToString(attrs);
+
+      this.$el.html($(this.template(fields)));
+
+      // Hello jscrollpane hacks!
+      // It needs some time to initialize, if not it doesn't render properly the fields
+      // Check the height of the content + the header if exists
+      var self = this;
+      setTimeout(function() {
+        var actual_height = self.$el.find(".cartodb-popup-content").outerHeight() + self.$el.find(".cartodb-popup-header").outerHeight();
+        if (self.minHeightToScroll <= actual_height)
+          self.$el.find(".cartodb-popup-content").jScrollPane({
+            maintainPosition:       false,
+            verticalDragMinHeight:  20
+          });
+      }, 1);
+
+      // If the infowindow is loading, show spin
+      this._checkLoading();
+
+      // If the template is 'cover-enabled', load the cover
+      this._loadCover();
+    };
+
+    return this;
+  },
+
+  /**
+   *  Change template of the infowindow
+   */
   changeTemplate: function(template_name) {
     this.template = cdb.templates.getTemplate(this.model.get("template_name"));
     this.render();
   },
 
+  /**
+   *  Compile template of the infowindow
+   */
   _compileTemplate: function() {
     this.template = new cdb.core.Template({
        template: this.model.get('template'),
@@ -17121,6 +17793,9 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     this.render();
   },
 
+  /**
+   *  Check event origin
+   */
   _checkOrigin: function(ev) {
     // If the mouse down come from jspVerticalBar
     // dont stop the propagation, but if the event
@@ -17161,51 +17836,61 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     return attrs;
   },
 
-  render: function() {
+  /**
+   *  Check if infowindow is loading the row content
+   */
+  _checkLoading: function() {
+    var content = this.model.get("content");
 
-    if(this.template) {
-
-      // If there is content, destroy the jscrollpane first, then remove the content.
-      var $jscrollpane = this.$el.find(".cartodb-popup-content");
-      if ($jscrollpane.length > 0 && $jscrollpane.data() != null) {
-        $jscrollpane.data().jsp && $jscrollpane.data().jsp.destroy();
-      }
-
-      var attrs = _.clone(this.model.attributes);
-
-      // Mustache doesn't support 0 values, we have to convert number to strings
-      // before apply the template
-
-      var fields = this._fieldsToString(attrs);
-
-      this.$el.html($(this.template(fields)));
-
-      // Hello jscrollpane hacks!
-      // It needs some time to initialize, if not it doesn't render properly the fields
-      // Check the height of the content + the header if exists
-      var that = this;
-      setTimeout(function() {
-        var actual_height = that.$el.find(".cartodb-popup-content").outerHeight() + that.$el.find(".cartodb-popup-header").outerHeight();
-        if (that.minHeightToScroll <= actual_height)
-          that.$el.find(".cartodb-popup-content").jScrollPane({
-            maintainPosition:       false,
-            verticalDragMinHeight:  20
-          });
-      }, 1);
-
-
-      // If the template is 'cover-enabled', load the cover
-      this._loadCover();
-
-    };
-
-    return this;
+    if (content.fields && content.fields.length == 1 && content.fields[0].loading) {
+      this._startSpinner()
+    } else {
+      this._stopSpinner()
+    }
   },
 
+  /**
+   *  Stop loading spinner
+   */
+  _stopSpinner: function() {
+    if (this.spinner)
+      this.spinner.stop()
+  },
+
+  /**
+   *  Start loading spinner
+   */
+  _startSpinner: function($el) {
+    this._stopSpinner();
+
+    var $el = this.$el.find('.loading');
+
+    if ($el) {
+      // Check if it is dark or other to change color
+      var template_dark = this.model.get('template_name').search('dark') != -1; 
+
+      if (template_dark) {
+        this.spin_options.color = '#FFF';
+      } else {
+        this.spin_options.color = 'rgba(0,0,0,0.5)';
+      }
+
+      this.spinner = new Spinner(this.spin_options).spin();
+      $el.append(this.spinner.el);
+    }
+  },
+
+  /**
+   *  Stop loading spinner
+   */
   _containsCover: function() {
     return this.$el.find(".cartodb-popup.header").attr("data-cover") ? true : false;
   },
 
+
+  /**
+   *  Get cover URL
+   */
   _getCoverURL: function() {
 
     var content = this.model.get("content");
@@ -17219,12 +17904,11 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     }
 
     return false;
-
   },
 
   /**
-  * Attempts to load the cover URL and show it
-  */
+   *  Attempts to load the cover URL and show it
+   */
   _loadCover: function() {
 
     if (!this._containsCover()) return;
@@ -17289,31 +17973,63 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
       spinner.stop();
       $imageNotFound.fadeIn(250);
     });
-
   },
 
   /**
-  * Return true if the provided URL is valid
-  */
+   *  Return true if the provided URL is valid
+   */
   _isValidURL: function(url) {
-
     if (url) {
       var urlPattern = /(http|ftp|https):\/\/[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:\/~+#-]*[\w@?^=%&amp;\/~+#-])?/
       return url.match(urlPattern) != null ? true : false;
     }
 
     return false;
-
   },
 
+  /**
+   *  Toggle infowindow visibility
+   */
   toggle: function() {
     this.model.get("visibility") ? this.show() : this.hide();
   },
 
+  /**
+   *  Stop event propagation
+   */
   _stopPropagation: function(ev) {
     ev.stopPropagation();
   },
 
+  /**
+   *  Set loading state adding its content
+   */
+  setLoading: function() {
+    this.model.set({
+      content:  { 
+        fields: [{
+          title: null,
+          value: 'Loading content...',
+          index: 0,
+          loading: true
+        }],
+        data: {}
+      }
+    })
+    return this;
+  },
+
+  /**
+   * Set the correct position for the popup
+   */
+  setLatLng: function (latlng) {
+    this.model.set("latlng", latlng);
+    return this;
+  },
+
+  /**
+   *  Close infowindow
+   */
   _closeInfowindow: function(ev) {
     if (ev) {
       ev.preventDefault()
@@ -17324,42 +18040,48 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
   },
 
   /**
-  * Set the correct position for the popup
-  */
-  setLatLng: function (latlng) {
-    this.model.set("latlng", latlng);
-    return this;
-  },
-
+   *  Set visibility infowindow
+   */
   showInfowindow: function() {
     this.model.set("visibility", true);
   },
 
+  /**
+   *  Show infowindow (update, pan, etc)
+   */
   show: function (no_pan) {
-    var that = this;
+    var self = this;
 
     if (this.model.get("visibility")) {
-      that.$el.css({ left: -5000 });
-      that._update(no_pan);
+      self.$el.css({ left: -5000 });
+      self._update(no_pan);
     }
-
   },
 
+  /**
+   *  Get infowindow visibility
+   */
   isHidden: function () {
     return !this.model.get("visibility");
   },
 
+  /**
+   *  Set infowindow to hidden
+   */
   hide: function (force) {
     if (force || !this.model.get("visibility")) this._animateOut();
   },
 
+  /**
+   *  Update infowindow
+   */
   _update: function (no_pan) {
 
     if(!this.isHidden()) {
       var delay = 0;
 
       if (!no_pan) {
-        var delay = this._adjustPan();
+        var delay = this.adjustPan();
       }
 
       this._updatePosition();
@@ -17367,6 +18089,9 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     }
   },
 
+  /**
+   *  Animate infowindow to show up
+   */
   _animateIn: function(delay) {
     if (!$.browser.msie || ($.browser.msie && $.browser.version.search("9.") != -1)) {
       this.$el.css({
@@ -17386,15 +18111,18 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     }
   },
 
+  /**
+   *  Animate infowindow to disappear
+   */
   _animateOut: function() {
     if (!$.browser.msie || ($.browser.msie && $.browser.version.search("9.") != -1)) {
-      var that = this;
+      var self = this;
       this.$el.animate({
         marginBottom: "-10px",
         opacity:      "0",
         display:      "block"
       }, 180, function() {
-        that.$el.css({display: "none"});
+        self.$el.css({display: "none"});
       });
     } else {
       this.$el.hide();
@@ -17402,8 +18130,8 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
   },
 
   /**
-  * Update the position (private)
-  */
+   *  Update the position (private)
+   */
   _updatePosition: function () {
     if(this.isHidden()) return;
 
@@ -17421,8 +18149,10 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     this.$el.css({ bottom: bottom, left: left });
   },
 
-  _adjustPan: function (callback) {
-
+  /**
+   *  Adjust pan to show correctly the infowindow
+   */
+  adjustPan: function (callback) {
     var offset = this.model.get("offset");
 
     if (!this.model.get("autoPan") || this.isHidden()) { return; }
@@ -18357,7 +19087,7 @@ L.CartoDBLayer = L.TileLayer.extend({
     this.options.opacity = Math.min(opacity, 0.99);
 
     if (this.options.visible) {
-      L.TileLayer.prototype.setOpacity.call(this,  opacity);
+      L.TileLayer.prototype.setOpacity.call(this, this.options.opacity);
       this.fire('updated');
     }
   },
@@ -20332,38 +21062,46 @@ cdb.ui.common.RowView = cdb.core.View.extend({
 
   render: function() {
     var self = this;
-    var tr = this.$el;
-    tr.html('');
     var row = this.model;
-    tr.attr('id', 'row_' + row.id);
+
+    var tr = '';
 
     var tdIndex = 0;
+    var td;
     if(this.options.row_header) {
-        var td = $('<td class="rowHeader">');
-        td.append(self.valueView('', ''));
-        td.attr('data-x', tdIndex);
-        tdIndex++;
-        tr.append(td);
+        td = '<td class="rowHeader" data-x="' + tdIndex + '">';
     } else {
-        var td = $('<td class="EmptyRowHeader">');
-        td.append(self.valueView('', ''));
-        td.attr('data-x', tdIndex);
-        tdIndex++;
-        tr.append(td);
+        td = '<td class="EmptyRowHeader" data-x="' + tdIndex + '">';
     }
+    var v = self.valueView('', '');
+    if(v.html) {
+      v = v[0].outerHTML;
+    }
+    td += v;
+    td += '</td>';
+    tdIndex++;
+    tr += td
 
     var attrs = this.order || _.keys(row.attributes);
-    _(attrs).each(function(key) {
-      var value = row.attributes[key];
+    var tds = '';
+    var row_attrs = row.attributes;
+    for(var i = 0, len = attrs.length; i < len; ++i) {
+      var key = attrs[i];
+      var value = row_attrs[key];
       if(value !== undefined) {
-        var td = $('<td>');
-        td.attr('id', 'cell_' + row.id + '_' + key);
-        td.attr('data-x', tdIndex);
+        var td = '<td id="cell_' + row.id + '_' + key + '" data-x="' + tdIndex + '">';
+        var v = self.valueView(key, value);
+        if(v.html) {
+          v = v[0].outerHTML;
+        }
+        td += v;
+        td += '</td>';
         tdIndex++;
-        td.append(self.valueView(key, value));
-        tr.append(td);
+        tds += td;
       }
-    });
+    }
+    tr += tds;
+    this.$el.html(tr).attr('id', 'row_' + row.id);
     return this;
   },
 
@@ -20627,10 +21365,8 @@ cdb.ui.common.Table = cdb.core.View.extend({
   render: function() {
     var self = this;
 
-    self.$el.html('');
-
     // render header
-    self.$el.append(self._renderHeader());
+    self.$el.html(self._renderHeader());
 
     // render data
     self._renderRows();
@@ -21028,14 +21764,13 @@ var Vis = cdb.core.View.extend({
 
   // Set map top position taking into account header height
   setMapPosition: function() {
-    var header_h = this.$el.parent().find(".header").outerHeight();
-  
+    var header_h = this.$el.find(".header:not(.cartodb-popup)").outerHeight();
+
     this.$el
       .find("div.map-wrapper")
       .css("top", header_h);
 
     this.mapView.invalidateSize();
-
   },
 
   createLayer: function(layerData, opts) {
@@ -21074,11 +21809,15 @@ var Vis = cdb.core.View.extend({
     layerView.bind(eventType, function(e, latlng, pos, data) {
         var cartodb_id = data.cartodb_id
         var fields = infowindowFields.fields;
+
+
+        // Send request
         sql.execute("select {{fields}} from {{table_name}} where cartodb_id = {{cartodb_id }}", {
           fields: _.pluck(fields, 'name').join(','),
           cartodb_id: cartodb_id,
           table_name: model.get('table_name')
-        }).done(function(interact_data) {
+        })
+        .done(function(interact_data) {
           if(interact_data.rows.length == 0 ) return;
           interact_data = interact_data.rows[0];
           if(infowindowFields) {
@@ -21099,20 +21838,27 @@ var Vis = cdb.core.View.extend({
               render_fields.push({
                 title: null,
                 value: 'No data available',
-                index: j ? j:null // mustache does not recognize 0 as false :( 
+                index: j ? j:null, // mustache does not recognize 0 as false :( 
+                type: 'empty'
               });
             }
             content = render_fields;
           }
+
           infowindow.model.set({ 
             content:  { 
               fields: content, 
               data: interact_data
             } 
-          });
-          infowindow.setLatLng(latlng).showInfowindow();
+          })
+          infowindow.adjustPan();
         });
 
+        // Show infowindow with loading state
+        infowindow
+          .setLatLng(latlng)
+          .setLoading()
+          .showInfowindow();
     });
 
     layerView.bind('featureOver', function(e, latlon, pxPos, data) {

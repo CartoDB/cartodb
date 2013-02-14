@@ -1,0 +1,58 @@
+<article class="visualizations <%= 'active' if @tables_count > 0 %>">
+<div class="inner">   
+  <section class="left visualizations">
+  <div class="head">
+    <h2>5 visualizations created</h2>
+    <div class="order">
+      Order by <a href="#" class="selected">modified</a>/ <a href="#">created</a>
+    </div>
+  </div>
+
+  <div class="content"> 
+
+    <ul id="visualizationlist">
+      <%#= render :partial => 'shared/flash_message' %>
+    </ul>
+
+
+    <ul>
+
+      <% (1..5).each do |v| %>
+
+      <li class="border">
+      <div class="content">
+        <h3><a href="#">Untitled_vizz_1</a> <a href="#remove" class="remove"></a></h3>
+        <p>administration geometries for spain provinces map</p>
+
+        <div class="tags">
+          <% %w(one two three four five six seven).sample(rand(6)).to_a.each do |t| %>
+            <a href="#/tag/<%= t %>/1" ><%= t %></a>
+        <% end %>
+        </div>
+
+        <div class="footer">
+          <div class="graph"></div>
+          <div class="colors"></div>
+        </div>
+
+      </div>
+      </li>
+    <% end %>
+
+    </ul>
+  </div>
+
+  </section>
+
+  <aside class="right">
+  <div class="head">
+    <a href="#" class="create border">
+      <div class="content"></div>
+      <div class="title">Create new visualization</div>
+    </a>
+  </div>
+  <div class="content">
+  </div>
+  </aside>
+</div>
+</article>

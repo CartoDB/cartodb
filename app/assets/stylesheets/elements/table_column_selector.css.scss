@@ -25,7 +25,12 @@
         margin-top:60px;
       }
 
-      p {margin-top:5px; text-align:center;}
+      p {
+        margin-top:5px;
+        text-align:center;
+        text-overflow:ellipsis;
+        overflow:hidden;
+      }
 
       &.chosen {
         height:22px;

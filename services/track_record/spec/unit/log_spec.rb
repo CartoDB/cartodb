@@ -59,6 +59,13 @@ describe Log do
     end
   end #append
 
+  describe '#<<' do
+    it 'is an alias for append' do
+      log = Log.new
+      log.method(:append) == log.method(:<<)
+    end
+  end #<<
+
   describe '#each' do
     it 'yields entries sorted by their timestamp, in ascending order' do
       log = Log.new

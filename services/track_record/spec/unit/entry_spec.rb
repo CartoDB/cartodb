@@ -120,7 +120,7 @@ describe Entry do
   describe '#persist' do
     it 'persists this entry in the data repository' do
       repository  = DataRepository::Repository.new
-      entry       = Entry.new({ text: 'bogus' }, repository)
+      entry       = Entry.new({ text: 'bogus' }, nil, repository)
 
       entry.persist
       repository.keys.must_include entry.storage_key
@@ -130,11 +130,11 @@ describe Entry do
   describe '#fetch' do
     it 'updates the entry with data retrieved from the repository' do
       repository      = DataRepository::Repository.new
-      entry           = Entry.new({ text: 'bogus' }, repository)
+      entry           = Entry.new({ text: 'bogus' }, nil, repository)
 
       entry.persist
 
-      retrieved_entry = Entry.new({ id: entry.id }, repository)
+      retrieved_entry = Entry.new({ id: entry.id }, nil, repository)
 
       retrieved_entry.payload.must_be_empty
       retrieved_entry.fetch

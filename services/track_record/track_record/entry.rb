@@ -14,9 +14,11 @@ module TrackRecord
     attribute :payload,     Hash, default: {}
     attribute :timestamp,   Float
     attribute :created_at,  Time
+    attribute :prefix,      String
 
-    def initialize(payload, repository=DataRepository::Repository.new)
+    def initialize(payload, prefix=nil, repository=DataRepository::Repository.new)
       @repository = repository
+      @prefix     = prefix
       payload     = { message: payload } unless payload.respond_to?(:to_hash)
       payload     = JSON.parse(payload.to_hash.to_json)
       self.id     = payload.delete('id')
@@ -59,7 +61,7 @@ module TrackRecord
     end #fetch
 
     def storage_key
-      "entry:#{id}"
+      [prefix, "entry:#{id}"].join(':')
     end #storage_key
 
     private

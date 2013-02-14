@@ -340,7 +340,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
 
     if ($el) {
       // Check if it is dark or other to change color
-      var template_dark = this.model.get('template_name').search('dark') != -1; 
+      var template_dark = this.model.get('template_name').search('dark') != -1;
 
       if (template_dark) {
         this.spin_options.color = '#FFF';
@@ -479,7 +479,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
    */
   setLoading: function() {
     this.model.set({
-      content:  { 
+      content:  {
         fields: [{
           title: null,
           value: 'Loading content...',

@@ -10,6 +10,7 @@ bundle exec rake cartodb:db:load_functions
 * Persisted updated_at on vizjson, this saves a lot of traffic to the tiler if Varnish crashes or is not running
 * Fixes a importer bug when decoding content-disposition http header
 * Fixes a bug that causes VACUUM FULL to be run more than once after table creation
+* Added 'loading state' for infowindows.
 
 2.0.3 (31/01/13)
 -----

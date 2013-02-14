@@ -90,6 +90,6 @@ class Map < Sequel::Model
   # stored on the related tables have changed
   #
   def viz_updated_at
-    [self.updated_at, tables.first.data_last_modified].max
+    [self.updated_at, tables.first.data_last_modified].compact.max
   end
 end

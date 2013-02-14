@@ -10,7 +10,7 @@ module DataRepository
         end #initialize
 
         def store(key, data)
-          redis.sadd key, *(data.to_a)
+          redis.sadd key, data.to_a
         end #store
 
         def fetch(key)

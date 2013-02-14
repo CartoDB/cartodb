@@ -362,14 +362,13 @@ var Vis = cdb.core.View.extend({
 
   // Set map top position taking into account header height
   setMapPosition: function() {
-    var header_h = this.$el.parent().find(".header").outerHeight();
-  
+    var header_h = this.$el.find(".header:not(.cartodb-popup)").outerHeight();
+
     this.$el
       .find("div.map-wrapper")
       .css("top", header_h);
 
     this.mapView.invalidateSize();
-
   },
 
   createLayer: function(layerData, opts) {
@@ -408,11 +407,15 @@ var Vis = cdb.core.View.extend({
     layerView.bind(eventType, function(e, latlng, pos, data) {
         var cartodb_id = data.cartodb_id
         var fields = infowindowFields.fields;
+
+
+        // Send request
         sql.execute("select {{fields}} from {{table_name}} where cartodb_id = {{cartodb_id }}", {
           fields: _.pluck(fields, 'name').join(','),
           cartodb_id: cartodb_id,
           table_name: model.get('table_name')
-        }).done(function(interact_data) {
+        })
+        .done(function(interact_data) {
           if(interact_data.rows.length == 0 ) return;
           interact_data = interact_data.rows[0];
           if(infowindowFields) {
@@ -433,20 +436,27 @@ var Vis = cdb.core.View.extend({
               render_fields.push({
                 title: null,
                 value: 'No data available',
-                index: j ? j:null // mustache does not recognize 0 as false :( 
+                index: j ? j:null, // mustache does not recognize 0 as false :( 
+                type: 'empty'
               });
             }
             content = render_fields;
           }
+
           infowindow.model.set({ 
             content:  { 
               fields: content, 
               data: interact_data
             } 
-          });
-          infowindow.setLatLng(latlng).showInfowindow();
+          })
+          infowindow.adjustPan();
         });
 
+        // Show infowindow with loading state
+        infowindow
+          .setLatLng(latlng)
+          .setLoading()
+          .showInfowindow();
     });
 
     layerView.bind('featureOver', function(e, latlon, pxPos, data) {

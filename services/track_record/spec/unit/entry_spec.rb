@@ -14,6 +14,11 @@ describe Entry do
       entry = Entry.new(text: 'bogus')
       entry.payload.fetch('text').must_equal 'bogus'
     end
+
+    it 'adds a default :message key in the payload if none given' do
+      entry = Entry.new('bogus')
+      entry.payload.keys.must_equal ['message']
+    end
   end #initialize
 
   describe '#payload' do

@@ -223,6 +223,49 @@ describe("common.ui.Table", function() {
       expect(table.$('tr').length).toEqual(1); // only the header
     });
 
+
+    it("should render faster than light", function() {
+      var NCOLUMNS = 100;
+      var NROWS = 260;
+      var schema = []
+      var rows = [];
+
+      _(NCOLUMNS).times(function(n) {
+        schema.push(['column_' + n, 'string']);
+      });
+
+      _(NROWS).times(function(n) {
+        var row = {}
+        _(schema).each(function(c) {
+          row[c[0]] = "testestestest"
+        })
+        rows.push(row);
+      });
+
+
+      tableMetadata = new cdb.ui.common.TableProperties({
+        schema: schema
+      });
+      cols.reset(rows);
+
+      table = new cdb.ui.common.Table({
+        dataModel: cols,
+        model: tableMetadata
+      });
+
+      var mean = 0;
+      var count = 5;
+      for(var i = 0; i < count; ++i) {
+        var t0 = new Date().getTime();
+        table.render();
+        var t1 = new Date().getTime();
+        mean += t1 - t0;
+      }
+      console.log("mean time", mean/count);
+      expect(mean/count).toBeLessThan(1000);
+
+    });
+
   });
 
 });

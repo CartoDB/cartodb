@@ -141,54 +141,6 @@ div.cartodb-popup.dark .jspDrag:hover
   background: rgba(255,255,255,0.8);
 }
 
-div.cartodb-popup.dark div.cartodb-edit-buttons a.button {
-  border-color:#333333;
-  color:white;
-  text-shadow:none;
-  background: #111111; /* FOR IE*/
-  background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, rgba(24,24,24,1)), color-stop(100%, rgba(0,0,0,1)));
-  background: -webkit-linear-gradient(top, rgba(24,24,24,1), rgba(0,0,0,1));
-  background: -moz-linear-gradient(top, rgba(24,24,24,1), rgba(0,0,0,1));
-  background: -o-linear-gradient(top, rgba(24,24,24,1), rgba(0,0,0,1));
-  background: linear-gradient(top, rgba(24,24,24,1), rgba(0,0,0,1));
-}
-
-div.cartodb-popup.dark div.cartodb-edit-buttons a.button:active {
-  border-color:#333333;
-  color:white;
-  text-shadow:none;
-  background: #111111; /* FOR IE*/
-  background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, rgba(24,24,24,1)), color-stop(100%, rgba(0,0,0,1)));
-  background: -webkit-linear-gradient(top, rgba(24,24,24,1), rgba(0,0,0,1));
-  background: -moz-linear-gradient(top, rgba(24,24,24,1), rgba(0,0,0,1));
-  background: -o-linear-gradient(top, rgba(24,24,24,1), rgba(0,0,0,1));
-  background: linear-gradient(top, rgba(24,24,24,1), rgba(0,0,0,1));
-}
-
-div.cartodb-popup.dark div.cartodb-edit-buttons a.button:hover {
-  background:#010101/9;
-  text-decoration:none;
-  cursor:pointer;
-}
-div.cartodb-popup.dark div.cartodb-edit-buttons a.button:active {
-  box-shadow: rgba(255,255,255,0) 0 0 1px 0,rgba(130,126,111,0.6) 0 1px 3px 0 inset;
-}
-div.cartodb-popup.dark div.cartodb-edit-buttons a.button.disabled {
-  color:#454545;
-}
-div.cartodb-popup.dark div.cartodb-edit-buttons a.button.disabled:hover,
-div.cartodb-popup.dark div.cartodb-edit-buttons a.button.disabled:focus,
-div.cartodb-popup.dark div.cartodb-edit-buttons a.button.disabled:active {
-  color:#454545;
-  background: #111111; /* FOR IE*/
-  background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, rgba(24,24,24,1)), color-stop(100%, rgba(0,0,0,1)));
-  background: -webkit-linear-gradient(top, rgba(24,24,24,1), rgba(0,0,0,1));
-  background: -moz-linear-gradient(top, rgba(24,24,24,1), rgba(0,0,0,1));
-  background: -o-linear-gradient(top, rgba(24,24,24,1), rgba(0,0,0,1));
-  background: linear-gradient(top, rgba(24,24,24,1), rgba(0,0,0,1));
-  cursor:default;
-}
-
 /* EMBED MAP */
 div.header.dark {
   background:#333333;
@@ -275,8 +227,17 @@ div.cartodb-popup.header div.cartodb-popup-header h1 {
   font:bold 21px "Helvetica Neue", "Helvetica", Arial;
   color:#FFFFFF;
   line-height:23px;
-  text-shadow: 1px 1px 1px #333;
+  text-shadow: 0 1px rgba(0,0,0,0.5);
 }
+
+div.cartodb-popup.header div.cartodb-popup-header h1.loading {
+  position:relative;
+  font-size:14px;
+  font-weight:normal;
+  padding-right:0;
+  padding-left:30px;
+}
+
 
 div.cartodb-popup.header div.cartodb-popup-header span.separator {
   position:absolute;
@@ -1003,18 +964,6 @@ div.header.yellow h1 a:hover {
 	        border-radius: 2px;
 	}
 
-#legend { position: absolute; right: 50px; top: 20px; width: 250px; padding: 10px; background: white; z-index: 99; }
-#legend .title, 
-#legend .row { position: relative; float: left; width: 240px; background: none; padding: 5; margin: 0; }
-#legend .title {font-weight: bold; font-size: 24px;}
-#legend .row span { float: left; padding: 0; margin: 0; }
-
-#legend .row span.box { width: 20px; height: 20px; background: black; margin: 2px; border: 1px solid #BBB; }
-#legend .row span.line { width: 20px; height: 6px; background: black; margin: 2px; border: 1px solid #BBB;  margin-top: 11px;}
-#legend .row span.circle { width: 20px; height: 20px; background: black; margin: 2px; border: 1px solid #BBB;  border-radius: 50%;}
-
-#legend .row span.value { line-height: 18px; margin: 5px; max-width: 192px;}
-
 /**
  *  CartoDB2.0 theme (DEFAULT)
  */
@@ -1145,14 +1094,36 @@ div.header.yellow h1 a:hover {
     width:190px;
     max-width: 190px;
     margin: 0;
-    padding: 0;
+    padding:0 0 7px;
     font:normal 13px "Helvetica",Arial;
     color:#333333;
-    padding:0 0 7px;
     word-wrap: break-word;
   }
 
+  div.cartodb-popup p.loading {
+    position:relative;
+    display:block;
+    width:170px;
+    max-width: 170px;
+    margin: 0;
+    padding:0 0 0 30px;
+    font:normal 13px "Helvetica",Arial;
+    color:#888;
+    font-style:italic;
+    word-wrap: break-word;
+    line-height:21px;
+  }
+
+  div.cartodb-popup div.spinner {
+    position:absolute!important;
+    display:inline;
+    top:0;
+    left:0;
+    margin:10px 0 0 10px;
+  }
+
   div.cartodb-popup p.empty {
+    padding-bottom:0;
     color:#999999;
     font-style: italic;
   }

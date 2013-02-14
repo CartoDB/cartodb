@@ -8,17 +8,15 @@ module TrackRecord
   class Entry
     include Virtus
 
-    PAYLOAD_TYPE_ERROR      = 'Payload must be a Hash'
-
     attribute :id,          String
     attribute :payload,     Hash, default: {}
     attribute :timestamp,   Float
     attribute :created_at,  Time
 
     def initialize(payload, repository=DataRepository::Repository.new)
-      raise(ArgumentError, PAYLOAD_TYPE_ERROR) unless payload.is_a?(Hash)
       @repository = repository
-      payload     = JSON.parse(payload.to_json)
+      payload     = { message: payload } unless payload.respond_to?(:to_hash)
+      payload     = JSON.parse(payload.to_hash.to_json)
       self.id     = payload.delete('id')
 
       initialize_attributes_with(payload)

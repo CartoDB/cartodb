@@ -61,54 +61,6 @@ div.cartodb-popup.dark .jspDrag:hover
   background: rgba(255,255,255,0.8);
 }
 
-div.cartodb-popup.dark div.cartodb-edit-buttons a.button {
-  border-color:#333333;
-  color:white;
-  text-shadow:none;
-  background: #111111; /* FOR IE*/
-  background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, rgba(24,24,24,1)), color-stop(100%, rgba(0,0,0,1)));
-  background: -webkit-linear-gradient(top, rgba(24,24,24,1), rgba(0,0,0,1));
-  background: -moz-linear-gradient(top, rgba(24,24,24,1), rgba(0,0,0,1));
-  background: -o-linear-gradient(top, rgba(24,24,24,1), rgba(0,0,0,1));
-  background: linear-gradient(top, rgba(24,24,24,1), rgba(0,0,0,1));
-}
-
-div.cartodb-popup.dark div.cartodb-edit-buttons a.button:active {
-  border-color:#333333;
-  color:white;
-  text-shadow:none;
-  background: #111111; /* FOR IE*/
-  background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, rgba(24,24,24,1)), color-stop(100%, rgba(0,0,0,1)));
-  background: -webkit-linear-gradient(top, rgba(24,24,24,1), rgba(0,0,0,1));
-  background: -moz-linear-gradient(top, rgba(24,24,24,1), rgba(0,0,0,1));
-  background: -o-linear-gradient(top, rgba(24,24,24,1), rgba(0,0,0,1));
-  background: linear-gradient(top, rgba(24,24,24,1), rgba(0,0,0,1));
-}
-
-div.cartodb-popup.dark div.cartodb-edit-buttons a.button:hover {
-  background:#010101/9;
-  text-decoration:none;
-  cursor:pointer;
-}
-div.cartodb-popup.dark div.cartodb-edit-buttons a.button:active {
-  box-shadow: rgba(255,255,255,0) 0 0 1px 0,rgba(130,126,111,0.6) 0 1px 3px 0 inset;
-}
-div.cartodb-popup.dark div.cartodb-edit-buttons a.button.disabled {
-  color:#454545;
-}
-div.cartodb-popup.dark div.cartodb-edit-buttons a.button.disabled:hover,
-div.cartodb-popup.dark div.cartodb-edit-buttons a.button.disabled:focus,
-div.cartodb-popup.dark div.cartodb-edit-buttons a.button.disabled:active {
-  color:#454545;
-  background: #111111; /* FOR IE*/
-  background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, rgba(24,24,24,1)), color-stop(100%, rgba(0,0,0,1)));
-  background: -webkit-linear-gradient(top, rgba(24,24,24,1), rgba(0,0,0,1));
-  background: -moz-linear-gradient(top, rgba(24,24,24,1), rgba(0,0,0,1));
-  background: -o-linear-gradient(top, rgba(24,24,24,1), rgba(0,0,0,1));
-  background: linear-gradient(top, rgba(24,24,24,1), rgba(0,0,0,1));
-  cursor:default;
-}
-
 /* EMBED MAP */
 div.header.dark {
   background:#333333;

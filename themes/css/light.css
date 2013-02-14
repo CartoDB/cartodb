@@ -158,7 +158,6 @@
   }
 
   div.cartodb-popup p.empty {
-    padding-bottom:0;
     color:#999999;
     font-style: italic;
   }

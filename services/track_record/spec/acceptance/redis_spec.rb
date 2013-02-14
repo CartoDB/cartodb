@@ -15,11 +15,19 @@ describe 'example usage with an in-memory backend' do
     repository  = DataRepository.new(@redis)
     log         = TrackRecord::Log.new(repository: repository)
 
-    log.append(message: 'sample message')
+    log.append(message: 'sample message 1')
+    log.append(message: 'sample message 2')
 
     rehydrated_log  = TrackRecord::Log.new(id: log.id, repository: repository)
     rehydrated_log.repository   .must_equal log.repository
-    rehydrated_log.fetch.to_s.must_match /sample/
+    rehydrated_log.fetch.to_s   .must_match /sample message 1/
+    rehydrated_log.fetch.to_s   .must_match /sample message 2/
+
+    log.append('sample message 3')
+    log.to_s.must_match /message 3/
+    
+    rehydrated_log.fetch
+    rehydrated_log.to_s.must_match /message 3/
   end
 
   it 'should reuse the default repository' do

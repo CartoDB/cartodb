@@ -92,7 +92,7 @@ L.CartoDBLayer = L.TileLayer.extend({
     this.options.opacity = Math.min(opacity, 0.99);
 
     if (this.options.visible) {
-      L.TileLayer.prototype.setOpacity.call(this,  opacity);
+      L.TileLayer.prototype.setOpacity.call(this, this.options.opacity);
       this.fire('updated');
     }
   },

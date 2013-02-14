@@ -23,7 +23,7 @@ if (typeof exports !== undefined + '') {
 	window.L = L;
 }
 
-L.version = '0.6-dev';
+L.version = '0.5.1';
 
 
 /*
@@ -109,7 +109,7 @@ L.Util = {
 		var params = [];
 		for (var i in obj) {
 			if (obj.hasOwnProperty(i)) {
-				params.push(encodeURIComponent(i) + '=' + encodeURIComponent(obj[i]));
+				params.push(i + '=' + obj[i]);
 			}
 		}
 		return ((!existingUrl || existingUrl.indexOf('?') === -1) ? '?' : '&') + params.join('&');
@@ -253,7 +253,6 @@ L.Class.extend = function (props) {
 	proto._initHooks = [];
 
 	var parent = this;
-	NewClass.__super__ = parent.prototype;
 	// add method for calling all hooks
 	proto.callInitHooks = function () {
 
@@ -308,12 +307,10 @@ L.Mixin = {};
 L.Mixin.Events = {
 
 	addEventListener: function (types, fn, context) { // (String, Function[, Object]) or (Object[, Object])
-		
 		var events = this[key] = this[key] || {},
-		    type, i, len, evt,
-		    contextId, objKey, objLenKey, eventsObj;
+			type, i, len;
 
-		// types can be a map of types/handlers
+		// Types can be a map of types/handlers
 		if (typeof types === 'object') {
 			for (type in types) {
 				if (types.hasOwnProperty(type)) {
@@ -324,50 +321,26 @@ L.Mixin.Events = {
 			return this;
 		}
 
-		// types can be a string of space-separated words
 		types = L.Util.splitWords(types);
 
 		for (i = 0, len = types.length; i < len; i++) {
-			evt = {
+			events[types[i]] = events[types[i]] || [];
+			events[types[i]].push({
 				action: fn,
 				context: context || this
-			};
-			contextId = context && context._leaflet_id;
-
-			if (contextId) {
-				// store listeners of a particular context in a separate hash (if it has an id)
-				// gives a major performance boost when removing thousands of map layers
-
-				objKey = types[i] + '_idx',
-				objLenKey = objKey + '_len',
-				eventsObj = events[objKey] = events[objKey] || {};
-
-				if (eventsObj[contextId]) {
-					eventsObj[contextId].push(evt);
-				} else {
-					eventsObj[contextId] = [evt];
-					events[objLenKey] = (events[objLenKey] || 0) + 1;
-				}
-
-			} else {
-				events[types[i]] = events[types[i]] || [];
-				events[types[i]].push(evt);
-			}
+			});
 		}
 
 		return this;
 	},
 
 	hasEventListeners: function (type) { // (String) -> Boolean
-		return (key in this) &&
-		       (((type in this[key]) && this[key][type].length > 0) ||
-		        (this[key][type + '_idx_len'] > 0));
+		return (key in this) && (type in this[key]) && (this[key][type].length > 0);
 	},
 
 	removeEventListener: function (types, fn, context) { // (String[, Function, Object]) or (Object[, Object])
 		var events = this[key],
-			type, i, len, listeners, j,
-			contextId, objKey, objLenKey;
+			type, i, len, listeners, j;
 
 		if (typeof types === 'object') {
 			for (type in types) {
@@ -375,34 +348,24 @@ L.Mixin.Events = {
 					this.removeEventListener(type, types[type], fn);
 				}
 			}
+
 			return this;
 		}
 
 		types = L.Util.splitWords(types);
 
 		for (i = 0, len = types.length; i < len; i++) {
+
 			if (this.hasEventListeners(types[i])) {
-
-				// if the context has an id, use it to find the listeners
-				contextId = context && context._leaflet_id;
-				objKey = types[i] + '_idx';
-
-				if (contextId && events[objKey]) {
-					listeners =  events[objKey][contextId] || [];
-				} else {
-					listeners = events[types[i]] || [];
-				}
+				listeners = events[types[i]];
 
 				for (j = listeners.length - 1; j >= 0; j--) {
-					if ((!fn || listeners[j].action === fn) && (!context || (listeners[j].context === context))) {
+					if (
+						(!fn || listeners[j].action === fn) &&
+						(!context || (listeners[j].context === context))
+					) {
 						listeners.splice(j, 1);
 					}
-				}
-
-				if (contextId && listeners.length === 0) {
-					objLenKey = objKey + '_len';
-					delete events[objKey][contextId];
-					events[objLenKey] = (events[objLenKey] || 1) - 1;
 				}
 			}
 		}
@@ -415,36 +378,15 @@ L.Mixin.Events = {
 			return this;
 		}
 
-		var event = L.Util.extend({
+		var event = L.extend({
 			type: type,
 			target: this
 		}, data);
 
-		var listeners, i, len, eventsObj, contextId;
+		var listeners = this[key][type].slice();
 
-		if (this[key][type]) {
-			listeners = this[key][type].slice();
-
-			for (i = 0, len = listeners.length; i < len; i++) {
-				listeners[i].action.call(listeners[i].context || this, event);
-			}
-		}
-
-		// fire event for the context-indexed listeners as well
-		
-		eventsObj = this[key][type + '_idx'];
-
-		if (eventsObj) {
-			for (contextId in eventsObj) {
-				if (eventsObj.hasOwnProperty(contextId)) {
-					listeners = eventsObj[contextId];
-					if (listeners) {
-						for (i = 0, len = listeners.length; i < len; i++) {
-							listeners[i].action.call(listeners[i].context || this, event);
-						}
-					}
-				}
-			}
+		for (var i = 0, len = listeners.length; i < len; i++) {
+			listeners[i].action.call(listeners[i].context || this, event);
 		}
 
 		return this;
@@ -655,7 +597,7 @@ L.point = function (x, y, round) {
 	if (L.Util.isArray(x)) {
 		return new L.Point(x[0], x[1]);
 	}
-	if (x === undefined || x === null) {
+	if (isNaN(x)) {
 		return x;
 	}
 	return new L.Point(x, y, round);
@@ -823,7 +765,6 @@ L.DomUtil = {
 		    left = 0,
 		    el = element,
 		    docBody = document.body,
-		    docEl = document.documentElement,
 		    pos,
 		    ie7 = L.Browser.ie7;
 
@@ -840,8 +781,8 @@ L.DomUtil = {
 			if (el.offsetParent === docBody && pos === 'absolute') { break; }
 
 			if (pos === 'fixed') {
-				top  += docBody.scrollTop  || docEl.scrollTop  || 0;
-				left += docBody.scrollLeft || docEl.scrollLeft || 0;
+				top  += docBody.scrollTop  || 0;
+				left += docBody.scrollLeft || 0;
 				break;
 			}
 			el = el.offsetParent;
@@ -1097,7 +1038,7 @@ L.latLng = function (a, b) { // (LatLng) or ([Number, Number]) or (Number, Numbe
 	if (L.Util.isArray(a)) {
 		return new L.LatLng(a[0], a[1]);
 	}
-	if (a === undefined || a === null) {
+	if (isNaN(a)) {
 		return a;
 	}
 	return new L.LatLng(a, b);
@@ -1173,27 +1114,11 @@ L.LatLngBounds.prototype = {
 	},
 
 	getNorthWest: function () {
-		return new L.LatLng(this.getNorth(), this.getWest());
+		return new L.LatLng(this._northEast.lat, this._southWest.lng);
 	},
 
 	getSouthEast: function () {
-		return new L.LatLng(this.getSouth(), this.getEast());
-	},
-
-	getWest: function () {
-		return this._southWest.lng;
-	},
-
-	getSouth: function () {
-		return this._southWest.lat;
-	},
-
-	getEast: function () {
-		return this._northEast.lng;
-	},
-
-	getNorth: function () {
-		return this._northEast.lat;
+		return new L.LatLng(this._southWest.lat, this._northEast.lng);
 	},
 
 	contains: function (obj) { // (LatLngBounds) or (LatLng) -> Boolean
@@ -1233,7 +1158,10 @@ L.LatLngBounds.prototype = {
 	},
 
 	toBBoxString: function () {
-		return [this.getWest(), this.getSouth(), this.getEast(), this.getNorth()].join(',');
+		var sw = this._southWest,
+		    ne = this._northEast;
+
+		return [sw.lng, sw.lat, ne.lng, ne.lat].join(',');
 	},
 
 	equals: function (bounds) { // (LatLngBounds)
@@ -1583,8 +1511,6 @@ L.Map = L.Class.extend({
 	},
 
 	hasLayer: function (layer) {
-		if (!layer) { return false; }
-
 		var id = L.stamp(layer);
 		return this._layers.hasOwnProperty(id);
 	},
@@ -2796,7 +2722,6 @@ L.TileLayer.Canvas = L.TileLayer.extend({
 				this._redrawTile(tiles[i]);
 			}
 		}
-		return this;
 	},
 
 	_redrawTile: function (tile) {
@@ -3116,15 +3041,14 @@ L.Icon.Default.imagePath = (function () {
 	var scripts = document.getElementsByTagName('script'),
 	    leafletRe = /\/?leaflet[\-\._]?([\w\-\._]*)\.js\??/;
 
-	var i, len, src, matches, path;
+	var i, len, src, matches;
 
 	for (i = 0, len = scripts.length; i < len; i++) {
 		src = scripts[i].src;
 		matches = src.match(leafletRe);
 
 		if (matches) {
-			path = src.split(leafletRe)[0];
-			return (path ? path + '/' : '') + 'images';
+			return src.split(leafletRe)[0] + '/images';
 		}
 	}
 }());
@@ -3845,13 +3769,6 @@ L.LayerGroup = L.Class.extend({
 		return this;
 	},
 
-	hasLayer: function (layer) {
-		if (!layer) { return false; }
-
-		var id = L.stamp(layer);
-		return this._layers.hasOwnProperty(id);
-	},
-
 	clearLayers: function () {
 		this.eachLayer(this.removeLayer, this);
 		return this;
@@ -3977,9 +3894,7 @@ L.FeatureGroup = L.LayerGroup.extend({
 	},
 
 	_propagateEvent: function (e) {
-		if (!e.layer) {
-			e.layer = e.target;
-		}
+		e.layer  = e.target;
 		e.target = this;
 
 		this.fire(e.type, e);
@@ -4170,9 +4085,6 @@ L.Path = L.Path.extend({
 		}
 		if (this.options.fill) {
 			this._path.setAttribute('fill-rule', 'evenodd');
-		}
-		if (this.options.pointerEvents) {
-			this._path.setAttribute('pointer-events', this.options.pointerEvents);
 		}
 		this._updateStyle();
 	},
@@ -4909,7 +4821,7 @@ L.LineUtil = {
 
 
 /*
- * L.Polyline is used to display polylines on a map.
+ * L.Polygon is used to display polylines on a map.
  */
 
 L.Polyline = L.Path.extend({
@@ -5153,13 +5065,6 @@ L.Polygon = L.Polyline.extend({
 		if (latlngs && L.Util.isArray(latlngs[0]) && (typeof latlngs[0][0] !== 'number')) {
 			this._latlngs = this._convertLatLngs(latlngs[0]);
 			this._holes = latlngs.slice(1);
-		}
-
-		// filter out last point if its equal to the first one
-		latlngs = this._latlngs;
-
-		if (latlngs[0].equals(latlngs[latlngs.length - 1])) {
-			latlngs.pop();
 		}
 	},
 
@@ -5713,13 +5618,6 @@ L.DomEvent = {
 
 				obj.addEventListener(newType, handler, false);
 
-			} else if (type === 'click' && L.Browser.android) {
-				originalHandler = handler;
-				handler = function (e) {
-					return L.DomEvent._filterClick(e, originalHandler);
-				};
-
-				obj.addEventListener(type, handler, false);
 			} else {
 				obj.addEventListener(type, handler, false);
 			}
@@ -5858,23 +5756,6 @@ L.DomEvent = {
 			}
 		}
 		return e;
-	},
-
-	// this solves a bug in Android WebView where a single touch triggers two click events.
-	_filterClick: function (e, handler) {
-		var elapsed = L.DomEvent._lastClick && (e.timeStamp - L.DomEvent._lastClick);
-
-		// are they closer together than 400ms yet more than 100ms?
-		// Android typically triggers them ~300ms apart while multiple listeners
-		// on the same event should be triggered far faster.
-
-		if (elapsed && elapsed > 100 && elapsed < 400) {
-			L.DomEvent.stop(e);
-			return;
-		}
-		L.DomEvent._lastClick = e.timeStamp;
-
-		return handler(e);
 	}
 };
 
@@ -7032,6 +6913,257 @@ L.Handler.MarkerDrag = L.Handler.extend({
 
 
 /*
+ * L.Handler.PolyEdit is an editing handler for polylines and polygons.
+ */
+
+L.Handler.PolyEdit = L.Handler.extend({
+	options: {
+		icon: new L.DivIcon({
+			iconSize: new L.Point(8, 8),
+			className: 'leaflet-div-icon leaflet-editing-icon'
+		})
+	},
+
+	initialize: function (poly, options) {
+		this._poly = poly;
+		L.setOptions(this, options);
+	},
+
+	addHooks: function () {
+		if (this._poly._map) {
+			if (!this._markerGroup) {
+				this._initMarkers();
+			}
+			this._poly._map.addLayer(this._markerGroup);
+		}
+	},
+
+	removeHooks: function () {
+		if (this._poly._map) {
+			this._poly._map.removeLayer(this._markerGroup);
+			delete this._markerGroup;
+			delete this._markers;
+		}
+	},
+
+	updateMarkers: function () {
+		this._markerGroup.clearLayers();
+		this._initMarkers();
+	},
+
+	_initMarkers: function () {
+		if (!this._markerGroup) {
+			this._markerGroup = new L.LayerGroup();
+		}
+		this._markers = [];
+
+		var latlngs = this._poly._latlngs,
+		    i, j, len, marker;
+
+		// TODO refactor holes implementation in Polygon to support it here
+
+		for (i = 0, len = latlngs.length; i < len; i++) {
+
+			marker = this._createMarker(latlngs[i], i);
+			marker.on('click', this._onMarkerClick, this);
+			this._markers.push(marker);
+		}
+
+		var markerLeft, markerRight;
+
+		for (i = 0, j = len - 1; i < len; j = i++) {
+			if (i === 0 && !(L.Polygon && (this._poly instanceof L.Polygon))) {
+				continue;
+			}
+
+			markerLeft = this._markers[j];
+			markerRight = this._markers[i];
+
+			this._createMiddleMarker(markerLeft, markerRight);
+			this._updatePrevNext(markerLeft, markerRight);
+		}
+	},
+
+	_createMarker: function (latlng, index) {
+		var marker = new L.Marker(latlng, {
+			draggable: true,
+			icon: this.options.icon
+		});
+
+		marker._origLatLng = latlng;
+		marker._index = index;
+
+		marker.on('drag', this._onMarkerDrag, this);
+		marker.on('dragend', this._fireEdit, this);
+
+		this._markerGroup.addLayer(marker);
+
+		return marker;
+	},
+
+	_fireEdit: function () {
+		this._poly.fire('edit');
+	},
+
+	_onMarkerDrag: function (e) {
+		var marker = e.target;
+
+		L.extend(marker._origLatLng, marker._latlng);
+
+		if (marker._middleLeft) {
+			marker._middleLeft.setLatLng(this._getMiddleLatLng(marker._prev, marker));
+		}
+		if (marker._middleRight) {
+			marker._middleRight.setLatLng(this._getMiddleLatLng(marker, marker._next));
+		}
+
+		this._poly.redraw();
+	},
+
+	_onMarkerClick: function (e) {
+		// we want to remove the marker on click, but if latlng count < 3, polyline would be invalid
+		if (this._poly._latlngs.length < 3) { return; }
+
+		var marker = e.target,
+		    i = marker._index;
+
+		// remove the marker
+		this._markerGroup.removeLayer(marker);
+		this._markers.splice(i, 1);
+		this._poly.spliceLatLngs(i, 1);
+		this._updateIndexes(i, -1);
+
+		// update prev/next links of adjacent markers
+		this._updatePrevNext(marker._prev, marker._next);
+
+		// remove ghost markers near the removed marker
+		if (marker._middleLeft) {
+			this._markerGroup.removeLayer(marker._middleLeft);
+		}
+		if (marker._middleRight) {
+			this._markerGroup.removeLayer(marker._middleRight);
+		}
+
+		// create a ghost marker in place of the removed one
+		if (marker._prev && marker._next) {
+			this._createMiddleMarker(marker._prev, marker._next);
+
+		} else if (!marker._prev) {
+			marker._next._middleLeft = null;
+
+		} else if (!marker._next) {
+			marker._prev._middleRight = null;
+		}
+
+		this._poly.fire('edit');
+	},
+
+	_updateIndexes: function (index, delta) {
+		this._markerGroup.eachLayer(function (marker) {
+			if (marker._index > index) {
+				marker._index += delta;
+			}
+		});
+	},
+
+	_createMiddleMarker: function (marker1, marker2) {
+		var latlng = this._getMiddleLatLng(marker1, marker2),
+		    marker = this._createMarker(latlng),
+		    onClick,
+		    onDragStart,
+		    onDragEnd;
+
+		marker.setOpacity(0.6);
+
+		marker1._middleRight = marker2._middleLeft = marker;
+
+		onDragStart = function () {
+			var i = marker2._index;
+
+			marker._index = i;
+
+			marker
+			    .off('click', onClick)
+			    .on('click', this._onMarkerClick, this);
+
+			latlng.lat = marker.getLatLng().lat;
+			latlng.lng = marker.getLatLng().lng;
+			this._poly.spliceLatLngs(i, 0, latlng);
+			this._markers.splice(i, 0, marker);
+
+			marker.setOpacity(1);
+
+			this._updateIndexes(i, 1);
+			marker2._index++;
+			this._updatePrevNext(marker1, marker);
+			this._updatePrevNext(marker, marker2);
+		};
+
+		onDragEnd = function () {
+			marker.off('dragstart', onDragStart, this);
+			marker.off('dragend', onDragEnd, this);
+
+			this._createMiddleMarker(marker1, marker);
+			this._createMiddleMarker(marker, marker2);
+		};
+
+		onClick = function () {
+			onDragStart.call(this);
+			onDragEnd.call(this);
+			this._poly.fire('edit');
+		};
+
+		marker
+		    .on('click', onClick, this)
+		    .on('dragstart', onDragStart, this)
+		    .on('dragend', onDragEnd, this);
+
+		this._markerGroup.addLayer(marker);
+	},
+
+	_updatePrevNext: function (marker1, marker2) {
+		if (marker1) {
+			marker1._next = marker2;
+		}
+		if (marker2) {
+			marker2._prev = marker1;
+		}
+	},
+
+	_getMiddleLatLng: function (marker1, marker2) {
+		var map = this._poly._map,
+		    p1 = map.latLngToLayerPoint(marker1.getLatLng()),
+		    p2 = map.latLngToLayerPoint(marker2.getLatLng());
+
+		return map.layerPointToLatLng(p1._add(p2)._divideBy(2));
+	}
+});
+
+L.Polyline.addInitHook(function () {
+
+	if (L.Handler.PolyEdit) {
+		this.editing = new L.Handler.PolyEdit(this);
+
+		if (this.options.editable) {
+			this.editing.enable();
+		}
+	}
+
+	this.on('add', function () {
+		if (this.editing && this.editing.enabled()) {
+			this.editing.addHooks();
+		}
+	});
+
+	this.on('remove', function () {
+		if (this.editing && this.editing.enabled()) {
+			this.editing.removeHooks();
+		}
+	});
+});
+
+
+/*
  * L.Control is a base class for implementing map controls. Handles positioning.
  * All other controls extend from this class.
  */
@@ -7149,14 +7281,23 @@ L.Control.Zoom = L.Control.extend({
 
 	onAdd: function (map) {
 		var zoomName = 'leaflet-control-zoom',
-		    container = L.DomUtil.create('div', zoomName + ' leaflet-bar');
+		    barName = 'leaflet-bar',
+		    partName = barName + '-part',
+		    container = L.DomUtil.create('div', zoomName + ' ' + barName);
 
 		this._map = map;
 
-		this._zoomInButton  = this._createButton(
-		        '+', 'Zoom in',  zoomName + '-in',  container, this._zoomIn,  this);
-		this._zoomOutButton = this._createButton(
-		        '-', 'Zoom out', zoomName + '-out', container, this._zoomOut, this);
+		this._zoomInButton = this._createButton('+', 'Zoom in',
+		        zoomName + '-in ' +
+		        partName + ' ' +
+		        partName + '-top',
+		        container, this._zoomIn,  this);
+
+		this._zoomOutButton = this._createButton('-', 'Zoom out',
+		        zoomName + '-out ' +
+		        partName + ' ' +
+		        partName + '-bottom',
+		        container, this._zoomOut, this);
 
 		map.on('zoomend', this._updateDisabled, this);
 
@@ -7195,7 +7336,7 @@ L.Control.Zoom = L.Control.extend({
 
 	_updateDisabled: function () {
 		var map = this._map,
-			className = 'leaflet-disabled';
+			className = 'leaflet-control-zoom-disabled';
 
 		L.DomUtil.removeClass(this._zoomInButton, className);
 		L.DomUtil.removeClass(this._zoomOutButton, className);
@@ -7674,12 +7815,9 @@ L.Control.Layers = L.Control.extend({
 				this._map.addLayer(obj.layer);
 				if (!obj.overlay) {
 					baseLayer = obj.layer;
-				} else {
-					this._map.fire('overlayadd', {layer: obj});
 				}
 			} else if (!input.checked && this._map.hasLayer(obj.layer)) {
 				this._map.removeLayer(obj.layer);
-				this._map.fire('overlayremove', {layer: obj});
 			}
 		}
 

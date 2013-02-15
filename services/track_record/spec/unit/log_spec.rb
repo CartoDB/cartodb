@@ -143,6 +143,24 @@ describe Log do
       log = Log.new
       log.tail.must_be_empty
     end
-  end #latest
+  end #tail
+
+  describe '#storage_key' do
+    it 'uses the prefix if passed' do
+      prefix  = 'server'
+      log     = Log.new(prefix: prefix)
+      log.storage_key.must_match prefix
+    end
+
+    it 'passes it to each entry' do
+      prefix  = 'server'
+      log     = Log.new(prefix: prefix)
+
+      log.append(message: 'sample')
+
+      entry   = log.to_a.first
+      entry.storage_key.must_match prefix
+    end
+  end #storage_key
 end # Log
 

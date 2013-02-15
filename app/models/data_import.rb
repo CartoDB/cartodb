@@ -1,4 +1,14 @@
 # coding: UTF-8'
+require 'sequel'
+require 'active_model'
+require 'fileutils'
+require_relative './user'
+require_relative './table'
+require_relative '../../lib/cartodb/errors'
+require_relative '../../lib/cartodb_stats'
+require_relative '../../lib/cartodb/mini_sequel'
+require_relative '../../lib/importer/lib/cartodb-importer'
+
 class DataImport < Sequel::Model
   include CartoDB::MiniSequel
   include ActiveModel::Validations
@@ -143,7 +153,7 @@ class DataImport < Sequel::Model
         e = CartoDB::InvalidFile.new    e.message    if file?
         e = CartoDB::TableCopyError.new e.message    if table_copy?
       end
-      CartoDB::Logger.info "Exception on tables#create", e.inspect
+      self.logger << ("Exception on tables#create: " + e.inspect)
     end
   end
 
@@ -285,7 +295,8 @@ class DataImport < Sequel::Model
       refresh
     else
       reload
-      CartoDB::Logger.info "Errors on import#create", @new_table.errors.full_messages
+      message = "Errors on import#create" + @new_table.errors.full_messages
+      self.logger << message
     end
   end
 

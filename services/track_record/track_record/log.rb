@@ -32,6 +32,8 @@ module TrackRecord
       persist
       self
     end #append
+
+    alias_method :<<, :append
     
     def each
       return Enumerator.new(self, :each) unless block_given?
@@ -39,7 +41,7 @@ module TrackRecord
     end #each
 
     def to_s
-      self.map(&:to_s).join
+      self.map(&:to_s).join("\n")
     end #to_s
 
     def fetch

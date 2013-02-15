@@ -13,6 +13,7 @@
 //= require ../../../lib/assets/javascripts/utils/carto.codemirror
 //= require_tree ../../../lib/assets/javascripts/cartodb/models
 //= require ../../../lib/assets/javascripts/cartodb/common/dropdown_menu
+//= require ../../../lib/assets/javascripts/cartodb/common/forms/string_field
 //= require_tree ../../../lib/assets/javascripts/cartodb/common
 //= require ../../../lib/assets/javascripts/cartodb/table/right_menu
 //= require_tree ../../../lib/assets/javascripts/cartodb/table

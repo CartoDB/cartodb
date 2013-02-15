@@ -14,7 +14,9 @@ require_relative '../../config/initializers/redis'
 
 class DataImport < Sequel::Model
   include CartoDB::MiniSequel
-  include ActiveModel::Validations
+ include ActiveModel::Validations
+
+ REDIS_LOG_KEY_PREFIX = 'importer'
 
   attr_accessor :append, :migrate_table, :table_copy, :from_query
   attr_reader   :log
@@ -29,9 +31,12 @@ class DataImport < Sequel::Model
   def instantiate_log
     uuid = self.logger
     if valid_uuid?(uuid)
-      self.log = TrackRecord::Log.new(id: uuid.to_s).fetch 
+      self.log  = TrackRecord::Log.new(
+                    id:     uuid.to_s, 
+                    prefix: REDIS_LOG_KEY_PREFIX
+                  ).fetch 
     else
-      self.log = TrackRecord::Log.new
+      self.log  = TrackRecord::Log.new(prefix: REDIS_LOG_KEY_PREFIX)
     end
   end #instantiate_log
   

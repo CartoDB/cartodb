@@ -1,7 +1,13 @@
 
   /*
    * Custom objects
+   * - Horizontal slider
+   * - Form color
+   * - Form spinner
    * - Custom radiobutton
+   * - Custom checkbox
+   * - iPhone style switch
+   * - Rounded white button
    */
 
   @import "compass";
@@ -374,6 +380,7 @@
     vertical-align:middle;
     font-weight:bold;
     color:#397DB9;
+    outline:none;
 
     span.radio {
       position:relative;
@@ -399,7 +406,7 @@
       }
     }
 
-    &:hover {
+    &:hover, &:focus {
       span.radio{
         border-color:#333333;
         &:before {
@@ -419,7 +426,7 @@
         }
       }
 
-      &:hover {
+      &:hover, &:focus {
         cursor:default;
         text-decoration:none;
       }
@@ -434,7 +441,7 @@
           display:none;
         }
       }
-      &:hover {
+      &:hover, &:focus {
         cursor:default;
       }
     }

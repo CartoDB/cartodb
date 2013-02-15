@@ -1,5 +1,6 @@
 # encoding: utf-8
 require 'minitest/autorun'
+require 'set'
 require_relative '../../spec_helper'
 require_relative '../../../backend/redis'
 require_relative '../../../repository'
@@ -24,6 +25,13 @@ describe Backend::Redis do
       @repository.keys.wont_include key.to_s
       @repository.store(key, data)
       @repository.keys.must_include key.to_s
+
+      set = Set.new
+      set.add 1
+      set.add 2
+
+      @repository.store('bogus_key', set)
+      @repository.fetch('bogus_key').must_be_kind_of Enumerable
     end
 
     it 'stringifies symbols in the persisted data structe' do

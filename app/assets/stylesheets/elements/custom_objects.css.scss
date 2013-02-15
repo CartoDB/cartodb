@@ -382,13 +382,21 @@
     color:#397DB9;
     outline:none;
 
+
+    &.hidden_radio span.radio { display:none; }
+    &.hidden_radio {
+      font-weight: normal;
+      cursor: default;
+      &:hover { text-decoration:none; }
+    }
+
     span.radio {
       position:relative;
       @include inline-block();
       vertical-align:top;
-      width:10px;
-      height:10px;
+      @include size(10px);
       margin:2px 7px 0 0;
+
       @include border-radius(10px);
       border:1px solid #397DBA;
       background:white;
@@ -399,8 +407,7 @@
         position:absolute;
         top:2px;
         left:2px;
-        width:6px;
-        height:6px;
+        @include size(6px);
         background:#333333;
         @include border-radius(25px);
       }
@@ -421,9 +428,7 @@
 
       span.radio{
         border-color:#333333;
-        &:before {
-          display:block;
-        }
+        &:before { display:block; }
       }
 
       &:hover, &:focus {
@@ -435,15 +440,12 @@
     &.disabled {
       text-decoration:none;
       color:#397DBA;
+
       span.radio{
         border-color:#397DBA;
-        &:before {
-          display:none;
-        }
+        &:before {display:none;}
       }
-      &:hover, &:focus {
-        cursor:default;
-      }
+      &:hover, &:focus {cursor:default;}
     }
   }
 
@@ -578,13 +580,13 @@
     }
 
     &:hover {cursor:pointer!important;}
-    
+
     &.working {
       @include opacity(0.5);
       &:hover {cursor:default!important;}
     }
 
-    
+
   }
 
 

@@ -39,11 +39,18 @@ module HelperMethods
 
     trap("INT"){ server.shutdown }
 
-    Thread.new { server.start }
+    a = Thread.new { server.start }
+    
+    begin
+      yield "http://localhost:9999/#{File.basename(file_path)}" if block_given?
+    rescue => e
+      raise e
+    ensure
+      b = Thread.new { server.shutdown }
 
-    yield "http://localhost:9999/#{File.basename(file_path)}" if block_given?
-
-    Thread.new { server.shutdown }
+      b.join
+      a.join
+    end
   end
 
 

@@ -4,7 +4,7 @@ $$
 DECLARE
 
   pbfact float8;
-  qmax integer;
+  qmax int8;
   dice float8;
   quota float8;
 BEGIN
@@ -35,4 +35,3 @@ BEGIN
 END;
 $$
 LANGUAGE 'plpgsql' VOLATILE;
-

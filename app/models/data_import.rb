@@ -8,13 +8,16 @@ class DataImport < Sequel::Model
   PUBLIC_ATTRIBUTES = %W{ id user_id table_id data_type table_name state success error_code queue_id get_error_text tables_created_count }
 
   def before_destroy
+    self.remove_uploaded_resources
+  end
+
+  def remove_uploaded_resources
     # Remove uploaded file if present
     if file_sha = self.data_source.to_s.match(/uploads\/([a-z0-9]{20})\/.*/)
       path = Rails.root.join("public", "uploads", file_sha[1])
       FileUtils.rm_rf(path) if Dir.exists?(path)
     end
   end
-
 
   def public_values
     Hash[PUBLIC_ATTRIBUTES.map{ |a| [a, self.send(a)] }]
@@ -27,14 +30,24 @@ class DataImport < Sequel::Model
     end
 
     after_transition :log_state_change
-    #after_transition  :uploading => :preparing, :preparing => :importing, :importing => :cleaning do
-    #end
+
     after_transition any => :complete do
+      CartodbStats.increment_imports()
       self.success = true
       self.logger << "SUCCESS!\n"
       self.save
     end
+    
     after_transition any => :failure do
+      # Increment failed imports on CartoDB stats
+      CartodbStats.increment_failed_imports()
+
+      # Copy any uploaded resources to secret failed imports vault(tm)
+      if file_sha = self.data_source.to_s.match(/uploads\/([a-z0-9]{20})\/.*/)
+        path = Rails.root.join("public", "uploads", file_sha[1])
+        FileUtils.cp_r(path, Rails.root.join('public', 'uploads', 'failed_imports')) if Dir.exists?(path)
+      end
+
       self.success = false
       self.logger << "ERROR!\n"
       self.save

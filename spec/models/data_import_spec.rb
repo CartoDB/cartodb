@@ -1,4 +1,4 @@
-require 'spec_helper'
+require_relative '../spec_helper'
 
 describe DataImport do
   before(:each) do
@@ -152,4 +152,14 @@ describe DataImport do
 
     Dir.exists?(file_path).should be_false
   end
+
+  describe '#logger=' do
+    it 'sets a logger' do
+      data_import         = DataImport.new
+      data_import.logger  = TrackRecord::Log.new
+      data_import.logger << 'sample message'
+
+      data_import.logger.to_s.should_match /sample message/
+    end
+  end #logger=
 end

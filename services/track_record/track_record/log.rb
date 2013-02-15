@@ -11,7 +11,8 @@ module TrackRecord
 
     attr_reader :repository
 
-    attribute   :id, String
+    attribute   :id,      String
+    attribute   :prefix,  String
 
     def self.repository
       @repository ||= DataRepository.new
@@ -23,12 +24,13 @@ module TrackRecord
 
     def initialize(arguments={})
       self.id     = arguments.fetch(:id, next_id)
+      self.prefix = arguments.fetch(:prefix, nil)
       @repository = arguments.fetch(:repository, self.class.repository)
       @entries    = Set.new
     end #initialize
 
     def append(payload)
-      entries.add Entry.new(payload, repository).persist.id
+      entries.add Entry.new(payload, prefix, repository).persist.id
       persist
       self
     end #append
@@ -49,14 +51,14 @@ module TrackRecord
       self
     end #fetch
 
-    def storage_key
-      "log:#{id}"
-    end #storage_key
-
     def tail
       return [] if entries.empty?
       entry_from(entries.to_a.last)
     end #tail
+
+    def storage_key
+      [prefix, "log:#{id}"].join(':')
+    end #storage_key
 
     private
 
@@ -71,7 +73,7 @@ module TrackRecord
     end #persist
 
     def entry_from(entry_id)
-      Entry.new({ id: entry_id }, repository).fetch
+      Entry.new({ id: entry_id }, prefix, repository).fetch
     end #entry_from
   end # Log
 end # TrackRecord

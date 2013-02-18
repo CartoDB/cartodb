@@ -59,7 +59,7 @@ BEGIN
         i := i+1; 
     END LOOP; 
 
-    best_result = axh_JenksBinsIteration( in_array, breaks, classes, invert, element_count, arr_mean);
+    best_result = CDB_JenksBinsIteration( in_array, breaks, classes, invert, element_count, arr_mean);
 
     --set the seed so we can ensure the same results
     SELECT setseed(0.4567) INTO seedtarget;

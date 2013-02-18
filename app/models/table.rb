@@ -1361,59 +1361,40 @@ TRIGGER
     update_updated_at && save_changes
   end
 
-  # Returns a valid name for a table
-  # Handles:
-  # * sanitation
-  # * duplicate checking
-  # * incrementing trailing counter if duplicate
-  #
-  # Note, trailing counter increments the maximum trailing number found.
-  # This means gaps in a counter range will be made if the user manually sets
-  # the name of a table with a trailing number.
-  #
-  # Duplicating a table manually loaded called "my_table_2010" => "my_table_2011"
-  #
-  # TODO: Far too clever approach. Just recursivly append "_copy" if duplicate
-  def get_valid_name(raw_new_name = nil)
-    # set defaults and sanity check
-    raw_new_name = (raw_new_name || "untitled_table").sanitize
-
-    # tables cannot be blank, start with numbers or underscore
-    raw_new_name = "table_#{raw_new_name}" if raw_new_name =~ /^[0-9]/
-    raw_new_name = "table#{raw_new_name}"  if raw_new_name =~ /^_/
-    raw_new_name = "untitled_table"        if raw_new_name.blank?
-
-    # Do a basic check for the new name. If it doesn't exist, let it through (sanitized)
-    return raw_new_name if name_available?(raw_new_name)
-
-    # Happens if we're duplicating a table.
-    # First get candidates from the base name
-    # eg: "simon_24" => "simon"
-    if match = /(.+)_\d+$/.match(raw_new_name)
-      raw_new_name = match[1]
-    end
-
-    # return if no dupe
-    return raw_new_name if name_available?(raw_new_name)
-
-    # increment trailing number (max+1) if dupe
-    max_candidate = name_candidates(raw_new_name).sort_by {|c| -c[/_(\d+)$/,1].to_i}.first
-
-    if max_candidate =~ /(.+)_(\d+)$/
-      return $1 + "_#{$2.to_i + 1}"
-    else
-      return max_candidate + "_2"
-    end
+  def get_valid_name(name)
+    Table.get_valid_table_name(name, 
+      name_candidates: self.owner.tables.select_map(:name))
   end
 
-  # return name if no dupe, else false
-  def name_available?(name)
-    name_candidates(name).include?(name) ? false : name
-  end
+  # Gets a valid postgresql table name for a given database
+  # See http://www.postgresql.org/docs/9.1/static/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS
+  def self.get_valid_table_name(name, options = {})
+    # Initial name cleaning
+    name = name.to_s.strip.downcase
+    name = 'untitled_table' if name.blank?
 
-  def name_candidates(name)
-    # FYI: Native sequel (owner.in_database.tables) filters tables that start with sql or pg
-    owner.tables.filter(:name.like(/^#{name}/)).select_map(:name)
+    # Valid names start with a letter or an underscore
+    name = "table_#{name}" unless name[/^[a-z_]{1}/]
+
+    # Subsequent characters can be letters, underscores or digits
+    name = name.gsub(/[^a-z0-9]/,'_').gsub(/_{2,}/, '_')
+
+    # Postgresql table name limit
+    name = name[0..62]
+
+    # We don't want to use an existing table name
+    existing_names = options[:name_candidates] || options[:connection]["select relname from pg_stat_user_tables WHERE schemaname='public'"].map(:relname)
+    rx = /_(\d+)$/
+    count = name[rx][1].to_i rescue 0
+    while existing_names.include?(name)
+      count = count + 1
+      suffix = "_#{count}"
+      name = name[0..62-suffix.length]
+      name = name[rx] ? name.gsub(rx, suffix) : "#{name}#{suffix}"
+    end
+
+    # Re-check for duplicated underscores
+    return name.gsub(/_{2,}/, '_')
   end
 
   def get_new_column_type(invalid_column)

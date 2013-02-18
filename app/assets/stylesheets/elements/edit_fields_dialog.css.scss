@@ -104,7 +104,7 @@
           div.date_field {
             display:table;
             width:346px;
-            padding:7px 11px 9px;
+            padding:9px 11px;
             border: 1px solid #C0C1C2;
             @include border-radius(4px);
             letter-spacing: -4px;
@@ -131,6 +131,7 @@
                 width:75px;
                 @include default-input();
                 input {
+                  border-color:#9E9E9E;
                   width:67px;
                   padding:2px 3px;
                   font-size:13px;

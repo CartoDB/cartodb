@@ -1,4 +1,7 @@
-2.0.4 (DD/MM/YY)
+2.0.5 (DD/MM/YY)
+-----
+
+2.0.4 (19/02/13)
 -----
 
 You'll need to run database migrations and reload sql functions after upgrating:

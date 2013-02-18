@@ -50,12 +50,13 @@ module TrackRecord
       [created_at.utc.iso8601, payload.values].join(FIELD_SEPARATOR)
     end #to_s
 
-    def persist
-      repository.store(storage_key, self.to_hash)
+    def persist(options={})
+      repository.store(storage_key, self.to_hash, options)
       self
     end #persist
 
     def fetch
+      return self unless repository.exists?(storage_key)
       self.attributes = repository.fetch(storage_key)
       self
     end #fetch

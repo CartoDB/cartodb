@@ -57,6 +57,21 @@ describe Log do
       log
       log.map { |entry| entry.to_s }.join.must_match /bogus message/
     end
+
+    it 'passes a log expiration value if available' do
+      expiration  = 1000
+      log         = Log.new(
+                      repository: DataRepository.new(Redis.new),
+                      expiration: expiration
+                    )
+
+      log.append(text: 'bogus message')
+      log.to_a.size.must_equal 1
+      sleep(expiration.to_f / 1000.0)
+      log.fetch
+      log.to_a.size.must_equal 0
+      log.to_s.must_be_empty
+    end
   end #append
 
   describe '#<<' do

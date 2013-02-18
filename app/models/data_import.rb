@@ -14,9 +14,9 @@ require_relative '../../config/initializers/redis'
 
 class DataImport < Sequel::Model
   include CartoDB::MiniSequel
- include ActiveModel::Validations
+  include ActiveModel::Validations
 
- REDIS_LOG_KEY_PREFIX = 'importer'
+  REDIS_LOG_KEY_PREFIX = 'importer'
 
   attr_accessor :append, :migrate_table, :table_copy, :from_query
   attr_reader   :log
@@ -24,7 +24,6 @@ class DataImport < Sequel::Model
   PUBLIC_ATTRIBUTES = %W{ id user_id table_id data_type table_name state success error_code queue_id get_error_text tables_created_count }
 
   def after_initialize
-    super
     instantiate_log
   end #after_initialize
 
@@ -41,7 +40,7 @@ class DataImport < Sequel::Model
   end #instantiate_log
   
   def valid_uuid?(text)
-    UUIDTools::UUID.parse(text)
+    !!UUIDTools::UUID.parse(text)
   rescue TypeError => exception
     false
   rescue ArgumentError => exception

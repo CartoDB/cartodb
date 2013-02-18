@@ -22,12 +22,17 @@ module DataRepository
       end #store
 
       def fetch(key)
+        return nil unless redis.exists(key)
         retriever_for(key).new(redis).fetch(key)
       end #fetch
 
       def keys
         redis.keys
       end #keys
+
+      def exists?(key)
+        redis.exists(key)
+      end #exists?
 
       private
 

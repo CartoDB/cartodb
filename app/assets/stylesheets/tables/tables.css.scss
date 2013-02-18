@@ -33,6 +33,9 @@
       }
     } // .no_tables
 
+    &.visualizations aside .head { margin-top: 25px; }
+    &.tables aside .head { margin-top: 55px; }
+
     // Common elements for visualizations and tables
     &.visualizations,
     &.tables {
@@ -58,7 +61,17 @@
 
       aside {
         width: 94px;
-        /*background:red;*/
+      }
+
+      .order {
+        font-size:15px;
+        color: #878787;
+
+        .selected {
+          color: #333333;
+          font-weight: bold;
+        }
+
       }
 
       // Create tables or visualization button
@@ -70,6 +83,7 @@
         background:#EEF5E2;
 
         text-decoration:none;
+
         .title {
           margin: 15px 0 0 0;
 
@@ -77,7 +91,15 @@
           text-align:center;
         }
 
-        .content { }
+        .content {
+          position: relative;
+
+          .plus {
+            @include absolute-center(25px, 24px);
+            @include icons-sprite(plus_big);
+          }
+        }
+
       }
 
       div.tags {
@@ -360,7 +382,7 @@
           li {
             border:none;
             position:relative;
-            padding:0 40px;
+            padding: 0 30px;
 
             @include opacity(1);
             @include simple-transition(background, 80ms);
@@ -415,11 +437,9 @@
                 &.options {
                   position:absolute;
                   top:32px;
-                  right:40px;
+                  right:30px;
                   display:block;
                   width:auto;
-                  margin:5px 0 0;
-                  /*@include opacity(0);*/
                 }
 
                 h3 {
@@ -459,14 +479,30 @@
                   position:relative;
                   @include inline-block();
                   width:auto;
-                  padding:3px 10px 0 0;
                   letter-spacing:0;
+                  padding: 3px 10px 0 0;
 
-                  &:last-child { padding-right: 0; }
+                  &.size .separator {
+                    padding: 0 8px;
+                    position:relative;
+
+                    &:before {
+                      content:'\b7';
+                      position:absolute;
+                      top:-1px;
+                      width:4px;
+                      height:4px;
+                      left:6px;
+                      color:#999;
+                    }
+                  }
+
+                  &:last-child, &.size { padding-right: 0; }
 
                   &.feed {
                     color: #E7BF5B;
                     position:relative;
+                    margin-right: 10px;
 
                     &:before {
                       content:'\b7';
@@ -655,7 +691,6 @@
       }
 
       div.head {
-        padding-top:40px;
         border:none;
       }
 

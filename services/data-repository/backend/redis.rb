@@ -18,6 +18,7 @@ module DataRepository
 
       def store(key, data, options={})
         persister_for(data).new(redis).store(key, data)
+        expire_in(options.fetch(:expiration, nil), key)
       end #store
 
       def fetch(key)
@@ -31,6 +32,10 @@ module DataRepository
       private
 
       attr_reader :redis
+
+      def expire_in(milliseconds, key)
+        !!milliseconds && redis.pexpire(key, milliseconds)
+      end #expire_in
 
       def retriever_for(key)
         HANDLERS.fetch(redis.type(key), Backend::Redis::String)

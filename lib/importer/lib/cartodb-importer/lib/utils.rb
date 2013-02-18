@@ -43,29 +43,7 @@ module CartoDB
       end
 
       def get_valid_name(name)
-        #check if the table name starts with a number
-        if !(name[0,1].to_s.match(/\A[+-]?\d+?(\.\d+)?\Z/) == nil)
-          name="_#{name}"
-        end
-        if name.length > 60
-          name = name[0..59]
-        end
-        existing_names = @db_connection["select relname from pg_stat_user_tables WHERE schemaname='public'"].map(:relname)
-        testn = 1
-        uniname = name
-        while true==existing_names.include?("#{uniname}")
-          if "#{name}_#{testn}".length > 20
-            n = 19-("#{name}_#{testn}".length - 20)
-            name = name[0..n]
-          end
-          uniname = "#{name}_#{testn}"
-          testn = testn + 1
-        end
-        uniname = uniname.gsub(' ','_')
-        while uniname.include? "__"
-          uniname = uniname.sub("__","_")
-        end
-        return uniname
+        Table.get_valid_table_name(name, connection: @db_connection)
       end
 
       def fix_encoding

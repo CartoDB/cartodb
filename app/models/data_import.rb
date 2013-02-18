@@ -335,48 +335,9 @@ class DataImport < Sequel::Model
     end
   end
 
-  def get_valid_name(raw_new_name = nil)
-    # TODO add a delete table check in the cases where a table has become ghost
-    # probably in the after_destroy method in table.rb
-
-    # set defaults and sanity check
-    raw_new_name = (raw_new_name || "untitled_table").sanitize
-
-    # tables cannot be blank, start with numbers or underscore
-    raw_new_name = "table_#{raw_new_name}" if raw_new_name =~ /^[0-9]/
-    raw_new_name = "table#{raw_new_name}"  if raw_new_name =~ /^_/
-    raw_new_name = "untitled_table"        if raw_new_name.blank?
-
-    # Do a basic check for the new name. If it doesn't exist, let it through (sanitized)
-    return raw_new_name if name_available?(raw_new_name)
-
-    # Happens if we're duplicating a table.
-    # First get candidates from the base name
-    # eg: "simon_24" => "simon"
-    if match = /(.+)_\d+$/.match(raw_new_name)
-      raw_new_name = match[1]
-    end
-
-    # return if no dupe
-    return raw_new_name if name_available?(raw_new_name)
-
-    # increment trailing number (max+1) if dupe
-    max_candidate = name_candidates(raw_new_name).sort_by {|c| -c[/_(\d+)$/,1].to_i}.first
-
-    if max_candidate =~ /(.+)_(\d+)$/
-      return $1 + "_#{$2.to_i + 1}"
-    else
-      return max_candidate + "_2"
-    end
-  end
-
-  def name_available?(name)
-    name_candidates(name).include?(name) ? false : name
-  end
-
-  def name_candidates(name)
-    # FYI: Native sequel (table_owner.in_database.tables) filters tables that start with sql or pg
-    table_owner.tables.filter(:name.like(/^#{name}/)).select_map(:name)
+  def get_valid_name(name)
+    Table.get_valid_table_name(name, 
+      name_candidates: table_owner.tables.select_map(:name))
   end
 
   def table_owner

@@ -78,6 +78,7 @@ div.map {
 
       .info {
         @include inline-block();
+        padding-top:2px;
 
         h5, .name {
           font-size: 13px;
@@ -95,7 +96,7 @@ div.map {
           &:before {
             position:absolute;
             content:' ';
-            top:-6px;
+            top:-3px;
             right:-9px;
             margin:8px 0 0 5px;
             border-left:3px solid transparent;

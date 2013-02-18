@@ -11,6 +11,8 @@ bundle exec rake cartodb:db:load_functions
 * Fixes a importer bug when decoding content-disposition http header
 * Fixes a bug that causes VACUUM FULL to be run more than once after table creation
 * Added 'loading state' for infowindows.
+* Replaced submodule URL's with read-only ones
+* Adds new merge option: spatial merge.
 
 2.0.3 (31/01/13)
 -----

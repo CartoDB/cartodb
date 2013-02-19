@@ -29,7 +29,7 @@ require 'spec_helper'
 #   
 #   it "should parse queries containing geojson()" do
 #     CartoDB::SqlParser.parse("SELECT 1 as foo, geojson(the_geom) from restaurants r").should ==
-#       "SELECT 1 as foo, ST_AsGeoJSON(the_geom,6) from restaurants r"
+#       "SELECT 1 as foo, ST_AsGeoJSON(the_geom,8) from restaurants r"
 #   end
 #   
 #   it "should parse queries containing kml()" do

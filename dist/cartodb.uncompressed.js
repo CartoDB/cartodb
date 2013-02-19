@@ -1,6 +1,6 @@
-// cartodb.js version: 2.0.21-dev
+// cartodb.js version: 2.0.21
 // uncompressed version: cartodb.uncompressed.js
-// sha: b42303f1e83b4555f23f22fb96413a8873eb5707
+// sha: c793041083979fb58af46097f52b6619e4a614c5
 (function() {
   var root = this;
 
@@ -15451,7 +15451,7 @@ $(function(){
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '2.0.21-dev';
+    cdb.VERSION = '2.0.21';
 
     cdb.CARTOCSS_VERSIONS = {
       '2.0.0': '',
@@ -17867,7 +17867,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
 
     if ($el) {
       // Check if it is dark or other to change color
-      var template_dark = this.model.get('template_name').search('dark') != -1; 
+      var template_dark = this.model.get('template_name').search('dark') != -1;
 
       if (template_dark) {
         this.spin_options.color = '#FFF';
@@ -18006,7 +18006,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
    */
   setLoading: function() {
     this.model.set({
-      content:  { 
+      content:  {
         fields: [{
           title: null,
           value: 'Loading content...',
@@ -21985,7 +21985,7 @@ cdb.vis.Overlay.register('header', function(data, vis) {
 
   var template = cdb.core.Template.compile(
     data.template || "\
-      {{#title}}<h1><a href='{{url}}'>{{title}}</a></h1>{{/title}}\
+      {{#title}}<h1><a href='#' onmousedown=\"window.open('{{url}}')\">{{title}}</a></h1>{{/title}}\
       {{#description}}<p>{{description}}</p>{{/description}}\
       {{#shareable}}\
         <div class='social'>\

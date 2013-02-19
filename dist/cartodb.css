@@ -376,6 +376,16 @@ div.cartodb-popup.header.with-image div.cartodb-popup-header .cover {
   border-radius: 4px 4px 0 0;
 }
 
+div.cartodb-popup.header.with-image div.cartodb-popup-header .cover .shadow {
+  position:absolute;
+  width: 218px;
+  height:55px;
+  bottom: 0;
+  left: 0;
+  background:url('../img/shadow.png') no-repeat;
+  z-index: 100;
+}
+
 div.cartodb-popup.header.with-image div.cartodb-popup-header .cover #spinner {
   position:absolute;
   top: 67px;
@@ -402,6 +412,7 @@ div.cartodb-popup.header.with-image div.cartodb-popup-header .image_not_found a 
   color: #888888;
   font-size:13px;
   font-family: "Helvetica", "Helvetica Neue", Arial, sans-serif;
+  text-decoration: underline;
 }
 
 div.cartodb-popup.header.with-image div.cartodb-popup-header .image_not_found a:hover {
@@ -420,8 +431,8 @@ div.cartodb-popup.header.with-image div.cartodb-popup-header h1 {
   position:absolute;
   bottom: 13px;
   left: 18px;
-
   width: 188px;
+  z-index: 150;
 }
 
 div.cartodb-popup.header.with-image div.cartodb-popup-header h4 {
@@ -448,7 +459,7 @@ div.cartodb-popup.header.with-image .cartodb-popup-header h1.order1 {
   display:block;
 }
 
-div.cartodb-popup.header.with-image .cartodb-popup-content-wrapper .cartodb-popup-content.order1 {
+div.cartodb-popup.header.with-image .cartodb-popup-content-wrapper .order1 {
   display:none;
 }
 
@@ -1135,7 +1146,6 @@ div.header.yellow h1 a:hover {
   }
 
   div.cartodb-popup p.empty {
-    padding-bottom:0;
     color:#999999;
     font-style: italic;
   }

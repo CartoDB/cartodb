@@ -13,6 +13,7 @@ bundle exec rake cartodb:db:load_functions
 * Added 'loading state' for infowindows.
 * Replaced submodule URL's with read-only ones
 * Adds new merge option: spatial merge.
+* Edit fields from the map.
 
 2.0.3 (31/01/13)
 -----

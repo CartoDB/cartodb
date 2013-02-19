@@ -446,6 +446,10 @@
         &:before {display:none;}
       }
       &:hover, &:focus {cursor:default;}
+
+      &.selected {
+        span.radio:before {display:block;}
+      }
     }
   }
 

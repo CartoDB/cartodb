@@ -17,6 +17,7 @@
 //= require_tree ../../../lib/assets/javascripts/cartodb/common
 //= require ../../../lib/assets/javascripts/cartodb/table/column_type_dropdown
 //= require ../../../lib/assets/javascripts/cartodb/table/export_dialog
+//= require ../../../lib/assets/javascripts/cartodb/table/editor_small_dialog
 //= require ../../../lib/assets/javascripts/cartodb/table/header_dropdown
 //= require ../../../lib/assets/javascripts/cartodb/table/header_view
 //= require ../../../lib/assets/javascripts/cartodb/table/infowindow
@@ -26,7 +27,6 @@
 //= require ../../../lib/assets/javascripts/cartodb/table/mapview
 ////= require ../../../lib/assets/javascripts/cartodb/table/filter_column_dialog
 //= require_tree ../../../lib/assets/javascripts/cartodb/table/views
-//= require_tree ../../../lib/assets/javascripts/cartodb/table/cell_editors
 //= require_tree ../../../lib/assets/javascripts/cartodb/table_public
 //= require ../../../lib/assets/javascripts/cartodb/table_public/table_public
 //= require_tree ../../../lib/assets/javascripts/cartodb/table/views

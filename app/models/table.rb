@@ -238,6 +238,7 @@ class Table < Sequel::Model(:user_tables)
       begin
         user_database.run(%Q{ALTER TABLE "#{self.name}" ADD PRIMARY KEY (cartodb_id)})
       rescue
+        @data_import.log_update("Renaming cartodb_id to invalid_cartodb_id") if @data_import
         user_database.run(%Q{ALTER TABLE "#{self.name}" ALTER COLUMN cartodb_id DROP DEFAULT})
         user_database.run(%Q{ALTER TABLE "#{self.name}" ALTER COLUMN cartodb_id DROP NOT NULL})
         user_database.run(%Q{DROP SEQUENCE IF EXISTS #{self.name}_cartodb_id_seq})

@@ -357,6 +357,8 @@ Creates a visualization inside the map_id DOM object:
     - zoom: initial zoom.
     - cartodb_logo: default to true, set to false if you want to remove the cartodb logo
     - infowindow: set to false if you want to disable the infowindow (enabled by default)
+    - sql: sql query applied.
+    - tile_style: cartocss applied.
 
 ##### cartodb.Vis.getLayers()
 Return an array of layers in the map. The first is the base layer.

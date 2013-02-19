@@ -147,6 +147,12 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
 cdb.geo.ui.Infowindow = cdb.core.View.extend({
   className: "infowindow",
 
+  spin_options: {
+    lines: 10, length: 0, width: 4, radius: 6, corners: 1, rotate: 0, color: 'rgba(0,0,0,0.5)',
+    speed: 1, trail: 60, shadow: false, hwaccel: true, className: 'spinner', zIndex: 2e9,
+    top: 'auto', left: 'auto', position: 'absolute'
+  },
+
   events: {
     // Close bindings
     "click .close":       "_closeInfowindow",
@@ -163,8 +169,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
   },
 
   initialize: function(){
-
-    var that = this;
+    var self = this;
 
     _.bindAll(this, "render", "setLatLng", "changeTemplate", "_updatePosition", "_update", "toggle", "show", "hide");
 
@@ -183,11 +188,11 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     this.mapView.map.bind('change',         this._updatePosition, this);
 
     this.mapView.bind('zoomstart', function(){
-      that.hide(true);
+      self.hide(true);
     });
 
     this.mapView.bind('zoomend', function() {
-      that.show(true);
+      self.show(true);
     });
 
     // Set min height to show the scroll
@@ -195,14 +200,63 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
 
     this.render();
     this.$el.hide();
-
   },
 
+  /**
+   *  Render infowindow content
+   */
+  render: function() {
+    if(this.template) {
+
+      // If there is content, destroy the jscrollpane first, then remove the content.
+      var $jscrollpane = this.$el.find(".cartodb-popup-content");
+      if ($jscrollpane.length > 0 && $jscrollpane.data() != null) {
+        $jscrollpane.data().jsp && $jscrollpane.data().jsp.destroy();
+      }
+
+      var attrs = _.clone(this.model.attributes);
+
+      // Mustache doesn't support 0 values, we have to convert number to strings
+      // before apply the template
+
+      var fields = this._fieldsToString(attrs);
+
+      this.$el.html($(this.template(fields)));
+
+      // Hello jscrollpane hacks!
+      // It needs some time to initialize, if not it doesn't render properly the fields
+      // Check the height of the content + the header if exists
+      var self = this;
+      setTimeout(function() {
+        var actual_height = self.$el.find(".cartodb-popup-content").outerHeight() + self.$el.find(".cartodb-popup-header").outerHeight();
+        if (self.minHeightToScroll <= actual_height)
+          self.$el.find(".cartodb-popup-content").jScrollPane({
+            maintainPosition:       false,
+            verticalDragMinHeight:  20
+          });
+      }, 1);
+
+      // If the infowindow is loading, show spin
+      this._checkLoading();
+
+      // If the template is 'cover-enabled', load the cover
+      this._loadCover();
+    };
+
+    return this;
+  },
+
+  /**
+   *  Change template of the infowindow
+   */
   changeTemplate: function(template_name) {
     this.template = cdb.templates.getTemplate(this.model.get("template_name"));
     this.render();
   },
 
+  /**
+   *  Compile template of the infowindow
+   */
   _compileTemplate: function() {
     this.template = new cdb.core.Template({
        template: this.model.get('template'),
@@ -212,6 +266,9 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     this.render();
   },
 
+  /**
+   *  Check event origin
+   */
   _checkOrigin: function(ev) {
     // If the mouse down come from jspVerticalBar
     // dont stop the propagation, but if the event
@@ -252,51 +309,61 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     return attrs;
   },
 
-  render: function() {
+  /**
+   *  Check if infowindow is loading the row content
+   */
+  _checkLoading: function() {
+    var content = this.model.get("content");
 
-    if(this.template) {
-
-      // If there is content, destroy the jscrollpane first, then remove the content.
-      var $jscrollpane = this.$el.find(".cartodb-popup-content");
-      if ($jscrollpane.length > 0 && $jscrollpane.data() != null) {
-        $jscrollpane.data().jsp && $jscrollpane.data().jsp.destroy();
-      }
-
-      var attrs = _.clone(this.model.attributes);
-
-      // Mustache doesn't support 0 values, we have to convert number to strings
-      // before apply the template
-
-      var fields = this._fieldsToString(attrs);
-
-      this.$el.html($(this.template(fields)));
-
-      // Hello jscrollpane hacks!
-      // It needs some time to initialize, if not it doesn't render properly the fields
-      // Check the height of the content + the header if exists
-      var that = this;
-      setTimeout(function() {
-        var actual_height = that.$el.find(".cartodb-popup-content").outerHeight() + that.$el.find(".cartodb-popup-header").outerHeight();
-        if (that.minHeightToScroll <= actual_height)
-          that.$el.find(".cartodb-popup-content").jScrollPane({
-            maintainPosition:       false,
-            verticalDragMinHeight:  20
-          });
-      }, 1);
-
-
-      // If the template is 'cover-enabled', load the cover
-      this._loadCover();
-
-    };
-
-    return this;
+    if (content.fields && content.fields.length == 1 && content.fields[0].loading) {
+      this._startSpinner()
+    } else {
+      this._stopSpinner()
+    }
   },
 
+  /**
+   *  Stop loading spinner
+   */
+  _stopSpinner: function() {
+    if (this.spinner)
+      this.spinner.stop()
+  },
+
+  /**
+   *  Start loading spinner
+   */
+  _startSpinner: function($el) {
+    this._stopSpinner();
+
+    var $el = this.$el.find('.loading');
+
+    if ($el) {
+      // Check if it is dark or other to change color
+      var template_dark = this.model.get('template_name').search('dark') != -1;
+
+      if (template_dark) {
+        this.spin_options.color = '#FFF';
+      } else {
+        this.spin_options.color = 'rgba(0,0,0,0.5)';
+      }
+
+      this.spinner = new Spinner(this.spin_options).spin();
+      $el.append(this.spinner.el);
+    }
+  },
+
+  /**
+   *  Stop loading spinner
+   */
   _containsCover: function() {
     return this.$el.find(".cartodb-popup.header").attr("data-cover") ? true : false;
   },
 
+
+  /**
+   *  Get cover URL
+   */
   _getCoverURL: function() {
 
     var content = this.model.get("content");
@@ -310,12 +377,11 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     }
 
     return false;
-
   },
 
   /**
-  * Attempts to load the cover URL and show it
-  */
+   *  Attempts to load the cover URL and show it
+   */
   _loadCover: function() {
 
     if (!this._containsCover()) return;
@@ -380,31 +446,63 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
       spinner.stop();
       $imageNotFound.fadeIn(250);
     });
-
   },
 
   /**
-  * Return true if the provided URL is valid
-  */
+   *  Return true if the provided URL is valid
+   */
   _isValidURL: function(url) {
-
     if (url) {
       var urlPattern = /(http|ftp|https):\/\/[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:\/~+#-]*[\w@?^=%&amp;\/~+#-])?/
       return url.match(urlPattern) != null ? true : false;
     }
 
     return false;
-
   },
 
+  /**
+   *  Toggle infowindow visibility
+   */
   toggle: function() {
     this.model.get("visibility") ? this.show() : this.hide();
   },
 
+  /**
+   *  Stop event propagation
+   */
   _stopPropagation: function(ev) {
     ev.stopPropagation();
   },
 
+  /**
+   *  Set loading state adding its content
+   */
+  setLoading: function() {
+    this.model.set({
+      content:  {
+        fields: [{
+          title: null,
+          value: 'Loading content...',
+          index: 0,
+          loading: true
+        }],
+        data: {}
+      }
+    })
+    return this;
+  },
+
+  /**
+   * Set the correct position for the popup
+   */
+  setLatLng: function (latlng) {
+    this.model.set("latlng", latlng);
+    return this;
+  },
+
+  /**
+   *  Close infowindow
+   */
   _closeInfowindow: function(ev) {
     if (ev) {
       ev.preventDefault()
@@ -415,42 +513,48 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
   },
 
   /**
-  * Set the correct position for the popup
-  */
-  setLatLng: function (latlng) {
-    this.model.set("latlng", latlng);
-    return this;
-  },
-
+   *  Set visibility infowindow
+   */
   showInfowindow: function() {
     this.model.set("visibility", true);
   },
 
+  /**
+   *  Show infowindow (update, pan, etc)
+   */
   show: function (no_pan) {
-    var that = this;
+    var self = this;
 
     if (this.model.get("visibility")) {
-      that.$el.css({ left: -5000 });
-      that._update(no_pan);
+      self.$el.css({ left: -5000 });
+      self._update(no_pan);
     }
-
   },
 
+  /**
+   *  Get infowindow visibility
+   */
   isHidden: function () {
     return !this.model.get("visibility");
   },
 
+  /**
+   *  Set infowindow to hidden
+   */
   hide: function (force) {
     if (force || !this.model.get("visibility")) this._animateOut();
   },
 
+  /**
+   *  Update infowindow
+   */
   _update: function (no_pan) {
 
     if(!this.isHidden()) {
       var delay = 0;
 
       if (!no_pan) {
-        var delay = this._adjustPan();
+        var delay = this.adjustPan();
       }
 
       this._updatePosition();
@@ -458,6 +562,9 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     }
   },
 
+  /**
+   *  Animate infowindow to show up
+   */
   _animateIn: function(delay) {
     if (!$.browser.msie || ($.browser.msie && $.browser.version.search("9.") != -1)) {
       this.$el.css({
@@ -477,15 +584,18 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     }
   },
 
+  /**
+   *  Animate infowindow to disappear
+   */
   _animateOut: function() {
     if (!$.browser.msie || ($.browser.msie && $.browser.version.search("9.") != -1)) {
-      var that = this;
+      var self = this;
       this.$el.animate({
         marginBottom: "-10px",
         opacity:      "0",
         display:      "block"
       }, 180, function() {
-        that.$el.css({display: "none"});
+        self.$el.css({display: "none"});
       });
     } else {
       this.$el.hide();
@@ -493,8 +603,8 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
   },
 
   /**
-  * Update the position (private)
-  */
+   *  Update the position (private)
+   */
   _updatePosition: function () {
     if(this.isHidden()) return;
 
@@ -512,8 +622,10 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     this.$el.css({ bottom: bottom, left: left });
   },
 
-  _adjustPan: function (callback) {
-
+  /**
+   *  Adjust pan to show correctly the infowindow
+   */
+  adjustPan: function (callback) {
     var offset = this.model.get("offset");
 
     if (!this.model.get("autoPan") || this.isHidden()) { return; }

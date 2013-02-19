@@ -406,7 +406,6 @@ L.Mixin.Events.fire = L.Mixin.Events.fireEvent;
 
 	var ie = !!window.ActiveXObject,
 	    ie6 = ie && !window.XMLHttpRequest,
-	    ie7 = ie && !document.querySelector,
 
 	    // terrible browser detection to work around Safari / iOS / Android browser bugs
 	    ua = navigator.userAgent.toLowerCase(),
@@ -414,6 +413,8 @@ L.Mixin.Events.fire = L.Mixin.Events.fireEvent;
 	    chrome = ua.indexOf('chrome') !== -1,
 	    android = ua.indexOf('android') !== -1,
 	    android23 = ua.search('android [23]') !== -1,
+	    ie7 = ie && !document.querySelector && ua.search('msie 7') !== -1,
+	    ie8 = ie && ua.search('msie 8') !== -1,
 
 	    mobile = typeof orientation !== undefined + '',
 	    msTouch = window.navigator && window.navigator.msPointerEnabled &&
@@ -463,6 +464,7 @@ L.Mixin.Events.fire = L.Mixin.Events.fireEvent;
 		ie: ie,
 		ie6: ie6,
 		ie7: ie7,
+        ie8: ie8,
 		webkit: webkit,
 
 		android: android,
@@ -875,26 +877,12 @@ L.DomUtil = {
 	},
 
 	setOpacity: function (el, value) {
-
 		if ('opacity' in el.style) {
 			el.style.opacity = value;
-
 		} else if ('filter' in el.style) {
-
-			var filter = false,
-			    filterName = 'DXImageTransform.Microsoft.Alpha';
-
-			// filters collection throws an error if we try to retrieve a filter that doesn't exist
-			try { filter = el.filters.item(filterName); } catch (e) {}
-
+			var filterName = 'alpha';
 			value = Math.round(value * 100);
-
-			if (filter) {
-				filter.Enabled = (value !== 100);
-				filter.Opacity = value;
-			} else {
-				el.style.filter += ' progid:' + filterName + '(opacity=' + value + ')';
-			}
+			el.style.filter = filterName + '(opacity=' + value + ')';
 		}
 	},
 
@@ -2270,12 +2258,20 @@ L.TileLayer = L.Class.extend({
 	},
 
 	_updateOpacity: function () {
-		L.DomUtil.setOpacity(this._container, this.options.opacity);
-
-		// stupid webkit hack to force redrawing of tiles
 		var i,
 		    tiles = this._tiles;
 
+		if (!L.Browser.ie7 && !L.Browser.ie8) {
+			L.DomUtil.setOpacity(this._container, this.options.opacity);
+		} else {
+			for (i in tiles) {
+				if (tiles.hasOwnProperty(i)) {
+					L.DomUtil.setOpacity(tiles[i], this.options.opacity);
+				}
+			}
+        }
+
+		// stupid webkit hack to force redrawing of tiles
 		if (L.Browser.webkit) {
 			for (i in tiles) {
 				if (tiles.hasOwnProperty(i)) {
@@ -2283,6 +2279,8 @@ L.TileLayer = L.Class.extend({
 				}
 			}
 		}
+
+
 	},
 
 	_initContainer: function () {
@@ -2555,6 +2553,11 @@ L.TileLayer = L.Class.extend({
 	_createTile: function () {
 		var tile = this._tileImg.cloneNode(false);
 		tile.onselectstart = tile.onmousemove = L.Util.falseFn;
+		// in IE7 and IE8 should be set per tile
+		if ((L.Browser.ie7 || L.Browser.ie8) && this.options.opacity !== undefined) {
+			L.DomUtil.setOpacity(tile, this.options.opacity);
+		}
+
 		return tile;
 	},
 

@@ -129,11 +129,32 @@
     width:190px;
     max-width: 190px;
     margin: 0;
-    padding: 0;
+    padding:0 0 7px;
     font:normal 13px "Helvetica",Arial;
     color:#333333;
-    padding:0 0 7px;
     word-wrap: break-word;
+  }
+
+  div.cartodb-popup p.loading {
+    position:relative;
+    display:block;
+    width:170px;
+    max-width: 170px;
+    margin: 0;
+    padding:0 0 0 30px;
+    font:normal 13px "Helvetica",Arial;
+    color:#888;
+    font-style:italic;
+    word-wrap: break-word;
+    line-height:21px;
+  }
+
+  div.cartodb-popup div.spinner {
+    position:absolute!important;
+    display:inline;
+    top:0;
+    left:0;
+    margin:10px 0 0 10px;
   }
 
   div.cartodb-popup p.empty {

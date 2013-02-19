@@ -35,7 +35,7 @@ cdb.vis.Overlay.register('header', function(data, vis) {
 
   var template = cdb.core.Template.compile(
     data.template || "\
-      {{#title}}<h1><a href='{{url}}'>{{title}}</a></h1>{{/title}}\
+      {{#title}}<h1><a href='#' onmousedown=\"window.open('{{url}}')\">{{title}}</a></h1>{{/title}}\
       {{#description}}<p>{{description}}</p>{{/description}}\
       {{#shareable}}\
         <div class='social'>\

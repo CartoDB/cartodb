@@ -1,7 +1,7 @@
-<% unless Cartodb.config[:google_analytics_ua].blank? %>
+<% unless ua.blank? %>
     <script type="text/javascript">
       var _gaq = _gaq || []; 
-      _gaq.push(['_setAccount', '<%= Cartodb.config[:google_analytics_ua] %>']);
+      _gaq.push(['_setAccount', '<%= ua %>']);
       _gaq.push(['_setDomainName', 'cartodb.com']);
       _gaq.push(['_setAllowLinker', true]);
       _gaq.push(['_setCustomVar', 1, 'Member Type', '<%= stringified_member_type %>', 1]);

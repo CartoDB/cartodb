@@ -227,7 +227,7 @@ class DataImport < Sequel::Model
       self.log << "BEGIN \n"
       self.error_code = nil
     end
-    self.log << "TRANSITION: #{from} => #{to}, #{Time.now}\n"
+    self.log << "TRANSITION: #{from} => #{to}"
   end
 
   def set_error_code(code)

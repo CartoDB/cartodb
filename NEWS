@@ -1,3 +1,7 @@
+2.0.21 (02//19//2013)
+-----
+- fixed problem with interaction in IE9
+
 2.0.20 (02//13//2013)
 -----
 - fixed problem with setOpacity in IE8

@@ -922,7 +922,7 @@ class Table < Sequel::Model(:user_tables)
         column_names[the_geom_index] = <<-STR
             CASE
             WHEN GeometryType(the_geom) = 'POINT' THEN
-              ST_AsGeoJSON(the_geom,6)
+              ST_AsGeoJSON(the_geom,8)
             WHEN (the_geom IS NULL) THEN
               ''
             ELSE
@@ -996,7 +996,7 @@ class Table < Sequel::Model(:user_tables)
     row = nil
     owner.in_database do |user_database|
       select = if schema.flatten.include?(THE_GEOM)
-        schema.select{|c| c[0] != THE_GEOM }.map{|c| %Q{"#{c[0]}"} }.join(',') + ",ST_AsGeoJSON(the_geom,6) as the_geom"
+        schema.select{|c| c[0] != THE_GEOM }.map{|c| %Q{"#{c[0]}"} }.join(',') + ",ST_AsGeoJSON(the_geom,8) as the_geom"
       else
         schema.map{|c| %Q{"#{c[0]}"} }.join(',')
       end
@@ -1091,7 +1091,7 @@ class Table < Sequel::Model(:user_tables)
     owner.in_database do |user_database|
       #table_name = "csv_export_temp_#{self.name}"
       export_schema = self.schema.map{|c| c.first} - [THE_GEOM]
-      export_schema += ["ST_AsGeoJSON(the_geom, 6) as the_geom"] if self.schema.map{|c| c.first}.include?(THE_GEOM)
+      export_schema += ["ST_AsGeoJSON(the_geom, 8) as the_geom"] if self.schema.map{|c| c.first}.include?(THE_GEOM)
       hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
         "database" => database_name,
         :logger => ::Rails.logger,

@@ -495,7 +495,6 @@ class Table < Sequel::Model(:user_tables)
   def name=(value)
     return if value == self[:name] || value.blank?
     new_name = get_valid_name(value)
-    owner.in_database.rename_table(name, new_name) unless new?
 
     # Do not keep track of name changes until table has been saved
     @name_changed_from = self.name if !new? && self.name.present?
@@ -1575,6 +1574,7 @@ SQL
     if @name_changed_from.present? && @name_changed_from != name
       # update metadata records
       $tables_metadata.rename(Table.key(database_name,@name_changed_from), key)
+      owner.in_database.rename_table(@name_changed_from, name)
 
       # update tile styles
       begin

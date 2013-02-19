@@ -92,13 +92,6 @@ describe Layer do
           .with("obj.http.X-Cache-Channel ~ #{@table.varnish_key}.*").returns(true)
         @layer.save
       end
-
-      it "should update its maps updated_at" do
-        t = Time.now + 3.minutes
-        Timecop.freeze t
-        @layer.save
-        @map.updated_at.should == t
-      end
     end
 
     context "when the type is not cartodb" do

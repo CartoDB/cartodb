@@ -250,6 +250,7 @@
           z-index:1;
 
           a.next, a.back {
+            margin: 4px 0 0 0;
             @include text-indent();
             padding:0;
             height:25px;

@@ -4,12 +4,13 @@ module DataRepository
     module S3
       class UrlParser
         def initialize(url)
-          @url = url
+          @url = URI(url)
         end #initialize
 
         def parse
-          object_name = url.split('/').last
-          bucket_name = url.split('/')[-2]
+          parts = url.path.split('/').delete_if { |part| part.empty? }
+          bucket_name = parts.first
+          object_name = parts[1..-1].join('/')
           [bucket_name, object_name]
         end #parse
 

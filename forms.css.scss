@@ -31,6 +31,36 @@
   }
 }
 
+@mixin default-textarea {
+  textarea {
+    position:relative;
+    margin: 0;
+    padding: 11px;
+    border: 1px solid #C0C1C2;
+    background: #FFF;
+    @include border-radius(4px);
+    font-size: 15px;
+    font-family: $text-fonts;
+    color: #666666;
+    z-index:2;
+
+    &:focus {
+      outline:none;
+      border-color:#999999;
+      @include box-shadow(rgba(0,0,0,0.1) 0 0 2px 2px);
+    }
+
+    &::-webkit-input-placeholder {
+      color:rgba(#666666,0.3);
+    }
+
+    &:-moz-placeholder {
+      color:rgba(#666666,0.3); 
+    }
+  }
+}
+
+
 @mixin default-upload {
 
 }

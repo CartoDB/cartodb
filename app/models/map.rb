@@ -24,17 +24,22 @@ class Map < Sequel::Model
 
   DEFAULT_BOUNDS = { minlon: -179, maxlon: 179, minlat: -85.0511, maxlat: 85.0511 }
 
-  # TODO remove this
-  # We'll need to join maps and tables for this version
-  # but they are meant to be totally independent entities
-  # in the future
   attr_accessor :table_id
+
+  def before_save
+    super
+    self.updated_at = Time.now
+  end
+
   def after_save
-    Table.filter(user_id: self.user_id, id: self.table_id).
-      update(map_id: self.id) unless self.table_id.blank?
+    super
+    # Keep updated related table map_id (temporal fix)
+    if self.table_id.present?
+      related_table = Table.filter(user_id: self.user_id, id: self.table_id).first
+      related_table.this.update(map_id: self.id) if self.table_id != related_table.map_id
+    end
 
     self.invalidate_varnish_cache
-    self.affected_tables.map &:invalidate_varnish_cache
   end
 
   def public_values
@@ -53,28 +58,6 @@ class Map < Sequel::Model
   def invalidate_varnish_cache
     t = self.tables_dataset.select(:id, :user_id, :name).first
     CartoDB::Varnish.new.purge("obj.http.X-Cache-Channel ~ #{t.varnish_key}:vizjson")
-  end
-
-  ##
-  # Returns an array of tables used on the map
-  #
-  def affected_tables
-    queries = layers.map { |l| 
-      if l.options.present?
-        l.options['query'].blank? ? nil : l.options['query'] 
-      else
-        nil
-      end
-    }.compact
-    aff_tables = queries.map { |q|
-      begin
-        xml = user.in_database.fetch("EXPLAIN (FORMAT XML) #{q}").first[:"QUERY PLAN"]
-        Nokogiri::XML(xml).search("Relation-Name").map(&:text).map { |table_name| Table.find_by_identifier(user.id, table_name) }
-      rescue Sequel::DatabaseError
-      end
-    }.flatten.compact.uniq
-
-    aff_tables.empty? ? self.tables : aff_tables
   end
 
   def recalculate_bounds!
@@ -99,5 +82,14 @@ class Map < Sequel::Model
     result[:miny] = result[:miny].to_f < DEFAULT_BOUNDS[:minlat] ? DEFAULT_BOUNDS[:minlat] : result[:miny].to_f > DEFAULT_BOUNDS[:maxlat] ? DEFAULT_BOUNDS[:maxlat] : result[:miny].to_f
 
     return result
+  end
+
+  ##
+  # This is the updated_at value we're using on vizjsons,
+  # represents the last time the map metadata or the data
+  # stored on the related tables have changed
+  #
+  def viz_updated_at
+    [self.updated_at, tables.first.data_last_modified].compact.max
   end
 end

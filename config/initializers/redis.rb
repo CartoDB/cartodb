@@ -13,10 +13,12 @@ end
 # Redis interfaces definition:
 redis_conf = Cartodb.config[:redis].select { |k, v| [:host, :port].include?(k) }
 
-$tables_metadata = Redis.new(redis_conf.merge(:db => 0))
+$tables_metadata      = Redis.new(redis_conf.merge(:db => 0))
 # TO ACTIVATE when decided how to do it more efficiently without filling the Redis
-#$queries_log    = Redis.new(Cartodb.config[:redis].merge(:db => 1))
-$threshold       = Redis.new(redis_conf.merge(:db => 2))
-$api_credentials = Redis.new(redis_conf.merge(:db => 3))
-$users_metadata  = Redis.new(redis_conf.merge(:db => 5))
-#$layers_metadata = Redis.new(redis_conf.merge(:db => 7))
+#$queries_log         = Redis.new(Cartodb.config[:redis].merge(:db => 1))
+$threshold            = Redis.new(redis_conf.merge(:db => 2))
+$api_credentials      = Redis.new(redis_conf.merge(:db => 3))
+$users_metadata       = Redis.new(redis_conf.merge(:db => 5))
+$redis_migrator_logs  = Redis.new(redis_conf.merge(:db => 6))
+#$layers_metadata     = Redis.new(redis_conf.merge(:db => 7))
+

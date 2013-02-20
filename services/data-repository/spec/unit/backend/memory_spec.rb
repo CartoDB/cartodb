@@ -54,5 +54,16 @@ describe Repository do
       @repository.keys.must_equal [key.to_s]
     end
   end #keys
+
+  describe '#exists?' do
+    it 'returns if key exists' do
+      data  = { id: 5 }
+      key   = data.fetch(:id)
+
+      @repository.exists?(key.to_s).must_equal false
+      @repository.store(key, data)
+      @repository.exists?(key.to_s).must_equal true
+    end
+  end #exists?
 end # Repository
 

@@ -453,6 +453,12 @@ class User < Sequel::Model
     (remaining_table_quota && remaining_table_quota <= 0) ? true : false
   end
 
+  def account_type_name
+    self.account_type.gsub(" ", "_").downcase
+    rescue
+    ""
+  end
+
   #can be nil table quotas
   def remaining_table_quota
     if self.table_quota.present?

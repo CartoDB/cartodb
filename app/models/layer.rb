@@ -37,8 +37,8 @@ class Layer < Sequel::Model
   def after_save
     super
 
-    # Update related maps updated_at, this also invalidates the cached vizjson
-    maps.each { |map| map.save }
+    # Invalidate varnish cache (vizjson) for all the maps including this layer
+    maps.each { |map| map.invalidate_varnish_cache }
 
     # Invalidate related tables cache on varnish (only for carto layers)
     affected_tables.map &:invalidate_varnish_cache if kind == 'carto'
@@ -50,11 +50,18 @@ class Layer < Sequel::Model
   def affected_tables
     if maps.first.present? && options.present? && options[:query].present?
       begin
-        xml = maps.first.user.in_database["EXPLAIN (FORMAT XML) #{options[:query]}"]
-          .first[:"QUERY PLAN"]
-        Nokogiri::XML(xml).search("Relation-Name").map(&:text).map { |table_name| 
-          Table.select(:id, :name, :user_id).where(user_id: maps.first.user.id, name: table_name).all
-        }.flatten.compact.uniq
+        query = options[:query]
+        tables_per_statement = maps.first.user.in_database.select { 
+          cdb_querytables(Sequel.function(:cdb_querystatements, query))
+        }.all
+
+        tables_per_statement.map do |s|
+          s[:cdb_querytables].split(',').map do |table_name|
+            table_name.gsub!(/[\{\}]/, '') 
+            Table.select(:id, :name, :user_id)
+              .where(user_id: maps.first.user.id, name: table_name).all
+          end
+        end.flatten.compact.uniq
       rescue Sequel::DatabaseError
         []
       end

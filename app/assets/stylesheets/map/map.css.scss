@@ -78,6 +78,7 @@ div.map {
 
       .info {
         @include inline-block();
+        padding-top:2px;
 
         h5, .name {
           font-size: 13px;
@@ -95,7 +96,7 @@ div.map {
           &:before {
             position:absolute;
             content:' ';
-            top:-6px;
+            top:-3px;
             right:-9px;
             margin:8px 0 0 5px;
             border-left:3px solid transparent;
@@ -297,7 +298,7 @@ div.map {
     width:100%;
     height:auto;
     z-index:1;
-
+    
     // Move attributions in different providers
     .leaflet-right .leaflet-control, #cartodb_attribution {
       margin-right: 62px!important;
@@ -423,31 +424,69 @@ section.block.noGeoRef {
 
 /* FOOTER EDIT BUTTONS  for infowindow */
 
+@mixin edit-bottom-states($x,$y,$c1,$c2,$c3,$c4) {
+  @include background(sprite($icons-sprites, infowindow-edit-tools, $offset-x: $x, $offset-y: $y) no-repeat, $c1); // IE
+  @include background(sprite($icons-sprites, infowindow-edit-tools, $offset-x: $x, $offset-y: $y) no-repeat, linear-gradient($c1,$c2));
+
+  &:hover, &:active, &:focus {
+    @include background(sprite($icons-sprites, infowindow-edit-tools, $offset-x: $x, $offset-y: $y) no-repeat, $c3); // IE
+    @include background(sprite($icons-sprites, infowindow-edit-tools, $offset-x: $x, $offset-y: $y) no-repeat, linear-gradient($c1,$c4));
+  }
+}
+
 div.cartodb-edit-buttons {
-  border-top:1px solid rgba(204,204,204,0.5);
+  border-top:1px solid #E5E5E5;
   display:block;
   width:188px;
   padding:11px 0 6px;
-  margin-top:10px;
+  margin:10px 0 0;
+  letter-spacing: -4px;
+
+  // CartoDB id
+  .cartodb_id {
+    @include inline-block();
+    color: #999;
+    font-size: 13px;
+    margin-top:8px;
+    letter-spacing:0px;
+    word-spacing:0px;
+  }
+
+  // Edit buttons
+  div.right {width:91px; margin-top:5px;}
+
+  a.button {
+    @include inline-block();
+    width:29px;
+    height:24px;
+    border-right:0;
+    margin:0;
+    padding:0!important;
+    margin:0;
+    text-indent: -9999px;
+    font-size:0;
+    line-height:0;
+    letter-spacing:0px;
+    @include border-radius(0);
+
+    &.edit_data {@include edit-bottom-states(-4, 4, #F9F9F9, #EBEBEB, #DEDEDE, #E1E1E1);}
+    &.edit_geo {@include edit-bottom-states(-35, 4, #F9F9F9, #EBEBEB, #DEDEDE, #E1E1E1);}
+    &.remove {@include edit-bottom-states(-66, 4, #F9F9F9, #EBEBEB, #DEDEDE, #E1E1E1);}
+
+    &:first-child {@include border-left-radius(3px);}
+    &:last-child {@include border-right-radius(3px); border-right:1px solid #B0B0B0;}
+  }
 }
 
-div.cartodb-edit-buttons a.button.grey.small {
-  margin-left: 5px;
-  font-size: 13px;
-  padding: 6px 8px;
+// Dark buttons
+div.cartodb-popup.dark  {
+  div.cartodb-edit-buttons {
+    border-color:#676767;
+    a.button {
+      border-color:#676767!important;
+      &.edit_data {@include edit-bottom-states(-4, -18, #222, #222, #222, #222);}
+      &.edit_geo {@include edit-bottom-states(-35, -18, #222, #222, #222, #222);}
+      &.remove {@include edit-bottom-states(-66, -18, #222, #222, #222, #222);}
+    }
+  }
 }
-
-div.cartodb-edit-buttons .button:first-child {
-  margin-left:0;
-}
-
-div.cartodb-edit-buttons .cartodb_id {
-  display:inline-block;
-  *display:inline;
-  vertical-align:top;
-  zoom:1;
-  color: #999;
-  font-size: 13px;
-  margin-top:8px;
-}
-

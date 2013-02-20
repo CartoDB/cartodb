@@ -113,6 +113,11 @@ Add CartoDB PostgreSQL PPA
 sudo add-apt-repository  ppa:cartodb/postgresql
 ```
 
+Add Pitti PostgreSQL PPA
+```bash
+sudo add-apt-repository ppa:pitti/postgresql
+```
+
 ## Some dependencies ##
 
 unp is required for archive file upload support
@@ -173,6 +178,16 @@ sudo apt-get install postgresql-plpython-9.1
 the geospatial extension that allows PostgreSQL to support geospatial
 queries. This is the heart of CartoDB!
 
+NB. You may need to install libxml2 and the latest version of GEOS.
+```bash
+sudo apt-get install libxml2-dev libxml2
+sudo apt-get update
+sudo apt-get upgrade
+sudo apt-get install libgeos-3.3.4
+sudo apt-get install libgeos-dev
+```
+
+Use 'sudo' when necessary. (for wget, tar, make install)
 ```bash
 cd /usr/local/src
 wget http://download.osgeo.org/postgis/source/postgis-2.0.2.tar.gz
@@ -184,8 +199,7 @@ make install
 ```
 
 Finally, CartoDB depends on a geospatial database template named
-`template_postgis`. In the example script below, make sure that the
-path to each SQL file is correct:
+`template_postgis`. Copy the example script below.
 
 ```bash
 #!/usr/bin/env bash
@@ -194,19 +208,46 @@ createdb -E UTF8 template_postgis
 createlang -d template_postgis plpgsql
 psql -d postgres -c \
  "UPDATE pg_database SET datistemplate='true' WHERE datname='template_postgis'"
-psql -d template_postgis -f $POSTGIS_SQL_PATH/postgis.sql
-psql -d template_postgis -f $POSTGIS_SQL_PATH/spatial_ref_sys.sql
-psql -d template_postgis -f $POSTGIS_SQL_PATH/legacy.sql
-psql -d template_postgis -f $POSTGIS_SQL_PATH/rtpostgis.sql
-psql -d template_postgis -f $POSTGIS_SQL_PATH/topology.sql
+psql -d template_postgis -f postgis/postgis.sql
+psql -d template_postgis -f spatial_ref_sys.sql
+psql -d template_postgis -f postgis/legacy.sql
+psql -d template_postgis -f taster/rt_pg/rtpostgis.sql
+psql -d template_postgis -f topology/topology.sql
 psql -d template_postgis -c "GRANT ALL ON geometry_columns TO PUBLIC;"
 psql -d template_postgis -c "GRANT ALL ON spatial_ref_sys TO PUBLIC;"
+```
+Paste it into a new file:
+```bash
+sudo vi pg.sh
+```
+Give it execution privileges, switch to 'postgres' user, go back to that directory, run it, then logout from user postgres:
+```bash
+sudo chmod 777 pg.sh
+sudo su -u postgres
+cd /usr/local/src/postgis-2.0.2
+./pg.sh
+logout
+```
+
+Before installing Ruby, make sure that readline is installed:
+```bash
+sudo apt-get install libreadline-dev
 ```
 
 ## Install Ruby ##
 We implemented CartoDB in the [Ruby](http://ruby-lang.org) programming language,
-so you'll need to install Ruby 1.9.2.
-
+so you'll need to install Ruby 1.9.2. The best way to do this is with the Ruby Version Manager. Follow the instructions below, originally found on the following page:
+http://www.andrehonsberg.com/article/install-rvm-ubuntu-1204-linux-for-ruby-193
+Make sure you swap [username], for your own in the 4th line. This could take a significant amount of time.
+```bash
+sudo apt-get install build-essential git-core
+sudo apt-get install curl
+bash -s stable < <(curl -s https://raw.github.com/wayneeseguin/rvm/master/binscripts/rvm-installer)
+echo '[[ -s "/home/[username]/.rvm/scripts/rvm" ]] && source "/home/[username]/.rvm/scripts/rvm"' >> ~/.bashrc
+source ~/.bashrc
+type rvm | head -1
+rvm install 1.9.2
+```
     
 ## Install Node.js ##
 The tiler API and the SQL API are both [Node.js](http://nodejs.org) apps.
@@ -222,14 +263,25 @@ Components of CartoDB, like Windshaft or the SQL API depend on [Redis](http://re
 sudo apt-get install redis-server
 ```
 
+In order to install the python dependencies, you'll need this:
+```bash
+sudo apt-get install python-setuptools
+```
+
 ## Install Python dependencies ##
 This need to be done from the cartodb20 local copy.
 To install the Python modules that CartoDB depends on, you can use
 `easy_install`:
 
 ```bash
+$ cd ~/cartodb20
 $ easy_install pip
 $ pip install -r python_requirements.txt
+```
+
+## Install libxslt1
+```bash
+sudo apt-get install libxslt1-dev python-libxslt1
 ```
 
 ## Install Varnish
@@ -254,7 +306,7 @@ The [CartoDB SQL API](https://github.com/Vizzuality/CartoDB-SQL-API)
 component powers the SQL queries over HTTP. To install it:
 
 ```bash
-git clone git@github.com:Vizzuality/CartoDB-SQL-API.git
+git clone https://github.com/Vizzuality/CartoDB-SQL-API
 cd CartoDB-SQL-API
 git checkout master
 npm install
@@ -263,15 +315,17 @@ npm install
 To run CartoDB SQL API in development mode, simply type:
 
 ```bash
+mv config/environments/development.js.example config/environments/development.js
 node app.js development
 ```
+This must be running, so open a new terminal window to continue, or rerun the above line from the same location later.
 
 ## Install Windshaft-cartodb ##
 The [Windshaft-cartodb](https://github.com/Vizzuality/Windshaft-cartodb)
 component powers the CartoDB Maps API. To install it:
 
 ```bash
-git clone git@github.com:Vizzuality/Windshaft-cartodb.git
+git clone https://github.com/Vizzuality/Windshaft-cartodb
 cd Windshaft-cartodb
 git checkout master
 npm install
@@ -279,8 +333,10 @@ npm install
 To run Windshaft-cartodb in development mode, simply type:
 
 ```bash
+mv config/environments/development.js.example config/environments/development.js
 node app.js development
 ```
+This must be running, so open a new terminal window to continue, or rerun the above line from the same location later.
 
 ## Install local instance of cold beer ##
 
@@ -319,7 +375,12 @@ sudo bundle install
 mv config/app_config.yml.sample config/app_config.yml
 vim config/app_config.yml
 
-# Configure your postgres database connection details
+# It is necessary to set the Postgres user password
+sudo -u postgres psql postgres
+\password
+\q
+
+# Configure your postgres database connection details, using the password set above
 mv config/database.yml.sample config/database.yml
 vim config/database.yml
 

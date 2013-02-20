@@ -1,7 +1,13 @@
 
   /*
    * Custom objects
+   * - Horizontal slider
+   * - Form color
+   * - Form spinner
    * - Custom radiobutton
+   * - Custom checkbox
+   * - iPhone style switch
+   * - Rounded white button
    */
 
   @import "compass";
@@ -374,14 +380,23 @@
     vertical-align:middle;
     font-weight:bold;
     color:#397DB9;
+    outline:none;
+
+
+    &.hidden_radio span.radio { display:none; }
+    &.hidden_radio {
+      font-weight: normal;
+      cursor: default;
+      &:hover { text-decoration:none; }
+    }
 
     span.radio {
       position:relative;
       @include inline-block();
       vertical-align:top;
-      width:10px;
-      height:10px;
+      @include size(10px);
       margin:2px 7px 0 0;
+
       @include border-radius(10px);
       border:1px solid #397DBA;
       background:white;
@@ -392,14 +407,13 @@
         position:absolute;
         top:2px;
         left:2px;
-        width:6px;
-        height:6px;
+        @include size(6px);
         background:#333333;
         @include border-radius(25px);
       }
     }
 
-    &:hover {
+    &:hover, &:focus {
       span.radio{
         border-color:#333333;
         &:before {
@@ -414,12 +428,10 @@
 
       span.radio{
         border-color:#333333;
-        &:before {
-          display:block;
-        }
+        &:before { display:block; }
       }
 
-      &:hover {
+      &:hover, &:focus {
         cursor:default;
         text-decoration:none;
       }
@@ -428,14 +440,15 @@
     &.disabled {
       text-decoration:none;
       color:#397DBA;
+
       span.radio{
         border-color:#397DBA;
-        &:before {
-          display:none;
-        }
+        &:before {display:none;}
       }
-      &:hover {
-        cursor:default;
+      &:hover, &:focus {cursor:default;}
+
+      &.selected {
+        span.radio:before {display:block;}
       }
     }
   }
@@ -571,13 +584,13 @@
     }
 
     &:hover {cursor:pointer!important;}
-    
+
     &.working {
       @include opacity(0.5);
       &:hover {cursor:default!important;}
     }
 
-    
+
   }
 
 

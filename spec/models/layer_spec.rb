@@ -92,13 +92,6 @@ describe Layer do
           .with("obj.http.X-Cache-Channel ~ #{@table.varnish_key}.*").returns(true)
         @layer.save
       end
-
-      it "should update its maps updated_at" do
-        t = Time.now + 3.minutes
-        Timecop.freeze t
-        @layer.save
-        @map.updated_at.should == t
-      end
     end
 
     context "when the type is not cartodb" do
@@ -132,7 +125,7 @@ describe Layer do
       map = Map.create(:user_id => @user.id, :table_id => @table.id)
       layer = Layer.create(
         kind: 'carto',
-        options: { query: "select * from #{@table.name}, #{table2.name}" }
+        options: { query: "select * from #{@table.name}, #{table2.name};select cartodb_id from unexisting_table;selecterror;select 1;select * from #{table2.name}" }
       )
       map.add_layer(layer)
 

@@ -331,32 +331,32 @@
           a.next, a.back {
             @include text-indent();
             padding:0;
-            height:35px;
-            width:35px;
+            height:25px;
+            width:30px;
           }
 
           a.next {
             @include border-left-radius(0);
             @include text-indent();
-            @include background(sprite($icons-sprites, unredo, $offset-x:-37, $offset-y:14) no-repeat #F9F9F9);//IE
-            @include background(sprite($icons-sprites, unredo, $offset-x:-37, $offset-y:14) no-repeat, linear-gradient(#F9F9F9,#EBEBEB));
+            @include background(sprite($icons-sprites, unredo, $offset-x:-38, $offset-y:9) no-repeat #F9F9F9);//IE
+            @include background(sprite($icons-sprites, unredo, $offset-x:-38, $offset-y:9) no-repeat, linear-gradient(#F9F9F9,#EBEBEB));
             border-left:0;
 
             &:hover, &:active {
-              @include background(sprite($icons-sprites, unredo, $offset-x:-37, $offset-y:-8) no-repeat #DEDEDE);//IE
-              @include background(sprite($icons-sprites, unredo, $offset-x:-37, $offset-y:-8) no-repeat, linear-gradient(#F9F9F9,#DEDEDE));
+              @include background(sprite($icons-sprites, unredo, $offset-x:-38, $offset-y:9) no-repeat #DEDEDE);//IE
+              @include background(sprite($icons-sprites, unredo, $offset-x:-38, $offset-y:9) no-repeat, linear-gradient(#F9F9F9,#DEDEDE));
             }
           }
 
           a.back {
             @include border-right-radius(0);
             @include text-indent();
-            @include background(sprite($icons-sprites, unredo, $offset-x:12, $offset-y:14) no-repeat #EBEBEB); //IE
-            @include background(sprite($icons-sprites, unredo, $offset-x:12, $offset-y:14) no-repeat, linear-gradient(#F9F9F9,#EBEBEB));
+            @include background(sprite($icons-sprites, unredo, $offset-x:9, $offset-y:9) no-repeat #EBEBEB); //IE
+            @include background(sprite($icons-sprites, unredo, $offset-x:9, $offset-y:9) no-repeat, linear-gradient(#F9F9F9,#EBEBEB));
 
             &:hover, &:active {
-              @include background(sprite($icons-sprites, unredo, $offset-x:12, $offset-y:-8) no-repeat #DEDEDE);//IE
-              @include background(sprite($icons-sprites, unredo, $offset-x:12, $offset-y:-8) no-repeat, linear-gradient(#F9F9F9,#DEDEDE));
+              @include background(sprite($icons-sprites, unredo, $offset-x:9, $offset-y:9) no-repeat #DEDEDE);//IE
+              @include background(sprite($icons-sprites, unredo, $offset-x:9, $offset-y:9) no-repeat, linear-gradient(#F9F9F9,#DEDEDE));
             }
           }
 
@@ -364,12 +364,12 @@
             opacity:0.6;
 
             &.next, &.next:active, &.next:hover {
-              @include background(sprite($icons-sprites, unredo, $offset-x:-37, $offset-y:14) no-repeat #F9F9F9);//IE
-              @include background(sprite($icons-sprites, unredo, $offset-x:-37, $offset-y:14) no-repeat, linear-gradient(#F9F9F9,#EBEBEB));
+              @include background(sprite($icons-sprites, unredo, $offset-x:-38, $offset-y:9) no-repeat #F9F9F9);//IE
+              @include background(sprite($icons-sprites, unredo, $offset-x:-38, $offset-y:9) no-repeat, linear-gradient(#F9F9F9,#EBEBEB));
             }
             &.back, &.back:active, &.back:hover {
-              @include background(sprite($icons-sprites, unredo, $offset-x:12, $offset-y:14) no-repeat #EBEBEB);//IE
-              @include background(sprite($icons-sprites, unredo, $offset-x:12, $offset-y:14) no-repeat, linear-gradient(#F9F9F9,#EBEBEB));
+              @include background(sprite($icons-sprites, unredo, $offset-x:9, $offset-y:9) no-repeat #EBEBEB);//IE
+              @include background(sprite($icons-sprites, unredo, $offset-x:9, $offset-y:9) no-repeat, linear-gradient(#F9F9F9,#EBEBEB));
             }
           }
 

@@ -1,11 +1,51 @@
-# coding: UTF-8'
+# encoding: UTF-8'
+require 'sequel'
+require 'active_model'
+require 'fileutils'
+require 'uuidtools'
+require_relative './user'
+require_relative './table'
+require_relative '../../lib/cartodb/errors'
+require_relative '../../lib/cartodb_stats'
+require_relative '../../lib/cartodb/mini_sequel'
+require_relative '../../lib/importer/lib/cartodb-importer'
+require_relative '../../services/track_record/track_record/log'
+require_relative '../../config/initializers/redis'
+
 class DataImport < Sequel::Model
   include CartoDB::MiniSequel
   include ActiveModel::Validations
 
+  REDIS_LOG_KEY_PREFIX = 'importer'
+
   attr_accessor :append, :migrate_table, :table_copy, :from_query
+  attr_reader   :log
 
   PUBLIC_ATTRIBUTES = %W{ id user_id table_id data_type table_name state success error_code queue_id get_error_text tables_created_count }
+
+  def after_initialize
+    instantiate_log
+  end #after_initialize
+
+  def instantiate_log
+    uuid = self.logger
+    if valid_uuid?(uuid)
+      self.log  = TrackRecord::Log.new(
+                    id:     uuid.to_s, 
+                    prefix: REDIS_LOG_KEY_PREFIX
+                  ).fetch 
+    else
+      self.log  = TrackRecord::Log.new(prefix: REDIS_LOG_KEY_PREFIX)
+    end
+  end #instantiate_log
+  
+  def valid_uuid?(text)
+    !!UUIDTools::UUID.parse(text)
+  rescue TypeError => exception
+    false
+  rescue ArgumentError => exception
+    false
+  end #instantiate_log
 
   def before_destroy
     self.remove_uploaded_resources
@@ -34,7 +74,7 @@ class DataImport < Sequel::Model
     after_transition any => :complete do
       CartodbStats.increment_imports()
       self.success = true
-      self.logger << "SUCCESS!\n"
+      self.log << "SUCCESS!\n"
       self.save
     end
     
@@ -49,7 +89,7 @@ class DataImport < Sequel::Model
       end
 
       self.success = false
-      self.logger << "ERROR!\n"
+      self.log << "ERROR!\n"
       self.save
     end
 
@@ -143,11 +183,12 @@ class DataImport < Sequel::Model
         e = CartoDB::InvalidFile.new    e.message    if file?
         e = CartoDB::TableCopyError.new e.message    if table_copy?
       end
-      CartoDB::Logger.info "Exception on tables#create", e.inspect
+      self.log << ("Exception on tables#create: " + e.inspect)
     end
   end
 
   def before_save
+    self.logger = self.log.id unless self.logger.present?
     self.updated_now
   end
 
@@ -163,12 +204,12 @@ class DataImport < Sequel::Model
   end
 
   def log_update(update_msg)
-    self.logger << "UPDATE: #{update_msg}\n"
+    self.log << "UPDATE: #{update_msg}\n"
     self.save
   end
 
   def log_error(error_msg)
-    self.logger << "#{error_msg}\n"
+    self.log << "#{error_msg}\n"
     if self.error_code.nil?
       self.error_code = 99999
     end
@@ -176,17 +217,17 @@ class DataImport < Sequel::Model
   end
 
   def log_warning(error_msg)
-    self.logger << "WARNING: #{error_msg}\n"
+    self.log << "WARNING: #{error_msg}\n"
     self.save
   end
 
   def log_state_change(transition)
     event, from, to = transition.event, transition.from_name, transition.to_name
     if !self.logger
-      self.logger = "BEGIN \n"
+      self.log << "BEGIN \n"
       self.error_code = nil
     end
-    self.logger << "TRANSITION: #{from} => #{to}, #{Time.now}\n"
+    self.log << "TRANSITION: #{from} => #{to}"
   end
 
   def set_error_code(code)
@@ -207,14 +248,18 @@ class DataImport < Sequel::Model
   end
 
   def log_json
-    if self.logger.nil?
-      ["empty"]
-    else
-      self.logger.split("\n")
-    end
-  end
+    return jsonize(self.log.to_s) if valid_uuid?(self.logger)
+    return jsonize(self.logger.to_s)
+  end #log_json
+
+  def jsonize(text)
+    return text.split("\n") if text.present?
+    return ["empty"]
+  end #jsonize
 
   private
+
+  attr_writer :log
 
   def append_to_existing
 
@@ -285,52 +330,14 @@ class DataImport < Sequel::Model
       refresh
     else
       reload
-      CartoDB::Logger.info "Errors on import#create", @new_table.errors.full_messages
+      message = "Errors on import#create" + @new_table.errors.full_messages
+      self.log << message
     end
   end
 
-  def get_valid_name(raw_new_name = nil)
-    # TODO add a delete table check in the cases where a table has become ghost
-    # probably in the after_destroy method in table.rb
-
-    # set defaults and sanity check
-    raw_new_name = (raw_new_name || "untitled_table").sanitize
-
-    # tables cannot be blank, start with numbers or underscore
-    raw_new_name = "table_#{raw_new_name}" if raw_new_name =~ /^[0-9]/
-    raw_new_name = "table#{raw_new_name}"  if raw_new_name =~ /^_/
-    raw_new_name = "untitled_table"        if raw_new_name.blank?
-
-    # Do a basic check for the new name. If it doesn't exist, let it through (sanitized)
-    return raw_new_name if name_available?(raw_new_name)
-
-    # Happens if we're duplicating a table.
-    # First get candidates from the base name
-    # eg: "simon_24" => "simon"
-    if match = /(.+)_\d+$/.match(raw_new_name)
-      raw_new_name = match[1]
-    end
-
-    # return if no dupe
-    return raw_new_name if name_available?(raw_new_name)
-
-    # increment trailing number (max+1) if dupe
-    max_candidate = name_candidates(raw_new_name).sort_by {|c| -c[/_(\d+)$/,1].to_i}.first
-
-    if max_candidate =~ /(.+)_(\d+)$/
-      return $1 + "_#{$2.to_i + 1}"
-    else
-      return max_candidate + "_2"
-    end
-  end
-
-  def name_available?(name)
-    name_candidates(name).include?(name) ? false : name
-  end
-
-  def name_candidates(name)
-    # FYI: Native sequel (table_owner.in_database.tables) filters tables that start with sql or pg
-    table_owner.tables.filter(:name.like(/^#{name}/)).select_map(:name)
+  def get_valid_name(name)
+    Table.get_valid_table_name(name, 
+      name_candidates: table_owner.tables.select_map(:name))
   end
 
   def table_owner

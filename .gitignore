@@ -23,4 +23,3 @@ coverage
 .spin.rb
 .sass-cache
 public/js/lib/cdb.js
-app/assets/images/icons-*.png

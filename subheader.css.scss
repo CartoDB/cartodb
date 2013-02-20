@@ -26,24 +26,37 @@
       position:relative;
       @include inline-block();
       width:100%;
-      height:145px;
+      height:132px;
       margin:0;
       background:white;
       border-bottom:1px solid #CDCDCD;
       @include single-box-shadow(rgba(0,0,0,0.07), 0, 4px, 3px, 0, false);
-      z-index:2;
 
       ul {
         letter-spacing:-4px;
+
         li {
           @include inline-block();
-          width:239px;
-          padding:40px;
-          border-right: 1px solid #E5E5E5;
+          width:230px;
+          padding:35px;
+          border-left: 1px solid #E5E5E5;
           letter-spacing:0;
+          height:64px;
 
-          &:first-child {width:279px; padding-left:0}
-          &:last-child {width:279px; padding-right:0; border:none;}
+          &:first-child { width:254px; padding-left:0;  border:none; }
+          &:last-child  { width:100px; padding-right:0; border:none; }
+
+          .badge {
+            margin: 4px 0 0 0;
+            @include size(93px, 74px);
+
+            &.free      { @include icons-sprite(badge_free_server); }
+            &.magellan  { @include icons-sprite(badge_magellan); }
+            &.john_snow { @include icons-sprite(badge_john_snow); }
+            &.coronelli { @include icons-sprite(badge_coronelli); }
+            &.dedicated { @include icons-sprite(badge_dedicated_server); }
+
+          }
 
           div.progress {
             display:block;
@@ -51,6 +64,7 @@
             background:#E7E7E7; //IE
             @include background(linear-gradient(#E5E5E5,#E9E9E9));
             @include border-radius(3px);
+
             span {
               position:relative;
               @include inline-block();

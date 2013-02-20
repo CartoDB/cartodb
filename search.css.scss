@@ -1,0 +1,39 @@
+@import "compass";
+@import "../common/mixins";
+@import "../common/fonts";
+@import "../common/sprites";
+@import "../common/vars";
+
+div.search {
+  position:absolute;
+  width: 100%;
+  padding: 13px 0;
+
+  border-bottom: 1px solid #E1E1E1;
+
+  input[type="text"] {
+
+    width: 600px;
+
+    border:none;
+    background:none;
+    outline:none;
+
+    font-size: 13px;
+    letter-spacing:0;
+
+    &::-webkit-input-placeholder { font-style: italic; color: #397DB8; }
+    &:-moz-placeholder           { font-style: italic; color: #397DB8; }
+    &::-moz-placeholder          { font-style: italic; color: #397DB8; }
+    &:-ms-input-placeholder      { font-style: italic; color: #397DB8; }
+
+  }
+
+  i {
+    display:block;
+    @include size(15px);
+    @include inline-block();
+    @include icons-sprite(lens_blue);
+  }
+
+}

@@ -383,7 +383,7 @@ header { // general header
           &.selected {
             margin:0;
 
-            color: #2A5A8C;
+            color: rgba(black,0.7);
             background:#fff;
 
             &:hover {text-decoration:none; cursor:default;}

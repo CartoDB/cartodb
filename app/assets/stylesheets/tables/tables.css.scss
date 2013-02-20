@@ -142,7 +142,6 @@
 
         @include box-sizing(border-box);
         margin: 0 0 27px 0;
-        /*width: 885px;*/
 
         clear:both;
         overflow:hidden;
@@ -164,10 +163,8 @@
       section > .head > h2 {
         float:left;
 
-        /*@include opacity(0.25);*/
         width:auto;
 
-        /*color:#B9B9B9;*/
         color: #c3c3c3;
 
         font-size:25px;

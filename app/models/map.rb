@@ -86,10 +86,9 @@ class Map < Sequel::Model
 
   ##
   # This is the updated_at value we're using on vizjsons,
-  # represents the last time the map metadata or the data
-  # stored on the related tables have changed
+  # represents the last time the tiles have changed
   #
   def viz_updated_at
-    [self.updated_at, tables.first.data_last_modified].compact.max
+    [tables.first.data_last_modified, data_layers.map(&:updated_at)].flatten.compact.max
   end
 end

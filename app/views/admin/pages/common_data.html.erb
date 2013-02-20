@@ -12,20 +12,23 @@
 
   <script type="text/javascript">
 
+    function importData(e) {
+
+      e.stopPropagation();
+      e.preventDefault();
+
+      dashboard.createTable._importExample(e);
+
+    }
+
     $(function() {
 
       var $a = $("a.copy");
       $a.attr('data-tipsy', 'Copy to your tables');
       $a.tipsy({ title:"data-tipsy", fade: true, gravity: 's' });
 
-      $a.on("click", function(e) {
-
-        e.stopPropagation();
-        e.preventDefault();
-
-        dashboard.createTable._importExample(e);
-
-      });
+      $a.on("click", importData);
+      $(".name").on("click", importData);
 
     });
 

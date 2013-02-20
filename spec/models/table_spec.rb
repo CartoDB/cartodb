@@ -51,18 +51,18 @@ describe Table do
       table2 = Table.new
       table2.user_id = @user.id
       table2.save.reload
-      table2.name.should == "untitled_table_2"
+      table2.name.should == "untitled_table_1"
     end
 
     it "should create default associated map and layers" do
-      table = create_table({:name => "epaminondas__pantulis", :user_id => @user.id})
+      table = create_table({:name => "epaminondas_pantulis", :user_id => @user.id})
 
       table.map.should be_an_instance_of(Map)
       table.map.values.slice(:zoom, :bounding_box_sw, :bounding_box_ne, :provider).should == { zoom: 3, bounding_box_sw: "[0, 0]", bounding_box_ne: "[0, 0]", provider: 'leaflet'}
       table.map.layers.count.should == 2
       table.map.layers.map(&:kind).should == ['tiled', 'carto']
       table.map.data_layers.first.infowindow["fields"].should == [{"name"=>"cartodb_id", "title"=>true, "position"=>1}, {"name"=>"description", "title"=>true, "position"=>2}, {"name"=>"name", "title"=>true, "position"=>3}]
-      table.map.data_layers.first.options["table_name"].should == "epaminondas__pantulis"
+      table.map.data_layers.first.options["table_name"].should == "epaminondas_pantulis"
     end
 
     it "should return a sequel interface" do
@@ -844,14 +844,14 @@ describe Table do
 
   end
   context "preimport tests" do
-    it "rename a table to a name that exists should add a _2 to the new name" do
+    it "rename a table to a name that exists should add a _1 to the new name" do
       table = new_table :name => 'empty_file', :user_id => @user.id
       table.save.reload
       table.name.should == 'empty_file'
 
       table2 = new_table :name => 'empty_file', :user_id => @user.id
       table2.save.reload
-      table2.name.should == 'empty_file_2'
+      table2.name.should == 'empty_file_1'
     end
 
     it "should escape table names starting with numbers" do
@@ -859,11 +859,6 @@ describe Table do
       table.save.reload
 
       table.name.should == "table_123_table_name"
-
-      table = new_table :user_id => @user.id, :name => '_table_name'
-      table.save.reload
-
-      table.name.should == "table_table_name"
     end
 
     it "should get a valid name when a table when a name containing the current name exists" do
@@ -882,8 +877,8 @@ describe Table do
       table = create_table :name => 'Wadus The Table', :user_id => @user.id
       table.name.should == "wadus_the_table"
 
-      # Renaming starts at 2
-      2.upto(25) do |n|
+      # Renaming starts at 1
+      1.upto(25) do |n|
         table = create_table :name => 'Wadus The Table', :user_id => @user.id
         table.name.should == "wadus_the_table_#{n}"
       end

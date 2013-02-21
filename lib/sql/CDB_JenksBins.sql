@@ -26,6 +26,7 @@ DECLARE
     curr_result NUMERIC[];
     best_result NUMERIC[];
     seedtarget TEXT;
+    quant NUMERIC[];
 BEGIN
     -- get the total size of our row
     element_count := array_length(in_array, 1); --array_upper(in_array, 1) - array_lower(in_array, 1); 
@@ -43,21 +44,29 @@ BEGIN
     -- get our mean value
     SELECT avg(v) INTO arr_mean FROM (  SELECT unnest(in_array) as v ) x; 
 
-    LOOP  
-        IF i > breaks THEN  EXIT;  END IF;  
-        bot = floor((element_count / breaks) * (i - 1)) + 1;
+    -- assume best is actually Quantile
+    SELECT CDB_QuantileBins(in_array, breaks) INTO quant;
+
+    LOOP 
+        IF i = 1 THEN 
+            bot = 1;
+        ELSE 
+            -- use last top to find this bot
+            bot = top+1;
+        END IF;
         IF i = breaks THEN
-            top = array_upper(in_array, 1);
+            top = element_count;
         ELSE
-            top = floor((element_count / breaks) * i);
+            SELECT count(*) INTO top FROM ( SELECT unnest(in_array) as v) x WHERE v <= quant[i];
         END IF;
         IF i = 1 THEN 
             classes = ARRAY[ARRAY[bot,top]]; 
         ELSE 
             classes = ARRAY_CAT(classes,ARRAY[bot,top]); 
         END IF;
-        i := i+1; 
-    END LOOP; 
+        IF i > breaks THEN EXIT; END IF;
+        i = i+1;
+    END LOOP;
 
     best_result = CDB_JenksBinsIteration( in_array, breaks, classes, invert, element_count, arr_mean);
 

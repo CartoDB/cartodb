@@ -14,7 +14,9 @@ defaults: &defaults
   sql_api_port:       8080
   api_requests_service_url: ''
   developers_host:    'http://developers.localhost.lan:3000'
-
+  google_analytics:
+    primary:          ''
+    embeds:           ''
   varnish_management:
     critical: true
     host: '127.0.0.1'
@@ -116,8 +118,6 @@ test:
 
 staging:
   <<: *defaults
-  google_analytics_ua: 'UA-20934186-3'
 
 production:
   <<: *defaults
-  google_analytics_ua: 'UA-20934186-3'

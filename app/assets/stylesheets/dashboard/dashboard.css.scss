@@ -365,11 +365,11 @@
         div.loader {
           position:absolute;
           display:none;
-          top:48px;
-          right:40px;
+          top:42px;
+          left: 311px;
           width:38px;
           height:16px;
-          background:image-url("layout/loader.gif") no-repeat 0 0;
+          background:image-url("layout/loader_gray.gif") no-repeat 0 0;
         }
       }
 
@@ -714,7 +714,7 @@
       float:left;
       display:block;
       margin:20px auto 0;
-      width:638px;
+      width:880px;
       height:20px;
 
       ul {

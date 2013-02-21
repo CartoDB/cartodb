@@ -161,7 +161,7 @@ module CartoDB
     },
     3201 => {
       title: 'Geometry Collection not supported',
-      what_about: "We are working to support more formats every day, but currently we cannot take mixed geometry types. Take a look at your data source and see if other formats are avialable, otherwise, look into tools like OGR to split this file into valid ESRI Shapefiles prior to importing. "
+      what_about: "We are working to support more formats every day, but currently we cannot take mixed geometry types. Take a look at your data source and see if other formats are available, otherwise, look into tools like OGR to split this file into valid ESRI Shapefiles prior to importing. "
     },
     4000 => {
       title: 'Raster errors',

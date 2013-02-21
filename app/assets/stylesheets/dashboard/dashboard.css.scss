@@ -1,7 +1,6 @@
 
   /*
-   * List of tables or visualizations for your dashboard or public tables
-   * TODO: Update file name
+   * List of tables and visualizations for your dashboard or public tables
    */
 
   @import "compass";
@@ -271,9 +270,11 @@
         padding:100px 36px 0 40px;
         background:image-url("layout/empty_dashboard_bkg.png") repeat-y 0 0;
         overflow:hidden;
+
         div.left {
           width:280px;
           padding:23px 0 0 0;
+
           h2 {font-size:27px;line-height: 27px}
         }
 
@@ -282,6 +283,7 @@
         }
 
       }
+
       div.foot {
         ul {
           display:block;
@@ -595,41 +597,6 @@
               &:hover {
                 background:white;
               }
-            }
-
-            &.drop:not(.alreadyContainsTag) {
-              background:#F7F7F7;
-              & + li div.table_info {border-color:white}
-              &:after {content:' '; position:absolute; left:0; bottom:0px; width:100%; height:1px; background:#E8E8E8;}
-              &:before {content:' '; position:absolute; left:0; top:0px; width:100%; height:1px; background:#E8E8E8}
-
-              span.tags {
-                position:relative;
-
-                &:before {
-                  position:absolute;
-                  content:'+';
-                  top:0;
-                  left:-18px;
-                  width:18px;
-                  height:14px;
-                  padding:2px 0;
-                  background:#397DBA;
-                  font:bold 14px "Arial";
-                  line-height:normal;
-                  color:white;
-                  text-align:center;
-                  @include border-radius(2px);
-                }
-              }
-            }
-
-            &.drop.alreadyContainsTag {
-              background-color: #FFE7E7;
-              @include transform-style("linear");
-              @include transition-property("background-color");
-              @include transition-duration(500ms);
-
             }
 
             &:last-child {

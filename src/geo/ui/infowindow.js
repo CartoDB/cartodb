@@ -386,16 +386,15 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
 
     if (!this._containsCover()) return;
 
-    var self = this;
-
     var
-    $cover         = this.$el.find(".cover"),
-    $imageNotFound = this.$el.find(".image_not_found");
-
-    var url = this._getCoverURL();
+    self = this,
+    $cover = this.$(".cover"),
+    $shadow = this.$(".shadow"),
+    url = this._getCoverURL();
 
     if (!this._isValidURL(url)) {
-      $imageNotFound.fadeIn(250);
+      $shadow.hide();
+      cdb.log.info("Header image url not valid");
       return;
     }
 
@@ -407,8 +406,6 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
 
     // create the image
     var $img = $cover.find("img");
-
-    $imageNotFound.hide();
 
     $img.hide(function() {
       this.remove();
@@ -444,7 +441,6 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     })
     .error(function(){
       spinner.stop();
-      $imageNotFound.fadeIn(250);
     });
   },
 

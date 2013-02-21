@@ -1,4 +1,3 @@
-
 <article class="no_tables <%= 'active' if @tables_count == 0 %>">
 <div class="inner">
   <section class="block longer empty">
@@ -30,9 +29,14 @@
   <section class="left tables">
   <div class="head">
     <h2>
+      <i></i>
       <%= pluralize(@tables_count, 'table', 'tables') %>
     </h2>
     <div class="loader"></div>
+    <a href="#" class="toggle"></a>
+    <div class="order">
+      Order by <a href="#" class="selected">modified</a> / <a href="#">created</a>
+    </div>
   </div>
   <div class="content">
     <ul id="tablelist">

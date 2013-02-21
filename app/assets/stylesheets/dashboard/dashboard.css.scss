@@ -1,7 +1,6 @@
 
   /*
-   * List of tables or visualizations for your dashboard or public tables
-   * TODO: Update file name
+   * List of tables and visualizations for your dashboard or public tables
    */
 
   @import "compass";
@@ -142,7 +141,6 @@
 
         @include box-sizing(border-box);
         margin: 0 0 27px 0;
-        /*width: 885px;*/
 
         clear:both;
         overflow:hidden;
@@ -164,10 +162,8 @@
       section > .head > h2 {
         float:left;
 
-        /*@include opacity(0.25);*/
         width:auto;
 
-        /*color:#B9B9B9;*/
         color: #c3c3c3;
 
         font-size:25px;
@@ -274,9 +270,11 @@
         padding:100px 36px 0 40px;
         background:image-url("layout/empty_dashboard_bkg.png") repeat-y 0 0;
         overflow:hidden;
+
         div.left {
           width:280px;
           padding:23px 0 0 0;
+
           h2 {font-size:27px;line-height: 27px}
         }
 
@@ -285,6 +283,7 @@
         }
 
       }
+
       div.foot {
         ul {
           display:block;
@@ -366,11 +365,11 @@
         div.loader {
           position:absolute;
           display:none;
-          top:48px;
-          right:40px;
+          top:42px;
+          left: 311px;
           width:38px;
           height:16px;
-          background:image-url("layout/loader.gif") no-repeat 0 0;
+          background:image-url("layout/loader_gray.gif") no-repeat 0 0;
         }
       }
 
@@ -600,41 +599,6 @@
               }
             }
 
-            &.drop:not(.alreadyContainsTag) {
-              background:#F7F7F7;
-              & + li div.table_info {border-color:white}
-              &:after {content:' '; position:absolute; left:0; bottom:0px; width:100%; height:1px; background:#E8E8E8;}
-              &:before {content:' '; position:absolute; left:0; top:0px; width:100%; height:1px; background:#E8E8E8}
-
-              span.tags {
-                position:relative;
-
-                &:before {
-                  position:absolute;
-                  content:'+';
-                  top:0;
-                  left:-18px;
-                  width:18px;
-                  height:14px;
-                  padding:2px 0;
-                  background:#397DBA;
-                  font:bold 14px "Arial";
-                  line-height:normal;
-                  color:white;
-                  text-align:center;
-                  @include border-radius(2px);
-                }
-              }
-            }
-
-            &.drop.alreadyContainsTag {
-              background-color: #FFE7E7;
-              @include transform-style("linear");
-              @include transition-property("background-color");
-              @include transition-duration(500ms);
-
-            }
-
             &:last-child {
               &:hover,&.drop {
                 @include border-bottom-radius(4px);
@@ -682,7 +646,7 @@
       // When scroll, aside has to be fixed
       &.moving {
         position:fixed;
-        margin-left:41px;
+        margin-left:52px;
       }
 
       // Too much scroll -> positionate to the bottom
@@ -750,7 +714,7 @@
       float:left;
       display:block;
       margin:20px auto 0;
-      width:638px;
+      width:880px;
       height:20px;
 
       ul {

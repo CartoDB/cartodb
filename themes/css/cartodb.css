@@ -223,11 +223,21 @@ div.cartodb-popup.header div.cartodb-popup-header h4 {
 }
 
 div.cartodb-popup.header div.cartodb-popup-header h1 {
+  width:100%;
   margin:0;
   font:bold 21px "Helvetica Neue", "Helvetica", Arial;
   color:#FFFFFF;
   line-height:23px;
   text-shadow: 0 1px rgba(0,0,0,0.5);
+}
+
+div.cartodb-popup.header div.cartodb-popup-header h1 a {
+  color:white;
+  font-size:21px;
+}
+
+div.cartodb-popup.header div.cartodb-popup-header h1 a:hover {
+  text-decoration: underline;
 }
 
 div.cartodb-popup.header div.cartodb-popup-header h1.loading {
@@ -259,22 +269,6 @@ div.cartodb-popup.header a.cartodb-popup-close-button {
 div.cartodb-popup.header a.cartodb-popup-close-button:hover {
   background-position:-226px -66px;
 }
-
-
-/* EMBED MAP */
-div.header.blue h1 {
-  color: #1F4C7F;
-}
-
-div.header.blue h1 a {
-  color: #1F4C7F;
-}
-
-div.header.blue h1 a:hover {
-  color: #225386;
-  text-decoration: underline;
-}
-
 /**
  *  CartoDB2.0 Infowindow header theme green
  */
@@ -299,21 +293,6 @@ div.cartodb-popup.header.green a.cartodb-popup-close-button {
 div.cartodb-popup.header.green a.cartodb-popup-close-button:hover {
   background-position:-478px -66px;
 }
-
-/* EMBED MAP */
-div.header.green h1 {
-  color: #00916D;
-}
-
-div.header.green h1 a {
-  color: #00916D;
-}
-
-div.header.green h1 a:hover {
-  color: #008E6A;
-  text-decoration: underline;
-}
-
 /**
  *  CartoDB2.0 Infowindow header theme orange
  */
@@ -337,22 +316,7 @@ div.cartodb-popup.header.orange a.cartodb-popup-close-button {
 
 div.cartodb-popup.header.orange a.cartodb-popup-close-button:hover {
   background-position:-982px -66px;
-}
-
-/* EMBED MAP */
-div.header.orange h1 {
-  color: #CC2929;
-}
-
-div.header.orange h1 a {
-  color: #CC2929;
-}
-
-div.header.orange h1 a:hover {
-  color: #CC2929;
-  text-decoration: underline;
-}
-/**
+}/**
  *  CartoDB2.0 Infowindow header theme with-image
  */
 
@@ -444,11 +408,11 @@ div.cartodb-popup.header.with-image div.cartodb-popup-header span.separator {
 }
 
 div.cartodb-popup.header.with-image a.cartodb-popup-close-button {
-  background:url('../img/headers.png') no-repeat -1235px -40px;
+  background:url('../img/headers.png') no-repeat -226px -40px;
 }
 
 div.cartodb-popup.header.with-image a.cartodb-popup-close-button:hover {
-  background-position:-1235px -66px;
+  background-position:-226px -66px;
 }
 
 div.cartodb-popup.header.with-image .cartodb-popup-header h1 {
@@ -462,23 +426,6 @@ div.cartodb-popup.header.with-image .cartodb-popup-header h1.order1 {
 div.cartodb-popup.header.with-image .cartodb-popup-content-wrapper .order1 {
   display:none;
 }
-
-/* EMBED MAP */
-div.header.with-image h1 {
-  color: #CCC;
-  z-index: 100;
-}
-
-div.header.with-image h1 a {
-  color: #CCC;
-}
-
-div.header.with-image h1 a:hover {
-  color: #333;
-  text-decoration: underline;
-}
-
-
 /**
  *  CartoDB2.0 Infowindow header theme yellow
  */
@@ -502,22 +449,7 @@ div.cartodb-popup.header.yellow a.cartodb-popup-close-button {
 
 div.cartodb-popup.header.yellow a.cartodb-popup-close-button:hover {
   background-position:-730px -66px;
-}
-
-/* EMBED MAP */
-div.header.yellow h1 {
-  color: #D8832A;
-}
-
-div.header.yellow h1 a {
-  color: #D8832A;
-}
-
-div.header.yellow h1 a:hover {
-  color: #CC7A29;
-  text-decoration: underline;
-}
-/* required styles */
+}/* required styles */
 
 .leaflet-map-pane,
 .leaflet-tile,
@@ -974,18 +906,6 @@ div.header.yellow h1 a:hover {
 	-webkit-border-radius: 2px;
 	        border-radius: 2px;
 	}
-
-#legend { position: absolute; right: 50px; top: 20px; width: 250px; padding: 10px; background: white; z-index: 99; }
-#legend .title, 
-#legend .row { position: relative; float: left; width: 240px; background: none; padding: 5; margin: 0; }
-#legend .title {font-weight: bold; font-size: 24px;}
-#legend .row span { float: left; padding: 0; margin: 0; }
-
-#legend .row span.box { width: 20px; height: 20px; background: black; margin: 2px; border: 1px solid #BBB; }
-#legend .row span.line { width: 20px; height: 6px; background: black; margin: 2px; border: 1px solid #BBB;  margin-top: 11px;}
-#legend .row span.circle { width: 20px; height: 20px; background: black; margin: 2px; border: 1px solid #BBB;  border-radius: 50%;}
-
-#legend .row span.value { line-height: 18px; margin: 5px; max-width: 192px;}
 
 /**
  *  CartoDB2.0 theme (DEFAULT)

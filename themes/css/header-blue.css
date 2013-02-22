@@ -33,11 +33,21 @@ div.cartodb-popup.header div.cartodb-popup-header h4 {
 }
 
 div.cartodb-popup.header div.cartodb-popup-header h1 {
+  width:100%;
   margin:0;
   font:bold 21px "Helvetica Neue", "Helvetica", Arial;
   color:#FFFFFF;
   line-height:23px;
   text-shadow: 0 1px rgba(0,0,0,0.5);
+}
+
+div.cartodb-popup.header div.cartodb-popup-header h1 a {
+  color:white;
+  font-size:21px;
+}
+
+div.cartodb-popup.header div.cartodb-popup-header h1 a:hover {
+  text-decoration: underline;
 }
 
 div.cartodb-popup.header div.cartodb-popup-header h1.loading {
@@ -68,19 +78,4 @@ div.cartodb-popup.header a.cartodb-popup-close-button {
 
 div.cartodb-popup.header a.cartodb-popup-close-button:hover {
   background-position:-226px -66px;
-}
-
-
-/* EMBED MAP */
-div.header.blue h1 {
-  color: #1F4C7F;
-}
-
-div.header.blue h1 a {
-  color: #1F4C7F;
-}
-
-div.header.blue h1 a:hover {
-  color: #225386;
-  text-decoration: underline;
 }

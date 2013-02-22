@@ -23,17 +23,3 @@ div.cartodb-popup.header.green a.cartodb-popup-close-button {
 div.cartodb-popup.header.green a.cartodb-popup-close-button:hover {
   background-position:-478px -66px;
 }
-
-/* EMBED MAP */
-div.header.green h1 {
-  color: #00916D;
-}
-
-div.header.green h1 a {
-  color: #00916D;
-}
-
-div.header.green h1 a:hover {
-  color: #008E6A;
-  text-decoration: underline;
-}

@@ -35,6 +35,10 @@
     &.visualizations aside .head { margin-top: 25px; }
     &.tables aside .head { margin-top: 55px; }
 
+    // TODO: fix this
+    &.tables.active { padding-top: 0!important; }
+    &.visualizations.active { padding-bottom: 0!important; }
+
     // Common elements for visualizations and tables
     &.visualizations,
     &.tables {
@@ -62,7 +66,27 @@
         width: 94px;
       }
 
+      .toggle {
+        display:block;
+        float:right;
+
+        width: 15px;
+
+        height: 8px;
+        margin: 18px 0 0 18px;
+        @include icons-sprite(burguer);
+        border:none;
+
+        &.active {
+          @include icons-sprite(burguer_line);
+        }
+
+      }
+
       .order {
+        float:right;
+        margin: 14px 0 0 0;
+
         font-size:15px;
         color: #878787;
 
@@ -105,12 +129,9 @@
         display:block;
         width:auto!important; // TODO: try to remove this
 
-        // Space when there is description or not
-        &.more { margin:13px 0 0; }
-        &.less { margin:3px 0 0; }
+        /*margin: 4px 0 0 0;*/
 
         a {
-
           padding:2px 7px;
 
           @include size(auto, 14px);
@@ -124,7 +145,6 @@
           border:1px solid #C7D1D9;
 
           &:hover { color:#333333; }
-
         }
 
         a.exists {
@@ -152,11 +172,6 @@
           margin: 0 7px 5px 0;
         }
 
-      }
-
-      section > .head > .order {
-        float:right;
-        margin: 14px 0 0 0;
       }
 
       section > .head > h2 {
@@ -377,6 +392,8 @@
       div.content {
         padding:0;
 
+        &.hidden { display: none; }
+
         ul {
           li {
             border:none;
@@ -422,12 +439,14 @@
             } //li:hover
 
             div.table_info {
-              padding: 22px 0 18px 0;
+              @include box-sizing(border-box);
+              min-height:102px;
+              padding: 22px 0 33px 0;
               border-top:1px solid #EDEDED;
               overflow:hidden;
 
-              .left {width:32%;}
-              .right {width:66%;}
+              .left  { width:32%; }
+              .right { width:66%; }
 
               hgroup {
                 display:block;
@@ -435,7 +454,7 @@
 
                 &.options {
                   position:absolute;
-                  top:32px;
+                  top:27px;
                   right:30px;
                   display:block;
                   width:auto;
@@ -594,9 +613,7 @@
 
               p {font-family: $text-fonts2; letter-spacing:0;}
 
-              &:hover {
-                background:white;
-              }
+              &:hover { background:none; }
             }
 
             &:last-child {
@@ -795,20 +812,20 @@
 
   }
 
-@-webkit-keyframes pulsate {
+  @-webkit-keyframes pulsate {
     0% {background-color: #C7D1D9; color: #666}
     50% {background-color: #2483B4; color: #FFF}
     100% {background-color: #C7D1D9; color: #666}
-}
+  }
 
-@-moz-keyframes pulsate {
+  @-moz-keyframes pulsate {
     0% {background-color: #C7D1D9; color: #666}
     50% {background-color: #2483B4; color: #FFF}
     100% {background-color: #C7D1D9; color: #666}
-}
+  }
 
-keyframes pulsate {
+  keyframes pulsate {
     0% {background-color: #C7D1D9; color: #666}
     50% {background-color: #2483B4; color: #FFF}
     100% {background-color: #C7D1D9; color: #666}
-}
+  }

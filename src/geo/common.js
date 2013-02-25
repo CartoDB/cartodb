@@ -66,14 +66,18 @@ CartoDBLayerCommon.prototype = {
     }
   },
 
+  _tilerHost: function() {
+    var opts = this.options;
+    return opts.tiler_protocol +
+         "://" + ((opts.user_name) ? opts.user_name+".":"")  +
+         opts.tiler_domain +
+         ((opts.tiler_port != "") ? (":" + opts.tiler_port) : "");
+  },
 
   _host: function(subhost) {
     var opts = this.options;
     if (opts.no_cdn) {
-      return opts.tiler_protocol +
-         "://" + ((opts.user_name) ? opts.user_name+".":"")  +
-         opts.tiler_domain +
-         ((opts.tiler_port != "") ? (":" + opts.tiler_port) : "");
+      return this._tilerHost();
     } else {
       var h = opts.tiler_protocol + "://";
       if (subhost) {
@@ -165,6 +169,22 @@ CartoDBLayerCommon.prototype = {
         formatter: function(options, data) { return data; }
     };
   },
+
+  layerToken: function(layerGroup, callback) {
+    var ajax = this.options.ajax || $.ajax;
+    ajax({
+      method: 'POST',
+      url: this._tilerHost() + '/layergroup',
+      data: JSON.stringify(layerGroup),
+      success: function(data) {
+        callback(data);
+      },
+      error: function() {
+        callback(null);
+      }
+    });
+  },
+
 
   error: function(e) {
     console.log(e.error);

@@ -8,17 +8,19 @@ module TrackRecord
   class Entry
     include Virtus
 
-    PAYLOAD_TYPE_ERROR      = 'Payload must be a Hash'
+    FIELD_SEPARATOR         = ' || '
 
     attribute :id,          String
     attribute :payload,     Hash, default: {}
     attribute :timestamp,   Float
     attribute :created_at,  Time
+    attribute :prefix,      String
 
-    def initialize(payload, repository=DataRepository::Repository.new)
-      raise(ArgumentError, PAYLOAD_TYPE_ERROR) unless payload.is_a?(Hash)
+    def initialize(payload, prefix=nil, repository=DataRepository::Repository.new)
       @repository = repository
-      payload     = JSON.parse(payload.to_json)
+      @prefix     = prefix
+      payload     = { message: payload } unless payload.respond_to?(:to_hash)
+      payload     = JSON.parse(payload.to_hash.to_json)
       self.id     = payload.delete('id')
 
       initialize_attributes_with(payload)
@@ -45,21 +47,22 @@ module TrackRecord
     end #to_hash
 
     def to_s
-      [created_at, payload.values].join(' || ')
+      [created_at.utc.iso8601, payload.values].join(FIELD_SEPARATOR)
     end #to_s
 
-    def persist
-      repository.store(storage_key, self.to_hash)
+    def persist(options={})
+      repository.store(storage_key, self.to_hash, options)
       self
     end #persist
 
     def fetch
+      return self unless repository.exists?(storage_key)
       self.attributes = repository.fetch(storage_key)
       self
     end #fetch
 
     def storage_key
-      "entry:#{id}"
+      [prefix, "entry:#{id}"].join(':')
     end #storage_key
 
     private

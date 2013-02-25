@@ -10,7 +10,7 @@ module DataRepository
         end #initialize
 
         def store(key, data)
-          redis.sadd key, *(data.to_a)
+          workaround_until_resque_supports_latest_redis_gem(key, data)
         end #store
 
         def fetch(key)
@@ -20,6 +20,12 @@ module DataRepository
         private
 
         attr_reader :redis
+
+        def workaround_until_resque_supports_latest_redis_gem(key, data)
+          redis.multi do
+            data.to_a.each { |item| redis.sadd(key, item) }
+          end
+        end #workaround_until_resque_supports_latest_redis_gem
       end # Set
     end # Redis
   end # Backend

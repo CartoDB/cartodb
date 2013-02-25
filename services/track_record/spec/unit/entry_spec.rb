@@ -14,6 +14,11 @@ describe Entry do
       entry = Entry.new(text: 'bogus')
       entry.payload.fetch('text').must_equal 'bogus'
     end
+
+    it 'adds a default :message key in the payload if none given' do
+      entry = Entry.new('bogus')
+      entry.payload.keys.must_equal ['message']
+    end
   end #initialize
 
   describe '#payload' do
@@ -103,16 +108,19 @@ describe Entry do
       entry.to_s.must_match /bogus/
     end
 
-    it 'adjust times to UTC' do
-      entry = Entry.new(text: 'bogus')
-      entry.to_s.must_match /UTC/
+    it 'converts the created_at time to ISO 8601' do
+      entry         = Entry.new(text: 'bogus')
+      iso8601_time  = entry.to_s.split(Entry::FIELD_SEPARATOR).first
+
+      Time.iso8601(iso8601_time)  .must_be_instance_of Time
+      Time.iso8601(iso8601_time)  .must_equal entry.created_at
     end
   end #to_s
 
   describe '#persist' do
     it 'persists this entry in the data repository' do
       repository  = DataRepository::Repository.new
-      entry       = Entry.new({ text: 'bogus' }, repository)
+      entry       = Entry.new({ text: 'bogus' }, nil, repository)
 
       entry.persist
       repository.keys.must_include entry.storage_key
@@ -122,11 +130,11 @@ describe Entry do
   describe '#fetch' do
     it 'updates the entry with data retrieved from the repository' do
       repository      = DataRepository::Repository.new
-      entry           = Entry.new({ text: 'bogus' }, repository)
+      entry           = Entry.new({ text: 'bogus' }, nil, repository)
 
       entry.persist
 
-      retrieved_entry = Entry.new({ id: entry.id }, repository)
+      retrieved_entry = Entry.new({ id: entry.id }, nil, repository)
 
       retrieved_entry.payload.must_be_empty
       retrieved_entry.fetch

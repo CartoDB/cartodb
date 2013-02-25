@@ -1,4 +1,8 @@
-2.0.4 (DD/MM/YY)
+2.0.5 (DD/MM/YY)
+-----
+* Add new quantification methods, CDB_JenksBins etc.
+
+2.0.4 (19/02/13)
 -----
 
 You'll need to run database migrations and reload sql functions after upgrating:
@@ -11,6 +15,9 @@ bundle exec rake cartodb:db:load_functions
 * Fixes a importer bug when decoding content-disposition http header
 * Fixes a bug that causes VACUUM FULL to be run more than once after table creation
 * Added 'loading state' for infowindows.
+* Replaced submodule URL's with read-only ones
+* Adds new merge option: spatial merge.
+* Edit fields from the map.
 
 2.0.3 (31/01/13)
 -----

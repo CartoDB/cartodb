@@ -13,6 +13,10 @@ module DataRepository
       def fetch(key, options={})
         super key
       end #fetch
+
+      def exists?(key)
+        self.has_key?(key)
+      end #exists?
     end # Memory
   end # Backend
 end # DataRepository

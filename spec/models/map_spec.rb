@@ -84,10 +84,10 @@ describe Map do
       Table.any_instance.stubs(:data_last_modified).returns(t)
       map.viz_updated_at.to_s.should == t.to_s
 
-      # When the map is newer
-      t = Time.now + 3.minutes
-      map.stubs(:updated_at).returns(t)
-      map.viz_updated_at.to_s.should == t.to_s
+      # When the data layer is newer
+      t2 = Time.now + 3.minutes
+      map.stubs(:data_layers).returns([Layer.new(updated_at: t2)])
+      map.viz_updated_at.to_s.should == t2.to_s
     end
   end
 end

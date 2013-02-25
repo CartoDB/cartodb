@@ -62,12 +62,12 @@ defaults: &defaults
         interactivity:      "cartodb_id"
         debug:              false
         visible:            true
-        tiler_domain:       "cartodb.com"
-        tiler_port:         "443"
-        tiler_protocol:     "https"
-        sql_domain:         "cartodb.com"
-        sql_port:           "443"
-        sql_protocol:       "https"
+        tiler_domain:       "localhost.lan"
+        tiler_port:         "80"
+        tiler_protocol:     "http"
+        sql_domain:         "localhost.lan"
+        sql_port:           "80"
+        sql_protocol:       "http"
         extra_params:       { cache_policy: 'persist' }
         cdn_url:            ""
         tile_style_history: []

@@ -5,35 +5,12 @@
     <h2><i></i> 5 visualizations created</h2>
     <a href="#" class="toggle"></a>
     <div class="order">
-      Order by <a href="#" class="selected">modified</a> / <a href="#">created</a>
+      Order by <a href="#" data-order="modified" class="selected">modified</a> / <a href="#" data-order="created">created</a>
     </div>
   </div>
 
   <div class="content"> 
-    <ul>
-      <% (1..5).each do |v| %>
-
-      <li class="border">
-      <div class="content">
-        <h3><a href="#">Untitled_vizz_1</a><a href="#delete" class="delete"></a></h3>
-        <p>administration geometries for spain provinces map</p>
-
-        <div class="tags">
-          <% %w(one two three four five six seven).sample(rand(6)).to_a.each do |t| %>
-            <a href="#/tag/<%= t %>/1" ><%= t %></a>
-        <% end %>
-        </div>
-
-        <div class="footer">
-          <div class="graph"></div>
-          <div class="colors"></div>
-        </div>
-
-      </div>
-      </li>
-    <% end %>
-
-    </ul>
+    <ul id="vislist"></ul>
   </div>
 
   </section>

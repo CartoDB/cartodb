@@ -329,6 +329,7 @@
           z-index:1;
 
           a.next, a.back {
+            margin: 4px 0 0 0;
             @include text-indent();
             padding:0;
             height:25px;
@@ -695,7 +696,14 @@
               &.label_text.border { border-bottom: 1px solid rgba(#E5E5E5,0.5); }
               &:last-child {border:none;}
 
-              span.field > div {margin-left:5px;}
+              span.field > div {
+                margin-left:5px;
+
+                &.form_hidden {
+                  margin:0;
+                  display:none;
+                }
+              }
 
               // Text between fields like " - to - "
               span.field span.text {

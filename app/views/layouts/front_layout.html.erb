@@ -12,7 +12,7 @@
     <%= stylesheet_link_tag :common, :front, :media => 'all' %>
     <!--[if gt IE 8]><%= stylesheet_link_tag :fonts_ie %><![endif]-->
     <%= yield :js %>
-    <%= render 'shared/analytics'%>
+    <%= render 'shared/analytics', ua: Cartodb.config[:google_analytics]["primary"] %>
     <noscript><meta http-equiv="refresh" content="0;url=/no_javascript.html"></noscript>
   </head>
   <body class="sessions">

@@ -3,8 +3,17 @@
 module CartoDB
   module Relocator
     module Helpers
+      def token
+        "relocator_#{relocation_id.to_s.gsub(/-/, '_')}" 
+      end #token
+
+      def database_username_for(user_id)
+        "#{environment}_cartodb_user_#{user_id}"
+      end #database_username
+
       def user_database_for(user_id)
-        "cartodb_dev_user_#{user_id}_db"
+        return "cartodb_dev_user_#{user_id}_db" if Rails.env == 'development'
+        "cartodb_#{environment}_user_#{user_id}_db"
       end #user_database
 
       def to_stdout(text)

@@ -6,41 +6,51 @@ module DataRepository
   module Filesystem
     module S3
       class Backend
-        def initialize(config={})
+        def initialize(config={}, bucket=nil)
           AWSConfigurator.new(config).configure
           @connection = AWS::S3.new
+          bucket_name = config.fetch(:bucket_name, nil)
+          @bucket     = bucket || bucket_from(bucket_name) || default_bucket
         end #initialize
 
-        def store(io_object, path, bucket=nil)
-          bucket        ||= default_bucket
-          uploaded_file = bucket.objects[path]
+        def store(path, data)
+          path    = clean_multiple_slashes_from(path)
+          object  = object_from(bucket, path)
 
-          uploaded_file.write(io_object)
-          uploaded_file.public_url.to_s
+          object.write(data)
+          object.public_url.to_s
         end #store
 
-        def fetch(file_url, bucket=nil)
+        def fetch(file_url)
           bucket_name, object_name = UrlParser.new(file_url).parse
+          raise_if_dont_match(bucket.name, bucket_name)
 
-          bucket ||= bucket_from(bucket_name)
           object_from(bucket, object_name)
         end #fetch
 
         private
 
-        attr_reader :connection
+        attr_reader :connection, :bucket
 
         def default_bucket
           @default_bucket ||= connection.buckets[ENV.fetch('S3_BUCKET')]
         end #default_bucket
 
-        def bucket_from(bucket_name)
-          connection.buckets[bucket_name]
+        def bucket_from(bucket_name=nil)
+          connection.buckets[bucket_name] if bucket_name
         end #bucket_from
 
         def object_from(bucket, object_name)
           bucket.objects[object_name]
         end #object_from
+
+        def raise_if_dont_match(a, b)
+          raise(ArgumentError, "URL doesn't match bucket") unless a == b
+        end #raise_if_dont_match
+
+        def clean_multiple_slashes_from(path)
+          path.split('/').delete_if { |part| part.empty? }.join('/')
+        end #clean_multiple_slashes_from
       end # Backend
     end # S3
   end # Filesystem

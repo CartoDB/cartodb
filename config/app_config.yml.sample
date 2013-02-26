@@ -14,7 +14,9 @@ defaults: &defaults
   sql_api_port:       8080
   api_requests_service_url: ''
   developers_host:    'http://developers.localhost.lan:3000'
-
+  google_analytics:
+    primary:          ''
+    embeds:           ''
   varnish_management:
     critical: true
     host: '127.0.0.1'
@@ -62,12 +64,12 @@ defaults: &defaults
         interactivity:      "cartodb_id"
         debug:              false
         visible:            true
-        tiler_domain:       "cartodb.com"
-        tiler_port:         "443"
-        tiler_protocol:     "https"
-        sql_domain:         "cartodb.com"
-        sql_port:           "443"
-        sql_protocol:       "https"
+        tiler_domain:       "localhost.lan"
+        tiler_port:         "80"
+        tiler_protocol:     "http"
+        sql_domain:         "localhost.lan"
+        sql_port:           "80"
+        sql_protocol:       "http"
         extra_params:       { cache_policy: 'persist' }
         cdn_url:            ""
         tile_style_history: []
@@ -116,8 +118,6 @@ test:
 
 staging:
   <<: *defaults
-  google_analytics_ua: 'UA-20934186-3'
 
 production:
   <<: *defaults
-  google_analytics_ua: 'UA-20934186-3'

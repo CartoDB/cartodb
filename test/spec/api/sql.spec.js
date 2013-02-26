@@ -99,7 +99,8 @@ describe('SQL api client', function() {
       user: 'rambo',
       format: 'geojson',
       protocol: 'http',
-      host: 'charlies.com'
+      host: 'charlies.com',
+      api_key: 'testkey'
     })
     s.execute('select * from rambo', null, {
       dp: 2
@@ -107,6 +108,7 @@ describe('SQL api client', function() {
     expect(ajaxParams.url.indexOf('http://')).not.toEqual(-1);
     expect(ajaxParams.url.indexOf('rambo.charlies.com')).not.toEqual(-1);
     expect(ajaxParams.url.indexOf('&format=geojson')).not.toEqual(-1);
+    expect(ajaxParams.url.indexOf('&api_key=testkey')).not.toEqual(-1);
     expect(ajaxParams.url.indexOf('&dp=2')).not.toEqual(-1);
   });
 

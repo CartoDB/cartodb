@@ -174,6 +174,36 @@ CartoDBLayerCommon.prototype = {
 
   },
 
+  getLayerCount: function() {
+    return this.options.layer_definition.layers.length;
+  },
+
+  removeLayer: function(layer) {
+    if(layer < this.getLayerCount() && layer >= 0) {
+      this.options.layer_definition.layers.splice(layer, 1);
+    }
+    return this;
+  },
+
+  getLayer: function(index) {
+    return this.options.layer_definition.layers[index]
+  },
+
+  addLayer: function(def, layer) {
+    layer = layer === undefined ? this.getLayerCount(): layer;
+    if(layer <= this.getLayerCount() && layer >= 0) {
+      if(!def.sql || !def.cartocss) {
+        throw new Error("layer definition should contain at least a sql and a cartocss");
+        return this;
+      }
+      this.options.layer_definition.layers.splice(layer, 0, {
+        type: 'cartodb',
+        options: def
+      });
+    }
+    return this;
+  },
+
   _tileJSON: function () {
     var grids = [];
     var tiles = [];

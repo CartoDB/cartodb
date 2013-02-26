@@ -112,4 +112,76 @@ describe('common', function() {
     expect(t.grids[0].indexOf('sql='+encodeURIComponent('select * from (select * from test)'))).not.toEqual(-1);
   });
 
+
+  describe("multilayer", function() {
+    var commont
+    beforeEach(function(){
+      common = new CartoDBLayerCommon();
+      common.options = {
+        tiler_domain:   "cartodb.com",
+        tiler_port:     "8081",
+        tiler_protocol: "http",
+        user_name: 'rambo',
+        table_name: 'test',
+        layer_definition: {
+          version: '1.0.0',
+          layers: [{
+             type: 'cartodb', 
+             options: {
+               sql: 'select * from ne_10m_populated_places_simple',
+               cartocss: '#layer { marker-fill: red; }', 
+             }
+           }, {
+             type: 'cartodb', 
+             options: {
+               sql: "select * from european_countries_export",
+               cartocss: '#layer { polygon-fill: #000; polygon-opacity: 0.8;}', 
+             }
+           }
+          ]
+        }
+      };
+
+    });
+
+    it("should return layer count", function() {
+      expect(common.getLayerCount()).toEqual(2);
+    });
+
+    it("should remove a layer", function() {
+      common.removeLayer(0);
+      expect(common.getLayerCount()).toEqual(1);
+      expect(common.getLayer(0)).toEqual({
+         type: 'cartodb', 
+         options: {
+           sql: "select * from european_countries_export",
+           cartocss: '#layer { polygon-fill: #000; polygon-opacity: 0.8;}'
+         }
+      });
+    });
+
+    it("should add a layer", function() {
+      common.addLayer({ sql : 'b', cartocss: 'b'});
+      expect(common.getLayerCount()).toEqual(3);
+      expect(common.getLayer(2)).toEqual({
+         type: 'cartodb', 
+         options: {
+           sql: 'b',
+           cartocss: 'b'
+         }
+      });
+      common.addLayer({ sql : 'a', cartocss: 'a'}, 0);
+      expect(common.getLayer(0)).toEqual({
+         type: 'cartodb', 
+         options: {
+           sql: "a",
+           cartocss: 'a'
+         }
+      });
+    });
+
+  });
+
+
+
 });

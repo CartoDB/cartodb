@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      html, body, #map {
+        height: 100%;
+        padding: 0;
+        margin: 0;
+      }
+    </style>
+
+    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/themes/css/cartodb.css" />
+    <!--[if lte IE 8]>
+        <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/themes/css/cartodb.ie.css" />
+    <![endif]-->
+
+  </head>
+    
+  <body>
+    <div id="map"></div>
+  </body>
+
+
+  <!-- include cartodb.js library -->
+  <script src="../src/cartodb.js"></script>
+  <script>
+
+    function main() {
+
+      var map = L.map('map', { 
+        zoomControl: false,
+        center: [43, 0],
+        zoom: 3
+      })
+
+      L.tileLayer('http://tile.stamen.com/toner/{z}/{x}/{y}.png', {
+        attribution: 'MapBox'
+      }).addTo(map);
+
+      var layer = new L.CartoDBGroupLayer({
+        layer_definition: {
+          version: '1.0.0',
+          layers: [{
+             type: 'cartodb', 
+             options: {
+               sql: 'select * from ne_10m_populated_places_simple',
+               cartocss: '#layer { marker-fill: red; }', 
+             }
+           }, {
+             type: 'cartodb', 
+             options: {
+               sql: "select * from european_countries_export",
+               cartocss: '#layer { polygon-fill: #000; polygon-opacity: 0.8;}', 
+             }
+           }
+          ]
+        },
+        tiler_domain: "localhost.lan",
+        tiler_port: "8181",
+        user_name: 'development',
+        no_cdn: true
+      }).addTo(map);
+
+  /*
+
+      cartodb.createLayer(map, 'http://development.localhost.lan:3000/api/v1/viz/ne_10m_populated_places_simple/viz.json', {
+        no_cdn: true
+
+      })
+       .on('done', function(layer) {
+        map.addLayer(layer);
+
+        layer.on('featureOver', function(e, pos, latlng, data) {
+          cartodb.log.log(e, pos, latlng, data);
+        });
+
+        layer.on('error', function(err) {
+          cartodb.log.log('error: ' + err);
+        });
+
+
+        layer.layerToken({
+          version: '1.0.0',
+          layers: [{
+             type: 'cartodb', 
+             options: {
+               sql: 'select * from european_countries_e limit 10',
+               cartocss: '#layer { polygon-fill: red; }', 
+             }
+          }]
+        }, function(data) {
+        console.log(data);
+        });
+
+      }).on('error', function() {
+        cartodb.log.log("some error occurred");
+      });
+
+    */
+    }
+
+    // you could use $(window).load(main);
+    window.onload = function() {
+      cdb.load("../src/", main);
+    }
+
+  </script>
+
+
+</html>

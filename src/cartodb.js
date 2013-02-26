@@ -76,6 +76,7 @@
         'geo/leaflet/leaflet_base.js',
         'geo/leaflet/leaflet_plainlayer.js',
         'geo/leaflet/leaflet_tiledlayer.js',
+        'geo/leaflet/leaflet_cartodb_layergroup.js',
         'geo/leaflet/leaflet_cartodb_layer.js',
         'geo/leaflet/leaflet.js',
 

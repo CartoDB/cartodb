@@ -147,6 +147,33 @@ CartoDBLayerCommon.prototype = {
     return this.options.tiler_protocol === 'https';
   },
 
+  _layerGroupTiles: function(layerGroupId, extraParams) {
+    var subdomains = this.options.subdomains || ['0', '1', '2', '3'];
+    if(this.isHttps()) {
+      subdomains = [null]; // no subdomain
+    } 
+
+    var tileTemplate = '/{z}/{x}/{y}';
+
+    var grids = []
+    var tiles = [];
+    for(var i = 0; i < subdomains.length; ++i) {
+      var s = subdomains[i]
+      var cartodb_url = this._host(s) + '/tiles/layergroup/' + layerGroupId 
+      tiles.push(cartodb_url + tileTemplate + ".png");
+      for(var layer in this.options.layer_definition.layers) {
+        grids[layer] = grids[layer] || [];
+        grids[layer].push(cartodb_url + "/" + layer + "/" + tileTemplate + ".grid.json");
+      }
+    }
+    
+    return {
+      tiles: tiles,
+      grids: grids
+    }
+
+  },
+
   _tileJSON: function () {
     var grids = [];
     var tiles = [];
@@ -170,12 +197,16 @@ CartoDBLayerCommon.prototype = {
     };
   },
 
+  //TODO: support old browsers
   layerToken: function(layerGroup, callback) {
     var ajax = this.options.ajax || $.ajax;
     ajax({
-      method: 'POST',
-      url: this._tilerHost() + '/layergroup',
-      data: JSON.stringify(layerGroup),
+      crossOrigin: true,
+      type: 'POST',
+      dataType: 'json',
+      contentType: 'application/json',
+      url: this._tilerHost() + '/tiles/layergroup',
+      data: JSON.stringify(this.options.layer_definition),
       success: function(data) {
         callback(data);
       },
@@ -184,7 +215,6 @@ CartoDBLayerCommon.prototype = {
       }
     });
   },
-
 
   error: function(e) {
     console.log(e.error);

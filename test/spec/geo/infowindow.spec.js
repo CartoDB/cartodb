@@ -89,7 +89,10 @@ describe("cdb.geo.ui.infowindow", function() {
     });
 
     it("should convert value to string when it is a number", function() {
-      model.set('content', { fields: [{ title: 'jamon1', value: 0}, { title: 'jamon2', value: 1}] }, {silent: true});
+      model.set({
+        'content': { fields: [{ title: 'jamon1', value: 0}, { title: 'jamon2', value: 1}] }, {silent: true},
+        'template_name': 'jaja'
+      });
 
       var render_fields = view._fieldsToString(model.attributes).content.fields;
 
@@ -98,7 +101,10 @@ describe("cdb.geo.ui.infowindow", function() {
     });
 
     it("should convert value to null when it is undefined", function() {
-      model.set('content', { fields: [{ title: 'jamon', value: undefined}] }, {silent: true});
+      model.set({
+        'content', { fields: [{ title: 'jamon', value: undefined}] }, {silent: true},
+        'template_name': 'jaja'
+      });
 
       var render_fields = view._fieldsToString(model.attributes).content.fields;
       expect(render_fields[0].value).toEqual(null);

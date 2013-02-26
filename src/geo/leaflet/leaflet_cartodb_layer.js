@@ -1,13 +1,3 @@
-/**
- * @name cartodb-leaflet
- * @author: Vizzuality.com
- * @fileoverview <b>Author:</b> Vizzuality.com<br/> <b>Licence:</b>
- *               Licensed under <a
- *               href="http://opensource.org/licenses/mit-license.php">MIT</a>
- *               license.<br/> This library lets you to use CartoDB with Leaflet.
- *
- */
-
 
 (function() {
 

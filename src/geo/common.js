@@ -147,23 +147,49 @@ CartoDBLayerCommon.prototype = {
     return this.options.tiler_protocol === 'https';
   },
 
-  _layerGroupTiles: function(layerGroupId, extraParams) {
+
+  _encodeParams: function(params, included) {
+    var url_params = [];
+    included = included || _.keys(params);
+    for(var i in included) {
+      var k = included[i]
+      var p = params[k];
+      if(p) {
+        var q = encodeURIComponent(p);
+        q = q.replace(/%7Bx%7D/g,"{x}").replace(/%7By%7D/g,"{y}").replace(/%7Bz%7D/g,"{z}");
+        url_params.push(k + "=" + q);
+      }
+    }
+    return url_params.join('&')
+  },
+
+  _layerGroupTiles: function(layerGroupId, params) {
     var subdomains = this.options.subdomains || ['0', '1', '2', '3'];
     if(this.isHttps()) {
       subdomains = [null]; // no subdomain
     } 
 
+
     var tileTemplate = '/{z}/{x}/{y}';
 
     var grids = []
     var tiles = [];
+
+    var pngParams = this._encodeParams(params, ['api_key', 'cache_policy', 'updated_at']);
     for(var i = 0; i < subdomains.length; ++i) {
       var s = subdomains[i]
       var cartodb_url = this._host(s) + '/tiles/layergroup/' + layerGroupId 
-      tiles.push(cartodb_url + tileTemplate + ".png");
+      tiles.push(cartodb_url + tileTemplate + ".png?" + pngParams );
+    }
+
+    var gridParams = this._encodeParams(params, ['api_key', 'cache_policy', 'updated_at', 'interactivity']);
+
+    for(var i = 0; i < subdomains.length; ++i) {
+      var s = subdomains[i]
+      var cartodb_url = this._host(s) + '/tiles/layergroup/' + layerGroupId 
       for(var layer in this.options.layer_definition.layers) {
         grids[layer] = grids[layer] || [];
-        grids[layer].push(cartodb_url + "/" + layer + "/" + tileTemplate + ".grid.json");
+        grids[layer].push(cartodb_url + "/" + layer + "/" + tileTemplate + ".grid.json?" + gridParams);
       }
     }
     
@@ -239,7 +265,7 @@ CartoDBLayerCommon.prototype = {
         tiles: layergroupTiles.tiles,
         formatter: function(options, data) { return data; }
     };
-  }
+  },
 
   //TODO: support old browsers
   layerToken: function(layerGroup, callback) {

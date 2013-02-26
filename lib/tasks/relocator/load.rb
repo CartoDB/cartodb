@@ -15,15 +15,15 @@ module CartoDB
       include Helpers
 
       def initialize(arguments)
-        @connection           = Rails::Sequel.connection
+        @environment          = arguments.fetch(:environment)
+        @psql_command         = arguments.fetch(:psql_command)
         @relocation_id        = arguments.fetch(:relocation_id)
-        @psql_command         = arguments.fetch(:psql)
-
         @tmp_dir              = File.join(File.dirname(__FILE__), '..',
                                 '..', '..', 'tmp', 'relocator')
-        @local_filesystem     = Filesystem::Local.new(@tmp_dir)
-        @s3_filesystem        = Filesystem::S3::Backend.new
-
+        @local_filesystem     = arguments.fetch(:local, default_local)
+        @remote_filesystem    = arguments.fetch(:remote, default_remote)
+        @rdbms                = RDBMS.new(arguments.fetch(:connection))
+        @database_owner       = arguments.fetch(:database_owner)
         @dump_path            = "#{relocation_id}/user_db.sql"
         @user_attributes_path = "#{relocation_id}/user.json"
       end #initialize
@@ -31,28 +31,35 @@ module CartoDB
       def run
         to_stdout("Continuing relocation with ID: #{relocation_id}")
         to_stdout("Downloading data from Amazon S3")
-        download_from_s3(dump_path)
+        download_from_remote(dump_path)
         to_stdout("Data downloaded from Amazon S3")
 
         to_stdout("Downloading user attributes from Amazon S3")
-        download_from_s3(user_attributes_path)
+        download_from_remote(user_attributes_path)
 
         to_stdout("Creating user with downloaded attributes")
         create_user
 
         to_stdout("Creating user database #{user.database_name}")
-        create_user_database
+        rdbms.create_database(user.database_name, database_owner)
 
         to_stdout("Loading data from filesystem to #{user.database_name}")
         load_database
+
+        to_stdout("Renaming database user")
+        rdbms.rename_user(token, database_username_for(user.id))
+
+        to_stdout("Setting password for database user")
+        rdbms.set_password(database_username_for(user.id), user.database_password)
+
         to_stdout("Finished relocation with ID: #{relocation_id}")
       end #run
 
       private
 
-      attr_reader :local_filesystem, :s3_filesystem, :relocation_id,
-                  :psql_command, :dump_path, :user,
-                  :user_attributes_path, :port, :connection 
+      attr_reader :local_filesystem, :remote_filesystem, :relocation_id,
+                  :dump_path, :user, :user_attributes_path, :psql_command, 
+                  :environment, :database_owner, :rdbms
 
       def create_user
         @user = User.new
@@ -64,54 +71,32 @@ module CartoDB
 
         raise 'Invalid user' unless user.valid?
         user.save
-        user.database_name = "cartodb_#{Rails.env}_user_#{user.id}_db"
+        user.database_name = user_database_for(user.id)
         user.save
       end #create_user
 
-
-      def create_database_user
-        connection.run(create_database_user_sql)
-      end #create_database_user
-
-      def create_user_database
-        owner = Rails.configuration.database_configuration
-                  .fetch(Rails.env)
-                  .fetch('username')
-        puts owner
-        begin
-          connection.run(create_user_database_sql(owner))
-        rescue => exception 
-          puts 'Error!'
-          raise exception
-        end
-      end #create_user_database
-
       def load_database
-        dump_file =  "#{@tmp_dir}/#{dump_path}"
-        command   = "#{psql_command} #{user.database_name} < #{dump_file}"
+        dump      = File.join(@tmp_dir, dump_path)
+        command   = "#{psql_command} #{user.database_name} < #{dump}"
 
-        Open3.popen3(command) do |stdin, stdout, stderr, process| 
-          print_and_raise(stderr) unless process.value.to_s =~ /exit 0/
-        end
+        `#{command}`
+        puts $?
+        #Open3.popen3(command) do |stdin, stdout, stderr, process| 
+        #  print_and_raise(stderr) unless process.value.to_s =~ /exit 0/
+        #end
       end #load_database
 
-      def download_from_s3(path)
-        url = url_for(path)
-        local_filesystem.store(path, s3_filesystem.fetch(url))
-      end #download_from_s3
+      def download_from_remote(path)
+        local_filesystem.store(path, remote_filesystem.fetch(url_for(path)) )
+      end #download_from_remote
 
-      def create_database_user_sql
-        "CREATE USER token#{migration.id.delete('-')} 
-        PASSWORD '#{user.database_password}'"
-      end #create_database_user_sql
+      def default_local
+        Filesystem::Local.new(@tmp_dir)
+      end #default_local
 
-      def create_user_database_sql(owner)
-        "CREATE DATABASE #{user.database_name}
-        WITH TEMPLATE = template_postgis
-        OWNER = #{owner}
-        ENCODING = 'UTF8'
-        CONNECTION LIMIT=-1"
-      end #create_user_database_sql
+      def default_remote
+        Filesystem::S3::Backend.new
+      end #default_remote
     end # Load
   end # Relocator
 end # CartoDB

@@ -135,7 +135,7 @@ describe('common', function() {
              type: 'cartodb', 
              options: {
                sql: "select * from european_countries_export",
-               cartocss: '#layer { polygon-fill: #000; polygon-opacity: 0.8;}', 
+               cartocss: '#layer { polygon-fill: #000; polygon-opacity: 0.8;}'
              }
            }
           ]

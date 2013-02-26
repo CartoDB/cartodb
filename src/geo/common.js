@@ -181,6 +181,7 @@ CartoDBLayerCommon.prototype = {
   removeLayer: function(layer) {
     if(layer < this.getLayerCount() && layer >= 0) {
       this.options.layer_definition.layers.splice(layer, 1);
+      this.onLayerDefinitionUpdated();
     }
     return this;
   },
@@ -200,6 +201,7 @@ CartoDBLayerCommon.prototype = {
         type: 'cartodb',
         options: def
       });
+      this.onLayerDefinitionUpdated();
     }
     return this;
   },
@@ -226,6 +228,18 @@ CartoDBLayerCommon.prototype = {
         formatter: function(options, data) { return data; }
     };
   },
+
+  _getTileJSON: function(layergroupTiles, layer) {
+    layer = layer == undefined ? 0: layer;
+
+    return {
+        tilejson: '2.0.0',
+        scheme: 'xyz',
+        grids: layergroupTiles.grids[layer],
+        tiles: layergroupTiles.tiles,
+        formatter: function(options, data) { return data; }
+    };
+  }
 
   //TODO: support old browsers
   layerToken: function(layerGroup, callback) {
@@ -285,7 +299,9 @@ CartoDBLayerCommon.prototype = {
       self.error("tile timeout");
     }, 30000);
 
-  }
+  },
+
+  onLayerDefinitionUpdated: function() {}
 
 };
 

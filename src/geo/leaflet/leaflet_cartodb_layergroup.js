@@ -111,6 +111,10 @@ L.CartoDBGroupLayer = L.TileLayer.extend({
     L.TileLayer.prototype.onRemove.call(this, map);
   },
 
+  onLayerDefinitionUpdated: function() {
+    this.__update();
+  },
+
   /**
    * Update CartoDB layer
    * generates a new url for tiles and refresh leaflet layer
@@ -158,13 +162,25 @@ L.CartoDBGroupLayer = L.TileLayer.extend({
 
   },
 
+  enableInteraction: function(layer) {
+    var self = this;
+    this.interaction = wax.leaf.interaction()
+      .map(this.options.map)
+      .tilejson(this._getTileJSON(this.tilejson, layer))
+      .on('on', function(o) {
+        o.layer = layer;
+        self._bindWaxOnEvents(self.options.map, o);
+      })
+      .on('off', function(o) {
+        self._bindWaxOffEvents();
+      });
+  },
+
   _checkLayer: function() {
     if (!this.options.added) {
       throw new Error('the layer is not still added to the map');
     }
   },
-
-
 
   /**
    * Change query of the tiles
@@ -229,9 +245,9 @@ L.CartoDBGroupLayer = L.TileLayer.extend({
    * @params {Boolean} Choose if wants interaction or not
    */
   setInteraction: function(enable) {
-    this.setOptions({
+    /*this.setOptions({
       interaction: enable
-    })
+    })*/
   },
 
 

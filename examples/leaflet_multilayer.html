@@ -61,6 +61,17 @@
         no_cdn: true
       }).addTo(map);
 
+      setTimeout(function() {
+        layer.removeLayer(0);
+      }, 3000);
+
+      setTimeout(function() {
+        layer.addLayer({
+           sql: 'select * from ne_10m_populated_places_simple',
+           cartocss: '#layer { marker-fill: #00FF00; }', 
+        });
+      }, 6000);
+
   /*
 
       cartodb.createLayer(map, 'http://development.localhost.lan:3000/api/v1/viz/ne_10m_populated_places_simple/viz.json', {

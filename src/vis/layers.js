@@ -63,10 +63,10 @@ var cartoLayer = function(vis, data) {
   }
 
   data.tiler_protocol = vis.https ? 'https': 'http';
-  if(!data.no_cdn) {
+  /*if(!data.no_cdn) {
     data.tiler_protocol = vis.https ? 'https': 'http';
     data.tiler_port = vis.https ? 443: 80;
-  }
+  }*/
   data.extra_params = data.extra_params || {};
   if(vis.updated_at) {
     data.extra_params.updated_at = vis.updated_at;

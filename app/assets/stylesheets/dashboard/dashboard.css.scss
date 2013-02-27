@@ -18,7 +18,7 @@
 
     // Empty dashboard -> article
 
-    &.no_tables {
+    &.no_vis, &.no_tables {
       margin:-750px 0 0 0;
       padding:0;
       @include transform-style("linear");
@@ -31,6 +31,88 @@
         padding:113px 0 80px;
       }
     } // .no_tables
+
+    &.no_vis {
+
+      section.empty {
+        margin: 0;
+        border:1px solid #D1D1D1;
+        z-index:0;
+
+
+        a.close {
+          @include box-sizing(border-box);
+          position:absolute;
+          @include position(-10px, -10px, false, false);
+          @include size(23px, 23px);
+          font-size: 11px;
+          background:white;
+          @include box-shadow(0 0 3px 3px rgba(black, .08) );
+          @include border-radius(50px);
+          border: 1px solid #ccc;
+
+          z-index:5;
+
+          i {
+            @include position(7px, false, false, 7px);
+            @include size(7px);
+            display:block;
+            background:image-url("icons/x.png") no-repeat 0 0;
+          }
+
+
+          &:focus, &:hover {
+            outline:none;
+            color:black;
+            text-decoration:none;
+          }
+        }
+
+
+        div.content {
+          @include box-sizing(border-box);
+          padding:40px 36px 0 40px;
+          height:308px;
+
+          background:image-url("layout/empty_vis_bkg.png") repeat-y 0 0;
+          overflow:hidden;
+
+          div.left {
+            width:280px;
+            padding:23px 0 0 0;
+
+            h2 { margin: 0 0 20px 0; font-size:27px; line-height: 27px; }
+            p  { margin: 0 0 25px 0; }
+          }
+
+          div.right {
+            position:relative;
+            height: 100%;
+            width: 602px;
+
+            .tables {
+              @include size(602px, 273px);
+              position:absolute;
+              bottom: 0;
+              left: 0;
+              background:image-url("layout/empty_vis_tables.png") repeat-y 0 0;
+
+              .create_new {
+                position:absolute;
+                @include position(123px, false, false, 185px);
+                font-weight:normal;
+                font-size:17px;
+
+                @include text-shadow(0 1px 1px #455d1e);
+                @include glow(.2, 10px, 5px);
+              }
+
+            }
+          }
+
+        }
+      }
+    }
 
     &.visualizations aside .head { margin-top: 25px; }
     &.tables aside .head { margin-top: 55px; }

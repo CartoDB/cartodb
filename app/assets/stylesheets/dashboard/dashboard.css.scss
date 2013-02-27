@@ -60,14 +60,13 @@
             background:image-url("icons/x.png") no-repeat 0 0;
           }
 
-
           &:focus, &:hover {
             outline:none;
             color:black;
             text-decoration:none;
           }
-        }
 
+        }
 
         div.content {
           @include box-sizing(border-box);

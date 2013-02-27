@@ -169,7 +169,7 @@
 
         &.disabled {
           background:white;
-          a {@include opacity(0.4); color:$link-color; text-decoration:none}
+          a {@include opacity(0.4); color:$link-color; text-decoration:none; &:hover {cursor:default;}}
         }
       }
 

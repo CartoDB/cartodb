@@ -30,7 +30,7 @@ class User < Sequel::Model
     :naked => true # avoid adding json_class to result
   }
 
-  SYSTEM_TABLE_NAMES = %w( spatial_ref_sys geography_columns geometry_columns raster_columns raster_overviews )
+  SYSTEM_TABLE_NAMES = %w( spatial_ref_sys geography_columns geometry_columns raster_columns raster_overviews cdb_tablemetadata )
 
   self.raise_on_typecast_failure = false
   self.raise_on_save_failure = false

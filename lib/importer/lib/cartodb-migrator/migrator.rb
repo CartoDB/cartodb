@@ -168,17 +168,8 @@ module CartoDB
     private
 
     def get_valid_name(name)
-      candidates = @db_connection.tables.map{ |t| t.to_s }.select{ |t| t.match(/^#{name}/) }
-      if candidates.any?
-        max_candidate = candidates.max
-        if max_candidate =~ /(.+)_(\d+)$/
-          return $1 + "_#{$2.to_i +  1}"
-        else
-          return max_candidate + "_2"
-        end
-      else
-        return name
-      end
+      Table.get_valid_table_name(name, 
+        name_candidates: @db_connection.tables.map(&:to_s))
     end
 
     def log(str)

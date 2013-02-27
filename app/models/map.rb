@@ -19,7 +19,7 @@ class Map < Sequel::Model
     bounding_box_sw: [0, 0],
     bounding_box_ne: [0, 0],
     provider:        'leaflet',
-    center:          [0, 0]
+    center:          [30, 0]
   }
 
   DEFAULT_BOUNDS = { minlon: -179, maxlon: 179, minlat: -85.0511, maxlat: 85.0511 }

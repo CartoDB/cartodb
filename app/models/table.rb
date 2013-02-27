@@ -1384,6 +1384,7 @@ TRIGGER
 
     # We don't want to use an existing table name
     existing_names = options[:name_candidates] || options[:connection]["select relname from pg_stat_user_tables WHERE schemaname='public'"].map(:relname)
+    existing_names = existing_names + User::SYSTEM_TABLE_NAMES
     rx = /_(\d+)$/
     count = name[rx][1].to_i rescue 0
     while existing_names.include?(name)

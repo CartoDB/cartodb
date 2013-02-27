@@ -58,6 +58,7 @@ gem "state_machine",           "1.1.2"
 gem "virtus"
 gem "aequitas"
 gem "uuidtools"
+gem "rubyzip",                  "0.9.9"
 
 # TODO we should be able to remove this using the new
 #      Rails routes DSL

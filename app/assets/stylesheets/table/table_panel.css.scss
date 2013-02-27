@@ -23,6 +23,7 @@
     border:1px solid rgba(black,0.4);
     border-bottom:0;
     border-right:0;
+    background:#EDEDED;
     @include box-shadow(rgba(black,0.15) 0 0 2px 2px);
     @include border-top-left-radius($corner_radius);
 
@@ -50,21 +51,16 @@
 
     */
     .layer_panel {
-      position:absolute;
-      top:0; right:0; bottom:0; left:0;
+      position:relative;
       width:100%;
+      height:100%;
+      margin-top:-15px;
       background:#EDEDED;
       border-top:1px solid #999999;
-      @include box-shadow(rgba(black,0.1) 0 10px 0 0);
       @include border-top-left-radius($corner_radius);
       z-index:1;
 
-      &:nth-child(1) {z-index:2; border:none;}
-      &:nth-child(2) {z-index:4; top:39px;}
-      &:nth-child(3) {z-index:6; top:78px;}
-      &:nth-child(4) {z-index:8; top:117px;}
-      &:nth-child(5) {z-index:10; top:156px;}
-      &:nth-child(6) {z-index:12; top:195px;}
+      &:first-child {margin-top:0;}
     }
 
     // Layer info, as name, order, ... etc
@@ -747,8 +743,17 @@
     } // end view!
 
 
+    // ANIMATIONS FOR LAYER_PANEL
+
+    // .layer_panel:hover {
+    //   margin-top:-10px;
+    // }
+
     // Active layer
     .layer_panel.active {
+
+      @include box-shadow(rgba(black,0.1) 0 10px 0 0);
+
       .layer_info a.info {
         .order {background:#666666;}
         .name {color:#666666;}
@@ -757,5 +762,25 @@
         }
       }
     }
+
+    .layer_panel.placeholder {
+      height:66px!important;
+      background:red!important;
+    }
+
+    // // Top / bottom layer
+    // .layer_panel.bottom {
+    //   top:auto;
+    //   height:50px;
+    // }
+    // .layer_panel.top {
+    //   height:auto;
+    //   &:nth-child(1) {z-index:2; border:none;}
+    //   &:nth-child(2) {z-index:4; top:39px;}
+    //   &:nth-child(3) {z-index:6; top:78px;}
+    //   &:nth-child(4) {z-index:8; top:117px;}
+    //   &:nth-child(5) {z-index:10; top:156px;}
+    //   &:nth-child(6) {z-index:12; top:195px;}
+    // }
   }
 

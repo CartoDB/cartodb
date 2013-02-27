@@ -5,7 +5,14 @@
       {{^index}}
         {{#title}}<h4>{{title}}</h4>{{/title}}
         {{#value}}
-          <h1 {{#loading}}class="loading"{{/loading}}>{{ value }}</h1>
+          <h1 {{#loading}}class="loading"{{/loading}}>
+            {{#url}}
+              <a href="{{ url }}" target="_blank">{{ value }}</a>
+            {{/url}}
+            {{^url}}
+              {{ value }}
+            {{/url}}
+          </h1>
         {{/value}}
         {{^value}}
           <h1 class="empty">null</h1>
@@ -20,7 +27,14 @@
         {{#index}}
           {{#title}}<h4>{{title}}</h4>{{/title}}
           {{#value}}
-            <p>{{ value }}</p>
+            <p>
+              {{#url}}
+                <a href="{{ url }}" target="_blank">{{ value }}</a>
+              {{/url}}
+              {{^url}}
+                {{ value }}
+              {{/url}}
+            </p>
           {{/value}}
           {{^value}}
             <p class="empty">null</p>

@@ -348,7 +348,6 @@
             div.row_header:before, div.row_header:after {
               display: block !important;
             }
-
           }
 
           td {
@@ -447,7 +446,22 @@
               padding-right:65px;
             }
           }
-        }
+
+          &:last-child {
+            border-bottom:1px solid #ECECEC;
+          }
+
+          &:hover {
+            background:#E8F9EC;
+            border-color:#CCCCCC;
+
+            & + tr {border-color:#CCCCCC;}
+
+            div.row_header:before, div.row_header:after {
+              display: block !important;
+            }
+          }
+        } // tr
       } // tbody
 
       // Loaders

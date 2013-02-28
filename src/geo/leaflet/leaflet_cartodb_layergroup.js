@@ -162,6 +162,8 @@ L.CartoDBGroupLayer = L.TileLayer.extend({
 
   },
 
+  setInteractivity
+
   enableInteraction: function(layer) {
     var self = this;
     this.interaction = wax.leaf.interaction()

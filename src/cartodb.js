@@ -70,6 +70,7 @@
         'geo/ui/infobox.js',
         'geo/ui/tooltip.js',
 
+        'geo/layer_definition.js',
         'geo/common.js',
 
         'geo/leaflet/leaflet.geometry.js',

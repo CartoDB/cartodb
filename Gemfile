@@ -26,6 +26,7 @@ gem "yajl-ruby",               "1.1.0", :require => "yajl"
 gem "airbrake",                "3.1.6"
 gem "nokogiri",                "1.5.3"
 gem "statsd-client",           "0.0.7", :require => "statsd"
+gem "aws-sdk",               "1.5.2"
 
 gem "addressable",             "2.2.8", :require => "addressable/uri"
 
@@ -86,7 +87,6 @@ group :development, :test do
   gem "rack-reverse-proxy",    "0.4.4", :require => 'rack/reverse_proxy'
   gem "rack-test"
   gem "foreman",               "0.46.0"
-  gem "aws-sdk",               "1.5.2"
   gem "factory_girl_rails",    "~> 4.0.0"
 
   # Guard

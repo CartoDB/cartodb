@@ -297,7 +297,9 @@
       matches = src.match(leafletRe);
 
       if (matches) {
-        return src.split(leafletRe)[0] + '/themes/css/images/';
+        var bits = src.split('/')
+        delete bits[bits.length - 1];
+        return bits.join('/') + 'themes/css/images';
       }
     }
   }());

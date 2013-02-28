@@ -285,28 +285,61 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
    */
   _fieldsToString: function(attrs) {
     if (attrs.content && attrs.content.fields) {
+      var self = this;
       attrs.content.fields = _.map(attrs.content.fields, function(attr) {
-        // Check null or undefined :| and set both to empty == ''
-        if (attr.value == null || attr.value == undefined) {
-          attr.value = '';
-        }
-
-        // Cast all values to string due to problems with Mustache 0 number rendering
-        var new_value = attr.value.toString();
-
-        // But if we have some empty values (null)
-        // we must make them null to display them correctly
-        // ARGGG!
-        if (new_value == "") new_value = null;
-
-        // store attribute
-        attr.value = new_value;
-
-        return attr;
+        // Return whole attribute sanitized
+        return self._sanitizeField(attr, attrs.template_name);
       });
     }
 
     return attrs;
+  },
+
+  /**
+   *  Sanitize fields, what does it mean?
+   *  - If value is null, transform to string
+   *  - If value is an url, add it as an attribute
+   *  - Cut off title if it is very long (in header or image templates).
+   *  - If the value is a valid url, let's make it a link.
+   *  - More to come...
+   */                                                                                                                
+  _sanitizeField: function(attr, template_name) {
+    // Check null or undefined :| and set both to empty == ''
+    if (attr.value == null || attr.value == undefined) {
+      attr.value = '';
+    }
+
+    // Cast all values to string due to problems with Mustache 0 number rendering
+    var new_value = attr.value.toString();
+
+    // But if we have some empty values (null)
+    // we must make them null to display them correctly
+    // ARGGG!
+    if (new_value == "") new_value = null;
+
+    //Link? go ahead!
+    if (!attr.loading && this._isValidURL(attr.value)) {
+      attr.url = attr.value;
+    }
+
+    // If it is index 0, not loading, header template type and length bigger than 30... cut off the text!
+    if (!attr.loading && attr.index==0 && attr.value.length > 35 && template_name.search('_header_') != -1) {
+      new_value = attr.value.substr(0,32) + "...";
+    }
+
+    // If it is index 0, not loading, header image template type... don't cut off the text!
+    if (attr.index==0 && template_name.search('_header_with_image') != -1) {
+      new_value = attr.value;
+    }
+
+    // If it is index 1, not loading, header image template type and length bigger than 30... cut off the text!
+    if (!attr.loading && attr.index==1 && attr.value.length > 35 && template_name.search('_header_with_image') != -1) {
+      new_value = attr.value.substr(0,32) + "...";
+    }
+
+    attr.value = new_value;
+
+    return attr;
   },
 
   /**

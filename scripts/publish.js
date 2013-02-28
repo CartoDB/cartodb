@@ -70,7 +70,8 @@ function invalidate_files(files, remote_path) {
 
 var JS_FILES = [
   'cartodb.js',
-  'cartodb.uncompressed.js'
+  'cartodb.uncompressed.js',
+  'cartodb.nojquery.js'
 ]
 
 var CSS_FILES = [

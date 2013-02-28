@@ -22,7 +22,7 @@
 
 
   <!-- include cartodb.js library -->
-  <script src="http://libs.cartocdn.com/cartodb.js/v2/cartodb.js"></script>
+  <script src="/dist/cartodb.uncompressed.js"></script>
   <script>
 
     function main() {
@@ -39,7 +39,6 @@
 
       cartodb.createLayer(map, 'http://examples.cartodb.com/api/v1/viz/european_countries_e/viz.json', {
         query: 'select * from {{table_name}} where area::float > 10000' // if you remove this the query applied in the editor will be used
-
       })
        .on('done', function(layer) {
         map.addLayer(layer);

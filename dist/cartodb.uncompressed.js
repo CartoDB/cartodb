@@ -1,6 +1,6 @@
 // cartodb.js version: 2.0.22-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: 98d4f69f51e0d50bca1e0025866231391410ae69
+// sha: 5e0a8d441eb20631b98ec114b53124cc00594c6e
 (function() {
   var root = this;
 
@@ -17845,12 +17845,12 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     if (new_value == "") new_value = null;
 
     //Link? go ahead!
-    if (!attr.loading && this._isValidURL(attr.value)) {
+    if (!attr.loading && this._isValidURL(new_value)) {
       attr.url = attr.value;
     }
 
     // If it is index 0, not loading, header template type and length bigger than 30... cut off the text!
-    if (!attr.loading && attr.index==0 && attr.value.length > 35 && template_name.search('_header_') != -1) {
+    if (!attr.loading && attr.index==0 && attr.value.length > 35 && template_name && template_name.search('_header_') != -1) {
       new_value = attr.value.substr(0,32) + "...";
     }
 
@@ -17860,7 +17860,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     }
 
     // If it is index 1, not loading, header image template type and length bigger than 30... cut off the text!
-    if (!attr.loading && attr.index==1 && attr.value.length > 35 && template_name.search('_header_with_image') != -1) {
+    if (!attr.loading && attr.index==1 && attr.value.length > 35 && template_name && template_name.search('_header_with_image') != -1) {
       new_value = attr.value.substr(0,32) + "...";
     }
 
@@ -18517,6 +18517,16 @@ CartoDBLayerCommon.prototype = {
     return a.length > 0;
   },
 
+  
+  /**
+   *  Check if browser supports retina images
+   */
+  _isRetinaBrowser: function() {
+    return  ('devicePixelRatio' in window && window.devicePixelRatio > 1) ||
+            ('matchMedia' in window && window.matchMedia('(min-resolution:144dpi)') &&
+            window.matchMedia('(min-resolution:144dpi)').matches);
+  },
+
 
   /**
    * Add Cartodb logo
@@ -18525,6 +18535,7 @@ CartoDBLayerCommon.prototype = {
   _addWadus: function(position, timeout, container) {
     if (this.options.cartodb_logo !== false && !this._isWadusAdded(container, 'cartodb_logo')) {
       var cartodb_link = document.createElement("a");
+      var is_retina = this._isRetinaBrowser();
       cartodb_link.setAttribute('class','cartodb_logo');
       container.appendChild(cartodb_link);
       setTimeout(function() {
@@ -18532,7 +18543,7 @@ CartoDBLayerCommon.prototype = {
         cartodb_link.setAttribute('href','http://www.cartodb.com');
         cartodb_link.setAttribute('target','_blank');
         var protocol = location.protocol.indexOf('https') === -1 ? 'http': 'https';
-        cartodb_link.innerHTML = "<img src='" + protocol + "://cartodb.s3.amazonaws.com/static/new_logo.png' style='position:absolute; bottom:" + 
+        cartodb_link.innerHTML = "<img width='71' height='29' src='" + protocol + "://cartodb.s3.amazonaws.com/static/new_logo" + (is_retina ? '@2x' : '') + ".png' style='position:absolute; bottom:" + 
           ( position.bottom || 0 ) + "px; left:" + ( position.left || 0 ) + "px; display:block; border:none; outline:none' alt='CartoDB' title='CartoDB' />";
       },( timeout || 0 ));
     }
@@ -22434,7 +22445,7 @@ Layers.register('carto', cartoLayer);
               '       ST_YMin(ST_Extent(the_geom)) as miny,'+
               '       ST_XMax(ST_Extent(the_geom)) as maxx,' +
               '       ST_YMax(ST_Extent(the_geom)) as maxy' +
-              ' from ({{sql}}) as subq';
+              ' from ({{{ sql }}}) as subq';
       sql = Mustache.render(sql, vars);
       this.execute(s, { sql: sql }, options)
         .done(function(result) {

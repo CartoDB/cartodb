@@ -4,6 +4,12 @@
 (function() {
   var root = this;
 
+  if(!<%= load_jquery %>) {
+    if(root.jQuery === undefined) {
+      throw "jQuery should be loaded before include cartodb.js";
+    }
+  }
+
   // save current libraries
   var __prev = {
     jQuery: root.jQuery,

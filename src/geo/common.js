@@ -67,9 +67,39 @@ CartoDBLayerCommon.prototype = {
   },
 
 
+  _getLayerDefinition: function() {
+    // set params
+    var params = {};
+    var opts = this.options;
+    var sql, cartocss, cartocss_version;
+    sql = opts.query || "select * from " + opts.table_name;
+
+    if(opts.query_wrapper) {
+      sql = _.template(opts.query_wrapper)({ sql: sql });
+    }
+
+    cartocss = opts.tile_style;
+    cartocss_version = opts.cartocss_version;
+
+    // extra_params?
+    for (var _param in opts.extra_params) {
+       params[_param] = opts.extra_params[_param].replace(/\{\{table_name\}\}/g, opts.table_name);
+    }
+
+    return {
+      sql: sql,
+      cartocss: cartocss,
+      cartocss_version: cartocss_version,
+      params: params,
+      interactivity: opts.interactivity
+    }
+
+  },
+
   //
   // param ext tile extension, i.e png, json
   // 
+  /*
   _tilesUrl: function(ext, subdomain) {
     var opts = this.options;
     ext = ext || 'png';
@@ -122,10 +152,6 @@ CartoDBLayerCommon.prototype = {
     return cartodb_url;
   },
 
-  isHttps: function() {
-    return this.options.tiler_protocol === 'https';
-  },
-
 
   _tileJSON: function () {
     var grids = [];
@@ -149,18 +175,8 @@ CartoDBLayerCommon.prototype = {
         formatter: function(options, data) { return data; }
     };
   },
+  */
 
-  _getTileJSON: function(layergroupTiles, layer) {
-    layer = layer == undefined ? 0: layer;
-
-    return {
-        tilejson: '2.0.0',
-        scheme: 'xyz',
-        grids: layergroupTiles.grids[layer],
-        tiles: layergroupTiles.tiles,
-        formatter: function(options, data) { return data; }
-    };
-  },
 
   error: function(e) {
     console.log(e.error);
@@ -178,30 +194,34 @@ CartoDBLayerCommon.prototype = {
       , img = new Image()
       , urls = this._tileJSON()
 
-    var grid_url = urls.tiles[0].replace(/\{z\}/g,xyz.z).replace(/\{x\}/g,xyz.x).replace(/\{y\}/g,xyz.y);
+    getTiles(function(urls) {
 
+      var grid_url = urls.tiles[0]
+          .replace(/\{z\}/g,xyz.z)
+          .replace(/\{x\}/g,xyz.x)
+          .replace(/\{y\}/g,xyz.y);
 
-    $.ajax({
-      method: "get",
-      url: grid_url,
-      crossDomain: true,
-      success: function() {
-        self.tilesOk();
-        clearTimeout(timeout)
-      },
-      error: function(xhr, msg, data) {
-        clearTimeout(timeout);
-        self.error(xhr.responseText && JSON.parse(xhr.responseText));
-      }
+      this.options.ajax({
+        method: "get",
+        url: grid_url,
+        crossDomain: true,
+        success: function() {
+          self.tilesOk();
+          clearTimeout(timeout)
+        },
+        error: function(xhr, msg, data) {
+          clearTimeout(timeout);
+          self.error(xhr.responseText && JSON.parse(xhr.responseText));
+        }
+      });
     });
 
-    // Hacky for reqwest, due to timeout doesn't work very well
     var timeout = setTimeout(function(){
       clearTimeout(timeout);
       self.error("tile timeout");
     }, 30000);
 
-  },
+  }
 
 
 };

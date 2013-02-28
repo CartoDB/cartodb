@@ -6,6 +6,7 @@ L.CartoDBGroupLayer = L.TileLayer.extend({
 
   includes: [
     cdb.geo.LeafLetLayerView.prototype,
+    LayerDefinition.prototype,
     CartoDBLayerCommon.prototype
   ],
 
@@ -32,18 +33,12 @@ L.CartoDBGroupLayer = L.TileLayer.extend({
     L.Util.setOptions(this, options);
 
     // Some checks
-    if (!options.layer_definition || !options.map) {
-      if (options.debug) {
-        throw('cartodb-leaflet needs at least the layer_definition name and the Leaflet map object');
-      } else { return }
+    if (!options.layer_definition) {
+        throw new Error('cartodb-leaflet needs at least the layer_definition');
     }
 
-    // Bounds? CartoDB does it
-    if (options.auto_bound)
-      this.setBounds();
+    LayerDefinition.call(this, options.layer_definition, this.options);
 
-    // Add cartodb logo, yes sir!
-    this._addWadus({left:8, bottom:8}, 0, this.options.map._container);
 
     this.fire = this.trigger;
 
@@ -95,6 +90,8 @@ L.CartoDBGroupLayer = L.TileLayer.extend({
    */
   onAdd: function(map) {
     var self = this;
+    this.options.map = map;
+    this._addWadus({left:8, bottom:8}, 0, map._container);
     this.__update(function() {
       L.TileLayer.prototype.onAdd.call(self, map);
       self.fire('added');
@@ -124,9 +121,9 @@ L.CartoDBGroupLayer = L.TileLayer.extend({
     var self = this;
     this.fire('updated');
 
-    this.layerToken(this.options.layer_definition, function(layer) {
-      if(layer) {
-        self.tilejson = self._layerGroupTiles(layer.layergroupid);
+    this.getTiles(function(urls) {
+      if(urls) {
+        self.tilejson = urls;
         self.setUrl(self.tilejson.tiles[0]);
         done && done();
       } else {
@@ -161,8 +158,6 @@ L.CartoDBGroupLayer = L.TileLayer.extend({
     */
 
   },
-
-  setInteractivity
 
   enableInteraction: function(layer) {
     var self = this;

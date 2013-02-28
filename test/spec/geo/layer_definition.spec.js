@@ -17,13 +17,14 @@ describe("LayerDefinition", function() {
          }
        }
       ]
-    }
+    };
     layerDefinition = new LayerDefinition(layer_definition, {
       tiler_domain:   "cartodb.com",
       tiler_port:     "8081",
       tiler_protocol: "http",
       user_name: 'rambo',
-      table_name: 'test',
+      no_cdn: true,
+      subdomains: [null]
     });
 
   });
@@ -71,7 +72,7 @@ describe("LayerDefinition", function() {
          type: 'cartodb', 
          options: {
            sql: 'select * from ne_10m_populated_places_simple',
-           cartocss: '#layer { marker-fill: red; }', 
+           cartocss: '#layer { marker-fill: red; }'
          }
        }, {
          type: 'cartodb', 
@@ -84,7 +85,57 @@ describe("LayerDefinition", function() {
     });
   });
 
-  it("should return tiles", function() {
+  it("should generate url for tiles", function() {
+    var tiles = layerDefinition._layerGroupTiles('test_layer');
+    expect(tiles.tiles.length).toEqual(1);
+    expect(tiles.grids.length).toEqual(2);
+    expect(tiles.grids[0].length).toEqual(1);
+    expect(tiles.tiles[0]).toEqual('http://rambo.cartodb.com:8081/tiles/layergroup/test_layer/{z}/{x}/{y}.png?');
+    expect(tiles.grids[0][0]).toEqual('http://rambo.cartodb.com:8081/tiles/layergroup/test_layer/0/{z}/{x}/{y}.grid.json?');
+    expect(tiles.grids[1][0]).toEqual('http://rambo.cartodb.com:8081/tiles/layergroup/test_layer/1/{z}/{x}/{y}.grid.json?');
+
+  });
+
+  it("should generate url for tiles with params", function() {
+    var tiles = layerDefinition._layerGroupTiles('test_layer', {
+      api_key: 'api_key_test',
+      updated_at: '1234'
+    });
+    expect(tiles.tiles[0]).toEqual('http://rambo.cartodb.com:8081/tiles/layergroup/test_layer/{z}/{x}/{y}.png?api_key=api_key_test&updated_at=1234');
+    expect(tiles.grids[0][0]).toEqual('http://rambo.cartodb.com:8081/tiles/layergroup/test_layer/0/{z}/{x}/{y}.grid.json?api_key=api_key_test&updated_at=1234');
+  });
+
+  it("should generate url for with cdn", function() {
+    layerDefinition.options.no_cdn = false;
+    layerDefinition.options.subdomains = ['a', 'b', 'c', 'd'];
+    var tiles = layerDefinition._layerGroupTiles('test_layer');
+    expect(tiles.tiles[0]).toEqual('http://a.tiles.cartocdn.com/rambo/tiles/layergroup/test_layer/{z}/{x}/{y}.png?');
+    expect(tiles.tiles[1]).toEqual('http://b.tiles.cartocdn.com/rambo/tiles/layergroup/test_layer/{z}/{x}/{y}.png?');
+    expect(tiles.grids[0][0]).toEqual('http://a.tiles.cartocdn.com/rambo/tiles/layergroup/test_layer/0/{z}/{x}/{y}.grid.json?');
+    expect(tiles.grids[0][1]).toEqual('http://b.tiles.cartocdn.com/rambo/tiles/layergroup/test_layer/0/{z}/{x}/{y}.grid.json?');
+  });
+
+  it("grid url should include interactivity", function() {
+    layerDefinition.setInteractivity(0, ['cartodb_id', 'rambo']);
+    var tiles = layerDefinition._layerGroupTiles('test_layer');
+    expect(tiles.grids[0][0]).toEqual('http://rambo.cartodb.com:8081/tiles/layergroup/test_layer/0/{z}/{x}/{y}.grid.json?interactivity=' + encodeURIComponent('cartodb_id,rambo'));
+    expect(tiles.grids[1][0]).toEqual('http://rambo.cartodb.com:8081/tiles/layergroup/test_layer/1/{z}/{x}/{y}.grid.json?');
+  });
+
+  it("should set interaction", function() {
+    layerDefinition.setInteractivity(1, ['cartodb_id', 'rambo']);
+    expect(layerDefinition.getLayer(1).options.interactivity).toEqual('cartodb_id,rambo');
+    layerDefinition.setInteractivity(['cartodb_id', 'john']);
+    expect(layerDefinition.getLayer(0).options.interactivity).toEqual('cartodb_id,john');
+  });
+
+  it("should use cdn_url as default", function() {
+    delete layerDefinition.options.no_cdn;
+    expect(layerDefinition._host()).toEqual('http://tiles.cartocdn.com/rambo');
+    expect(layerDefinition._host('0')).toEqual('http://0.tiles.cartocdn.com/rambo');
+    layerDefinition.options.tiler_protocol = "https";
+    expect(layerDefinition._host()).toEqual('https://d3pu9mtm6f0hk5.cloudfront.net/rambo');
+    expect(layerDefinition._host('a')).toEqual('https://a.d3pu9mtm6f0hk5.cloudfront.net/rambo');
   });
 
 });

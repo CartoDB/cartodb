@@ -318,12 +318,12 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     if (new_value == "") new_value = null;
 
     //Link? go ahead!
-    if (!attr.loading && this._isValidURL(attr.value)) {
+    if (!attr.loading && this._isValidURL(new_value)) {
       attr.url = attr.value;
     }
 
     // If it is index 0, not loading, header template type and length bigger than 30... cut off the text!
-    if (!attr.loading && attr.index==0 && attr.value.length > 35 && template_name.search('_header_') != -1) {
+    if (!attr.loading && attr.index==0 && attr.value.length > 35 && template_name && template_name.search('_header_') != -1) {
       new_value = attr.value.substr(0,32) + "...";
     }
 
@@ -333,7 +333,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     }
 
     // If it is index 1, not loading, header image template type and length bigger than 30... cut off the text!
-    if (!attr.loading && attr.index==1 && attr.value.length > 35 && template_name.search('_header_with_image') != -1) {
+    if (!attr.loading && attr.index==1 && attr.value.length > 35 && template_name && template_name.search('_header_with_image') != -1) {
       new_value = attr.value.substr(0,32) + "...";
     }
 

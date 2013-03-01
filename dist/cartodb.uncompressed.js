@@ -1,8 +1,14 @@
 // cartodb.js version: 2.0.22-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: 10a3a0aaaceeed12cbfe043db7aabde685d657e1
+// sha: dd6e702f64956f36920c8505add142480f949a0a
 (function() {
   var root = this;
+
+  if(!true) {
+    if(root.jQuery === undefined) {
+      throw "jQuery should be loaded before include cartodb.js";
+    }
+  }
 
   // save current libraries
   var __prev = {

@@ -22,14 +22,17 @@ cmds = [
 ];
 
 
-function concat_files(files, ignore, callback) {
+function concat_files(_files, ignore, callback) {
+  var files = _.clone(_files);
   var all = '';
   var _r = function(f) {
-    console.log(f);
     if(_.contains(ignore, f)) {
       var next = files.shift();
       if(next) _r(next);
+      else callback(all);
+      console.log(f, "..... IGNORED");
     } else {
+      console.log(f);
       fs.readFile(f, 'utf8', function (err, data) {
         if (err) { throw new Error(err); }
         all += data;
@@ -71,7 +74,7 @@ require('git-rev').long(function (sha) {
 
 //no jquery
 require('git-rev').long(function (sha) {
-  concat_files(vendor_files, ['jquery.min.js'], function(vendor_js) {
+  concat_files(vendor_files, ['./vendor/jquery.min.js'], function(vendor_js) {
     concat_files(cdb_files, [], function(cdb_js) {
       fs.readFile('scripts/wrapper.js', 'utf8', function (err, final_js) {
         fs.writeFile("dist/_cartodb_nojquery.js", _.template(final_js)({

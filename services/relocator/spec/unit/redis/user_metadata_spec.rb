@@ -19,7 +19,7 @@ describe UserMetadata do
   end
 
   describe '#transform' do
-    it 'transforms the database name key in the data' do
+    it 'transforms the database_name key in the data' do
       user_data = @sample_data.values.first
       user_data.fetch('database_name').must_match(/_#{@old_user_id}_db/)
 

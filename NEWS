@@ -3,6 +3,7 @@
 - added cartodb.nojquery.js
 - infowindow crops text when it is too large in infowindows headers
 - infowindow converts links automatically
+- added retina CartoDB logo
 
 2.0.21 (02//19//2013)
 -----

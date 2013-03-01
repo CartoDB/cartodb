@@ -49,10 +49,18 @@ describe("geo.map", function() {
     });
 
     it("should assign order each time is added", function() {
-      var layer = new cdb.geo.CartoDBLayer();
+      var layer = new cdb.geo.CartoDBLayer({ 
+          table_name: "INVENTADO",
+          user_name: 'test',
+          tile_style: 'test'
+      });
       layers.add(layer);
       expect(layer.get('order')).toEqual(0);
-      var layer2 = new cdb.geo.CartoDBLayer();
+      var layer2 = new cdb.geo.CartoDBLayer({ 
+          table_name: "INVENTADO2",
+          user_name: 'test',
+          tile_style: 'test'
+      });
       layers.add(layer2);
       expect(layer2.get('order')).toEqual(1);
       layer.destroy();
@@ -318,7 +326,11 @@ describe("geo.map", function() {
     });
 
     it("should create a CartoDBLayer when the layer is cartodb", function() {
-      layer    = new cdb.geo.CartoDBLayer({});
+      layer    = new cdb.geo.CartoDBLayer({
+        table_name: 'test',
+        user_name: 'test',
+        tile_style: 'test'
+      });
       var lyr = map.addLayer(layer);
       var layerView = mapView.getLayerByCid(lyr);
       expect(layerView.setQuery).not.toEqual(undefined);
@@ -326,7 +338,11 @@ describe("geo.map", function() {
 
     it("should create the cartodb logo", function() {
       runs(function() {
-        layer = new cdb.geo.CartoDBLayer({ table_name: "INVENTADO"});
+        layer = new cdb.geo.CartoDBLayer({ 
+          table_name: "INVENTADO",
+          user_name: 'test',
+          tile_style: 'test'
+        });
         var lyr = map.addLayer(layer);
         var layerView = mapView.getLayerByCid(lyr);
       });
@@ -338,7 +354,12 @@ describe("geo.map", function() {
 
     it("should not add the cartodb logo when cartodb_logo = false", function() {
       runs(function() {
-        layer = new cdb.geo.CartoDBLayer({ table_name: "INVENTADO", cartodb_logo: false});
+        layer = new cdb.geo.CartoDBLayer({ 
+          table_name: "INVENTADO",
+          user_name: 'test',
+          tile_style: 'test',
+          cartodb_logo: false
+        });
         var lyr = map.addLayer(layer);
         var layerView = mapView.getLayerByCid(lyr);
       });
@@ -356,7 +377,11 @@ describe("geo.map", function() {
     });
 
     it("should insert layers in specified order", function() {
-      var layer    = new cdb.geo.CartoDBLayer({});
+      var layer = new cdb.geo.CartoDBLayer({ 
+          table_name: "INVENTADO",
+          user_name: 'test',
+          tile_style: 'test'
+        });
       map.addLayer(layer);
 
       spyOn(mapView.map_leaflet,'addLayer');
@@ -393,8 +418,16 @@ describe("geo.map", function() {
 
     it("shoule remove all layers when map view is cleaned", function() {
 
-      var id1 = map.addLayer(new cdb.geo.CartoDBLayer({}));
-      var id2 = map.addLayer(new cdb.geo.CartoDBLayer({}));
+      var id1 = map.addLayer(new cdb.geo.CartoDBLayer({
+          table_name: "INVENTADO",
+          user_name: 'test',
+          tile_style: 'test'
+      }));
+      var id2 = map.addLayer(new cdb.geo.CartoDBLayer({
+          table_name: "INVENTADO",
+          user_name: 'test',
+          tile_style: 'test'
+      }));
 
       expect(_.size(mapView.layers)).toEqual(2);
       var layer = mapView.getLayerByCid(id1);

@@ -37,6 +37,33 @@
         attribution: 'MapBox'
       }).addTo(map);
 
+      var layer = new L.CartoDBLayer({
+        tiler_domain: "localhost.lan",
+        tiler_port: "8181",
+        user_name: 'development',
+        table_name: "european_countries_export",
+        tile_style: '#layer { polygon-fill: #000; polygon-opacity: 0.8;}',
+        no_cdn: true,
+        featureOver: function(e, pos, latlng, data) {
+          cartodb.log.log(e, pos, latlng, data);
+        }
+      }).addTo(map);
+
+      layer.setInteractivity('cartodb_id').setInteraction(0, true) 
+      layer.on('featureOver', function(e, pos, latlng, data) {
+        cartodb.log.log(e, pos, latlng, data);
+      });
+      return;
+
+      setTimeout(function() {
+        layer.setCartoCSS('#layer { polygon-fill: #F00; polygon-opacity: 0.8;}');
+      }, 3000);
+
+      setTimeout(function() {
+        layer.setQuery('select * from european_countries_export limit 10');
+      }, 6000);
+
+      /*
       var layer = new L.CartoDBGroupLayer({
         layer_definition: {
           version: '1.0.0',
@@ -77,6 +104,7 @@
            cartocss: '#layer { marker-fill: #00FF00; }', 
         });
       }, 6000);
+      */
 
   /*
 

@@ -4,6 +4,8 @@ if(typeof(L) == "undefined")
 
 L.CartoDBGroupLayer = L.TileLayer.extend({
 
+  interactionClass: wax.leaf.interaction,
+
   includes: [
     cdb.geo.LeafLetLayerView.prototype,
     LayerDefinition.prototype,
@@ -29,6 +31,7 @@ L.CartoDBGroupLayer = L.TileLayer.extend({
 
 
   initialize: function (options) {
+    options = options || {};
     // Set options
     L.Util.setOptions(this, options);
 
@@ -39,10 +42,11 @@ L.CartoDBGroupLayer = L.TileLayer.extend({
 
     LayerDefinition.call(this, options.layer_definition, this.options);
 
-
     this.fire = this.trigger;
 
     L.TileLayer.prototype.initialize.call(this);
+    this.interaction = [];
+    this.interactionEnabled = [];
   },
 
 
@@ -104,8 +108,10 @@ L.CartoDBGroupLayer = L.TileLayer.extend({
    * When removes the layer, destroy interactivity if exist
    */
   onRemove: function(map) {
-    this.options.added = false;
-    L.TileLayer.prototype.onRemove.call(this, map);
+    if(this.options.added) {
+      this.options.added = false;
+      L.TileLayer.prototype.onRemove.call(this, map);
+    }
   },
 
   onLayerDefinitionUpdated: function() {
@@ -159,94 +165,12 @@ L.CartoDBGroupLayer = L.TileLayer.extend({
 
   },
 
-  enableInteraction: function(layer) {
-    var self = this;
-    this.interaction = wax.leaf.interaction()
-      .map(this.options.map)
-      .tilejson(this._getTileJSON(this.tilejson, layer))
-      .on('on', function(o) {
-        o.layer = layer;
-        self._bindWaxOnEvents(self.options.map, o);
-      })
-      .on('off', function(o) {
-        self._bindWaxOffEvents();
-      });
-  },
 
   _checkLayer: function() {
     if (!this.options.added) {
       throw new Error('the layer is not still added to the map');
     }
   },
-
-  /**
-   * Change query of the tiles
-   * @params {str} New sql for the tiles
-   */
-  setQuery: function(layer, sql) {
-
-    this._checkLayer();
-
-    /*this.setOptions({
-      query: sql
-    });*/
-
-  },
-
-
-  /**
-   * Change style of the tiles
-   * @params {style} New carto for the tiles
-   */
-  setCartoCSS: function(layer, style, version) {
-    this._checkLayer();
-
-    version = version || cdb.CARTOCSS_DEFAULT_VERSION;
-
-    /*this.setOptions({
-      tile_style: style,
-      style_version: version
-    });*/
-
-  },
-
-
-  /**
-   * Change the query when clicks in a feature
-   * @params {Boolean | String} New sql for the request
-   */
-  setInteractivity: function(value) {
-/*
-    if (!this.options.added) {
-      if (this.options.debug) {
-        throw('the layer is not still added to the map');
-      } else { return }
-    }
-
-    if (!isNaN(value)) {
-      if (this.options.debug) {
-        throw(value + ' is not a valid setInteractivity value');
-      } else { return }
-    }
-
-    this.setOptions({
-      interactivity: value
-    });
-    */
-
-  },
-
-
-  /**
-   * Active or desactive interaction
-   * @params {Boolean} Choose if wants interaction or not
-   */
-  setInteraction: function(enable) {
-    /*this.setOptions({
-      interaction: enable
-    })*/
-  },
-
 
   /**
    * Set a new layer attribution
@@ -270,6 +194,7 @@ L.CartoDBGroupLayer = L.TileLayer.extend({
 
     this.fire('updated');
   },
+
 
 
   /**
@@ -300,44 +225,27 @@ L.CartoDBGroupLayer = L.TileLayer.extend({
 
 
   /**
-   * Returns if the layer is visible or not
-   */
-  isVisible: function() {
-    return this.options.visible
-  },
-
-
-  /**
-   * Returns if the layer belongs to the map
-   */
-  isAdded: function() {
-    return this.options.added
-  },
-
-
-  /**
    * Bind events for wax interaction
    * @param {Object} Layer map object
    * @param {Event} Wax event
    */
-  _bindWaxOnEvents: function(map,o) {
+  _manageOnEvents: function(map, o) {
     var layer_point = this._findPos(map,o),
         latlng = map.layerPointToLatLng(layer_point);
 
     var screenPos = map.layerPointToContainerPoint(layer_point);
 
     switch (o.e.type) {
-
       case 'mousemove':
         if (this.options.featureOver) {
-          return this.options.featureOver(o.e,latlng, screenPos, o.data);
+          return this.options.featureOver(o.e,latlng, screenPos, o.data, o.layer);
         }
         break;
 
       case 'click':
       case 'touchend':
         if (this.options.featureClick) {
-          this.options.featureClick(o.e,latlng, screenPos, o.data);
+          this.options.featureClick(o.e,latlng, screenPos, o.data, o.layer);
         }
         break;
       default:
@@ -349,7 +257,7 @@ L.CartoDBGroupLayer = L.TileLayer.extend({
   /**
    * Bind off event for wax interaction
    */
-  _bindWaxOffEvents: function(){
+  _manageOffEvents: function(){
     if (this.options.featureOut) {
       return this.options.featureOut && this.options.featureOut();
     }

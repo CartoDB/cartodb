@@ -72,6 +72,13 @@ LayerDefinition.prototype = {
     this.layerToken = null;
   },
 
+  setLayer: function(layer, def) {
+    if(layer < this.getLayerCount() && layer >= 0) {
+      this.layers[layer] = _.clone(def);
+    }
+    return this;
+  },
+
   addLayer: function(def, layer) {
     layer = layer === undefined ? this.getLayerCount(): layer;
     if(layer <= this.getLayerCount() && layer >= 0) {
@@ -136,7 +143,7 @@ LayerDefinition.prototype = {
         grids[layer] = grids[layer] || [];
         var p = _.extend({}, params, { interactivity: layerObject.options.interactivity });
         var gridParams = this._encodeParams(p, this.options.gridParams);
-        grids[layer].push(cartodb_url + "/" + layer +  tileTemplate + ".grid.json?" + gridParams);
+        grids[layer].push(cartodb_url + "/layer" + layer +  tileTemplate + ".grid.json?" + gridParams);
       }
     }
 
@@ -178,16 +185,19 @@ LayerDefinition.prototype = {
   /**
    * get tile json for layer
    */
-  getTileJSON: function(layer) {
+  getTileJSON: function(layer, callback) {
     layer = layer == undefined ? 0: layer;
-
-    return {
-        tilejson: '2.0.0',
-        scheme: 'xyz',
-        grids: this.layers.grids[layer],
-        tiles: layergroupTiles.tiles,
-        formatter: function(options, data) { return data; }
-    };
+    this.getTiles(function(urls) {
+      if(callback) {
+        callback({
+          tilejson: '2.0.0',
+          scheme: 'xyz',
+          grids: urls.grids[layer],
+          tiles: urls.tiles,
+          formatter: function(options, data) { return data; }
+        });
+      }
+    });
   },
 
   /**
@@ -199,7 +209,7 @@ LayerDefinition.prototype = {
       sql = layer;
       layer = 0;
     }
-    this.layer[layer].options.sql = sql;
+    this.layers[layer].options.sql = sql;
     this._definitionUpdated();
   },
 
@@ -216,8 +226,8 @@ LayerDefinition.prototype = {
 
     version = version || cdb.CARTOCSS_DEFAULT_VERSION;
 
-    this.layer[layer].options.cartocss = style;
-    this.layer[layer].options.cartocss_version = version;
+    this.layers[layer].options.cartocss = style;
+    this.layers[layer].options.cartocss_version = version;
     this._definitionUpdated();
 
   },

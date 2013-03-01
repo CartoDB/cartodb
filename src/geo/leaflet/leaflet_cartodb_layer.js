@@ -14,54 +14,27 @@ L.CartoDBLayer = L.CartoDBGroupLayer.extend({
     debug:          false,
     visible:        true,
     added:          false,
-    extra_params:   {}
+    extra_params:   {},
+    layer_definition_version: '1.0.0'
   },
 
 
   initialize: function (options) {
-    if (!options.table_name || !options.map) {
-      if (options.debug) {
-        throw('cartodb-leaflet needs at least a CartoDB table name and the Leaflet map object :(');
-      } else { return }
+    L.Util.setOptions(this, options);
+
+    if (!options.table_name || !options.user_name || !options.tile_style) {
+        throw ('cartodb-leaflet needs at least a CartoDB table name, user_name and tile_style');
     }
 
-    L.CartoDBGroupLayer.prototype.initialize.call(this);
-  },
-
-
-  /**
-   * Change the query when clicks in a feature
-   * @params {Boolean | String} New sql for the request
-   */
-  setInteractivity: function(value) {
-
-    if (!this.options.added) {
-      if (this.options.debug) {
-        throw('the layer is not still added to the map');
-      } else { return }
-    }
-
-    if (!isNaN(value)) {
-      if (this.options.debug) {
-        throw(value + ' is not a valid setInteractivity value');
-      } else { return }
-    }
-
-    this.setOptions({
-      interactivity: value
+    L.CartoDBGroupLayer.prototype.initialize.call(this, {
+      layer_definition: {
+        version: this.options.layer_definition_version,
+        layers: [{
+          type: 'cartodb',
+          options: this._getLayerDefinition()
+        }]
+      }
     });
-
-  },
-
-
-  /**
-   * Active or desactive interaction
-   * @params {Boolean} Choose if wants interaction or not
-   */
-  setInteraction: function(enable) {
-    this.setOptions({
-      interaction: enable
-    })
   },
 
   /**

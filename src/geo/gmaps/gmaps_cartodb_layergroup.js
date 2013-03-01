@@ -1,7 +1,8 @@
 (function() {
 // if google maps is not defined do not load the class
-if(typeof(google) == "undefined" || typeof(google.maps) == "undefined")
+if(typeof(google) == "undefined" || typeof(google.maps) == "undefined") {
   return;
+}
 
 // helper to get pixel position from latlon
 var Projector = function(map) { this.setMap(map); };
@@ -23,33 +24,31 @@ Projector.prototype.pixelToLatLng = function(point) {
   //return this.map.getProjection().fromPointToLatLng(point);
 };
 
-var CartoDBLayer = function(opts) {
+var CartoDBLayerGroup = function(opts) {
 
   var default_options = {
-    query:          "SELECT * FROM {{table_name}}",
+    opacity:        0.99,
     attribution:    "CartoDB",
-    opacity:        1,
-    auto_bound:     false,
     debug:          false,
     visible:        true,
     added:          false,
-    loaded:         null,
-    loading:        null,
-    layer_order:    "top",
     tiler_domain:   "cartodb.com",
     tiler_port:     "80",
     tiler_protocol: "http",
     sql_domain:     "cartodb.com",
     sql_port:       "80",
     sql_protocol:   "http",
-    subdomains:      null
+    extra_params:   {},
+    cdn_url:        null,
+    subdomains:     null
   };
 
   this.options = _.defaults(opts, default_options);
-  opts.tiles = this._tileJSON().tiles;
-
-  // Set init
   this.tiles = 0;
+  
+  if (!opts.layer_definition) {
+    throw new Error('cartodb-gmaps needs at least the layer_definition');
+  }
 
   // Add CartoDB logo
   this._addWadus({left: 74, bottom:8}, 2000, this.options.map.getDiv());
@@ -60,8 +59,7 @@ var CartoDBLayer = function(opts) {
   // TODO: remove wax.connector here
    _.extend(this.options, opts);
   this.projector = new Projector(opts.map);
-  this._addInteraction();
-  this._checkTiles();
+  LayerDefinition.call(this, options.layer_definition, this.options);
 };
 
 CartoDBLayer.Projector = Projector;

@@ -66,6 +66,52 @@ CartoDBLayerCommon.prototype = {
     }
   },
 
+  /**
+   * Returns if the layer is visible or not
+   */
+  isVisible: function() {
+    return this.options.visible
+  },
+
+  /**
+   * Active or desactive interaction
+   * @params enable {Number} layer number
+   * @params layer {Boolean} Choose if wants interaction or not
+   */
+  setInteraction: function(layer, b) {
+    var self = this;
+    var layerInteraction;
+    this.interactionEnabled[layer] = b;
+    if(!b) {
+      layerInteraction = this.interaction[layer];
+      if(layerInteraction) {
+        layerInteraction.remove();
+        this.interaction[layer] = null;
+      }
+    } else {
+      layerInteraction = this.interaction[layer];
+      if(layerInteraction) {
+        layerInteraction.remove();
+      }
+      this.getTileJSON(layer, function(tilejson) {
+        // check again, it could be changed while the request arrives
+        if(self.interactionEnabled[layer]) {
+          self.interaction[layer] = this.interactionClass()
+            .map(self.options.map)
+            .tilejson(tilejson)
+            .on('on', function(o) {
+              o.layer = layer;
+              self._manageOnEvents(self.options.map, o);
+            })
+            .on('off', function(o) {
+              self._manageOffEvents();
+            });
+        }
+      });
+    }
+    return this;
+  },
+
 
   _getLayerDefinition: function() {
     // set params
@@ -85,6 +131,8 @@ CartoDBLayerCommon.prototype = {
     for (var _param in opts.extra_params) {
        params[_param] = opts.extra_params[_param].replace(/\{\{table_name\}\}/g, opts.table_name);
     }
+    sql = sql.replace(/\{\{table_name\}\}/g, opts.table_name);
+    cartocss = cartocss.replace(/\{\{table_name\}\}/g, opts.table_name);
 
     return {
       sql: sql,

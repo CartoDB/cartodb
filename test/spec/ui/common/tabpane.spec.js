@@ -178,7 +178,7 @@ describe('core.ui.common.TabPane', function() {
   });
 
   it("should remove all panels ", function() {
-    var v1 = new cdb.core.View(),
+    var v1 = new cdb.core.View();
     var v2 = new cdb.core.View();
     spyOn(v1, 'clean');
     spyOn(v2, 'clean');

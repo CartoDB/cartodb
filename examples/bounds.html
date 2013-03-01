@@ -31,11 +31,13 @@
         zoomControl: false,
         center: [43, 0],
         zoom: 3
-      })
+      });
 
-      L.tileLayer('http://tile.stamen.com/toner/{z}/{x}/{y}.png', {
-        attribution: 'MapBox'
-      }).addTo(map);
+      // Setting bounds to Spain country
+      var sql = new cartodb.SQL({ user: 'examples' });
+      sql.getBounds("select * from european_countries_e where name='Spain'").done(function(bounds) {
+        map.fitBounds(bounds)
+      });
 
       cartodb.createLayer(map, 'http://examples.cartodb.com/api/v1/viz/european_countries_e/viz.json', {
         query: 'select * from {{table_name}} where area::float > 10000' // if you remove this the query applied in the editor will be used

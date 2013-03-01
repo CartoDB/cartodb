@@ -113,7 +113,6 @@ cdb.geo.CartoDBLayer = cdb.geo.MapLayer.extend({
     active: true,
     query: null,
     opacity: 0.99,
-    auto_bound: false,
     interactivity: null,
     interaction: true,
     debug: false,

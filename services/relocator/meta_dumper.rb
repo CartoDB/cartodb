@@ -13,7 +13,7 @@ module CartoDB
 
       Relocator::SIMPLE_TABLES.each do |table|
         define_method(table) do 
-          serialize(table, transform(records_from(table), 'user_id') )
+          memoize(table, transform(records_from(table), 'user_id') )
         end
       end
 
@@ -27,44 +27,44 @@ module CartoDB
       end #initialize
 
       def run
-        DATA_SOURCES.each { |table_method| send table_method }
-        #}.map { |key, data| serialize(key, data, 'redis') } 
-        #metadata.each { |key, data| serialize(key, data) }
+        TABLES.each     { |table| serialize(table, send(table)) }
+        REDIS_DATA.each { |sink| serialize(sink, send(sink), 'redis')}
       end #run
 
       def layers
-        serialize('layers', rdbms.export_layers_for(user_id))
       end #layers
 
       def layers_maps
-        serialize('layers_maps', rdbms.export_layers_maps_for(user_id))
+        memoize('layers_maps', rdbms.export_layers_maps_for(user_id))
       end #layers_maps
 
       def users
-        serialize('users', transform(rdbms.export_user(user_id)))
+        memoize('users', transform(rdbms.export_user(user_id)))
       end #users
 
       def thresholds
-        redis_dumper.tresholds_for(user_id)
+        memoize('thresholds', redis_dumper.thresholds_for(user_id))
       end #thresholds
 
       def tables_metadata
-        redis_dumper.tables_metadata_for(environment.user_database)
+        database = environment.user_database
+        memoize('tables_metadata', redis_dumper.tables_metadata_for(database))
       end #table_metadata
 
       def user_metadata
         username = users.first.fetch('username')
-        redis_dumper.user_metadata_for(username)
+        memoize('user_metadata', redis_dumper.user_metadata_for(username))
       end #user_metadata
 
       def api_credentials
         tokens = []
-        redis_dumper.api_credentials_for(tokens)
+        memoize('api_credentials', redis_dumper.api_credentials_for(tokens))
       end #api_credentials
 
       private
 
-      attr_reader :rdbms, :user_id, :relocation, :redis_dumper, :metadata
+      attr_reader :rdbms, :user_id, :relocation, :redis_dumper, :metadata,
+                  :environment
 
       def records_from(table)
         rdbms.export_records_for(user_id, table)
@@ -77,6 +77,10 @@ module CartoDB
           record
         end
       end #transform
+
+      def memoize(key, data)
+        metadata.fetch(key, metadata.store(key, data))
+      end #memoize
 
       def serialize(key, data, prefix=nil)
         relocation.store(key, StringIO.new(data.to_json), prefix)

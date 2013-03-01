@@ -261,7 +261,8 @@ var Vis = cdb.core.View.extend({
       tiles_loader: true,
       zoomControl: true,
       loaderControl: true,
-      searchControl: false
+      searchControl: false,
+      infowindow: true
     });
     vizjson.overlays = vizjson.overlays || [];
     vizjson.layers = vizjson.layers || [];
@@ -284,6 +285,8 @@ var Vis = cdb.core.View.extend({
         }
       }
     }
+
+    this.infowindow = opt.infowindow;
 
     if(opt.https) {
       this.https = true;
@@ -480,7 +483,8 @@ var Vis = cdb.core.View.extend({
     // add the associated overlays
     if(layerData.infowindow &&
       layerData.infowindow.fields &&
-      layerData.infowindow.fields.length > 0) {
+      layerData.infowindow.fields.length > 0 &&
+      this.infowindow) {
       this.addInfowindow(layerView);
     }
 

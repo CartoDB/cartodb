@@ -47,7 +47,7 @@ module CartoDB
             memo.store(key, redis.hgetall(key))
             memo
           end
-        end #dump_api_credentials_for
+        end #api_credentials_for
 
         private
 

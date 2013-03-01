@@ -9,9 +9,9 @@ module CartoDB
       SIMPLE_TABLES     = %w{ api_keys assets client_applications data_imports
                               layers_users maps oauth_tokens tags user_tables }
       COMPLEX_TABLES    = %w{ layers layers_maps users }
-      REDIS_DATA        = %w{ tresholds api_credentials tables_metadata
+      REDIS_DATA        = %w{ thresholds api_credentials tables_metadata
                               user_metadata }
-      DATA_SOURCES      = SIMPLE_TABLES + COMPLEX_TABLES
+      TABLES            = SIMPLE_TABLES + COMPLEX_TABLES
       REDIS_DATABASES   = {
                             tables_metadata:  0,
                             threshold:        2,

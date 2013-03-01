@@ -16,17 +16,19 @@ module CartoDB
         def thresholds_for(user_id)
           redis.select Relocator::REDIS_DATABASES.fetch(:threshold)
 
-          thresholds_for(user_id).inject({}) do |memo, key| 
+          threshold_keys_for(user_id).inject(Hash.new) do |memo, key| 
             memo.store(key, redis.get(key))
+            memo
           end
         end #thresholds_for
 
         def tables_metadata_for(database_name)
           redis.select Relocator::REDIS_DATABASES.fetch(:tables_metadata)
 
-          tables_in(database_name).inject({}) do |memo, table_name|
+          tables_in(database_name).inject(Hash.new) do |memo, table_name|
             key = key_master.table_metadata(database_name, table_name)
             memo.store(key, redis.hgetall(key))
+            memo
           end
         end #tables_metadata_for
 
@@ -40,9 +42,10 @@ module CartoDB
         def api_credentials_for(tokens=[])
           redis.select Relocator::REDIS_DATABASES.fetch(:api_credentials)
 
-          tokens.each do |memo, token|
+          tokens.inject(Hash.new) do |memo, token|
             key = key_master.api_credential(token)
             memo.store(key, redis.hgetall(key))
+            memo
           end
         end #dump_api_credentials_for
 
@@ -54,7 +57,7 @@ module CartoDB
           redis.keys(key_master.database_metadata(database_name) + '*')
         end #tables_in
 
-        def thresholds_for(user_id)
+        def threshold_keys_for(user_id)
           redis.keys(key_master.threshold(user_id) + '*')
         end #thresholds_for
       end # Dumper

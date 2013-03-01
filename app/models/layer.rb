@@ -37,8 +37,8 @@ class Layer < Sequel::Model
   def after_save
     super
 
-    # Update related maps updated_at, this also invalidates the cached vizjson
-    maps.each { |map| map.save }
+    # Invalidate varnish cache (vizjson) for all the maps including this layer
+    maps.each { |map| map.invalidate_varnish_cache }
 
     # Invalidate related tables cache on varnish (only for carto layers)
     affected_tables.map &:invalidate_varnish_cache if kind == 'carto'

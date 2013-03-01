@@ -18,22 +18,21 @@ module CartoDB
        
        ogr2ogr_command = %Q{#{ogr2ogr_bin_path} -lco dim=2 -skipfailures --config SHAPE_ENCODING UTF8 -f "ESRI Shapefile" #{shp_file} #{@working_data[:path]}}
 
-       stdin,  stdout, stderr = Open3.popen3(ogr2ogr_command) 
-  
-        unless (err = stderr.read).empty?
-          if err.downcase.include?('failure')
-            if err.include? "Geometry Collection"
-              @data_import.set_error_code(3201)
-              @data_import.log_error("ERROR: geometry contains Geometry Collection")
-            else
-              @data_import.set_error_code(2000)
-              @data_import.log_error(err)
-              @data_import.log_error("ERROR: failed to convert #{@ext.sub('.','')} to shp")
-            end
-            raise "failed to convert file to shp"
+       stdin, stdout, stderr = Open3.popen3(ogr2ogr_command)
+        
+        err = stderr.read
+        if err.to_s[/^ERROR \d+:.*/]
+          if err.include? "Geometry Collection"
+            @data_import.set_error_code(3201)
+            @data_import.log_error("ERROR: geometry contains Geometry Collection")
           else
-            @data_import.log_update(err)
+            @data_import.set_error_code(2000)
+            @data_import.log_error(err)
+            @data_import.log_error("ERROR: failed to convert #{@ext.sub('.','')} to shp")
           end
+          raise "failed to convert file to shp"
+        else
+          @data_import.log_update(err)
         end
         
        # then choose the track_points file to import

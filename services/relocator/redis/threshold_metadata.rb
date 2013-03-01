@@ -5,7 +5,7 @@ require_relative '../relocator'
 
 module CartoDB
   module Relocator
-    class ThresholdData
+    class ThresholdMetadata
       def initialize(user_id, redis=nil, key_master=nil)
         @user_id    = user_id
         @redis      = redis || Redis.new(db: REDIS_DATABASES.fetch(:threshold))
@@ -42,7 +42,7 @@ module CartoDB
       def alter(key, user_id)
         key.gsub(/users:\d+:/, "users:#{user_id}:")
       end #alter
-    end # ThresholdData
+    end # ThresholdMetadata
   end # Reloctor
 end # CartoDB
 

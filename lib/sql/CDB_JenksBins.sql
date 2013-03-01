@@ -26,6 +26,8 @@ DECLARE
     curr_result NUMERIC[];
     best_result NUMERIC[];
     seedtarget TEXT;
+    quant NUMERIC[];
+    shuffles INT;
 BEGIN
     -- get the total size of our row
     element_count := array_length(in_array, 1); --array_upper(in_array, 1) - array_lower(in_array, 1); 
@@ -40,26 +42,41 @@ BEGIN
         RETURN in_array; 
     END IF; 
 
+    shuffles := LEAST(GREATEST(floor(2500000.0/(element_count::float*iterations::float)), 1), 750)::int;
     -- get our mean value
     SELECT avg(v) INTO arr_mean FROM (  SELECT unnest(in_array) as v ) x; 
 
-    LOOP  
-        IF i > breaks THEN  EXIT;  END IF;  
-        bot = floor((element_count / breaks) * (i - 1)) + 1;
+    -- assume best is actually Quantile
+    SELECT CDB_QuantileBins(in_array, breaks) INTO quant;
+
+    -- if data is very very large, just return quant and be done
+    IF element_count > 5000000 THEN
+        RETURN quant;
+    END IF;
+
+    -- change quant into bottom, top markers
+    LOOP 
+        IF i = 1 THEN 
+            bot = 1;
+        ELSE 
+            -- use last top to find this bot
+            bot = top+1;
+        END IF;
         IF i = breaks THEN
-            top = array_upper(in_array, 1);
+            top = element_count;
         ELSE
-            top = floor((element_count / breaks) * i);
+            SELECT count(*) INTO top FROM ( SELECT unnest(in_array) as v) x WHERE v <= quant[i];
         END IF;
         IF i = 1 THEN 
             classes = ARRAY[ARRAY[bot,top]]; 
         ELSE 
             classes = ARRAY_CAT(classes,ARRAY[bot,top]); 
         END IF;
-        i := i+1; 
-    END LOOP; 
+        IF i > breaks THEN EXIT; END IF;
+        i = i+1;
+    END LOOP;
 
-    best_result = CDB_JenksBinsIteration( in_array, breaks, classes, invert, element_count, arr_mean);
+    best_result = CDB_JenksBinsIteration( in_array, breaks, classes, invert, element_count, arr_mean, shuffles);
 
     --set the seed so we can ensure the same results
     SELECT setseed(0.4567) INTO seedtarget;
@@ -89,7 +106,7 @@ BEGIN
             END IF;
             i := i+1; 
         END LOOP; 
-        curr_result = CDB_JenksBinsIteration( in_array, breaks, classes, invert, element_count, arr_mean);
+        curr_result = CDB_JenksBinsIteration( in_array, breaks, classes, invert, element_count, arr_mean, shuffles);
 
         IF curr_result[1] > best_result[1] THEN
             best_result = curr_result;
@@ -108,7 +125,7 @@ $$ language plpgsql IMMUTABLE;
 -- Perform a single iteration of the Jenks classification
 --
 
-CREATE OR REPLACE FUNCTION CDB_JenksBinsIteration ( in_array NUMERIC[], breaks INT, classes INT[][], invert BOOLEAN, element_count INT4, arr_mean NUMERIC, max_search INT DEFAULT 250) RETURNS NUMERIC[] as $$ 
+CREATE OR REPLACE FUNCTION CDB_JenksBinsIteration ( in_array NUMERIC[], breaks INT, classes INT[][], invert BOOLEAN, element_count INT4, arr_mean NUMERIC, max_search INT DEFAULT 50) RETURNS NUMERIC[] as $$ 
 DECLARE 
     tmp_val numeric; 
     new_classes int[][];

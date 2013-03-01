@@ -1,6 +1,8 @@
 2.0.22 (////2013)
 -----
 - added cartodb.nojquery.js
+- infowindow crops text when it is too large in infowindows headers
+- infowindow converts links automatically
 
 2.0.21 (02//19//2013)
 -----

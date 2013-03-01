@@ -1,4 +1,4 @@
-2.0.22 (////2013)
+2.0.22 (03//01//2013)
 -----
 - added cartodb.nojquery.js to the cdn
 - infowindow crops text when it is too large in infowindows headers

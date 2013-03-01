@@ -1,6 +1,6 @@
 // cartodb.js version: 2.0.22-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: e02ead9fab68f1afd5fb170ad2a0596967e6188b
+// sha: b2daa1006d0f40f1dd864fed46b70e4c33909a4a
 (function() {
   var root = this;
 
@@ -21648,7 +21648,8 @@ var Vis = cdb.core.View.extend({
       tiles_loader: true,
       zoomControl: true,
       loaderControl: true,
-      searchControl: false
+      searchControl: false,
+      infowindow: true
     });
     vizjson.overlays = vizjson.overlays || [];
     vizjson.layers = vizjson.layers || [];
@@ -21671,6 +21672,8 @@ var Vis = cdb.core.View.extend({
         }
       }
     }
+
+    this.infowindow = opt.infowindow;
 
     if(opt.https) {
       this.https = true;
@@ -21867,7 +21870,8 @@ var Vis = cdb.core.View.extend({
     // add the associated overlays
     if(layerData.infowindow &&
       layerData.infowindow.fields &&
-      layerData.infowindow.fields.length > 0) {
+      layerData.infowindow.fields.length > 0 &&
+      this.infowindow) {
       this.addInfowindow(layerView);
     }
 
@@ -22154,8 +22158,9 @@ var cartoLayer = function(vis, data) {
   }
   data.extra_params = data.extra_params || {};
   if(vis.updated_at) {
-    data.extra_params.updated_at = vis.updated_at;
-    delete data.extra_params.cache_buster;
+    // see #1724 (internal)
+    data.extra_params.cache_buster = vis.updated_at;
+    //delete data.extra_params.cache_buster;
   } else {
     data.no_cdn = true;
   }
@@ -22264,8 +22269,9 @@ Layers.register('carto', cartoLayer);
         layerData = visData.layers[1];
         // add the timestamp to options
         layerData.options.extra_params = layerData.options.extra_params || {};
-        layerData.options.extra_params.updated_at = visData.updated_at;
-        delete layerData.options.cache_buster;
+        //layerData.options.extra_params.updated_at = visData.updated_at;
+        layerData.options.extra_params.cache_buster = visData.updated_at;
+        //delete layerData.options.cache_buster;
       } else {
         layerData = visData;
       }

@@ -2,6 +2,8 @@
 require_relative '../data-repository/filesystem/s3/backend'
 require_relative '../data-repository/filesystem/local'
 
+Encoding.default_external = "utf-8"
+
 module CartoDB
   module Relocator
       include DataRepository::Filesystem

@@ -9,7 +9,7 @@ include CartoDB::Relocator
 describe UserMetadata do
   before do
     @old_user_id    = 2
-    @new_user_id    = rand(999)
+    @new_user_id    = rand(100) + 100
     json_data       = File.open(File.join(File.dirname(__FILE__), '..', '..',
                       'fixtures', 'users_metadata.json')).readlines.join
     @sample_data    = JSON.parse(json_data)

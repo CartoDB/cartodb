@@ -346,7 +346,7 @@ class User < Sequel::Model
   def db_size_in_bytes(use_total = false)
     attempts = 0
     begin
-      size = in_database(:as => :superuser).fetch("SELECT CDB_CheckQuota()").first[:quota] rescue 0
+      in_database(:as => :superuser).fetch("SELECT CDB_UserDataSize()").first[:cdb_userdatasize]
     rescue
       attempts += 1
       in_database(:as => :superuser).fetch("ANALYZE")

@@ -52,6 +52,7 @@
 //= require cdb/src/geo/ui/infowindow
 //= require cdb/src/geo/ui/header
 //= require cdb/src/geo/ui/search
+//= require cdb/src/geo/ui/layer_selector
 //= require cdb/src/geo/ui/tiles_loader
 //
 //= require cdb/src/ui/common/tabpane

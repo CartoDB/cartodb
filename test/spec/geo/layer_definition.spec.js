@@ -7,13 +7,14 @@ describe("LayerDefinition", function() {
          type: 'cartodb', 
          options: {
            sql: 'select * from ne_10m_populated_places_simple',
-           cartocss: '#layer { marker-fill: red; }', 
+           cartocss: '#layer { marker-fill: red; }'
          }
        }, {
          type: 'cartodb', 
          options: {
            sql: "select * from european_countries_export",
-           cartocss: '#layer { polygon-fill: #000; polygon-opacity: 0.8;}'
+           cartocss: '#layer { polygon-fill: #000; polygon-opacity: 0.8;}',
+           cartocss_version : '2.0.0'
          }
        }
       ]
@@ -40,7 +41,8 @@ describe("LayerDefinition", function() {
        type: 'cartodb', 
        options: {
          sql: "select * from european_countries_export",
-         cartocss: '#layer { polygon-fill: #000; polygon-opacity: 0.8;}'
+         cartocss: '#layer { polygon-fill: #000; polygon-opacity: 0.8;}',
+         cartocss_version: '2.0.0'
        }
     });
   });
@@ -72,13 +74,15 @@ describe("LayerDefinition", function() {
          type: 'cartodb', 
          options: {
            sql: 'select * from ne_10m_populated_places_simple',
-           cartocss: '#layer { marker-fill: red; }'
+           cartocss: '#layer { marker-fill: red; }',
+           cartocss_version: '2.1.0'
          }
        }, {
          type: 'cartodb', 
          options: {
            sql: "select * from european_countries_export",
-           cartocss: '#layer { polygon-fill: #000; polygon-opacity: 0.8;}'
+           cartocss: '#layer { polygon-fill: #000; polygon-opacity: 0.8;}',
+           cartocss_version: '2.0.0'
          }
        }
       ]

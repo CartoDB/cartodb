@@ -23,132 +23,38 @@ Projector.prototype.pixelToLatLng = function(point) {
   //return this.map.getProjection().fromPointToLatLng(point);
 };
 
-var CartoDBLayer = function(opts) {
+var CartoDBLayer = function(options) {
 
   var default_options = {
     query:          "SELECT * FROM {{table_name}}",
-    attribution:    "CartoDB",
-    opacity:        1,
+    opacity:        0.99,
     auto_bound:     false,
+    attribution:    "CartoDB",
     debug:          false,
     visible:        true,
     added:          false,
-    loaded:         null,
-    loading:        null,
-    layer_order:    "top",
-    tiler_domain:   "cartodb.com",
-    tiler_port:     "80",
-    tiler_protocol: "http",
-    sql_domain:     "cartodb.com",
-    sql_port:       "80",
-    sql_protocol:   "http",
-    subdomains:      null
+    extra_params:   {},
+    layer_definition_version: '1.0.0'
   };
 
-  this.options = _.defaults(opts, default_options);
-  opts.tiles = this._tileJSON().tiles;
+  this.options = _.defaults(options, default_options);
 
-  // Set init
-  this.tiles = 0;
-
-  // Add CartoDB logo
-  this._addWadus({left: 74, bottom:8}, 2000, this.options.map.getDiv());
-
-  wax.g.connector.call(this, opts);
-
-  // lovely wax connector overwrites options so set them again
-  // TODO: remove wax.connector here
-   _.extend(this.options, opts);
-  this.projector = new Projector(opts.map);
-  this._addInteraction();
-  this._checkTiles();
-};
-
-CartoDBLayer.Projector = Projector;
-
-CartoDBLayer.prototype = new wax.g.connector();
-_.extend(CartoDBLayer.prototype, CartoDBLayerCommon.prototype);
-
-CartoDBLayer.prototype.interactionClass = wax.g.interaction;
-
-CartoDBLayer.prototype.setOpacity = function(opacity) {
-
-  this._checkLayer();
-
-  if (isNaN(opacity) || opacity > 1 || opacity < 0) {
-    throw new Error(opacity + ' is not a valid value, should be in [0, 1] range');
+  if (!options.table_name || !options.user_name || !options.tile_style) {
+      throw ('cartodb-gmaps needs at least a CartoDB table name, user_name and tile_style');
   }
-  this.opacity = this.options.opacity = opacity;
-  for(var key in this.cache) {
-    var img = this.cache[key];
-    img.style.opacity = opacity;
-    img.style.filter = "alpha(opacity=" + (opacity*100) + ");"
-    //img.setAttribute("style","opacity: " + opacity + "; filter: alpha(opacity="+(opacity*100)+");");
+
+  this.options.layer_definition = {
+    version: this.options.layer_definition_version,
+    layers: [{
+      type: 'cartodb',
+      options: this._getLayerDefinition()
+    }]
   }
+  cdb.geo.CartoDBLayerGroupGMaps.call(this, this.options);
 
 };
 
-CartoDBLayer.prototype.setAttribution = function() {};
-
-CartoDBLayer.prototype.getTile = function(coord, zoom, ownerDocument) {
-
-  var self = this;
-
-  this.options.added = true;
-
-  var im = wax.g.connector.prototype.getTile.call(this, coord, zoom, ownerDocument);
-
-  if (this.tiles == 0) {
-    this.loading && this.loading();
-    //this.trigger("loading");
-  }
-
-  this.tiles++;
-
-  im.onload = im.onerror = function() {
-    self.tiles--;
-    if (self.tiles == 0) {
-      self.finishLoading && self.finishLoading();
-    }
-  }
-
-  return im;
-}
-
-
-CartoDBLayer.prototype.clear = function () {
-  if (this.interaction) {
-    this.interaction.remove();
-    delete this.interaction;
-  }
-  self.finishLoading && self.finishLoading();
-};
-
-CartoDBLayer.prototype.update = function () {
-  this.getTiles(function(urls) {
-    if(urls) {
-      self.tilejson = urls;
-      self.options.tiles = tilejson.tiles;
-      self.cache = {};
-      self.refreshView();
-      done && done();
-    } else {
-      //TODO: manage error
-    }
-  });
-  // clear wax cache
-  // set new tiles to wax
-  //this._addInteraction();
-
-  //this._checkTiles();
-
-  // reload the tiles
-};
-
-
-CartoDBLayer.prototype.refreshView = function() {
-}
-
+_.extend(CartoDBLayer.prototype, cdb.geo.CartoDBLayerGroupGMaps.prototype);
 
 CartoDBLayer.prototype.setOptions = function (opts) {
   _.extend(this.options, opts);
@@ -168,55 +74,6 @@ CartoDBLayer.prototype.setOptions = function (opts) {
   // Update tiles
   if(opts.query != undefined || opts.style != undefined || opts.tile_style != undefined || opts.interactivity != undefined || opts.interaction != undefined) {
     this.update();
-  }
-}
-
-CartoDBLayer.prototype._checkLayer = function() {
-  if (!this.options.added) {
-    throw new Error('the layer is not still added to the map');
-  }
-}
-
-CartoDBLayer.prototype._findPos = function (map,o) {
-  var curleft, cartop;
-  curleft = curtop = 0;
-  var obj = map.getDiv();
-  do {
-    curleft += obj.offsetLeft;
-    curtop += obj.offsetTop;
-  } while (obj = obj.offsetParent);
-  return new google.maps.Point(
-      (o.e.clientX || o.e.changedTouches[0].clientX) - curleft,
-      (o.e.clientY || o.e.changedTouches[0].clientY) - curtop
-  );
-};
-
-CartoDBLayer.prototype._manageOffEvents = function(){
-  if (this.options.featureOut) {
-    return this.options.featureOut && this.options.featureOut();
-  }
-};
-
-
-CartoDBLayer.prototype._manageOnEvents = function(map,o) {
-  var point  = this._findPos(map, o);
-  var latlng = this.projector.pixelToLatLng(point);
-
-  switch (o.e.type) {
-    case 'mousemove':
-      if (this.options.featureOver) {
-        return this.options.featureOver(o.e,latlng, point, o.data);
-      }
-      break;
-
-    case 'click':
-    case 'touchend':
-      if (this.options.featureClick) {
-        this.options.featureClick(o.e,latlng, point, o.data);
-      }
-      break;
-    default:
-      break;
   }
 }
 

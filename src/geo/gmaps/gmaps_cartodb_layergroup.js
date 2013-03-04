@@ -45,6 +45,9 @@ var CartoDBLayerGroup = function(opts) {
 
   this.options = _.defaults(opts, default_options);
   this.tiles = 0;
+  this.tilejson = null;
+  this.interaction = [];
+  this.interactionEnabled = [];
   
   if (!opts.layer_definition) {
     throw new Error('cartodb-gmaps needs at least the layer_definition');
@@ -59,17 +62,19 @@ var CartoDBLayerGroup = function(opts) {
   // TODO: remove wax.connector here
    _.extend(this.options, opts);
   this.projector = new Projector(opts.map);
-  LayerDefinition.call(this, options.layer_definition, this.options);
+  LayerDefinition.call(this, opts.layer_definition, this.options);
+  // precache
+  this.getTiles();
 };
 
-CartoDBLayer.Projector = Projector;
+CartoDBLayerGroup.Projector = Projector;
 
-CartoDBLayer.prototype = new wax.g.connector();
-_.extend(CartoDBLayer.prototype, CartoDBLayerCommon.prototype);
+CartoDBLayerGroup.prototype = new wax.g.connector();
+_.extend(CartoDBLayerGroup.prototype, CartoDBLayerCommon.prototype, LayerDefinition.prototype);
 
-CartoDBLayer.prototype.interactionClass = wax.g.interaction;
+CartoDBLayerGroup.prototype.interactionClass = wax.g.interaction;
 
-CartoDBLayer.prototype.setOpacity = function(opacity) {
+CartoDBLayerGroup.prototype.setOpacity = function(opacity) {
 
   this._checkLayer();
 
@@ -86,13 +91,20 @@ CartoDBLayer.prototype.setOpacity = function(opacity) {
 
 };
 
-CartoDBLayer.prototype.setAttribution = function() {};
+CartoDBLayerGroup.prototype.setAttribution = function() {};
 
-CartoDBLayer.prototype.getTile = function(coord, zoom, ownerDocument) {
+CartoDBLayerGroup.prototype.getTile = function(coord, zoom, ownerDocument) {
 
   var self = this;
 
+  if(!this.options.added) {
+    this.onAdd();
+  }
   this.options.added = true;
+  if(this.tilejson == null) {
+    var key = zoom + '/' + coord.x + '/' + coord.y;
+    return this.cache[key] = new Image(256, 256);
+  }
 
   var im = wax.g.connector.prototype.getTile.call(this, coord, zoom, ownerDocument);
 
@@ -113,8 +125,11 @@ CartoDBLayer.prototype.getTile = function(coord, zoom, ownerDocument) {
   return im;
 }
 
+CartoDBLayerGroup.prototype.onAdd = function () {
+  this.update();
+};
 
-CartoDBLayer.prototype.clear = function () {
+CartoDBLayerGroup.prototype.clear = function () {
   if (this.interaction) {
     this.interaction.remove();
     delete this.interaction;
@@ -122,11 +137,12 @@ CartoDBLayer.prototype.clear = function () {
   self.finishLoading && self.finishLoading();
 };
 
-CartoDBLayer.prototype.update = function () {
+CartoDBLayerGroup.prototype.update = function (done) {
+  var self = this;
   this.getTiles(function(urls) {
     if(urls) {
       self.tilejson = urls;
-      self.options.tiles = tilejson.tiles;
+      self.options.tiles = urls.tiles;
       self.cache = {};
       self.refreshView();
       done && done();
@@ -144,11 +160,24 @@ CartoDBLayer.prototype.update = function () {
 };
 
 
-CartoDBLayer.prototype.refreshView = function() {
+CartoDBLayerGroup.prototype.refreshView = function() {
+  var self = this;
+  var map = this.options.map;
+  map.overlayMapTypes.forEach(
+    function(layer, i) {
+      if (layer == self) {
+        map.overlayMapTypes.setAt(i, self);
+        return;
+      }
+    }
+  );
+}
+CartoDBLayerGroup.prototype.onLayerDefinitionUpdated = function() {
+    this.update();
 }
 
 
-CartoDBLayer.prototype.setOptions = function (opts) {
+CartoDBLayerGroup.prototype.setOptions = function (opts) {
   _.extend(this.options, opts);
 
   if (typeof opts != "object" || opts.length) {
@@ -169,13 +198,13 @@ CartoDBLayer.prototype.setOptions = function (opts) {
   }
 }
 
-CartoDBLayer.prototype._checkLayer = function() {
+CartoDBLayerGroup.prototype._checkLayer = function() {
   if (!this.options.added) {
     throw new Error('the layer is not still added to the map');
   }
 }
 
-CartoDBLayer.prototype._findPos = function (map,o) {
+CartoDBLayerGroup.prototype._findPos = function (map,o) {
   var curleft, cartop;
   curleft = curtop = 0;
   var obj = map.getDiv();
@@ -189,28 +218,28 @@ CartoDBLayer.prototype._findPos = function (map,o) {
   );
 };
 
-CartoDBLayer.prototype._manageOffEvents = function(){
+CartoDBLayerGroup.prototype._manageOffEvents = function(){
   if (this.options.featureOut) {
     return this.options.featureOut && this.options.featureOut();
   }
 };
 
 
-CartoDBLayer.prototype._manageOnEvents = function(map,o) {
+CartoDBLayerGroup.prototype._manageOnEvents = function(map,o) {
   var point  = this._findPos(map, o);
   var latlng = this.projector.pixelToLatLng(point);
 
   switch (o.e.type) {
     case 'mousemove':
       if (this.options.featureOver) {
-        return this.options.featureOver(o.e,latlng, point, o.data);
+        return this.options.featureOver(o.e,latlng, point, o.data, o.layer);
       }
       break;
 
     case 'click':
     case 'touchend':
       if (this.options.featureClick) {
-        this.options.featureClick(o.e,latlng, point, o.data);
+        this.options.featureClick(o.e,latlng, point, o.data, o.layer);
       }
       break;
     default:
@@ -218,109 +247,10 @@ CartoDBLayer.prototype._manageOnEvents = function(map,o) {
   }
 }
 
-cdb.geo.CartoDBLayerGMaps = CartoDBLayer;
+cdb.geo.CartoDBLayerGroupGMaps = CartoDBLayerGroup;
 
 /**
 * gmaps cartodb layer
 */
-
-var GMapsCartoDBLayerView = function(layerModel, gmapsMap) {
-  var self = this;
-
-  _.bindAll(this, 'featureOut', 'featureOver', 'featureClick');
-
-  // CartoDB new attribution,
-  // also we have the logo
-  layerModel.attributes.attribution = "CartoDB <a href='http://cartodb.com/attributions' target='_blank'>attribution</a>";
-
-  var opts = _.clone(layerModel.attributes);
-
-  opts.map =  gmapsMap;
-
-  var // preserve the user's callbacks
-  _featureOver  = opts.featureOver,
-  _featureOut   = opts.featureOut,
-  _featureClick = opts.featureClick;
-
-  opts.featureOver  = function() {
-    _featureOver  && _featureOver.apply(this, arguments);
-    self.featureOver  && self.featureOver.apply(this, arguments);
-  };
-
-  opts.featureOut  = function() {
-    _featureOut  && _featureOut.apply(this, arguments);
-    self.featureOut  && self.featureOut.apply(this, arguments);
-  };
-
-  opts.featureClick  = function() {
-    _featureClick  && _featureClick.apply(this, arguments);
-    self.featureClick  && self.featureClick.apply(opts, arguments);
-  };
-
-  cdb.geo.CartoDBLayerGMaps.call(this, opts);
-  cdb.geo.GMapsLayerView.call(this, layerModel, this, gmapsMap);
-};
-
-cdb.geo.GMapsCartoDBLayerView = GMapsCartoDBLayerView;
-
-
-_.extend(
-  GMapsCartoDBLayerView.prototype,
-  cdb.geo.CartoDBLayerGMaps.prototype,
-  cdb.geo.GMapsLayerView.prototype,
-  {
-
-  _update: function() {
-    _.extend(this.options, this.model.attributes);
-
-    this.update();
-
-  },
-
-  reload: function() {
-    this.model.invalidate();
-  },
-
-  remove: function() {
-    cdb.geo.GMapsLayerView.prototype.remove.call(this);
-    this.clear();
-  },
-
-  featureOver: function(e, latlon, pixelPos, data) {
-    // dont pass gmaps LatLng
-    this.trigger('featureOver', e, [latlon.lat(), latlon.lng()], pixelPos, data);
-  },
-
-  featureOut: function(e) {
-    this.trigger('featureOut', e);
-  },
-
-  featureClick: function(e, latlon, pixelPos, data) {
-    // dont pass leaflet lat/lon
-    this.trigger('featureClick', e, [latlon.lat(), latlon.lng()], pixelPos, data);
-  },
-
-  error: function(e) {
-    if(this.model) {
-      //trigger the error form _checkTiles in the model
-      this.model.trigger('error', e?e.error:'unknown error');
-      this.model.trigger('tileError', e?e.error:'unknown error');
-    }
-  },
-
-  tilesOk: function(e) {
-    this.model.trigger('tileOk');
-  },
-
-  loading: function() {
-    this.trigger("loading");
-  },
-
-  finishLoading: function() {
-    this.trigger("load");
-  }
-
-
-});
 
 })();

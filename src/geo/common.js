@@ -94,9 +94,13 @@ CartoDBLayerCommon.prototype = {
         layerInteraction.remove();
       }
       this.getTileJSON(layer, function(tilejson) {
+        if(!tilejson) {
+          //TODO: check errors
+          return;
+        }
         // check again, it could be changed while the request arrives
         if(self.interactionEnabled[layer]) {
-          self.interaction[layer] = this.interactionClass()
+          self.interaction[layer] = self.interactionClass()
             .map(self.options.map)
             .tilejson(tilejson)
             .on('on', function(o) {
@@ -125,7 +129,7 @@ CartoDBLayerCommon.prototype = {
     }
 
     cartocss = opts.tile_style;
-    cartocss_version = opts.cartocss_version;
+    cartocss_version = opts.cartocss_version || '2.1.0';
 
     // extra_params?
     for (var _param in opts.extra_params) {

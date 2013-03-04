@@ -82,7 +82,7 @@ cdb.geo.GoogleMapsMapView = cdb.geo.MapView.extend({
     this.map.layers.bind('remove', this._removeLayer, this);
     this.map.layers.bind('reset', this._addLayers, this);
 
-    this.projector = new cdb.geo.CartoDBLayerGMaps.Projector(this.map_googlemaps);
+    this.projector = new cdb.geo.CartoDBLayerGroupGMaps.Projector(this.map_googlemaps);
 
     this.projector.draw = this._ready;
 

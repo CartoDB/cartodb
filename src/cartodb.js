@@ -86,6 +86,7 @@
         'geo/gmaps/gmaps_baselayer.js',
         'geo/gmaps/gmaps_plainlayer.js',
         'geo/gmaps/gmaps_tiledlayer.js',
+        'geo/gmaps/gmaps_cartodb_layergroup.js',
         'geo/gmaps/gmaps_cartodb_layer.js',
         'geo/gmaps/gmaps.js',
 

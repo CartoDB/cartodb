@@ -108,7 +108,11 @@
     });
 
     it("should create a CartoDBLayer when the layer is cartodb", function() {
-      layer = new cdb.geo.CartoDBLayer({});
+      layer = new cdb.geo.CartoDBLayer({
+        table_name: 'test',
+        user_name: 'testuser',
+        tile_style: 'teststyle'
+      });
       map.addLayer(new cdb.geo.PlainLayer({}));
       var lyr = map.addLayer(layer);
       var layerView = mapView.getLayerByCid(lyr);
@@ -117,7 +121,7 @@
 
     it("should create a cartodb logo when layer is cartodb", function() {
       runs(function() {
-        layer = new cdb.geo.CartoDBLayer({ table_name: "INVENTADO"});
+        layer = new cdb.geo.CartoDBLayer({ table_name: "INVENTADO", tile_style: 'test', user_name: 'test'});
         var lyr = map.addLayer(layer);
         var layerView = mapView.getLayerByCid(lyr);
       });

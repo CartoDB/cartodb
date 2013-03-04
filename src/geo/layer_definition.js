@@ -29,7 +29,8 @@ LayerDefinition.prototype = {
         type: 'cartodb',
         options: {
           sql: layer.options.sql,
-          cartocss: layer.options.cartocss
+          cartocss: layer.options.cartocss,
+          cartocss_version: layer.options.cartocss_version || '2.1.0'
         }
       });
     }
@@ -98,15 +99,15 @@ LayerDefinition.prototype = {
   getTiles: function(callback) {
     var self = this;
     if(self.layerToken) {
-      callback(self._layerGroupTiles(self.layerToken));
+      callback && callback(self._layerGroupTiles(self.layerToken));
       return this;
     }
     this.getLayerToken(function(data) {
       if(data) {
         self.layertoken = data.layergroupid;
-        callback(self._layerGroupTiles(data.layergroupid));
+        callback && callback(self._layerGroupTiles(data.layergroupid));
       } else {
-        callback(null);
+        callback && callback(null);
       }
     });
     return this;
@@ -188,6 +189,10 @@ LayerDefinition.prototype = {
   getTileJSON: function(layer, callback) {
     layer = layer == undefined ? 0: layer;
     this.getTiles(function(urls) {
+      if(!urls) {
+        callback(null);
+        return;
+      }
       if(callback) {
         callback({
           tilejson: '2.0.0',

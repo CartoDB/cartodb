@@ -28,7 +28,7 @@ module CartoDB
 
       private
 
-      attr_reader :user_id, :redis
+      attr_reader :user_id, :redis, :key_master
 
       def massage(data)
         transformed = data.inject(Hash.new) do |memo, tuple|
@@ -45,7 +45,7 @@ module CartoDB
       end #alter
 
       def default_redis
-        Redis.new(db: REDIS_DATABASES.fetch(:users_metadata))
+        ::Redis.new(db: REDIS_DATABASES.fetch(:users_metadata))
       end #default_redis
     end # UserMetadata
   end # Reloctor

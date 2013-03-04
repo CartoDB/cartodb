@@ -4,6 +4,7 @@ require 'json'
 require_relative './rdbms'
 require_relative './helpers'
 require_relative './redis/dumper'
+require_relative './redis/map_style_metadata'
 
 module CartoDB
   module Relocator
@@ -32,6 +33,7 @@ module CartoDB
       end #run
 
       def layers
+        memoize('layers', rdbms.export_layers_for(user_id))
       end #layers
 
       def layers_maps
@@ -42,24 +44,30 @@ module CartoDB
         memoize('users', transform(rdbms.export_user(user_id)))
       end #users
 
-      def thresholds
-        memoize('thresholds', redis_dumper.thresholds_for(user_id))
-      end #thresholds
+      def thresholds_metadata
+        memoize('thresholds_metadata', redis_dumper.thresholds_for(user_id))
+      end #thresholds_metadata
 
       def tables_metadata
         database = environment.user_database
         memoize('tables_metadata', redis_dumper.tables_metadata_for(database))
-      end #table_metadata
+      end #tables_metadata
 
-      def user_metadata
+      def users_metadata
         username = users.first.fetch('username')
-        memoize('user_metadata', redis_dumper.user_metadata_for(username))
-      end #user_metadata
+        memoize('users_metadata', redis_dumper.user_metadata_for(username))
+      end #users_metadata
 
-      def api_credentials
-        tokens = []
-        memoize('api_credentials', redis_dumper.api_credentials_for(tokens))
-      end #api_credentials
+      def api_credentials_metadata
+        tokens = oauth_tokens.map { |oauth_token| oauth_token.fetch('token') }
+        memoize(
+          'api_credentials_metadata', redis_dumper.api_credentials_for(tokens)
+        )
+      end #api_credentials_metadata
+
+      def map_styles_metadata
+        memoize('map_styles_metadata', MapStyleMetadata.new(user_id).dump)
+      end #map_styles_metadata
 
       private
 

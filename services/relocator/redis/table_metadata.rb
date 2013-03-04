@@ -8,7 +8,7 @@ module CartoDB
     class TableMetadata
       def initialize(user_id, redis=nil, key_master=nil)
         @user_id    = user_id
-        @redis      = redis || Redis.new(db: REDIS_DATABASES.fetch(:table))
+        @redis      = redis || ::Redis.new(db: REDIS_DATABASES.fetch(:tables_metadata))
         @key_master = key_master || Redis::KeyMaster.new
       end #initialize
 
@@ -36,7 +36,7 @@ module CartoDB
 
       private
 
-      attr_reader :user_id, :redis
+      attr_reader :user_id, :redis, :key_master
 
       def tables_in(database_name)
         redis.keys(key_master.database_metadata(database_name) + '*')

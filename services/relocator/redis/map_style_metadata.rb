@@ -8,7 +8,7 @@ module CartoDB
     class MapStyleMetadata
       def initialize(user_id, redis=nil, key_master=nil)
         @user_id    = user_id
-        @redis      = redis || Redis.new(db: REDIS_DATABASES.fetch(:map_style))
+        @redis      = redis || ::Redis.new(db: REDIS_DATABASES.fetch(:map_style))
         @key_master = key_master || Redis::KeyMaster.new
       end #initialize
 
@@ -33,10 +33,10 @@ module CartoDB
 
       private
 
-      attr_reader :user_id, :redis
+      attr_reader :user_id, :redis, :key_master
 
       def keys_for(user_id)
-        redis.keys(key_master.map_style(user_id) + '*')
+        redis.keys(key_master.map_style_metadata(user_id) + '*')
       end #keys_for
 
       def alter(key, user_id)

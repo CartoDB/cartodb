@@ -36,14 +36,14 @@ module CartoDB
 
       private
 
-      attr_reader :user_id, :redis
+      attr_reader :user_id, :redis, :key_master
 
       def keys_for(user_id)
         redis.keys(key_master.api_credential(user_id) + '*')
       end #keys_for
 
       def default_redis
-        Redis.new(db: REDIS_DATABASES.fetch(:api_credentials))
+        ::Redis.new(db: REDIS_DATABASES.fetch(:api_credentials))
       end #default_redis
     end # APICredentialMetadata
   end # Reloctor

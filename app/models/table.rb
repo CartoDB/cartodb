@@ -1319,6 +1319,7 @@ TRIGGER
     # (it'll always run before each statement)
     check_probability_factor = 0.001 # TODO: base on database usage ?
     owner.in_database(:as => :superuser).run(<<-TRIGGER
+    DROP FUNCTION IF EXISTS check_quota() CASCADE; -- old, legacy function
     DROP TRIGGER IF EXISTS test_quota ON "#{self.name}";
     CREATE TRIGGER test_quota BEFORE UPDATE OR INSERT ON "#{self.name}"
       EXECUTE PROCEDURE CDB_CheckQuota(1, #{self.owner.quota_in_bytes});

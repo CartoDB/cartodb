@@ -404,7 +404,8 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     if (content && content.fields) {
 
       if (content.fields && content.fields.length > 0) {
-        return content.fields[0].value;
+        // Force always the value to be a string
+        return (content.fields[0].value).toString();
       }
       return false;
     }

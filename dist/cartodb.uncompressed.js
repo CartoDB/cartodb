@@ -1,6 +1,6 @@
-// cartodb.js version: 2.0.22
+// cartodb.js version: 2.0.23-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: ec50cb42e65127705f58613e5dae0644bc7daa21
+// sha: f63fea650bb7061a6398233d304ff704b6b11c5e
 (function() {
   var root = this;
 
@@ -15457,7 +15457,7 @@ $(function(){
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '2.0.22';
+    cdb.VERSION = '2.0.23-dev';
 
     cdb.CARTOCSS_VERSIONS = {
       '2.0.0': '',
@@ -17818,9 +17818,9 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
   _fieldsToString: function(attrs) {
     if (attrs.content && attrs.content.fields) {
       var self = this;
-      attrs.content.fields = _.map(attrs.content.fields, function(attr) {
+      attrs.content.fields = _.map(attrs.content.fields, function(attr,i) {
         // Return whole attribute sanitized
-        return self._sanitizeField(attr, attrs.template_name);
+        return self._sanitizeField(attr, attrs.template_name, attr.index || i);
       });
     }
 
@@ -17835,7 +17835,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
    *  - If the value is a valid url, let's make it a link.
    *  - More to come...
    */                                                                                                                
-  _sanitizeField: function(attr, template_name) {
+  _sanitizeField: function(attr, template_name, pos) {
     // Check null or undefined :| and set both to empty == ''
     if (attr.value == null || attr.value == undefined) {
       attr.value = '';
@@ -17855,17 +17855,17 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     }
 
     // If it is index 0, not loading, header template type and length bigger than 30... cut off the text!
-    if (!attr.loading && attr.index==0 && attr.value.length > 35 && template_name && template_name.search('_header_') != -1) {
+    if (!attr.loading && pos==0 && attr.value.length > 35 && template_name && template_name.search('_header_') != -1) {
       new_value = attr.value.substr(0,32) + "...";
     }
 
     // If it is index 0, not loading, header image template type... don't cut off the text!
-    if (attr.index==0 && template_name.search('_header_with_image') != -1) {
+    if (pos==0 && template_name.search('_header_with_image') != -1) {
       new_value = attr.value;
     }
 
     // If it is index 1, not loading, header image template type and length bigger than 30... cut off the text!
-    if (!attr.loading && attr.index==1 && attr.value.length > 35 && template_name && template_name.search('_header_with_image') != -1) {
+    if (!attr.loading && pos==1 && attr.value.length > 35 && template_name && template_name.search('_header_with_image') != -1) {
       new_value = attr.value.substr(0,32) + "...";
     }
 
@@ -22024,7 +22024,8 @@ cdb.vis.Overlay.register('infowindow', function(data, vis) {
   }
 
   var infowindowModel = new cdb.geo.ui.InfowindowModel({
-    fields: data.fields
+    fields: data.fields,
+    template_name: data.template_name
   });
 
   var templateType = data.templateType || 'mustache';

@@ -18,7 +18,7 @@
     @include inline-block();
     vertical-align:top;
     width:480px;
-    height: 290px;
+    height: 300px;
     border: 1px solid #CCC;
     margin:0;
     @include translateZ(10px);
@@ -55,6 +55,7 @@
     }
 
     div.search_box {display:none;}
+    div.layer_selector_box {display:none;}
 
     div#zoom {top:0;}
   }

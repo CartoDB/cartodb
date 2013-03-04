@@ -1,3 +1,8 @@
+2.0.23 (03//04//2013)
+-----
+- fixed infowindow bug with cover image checking number fields as url
+- added template_name in the infowindow model for vis.js
+
 2.0.22 (03//01//2013)
 -----
 - added cartodb.nojquery.js to the cdn

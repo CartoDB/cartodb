@@ -346,18 +346,12 @@ class User < Sequel::Model
   def db_size_in_bytes(use_total = false)
     attempts = 0
     begin
-      size = in_database(:as => :superuser).fetch("SELECT sum(pg_total_relation_size(quote_ident(table_name)))
-        FROM information_schema.tables
-        WHERE table_catalog = '#{database_name}' AND table_schema = 'public'
-        AND table_name != 'spatial_ref_sys' AND table_type = 'BASE TABLE'").first[:sum] rescue 0
+      size = in_database(:as => :superuser).fetch("SELECT CDB_CheckQuota()").first[:quota] rescue 0
     rescue
       attempts += 1
       in_database(:as => :superuser).fetch("ANALYZE")
       retry unless attempts > 1
     end
-
-    # hack for the_geom_webmercator
-    size.to_i / 2
   end
 
   def real_tables

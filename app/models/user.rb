@@ -469,7 +469,7 @@ class User < Sequel::Model
     # Clean old legacy function.
     # TODO: should proably be in a migration task instead
     in_database(:as => :superuser).run(<<-CLEANUP
-      DROP FUNCTION IF EXISTS check_quota(); -- old, legacy function
+      DROP FUNCTION IF EXISTS check_quota() CASCADE; -- old, legacy function
 CLEANUP
     )
   end

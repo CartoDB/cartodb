@@ -119,7 +119,7 @@ header { // general header
         &.selected {color:#264565; text-shadow:0 1px rgba(white,0.25); &:hover {text-decoration:none; cursor:default;} &:after {color:rgba(#264565,0.5);} &:before {border-top-color:#264565;}}
         &:focus {outline:none; text-decoration:underline;}
 
-        &.rounded_white {text-shadow:none; &:hover {color:#333333;}}
+        &.rounded.white {text-shadow:none; &:hover {color:#333333;}}
       }
 
       form {
@@ -176,7 +176,6 @@ header { // general header
   }
 
   &.table { // table view's header
-
     position:fixed;
     left:0;
     top:0;
@@ -188,25 +187,9 @@ header { // general header
     @include box-shadow(rgba(0,0,0,0.09) 0 -5px 3px 0 inset);
     z-index:2;
 
-
-    h1 {
-
-      margin:7px 0 0 0;
-
-      a {
-        @include inline-block();
-        width:14px;
-        height:13px;
-        @include icons-sprite(back);
-        @include text-indent();
-          opacity: .5;
-
-        &:focus,&:hover {
-          outline:none;
-          @include icons-sprite(back);
-          opacity: 1;
-        }
-      }
+    .inner {
+      width:auto;
+      height: 128px;
     }
 
     div.globalerror {
@@ -246,12 +229,6 @@ header { // general header
 
 
       }
-
-    }
-
-    .inner {
-      width:auto;
-      height: 128px;
     }
 
     div.left {
@@ -284,6 +261,32 @@ header { // general header
           }
         }
 
+        a.back {
+          @include inline-block();
+          width:14px;
+          height:13px;
+          margin:5px 0 0 0;
+          @include icons-sprite(back);
+          @include text-indent();
+          @include opacity(.5);
+
+          &:focus,&:hover {
+            outline:none;
+            @include icons-sprite(back);
+            @include opacity(1);
+          }
+        }
+
+        span.vis_type {
+          @include inline-block();
+          width:23px;
+          height:18px;
+          margin:5px 0 0 8px;
+          text-indent:-9999px;
+          &.single {@include icons-sprite(vis_type, $offset-y:0)}
+          &.multi {@include icons-sprite(vis_type, $offset-y:-18)}
+        }
+
         h1,h2,a.button_header {
           @include inline-block();
           margin:0;
@@ -293,28 +296,29 @@ header { // general header
         }
 
         h1 {
-          line-height:23px;
-        }
-
-        h2 {
           position:relative;
-          padding:0 0 1px 8px;
+          margin:0 0 1px 8px;
           line-height:30px;
 
           a {
             overflow:hidden;
             display:block;
             max-width:440px;
+            width:auto;
+            height:auto;
             margin:0;
+            padding:0;
             font-size:21px;
             font-family: $title-fonts;
             color:white;
             text-overflow:ellipsis;
-            padding:0;
             white-space:nowrap;
             text-shadow:0 1px $text-shadow-color;
+            background:none;
+            text-indent:0;
+            line-height:normal;
+            text-transform: none;
           }
-
         }
 
         a.button_header {
@@ -382,19 +386,15 @@ header { // general header
 
           &.selected {
             margin:0;
-
-            color: rgba(black,0.7);
+            color: #326A98;
             background:#fff;
 
             &:hover {text-decoration:none; cursor:default;}
-            &:focus {}
-            &:active {}
+            &:focus, &:active {}
           }
 
           &.disabled {
-            &:hover {}
-            &:focus {}
-            &:active {}
+            &:hover, &:focus, &:active {}
           }
         }
       }

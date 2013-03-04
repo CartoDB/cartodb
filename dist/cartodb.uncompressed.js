@@ -1,6 +1,6 @@
 // cartodb.js version: 2.0.23-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: f63fea650bb7061a6398233d304ff704b6b11c5e
+// sha: b81814a28fd35fcd1bb5db83a69954758ddcf27b
 (function() {
   var root = this;
 
@@ -17936,7 +17936,8 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     if (content && content.fields) {
 
       if (content.fields && content.fields.length > 0) {
-        return content.fields[0].value;
+        // Force always the value to be a string
+        return (content.fields[0].value).toString();
       }
       return false;
     }

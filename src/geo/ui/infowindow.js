@@ -513,7 +513,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
         fields: [{
           title: null,
           value: 'Loading content...',
-          index: 0,
+          index: null,
           loading: true
         }],
         data: {}

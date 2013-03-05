@@ -52,10 +52,13 @@ div.cartodb-popup.header div.cartodb-popup-header h1 a:hover {
 
 div.cartodb-popup.header div.cartodb-popup-header h1.loading {
   position:relative;
-  font-size:14px;
-  font-weight:normal;
+  display:block;
+  width:auto;
   padding-right:0;
   padding-left:30px;
+  font-size:14px;
+  font-weight:normal;
+  line-height:19px;
 }
 
 

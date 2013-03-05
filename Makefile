@@ -32,7 +32,7 @@ clean:
 	rm -rf dist/*
 
 css: $(CSS_FILES) 
-	rm -rf themes/css/cartodb.css themes./css/cartodb.ie.css
+	rm -rf themes/css/cartodb.css themes/css/cartodb.ie.css
 	cat $(CSS_FILES) > themes/css/cartodb.css
 	cat $(CSS_FILES_IE) > themes/css/cartodb.ie.css
 

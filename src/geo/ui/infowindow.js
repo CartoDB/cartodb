@@ -145,7 +145,7 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
 });
 
 cdb.geo.ui.Infowindow = cdb.core.View.extend({
-  className: "infowindow",
+  className: "cartodb-infowindow",
 
   spin_options: {
     lines: 10, length: 0, width: 4, radius: 6, corners: 1, rotate: 0, color: 'rgba(0,0,0,0.5)',

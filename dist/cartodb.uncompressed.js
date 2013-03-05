@@ -1,6 +1,6 @@
 // cartodb.js version: 2.0.23
 // uncompressed version: cartodb.uncompressed.js
-// sha: f6173db35b1beda609eb0226726ec6f1c5cda3f0
+// sha: c00a1f84bfa2bddae119c5f1e0d0acf6e09ebfce
 (function() {
   var root = this;
 
@@ -17268,7 +17268,7 @@ cdb.geo.MapView = cdb.core.View.extend({
 
 cdb.geo.ui.Zoom = cdb.core.View.extend({
 
-  id: "zoom",
+  className: "cartodb-zoom",
 
   events: {
     'click .zoom_in': 'zoom_in',
@@ -17324,7 +17324,7 @@ cdb.geo.ui.Zoom = cdb.core.View.extend({
 
 cdb.geo.ui.ZoomInfo = cdb.core.View.extend({
 
-  id: "zoom_info",
+  className: "cartodb-zoom-info",
 
   initialize: function() {
     this.model.bind("change:zoom", this.render, this);
@@ -17677,7 +17677,7 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
 });
 
 cdb.geo.ui.Infowindow = cdb.core.View.extend({
-  className: "infowindow",
+  className: "cartodb-infowindow",
 
   spin_options: {
     lines: 10, length: 0, width: 4, radius: 6, corners: 1, rotate: 0, color: 'rgba(0,0,0,0.5)',
@@ -17844,28 +17844,23 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     // Cast all values to string due to problems with Mustache 0 number rendering
     var new_value = attr.value.toString();
 
-    // But if we have some empty values (null)
-    // we must make them null to display them correctly
-    // ARGGG!
-    if (new_value == "") new_value = null;
-
     //Link? go ahead!
-    if (!attr.loading && this._isValidURL(new_value)) {
+    if (!attr.type && this._isValidURL(new_value)) {
       attr.url = attr.value;
     }
 
-    // If it is index 0, not loading, header template type and length bigger than 30... cut off the text!
-    if (!attr.loading && pos==0 && attr.value.length > 35 && template_name && template_name.search('_header_') != -1) {
+    // If it is index 0, not any field type, header template type and length bigger than 30... cut off the text!
+    if (!attr.type && pos==0 && attr.value.length > 35 && template_name && template_name.search('_header_') != -1) {
       new_value = attr.value.substr(0,32) + "...";
     }
 
-    // If it is index 0, not loading, header image template type... don't cut off the text!
+    // If it is index 0, not any field type, header image template type... don't cut off the text!
     if (pos==0 && template_name.search('_header_with_image') != -1) {
       new_value = attr.value;
     }
 
-    // If it is index 1, not loading, header image template type and length bigger than 30... cut off the text!
-    if (!attr.loading && pos==1 && attr.value.length > 35 && template_name && template_name.search('_header_with_image') != -1) {
+    // If it is index 1, not any field type, header image template type and length bigger than 30... cut off the text!
+    if (!attr.type && pos==1 && attr.value.length > 35 && template_name && template_name.search('_header_with_image') != -1) {
       new_value = attr.value.substr(0,32) + "...";
     }
 
@@ -17880,7 +17875,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
   _checkLoading: function() {
     var content = this.model.get("content");
 
-    if (content.fields && content.fields.length == 1 && content.fields[0].loading) {
+    if (content.fields && content.fields.length == 1 && content.fields[0].type == "loading") {
       this._startSpinner()
     } else {
       this._stopSpinner()
@@ -18045,8 +18040,26 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
         fields: [{
           title: null,
           value: 'Loading content...',
-          index: 0,
-          loading: true
+          index: null,
+          type: "loading"
+        }],
+        data: {}
+      }
+    })
+    return this;
+  },
+
+  /**
+   *  Set loading state adding its content
+   */
+  setError: function() {
+    this.model.set({
+      content:  {
+        fields: [{
+          title: null,
+          value: 'There has been an error...',
+          index: null,
+          type: 'error'
         }],
         data: {}
       }
@@ -18230,7 +18243,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
 
 cdb.geo.ui.Header = cdb.core.View.extend({
 
-  className: 'header',
+  className: 'cartodb-header',
 
   initialize: function() {},
 
@@ -18242,7 +18255,7 @@ cdb.geo.ui.Header = cdb.core.View.extend({
 
 cdb.geo.ui.Search = cdb.core.View.extend({
 
-  className: 'search_box',
+  className: 'cartodb-searchbox',
 
   events: {
     "click input[type='text']":   '_focus',
@@ -18331,7 +18344,7 @@ cdb.geo.ui.Search = cdb.core.View.extend({
 
 cdb.geo.ui.TilesLoader = cdb.core.View.extend({
 
-  id: "tiles_loader",
+  className: "cartodb-tiles-loader",
 
   default_options: {
     animationSpeed: 500
@@ -18370,7 +18383,7 @@ cdb.geo.ui.TilesLoader = cdb.core.View.extend({
 
 cdb.geo.ui.InfoBox = cdb.core.View.extend({
 
-  className: 'cartodb_infobox',
+  className: 'cartodb-infobox',
   defaults: {
     pos_margin: 20,
     position: 'bottom|right',
@@ -18440,7 +18453,7 @@ cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
 
   DEFAULT_OFFSET_TOP: 30,
   defaultTemplate: '<p>{{text}}</p>',
-  className: 'cartodb_tooltip',
+  className: 'cartodb-tooltip',
 
   initialize: function() {
     this.options.template = this.options.template || defaultTemplate;
@@ -21814,7 +21827,7 @@ var Vis = cdb.core.View.extend({
             var fields = infowindowFields.fields;
             for(var j = 0; j < fields.length; ++j) {
               var f = fields[j];
-              if(interact_data[f.name] != undefined) {
+              if(interact_data[f.name] != undefined && interact_data[f.name] != "") {
                 render_fields.push({
                   title: f.title ? f.name: null,
                   value: interact_data[f.name],
@@ -21841,7 +21854,10 @@ var Vis = cdb.core.View.extend({
             } 
           })
           infowindow.adjustPan();
-        });
+        })
+        .error(function() {
+          infowindow.setError();
+        })
 
         // Show infowindow with loading state
         infowindow

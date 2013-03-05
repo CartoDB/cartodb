@@ -1,7 +1,7 @@
 
 cdb.geo.ui.Search = cdb.core.View.extend({
 
-  className: 'search_box',
+  className: 'cartodb-searchbox',
 
   events: {
     "click input[type='text']":   '_focus',

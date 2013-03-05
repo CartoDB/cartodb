@@ -1,3 +1,6 @@
+2.0.6
+-----
+
 2.0.5 (DD/MM/YY)
 -----
 * Add new quantification methods, CDB_JenksBins etc.

@@ -100,10 +100,14 @@ CartoDBLayerGroup.prototype.getTile = function(coord, zoom, ownerDocument) {
   if(!this.options.added) {
     this.onAdd();
   }
+
   this.options.added = true;
+
   if(this.tilejson == null) {
     var key = zoom + '/' + coord.x + '/' + coord.y;
-    return this.cache[key] = new Image(256, 256);
+    var i = this.cache[key] = new Image(256, 256);
+    i.setAttribute('gTileKey', key);
+    return i;
   }
 
   var im = wax.g.connector.prototype.getTile.call(this, coord, zoom, ownerDocument);

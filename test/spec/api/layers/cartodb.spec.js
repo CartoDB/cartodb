@@ -44,7 +44,7 @@ describe('api.layers.cartodb', function() {
       ];
 
       runs(function() {
-        cartodb.createLayer(map, { kind: 'cartodb', options: { table_name:'test'} }, function(l) {
+        cartodb.createLayer(map, { kind: 'cartodb', options: { table_name:'test', tile_style: 'test', user_name: 'test'} }, function(l) {
           layer = l;
         });
       });
@@ -70,7 +70,7 @@ describe('api.layers.cartodb', function() {
 
     it("should add style to the tile url", function() {
       runs(function() {
-        cartodb.createLayer(map, { kind: 'cartodb', options: { table_name: 'test'} }).done(function(l) {
+        cartodb.createLayer(map, { kind: 'cartodb', options: { table_name:'test', tile_style: 'test', user_name: 'test', ajax: ajax} }, function(l) {
           addFn(map, l);
           layer = l;
         });
@@ -78,54 +78,47 @@ describe('api.layers.cartodb', function() {
       waits(100);
       runs(function() {
         layer.setCartoCSS('#{{table_name}} { polygon-fill: red; }');
-        var t = layer._tileJSON();
-        var opts = get_url_options(t.tiles[0]);
-        expect(opts.style).toEqual('#test { polygon-fill: red; }');
-        expect(opts.style_version).toEqual(cdb.CARTOCSS_DEFAULT_VERSION);
+        expect(JSON.parse(last_params.data).layers[0].options.cartocss).toEqual('#{{table_name}} { polygon-fill: red; }');
+
 
         layer.setCartoCSS('#{{table_name}} { polygon-fill: red; }', '2.0.10');
-        var t = layer._tileJSON();
-        opts = get_url_options(t.tiles[0]);
-        expect(opts.style_version).toEqual('2.0.10');
+        expect(JSON.parse(last_params.data).layers[0].options.cartocss_version).toEqual('2.0.10');
 
-        layer.setCartoCSS(null, null);
-        var t = layer._tileJSON();
-        opts = get_url_options(t.tiles[0]);
-        expect(opts.style).toEqual(undefined);
-        expect(opts.style_version).toEqual(undefined);
       });
     });
 
     it("should add query to the tile url", function() {
+      var last_params;
+      function ajax(params) {
+        last_params = params;
+      }
       runs(function() {
-        cartodb.createLayer(map, { kind: 'cartodb', options: { table_name: 'test'} }, function(l) {
+        cartodb.createLayer(map, { kind: 'cartodb', options: { table_name:'test', tile_style: 'test', user_name: 'test', ajax: ajax} }, function(l) {
           addFn(map, l);
           layer = l;
         });
       });
       waits(100);
       runs(function() {
-        layer.setQuery('select * from jaja');
-        var t = layer._tileJSON();
-        var opts = get_url_options(t.tiles[0]);
-        expect(opts.sql).toEqual('select * from jaja');
-        expect(opts.updated_at).toEqual(undefined);
-        expect(layer.options.no_cdn).toEqual(true);
+        layer.setQuery('select * from jaja limit 1');
+        expect(JSON.parse(last_params.data).layers[0].options.sql).toEqual('select * from jaja limit 1');
 
         layer.setQuery(null);
-        var t = layer._tileJSON();
-        opts = get_url_options(t.tiles[0]);
-        expect(opts.sql).toEqual(undefined);
-        expect(opts.updated_at).toEqual(undefined);
-        expect(layer.options.no_cdn).toEqual(true);
+        expect(JSON.parse(last_params.data).layers[0].options.sql).toEqual('select * from test');
       });
 
 
     });
 
     it("should add interaction to the grid", function() {
+      var last_params;
+      function ajax(params) {
+        params.success({
+          layergroupid: 'test'
+        });
+      }
       runs(function() {
-        cartodb.createLayer(map, { kind: 'cartodb', options: { table_name: 'test'} }, function(l) {
+        cartodb.createLayer(map, { kind: 'cartodb', options: { table_name:'test', tile_style: 'test', user_name: 'test', ajax: ajax} }, function(l) {
           addFn(map, l);
           layer = l;
         });

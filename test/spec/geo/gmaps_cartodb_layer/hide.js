@@ -47,7 +47,6 @@ describe('Hide funcionality', function() {
     waits(500);
 
     runs(function() {
-      debugger;
       var $tile = $(div).find("img[gtilekey]").first()
         , opacity = cdb_layer.options.opacity
         , before_opacity = cdb_layer.options.previous_opacity;

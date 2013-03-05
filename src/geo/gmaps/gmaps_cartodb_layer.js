@@ -56,6 +56,15 @@ var CartoDBLayer = function(options) {
 
 _.extend(CartoDBLayer.prototype, cdb.geo.CartoDBLayerGroupGMaps.prototype);
 
+CartoDBLayer.prototype.setQuery = function (layer, sql) {
+  if(sql === undefined) {
+    sql = layer;
+    layer = 0;
+  }
+  sql = sql || 'select * from ' + this.options.table_name;
+  LayerDefinition.prototype.setQuery.call(this, layer, sql);
+}
+
 CartoDBLayer.prototype.setOptions = function (opts) {
   _.extend(this.options, opts);
 

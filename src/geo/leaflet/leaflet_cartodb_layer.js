@@ -37,6 +37,15 @@ L.CartoDBLayer = L.CartoDBGroupLayer.extend({
     });
   },
 
+  setQuery: function(layer, sql) {
+    if(sql === undefined) {
+      sql = layer;
+      layer = 0;
+    }
+    sql = sql || 'select * from ' + this.options.table_name;
+    LayerDefinition.prototype.setQuery.call(this, layer, sql);
+  },
+
   /**
    * Change multiple options at the same time
    * @params {Object} New options object

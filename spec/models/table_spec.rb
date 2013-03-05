@@ -54,6 +54,11 @@ describe Table do
       table2.name.should == "untitled_table_1"
     end
 
+    it "should not allow to create tables using system names" do
+      table = create_table(name: "cdb_tablemetadata", user_id: @user.id)
+      table.name.should == "cdb_tablemetadata_1"
+    end
+
     it "should create default associated map and layers" do
       table = create_table({:name => "epaminondas_pantulis", :user_id => @user.id})
 

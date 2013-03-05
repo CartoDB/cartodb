@@ -30,7 +30,7 @@ class User < Sequel::Model
     :naked => true # avoid adding json_class to result
   }
 
-  SYSTEM_TABLE_NAMES = %w( spatial_ref_sys geography_columns geometry_columns raster_columns raster_overviews )
+  SYSTEM_TABLE_NAMES = %w( spatial_ref_sys geography_columns geometry_columns raster_columns raster_overviews cdb_tablemetadata )
 
   self.raise_on_typecast_failure = false
   self.raise_on_save_failure = false
@@ -346,18 +346,12 @@ class User < Sequel::Model
   def db_size_in_bytes(use_total = false)
     attempts = 0
     begin
-      size = in_database(:as => :superuser).fetch("SELECT sum(pg_total_relation_size(quote_ident(table_name)))
-        FROM information_schema.tables
-        WHERE table_catalog = '#{database_name}' AND table_schema = 'public'
-        AND table_name != 'spatial_ref_sys' AND table_type = 'BASE TABLE'").first[:sum] rescue 0
+      in_database(:as => :superuser).fetch("SELECT CDB_UserDataSize()").first[:cdb_userdatasize]
     rescue
       attempts += 1
       in_database(:as => :superuser).fetch("ANALYZE")
       retry unless attempts > 1
     end
-
-    # hack for the_geom_webmercator
-    size.to_i / 2
   end
 
   def real_tables
@@ -472,12 +466,6 @@ class User < Sequel::Model
       table.add_python
       table.set_trigger_check_quota
     end
-    # Clean old legacy function.
-    # TODO: should proably be in a migration task instead
-    in_database(:as => :superuser).run(<<-CLEANUP
-      DROP FUNCTION IF EXISTS check_quota(); -- old, legacy function
-CLEANUP
-    )
   end
 
   def importing_jobs

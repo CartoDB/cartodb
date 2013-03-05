@@ -85,7 +85,7 @@
           display: block;
           width: 100%;
           height: 37px;
-          z-index:0;
+          z-index:1;
 
           p {
             position: fixed;
@@ -113,7 +113,7 @@
         tr {
           width:100%;
           height:64px;
-          z-index:1;
+          z-index:2;
 
           th {
             position:relative;
@@ -333,16 +333,21 @@
 
 
         tr {
+          position:relative;
           width:100%;
+          z-index:0;
           background:white;
+          border-top:1px solid #ECECEC;
 
           &:hover {
             background:#E8F9EC;
+            border-color:#CCCCCC;
+
+            & + tr {border-color:#CCCCCC;}
 
             div.row_header:before, div.row_header:after {
               display: block !important;
             }
-
           }
 
           td {
@@ -363,7 +368,6 @@
               text-overflow: ellipsis;
               white-space: nowrap;
               font-size:13px;
-              border-bottom:1px solid #ECECEC;
               border-left:1px solid #ECECEC;
 
               &.disabled {
@@ -388,7 +392,6 @@
                 display:block;
                 height:100%;
                 overflow:visible;
-                border-bottom:1px solid #ECECEC;
 
                 &:before {
                   content:'';
@@ -443,7 +446,22 @@
               padding-right:65px;
             }
           }
-        }
+
+          &:last-child {
+            border-bottom:1px solid #ECECEC;
+          }
+
+          &:hover {
+            background:#E8F9EC;
+            border-color:#CCCCCC;
+
+            & + tr {border-color:#CCCCCC;}
+
+            div.row_header:before, div.row_header:after {
+              display: block !important;
+            }
+          }
+        } // tr
       } // tbody
 
       // Loaders
@@ -657,11 +675,12 @@
 
   // Hello hacks for Firefox
   @-moz-document url-prefix() { 
-    div.cell {
-      background:white;
+    table {
+      border-collapse: inherit;
     }
 
-    tr:hover div.cell {
-      background:#E8F9EC;
+    tbody tr td {
+      border-spacing: 1px;
+      border-bottom:1px solid #ECECEC;
     }
   }

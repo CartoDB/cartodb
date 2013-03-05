@@ -298,7 +298,7 @@ div.map {
     width:100%;
     height:auto;
     z-index:1;
-    
+
     // Move attributions in different providers
     .leaflet-right .leaflet-control, #cartodb_attribution {
       margin-right: 62px!important;
@@ -314,6 +314,14 @@ div.map {
   // Tiler in core map
   div#tiles_loader div.loader {
     top:175px;
+  }
+
+  // Layer selector box in core map
+  div.layer_selector_box {
+    position:relative;
+    float:right;
+    top:65px;
+    right:58px;
   }
 
   // Search box in core map

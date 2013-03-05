@@ -44,13 +44,13 @@
              type: 'cartodb', 
              options: {
                sql: 'select * from ne_10m_populated_places_simple',
-               cartocss: '#layer { marker-fill: red; }', 
+               cartocss: '#layer { marker-fill: red; }'
              }
            }, {
              type: 'cartodb', 
              options: {
                sql: "select * from european_countries_export",
-               cartocss: '#layer { polygon-fill: #000; polygon-opacity: 0.8;}', 
+               cartocss: '#layer { polygon-fill: #000; polygon-opacity: 0.8;}'
              }
            }
           ]
@@ -64,6 +64,12 @@
       setTimeout(function() {
         layer.removeLayer(0);
       }, 3000);
+
+      layer.setInteraction(0, '........');
+      layer.setInteraction({
+        '9': '....',
+        '10': '....',
+      });
 
       setTimeout(function() {
         layer.addLayer({

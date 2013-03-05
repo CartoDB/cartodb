@@ -10,6 +10,7 @@ namespace :cartodb do
       User.all.each_with_index do |user, i|
         begin
           user.load_cartodb_functions
+          user.in_database(:as => :superuser).run("DROP FUNCTION IF EXISTS check_quota() CASCADE;")
           user.tables.all.each do |table|
               table.add_python
               table.set_trigger_check_quota

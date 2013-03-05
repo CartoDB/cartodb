@@ -61,6 +61,18 @@ div.cartodb-popup.header div.cartodb-popup-header h1.loading {
   line-height:19px;
 }
 
+div.cartodb-popup.header div.cartodb-popup-header h1.error {
+  position:relative;
+  display:block;
+  width:auto;
+  padding-right:0;
+  padding-left:0;
+  font-size:14px;
+  font-weight:normal;
+  font-style: italic;
+  line-height:19px;
+}
+
 
 div.cartodb-popup.header div.cartodb-popup-header span.separator {
   position:absolute;

@@ -453,7 +453,10 @@ var Vis = cdb.core.View.extend({
             } 
           })
           infowindow.adjustPan();
-        });
+        })
+        .error(function() {
+          infowindow.setError();
+        })
 
         // Show infowindow with loading state
         infowindow

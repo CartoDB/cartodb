@@ -318,22 +318,22 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     if (new_value == "") new_value = null;
 
     //Link? go ahead!
-    if (!attr.loading && this._isValidURL(new_value)) {
+    if (!attr.type && this._isValidURL(new_value)) {
       attr.url = attr.value;
     }
 
-    // If it is index 0, not loading, header template type and length bigger than 30... cut off the text!
-    if (!attr.loading && pos==0 && attr.value.length > 35 && template_name && template_name.search('_header_') != -1) {
+    // If it is index 0, not any field type, header template type and length bigger than 30... cut off the text!
+    if (!attr.type && pos==0 && attr.value.length > 35 && template_name && template_name.search('_header_') != -1) {
       new_value = attr.value.substr(0,32) + "...";
     }
 
-    // If it is index 0, not loading, header image template type... don't cut off the text!
+    // If it is index 0, not any field type, header image template type... don't cut off the text!
     if (pos==0 && template_name.search('_header_with_image') != -1) {
       new_value = attr.value;
     }
 
-    // If it is index 1, not loading, header image template type and length bigger than 30... cut off the text!
-    if (!attr.loading && pos==1 && attr.value.length > 35 && template_name && template_name.search('_header_with_image') != -1) {
+    // If it is index 1, not any field type, header image template type and length bigger than 30... cut off the text!
+    if (!attr.type && pos==1 && attr.value.length > 35 && template_name && template_name.search('_header_with_image') != -1) {
       new_value = attr.value.substr(0,32) + "...";
     }
 
@@ -348,7 +348,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
   _checkLoading: function() {
     var content = this.model.get("content");
 
-    if (content.fields && content.fields.length == 1 && content.fields[0].loading) {
+    if (content.fields && content.fields.length == 1 && content.fields[0].type == "loading") {
       this._startSpinner()
     } else {
       this._stopSpinner()
@@ -514,7 +514,25 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
           title: null,
           value: 'Loading content...',
           index: null,
-          loading: true
+          type: "loading"
+        }],
+        data: {}
+      }
+    })
+    return this;
+  },
+
+  /**
+   *  Set loading state adding its content
+   */
+  setError: function() {
+    this.model.set({
+      content:  {
+        fields: [{
+          title: null,
+          value: 'There has been an error...',
+          index: null,
+          type: 'error'
         }],
         data: {}
       }

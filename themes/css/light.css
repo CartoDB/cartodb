@@ -149,6 +149,20 @@
     line-height:21px;
   }
 
+  div.cartodb-popup p.error {
+    position:relative;
+    display:block;
+    width:170px;
+    max-width:170px;
+    margin:0;
+    padding:0;
+    font:normal 13px "Helvetica",Arial;
+    color:#FF7F7F;
+    font-style:italic;
+    word-wrap: break-word;
+    line-height:18px;
+  }
+
   div.cartodb-popup div.spinner {
     position:absolute!important;
     display:inline;

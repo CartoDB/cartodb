@@ -79,6 +79,11 @@ CartoDBLayerCommon.prototype = {
    * @params layer {Boolean} Choose if wants interaction or not
    */
   setInteraction: function(layer, b) {
+    // shift arguments to maintain caompatibility
+    if(b == undefined) {
+      b = layer;
+      layer = 0;
+    }
     var self = this;
     var layerInteraction;
     this.interactionEnabled[layer] = b;
@@ -116,6 +121,26 @@ CartoDBLayerCommon.prototype = {
     return this;
   },
 
+  setOptions: function (opts) {
+
+    if (typeof opts != "object" || opts.length) {
+      throw new Error(opts + ' options has to be an object');
+    }
+
+    _.extend(this.options, opts);
+
+    this.setSilent(true);
+    debugger;
+    opts.interaction && this.setInteraction(opts.interaction);
+    opts.opacity && this.setOpacity(opts.opacity);
+    opts.query && this.setQuery(opts.query);
+    opts.tile_style && this.setCartoCSS(opts.tile_style);
+    opts.cartocss && this.setCartoCSS(opts.cartocss);
+    opts.interactivity && this.setInteractivity(opts.interactivity);
+    this.setSilent(false);
+    this._definitionUpdated();
+
+  },
 
   _getLayerDefinition: function() {
     // set params

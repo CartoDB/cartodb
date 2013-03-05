@@ -22,7 +22,7 @@ describe('Opacity interaction', function() {
       table_name: 'earthquakes',
       query: "SELECT * FROM {{table_name}}",
       tile_style: "#{{table_name}}{marker-fill:#E25B5B}",
-      opacity:0.8,
+      opacity: 0.8,
       interactivity: "cartodb_id, magnitude",
       featureOver: function(ev,latlng,pos,data) {},
       featureOut: function() {},

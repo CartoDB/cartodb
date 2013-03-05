@@ -141,7 +141,9 @@ describe("Vis", function() {
     this.mapConfig.layers = [{
       kind: 'cartodb',
       options: {
-        table_name: 'test'
+        table_name: 'test',
+        user_name: 'test',
+        tile_style: 'test'
       }
     }]
     this.vis.load(this.mapConfig);

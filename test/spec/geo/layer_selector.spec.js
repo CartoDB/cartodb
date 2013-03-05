@@ -10,11 +10,6 @@ describe("cdb.geo.ui.layer_selector", function() {
       });
     });
 
-    //it("should have a dropdown", function() {
-      //view.render();
-      //expect(view.dropdown).toBeDefined();
-    //});
-
   });
 
   describe("cdb.geo.ui.layer", function() {

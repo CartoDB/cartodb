@@ -1,6 +1,12 @@
+2.0.6
+-----
+
 2.0.5 (DD/MM/YY)
 -----
 * Add new quantification methods, CDB_JenksBins etc.
+* Modal confirmation when deletes a row.
+* Modal confirmation when deletes a feature in the map.
+* Edit geometry window confirmation doesn't stop edition, it is just an advice.
 
 2.0.4 (19/02/13)
 -----

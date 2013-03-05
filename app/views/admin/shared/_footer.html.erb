@@ -2,7 +2,7 @@
   <div class="inner">
     <nav class="left">
       <%= link_to "Feature tour", "http://cartodb.com/tour" %>
-      <%= link_to "Getting started", "http://cartodb.com/tutorial/" %>
+      <%= link_to "Getting started", "#{Cartodb.config[:developers_host]}/tutorials.html" %>
       <%= link_to "Developers", Cartodb.config[:developers_host] %>
       <%= link_to "Support", "http://support.cartodb.com" %>
       <%= link_to "Contact", "mailto:contact@cartodb.com" %>

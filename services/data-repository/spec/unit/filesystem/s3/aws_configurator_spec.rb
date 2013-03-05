@@ -1,8 +1,8 @@
 # encoding: utf-8
 require 'minitest/autorun'
-require_relative '../../../commands/aws_configurator'
+require_relative '../../../../filesystem/s3/aws_configurator'
 
-include Workman::Commands
+include DataRepository::Filesystem::S3
 
 describe AWSConfigurator do
   describe '#configure' do

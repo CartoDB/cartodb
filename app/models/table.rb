@@ -238,6 +238,7 @@ class Table < Sequel::Model(:user_tables)
       begin
         user_database.run(%Q{ALTER TABLE "#{self.name}" ADD PRIMARY KEY (cartodb_id)})
       rescue
+        @data_import.log_update("Renaming cartodb_id to invalid_cartodb_id") if @data_import
         user_database.run(%Q{ALTER TABLE "#{self.name}" ALTER COLUMN cartodb_id DROP DEFAULT})
         user_database.run(%Q{ALTER TABLE "#{self.name}" ALTER COLUMN cartodb_id DROP NOT NULL})
         user_database.run(%Q{DROP SEQUENCE IF EXISTS #{self.name}_cartodb_id_seq})
@@ -922,7 +923,7 @@ class Table < Sequel::Model(:user_tables)
         column_names[the_geom_index] = <<-STR
             CASE
             WHEN GeometryType(the_geom) = 'POINT' THEN
-              ST_AsGeoJSON(the_geom,6)
+              ST_AsGeoJSON(the_geom,8)
             WHEN (the_geom IS NULL) THEN
               ''
             ELSE
@@ -996,7 +997,7 @@ class Table < Sequel::Model(:user_tables)
     row = nil
     owner.in_database do |user_database|
       select = if schema.flatten.include?(THE_GEOM)
-        schema.select{|c| c[0] != THE_GEOM }.map{|c| %Q{"#{c[0]}"} }.join(',') + ",ST_AsGeoJSON(the_geom,6) as the_geom"
+        schema.select{|c| c[0] != THE_GEOM }.map{|c| %Q{"#{c[0]}"} }.join(',') + ",ST_AsGeoJSON(the_geom,8) as the_geom"
       else
         schema.map{|c| %Q{"#{c[0]}"} }.join(',')
       end
@@ -1091,7 +1092,7 @@ class Table < Sequel::Model(:user_tables)
     owner.in_database do |user_database|
       #table_name = "csv_export_temp_#{self.name}"
       export_schema = self.schema.map{|c| c.first} - [THE_GEOM]
-      export_schema += ["ST_AsGeoJSON(the_geom, 6) as the_geom"] if self.schema.map{|c| c.first}.include?(THE_GEOM)
+      export_schema += ["ST_AsGeoJSON(the_geom, 8) as the_geom"] if self.schema.map{|c| c.first}.include?(THE_GEOM)
       hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
         "database" => database_name,
         :logger => ::Rails.logger,
@@ -1383,6 +1384,7 @@ TRIGGER
 
     # We don't want to use an existing table name
     existing_names = options[:name_candidates] || options[:connection]["select relname from pg_stat_user_tables WHERE schemaname='public'"].map(:relname)
+    existing_names = existing_names + User::SYSTEM_TABLE_NAMES
     rx = /_(\d+)$/
     count = name[rx][1].to_i rescue 0
     while existing_names.include?(name)

@@ -426,7 +426,7 @@ var Vis = cdb.core.View.extend({
             var fields = infowindowFields.fields;
             for(var j = 0; j < fields.length; ++j) {
               var f = fields[j];
-              if(interact_data[f.name] != undefined) {
+              if(interact_data[f.name] != undefined && interact_data[f.name] != "") {
                 render_fields.push({
                   title: f.title ? f.name: null,
                   value: interact_data[f.name],

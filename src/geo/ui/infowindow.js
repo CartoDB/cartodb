@@ -312,11 +312,6 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     // Cast all values to string due to problems with Mustache 0 number rendering
     var new_value = attr.value.toString();
 
-    // But if we have some empty values (null)
-    // we must make them null to display them correctly
-    // ARGGG!
-    if (new_value == "") new_value = null;
-
     //Link? go ahead!
     if (!attr.type && this._isValidURL(new_value)) {
       attr.url = attr.value;

@@ -136,7 +136,9 @@ module CartoDB
           old_data_import_id  = record.fetch('data_import_id')
 
           record.store('map_id', maps_map.fetch(old_map_id))
-          record.store('data_import_id', data_imports_map.fetch(old_data_import_id))
+          if old_data_import_id
+            record.store('data_import_id', data_imports_map.fetch(old_data_import_id))
+          end
           record.store('user_id', user_id)
           connection[:user_tables].insert(record)
         end

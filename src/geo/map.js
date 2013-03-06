@@ -33,7 +33,7 @@ cdb.geo.MapLayer = cdb.core.Model.extend({
 
     var myType  = me.type? me.type : me.options.type
       , itsType = other.type? other.type : other.options.type;
-    
+
     if(myType && (myType === itsType)) {
 
       if(myType === 'Tiled') {
@@ -200,6 +200,7 @@ cdb.geo.Map = cdb.core.Model.extend({
     zoom: 3,
     minZoom: 0,
     maxZoom: 28,
+    scrollwheel: true,
     provider: 'leaflet'
   },
 
@@ -227,6 +228,17 @@ cdb.geo.Map = cdb.core.Model.extend({
   setZoom: function(z) {
     this.set({
       zoom: z
+    });
+  },
+
+  enableScrollWheel: function() {
+    this.set({
+      scrollwheel: true
+    });
+  },
+  disableScrollWheel: function() {
+    this.set({
+      scrollwheel: false
     });
   },
 
@@ -272,7 +284,7 @@ cdb.geo.Map = cdb.core.Model.extend({
     }
 
     // Set options
-    _.defauls(this.options, options);
+    _.defaults(this.options, options);
 
   },
 
@@ -609,6 +621,7 @@ cdb.geo.MapView = cdb.core.View.extend({
     this.map.bind('change:view_bounds_sw',  this._changeBounds, this);
     this.map.bind('change:view_bounds_ne',  this._changeBounds, this);
     this.map.bind('change:zoom',            this._setZoom, this);
+    this.map.bind('change:scrollwheel',     this._setScrollWheel, this);
     this.map.bind('change:center',          this._setCenter, this);
     this.map.bind('change:attribution',     this._setAttribution, this);
   },

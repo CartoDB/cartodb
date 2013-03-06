@@ -58,7 +58,10 @@ class Admin::TablesController < ApplicationController
     if @table.blank? || @table.private?
       head :forbidden
     else
-      render :layout => false
+      respond_to do |format|
+        format.html { render :layout => false }
+        format.js { render 'embed_map.js.erb', :content_type => 'application/javascript' }
+      end
     end
   end
 

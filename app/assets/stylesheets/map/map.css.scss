@@ -392,6 +392,45 @@ div.map {
     }
   }
 
+  div.sqlview {
+    position: absolute;
+    top: 53px;
+    right: 0;
+    left: 0;
+    display: block;
+    width: 100%;
+    height: 37px;
+    z-index:1;
+
+    p {
+      position: fixed;
+      left: 50%;
+      display: inline;
+      margin: 12px 0 0 -50%;
+      padding: 12px 0;
+      width: 100%;
+      border-bottom: 1px solid #ccc;
+      background-color: #E5FAEA;
+      color: #333;
+      color: #666666;
+      text-align: center;
+      font-size: 13px;
+      font-family: $text-fonts;
+      text-indent:0;
+      z-index:2;
+      @include transform-style("linear");
+      @include transition-property("text-indent");
+      @include transition-duration(300ms);
+      @include box-shadow(rgba(0, 0, 0, 0.055) 0 3px 1px 0);
+    }
+  } //div.sqlview
+
+  &.displaced {
+    div.sqlview p {
+      text-indent:-600px;
+    }
+  } //&.displaced
+
 } // div.cartodb-map
 
 

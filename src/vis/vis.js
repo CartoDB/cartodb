@@ -183,7 +183,7 @@ var Vis = cdb.core.View.extend({
 
     // Another div to prevent leaflet grabs the div
     var div_hack = $('<div>')
-      .addClass("map-wrapper")
+      .addClass("cartodb-map-wrapper")
       .css({
         position: "absolute",
         top: 0,
@@ -368,7 +368,7 @@ var Vis = cdb.core.View.extend({
     var header_h = this.$el.find(".header:not(.cartodb-popup)").outerHeight();
 
     this.$el
-      .find("div.map-wrapper")
+      .find("div.cartodb-map-wrapper")
       .css("top", header_h);
 
     this.mapView.invalidateSize();

@@ -6,6 +6,6 @@ only_com_tho|,|.
 only_dot_tho|.|,
 both_com_dec|.|,
 both_dot_dec|,|.
-only_com_amb||
-only_dot_amb||
+only_com_AMB||
+only_dot_AMB||
 DROP TABLE

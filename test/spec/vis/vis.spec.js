@@ -126,7 +126,7 @@ describe("Vis", function() {
     this.vis.load(this.mapConfig, {
       title: true
     });
-    expect(this.vis.$('.header').length).toEqual(1);
+    expect(this.vis.$('.cartodb-header').length).toEqual(1);
   });
   
   it("should use zoom", function() {

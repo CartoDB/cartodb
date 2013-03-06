@@ -13,6 +13,8 @@
     global_info.scripts_loaded = global_info.scripts_loaded || [];
     global_info.load_queue = global_info.load_queue || [];
 
+    var script_url = global_info.script_url || null;
+
     function contains(array, v) {
       for(var i = 0; i < array.length; ++i) {
         if(array[i] == v) return true;
@@ -30,7 +32,7 @@
           return src;
         }
       }
-      return null;
+      return script_url;
     }
 
     function get_url_params(url, conversion) {
@@ -94,12 +96,16 @@
 
     var height = opt.height || '400';
 
+    if(height.indexOf('%') == -1)  {
+      height += 'px';
+    }
+
     <% if Rails.env.development? %>
       opt.no_cdn = true;
     <% end %>
 
     var map_id = "cartodb-map-" + new Date().getTime();
-    doc.write('<div id="' + map_id + '" style="height: ' + height + 'px"></div>');
+    doc.write('<div id="' + map_id + '" style="height: ' + height + '"></div>');
 
     var load_cartodb = function() {
       if(typeof(cartodb) == "undefined") {

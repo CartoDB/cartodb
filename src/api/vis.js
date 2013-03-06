@@ -3,7 +3,7 @@
   cartodb.createVis = function(el, vizjson, options, callback) {
 
     if (!el) {
-      throw new TypeError("a dom element should be provided");
+      throw new TypeError("a DOM element should be provided");
     }
 
     var

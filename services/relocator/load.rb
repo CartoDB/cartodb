@@ -21,10 +21,12 @@ module CartoDB
         @relocation       = Relocation.new(arguments.fetch(:relocation_id))
         @rdbms            = RDBMS.new(arguments.fetch(:connection))
         @environment      = arguments.fetch(:environment)
+        @new_username     = arguments.fetch(:new_username, nil)
+        @renaming         = !!new_username
         @meta_loader      = MetaLoader.new(
                               relocation:   relocation,
-                              environment:  environment,
-                              rdbms:        rdbms
+                              rdbms:        rdbms,
+                              renaming:     renaming
                             )
       end #initialize
 
@@ -56,7 +58,8 @@ module CartoDB
         rdbms.set_password(environment.database_username, user.database_password)
 
         to_stdout("Loading metadata")
-        meta_loader.user_id = user.id
+        meta_loader.user = user
+        meta_loader.environment = environment
         meta_loader.run
 
         to_stdout("Finished relocation with ID: #{relocation.id}")
@@ -65,7 +68,7 @@ module CartoDB
       private
 
       attr_reader :relocation, :user, :psql, :environment, :database_owner,
-                  :rdbms, :meta_loader
+                  :rdbms, :meta_loader, :new_username, :renaming
 
       def create_user
         @user = User.new
@@ -76,6 +79,10 @@ module CartoDB
         attributes.delete('id')
         attributes.each { |k, v| @user.send(:"#{k}=", v) }
 
+        if new_username
+          @user.username = new_username 
+          @user.email    = "#{@user.email}_#{relocation.token}_#{Time.now.to_i}"
+        end
         raise 'Invalid user' unless user.valid?
         user.save
         @environment        = Environment.new(environment, user.id)

@@ -13,24 +13,31 @@ Encoding.default_external = "utf-8"
 module CartoDB
   module Relocator
     class MetaLoader
-      attr_accessor :user_id
+      attr_accessor :user, :environment
       
-      %w{ maps layers data_imports client_applications api_keys assets tags}
+      %w{ maps data_imports client_applications api_keys assets tags}
       .each do |table|
         define_method(table) { insert_in(table) }
       end
 
       def initialize(arguments)
-        @rdbms       = arguments.fetch(:rdbms)
-        @relocation  = arguments.fetch(:relocation)
+        @rdbms      = arguments.fetch(:rdbms)
+        @relocation = arguments.fetch(:relocation)
+        @renaming   = arguments.fetch(:renaming, false)
       end #initialize
 
       def run
-        @maps_map                   = maps
-        @layers_map                 = layers
-        @data_imports_map           = data_imports
-        @client_applications_map    = client_applications
-
+        @maps_map                 = maps
+        @layers_map               = rdbms.insert_layers_for(
+                                      records:  records_for(:layers),
+                                      user:     user
+                                    )
+        @data_imports_map         = data_imports
+        @client_applications_map  = rdbms.insert_client_applications_for(
+                                      records: records_for(:client_applications),
+                                      user:     user,
+                                      renaming: renaming
+                                    )
         api_keys
         assets
         tags
@@ -38,7 +45,7 @@ module CartoDB
         rdbms.insert_oauth_tokens_for(
           records:                  records_for(:oauth_tokens),
           client_applications_map:  @client_applications_map,
-          user_id:                  user_id
+          user_id:                  user.id
         )
 
         rdbms.insert_layers_maps_for(
@@ -50,35 +57,36 @@ module CartoDB
         rdbms.insert_layers_users_for(
           records:                  records_for(:layers_users),
           layers_map:               @layers_map,
-          user_id:                  user_id
+          user_id:                  user.id
         )
 
         rdbms.insert_user_tables_for(
-          user_id:                  user_id,
+          user_id:                  user.id,
+          database_name:            environment.user_database,
           records:                  records_for(:user_tables),
           maps_map:                 @maps_map,
           data_imports_map:         @data_imports_map
         )
 
         puts 'Loading redis data'
-        ThresholdMetadata.new(user_id)
+        ThresholdMetadata.new(user.id)
           .load(records_for('redis/thresholds_metadata'))
-        APICredentialMetadata.new(user_id)
+        APICredentialMetadata.new(user.id)
           .load(records_for('redis/api_credentials_metadata'))
-        MapStyleMetadata.new(user_id)
+        MapStyleMetadata.new(user.id)
           .load(records_for('redis/map_styles_metadata')) 
-        TableMetadata.new(user_id)
+        TableMetadata.new(user.id)
           .load(records_for('redis/tables_metadata' ))
-        UserMetadata.new(user_id)
+        UserMetadata.new(user)
           .load(records_for('redis/users_metadata'))
       end #run
 
       private
 
-      attr_reader :rdbms, :relocation
+      attr_reader :rdbms, :relocation, :renaming
 
       def insert_in(table_name)
-        rdbms.insert_in(table_name, records_for(table_name), user_id)
+        rdbms.insert_in(table_name, records_for(table_name), user.id)
       end #insert_in
 
       def records_for(table_name)

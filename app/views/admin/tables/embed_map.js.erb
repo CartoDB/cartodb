@@ -1,0 +1,135 @@
+
+(function() {
+
+    var INCLUDE_GMAPS = <% if @table.map.provider == 'googlemaps' %> true <% else %> false <% end %>;
+    var VIZJSON_URL = '<%= v1_vizjson_url(@table) %>';
+    var ACCOUNT_TYPE = "<%= @table.owner.account_type.downcase %>";
+    var IS_CUSTOM_INSTALL = <%= Cartodb.config[:cartodb_com_hosted].present? %>;
+
+    var doc = document;
+    var head = doc.getElementsByTagName('head')[0];
+
+    var global_info = window.__cartodb_embed = window.__cartodb_embed || {};
+    global_info.scripts_loaded = global_info.scripts_loaded || [];
+    global_info.load_queue = global_info.load_queue || [];
+
+    function contains(array, v) {
+      for(var i = 0; i < array.length; ++i) {
+        if(array[i] == v) return true;
+      }
+      return false;
+    }
+
+    function search_embed_script_url() {
+      var i, len, src;
+      var scripts = document.getElementsByTagName('script');
+      for (i = 0, len = scripts.length; i < len; ++i) {
+        src = scripts[i].src;
+        if(src && src.indexOf('embed_map.js') != -1 && !contains(global_info.scripts_loaded, src)) {
+          global_info.scripts_loaded.push(src);
+          return src;
+        }
+      }
+      return null;
+    }
+
+    function get_url_params(url, conversion) {
+      conversion = conversion || {};
+      if(!url) {
+        return {};
+      }
+      var search = url.split('?');
+      if(search.length < 2) {
+        return {};
+      }
+      search = search[1];
+      var tokens = search.split('&');
+      var params = {};
+      for(var i = 0; i < tokens.length; ++i) {
+        var tk = tokens[i].split('=');
+        var fn = conversion[tk[0]] || function(v) { return v };
+        if(tk.length === 2) {
+          params[tk[0]] = fn(decodeURIComponent(tk[1]));
+        }
+      }
+      return params;
+    }
+
+    var url = search_embed_script_url();
+
+    var bool_fn = function(v) { return v == 'true' }
+    var logo_fn = function(v) { return ( ACCOUNT_TYPE != "coronelli" || IS_CUSTOM_INSTALL) ? true : v == 'true' };
+
+    var opt = get_url_params(url, {
+      'search': bool_fn,
+      'title': bool_fn,
+      'description': bool_fn,
+      'shareable': bool_fn,
+      'cartodb_logo': bool_fn,
+      'debug': bool_fn
+    });
+
+    doc.write('<link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/themes/css/cartodb.css" />');
+    var ua = navigator.userAgent;
+    if(ua.indexOf('MSIE 8') != -1 || ua.indexOf('MSIE 7') != -1) {
+        doc.write('<link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/themes/css/cartodb.ie.css" />');
+    }
+
+    function load_script(url, done) {
+      var script = doc.createElement('script');
+      script.type = 'text/javascript';
+      script.src = url;
+      script.async = true;
+      var loaded = false;
+
+      script.onload = script.onreadystatechange = function () {
+        if ((script['readyState'] && script['readyState'] !== 'complete' && script[readyState] !== 'loaded') || loaded) {
+          return false
+        }
+        loaded = true;
+        done && done();
+      }
+      head.appendChild(script)
+    }
+
+    var height = opt.height || '400';
+
+    <% if Rails.env.development? %>
+      opt.no_cdn = true;
+    <% end %>
+
+    var map_id = "cartodb-map-" + new Date().getTime();
+    doc.write('<div id="' + map_id + '" style="height: ' + height + 'px"></div>');
+
+    var load_cartodb = function() {
+      if(typeof(cartodb) == "undefined") {
+        if(global_info.loading) {
+            global_info.load_queue.push([map_id, opt.url || VIZJSON_URL, opt]);
+        } else {
+          load_script('http://libs.cartocdn.com/cartodb.js/v2/' + (opt.debug ?'cartodb.uncompressed.js':'cartodb.js'), function() {
+            cartodb.createVis(map_id, opt.url || VIZJSON_URL, opt);
+            for(var g in global_info.load_queue) {
+              var params = global_info.load_queue[g];
+              cartodb.createVis.apply(cartodb, params);
+            }
+          })
+        }
+        global_info.loading = true;
+       } else {
+          cartodb.createVis(map_id, opt.url || VIZJSON_URL, opt);
+       }
+    }
+
+    if(INCLUDE_GMAPS) {
+      if(typeof(google) != 'undefined' && typeof(google.maps) != 'undefined') {
+        load_cartodb();
+      } else {
+      load_script("https://www.google.com/jsapi", function() {
+        google.load("maps", "3.8", {"callback" : load_cartodb, other_params: "sensor=false"});
+      });
+      }
+    } else {
+      load_cartodb();
+    }
+
+})();

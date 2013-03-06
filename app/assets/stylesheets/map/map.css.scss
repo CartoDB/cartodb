@@ -288,8 +288,10 @@ div.map {
     }
   }
 
-
-  div#map {
+  
+  /* CartoDB map styles */
+  
+  div.cartodb-map {
     position:absolute;
     top:64px;
     left:0;
@@ -306,18 +308,18 @@ div.map {
   }
 
   // Zoom info
-  div#zoom_info {top:135px;}
+  div.cartodb-zoom-info {top:135px;}
 
   // Zoom in core map
-  div#zoom {top:65px;}
+  div.cartodb-zoom {top:65px;}
 
   // Tiler in core map
-  div#tiles_loader div.loader {
+  div.cartodb-tiles-loader div.loader {
     top:175px;
   }
 
   // Search box in core map
-  div.search_box {
+  div.cartodb-searchbox {
     position:relative;
     float:right;
     top:65px;
@@ -325,14 +327,14 @@ div.map {
   }
 
   // Public map
-  div#map.public {
+  .cartodb-map.public {
     top: 55px;
     border-top:1px solid #999999;
-    div#zoom {top: 0px;}
-    div#tiles_loader div.loader {
+    div.cartodb-zoom {top: 0px;}
+    div.cartodb-tiles-loader div.loader {
       top:135px - 65px;
     }
-    div.search_box{
+    div.cartodb-searchbox{
       top: 0px;
       left: 0px;
     }
@@ -341,6 +343,7 @@ div.map {
       margin-right: 0px!important;
     }
   }
+
 
   // [done | discard] dialog shown when a geometry is being edited or created
   div.editing {
@@ -389,7 +392,7 @@ div.map {
     }
   }
 
-} // div.map
+} // div.cartodb-map
 
 
 section.block.noGeoRef {

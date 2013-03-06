@@ -40,7 +40,7 @@
         this.map_leaflet.attributionControl.setPrefix('');
 
         // Disable the scrollwheel
-        if (!this.map.get("scrollwheel")) this.map_leaflet.scrollWheelZoom.disable();
+        if (this.map.get("scrollwheel") == false) this.map_leaflet.scrollWheelZoom.disable();
 
       } else {
         this.map_leaflet = this.options.map_object;

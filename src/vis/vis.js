@@ -135,10 +135,12 @@ var Vis = cdb.core.View.extend({
       this.https = data.https;
     }
 
+    var scrollwheel = true;
 
     if(options) {
       this._applyOptions(data, options);
       this.cartodb_logo = options.cartodb_logo;
+      scrollwheel       = options.scrollwheel;
     }
 
     // map
@@ -150,6 +152,7 @@ var Vis = cdb.core.View.extend({
       description: data.description,
       maxZoom: data.maxZoom,
       minZoom: data.minZoom,
+      scrollwheel: scrollwheel,
       provider: data.map_provider
     };
 
@@ -237,7 +240,7 @@ var Vis = cdb.core.View.extend({
           var o = this.overlays[i];
           if(v.cid === o.cid) {
             this.overlays.splice(i, 1)
-            return; 
+            return;
           }
         }
       }, this);
@@ -430,7 +433,7 @@ var Vis = cdb.core.View.extend({
                 render_fields.push({
                   title: f.title ? f.name: null,
                   value: interact_data[f.name],
-                  index: j ? j:null // mustache does not recognize 0 as false :( 
+                  index: j ? j:null // mustache does not recognize 0 as false :(
                 });
               }
             }
@@ -439,18 +442,18 @@ var Vis = cdb.core.View.extend({
               render_fields.push({
                 title: null,
                 value: 'No data available',
-                index: j ? j:null, // mustache does not recognize 0 as false :( 
+                index: j ? j:null, // mustache does not recognize 0 as false :(
                 type: 'empty'
               });
             }
             content = render_fields;
           }
 
-          infowindow.model.set({ 
-            content:  { 
-              fields: content, 
+          infowindow.model.set({
+            content:  {
+              fields: content,
               data: interact_data
-            } 
+            }
           })
           infowindow.adjustPan();
         })
@@ -482,7 +485,7 @@ var Vis = cdb.core.View.extend({
     var layer_cid = map.addLayer(Layers.create(layerData.type || layerData.kind, this, layerData), opts);
 
     var layerView = mapView.getLayerByCid(layer_cid);
-    
+
     // add the associated overlays
     if(layerData.infowindow &&
       layerData.infowindow.fields &&

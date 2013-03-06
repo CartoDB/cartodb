@@ -4,15 +4,15 @@ require 'spec_helper'
 
 describe CartoDB::Importer do
   homepath = File.expand_path('~')
-  if File.exists? "#{homepath}/Dropbox/ec2-keys/.amazon_key"
+  if ENV['AWS_ACCESS_KEY_ID']
     require 'aws-sdk'
     
     local_storage_dir = "spec/support/data/failed_remote"
     
-    s3 = AWS::S3.new({
-      :access_key_id => File.open("#{homepath}/Dropbox/ec2-keys/.amazon_key", "rb").read.strip,
-      :secret_access_key => File.open("#{homepath}/Dropbox/ec2-keys/.amazon_secret", "rb").read.strip
-    })
+    s3 = AWS::S3.new(
+      access_key_id:      ENV.fetch('AWS_ACCESS_KEY_ID'),
+      secret_access_key:  ENV.fetch('AWS_SECRET_ACCESS_KEY')
+    )
     bucket = s3.buckets[:failed_imports]
     
     it "test failed files from S3" do

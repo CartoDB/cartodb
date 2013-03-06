@@ -35,6 +35,7 @@ cdb.geo.GoogleMapsMapView = cdb.geo.MapView.extend({
         minZoom: this.map.get('minZoom'),
         maxZoom: this.map.get('maxZoom'),
         disableDefaultUI: true,
+        scrollwheel: this.map.get("scrollwheel"),
         mapTypeControl:false,
         mapTypeId: google.maps.MapTypeId.ROADMAP,
         backgroundColor: 'white'
@@ -92,6 +93,10 @@ cdb.geo.GoogleMapsMapView = cdb.geo.MapView.extend({
     this.projector.draw = function() {};
     this.trigger('ready');
     this._isReady = true;
+  },
+
+  _setScrollWheel: function(model, z) {
+    this.map_googlemaps.setOptions({ scrollwheel: z });
   },
 
   _setZoom: function(model, z) {

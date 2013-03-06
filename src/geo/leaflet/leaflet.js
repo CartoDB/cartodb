@@ -40,7 +40,7 @@
         this.map_leaflet = new L.Map(this.el, mapConfig);
 
         // Disable the scrollwheel
-        if (!this.map.get("scrollwheel")) this.map_leaflet.scrollWheelZoom.disable();
+        if (this.map.get("scrollwheel") == false) this.map_leaflet.scrollWheelZoom.disable();
 
         // remove the "powered by leaflet"
         this.map_leaflet.attributionControl.setPrefix('');

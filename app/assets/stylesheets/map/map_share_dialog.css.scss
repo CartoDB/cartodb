@@ -106,8 +106,7 @@
     li {
       @include inline-block();
     }
-  } // ul.format_selector
-
+  }
 
   .input {
 
@@ -117,7 +116,10 @@
       margin: 0;
       overflow:hidden;
       border:none;
-      @include box-shadow(none);
+      outline:none;
+
+      &:focus { @include box-shadow(none); }
+
     }
 
     ul {

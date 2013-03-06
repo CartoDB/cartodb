@@ -1,6 +1,6 @@
 // cartodb.js version: 2.0.23
 // uncompressed version: cartodb.uncompressed.js
-// sha: 661395047349424a6f15b04cc02fb1bc6613a951
+// sha: 9a35f1b919958d3c560e90f03d83be479d860a25
 (function() {
   var root = this;
 
@@ -21584,7 +21584,7 @@ var Vis = cdb.core.View.extend({
 
     // Another div to prevent leaflet grabs the div
     var div_hack = $('<div>')
-      .addClass("map-wrapper")
+      .addClass("cartodb-map-wrapper")
       .css({
         position: "absolute",
         top: 0,
@@ -21769,7 +21769,7 @@ var Vis = cdb.core.View.extend({
     var header_h = this.$el.find(".header:not(.cartodb-popup)").outerHeight();
 
     this.$el
-      .find("div.map-wrapper")
+      .find("div.cartodb-map-wrapper")
       .css("top", header_h);
 
     this.mapView.invalidateSize();

@@ -12,8 +12,7 @@
     var global_info = window.__cartodb_embed = window.__cartodb_embed || {};
     global_info.scripts_loaded = global_info.scripts_loaded || [];
     global_info.load_queue = global_info.load_queue || [];
-
-    var script_url = global_info.script_url || null;
+    global_info.gmaps_queue = global_info.gmaps_queue || [];
 
     function contains(array, v) {
       for(var i = 0; i < array.length; ++i) {
@@ -32,7 +31,7 @@
           return src;
         }
       }
-      return script_url;
+      return null;
     }
 
     function get_url_params(url, conversion) {
@@ -59,6 +58,7 @@
 
     var url = search_embed_script_url();
 
+    var string_fn = function(v) { return v; }
     var bool_fn = function(v) { return v == 'true' }
     var logo_fn = function(v) { return ( ACCOUNT_TYPE != "coronelli" || IS_CUSTOM_INSTALL) ? true : v == 'true' };
 
@@ -69,14 +69,10 @@
       'shareable': bool_fn,
       'cartodb_logo': bool_fn,
       'scrollwheel': bool_fn,
-      'debug': bool_fn
+      'debug': bool_fn,
+      'version': string_fn
     });
 
-    doc.write('<link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/themes/css/cartodb.css" />');
-    var ua = navigator.userAgent;
-    if(ua.indexOf('MSIE 8') != -1 || ua.indexOf('MSIE 7') != -1) {
-        doc.write('<link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/themes/css/cartodb.ie.css" />');
-    }
 
     function load_script(url, done) {
       var script = doc.createElement('script');
@@ -96,9 +92,16 @@
     }
 
     var height = opt.height || '400';
-
     if(height.indexOf('%') == -1)  {
       height += 'px';
+    }
+
+    opt.version = opt.version ? (opt.version + '/'): '';
+
+    doc.write('<link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/' + opt.version + 'themes/css/cartodb.css" />');
+    var ua = navigator.userAgent;
+    if(ua.indexOf('MSIE 8') != -1 || ua.indexOf('MSIE 7') != -1) {
+        doc.write('<link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/' + opt.version + 'themes/css/cartodb.ie.css" />');
     }
 
     <% if Rails.env.development? %>
@@ -106,14 +109,14 @@
     <% end %>
 
     var map_id = "cartodb-map-" + new Date().getTime();
-    doc.write('<div id="' + map_id + '" style="height: ' + height + '"></div>');
+    doc.write('<div class="cartodb-embed-map" id="' + map_id + '" style="height: ' + height + '"></div>');
 
     var load_cartodb = function() {
       if(typeof(cartodb) == "undefined") {
         if(global_info.loading) {
             global_info.load_queue.push([map_id, opt.url || VIZJSON_URL, opt]);
         } else {
-          load_script('http://libs.cartocdn.com/cartodb.js/v2/' + (opt.debug ?'cartodb.uncompressed.js':'cartodb.js'), function() {
+          load_script('http://libs.cartocdn.com/cartodb.js/v2/' + (opt.debug ? ( opt.version + 'cartodb.uncompressed.js'):'cartodb.js'), function() {
             cartodb.createVis(map_id, opt.url || VIZJSON_URL, opt);
 
             for(var g in global_info.load_queue) {
@@ -129,12 +132,25 @@
     }
 
     if(INCLUDE_GMAPS) {
-      if(typeof(google) != 'undefined' && typeof(google.maps) != 'undefined') {
+      if(!global_info.loading_gmaps && typeof(google) != 'undefined' && typeof(google.maps) != 'undefined') {
         load_cartodb();
       } else {
-      load_script("https://www.google.com/jsapi", function() {
-        google.load("maps", "3.8", {"callback" : load_cartodb, other_params: "sensor=false"});
-      });
+        if(global_info.loading_gmaps) {
+          global_info.gmaps_queue.push(load_cartodb);
+          return;
+        }
+        global_info.loading_gmaps = true;
+        load_script("https://www.google.com/jsapi", function() {
+        google.load("maps", "3.8", {
+          "callback" : function() {
+            global_info.loading_gmaps = false;
+            load_cartodb()
+            for(var i in global_info.gmaps_queue) {
+                global_info.gmaps_queue[i]();
+            }
+          },
+          other_params: "sensor=false"});
+        });
       }
     } else {
       load_cartodb();

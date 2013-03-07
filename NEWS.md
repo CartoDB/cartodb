@@ -1,7 +1,10 @@
-2.0.6
+2.0.6 (DD/MM/YY)
 -----
+* If the the_geom value is null, it appears as null in the table and not as GeoJSON.
+* Table hover styles fixed.
+* Embeding map with an script is possible now (iframe still supported).
 
-2.0.5 (DD/MM/YY)
+2.0.5 (05/03/13)
 -----
 * Add new quantification methods, CDB_JenksBins etc.
 * Modal confirmation when deletes a row.
@@ -10,7 +13,6 @@
 
 2.0.4 (19/02/13)
 -----
-
 You'll need to run database migrations and reload sql functions after upgrating:
 
 bundle exec rake db:migrate

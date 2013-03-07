@@ -13,6 +13,8 @@
     global_info.scripts_loaded = global_info.scripts_loaded || [];
     global_info.load_queue = global_info.load_queue || [];
 
+    var script_url = global_info.script_url || null;
+
     function contains(array, v) {
       for(var i = 0; i < array.length; ++i) {
         if(array[i] == v) return true;
@@ -30,7 +32,7 @@
           return src;
         }
       }
-      return null;
+      return script_url;
     }
 
     function get_url_params(url, conversion) {
@@ -66,6 +68,7 @@
       'description': bool_fn,
       'shareable': bool_fn,
       'cartodb_logo': bool_fn,
+      'scrollwheel': bool_fn,
       'debug': bool_fn
     });
 
@@ -94,12 +97,16 @@
 
     var height = opt.height || '400';
 
+    if(height.indexOf('%') == -1)  {
+      height += 'px';
+    }
+
     <% if Rails.env.development? %>
       opt.no_cdn = true;
     <% end %>
 
     var map_id = "cartodb-map-" + new Date().getTime();
-    doc.write('<div id="' + map_id + '" style="height: ' + height + 'px"></div>');
+    doc.write('<div id="' + map_id + '" style="height: ' + height + '"></div>');
 
     var load_cartodb = function() {
       if(typeof(cartodb) == "undefined") {
@@ -108,6 +115,7 @@
         } else {
           load_script('http://libs.cartocdn.com/cartodb.js/v2/' + (opt.debug ?'cartodb.uncompressed.js':'cartodb.js'), function() {
             cartodb.createVis(map_id, opt.url || VIZJSON_URL, opt);
+
             for(var g in global_info.load_queue) {
               var params = global_info.load_queue[g];
               cartodb.createVis.apply(cartodb, params);

@@ -1,5 +1,7 @@
 # coding: UTF-8
 # Proxies management of a table in the users database
+require_relative './table/column_converter'
+
 class Table < Sequel::Model(:user_tables)
 
   # Table constants
@@ -730,16 +732,13 @@ class Table < Sequel::Model(:user_tables)
         raise if CARTODB_COLUMNS.include?(column_name)
         begin
           user_database.set_column_type name, column_name.to_sym, new_type
-        rescue => e
-          message = e.message.split("\n").first
+        rescue => exception
+          message = exception.message.split("\n").first
+          puts message
           if message =~ /cannot be cast to type/
-            begin
-              convert_column_datatype user_database, name, column_name, new_type
-            rescue => e
-              raise e
-            end
+            convert_column_datatype(user_database, name, column_name, new_type)
           else
-            raise e
+            raise exception
           end
         end
       end
@@ -748,153 +747,14 @@ class Table < Sequel::Model(:user_tables)
   end
 
   # convert non-conformist rows to null
-  def convert_column_datatype user_database, table_name, column_name, new_type
-    begin
-      # try straight cast
-      user_database.transaction do
-        user_database.run(<<-EOF
-          ALTER TABLE "#{table_name}"
-          ALTER COLUMN #{column_name}
-          TYPE #{new_type}
-          USING cast(#{column_name} as #{new_type})
-          EOF
-        )
-      end
-    rescue => e
-      # attempt various lossy conversions by regex nullifying unmatching data and retrying conversion.
-      user_database.transaction do
-        old_type = col_type(user_database, table_name, column_name).to_s
-
-        # conversions ok by default
-        # number => string
-        # boolean => string
-
-        # string => number
-        if (old_type == 'string' && new_type == 'double precision')
-          # normalise number
-          user_database.run(<<-EOF
-            UPDATE "#{table_name}"
-            SET #{column_name}=NULL
-            WHERE trim(\"#{column_name}\") !~* '^([-+]?[0-9]+(\.[0-9]+)?)$'
-            EOF
-          )
-        end
-
-        # string => boolean
-        if (old_type == 'string' && new_type == 'boolean')
-          falsy = "0|f|false"
-
-          # normalise empty string to NULL
-          user_database.run(<<-EOF
-            UPDATE "#{table_name}"
-            SET #{column_name}=NULL
-            WHERE trim(\"#{column_name}\") ~* '^$'
-            EOF
-          )
-
-          # normalise truthy (anything not false and NULL is true...)
-          user_database.run(<<-EOF
-            UPDATE "#{table_name}"
-            SET #{column_name}='t'
-            WHERE trim(\"#{column_name}\") !~* '^(#{falsy})$' AND #{column_name} IS NOT NULL
-            EOF
-          )
-
-          # normalise falsy
-          user_database.run(<<-EOF
-            UPDATE "#{table_name}"
-            SET #{column_name}='f'
-            WHERE trim(\"#{column_name}\") ~* '^(#{falsy})$'
-            EOF
-          )
-        end
-
-        # boolean => number
-        # normalise truthy to 1, falsy to 0
-        if (old_type == 'boolean' && new_type == 'double precision')
-
-          # first to string
-          user_database.run(<<-EOF
-            ALTER TABLE "#{table_name}"
-            ALTER COLUMN #{column_name} TYPE text
-            USING cast(#{column_name} as text)
-            EOF
-          )
-
-          # normalise truthy
-          user_database.run(<<-EOF
-            UPDATE "#{table_name}"
-            SET #{column_name}='1'
-            WHERE #{column_name} = 'true' AND #{column_name} IS NOT NULL
-            EOF
-          )
-
-          # normalise falsy
-          user_database.run(<<-EOF
-            UPDATE "#{table_name}"
-            SET #{column_name}='0'
-            WHERE #{column_name} = 'false' AND #{column_name} IS NOT NULL
-            EOF
-          )
-        end
-
-        # string => datetime
-        if (old_type == 'string' && %w(date datetime timestamp).include?(new_type))
-          # normalise empty string to NULL
-          user_database.run(<<-EOF
-            UPDATE "#{table_name}"
-            SET "#{column_name}" = NULL
-            WHERE \"#{column_name}\" = ''
-            EOF
-          )
-        end
-
-        # number => boolean
-        # normalise 0 to falsy else truthy
-        if (old_type == 'float' && new_type == 'boolean')
-
-          # first to string
-          user_database.run(<<-EOF
-            ALTER TABLE "#{table_name}"
-            ALTER COLUMN #{column_name} TYPE text
-            USING cast(#{column_name} as text)
-            EOF
-          )
-
-          # normalise truthy
-          user_database.run(<<-EOF
-            UPDATE "#{table_name}"
-            SET #{column_name}='t'
-            WHERE #{column_name} !~* '^0$' AND #{column_name} IS NOT NULL
-            EOF
-          )
-
-          # normalise falsy
-          user_database.run(<<-EOF
-            UPDATE "#{table_name}"
-            SET #{column_name}='f'
-            WHERE #{column_name} ~* '^0$'
-            EOF
-          )
-        end
-
-        # TODO:
-        # * number  => datetime
-        # * boolean => datetime
-        #
-        # Maybe do nothing? Does it even make sense? Best to throw error here for now.
-
-        # try to update normalised column to new type (if fails here, well, we have not lost anything)
-        user_database.run(<<-EOF
-          ALTER TABLE "#{table_name}"
-          ALTER COLUMN #{column_name}
-          TYPE #{new_type}
-          USING cast(#{column_name} as #{new_type})
-          EOF
-        )
-      end
-    end
-  end
+  def convert_column_datatype(user_database, table_name, column_name, new_type)
+    CartoDB::ColumnConverter.new(
+      user_database:  user_database,
+      table_name:     table_name,
+      column_name:    column_name,
+      new_type:       new_type
+    ).run
+  end #convert_column_datatype
 
   def col_type user_database, table_name, column_name
     user_database.schema(table_name).select{ |c| c[0] == column_name.to_sym }.flatten.last[:type]

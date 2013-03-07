@@ -7,18 +7,21 @@ module CartoDB
       @table_name     = arguments.fetch(:table_name)
       @column_name    = arguments.fetch(:column_name)
       @new_type       = arguments.fetch(:new_type)
-      @old_type       = col_type(column_name)
+      @old_type       = column_type(column_name)
     end #initialize
 
     def run
-      user_database.transaction { straight_cast }
+      user_database.transaction do straight_cast end
     rescue => exception
       # attempt various lossy conversions by regex nullifying 
       # unmatching data and retrying conversion.
       #
       # conversions ok by default:
-      #   number => string
-      #   boolean => string
+      #   * number => string
+      #   * boolean => string
+      # TODO:
+      #   * number  => datetime
+      #   * boolean => datetime
 
       user_database.transaction do
         string_to_number    if string_to_number?
@@ -27,13 +30,19 @@ module CartoDB
         boolean_to_number   if boolean_to_number?
         string_to_datetime  if string_to_datetime?
 
-        retry_conversion
+        straight_cast
       end
     end #run
 
     private
 
     attr_reader :user_database, :table_name, :column_name, :new_type, :old_type
+
+    def column_type(column_name)
+      user_database.schema(table_name).select { |c|
+        c[0] == column_name.to_sym
+      }.flatten.last[:type].to_s
+    end #column_type
 
     def number_to_boolean?
       old_type == 'float' && new_type == 'boolean'
@@ -55,12 +64,6 @@ module CartoDB
       old_type == 'string' && new_type == 'boolean'
     end #string_to_boolean?
 
-    def col_type(column_name)
-      user_database.schema(table_name).select { |c|
-        c[0] == column_name.to_sym
-      }.flatten.last.fetch(:type)
-    end #col_type
-
     def straight_cast
       user_database.run(%Q{
         ALTER TABLE "#{table_name}"
@@ -75,7 +78,6 @@ module CartoDB
         UPDATE "#{table_name}"
         SET #{column_name}=NULL
         WHERE trim(\"#{column_name}\") !~* '^([-+]?[0-9]+(\.[0-9]+)?)$'
-        
       })
     end #string_to_number
 
@@ -135,7 +137,7 @@ module CartoDB
         SET #{column_name}='0'
         WHERE #{column_name} = 'false' AND #{column_name} IS NOT NULL
       })
-    end #boolean_to_numer
+    end #boolean_to_number
 
     def number_to_boolean
       # normalise 0 to falsy else truthy
@@ -160,24 +162,6 @@ module CartoDB
         WHERE #{column_name} ~* '^0$'
       })
     end #number_to_boolean
-
-    def retry_conversion
-      # TODO:
-      # * number  => datetime
-      # * boolean => datetime
-      #
-      # Maybe do nothing? Does it even make sense? 
-      # Best to throw error here for now.
-      #
-      # try to update normalised column to new type 
-      # (if fails here, well, we have not lost anything)
-      user_database.run(%Q{
-        ALTER TABLE "#{table_name}"
-        ALTER COLUMN #{column_name}
-        TYPE #{new_type}
-        USING cast(#{column_name} as #{new_type})
-      })
-    end #retry_conversion
   end # ColumnConverter
 end # CartoDB
 

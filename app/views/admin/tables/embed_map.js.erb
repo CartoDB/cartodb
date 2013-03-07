@@ -12,6 +12,7 @@
     var global_info = window.__cartodb_embed = window.__cartodb_embed || {};
     global_info.scripts_loaded = global_info.scripts_loaded || [];
     global_info.load_queue = global_info.load_queue || [];
+    global_info.gmaps_queue = global_info.gmaps_queue || [];
 
     function contains(array, v) {
       for(var i = 0; i < array.length; ++i) {
@@ -111,7 +112,6 @@
     doc.write('<div class="cartodb-embed-map" id="' + map_id + '" style="height: ' + height + '"></div>');
 
     var load_cartodb = function() {
-      global_info.loading_gmaps = false;
       if(typeof(cartodb) == "undefined") {
         if(global_info.loading) {
             global_info.load_queue.push([map_id, opt.url || VIZJSON_URL, opt]);
@@ -132,14 +132,25 @@
     }
 
     if(INCLUDE_GMAPS) {
-      if(global_info.loading_gmaps && typeof(google) != 'undefined' && typeof(google.maps) != 'undefined') {
+      if(!global_info.loading_gmaps && typeof(google) != 'undefined' && typeof(google.maps) != 'undefined') {
         load_cartodb();
       } else {
+        if(global_info.loading_gmaps) {
+          global_info.gmaps_queue.push(load_cartodb);
+          return;
+        }
         global_info.loading_gmaps = true;
-      load_script("https://www.google.com/jsapi", function() {
-      
-        google.load("maps", "3.8", {"callback" : load_cartodb, other_params: "sensor=false"});
-      });
+        load_script("https://www.google.com/jsapi", function() {
+        google.load("maps", "3.8", {
+          "callback" : function() {
+            global_info.loading_gmaps = false;
+            load_cartodb()
+            for(var i in global_info.gmaps_queue) {
+                global_info.gmaps_queue[i]();
+            }
+          },
+          other_params: "sensor=false"});
+        });
       }
     } else {
       load_cartodb();

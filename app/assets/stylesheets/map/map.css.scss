@@ -222,6 +222,11 @@ div.map {
 
         }
 
+        &.dark_roadmap .thumb {
+          background-size:auto;
+          @include icons-sprite(gmaps_dark_roadmap);
+        }
+
         &.gray_roadmap .thumb {
           background-size:auto;
           @include icons-sprite(gmaps_gray_roadmap);
@@ -288,9 +293,9 @@ div.map {
     }
   }
 
-  
+
   /* CartoDB map styles */
-  
+
   div.cartodb-map {
     position:absolute;
     top:64px;
@@ -300,7 +305,7 @@ div.map {
     width:100%;
     height:auto;
     z-index:1;
-    
+
     // Move attributions in different providers
     .leaflet-right .leaflet-control, #cartodb_attribution {
       margin-right: 62px!important;

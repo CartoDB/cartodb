@@ -146,4 +146,16 @@ article.public_tables {
       }
     }
   }
+
+  td.over_quota {
+
+    .size {
+      color:#FF7373;
+    }
+    
+    a.copy {
+      @include icons-sprite(prohibited, $offset-x: 4px, $offset-y: 5px);
+      &:hover {cursor:default;}
+    }
+  }
 }

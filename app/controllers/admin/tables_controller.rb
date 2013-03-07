@@ -66,6 +66,8 @@ class Admin::TablesController < ApplicationController
   end
 
   def track_embed
+    response.headers['X-Cache-Channel'] = "embeds_google_analytics"
+    response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
     render 'track.html.erb', :layout => false
   end
 

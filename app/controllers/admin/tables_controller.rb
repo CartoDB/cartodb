@@ -65,6 +65,12 @@ class Admin::TablesController < ApplicationController
     end
   end
 
+  def track_embed
+    response.headers['X-Cache-Channel'] = "embeds_google_analytics"
+    response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
+    render 'track.html.erb', :layout => false
+  end
+
   private
   def download_formats table, format
     format.sql  { send_data table.to_sql, send_data_conf(table, 'zip', 'zip') }

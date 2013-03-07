@@ -98,10 +98,13 @@
 
     opt.version = opt.version ? (opt.version + '/'): '';
 
-    doc.write('<link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/' + opt.version + 'themes/css/cartodb.css" />');
-    var ua = navigator.userAgent;
-    if(ua.indexOf('MSIE 8') != -1 || ua.indexOf('MSIE 7') != -1) {
+    if(!global_info.css_included) {
+      doc.write('<link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/' + opt.version + 'themes/css/cartodb.css" />');
+      var ua = navigator.userAgent;
+      if(ua.indexOf('MSIE 8') != -1 || ua.indexOf('MSIE 7') != -1) {
         doc.write('<link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/' + opt.version + 'themes/css/cartodb.ie.css" />');
+      }
+      global_info.css_included = true
     }
 
     <% if Rails.env.development? %>
@@ -154,6 +157,12 @@
       }
     } else {
       load_cartodb();
+    }
+
+    var l = document.createElement("a");
+    l.href = url
+    if(l.protocol.indexOf('http') != -1) {
+        doc.write('<iframe style="display: none" src="' + l.protocol + '//' + l.hostname + ':' + l.port + '/tables/track_embed"></iframe>');
     }
 
 })();

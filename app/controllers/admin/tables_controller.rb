@@ -65,6 +65,10 @@ class Admin::TablesController < ApplicationController
     end
   end
 
+  def track_embed
+    render 'track.html.erb', :layout => false
+  end
+
   private
   def download_formats table, format
     format.sql  { send_data table.to_sql, send_data_conf(table, 'zip', 'zip') }

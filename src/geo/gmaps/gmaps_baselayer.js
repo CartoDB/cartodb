@@ -17,6 +17,7 @@ _.extend(
     var types = {
       "roadmap":      google.maps.MapTypeId.ROADMAP,
       "gray_roadmap": google.maps.MapTypeId.ROADMAP,
+      "dark_roadmap": google.maps.MapTypeId.ROADMAP,
       "hybrid":       google.maps.MapTypeId.HYBRID,
       "satellite":    google.maps.MapTypeId.SATELLITE,
       "terrain":      google.maps.MapTypeId.TERRAIN

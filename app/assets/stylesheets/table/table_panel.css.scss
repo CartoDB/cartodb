@@ -99,9 +99,18 @@
           @include opacity(0.75);
 
           &.sql_mod        { @include icons-sprite(table_icons, $offset-x:20px, $offset-y:-3px);}
-          &.wizards_mod { @include icons-sprite(table_icons, $offset-x:21px, $offset-y:-370px);}
-          &.cartocss_mod      { @include icons-sprite(table_icons, $offset-x:21px, $offset-y:-549px);}
+          &.cartocss_mod   { @include icons-sprite(table_icons, $offset-x:21px, $offset-y:-549px);}
           &.infowindow_mod { @include icons-sprite(table_icons, $offset-x:20px, $offset-y:-430px);}
+          &.wizards_mod    {
+            @include icons-sprite(table_icons, $offset-x:21px, $offset-y:-370px);
+            &.selected:before {
+              border-right-color: #575757;
+            }
+            &.selected:after {
+              border-right-color: #575757;
+              right: 0;
+            }
+          }
 
           // tool buttons
           &.add_row {@include icons-sprite(table_icons, $offset-x:22px, $offset-y:-307px);}
@@ -434,28 +443,31 @@
           top:60px;
           left:0;
           right:0;
-          height:151px;
+          height:149px;
+
+          background: image-url('layout/linen.png');
 
           &:after {
             content:'';
             position:absolute;
-            top:5px;
-            bottom:5px;
+            top:0px;
+            bottom:0px;
             right:0px;
             width:30px;
-            @include background(linear-gradient(left, rgba(white,0), rgba(white,1)));
+            @include background(linear-gradient(left, rgba(#333,0), rgba(#333, .5)));
             z-index:1;
           }
-          &:before {
+
+          /*&:before {
             content:'';
             position:absolute;
-            top:5px;
-            bottom:5px;
+            top:0px;
+            bottom:0px;
             left:0px;
             width:30px;
-            @include background(linear-gradient(left, rgba(white,1), rgba(white,0)));
+            @include background(linear-gradient(left, rgba(#333, .5), rgba(#333,0)));
             z-index:1;
-          }
+          }*/
         }
 
         div.wizard_arrows {
@@ -509,21 +521,38 @@
           li {
             position:relative;
             @include inline-block();
-            padding:0 1px 0 0;
-            margin:0 4px 0 0;
+            padding:0;
+            margin:0 12px 0 0;
             word-space: 0;
             letter-spacing:0;
 
             a {
+              position:relative;
               display:block;
-              @include size(92px, 82px);
+              @include size(92px, 90px);
               margin:30px 0;
-              padding:3px;
 
-              border:1px solid $cGray4;
+              @include box-shadow(0 0 3px 4px rgba(black, 0.15));
+              @include border-radius(3px);
 
-              @include border-radius(5px);
-              @include text-indent();
+              .name {
+                position: absolute;
+                width: 100%;
+                padding: 8px 0;
+                left: 0;
+                bottom: 0;
+                background:#fff;
+
+                border-top: 1px solid #ccc;
+                @include border-radius(0 0 3px 3px);
+                text-transform: uppercase;
+
+                text-align:center;
+
+                font-weight:bold;
+                font-size:11px;
+                color: #397DBA;
+              }
 
               @include simple-transition(opacity, 200ms);
 
@@ -531,18 +560,22 @@
 
               // Wizard icons
               &.simple {
-                background: image-url('layout/wizard-simple.png') no-repeat 3px 3px;
-                &.polygon { background: image-url('layout/wizard-simple-polygon.png') no-repeat 3px 3px;}
-                &.line { background: image-url('layout/wizard-simple-polyline.png') no-repeat 3px 3px;}
+                background: image-url('layout/wizard-simple.png') no-repeat;
+                &.polygon { background: image-url('layout/wizard-simple-polygon.png') no-repeat;}
+                &.line { background: image-url('layout/wizard-simple-polyline.png') no-repeat;}
+              }
+
+              &.heatmap {
+                background: image-url('layout/wizard-heatmap.png') no-repeat;
               }
 
               &.choropleth {
-                background: image-url('layout/wizard-choropleth.png') no-repeat 3px 3px;
-                &.line { background: image-url('layout/wizard-choropleth-polyline.png') no-repeat 3px 3px;}
+                background: image-url('layout/wizard-choropleth.png') no-repeat;
+                &.line { background: image-url('layout/wizard-choropleth-polyline.png') no-repeat;}
               }
 
-              &.bubble  { background: image-url('layout/wizard-bubble.png') no-repeat 3px 3px;}
-              &.density { background: image-url('layout/wizard-density-hex.png') no-repeat 3px 3px;}
+              &.bubble  { background: image-url('layout/wizard-bubble.png') no-repeat;}
+              &.density { background: image-url('layout/wizard-density-hex.png') no-repeat;}
 
               &:hover {
                 border-color:$cGray2;
@@ -554,9 +587,14 @@
 
                 @include opacity(1);
 
+                .name {
+                  color: #333;
+                }
+
                 &:before, &:after {
                   @include size(0);
                   position:absolute;
+                  bottom: 0;
                   content: '';
                   left:50%;
                   margin-left:-13px;
@@ -566,13 +604,13 @@
                 }
 
                 &:before {
-                  bottom:-1px;
+                  bottom:-30px;
                   border-bottom:10px solid white;
                   z-index:10;
                 }
 
                 &:after {
-                  bottom:0;
+                  bottom:-30px;
                   border-bottom:10px solid $cGray4;
                 }
               }

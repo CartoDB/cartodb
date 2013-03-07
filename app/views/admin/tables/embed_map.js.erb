@@ -108,9 +108,10 @@
     <% end %>
 
     var map_id = "cartodb-map-" + new Date().getTime();
-    doc.write('<div id="' + map_id + '" style="height: ' + height + '"></div>');
+    doc.write('<div class="cartodb-embed-map" id="' + map_id + '" style="height: ' + height + '"></div>');
 
     var load_cartodb = function() {
+      global_info.loading_gmaps = false;
       if(typeof(cartodb) == "undefined") {
         if(global_info.loading) {
             global_info.load_queue.push([map_id, opt.url || VIZJSON_URL, opt]);
@@ -131,10 +132,12 @@
     }
 
     if(INCLUDE_GMAPS) {
-      if(typeof(google) != 'undefined' && typeof(google.maps) != 'undefined') {
+      if(global_info.loading_gmaps && typeof(google) != 'undefined' && typeof(google.maps) != 'undefined') {
         load_cartodb();
       } else {
+        global_info.loading_gmaps = true;
       load_script("https://www.google.com/jsapi", function() {
+      
         google.load("maps", "3.8", {"callback" : load_cartodb, other_params: "sensor=false"});
       });
       }

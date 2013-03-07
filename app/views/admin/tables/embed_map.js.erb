@@ -13,8 +13,6 @@
     global_info.scripts_loaded = global_info.scripts_loaded || [];
     global_info.load_queue = global_info.load_queue || [];
 
-    var script_url = global_info.script_url || null;
-
     function contains(array, v) {
       for(var i = 0; i < array.length; ++i) {
         if(array[i] == v) return true;
@@ -32,7 +30,7 @@
           return src;
         }
       }
-      return script_url;
+      return null;
     }
 
     function get_url_params(url, conversion) {
@@ -59,6 +57,7 @@
 
     var url = search_embed_script_url();
 
+    var string_fn = function(v) { return v; }
     var bool_fn = function(v) { return v == 'true' }
     var logo_fn = function(v) { return ( ACCOUNT_TYPE != "coronelli" || IS_CUSTOM_INSTALL) ? true : v == 'true' };
 
@@ -69,14 +68,10 @@
       'shareable': bool_fn,
       'cartodb_logo': bool_fn,
       'scrollwheel': bool_fn,
-      'debug': bool_fn
+      'debug': bool_fn,
+      'version': string_fn
     });
 
-    doc.write('<link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/themes/css/cartodb.css" />');
-    var ua = navigator.userAgent;
-    if(ua.indexOf('MSIE 8') != -1 || ua.indexOf('MSIE 7') != -1) {
-        doc.write('<link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/themes/css/cartodb.ie.css" />');
-    }
 
     function load_script(url, done) {
       var script = doc.createElement('script');
@@ -96,9 +91,16 @@
     }
 
     var height = opt.height || '400';
-
     if(height.indexOf('%') == -1)  {
       height += 'px';
+    }
+
+    opt.version = opt.version ? (opt.version + '/'): '';
+
+    doc.write('<link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/' + opt.version + 'themes/css/cartodb.css" />');
+    var ua = navigator.userAgent;
+    if(ua.indexOf('MSIE 8') != -1 || ua.indexOf('MSIE 7') != -1) {
+        doc.write('<link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/' + opt.version + 'themes/css/cartodb.ie.css" />');
     }
 
     <% if Rails.env.development? %>
@@ -113,7 +115,7 @@
         if(global_info.loading) {
             global_info.load_queue.push([map_id, opt.url || VIZJSON_URL, opt]);
         } else {
-          load_script('http://libs.cartocdn.com/cartodb.js/v2/' + (opt.debug ?'cartodb.uncompressed.js':'cartodb.js'), function() {
+          load_script('http://libs.cartocdn.com/cartodb.js/v2/' + (opt.debug ? ( opt.version + 'cartodb.uncompressed.js'):'cartodb.js'), function() {
             cartodb.createVis(map_id, opt.url || VIZJSON_URL, opt);
 
             for(var g in global_info.load_queue) {

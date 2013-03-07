@@ -565,6 +565,10 @@
                 &.line { background: image-url('layout/wizard-simple-polyline.png') no-repeat;}
               }
 
+              &.heatmap {
+                background: image-url('layout/wizard-heatmap.png') no-repeat;
+              }
+
               &.choropleth {
                 background: image-url('layout/wizard-choropleth.png') no-repeat;
                 &.line { background: image-url('layout/wizard-choropleth-polyline.png') no-repeat;}

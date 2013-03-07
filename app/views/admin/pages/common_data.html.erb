@@ -1,156 +1,93 @@
-<% content_for(:page_title) do %>
-  <%= current_user.username %> |
-<% end %>
+  <% content_for(:page_title) do %>
+    <%= current_user.username %> |
+  <% end %>
 
-<%= content_for(:js) do %>
-  <%= javascript_include_tag :application, :cdb, :dashboard %>
+  <%= content_for(:js) do %>
+    <%= javascript_include_tag :application, :cdb, :common_data %>
     <script type="text/javascript">
       var username = "<%= current_user.username %>"
       , user_data = <%=raw current_user.data.to_json.html_safe %>
-      , config = <%=raw frontend_config.html_safe %>;
+      , config = <%=raw frontend_config.html_safe %>
+      , public_data = [{ 
+          name: "World borders",
+          description: "World countries borders",
+          author: null,
+          author_url: null,
+          url: "http://cartodb.s3.amazonaws.com/static/TM_WORLD_BORDERS_SIMPL-0.3.zip",
+          size: 483328,
+          rows: 246
+        }, { 
+          name: "European countries",
+          description: "European countries geometries",
+          author: null,
+          author_url: null,
+          url: "http://cartodb.s3.amazonaws.com/static/european_countries.zip",
+          size: 376832,
+          rows: 46
+        }, { 
+          name: "Urban Areas",
+          description: "Areas of human habitation",
+          author: "naturalearthdata.com",
+          author_url: "http://www.naturalearthdata.com",
+          url: "http://cartodb.s3.amazonaws.com/static/50m-urban-area.zip",
+          size: 983040,
+          rows: 2143
+        }, { 
+          name: "Populated places",
+          description: "Most populated places",
+          author: "naturalearthdata.com",
+          author_url: "http://www.naturalearthdata.com",
+          url: "http://cartodb.s3.amazonaws.com/static/10m-populated-places-simple.zip",
+          size: 1824522,
+          rows: 7313
+        }, { 
+          name: "World rivers",
+          description: "Most of the world rivers",
+          author: "naturalearthdata.com",
+          author_url: "http://www.naturalearthdata.com",
+          url: "http://cartodb.s3.amazonaws.com/static/50m-rivers-lake-centerlines-with-scale-ranks.zip",
+          size: 704512,
+          rows: 1611
+        }, { 
+          name: "New York Counties",
+          description: "All the New York counties",
+          author: null,
+          author_url: null,
+          url: "http://cartodb.s3.amazonaws.com/static/counties_ny.zip",
+          size: 57344,
+          rows: 62
+        }, {
+          name: "NYC Subways",
+          description: "All the NYC Subways",
+          author: null,
+          author_url: null,
+          url: "http://cartodb.s3.amazonaws.com/static/nyc_subway_entrance.zip",
+          size: 385024,
+          rows: 1904
+        }];
     </script>
+  <% end %>
 
-  <script type="text/javascript">
+  <%= content_for(:css) do %>
+    <%= stylesheet_link_tag :common, :tables, :pages, :media => 'all' %>
+  <% end %>
 
-    function importData(e) {
-
-      e.stopPropagation();
-      e.preventDefault();
-
-      dashboard.createTable._importExample(e);
-
-    }
-
-    $(function() {
-
-      var $a = $("a.copy");
-      $a.attr('data-tipsy', 'Copy to your tables');
-      $a.tipsy({ title:"data-tipsy", fade: true, gravity: 's' });
-
-      $a.on("click", importData);
-      $(".name").on("click", importData);
-
-    });
-
-  </script>
-<% end %>
-
-<%= content_for(:css) do %>
-  <%= stylesheet_link_tag :common, :tables, :pages, :media => 'all' %>
-<% end %>
-
-    <%
-
-      tables = [{ 
-        :name => "World borders",
-        :description => "World countries borders",
-        :author => nil,
-        :author_url => nil,
-        :url => "http://cartodb.s3.amazonaws.com/static/TM_WORLD_BORDERS_SIMPL-0.3.zip",
-        :size => "472 KB",
-        :rows => "246 ROWS"
-      }, { 
-        :name => "European countries",
-        :description => "European countries geometries",
-        :author => nil,
-        :author_url => nil,
-        :url => "http://cartodb.s3.amazonaws.com/static/european_countries.zip",
-        :size => "368 KB",
-        :rows => "46 ROWS"
-      }, { 
-        :name => "Urban Areas",
-        :description => "Areas of human habitation",
-        :author => "naturalearthdata.com",
-        :author_url => "http://www.naturalearthdata.com",
-        :url => "http://cartodb.s3.amazonaws.com/static/50m-urban-area.zip",
-        :size => "960 KB",
-        :rows => "2143 ROWS"
-      }, { 
-        :name => "Populated places",
-        :description => "Most populated places",
-        :author => "naturalearthdata.com",
-        :author_url => "http://www.naturalearthdata.com",
-        :url => "http://cartodb.s3.amazonaws.com/static/10m-populated-places-simple.zip",
-        :size => "1.74 MB",
-        :rows => "7313 ROWS"
-      }, { 
-        :name => "World rivers",
-        :description => "Most of the world rivers",
-        :author => "naturalearthdata.com",
-        :author_url => "http://www.naturalearthdata.com",
-        :url => "http://cartodb.s3.amazonaws.com/static/50m-rivers-lake-centerlines-with-scale-ranks.zip",
-        :size => "688 KB",
-        :rows => "1611 ROWS" 
-      }, { 
-        :name => "New York Counties",
-        :description => "All the New York counties",
-        :author => nil,
-        :author_url => nil,
-        :url => "http://cartodb.s3.amazonaws.com/static/counties_ny.zip",
-        :size => "56 KB",
-        :rows => "62 ROWS"
-      }, {
-        :name => "NYC Subways",
-        :description => "All the NYC Subways",
-        :author => nil,
-        :author_url => nil,
-        :url => "http://cartodb.s3.amazonaws.com/static/nyc_subway_entrance.zip",
-        :size => "376 KB",
-        :rows => "1904 ROWS"
-      }]
-
-    %>
-
-<div class="content">
-  <article class="public_tables">
-  <div class="inner">   
-
-    <div class="header">
-      <h2><i class="table"></i><%= tables.count %> Common data tables</h2>
-      <p>Import any of them to your account and start playing with them</p>
-    </div>
-
-
-    <table>
-
-      <% tables.each do |data| %>
-
-        <tr>
-          <td class="name">
-            <a href="<%= data[:url] %>" class="name"><%= data[:name] %></a>
-            <p><%= data[:description] %></p>
-          </td>
-
-          <td class="info">
-            <div class="stats"><%= raw [data[:size], data[:rows]].compact.join(" &middot; ") %></div>
-            <% if data[:author] %>
-              <div class="author">by <a href="<%= data[:author_url] %>"><%= data[:author] %></a></div>
-            <% end %>
-          </td>
-
-          <td class="separator">
-            <div class="separator"></div>
-          </td>
-
-          <td class="copy">
-            <a href="<%= data[:url] %>" class="copy">copy</a>
-          </td>
-        </tr>
-
-      <% end %>
-
-    </table>
-
+  <div class="content">
+    <article class="public_tables">
+      <div class="inner">
+        <div class="header">
+          <h2><i class="table"></i> Common data tables</h2>
+          <p>Import any to your account and start playing with them</p>
+        </div>
+        <table></table>
+      </div>
+    </article>
+    <article class="support" style="display: inline-block;">
+      <div class="inner">   
+        <section class="left">
+        <h3>Don’t find what you are looking for?</h3>
+        <p>Try in our <a href="https://groups.google.com/forum/#!forum/cartodb" title="CartoDB Google Group">Google Group</a>, there may be some users looking forward to help you.</p>
+        </section>
+      </div>
+    </article>
   </div>
-  </article>
-
-  <article class="support" style="display: inline-block;">
-  <div class="inner">   
-    <section class="left">
-    <h3>Don’t find what you are looking for?</h3>
-    <p>Try in our <a href="https://groups.google.com/forum/#!forum/cartodb" title="CartoDB Google Group">Google Group</a>, there may be some users looking forward to help you.</p>
-    </section>
-  </div>
-  </article>
-</div>
-

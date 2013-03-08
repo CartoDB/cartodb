@@ -1118,6 +1118,7 @@ TRIGGER
     varnish_timeout = Cartodb.config[:varnish_management].try(:[],'timeout') || 5
     varnish_critical = Cartodb.config[:varnish_management].try(:[],'critical') == true ? 1 : 0
     varnish_retry = Cartodb.config[:varnish_management].try(:[],'retry') || 5
+    purge_command = Cartodb::config[:varnish_management]["purge_command"]
 
     owner.in_database(:as => :superuser).run(<<-TRIGGER
     CREATE OR REPLACE FUNCTION update_timestamp() RETURNS trigger AS
@@ -1143,7 +1144,7 @@ TRIGGER
 
           try:
             table_name = TD["table_name"]
-            client.fetch('purge obj.http.X-Cache-Channel ~ "^#{self.database_name}:(.*%s.*)|(table)$"' % table_name)
+            client.fetch('#{purge_command} obj.http.X-Cache-Channel ~ "^#{self.database_name}:(.*%s.*)|(table)$"' % table_name)
             break
           except Exception as err:
             plpy.warning('Varnish fetch error: ' + str(err))

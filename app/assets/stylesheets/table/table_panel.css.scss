@@ -216,7 +216,7 @@
       }
 
       // SQL PANEL & CARTO PANEL
-      .sql_panel, .wizards_panel, .csseditor_panel {
+      .sql_panel, .wizards_panel, .csseditor_panel, .filters_panel {
         @include inline-block();
         width:535px;
         height:100%;
@@ -703,6 +703,27 @@
           background:rgba(#509DD7,0.25);
         }
       }
+
+      div.filters_panel {
+        .histogram_filter {
+          .hist {
+            position: relative;
+            svg {
+              position: absolute;
+              top: 0;
+              left: 0;
+            }
+          }
+          .left_slider, .right_slider  {
+            top: 25px;
+            z-index: 10;
+            background: #444;
+            width: 10px;
+            height: 20px;
+            position: absolute;
+          }
+        }
+      } //div.filters_panel
     }
   }
 

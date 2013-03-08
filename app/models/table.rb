@@ -1,6 +1,6 @@
 # coding: UTF-8
 # Proxies management of a table in the users database
-require_relative './table/column_converter'
+require_relative './table/column_typecaster'
 
 class Table < Sequel::Model(:user_tables)
 
@@ -717,7 +717,14 @@ class Table < Sequel::Model(:user_tables)
 
   def modify_column!(options)
     new_name = options[:name] || options[:old_name]
-    new_type = options[:type] ? options[:type].try(:convert_to_db_type) : schema(:cartodb_types => false).select{ |c| c[0] == new_name.to_sym }.first[1]
+    new_type = 
+      if options[:type] 
+        options[:type].try(:convert_to_db_type)
+      else
+        schema(cartodb_types: false)
+          .select{ |c| c[0] == new_name.to_sym }.first[1]
+      end
+
     cartodb_type = new_type.try(:convert_to_cartodb_type)
 
     owner.in_database do |user_database|
@@ -727,38 +734,32 @@ class Table < Sequel::Model(:user_tables)
         user_database.rename_column name, options[:old_name].to_sym, options[:new_name].sanitize.to_sym
         new_name = options[:new_name].sanitize
       end
+
       if options[:type]
         column_name = (options[:new_name] || options[:name]).sanitize
         raise if CARTODB_COLUMNS.include?(column_name)
+
         begin
-          user_database.set_column_type name, column_name.to_sym, new_type
+          user_database.set_column_type(name, column_name.to_sym, new_type)
         rescue => exception
-          message = exception.message.split("\n").first
-          puts message
-          if message =~ /cannot be cast to type/
-            convert_column_datatype(user_database, name, column_name, new_type)
-          else
-            raise exception
-          end
+          raise exception unless exception.message =~ /cannot be cast to type/
+          convert_column_datatype(user_database, name, column_name, new_type)
         end
       end
     end
-    return {:name => new_name, :type => new_type, :cartodb_type => cartodb_type}
-  end
+
+    { name: new_name, type: new_type, cartodb_type: cartodb_type }
+  end #modify_column!
 
   # convert non-conformist rows to null
   def convert_column_datatype(user_database, table_name, column_name, new_type)
-    CartoDB::ColumnConverter.new(
+    CartoDB::ColumnTypecaster.new(
       user_database:  user_database,
       table_name:     table_name,
       column_name:    column_name,
       new_type:       new_type
     ).run
   end #convert_column_datatype
-
-  def col_type user_database, table_name, column_name
-    user_database.schema(table_name).select{ |c| c[0] == column_name.to_sym }.flatten.last[:type]
-  end
 
   def records(options = {})
     rows = []

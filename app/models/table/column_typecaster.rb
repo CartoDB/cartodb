@@ -70,12 +70,29 @@ module CartoDB
     end #straight_cast
 
     def string_to_number
-      user_database.run(%Q{
-        UPDATE "#{table_name}"
-        SET #{column_name}=NULL
-        WHERE trim(\"#{column_name}\") !~* '^([-+]?[0-9]+(\.[0-9]+)?)$'
-      })
+      thousand, decimal = get_digit_separators_for(column_name)
+
+      normalize_from_latin if latin_separators?(thousand, decimal)
+      normalize_from_saxon if saxon_separators?(thousand, decimal)
+
+      set_to_null_if_non_convertible
     end #string_to_number
+
+    def normalize_from_latin
+      user_database.execute(%Q{
+        UPDATE "#{table_name}"
+        SET #{column_name} = replace(
+          replace(#{column_name}, '.', ''), ',', '.'
+        )
+      })
+    end #normalize_from_latin
+
+    def normalize_from_saxon
+      user_database.execute(%Q{
+        UPDATE "#{table_name}"
+        SET #{column_name} = replace(#{column_name}, ',', '')
+      })
+    end #normalize_from_saxon
 
     def string_to_boolean
       falsy = "0|f|false"
@@ -161,6 +178,29 @@ module CartoDB
         WHERE #{column_name} ~* '^0$'
       })
     end #number_to_boolean
+
+    def set_to_null_if_non_convertible
+      user_database.run(%Q{
+        UPDATE "#{table_name}"
+        SET #{column_name}=NULL
+        WHERE trim(\"#{column_name}\") !~* '^([-+]?[0-9]+(\.[0-9]+)?)$'
+      })
+    end #set_to_null_if_non_convertible
+
+    def get_digit_separators_for(column_name)
+      user_database.execute(%Q{
+        SELECT t,d
+        FROM CDB_DigitSeparator('#{table_name}', '#{column_name}')
+      }, &:to_a).first.values
+    end #get_digit_separators
+
+    def latin_separators?(thousand, decimal)
+      decimal == ','
+    end #latin_separators?
+
+    def saxon_separators?(thousand, decimal)
+      decimal == '.'
+    end #saxon_separators?
   end # ColumnTypecaster
 end # CartoDB
 

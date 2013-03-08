@@ -1,13 +1,29 @@
 # encoding: utf-8
 
 module CartoDB
-  class ColumnConverter
+  class ColumnTypecaster
+
+    CONVERSION_MAP = {
+      'float' => {
+        'boolean'           => 'number_to_boolean'
+      },
+      'boolean' => {
+        'double precision'  => 'boolean_to_number'
+      },
+      'string' => {
+        'date'              => 'string_to_datetime',
+        'datetime'          => 'string_to_datetime',
+        'timestamp'         => 'string_to_datetime',
+        'double precision'  => 'string_to_number',
+        'boolean'           => 'string_to_boolean'
+      }
+    }
+
     def initialize(arguments)
-      @user_database  = arguments.fetch(:user_database)
-      @table_name     = arguments.fetch(:table_name)
-      @column_name    = arguments.fetch(:column_name)
-      @new_type       = arguments.fetch(:new_type)
-      @old_type       = column_type(column_name)
+      @user_database        = arguments.fetch(:user_database)
+      @table_name           = arguments.fetch(:table_name)
+      @column_name          = arguments.fetch(:column_name)
+      @new_type             = arguments.fetch(:new_type)
     end #initialize
 
     def run
@@ -24,12 +40,8 @@ module CartoDB
       #   * boolean => datetime
 
       user_database.transaction do
-        string_to_number    if string_to_number?
-        string_to_boolean   if string_to_boolean?
-        number_to_boolean   if number_to_boolean?
-        boolean_to_number   if boolean_to_number?
-        string_to_datetime  if string_to_datetime?
-
+        old_type = column_type(column_name)
+        self.send conversion_method_for(old_type, new_type)
         straight_cast
       end
     end #run
@@ -38,31 +50,15 @@ module CartoDB
 
     attr_reader :user_database, :table_name, :column_name, :new_type, :old_type
 
+    def conversion_method_for(old_type, new_type)
+      CONVERSION_MAP.fetch(old_type.to_s).fetch(new_type.to_s)
+    end #conversion_method_for
+
     def column_type(column_name)
       user_database.schema(table_name).select { |c|
         c[0] == column_name.to_sym
-      }.flatten.last[:type].to_s
+      }.flatten.last.fetch(:type).to_s
     end #column_type
-
-    def number_to_boolean?
-      old_type == 'float' && new_type == 'boolean'
-    end #number_to_boolean?
-
-    def boolean_to_number?
-      old_type == 'boolean' && new_type == 'double precision'
-    end #boolean_to_number?
-
-    def string_to_datetime?
-      old_type == 'string' && %w(date datetime timestamp).include?(new_type)
-    end #string_to_datetime?
-
-    def string_to_number?
-      old_type == 'string' && new_type == 'double precision'
-    end #string_to_number?
-
-    def string_to_boolean?
-      old_type == 'string' && new_type == 'boolean'
-    end #string_to_boolean?
 
     def straight_cast
       user_database.run(%Q{
@@ -128,14 +124,16 @@ module CartoDB
       user_database.run(%Q{
         UPDATE "#{table_name}"
         SET #{column_name}='1'
-        WHERE #{column_name} = 'true' AND #{column_name} IS NOT NULL
+        WHERE #{column_name} = 'true'
+        AND #{column_name} IS NOT NULL
       })
 
       # normalise falsy to 0
       user_database.run(%Q{
         UPDATE "#{table_name}"
         SET #{column_name}='0'
-        WHERE #{column_name} = 'false' AND #{column_name} IS NOT NULL
+        WHERE #{column_name} = 'false'
+        AND #{column_name} IS NOT NULL
       })
     end #boolean_to_number
 
@@ -152,7 +150,8 @@ module CartoDB
       user_database.run(%Q{
         UPDATE "#{table_name}"
         SET #{column_name}='t'
-        WHERE #{column_name} !~* '^0$' AND #{column_name} IS NOT NULL
+        WHERE #{column_name} !~* '^0$'
+        AND #{column_name} IS NOT NULL
       })
 
       # normalise falsy
@@ -162,6 +161,6 @@ module CartoDB
         WHERE #{column_name} ~* '^0$'
       })
     end #number_to_boolean
-  end # ColumnConverter
+  end # ColumnTypecaster
 end # CartoDB
 

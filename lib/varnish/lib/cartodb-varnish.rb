@@ -4,7 +4,7 @@ module CartoDB
   class Varnish
     def purge(what)
       ActiveSupport::Notifications.instrument('purge.varnish', what: what) do |payload|
-        send_command("purge #{what}") do |result|
+        send_command("#{purge_command} #{what}") do |result|
           payload[:result] = result
           result =~ /200/
         end
@@ -13,7 +13,7 @@ module CartoDB
 
     def purge_url(path)
       ActiveSupport::Notifications.instrument('purge_url.varnish', path: path) do |payload|
-        send_command(Cartodb::config[:varnish_management]["purge_command"] + " " + path.gsub('\\', '\\\\\\')) do |result|
+        send_command(url_purge_command + " " + path.gsub('\\', '\\\\\\')) do |result|
           payload[:result] = result
           result =~ /200/
         end
@@ -44,5 +44,15 @@ module CartoDB
       end
       response
     end
-  end
-end
+
+    private
+
+    def purge_command
+       Cartodb::config[:varnish_management]["purge_command"]
+    end #purge_command
+
+    def url_purge_command
+       Cartodb::config[:varnish_management]["url_purge_command"]
+    end #purge_command
+  end # Varnish
+end # CartoDB

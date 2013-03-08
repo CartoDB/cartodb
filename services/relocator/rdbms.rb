@@ -91,12 +91,46 @@ module CartoDB
         user_id   = arguments.fetch(:user_id)
 
         records.each do |record|
+          record.delete('id')
           old_id  = record.fetch('client_application_id')
           record.store('user_id', user_id)
           record.store('client_application_id', map.fetch(old_id))
           connection[:oauth_tokens].insert(record)
         end
       end #insert_oauth_tokens_for
+
+      def insert_client_applications_for(arguments)
+        records   = arguments.fetch(:records)
+        user      = arguments.fetch(:user, nil)
+        renaming  = arguments.fetch(:renaming, false)
+        map       = {}
+
+        records.each do |record|
+          old_id = record.delete('id')
+          record.store('user_id', user.id)
+          record['key'] = record['key'] + ":#{Time.now.to_i}" if renaming
+          new_id = connection[:client_applications].insert(record)
+          map.store(old_id.to_s, new_id.to_s)
+        end
+        map
+      end #insert_client_applications_for
+
+      def insert_layers_for(arguments)
+        records = arguments.fetch(:records)
+        user    = arguments.fetch(:user)
+        map     = {}
+        records.each do |record|
+          old_id = record.delete('id')
+          if record['options']
+            regex           = %r{\"user_name\":\".+\"}
+            replacement     = %Q{\"user_name\":\"#{user.username}\"}
+            record['options']  = record['options'].gsub(regex, replacement)
+          end
+          new_id = connection[:layers].insert(record)
+          map.store(old_id.to_s, new_id.to_s)
+        end
+        map 
+      end #insert_layers_for
 
       def insert_layers_maps_for(arguments)
         records     = arguments.fetch(:records)
@@ -106,6 +140,8 @@ module CartoDB
         records.each do |record| 
           old_layer_id  = record.fetch('layer_id')
           old_map_id    = record.fetch('map_id')
+
+          record.delete('id')
           record.store('layer_id', layers_map.fetch(old_layer_id))
           record.store('map_id', maps_map.fetch(old_map_id))
           connection[:layers_maps].insert(record)
@@ -119,6 +155,8 @@ module CartoDB
 
         records.each do |record| 
           old_layer_id  = record.fetch('layer_id')
+
+          record.delete('id')
           record.store('layer_id', layers_map.fetch(old_layer_id))
           record.store('user_id', user_id)
           connection[:layers_users].insert(record)
@@ -130,14 +168,21 @@ module CartoDB
         maps_map          = arguments.fetch(:maps_map)
         data_imports_map  = arguments.fetch(:data_imports_map)
         user_id           = arguments.fetch(:user_id)
+        database_name     = arguments.fetch(:database_name)
 
         records.each do |record|
           old_map_id          = record.fetch('map_id')
           old_data_import_id  = record.fetch('data_import_id')
 
-          record.store('map_id', maps_map.fetch(old_map_id))
-          record.store('data_import_id', data_imports_map.fetch(old_data_import_id))
+          record.delete('id')
           record.store('user_id', user_id)
+          record.store('map_id', maps_map.fetch(old_map_id))
+          record.store('database_name', database_name)
+
+          if old_data_import_id
+            record.store('data_import_id', data_imports_map.fetch(old_data_import_id))
+          end
+
           connection[:user_tables].insert(record)
         end
       end #insert_users_tables_for

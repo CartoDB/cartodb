@@ -386,7 +386,7 @@ describe Table do
     end
   end
 
-  context "schema and columns", schema: true do
+  context "schema and columns" do
     it "has a default schema" do
       table = create_table(:user_id => @user.id)
       table.reload
@@ -510,7 +510,7 @@ describe Table do
     end
 
     it "should be able to modify it's schema with castings
-    the DB engine doesn't support", failing: true do
+    the DB engine doesn't support" do
       table = create_table(user_id: @user.id)
       table.add_column!(name: "my new column", type: "text")
       table.reload
@@ -683,6 +683,30 @@ describe Table do
       table.records[:rows][4][:wadus].should be_nil
     end
 
+    it 'normalizes digit separators when converting from string to number',
+    normalize: true do
+      table = create_table(user_id: @user.id)
+
+      table.add_column!(name: 'balance', type: 'text')
+      table.insert_row!(balance: '1.234,56')
+      table.modify_column!(name: 'balance', type: 'double precision')
+      table.records[:rows][0][:balance].should == 1234.56
+
+      #table.insert_row!(balance: '123.456,789')
+      #table.modify_column!(name: 'balance', type: 'double precision')
+      #table.records[:rows][1][:balance].should == 123456.789
+
+      table = create_table(user_id: @user.id)
+
+      table.add_column!(name: 'balance', type: 'text')
+      table.insert_row!(balance: '1,234.56')
+      table.modify_column!(name: 'balance', type: 'double precision')
+      table.records[:rows][0][:balance].should == 1234.56
+
+      #table.insert_row!(balance: '123,456.789')
+      #table.modify_column!(name: 'balance', type: 'double precision')
+      #table.records[:rows][1][:balance].should == 123456.789
+    end
   end
 
   context "insert and update rows" do

@@ -34,9 +34,8 @@ module CartoDB
 
         def user_metadata_for(username)
           redis.select Relocator::REDIS_DATABASES.fetch(:users_metadata)
-
           key = key_master.user_metadata(username)
-          {}.store(key, redis.hgetall(key))
+          { key => redis.hgetall(key) }
         end #user_metadata_for
 
         def api_credentials_for(tokens=[])

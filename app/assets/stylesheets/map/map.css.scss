@@ -164,11 +164,11 @@ div.map {
         .name {
           float:left;
           font-size:13px;
-          width: 145px;
+          width: 150px;
           margin: 5px 0 0 5px;
 
           text-overflow:ellipsis;
-          white-space: normal;
+          white-space: nowrap;
           overflow: hidden;
         }
 

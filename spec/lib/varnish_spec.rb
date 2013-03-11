@@ -42,10 +42,4 @@ describe "Varnish" do
     end
   end
 
-  describe "when sending a purge_url command" do 
-    it "should return successfully" do
-      @telnet_mock.stubs(:cmd).with("String" => "url.purge /", "Match" => /\n\n/).yields('200')
-      CartoDB::Varnish.new.purge_url('/').should == "200"
-    end
-  end
 end

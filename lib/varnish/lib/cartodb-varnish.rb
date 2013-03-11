@@ -11,15 +11,6 @@ module CartoDB
       end
     end
 
-    def purge_url(path)
-      ActiveSupport::Notifications.instrument('purge_url.varnish', path: path) do |payload|
-        send_command(url_purge_command + " " + path.gsub('\\', '\\\\\\')) do |result|
-          payload[:result] = result
-          result =~ /200/
-        end
-      end
-    end
-
     def send_command(command)
       retries = 0
       response = nil

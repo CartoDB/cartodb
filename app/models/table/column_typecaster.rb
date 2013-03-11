@@ -71,28 +71,9 @@ module CartoDB
 
     def string_to_number
       thousand, decimal = get_digit_separators_for(column_name)
-
-      normalize_from_latin if latin_separators?(thousand, decimal)
-      normalize_from_saxon if saxon_separators?(thousand, decimal)
-
+      normalize_digit_separators(thousand, decimal)
       set_to_null_if_non_convertible
     end #string_to_number
-
-    def normalize_from_latin
-      user_database.execute(%Q{
-        UPDATE "#{table_name}"
-        SET #{column_name} = replace(
-          replace(#{column_name}, '.', ''), ',', '.'
-        )
-      })
-    end #normalize_from_latin
-
-    def normalize_from_saxon
-      user_database.execute(%Q{
-        UPDATE "#{table_name}"
-        SET #{column_name} = replace(#{column_name}, ',', '')
-      })
-    end #normalize_from_saxon
 
     def string_to_boolean
       falsy = "0|f|false"
@@ -194,13 +175,15 @@ module CartoDB
       }, &:to_a).first.values
     end #get_digit_separators
 
-    def latin_separators?(thousand, decimal)
-      decimal == ','
-    end #latin_separators?
-
-    def saxon_separators?(thousand, decimal)
-      decimal == '.'
-    end #saxon_separators?
+    def normalize_digit_separators(thousand=nil, decimal=nil)
+      return unless thousand && decimal
+      user_database.execute(%Q{
+        UPDATE "#{table_name}"
+        SET #{column_name} = replace(
+          replace(#{column_name}, '#{thousand}', ''), '#{decimal}', '.'
+        )
+      })
+    end #normalize_digit_separators
   end # ColumnTypecaster
 end # CartoDB
 

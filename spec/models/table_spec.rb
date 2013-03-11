@@ -686,26 +686,40 @@ describe Table do
     it 'normalizes digit separators when converting from string to number',
     normalize: true do
       table = create_table(user_id: @user.id)
-
       table.add_column!(name: 'balance', type: 'text')
       table.insert_row!(balance: '1.234,56')
       table.modify_column!(name: 'balance', type: 'double precision')
       table.records[:rows][0][:balance].should == 1234.56
 
-      #table.insert_row!(balance: '123.456,789')
-      #table.modify_column!(name: 'balance', type: 'double precision')
-      #table.records[:rows][1][:balance].should == 123456.789
+      table = create_table(user_id: @user.id)
+      table.add_column!(name: 'balance', type: 'text')
+      table.insert_row!(balance: '123.456,789')
+      table.modify_column!(name: 'balance', type: 'double precision')
+      table.records[:rows][0][:balance].should == 123456.789
 
       table = create_table(user_id: @user.id)
+      table.add_column!(name: 'balance', type: 'text')
+      table.insert_row!(balance: '9.123.456,789')
+      table.modify_column!(name: 'balance', type: 'double precision')
+      table.records[:rows][0][:balance].should == 9123456.789
 
+      table = create_table(user_id: @user.id)
       table.add_column!(name: 'balance', type: 'text')
       table.insert_row!(balance: '1,234.56')
       table.modify_column!(name: 'balance', type: 'double precision')
       table.records[:rows][0][:balance].should == 1234.56
 
-      #table.insert_row!(balance: '123,456.789')
-      #table.modify_column!(name: 'balance', type: 'double precision')
-      #table.records[:rows][1][:balance].should == 123456.789
+      table = create_table(user_id: @user.id)
+      table.add_column!(name: 'balance', type: 'text')
+      table.insert_row!(balance: '123,456.789')
+      table.modify_column!(name: 'balance', type: 'double precision')
+      table.records[:rows][0][:balance].should == 123456.789
+
+      table = create_table(user_id: @user.id)
+      table.add_column!(name: 'balance', type: 'text')
+      table.insert_row!(balance: '9,123,456.789')
+      table.modify_column!(name: 'balance', type: 'double precision')
+      table.records[:rows][0][:balance].should == 9123456.789
     end
   end
 

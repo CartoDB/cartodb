@@ -9,6 +9,7 @@ module CartoDB
       end #initialize
 
       def database_username
+        return "cartodb_staging_user_#{user_id}" if environment == 'staging'
         "#{environment}_cartodb_user_#{user_id}"
       end #database_username
 

@@ -18,7 +18,8 @@ module CartoDB
 
       def load(user_metadata={})
         transform(user_metadata).each do |key, data| 
-          redis.hmset key, *data.to_a.flatten
+          break if data.empty?
+          redis.set key, *data.to_a.flatten
         end
       end #load
 

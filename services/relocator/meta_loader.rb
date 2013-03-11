@@ -15,7 +15,7 @@ module CartoDB
     class MetaLoader
       attr_accessor :user, :environment
       
-      %w{ maps data_imports client_applications api_keys assets tags}
+      %w{ maps data_imports client_applications api_keys assets}
       .each do |table|
         define_method(table) { insert_in(table) }
       end
@@ -40,12 +40,11 @@ module CartoDB
                                     )
         api_keys
         assets
-        tags
 
         rdbms.insert_oauth_tokens_for(
+          user:                     user,
           records:                  records_for(:oauth_tokens),
           client_applications_map:  @client_applications_map,
-          user_id:                  user.id
         )
 
         rdbms.insert_layers_maps_for(
@@ -55,20 +54,25 @@ module CartoDB
         )
 
         rdbms.insert_layers_users_for(
+          user:                     user,
           records:                  records_for(:layers_users),
           layers_map:               @layers_map,
-          user_id:                  user.id
         )
 
-        rdbms.insert_user_tables_for(
-          user_id:                  user.id,
+        @tables_map = rdbms.insert_user_tables_for(
+          user:                     user,
           database_name:            environment.user_database,
           records:                  records_for(:user_tables),
           maps_map:                 @maps_map,
           data_imports_map:         @data_imports_map
         )
 
-        puts 'Loading redis data'
+        rdbms.insert_tags_for(
+          user:                     user,
+          records:                  records_for(:tags),
+          tables_map:               @tables_map,
+        )
+
         ThresholdMetadata.new(user.id)
           .load(records_for('redis/thresholds_metadata'))
         APICredentialMetadata.new(user.id)
@@ -86,7 +90,7 @@ module CartoDB
       attr_reader :rdbms, :relocation, :renaming
 
       def insert_in(table_name)
-        rdbms.insert_in(table_name, records_for(table_name), user.id)
+        rdbms.insert_in(table_name, records_for(table_name), user)
       end #insert_in
 
       def records_for(table_name)

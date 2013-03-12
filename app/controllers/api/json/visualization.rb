@@ -24,7 +24,7 @@ module CartoDB
 
       put '/api/v1/visualizations/:id' do
         begin
-          member    = Member.new(id: params.fetch('id')).fetch
+          member            = Member.new(id: params.fetch('id')).fetch
           member.attributes = payload
           member.store
           [200, member.attributes.to_json]

@@ -7,7 +7,7 @@
 # 1256 # Table merging two+ tables should import and then export file SHP1.zip as kml
 # 1275 # Table merging two+ tables should import and then export file SHP1.zip as sql
 
-require 'spec_helper'
+require_relative '../spec_helper'
 def check_schema(table, expected_schema, options={})
   table_schema = table.schema(:cartodb_types => options[:cartodb_types] || false)
   schema_differences = (expected_schema - table_schema) + (table_schema - expected_schema)
@@ -509,16 +509,26 @@ describe Table do
       table.schema(:cartodb_types => false).should == original_schema
     end
 
-    it "should be able to modify it's schema with castings that the DB engine doesn't support" do
-      table = create_table(:user_id => @user.id)
-      table.add_column!(:name => "my new column", :type => "text")
+    it "should be able to modify it's schema with castings
+    the DB engine doesn't support" do
+      table = create_table(user_id: @user.id)
+      table.add_column!(name: "my new column", type: "text")
       table.reload
-      table.schema(:cartodb_types => false).should include([:my_new_column, "text"])
 
-      pk = table.insert_row!(:name => "Text", :my_new_column => "1")
-      table.modify_column!(:old_name => "my_new_column", :new_name => "my new column new name", :type => "integer", :force_value => "NULL")
+      table.schema(:cartodb_types => false)
+        .should include([:my_new_column, "text"])
+
+      pk = table.insert_row!(name: "Text", my_new_column: "1")
+      table.modify_column!(
+        old_name:     "my_new_column",
+        new_name:     "my new column new name",
+        type:         "integer",
+        force_value:  "NULL"
+      )
       table.reload
-      table.schema(:cartodb_types => false).should include([:my_new_column_new_name, "integer"])
+
+      table.schema(cartodb_types: false)
+        .should include([:my_new_column_new_name, "integer"])
 
       rows = table.records
       rows[:rows][0][:my_new_column_new_name].should == 1
@@ -673,6 +683,44 @@ describe Table do
       table.records[:rows][4][:wadus].should be_nil
     end
 
+    it 'normalizes digit separators when converting from string to number',
+    normalize: true do
+      table = create_table(user_id: @user.id)
+      table.add_column!(name: 'balance', type: 'text')
+      table.insert_row!(balance: '1.234,56')
+      table.modify_column!(name: 'balance', type: 'double precision')
+      table.records[:rows][0][:balance].should == 1234.56
+
+      table = create_table(user_id: @user.id)
+      table.add_column!(name: 'balance', type: 'text')
+      table.insert_row!(balance: '123.456,789')
+      table.modify_column!(name: 'balance', type: 'double precision')
+      table.records[:rows][0][:balance].should == 123456.789
+
+      table = create_table(user_id: @user.id)
+      table.add_column!(name: 'balance', type: 'text')
+      table.insert_row!(balance: '9.123.456,789')
+      table.modify_column!(name: 'balance', type: 'double precision')
+      table.records[:rows][0][:balance].should == 9123456.789
+
+      table = create_table(user_id: @user.id)
+      table.add_column!(name: 'balance', type: 'text')
+      table.insert_row!(balance: '1,234.56')
+      table.modify_column!(name: 'balance', type: 'double precision')
+      table.records[:rows][0][:balance].should == 1234.56
+
+      table = create_table(user_id: @user.id)
+      table.add_column!(name: 'balance', type: 'text')
+      table.insert_row!(balance: '123,456.789')
+      table.modify_column!(name: 'balance', type: 'double precision')
+      table.records[:rows][0][:balance].should == 123456.789
+
+      table = create_table(user_id: @user.id)
+      table.add_column!(name: 'balance', type: 'text')
+      table.insert_row!(balance: '9,123,456.789')
+      table.modify_column!(name: 'balance', type: 'double precision')
+      table.records[:rows][0][:balance].should == 9123456.789
+    end
   end
 
   context "insert and update rows" do

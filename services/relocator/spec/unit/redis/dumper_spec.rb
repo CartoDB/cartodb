@@ -12,21 +12,18 @@ describe Relocator::Redis::Dumper do
     @redis.select 8
     @redis.flushdb
 
-    @dumper = Relocator::Redis::Dumper.new(
-                redis:      @redis,
-                filesystem: DataRepository::Filesystem::Local.new('/var/tmp')
-              )
+    @dumper = Relocator::Redis::Dumper.new(@redis)
   end
 
   describe '#api_credentials_for' do
     it 'returns the api credentials linked to the passed tokens' do
-      token1 = 'token1'
-      token2 = 'token2'
+      token1      = 'token1'
+      token2      = 'token2'
+      key_master  = Relocator::Redis::KeyMaster.new
 
-      @redis.select Relocator::Redis::DATABASES.fetch(:api_credentials)
-      @redis.hset @dumper.api_credential_key_for(token1), 'name', 'bogus 1'
-      @redis.hset @dumper.api_credential_key_for(token2), 'name', 'bogus 2'
-      @redis.select 8
+      @redis.select Relocator::REDIS_DATABASES.fetch(:api_credentials)
+      @redis.hset key_master.api_credential(token1), 'name', 'bogus 1'
+      @redis.hset key_master.api_credential(token1), 'name', 'bogus 1'
 
       data = @dumper.api_credentials_for([token1, token2]).values
       data.flat_map(&:values).must_include 'bogus 1'

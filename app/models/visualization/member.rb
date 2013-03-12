@@ -7,7 +7,7 @@ module CartoDB
   class SnakeCaseString < Virtus::Attribute::String
     class SnakeCase < Virtus::Attribute::Writer::Coercible
       def coerce(value)
-        (super || String.new).gsub(' ', '_')
+        value.gsub(' ', '_') if value
       end #coerce
     end # Snake Case
 
@@ -22,15 +22,15 @@ module CartoDB
     class Member
       include Virtus
 
-      def self.repository
-        @repository ||= DataRepository::Repository.new
-      end # self.repository
-
       attribute :id,            String
       attribute :name,          CartoDB::SnakeCaseString
       attribute :map_id,        Integer
       attribute :tags,          Array[String]
       attribute :description,   String
+
+      def self.repository
+        @repository ||= DataRepository::Repository.new
+      end # self.repository
 
       def initialize(attributes={})
         self.attributes = attributes
@@ -43,12 +43,14 @@ module CartoDB
       end #store
 
       def fetch
-        self.attributes = self.attributes.merge( repository.fetch(id) )
+        self.attributes = repository.fetch(id)
         self
       end #fetch
 
       def delete
         repository.delete(id)
+        self.attributes.keys.each { |k| self.send("#{k}=", nil) }
+        self
       end #delete
 
       private

@@ -14,7 +14,7 @@ describe Visualization::Member do
   end #initialize
 
   describe '#store' do
-    it 'persists the data' do
+    it 'persists attributes to the data repository' do
       member = Visualization::Member.new(name: 'foo')
       member.store
 
@@ -27,7 +27,7 @@ describe Visualization::Member do
   end #store
 
   describe '#fetch' do
-    it 'fetches data from the repository' do
+    it 'fetches attributes from the data repository' do
       member = Visualization::Member.new(name: 'foo')
       member.store
 
@@ -37,5 +37,20 @@ describe Visualization::Member do
       member.name.must_equal 'foo'
     end
   end #fetch
+
+  describe '#delete' do
+    it 'deletes this member data from the data repository' do
+      member = Visualization::Member.new(name: 'foo')
+      member.store
+
+      member.fetch
+      member.name.wont_be_nil
+
+      member.delete
+      member.name.must_be_nil
+
+      lambda { member.fetch }.must_raise KeyError
+    end
+  end #delete
 end # Visualization
 

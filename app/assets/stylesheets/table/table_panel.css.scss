@@ -447,6 +447,17 @@
 
           background: image-url('layout/linen.png');
 
+          &.left_shadow:before {
+            content:'';
+            position:absolute;
+            top:0px;
+            bottom:0px;
+            left:0px;
+            width:30px;
+            @include background(linear-gradient(left, rgba(#333, .7), rgba(#333,0)));
+            z-index:1;
+          }
+
           &:after {
             content:'';
             position:absolute;
@@ -454,20 +465,10 @@
             bottom:0px;
             right:0px;
             width:30px;
-            @include background(linear-gradient(left, rgba(#333,0), rgba(#333, .5)));
+            @include background(linear-gradient(left, rgba(#333, 0), rgba(#333, .7)));
             z-index:1;
           }
 
-          /*&:before {
-            content:'';
-            position:absolute;
-            top:0px;
-            bottom:0px;
-            left:0px;
-            width:30px;
-            @include background(linear-gradient(left, rgba(#333, .5), rgba(#333,0)));
-            z-index:1;
-          }*/
         }
 
         div.wizard_arrows {
@@ -565,8 +566,8 @@
                 &.line { background: image-url('layout/wizard-simple-polyline.png') no-repeat;}
               }
 
-              &.heatmap {
-                background: image-url('layout/wizard-heatmap.png') no-repeat;
+              &.intensity {
+                background: image-url('layout/wizard-intensity.png') no-repeat;
               }
 
               &.choropleth {

@@ -1,8 +1,12 @@
-2.0.6 (DD/MM/YY)
+2g0.6 (DD/MM/YY)
 -----
 * If the the_geom value is null, it appears as null in the table and not as GeoJSON.
 * Table hover styles fixed.
 * Embeding map with an script is possible now (iframe still supported).
+* Brad new share window.
+* Enable/disable scroll wheel zoom in the embeded maps.
+* Revamped visualization wizard's selector.
+* Added new cool wizard for point maps: Intensity.
 
 2.0.5 (05/03/13)
 -----

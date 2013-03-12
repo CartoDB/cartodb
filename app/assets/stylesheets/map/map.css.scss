@@ -124,7 +124,8 @@ div.map {
 
   div.dropdown.basemap {
 
-    width:auto;
+    height: 247px;
+    width: 648px;
     border: 1px solid #999999;
 
     .custom {
@@ -163,11 +164,11 @@ div.map {
         .name {
           float:left;
           font-size:13px;
-          width: 145px;
+          width: 150px;
           margin: 5px 0 0 5px;
 
           text-overflow:ellipsis;
-          white-space: normal;
+          white-space: nowrap;
           overflow: hidden;
         }
 

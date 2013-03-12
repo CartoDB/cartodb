@@ -25,6 +25,10 @@ module DataRepository
       storage.fetch(key.to_s)
     end #fetch
 
+    def delete(key)
+      storage.delete(key.to_s)
+    end #delete
+
     def exists?(key)
       storage.exists?(key)
     end #exists?

@@ -45,6 +45,19 @@ describe Repository do
     end
   end #fetch
 
+  describe '#delete' do
+    it 'deletes a key' do
+      data  = { id: 5 }
+      key   = data.fetch(:id)
+
+      @repository.store(key, data)
+      @repository.fetch(key.to_s).wont_be_nil
+
+      @repository.delete(key)
+      lambda { @repository.fetch(key.to_s) }.must_raise KeyError
+    end
+  end #delete
+
   describe '#keys' do
     it 'returns all stored keys, stringified' do
       data  = { id: 5 }

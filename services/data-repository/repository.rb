@@ -1,4 +1,5 @@
 # encoding: utf-8
+require 'uuidtools'
 require_relative 'backend/detector'
 require_relative 'backend/memory'
 
@@ -36,6 +37,10 @@ module DataRepository
     def keys
       storage.keys
     end #keys
+
+    def next_id
+      UUIDTools::UUID.timestamp_create     
+    end #next_id
 
     private
 

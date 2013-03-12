@@ -8,10 +8,11 @@ module CartoDB
     class Member
       include Virtus
 
-      attribute :id,        String
-      attribute :order,     Integer
-      attribute :type,      String
-      attribute :options,   Hash
+      attribute :id,                String
+      attribute :order,             Integer
+      attribute :type,              String
+      attribute :options,           Hash
+      attribute :visualization_id,  Hash
 
       def self.repository
         @repository ||= DataRepository::Repository.new

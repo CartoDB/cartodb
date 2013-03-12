@@ -100,6 +100,7 @@
 
           &.sql_mod        { @include icons-sprite(table_icons, $offset-x:20px, $offset-y:-3px);}
           &.cartocss_mod   { @include icons-sprite(table_icons, $offset-x:21px, $offset-y:-549px);}
+          &.filters_mod    { @include icons-sprite(table_icons, $offset-x:21px, $offset-y:-62px);}
           &.infowindow_mod { @include icons-sprite(table_icons, $offset-x:20px, $offset-y:-430px);}
           &.wizards_mod    {
             @include icons-sprite(table_icons, $offset-x:21px, $offset-y:-370px);

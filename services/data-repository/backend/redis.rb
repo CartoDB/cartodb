@@ -34,6 +34,10 @@ module DataRepository
         redis.exists(key)
       end #exists?
 
+      def delete(key)
+        redis.del(key)
+      end #delete
+
       private
 
       attr_reader :redis

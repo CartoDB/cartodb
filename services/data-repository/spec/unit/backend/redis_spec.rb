@@ -75,6 +75,19 @@ describe Backend::Redis do
     end
   end #fetch
 
+  describe '#delete' do
+    it 'deletes a key' do
+      data  = { id: 5 }
+      key   = data.fetch(:id)
+
+      @repository.store(key, data)
+      @repository.fetch(key).wont_be_nil
+
+      @repository.delete(key)
+      @repository.fetch(key).must_be_nil
+    end
+  end #delete
+
   describe '#keys' do
     it 'returns all stored keys, stringified' do
       data  = { id: 5 }

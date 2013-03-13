@@ -42,6 +42,10 @@ module CartoDB
         self
       end #store
 
+      def to_json(*args)
+        each { |member| member.fetch.to_hash }.to_json(*args)
+      end #to_json
+
       private
 
       attr_accessor :storage

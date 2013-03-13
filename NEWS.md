@@ -7,6 +7,7 @@
 * Enable/disable scroll wheel zoom in the embeded maps.
 * Revamped visualization wizard's selector.
 * Added new cool wizard for point maps: Intensity.
+* New upgrade window.
 
 2.0.5 (05/03/13)
 -----

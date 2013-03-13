@@ -11,24 +11,27 @@ include CartoDB
 
 describe Visualization::API do
   include Rack::Test::Methods
-  
-  describe 'GET /api/v1/visualizations/:id' do
-    it 'returns a visualization' do
+ 
+  describe 'GET /api/v1/visualizations' do
+    it 'retrieves a collection of visualizations' do
       payload = factory
       post '/api/v1/visualizations', payload.to_json
       id = JSON.parse(last_response.body).fetch('id')
       
-      get "/api/v1/visualizations/#{id}"
-      last_response.status.must_equal 200
-
-      response = JSON.parse(last_response.body)
-
-      response.fetch('id')            .wont_be_nil
-      response.fetch('map_id')        .wont_be_nil
-      response.fetch('tags')          .wont_be_empty
-      response.fetch('description')   .wont_be_nil
+      get '/api/v1/visualizations'
+      response    = JSON.parse(last_response.body)
+      collection  = response.fetch('visualizations')
+      collection.first.fetch('id').must_equal id
     end
-  end # GET /api/v1/visualizations/:id
+
+    it 'is updated after creating a visualization' do
+      skip
+    end
+
+    it 'is updated after deleted a visualization' do
+      skip
+    end
+  end # GET /api/v1/visualizations
 
   describe 'POST /api/v1/visualizations' do
     it 'creates a visualization' do
@@ -51,6 +54,24 @@ describe Visualization::API do
       response.fetch('tags')        .must_equal payload.fetch(:tags)
     end
   end # POST /api/v1/visualizations
+
+  describe 'GET /api/v1/visualizations/:id' do
+    it 'returns a visualization' do
+      payload = factory
+      post '/api/v1/visualizations', payload.to_json
+      id = JSON.parse(last_response.body).fetch('id')
+      
+      get "/api/v1/visualizations/#{id}"
+      last_response.status.must_equal 200
+
+      response = JSON.parse(last_response.body)
+
+      response.fetch('id')            .wont_be_nil
+      response.fetch('map_id')        .wont_be_nil
+      response.fetch('tags')          .wont_be_empty
+      response.fetch('description')   .wont_be_nil
+    end
+  end # GET /api/v1/visualizations/:id
 
   describe 'PUT /api/v1/visualizations/:id' do
     it 'updates an existing visualization' do

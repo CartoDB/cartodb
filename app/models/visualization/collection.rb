@@ -10,41 +10,46 @@ module CartoDB
  
       attr_reader :id
 
-      def initialize(attributes={}, repository=nil)
-        @storage    = Set.new
-        @repository = repository || Visualization.default_repository
-        @id         = attributes.fetch(:id, @repository.next_id)
+      def initialize(attributes={}, member_class=nil, repository=nil)
+        @storage      = Set.new
+        @member_class = member_class  || OpenStruct
+        @repository   = repository    || Visualization.default_repository
+        @id           = attributes.fetch(:id, @repository.next_id)
       end #initialize
 
       def add(member)
-        storage.add(member)
+        storage.add(member.id)
+        self
       end #add
 
       def delete(member)
-        storage.delete(member)
+        storage.delete(member.id)
+        self
       end #delete
 
-      def each
-        return storage.each { |member| yield member } if block_given?
-        Enumerator.new(@storage)
+      def each(&block)
+        return members(&block) if block
+        Enumerator.new(storage.map { |id| member_class.new(id: id) })
       end #each
 
       def fetch
-        storage.clear
-        repository.fetch(id).map { |id| storage.add OpenStruct.new(id: id) }
+        self.storage = Set[*repository.fetch(id)]
+        self
       end #fetch
 
       def store
-        repository.store(id, member_ids)
+        repository.store(id, storage.to_a)
+        self
       end #store
 
       private
 
-      attr_reader :storage, :repository
+      attr_accessor :storage
+      attr_reader   :repository, :member_class
 
-      def member_ids
-        storage.map { |member| member.id }
-      end #member_ids
+      def members
+        storage.map { |member_id| yield member_class.new(id: member_id) }
+      end #members
     end # Collection
   end # Visualization
 end # CartoDB

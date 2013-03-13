@@ -201,17 +201,17 @@ div.cartodb-popup div.cartodb-popup-tip-container::after {
 	z-index: 1;
 }
 
-div.cartodb_infobox {
+div.cartodb-infobox {
 	bottom:35px!important;
 	font-family: "Helvetica",Arial;
 }
 
-div.cartodb_infobox h3 {
+div.cartodb-infobox h3 {
 	color:#333333;
 	font-size:15px;
 }
 
-div.cartodb_infobox p {
+div.cartodb-infobox p {
 	display:block;
 	margin:10px 0 0 0;
 	color:#788787;

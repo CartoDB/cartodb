@@ -72,7 +72,7 @@ CartoDBLayerCommon.prototype = {
         cartodb_link.setAttribute('target','_blank');
         var protocol = location.protocol.indexOf('https') === -1 ? 'http': 'https';
         cartodb_link.innerHTML = "<img width='71' height='29' src='" + protocol + "://cartodb.s3.amazonaws.com/static/new_logo" + (is_retina ? '@2x' : '') + ".png' style='position:absolute; bottom:" + 
-          ( position.bottom || 0 ) + "px; left:" + ( position.left || 0 ) + "px; display:block; border:none; outline:none' alt='CartoDB' title='CartoDB' />";
+          ( position.bottom || 0 ) + "px; left:" + ( position.left || 0 ) + "px; display:block; width:71px!important; height:29px!important; border:none; outline:none;' alt='CartoDB' title='CartoDB' />";
       },( timeout || 0 ));
     }
   },

@@ -3,6 +3,7 @@
 //= require select2.min
 //= require jquery.faviconNotify
 //= require rgbcolor
+//= require crossfilter
 //= require jquery-ui.core.min
 //= require jquery-ui.autocomplete
 //= require jquery.caret

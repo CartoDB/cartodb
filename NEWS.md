@@ -1,4 +1,8 @@
-2g0.6 (DD/MM/YY)
+2.0.7
+-----
+
+
+2.0.6 (DD/MM/YY)
 -----
 * If the the_geom value is null, it appears as null in the table and not as GeoJSON.
 * Table hover styles fixed.

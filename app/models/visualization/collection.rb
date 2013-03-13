@@ -43,6 +43,7 @@ module CartoDB
       end #store
 
       def to_json(*args)
+        fetch
         each { |member| member.fetch.to_hash }.to_json(*args)
       end #to_json
 

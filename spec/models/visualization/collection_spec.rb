@@ -131,6 +131,7 @@ describe Visualization::Collection do
       member      = dummy_class.new(id: 1)
       collection  = Visualization::Collection.new({}, dummy_class)
       collection.add(member)
+      collection.store
 
       representation = JSON.parse(collection.to_json)
       representation.size.must_equal 1

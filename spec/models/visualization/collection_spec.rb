@@ -6,6 +6,10 @@ include CartoDB
 
 describe Visualization::Collection do
   describe '#initialize' do
+    before do
+      Visualization.default_repository = DataRepository::Repository.new
+    end
+
     it 'sets a default data repository if none passed' do
       Visualization.default_repository = DataRepository::Repository.new
       collection  = Visualization::Collection.new
@@ -24,7 +28,7 @@ describe Visualization::Collection do
   describe '#add' do
     it 'adds a member to the collection' do
       member      = OpenStruct.new(id: 1)
-      collection  = Visualization::Collection.new
+      collection  = Visualization::Collection.new({}, OpenStruct)
       collection.add(member)
       collection.to_a.must_include member
     end
@@ -47,7 +51,8 @@ describe Visualization::Collection do
       collection.add(member)
       collection.store
 
-      rehydrated_collection = Visualization::Collection.new(id: collection.id)
+      rehydrated_collection = 
+        Visualization::Collection.new({ id: collection.id }, OpenStruct)
       rehydrated_collection.fetch
       rehydrated_collection.to_a.first.must_be_instance_of OpenStruct
     end
@@ -78,7 +83,8 @@ describe Visualization::Collection do
       collection.add(member)
       collection.store
 
-      rehydrated_collection = Visualization::Collection.new(id: collection.id)
+      rehydrated_collection =
+        Visualization::Collection.new({ id: collection.id }, OpenStruct)
       rehydrated_collection.fetch
 
       enumerator = rehydrated_collection.each
@@ -94,7 +100,8 @@ describe Visualization::Collection do
       collection.add(member1)
       collection.store
 
-      rehydrated_collection = Visualization::Collection.new(id: collection.id)
+      rehydrated_collection = 
+        Visualization::Collection.new({ id: collection.id }, OpenStruct)
       rehydrated_collection.add(member2) 
 
       rehydrated_collection.to_a.must_include(member2)
@@ -105,7 +112,7 @@ describe Visualization::Collection do
     end
 
     it 'empties the collection if it was not persisted to the repository' do
-      member     = OpenStruct.new(id: 1)
+      member      = OpenStruct.new(id: 1)
       collection  = Visualization::Collection.new
       collection.add(member)
       collection.to_a.length.must_equal 1
@@ -123,9 +130,10 @@ describe Visualization::Collection do
 
       rehydrated_collection = Visualization::Collection.new(id: collection.id)
       rehydrated_collection.fetch
-      rehydrated_collection.map { |member| member.id }.must_include member.id
+      rehydrated_collection.map { |member| member.id }
+        .must_include member.id.to_s
     end
-  end #stsore
+  end #store
 
   describe '#to_json' do
     it 'renders a JSON representation of the collection' do

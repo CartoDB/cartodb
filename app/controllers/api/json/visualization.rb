@@ -7,7 +7,7 @@ require_relative '../../../models/visualization/collection'
 module CartoDB
   module Visualization
     class API < Sinatra::Base
-      VISUALIZATION_COLLECTION_ID = rand(999)
+      VISUALIZATION_COLLECTION_ID = 'visualizations'
 
       get '/api/v1/visualizations' do
         collection  = Visualization::Collection.new(
@@ -23,7 +23,7 @@ module CartoDB
           member    = Member.new(id: params.fetch('id')).fetch
           response  = member.attributes.to_json
           [200, response]
-        rescue KeyError
+        rescue KeyError => exception
           [404]
         end
       end # get /api/v1/visualizations/:id
@@ -33,7 +33,7 @@ module CartoDB
         collection  = Visualization::Collection.new(
                         { id: VISUALIZATION_COLLECTION_ID },
                         Visualization::Member
-                      )
+                      ).fetch
         collection.add(member)
         collection.store
 
@@ -53,7 +53,14 @@ module CartoDB
       end # put /api/v1/visualizations/:id
 
       delete '/api/v1/visualizations/:id' do
-        Member.new(id: params.fetch('id')).delete
+        collection  = Visualization::Collection.new(
+                        { id: VISUALIZATION_COLLECTION_ID },
+                        Visualization::Member
+                      ).fetch
+        member      = Member.new(id: params.fetch('id'))
+        collection.delete(member)
+        member.delete
+        collection.store
         [204]
       end # delete '/api/v1/visualizations/:id
 

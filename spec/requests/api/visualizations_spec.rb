@@ -12,6 +12,10 @@ include CartoDB
 describe Visualization::API do
   include Rack::Test::Methods
  
+  before do
+    Visualization.default_repository = DataRepository::Repository.new
+  end
+
   describe 'GET /api/v1/visualizations' do
     it 'retrieves a collection of visualizations' do
       payload = factory
@@ -25,11 +29,39 @@ describe Visualization::API do
     end
 
     it 'is updated after creating a visualization' do
-      skip
+      payload = factory
+      post '/api/v1/visualizations', payload.to_json
+
+      get '/api/v1/visualizations'
+      response    = JSON.parse(last_response.body)
+      collection  = response.fetch('visualizations')
+      collection.size.must_equal 1
+
+      payload = factory.merge('name' => 'another one')
+      post '/api/v1/visualizations', payload.to_json
+
+      get '/api/v1/visualizations'
+      response    = JSON.parse(last_response.body)
+      collection  = response.fetch('visualizations')
+      collection.size.must_equal 2
     end
 
     it 'is updated after deleted a visualization' do
-      skip
+      payload = factory
+      post '/api/v1/visualizations', payload.to_json
+      id = JSON.parse(last_response.body).fetch('id')
+      
+      get '/api/v1/visualizations'
+      response    = JSON.parse(last_response.body)
+      collection  = response.fetch('visualizations')
+      collection.wont_be_empty
+
+      delete "/api/v1/visualizations/#{id}"
+      get '/api/v1/visualizations'
+
+      response    = JSON.parse(last_response.body)
+      collection  = response.fetch('visualizations')
+      collection.must_be_empty
     end
   end # GET /api/v1/visualizations
 
@@ -106,7 +138,7 @@ describe Visualization::API do
       get "/api/v1/visualizations/#{id}"
       last_response.status.must_equal 404
     end
-  end
+  end # DELETE /api/v1/visualizations/:id
 
   def factory
     {

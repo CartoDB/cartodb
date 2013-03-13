@@ -40,39 +40,6 @@ describe Visualization::Collection do
     end
   end #delete
 
-  describe '#fetch' do
-    it 'resets the collection with data from the data repository' do
-      member1     = OpenStruct.new(id: 1)
-      member2     = OpenStruct.new(id: 2)
-      collection  = Visualization::Collection.new
-      collection.add(member1)
-      collection.store
-
-      rehydrated_collection = Visualization::Collection.new(id: collection.id)
-      rehydrated_collection.add(member2) 
-
-      rehydrated_collection.to_a.must_include(member2)
-      rehydrated_collection.to_a.wont_include(member1)
-      rehydrated_collection.fetch
-      rehydrated_collection.to_a.must_include(member1)
-      rehydrated_collection.to_a.wont_include(member2)
-    end
-  end #fetch
-
-  describe '#store' do
-
-    it 'persists the collection to the data repository' do
-      member      = OpenStruct.new(id: 1)
-      collection  = Visualization::Collection.new
-      collection.add(member)
-      collection.store
-
-      rehydrated_collection = Visualization::Collection.new(id: collection.id)
-      rehydrated_collection.fetch
-      rehydrated_collection.map { |member| member.id }.must_include member.id
-    end
-  end #stsore
-
   describe '#each' do
     it 'yields members of the collection as OpenStruct by default' do
       member      = OpenStruct.new(id: 1)
@@ -118,6 +85,47 @@ describe Visualization::Collection do
       enumerator.next.must_be_instance_of OpenStruct
     end
   end #each
+
+  describe '#fetch' do
+    it 'resets the collection with data from the data repository' do
+      member1     = OpenStruct.new(id: 1)
+      member2     = OpenStruct.new(id: 2)
+      collection  = Visualization::Collection.new
+      collection.add(member1)
+      collection.store
+
+      rehydrated_collection = Visualization::Collection.new(id: collection.id)
+      rehydrated_collection.add(member2) 
+
+      rehydrated_collection.to_a.must_include(member2)
+      rehydrated_collection.to_a.wont_include(member1)
+      rehydrated_collection.fetch
+      rehydrated_collection.to_a.must_include(member1)
+      rehydrated_collection.to_a.wont_include(member2)
+    end
+
+    it 'empties the collection if it was not persisted to the repository' do
+      member     = OpenStruct.new(id: 1)
+      collection  = Visualization::Collection.new
+      collection.add(member)
+      collection.to_a.length.must_equal 1
+      collection.fetch
+      collection.to_a.must_be_empty
+    end
+  end #fetch
+
+  describe '#store' do
+    it 'persists the collection to the data repository' do
+      member      = OpenStruct.new(id: 1)
+      collection  = Visualization::Collection.new
+      collection.add(member)
+      collection.store
+
+      rehydrated_collection = Visualization::Collection.new(id: collection.id)
+      rehydrated_collection.fetch
+      rehydrated_collection.map { |member| member.id }.must_include member.id
+    end
+  end #stsore
 
   describe '#to_json' do
     it 'renders a JSON representation of the collection' do

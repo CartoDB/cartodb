@@ -35,6 +35,9 @@ module CartoDB
       def fetch
         self.storage = Set[*repository.fetch(id)]
         self
+      rescue => exception
+        storage.clear
+        self
       end #fetch
 
       def store

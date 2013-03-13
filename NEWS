@@ -1,5 +1,6 @@
-2.0.24 (MM//DD//YYYY)
+2.0.24 (03//13//2013)
 -----
+- Added option to control map scrollwheel zoom
 - Loading content in infowindow bug fixed.
 - New classes applied to CartoDB map components avoiding other css collisions.
 

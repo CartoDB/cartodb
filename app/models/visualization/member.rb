@@ -1,7 +1,7 @@
 # encoding: utf-8
 require 'virtus'
 require 'virtus/attribute/writer/coercible'
-require_relative '../../../services/data-repository/repository'
+require_relative '../visualization'
 
 module CartoDB
   class SnakeCaseString < Virtus::Attribute::String
@@ -28,13 +28,10 @@ module CartoDB
       attribute :tags,          Array[String]
       attribute :description,   String
 
-      def self.repository
-        @repository ||= DataRepository::Repository.new
-      end # self.repository
-
-      def initialize(attributes={})
+      def initialize(attributes={}, repository=nil)
         self.attributes = attributes
-        self.id         ||= repository.next_id
+        @repository     = repository || Visualization.default_repository
+        self.id         ||= @repository.next_id
       end #initialize
 
       def store
@@ -55,9 +52,7 @@ module CartoDB
 
       private
 
-      def repository
-        self.class.repository
-      end #repository
+      attr_reader :repository
     end # Member
   end # Visualization
 end # CartoDB

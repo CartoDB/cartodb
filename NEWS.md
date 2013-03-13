@@ -8,6 +8,10 @@
 * Revamped visualization wizard's selector.
 * Added new cool wizard for point maps: Intensity.
 * New upgrade window.
+* when converting a column from string type to number type, figures using
+  decimal comma and point as grouping separator (e.g. 1.234.567,1234), are 
+  appropriately casted to floats using a decimal point separator 
+  (e.g. 1234567.1234)
 
 2.0.5 (05/03/13)
 -----

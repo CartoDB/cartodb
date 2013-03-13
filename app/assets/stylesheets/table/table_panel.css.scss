@@ -707,23 +707,65 @@
       }
 
       div.filters_panel {
+
+        .legend { color: #666666; }
+
+        .range { color: #4DC964; }
+
+        .filters {
+          margin: 0 0 80px 0;
+        }
+
         .histogram_filter {
+          padding: 20px 0 0 0;
+
+          border-bottom: 1px solid rgba(#999999, .25);
+          @include box-shadow(0px 4px 4px #EDEDED);
+
+          text-align:center;
+
           .hist {
+            margin: auto;
             position: relative;
-            svg {
-              position: absolute;
-              top: 0;
-              left: 0;
-            }
+            display: inline-block;
+            height: 151px;
           }
-          .left_slider, .right_slider  {
-            top: 25px;
-            z-index: 10;
-            background: #444;
-            width: 10px;
-            height: 20px;
-            position: absolute;
+
+          .reset {
+            padding-left: 1em;
+            font-size: smaller;
+            color: #ccc;
           }
+
+          .background.bar {
+            fill: #E5E5E5;
+          }
+
+          .foreground.bar {
+            fill: #4DC964;
+            fill-opacity: .3;
+          }
+
+          .axis path, .axis line {
+            fill: none;
+            stroke: #000;
+            shape-rendering: crispEdges;
+          }
+
+          .axis text {
+            font: 10px sans-serif;
+          }
+
+          .brush rect.extent {
+            fill: #4DC964;
+            fill-opacity: .125;
+          }
+
+          .brush .resize path {
+            fill: #eee;
+            stroke: #666;
+          }
+
         }
       } //div.filters_panel
     }

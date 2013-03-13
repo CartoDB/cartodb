@@ -22,7 +22,6 @@ describe('Interaction funcionality', function() {
       table_name: 'country_colors',
       opacity:0.8,
       interactivity: "cartodb_id",
-      auto_bound: false,
       debug: true,
       interaction: true
     });

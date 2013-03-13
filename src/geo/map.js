@@ -33,7 +33,7 @@ cdb.geo.MapLayer = cdb.core.Model.extend({
 
     var myType  = me.type? me.type : me.options.type
       , itsType = other.type? other.type : other.options.type;
-    
+
     if(myType && (myType === itsType)) {
 
       if(myType === 'Tiled') {
@@ -113,7 +113,6 @@ cdb.geo.CartoDBLayer = cdb.geo.MapLayer.extend({
     active: true,
     query: null,
     opacity: 0.99,
-    auto_bound: false,
     interactivity: null,
     interaction: true,
     debug: false,
@@ -200,6 +199,7 @@ cdb.geo.Map = cdb.core.Model.extend({
     zoom: 3,
     minZoom: 0,
     maxZoom: 28,
+    scrollwheel: true,
     provider: 'leaflet'
   },
 
@@ -227,6 +227,18 @@ cdb.geo.Map = cdb.core.Model.extend({
   setZoom: function(z) {
     this.set({
       zoom: z
+    });
+  },
+
+  enableScrollWheel: function() {
+    this.set({
+      scrollwheel: true
+    });
+  },
+
+  disableScrollWheel: function() {
+    this.set({
+      scrollwheel: false
     });
   },
 
@@ -277,8 +289,8 @@ cdb.geo.Map = cdb.core.Model.extend({
   },
 
   /**
-   * return getViewbounds if it is set
-   */
+  * return getViewbounds if it is set
+  */
   getViewBounds: function() {
     if(this.has('view_bounds_sw') && this.has('view_bounds_ne')) {
       return [
@@ -303,11 +315,11 @@ cdb.geo.Map = cdb.core.Model.extend({
     /*
     var z = layer.get('maxZoom');
     if(_.isNumber(z)) {
-      this.set({ maxZoom: z });
+    this.set({ maxZoom: z });
     }
     z = layer.get('minZoom');
     if(_.isNumber(z)) {
-      this.set({ minZoom: z });
+    this.set({ minZoom: z });
     }
     */
   },
@@ -354,8 +366,8 @@ cdb.geo.Map = cdb.core.Model.extend({
   },
 
   /**
-   * Checks if the base layer is already in the map as base map
-   */
+  * Checks if the base layer is already in the map as base map
+  */
   isBaseLayerAdded: function(layer) {
     var baselayer = this.getBaseLayer()
     return baselayer && layer.isEqual(baselayer);
@@ -444,12 +456,12 @@ cdb.geo.Map = cdb.core.Model.extend({
 
   setBounds: function(b) {
     this.attributes.view_bounds_sw = [
-        b[0][0],
-        b[0][1]
+      b[0][0],
+      b[0][1]
     ];
     this.attributes.view_bounds_ne = [
-        b[1][0],
-        b[1][1]
+      b[1][0],
+      b[1][1]
     ];
 
     // change both at the same time
@@ -480,14 +492,14 @@ cdb.geo.Map = cdb.core.Model.extend({
   // adapted from leaflat src
   getBoundsZoom: function(boundsSWNE, mapSize) {
     var size = [mapSize.x, mapSize.y],
-        zoom = this.get('minZoom') || 0,
-        maxZoom = this.get('maxZoom') || 24,
-        ne = boundsSWNE[1],
-        sw = boundsSWNE[0],
-        boundsSize = [],
-        nePoint,
-        swPoint,
-        zoomNotFound = true;
+    zoom = this.get('minZoom') || 0,
+    maxZoom = this.get('maxZoom') || 24,
+    ne = boundsSWNE[1],
+    sw = boundsSWNE[0],
+    boundsSize = [],
+    nePoint,
+    swPoint,
+    zoomNotFound = true;
 
     do {
       zoom++;
@@ -551,8 +563,8 @@ cdb.geo.MapView = cdb.core.View.extend({
   },
 
   /**
-   * add a infowindow to the map
-   */
+  * add a infowindow to the map
+  */
   addInfowindow: function(infoWindowView) {
     if (infoWindowView) {
       this.$el.append(infoWindowView.render().el);
@@ -610,6 +622,7 @@ cdb.geo.MapView = cdb.core.View.extend({
     this.map.bind('change:view_bounds_ne',  this._changeBounds, this);
     this.map.bind('change:zoom',            this._setZoom, this);
     this.map.bind('change:center',          this._setCenter, this);
+    this.map.bind('change:scrollwheel',     this._setScrollWheel, this);
     this.map.bind('change:attribution',     this._setAttribution, this);
   },
 
@@ -698,7 +711,7 @@ cdb.geo.MapView = cdb.core.View.extend({
   },
 
   _saveLocation: _.debounce(function() {
-      this.map.save(null, { silent: true });
+    this.map.save(null, { silent: true });
   }, 1000),
 
   _addGeometry: function(geom) {
@@ -718,11 +731,11 @@ cdb.geo.MapView = cdb.core.View.extend({
   _getClass: function(provider) {
     var mapViewClass = cdb.geo.LeafletMapView;
     if(provider === 'googlemaps') {
-        if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
-          mapViewClass = cdb.geo.GoogleMapsMapView;
-        } else {
-          cdb.log.error("you must include google maps library _before_ include cdb");
-        }
+      if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
+        mapViewClass = cdb.geo.GoogleMapsMapView;
+      } else {
+        cdb.log.error("you must include google maps library _before_ include cdb");
+      }
     }
     return mapViewClass;
   },

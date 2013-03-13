@@ -45,6 +45,16 @@ CartoDBLayerCommon.prototype = {
     return a.length > 0;
   },
 
+  
+  /**
+   *  Check if browser supports retina images
+   */
+  _isRetinaBrowser: function() {
+    return  ('devicePixelRatio' in window && window.devicePixelRatio > 1) ||
+            ('matchMedia' in window && window.matchMedia('(min-resolution:144dpi)') &&
+            window.matchMedia('(min-resolution:144dpi)').matches);
+  },
+
 
   /**
    * Add Cartodb logo
@@ -53,6 +63,7 @@ CartoDBLayerCommon.prototype = {
   _addWadus: function(position, timeout, container) {
     if (this.options.cartodb_logo !== false && !this._isWadusAdded(container, 'cartodb_logo')) {
       var cartodb_link = document.createElement("a");
+      var is_retina = this._isRetinaBrowser();
       cartodb_link.setAttribute('class','cartodb_logo');
       container.appendChild(cartodb_link);
       setTimeout(function() {
@@ -60,7 +71,7 @@ CartoDBLayerCommon.prototype = {
         cartodb_link.setAttribute('href','http://www.cartodb.com');
         cartodb_link.setAttribute('target','_blank');
         var protocol = location.protocol.indexOf('https') === -1 ? 'http': 'https';
-        cartodb_link.innerHTML = "<img src='" + protocol + "://cartodb.s3.amazonaws.com/static/new_logo.png' style='position:absolute; bottom:" + 
+        cartodb_link.innerHTML = "<img width='71' height='29' src='" + protocol + "://cartodb.s3.amazonaws.com/static/new_logo" + (is_retina ? '@2x' : '') + ".png' style='position:absolute; bottom:" + 
           ( position.bottom || 0 ) + "px; left:" + ( position.left || 0 ) + "px; display:block; border:none; outline:none' alt='CartoDB' title='CartoDB' />";
       },( timeout || 0 ));
     }

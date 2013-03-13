@@ -15,10 +15,6 @@
       loc = 'https';
     }
 
-    if(options.api_key) {
-      this.api_key = options.api_key;
-    }
-
     this.options = _.defaults(options, {
       version: 'v2',
       protocol: loc,
@@ -73,7 +69,7 @@
     var q = 'q=' + encodeURIComponent(query);
 
     // request params
-    var reqParams = ['format', 'dp'];
+    var reqParams = ['format', 'dp', 'api_key'];
     for(var i in reqParams) {
       var r = reqParams[i];
       var v = options[r];
@@ -82,7 +78,6 @@
       }
     }
 
-
     var isGetRequest = options.type == 'get' || params.type == 'get';
     // generate url depending on the http method
     params.url = this._host() ;
@@ -90,13 +85,6 @@
       params.url += '?' + q
     } else {
       params.data = q;
-    }
-    if(this.api_key) {
-      if(isGetRequest) {
-        params.url += '&api_key=' + this.api_key;
-      } else {
-        darams.data['api_key'] = this.api_key;
-      }
     }
 
     // wrap success and error functions
@@ -133,7 +121,7 @@
               '       ST_YMin(ST_Extent(the_geom)) as miny,'+
               '       ST_XMax(ST_Extent(the_geom)) as maxx,' +
               '       ST_YMax(ST_Extent(the_geom)) as maxy' +
-              ' from ({{sql}}) as subq';
+              ' from ({{{ sql }}}) as subq';
       sql = Mustache.render(sql, vars);
       this.execute(s, { sql: sql }, options)
         .done(function(result) {

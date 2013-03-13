@@ -1,7 +1,7 @@
 
 cdb.geo.ui.Header = cdb.core.View.extend({
 
-  className: 'header',
+  className: 'cartodb-header',
 
   initialize: function() {},
 

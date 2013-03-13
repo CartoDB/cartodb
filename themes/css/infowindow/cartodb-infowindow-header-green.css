@@ -1,9 +1,8 @@
 
 /**
- *  CartoDB2.0 Infowindow header theme green
+ *  CartoDB2.0 green header popup styles
  */
 
-/* INFOWINDOW */
 div.cartodb-popup.header.green div.cartodb-popup-header {
   background:url('../img/headers.png') no-repeat -252px -40px;
 }
@@ -22,18 +21,4 @@ div.cartodb-popup.header.green a.cartodb-popup-close-button {
 
 div.cartodb-popup.header.green a.cartodb-popup-close-button:hover {
   background-position:-478px -66px;
-}
-
-/* EMBED MAP */
-div.header.green h1 {
-  color: #00916D;
-}
-
-div.header.green h1 a {
-  color: #00916D;
-}
-
-div.header.green h1 a:hover {
-  color: #008E6A;
-  text-decoration: underline;
 }

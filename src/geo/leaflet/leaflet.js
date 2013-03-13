@@ -3,7 +3,7 @@
 */
 (function() {
 
-  if(typeof(L) == "undefined") 
+  if(typeof(L) == "undefined")
     return;
 
   /**
@@ -36,8 +36,12 @@
       if(!this.options.map_object) {
         this.map_leaflet = new L.Map(this.el, mapConfig);
 
-        // remove the "powered by leaflet" 
+        // remove the "powered by leaflet"
         this.map_leaflet.attributionControl.setPrefix('');
+
+        // Disable the scrollwheel
+        if (this.map.get("scrollwheel") == false) this.map_leaflet.scrollWheelZoom.disable();
+
       } else {
         this.map_leaflet = this.options.map_object;
         this.setElement(this.map_leaflet.getContainer());
@@ -131,6 +135,14 @@
       cdb.core.View.prototype.clean.call(this);
     },
 
+    _setScrollWheel: function(model, z) {
+      if (z) {
+        this.map_leaflet.scrollWheelZoom.enable();
+      } else {
+        this.map_leaflet.scrollWheelZoom.disable();
+      }
+    },
+
     _setZoom: function(model, z) {
       this._setView();
     },
@@ -167,7 +179,7 @@
       }
 
       var appending = !opts || opts.index === undefined || opts.index === _.size(this.layers);
-      // since leaflet does not support layer ordering 
+      // since leaflet does not support layer ordering
       // add the layers should be removed and added again
       // if the layer is being appended do not clear
       if(!appending) {
@@ -189,7 +201,7 @@
           }
         });
       }
-      
+
       var attribution = layer.get('attribution');
 
       if (attribution) {
@@ -297,7 +309,9 @@
       matches = src.match(leafletRe);
 
       if (matches) {
-        return src.split(leafletRe)[0] + '/themes/css/images/';
+        var bits = src.split('/')
+        delete bits[bits.length - 1];
+        return bits.join('/') + 'themes/css/images';
       }
     }
   }());

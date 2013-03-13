@@ -99,7 +99,8 @@ describe('SQL api client', function() {
       user: 'rambo',
       format: 'geojson',
       protocol: 'http',
-      host: 'charlies.com'
+      host: 'charlies.com',
+      api_key: 'testkey'
     })
     s.execute('select * from rambo', null, {
       dp: 2
@@ -107,6 +108,7 @@ describe('SQL api client', function() {
     expect(ajaxParams.url.indexOf('http://')).not.toEqual(-1);
     expect(ajaxParams.url.indexOf('rambo.charlies.com')).not.toEqual(-1);
     expect(ajaxParams.url.indexOf('&format=geojson')).not.toEqual(-1);
+    expect(ajaxParams.url.indexOf('&api_key=testkey')).not.toEqual(-1);
     expect(ajaxParams.url.indexOf('&dp=2')).not.toEqual(-1);
   });
 
@@ -132,6 +134,12 @@ describe('SQL api client', function() {
     s = new cartodb.SQL({ user: 'jaja' });
     s.getBounds('select * from rambo where id={{id}}', {id: 2});
     expect(ajaxParams.url.indexOf(encodeURIComponent(sql))).not.toEqual(-1);
+  });
+
+  it("should get bounds for query with appostrophes", function() {
+    s = new cartodb.SQL({ user: 'jaja' });
+    s.getBounds("select * from country where name={{ name }}", { name: "'Spain'"});
+    expect(ajaxParams.url.indexOf("%26amp%3B%2339%3B")).toEqual(-1);
   });
 });
 

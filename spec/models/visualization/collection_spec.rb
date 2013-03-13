@@ -118,5 +118,24 @@ describe Visualization::Collection do
       enumerator.next.must_be_instance_of OpenStruct
     end
   end #each
+
+  describe '#to_json' do
+    it 'renders a JSON representation of the collection' do
+      dummy_class = Class.new do
+        def initialize(attributes={}); @id = attributes.fetch(:id); end
+        def id; @id; end
+        def to_hash; { id: self.id }; end
+        def fetch; self; end
+      end
+
+      member      = dummy_class.new(id: 1)
+      collection  = Visualization::Collection.new({}, dummy_class)
+      collection.add(member)
+
+      representation = JSON.parse(collection.to_json)
+      representation.size.must_equal 1
+      representation.first.fetch('id').must_equal member.id
+    end
+  end #to_json
 end # Visualization::Collection
 

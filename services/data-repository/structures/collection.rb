@@ -12,10 +12,10 @@ module DataRepository
 
     attr_reader :id
 
-    def initialize(attributes={}, member_class=nil, repository=nil)
+    def initialize(attributes={}, options={})
       @storage      = Set.new
-      @member_class = member_class  || OpenStruct
-      @repository   = repository    || Repository.new
+      @member_class = options.fetch(:member_class, OpenStruct)
+      @repository   = options.fetch(:repository, Repository.new)
       @id           = attributes.fetch(:id, @repository.next_id)
     end #initialize
 

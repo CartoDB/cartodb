@@ -501,10 +501,11 @@ div.cartodb-edit-buttons {
   }
 
   // Edit buttons
-  div.right {width:91px; margin-top:5px;}
+  div.right {width:auto; margin-top:4px;}
 
   a.button {
-    @include inline-block();
+    float:left;
+    vertical-align:top;
     width:29px;
     height:24px;
     border-right:0;

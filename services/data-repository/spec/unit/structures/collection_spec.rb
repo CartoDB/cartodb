@@ -44,7 +44,7 @@ describe Collection do
       collection.add(member)
       collection.store
 
-      rehydrated_collection = Collection.new({ id: collection.id }, @defaults)
+      rehydrated_collection = Collection.new({ signature: collection.signature }, @defaults)
       rehydrated_collection.fetch
       rehydrated_collection.to_a.first.must_be_instance_of @dummy_class
     end
@@ -55,7 +55,7 @@ describe Collection do
       collection.add(member)
       collection.store
 
-      rehydrated_collection = Collection.new({ id: collection.id }, @defaults)
+      rehydrated_collection = Collection.new({ signature: collection.signature }, @defaults)
       rehydrated_collection.fetch
 
       enumerator = rehydrated_collection.each
@@ -71,7 +71,7 @@ describe Collection do
       collection.add(member1)
       collection.store
 
-      rehydrated_collection = Collection.new({ id: collection.id }, @defaults)
+      rehydrated_collection = Collection.new({ signature: collection.signature }, @defaults)
       rehydrated_collection.add(member2) 
 
       rehydrated_collection.to_a.must_include(member2)
@@ -98,7 +98,7 @@ describe Collection do
       collection.add(member)
       collection.store
 
-      rehydrated_collection = Collection.new({ id: collection.id }, @defaults)
+      rehydrated_collection = Collection.new({ signature: collection.signature }, @defaults)
       rehydrated_collection.fetch
       rehydrated_collection.map { |member| member.id }.must_include member.id
     end

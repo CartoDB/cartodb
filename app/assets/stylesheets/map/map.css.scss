@@ -37,10 +37,7 @@ div.map {
     padding:8px 20px 8px 30px;
     z-index:50;
 
-    a {
-      float:left;
-      @include box-shadow(rgba(white,1) 0 0 8px 5px);
-    }
+    a {float:left;}
   }
 
   .options {

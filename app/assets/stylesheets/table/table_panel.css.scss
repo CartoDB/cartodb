@@ -740,7 +740,7 @@
             .header {
               position:relative;
               padding: 5px 20px;
-              margin: 0 0 20px 0;
+              margin: 0 auto 20px auto;
 
               clear:both;
               overflow:hidden;
@@ -768,18 +768,21 @@
           }
         }
 
-        h2  {
-          font-size:13px;
-          font-weight:bold;
-          color:#666;
-        }
+        .filters .filter.selection {
 
-        .filters .selection {
+          .header{
+            padding-left: 0;
+            padding-right: 0;
+          }
+
+          .header, .items {
+            @include box-sizing(border-box);
+            width:470px;
+          }
 
           .items {
-            width:470px;
-            margin: auto;
             text-align:left;
+            margin: auto;
 
             li {
               position:relative;
@@ -794,16 +797,34 @@
               &:before {
                 @include position(12px, false, false, 0);
                 content: '';
-                @include size(7px);
+                @include size(9px);
+
 
                 background: #fff;
-                border: 1px solid #82D992;
-                @include border-radius(90px);
-                @include simple-transition(background-color, 100ms);
+                border: none;
+                @include border-radius(200px);
+                @include scale(0);
+                @include simple-transition(scale, 250ms);
               }
 
+              &:after {
+                @include opacity(1);
+                @include position(12px, false, false, 0);
+                content: '';
+                @include size(7px);
+
+                background: none;
+                border: 1px solid #82D992;
+                @include border-radius(200px);
+                @include simple-transition(opacity, 250ms);
+              }
+
+              &.selected:after {
+                @include opacity(0);
+              }
               &.selected:before {
                 background: #82D992;
+                @include scale(1);
               }
 
               &.selected .value {
@@ -826,7 +847,7 @@
           }
         }
 
-        .filters .histogram {
+        .filters .filter.histogram {
           .hist { margin: auto; position: relative; display: inline-block; bottom: -3px; }
           .background.bar { fill: #E5E5E5; }
           .foreground.bar { fill: #4DC964; fill-opacity: .3; }

@@ -1,6 +1,6 @@
-// cartodb.js version: 2.0.24
+// cartodb.js version: 2.0.25-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: ba3c3d79f0d2ad33de373d7f0235efb88b2786d6
+// sha: 1ebd44a1f7371512e51e9e63e11dbc91b64f36f2
 (function() {
   var root = this;
 
@@ -15457,7 +15457,7 @@ $(function(){
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '2.0.24';
+    cdb.VERSION = '2.0.25-dev';
 
     cdb.CARTOCSS_VERSIONS = {
       '2.0.0': '',
@@ -18577,7 +18577,7 @@ CartoDBLayerCommon.prototype = {
         cartodb_link.setAttribute('target','_blank');
         var protocol = location.protocol.indexOf('https') === -1 ? 'http': 'https';
         cartodb_link.innerHTML = "<img width='71' height='29' src='" + protocol + "://cartodb.s3.amazonaws.com/static/new_logo" + (is_retina ? '@2x' : '') + ".png' style='position:absolute; bottom:" + 
-          ( position.bottom || 0 ) + "px; left:" + ( position.left || 0 ) + "px; display:block; border:none; outline:none' alt='CartoDB' title='CartoDB' />";
+          ( position.bottom || 0 ) + "px; left:" + ( position.left || 0 ) + "px; display:block; width:71px!important; height:29px!important; border:none; outline:none;' alt='CartoDB' title='CartoDB' />";
       },( timeout || 0 ));
     }
   },

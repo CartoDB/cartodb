@@ -744,6 +744,56 @@
 
           text-align:center;
 
+          .items {
+            width:300px;
+            margin: auto;
+            text-align:left;
+
+            li {
+              position:relative;
+              color: #666666;
+              font-size:13px;
+              border-bottom: 1px solid rgba(#999, .25);
+              padding: 10px 0 10px 17px;
+              margin: 0 0 5px 0;
+
+              cursor: pointer;
+
+              &:before {
+                @include position(0, false, false, 10px);
+                content: '';
+                @include size(7px);
+
+                background: #fff;
+                border: 1px solid #82D992;
+                @include border-radius(90px);
+                @include simple-transition(background-color, 100ms);
+              }
+
+              &.selected:before {
+                background: #82D992;
+              }
+
+              &.selected .value {
+                background: #82D992;
+                color:#fff;
+              }
+
+              .value {
+                float:right;
+                font-size:10px;
+                padding: 2px 4px;
+                border:1px solid #82D992;
+                background:#fff;
+                @include border-radius(2px);
+                color:#82D992;
+
+                @include simple-transition(background-color, 100ms);
+              }
+            }
+
+          }
+
           .hist {
             margin: auto;
             position: relative;

@@ -734,7 +734,14 @@
 
           .jspContainer { overflow: hidden; position: relative; }
           .jspPane { position: absolute; }
-          .jspVerticalBar { position: absolute; top: 0; right: 10px; width: 5px; height: 100%; background: none; }
+          .jspVerticalBar {
+            @include opacity(0);
+            @include simple-transition(opacity, 250ms);
+            @include position(0, 10px, false, false);
+            @include size(5px, 100%);
+            background: none;
+            @include transition-delay(250ms);
+          }
           .jspHorizontalBar { position: absolute; bottom: 0; left: 0; width: 100%; height: 16px; background: none; }
 
           .jspVerticalBar *,
@@ -802,6 +809,9 @@
         }
 
         .filters .filter.selection {
+
+          &:hover .scroll .jspVerticalBar { @include opacity(1); }
+
 
           .header {
             padding-left: 0;

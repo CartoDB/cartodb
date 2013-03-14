@@ -708,11 +708,6 @@
 
       div.filters_panel {
 
-        .legend { color: #666666; }
-
-        .range { color: #4DC964; }
-
-
         .content {
           text-align:center;
 
@@ -720,32 +715,69 @@
             margin:auto;
 
             & > div { text-align: left; }
-
           }
 
           .no_filters {
+            @include size(102px, 81px);
             background: image-url('layout/empty_filters.png') no-repeat;
-            width: 102px;
-            height: 81px;
             margin: 85px auto 20px auto;
-          }
-
-          ul.filters {
-            margin: 0 0 40px 0;
           }
 
         }
 
-        .histogram_filter {
-          padding: 20px 0 0 0;
+        ul.filters {
+          margin: 0 0 40px 0;
 
-          border-bottom: 1px solid rgba(#999999, .25);
-          @include box-shadow(0px 4px 4px #EDEDED);
+          .filter {
 
-          text-align:center;
+            padding: 20px 0 0 0;
+
+            border-bottom: 1px solid rgba(#999999, .25);
+            @include box-shadow(0px 4px 4px #EDEDED);
+
+            text-align:center;
+
+            .header {
+              position:relative;
+              padding: 5px 20px;
+              margin: 0 0 20px 0;
+
+              clear:both;
+              overflow:hidden;
+
+              .legend { color: #666666; }
+              .range  { color: #4DC964; }
+
+              .title  { float: left; }
+              .remove { float: right; }
+            }
+
+            &:hover .remove { @include opacity(1); }
+
+            .remove {
+              display:block;
+              @include opacity(0);
+
+              @include size(12px);
+              @include position(5px, 5px, false, false);
+              @include simple-transition(opacity, 150ms);
+
+              background: image-url('icons/remove_filter.png') no-repeat;
+            }
+
+          }
+        }
+
+        h2  {
+          font-size:13px;
+          font-weight:bold;
+          color:#666;
+        }
+
+        .filters .selection {
 
           .items {
-            width:300px;
+            width:470px;
             margin: auto;
             text-align:left;
 
@@ -753,14 +785,14 @@
               position:relative;
               color: #666666;
               font-size:13px;
-              border-bottom: 1px solid rgba(#999, .25);
-              padding: 10px 0 10px 17px;
+              border-top: 1px solid rgba(#999, .25);
+              padding: 10px 0 10px 15px;
               margin: 0 0 5px 0;
 
               cursor: pointer;
 
               &:before {
-                @include position(0, false, false, 10px);
+                @include position(12px, false, false, 0);
                 content: '';
                 @include size(7px);
 
@@ -791,53 +823,20 @@
                 @include simple-transition(background-color, 100ms);
               }
             }
-
           }
-
-          .hist {
-            margin: auto;
-            position: relative;
-            display: inline-block;
-            bottom: -3px;
-          }
-
-          .reset {
-            padding-left: 1em;
-            font-size: smaller;
-            color: #ccc;
-          }
-
-          .background.bar {
-            fill: #E5E5E5;
-          }
-
-          .foreground.bar {
-            fill: #4DC964;
-            fill-opacity: .3;
-          }
-
-          .axis path, .axis line {
-            fill: none;
-            stroke: #000;
-            shape-rendering: crispEdges;
-          }
-
-          .axis text {
-            font: 10px sans-serif;
-          }
-
-          .brush rect.extent {
-            fill: #CCCCCC;
-            fill-opacity: .2;
-          }
-
-          .brush .resize path {
-            fill: #eee;
-            stroke: #666;
-          }
-
         }
-      } //div.filters_panel
+
+        .filters .histogram {
+          .hist { margin: auto; position: relative; display: inline-block; bottom: -3px; }
+          .background.bar { fill: #E5E5E5; }
+          .foreground.bar { fill: #4DC964; fill-opacity: .3; }
+          .axis path, .axis line { fill: none; stroke: #000; shape-rendering: crispEdges; }
+          .axis text { font: 10px sans-serif; }
+          .brush rect.extent { fill: #CCCCCC; fill-opacity: .2; }
+          .brush .resize path { fill: #eee; stroke: #666; }
+        }
+
+      }
     }
   }
 

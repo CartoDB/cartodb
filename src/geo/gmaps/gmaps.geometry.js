@@ -99,7 +99,6 @@ function PathView(geometryModel) {
   
 
   var style = _.clone(geometryModel.get('style')) || {};
-  console.log(style);
 
   this.geom = new GeoJSON (
     geometryModel.get('geojson'),

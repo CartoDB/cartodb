@@ -1,10 +1,11 @@
-/* wax - 7.0.0dev10 - v6.0.4-132-g86c33ce */
+/* wax - 7.0.0dev10 - v6.0.4-133-g6778284 */
 
 
 !function (name, context, definition) {
-  if (typeof module !== 'undefined') module.exports = definition(name, context);
-  else if (typeof define === 'function' && typeof define.amd  === 'object') define(definition);
-  else context[name] = definition(name, context);
+  //if (typeof module !== 'undefined') module.exports = definition(name, context);
+  //else if (typeof define === 'function' && typeof define.amd  === 'object') define(definition);
+  //else context[name] = definition(name, context);
+  context[name] = definition(name, context);
 }('bean', this, function (name, context) {
   var win = window
     , old = context[name]

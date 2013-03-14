@@ -7,13 +7,9 @@ require_relative '../../../models/overlay/collection'
 module CartoDB
   module Overlay
     class API < Sinatra::Base
-      OVERLAY_COLLECTION_ID = 'overlays'
-
       get '/api/v1/visualizations/:visualization_id/overlays' do
         begin
-          collection  = Overlay::Collection.new(
-                         { id: OVERLAY_COLLECTION_ID }
-                       ).fetch
+          collection  = Overlay::Collection.new.fetch
           response    = { overlays: collection }.to_json
           [200, response]
         rescue KeyError => exception
@@ -22,9 +18,7 @@ module CartoDB
       end # get /api/v1/visualizations/:visualization_id/overlays
 
       post '/api/v1/visualizations/:visualization_id/overlays' do
-        collection  = Overlay::Collection.new(
-                        { id: OVERLAY_COLLECTION_ID }
-                      ).fetch
+        collection  = Overlay::Collection.new.fetch
         member      = Overlay::Member.new(payload)
         collection.add(member)
         collection.store
@@ -57,9 +51,7 @@ module CartoDB
       end # put /api/v1/visualizations/:visualization_id/overlays/:id
 
       delete '/api/v1/visualizations/:visualization_id/overlays/:id' do
-        collection  = Overlay::Collection.new(
-                        { id: OVERLAY_COLLECTION_ID }
-                      ).fetch
+        collection  = Overlay::Collection.new.fetch
         member      = Overlay::Member.new(id: params.fetch('id'))
         collection.delete(member)
         member.delete

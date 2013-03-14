@@ -5,10 +5,12 @@ require_relative '../../../services/data-repository/structures/collection'
 
 module CartoDB
   module Overlay
+    SIGNATURE = 'overlays'
+
     class Collection
-      def initialize(attributes={}, options={})
-        options     = defaults.merge(options)
-        @collection = DataRepository::Collection.new(attributes, options)
+      def initialize
+        @collection = 
+          DataRepository::Collection.new({ signature: SIGNATURE }, defaults)
       end #initialize
 
       DataRepository::Collection::INTERFACE.each do |method_name|

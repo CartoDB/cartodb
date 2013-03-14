@@ -730,7 +730,7 @@
 
           .filter {
 
-            padding: 20px 0 0 0;
+            padding: 10px 0 0 0;
 
             border-bottom: 1px solid rgba(#999999, .25);
             @include box-shadow(0px 4px 4px #EDEDED);
@@ -747,6 +747,7 @@
 
               .legend { font-size:13px; color: #666666; }
               .range  { font-size:13px; color: #4DC964; }
+              .count  { font-size:13px; color: #CCCCCC; }
 
               .title  { float: left; }
               .remove { float: right; }
@@ -770,7 +771,7 @@
 
         .filters .filter.selection {
 
-          .header{
+          .header {
             padding-left: 0;
             padding-right: 0;
           }
@@ -804,7 +805,7 @@
                 border: none;
                 @include border-radius(200px);
                 @include scale(0);
-                @include simple-transition(scale, 250ms);
+                @include simple-transition(scale, 220ms);
               }
 
               &:after {
@@ -816,7 +817,7 @@
                 background: none;
                 border: 1px solid #82D992;
                 @include border-radius(200px);
-                @include simple-transition(opacity, 250ms);
+                @include simple-transition(opacity, 220ms);
               }
 
               &.selected:after {

@@ -11,12 +11,23 @@ module CartoDB
 
       get '/api/v1/visualizations' do
         collection  = Visualization::Collection.new(
-                        { id: VISUALIZATION_COLLECTION_ID },
-                        Visualization::Member
+                        { id: VISUALIZATION_COLLECTION_ID }
                       ).fetch
         response    = { visualizations: collection }.to_json
         [200, response]
       end
+
+      post '/api/v1/visualizations' do
+        member      = Member.new(payload).store
+        collection  = Visualization::Collection.new(
+                        { id: VISUALIZATION_COLLECTION_ID }
+                      ).fetch
+        collection.add(member)
+        collection.store
+
+        response  = member.attributes.to_json
+        [201, response]
+      end # post /api/visualizations
 
       get '/api/v1/visualizations/:id' do
         begin
@@ -28,19 +39,6 @@ module CartoDB
         end
       end # get /api/v1/visualizations/:id
       
-      post '/api/v1/visualizations' do
-        member      = Member.new(payload).store
-        collection  = Visualization::Collection.new(
-                        { id: VISUALIZATION_COLLECTION_ID },
-                        Visualization::Member
-                      ).fetch
-        collection.add(member)
-        collection.store
-
-        response  = member.attributes.to_json
-        [201, response]
-      end # post /api/visualizations
-
       put '/api/v1/visualizations/:id' do
         begin
           member            = Member.new(id: params.fetch('id')).fetch
@@ -54,8 +52,7 @@ module CartoDB
 
       delete '/api/v1/visualizations/:id' do
         collection  = Visualization::Collection.new(
-                        { id: VISUALIZATION_COLLECTION_ID },
-                        Visualization::Member
+                        { id: VISUALIZATION_COLLECTION_ID }
                       ).fetch
         member      = Member.new(id: params.fetch('id'))
         collection.delete(member)

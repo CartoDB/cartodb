@@ -712,8 +712,28 @@
 
         .range { color: #4DC964; }
 
-        .filters {
-          margin: 0 0 80px 0;
+
+        .content {
+          text-align:center;
+
+          .form_combo {
+            margin:auto;
+
+            & > div { text-align: left; }
+
+          }
+
+          .no_filters {
+            background: image-url('layout/empty_filters.png') no-repeat;
+            width: 102px;
+            height: 81px;
+            margin: 85px auto 20px auto;
+          }
+
+          ul.filters {
+            margin: 0 0 40px 0;
+          }
+
         }
 
         .histogram_filter {
@@ -728,7 +748,7 @@
             margin: auto;
             position: relative;
             display: inline-block;
-            height: 151px;
+            bottom: -3px;
           }
 
           .reset {
@@ -757,8 +777,8 @@
           }
 
           .brush rect.extent {
-            fill: #4DC964;
-            fill-opacity: .125;
+            fill: #CCCCCC;
+            fill-opacity: .2;
           }
 
           .brush .resize path {

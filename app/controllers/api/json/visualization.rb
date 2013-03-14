@@ -7,21 +7,15 @@ require_relative '../../../models/visualization/collection'
 module CartoDB
   module Visualization
     class API < Sinatra::Base
-      VISUALIZATION_COLLECTION_ID = 'visualizations'
-
       get '/api/v1/visualizations' do
-        collection  = Visualization::Collection.new(
-                        { id: VISUALIZATION_COLLECTION_ID }
-                      ).fetch
+        collection  = Visualization::Collection.new.fetch
         response    = { visualizations: collection }.to_json
         [200, response]
       end
 
       post '/api/v1/visualizations' do
         member      = Member.new(payload).store
-        collection  = Visualization::Collection.new(
-                        { id: VISUALIZATION_COLLECTION_ID }
-                      ).fetch
+        collection  = Visualization::Collection.new.fetch
         collection.add(member)
         collection.store
 
@@ -51,9 +45,7 @@ module CartoDB
       end # put /api/v1/visualizations/:id
 
       delete '/api/v1/visualizations/:id' do
-        collection  = Visualization::Collection.new(
-                        { id: VISUALIZATION_COLLECTION_ID }
-                      ).fetch
+        collection  = Visualization::Collection.new.fetch
         member      = Member.new(id: params.fetch('id'))
         collection.delete(member)
         member.delete

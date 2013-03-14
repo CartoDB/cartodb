@@ -1,14 +1,17 @@
-# encoding: utf-8 require 'set'
+# encoding: utf-8
+require 'set'
 require_relative '../visualization'
 require_relative './member'
 require_relative '../../../services/data-repository/structures/collection'
 
 module CartoDB
   module Visualization
+    SIGNATURE = 'visualizations'
+
     class Collection
-      def initialize(attributes={}, options={})
-        options     = defaults.merge(options)
-        @collection = DataRepository::Collection.new(attributes, options)
+      def initialize
+        @collection = 
+          DataRepository::Collection.new({ signature: SIGNATURE }, defaults)
       end #initialize
 
       DataRepository::Collection::INTERFACE.each do |method_name|

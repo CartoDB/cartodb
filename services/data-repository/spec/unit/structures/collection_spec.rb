@@ -7,11 +7,21 @@ include DataRepository
 describe Collection do
   before do
     @repository = DataRepository::Repository.new
+    @dummy_class = Class.new do
+      attr_accessor :id
+      def initialize(arguments={}); self.id = arguments.fetch(:id); end
+      def fetch; self; end
+      def to_hash; { id: id }; end
+      def ==(other); id.to_s == other.id.to_s; end
+    end
+
+    @defaults = { repository: @repository, member_class: @dummy_class}
   end
+
   describe '#add' do
     it 'adds a member to the collection' do
-      member      = OpenStruct.new(id: 1)
-      collection  = Collection.new({}, { repository: @repository })
+      member      = @dummy_class.new(id: 1)
+      collection  = Collection.new({}, @defaults)
       collection.add(member)
       collection.to_a.must_include member
     end
@@ -19,8 +29,8 @@ describe Collection do
 
   describe '#delete' do
     it 'deletes a member from the collection' do
-      member      = OpenStruct.new(id: 1)
-      collection  = Collection.new({}, { repository: @repository })
+      member      = @dummy_class.new(id: 1)
+      collection  = Collection.new({}, @defaults)
       collection.add(member)
       collection.delete(member)
       collection.to_a.wont_include member
@@ -28,67 +38,40 @@ describe Collection do
   end #delete
 
   describe '#each' do
-    it 'yields members of the collection as OpenStruct by default' do
-      member      = OpenStruct.new(id: 1)
-      collection  = Collection.new({}, { repository: @repository })
-      collection.add(member)
-      collection.store
-
-      rehydrated_collection = 
-        Collection.new({ id: collection.id }, OpenStruct)
-      rehydrated_collection.fetch
-      rehydrated_collection.to_a.first.must_be_instance_of OpenStruct
-    end
-
     it 'yields members of the collection as the initialized member_class' do
-      dummy_class = Class.new do
-        attr_reader :id
-
-        def initialize(attributes={})
-          @id = attributes.fetch(:id)
-        end #initialize
-      end
-
-      member      = dummy_class.new(id: 1)
-      collection  = Collection.new({}, { repository: @repository })
+      member      = @dummy_class.new(id: 1)
+      collection  = Collection.new({}, @defaults)
       collection.add(member)
       collection.store
 
-      rehydrated_collection = Collection.new(
-        { id: collection.id },
-        { repository: @repository, member_class: dummy_class }
-      )
+      rehydrated_collection = Collection.new({ id: collection.id }, @defaults)
       rehydrated_collection.fetch
-      rehydrated_collection.to_a.first.must_be_instance_of dummy_class
+      rehydrated_collection.to_a.first.must_be_instance_of @dummy_class
     end
 
     it 'returns an enumerator if no block given' do
-      member      = OpenStruct.new(id: 1)
+      member      = @dummy_class.new(id: 1)
       collection  = Collection.new({}, { repository: @repository })
       collection.add(member)
       collection.store
 
-      rehydrated_collection =
-        Collection.new({ id: collection.id }, OpenStruct)
+      rehydrated_collection = Collection.new({ id: collection.id }, @defaults)
       rehydrated_collection.fetch
 
       enumerator = rehydrated_collection.each
-      enumerator.next.must_be_instance_of OpenStruct
+      enumerator.next.must_be_instance_of @dummy_class
     end
   end #each
 
   describe '#fetch' do
     it 'resets the collection with data from the data repository' do
-      member1     = OpenStruct.new(id: 1)
-      member2     = OpenStruct.new(id: 2)
-      collection  = Collection.new({}, { repository: @repository })
+      member1     = @dummy_class.new(id: 1)
+      member2     = @dummy_class.new(id: 2)
+      collection  = Collection.new({}, @defaults)
       collection.add(member1)
       collection.store
 
-      rehydrated_collection = Collection.new(
-        { id: collection.id },
-        { repository: @repository }
-      )
+      rehydrated_collection = Collection.new({ id: collection.id }, @defaults)
       rehydrated_collection.add(member2) 
 
       rehydrated_collection.to_a.must_include(member2)
@@ -99,8 +82,8 @@ describe Collection do
     end
 
     it 'empties the collection if it was not persisted to the repository' do
-      member      = OpenStruct.new(id: 1)
-      collection  = Collection.new({}, { repository: @repository })
+      member      = @dummy_class.new(id: 1)
+      collection  = Collection.new({}, @defaults)
       collection.add(member)
       collection.to_a.length.must_equal 1
       collection.fetch
@@ -110,34 +93,21 @@ describe Collection do
 
   describe '#store' do
     it 'persists the collection to the data repository' do
-      member      = OpenStruct.new(id: 1)
-      collection  = Collection.new({}, { repository: @repository })
+      member      = @dummy_class.new(id: 1)
+      collection  = Collection.new({}, @defaults)
       collection.add(member)
       collection.store
 
-      rehydrated_collection = Collection.new(
-        { id: collection.id },
-        { repository: @repository }
-      )
+      rehydrated_collection = Collection.new({ id: collection.id }, @defaults)
       rehydrated_collection.fetch
-      rehydrated_collection.map { |member| member.id }
-        .must_include member.id.to_s
+      rehydrated_collection.map { |member| member.id }.must_include member.id
     end
   end #store
 
   describe '#to_json' do
     it 'renders a JSON representation of the collection' do
-      dummy_class = Class.new do
-        def initialize(attributes={}); @id = attributes.fetch(:id); end
-        def id; @id; end
-        def to_hash; { id: self.id }; end
-        def fetch; self; end
-      end
-
-      member      = dummy_class.new(id: 1)
-      collection  = Collection.new({
-                      }, { member_class: dummy_class, repository: @repository }
-                    )
+      member      = @dummy_class.new(id: 1)
+      collection  = Collection.new({}, @defaults)
       collection.add(member)
       collection.store
 

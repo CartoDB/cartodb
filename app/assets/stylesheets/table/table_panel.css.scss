@@ -725,6 +725,39 @@
 
         }
 
+        .scroll {
+
+          width: 100%;
+          height: 200px;
+          overflow: auto;
+          outline:none;
+
+          .jspContainer { overflow: hidden; position: relative; }
+          .jspPane { position: absolute; }
+          .jspVerticalBar { position: absolute; top: 0; right: 10px; width: 5px; height: 100%; background: none; }
+          .jspHorizontalBar { position: absolute; bottom: 0; left: 0; width: 100%; height: 16px; background: none; }
+
+          .jspVerticalBar *,
+          .jspHorizontalBar * {
+            margin: 0;
+            padding: 0;
+          }
+
+          .jspCap { display: none; }
+          .jspHorizontalBar .jspCap { float: left; }
+          .jspTrack { background: none; position: relative; }
+          .jspDrag { background: rgba(#BBB, .5); @include border-radius(5px); position: relative; top: 0; left: 0; cursor: pointer; }
+          .jspHorizontalBar .jspTrack, .jspHorizontalBar .jspDrag { float: left; height: 100%; }
+          .jspArrow { background: none; text-indent: -20000px; display: block; cursor: pointer; }
+          .jspArrow.jspDisabled { cursor: default; background: none; }
+          .jspArrow.jspArrowUp { display:none; }
+          .jspVerticalBar .jspArrow { height: 6px; }
+          .jspHorizontalBar .jspArrow { width: 5px; float: left; height: 100%; }
+          .jspVerticalBar .jspArrow:focus { outline: none; }
+          .jspCorner { background: #eeeef4; float: left; height: 100%; }
+
+        }
+
         ul.filters {
           margin: 0 0 40px 0;
 
@@ -740,7 +773,7 @@
             .header {
               position:relative;
               padding: 5px 20px;
-              margin: 0 auto 20px auto;
+              margin: 0 auto 10px auto;
 
               clear:both;
               overflow:hidden;
@@ -765,7 +798,6 @@
 
               background: image-url('icons/remove_filter.png') no-repeat;
             }
-
           }
         }
 

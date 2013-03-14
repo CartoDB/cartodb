@@ -7,16 +7,16 @@ module DataRepository
   class Collection
     include Enumerable
 
-    INTERFACE  = %w{ id add delete store fetch each to_json repository } +
+    INTERFACE  = %w{ signature add delete store fetch each to_json repository } +
                   Enumerable.instance_methods
 
-    attr_reader :id
+    attr_reader :signature
 
-    def initialize(attributes={}, member_class=nil, repository=nil)
+    def initialize(attributes={}, options={})
       @storage      = Set.new
-      @member_class = member_class  || OpenStruct
-      @repository   = repository    || Repository.new
-      @id           = attributes.fetch(:id, @repository.next_id)
+      @member_class = options.fetch(:member_class, OpenStruct)
+      @repository   = options.fetch(:repository, Repository.new)
+      @signature    = attributes.fetch(:signature, @repository.next_id)
     end #initialize
 
     def add(member)
@@ -35,7 +35,7 @@ module DataRepository
     end #each
 
     def fetch
-      self.storage = Set[*repository.fetch(id)]
+      self.storage = Set[*repository.fetch(signature)]
       self
     rescue => exception
       storage.clear
@@ -43,7 +43,7 @@ module DataRepository
     end #fetch
 
     def store
-      repository.store(id, storage.to_a)
+      repository.store(signature, storage.to_a)
       self
     end #store
 

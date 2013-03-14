@@ -6,10 +6,9 @@ require_relative '../../../services/data-repository/structures/collection'
 module CartoDB
   module Visualization
     class Collection
-      def initialize(attributes={}, member_class=Member, repository=nil)
-        repository ||= Visualization.default_repository
-        @collection = DataRepository::Collection
-                       .new(attributes, member_class, repository)
+      def initialize(attributes={}, options={})
+        options     = defaults.merge(options)
+        @collection = DataRepository::Collection.new(attributes, options)
       end #initialize
 
       DataRepository::Collection::INTERFACE.each do |method_name|
@@ -23,6 +22,13 @@ module CartoDB
       private
 
       attr_reader :collection
+
+      def defaults
+        { 
+          repository:   Visualization.default_repository,
+          member_class: Member
+        }
+      end #defautls
     end # Collection
   end # Visualization
 end # CartoDB

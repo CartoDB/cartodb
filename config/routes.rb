@@ -1,3 +1,7 @@
+# encoding: utf-8
+require_relative '../app/controllers/api/json/visualization'
+require_relative '../app/controllers/api/json/overlay'
+
 CartoDB::Application.routes.draw do
   root :to => redirect("/login")
 
@@ -103,6 +107,16 @@ CartoDB::Application.routes.draw do
 
       # Tags
       resources :tags, :only                                    => [:index]
+
+      match '/visualizations',
+        to: CartoDB::Visualization::API
+      match '/visualizations/:visualization_id',
+        to: CartoDB::Visualization::API
+      match '/visualizations/:visualization_id/overlays',
+        to: CartoDB::Overlay::API
+      match '/visualizations/:visualization_id/overlays/:id',
+        to: CartoDB::Overlay::API
     end
   end
 end
+

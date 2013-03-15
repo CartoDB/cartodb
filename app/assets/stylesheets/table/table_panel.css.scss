@@ -708,66 +708,199 @@
 
       div.filters_panel {
 
-        .legend { color: #666666; }
-
-        .range { color: #4DC964; }
-
-        .filters {
-          margin: 0 0 80px 0;
-        }
-
-        .histogram_filter {
-          padding: 20px 0 0 0;
-
-          border-bottom: 1px solid rgba(#999999, .25);
-          @include box-shadow(0px 4px 4px #EDEDED);
-
+        .content {
           text-align:center;
 
-          .hist {
-            margin: auto;
-            position: relative;
-            display: inline-block;
-            height: 151px;
+          .form_combo {
+            margin:auto;
+
+            & > div { text-align: left; }
           }
 
-          .reset {
-            padding-left: 1em;
-            font-size: smaller;
-            color: #ccc;
-          }
-
-          .background.bar {
-            fill: #E5E5E5;
-          }
-
-          .foreground.bar {
-            fill: #4DC964;
-            fill-opacity: .3;
-          }
-
-          .axis path, .axis line {
-            fill: none;
-            stroke: #000;
-            shape-rendering: crispEdges;
-          }
-
-          .axis text {
-            font: 10px sans-serif;
-          }
-
-          .brush rect.extent {
-            fill: #4DC964;
-            fill-opacity: .125;
-          }
-
-          .brush .resize path {
-            fill: #eee;
-            stroke: #666;
+          .no_filters {
+            @include size(102px, 81px);
+            background: image-url('layout/empty_filters.png') no-repeat;
+            margin: 85px auto 20px auto;
           }
 
         }
-      } //div.filters_panel
+
+        .scroll {
+
+          width: 100%;
+          height: 200px;
+          overflow: auto;
+          outline:none;
+
+          .jspContainer { overflow: hidden; position: relative; }
+          .jspPane { position: absolute; }
+          .jspVerticalBar {
+            @include opacity(0);
+            @include simple-transition(opacity, 250ms);
+            @include position(0, 10px, false, false);
+            @include size(5px, 100%);
+            background: none;
+            @include transition-delay(250ms);
+          }
+          .jspHorizontalBar { position: absolute; bottom: 0; left: 0; width: 100%; height: 16px; background: none; }
+
+          .jspVerticalBar *,
+          .jspHorizontalBar * {
+            margin: 0;
+            padding: 0;
+          }
+
+          .jspCap { display: none; }
+          .jspHorizontalBar .jspCap { float: left; }
+          .jspTrack { background: none; position: relative; }
+          .jspDrag { background: rgba(#BBB, .5); @include border-radius(5px); position: relative; top: 0; left: 0; cursor: pointer; }
+          .jspHorizontalBar .jspTrack, .jspHorizontalBar .jspDrag { float: left; height: 100%; }
+          .jspArrow { background: none; text-indent: -20000px; display: block; cursor: pointer; }
+          .jspArrow.jspDisabled { cursor: default; background: none; }
+          .jspArrow.jspArrowUp { display:none; }
+          .jspVerticalBar .jspArrow { height: 6px; }
+          .jspHorizontalBar .jspArrow { width: 5px; float: left; height: 100%; }
+          .jspVerticalBar .jspArrow:focus { outline: none; }
+          .jspCorner { background: #eeeef4; float: left; height: 100%; }
+
+        }
+
+        ul.filters {
+          margin: 0 0 40px 0;
+
+          .filter {
+
+            padding: 10px 0 0 0;
+
+            border-bottom: 1px solid rgba(#999999, .25);
+            @include box-shadow(0px 4px 4px #EDEDED);
+
+            text-align:center;
+
+            .header {
+              position:relative;
+              padding: 5px 20px;
+              margin: 0 auto 10px auto;
+
+              clear:both;
+              overflow:hidden;
+
+              .legend { font-size:13px; color: #666666; }
+              .range  { font-size:13px; color: #4DC964; }
+              .count  { font-size:13px; color: #CCCCCC; }
+
+              .title  { float: left; }
+              .remove { float: right; }
+            }
+
+            &:hover .remove { @include opacity(1); }
+
+            .remove {
+              display:block;
+              @include opacity(0);
+
+              @include size(12px);
+              @include position(5px, 5px, false, false);
+              @include simple-transition(opacity, 150ms);
+
+              background: image-url('icons/remove_filter.png') no-repeat;
+            }
+          }
+        }
+
+        .filters .filter.selection {
+
+          &:hover .scroll .jspVerticalBar { @include opacity(1); }
+
+
+          .header {
+            padding-left: 0;
+            padding-right: 0;
+          }
+
+          .header, .items {
+            @include box-sizing(border-box);
+            width:470px;
+          }
+
+          .items {
+            text-align:left;
+            margin: auto;
+
+            li {
+              position:relative;
+              color: #666666;
+              font-size:13px;
+              border-top: 1px solid rgba(#999, .25);
+              padding: 10px 0 10px 15px;
+              margin: 0 0 5px 0;
+
+              cursor: pointer;
+
+              &:before {
+                @include position(12px, false, false, 0);
+                content: '';
+                @include size(9px);
+
+
+                background: #fff;
+                border: none;
+                @include border-radius(200px);
+                @include scale(0);
+                @include simple-transition(scale, 220ms);
+              }
+
+              &:after {
+                @include opacity(1);
+                @include position(12px, false, false, 0);
+                content: '';
+                @include size(7px);
+
+                background: none;
+                border: 1px solid #82D992;
+                @include border-radius(200px);
+                @include simple-transition(opacity, 220ms);
+              }
+
+              &.selected:after {
+                @include opacity(0);
+              }
+              &.selected:before {
+                background: #82D992;
+                @include scale(1);
+              }
+
+              &.selected .value {
+                background: #82D992;
+                color:#fff;
+              }
+
+              .value {
+                float:right;
+                font-size:10px;
+                padding: 2px 4px;
+                border:1px solid #82D992;
+                background:#fff;
+                @include border-radius(2px);
+                color:#82D992;
+
+                @include simple-transition(background-color, 100ms);
+              }
+            }
+          }
+        }
+
+        .filters .filter.histogram {
+          .hist { margin: auto; position: relative; display: inline-block; bottom: -3px; }
+          .background.bar { fill: #E5E5E5; }
+          .foreground.bar { fill: #4DC964; fill-opacity: .3; }
+          .axis path, .axis line { fill: none; stroke: #000; shape-rendering: crispEdges; }
+          .axis text { font: 10px sans-serif; }
+          .brush rect.extent { fill: #CCCCCC; fill-opacity: .2; }
+          .brush .resize path { fill: #eee; stroke: #666; }
+        }
+
+      }
     }
   }
 

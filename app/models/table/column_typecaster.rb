@@ -8,7 +8,10 @@ module CartoDB
         'boolean'           => 'number_to_boolean'
       },
       'boolean' => {
-        'double precision'  => 'boolean_to_number'
+        'double precision'  => 'boolean_to_number',
+        'date'              => 'boolean_to_datetime',
+        'datetime'          => 'boolean_to_datetime',
+        'timestamp'         => 'boolean_to_datetime'
       },
       'string' => {
         'date'              => 'string_to_datetime',
@@ -134,6 +137,21 @@ module CartoDB
         AND #{column_name} IS NOT NULL
       })
     end #boolean_to_number
+
+    def boolean_to_datetime
+      # cast to string
+      user_database.run(%Q{
+        ALTER TABLE "#{table_name}"
+        ALTER COLUMN #{column_name} TYPE text
+        USING cast(#{column_name} as text)
+      })
+      
+      # nullify the column
+      user_database.run(%Q{
+        UPDATE "#{table_name}"
+        SET #{column_name} = NULL
+      })
+    end #boolean_to_datetime
 
     def number_to_boolean
       # normalise 0 to falsy else truthy

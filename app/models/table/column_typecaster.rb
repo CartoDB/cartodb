@@ -5,7 +5,10 @@ module CartoDB
 
     CONVERSION_MAP = {
       'float' => {
-        'boolean'           => 'number_to_boolean'
+        'boolean'           => 'number_to_boolean',
+        'date'              => 'number_to_datetime',
+        'datetime'          => 'number_to_datetime',
+        'timestamp'         => 'number_to_datetime'
       },
       'boolean' => {
         'double precision'  => 'boolean_to_number',
@@ -38,9 +41,6 @@ module CartoDB
       # conversions ok by default:
       #   * number => string
       #   * boolean => string
-      # TODO:
-      #   * number  => datetime
-      #   * boolean => datetime
 
       user_database.transaction do
         old_type = column_type(column_name)
@@ -132,6 +132,8 @@ module CartoDB
       straight_cast('text')
       nullify(column_name)
     end #boolean_to_datetime
+
+    alias_method :number_to_datetime, :boolean_to_datetime
 
     def number_to_boolean
       straight_cast('text')

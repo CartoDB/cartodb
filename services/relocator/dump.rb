@@ -45,9 +45,9 @@ module CartoDB
         rdbms.rename_user(relocation.token, environment.database_username)
 
         to_stdout("Finished dump stage for relocation ID: #{relocation.id}")
-      rescue => exception
-        puts exception
-        rdbms.rename_user(relocation.token, environment.database_username)
+      #rescue => exception
+        #puts exception
+        #rdbms.rename_user(relocation.token, environment.database_username)
       end #run
 
       private

@@ -16,7 +16,8 @@ class DataImport < Sequel::Model
   include CartoDB::MiniSequel
   include ActiveModel::Validations
 
-  REDIS_LOG_KEY_PREFIX = 'importer'
+  REDIS_LOG_KEY_PREFIX          = 'importer'
+  REDIS_LOG_EXPIRATION_IN_SECS  = 3600 * 24 * 2 # 2 days
 
   attr_accessor :append, :migrate_table, :table_copy, :from_query
   attr_reader   :log
@@ -29,13 +30,18 @@ class DataImport < Sequel::Model
 
   def instantiate_log
     uuid = self.logger
+
     if valid_uuid?(uuid)
       self.log  = TrackRecord::Log.new(
-                    id:     uuid.to_s, 
-                    prefix: REDIS_LOG_KEY_PREFIX
-                  ).fetch 
+        id:         uuid.to_s, 
+        prefix:     REDIS_LOG_KEY_PREFIX,
+        expiration: REDIS_LOG_EXPIRATION_IN_SECS
+      ).fetch 
     else
-      self.log  = TrackRecord::Log.new(prefix: REDIS_LOG_KEY_PREFIX)
+      self.log  = TrackRecord::Log.new(
+        prefix:     REDIS_LOG_KEY_PREFIX,
+        expiration: REDIS_LOG_EXPIRATION_IN_SECS
+      )
     end
   end #instantiate_log
   

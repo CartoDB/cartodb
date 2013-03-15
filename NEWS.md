@@ -1,7 +1,19 @@
-2.0.6
+2g0.6 (DD/MM/YY)
 -----
+* If the the_geom value is null, it appears as null in the table and not as GeoJSON.
+* Table hover styles fixed.
+* Embeding map with an script is possible now (iframe still supported).
+* Brand new share window.
+* Enable/disable scroll wheel zoom in the embeded maps.
+* Revamped visualization wizard's selector.
+* Added new cool wizard for point maps: Intensity.
+* New upgrade window.
+* when converting a column from string type to number type, figures using
+  decimal comma and point as grouping separator (e.g. 1.234.567,1234), are 
+  appropriately casted to floats using a decimal point separator 
+  (e.g. 1234567.1234)
 
-2.0.5 (DD/MM/YY)
+2.0.5 (05/03/13)
 -----
 * Add new quantification methods, CDB_JenksBins etc.
 * Modal confirmation when deletes a row.
@@ -10,7 +22,6 @@
 
 2.0.4 (19/02/13)
 -----
-
 You'll need to run database migrations and reload sql functions after upgrating:
 
 bundle exec rake db:migrate

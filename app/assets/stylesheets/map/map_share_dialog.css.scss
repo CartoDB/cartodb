@@ -1,4 +1,3 @@
-
 /**
  * share map dialog
  */
@@ -9,16 +8,17 @@
 
 // Map preview
 .map_share_dialog {
+
   div.head {
     padding:30px 40px!important;
   }
 
-  .map_wrapper {
+  .cartodb-map_wrapper {
     position: relative;
     @include inline-block();
     vertical-align:top;
     width:480px;
-    height: 290px;
+    height: 300px;
     border: 1px solid #CCC;
     margin:0;
     @include translateZ(10px);
@@ -26,7 +26,7 @@
     @include translate3d(0,0,10px);
     overflow:hidden!important;
 
-    .map {
+    .cartodb-map {
       position:absolute;
       top:65px;
       bottom:0;
@@ -50,20 +50,21 @@
       overflow:hidden;
     }
 
-    div.header {
+    div.cartodb-header {
       div.social {display:none; letter-spacing:-4px;}
     }
 
-    div.search_box {display:none;}
+    div.cartodb-searchbox {display:none;}
 
-    div#zoom {top:0;}
+
+    div.cartodb-zoom {top:0;}
   }
 
   // Sharing options
   div.sharing_options {
     display:inline-block!important;
     vertical-align:top;
-    width:156px;
+    width:173px;
     margin-left:25px;
 
     h5 {
@@ -105,11 +106,69 @@
     li {
       @include inline-block();
     }
-  } // ul.format_selector
-
-  input.url {
-    width:604px;
   }
+
+  .input {
+
+    input {
+      width:484px;
+      padding: 0;
+      margin: 0;
+      overflow:hidden;
+      border:none;
+      outline:none;
+
+      &:focus { @include box-shadow(none); }
+
+    }
+
+    ul {
+      clear:both;
+      overflow:hidden;
+      @include position(false, 45px, 11px, false);
+
+      li {
+        float:left;
+        background:#E7E7E7;
+        padding: 5px 6px;
+        margin: 0 1px 0 0;
+        border:none!important;
+        line-height:14px;
+
+        &:hover {
+          color: #fff;
+        }
+
+        &:first-child { @include border-radius(3px 0 0 3px); }
+        &:last-child  { margin: 0; @include border-radius(0 3px 3px 0); }
+
+        &.selected {
+          background:$cBlue;
+          a { color: #fff; }
+        }
+      }
+
+    }
+
+
+    display:block;
+    margin-top:5px;
+    padding:14px 50px 14px 14px;
+    @include border-radius(3px);
+    line-height:normal;
+    border:1px solid #CCCCCC;
+    background:#F5F5F5;
+    text-overflow:ellipsis;
+    overflow:hidden;
+    white-space:nowrap;
+    font-size:15px;
+
+    &:hover {
+      border-color:#999999;
+    }
+
+  }
+
 
   div.description {
     margin: 0 0 30px;

@@ -21,15 +21,15 @@
     </style>
 
     <% if Rails.env.development? %>
-        <%= stylesheet_link_tag 'cdb/themes/css/cartodb' %>
-        <!--[if lte IE 8]>
-            <%= stylesheet_link_tag 'cdb/themes/css/cartodb.ie' %>
-        <![endif]-->
+      <%= stylesheet_link_tag 'cdb/themes/css/cartodb' %>
+      <!--[if lte IE 8]>
+      <%= stylesheet_link_tag 'cdb/themes/css/cartodb.ie' %>
+      <![endif]-->
     <% else %>
-        <link rel="stylesheet" href="http://libs.cartodb.com/cartodb.js/v2/themes/css/cartodb.css" />
-        <!--[if lte IE 8]>
-            <link rel="stylesheet" href="http://libs.cartodb.com/cartodb.js/v2/themes/css/cartodb.ie.css" />
-        <![endif]-->
+      <link rel="stylesheet" href="http://libs.cartodb.com/cartodb.js/v2/themes/css/cartodb.css" />
+      <!--[if lte IE 8]>
+      <link rel="stylesheet" href="http://libs.cartodb.com/cartodb.js/v2/themes/css/cartodb.ie.css" />
+      <![endif]-->
     <% end %>
 
   </head>
@@ -78,7 +78,8 @@
           'title': bool_fn,
           'description': bool_fn,
           'shareable': bool_fn,
-          'cartodb_logo': logo_fn
+          'cartodb_logo': logo_fn,
+          'scrollwheel': bool_fn
         });
 
         <% if Rails.env.development? %>
@@ -89,6 +90,7 @@
           // add here your code
         });
       });
+
     </script>
 
     <%= render 'shared/analytics', ua: Cartodb.config[:google_analytics]["embeds"] %>

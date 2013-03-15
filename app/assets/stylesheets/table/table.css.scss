@@ -339,17 +339,6 @@
           background:white;
           border-top:1px solid #ECECEC;
 
-          &:hover {
-            background:#E8F9EC;
-            border-color:#CCCCCC;
-
-            & + tr {border-color:#CCCCCC;}
-
-            div.row_header:before, div.row_header:after {
-              display: block !important;
-            }
-          }
-
           td {
             &:not(.row_header) {
               div.cell:not(.disabled) {
@@ -455,7 +444,7 @@
             background:#E8F9EC;
             border-color:#CCCCCC;
 
-            & + tr {border-color:#CCCCCC;}
+            & + tr {border-top-color:#CCCCCC;}
 
             div.row_header:before, div.row_header:after {
               display: block !important;

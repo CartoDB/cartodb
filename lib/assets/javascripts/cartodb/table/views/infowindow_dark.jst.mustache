@@ -5,7 +5,7 @@
       {{#content.fields}}
         {{#title}}<h4>{{title}}</h4>{{/title}}
         {{#value}}
-          <p {{#loading}}class="loading"{{/loading}}>
+          <p {{#type}}class="{{ type }}"{{/type}}>
             {{#url}}
               <a href="{{ url }}" target="_blank">{{ value }}</a>
             {{/url}}

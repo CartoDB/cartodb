@@ -718,6 +718,7 @@
           }
 
           .no_filters {
+            display:none;
             @include size(102px, 81px);
             background: image-url('layout/empty_filters.png') no-repeat;
             margin: 85px auto 20px auto;

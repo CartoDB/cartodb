@@ -718,11 +718,18 @@
           }
 
           .no_filters {
+            display:none;
             @include size(102px, 81px);
             background: image-url('layout/empty_filters.png') no-repeat;
             margin: 85px auto 20px auto;
           }
 
+        }
+
+        .white-gradient-shadow {
+          @include position(false, false, 0, 0);
+          @include size(100%, 20px);
+          @extend .white-gradient-shadow;
         }
 
         .scroll {
@@ -769,6 +776,7 @@
           margin: 0 0 40px 0;
 
           .filter {
+            position:relative;
 
             padding: 10px 0 0 0;
 
@@ -812,7 +820,6 @@
 
           &:hover .scroll .jspVerticalBar { @include opacity(1); }
 
-
           .header {
             padding-left: 0;
             padding-right: 0;
@@ -821,6 +828,11 @@
           .header, .items {
             @include box-sizing(border-box);
             width:470px;
+          }
+
+          .fields {
+            position:relative;
+            margin: 0 0 40px 0;
           }
 
           .items {

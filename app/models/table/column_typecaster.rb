@@ -49,9 +49,13 @@ module CartoDB
       end
     end #run
 
+    protected
+
+    attr_reader :new_type, :column_name
+
     private
 
-    attr_reader :user_database, :table_name, :column_name, :new_type, :old_type
+    attr_reader :user_database, :table_name, :old_type
 
     def conversion_method_for(old_type, new_type)
       CONVERSION_MAP.fetch(old_type.to_s).fetch(new_type.to_s)
@@ -63,7 +67,7 @@ module CartoDB
       }.flatten.last.fetch(:type).to_s
     end #column_type
 
-    def straight_cast
+    def straight_cast(new_type=self.new_type)
       user_database.run(%Q{
         ALTER TABLE "#{table_name}"
         ALTER COLUMN #{column_name}
@@ -75,18 +79,17 @@ module CartoDB
     def string_to_number
       thousand, decimal = get_digit_separators_for(column_name)
       normalize_digit_separators(thousand, decimal)
-      set_to_null_if_non_convertible
+      nullify_if_non_convertible
     end #string_to_number
+
+    def string_to_datetime
+      normalize_empty_string_to_null
+    end #string_to_datetime
 
     def string_to_boolean
       falsy = "0|f|false"
 
-      # normalise empty string to NULL
-      user_database.run(%Q{
-        UPDATE "#{table_name}"
-        SET #{column_name}=NULL
-        WHERE trim(\"#{column_name}\") ~* '^$'
-      })
+      normalize_empty_string_to_null
 
       # normalise truthy (anything not false and NULL is true...)
       user_database.run(%Q{
@@ -104,22 +107,9 @@ module CartoDB
       })
     end #string_to_boolean
 
-    def string_to_datetime
-      # normalise empty string to NULL
-      user_database.run(%Q{
-        UPDATE "#{table_name}"
-        SET "#{column_name}" = NULL
-        WHERE \"#{column_name}\" = ''
-      })
-    end #string_to_datetime
-
     def boolean_to_number
       # first to string
-      user_database.run(%Q{
-        ALTER TABLE "#{table_name}"
-        ALTER COLUMN #{column_name} TYPE text
-        USING cast(#{column_name} as text)
-      })
+      straight_cast('text')
 
       # normalise truthy to 1
       user_database.run(%Q{
@@ -139,29 +129,14 @@ module CartoDB
     end #boolean_to_number
 
     def boolean_to_datetime
-      # cast to string
-      user_database.run(%Q{
-        ALTER TABLE "#{table_name}"
-        ALTER COLUMN #{column_name} TYPE text
-        USING cast(#{column_name} as text)
-      })
-      
-      # nullify the column
-      user_database.run(%Q{
-        UPDATE "#{table_name}"
-        SET #{column_name} = NULL
-      })
+      straight_cast('text')
+      nullify(column_name)
     end #boolean_to_datetime
 
     def number_to_boolean
-      # normalise 0 to falsy else truthy
-      # first to string
-      user_database.run(%Q{
-        ALTER TABLE "#{table_name}"
-        ALTER COLUMN #{column_name} TYPE text
-        USING cast(#{column_name} as text)
-      })
+      straight_cast('text')
 
+      # normalise 0 to falsy else truthy
       # normalise truthy
       user_database.run(%Q{
         UPDATE "#{table_name}"
@@ -178,13 +153,28 @@ module CartoDB
       })
     end #number_to_boolean
 
-    def set_to_null_if_non_convertible
+    def normalize_empty_string_to_null
+      user_database.run(%Q{
+        UPDATE "#{table_name}"
+        SET "#{column_name}" = NULL
+        WHERE \"#{column_name}\" = ''
+      })
+    end #normalize_empty_string_to_null
+
+    def nullify(column_name=self.column_name)
+      user_database.run(%Q{
+        UPDATE "#{table_name}"
+        SET #{column_name} = NULL
+      })
+    end #nullify
+
+    def nullify_if_non_convertible
       user_database.run(%Q{
         UPDATE "#{table_name}"
         SET #{column_name}=NULL
         WHERE trim(\"#{column_name}\") !~* '^([-+]?[0-9]+(\.[0-9]+)?)$'
       })
-    end #set_to_null_if_non_convertible
+    end #nullify_if_non_convertible
 
     def get_digit_separators_for(column_name)
       user_database.execute(%Q{

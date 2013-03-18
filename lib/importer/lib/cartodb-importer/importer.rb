@@ -2,6 +2,10 @@
 require 'iconv'
 require_relative './decompressors/kmz'
 require_relative './decompressors/unp'
+require_relative './preprocessors/gpx'
+require_relative './preprocessors/json'
+require_relative './preprocessors/kml'
+require_relative './preprocessors/xls'
 
 module CartoDB
   class Importer
@@ -10,14 +14,6 @@ module CartoDB
     class << self
       attr_accessor :debug
     end
-
-    DECOMPRESSORS = {
-      tar:  CartoDB::UNP,
-      zip:  CartoDB::UNP,
-      gz:   CartoDB::UNP,
-      tgz:  CartoDB::UNP,
-      kmz:  CartoDB::KMZ
-    }
 
     @@debug = true
     RESERVED_COLUMN_NAMES = %W{ oid tableoid xmin cmin xmax cmax ctid }
@@ -201,13 +197,12 @@ module CartoDB
           @entries << data[:path]
           @working_data = data
           @working_data[:suggested_name] = get_valid_name(@working_data[:suggested_name])
-          preproc = CartoDB::Import::Preprocessor.create(data[:ext], self.to_import_hash)
+          preprocessor = preprocessor_for(data.fetch(:ext))
           @data_import.refresh
 
-          if preproc
-
+          if preprocessor
             begin
-              out = preproc.process!
+              out = preprocessor.process!
 
               # Return raw data if preprocessor returns false
               # For example: we don't want to run JSON preprocessor
@@ -220,9 +215,11 @@ module CartoDB
               end
             rescue
               @data_import.reload
-              errors << OpenStruct.new({ :description => @data_import.get_error_text[:title],
-                                         :stack       => @data_import.get_error_text[:what_about],
-                                         :code        => @data_import.error_code })
+              errors << OpenStruct.new(
+                description:  @data_import.get_error_text[:title],
+                stack:        @data_import.get_error_text[:what_about],
+                code:         @data_import.error_code
+              )
             end
           else
             processed_imports << data
@@ -393,6 +390,23 @@ module CartoDB
       return "http://api.openstreetmap.org/api/0.6/map?bbox=#{lon1},#{lat1},#{lon2},#{lat2}"
     end
 
+    DECOMPRESSORS = {
+      tar:  CartoDB::UNP,
+      zip:  CartoDB::UNP,
+      gz:   CartoDB::UNP,
+      tgz:  CartoDB::UNP,
+      kmz:  CartoDB::KMZ
+    }
+
+    PREPROCESSORS = {
+      gpx:  CartoDB::GPX,
+      kml:  CartoDB::KML,
+      json: CartoDB::JSON,
+      xls:  CartoDB::XLS,
+      xlsx: CartoDB::XLS,
+      ods:  CartoDB::XLS
+    }
+
     def decompressor_for(extension)
       key = extension.to_s.delete('.').to_sym
       return false unless DECOMPRESSORS.keys.include?(key)
@@ -403,6 +417,18 @@ module CartoDB
         suggested_name: @suggested_name
       )
     end #decompressor_for
-  end
 
-end
+    def preprocessor_for(extension)
+      key = extension.to_s.delete('.').to_sym
+      return false unless PREPROCESSORS.keys.include?(key)
+
+      PREPROCESSORS.fetch(key).new(
+        data_import:    @data_import,
+        path:           @path,
+        working_data:   @working_data,
+        ext:            @ext
+      )
+    end #preprocessor_for
+  end # Importer
+end # CartoDB
+

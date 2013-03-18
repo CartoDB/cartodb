@@ -1,54 +1,65 @@
+# encoding: utf-8
+require 'tempfile'
+
 module CartoDB
-  module Import
-    class KMZ < CartoDB::Import::Decompressor
-      #TODO: do we really need this still?
-      register_decompressor :kmz
+  class KMZ
+    # TODO: do we really need this still?
+    attr_accessor :data_import, :path, :suggested_name, :tmp_dir
 
-      def process!
-        log "Importing zip file: #{@path}"
-        @data_import = DataImport.find(:id=>@data_import_id)
-        @data_import.log_update("decompressing file #{@path}")
+    def initialize(arguments)
+      @path           = arguments.fetch(:path)
+      @suggested_name = arguments.fetch(:suggested_name)
+      @data_import    = arguments.fetch(:data_import)
+      tempfile        = Tempfile.new("")
+      @tmp_dir        = tempfile.path
+      tempfile.close!
+    end #initialize
 
-        # generate a temp file for import
-        tmp_dir = temporary_filename
+    def process!
+      data_import.log_update("Importing zip file: #{path}")
+      import_data     = []
 
-        import_data = []
-        Zip::ZipFile.foreach(@path) do |entry|
-          name = entry.name.split('/').last
-          orig = name
-          next if name =~ /^(\.|\_{2})/
+      data_import.log_update("Decompressing file: #{path}")
+      Zip::ZipFile.foreach(path) do |entry|
+        name = entry.name.split('/').last
+        orig = name
+        next if name =~ /^(\.|\_{2})/
 
-          # cleans spaces out of archived file names
-          if name.include? ' '
-            name = name.gsub(' ','_')
-          end
+        # cleans spaces out of archived file names
+        name = name.gsub(' ','_')
 
-          #fixes problem of different SHP archive files with different case patterns
-          FileUtils.mv("#{path}/#{orig}", "#{path}/#{name.downcase}") unless name == orig.downcase
-          name = name.downcase
+        #fixes problem of different SHP archive files 
+        # with different case patterns
+        unless name == orig.downcase
+          FileUtils.mv("#{path}/#{orig}", "#{path}/#{name.downcase}") 
+        end 
+        name = name.downcase
 
-          # temporary filename. no collisions.
-          tmp_path = "#{tmp_dir}.#{name}"
+        # temporary filename. no collisions.
+        tmp_path = "#{tmp_dir}.#{name}"
 
-          if CartoDB::Importer::SUPPORTED_FORMATS.include?(File.extname(name))
-            unless @suggested_name.nil?
-              suggested = @suggested_name
-            else
-              suggested = File.basename( name, File.extname(name)).sanitize
-            end
-            import_data << {
-              :ext => File.extname(name),
-              :suggested_name => suggested,
-              :path => tmp_path
-            }
-            log "Found original @ext file named #{name} in path #{@path}"
-          end
-          entry.extract(tmp_path)
+        if CartoDB::Importer::SUPPORTED_FORMATS.include?(File.extname(name))
+          import_data << {
+            ext:            File.extname(name),
+            suggested_name: name_from(name, suggested_name),
+            path:           tmp_path
+          }
+          data_import.log_update(
+            "Found original @ext file named #{name} in path #{path}"
+          )
         end
-
-        # construct return variables
-        import_data
+        entry.extract(tmp_path)
       end
-    end
-  end
-end
+
+      import_data
+    end #process!
+
+    private
+
+    def name_from(name, suggested_name=nil )
+      return suggested_name unless suggested_name.nil?
+      File.basename(name, File.extname(name)).sanitize
+    end #name_from
+  end # KMZ
+end # CartoDB
+

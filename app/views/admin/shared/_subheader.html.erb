@@ -2,13 +2,13 @@
   <section class="stats">
   <div class="inner">
     <ul>
-      <li>
+      <li class="tables">
       <div class="progress">
         <span class="" style="width:2%"></span>
       </div>
       <p class="center"><strong>0 of 0</strong> tables created</p>
       </li>
-      <li>
+      <li class="size">
       <div class="progress">
         <span class="" style="width:2%"></span>
       </div>
@@ -18,8 +18,8 @@
       <div class="stats" data-requests="0"></div>
       <p class="center"><strong>0</strong> map views the last 21 days</p>
       </li>
-      <li>
-      <div class="badge <%= current_user.account_type_name %>"></div>
+      <li class="badge">
+      <i class="<%= current_user.account_type_name %>"></i>
       </li>
     </ul>
   </div>

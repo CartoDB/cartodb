@@ -56,10 +56,11 @@ gem "builder",                 "3.0.0"
 gem "state_machine",           "1.1.2"
 
 # Service components (/services)
-gem "virtus"
+gem "virtus",                  "1.0.0.beta1"
 gem "aequitas"
 gem "uuidtools"
 gem "rubyzip",                  "0.9.9"
+gem "sinatra",                  "1.3.4", require: 'sinatra/base'
 
 # TODO we should be able to remove this using the new
 #      Rails routes DSL

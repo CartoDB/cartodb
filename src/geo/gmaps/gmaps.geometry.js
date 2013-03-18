@@ -99,7 +99,6 @@ function PathView(geometryModel) {
   
 
   var style = _.clone(geometryModel.get('style')) || {};
-  console.log(style);
 
   this.geom = new GeoJSON (
     geometryModel.get('geojson'),
@@ -179,10 +178,13 @@ PathView.getGeoJSON = function(geom, gType) {
       coords = [_coord(g.getPosition())]
     } else if(gType == 'Polygon') {
       coords = [_coords(g.getPath())];
+      coords[0].push(_coord(g.getPath().getAt(0)));
     } else if(gType == 'MultiPolygon') {
       coords = [];
       for(var p = 0; p < g.getPaths().length; ++p) {
-        coords.push(_coords(g.getPaths().getAt(p)));
+        var c = _coords(g.getPaths().getAt(p));
+        c.push(_coord(g.getPaths().getAt(p).getAt(0)));
+        coords.push(c);
       }
       coords = [coords]
     } else if(gType == 'LineString') {

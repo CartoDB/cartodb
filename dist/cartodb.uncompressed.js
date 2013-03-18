@@ -1,6 +1,6 @@
-// cartodb.js version: 2.0.23
+// cartodb.js version: 2.0.25-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: 9a35f1b919958d3c560e90f03d83be479d860a25
+// sha: 1ebd44a1f7371512e51e9e63e11dbc91b64f36f2
 (function() {
   var root = this;
 
@@ -15457,7 +15457,7 @@ $(function(){
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '2.0.23';
+    cdb.VERSION = '2.0.25-dev';
 
     cdb.CARTOCSS_VERSIONS = {
       '2.0.0': '',
@@ -16552,7 +16552,7 @@ cdb.geo.MapLayer = cdb.core.Model.extend({
 
     var myType  = me.type? me.type : me.options.type
       , itsType = other.type? other.type : other.options.type;
-    
+
     if(myType && (myType === itsType)) {
 
       if(myType === 'Tiled') {
@@ -16718,6 +16718,7 @@ cdb.geo.Map = cdb.core.Model.extend({
     zoom: 3,
     minZoom: 0,
     maxZoom: 28,
+    scrollwheel: true,
     provider: 'leaflet'
   },
 
@@ -16745,6 +16746,18 @@ cdb.geo.Map = cdb.core.Model.extend({
   setZoom: function(z) {
     this.set({
       zoom: z
+    });
+  },
+
+  enableScrollWheel: function() {
+    this.set({
+      scrollwheel: true
+    });
+  },
+
+  disableScrollWheel: function() {
+    this.set({
+      scrollwheel: false
     });
   },
 
@@ -16795,8 +16808,8 @@ cdb.geo.Map = cdb.core.Model.extend({
   },
 
   /**
-   * return getViewbounds if it is set
-   */
+  * return getViewbounds if it is set
+  */
   getViewBounds: function() {
     if(this.has('view_bounds_sw') && this.has('view_bounds_ne')) {
       return [
@@ -16821,11 +16834,11 @@ cdb.geo.Map = cdb.core.Model.extend({
     /*
     var z = layer.get('maxZoom');
     if(_.isNumber(z)) {
-      this.set({ maxZoom: z });
+    this.set({ maxZoom: z });
     }
     z = layer.get('minZoom');
     if(_.isNumber(z)) {
-      this.set({ minZoom: z });
+    this.set({ minZoom: z });
     }
     */
   },
@@ -16872,8 +16885,8 @@ cdb.geo.Map = cdb.core.Model.extend({
   },
 
   /**
-   * Checks if the base layer is already in the map as base map
-   */
+  * Checks if the base layer is already in the map as base map
+  */
   isBaseLayerAdded: function(layer) {
     var baselayer = this.getBaseLayer()
     return baselayer && layer.isEqual(baselayer);
@@ -16962,12 +16975,12 @@ cdb.geo.Map = cdb.core.Model.extend({
 
   setBounds: function(b) {
     this.attributes.view_bounds_sw = [
-        b[0][0],
-        b[0][1]
+      b[0][0],
+      b[0][1]
     ];
     this.attributes.view_bounds_ne = [
-        b[1][0],
-        b[1][1]
+      b[1][0],
+      b[1][1]
     ];
 
     // change both at the same time
@@ -16998,14 +17011,14 @@ cdb.geo.Map = cdb.core.Model.extend({
   // adapted from leaflat src
   getBoundsZoom: function(boundsSWNE, mapSize) {
     var size = [mapSize.x, mapSize.y],
-        zoom = this.get('minZoom') || 0,
-        maxZoom = this.get('maxZoom') || 24,
-        ne = boundsSWNE[1],
-        sw = boundsSWNE[0],
-        boundsSize = [],
-        nePoint,
-        swPoint,
-        zoomNotFound = true;
+    zoom = this.get('minZoom') || 0,
+    maxZoom = this.get('maxZoom') || 24,
+    ne = boundsSWNE[1],
+    sw = boundsSWNE[0],
+    boundsSize = [],
+    nePoint,
+    swPoint,
+    zoomNotFound = true;
 
     do {
       zoom++;
@@ -17069,8 +17082,8 @@ cdb.geo.MapView = cdb.core.View.extend({
   },
 
   /**
-   * add a infowindow to the map
-   */
+  * add a infowindow to the map
+  */
   addInfowindow: function(infoWindowView) {
     if (infoWindowView) {
       this.$el.append(infoWindowView.render().el);
@@ -17128,6 +17141,7 @@ cdb.geo.MapView = cdb.core.View.extend({
     this.map.bind('change:view_bounds_ne',  this._changeBounds, this);
     this.map.bind('change:zoom',            this._setZoom, this);
     this.map.bind('change:center',          this._setCenter, this);
+    this.map.bind('change:scrollwheel',     this._setScrollWheel, this);
     this.map.bind('change:attribution',     this._setAttribution, this);
   },
 
@@ -17216,7 +17230,7 @@ cdb.geo.MapView = cdb.core.View.extend({
   },
 
   _saveLocation: _.debounce(function() {
-      this.map.save(null, { silent: true });
+    this.map.save(null, { silent: true });
   }, 1000),
 
   _addGeometry: function(geom) {
@@ -17236,11 +17250,11 @@ cdb.geo.MapView = cdb.core.View.extend({
   _getClass: function(provider) {
     var mapViewClass = cdb.geo.LeafletMapView;
     if(provider === 'googlemaps') {
-        if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
-          mapViewClass = cdb.geo.GoogleMapsMapView;
-        } else {
-          cdb.log.error("you must include google maps library _before_ include cdb");
-        }
+      if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
+        mapViewClass = cdb.geo.GoogleMapsMapView;
+      } else {
+        cdb.log.error("you must include google maps library _before_ include cdb");
+      }
     }
     return mapViewClass;
   },
@@ -18563,7 +18577,7 @@ CartoDBLayerCommon.prototype = {
         cartodb_link.setAttribute('target','_blank');
         var protocol = location.protocol.indexOf('https') === -1 ? 'http': 'https';
         cartodb_link.innerHTML = "<img width='71' height='29' src='" + protocol + "://cartodb.s3.amazonaws.com/static/new_logo" + (is_retina ? '@2x' : '') + ".png' style='position:absolute; bottom:" + 
-          ( position.bottom || 0 ) + "px; left:" + ( position.left || 0 ) + "px; display:block; border:none; outline:none' alt='CartoDB' title='CartoDB' />";
+          ( position.bottom || 0 ) + "px; left:" + ( position.left || 0 ) + "px; display:block; width:71px!important; height:29px!important; border:none; outline:none;' alt='CartoDB' title='CartoDB' />";
       },( timeout || 0 ));
     }
   },
@@ -19524,7 +19538,7 @@ cdb.geo.LeafLetLayerCartoDBView = LeafLetLayerCartoDBView;
 */
 (function() {
 
-  if(typeof(L) == "undefined") 
+  if(typeof(L) == "undefined")
     return;
 
   /**
@@ -19557,8 +19571,12 @@ cdb.geo.LeafLetLayerCartoDBView = LeafLetLayerCartoDBView;
       if(!this.options.map_object) {
         this.map_leaflet = new L.Map(this.el, mapConfig);
 
-        // remove the "powered by leaflet" 
+        // remove the "powered by leaflet"
         this.map_leaflet.attributionControl.setPrefix('');
+
+        // Disable the scrollwheel
+        if (this.map.get("scrollwheel") == false) this.map_leaflet.scrollWheelZoom.disable();
+
       } else {
         this.map_leaflet = this.options.map_object;
         this.setElement(this.map_leaflet.getContainer());
@@ -19652,6 +19670,14 @@ cdb.geo.LeafLetLayerCartoDBView = LeafLetLayerCartoDBView;
       cdb.core.View.prototype.clean.call(this);
     },
 
+    _setScrollWheel: function(model, z) {
+      if (z) {
+        this.map_leaflet.scrollWheelZoom.enable();
+      } else {
+        this.map_leaflet.scrollWheelZoom.disable();
+      }
+    },
+
     _setZoom: function(model, z) {
       this._setView();
     },
@@ -19688,7 +19714,7 @@ cdb.geo.LeafLetLayerCartoDBView = LeafLetLayerCartoDBView;
       }
 
       var appending = !opts || opts.index === undefined || opts.index === _.size(this.layers);
-      // since leaflet does not support layer ordering 
+      // since leaflet does not support layer ordering
       // add the layers should be removed and added again
       // if the layer is being appended do not clear
       if(!appending) {
@@ -19710,7 +19736,7 @@ cdb.geo.LeafLetLayerCartoDBView = LeafLetLayerCartoDBView;
           }
         });
       }
-      
+
       var attribution = layer.get('attribution');
 
       if (attribution) {
@@ -19919,6 +19945,7 @@ _.extend(
     var types = {
       "roadmap":      google.maps.MapTypeId.ROADMAP,
       "gray_roadmap": google.maps.MapTypeId.ROADMAP,
+      "dark_roadmap": google.maps.MapTypeId.ROADMAP,
       "hybrid":       google.maps.MapTypeId.HYBRID,
       "satellite":    google.maps.MapTypeId.SATELLITE,
       "terrain":      google.maps.MapTypeId.TERRAIN
@@ -20471,6 +20498,7 @@ cdb.geo.GoogleMapsMapView = cdb.geo.MapView.extend({
         minZoom: this.map.get('minZoom'),
         maxZoom: this.map.get('maxZoom'),
         disableDefaultUI: true,
+        scrollwheel: this.map.get("scrollwheel"),
         mapTypeControl:false,
         mapTypeId: google.maps.MapTypeId.ROADMAP,
         backgroundColor: 'white'
@@ -20528,6 +20556,10 @@ cdb.geo.GoogleMapsMapView = cdb.geo.MapView.extend({
     this.projector.draw = function() {};
     this.trigger('ready');
     this._isReady = true;
+  },
+
+  _setScrollWheel: function(model, z) {
+    this.map_googlemaps.setOptions({ scrollwheel: z });
   },
 
   _setZoom: function(model, z) {
@@ -20650,13 +20682,14 @@ cdb.geo.GoogleMapsMapView = cdb.geo.MapView.extend({
     // Add new one
     var container           = this.map_googlemaps.getDiv()
       , style               = "height: 19px; line-height: 19px; padding-right: 6px; padding-left: 50px; background:white; background: -webkit-linear-gradient(left, rgba(255, 255, 255, 0) 0px,\
-                              rgba(255, 255, 255, 0.498039) 50px); background: linear-gradient(left, rgba(255, 255, 255, 0) 0px, rgba(255, 255, 255, 0.498039) 50px); background: \
-                              -moz-inear-gradient(left, rgba(255, 255, 255, 0) 0px, rgba(255, 255, 255, 0.498039) 50px); font-family: Arial, sans-serif; font-size: 10px; color: rgb(68, 68, 68);\
+                              rgba(255, 255, 255, 0.498039) 50px); background: linear-gradient(left, rgba(255, 255, 255, 0) 0px, rgba(255, 255, 255, 0.498039) 50px); \
+                              background: -moz-linear-gradient(left center , rgba(255, 255, 255, 0) 0px, rgba(255, 255, 255, 0.5) 50px) repeat scroll 0% 0% transparent; font-family: Arial, sans-serif; font-size: 10px; color: rgb(68, 68, 68)!important;\
                               white-space: nowrap; direction: ltr; text-align: right; background-position: initial initial; background-repeat: initial initial; position:absolute; bottom:19px;\
                               right:0; display:block; border:none; z-index:10000;"
       , cartodb_attribution = document.createElement("div");
 
     cartodb_attribution.setAttribute('id','cartodb_attribution');
+    cartodb_attribution.setAttribute('class', 'gmaps');
     container.appendChild(cartodb_attribution);
     cartodb_attribution.setAttribute('style',style);
     cartodb_attribution.innerHTML = attribution;
@@ -21536,10 +21569,12 @@ var Vis = cdb.core.View.extend({
       this.https = data.https;
     }
 
+    var scrollwheel = true;
 
     if(options) {
       this._applyOptions(data, options);
       this.cartodb_logo = options.cartodb_logo;
+      scrollwheel       = options.scrollwheel;
     }
 
     // map
@@ -21551,6 +21586,7 @@ var Vis = cdb.core.View.extend({
       description: data.description,
       maxZoom: data.maxZoom,
       minZoom: data.minZoom,
+      scrollwheel: scrollwheel,
       provider: data.map_provider
     };
 
@@ -21638,7 +21674,7 @@ var Vis = cdb.core.View.extend({
           var o = this.overlays[i];
           if(v.cid === o.cid) {
             this.overlays.splice(i, 1)
-            return; 
+            return;
           }
         }
       }, this);
@@ -21766,7 +21802,7 @@ var Vis = cdb.core.View.extend({
 
   // Set map top position taking into account header height
   setMapPosition: function() {
-    var header_h = this.$el.find(".header:not(.cartodb-popup)").outerHeight();
+    var header_h = this.$el.find(".cartodb-header:not(.cartodb-popup)").outerHeight();
 
     this.$el
       .find("div.cartodb-map-wrapper")
@@ -21831,7 +21867,7 @@ var Vis = cdb.core.View.extend({
                 render_fields.push({
                   title: f.title ? f.name: null,
                   value: interact_data[f.name],
-                  index: j ? j:null // mustache does not recognize 0 as false :( 
+                  index: j ? j:null // mustache does not recognize 0 as false :(
                 });
               }
             }
@@ -21840,18 +21876,18 @@ var Vis = cdb.core.View.extend({
               render_fields.push({
                 title: null,
                 value: 'No data available',
-                index: j ? j:null, // mustache does not recognize 0 as false :( 
+                index: j ? j:null, // mustache does not recognize 0 as false :(
                 type: 'empty'
               });
             }
             content = render_fields;
           }
 
-          infowindow.model.set({ 
-            content:  { 
-              fields: content, 
+          infowindow.model.set({
+            content:  {
+              fields: content,
               data: interact_data
-            } 
+            }
           })
           infowindow.adjustPan();
         })
@@ -21883,7 +21919,7 @@ var Vis = cdb.core.View.extend({
     var layer_cid = map.addLayer(Layers.create(layerData.type || layerData.kind, this, layerData), opts);
 
     var layerView = mapView.getLayerByCid(layer_cid);
-    
+
     // add the associated overlays
     if(layerData.infowindow &&
       layerData.infowindow.fields &&

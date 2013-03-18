@@ -753,9 +753,9 @@ div.cartodb-popup.header.yellow a.cartodb-popup-close-button:hover {
     -moz-border-radius-topright: 1px;
     -webkit-border-top-right-radius: 1px;
     border-top-right-radius: 1px;
-    -webkit-box-shadow: rgba(0, 0, 0, 0.1) 0 0 4px 4px;
-    -moz-box-shadow: rgba(0, 0, 0, 0.1) 0 0 4px 4px;
-    box-shadow: rgba(0, 0, 0, 0.1) 0 0 4px 4px;
+    -webkit-box-shadow: rgba(0, 0, 0, 0.1) 0 6px 4px -2px;
+    -moz-box-shadow: rgba(0, 0, 0, 0.1) 0 6px 4px -2px;
+    box-shadow: rgba(0, 0, 0, 0.1) 0 6px 4px -2px;
     -webkit-transform: translateZ(10px);
     -moz-transform: translateZ(10px);
     -ms-transform: translateZ(10px);
@@ -1079,7 +1079,13 @@ div.cartodb-popup.header.yellow a.cartodb-popup-close-button:hover {
     color: #333;
     text-shadow: -1px -1px 0 #FFF, 1px -1px 0 #FFF, -1px 1px 0 #FFF, 1px 1px 0 #FFF;
   }
-/* required styles */
+
+
+  /* Gmaps attribution */
+
+  div#cartodb_attribution.gmaps a {
+    color: rgb(68,68,68);
+  }/* required styles */
 
 .leaflet-map-pane,
 .leaflet-tile,

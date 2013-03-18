@@ -5438,13 +5438,13 @@ L.GeoJSON = L.FeatureGroup.extend({
 	},
 
 	addData: function (geojson) {
-		var features = L.Util.isArray(geojson) ? geojson : geojson.features,
+		var features = geojson instanceof Array ? geojson : geojson.features,
 		    i, len;
 
 		if (features) {
 			for (i = 0, len = features.length; i < len; i++) {
 				// Only add this if geometry or geometries are set and not null
-				if (features[i].geometries || features[i].geometry || features[i].features) {
+				if (features[i].geometries || features[i].geometry) {
 					this.addData(features[i]);
 				}
 			}
@@ -5520,23 +5520,23 @@ L.extend(L.GeoJSON, {
 
 		case 'Polygon':
 			latlngs = this.coordsToLatLngs(coords, 1);
+			latlngs = this.removeLastPoint(latlngs, 0);
 			return new L.Polygon(latlngs);
 
 		case 'MultiLineString':
 			latlngs = this.coordsToLatLngs(coords, 1);
 			return new L.MultiPolyline(latlngs);
 
-		case 'MultiPolygon':
+		case "MultiPolygon":
 			latlngs = this.coordsToLatLngs(coords, 2);
+			// geojson closes the polygons added the frist
+			// coordinate at the end
+			latlngs = this.removeLastPoint(latlngs, 1);
 			return new L.MultiPolygon(latlngs);
 
-		case 'GeometryCollection':
+		case "GeometryCollection":
 			for (i = 0, len = geometry.geometries.length; i < len; i++) {
-				layer = this.geometryToLayer({
-					geometry: geometry.geometries[i],
-					type: 'Feature',
-					properties: geojson.properties
-				}, pointToLayer);
+				layer = this.geometryToLayer(geometry.geometries[i], pointToLayer);
 				layers.push(layer);
 			}
 			return new L.FeatureGroup(layers);
@@ -5544,6 +5544,21 @@ L.extend(L.GeoJSON, {
 		default:
 			throw new Error('Invalid GeoJSON object.');
 		}
+	},
+
+	// removes the last point from each array. It allows to remove the
+	// duplicated point GeoJSON uses to close Polygons
+	removeLastPoint: function (coords, levelsDeep) {
+		var latlng,
+			latlngs = [],
+			i, len;
+		for (i = 0, len = coords.length; i < len; i++) {
+			latlng = levelsDeep ?
+				this.removeLastPoint(coords[i], levelsDeep - 1) :
+				coords[i].slice(0, coords[i].length - 1);
+			latlngs.push(latlng);
+		}
+		return latlngs;
 	},
 
 	coordsToLatLng: function (coords, reverse) { // (Array, Boolean) -> LatLng

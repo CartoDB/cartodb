@@ -145,7 +145,7 @@ When you create a visualization using the CartoDB website, you get automatically
     cartodb.createLayer(map, {
         type: 'cartodb',
         options: {
-            table: 'mytable',
+            table_name: 'mytable',
             user_name: 'cartodb_username'
             query: 'select * from mytable where age > 10'
         }

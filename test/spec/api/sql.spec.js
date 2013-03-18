@@ -135,6 +135,12 @@ describe('SQL api client', function() {
     s.getBounds('select * from rambo where id={{id}}', {id: 2});
     expect(ajaxParams.url.indexOf(encodeURIComponent(sql))).not.toEqual(-1);
   });
+
+  it("should get bounds for query with appostrophes", function() {
+    s = new cartodb.SQL({ user: 'jaja' });
+    s.getBounds("select * from country where name={{ name }}", { name: "'Spain'"});
+    expect(ajaxParams.url.indexOf("%26amp%3B%2339%3B")).toEqual(-1);
+  });
 });
 
 describe('sql.table', function() {

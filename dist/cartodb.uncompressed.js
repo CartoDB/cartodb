@@ -1,8 +1,14 @@
-// cartodb.js version: 2.0.21
+// cartodb.js version: 2.0.25-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: c793041083979fb58af46097f52b6619e4a614c5
+// sha: 1ebd44a1f7371512e51e9e63e11dbc91b64f36f2
 (function() {
   var root = this;
+
+  if(!true) {
+    if(root.jQuery === undefined) {
+      throw "jQuery should be loaded before include cartodb.js";
+    }
+  }
 
   // save current libraries
   var __prev = {
@@ -15451,7 +15457,7 @@ $(function(){
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '2.0.21';
+    cdb.VERSION = '2.0.25-dev';
 
     cdb.CARTOCSS_VERSIONS = {
       '2.0.0': '',
@@ -16546,7 +16552,7 @@ cdb.geo.MapLayer = cdb.core.Model.extend({
 
     var myType  = me.type? me.type : me.options.type
       , itsType = other.type? other.type : other.options.type;
-    
+
     if(myType && (myType === itsType)) {
 
       if(myType === 'Tiled') {
@@ -16626,7 +16632,6 @@ cdb.geo.CartoDBLayer = cdb.geo.MapLayer.extend({
     active: true,
     query: null,
     opacity: 0.99,
-    auto_bound: false,
     interactivity: null,
     interaction: true,
     debug: false,
@@ -16713,6 +16718,7 @@ cdb.geo.Map = cdb.core.Model.extend({
     zoom: 3,
     minZoom: 0,
     maxZoom: 28,
+    scrollwheel: true,
     provider: 'leaflet'
   },
 
@@ -16740,6 +16746,18 @@ cdb.geo.Map = cdb.core.Model.extend({
   setZoom: function(z) {
     this.set({
       zoom: z
+    });
+  },
+
+  enableScrollWheel: function() {
+    this.set({
+      scrollwheel: true
+    });
+  },
+
+  disableScrollWheel: function() {
+    this.set({
+      scrollwheel: false
     });
   },
 
@@ -16790,8 +16808,8 @@ cdb.geo.Map = cdb.core.Model.extend({
   },
 
   /**
-   * return getViewbounds if it is set
-   */
+  * return getViewbounds if it is set
+  */
   getViewBounds: function() {
     if(this.has('view_bounds_sw') && this.has('view_bounds_ne')) {
       return [
@@ -16816,11 +16834,11 @@ cdb.geo.Map = cdb.core.Model.extend({
     /*
     var z = layer.get('maxZoom');
     if(_.isNumber(z)) {
-      this.set({ maxZoom: z });
+    this.set({ maxZoom: z });
     }
     z = layer.get('minZoom');
     if(_.isNumber(z)) {
-      this.set({ minZoom: z });
+    this.set({ minZoom: z });
     }
     */
   },
@@ -16867,8 +16885,8 @@ cdb.geo.Map = cdb.core.Model.extend({
   },
 
   /**
-   * Checks if the base layer is already in the map as base map
-   */
+  * Checks if the base layer is already in the map as base map
+  */
   isBaseLayerAdded: function(layer) {
     var baselayer = this.getBaseLayer()
     return baselayer && layer.isEqual(baselayer);
@@ -16957,12 +16975,12 @@ cdb.geo.Map = cdb.core.Model.extend({
 
   setBounds: function(b) {
     this.attributes.view_bounds_sw = [
-        b[0][0],
-        b[0][1]
+      b[0][0],
+      b[0][1]
     ];
     this.attributes.view_bounds_ne = [
-        b[1][0],
-        b[1][1]
+      b[1][0],
+      b[1][1]
     ];
 
     // change both at the same time
@@ -16993,14 +17011,14 @@ cdb.geo.Map = cdb.core.Model.extend({
   // adapted from leaflat src
   getBoundsZoom: function(boundsSWNE, mapSize) {
     var size = [mapSize.x, mapSize.y],
-        zoom = this.get('minZoom') || 0,
-        maxZoom = this.get('maxZoom') || 24,
-        ne = boundsSWNE[1],
-        sw = boundsSWNE[0],
-        boundsSize = [],
-        nePoint,
-        swPoint,
-        zoomNotFound = true;
+    zoom = this.get('minZoom') || 0,
+    maxZoom = this.get('maxZoom') || 24,
+    ne = boundsSWNE[1],
+    sw = boundsSWNE[0],
+    boundsSize = [],
+    nePoint,
+    swPoint,
+    zoomNotFound = true;
 
     do {
       zoom++;
@@ -17064,8 +17082,8 @@ cdb.geo.MapView = cdb.core.View.extend({
   },
 
   /**
-   * add a infowindow to the map
-   */
+  * add a infowindow to the map
+  */
   addInfowindow: function(infoWindowView) {
     if (infoWindowView) {
       this.$el.append(infoWindowView.render().el);
@@ -17123,6 +17141,7 @@ cdb.geo.MapView = cdb.core.View.extend({
     this.map.bind('change:view_bounds_ne',  this._changeBounds, this);
     this.map.bind('change:zoom',            this._setZoom, this);
     this.map.bind('change:center',          this._setCenter, this);
+    this.map.bind('change:scrollwheel',     this._setScrollWheel, this);
     this.map.bind('change:attribution',     this._setAttribution, this);
   },
 
@@ -17211,7 +17230,7 @@ cdb.geo.MapView = cdb.core.View.extend({
   },
 
   _saveLocation: _.debounce(function() {
-      this.map.save(null, { silent: true });
+    this.map.save(null, { silent: true });
   }, 1000),
 
   _addGeometry: function(geom) {
@@ -17231,11 +17250,11 @@ cdb.geo.MapView = cdb.core.View.extend({
   _getClass: function(provider) {
     var mapViewClass = cdb.geo.LeafletMapView;
     if(provider === 'googlemaps') {
-        if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
-          mapViewClass = cdb.geo.GoogleMapsMapView;
-        } else {
-          cdb.log.error("you must include google maps library _before_ include cdb");
-        }
+      if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
+        mapViewClass = cdb.geo.GoogleMapsMapView;
+      } else {
+        cdb.log.error("you must include google maps library _before_ include cdb");
+      }
     }
     return mapViewClass;
   },
@@ -17263,7 +17282,7 @@ cdb.geo.MapView = cdb.core.View.extend({
 
 cdb.geo.ui.Zoom = cdb.core.View.extend({
 
-  id: "zoom",
+  className: "cartodb-zoom",
 
   events: {
     'click .zoom_in': 'zoom_in',
@@ -17319,7 +17338,7 @@ cdb.geo.ui.Zoom = cdb.core.View.extend({
 
 cdb.geo.ui.ZoomInfo = cdb.core.View.extend({
 
-  id: "zoom_info",
+  className: "cartodb-zoom-info",
 
   initialize: function() {
     this.model.bind("change:zoom", this.render, this);
@@ -17672,7 +17691,7 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
 });
 
 cdb.geo.ui.Infowindow = cdb.core.View.extend({
-  className: "infowindow",
+  className: "cartodb-infowindow",
 
   spin_options: {
     lines: 10, length: 0, width: 4, radius: 6, corners: 1, rotate: 0, color: 'rgba(0,0,0,0.5)',
@@ -17812,28 +17831,56 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
    */
   _fieldsToString: function(attrs) {
     if (attrs.content && attrs.content.fields) {
-      attrs.content.fields = _.map(attrs.content.fields, function(attr) {
-        // Check null or undefined :| and set both to empty == ''
-        if (attr.value == null || attr.value == undefined) {
-          attr.value = '';
-        }
-
-        // Cast all values to string due to problems with Mustache 0 number rendering
-        var new_value = attr.value.toString();
-
-        // But if we have some empty values (null)
-        // we must make them null to display them correctly
-        // ARGGG!
-        if (new_value == "") new_value = null;
-
-        // store attribute
-        attr.value = new_value;
-
-        return attr;
+      var self = this;
+      attrs.content.fields = _.map(attrs.content.fields, function(attr,i) {
+        // Return whole attribute sanitized
+        return self._sanitizeField(attr, attrs.template_name, attr.index || i);
       });
     }
 
     return attrs;
+  },
+
+  /**
+   *  Sanitize fields, what does it mean?
+   *  - If value is null, transform to string
+   *  - If value is an url, add it as an attribute
+   *  - Cut off title if it is very long (in header or image templates).
+   *  - If the value is a valid url, let's make it a link.
+   *  - More to come...
+   */                                                                                                                
+  _sanitizeField: function(attr, template_name, pos) {
+    // Check null or undefined :| and set both to empty == ''
+    if (attr.value == null || attr.value == undefined) {
+      attr.value = '';
+    }
+
+    // Cast all values to string due to problems with Mustache 0 number rendering
+    var new_value = attr.value.toString();
+
+    //Link? go ahead!
+    if (!attr.type && this._isValidURL(new_value)) {
+      attr.url = attr.value;
+    }
+
+    // If it is index 0, not any field type, header template type and length bigger than 30... cut off the text!
+    if (!attr.type && pos==0 && attr.value.length > 35 && template_name && template_name.search('_header_') != -1) {
+      new_value = attr.value.substr(0,32) + "...";
+    }
+
+    // If it is index 0, not any field type, header image template type... don't cut off the text!
+    if (pos==0 && template_name.search('_header_with_image') != -1) {
+      new_value = attr.value;
+    }
+
+    // If it is index 1, not any field type, header image template type and length bigger than 30... cut off the text!
+    if (!attr.type && pos==1 && attr.value.length > 35 && template_name && template_name.search('_header_with_image') != -1) {
+      new_value = attr.value.substr(0,32) + "...";
+    }
+
+    attr.value = new_value;
+
+    return attr;
   },
 
   /**
@@ -17842,7 +17889,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
   _checkLoading: function() {
     var content = this.model.get("content");
 
-    if (content.fields && content.fields.length == 1 && content.fields[0].loading) {
+    if (content.fields && content.fields.length == 1 && content.fields[0].type == "loading") {
       this._startSpinner()
     } else {
       this._stopSpinner()
@@ -17898,7 +17945,8 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     if (content && content.fields) {
 
       if (content.fields && content.fields.length > 0) {
-        return content.fields[0].value;
+        // Force always the value to be a string
+        return (content.fields[0].value).toString();
       }
       return false;
     }
@@ -17913,16 +17961,15 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
 
     if (!this._containsCover()) return;
 
-    var self = this;
-
     var
-    $cover         = this.$el.find(".cover"),
-    $imageNotFound = this.$el.find(".image_not_found");
-
-    var url = this._getCoverURL();
+    self = this,
+    $cover = this.$(".cover"),
+    $shadow = this.$(".shadow"),
+    url = this._getCoverURL();
 
     if (!this._isValidURL(url)) {
-      $imageNotFound.fadeIn(250);
+      $shadow.hide();
+      cdb.log.info("Header image url not valid");
       return;
     }
 
@@ -17934,8 +17981,6 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
 
     // create the image
     var $img = $cover.find("img");
-
-    $imageNotFound.hide();
 
     $img.hide(function() {
       this.remove();
@@ -17971,7 +18016,6 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     })
     .error(function(){
       spinner.stop();
-      $imageNotFound.fadeIn(250);
     });
   },
 
@@ -18010,8 +18054,26 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
         fields: [{
           title: null,
           value: 'Loading content...',
-          index: 0,
-          loading: true
+          index: null,
+          type: "loading"
+        }],
+        data: {}
+      }
+    })
+    return this;
+  },
+
+  /**
+   *  Set loading state adding its content
+   */
+  setError: function() {
+    this.model.set({
+      content:  {
+        fields: [{
+          title: null,
+          value: 'There has been an error...',
+          index: null,
+          type: 'error'
         }],
         data: {}
       }
@@ -18195,7 +18257,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
 
 cdb.geo.ui.Header = cdb.core.View.extend({
 
-  className: 'header',
+  className: 'cartodb-header',
 
   initialize: function() {},
 
@@ -18207,7 +18269,7 @@ cdb.geo.ui.Header = cdb.core.View.extend({
 
 cdb.geo.ui.Search = cdb.core.View.extend({
 
-  className: 'search_box',
+  className: 'cartodb-searchbox',
 
   events: {
     "click input[type='text']":   '_focus',
@@ -18296,7 +18358,7 @@ cdb.geo.ui.Search = cdb.core.View.extend({
 
 cdb.geo.ui.TilesLoader = cdb.core.View.extend({
 
-  id: "tiles_loader",
+  className: "cartodb-tiles-loader",
 
   default_options: {
     animationSpeed: 500
@@ -18335,7 +18397,7 @@ cdb.geo.ui.TilesLoader = cdb.core.View.extend({
 
 cdb.geo.ui.InfoBox = cdb.core.View.extend({
 
-  className: 'cartodb_infobox',
+  className: 'cartodb-infobox',
   defaults: {
     pos_margin: 20,
     position: 'bottom|right',
@@ -18405,7 +18467,7 @@ cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
 
   DEFAULT_OFFSET_TOP: 30,
   defaultTemplate: '<p>{{text}}</p>',
-  className: 'cartodb_tooltip',
+  className: 'cartodb-tooltip',
 
   initialize: function() {
     this.options.template = this.options.template || defaultTemplate;
@@ -18488,6 +18550,16 @@ CartoDBLayerCommon.prototype = {
     return a.length > 0;
   },
 
+  
+  /**
+   *  Check if browser supports retina images
+   */
+  _isRetinaBrowser: function() {
+    return  ('devicePixelRatio' in window && window.devicePixelRatio > 1) ||
+            ('matchMedia' in window && window.matchMedia('(min-resolution:144dpi)') &&
+            window.matchMedia('(min-resolution:144dpi)').matches);
+  },
+
 
   /**
    * Add Cartodb logo
@@ -18496,6 +18568,7 @@ CartoDBLayerCommon.prototype = {
   _addWadus: function(position, timeout, container) {
     if (this.options.cartodb_logo !== false && !this._isWadusAdded(container, 'cartodb_logo')) {
       var cartodb_link = document.createElement("a");
+      var is_retina = this._isRetinaBrowser();
       cartodb_link.setAttribute('class','cartodb_logo');
       container.appendChild(cartodb_link);
       setTimeout(function() {
@@ -18503,8 +18576,8 @@ CartoDBLayerCommon.prototype = {
         cartodb_link.setAttribute('href','http://www.cartodb.com');
         cartodb_link.setAttribute('target','_blank');
         var protocol = location.protocol.indexOf('https') === -1 ? 'http': 'https';
-        cartodb_link.innerHTML = "<img src='" + protocol + "://cartodb.s3.amazonaws.com/static/new_logo.png' style='position:absolute; bottom:" + 
-          ( position.bottom || 0 ) + "px; left:" + ( position.left || 0 ) + "px; display:block; border:none; outline:none' alt='CartoDB' title='CartoDB' />";
+        cartodb_link.innerHTML = "<img width='71' height='29' src='" + protocol + "://cartodb.s3.amazonaws.com/static/new_logo" + (is_retina ? '@2x' : '') + ".png' style='position:absolute; bottom:" + 
+          ( position.bottom || 0 ) + "px; left:" + ( position.left || 0 ) + "px; display:block; width:71px!important; height:29px!important; border:none; outline:none;' alt='CartoDB' title='CartoDB' />";
       },( timeout || 0 ));
     }
   },
@@ -19014,7 +19087,6 @@ L.CartoDBLayer = L.TileLayer.extend({
   options: {
     query:          "SELECT * FROM {{table_name}}",
     opacity:        0.99,
-    auto_bound:     false,
     attribution:    "CartoDB",
     debug:          false,
     visible:        true,
@@ -19041,10 +19113,6 @@ L.CartoDBLayer = L.TileLayer.extend({
         throw('cartodb-leaflet needs at least a CartoDB table name and the Leaflet map object :(');
       } else { return }
     }
-
-    // Bounds? CartoDB does it
-    if (options.auto_bound)
-      this.setBounds();
 
     // Add cartodb logo, yes sir!
     this._addWadus({left:8, bottom:8}, 0, this.options.map._container);
@@ -19293,62 +19361,6 @@ L.CartoDBLayer = L.TileLayer.extend({
 
 
   /**
-   * Zoom to cartodb geometries
-   */
-  setBounds: function(sql) {
-    var self = this
-      , query = "";
-
-    if (sql) {
-      // Custom query
-      query = sql;
-    } else {
-      // Already defined query
-      query = this.options.query;
-    }
-
-    reqwest({
-      url: this._generateCoreUrl("sql") + '/api/v2/sql/?q='+escape('SELECT ST_XMin(ST_Extent(the_geom)) as minx,ST_YMin(ST_Extent(the_geom)) as miny,'+
-        'ST_XMax(ST_Extent(the_geom)) as maxx,ST_YMax(ST_Extent(the_geom)) as maxy from ('+ query.replace(/\{\{table_name\}\}/g,this.options.table_name) + ') as subq'),
-      type: 'jsonp',
-      jsonpCallback: 'callback',
-      success: function(result) {
-        if (result.rows[0].maxx!=null) {
-          var coordinates = result.rows[0];
-
-          var lon0 = coordinates.maxx;
-          var lat0 = coordinates.maxy;
-          var lon1 = coordinates.minx;
-          var lat1 = coordinates.miny;
-
-          var minlat = -85.0511;
-          var maxlat =  85.0511;
-          var minlon = -179;
-          var maxlon =  179;
-
-          /* Clamp X to be between min and max (inclusive) */
-          var clampNum = function(x, min, max) {
-            return x < min ? min : x > max ? max : x;
-          }
-
-          lon0 = clampNum(lon0, minlon, maxlon);
-          lon1 = clampNum(lon1, minlon, maxlon);
-          lat0 = clampNum(lat0, minlat, maxlat);
-          lat1 = clampNum(lat1, minlat, maxlat);
-
-          var sw = new L.LatLng(lat0, lon0);
-          var ne = new L.LatLng(lat1, lon1);
-          var bounds = new L.LatLngBounds(sw,ne);
-          self.options.map.fitBounds(bounds);
-        }
-      },
-      error: function(e,msg) {
-        if (this.options.debug) throw('Error getting table bounds: ' + msg);
-      }
-    });
-  },
-
-  /**
    * Bind events for wax interaction
    * @param {Object} Layer map object
    * @param {Event} Wax event
@@ -19526,7 +19538,7 @@ cdb.geo.LeafLetLayerCartoDBView = LeafLetLayerCartoDBView;
 */
 (function() {
 
-  if(typeof(L) == "undefined") 
+  if(typeof(L) == "undefined")
     return;
 
   /**
@@ -19559,8 +19571,12 @@ cdb.geo.LeafLetLayerCartoDBView = LeafLetLayerCartoDBView;
       if(!this.options.map_object) {
         this.map_leaflet = new L.Map(this.el, mapConfig);
 
-        // remove the "powered by leaflet" 
+        // remove the "powered by leaflet"
         this.map_leaflet.attributionControl.setPrefix('');
+
+        // Disable the scrollwheel
+        if (this.map.get("scrollwheel") == false) this.map_leaflet.scrollWheelZoom.disable();
+
       } else {
         this.map_leaflet = this.options.map_object;
         this.setElement(this.map_leaflet.getContainer());
@@ -19654,6 +19670,14 @@ cdb.geo.LeafLetLayerCartoDBView = LeafLetLayerCartoDBView;
       cdb.core.View.prototype.clean.call(this);
     },
 
+    _setScrollWheel: function(model, z) {
+      if (z) {
+        this.map_leaflet.scrollWheelZoom.enable();
+      } else {
+        this.map_leaflet.scrollWheelZoom.disable();
+      }
+    },
+
     _setZoom: function(model, z) {
       this._setView();
     },
@@ -19690,7 +19714,7 @@ cdb.geo.LeafLetLayerCartoDBView = LeafLetLayerCartoDBView;
       }
 
       var appending = !opts || opts.index === undefined || opts.index === _.size(this.layers);
-      // since leaflet does not support layer ordering 
+      // since leaflet does not support layer ordering
       // add the layers should be removed and added again
       // if the layer is being appended do not clear
       if(!appending) {
@@ -19712,7 +19736,7 @@ cdb.geo.LeafLetLayerCartoDBView = LeafLetLayerCartoDBView;
           }
         });
       }
-      
+
       var attribution = layer.get('attribution');
 
       if (attribution) {
@@ -19820,7 +19844,9 @@ cdb.geo.LeafLetLayerCartoDBView = LeafLetLayerCartoDBView;
       matches = src.match(leafletRe);
 
       if (matches) {
-        return src.split(leafletRe)[0] + '/themes/css/images/';
+        var bits = src.split('/')
+        delete bits[bits.length - 1];
+        return bits.join('/') + 'themes/css/images';
       }
     }
   }());
@@ -19919,6 +19945,7 @@ _.extend(
     var types = {
       "roadmap":      google.maps.MapTypeId.ROADMAP,
       "gray_roadmap": google.maps.MapTypeId.ROADMAP,
+      "dark_roadmap": google.maps.MapTypeId.ROADMAP,
       "hybrid":       google.maps.MapTypeId.HYBRID,
       "satellite":    google.maps.MapTypeId.SATELLITE,
       "terrain":      google.maps.MapTypeId.TERRAIN
@@ -20057,7 +20084,6 @@ var CartoDBLayer = function(opts) {
     query:          "SELECT * FROM {{table_name}}",
     attribution:    "CartoDB",
     opacity:        1,
-    auto_bound:     false,
     debug:          false,
     visible:        true,
     added:          false,
@@ -20472,6 +20498,7 @@ cdb.geo.GoogleMapsMapView = cdb.geo.MapView.extend({
         minZoom: this.map.get('minZoom'),
         maxZoom: this.map.get('maxZoom'),
         disableDefaultUI: true,
+        scrollwheel: this.map.get("scrollwheel"),
         mapTypeControl:false,
         mapTypeId: google.maps.MapTypeId.ROADMAP,
         backgroundColor: 'white'
@@ -20529,6 +20556,10 @@ cdb.geo.GoogleMapsMapView = cdb.geo.MapView.extend({
     this.projector.draw = function() {};
     this.trigger('ready');
     this._isReady = true;
+  },
+
+  _setScrollWheel: function(model, z) {
+    this.map_googlemaps.setOptions({ scrollwheel: z });
   },
 
   _setZoom: function(model, z) {
@@ -20651,13 +20682,14 @@ cdb.geo.GoogleMapsMapView = cdb.geo.MapView.extend({
     // Add new one
     var container           = this.map_googlemaps.getDiv()
       , style               = "height: 19px; line-height: 19px; padding-right: 6px; padding-left: 50px; background:white; background: -webkit-linear-gradient(left, rgba(255, 255, 255, 0) 0px,\
-                              rgba(255, 255, 255, 0.498039) 50px); background: linear-gradient(left, rgba(255, 255, 255, 0) 0px, rgba(255, 255, 255, 0.498039) 50px); background: \
-                              -moz-inear-gradient(left, rgba(255, 255, 255, 0) 0px, rgba(255, 255, 255, 0.498039) 50px); font-family: Arial, sans-serif; font-size: 10px; color: rgb(68, 68, 68);\
+                              rgba(255, 255, 255, 0.498039) 50px); background: linear-gradient(left, rgba(255, 255, 255, 0) 0px, rgba(255, 255, 255, 0.498039) 50px); \
+                              background: -moz-linear-gradient(left center , rgba(255, 255, 255, 0) 0px, rgba(255, 255, 255, 0.5) 50px) repeat scroll 0% 0% transparent; font-family: Arial, sans-serif; font-size: 10px; color: rgb(68, 68, 68)!important;\
                               white-space: nowrap; direction: ltr; text-align: right; background-position: initial initial; background-repeat: initial initial; position:absolute; bottom:19px;\
                               right:0; display:block; border:none; z-index:10000;"
       , cartodb_attribution = document.createElement("div");
 
     cartodb_attribution.setAttribute('id','cartodb_attribution');
+    cartodb_attribution.setAttribute('class', 'gmaps');
     container.appendChild(cartodb_attribution);
     cartodb_attribution.setAttribute('style',style);
     cartodb_attribution.innerHTML = attribution;
@@ -21537,10 +21569,12 @@ var Vis = cdb.core.View.extend({
       this.https = data.https;
     }
 
+    var scrollwheel = true;
 
     if(options) {
       this._applyOptions(data, options);
       this.cartodb_logo = options.cartodb_logo;
+      scrollwheel       = options.scrollwheel;
     }
 
     // map
@@ -21552,6 +21586,7 @@ var Vis = cdb.core.View.extend({
       description: data.description,
       maxZoom: data.maxZoom,
       minZoom: data.minZoom,
+      scrollwheel: scrollwheel,
       provider: data.map_provider
     };
 
@@ -21585,7 +21620,7 @@ var Vis = cdb.core.View.extend({
 
     // Another div to prevent leaflet grabs the div
     var div_hack = $('<div>')
-      .addClass("map-wrapper")
+      .addClass("cartodb-map-wrapper")
       .css({
         position: "absolute",
         top: 0,
@@ -21639,7 +21674,7 @@ var Vis = cdb.core.View.extend({
           var o = this.overlays[i];
           if(v.cid === o.cid) {
             this.overlays.splice(i, 1)
-            return; 
+            return;
           }
         }
       }, this);
@@ -21663,7 +21698,8 @@ var Vis = cdb.core.View.extend({
       tiles_loader: true,
       zoomControl: true,
       loaderControl: true,
-      searchControl: false
+      searchControl: false,
+      infowindow: true
     });
     vizjson.overlays = vizjson.overlays || [];
     vizjson.layers = vizjson.layers || [];
@@ -21686,6 +21722,8 @@ var Vis = cdb.core.View.extend({
         }
       }
     }
+
+    this.infowindow = opt.infowindow;
 
     if(opt.https) {
       this.https = true;
@@ -21764,10 +21802,10 @@ var Vis = cdb.core.View.extend({
 
   // Set map top position taking into account header height
   setMapPosition: function() {
-    var header_h = this.$el.find(".header:not(.cartodb-popup)").outerHeight();
+    var header_h = this.$el.find(".cartodb-header:not(.cartodb-popup)").outerHeight();
 
     this.$el
-      .find("div.map-wrapper")
+      .find("div.cartodb-map-wrapper")
       .css("top", header_h);
 
     this.mapView.invalidateSize();
@@ -21825,11 +21863,11 @@ var Vis = cdb.core.View.extend({
             var fields = infowindowFields.fields;
             for(var j = 0; j < fields.length; ++j) {
               var f = fields[j];
-              if(interact_data[f.name] != undefined) {
+              if(interact_data[f.name] != undefined && interact_data[f.name] != "") {
                 render_fields.push({
                   title: f.title ? f.name: null,
                   value: interact_data[f.name],
-                  index: j ? j:null // mustache does not recognize 0 as false :( 
+                  index: j ? j:null // mustache does not recognize 0 as false :(
                 });
               }
             }
@@ -21838,21 +21876,24 @@ var Vis = cdb.core.View.extend({
               render_fields.push({
                 title: null,
                 value: 'No data available',
-                index: j ? j:null, // mustache does not recognize 0 as false :( 
+                index: j ? j:null, // mustache does not recognize 0 as false :(
                 type: 'empty'
               });
             }
             content = render_fields;
           }
 
-          infowindow.model.set({ 
-            content:  { 
-              fields: content, 
+          infowindow.model.set({
+            content:  {
+              fields: content,
               data: interact_data
-            } 
+            }
           })
           infowindow.adjustPan();
-        });
+        })
+        .error(function() {
+          infowindow.setError();
+        })
 
         // Show infowindow with loading state
         infowindow
@@ -21878,11 +21919,12 @@ var Vis = cdb.core.View.extend({
     var layer_cid = map.addLayer(Layers.create(layerData.type || layerData.kind, this, layerData), opts);
 
     var layerView = mapView.getLayerByCid(layer_cid);
-    
+
     // add the associated overlays
     if(layerData.infowindow &&
       layerData.infowindow.fields &&
-      layerData.infowindow.fields.length > 0) {
+      layerData.infowindow.fields.length > 0 &&
+      this.infowindow) {
       this.addInfowindow(layerView);
     }
 
@@ -22035,7 +22077,8 @@ cdb.vis.Overlay.register('infowindow', function(data, vis) {
   }
 
   var infowindowModel = new cdb.geo.ui.InfowindowModel({
-    fields: data.fields
+    fields: data.fields,
+    template_name: data.template_name
   });
 
   var templateType = data.templateType || 'mustache';
@@ -22169,8 +22212,9 @@ var cartoLayer = function(vis, data) {
   }
   data.extra_params = data.extra_params || {};
   if(vis.updated_at) {
-    data.extra_params.updated_at = vis.updated_at;
-    delete data.extra_params.cache_buster;
+    // see #1724 (internal)
+    data.extra_params.cache_buster = vis.updated_at;
+    //delete data.extra_params.cache_buster;
   } else {
     data.no_cdn = true;
   }
@@ -22279,8 +22323,9 @@ Layers.register('carto', cartoLayer);
         layerData = visData.layers[1];
         // add the timestamp to options
         layerData.options.extra_params = layerData.options.extra_params || {};
-        layerData.options.extra_params.updated_at = visData.updated_at;
-        delete layerData.options.cache_buster;
+        //layerData.options.extra_params.updated_at = visData.updated_at;
+        layerData.options.extra_params.cache_buster = visData.updated_at;
+        //delete layerData.options.cache_buster;
       } else {
         layerData = visData;
       }
@@ -22358,10 +22403,6 @@ Layers.register('carto', cartoLayer);
       loc = 'https';
     }
 
-    if(options.api_key) {
-      this.api_key = options.api_key;
-    }
-
     this.options = _.defaults(options, {
       version: 'v2',
       protocol: loc,
@@ -22416,7 +22457,7 @@ Layers.register('carto', cartoLayer);
     var q = 'q=' + encodeURIComponent(query);
 
     // request params
-    var reqParams = ['format', 'dp'];
+    var reqParams = ['format', 'dp', 'api_key'];
     for(var i in reqParams) {
       var r = reqParams[i];
       var v = options[r];
@@ -22425,7 +22466,6 @@ Layers.register('carto', cartoLayer);
       }
     }
 
-
     var isGetRequest = options.type == 'get' || params.type == 'get';
     // generate url depending on the http method
     params.url = this._host() ;
@@ -22433,13 +22473,6 @@ Layers.register('carto', cartoLayer);
       params.url += '?' + q
     } else {
       params.data = q;
-    }
-    if(this.api_key) {
-      if(isGetRequest) {
-        params.url += '&api_key=' + this.api_key;
-      } else {
-        darams.data['api_key'] = this.api_key;
-      }
     }
 
     // wrap success and error functions
@@ -22476,7 +22509,7 @@ Layers.register('carto', cartoLayer);
               '       ST_YMin(ST_Extent(the_geom)) as miny,'+
               '       ST_XMax(ST_Extent(the_geom)) as maxx,' +
               '       ST_YMax(ST_Extent(the_geom)) as maxy' +
-              ' from ({{sql}}) as subq';
+              ' from ({{{ sql }}}) as subq';
       sql = Mustache.render(sql, vars);
       this.execute(s, { sql: sql }, options)
         .done(function(result) {

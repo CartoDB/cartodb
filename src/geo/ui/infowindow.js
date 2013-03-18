@@ -145,7 +145,7 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
 });
 
 cdb.geo.ui.Infowindow = cdb.core.View.extend({
-  className: "infowindow",
+  className: "cartodb-infowindow",
 
   spin_options: {
     lines: 10, length: 0, width: 4, radius: 6, corners: 1, rotate: 0, color: 'rgba(0,0,0,0.5)',
@@ -285,28 +285,56 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
    */
   _fieldsToString: function(attrs) {
     if (attrs.content && attrs.content.fields) {
-      attrs.content.fields = _.map(attrs.content.fields, function(attr) {
-        // Check null or undefined :| and set both to empty == ''
-        if (attr.value == null || attr.value == undefined) {
-          attr.value = '';
-        }
-
-        // Cast all values to string due to problems with Mustache 0 number rendering
-        var new_value = attr.value.toString();
-
-        // But if we have some empty values (null)
-        // we must make them null to display them correctly
-        // ARGGG!
-        if (new_value == "") new_value = null;
-
-        // store attribute
-        attr.value = new_value;
-
-        return attr;
+      var self = this;
+      attrs.content.fields = _.map(attrs.content.fields, function(attr,i) {
+        // Return whole attribute sanitized
+        return self._sanitizeField(attr, attrs.template_name, attr.index || i);
       });
     }
 
     return attrs;
+  },
+
+  /**
+   *  Sanitize fields, what does it mean?
+   *  - If value is null, transform to string
+   *  - If value is an url, add it as an attribute
+   *  - Cut off title if it is very long (in header or image templates).
+   *  - If the value is a valid url, let's make it a link.
+   *  - More to come...
+   */                                                                                                                
+  _sanitizeField: function(attr, template_name, pos) {
+    // Check null or undefined :| and set both to empty == ''
+    if (attr.value == null || attr.value == undefined) {
+      attr.value = '';
+    }
+
+    // Cast all values to string due to problems with Mustache 0 number rendering
+    var new_value = attr.value.toString();
+
+    //Link? go ahead!
+    if (!attr.type && this._isValidURL(new_value)) {
+      attr.url = attr.value;
+    }
+
+    // If it is index 0, not any field type, header template type and length bigger than 30... cut off the text!
+    if (!attr.type && pos==0 && attr.value.length > 35 && template_name && template_name.search('_header_') != -1) {
+      new_value = attr.value.substr(0,32) + "...";
+    }
+
+    // If it is index 0, not any field type, header image template type... don't cut off the text!
+    if (pos==0 && template_name.search('_header_with_image') != -1) {
+      new_value = attr.value;
+    }
+
+    // If it is index 1, not any field type, header image template type and length bigger than 30... cut off the text!
+    if (!attr.type && pos==1 && attr.value.length > 35 && template_name && template_name.search('_header_with_image') != -1) {
+      new_value = attr.value.substr(0,32) + "...";
+    }
+
+    attr.value = new_value;
+
+    return attr;
   },
 
   /**
@@ -315,7 +343,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
   _checkLoading: function() {
     var content = this.model.get("content");
 
-    if (content.fields && content.fields.length == 1 && content.fields[0].loading) {
+    if (content.fields && content.fields.length == 1 && content.fields[0].type == "loading") {
       this._startSpinner()
     } else {
       this._stopSpinner()
@@ -371,7 +399,8 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     if (content && content.fields) {
 
       if (content.fields && content.fields.length > 0) {
-        return content.fields[0].value;
+        // Force always the value to be a string
+        return (content.fields[0].value).toString();
       }
       return false;
     }
@@ -479,8 +508,26 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
         fields: [{
           title: null,
           value: 'Loading content...',
-          index: 0,
-          loading: true
+          index: null,
+          type: "loading"
+        }],
+        data: {}
+      }
+    })
+    return this;
+  },
+
+  /**
+   *  Set loading state adding its content
+   */
+  setError: function() {
+    this.model.set({
+      content:  {
+        fields: [{
+          title: null,
+          value: 'There has been an error...',
+          index: null,
+          type: 'error'
         }],
         data: {}
       }

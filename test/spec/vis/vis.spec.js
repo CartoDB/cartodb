@@ -126,7 +126,7 @@ describe("Vis", function() {
     this.vis.load(this.mapConfig, {
       title: true
     });
-    expect(this.vis.$('.header').length).toEqual(1);
+    expect(this.vis.$('.cartodb-header').length).toEqual(1);
   });
   
   it("should use zoom", function() {
@@ -145,7 +145,8 @@ describe("Vis", function() {
       }
     }]
     this.vis.load(this.mapConfig);
-    expect(this.vis.map.layers.at(0).attributes.extra_params.updated_at).toEqual('cachebuster');
+    //expect(this.vis.map.layers.at(0).attributes.extra_params.updated_at).toEqual('cachebuster');
+    expect(this.vis.map.layers.at(0).attributes.extra_params.cache_buster).toEqual('cachebuster');
   });
 
 

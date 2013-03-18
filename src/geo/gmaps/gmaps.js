@@ -227,63 +227,64 @@ if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
       // Add new one
       var container           = this.map_googlemaps.getDiv()
       , style               = "height: 19px; line-height: 19px; padding-right: 6px; padding-left: 50px; background:white; background: -webkit-linear-gradient(left, rgba(255, 255, 255, 0) 0px,\
-        rgba(255, 255, 255, 0.498039) 50px); background: linear-gradient(left, rgba(255, 255, 255, 0) 0px, rgba(255, 255, 255, 0.498039) 50px); background: \
-        -moz-inear-gradient(left, rgba(255, 255, 255, 0) 0px, rgba(255, 255, 255, 0.498039) 50px); font-family: Arial, sans-serif; font-size: 10px; color: rgb(68, 68, 68);\
-        white-space: nowrap; direction: ltr; text-align: right; background-position: initial initial; background-repeat: initial initial; position:absolute; bottom:19px;\
-        right:0; display:block; border:none; z-index:10000;"
-        , cartodb_attribution = document.createElement("div");
+                              rgba(255, 255, 255, 0.498039) 50px); background: linear-gradient(left, rgba(255, 255, 255, 0) 0px, rgba(255, 255, 255, 0.498039) 50px); \
+                              background: -moz-linear-gradient(left center , rgba(255, 255, 255, 0) 0px, rgba(255, 255, 255, 0.5) 50px) repeat scroll 0% 0% transparent; font-family: Arial, sans-serif; font-size: 10px; color: rgb(68, 68, 68)!important;\
+                              white-space: nowrap; direction: ltr; text-align: right; background-position: initial initial; background-repeat: initial initial; position:absolute; bottom:19px;\
+                              right:0; display:block; border:none; z-index:10000;"
+      , cartodb_attribution = document.createElement("div");
 
-      cartodb_attribution.setAttribute('id','cartodb_attribution');
-      container.appendChild(cartodb_attribution);
-      cartodb_attribution.setAttribute('style',style);
-      cartodb_attribution.innerHTML = attribution;
-    },
+    cartodb_attribution.setAttribute('id','cartodb_attribution');
+    cartodb_attribution.setAttribute('class', 'gmaps');
+    container.appendChild(cartodb_attribution);
+    cartodb_attribution.setAttribute('style',style);
+    cartodb_attribution.innerHTML = attribution;
+  },
 
-    setCursor: function(cursor) {
-      this.map_googlemaps.setOptions({ draggableCursor: cursor });
-    },
+  setCursor: function(cursor) {
+    this.map_googlemaps.setOptions({ draggableCursor: cursor });
+  },
 
-    _addGeomToMap: function(geom) {
-      var geo = cdb.geo.GoogleMapsMapView.createGeometry(geom);
-      if(geo.geom.length) {
-        for(var i = 0 ; i < geo.geom.length; ++i) {
-          geo.geom[i].setMap(this.map_googlemaps);
-        }
-      } else {
+  _addGeomToMap: function(geom) {
+    var geo = cdb.geo.GoogleMapsMapView.createGeometry(geom);
+    if(geo.geom.length) {
+      for(var i = 0 ; i < geo.geom.length; ++i) {
+        geo.geom[i].setMap(this.map_googlemaps);
+      }
+    } else {
         geo.geom.setMap(this.map_googlemaps);
-      }
-      return geo;
-    },
-
-    _removeGeomFromMap: function(geo) {
-      if(geo.geom.length) {
-        for(var i = 0 ; i < geo.geom.length; ++i) {
-          geo.geom[i].setMap(null);
-        }
-      } else {
-        geo.geom.setMap(null);
-      }
-    },
-
-    getNativeMap: function() {
-      return this.map_googlemaps;
-    },
-
-    invalidateSize: function() {
-      google.maps.event.trigger(this.map_googlemaps, 'resize');
     }
+    return geo;
+  },
 
-  }, {
-
-    /**
-    * create the view for the geometry model
-    */
-    createGeometry: function(geometryModel) {
-      if(geometryModel.isPoint()) {
-        return new cdb.geo.gmaps.PointView(geometryModel);
+  _removeGeomFromMap: function(geo) {
+    if(geo.geom.length) {
+      for(var i = 0 ; i < geo.geom.length; ++i) {
+        geo.geom[i].setMap(null);
       }
-      return new cdb.geo.gmaps.PathView(geometryModel);
+    } else {
+      geo.geom.setMap(null);
     }
-  });
+  },
+
+  getNativeMap: function() {
+    return this.map_googlemaps;
+  },
+
+  invalidateSize: function() {
+    google.maps.event.trigger(this.map_googlemaps, 'resize');
+  }
+
+}, {
+
+  /**
+  * create the view for the geometry model
+  */
+  createGeometry: function(geometryModel) {
+    if(geometryModel.isPoint()) {
+      return new cdb.geo.gmaps.PointView(geometryModel);
+    }
+    return new cdb.geo.gmaps.PathView(geometryModel);
+  }
+});
 
 }

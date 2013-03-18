@@ -29,7 +29,6 @@ module CartoDB
         # Read in a 128kb chunk and try to detect encoding
         chunk = File.open(@path).read(128000)
         cd = CharDet.detect(chunk)
-        #puts "*** Chardet detected #{cd.encoding} with #{cd.confidence} confidence"
 
         # Only do non-UTF8 if we're quite sure. (May fail)
         if !['utf-8', 'ascii', ''].include?(cd.encoding.to_s.downcase) && cd.confidence > 0.6

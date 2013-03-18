@@ -24,11 +24,13 @@ module CartoDB
 
      # ogr2ogr does not manage well datetime fields in gpx to transform it 
      # to string  in order to import correctly
-     ogr2ogr_command = %Q{#{ogr2ogr_bin_path} -fieldTypeToString DateTime -f "ESRI Shapefile" #{shp_file} #{working_data[:path]}}
+     ogr2ogr_command = %Q{#{ogr2ogr_bin_path} -fieldTypeToString DateTime -f "ESRI Shapefile" #{shp_file} #{path}}
      
      stdin,  stdout, stderr = Open3.popen3(ogr2ogr_command) 
 
-     data_import.log_error(err) unless (err = stderr.read).empty?
+     unless (err = stderr.read).empty?
+      data_import.log_error(err) 
+     end
       
      # then choose the track_points file to import
      Dir.foreach(shp_file) do |tmp_path|

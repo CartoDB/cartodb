@@ -1,15 +1,23 @@
 # coding: UTF-8
 require 'iconv'
+require_relative './decompressors/kmz'
+require_relative './decompressors/unp'
 
 module CartoDB
-
   class Importer
+    include CartoDB::Import::Util
 
     class << self
       attr_accessor :debug
     end
 
-    include CartoDB::Import::Util
+    DECOMPRESSORS = {
+      tar:  CartoDB::UNP,
+      zip:  CartoDB::UNP,
+      gz:   CartoDB::UNP,
+      tgz:  CartoDB::UNP,
+      kmz:  CartoDB::KMZ
+    }
 
     @@debug = true
     RESERVED_COLUMN_NAMES = %W{ oid tableoid xmin cmin xmax cmax ctid }
@@ -177,16 +185,12 @@ module CartoDB
         # A record of all file paths for cleanup
         @entries << @path
 
-        # TODO the problem with this Factory method, is that if a Zip -> KMZ/Zip
-        # it will fail because it wont know to go back and do the Decompressor
-        # stage again
+        # TODO: A Zip -> KMZ/Zip will fail because it wont know 
+        # how to go back and do the Decompressor stage again
+        decompressor  = decompressor_for(@ext)
+        import_data   = decompressor.process! if decompressor
 
-        # set our multi file handlers
-        # decompress data and update self with results
-        decompressor = CartoDB::Import::Decompressor.create(@ext, self.to_import_hash)
-        @data_import.log_update('file unzipped') if decompressor
-        import_data = decompressor.process! if decompressor
-
+        @data_import.log_update('file unzipped') if import_data
         @data_import.reload
 
         # Preprocess data and update self with results
@@ -389,6 +393,16 @@ module CartoDB
       return "http://api.openstreetmap.org/api/0.6/map?bbox=#{lon1},#{lat1},#{lon2},#{lat2}"
     end
 
+    def decompressor_for(extension)
+      key = extension.to_s.delete('.').to_sym
+      return false unless DECOMPRESSORS.keys.include?(key)
+
+      DECOMPRESSORS.fetch(key).new(
+        data_import:    @data_import,
+        path:           @path,
+        suggested_name: @suggested_name
+      )
+    end #decompressor_for
   end
 
 end

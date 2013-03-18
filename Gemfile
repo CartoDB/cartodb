@@ -56,7 +56,7 @@ gem "builder",                 "3.0.0"
 gem "state_machine",           "1.1.2"
 
 # Service components (/services)
-gem "virtus",                  "1.0.0.beta1"
+gem "virtus",                  git: "https://github.com/solnic/virtus.git"
 gem "aequitas"
 gem "uuidtools"
 gem "rubyzip",                  "0.9.9"

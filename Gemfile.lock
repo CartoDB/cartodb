@@ -13,6 +13,17 @@ GIT
     mustache-trimmer (0.2.0)
       mustache (~> 0.99.4)
 
+GIT
+  remote: https://github.com/solnic/virtus.git
+  revision: 97a161f19d20a961094112464075c284d68d35e4
+  specs:
+    virtus (1.0.0.beta1)
+      abstract_type (~> 0.0.5)
+      adamantium (~> 0.0.7)
+      backports (~> 3.0, >= 3.1.0)
+      coercible (~> 0.2)
+      descendants_tracker (~> 0.0.1)
+
 GEM
   remote: http://rubygems.org/
   specs:
@@ -321,12 +332,6 @@ GEM
     uuidtools (2.1.3)
     vegas (0.1.11)
       rack (>= 1.0.0)
-    virtus (1.0.0.beta1)
-      abstract_type (~> 0.0.5)
-      adamantium (~> 0.0.7)
-      backports (~> 3.0, >= 3.1.0)
-      coercible (~> 0.2)
-      descendants_tracker (~> 0.0.1)
     warden (1.2.1)
       rack (>= 1.0)
     websocket (1.0.7)
@@ -403,6 +408,6 @@ DEPENDENCIES
   turbo-sprockets-rails3 (= 0.1.16)
   uglifier (~> 1.3.0)
   uuidtools
-  virtus (= 1.0.0.beta1)
+  virtus!
   vizzuality-sequel-rails (= 0.3.6)!
   yajl-ruby (= 1.1.0)

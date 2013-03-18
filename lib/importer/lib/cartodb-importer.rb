@@ -10,7 +10,6 @@ require 'open-uri'
 Dir[File.dirname(__FILE__) + '/cartodb-importer/lib/*.rb'].each {|file| require file }
 
 # load factories
-require File.dirname(__FILE__) + '/cartodb-importer/decompressors/factory'
 require File.dirname(__FILE__) + '/cartodb-importer/preprocessors/factory'
 require File.dirname(__FILE__) + '/cartodb-importer/loaders/factory'
 

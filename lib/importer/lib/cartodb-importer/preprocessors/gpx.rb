@@ -28,7 +28,9 @@ module CartoDB
      
      stdin,  stdout, stderr = Open3.popen3(ogr2ogr_command) 
 
-     data_import.log_error(err) unless (err = stderr.read).empty?
+     unless (err = stderr.read).empty?
+      data_import.log_error(err) 
+     end
       
      # then choose the track_points file to import
      Dir.foreach(shp_file) do |tmp_path|

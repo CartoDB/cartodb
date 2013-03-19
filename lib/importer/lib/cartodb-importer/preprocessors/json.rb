@@ -1,5 +1,5 @@
 # encoding: utf-8
-require_relative '../lib/encoding_converter'
+require_relative '../utils/encoding_converter'
 
 module CartoDB
   class JSON

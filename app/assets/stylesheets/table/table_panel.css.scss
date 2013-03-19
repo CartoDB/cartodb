@@ -811,7 +811,7 @@
               pointer-events: none;
 
               &.top    { @include opacity(0); @include position(0, false, false, 0); @extend .white-gradient-shadow-top;    z-index: 10; }
-              &.bottom { @include opacity(1); @include position(false, false, 0, 0); @extend .white-gradient-shadow-bottom; z-index: 10; }
+              &.bottom { @include opacity(0); @include position(false, false, 0, 0); @extend .white-gradient-shadow-bottom; z-index: 10; }
 
               @include size(100%, 30px);
 
@@ -868,7 +868,7 @@
 
             z-index: 100;
 
-            .scrollers { float: right; }
+            .scrollers { display:none; float: right; }
 
             .btn {
               @include inline-block();

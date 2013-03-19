@@ -1,7 +1,7 @@
 
 UGLIFYJS = ./node_modules/.bin/uglifyjs
 
-CSS_FILES = $(wildcard themes/css/*/*.css)
+CSS_FILES = $(wildcard themes/css/infowindow/*.css themes/css/map/*.css)
 CSS_FILES_IE = $(wildcard themes/css/ie/*.css)
 
 #dist:  dist/cartodb.js dist/cartodb.full.js themes

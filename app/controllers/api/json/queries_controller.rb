@@ -49,7 +49,6 @@ class Api::Json::QueriesController < Api::ApplicationController
           if current_user.run_pg_query("SELECT relname FROM pg_class WHERE relname='#{row.name}'")[:rows].empty?
             Table.filter(:user_id => current_user.id, :id => row.id).delete
             Tag.filter(:user_id => current_user.id, :table_id => row.id).delete
-            User.filter(:id => current_user.id).update(:tables_count => :tables_count - 1)
           end
         end
       # or, should the process of 'creating' the table fail if we can't register the table?

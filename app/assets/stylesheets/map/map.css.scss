@@ -24,10 +24,11 @@ div.map {
     width:100%;
     height:64px;
     display:block;
-    z-index:2;
+    z-index:6;
     @include box-shadow(rgba(black,0.15) 0 3px 3px 0);
     @include background(linear-gradient(top,#FDFDFD,#F2F2F2));
   }
+
   div.share {
     position:absolute;
     top:0;
@@ -36,100 +37,168 @@ div.map {
     padding:8px 20px 8px 30px;
     z-index:50;
 
-    a {
-      float:left;
-      @include box-shadow(rgba(white,1) 0 0 8px 5px);
-    }
+    a {float:left;}
   }
 
-  div.base_maps {
-    ul {
-      margin:10px 0 10px 10px;
-      letter-spacing:-4px;
+  .options {
+    @include inline-block();
+    margin: 17px 0 0 45px;
 
-      li {
+    & > li.dropdown {
+
+      &.full_screen .thumb {
+        @include icons-sprite(full_screen);
+
+        border: none;
+        @include border-radius(0px);
+      }
+
+      @include inline-block();
+
+      padding: 0 15px 0 0;
+      margin: 0 5px 0 0;
+
+      border-right: 1px solid rgba(#D9D9D9, .8);
+      &:last-child { border: none; }
+
+      cursor: pointer;
+
+      & > .thumb {
         @include inline-block();
+        @include size(24px);
+        margin: 0 2px 0 0;
 
-        width:44px;
-        height:44px;
-        margin:0 5px 0 0;
-        @include border-radius(4px);
-        letter-spacing:0;
-        overflow:hidden;
+        border: 1px solid rgba(0,0,0,.2);
+        @include border-radius(3px);
+        background-size: 24px 24px;
+      }
 
-        &.selected {
-          a:before { border: 1px solid rgba(0,0,0, 0.5); }
+      .info {
+        @include inline-block();
+        padding-top:2px;
+
+        h5, .name {
+          font-size: 13px;
+          color: #7A7A7A;
         }
 
-        &:hover { @include box-shadow(0px 0px 3px #CCC); }
-
-        a {
+        h5 {
           position:relative;
-          @include inline-block();
-          width:100%;
-          height:100%;
-          background-size:98px 98px;//!important;
-          background-position:-22px -22px;//!important;
-          @include border-radius(4px);
+          padding:0 12px 0 0;
+          display:block;
+          font-family: "Helvetica", Arial;
+          font-weight:normal;
+          line-height:12px;
+
+          &:before {
+            position:absolute;
+            content:' ';
+            top:-3px;
+            right:-9px;
+            margin:8px 0 0 5px;
+            border-left:3px solid transparent;
+            border-right:3px solid transparent;
+            border-top:3px solid #7C7C7C;
+            z-index:1;
+          }
+
+          &:after {
+            position:absolute;
+            content:' ';
+            top:-1px;
+            right:-9px;
+            margin:9px 0 0 5px;
+            border-left:3px solid transparent;
+            border-right:3px solid transparent;
+            border-top:3px solid transparent;
+            z-index:0;
+          }
+        }
+
+      }
+    } // .basemap_dropdown
+  } // .dropdowns
+
+  div.dropdown.basemap {
+
+    height: 247px;
+    width: 648px;
+    border: 1px solid #999999;
+
+    .custom {
+      width:200px;
+      display:inline;
+      vertical-align:top;
+    }
+
+    ul {
+      width:200px;
+      @include inline-block();
+      vertical-align:top;
+      padding: 0 5px 0 10px;
+
+      &.special {
+        background:#F6F6F6;
+        border-left: 1px solid #E7E7E7;
+      }
+    }
+
+    ul li {
+
+      &.selected .name { color: #7B7B7B; }
+
+      &.hidden { display: none; }
+
+      &:hover { background: none; }
+
+      & > a {
+        display:block;
+        padding: 11px 10px 11px 0;
+
+        line-height: normal;
+        @include clearfix();
+
+        .name {
+          float:left;
+          font-size:13px;
+          width: 150px;
+          margin: 5px 0 0 5px;
+
+          text-overflow:ellipsis;
+          white-space: nowrap;
+          overflow: hidden;
+        }
+
+        &.add .thumb { border-color: #397DB8; }
+        &:hover .thumb .remove_layer { opacity: 1; }
+
+        .thumb {
+          position:relative;
+          float:left;
+          @include size(24px);
+          @include border-radius(2px);
           @include text-indent();
+          background-size: 34px 34px;
+          background-position: 50% 50%;
+
           text-decoration:none;
+          border: 1px solid rgba(0,0,0, 0.3);
 
-          &:hover {
-            cursor:pointer;
-            &:before { border: 1px solid rgba(0,0,0, 0.5); }
-            span.remove_layer { display: block; }
-          }
+          .remove_layer {
 
-          span.color {
-            position:relative;
-            display:block;
-            width:100%;
-            height:14px;
-            padding:15px 0;
+            @include size(14px, 10px);
+            @include position(false, 0, 0, false);
+            @include simple-transition(opacity, 100ms);
+            padding: 0;
+
+            background:#333;
             text-indent:0;
-            font:bold 9px $text-fonts;
-            color:rgba(#999,0.8);
-            text-shadow:0 0 1px rgba(#FFF,0.5);
-            text-transform:uppercase;
-            text-align:center;
-          }
-
-          span.button {
-            position:absolute;
-            bottom:2px;
-            right:2px;
-            width:10px;
-            height:10px;
-            text-indent:0;
-            @include border-radius(10px);
-            background:white;
-            z-index:2;
-
-            &:before {
-              position:absolute;
-              content:' ';
-              top:4px;
-              left:3px;
-              width:0;
-              height:0;
-              border-left:2px solid transparent;
-              border-right:2px solid transparent;
-              border-top:3px solid #397DBA;
-            }
-          }
-
-          span.remove_layer {
-            display: none;
-            position:absolute;
-            bottom:1px;
-            right:1px;
-            width:14px;
-            height:10px;
-            text-indent:0;
-            @include border-top-left-radius(3px);
-            @include border-bottom-right-radius(3px);
+            @include border-top-left-radius(2px);
+            @include border-bottom-right-radius(2px);
             background:rgba(black,0.5);
             z-index:2;
+
+            opacity: 0;
 
             &:before {
               position:absolute;
@@ -144,79 +213,88 @@ div.map {
             }
           }
 
+          &:hover {
+            cursor:pointer;
+            &:before { border: 1px solid rgba(0,0,0, 0.5); }
+          }
+
+        }
+
+        &.dark_roadmap .thumb {
+          background-size:auto;
+          @include icons-sprite(gmaps_dark_roadmap);
+        }
+
+        &.gray_roadmap .thumb {
+          background-size:auto;
+          @include icons-sprite(gmaps_gray_roadmap);
+        }
+
+        &.roadmap .thumb{
+          background-size:auto;
+          @include icons-sprite(gmaps_roadmap);
+        }
+
+        &.satellite .thumb {
+          background-size:auto;
+          @include icons-sprite(gmaps_satellite);
+        }
+
+        &.hybrid .thumb {
+          background-size:auto;
+          @include icons-sprite(gmaps_hybrid);
+        }
+
+        &.add .thumb {
+          background-size:auto;
+          @include icons-sprite(plus);
+        }
+
+        span.color {
+          position:relative;
+          display:block;
+          width:100%;
+          height:14px;
+          padding:15px 0;
+          text-indent:0;
+          font:bold 9px $text-fonts;
+          color:rgba(#999,0.8);
+          text-shadow:0 0 1px rgba(#FFF,0.5);
+          text-transform:uppercase;
+          text-align:center;
+        }
+
+        span.button {
+          position:absolute;
+          bottom:2px;
+          right:2px;
+          width:10px;
+          height:10px;
+          text-indent:0;
+          @include border-radius(10px);
+          background:white;
+          z-index:2;
+
           &:before {
-            content:' ';
             position:absolute;
-            z-index:1;
-            top:0px;
-            right:0px;
-            left:0px;
-            bottom:0px;
-            background:none;
-            border:1px solid rgba(#999999,0.25);
-            @include border-radius(4px);
+            content:' ';
+            top:4px;
+            left:3px;
+            width:0;
+            height:0;
+            border-left:2px solid transparent;
+            border-right:2px solid transparent;
+            border-top:3px solid #397DBA;
           }
-
-          &.gray_roadmap {
-            background-size:auto;
-            @include icons-sprite(gmaps_gray_roadmap);
-          }
-
-          &.roadmap {
-            background-size:auto;
-            @include icons-sprite(gmaps_roadmap);
-          }
-
-          &.satellite {
-            background-size:auto;
-            @include icons-sprite(gmaps_satellite);
-          }
-
-          &.hybrid {
-            background-size:auto;
-            @include icons-sprite(gmaps_hybrid);
-          }
-
-          // Add new base map
-          &.add {
-            position:relative;
-
-            span {
-              &:after, &:before {
-                position:absolute;
-                content:'';
-                top:50%;
-                left:50%;
-                @include border-radius(3px);
-                background:#397DBA;
-              }
-
-              &:after {
-                margin:-2px 0 0 -8px;
-                width:16px;
-                height:4px;
-              }
-
-              &:before {
-                margin:-8px 0 0 -2px;
-                width:4px;
-                height:16px;
-              }
-            }
-
-            &:hover {
-              span:after,span:before {
-                background:#24527B;
-              }
-            }
-          } // a.add
-        } // a
+        }
       }
     }
   }
 
 
-  div#map {
+  /* CartoDB map styles */
+
+  div.cartodb-map {
     position:absolute;
     top:64px;
     left:0;
@@ -233,18 +311,18 @@ div.map {
   }
 
   // Zoom info
-  div#zoom_info {top:135px;}
+  div.cartodb-zoom-info {top:135px;}
 
   // Zoom in core map
-  div#zoom {top:65px;}
+  div.cartodb-zoom {top:65px;}
 
   // Tiler in core map
-  div#tiles_loader div.loader {
+  div.cartodb-tiles-loader div.loader {
     top:175px;
   }
 
   // Search box in core map
-  div.search_box {
+  div.cartodb-searchbox {
     position:relative;
     float:right;
     top:65px;
@@ -252,22 +330,23 @@ div.map {
   }
 
   // Public map
-  div#map.public {
+  .cartodb-map.public {
     top: 55px;
     border-top:1px solid #999999;
-    div#zoom {top: 0px;}
-    div#tiles_loader div.loader {
+    div.cartodb-zoom {top: 0px;}
+    div.cartodb-tiles-loader div.loader {
       top:135px - 65px;
     }
-    div.search_box{
+    div.cartodb-searchbox{
       top: 0px;
       left: 0px;
     }
 
     .leaflet-right .leaflet-control, #cartodb_attribution {
       margin-right: 0px!important;
-    }  
+    }
   }
+
 
   // [done | discard] dialog shown when a geometry is being edited or created
   div.editing {
@@ -316,7 +395,46 @@ div.map {
     }
   }
 
-} // div.map
+  div.sqlview {
+    position: absolute;
+    top: 53px;
+    right: 0;
+    left: 0;
+    display: block;
+    width: 100%;
+    height: 37px;
+    z-index:1;
+
+    p {
+      position: fixed;
+      left: 50%;
+      display: inline;
+      margin: 12px 0 0 -50%;
+      padding: 12px 0;
+      width: 100%;
+      border-bottom: 1px solid #ccc;
+      background-color: #E5FAEA;
+      color: #333;
+      color: #666666;
+      text-align: center;
+      font-size: 13px;
+      font-family: $text-fonts;
+      text-indent:0;
+      z-index:2;
+      @include transform-style("linear");
+      @include transition-property("text-indent");
+      @include transition-duration(300ms);
+      @include box-shadow(rgba(0, 0, 0, 0.055) 0 3px 1px 0);
+    }
+  } //div.sqlview
+
+  &.displaced {
+    div.sqlview p {
+      text-indent:-600px;
+    }
+  } //&.displaced
+
+} // div.cartodb-map
 
 
 section.block.noGeoRef {
@@ -351,30 +469,70 @@ section.block.noGeoRef {
 
 /* FOOTER EDIT BUTTONS  for infowindow */
 
+@mixin edit-bottom-states($x,$y,$c1,$c2,$c3,$c4) {
+  @include background(sprite($icons-sprites, infowindow-edit-tools, $offset-x: $x, $offset-y: $y) no-repeat, $c1); // IE
+  @include background(sprite($icons-sprites, infowindow-edit-tools, $offset-x: $x, $offset-y: $y) no-repeat, linear-gradient($c1,$c2));
+
+  &:hover, &:active, &:focus {
+    @include background(sprite($icons-sprites, infowindow-edit-tools, $offset-x: $x, $offset-y: $y) no-repeat, $c3); // IE
+    @include background(sprite($icons-sprites, infowindow-edit-tools, $offset-x: $x, $offset-y: $y) no-repeat, linear-gradient($c1,$c4));
+  }
+}
+
 div.cartodb-edit-buttons {
-  border-top:1px solid rgba(204,204,204,0.5);
+  border-top:1px solid #E5E5E5;
   display:block;
   width:188px;
   padding:11px 0 6px;
-  margin-top:10px;
+  margin:10px 0 0;
+  letter-spacing: -4px;
+
+  // CartoDB id
+  .cartodb_id {
+    @include inline-block();
+    color: #999;
+    font-size: 13px;
+    margin-top:8px;
+    letter-spacing:0px;
+    word-spacing:0px;
+  }
+
+  // Edit buttons
+  div.right {width:auto; margin-top:4px;}
+
+  a.button {
+    float:left;
+    vertical-align:top;
+    width:29px;
+    height:24px;
+    border-right:0;
+    margin:0;
+    padding:0!important;
+    margin:0;
+    text-indent: -9999px;
+    font-size:0;
+    line-height:0;
+    letter-spacing:0px;
+    @include border-radius(0);
+
+    &.edit_data {@include edit-bottom-states(-4, 4, #F9F9F9, #EBEBEB, #DEDEDE, #E1E1E1);}
+    &.edit_geo {@include edit-bottom-states(-35, 4, #F9F9F9, #EBEBEB, #DEDEDE, #E1E1E1);}
+    &.remove {@include edit-bottom-states(-66, 4, #F9F9F9, #EBEBEB, #DEDEDE, #E1E1E1);}
+
+    &:first-child {@include border-left-radius(3px);}
+    &:last-child {@include border-right-radius(3px); border-right:1px solid #B0B0B0;}
+  }
 }
 
-div.cartodb-edit-buttons a.button.grey.small {
-  margin-left: 5px;
-  font-size: 13px;
-  padding: 6px 8px;
-}
-
-div.cartodb-edit-buttons .button:first-child {
-  margin-left:0;
-}
-
-div.cartodb-edit-buttons .cartodb_id {
-  display:inline-block;
-  *display:inline;
-  vertical-align:top;
-  zoom:1;
-  color: #999;
-  font-size: 13px;
-  margin-top:8px;
+// Dark buttons
+div.cartodb-popup.dark  {
+  div.cartodb-edit-buttons {
+    border-color:#676767;
+    a.button {
+      border-color:#676767!important;
+      &.edit_data {@include edit-bottom-states(-4, -18, #222, #222, #222, #222);}
+      &.edit_geo {@include edit-bottom-states(-35, -18, #222, #222, #222, #222);}
+      &.remove {@include edit-bottom-states(-66, -18, #222, #222, #222, #222);}
+    }
+  }
 }

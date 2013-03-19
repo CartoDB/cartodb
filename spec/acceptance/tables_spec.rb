@@ -51,7 +51,6 @@ feature "Tables", :js => true do
     click_on 'Save'
 
     click_on 'Ok, continue'
-    #require 'debugger'; debugger
     page.should have_content 'aeasdf'
   end
 

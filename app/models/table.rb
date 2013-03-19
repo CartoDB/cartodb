@@ -1,5 +1,7 @@
 # coding: UTF-8
 # Proxies management of a table in the users database
+require_relative './table/column_typecaster'
+
 class Table < Sequel::Model(:user_tables)
 
   # Table constants
@@ -18,6 +20,7 @@ class Table < Sequel::Model(:user_tables)
 
   many_to_one :map
   plugin :association_dependencies, :map => :destroy
+  plugin :dirty
 
   def public_values(options = {})
     selected_attrs = options[:except].present? ? PUBLIC_ATTRIBUTES.select { |k, v| !options[:except].include?(k.to_sym) } : PUBLIC_ATTRIBUTES
@@ -25,9 +28,14 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def geometry_types
-    owner.in_database.select("ST_GeometryType(#{Table::THE_GEOM})".lit)
-      .distinct.from(self.name).where("#{Table::THE_GEOM} is not null")
-      .limit(10).all.map {|r| r[:st_geometrytype] }
+    owner.in_database[<<-SQL
+      SELECT DISTINCT ST_GeometryType(the_geom) FROM (
+        SELECT the_geom
+        FROM #{self.name}
+        WHERE (the_geom is not null) LIMIT 10
+      ) as foo
+    SQL
+    ].all.map {|r| r[:st_geometrytype] }
   end
 
   def_dataset_method(:search) do |query|
@@ -45,7 +53,7 @@ class Table < Sequel::Model(:user_tables)
 
   attr_accessor :force_schema, :import_from_file,:import_from_url, :import_from_query,
                 :import_from_table_copy, :importing_encoding,
-                :temporal_the_geom_type, :migrate_existing_table
+                :temporal_the_geom_type, :migrate_existing_table, :new_table
 
   ## Callbacks
 
@@ -226,7 +234,20 @@ class Table < Sequel::Model(:user_tables)
         end
         @data_import.log_update('cleaning supplied cartodb_id')
       end
-      user_database.run(%Q{ALTER TABLE "#{self.name}" ADD PRIMARY KEY (cartodb_id)})
+
+      # Try to use the selected cartodb_id column as primary key,
+      # generate a new one if we can't (duplicated values for instance)
+      begin
+        user_database.run(%Q{ALTER TABLE "#{self.name}" ADD PRIMARY KEY (cartodb_id)})
+      rescue
+        @data_import.log_update("Renaming cartodb_id to invalid_cartodb_id") if @data_import
+        user_database.run(%Q{ALTER TABLE "#{self.name}" ALTER COLUMN cartodb_id DROP DEFAULT})
+        user_database.run(%Q{ALTER TABLE "#{self.name}" ALTER COLUMN cartodb_id DROP NOT NULL})
+        user_database.run(%Q{DROP SEQUENCE IF EXISTS #{self.name}_cartodb_id_seq})
+        user_database.run(%Q{ALTER TABLE "#{self.name}" RENAME COLUMN cartodb_id TO invalid_cartodb_id})
+        user_database.run(%Q{ALTER TABLE "#{self.name}" ADD COLUMN cartodb_id SERIAL})
+        user_database.run(%Q{ALTER TABLE "#{self.name}" ADD PRIMARY KEY (cartodb_id)})
+      end
 
       normalize_timestamp_field!(:created_at, user_database)
       normalize_timestamp_field!(:updated_at, user_database)
@@ -234,11 +255,9 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def before_create
+    super
     update_updated_at
     self.database_name = owner.database_name
-
-    #import from file
-    # if import_from_file.present? or import_from_url.present? or import_from_query.present? or import_from_table_copy.present? or migrate_existing_table.present?
 
     # The Table model only migrates now, never imports
     if migrate_existing_table.present?
@@ -274,110 +293,92 @@ class Table < Sequel::Model(:user_tables)
       end
       set_the_geom_column!(self.the_geom_type)
     end
-
-
-    # test for exceeding of table quota after creation - needed as no way to test future db size pre-creation
-    if owner.over_disk_quota?
-      unless @data_import.nil?
-        @data_import.reload
-        @data_import.set_error_code(8001)
-        @data_import.log_error("#{owner.disk_quota_overspend / 1024}KB more space is required" )
-      end
-      raise CartoDB::QuotaExceeded, "#{owner.disk_quota_overspend / 1024}KB more space is required"
-    end
-
-    # all looks ok, so ANALYZE for correct statistics
-    owner.in_database.run(%Q{ANALYZE "#{self.name}"})
-
-    # TODO: insert geometry checking and fixing here https://github.com/Vizzuality/cartodb/issues/511
-    super
-    if @data_import
-      CartodbStats.increment_imports()
-    end
   rescue => e
-    CartoDB::Logger.info "table#create error", "#{e.inspect}"
-    if @data_import
-      @data_import.reload
-      @data_import.log_error("Table error, #{e.inspect}")
-    end
-
-    # Remove the table, except if it already exists
-    unless self.name.blank? || e.message =~ /relation .* already exists/
-      $tables_metadata.del key
-
-      owner.in_database(:as => :superuser).run(%Q{DROP TABLE IF EXISTS "#{self.name}"})
-      if @data_import
-        @data_import.log_update("dropping table #{self.name}")
-      end
-    end
-
-    if @import_from_file
-      @import_from_file = URI.escape(@import_from_file) if @import_from_file =~ /^http/
-      open(@import_from_file) do |res|
-        filename = "#{File.basename(@import_from_file).split('.').first}_#{Time.now.to_i}#{File.extname(@import_from_file)}"
-        @import_from_file = File.new Rails.root.join('public', 'uploads', 'failed_imports', filename), 'w'
-        @import_from_file.write res.read.force_encoding('utf-8')
-        @import_from_file.close
-      end
-
-      if @data_import
-        @data_import.log_error("Import Error: #{e.try(:message)}")
-        CartodbStats.increment_failed_imports()
-      end
-
-      # nill required for this bug https://github.com/airbrake/airbrake/issues/34
-      Airbrake.notify(nil,
-        :error_class   => "Import Error",
-        :error_message => "Import Error: #{e.try(:message)}",
-        :backtrace     => e.try(:backtrace),
-        :parameters    => {
-          :database  => database_name,
-          :username  => owner.database_username,
-          :temp_file => @import_from_file.path
-        }
-      )
-    end
-    raise e
+    self.handle_creation_error(e)
   end
 
   def after_save
     super
     manage_tags
     update_name_changes
-    manage_privacy
-    map.invalidate_varnish_cache
-    self.invalidate_varnish_cache
+    self.manage_privacy
+    self.map.save
+
+    # Privacy changes should invalidate varnish cache
+    if self.previous_changes.keys.include?(:privacy)
+      self.invalidate_varnish_cache
+    end
   end
 
   def after_create
     super
-
     self.create_default_map_and_layers
     self.send_tile_style_request
 
-    User.filter(:id => user_id).update(:tables_count => :tables_count + 1)
     owner.in_database(:as => :superuser).run(%Q{GRANT SELECT ON "#{self.name}" TO #{CartoDB::TILE_DB_USER};})
-    add_python
-    flush_cache
-    set_trigger_update_updated_at
-    set_trigger_cache_timestamp
-    set_trigger_check_quota
     set_default_table_privacy
-    # make_geom_valid # too expensive to do on import, leave to the user
 
     @force_schema = nil
     $tables_metadata.hset key, "user_id", user_id
-
-    update_table_pg_stats
+    self.new_table = true
 
     # finally, close off the data import
     if data_import_id
-      @data_import = DataImport.find(:id=>data_import_id)
+      @data_import = DataImport.find(id: data_import_id)
       @data_import.table_id   = id
       @data_import.table_name = name
       @data_import.finished
     end
     add_table_to_stats
+  rescue => e
+    self.handle_creation_error(e)
+  end
+
+  def after_commit
+    super
+    if self.new_table
+      begin
+        # VACUUM can't be run inside a transaction, so we have to perform
+        # this operation after the transaction has been commited
+        owner.in_database.run("VACUUM FULL \"#{self.name}\"") rescue ""
+        update_table_pg_stats
+
+        # Check if owner is over quota, raise an exception if so
+        if owner.over_disk_quota?
+          unless @data_import.nil?
+            @data_import.reload
+            @data_import.set_error_code(8001)
+            @data_import.log_error("#{owner.disk_quota_overspend / 1024}KB more space is required" )
+          end
+          raise CartoDB::QuotaExceeded, "#{owner.disk_quota_overspend / 1024}KB more space is required"
+        end
+
+        # Set default triggers
+        add_python
+        set_trigger_update_updated_at
+        set_trigger_cache_timestamp
+        set_trigger_check_quota
+      rescue => e
+        self.handle_creation_error(e)
+      end
+    end
+  end
+
+  def handle_creation_error(e)
+    CartoDB::Logger.info "table#create error", "#{e.inspect}"
+
+    # Remove the table, except if it already exists
+    unless self.name.blank? || e.message =~ /relation .* already exists/
+      $tables_metadata.del key
+
+      self.remove_table_from_user_database
+      
+      @data_import.log_update("Dropping table #{self.name}") if @data_import
+    end
+
+    @data_import.log_error("Import Error: #{e.try(:message)}") if @data_import
+
+    raise e
   end
 
   def create_default_map_and_layers
@@ -398,7 +399,6 @@ class Table < Sequel::Model(:user_tables)
       }.compact.each_with_index.map { |column_name, i|
         { name: column_name, title: true, position: i+1 }
       }
-
     m.add_layer(data_layer)
   end
 
@@ -417,19 +417,17 @@ class Table < Sequel::Model(:user_tables)
     end
   end
 
-  def after_update
-    flush_cache
-  end
-
-  def before_destroy
-    $tables_metadata.del key
-  end
-
   def after_destroy
-    # TODO add a delete table check in the cases where a table has become ghost
     super
+    $tables_metadata.del key
     Tag.filter(:user_id => user_id, :table_id => id).delete
-    User.filter(:id => user_id).update(:tables_count => :tables_count - 1)
+    remove_table_from_user_database
+    remove_table_from_stats
+    invalidate_varnish_cache
+    delete_tile_style
+  end
+
+  def remove_table_from_user_database
     owner.in_database(:as => :superuser) do |user_database|
       begin
         user_database.run("DROP SEQUENCE IF EXISTS cartodb_id_#{oid}_seq")
@@ -438,12 +436,13 @@ class Table < Sequel::Model(:user_tables)
       end
       user_database.run(%Q{DROP TABLE IF EXISTS "#{self.name}"})
     end
-    remove_table_from_stats
-    invalidate_varnish_cache
-    delete_tile_style
   end
   ## End of Callbacks
 
+  ##
+  # This method removes all the vanish cached objects for the table,
+  # tiles included. Use with care O:-)
+  #
   def invalidate_varnish_cache
     CartoDB::Varnish.new.purge("obj.http.X-Cache-Channel ~ #{varnish_key}.*")
   end
@@ -499,7 +498,6 @@ class Table < Sequel::Model(:user_tables)
   def name=(value)
     return if value == self[:name] || value.blank?
     new_name = get_valid_name(value)
-    owner.in_database.rename_table(name, new_name) unless new?
 
     # Do not keep track of name changes until table has been saved
     @name_changed_from = self.name if !new? && self.name.present?
@@ -575,7 +573,11 @@ class Table < Sequel::Model(:user_tables)
 
   # returns table size in bytes
   def table_size
-    @table_size ||= owner.in_database["SELECT pg_relation_size('#{self.name}') as size"].first[:size] / 2
+    @table_size ||= owner.in_database["SELECT pg_total_relation_size('#{self.name}') as size"].first[:size] / 2
+  end
+
+  def total_table_size
+    @total_table_size ||= owner.in_database["SELECT pg_total_relation_size('#{self.name}') as size"].first[:size] / 2
   end
 
   # TODO: make predictable. Alphabetical would be better
@@ -637,11 +639,11 @@ class Table < Sequel::Model(:user_tables)
           end
         end
 
-        if new_column_type = get_new_column_type(invalid_column)
+        if invalid_column.nil? || new_column_type != get_new_column_type(invalid_column)
+          raise e
+        else
           user_database.set_column_type self.name, invalid_column.to_sym, new_column_type
           retry
-        else
-          raise e
         end
       end
     end
@@ -715,7 +717,14 @@ class Table < Sequel::Model(:user_tables)
 
   def modify_column!(options)
     new_name = options[:name] || options[:old_name]
-    new_type = options[:type] ? options[:type].try(:convert_to_db_type) : schema(:cartodb_types => false).select{ |c| c[0] == new_name.to_sym }.first[1]
+    new_type = 
+      if options[:type] 
+        options[:type].try(:convert_to_db_type)
+      else
+        schema(cartodb_types: false)
+          .select{ |c| c[0] == new_name.to_sym }.first[1]
+      end
+
     cartodb_type = new_type.try(:convert_to_cartodb_type)
 
     owner.in_database do |user_database|
@@ -725,180 +734,32 @@ class Table < Sequel::Model(:user_tables)
         user_database.rename_column name, options[:old_name].to_sym, options[:new_name].sanitize.to_sym
         new_name = options[:new_name].sanitize
       end
+
       if options[:type]
         column_name = (options[:new_name] || options[:name]).sanitize
         raise if CARTODB_COLUMNS.include?(column_name)
+
         begin
-          user_database.set_column_type name, column_name.to_sym, new_type
-        rescue => e
-          message = e.message.split("\n").first
-          if message =~ /cannot be cast to type/
-            begin
-              convert_column_datatype user_database, name, column_name, new_type
-            rescue => e
-              raise e
-            end
-          else
-            raise e
-          end
+          user_database.set_column_type(name, column_name.to_sym, new_type)
+        rescue => exception
+          raise exception unless exception.message =~ /cannot be cast to type/
+          convert_column_datatype(user_database, name, column_name, new_type)
         end
       end
     end
-    return {:name => new_name, :type => new_type, :cartodb_type => cartodb_type}
-  end
+
+    { name: new_name, type: new_type, cartodb_type: cartodb_type }
+  end #modify_column!
 
   # convert non-conformist rows to null
-  def convert_column_datatype user_database, table_name, column_name, new_type
-    begin
-      # try straight cast
-      user_database.transaction do
-        user_database.run(<<-EOF
-          ALTER TABLE "#{table_name}"
-          ALTER COLUMN #{column_name}
-          TYPE #{new_type}
-          USING cast(#{column_name} as #{new_type})
-          EOF
-        )
-      end
-    rescue => e
-      # attempt various lossy conversions by regex nullifying unmatching data and retrying conversion.
-      user_database.transaction do
-        old_type = col_type(user_database, table_name, column_name).to_s
-
-        # conversions ok by default
-        # number => string
-        # boolean => string
-
-        # string => number
-        if (old_type == 'string' && new_type == 'double precision')
-          # normalise number
-          user_database.run(<<-EOF
-            UPDATE "#{table_name}"
-            SET #{column_name}=NULL
-            WHERE trim(\"#{column_name}\") !~* '^([-+]?[0-9]+(\.[0-9]+)?)$'
-            EOF
-          )
-        end
-
-        # string => boolean
-        if (old_type == 'string' && new_type == 'boolean')
-          falsy = "0|f|false"
-
-          # normalise empty string to NULL
-          user_database.run(<<-EOF
-            UPDATE "#{table_name}"
-            SET #{column_name}=NULL
-            WHERE trim(\"#{column_name}\") ~* '^$'
-            EOF
-          )
-
-          # normalise truthy (anything not false and NULL is true...)
-          user_database.run(<<-EOF
-            UPDATE "#{table_name}"
-            SET #{column_name}='t'
-            WHERE trim(\"#{column_name}\") !~* '^(#{falsy})$' AND #{column_name} IS NOT NULL
-            EOF
-          )
-
-          # normalise falsy
-          user_database.run(<<-EOF
-            UPDATE "#{table_name}"
-            SET #{column_name}='f'
-            WHERE trim(\"#{column_name}\") ~* '^(#{falsy})$'
-            EOF
-          )
-        end
-
-        # boolean => number
-        # normalise truthy to 1, falsy to 0
-        if (old_type == 'boolean' && new_type == 'double precision')
-
-          # first to string
-          user_database.run(<<-EOF
-            ALTER TABLE "#{table_name}"
-            ALTER COLUMN #{column_name} TYPE text
-            USING cast(#{column_name} as text)
-            EOF
-          )
-
-          # normalise truthy
-          user_database.run(<<-EOF
-            UPDATE "#{table_name}"
-            SET #{column_name}='1'
-            WHERE #{column_name} = 'true' AND #{column_name} IS NOT NULL
-            EOF
-          )
-
-          # normalise falsy
-          user_database.run(<<-EOF
-            UPDATE "#{table_name}"
-            SET #{column_name}='0'
-            WHERE #{column_name} = 'false' AND #{column_name} IS NOT NULL
-            EOF
-          )
-        end
-
-        # string => datetime
-        if (old_type == 'string' && %w(date datetime timestamp).include?(new_type))
-          # normalise empty string to NULL
-          user_database.run(<<-EOF
-            UPDATE "#{table_name}"
-            SET "#{column_name}" = NULL
-            WHERE \"#{column_name}\" = ''
-            EOF
-          )
-        end
-
-        # number => boolean
-        # normalise 0 to falsy else truthy
-        if (old_type == 'float' && new_type == 'boolean')
-
-          # first to string
-          user_database.run(<<-EOF
-            ALTER TABLE "#{table_name}"
-            ALTER COLUMN #{column_name} TYPE text
-            USING cast(#{column_name} as text)
-            EOF
-          )
-
-          # normalise truthy
-          user_database.run(<<-EOF
-            UPDATE "#{table_name}"
-            SET #{column_name}='t'
-            WHERE #{column_name} !~* '^0$' AND #{column_name} IS NOT NULL
-            EOF
-          )
-
-          # normalise falsy
-          user_database.run(<<-EOF
-            UPDATE "#{table_name}"
-            SET #{column_name}='f'
-            WHERE #{column_name} ~* '^0$'
-            EOF
-          )
-        end
-
-        # TODO:
-        # * number  => datetime
-        # * boolean => datetime
-        #
-        # Maybe do nothing? Does it even make sense? Best to throw error here for now.
-
-        # try to update normalised column to new type (if fails here, well, we have not lost anything)
-        user_database.run(<<-EOF
-          ALTER TABLE "#{table_name}"
-          ALTER COLUMN #{column_name}
-          TYPE #{new_type}
-          USING cast(#{column_name} as #{new_type})
-          EOF
-        )
-      end
-    end
-  end
-
-  def col_type user_database, table_name, column_name
-    user_database.schema(table_name).select{ |c| c[0] == column_name.to_sym }.flatten.last[:type]
-  end
+  def convert_column_datatype(user_database, table_name, column_name, new_type)
+    CartoDB::ColumnTypecaster.new(
+      user_database:  user_database,
+      table_name:     table_name,
+      column_name:    column_name,
+      new_type:       new_type
+    ).run
+  end #convert_column_datatype
 
   def records(options = {})
     rows = []
@@ -923,9 +784,9 @@ class Table < Sequel::Model(:user_tables)
         column_names[the_geom_index] = <<-STR
             CASE
             WHEN GeometryType(the_geom) = 'POINT' THEN
-              ST_AsGeoJSON(the_geom,6)
+              ST_AsGeoJSON(the_geom,8)
             WHEN (the_geom IS NULL) THEN
-              ''
+              NULL
             ELSE
               'GeoJSON'
             END the_geom
@@ -997,7 +858,7 @@ class Table < Sequel::Model(:user_tables)
     row = nil
     owner.in_database do |user_database|
       select = if schema.flatten.include?(THE_GEOM)
-        schema.select{|c| c[0] != THE_GEOM }.map{|c| %Q{"#{c[0]}"} }.join(',') + ",ST_AsGeoJSON(the_geom,6) as the_geom"
+        schema.select{|c| c[0] != THE_GEOM }.map{|c| %Q{"#{c[0]}"} }.join(',') + ",ST_AsGeoJSON(the_geom,8) as the_geom"
       else
         schema.map{|c| %Q{"#{c[0]}"} }.join(',')
       end
@@ -1092,7 +953,7 @@ class Table < Sequel::Model(:user_tables)
     owner.in_database do |user_database|
       #table_name = "csv_export_temp_#{self.name}"
       export_schema = self.schema.map{|c| c.first} - [THE_GEOM]
-      export_schema += ["ST_AsGeoJSON(the_geom, 6) as the_geom"] if self.schema.map{|c| c.first}.include?(THE_GEOM)
+      export_schema += ["ST_AsGeoJSON(the_geom, 8) as the_geom"] if self.schema.map{|c| c.first}.include?(THE_GEOM)
       hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
         "database" => database_name,
         :logger => ::Rails.logger,
@@ -1184,6 +1045,7 @@ class Table < Sequel::Model(:user_tables)
   end
 
   # DB Triggers and things
+  # TODO: move to user (is db-wide, not table-wide)
   def add_python
     owner.in_database(:as => :superuser).run(<<-SQL
       CREATE OR REPLACE PROCEDURAL LANGUAGE 'plpythonu' HANDLER plpython_call_handler;
@@ -1256,6 +1118,7 @@ TRIGGER
     varnish_timeout = Cartodb.config[:varnish_management].try(:[],'timeout') || 5
     varnish_critical = Cartodb.config[:varnish_management].try(:[],'critical') == true ? 1 : 0
     varnish_retry = Cartodb.config[:varnish_management].try(:[],'retry') || 5
+    purge_command = Cartodb::config[:varnish_management]["purge_command"]
 
     owner.in_database(:as => :superuser).run(<<-TRIGGER
     CREATE OR REPLACE FUNCTION update_timestamp() RETURNS trigger AS
@@ -1281,7 +1144,7 @@ TRIGGER
 
           try:
             table_name = TD["table_name"]
-            client.fetch('purge obj.http.X-Cache-Channel ~ "^#{self.database_name}:(.*%s.*)|(table)$"' % table_name)
+            client.fetch('#{purge_command} obj.http.X-Cache-Channel ~ "^#{self.database_name}:(.*%s.*)|(table)$"' % table_name)
             break
           except Exception as err:
             plpy.warning('Varnish fetch error: ' + str(err))
@@ -1296,6 +1159,13 @@ TRIGGER
 
     DROP TRIGGER IF EXISTS cache_checkpoint ON "#{self.name}";
     CREATE TRIGGER cache_checkpoint BEFORE UPDATE OR INSERT OR DELETE OR TRUNCATE ON "#{self.name}" EXECUTE PROCEDURE update_timestamp();
+
+    DROP TRIGGER IF EXISTS track_updates ON "#{self.name}";
+    CREATE trigger track_updates
+      AFTER INSERT OR UPDATE OR DELETE OR TRUNCATE ON "#{self.name}"
+      FOR EACH STATEMENT
+      EXECUTE PROCEDURE cdb_tablemetadata_trigger();
+
 TRIGGER
     )
   end
@@ -1305,28 +1175,20 @@ TRIGGER
     owner.in_database[%Q{ANALYZE "#{self.name}";}]
   end
 
-  # move to C
+  # Set quota checking trigger for this table
   def set_trigger_check_quota
+    # probability factor of running the check for each row
+    # (it'll always run before each statement)
+    check_probability_factor = 0.001 # TODO: base on database usage ?
     owner.in_database(:as => :superuser).run(<<-TRIGGER
-    CREATE OR REPLACE FUNCTION check_quota() RETURNS trigger AS
-    $$
-    c = SD.get('quota_counter', 0)
-    m = SD.get('quota_mod', 1000)
-    QUOTA_MAX = #{self.owner.quota_in_bytes}
-
-    if c%m == 0:
-        s = plpy.execute("SELECT sum(pg_relation_size(quote_ident(table_name))) FROM information_schema.tables WHERE table_catalog = '#{self.database_name}' AND table_schema = 'public'")[0]['sum'] / 2
-        int_s = int(s)
-        diff = int_s - QUOTA_MAX
-        SD['quota_mod'] = min(1000, max(1, diff))
-        if int_s > QUOTA_MAX:
-            raise Exception("Quota exceeded by %sKB" % (diff/1024))
-    SD['quota_counter'] = c + 1
-    $$
-    LANGUAGE 'plpythonu' VOLATILE;
-
     DROP TRIGGER IF EXISTS test_quota ON "#{self.name}";
-    CREATE TRIGGER test_quota BEFORE UPDATE OR INSERT ON "#{self.name}" EXECUTE PROCEDURE check_quota();
+    CREATE TRIGGER test_quota BEFORE UPDATE OR INSERT ON "#{self.name}"
+      EXECUTE PROCEDURE CDB_CheckQuota(1, #{self.owner.quota_in_bytes});
+    DROP TRIGGER IF EXISTS test_quota_per_row ON "#{self.name}";
+    CREATE TRIGGER test_quota_per_row BEFORE UPDATE OR INSERT ON "#{self.name}"
+      FOR EACH ROW
+      EXECUTE PROCEDURE CDB_CheckQuota( #{check_probability_factor},
+                                        #{self.owner.quota_in_bytes} );
   TRIGGER
   )
   end
@@ -1343,6 +1205,14 @@ TRIGGER
     $tables_metadata.get("map_style|#{self.database_name}|#{self.name}")
   end
 
+  def data_last_modified
+    owner.in_database.select(:updated_at)
+      .from(:cdb_tablemetadata)
+      .where(tabname: "'#{self.name}'::regclass".lit).first[:updated_at]
+  rescue
+    nil
+  end
+
   private
 
   def update_updated_at
@@ -1353,59 +1223,41 @@ TRIGGER
     update_updated_at && save_changes
   end
 
-  # Returns a valid name for a table
-  # Handles:
-  # * sanitation
-  # * duplicate checking
-  # * incrementing trailing counter if duplicate
-  #
-  # Note, trailing counter increments the maximum trailing number found.
-  # This means gaps in a counter range will be made if the user manually sets
-  # the name of a table with a trailing number.
-  #
-  # Duplicating a table manually loaded called "my_table_2010" => "my_table_2011"
-  #
-  # TODO: Far too clever approach. Just recursivly append "_copy" if duplicate
-  def get_valid_name(raw_new_name = nil)
-    # set defaults and sanity check
-    raw_new_name = (raw_new_name || "untitled_table").sanitize
-
-    # tables cannot be blank, start with numbers or underscore
-    raw_new_name = "table_#{raw_new_name}" if raw_new_name =~ /^[0-9]/
-    raw_new_name = "table#{raw_new_name}"  if raw_new_name =~ /^_/
-    raw_new_name = "untitled_table"        if raw_new_name.blank?
-
-    # Do a basic check for the new name. If it doesn't exist, let it through (sanitized)
-    return raw_new_name if name_available?(raw_new_name)
-
-    # Happens if we're duplicating a table.
-    # First get candidates from the base name
-    # eg: "simon_24" => "simon"
-    if match = /(.+)_\d+$/.match(raw_new_name)
-      raw_new_name = match[1]
-    end
-
-    # return if no dupe
-    return raw_new_name if name_available?(raw_new_name)
-
-    # increment trailing number (max+1) if dupe
-    max_candidate = name_candidates(raw_new_name).sort_by {|c| -c[/_(\d+)$/,1].to_i}.first
-
-    if max_candidate =~ /(.+)_(\d+)$/
-      return $1 + "_#{$2.to_i + 1}"
-    else
-      return max_candidate + "_2"
-    end
+  def get_valid_name(name)
+    Table.get_valid_table_name(name, 
+      name_candidates: self.owner.tables.select_map(:name))
   end
 
-  # return name if no dupe, else false
-  def name_available?(name)
-    name_candidates(name).include?(name) ? false : name
-  end
+  # Gets a valid postgresql table name for a given database
+  # See http://www.postgresql.org/docs/9.1/static/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS
+  def self.get_valid_table_name(name, options = {})
+    # Initial name cleaning
+    name = name.to_s.strip.downcase
+    name = 'untitled_table' if name.blank?
 
-  def name_candidates(name)
-    # FYI: Native sequel (owner.in_database.tables) filters tables that start with sql or pg
-    owner.tables.filter(:name.like(/^#{name}/)).select_map(:name)
+    # Valid names start with a letter or an underscore
+    name = "table_#{name}" unless name[/^[a-z_]{1}/]
+
+    # Subsequent characters can be letters, underscores or digits
+    name = name.gsub(/[^a-z0-9]/,'_').gsub(/_{2,}/, '_')
+
+    # Postgresql table name limit
+    name = name[0..62]
+
+    # We don't want to use an existing table name
+    existing_names = options[:name_candidates] || options[:connection]["select relname from pg_stat_user_tables WHERE schemaname='public'"].map(:relname)
+    existing_names = existing_names + User::SYSTEM_TABLE_NAMES
+    rx = /_(\d+)$/
+    count = name[rx][1].to_i rescue 0
+    while existing_names.include?(name)
+      count = count + 1
+      suffix = "_#{count}"
+      name = name[0..62-suffix.length]
+      name = name[rx] ? name.gsub(rx, suffix) : "#{name}#{suffix}"
+    end
+
+    # Re-check for duplicated underscores
+    return name.gsub(/_{2,}/, '_')
   end
 
   def get_new_column_type(invalid_column)
@@ -1586,6 +1438,7 @@ SQL
     if @name_changed_from.present? && @name_changed_from != name
       # update metadata records
       $tables_metadata.rename(Table.key(database_name,@name_changed_from), key)
+      owner.in_database.rename_table(@name_changed_from, name)
 
       # update tile styles
       begin
@@ -1617,7 +1470,7 @@ SQL
 
   def flush_cache
     begin
-      #tile_request('DELETE', "/tiles/#{self.name}/flush_cache?map_key=#{owner.get_map_key}")
+      tile_request('DELETE', "/tiles/#{self.name}/flush_cache?map_key=#{owner.get_map_key}")
     rescue => e
       CartoDB::Logger.info "cache#flush error", "#{e.inspect}"
     end

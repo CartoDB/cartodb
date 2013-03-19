@@ -28,10 +28,46 @@ class Layer < Sequel::Model
     errors.add(:kind, "not accepted") unless ALLOWED_KINDS.include?(kind)
   end
 
+  def before_save
+    super  
+
+    self.updated_at = Time.now
+  end
+
   def after_save
     super
 
+    # Invalidate varnish cache (vizjson) for all the maps including this layer
     maps.each { |map| map.invalidate_varnish_cache }
+
+    # Invalidate related tables cache on varnish (only for carto layers)
+    affected_tables.map &:invalidate_varnish_cache if kind == 'carto'
+  end
+
+  ##
+  # Returns an array of tables used on the layer
+  #
+  def affected_tables
+    if maps.first.present? && options.present? && options[:query].present?
+      begin
+        query = options[:query]
+        tables_per_statement = maps.first.user.in_database.select { 
+          cdb_querytables(Sequel.function(:cdb_querystatements, query))
+        }.all
+
+        tables_per_statement.map do |s|
+          s[:cdb_querytables].split(',').map do |table_name|
+            table_name.gsub!(/[\{\}]/, '') 
+            Table.select(:id, :name, :user_id)
+              .where(user_id: maps.first.user.id, name: table_name).all
+          end
+        end.flatten.compact.uniq
+      rescue Sequel::DatabaseError
+        []
+      end
+    else
+      []
+    end
   end
 
   def key
@@ -61,6 +97,5 @@ class Layer < Sequel::Model
       "scheme" => "xyz",
       "tiles" => [url]
     }.to_json
-
   end
 end

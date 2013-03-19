@@ -1,6 +1,6 @@
 # coding: UTF-8
 
-require 'spec_helper'
+require_relative '../spec_helper'
 
 describe CartoDB::Importer do
 
@@ -206,7 +206,7 @@ describe CartoDB::Importer do
         results,errors = importer.import!
 
         errors.should be_empty
-        results[0].name.should == 'cartodb_csv_multipol'
+        results[0].name.should == 'cartodb_csv_multipoly_export'
         results[0].rows_imported.should == 601
         results[0].import_type.should == '.csv'
       end
@@ -216,7 +216,7 @@ describe CartoDB::Importer do
         results,errors = importer.import!
 
         errors.should be_empty
-        results[0].name.should == 'csv_with_number_colu'
+        results[0].name.should == 'csv_with_number_columns'
         results[0].rows_imported.should == 177
 
         results[0].import_type.should == '.csv'
@@ -244,7 +244,7 @@ describe CartoDB::Importer do
         results, errors = importer.import!
 
         errors.should be_empty
-        results[0].name.should == 'soy_bean_cleaned_wah'
+        results[0].name.should == 'soy_bean_cleaned_wahwah'
         results[0].rows_imported.should == 238
 
         results[0].import_type.should == '.csv'
@@ -255,7 +255,7 @@ describe CartoDB::Importer do
         results, errors = importer.import!
 
         errors.should be_empty
-        results[0].name.should == 'cambodia_pop_tabbed_'
+        results[0].name.should == 'cambodia_pop_tabbed_data'
         results[0].rows_imported.should == 99
 
         results[0].import_type.should == '.csv'
@@ -322,7 +322,7 @@ describe CartoDB::Importer do
         importer = create_importer 'TM_WORLD_BORDERS_SIMPL-0.3.zip'
         results,errors = importer.import!
 
-        results[0].name.should          == 'tm_world_borders_sim'
+        results[0].name.should          == 'tm_world_borders_simpl_0_3'
         results[0].rows_imported.should == 246
         results[0].import_type.should   == '.shp'
       end
@@ -371,7 +371,7 @@ describe CartoDB::Importer do
         results,errors = importer.import!
 
         results.length.should              == 1
-        results[0].name.should be          == 'ne_10m_admin_0_count'
+        results[0].name.should be          == 'ne_10m_admin_0_countries'
         results[0].rows_imported.should be == 254
         results[0].import_type.should be   == '.shp'
       end
@@ -384,10 +384,10 @@ describe CartoDB::Importer do
 
         errors.length.should            == 3
         results.length.should           == 2
-        results[0].name.should          == 'activity_234497933_t'
+        results[0].name.should          == 'activity_234497933_track_points'
         results[0].rows_imported.should == 440
         results[0].import_type.should   == '.gpx'
-        results[1].name.should          == 'activity_234497933_1'
+        results[1].name.should          == 'activity_234497933_tracks'
         results[1].rows_imported.should == 1
         results[1].import_type.should   == '.gpx'
       end
@@ -398,7 +398,7 @@ describe CartoDB::Importer do
         importer = create_importer 'GLOBAL_ELEVATION_SIMPLE.zip'
         results,errors = importer.import!
 
-        results[0].name.should          == 'global_elevation_sim'
+        results[0].name.should          == 'global_elevation_simple'
         results[0].rows_imported.should == 774
         results[0].import_type.should   == '.tif'
       end
@@ -456,7 +456,7 @@ describe CartoDB::Importer do
         importer = create_importer 'csv_with_number_columns.json', 'csv_with_number_columns'
         results,errors = importer.import!
 
-        results[0].name.should == 'csv_with_number_colu'
+        results[0].name.should == 'csv_with_number_columns'
         results[0].rows_imported.should == 177
 
         results[0].import_type.should == '.json'
@@ -482,8 +482,8 @@ describe CartoDB::Importer do
             results,errors = importer.import!
 
             @db.tables.should include(:_10m_us_parks)
-            results[0].name.should          == '_10m_us_parks'
-            results[0].rows_imported.should == 61
+            results.map(&:name).should          =~ ['_10m_us_parks', '_10m_us_parks_1', '_10m_us_parks_2', '_10m_us_parks_3']
+            results.map(&:rows_imported).should =~ [29, 110, 315, 61]
             results[0].import_type.should   == '.shp'
         end
       end
@@ -503,6 +503,7 @@ describe CartoDB::Importer do
       end
 
       it "should infer file extension from http content-type header" do
+        pending "can't find a way to override content-type header on Webrick. But this works, bitches"
         serve_file Rails.root.join('spec/support/data/MGL0905'),
           :headers => {"content-type" => "application/json"} do |url|
           importer = create_importer url, nil, true
@@ -520,34 +521,26 @@ describe CartoDB::Importer do
         importer = create_importer "http://www.openstreetmap.org/?lat=40.01005&lon=-105.27517&zoom=15&layers=M", "osm", true
         results,errors = importer.import!
 
-        results.should include(OpenStruct.new(name: 'osm_line',    rows_imported: 752, import_type: '.osm', log: ''),
-                               OpenStruct.new(name: 'osm_polygon', rows_imported: 252, import_type: '.osm', log: ''),
-                               OpenStruct.new(name: 'osm_roads',   rows_imported: 43,  import_type: '.osm', log: ''),
-                               OpenStruct.new(name: 'osm_point',   rows_imported: 259, import_type: '.osm', log: ''))
+        results.should include(OpenStruct.new(name: 'osm_line',    rows_imported: 840, import_type: '.osm', log: ''),
+                               OpenStruct.new(name: 'osm_polygon', rows_imported: 265, import_type: '.osm', log: ''),
+                               OpenStruct.new(name: 'osm_roads',   rows_imported: 53,  import_type: '.osm', log: ''),
+                               OpenStruct.new(name: 'osm_point',   rows_imported: 451, import_type: '.osm', log: ''))
       end
 
       it "throws an error for OSM imports when the zoom is too big" do
         expect{
           create_importer "http://www.openstreetmap.org/?lat=37.39170&lon=-5.985950&zoom=13&layers=M", "osm", true
         }.to raise_error('You requested too many nodes (limit is 50000). Either request a smaller area, or use planet.osm')
-
-        importer = create_importer "http://www.openstreetmap.org/?lat=37.39170&lon=-5.985950&zoom=17&layers=M", "osm", true
-        results,errors = importer.import!
-
-        results.should include(OpenStruct.new(name: 'osm_line',    rows_imported: 140, import_type: '.osm', log: ''),
-                               OpenStruct.new(name: 'osm_polygon', rows_imported: 31,  import_type: '.osm', log: ''),
-                               OpenStruct.new(name: 'osm_roads',   rows_imported: 6,   import_type: '.osm', log: ''),
-                               OpenStruct.new(name: 'osm_point',   rows_imported: 136, import_type: '.osm', log: ''))
       end
 
-      it "can import an specific OSM url" do
+      it "can import a specific OSM url" do
         importer = create_importer "http://www.openstreetmap.org/?lat=37.39296&lon=-5.99099&zoom=15&layers=M", "osm", true
         results,errors = importer.import!
 
-        results.should include(OpenStruct.new(name: 'osm_line',    rows_imported: 140, import_type: '.osm', log: ''),
-                               OpenStruct.new(name: 'osm_polygon', rows_imported: 31,  import_type: '.osm', log: ''),
-                               OpenStruct.new(name: 'osm_roads',   rows_imported: 6,   import_type: '.osm', log: ''),
-                               OpenStruct.new(name: 'osm_point',   rows_imported: 136, import_type: '.osm', log: ''))
+        results.should include(OpenStruct.new(name: 'osm_line',    rows_imported: 1338, import_type: '.osm', log: ''),
+                               OpenStruct.new(name: 'osm_polygon', rows_imported: 543,  import_type: '.osm', log: ''),
+                               OpenStruct.new(name: 'osm_roads',   rows_imported: 74,   import_type: '.osm', log: ''),
+                               OpenStruct.new(name: 'osm_point',   rows_imported: 1438, import_type: '.osm', log: ''))
       end
 
     end
@@ -556,11 +549,11 @@ describe CartoDB::Importer do
       importer = create_importer "Municipios.zip"
       results, errors = importer.import!
 
-      @db.tables.should include(:cb_municipios_5000_e)
-      results[0].name.should          == 'cb_municipios_5000_e'
+      @db.tables.should include(:cb_municipios_5000_etrs89)
+      results[0].name.should          == 'cb_municipios_5000_etrs89'
       results[0].rows_imported.should == 258
       results[0].import_type.should   == '.shp'
-      @db.select(:comarca).from(:cb_municipios_5000_e).all.first[:comarca].should be == 'MONTAÑA ALAVESA'
+      @db.select(:comarca).from(:cb_municipios_5000_etrs89).all.first[:comarca].should be == 'MONTAÑA ALAVESA'
     end
 
     it "throws an error when importing an shp with unknown srid" do
@@ -646,7 +639,7 @@ describe CartoDB::Importer do
       results, errors   = importer.import!
 
       results.length.should           == 1
-      results[0].name.should          == 'cartodb_20_export_cs'
+      results[0].name.should          == 'cartodb_20_export_csv'
       results[0].rows_imported.should == 3
       results[0].import_type.should   == '.csv'
 
@@ -660,7 +653,7 @@ describe CartoDB::Importer do
       results, errors   = importer.import!
 
       results.length.should           == 1
-      results[0].name.should          == 'tm_world_borders_s_1'
+      results[0].name.should          == 'tm_world_borders_s_11'
       results[0].rows_imported.should == 246
       results[0].import_type.should   == '.shp'
       errors.length.should            == 0
@@ -669,12 +662,12 @@ describe CartoDB::Importer do
 
     it "can import KML files" do
 
-      importer = create_importer 'tm_world_borders_s_11.kml'
+      importer = create_importer 'counties_ny_export.kml'
       results, errors   = importer.import!
 
       results.length.should           == 1
-      results[0].name.should          == 'tm_world_borders_s_11'
-      results[0].rows_imported.should == 10
+      results[0].name.should          == 'counties_ny_export'
+      results[0].rows_imported.should == 62
       results[0].import_type.should   == '.kml'
       errors.length.should            == 0
 
@@ -713,6 +706,8 @@ describe CartoDB::Importer do
                 :username => "postgres", :password => '',
                 :host => 'localhost',
                 :port => 5432}
+    create_user(:username => 'test', :email => "client@example.com", :password => "clientex", :table_quota => 100, :disk_quota => 500.megabytes)
+    @user = User.first
   end
 
   after(:all) do
@@ -743,12 +738,13 @@ describe CartoDB::Importer do
     opts[:suggested_name] = suggested_name if suggested_name.present?
     opts[:data_import_id] = get_data_import_id()
     opts[:remaining_quota] = 50000000
+    opts[:user_id] = @user.id
     # build importer
     CartoDB::Importer.new opts.reverse_merge(@db_opts)
   end
 
   def get_data_import_id()
-    @data_import  = DataImport.new(:user_id => 0)
+    @data_import  = DataImport.new(:user_id => @user.id)
     @data_import.updated_at = Time.now
     @data_import.save
     @data_import.id

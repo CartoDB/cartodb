@@ -129,9 +129,9 @@
 
               div.url {
                 position:relative;
-                p {
-                  z-index:0;
-                }
+                pointer-events:none;
+
+                p {z-index:0;}
               }
 
 
@@ -168,7 +168,7 @@
                 position:absolute;
                 top:50%;
                 left:43px;
-                right:10px;
+                width:445px;
                 margin:-10px 0 0 0;
                 font-size:15px;
                 font-style:italic;

@@ -47,6 +47,7 @@
       // Compressed (footer fewer space, eg: share map window)
       &.compressed {
         div.content, div.error_content {padding:40px 40px 15px 40px;}
+        div.content > p { margin: 0 0 20px 0; }
         div.foot {border:none; padding-top:15px;}
       }
 
@@ -59,7 +60,7 @@
         div.error_content {
           max-height:250px;
           overflow:auto;
-          
+
           h4 {
             padding-left:30px;
             &.exclamation {
@@ -92,6 +93,6 @@
           border:none;
           a.cancel {display:none}
         }
-      }      
+      }
     }
   }

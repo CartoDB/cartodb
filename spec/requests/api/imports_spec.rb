@@ -34,8 +34,8 @@ describe "Imports API" do
     last_import.queue_id.should be == response_json['item_queue_id']
     last_import.state.should be == 'complete'
     table = Table[last_import.table_id]
-    table.name.should == "column_number_to_boo"
-    table.map.data_layers.first.options["table_name"].should == "column_number_to_boo"
+    table.name.should == "column_number_to_boolean"
+    table.map.data_layers.first.options["table_name"].should == "column_number_to_boolean"
   end
 
   it 'performs asynchronous url imports' do
@@ -57,7 +57,7 @@ describe "Imports API" do
 
   it 'performs synchronous imports'
 
-  it 'gets a list of all pending imports' do
+  pending 'gets a list of all pending imports' do
 
     thread = Thread.new do |number|
       serve_file(Rails.root.join('spec/support/data/ESP_adm.zip')) do |url|
@@ -183,7 +183,6 @@ describe "Imports API" do
     import_table.should have_required_indexes_and_triggers
   end
 
-  it 'gets a list of pending imports'
   it 'gets a list of failed imports'
   it 'gets a list of succeeded imports'
   it 'kills pending imports'
@@ -191,17 +190,15 @@ describe "Imports API" do
   it 'imports all the sample data' do
     @user.update table_quota: 10
     import_files = ["http://cartodb.s3.amazonaws.com/static/TM_WORLD_BORDERS_SIMPL-0.3.zip",
-    "http://cartodb.s3.amazonaws.com/static/european_countries.zip",
-    "http://cartodb.s3.amazonaws.com/static/counties_ny.zip",
-    "http://cartodb.s3.amazonaws.com/static/50m-urban-area.zip",
-    "http://cartodb.s3.amazonaws.com/static/10m-populated-places-simple.zip",
-    "http://cartodb.s3.amazonaws.com/static/nyc_subway_entrance.zip"]
+                    "http://cartodb.s3.amazonaws.com/static/european_countries.zip",
+                    "http://cartodb.s3.amazonaws.com/static/50m-urban-area.zip",
+                    "http://cartodb.s3.amazonaws.com/static/10m-populated-places-simple.zip",
+                    "http://cartodb.s3.amazonaws.com/static/50m-rivers-lake-centerlines-with-scale-ranks.zip",
+                    "http://cartodb.s3.amazonaws.com/static/counties_ny.zip",
+                    "http://cartodb.s3.amazonaws.com/static/nyc_subway_entrance.zip"]
 
     import_files.each do |url|
-
-      post v1_imports_url(params.merge(:url        => url,
-                                       :table_name => "wadus"))
-
+      post v1_imports_url(params.merge(:url => url, :table_name => "wadus"))
 
       response.code.should be == '200'
 
@@ -236,8 +233,21 @@ describe "Imports API" do
     @user.reload.tables.count.should == 0
   end
 
+  it 'raises an error if the user attempts to import tables when being over disk quota' do
+    @user.update quota_in_bytes: 1000, table_quota: 200
+    serve_file(Rails.root.join('spec/support/data/ESP_adm.zip')) do |url|
+      post v1_imports_url, params.merge(:url        => url,
+                                       :table_name => "wadus")
+    end
+    response.code.should be == '200'
+    last_import = DataImport.order(:updated_at.desc).first
+    last_import.state.should be == 'failure'
+    last_import.error_code.should be == 8001
+    @user.reload.tables.count.should == 0
+  end
+
   it 'raises an error if the user attempts to duplicate a table when being over quota' do
-    @user.update table_quota: 1
+    @user.update table_quota: 1, quota_in_bytes: 100.megabytes
 
     post v1_imports_url,
       params.merge(:filename => upload_file('spec/support/data/_penguins_below_80 (2).tgz', 'application/octet-stream'))

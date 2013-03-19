@@ -115,8 +115,6 @@ sudo add-apt-repository  ppa:cartodb/postgresql
 
 ## Some dependencies ##
 
-## Some dependencies ##
-
 unp is required for archive file upload support
 
 ```bash
@@ -404,3 +402,4 @@ CartoDB is a large app. We reccomend you use the [spin gem](https://github.com/j
   - Sandro Santilli (@strk)
   - David Arango (@demimismo)
   - Xabel Álvarez (@johnhackworth)
+  - Lorenzo Planas (@lorenzoplanas)

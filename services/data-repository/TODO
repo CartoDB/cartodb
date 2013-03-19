@@ -1,0 +1,5 @@
+
+== TODO
+
+* Don't force requiring the redis gem if no redis backend is used
+

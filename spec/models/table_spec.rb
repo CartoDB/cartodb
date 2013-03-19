@@ -7,7 +7,7 @@
 # 1256 # Table merging two+ tables should import and then export file SHP1.zip as kml
 # 1275 # Table merging two+ tables should import and then export file SHP1.zip as sql
 
-require 'spec_helper'
+require_relative '../spec_helper'
 def check_schema(table, expected_schema, options={})
   table_schema = table.schema(:cartodb_types => options[:cartodb_types] || false)
   schema_differences = (expected_schema - table_schema) + (table_schema - expected_schema)
@@ -51,18 +51,23 @@ describe Table do
       table2 = Table.new
       table2.user_id = @user.id
       table2.save.reload
-      table2.name.should == "untitled_table_2"
+      table2.name.should == "untitled_table_1"
+    end
+
+    it "should not allow to create tables using system names" do
+      table = create_table(name: "cdb_tablemetadata", user_id: @user.id)
+      table.name.should == "cdb_tablemetadata_1"
     end
 
     it "should create default associated map and layers" do
-      table = create_table({:name => "epaminondas__pantulis", :user_id => @user.id})
+      table = create_table({:name => "epaminondas_pantulis", :user_id => @user.id})
 
       table.map.should be_an_instance_of(Map)
       table.map.values.slice(:zoom, :bounding_box_sw, :bounding_box_ne, :provider).should == { zoom: 3, bounding_box_sw: "[0, 0]", bounding_box_ne: "[0, 0]", provider: 'leaflet'}
       table.map.layers.count.should == 2
       table.map.layers.map(&:kind).should == ['tiled', 'carto']
       table.map.data_layers.first.infowindow["fields"].should == [{"name"=>"cartodb_id", "title"=>true, "position"=>1}, {"name"=>"description", "title"=>true, "position"=>2}, {"name"=>"name", "title"=>true, "position"=>3}]
-      table.map.data_layers.first.options["table_name"].should == "epaminondas__pantulis"
+      table.map.data_layers.first.options["table_name"].should == "epaminondas_pantulis"
     end
 
     it "should return a sequel interface" do
@@ -265,10 +270,12 @@ describe Table do
       @user.save
 
       table = create_table({:name => 'Wadus table', :user_id => @user.id})
-
-      CartoDB::Varnish.any_instance.expects(:purge).with("obj.http.X-Cache-Channel ~ #{table.owner.database_name}:wadus_table_23:vizjson").returns(true)
-      CartoDB::Varnish.any_instance.expects(:purge).with("obj.http.X-Cache-Channel ~ #{table.owner.database_name}:wadus_table_23.*").returns(true)
-      CartoDB::Varnish.any_instance.expects(:purge).with("obj.http.X-Cache-Channel ~ #{table.owner.database_name}:wadus_table.*").returns(true)
+      CartoDB::Varnish.any_instance.expects(:purge)
+        .with("obj.http.X-Cache-Channel ~ #{@user.database_name}:wadus_table_23:vizjson").returns(true)
+      #CartoDB::Varnish.any_instance.expects(:purge)
+      #  .with("obj.http.X-Cache-Channel ~ #{@user.database_name}:wadus_table_23.*").returns(true)
+      CartoDB::Varnish.any_instance.expects(:purge)
+        .with("obj.http.X-Cache-Channel ~ #{@user.database_name}:wadus_table.*").returns(true)
       table.name = 'Wadus table #23'
       table.save
     end
@@ -364,8 +371,15 @@ describe Table do
       table.destroy
     end
 
-    it "should remove varnish cache when updating the table" do
-      table = create_table(:user_id => @user.id)
+    it "should remove varnish cache when updating the table privacy" do
+      @user.private_tables_enabled = true
+      @user.save
+      table = create_table(user_id: @user.id, name: "varnish_privacy", privacy: Table::PRIVATE)
+      CartoDB::Varnish.any_instance.expects(:purge).times(1).with("obj.http.X-Cache-Channel ~ #{table.varnish_key}:vizjson").returns(true)
+      CartoDB::Varnish.any_instance.expects(:purge).times(0).with("obj.http.X-Cache-Channel ~ #{table.varnish_key}.*").returns(true)
+      table.save
+
+      table.privacy = Table::PUBLIC
       CartoDB::Varnish.any_instance.expects(:purge).times(1).with("obj.http.X-Cache-Channel ~ #{table.varnish_key}:vizjson").returns(true)
       CartoDB::Varnish.any_instance.expects(:purge).times(1).with("obj.http.X-Cache-Channel ~ #{table.varnish_key}.*").returns(true)
       table.save
@@ -495,16 +509,26 @@ describe Table do
       table.schema(:cartodb_types => false).should == original_schema
     end
 
-    it "should be able to modify it's schema with castings that the DB engine doesn't support" do
-      table = create_table(:user_id => @user.id)
-      table.add_column!(:name => "my new column", :type => "text")
+    it "should be able to modify it's schema with castings
+    the DB engine doesn't support" do
+      table = create_table(user_id: @user.id)
+      table.add_column!(name: "my new column", type: "text")
       table.reload
-      table.schema(:cartodb_types => false).should include([:my_new_column, "text"])
 
-      pk = table.insert_row!(:name => "Text", :my_new_column => "1")
-      table.modify_column!(:old_name => "my_new_column", :new_name => "my new column new name", :type => "integer", :force_value => "NULL")
+      table.schema(:cartodb_types => false)
+        .should include([:my_new_column, "text"])
+
+      pk = table.insert_row!(name: "Text", my_new_column: "1")
+      table.modify_column!(
+        old_name:     "my_new_column",
+        new_name:     "my new column new name",
+        type:         "integer",
+        force_value:  "NULL"
+      )
       table.reload
-      table.schema(:cartodb_types => false).should include([:my_new_column_new_name, "integer"])
+
+      table.schema(cartodb_types: false)
+        .should include([:my_new_column_new_name, "integer"])
 
       rows = table.records
       rows[:rows][0][:my_new_column_new_name].should == 1
@@ -659,6 +683,75 @@ describe Table do
       table.records[:rows][4][:wadus].should be_nil
     end
 
+    it 'nullifies the collumn when converting from boolean to date' do
+      table = create_table(user_id: @user.id)
+      table.add_column!(name: 'new', type: 'boolean')
+      table.insert_row!(new: 't')
+      table.modify_column!(name: 'new', type: 'date')
+      
+      table.records[:rows][0][:new].should be_nil
+
+      table = create_table(user_id: @user.id)
+      table.add_column!(name: 'new', type: 'boolean')
+      table.insert_row!(new: 'f')
+      table.modify_column!(name: 'new', type: 'date')
+      
+      table.records[:rows][0][:new].should be_nil
+    end
+
+    it 'nullifies the collumn when converting from number to date' do
+      table = create_table(user_id: @user.id)
+      table.add_column!(name: 'number', type: 'double precision')
+      table.insert_row!(number: 12345.67)
+      table.modify_column!(name: 'number', type: 'date')
+      
+      table.records[:rows][0][:number].should be_nil
+
+      table = create_table(user_id: @user.id)
+      table.add_column!(name: 'number', type: 'double precision')
+      table.insert_row!(number: 12345)
+      table.modify_column!(name: 'number', type: 'date')
+      
+      table.records[:rows][0][:number].should be_nil
+    end
+
+    it 'normalizes digit separators when converting from string to number' do
+      table = create_table(user_id: @user.id)
+      table.add_column!(name: 'balance', type: 'text')
+      table.insert_row!(balance: '1.234,56')
+      table.modify_column!(name: 'balance', type: 'double precision')
+      table.records[:rows][0][:balance].should == 1234.56
+
+      table = create_table(user_id: @user.id)
+      table.add_column!(name: 'balance', type: 'text')
+      table.insert_row!(balance: '123.456,789')
+      table.modify_column!(name: 'balance', type: 'double precision')
+      table.records[:rows][0][:balance].should == 123456.789
+
+      table = create_table(user_id: @user.id)
+      table.add_column!(name: 'balance', type: 'text')
+      table.insert_row!(balance: '9.123.456,789')
+      table.modify_column!(name: 'balance', type: 'double precision')
+      table.records[:rows][0][:balance].should == 9123456.789
+
+      table = create_table(user_id: @user.id)
+      table.add_column!(name: 'balance', type: 'text')
+      table.insert_row!(balance: '1,234.56')
+      table.modify_column!(name: 'balance', type: 'double precision')
+      table.records[:rows][0][:balance].should == 1234.56
+
+      table = create_table(user_id: @user.id)
+      table.add_column!(name: 'balance', type: 'text')
+      table.insert_row!(balance: '123,456.789')
+      table.modify_column!(name: 'balance', type: 'double precision')
+      table.records[:rows][0][:balance].should == 123456.789
+
+      table = create_table(user_id: @user.id)
+      table.add_column!(name: 'balance', type: 'text')
+      table.insert_row!(balance: '9,123,456.789')
+      table.modify_column!(name: 'balance', type: 'double precision')
+      table.records[:rows][0][:balance].should == 9123456.789
+    end
   end
 
   context "insert and update rows" do
@@ -699,6 +792,13 @@ describe Table do
       lambda {
         table.insert_row!({:non_existing => "bad value"})
       }.should raise_error(CartoDB::InvalidAttributes)
+    end
+
+    it "updates data_last_modified when changing data" do
+      table = create_table(:user_id => @user.id)
+      table.data_last_modified.should be_nil
+      table.insert_row!({})
+      table.data_last_modified.to_s.should == Time.now.to_s
     end
 
     it "should be able to insert a row with a geometry value" do
@@ -814,15 +914,6 @@ describe Table do
   end
 
   context "counter updates" do
-    it "should increase the tables_count counter from owner" do
-      delete_user_data(@user) && @user.reload
-      @user.tables_count.should == 0
-
-      table = create_table(:user_id => @user.id)
-      @user.reload
-      @user.tables_count.should == 1
-    end
-
     it "should remove and updating the denormalized counters when removed" do
       delete_user_data(@user) && @user.reload
       table = create_table :user_id => @user.id, :tags => 'tag 1, tag2'
@@ -837,14 +928,14 @@ describe Table do
 
   end
   context "preimport tests" do
-    it "rename a table to a name that exists should add a _2 to the new name" do
+    it "rename a table to a name that exists should add a _1 to the new name" do
       table = new_table :name => 'empty_file', :user_id => @user.id
       table.save.reload
       table.name.should == 'empty_file'
 
       table2 = new_table :name => 'empty_file', :user_id => @user.id
       table2.save.reload
-      table2.name.should == 'empty_file_2'
+      table2.name.should == 'empty_file_1'
     end
 
     it "should escape table names starting with numbers" do
@@ -852,11 +943,6 @@ describe Table do
       table.save.reload
 
       table.name.should == "table_123_table_name"
-
-      table = new_table :user_id => @user.id, :name => '_table_name'
-      table.save.reload
-
-      table.name.should == "table_table_name"
     end
 
     it "should get a valid name when a table when a name containing the current name exists" do
@@ -875,8 +961,8 @@ describe Table do
       table = create_table :name => 'Wadus The Table', :user_id => @user.id
       table.name.should == "wadus_the_table"
 
-      # Renaming starts at 2
-      2.upto(25) do |n|
+      # Renaming starts at 1
+      1.upto(25) do |n|
         table = create_table :name => 'Wadus The Table', :user_id => @user.id
         table.name.should == "wadus_the_table_#{n}"
       end
@@ -884,25 +970,23 @@ describe Table do
   end
 
   context "post import processing tests" do
-    it "should add a point the_geom column after importing a CSV" do
+
+    it "should run vacuum full" do
+      data_import = DataImport.create( :user_id       => @user.id,
+                                       :data_source   => '/../db/fake_data/SHP1.zip' )
+      table = Table[data_import.table_id]
+      table.table_size.should == 2351104
+    end
+
+    it "should add a the_geom column after importing a CSV" do
       data_import = DataImport.create( :user_id       => @user.id,
                                        :data_source   => '/../db/fake_data/twitters.csv' )
 
       table = Table[data_import.table_id]
       table.name.should match(/^twitters/)
       table.rows_counted.should == 7
-      check_schema(table, [
-        [:cartodb_id, "integer"], [:url, "text"], [:login, "text"],
-        [:country, "text"], [:followers_count, "text"],
-        [:created_at, "timestamp without time zone"], [:updated_at, "timestamp without time zone"], [:the_geom, "geometry", "geometry", "geometry"],
-        [:field_5, "text"]
-      ])
 
-      row = table.records[:rows][0]
-      row[:url].should == "http://twitter.com/vzlaturistica/statuses/23424668752936961"
-      row[:login].should == "vzlaturistica "
-      row[:country].should == " Venezuela "
-      row[:followers_count].should == "211"
+      table.schema.should include([:the_geom, "geometry", "geometry", "geometry"])
     end
 
     it "should not drop a table that exists when upload fails" do
@@ -975,9 +1059,27 @@ describe Table do
       cartodb_id_schema.should be_present
       cartodb_id_schema = cartodb_id_schema[1]
       cartodb_id_schema[:db_type].should == "integer"
+      cartodb_id_schema[:default].should == "nextval('#{table.name}_cartodb_id_seq1'::regclass)"
+      cartodb_id_schema[:primary_key].should == true
+      cartodb_id_schema[:allow_null].should == false
+    end
+
+    it "should add an invalid_cartodb_id column when importing a file with invalid data on the cartodb_id column" do
+      data_import = DataImport.create( :user_id       => @user.id,
+                                       :data_source   =>  '/../db/fake_data/duplicated_cartodb_id.zip')
+      table = Table[data_import.table_id]
+
+      table_schema = @user.in_database.schema(table.name)
+
+      cartodb_id_schema = table_schema.detect {|s| s[0].to_s == "cartodb_id"}
+      cartodb_id_schema.should be_present
+      cartodb_id_schema = cartodb_id_schema[1]
+      cartodb_id_schema[:db_type].should == "integer"
       cartodb_id_schema[:default].should == "nextval('#{table.name}_cartodb_id_seq'::regclass)"
       cartodb_id_schema[:primary_key].should == true
       cartodb_id_schema[:allow_null].should == false
+      invalid_cartodb_id_schema = table_schema.detect {|s| s[0].to_s == "invalid_cartodb_id"}
+      invalid_cartodb_id_schema.should be_present
     end
 
     it "should return geometry types" do
@@ -1310,6 +1412,7 @@ describe Table do
       check_schema(table, [[:cartodb_id, "integer"], [:bed, "text"], [:created_at, "timestamp without time zone"], [:updated_at, "timestamp without time zone"], [:the_geom, "geometry", "geometry", "point"]])
     end
   end
+
   context "merging two+ tables" do
     it "should merge two twitters.csv" do
       # load a table to treat as our 'existing' table
@@ -1336,8 +1439,10 @@ describe Table do
       table.name.should match(/^twitters/)
       table.rows_counted.should == 2005
     end
+  end
 
-    it "should import and then export file twitters.csv" do
+  context "imports" do
+    it "file twitters.csv" do
       delete_user_data @user
       data_import = DataImport.create( :user_id       => @user.id,
                                        :data_source   => '/../db/fake_data/twitters.csv' )
@@ -1345,79 +1450,31 @@ describe Table do
 
       table.name.should match(/^twitters/)
       table.rows_counted.should == 7
-
-      # write CSV to tempfile and read it back
-      csv_content = nil
-      zip = table.to_csv
-      file = Tempfile.new('zip')
-      File.open(file,'w+') { |f| f.write(zip) }
-
-      Zip::ZipFile.foreach(file) do |entry|
-        entry.name.should == "twitters.csv"
-        csv_content = entry.get_input_stream.read
-      end
-      file.close
-
-      # parse constructed CSV and test
-      parsed = CSV.parse(csv_content)
-      parsed[0].should == ["cartodb_id", "country", "field_5", "followers_count", "login", "url", "created_at", "updated_at", "the_geom"]
-      parsed[1].first.should == "1"
     end
 
-    it "should import and then export file SHP1.zip" do
+    it "file SHP1.zip" do
       data_import = DataImport.create( :user_id       => @user.id,
                                        :data_source   => '/../db/fake_data/SHP1.zip' )
       table = Table[data_import.table_id]
       table.name.should == "esp_adm1"
-
-      # write CSV to tempfile and read it back
-      shp_content = nil
-      zip = table.to_shp
-      file_ct = 0
-      file = Tempfile.new('zip')
-      File.open(file,'w+') { |f| f.write(zip) }
-      Zip::ZipFile.foreach(file) do |entry|
-        file_ct = file_ct + 1
-      end
-      file.close
-      file_ct.should == 4
+      table.rows_counted.should == 18
     end
 
-    it "should import and then export file SHP1.zip as kml" do
+    it "file SHP1.zip as kml" do
       data_import = DataImport.create( :user_id       => @user.id,
                                        :data_source   => '/../db/fake_data/SHP1.zip' )
       table = Table[data_import.table_id]
-
-      # write CSV to tempfile and read it back
-      shp_content = nil
-      zip = table.to_kml
-      file_ct = 0
-      file = Tempfile.new('zip')
-      File.open(file,'w+') { |f| f.write(zip) }
-      Zip::ZipFile.foreach(file) do |entry|
-        file_ct = file_ct + 1
-      end
-      file.close
-      file_ct.should == 1
+      table.name.should == "esp_adm1_1"
+      table.rows_counted.should == 18
     end
 
-    it "should import and then export file SHP1.zip as sql" do
+    it "file SHP1.zip as sql" do
       data_import = DataImport.create( :user_id       => @user.id,
                                        :table_name    => 'esp_adm1',
                                        :data_source   => '/../db/fake_data/SHP1.zip' )
       table = Table[data_import.table_id]
-
-      # write SQL to tempfile and read it back
-      shp_content = nil
-      zip = table.to_sql
-      file_ct = 0
-      file = Tempfile.new('zip')
-      File.open(file,'w+') { |f| f.write(zip) }
-      Zip::ZipFile.foreach(file) do |entry|
-        file_ct = file_ct + 1
-      end
-      file.close
-      file_ct.should == 1
+      table.name.should == "esp_adm1_2"
+      table.rows_counted.should == 18
     end
   end
 

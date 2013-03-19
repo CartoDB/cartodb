@@ -777,7 +777,7 @@
               @include opacity(0);
 
               @include size(12px);
-              @include position(10px, 10px, false, false);
+              @include position(15px, 10px, false, false);
               @include simple-transition(opacity, 150ms);
 
               background: image-url('icons/remove_filter.png') no-repeat;
@@ -863,18 +863,18 @@
           .options {
             position:relative;
             width: 301px;
-            margin: 0 0 0 35px;
+            margin: 1px 0 0 35px;
             clear:both;
-
             z-index: 100;
 
             .view_mode {
+
               float:left;
-              .switch {
-                @include inline-block();
-              }
+
+              .switch { @include inline-block(); }
 
               label {
+                cursor: pointer;
                 @include inline-block();
                 font-size:13px;
                 color:#999999;
@@ -889,7 +889,16 @@
               background:#f1f1f1;
               margin-right: -3px;
 
+              @include simple-transition(opacity, 100ms);
+
               $radius: 3px;
+
+              &.disabled {
+                @include opacity(.5);
+                cursor: default;
+
+                &:active { background-position: 50% 9px!important; }
+              }
 
               &.up   {
                 @include border-radius($radius 0 0 $radius);

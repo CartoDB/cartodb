@@ -93,10 +93,8 @@ module CartoDB
               .add(table_name, "importing_#{Time.now.to_i}_#{table_name}")
           end
 
-          begin
-            CartoDB::ColumnSanitizer.new(db, table_name).run
-          rescue Exception => msg
-            #@runlog.err << msg
+          success = CartoDB::ColumnSanitizer.new(db, table_name).run
+          unless success
             data_import.log_update("ERROR: Failed to sanitize some column names")
           end
 

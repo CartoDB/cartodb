@@ -10,6 +10,9 @@ module CartoDB
 
     def run
       column_names.each { |column_name| sanitize(column_name) }
+      true
+    rescue
+      false
     end #run
 
     private

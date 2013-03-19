@@ -862,11 +862,24 @@
 
           .options {
             position:relative;
-            width:285px;
-            margin: auto;
+            width: 301px;
+            margin: 0 0 0 35px;
             clear:both;
 
             z-index: 100;
+
+            .view_mode {
+              float:left;
+              .switch {
+                @include inline-block();
+              }
+
+              label {
+                @include inline-block();
+                font-size:13px;
+                color:#999999;
+              }
+            }
 
             .scrollers { display:none; float: right; }
 

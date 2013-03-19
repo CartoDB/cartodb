@@ -17,6 +17,12 @@
       padding:80px 40px;
     }
 
+    section.block {
+      .content {
+        padding: 40px 40px 25px 40px;
+      }
+    }
+
     .modal.duplicating {
       display:none;
       width:300px!important;
@@ -24,7 +30,7 @@
       div.loader {
         padding-top:40px;
         @include background(image-url('layout/loader.gif') no-repeat center top);
-        p {text-align:center;}  
+        p {text-align:center;}
       }
     }
 

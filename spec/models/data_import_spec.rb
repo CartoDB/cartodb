@@ -1,4 +1,5 @@
-require 'spec_helper'
+# encoding: utf-8
+require_relative '../spec_helper'
 
 describe DataImport do
   before(:each) do
@@ -138,4 +139,68 @@ describe DataImport do
     duplicated_table.name.should be == 'from_query'
     duplicated_table.records[:rows].should have(5).items
   end
+
+  it "should remove any uploaded files after deletion" do
+    upload_path = FileUtils.mkdir_p Rails.root.join('public', 'uploads', 'test0000000000000000')
+    file_path = File.join(upload_path, 'wadus.csv')
+    FileUtils.cp Rails.root.join('db/fake_data/clubbing.csv'), file_path
+    data_import = DataImport.create(
+      :user_id       => @user.id,
+      :data_source   => file_path,
+      :updated_at    => Time.now )
+
+    data_import.destroy
+
+    Dir.exists?(file_path).should be_false
+  end
+
+  describe 'log' do
+    it 'is initialized to a TrackRecord::Log instance' do
+      data_import   = DataImport.new
+      data_import.log.should be_instance_of TrackRecord::Log
+    end
+
+    it 'allows messages to be appended' do
+      data_import   = DataImport.new(
+                        user_id:    1, 
+                        table_name: 'foo', 
+                        from_query: 'bogus'
+                      )
+      data_import.log << 'sample message'
+      data_import.save
+      data_import.log.to_s.should =~ /sample message/
+    end
+
+    it 'is fetched after retrieving the data_import object from DB' do
+      data_import   = DataImport.new(
+                        user_id:    1, 
+                        table_name: 'foo', 
+                        from_query: 'bogus'
+                      )
+      data_import.log << 'sample message'
+      data_import.save
+      data_import.logger.should_not be nil
+
+      rehydrated_data_import = DataImport[id: data_import.id]
+      rehydrated_data_import
+      data_import.log.to_s.should == rehydrated_data_import.log.to_s
+    end
+
+    it 'will not overwrite an existing logger field' do
+      data_import   = DataImport.new(
+                        user_id:    1,
+                        table_name: 'foo',
+                        from_query: 'bogus',
+                      )
+      data_import.save
+      data_import.logger = 'existing log'
+      data_import.this.update(logger: 'existing log')
+      data_import.logger    .should == 'existing log'
+      data_import.log       << 'sample message'
+      data_import.log.to_s  .should =~ /sample message/
+      data_import.save
+      data_import.logger    .should == 'existing log'
+    end
+  end #log
 end
+

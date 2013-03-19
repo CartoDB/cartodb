@@ -36,7 +36,7 @@ class Admin::TablesController < ApplicationController
     @table     = Table.find_by_subdomain(@subdomain, params[:id])
 
     # Has quite strange checks to see if a user can access a public table
-    if @table.blank? || (!current_user && @table.private?) || ((current_user && current_user.id != @table.owner.id) && @table.private?)
+    if @table.blank? || @table.private? || ((current_user && current_user.id != @table.user_id) && @table.private?)
       render_403
     else
       begin
@@ -58,8 +58,17 @@ class Admin::TablesController < ApplicationController
     if @table.blank? || @table.private?
       head :forbidden
     else
-      render :layout => false
+      respond_to do |format|
+        format.html { render :layout => false }
+        format.js { render 'embed_map.js.erb', :content_type => 'application/javascript' }
+      end
     end
+  end
+
+  def track_embed
+    response.headers['X-Cache-Channel'] = "embeds_google_analytics"
+    response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
+    render 'track.html.erb', :layout => false
   end
 
   private

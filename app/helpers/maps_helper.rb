@@ -8,7 +8,7 @@ module MapsHelper
     {
       version: "0.1.0",
 
-      updated_at: Time.now,
+      updated_at: map.viz_updated_at,
 
       layers: [
         layer_vizzjson(map.base_layers.first, options),

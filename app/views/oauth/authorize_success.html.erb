@@ -1,1 +1,13 @@
-<h1>You have allowed this request</h1>
+<section class="sessions shadow">
+  <div class="content">
+    <h2>Authorization accepted</h2>
+    <p class="margin15 light">You have allowed this request</p>
+  </div>
+  <div class="footer">
+    <p class="center light"><%= link_to "Forgot password?",forget_password_url %> · <%= link_to "Create an account", "http://cartodb.com/signup" %></p>
+  </div>
+</section>
+
+<footer class="short">
+  <h1><%= link_to 'CartoDB', root_path, :class => "cartodb" %></h1>
+</footer>

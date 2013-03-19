@@ -12,8 +12,6 @@ class User < Sequel::Model
     layer.set_default_order(user)
   }
 
-  plugin :association_dependencies, :maps => :destroy, :layers => :nullify
-
   # Sequel setup & plugins
   set_allowed_columns :email, :map_enabled, :password_confirmation, :quota_in_bytes, :table_quota, :account_type, :private_tables_enabled
   plugin :validation_helpers
@@ -32,7 +30,7 @@ class User < Sequel::Model
     :naked => true # avoid adding json_class to result
   }
 
-  SYSTEM_TABLE_NAMES = %w( spatial_ref_sys geography_columns geometry_columns raster_columns raster_overviews )
+  SYSTEM_TABLE_NAMES = %w( spatial_ref_sys geography_columns geometry_columns raster_columns raster_overviews cdb_tablemetadata )
 
   self.raise_on_typecast_failure = false
   self.raise_on_save_failure = false
@@ -62,6 +60,11 @@ class User < Sequel::Model
   def before_destroy
     # Remove user tables
     self.tables.all.each { |t| t.destroy }
+    
+    # Remove user data imports, maps and layers
+    self.data_imports.each { |d| d.destroy }
+    self.maps.each { |m| m.destroy }
+    self.layers.each { |l| self.remove_layer l }
 
     # Remove metadata from redis
     $users_metadata.DEL(self.key)
@@ -278,9 +281,9 @@ class User < Sequel::Model
   ##
   # Load api calls from external service
   #
-  def set_api_calls
-    # Ensure we update only once every 24 hours
-    if get_api_calls["updated_at"].to_i < 24.hours.ago.to_i
+  def set_api_calls(options = {})
+    # Ensure we update only once every 12 hours
+    if options[:force_update] || get_api_calls["updated_at"].to_i < 3.hours.ago.to_i
       api_calls = JSON.parse(
         open("#{Cartodb.config[:api_requests_service_url]}?username=#{self.username}").read
       ) rescue {}
@@ -301,6 +304,10 @@ class User < Sequel::Model
 
   def set_last_active_time
     $users_metadata.HMSET key, 'last_active_time',  Time.now
+  end
+
+  def get_last_active_time
+    $users_metadata.HMGET(key, 'last_active_time').first
   end
 
   def reset_client_application!
@@ -336,21 +343,15 @@ class User < Sequel::Model
   #
   # TODO: Without a full table scan, ignoring the_geom_webmercator, we cannot accuratly asses table size
   # Needs to go on a background job.
-  def db_size_in_bytes
+  def db_size_in_bytes(use_total = false)
     attempts = 0
     begin
-      size = in_database(:as => :superuser).fetch("SELECT sum(pg_relation_size(quote_ident(table_name)))
-        FROM information_schema.tables
-        WHERE table_catalog = '#{database_name}' AND table_schema = 'public'
-        AND table_name != 'spatial_ref_sys' AND table_type = 'BASE TABLE'").first[:sum] rescue 0
+      in_database(:as => :superuser).fetch("SELECT CDB_UserDataSize()").first[:cdb_userdatasize]
     rescue
       attempts += 1
       in_database(:as => :superuser).fetch("ANALYZE")
       retry unless attempts > 1
     end
-
-    # hack for the_geom_webmercator
-    size.to_i / 2
   end
 
   def real_tables
@@ -430,8 +431,8 @@ class User < Sequel::Model
     self.over_disk_quota? || self.over_table_quota?
   end
 
-  def remaining_quota
-    self.quota_in_bytes - self.db_size_in_bytes
+  def remaining_quota(use_total = false)
+    self.quota_in_bytes - self.db_size_in_bytes(use_total)
   end
 
   def disk_quota_overspend
@@ -459,9 +460,15 @@ class User < Sequel::Model
   end
 
   def rebuild_quota_trigger
+    load_cartodb_functions
+    puts "Rebuilding quota trigger in db '#{database_name}' (#{username})"
     tables.all.each do |table|
-      table.add_python
-      table.set_trigger_check_quota
+      begin
+        table.add_python
+        table.set_trigger_check_quota
+      rescue Sequel::DatabaseError => e
+        next if e.message =~ /.*does not exist\s*/
+      end
     end
   end
 
@@ -563,21 +570,38 @@ class User < Sequel::Model
     end
   end
 
-  def data
-    {
-      :id => self.id,
-      :username => self.username,
-      :account_type => self.account_type,
-      :private_tables => self.private_tables_enabled,
-      :table_quota => self.table_quota,
-      :table_count => self.table_count,
-      :byte_quota => self.quota_in_bytes,
-      :remaining_table_quota => self.remaining_table_quota,
-      :remaining_byte_quota => self.remaining_quota.to_f,
-      :api_calls => self.get_api_calls["per_day"],
-      :api_key => self.get_map_key,
-      :layers => self.layers.map(&:public_values)
+  def data(options = {})
+    data = { 
+      :id                         => self.id,
+      :email                      => self.email,
+      :username                   => self.username,
+      :account_type               => self.account_type,
+      :private_tables             => self.private_tables_enabled,
+      :table_quota                => self.table_quota,
+      :table_count                => self.table_count,
+      :byte_quota                 => self.quota_in_bytes,
+      :remaining_table_quota      => self.remaining_table_quota,
+      :remaining_byte_quota       => self.remaining_quota.to_f,
+      :api_calls                  => self.get_api_calls["per_day"],
+      :api_key                    => self.get_map_key,
+      :layers                     => self.layers.map(&:public_values),
     }
+
+    if !options[:extended]
+      data
+    else
+      biggest_table = self.tables.select(:id, :name, :user_id).all.map { |t| 
+        {:name => t.name, :size_diff => (t.table_size - 10)} 
+      }.sort_by {|h| h[:size_diff] }.last
+      data.merge({
+        :real_table_count           => self.real_tables.size,
+        :last_active_time           => self.get_last_active_time,
+        :db_size_in_bytes           => self.db_size_in_bytes,
+        :total_db_size_in_bytes     => self.db_size_in_bytes(true),
+        :biggest_table_name         => (biggest_table.blank? ? nil : biggest_table[:name]),
+        :biggest_table_size_diff    => (biggest_table.blank? ? nil : biggest_table[:size_diff])
+      })
+    end
   end
 
   # Whitelist Permissions

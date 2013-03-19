@@ -19,8 +19,7 @@ class Api::Json::RecordsController < Api::ApplicationController
     primary_key = @table.insert_row!(params.reject{|k,v| REJECT_PARAMS.include?(k)}.symbolize_keys)
     render_jsonp(get_record(primary_key))
   rescue => e
-    CartoDB::Logger.info "exception on records#create", e.inspect
-    render_jsonp({ :errors => [e] }, 400)
+    render_jsonp({ :errors => [e.message] }, 400)
   end
 
   def show

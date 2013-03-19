@@ -155,6 +155,14 @@ feature "Superadmin's users API" do
     User[user.id].should be_nil
   end
 
+  scenario "user get info success" do
+    user = create_user
+    get_json superadmin_user_path(user), {}, default_headers do |response|
+      response.status.should == 200
+      response.body[:id].should == user.id
+    end
+  end
+
   private
 
   def default_headers(user = Cartodb.config[:superadmin]["username"], password = Cartodb.config[:superadmin]["password"])

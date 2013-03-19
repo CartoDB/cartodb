@@ -740,51 +740,6 @@
 
         }
 
-        .white-gradient-shadow {
-          @include position(false, false, 0, 0);
-          @include size(100%, 20px);
-          @extend .white-gradient-shadow;
-        }
-
-        .scroll {
-          width: 380px;
-          max-height: 200px;
-          overflow: auto;
-          outline:none;
-
-          .jspContainer { overflow: hidden; position: relative; }
-          .jspPane { position: absolute; }
-          .jspVerticalBar {
-            @include opacity(0);
-            @include simple-transition(opacity, 250ms);
-            @include position(0, 20px, false, false);
-            @include size(5px, 100%);
-            background: none;
-            @include transition-delay(250ms);
-          }
-          .jspHorizontalBar { position: absolute; bottom: 0; left: 0; width: 100%; height: 16px; background: none; }
-
-          .jspVerticalBar *,
-          .jspHorizontalBar * {
-            margin: 0;
-            padding: 0;
-          }
-
-          .jspCap { display: none; }
-          .jspHorizontalBar .jspCap { float: left; }
-          .jspTrack { background: none; position: relative; }
-          .jspDrag { background: rgba(#BBB, .5); @include border-radius(5px); position: relative; top: 0; left: 0; cursor: pointer; }
-          .jspHorizontalBar .jspTrack, .jspHorizontalBar .jspDrag { float: left; height: 100%; }
-          .jspArrow { background: none; text-indent: -20000px; display: block; cursor: pointer; }
-          .jspArrow.jspDisabled { cursor: default; background: none; }
-          .jspArrow.jspArrowUp { display:none; }
-          .jspVerticalBar .jspArrow { height: 6px; }
-          .jspHorizontalBar .jspArrow { width: 5px; float: left; height: 100%; }
-          .jspVerticalBar .jspArrow:focus { outline: none; }
-          .jspCorner { background: #eeeef4; float: left; height: 100%; }
-
-        }
-
         ul.filters {
           margin: 0 0 40px 0;
 
@@ -822,7 +777,7 @@
               @include opacity(0);
 
               @include size(12px);
-              @include position(5px, 5px, false, false);
+              @include position(10px, 10px, false, false);
               @include simple-transition(opacity, 150ms);
 
               background: image-url('icons/remove_filter.png') no-repeat;
@@ -846,6 +801,96 @@
           .fields {
             position:relative;
             margin: 0 0 40px 0;
+          }
+
+          .data {
+            position:relative;
+
+            .white-gradient-shadow {
+
+              pointer-events: none;
+
+              &.top    { @include opacity(0); @include position(0, false, false, 0); @extend .white-gradient-shadow-top;    z-index: 10; }
+              &.bottom { @include opacity(1); @include position(false, false, 0, 0); @extend .white-gradient-shadow-bottom; z-index: 10; }
+
+              @include size(100%, 30px);
+
+            }
+
+            .scroll {
+              width: 380px;
+              max-height: 200px;
+              overflow: hidden;
+              outline:none;
+            }
+
+          }
+
+          .controllers {
+
+            float: right;
+
+            li {
+              @include inline-block();
+              color: #999999;
+              font-size:13px;
+
+              .btn {
+                @include inline-block();
+                padding: 7px 8px;
+                margin-right: 1px;
+                font-size: 9px;
+                color: #4DC964;
+
+                background:#f1f1f1;
+
+                text-transform: uppercase;
+
+                $radius: 3px;
+
+                &.all   {
+                  @include border-radius($radius 0 0 $radius);
+                }
+
+                &.none {
+                  @include border-radius(0 $radius $radius 0);
+                }
+              }
+            }
+
+          }
+
+          .options {
+            position:relative;
+            width:285px;
+            margin: auto;
+            clear:both;
+
+            z-index: 100;
+
+            .scrollers { float: right; }
+
+            .btn {
+              @include inline-block();
+              @include size(25px, 21px);
+              background:#f1f1f1;
+              margin-right: -3px;
+
+              $radius: 3px;
+
+              &.up   {
+                @include border-radius($radius 0 0 $radius);
+                background: #f1f1f1 image-url('icons/filters_scroll_up.png') no-repeat 50% 9px;
+                &:active { background-position: 50% 10px;  }
+              }
+
+              &.down {
+                @include border-radius(0 $radius $radius 0);
+                background: #f1f1f1 image-url('icons/filters_scroll_down.png') no-repeat 50% 9px;
+                &:active { background-position: 50% 10px;  }
+              }
+            }
+
           }
 
           .items {

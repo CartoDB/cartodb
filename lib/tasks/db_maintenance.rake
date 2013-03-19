@@ -12,10 +12,15 @@ namespace :cartodb do
           user.load_cartodb_functions
           user.in_database(:as => :superuser).run("DROP FUNCTION IF EXISTS check_quota() CASCADE;")
           user.tables.all.each do |table|
+            begin
               table.add_python
               table.set_trigger_check_quota
               table.set_trigger_update_updated_at
               table.set_trigger_cache_timestamp
+            rescue => e
+              puts e
+              next
+            end
           end
           printf "OK %-#{20}s (%-#{4}s/%-#{4}s)\n", user.username, i, count
         rescue => e

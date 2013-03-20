@@ -129,6 +129,7 @@
 
           &.disabled {
             @include opacity(0.15);
+            border-color:#999;
           }
 
           &.selected {

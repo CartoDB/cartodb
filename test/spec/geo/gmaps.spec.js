@@ -17,14 +17,18 @@
       layer    = new cdb.geo.TileLayer({ urlTemplate: layerURL });
 
       spy = {
-        zoomChanged: function(){},
-        centerChanged: function(){}
+        zoomChanged:        function(){},
+        centerChanged:      function(){},
+        scrollWheelChanged: function(){}
       };
 
       spyOn(spy, 'zoomChanged');
       spyOn(spy, 'centerChanged');
+      spyOn(spy, 'scrollWheelChanged');
+
       map.bind('change:zoom', spy.zoomChanged);
       map.bind('change:center', spy.centerChanged);
+      map.bind('change:scrollwheel', spy.scrollWheelChanged);
     });
 
     it("should change bounds when center is set", function() {
@@ -53,6 +57,12 @@
         expect(mapView._setCenter).toHaveBeenCalled();
         //expect(s.called).toEqual(true);
       });
+    });
+
+    it("should allow to disable the scroll wheel", function() {
+      map.disableScrollWheel();
+      expect(spy.scrollWheelChanged).toHaveBeenCalled();
+      expect(map.get("scrollwheel")).toEqual(false);
     });
 
     it("should change zoom", function() {

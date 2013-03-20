@@ -19,7 +19,7 @@ var Overlay = {
   // raise an exception if the type does not exist
   create: function(type, vis, data) {
     var t = Overlay._types[type];
-    if(!t) {
+    if (!t) {
       cdb.log.error("Overlay: " + type + " does not exist");
     }
     var widget = t(data, vis);
@@ -40,7 +40,7 @@ var Layers = {
   },
 
   create: function(type, vis, data) {
-    if(!type) {
+    if (!type) {
       cdb.log.error("creating a layer without type");
       return null;
     }
@@ -64,14 +64,14 @@ var Loader = cdb.vis.Loader = {
   head: null,
 
   get: function(url, callback) {
-    if(!Loader._script) {
+    if (!Loader._script) {
       Loader.current = callback;
       var script = document.createElement('script');
       script.type = 'text/javascript';
       script.src = url + (~url.indexOf('?') ? '&' : '?') + 'callback=vizjson';
       script.async = true;
       Loader._script = script;
-      if(!Loader.head) {
+      if (!Loader.head) {
         Loader.head = document.getElementsByTagName('head')[0];
       }
       Loader.head.appendChild(script);
@@ -89,7 +89,7 @@ window.vizjson = function(data) {
   Loader._script = null;
   // next element
   var a = Loader.queue.shift();
-  if(a) {
+  if (a) {
     Loader.get(a[0], a[1]);
   }
 };
@@ -105,7 +105,7 @@ var Vis = cdb.core.View.extend({
     this.https = false;
     this.overlays = [];
 
-    if(this.options.mapView) {
+    if (this.options.mapView) {
       this.mapView = this.options.mapView;
       this.map = this.mapView.map;
     }
@@ -114,10 +114,10 @@ var Vis = cdb.core.View.extend({
 
   load: function(data, options) {
     var self = this;
-    if(typeof(data) === 'string') {
+    if (typeof(data) === 'string') {
       var url = data;
       cdb.vis.Loader.get(url, function(data) {
-        if(data) {
+        if (data) {
           self.load(data, options);
         } else {
           self.trigger('error', 'error fetching viz.json file');
@@ -127,18 +127,19 @@ var Vis = cdb.core.View.extend({
     }
 
     // configure the vis in http or https
-    if(window && window.location.protocol && window.location.protocol === 'https:') {
+    if (window && window.location.protocol && window.location.protocol === 'https:') {
       this.https = true;
     }
 
-    if(data.https) {
+    if (data.https) {
       this.https = data.https;
     }
 
     var scrollwheel = true;
 
-    if(options) {
+    if (options) {
       this._applyOptions(data, options);
+
       this.cartodb_logo = options.cartodb_logo;
       scrollwheel       = options.scrollwheel;
     }
@@ -157,11 +158,11 @@ var Vis = cdb.core.View.extend({
     };
 
     // if the boundaries are defined, we add them to the map
-    if(data.bounding_box_sw && data.bounding_box_ne) {
+    if (data.bounding_box_sw && data.bounding_box_ne) {
       mapConfig.bounding_box_sw = data.bounding_box_sw;
       mapConfig.bounding_box_ne = data.bounding_box_ne;
     }
-    if(data.bounds) {
+    if (data.bounds) {
       mapConfig.view_bounds_sw = data.bounds[0];
       mapConfig.view_bounds_ne = data.bounds[1];
     } else {
@@ -238,7 +239,7 @@ var Vis = cdb.core.View.extend({
       v.bind('clean', function() {
         for(var i in this.overlays) {
           var o = this.overlays[i];
-          if(v.cid === o.cid) {
+          if (v.cid === o.cid) {
             this.overlays.splice(i, 1)
             return;
           }
@@ -271,18 +272,18 @@ var Vis = cdb.core.View.extend({
     vizjson.layers = vizjson.layers || [];
 
     function search_overlay(name) {
-      if(!vizjson.overlays) return null;
+      if (!vizjson.overlays) return null;
       for(var i = 0; i < vizjson.overlays.length; ++i) {
-        if(vizjson.overlays[i].type === name) {
+        if (vizjson.overlays[i].type === name) {
           return vizjson.overlays[i];
         }
       }
     }
 
     function remove_overlay(name) {
-      if(!vizjson.overlays) return;
+      if (!vizjson.overlays) return;
       for(var i = 0; i < vizjson.overlays.length; ++i) {
-        if(vizjson.overlays[i].type === name) {
+        if (vizjson.overlays[i].type === name) {
           vizjson.overlays.splice(i, 1);
           return;
         }
@@ -302,7 +303,7 @@ var Vis = cdb.core.View.extend({
       });
     }
 
-    if(opt.title  || opt.description || opt.shareable) {
+    if (opt.title  || opt.description || opt.shareable) {
       vizjson.overlays.unshift({
         type: "header",
         shareable: opt.shareable ? true: false,
@@ -310,54 +311,54 @@ var Vis = cdb.core.View.extend({
       });
     }
 
-    if(!opt.title) {
+    if (!opt.title) {
       vizjson.title = null;
     }
 
-    if(!opt.description) {
+    if (!opt.description) {
       vizjson.description = null;
     }
 
-    if(!opt.tiles_loader) {
+    if (!opt.tiles_loader) {
       remove_overlay('loader');
     }
 
-    if(!opt.zoomControl) {
+    if (!opt.zoomControl) {
       remove_overlay('zoom');
     }
 
-    if(!opt.loaderControl) {
+    if (!opt.loaderControl) {
       remove_overlay('loader');
     }
 
     // if bounds are present zoom and center will not taken into account
-    if(opt.zoom !== undefined) {
+    if (opt.zoom !== undefined) {
       vizjson.zoom = parseFloat(opt.zoom);
       vizjson.bounds = null;
     }
 
-    if(opt.center_lat !== undefined) {
+    if (opt.center_lat !== undefined) {
       vizjson.center = [parseFloat(opt.center_lat), parseFloat(opt.center_lon)];
       vizjson.bounds = null;
     }
 
-    if(opt.center !== undefined) {
+    if (opt.center !== undefined) {
       vizjson.center = opt.center;
       vizjson.bounds = null;
     }
 
-    if(opt.sw_lat !== undefined) {
+    if (opt.sw_lat !== undefined) {
       vizjson.bounds = [
         [parseFloat(opt.sw_lat), parseFloat(opt.sw_lon)],
         [parseFloat(opt.ne_lat), parseFloat(opt.ne_lon)],
       ];
     }
 
-    if(vizjson.layers.length > 1) {
-      if(opt.sql) {
+    if (vizjson.layers.length > 1) {
+      if (opt.sql) {
         vizjson.layers[1].options.query = opt.sql;
       }
-      if(opt.style) {
+      if (opt.style) {
         vizjson.layers[1].options.tile_style = opt.style;
       }
 
@@ -395,7 +396,7 @@ var Vis = cdb.core.View.extend({
     var domain = model.get('sql_domain') + (port ? ':' + port: '')
     var protocol = model.get('sql_protocol');
     var version = 'v1';
-    if(domain.indexOf('cartodb.com') !== -1) {
+    if (domain.indexOf('cartodb.com') !== -1) {
       protocol = 'http';
       domain = "cartodb.com";
       version = 'v2';
@@ -422,9 +423,9 @@ var Vis = cdb.core.View.extend({
           table_name: model.get('table_name')
         })
         .done(function(interact_data) {
-          if(interact_data.rows.length == 0 ) return;
+          if (interact_data.rows.length == 0 ) return;
           interact_data = interact_data.rows[0];
-          if(infowindowFields) {
+          if (infowindowFields) {
             var render_fields = [];
             var fields = infowindowFields.fields;
             for(var j = 0; j < fields.length; ++j) {
@@ -438,7 +439,7 @@ var Vis = cdb.core.View.extend({
               }
             }
             // manage when there is no data to render
-            if(render_fields.length === 0) {
+            if (render_fields.length === 0) {
               render_fields.push({
                 title: null,
                 value: 'No data available',
@@ -487,7 +488,7 @@ var Vis = cdb.core.View.extend({
     var layerView = mapView.getLayerByCid(layer_cid);
 
     // add the associated overlays
-    if(layerData.infowindow &&
+    if (layerData.infowindow &&
       layerData.infowindow.fields &&
       layerData.infowindow.fields.length > 0 &&
       this.infowindow) {
@@ -504,13 +505,13 @@ var Vis = cdb.core.View.extend({
   },
 
   loadingTiles: function() {
-    if(this.loader) {
+    if (this.loader) {
       this.loader.show()
     }
   },
 
   loadTiles: function() {
-    if(this.loader) {
+    if (this.loader) {
       this.loader.hide();
     }
   },

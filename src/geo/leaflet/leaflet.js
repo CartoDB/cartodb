@@ -29,11 +29,14 @@
         minZoom: this.map.get('minZoom'),
         maxZoom: this.map.get('maxZoom')
       };
+
+
       if (this.map.get('bounding_box_ne')) {
         //mapConfig.maxBounds = [this.map.get('bounding_box_ne'), this.map.get('bounding_box_sw')];
       }
 
-      if(!this.options.map_object) {
+      if (!this.options.map_object) {
+
         this.map_leaflet = new L.Map(this.el, mapConfig);
 
         // remove the "powered by leaflet"
@@ -43,16 +46,20 @@
         if (this.map.get("scrollwheel") == false) this.map_leaflet.scrollWheelZoom.disable();
 
       } else {
+
         this.map_leaflet = this.options.map_object;
         this.setElement(this.map_leaflet.getContainer());
+
         var c = self.map_leaflet.getCenter();
+
         self._setModelProperty({ center: [c.lat, c.lng] });
         self._setModelProperty({ zoom: self.map_leaflet.getZoom() });
+
         // unset bounds to not change mapbounds
         self.map.unset('view_bounds_sw', { silent: true });
         self.map.unset('view_bounds_ne', { silent: true });
-      }
 
+      }
 
       this.map.bind('set_view', this._setView, this);
       this.map.layers.bind('add', this._addLayer, this);
@@ -114,11 +121,11 @@
 
       // looks like leaflet dont like to change the bounds just after the inicialization
       var bounds = this.map.getViewBounds();
-      if(bounds) {
+
+      if (bounds) {
         this.showBounds(bounds);
       }
     },
-
 
     clean: function() {
       //see https://github.com/CloudMade/Leaflet/issues/1101

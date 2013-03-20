@@ -284,7 +284,7 @@ cdb.geo.Map = cdb.core.Model.extend({
     }
 
     // Set options
-    _.defauls(this.options, options);
+    _.defaults(this.options, options);
 
   },
 
@@ -621,6 +621,7 @@ cdb.geo.MapView = cdb.core.View.extend({
     this.map.bind('change:view_bounds_sw',  this._changeBounds, this);
     this.map.bind('change:view_bounds_ne',  this._changeBounds, this);
     this.map.bind('change:zoom',            this._setZoom, this);
+    this.map.bind('change:scrollwheel',     this._setScrollWheel, this);
     this.map.bind('change:center',          this._setCenter, this);
     this.map.bind('change:scrollwheel',     this._setScrollWheel, this);
     this.map.bind('change:attribution',     this._setAttribution, this);

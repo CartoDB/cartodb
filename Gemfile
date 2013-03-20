@@ -26,7 +26,7 @@ gem "yajl-ruby",               "1.1.0", :require => "yajl"
 gem "airbrake",                "3.1.6"
 gem "nokogiri",                "1.5.3"
 gem "statsd-client",           "0.0.7", :require => "statsd"
-gem "aws-sdk",               "1.5.2"
+gem "aws-sdk",                 "1.5.2"
 
 gem "addressable",             "2.2.8", :require => "addressable/uri"
 
@@ -56,10 +56,11 @@ gem "builder",                 "3.0.0"
 gem "state_machine",           "1.1.2"
 
 # Service components (/services)
-gem "virtus"
+gem "virtus",                  git: "https://github.com/solnic/virtus.git"
 gem "aequitas"
 gem "uuidtools"
 gem "rubyzip",                  "0.9.9"
+gem "sinatra",                  "1.3.4", require: 'sinatra/base'
 
 # TODO we should be able to remove this using the new
 #      Rails routes DSL

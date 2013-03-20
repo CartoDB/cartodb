@@ -2,5 +2,6 @@
 
 module CartoDB
   class DatabaseImportError < RuntimeError; end
+  class ExtractionError < RuntimeError; end
 end # CartoDB
 

@@ -1,6 +1,8 @@
 # encoding: utf-8
 require 'sinatra/base'
 require 'json'
+require 'minitest/autorun'
+require 'rack/test'
 require_relative '../../../models/visualization/member'
 require_relative '../../../models/visualization/collection'
 
@@ -61,4 +63,21 @@ module CartoDB
     end # Visualization
   end # API
 end # CartoDB
+
+def app
+  CartoDB::Visualization::API.new
+end
+
+include CartoDB
+
+describe Visualization::API do
+  include Rack::Test::Methods
+  
+  describe 'GET /api/v1/visualization/:id' do
+    it 'returns a visualization' do
+      get '/api/v1/visualization/:id'
+      last_response.status.must_equal 200
+    end
+  end
+end # Visualization::API
 

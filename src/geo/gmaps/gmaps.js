@@ -216,8 +216,8 @@ if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
 
     setAttribution: function(m) {
       // Remove old one
-      var old = document.getElementById("cartodb_attribution")
-      , attribution = m.get("attribution").join(", ");
+      var old = document.getElementById("cartodb-gmaps-attribution")
+        , attribution = m.get("attribution").join(", ");
 
       // If div already exists, remove it
       if (old) {
@@ -226,17 +226,11 @@ if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
 
       // Add new one
       var container           = this.map_googlemaps.getDiv()
-        , style               = "height: 19px; line-height: 19px; padding-right: 6px; padding-left: 50px; background:white; background: -webkit-linear-gradient(left, rgba(255, 255, 255, 0) 0px,\
-                                rgba(255, 255, 255, 0.498039) 50px); background: linear-gradient(left, rgba(255, 255, 255, 0) 0px, rgba(255, 255, 255, 0.498039) 50px); \
-                                background: -moz-linear-gradient(left center , rgba(255, 255, 255, 0) 0px, rgba(255, 255, 255, 0.5) 50px) repeat scroll 0% 0% transparent; font-family: Arial, sans-serif; font-size: 10px; color: rgb(68, 68, 68)!important;\
-                                white-space: nowrap; direction: ltr; text-align: right; background-position: initial initial; background-repeat: initial initial; position:absolute; bottom:19px;\
-                                right:0; display:block; border:none; z-index:10000;"
         , cartodb_attribution = document.createElement("div");
 
-      cartodb_attribution.setAttribute('id','cartodb_attribution');
+      cartodb_attribution.setAttribute('id','cartodb-gmaps-attribution');
       cartodb_attribution.setAttribute('class', 'gmaps');
       container.appendChild(cartodb_attribution);
-      cartodb_attribution.setAttribute('style',style);
       cartodb_attribution.innerHTML = attribution;
     },
 

@@ -1,11 +1,11 @@
 
 UGLIFYJS = ./node_modules/.bin/uglifyjs
 
-CSS_FILES = $(wildcard themes/css/*.css)
+CSS_FILES = $(wildcard themes/css/infowindow/*.css themes/css/map/*.css)
 CSS_FILES_IE = $(wildcard themes/css/ie/*.css)
 
 #dist:  dist/cartodb.js dist/cartodb.full.js themes
-dist:  dist/cartodb.js  dist/cartodb.css dist/cartodb.ie.css
+dist:  dist/cartodb.js  dist/cartodb.css dist/cartodb.ie.css dist/cartodb.nojquery.js
 
 
 dist_folder:
@@ -18,6 +18,10 @@ dist/cartodb.uncompressed.js: dist_folder
 dist/cartodb.js: dist/cartodb.uncompressed.js
 	$(UGLIFYJS) dist/cartodb.uncompressed.js > dist/cartodb.js
 
+dist/cartodb.nojquery.js: dist/cartodb.uncompressed.js
+	$(UGLIFYJS) dist/_cartodb_nojquery.js > dist/cartodb.nojquery.js
+	rm dist/_cartodb_nojquery.js
+
 dist/cartodb.css: css
 	cp themes/css/cartodb.css dist
 
@@ -28,7 +32,7 @@ clean:
 	rm -rf dist/*
 
 css: $(CSS_FILES) 
-	rm -rf themes/css/cartodb.css themes./css/cartodb.ie.css
+	rm -rf themes/css/cartodb.css themes/css/cartodb.ie.css
 	cat $(CSS_FILES) > themes/css/cartodb.css
 	cat $(CSS_FILES_IE) > themes/css/cartodb.ie.css
 

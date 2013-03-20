@@ -11,7 +11,7 @@
 
 cdb.geo.ui.TilesLoader = cdb.core.View.extend({
 
-  id: "tiles_loader",
+  className: "cartodb-tiles-loader",
 
   default_options: {
     animationSpeed: 500

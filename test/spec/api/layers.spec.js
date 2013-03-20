@@ -156,8 +156,9 @@ describe('api.layers', function() {
         waits(10);
         runs(function() {
           expect(s.called).toEqual(true);
-          expect(layer.model.attributes.extra_params.updated_at).toEqual('jaja');
-          expect(layer.model.attributes.extra_params.cache_buster).toEqual(undefined);
+          //expect(layer.model.attributes.extra_params.updated_at).toEqual('jaja');
+          expect(layer.model.attributes.extra_params.cache_buster).toEqual('jaja');
+          //expect(layer.model.attributes.extra_params.cache_buster).toEqual(undefined);
         });
       });
 

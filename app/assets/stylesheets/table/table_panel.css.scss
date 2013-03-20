@@ -848,6 +848,10 @@
 
                 $radius: 3px;
 
+                @include simple-transition(background, 100ms);
+
+                &.selected { color: #f1f1f1; background: #4DC964; }
+
                 &.all   {
                   @include border-radius($radius 0 0 $radius);
                 }

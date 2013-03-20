@@ -1,7 +1,8 @@
 # encoding: utf-8
-require 'zip/zip'
-require 'tempfile'
 require 'fileutils'
+require 'tempfile'
+require 'zip/zip'
+require 'iconv'
 require_relative '../constants'
 require_relative '../exceptions'
 
@@ -11,17 +12,17 @@ module CartoDB
       @path           = arguments.fetch(:path)
       @suggested_name = arguments.fetch(:suggested_name)
       @log            = arguments.fetch(:log, String.new)
-      @import         = []
+      @import         = Array.new
     end #initialize
 
     def process!
-      log("Importing zip file: #{path}")
       log("Extracting from file: #{path}")
       Zip::ZipFile.foreach(path) { |entry| extract(entry) }
       log("Extraction finished for file: #{path}")
 
       import
-    rescue
+    rescue => exception
+      puts exception
       raise ExtractionError
     end #process!
 
@@ -31,7 +32,8 @@ module CartoDB
 
     def extract(entry)
       return if hidden?(entry.name)
-      filename       = normalize_filename(entry)
+
+      filename       = normalize(entry.name)
       temporary_path = "#{generate_tempfile}.#{filename}"
 
       import.push(data_for(filename, temporary_path)) if supported?(entry.name)
@@ -56,16 +58,16 @@ module CartoDB
       Importer::SUPPORTED_FORMATS.include?(File.extname(filename))
     end #supported?
 
-    def normalize_filename(entry)
-      filename    = entry.name.split('/').last
-      normalized  = normalize(filename)
-      rename_file(filename, normalized)
-      normalized
-    end #normalize_filename
-
-    def normalize(filename)
-      filename.gsub(' ','_').downcase
+    def normalize(path)
+      filename = path.split('/').last
+      rename(filename, underscore(filename))
     end #normalize
+
+    def underscore(filename)
+      Iconv.new('UTF-8//IGNORE', 'UTF-8').iconv(filename)
+        .gsub(' ', '_')
+        .downcase
+    end #underscore
 
     def name_from(name, suggested_name=nil )
       suggested_name || File.basename(name, File.extname(name)).sanitize
@@ -78,15 +80,15 @@ module CartoDB
       path
     end #generate_tempfile
 
-    def rename_file(filename, normalized)
-      return false if filename == normalized
+    def rename(filename, normalized)
+      return normalized if filename == normalized
       FileUtils.mv("#{path}/#{filename}", "#{path}/#{normalized}")
       normalized
-    end #rename_file
+    end #rename
 
     def hidden?(name)
       name =~ /^(\.|\_{2})/
-    end #dot_directory?
+    end #hidden?
   end # KMZ
 end # CartoDB
 

@@ -25,13 +25,9 @@ describe "Imports API" do
 
 
     response.code.should be == '200'
-
     response_json = JSON.parse(response.body)
-    response_json.should_not be_nil
-    response_json['item_queue_id'].should_not be_empty
 
-    last_import = DataImport.order(:updated_at.desc).first
-    last_import.queue_id.should be == response_json['item_queue_id']
+    last_import = DataImport[response_json['item_queue_id']]
     last_import.state.should be == 'complete'
     table = Table[last_import.table_id]
     table.name.should == "column_number_to_boolean"
@@ -45,13 +41,9 @@ describe "Imports API" do
     end
 
     response.code.should be == '200'
-
     response_json = JSON.parse(response.body)
-    response_json.should_not be_nil
-    response_json['item_queue_id'].should_not be_empty
 
-    last_import = DataImport.order(:updated_at.desc).first
-    last_import.queue_id.should be == response_json['item_queue_id']
+    last_import = DataImport[response_json['item_queue_id']]
     last_import.state.should be == 'complete'
   end
 
@@ -120,13 +112,9 @@ describe "Imports API" do
 
 
     response.code.should be == '200'
-
     response_json = JSON.parse(response.body)
-    response_json.should_not be_nil
-    response_json['item_queue_id'].should_not be_empty
 
-    last_import = DataImport.order(:updated_at.desc).first
-    last_import.queue_id.should be == response_json['item_queue_id']
+    last_import = DataImport[response_json['item_queue_id']]
     last_import.state.should be == 'complete'
 
     @table.reload.rows_counted.should be == 4
@@ -147,11 +135,8 @@ describe "Imports API" do
     response.code.should be == '200'
 
     response_json = JSON.parse(response.body)
-    response_json.should_not be_nil
-    response_json['item_queue_id'].should_not be_empty
 
-    last_import = DataImport.order(:updated_at.desc).first
-    last_import.queue_id.should be == response_json['item_queue_id']
+    last_import = DataImport[response_json['item_queue_id']]
     last_import.state.should be == 'complete'
 
     import_table = Table.all.last
@@ -169,13 +154,9 @@ describe "Imports API" do
                                      :table_copy => @table_from_import.name))
 
     response.code.should be == '200'
-
     response_json = JSON.parse(response.body)
-    response_json.should_not be_nil
-    response_json['item_queue_id'].should_not be_empty
 
-    last_import = DataImport.order(:updated_at.desc).first
-    last_import.queue_id.should be == response_json['item_queue_id']
+    last_import = DataImport[response_json['item_queue_id']]
     last_import.state.should be == 'complete'
 
     import_table = Table.all.last
@@ -203,12 +184,8 @@ describe "Imports API" do
       response.code.should be == '200'
 
       response_json = JSON.parse(response.body)
-      response_json.should_not be_nil
-      response_json['item_queue_id'].should_not be_empty
+      last_import = DataImport[response_json['item_queue_id']]
 
-      last_import = DataImport.order(:updated_at.desc).first
-
-      last_import.queue_id.should be == response_json['item_queue_id']
       last_import.state.should be == 'complete'
       table = Table.order(:id).last
       table.should have_required_indexes_and_triggers
@@ -287,13 +264,9 @@ describe "Imports API" do
     end
 
     response.code.should be == '200'
-
     response_json = JSON.parse(response.body)
-    response_json.should_not be_nil
-    response_json['item_queue_id'].should_not be_empty
 
-    last_import = DataImport.order(:updated_at.desc).first
-    last_import.queue_id.should be == response_json['item_queue_id']
+    last_import = DataImport[response_json['item_queue_id']]
     last_import.state.should be == 'complete'
     last_import.tables_created_count.should be == 10
 

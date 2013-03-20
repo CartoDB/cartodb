@@ -37,10 +37,7 @@ div.map {
     padding:8px 20px 8px 30px;
     z-index:50;
 
-    a {
-      float:left;
-      @include box-shadow(rgba(white,1) 0 0 8px 5px);
-    }
+    a {float:left;}
   }
 
   .options {
@@ -124,7 +121,8 @@ div.map {
 
   div.dropdown.basemap {
 
-    width:auto;
+    height: 247px;
+    width: 648px;
     border: 1px solid #999999;
 
     .custom {
@@ -163,11 +161,11 @@ div.map {
         .name {
           float:left;
           font-size:13px;
-          width: 145px;
+          width: 150px;
           margin: 5px 0 0 5px;
 
           text-overflow:ellipsis;
-          white-space: normal;
+          white-space: nowrap;
           overflow: hidden;
         }
 
@@ -220,6 +218,11 @@ div.map {
             &:before { border: 1px solid rgba(0,0,0, 0.5); }
           }
 
+        }
+
+        &.dark_roadmap .thumb {
+          background-size:auto;
+          @include icons-sprite(gmaps_dark_roadmap);
         }
 
         &.gray_roadmap .thumb {
@@ -289,7 +292,9 @@ div.map {
   }
 
 
-  div#map {
+  /* CartoDB map styles */
+
+  div.cartodb-map {
     position:absolute;
     top:64px;
     left:0;
@@ -306,13 +311,13 @@ div.map {
   }
 
   // Zoom info
-  div#zoom_info {top:135px;}
+  div.cartodb-zoom-info {top:135px;}
 
   // Zoom in core map
-  div#zoom {top:65px;}
+  div.cartodb-zoom {top:65px;}
 
   // Tiler in core map
-  div#tiles_loader div.loader {
+  div.cartodb-tiles-loader div.loader {
     top:175px;
   }
 
@@ -325,7 +330,7 @@ div.map {
   }
 
   // Search box in core map
-  div.search_box {
+  div.cartodb-searchbox {
     position:relative;
     float:right;
     top:65px;
@@ -333,14 +338,14 @@ div.map {
   }
 
   // Public map
-  div#map.public {
+  .cartodb-map.public {
     top: 55px;
     border-top:1px solid #999999;
-    div#zoom {top: 0px;}
-    div#tiles_loader div.loader {
+    div.cartodb-zoom {top: 0px;}
+    div.cartodb-tiles-loader div.loader {
       top:135px - 65px;
     }
-    div.search_box{
+    div.cartodb-searchbox{
       top: 0px;
       left: 0px;
     }
@@ -349,6 +354,7 @@ div.map {
       margin-right: 0px!important;
     }
   }
+
 
   // [done | discard] dialog shown when a geometry is being edited or created
   div.editing {
@@ -397,7 +403,46 @@ div.map {
     }
   }
 
-} // div.map
+  div.sqlview {
+    position: absolute;
+    top: 53px;
+    right: 0;
+    left: 0;
+    display: block;
+    width: 100%;
+    height: 37px;
+    z-index:1;
+
+    p {
+      position: fixed;
+      left: 50%;
+      display: inline;
+      margin: 12px 0 0 -50%;
+      padding: 12px 0;
+      width: 100%;
+      border-bottom: 1px solid #ccc;
+      background-color: #E5FAEA;
+      color: #333;
+      color: #666666;
+      text-align: center;
+      font-size: 13px;
+      font-family: $text-fonts;
+      text-indent:0;
+      z-index:2;
+      @include transform-style("linear");
+      @include transition-property("text-indent");
+      @include transition-duration(300ms);
+      @include box-shadow(rgba(0, 0, 0, 0.055) 0 3px 1px 0);
+    }
+  } //div.sqlview
+
+  &.displaced {
+    div.sqlview p {
+      text-indent:-600px;
+    }
+  } //&.displaced
+
+} // div.cartodb-map
 
 
 section.block.noGeoRef {
@@ -461,10 +506,11 @@ div.cartodb-edit-buttons {
   }
 
   // Edit buttons
-  div.right {width:91px; margin-top:5px;}
+  div.right {width:auto; margin-top:4px;}
 
   a.button {
-    @include inline-block();
+    float:left;
+    vertical-align:top;
     width:29px;
     height:24px;
     border-right:0;

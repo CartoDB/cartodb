@@ -5,7 +5,7 @@ module CartoDB
     class << self
       attr_accessor :debug
     end
-    include CartoDB::Import::Util
+    #include CartoDB::Import::Util
 
     SUPPORTED_FORMATS = %W{ .csv .shp .kml }
     OUTPUT_FILE_LOCATION = "/tmp"

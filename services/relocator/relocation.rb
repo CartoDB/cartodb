@@ -27,7 +27,7 @@ module CartoDB
       end #upload_to_remote
 
       def download
-        local.store(bundle_path, remote.fetch(url_for(bundle_path)))
+        puts local.store(bundle_path, remote.fetch(url_for(bundle_path)))
       end #download_from_remote
 
       def zip

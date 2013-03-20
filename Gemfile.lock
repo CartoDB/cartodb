@@ -13,9 +13,22 @@ GIT
     mustache-trimmer (0.2.0)
       mustache (~> 0.99.4)
 
+GIT
+  remote: https://github.com/solnic/virtus.git
+  revision: 97a161f19d20a961094112464075c284d68d35e4
+  specs:
+    virtus (1.0.0.beta1)
+      abstract_type (~> 0.0.5)
+      adamantium (~> 0.0.7)
+      backports (~> 3.0, >= 3.1.0)
+      coercible (~> 0.2)
+      descendants_tracker (~> 0.0.1)
+
 GEM
   remote: http://rubygems.org/
   specs:
+    abstract_type (0.0.5)
+      backports (~> 3.0, >= 3.0.3)
     actionmailer (3.2.2)
       actionpack (= 3.2.2)
       mail (~> 2.4.0)
@@ -43,6 +56,9 @@ GEM
     activesupport (3.2.2)
       i18n (~> 0.6)
       multi_json (~> 1.0)
+    adamantium (0.0.7)
+      backports (~> 3.0, >= 3.0.3)
+      ice_nine (~> 0.7.0)
     addressable (2.2.8)
     aequitas (0.0.2)
     airbrake (3.1.6)
@@ -54,7 +70,7 @@ GEM
       json (~> 1.4)
       nokogiri (>= 1.4.4)
       uuidtools (~> 2.1)
-    backports (2.6.7)
+    backports (3.1.1)
     bartt-ssl_requirement (1.4.2)
     builder (3.0.0)
     capybara (1.1.2)
@@ -69,6 +85,9 @@ GEM
     choice (0.1.6)
     chunky_png (1.2.7)
     coderay (1.0.8)
+    coercible (0.2.0)
+      backports (~> 3.0, >= 3.1.0)
+      descendants_tracker (~> 0.0.1)
     columnize (0.3.6)
     compass (0.12.2)
       chunky_png (~> 1.2)
@@ -130,6 +149,7 @@ GEM
       multi_xml (>= 0.5.2)
     httpauth (0.2.0)
     i18n (0.6.1)
+    ice_nine (0.7.0)
     journey (1.0.4)
     json (1.7.7)
     jwt (0.1.5)
@@ -312,9 +332,6 @@ GEM
     uuidtools (2.1.3)
     vegas (0.1.11)
       rack (>= 1.0.0)
-    virtus (0.5.4)
-      backports (~> 2.6.1)
-      descendants_tracker (~> 0.0.1)
     warden (1.2.1)
       rack (>= 1.0)
     websocket (1.0.7)
@@ -380,6 +397,7 @@ DEPENDENCIES
   sequel (= 3.42.0)
   sequel_pg (= 1.6.3)
   simplecov (= 0.7.1)
+  sinatra (= 1.3.4)
   spin (= 0.5.3)
   spreadsheet (= 0.6.5.9)
   state_machine (= 1.1.2)
@@ -390,6 +408,6 @@ DEPENDENCIES
   turbo-sprockets-rails3 (= 0.1.16)
   uglifier (~> 1.3.0)
   uuidtools
-  virtus
+  virtus!
   vizzuality-sequel-rails (= 0.3.6)!
   yajl-ruby (= 1.1.0)

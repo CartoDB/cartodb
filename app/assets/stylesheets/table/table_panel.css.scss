@@ -740,8 +740,40 @@
 
         }
 
+        .scrollpane {
+          max-height: 400px;
+          overflow: auto;
+          outline: none;
+
+          .jspContainer { overflow: hidden; position: relative; }
+          .jspPane { position: absolute; }
+          .jspVerticalBar { position: absolute; top: 0; right: 13px; width: 5px; height: 100%; background: none; z-index: 20; }
+          .jspHorizontalBar { position: absolute; bottom: 0; left: 0; width: 100%; height: 16px; background: none; }
+
+          .jspVerticalBar *,
+          .jspHorizontalBar * {
+            margin: 0;
+            padding: 0;
+          }
+
+          .jspCap { display: none; }
+          .jspHorizontalBar .jspCap { float: left; }
+          .jspTrack { background: none; position: relative; }
+          .jspDrag { background: rgba(#BBB, .5); @include border-radius(5px); position: relative; top: 0; left: 0; cursor: pointer; }
+          .jspHorizontalBar .jspTrack, .jspHorizontalBar .jspDrag { float: left; height: 100%; }
+          .jspArrow { background: none; text-indent: -20000px; display: block; cursor: pointer; }
+          .jspArrow.jspDisabled { cursor: default; background: none; }
+          .jspArrow.jspArrowUp { display:none; }
+          .jspVerticalBar .jspArrow { height: 6px; }
+          .jspHorizontalBar .jspArrow { width: 5px; float: left; height: 100%; }
+          .jspVerticalBar .jspArrow:focus { outline: none; }
+          .jspCorner { background: #eeeef4; float: left; height: 100%; }
+
+        }
+
         ul.filters {
           margin: 0 0 40px 0;
+          width: 385px;
 
           .filter {
             position:relative;
@@ -766,18 +798,18 @@
               .range  { font-size:13px; color: #4DC964; }
               .count  { font-size:13px; color: #CCCCCC; }
 
-              .title  { float: left; margin: 0 0 0 35px; }
-              .remove { float: right; }
+              .title  { float: left; margin: 0 0 0 30px; }
             }
 
             &:hover .remove { @include opacity(1); }
 
             .remove {
+              float: right;
               display:block;
               @include opacity(0);
 
               @include size(12px);
-              @include position(15px, 10px, false, false);
+              @include position(20px, 22px, false, false);
               @include simple-transition(opacity, 150ms);
 
               background: image-url('icons/remove_filter.png') no-repeat;
@@ -819,7 +851,7 @@
 
             .scroll {
               width: 380px;
-              max-height: 200px;
+              max-height: 167px;
               overflow: hidden;
               outline:none;
             }
@@ -867,7 +899,7 @@
           .options {
             position:relative;
             width: 301px;
-            margin: 1px 0 0 35px;
+            margin: 1px 0 0 30px;
             clear:both;
             z-index: 100;
 
@@ -875,7 +907,20 @@
 
               float:left;
 
-              .switch { @include inline-block(); }
+              .switch { // small switch
+                @include inline-block();
+                @include size(21px, 12px);
+                margin:2px 0 0 0;
+
+                span.handle {
+                  @include position(0, false, false, 9px);
+                  @include size(10px);
+                }
+
+                &.enabled  span.handle { left:9px; }
+                &.disabled span.handle { left:1px; }
+
+              }
 
               label {
                 cursor: pointer;
@@ -916,12 +961,11 @@
                 &:active { background-position: 50% 10px;  }
               }
             }
-
           }
 
           .items {
             text-align:left;
-            margin: 0 0 0 35px;
+            margin: 0 0 0 30px;
             width: 300px;
 
             li {

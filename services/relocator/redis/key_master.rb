@@ -19,9 +19,13 @@ module CartoDB
           "rails:users:#{username}"
         end #user_metadata
 
-        def threshold(user_id )
+        def threshold(user_id)
           "rails:users:#{user_id}:queries"
         end #thresold
+
+        def map_style_metadata(user_id)
+          "*map_style|*_user_#{user_id}_db|*"
+        end #map_style_metadata
       end # KeyMaster
     end # Redis
   end # Relocator

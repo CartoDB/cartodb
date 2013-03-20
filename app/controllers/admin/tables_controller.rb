@@ -58,8 +58,17 @@ class Admin::TablesController < ApplicationController
     if @table.blank? || @table.private?
       head :forbidden
     else
-      render :layout => false
+      respond_to do |format|
+        format.html { render :layout => false }
+        format.js { render 'embed_map.js.erb', :content_type => 'application/javascript' }
+      end
     end
+  end
+
+  def track_embed
+    response.headers['X-Cache-Channel'] = "embeds_google_analytics"
+    response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
+    render 'track.html.erb', :layout => false
   end
 
   private

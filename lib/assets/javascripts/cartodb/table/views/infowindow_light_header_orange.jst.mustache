@@ -5,7 +5,7 @@
       {{^index}}
         {{#title}}<h4>{{title}}</h4>{{/title}}
         {{#value}}
-          <h1 {{#loading}}class="loading"{{/loading}}>
+          <h1 {{#type}}class="{{ type }}"{{/type}}>
             {{#url}}
               <a href="{{ url }}" target="_blank">{{ value }}</a>
             {{/url}}

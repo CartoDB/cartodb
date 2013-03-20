@@ -45,16 +45,16 @@ describe Backend::Redis do
       retrieved_data.keys.must_include 'id'
     end
 
-    it 'sets key expiration in milliseconds if expiration option passed' do
+    it 'sets key expiration in seconds if expiration option passed' do
       data        = { id: 5 }
       key         = data.fetch(:id)
-      expiration  = 1000
+      expiration  = 1
       
       @repository.store(key, data, expiration: expiration)
       retrieved_data = @repository.fetch(key)
       retrieved_data.keys.must_include 'id'
       @connection.get(key).wont_be_nil
-      sleep(expiration.to_f / 1000.to_f)
+      sleep(expiration.to_f + 1.0 / 1.0)
       @connection.get(key).must_be_nil
     end
   end #store

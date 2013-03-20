@@ -1,53 +1,47 @@
 # coding: UTF-8
 require 'iconv'
+require_relative './decompressors/kmz'
+require_relative './decompressors/unp'
+require_relative './preprocessors/gpx'
+require_relative './preprocessors/json'
+require_relative './preprocessors/kml'
+require_relative './preprocessors/xls'
+
+require_relative './loaders/csv'
+require_relative './loaders/exxxxppp'
+require_relative './loaders/osm'
+require_relative './loaders/shp'
+require_relative './loaders/sql'
+require_relative './loaders/tif'
 
 module CartoDB
-
   class Importer
-
-    class << self
-      attr_accessor :debug
-    end
-
-    include CartoDB::Import::Util
-
-    @@debug = true
     RESERVED_COLUMN_NAMES = %W{ oid tableoid xmin cmin xmax cmax ctid }
     SUPPORTED_FORMATS     = %W{ .csv .shp .ods .xls .xlsx .tif .tiff .kml .kmz .js .json .tar .gz .tgz .osm .bz2 .geojson .gpx .json .sql }
 
-    attr_accessor :import_from_file,
-      :db_configuration,
-      :db_connection,
-      :append_to_table,
-      :suggested_name,
-      :ext
-    attr_reader   :table_created,
-      :force_name
+    attr_accessor :import_from_file, :db_configuration, :db_connection,
+                  :append_to_table, :suggested_name, :ext
+    attr_reader   :force_name
 
     # Initialiser has to get the file in a standard location on the filesystem
     def initialize(options = {})
       @entries          = [] #will contain all files created on disk
       @table_entries    = [] #will contain all tables attempted to be created on disk
-      @python_bin_path  = `which python`.strip
-      @psql_bin_path    = `which psql`.strip
       @runlog           = OpenStruct.new :log => [], :stdout => [], :err => []
-      @@debug           = options[:debug]
-      @data_import_id   = options[:data_import_id]
-      @data_import      = DataImport.find(:id=>@data_import_id)
+      @data_import      = DataImport.find(id: options.fetch(:data_import_id))
       @remaining_quota  = options[:remaining_quota]
       @remaining_tables = options[:remaining_tables]
-      @append_to_table  = options[:append_to_table] || nil
+      @append_to_table  = options[:append_to_table]
+      @working_data     = nil;
       @db_configuration = options.slice :database, :username, :password, :host, :port
       @db_configuration = {:port => 5432, :host => '127.0.0.1'}.merge @db_configuration
-      @db_connection = Sequel.connect("postgres://#{@db_configuration[:username]}:#{@db_configuration[:password]}@#{@db_configuration[:host]}:#{@db_configuration[:port]}/#{@db_configuration[:database]}")
-      @working_data = nil;
+      @db_connection    = Sequel.connect("postgres://#{@db_configuration[:username]}:#{@db_configuration[:password]}@#{@db_configuration[:host]}:#{@db_configuration[:port]}/#{@db_configuration[:database]}")
 
       # Setup candidate file
       @import_from_file = options[:import_from_file]
 
       @import_from_file = options[:import_from_url] if options[:import_from_url]
 
-      raise "data_import_id can't be blank" if @data_import.blank?
       raise "import_from_file value can't be blank" if @import_from_file.blank?
 
       # Setup suggested name
@@ -109,8 +103,8 @@ module CartoDB
             @import_from_file.write res.read.force_encoding("UTF-8")
             @import_from_file.close
           end
-        rescue OpenURI::HTTPError => e
-          process_download_error(@import_from_file, e)
+        rescue OpenURI::HTTPError => exception
+          process_download_error(@import_from_file, exception)
         end
 
       else
@@ -136,7 +130,6 @@ module CartoDB
       @data_import.file_ready
     rescue => e
       @data_import.log_error(e)
-      log e.inspect
       raise e
     end
 
@@ -177,16 +170,12 @@ module CartoDB
         # A record of all file paths for cleanup
         @entries << @path
 
-        # TODO the problem with this Factory method, is that if a Zip -> KMZ/Zip
-        # it will fail because it wont know to go back and do the Decompressor
-        # stage again
+        # TODO: A Zip -> KMZ/Zip will fail because it wont know 
+        # how to go back and do the Decompressor stage again
+        decompressor  = decompressor_for(@ext)
+        import_data   = decompressor.process! if decompressor
 
-        # set our multi file handlers
-        # decompress data and update self with results
-        decompressor = CartoDB::Import::Decompressor.create(@ext, self.to_import_hash)
-        @data_import.log_update('file unzipped') if decompressor
-        import_data = decompressor.process! if decompressor
-
+        @data_import.log_update('file unzipped') if import_data
         @data_import.reload
 
         # Preprocess data and update self with results
@@ -197,13 +186,12 @@ module CartoDB
           @entries << data[:path]
           @working_data = data
           @working_data[:suggested_name] = get_valid_name(@working_data[:suggested_name])
-          preproc = CartoDB::Import::Preprocessor.create(data[:ext], self.to_import_hash)
+          preprocessor = preprocessor_for(data.fetch(:ext))
           @data_import.refresh
 
-          if preproc
-
+          if preprocessor
             begin
-              out = preproc.process!
+              out = preprocessor.process!
 
               # Return raw data if preprocessor returns false
               # For example: we don't want to run JSON preprocessor
@@ -216,9 +204,11 @@ module CartoDB
               end
             rescue
               @data_import.reload
-              errors << OpenStruct.new({ :description => @data_import.get_error_text[:title],
-                                         :stack       => @data_import.get_error_text[:what_about],
-                                         :code        => @data_import.error_code })
+              errors << OpenStruct.new(
+                description:  @data_import.get_error_text[:title],
+                stack:        @data_import.get_error_text[:what_about],
+                code:         @data_import.error_code
+              )
             end
           else
             processed_imports << data
@@ -232,9 +222,9 @@ module CartoDB
           @working_data = data
           # re-check suggested_name in the case that it has been taken by another in this import
           @working_data[:suggested_name] = @suggested_name.nil? ? get_valid_name(@working_data[:suggested_name]) : get_valid_name(@suggested_name)
-
           @data_path = data[:path]
-          loader = CartoDB::Import::Loader.create(data[:ext], self.to_import_hash)
+
+          loader = loader_for(data.fetch(:ext))
 
           if !loader
             @data_import.log_update("no importer for this type of data, #{@ext}")
@@ -248,9 +238,11 @@ module CartoDB
               @data_import.log_update("#{data[:ext]} successfully loaded")
             rescue => e
               @data_import.reload
-              errors << OpenStruct.new({ :description => @data_import.get_error_text[:title],
-                                         :stack       => @data_import.log_json,
-                                         :code        => @data_import.error_code })
+              errors << OpenStruct.new(
+                description:  @data_import.get_error_text[:title],
+                stack:        @data_import.log_json,
+                code:         @data_import.error_code
+              )
             end
           end
         end
@@ -284,12 +276,9 @@ module CartoDB
         elsif @import_from_file.is_a? Tempfile
           @import_from_file.unlink
         end
-        if @data_import
-          @data_import.save
-        end
+        @data_import.save if @data_import
       end
     end
-
 
     def drop_created_tables(table_names)
       begin
@@ -333,14 +322,10 @@ module CartoDB
     end
 
     def process_download_error(url, exception_caught)
-
       url = URI.parse(url)
-
       if url.host == 'api.openstreetmap.org'
-
         exception_caught.io.rewind
-
-        if exception_caught.io.read =~ CartoDB::Import::OSM::API_LIMIT_REACHED_ERROR_MESSAGE
+        if exception_caught.io.read =~ CartoDB::OSM::API_LIMIT_REACHED_REGEX
           @data_import.set_error_code(1009)
           raise @data_import.get_error_text[:what_about]
         end
@@ -389,6 +374,79 @@ module CartoDB
       return "http://api.openstreetmap.org/api/0.6/map?bbox=#{lon1},#{lat1},#{lon2},#{lat2}"
     end
 
-  end
+    def get_valid_name(name)
+      Table.get_valid_table_name(name, connection: @db_connection)
+    end #get_valid_name
 
-end
+    DECOMPRESSORS = {
+      tar:      CartoDB::UNP,
+      zip:      CartoDB::UNP,
+      gz:       CartoDB::UNP,
+      tgz:      CartoDB::UNP,
+      kmz:      CartoDB::KMZ
+    }
+
+    PREPROCESSORS = {
+      gpx:      CartoDB::GPX,
+      kml:      CartoDB::KML,
+      json:     CartoDB::JSON,
+      xls:      CartoDB::XLS,
+      xlsx:     CartoDB::XLS,
+      ods:      CartoDB::XLS
+    }
+
+    LOADERS = {
+      csv:      CartoDB::CSV,
+      txt:      CartoDB::CSV,
+      geojson:  CartoDB::CSV,
+      js:       CartoDB::CSV,
+      json:     CartoDB::CSV,
+      gml:      CartoDB::CSV,
+      sql:      CartoDB::SQL,
+      exxxxppp: CartoDB::Exxxxppp,
+      bz2:      CartoDB::OSM,
+      osm:      CartoDB::OSM,
+      tif:      CartoDB::TIF,
+      tiff:     CartoDB::TIF,
+      shp:      CartoDB::SHP
+    }
+
+    def decompressor_for(extension)
+      key = extension.to_s.delete('.').to_sym
+      return false unless DECOMPRESSORS.keys.include?(key)
+
+      DECOMPRESSORS.fetch(key).new(
+        data_import:    @data_import,
+        path:           @path,
+        suggested_name: @suggested_name
+      )
+    end #decompressor_for
+
+    def preprocessor_for(extension)
+      key = extension.to_s.delete('.').to_sym
+      return false unless PREPROCESSORS.keys.include?(key)
+
+      PREPROCESSORS.fetch(key).new(
+        data_import:    @data_import,
+        path:           @path,
+        working_data:   @working_data,
+        ext:            @ext
+      )
+    end #preprocessor_for
+
+    def loader_for(extension)
+      key = extension.to_s.delete('.').to_sym
+      return false unless LOADERS.keys.include?(key)
+
+      LOADERS.fetch(key).new(
+        entries:          @entries,
+        data_import:      @data_import,
+        db:               @db_connection,
+        db_configuration: @db_configuration,
+        working_data:     @working_data,
+        import_from_file: @import_from_file
+      )
+    end #preprocessor_for
+  end # Importer
+end # CartoDB
+

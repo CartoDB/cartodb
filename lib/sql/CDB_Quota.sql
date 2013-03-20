@@ -12,6 +12,7 @@ $$
   FROM information_schema.tables
   WHERE table_catalog = current_database() AND table_schema = 'public'
     AND table_name != 'spatial_ref_sys'
+    AND table_name != 'cdb_tablemetadata'
     AND table_type = 'BASE TABLE';
 $$
 LANGUAGE 'sql' VOLATILE;

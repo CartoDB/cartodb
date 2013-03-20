@@ -37,10 +37,7 @@ div.map {
     padding:8px 20px 8px 30px;
     z-index:50;
 
-    a {
-      float:left;
-      @include box-shadow(rgba(white,1) 0 0 8px 5px);
-    }
+    a {float:left;}
   }
 
   .options {
@@ -501,10 +498,11 @@ div.cartodb-edit-buttons {
   }
 
   // Edit buttons
-  div.right {width:91px; margin-top:5px;}
+  div.right {width:auto; margin-top:4px;}
 
   a.button {
-    @include inline-block();
+    float:left;
+    vertical-align:top;
     width:29px;
     height:24px;
     border-right:0;

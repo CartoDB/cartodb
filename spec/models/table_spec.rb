@@ -683,8 +683,39 @@ describe Table do
       table.records[:rows][4][:wadus].should be_nil
     end
 
-    it 'normalizes digit separators when converting from string to number',
-    normalize: true do
+    it 'nullifies the collumn when converting from boolean to date' do
+      table = create_table(user_id: @user.id)
+      table.add_column!(name: 'new', type: 'boolean')
+      table.insert_row!(new: 't')
+      table.modify_column!(name: 'new', type: 'date')
+      
+      table.records[:rows][0][:new].should be_nil
+
+      table = create_table(user_id: @user.id)
+      table.add_column!(name: 'new', type: 'boolean')
+      table.insert_row!(new: 'f')
+      table.modify_column!(name: 'new', type: 'date')
+      
+      table.records[:rows][0][:new].should be_nil
+    end
+
+    it 'nullifies the collumn when converting from number to date' do
+      table = create_table(user_id: @user.id)
+      table.add_column!(name: 'number', type: 'double precision')
+      table.insert_row!(number: 12345.67)
+      table.modify_column!(name: 'number', type: 'date')
+      
+      table.records[:rows][0][:number].should be_nil
+
+      table = create_table(user_id: @user.id)
+      table.add_column!(name: 'number', type: 'double precision')
+      table.insert_row!(number: 12345)
+      table.modify_column!(name: 'number', type: 'date')
+      
+      table.records[:rows][0][:number].should be_nil
+    end
+
+    it 'normalizes digit separators when converting from string to number' do
       table = create_table(user_id: @user.id)
       table.add_column!(name: 'balance', type: 'text')
       table.insert_row!(balance: '1.234,56')

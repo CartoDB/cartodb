@@ -14,11 +14,11 @@ module DataRepository
       def store(path, data)
         FileUtils.mkpath( File.dirname( destination_for(path) ) )
 
-        if data.respond_to?(:bucket)
+        File.open(destination_for(path), 'wb') do |file|
           data.read { |chunk| file.write(chunk)}
-        end
+        end if data.respond_to?(:bucket)
         
-        File.open(destination_for(path), 'w') do |file|
+        File.open(destination_for(path), 'wb') do |file|
           while chunk = data.gets
             file.write(chunk) 
           end

@@ -42,8 +42,8 @@ module DataRepository
 
       attr_reader :redis
 
-      def expire_in(milliseconds, key)
-        !!milliseconds && redis.pexpire(key, milliseconds)
+      def expire_in(seconds, key)
+        !!seconds && redis.expire(key, seconds)
       end #expire_in
 
       def retriever_for(key)

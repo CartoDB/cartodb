@@ -4,7 +4,7 @@ class Api::Json::ImportsController < Api::ApplicationController
 
   def index
     imports = current_user.importing_jobs
-    render json: { imports: imports.map(&:public_values) }
+    render json: { imports: imports.map(&:id), success: true }
   end
 
   def show

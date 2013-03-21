@@ -11,7 +11,6 @@ class Api::Json::ImportsController < Api::ApplicationController
     import        = DataImport[params[:id]]
     import_values = import.public_values
 
-    success = import_values[:state] != 'failure'
     render json: import_values
   end
 

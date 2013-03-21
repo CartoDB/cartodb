@@ -1,10 +1,16 @@
-# coding: UTF-8
-
+# encoding: utf-8
 require_relative '../spec_helper'
 
 describe CartoDB::Importer do
-
   context "basic functionality" do
+    it "wont set the error code if data is imported successfully" do
+      importer = create_importer 'TM_WORLD_BORDERS_SIMPL-0.3.zip'
+      results, errors = importer.import!
+
+      importer.data_import.reload
+      importer.data_import.error_code.should be nil
+    end
+
     it "should raise an error if :import_from_file option is blank" do
       lambda {
         CartoDB::Importer.new(:data_import_id => get_data_import_id)
@@ -261,6 +267,25 @@ describe CartoDB::Importer do
         results[0].import_type.should == '.csv'
       end
 
+      it 'imports a csv with a blank column' do
+        importer = create_importer 'twitters_with_blank_column.csv'
+        results, errors = importer.import!
+
+        errors.should be_empty
+        results[0].name.should == 'twitters_with_blank_column'
+        results[0].import_type.should == '.csv'
+        results[0].rows_imported.should == 7
+      end
+
+      it 'imports a csv with a column with a blank header', now: true do
+        importer = create_importer 'twitters_with_headerless_column.csv'
+        results, errors = importer.import!
+
+        errors.should be_empty
+        results[0].name.should == 'twitters_with_headerless_column'
+        results[0].import_type.should == '.csv'
+        results[0].rows_imported.should == 7
+      end
     end
 
     describe "#XLSX" do
@@ -703,11 +728,15 @@ describe CartoDB::Importer do
   before(:all) do
     @db = CartoDB::ImportDatabaseConnection.connection
     @db_opts = {:database => "cartodb_importer_test",
-                :username => "postgres", :password => '',
+                :username => "lorenzo", :password => '',
                 :host => 'localhost',
                 :port => 5432}
     create_user(:username => 'test', :email => "client@example.com", :password => "clientex", :table_quota => 100, :disk_quota => 500.megabytes)
     @user = User.first
+  end
+
+  after(:each) do
+    puts @data_import.inspect
   end
 
   after(:all) do

@@ -73,7 +73,7 @@ class DataImport < Sequel::Model
       nil
     end
     
-    Hash[PUBLIC_ATTRIBUTES.map{ |a| [a, self.send(a)] }].merge("success" => success_value)
+    Hash[PUBLIC_ATTRIBUTES.map{ |a| [a, self.send(a)] }].merge("success" => success_value, "queue_id" => self.id)
   end
 
   state_machine :initial => :preprocessing do

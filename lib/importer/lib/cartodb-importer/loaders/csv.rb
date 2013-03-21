@@ -35,6 +35,12 @@ module CartoDB
 
     def process!
       data_import.log_update("ogr2ogr #{suggested_name}")
+
+      header = []
+      ::CSV.foreach(path) { |row| header.concat row; break }
+
+      puts header.inspect
+
       import_csv_data
       error_helper(5001) if rows_imported == 0
       rename_to_the_geom if column_names.include? "wkb_geometry"
@@ -222,7 +228,6 @@ module CartoDB
         drop_geojson_column(suggested_name)
       end
     rescue => exception
-      puts exception
       column_names.delete('the_geom')
       indexer.drop(random_index_name)
       invalidate_the_geom_column(suggested_name)
@@ -259,6 +264,7 @@ module CartoDB
 
     def convert
       get_current_geojson_data.inject(Array.new) do |values, row|
+        puts row.to_s
         geojson = RGeo::GeoJSON.decode(row.fetch(:geojson), :json_parser => :json)
         values << "(ST_SetSRID(ST_GeomFromText('#{geojson.as_text}'), 4326), #{row[:cartodb_id]})" if geojson
       end

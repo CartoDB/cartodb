@@ -18,11 +18,10 @@ module CartoDB
   class Importer
     RESERVED_COLUMN_NAMES = %W{ oid tableoid xmin cmin xmax cmax ctid }
     SUPPORTED_FORMATS     = %W{ .csv .shp .ods .xls .xlsx .tif .tiff .kml .kmz
-    .js .shx .prj .js .json .tar .gz .tgz .osm .bz2 .geojson .gpx .json .sql
-    .dbf .qpj .zip }
+    .js .json .tar .gz .tgz .osm .bz2 .geojson .gpx .json .sql }
 
     attr_accessor :import_from_file, :db_configuration, :db_connection,
-                  :append_to_table, :suggested_name, :ext
+                  :append_to_table, :suggested_name, :ext, :data_import
     attr_reader   :force_name
 
     # Initialiser has to get the file in a standard location on the filesystem
@@ -229,6 +228,8 @@ module CartoDB
           loader = loader_for(data.fetch(:ext))
 
           if !loader
+            puts '=============== Setting 1002 error code'
+            puts data.fetch(:ext)
             @data_import.log_update("no importer for this type of data, #{@ext}")
             @data_import.set_error_code(1002)
           else

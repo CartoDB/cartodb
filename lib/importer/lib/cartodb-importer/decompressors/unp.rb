@@ -19,7 +19,7 @@ module CartoDB
       temporary_directory = extract(path)
 
       crawl(temporary_directory).each do |path|
-        import.push << data_for(path) if supported?(path)
+        import.push(data_for(path)) if supported?(path)
       end
 
       log("Extraction finished for file: #{path}")

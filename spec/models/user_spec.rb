@@ -410,7 +410,7 @@ describe User do
   it "should remove its user tables, layers and data imports after deletion" do
     doomed_user = create_user :email => 'doomed2@example.com', :username => 'doomed2', :password => 'doomed123'
     DataImport.create(:user_id     => doomed_user.id,
-                      :data_source => '/../db/fake_data/SHP1.zip')
+                      :data_source => '/../db/fake_data/SHP1.zip').run_import!
     doomed_user.add_layer Layer.create(:kind => 'carto')
     
     #CartoDB::Varnish.any_instance.expects(:purge).with("obj.http.X-Cache-Channel ~ #{doomed_user.database_name}.*").returns(true)

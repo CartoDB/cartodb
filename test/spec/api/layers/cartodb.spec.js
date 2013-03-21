@@ -68,75 +68,6 @@ describe('api.layers.cartodb', function() {
       return opts;
     }
 
-    xit("should add style to the tile url", function() {
-      runs(function() {
-        cartodb.createLayer(map, { kind: 'cartodb', options: { table_name:'test', tile_style: 'test', user_name: 'test', ajax: ajax} }, function(l) {
-          addFn(map, l);
-          layer = l;
-        });
-      });
-      waits(100);
-      runs(function() {
-        layer.setCartoCSS('#{{table_name}} { polygon-fill: red; }');
-        expect(JSON.parse(last_params.data).layers[0].options.cartocss).toEqual('#{{table_name}} { polygon-fill: red; }');
-
-
-        layer.setCartoCSS('#{{table_name}} { polygon-fill: red; }', '2.0.10');
-        expect(JSON.parse(last_params.data).layers[0].options.cartocss_version).toEqual('2.0.10');
-
-      });
-    });
-
-    it("should add query to the tile url", function() {
-      var last_params;
-      function ajax(params) {
-        last_params = params;
-      }
-      runs(function() {
-        cartodb.createLayer(map, { kind: 'cartodb', options: { table_name:'test', tile_style: 'test', user_name: 'test', ajax: ajax} }, function(l) {
-          addFn(map, l);
-          layer = l;
-        });
-      });
-      waits(100);
-      runs(function() {
-        layer.setQuery('select * from jaja limit 1');
-        expect(JSON.parse(last_params.data).layers[0].options.sql).toEqual('select * from jaja limit 1');
-
-        layer.setQuery(null);
-        expect(JSON.parse(last_params.data).layers[0].options.sql).toEqual('select * from test');
-      });
-
-
-    });
-
-    it("should add interaction to the grid", function() {
-      var last_params;
-      function ajax(params) {
-        params.success({
-          layergroupid: 'test'
-        });
-      }
-      runs(function() {
-        cartodb.createLayer(map, { kind: 'cartodb', options: { table_name:'test', tile_style: 'test', user_name: 'test', ajax: ajax} }, function(l) {
-          addFn(map, l);
-          layer = l;
-        });
-      });
-      waits(100);
-      runs(function() {
-        layer.setInteractivity(['cartodb_id', 'test']);
-        var t = layer._tileJSON();
-        var opts = get_url_options(t.grids[0]);
-        expect(opts.interactivity).toEqual('cartodb_id,test');
-
-        layer.setOptions({interactivity: ['cartodb_id', 'test'] });
-        var t = layer._tileJSON();
-        var opts = get_url_options(t.grids[0]);
-        expect(opts.interactivity).toEqual('cartodb_id,test');
-
-      });
-    });
 
     it("should add a infowindow", function() {
       //cdb.templates.add(new cdb.core.Template({
@@ -147,7 +78,8 @@ describe('api.layers.cartodb', function() {
             kind: 'cartodb', 
             options: { 
               table_name: 'test',
-              user_name: 'test'
+              user_name: 'test',
+              tile_style: 'tesst'
             },
             infowindow: { 
               template: '<div></div>',
@@ -173,7 +105,8 @@ describe('api.layers.cartodb', function() {
             kind: 'cartodb', 
             options: { 
               table_name: 'test',
-              user_name: 'test'
+              user_name: 'test',
+              tile_style: 'test'
             },
             infowindow: { 
               template: '<div></div>',
@@ -199,7 +132,8 @@ describe('api.layers.cartodb', function() {
             kind: 'cartodb', 
             options: { 
               table_name: 'test',
-              user_name: 'test'
+              user_name: 'test',
+              tile_style: 'test'
             },
             infowindow: { 
               template: '<div></div>',
@@ -218,7 +152,6 @@ describe('api.layers.cartodb', function() {
         expect(layer.infowindow).not.toEqual(undefined);
         expect(layer.options.interactivity).toEqual('myname,jaja,cartodb_id');
         expect(layer.options.interaction).toEqual(false);
-        expect(layer.interaction).toEqual(null);
       });
     });
 

@@ -11,6 +11,7 @@ function LayerDefinition(layerDefinition, options) {
   this.version = layerDefinition.version || '1.0.0';
   this.layers = _.clone(layerDefinition.layers);
   this.layerToken = null;
+  this.silent = false;
 }
 
 LayerDefinition.prototype = {
@@ -178,7 +179,12 @@ LayerDefinition.prototype = {
 
   onLayerDefinitionUpdated: function() {},
 
+  setSilent: function(b) {
+    this.silent = b;
+  },
+
   _definitionUpdated: function() {
+    if(this.silent) return;
     this.invalidate();
     this.onLayerDefinitionUpdated();
   },

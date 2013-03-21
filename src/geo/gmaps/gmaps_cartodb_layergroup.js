@@ -104,6 +104,7 @@ CartoDBLayerGroup.prototype.getTile = function(coord, zoom, ownerDocument) {
     var key = zoom + '/' + coord.x + '/' + coord.y;
     var i = this.cache[key] = new Image(256, 256);
     i.setAttribute('gTileKey', key);
+    i.style.opacity = this.options.opacity;
     return i;
   }
 
@@ -176,28 +177,6 @@ CartoDBLayerGroup.prototype.refreshView = function() {
 }
 CartoDBLayerGroup.prototype.onLayerDefinitionUpdated = function() {
     this.update();
-}
-
-
-CartoDBLayerGroup.prototype.setOptions = function (opts) {
-  _.extend(this.options, opts);
-
-  if (typeof opts != "object" || opts.length) {
-    throw new Error(opts + ' options has to be an object');
-  }
-
-  if(opts.interactivity) {
-    var i = opts.interactivity;
-    this.options.interactivity = i.join ? i.join(','): i;
-  }
-  if(opts.opacity !== undefined) {
-    this.setOpacity(this.options.opacity);
-  }
-
-  // Update tiles
-  if(opts.query != undefined || opts.style != undefined || opts.tile_style != undefined || opts.interactivity != undefined || opts.interaction != undefined) {
-    this.update();
-  }
 }
 
 CartoDBLayerGroup.prototype._checkLayer = function() {

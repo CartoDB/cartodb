@@ -37,7 +37,7 @@
         attribution: 'MapBox'
       }).addTo(map);
 
-      var layer = new L.CartoDBLayer({
+      /*var layer = new L.CartoDBLayer({
         tiler_domain: "localhost.lan",
         tiler_port: "8181",
         user_name: 'development',
@@ -62,8 +62,8 @@
       setTimeout(function() {
         layer.setQuery('select * from european_countries_export limit 10');
       }, 6000);
+      */
 
-      /*
       var layer = new L.CartoDBGroupLayer({
         layer_definition: {
           version: '1.0.0',
@@ -85,26 +85,33 @@
         tiler_domain: "localhost.lan",
         tiler_port: "8181",
         user_name: 'development',
-        no_cdn: true
+        no_cdn: true,
+        featureOver: function(e, pos, latlng, data, layer) {
+          console.log(layer);
+        }
       }).addTo(map);
+
+      layer.setInteraction(0, 'cartodb_id');
+      layer.setInteraction(1, 'cartodb_id');
 
       setTimeout(function() {
         layer.removeLayer(0);
-      }, 3000);
+      }, 5000);
 
-      layer.setInteraction(0, '........');
+      /*layer.setInteraction(0, '........');
       layer.setInteraction({
         '9': '....',
         '10': '....',
       });
+      */
 
       setTimeout(function() {
-        layer.addLayer({
+        /*layer.addLayer({
            sql: 'select * from ne_10m_populated_places_simple',
            cartocss: '#layer { marker-fill: #00FF00; }', 
         });
+        */
       }, 6000);
-      */
 
   /*
 

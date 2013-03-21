@@ -28,9 +28,7 @@ var CartoDBLayer = function(options) {
   var default_options = {
     query:          "SELECT * FROM {{table_name}}",
     opacity:        0.99,
-    auto_bound:     false,
     attribution:    "CartoDB",
-    debug:          false,
     visible:        true,
     added:          false,
     extra_params:   {},
@@ -43,14 +41,17 @@ var CartoDBLayer = function(options) {
       throw ('cartodb-gmaps needs at least a CartoDB table name, user_name and tile_style');
   }
 
+
   this.options.layer_definition = {
     version: this.options.layer_definition_version,
     layers: [{
       type: 'cartodb',
       options: this._getLayerDefinition()
     }]
-  }
+  };
   cdb.geo.CartoDBLayerGroupGMaps.call(this, this.options);
+
+  this.setOptions(this.options);
 
 };
 
@@ -63,31 +64,7 @@ CartoDBLayer.prototype.setQuery = function (layer, sql) {
   }
   sql = sql || 'select * from ' + this.options.table_name;
   LayerDefinition.prototype.setQuery.call(this, layer, sql);
-}
-
-CartoDBLayer.prototype.setOptions = function (opts) {
-  _.extend(this.options, opts);
-
-  if (typeof opts != "object" || opts.length) {
-    throw new Error(opts + ' options has to be an object');
-  }
-
-  if(this.options.interactivity) {
-    var i = this.options.interactivity;
-    this.options.interactivity = i.join ? i.join(','): i;
-  }
-  if(this.options.interaction) {
-    this.setInteraction(0, true);
-  }
-  if(this.options.opacity !== undefined) {
-    this.setOpacity(this.options.opacity);
-  }
-
-  // Update tiles
-  if(opts.query != undefined || opts.style != undefined || opts.tile_style != undefined || opts.interactivity != undefined || opts.interaction != undefined) {
-    this.update();
-  }
-}
+};
 
 cdb.geo.CartoDBLayerGMaps = CartoDBLayer;
 

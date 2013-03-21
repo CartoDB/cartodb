@@ -7,6 +7,12 @@ require_relative '../utils/indexer'
 module CartoDB
   class OSM
     API_LIMIT_REACHED_REGEX = %r{ou requested too many nodes}
+    TYPE_CONVERSIONS        = {
+      "line"      => "MULTILINESTRING",
+      "polygon"   => "MULTIPOLYGON",
+      "roads"     => "MULTILINESTRING",
+      "points"    => "POINT"
+    }
 
     def initialize(arguments)
       @data_import        = arguments.fetch(:data_import)
@@ -47,7 +53,6 @@ module CartoDB
       #@runlog.stdout << reg unless (reg = stdout.read).empty?
 
       valid_tables = Array.new
-      type_conversions = {"line" => "MULTILINESTRING", "polygon" => "MULTIPOLYGON", "roads" => "MULTILINESTRING", "points" => "POINT"}
       begin
         ["line", "polygon", "roads", "point"].each  do |feature|
           old_table_name = "#{random_table_prefix}_#{feature}"
@@ -70,33 +75,26 @@ module CartoDB
       payloads      = Array.new
 
       valid_tables.each do |feature|
-        @old_table_name = "#{random_table_prefix}_#{feature}"
+        old_table_name = "#{random_table_prefix}_#{feature}"
         table_name     = get_valid_name("#{suggested_name}_#{feature}")
 
         begin
-          db.run("ALTER TABLE \"#{@old_table_name}\" RENAME TO \"#{table_name}\"")
+          rename_table(old_table_name, table_name)
           #@table_created = true
-          entries.each{ |e| FileUtils.rm_rf(e) } if entries.any?
+          entries.each{ |entry| FileUtils.rm_rf(entry) } if entries.any?
 
           osm_geom_name = "way"
           geoms = db["SELECT count(*) as count from #{table_name}"].first[:count]
           unless geoms.nil? || geoms == 0
-            db.run("ALTER TABLE #{table_name} RENAME COLUMN \"#{osm_geom_name}\" TO the_geom")
-            # because the osm2pgsql importer isn't being complete about multi geom type
-            # i use this check, instead of the full geom rebuild used in the table methods
-            # to get all geoms to the same type
-            if feature == "polygon"
-              db.run("UPDATE #{table_name} SET the_geom = ST_Multi(the_geom) WHERE geometrytype(the_geom) != '#{type_conversions[feature]}' ;")
-            end
+            rename_geom_column(table_name, osm_geom_name)
+            normalize_geom(feature) if feature == "polygon"
 
             CartoDB::Indexer.new(db)
               .add(table_name, "importing_#{Time.now.to_i}_#{table_name}")
           end
 
-          begin
-            CartoDB::ColumnSanitizer.new(db, table_name).run
-          rescue Exception => msg
-            #@runlog.err << msg
+          success = CartoDB::ColumnSanitizer.new(db, table_name).run
+          unless success
             data_import.log_update("ERROR: Failed to sanitize some column names")
           end
 
@@ -132,9 +130,40 @@ module CartoDB
 
     attr_reader :data_import, :entries, :db, :db_configuration, :suggested_name
 
+    def rename_table(old_name, new_name)
+      db.run(%Q{
+        ALTER TABLE "#{old_name}"
+        RENAME TO "#{new_name}"
+      })
+    rescue
+      raise DatabaseImportError
+    end #rename_table
+
     def rows_imported_for(table_name)
       db["SELECT count(*) as count from #{table_name}"].first[:count]
     end #rows_imported
+
+    def rename_geom_column(table_name, column_name)
+      db.run(%Q{
+        ALTER TABLE #{table_name}
+        RENAME COLUMN "#{column_name}"
+        TO the_geom
+      })
+    rescue
+      raise DatabaseImportError
+    end #rename_geom_column
+
+    def normalize_geom(type)
+      # because the osm2pgsql importer isn't being complete about multi geom type
+      # i use this check, instead of the full geom rebuild used in the table methods
+      # to get all geoms to the same type
+
+      db.run(%Q{
+        UPDATE #{table_name}
+        SET the_geom = ST_Multi(the_geom)
+        WHERE geometrytype(the_geom) != '#{TYPE_CONVERSIONS.fetch(type)}'
+      })
+    end #normalize_geom_type
 
     def get_valid_name(name)
       Table.get_valid_table_name(name, connection: db)

@@ -17,7 +17,9 @@ require_relative './loaders/tif'
 module CartoDB
   class Importer
     RESERVED_COLUMN_NAMES = %W{ oid tableoid xmin cmin xmax cmax ctid }
-    SUPPORTED_FORMATS     = %W{ .csv .shp .ods .xls .xlsx .tif .tiff .kml .kmz .js .json .tar .gz .tgz .osm .bz2 .geojson .gpx .json .sql }
+    SUPPORTED_FORMATS     = %W{ .csv .shp .ods .xls .xlsx .tif .tiff .kml .kmz
+    .js .shx .prj .js .json .tar .gz .tgz .osm .bz2 .geojson .gpx .json .sql
+    .dbf .qpj }
 
     attr_accessor :import_from_file, :db_configuration, :db_connection,
                   :append_to_table, :suggested_name, :ext
@@ -265,6 +267,7 @@ module CartoDB
         @data_import.save
         return [payloads, errors]
       rescue => e
+        puts e
         @data_import.refresh
         drop_created_tables payloads.map(&:name)
         raise e

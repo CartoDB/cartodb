@@ -19,7 +19,7 @@ module CartoDB
     RESERVED_COLUMN_NAMES = %W{ oid tableoid xmin cmin xmax cmax ctid }
     SUPPORTED_FORMATS     = %W{ .csv .shp .ods .xls .xlsx .tif .tiff .kml .kmz
     .js .shx .prj .js .json .tar .gz .tgz .osm .bz2 .geojson .gpx .json .sql
-    .dbf .qpj }
+    .dbf .qpj .zip }
 
     attr_accessor :import_from_file, :db_configuration, :db_connection,
                   :append_to_table, :suggested_name, :ext

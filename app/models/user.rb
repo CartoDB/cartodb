@@ -473,7 +473,9 @@ class User < Sequel::Model
   end
 
   def importing_jobs
-    Resque::Plugins::JobTracking.running_jobs(job_tracking_identifier) + Resque::Plugins::JobTracking.pending_jobs(job_tracking_identifier)
+    DataImport.where(state: ['complete', 'failure']).invert
+      .where(user_id: self.id)
+      .where { created_at > Time.now - 6.hours }.all
   end
 
   def job_tracking_identifier

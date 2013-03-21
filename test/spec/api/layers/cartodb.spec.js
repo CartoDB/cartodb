@@ -68,7 +68,7 @@ describe('api.layers.cartodb', function() {
       return opts;
     }
 
-    it("should add style to the tile url", function() {
+    xit("should add style to the tile url", function() {
       runs(function() {
         cartodb.createLayer(map, { kind: 'cartodb', options: { table_name:'test', tile_style: 'test', user_name: 'test', ajax: ajax} }, function(l) {
           addFn(map, l);

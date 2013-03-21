@@ -34,7 +34,7 @@ describe('Opacity interaction', function() {
 
   });
 
-  it('Layer opacity should be 0.8', function() {
+  xit('Layer opacity should be 0.8', function() {
 
     waits(500);
 
@@ -48,7 +48,7 @@ describe('Opacity interaction', function() {
   });
 
 
-  it('Opacity shouldn\'t change if it is not visible', function() {
+  xit('Opacity shouldn\'t change if it is not visible', function() {
     
     waits(500);
 

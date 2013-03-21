@@ -86,7 +86,7 @@ describe('api.layers', function() {
       it("should create a layer with type", function() {
         var layer;
         runs(function() {
-          cartodb.createLayer(map, { kind: 'cartodb', options: {} }, function(l) {
+          cartodb.createLayer(map, { kind: 'cartodb', options: { table_name: 'test', tile_style: 'test', user_name: 'test' } }, function(l) {
             layer = l;
           });
         });
@@ -99,7 +99,7 @@ describe('api.layers', function() {
       it("should create a layer with options", function() {
         var layer;
         runs(function() {
-          cartodb.createLayer(map, { kind: 'cartodb', options: {} }, {query: 'select test'}, function(l) {
+          cartodb.createLayer(map, { kind: 'cartodb', options: {table_name: 'test', tile_style: 'test', user_name: 'test' } }, {query: 'select test'}, function(l) {
             layer = l;
           });
         });
@@ -147,7 +147,7 @@ describe('api.layers', function() {
             layers: [
               null,
               //{kind: 'plain', options: {} }
-              {kind: 'cartodb', options: { user_name: 'test', table: 'test', extra_params: { cache_buster: 'cb' }} }
+              {kind: 'cartodb', options: { tile_style: 'test', user_name: 'test', table_name: 'test', extra_params: { cache_buster: 'cb' }} }
             ]
           }, s).done(function(lyr) {
             layer = lyr;
@@ -169,7 +169,7 @@ describe('api.layers', function() {
             updated_at: 'jaja',
             layers: [
               null,
-              {kind: 'cartodb', options: { user_name: 'test'}, infowindow: { fields: [], template: '' } }
+              {kind: 'cartodb', options: { user_name: 'test', tile_style: 'test', table_name: 'test'}, infowindow: { fields: [], template: '' } }
             ]
           }, s).done(function(lyr) {
             layer = lyr;

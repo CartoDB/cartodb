@@ -131,37 +131,13 @@ L.CartoDBGroupLayer = L.TileLayer.extend({
       if(urls) {
         self.tilejson = urls;
         self.setUrl(self.tilejson.tiles[0]);
+        // manage interaction
+        self._reloadInteraction();
         done && done();
       } else {
         //TODO: manage error
       }
     });
-    // generate the tilejson
-
-    // check the tiles
-    //this._checkTiles();
-
-    /*
-    if(this.interaction) {
-      this.interaction.remove();
-      this.interaction = null;
-    }
-    */
-
-    // add the interaction?
-    /*
-    if (this.options.interactivity && this.options.interaction) {
-      this.interaction = wax.leaf.interaction()
-        .map(this.options.map)
-        .tilejson(this.tilejson)
-        .on('on', function(o) {
-          self._bindWaxOnEvents(self.options.map,o)
-        })
-        .on('off', function(o) {
-          self._bindWaxOffEvents()
-        });
-    }
-    */
 
   },
 

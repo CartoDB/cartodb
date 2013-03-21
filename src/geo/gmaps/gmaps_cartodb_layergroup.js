@@ -75,9 +75,6 @@ _.extend(CartoDBLayerGroup.prototype, CartoDBLayerCommon.prototype, LayerDefinit
 CartoDBLayerGroup.prototype.interactionClass = wax.g.interaction;
 
 CartoDBLayerGroup.prototype.setOpacity = function(opacity) {
-
-  this._checkLayer();
-
   if (isNaN(opacity) || opacity > 1 || opacity < 0) {
     throw new Error(opacity + ' is not a valid value, should be in [0, 1] range');
   }
@@ -148,6 +145,7 @@ CartoDBLayerGroup.prototype.update = function (done) {
       self.tilejson = urls;
       self.options.tiles = urls.tiles;
       self.cache = {};
+      self._reloadInteraction();
       self.refreshView();
       done && done();
     } else {

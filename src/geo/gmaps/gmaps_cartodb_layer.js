@@ -72,11 +72,14 @@ CartoDBLayer.prototype.setOptions = function (opts) {
     throw new Error(opts + ' options has to be an object');
   }
 
-  if(opts.interactivity) {
-    var i = opts.interactivity;
+  if(this.options.interactivity) {
+    var i = this.options.interactivity;
     this.options.interactivity = i.join ? i.join(','): i;
   }
-  if(opts.opacity !== undefined) {
+  if(this.options.interaction) {
+    this.setInteraction(0, true);
+  }
+  if(this.options.opacity !== undefined) {
     this.setOpacity(this.options.opacity);
   }
 

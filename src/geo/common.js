@@ -237,6 +237,15 @@ CartoDBLayerCommon.prototype = {
   tilesOk: function() {
   },
 
+  _reloadInteraction: function() {
+    for(var i in this.interactionEnabled) {
+      if(this.interactionEnabled[i]) {
+        this.setInteraction(i, false);
+        this.setInteraction(i, true);
+      }
+    }
+  },
+
   /**
    *  Check the tiles
    */

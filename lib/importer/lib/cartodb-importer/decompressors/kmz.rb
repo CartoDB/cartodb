@@ -22,7 +22,6 @@ module CartoDB
 
       import
     rescue => exception
-      puts exception
       raise ExtractionError
     end #process!
 
@@ -59,8 +58,7 @@ module CartoDB
     end #supported?
 
     def normalize(path)
-      filename = path.split('/').last
-      rename(filename, underscore(filename))
+      rename(path, underscore(path))
     end #normalize
 
     def underscore(filename)
@@ -80,10 +78,10 @@ module CartoDB
       path
     end #generate_tempfile
 
-    def rename(filename, normalized)
-      return normalized if filename == normalized
-      FileUtils.mv("#{path}/#{filename}", "#{path}/#{normalized}")
-      normalized
+    def rename(origin, destination)
+      return destination if origin == destination
+      FileUtils.mv(origin, destination)
+      destination
     end #rename
 
     def hidden?(name)

@@ -9,9 +9,7 @@ class Api::Json::ImportsController < Api::ApplicationController
 
   def show
     import        = DataImport[params[:id]]
-    import_values = import.public_values.merge(success: import.state != 'failure')
-
-    render json: import_values
+    render json: import.public_values
   end
 
   def create

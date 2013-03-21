@@ -65,7 +65,15 @@ class DataImport < Sequel::Model
   end
 
   def public_values
-    Hash[PUBLIC_ATTRIBUTES.map{ |a| [a, self.send(a)] }]
+    success_value = if self.state == 'failure'
+      false
+    elsif self.state == 'complete'
+      true
+    else
+      nil
+    end
+    
+    Hash[PUBLIC_ATTRIBUTES.map{ |a| [a, self.send(a)] }].merge("success" => success_value)
   end
 
   state_machine :initial => :preprocessing do

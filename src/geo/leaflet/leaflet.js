@@ -3,7 +3,7 @@
 */
 (function() {
 
-  if(typeof(L) == "undefined") 
+  if(typeof(L) == "undefined")
     return;
 
   /**
@@ -29,26 +29,37 @@
         minZoom: this.map.get('minZoom'),
         maxZoom: this.map.get('maxZoom')
       };
+
+
       if (this.map.get('bounding_box_ne')) {
         //mapConfig.maxBounds = [this.map.get('bounding_box_ne'), this.map.get('bounding_box_sw')];
       }
 
-      if(!this.options.map_object) {
+      if (!this.options.map_object) {
+
         this.map_leaflet = new L.Map(this.el, mapConfig);
 
-        // remove the "powered by leaflet" 
+        // Disable the scrollwheel
+        if (this.map.get("scrollwheel") == false) this.map_leaflet.scrollWheelZoom.disable();
+
+        // remove the "powered by leaflet"
         this.map_leaflet.attributionControl.setPrefix('');
+
       } else {
+
         this.map_leaflet = this.options.map_object;
         this.setElement(this.map_leaflet.getContainer());
+
         var c = self.map_leaflet.getCenter();
+
         self._setModelProperty({ center: [c.lat, c.lng] });
         self._setModelProperty({ zoom: self.map_leaflet.getZoom() });
+
         // unset bounds to not change mapbounds
         self.map.unset('view_bounds_sw', { silent: true });
         self.map.unset('view_bounds_ne', { silent: true });
-      }
 
+      }
 
       this.map.bind('set_view', this._setView, this);
       this.map.layers.bind('add', this._addLayer, this);
@@ -110,11 +121,11 @@
 
       // looks like leaflet dont like to change the bounds just after the inicialization
       var bounds = this.map.getViewBounds();
-      if(bounds) {
+
+      if (bounds) {
         this.showBounds(bounds);
       }
     },
-
 
     clean: function() {
       //see https://github.com/CloudMade/Leaflet/issues/1101
@@ -129,6 +140,14 @@
 
       // do not change by elder
       cdb.core.View.prototype.clean.call(this);
+    },
+
+    _setScrollWheel: function(model, z) {
+      if (z) {
+        this.map_leaflet.scrollWheelZoom.enable();
+      } else {
+        this.map_leaflet.scrollWheelZoom.disable();
+      }
     },
 
     _setZoom: function(model, z) {
@@ -167,7 +186,7 @@
       }
 
       var appending = !opts || opts.index === undefined || opts.index === _.size(this.layers);
-      // since leaflet does not support layer ordering 
+      // since leaflet does not support layer ordering
       // add the layers should be removed and added again
       // if the layer is being appended do not clear
       if(!appending) {
@@ -189,7 +208,7 @@
           }
         });
       }
-      
+
       var attribution = layer.get('attribution');
 
       if (attribution) {

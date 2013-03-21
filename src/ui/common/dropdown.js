@@ -43,7 +43,11 @@ cdb.ui.common.Dropdown = cdb.core.View.extend({
     _.defaults(this.options, this.default_options);
 
     // Dropdown template
-    this.template_base = cdb.templates.getTemplate(this.options.template_base);
+    if (this.options.template_base) {
+      this.template_base = cdb.templates.getTemplate(this.options.template_base);
+    } else if (this.options.template) {
+      this.template_base = this.options.template;
+    }
 
     // Bind to target
     $(this.options.target).bind({"click": this._handleClick});

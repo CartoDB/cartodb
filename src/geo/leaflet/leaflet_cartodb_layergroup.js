@@ -72,8 +72,6 @@ L.CartoDBGroupLayer = L.TileLayer.extend({
    */
   setOpacity: function(opacity) {
 
-    this._checkLayer();
-
     if (isNaN(opacity) || opacity>1 || opacity<0) {
       throw new Error(opacity + ' is not a valid value');
     }

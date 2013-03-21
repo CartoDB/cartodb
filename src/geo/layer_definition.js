@@ -220,7 +220,7 @@ LayerDefinition.prototype = {
       sql = layer;
       layer = 0;
     }
-    this.layers[layer].options.sql = sql;
+    this.layers[layer].options.sql = sql
     this._definitionUpdated();
   },
 

@@ -119,10 +119,7 @@ _.extend(
   {
 
   _update: function() {
-    _.extend(this.options, this.model.attributes);
-
-    this.update();
-
+    this.setOptions(this.model.attributes);
   },
 
   reload: function() {

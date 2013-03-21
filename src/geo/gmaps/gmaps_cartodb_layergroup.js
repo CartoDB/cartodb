@@ -132,10 +132,7 @@ CartoDBLayerGroup.prototype.onAdd = function () {
 };
 
 CartoDBLayerGroup.prototype.clear = function () {
-  if (this.interaction) {
-    this.interaction.remove();
-    delete this.interaction;
-  }
+  this._clearInteraction();
   self.finishLoading && self.finishLoading();
 };
 

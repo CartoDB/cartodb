@@ -129,12 +129,18 @@ CartoDBLayerCommon.prototype = {
 
     _.extend(this.options, opts);
 
+    var opts = this.options;
+
+    this.options.query = this.options.query || "select * from " + this.options.table_name;
+    if(this.options.query_wrapper) {
+      this.options.query = _.template(this.options.query_wrapper)({ sql: this.options.query });
+    }
+
     this.setSilent(true);
-    debugger;
     opts.interaction && this.setInteraction(opts.interaction);
     opts.opacity && this.setOpacity(opts.opacity);
-    opts.query && this.setQuery(opts.query);
-    opts.tile_style && this.setCartoCSS(opts.tile_style);
+    opts.query && this.setQuery(opts.query.replace(/\{\{table_name\}\}/g, this.options.table_name));
+    opts.tile_style && this.setCartoCSS(opts.tile_style.replace(new RegExp( opts.table_name, "g"), "layer0"));
     opts.cartocss && this.setCartoCSS(opts.cartocss);
     opts.interactivity && this.setInteractivity(opts.interactivity);
     this.setSilent(false);
@@ -158,10 +164,13 @@ CartoDBLayerCommon.prototype = {
 
     // extra_params?
     for (var _param in opts.extra_params) {
-       params[_param] = opts.extra_params[_param].replace(/\{\{table_name\}\}/g, opts.table_name);
+      var v = opts.extra_params[_param]
+      params[_param] = v.replace ? v.replace(/\{\{table_name\}\}/g, opts.table_name): v;
     }
     sql = sql.replace(/\{\{table_name\}\}/g, opts.table_name);
     cartocss = cartocss.replace(/\{\{table_name\}\}/g, opts.table_name);
+    cartocss = cartocss.replace(new RegExp( opts.table_name, "g"), "layer0");
+
 
     return {
       sql: sql,
@@ -260,6 +269,14 @@ CartoDBLayerCommon.prototype = {
   },
 
   tilesOk: function() {
+  },
+
+  _clearInteraction: function() {
+    for(var i in this.interactionEnabled) {
+      if(this.interactionEnabled[i]) {
+        this.setInteraction(i, false);
+      }
+    }
   },
 
   _reloadInteraction: function() {

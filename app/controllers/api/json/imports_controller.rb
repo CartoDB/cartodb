@@ -4,12 +4,11 @@ class Api::Json::ImportsController < Api::ApplicationController
 
   def index
     imports = current_user.importing_jobs
-    render json: { imports: imports }
+    render json: { imports: imports.map(&:public_values) }
   end
 
   def show
-    import        = DataImport[params[:id]]
-    render json: import.public_values
+    render json: DataImport[params[:id]].public_values
   end
 
   def create

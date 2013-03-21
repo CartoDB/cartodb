@@ -49,16 +49,12 @@ describe "Imports API" do
 
   it 'performs synchronous imports'
 
-  pending 'gets a list of all pending imports' do
-
-    thread = Thread.new do |number|
-      serve_file(Rails.root.join('spec/support/data/ESP_adm.zip')) do |url|
-        post v1_imports_url, params.merge(:url        => url,
-                                          :table_name => "wadus")
-      end
+  it 'gets a list of all pending imports' do
+    Resque.inline = false
+    serve_file(Rails.root.join('spec/support/data/ESP_adm.zip')) do |url|
+      post v1_imports_url, params.merge(:url        => url,
+                                        :table_name => "wadus")
     end
-
-    thread.join
 
     get v1_imports_url, params
 
@@ -68,7 +64,26 @@ describe "Imports API" do
     response_json.should_not be_nil
     imports = response_json['imports']
     imports.should have(1).items
+    Resque.inline = true
+  end
 
+  it "doesn't return old pending imports" do
+    Resque.inline = false
+    serve_file(Rails.root.join('spec/support/data/ESP_adm.zip')) do |url|
+      post v1_imports_url, params.merge(:url        => url,
+                                        :table_name => "wadus")
+    end
+
+    Timecop.travel Time.now + 7.hours
+    get v1_imports_url, params
+
+    response.code.should be == '200'
+
+    response_json = JSON.parse(response.body)
+    response_json.should_not be_nil
+    imports = response_json['imports']
+    imports.should have(0).items
+    Resque.inline = true
   end
 
   it 'gets the detail of an import' do

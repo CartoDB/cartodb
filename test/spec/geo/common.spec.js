@@ -22,12 +22,12 @@ describe('common', function() {
       tile_style:   "TEST",
       query: 'select jaja',
       query_wrapper: 'select * from (<%=sql%>)',
-      tile_style: 'test',
+      tile_style: '#test { polygon-fill: red; }',
       interactivity: 'jaja'
     }
     var t = common._getLayerDefinition();
     expect(t.sql).toEqual('select * from (select jaja)');
-    expect(t.cartocss).toEqual('test');
+    expect(t.cartocss).toEqual('#layer0 { polygon-fill: red; }');
     expect(t.interactivity).toEqual('jaja');
     
     common.options = {

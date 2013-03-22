@@ -37,7 +37,6 @@ module CartoDB
       data_import.log_update("ogr2ogr #{suggested_name}")
       import_csv_data
       error_helper(5001) if rows_imported == 0
-      delete_cartodb_id_column_from(suggested_name)
       rename_to_the_geom if column_names.include? "wkb_geometry"
       column_names.include?("geojson") ?  read_as_geojson : create_the_geom
 
@@ -255,12 +254,6 @@ module CartoDB
         AND geojson is not null
       }]
     end #get_current_geojson_data
-
-    def delete_cartodb_id_column_from(name)
-      return false unless column_names.include?('cartodb_id')
-      db.run(%Q{ALTER TABLE "#{name}" DROP COLUMN cartodb_id}) 
-      db.run(%Q{ALTER TABLE "#{name}" ADD COLUMN cartodb_id SERIAL})
-    end #delete_cartodb_id_column
 
     def massaged_geojson
       get_current_geojson_data.inject(Array.new) do |values, row|

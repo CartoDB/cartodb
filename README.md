@@ -21,17 +21,15 @@ quick start
         <script src="http://libs.cartocdn.com/cartodb.js/v2/cartodb.js"></script>
 
         <!-- use these cartodb.css links if you are using https -->
-        <!--
 
-        <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/themes/css/cartodb.css" />
+        <!--link rel="stylesheet" href="https://d3voyrscnb0slx.cloudfront.net/cartodb.js/v2/themes/css/cartodb.css" /-->
         <!--[if lte IE 8]>
-            <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/themes/css/cartodb.ie.css" />
+            <!--link rel="stylesheet" href="https://d3voyrscnb0slx.cloudfront.net/cartodb.js/v2/themes/css/cartodb.ie.css" /-->
         <![endif]-->
 
-        -->
 
         <!-- use this cartodb.js link if you are using https -->
-        <!-- script src="http://d3voyrscnb0slx.cloudfront.net/cartodb.js/v2/cartodb.js"></script -->
+        <!-- script src="https://d3voyrscnb0slx.cloudfront.net/cartodb.js/v2/cartodb.js"></script -->
     ```
 
 

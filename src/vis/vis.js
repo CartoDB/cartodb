@@ -136,12 +136,12 @@ var Vis = cdb.core.View.extend({
     }
 
     var scrollwheel = true;
+    
+    options = options || {};
 
-    if(options) {
-      this._applyOptions(data, options);
-      this.cartodb_logo = options.cartodb_logo;
-      scrollwheel       = options.scrollwheel;
-    }
+    this._applyOptions(data, options);
+    this.cartodb_logo = options.cartodb_logo;
+    scrollwheel       = options.scrollwheel;
 
     // map
     data.maxZoom || (data.maxZoom = 20);

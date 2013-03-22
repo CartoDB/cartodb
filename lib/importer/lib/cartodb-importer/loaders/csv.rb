@@ -1,236 +1,270 @@
+# encoding: utf-8
 require 'iconv'
+require_relative '../utils/column_sanitizer'
+
 module CartoDB
-  module Import
-    class CSV < CartoDB::Import::Loader
+  class CSV
+    LATITUDE_POSSIBLE_NAMES   = "'latitude','lat','latitudedecimal','latitud','lati','decimallatitude','decimallat'"
+    LONGITUDE_POSSIBLE_NAMES  = "'longitude','lon','lng','longitudedecimal','longitud','long','decimallongitude','decimallon'"
+    ERRORS = {
+      5001 => {
+        description:  "ERROR: no data could be imported from file",
+        exception:    "empty table"
+      },
+      5002 => {
+        description:  "ERROR: data contains reserved column names",
+        exception:    nil
+      },
+      3006 => {
+        description: "ERROR: failed to import data to database",
+        exception:    nil
+      }
+    }
 
-      register_loader :csv
-      register_loader :txt
-      register_loader :geojson
-      register_loader :js
-      register_loader :json
-      register_loader :gml
-      #register_loader :kml
+    def initialize(arguments)
+      @db                 = arguments.fetch(:db)
+      @db_configuration   = arguments.fetch(:db_configuration)
+      @data_import        = arguments.fetch(:data_import)
+      working_data        = arguments.fetch(:working_data)
+      @path               = working_data.fetch(:path)
+      @suggested_name     = working_data.fetch(:suggested_name)
+      @extension          = working_data.fetch(:ext)
+      @import_type        = working_data.fetch(:import_type, @extension)
+      @indexer            = CartoDB::Indexer.new(@db)
+    end #initialize
 
-      def process!
-        begin
-          @data_import = DataImport.find(:id=>@data_import_id)
+    def process!
+      data_import.log_update("ogr2ogr #{suggested_name}")
+      import_csv_data
+      error_helper(5001) if rows_imported == 0
+      rename_to_the_geom if column_names.include? "wkb_geometry"
+      column_names.include?("geojson") ?  read_as_geojson : create_the_geom
 
-          # run Chardet + Iconv
-          encoding_to_try = fix_encoding
-
-          @data_import.log_update("ogr2ogr #{@working_data[:suggested_name]}")
-
-          ogr2ogr_bin_path = `which ogr2ogr`.strip
-          ogr2ogr_command = %Q{PGCLIENTENCODING=#{encoding_to_try} #{ogr2ogr_bin_path} -lco FID=cartodb_id -f "PostgreSQL" PG:"host=#{@db_configuration[:host]} port=#{@db_configuration[:port]} user=#{@db_configuration[:username]} dbname=#{@db_configuration[:database]}" #{@working_data[:path]} -nln #{@working_data[:suggested_name]}}
-          stdin,  stdout, stderr = Open3.popen3(ogr2ogr_command)
-
-          unless (err = stderr.read).empty?
-            @iconv ||= Iconv.new('UTF-8//IGNORE', 'UTF-8')
-            err = @iconv.iconv(err)
-            if err.downcase.include?('failure')
-              @data_import.set_error_code(3006)
-              @data_import.log_error(err)
-              @data_import.log_error("ERROR: failed to import #{@working_data[:ext].sub('.','')} to database")
-              if err.include? "already exists"
-                @data_import.set_error_code(5002)
-                @data_import.log_error("ERROR: #{@working_data[:path]} contains reserved column names")
-              end
-              @data_import.save
-            else
-              @data_import.log_update(err)
-            end
-          end
-
-          unless (reg = stdout.read).empty?
-            @runlog.stdout << reg
-          end
-
-          # Check if the file had data, if not rise an error because probably something went wrong
-          begin
-            rows_imported = @db_connection["SELECT count(*) from #{@working_data[:suggested_name]} LIMIT 1"].first[:count]
-          rescue Exception => e
-            @runlog.err << "Empty table"
-            @data_import.set_error_code(3006)
-            @data_import.log_error(err)
-            @data_import.log_error("ERROR: failed to import #{@working_data[:ext].sub('.','')} to database")
-            raise "failed to import table"
-          end
-
-          if rows_imported == 0
-            @runlog.err << "Empty table"
-            @data_import.set_error_code(5001)
-            @data_import.log_error(err)
-            @data_import.log_error("ERROR: no data could be imported from file")
-            raise "empty table"
-          end
-
-          # Importing CartoDB GeoJSON
-          # =========================
-          # Result in a column called wkb_geometry
-          # Start by renaming this column to the_geom
-          # And then the next steps all follow the methods for CSV
-          column_names = @db_connection.schema(@working_data[:suggested_name], :reload => true).map{ |s| s[0].to_s }
-          if column_names.include? "wkb_geometry"
-            @db_connection.run("ALTER TABLE #{@working_data[:suggested_name]} RENAME COLUMN wkb_geometry TO the_geom;")
-          end
-          # Importing CartoDB CSV exports
-          # ===============================
-          # * if there is a column already called the_geom
-          # * if there is geojson in it
-          # * rename column to the_geom_orig
-          # * create a new column with the correct type (Assume 4326) "the_geom_temp"
-          # * loop over table and parse geojson into postgis geometries
-          # * drop the_geom_orig
-          #
-
-          random_index_name = "importing_#{Time.now.to_i}_#{@working_data[:suggested_name]}"
-          column_names = @db_connection.schema(@working_data[:suggested_name], :reload => true).map{ |s| s[0].to_s }
-          if column_names.include? "geojson"
-            @data_import.log_update("update the_geom")
-
-            if res = @db_connection["select geojson from #{@working_data[:suggested_name]} WHERE geojson is not null and geojson != '' limit 1"].first
-              # attempt to read as geojson. If it fails, continue
-              begin
-                geojson       = RGeo::GeoJSON.decode(res[:geojson], :json_parser => :json)
-                geometry_type = geojson.geometry_type.type_name.upcase
-
-                if geometry_type
-                  # move original geometry column around
-                  @db_connection.run("SELECT AddGeometryColumn('#{@working_data[:suggested_name]}', 'the_geom', 4326, 'geometry', 2)")
-
-                  @data_import.log_update("converting GeoJSON to the_geom")
-
-                  sql_values = []
-                  @db_connection["select geojson, cartodb_id from #{@working_data[:suggested_name]} where geojson != '' and geojson is not null "].each do |res|
-                    begin
-                      geojson = RGeo::GeoJSON.decode(res[:geojson], :json_parser => :json)
-                      
-                      if geojson
-                        sql_values << "(ST_SetSRID(ST_GeomFromText('#{geojson.as_text}'), 4326), #{res[:cartodb_id]})"
-                      end
-                    rescue => e
-                      @runlog.err << "silently fail conversion #{geojson.inspect} to #{@working_data[:suggested_name]}. #{e.inspect}"
-                      @data_import.log_error("ERROR: silently fail conversion #{geojson.inspect} to #{@working_data[:suggested_name]}. #{e.inspect}")
-                    end
-                  end
-                  
-                  @db_connection.run(<<-GEOREF
-                    UPDATE #{@working_data[:suggested_name]} o SET the_geom = n.the_geom
-                      FROM ( VALUES
-                      #{sql_values.join(',')}
-                      ) AS n(the_geom, cartodb_id)
-                      WHERE o.cartodb_id = n.cartodb_id;
-                  GEOREF
-                  )
-
-                  add_index @working_data[:suggested_name], random_index_name
-
-                  column_names << 'the_geom'
-                  column_names.delete('geojson')
-                  @db_connection.run("ALTER TABLE #{@working_data[:suggested_name]} DROP COLUMN geojson;")
-                end
-              rescue => e
-                column_names.delete('the_geom')
-                drop_index random_index_name
-                @db_connection.run("ALTER TABLE #{@working_data[:suggested_name]} RENAME COLUMN the_geom TO invalid_the_geom;")
-                @runlog.err << "failed to read geojson for #{@working_data[:suggested_name]}. #{e.inspect}"
-                @data_import.log_error("ERROR: failed to read geojson for #{@working_data[:suggested_name]}. #{e.inspect}")
-              end
-            else
-              begin
-                column_names.delete('the_geom')
-                drop_index random_index_name
-                @db_connection.run("ALTER TABLE #{@working_data[:suggested_name]} RENAME COLUMN the_geom TO invalid_the_geom;")
-              rescue
-                column_names.delete('the_geom')
-                @runlog.err << "failed to convert the_geom to invalid_the_geom"
-                @data_import.log_error("ERROR: failed to convert the_geom to invalid_the_geom")
-              end
-            end
-          end
-
-          # if there is no the_geom, and there are latitude and longitude columns, create the_geom
-          unless column_names.include? "the_geom"
-
-            latitude_possible_names = "'latitude','lat','latitudedecimal','latitud','lati','decimallatitude','decimallat'"
-            longitude_possible_names = "'longitude','lon','lng','longitudedecimal','longitud','long','decimallongitude','decimallon'"
-
-            matching_latitude = nil
-            res = @db_connection["select column_name from information_schema.columns where table_name ='#{@working_data[:suggested_name]}'
-              and lower(column_name) in (#{latitude_possible_names}) LIMIT 1"]
-            if !res.first.nil?
-              matching_latitude= res.first[:column_name]
-            end
-            matching_longitude = nil
-            res = @db_connection["select column_name from information_schema.columns where table_name ='#{@working_data[:suggested_name]}'
-              and lower(column_name) in (#{longitude_possible_names}) LIMIT 1"]
-            if !res.first.nil?
-              matching_longitude= res.first[:column_name]
-            end
-
-            if matching_latitude and matching_longitude
-                @data_import.log_update("converting #{matching_latitude}, #{matching_longitude} to the_geom")
-                #we know there is a latitude/longitude columns
-                @db_connection.run("SELECT AddGeometryColumn('#{@working_data[:suggested_name]}','the_geom',4326, 'POINT', 2);")
-                #TODO
-                # reconcile the two matching_latitude regex below
-                # the first one wasn't stringent enough, but i realize
-                # the second one doesn't bother with absolute extent check
-                @db_connection.run(<<-GEOREF
-                UPDATE \"#{@working_data[:suggested_name]}\"
-                SET the_geom =
-                  ST_GeomFromText(
-                    'POINT(' || trim(\"#{matching_longitude}\") || ' ' || trim(\"#{matching_latitude}\") || ')', 4326
-                )
-                WHERE
-                trim(CAST(\"#{matching_longitude}\" AS text)) ~ '^(([-+]?(([0-9]|[1-9][0-9]|1[0-7][0-9])(\.[0-9]+)?))|[-+]?180)$'
-                AND
-                trim(CAST(\"#{matching_latitude}\" AS text))  ~
-                '^(([-+]?(([0-9]|[1-8][0-9])(\.[0-9]+)?))|[-+]?90)$'
-                GEOREF
-                )
-                add_index @working_data[:suggested_name], random_index_name
-            end
-          end
-
-          begin
-            # Sanitize column names where needed
-            sanitize_table_columns @working_data[:suggested_name]
-          rescue Exception => msg
-            @runlog.err << msg
-            @data_import.log_update("ERROR: Failed to sanitize some column names")
-          end
-
-          @table_created = true
-          @data_import.log_update("table created")
-          FileUtils.rm_rf(Dir.glob(@working_data[:path]))
-          payload = OpenStruct.new({
-                                  :name => @working_data[:suggested_name],
-                                  :rows_imported => rows_imported,
-                                  :import_type => @working_data[:import_type] ? @working_data[:import_type] : @working_data[:ext]
-                                  })
-
-          # construct return variables
-          [payload]
-        rescue => e
-          @data_import.refresh #reload incase errors were written
-          #@data_import.log_error(e)
-          log "====================="
-          log e
-          log e.backtrace
-          log "====================="
-          begin  # TODO: Do we really mean nil here? What if a table is created?
-            @db_connection.drop_table random_table_name
-          rescue # silent try to drop the table
-          end
-          begin  # TODO: Do we really mean nil here? What if a table is created?
-            @db_connection.drop_table @working_data[:suggested_name]
-          rescue # silent try to drop the table
-          end
-
-          raise e
-        end
+      unless CartoDB::ColumnSanitizer.new(db, suggested_name).run
+        data_import.log_update("ERROR: Failed to sanitize some column names")
       end
-    end
-  end
-end
+
+      data_import.log_update("table created")
+
+      FileUtils.rm_rf(Dir.glob(path))
+      [OpenStruct.new(
+        name:           suggested_name,
+        rows_imported:  rows_imported,
+        import_type:    import_type
+      )]
+    rescue => exception
+      puts exception
+      #data_import.refresh
+      begin
+        db.drop_table random_table_name
+      rescue => exception
+        db.drop_table suggested_name
+        raise exception
+      end
+      raise exception
+    end #process!
+
+    private
+
+    attr_reader :db, :db_configuration, :data_import, :iconv,
+                :path, :suggested_name, :extension, :import_type, :indexer
+
+    def random_index_name
+      @random_index_name ||= "importing_#{Time.now.to_i}_#{suggested_name}"
+    end #random_index_name
+
+    def handle_ogr2ogr_errors(err)
+      err = Iconv.new('UTF-8//IGNORE', 'UTF-8').iconv(err).downcase
+
+      if err.include?('failure') && err.include?('already exists')
+        error_helper(5002)
+      elsif err.downcase.include?('failure')
+        error_helper(3006)
+      else
+        data_import.log_update(err)
+      end
+      data_import.save
+    end #handle_ogr2ogr_errors
+
+    def rows_imported
+      @rows_imported ||= db[%Q{
+        SELECT count(*)
+        FROM #{suggested_name}
+        LIMIT 1
+      }].first.fetch(:count)
+    rescue Exception => e
+      data_import.set_error_code(3006)
+      data_import.log_error("ERROR: failed to import #{extension.sub('.','')} to database")
+      raise "failed to import table"
+    end #rows_imported
+
+    def create_the_geom
+      res       = get_latitude(suggested_name.dup)
+      latitude  = res.first[:column_name] unless res.first.nil?
+      res       = get_longitude(suggested_name.dup)
+      longitude = res.first[:column_name] unless res.first.nil?
+      return false unless latitude && longitude
+
+      data_import.log_update("converting #{latitude}, #{longitude} to the_geom")
+      add_geometry_column(suggested_name)
+      georeference(latitude, longitude)
+      indexer.add(suggested_name, random_index_name)
+    end #create_the_geom
+  
+    def get_latitude(name)
+      db[%Q{
+        SELECT column_name
+        FROM information_schema.columns
+        WHERE table_name ='#{name}'
+        AND lower(column_name) in (#{LATITUDE_POSSIBLE_NAMES})
+        LIMIT 1
+      }]
+    end #get_latitude
+
+    def get_longitude(name)
+      db[%Q{
+        SELECT column_name 
+        FROM information_schema.columns
+        WHERE table_name ='#{name}'
+        AND lower(column_name) in (#{LONGITUDE_POSSIBLE_NAMES})
+        LIMIT 1
+      }]
+    end #get_longitude
+
+    def add_geometry_column(name)
+      db.run(%Q{
+        SELECT AddGeometryColumn('#{name}', 'the_geom', 4326, 'POINT', 2)
+      })
+    end #add_geometry_column
+
+    def georeference(latitude, longitude)
+      #TODO
+      # reconcile the two matching_latitude regex below
+      # the first one wasn't stringent enough, but i realize
+      # the second one doesn't bother with absolute extent check
+      db.run(%Q{
+        UPDATE "#{suggested_name}" 
+        SET the_geom = ST_GeomFromText(
+            'POINT(' || trim("#{longitude}") || ' ' ||
+              trim("#{latitude}") || ')', 4326
+        )
+        WHERE trim(CAST("#{longitude}" AS text)) ~ 
+          '^(([-+]?(([0-9]|[1-9][0-9]|1[0-7][0-9])(\.[0-9]+)?))|[-+]?180)$'
+        AND trim(CAST("#{latitude}" AS text))  ~
+          '^(([-+]?(([0-9]|[1-8][0-9])(\.[0-9]+)?))|[-+]?90)$'
+      })
+    end #georeference
+
+    def invalidate_the_geom_column(name)
+      db.run(%Q{
+        ALTER TABLE #{name}
+        RENAME COLUMN the_geom TO invalid_the_geom
+      })
+    rescue
+      column_names.delete('the_geom')
+      data_import.log_error("ERROR: failed to convert the_geom to invalid_the_geom")
+    end #invalidate_the_geom_column
+
+    def drop_geojson_column(name)
+      db.run(%Q{ALTER TABLE #{name} DROP COLUMN geojson})
+    end #drop_geojson_column
+
+    def column_names
+      db.schema(suggested_name, :reload => true).map{ |s| s[0].to_s }
+    end #column_names
+
+    def import_csv_data
+      encoding          = EncodingConverter.new(path).run
+      ogr2ogr_bin_path  = `which ogr2ogr`.strip
+      ogr2ogr_command   = 
+        %Q{PGCLIENTENCODING=#{encoding} #{ogr2ogr_bin_path} } +
+        %Q{-lco FID=cartodb_id -f "PostgreSQL" } +  
+        %Q{PG:"host=#{db_configuration[:host]} } +
+        %Q{port=#{db_configuration[:port]} } +
+        %Q{user=#{db_configuration[:username]} } +
+        %Q{dbname=#{db_configuration[:database]}" } +
+        %Q{#{path} -nln #{suggested_name}}
+
+      stdin,  stdout, stderr = Open3.popen3(ogr2ogr_command)
+      err = stderr.read
+      handle_ogr2ogr_errors(err) unless err.empty?
+    end #import_csv_data
+
+    def error_helper(error_code)
+      exception_message = ERRORS.fetch(error_code).fetch(:exception, nil)
+      data_import.set_error_code(error_code)
+      data_import.log_error(ERRORS.fetch(error_code).fetch(:description))
+      raise exception_message if exception_message
+    end #error_helper
+
+    def rename_to_the_geom
+      db.run(%Q{
+        ALTER TABLE #{suggested_name} 
+        RENAME COLUMN wkb_geometry TO the_geom
+      })
+    end #rename_to_the_geom
+
+    def read_as_geojson
+      data_import.log_update("update the_geom")
+      geojson       = RGeo::GeoJSON.decode(geojson_data[:geojson], json_parser: :json)
+      geometry_type = geojson.geometry_type.type_name.upcase
+
+      if geometry_type
+        # move original geometry column around
+        db.run("SELECT AddGeometryColumn('#{suggested_name}', 'the_geom', 4326, 'geometry', 2)")
+
+        data_import.log_update("converting GeoJSON to the_geom")
+
+        update_the_geom_with(convert)
+        indexer.add(suggested_name, random_index_name)
+        column_names << 'the_geom'
+        column_names.delete('geojson')
+        drop_geojson_column(suggested_name)
+      end
+    rescue => exception
+      puts exception
+      column_names.delete('the_geom')
+      indexer.drop(random_index_name)
+      invalidate_the_geom_column(suggested_name)
+      data_import.log_error("ERROR: failed to read geojson for #{suggested_name}. #{exception.inspect}")
+    end #read_as_geojson
+
+    def update_the_geom_with(values)
+      db.run(%Q{
+        UPDATE #{suggested_name} o SET the_geom = n.the_geom
+        FROM (VALUES #{values.join(',')})
+        AS n(the_geom, cartodb_id)
+        WHERE o.cartodb_id = n.cartodb_id
+      })
+    end #update_the_geom_with
+
+    def geojson_data
+      db[%Q{
+        SELECT geojson 
+        FROM #{suggested_name}
+        WHERE geojson is not null
+        AND geojson != ''
+        LIMIT 1
+      }].first
+    end #geojson_data
+    
+    def get_current_geojson_data
+      db[%Q{
+        SELECT geojson, cartodb_id
+        FROM #{suggested_name}
+        WHERE geojson != ''
+        AND geojson is not null
+      }]
+    end #get_current_geojson_data
+
+    def convert
+      get_current_geojson_data.inject(Array.new) do |values, row|
+        geojson = RGeo::GeoJSON.decode(row.fetch(:geojson), :json_parser => :json)
+        values << "(ST_SetSRID(ST_GeomFromText('#{geojson.as_text}'), 4326), #{row[:cartodb_id]})" if geojson
+      end
+    rescue => exception
+      data_import.log_error("ERROR: silently fail conversion #{geojson.inspect} to #{suggested_name}. #{exception.inspect}")
+    end #convert
+  end # CSV
+end # CartoDB
+

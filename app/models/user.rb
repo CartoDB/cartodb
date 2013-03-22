@@ -463,13 +463,19 @@ class User < Sequel::Model
     load_cartodb_functions
     puts "Rebuilding quota trigger in db '#{database_name}' (#{username})"
     tables.all.each do |table|
-      table.add_python
-      table.set_trigger_check_quota
+      begin
+        table.add_python
+        table.set_trigger_check_quota
+      rescue Sequel::DatabaseError => e
+        next if e.message =~ /.*does not exist\s*/
+      end
     end
   end
 
   def importing_jobs
-    Resque::Plugins::JobTracking.running_jobs(job_tracking_identifier) + Resque::Plugins::JobTracking.pending_jobs(job_tracking_identifier)
+    DataImport.where(state: ['complete', 'failure']).invert
+      .where(user_id: self.id)
+      .where { created_at > Time.now - 6.hours }.all
   end
 
   def job_tracking_identifier

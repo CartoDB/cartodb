@@ -1,10 +1,16 @@
-# coding: UTF-8
-
+# encoding: utf-8
 require_relative '../spec_helper'
 
 describe CartoDB::Importer do
-
   context "basic functionality" do
+    it "wont set the error code if data is imported successfully" do
+      importer = create_importer 'TM_WORLD_BORDERS_SIMPL-0.3.zip'
+      results, errors = importer.import!
+
+      importer.data_import.reload
+      importer.data_import.error_code.should be nil
+    end
+
     it "should raise an error if :import_from_file option is blank" do
       lambda {
         CartoDB::Importer.new(:data_import_id => get_data_import_id)
@@ -261,7 +267,36 @@ describe CartoDB::Importer do
         results[0].import_type.should == '.csv'
       end
 
-    end
+      it 'imports a csv with a blank column' do
+        importer = create_importer 'twitters_with_blank_column.csv'
+        results, errors = importer.import!
+
+        errors.should be_empty
+        results[0].name.should == 'twitters_with_blank_column'
+        results[0].import_type.should == '.csv'
+        results[0].rows_imported.should == 7
+      end
+
+      it 'imports a csv with a column with a blank header' do
+        importer = create_importer 'twitters_with_headerless_column.csv'
+        results, errors = importer.import!
+
+        errors.should be_empty
+        results[0].name.should == 'twitters_with_headerless_column'
+        results[0].import_type.should == '.csv'
+        results[0].rows_imported.should == 7
+      end
+
+      it 'imports a csv with an existing cartodb_id column' do
+        importer = create_importer 'nyc_subway_entrance_export.csv'
+        results, errors = importer.import!
+
+        errors.should be_empty
+        results[0].name.should == 'nyc_subway_entrance_export'
+        results[0].import_type.should == '.csv'
+        results[0].rows_imported.should == 1904
+      end
+    end # CSV
 
     describe "#XLSX" do
       it "should import a XLSX file in the given database in a table named like the file" do

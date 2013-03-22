@@ -1,6 +1,6 @@
-// cartodb.js version: 2.0.25-dev
+// cartodb.js version: 2.0.25
 // uncompressed version: cartodb.uncompressed.js
-// sha: 0e39f80320e5369a9a77987a18e2b6096978b84a
+// sha: 5750a567a417c0bc7bf6529665a02ecbd7dff770
 (function() {
   var root = this;
 
@@ -14961,7 +14961,7 @@ $(function(){
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '2.0.25-dev';
+    cdb.VERSION = '2.0.25';
 
     cdb.CARTOCSS_VERSIONS = {
       '2.0.0': '',
@@ -21074,12 +21074,12 @@ var Vis = cdb.core.View.extend({
     }
 
     var scrollwheel = true;
+    
+    options = options || {};
 
-    if(options) {
-      this._applyOptions(data, options);
-      this.cartodb_logo = options.cartodb_logo;
-      scrollwheel       = options.scrollwheel;
-    }
+    this._applyOptions(data, options);
+    this.cartodb_logo = options.cartodb_logo;
+    scrollwheel       = options.scrollwheel;
 
     // map
     data.maxZoom || (data.maxZoom = 20);

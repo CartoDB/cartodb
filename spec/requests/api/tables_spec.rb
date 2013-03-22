@@ -380,7 +380,7 @@ feature "API 1.0 tables management" do
   scenario "Download table metadata" do
     data_import = DataImport.create( :user_id       => @user.id,
       :table_name    => 'elecciones2008',
-      :data_source   => '/../spec/support/data/TM_WORLD_BORDERS_SIMPL-0.3.zip')
+      :data_source   => '/../spec/support/data/TM_WORLD_BORDERS_SIMPL-0.3.zip').run_import!
 
     table1 = Table[data_import.table_id]
     get_json "#{api_table_url(table1.name)}" do |response|

@@ -1,54 +1,92 @@
+# encoding: utf-8
+require 'fileutils'
+require 'tempfile'
+require 'zip/zip'
+require 'iconv'
+require_relative '../constants'
+require_relative '../exceptions'
+
 module CartoDB
-  module Import
-    class KMZ < CartoDB::Import::Decompressor
-      #TODO: do we really need this still?
-      register_decompressor :kmz
+  class KMZ
+    def initialize(arguments)
+      @path           = arguments.fetch(:path)
+      @suggested_name = arguments.fetch(:suggested_name)
+      @log            = arguments.fetch(:log, String.new)
+      @import         = Array.new
+    end #initialize
 
-      def process!
-        log "Importing zip file: #{@path}"
-        @data_import = DataImport.find(:id=>@data_import_id)
-        @data_import.log_update("decompressing file #{@path}")
+    def process!
+      log("Extracting from file: #{path}")
+      Zip::ZipFile.foreach(path) { |entry| extract(entry) }
+      log("Extraction finished for file: #{path}")
 
-        # generate a temp file for import
-        tmp_dir = temporary_filename
+      import
+    rescue => exception
+      raise ExtractionError
+    end #process!
 
-        import_data = []
-        Zip::ZipFile.foreach(@path) do |entry|
-          name = entry.name.split('/').last
-          orig = name
-          next if name =~ /^(\.|\_{2})/
+    private
 
-          # cleans spaces out of archived file names
-          if name.include? ' '
-            name = name.gsub(' ','_')
-          end
+    attr_reader :path, :suggested_name, :import
 
-          #fixes problem of different SHP archive files with different case patterns
-          FileUtils.mv("#{path}/#{orig}", "#{path}/#{name.downcase}") unless name == orig.downcase
-          name = name.downcase
+    def extract(entry)
+      return if hidden?(entry.name)
 
-          # temporary filename. no collisions.
-          tmp_path = "#{tmp_dir}.#{name}"
+      filename       = normalize(entry.name)
+      temporary_path = "#{generate_tempfile}.#{filename}"
 
-          if CartoDB::Importer::SUPPORTED_FORMATS.include?(File.extname(name))
-            unless @suggested_name.nil?
-              suggested = @suggested_name
-            else
-              suggested = File.basename( name, File.extname(name)).sanitize
-            end
-            import_data << {
-              :ext => File.extname(name),
-              :suggested_name => suggested,
-              :path => tmp_path
-            }
-            log "Found original @ext file named #{name} in path #{@path}"
-          end
-          entry.extract(tmp_path)
-        end
+      import.push(data_for(filename, temporary_path)) if supported?(entry.name)
+      log("Found original file #{filename} in path #{temporary_path}")
+      entry.extract(temporary_path)
+    end #extract
 
-        # construct return variables
-        import_data
-      end
-    end
-  end
-end
+
+    def data_for(name, path)
+      {
+        ext:            File.extname(name),
+        suggested_name: name_from(name, suggested_name),
+        path:           path
+      }
+    end #data_for
+
+    def log(message)
+      #@log.append("KMZ: #{message}")
+    end #log
+
+    def supported?(filename)
+      Importer::SUPPORTED_FORMATS.include?(File.extname(filename))
+    end #supported?
+
+    def normalize(path)
+      rename(path, underscore(path))
+    end #normalize
+
+    def underscore(filename)
+      Iconv.new('UTF-8//IGNORE', 'UTF-8').iconv(filename)
+        .gsub(' ', '_')
+        .downcase
+    end #underscore
+
+    def name_from(name, suggested_name=nil )
+      suggested_name || File.basename(name, File.extname(name)).sanitize
+    end #name_from
+
+    def generate_tempfile
+      tempfile    = Tempfile.new("")
+      path        = tempfile.path
+      tempfile.close!
+      path
+    end #generate_tempfile
+
+    def rename(origin, destination)
+      return destination if origin == destination
+      FileUtils.mv(origin, destination)
+      destination
+    end #rename
+
+    def hidden?(name)
+      name =~ /^(\.|\_{2})/
+    end #hidden?
+  end # KMZ
+end # CartoDB
+

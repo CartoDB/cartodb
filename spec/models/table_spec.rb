@@ -642,6 +642,7 @@ describe Table do
       data_import = DataImport.create( :user_id       => @user.id,
                                     :table_name    => 'rescol',
                                     :data_source   => '/../db/fake_data/reserved_columns.csv' )
+      data_import.run_import!
 
       table.run_query("select name from table1 where cartodb_id = '#{pk}'")[:rows].first[:name].should == "name #1"
     end
@@ -683,8 +684,39 @@ describe Table do
       table.records[:rows][4][:wadus].should be_nil
     end
 
-    it 'normalizes digit separators when converting from string to number',
-    normalize: true do
+    it 'nullifies the collumn when converting from boolean to date' do
+      table = create_table(user_id: @user.id)
+      table.add_column!(name: 'new', type: 'boolean')
+      table.insert_row!(new: 't')
+      table.modify_column!(name: 'new', type: 'date')
+      
+      table.records[:rows][0][:new].should be_nil
+
+      table = create_table(user_id: @user.id)
+      table.add_column!(name: 'new', type: 'boolean')
+      table.insert_row!(new: 'f')
+      table.modify_column!(name: 'new', type: 'date')
+      
+      table.records[:rows][0][:new].should be_nil
+    end
+
+    it 'nullifies the collumn when converting from number to date' do
+      table = create_table(user_id: @user.id)
+      table.add_column!(name: 'number', type: 'double precision')
+      table.insert_row!(number: 12345.67)
+      table.modify_column!(name: 'number', type: 'date')
+      
+      table.records[:rows][0][:number].should be_nil
+
+      table = create_table(user_id: @user.id)
+      table.add_column!(name: 'number', type: 'double precision')
+      table.insert_row!(number: 12345)
+      table.modify_column!(name: 'number', type: 'date')
+      
+      table.records[:rows][0][:number].should be_nil
+    end
+
+    it 'normalizes digit separators when converting from string to number' do
       table = create_table(user_id: @user.id)
       table.add_column!(name: 'balance', type: 'text')
       table.insert_row!(balance: '1.234,56')
@@ -831,6 +863,7 @@ describe Table do
       data_import = DataImport.create( :user_id       => @user.id,
                                        :table_name    => 'elecciones2008',
                                        :data_source   => '/../spec/support/data/elecciones2008.csv')
+      data_import.run_import!
 
       table = Table[data_import.table_id]
       update_data = {:upo___nombre_partido=>"PSOEE"}
@@ -847,6 +880,7 @@ describe Table do
     it "should be able to insert data in rows with column names with multiple underscores" do
       data_import = DataImport.create( :user_id       => @user.id,
                                        :data_source   => '/../spec/support/data/elecciones2008.csv')
+      data_import.run_import!
 
       table = Table[data_import.table_id]
       pk = nil
@@ -943,6 +977,7 @@ describe Table do
     it "should run vacuum full" do
       data_import = DataImport.create( :user_id       => @user.id,
                                        :data_source   => '/../db/fake_data/SHP1.zip' )
+      data_import.run_import!
       table = Table[data_import.table_id]
       table.table_size.should == 2351104
     end
@@ -950,6 +985,7 @@ describe Table do
     it "should add a the_geom column after importing a CSV" do
       data_import = DataImport.create( :user_id       => @user.id,
                                        :data_source   => '/../db/fake_data/twitters.csv' )
+      data_import.run_import!
 
       table = Table[data_import.table_id]
       table.name.should match(/^twitters/)
@@ -979,6 +1015,7 @@ describe Table do
 
       data_import = DataImport.create( :user_id       => @user.id,
                                        :data_source   => '/../db/fake_data/csv_no_quotes.csv' )
+      data_import.run_import!
 
       table2 = Table[data_import.table_id]
       table2.name.should == 'csv_no_quotes'
@@ -1020,6 +1057,7 @@ describe Table do
     it "should add a cartodb_id serial column as primary key when importing a file without a column with name cartodb_id" do
       data_import = DataImport.create( :user_id       => @user.id,
                                        :data_source   => '/../db/fake_data/gadm4_export.csv' )
+      data_import.run_import!
 
       table = Table[data_import.table_id]
       table_schema = @user.in_database.schema(table.name)
@@ -1036,6 +1074,7 @@ describe Table do
     it "should add an invalid_cartodb_id column when importing a file with invalid data on the cartodb_id column" do
       data_import = DataImport.create( :user_id       => @user.id,
                                        :data_source   =>  '/../db/fake_data/duplicated_cartodb_id.zip')
+      data_import.run_import!
       table = Table[data_import.table_id]
 
       table_schema = @user.in_database.schema(table.name)
@@ -1054,6 +1093,7 @@ describe Table do
     it "should return geometry types" do
       data_import = DataImport.create( :user_id       => @user.id,
                                        :data_source   => '/../db/fake_data/gadm4_export.csv' )
+      data_import.run_import!
 
       table = Table[data_import.table_id]
 
@@ -1064,6 +1104,7 @@ describe Table do
     pending "should copy cartodb_id values to a new cartodb_id serial column when importing a file which already has a cartodb_id column" do
       data_import = DataImport.create( :user_id       => @user.id,
                                        :data_source   => '/../db/fake_data/with_cartodb_id.csv' )
+      data_import.run_import!
       table = Table[data_import.table_id]
 
       check_schema(table, [
@@ -1105,6 +1146,7 @@ describe Table do
     it "should make sure it converts created_at and updated at to date types when importing from CSV" do
       data_import = DataImport.create( :user_id       => @user.id,
                                        :data_source   => '/../db/fake_data/gadm4_export.csv' )
+      data_import.run_import!
       table = Table[data_import.table_id]
 
       schema = table.schema(:cartodb_types => true)
@@ -1374,6 +1416,7 @@ describe Table do
 
       data_import = DataImport.create( :user_id       => @user.id,
                                        :migrate_table => 'exttable')
+      data_import.run_import!
 
       table = Table[data_import.table_id]
       table.name.should == 'exttable'
@@ -1415,6 +1458,7 @@ describe Table do
       delete_user_data @user
       data_import = DataImport.create( :user_id       => @user.id,
                                        :data_source   => '/../db/fake_data/twitters.csv' )
+      data_import.run_import!
       table = Table[data_import.table_id]
 
       table.name.should match(/^twitters/)
@@ -1424,6 +1468,7 @@ describe Table do
     it "file SHP1.zip" do
       data_import = DataImport.create( :user_id       => @user.id,
                                        :data_source   => '/../db/fake_data/SHP1.zip' )
+      data_import.run_import!
       table = Table[data_import.table_id]
       table.name.should == "esp_adm1"
       table.rows_counted.should == 18
@@ -1432,6 +1477,7 @@ describe Table do
     it "file SHP1.zip as kml" do
       data_import = DataImport.create( :user_id       => @user.id,
                                        :data_source   => '/../db/fake_data/SHP1.zip' )
+      data_import.run_import!
       table = Table[data_import.table_id]
       table.name.should == "esp_adm1_1"
       table.rows_counted.should == 18
@@ -1441,6 +1487,7 @@ describe Table do
       data_import = DataImport.create( :user_id       => @user.id,
                                        :table_name    => 'esp_adm1',
                                        :data_source   => '/../db/fake_data/SHP1.zip' )
+      data_import.run_import!
       table = Table[data_import.table_id]
       table.name.should == "esp_adm1_2"
       table.rows_counted.should == 18
@@ -1500,6 +1547,7 @@ describe Table do
       data_import = DataImport.create( :user_id       => @user.id,
                                        :table_name    => 'esp_adm1',
                                        :data_source   => '/../db/fake_data/with_cartodb_id.csv' )
+      data_import.run_import!
       table = Table[data_import.table_id]
       new_table = Table.find_by_subdomain(@user.username, table.id)
 
@@ -1511,6 +1559,7 @@ describe Table do
       data_import = DataImport.create( :user_id       => @user.id,
                                        :table_name    => 'esp_adm1',
                                        :data_source   => '/../db/fake_data/with_cartodb_id.csv' )
+      data_import.run_import!
       table = Table[data_import.table_id]
 
       new_table = Table.find_by_subdomain(nil, table.id)

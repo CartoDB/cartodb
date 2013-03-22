@@ -162,7 +162,8 @@
     var l = document.createElement("a");
     l.href = url
     if(l.protocol.indexOf('http') != -1) {
-        doc.write('<iframe style="display: none" src="' + l.protocol + '//' + l.hostname + ':' + l.port + '/tables/track_embed"></iframe>');
+        var port = l.port ? ':' + l.port: '';
+        doc.write('<iframe style="display: none" src="' + l.protocol + '//' + l.hostname + port + '/tables/track_embed"></iframe>');
     }
 
 })();

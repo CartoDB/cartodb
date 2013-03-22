@@ -35,14 +35,9 @@ module CartoDB
 
     def process!
       data_import.log_update("ogr2ogr #{suggested_name}")
-
-      header = []
-      ::CSV.foreach(path) { |row| header.concat row; break }
-
-      puts header.inspect
-
       import_csv_data
       error_helper(5001) if rows_imported == 0
+      delete_cartodb_id_column_from(suggested_name)
       rename_to_the_geom if column_names.include? "wkb_geometry"
       column_names.include?("geojson") ?  read_as_geojson : create_the_geom
 
@@ -59,7 +54,6 @@ module CartoDB
         import_type:    import_type
       )]
     rescue => exception
-      puts exception
       #data_import.refresh
       begin
         db.drop_table random_table_name
@@ -221,7 +215,7 @@ module CartoDB
 
         data_import.log_update("converting GeoJSON to the_geom")
 
-        update_the_geom_with(convert)
+        update_the_geom_with(massaged_geojson)
         indexer.add(suggested_name, random_index_name)
         column_names << 'the_geom'
         column_names.delete('geojson')
@@ -262,15 +256,20 @@ module CartoDB
       }]
     end #get_current_geojson_data
 
-    def convert
+    def delete_cartodb_id_column_from(name)
+      return false unless column_names.include?('cartodb_id')
+      db.run(%Q{ALTER TABLE "#{name}" DROP COLUMN cartodb_id}) 
+      db.run(%Q{ALTER TABLE "#{name}" ADD COLUMN cartodb_id SERIAL})
+    end #delete_cartodb_id_column
+
+    def massaged_geojson
       get_current_geojson_data.inject(Array.new) do |values, row|
-        puts row.to_s
         geojson = RGeo::GeoJSON.decode(row.fetch(:geojson), :json_parser => :json)
         values << "(ST_SetSRID(ST_GeomFromText('#{geojson.as_text}'), 4326), #{row[:cartodb_id]})" if geojson
       end
     rescue => exception
       data_import.log_error("ERROR: silently fail conversion #{geojson.inspect} to #{suggested_name}. #{exception.inspect}")
-    end #convert
+    end #massaged_geojson
   end # CSV
 end # CartoDB
 

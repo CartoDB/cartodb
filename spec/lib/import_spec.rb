@@ -268,6 +268,7 @@ describe CartoDB::Importer do
       end
 
       it 'imports a csv with a blank column' do
+        pending 'not implemented'
         importer = create_importer 'twitters_with_blank_column.csv'
         results, errors = importer.import!
 
@@ -278,6 +279,7 @@ describe CartoDB::Importer do
       end
 
       it 'imports a csv with a column with a blank header' do
+        pending 'not implemented'
         importer = create_importer 'twitters_with_headerless_column.csv'
         results, errors = importer.import!
 

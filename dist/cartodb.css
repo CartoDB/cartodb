@@ -96,6 +96,7 @@
     overflow-y: auto;
     overflow-x: hidden!important;
     outline: none;
+    text-align:left;
   }
 
   /* Custom gradients for scroll content */
@@ -673,13 +674,12 @@ div.cartodb-popup.header.yellow a.cartodb-popup-close-button:hover {
    *  CartoDB map style components 
    */ 
 
-
-  /* CartoDB header component */
-
   div.cartodb-header *, div.cartodb-popup * {
     -webkit-margin-before:0em;
     -webkit-margin-after:0em;
   }
+  
+  /* CartoDB header component */
 
   div.cartodb-header {
     position: relative;
@@ -716,6 +716,7 @@ div.cartodb-popup.header.yellow a.cartodb-popup-close-button:hover {
     font-size: 17px;
     color: #397DBA;
     line-height:normal;
+     text-align:left;
   }
 
   div.cartodb-header h1 a {
@@ -737,6 +738,7 @@ div.cartodb-popup.header.yellow a.cartodb-popup-close-button:hover {
     font-weight: normal;
     font-size: 13px;
     color: #999999;
+     text-align:left;
   }
 
   div.cartodb-header div.social {
@@ -958,6 +960,7 @@ div.cartodb-popup.header.yellow a.cartodb-popup-close-button:hover {
     border-bottom:1px dotted #CCCCCC;
     font:normal 14px Arial;
     color:#999999;
+    text-align:left;
     z-index:2;
   }
 
@@ -1004,6 +1007,7 @@ div.cartodb-popup.header.yellow a.cartodb-popup-close-button:hover {
     -o-border-radius: 4px;
     border-radius: 4px;
     border: 1px solid #999999;
+    text-align:left;
     z-index:5;
   }
 
@@ -1020,6 +1024,7 @@ div.cartodb-popup.header.yellow a.cartodb-popup-close-button:hover {
     font-family: "robotoregular", Helvetica, Arial, Sans-serif;
     font-size: 15px;
     color: #333;
+    text-align:left;
     text-shadow: -1px -1px 0 #FFF, 1px -1px 0 #FFF, -1px 1px 0 #FFF, 1px 1px 0 #FFF;
   }
 

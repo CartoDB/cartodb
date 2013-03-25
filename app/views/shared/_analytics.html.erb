@@ -2,7 +2,7 @@
     <script type="text/javascript">
       var _gaq = _gaq || []; 
       _gaq.push(['_setAccount', '<%= ua %>']);
-      _gaq.push(['_setDomainName', 'cartodb.com']);
+      _gaq.push(['_setDomainName', '<%= Rails.env.staging? ? "cartodb-staging.com" : "cartodb.com" %>']);
       _gaq.push(['_setAllowLinker', true]);
       _gaq.push(['_setCustomVar', 1, 'Member Type', '<%= stringified_member_type %>', 1]);
 

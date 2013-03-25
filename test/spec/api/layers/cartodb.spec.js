@@ -51,7 +51,6 @@ describe('api.layers.cartodb', function() {
       waits(100);
       runs(function() {
         _.each(methods, function(m) {
-          console.log(m, layer[m]?true:false);
           expect(layer[m]).not.toEqual(undefined);
         })
       });

@@ -876,7 +876,6 @@
 
               .legend { font-size:13px; color: #666666; }
               .range  { font-size:13px; color: #4DC964; }
-              .count  { font-size:13px; color: #CCCCCC; }
 
               .title  { float: left; margin: 0 0 0 30px; }
             }
@@ -911,6 +910,28 @@
           .header, .items {
             @include box-sizing(border-box);
           }
+
+          .header .title .controllers {
+
+            &.hidden { display: none; }
+
+            @include inline-block();
+            vertical-align: top;
+
+            li {
+              @include inline-block();
+              vertical-align: top;
+              color: #4DC964;
+
+              a {
+                color: #4DC964;
+                font-size:13px;
+
+                &.selected { display:none; }
+              }
+            }
+
+          } // controllers
 
           .fields {
             position:relative;
@@ -959,40 +980,6 @@
 
           } // data
 
-          .controllers {
-
-            &.hidden { display: none; }
-
-            float: right;
-
-            li {
-              @include inline-block();
-              color: #999999;
-              font-size:13px;
-
-              .btn {
-                @include inline-block();
-                padding: 7px 8px;
-                margin-right: 1px;
-
-                font-size: 9px;
-                color: #4DC964;
-                background:#f1f1f1;
-
-                text-transform: uppercase;
-
-                $radius: 3px;
-
-                @include simple-transition(background, 100ms);
-
-                &.selected { color: #f1f1f1; background: #4DC964; }
-
-                &.all  { @include border-radius($radius 0 0 $radius); }
-                &.none { @include border-radius(0 $radius $radius 0); }
-              }
-            }
-
-          } // controllers
 
           .options {
             position:relative;

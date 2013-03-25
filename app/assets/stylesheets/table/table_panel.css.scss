@@ -716,7 +716,20 @@
       div.filters_panel {
         @include box-sizing(border-box);
 
+        & > .white-gradient-shadow {
+
+          pointer-events: none;
+
+          &.top    { @include opacity(0); @include position(61px, false, false, 0); @extend .white-gradient-shadow-top;    z-index: 1000; }
+          &.bottom { @include opacity(1); @include position(false, false, 0px, 0);  @extend .white-gradient-shadow-bottom; z-index: 1000; }
+
+          @include size(100%, 30px);
+
+        }
+
         .content {
+          position:relative;
+
           text-align:center;
 
           .form_combo {
@@ -742,13 +755,14 @@
         }
 
         .scrollpane {
-          max-height: 400px;
           overflow: auto;
           outline: none;
 
+          &:hover .jspVerticalBar { @include opacity(1); }
+
           .jspContainer { overflow: hidden; position: relative; }
           .jspPane { position: absolute; }
-          .jspVerticalBar { position: absolute; top: 0; right: 13px; width: 5px; height: 100%; background: none; z-index: 20; }
+          .jspVerticalBar   { @include simple-transition(opacity, 150ms); @include opacity(0); position: absolute; top: 0; right: 7px; width: 5px; height: 100%; background: none; z-index: 20; }
           .jspVerticalBar * { margin: 0; padding: 0; }
           .jspCap { display: none; }
           .jspTrack { background: none; position: relative; }
@@ -760,14 +774,41 @@
 
         }
 
+        .get_sql {
+          @include box-sizing(border-box);
+          position: absolute;
+          padding: 20px 30px;
+          @include size(100%, 61px);
+          border-top: 1px solid rgba(153, 153, 153, 0.25);
+          background: #fff;
+          text-align: left;
+          bottom: 0;
+          z-index: 10000;
+
+          a {
+            float:right;
+            font-size:13px;
+            text-decoration: underline;
+          }
+        }
+
+        .add_filter {
+          display:block;
+          color: #6A9DCA;
+          font-size: 20px;
+          margin: 0 0 20px 0;
+        }
+
         ul.filters {
-          margin: 0 0 40px 0;
+          position:relative;
+
+          margin: 0 0 15px 0;
           width: 385px;
 
-          .filter {
+          .filter { // generic styles for all the filters
             position:relative;
 
-            padding: 10px 0 0 0;
+            padding: 15px 0 0 0;
 
             border-bottom: 1px solid rgba(#999999, .25);
             @include box-shadow(0px 4px 4px #EDEDED);
@@ -782,6 +823,8 @@
 
               clear:both;
               overflow:hidden;
+
+              .hidden { display: none; }
 
               .legend { font-size:13px; color: #666666; }
               .range  { font-size:13px; color: #4DC964; }
@@ -806,7 +849,8 @@
           }
         }
 
-        .filters .filter.selection {
+        // Selection filter
+        ul.filters .filter.selection {
 
           &:hover .scroll .jspVerticalBar { @include opacity(1); }
 
@@ -822,33 +866,31 @@
 
           .fields {
             position:relative;
-            margin: 0 0 40px 0;
+            margin: 0 0 29px 0;
           }
 
           .textarea {
             @include box-sizing(border-box);
-            position:absolute;
-            top: 0; left: 0;
+            @include position(0, false, false, 0);
+            @include size(100%, 80px);
             display:none;
-            height: 80px;
-            width: 100%;
             padding: 0 30px;
 
             textarea {
               @include box-sizing(border-box);
-              outline:none;
-              padding: 11px;
-              width: 100%;
-              height: 40px;
+              @include size(100%, 40px);
               max-width:100%;
               max-height:40px;
+              padding: 11px;
+
               @include border-radius(4px);
               font-size:13px;
               background:#fff;
               border: 1px solid #B7B7B7;
+              outline:none;
               resize: none;
             }
-          }
+          } // textarea
 
           .data {
             position:relative;
@@ -864,16 +906,13 @@
 
             }
 
-            .scroll {
-              width: 380px;
-              max-height: 167px;
-              overflow: hidden;
-              outline:none;
-            }
+            .scroll { width: 380px; max-height: 167px; overflow: hidden; outline:none; }
 
-          }
+          } // data
 
           .controllers {
+
+            &.hidden { display: none; }
 
             float: right;
 
@@ -886,9 +925,9 @@
                 @include inline-block();
                 padding: 7px 8px;
                 margin-right: 1px;
+
                 font-size: 9px;
                 color: #4DC964;
-
                 background:#f1f1f1;
 
                 text-transform: uppercase;
@@ -899,17 +938,12 @@
 
                 &.selected { color: #f1f1f1; background: #4DC964; }
 
-                &.all   {
-                  @include border-radius($radius 0 0 $radius);
-                }
-
-                &.none {
-                  @include border-radius(0 $radius $radius 0);
-                }
+                &.all  { @include border-radius($radius 0 0 $radius); }
+                &.none { @include border-radius(0 $radius $radius 0); }
               }
             }
 
-          }
+          } // controllers
 
           .options {
             position:relative;
@@ -939,14 +973,14 @@
               }
 
               label {
-                cursor: pointer;
                 @include inline-block();
                 font-size:13px;
                 color:#999999;
+                cursor: pointer;
               }
             }
 
-            .scrollers { display:none; float: right; }
+            .scrollers { display:none; float: right; margin: 0 3px 0 0; }
 
             .btn {
               @include inline-block();
@@ -986,11 +1020,11 @@
 
             li {
               position:relative;
+              padding: 10px 0 10px 15px;
+              margin: 0 0 5px 0;
               color: #666666;
               font-size:13px;
               border-top: 1px solid rgba(#999, .25);
-              padding: 10px 0 10px 15px;
-              margin: 0 0 5px 0;
 
               cursor: pointer;
 
@@ -998,7 +1032,6 @@
                 @include position(12px, false, false, 0);
                 content: '';
                 @include size(9px);
-
 
                 background: #fff;
                 border: none;
@@ -1019,18 +1052,9 @@
                 @include simple-transition(opacity, 220ms);
               }
 
-              &.selected:after {
-                @include opacity(0);
-              }
-              &.selected:before {
-                background: #82D992;
-                @include scale(1);
-              }
-
-              &.selected .value {
-                background: #82D992;
-                color:#fff;
-              }
+              &.selected:after  { @include opacity(0); }
+              &.selected:before { background: #82D992; @include scale(1); }
+              &.selected .value { background: #82D992; color:#fff; }
 
               .value {
                 float:right;
@@ -1045,9 +1069,10 @@
               }
             }
           }
-        }
+        } // filter.selection
 
-        .filters .filter.histogram {
+        // Histogram filter
+        ul.filters .filter.histogram {
 
           text-align:center;
 

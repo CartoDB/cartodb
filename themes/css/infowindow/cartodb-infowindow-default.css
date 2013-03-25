@@ -38,6 +38,7 @@
     overflow-y: auto;
     overflow-x: hidden!important;
     outline: none;
+    text-align:left;
   }
 
   /* Custom gradients for scroll content */

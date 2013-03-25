@@ -95,11 +95,30 @@ describe("geo.map", function() {
       var old = new cdb.geo.CartoDBLayer({});
       map.setCenter([1,0]);
       map.addLayer(old);
+
+      // prevents sync layer
+      cdb.geo.CartoDBLayer.prototype.sync = function(a, b, opts) {}
+      
       var m = map.clone();
       expect(m.layers.size()).toEqual(1);
+      expect(m.get('id')).toEqual(null);
       expect(m.get('center')).toEqual([1,0]);
     });
 
+    it("should change layers 'map_id' attribution if map id changes", function() {
+      var old = new cdb.geo.CartoDBLayer({});
+      map.setCenter([1,0]);
+      map.addLayer(old);
+
+      old.sync = function(a, b, opts) {
+        opts.success({
+          map_id: 68
+        }, 200);
+      }
+
+      map.set('id', 68);
+      expect(map.layers.models[0].get('map_id')).toBe(68);
+    });
 
     it("should set base layer", function() {
       var old = new cdb.geo.CartoDBLayer({ urlTemplate:'x', base_type: "x" });

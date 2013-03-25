@@ -205,6 +205,9 @@ cdb.geo.Map = cdb.core.Model.extend({
 
   initialize: function() {
     this.layers = new cdb.geo.Layers();
+
+    this.bind('change:id', this._setLayersMapId, this);
+
     this.layers.bind('reset', function() {
       if(this.layers.size() >= 1) {
         this._adjustZoomtoLayer(this.layers.models[0]);
@@ -227,6 +230,14 @@ cdb.geo.Map = cdb.core.Model.extend({
   setZoom: function(z) {
     this.set({
       zoom: z
+    });
+  },
+
+  _setLayersMapId: function(model) {
+    model.layers.each(function(layer){
+      layer.save({
+        map_id: model.get('id')
+      });
     });
   },
 
@@ -264,10 +275,14 @@ cdb.geo.Map = cdb.core.Model.extend({
       view_bounds_ne:   _.clone(this.attributes.view_bounds_ne),
       attribution:      _.clone(this.attributes.attribution)
     });
+
     // layers
     m.layers = this.layers.clone();
-    return m;
 
+    // Remove useless id
+    m.set("id", null);
+
+    return m;
   },
 
   /**

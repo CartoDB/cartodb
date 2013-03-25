@@ -127,7 +127,7 @@
         if(global_info.loading) {
             global_info.load_queue.push([map_id, opt.url || VIZJSON_URL, opt]);
         } else {
-          load_script(lib_url + <%= Rails.env.development? ? '/dist/' : '' %> + (opt.debug ? ( opt.version + 'cartodb.uncompressed.js'):'cartodb.js'), function() {
+          load_script(lib_url + <%= Rails.env.development? ? "'/dist/'" : "''" %> + (opt.debug ? ( opt.version + 'cartodb.uncompressed.js'):'cartodb.js'), function() {
             cartodb.createVis(map_id, opt.url || VIZJSON_URL, opt);
 
             for(var g in global_info.load_queue) {

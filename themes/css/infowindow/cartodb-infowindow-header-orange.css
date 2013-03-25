@@ -1,9 +1,8 @@
 
 /**
- *  CartoDB2.0 Infowindow header theme orange
+ *  CartoDB2.0 orange header popup styles
  */
 
-/* INFOWINDOW */
 div.cartodb-popup.header.orange div.cartodb-popup-header {
   background:url('../img/headers.png') no-repeat -756px -40px;
 }

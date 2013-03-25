@@ -39,11 +39,11 @@
 
         this.map_leaflet = new L.Map(this.el, mapConfig);
 
-        // Disable the scrollwheel
-        if (this.map.get("scrollwheel") == false) this.map_leaflet.scrollWheelZoom.disable();
-
         // remove the "powered by leaflet"
         this.map_leaflet.attributionControl.setPrefix('');
+
+        // Disable the scrollwheel
+        if (this.map.get("scrollwheel") == false) this.map_leaflet.scrollWheelZoom.disable();
 
       } else {
 
@@ -316,7 +316,9 @@
       matches = src.match(leafletRe);
 
       if (matches) {
-        return src.split(leafletRe)[0] + '/themes/css/images/';
+        var bits = src.split('/')
+        delete bits[bits.length - 1];
+        return bits.join('/') + 'themes/css/images';
       }
     }
   }());

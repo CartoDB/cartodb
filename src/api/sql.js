@@ -121,7 +121,7 @@
               '       ST_YMin(ST_Extent(the_geom)) as miny,'+
               '       ST_XMax(ST_Extent(the_geom)) as maxx,' +
               '       ST_YMax(ST_Extent(the_geom)) as maxy' +
-              ' from ({{sql}}) as subq';
+              ' from ({{{ sql }}}) as subq';
       sql = Mustache.render(sql, vars);
       this.execute(s, { sql: sql }, options)
         .done(function(result) {

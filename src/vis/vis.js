@@ -187,7 +187,7 @@ var Vis = cdb.core.View.extend({
 
     // Another div to prevent leaflet grabs the div
     var div_hack = $('<div>')
-      .addClass("map-wrapper")
+      .addClass("cartodb-map-wrapper")
       .css({
         position: "absolute",
         top: 0,
@@ -265,7 +265,8 @@ var Vis = cdb.core.View.extend({
       tiles_loader: true,
       zoomControl: true,
       loaderControl: true,
-      searchControl: false
+      searchControl: false,
+      infowindow: true
     });
     vizjson.overlays = vizjson.overlays || [];
     vizjson.layers = vizjson.layers || [];
@@ -289,7 +290,9 @@ var Vis = cdb.core.View.extend({
       }
     }
 
-    if (opt.https) {
+    this.infowindow = opt.infowindow;
+
+    if(opt.https) {
       this.https = true;
     }
 
@@ -366,10 +369,10 @@ var Vis = cdb.core.View.extend({
 
   // Set map top position taking into account header height
   setMapPosition: function() {
-    var header_h = this.$el.find(".header:not(.cartodb-popup)").outerHeight();
+    var header_h = this.$el.find(".cartodb-header:not(.cartodb-popup)").outerHeight();
 
     this.$el
-      .find("div.map-wrapper")
+      .find("div.cartodb-map-wrapper")
       .css("top", header_h);
 
     this.mapView.invalidateSize();
@@ -427,7 +430,7 @@ var Vis = cdb.core.View.extend({
             var fields = infowindowFields.fields;
             for(var j = 0; j < fields.length; ++j) {
               var f = fields[j];
-              if (interact_data[f.name] != undefined) {
+              if(interact_data[f.name] != undefined && interact_data[f.name] != "") {
                 render_fields.push({
                   title: f.title ? f.name: null,
                   value: interact_data[f.name],
@@ -454,7 +457,10 @@ var Vis = cdb.core.View.extend({
             }
           })
           infowindow.adjustPan();
-        });
+        })
+        .error(function() {
+          infowindow.setError();
+        })
 
         // Show infowindow with loading state
         infowindow
@@ -484,7 +490,8 @@ var Vis = cdb.core.View.extend({
     // add the associated overlays
     if (layerData.infowindow &&
       layerData.infowindow.fields &&
-      layerData.infowindow.fields.length > 0) {
+      layerData.infowindow.fields.length > 0 &&
+      this.infowindow) {
       this.addInfowindow(layerView);
     }
 

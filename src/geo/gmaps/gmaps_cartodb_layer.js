@@ -29,6 +29,8 @@ var CartoDBLayer = function(options) {
     query:          "SELECT * FROM {{table_name}}",
     opacity:        0.99,
     attribution:    "CartoDB",
+    opacity:        1,
+    debug:          false,
     visible:        true,
     added:          false,
     extra_params:   {},

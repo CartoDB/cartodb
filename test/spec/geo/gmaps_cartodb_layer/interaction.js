@@ -23,7 +23,6 @@ describe('Interaction funcionality', function() {
       tile_style: 'test',
       opacity:0.8,
       interactivity: "cartodb_id",
-      auto_bound: false,
       debug: true,
       interaction: true
     });

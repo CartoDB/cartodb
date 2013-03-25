@@ -322,6 +322,18 @@ describe Table do
       end
     end
 
+    it 'raises QuotaExceeded when trying to create a table while over quota' do
+      quota_in_bytes  = 524288000
+      table_quota     = 5
+      new_user        = new_user
+      user            = create_user(quota_in_bytes: quota_in_bytes, table_quota: table_quota)
+
+      5.times { |t| create_table(name: "table #{t}", user_id: user.id) }
+
+      expect { 
+        create_table(name: "table 6", user_id: user.id) 
+      }.to raise_error(CartoDB::QuotaExceeded)
+    end
   end
 
   context "redis syncs" do

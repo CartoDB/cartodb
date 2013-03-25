@@ -88,7 +88,7 @@
 
         <% if Rails.env.staging? %>
            cartodb.CDB_HOST['http'] = 'tiles-staging.cartocdn.com';
-        <% else %>
+        <% end %>
 
         cartodb.createVis('map', '<%= v1_vizjson_url(@tabla) %>', opt, function(vis) {
           // add here your code

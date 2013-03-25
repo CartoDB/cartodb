@@ -19,7 +19,6 @@ class DataImport < Sequel::Model
   REDIS_LOG_KEY_PREFIX          = 'importer'
   REDIS_LOG_EXPIRATION_IN_SECS  = 3600 * 24 * 2 # 2 days
 
-  attr_accessor :append, :migrate_table, :table_copy, :from_query
   attr_reader   :log
 
   PUBLIC_ATTRIBUTES = %W{ id user_id table_id data_type table_name state success error_code queue_id get_error_text tables_created_count }
@@ -66,7 +65,15 @@ class DataImport < Sequel::Model
   end
 
   def public_values
-    Hash[PUBLIC_ATTRIBUTES.map{ |a| [a, self.send(a)] }]
+    success_value = if self.state == 'failure'
+      false
+    elsif self.state == 'complete'
+      true
+    else
+      nil
+    end
+    
+    Hash[PUBLIC_ATTRIBUTES.map{ |a| [a, self.send(a)] }].merge("success" => success_value, "queue_id" => self.id)
   end
 
   state_machine :initial => :preprocessing do
@@ -151,7 +158,7 @@ class DataImport < Sequel::Model
     end
   end
 
-  def after_create
+  def run_import!
     begin
       if append.present?
         append_to_existing
@@ -179,6 +186,7 @@ class DataImport < Sequel::Model
         failed!
       end
 
+      self
     rescue => e
       reload
       failed!
@@ -273,7 +281,7 @@ class DataImport < Sequel::Model
     # table_names is null, since we're just appending data to
     # an existing table, not creating a new one
     self.update :table_names => nil
-    
+
     @table = Table.filter(:user_id => current_user.id, :id => table_id).first
     (imports || []).each do |import|
       migrate_existing import.name, table_name

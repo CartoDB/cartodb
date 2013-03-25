@@ -732,26 +732,41 @@
 
           text-align:center;
 
-          .form_combo {
-            margin:auto;
-            display:block;
-            width: 200px;
-
-            background: #f2f2f2;
-            padding: 10px;
-            @include border-radius(5px);
-
-            & > div { text-align: left; }
-
-          }
-
-          .no_filters {
+          .chooser {
             display:none;
-            @include size(102px, 81px);
-            background: image-url('layout/empty_filters.png') no-repeat;
-            margin: 85px auto 20px auto;
-          }
+            @include position(85px, false, false, 0);
+            @include size(100%, 200px);
 
+            text-align: center;
+            z-index: 100;
+
+            .no_filters {
+              @include size(102px, 81px);
+              background: image-url('layout/empty_filters.png') no-repeat;
+              margin: 0 auto 20px auto;
+            }
+
+            p {
+              width: 212px;
+              margin: 0 auto 17px auto;
+              padding: 0;
+              font-size: 15px;
+              color: #666666;
+            }
+
+            .form_combo {
+              margin: 0 auto 0 auto;
+              display:block;
+              width: 200px;
+
+              background: #f2f2f2;
+              padding: 10px;
+              @include border-radius(5px);
+
+              & > div { text-align: left; }
+
+            }
+          }
         }
 
         .scrollpane {
@@ -793,16 +808,49 @@
         }
 
         .add_filter {
-          display:block;
-          color: #6A9DCA;
-          font-size: 20px;
-          margin: 0 0 20px 0;
+          display:none;
+          position:relative;
+          width: 385px;
+          margin: 0 0 40px 0;
+
+          & > a.add {
+            position:relative;
+            top: 20px;
+            color: #6A9DCA;
+            font-size: 20px;
+          }
+
+          .combo {
+
+            @include box-shadow(inset 0px 4px 4px #EDEDED);
+
+            display:none;
+            @include box-sizing(border-box);
+            position:relative;
+            top: 0;
+            padding: 20px;
+
+            width: 100%;
+            background: #FFF9E7;
+
+            .remove {
+              @include inline-block();
+              @include size(12px);
+              background: image-url('icons/remove_filter.png') no-repeat;
+            }
+
+            .form_combo {
+              @include inline-block();
+            }
+          }
+
         }
 
         ul.filters {
           position:relative;
 
-          margin: 0 0 15px 0;
+          width: 385px;
+          margin: 0 0 0 0;
           width: 385px;
 
           .filter { // generic styles for all the filters
@@ -883,6 +931,7 @@
               max-height:40px;
               padding: 11px;
 
+              font-family: "Helvetica Neue", "Helvetica", Arial;
               @include border-radius(4px);
               font-size:13px;
               background:#fff;

@@ -20,7 +20,7 @@ class SessionsController < ApplicationController
 
   def destroy
     logout(request.subdomain)
-    redirect_to "http://www.cartodb.com"
+    redirect_to Cartodb.config[:account_host].blank? ? "http://www.cartodb.com" : "http://#{Cartodb.config[:account_host]}"
   end
 
   def show

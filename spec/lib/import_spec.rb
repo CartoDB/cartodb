@@ -152,7 +152,7 @@ describe CartoDB::Importer do
         results[0].import_type.should   == '.csv'
       end
 
-      it "should import a CSV file with invalid byte sequences" do
+      it "should import a CSV file with invalid byte sequences", now: true do
         importer = create_importer 'invalid_byte_seq.csv', 'invalid_byte_seq'
         results,errors = importer.import!
 
@@ -268,7 +268,6 @@ describe CartoDB::Importer do
       end
 
       it 'imports a csv with a blank column' do
-        pending 'not implemented'
         importer = create_importer 'twitters_with_blank_column.csv'
         results, errors = importer.import!
 
@@ -279,7 +278,6 @@ describe CartoDB::Importer do
       end
 
       it 'imports a csv with a column with a blank header' do
-        pending 'not implemented'
         importer = create_importer 'twitters_with_headerless_column.csv'
         results, errors = importer.import!
 
@@ -287,6 +285,8 @@ describe CartoDB::Importer do
         results[0].name.should == 'twitters_with_headerless_column'
         results[0].import_type.should == '.csv'
         results[0].rows_imported.should == 7
+        columns = @db[:twitters_with_headerless_column].columns
+        columns.grep(/header_/).empty?.should == false
       end
 
       it 'imports a csv with an existing cartodb_id column' do

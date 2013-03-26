@@ -223,7 +223,7 @@
 
       .filters_panel {
         width:100%;
-        h3 { padding-left:33px; }
+        h3 { padding-left:30px; }
       }
 
       // SQL PANEL & CARTO PANEL
@@ -875,6 +875,7 @@
               .hidden { display: none; }
 
               .legend { font-size:13px; color: #666666; }
+              .empty  { font-size:13px; color: #FF9999; }
               .range  { font-size:13px; color: #4DC964; }
 
               .title  { float: left; margin: 0 0 0 30px; }
@@ -888,7 +889,7 @@
               @include opacity(0);
 
               @include size(12px);
-              @include position(20px, 22px, false, false);
+              @include position(20px, 30px, false, false);
               @include simple-transition(opacity, 150ms);
 
               background: image-url('icons/remove_filter.png') no-repeat;
@@ -905,6 +906,9 @@
             height: 35px;
             padding-left: 0;
             padding-right: 0;
+
+            &.empty { height: auto; padding-bottom: 0; }
+
           }
 
           .header, .items {
@@ -936,6 +940,7 @@
           .fields {
             position:relative;
             margin: 0 0 29px 0;
+            &.empty { margin: 0 0 20px 0; }
           }
 
           .textarea {

@@ -25,6 +25,7 @@ module CartoDB
       attribute :id,            String
       attribute :name,          CartoDB::SnakeCaseString
       attribute :map_id,        Integer
+      attribute :derived,       Boolean
       attribute :tags,          Array[String]
       attribute :description,   String
 

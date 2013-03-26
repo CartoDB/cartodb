@@ -145,7 +145,8 @@ describe Visualization::API do
       name:         'new visualization 1' ,
       tags:         ['foo', 'bar'],
       map_id:       rand(999),
-      description:  'bogus'
+      description:  'bogus',
+      derived:      true
     }
   end #factory
 end # Visualization::API

@@ -1,7 +1,7 @@
-2.0.8
+2.0.9
 -----
 
-2.0.7
+2.0.8 (25/03/13)
 -----
 You'll have to run database migrations and reload sql functions after
 upgrating (yep, again, sorry):

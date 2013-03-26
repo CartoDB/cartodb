@@ -400,12 +400,12 @@ module CartoDB
     }
 
     LOADERS = {
-      csv:      CartoDB::CSV,
-      txt:      CartoDB::CSV,
-      geojson:  CartoDB::CSV,
-      js:       CartoDB::CSV,
-      json:     CartoDB::CSV,
-      gml:      CartoDB::CSV,
+      csv:      CartoDB::CSV::Loader,
+      txt:      CartoDB::CSV::Loader,
+      geojson:  CartoDB::CSV::Loader,
+      js:       CartoDB::CSV::Loader,
+      json:     CartoDB::CSV::Loader,
+      gml:      CartoDB::CSV::Loader,
       sql:      CartoDB::SQL,
       exxxxppp: CartoDB::Exxxxppp,
       bz2:      CartoDB::OSM,

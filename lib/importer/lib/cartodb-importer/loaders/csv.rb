@@ -53,13 +53,7 @@ module CartoDB
         import_type:    import_type
       )]
     rescue => exception
-      #data_import.refresh
-      begin
-        db.drop_table random_table_name
-      rescue => exception
-        db.drop_table suggested_name
-        raise exception
-      end
+      cleanup_tables
       raise exception
     end #process!
 
@@ -263,6 +257,14 @@ module CartoDB
     rescue => exception
       data_import.log_error("ERROR: silently fail conversion #{geojson.inspect} to #{suggested_name}. #{exception.inspect}")
     end #massaged_geojson
+
+    def cleanup_tables
+      #data_import.refresh
+      db.drop_table random_table_name
+    rescue => exception
+      db.drop_table suggested_name
+      raise exception
+    end #cleanup_tables
   end # CSV
 end # CartoDB
 

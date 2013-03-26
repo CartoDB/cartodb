@@ -1117,6 +1117,8 @@
 
           text-align:center;
 
+          .empty  { display:none; }
+
           .hist { margin: auto; position: relative; @include inline-block(); bottom: -3px; }
           .background.bar { fill: #E5E5E5; }
           .foreground.bar { fill: #4DC964; fill-opacity: .3; }

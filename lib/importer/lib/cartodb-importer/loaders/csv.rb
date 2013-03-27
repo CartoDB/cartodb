@@ -170,8 +170,10 @@ module CartoDB
       end #column_names
 
       def import_csv_data
+        header_normalizer = HeaderNormalizer.new(path)
+        header_normalizer.run if extension =~ /csv/
+
         encoding          = EncodingConverter.new(path).run
-        HeaderNormalizer.new(path, encoding: encoding).run if extension =~ /csv/
         ogr2ogr_bin_path  = `which ogr2ogr`.strip
         ogr2ogr_command   = 
           %Q{PGCLIENTENCODING=#{encoding} #{ogr2ogr_bin_path} } +
@@ -186,6 +188,7 @@ module CartoDB
         stdin,  stdout, stderr = Open3.popen3(ogr2ogr_command)
         err = stderr.read
         handle_ogr2ogr_errors(err) unless err.empty?
+        header_normalizer.remove_empty_filler_columns_in(db, suggested_name)
       rescue => exception
         puts exception
       end #import_csv_data

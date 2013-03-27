@@ -513,7 +513,7 @@ div.mamufas div.embed_window span.outer_map a.embed_zoom_in {position:absolute; 
 div.mamufas div.embed_window span.outer_map a.embed_zoom_in:hover {background-position:-31px 0; cursor:pointer;}
 div.mamufas div.embed_window span.outer_map a.embed_zoom_out {position:absolute; top:42px; left:10px; display:block; width:30px; height:32px; text-indent:-9999px; line-height:0; font-size:0; background:url('http://cartodb.s3.amazonaws.com/static/maps_sprite.png') no-repeat 0 -32px;}
 div.mamufas div.embed_window span.outer_map a.embed_zoom_out:hover {background-position:-31px -32px; cursor:pointer;}
-div.mamufas div.embed_window span.outer_map a.cartodb_logo {position:absolute; bottom:13px; left:75px; display:block; width:69px; height:27px; background:url('http://cartodb.s3.amazonaws.com/static/logo.png') no-repeat 0 0;
+div.mamufas div.embed_window span.outer_map div.cartodb_logo {position:absolute; bottom:13px; left:75px; display:block; width:69px; height:27px; background:url('http://cartodb.s3.amazonaws.com/static/logo.png') no-repeat 0 0;
   text-indent:-9999px; line-height:0; font-size:0;}
 div.mamufas div.embed_window div.inner_ span.bottom {float:left; width:581px; padding:0 10px 10px; border-top:1px solid white;}
 div.mamufas div.embed_window div.inner_ span.bottom a.cancel {float:right; height:12px; margin:10px 0 0 0; padding:7px 9px; font:bold 12px Arial; color:#333333; text-align:center; border:1px solid #999999; text-decoration:none; text-shadow:0 1px white;

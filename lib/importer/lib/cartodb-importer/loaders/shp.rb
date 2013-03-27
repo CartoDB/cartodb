@@ -1,7 +1,6 @@
 # encoding: utf-8
 require 'open3'
 require_relative '../utils/indexer'
-require_relative '../utils/column_sanitizer'
 
 module CartoDB
   class SHP
@@ -41,7 +40,9 @@ module CartoDB
 
         shp_args_command = out.split( /, */, 4) 
 
-        shp_args_command[1] = 'LATIN1' if shp_args_command[1] == "None"
+        encoding = shp_args_command[1]
+        encoding = 'LATIN1' if encoding == "None"
+        encoding = 'LATIN1' if probably_wrongly_detected_codepage?(encoding)
 
         if shp_args_command[0] == 'None'
           data_import.set_error_code(3102)
@@ -59,9 +60,10 @@ module CartoDB
           raise "Error running python shp_normalizer script"
         end
 
-        data_import.log_update("#{shp2pgsql_bin_path} -s #{shp_args_command[0]} -D -i -g the_geom -W #{shp_args_command[1]} \"#{shp_args_command[2]}\" #{shp_args_command[3].strip}")
-        full_shp_command = "{ echo 'set statement_timeout=600000;'; #{shp2pgsql_bin_path} -s #{shp_args_command[0]} -D -i -g the_geom -W #{shp_args_command[1]} \"#{shp_args_command[2]}\" #{shp_args_command[3].strip}; } | #{psql_bin_path} #{host} #{port} -U #{db_configuration[:username]} -w -d #{db_configuration[:database]}"
+        data_import.log_update("#{shp2pgsql_bin_path} -s #{shp_args_command[0]} -D -i -g the_geom -W #{encoding} \"#{shp_args_command[2]}\" #{shp_args_command[3].strip}")
 
+        full_shp_command = "{ echo 'set statement_timeout=600000;';
+        #{shp2pgsql_bin_path} -s #{shp_args_command[0]} -D -i -g the_geom -W #{encoding} \"#{shp_args_command[2]}\" #{shp_args_command[3].strip}; } | #{psql_bin_path} #{host} #{port} -U #{db_configuration[:username]} -w -d #{db_configuration[:database]}" 
         stdin,  stdout, stderr = Open3.popen3(full_shp_command)
 
         #unless (err = stderr.read).empty?
@@ -243,6 +245,10 @@ module CartoDB
         DROP COLUMN the_geom_orig
       })
     end #reproject_import
+
+    def probably_wrongly_detected_codepage?(encoding)
+      !!(encoding =~ /windows/)
+    end #probably_wrongly_detected_legacy?
   end # SHP
 end # CartoDB
 

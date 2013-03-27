@@ -1,6 +1,6 @@
 // cartodb.js version: 2.0.26-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: cdc5ae257049e332911ae36f702702f3960e3882
+// sha: b4f90faa96ce8b4dd13d345ea688868d66dc4356
 (function() {
   var root = this;
 
@@ -18070,18 +18070,16 @@ CartoDBLayerCommon.prototype = {
    * It needs a position, timeout if it is needed and the container where add it
    */
   _addWadus: function(position, timeout, container) {
-    if (this.options.cartodb_logo !== false && !this._isWadusAdded(container, 'cartodb_logo')) {
-      var cartodb_link = document.createElement("a");
+    if (this.options.cartodb_logo !== false && !this._isWadusAdded(container, 'cartodb-logo')) {
+      var cartodb_link = document.createElement("div");
       var is_retina = this._isRetinaBrowser();
-      cartodb_link.setAttribute('class','cartodb_logo');
-      container.appendChild(cartodb_link);
+      cartodb_link.setAttribute('class','cartodb-logo');
       setTimeout(function() {
-        cartodb_link.setAttribute('style',"position:absolute; bottom:0; left:0; display:block; border:none; z-index:10000;");
-        cartodb_link.setAttribute('href','http://www.cartodb.com');
-        cartodb_link.setAttribute('target','_blank');
+        cartodb_link.setAttribute('style',"position:absolute; bottom:0; left:0; display:block; border:none; z-index:1000000;");
         var protocol = location.protocol.indexOf('https') === -1 ? 'http': 'https';
-        cartodb_link.innerHTML = "<img width='71' height='29' src='" + protocol + "://cartodb.s3.amazonaws.com/static/new_logo" + (is_retina ? '@2x' : '') + ".png' style='position:absolute; bottom:" + 
+        cartodb_link.innerHTML = "<a href='http://www.cartodb.com' target='_blank'><img width='71' height='29' src='" + protocol + "://cartodb.s3.amazonaws.com/static/new_logo" + (is_retina ? '@2x' : '') + ".png' style='position:absolute; bottom:" + 
           ( position.bottom || 0 ) + "px; left:" + ( position.left || 0 ) + "px; display:block; width:71px!important; height:29px!important; border:none; outline:none;' alt='CartoDB' title='CartoDB' />";
+        container.appendChild(cartodb_link);
       },( timeout || 0 ));
     }
   },
@@ -20175,7 +20173,7 @@ cdb.geo.GoogleMapsMapView = cdb.geo.MapView.extend({
 
   setAttribution: function(m) {
     // Remove old one
-    var old = document.getElementById("cartodb_attribution")
+    var old = document.getElementById("cartodb-gmaps-attribution")
       , attribution = m.get("attribution").join(", ");
 
     // If div already exists, remove it
@@ -20185,17 +20183,11 @@ cdb.geo.GoogleMapsMapView = cdb.geo.MapView.extend({
 
     // Add new one
     var container           = this.map_googlemaps.getDiv()
-      , style               = "height: 19px; line-height: 19px; padding-right: 6px; padding-left: 50px; background:white; background: -webkit-linear-gradient(left, rgba(255, 255, 255, 0) 0px,\
-                              rgba(255, 255, 255, 0.498039) 50px); background: linear-gradient(left, rgba(255, 255, 255, 0) 0px, rgba(255, 255, 255, 0.498039) 50px); \
-                              background: -moz-linear-gradient(left center , rgba(255, 255, 255, 0) 0px, rgba(255, 255, 255, 0.5) 50px) repeat scroll 0% 0% transparent; font-family: Arial, sans-serif; font-size: 10px; color: rgb(68, 68, 68)!important;\
-                              white-space: nowrap; direction: ltr; text-align: right; background-position: initial initial; background-repeat: initial initial; position:absolute; bottom:19px;\
-                              right:0; display:block; border:none; z-index:10000;"
       , cartodb_attribution = document.createElement("div");
 
-    cartodb_attribution.setAttribute('id','cartodb_attribution');
+    cartodb_attribution.setAttribute('id','cartodb-gmaps-attribution');
     cartodb_attribution.setAttribute('class', 'gmaps');
     container.appendChild(cartodb_attribution);
-    cartodb_attribution.setAttribute('style',style);
     cartodb_attribution.innerHTML = attribution;
   },
 

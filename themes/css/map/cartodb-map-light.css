@@ -45,7 +45,7 @@
     font-size: 17px;
     color: #397DBA;
     line-height:normal;
-     text-align:left;
+    text-align:left;
   }
 
   div.cartodb-header h1 a {
@@ -67,7 +67,7 @@
     font-weight: normal;
     font-size: 13px;
     color: #999999;
-     text-align:left;
+    text-align:left;
   }
 
   div.cartodb-header div.social {
@@ -359,7 +359,32 @@
 
 
   /* Gmaps attribution */
+  div#cartodb-gmaps-attribution {
+    position:absolute;
+    display:block;
+    bottom:19px;
+    right:0;
+    height:19px;
+    line-height:19px;
+    padding:0 6px 0 50px;
+    filter: alpha(opacity=45);
+    background: #f5f5f5;
+    background: -webkit-linear-gradient(left, rgba(255, 255, 255, 0) 0px,rgba(255, 255, 255, 0.498039) 50px);
+    background: linear-gradient(left, rgba(255, 255, 255, 0) 0px, rgba(255, 255, 255, 0.498039) 50px);
+    background: -moz-linear-gradient(left center , rgba(255, 255, 255, 0) 0px, rgba(255, 255, 255, 0.5) 50px) repeat scroll 0% 0% transparent;
+    font-family: Arial, sans-serif;
+    font-size: 10px;
+    color: rgb(68, 68, 68)!important;
+    white-space: nowrap;
+    direction: ltr;
+    text-align: right;
+    background-position:initial initial;
+    background-repeat: initial initial;
+    border:none;
+    z-index:10000;
+  }  
 
-  div#cartodb_attribution.gmaps a {
+  div#cartodb-gmaps-attribution a {
     color: rgb(68,68,68);
+    text-decoration: underline;
   }

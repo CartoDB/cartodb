@@ -12273,6 +12273,12 @@ wax.interaction = function() {
         touchcancel: touchCancel
     };
 
+    var pointerEnds = {
+        MSPointerUp: onUp,
+        MSPointerMove: onUp,
+        MSPointerCancel: touchCancel
+    };
+
     // Abstract getTile method. Depends on a tilegrid with
     // grid[ [x, y, tile] ] structure.
     function getTile(e) {
@@ -12327,7 +12333,7 @@ wax.interaction = function() {
 
     // A handler for 'down' events - which means `mousedown` and `touchstart`
     function onDown(e) {
-
+        console.log("onDown " + e.originalEvent.type);
         // Prevent interaction offset calculations happening while
         // the user is dragging the map.
         //
@@ -12347,6 +12353,11 @@ wax.interaction = function() {
             bean.fire(interaction, 'off');
             // Touch moves invalidate touches
             bean.add(parent(), touchEnds);
+        } else if (e.originalEvent.type === "MSPointerDown") {
+          // Don't make the user click close if they hit another tooltip
+            bean.fire(interaction, 'off');
+            // Touch moves invalidate touches
+            bean.add(parent(), pointerEnds);
         }
     }
 
@@ -12356,27 +12367,33 @@ wax.interaction = function() {
 
     function touchCancel() {
         bean.remove(parent(), touchEnds);
+        bean.remove(parent(), pointerEnds);
         _downLock = false;
     }
 
     function onUp(e) {
         var evt = {},
-            pos = wax.u.eventoffset(e);
+            pos = wax.u.eventoffset((e.x) ? e : e.originalEvent);
         _downLock = false;
 
         // TODO: refine
-        for (var key in e) {
+        for (var key in ((e.x) ? e : e.originalEvent)) {
           evt[key] = e[key];
         }
 
+        evt.changedTouches = [];
+
         bean.remove(document.body, 'mouseup', onUp);
         bean.remove(parent(), touchEnds);
+        bean.remove(parent(), pointerEnds);
 
         if (e.type === 'touchend') {
             // If this was a touch and it survived, there's no need to avoid a double-tap
             // but also wax.u.eventoffset will have failed, since this touch
             // event doesn't have coordinates
             interaction.click(e, _d);
+        } else if (e.originalEvent.type === "MSPointerMove" || e.originalEvent.type === "MSPointerUp") {
+          interaction.click(evt, pos);
         } else if (Math.round(pos.y / tol) === Math.round(_d.y / tol) &&
             Math.round(pos.x / tol) === Math.round(_d.x / tol)) {
             // Contain the event data in a closure.
@@ -12437,6 +12454,7 @@ wax.interaction = function() {
         if (attach) attach(map);
         bean.add(parent(), defaultEvents);
         bean.add(parent(), 'touchstart', onDown);
+        bean.add(parent(), 'MSPointerDown', onDown);
         return interaction;
     };
 
@@ -12597,6 +12615,8 @@ wax.tilejson = function(url, callback) {
     reqwest({
         url: url + (~url.indexOf('?') ? '&' : '?') + 'callback=grid',
         type: 'jsonp',
+        cache: false,
+        method: 'post',
         jsonpCallback: 'callback',
         success: callback,
         error: callback
@@ -18175,6 +18195,7 @@ CartoDBLayerCommon.prototype = {
       grids.push(this._tilesUrl('grid.json', s));
       tiles.push(this._tilesUrl('png', s));
     }
+
     return {
         tilejson: '2.0.0',
         scheme: 'xyz',
@@ -21313,6 +21334,7 @@ var Vis = cdb.core.View.extend({
   },
 
   addInfowindow: function(layerView) {
+
     var model = layerView.model;
     var eventType = layerView.model.get('eventType') || 'featureClick';
     var infowindow = Overlay.create('infowindow', this, model.get('infowindow'), true);
@@ -21344,7 +21366,7 @@ var Vis = cdb.core.View.extend({
         var cartodb_id = data.cartodb_id
         var fields = infowindowFields.fields;
 
-
+        console.log('binded');
         // Send request
         sql.execute("select {{fields}} from {{table_name}} where cartodb_id = {{cartodb_id }}", {
           fields: _.pluck(fields, 'name').join(','),

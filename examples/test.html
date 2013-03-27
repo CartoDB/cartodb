@@ -1,8 +1,5 @@
-<!DOCTYPE html>
 <html>
   <head>
-    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
     <style>
       html, body, #map {
         height: 100%;
@@ -10,22 +7,11 @@
         margin: 0;
       }
     </style>
-
-    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/themes/css/cartodb.css" />
-    <!--[if lte IE 8]>
-        <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/themes/css/cartodb.ie.css" />
-    <![endif]-->
-
   </head>
-    
   <body>
-    <div id="map"></div>
-  </body>
+    <script src="/dist/cartodb.uncompressed.js"></script>
 
-  <!-- include cartodb.js library -->
-  <script src="/dist/cartodb.uncompressed.js"></script>
-
-        <script>
+    <script>
       ;(function (name, context, definition) {
   if (typeof module != 'undefined' && module.exports) module.exports = definition()
   else if (typeof define == 'function' && define.amd) define(definition)
@@ -537,91 +523,20 @@
   return reqwest
 })
     </script>
-  
-  <script>
-var layer;
-    function main() {
-      
 
-      var map = L.map('map', { 
-        zoomControl: false,
-        center: [43, 0],
-        zoom: 3
-      });
-
-      // Setting bounds to Spain country
-      var sql = new cartodb.SQL({ user: 'examples' });
-      sql.getBounds("select * from european_countries_e where name='Spain'").done(function(bounds) {
-        map.fitBounds(bounds)
-      });
-
-      cartodb.createLayer(map, {
-        type: 'cartodb',
-        options: {
-          table_name: 'european_countries_e',
-          user_name: 'examples',
-          interactivity: 'cartodb_id',
-          featureOver: function() {
-            console.log("jamon-over");
-          },
-          featureClick: function() {
-            console.log("jamon-click");
-          },
-          featureOut: function() {
-            console.log("jamon-out");
-          }
+    <script>
+      reqwest({
+        url: 'http://examples.cartodb.com/tiles/european_countries_e/5/16/12.grid.json?callback=grid&RABOS',
+        type: 'jsonp',
+        jsonpCallback: 'callback',
+        success: function(data) {
+          console.log("data - ", data);
+        },
+        error: function(err) {
+          console.log(err);
         }
-      })
-      .on('done', function(layer_) {
-        layer = layer_;
-        map.addLayer(layer);
-      }).on('error', function() {
-        cartodb.log.log("some error occurred");
       });
-
-    }
-
-    // you could use $(window).load(main);
-    window.onload = main;
-
-  </script>
-
-
-  <script>
-
-    function main() {
-      cartodb.createVis('map', 'http://examples.cartodb.com/api/v1/viz/european_countries_e/viz.json', {
-          shareable: true,
-          title: true,
-          description: true,
-          search: true,
-          tiles_loader: true,
-          center_lat: 0,
-          center_lon: 0,
-          zoom: 2
-      })
-      .done(function(vis, layers) {
-        // layer 0 is the base layer, layer 1 is cartodb layer
-        layers[1].on('featureOver', function(e, pos, latlng, data) {
-          cartodb.log.log(e, pos, latlng, data);
-        });
-
-        // you can get the native map to work with it
-        // depending if you use google maps or leaflet
-        map = vis.getNativeMap();
-        // map.setZoom(3)
-        // map.setCenter(new google.maps.Latlng(...))
-      })
-      .error(function(err) {
-        console.log(err);
-      });
-
-
-    }
-
-    window.onload = main;
-
-  </script>
-
-
+    </script>
+    <div id="map"></div>
+  </body>
 </html>

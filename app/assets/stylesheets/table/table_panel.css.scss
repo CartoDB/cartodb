@@ -994,10 +994,12 @@
           .options {
             position:relative;
             width: 325px;
-            margin: 1px 0 0 30px;
+            margin: 0 0 0 30px;
+            padding: 10px 0 0 0;
             clear:both;
             overflow:hidden;
             z-index: 100;
+            background:#fff;
 
             .view_mode {
 

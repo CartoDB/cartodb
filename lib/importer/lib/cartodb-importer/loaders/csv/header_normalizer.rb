@@ -5,7 +5,7 @@ require 'fileutils'
 module CartoDB
   module CSV
     class HeaderNormalizer
-      FILLER = "header"
+      FILLER = "field_000"
 
       def initialize(path, options={})
         @path     = path
@@ -53,7 +53,7 @@ module CartoDB
 
       def fill_empty_fields_in(row)
         row.inject(Array.new) do |massaged_row, cell| 
-          filler  = "#{FILLER}_#{Time.now.to_f}".delete('.')
+          filler  = "#{FILLER}_#{massaged_row.length}"
           cell[-1] = filler unless cell.last
           massaged_row.push(cell)
         end

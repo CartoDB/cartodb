@@ -133,7 +133,7 @@
             <% end %>
             cartodb.createVis(map_id, opt.url || VIZJSON_URL, opt);
 
-            for(var g in global_info.load_queue) {
+            for(var g = 0; g < global_info.load_queue.length; ++g) {
               var params = global_info.load_queue[g];
               cartodb.createVis.apply(cartodb, params);
             }
@@ -159,7 +159,7 @@
           "callback" : function() {
             global_info.loading_gmaps = false;
             load_cartodb()
-            for(var i in global_info.gmaps_queue) {
+            for(var i = 0; i < global_info.gmaps_queue.length; ++i) {
                 global_info.gmaps_queue[i]();
             }
           },

@@ -4,26 +4,12 @@ require 'virtus/attribute/writer/coercible'
 require_relative '../visualization'
 
 module CartoDB
-  class SnakeCaseString < Virtus::Attribute::String
-    class SnakeCase < Virtus::Attribute::Writer::Coercible
-      def coerce(value)
-        value.gsub(' ', '_') if value
-      end #coerce
-    end # Snake Case
-
-    def self.writer_class(*)
-      SnakeCase
-    end # self.writer_class
-  end # SnakeCaseString
-end # CartoDB
-
-module CartoDB
   module Visualization
     class Member
       include Virtus
 
       attribute :id,            String
-      attribute :name,          CartoDB::SnakeCaseString
+      attribute :name,          String
       attribute :map_id,        Integer
       attribute :derived,       Boolean
       attribute :tags,          Array[String]

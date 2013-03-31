@@ -1,6 +1,7 @@
 # encoding: utf-8
 require 'virtus'
 require_relative '../visualization'
+require_relative '../overlay/collection'
 
 module CartoDB
   module Visualization
@@ -10,7 +11,7 @@ module CartoDB
       attribute :id,            String
       attribute :name,          String
       attribute :map_id,        Integer
-      attribute :derived,       Boolean
+      attribute :type,          String
       attribute :tags,          Array[String]
       attribute :description,   String
 
@@ -37,6 +38,10 @@ module CartoDB
         self.attributes.keys.each { |k| self.send("#{k}=", nil) }
         self
       end #delete
+
+      def overlays
+        Overlay::Collection.new(visualization_id: id).fetch
+      end #overlays
 
       private
 

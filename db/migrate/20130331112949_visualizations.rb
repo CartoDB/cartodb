@@ -7,7 +7,7 @@ class VisualizationsMigration < Sequel::Migration
       String      :name,        text: true
       String      :description, text: true
       String      :map_id,      index: true
-      String      :kind
+      String      :type
     end
   end #up
   

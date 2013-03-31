@@ -15,9 +15,9 @@ module CartoDB
       attribute :options,           Hash
       attribute :visualization_id,  String
 
-      def initialize(attributes={}, repository=nil)
+      def initialize(attributes={}, repository=Visualization.repository)
         self.attributes = attributes
-        @repository     = repository || Visualization.default_repository
+        @repository     = repository
         self.id         ||= @repository.next_id
       end #initialize
 

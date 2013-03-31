@@ -13,7 +13,7 @@ describe Visualization::API do
   include Rack::Test::Methods
  
   before do
-    Visualization.default_repository = DataRepository::Repository.new
+    Visualization.repository = DataRepository::Repository.new
   end
 
   describe 'GET /api/v1/visualizations' do

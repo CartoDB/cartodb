@@ -27,7 +27,7 @@ module CartoDB
 
       def defaults
         { 
-          repository:   Visualization.default_repository,
+          repository:   Visualization.repository,
           member_class: Member
         }
       end #defautls

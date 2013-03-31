@@ -3,13 +3,13 @@ require_relative '../../services/data-repository/repository'
 
 module CartoDB
   module Visualization
-    def self.default_repository=(repository)
+    def self.repository=(repository)
       @repository = repository
-    end # self.default_repository
+    end # self.repository
 
-    def self.default_repository
+    def self.repository
       @repository ||= DataRepository::Repository.new
-    end #self.default_repository
+    end #self.repository
   end # Visualization
 end # CartoDB
 

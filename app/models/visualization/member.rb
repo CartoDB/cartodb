@@ -15,7 +15,7 @@ module CartoDB
       attribute :tags,          Array[String]
       attribute :description,   String
 
-      def initialize(attributes={}, repository=Visualization.default_repository)
+      def initialize(attributes={}, repository=Visualization.repository)
         @repository     = repository
         self.attributes = attributes
         self.id         ||= @repository.next_id

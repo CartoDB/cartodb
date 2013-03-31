@@ -13,12 +13,12 @@ describe Visualization::Repository do
       String    :name
       String    :description
       String    :map_id
-      Boolean   :derived
+      String    :type
       String    :tags
     end
 
-    repository  = Visualization::Repository.new(db)
-    Visualization.default_repository = repository
+    Visualization.repository = 
+      Visualization::Repository.new(:visualizations, db)
   end
 
   describe '#store' do
@@ -38,4 +38,36 @@ describe Visualization::Repository do
 
   describe '#fetch' do
   end #fetch
+
+  describe '#delete' do
+    it 'deletes a visualization from persistence' do
+      member = Visualization::Member.new(
+        name: 'visualization 1',
+        tags: ['foo', 'bar']
+      )
+      member.store
+
+      id = member.id
+      Visualization.repository.fetch(id).wont_be_nil
+      member.delete
+      Visualization.repository.fetch(id).must_be_nil
+    end
+  end #delete
+
+  describe '#collection' do
+    it 'gets a collection of records using the passed filter' do
+      member1 = Visualization::Member.new(
+        name:   'visualization 1',
+        map_id: 1
+      ).store
+      member2 = Visualization::Member.new(
+        name: 'visualization 2',
+        map_id: 1
+      ).store
+
+      records = Visualization.repository.collection(map_id: 1)
+      records.to_a.size.must_equal 2
+    end
+  end #collection
 end # Visualization::Repository
+

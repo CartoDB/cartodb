@@ -9,7 +9,7 @@ describe Visualization::Repository do
   before do
     db = Sequel.sqlite
     db.create_table :visualizations do
-      String    :id
+      String    :id, primary_key: true
       String    :name
       String    :description
       String    :map_id
@@ -17,12 +17,13 @@ describe Visualization::Repository do
       String    :tags
     end
 
+    db[:visualizations].delete
     Visualization.repository = 
       Visualization::Repository.new(:visualizations, db)
   end
 
   describe '#store' do
-    it 'persists a visualization' do
+    it 'inserts a visualization' do
       member = Visualization::Member.new(
         name: 'visualization 1',
         tags: ['foo', 'bar']
@@ -32,7 +33,24 @@ describe Visualization::Repository do
       rehydrated_member = Visualization::Member.new(id: member.id)
       rehydrated_member.fetch
       rehydrated_member.name.must_equal member.name
+    end
 
+    it 'updates the visualization if existing' do
+      member = Visualization::Member.new(
+        name: 'visualization 1',
+        tags: ['foo', 'bar']
+      )
+      member.store
+      Visualization.repository.collection(id: member.id).to_a.size
+        .must_equal 1
+
+      member.store
+      Visualization.repository.collection(id: member.id).to_a.size
+        .must_equal 1
+
+      Visualization::Member.new(id: member.id).fetch.store
+      Visualization.repository.collection(id: member.id).to_a.size
+        .must_equal 1
     end
   end #store
 
@@ -44,8 +62,7 @@ describe Visualization::Repository do
       member = Visualization::Member.new(
         name: 'visualization 1',
         tags: ['foo', 'bar']
-      )
-      member.store
+      ).store
 
       id = member.id
       Visualization.repository.fetch(id).wont_be_nil

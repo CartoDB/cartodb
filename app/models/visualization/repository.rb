@@ -15,7 +15,7 @@ module CartoDB
       end #collection
 
       def store(key, data={})
-        db[relation].insert(data)
+        naive_upsert_exposed_to_race_conditions(data)
       end #store
 
       def fetch(key)
@@ -33,6 +33,18 @@ module CartoDB
       private
 
       attr_reader :relation, :db
+
+      def naive_upsert_exposed_to_race_conditions(data={})
+        insert(data) unless update(data)
+      end #naive_upsert_exposed_to_race_conditions
+
+      def insert(data={})
+        db[relation].insert(data)
+      end #insert
+
+      def update(data={})
+        db[relation].where(id: data.fetch(:id)).update(data) != 0
+      end #update
     end # Repository
   end # Visualization
 end # CartoDB

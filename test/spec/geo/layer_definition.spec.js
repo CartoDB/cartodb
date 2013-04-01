@@ -148,5 +148,29 @@ describe("LayerDefinition", function() {
     expect(layerDefinition._host('a')).toEqual('https://a.d3pu9mtm6f0hk5.cloudfront.net/rambo');
   });
 
+  it("it should use jsonp when cors is not available", function() {
+    var params, lzma;
+    layerDefinition.options.cors = false;
+    layerDefinition.options.ajax = function(p) { 
+      params = p;
+      p.success({ layergroupid: 'test' });
+    };
+
+    runs(function() {
+      var json = JSON.stringify(layerDefinition.toJSON());
+      LZMA.compress(json, 3, function(encoded) {
+        lzma = layerDefinition._array2hex(encoded);
+        layerDefinition.getLayerToken(function() {
+        });
+      });
+    });
+    waits(100);
+    runs(function() {
+      expect(params.url).toEqual(layerDefinition._tilerHost() + '/tiles/layergroup?lzma=' + lzma);
+    });
+
+
+  });
+
 });
 

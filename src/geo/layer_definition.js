@@ -5,7 +5,9 @@ function LayerDefinition(layerDefinition, options) {
   this.options = _.defaults(options, {
     ajax: $.ajax,
     pngParams: ['api_key', 'cache_policy', 'updated_at'],
-    gridParams: ['api_key', 'cache_policy', 'updated_at']
+    gridParams: ['api_key', 'cache_policy', 'updated_at'],
+    cors: this.isCORSSupported()
+
   });
 
   this.version = layerDefinition.version || '1.0.0';
@@ -15,6 +17,10 @@ function LayerDefinition(layerDefinition, options) {
 }
 
 LayerDefinition.prototype = {
+
+  isCORSSupported: function() {
+    return 'withCredentials' in new XMLHttpRequest() || typeof XDomainRequest !== "undefined";
+  },
 
   getLayerCount: function() {
     return this.layers.length;
@@ -39,23 +45,56 @@ LayerDefinition.prototype = {
     return obj;
   },
 
+  _array2hex: function(byte_arr) {
+    var hex_str = "", tmp_hex;
+   
+    for (var i = 0, len = byte_arr.length; i < len; ++i) {
+        if (byte_arr[i] < 0) {
+            byte_arr[i] = byte_arr[i] + 256;
+        }
+        tmp_hex = byte_arr[i].toString(16);
+        if (tmp_hex.length == 1) tmp_hex = "0" + tmp_hex;
+        hex_str += tmp_hex;
+    }
+   
+    return hex_str.trim();
+  },
+
   //TODO: support old browsers
   getLayerToken: function(callback) {
     var ajax = this.options.ajax;
-    ajax({
-      crossOrigin: true,
-      type: 'POST',
-      dataType: 'json',
-      contentType: 'application/json',
-      url: this._tilerHost() + '/tiles/layergroup',
-      data: JSON.stringify(this.toJSON()),
-      success: function(data) {
-        callback(data);
-      },
-      error: function() {
-        callback(null);
-      }
-    });
+    if(this.options.cors) {
+      ajax({
+        crossOrigin: true,
+        type: 'POST',
+        dataType: 'json',
+        contentType: 'application/json',
+        url: this._tilerHost() + '/tiles/layergroup',
+        data: JSON.stringify(this.toJSON()),
+        success: function(data) {
+          callback(data);
+        },
+        error: function() {
+          callback(null);
+        }
+      });
+    } else {
+      var self = this;
+      var json = JSON.stringify(this.toJSON());
+      LZMA.compress(json, 3, function(encoded) {
+        encoded = self._array2hex(encoded);
+        ajax({
+          dataType: 'jsonp',
+          url: self._tilerHost() + '/tiles/layergroup?lzma=' + encoded,
+          success: function(data) {
+            callback(data);
+          },
+          error: function() {
+            callback(null);
+          }
+        });
+      });
+    }
     return this;
   },
 

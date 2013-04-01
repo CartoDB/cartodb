@@ -47,6 +47,7 @@
         "../vendor/mousewheel.js",
         "../vendor/mwheelIntent.js",
         "../vendor/spin.js",
+        "../vendor/lzma.js",
 
         'core/decorator.js',
         'core/config.js',

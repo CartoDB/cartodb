@@ -1,7 +1,6 @@
 # encoding: utf-8
 require 'minitest/autorun'
-require_relative '../../../app/models/visualization/repository'
-require_relative '../../../app/models/visualization/member'
+require_relative '../../../backend/sequel'
 
 include CartoDB
 
@@ -17,9 +16,17 @@ describe Visualization::Repository do
       String    :tags
     end
 
-    db[:visualizations].delete
+    db.create_table :overlays do
+      String    :id,                null: false, primary_key: true
+      Integer   :order,             null: false
+      String    :options,           text: true
+      String    :visualization_id,  index: true
+    end
+
     Visualization.repository = 
       Visualization::Repository.new(:visualizations, db)
+    Overlay.repository = 
+      Overlay::Repository.new(:overlays, db)
   end
 
   describe '#store' do

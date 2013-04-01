@@ -2,15 +2,16 @@
 require 'sequel'
 require 'uuidtools'
 
-module CartoDB
-  module Visualization
-    class Repository
-      def initialize(relation=:visualizations, db=Sequel.sqlite)
-        @relation = relation
+module DataRepository
+  module Backend
+    class Sequel
+      def initialize(db=Sequel.sqlite, relation=nil)
         @db       = db
+        @relation = relation
       end #initialize
 
       def collection(filter={})
+        return db[relation].all if filter.empty?
         db[relation].where(filter)
       end #collection
 
@@ -45,7 +46,7 @@ module CartoDB
       def update(data={})
         db[relation].where(id: data.fetch(:id)).update(data) != 0
       end #update
-    end # Repository
-  end # Visualization
-end # CartoDB
+    end # Sequel
+  end # Backend
+end # DataRepository
 

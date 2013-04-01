@@ -66,9 +66,15 @@ module ApplicationHelper
       account_host:                Cartodb.config[:account_host]
     }.to_json
   end
-
+Cartodb.config[:google_analytics]["primary"].blank?
   def stringified_member_type
     current_user.present? ? current_user.account_type.to_s.upcase : 'UNAUTHENTICATED'
+  end
+
+  def insert_google_analytics(track)
+    if not Cartodb.config[:google_analytics].blank? and not Cartodb.config[:google_analytics][track].blank? and not Cartodb.config[:google_analytics]["domain"].blank?
+      render(:partial => 'shared/analytics', :locals => {ua: Cartodb.config[:google_analytics][track], domain: Cartodb.config[:google_analytics]["domain"]})
+    end
   end
 
   ##

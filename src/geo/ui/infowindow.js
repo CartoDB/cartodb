@@ -155,17 +155,19 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
 
   events: {
     // Close bindings
-    "click .close":       "_closeInfowindow",
-    "touchstart .close":  "_closeInfowindow",
+    "click .close":         "_closeInfowindow",
+    "touchstart .close":    "_closeInfowindow",
+    "MSPointerDown .close": "_closeInfowindow",
     // Rest infowindow bindings
-    "dragstart":          "_checkOrigin",
-    "mousedown":          "_checkOrigin",
-    "touchstart":         "_checkOrigin",
-    "dblclick":           "_stopPropagation",
-    "mousewheel":         "_stopPropagation",
-    "DOMMouseScroll":     "_stopPropagation",
-    "dbclick":            "_stopPropagation",
-    "click":              "_stopPropagation"
+    "dragstart":            "_checkOrigin",
+    "mousedown":            "_checkOrigin",
+    "touchstart":           "_checkOrigin",
+    "MSPointerDown":        "_checkOrigin",
+    "dblclick":             "_stopPropagation",
+    "mousewheel":           "_stopPropagation",
+    "DOMMouseScroll":       "_stopPropagation",
+    "dbclick":              "_stopPropagation",
+    "click":                "_stopPropagation"
   },
 
   initialize: function(){

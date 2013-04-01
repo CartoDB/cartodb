@@ -5,7 +5,7 @@ function LayerDefinition(layerDefinition, options) {
   this.options = _.defaults(options, {
     ajax: $.ajax,
     pngParams: ['map_key', 'api_key', 'cache_policy', 'updated_at'],
-    gridParams: ['map_key', 'api_key', 'cache_policy', 'updated_at', 'interactivity'],
+    gridParams: ['map_key', 'api_key', 'cache_policy', 'updated_at'],
     cors: this.isCORSSupported()
   });
 
@@ -36,7 +36,8 @@ LayerDefinition.prototype = {
         options: {
           sql: layer.options.sql,
           cartocss: layer.options.cartocss,
-          cartocss_version: layer.options.cartocss_version || '2.1.0'
+          cartocss_version: layer.options.cartocss_version || '2.1.0',
+          interactivity: layer.options.interactivity
         }
       });
     }
@@ -172,17 +173,10 @@ LayerDefinition.prototype = {
       var s = subdomains[i]
       var cartodb_url = this._host(s) + '/tiles/layergroup/' + layerGroupId 
       tiles.push(cartodb_url + tileTemplate + ".png?" + pngParams );
-    }
 
-
-    for(var i = 0; i < subdomains.length; ++i) {
-      var s = subdomains[i]
-      var cartodb_url = this._host(s) + '/tiles/layergroup/' + layerGroupId 
+      var gridParams = this._encodeParams(params, this.options.gridParams);
       for(var layer in this.layers) {
-        var layerObject = this.layers[layer]
         grids[layer] = grids[layer] || [];
-        var p = _.extend({}, params, { interactivity: layerObject.options.interactivity });
-        var gridParams = this._encodeParams(p, this.options.gridParams);
         grids[layer].push(cartodb_url + "/layer" + layer +  tileTemplate + ".grid.json?" + gridParams);
       }
     }
@@ -206,11 +200,15 @@ LayerDefinition.prototype = {
       layer = 0;
     }
 
-    if(attributes.join) {
-      attributes = attributes.join(',');
+    if(typeof(attributes) == 'string') {
+      attributes = attributes.split(',');
     }
 
-    this.layers[layer].options.interactivity = attributes.replace(/ /g, '');
+    for(var i = 0; i < attributes.length; ++i) {
+      attributes[i] = attributes[i].replace(/ /g, '');
+    }
+
+    this.layers[layer].options.interactivity = attributes;
     this._definitionUpdated();
     return this;
   },

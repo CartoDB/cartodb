@@ -13,11 +13,11 @@ module DataRepository
     attr_reader   :signature
     attr_accessor :storage
 
-    def initialize(attributes={}, options={})
+    def initialize(arguments={})
       @storage      = Set.new
-      @member_class = options.fetch(:member_class, OpenStruct)
-      @repository   = options.fetch(:repository, Repository.new)
-      @signature    = attributes.fetch(:signature, @repository.next_id)
+      @member_class = arguments.fetch(:member_class, OpenStruct)
+      @repository   = arguments.fetch(:repository, Repository.new)
+      @signature    = arguments.fetch(:signature, @repository.next_id)
     end #initialize
 
     def add(member)
@@ -49,7 +49,6 @@ module DataRepository
     end #store
 
     def to_json(*args)
-      fetch
       map { |member| member.fetch.to_hash }.to_json(*args)
     end #to_json
 

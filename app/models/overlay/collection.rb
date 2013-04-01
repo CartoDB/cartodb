@@ -3,12 +3,15 @@ require 'set'
 require 'virtus'
 require 'aequitas'
 require_relative './member'
-require_relative '../visualization'
 require_relative '../../../services/data-repository/structures/collection'
 
 module CartoDB
   module Overlay
     SIGNATURE = 'overlays'
+
+    class << self
+      attr_accessor :repository
+    end
     
     class Collection
       include Virtus
@@ -17,9 +20,13 @@ module CartoDB
       attribute :visualization_id,  String
       validates_presence_of         :visualization_id
 
-      def initialize
-        @collection = 
-          DataRepository::Collection.new({ signature: SIGNATURE }, defaults)
+      def initialize(attributes={}, options={})
+        self.attributes = attributes
+        @collection = DataRepository::Collection.new(
+          signature:    SIGNATURE,
+          repository:   options.fetch(:repository, Overlay.repository),
+          member_class: Member
+        )
       end #initialize
 
       DataRepository::Collection::INTERFACE.each do |method_name|
@@ -30,16 +37,35 @@ module CartoDB
         end
       end
 
+      def fetch
+        unless repository.respond_to?(:collection)
+          collection.fetch
+          return self
+        end
+        collection.storage = 
+          Set.new(
+            repository.collection(filter).map { |record| record.fetch(:id) }
+          )
+        self
+      end #fetch
+
+      def store
+        map { |member| member.fetch.store }
+        self
+      end #store
+
+      def destroy
+        map(&:delete)
+        self
+      end #destroy
+
       private
 
       attr_reader :collection
 
-      def defaults
-        { 
-          repository:   Visualization.repository,
-          member_class: Member
-        }
-      end #defautls
+      def filter
+        { visualization_id: visualization_id }
+      end #filter
     end # Collection
   end # Overlay
 end # CartoDB

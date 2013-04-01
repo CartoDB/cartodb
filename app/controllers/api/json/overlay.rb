@@ -9,7 +9,9 @@ module CartoDB
     class API < Sinatra::Base
       get '/api/v1/visualizations/:visualization_id/overlays' do
         begin
-          collection  = Overlay::Collection.new.fetch
+          collection  = Overlay::Collection.new(
+                          visualization_id: params.fetch('visualization_id')
+                        ).fetch
           response    = { overlays: collection }.to_json
           [200, response]
         rescue KeyError => exception
@@ -18,11 +20,13 @@ module CartoDB
       end # get /api/v1/visualizations/:visualization_id/overlays
 
       post '/api/v1/visualizations/:visualization_id/overlays' do
-        collection  = Overlay::Collection.new.fetch
-        member      = Overlay::Member.new(payload)
+        collection  = Overlay::Collection.new(
+                        visualization_id: params.fetch('visualization_id')
+                      ).fetch
+        member      = Overlay::Member.new(payload).store
         collection.add(member)
         collection.store
-        response    = member.store.attributes.to_json
+        response    = member.attributes.to_json
 
         [201, response]
       end # post /api/v1/visualizations/:visualization_id/overlays
@@ -51,7 +55,9 @@ module CartoDB
       end # put /api/v1/visualizations/:visualization_id/overlays/:id
 
       delete '/api/v1/visualizations/:visualization_id/overlays/:id' do
-        collection  = Overlay::Collection.new.fetch
+        collection  = Overlay::Collection.new(
+                        visualization_id: params.fetch('visualization_id')
+                      ).fetch
         member      = Overlay::Member.new(id: params.fetch('id'))
         collection.delete(member)
         member.delete

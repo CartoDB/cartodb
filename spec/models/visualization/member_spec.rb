@@ -1,10 +1,17 @@
 # encoding: utf-8
 require 'minitest/autorun'
 require_relative '../../../app/models/visualization/member'
+require_relative '../../../services/data-repository/repository'
 
 include CartoDB
 
 describe Visualization::Member do
+  before do
+    memory = DataRepository.new
+    Visualization.repository  = memory
+    Overlay.repository        = memory
+  end
+
   describe '#initialize' do
     it 'assigns an id by default' do
       member = Visualization::Member.new

@@ -1,9 +1,14 @@
 # encoding: utf-8
 require 'minitest/autorun'
 require_relative '../../../app/models/overlay/member'
+require_relative '../../../services/data-repository/repository'
 
 include CartoDB
 describe Overlay::Member do
+  before do
+    Overlay.repository = DataRepository.new
+  end
+
   describe '#initialize' do
     it 'sets the id by default' do
       Overlay::Member.new.id.wont_be_nil

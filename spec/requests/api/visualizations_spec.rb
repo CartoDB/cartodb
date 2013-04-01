@@ -2,18 +2,39 @@ require 'minitest/autorun'
 require 'rack/test'
 require 'json'
 require_relative '../../../app/controllers/api/json/visualization'
-
-def app
-  CartoDB::Visualization::API.new
-end #app
+require_relative '../../../services/data-repository/backend/sequel'
 
 include CartoDB
+include DataRepository
+
+def app
+  Visualization::API.new
+end #app
 
 describe Visualization::API do
   include Rack::Test::Methods
  
   before do
-    Visualization.repository = DataRepository::Repository.new
+    db = Sequel.sqlite
+
+    db.create_table :visualizations do
+      String    :id, primary_key: true
+      String    :name
+      String    :description
+      String    :map_id
+      String    :type
+      String    :tags
+    end
+
+    db.create_table :overlays do
+      String    :id,                null: false, primary_key: true
+      Integer   :order,             null: false
+      String    :options,           text: true
+      String    :visualization_id,  index: true
+    end
+
+    Visualization.repository  = DataRepository::Backend::Sequel.new(db, :visualizations)
+    Overlay.repository        = DataRepository::Backend::Sequel.new(db, :overlays)
   end
 
   describe 'GET /api/v1/visualizations' do
@@ -46,7 +67,7 @@ describe Visualization::API do
       collection.size.must_equal 2
     end
 
-    it 'is updated after deleted a visualization' do
+    it 'is updated after deleting a visualization' do
       payload = factory
       post '/api/v1/visualizations', payload.to_json
       id = JSON.parse(last_response.body).fetch('id')
@@ -146,7 +167,7 @@ describe Visualization::API do
       tags:         ['foo', 'bar'],
       map_id:       rand(999),
       description:  'bogus',
-      derived:      true
+      type:         'table'
     }
   end #factory
 end # Visualization::API

@@ -5,6 +5,10 @@ require_relative '../../../app/models/overlay/collection'
 include CartoDB
 
 describe Overlay::Collection do
+  before do
+    Overlay.repository = DataRepository.new
+  end
+
   describe 'validations' do
     describe '#visualization_id' do
       it 'must be present' do

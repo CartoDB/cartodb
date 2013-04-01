@@ -3,16 +3,32 @@ require 'minitest/autorun'
 require 'rack/test'
 require 'json'
 require_relative '../../../app/controllers/api/json/overlay'
-
-def app
-  CartoDB::Overlay::API.new
-end #app
+require_relative '../../../services/data-repository/backend/sequel'
 
 include CartoDB
+include DataRepository
+
+def app
+  Overlay::API.new
+end #app
 
 describe Overlay::API do
   include Rack::Test::Methods
   
+  before do
+    db = Sequel.sqlite
+
+    db.create_table :overlays do
+      String    :id,                null: false, primary_key: true
+      Integer   :order,             null: false
+      String    :options,           text: true
+      String    :type,              text: true
+      String    :visualization_id,  index: true
+    end
+
+    Overlay.repository = DataRepository::Backend::Sequel.new(db, :overlays)
+  end
+
   describe 'POST /api/v1/visualizations/:visualization_id/overlays' do
     it 'creates an overlay for visualization' do
       base_url = base_url_for(rand(100))

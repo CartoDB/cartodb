@@ -28,7 +28,7 @@ module CartoDB
           member    = Member.new(id: params.fetch('id')).fetch
           response  = member.attributes.to_json
           [200, response]
-        rescue KeyError => exception
+        rescue KeyError
           [404]
         end
       end # get /api/v1/visualizations/:id
@@ -45,11 +45,8 @@ module CartoDB
       end # put /api/v1/visualizations/:id
 
       delete '/api/v1/visualizations/:id' do
-        collection  = Visualization::Collection.new.fetch
         member      = Member.new(id: params.fetch('id'))
-        collection.delete(member)
         member.delete
-        collection.store
         [204]
       end # delete '/api/v1/visualizations/:id
 

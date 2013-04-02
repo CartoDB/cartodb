@@ -35,6 +35,9 @@ div.map {
     right:57px;
     @include inline-block();
     padding:8px 20px 8px 30px;
+    @include transform-style("linear");
+    @include transition-property("right");
+    @include transition-duration(300ms);
     z-index:50;
 
     a {float:left;}
@@ -327,6 +330,9 @@ div.map {
     float:right;
     top:65px;
     right:58px;
+    @include transform-style("linear");
+    @include transition-property("right");
+    @include transition-duration(300ms);
   }
 
   // Public map
@@ -428,9 +434,32 @@ div.map {
     }
   } //div.sqlview
 
+  // When a panel view is openned or closed
   &.displaced {
     div.sqlview p {
       text-indent:-600px;
+    }
+
+    div.share {
+      right:595px;
+    }
+
+    div.cartodb-searchbox {
+      right:595px;
+    }
+
+    &.narrow {
+      div.sqlview p {
+        text-indent:-450px;
+      }
+
+      div.share {
+        right:445px;
+      }
+
+      div.cartodb-searchbox {
+        right:445px;
+      }
     }
   } //&.displaced
 

@@ -676,6 +676,14 @@
       border-collapse: inherit;
     }
 
+    tbody tr:hover {
+      z-index:1!important;
+    }
+
+    thead tr th div {
+      z-index:2!important;
+    }
+
     tbody tr td {
       border-spacing: 1px;
       border-bottom:1px solid #ECECEC;

@@ -222,7 +222,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
       // Sanitized them
       var sanitized_fields = this._fieldsToString(fields, template_name);
 
-      this.$el.html($(this.template({ fields: sanitized_fields })));
+      this.$el.html($(this.template({ content: { fields: sanitized_fields }})));
 
       // Hello jscrollpane hacks!
       // It needs some time to initialize, if not it doesn't render properly the fields

@@ -4,20 +4,13 @@
   <div class="cover">
     <div id="spinner"></div>
     <div class="image_not_found"> <i></i> <a href="#map" class="help">Non-valid picture URL</a></div>
-      {{#content.fields}}
+      {{#fields}}
         {{#index}}
           {{#value}}
-            <h1 class="order{{index}}">
-              {{#url}}
-                <a href="{{ url }}" target="_blank">{{ value }}</a>
-              {{/url}}
-              {{^url}}
-                {{ value }}
-              {{/url}}
-            </h1>
+            <h1 class="order{{index}}">{{{ value }}}</h1>
           {{/value}}
           {{^value}}
-              <h1 class="order{{index}}">null</h1>
+            <h1 class="order{{index}}">null</h1>
           {{/value}}
         {{/index}}
         {{^index}}
@@ -26,7 +19,7 @@
           {{/value}}
           <span class="separator"></span>      
         {{/index}}
-      {{/content.fields}}
+      {{/fields}}
 
       <div class="shadow"></div>
     </div>
@@ -34,26 +27,19 @@
 
   <div class="cartodb-popup-content-wrapper">
     <div class="cartodb-popup-content">
-      {{#content.fields}}
+      {{#fields}}
         <div class="order{{index}}">
             {{#index}}
               {{#title}}<h4>{{title}}</h4>{{/title}}
               {{#value}}
-                <p>
-                  {{#url}}
-                    <a href="{{ url }}" target="_blank">{{ value }}</a>
-                  {{/url}}
-                  {{^url}}
-                    {{ value }}
-                  {{/url}}
-                </p>
+                <p>{{{ value }}}</p>
               {{/value}}
               {{^value}}
                 <p class="empty">null</p>
               {{/value}}
             {{/index}}
         </div>
-      {{/content.fields}}
+      {{/fields}}
     </div>
   </div>
   <div class="cartodb-popup-tip-container"></div>

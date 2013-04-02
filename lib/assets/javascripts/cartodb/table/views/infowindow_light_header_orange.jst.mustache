@@ -1,46 +1,32 @@
 <div class="cartodb-popup header orange">
   <a href="#close" class="cartodb-popup-close-button close">x</a>
   <div class="cartodb-popup-header">
-    {{#content.fields}}
+    {{#fields}}
       {{^index}}
         {{#title}}<h4>{{title}}</h4>{{/title}}
         {{#value}}
-          <h1 {{#type}}class="{{ type }}"{{/type}}>
-            {{#url}}
-              <a href="{{ url }}" target="_blank">{{ value }}</a>
-            {{/url}}
-            {{^url}}
-              {{ value }}
-            {{/url}}
-          </h1>
+          <h1 {{#type}}class="{{ type }}"{{/type}}>{{{ value }}}</h1>
         {{/value}}
         {{^value}}
           <h1 class="empty">null</h1>
         {{/value}}
         <span class="separator"></span>      
       {{/index}}
-    {{/content.fields}}
+    {{/fields}}
   </div>
   <div class="cartodb-popup-content-wrapper">
     <div class="cartodb-popup-content">
-      {{#content.fields}}
+      {{#fields}}
         {{#index}}
           {{#title}}<h4>{{title}}</h4>{{/title}}
           {{#value}}
-            <p>
-              {{#url}}
-                <a href="{{ url }}" target="_blank">{{ value }}</a>
-              {{/url}}
-              {{^url}}
-                {{ value }}
-              {{/url}}
-            </p>
+            <p>{{{ value }}}</p>
           {{/value}}
           {{^value}}
             <p class="empty">null</p>
           {{/value}}
         {{/index}}
-      {{/content.fields}}
+      {{/fields}}
     </div>
   </div>
   <div class="cartodb-popup-tip-container">

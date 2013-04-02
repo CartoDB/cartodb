@@ -97,6 +97,6 @@
 
     </script>
 
-    <%= render 'shared/analytics', ua: Cartodb.config[:google_analytics]["embeds"] %>
+    <%= insert_google_analytics('embeds') %>
   </body>
 </html>

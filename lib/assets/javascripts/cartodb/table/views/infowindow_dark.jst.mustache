@@ -2,7 +2,7 @@
   <a href="#close" class="cartodb-popup-close-button close">x</a>
   <div class="cartodb-popup-content-wrapper">
     <div class="cartodb-popup-content">
-      {{#fields}}
+      {{#content.fields}}
         {{#title}}<h4>{{title}}</h4>{{/title}}
         {{#value}}
           <p {{#type}}class="{{ type }}"{{/type}}>{{{ value }}}</p>
@@ -10,7 +10,7 @@
         {{^value}}
           <p class="empty">null</p>
         {{/value}}
-      {{/fields}}
+      {{/content.fields}}
     </div>
   </div>
   <div class="cartodb-popup-tip-container"></div>

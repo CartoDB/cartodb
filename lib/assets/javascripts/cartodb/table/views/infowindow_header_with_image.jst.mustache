@@ -4,7 +4,7 @@
   <div class="cover">
     <div id="spinner"></div>
     <div class="image_not_found"> <i></i> <a href="#map" class="help">Non-valid picture URL</a></div>
-      {{#fields}}
+      {{#content.fields}}
         {{#index}}
           {{#value}}
             <h1 class="order{{index}}">{{{ value }}}</h1>
@@ -19,7 +19,7 @@
           {{/value}}
           <span class="separator"></span>      
         {{/index}}
-      {{/fields}}
+      {{/content.fields}}
 
       <div class="shadow"></div>
     </div>
@@ -27,7 +27,7 @@
 
   <div class="cartodb-popup-content-wrapper">
     <div class="cartodb-popup-content">
-      {{#fields}}
+      {{#content.fields}}
         <div class="order{{index}}">
             {{#index}}
               {{#title}}<h4>{{title}}</h4>{{/title}}
@@ -39,7 +39,7 @@
               {{/value}}
             {{/index}}
         </div>
-      {{/fields}}
+      {{/content.fields}}
     </div>
   </div>
   <div class="cartodb-popup-tip-container"></div>

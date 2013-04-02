@@ -4,8 +4,8 @@ function LayerDefinition(layerDefinition, options) {
 
   this.options = _.defaults(options, {
     ajax: $.ajax,
-    pngParams: ['api_key', 'cache_policy', 'updated_at'],
-    gridParams: ['api_key', 'cache_policy', 'updated_at'],
+    pngParams: ['map_key', 'api_key', 'cache_policy', 'updated_at'],
+    gridParams: ['map_key', 'api_key', 'cache_policy', 'updated_at'],
     cors: this.isCORSSupported()
 
   });
@@ -140,13 +140,13 @@ LayerDefinition.prototype = {
   getTiles: function(callback) {
     var self = this;
     if(self.layerToken) {
-      callback && callback(self._layerGroupTiles(self.layerToken));
+      callback && callback(self._layerGroupTiles(self.layerToken, self.options.extra_params));
       return this;
     }
     this.getLayerToken(function(data) {
       if(data) {
         self.layertoken = data.layergroupid;
-        callback && callback(self._layerGroupTiles(data.layergroupid));
+        callback && callback(self._layerGroupTiles(data.layergroupid, self.options.extra_params));
       } else {
         callback && callback(null);
       }

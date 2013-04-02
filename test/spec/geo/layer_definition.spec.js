@@ -172,5 +172,17 @@ describe("LayerDefinition", function() {
 
   });
 
+  it("getTiles should include extra params", function() {
+    layerDefinition.options.extra_params = {
+      'map_key': 'testapikey',
+      'should_not': 'included'
+    }
+    layerDefinition.layerToken = 'test';
+    layerDefinition.getTiles(function(tiles) {
+      expect(tiles.tiles[0].indexOf('map_key=testapikey')).not.toEqual(-1)
+      expect(tiles.tiles[0].indexOf('should_not')).toEqual(-1)
+    });
+  });
+
 });
 

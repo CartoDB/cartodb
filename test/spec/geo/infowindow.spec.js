@@ -92,15 +92,16 @@ describe("cdb.geo.ui.infowindow", function() {
       model.set({
         content: {
           fields: [{
-              title: 'jamon1', value: 0
+              title: 'jamon1', value: 0, index:0
             }, {
-              title: 'jamon2', value: 1
+              title: 'jamon2', value: 1, index:1
             }]
         },
         template_name: 'jaja'
       }, {silent: true});
 
-      var render_fields = view._fieldsToString(model.attributes).content.fields;
+      var render_fields = view._fieldsToString(model.attributes.content.fields, model.attributes.template_name);
+      console.log(render_fields);
 
       expect(render_fields[0].value).toEqual("0");
       expect(render_fields[1].value).toEqual("1");

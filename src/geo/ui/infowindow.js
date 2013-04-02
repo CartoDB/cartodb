@@ -479,7 +479,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
   _isValidURL: function(url) {
     if (url) {
       var urlPattern = /^(http|ftp|https):\/\/[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:\/~+#-]*[\w@?^=%&amp;\/~+#-])?$/
-      return url.match(urlPattern) != null ? true : false;
+      return String(url).match(urlPattern) != null ? true : false;
     }
 
     return false;

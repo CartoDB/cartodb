@@ -461,7 +461,7 @@ describe Table do
       }.should raise_error(CartoDB::InvalidColumnName)
     end
 
-    it "can modify it's schema" do
+    it "can modify its schema" do
       table = create_table(:user_id => @user.id)
       table.schema(:cartodb_types => false).should be_equal_to_default_db_schema
 

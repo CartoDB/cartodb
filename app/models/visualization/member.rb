@@ -33,6 +33,17 @@ module CartoDB
         self
       end #fetch
 
+      def to_json(*args)
+        { 
+          id:           id,
+          name:         name,
+          map_id:       map_id,
+          type:         type,
+          tags:         tags.join(','),
+          description:  description
+        }
+      end #to_json
+
       def delete
         repository.delete(id)
         self.attributes.keys.each { |k| self.send("#{k}=", nil) }

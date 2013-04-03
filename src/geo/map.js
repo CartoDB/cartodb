@@ -162,22 +162,6 @@ cdb.geo.Layers = Backbone.Collection.extend({
     this.bind('add remove', this._asignIndexes, this);
   },
 
-  clone: function() {
-    var layers = new cdb.geo.Layers();
-    this.each(function(layer) {
-      if(layer.clone) {
-        var lyr = layer.clone();
-        lyr.set('id', null);
-        layers.add(lyr);
-      } else {
-        var attrs = _.clone(layer.attributes);
-        delete attrs.id;
-        layers.add(attrs);
-      }
-    });
-    return layers;
-  },
-
   /**
    * each time a layer is added or removed
    * the index should be recalculated
@@ -206,8 +190,6 @@ cdb.geo.Map = cdb.core.Model.extend({
   initialize: function() {
     this.layers = new cdb.geo.Layers();
 
-    this.bind('change:id', this._setLayersMapId, this);
-
     this.layers.bind('reset', function() {
       if(this.layers.size() >= 1) {
         this._adjustZoomtoLayer(this.layers.models[0]);
@@ -233,14 +215,6 @@ cdb.geo.Map = cdb.core.Model.extend({
     });
   },
 
-  _setLayersMapId: function(model) {
-    model.layers.each(function(layer){
-      layer.save({
-        map_id: model.get('id')
-      });
-    });
-  },
-
   enableScrollWheel: function() {
     this.set({
       scrollwheel: true
@@ -261,28 +235,6 @@ cdb.geo.Map = cdb.core.Model.extend({
     this.set({
       center: latlng
     });
-  },
-
-  clone: function() {
-    var m = new cdb.geo.Map(_.clone(this.attributes));
-
-    // clone lists
-    m.set({
-      center:           _.clone(this.attributes.center),
-      bounding_box_sw:  _.clone(this.attributes.bounding_box_sw),
-      bounding_box_ne:  _.clone(this.attributes.bounding_box_ne),
-      view_bounds_sw:   _.clone(this.attributes.view_bounds_sw),
-      view_bounds_ne:   _.clone(this.attributes.view_bounds_ne),
-      attribution:      _.clone(this.attributes.attribution)
-    });
-
-    // layers
-    m.layers = this.layers.clone();
-
-    // Remove useless id
-    m.set("id", null);
-
-    return m;
   },
 
   /**
@@ -397,50 +349,6 @@ cdb.geo.Map = cdb.core.Model.extend({
     if(baseLayer && baseLayer.get('options'))  {
       return baseLayer.get('options').urlTemplate;
     }
-  },
-
-
-  // remove current base layer and set the specified
-  // current base layer is removed
-  setBaseLayer: function(layer, opts) {
-    opts = opts || {};
-    var self = this;
-    var old = this.layers.at(0);
-
-    // Check if the selected base layer is already selected
-    if (this.isBaseLayerAdded(layer)) {
-      opts.alreadyAdded && opts.alreadyAdded();
-      return false;
-    }
-
-    if (old) { // defensive programming FTW!!
-      //remove layer from the view
-      //change all the attributes and save it again
-      //it will saved in the server and recreated in the client
-      self.layers.remove(old);
-      layer.set('id', old.get('id'));
-      layer.set('order', old.get('order'));
-      this.layers.add(layer, { at: 0 });
-      layer.save(null, {
-        success: function() {
-          self.trigger('baseLayerAdded');
-          self._adjustZoomtoLayer(layer);
-          opts.success && opts.success();
-        },
-        error: opts.error
-      })
-
-    } else {
-      self.layers.add(layer, { at: 0 });
-      self.trigger('baseLayerAdded');
-      self._adjustZoomtoLayer(layer);
-      opts.success && opts.success();
-    }
-
-    // Update attribution removing old one and adding new one
-    this.updateAttribution(old,layer);
-
-    return layer;
   },
 
   updateAttribution: function(old,new_) {

@@ -119,7 +119,7 @@ cdb.ui.common.Dialog = cdb.core.View.extend({
    if(ev) ev.preventDefault();
 
     if (this.ok) {
-      this.ok();
+      this.ok(this.result);
     }
 
     this.hide();

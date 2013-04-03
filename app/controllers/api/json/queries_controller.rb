@@ -6,7 +6,7 @@ class Api::Json::QueriesController < Api::ApplicationController
   def run
     # Sanity check
     raise "You must indicate a sql query in the query parameter" if params[:sql].blank?
-    raise "System tables are forbidden" if params[:sql] =~ /.*pg_.+/
+    raise "System tables are forbidden" if params[:sql] =~ /[ ,"'(]pg_.+/
 
     params[:rows_per_page] = 40 unless params[:rows_per_page].present?
     params[:page] = 0 unless params[:page].present?

@@ -57,7 +57,9 @@ class Map < Sequel::Model
 
   def invalidate_varnish_cache
     t = self.tables_dataset.select(:id, :user_id, :name).first
+    return true if t.blank?
     CartoDB::Varnish.new.purge("obj.http.X-Cache-Channel ~ #{t.varnish_key}:vizjson")
+
   end
 
   def recalculate_bounds!

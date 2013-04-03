@@ -7,16 +7,14 @@ describe("LayerDefinition", function() {
          type: 'cartodb', 
          options: {
            sql: 'select * from ne_10m_populated_places_simple',
-           cartocss: '#layer { marker-fill: red; }',
-           interactivity: ['test', 'cartodb_id']
+           cartocss: '#layer { marker-fill: red; }'
          }
        }, {
          type: 'cartodb', 
          options: {
            sql: "select * from european_countries_export",
            cartocss: '#layer { polygon-fill: #000; polygon-opacity: 0.8;}',
-           cartocss_version : '2.0.0',
-           interactivity: ['test2', 'cartodb_id2']
+           cartocss_version : '2.0.0'
          }
        }
       ]
@@ -44,8 +42,7 @@ describe("LayerDefinition", function() {
        options: {
          sql: "select * from european_countries_export",
          cartocss: '#layer { polygon-fill: #000; polygon-opacity: 0.8;}',
-         cartocss_version: '2.0.0',
-         interactivity: ['test2', 'cartodb_id2']
+         cartocss_version: '2.0.0'
        }
     });
   });
@@ -78,16 +75,14 @@ describe("LayerDefinition", function() {
          options: {
            sql: 'select * from ne_10m_populated_places_simple',
            cartocss: '#layer { marker-fill: red; }',
-           cartocss_version: '2.1.0',
-           interactivity: ['test', 'cartodb_id']
+           cartocss_version: '2.1.0'
          }
        }, {
          type: 'cartodb', 
          options: {
            sql: "select * from european_countries_export",
            cartocss: '#layer { polygon-fill: #000; polygon-opacity: 0.8;}',
-           cartocss_version: '2.0.0',
-           interactivity: ['test2', 'cartodb_id2']
+           cartocss_version: '2.0.0'
          }
        }
       ]
@@ -124,19 +119,18 @@ describe("LayerDefinition", function() {
     expect(tiles.grids[0][1]).toEqual('http://b.tiles.cartocdn.com/rambo/tiles/layergroup/test_layer/layer0/{z}/{x}/{y}.grid.json?');
   });
 
-  it("grid url should not include interactivity", function() {
+  it("grid url should include interactivity", function() {
     layerDefinition.setInteractivity(0, ['cartodb_id', 'rambo']);
     var tiles = layerDefinition._layerGroupTiles('test_layer');
-    expect(tiles.grids[0][0]).toEqual('http://rambo.cartodb.com:8081/tiles/layergroup/test_layer/layer0/{z}/{x}/{y}.grid.json?');
+    expect(tiles.grids[0][0]).toEqual('http://rambo.cartodb.com:8081/tiles/layergroup/test_layer/layer0/{z}/{x}/{y}.grid.json?interactivity=' + encodeURIComponent('cartodb_id,rambo'));
     expect(tiles.grids[1][0]).toEqual('http://rambo.cartodb.com:8081/tiles/layergroup/test_layer/layer1/{z}/{x}/{y}.grid.json?');
   });
 
-  it("should set interactivity", function() {
-    layerDefinition.setInteractivity(1, ['cartodb_id', 'rambo   ']);
-    expect(layerDefinition.getLayer(1).options.interactivity).toEqual(['cartodb_id','rambo']);
+  it("should set interaction", function() {
+    layerDefinition.setInteractivity(1, ['cartodb_id', 'rambo']);
+    expect(layerDefinition.getLayer(1).options.interactivity).toEqual('cartodb_id,rambo');
     layerDefinition.setInteractivity(['cartodb_id', 'john']);
-    expect(layerDefinition.getLayer(0).options.interactivity).toEqual(['cartodb_id', 'john']);
-    expect(layerDefinition.toJSON().layers[0].options.interactivity).toEqual(['cartodb_id', 'john']);
+    expect(layerDefinition.getLayer(0).options.interactivity).toEqual('cartodb_id,john');
   });
 
   it("should use cdn_url as default", function() {

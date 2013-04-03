@@ -5,9 +5,8 @@ function LayerDefinition(layerDefinition, options) {
   this.options = _.defaults(options, {
     ajax: $.ajax,
     pngParams: ['map_key', 'api_key', 'cache_policy', 'updated_at'],
-    gridParams: ['map_key', 'api_key', 'cache_policy', 'updated_at'],
+    gridParams: ['map_key', 'api_key', 'cache_policy', 'updated_at', 'interactivity'],
     cors: this.isCORSSupported()
-
   });
 
   this.version = layerDefinition.version || '1.0.0';
@@ -37,8 +36,7 @@ LayerDefinition.prototype = {
         options: {
           sql: layer.options.sql,
           cartocss: layer.options.cartocss,
-          cartocss_version: layer.options.cartocss_version || '2.1.0',
-          interactivity: layer.options.interactivity
+          cartocss_version: layer.options.cartocss_version || '2.1.0'
         }
       });
     }
@@ -174,10 +172,17 @@ LayerDefinition.prototype = {
       var s = subdomains[i]
       var cartodb_url = this._host(s) + '/tiles/layergroup/' + layerGroupId 
       tiles.push(cartodb_url + tileTemplate + ".png?" + pngParams );
+    }
 
-      var gridParams = this._encodeParams(params, this.options.gridParams);
+
+    for(var i = 0; i < subdomains.length; ++i) {
+      var s = subdomains[i]
+      var cartodb_url = this._host(s) + '/tiles/layergroup/' + layerGroupId 
       for(var layer in this.layers) {
+        var layerObject = this.layers[layer]
         grids[layer] = grids[layer] || [];
+        var p = _.extend({}, params, { interactivity: layerObject.options.interactivity });
+        var gridParams = this._encodeParams(p, this.options.gridParams);
         grids[layer].push(cartodb_url + "/layer" + layer +  tileTemplate + ".grid.json?" + gridParams);
       }
     }
@@ -201,15 +206,11 @@ LayerDefinition.prototype = {
       layer = 0;
     }
 
-    if(typeof(attributes) == 'string') {
-      attributes = attributes.split(',');
+    if(attributes.join) {
+      attributes = attributes.join(',');
     }
 
-    for(var i = 0; i < attributes.length; ++i) {
-      attributes[i] = attributes[i].replace(/ /g, '');
-    }
-
-    this.layers[layer].options.interactivity = attributes;
+    this.layers[layer].options.interactivity = attributes.replace(/ /g, '');
     this._definitionUpdated();
     return this;
   },

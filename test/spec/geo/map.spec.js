@@ -267,7 +267,7 @@ describe("geo.map", function() {
       });
       waits(1);
       runs(function() {
-        expect(container.find("a.cartodb_logo").length).toEqual(1);
+        expect(container.find("div.cartodb-logo").length).toEqual(1);
       });
     });
 
@@ -284,7 +284,7 @@ describe("geo.map", function() {
       });
       waits(1);
       runs(function() {
-        expect(container.find("a.cartodb_logo").length).toEqual(0);
+        expect(container.find("div.cartodb-logo").length).toEqual(0);
       });
     });
 

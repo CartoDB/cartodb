@@ -214,10 +214,10 @@ if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
       return [ [0,0], [0,0] ];
     },
 
-    setAttribution: function(m) {
-      // Remove old one
-      var old = document.getElementById("cartodb-gmaps-attribution")
-        , attribution = m.get("attribution").join(", ");
+  setAttribution: function(m) {
+    // Remove old one
+    var old = document.getElementById("cartodb-gmaps-attribution")
+      , attribution = m.get("attribution").join(", ");
 
       // If div already exists, remove it
       if (old) {

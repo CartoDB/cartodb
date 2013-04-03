@@ -67,7 +67,7 @@ module CartoDB
 
       helpers do
         def payload
-          JSON.parse(request.body.read.to_s || String.new)
+          ::JSON.parse(request.body.read.to_s || String.new)
             .merge('visualization_id' => params.fetch('visualization_id'))
         end #payload
       end 

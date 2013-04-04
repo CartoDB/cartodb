@@ -49,8 +49,7 @@ GEM
       builder
       girl_friday
     arel (3.0.2)
-    aws-sdk (1.5.2)
-      httparty (~> 0.7)
+    aws-sdk (1.8.5)
       json (~> 1.4)
       nokogiri (>= 1.4.4)
       uuidtools (~> 2.1)
@@ -125,9 +124,6 @@ GEM
     hike (1.2.1)
     htmlentities (4.3.1)
     http_parser.rb (0.5.3)
-    httparty (0.10.2)
-      multi_json (~> 1.0)
-      multi_xml (>= 0.5.2)
     httpauth (0.2.0)
     i18n (0.6.1)
     journey (1.0.4)
@@ -325,7 +321,7 @@ DEPENDENCIES
   addressable (= 2.2.8)
   aequitas
   airbrake (= 3.1.6)
-  aws-sdk (= 1.5.2)
+  aws-sdk (= 1.8.5)
   bartt-ssl_requirement (~> 1.4.0)
   builder (= 3.0.0)
   capybara (= 1.1.2)

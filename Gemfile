@@ -24,7 +24,7 @@ gem "yajl-ruby",               "1.1.0", :require => "yajl"
 gem "airbrake",                "3.1.6"
 gem "nokogiri",                "1.5.3"
 gem "statsd-client",           "0.0.7", :require => "statsd"
-gem "aws-sdk",                 "1.5.2"
+gem "aws-sdk",                 "1.8.5"
 
 gem "addressable",             "2.2.8", :require => "addressable/uri"
 

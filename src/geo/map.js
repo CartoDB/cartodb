@@ -604,7 +604,7 @@ cdb.geo.MapView = cdb.core.View.extend({
   getLayerByCid: function(cid) {
     var l = this.layers[cid];
     if(!l) {
-      cdb.log.error("layer with cid " + cid + " can't be get");
+      cdb.log.debug("layer with cid " + cid + " can't be get");
     }
     return l;
   },

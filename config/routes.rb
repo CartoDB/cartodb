@@ -22,6 +22,13 @@ CartoDB::Application.routes.draw do
       get 'track_embed', :on => :collection
       get 'public' => 'tables#show_public', :on => :member
     end
+
+    resources :visualizations, :only => [:show] do
+      get 'embed_map', :on => :member
+      get 'track_embed', :on => :collection
+      get 'public' => 'tables#show_public', :on => :member
+    end
+
     match '/your_apps/oauth'   => 'client_applications#oauth',   :as => :oauth_credentials
     match '/your_apps/api_key' => 'client_applications#api_key', :as => :api_key_credentials
     post  '/your_apps/api_key/regenerate' => 'client_applications#regenerate_api_key', :as => :regenerate_api_key

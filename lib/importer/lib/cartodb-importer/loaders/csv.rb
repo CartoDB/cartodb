@@ -95,6 +95,7 @@ module CartoDB
       end #rows_imported
 
       def create_the_geom
+        return if column_names.include?('the_geom')
         res       = get_latitude(suggested_name.dup)
         latitude  = res.first[:column_name] unless res.first.nil?
         res       = get_longitude(suggested_name.dup)

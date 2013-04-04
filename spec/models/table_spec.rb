@@ -60,7 +60,9 @@ describe Table do
     end
 
     it "should create default associated map and layers" do
-      table = create_table({:name => "epaminondas_pantulis", :user_id => @user.id})
+      expect do
+        table = create_table(name: "epaminondas_pantulis", user_id: @user.id)
+      end.to change(CartoDB::Visualization::Collection.new.fetch.count).by(1)
 
       table.map.should be_an_instance_of(Map)
       table.map.values.slice(:zoom, :bounding_box_sw, :bounding_box_ne, :provider).should == { zoom: 3, bounding_box_sw: "[0, 0]", bounding_box_ne: "[0, 0]", provider: 'leaflet'}

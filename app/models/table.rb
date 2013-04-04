@@ -313,6 +313,7 @@ class Table < Sequel::Model(:user_tables)
   def after_create
     super
     self.create_default_map_and_layers
+    self.create_default_visualization
     self.send_tile_style_request
 
     owner.in_database(:as => :superuser).run(%Q{GRANT SELECT ON "#{self.name}" TO #{CartoDB::TILE_DB_USER};})
@@ -400,6 +401,15 @@ class Table < Sequel::Model(:user_tables)
         { name: column_name, title: true, position: i+1 }
       }
     m.add_layer(data_layer)
+  end
+
+  def create_default_visualization
+    CartoDB::Visualization::Member.new(
+      name: self.name, 
+      map_id: self.map_id, 
+      type: "table", 
+      description: self.description
+    ).store
   end
 
   ##

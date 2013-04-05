@@ -2,7 +2,6 @@
 require 'virtus'
 require_relative './collection'
 require_relative '../overlay/collection'
-require_relative '../map'
 
 module CartoDB
   module Visualization
@@ -36,7 +35,7 @@ module CartoDB
         self
       end #fetch
 
-      def to_json(*args)
+      def to_hash
         { 
           id:           id,
           name:         name,
@@ -44,8 +43,8 @@ module CartoDB
           type:         type,
           tags:         tags.join(','),
           description:  description
-        }
-      end #to_json
+        }.merge(table: table_data)
+      end #to_hash
 
       def delete
         overlays.destroy
@@ -59,12 +58,31 @@ module CartoDB
       end #overlays
 
       def map
+        return nil unless map_id
+        return nil unless defined?(Map)
         @map ||= Map.where(id: map_id).first
       end #map
+
+      def table
+        return nil unless type == 'table'
+        return nil unless defined?(Table)
+        @table  ||= Table.where(map_id: map_id).first
+      end #table
 
       private
 
       attr_reader :repository
+
+      def table_data
+        return {} unless table
+        {
+          id:           table.id,
+          privacy:      table.privacy,
+          size:         table.table_size,
+          row_count:    table.rows_counted,
+          updated_at:   table.updated_at
+        }
+      end #table_data
     end # Member
   end # Visualization
 end # CartoDB

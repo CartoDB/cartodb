@@ -7,8 +7,8 @@ module DataRepository
   class Collection
     include Enumerable
 
-    INTERFACE  = %w{ signature add delete store fetch each to_json repository } +
-                  Enumerable.instance_methods
+    INTERFACE  = %w{ signature add delete store fetch each to_json repository
+    size } + Enumerable.instance_methods
 
     attr_reader   :signature
     attr_accessor :storage
@@ -51,6 +51,10 @@ module DataRepository
     def to_json(*args)
       map { |member| member.fetch.to_hash }.to_json(*args)
     end #to_json
+
+    def size
+      storage.size
+    end #size
 
     private
 

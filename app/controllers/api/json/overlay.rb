@@ -10,9 +10,16 @@ module CartoDB
       get '/api/v1/visualizations/:visualization_id/overlays' do
         begin
           collection  = Overlay::Collection.new(
-                          visualization_id: params.fetch('visualization_id')
-                        ).fetch
-          response    = { overlays: collection }.to_json
+            visualization_id: params.fetch('visualization_id'),
+            page:             params.dup.delete('page'),
+            per_page:         params.dup.delete('per_page')
+          ).fetch
+
+          response    = { 
+            overlays:       collection, 
+            total_entries:  collection.size
+          }.to_json
+
           [200, response]
         rescue KeyError => exception
           [404]

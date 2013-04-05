@@ -2,6 +2,7 @@
 require 'virtus'
 require_relative './collection'
 require_relative '../overlay/collection'
+require_relative '../map'
 
 module CartoDB
   module Visualization
@@ -56,6 +57,10 @@ module CartoDB
       def overlays
         @overlays ||= Overlay::Collection.new(visualization_id: id).fetch
       end #overlays
+
+      def map
+        @map ||= Map.where(id: map_id).first
+      end #map
 
       private
 

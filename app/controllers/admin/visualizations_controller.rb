@@ -34,10 +34,8 @@ class Admin::VisualizationsController < ApplicationController
     # Has quite strange checks to see if a user can access a public table
     #if @table.blank? || @table.private? || ((current_user && current_user.id != @table.user_id) && @table.private?)
     #  render_403
-    else
-      respond_to do |format|
-        format.html { render 'show_public', :layout => 'application_public' }
-      end
+    respond_to do |format|
+      format.html { render 'show_public', :layout => 'application_public' }
     end
   end
 

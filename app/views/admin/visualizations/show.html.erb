@@ -1,5 +1,5 @@
   <% content_for(:page_title) do %>
-    <%= @table.name %> |
+    <%= @visualization.name %> |
   <% end %>
 
   <% content_for(:css) do %>
@@ -8,12 +8,10 @@
   <% end %>
 
   <script>
-    var table_name = '<%= @table.name %>'
-      , table_id = '<%= @table.id %>'
-      , table_data = <%=raw @table.public_values.merge(schema: @table.schema(reload: true)).to_json.html_safe %>
+      var
+        vis_data = <%=raw @visualization.attributes.to_json %>
       , user_data = <%=raw current_user.data.to_json.html_safe %>
       , config = <%=raw frontend_config.html_safe %>
-      , map_data = <%=raw @table.map.public_values.to_json.html_safe %>;
   </script>
 
   <% content_for(:js) do %>

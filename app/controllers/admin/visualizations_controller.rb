@@ -1,6 +1,6 @@
 # coding: utf-8
 
-class Admin::TablesController < ApplicationController
+class Admin::VisualizationsController < ApplicationController
   ssl_required :index, :show
 
   skip_before_filter :browser_is_html5_compliant?, :only => [:embed_map]

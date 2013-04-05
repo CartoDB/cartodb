@@ -1,0 +1,51 @@
+<article class="no_vis active">
+<div class="inner">
+  <section class="block empty">
+  <a href="#close" class="close"><i></i></a>
+  <div class="content">
+    <div class="left">
+      <h2>Create your first visualization</h2>
+      <p class="margin20">A visualization is a mashup of layers and components using your cartodb data and the wizards.</p>
+      <p>Definitely the best way to publish your maps on the web.</p>
+    </div>
+    <div class="right">
+      <div class="tables">
+        <a href="#create_a_table" class="green button create_new">Create your first vizz</a>
+      </div>
+    </div>
+  </div>
+  </section>
+</div>
+</article>
+
+<article class="visualizations <%= 'active' if @tables_count > 0 %>">
+<div class="inner">   
+  <section class="left visualizations">
+  <div class="head">
+    <h2><i></i> 5 visualizations created</h2>
+    <a href="#" class="toggle"></a>
+    <div class="order">
+      Order by <a href="#" data-order="modified" class="selected">modified</a> / <a href="#" data-order="created">created</a>
+    </div>
+  </div>
+
+  <div class="content"> 
+    <ul id="vislist"></ul>
+  </div>
+
+  </section>
+
+  <aside class="right">
+  <div class="head">
+    <a href="#" class="create border">
+      <div class="content">
+        <div class="plus"></div>
+      </div>
+      <div class="title">Create new visualization</div>
+    </a>
+  </div>
+  <div class="content">
+  </div>
+  </aside>
+</div>
+</article>

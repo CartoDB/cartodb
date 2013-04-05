@@ -99,6 +99,23 @@ describe Visualization::API do
       collection  = response.fetch('visualizations')
       collection.length.must_equal per_page
     end
+
+    it 'returns filtered results' do
+      post '/api/v1/visualizations', factory.to_json
+
+      get "/api/v1/visualizations?type=table"
+      last_response.status.must_equal 200
+      response    = JSON.parse(last_response.body)
+      collection  = response.fetch('visualizations')
+      collection.wont_be_empty
+
+      get "/api/v1/visualizations?type=derived"
+      last_response.status.must_equal 200
+      response    = JSON.parse(last_response.body)
+      collection  = response.fetch('visualizations')
+      puts collection
+      collection.must_be_empty
+    end
   end # GET /api/v1/visualizations
 
   describe 'POST /api/v1/visualizations' do

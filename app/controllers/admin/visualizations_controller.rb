@@ -19,17 +19,7 @@ class Admin::VisualizationsController < ApplicationController
     if current_user.present?
       @visualization = 
         CartoDB::Visualization::Member.new(id: params[:id]).fetch
-
-      table_id  = Table.where(map_id: @visualization.map_id).first.id
-      @table    = Table.find_by_identifier(current_user.id, table_id)
-      begin
-        respond_to do |format|
-          format.html
-          download_formats @table, format
-        end
-      rescue
-        redirect_to table_path(@table), alert: "There was an error exporting the table"
-      end
+      respond_to { |format| format.html }
     else
       redirect_to public_visualization_path(params[:id], :format => params[:format])
     end
@@ -38,21 +28,15 @@ class Admin::VisualizationsController < ApplicationController
   def show_public
     @visualization = 
         CartoDB::Visualization::Member.new(id: params[:id]).fetch
-    table_id  = Table.where(map_id: @visualization.map_id).first.id
-    @subdomain  = request.subdomain
-    @table      = Table.find_by_subdomain(@subdomain, params[:id])
+    #@subdomain  = request.subdomain
+    #@table      = Table.find_by_subdomain(@subdomain, params[:id])
 
     # Has quite strange checks to see if a user can access a public table
-    if @table.blank? || @table.private? || ((current_user && current_user.id != @table.user_id) && @table.private?)
-      render_403
+    #if @table.blank? || @table.private? || ((current_user && current_user.id != @table.user_id) && @table.private?)
+    #  render_403
     else
-      begin
-        respond_to do |format|
-          format.html { render 'show_public', :layout => 'application_public' }
-          download_formats @table, format
-        end
-      rescue
-        redirect_to public_table_path(@table), :alert => "There was an error exporting the table"
+      respond_to do |format|
+        format.html { render 'show_public', :layout => 'application_public' }
       end
     end
   end

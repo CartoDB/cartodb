@@ -16,6 +16,7 @@ describe Overlay::API do
   include Rack::Test::Methods
   
   before do
+    Sequel.extension(:pagination)
     db = Sequel.sqlite
 
     db.create_table :overlays do

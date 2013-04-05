@@ -13,8 +13,8 @@ module CartoDB
     
     class Collection
       def initialize(attributes={}, options={})
-        @page       = attributes.delete(:page)
-        @per_page   =  attributes.delete(:per_page)
+        @page       = attributes.delete('page')
+        @per_page   =  attributes.delete('per_page')
         @collection = DataRepository::Collection.new(
           signature:    SIGNATURE,
           repository:   options.fetch(:repository, Visualization.repository),

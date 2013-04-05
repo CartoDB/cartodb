@@ -21,8 +21,8 @@ module CartoDB
       validates_presence_of         :visualization_id
 
       def initialize(attributes={}, options={})
-        @page           = attributes.delete(:page)
-        @per_page       = attributes.delete(:per_page)
+        @page           = attributes.delete('page')
+        @per_page       = attributes.delete('per_page')
         self.attributes = attributes
         @collection     = DataRepository::Collection.new(
           signature:    SIGNATURE,

@@ -5,7 +5,8 @@ require_relative '../../../services/data-repository/structures/collection'
 
 module CartoDB
   module Visualization
-    SIGNATURE = 'visualizations'
+    SIGNATURE         = 'visualizations'
+    AVAILABLE_FILTERS = %w{ name type description }
 
     class << self
       attr_accessor :repository
@@ -13,8 +14,6 @@ module CartoDB
     
     class Collection
       def initialize(attributes={}, options={})
-        @page       = attributes.delete('page')
-        @per_page   =  attributes.delete('per_page')
         @collection = DataRepository::Collection.new(
           signature:    SIGNATURE,
           repository:   options.fetch(:repository, Visualization.repository),
@@ -30,10 +29,11 @@ module CartoDB
         end
       end
 
-      def fetch
+      def fetch(filter={})
         collection.storage = 
           Set.new(
-            repository.collection(filter).map { |record| record.fetch(:id) }
+            repository.collection(filter, AVAILABLE_FILTERS)
+              .map { |record| record.fetch(:id) }
           )
         self
       end #fetch
@@ -50,11 +50,7 @@ module CartoDB
 
       private
 
-      attr_reader :collection, :page, :per_page
-
-      def filter
-        { page: page, per_page: per_page }
-      end #filter
+      attr_reader :collection
     end # Collection
   end # Visualization
 end # CartoDB

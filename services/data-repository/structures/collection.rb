@@ -57,7 +57,7 @@ module DataRepository
     attr_reader   :repository, :member_class
 
     def members
-      storage.each { |member_id| yield member_class.new(id: member_id) }
+      storage.each { |member_id| yield member_class.new(id: member_id).fetch }
     end #members
   end # Collection
 end # DataRepository

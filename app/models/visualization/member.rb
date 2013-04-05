@@ -12,7 +12,7 @@ module CartoDB
       attribute :name,          String
       attribute :map_id,        Integer
       attribute :type,          String
-      attribute :tags,          Array[String]
+      attribute :tags,          Array[String], default: []
       attribute :description,   String
 
       def initialize(attributes={}, repository=Visualization.repository)
@@ -41,7 +41,7 @@ module CartoDB
           name:         name,
           map_id:       map_id,
           type:         type,
-          tags:         tags.join(','),
+          tags:         (tags || []).join(','),
           description:  description
         }.merge(table: table_data)
       end #to_hash

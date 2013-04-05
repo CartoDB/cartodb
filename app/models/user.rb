@@ -480,7 +480,7 @@ class User < Sequel::Model
     imports.map do |import|
       if import.created_at < Time.now - 5.minutes && !running_import_ids.include?(import.id)
         import.failed!
-        Bugsnag.notify(RuntimeError.new("Import timed out"), { :username => self.username })
+        CartoDB::notify_exception(CartoDB::GenericImportError.new("Import timed out"), self)
         nil
       else
         import

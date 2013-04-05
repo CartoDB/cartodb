@@ -95,7 +95,7 @@ class DataImport < Sequel::Model
       # Increment failed imports on CartoDB stats
       CartodbStats.increment_failed_imports()
       
-      Bugsnag.notify(RuntimeError.new("Import error"), { username: current_user.username })
+      CartoDB::notify_exception(CartoDB::GenericImportError.new, current_user)
 
       # Copy any uploaded resources to secret failed imports vault(tm)
       if file_sha = self.data_source.to_s.match(/uploads\/([a-z0-9]{20})\/.*/)

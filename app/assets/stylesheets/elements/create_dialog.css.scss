@@ -139,12 +139,13 @@
                 position: relative;
                 overflow: hidden;
                 @include inline-block();
-                margin:0 0 0 3px;
+                margin:0 0 0 5px;
                 color:#397DBA;
                 text-decoration:underline;
                 font-style:italic;
                 font-size:15px!important;
                 cursor:pointer;
+                letter-spacing: 0;
                 &:hover {
                   color:#333333;
                 }

@@ -11,9 +11,7 @@ module CartoDB
         begin
           collection  = Overlay::Collection.new(
             visualization_id: params.fetch('visualization_id'),
-            page:             params.dup.delete('page'),
-            per_page:         params.dup.delete('per_page')
-          ).fetch
+          ).fetch(params.dump)
 
           response    = { 
             overlays:       collection, 

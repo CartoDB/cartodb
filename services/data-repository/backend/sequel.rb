@@ -13,15 +13,20 @@ module DataRepository
         @relation = relation
       end #initialize
 
-      def collection(filter={})
+      def collection(filter={}, attribute_names=[])
         return db[relation].all if filter.empty?
 
-        page        = (filter.delete(:page)     || PAGE).to_i
-        per_page    = (filter.delete(:per_page) || PER_PAGE).to_i
+        attribute_names = attribute_names.map { |k| k.to_sym}
+        filter          = Hash[ filter.map { |k, v| [k.to_sym, v] } ]
+
+        page        = (filter.delete(:page)      || PAGE).to_i
+        per_page    = (filter.delete(:per_page)  || PER_PAGE).to_i
+
+        filter = filter.select { |key, value|
+          attribute_names.include?(key)
+        } unless attribute_names.empty?
 
         db[relation].where(filter).paginate(page, per_page)
-      rescue => exception
-        puts exception
       end #collection
 
       def store(key, data={})

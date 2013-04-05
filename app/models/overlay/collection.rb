@@ -39,14 +39,16 @@ module CartoDB
         end
       end
 
-      def fetch
+      def fetch(filter={})
         unless repository.respond_to?(:collection)
           collection.fetch
           return self
         end
+
         collection.storage = 
           Set.new(
-            repository.collection(filter).map { |record| record.fetch(:id) }
+            repository.collection(filter.merge(scope))
+              .map { |record| record.fetch(:id) }
           )
         self
       end #fetch
@@ -63,15 +65,11 @@ module CartoDB
 
       private
 
-      attr_reader :collection, :page, :per_page
+      attr_reader :collection
 
-      def filter
-        { 
-          visualization_id: visualization_id,
-          page:             page,
-          per_page:         per_page
-        }
-      end #filter
+      def scope
+        { visualization_id: visualization_id, }
+      end #scope
     end # Collection
   end # Overlay
 end # CartoDB

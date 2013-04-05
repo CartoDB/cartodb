@@ -8,7 +8,7 @@ module CartoDB
   module Visualization
     class API < Sinatra::Base
       get '/api/v1/visualizations' do
-        collection  = Visualization::Collection.new(params.dup).fetch
+        collection  = Visualization::Collection.new.fetch(params.dup)
         response    = {
           visualizations: collection,
           total_entries:  collection.count

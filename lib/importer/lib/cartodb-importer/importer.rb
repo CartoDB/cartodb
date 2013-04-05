@@ -74,8 +74,8 @@ module CartoDB
           # Try to open file normally, or open-uri to download/open
           open(@import_from_file) do |res|
             @data_import.file_ready
-            file_name = File.basename(@import_from_file)
-            @ext = File.extname(file_name).downcase
+            file_name = File.basename(@import_from_file).to_s.gsub(/\?.*/, '')
+            @ext = File.extname(file_name).to_s.downcase
 
             # Try to infer file extension from http Content-Disposition
             if @ext.blank? && res.meta.present? && res.meta["content-disposition"].present?
@@ -98,7 +98,8 @@ module CartoDB
             end
 
             @iconv ||= Iconv.new('UTF-8//IGNORE', 'UTF-8')
-            @original_name ||= get_valid_name(File.basename(@iconv.iconv(@import_from_file), @ext).downcase.sanitize)
+            file_name = File.basename(@iconv.iconv(@import_from_file)).to_s.gsub(/#{Regexp.escape(@ext)}.*/, '').downcase.sanitize
+            @original_name ||= get_valid_name(file_name)
 
             @import_from_file = Tempfile.new([@original_name, @ext], :encoding => 'utf-8')
             @import_from_file.write res.read.force_encoding("UTF-8")
@@ -176,7 +177,7 @@ module CartoDB
         decompressor  = decompressor_for(@ext)
         import_data   = decompressor.process! if decompressor
 
-        @data_import.log_update('file unzipped') if import_data
+        @data_import.log_update('file unzipped') if import_data && decompressor
         @data_import.reload
 
         # Preprocess data and update self with results
@@ -228,8 +229,6 @@ module CartoDB
           loader = loader_for(data.fetch(:ext))
 
           if !loader
-            puts '=============== Setting 1002 error code'
-            puts data.fetch(:ext)
             @data_import.log_update("no importer for this type of data, #{@ext}")
             @data_import.set_error_code(1002)
           else

@@ -1,4 +1,5 @@
 require 'minitest/autorun'
+require 'sequel'
 require 'rack/test'
 require 'json'
 require_relative '../../../app/controllers/api/json/visualization'
@@ -15,6 +16,7 @@ describe Visualization::API do
   include Rack::Test::Methods
  
   before do
+    Sequel.extension(:pagination)
     db = Sequel.sqlite
 
     db.create_table :visualizations do
@@ -84,6 +86,19 @@ describe Visualization::API do
       collection  = response.fetch('visualizations')
       collection.must_be_empty
     end
+
+    it 'paginates results' do
+      per_page = 10
+
+      20.times { post '/api/v1/visualizations', factory.to_json }
+      get "/api/v1/visualizations?page=1&per_page=#{per_page}"
+
+      last_response.status.must_equal 200
+      
+      response    = JSON.parse(last_response.body)
+      collection  = response.fetch('visualizations')
+      collection.length.must_equal per_page
+    end
   end # GET /api/v1/visualizations
 
   describe 'POST /api/v1/visualizations' do
@@ -94,7 +109,7 @@ describe Visualization::API do
 
       response = JSON.parse(last_response.body)
 
-      response.fetch('name')        .must_equal 'new visualization 1'
+      response.fetch('name')        .must_match /visualization/
       response.fetch('tags')        .must_equal payload.fetch(:tags)
       response.fetch('map_id')      .must_equal payload.fetch(:map_id)
       response.fetch('description') .must_equal payload.fetch(:description)
@@ -162,10 +177,11 @@ describe Visualization::API do
   end # DELETE /api/v1/visualizations/:id
 
   def factory
+    random_number = rand(999)
     {
-      name:         'new visualization 1' ,
+      name:         "visualization #{random_number}",
       tags:         ['foo', 'bar'],
-      map_id:       rand(999),
+      map_id:       random_number,
       description:  'bogus',
       type:         'table'
     }

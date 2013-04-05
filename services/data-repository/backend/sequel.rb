@@ -16,10 +16,12 @@ module DataRepository
       def collection(filter={})
         return db[relation].all if filter.empty?
 
-        page        = filter.delete(:page)      || PAGE
-        per_page    = filter.delete(:per_page)  || PER_PAGE
+        page        = (filter.delete(:page)     || PAGE).to_i
+        per_page    = (filter.delete(:per_page) || PER_PAGE).to_i
 
         db[relation].where(filter).paginate(page, per_page)
+      rescue => exception
+        puts exception
       end #collection
 
       def store(key, data={})

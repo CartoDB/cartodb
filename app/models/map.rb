@@ -65,7 +65,7 @@ class Map < Sequel::Model
       result = get_map_bounds
       self.update(view_bounds_ne: "[#{result[:maxy]}, #{result[:maxx]}]", view_bounds_sw: "[#{result[:miny]}, #{result[:minx]}]")
     rescue Sequel::DatabaseError => ex
-      Bugsnag.notify(RuntimeError.new(ex))
+      Bugsnag.notify(ex)
     end
   end
 

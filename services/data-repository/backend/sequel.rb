@@ -5,6 +5,9 @@ require 'uuidtools'
 module DataRepository
   module Backend
     class Sequel
+      PAGE      = 1
+      PER_PAGE  = 1000
+
       def initialize(db=Sequel.sqlite, relation=nil)
         @db       = db
         @relation = relation
@@ -12,7 +15,11 @@ module DataRepository
 
       def collection(filter={})
         return db[relation].all if filter.empty?
-        db[relation].where(filter)
+
+        page        = filter.delete(:page)      || PAGE
+        per_page    = filter.delete(:per_page)  || PER_PAGE
+
+        db[relation].where(filter).paginate(page, per_page)
       end #collection
 
       def store(key, data={})

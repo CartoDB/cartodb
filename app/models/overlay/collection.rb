@@ -21,8 +21,10 @@ module CartoDB
       validates_presence_of         :visualization_id
 
       def initialize(attributes={}, options={})
+        @page           = attributes.delete(:page)
+        @per_page       = attributes.delete(:per_page)
         self.attributes = attributes
-        @collection = DataRepository::Collection.new(
+        @collection     = DataRepository::Collection.new(
           signature:    SIGNATURE,
           repository:   options.fetch(:repository, Overlay.repository),
           member_class: Member
@@ -61,10 +63,14 @@ module CartoDB
 
       private
 
-      attr_reader :collection
+      attr_reader :collection, :page, :per_page
 
       def filter
-        { visualization_id: visualization_id }
+        { 
+          visualization_id: visualization_id,
+          page:             page,
+          per_page:         per_page
+        }
       end #filter
     end # Collection
   end # Overlay

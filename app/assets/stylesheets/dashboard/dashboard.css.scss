@@ -39,7 +39,6 @@
         border:1px solid #D1D1D1;
         z-index:0;
 
-
         a.close {
           @include box-sizing(border-box);
           position:absolute;
@@ -73,7 +72,7 @@
           padding:40px 36px 0 40px;
           height:308px;
 
-          background:image-url("layout/empty_vis_bkg.png") repeat-y 0 0;
+          background:image-url("layout/empty_vis_bkg.png") repeat-y 1px 0;
           overflow:hidden;
 
           div.left {
@@ -387,7 +386,7 @@
           display:block;
           li {
             @include inline-block();
-            width:285px;
+            width:270px;
             margin:0 27px 0 0;
             vertical-align: top;
             a {
@@ -398,7 +397,8 @@
               @include icons-sprite(download_dataset);
             }
 
-            &:last-child {width:235px; margin:0;}
+            &:first-child {width:350px;}
+            &:last-child {margin:0;}
           }
         }
         h3 {letter-spacing:-1px; line-height:25px;}

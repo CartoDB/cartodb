@@ -17,7 +17,7 @@ module CartoDB
 
           response    = { 
             overlays:       collection, 
-            total_entries:  collection.size
+            total_entries:  collection.count
           }.to_json
 
           [200, response]

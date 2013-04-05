@@ -11,7 +11,7 @@ module CartoDB
         collection  = Visualization::Collection.new(params.dup).fetch
         response    = {
           visualizations: collection,
-          total_entries:  collection.size
+          total_entries:  collection.count
         }.to_json
 
         [200, response]

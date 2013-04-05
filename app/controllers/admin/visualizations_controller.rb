@@ -1,6 +1,6 @@
 # coding: utf-8
 
-class Admin::VisualizationsController < ApplicationController
+class Admin::TablesController < ApplicationController
   ssl_required :index, :show
 
   skip_before_filter :browser_is_html5_compliant?, :only => [:embed_map]
@@ -17,23 +17,30 @@ class Admin::VisualizationsController < ApplicationController
   # if the user is not logged in, we redirect them to the public page
   def show
     if current_user.present?
-      @table = Table.find_by_identifier(current_user.id, params[:id])
+      @visualization = 
+        CartoDB::Visualization::Member.new(id: params[:id]).fetch
+
+      table_id  = Table.where(map_id: @visualization.map_id).first.id
+      @table    = Table.find_by_identifier(current_user.id, table_id)
       begin
         respond_to do |format|
           format.html
           download_formats @table, format
         end
       rescue
-        redirect_to table_path(@table), :alert => "There was an error exporting the table"
+        redirect_to table_path(@table), alert: "There was an error exporting the table"
       end
     else
-      redirect_to public_table_path(params[:id], :format => params[:format])
+      redirect_to public_visualization_path(params[:id], :format => params[:format])
     end
   end
 
   def show_public
-    @subdomain = request.subdomain
-    @table     = Table.find_by_subdomain(@subdomain, params[:id])
+    @visualization = 
+        CartoDB::Visualization::Member.new(id: params[:id]).fetch
+    table_id  = Table.where(map_id: @visualization.map_id).first.id
+    @subdomain  = request.subdomain
+    @table      = Table.find_by_subdomain(@subdomain, params[:id])
 
     # Has quite strange checks to see if a user can access a public table
     if @table.blank? || @table.private? || ((current_user && current_user.id != @table.user_id) && @table.private?)
@@ -93,4 +100,4 @@ class Admin::VisualizationsController < ApplicationController
     return true unless current_user.present?
     current_user.set_api_calls
   end
-end # VisualizationsController
+end

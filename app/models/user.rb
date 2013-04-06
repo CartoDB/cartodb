@@ -472,11 +472,13 @@ class User < Sequel::Model
     end
   end
 
+  # This user's currently running import jobs
   def importing_jobs
     imports = DataImport.where(state: ['complete', 'failure']).invert
       .where(user_id: self.id)
       .where { created_at > Time.now - 24.hours }.all
-    imports.select(&:mark_as_failed_if_stuck!)
+    
+    imports.delete_if &:mark_as_failed_if_stuck!
   end
 
   def job_tracking_identifier

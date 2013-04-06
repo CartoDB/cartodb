@@ -273,16 +273,29 @@ class DataImport < Sequel::Model
     return ["empty"]
   end #jsonize
 
-  def mark_as_failed_if_stuck!
-    running_import_ids = Resque::Worker.all.map do |worker|
+  def mark_as_failed_if_stuck!    
+    if self.stuck?
+      self.failed!
+      CartoDB::notify_exception(CartoDB::GenericImportError.new("Import timed out"), self)
+      return true
+    else
+      return false
+    end
+  end
+
+  # A stuck job shouldn't be finished, so it's state should not
+  # be 'complete' nor 'failed'. It should have been in the queue
+  # for more than 5 minutes and it shouldn't be currently
+  # processed by any active worker
+  def stuck?
+    !['complete', 'failure'].include?(self.state) && self.created_at < 5.minutes.ago && !running_import_ids.include?(self.id)
+  end
+
+  def running_import_ids
+    Resque::Worker.all.map do |worker|
       next unless worker.job["queue"] == "imports"
       worker.job["payload"]["args"].first["job_id"] rescue nil 
     end.compact
-    
-    if self.created_at < 5.minutes.ago && !running_import_ids.include?(self.id)
-      self.failed!
-      CartoDB::notify_exception(CartoDB::GenericImportError.new("Import timed out"), self)
-    end
   end
 
   private

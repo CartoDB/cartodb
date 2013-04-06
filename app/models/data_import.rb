@@ -94,8 +94,7 @@ class DataImport < Sequel::Model
     after_transition any => :failure do
       # Increment failed imports on CartoDB stats
       CartodbStats.increment_failed_imports()
-      
-      CartoDB::notify_exception(CartoDB::GenericImportError.new, current_user)
+      Rollbar.report_message("Failed import", "error", error_code: error_code, error_message: get_error_text,person: current_user)
 
       # Copy any uploaded resources to secret failed imports vault(tm)
       if file_sha = self.data_source.to_s.match(/uploads\/([a-z0-9]{20})\/.*/)
@@ -276,7 +275,7 @@ class DataImport < Sequel::Model
   def mark_as_failed_if_stuck!    
     if self.stuck?
       self.failed!
-      CartoDB::notify_exception(CartoDB::GenericImportError.new("Import timed out"), self)
+      CartoDB::notify_exception(CartoDB::GenericImportError.new("Import timed out"), user: current_user)
       return true
     else
       return false

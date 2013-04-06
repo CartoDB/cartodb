@@ -476,16 +476,7 @@ class User < Sequel::Model
     imports = DataImport.where(state: ['complete', 'failure']).invert
       .where(user_id: self.id)
       .where { created_at > Time.now - 24.hours }.all
-    running_import_ids = Resque::Worker.all.map { |worker| worker.job["payload"]["args"].first["job_id"] rescue nil }.compact
-    imports.map do |import|
-      if import.created_at < Time.now - 5.minutes && !running_import_ids.include?(import.id)
-        import.failed!
-        CartoDB::notify_exception(CartoDB::GenericImportError.new("Import timed out"), self)
-        nil
-      else
-        import
-      end
-    end.compact
+    imports.select(&:mark_as_failed_if_stuck!)
   end
 
   def job_tracking_identifier

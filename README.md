@@ -254,7 +254,7 @@ The [CartoDB SQL API](https://github.com/Vizzuality/CartoDB-SQL-API)
 component powers the SQL queries over HTTP. To install it:
 
 ```bash
-git clone git@github.com:Vizzuality/CartoDB-SQL-API.git
+git clone git://github.com/Vizzuality/CartoDB-SQL-API.git
 cd CartoDB-SQL-API
 git checkout master
 npm install
@@ -271,7 +271,7 @@ The [Windshaft-cartodb](https://github.com/Vizzuality/Windshaft-cartodb)
 component powers the CartoDB Maps API. To install it:
 
 ```bash
-git clone git@github.com:Vizzuality/Windshaft-cartodb.git
+git clone git://github.com/Vizzuality/Windshaft-cartodb.git
 cd Windshaft-cartodb
 git checkout master
 npm install

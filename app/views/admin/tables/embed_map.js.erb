@@ -14,6 +14,14 @@
     global_info.load_queue = global_info.load_queue || [];
     global_info.gmaps_queue = global_info.gmaps_queue || [];
 
+    var lib_url;
+    <% if Rails.env.development? %>
+      lib_url = "<%= request.protocol %><%= request.host %>:<%= request.port %>/assets/cdb/";
+    <% else %>
+      lib_url = "http://libs.cartocdn.com/cartodb.js/v2/"
+    <% end %>
+
+
     function contains(array, v) {
       for(var i = 0; i < array.length; ++i) {
         if(array[i] == v) return true;
@@ -99,10 +107,10 @@
     opt.version = opt.version ? (opt.version + '/'): '';
 
     if(!global_info.css_included) {
-      doc.write('<link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/' + opt.version + 'themes/css/cartodb.css" />');
+      doc.write('<link rel="stylesheet" href="'+ lib_url + opt.version + 'themes/css/cartodb.css" />');
       var ua = navigator.userAgent;
       if(ua.indexOf('MSIE 8') != -1 || ua.indexOf('MSIE 7') != -1) {
-        doc.write('<link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/' + opt.version + 'themes/css/cartodb.ie.css" />');
+        doc.write('<link rel="stylesheet" href="' + lib_url + opt.version + 'themes/css/cartodb.ie.css" />');
       }
       global_info.css_included = true
     }
@@ -119,10 +127,13 @@
         if(global_info.loading) {
             global_info.load_queue.push([map_id, opt.url || VIZJSON_URL, opt]);
         } else {
-          load_script('http://libs.cartocdn.com/cartodb.js/v2/' + (opt.debug ? ( opt.version + 'cartodb.uncompressed.js'):'cartodb.js'), function() {
+          load_script(lib_url + <%= Rails.env.development? ? "'/dist/'" : "''" %> + (opt.debug ? ( opt.version + 'cartodb.uncompressed.js'):'cartodb.js'), function() {
+            <% if Rails.env.staging? %>
+            cartodb.CDB_HOST['http'] = 'tiles-staging.cartocdn.com';
+            <% end %>
             cartodb.createVis(map_id, opt.url || VIZJSON_URL, opt);
 
-            for(var g in global_info.load_queue) {
+            for(var g = 0; g < global_info.load_queue.length; ++g) {
               var params = global_info.load_queue[g];
               cartodb.createVis.apply(cartodb, params);
             }
@@ -148,7 +159,7 @@
           "callback" : function() {
             global_info.loading_gmaps = false;
             load_cartodb()
-            for(var i in global_info.gmaps_queue) {
+            for(var i = 0; i < global_info.gmaps_queue.length; ++i) {
                 global_info.gmaps_queue[i]();
             }
           },
@@ -162,7 +173,8 @@
     var l = document.createElement("a");
     l.href = url
     if(l.protocol.indexOf('http') != -1) {
-        doc.write('<iframe style="display: none" src="' + l.protocol + '//' + l.hostname + ':' + l.port + '/tables/track_embed"></iframe>');
+        var port = l.port ? ':' + l.port: '';
+        doc.write('<iframe style="display: none" src="' + l.protocol + '//' + l.hostname + port + '/tables/track_embed"></iframe>');
     }
 
 })();

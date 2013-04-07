@@ -17,10 +17,11 @@ require_relative './loaders/tif'
 module CartoDB
   class Importer
     RESERVED_COLUMN_NAMES = %W{ oid tableoid xmin cmin xmax cmax ctid }
-    SUPPORTED_FORMATS     = %W{ .csv .shp .ods .xls .xlsx .tif .tiff .kml .kmz .js .json .tar .gz .tgz .osm .bz2 .geojson .gpx .json .sql }
+    SUPPORTED_FORMATS     = %W{ .csv .shp .ods .xls .xlsx .tif .tiff .kml .kmz
+    .js .json .tar .gz .tgz .osm .bz2 .geojson .gpx .json .sql }
 
     attr_accessor :import_from_file, :db_configuration, :db_connection,
-                  :append_to_table, :suggested_name, :ext
+                  :append_to_table, :suggested_name, :ext, :data_import
     attr_reader   :force_name
 
     # Initialiser has to get the file in a standard location on the filesystem
@@ -73,8 +74,8 @@ module CartoDB
           # Try to open file normally, or open-uri to download/open
           open(@import_from_file) do |res|
             @data_import.file_ready
-            file_name = File.basename(@import_from_file)
-            @ext = File.extname(file_name).downcase
+            file_name = File.basename(@import_from_file).to_s.gsub(/\?.*/, '')
+            @ext = File.extname(file_name).to_s.downcase
 
             # Try to infer file extension from http Content-Disposition
             if @ext.blank? && res.meta.present? && res.meta["content-disposition"].present?
@@ -97,7 +98,8 @@ module CartoDB
             end
 
             @iconv ||= Iconv.new('UTF-8//IGNORE', 'UTF-8')
-            @original_name ||= get_valid_name(File.basename(@iconv.iconv(@import_from_file), @ext).downcase.sanitize)
+            file_name = File.basename(@iconv.iconv(@import_from_file)).to_s.gsub(/#{Regexp.escape(@ext)}.*/, '').downcase.sanitize
+            @original_name ||= get_valid_name(file_name)
 
             @import_from_file = Tempfile.new([@original_name, @ext], :encoding => 'utf-8')
             @import_from_file.write res.read.force_encoding("UTF-8")
@@ -175,7 +177,7 @@ module CartoDB
         decompressor  = decompressor_for(@ext)
         import_data   = decompressor.process! if decompressor
 
-        @data_import.log_update('file unzipped') if import_data
+        @data_import.log_update('file unzipped') if import_data && decompressor
         @data_import.reload
 
         # Preprocess data and update self with results
@@ -265,6 +267,7 @@ module CartoDB
         @data_import.save
         return [payloads, errors]
       rescue => e
+        puts e
         @data_import.refresh
         drop_created_tables payloads.map(&:name)
         raise e
@@ -396,12 +399,12 @@ module CartoDB
     }
 
     LOADERS = {
-      csv:      CartoDB::CSV,
-      txt:      CartoDB::CSV,
-      geojson:  CartoDB::CSV,
-      js:       CartoDB::CSV,
-      json:     CartoDB::CSV,
-      gml:      CartoDB::CSV,
+      csv:      CartoDB::CSV::Loader,
+      txt:      CartoDB::CSV::Loader,
+      geojson:  CartoDB::CSV::Loader,
+      js:       CartoDB::CSV::Loader,
+      json:     CartoDB::CSV::Loader,
+      gml:      CartoDB::CSV::Loader,
       sql:      CartoDB::SQL,
       exxxxppp: CartoDB::Exxxxppp,
       bz2:      CartoDB::OSM,

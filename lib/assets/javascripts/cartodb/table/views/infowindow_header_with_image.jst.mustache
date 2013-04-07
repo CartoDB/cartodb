@@ -7,17 +7,10 @@
       {{#content.fields}}
         {{#index}}
           {{#value}}
-            <h1 class="order{{index}}">
-              {{#url}}
-                <a href="{{ url }}" target="_blank">{{ value }}</a>
-              {{/url}}
-              {{^url}}
-                {{ value }}
-              {{/url}}
-            </h1>
+            <h1 class="order{{index}}">{{{ value }}}</h1>
           {{/value}}
           {{^value}}
-              <h1 class="order{{index}}">null</h1>
+            <h1 class="order{{index}}">null</h1>
           {{/value}}
         {{/index}}
         {{^index}}
@@ -39,14 +32,7 @@
             {{#index}}
               {{#title}}<h4>{{title}}</h4>{{/title}}
               {{#value}}
-                <p>
-                  {{#url}}
-                    <a href="{{ url }}" target="_blank">{{ value }}</a>
-                  {{/url}}
-                  {{^url}}
-                    {{ value }}
-                  {{/url}}
-                </p>
+                <p>{{{ value }}}</p>
               {{/value}}
               {{^value}}
                 <p class="empty">null</p>

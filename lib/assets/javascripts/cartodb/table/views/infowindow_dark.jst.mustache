@@ -5,14 +5,7 @@
       {{#content.fields}}
         {{#title}}<h4>{{title}}</h4>{{/title}}
         {{#value}}
-          <p {{#type}}class="{{ type }}"{{/type}}>
-            {{#url}}
-              <a href="{{ url }}" target="_blank">{{ value }}</a>
-            {{/url}}
-            {{^url}}
-              {{ value }}
-            {{/url}}
-          </p>
+          <p {{#type}}class="{{ type }}"{{/type}}>{{{ value }}}</p>
         {{/value}}
         {{^value}}
           <p class="empty">null</p>

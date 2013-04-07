@@ -17,6 +17,7 @@ defaults: &defaults
   google_analytics:
     primary:          ''
     embeds:           ''
+    domain:           ''
   varnish_management:
     critical: true
     host: '127.0.0.1'

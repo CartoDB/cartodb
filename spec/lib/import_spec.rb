@@ -152,7 +152,7 @@ describe CartoDB::Importer do
         results[0].import_type.should   == '.csv'
       end
 
-      it "should import a CSV file with invalid byte sequences", now: true do
+      it "should import a CSV file with invalid byte sequences" do
         importer = create_importer 'invalid_byte_seq.csv', 'invalid_byte_seq'
         results,errors = importer.import!
 
@@ -351,6 +351,14 @@ describe CartoDB::Importer do
         results, errors = importer.import!
         results.length.should == 1
         @db[:geojson_utf8].get(:reg_symbol).force_encoding('UTF-8').should == "In here -> ® <-- this here"
+      end
+
+      it 'should import data previously exported through the SQL API', now: true do
+        importer = create_importer 'tm_world_borders_simpl_0_8.geojson'
+        results, errors = importer.import!
+
+        errors.should be_empty
+        puts results[0].rows_imported
       end
     end
 

@@ -145,6 +145,7 @@ class ApplicationController < ActionController::Base
   def current_user
     super(request.subdomain)
   end
+
   protected :current_user
 
 end

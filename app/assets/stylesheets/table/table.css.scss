@@ -561,6 +561,14 @@
           text-indent:-600px;
           p, h4 {text-indent:0;}
         }
+
+        &.narrow {
+          tbody tr td:last-child, thead tr th:last-child {padding-right:450px;}
+          div.sqlview p {text-indent:-450px;}
+          tfoot.sql_loader div.float_info {margin-left:-380px;}
+          tfoot div.emptyTableContainer {text-indent:-450px;}
+        }
+
       } // table.displaced
     } // table
 
@@ -666,6 +674,14 @@
   @-moz-document url-prefix() { 
     table {
       border-collapse: inherit;
+    }
+
+    tbody tr:hover {
+      z-index:1!important;
+    }
+
+    thead tr th div {
+      z-index:2!important;
     }
 
     tbody tr td {

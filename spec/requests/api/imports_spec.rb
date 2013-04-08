@@ -47,60 +47,58 @@ describe "Imports API" do
     last_import.state.should be == 'complete'
   end
 
-  it 'performs synchronous imports'
+  describe "retrieve information" do
+    before { Resque.inline = false }
+    after { Resque.inline = true }
 
-  it 'gets a list of all pending imports' do
-    Resque.inline = false
-    serve_file(Rails.root.join('spec/support/data/ESP_adm.zip')) do |url|
-      post v1_imports_url, params.merge(:url        => url,
-                                        :table_name => "wadus")
+    it "active imports" do
+      Resque.inline = true      
+      serve_file(Rails.root.join('db/fake_data/clubbing.csv')) do |url|
+        post v1_imports_url, params.merge(:url        => url,
+                                          :table_name => "wadus")
+      end
+      import_id = JSON.parse(response.body)["item_queue_id"]
+      get v1_import_url(id: import_id), params
+
+      response.code.should be == '200'
+
+      import = JSON.parse(response.body)
+      import['state'].should be == 'complete'
     end
 
-    get v1_imports_url, params
+    it "pending imports" do
+      serve_file(Rails.root.join('spec/support/data/ESP_adm.zip')) do |url|
+        post v1_imports_url, params.merge(:url        => url,
+                                          :table_name => "wadus")
+      end
 
-    response.code.should be == '200'
+      get v1_imports_url, params
 
-    response_json = JSON.parse(response.body)
-    response_json.should_not be_nil
-    imports = response_json['imports']
-    imports.should have(1).items
-    Resque.inline = true
-  end
+      response.code.should be == '200'
 
-  it "doesn't return old pending imports" do
-    Resque.inline = false
-    serve_file(Rails.root.join('spec/support/data/ESP_adm.zip')) do |url|
-      post v1_imports_url, params.merge(:url        => url,
-                                        :table_name => "wadus")
+      response_json = JSON.parse(response.body)
+      response_json.should_not be_nil
+      imports = response_json['imports']
+      imports.should have(1).items
     end
 
-    Timecop.travel Time.now + 7.hours
-    get v1_imports_url, params
+    it "stuck imports" do
+      serve_file(Rails.root.join('spec/support/data/ESP_adm.zip')) do |url|
+        post v1_imports_url, params.merge(:url        => url,
+                                          :table_name => "wadus")
+      end
 
-    response.code.should be == '200'
+      Timecop.travel Time.now + 7.hours
+      DataImport.any_instance.stubs(:running_import_ids).returns([])
 
-    response_json = JSON.parse(response.body)
-    response_json.should_not be_nil
-    imports = response_json['imports']
-    imports.should have(0).items
-    Resque.inline = true
+      get v1_imports_url, params
+
+      response.code.should be == '200'
+      imports = JSON.parse(response.body)['imports']
+      imports.should have(0).items
+    end
   end
 
-  it 'gets the detail of an import' do
-    post v1_imports_url(:api_key => @user.get_map_key,
-                        :table_name => 'wadus',
-                        :filename   => File.basename('wadus.csv')),
-      upload_file('db/fake_data/column_number_to_boolean.csv', 'text/csv')
-
-    item_queue_id = JSON.parse(response.body)['item_queue_id']
-
-    get v1_import_url(:id => item_queue_id), params
-
-    response.code.should be == '200'
-
-    import = JSON.parse(response.body)
-    import['state'].should be == 'complete'
-  end
 
   it 'imports files with weird filenames' do
     post v1_imports_url,

@@ -10,7 +10,8 @@ module DataRepository
     INTERFACE  = %w{ signature add delete store fetch each to_json repository } +
                   Enumerable.instance_methods
 
-    attr_reader :signature
+    attr_reader   :signature
+    attr_accessor :storage
 
     def initialize(attributes={}, options={})
       @storage      = Set.new
@@ -54,7 +55,6 @@ module DataRepository
 
     private
 
-    attr_accessor :storage
     attr_reader   :repository, :member_class
 
     def members

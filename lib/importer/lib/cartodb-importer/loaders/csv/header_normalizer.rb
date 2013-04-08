@@ -5,6 +5,8 @@ require 'fileutils'
 module CartoDB
   module CSV
     class HeaderNormalizer
+      FILLER = "field_000"
+
       def initialize(path, options={})
         @path     = path
         @options  = default_csv_options.merge(options)
@@ -25,13 +27,33 @@ module CartoDB
       rescue ArgumentError
       end #normalize_csv_header
 
+      def remove_empty_filler_columns_in(db, table)
+        filler_columns_in(db, table).each do |column|
+          remove(db, table, column) if empty_column?(db, table, column)
+        end
+      end #clean_empty_columns_in
+
       private
 
       attr_reader :path, :options
 
+      def remove(db, table, column)
+        db.run(%Q{ ALTER TABLE #{table} DROP COLUMN #{column} })
+      end #remove
+
+      def empty_column?(db, table, column)
+        db[table.to_sym].where("#{column} IS NOT NULL").count <= 0
+      end #no_data_in?
+
+      def filler_columns_in(db, table_name)
+        db[table_name.to_sym].columns.select do |column_name|
+          column_name.match Regexp.new(FILLER)
+        end
+      end #filler_columns_in
+
       def fill_empty_fields_in(row)
         row.inject(Array.new) do |massaged_row, cell| 
-          filler  = "header_#{Time.now.to_f}".delete('.')
+          filler  = "#{FILLER}_#{massaged_row.length}"
           cell[-1] = filler unless cell.last
           massaged_row.push(cell)
         end

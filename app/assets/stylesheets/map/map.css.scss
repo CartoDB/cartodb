@@ -16,6 +16,7 @@ div.map {
   bottom:0;
   right:0;
   width:100%;
+  padding-top:64px;
 
   div.map_toolbar {
     position:absolute;
@@ -35,6 +36,9 @@ div.map {
     right:57px;
     @include inline-block();
     padding:8px 20px 8px 30px;
+    @include transform-style("linear");
+    @include transition-property("right");
+    @include transition-duration(300ms);
     z-index:50;
 
     a {float:left;}
@@ -311,22 +315,35 @@ div.map {
   }
 
   // Zoom info
-  div.cartodb-zoom-info {top:135px;}
-
-  // Zoom in core map
-  div.cartodb-zoom {top:65px;}
+  div.cartodb-zoom-info {
+    position:relative;
+    float:left;
+    top:0;
+    left:0;
+    margin:10px 0 0 20px;
+    clear:both;
+  }
 
   // Tiler in core map
-  div.cartodb-tiles-loader div.loader {
-    top:175px;
+  div.cartodb-tiles-loader {
+    float:left;
+    clear:both;
+    div.loader {
+      position:relative;
+      top:0;
+      left:0;
+      margin:10px 0 0 20px;
+    }
   }
 
   // Search box in core map
   div.cartodb-searchbox {
     position:relative;
     float:right;
-    top:65px;
-    right:58px;
+    margin:20px 77px 0 0;
+    @include transform-style("linear");
+    @include transition-property("margin-right");
+    @include transition-duration(300ms);
   }
 
   // Public map
@@ -396,20 +413,18 @@ div.map {
   }
 
   div.sqlview {
-    position: absolute;
-    top: 53px;
-    right: 0;
-    left: 0;
+    position: relative;
     display: block;
     width: 100%;
     height: 37px;
+    margin:0;
     z-index:1;
 
     p {
       position: fixed;
       left: 50%;
       display: inline;
-      margin: 12px 0 0 -50%;
+      margin: 0 0 0 -50%;
       padding: 12px 0;
       width: 100%;
       border-bottom: 1px solid #ccc;
@@ -428,9 +443,32 @@ div.map {
     }
   } //div.sqlview
 
+  // When a panel view is openned or closed
   &.displaced {
     div.sqlview p {
       text-indent:-600px;
+    }
+
+    div.share {
+      right:595px;
+    }
+
+    div.cartodb-searchbox {
+      margin-right:612px;
+    }
+
+    &.narrow {
+      div.sqlview p {
+        text-indent:-450px;
+      }
+
+      div.share {
+        right:445px;
+      }
+
+      div.cartodb-searchbox {
+        margin-right:462px;
+      }
     }
   } //&.displaced
 

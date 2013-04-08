@@ -56,13 +56,20 @@ class Admin::TablesController < ApplicationController
     @table = Table.find_by_subdomain(@subdomain, params[:id])
 
     if @table.blank? || @table.private?
-      head :forbidden
+      respond_to do |format|
+        format.html { render "embed_map_error.html.erb", :layout => false, :status => :forbidden }
+        format.js { render "embed_map_error.js.erb", :layout => false }
+      end
     else
       respond_to do |format|
         format.html { render :layout => false }
         format.js { render 'embed_map.js.erb', :content_type => 'application/javascript' }
       end
     end
+  end
+
+  def embed_forbidden
+    render 'embed_map_error.html.erb', :layout => false, :status => :forbidden
   end
 
   def track_embed

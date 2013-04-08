@@ -55,7 +55,6 @@
     }
 
     div.cartodb-searchbox {display:none;}
-    div.layer_selector_box {display:none;}
     div.cartodb-zoom {top:0;}
   }
 
@@ -117,8 +116,8 @@
       border:none;
       outline:none;
 
+      &.loading { font-style: italic; color:#AAA; }
       &:focus { @include box-shadow(none); }
-
     }
 
     ul {

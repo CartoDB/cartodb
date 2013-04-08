@@ -8,7 +8,9 @@ class Api::Json::ImportsController < Api::ApplicationController
   end
 
   def show
-    render json: DataImport[params[:id]].public_values
+    data_import = DataImport[params[:id]]
+    data_import.mark_as_failed_if_stuck!
+    render json: data_import.reload.public_values
   end
 
   def create

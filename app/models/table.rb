@@ -467,16 +467,30 @@ class Table < Sequel::Model(:user_tables)
 
           #if date is in milliseconds
           begin
-            user_database.run(<<-ALTERCREATEDAT)
-              ALTER TABLE "#{self.name}" ALTER COLUMN #{field.to_s} TYPE timestamp without time zone
-              USING to_timestamp(#{field.to_s}::float / 1000);
-            ALTERCREATEDAT
+            user_database.run(%Q{
+              ALTER TABLE "#{self.name}"
+              ALTER COLUMN #{field}
+              TYPE timestamp without time zone
+              USING to_timestamp(#{field}::float / 1000)
+            })
+
           #if date is a string
-          rescue
-            user_database.run(<<-ALTERCREATEDAT)
-              ALTER TABLE "#{self.name}" ALTER COLUMN #{field.to_s} TYPE timestamp without time zone
-              USING to_timestamp(#{field.to_s}, 'YYYY-MM-DD HH24:MI:SS.MS.US');
-            ALTERCREATEDAT
+          rescue => exception
+            begin
+              user_database.run(%Q{
+                ALTER TABLE "#{self.name}"
+                ALTER COLUMN #{field.to_s}
+                TYPE timestamp without time zone
+                USING to_timestamp(#{field}, 'YYYY-MM-DD HH24:MI:SS.MS.US')
+              })
+            rescue
+              user_database.run(%Q{
+                ALTER TABLE "#{self.name}"
+                ALTER COLUMN #{field.to_s}
+                TYPE timestamp without time zone
+                USING to_timestamp(#{field}, 'YYYY-MM-DD HH24:MI:SS')
+              })
+            end
           end
 
           user_database.run(%Q{ALTER TABLE "#{self.name}" ALTER COLUMN #{field.to_s} SET DEFAULT now();})

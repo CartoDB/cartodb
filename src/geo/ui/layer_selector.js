@@ -83,7 +83,7 @@ cdb.geo.ui.Layers = Backbone.Collection.extend({
 */
 cdb.geo.ui.LayerSelector = cdb.core.View.extend({
 
-  className: 'layer_selector_box',
+  className: 'cartodb-layer-selector-box',
 
   events: {
     "click":     '_openDropdown',
@@ -104,7 +104,6 @@ cdb.geo.ui.LayerSelector = cdb.core.View.extend({
   render: function() {
 
     var self = this;
-//debugger;
 
     this.$el.html(this.options.template(_.extend(this.model.toJSON(), this.options)));
 

@@ -1,4 +1,5 @@
 # coding: UTF-8
+require_relative '../../../helpers/vizzjson/layer'
 
 class Api::Json::LayersController < Api::ApplicationController
   ssl_required :index, :show, :create, :update, :destroy
@@ -21,7 +22,10 @@ class Api::Json::LayersController < Api::ApplicationController
        render :text => "#{params[:callback]}( #{@layer.to_tilejson} )"
       end
       format.json do 
-        render_jsonp(view_context.layer_vizzjson(@layer, full: false))
+        render_jsonp(CartoDB::VizzJSON::Layer.new(
+            @layer, { full: false }, Cartodb.config
+          ).to_poro
+        )
       end
     end
   end

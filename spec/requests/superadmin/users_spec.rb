@@ -1,9 +1,7 @@
-# coding: UTF-8
-
-require File.expand_path(File.dirname(__FILE__) + '/../acceptance_helper')
+# encoding: utf-8
+require_relative '../../acceptance_helper'
 
 feature "Superadmin's users API" do
-
   background do
     Capybara.current_driver = :rack_test
     @new_user = new_user(:password => "this_is_a_password")

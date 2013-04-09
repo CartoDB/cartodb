@@ -1,6 +1,5 @@
-# coding: UTF-8
-
-require File.expand_path(File.dirname(__FILE__) + '/../acceptance_helper')
+# encoding: utf-8
+require_relative '../../acceptance_helper'
 
 feature "API 1.0 assets management" do
 
@@ -23,7 +22,7 @@ feature "API 1.0 assets management" do
     @user.reload
     @user.assets.count.should == 1
     asset = @user.assets.first
-    asset.public_url.should == "https://s3.amazonaws.com/tile_assets_devel/user/#{@user.id}/assets/column_number_to_boolean.csv"
+    asset.public_url.should =~ %r{#{@user.id}/assets/column_number_to_boolean.csv}
   end
 
   scenario "Get all assets" do
@@ -45,3 +44,4 @@ feature "API 1.0 assets management" do
     end
   end
 end
+

@@ -8,6 +8,18 @@ describe DataImport do
     @table = create_table :user_id => @user.id
   end
 
+  it 'imports a csv with confidential data', now: true do
+    DataImport.create(
+      user_id:        @user.id,
+      table_id:       @table.id,
+      data_source: '/../spec/support/data/billing_infos-all-2013-03-31-224624.csv',
+      updated_at:     Time.now,
+      append:         false
+    ).run_import!
+
+    puts @table.reload.records[:total_rows]
+  end
+
   it 'should allow to append data to an existing table' do
     expect do
       DataImport.create(

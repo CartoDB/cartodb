@@ -350,13 +350,14 @@ div.map {
   .cartodb-map.public {
     top: 55px;
     border-top:1px solid #999999;
-    div.cartodb-zoom {top: 0px;}
-    div.cartodb-tiles-loader div.loader {
-      top:135px - 65px;
+
+    div.cartodb-zoom {position:absolute; top: 0px;}
+    div.cartodb-tiles-loader {
+      position:absolute;
+      top:80px;
     }
     div.cartodb-searchbox{
-      top: 0px;
-      left: 0px;
+      margin-right:20px;
     }
 
     .leaflet-right .leaflet-control, #cartodb_attribution {

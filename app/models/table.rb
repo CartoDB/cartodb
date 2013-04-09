@@ -249,8 +249,8 @@ class Table < Sequel::Model(:user_tables)
         user_database.run(%Q{ALTER TABLE "#{self.name}" ADD PRIMARY KEY (cartodb_id)})
       end
 
-      normalize_timestamp_field!(:created_at, user_database)
-      normalize_timestamp_field!(:updated_at, user_database)
+      normalize_timestamp(user_database, :created_at)
+      normalize_timestamp(user_database, :updated_at)
     end
   end
 
@@ -453,51 +453,56 @@ class Table < Sequel::Model(:user_tables)
   end
 
   # adds the column if not exists or cast it to timestamp field
-  def normalize_timestamp_field!(field, user_database)
-    schema = self.schema(:reload => true)
-    if schema.nil? || !schema.flatten.include?(field)
-        user_database.run(%Q{ALTER TABLE "#{self.name}" ADD COLUMN #{field.to_s} timestamp DEFAULT NOW()})
+  def normalize_timestamp(database, column)
+    schema = self.schema(reload: true)
+
+    if schema.nil? || !schema.flatten.include?(column)
+      database.run(%Q{
+        ALTER TABLE "#{name}"
+        ADD COLUMN #{column} timestamp
+        DEFAULT NOW()
+      })
     end
 
     if schema.present?
-      field_type = Hash[schema][field]
+      column_type = Hash[schema][column]
       # if column already exists, cast to timestamp value and set default
-      if field_type == 'string' && schema.flatten.include?(field)
-          #TODO: check type
+      if column_type == 'string' && schema.flatten.include?(column)
+        success = ms_to_timestamp(database, name, column)
+        success = string_to_timestamp(database, name, column) unless success
 
-          #if date is in milliseconds
-          begin
-            user_database.run(%Q{
-              ALTER TABLE "#{self.name}"
-              ALTER COLUMN #{field}
-              TYPE timestamp without time zone
-              USING to_timestamp(#{field}::float / 1000)
-            })
-
-          #if date is a string
-          rescue => exception
-            begin
-              user_database.run(%Q{
-                ALTER TABLE "#{self.name}"
-                ALTER COLUMN #{field.to_s}
-                TYPE timestamp without time zone
-                USING to_timestamp(#{field}, 'YYYY-MM-DD HH24:MI:SS.MS.US')
-              })
-            rescue
-              user_database.run(%Q{
-                ALTER TABLE "#{self.name}"
-                ALTER COLUMN #{field.to_s}
-                TYPE timestamp without time zone
-                USING to_timestamp(#{field}, 'YYYY-MM-DD HH24:MI:SS')
-              })
-            end
-          end
-
-          user_database.run(%Q{ALTER TABLE "#{self.name}" ALTER COLUMN #{field.to_s} SET DEFAULT now();})
+        database.run(%Q{
+          ALTER TABLE "#{name}"
+          ALTER COLUMN #{column}
+          SET DEFAULT now()
+        })
       end
     end
-  end
+  end #normalize_timestamp_field
 
+  def ms_to_timestamp(database, table, column)
+    database.run(%Q{
+      ALTER TABLE "#{table}"
+      ALTER COLUMN #{column}
+      TYPE timestamp without time zone
+      USING to_timestamp(#{column}::float / 1000)
+    })
+    true
+  rescue
+    false
+  end #normalize_ms_to_timestamp
+
+  def string_to_timestamp(database, table, column)
+    database.run(%Q{
+      ALTER TABLE "#{table}"
+      ALTER COLUMN #{column}
+      TYPE timestamp without time zone
+      USING to_timestamp(#{column}, 'YYYY-MM-DD HH24:MI:SS.MS.US')
+    })
+    true
+  rescue
+    false
+  end #string_to_timestamp
 
   def make_geom_valid
     begin
@@ -648,7 +653,7 @@ class Table < Sequel::Model(:user_tables)
           attributes.invert[invalid_value] # which is the column of the name that raises error
         else
           if m = message.match(/PGError: ERROR:  value too long for type (.+)$/)
-            if candidate = schema(:cartodb_types => false).select{ |c| c[1].to_s == m[1].to_s }.first
+            if candidate = schema(cartodb_types: false).select{ |c| c[1].to_s == m[1].to_s }.first
               candidate[0]
             end
           end
@@ -657,7 +662,7 @@ class Table < Sequel::Model(:user_tables)
         if invalid_column.nil? || new_column_type != get_new_column_type(invalid_column)
           raise e
         else
-          user_database.set_column_type self.name, invalid_column.to_sym, new_column_type
+          user_database.set_column_type(self.name, invalid_column.to_sym, new_column_type)
           retry
         end
       end
@@ -731,8 +736,8 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def modify_column!(options)
-    old_name  = options.fetch(:old_name, '').sanitize
-    new_name  = options.fetch(:new_name, '').sanitize
+    old_name  = (options.fetch(:old_name, '') || '').sanitize
+    new_name  = (options.fetch(:new_name, '') || '').sanitize
 
     rename_column(old_name, new_name) if new_name.present?
 

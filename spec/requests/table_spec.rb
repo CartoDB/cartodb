@@ -1,9 +1,7 @@
-# coding: UTF-8
-
-require File.expand_path(File.dirname(__FILE__) + '/acceptance_helper')
+# encoding: utf-8
+require_relative '../acceptance_helper'
 
 feature 'Table' do
-
   background do
     @user = FactoryGirl.create(:user)
     @table = FactoryGirl.create(:table, :user_id => @user.id, :tags => 'tag 1, wadus')

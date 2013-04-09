@@ -1,9 +1,7 @@
-# coding: UTF-8
-
-require File.expand_path(File.dirname(__FILE__) + '/acceptance_helper')
+# encoding: utf-8
+require_relative '../acceptance_helper'
 
 feature 'Map' do
-
   scenario 'allows users to create a line'
 
   scenario 'allows users to create a polygon'
@@ -49,5 +47,4 @@ feature 'Map' do
   scenario '¿¿¿¿¿¿¿¿¿ allows users to use a map with custom STYLE in an external application and verify that the style is not changed after changing the target table style from the UI ?????????'
 
   scenario 'allows users to add their own basemap from mapbox or another cartodb table'
-
 end

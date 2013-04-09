@@ -1,11 +1,16 @@
-#encoding: UTF-8
-
-require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
+# encoding: utf-8
+require 'rack/test'
+require_relative '../../acceptance_helper'
 
 describe "Imports API" do
-
+  #include Rack::Test::Methods
+  
   before(:all) do
-    @user = create_user(:username => 'test', :email => "client@example.com", :password => "clientex")
+    @user = create_user(
+      username: 'test',
+      email:    'client@example.com',
+      password: 'clientex'
+    )
     @user.set_map_key
   end
 
@@ -14,15 +19,21 @@ describe "Imports API" do
     host! 'test.localhost.lan'
   end
 
-  let(:params) { { :api_key => @user.get_map_key } }
+  let(:params) { { api_key: @user.get_map_key } }
 
-  it 'performs asynchronous imports' do
-    f = upload_file('db/fake_data/column_number_to_boolean.csv', 'text/csv')
-    post v1_imports_url(
-      params.merge(:filename  => 'column_number_to_boolean.csv',
-                   :table_name => "wadus")), 
-      f.read.force_encoding('UTF-8')
+  it 'performs asynchronous imports', now: true do
+    file = upload_file(
+      'db/fake_data/column_number_to_boolean.csv', 'text/csv'
+    )
 
+    data        = file.read.force_encoding('UTF-8')
+    filename    = 'column_number_to_boolean.csv'
+    table_name  = 'wadus'
+
+    post v1_imports_url(params.merge(
+      filename: filename,
+      table_name: table_name
+    )), data
 
     response.code.should be == '200'
     response_json = JSON.parse(response.body)
@@ -293,5 +304,5 @@ describe "Imports API" do
     import['state'].should be == 'complete'
     import['tables_created_count'].should be == 10
   end
-
 end
+

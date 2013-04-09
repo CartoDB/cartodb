@@ -1067,6 +1067,9 @@
             width: 325px;
 
             li {
+              clear:both;
+              overflow:hidden;
+
               position:relative;
               padding: 10px 0 10px 15px;
               margin: 0 0 5px 0;
@@ -1075,6 +1078,11 @@
               border-top: 1px solid rgba(#999, .25);
 
               cursor: pointer;
+
+              p {
+                float: left;
+                width: 285px;
+              }
 
               &:before {
                 @include position(12px, false, false, 0);

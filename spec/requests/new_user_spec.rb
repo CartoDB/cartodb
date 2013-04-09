@@ -1,9 +1,7 @@
-# coding: UTF-8
-
-require File.expand_path(File.dirname(__FILE__) + '/acceptance_helper')
+# encoding: utf-8
+require_relative '../acceptance_helper'
 
 feature 'New users' do
-
   scenario 'can create a new account'
 
   scenario 'can create a points table'
@@ -17,6 +15,4 @@ feature 'New users' do
   scenario 'can change their password'
 
   scenario 'can delete their account'
-
-
 end

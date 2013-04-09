@@ -1,4 +1,5 @@
-require File.expand_path(File.dirname(__FILE__) + '/acceptance_helper')
+# encoding: utf-8
+require_relative '../acceptance_helper'
 
 feature "Sessions" do
   before do
@@ -115,3 +116,4 @@ feature "Sessions" do
     page.should_not have_content("Your account or your password is not ok")
   end
 end
+

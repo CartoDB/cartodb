@@ -1,8 +1,7 @@
-# coding: UTF-8
-require File.expand_path(File.dirname(__FILE__) + '/../acceptance_helper')
+# encoding: utf-8
+require_relative '../../acceptance_helper'
 
 feature "API 1.0 user layers management" do
-
   before(:all) do
     Capybara.current_driver = :rack_test
     @user  = create_user({:username => 'test'})

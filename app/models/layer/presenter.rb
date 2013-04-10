@@ -2,8 +2,8 @@
 require 'json'
 
 module CartoDB
-  module VizzJSON
-    class Layer
+  class Layer
+    class Presenter
       PUBLIC_ATTRIBUTES = %W{ options kind infowindow id order }
 
       def initialize(layer, options={}, configuration={})
@@ -14,16 +14,16 @@ module CartoDB
 
       def to_poro
         return layer.public_values unless layer.kind == 'carto'
-        carto_to_poro
+        layer_to_poro
       end #to_poro
   
       private
 
       attr_reader :layer, :options, :configuration
 
-      def carto_to_poro
+      def layer_to_poro
         Hash[PUBLIC_ATTRIBUTES.map { |key| data_for(key) }]
-      end #carto_to_poro
+      end #layer_to_poro
 
       def data_for(key)
         return [:options, options_data] if key == "options" && !options[:full]
@@ -43,7 +43,7 @@ module CartoDB
       def public_options
         configuration.fetch(:layer_opts).fetch("public_opts")
       end #public_options
-    end # Layer
-  end # VizzJSON
+    end # Presenter
+  end # Layer
 end # CartoDB
 

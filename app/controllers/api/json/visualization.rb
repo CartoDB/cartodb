@@ -2,11 +2,22 @@
 require 'sinatra/base'
 require 'json'
 require_relative '../../../models/visualization/member'
+require_relative '../../../models/visualization/presenter'
 require_relative '../../../models/visualization/collection'
 
 module CartoDB
   module Visualization
     class API < Sinatra::Base
+      get '/viz/:id/viz' do
+        begin
+          member    = Member.new(id: params[:id]).fetch
+          return [200, member.to_json] if member.public?
+          [204]
+        rescue KeyError
+          head :forbidden
+        end
+      end #get /viz/:id/viz
+
       get '/api/v1/visualizations' do
         collection  = Visualization::Collection.new.fetch(params.dup)
         response    = {

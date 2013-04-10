@@ -111,11 +111,13 @@ CartoDB::Application.routes.draw do
         resources :layers, :only                                => [:show, :index, :create, :update, :destroy]
       end
 
-      get "/viz/:id/viz"                                        => 'tables#vizzjson', :as => :vizjson
+      #get "/viz/:id/viz"                                        => 'tables#vizzjson', :as => :vizjson
 
       # Tags
       resources :tags, :only                                    => [:index]
 
+      match '/viz/:id/viz',
+        to: CartoDB::Visualization::API
       match '/visualizations',
         to: CartoDB::Visualization::API
       match '/visualizations/:visualization_id',

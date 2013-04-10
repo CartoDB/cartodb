@@ -1,5 +1,5 @@
 # coding: UTF-8
-require_relative '../../../helpers/vizzjson/layer'
+require_relative '../../../models/layer/vizzjson'
 
 class Api::Json::LayersController < Api::ApplicationController
   ssl_required :index, :show, :create, :update, :destroy

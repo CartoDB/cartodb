@@ -1,6 +1,5 @@
 # encoding: utf-8
 require 'json'
-require 'mustache'
 
 module CartoDB
   module VizzJSON

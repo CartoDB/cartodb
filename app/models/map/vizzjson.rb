@@ -1,6 +1,6 @@
 # encoding: utf-8
 require 'json'
-require_relative './layer'
+require_relative '../layer/vizzjson'
 
 module CartoDB
   module VizzJSON
@@ -52,7 +52,6 @@ module CartoDB
       def bounds_from(map)
         ::JSON.parse("[#{map.view_bounds_sw}, #{map.view_bounds_ne}]")
       rescue => exception
-        nil
       end #bounds_from
     end # Map
   end # VizzJSON

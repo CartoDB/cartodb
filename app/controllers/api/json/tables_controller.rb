@@ -1,5 +1,5 @@
 # coding: UTF-8
-require_relative '../../../helpers/vizzjson/map'
+require_relative '../../../models/map/vizzjson'
 
 class Api::Json::TablesController < Api::ApplicationController
   ssl_required :index, :show, :create, :update, :destroy

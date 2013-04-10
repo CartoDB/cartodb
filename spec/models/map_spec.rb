@@ -1,12 +1,15 @@
-# coding: UTF-8
-require 'spec_helper'
+# encoding: utf-8
+require_relative '../spec_helper'
+require_relative '../../app/models/map'
 
 describe Map do
-
   before(:all) do
     @quota_in_bytes = 524288000
     @table_quota    = 500
-    @user     = create_user(:quota_in_bytes => @quota_in_bytes, :table_quota => @table_quota)
+    @user           = create_user(
+                        quota_in_bytes: @quota_in_bytes,
+                        table_quota:    @table_quota
+                      )
   end
 
   before(:each) do
@@ -15,43 +18,59 @@ describe Map do
     @table.save
   end
 
-  context "setups" do
-
-    it "should allow to be linked to a table" do
-      map = Map.create(:user_id => @user.id, :table_id => @table.id)
-      map.reload
+  describe '#tables' do
+    it 'returns the associated tables' do
+      map = Map.create(user_id: @user.id, table_id: @table.id)
       @table.reload
-
-      @table.map.should == map
+      map.reload
       map.tables.should include(@table)
-    end
+    end 
+  end #tables
 
-    it "should correctly identify the base layer" do
-      map = Map.create(:user_id => @user.id, :table_id => @table.id)
-      base_layer = Layer.create(:kind => 'carto')
+  describe '#base_layers' do
+    it 'returns the associated base layer' do
+      map = Map.create(user_id: @user.id, table_id: @table.id)
+      base_layer = Layer.create(kind: 'carto')
       map.add_layer(base_layer)
-      5.times { map.add_layer(Layer.create(:kind => 'carto')) }
+      5.times { map.add_layer(Layer.create(kind: 'carto')) }
 
       map.reload.base_layers.first.id.should == base_layer.id
     end
+  end #base_layers
 
-    it "should correctly identify the data layers" do
-      map = Map.create(:user_id => @user.id, :table_id => @table.id)
-      5.times { map.add_layer(Layer.create(:kind => 'tiled')) }
-      data_layer = Layer.create(:kind => 'carto')
+  describe 'data_layers' do
+    it 'returns the associated data layers' do
+      map = Map.create(user_id: @user.id, table_id: @table.id)
+      5.times { map.add_layer(Layer.create(kind: 'tiled')) }
+      data_layer = Layer.create(kind: 'carto')
       map.add_layer(data_layer)
 
       map.reload.data_layers.first.id.should == data_layer.id
-    end
+    end 
+  end #data_layers
 
-    it "should remove its vizzjson from varnish after being modified" do
+  describe '#user_layers' do
+    it 'returns all user-defined layers' do
+      map = Map.create(user_id: @user.id, table_id: @table.id)
+      5.times { map.add_layer(Layer.create(kind: 'tiled')) }
+      data_layer = Layer.create(kind: 'carto')
+      map.add_layer(data_layer)
+
+      map.reload.base_layers.length.should == 6
+      map.reload.user_layers.length.should == 5
+    end
+  end #user_layers
+
+  describe '#after_save' do
+    it 'invalidates varnish cache' do
+
       map = Map.create(:user_id => @user.id, :table_id => @table.id)
       CartoDB::Varnish.any_instance.expects(:purge).times(1).with("obj.http.X-Cache-Channel ~ #{@table.varnish_key}:vizjson").returns(true)
       CartoDB::Varnish.any_instance.expects(:purge).times(0).with("obj.http.X-Cache-Channel ~ #{@table.varnish_key}.*")
       map.save
     end
 
-    it "should correctly recalculate bounds" do
+    it "recalculates bounds" do
       table = Table.new :privacy => Table::PRIVATE, :name => 'Madrid Bars',
                         :tags => 'movies, personal'
       table.user_id = @user.id
@@ -68,26 +87,31 @@ describe Map do
       table.map.view_bounds_ne.should == "[40.428198, -3.699732]"
       table.map.view_bounds_sw.should == "[40.415113, -3.70957]"
     end
+  end #after_save
 
-    it "should update updated_at after saving" do
-      map = Map.create(:user_id => @user.id, :table_id => @table.id)
-      after = map.updated_at
-      sleep 1
-      after.should < map.save.updated_at
+  describe '#updated_at' do
+    it 'is updated after saving the map' do
+      map         = Map.create(user_id: @user.id, table_id: @table.id)
+      updated_at  = map.updated_at
+
+      sleep 0.5
+      map.save
+      map.updated_at.should > updated_at
     end
+  end #updated_at
 
-    it "should correcly set vizjson updated_at" do
-      map = Map.create(user_id: @user.id, table_id: @table.id)
+  it "should correcly set vizjson updated_at" do
+    map = Map.create(user_id: @user.id, table_id: @table.id)
 
-      # When the table data is newer
-      t = Time.now + 2.minutes
-      Table.any_instance.stubs(:data_last_modified).returns(t)
-      map.viz_updated_at.to_s.should == t.to_s
+    # When the table data is newer
+    time = Time.now + 2.minutes
+    Table.any_instance.stubs(:data_last_modified).returns(time)
+    map.viz_updated_at.to_s.should == time.to_s
 
-      # When the data layer is newer
-      t2 = Time.now + 3.minutes
-      map.stubs(:data_layers).returns([Layer.new(updated_at: t2)])
-      map.viz_updated_at.to_s.should == t2.to_s
-    end
+    # When the data layer is newer
+    time = Time.now + 3.minutes
+    map.stubs(:data_layers).returns([Layer.new(updated_at: time)])
+    map.viz_updated_at.to_s.should == time.to_s
   end
 end
+

@@ -38,7 +38,8 @@ cdb.geo.GoogleMapsMapView = cdb.geo.MapView.extend({
         scrollwheel: this.map.get("scrollwheel"),
         mapTypeControl:false,
         mapTypeId: google.maps.MapTypeId.ROADMAP,
-        backgroundColor: 'white'
+        backgroundColor: 'white',
+        tilt: 0
       });
     } else {
       this.map_googlemaps = this.options.map_object;

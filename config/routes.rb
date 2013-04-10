@@ -1,3 +1,7 @@
+# encoding: utf-8
+require_relative '../app/controllers/api/json/visualization'
+require_relative '../app/controllers/api/json/overlay'
+
 CartoDB::Application.routes.draw do
   root :to => redirect("/login")
 
@@ -16,9 +20,15 @@ CartoDB::Application.routes.draw do
     resources :tables, :only => [:show] do
       get 'embed_map', :on => :member
       get 'track_embed', :on => :collection
-      get 'embed_forbidden', :on => :collection
       get 'public' => 'tables#show_public', :on => :member
     end
+
+    resources :visualizations, :only => [:show] do
+      get 'embed_map',    :on => :member
+      get 'track_embed',  :on => :collection
+      get 'public' => 'tables#show_public', :on => :member
+    end
+
     match '/your_apps/oauth'   => 'client_applications#oauth',   :as => :oauth_credentials
     match '/your_apps/api_key' => 'client_applications#api_key', :as => :api_key_credentials
     post  '/your_apps/api_key/regenerate' => 'client_applications#regenerate_api_key', :as => :regenerate_api_key
@@ -41,34 +51,50 @@ CartoDB::Application.routes.draw do
   scope "/api" do
     namespace CartoDB::API::VERSION_1, :format => :json, :module => "api/json" do
       get    '/column_types'                                    => 'meta#column_types'
-      get    '/tables'                                          => 'tables#index'
-      post   '/tables'                                          => 'tables#create'
-      get    '/tables/tags/:tag_name'                           => 'tables#index'
-      get    '/tables/tags'                                     => 'tags#index'
-      get    '/tables/:id'                                      => 'tables#show'
-      put    '/tables/:id'                                      => 'tables#update'
-      delete '/tables/:id'                                      => 'tables#destroy'
+      #we should depricate the following five
       get    '/tables/:table_id.:format'                        => 'export_tables#show'
-      #we should depricate the following four
       get    '/tables/:table_id/export/csv'                     => 'export_tables#show', :format  => :csv
       get    '/tables/:table_id/export/shp'                     => 'export_tables#show', :format  => :shp
       get    '/tables/:table_id/export/kml'                     => 'export_tables#show', :format  => :kml
       get    '/tables/:table_id/export/sql'                     => 'export_tables#show', :format  => :sql
-      get    '/tables/:table_id/records'                        => 'records#index'
-      post   '/tables/:table_id/records'                        => 'records#create'
-      get    '/tables/:table_id/records/pending_addresses'      => 'records#pending_addresses'
-      get    '/tables/:table_id/records/:id'                    => 'records#show'
-      put    '/tables/:table_id/records/:id'                    => 'records#update'
-      delete '/tables/:table_id/records/:id'                    => 'records#destroy'
-      get    '/tables/:table_id/columns'                        => 'columns#index'
-      post   '/tables/:table_id/columns'                        => 'columns#create'
-      get    '/tables/:table_id/columns/:id'                    => 'columns#show'
-      put    '/tables/:table_id/columns/:id'                    => 'columns#update'
-      delete '/tables/:table_id/columns/:id'                    => 'columns#delete'
-      get    '/tables/:table_id/records/:record_id/columns/:id' => 'records#show_column'
-      put    '/tables/:table_id/records/:record_id/columns/:id' => 'records#update_column'
       get    '/queries'                                         => 'queries#run'
       put    '/queries'                                         => 'queries#run'
+
+
+      # get    '/tables'                                          => 'tables#index'
+      # post   '/tables'                                          => 'tables#create'
+      # get    '/tables/:id'                                      => 'tables#show'
+      # put    '/tables/:id'                                      => 'tables#update'
+      # delete '/tables/:id'                                      => 'tables#destroy'
+      resources :tables, :only => [:index, :create, :show, :update, :destroy] do
+        collection do
+          # get    '/tables/tags/:tag_name'                           => 'tables#index'
+          get '/tags/:tag_name' => 'tables#index', :as => 'show_tag'
+          # get    '/tables/tags'                                     => 'tags#index'
+          get '/tags' => 'tags#index', :as => 'list_tags'
+        end
+        # get    '/tables/:table_id/records'                        => 'records#index'
+        # post   '/tables/:table_id/records'                        => 'records#create'
+        # get    '/tables/:table_id/records/:id'                    => 'records#show'
+        # put    '/tables/:table_id/records/:id'                    => 'records#update'
+        # delete '/tables/:table_id/records/:id'                    => 'records#destroy'
+        resources :records, :only => [:index, :create, :show, :update, :destroy] do
+          # get    '/tables/:table_id/records/pending_addresses'      => 'records#pending_addresses'
+          get '/pending_addresses' => 'records#pending_addresses'
+          resources :columns do
+            # get    '/tables/:table_id/records/:record_id/columns/:id' => 'records#show_column'
+            get '/:id' => 'records#show_column'
+            # put    '/tables/:table_id/records/:record_id/columns/:id' => 'records#update_column'
+            put '/:id' => 'records#update_column'
+          end
+        end
+        # get    '/tables/:table_id/columns'                        => 'columns#index'
+        # post   '/tables/:table_id/columns'                        => 'columns#create'
+        # get    '/tables/:table_id/columns/:id'                    => 'columns#show'
+        # put    '/tables/:table_id/columns/:id'                    => 'columns#update'
+        # delete '/tables/:table_id/columns/:id'                    => 'columns#delete'
+        resources :columns, :only => [:index, :create, :show, :update, :destroy]
+      end
 
       # imports
       resources :uploads, :only                                 => :create
@@ -89,6 +115,16 @@ CartoDB::Application.routes.draw do
 
       # Tags
       resources :tags, :only                                    => [:index]
+
+      match '/visualizations',
+        to: CartoDB::Visualization::API
+      match '/visualizations/:visualization_id',
+        to: CartoDB::Visualization::API
+      match '/visualizations/:visualization_id/overlays',
+        to: CartoDB::Overlay::API
+      match '/visualizations/:visualization_id/overlays/:id',
+        to: CartoDB::Overlay::API
     end
   end
 end
+

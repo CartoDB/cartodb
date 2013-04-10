@@ -1,12 +1,20 @@
 # encoding: utf-8
+require 'ostruct'
 require 'virtus'
 require_relative './collection'
+require_relative './presenter'
 require_relative '../overlay/collection'
 
 module CartoDB
   module Visualization
     class Member
       include Virtus
+
+      LAYER_SCOPES = {
+        base:     :base_layers,
+        cartodb:  :data_layers,
+        other:    :user_layers
+      }
 
       attribute :id,            String
       attribute :name,          String
@@ -36,20 +44,13 @@ module CartoDB
       end #fetch
 
       def to_hash
-        { 
-          id:           id,
-          name:         name,
-          map_id:       map_id,
-          type:         type,
-          tags:         (tags || []).join(','),
-          description:  description
-        }.merge(table: table_data)
+        Presenter.new(self, { full: false }).to_poro
       end #to_hash
 
       def delete
         overlays.destroy
         repository.delete(id)
-        self.attributes.keys.each { |k| self.send("#{k}=", nil) }
+        self.attributes.keys.each { |key| self.send("#{key}=", nil) }
         self
       end #delete
 
@@ -58,20 +59,21 @@ module CartoDB
       end #overlays
 
       def map
-        return nil unless map_id
-        return nil unless defined?(Map)
+        return OpenStruct.new unless map_id
+        return OpenStruct.new unless defined?(Map)
         @map ||= Map.where(id: map_id).first
       end #map
 
       def table
-        return nil unless type == 'table'
-        return nil unless defined?(Table)
+        return OpenStruct.new unless type == 'table'
+        return OpenStruct.new unless defined?(Table)
         @table  ||= Table.where(map_id: map_id).first
       end #table
 
-      private
-
-      attr_reader :repository
+      def layers(kind)
+        return [] unless map.id
+        return map.send(LAYER_SCOPES.fetch(kind))
+      end #layers
 
       def table_data
         return {} unless table
@@ -83,6 +85,15 @@ module CartoDB
           updated_at:   table.updated_at
         }
       end #table_data
+
+      private
+
+      attr_reader :repository
+
+      def configuration
+        return {} unless defined?(Cartodb)
+        Cartodb.config
+      end #configuration
     end # Member
   end # Visualization
 end # CartoDB

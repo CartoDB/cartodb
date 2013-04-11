@@ -736,26 +736,22 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def modify_column!(options)
-    old_name  = (options.fetch(:old_name, '') || '').sanitize
-    new_name  = (options.fetch(:new_name, '') || '').sanitize
+    old_name  = options.fetch(:name, '').to_s.sanitize
+    new_name  = options.fetch(:new_name, '').to_s.sanitize
+    raise 'This column cannot be modified' if CARTODB_COLUMNS.include?(old_name.to_s)
 
-    rename_column(old_name, new_name) if new_name.present?
-
-    column_name = (new_name || options.fetch(:name)).sanitize
-    new_type = options.fetch(:type, column_type_for(column_name))
-                .try(:convert_to_db_type)
-
-    cartodb_type = new_type.try(:convert_to_cartodb_type)
-
-    owner.in_database do |user_database|
-      change_type(user_database, name, column_name, new_type)
+    if new_name.present? && new_name != old_name
+      rename_column(old_name, new_name)
     end
 
-    { name: column_name, type: new_type, cartodb_type: cartodb_type }
+    column_name = (new_name.present? ? new_name : old_name)
+    convert_column_datatype(owner.in_database, name, column_name, options[:type])
+    column_type = column_type_for(column_name)
+    { name: column_name, type: column_type, cartodb_type: column_type.convert_to_cartodb_type }
   end #modify_column!
 
   def column_type_for(column_name)
-    schema(cartodb_types: false).select { |c|
+    schema(cartodb_types: false, reload: true).select { |c|
       c[0] == column_name.to_sym 
     }.first[1]
   end #column_type_for
@@ -779,13 +775,6 @@ class Table < Sequel::Model(:user_tables)
       user_database.rename_column(name, old_name.to_sym, new_name.to_sym)
     end
   end #rename_column
-
-  def change_type(database, table_name, column_name, new_type)
-    database.set_column_type(table_name, column_name, new_type)
-  rescue => exception
-    raise exception unless exception.message =~ /cannot be cast to type/
-    convert_column_datatype(database, table_name, column_name, new_type)
-  end #change_type
 
   def convert_column_datatype(database, table_name, column_name, new_type)
     CartoDB::ColumnTypecaster.new(

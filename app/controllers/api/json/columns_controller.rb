@@ -25,10 +25,9 @@ class Api::Json::ColumnsController < Api::ApplicationController
   end
 
   def update
-    render_jsonp(@table.modify_column!(:name => params[:id], 
-                                       :type => params[:type], 
-                                       :old_name => params[:id], 
-                                       :new_name => params[:new_name]))
+    render_jsonp(@table.modify_column!(name: params[:id], 
+                                       type: params[:type], 
+                                       new_name: params[:new_name]))
   rescue => e  
     errors = e.is_a?(CartoDB::InvalidType) ? [e.db_message] : [translate_error(e.message.split("\n").first)]
     render_jsonp({:errors => errors}, 400) and return

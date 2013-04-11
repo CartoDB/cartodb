@@ -721,6 +721,7 @@ class Table < Sequel::Model(:user_tables)
     type = options[:type].convert_to_db_type
     cartodb_type = options[:type].convert_to_cartodb_type
     owner.in_database.add_column name, options[:name].to_s.sanitize, type
+    self.invalidate_varnish_cache
     return {:name => options[:name].to_s.sanitize, :type => type, :cartodb_type => cartodb_type}
   rescue => e
     if e.message =~ /^PGError/
@@ -733,6 +734,7 @@ class Table < Sequel::Model(:user_tables)
   def drop_column!(options)
     raise if CARTODB_COLUMNS.include?(options[:name].to_s)
     owner.in_database.drop_column name, options[:name].to_s
+    self.invalidate_varnish_cache
   end
 
   def modify_column!(options)
@@ -747,6 +749,7 @@ class Table < Sequel::Model(:user_tables)
     column_name = (new_name.present? ? new_name : old_name)
     convert_column_datatype(owner.in_database, name, column_name, options[:type])
     column_type = column_type_for(column_name)
+    self.invalidate_varnish_cache
     { name: column_name, type: column_type, cartodb_type: column_type.convert_to_cartodb_type }
   end #modify_column!
 

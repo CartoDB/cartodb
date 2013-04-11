@@ -116,16 +116,7 @@ CartoDB::Application.routes.draw do
       # Tags
       resources :tags, :only                                    => [:index]
 
-      match '/viz/:id/viz',
-        to: CartoDB::Visualization::API
-      match '/visualizations',
-        to: CartoDB::Visualization::API
-      match '/visualizations/:visualization_id',
-        to: CartoDB::Visualization::API
-      match '/visualizations/:visualization_id/overlays',
-        to: CartoDB::Overlay::API
-      match '/visualizations/:visualization_id/overlays/:id',
-        to: CartoDB::Overlay::API
+      resources :visualizations
     end
   end
 end

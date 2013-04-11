@@ -61,7 +61,7 @@ module CartoDB
       def map
         return OpenStruct.new unless map_id
         return OpenStruct.new unless defined?(Map)
-        @map ||= Map.where(id: map_id).first
+        @map ||= Map.where(id: map_id).first || OpenStruct.new
       end #map
 
       def table

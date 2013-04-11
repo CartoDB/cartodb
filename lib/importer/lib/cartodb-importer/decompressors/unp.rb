@@ -96,8 +96,11 @@ module CartoDB
     end #generate_tempfile
 
     def rename(origin, destination)
-      return destination if origin == destination
-      FileUtils.mv(origin, destination)
+      begin
+        FileUtils.mv(origin, destination)
+      rescue ArgumentError => e
+        raise(e) unless e.message =~ /same file/
+      end
       destination
     end #rename
 

@@ -55,19 +55,17 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     head 204
   end #destroy
 
+  def vizzjson
+    member = Member.new(id: params[:id]).fetch
+    render_jsonp(member) if member.public?
+    head 204
+  rescue KeyError
+    head :forbidden
+  end #vizzjson
+
   def payload
     request.body.rewind
     ::JSON.parse(request.body.read.to_s || String.new)
   end #payload
-
-  def vizzjson
-    begin
-      member    = Member.new(id: params[:id]).fetch
-      return [200, member.to_json] if member.public?
-      [204]
-    rescue KeyError
-      head :forbidden
-    end
-  end #vizzjson
-end # API
+end # Api::Json::VisualizationsController
 

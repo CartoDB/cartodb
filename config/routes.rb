@@ -1,6 +1,4 @@
 # encoding: utf-8
-require_relative '../app/controllers/api/json/visualization'
-require_relative '../app/controllers/api/json/overlay'
 
 CartoDB::Application.routes.draw do
   root :to => redirect("/login")
@@ -111,12 +109,14 @@ CartoDB::Application.routes.draw do
         resources :layers, :only                                => [:show, :index, :create, :update, :destroy]
       end
 
-      #get "/viz/:id/viz"                                        => 'tables#vizzjson', :as => :vizjson
+      resources :visualizations do
+        resources :overlays
+      end
+
+      get "/viz/:id/viz"                                        => 'visualizations#vizzjson', as: :vizjson
 
       # Tags
       resources :tags, :only                                    => [:index]
-
-      resources :visualizations
     end
   end
 end

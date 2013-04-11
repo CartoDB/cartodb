@@ -3,7 +3,7 @@ require 'sequel'
 require 'rack/test'
 require 'json'
 require_relative '../../spec_helper'
-require_relative '../../../app/controllers/api/json/visualization'
+require_relative '../../../app/controllers/api/json/visualizations_controller'
 require_relative '../../../services/data-repository/backend/sequel'
 
 include CartoDB
@@ -248,5 +248,5 @@ describe Api::Json::VisualizationsController do
       type:         'table'
     }
   end #factory
-end # Visualization::API
+end # Api::Json::VisualizationsController
 

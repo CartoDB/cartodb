@@ -33,7 +33,7 @@ class Api::Json::ColumnsController < Api::ApplicationController
     render_jsonp({:errors => errors}, 400) and return
   end
 
-  def delete
+  def destroy
     @table.drop_column!(:name => params[:id])
     
     # Select the primary key name of the table. This is neccesary because if you change the name of the table

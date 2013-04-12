@@ -48,9 +48,9 @@ class Layer < Sequel::Model
   # Returns an array of tables used on the layer
   #
   def affected_tables
-    if maps.first.present? && options.present? && options[:query].present?
+    if maps.first.present? && options.present? && options.symbolize_keys[:query].present?
       begin
-        query = options[:query]
+        query = options.symbolize_keys[:query]
         tables_per_statement = maps.first.user.in_database.select { 
           cdb_querytables(Sequel.function(:cdb_querystatements, query))
         }.all

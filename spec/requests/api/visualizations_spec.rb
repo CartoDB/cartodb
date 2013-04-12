@@ -19,7 +19,6 @@ describe Api::Json::VisualizationsController do
   before(:all) do
     @user = create_user(:username => 'test', :email => "client@example.com", :password => "clientex")
     @user.set_map_key
-    #@table = create_table :user_id => @user.id
 
     Sequel.extension(:pagination)
   end
@@ -75,7 +74,7 @@ describe Api::Json::VisualizationsController do
 
       response = JSON.parse(last_response.body)
       response.fetch('name')        .should_not == nil
-      #response.fetch('tags')        .should_not payload.fetch(:tags)
+      response.fetch('tags')        .should_not == payload.fetch(:tags).to_json
     end
   end # POST /api/v1/visualizations
 
@@ -172,7 +171,6 @@ describe Api::Json::VisualizationsController do
       last_response.status.should == 200
       response    = JSON.parse(last_response.body)
       collection  = response.fetch('visualizations')
-      puts collection
       collection.should be_empty
     end
   end # GET /api/v1/visualizations
@@ -192,27 +190,30 @@ describe Api::Json::VisualizationsController do
 
       response.fetch('id')            .should_not be_nil
       response.fetch('map_id')        .should_not be_nil
-      #response.fetch('tags')          .should_not be_empty
+      response.fetch('tags')          .should_not be_empty
       response.fetch('description')   .should_not be_nil
     end
   end # GET /api/v1/visualizations/:id
 
   describe 'PUT /api/v1/visualizations/:id' do
-    it 'updates an existing visualization' do
+    it 'updates an existing visualization', now: true do
       payload   = factory
       post "/api/v1/visualizations?api_key=#{@api_key}",
         payload.to_json
 
       response  =  JSON.parse(last_response.body)
       id        = response.fetch('id')
-      #tags      = response.fetch('tags')
+      tags      = response.fetch('tags')
+
+      response.fetch('tags').should == ['foo', 'bar']
 
       put "/api/v1/visualizations/#{id}?api_key=#{@api_key}",
         { name: 'changed' }.to_json, @headers
       last_response.status.should == 200
       response = JSON.parse(last_response.body)
       response.fetch('name').should == 'changed'
-      #response.fetch('tags').should == tags
+      response.fetch('tags').should == ['foo', 'bar']
+      response.fetch('tags').should == tags
     end
   end # PUT /api/v1/visualizations
 

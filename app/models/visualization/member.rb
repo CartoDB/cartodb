@@ -1,6 +1,7 @@
 # encoding: utf-8
 require 'ostruct'
 require 'virtus'
+require 'json'
 require_relative './collection'
 require_relative './presenter'
 require_relative '../overlay/collection'
@@ -30,16 +31,14 @@ module CartoDB
       end #initialize
 
       def store
-        data = attributes.to_hash
-        data.delete(:tags)
-        repository.store(id, data)
+        repository.store(id, attributes.to_hash)
         self
       end #store
 
       def fetch
-        result = repository.fetch(id)
-        raise KeyError if result.nil?
-        self.attributes = result
+        data = repository.fetch(id)
+        raise KeyError if data.nil?
+        self.attributes = data
         self
       end #fetch
 

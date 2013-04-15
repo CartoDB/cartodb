@@ -77,9 +77,7 @@ cdb.ui.common.TabPane = cdb.core.View.extend({
   },
 
   removeTab: function(name) {
-    if(this.tabs[name] === undefined) {
-      cdb.log.debug("trying to remove non existing pane " + name);
-    } else {
+    if (this.tabs[name] !== undefined) {
       var vid = this.tabs[name];
       this._subviews[vid].clean();
       delete this.tabs[name];
@@ -108,9 +106,7 @@ cdb.ui.common.TabPane = cdb.core.View.extend({
     self = this,
     vid  = this.tabs[name];
 
-    if (vid === undefined) {
-      cdb.log.debug("trying to switch to non existing pane " + name);
-    } else {
+    if (vid !== undefined) {
 
       if (this.activeTab !== name) {
 

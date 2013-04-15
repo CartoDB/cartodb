@@ -6,7 +6,6 @@ module CartoDB
         email: self.email,
         username: self.username,
         account_type: self.account_type,
-        private_tables: self.private_tables_enabled,
         table_quota: self.table_quota,
         table_count: self.table_count,
         byte_quota: self.quota_in_bytes,

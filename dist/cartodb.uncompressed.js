@@ -1,6 +1,6 @@
-// cartodb.js version: 2.0.26-dev
+// cartodb.js version: 2.0.26
 // uncompressed version: cartodb.uncompressed.js
-// sha: 7b731a6b80264125412e8152769176a64e4e39aa
+// sha: 90d530ed1cc2de77635759bcba0a50997cc9082c
 (function() {
   var root = this;
 
@@ -9812,7 +9812,7 @@ L.Map.include({
 });
 
 
-}(this, document));/* wax - 7.0.0dev10 - v6.0.4-143-g006af88 */
+}(this, document));/* wax - 7.0.0dev10 - v6.0.4-145-ga13219f */
 
 
 !function (name, context, definition) {
@@ -12905,7 +12905,7 @@ wax.interaction = function() {
             // but also wax.u.eventoffset will have failed, since this touch
             // event doesn't have coordinates
             interaction.click(e, _d);
-        } else if (evt.type === "MSPointerMove" || evt.type === "MSPointerUp") {
+        } else if (evt.type === "MSPointerMove" || evt.type === "MSPointerUp") {
             interaction.click(evt, pos);
         } else if (Math.round(pos.y / tol) === Math.round(_d.y / tol) &&
             Math.round(pos.x / tol) === Math.round(_d.x / tol)) {
@@ -15492,7 +15492,7 @@ $(function(){
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '2.0.26-dev';
+    cdb.VERSION = '2.0.26';
 
     cdb.CARTOCSS_VERSIONS = {
       '2.0.0': '',
@@ -17797,14 +17797,15 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
         $jscrollpane.data().jsp && $jscrollpane.data().jsp.destroy();
       }
 
-      var attrs = _.clone(this.model.attributes);
+      // Clone fields and template name
+      var fields = _.map(this.model.attributes.content.fields, function(field){
+        return _.clone(field);
+      });
+      var template_name = _.clone(this.model.attributes.template_name);
+      // Sanitized them
+      var sanitized_fields = this._fieldsToString(fields, template_name);
 
-      // Mustache doesn't support 0 values, we have to convert number to strings
-      // before apply the template
-
-      var fields = this._fieldsToString(attrs);
-
-      this.$el.html($(this.template(fields)));
+      this.$el.html($(this.template({ content: { fields: sanitized_fields }})));
 
       // Hello jscrollpane hacks!
       // It needs some time to initialize, if not it doesn't render properly the fields
@@ -17824,7 +17825,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
 
       // If the template is 'cover-enabled', load the cover
       this._loadCover();
-    };
+    }
 
     return this;
   },
@@ -17866,16 +17867,16 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
   /**
    *  Convert values to string unless value is NULL
    */
-  _fieldsToString: function(attrs) {
-    if (attrs.content && attrs.content.fields) {
+  _fieldsToString: function(fields, template_name) {
+    var fields_sanitized = [];
+    if (fields && fields.length > 0) {
       var self = this;
-      attrs.content.fields = _.map(attrs.content.fields, function(attr,i) {
+      fields_sanitized = _.map(fields, function(field,i) {
         // Return whole attribute sanitized
-        return self._sanitizeField(attr, attrs.template_name, attr.index || i);
+        return self._sanitizeField(field, template_name, field.index || i);
       });
     }
-
-    return attrs;
+    return fields_sanitized;
   },
 
   /**
@@ -17895,19 +17896,13 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     // Cast all values to string due to problems with Mustache 0 number rendering
     var new_value = attr.value.toString();
 
-    //Link? go ahead!
-    if (!attr.type && this._isValidURL(new_value)) {
-      attr.url = attr.value;
-    }
+    // Remove '_' character from titles
+    if (attr.title)
+      attr.title = attr.title.replace(/_/g,' ');
 
     // If it is index 0, not any field type, header template type and length bigger than 30... cut off the text!
     if (!attr.type && pos==0 && attr.value.length > 35 && template_name && template_name.search('_header_') != -1) {
       new_value = attr.value.substr(0,32) + "...";
-    }
-
-    // If it is index 0, not any field type, header image template type... don't cut off the text!
-    if (pos==0 && template_name.search('_header_with_image') != -1) {
-      new_value = attr.value;
     }
 
     // If it is index 1, not any field type, header image template type and length bigger than 30... cut off the text!
@@ -17915,6 +17910,17 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
       new_value = attr.value.substr(0,32) + "...";
     }
 
+    // Is it the value a link?
+    if (this._isValidURL(attr.value)) {
+      new_value = "<a href='" + attr.value + "' target='_blank'>" + new_value + "</a>"
+    }
+
+    // If it is index 0, not any field type, header image template type... don't cut off the text or add any link!!
+    if (pos==0 && template_name.search('_header_with_image') != -1) {
+      new_value = attr.value;
+    }
+
+    // Save new sanitized value
     attr.value = new_value;
 
     return attr;
@@ -17976,16 +17982,10 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
    *  Get cover URL
    */
   _getCoverURL: function() {
-
     var content = this.model.get("content");
 
-    if (content && content.fields) {
-
-      if (content.fields && content.fields.length > 0) {
-        // Force always the value to be a string
-        return (content.fields[0].value).toString();
-      }
-      return false;
+    if (content && content.fields && content.fields.length > 0) {
+      return (content.fields[0].value).toString();
     }
 
     return false;
@@ -18061,8 +18061,8 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
    */
   _isValidURL: function(url) {
     if (url) {
-      var urlPattern = /(http|ftp|https):\/\/[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:\/~+#-]*[\w@?^=%&amp;\/~+#-])?/
-      return url.match(urlPattern) != null ? true : false;
+      var urlPattern = /^(http|ftp|https):\/\/[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:\/~+#-]*[\w@?^=%&amp;\/~+#-])?$/
+      return String(url).match(urlPattern) != null ? true : false;
     }
 
     return false;
@@ -20539,7 +20539,8 @@ cdb.geo.GoogleMapsMapView = cdb.geo.MapView.extend({
         scrollwheel: this.map.get("scrollwheel"),
         mapTypeControl:false,
         mapTypeId: google.maps.MapTypeId.ROADMAP,
-        backgroundColor: 'white'
+        backgroundColor: 'white',
+        tilt: 0
       });
     } else {
       this.map_googlemaps = this.options.map_object;
@@ -21895,20 +21896,22 @@ var Vis = cdb.core.View.extend({
             var fields = infowindowFields.fields;
             for(var j = 0; j < fields.length; ++j) {
               var f = fields[j];
-              if(interact_data[f.name] != undefined && interact_data[f.name] != "") {
+              var value = String(interact_data[f.name]);
+              if(interact_data[f.name] != undefined && value != "") {
                 render_fields.push({
-                  title: f.title ? f.name: null,
+                  title: f.title ? f.name : null,
                   value: interact_data[f.name],
-                  index: j ? j:null // mustache does not recognize 0 as false :(
+                  index: j ? j : null
                 });
               }
             }
+
             // manage when there is no data to render
             if(render_fields.length === 0) {
               render_fields.push({
                 title: null,
                 value: 'No data available',
-                index: j ? j:null, // mustache does not recognize 0 as false :(
+                index: j ? j : null,
                 type: 'empty'
               });
             }
@@ -22386,7 +22389,8 @@ Layers.register('carto', cartoLayer);
 
       options = options || {};
       options = _.defaults(options, {
-          infowindow: true
+        infowindow: true,
+        https: false
       })
 
       // create a dummy viz
@@ -22402,6 +22406,7 @@ Layers.register('carto', cartoLayer);
         });
 
         viz.updated_at = visData.updated_at;
+        viz.https = options.https;
       }
 
       layerView = viz.createLayer(layerData, { no_base_layer: true });

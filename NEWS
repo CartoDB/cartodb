@@ -1,3 +1,7 @@
+2.0.27 (04//15//2013)
+-----
+- fixed infowindow content (#47)
+
 2.0.26 (04//15//2013)
 -----
 - fixed interaction for IE10 browsers (#43)

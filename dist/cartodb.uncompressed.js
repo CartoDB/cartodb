@@ -1,6 +1,6 @@
-// cartodb.js version: 2.0.26
+// cartodb.js version: 2.0.27
 // uncompressed version: cartodb.uncompressed.js
-// sha: 90d530ed1cc2de77635759bcba0a50997cc9082c
+// sha: d93f4d73b1074a8b25f37e8c3ac68c48a84afd86
 (function() {
   var root = this;
 
@@ -15492,7 +15492,7 @@ $(function(){
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '2.0.26';
+    cdb.VERSION = '2.0.27';
 
     cdb.CARTOCSS_VERSIONS = {
       '2.0.0': '',
@@ -17804,8 +17804,14 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
       var template_name = _.clone(this.model.attributes.template_name);
       // Sanitized them
       var sanitized_fields = this._fieldsToString(fields, template_name);
-
-      this.$el.html($(this.template({ content: { fields: sanitized_fields }})));
+      var data = this.model.get('content') ? this.model.get('content').data : {}
+      this.$el.html($(this.template({ 
+          content: {
+            fields: sanitized_fields,
+            data: data 
+          }
+        })
+      ));
 
       // Hello jscrollpane hacks!
       // It needs some time to initialize, if not it doesn't render properly the fields

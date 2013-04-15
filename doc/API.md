@@ -258,6 +258,27 @@ We have worked hard to support Internet Explorer with CartoDB.js. It currently w
     <script src="http://libs.cartocdn.com/cartodb.js/v2/cartodb.js"></script>
 ```
 
+##### HTTPS support
+
+You can use all the functionality of cartodb.js with HTTPs support. Be sure to add the https method when importing both the library and the css files. Next, you will specify HTTPs for your Viz.JSON and as a parameter when you initialize your visualizaiton.
+
+<div class="margin20"></div>
+``` javascript
+    cartodb.createLayer(map, 'https://.../api/v1/viz/counties/viz.json',{ https: true})
+    <div id="map"></div>
+    <script>
+        var map = new L.Map('map', { 
+          center: [0,0],
+          zoom: 2
+        })
+        cartodb.createLayer(map, 'https://examples-beta.cartodb.com/api/v1/viz/766/viz.json', { https: true })
+          .on('error', function(err) {
+            alert("some error occurred: " + err);
+          });
+    </script>
+```
+
+
 ##### Persistent version hosting
 
 We are committed to making sure your website works as intended no matter what changes in the future. While we may find more efficient or more useful features to add to the library as time progresses. We never want to break things you have already developed, for this reason, we make versioned CartoDB.js libraries available to you, meaning that the way they function will never unexpectedly change on you.

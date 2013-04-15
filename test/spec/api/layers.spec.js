@@ -109,6 +109,32 @@ describe('api.layers', function() {
         });
       });
 
+      it("should use https when https == true", function() {
+        var layer;
+        runs(function() {
+          cartodb.createLayer(map, { kind: 'cartodb', options: {} }, {https: true}, function(l) {
+            layer = l;
+          });
+        });
+        waits(100);
+        runs(function() {
+          expect(layer._tileJSON().tiles[0].indexOf('https')).toEqual(0)
+        });
+      });
+
+      it("should not use https when https == false", function() {
+        var layer;
+        runs(function() {
+          cartodb.createLayer(map, { kind: 'cartodb', options: {} }, {https: false}, function(l) {
+            layer = l;
+          });
+        });
+        waits(100);
+        runs(function() {
+          expect(layer._tileJSON().tiles[0].indexOf('https')).toEqual(-1)
+        });
+      });
+
 
       it("should manage errors", function() {
         var s = sinon.spy();

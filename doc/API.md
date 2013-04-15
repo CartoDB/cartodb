@@ -260,11 +260,10 @@ We have worked hard to support Internet Explorer with CartoDB.js. It currently w
 
 ##### HTTPS support
 
-You can use all the functionality of cartodb.js with HTTPs support. Be sure to add the https method when importing both the library and the css files. Next, you will specify HTTPs for your Viz.JSON and as a parameter when you initialize your visualizaiton.
+You can use all the functionality of cartodb.js with HTTPs support. Be sure to add use https when importing both the JS library and the CSS file. Next, you will specify HTTPs for your Viz.JSON URL and as a parameter when you initialize your visualizaiton.
 
 <div class="margin20"></div>
 ``` javascript
-    cartodb.createLayer(map, 'https://.../api/v1/viz/counties/viz.json',{ https: true})
     <div id="map"></div>
     <script>
         var map = new L.Map('map', { 

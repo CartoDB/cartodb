@@ -123,7 +123,7 @@
       });
       waits(2000);
       runs(function() {
-        expect(container.find("a.cartodb_logo").length).toEqual(1);
+        expect(container.find("div.cartodb-logo").length).toEqual(1);
       });
     });
 

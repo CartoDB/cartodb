@@ -34,7 +34,7 @@ module CartoDB
       end #data_for
 
       def options_data
-        options = JSON.parse(layer.options)
+        options = ::JSON.parse(layer.options)
         {
           sql:                sql_from(options),
           cartocss:           options.fetch('tile_style'),

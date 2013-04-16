@@ -85,6 +85,11 @@ module CartoDB
         }
       end #table_data
 
+      def public?
+        return table.public? if type == 'table'
+        return true 
+      end #public?
+
       private
 
       attr_reader :repository

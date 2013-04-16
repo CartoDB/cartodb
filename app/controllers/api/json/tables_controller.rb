@@ -3,6 +3,8 @@ require_relative '../../../helpers/vizzjson/map'
 
 class Api::Json::TablesController < Api::ApplicationController
   ssl_required :index, :show, :create, :update, :destroy
+  ssl_allowed  :vizzjson
+  
   skip_before_filter :api_authorization_required, :only => [ :vizzjson ]
 
   before_filter :load_table, :except => [:index, :create, :vizzjson]

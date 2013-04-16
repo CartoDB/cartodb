@@ -13,7 +13,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   def index
     collection  = Visualization::Collection.new.fetch(params.dup)
     response    = {
-      visualizations: collection,
+      visualizations: collection.map(&:attributes),
       total_entries:  collection.count
     }
 

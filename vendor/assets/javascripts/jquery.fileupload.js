@@ -784,16 +784,29 @@
         _handleFileTreeEntry: function (entry, path) {
             var that = this,
                 dfd = $.Deferred(),
-                errorHandler = function () {
-                    dfd.reject();
+                errorHandler = function (e) {
+                    if (e && !e.entry) {
+                        e.entry = entry;
+                    }
+                    // Since $.when returns immediately if one
+                    // Deferred is rejected, we use resolve instead.
+                    // This allows valid files and invalid items
+                    // to be returned together in one set:
+                    dfd.resolve([e]);
                 },
                 dirReader;
             path = path || '';
             if (entry.isFile) {
-                entry.file(function (file) {
-                    file.relativePath = path;
-                    dfd.resolve(file);
-                }, errorHandler);
+                if (entry._file) {
+                    // Workaround for Chrome bug #149735
+                    entry._file.relativePath = path;
+                    dfd.resolve(entry._file);
+                } else {
+                    entry.file(function (file) {
+                        file.relativePath = path;
+                        dfd.resolve(file);
+                    }, errorHandler);
+                }
             } else if (entry.isDirectory) {
                 dirReader = entry.createReader();
                 dirReader.readEntries(function (entries) {
@@ -805,7 +818,9 @@
                     }).fail(errorHandler);
                 }, errorHandler);
             } else {
-                errorHandler();
+                // Return an empy list for file system items
+                // other than files or directories:
+                dfd.resolve([]);
             }
             return dfd.promise();
         },
@@ -832,8 +847,14 @@
                     items[0].getAsEntry)) {
                 return this._handleFileTreeEntries(
                     $.map(items, function (item) {
+                        var entry;
                         if (item.webkitGetAsEntry) {
-                            return item.webkitGetAsEntry();
+                            entry = item.webkitGetAsEntry();
+                            if (entry) {
+                                // Workaround for Chrome bug #149735:
+                                entry._file = item.getAsFile();
+                            }
+                            return entry;
                         }
                         return item.getAsEntry();
                     })

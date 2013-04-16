@@ -3,12 +3,14 @@
 //= require select2.min
 //= require jquery.faviconNotify
 //= require rgbcolor
+//= require crossfilter
 //= require jquery-ui.core.min
 //= require jquery-ui.autocomplete
 //= require jquery.caret
 //= require ZeroClipboard
 //= require tag-it
 //= require jquery.tipsy
+//= require d3.v2
 //= require ../../../lib/assets/javascripts/utils/postgres.codemirror
 //= require ../../../lib/assets/javascripts/utils/carto.codemirror
 //= require_tree ../../../lib/assets/javascripts/cartodb/models

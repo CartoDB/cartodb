@@ -5,7 +5,7 @@ require_relative '../../../models/visualization/presenter'
 require_relative '../../../models/visualization/collection'
 
 class Api::Json::VisualizationsController < Api::ApplicationController
-  include CartoDB::Visualization
+  include CartoDB
 
   ssl_required :index, :show, :create, :update, :destroy
   skip_before_filter :api_authorization_required, only: [:create, :vizzjson]

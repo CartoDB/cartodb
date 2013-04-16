@@ -34,12 +34,11 @@ module CartoDB
       end #data_for
 
       def options_data
-        options = ::JSON.parse(layer.options)
         {
-          sql:                sql_from(options),
-          cartocss:           options.fetch('tile_style'),
-          cartocss_version:   CARTOCSS_VERSION,
-          interactivity:      options.fetch('interactivity')
+          sql:                sql_from(layer.options),
+          cartocss:           layer.options.fetch('tile_style'),
+          cartocss_version:   CARTO_CSS_VERSION,
+          interactivity:      layer.options.fetch('interactivity')
         }
       end #options_data
 

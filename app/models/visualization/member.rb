@@ -14,8 +14,7 @@ module CartoDB
 
       LAYER_SCOPES = {
         base:     :base_layers,
-        cartodb:  :data_layers,
-        other:    :user_layers
+        cartodb:  :data_layers
       }
 
       attribute :id,            String
@@ -63,11 +62,11 @@ module CartoDB
       end #overlays
 
       def map
-        (@map ||= Map.where(id: map_id.to_i).first) || OpenStruct.new
+        (@map ||= Map.where(id: map_id).first) || OpenStruct.new
       end #map
 
       def table
-        @table  ||= Table.where(map_id: map_id.to_i).first
+        @table  ||= Table.where(map_id: map_id).first
       end #table
 
       def layers(kind)

@@ -58,15 +58,11 @@ module CartoDB
       end #overlays
 
       def map
-        return OpenStruct.new unless map_id
-        return OpenStruct.new unless defined?(Map)
-        @map ||= Map.where(id: map_id).first || OpenStruct.new
+        (@map ||= Map.where(id: map_id.to_i).first) || OpenStruct.new
       end #map
 
       def table
-        return OpenStruct.new unless type == 'table'
-        return OpenStruct.new unless defined?(Table)
-        @table  ||= Table.where(map_id: map_id).first
+        @table  ||= Table.where(map_id: map_id.to_i).first
       end #table
 
       def layers(kind)

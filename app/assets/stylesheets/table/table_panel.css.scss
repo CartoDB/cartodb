@@ -1082,6 +1082,8 @@
               p {
                 float: left;
                 width: 285px;
+
+                &.empty { font-style:italic; color: #ccc; }
               }
 
               &:before {

@@ -66,6 +66,29 @@ describe('SQL api client', function() {
     )
   });
 
+  it("should substitute mapnik tokens", function() {
+    sql.execute('select !pixel_width! as w, !pixel_height! as h, !bbox! as b from {{table}}', {
+      table: 't'
+    })
+
+    var earth_circumference = 40075017;
+    var tile_size = 256;
+    var srid = 3857;
+    var full_resolution = earth_circumference/tile_size;
+    var shift := earth_circumference / 2.0;
+
+    var pw = full_resolution; 
+    var ph = pw;
+    var bbox = 'ST_MakeEnvelope(' + (-shift) + ',' + (-shift) + ','
+                                  + shift + ',' + shift + ',' + srid + ')';
+
+    expect(ajaxParams.url).toEqual(
+      'https://' + USER + '.cartodb.com/api/v2/sql?q=' + encodeURIComponent(
+        'select ' + pw + ' as w, ' + ph + ' as h, '
+        + bbox + ' as b from t')
+    )
+  });
+
   it("should call promise", function() {
     var data;
     var data_callback;

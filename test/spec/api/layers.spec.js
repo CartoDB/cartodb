@@ -135,6 +135,13 @@ describe('api.layers', function() {
         });
       });
 
+      it("should not substitute mapnik tokens", function() {
+        var layer;
+        runs(function() {
+          cartodb.createLayer(map, { kind: 'cartodb', options: {} }, {query: 'select !bbox!'}, function(l) {
+          expect(layer.options.query).toEqual('select !bbox!');
+        });
+      });
 
       it("should manage errors", function() {
         var s = sinon.spy();

@@ -12828,7 +12828,8 @@ wax.interaction = function() {
         // to avoid performance hits.
         if (_downLock) return;
 
-        var pos = wax.u.eventoffset(e);
+        var _e = (e.type != "MSPointerMove" ? e : e.originalEvent);
+        var pos = wax.u.eventoffset(_e);
 
         interaction.screen_feature(pos, function(feature) {
             if (feature) {
@@ -12853,7 +12854,8 @@ wax.interaction = function() {
         // Store this event so that we can compare it to the
         // up event
         _downLock = true;
-        _d = wax.u.eventoffset(e);
+        var _e = (e.type != "MSPointerDown" ? e : e.originalEvent); 
+        _d = wax.u.eventoffset(_e);
         if (e.type === 'mousedown') {
             bean.add(document.body, 'click', onUp);
             // track mouse up to remove lockDown when the drags end
@@ -12887,12 +12889,17 @@ wax.interaction = function() {
 
     function onUp(e) {
         var evt = {},
-            pos = wax.u.eventoffset(e.originalEvent);
+            _e = (e.type != "MSPointerMove" && e.type != "MSPointerUp" ? e : e.originalEvent),
+            pos = wax.u.eventoffset(_e);
         _downLock = false;
 
-        for (var key in e.originalEvent) {
-          evt[key] = e.originalEvent[key];
+        for (var key in _e) {
+          evt[key] = _e[key];
         }
+
+        // for (var key in e) {
+        //   evt[key] = e[key];
+        // }
 
         evt.changedTouches = [];
 
@@ -13241,6 +13248,14 @@ wax.u = {
         var posx = 0;
         var posy = 0;
         if (!e) { e = window.event; }
+        
+        if (e.type == "MSPointerMove" || e.type == "MSPointerDown" || e.type == "MSPointerUp") {
+          return {
+            x: e.pageX + window.pageXOffset,
+            y: e.pageY + window.pageYOffset
+          }
+        }
+
         if (e.pageX || e.pageY) {
             // Good browsers
             return {
@@ -19450,7 +19465,14 @@ L.CartoDBLayer = L.TileLayer.extend({
   _findPos: function (map,o) {
     var curleft = 0, curtop = 0;
     var obj = map.getContainer();
+    var x = (o.e.clientX || o.e.changedTouches[0].clientX);
+    var y = (o.e.clientY || o.e.changedTouches[0].clientY);
 
+    // Thanks IE10
+    if (o.e.type == "MSPointerUp" || o.e.type == "MSPointerDown" || o.e.type == "MSPointerMove") {
+      x = o.e.pageX + window.pageXOffset;
+      y = o.e.pageY + window.pageYOffset;
+    }
 
     if (obj.offsetParent) {
       // Modern browsers
@@ -19458,7 +19480,7 @@ L.CartoDBLayer = L.TileLayer.extend({
         curleft += obj.offsetLeft;
         curtop += obj.offsetTop;
       } while (obj = obj.offsetParent);
-      return map.containerPointToLayerPoint(new L.Point((o.e.clientX || o.e.changedTouches[0].clientX) - curleft,(o.e.clientY || o.e.changedTouches[0].clientY) - curtop))
+      return map.containerPointToLayerPoint(new L.Point(x - curleft,y - curtop))
     } else {
       // IE
       return map.mouseEventToLayerPoint(o.e)
@@ -20361,8 +20383,8 @@ CartoDBLayer.prototype._findPos = function (map,o) {
     curtop += obj.offsetTop;
   } while (obj = obj.offsetParent);
   return new google.maps.Point(
-      (o.e.clientX || o.e.changedTouches[0].clientX) - curleft,
-      (o.e.clientY || o.e.changedTouches[0].clientY) - curtop
+      e.pageX + window.pageYOffset - curleft,
+      e.pageY + window.pageYOffset - curtop
   );
 };
 

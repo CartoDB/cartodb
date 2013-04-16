@@ -265,14 +265,17 @@ class User < Sequel::Model
   end
 
   def dedicated_support?
+    return true unless Cartodb.config[:cartodb_com_hosted]
     [/FREE/i, /MAGELLAN/i].select { |rx| self.account_type =~ rx }.empty?
   end
 
   def remove_logo?
+    return true unless Cartodb.config[:cartodb_com_hosted]
     [/FREE/i, /MAGELLAN/i, /JOHN SNOW/i].select { |rx| self.account_type =~ rx }.empty?
   end
 
   def import_quota
+    return 3 unless Cartodb.config[:cartodb_com_hosted]
     self.account_type.downcase == 'free' ? 1 : 3
   end
 

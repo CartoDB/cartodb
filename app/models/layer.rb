@@ -49,22 +49,9 @@ class Layer < Sequel::Model
   #
   def affected_tables
     if maps.first.present? && options.present? && options.symbolize_keys[:query].present?
-      begin
-        query = options.symbolize_keys[:query]
-        tables_per_statement = maps.first.user.in_database.select { 
-          cdb_querytables(Sequel.function(:cdb_querystatements, query))
-        }.all
-
-        tables_per_statement.map do |s|
-          s[:cdb_querytables].split(',').map do |table_name|
-            table_name.gsub!(/[\{\}]/, '') 
-            Table.select(:id, :name, :user_id)
-              .where(user_id: maps.first.user.id, name: table_name).all
-          end
-        end.flatten.compact.uniq
-      rescue Sequel::DatabaseError
-        []
-      end
+      table_names = CartoDB::SqlParser.new(options.symbolize_keys[:query], connection: maps.first.user.in_database).affected_tables
+      Table.select(:id, :name, :user_id)
+        .where(user_id: maps.first.user.id, name: table_names).all
     else
       []
     end

@@ -164,14 +164,14 @@ describe Api::Json::VisualizationsController do
       last_response.status.should == 200
       response    = JSON.parse(last_response.body)
       collection  = response.fetch('visualizations')
-      collection.should_not be_empty
+      collection.should be_empty
 
       get "/api/v1/visualizations?api_key=#{@api_key}&type=derived",
         {}, @headers
       last_response.status.should == 200
       response    = JSON.parse(last_response.body)
       collection  = response.fetch('visualizations')
-      collection.should be_empty
+      collection.should_not be_empty
     end
   end # GET /api/v1/visualizations
 
@@ -192,6 +192,10 @@ describe Api::Json::VisualizationsController do
       response.fetch('map_id')        .should_not be_nil
       response.fetch('tags')          .should_not be_empty
       response.fetch('description')   .should_not be_nil
+
+      get "/api/v1/viz/#{id}/viz?api_key=#{@api_key}", 
+        {}, @headers
+      puts last_response.body
     end
   end # GET /api/v1/visualizations/:id
 
@@ -246,7 +250,7 @@ describe Api::Json::VisualizationsController do
       tags:         ['foo', 'bar'],
       map_id:       random_number,
       description:  'bogus',
-      type:         'table'
+      type:         'derived'
     }
   end #factory
 end # Api::Json::VisualizationsController

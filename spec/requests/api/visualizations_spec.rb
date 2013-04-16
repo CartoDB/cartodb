@@ -196,7 +196,7 @@ describe Api::Json::VisualizationsController do
   end # GET /api/v1/visualizations/:id
 
   describe 'PUT /api/v1/visualizations/:id' do
-    it 'updates an existing visualization', now: true do
+    it 'updates an existing visualization' do
       payload   = factory
       post "/api/v1/visualizations?api_key=#{@api_key}",
         payload.to_json

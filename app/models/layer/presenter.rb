@@ -4,7 +4,6 @@ require 'json'
 module CartoDB
   class Layer
     class Presenter
-      PUBLIC_ATTRIBUTES = %W{ options kind infowindow id order }
       CARTO_CSS_VERSION = '2.0.1'
 
       def initialize(layer, options={}, configuration={})
@@ -15,25 +14,27 @@ module CartoDB
 
       def to_poro
         return layer.public_values unless layer.kind == 'carto'
-        layer_to_poro
+
+        {
+          id:         layer.id,
+          type:       'CartoDB',
+          infowindow: infowindow_data,
+          order:      layer.order,
+          options:    options_data
+        }
       end #to_poro
   
       private
 
       attr_reader :layer, :options, :configuration
 
-      def layer_to_poro
-        Hash[PUBLIC_ATTRIBUTES.map { |key| data_for(key) }]
-      end #layer_to_poro
-
-      def data_for(key)
-        return [:options, options_data] if key == 'options' && !options[:full]
-        return [:infowindow, infowindow_data] if key == 'infowindow'
-        return [:type, layer.kind]            if key == 'kind'
-        return [key, layer.send(key)]
-      end #data_for
+      def infowindow_data
+        layer.infowindow.merge(template: File.read(layer.template_path))
+      rescue => exception
+      end #infowindow_data
 
       def options_data
+        return layer.options if options[:full]
         {
           sql:                sql_from(layer.options),
           cartocss:           layer.options.fetch('tile_style'),
@@ -42,13 +43,11 @@ module CartoDB
         }
       end #options_data
 
-      def infowindow_data
-        layer.infowindow.merge(template: File.read(layer.template_path))
-      rescue => exception
-      end #infowindow_data
-
       def sql_from(options)
-        options.fetch('query', default_query_for(options))
+        query = options.fetch('query', '')
+        return query unless query.empty?
+
+        default_query_for(options)
       end #sql_from
 
       def default_query_for(options)

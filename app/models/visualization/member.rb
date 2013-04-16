@@ -3,8 +3,9 @@ require 'ostruct'
 require 'virtus'
 require 'json'
 require_relative './collection'
-require_relative './presenter'
 require_relative '../overlay/collection'
+require_relative './presenter'
+require_relative './vizzjson'
 
 module CartoDB
   module Visualization
@@ -43,7 +44,11 @@ module CartoDB
       end #fetch
 
       def to_hash
-        Presenter.new(self, { full: false }).to_poro
+        Presenter.new(self).to_poro
+      end #to_hash
+
+      def to_vizzjson
+        VizzJSON.new(self, { full: false }).to_poro
       end #to_hash
 
       def delete
@@ -69,17 +74,6 @@ module CartoDB
         return [] unless map.id
         return map.send(LAYER_SCOPES.fetch(kind))
       end #layers
-
-      def table_data
-        return {} unless table
-        {
-          id:           table.id,
-          privacy:      table.privacy,
-          size:         table.table_size,
-          row_count:    table.rows_counted,
-          updated_at:   table.updated_at
-        }
-      end #table_data
 
       def public?
         return table.public? if type == 'table'

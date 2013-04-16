@@ -307,5 +307,14 @@ namespace :cartodb do
         end
       end
     end
+
+    desc "Runs the specified CartoDB migration script"
+    task :migrate_to, [:version] => :environment do |t, args|
+      usage = "usage: rake cartodb:db:migrate_to[version]"
+      raise usage if args[:version].blank?
+      require Rails.root.join("lib/cartodb/generic_migrator.rb")
+
+      CartoDB::GenericMigrator.new(args[:version]).migrate!
+    end
   end
 end

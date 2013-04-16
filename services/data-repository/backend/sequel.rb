@@ -11,6 +11,7 @@ module DataRepository
       def initialize(db=Sequel.sqlite, relation=nil)
         @db       = db
         @relation = relation
+        db.extension :pg_array if postgres?(db)
       end #initialize
 
       def collection(filter={}, attribute_names=[])
@@ -34,7 +35,7 @@ module DataRepository
       end #store
 
       def fetch(key)
-        db[relation].where(id: key).first
+        parse( db[relation].where(id: key).first )
       end #fetch
 
       def delete(key)
@@ -54,6 +55,7 @@ module DataRepository
       attr_reader :relation, :db
 
       def naive_upsert_exposed_to_race_conditions(data={})
+        data = send("serialize_for_#{backend_type}", data)
         insert(data) unless update(data)
       end #naive_upsert_exposed_to_race_conditions
 
@@ -64,6 +66,45 @@ module DataRepository
       def update(data={})
         db[relation].where(id: data.fetch(:id)).update(data) != 0
       end #update
+
+      def serialize_for_postgres(data)
+        Hash[
+          data.map { |key, value|
+            value = value.pg_array if value.is_a?(Array)
+            [key, value]
+          }
+        ]
+      end #serialize_for_postgres
+
+      def serialize_for_other_database(data={})
+        Hash[
+          data.map { |key, value|
+            value = value.to_s if value.is_a?(Array)
+            [key, value]
+          }
+        ]
+      end #serialize_for_other_database
+
+      def backend_type
+        return :postgres if postgres?(db)
+        return :other_database
+      end #backend_type
+
+      def postgres?(db)
+        db.database_type == :postgres
+      end #postgres?
+
+      def parse(attributes={})
+        return unless attributes
+        return attributes if postgres?(db)
+
+        Hash[
+          attributes.map do |key, value|
+            value = JSON.parse(value) if value =~ %r{\[.*\]}
+            [key, value]
+          end
+        ]
+      end #parse
     end # Sequel
   end # Backend
 end # DataRepository

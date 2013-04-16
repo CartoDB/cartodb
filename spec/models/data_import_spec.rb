@@ -15,7 +15,7 @@ describe DataImport do
         :table_id      => @table.id,
         :data_source   => '/../db/fake_data/column_string_to_boolean.csv',
         :updated_at    => Time.now,
-        :append        => true )
+        :append        => true ).run_import!
     end.to change{@table.reload.records[:total_rows]}.by(11)
   end
 
@@ -24,7 +24,7 @@ describe DataImport do
       :user_id       => @user.id,
       :table_name    => 'duplicated_table',
       :updated_at    => Time.now,
-      :table_copy    => @table.name )
+      :table_copy    => @table.name ).run_import!
     duplicated_table = Table[data_import.table_id]
     duplicated_table.should_not be_nil
     duplicated_table.name.should be == 'duplicated_table'
@@ -34,13 +34,13 @@ describe DataImport do
     data_import = DataImport.create(
       :user_id       => @user.id,
       :data_source   => '/../db/fake_data/clubbing.csv',
-      :updated_at    => Time.now )
+      :updated_at    => Time.now ).run_import!
 
     data_import = DataImport.create(
       :user_id       => @user.id,
       :table_name    => 'from_query',
       :updated_at    => Time.now,
-      :from_query    => "SELECT * FROM #{data_import.table_name} LIMIT 5" )
+      :from_query    => "SELECT * FROM #{data_import.table_name} LIMIT 5" ).run_import!
     data_import.state.should be == 'complete'
 
     duplicated_table = Table[data_import.table_id]
@@ -55,7 +55,7 @@ describe DataImport do
       data_import = DataImport.create(
         :user_id       => @user.id,
         :data_source   => url,
-        :updated_at    => Time.now )
+        :updated_at    => Time.now ).run_import!
     end
 
     table = Table[data_import.table_id]
@@ -71,7 +71,7 @@ describe DataImport do
       data_import = DataImport.create(
         :user_id       => @user.id,
         :data_source   => url,
-        :updated_at    => Time.now )
+        :updated_at    => Time.now ).run_import!
     end
 
     table = Table[data_import.table_id]
@@ -84,7 +84,7 @@ describe DataImport do
     data_import = DataImport.create(
       :user_id       => @user.id,
       :data_source   => '/../db/fake_data/clubbing.csv',
-      :updated_at    => Time.now )
+      :updated_at    => Time.now ).run_import!
 
     table = Table.filter(:name => 'clubbing').all.last
     table.records.count.should be == 4
@@ -98,7 +98,7 @@ describe DataImport do
     data_import = DataImport.create(
       :user_id       => @user.id,
       :data_source   => '/../tmp/clubbing.sql.zip',
-      :updated_at    => Time.now )
+      :updated_at    => Time.now ).run_import!
 
     File.delete(file.path)
 
@@ -110,7 +110,7 @@ describe DataImport do
     DataImport.create(
       :user_id       => @user.id,
       :data_source   => '/../db/fake_data/created_at_update_at_fields_present.csv',
-      :updated_at    => Time.now )
+      :updated_at    => Time.now ).run_import!
 
     table = Table.all.last
 
@@ -125,13 +125,13 @@ describe DataImport do
     data_import = DataImport.create(
       :user_id       => @user.id,
       :data_source   => '/../db/fake_data/clubbing.csv',
-      :updated_at    => Time.now )
+      :updated_at    => Time.now ).run_import!
 
     data_import = DataImport.create(
       :user_id       => @user.id,
       :table_name    => 'from_query',
       :updated_at    => Time.now,
-      :from_query    => "SELECT cartodb_id FROM #{data_import.table_name} LIMIT 5" )
+      :from_query    => "SELECT cartodb_id FROM #{data_import.table_name} LIMIT 5" ).run_import!
     data_import.state.should be == 'complete'
 
     duplicated_table = Table[data_import.table_id]

@@ -41,7 +41,7 @@ module CartoDB
       end #infowindow_data
 
       def public_options
-        configuration.fetch(:layer_opts).fetch("public_opts")
+        configuration(:layer_opts, {}).fetch("public_opts", '')
       end #public_options
     end # Presenter
   end # Layer

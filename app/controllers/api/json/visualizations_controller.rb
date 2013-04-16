@@ -50,13 +50,13 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   end #update
 
   def destroy
-    member      = Member.new(id: params.fetch('id'))
+    member      = Visualization::Member.new(id: params.fetch('id'))
     member.delete
     head 204
   end #destroy
 
   def vizzjson
-    member = Member.new(id: params[:id]).fetch
+    member = Visualization::Member.new(id: params[:id]).fetch
     render_jsonp(member) if member.public?
     head 204
   rescue KeyError

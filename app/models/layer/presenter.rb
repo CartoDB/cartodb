@@ -5,6 +5,7 @@ module CartoDB
   class Layer
     class Presenter
       PUBLIC_ATTRIBUTES = %W{ options kind infowindow id order }
+      CARTO_CSS_VERSION = '2.0.1'
 
       def initialize(layer, options={}, configuration={})
         @layer          = layer
@@ -26,13 +27,20 @@ module CartoDB
       end #layer_to_poro
 
       def data_for(key)
-        return [:options, options_data] if key == "options" && !options[:full]
-        return [:infowindow, infowindow_data] if key == "infowindow"
+        return [:options, options_data] if key == 'options' && !options[:full]
+        return [:infowindow, infowindow_data] if key == 'infowindow'
+        return [:type, layer.kind]            if key == 'kind'
         return [key, layer.send(key)]
       end #data_for
 
       def options_data
-        layer.options.select { |key, value| public_options.include?(key.to_s) }
+        options = JSON.parse(layer.options)
+        {
+          sql:                sql_from(options),
+          cartocss:           options.fetch('tile_style'),
+          cartocss_version:   CARTOCSS_VERSION,
+          interactivity:      options.fetch('interactivity')
+        }
       end #options_data
 
       def infowindow_data
@@ -40,9 +48,13 @@ module CartoDB
       rescue => exception
       end #infowindow_data
 
-      def public_options
-        configuration(:layer_opts, {}).fetch("public_opts", '')
-      end #public_options
+      def sql_from(options)
+        options.fetch('query', default_query_for(options))
+      end #sql_from
+
+      def default_query_for(options)
+        "select * from #{options.fetch('table_name')}"
+      end #defaut_query_for
     end # Presenter
   end # Layer
 end # CartoDB

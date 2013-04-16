@@ -7,7 +7,8 @@ require_relative '../overlay/presenter'
 module CartoDB
   module Visualization
     class Presenter
-      VERSION = "0.1.0"
+      VIZZJSON_VERSION    = "0.1.0"
+      LAYER_GROUP_VERSION = "1.0.1"
 
       def initialize(visualization, options={}, configuration={}, logger=nil)
         @visualization    = visualization
@@ -20,7 +21,7 @@ module CartoDB
       def to_poro
         {
           id:             visualization.id,
-          version:        VERSION,
+          version:        VIZZJSON_VERSION,
           title:          visualization.name,
           description:    visualization.description,
           url:            options.delete(:url),
@@ -57,15 +58,23 @@ module CartoDB
       end #overlay_data_for
 
       def ordered_layers_for(visualization)
-        visualization.layers(:base)       + 
-        cartodb_layers_for(visualization) + 
-        visualization.layers(:other)
+        visualization.layers(:base) + cartodb_layers_for(visualization)
       end #ordered_layers_for
 
       def cartodb_layers_for(visualization)
         [OpenStruct.new( 
-          type:   'layergroup',
-          layers: visualization.layers(:cartodb)
+          type:               'layergroup',
+          options:            {
+            version:            LAYER_GROUP_VERSION,
+            tile_protocol:      configuration.fetch(:tile_protocol, nil),
+            tile_host:          configuration.fetch(:tile_host, nil),
+            tile_port:          configuration.fetch(:tile_port, nil),
+            sql_api_protocol:   configuration.fetch(:sql_api_protocol, nil),
+            sql_api_domain:     configuration.fetch(:sql_api_domain, nil),
+            sql_api_endpoint:   configuration.fetch(:sql_api_endpoint, nil),
+            sql_api_port:       configuration.fetch(:sql_api_port, nil),
+            layers:             visualization.layers(:cartodb)
+          }
         )]
       end #cartodb_layers_for
 

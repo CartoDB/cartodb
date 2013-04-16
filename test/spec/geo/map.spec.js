@@ -31,6 +31,13 @@ describe("geo.map", function() {
     });
   });
 
+  describe('CartoDBGroupLayer', function() {
+    it("should be type layergroup", function() {
+      var layer = new cdb.geo.CartoDBGroupLayer();
+      expect(layer.get('type')).toEqual("layergroup");
+    });
+  });
+
   describe("Layers", function() {
     var layers;
     beforeEach(function() {
@@ -253,6 +260,25 @@ describe("geo.map", function() {
       var lyr = map.addLayer(layer);
       var layerView = mapView.getLayerByCid(lyr);
       expect(layerView.setQuery).not.toEqual(undefined);
+    });
+
+    it("should create a CartoDBLayerGroup when the layer is LayerGroup", function() {
+      layer = new cdb.geo.CartoDBGroupLayer({ 
+        layer_definition: {
+            version: '1.0.0',
+            layers: [{
+               type: 'cartodb', 
+               options: {
+                 sql: 'select * from ne_10m_populated_places_simple',
+                 cartocss: '#layer { marker-fill: red; }',
+                 interactivity: ['test', 'cartodb_id']
+               }
+            }]
+          }
+      });
+      var lyr = map.addLayer(layer);
+      var layerView = mapView.getLayerByCid(lyr);
+      expect(layerView.getLayerCount()).toEqual(1);
     });
 
     it("should create the cartodb logo", function() {

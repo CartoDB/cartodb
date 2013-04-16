@@ -102,14 +102,14 @@ CartoDBLayerCommon.prototype = {
         this.interaction[layer] = null;
       }
     } else {
-      layerInteraction = this.interaction[layer];
-      if(layerInteraction) {
-        layerInteraction.remove();
-      }
       this.getTileJSON(layer, function(tilejson) {
         if(!tilejson) {
           //TODO: check errors
           return;
+        }
+        layerInteraction = self.interaction[layer];
+        if(layerInteraction) {
+          layerInteraction.remove();
         }
         // check again, it could be changed while the request arrives
         if(self.interactionEnabled[layer]) {

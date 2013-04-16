@@ -12,6 +12,7 @@ function LayerDefinition(layerDefinition, options) {
   this.version = layerDefinition.version || '1.0.0';
   this.layers = _.clone(layerDefinition.layers);
   this.layerToken = null;
+  this.urls = null;
   this.silent = false;
 }
 
@@ -144,8 +145,9 @@ LayerDefinition.prototype = {
     }
     this.getLayerToken(function(data) {
       if(data) {
-        self.layertoken = data.layergroupid;
-        callback && callback(self._layerGroupTiles(data.layergroupid, self.options.extra_params));
+        self.layerToken = data.layergroupid;
+        self.urls = self._layerGroupTiles(data.layergroupid, self.options.extra_params);
+        callback && callback(self.urls);
       } else {
         callback && callback(null);
       }
@@ -177,7 +179,7 @@ LayerDefinition.prototype = {
       var gridParams = this._encodeParams(params, this.options.gridParams);
       for(var layer in this.layers) {
         grids[layer] = grids[layer] || [];
-        grids[layer].push(cartodb_url + "/layer" + layer +  tileTemplate + ".grid.json?" + gridParams);
+        grids[layer].push(cartodb_url + "/" + layer +  tileTemplate + ".grid.json?" + gridParams);
       }
     }
 
@@ -225,6 +227,16 @@ LayerDefinition.prototype = {
     this.onLayerDefinitionUpdated();
   },
 
+  _tileJSONfromTiles: function(layer, urls) {
+    return {
+      tilejson: '2.0.0',
+      scheme: 'xyz',
+      grids: urls.grids[layer],
+      tiles: urls.tiles,
+      formatter: function(options, data) { return data; }
+     };
+  },
+
   /**
    * get tile json for layer
    */
@@ -236,13 +248,7 @@ LayerDefinition.prototype = {
         return;
       }
       if(callback) {
-        callback({
-          tilejson: '2.0.0',
-          scheme: 'xyz',
-          grids: urls.grids[layer],
-          tiles: urls.tiles,
-          formatter: function(options, data) { return data; }
-        });
+        callback(this._tileJSONfromTiles(layer, urls));
       }
     });
   },

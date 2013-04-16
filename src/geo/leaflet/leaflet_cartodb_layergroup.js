@@ -261,3 +261,52 @@ L.CartoDBGroupLayer = L.TileLayer.extend({
   }
 
 });
+
+cdb.geo.LeafLetCartoDBLayerGroupView = L.CartoDBGroupLayer.extend({
+
+  includes: [
+    cdb.geo.LeafLetLayerView.prototype,
+    Backbone.Events
+  ],
+
+  initialize: function(layerModel, leafletMap) {
+    var self = this;
+
+    //_.bindAll(this, 'featureOut', 'featureOver', 'featureClick');
+
+    // CartoDB new attribution,
+    // also we have the logo
+    layerModel.attributes.attribution = "CartoDB <a href='http://cartodb.com/attributions' target='_blank'>attribution</a>";
+
+    var opts = _.clone(layerModel.attributes);
+
+    opts.map =  leafletMap;
+
+    var // preserve the user's callbacks
+    _featureOver  = opts.featureOver,
+    _featureOut   = opts.featureOut,
+    _featureClick = opts.featureClick;
+
+    /*
+
+    opts.featureOver  = function() {
+      _featureOver  && _featureOver.apply(this, arguments);
+      self.featureOver  && self.featureOver.apply(this, arguments);
+    };
+
+    opts.featureOut  = function() {
+      _featureOut  && _featureOut.apply(this, arguments);
+      self.featureOut  && self.featureOut.apply(this, arguments);
+    };
+
+    opts.featureClick  = function() {
+      _featureClick  && _featureClick.apply(this, arguments);
+      self.featureClick  && self.featureClick.apply(opts, arguments);
+    };
+    */
+
+    L.CartoDBGroupLayer.prototype.initialize.call(this, opts);
+    cdb.geo.LeafLetLayerView.call(this, layerModel, this, leafletMap);
+
+  }
+});

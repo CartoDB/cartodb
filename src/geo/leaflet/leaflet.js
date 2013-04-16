@@ -272,7 +272,8 @@
       "carto": cdb.geo.LeafLetLayerCartoDBView,
       "plain": cdb.geo.LeafLetPlainLayerView,
       // for google maps create a plain layer
-      "gmapsbase": cdb.geo.LeafLetPlainLayerView
+      "gmapsbase": cdb.geo.LeafLetPlainLayerView,
+      "layergroup": cdb.geo.LeafLetCartoDBLayerGroupView
     },
 
     createLayer: function(layer, map) {

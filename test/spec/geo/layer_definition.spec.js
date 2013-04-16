@@ -100,8 +100,8 @@ describe("LayerDefinition", function() {
     expect(tiles.grids.length).toEqual(2);
     expect(tiles.grids[0].length).toEqual(1);
     expect(tiles.tiles[0]).toEqual('http://rambo.cartodb.com:8081/tiles/layergroup/test_layer/{z}/{x}/{y}.png?');
-    expect(tiles.grids[0][0]).toEqual('http://rambo.cartodb.com:8081/tiles/layergroup/test_layer/layer0/{z}/{x}/{y}.grid.json?');
-    expect(tiles.grids[1][0]).toEqual('http://rambo.cartodb.com:8081/tiles/layergroup/test_layer/layer1/{z}/{x}/{y}.grid.json?');
+    expect(tiles.grids[0][0]).toEqual('http://rambo.cartodb.com:8081/tiles/layergroup/test_layer/0/{z}/{x}/{y}.grid.json?');
+    expect(tiles.grids[1][0]).toEqual('http://rambo.cartodb.com:8081/tiles/layergroup/test_layer/1/{z}/{x}/{y}.grid.json?');
 
   });
 
@@ -111,7 +111,7 @@ describe("LayerDefinition", function() {
       updated_at: '1234'
     });
     expect(tiles.tiles[0]).toEqual('http://rambo.cartodb.com:8081/tiles/layergroup/test_layer/{z}/{x}/{y}.png?api_key=api_key_test&updated_at=1234');
-    expect(tiles.grids[0][0]).toEqual('http://rambo.cartodb.com:8081/tiles/layergroup/test_layer/layer0/{z}/{x}/{y}.grid.json?api_key=api_key_test&updated_at=1234');
+    expect(tiles.grids[0][0]).toEqual('http://rambo.cartodb.com:8081/tiles/layergroup/test_layer/0/{z}/{x}/{y}.grid.json?api_key=api_key_test&updated_at=1234');
   });
 
   it("should generate url for with cdn", function() {
@@ -120,15 +120,15 @@ describe("LayerDefinition", function() {
     var tiles = layerDefinition._layerGroupTiles('test_layer');
     expect(tiles.tiles[0]).toEqual('http://a.tiles.cartocdn.com/rambo/tiles/layergroup/test_layer/{z}/{x}/{y}.png?');
     expect(tiles.tiles[1]).toEqual('http://b.tiles.cartocdn.com/rambo/tiles/layergroup/test_layer/{z}/{x}/{y}.png?');
-    expect(tiles.grids[0][0]).toEqual('http://a.tiles.cartocdn.com/rambo/tiles/layergroup/test_layer/layer0/{z}/{x}/{y}.grid.json?');
-    expect(tiles.grids[0][1]).toEqual('http://b.tiles.cartocdn.com/rambo/tiles/layergroup/test_layer/layer0/{z}/{x}/{y}.grid.json?');
+    expect(tiles.grids[0][0]).toEqual('http://a.tiles.cartocdn.com/rambo/tiles/layergroup/test_layer/0/{z}/{x}/{y}.grid.json?');
+    expect(tiles.grids[0][1]).toEqual('http://b.tiles.cartocdn.com/rambo/tiles/layergroup/test_layer/0/{z}/{x}/{y}.grid.json?');
   });
 
   it("grid url should not include interactivity", function() {
     layerDefinition.setInteractivity(0, ['cartodb_id', 'rambo']);
     var tiles = layerDefinition._layerGroupTiles('test_layer');
-    expect(tiles.grids[0][0]).toEqual('http://rambo.cartodb.com:8081/tiles/layergroup/test_layer/layer0/{z}/{x}/{y}.grid.json?');
-    expect(tiles.grids[1][0]).toEqual('http://rambo.cartodb.com:8081/tiles/layergroup/test_layer/layer1/{z}/{x}/{y}.grid.json?');
+    expect(tiles.grids[0][0]).toEqual('http://rambo.cartodb.com:8081/tiles/layergroup/test_layer/0/{z}/{x}/{y}.grid.json?');
+    expect(tiles.grids[1][0]).toEqual('http://rambo.cartodb.com:8081/tiles/layergroup/test_layer/1/{z}/{x}/{y}.grid.json?');
   });
 
   it("should set interactivity", function() {

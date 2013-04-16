@@ -4,15 +4,11 @@ class Api::Json::ImportsController < Api::ApplicationController
 
   def index
     imports = current_user.importing_jobs
-    render :json => {:imports => imports, :success => true}
+    render json: { imports: imports.map(&:id), success: true }
   end
 
   def show
-    import        = DataImport.filter(:queue_id => params[:id]).first
-    import_values = import.public_values rescue { :state => 'preprocessing' }
-
-    success = import_values[:state].blank? || import_values[:state] != 'failure'
-    render :json => import_values, :status => success ? :ok : :ok
+    render json: DataImport[params[:id]].public_values
   end
 
   def create
@@ -22,15 +18,18 @@ class Api::Json::ImportsController < Api::ApplicationController
       #@data_import = Resque::ImporterJobs.process(current_user[:id], params[:table_name], file_uri)
       #render :json => {:item_queue_id => job_meta.meta_id, :success => true}
     else
-      job = Resque::ImporterJobs.enqueue(:user_id     => current_user[:id],
-                                         :table_name  => params[:table_name].presence,
-                                         :data_source => file_uri.presence,
-                                         :table_id    => params[:table_id].presence,
-                                         :append      => (params[:append].presence == 'true'),
-                                         :table_copy  => params[:table_copy].presence,
-                                         :from_query  => params[:sql].presence)
+    options = { user_id: current_user.id,
+                table_name:  params[:table_name].presence,
+                data_source: file_uri.presence,
+                table_id:    params[:table_id].presence,
+                append:      (params[:append].presence == 'true'),
+                table_copy:  params[:table_copy].presence,
+                from_query:  params[:sql].presence }
+      
+      data_import = DataImport.create(options)
+      Resque.enqueue(Resque::ImporterJobs, job_id: data_import.id)
 
-      render_jsonp({:item_queue_id => job.meta_id, :success => true})
+      render_jsonp({ item_queue_id: data_import.id, success: true })
     end
   #rescue => e
   #  render_jsonp({ :description => e.message, :code => (@data_import.error_code rescue '') }, 400)

@@ -11,6 +11,8 @@ class ApplicationController < ActionController::Base
   before_filter :set_asset_debugging
   after_filter  :remove_flash_cookie
 
+  before_bugsnag_notify :add_user_info_to_bugsnag
+
   rescue_from NoHTML5Compliant, :with => :no_html5_compliant
   rescue_from RecordNotFound,   :with => :render_404
 
@@ -145,6 +147,14 @@ class ApplicationController < ActionController::Base
   def current_user
     super(request.subdomain)
   end
+
   protected :current_user
+
+  def add_user_info_to_bugsnag(notif)
+    notif.add_tab(:user_info, {
+      name:         current_user.username,
+      account_type: current_user.account_type.to_s
+    }) unless current_user.blank?
+  end
 
 end

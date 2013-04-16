@@ -393,6 +393,7 @@ describe "Tables API" do
 
   it "downloads table metadata" do
     data_import = DataImport.create(user_id: @user.id, table_name: 'elecciones2008', data_source: '/../spec/support/data/TM_WORLD_BORDERS_SIMPL-0.3.zip')
+      :data_source   => '/../spec/support/data/TM_WORLD_BORDERS_SIMPL-0.3.zip').run_import!
 
     table1 = Table[data_import.table_id]
     get_json v1_table_url(table1.name, params) do |response|

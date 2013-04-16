@@ -256,6 +256,7 @@ class Table < Sequel::Model(:user_tables)
 
   def before_create
     super
+    raise CartoDB::QuotaExceeded if owner.over_table_quota?
     update_updated_at
     self.database_name = owner.database_name
 
@@ -726,45 +727,60 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def modify_column!(options)
-    new_name = options[:name] || options[:old_name]
-    new_type = 
-      if options[:type] 
-        options[:type].try(:convert_to_db_type)
-      else
-        schema(cartodb_types: false)
-          .select{ |c| c[0] == new_name.to_sym }.first[1]
-      end
+    old_name  = options.fetch(:old_name, '').sanitize
+    new_name  = options.fetch(:new_name, '').sanitize
+
+    rename_column(old_name, new_name) if new_name.present?
+
+    column_name = (new_name || options.fetch(:name)).sanitize
+    new_type = options.fetch(:type, column_type_for(column_name))
+                .try(:convert_to_db_type)
 
     cartodb_type = new_type.try(:convert_to_cartodb_type)
 
     owner.in_database do |user_database|
-      if options[:old_name] && options[:new_name]
-        raise CartoDB::InvalidColumnName if options[:new_name] =~ /^[0-9_]/ || RESERVED_COLUMN_NAMES.include?(options[:new_name])
-        raise if CARTODB_COLUMNS.include?(options[:old_name].to_s)
-        user_database.rename_column name, options[:old_name].to_sym, options[:new_name].sanitize.to_sym
-        new_name = options[:new_name].sanitize
-      end
-
-      if options[:type]
-        column_name = (options[:new_name] || options[:name]).sanitize
-        raise if CARTODB_COLUMNS.include?(column_name)
-
-        begin
-          user_database.set_column_type(name, column_name.to_sym, new_type)
-        rescue => exception
-          raise exception unless exception.message =~ /cannot be cast to type/
-          convert_column_datatype(user_database, name, column_name, new_type)
-        end
-      end
+      change_type(user_database, name, column_name, new_type)
     end
 
-    { name: new_name, type: new_type, cartodb_type: cartodb_type }
+    { name: column_name, type: new_type, cartodb_type: cartodb_type }
   end #modify_column!
 
-  # convert non-conformist rows to null
-  def convert_column_datatype(user_database, table_name, column_name, new_type)
+  def column_type_for(column_name)
+    schema(cartodb_types: false).select { |c|
+      c[0] == column_name.to_sym 
+    }.first[1]
+  end #column_type_for
+
+  def column_names_for(db, table_name)
+    db.schema(table_name, :reload => true).map{ |s| s[0].to_s }
+  end #column_names
+
+  def rename_column(old_name, new_name="")
+    raise 'Please provide a column name' if new_name.empty?
+    raise 'This column cannot be renamed' if CARTODB_COLUMNS.include?(old_name.to_s)
+
+    if new_name =~ /^[0-9_]/ || RESERVED_COLUMN_NAMES.include?(new_name) || CARTODB_COLUMNS.include?(new_name)
+      raise CartoDB::InvalidColumnName, 'That column name is reserved, please choose a different one' 
+    end
+
+    owner.in_database do |user_database|
+      if column_names_for(user_database, name).include?(new_name)
+        raise 'Column already exists' 
+      end
+      user_database.rename_column(name, old_name.to_sym, new_name.to_sym)
+    end
+  end #rename_column
+
+  def change_type(database, table_name, column_name, new_type)
+    database.set_column_type(table_name, column_name, new_type)
+  rescue => exception
+    raise exception unless exception.message =~ /cannot be cast to type/
+    convert_column_datatype(database, table_name, column_name, new_type)
+  end #change_type
+
+  def convert_column_datatype(database, table_name, column_name, new_type)
     CartoDB::ColumnTypecaster.new(
-      user_database:  user_database,
+      user_database:  database,
       table_name:     table_name,
       column_name:    column_name,
       new_type:       new_type

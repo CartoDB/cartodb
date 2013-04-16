@@ -6,7 +6,7 @@ Setup cartodb database and creates a new user from environment variables:
   - ENV['PASSWORD']: user password
   - ENV['SUBDOMAIN']: user subdomain
 DESC
-    task :setup => ["rake:db:create", "rake:db:migrate", "cartodb:db:create_publicuser", "cartodb:db:create_admin"] do
+    task :setup => ["rake:db:create", "rake:db:migrate", "cartodb:db:create_publicuser"] do
       begin
         raise "You should provide a valid e-mail"    if ENV['EMAIL'].blank?
         raise "You should provide a valid password"  if ENV['PASSWORD'].blank?
@@ -58,38 +58,6 @@ DESC
         puts "USER_ID #{u.id}"
       rescue => e
         puts e.inspect
-      end
-    end
-
-    # TODO: remove text bit and just use env
-    desc "Create an admin account with a password from ENV['ADMIN_PASSWORD'] environment variable"
-    task :create_admin => :environment do
-      raise "Set ADMIN_PASSWORD environment variable" if ENV['ADMIN_PASSWORD'].blank?
-      password = ENV['ADMIN_PASSWORD']
-
-      u = User.new
-      u.email = "admin@cartodb.com"
-      u.password = password
-      u.password_confirmation = password
-      u.username = "admin"
-      u.enabled = true
-      u.admin = true
-      u.save
-      if u.new?
-        raise u.errors.inspect
-      end
-    end
-
-    desc "Sets the password of the admin user to the value of a ADMIN_PASSWORD environment variable"
-    task :change_admin_password => :environment do
-      raise "Set ADMIN_PASSWORD environment variable" if ENV['ADMIN_PASSWORD'].blank?
-      password = ENV['ADMIN_PASSWORD']
-
-      u = User.filter(:username => "admin").first
-      u.password = ENV['ADMIN_PASSWORD']
-      u.password_confirmation = ENV['ADMIN_PASSWORD']
-      if !u.save
-        raise u.errors.inspect
       end
     end
 

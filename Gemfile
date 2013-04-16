@@ -20,13 +20,11 @@ gem "rgeo-geojson",            "0.2.1", :require => "rgeo/geo_json"
 
 gem "redis",                   "2.2.2"
 gem "resque",                  "1.23.0"
-gem "resque-meta",             "1.0.3"
-gem "resque-job-tracking",     "0.0.4"
 gem "yajl-ruby",               "1.1.0", :require => "yajl"
-gem "airbrake",                "3.1.6"
+gem "bugsnag"
 gem "nokogiri",                "1.5.3"
 gem "statsd-client",           "0.0.7", :require => "statsd"
-gem "aws-sdk",                 "1.5.2"
+gem "aws-sdk",                 "1.8.5"
 
 gem "addressable",             "2.2.8", :require => "addressable/uri"
 
@@ -70,6 +68,7 @@ gem "simplecov",               "0.7.1", :require => false, :group => :test
 gem "spin",                    "0.5.3", :require => false, :group => :test
 
 group :development, :test do
+  gem "webrick",               "1.3.1"
   gem "sqlite3",               "1.3.7"
   gem "poltergeist",           ">= 1.0.0"
   gem "minitest",              "2.0.2", :require => 'minitest/unit'

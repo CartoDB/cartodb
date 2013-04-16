@@ -48,4 +48,12 @@ feature "API 1.0 queries management" do
       response.body[:affected_rows].should == 12
     end
   end  
+
+
+  scenario "Get the results of a query involving system tables" do
+    get_json api_queries_url(:sql => "SELECT datname FROM pg_database;", :rows_per_page => 2) do |response|
+      response.status.should == 400
+      response.body[:errors].should == ["System tables are forbidden"]
+    end
+  end  
 end

@@ -17,7 +17,7 @@
 
     <style type="text/css">
       html, body {height: 100%; padding: 0; margin: 0;}
-      #map {position:absolute; width:100%; top:0; right:0; bottom:0; left:0;}
+      #map {position:absolute; width:100%; height:100%; top:0; right:0; bottom:0; left:0;}
     </style>
 
     <% if Rails.env.development? %>
@@ -92,6 +92,10 @@
         opt.no_cdn = true;
         <% end %>
 
+        <% if Rails.env.staging? %>
+           cartodb.CDB_HOST['http'] = 'tiles-staging.cartocdn.com';
+        <% end %>
+
         cartodb.createVis('map', '<%= v1_vizjson_url(@tabla) %>', opt, function(vis) {
           // add here your code
           window.vis = vis;
@@ -99,6 +103,6 @@
       });
 
     </script>
-    <%= render 'shared/analytics', ua: Cartodb.config[:google_analytics]["embeds"] %>
+    <%= insert_google_analytics('embeds') %>
   </body>
 </html>

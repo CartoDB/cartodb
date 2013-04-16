@@ -7,7 +7,7 @@ $$
   --
   -- NOTE: division by 2 is an hack for the_geom_webmercator
   --
-  SELECT int8(sum(pg_total_relation_size(quote_ident(table_name))) / 2)
+  SELECT coalesce(int8(sum(pg_total_relation_size(quote_ident(table_name))) / 2), 0)
     AS quota
   FROM information_schema.tables
   WHERE table_catalog = current_database() AND table_schema = 'public'

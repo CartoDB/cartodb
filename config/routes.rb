@@ -18,6 +18,7 @@ CartoDB::Application.routes.draw do
     resources :tables, :only => [:show] do
       get 'embed_map', :on => :member
       get 'track_embed', :on => :collection
+      get 'embed_forbidden', :on => :collection
       get 'public' => 'tables#show_public', :on => :member
     end
 

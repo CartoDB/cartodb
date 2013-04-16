@@ -1,8 +1,23 @@
-2.0.7
+2.0.10
+------
+
+2.0.9
 -----
 
+2.0.8 (25/03/13)
+-----
+You'll have to run database migrations and reload sql functions after
+upgrating (yep, again, sorry):
 
-2.0.6 (DD/MM/YY)
+bundle exec rake db:migrate
+bundle exec rake cartodb:db:load_functions
+
+* Huge importer refactor. Now import jobs shouldn't get stuck.
+* Excludes some system tables from user quota calculation.
+* Script url is only formed with table name and not id.
+* Fixed problem importing files with accents in the name.
+
+2.0.6 (15/03/13)
 -----
 * If the the_geom value is null, it appears as null in the table and not as GeoJSON.
 * Table hover styles fixed.

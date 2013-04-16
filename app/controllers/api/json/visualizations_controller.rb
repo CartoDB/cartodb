@@ -57,8 +57,8 @@ class Api::Json::VisualizationsController < Api::ApplicationController
 
   def vizzjson
     member = Visualization::Member.new(id: params[:id]).fetch
-    render_jsonp(member) if member.public?
-    head 204
+    head 204 unless member.public?
+    render_jsonp(member)
   rescue KeyError
     head :forbidden
   end #vizzjson

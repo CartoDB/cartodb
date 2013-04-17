@@ -1,6 +1,6 @@
-// cartodb.js version: 2.0.27
+// cartodb.js version: 2.0.28-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: d93f4d73b1074a8b25f37e8c3ac68c48a84afd86
+// sha: 4883b728da08c12f0b20145a1ae01fb1cb38d8c7
 (function() {
   var root = this;
 
@@ -9812,7 +9812,7 @@ L.Map.include({
 });
 
 
-}(this, document));/* wax - 7.0.0dev10 - v6.0.4-145-ga13219f */
+}(this, document));/* wax - 7.0.0dev10 - v6.0.4-147-gca63e3e */
 
 
 !function (name, context, definition) {
@@ -12901,6 +12901,7 @@ wax.interaction = function() {
         //   evt[key] = e[key];
         // }
 
+
         evt.changedTouches = [];
 
         bean.remove(document.body, 'mouseup', onUp);
@@ -13248,14 +13249,12 @@ wax.u = {
         var posx = 0;
         var posy = 0;
         if (!e) { e = window.event; }
-        
         if (e.type == "MSPointerMove" || e.type == "MSPointerDown" || e.type == "MSPointerUp") {
           return {
             x: e.pageX + window.pageXOffset,
             y: e.pageY + window.pageYOffset
           }
         }
-
         if (e.pageX || e.pageY) {
             // Good browsers
             return {
@@ -15507,7 +15506,7 @@ $(function(){
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '2.0.27';
+    cdb.VERSION = '2.0.28-dev';
 
     cdb.CARTOCSS_VERSIONS = {
       '2.0.0': '',
@@ -19465,14 +19464,7 @@ L.CartoDBLayer = L.TileLayer.extend({
   _findPos: function (map,o) {
     var curleft = 0, curtop = 0;
     var obj = map.getContainer();
-    var x = (o.e.clientX || o.e.changedTouches[0].clientX);
-    var y = (o.e.clientY || o.e.changedTouches[0].clientY);
 
-    // Thanks IE10
-    if (o.e.type == "MSPointerUp" || o.e.type == "MSPointerDown" || o.e.type == "MSPointerMove") {
-      x = o.e.pageX + window.pageXOffset;
-      y = o.e.pageY + window.pageYOffset;
-    }
 
     if (obj.offsetParent) {
       // Modern browsers
@@ -19480,7 +19472,7 @@ L.CartoDBLayer = L.TileLayer.extend({
         curleft += obj.offsetLeft;
         curtop += obj.offsetTop;
       } while (obj = obj.offsetParent);
-      return map.containerPointToLayerPoint(new L.Point(x - curleft,y - curtop))
+      return map.containerPointToLayerPoint(new L.Point((o.e.clientX || o.e.changedTouches[0].clientX) - curleft,(o.e.clientY || o.e.changedTouches[0].clientY) - curtop))
     } else {
       // IE
       return map.mouseEventToLayerPoint(o.e)
@@ -20383,8 +20375,8 @@ CartoDBLayer.prototype._findPos = function (map,o) {
     curtop += obj.offsetTop;
   } while (obj = obj.offsetParent);
   return new google.maps.Point(
-      e.pageX + window.pageYOffset - curleft,
-      e.pageY + window.pageYOffset - curtop
+      (o.e.clientX || o.e.changedTouches[0].clientX) - curleft,
+      (o.e.clientY || o.e.changedTouches[0].clientY) - curtop
   );
 };
 
@@ -22516,6 +22508,15 @@ Layers.register('carto', cartoLayer);
       delete params.crossDomain;
       params.dataType = 'jsonp';
     }
+
+    // Substitute mapnik tokens
+    // resolution at zoom level 0
+    var res = '156543.03515625';
+    // full webmercator extent
+    var ext = 'ST_MakeEnvelope(-20037508.5,-20037508.5,20037508.5,20037508.5,3857)';
+    sql = sql.replace('!bbox!', ext)
+             .replace('!pixel_width!', res)
+             .replace('!pixel_height!', res);
 
     // create query
     var query = Mustache.render(sql, vars);

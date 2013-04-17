@@ -42,10 +42,6 @@ module DataRepository
         db[relation].where(id: key).delete
       end #delete
 
-      def count
-        db[relation].count
-      end #count
-
       def next_id
         UUIDTools::UUID.timestamp_create
       end #next_id

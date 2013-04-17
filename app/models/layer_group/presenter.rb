@@ -18,7 +18,7 @@ module CartoDB
           options:            {
             user_name:          options.fetch(:user_name),
             tiler_protocol:     configuration.fetch(:tiler_protocol, nil),
-            tiler_host:         configuration.fetch(:tiler_host, nil),
+            tiler_domain:       configuration.fetch(:tiler_domain, nil),
             tiler_port:         configuration.fetch(:tiler_port, nil),
             sql_api_protocol:   configuration.fetch(:sql_api_protocol, nil),
             sql_api_domain:     configuration.fetch(:sql_api_domain, nil),

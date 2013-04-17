@@ -47,7 +47,8 @@ module CartoDB
       end #to_hash
 
       def to_vizzjson
-        VizzJSON.new(self, { full: false }, configuration).to_poro
+        options = { full: false, user_name: user.username }
+        VizzJSON.new(self, options, configuration).to_poro
       end #to_hash
 
       def delete
@@ -64,6 +65,10 @@ module CartoDB
       def map
         (@map ||= Map.where(id: map_id).first) || OpenStruct.new
       end #map
+
+      def user
+        map.user || OpenStruct.new
+      end #user
 
       def table
         @table  ||= Table.where(map_id: map_id).first

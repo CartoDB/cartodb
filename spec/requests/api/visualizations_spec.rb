@@ -200,6 +200,8 @@ describe Api::Json::VisualizationsController do
 
       get "/api/v1/viz/#{id}/viz?api_key=#{@api_key}", 
         {}, @headers
+
+      puts last_response.body
     end
   end # GET /api/v1/visualizations/:id
 

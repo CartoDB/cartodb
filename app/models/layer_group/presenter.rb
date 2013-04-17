@@ -16,9 +16,10 @@ module CartoDB
         { 
           type:               'layergroup',
           options:            {
-            tile_protocol:      configuration.fetch(:tile_protocol, nil),
-            tile_host:          configuration.fetch(:tile_host, nil),
-            tile_port:          configuration.fetch(:tile_port, nil),
+            user_name:          options.fetch(:user_name),
+            tiler_protocol:     configuration.fetch(:tiler_protocol, nil),
+            tiler_host:         configuration.fetch(:tiler_host, nil),
+            tiler_port:         configuration.fetch(:tiler_port, nil),
             sql_api_protocol:   configuration.fetch(:sql_api_protocol, nil),
             sql_api_domain:     configuration.fetch(:sql_api_domain, nil),
             sql_api_endpoint:   configuration.fetch(:sql_api_endpoint, nil),

@@ -53,8 +53,7 @@ module DataRepository
     end #to_json
 
     def count
-      return 0 unless repository.respond_to?(:count)
-      repository.count
+      storage.count
     end #count
 
     private

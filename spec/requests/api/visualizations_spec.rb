@@ -166,12 +166,17 @@ describe Api::Json::VisualizationsController do
       collection  = response.fetch('visualizations')
       collection.should be_empty
 
+      post "/api/v1/visualizations?api_key=#{@api_key}",
+        factory.to_json, @headers
+      post "/api/v1/visualizations?api_key=#{@api_key}",
+        factory.merge(type: 'table').to_json, @headers
       get "/api/v1/visualizations?api_key=#{@api_key}&type=derived",
         {}, @headers
+
       last_response.status.should == 200
       response    = JSON.parse(last_response.body)
       collection  = response.fetch('visualizations')
-      collection.should_not be_empty
+      collection.size.should == 2
     end
   end # GET /api/v1/visualizations
 
@@ -195,7 +200,6 @@ describe Api::Json::VisualizationsController do
 
       get "/api/v1/viz/#{id}/viz?api_key=#{@api_key}", 
         {}, @headers
-      puts last_response.body
     end
   end # GET /api/v1/visualizations/:id
 
@@ -212,12 +216,11 @@ describe Api::Json::VisualizationsController do
       response.fetch('tags').should == ['foo', 'bar']
 
       put "/api/v1/visualizations/#{id}?api_key=#{@api_key}",
-        { name: 'changed' }.to_json, @headers
+        { name: 'changed', tags: [] }.to_json, @headers
       last_response.status.should == 200
       response = JSON.parse(last_response.body)
       response.fetch('name').should == 'changed'
-      response.fetch('tags').should == ['foo', 'bar']
-      response.fetch('tags').should == tags
+      response.fetch('tags').should == []
     end
   end # PUT /api/v1/visualizations
 

@@ -13,7 +13,7 @@ module CartoDB
       include Virtus
 
       LAYER_SCOPES = {
-        base:     :base_layers,
+        base:     :user_layers,
         cartodb:  :data_layers
       }
 
@@ -47,7 +47,7 @@ module CartoDB
       end #to_hash
 
       def to_vizzjson
-        VizzJSON.new(self, { full: false }).to_poro
+        VizzJSON.new(self, { full: false }, configuration).to_poro
       end #to_hash
 
       def delete

@@ -8,15 +8,16 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   include CartoDB
 
   ssl_required :index, :show, :create, :update, :destroy
-  skip_before_filter :api_authorization_required, only: [:create, :vizzjson]
+  skip_before_filter :api_authorization_required, only: [:vizzjson]
 
   def index
-    collection  = Visualization::Collection.new.fetch(params.dup)
+    collection  = Visualization::Collection.new.fetch(
+      params.dup.merge(scope_for(current_user))
+    )
     response    = {
       visualizations: collection,
       total_entries:  collection.count
     }
-
     render_jsonp(response)
   end #index
 
@@ -32,6 +33,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   def show
     begin
       member    = Visualization::Member.new(id: params.fetch('id')).fetch
+      (head(201) and return) unless member.authorize?(current_user)
       render_jsonp(member)
     rescue KeyError
       head :not_found
@@ -41,6 +43,8 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   def update
     begin
       member    = Visualization::Member.new(id: params.fetch('id')).fetch
+      (head(201) and return) unless member.authorize?(current_user)
+
       member.attributes = payload
       member.store
       render_jsonp(member)
@@ -50,18 +54,26 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   end #update
 
   def destroy
-    member      = Visualization::Member.new(id: params.fetch('id'))
+    member      = Visualization::Member.new(id: params.fetch('id')).fetch
+    (head(201) and return) unless member.authorize?(current_user)
+
     member.delete
     head 204
   end #destroy
 
   def vizzjson
     member = Visualization::Member.new(id: params[:id]).fetch
-    head 204 unless member.public?
+    (head 204 and return) unless member.public?
     render_jsonp(member.to_vizzjson)
   rescue KeyError
     head :forbidden
   end #vizzjson
+
+  private
+
+  def scope_for(current_user)
+    { map_id: current_user.maps.map(&:id) }
+  end #scope_for
 
   def payload
     request.body.rewind

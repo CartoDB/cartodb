@@ -41,6 +41,7 @@ var Layers = {
 
   create: function(type, vis, data) {
     if (!type) {
+      debugger;
       cdb.log.error("creating a layer without type");
       return null;
     }
@@ -481,7 +482,7 @@ var Vis = cdb.core.View.extend({
   loadLayer: function(layerData, opts) {
     var map = this.map;
     var mapView = this.mapView;
-    layerData.type = layerData.kind;
+    //layerData.type = layerData.kind;
     var layer_cid = map.addLayer(Layers.create(layerData.type || layerData.kind, this, layerData), opts);
 
     var layerView = mapView.getLayerByCid(layer_cid);

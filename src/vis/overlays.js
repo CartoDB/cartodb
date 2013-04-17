@@ -2,8 +2,12 @@
 (function() {
 
 // map zoom control
-cdb.vis.Overlay.register('zoom', function(data) {
+cdb.vis.Overlay.register('zoom', function(data, vis) {
 
+  if(!data.template) {
+    vis.trigger('error', 'zoom template is empty')
+    return;
+  }
   var zoom = new cdb.geo.ui.Zoom({
     model: data.map,
     template: cdb.core.Template.compile(data.template)

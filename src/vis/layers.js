@@ -83,7 +83,7 @@ var cartoLayer = function(vis, data) {
 Layers.register('cartodb', cartoLayer);
 Layers.register('carto', cartoLayer);
 
-Layers.register('grouplayer', function(vis, data) {
+Layers.register('layergroup', function(vis, data) {
   return new cdb.geo.CartoDBGroupLayer(data);
 });
 

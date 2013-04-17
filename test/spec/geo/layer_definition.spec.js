@@ -36,6 +36,15 @@ describe("LayerDefinition", function() {
     expect(layerDefinition.getLayerCount()).toEqual(2);
   });
 
+  it("should invalidate", function() {
+    layerDefinition.layerToken = 'test';
+    layerDefinition.urls = ['test'];
+    layerDefinition.invalidate();
+    expect(layerDefinition.layerToken).toEqual(null);
+    expect(layerDefinition.urls).toEqual(null);
+    
+  });
+
   it("should remove a layer", function() {
     layerDefinition.removeLayer(0);
     expect(layerDefinition.getLayerCount()).toEqual(1);

@@ -92,7 +92,6 @@ CartoDBLayerCommon.prototype = {
       b = layer;
       layer = 0;
     }
-    var self = this;
     var layerInteraction;
     this.interactionEnabled[layer] = b;
     if(!b) {
@@ -102,29 +101,32 @@ CartoDBLayerCommon.prototype = {
         this.interaction[layer] = null;
       }
     } else {
-      this.getTileJSON(layer, function(tilejson) {
-        if(!tilejson) {
-          //TODO: check errors
-          return;
-        }
-        layerInteraction = self.interaction[layer];
+      // if urls is null it means that setInteraction will be called
+      // when the layergroup token was recieved, then the real interaction
+      // layer will be created
+      if(this.urls) {
+        // generate the tilejson from the urls. wax needs it
+        var tilejson = this._tileJSONfromTiles(layer, this.urls);
+
+        // remove previous
+        layerInteraction = this.interaction[layer];
         if(layerInteraction) {
           layerInteraction.remove();
         }
-        // check again, it could be changed while the request arrives
-        if(self.interactionEnabled[layer]) {
-          self.interaction[layer] = self.interactionClass()
-            .map(self.options.map)
-            .tilejson(tilejson)
-            .on('on', function(o) {
-              o.layer = layer;
-              self._manageOnEvents(self.options.map, o);
-            })
-            .on('off', function(o) {
-              self._manageOffEvents();
-            });
-        }
-      });
+        var self = this;
+
+        // add the new one
+        this.interaction[layer] = this.interactionClass()
+          .map(this.options.map)
+          .tilejson(tilejson)
+          .on('on', function(o) {
+            o.layer = layer;
+            self._manageOnEvents(self.options.map, o);
+          })
+          .on('off', function(o) {
+            self._manageOffEvents();
+          });
+      }
     }
     return this;
   },

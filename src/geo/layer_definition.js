@@ -112,6 +112,7 @@ LayerDefinition.prototype = {
 
   invalidate: function() {
     this.layerToken = null;
+    this.urls = null;
   },
 
   setLayer: function(layer, def) {

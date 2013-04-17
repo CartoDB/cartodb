@@ -1,8 +1,10 @@
-2.0.11
-------
-
 2.0.10
 ------
+* Imports now never get stuck on the UI
+* Vizjson now works with and without SSL
+* Fixed various errors when changing column types using the UI
+* Invalidates varnish cache after column modifications using the UI
+* Fixed error when trying to import urls with query string parameters
 
 2.0.9
 -----

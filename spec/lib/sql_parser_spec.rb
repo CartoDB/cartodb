@@ -9,7 +9,8 @@ describe CartoDB::SqlParser do
   end
 
   it "should return the affected tables" do
-    sql = "select * from cdb_tablemetadata;select cartodb_id from unexisting_table;selecterror;select 1;select * from spatial_ref_sys"
+    sql = "select coalesce('tabname', null) from cdb_tablemetadata;select cartodb_id from unexisting_table;selecterror;select 1;select * from spatial_ref_sys"
     CartoDB::SqlParser.new(sql, connection: @connection).affected_tables.should =~ ["cdb_tablemetadata", "spatial_ref_sys"]
   end
+
 end

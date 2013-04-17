@@ -8,7 +8,7 @@ module CartoDB
 
     # Returns the tables involved in a query
     def affected_tables
-      tables_per_statement = @connection["SELECT CDB_QueryTables('#{@query}')"].all
+      tables_per_statement = @connection["SELECT CDB_QueryTables(?)", @query].all
       tables_per_statement.map do |s|
         s[:cdb_querytables].split(',').map do |table_name|
           table_name.gsub!(/[\{\}]/, '') 

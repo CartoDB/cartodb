@@ -13,7 +13,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   def index
     collection  = Visualization::Collection.new.fetch(params.dup)
     response    = {
-      visualizations: collection.map(&:attributes),
+      visualizations: collection,
       total_entries:  collection.count
     }
 
@@ -26,13 +26,13 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     collection.add(member)
     collection.store
 
-    render_jsonp(member.attributes)
+    render_jsonp(member)
   end #create
 
   def show
     begin
       member    = Visualization::Member.new(id: params.fetch('id')).fetch
-      render_jsonp(member.attributes)
+      render_jsonp(member)
     rescue KeyError
       head :not_found
     end
@@ -40,10 +40,10 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   
   def update
     begin
-      member            = Visualization::Member.new(id: params.fetch('id')).fetch
+      member    = Visualization::Member.new(id: params.fetch('id')).fetch
       member.attributes = payload
       member.store
-      render_jsonp(member.attributes)
+      render_jsonp(member)
     rescue KeyError
       head :not_found
     end
@@ -58,7 +58,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   def vizzjson
     member = Visualization::Member.new(id: params[:id]).fetch
     head 204 unless member.public?
-    render_jsonp(member)
+    render_jsonp(member.to_vizzjson)
   rescue KeyError
     head :forbidden
   end #vizzjson

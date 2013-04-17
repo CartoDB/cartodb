@@ -12,7 +12,7 @@ module CartoDB
           type:     overlay.type,
           order:    overlay.order,
           options:  overlay.options,
-          template: nil
+          template: overlay.template
         }
       end #to_poro
 

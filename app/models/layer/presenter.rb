@@ -13,7 +13,7 @@ module CartoDB
       end #initialize
 
       def to_poro
-        return base_to_poro(layer) if base?(layer)
+        return with_kind_as_type(layer.public_values) if base?(layer)
 
         {
           id:         layer.id,
@@ -32,11 +32,9 @@ module CartoDB
         layer.kind != 'carto'
       end #base?
 
-      def base_to_poro(layer)
-        poro = layer.public_values
-        type = layer.delete(:kind)
-        poro.merge(type: type)
-        poro
+      def with_kind_as_type(attributes)
+        type = attributes.delete(:kind)
+        attributes.merge(type: type)
       end #base_to_poro
 
       def infowindow_data

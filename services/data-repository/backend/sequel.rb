@@ -66,7 +66,9 @@ module DataRepository
       def serialize_for_postgres(data)
         Hash[
           data.map { |key, value|
-            value = value.pg_array if value.is_a?(Array)
+            if value.is_a?(Array) && !value.empty?
+              value = value.pg_array 
+            end
             [key, value]
           }
         ]

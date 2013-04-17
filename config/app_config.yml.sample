@@ -50,7 +50,7 @@ defaults: &defaults
                   "tiler_port", "tiler_protocol", "sql_domain", "sql_port", 
                   "sql_protocol", "extra_params", "cdn_url", "table_name", 
                   "user_name", "style_version", "query_wrapper"]
-    default_tiler_styles:
+    default_tile_styles:
       point: "{\n  marker-fill: #FF6600;\n  marker-opacity: 0.9;\n  marker-width: 12;\n  marker-line-color: white;\n  marker-line-width: 3;\n  marker-line-opacity: 0.9;\n  marker-placement: point;\n  marker-type: ellipse;\n  marker-allow-overlap: true;\n}"
       geometry: "{\n // points\n [mapnik-geometry-type=point] {\n    marker-fill: #FF6600;\n    marker-opacity: 1;\n    marker-width: 12;\n    marker-line-color: white;\n    marker-line-width: 3;\n    marker-line-opacity: 0.9;\n    marker-placement: point;\n    marker-type: ellipse;marker-allow-overlap: true;\n  }\n\n //lines\n [mapnik-geometry-type=linestring] {\n    line-color: #FF6600; \n    line-width: 2; \n    line-opacity: 0.7;\n  }\n\n //polygons\n [mapnik-geometry-type=polygon] {\n    polygon-fill:#FF6600;\n    polygon-opacity: 0.7;\n    line-opacity:1;\n    line-color: #FFFFFF;\n   }\n }"
       polygon: "{\n  polygon-fill:#FF6600;\n  polygon-opacity: 0.7;\n  line-opacity:1;\n  line-color: #FFFFFF;\n}"
@@ -73,7 +73,7 @@ defaults: &defaults
         sql_protocol:       "http"
         extra_params:       { cache_policy: 'persist' }
         cdn_url:            ""
-        tiler_style_history: []
+        tile_style_history: []
         style_version:      "2.1.1"
       infowindow:
         template_name:      "table/views/infowindow_light"

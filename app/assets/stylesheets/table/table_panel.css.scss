@@ -880,7 +880,8 @@
               .hidden { display: none; }
 
               .legend { font-size:13px; color: #666666; }
-              .empty  { font-size:13px; color: #FF9999; }
+              .empty  { display:none; font-size:13px; color: #FF9999; }
+              .only   { display:none; font-size:13px; color: #FFAB37; }
               .range  { font-size:13px; color: #4DC964; }
 
               .title  { float: left; margin: 0 0 0 30px; }

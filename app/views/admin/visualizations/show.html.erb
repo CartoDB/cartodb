@@ -9,7 +9,7 @@
 
   <script>
       var
-        vis_data = <%=raw @visualization.attributes.to_json %>
+        vis_data = <%=raw @visualization.to_hash.to_json %>
       , user_data = <%=raw current_user.data.to_json.html_safe %>
       , config = <%=raw frontend_config.html_safe %>
       , map_data = <%=raw @visualization.map.public_values.to_json %>

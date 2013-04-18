@@ -88,7 +88,6 @@ class DataImport < Sequel::Model
   end
 
   def public_url
-    debugger
     if file_sha = self.data_source.to_s.match(/uploads\/([a-z0-9]{20})\/.*/)
       "https://#{current_user.username}.cartodb.com/#{file_sha[0]}"
     else

@@ -15,6 +15,7 @@ module CartoDB
           type:         visualization.type,
           tags:         visualization.tags,
           description:  visualization.description,
+          privacy:      visualization.privacy,
           table:        table_data_for(visualization.table)
         }
       end #to_poro
@@ -27,7 +28,6 @@ module CartoDB
         return {} unless table
         {
           id:           table.id,
-          privacy:      table.privacy,
           size:         table.table_size,
           row_count:    table.rows_counted,
           updated_at:   table.updated_at

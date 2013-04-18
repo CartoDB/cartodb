@@ -11,10 +11,12 @@ class Table < Sequel::Model(:user_tables)
   THE_GEOM_WEBMERCATOR = :the_geom_webmercator
   THE_GEOM = :the_geom
   RESERVED_COLUMN_NAMES = %W{ oid tableoid xmin cmin xmax cmax ctid ogc_fid }
-  PUBLIC_ATTRIBUTES = { :id => :id, :name => :name, :privacy => :privacy_text, :tags => :tags_names,
-                        :schema => :schema, :updated_at => :updated_at, :rows_counted => :rows_estimated,
-                        :table_size => :table_size, :map_id => :map_id, :description => :description,
-                        :geometry_types => :geometry_types }
+  PUBLIC_ATTRIBUTES = { 
+    :id => :id, :name => :name, :privacy => :privacy_text, :tags => :tags_names,
+    :schema => :schema, :updated_at => :updated_at, :rows_counted => :rows_estimated,
+    :table_size => :table_size, :map_id => :map_id, :description => :description,
+    :geometry_types => :geometry_types, :visualization_id => :visualization_id
+  }
 
   DEFAULT_THE_GEOM_TYPE = "geometry"
 
@@ -23,7 +25,12 @@ class Table < Sequel::Model(:user_tables)
   plugin :dirty
 
   def public_values(options = {})
-    selected_attrs = options[:except].present? ? PUBLIC_ATTRIBUTES.select { |k, v| !options[:except].include?(k.to_sym) } : PUBLIC_ATTRIBUTES
+    selected_attrs = if options[:except].present?
+      PUBLIC_ATTRIBUTES.select { |k, v| !options[:except].include?(k.to_sym) }
+    else
+      PUBLIC_ATTRIBUTES
+    end
+
     Hash[selected_attrs.map{ |k, v| [k, (self.send(v) rescue self[v].to_s)] }]
   end
 
@@ -1239,6 +1246,15 @@ TRIGGER
     nil
   end
 
+  def privacy_text
+    self.private? ? 'PRIVATE' : 'PUBLIC'
+  end
+
+  def visualization_id
+    5
+    #CartoDB::Visualization::Collection.new( ).fetch
+  end #visualization_id
+
   private
 
   def update_updated_at
@@ -1430,10 +1446,6 @@ SQL
     owner.in_database.run(%Q{UPDATE "#{self.name}" SET the_geom = ST_GeomFromText('#{geo_json}',#{CartoDB::SRID}) where cartodb_id = #{primary_key}})
   end
 
-  def privacy_text
-    self.private? ? 'PRIVATE' : 'PUBLIC'
-  end
-
   def manage_tags
     if self[:tags].blank?
       Tag.filter(:user_id => user_id, :table_id => id).delete
@@ -1570,5 +1582,5 @@ SQL
       SELECT check_the_geom_exists('#{table_name}');
     SQL
   end
-
 end
+

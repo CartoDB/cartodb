@@ -1,6 +1,6 @@
-// cartodb.js version: 2.0.27
+// cartodb.js version: 2.0.28
 // uncompressed version: cartodb.uncompressed.js
-// sha: d93f4d73b1074a8b25f37e8c3ac68c48a84afd86
+// sha: cbcc993b7eb90a88c84244f974cb521266ca05d9
 (function() {
   var root = this;
 
@@ -9812,7 +9812,7 @@ L.Map.include({
 });
 
 
-}(this, document));/* wax - 7.0.0dev10 - v6.0.4-145-ga13219f */
+}(this, document));/* wax - 7.0.0dev10 - v6.0.4-147-gca63e3e */
 
 
 !function (name, context, definition) {
@@ -12828,7 +12828,8 @@ wax.interaction = function() {
         // to avoid performance hits.
         if (_downLock) return;
 
-        var pos = wax.u.eventoffset(e);
+        var _e = (e.type != "MSPointerMove" ? e : e.originalEvent);
+        var pos = wax.u.eventoffset(_e);
 
         interaction.screen_feature(pos, function(feature) {
             if (feature) {
@@ -12853,7 +12854,8 @@ wax.interaction = function() {
         // Store this event so that we can compare it to the
         // up event
         _downLock = true;
-        _d = wax.u.eventoffset(e);
+        var _e = (e.type != "MSPointerDown" ? e : e.originalEvent); 
+        _d = wax.u.eventoffset(_e);
         if (e.type === 'mousedown') {
             bean.add(document.body, 'click', onUp);
             // track mouse up to remove lockDown when the drags end
@@ -12887,12 +12889,18 @@ wax.interaction = function() {
 
     function onUp(e) {
         var evt = {},
-            pos = wax.u.eventoffset(e.originalEvent);
+            _e = (e.type != "MSPointerMove" && e.type != "MSPointerUp" ? e : e.originalEvent),
+            pos = wax.u.eventoffset(_e);
         _downLock = false;
 
-        for (var key in e.originalEvent) {
-          evt[key] = e.originalEvent[key];
+        for (var key in _e) {
+          evt[key] = _e[key];
         }
+
+        // for (var key in e) {
+        //   evt[key] = e[key];
+        // }
+
 
         evt.changedTouches = [];
 
@@ -13241,6 +13249,12 @@ wax.u = {
         var posx = 0;
         var posy = 0;
         if (!e) { e = window.event; }
+        if (e.type == "MSPointerMove" || e.type == "MSPointerDown" || e.type == "MSPointerUp") {
+          return {
+            x: e.pageX + window.pageXOffset,
+            y: e.pageY + window.pageYOffset
+          }
+        }
         if (e.pageX || e.pageY) {
             // Good browsers
             return {
@@ -15492,7 +15506,7 @@ $(function(){
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '2.0.27';
+    cdb.VERSION = '2.0.28';
 
     cdb.CARTOCSS_VERSIONS = {
       '2.0.0': '',
@@ -22494,6 +22508,15 @@ Layers.register('carto', cartoLayer);
       delete params.crossDomain;
       params.dataType = 'jsonp';
     }
+
+    // Substitute mapnik tokens
+    // resolution at zoom level 0
+    var res = '156543.03515625';
+    // full webmercator extent
+    var ext = 'ST_MakeEnvelope(-20037508.5,-20037508.5,20037508.5,20037508.5,3857)';
+    sql = sql.replace('!bbox!', ext)
+             .replace('!pixel_width!', res)
+             .replace('!pixel_height!', res);
 
     // create query
     var query = Mustache.render(sql, vars);

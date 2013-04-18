@@ -84,6 +84,15 @@ module CartoDB
         return true 
       end #public?
 
+      def authorize?(user)
+        user.maps.map(&:id).include?(map_id)
+      end #authorize?
+
+      def privacy
+        return 'PUBLIC' unless table
+        return table.privacy_text
+      end #privacy
+
       private
 
       attr_reader :repository

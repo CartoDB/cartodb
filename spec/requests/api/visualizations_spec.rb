@@ -17,7 +17,11 @@ describe Api::Json::VisualizationsController do
   include Rack::Test::Methods
 
   before(:all) do
-    @user = create_user(:username => 'test', :email => "client@example.com", :password => "clientex")
+    @user = create_user(
+      username: 'test',
+      email:    'client@example.com',
+      password: 'clientex'
+    )
     @user.set_map_key
 
     Sequel.extension(:pagination)
@@ -46,8 +50,8 @@ describe Api::Json::VisualizationsController do
 
     delete_user_data @user
     @headers = { 
-      "CONTENT_TYPE" => 'application/json',
-      "HTTP_HOST" => "test.localhost.lan"
+      'CONTENT_TYPE'  => 'application/json',
+      'HTTP_HOST'     => 'test.localhost.lan'
     }
     @api_key = @user.get_map_key
   end
@@ -197,11 +201,6 @@ describe Api::Json::VisualizationsController do
       response.fetch('map_id')        .should_not be_nil
       response.fetch('tags')          .should_not be_empty
       response.fetch('description')   .should_not be_nil
-
-      get "/api/v1/viz/#{id}/viz?api_key=#{@api_key}", 
-        {}, @headers
-
-      puts last_response.body
     end
   end # GET /api/v1/visualizations/:id
 
@@ -209,7 +208,7 @@ describe Api::Json::VisualizationsController do
     it 'updates an existing visualization' do
       payload   = factory
       post "/api/v1/visualizations?api_key=#{@api_key}",
-        payload.to_json
+        payload.to_json, @headers
 
       response  =  JSON.parse(last_response.body)
       id        = response.fetch('id')
@@ -249,11 +248,11 @@ describe Api::Json::VisualizationsController do
   end # DELETE /api/v1/visualizations/:id
 
   def factory
-    random_number = rand(999)
+    map = Map.create(user_id: @user.id)
     {
-      name:         "visualization #{random_number}",
+      name:         "visualization #{rand(9999)}",
       tags:         ['foo', 'bar'],
-      map_id:       random_number,
+      map_id:       map.id,
       description:  'bogus',
       type:         'derived'
     }

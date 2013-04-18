@@ -89,6 +89,21 @@ describe Visualization::Member do
     end
   end #delete
 
+  describe '#authorize?' do
+    it 'returns true if user maps include map_id' do
+      map_id  = rand(99)
+      member  = Visualization::Member.new(name: 'foo', map_id: map_id)
+
+      maps    = [OpenStruct.new(id: map_id)]
+      user    = OpenStruct.new(maps: maps)
+      member.authorize?(user).must_equal true
+
+      maps    = [OpenStruct.new(id: 999)]
+      user    = OpenStruct.new(maps: maps)
+      member.authorize?(user).must_equal false
+    end
+  end #authorize?
+
   def create_visualizations_table_in(db, relation)
     db.create_table relation do
       String    :id, primary_key: true

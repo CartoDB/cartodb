@@ -12,6 +12,12 @@
   text-transform:uppercase;
 }
 
+@mixin text-overflow() {
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  overflow:hidden;
+}
+
 @mixin user-select($val) {
   -webkit-touch-callout: $val;
   -webkit-user-select: $val;

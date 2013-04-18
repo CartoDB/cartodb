@@ -1251,8 +1251,10 @@ TRIGGER
   end
 
   def visualization_id
-    5
-    #CartoDB::Visualization::Collection.new( ).fetch
+    visualization = CartoDB::Visualization::Collection.new( 
+      map_id: [map_id]
+    ).fetch.first
+    visualization.id if visualization
   end #visualization_id
 
   private

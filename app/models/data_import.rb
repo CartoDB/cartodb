@@ -76,6 +76,26 @@ class DataImport < Sequel::Model
     Hash[PUBLIC_ATTRIBUTES.map{ |a| [a, self.send(a)] }].merge("success" => success_value, "queue_id" => self.id)
   end
 
+  def basic_information
+    {
+      error:         get_error_text[:title],
+      username:      current_user.username,
+      file_url:      public_url,
+      account_type:  current_user.account_type,
+      database:      current_user.database_name,
+      email:         current_user.email
+    }
+  end
+
+  def public_url
+    debugger
+    if file_sha = self.data_source.to_s.match(/uploads\/([a-z0-9]{20})\/.*/)
+      "https://#{current_user.username}.cartodb.com/#{file_sha[0]}"
+    else
+      self.data_source
+    end
+  end
+
   state_machine :initial => :preprocessing do
     before_transition :updated_now
     before_transition do
@@ -90,11 +110,11 @@ class DataImport < Sequel::Model
       self.log << "SUCCESS!\n"
       self.save
     end
-    
+
     after_transition any => :failure do
       # Increment failed imports on CartoDB stats
       CartodbStats.increment_failed_imports()
-      Rollbar.report_message("Failed import", "error", error_code: error_code, error_message: get_error_text,person: current_user)
+      Rollbar.report_message("Failed import", "error", error_info: self.basic_information)
 
       # Copy any uploaded resources to secret failed imports vault(tm)
       if file_sha = self.data_source.to_s.match(/uploads\/([a-z0-9]{20})\/.*/)
@@ -160,12 +180,13 @@ class DataImport < Sequel::Model
   end
 
   def run_import!
+    imported_something = false
     begin
       if append.present?
         append_to_existing
 
       elsif migrate_table.present?
-        migrate_existing migrate_table
+        imported_something = migrate_existing migrate_table
 
       elsif table_copy.present? || from_query.present?
         # Raise an error if user is over table quota
@@ -174,44 +195,37 @@ class DataImport < Sequel::Model
         query = table_copy ? "SELECT * FROM #{table_copy}" : from_query
         new_table_name = import_from_query table_name, query
         self.update :table_names => new_table_name
-        migrate_existing new_table_name
+        imported_something = migrate_existing(new_table_name)
 
       elsif %w(url file).include?(data_type)
         imports, errors = import_to_cartodb data_type, data_source
         if imports.present?
           imports.each do | import |
-            migrate_existing import.name, table_name
+            self.log << "Linking #{import.name} to CartoDB UI"
+            unless migrate_existing(import.name, table_name)
+              current_user.in_database.drop_table import.name
+            else
+              imported_something = true
+            end
           end
         end
       else
         failed!
       end
 
+      failed! unless imported_something
+      
       self
     rescue => e
       reload
       failed!
-      # Add semantics based on the users creation method.
-      # TODO: The importer should throw these specific errors
-      if !e.is_a? CartoDB::QuotaExceeded
-        e = CartoDB::InvalidUrl.new     e.message    if url?
-        e = CartoDB::InvalidFile.new    e.message    if file?
-        e = CartoDB::TableCopyError.new e.message    if table_copy?
-      end
-      self.log << ("Exception on tables#create: " + e.inspect)
+      self.log << ("Exception while running import: " + e.inspect)
     end
   end
 
   def before_save
     self.logger = self.log.id unless self.logger.present?
     self.updated_now
-  end
-
-  # FIXME: after a rollback the object doesn't exist on the
-  # database anymore, so no save
-  def after_rollback(*args, &block)
-    #self.save
-    #set_callback(:rollback, :after, *args, &block)
   end
 
   def updated_now(transition=nil)
@@ -302,7 +316,6 @@ class DataImport < Sequel::Model
   attr_writer :log
 
   def append_to_existing
-
     imports, errors = import_to_cartodb data_type, data_source
     # table_names is null, since we're just appending data to
     # an existing table, not creating a new one
@@ -355,12 +368,9 @@ class DataImport < Sequel::Model
 
     new_name = imported_name || name
 
-    #the below is redudant with the method below after import.nil?, should factor
     @new_table = Table.new
-    @new_table.user_id = current_user.id
+    @new_table.user_id = user_id
     @new_table.name = new_name
-
-    @new_table.user_id =  user_id
     @new_table.data_import_id = id
     @new_table.migrate_existing_table = imported_name
 
@@ -368,11 +378,13 @@ class DataImport < Sequel::Model
       @new_table.save
       @new_table.map.recalculate_bounds!
       refresh
+      return true
     else
       reload
-      message = "Errors on import#create" + @new_table.errors.full_messages
-      self.log << message
+      self.log << ("Error linking #{imported_name} to UI: " + @new_table.errors.full_messages.join(" - "))
+      return false
     end
+
   end
 
   def get_valid_name(name)

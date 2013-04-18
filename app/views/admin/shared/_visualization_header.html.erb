@@ -1,0 +1,31 @@
+<header class="vis">
+  <div class="inner">
+    <div class="left">
+      <ul class="actions">
+        <li><%= link_to "Back", root_path, :class => "back" %></li>
+        <li><span class="type">T</span></li>
+        <li><h1><%= link_to "", "#/change-title", :class => "title" %></h1></li>
+        <li><a href="#/clearview" class="clearview button_header rounded white">clear view</a></li>
+        <li><a href="#/change-status" class="status button_header rounded white"></a></li>
+        <li><span class="tags"></span></li>
+      </ul>
+      <div class="description">
+        <p><a href="#/change-description"></a></p>
+      </div>
+      <nav>
+        <%= link_to "Table",    "/table", :class => "smaller strong tab selected" %>
+        <%= link_to "Map view", "/map",   :class => "smaller strong tab" %>
+      </nav>
+    </div>
+    <div class="right">
+      <ul class="options">
+        <li><%= link_to "options", "#/options", :class => "dropdown options" %></li>
+        <li><%= link_to current_user.username, "#/" + current_user.username, :class => "dropdown account" %></li>
+        <li><%= link_to "visualize", "#/visualize", :class => "rounded green share" %></li>
+      </ul>
+    </div>
+    <div class="shadow"></div>
+  </div>
+  <div class="globalerror"></div>
+</header>
+

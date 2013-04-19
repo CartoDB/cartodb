@@ -1,7 +1,7 @@
 # coding: utf-8
 
 class Api::Json::ColumnsController < Api::ApplicationController
-  ssl_required :index, :create, :show, :update, :delete
+  ssl_required :index, :create, :show, :update, :destroy
 
   before_filter :load_table, :set_start_time
   after_filter :record_query_threshold
@@ -65,7 +65,7 @@ class Api::Json::ColumnsController < Api::ApplicationController
   def record_query_threshold
     if response.ok?
       case action_name
-        when "create", "update", "delete"
+        when "create", "update", "destroy"
           CartoDB::QueriesThreshold.incr(current_user.id, "other", Time.now - @time_start)
       end
     end

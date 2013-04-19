@@ -19,6 +19,7 @@ describe("log", function() {
     });
 
     it("should generate error when error is called", function() {
+      cdb.config.ERROR_TRACK_ENABLED = true
       cdb.errors.reset([]);
       var log = new cdb.core.Log({tag: 'test'});
       log.error('this is an error');

@@ -75,7 +75,7 @@ describe('SQL api client', function() {
     var tile_size = 256;
     var srid = 3857;
     var full_resolution = earth_circumference/tile_size;
-    var shift := earth_circumference / 2.0;
+    var shift = earth_circumference / 2.0;
 
     var pw = full_resolution; 
     var ph = pw;

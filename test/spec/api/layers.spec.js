@@ -139,6 +139,11 @@ describe('api.layers', function() {
         var layer;
         runs(function() {
           cartodb.createLayer(map, { kind: 'cartodb', options: {} }, {query: 'select !bbox!'}, function(l) {
+            layer = l
+          })
+        });
+        waits(100);
+        runs(function() {
           expect(layer.options.query).toEqual('select !bbox!');
         });
       });
@@ -209,13 +214,18 @@ describe('api.layers', function() {
             layer = lyr;
           });
         });
+
         waits(10);
+
         runs(function() {
           expect(s.called).toEqual(true);
         });
-      });
-    });
 
-  };
+      });
+
+    //});
+
+    });
+  }
 
 });

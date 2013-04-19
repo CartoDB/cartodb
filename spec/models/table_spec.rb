@@ -1177,7 +1177,6 @@ describe Table do
       table = new_table :user_id => @user.id
       table.name = "clubbing"
       importer, errors = create_import @user, "#{Rails.root}/db/fake_data/short_clubbing.csv"
-
       table.migrate_existing_table = importer[0].name
       table.save.reload
 

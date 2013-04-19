@@ -72,8 +72,12 @@ class Table < Sequel::Model(:user_tables)
     # privacy setting must be a sane value
     errors.add(:privacy, 'has an invalid value') if privacy != PRIVATE && privacy != PUBLIC
 
-
-    ## QUOTA CHECKS
+    # when loading existing tables (importer does this)
+    # check if the table fits into owner's remaining quota
+    if migrate_existing_table.present? && self.table_size(migrate_existing_table) > owner.remaining_quota
+      errors.add(:table_size, 'over account quota') 
+      @data_import.set_error_code(8001) if @data_import.present?
+    end
 
     # Branch if owner dows not have private table privileges
     if !self.owner.try(:private_tables_enabled)
@@ -344,15 +348,6 @@ class Table < Sequel::Model(:user_tables)
         owner.in_database.run("VACUUM FULL \"#{self.name}\"") rescue ""
         update_table_pg_stats
 
-        # Check if owner is over quota, raise an exception if so
-        if owner.over_disk_quota?
-          unless @data_import.nil?
-            @data_import.reload
-            @data_import.set_error_code(8001)
-            @data_import.log_error("#{owner.disk_quota_overspend / 1024}KB more space is required" )
-          end
-          raise CartoDB::QuotaExceeded, "#{owner.disk_quota_overspend / 1024}KB more space is required"
-        end
 
         # Set default triggers
         add_python
@@ -592,12 +587,8 @@ class Table < Sequel::Model(:user_tables)
   end
 
   # returns table size in bytes
-  def table_size
-    @table_size ||= owner.in_database["SELECT pg_total_relation_size('#{self.name}') as size"].first[:size] / 2
-  end
-
-  def total_table_size
-    @total_table_size ||= owner.in_database["SELECT pg_total_relation_size('#{self.name}') as size"].first[:size] / 2
+  def table_size(name = self.name)
+    @table_size ||= owner.in_database["SELECT pg_total_relation_size('#{name}') as size"].first[:size] / 2
   end
 
   # TODO: make predictable. Alphabetical would be better

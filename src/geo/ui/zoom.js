@@ -11,7 +11,7 @@
 
 cdb.geo.ui.Zoom = cdb.core.View.extend({
 
-  id: "zoom",
+  className: "cartodb-zoom",
 
   events: {
     'click .zoom_in': 'zoom_in',

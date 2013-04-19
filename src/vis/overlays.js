@@ -35,7 +35,7 @@ cdb.vis.Overlay.register('header', function(data, vis) {
 
   var template = cdb.core.Template.compile(
     data.template || "\
-      {{#title}}<h1><a href='{{url}}'>{{title}}</a></h1>{{/title}}\
+      {{#title}}<h1><a href='#' onmousedown=\"window.open('{{url}}')\">{{title}}</a></h1>{{/title}}\
       {{#description}}<p>{{description}}</p>{{/description}}\
       {{#shareable}}\
         <div class='social'>\
@@ -85,7 +85,8 @@ cdb.vis.Overlay.register('infowindow', function(data, vis) {
   }
 
   var infowindowModel = new cdb.geo.ui.InfowindowModel({
-    fields: data.fields
+    fields: data.fields,
+    template_name: data.template_name
   });
 
   var templateType = data.templateType || 'mustache';
@@ -106,6 +107,7 @@ cdb.vis.Overlay.register('search', function(data, vis) {
   var template = cdb.core.Template.compile(
     data.template || '\
       <form>\
+        <span class="loader"></span>\
         <input type="text" class="text" value="" />\
         <input type="submit" class="submit" value="" />\
       </form>\

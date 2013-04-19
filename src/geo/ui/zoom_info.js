@@ -11,7 +11,7 @@
 
 cdb.geo.ui.ZoomInfo = cdb.core.View.extend({
 
-  id: "zoom_info",
+  className: "cartodb-zoom-info",
 
   initialize: function() {
     this.model.bind("change:zoom", this.render, this);

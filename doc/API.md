@@ -145,7 +145,7 @@ When you create a visualization using the CartoDB website, you get automatically
     cartodb.createLayer(map, {
         type: 'cartodb',
         options: {
-            table: 'mytable',
+            table_name: 'mytable',
             user_name: 'cartodb_username'
             query: 'select * from mytable where age > 10'
         }
@@ -258,6 +258,26 @@ We have worked hard to support Internet Explorer with CartoDB.js. It currently w
     <script src="http://libs.cartocdn.com/cartodb.js/v2/cartodb.js"></script>
 ```
 
+##### HTTPS support
+
+You can use all the functionality of cartodb.js with HTTPs support. Be sure to add use https when importing both the JS library and the CSS file. Next, you will specify HTTPs for your Viz.JSON URL and as a parameter when you initialize your visualizaiton.
+
+<div class="margin20"></div>
+``` javascript
+    <div id="map"></div>
+    <script>
+        var map = new L.Map('map', { 
+          center: [0,0],
+          zoom: 2
+        })
+        cartodb.createLayer(map, 'https://examples-beta.cartodb.com/api/v1/viz/766/viz.json', { https: true })
+          .on('error', function(err) {
+            alert("some error occurred: " + err);
+          });
+    </script>
+```
+
+
 ##### Persistent version hosting
 
 We are committed to making sure your website works as intended no matter what changes in the future. While we may find more efficient or more useful features to add to the library as time progresses. We never want to break things you have already developed, for this reason, we make versioned CartoDB.js libraries available to you, meaning that the way they function will never unexpectedly change on you.
@@ -356,6 +376,9 @@ Creates a visualization inside the map_id DOM object:
     - center_lon.
     - zoom: initial zoom.
     - cartodb_logo: default to true, set to false if you want to remove the cartodb logo
+    - infowindow: set to false if you want to disable the infowindow (enabled by default)
+    - sql: sql query applied.
+    - tile_style: cartocss applied.
 
 ##### cartodb.Vis.getLayers()
 Return an array of layers in the map. The first is the base layer.

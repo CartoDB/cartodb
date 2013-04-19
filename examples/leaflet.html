@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    
     <style>
       html, body, #map {
         height: 100%;
@@ -33,14 +36,12 @@
         zoom: 3
       })
 
-      // add a nice baselayer from mapbox
-      L.tileLayer('http://a.tiles.mapbox.com/v3/mapbox.mapbox-streets/{z}/{x}/{y}.png', {
-        attribution: 'MapBox'
+      L.tileLayer('http://tile.stamen.com/toner/{z}/{x}/{y}.png', {
+        attribution: 'Stamen'
       }).addTo(map);
 
       cartodb.createLayer(map, 'http://examples.cartodb.com/api/v1/viz/european_countries_e/viz.json', {
         query: 'select * from {{table_name}} where area::float > 10000' // if you remove this the query applied in the editor will be used
-
       })
        .on('done', function(layer) {
         map.addLayer(layer);

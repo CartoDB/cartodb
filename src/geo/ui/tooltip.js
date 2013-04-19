@@ -3,7 +3,7 @@ cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
 
   DEFAULT_OFFSET_TOP: 30,
   defaultTemplate: '<p>{{text}}</p>',
-  className: 'cartodb_tooltip',
+  className: 'cartodb-tooltip',
 
   initialize: function() {
     this.options.template = this.options.template || defaultTemplate;

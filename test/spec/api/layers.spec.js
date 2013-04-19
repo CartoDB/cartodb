@@ -16,6 +16,25 @@ describe('api.layers', function() {
     });
   });
 
+
+  describe('loadLayer unknow', function() {
+    it("shoudl return an error for unknow map types", function() {
+      var map = {};
+      var err = false;
+      runs(function() {
+        cartodb.createLayer(map, { kind: 'plain', options: {} }, function(l) {
+          layer = l;
+        }).error(function() {
+          err = true;
+        });
+      })
+      waits(10);
+      runs(function() {
+        expect(err).toEqual(true);
+      });
+    })
+  });
+
   //
   // shared specs for each map
   //
@@ -90,6 +109,39 @@ describe('api.layers', function() {
         });
       });
 
+      it("should use https when https == true", function() {
+        var layer;
+        runs(function() {
+          cartodb.createLayer(map, { kind: 'cartodb', options: {} }, {https: true}, function(l) {
+            layer = l;
+          });
+        });
+        waits(100);
+        runs(function() {
+          expect(layer._tileJSON().tiles[0].indexOf('https')).toEqual(0)
+        });
+      });
+
+      it("should not use https when https == false", function() {
+        var layer;
+        runs(function() {
+          cartodb.createLayer(map, { kind: 'cartodb', options: {} }, {https: false}, function(l) {
+            layer = l;
+          });
+        });
+        waits(100);
+        runs(function() {
+          expect(layer._tileJSON().tiles[0].indexOf('https')).toEqual(-1)
+        });
+      });
+
+      it("should not substitute mapnik tokens", function() {
+        var layer;
+        runs(function() {
+          cartodb.createLayer(map, { kind: 'cartodb', options: {} }, {query: 'select !bbox!'}, function(l) {
+          expect(layer.options.query).toEqual('select !bbox!');
+        });
+      });
 
       it("should manage errors", function() {
         var s = sinon.spy();
@@ -137,8 +189,9 @@ describe('api.layers', function() {
         waits(10);
         runs(function() {
           expect(s.called).toEqual(true);
-          expect(layer.model.attributes.extra_params.updated_at).toEqual('jaja');
-          expect(layer.model.attributes.extra_params.cache_buster).toEqual(undefined);
+          //expect(layer.model.attributes.extra_params.updated_at).toEqual('jaja');
+          expect(layer.model.attributes.extra_params.cache_buster).toEqual('jaja');
+          //expect(layer.model.attributes.extra_params.cache_buster).toEqual(undefined);
         });
       });
 

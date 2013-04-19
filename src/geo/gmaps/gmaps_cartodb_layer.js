@@ -29,7 +29,6 @@ var CartoDBLayer = function(opts) {
     query:          "SELECT * FROM {{table_name}}",
     attribution:    "CartoDB",
     opacity:        1,
-    auto_bound:     false,
     debug:          false,
     visible:        true,
     added:          false,
@@ -278,10 +277,11 @@ CartoDBLayer.prototype._manageOffEvents = function(){
 
 
 CartoDBLayer.prototype._manageOnEvents = function(map,o) {
-  var point  = this._findPos(map, o);
-  var latlng = this.projector.pixelToLatLng(point);
+  var point = this._findPos(map, o)
+    , latlng = this.projector.pixelToLatLng(point)
+    , event_type = o.e.type.toLowerCase();
 
-  switch (o.e.type) {
+  switch (event_type) {
     case 'mousemove':
       if (this.options.featureOver) {
         return this.options.featureOver(o.e,latlng, point, o.data);
@@ -290,6 +290,7 @@ CartoDBLayer.prototype._manageOnEvents = function(map,o) {
 
     case 'click':
     case 'touchend':
+    case 'mspointerup':
       if (this.options.featureClick) {
         this.options.featureClick(o.e,latlng, point, o.data);
       }

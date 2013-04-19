@@ -27,7 +27,6 @@ describe('Opacity interaction', function() {
       featureOver: function(ev,latlng,pos,data) {},
       featureOut: function() {},
       featureClick: function(ev,latlng,pos,data) {},
-      auto_bound: false,
       debug: true
     });
     map.overlayMapTypes.setAt(0, cdb_layer);

@@ -66,6 +66,29 @@ describe('SQL api client', function() {
     )
   });
 
+  it("should substitute mapnik tokens", function() {
+    sql.execute('select !pixel_width! as w, !pixel_height! as h, !bbox! as b from {{table}}', {
+      table: 't'
+    })
+
+    var earth_circumference = 40075017;
+    var tile_size = 256;
+    var srid = 3857;
+    var full_resolution = earth_circumference/tile_size;
+    var shift = earth_circumference / 2.0;
+
+    var pw = full_resolution; 
+    var ph = pw;
+    var bbox = 'ST_MakeEnvelope(' + (-shift) + ',' + (-shift) + ','
+                                  + shift + ',' + shift + ',' + srid + ')';
+
+    expect(ajaxParams.url).toEqual(
+      'https://' + USER + '.cartodb.com/api/v2/sql?q=' + encodeURIComponent(
+        'select ' + pw + ' as w, ' + ph + ' as h, '
+        + bbox + ' as b from t')
+    )
+  });
+
   it("should call promise", function() {
     var data;
     var data_callback;
@@ -99,7 +122,8 @@ describe('SQL api client', function() {
       user: 'rambo',
       format: 'geojson',
       protocol: 'http',
-      host: 'charlies.com'
+      host: 'charlies.com',
+      api_key: 'testkey'
     })
     s.execute('select * from rambo', null, {
       dp: 2
@@ -107,6 +131,7 @@ describe('SQL api client', function() {
     expect(ajaxParams.url.indexOf('http://')).not.toEqual(-1);
     expect(ajaxParams.url.indexOf('rambo.charlies.com')).not.toEqual(-1);
     expect(ajaxParams.url.indexOf('&format=geojson')).not.toEqual(-1);
+    expect(ajaxParams.url.indexOf('&api_key=testkey')).not.toEqual(-1);
     expect(ajaxParams.url.indexOf('&dp=2')).not.toEqual(-1);
   });
 
@@ -132,6 +157,12 @@ describe('SQL api client', function() {
     s = new cartodb.SQL({ user: 'jaja' });
     s.getBounds('select * from rambo where id={{id}}', {id: 2});
     expect(ajaxParams.url.indexOf(encodeURIComponent(sql))).not.toEqual(-1);
+  });
+
+  it("should get bounds for query with appostrophes", function() {
+    s = new cartodb.SQL({ user: 'jaja' });
+    s.getBounds("select * from country where name={{ name }}", { name: "'Spain'"});
+    expect(ajaxParams.url.indexOf("%26amp%3B%2339%3B")).toEqual(-1);
   });
 });
 

@@ -1,18 +1,81 @@
+2.0.28 (04//17//2013)
+-----
+- Fixed infowindow position when a map is in a scroll page.
+- Added a new example (scroll_map).
+
+2.0.27 (04//15//2013)
+-----
+- Fixed infowindow content (#47).
+
+2.0.26 (04//15//2013)
+-----
+- Fixed interaction for IE10 browsers (#43).
+- Fixed https option in createLayer (#46).
+
+2.0.25 (03//22//2013)
+-----
+- Fixed #37 featureOut is called when the cursor moves between tiles.
+- Fixed #38 Infowindow isn't working using 'createVis' function without any parameter.
+- Fixed #27 IE styles included in main css file.
+
+2.0.24 (03//13//2013)
+-----
+- Added option to control map scrollwheel zoom.
+- Loading content in infowindow bug fixed.
+- New classes applied to CartoDB map components avoiding other css collisions.
+
+2.0.23 (03//04//2013)
+-----
+- Fixed infowindow bug with cover image checking number fields as url.
+- Added template_name in the infowindow model for vis.js.
+
+2.0.22 (03//01//2013)
+-----
+- Added cartodb.nojquery.js to the cdn.
+- Infowindow crops text when it is too large in infowindows headers.
+- Infowindow converts links automatically.
+- Added retina CartoDB logo.
+- Fixed problem with leaflet markers image paths.
+- Fixed infowindow option in createVis #31.
+
+2.0.21 (02//19//2013)
+-----
+- Fixed problem with interaction in IE9.
+
+2.0.20 (02//13//2013)
+-----
+- Fixed problem with setOpacity in IE8.
+
+2.0.19 (02//13//2013)
+-----
+- Fixed problem with setOpacity in IE7 and IE8. It replaces leaflet with a custom one.
+
+2.0.18 (02//12//2013)
+-----
+- Fixed problem when loading leaflet externally.
+
+2.0.17 (02//11//2013)
+-----
+- Fixed problem with hide method on layers for IE8.
+- Migrated to leaflet 0.5.1.
+- Fixed problem guessing map type in createLayer.
+- Fixed showing null values in the infowindow.
+
 2.0.16 (01//31//2013)
 -----
 - Added support for new infowindow' theme: 'header with image'.
-- fixed loading more than one viz.json in the same application.
-- documentation fixes
+- Fixed loading more than one viz.json in the same application.
+- Documentation fixes.
 
 2.0.15 (01//14//2013)
 -----
-- fixed problem fetching viz.json when createVis and createLayer are called in the same script
+- Fixed problem fetching viz.json when createVis and createLayer are called in the same script.
 
 2.0.14 (01//11//2013)
 -----
-- improvements in the documentation 
-- reduced the final file size by 58kb 
-- added cartodb_logo option to remove cartodb logo on visualizations 
-- fixed problem with the map always in fullscreen (#20)
-- fixed bootstrap conflicts (#16)
-- fixed autobounds in the map when user calls to createLayer (#11)
+- Improvements in the documentation.
+- Reduced the final file size by 58kb.
+- Added cartodb_logo option to remove cartodb logo on visualizations .
+- Fixed problem with the map always in fullscreen (#20).
+- Fixed bootstrap conflicts (#16).
+- Fixed autobounds in the map when user calls to createLayer (#11).

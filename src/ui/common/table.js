@@ -102,38 +102,46 @@ cdb.ui.common.RowView = cdb.core.View.extend({
 
   render: function() {
     var self = this;
-    var tr = this.$el;
-    tr.html('');
     var row = this.model;
-    tr.attr('id', 'row_' + row.id);
+
+    var tr = '';
 
     var tdIndex = 0;
+    var td;
     if(this.options.row_header) {
-        var td = $('<td class="rowHeader">');
-        td.append(self.valueView('', ''));
-        td.attr('data-x', tdIndex);
-        tdIndex++;
-        tr.append(td);
+        td = '<td class="rowHeader" data-x="' + tdIndex + '">';
     } else {
-        var td = $('<td class="EmptyRowHeader">');
-        td.append(self.valueView('', ''));
-        td.attr('data-x', tdIndex);
-        tdIndex++;
-        tr.append(td);
+        td = '<td class="EmptyRowHeader" data-x="' + tdIndex + '">';
     }
+    var v = self.valueView('', '');
+    if(v.html) {
+      v = v[0].outerHTML;
+    }
+    td += v;
+    td += '</td>';
+    tdIndex++;
+    tr += td
 
     var attrs = this.order || _.keys(row.attributes);
-    _(attrs).each(function(key) {
-      var value = row.attributes[key];
+    var tds = '';
+    var row_attrs = row.attributes;
+    for(var i = 0, len = attrs.length; i < len; ++i) {
+      var key = attrs[i];
+      var value = row_attrs[key];
       if(value !== undefined) {
-        var td = $('<td>');
-        td.attr('id', 'cell_' + row.id + '_' + key);
-        td.attr('data-x', tdIndex);
+        var td = '<td id="cell_' + row.id + '_' + key + '" data-x="' + tdIndex + '">';
+        var v = self.valueView(key, value);
+        if(v.html) {
+          v = v[0].outerHTML;
+        }
+        td += v;
+        td += '</td>';
         tdIndex++;
-        td.append(self.valueView(key, value));
-        tr.append(td);
+        tds += td;
       }
-    });
+    }
+    tr += tds;
+    this.$el.html(tr).attr('id', 'row_' + row.id);
     return this;
   },
 
@@ -397,10 +405,8 @@ cdb.ui.common.Table = cdb.core.View.extend({
   render: function() {
     var self = this;
 
-    self.$el.html('');
-
     // render header
-    self.$el.append(self._renderHeader());
+    self.$el.html(self._renderHeader());
 
     // render data
     self._renderRows();

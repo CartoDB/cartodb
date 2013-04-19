@@ -1,7 +1,7 @@
 
 cdb.geo.ui.InfoBox = cdb.core.View.extend({
 
-  className: 'cartodb_infobox',
+  className: 'cartodb-infobox',
   defaults: {
     pos_margin: 20,
     position: 'bottom|right',

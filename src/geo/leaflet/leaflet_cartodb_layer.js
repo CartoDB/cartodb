@@ -19,7 +19,6 @@ L.CartoDBLayer = L.TileLayer.extend({
   options: {
     query:          "SELECT * FROM {{table_name}}",
     opacity:        0.99,
-    auto_bound:     false,
     attribution:    "CartoDB",
     debug:          false,
     visible:        true,
@@ -46,10 +45,6 @@ L.CartoDBLayer = L.TileLayer.extend({
         throw('cartodb-leaflet needs at least a CartoDB table name and the Leaflet map object :(');
       } else { return }
     }
-
-    // Bounds? CartoDB does it
-    if (options.auto_bound)
-      this.setBounds();
 
     // Add cartodb logo, yes sir!
     this._addWadus({left:8, bottom:8}, 0, this.options.map._container);
@@ -92,7 +87,7 @@ L.CartoDBLayer = L.TileLayer.extend({
     this.options.opacity = Math.min(opacity, 0.99);
 
     if (this.options.visible) {
-      L.TileLayer.prototype.setOpacity.call(this,  opacity);
+      L.TileLayer.prototype.setOpacity.call(this, this.options.opacity);
       this.fire('updated');
     }
   },
@@ -298,74 +293,18 @@ L.CartoDBLayer = L.TileLayer.extend({
 
 
   /**
-   * Zoom to cartodb geometries
-   */
-  setBounds: function(sql) {
-    var self = this
-      , query = "";
-
-    if (sql) {
-      // Custom query
-      query = sql;
-    } else {
-      // Already defined query
-      query = this.options.query;
-    }
-
-    reqwest({
-      url: this._generateCoreUrl("sql") + '/api/v2/sql/?q='+escape('SELECT ST_XMin(ST_Extent(the_geom)) as minx,ST_YMin(ST_Extent(the_geom)) as miny,'+
-        'ST_XMax(ST_Extent(the_geom)) as maxx,ST_YMax(ST_Extent(the_geom)) as maxy from ('+ query.replace(/\{\{table_name\}\}/g,this.options.table_name) + ') as subq'),
-      type: 'jsonp',
-      jsonpCallback: 'callback',
-      success: function(result) {
-        if (result.rows[0].maxx!=null) {
-          var coordinates = result.rows[0];
-
-          var lon0 = coordinates.maxx;
-          var lat0 = coordinates.maxy;
-          var lon1 = coordinates.minx;
-          var lat1 = coordinates.miny;
-
-          var minlat = -85.0511;
-          var maxlat =  85.0511;
-          var minlon = -179;
-          var maxlon =  179;
-
-          /* Clamp X to be between min and max (inclusive) */
-          var clampNum = function(x, min, max) {
-            return x < min ? min : x > max ? max : x;
-          }
-
-          lon0 = clampNum(lon0, minlon, maxlon);
-          lon1 = clampNum(lon1, minlon, maxlon);
-          lat0 = clampNum(lat0, minlat, maxlat);
-          lat1 = clampNum(lat1, minlat, maxlat);
-
-          var sw = new L.LatLng(lat0, lon0);
-          var ne = new L.LatLng(lat1, lon1);
-          var bounds = new L.LatLngBounds(sw,ne);
-          self.options.map.fitBounds(bounds);
-        }
-      },
-      error: function(e,msg) {
-        if (this.options.debug) throw('Error getting table bounds: ' + msg);
-      }
-    });
-  },
-
-  /**
    * Bind events for wax interaction
    * @param {Object} Layer map object
    * @param {Event} Wax event
    */
   _bindWaxOnEvents: function(map,o) {
-    var layer_point = this._findPos(map,o),
-        latlng = map.layerPointToLatLng(layer_point);
+    var layer_point = this._findPos(map,o)
+      , latlng = map.layerPointToLatLng(layer_point)
+      , event_type = o.e.type.toLowerCase();
 
     var screenPos = map.layerPointToContainerPoint(layer_point);
 
-    switch (o.e.type) {
-
+    switch (event_type) {
       case 'mousemove':
         if (this.options.featureOver) {
           return this.options.featureOver(o.e,latlng, screenPos, o.data);
@@ -374,6 +313,7 @@ L.CartoDBLayer = L.TileLayer.extend({
 
       case 'click':
       case 'touchend':
+      case 'mspointerup':
         if (this.options.featureClick) {
           this.options.featureClick(o.e,latlng, screenPos, o.data);
         }

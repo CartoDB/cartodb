@@ -145,26 +145,33 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
 });
 
 cdb.geo.ui.Infowindow = cdb.core.View.extend({
-  className: "infowindow",
+  className: "cartodb-infowindow",
+
+  spin_options: {
+    lines: 10, length: 0, width: 4, radius: 6, corners: 1, rotate: 0, color: 'rgba(0,0,0,0.5)',
+    speed: 1, trail: 60, shadow: false, hwaccel: true, className: 'spinner', zIndex: 2e9,
+    top: 'auto', left: 'auto', position: 'absolute'
+  },
 
   events: {
     // Close bindings
-    "click .close":       "_closeInfowindow",
-    "touchstart .close":  "_closeInfowindow",
+    "click .close":         "_closeInfowindow",
+    "touchstart .close":    "_closeInfowindow",
+    "MSPointerDown .close": "_closeInfowindow",
     // Rest infowindow bindings
-    "dragstart":          "_checkOrigin",
-    "mousedown":          "_checkOrigin",
-    "touchstart":         "_checkOrigin",
-    "dblclick":           "_stopPropagation",
-    "mousewheel":         "_stopPropagation",
-    "DOMMouseScroll":     "_stopPropagation",
-    "dbclick":            "_stopPropagation",
-    "click":              "_stopPropagation"
+    "dragstart":            "_checkOrigin",
+    "mousedown":            "_checkOrigin",
+    "touchstart":           "_checkOrigin",
+    "MSPointerDown":        "_checkOrigin",
+    "dblclick":             "_stopPropagation",
+    "mousewheel":           "_stopPropagation",
+    "DOMMouseScroll":       "_stopPropagation",
+    "dbclick":              "_stopPropagation",
+    "click":                "_stopPropagation"
   },
 
   initialize: function(){
-
-    var that = this;
+    var self = this;
 
     _.bindAll(this, "render", "setLatLng", "changeTemplate", "_updatePosition", "_update", "toggle", "show", "hide");
 
@@ -183,11 +190,11 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     this.mapView.map.bind('change',         this._updatePosition, this);
 
     this.mapView.bind('zoomstart', function(){
-      that.hide(true);
+      self.hide(true);
     });
 
     this.mapView.bind('zoomend', function() {
-      that.show(true);
+      self.show(true);
     });
 
     // Set min height to show the scroll
@@ -195,14 +202,70 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
 
     this.render();
     this.$el.hide();
-
   },
 
+  /**
+   *  Render infowindow content
+   */
+  render: function() {
+    if(this.template) {
+
+      // If there is content, destroy the jscrollpane first, then remove the content.
+      var $jscrollpane = this.$el.find(".cartodb-popup-content");
+      if ($jscrollpane.length > 0 && $jscrollpane.data() != null) {
+        $jscrollpane.data().jsp && $jscrollpane.data().jsp.destroy();
+      }
+
+      // Clone fields and template name
+      var fields = _.map(this.model.attributes.content.fields, function(field){
+        return _.clone(field);
+      });
+      var template_name = _.clone(this.model.attributes.template_name);
+      // Sanitized them
+      var sanitized_fields = this._fieldsToString(fields, template_name);
+      var data = this.model.get('content') ? this.model.get('content').data : {}
+      this.$el.html($(this.template({ 
+          content: {
+            fields: sanitized_fields,
+            data: data 
+          }
+        })
+      ));
+
+      // Hello jscrollpane hacks!
+      // It needs some time to initialize, if not it doesn't render properly the fields
+      // Check the height of the content + the header if exists
+      var self = this;
+      setTimeout(function() {
+        var actual_height = self.$el.find(".cartodb-popup-content").outerHeight() + self.$el.find(".cartodb-popup-header").outerHeight();
+        if (self.minHeightToScroll <= actual_height)
+          self.$el.find(".cartodb-popup-content").jScrollPane({
+            maintainPosition:       false,
+            verticalDragMinHeight:  20
+          });
+      }, 1);
+
+      // If the infowindow is loading, show spin
+      this._checkLoading();
+
+      // If the template is 'cover-enabled', load the cover
+      this._loadCover();
+    }
+
+    return this;
+  },
+
+  /**
+   *  Change template of the infowindow
+   */
   changeTemplate: function(template_name) {
     this.template = cdb.templates.getTemplate(this.model.get("template_name"));
     this.render();
   },
 
+  /**
+   *  Compile template of the infowindow
+   */
   _compileTemplate: function() {
     this.template = new cdb.core.Template({
        template: this.model.get('template'),
@@ -212,6 +275,9 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     this.render();
   },
 
+  /**
+   *  Check event origin
+   */
   _checkOrigin: function(ev) {
     // If the mouse down come from jspVerticalBar
     // dont stop the propagation, but if the event
@@ -226,110 +292,146 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
   /**
    *  Convert values to string unless value is NULL
    */
-  _fieldsToString: function(attrs) {
-    if (attrs.content && attrs.content.fields) {
-      attrs.content.fields = _.map(attrs.content.fields, function(attr) {
-        // Check null or undefined :| and set both to empty == ''
-        if (attr.value == null || attr.value == undefined) {
-          attr.value = '';
-        }
-
-        // Cast all values to string due to problems with Mustache 0 number rendering
-        var new_value = attr.value.toString();
-
-        // But if we have some empty values (null)
-        // we must make them null to display them correctly
-        // ARGGG!
-        if (new_value == "") new_value = null;
-
-        // store attribute
-        attr.value = new_value;
-
-        return attr;
+  _fieldsToString: function(fields, template_name) {
+    var fields_sanitized = [];
+    if (fields && fields.length > 0) {
+      var self = this;
+      fields_sanitized = _.map(fields, function(field,i) {
+        // Return whole attribute sanitized
+        return self._sanitizeField(field, template_name, field.index || i);
       });
     }
-
-    return attrs;
+    return fields_sanitized;
   },
 
-  render: function() {
+  /**
+   *  Sanitize fields, what does it mean?
+   *  - If value is null, transform to string
+   *  - If value is an url, add it as an attribute
+   *  - Cut off title if it is very long (in header or image templates).
+   *  - If the value is a valid url, let's make it a link.
+   *  - More to come...
+   */                                                                                                                
+  _sanitizeField: function(attr, template_name, pos) {
+    // Check null or undefined :| and set both to empty == ''
+    if (attr.value == null || attr.value == undefined) {
+      attr.value = '';
+    }
 
-    if(this.template) {
+    // Cast all values to string due to problems with Mustache 0 number rendering
+    var new_value = attr.value.toString();
 
-      // If there is content, destroy the jscrollpane first, then remove the content.
-      var $jscrollpane = this.$el.find(".cartodb-popup-content");
-      if ($jscrollpane.length > 0 && $jscrollpane.data() != null) {
-        $jscrollpane.data().jsp && $jscrollpane.data().jsp.destroy();
+    // Remove '_' character from titles
+    if (attr.title)
+      attr.title = attr.title.replace(/_/g,' ');
+
+    // If it is index 0, not any field type, header template type and length bigger than 30... cut off the text!
+    if (!attr.type && pos==0 && attr.value.length > 35 && template_name && template_name.search('_header_') != -1) {
+      new_value = attr.value.substr(0,32) + "...";
+    }
+
+    // If it is index 1, not any field type, header image template type and length bigger than 30... cut off the text!
+    if (!attr.type && pos==1 && attr.value.length > 35 && template_name && template_name.search('_header_with_image') != -1) {
+      new_value = attr.value.substr(0,32) + "...";
+    }
+
+    // Is it the value a link?
+    if (this._isValidURL(attr.value)) {
+      new_value = "<a href='" + attr.value + "' target='_blank'>" + new_value + "</a>"
+    }
+
+    // If it is index 0, not any field type, header image template type... don't cut off the text or add any link!!
+    if (pos==0 && template_name.search('_header_with_image') != -1) {
+      new_value = attr.value;
+    }
+
+    // Save new sanitized value
+    attr.value = new_value;
+
+    return attr;
+  },
+
+  /**
+   *  Check if infowindow is loading the row content
+   */
+  _checkLoading: function() {
+    var content = this.model.get("content");
+
+    if (content.fields && content.fields.length == 1 && content.fields[0].type == "loading") {
+      this._startSpinner()
+    } else {
+      this._stopSpinner()
+    }
+  },
+
+  /**
+   *  Stop loading spinner
+   */
+  _stopSpinner: function() {
+    if (this.spinner)
+      this.spinner.stop()
+  },
+
+  /**
+   *  Start loading spinner
+   */
+  _startSpinner: function($el) {
+    this._stopSpinner();
+
+    var $el = this.$el.find('.loading');
+
+    if ($el) {
+      // Check if it is dark or other to change color
+      var template_dark = this.model.get('template_name').search('dark') != -1;
+
+      if (template_dark) {
+        this.spin_options.color = '#FFF';
+      } else {
+        this.spin_options.color = 'rgba(0,0,0,0.5)';
       }
 
-      var attrs = _.clone(this.model.attributes);
-
-      // Mustache doesn't support 0 values, we have to convert number to strings
-      // before apply the template
-
-      var fields = this._fieldsToString(attrs);
-
-      this.$el.html($(this.template(fields)));
-
-      // Hello jscrollpane hacks!
-      // It needs some time to initialize, if not it doesn't render properly the fields
-      // Check the height of the content + the header if exists
-      var that = this;
-      setTimeout(function() {
-        var actual_height = that.$el.find(".cartodb-popup-content").outerHeight() + that.$el.find(".cartodb-popup-header").outerHeight();
-        if (that.minHeightToScroll <= actual_height)
-          that.$el.find(".cartodb-popup-content").jScrollPane({
-            maintainPosition:       false,
-            verticalDragMinHeight:  20
-          });
-      }, 1);
-
-
-      // If the template is 'cover-enabled', load the cover
-      this._loadCover();
-
-    };
-
-    return this;
+      this.spinner = new Spinner(this.spin_options).spin();
+      $el.append(this.spinner.el);
+    }
   },
 
+  /**
+   *  Stop loading spinner
+   */
   _containsCover: function() {
     return this.$el.find(".cartodb-popup.header").attr("data-cover") ? true : false;
   },
 
-  _getCoverURL: function() {
 
+  /**
+   *  Get cover URL
+   */
+  _getCoverURL: function() {
     var content = this.model.get("content");
 
-    if (content && content.fields) {
-
-      if (content.fields && content.fields.length > 0) {
-        return content.fields[0].value;
-      }
-      return false;
+    if (content && content.fields && content.fields.length > 0) {
+      return (content.fields[0].value).toString();
     }
 
     return false;
-
   },
 
   /**
-  * Attempts to load the cover URL and show it
-  */
+   *  Attempts to load the cover URL and show it
+   */
   _loadCover: function() {
 
     if (!this._containsCover()) return;
 
-    var self = this;
-
     var
-    $cover         = this.$el.find(".cover"),
-    $imageNotFound = this.$el.find(".image_not_found");
-
-    var url = this._getCoverURL();
+    self = this,
+    $cover = this.$(".cover"),
+    $shadow = this.$(".shadow"),
+    url = this._getCoverURL();
 
     if (!this._isValidURL(url)) {
-      $imageNotFound.fadeIn(250);
+      $shadow.hide();
+      cdb.log.info("Header image url not valid");
       return;
     }
 
@@ -341,8 +443,6 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
 
     // create the image
     var $img = $cover.find("img");
-
-    $imageNotFound.hide();
 
     $img.hide(function() {
       this.remove();
@@ -356,45 +456,104 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
 
       var w  = $img.width();
       var h  = $img.height();
-      var cW = $cover.width();
-      var cH = $cover.height();
+      var coverWidth = $cover.width();
+      var coverHeight = $cover.height();
+
+      var ratio = h / w;
+      var coverRatio = coverHeight / coverWidth;
 
       // Resize rules
-      //if ( (w < cW && h < cH) ) $img.css({ top: "50%", left: "50%", marginTop: -1*h/2, marginLeft: -1*w/2 });
-      if ( w > cW && h > cH && h > w )  $img.css({ height: cH });
-      else $img.css({ width: cW });
+      if ( w > coverWidth && h > coverHeight) { // bigger image
+        if ( ratio < coverRatio ) $img.css({ height: coverHeight });
+        else {
+          var calculatedHeight = h / (w / coverWidth);
+          $img.css({ width: coverWidth, top: "50%", position: "absolute", "margin-top": -1*parseInt(calculatedHeight, 10)/2 });
+        }
+      } else {
+        var calculatedHeight = h / (w / coverWidth);
+        $img.css({ width: coverWidth, top: "50%", position: "absolute", "margin-top": -1*parseInt(calculatedHeight, 10)/2 });
+      }
 
       $img.fadeIn(300);
     })
     .error(function(){
       spinner.stop();
-      $imageNotFound.fadeIn(250);
     });
-
   },
 
   /**
-  * Return true if the provided URL is valid
-  */
+   *  Return true if the provided URL is valid
+   */
   _isValidURL: function(url) {
-
     if (url) {
-      var urlPattern = /(http|ftp|https):\/\/[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:\/~+#-]*[\w@?^=%&amp;\/~+#-])?/
-      return url.match(urlPattern) != null ? true : false;
+      var urlPattern = /^(http|ftp|https):\/\/[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:\/~+#-]*[\w@?^=%&amp;\/~+#-])?$/
+      return String(url).match(urlPattern) != null ? true : false;
     }
 
     return false;
-
   },
 
+  /**
+   *  Toggle infowindow visibility
+   */
   toggle: function() {
     this.model.get("visibility") ? this.show() : this.hide();
   },
 
+  /**
+   *  Stop event propagation
+   */
   _stopPropagation: function(ev) {
     ev.stopPropagation();
   },
 
+  /**
+   *  Set loading state adding its content
+   */
+  setLoading: function() {
+    this.model.set({
+      content:  {
+        fields: [{
+          title: null,
+          value: 'Loading content...',
+          index: null,
+          type: "loading"
+        }],
+        data: {}
+      }
+    })
+    return this;
+  },
+
+  /**
+   *  Set loading state adding its content
+   */
+  setError: function() {
+    this.model.set({
+      content:  {
+        fields: [{
+          title: null,
+          value: 'There has been an error...',
+          index: null,
+          type: 'error'
+        }],
+        data: {}
+      }
+    })
+    return this;
+  },
+
+  /**
+   * Set the correct position for the popup
+   */
+  setLatLng: function (latlng) {
+    this.model.set("latlng", latlng);
+    return this;
+  },
+
+  /**
+   *  Close infowindow
+   */
   _closeInfowindow: function(ev) {
     if (ev) {
       ev.preventDefault()
@@ -405,42 +564,48 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
   },
 
   /**
-  * Set the correct position for the popup
-  */
-  setLatLng: function (latlng) {
-    this.model.set("latlng", latlng);
-    return this;
-  },
-
+   *  Set visibility infowindow
+   */
   showInfowindow: function() {
     this.model.set("visibility", true);
   },
 
+  /**
+   *  Show infowindow (update, pan, etc)
+   */
   show: function (no_pan) {
-    var that = this;
+    var self = this;
 
     if (this.model.get("visibility")) {
-      that.$el.css({ left: -5000 });
-      that._update(no_pan);
+      self.$el.css({ left: -5000 });
+      self._update(no_pan);
     }
-
   },
 
+  /**
+   *  Get infowindow visibility
+   */
   isHidden: function () {
     return !this.model.get("visibility");
   },
 
+  /**
+   *  Set infowindow to hidden
+   */
   hide: function (force) {
     if (force || !this.model.get("visibility")) this._animateOut();
   },
 
+  /**
+   *  Update infowindow
+   */
   _update: function (no_pan) {
 
     if(!this.isHidden()) {
       var delay = 0;
 
       if (!no_pan) {
-        var delay = this._adjustPan();
+        var delay = this.adjustPan();
       }
 
       this._updatePosition();
@@ -448,6 +613,9 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     }
   },
 
+  /**
+   *  Animate infowindow to show up
+   */
   _animateIn: function(delay) {
     if (!$.browser.msie || ($.browser.msie && $.browser.version.search("9.") != -1)) {
       this.$el.css({
@@ -467,15 +635,18 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     }
   },
 
+  /**
+   *  Animate infowindow to disappear
+   */
   _animateOut: function() {
     if (!$.browser.msie || ($.browser.msie && $.browser.version.search("9.") != -1)) {
-      var that = this;
+      var self = this;
       this.$el.animate({
         marginBottom: "-10px",
         opacity:      "0",
         display:      "block"
       }, 180, function() {
-        that.$el.css({display: "none"});
+        self.$el.css({display: "none"});
       });
     } else {
       this.$el.hide();
@@ -483,8 +654,8 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
   },
 
   /**
-  * Update the position (private)
-  */
+   *  Update the position (private)
+   */
   _updatePosition: function () {
     if(this.isHidden()) return;
 
@@ -502,8 +673,10 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     this.$el.css({ bottom: bottom, left: left });
   },
 
-  _adjustPan: function (callback) {
-
+  /**
+   *  Adjust pan to show correctly the infowindow
+   */
+  adjustPan: function (callback) {
     var offset = this.model.get("offset");
 
     if (!this.model.get("autoPan") || this.isHidden()) { return; }

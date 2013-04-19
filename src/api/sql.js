@@ -63,10 +63,6 @@
       loc = 'https';
     }
 
-    if(options.api_key) {
-      this.api_key = options.api_key;
-    }
-
     this.ajax = typeof(jQuery) !== 'undefined' ? jQuery.ajax: reqwest;
     if(!this.ajax) {
       throw new Error("jQuery or reqwest should be loaded");
@@ -121,12 +117,21 @@
       params.dataType = 'jsonp';
     }
 
+    // Substitute mapnik tokens
+    // resolution at zoom level 0
+    var res = '156543.03515625';
+    // full webmercator extent
+    var ext = 'ST_MakeEnvelope(-20037508.5,-20037508.5,20037508.5,20037508.5,3857)';
+    sql = sql.replace('!bbox!', ext)
+             .replace('!pixel_width!', res)
+             .replace('!pixel_height!', res);
+
     // create query
     var query = Mustache.render(sql, vars);
     var q = 'q=' + encodeURIComponent(query);
 
     // request params
-    var reqParams = ['format', 'dp'];
+    var reqParams = ['format', 'dp', 'api_key'];
     for(var i in reqParams) {
       var r = reqParams[i];
       var v = options[r];
@@ -135,7 +140,6 @@
       }
     }
 
-
     var isGetRequest = options.type == 'get' || params.type == 'get';
     // generate url depending on the http method
     params.url = this._host() ;
@@ -143,13 +147,6 @@
       params.url += '?' + q
     } else {
       params.data = q;
-    }
-    if(this.api_key) {
-      if(isGetRequest) {
-        params.url += '&api_key=' + this.api_key;
-      } else {
-        darams.data['api_key'] = this.api_key;
-      }
     }
 
     // wrap success and error functions
@@ -193,7 +190,7 @@
               '       ST_YMin(ST_Extent(the_geom)) as miny,'+
               '       ST_XMax(ST_Extent(the_geom)) as maxx,' +
               '       ST_YMax(ST_Extent(the_geom)) as maxy' +
-              ' from ({{sql}}) as subq';
+              ' from ({{{ sql }}}) as subq';
       sql = Mustache.render(sql, vars);
       this.execute(s, { sql: sql }, options)
         .done(function(result) {

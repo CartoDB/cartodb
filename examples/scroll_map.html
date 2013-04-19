@@ -11,8 +11,8 @@
       }
 
       div.example {
-        margin:0 auto;
-        width:600px;
+        display:block;
+        padding:0 20px;
       }
 
       div.example p {
@@ -26,7 +26,6 @@
       }
 
       #map {
-        display:block;
         width:100%;
         height:400px;
         margin:50px 0;
@@ -75,7 +74,7 @@
       }).addTo(map);
 
       cartodb.createLayer(map, 'http://examples.cartodb.com/api/v1/viz/european_countries_e/viz.json', {
-        query: 'select * from {{table_name}} where area::float > 10000' // if you remove this the query applied in the editor will be used
+        query: 'select * from {{table_name}} where area::float > 10000'
       })
        .on('done', function(layer) {
         map.addLayer(layer);

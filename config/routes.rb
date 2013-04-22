@@ -22,10 +22,10 @@ CartoDB::Application.routes.draw do
       get 'public' => 'tables#show_public', :on => :member
     end
 
-    resources :visualizations, :only => [:show] do
+    resources :visualizations, :only => [:index, :show] do
       get 'embed_map',    :on => :member
       get 'track_embed',  :on => :collection
-      get 'public' => 'tables#show_public', :on => :member
+      get 'public' => 'visualizations#public', :on => :member
     end
 
     match '/your_apps/oauth'   => 'client_applications#oauth',   :as => :oauth_credentials

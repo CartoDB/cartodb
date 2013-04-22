@@ -914,6 +914,7 @@
             padding-right: 0;
 
             &.empty { height: auto; }
+            .only   { @include inline-block(); }
 
           }
 
@@ -947,6 +948,7 @@
             position:relative;
             margin: 0 0 29px 0;
             &.empty { margin: 0 0 15px 0; }
+            &.empty .items { display:none; }
           }
 
           .textarea {

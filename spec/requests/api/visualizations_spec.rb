@@ -201,6 +201,14 @@ describe Api::Json::VisualizationsController do
       response.fetch('map_id')        .should_not be_nil
       response.fetch('tags')          .should_not be_empty
       response.fetch('description')   .should_not be_nil
+
+      get "/api/v1/visualizations/#{id}/map?api_key=#{@api_key}", 
+        {}, @headers
+      last_response.status.should == 204
+
+      get "/api/v1/visualizations/#{id}/table?api_key=#{@api_key}", 
+        {}, @headers
+      last_response.status.should == 204
     end
   end # GET /api/v1/visualizations/:id
 

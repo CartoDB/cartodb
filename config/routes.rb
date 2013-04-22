@@ -112,6 +112,8 @@ CartoDB::Application.routes.draw do
 
       resources :visualizations do
         resources :overlays
+        get "/table"  => 'visualizations#table'
+        get "/map"    => 'visualizations#map'
       end
 
       get "/viz/:id/viz"                                        => 'visualizations#vizzjson', as: :vizjson

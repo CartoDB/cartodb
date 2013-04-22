@@ -69,6 +69,14 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     head :forbidden
   end #vizzjson
 
+  def map
+    head(204)
+  end #map
+
+  def table
+    head(204)
+  end #table
+
   private
 
   def scope_for(current_user)

@@ -1,3 +1,6 @@
+2.0.12
+------
+
 2.0.11
 ------
 * Imports now never get stuck on the UI

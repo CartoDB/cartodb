@@ -5,6 +5,7 @@ require 'json'
 require_relative '../../spec_helper'
 require_relative '../../../app/controllers/api/json/visualizations_controller'
 require_relative '../../../services/data-repository/backend/sequel'
+require_relative '../../../app/models/visualization/migrator'
 
 include CartoDB
 include DataRepository
@@ -23,37 +24,18 @@ describe Api::Json::VisualizationsController do
       password: 'clientex'
     )
     @user.set_map_key
-
     Sequel.extension(:pagination)
+    @api_key = @user.get_map_key
   end
 
   before(:each) do
     @db = Sequel.sqlite
-
-    @db.create_table :visualizations do
-      String    :id, primary_key: true
-      String    :name
-      String    :description
-      String    :map_id
-      String    :type
-      String    :tags
-    end
-
-    @db.create_table :overlays do
-      String    :id,                null: false, primary_key: true
-      Integer   :order,             null: false
-      String    :options,           text: true
-      String    :visualization_id,  index: true
-    end
-    Visualization.repository  = DataRepository::Backend::Sequel.new(@db, :visualizations)
-    Overlay.repository        = DataRepository::Backend::Sequel.new(@db, :overlays)
-
+    Visualization::Migrator.new(@db).migrate
     delete_user_data @user
     @headers = { 
       'CONTENT_TYPE'  => 'application/json',
       'HTTP_HOST'     => 'test.localhost.lan'
     }
-    @api_key = @user.get_map_key
   end
 
   describe 'POST /api/v1/visualizations' do

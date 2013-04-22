@@ -551,7 +551,7 @@ class User < Sequel::Model
       user_database.transaction do
         glob = Rails.root.join('lib/sql/*.sql')
         Dir.glob(glob).each do |f|
-          CartoDB::Logger.info "Loading CartoDB SQL function #{f}"
+          CartoDB::Logger.info "Loading CartoDB SQL function #{File.basename(f)} into #{database_name}"
           @sql = File.new(f).read
           user_database.run(@sql)
         end

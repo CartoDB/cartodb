@@ -142,11 +142,10 @@
       left:0;
       @include inline-block();
       @include size(65px, 100%);
-      background:#EDEDED;
       letter-spacing:0;
       @include border-left-radius(4px);
       @include single-box-shadow(rgba(black,0.03), -4px, 0, 5px, 0, true);
-      z-index:0;
+      z-index:6;
 
       nav {
         position:absolute;
@@ -201,13 +200,8 @@
           &.infowindow_mod { @include icons-sprite(table_icons, $offset-x:20px, $offset-y:-430px);}
           &.wizards_mod    {
             @include icons-sprite(table_icons, $offset-x:21px, $offset-y:-370px);
-            &.selected:before {
-              border-right-color: #575757;
-            }
-            &.selected:after {
-              border-right-color: #575757;
-              right: 0;
-            }
+            &.selected:before, &.selected:after { border-right-color: #575757; }
+            &.selected:after {right:-1px;}
           }
 
           // tool buttons
@@ -236,7 +230,7 @@
             &:before {
               position:absolute;
               content:'';
-              right:0;
+              right:-1px;
               top:50%;
               margin:-7px 0 0 0;
               width:0;
@@ -244,20 +238,20 @@
               border-top:7px solid transparent;
               border-bottom:7px solid transparent;
               border-right:7px solid white;
-              z-index:2;
+              z-index:1;
             }
             &:after {
               position:absolute;
               content:'';
-              right:1px;
+              right:0;
               top:50%;
               margin:-7px 0 0 0;
               width:0;
               height:0;
               border-top:7px solid transparent;
               border-bottom:7px solid transparent;
-              border-right:7px solid #E5E5E5;
-              z-index:1;
+              border-right:7px solid #D0D0D0;
+              z-index:0;
             }
           }
         }

@@ -4,7 +4,6 @@ class Api::Json::ColumnsController < Api::ApplicationController
   ssl_required :index, :create, :show, :update, :destroy
 
   before_filter :load_table, :set_start_time
-  after_filter :record_query_threshold
 
   def index
     render_jsonp(@table.schema(:cartodb_types => true))
@@ -60,14 +59,5 @@ class Api::Json::ColumnsController < Api::ApplicationController
   def load_table
     @table = Table.find_by_identifier(current_user.id, params[:table_id])
     raise RecordNotFound if @table.nil?
-  end
-  
-  def record_query_threshold
-    if response.ok?
-      case action_name
-        when "create", "update", "destroy"
-          CartoDB::QueriesThreshold.incr(current_user.id, "other", Time.now - @time_start)
-      end
-    end
   end
 end

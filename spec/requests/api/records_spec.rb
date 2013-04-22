@@ -14,8 +14,6 @@ feature "API 1.0 records management" do
   end
 
   scenario "Get the records from a table" do
-    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "select", any_parameters).times(3)
-    
     10.times do
       @table.insert_row!({:name => String.random(10), :description => String.random(50), :the_geom => %Q{\{"type":"Point","coordinates":[40.392949,-3.69084]\}}})
     end
@@ -83,9 +81,6 @@ feature "API 1.0 records management" do
   end
 
   scenario "Insert a new row and get the record" do
-    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "insert", any_parameters).once
-    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "select", any_parameters).once
-    
     post_json api_table_records_url(@table.name), {
         :name => "Name 123",
         :description => "The description"
@@ -103,16 +98,12 @@ feature "API 1.0 records management" do
   end
 
   scenario "Get a record that doesn't exist" do
-    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "select", any_parameters).never
-    
     get_json api_table_record_url(@table.name,1) do |response|
       response.status.should == 404
     end
   end
 
   scenario "Update a row" do
-    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "update", any_parameters).once
-    
     pk = @table.insert_row!({:name => String.random(10), :description => String.random(50), :the_geom => %Q{\{"type":"Point","coordinates":[0.966797,55.91843]\}}})
 
     put_json api_table_record_url(@table.name,pk), {
@@ -128,8 +119,6 @@ feature "API 1.0 records management" do
   end
 
   scenario "Update a row that doesn't exist" do
-    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "update", any_parameters).never
-    
     put_json api_table_record_url(@table.name,1), {
       :name => "Name updated",
       :description => "Description updated"
@@ -139,8 +128,6 @@ feature "API 1.0 records management" do
   end
 
   scenario "Remove a row" do
-    #CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "delete", any_parameters).once
-    
     pk = @table.insert_row!({:name => String.random(10), :description => String.random(50), :the_geom => %Q{\{"type":"Point","coordinates":[#{Float.random_longitude},#{Float.random_latitude}]\}}})
 
     delete_json api_table_record_url(@table.name,pk) do |response|
@@ -150,8 +137,6 @@ feature "API 1.0 records management" do
   end
 
   scenario "Remove multiple rows" do
-    #CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "delete", any_parameters).once
-    
     pk  = @table.insert_row!({:name => String.random(10), :description => String.random(50), :the_geom => %Q{\{"type":"Point","coordinates":[#{Float.random_longitude},#{Float.random_latitude}]\}}})
     pk2 = @table.insert_row!({:name => String.random(10), :description => String.random(50), :the_geom => %Q{\{"type":"Point","coordinates":[#{Float.random_longitude},#{Float.random_latitude}]\}}})
     pk3 = @table.insert_row!({:name => String.random(10), :description => String.random(50), :the_geom => %Q{\{"type":"Point","coordinates":[#{Float.random_longitude},#{Float.random_latitude}]\}}})
@@ -164,8 +149,6 @@ feature "API 1.0 records management" do
   end
 
   scenario "Get the value from a column in a given record" do
-    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "select", any_parameters).once
-    
     pk = @table.insert_row!({:name => "Blat", :description => String.random(50), :the_geom => %Q{\{"type":"Point","coordinates":[#{Float.random_longitude},#{Float.random_latitude}]\}}})
 
     get_json api_table_record_column_url(@table.name,pk,:name) do |response|
@@ -175,8 +158,6 @@ feature "API 1.0 records management" do
   end
 
   scenario "Update the value from a column in a given record" do
-    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "update", any_parameters).once
-    
     pk = @table.insert_row!({:name => "Blat", :description => String.random(50), :the_geom => %Q{\{"type":"Point","coordinates":[#{Float.random_longitude},#{Float.random_latitude}]\}}})
 
     put_json api_table_record_column_url(@table.name,pk,:name), {:value => "Fernando Blat"} do |response|

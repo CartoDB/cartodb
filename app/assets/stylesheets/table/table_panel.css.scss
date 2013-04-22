@@ -63,6 +63,15 @@
       &:first-child {margin-top:0;}
     }
 
+    .add_layer {
+      position:relative;
+      height:60px;
+      line-height:60px;
+
+      div.left {margin-left:24px;}
+      div.right {margin-right:20px;}
+    }
+
     // Layer info, as name, order, ... etc
     .layer_info {
       position:absolute;
@@ -74,33 +83,54 @@
       
       div.left {margin-left:24px;}
       div.right {margin-right:20px;}
+    }
 
-      a.info {
-        * {@include inline-block(); vertical-align:middle; letter-spacing:0px;}
+    // Layer info
+    a.info {
+      * {@include inline-block(); vertical-align:middle; letter-spacing:0px;}
 
-        .order {
-          width:16px;
-          padding:1px 0;
-          line-height:16px;
-          text-align:center;
-          font:bold 11px $text-fonts;
-          color:#ECECEC;
-          background:#A9A9A9;
-          @include border-radius(2px);
-        }
+      .order {
+        width:16px;
+        padding:1px 0;
+        line-height:16px;
+        text-align:center;
+        font:bold 11px $text-fonts;
+        color:#ECECEC;
+        background:#A9A9A9;
+        @include border-radius(2px);
+      }
 
-        .name {
-          margin-left:27px;
-          font:bold 17px $text-fonts;
-          color:#A9A9A9;
-          line-height:20px;
-        }
+      .add {
+        width:16px;
+        height:16px;
+        text-align:center;
+        font:bold 11px $text-fonts;
+        color:#ECECEC;
+        background:#A9A9A9;
+        @include text-indent();
+        @include border-radius(2px);
+        @include background(sprite($icons-sprites, add_layer, $offset-x:0, $offset-y:0) no-repeat);
+      }
 
-        &:hover {
-          text-decoration:none;
-          .name {color:#666;}
-          .order {background:#666;}
-        }
+      .name {
+        margin-left:27px;
+        font:bold 17px $text-fonts;
+        color:#A9A9A9;
+        line-height:20px;
+      }
+
+      .action {
+        margin-left:27px;
+        font:500 17px $text-fonts;
+        line-height:20px; 
+      }
+
+      &:hover {
+        text-decoration:none;
+        .name {color:#666;}
+        .action {color: #3A77A6;}
+        .order {background:#666;}
+        .add { @include background(sprite($icons-sprites, add_layer, $offset-x:0, $offset-y:-16px) no-repeat); }
       }
     }
 
@@ -112,11 +142,10 @@
       left:0;
       @include inline-block();
       @include size(65px, 100%);
-      background:#EDEDED;
       letter-spacing:0;
       @include border-left-radius(4px);
       @include single-box-shadow(rgba(black,0.03), -4px, 0, 5px, 0, true);
-      z-index:0;
+      z-index:6;
 
       nav {
         position:absolute;
@@ -171,13 +200,8 @@
           &.infowindow_mod { @include icons-sprite(table_icons, $offset-x:20px, $offset-y:-430px);}
           &.wizards_mod    {
             @include icons-sprite(table_icons, $offset-x:21px, $offset-y:-370px);
-            &.selected:before {
-              border-right-color: #575757;
-            }
-            &.selected:after {
-              border-right-color: #575757;
-              right: 0;
-            }
+            &.selected:before, &.selected:after { border-right-color: #575757; }
+            &.selected:after {right:-1px;}
           }
 
           // tool buttons
@@ -206,7 +230,7 @@
             &:before {
               position:absolute;
               content:'';
-              right:0;
+              right:-1px;
               top:50%;
               margin:-7px 0 0 0;
               width:0;
@@ -214,20 +238,20 @@
               border-top:7px solid transparent;
               border-bottom:7px solid transparent;
               border-right:7px solid white;
-              z-index:2;
+              z-index:1;
             }
             &:after {
               position:absolute;
               content:'';
-              right:1px;
+              right:0;
               top:50%;
               margin:-7px 0 0 0;
               width:0;
               height:0;
               border-top:7px solid transparent;
               border-bottom:7px solid transparent;
-              border-right:7px solid #E5E5E5;
-              z-index:1;
+              border-right:7px solid #D0D0D0;
+              z-index:0;
             }
           }
         }

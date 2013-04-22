@@ -19,14 +19,14 @@ CartoDB::Application.routes.draw do
       get 'embed_map', :on => :member
       get 'track_embed', :on => :collection
       get 'embed_forbidden', :on => :collection
-      get 'public' => 'tables#show_public', :on => :member
+      get 'public' => 'tables#public', :on => :member
     end
 
-    resources :visualizations, :only => [:index, :show] do
-      get 'embed_map',    :on => :member
-      get 'track_embed',  :on => :collection
-      get 'public' => 'visualizations#public', :on => :member
-    end
+    match '/viz'                  => 'visualizations#index'
+    match '/viz/:id'              => 'visualizations#show'
+    match '/viz/:id/public'       => 'visualizations#public'
+    match '/viz/:id/embed_map'    => 'visualizations#embed_map'
+    match '/viz/:id/track_embed'  => 'visualizations#track_embed'
 
     match '/your_apps/oauth'   => 'client_applications#oauth',   :as => :oauth_credentials
     match '/your_apps/api_key' => 'client_applications#api_key', :as => :api_key_credentials
@@ -110,13 +110,17 @@ CartoDB::Application.routes.draw do
         resources :layers, :only                                => [:show, :index, :create, :update, :destroy]
       end
 
-      resources :visualizations do
-        resources :overlays
-        get "/table"  => 'visualizations#table'
-        get "/map"    => 'visualizations#map'
-      end
-
-      get "/viz/:id/viz"                                        => 'visualizations#vizzjson', as: :vizjson
+      get     'viz'                                 => 'visualizations#index'
+      post    'viz'                                 => 'visualizations#create'
+      get     'viz/:id'                             => 'visualizations#show'
+      put     'viz/:id'                             => 'visualizations#update'
+      delete  'viz/:id'                             => 'visualizations#destroy'
+      get     'viz/:id/viz'                         => 'visualizations#vizzjson', as: :vizjson
+      get     'viz/:visualization_id/overlays'      => 'overlays#index'
+      post    'viz/:visualization_id/overlays'      => 'overlays#create'
+      get     'viz/:visualization_id/overlays/:id'  => 'overlays#show'
+      put     'viz/:visualization_id/overlays/:id'  => 'overlays#update'
+      delete  'viz/:visualization_id/overlays/:id'  => 'overlays#destroy'
 
       # Tags
       resources :tags, :only                                    => [:index]

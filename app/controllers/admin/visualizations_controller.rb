@@ -19,9 +19,7 @@ class Admin::VisualizationsController < ApplicationController
         CartoDB::Visualization::Member.new(id: params[:id]).fetch
       respond_to { |format| format.html }
     else
-      redirect_to public_visualization_path(
-        params[:id], format: params[:format]
-      )
+      redirect_to "/viz/#{params[:id]}/public"
     end
 
     update_user_last_activity

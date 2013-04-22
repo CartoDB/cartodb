@@ -1,55 +1,51 @@
-# coding: utf-8
+# encoding: utf-8
 
 class Admin::VisualizationsController < ApplicationController
   ssl_required :index, :show
-
-  skip_before_filter :browser_is_html5_compliant?, :only => [:embed_map]
-  before_filter      :login_required,              :only => [:index]
-  before_filter      :update_user_api_calls,       :only => [:index, :show]
-  after_filter       :update_user_last_activity,   :only => [:index, :show]
+  skip_before_filter :browser_is_html5_compliant?, only: [:embed_map]
 
   def index
+    login_required
+    update_user_api_calls
     @tables_count  = current_user.tables.count
+    update_user_last_activity
   end
 
-  # We only require login for index, so we must manage the security at this level.
-  # we present different actions depending on if there is a user logged in or not.
-  # if the user is not logged in, we redirect them to the public page
   def show
+    update_user_api_calls
+
     if current_user.present?
       @visualization = 
         CartoDB::Visualization::Member.new(id: params[:id]).fetch
       respond_to { |format| format.html }
     else
-      redirect_to public_visualization_path(params[:id], :format => params[:format])
+      redirect_to public_visualization_path(
+        params[:id], format: params[:format]
+      )
     end
+
+    update_user_last_activity
   end
 
-  def show_public
+  def public
     @visualization = 
         CartoDB::Visualization::Member.new(id: params[:id]).fetch
-    #@subdomain  = request.subdomain
-    #@table      = Table.find_by_subdomain(@subdomain, params[:id])
 
-    # Has quite strange checks to see if a user can access a public table
-    #if @table.blank? || @table.private? || ((current_user && current_user.id != @table.user_id) && @table.private?)
-    #  render_403
     respond_to do |format|
-      format.html { render 'show_public', :layout => 'application_public' }
+      format.html { render 'public', layout: 'application_public' }
     end
   end
 
   def embed_map
-    # Code done with ♥ by almost every human being working at @vizzuality
-    @subdomain = request.subdomain
-    @table = Table.find_by_subdomain(@subdomain, params[:id])
+    @subdomain  = request.subdomain
+    @table      = Table.find_by_subdomain(@subdomain, params[:id])
 
     if @table.blank? || @table.private?
       head :forbidden
     else
       respond_to do |format|
-        format.html { render :layout => false }
-        format.js { render 'embed_map.js.erb', :content_type => 'application/javascript' }
+        format.html { render layout: false }
+        format.js { render 'embed_map.js.erb', content_type: 'application/javascript' }
       end
     end
   end
@@ -57,29 +53,33 @@ class Admin::VisualizationsController < ApplicationController
   def track_embed
     response.headers['X-Cache-Channel'] = "embeds_google_analytics"
     response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
-    render 'track.html.erb', :layout => false
+    render 'track.html.erb', layout: false
   end
 
   private
+
   def download_formats table, format
-    format.sql  { send_data table.to_sql, send_data_conf(table, 'zip', 'zip') }
-    format.kml  { send_data table.to_kml, send_data_conf(table, 'zip', 'kmz') }
-    format.csv  { send_data table.to_csv, send_data_conf(table, 'zip', 'zip') }
-    format.shp  { send_data table.to_shp, send_data_conf(table, 'octet-stream', 'zip') }
+    format.sql  { send_data table.to_sql, data_for(table, 'zip', 'zip') }
+    format.kml  { send_data table.to_kml, data_for(table, 'zip', 'kmz') }
+    format.csv  { send_data table.to_csv, data_for(table, 'zip', 'zip') }
+    format.shp  { send_data table.to_shp, data_for(table, 'octet-stream', 'zip') }
   end
 
-  def send_data_conf table, type, ext
-    { :type => "application/#{type}; charset=binary; header=present",
-      :disposition => "attachment; filename=#{table.name}.#{ext}" }
+  def data_for(table, type, extension)
+    { 
+      type:         "application/#{type}; charset=binary; header=present",
+      disposition:  "attachment; filename=#{table.name}.#{extension}"
+    }
   end
 
   def update_user_last_activity
-    return true unless current_user.present?
+    return false unless current_user.present?
     current_user.set_last_active_time
   end
 
   def update_user_api_calls
-    return true unless current_user.present?
+    return false unless current_user.present?
     current_user.set_api_calls
   end
-end
+end # VisualizationsController
+

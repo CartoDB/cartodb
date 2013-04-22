@@ -1,5 +1,5 @@
   <% content_for(:page_title) do %>
-    <%= @table.name %> |
+    <%= @visualization.name %> |
   <% end %>
 
   <% content_for(:css) do %>
@@ -7,15 +7,6 @@
     <%= stylesheet_link_tag :common, :table, :map, :media => 'all' %>
   <% end %>
 
-  <script>
-    var table_name = '<%= @table.name %>'
-      , table_id = '<%= @table.id %>'
-      , schema = <%=raw @table.schema.to_json %>
-      , user_name = '<%=raw @table.owner.username %>'
-      , map = <%=raw @table.map.to_json %>
-      , config = <%=raw frontend_config.html_safe %>
-      , vizjson = <%=raw map_vizzjson(@table.map, :full => false).to_json %>
-  </script>
   <script>
     var debug = false;
     <% if Rails.env.development? %>

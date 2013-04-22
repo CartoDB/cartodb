@@ -16,9 +16,7 @@ feature "API 1.0 columns management" do
     end
   end
 
-  scenario "Add a new column to a table" do
-    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
-    
+  scenario "Add a new column to a table" do    
     post_json api_table_columns_url(@table.name), { :type => "Number", :name => "postal code" } do |response|
       response.status.should be_success
       response.body.should == {
@@ -30,8 +28,6 @@ feature "API 1.0 columns management" do
   end
 
   scenario "Try to add a new column of an invalid type" do
-    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).never
-    
     post_json api_table_columns_url(@table.name), { :type => "integerrr", :name => "postal code" } do |response|
       response.status.should == 400
     end
@@ -51,8 +47,6 @@ feature "API 1.0 columns management" do
   end
 
   scenario "Update the type of a given column" do
-    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
-    
     put_json api_table_column_url(@table.name, "name"), {:type => "number"} do |response|
       response.status.should be_success
       response.body.should == {
@@ -64,8 +58,6 @@ feature "API 1.0 columns management" do
   end
 
   scenario "Update the type of a given column with an invalid type" do
-    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).never
-    
     put_json api_table_column_url(@table.name, "name"), {:type => "integerr"} do |response|
       response.status.should == 400
     end
@@ -75,8 +67,6 @@ feature "API 1.0 columns management" do
     delete_user_data @user
     @table = create_table :user_id => @user.id
 
-    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
-    
     put_json api_table_column_url(@table.name, "name"), {:new_name => "nombresito"} do |response|
       response.status.should be_success
       response.body.should == {

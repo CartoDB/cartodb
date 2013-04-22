@@ -1,12 +1,10 @@
 # coding: UTF-8
-
 class Api::Json::RecordsController < Api::ApplicationController
   ssl_required :index, :create, :show, :update, :destroy, :show_column, :update_column, :pending_addresses
 
   REJECT_PARAMS = %W{ format controller action id row_id requestId column_id api_key table_id oauth_token oauth_token_secret }
 
   before_filter :load_table, :set_start_time
-  after_filter :record_query_threshold
 
   def index
     render_jsonp(Yajl::Encoder.encode(@table.records(params.slice(:page, :rows_per_page, :order_by, :mode, :filter_column, :filter_value))))
@@ -86,20 +84,5 @@ class Api::Json::RecordsController < Api::ApplicationController
   def load_table
     @table = Table.find_by_identifier(current_user.id, params[:table_id])
     raise RecordNotFound if @table.nil?
-  end
-
-  def record_query_threshold
-    if response.ok?
-      case action_name
-        when "index", "show", "show_column"
-          CartoDB::QueriesThreshold.incr(current_user.id, "select", Time.now - @time_start)
-        when "create"
-          CartoDB::QueriesThreshold.incr(current_user.id, "insert", Time.now - @time_start)
-        when "update", "update_column"
-          CartoDB::QueriesThreshold.incr(current_user.id, "update", Time.now - @time_start)
-        when "destroy"
-          CartoDB::QueriesThreshold.incr(current_user.id, "delete", Time.now - @time_start)
-      end
-    end
   end
 end

@@ -148,17 +148,17 @@ class User < Sequel::Model
     configuration = if options[:as]
       if options[:as] == :superuser
         ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-          'database' => self.database_name, :logger => ::Rails.logger
+          'database' => self.database_name
         )
       elsif options[:as] == :public_user
         ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-          'database' => self.database_name, :logger => ::Rails.logger,
+          'database' => self.database_name,
           'username' => CartoDB::PUBLIC_DB_USER, 'password' => ''
         )
       end
     else
       ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-        'database' => self.database_name, :logger => ::Rails.logger,
+        'database' => self.database_name,
         'username' => database_username, 'password' => database_password
       )
     end
@@ -547,11 +547,11 @@ class User < Sequel::Model
 
   # Cartodb functions
   def load_cartodb_functions
-    in_database(:as => :superuser) do |user_database|
+    in_database(as: :superuser) do |user_database|
       user_database.transaction do
         glob = Rails.root.join('lib/sql/*.sql')
-
         Dir.glob(glob).each do |f|
+          CartoDB::Logger.info "Loading CartoDB SQL function #{f}"
           @sql = File.new(f).read
           user_database.run(@sql)
         end

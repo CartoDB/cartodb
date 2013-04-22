@@ -32,19 +32,20 @@ class Admin::TablesController < ApplicationController
   end
 
   def show_public
-    @subdomain = request.subdomain
-    @table     = Table.find_by_subdomain(@subdomain, params[:id])
-
+    @subdomain  = request.subdomain
+    @table      = Table.find_by_subdomain(@subdomain, params[:id])
+    @vizzjson   = {}
     # Has quite strange checks to see if a user can access a public table
     if @table.blank? || @table.private? || ((current_user && current_user.id != @table.user_id) && @table.private?)
       render_403
     else
       begin
         respond_to do |format|
+          puts 'in respond_to'
           format.html { render 'show_public', :layout => 'application_public' }
           download_formats @table, format
         end
-      rescue
+      rescue => exception
         redirect_to public_table_path(@table), :alert => "There was an error exporting the table"
       end
     end
@@ -52,8 +53,9 @@ class Admin::TablesController < ApplicationController
 
   def embed_map
     # Code done with ♥ by almost every human being working at @vizzuality
-    @subdomain = request.subdomain
-    @table = Table.find_by_subdomain(@subdomain, params[:id])
+    @subdomain  = request.subdomain
+    @table      = Table.find_by_subdomain(@subdomain, params[:id])
+    @vizzjson   = {}
 
     if @table.blank? || @table.private?
       respond_to do |format|

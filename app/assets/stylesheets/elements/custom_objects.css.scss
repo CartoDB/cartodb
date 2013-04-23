@@ -585,12 +585,29 @@
 
     &:hover {cursor:pointer!important;}
 
+    // Working
     &.working {
       @include opacity(0.5);
       &:hover {cursor:default!important;}
     }
 
+    // Small type
+    &.small {
+      width:23px;
+      height:12px;
 
+      span.handle {
+        position:absolute;
+        top:0px;
+        left:11px;
+        width:10px;
+        height:10px;
+        @include border-radius(10px);
+      }
+
+      &.disabled span.handle { left:1px; }
+      &.enabled span.handle { left:11px; }
+    }
   }
 
 

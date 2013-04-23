@@ -117,6 +117,7 @@
         font:bold 17px $text-fonts;
         color:#A9A9A9;
         line-height:20px;
+        &:hover { cursor:move; }
       }
 
       .action {

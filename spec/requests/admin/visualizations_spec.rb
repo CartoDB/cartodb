@@ -38,33 +38,33 @@ describe Admin::VisualizationsController do
     }
   end
 
-  describe 'GET /visualizations' do
+  describe 'GET /viz' do
     it 'returns a list of visualizations' do
       login_as(@user, scope: 'test')
 
-      get "/visualizations", {}, @headers
+      get "/viz", {}, @headers
       last_response.status.should == 200
     end
-  end # GET /visualizations
+  end # GET /viz
 
-  describe 'GET /visualizations/:id' do
+  describe 'GET /viz:id' do
     it 'returns a visualization' do
       id = factory.fetch('id')
       login_as(@user, scope: 'test')
 
-      get "/visualizations/#{id}", {}, @headers
+      get "/viz/#{id}", {}, @headers
       last_response.status.should == 200
     end
-  end # GET /visualizations/:id
+  end # GET /viz/:id
 
-  describe 'GET /visualizations/:id/public' do
+  describe 'GET /viz/:id/public' do
     it 'returns public data for a visualization' do
       id = factory.fetch('id')
 
-      get "/visualizations/#{id}/public", {}, @headers
+      get "/viz/#{id}/public", {}, @headers
       last_response.status.should == 200
     end
-  end # GET /visualizations/:id/public
+  end # GET /viz/:id/public
 
   def factory
     map     = Map.create(user_id: @user.id)
@@ -75,7 +75,7 @@ describe Admin::VisualizationsController do
       description:  'bogus',
       type:         'derived'
     }
-    post "/api/v1/visualizations?api_key=#{@api_key}",
+    post "/api/v1/viz?api_key=#{@api_key}",
       payload.to_json, @headers
 
     JSON.parse(last_response.body)

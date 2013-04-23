@@ -63,7 +63,7 @@ module CartoDB
       end #overlays
 
       def map
-        (@map ||= Map.where(id: map_id).first) || OpenStruct.new
+        (@map ||= ::Map.where(id: map_id).first) || OpenStruct.new
       end #map
 
       def user
@@ -71,7 +71,7 @@ module CartoDB
       end #user
 
       def table
-        @table  ||= Table.where(map_id: map_id).first
+        @table  ||= ::Table.where(map_id: map_id).first
       end #table
 
       def layers(kind)

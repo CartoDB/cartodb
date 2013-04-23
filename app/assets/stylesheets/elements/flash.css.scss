@@ -20,10 +20,10 @@
       top:24px;
       width:13px;
       height:13px;
-      @include icons-sprite(close_flash);
+      @include icons-sprite(close_grey);
       @include text-indent();
       
-      &:hover {@include icons-sprite(close_flash, $offset-y: -13px);}
-      &:active {@include icons-sprite(close_flash, $offset-y: -26px);}
+      &:hover {@include icons-sprite(close_grey, $offset-y: -13px);}
+      &:active {@include icons-sprite(close_grey, $offset-y: -26px);}
     }
   }

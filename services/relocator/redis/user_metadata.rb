@@ -19,12 +19,7 @@ module CartoDB
       def load(user_metadata={})
         transform(user_metadata).each do |key, data| 
           break if data.empty?
-	  data.each do |field, value|
-            redis.hset key, field, value
-            #redis.rpush(key, element) #if redis.exists(key)
-            #redis.set(key, element) unless redis.exists(key)
-          end
-          #redis.set key, *data.to_a.flatten
+          data.each { |field, value| redis.hset(key, field, value) }
         end
       end #load
 
@@ -48,15 +43,11 @@ module CartoDB
       end #massage
 
       def alter(database_name, user)
-        puts database_name
-        puts user.id
         database_name.gsub(/_\d+_db/, "_#{user.id}_db")
       end #alter
 
       def rekey(key)
-        foo = key.split(':')[0..-2].push(user.username).join(':')
-        puts foo
-        foo
+        key.split(':')[0..-2].push(user.username).join(':')
       end #rekey
 
       def default_redis

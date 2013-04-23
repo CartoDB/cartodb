@@ -524,6 +524,7 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def tags=(value)
+    return unless value
     self[:tags] = value.split(',').map{ |t| t.strip }.compact.delete_if{ |t| t.blank? }.uniq.join(',')
   end
 

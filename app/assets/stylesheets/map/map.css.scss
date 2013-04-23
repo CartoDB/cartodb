@@ -30,20 +30,6 @@ div.map {
     @include background(linear-gradient(top,#FDFDFD,#F2F2F2));
   }
 
-  div.share {
-    position:absolute;
-    top:0;
-    right:57px;
-    @include inline-block();
-    padding:8px 20px 8px 30px;
-    @include transform-style("linear");
-    @include transition-property("right");
-    @include transition-duration(300ms);
-    z-index:50;
-
-    a {float:left;}
-  }
-
   .options {
     @include inline-block();
     margin: 17px 0 0 45px;
@@ -336,14 +322,6 @@ div.map {
     }
   }
 
-  // Layer selector box in core map
-  div.cartodb-layer-selector-box {
-    position:relative;
-    float:right;
-    top:65px;
-    right:58px;
-  }
-
   // Search box in core map
   div.cartodb-searchbox {
     position:relative;
@@ -358,13 +336,14 @@ div.map {
   .cartodb-map.public {
     top: 55px;
     border-top:1px solid #999999;
-    div.cartodb-zoom {top: 0px;}
-    div.cartodb-tiles-loader div.loader {
-      top:135px - 65px;
+
+    div.cartodb-zoom {position:absolute; top: 0px;}
+    div.cartodb-tiles-loader {
+      position:absolute;
+      top:80px;
     }
     div.cartodb-searchbox{
-      top: 0px;
-      left: 0px;
+      margin-right:20px;
     }
 
     .leaflet-right .leaflet-control, #cartodb_attribution {

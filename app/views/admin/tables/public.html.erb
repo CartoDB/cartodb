@@ -14,7 +14,7 @@
       , user_name = '<%=raw @table.owner.username %>'
       , map = <%=raw @table.map.to_json %>
       , config = <%=raw frontend_config.html_safe %>
-      , vizjson = <%=raw map_vizzjson(@table.map, :full => false).to_json %>
+      , vizjson = <%=raw @vizzjson.to_json %>
   </script>
   <script>
     var debug = false;

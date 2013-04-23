@@ -230,7 +230,7 @@ describe Api::Json::VisualizationsController do
   end # DELETE /api/v1/viz/:id
 
   def factory
-    map = Map.create(user_id: @user.id)
+    map = ::Map.create(user_id: @user.id)
     {
       name:         "visualization #{rand(9999)}",
       tags:         ['foo', 'bar'],

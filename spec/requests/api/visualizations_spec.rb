@@ -38,11 +38,11 @@ describe Api::Json::VisualizationsController do
     }
   end
 
-  describe 'POST /api/v1/visualizations' do
+  describe 'POST /api/v1/viz' do
     it 'creates a visualization' do
       payload = factory
 
-      post "/api/v1/visualizations?api_key=#{@api_key}",
+      post "/api/v1/viz?api_key=#{@api_key}",
             payload.to_json, @headers
 
       last_response.status.should == 200
@@ -54,7 +54,7 @@ describe Api::Json::VisualizationsController do
       response.fetch('description') .should == payload.fetch(:description)
       id = response.fetch('id')
 
-      get "/api/v1/visualizations/#{id}?api_key=#{@api_key}",
+      get "/api/v1/viz/#{id}?api_key=#{@api_key}",
         {}, @headers
       last_response.status.should ==  200
 
@@ -62,16 +62,16 @@ describe Api::Json::VisualizationsController do
       response.fetch('name')        .should_not == nil
       response.fetch('tags')        .should_not == payload.fetch(:tags).to_json
     end
-  end # POST /api/v1/visualizations
+  end # POST /api/v1/viz
 
-  describe 'GET /api/v1/visualizations' do
+  describe 'GET /api/v1/viz' do
     it 'retrieves a collection of visualizations' do
       payload = factory
-      post "/api/v1/visualizations?api_key=#{@api_key}", 
+      post "/api/v1/viz?api_key=#{@api_key}", 
         payload.to_json, @headers
       id = JSON.parse(last_response.body).fetch('id')
       
-      get "/api/v1/visualizations?api_key=#{@api_key}",
+      get "/api/v1/viz?api_key=#{@api_key}",
         {}, @headers
 
       response    = JSON.parse(last_response.body)
@@ -81,10 +81,10 @@ describe Api::Json::VisualizationsController do
 
     it 'is updated after creating a visualization' do
       payload = factory
-      post "/api/v1/visualizations?api_key=#{@api_key}", 
+      post "/api/v1/viz?api_key=#{@api_key}", 
         payload.to_json, @headers
 
-      get "/api/v1/visualizations?api_key=#{@api_key}",
+      get "/api/v1/viz?api_key=#{@api_key}",
         {}, @headers
 
       response    = JSON.parse(last_response.body)
@@ -92,10 +92,10 @@ describe Api::Json::VisualizationsController do
       collection.size.should == 1
 
       payload = factory.merge('name' => 'another one')
-      post "/api/v1/visualizations?api_key=#{@api_key}",
+      post "/api/v1/viz?api_key=#{@api_key}",
         payload.to_json, @headers
 
-      get "/api/v1/visualizations?api_key=#{@api_key}",
+      get "/api/v1/viz?api_key=#{@api_key}",
         {}, @headers
       response    = JSON.parse(last_response.body)
       collection  = response.fetch('visualizations')
@@ -104,19 +104,19 @@ describe Api::Json::VisualizationsController do
 
     it 'is updated after deleting a visualization' do
       payload = factory
-      post "/api/v1/visualizations?api_key=#{@api_key}",
+      post "/api/v1/viz?api_key=#{@api_key}",
         payload.to_json, @headers
       id = JSON.parse(last_response.body).fetch('id')
       
-      get "/api/v1/visualizations?api_key=#{@api_key}",
+      get "/api/v1/viz?api_key=#{@api_key}",
         {}, @headers
       response    = JSON.parse(last_response.body)
       collection  = response.fetch('visualizations')
       collection.should_not be_empty
 
-      delete "/api/v1/visualizations/#{id}?api_key=#{@api_key}",
+      delete "/api/v1/viz/#{id}?api_key=#{@api_key}",
         {}, @headers
-      get "/api/v1/visualizations?api_key=#{@api_key}",
+      get "/api/v1/viz?api_key=#{@api_key}",
         {}, @headers
 
       response    = JSON.parse(last_response.body)
@@ -128,11 +128,11 @@ describe Api::Json::VisualizationsController do
       per_page = 10
 
       20.times do 
-        post "/api/v1/visualizations?api_key=#{@api_key}",
+        post "/api/v1/viz?api_key=#{@api_key}",
           factory.to_json, @headers
       end
 
-      get "/api/v1/visualizations?api_key=#{@api_key}&page=1&per_page=#{per_page}", {}, @headers
+      get "/api/v1/viz?api_key=#{@api_key}&page=1&per_page=#{per_page}", {}, @headers
 
       last_response.status.should == 200
       
@@ -142,21 +142,21 @@ describe Api::Json::VisualizationsController do
     end
 
     it 'returns filtered results' do
-      post "/api/v1/visualizations?api_key=#{@api_key}",
+      post "/api/v1/viz?api_key=#{@api_key}",
         factory.to_json, @headers
 
-      get "/api/v1/visualizations?api_key=#{@api_key}&type=table",
+      get "/api/v1/viz?api_key=#{@api_key}&type=table",
         {}, @headers
       last_response.status.should == 200
       response    = JSON.parse(last_response.body)
       collection  = response.fetch('visualizations')
       collection.should be_empty
 
-      post "/api/v1/visualizations?api_key=#{@api_key}",
+      post "/api/v1/viz?api_key=#{@api_key}",
         factory.to_json, @headers
-      post "/api/v1/visualizations?api_key=#{@api_key}",
+      post "/api/v1/viz?api_key=#{@api_key}",
         factory.merge(type: 'table').to_json, @headers
-      get "/api/v1/visualizations?api_key=#{@api_key}&type=derived",
+      get "/api/v1/viz?api_key=#{@api_key}&type=derived",
         {}, @headers
 
       last_response.status.should == 200
@@ -164,16 +164,16 @@ describe Api::Json::VisualizationsController do
       collection  = response.fetch('visualizations')
       collection.size.should == 2
     end
-  end # GET /api/v1/visualizations
+  end # GET /api/v1/viz
 
-  describe 'GET /api/v1/visualizations/:id' do
+  describe 'GET /api/v1/viz/:id' do
     it 'returns a visualization' do
       payload = factory
-      post "/api/v1/visualizations?api_key=#{@api_key}",
+      post "/api/v1/viz?api_key=#{@api_key}",
         payload.to_json, @headers
       id = JSON.parse(last_response.body).fetch('id')
       
-      get "/api/v1/visualizations/#{id}?api_key=#{@api_key}", 
+      get "/api/v1/viz/#{id}?api_key=#{@api_key}", 
         {}, @headers
       last_response.status.should == 200
 
@@ -183,21 +183,13 @@ describe Api::Json::VisualizationsController do
       response.fetch('map_id')        .should_not be_nil
       response.fetch('tags')          .should_not be_empty
       response.fetch('description')   .should_not be_nil
-
-      get "/api/v1/visualizations/#{id}/map?api_key=#{@api_key}", 
-        {}, @headers
-      last_response.status.should == 204
-
-      get "/api/v1/visualizations/#{id}/table?api_key=#{@api_key}", 
-        {}, @headers
-      last_response.status.should == 204
     end
-  end # GET /api/v1/visualizations/:id
+  end # GET /api/v1/viz/:id
 
-  describe 'PUT /api/v1/visualizations/:id' do
+  describe 'PUT /api/v1/viz/:id' do
     it 'updates an existing visualization' do
       payload   = factory
-      post "/api/v1/visualizations?api_key=#{@api_key}",
+      post "/api/v1/viz?api_key=#{@api_key}",
         payload.to_json, @headers
 
       response  =  JSON.parse(last_response.body)
@@ -206,36 +198,36 @@ describe Api::Json::VisualizationsController do
 
       response.fetch('tags').should == ['foo', 'bar']
 
-      put "/api/v1/visualizations/#{id}?api_key=#{@api_key}",
+      put "/api/v1/viz/#{id}?api_key=#{@api_key}",
         { name: 'changed', tags: [] }.to_json, @headers
       last_response.status.should == 200
       response = JSON.parse(last_response.body)
       response.fetch('name').should == 'changed'
       response.fetch('tags').should == []
     end
-  end # PUT /api/v1/visualizations
+  end # PUT /api/v1/viz/:id
 
-  describe 'DELETE /api/v1/visualizations/:id' do
+  describe 'DELETE /api/v1/viz/:id' do
     it 'deletes the visualization' do
       payload   = factory
-      post "/api/v1/visualizations?api_key=#{@api_key}",
+      post "/api/v1/viz?api_key=#{@api_key}",
         payload.to_json, @headers
 
       id = JSON.parse(last_response.body).fetch('id')
-      get "/api/v1/visualizations/#{id}?api_key=#{@api_key}",
+      get "/api/v1/viz/#{id}?api_key=#{@api_key}",
         {}, @headers
       last_response.status.should == 200
 
-      delete "/api/v1/visualizations/#{id}?api_key=#{@api_key}",
+      delete "/api/v1/viz/#{id}?api_key=#{@api_key}",
         {}, @headers
       last_response.status.should == 204
       last_response.body.should be_empty
 
-      get "/api/v1/visualizations/#{id}?api_key=#{@api_key}",
+      get "/api/v1/viz/#{id}?api_key=#{@api_key}",
         {}, @headers
       last_response.status.should == 404
     end
-  end # DELETE /api/v1/visualizations/:id
+  end # DELETE /api/v1/viz/:id
 
   def factory
     map = Map.create(user_id: @user.id)

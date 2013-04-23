@@ -33,11 +33,11 @@ module CartoDB
       def run
         to_stdout("Continuing relocation with ID: #{relocation.id}")
         to_stdout("Downloading data bundle from remote storage")
-        relocation.download
+        #relocation.download
         to_stdout("Data bundle downloaded from remote storage")
 
         to_stdout('Unzipping data bundle')
-        relocation.unzip
+        #relocation.unzip
 
         to_stdout("Creating user with downloaded attributes")
         create_user
@@ -56,7 +56,9 @@ module CartoDB
 
         to_stdout("Setting password for database user")
         rdbms.set_password(environment.database_username, user.database_password)
-
+	to_stdout("sleeping")
+	`/usr/local/bin/regenerate.pgbouncer.pg_auth`
+	sleep 20
         to_stdout("Loading metadata")
         meta_loader.user = user
         meta_loader.environment = environment
@@ -75,7 +77,7 @@ module CartoDB
         def user.after_create; end
 
         payload    = relocation.fetch('users').readlines.join
-        attributes = JSON.parse(payload).first
+        attributes = ::JSON.parse(payload).first
         attributes.delete('id')
         attributes.each { |k, v| @user.send(:"#{k}=", v) }
 
@@ -92,7 +94,7 @@ module CartoDB
 
       def load_database
         dump    = File.join(Relocator::TMP_DIR, relocation.path_for('dump.sql'))
-        command = "#{psql} #{user.database_name} < #{dump}"
+        command = "#{psql} -U postgres #{user.database_name} < #{dump}"
 
         `#{command}`
         puts $?

@@ -41,11 +41,11 @@ module CartoDB
         api_keys
         assets
 
-        #rdbms.insert_oauth_tokens_for(
-        #  user:                     user,
-        #  records:                  records_for(:oauth_tokens),
-        #  client_applications_map:  @client_applications_map,
-        #)
+        rdbms.insert_oauth_tokens_for(
+          user:                     user,
+          records:                  records_for(:oauth_tokens),
+          client_applications_map:  @client_applications_map,
+        )
 
         rdbms.insert_layers_maps_for(
           records:                  records_for(:layers_maps),

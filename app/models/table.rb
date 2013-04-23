@@ -1251,10 +1251,13 @@ TRIGGER
     self.private? ? 'PRIVATE' : 'PUBLIC'
   end
 
-  def visualization_id
+  def visualization
     visualization = CartoDB::Visualization::Collection.new( 
       map_id: [map_id]
     ).fetch.first
+  end #visualization
+
+  def visualization_id
     visualization.id if visualization
   end #visualization_id
 

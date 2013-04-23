@@ -126,9 +126,10 @@ module CartoDB
           old_id = record.delete('id')
 
           if record['options']
-            regex           = %r{\"user_name\":\".+\"}
+            regex           = %r{\"user_name\":\"\w+\"}
             replacement     = %Q{\"user_name\":\"#{user.username}\"}
             record['options']  = record['options'].gsub(regex, replacement)
+            puts record['options']
           end
           new_id = connection[:layers].insert(record)
           map.store(old_id.to_s, new_id.to_s)

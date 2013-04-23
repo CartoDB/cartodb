@@ -134,6 +134,23 @@
       }
     }
 
+    // layer actions
+    .visibility {
+
+    }
+
+    .remove {
+      @include inline-block();
+      vertical-align:middle;
+      letter-spacing:0px;
+      width:13px;
+      height:13px;
+      margin-left:5px;
+      @include background(sprite($icons-sprites, close_grey, $offset-x:0, $offset-y:0) no-repeat);
+      &:hover {@include background(sprite($icons-sprites, close_grey, $offset-x:0, $offset-y:-13px) no-repeat);}
+      &:active {@include background(sprite($icons-sprites, close_grey, $offset-x:0, $offset-y:-26px) no-repeat);}
+    }
+
     // Layer actions sidebar
     .sidebar {
       position:absolute;

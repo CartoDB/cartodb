@@ -547,14 +547,23 @@ class User < Sequel::Model
   end
 
   # Cartodb functions
-  def load_cartodb_functions
+  def load_cartodb_functions(files = [])
     in_database(as: :superuser) do |user_database|
       user_database.transaction do
-        glob = Rails.root.join('lib/sql/*.sql')
-        Dir.glob(glob).sort.each do |f|
-          CartoDB::Logger.info "Loading CartoDB SQL function #{File.basename(f)} into #{database_name}"
-          @sql = File.new(f).read
-          user_database.run(@sql)
+        if files.empty?
+          glob = Rails.root.join('lib/sql/*.sql')
+          sql_files = Dir.glob(glob).sort
+        else
+          sql_files = files.map {|sql| Rails.root.join('lib/sql', sql).to_s}.sort
+        end
+        sql_files.each do |f|
+          if File.exists?(f)
+            CartoDB::Logger.info "Loading CartoDB SQL function #{File.basename(f)} into #{database_name}"
+            @sql = File.new(f).read
+            user_database.run(@sql)
+          else
+            CartoDB::Logger.info "SQL function #{File.basename(f)} doesn't exist in lib/sql directory. Not loading it."
+          end
         end
       end
     end

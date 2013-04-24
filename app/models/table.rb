@@ -1260,10 +1260,10 @@ TRIGGER
   end #visualization_ids
 
   def table_visualization
-    CartoDB::Visualization::Collection.new(
+    CartoDB::Visualization::Collection.new.fetch(
       map_id: [map_id],
       type:   'table'
-    ).fetch.first
+    ).first
   end #visualization
 
   private

@@ -175,14 +175,15 @@ describe Api::Json::VisualizationsController do
       
       get "/api/v1/viz/#{id}?api_key=#{@api_key}", 
         {}, @headers
-      last_response.status.should == 200
 
+      last_response.status.should == 200
       response = JSON.parse(last_response.body)
 
-      response.fetch('id')            .should_not be_nil
-      response.fetch('map_id')        .should_not be_nil
-      response.fetch('tags')          .should_not be_empty
-      response.fetch('description')   .should_not be_nil
+      response.fetch('id')              .should_not be_nil
+      response.fetch('map_id')          .should_not be_nil
+      response.fetch('tags')            .should_not be_empty
+      response.fetch('description')     .should_not be_nil
+      response.fetch('related_tables')  .should_not be_nil
     end
   end # GET /api/v1/viz/:id
 

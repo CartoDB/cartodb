@@ -74,6 +74,10 @@ module CartoDB
         @table  ||= ::Table.where(map_id: map_id).first
       end #table
 
+      def related_tables
+        layers(:cartodb).flat_map(&:affected_tables).map(&:name)
+      end #related_tables
+
       def layers(kind)
         return [] unless map.id
         return map.send(LAYER_SCOPES.fetch(kind))

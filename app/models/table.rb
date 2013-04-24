@@ -413,11 +413,10 @@ class Table < Sequel::Model(:user_tables)
 
   def create_default_visualization
     CartoDB::Visualization::Member.new(
-      name:         self.name, 
-      description:  self.description,
-      tags:         (self.tags || '').split(','),
-      map_id:       self.map_id, 
-      type:         'table'
+      name: self.name, 
+      map_id: self.map_id, 
+      type: "table", 
+      description: self.description
     ).store
   end
 

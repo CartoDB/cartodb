@@ -126,6 +126,7 @@
   <script type="text/javascript" src="spec/api/layers/cartodb.spec.js"></script>
   <script type="text/javascript" src="spec/api/sql.spec.js"></script>
 
+  <script type="text/javascript" src="lib/phantom-jasmine/lib/console-runner.js"></script>
 
   <script type="text/javascript">
 
@@ -164,6 +165,7 @@
       };
 
       jasmineEnv.addReporter(htmlReporter);
+      jasmineEnv.addReporter(new jasmine.ConsoleReporter());
       jasmineEnv.specFilter = function(spec) {
         return htmlReporter.specFilter(spec);
       };

@@ -45,19 +45,12 @@ LayerDefinition.prototype = {
     return obj;
   },
 
-  _array2hex: function(byte_arr) {
-    var hex_str = "", tmp_hex;
-   
-    for (var i = 0, len = byte_arr.length; i < len; ++i) {
-        if (byte_arr[i] < 0) {
-            byte_arr[i] = byte_arr[i] + 256;
-        }
-        tmp_hex = byte_arr[i].toString(16);
-        if (tmp_hex.length == 1) tmp_hex = "0" + tmp_hex;
-        hex_str += tmp_hex;
+  _array2hex: function(byteArr) {
+    var encoded = []
+    for(var i = 0; i < byteArr.length; ++i) {
+      encoded.push(String.fromCharCode(byteArr[i] + 128));
     }
-   
-    return hex_str.trim();
+    return btoa(encoded.join(''))
   },
 
   //TODO: support old browsers
@@ -80,12 +73,14 @@ LayerDefinition.prototype = {
       });
     } else {
       var self = this;
-      var json = JSON.stringify(this.toJSON());
+      var json = '{ "config": "' + 
+        JSON.stringify(this.toJSON()).replace(/"/g, '\\"') + 
+        '"}';
       LZMA.compress(json, 3, function(encoded) {
         encoded = self._array2hex(encoded);
         ajax({
           dataType: 'jsonp',
-          url: self._tilerHost() + '/tiles/layergroup?lzma=' + encoded,
+          url: self._tilerHost() + '/tiles/layergroup?lzma=' + encodeURIComponent(encoded),
           success: function(data) {
             callback(data);
           },

@@ -58,8 +58,8 @@ module CartoDB
 
         to_stdout("Setting password for database user")
         rdbms.set_password(environment.database_username, user.database_password)
-        `#{PG_BOUNCER_UPDATER}` if ENV[RAILS_ENV] == 'staging'
-        to_stdout("sleeping")
+        `#{PG_BOUNCER_UPDATER}` if ENV['RAILS_ENV'] == 'staging'
+        to_stdout("Waiting for pg_bouncer authentication DB to be updated")
 	      sleep 20
         to_stdout("Loading metadata")
         meta_loader.user = user

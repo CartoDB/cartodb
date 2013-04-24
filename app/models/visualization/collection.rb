@@ -6,7 +6,7 @@ require_relative '../../../services/data-repository/structures/collection'
 module CartoDB
   module Visualization
     SIGNATURE         = 'visualizations'
-    AVAILABLE_FILTERS = %w{ name type description }
+    AVAILABLE_FILTERS = %w{ name type description map_id }
 
     class << self
       attr_accessor :repository

@@ -1,5 +1,4 @@
 # encoding: utf-8
-require 'minitest/autorun'
 require_relative '../../../services/data-repository/backend/sequel'
 require_relative '../../../app/models/visualization/member'
 require_relative '../../../services/data-repository/repository'
@@ -16,8 +15,8 @@ describe Visualization::Member do
   describe '#initialize' do
     it 'assigns an id by default' do
       member = Visualization::Member.new
-      member.must_be_instance_of Visualization::Member
-      member.id.wont_be_nil
+      member.should be_an_instance_of Visualization::Member
+      member.id.should_not be_nil
     end
   end #initialize
 
@@ -27,10 +26,10 @@ describe Visualization::Member do
       member.store
 
       member = Visualization::Member.new(id: member.id)
-      member.name.must_be_nil
+      member.name.should be_nil
 
       member.fetch
-      member.name.must_equal 'foo'
+      member.name.should == 'foo'
     end
 
     it 'persists tags as an array if the backend supports it' do
@@ -45,8 +44,8 @@ describe Visualization::Member do
       
       member      = Visualization::Member.new({ id: member.id }, repository)
       member.fetch
-      member.tags.must_include('tag 1')
-      member.tags.must_include('tag 2')
+      member.tags.should include('tag 1')
+      member.tags.should include('tag 2')
 
       drop_table_from(db, relation)
     end
@@ -57,8 +56,8 @@ describe Visualization::Member do
 
       member = Visualization::Member.new(id: member.id)
       member.fetch
-      member.tags.must_include('tag 1')
-      member.tags.must_include('tag 2')
+      member.tags.should include('tag 1')
+      member.tags.should include('tag 2')
     end
   end #store
 
@@ -70,7 +69,7 @@ describe Visualization::Member do
       member = Visualization::Member.new(id: member.id)
       member.name = 'changed'
       member.fetch
-      member.name.must_equal 'foo'
+      member.name.should == 'foo'
     end
   end #fetch
 
@@ -80,12 +79,12 @@ describe Visualization::Member do
       member.store
 
       member.fetch
-      member.name.wont_be_nil
+      member.name.should_not be_nil
 
       member.delete
-      member.name.must_be_nil
+      member.name.should be_nil
 
-      lambda { member.fetch }.must_raise KeyError
+      lambda { member.fetch }.should raise_error KeyError
     end
   end #delete
 
@@ -96,11 +95,11 @@ describe Visualization::Member do
 
       maps    = [OpenStruct.new(id: map_id)]
       user    = OpenStruct.new(maps: maps)
-      member.authorize?(user).must_equal true
+      member.authorize?(user).should == true
 
       maps    = [OpenStruct.new(id: 999)]
       user    = OpenStruct.new(maps: maps)
-      member.authorize?(user).must_equal false
+      member.authorize?(user).should == false
     end
   end #authorize?
 

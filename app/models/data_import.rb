@@ -202,7 +202,7 @@ class DataImport < Sequel::Model
           imports.each do | import |
             self.log << "Linking #{import.name} to CartoDB UI"
             unless migrate_existing(import.name, table_name)
-              current_user.in_database.drop_table import.name
+              current_user.in_database.drop_table(import.name) rescue ""
             else
               imported_something = true
             end
@@ -212,7 +212,11 @@ class DataImport < Sequel::Model
         failed!
       end
 
-      failed! unless imported_something
+      if imported_something
+        finished!
+      else
+        failed!
+      end
       
       self
     rescue => e
@@ -364,7 +368,6 @@ class DataImport < Sequel::Model
   end
 
   def migrate_existing imported_name, name = nil
-
     new_name = imported_name || name
 
     @new_table = Table.new
@@ -375,7 +378,15 @@ class DataImport < Sequel::Model
 
     if @new_table.valid?
       @new_table.save
+      @new_table.optimize
       @new_table.map.recalculate_bounds!
+      # check if the table fits into owner's remaining quota
+      if table_owner.remaining_quota < 0
+        self.log_error("Over storage quota, removing table" )
+        self.set_error_code(8001)
+        @new_table.destroy
+        return false
+      end
       refresh
       return true
     else

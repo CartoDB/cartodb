@@ -202,16 +202,13 @@ module CartoDB
       end #error_helper
 
       def detect_geometry_column
-        (column_names && ["the_geom", "geojson", "wkb_geometry"]).first
+        (column_names & ["the_geom", "geojson", "wkb_geometry"]).first
       end
 
       def rename_to_geojson(column_name)
-        return if column_name.blank?
+        return if column_name.blank? || column_name == "geojson"
         data_import.log_update("Renaming #{column_name} to geojson on table #{suggested_name}")        
-        db.run(%Q{
-          ALTER TABLE #{suggested_name} 
-          RENAME COLUMN #{column_name} TO geojson
-        })
+        db.run(%Q{ALTER TABLE #{suggested_name} RENAME COLUMN #{column_name} TO geojson})
       end #rename_to_the_geom
 
       def read_as_geojson

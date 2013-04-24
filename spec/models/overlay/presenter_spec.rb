@@ -16,9 +16,9 @@ describe Overlay::Presenter do
 
       representation = Overlay::Presenter.new(overlay).to_poro
 
-      representation.fetch(:order)    .must_equal overlay.order
-      representation.fetch(:type)     .must_equal overlay.type
-      representation.fetch(:options)  .must_equal overlay.options
+      representation.fetch(:order)    .should == overlay.order
+      representation.fetch(:type)     .should == overlay.type
+      representation.fetch(:options)  .should == overlay.options
     end
   end #to_poro
 end # CartoDB

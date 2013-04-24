@@ -1,24 +1,16 @@
 # encoding: utf-8
 
-class VisualizationsMigration < Sequel::Migration
+class VisualizationsFixMigration < Sequel::Migration
   def up
-    drop_table :visualizations
-    create_table :visualizations do
-      String      :id,          null: false, primary_key: true
-      String      :name,        text: true
-      String      :description, text: true
-      Integer     :map_id,      index: true
-      String      :type
-      Array       :tags
-    end
-
-    Rails::Sequel.connection.run(%q{
-      ALTER TABLE "visualizations"
-      ADD COLUMN tags text[]
+    Rails::Sequel.connection.run(%Q{
+      ALTER TABLE visualizations
+      ALTER COLUMN map_id 
+      TYPE integer
+      USING map_id::integer
     })
   end #up
   
   def down
   end #down
-end # VisualizationsMigration
+end # VisualizationsFixMigration
 

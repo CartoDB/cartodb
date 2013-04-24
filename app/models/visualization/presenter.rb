@@ -9,14 +9,15 @@ module CartoDB
 
       def to_poro
         {
-          id:           visualization.id,
-          name:         visualization.name,
-          map_id:       visualization.map_id,
-          type:         visualization.type,
-          tags:         visualization.tags,
-          description:  visualization.description,
-          privacy:      visualization.privacy,
-          table:        table_data_for(visualization.table)
+          id:             visualization.id,
+          name:           visualization.name,
+          map_id:         visualization.map_id,
+          type:           visualization.type,
+          tags:           visualization.tags,
+          description:    visualization.description,
+          privacy:        visualization.privacy,
+          table:          table_data_for(visualization.table),
+          related_tables: visualization.related_tables
         }
       end #to_poro
 

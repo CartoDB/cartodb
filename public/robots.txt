@@ -15,3 +15,6 @@ Disallow: /api/
 
 User-agent: baiduspider
 Disallow: /api/
+
+User-agent: wget
+Disallow: /api/

@@ -166,7 +166,10 @@ describe("LayerDefinition", function() {
     };
 
     runs(function() {
-      var json = JSON.stringify(layerDefinition.toJSON());
+      var json = layerDefinition.toJSON();
+      json = '{ "config": "' + 
+        JSON.stringify(json).replace(/"/g, '\\"') + 
+      '"}';
       LZMA.compress(json, 3, function(encoded) {
         lzma = layerDefinition._array2hex(encoded);
         layerDefinition.getLayerToken(function() {
@@ -175,7 +178,7 @@ describe("LayerDefinition", function() {
     });
     waits(100);
     runs(function() {
-      expect(params.url).toEqual(layerDefinition._tilerHost() + '/tiles/layergroup?lzma=' + lzma);
+      expect(params.url).toEqual(layerDefinition._tilerHost() + '/tiles/layergroup?lzma=' + encodeURIComponent(lzma));
     });
 
 

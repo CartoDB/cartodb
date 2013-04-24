@@ -11,7 +11,7 @@ describe Overlay::Member do
 
   describe '#initialize' do
     it 'sets the id by default' do
-      Overlay::Member.new.id.wont_be_nil
+      Overlay::Member.new.id.should_not be_nil
     end
   end #initialize
 
@@ -21,10 +21,10 @@ describe Overlay::Member do
       member.store
 
       member = Overlay::Member.new(id: member.id)
-      member.type.must_be_nil
+      member.type.should be_nil
 
       member.fetch
-      member.type.must_equal 'bogus'
+      member.type.should == 'bogus'
     end
   end #store
 
@@ -35,7 +35,7 @@ describe Overlay::Member do
 
       member = Overlay::Member.new(id: member.id)
       member.fetch
-      member.type.must_equal 'bogus'
+      member.type.should == 'bogus'
     end
   end #fetch
 
@@ -45,12 +45,12 @@ describe Overlay::Member do
       member.store
 
       member.fetch
-      member.type.wont_be_nil
+      member.type.should_not be_nil
 
       member.delete
-      member.type.must_be_nil
+      member.type.should be_nil
 
-      lambda { member.fetch }.must_raise KeyError
+      lambda { member.fetch }.should raise_error KeyError
     end
   end #delete
 end # Overlay::Member

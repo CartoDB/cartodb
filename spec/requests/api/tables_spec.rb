@@ -1,8 +1,9 @@
 #encoding: UTF-8
 
-require 'spec_helper'
+require_relative '../../spec_helper'
 
 describe "Tables API" do
+  include Rack::Test::Methods
 
   before(:all) do
     @user = create_user(:username => 'test', :email => "client@example.com", :password => "clientex")
@@ -13,9 +14,32 @@ describe "Tables API" do
   before(:each) do
     delete_user_data @user
     host! 'test.localhost.lan'
+    @headers = { 
+      'CONTENT_TYPE'  => 'application/json',
+      'HTTP_HOST'     => 'test.localhost.lan'
+    }
   end
 
   let(:params) { { :api_key => @user.get_map_key } }
+
+  describe 'GET /api/v1/tables/:id' do
+    it 'returns table attributes' do
+      table = create_table(
+        user_id:      @user.id,
+        name:         'My table #1',
+        privacy:      Table::PRIVATE,
+        tags:         "tag 1, tag 2,tag 3, tag 3",
+        description:  'Testing is awesome'
+      )
+
+      get "/api/v1/tables/#{table.id}?api_key=#{@user.get_map_key}",
+        {}, @headers
+
+      last_response.status.should == 200
+      response = JSON.parse(last_response.body)
+      response.fetch('visualization_ids').should_not be_empty
+    end
+  end # GET /api/v1/tables/:id
 
   context "when having 0 tables" do
     it "returns an empty table list" do
@@ -392,8 +416,11 @@ describe "Tables API" do
   end
 
   it "downloads table metadata" do
-    data_import = DataImport.create(user_id: @user.id, table_name: 'elecciones2008', data_source: '/../spec/support/data/TM_WORLD_BORDERS_SIMPL-0.3.zip')
-      :data_source   => '/../spec/support/data/TM_WORLD_BORDERS_SIMPL-0.3.zip').run_import!
+    data_import = DataImport.create(
+      user_id: @user.id,
+      table_name: 'elecciones2008',
+      data_source: '/../spec/support/data/TM_WORLD_BORDERS_SIMPL-0.3.zip'
+    ).run_import!
 
     table1 = Table[data_import.table_id]
     get_json v1_table_url(table1.name, params) do |response|

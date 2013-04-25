@@ -1,9 +1,7 @@
-# coding: UTF-8
-
-require File.expand_path(File.dirname(__FILE__) + '/acceptance_helper')
+# encoding: utf-8
+require_relative '../acceptance_helper'
 
 feature 'Dashboard' do
-
   background do
     @user = FactoryGirl.create(:user, :table_quota => 6)
     @tables = []
@@ -134,5 +132,5 @@ feature 'Dashboard' do
   scenario 'allows to import a previously exported table as KML'
 
   scenario 'allows to import a previously exported table as SQL'
-
 end
+

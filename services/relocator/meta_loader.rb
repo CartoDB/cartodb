@@ -94,7 +94,7 @@ module CartoDB
       end #insert_in
 
       def records_for(table_name)
-        JSON.parse(relocation.fetch(table_name).readlines.join)
+        ::JSON.parse(relocation.fetch(table_name).readlines.join)
       end #records_for
     end # MetaLoader
   end # Relocator

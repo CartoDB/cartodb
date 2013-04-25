@@ -33,8 +33,11 @@ class Admin::TablesController < ApplicationController
   end
 
   def public
-    @subdomain = request.subdomain
-    @table     = Table.find_by_subdomain(@subdomain, params[:id])
+    @subdomain  = request.subdomain
+    @table      = Table.find_by_subdomain(@subdomain, params[:id])
+    @vizzjson   = CartoDB::VizzJSON::Map.new(
+      @table.map, { :full => false }, Cartodb.config
+    ).to_poro
 
     # Has quite strange checks to see if a user can access a public table
     if @table.blank? || @table.private? || ((current_user && current_user.id != @table.user_id) && @table.private?)
@@ -60,8 +63,11 @@ class Admin::TablesController < ApplicationController
 
   def embed_map
     # Code done with ♥ by almost every human being working at @vizzuality
-    @subdomain = request.subdomain
-    @table = Table.find_by_subdomain(@subdomain, params[:id])
+    @subdomain  = request.subdomain
+    @table      = Table.find_by_subdomain(@subdomain, params[:id])
+    @vizzjson   = CartoDB::VizzJSON::Map.new(
+      @table.map, { :full => false }, Cartodb.config
+    ).to_poro
 
     if @table.blank? || @table.private?
       respond_to do |format|

@@ -1,5 +1,5 @@
 #encoding: UTF-8
-
+require_relative '../../acceptance_helper'
 require_relative '../../spec_helper'
 
 describe "Tables API" do
@@ -201,7 +201,6 @@ describe "Tables API" do
   end
 
   it "creates a new table without schema" do
-    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
     post_json v1_tables_url(params) do |response|
       response.status.should be_success
       response.body[:id].should == response.headers['Location'].match(/\/(\d+)$/)[1].to_i
@@ -218,8 +217,6 @@ describe "Tables API" do
   end
 
   it "creates a new table specifing a name, description and a schema" do
-    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
-
     post_json v1_tables_url(params.merge(
       name: "My new imported table", 
       schema: "code varchar, title varchar, did integer, date_prod timestamp, kind varchar", 
@@ -235,8 +232,6 @@ describe "Tables API" do
   end
 
   it "creates a new table specifying a geometry of type point" do
-    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
-
     post_json v1_tables_url(params.merge(name: "My new imported table", the_geom_type: "Point")) do |response|
       response.status.should be_success
       response.body[:name].should == "my_new_imported_table"
@@ -248,8 +243,6 @@ describe "Tables API" do
   end
 
   it "creates a new table specifying a geometry of type polygon" do
-    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
-
     post_json v1_tables_url(params.merge(name: "My new imported table", the_geom_type: "Polygon")) do |response|
       response.status.should be_success
       response.body[:name].should == "my_new_imported_table"
@@ -261,8 +254,6 @@ describe "Tables API" do
   end
 
   it "creates a new table specifying a geometry of type line" do
-    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
-
     post_json v1_tables_url(params.merge(name: "My new imported table", the_geom_type: "Line")) do |response|
       response.status.should be_success
       response.body[:name].should == "my_new_imported_table"
@@ -274,8 +265,6 @@ describe "Tables API" do
   end
 
   it "creates a new table specifying tags" do
-    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
-
     post_json v1_tables_url(params.merge(name: "My new imported table", tags: "environment,wadus")) do |response|
       response.status.should be_success
       response.body[:name].should == "my_new_imported_table"
@@ -285,7 +274,6 @@ describe "Tables API" do
   end
 
   pending "Fail nicely when you create a new table with bad schema" do
-    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
     post_json v1_tables_url(params.merge(name: "My new imported table", schema: "bla bla blat")) do |response|
       response.status.should == 400
     end
@@ -344,8 +332,6 @@ describe "Tables API" do
   end
 
   it "deletes a table of the user currently logged in" do
-    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
-
     table1 = create_table :user_id => @user.id, :name => 'My table #1', :privacy => Table::PRIVATE, :tags => "tag 1, tag 2,tag 3, tag 3"
 
     delete_json v1_table_url(table1.name, params) do |response|
@@ -354,8 +340,6 @@ describe "Tables API" do
   end
 
   it "doesn't delete a table of another user" do
-    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).never
-
     another_user = create_user
     table1 = create_table :user_id => another_user.id, :name => 'My table #1', :privacy => Table::PRIVATE, :tags => "tag 1, tag 2,tag 3, tag 3"
 

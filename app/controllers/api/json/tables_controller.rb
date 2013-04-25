@@ -3,11 +3,12 @@ require_relative '../../../models/visualization/presenter'
 
 class Api::Json::TablesController < Api::ApplicationController
   ssl_required :index, :show, :create, :update, :destroy
+  ssl_allowed  :vizzjson
+  
   skip_before_filter :api_authorization_required, :only => [ :vizzjson ]
 
   before_filter :load_table, :except => [:index, :create, :vizzjson]
   before_filter :set_start_time
-  after_filter  :record_query_threshold
   #before_filter :link_ghost_tables
 
   def index
@@ -133,6 +134,13 @@ class Api::Json::TablesController < Api::ApplicationController
       response.headers['X-Cache-Channel'] = "#{@table.varnish_key}:vizjson"
       response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
       render_jsonp({})
+        CartoDB::VizzJSON::Map.new(
+          @table.map, 
+          { full: false, url: table_url(@table) }, 
+          Cartodb.config, 
+          CartoDB::Logger
+        ).to_poro
+      )
     else
       head :forbidden
     end
@@ -143,16 +151,4 @@ class Api::Json::TablesController < Api::ApplicationController
   def load_table
     @table = Table.find_by_identifier(current_user.id, params[:id])
   end
-
-  def record_query_threshold
-    if [200, 204].include?(response.status)
-      case action_name
-        when "create"
-          CartoDB::QueriesThreshold.incr(current_user.id, "other", Time.now - @time_start)
-        when "destroy"
-          CartoDB::QueriesThreshold.incr(current_user.id, "other", Time.now - @time_start)
-      end
-    end
-  end
-
 end

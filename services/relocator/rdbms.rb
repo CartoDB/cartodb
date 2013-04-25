@@ -98,7 +98,12 @@ module CartoDB
           record.delete('id')
           record.store('user_id', user.id)
           record.store('client_application_id', map.fetch(old_id))
-          connection[:oauth_tokens].insert(record)
+          begin
+            connection[:oauth_tokens].insert(record)
+          rescue => exception
+            return if exception.message =~ /violates unique constraint/
+            raise exception
+          end
         end
       end #insert_oauth_tokens_for
 
@@ -126,7 +131,7 @@ module CartoDB
           old_id = record.delete('id')
 
           if record['options']
-            regex           = %r{\"user_name\":\".+\"}
+            regex           = %r{\"user_name\":\"\w+\"}
             replacement     = %Q{\"user_name\":\"#{user.username}\"}
             record['options']  = record['options'].gsub(regex, replacement)
           end

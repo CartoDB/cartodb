@@ -1,0 +1,72 @@
+
+/**
+ *  New visualization dialog styles
+ */
+
+@import "compass";
+@import "common/sprites";
+@import "common/mixins";
+
+.new_visualization_dialog {
+  width: 200px;
+
+  p { margin: 0 0 20px 0; }
+
+  .tables {
+
+    list-style:none;
+
+    li {
+      display:none;
+
+      padding:12px;
+      margin: 0 0 5px 0;
+      background:#F2F2F2;
+      @include border-radius(6px);
+      font-weight:bold;
+
+      .remove {
+        float: right;
+        @include icons-sprite(remove_filter);
+        @include size(12px);
+
+        &:hover { @include icons-sprite(remove_filter, $offset_y:-12px); }
+      }
+    }
+  }
+
+  .combo_wrapper {
+
+    display:block;
+    padding:12px;
+    background:#F2F2F2;
+    @include border-radius(6px);
+
+    .tableListCombo {
+      margin: 0 3px 0 0;
+    }
+
+    .tableListCombo, .add {
+      @include inline-block();
+    }
+
+    .add {
+      padding: 3px 8px;
+      font-size: 13px;
+      font-weight: bold;
+      color:#333;
+      border: 1px solid #9E9E9E;
+      @include border-radius(3px);
+
+      background-color: #fff;
+      background-image: -webkit-gradient(linear, left bottom, left top, color-stop(0, #eeeeee), color-stop(0.5, white));
+      background-image: -webkit-linear-gradient(center bottom, #eeeeee 0%, white 50%);
+      background-image: -moz-linear-gradient(center bottom, #eeeeee 0%, white 50%);
+      background-image: -o-linear-gradient(bottom, #eeeeee 0%, #ffffff 50%);
+      background-image: -ms-linear-gradient(top, #eeeeee 0%, #ffffff 50%);
+      background-image: linear-gradient(top, #eeeeee 0%, #ffffff 50%);
+
+    }
+  }
+
+}

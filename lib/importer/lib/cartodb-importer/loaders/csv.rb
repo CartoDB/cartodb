@@ -40,6 +40,7 @@ module CartoDB
       def process!
         import_csv_data
         error_helper(5001) if rows_imported == 0
+        rename_wkb_to_the_geom
         rename_to_geojson(detect_geometry_column)
         column_names.include?("geojson") ? read_as_geojson : create_the_geom
 
@@ -202,14 +203,22 @@ module CartoDB
       end #error_helper
 
       def detect_geometry_column
-        (column_names & ["the_geom", "geojson", "wkb_geometry"]).first
-      end
+        (column_names & ["the_geom", "geojson"]).first
+      end #detect_geometry_column
+
+      def rename_wkb_to_the_geom
+        return unless column_names.include? "wkb_geometry"
+        db.run(%Q{
+          ALTER TABLE #{suggested_name} 
+          RENAME COLUMN wkb_geometry TO the_geom
+        })
+      end #rename_to_the_geom
 
       def rename_to_geojson(column_name)
         return if column_name.blank? || column_name == "geojson"
         data_import.log_update("Renaming #{column_name} to geojson on table #{suggested_name}")        
         db.run(%Q{ALTER TABLE #{suggested_name} RENAME COLUMN #{column_name} TO geojson})
-      end #rename_to_the_geom
+      end #rename_to_geojson
 
       def read_as_geojson
         data_import.log_update("Trying to read geojson column on table #{suggested_name}")
@@ -225,6 +234,8 @@ module CartoDB
           column_names << 'the_geom'
           column_names.delete('geojson')
           drop_geojson_column(suggested_name)
+        else
+          return if column_names.include?("the_geom")
         end
       rescue => exception
         column_names.delete('the_geom')

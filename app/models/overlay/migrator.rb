@@ -2,25 +2,23 @@
 require 'sequel'
 require_relative '../../../services/data-repository/backend/sequel'
 
-# encoding: utf-8
 module CartoDB
-  module Visualization
+  module Overlay
     class Migrator
       def initialize(db)
         @db = db
       end #initialize
 
       def migrate
-        @db.create_table :visualizations do
-          String    :id, primary_key: true
-          String    :name
-          String    :description
-          Integer   :map_id, index: true
+        @db.create_table :overlays do
+          String    :id,                null: false, primary_key: true
+          Integer   :order,             null: false
+          String    :options,           text: true
           String    :type
-          String    :tags
+          String    :visualization_id,  index: true
         end
       end #migrate
     end # Migrator
-  end # Visualization
+  end # Overlay
 end # CartoDB
 

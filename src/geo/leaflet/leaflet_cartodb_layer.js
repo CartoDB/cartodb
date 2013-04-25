@@ -128,6 +128,10 @@ var LeafLetLayerCartoDBView = L.CartoDBLayer.extend({
       self.featureClick  && self.featureClick.apply(opts, arguments);
     };
 
+    layerModel.bind('change:visible', function() {
+      self.model.get('visible') ? self.show(): self.hide();
+    }, this);
+
     L.CartoDBLayer.prototype.initialize.call(this, opts);
     cdb.geo.LeafLetLayerView.call(this, layerModel, this, leafletMap);
 

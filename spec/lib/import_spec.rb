@@ -353,12 +353,11 @@ describe CartoDB::Importer do
         @db[:geojson_utf8].get(:reg_symbol).force_encoding('UTF-8').should == "In here -> ® <-- this here"
       end
 
-      it 'should import data previously exported through the SQL API', now: true do
+      it 'should import data previously exported through the SQL API' do
         importer = create_importer 'tm_world_borders_simpl_0_8.geojson'
         results, errors = importer.import!
 
         errors.should be_empty
-        puts results[0].rows_imported
       end
     end
 

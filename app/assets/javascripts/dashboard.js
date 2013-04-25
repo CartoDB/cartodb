@@ -1,4 +1,5 @@
 //= require d3.v2
+//= require select2.min
 //= require jquery-ui.core.min
 //= require jquery.fileupload
 //= require jquery.fileupload-fp

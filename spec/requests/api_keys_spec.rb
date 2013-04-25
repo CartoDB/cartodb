@@ -1,6 +1,5 @@
-# coding: UTF-8
-
-require File.expand_path(File.dirname(__FILE__) + '/acceptance_helper')
+# encoding: utf-8
+require_relative '../acceptance_helper'
 
 feature "API keys" do
 
@@ -17,3 +16,4 @@ feature "API keys" do
   scenario 'does not allow users to get a tile from a private table using an old API key'
 
 end
+

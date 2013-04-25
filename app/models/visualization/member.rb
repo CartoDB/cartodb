@@ -42,6 +42,13 @@ module CartoDB
         self
       end #fetch
 
+      def delete
+        overlays.destroy
+        repository.delete(id)
+        self.attributes.keys.each { |key| self.send("#{key}=", nil) }
+        self
+      end #delete
+
       def to_hash
         Presenter.new(self).to_poro
       end #to_hash
@@ -50,13 +57,6 @@ module CartoDB
         options = { full: false, user_name: user.username }
         VizzJSON.new(self, options, configuration).to_poro
       end #to_hash
-
-      def delete
-        overlays.destroy
-        repository.delete(id)
-        self.attributes.keys.each { |key| self.send("#{key}=", nil) }
-        self
-      end #delete
 
       def overlays
         @overlays ||= Overlay::Collection.new(visualization_id: id).fetch
@@ -88,14 +88,14 @@ module CartoDB
         return true 
       end #public?
 
-      def authorize?(user)
-        user.maps.map(&:id).include?(map_id)
-      end #authorize?
-
       def privacy
         return 'PUBLIC' unless table
         return table.privacy_text
       end #privacy
+
+      def authorize?(user)
+        user.maps.map(&:id).include?(map_id)
+      end #authorize?
 
       private
 

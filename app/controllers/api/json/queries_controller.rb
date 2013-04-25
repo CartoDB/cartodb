@@ -1,31 +1,32 @@
 # coding: UTF-8
-
 class Api::Json::QueriesController < Api::ApplicationController
   ssl_required :run
     
   def run
+    query = params[:sql]
     # Sanity check
-    raise "You must indicate a sql query in the query parameter" if params[:sql].blank?
-    raise "System tables are forbidden" if params[:sql] =~ /[ ,"'(]pg_.+/
+    raise "You must indicate a sql query in the query parameter" if query.blank?
+    affected_tables = CartoDB::SqlParser.new(query, connection: current_user.in_database).affected_tables
+    raise "System tables are forbidden" if affected_tables.any? { |t| t =~ /[ ,"'(]*pg_.+/ }
 
     params[:rows_per_page] = 40 unless params[:rows_per_page].present?
     params[:page] = 0 unless params[:page].present?
 
     # Window SELECT queries, run the others straight ahead
-    q = if /\Aselect/i.match params[:sql].strip
+    q = if /\Aselect/i.match query.strip
       page, per_page = CartoDB::Pagination.get_page_and_per_page(params)
       order_fragment = (params[:order_by].blank? ? "" : "ORDER BY #{params[:order_by]} #{(params[:mode] == 'des' ? 'DESC' : 'ASC')}")
-      "SELECT * FROM (#{params[:sql].gsub(/;\s*$/, '')}) AS subq #{order_fragment} LIMIT #{per_page} OFFSET #{page}"
+      "SELECT * FROM (#{query.gsub(/;\s*$/, '')}) AS subq #{order_fragment} LIMIT #{per_page} OFFSET #{page}"
     else
-      params[:sql]
+      query
     end
 
     # Run query
     query_result = current_user.run_pg_query(q)
     
-    if params[:sql].downcase.include? "create table "
+    if query.downcase.include? "create table "
       begin
-        params[:sql].downcase.split("create table ").each do |statement|
+        query.downcase.split("create table ").each do |statement|
           table_name = statement.split(/[\s\(]/).first
           if table_name
             @table = Table.new
@@ -40,7 +41,7 @@ class Api::Json::QueriesController < Api::ApplicationController
         CartoDB::Logger.info "exception automatically creating new cartodb table", errors
       end
     end
-    if params[:sql].downcase.include? "drop table "
+    if query.downcase.include? "drop table "
       begin
         #get all tables in user_tables
         #check each if exists in database
@@ -59,10 +60,6 @@ class Api::Json::QueriesController < Api::ApplicationController
       end
     end
     
-    # log results of query
-    @to_log = params[:sql]          
-    Resque.enqueue(Resque::QueriesThresholdJobs, current_user.id, params[:sql], query_result[:time])
-
     # Return to client as JSONP        
     render_jsonp Yajl::Encoder.encode(query_result)
   rescue => e

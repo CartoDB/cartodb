@@ -1,9 +1,7 @@
 module CartoDB
   class Logger
     def self.info title = "CartoDB Log", message
-      Rails.logger.info "#{'=' * 10} #{title} #{'=' * 10}"
-      Rails.logger.info message
-      Rails.logger.info '=' * (22 + title.size)
+      Rails.logger.info "[#{title}] === #{message}"
     end
-  end  
-end    
+  end
+end

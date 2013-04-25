@@ -4,7 +4,7 @@ module CartoDB
   class ColumnTypecaster
 
     CONVERSION_MAP = {
-      'float' => {
+      'number' => {
         'boolean'           => 'number_to_boolean',
         'date'              => 'number_to_datetime',
         'datetime'          => 'number_to_datetime',
@@ -33,7 +33,8 @@ module CartoDB
     end #initialize
 
     def run
-      user_database.transaction do straight_cast end
+      return if nothing_to_do
+      user_database.transaction do straight_cast(@new_type.convert_to_db_type) end
     rescue => exception
       # attempt various lossy conversions by regex nullifying 
       # unmatching data and retrying conversion.
@@ -41,11 +42,10 @@ module CartoDB
       # conversions ok by default:
       #   * number => string
       #   * boolean => string
-
       user_database.transaction do
-        old_type = column_type(column_name)
+        old_type = column_type(column_name).convert_to_cartodb_type
         self.send conversion_method_for(old_type, new_type)
-        straight_cast
+        straight_cast(@new_type.convert_to_db_type)
       end
     end #run
 
@@ -57,14 +57,18 @@ module CartoDB
 
     attr_reader :user_database, :table_name, :old_type
 
+    def nothing_to_do
+      @new_type.blank? || @new_type == column_type(@column_name).convert_to_cartodb_type
+    end
+
     def conversion_method_for(old_type, new_type)
-      CONVERSION_MAP.fetch(old_type.to_s).fetch(new_type.to_s)
+      CONVERSION_MAP.fetch(old_type.to_s).fetch(new_type.to_s.convert_to_db_type)
     end #conversion_method_for
 
     def column_type(column_name)
       user_database.schema(table_name).select { |c|
         c[0] == column_name.to_sym
-      }.flatten.last.fetch(:type).to_s
+      }.flatten.last.fetch(:db_type).to_s
     end #column_type
 
     def straight_cast(new_type=self.new_type)

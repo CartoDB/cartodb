@@ -1,8 +1,17 @@
-2.0.10
+2.0.12
 ------
 
-2.0.9
------
+2.0.11
+------
+* Imports now never get stuck on the UI
+* Imports will populate created_at and updated_at fields as strings
+  as a fallback if dates cannot be parsed.
+* Conversion of a numeric column to date is properly handled, 
+  by nullifying data in the column.
+* Vizjson now works with and without SSL
+* Fixed various errors when changing column types using the UI
+* Invalidates varnish cache after column modifications using the UI
+* Fixed error when trying to import urls with query string parameters
 
 2.0.8 (25/03/13)
 -----

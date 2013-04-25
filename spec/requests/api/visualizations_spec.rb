@@ -6,6 +6,7 @@ require_relative '../../spec_helper'
 require_relative '../../../app/controllers/api/json/visualizations_controller'
 require_relative '../../../services/data-repository/backend/sequel'
 require_relative '../../../app/models/visualization/migrator'
+require_relative '../../../app/models/overlay/migrator'
 
 include CartoDB
 include DataRepository
@@ -24,13 +25,21 @@ describe Api::Json::VisualizationsController do
       password: 'clientex'
     )
     @user.set_map_key
-    Sequel.extension(:pagination)
     @api_key = @user.get_map_key
   end
 
   before(:each) do
     @db = Sequel.sqlite
+    Sequel.extension(:pagination)
+
     Visualization::Migrator.new(@db).migrate
+    Visualization.repository  = 
+      DataRepository::Backend::Sequel.new(@db, :visualizations)
+
+    Overlay::Migrator.new(@db).migrate
+    Overlay.repository        =
+      DataRepository::Backend::Sequel.new(@db, :overlays)
+
     delete_user_data @user
     @headers = { 
       'CONTENT_TYPE'  => 'application/json',

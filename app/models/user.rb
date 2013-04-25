@@ -148,17 +148,17 @@ class User < Sequel::Model
     configuration = if options[:as]
       if options[:as] == :superuser
         ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-          'database' => self.database_name
+          'database' => self.database_name, :logger => ::Rails.logger
         )
       elsif options[:as] == :public_user
         ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-          'database' => self.database_name,
+          'database' => self.database_name, :logger => ::Rails.logger,
           'username' => CartoDB::PUBLIC_DB_USER, 'password' => ''
         )
       end
     else
       ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-        'database' => self.database_name,
+        'database' => self.database_name, :logger => ::Rails.logger,
         'username' => database_username, 'password' => database_password
       )
     end
@@ -360,7 +360,7 @@ class User < Sequel::Model
   #
   # TODO: Without a full table scan, ignoring the_geom_webmercator, we cannot accuratly asses table size
   # Needs to go on a background job.
-  def db_size_in_bytes(use_total = false)
+  def db_size_in_bytes
     attempts = 0
     begin
       in_database(:as => :superuser).fetch("SELECT CDB_UserDataSize()").first[:cdb_userdatasize]
@@ -448,8 +448,8 @@ class User < Sequel::Model
     self.over_disk_quota? || self.over_table_quota?
   end
 
-  def remaining_quota(use_total = false)
-    self.quota_in_bytes - self.db_size_in_bytes(use_total)
+  def remaining_quota
+    self.quota_in_bytes - self.db_size_in_bytes
   end
 
   def disk_quota_overspend

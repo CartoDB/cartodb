@@ -19,7 +19,7 @@ module CartoDB
       def load(user_metadata={})
         transform(user_metadata).each do |key, data| 
           break if data.empty?
-          redis.set key, *data.to_a.flatten
+          data.each { |field, value| redis.hset(key, field, value) }
         end
       end #load
 
@@ -34,6 +34,7 @@ module CartoDB
       def massage(data)
         transformed = data.inject(Hash.new) do |memo, tuple|
           key, value = *tuple
+          memo.store(key, user.id) if key == 'id'
           memo.store(key, alter(value, user)) if key == 'database_name'
           memo
         end

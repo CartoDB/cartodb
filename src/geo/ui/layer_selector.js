@@ -22,7 +22,7 @@ cdb.geo.ui.LayerView = cdb.core.View.extend({
   },
 
   events: {
-    "click": '_onSwitchClick',
+    "click": '_onSwitchClick'
   },
 
   initialize: function() {
@@ -129,7 +129,7 @@ cdb.geo.ui.LayerSelector = cdb.core.View.extend({
 
       var layerView = new cdb.geo.ui.LayerView({
         name: l.get("name"),
-        template_base: 'table/views/layer_item',
+        template_base: 'table/views/layer_item'
       }).bind("switchChanged", self.switchChanged, self);
 
       self.$el.find("ul").append(layerView.render().el);

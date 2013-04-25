@@ -265,17 +265,14 @@ class User < Sequel::Model
   end
 
   def dedicated_support?
-    return true unless Cartodb.config[:cartodb_com_hosted]
     [/FREE/i, /MAGELLAN/i].select { |rx| self.account_type =~ rx }.empty?
   end
 
   def remove_logo?
-    return true unless Cartodb.config[:cartodb_com_hosted]
     [/FREE/i, /MAGELLAN/i, /JOHN SNOW/i].select { |rx| self.account_type =~ rx }.empty?
   end
 
   def import_quota
-    return 3 unless Cartodb.config[:cartodb_com_hosted]
     self.account_type.downcase == 'free' ? 1 : 3
   end
 
@@ -360,7 +357,7 @@ class User < Sequel::Model
   #
   # TODO: Without a full table scan, ignoring the_geom_webmercator, we cannot accuratly asses table size
   # Needs to go on a background job.
-  def db_size_in_bytes
+  def db_size_in_bytes(use_total = false)
     attempts = 0
     begin
       in_database(:as => :superuser).fetch("SELECT CDB_UserDataSize()").first[:cdb_userdatasize]
@@ -448,8 +445,8 @@ class User < Sequel::Model
     self.over_disk_quota? || self.over_table_quota?
   end
 
-  def remaining_quota
-    self.quota_in_bytes - self.db_size_in_bytes
+  def remaining_quota(use_total = false)
+    self.quota_in_bytes - self.db_size_in_bytes(use_total)
   end
 
   def disk_quota_overspend
@@ -495,13 +492,19 @@ class User < Sequel::Model
     end
   end
 
-  # This user's currently running import jobs
   def importing_jobs
     imports = DataImport.where(state: ['complete', 'failure']).invert
       .where(user_id: self.id)
       .where { created_at > Time.now - 24.hours }.all
-    
-    imports.delete_if &:mark_as_failed_if_stuck!
+    running_import_ids = Resque::Worker.all.map { |worker| worker.job["payload"]["args"].first["job_id"] rescue nil }.compact
+    imports.map do |import|
+      if import.created_at < Time.now - 5.minutes && !running_import_ids.include?(import.id)
+        import.failed!
+        nil
+      else
+        import
+      end
+    end.compact
   end
 
   def job_tracking_identifier
@@ -553,11 +556,11 @@ class User < Sequel::Model
 
   # Cartodb functions
   def load_cartodb_functions
-    in_database(as: :superuser) do |user_database|
+    in_database(:as => :superuser) do |user_database|
       user_database.transaction do
         glob = Rails.root.join('lib/sql/*.sql')
+
         Dir.glob(glob).each do |f|
-          CartoDB::Logger.info "Loading CartoDB SQL function #{File.basename(f)} into #{database_name}"
           @sql = File.new(f).read
           user_database.run(@sql)
         end

@@ -19,8 +19,8 @@ class Layer < Sequel::Model
   plugin :association_dependencies, :maps => :nullify, :users => :nullify
 
   def public_values
-    Hash[PUBLIC_ATTRIBUTES.map{ |a| [a.sub(/_for_api$/, ''), self.send(a)] }]
-  end
+    Hash[ PUBLIC_ATTRIBUTES.map { |attribute| [attribute, send(attribute)] } ]
+  end #public_values
 
   def validate
     super
@@ -85,4 +85,9 @@ class Layer < Sequel::Model
       "tiles" => [url]
     }.to_json
   end
+
+  def copy
+    attributes = public_values.select { |k, v| k != 'id' }
+    Layer.new(attributes)
+  end #copy
 end

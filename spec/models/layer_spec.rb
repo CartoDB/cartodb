@@ -165,4 +165,14 @@ describe Layer do
     end
   end
 
+  describe '#copy' do
+    it 'returns a copy of the layer' do
+      layer       = Layer.new(kind: 'carto', options: { style: 'bogus' }).save
+      layer_copy  = layer.copy
+
+      layer_copy.kind.should    == layer.kind
+      layer_copy.options.should == layer.options
+      layer_copy.id.should be_nil
+    end
+  end
 end

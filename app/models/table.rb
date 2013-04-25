@@ -15,7 +15,7 @@ class Table < Sequel::Model(:user_tables)
     :id => :id, :name => :name, :privacy => :privacy_text, :tags => :tags_names,
     :schema => :schema, :updated_at => :updated_at, :rows_counted => :rows_estimated,
     :table_size => :table_size, :map_id => :map_id, :description => :description,
-    :geometry_types => :geometry_types, :visualization_id => :visualization_id
+    :geometry_types => :geometry_types, :visualization_ids => :visualization_ids
   }
 
   DEFAULT_THE_GEOM_TYPE = "geometry"
@@ -1251,15 +1251,20 @@ TRIGGER
     self.private? ? 'PRIVATE' : 'PUBLIC'
   end
 
-  def visualization
-    visualization = CartoDB::Visualization::Collection.new( 
-      map_id: [map_id]
-    ).fetch.first
-  end #visualization
+  def visualizations
+    CartoDB::Visualization::Collection.new(map_id: [map_id]).fetch
+  end #visualizations
 
-  def visualization_id
-    visualization.id if visualization
-  end #visualization_id
+  def visualization_ids
+    visualizations.map(&:id)
+  end #visualization_ids
+
+  def table_visualization
+    CartoDB::Visualization::Collection.new.fetch(
+      map_id: [map_id],
+      type:   'table'
+    ).first
+  end #visualization
 
   private
 

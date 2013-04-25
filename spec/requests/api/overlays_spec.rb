@@ -5,6 +5,7 @@ require 'json'
 require_relative '../../spec_helper'
 require_relative '../../../app/controllers/api/json/overlays_controller'
 require_relative '../../../app/models/visualization/migrator'
+require_relative '../../../app/models/overlay/migrator'
 
 include CartoDB
 include DataRepository
@@ -17,24 +18,32 @@ describe Api::Json::OverlaysController do
   include Rack::Test::Methods
 
   before(:all) do
-    Sequel.extension(:pagination)
     @user = create_user(
       username: 'test',
       email:    "client@example.com",
       password: "clientex"
     )
     @user.set_map_key
+    @api_key = @user.get_map_key
   end
 
   before(:each) do
     @db = Sequel.sqlite
-    CartoDB::Visualization::Migrator.new(@db).migrate
+    Sequel.extension(:pagination)
+
+    Visualization::Migrator.new(@db).migrate
+    Visualization.repository  = 
+      DataRepository::Backend::Sequel.new(@db, :visualizations)
+
+    Overlay::Migrator.new(@db).migrate
+    Overlay.repository        =
+      DataRepository::Backend::Sequel.new(@db, :overlays)
+
     delete_user_data @user
     @headers = { 
       "CONTENT_TYPE" => 'application/json',
       "HTTP_HOST" => "test.localhost.lan"
     }
-    @api_key = @user.get_map_key
   end
 
   describe 'POST /api/v1/viz/:visualization_id/overlays' do

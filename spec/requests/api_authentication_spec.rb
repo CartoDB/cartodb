@@ -1,7 +1,7 @@
-require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
+# encoding: utf-8
+require_relative '../spec_helper'
 
 describe "API Authentication" do
-
   before(:each) do
     User.all.each(&:destroy)
     @user = create_user(:email => "client@example.com", :password => "clientex")
@@ -78,7 +78,6 @@ describe "API Authentication" do
   end
 
   describe "Api key auth" do
-
     before(:each) do
       @random_string = (0...8).map{65.+(rand(25)).chr}.join
     end
@@ -111,8 +110,6 @@ describe "API Authentication" do
       get v1_tables_path, {:api_key => @user.get_map_key}, {'HTTP_HOST' => "#{@user.username}.testhost.lan"}
       status.should == 200
     end
-
   end
-
 end
 

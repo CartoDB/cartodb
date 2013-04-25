@@ -112,35 +112,34 @@ describe User do
 
   it "should correctly count real tables" do
     @user.in_database.run('create table ghost_table (test integer)')
-    @user.real_tables.map { |c| c[:relname] }.should =~ ["import_csv_1", "twitters", "ghost_table"]
+    @user.real_tables.map { |c| c[:relname] }.should =~ ["ghost_table", "import_csv_1", "twitters"]
     @user.real_tables.size.should == 3
     @user.tables.count.should == 2
   end
 
   it "should generate a data report" do
     @user2.data(:extended => true).should == {
-      :id => @user2.id,
-      :email => "user@example.com",
-      :username => "user",
-      :account_type => "FREE",
-      :private_tables => true,
-      :table_quota => 5,
-      :table_count => 1,
-      :byte_quota  => 104857600, 
-      :remaining_table_quota => 4, 
-      :remaining_byte_quota => 104841216.0, 
-      :api_calls => nil, 
-      :api_key => @user2.get_map_key, 
-      :layers => [],
-      :last_active_time => nil,
-      :db_size_in_bytes => 16384,
-      :total_db_size_in_bytes => 16384,
-      :real_table_count => 1,
-      :biggest_table_name => "my_first_table",
-      :biggest_table_size_diff => 16374
+      id: @user2.id,
+      email: "user@example.com",
+      username: "user",
+      account_type: "FREE",
+      table_quota: 5,
+      table_count: 1,
+      byte_quota: 104857600, 
+      remaining_table_quota: 4, 
+      remaining_byte_quota: 104841216.0, 
+      api_calls: nil, 
+      api_key: @user2.get_map_key, 
+      actions: { private_tables: true, dedicated_support: false, import_quota: 1, remove_logo: false },
+      layers: [],
+      last_active_time: nil,
+      db_size_in_bytes: 16384,
+      real_table_count: 1,
+      biggest_table_name: "my_first_table",
+      biggest_table_size_diff: 16374
     }
 
-    @user2.data.keys.should =~ [:id, :email, :username, :account_type, :private_tables, :table_quota, :table_count, :byte_quota, :remaining_table_quota, :remaining_byte_quota, :api_calls, :api_key, :layers]
+    @user2.data.keys.should =~ [:id, :email, :username, :account_type, :actions, :table_quota, :table_count, :byte_quota, :remaining_table_quota, :remaining_byte_quota, :api_calls, :api_key, :layers]
   end
 
   it "should update remaining quotas when adding or removing tables" do

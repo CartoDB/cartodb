@@ -1,10 +1,8 @@
-# coding: UTF-8
-
-require File.expand_path(File.dirname(__FILE__) + '/acceptance_helper')
+# encoding: utf-8
+require_relative '../acceptance_helper'
 
 feature "Tables", :js => true do
-
-  background do
+  before do 
     @user  = FactoryGirl.create(:user_with_private_tables)
     @table = FactoryGirl.create(:table, :user_id => @user.id,
                                         :name => 'Twitter followers',
@@ -160,5 +158,4 @@ feature "Tables", :js => true do
 
     page.find("th[c='age'][type='number'] h3").text.should == "age"
   end
-
 end

@@ -15,6 +15,8 @@ module CartoDB
       include DataRepository
       include Helpers
 
+	    PG_BOUNCER_UPDATER = "/usr/local/bin/regenerate.pgbouncer.pg_auth"
+
       def initialize(arguments)
         @psql             = arguments.fetch(:psql)
         @database_owner   = arguments.fetch(:database_owner)
@@ -56,7 +58,9 @@ module CartoDB
 
         to_stdout("Setting password for database user")
         rdbms.set_password(environment.database_username, user.database_password)
-
+        `#{PG_BOUNCER_UPDATER}` if ENV['RAILS_ENV'] == 'staging'
+        to_stdout("Waiting for pg_bouncer authentication DB to be updated")
+	      sleep 20
         to_stdout("Loading metadata")
         meta_loader.user = user
         meta_loader.environment = environment
@@ -75,7 +79,7 @@ module CartoDB
         def user.after_create; end
 
         payload    = relocation.fetch('users').readlines.join
-        attributes = JSON.parse(payload).first
+        attributes = ::JSON.parse(payload).first
         attributes.delete('id')
         attributes.each { |k, v| @user.send(:"#{k}=", v) }
 
@@ -92,7 +96,7 @@ module CartoDB
 
       def load_database
         dump    = File.join(Relocator::TMP_DIR, relocation.path_for('dump.sql'))
-        command = "#{psql} #{user.database_name} < #{dump}"
+        command = "#{psql} -U postgres #{user.database_name} < #{dump}"
 
         `#{command}`
         puts $?

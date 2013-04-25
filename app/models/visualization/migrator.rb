@@ -15,23 +15,10 @@ module CartoDB
           String    :id, primary_key: true
           String    :name
           String    :description
-          String    :map_id
+          Integer   :map_id, index: true
           String    :type
           String    :tags
         end
-
-        @db.create_table :overlays do
-          String    :id,                null: false, primary_key: true
-          Integer   :order,             null: false
-          String    :options,           text: true
-          String    :type
-          String    :visualization_id,  index: true
-        end
-
-        Visualization.repository  = 
-          DataRepository::Backend::Sequel.new(@db, :visualizations)
-        Overlay.repository        =
-          DataRepository::Backend::Sequel.new(@db, :overlays)
       end #migrate
     end # Migrator
   end # Visualization

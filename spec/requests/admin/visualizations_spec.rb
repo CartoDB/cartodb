@@ -24,13 +24,17 @@ describe Admin::VisualizationsController do
       password: 'test'
     )
     @user.set_map_key
-    Sequel.extension(:pagination)
     @api_key = @user.get_map_key
   end
 
   before(:each) do
     @db = Sequel.sqlite
+    Sequel.extension(:pagination)
+
     Visualization::Migrator.new(@db).migrate
+    Visualization.repository  = 
+      DataRepository::Backend::Sequel.new(@db, :visualizations)
+
     delete_user_data @user
     @headers = { 
       'CONTENT_TYPE'  => 'application/json',

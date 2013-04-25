@@ -1,4 +1,5 @@
 # encoding: utf-8
+require_relative './map/copier'
 
 class Map < Sequel::Model
   self.raise_on_save_failure = false
@@ -82,6 +83,10 @@ class Map < Sequel::Model
       "obj.http.X-Cache-Channel ~ #{t.varnish_key}:vizjson"
     )
   end #invalidate_varnish_cache
+
+  def copy_for(user)
+    CartoDB::Map::Copier.new(self, user).copy
+  end #copy
 
   private
 

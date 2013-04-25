@@ -7,7 +7,6 @@ class Api::Json::TablesController < Api::ApplicationController
 
   before_filter :load_table, :except => [:index, :create, :vizzjson]
   before_filter :set_start_time
-  after_filter  :record_query_threshold
   #before_filter :link_ghost_tables
 
   def index
@@ -143,16 +142,5 @@ class Api::Json::TablesController < Api::ApplicationController
   def load_table
     @table = Table.find_by_identifier(current_user.id, params[:id])
   end
-
-  def record_query_threshold
-    if [200, 204].include?(response.status)
-      case action_name
-        when "create"
-          CartoDB::QueriesThreshold.incr(current_user.id, "other", Time.now - @time_start)
-        when "destroy"
-          CartoDB::QueriesThreshold.incr(current_user.id, "other", Time.now - @time_start)
-      end
-    end
-  end
-
 end
+

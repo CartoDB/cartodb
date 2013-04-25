@@ -53,7 +53,7 @@ module CartoDB
       end #options_data
 
       def sql_from(options)
-        query = options.fetch('query', '')
+        query = options.fetch('query', '') || ''
         return query unless query.empty?
 
         default_query_for(options)

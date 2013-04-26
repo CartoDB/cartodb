@@ -747,7 +747,7 @@ describe CartoDB::Importer do
   before(:all) do
     @db = CartoDB::ImportDatabaseConnection.connection
     @db_opts = {:database => "cartodb_importer_test",
-                :username => "lorenzo", :password => '',
+                :username => "postgres", :password => '',
                 :host => 'localhost',
                 :port => 5432}
     create_user(:username => 'test', :email => "client@example.com", :password => "clientex", :table_quota => 100, :disk_quota => 500.megabytes)

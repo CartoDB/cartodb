@@ -1,5 +1,4 @@
 # coding: UTF-8
-
 class Api::Json::QueriesController < Api::ApplicationController
   ssl_required :run
     
@@ -61,10 +60,6 @@ class Api::Json::QueriesController < Api::ApplicationController
       end
     end
     
-    # log results of query
-    @to_log = query
-    Resque.enqueue(Resque::QueriesThresholdJobs, current_user.id, query, query_result[:time])
-
     # Return to client as JSONP        
     render_jsonp Yajl::Encoder.encode(query_result)
   rescue => e

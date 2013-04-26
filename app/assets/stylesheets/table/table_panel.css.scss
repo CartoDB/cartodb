@@ -880,7 +880,8 @@
               .hidden { display: none; }
 
               .legend { font-size:13px; color: #666666; }
-              .empty  { font-size:13px; color: #FF9999; }
+              .empty  { display:none; font-size:13px; color: #FF9999; }
+              .only   { display:none; font-size:13px; color: #FFAB37; }
               .range  { font-size:13px; color: #4DC964; }
 
               .title  { float: left; margin: 0 0 0 30px; }
@@ -913,6 +914,8 @@
             padding-right: 0;
 
             &.empty { height: auto; }
+            .only   { @include inline-block(); }
+            &.empty .empty  { @include inline-block(); }
 
           }
 
@@ -946,6 +949,7 @@
             position:relative;
             margin: 0 0 29px 0;
             &.empty { margin: 0 0 15px 0; }
+            &.empty .items { display:none; }
           }
 
           .textarea {

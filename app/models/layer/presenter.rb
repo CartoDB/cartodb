@@ -53,11 +53,17 @@ module CartoDB
       end #options_data
 
       def sql_from(options)
-        query = options.fetch('query', '') || ''
-        return query unless query.empty?
+        wrapper = options.fetch('query_wrapper', nil)
+        default = default_query_for(options)
+        query   = options.fetch('query', default) || default
 
-        default_query_for(options)
+        wrap(query, wrapper)
       end #sql_from
+
+      def wrap(query, wrapper=nil)
+        return query unless wrapper
+        EJS.evaluate(wrapper, sql: query)
+      end #wrap
 
       def default_query_for(options)
         "select * from #{options.fetch('table_name')}"

@@ -40,9 +40,8 @@ module CartoDB
       def process!
         import_csv_data
         error_helper(5001) if rows_imported == 0
-        rename_wkb_to_the_geom
-        rename_to_geojson(detect_geometry_column)
-        column_names.include?("geojson") ? read_as_geojson : create_the_geom
+        rename_to_the_geom if column_names.include? "wkb_geometry"
+        column_names.include?("geojson") ?  read_as_geojson : create_the_geom
 
         unless CartoDB::ColumnSanitizer.new(db, suggested_name).run
           data_import.log_update("ERROR: Failed to sanitize some column names")
@@ -202,40 +201,29 @@ module CartoDB
         raise exception_message if exception_message
       end #error_helper
 
-      def detect_geometry_column
-        (column_names & ["the_geom", "geojson"]).first
-      end #detect_geometry_column
-
-      def rename_wkb_to_the_geom
-        return unless column_names.include? "wkb_geometry"
+      def rename_to_the_geom
         db.run(%Q{
           ALTER TABLE #{suggested_name} 
           RENAME COLUMN wkb_geometry TO the_geom
         })
       end #rename_to_the_geom
 
-      def rename_to_geojson(column_name)
-        return if column_name.blank? || column_name == "geojson"
-        data_import.log_update("Renaming #{column_name} to geojson on table #{suggested_name}")        
-        db.run(%Q{ALTER TABLE #{suggested_name} RENAME COLUMN #{column_name} TO geojson})
-      end #rename_to_geojson
-
       def read_as_geojson
-        data_import.log_update("Trying to read geojson column on table #{suggested_name}")
+        data_import.log_update("update the_geom")
         geojson       = RGeo::GeoJSON.decode(geojson_data[:geojson], json_parser: :json)
         geometry_type = geojson.geometry_type.type_name.upcase
 
         if geometry_type
           # move original geometry column around
-          data_import.log_update("Converting geojson to the_geom")
           db.run("SELECT AddGeometryColumn('#{suggested_name}', 'the_geom', 4326, 'geometry', 2)")
+
+          data_import.log_update("converting GeoJSON to the_geom")
+
           update_the_geom_with(massaged_geojson)
           indexer.add(suggested_name, random_index_name)
           column_names << 'the_geom'
           column_names.delete('geojson')
           drop_geojson_column(suggested_name)
-        else
-          return if column_names.include?("the_geom")
         end
       rescue => exception
         column_names.delete('the_geom')

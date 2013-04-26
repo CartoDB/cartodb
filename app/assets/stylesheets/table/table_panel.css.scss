@@ -879,7 +879,7 @@
 
               .hidden { display: none; }
 
-              .legend    { font-size:13px; color: #666666; }
+              .legend    { float:left; font-size:13px; color: #666666; }
               .empty     { display:none; font-size:13px; color: #FF9999; }
               .only      { display:none; font-size:13px; color: #FFAB37; }
               .loading   { display:none; font-size:13px; color: #FFAB37; }
@@ -930,15 +930,14 @@
 
             &.hidden { display: none; }
 
-            @include inline-block();
-            vertical-align: top;
+            float:left;
+            margin-left: 5px;
 
             li {
-              @include inline-block();
-              vertical-align: top;
               color: #4DC964;
 
               a {
+                vertical-align: top;
                 color: #4DC964;
                 font-size:13px;
 

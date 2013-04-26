@@ -1,5 +1,6 @@
 # encoding: utf-8
 require 'json'
+require 'ejs'
 
 module CartoDB
   class Layer
@@ -7,9 +8,8 @@ module CartoDB
       CARTO_CSS_VERSION = '2.0.1'
 
       def initialize(layer, options={}, configuration={})
-        @layer          = layer
-        @options        = options
-        @configuration  = configuration
+        @layer    = layer
+        @options  = options
       end #initialize
 
       def to_poro
@@ -26,7 +26,7 @@ module CartoDB
   
       private
 
-      attr_reader :layer, :options, :configuration
+      attr_reader :layer, :options
 
       def base?(layer)
         layer.kind != 'carto'
@@ -44,8 +44,10 @@ module CartoDB
 
       def options_data
         return layer.options if options[:full]
+        sql = sql_from(layer.options)
         {
-          sql:                sql_from(layer.options),
+          sql:                sql,
+          query:              wrap(sql, layer.options),
           cartocss:           layer.options.fetch('tile_style'),
           cartocss_version:   CARTO_CSS_VERSION,
           interactivity:      layer.options.fetch('interactivity')
@@ -53,14 +55,13 @@ module CartoDB
       end #options_data
 
       def sql_from(options)
-        wrapper = options.fetch('query_wrapper', nil)
-        default = default_query_for(options)
-        query   = options.fetch('query', default) || default
-
-        wrap(query, wrapper)
+        query = options.fetch('query', '')
+        return default_query_for(options) if query.nil? || query.empty?
+        query
       end #sql_from
 
-      def wrap(query, wrapper=nil)
+      def wrap(query, options)
+        wrapper = options.fetch('query_wrapper', nil)
         return query if wrapper.nil? || wrapper.empty?
         EJS.evaluate(wrapper, sql: query)
       end #wrap

@@ -61,7 +61,7 @@ module CartoDB
       end #sql_from
 
       def wrap(query, wrapper=nil)
-        return query unless wrapper
+        return query if wrapper.nil? || wrapper.empty?
         EJS.evaluate(wrapper, sql: query)
       end #wrap
 

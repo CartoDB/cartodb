@@ -40,7 +40,7 @@ describe Visualization::NameGenerator do
 
   def negative_checker
     checker = Object.new
-    def checker.available?(user, candidate)
+    def checker.available?(candidate)
       existing = [
         'visualization 1',
         'Untitled visualization',

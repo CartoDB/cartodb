@@ -11,7 +11,7 @@ module CartoDB
       end #initialize
 
       def name(candidate=PATTERN, iteration=0)
-        return candidate if checker.available?(user, candidate)
+        return candidate if checker.available?(candidate)
 
         new_candidate = "#{candidate} #{iteration}"
         name(new_candidate, iteration + 1)

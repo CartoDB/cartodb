@@ -279,4 +279,3 @@ module CartoDB
     end # Loader
   end # CSV
 end # CartoDB
-

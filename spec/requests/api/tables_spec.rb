@@ -165,7 +165,6 @@ feature "API 1.0 tables management" do
   end
 
   scenario "Create a new table without schema" do
-    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
     post_json api_tables_url do |response|
       response.status.should be_success
       response.body[:id].should == response.headers['Location'].match(/\/(\d+)$/)[1].to_i
@@ -182,8 +181,6 @@ feature "API 1.0 tables management" do
   end
 
   scenario "Create a new table specifing a name, description and a schema" do
-    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
-
     post_json api_tables_url, {:name => "My new imported table", :schema => "code varchar, title varchar, did integer, date_prod timestamp, kind varchar", :description => "Testing is awesome"} do |response|
       response.status.should be_success
       response.body[:name].should == "my_new_imported_table"
@@ -196,8 +193,6 @@ feature "API 1.0 tables management" do
   end
 
   scenario "Create a new table specifying a geometry of type point" do
-    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
-
     post_json api_tables_url, {:name => "My new imported table", :the_geom_type => "Point" } do |response|
       response.status.should be_success
       response.body[:name].should == "my_new_imported_table"
@@ -209,8 +204,6 @@ feature "API 1.0 tables management" do
   end
 
   scenario "Create a new table specifying a geometry of type polygon" do
-    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
-
     post_json api_tables_url, {:name => "My new imported table", :the_geom_type => "Polygon" } do |response|
       response.status.should be_success
       response.body[:name].should == "my_new_imported_table"
@@ -222,8 +215,6 @@ feature "API 1.0 tables management" do
   end
 
   scenario "Create a new table specifying a geometry of type line" do
-    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
-
     post_json api_tables_url, {:name => "My new imported table", :the_geom_type => "Line" } do |response|
       response.status.should be_success
       response.body[:name].should == "my_new_imported_table"
@@ -235,8 +226,6 @@ feature "API 1.0 tables management" do
   end
 
   scenario "Create a new table specifying tags" do
-    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
-
     post_json api_tables_url, {:name => "My new imported table", :tags => "environment,wadus" } do |response|
       response.status.should be_success
       response.body[:name].should == "my_new_imported_table"
@@ -246,7 +235,6 @@ feature "API 1.0 tables management" do
   end
 
   pending "Fail nicely when you create a new table with bad schema" do
-    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
     post_json api_tables_url, {:name => "My new imported table", :schema => "bla bla blat"} do |response|
       response.status.should == 400
     end
@@ -303,8 +291,6 @@ feature "API 1.0 tables management" do
   end
 
   scenario "Delete a table of mine" do
-    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
-
     table1 = create_table :user_id => @user.id, :name => 'My table #1', :privacy => Table::PRIVATE, :tags => "tag 1, tag 2,tag 3, tag 3"
 
     delete_json api_table_url(table1.name) do |response|
@@ -313,8 +299,6 @@ feature "API 1.0 tables management" do
   end
 
   scenario "Delete a table of another user" do
-    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).never
-
     another_user = create_user
     table1 = create_table :user_id => another_user.id, :name => 'My table #1', :privacy => Table::PRIVATE, :tags => "tag 1, tag 2,tag 3, tag 3"
 

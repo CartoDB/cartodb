@@ -874,16 +874,18 @@
               margin: 0;
               width: 340px;
 
+              text-align:left;
+
               clear:both;
               overflow:hidden;
 
               .hidden { display: none; }
 
-              .legend    { float:left; font-size:13px; color: #666666; }
-              .empty     { display:none; font-size:13px; color: #FF9999; }
-              .only      { display:none; font-size:13px; color: #FFAB37; }
-              .loading   { display:none; font-size:13px; color: #FFAB37; }
-              .range     { font-size:13px; color: #4DC964; }
+              .legend    { float:left; margin: 0 5px 0 0; font-size:13px; color: #666666; text-align: left; }
+              .empty     { float: left; display:none; font-size:13px; color: #FF9999; vertical-align: top; }
+              .only      { float: left; display:none; font-size:13px; color: #FFAB37; vertical-align: top; }
+              .loading   { float: left; display:none; font-size:13px; color: #FFAB37; vertical-align: top; }
+              .range     { float:left; font-size:13px; color: #4DC964; }
 
               .title  { float: left; margin: 0 0 0 30px; }
             }
@@ -910,15 +912,16 @@
           &:hover .scroll .jspVerticalBar { @include opacity(1); }
 
           .header {
+
             height: 35px;
             padding-left: 0;
             padding-right: 0;
 
+            &.loading, &.empty, &.only { height: auto; }
+
             .title {
-            .loading, .empty, .only   { @include inline-block(); }
-
+              .loading, .empty, .only   { display: block; }
             }
-
 
           }
 
@@ -931,7 +934,6 @@
             &.hidden { display: none; }
 
             float:left;
-            margin-left: 5px;
 
             li {
               color: #4DC964;

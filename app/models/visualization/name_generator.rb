@@ -5,9 +5,9 @@ module CartoDB
     class NameGenerator
       PATTERN = 'Untitled visualization'
 
-      def initialize(user, checker=NameChecker.new)
+      def initialize(user, checker=nil)
         @user     = user
-        @checker  = checker
+        @checker  = checker || NameChecker.new(user, Rails::Sequel.connection)
       end #initialize
 
       def name(candidate=PATTERN, iteration=0)
@@ -19,17 +19,8 @@ module CartoDB
 
       private
 
-      attr_reader :checker, :user, :candidate
+      attr_reader :checker, :user
     end # NameGenerator
-
-    def NameChecker
-      def available?(candidate)
-        db[:visualizations]
-          .select(:name)
-          .where(map_id: user.maps.map(&:id))
-          .include?(candidate)
-      end #available?
-    end #NameChecker
   end # Visualization
 end # CartoDB
 

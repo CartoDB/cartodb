@@ -12,6 +12,8 @@
 * Fixed various errors when changing column types using the UI
 * Invalidates varnish cache after column modifications using the UI
 * Fixed error when trying to import urls with query string parameters
+* Added function CDB_UserTables to get user tables list
+* Added function CDB_ColumnType to get a user table column type
 
 2.0.8 (25/03/13)
 -----

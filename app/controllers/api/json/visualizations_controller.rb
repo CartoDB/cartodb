@@ -3,6 +3,7 @@ require 'json'
 require_relative '../../../models/visualization/member'
 require_relative '../../../models/visualization/presenter'
 require_relative '../../../models/visualization/collection'
+require_relative '../../../models/visualization/copier'
 
 class Api::Json::VisualizationsController < Api::ApplicationController
   include CartoDB
@@ -22,7 +23,17 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   end #index
 
   def create
-    member      = Visualization::Member.new(payload).store
+    if params[:source_visualization_id]
+      source    = Visualization::Member.new(
+                    id: params.fetch(:source_visualization_id)
+                  ).fetch
+      member    = Visualization::Copier.new(
+                    current_user, source, params.fetch(:name, nil)
+                  )
+    else
+      member    = Visualization::Member.new(payload).store
+    end
+
     collection  = Visualization::Collection.new.fetch
     collection.add(member)
     collection.store

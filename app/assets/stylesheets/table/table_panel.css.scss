@@ -879,10 +879,11 @@
 
               .hidden { display: none; }
 
-              .legend { font-size:13px; color: #666666; }
-              .empty  { display:none; font-size:13px; color: #FF9999; }
-              .only   { display:none; font-size:13px; color: #FFAB37; }
-              .range  { font-size:13px; color: #4DC964; }
+              .legend    { font-size:13px; color: #666666; }
+              .empty     { display:none; font-size:13px; color: #FF9999; }
+              .only      { display:none; font-size:13px; color: #FFAB37; }
+              .loading   { display:none; font-size:13px; color: #FFAB37; }
+              .range     { font-size:13px; color: #4DC964; }
 
               .title  { float: left; margin: 0 0 0 30px; }
             }
@@ -913,9 +914,11 @@
             padding-left: 0;
             padding-right: 0;
 
-            &.empty { height: auto; }
-            .only   { @include inline-block(); }
-            &.empty .empty  { @include inline-block(); }
+            .title {
+            .loading, .empty, .only   { @include inline-block(); }
+
+            }
+
 
           }
 
@@ -948,8 +951,8 @@
           .fields {
             position:relative;
             margin: 0 0 29px 0;
-            &.empty { margin: 0 0 15px 0; }
-            &.empty .items { display:none; }
+            &.only, &.empty { margin: 0 0 15px 0; }
+            &.only .items, &.empty .items { display:none; }
           }
 
           .textarea {

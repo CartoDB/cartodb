@@ -30,8 +30,9 @@ module CartoDB
       end #new_layers
 
       def link(user, map, layer)
-        layer.maps.push(map)
-        layer.users.push(user)
+        layer.save
+        layer.add_map(map)
+        layer.add_user(user)
         layer.save
       end #link
     end # Copier

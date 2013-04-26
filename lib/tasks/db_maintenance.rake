@@ -6,10 +6,11 @@ namespace :cartodb do
     ########################
     desc "Install/upgrade CARTODB SQL functions"
     task :load_functions => :environment do
+      functions_list = ENV['FUNCTIONS'].blank? ? [] : ENV['FUNCTIONS'].split(',')
       count = User.count
       User.all.each_with_index do |user, i|
         begin
-          user.load_cartodb_functions
+          user.load_cartodb_functions(functions_list)
           user.in_database(:as => :superuser).run("DROP FUNCTION IF EXISTS check_quota() CASCADE;")
           user.tables.all.each do |table|
             begin

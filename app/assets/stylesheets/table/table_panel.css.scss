@@ -915,6 +915,7 @@
 
             &.empty { height: auto; }
             .only   { @include inline-block(); }
+            &.empty .empty  { @include inline-block(); }
 
           }
 

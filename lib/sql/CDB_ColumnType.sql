@@ -6,7 +6,8 @@ AS $$
     SELECT data_type 
       FROM information_schema.columns 
       WHERE
-        table_name = '' || $1 || ''
+        table_name IN (SELECT CDB_UserTables())
+        AND table_name = '' || $1 || ''
         AND column_name = '' || quote_ident($2) || '';
          
 $$ LANGUAGE SQL;

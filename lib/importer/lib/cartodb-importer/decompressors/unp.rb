@@ -66,7 +66,7 @@ module CartoDB
     end #data_for
 
     def log(message)
-      #@log.append("KMZ: #{message}")
+      @log << "KMZ: #{message}"
     end #log
 
    def supported?(filename)
@@ -96,11 +96,7 @@ module CartoDB
     end #generate_tempfile
 
     def rename(origin, destination)
-      begin
-        FileUtils.mv(origin, destination)
-      rescue ArgumentError => e
-        raise(e) unless e.message =~ /same file/
-      end
+      FileUtils.mv(origin, destination) rescue ""
       destination
     end #rename
 

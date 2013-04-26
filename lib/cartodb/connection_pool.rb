@@ -11,7 +11,7 @@ module CartoDB
     
     def fetch(configuration, &block)
       if @pool[connection_id(configuration)]
-        Rails.logger.info "[pool] Found a connection for #{connection_id(configuration)} (#{@pool.keys.size})"
+        Rails.logger.debug "[pool] Found a connection for #{connection_id(configuration)} (#{@pool.keys.size})"
         @pool[connection_id(configuration)][:last_accessed] = Time.now
         @pool[connection_id(configuration)][:connection]
       else
@@ -21,7 +21,7 @@ module CartoDB
         end
         connection = yield
         @pool[connection_id(configuration)] = { :connection => connection, :last_accessed => Time.now }
-        Rails.logger.info "[pool] Creating a new connection for #{connection_id(configuration)} (#{@pool.keys.size})"
+        Rails.logger.debug "[pool] Creating a new connection for #{connection_id(configuration)} (#{@pool.keys.size})"
         connection
       end
     end

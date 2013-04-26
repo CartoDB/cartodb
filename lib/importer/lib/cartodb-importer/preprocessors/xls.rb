@@ -37,11 +37,11 @@ module CartoDB
     end #preprocessor_for
 
     def xls
-      fix_carriage_returns_in_headers( Excel.new(origin_path) )
+      fix_carriage_returns_in_headers( Roo::Excel.new(origin_path) )
     end #xls
 
     def xlsx
-      fix_carriage_returns_in_headers( Excelx.new(origin_path) )
+      fix_carriage_returns_in_headers( Roo::Excelx.new(origin_path) )
     end #xlsx
 
     def ods
@@ -51,7 +51,6 @@ module CartoDB
     def fix_carriage_returns_in_headers(data)
       g = Array.new
       data.row(1).each{ |cell| g << cell.gsub('\n', '').strip }
-
       if data.row(1) != g
         cell_count = 1
 

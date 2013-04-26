@@ -33,6 +33,8 @@ class Api::Json::QueriesController < Api::ApplicationController
             @table.user_id = current_user.id
             @table.migrate_existing_table = table_name
             @table.save  
+            DataImport.where(user_id: current_user.id, table_name: @table.name)
+              .order(:id).last.finished! rescue ""
           end
         end
       # or, should the process of 'creating' the table fail if we can't register the table?

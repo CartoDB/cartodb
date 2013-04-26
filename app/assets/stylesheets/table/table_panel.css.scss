@@ -885,7 +885,7 @@
               .empty     { float: left; display:none; font-size:13px; color: #FF9999; vertical-align: top; }
               .only      { float: left; display:none; font-size:13px; color: #FFAB37; vertical-align: top; }
               .loading   { float: left; display:none; font-size:13px; color: #FFAB37; vertical-align: top; }
-              .range     { float:left; font-size:13px; color: #4DC964; }
+              .range     { float:left;  display:none; font-size:13px; color: #4DC964; }
 
               .title  { float: left; margin: 0 0 0 30px; }
             }

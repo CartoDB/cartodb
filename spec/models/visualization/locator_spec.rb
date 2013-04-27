@@ -23,10 +23,10 @@ describe Visualization::Locator do
     ).store
   end
 
-  describe '#find' do
+  describe '#get' do
     it 'fetches a Visualization::Member if passed an UUID' do
       locator     = Visualization::Locator.new
-      rehydrated  = locator.find(@visualization.id)
+      rehydrated  = locator.get(@visualization.id)
 
       rehydrated.name.should == @visualization.name
       rehydrated.description.should_not be_nil
@@ -34,7 +34,7 @@ describe Visualization::Locator do
 
     it 'fetches a Visualization::Member if passed a visualizatio name' do
       locator     = Visualization::Locator.new
-      rehydrated  = locator.find(@visualization.name)
+      rehydrated  = locator.get(@visualization.name)
 
       rehydrated.id.should == @visualization.id
       rehydrated.description.should_not be_nil
@@ -42,8 +42,8 @@ describe Visualization::Locator do
 
     it 'returns nil if no Visualization::Member found' do
       locator     = Visualization::Locator.new
-      locator.find('bogus').should be_nil
+      locator.get('bogus').should be_nil
     end
-  end #find
+  end #get
 end # Visualization::Locator
 

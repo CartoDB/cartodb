@@ -9,23 +9,23 @@ module CartoDB
         @repository = repository
       end #initialize
 
-      def find(uuid_or_name)
-        attributes = find_by_id(uuid_or_name) || find_by_name(uuid_or_name)
+      def get(uuid_or_name)
+        attributes = get_by_id(uuid_or_name) || get_by_name(uuid_or_name)
         return if attributes.nil? || attributes.empty?
         Visualization::Member.new(attributes) 
-      end #find
+      end #get
 
       private
 
       attr_reader :repository
 
-      def find_by_id(uuid)
+      def get_by_id(uuid)
         repository.fetch(uuid)
-      end #find_by_id
+      end #get_by_id
 
-      def find_by_name(name)
+      def get_by_name(name)
         repository.collection(name: name).first
-      end #find_by_name
+      end #get_by_name
     end # Locator
   end # Visualization
 end # CartoDB

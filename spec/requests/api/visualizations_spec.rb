@@ -8,7 +8,6 @@ require_relative '../../../services/data-repository/backend/sequel'
 require_relative '../../../app/models/visualization/migrator'
 require_relative '../../../app/models/overlay/migrator'
 
-include CartoDB
 include DataRepository
 
 def app
@@ -32,12 +31,12 @@ describe Api::Json::VisualizationsController do
     @db = Sequel.sqlite
     Sequel.extension(:pagination)
 
-    Visualization::Migrator.new(@db).migrate
-    Visualization.repository  = 
+    CartoDB::Visualization::Migrator.new(@db).migrate
+    CartoDB::Visualization.repository  = 
       DataRepository::Backend::Sequel.new(@db, :visualizations)
 
-    Overlay::Migrator.new(@db).migrate
-    Overlay.repository        =
+    CartoDB::Overlay::Migrator.new(@db).migrate
+    CartoDB::Overlay.repository        =
       DataRepository::Backend::Sequel.new(@db, :overlays)
 
     delete_user_data @user

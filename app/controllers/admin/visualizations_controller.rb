@@ -16,7 +16,7 @@ class Admin::VisualizationsController < ApplicationController
 
     if current_user.present?
       @visualization = 
-        CartoDB::Visualization::Member.new(id: params[:id]).fetch
+        CartoDB::Visualization::Locator.new.find(params.fetch(:id))
       respond_to { |format| format.html }
     else
       redirect_to "/viz/#{params[:id]}/public"
@@ -27,7 +27,7 @@ class Admin::VisualizationsController < ApplicationController
 
   def public
     @visualization = 
-        CartoDB::Visualization::Member.new(id: params[:id]).fetch
+      CartoDB::Visualization::Locator.new.find(params.fetch(:id))
 
     respond_to do |format|
       format.html { render 'public', layout: 'application_public' }
@@ -35,8 +35,9 @@ class Admin::VisualizationsController < ApplicationController
   end
 
   def embed_map
-    @subdomain  = request.subdomain
-    @table      = Table.find_by_subdomain(@subdomain, params[:id])
+    @visualization = 
+      CartoDB::Visualization::Locator.new.find(params.fetch(:id))
+    @table = @visualization.table
 
     if @table.blank? || @table.private?
       head :forbidden

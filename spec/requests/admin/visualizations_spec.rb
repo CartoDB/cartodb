@@ -70,6 +70,29 @@ describe Admin::VisualizationsController do
     end
   end # GET /viz/:id/public
 
+  describe 'GET /viz/:name/embed_map' do
+    it 'renders the view by passing a visualization name' do
+      attributes  = factory
+      name        = URI::encode(attributes.fetch('name'))
+      id          = attributes.fetch('id')
+
+      login_as(@user, scope: 'test')
+
+      get "/viz/#{name}/embed_map", {}, @headers
+      last_response.status.should == 403
+    end
+  end # GET /viz/:name/embed_map
+
+  describe 'GET /viz/:name/track_embed' do
+    it 'renders the view by passing a visualization name' do
+      name = URI::encode(factory.fetch('name'))
+      login_as(@user, scope: 'test')
+
+      get "/viz/#{name}/track_embed", {}, @headers
+      last_response.status.should == 200
+    end
+  end # GET /viz/:name/track_embed
+
   def factory
     map     = Map.create(user_id: @user.id)
     payload = {

@@ -6,9 +6,6 @@ require_relative '../../spec_helper'
 require_relative '../../../app/models/visualization/migrator'
 require_relative '../../../app/controllers/admin/visualizations_controller'
 
-include CartoDB
-include DataRepository
-
 def app
   CartoDB::Application.new
 end #app
@@ -18,6 +15,7 @@ describe Admin::VisualizationsController do
   include Warden::Test::Helpers
 
   before(:all) do
+
     @user = create_user(
       username: 'test',
       email:    'test@test.com',
@@ -31,8 +29,8 @@ describe Admin::VisualizationsController do
     @db = Sequel.sqlite
     Sequel.extension(:pagination)
 
-    Visualization::Migrator.new(@db).migrate
-    Visualization.repository  = 
+    CartoDB::Visualization::Migrator.new(@db).migrate
+    CartoDB::Visualization.repository  = 
       DataRepository::Backend::Sequel.new(@db, :visualizations)
 
     delete_user_data @user
@@ -69,6 +67,29 @@ describe Admin::VisualizationsController do
       last_response.status.should == 200
     end
   end # GET /viz/:id/public
+
+  describe 'GET /viz/:name/embed_map' do
+    it 'renders the view by passing a visualization name' do
+      attributes  = factory
+      name        = URI::encode(attributes.fetch('name'))
+      id          = attributes.fetch('id')
+
+      login_as(@user, scope: 'test')
+
+      get "/viz/#{name}/embed_map", {}, @headers
+      last_response.status.should == 403
+    end
+  end # GET /viz/:name/embed_map
+
+  describe 'GET /viz/:name/track_embed' do
+    it 'renders the view by passing a visualization name' do
+      name = URI::encode(factory.fetch('name'))
+      login_as(@user, scope: 'test')
+
+      get "/viz/track_embed", {}, @headers
+      last_response.status.should == 200
+    end
+  end # GET /viz/:name/track_embed
 
   def factory
     map     = Map.create(user_id: @user.id)

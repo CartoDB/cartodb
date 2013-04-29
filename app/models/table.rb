@@ -76,6 +76,10 @@ class Table < Sequel::Model(:user_tables)
     # tables must have a user
     errors.add(:user_id, "can't be blank") if user_id.blank?
 
+    errors.add(
+      :name, "is a reserved keyword, please choose a different one"
+    ) if self.name == 'layergroup'
+
     # privacy setting must be a sane value
     errors.add(:privacy, 'has an invalid value') if privacy != PRIVATE && privacy != PUBLIC
 

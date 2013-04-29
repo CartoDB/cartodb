@@ -54,6 +54,15 @@ describe Table do
       table2.name.should == "untitled_table_1"
     end
 
+    it 'is invalid with a "layergroup" name' do
+      table         = Table.new
+      table.user_id = @user.id
+      table.name    = 'layergroup'
+
+      table.valid?.should == false
+      table.errors.fetch(:name).first.should =~ /reserved keyword/
+    end
+
     it "should not allow to create tables using system names" do
       table = create_table(name: "cdb_tablemetadata", user_id: @user.id)
       table.name.should == "cdb_tablemetadata_1"

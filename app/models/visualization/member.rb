@@ -5,7 +5,7 @@ require 'json'
 require_relative './collection'
 require_relative '../overlay/collection'
 require_relative './presenter'
-require_relative './vizzjson'
+require_relative './vizjson'
 
 module CartoDB
   module Visualization
@@ -53,9 +53,9 @@ module CartoDB
         Presenter.new(self).to_poro
       end #to_hash
 
-      def to_vizzjson
+      def to_vizjson
         options = { full: false, user_name: user.username }
-        VizzJSON.new(self, options, configuration).to_poro
+        VizJSON.new(self, options, configuration).to_poro
       end #to_hash
 
       def overlays

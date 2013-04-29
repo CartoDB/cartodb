@@ -4,12 +4,13 @@ require_relative '../../../models/visualization/member'
 require_relative '../../../models/visualization/presenter'
 require_relative '../../../models/visualization/collection'
 require_relative '../../../models/visualization/copier'
+require_relative '../../../models/visualization/locator'
 
 class Api::Json::VisualizationsController < Api::ApplicationController
   include CartoDB
 
   ssl_required :index, :show, :create, :update, :destroy
-  skip_before_filter :api_authorization_required, only: [:vizzjson]
+  skip_before_filter :api_authorization_required, only: [:vizjson1, :vizjson2]
 
   def index
     collection  = Visualization::Collection.new.fetch(
@@ -43,8 +44,8 @@ class Api::Json::VisualizationsController < Api::ApplicationController
 
   def show
     begin
-      member    = Visualization::Member.new(id: params.fetch('id')).fetch
-      (head(201) and return) unless member.authorize?(current_user)
+      member = Visualization::Member.new(id: params.fetch('id')).fetch
+      return(head 201) unless member.authorize?(current_user)
       render_jsonp(member)
     rescue KeyError
       head :not_found
@@ -53,8 +54,8 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   
   def update
     begin
-      member    = Visualization::Member.new(id: params.fetch('id')).fetch
-      (head(201) and return) unless member.authorize?(current_user)
+      member = Visualization::Member.new(id: params.fetch('id')).fetch
+      return head(201) unless member.authorize?(current_user)
 
       member.attributes = payload
       member.store
@@ -65,34 +66,59 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   end #update
 
   def destroy
-    member      = Visualization::Member.new(id: params.fetch('id')).fetch
-    (head(201) and return) unless member.authorize?(current_user)
+    member = Visualization::Member.new(id: params.fetch('id')).fetch
+    return(head 201) unless member.authorize?(current_user)
 
     member.delete
-    head 204
+    return head 204
   end #destroy
 
-  def vizzjson
-    member = Visualization::Member.new(id: params[:id]).fetch
-    (head 204 and return) unless member.public?
-    render_jsonp(member.to_vizzjson)
+  def vizjson1
+    @visualization, @table = locator.get(params.fetch(:id), request.subdomain)
+
+    return(head 403) unless allow_vizjson_for?(@table)
+    set_vizjson_response_headers_for(@table)
+    render_jsonp(CartoDB::Map::Presenter.new(
+      @table.map, 
+      { full: false, url: "/api/v1/tables/#{@table.id}" },
+      Cartodb.config, 
+      CartoDB::Logger
+    ).to_poro)
+  end #vizjson1
+
+  def vizjson2
+    @visualization, @table = locator.get(params.fetch(:id), request.subdomain)
+    return(head 403) unless allow_vizjson_for?(@table)
+    set_vizjson_response_headers_for(@table)
+    render_jsonp(@visualization.to_vizjson)
   rescue KeyError
-    head :forbidden
-  end #vizzjson
-
-  def map
-    head(204)
-  end #map
-
-  def table
-    head(204)
-  end #table
+    head 403
+  end #vizjson
 
   private
+
+  def locator
+    CartoDB::Visualization::Locator.new
+  end #locator
 
   def scope_for(current_user)
     { map_id: current_user.maps.map(&:id) }
   end #scope_for
+
+  def allow_vizjson_for?(table)
+    table && (table.public? || current_user_is_owner?(table))
+  end #allow_vizjson_for?
+
+  def current_user_is_owner?(table)
+    current_user.present? && (table.owner.id == current_user.id)
+  end #current_user_is_owner?
+
+  def set_vizjson_response_headers_for(table)
+    response.headers['X-Cache-Channel'] = 
+      "#{table.varnish_key}:vizjson"
+    response.headers['Cache-Control']   =
+      "no-cache,max-age=86400,must-revalidate, public"
+  end #set_vizjson_response_headers
 
   def payload
     request.body.rewind

@@ -1262,7 +1262,7 @@ TRIGGER
       map_id: [map_id],
       type:   'table'
     ).first
-  end #visualization
+  end #table_visualization
 
   private
 

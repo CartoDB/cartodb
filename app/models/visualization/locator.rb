@@ -5,20 +5,35 @@ require_relative './member'
 module CartoDB
   module Visualization
     class Locator
-      def initialize(repository=Visualization.repository)
-        @repository = repository
+      def initialize(table_model=Table, repository=Visualization.repository)
+        @table_model  = table_model
+        @repository   = repository
       end #initialize
 
-      def get(uuid_or_name)
-        attributes = get_by_id(uuid_or_name) || get_by_name(uuid_or_name)
-        return if attributes.nil? || attributes.empty?
-        Visualization::Member.new(attributes) 
+      def get(id_or_name, subdomain=nil)
+        get_visualization(id_or_name) || get_table(id_or_name, subdomain)
       end #get
 
       private
 
-      attr_reader :repository
+      attr_reader :repository, :table_model
 
+      def get_visualization(id_or_name)
+        attributes = get_by_id(id_or_name) || get_by_name(id_or_name)
+        return false if attributes.nil? || attributes.empty?
+        
+        visualization = Visualization::Member.new(attributes)
+        [visualization, visualization.table]
+      end # get_visualization
+
+      def get_table(id_or_name, subdomain=nil)
+        return false unless subdomain
+        table = table_model.find_by_subdomain(subdomain, id_or_name)
+
+        return false unless table && table.table_visualization
+        [table.table_visualization, table]
+      end #get_table
+        
       def get_by_id(uuid)
         repository.fetch(uuid)
       end #get_by_id

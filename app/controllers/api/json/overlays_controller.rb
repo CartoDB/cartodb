@@ -5,7 +5,7 @@ require_relative '../../../models/overlay/collection'
 require_relative '../../../models/overlay/presenter'
 
 class Api::Json::OverlaysController < Api::ApplicationController
-  include CartoDB::Overlay
+  include CartoDB
 
   ssl_required :index, :show, :create, :update, :destroy
 

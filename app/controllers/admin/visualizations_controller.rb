@@ -1,4 +1,5 @@
 # encoding: utf-8
+require_relative '../../models/map/presenter'
 
 class Admin::VisualizationsController < ApplicationController
   ssl_required :index, :show
@@ -9,51 +10,48 @@ class Admin::VisualizationsController < ApplicationController
     update_user_api_calls
     @tables_count  = current_user.tables.count
     update_user_last_activity
-  end
+  end #index
 
   def show
     update_user_api_calls
-
     if current_user.present?
-      @visualization = 
-        CartoDB::Visualization::Locator.new.get(params.fetch(:id))
+      @visualization, @table = locator.get(params.fetch(:id), request.subdomain)
       respond_to { |format| format.html }
     else
       redirect_to "/viz/#{params[:id]}/public"
     end
 
     update_user_last_activity
-  end
+  end #show
 
   def public
-    @visualization = 
-      CartoDB::Visualization::Locator.new.get(params.fetch(:id))
+    @visualization, @table = locator.get(params.fetch(:id), request.subdomain)
 
     respond_to do |format|
       format.html { render 'public', layout: 'application_public' }
     end
-  end
+  end #public
 
   def embed_map
-    @visualization = 
-      CartoDB::Visualization::Locator.new.get(params.fetch(:id))
-    @table = @visualization.table
+    @visualization, @table = locator.get(params.fetch(:id), request.subdomain)
 
-    if @table.blank? || @table.private?
-      head :forbidden
-    else
-      respond_to do |format|
-        format.html { render layout: false }
-        format.js { render 'embed_map.js.erb', content_type: 'application/javascript' }
-      end
+    return(head :forbidden) if @table.blank? || @table.private?
+
+    respond_to do |format|
+      format.html { render layout: false }
+      format.js { render 'embed_map', content_type: 'application/javascript' }
     end
-  end
+  end #embed_map
+
+  def embed_forbidden
+    render 'embed_map_error', layout: false, status: :forbidden
+  end #embed_forbidden
 
   def track_embed
     response.headers['X-Cache-Channel'] = "embeds_google_analytics"
     response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
-    render 'track.html.erb', layout: false
-  end
+    render 'track', layout: false
+  end #track_embed
 
   private
 
@@ -80,5 +78,9 @@ class Admin::VisualizationsController < ApplicationController
     return false unless current_user.present?
     current_user.set_api_calls
   end
+
+  def locator
+    CartoDB::Visualization::Locator.new
+  end #locator
 end # VisualizationsController
 

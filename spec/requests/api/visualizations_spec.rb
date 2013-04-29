@@ -8,7 +8,6 @@ require_relative '../../../services/data-repository/backend/sequel'
 require_relative '../../../app/models/visualization/migrator'
 require_relative '../../../app/models/overlay/migrator'
 
-include DataRepository
 
 def app
   CartoDB::Application.new
@@ -16,6 +15,7 @@ end #app
 
 describe Api::Json::VisualizationsController do
   include Rack::Test::Methods
+  include DataRepository
 
   before(:all) do
     @user = create_user(

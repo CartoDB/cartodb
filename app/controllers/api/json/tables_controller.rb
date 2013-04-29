@@ -48,7 +48,7 @@ class Api::Json::TablesController < Api::ApplicationController
       @table = Table.fetch("select *, array_to_string(array(select tags.name from tags where tags.table_id = user_tables.id),',') as tags_names
                             from user_tables
                             where id=?",@table.id).first
-      render_jsonp(@table.public_values, 200, { :location => table_path(@table) })
+      render_jsonp(@table.public_values, 200, { location: "/tables/#{@table.id}" })
     else
       CartoDB::Logger.info "Error on tables#create", @table.errors.full_messages
       render_jsonp( { :description => @table.errors.full_messages,

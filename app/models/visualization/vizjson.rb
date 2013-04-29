@@ -50,7 +50,7 @@ module CartoDB
 
       def base_layers_for(visualization)
         visualization.layers(:base).map do |layer|
-          Layer::Presenter.new(layer, options, configuration).to_poro
+          Layer::Presenter.new(layer, options, configuration).to_vizjson_v2
         end
       end #base_layers_for
 

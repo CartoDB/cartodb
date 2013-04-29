@@ -28,10 +28,10 @@ module CartoDB
           layers: [
             CartoDB::Layer::Presenter.new(
               map.base_layers.first, options, configuration
-            ).to_poro,
+            ).to_vizjson_v1,
             CartoDB::Layer::Presenter.new(
               map.data_layers.first, options, configuration
-            ).to_poro
+            ).to_vizjson_v1
             #VizzJSON::Layer.new(map.data_layers.first, options, configuration) .to_poro
           ],
 

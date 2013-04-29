@@ -38,7 +38,7 @@ module CartoDB
 
       def rendered_layers
         layers.map do |layer|
-          Layer::Presenter.new(layer, options, configuration).to_poro
+          Layer::Presenter.new(layer, options, configuration).to_vizjson_v2
         end
       end #layer_definition
     end # Presenter

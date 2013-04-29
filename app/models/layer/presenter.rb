@@ -23,6 +23,19 @@ module CartoDB
           options:    options_data
         }
       end #to_poro
+
+      alias_method :to_vizjson_v2, :to_poro
+
+      def to_vizjson_v1
+        representation  = to_poro
+        options         = representation.delete(:options)
+
+        return representation unless options
+
+        options.store(:tile_style, options.delete(:cartocss))
+        representation.store(:options, options)
+        representation
+      end #to_vizjson_v1
   
       private
 

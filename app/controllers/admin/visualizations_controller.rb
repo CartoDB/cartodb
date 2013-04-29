@@ -28,6 +28,13 @@ class Admin::VisualizationsController < ApplicationController
   def public
     @visualization, @table = locator.get(params.fetch(:id), request.subdomain)
 
+    @vizjson = CartoDB::Map::Presenter.new(
+      @table.map, 
+      { full: false, url: "/api/v1/tables/#{@table.id}" },
+      Cartodb.config, 
+      CartoDB::Logger
+    ).to_poro
+
     respond_to do |format|
       format.html { render 'public', layout: 'application_public' }
     end

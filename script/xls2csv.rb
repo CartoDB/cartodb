@@ -15,9 +15,9 @@ else
   when '.odt'
     Openoffice.new(ARGV[0])
   when '.xls'
-    Excel.new(ARGV[0])
+    Roo::Excel.new(ARGV[0])
   when '.xlsx'
-    Excelx.new(ARGV[0])
+    Roo::Excelx.new(ARGV[0])
   end
   s.to_csv("/tmp/#{csv_name}.csv")
   puts "/tmp/#{csv_name}.csv"

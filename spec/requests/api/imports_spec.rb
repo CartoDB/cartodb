@@ -204,6 +204,7 @@ describe "Imports API" do
       last_import.state.should be == 'complete'
       table = Table.order(:id).last
       table.should have_required_indexes_and_triggers
+      table.geometry_types.should_not be_blank
     end
     
     DataImport.count.should == import_files.size

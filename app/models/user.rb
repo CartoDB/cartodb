@@ -145,20 +145,21 @@ class User < Sequel::Model
   end
 
   def in_database(options = {}, &block)
+    logger = (Rails.env.development? || Rails.env.test? ? ::Rails.logger : nil)
     configuration = if options[:as]
       if options[:as] == :superuser
         ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-          'database' => self.database_name, :logger => ::Rails.logger
+          'database' => self.database_name, :logger => logger
         )
       elsif options[:as] == :public_user
         ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-          'database' => self.database_name, :logger => ::Rails.logger,
+          'database' => self.database_name, :logger => logger,
           'username' => CartoDB::PUBLIC_DB_USER, 'password' => ''
         )
       end
     else
       ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-        'database' => self.database_name, :logger => ::Rails.logger,
+        'database' => self.database_name, :logger => logger,
         'username' => database_username, 'password' => database_password
       )
     end
@@ -555,14 +556,23 @@ class User < Sequel::Model
   end
 
   # Cartodb functions
-  def load_cartodb_functions
+  def load_cartodb_functions(files = [])
     in_database(:as => :superuser) do |user_database|
       user_database.transaction do
-        glob = Rails.root.join('lib/sql/*.sql')
-
-        Dir.glob(glob).each do |f|
-          @sql = File.new(f).read
-          user_database.run(@sql)
+        if files.empty?
+          glob = Rails.root.join('lib/sql/*.sql')
+          sql_files = Dir.glob(glob).sort
+        else
+          sql_files = files.map {|sql| Rails.root.join('lib/sql', sql).to_s}.sort
+        end
+        sql_files.each do |f|
+          if File.exists?(f)
+            CartoDB::Logger.info "Loading CartoDB SQL function #{File.basename(f)} into #{database_name}"
+            @sql = File.new(f).read
+            user_database.run(@sql)
+          else
+            CartoDB::Logger.info "SQL function #{File.basename(f)} doesn't exist in lib/sql directory. Not loading it."
+          end
         end
       end
     end

@@ -8,13 +8,13 @@ module CartoDB
       CARTO_CSS_VERSION = '2.0.1'
 
       def initialize(layer, options={}, configuration={})
-        @layer    = layer
-        @options  = options
+        @layer          = layer
+        @options        = options
+        @configuration  = configuration
       end #initialize
 
       def to_poro
         return with_kind_as_type(layer.public_values) if base?(layer)
-
         {
           id:         layer.id,
           type:       'CartoDB',
@@ -32,12 +32,13 @@ module CartoDB
 
         options.store(:tile_style, options.delete(:cartocss))
         representation.store(:options, options)
+
         representation
       end #to_vizjson_v1
   
       private
 
-      attr_reader :layer, :options
+      attr_reader :layer, :options, :configuration
 
       def base?(layer)
         layer.kind != 'carto'
@@ -56,13 +57,16 @@ module CartoDB
       def options_data
         return layer.options if options[:full]
         sql = sql_from(layer.options)
-        {
+
+        layer.options.select { |key, value| 
+          public_options.include?(key.to_s) 
+        }.merge(
           sql:                sql,
           query:              wrap(sql, layer.options),
           cartocss:           layer.options.fetch('tile_style'),
           cartocss_version:   CARTO_CSS_VERSION,
           interactivity:      layer.options.fetch('interactivity')
-        }
+        )
       end #options_data
 
       def sql_from(options)
@@ -80,6 +84,11 @@ module CartoDB
       def default_query_for(options)
         "select * from #{options.fetch('table_name')}"
       end #defaut_query_for
+
+      def public_options
+        return configuration if configuration.empty?
+        configuration.fetch(:layer_opts).fetch("public_opts")
+      end #public_options
     end # Presenter
   end # Layer
 end # CartoDB

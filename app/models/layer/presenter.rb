@@ -28,9 +28,7 @@ module CartoDB
 
       def to_vizjson_v1
         representation  = to_poro
-        options         = representation.delete(:options)
-
-        return representation unless options
+        options         = representation.fetch(:options, {})
 
         options.store(:tile_style, options.delete(:cartocss))
         representation.store(:options, options)

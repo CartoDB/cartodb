@@ -61,7 +61,8 @@ describe Admin::VisualizationsController do
 
   describe 'GET /viz/:id/public' do
     it 'returns public data for a visualization' do
-      id = factory.fetch('id')
+      table_attributes = table_factory
+      id = table_attributes.fetch('id')
 
       get "/viz/#{id}/public", {}, @headers
       last_response.status.should == 200
@@ -105,5 +106,26 @@ describe Admin::VisualizationsController do
 
     JSON.parse(last_response.body)
   end #factory
+
+  def table_factory
+    payload = { name: "table #{rand(9999)}" }
+    post "/api/v1/tables?api_key=#{@api_key}",
+      payload.to_json, @headers
+
+    table_attributes  = JSON.parse(last_response.body)
+    table_id          = table_attributes.fetch('id')
+    table_name        = table_attributes.fetch('name')
+
+    put "/api/v1/tables/#{table_id}?api_key=#{@api_key}",
+      { privacy: 1 }.to_json, @headers
+
+    sql = URI.escape(%Q{
+      INSERT INTO #{table_name} (description)
+      VALUES('bogus description')
+    })
+
+    get "/api/v1/queries?sql=#{sql}&api_key=#{@api_key}", {}, @headers
+    table_attributes
+  end #table_factory
 end # Admin::VisualizationsController
 

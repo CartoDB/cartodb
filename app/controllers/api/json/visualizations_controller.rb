@@ -5,6 +5,7 @@ require_relative '../../../models/visualization/presenter'
 require_relative '../../../models/visualization/collection'
 require_relative '../../../models/visualization/copier'
 require_relative '../../../models/visualization/locator'
+require_relative '../../../models/map/presenter'
 
 class Api::Json::VisualizationsController < Api::ApplicationController
   include CartoDB

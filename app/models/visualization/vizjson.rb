@@ -7,8 +7,8 @@ require_relative '../layer_group/presenter'
 
 module CartoDB
   module Visualization
-    class VizzJSON
-      VIZZJSON_VERSION    = '0.1.0'
+    class VizJSON
+      VIZJSON_VERSION     = '0.1.0'
 
       def initialize(visualization, options={}, configuration={}, logger=nil)
         @visualization    = visualization
@@ -21,7 +21,7 @@ module CartoDB
       def to_poro
         {
           id:             visualization.id,
-          version:        VIZZJSON_VERSION,
+          version:        VIZJSON_VERSION,
           title:          visualization.name,
           description:    visualization.description,
           url:            options.delete(:url),
@@ -87,7 +87,7 @@ module CartoDB
           template: '<div class="loader"></div>'
         )
       end #loader_overlay
-    end # VizzJSON
+    end # VizJSON
   end # Visualization
 end # CartoDB
 

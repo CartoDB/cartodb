@@ -115,7 +115,7 @@ CartoDB::Application.routes.draw do
       get     'viz/:id'                             => 'visualizations#show'
       put     'viz/:id'                             => 'visualizations#update'
       delete  'viz/:id'                             => 'visualizations#destroy'
-      get     'viz/:id/viz'                         => 'visualizations#vizzjson', as: :vizjson
+      get     'viz/:id/viz'                         => 'visualizations#vizjson1', as: :vizjson
       get     'viz/:visualization_id/overlays'      => 'overlays#index'
       post    'viz/:visualization_id/overlays'      => 'overlays#create'
       get     'viz/:visualization_id/overlays/:id'  => 'overlays#show'
@@ -125,6 +125,8 @@ CartoDB::Application.routes.draw do
       # Tags
       resources :tags, :only                                    => [:index]
     end
+
+    get '/v2/viz/:id/viz'    => 'api/json/visualizations#vizjson2', as: :vizjson
   end
 end
 

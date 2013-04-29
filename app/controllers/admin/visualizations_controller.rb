@@ -1,5 +1,6 @@
 # encoding: utf-8
 require_relative '../../models/map/presenter'
+require_relative '../../models/visualization/locator'
 
 class Admin::VisualizationsController < ApplicationController
   ssl_required :index, :show

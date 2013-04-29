@@ -238,6 +238,26 @@ describe Api::Json::VisualizationsController do
     end
   end # DELETE /api/v1/viz/:id
 
+  describe 'GET /api/v1/viz/:id/viz' do
+    it 'renders vizjson v1' do
+      table_attributes  = table_factory
+      table_id          = table_attributes.fetch('id')
+      get "/api/v1/viz/#{table_id}/viz?api_key=#{@api_key}",
+        {}, @headers
+      last_response.status.should == 200
+    end
+  end # GET /api/v1/viz/:id/viz
+
+  describe 'GET /api/v2/viz/:id/viz' do
+    it 'renders vizjson v2' do
+      table_attributes  = table_factory
+      table_id          = table_attributes.fetch('id')
+      get "/api/v2/viz/#{table_id}/viz?api_key=#{@api_key}",
+        {}, @headers
+      last_response.status.should == 200
+    end
+  end # GET /api/v2/viz/:id/viz
+
   def factory
     map = ::Map.create(user_id: @user.id)
     {
@@ -248,5 +268,26 @@ describe Api::Json::VisualizationsController do
       type:         'derived'
     }
   end #factory
+
+  def table_factory
+    payload = { name: "table #{rand(9999)}" }
+    post "/api/v1/tables?api_key=#{@api_key}",
+      payload.to_json, @headers
+
+    table_attributes  = JSON.parse(last_response.body)
+    table_id          = table_attributes.fetch('id')
+    table_name        = table_attributes.fetch('name')
+
+    put "/api/v1/tables/#{table_id}?api_key=#{@api_key}",
+      { privacy: 1 }.to_json, @headers
+
+    sql = URI.escape(%Q{
+      INSERT INTO #{table_name} (description)
+      VALUES('bogus description')
+    })
+
+    get "/api/v1/queries?sql=#{sql}&api_key=#{@api_key}", {}, @headers
+    table_attributes
+  end #table_factory
 end # Api::Json::VisualizationsController
 

@@ -1,5 +1,6 @@
 2.0.12
 ------
+* Adds new filter feature.
 
 2.0.11
 ------

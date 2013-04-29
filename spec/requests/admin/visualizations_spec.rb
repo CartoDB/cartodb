@@ -6,9 +6,6 @@ require_relative '../../spec_helper'
 require_relative '../../../app/models/visualization/migrator'
 require_relative '../../../app/controllers/admin/visualizations_controller'
 
-include CartoDB
-include DataRepository
-
 def app
   CartoDB::Application.new
 end #app
@@ -18,6 +15,7 @@ describe Admin::VisualizationsController do
   include Warden::Test::Helpers
 
   before(:all) do
+
     @user = create_user(
       username: 'test',
       email:    'test@test.com',
@@ -31,8 +29,8 @@ describe Admin::VisualizationsController do
     @db = Sequel.sqlite
     Sequel.extension(:pagination)
 
-    Visualization::Migrator.new(@db).migrate
-    Visualization.repository  = 
+    CartoDB::Visualization::Migrator.new(@db).migrate
+    CartoDB::Visualization.repository  = 
       DataRepository::Backend::Sequel.new(@db, :visualizations)
 
     delete_user_data @user
@@ -88,7 +86,7 @@ describe Admin::VisualizationsController do
       name = URI::encode(factory.fetch('name'))
       login_as(@user, scope: 'test')
 
-      get "/viz/#{name}/track_embed", {}, @headers
+      get "/viz/track_embed", {}, @headers
       last_response.status.should == 200
     end
   end # GET /viz/:name/track_embed

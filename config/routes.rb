@@ -12,21 +12,21 @@ CartoDB::Application.routes.draw do
   get   '/test' => 'test#index', :as => :test
 
   scope :module => "admin" do
-    match '/dashboard/'               => 'tables#index', :as => :dashboard
-    match '/dashboard/common_data'  => 'pages#common_data'
+    get '/dashboard/'               => 'visualizations#index', :as => :dashboard
+    get '/dashboard/common_data'    => 'pages#common_data'
 
-    resources :tables, :only => [:show] do
-      get 'embed_map', :on => :member
-      get 'track_embed', :on => :collection
-      get 'embed_forbidden', :on => :collection
-      get 'public' => 'tables#public', :on => :member
-    end
+    get '/tables/track_embed'       => 'visualizations#track_embed'
+    get '/tables/embed_forbidden'   => 'visualizations#embed_forbidden'
+    get '/tables/:id'               => 'visualizations#show'
+    get '/tables/:id/public'        => 'visualizations#public'
+    get '/tables/:id/embed_map'     => 'visualizations#embed_map'
 
-    match '/viz'                  => 'visualizations#index'
-    match '/viz/:id'              => 'visualizations#show'
-    match '/viz/:id/public'       => 'visualizations#public'
-    match '/viz/:id/embed_map'    => 'visualizations#embed_map'
-    match '/viz/:id/track_embed'  => 'visualizations#track_embed'
+    get '/viz'                      => 'visualizations#index'
+    get '/viz/track_embed'          => 'visualizations#track_embed'
+    get '/viz/embed_forbidden'      => 'visualizations#embed_forbidden'
+    get '/viz/:id'                  => 'visualizations#show'
+    get '/viz/:id/public'           => 'visualizations#public'
+    get '/viz/:id/embed_map'        => 'visualizations#embed_map'
 
     match '/your_apps/oauth'   => 'client_applications#oauth',   :as => :oauth_credentials
     match '/your_apps/api_key' => 'client_applications#api_key', :as => :api_key_credentials
@@ -96,18 +96,18 @@ CartoDB::Application.routes.draw do
       end
 
       # imports
-      resources :uploads, :only                                 => :create
-      resources :imports, :only                                 => [:create, :show, :index]
+      resources :uploads, :only                     => :create
+      resources :imports, :only                     => [:create, :show, :index]
 
       # Dashboard
-      resources :users, :only                                   => [:show] do
-        resources :layers, :only                                => [:create, :index, :update, :destroy]
-        resources :assets, :only                                => [:create, :index, :destroy]
+      resources :users, :only                       => [:show] do
+        resources :layers, :only                    => [:create, :index, :update, :destroy]
+        resources :assets, :only                    => [:create, :index, :destroy]
       end
 
       # Maps
-      resources :maps, :only                                    => [:show, :create, :update, :destroy] do
-        resources :layers, :only                                => [:show, :index, :create, :update, :destroy]
+      resources :maps, :only                        => [:show, :create, :update, :destroy] do
+        resources :layers, :only                    => [:show, :index, :create, :update, :destroy]
       end
 
       get     'viz'                                 => 'visualizations#index'

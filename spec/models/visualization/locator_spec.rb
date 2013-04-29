@@ -7,43 +7,55 @@ require_relative '../../../app/models/visualization'
 require_relative '../../../app/models/visualization/member'
 require_relative '../../../app/models/visualization/migrator'
 
-include CartoDB
-
-describe Visualization::Locator do
+describe CartoDB::Visualization::Locator do
   before do
     @db = Sequel.sqlite
     Sequel.extension(:pagination)
 
-    Visualization::Migrator.new(@db).migrate
-    Visualization.repository  = 
+    CartoDB::Visualization::Migrator.new(@db).migrate
+    CartoDB::Visualization.repository  = 
       DataRepository::Backend::Sequel.new(@db, :visualizations)
-    @visualization = Visualization::Member.new(
+    @visualization  = CartoDB::Visualization::Member.new(
       name:         'Visualization 1',
       description:  'A sample visualization'
     ).store
+    @locator        = CartoDB::Visualization::Locator.new(table_fake)
   end
 
   describe '#get' do
     it 'fetches a Visualization::Member if passed an UUID' do
-      locator     = Visualization::Locator.new
-      rehydrated  = locator.get(@visualization.id)
+      rehydrated  = @locator.get(@visualization.id).first
 
       rehydrated.name.should == @visualization.name
       rehydrated.description.should_not be_nil
     end
 
     it 'fetches a Visualization::Member if passed a visualizatio name' do
-      locator     = Visualization::Locator.new
-      rehydrated  = locator.get(@visualization.name)
+      rehydrated  = @locator.get(@visualization.name).first
 
       rehydrated.id.should == @visualization.id
       rehydrated.description.should_not be_nil
     end
 
-    it 'returns nil if no Visualization::Member found' do
-      locator     = Visualization::Locator.new
-      locator.get('bogus').should be_nil
+    it 'fetches a Table if passed a table id' do
+      table_fake  = stub('find_by_subdomain')
+      locator     = CartoDB::Visualization::Locator.new(table_fake)
+
+      table_fake.should_receive(:find_by_subdomain).with('foo', 0)
+      locator.get(0, 'foo')
+    end
+
+    it 'returns nil if no visualization or table found' do
+      @locator.get('bogus').should == false
     end
   end #get
-end # Visualization::Locator
+
+  def table_fake
+    table_klass = Object.new
+    def table_klass.find_by_subdomain(subdomain, identifier)
+      OpenStruct.new
+    end
+    table_klass
+  end #table_fake
+end # CartoDB::Visualization::Locator
 

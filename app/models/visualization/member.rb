@@ -71,6 +71,7 @@ module CartoDB
       end #user
 
       def table
+        return nil unless defined?(Table)
         @table  ||= ::Table.where(map_id: map_id).first
       end #table
 

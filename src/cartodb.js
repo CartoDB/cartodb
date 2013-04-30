@@ -12,7 +12,7 @@
       '2.1.0': ''
     };
 
-    cdb.CARTOCSS_DEFAULT_VERSION = '2.0.0';
+    cdb.CARTOCSS_DEFAULT_VERSION = '2.1.1';
 
     cdb.CDB_HOST = {
       'http': 'tiles.cartocdn.com',

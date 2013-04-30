@@ -86,29 +86,31 @@ var IMG_FILES = fs.readdirSync('themes/img')
 var only_invalidate = process.argv.length > 2 && process.argv[2] == '--invalidate';
 var only_current_version = process.argv.length > 2 && process.argv[2] == '--current_version';
 
+var version = 'v' + package_.version.split('.')[0]
+
 if(!only_invalidate) {
   if(!only_current_version) {
-    put_files(JS_FILES, 'v2', 'cartodb.js/v2')
-    put_files(CSS_FILES, 'v2/themes/css', 'cartodb.js/v2/themes/css')
-    put_files(CSS_IMAGE_FILES, 'v2/themes/css/images', 'cartodb.js/v2/themes/css/images')
-    put_files(IMG_FILES, 'v2/themes/img', 'cartodb.js/v2/themes/img')
+    put_files(JS_FILES, '' + version + '', 'cartodb.js/' + version + '')
+    put_files(CSS_FILES, '' + version + '/themes/css', 'cartodb.js/' + version + '/themes/css')
+    put_files(CSS_IMAGE_FILES, '' + version + '/themes/css/images', 'cartodb.js/' + version + '/themes/css/images')
+    put_files(IMG_FILES, '' + version + '/themes/img', 'cartodb.js/' + version + '/themes/img')
   }
 
-  put_files(JS_FILES, 'v2', 'cartodb.js/v2/' + package_.version)
-  put_files(CSS_FILES, 'v2/themes/css', 'cartodb.js/v2/' + package_.version + '/themes/css')
-  put_files(CSS_IMAGE_FILES, 'v2/themes/css/images', 'cartodb.js/v2/' + package_.version + '/themes/css/images')
-  put_files(IMG_FILES, 'v2/themes/img', 'cartodb.js/v2/' + package_.version + '/themes/img')
+  put_files(JS_FILES, '' + version + '', 'cartodb.js/' + version + '/' + package_.version)
+  put_files(CSS_FILES, '' + version + '/themes/css', 'cartodb.js/' + version + '/' + package_.version + '/themes/css')
+  put_files(CSS_IMAGE_FILES, '' + version + '/themes/css/images', 'cartodb.js/' + version + '/' + package_.version + '/themes/css/images')
+  put_files(IMG_FILES, '' + version + '/themes/img', 'cartodb.js/' + version + '/' + package_.version + '/themes/img')
 }
 
 
 console.log(" *** flushing cdn cache")
 if(!only_current_version) {
-  invalidate_files(JS_FILES,  'cartodb.js/v2')
-  invalidate_files(CSS_FILES, 'cartodb.js/v2/themes/css')
-  invalidate_files(CSS_IMAGE_FILES, 'cartodb.js/v2/themes/css/images')
-  invalidate_files(IMG_FILES, 'cartodb.js/v2/themes/img')
+  invalidate_files(JS_FILES,  'cartodb.js/' + version + '')
+  invalidate_files(CSS_FILES, 'cartodb.js/' + version + '/themes/css')
+  invalidate_files(CSS_IMAGE_FILES, 'cartodb.js/' + version + '/themes/css/images')
+  invalidate_files(IMG_FILES, 'cartodb.js/' + version + '/themes/img')
 }
-invalidate_files(JS_FILES , 'cartodb.js/v2/' + package_.version)
-invalidate_files(CSS_FILES, 'cartodb.js/v2/' + package_.version + '/themes/css')
-invalidate_files(CSS_IMAGE_FILES, 'cartodb.js/v2/' + package_.version + '/themes/css/images')
-invalidate_files(IMG_FILES, 'cartodb.js/v2/' + package_.version + '/themes/img')
+invalidate_files(JS_FILES , 'cartodb.js/' + version + '/' + package_.version)
+invalidate_files(CSS_FILES, 'cartodb.js/' + version + '/' + package_.version + '/themes/css')
+invalidate_files(CSS_IMAGE_FILES, 'cartodb.js/' + version + '/' + package_.version + '/themes/css/images')
+invalidate_files(IMG_FILES, 'cartodb.js/' + version + '/' + package_.version + '/themes/img')

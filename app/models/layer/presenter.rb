@@ -27,6 +27,7 @@ module CartoDB
       alias_method :to_vizjson_v2, :to_poro
 
       def to_vizjson_v1
+        return with_kind_as_type(layer.public_values) if base?(layer)
         representation  = to_poro
         options         = representation.fetch(:options, {})
 

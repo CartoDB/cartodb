@@ -46,7 +46,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   def show
     begin
       member = Visualization::Member.new(id: params.fetch('id')).fetch
-      return(head 201) unless member.authorize?(current_user)
+      return(head 401) unless member.authorize?(current_user)
       render_jsonp(member)
     rescue KeyError
       head :not_found
@@ -56,7 +56,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   def update
     begin
       member = Visualization::Member.new(id: params.fetch('id')).fetch
-      return head(201) unless member.authorize?(current_user)
+      return head(401) unless member.authorize?(current_user)
 
       member.attributes = payload
       member.store
@@ -68,7 +68,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
 
   def destroy
     member = Visualization::Member.new(id: params.fetch('id')).fetch
-    return(head 201) unless member.authorize?(current_user)
+    return(head 401) unless member.authorize?(current_user)
 
     member.delete
     return head 204

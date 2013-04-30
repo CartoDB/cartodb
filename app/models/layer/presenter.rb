@@ -32,9 +32,6 @@ module CartoDB
         options         = representation.fetch(:options, {})
 
         options.store(:tile_style,      options.delete(:cartocss))
-        options.store('tile_host',      options.delete('tiler_domain'))
-        options.store('tile_port',      options.delete('tiler_port'))
-        options.store('tile_protocol',  options.delete('tiler_protocol'))
         representation.store(:options,  options)
 
         representation

@@ -34,6 +34,8 @@ L.CartoDBLayer = L.CartoDBGroupLayer.extend({
         }]
       }
     });
+
+    this.setOptions(this.options);
   },
 
   setQuery: function(layer, sql) {

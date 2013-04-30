@@ -77,7 +77,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   def vizjson1
     @visualization, @table = locator.get(params.fetch(:id), request.subdomain)
 
-    return(head 403) unless allow_vizjson_for?(@table)
+    return(head 403) unless allow_vizjson_v1_for?(@table)
     set_vizjson_response_headers_for(@table)
     render_jsonp(CartoDB::Map::Presenter.new(
       @table.map, 
@@ -89,7 +89,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
 
   def vizjson2
     @visualization, @table = locator.get(params.fetch(:id), request.subdomain)
-    return(head 403) unless allow_vizjson_for?(@table)
+    return(head 403) unless allow_vizjson_v2_for?(@visualization)
     set_vizjson_response_headers_for(@table)
     render_jsonp(@visualization.to_vizjson)
   rescue KeyError
@@ -106,9 +106,13 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     { map_id: current_user.maps.map(&:id) }
   end #scope_for
 
-  def allow_vizjson_for?(table)
+  def allow_vizjson_v1_for?(table)
     table && (table.public? || current_user_is_owner?(table))
-  end #allow_vizjson_for?
+  end #allow_vizjson_v1_for?
+
+  def allow_vizjson_v2_for?(visualization)
+    visualization.privacy == 'PUBLIC'
+  end #allow_vizjson_v2_for?
 
   def current_user_is_owner?(table)
     current_user.present? && (table.owner.id == current_user.id)

@@ -44,6 +44,7 @@ module CartoDB
 
       def delete
         overlays.destroy
+        table.destroy if type == 'table' && table
         repository.delete(id)
         self.attributes.keys.each { |key| self.send("#{key}=", nil) }
         self
@@ -72,7 +73,7 @@ module CartoDB
 
       def table
         return nil unless defined?(Table)
-        @table  ||= ::Table.where(map_id: map_id).first
+        @table ||= ::Table.where(map_id: map_id).first 
       end #table
 
       def related_tables
@@ -90,7 +91,7 @@ module CartoDB
       end #public?
 
       def privacy
-        return 'PUBLIC' unless table
+        return 'PUBLIC' unless table && table.id
         return table.privacy_text
       end #privacy
 

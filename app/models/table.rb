@@ -15,7 +15,8 @@ class Table < Sequel::Model(:user_tables)
     :id => :id, :name => :name, :privacy => :privacy_text, :tags => :tags_names,
     :schema => :schema, :updated_at => :updated_at, :rows_counted => :rows_estimated,
     :table_size => :table_size, :map_id => :map_id, :description => :description,
-    :geometry_types => :geometry_types, :visualization_ids => :visualization_ids
+    :geometry_types => :geometry_types, :visualization_ids => :visualization_ids,
+    :table_visualization => :table_visualization
   }
 
   DEFAULT_THE_GEOM_TYPE = "geometry"

@@ -169,35 +169,6 @@ L.CartoDBGroupLayer = L.TileLayer.extend({
     this.fire('updated');
   },
 
-
-
-  /**
-   * Change multiple options at the same time
-   * @params {Object} New options object
-   */
-  /*setOptions: function(opts) {
-
-    if (typeof opts != "object" || opts.length) {
-      throw new Error(opts + ' options has to be an object');
-    }
-
-    L.Util.setOptions(this, opts);
-
-    if(opts.interactivity) {
-      var i = opts.interactivity;
-      this.options.interactivity = i.join ? i.join(','): i;
-    }
-    if(opts.opacity !== undefined) {
-      this.setOpacity(this.options.opacity);
-    }
-
-    // Update tiles
-    if(opts.query != undefined || opts.style != undefined || opts.tile_style != undefined || opts.interactivity != undefined || opts.interaction != undefined) {
-      this.__update();
-    }
-  },*/
-
-
   /**
    * Bind events for wax interaction
    * @param {Object} Layer map object

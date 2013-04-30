@@ -427,6 +427,10 @@ class Table < Sequel::Model(:user_tables)
     end
   end
 
+  def before_destroy
+    memoize_table_visualization_to_be_available_in_after_destroy
+  end
+
   def after_destroy
     super
     $tables_metadata.del key
@@ -435,6 +439,7 @@ class Table < Sequel::Model(:user_tables)
     remove_table_from_stats
     invalidate_varnish_cache
     delete_tile_style
+    table_visualization.delete if table_visualization
   end
 
   def remove_table_from_user_database
@@ -1263,12 +1268,14 @@ TRIGGER
   end #visualization_ids
 
   def table_visualization
-    CartoDB::Visualization::Collection.new.fetch(
+    @table_visualization ||= CartoDB::Visualization::Collection.new.fetch(
       map_id: [map_id],
       type:   'table'
     ).first
   end #table_visualization
 
+  alias_method :memoize_table_visualization_to_be_available_in_after_destroy,
+                :table_visualization
   private
 
   def update_updated_at

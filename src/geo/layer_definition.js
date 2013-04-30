@@ -120,11 +120,9 @@ LayerDefinition.prototype = {
       });
     } else {
       var self = this;
-      console.log(JSON.stringify(this.toJSON()));
       var json = '{ "config": "' +
         JSON.stringify(this.toJSON()).replace(/"/g, '\\"') +
         '"}';
-      console.log(json);
       LZMA.compress(json, 3, function(encoded) {
         encoded = self._array2hex(encoded);
         ajax({

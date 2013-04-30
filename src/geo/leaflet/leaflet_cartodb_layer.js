@@ -30,7 +30,8 @@ L.CartoDBLayer = L.CartoDBGroupLayer.extend({
         version: this.options.layer_definition_version,
         layers: [{
           type: 'cartodb',
-          options: this._getLayerDefinition()
+          options: this._getLayerDefinition(),
+          infowindow: this.options.infowindow
         }]
       }
     });

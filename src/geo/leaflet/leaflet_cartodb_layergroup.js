@@ -258,26 +258,37 @@ cdb.geo.LeafLetCartoDBLayerGroupView = L.CartoDBGroupLayer.extend({
     _featureOut   = opts.featureOut,
     _featureClick = opts.featureClick;
 
-    /*
-
     opts.featureOver  = function() {
-      _featureOver  && _featureOver.apply(this, arguments);
-      self.featureOver  && self.featureOver.apply(this, arguments);
+      _featureOver  && _featureOver.apply(self, arguments);
+      self.featureOver  && self.featureOver.apply(self, arguments);
     };
 
     opts.featureOut  = function() {
-      _featureOut  && _featureOut.apply(this, arguments);
-      self.featureOut  && self.featureOut.apply(this, arguments);
+      _featureOut  && _featureOut.apply(self, arguments);
+      self.featureOut  && self.featureOut.apply(self, arguments);
     };
 
     opts.featureClick  = function() {
-      _featureClick  && _featureClick.apply(this, arguments);
-      self.featureClick  && self.featureClick.apply(opts, arguments);
+      _featureClick  && _featureClick.apply(self, arguments);
+      self.featureClick  && self.featureClick.apply(self, arguments);
     };
-    */
 
     L.CartoDBGroupLayer.prototype.initialize.call(this, opts);
     cdb.geo.LeafLetLayerView.call(this, layerModel, this, leafletMap);
 
-  }
+  },
+
+  featureOver: function(e, latlon, pixelPos, data, layer) {
+    // dont pass leaflet lat/lon
+    this.trigger('featureOver', e, [latlon.lat, latlon.lng], pixelPos, data, layer);
+  },
+
+  featureOut: function(e, layer) {
+    this.trigger('featureOut', e, layer);
+  },
+
+  featureClick: function(e, latlon, pixelPos, data, layer) {
+    // dont pass leaflet lat/lon
+    this.trigger('featureClick', e, [latlon.lat, latlon.lng], pixelPos, data, layer);
+  },
 });

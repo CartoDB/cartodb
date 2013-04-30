@@ -48,7 +48,8 @@ var CartoDBLayer = function(options) {
     version: this.options.layer_definition_version,
     layers: [{
       type: 'cartodb',
-      options: this._getLayerDefinition()
+      options: this._getLayerDefinition(),
+      infowindow: this.options.infowindow
     }]
   };
   cdb.geo.CartoDBLayerGroupGMaps.call(this, this.options);

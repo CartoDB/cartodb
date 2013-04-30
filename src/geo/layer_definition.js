@@ -309,6 +309,11 @@ LayerDefinition.prototype = {
     this._definitionUpdated();
   },
 
+  getQuery: function(layer) {
+    layer = layer || 0;
+    return this.layers[layer].options.sql
+  },
+
   /**
    * Change style of the tiles
    * @params {style} New carto for the tiles
@@ -364,6 +369,21 @@ LayerDefinition.prototype = {
       h += cdb.CDB_HOST[opts.tiler_protocol] + "/" + opts.user_name;
       return h;
     }
+  },
+
+  getInfowindowData: function(layer) {
+    return this.options.layer_definition.layers[layer].infowindow;
+  },
+
+  containInfowindow: function() {
+    var layers =  this.options.layer_definition.layers;
+    for(var i = 0; i < layers.length; ++i) {
+      var infowindow = layers[i].infowindow;
+      if (infowindow && infowindow.fields && infowindow.fields.length > 0) {
+        return true;
+      }
+    }
+    return false
   }
 
 };

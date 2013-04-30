@@ -383,18 +383,10 @@ var Vis = cdb.core.View.extend({
     return this.mapView.createLayer(layerModel);
   },
 
-  addInfowindow: function(layerView) {
-    var model = layerView.model;
-    var eventType = layerView.model.get('eventType') || 'featureClick';
-    var infowindow = Overlay.create('infowindow', this, model.get('infowindow'), true);
-    var mapView = this.mapView;
-    mapView.addInfowindow(infowindow);
-
-    var infowindowFields = layerView.model.get('infowindow');
-    // HACK: REMOVE
-    var port = model.get('sql_port');
-    var domain = model.get('sql_domain') + (port ? ':' + port: '')
-    var protocol = model.get('sql_protocol');
+  _getSqlApi: function(attrs) {
+    var port = attrs.sql_port
+    var domain = attrs.sql_domain + (port ? ':' + port: '')
+    var protocol = attrs.sql_protocol;
     var version = 'v1';
     if (domain.indexOf('cartodb.com') !== -1) {
       protocol = 'http';
@@ -403,24 +395,42 @@ var Vis = cdb.core.View.extend({
     }
 
     var sql = new cartodb.SQL({
-      user: model.get('user_name'),
+      user: attrs.user_name,
       protocol: protocol,
       host: domain,
       version: version
     });
 
+    return sql;
+  },
+
+  addInfowindow: function(layerView) {
+    var mapView = this.mapView;
+    var eventType = 'featureClick';
+    var infowindow = Overlay.create('infowindow', this, layerView.getInfowindowData(0), true);
+
+    mapView.addInfowindow(infowindow);
+
+    var sql = this._getSqlApi(layerView.options)
+
+    // activate interactivity for layers with infowindows
+    for(var i = 0; i < layerView.getLayerCount(); ++i) {
+      if(layerView.getInfowindowData(i)) {
+        layerView.setInteraction(i, true);
+      }
+    }
+
     // if the layer has no infowindow just pass the interaction
     // data to the infowindow
-    layerView.bind(eventType, function(e, latlng, pos, data) {
+    layerView.bind(eventType, function(e, latlng, pos, data, layer) {
         var cartodb_id = data.cartodb_id
+        var infowindowFields = layerView.getInfowindowData(layer)
         var fields = infowindowFields.fields;
-
-
         // Send request
-        sql.execute("select {{fields}} from {{table_name}} where cartodb_id = {{cartodb_id }}", {
+        sql.execute("select {{fields}} from ({{sql}}) _cartodbjs_alias where cartodb_id = {{ cartodb_id }}", {
           fields: _.pluck(fields, 'name').join(','),
           cartodb_id: cartodb_id,
-          table_name: model.get('table_name')
+          sql: layerView.getQuery(layer)
         })
         .done(function(interact_data) {
           if (interact_data.rows.length == 0 ) return;
@@ -488,10 +498,7 @@ var Vis = cdb.core.View.extend({
     var layerView = mapView.getLayerByCid(layer_cid);
 
     // add the associated overlays
-    if (layerData.infowindow &&
-      layerData.infowindow.fields &&
-      layerData.infowindow.fields.length > 0 &&
-      this.infowindow) {
+    if(layerData.type == 'layergroup' && layerView.containInfowindow()) {
       this.addInfowindow(layerView);
     }
 

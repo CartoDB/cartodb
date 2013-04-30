@@ -855,8 +855,7 @@
           position:relative;
 
           width: 385px;
-          margin: 0 0 0 0;
-          width: 385px;
+          margin: 0;
 
           .filter { // generic styles for all the filters
             position:relative;
@@ -898,7 +897,7 @@
               @include opacity(0);
 
               @include size(12px);
-              @include position(23px, 30px, false, false);
+              @include position(20px, 30px, false, false);
               @include simple-transition(opacity, 150ms);
 
               background: image-url('icons/remove_filter.png') no-repeat;
@@ -1003,7 +1002,7 @@
             position:relative;
             width: 325px;
             margin: 0 0 0 30px;
-            padding: 10px 0 0 0;
+            padding: 0;
             clear:both;
             overflow:hidden;
             z-index: 100;
@@ -1072,6 +1071,7 @@
           .items {
             text-align:left;
             margin: 0 0 0 30px;
+            padding: 0;
             width: 325px;
 
             li {
@@ -1093,6 +1093,8 @@
 
                 &.empty { font-style:italic; color: #ccc; }
               }
+
+              &:last-child { margin-bottom: 0; }
 
               &:before {
                 @include position(12px, false, false, 0);

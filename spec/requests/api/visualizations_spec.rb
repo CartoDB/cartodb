@@ -236,6 +236,25 @@ describe Api::Json::VisualizationsController do
         {}, @headers
       last_response.status.should == 404
     end
+
+    it 'deletes the associated table' do
+      table_attributes = table_factory
+      table_id         = table_attributes.fetch('id')
+
+      get "/api/v1/tables/#{table_id}?api_key=#{@api_key}",
+        {}, @headers
+      last_response.status.should == 200
+      table             = JSON.parse(last_response.body)
+      visualization_id  = table.fetch('table_visualization').fetch('id')
+
+      delete "/api/v1/viz/#{visualization_id}?api_key=#{@api_key}",
+        {}, @headers
+      last_response.status.should == 204
+
+      get "/api/v1/tables/#{table_id}?api_key=#{@api_key}",
+        {}, @headers
+      last_response.status.should == 404
+    end
   end # DELETE /api/v1/viz/:id
 
   describe 'GET /api/v1/viz/:id/viz' do

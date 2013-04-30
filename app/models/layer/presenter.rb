@@ -13,7 +13,7 @@ module CartoDB
         @configuration  = configuration
       end #initialize
 
-      def to_poro
+      def to_vizjson_v2
         return with_kind_as_type(layer.public_values) if base?(layer)
         {
           id:         layer.id,
@@ -22,18 +22,21 @@ module CartoDB
           order:      layer.order,
           options:    options_data
         }
-      end #to_poro
-
-      alias_method :to_vizjson_v2, :to_poro
+      end #to_vizjson_v2
 
       def to_vizjson_v1
-        return with_kind_as_type(layer.public_values) if base?(layer)
-        representation  = to_poro
-        options         = representation.fetch(:options, {})
+        return layer.public_values if base?(layer)
+        representation = {
+          id:         layer.id,
+          kind:       'CartoDB',
+          infowindow: infowindow_data,
+          order:      layer.order,
+          options:    options_data
+        }
 
-        options.store(:tile_style,      options.delete(:cartocss))
+        options = representation.fetch(:options, {})
+        options.store(:tile_style,  options.delete(:cartocss))
         representation.store(:options,  options)
-
         representation
       end #to_vizjson_v1
   
@@ -46,9 +49,8 @@ module CartoDB
       end #base?
 
       def with_kind_as_type(attributes)
-        type = attributes.delete(:kind)
-        attributes.merge(type: type)
-      end #base_to_poro
+        attributes.merge(type: attributes.delete('kind'))
+      end #with_kind_as_type
 
       def infowindow_data
         layer.infowindow.merge(template: File.read(layer.template_path))

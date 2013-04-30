@@ -419,7 +419,7 @@ header { // general header
           &:after {display:none}
         }
 
-        a {font-weight:300; &.share {font-weight:500;}}
+        a {font-weight:300; &.share, &.data_download {font-weight:500;}}
       }
     }
   }

@@ -11,7 +11,9 @@ module CartoDB
       end #initialize
 
       def get(id_or_name, subdomain=nil)
-        get_visualization(id_or_name) || get_table(id_or_name, subdomain)
+        get_visualization(id_or_name)     || 
+        get_table(id_or_name, subdomain)  ||
+        [nil, nil]
       end #get
 
       private

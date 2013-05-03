@@ -16,9 +16,14 @@ module CartoDB
           String    :name
           String    :description
           Integer   :map_id, index: true
+          Integer   :active_layer_id
           String    :type
-          String    :tags
         end
+
+        @db.run(%Q{
+          ALTER TABLE "visualizations"
+          ADD COLUMN tags text[]
+        })
       end #migrate
     end # Migrator
   end # Visualization

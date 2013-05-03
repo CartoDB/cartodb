@@ -70,6 +70,35 @@ describe Api::Json::VisualizationsController do
       response.fetch('name')        .should_not == nil
       response.fetch('tags')        .should_not == payload.fetch(:tags).to_json
     end
+
+    it 'creates a visualization from a list of tables' do
+      table1 = table_factory
+      table2 = table_factory
+      table3 = table_factory
+
+      payload = {
+        name: 'new visualization',
+        tables: [
+          table1.fetch('name'),
+          table2.fetch('name'),
+          table3.fetch('name')
+        ]
+      }
+
+      post "/api/v1/viz?api_key=#{@api_key}",
+            payload.to_json, @headers
+      last_response.status.should == 200
+
+      visualization = JSON.parse(last_response.body)
+
+      get "/api/v1/viz/#{visualization.fetch('id')}/viz?api_key=#{@api_key}",
+        {}, @headers
+      last_response.status.should == 403
+
+      get "/api/v2/viz/#{visualization.fetch('id')}/viz?api_key=#{@api_key}",
+        {}, @headers
+      last_response.status.should == 200
+    end
   end # POST /api/v1/viz
 
   describe 'GET /api/v1/viz' do
@@ -213,6 +242,26 @@ describe Api::Json::VisualizationsController do
       response = JSON.parse(last_response.body)
       response.fetch('name').should == 'changed'
       response.fetch('tags').should == []
+    end
+
+    it 'allows setting the active layer' do
+      payload   = factory
+      post "/api/v1/viz?api_key=#{@api_key}",
+        payload.to_json, @headers
+
+      response  =  JSON.parse(last_response.body)
+      id        = response.fetch('id')
+      tags      = response.fetch('tags')
+
+      response.fetch('tags').should == ['foo', 'bar']
+
+      active_layer_id = 8
+      put "/api/v1/viz/#{id}?api_key=#{@api_key}",
+        { active_layer_id: active_layer_id }.to_json, @headers
+      last_response.status.should == 200
+      response = JSON.parse(last_response.body)
+      response.fetch('active_layer_id').should == active_layer_id
+      response.fetch('tags').should == ['foo', 'bar']
     end
   end # PUT /api/v1/viz/:id
 

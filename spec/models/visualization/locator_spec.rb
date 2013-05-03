@@ -38,15 +38,15 @@ describe CartoDB::Visualization::Locator do
     end
 
     it 'fetches a Table if passed a table id' do
-      table_fake  = stub('find_by_subdomain')
-      locator     = CartoDB::Visualization::Locator.new(table_fake)
+      table_class = stub('find_by_subdomain')
+      locator     = CartoDB::Visualization::Locator.new(table_class)
 
-      table_fake.should_receive(:find_by_subdomain).with('foo', 0)
+      table_class.should_receive(:find_by_subdomain).with('foo', 0)
       locator.get(0, 'foo')
     end
 
     it 'returns nil if no visualization or table found' do
-      @locator.get('bogus').should == false
+      @locator.get('bogus').should == [nil, nil]
     end
   end #get
 

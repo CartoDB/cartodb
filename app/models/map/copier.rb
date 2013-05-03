@@ -17,16 +17,28 @@ module CartoDB
         new_map
       end #copy
 
+      def copy_layers(user, origin_map, destination_map)
+        layer_copies_from(origin_map).map do |layer|
+          link(user, destination_map, layer)
+        end
+      end #copy_layers
+
+      def copy_data_layers(user, origin_map, destination_map)
+        data_layer_copies_from(origin_map).map do |layer|
+          link(user, destination_map, layer)
+        end
+      end #copy_data_layers
+
       private
 
       attr_reader :map, :user
 
-      def copy_layers(user, map, new_map)
-        layer_copies_from(map).map { |layer| link(user, new_map, layer) }
-      end #copy_layers
+      def data_layer_copies_from(map)
+        map.data_layers.map { |layer| layer.copy }
+      end #data_layer_copies_from
 
       def layer_copies_from(map)
-        map.layers.each { |layer| layer.copy }
+        map.layers.map { |layer| layer.copy }
       end #new_layers
 
       def link(user, map, layer)

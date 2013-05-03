@@ -70,6 +70,35 @@ describe Api::Json::VisualizationsController do
       response.fetch('name')        .should_not == nil
       response.fetch('tags')        .should_not == payload.fetch(:tags).to_json
     end
+
+    it 'creates a visualization from a list of tables' do
+      table1 = table_factory
+      table2 = table_factory
+      table3 = table_factory
+
+      payload = {
+        name: 'new visualization',
+        tables: [
+          table1.fetch('name'),
+          table2.fetch('name'),
+          table3.fetch('name')
+        ]
+      }
+
+      post "/api/v1/viz?api_key=#{@api_key}",
+            payload.to_json, @headers
+      last_response.status.should == 200
+
+      visualization = JSON.parse(last_response.body)
+
+      get "/api/v1/viz/#{visualization.fetch('id')}/viz?api_key=#{@api_key}",
+        {}, @headers
+      last_response.status.should == 403
+
+      get "/api/v2/viz/#{visualization.fetch('id')}/viz?api_key=#{@api_key}",
+        {}, @headers
+      last_response.status.should == 200
+    end
   end # POST /api/v1/viz
 
   describe 'GET /api/v1/viz' do

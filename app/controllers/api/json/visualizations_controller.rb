@@ -3,8 +3,9 @@ require 'json'
 require_relative '../../../models/visualization/member'
 require_relative '../../../models/visualization/presenter'
 require_relative '../../../models/visualization/collection'
-require_relative '../../../models/visualization/copier'
 require_relative '../../../models/visualization/locator'
+require_relative '../../../models/visualization/copier'
+require_relative '../../../models/visualization/table_blender'
 require_relative '../../../models/map/presenter'
 
 class Api::Json::VisualizationsController < Api::ApplicationController
@@ -32,6 +33,15 @@ class Api::Json::VisualizationsController < Api::ApplicationController
       member    = Visualization::Copier.new(
                     current_user, source, params.fetch(:name, nil)
                   )
+    elsif params[:tables]
+      tables    = params[:tables].map do |table_name| 
+                    Table.find_by_subdomain(request.subdomain, table_name)
+                  end
+      map       = Visualization::TableBlender.new(current_user, tables).blend
+      member    = Visualization::Member.new(
+                    payload.merge(map_id: map.id, type: 'derived')
+                  )
+      member.store
     else
       member    = Visualization::Member.new(payload).store
     end
@@ -39,7 +49,6 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     collection  = Visualization::Collection.new.fetch
     collection.add(member)
     collection.store
-
     render_jsonp(member)
   end #create
 
@@ -76,7 +85,6 @@ class Api::Json::VisualizationsController < Api::ApplicationController
 
   def vizjson1
     @visualization, @table = locator.get(params.fetch(:id), request.subdomain)
-
     return(head 403) unless allow_vizjson_v1_for?(@table)
     set_vizjson_response_headers_for(@table)
     render_jsonp(CartoDB::Map::Presenter.new(
@@ -90,7 +98,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   def vizjson2
     @visualization, @table = locator.get(params.fetch(:id), request.subdomain)
     return(head 403) unless allow_vizjson_v2_for?(@visualization)
-    set_vizjson_response_headers_for(@table)
+    #set_vizjson_response_headers_for(@table)
     render_jsonp(@visualization.to_vizjson)
   rescue KeyError
     head 403
@@ -111,7 +119,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   end #allow_vizjson_v1_for?
 
   def allow_vizjson_v2_for?(visualization)
-    visualization.privacy == 'PUBLIC'
+    visualization && visualization.privacy == 'PUBLIC'
   end #allow_vizjson_v2_for?
 
   def current_user_is_owner?(table)

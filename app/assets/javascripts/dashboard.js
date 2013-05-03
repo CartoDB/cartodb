@@ -15,4 +15,6 @@
 //= require_tree ../../../lib/assets/javascripts/cartodb/common/views
 //= require ../../../lib/assets/javascripts/cartodb/common/export_table_dialog
 //= require ../../../lib/assets/javascripts/cartodb/visualization/visualization_view
+//= require ../../../lib/assets/javascripts/cartodb/table/header/name_visualization_dialog
+//= require ../../../lib/assets/javascripts/cartodb/table/header/views/name_visualization_dialog
 //= require moment

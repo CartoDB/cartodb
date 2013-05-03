@@ -301,6 +301,7 @@ header { // general header
       a.button_header {
         margin:3px 0 0 10px;
         @include inline-block();
+        &.clearview {display:none;}
       }
 
       // Tags block

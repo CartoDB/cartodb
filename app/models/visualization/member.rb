@@ -17,15 +17,16 @@ module CartoDB
         cartodb:  :data_layers
       }
 
-      attribute :id,            String
-      attribute :name,          String
-      attribute :map_id,        Integer
-      attribute :type,          String
-      attribute :tags,          Array[String], default: []
-      attribute :description,   String
+      attribute :id,                String
+      attribute :name,              String
+      attribute :map_id,            Integer
+      attribute :active_layer_id,   Integer
+      attribute :type,              String
+      attribute :tags,              Array[String], default: []
+      attribute :description,       String
 
       def initialize(attributes={}, repository=Visualization.repository)
-        self.attributes = attributes
+        super(attributes)
         @repository     = repository
         self.id         ||= @repository.next_id
       end #initialize

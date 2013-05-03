@@ -243,6 +243,26 @@ describe Api::Json::VisualizationsController do
       response.fetch('name').should == 'changed'
       response.fetch('tags').should == []
     end
+
+    it 'allows setting the active layer' do
+      payload   = factory
+      post "/api/v1/viz?api_key=#{@api_key}",
+        payload.to_json, @headers
+
+      response  =  JSON.parse(last_response.body)
+      id        = response.fetch('id')
+      tags      = response.fetch('tags')
+
+      response.fetch('tags').should == ['foo', 'bar']
+
+      active_layer_id = 8
+      put "/api/v1/viz/#{id}?api_key=#{@api_key}",
+        { active_layer_id: active_layer_id }.to_json, @headers
+      last_response.status.should == 200
+      response = JSON.parse(last_response.body)
+      response.fetch('active_layer_id').should == active_layer_id
+      response.fetch('tags').should == ['foo', 'bar']
+    end
   end # PUT /api/v1/viz/:id
 
   describe 'DELETE /api/v1/viz/:id' do

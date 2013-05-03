@@ -22,14 +22,18 @@ describe Visualization::Member do
 
   describe '#store' do
     it 'persists attributes to the data repository' do
-      member = Visualization::Member.new(name: 'foo')
+      member = Visualization::Member.new(
+        name:             'foo',
+        active_layer_id:  3
+      )
       member.store
 
       member = Visualization::Member.new(id: member.id)
       member.name.should be_nil
 
       member.fetch
-      member.name.should == 'foo'
+      member.name             .should == 'foo'
+      member.active_layer_id  .should == 3
     end
 
     it 'persists tags as an array if the backend supports it' do
@@ -108,7 +112,8 @@ describe Visualization::Member do
       String    :id, primary_key: true
       String    :name
       String    :description
-      String    :map_id
+      Integer   :map_id, index: true
+      Integer   :active_layer_id
       String    :type
     end
 

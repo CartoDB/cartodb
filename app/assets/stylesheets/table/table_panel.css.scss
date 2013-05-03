@@ -15,10 +15,10 @@
     position:fixed;
     right:0;
     top:64px;
-    width:600px;
     bottom:0px;
+    width:600px;
+    padding-top:14px;
     background:white;
-    z-index:20;
     letter-spacing:-4px;
     border:1px solid rgba(black,0.4);
     border-bottom:0;
@@ -26,6 +26,7 @@
     background:#EDEDED;
     @include box-shadow(rgba(black,0.15) 0 0 2px 2px);
     @include border-top-left-radius($corner_radius);
+    z-index:20;
 
     &:before {
       content:'';
@@ -66,6 +67,7 @@
     .add_layer {
       position:relative;
       height:60px;
+      margin-top:-15px;
       line-height:60px;
 
       div.left {margin-left:24px;}

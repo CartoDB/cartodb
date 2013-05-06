@@ -92,6 +92,19 @@ describe Visualization::Member do
     end
   end #delete
 
+  describe '#public?' do
+    it 'returns true if privacy set to public' do
+      visualization = Visualization::Member.new
+      visualization.public?.should == true
+
+      visualization.privacy = 'private'
+      visualization.public?.should == false
+
+      visualization.privacy = 'public'
+      visualization.public?.should == true
+    end
+  end #public?
+
   describe '#authorize?' do
     it 'returns true if user maps include map_id' do
       map_id  = rand(99)
@@ -115,6 +128,7 @@ describe Visualization::Member do
       Integer   :map_id, index: true
       Integer   :active_layer_id
       String    :type
+      String    :privacy
     end
 
     db.run(%Q{

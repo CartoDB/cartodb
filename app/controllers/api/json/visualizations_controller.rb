@@ -119,7 +119,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   end #allow_vizjson_v1_for?
 
   def allow_vizjson_v2_for?(visualization)
-    visualization && visualization.privacy == 'PUBLIC'
+    visualization && visualization.public?
   end #allow_vizjson_v2_for?
 
   def current_user_is_owner?(table)

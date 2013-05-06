@@ -18,6 +18,7 @@ module CartoDB
           Integer   :map_id, index: true
           Integer   :active_layer_id
           String    :type
+          String    :privacy
         end
 
         @db.run(%Q{

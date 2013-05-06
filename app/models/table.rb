@@ -12,8 +12,8 @@ class Table < Sequel::Model(:user_tables)
   THE_GEOM = :the_geom
   RESERVED_COLUMN_NAMES = %W{ oid tableoid xmin cmin xmax cmax ctid ogc_fid }
   PUBLIC_ATTRIBUTES = { 
-    :id => :id, :name => :name, :privacy => :privacy_text, :tags => :tags_names,
-    :schema => :schema, :updated_at => :updated_at, :rows_counted => :rows_estimated,
+    :id => :id, :name => :name, :privacy => :privacy_text, :schema => :schema,
+    :updated_at => :updated_at, :rows_counted => :rows_estimated,
     :table_size => :table_size, :map_id => :map_id, :description => :description,
     :geometry_types => :geometry_types, :visualization_ids => :visualization_ids,
     :table_visualization => :table_visualization
@@ -1070,9 +1070,13 @@ class Table < Sequel::Model(:user_tables)
   def self.find_by_identifier(user_id, identifier)
     col = (identifier =~ /\A\d+\Z/ || identifier.is_a?(Fixnum)) ? 'id' : 'name'
 
-    table = fetch("SELECT *, array_to_string(array(
-                     SELECT tags.name FROM tags WHERE tags.table_id = user_tables.id ORDER BY tags.id),',') AS tags_names
-                   FROM user_tables WHERE user_tables.user_id = ? AND user_tables.#{col} = ?", user_id, identifier).first
+    table = fetch(%Q{
+      SELECT *
+      FROM user_tables
+      WHERE user_tables.user_id = ?
+      AND user_tables.#{col} = ?},
+      user_id, identifier
+    ).first
     raise RecordNotFound if table.nil?
     table
   end

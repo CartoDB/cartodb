@@ -70,7 +70,6 @@ CartoDB::Application.routes.draw do
           # get    '/tables/tags/:tag_name'                           => 'tables#index'
           get '/tags/:tag_name' => 'tables#index', :as => 'show_tag'
           # get    '/tables/tags'                                     => 'tags#index'
-          get '/tags' => 'tags#index', :as => 'list_tags'
         end
         # get    '/tables/:table_id/records'                        => 'records#index'
         # post   '/tables/:table_id/records'                        => 'records#create'
@@ -110,6 +109,7 @@ CartoDB::Application.routes.draw do
         resources :layers, :only                    => [:show, :index, :create, :update, :destroy]
       end
 
+      get     'viz/tags' => 'tags#index', :as => 'list_tags'
       get     'viz'                                 => 'visualizations#index'
       post    'viz'                                 => 'visualizations#create'
       get     'viz/:id'                             => 'visualizations#show'

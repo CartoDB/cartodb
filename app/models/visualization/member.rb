@@ -22,6 +22,7 @@ module CartoDB
       attribute :map_id,            Integer
       attribute :active_layer_id,   Integer
       attribute :type,              String
+      attribute :privacy,           String, default: 'public'
       attribute :tags,              Array[String], default: []
       attribute :description,       String
 
@@ -51,6 +52,20 @@ module CartoDB
         self
       end #delete
 
+      def privacy=(privacy)
+        return super(privacy) unless table
+        table.privacy = privacy.upcase
+        table.save
+      end #privacy=
+
+      def public?
+        privacy == 'public'
+      end #public?
+
+      def private?
+        !public?
+      end #private?
+
       def to_hash
         Presenter.new(self).to_poro
       end #to_hash
@@ -74,7 +89,7 @@ module CartoDB
 
       def table
         return nil unless defined?(Table)
-        @table ||= ::Table.where(map_id: map_id).first 
+        ::Table.where(map_id: map_id).first 
       end #table
 
       def related_tables
@@ -85,16 +100,6 @@ module CartoDB
         return [] unless map.id
         return map.send(LAYER_SCOPES.fetch(kind))
       end #layers
-
-      def public?
-        return table.public? if type == 'table'
-        return true 
-      end #public?
-
-      def privacy
-        return 'PUBLIC' unless table && table.id
-        return table.privacy_text
-      end #privacy
 
       def authorize?(user)
         user.maps.map(&:id).include?(map_id)

@@ -97,6 +97,7 @@ describe "Tables API" do
     end
 
     it "finds tables by tag name" do
+      pending 'Moved to visualization'
       get_json show_tag_v1_tables_url("tag 1", params.merge(page: 1, per_page: 10)) do |response|
         response.status.should be_success
         response.body[:total_entries].should == 2
@@ -105,6 +106,7 @@ describe "Tables API" do
     end
 
     it "finds tables by tag name, honoring page and per_page" do
+      pending 'Moved to visualization'
       get_json show_tag_v1_tables_url("tag 1", params.merge(:page => 1, :per_page => 1)) do |response|
         response.status.should be_success
         response.body[:tables].map{ |t| t['name'] }.should == ["my_table_3"]
@@ -265,6 +267,8 @@ describe "Tables API" do
   end
 
   it "creates a new table specifying tags" do
+    pending 'Moved to visualization' 
+
     post_json v1_tables_url(params.merge(name: "My new imported table", tags: "environment,wadus")) do |response|
       response.status.should be_success
       response.body[:name].should == "my_new_imported_table"
@@ -309,8 +313,6 @@ describe "Tables API" do
       response.body[:name].should == "my_table_2"
       response.body[:privacy] == "PRIVATE"
       response.body[:description].should == "Testing is awesome"
-      response.body[:tags].split(',').should include("disco")
-      response.body[:tags].split(',').should include("bars")
       (response.body[:schema] - default_schema).should be_empty
     end
   end

@@ -2,7 +2,7 @@ module CartoDB
   module Factories
     def new_map(attributes = {})
       attributes = attributes.dup
-      map = Map.new(attributes)
+      map = ::Map.new(attributes)
       map.user_id = if attributes[:user_id].nil?
         create_user.id
       else

@@ -53,9 +53,7 @@ module CartoDB
       end #delete
 
       def privacy=(privacy)
-        return super(privacy) unless table
-        table.privacy = privacy.upcase
-        table.save
+        super(privacy)
       end #privacy=
 
       def public?

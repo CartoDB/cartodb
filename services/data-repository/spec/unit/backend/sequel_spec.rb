@@ -1,32 +1,36 @@
 # encoding: utf-8
 require 'minitest/autorun'
 require_relative '../../../backend/sequel'
+require_relative '../../../../../app/models/visualization/member'
 
 include CartoDB
 
-describe Visualization::Repository do
+describe DataRepository::Backend::Sequel do
   before do
     db = Sequel.sqlite
     db.create_table :visualizations do
       String    :id, primary_key: true
       String    :name
       String    :description
-      String    :map_id
-      String    :type
       String    :tags
+      Integer   :map_id
+      Integer   :active_layer_id
+      String    :type
+      String    :privacy
     end
 
     db.create_table :overlays do
       String    :id,                null: false, primary_key: true
       Integer   :order,             null: false
       String    :options,           text: true
+      String    :type
       String    :visualization_id,  index: true
     end
 
     Visualization.repository = 
-      Visualization::Repository.new(:visualizations, db)
+      DataRepository::Backend::Sequel.new(db, :visualizations)
     Overlay.repository = 
-      Overlay::Repository.new(:overlays, db)
+      DataRepository::Backend::Sequel.new(db, :overlays)
   end
 
   describe '#store' do

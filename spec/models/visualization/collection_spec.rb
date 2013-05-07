@@ -21,7 +21,7 @@ describe Visualization::Collection do
       Visualization::Member.new(attributes_2, repository).store
       collection    = Visualization::Collection.new({}, { repository: repository })
 
-      collection.fetch(tags: ['tag 1']).count.should == 1
+      collection.fetch(tags: 'tag 1').count.should == 1
       db.drop_table relation.to_sym
     end
   end

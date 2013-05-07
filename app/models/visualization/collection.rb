@@ -31,7 +31,8 @@ module CartoDB
 
       def fetch(filters={})
         dataset = repository.collection(filters, AVAILABLE_FILTERS)
-        dataset = dataset.where(has_tags(filters.delete(:tags)))
+        tags    = filters.delete(:tags).to_s.split(',')
+        dataset = dataset.where(has_tags(tags))
 
         collection.storage = 
           Set.new(dataset.map { |record| record.fetch(:id) })

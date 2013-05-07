@@ -29,12 +29,12 @@ module CartoDB
         end
       end
 
-      def fetch(filter={})
+      def fetch(filters={})
+        dataset = repository.collection(filters, AVAILABLE_FILTERS)
+        dataset = dataset.where(has_tags(filters.delete(:tags)))
+
         collection.storage = 
-          Set.new(
-            repository.collection(filter, AVAILABLE_FILTERS)
-              .map { |record| record.fetch(:id) }
-          )
+          Set.new(dataset.map { |record| record.fetch(:id) })
         self
       end #fetch
 
@@ -51,6 +51,14 @@ module CartoDB
       private
 
       attr_reader :collection
+
+      def has_tags(tags=[])
+        return {} if tags.nil? || tags.empty?
+        placeholders = tags.length.times.map { "?" }.join(", ")
+        filter       = "tags && ARRAY[#{placeholders}]"
+       
+        [filter].concat(tags)
+      end #with_tags
     end # Collection
   end # Visualization
 end # CartoDB

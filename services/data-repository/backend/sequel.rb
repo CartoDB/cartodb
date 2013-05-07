@@ -17,10 +17,9 @@ module DataRepository
       end #initialize
 
       def collection(filter={}, available_filters=[])
-        return db[relation].all if filter.empty?
-
-        dataset           = paginate(db[relation], filter)
-        available_filters = symbolize_elements(available_filters)
+        dataset = paginate(db[relation], filter)
+        return dataset if filter.nil? || filter.empty?
+        available_filters   = symbolize_elements(available_filters)
 
         filter = symbolize_keys(filter).select { |key, value|
           available_filters.include?(key)

@@ -6,6 +6,7 @@ class User < Sequel::Model
   include CartoDB::UserDecorator
 
   one_to_one :client_application
+  plugin :association_dependencies, :client_application => :destroy
   one_to_many :tokens, :class => :OauthToken
   one_to_many :maps
   one_to_many :assets

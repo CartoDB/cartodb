@@ -5,29 +5,28 @@ require 'uuidtools'
 module DataRepository
   module Backend
     class Sequel
-      PAGE      = 1
-      PER_PAGE  = 1000
+      PAGE          = 1
+      PER_PAGE      = 100
+      ARRAY_RE      = %r{\[.*\]}
 
       def initialize(db=Sequel.sqlite, relation=nil)
-        @db       = db
-        @relation = relation
-        db.extension :pg_array if postgres?(db)
+        @db         = db
+        @relation   = relation
+        ::Sequel.extension :pagination
+        @db.extension :pg_array if postgres?(@db)
       end #initialize
 
-      def collection(filter={}, attribute_names=[])
+      def collection(filter={}, available_filters=[])
         return db[relation].all if filter.empty?
 
-        attribute_names = attribute_names.map { |k| k.to_sym}
-        filter          = Hash[ filter.map { |k, v| [k.to_sym, v] } ]
+        dataset           = paginate(db[relation], filter)
+        available_filters = symbolize_elements(available_filters)
 
-        page        = (filter.delete(:page)      || PAGE).to_i
-        per_page    = (filter.delete(:per_page)  || PER_PAGE).to_i
+        filter = symbolize_keys(filter).select { |key, value|
+          available_filters.include?(key)
+        } unless available_filters.empty?
 
-        filter = filter.select { |key, value|
-          attribute_names.include?(key)
-        } unless attribute_names.empty?
-
-        db[relation].where(filter).paginate(page, per_page)
+        dataset.where(filter)
       end #collection
 
       def store(key, data={})
@@ -66,9 +65,7 @@ module DataRepository
       def serialize_for_postgres(data)
         Hash[
           data.map { |key, value|
-            if value.is_a?(Array) && !value.empty?
-              value = value.pg_array 
-            end
+            value = value.pg_array if value.is_a?(Array) && !value.empty? 
             [key, value]
           }
         ]
@@ -98,11 +95,31 @@ module DataRepository
 
         Hash[
           attributes.map do |key, value|
-            value = JSON.parse(value) if value =~ %r{\[.*\]}
+            value = JSON.parse(value) if value =~ ARRAY_RE
             [key, value]
           end
         ]
       end #parse
+
+      def symbolize_elements(array=[])
+        array.map { |k| k.to_sym}
+      end #symbolize_elements
+
+      def symbolize_keys(hash={})
+        Hash[ hash.map { |k, v| [k.to_sym, v] } ]
+      end #symbolize_keys
+
+      def paginate(dataset, filter={})
+        page, per_page = pagination_params_from(filter)
+        dataset.paginate(page, per_page)
+      end #paginate
+
+      def pagination_params_from(filter)
+        page      = (filter.delete(:page)      || PAGE).to_i
+        per_page  = (filter.delete(:per_page)  || PER_PAGE).to_i
+
+        [page, per_page]
+      end #pagination_params_from
     end # Sequel
   end # Backend
 end # DataRepository

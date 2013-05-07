@@ -897,7 +897,7 @@
               @include opacity(0);
 
               @include size(12px);
-              @include position(20px, 30px, false, false);
+              @include position(21px, 30px, false, false);
               @include simple-transition(opacity, 150ms);
 
               background: image-url('icons/remove_filter.png') no-repeat;
@@ -953,6 +953,8 @@
             margin: 0 0 29px 0;
             &.only, &.empty { margin: 0 0 15px 0; }
             &.only .items, &.empty .items { display:none; }
+
+            &.boolean { margin-bottom: 10px; }
           }
 
           .textarea {

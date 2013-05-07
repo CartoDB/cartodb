@@ -1,3 +1,15 @@
+2.1
+---
+
+After updating to 2.1 you'll need to upgrade your system:
+
+```
+$ bundle install
+$ bundle exec rake db:migrate
+$ bundle exec rake cartodb:db:load_functions
+$ bundle exec rake cartodb:db:migrate_to[2.1]
+```
+
 2.0.13
 ------
 

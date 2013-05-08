@@ -12,8 +12,9 @@ var payload = {
 };
 
 var headers = {
+  'Host'        : configuration.HOST,
   'Content-Type': 'application/json',
-  'Host'        : configuration.HOST
+  'Accept'      : 'application/json'
 }
 
 casper.echo(configuration.HOST)
@@ -26,7 +27,9 @@ casper.open(authenticated(url), {
 });
 
 casper.then(function() {
-  casper.echo(url)
+  response = JSON.parse(casper.getPageContent());
+  casper.test.assertEquals(response['name'], payload['name']);
+  require('utils').dump(response);
 });
 
 casper.run();

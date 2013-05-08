@@ -1,5 +1,6 @@
 2.0.13
 ------
+* Fixed public table view
 
 2.0.12
 ------

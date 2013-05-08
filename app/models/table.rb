@@ -568,6 +568,14 @@ class Table < Sequel::Model(:user_tables)
     end
   end
 
+  # sets table privacy without callbacks
+  def set_privacy!(value)
+    self.this.update(privacy: value)
+    self.reload
+    self.manage_privacy
+    self.invalidate_varnish_cache
+  end
+
   # enforce standard format for this field
   def privacy=(value)
     if value == "PRIVATE" || value == PRIVATE || value == PRIVATE.to_s

@@ -664,6 +664,6 @@ class User < Sequel::Model
   end
 
   def monitor_user_notification
-    File.touch(Rails.root.join('log', 'users_modifications'))
+    FileUtils.touch(Rails.root.join('log', 'users_modifications'))
   end
 end

@@ -1,5 +1,7 @@
 2.0.13
 ------
+* Adds booleans filters feature.
+* Allows adding filters from the column name tooltip.
 
 2.0.12
 ------

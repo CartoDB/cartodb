@@ -2,6 +2,7 @@
 ------
 * Adds booleans filters feature.
 * Allows adding filters from the column name tooltip.
+* Fixed public table view
 
 2.0.12
 ------

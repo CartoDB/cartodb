@@ -58,7 +58,7 @@ module CartoDB
       end #export_user
 
       def export_layers_for(user_id)
-        connection.execute("
+        exported_layers = connection.execute("
           SELECT  * 
           FROM    layers 
           WHERE   id in (
@@ -67,6 +67,20 @@ module CartoDB
                     WHERE   maps.user_id = #{user_id}
                   )
         ", &:to_a)
+
+        exported_layers.concat(
+          connection.execute(%Q{
+            SELECT *
+            FROM layers
+            WHERE id in(
+              SELECT layer_id
+              FROM layers_users
+              WHERE layers_users.user_id = #{user_id}
+            )
+          }, &:to_a)
+        )
+        
+        exported_layers.uniq
       end #export_layers_for
 
       def export_records_for(user_id, table)

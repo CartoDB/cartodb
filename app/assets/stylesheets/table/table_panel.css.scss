@@ -960,9 +960,22 @@
           .textarea {
             @include box-sizing(border-box);
             @include position(0, false, false, 0);
-            @include size(100%, 80px);
+            @include size(100%, 40px);
             display:none;
             padding: 0 30px;
+
+            .apply {
+             @include size(26px, 27px);
+             @include position(false, 40px, 6px, false);
+
+             @include text-indent();
+             @include icons-sprite(copy_button);
+             z-index:3;
+
+             &:hover  { @include icons-sprite(copy_button, $offset-y:-27px); }
+             &:focus  { @include icons-sprite(copy_button, $offset-y:-27px);  }
+             &:active { @include icons-sprite(copy_button, $offset-y:-54px);  }
+           }
 
             textarea {
               @include box-sizing(border-box);

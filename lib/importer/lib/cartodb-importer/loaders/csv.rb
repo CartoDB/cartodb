@@ -172,7 +172,6 @@ module CartoDB
 
       def import_csv_data
         header_normalizer = HeaderNormalizer.new(path)
-        header_normalizer.run if extension =~ /csv/
 
         encoding          = EncodingConverter.new(path).run
         ogr2ogr_bin_path  = `which ogr2ogr`.strip

@@ -6,6 +6,7 @@ class User < Sequel::Model
   include CartoDB::UserDecorator
 
   one_to_one :client_application
+  plugin :association_dependencies, :client_application => :destroy
   one_to_many :tokens, :class => :OauthToken
   one_to_many :maps
   one_to_many :assets
@@ -58,6 +59,7 @@ class User < Sequel::Model
     super
     setup_user
     save_metadata
+    monitor_user_notification
   end
 
   def before_destroy
@@ -85,6 +87,7 @@ class User < Sequel::Model
         conn.run("DROP DATABASE #{database_name}")
         conn.run("DROP USER #{database_username}")
     end.join
+    monitor_user_notification
   end
 
   def invalidate_varnish_cache
@@ -658,5 +661,9 @@ class User < Sequel::Model
         user_database.run("ALTER TABLE #{table.name} OWNER TO #{database_username}")
       end
     end
+  end
+
+  def monitor_user_notification
+    File.touch(Rails.root.join('log', 'users_modifications'))
   end
 end

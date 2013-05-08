@@ -957,7 +957,15 @@
 
             &.boolean { margin-bottom: 10px; }
 
-            &.list { margin: 0 0 16px 0; }
+            &.list {
+              margin: 0 0 16px 0;
+              .options { margin: -6px 0 0 30px; }
+            }
+
+            &.list.has_scrollers {
+              margin: 0 0 16px 0;
+              .options { margin: 2px 0 0 30px; }
+            }
 
           }
 
@@ -1107,6 +1115,7 @@
               cursor: pointer;
 
               p {
+
                 float: left;
                 width: 275px;
                 min-height: 15px;

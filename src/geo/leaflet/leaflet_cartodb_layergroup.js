@@ -1,4 +1,6 @@
 
+(function() {
+
 if(typeof(L) == "undefined")
   return;
 
@@ -292,3 +294,5 @@ cdb.geo.LeafLetCartoDBLayerGroupView = L.CartoDBGroupLayer.extend({
     this.trigger('featureClick', e, [latlon.lat, latlon.lng], pixelPos, data, layer);
   },
 });
+
+})();

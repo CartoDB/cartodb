@@ -55,7 +55,7 @@ module CartoDB
       def privacy=(privacy)
         super(privacy)
         table_privacy = self.public? ? ::Table::PUBLIC : ::Table::PRIVATE
-        table.set_privacy!(table_privacy)
+        table.set_privacy!(table_privacy) if table.present?
         @privacy
       end #privacy=
 

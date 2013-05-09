@@ -1,4 +1,5 @@
 # encoding: utf-8
+require_relative '../../spec_helper'
 require_relative '../../../services/data-repository/backend/sequel'
 require_relative '../../../app/models/visualization/member'
 require_relative '../../../services/data-repository/repository'
@@ -37,7 +38,7 @@ describe Visualization::Member do
     end
 
     it 'persists tags as an array if the backend supports it' do
-      db          = Sequel.postgres(host: 'localhost', port: 5432)
+      db          = Sequel.postgres(host: Rails.configuration.database_configuration[Rails.env]["host"], port: Rails.configuration.database_configuration[Rails.env]["port"], username: Rails.configuration.database_configuration[Rails.env]["username"])
       relation    = :"visualizations_#{Time.now.to_i}"
       create_visualizations_table_in(db, relation)
 

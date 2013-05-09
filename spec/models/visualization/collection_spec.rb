@@ -9,7 +9,7 @@ include CartoDB
 describe Visualization::Collection do
   describe '#fetch' do
     it 'can search by tag if the backend supports array columns' do
-      db            = Sequel.postgres(host: 'localhost', port: 5432)
+      db            = Sequel.postgres(host: Rails.configuration.database_configuration[Rails.env]["host"], port: Rails.configuration.database_configuration[Rails.env]["port"], username: Rails.configuration.database_configuration[Rails.env]["username"])
       relation      = :"visualizations_#{Time.now.to_i}"
       create_visualizations_table_in(db, relation)
 

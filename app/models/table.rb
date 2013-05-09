@@ -591,7 +591,6 @@ class Table < Sequel::Model(:user_tables)
     end
 
     if table_visualization.present?
-      debugger
       table_visualization.privacy = (self[:privacy] == PRIVATE ? 'private' : 'public')
       table_visualization.store
     end

@@ -31,7 +31,7 @@ module CartoDB
         {
           id:               table.id,
           size:             table.table_size,
-          row_count:        table.rows_counted,
+          row_count:        table.rows_estimated,
           updated_at:       table.updated_at
         }
       end #table_data_for

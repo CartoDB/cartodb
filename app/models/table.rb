@@ -589,6 +589,12 @@ class Table < Sequel::Model(:user_tables)
     elsif value == "PUBLIC" || value == PUBLIC || value == PUBLIC.to_s
       self[:privacy] = PUBLIC
     end
+
+    if table_visualization.present?
+      debugger
+      table_visualization.privacy = (self[:privacy] == PRIVATE ? 'private' : 'public')
+      table_visualization.store
+    end
   end
 
   def key

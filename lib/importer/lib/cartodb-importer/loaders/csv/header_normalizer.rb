@@ -12,21 +12,6 @@ module CartoDB
         @options  = default_csv_options.merge(options)
       end #initialize
 
-      def run
-        temporary_path  = "#{path}_temp_#{Time.now.to_f}"
-        input           = File.open(path, 'r')
-        output          = File.open(temporary_path, 'w')
-
-        ::CSV.filter(input, output, options) do |row|
-          fill_empty_fields_in(row) if row.header_row?
-        end
-
-        input.close
-        output.close
-        FileUtils.mv(temporary_path, path)
-      rescue ArgumentError
-      end #normalize_csv_header
-
       def remove_empty_filler_columns_in(db, table)
         filler_columns_in(db, table).each do |column|
           remove(db, table, column) if empty_column?(db, table, column)

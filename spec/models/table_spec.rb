@@ -92,6 +92,58 @@ describe Table do
       $tables_metadata.hget(table.key,"privacy").to_i.should == Table::PRIVATE
     end
 
+    it 'propagates privacy changes to the associated visualization' do
+      table = create_table(user_id: @user.id)
+      table.should be_private
+      table.table_visualization.should be_private
+
+      table.privacy = Table::PUBLIC
+      table.save
+      table.reload
+      table                           .should be_public
+      table.table_visualization       .should be_public
+
+      rehydrated = Table.where(id: table.id).first
+      rehydrated                      .should be_public
+      rehydrated.table_visualization  .should be_public
+
+      table.privacy = Table::PRIVATE
+      table.save
+      table.reload
+      table                           .should be_private
+      table.table_visualization       .should be_private
+
+      rehydrated = Table.where(id: table.id).first
+      rehydrated                      .should be_private
+      rehydrated.table_visualization  .should be_private
+    end
+
+    it 'receives privacy changes from the associated visualization' do
+      table = create_table(user_id: @user.id)
+      table.should be_private
+      table.table_visualization.should be_private
+
+      table.table_visualization.privacy = 'public'
+      table.table_visualization.store
+      table.reload
+      table                           .should be_public
+      table.table_visualization       .should be_public
+
+      rehydrated = Table.where(id: table.id).first
+      rehydrated                      .should be_public
+      rehydrated.table_visualization  .should be_public
+
+      table.table_visualization.privacy = 'private'
+      table.table_visualization.store
+      table.reload
+      table                           .should be_private
+      table.table_visualization       .should be_private
+
+      rehydrated = Table.where(id: table.id).first
+      rehydrated                      .should be_private
+      rehydrated.table_visualization  .should be_private
+    end
+
     it "should be public if the creating user doesn't have the ability to make private tables" do
       @user.private_tables_enabled = false
       @user.save
@@ -1596,6 +1648,5 @@ describe Table do
       new_table.should == nil
     end
   end
-
 end
 

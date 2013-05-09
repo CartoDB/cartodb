@@ -378,7 +378,7 @@ module CartoDB
     end
 
     def get_valid_name(name)
-      Table.get_valid_table_name(name, connection: @db_connection)
+      ::Table.get_valid_table_name(name, connection: @db_connection)
     end #get_valid_name
 
     DECOMPRESSORS = {

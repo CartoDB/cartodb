@@ -2,7 +2,7 @@ module CartoDB
   module Factories
     def new_table(attributes = {})
       attributes = attributes.dup
-      table = Table.new(attributes)
+      table = ::Table.new(attributes)
       table.user_id = if attributes[:user_id].nil?
         create_user.id
       else

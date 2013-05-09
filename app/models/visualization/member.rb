@@ -6,6 +6,8 @@ require_relative './collection'
 require_relative '../overlay/collection'
 require_relative './presenter'
 require_relative './vizjson'
+require_relative '../table'
+require_relative '../table/privacy_manager'
 
 module CartoDB
   module Visualization
@@ -33,9 +35,16 @@ module CartoDB
       end #initialize
 
       def store
+        propagate_privacy_to(table) if table
         repository.store(id, attributes.to_hash)
         self
       end #store
+
+      def store_using_table(privacy)
+        self.privacy = privacy
+        repository.store(id, attributes.to_hash)
+        self
+      end #store_using_table
 
       def fetch
         data = repository.fetch(id)
@@ -51,13 +60,6 @@ module CartoDB
         self.attributes.keys.each { |key| self.send("#{key}=", nil) }
         self
       end #delete
-
-      def privacy=(privacy)
-        super(privacy)
-        table_privacy = self.public? ? ::Table::PUBLIC : ::Table::PRIVATE
-        table.set_privacy!(table_privacy) if table.present?
-        @privacy
-      end #privacy=
 
       def public?
         privacy == 'public'
@@ -89,7 +91,7 @@ module CartoDB
       end #user
 
       def table
-        return nil unless defined?(Table)
+        return nil unless defined?(::Table)
         ::Table.where(map_id: map_id).first 
       end #table
 
@@ -109,6 +111,12 @@ module CartoDB
       private
 
       attr_reader :repository
+
+      def propagate_privacy_to(table)
+        Table::PrivacyManager.new(table)
+          .set_from(self)
+          .propagate_to_redis_and_varnish
+      end #propagate_privacy_to
 
       def configuration
         return {} unless defined?(Cartodb)

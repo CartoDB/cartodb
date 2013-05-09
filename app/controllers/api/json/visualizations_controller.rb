@@ -35,7 +35,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
                   )
     elsif params[:tables]
       tables    = params[:tables].map do |table_name| 
-                    Table.find_by_subdomain(request.subdomain, table_name)
+                    ::Table.find_by_subdomain(request.subdomain, table_name)
                   end
       map       = Visualization::TableBlender.new(current_user, tables).blend
       member    = Visualization::Member.new(

@@ -1,6 +1,7 @@
 # coding: UTF-8
 # Proxies management of a table in the users database
 require_relative './table/column_typecaster'
+require_relative './table/privacy_manager'
 
 class Table < Sequel::Model(:user_tables)
 
@@ -311,13 +312,13 @@ class Table < Sequel::Model(:user_tables)
     super
     manage_tags
     update_name_changes
-    self.manage_privacy
     self.map.save
 
-    # Privacy changes should invalidate varnish cache
-    if self.previous_changes.keys.include?(:privacy)
-      self.invalidate_varnish_cache
-    end
+    manager = CartoDB::Table::PrivacyManager.new(self)
+    manager.set_private if privacy == PRIVATE
+    manager.set_public  if privacy == PUBLIC
+    manager.propagate_to(table_visualization)
+    manager.propagate_to_redis_and_varnish if privacy_changed?
   end
 
   def after_create
@@ -458,11 +459,11 @@ class Table < Sequel::Model(:user_tables)
   ##
   # This method removes all the vanish cached objects for the table,
   # tiles included. Use with care O:-)
-  #
+
   def invalidate_varnish_cache
     CartoDB::Varnish.new.purge("obj.http.X-Cache-Channel ~ #{varnish_key}.*")
   end
-
+  
   def varnish_key
     "#{self.owner.database_name}:#{self.name}"
   end
@@ -564,24 +565,6 @@ class Table < Sequel::Model(:user_tables)
     save
   end
 
-  def manage_privacy
-    if privacy == PRIVATE
-      owner.in_database(:as => :superuser).run(%Q{REVOKE SELECT ON "#{self.name}" FROM #{CartoDB::PUBLIC_DB_USER};})
-      $tables_metadata.hset key, "privacy", PRIVATE
-    elsif privacy == PUBLIC
-      $tables_metadata.hset key, "privacy", PUBLIC
-      owner.in_database(:as => :superuser).run(%Q{GRANT SELECT ON "#{self.name}" TO #{CartoDB::PUBLIC_DB_USER};})
-    end
-  end
-
-  # sets table privacy without callbacks
-  def set_privacy!(value)
-    self.this.update(privacy: value)
-    self.reload
-    self.manage_privacy
-    self.invalidate_varnish_cache
-  end
-
   # enforce standard format for this field
   def privacy=(value)
     if value == "PRIVATE" || value == PRIVATE || value == PRIVATE.to_s
@@ -589,12 +572,31 @@ class Table < Sequel::Model(:user_tables)
     elsif value == "PUBLIC" || value == PUBLIC || value == PUBLIC.to_s
       self[:privacy] = PUBLIC
     end
-
-    if table_visualization.present?
-      table_visualization.privacy = (self[:privacy] == PRIVATE ? 'private' : 'public')
-      table_visualization.store
-    end
   end
+
+  def privacy_changed?
+    previous_changes.keys.include?(:privacy)
+  end #privacy_changed?
+
+  # TO BE DELETED
+  #def manage_privacy
+    #if privacy == PRIVATE
+    #  owner.in_database(:as => :superuser).run(%Q{REVOKE SELECT ON "#{self.name}" FROM #{CartoDB::PUBLIC_DB_USER};})
+    #  $tables_metadata.hset key, "privacy", PRIVATE
+    #elsif privacy == PUBLIC
+    #  $tables_metadata.hset key, "privacy", PUBLIC
+    #  owner.in_database(:as => :superuser).run(%Q{GRANT SELECT ON "#{self.name}" TO #{CartoDB::PUBLIC_DB_USER};})
+    #end
+  #end
+
+  # TO BE DELETED
+  # sets table privacy without callbacks
+  #def set_privacy!(value)
+    #self.this.update(privacy: value)
+    #self.reload
+    #self.manage_privacy
+    #self.invalidate_varnish_cache
+  #end
 
   def key
     Table.key(database_name, name)

@@ -5,7 +5,7 @@ require_relative './member'
 module CartoDB
   module Visualization
     class Locator
-      def initialize(table_model=Table, repository=Visualization.repository)
+      def initialize(table_model=::Table, repository=Visualization.repository)
         @table_model  = table_model
         @repository   = repository
       end #initialize

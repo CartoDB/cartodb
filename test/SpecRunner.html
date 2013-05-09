@@ -165,7 +165,10 @@
       };
 
       jasmineEnv.addReporter(htmlReporter);
-      jasmineEnv.addReporter(new jasmine.ConsoleReporter());
+
+      if(jasmine.ConsoleReporter !== undefined) {
+        jasmineEnv.addReporter(new jasmine.ConsoleReporter());
+      }
       jasmineEnv.specFilter = function(spec) {
         return htmlReporter.specFilter(spec);
       };

@@ -2,6 +2,7 @@
 require 'rspec'
 require 'sequel'
 
+require_relative '../../spec_helper'
 require_relative '../../../app/models/visualization/locator'
 require_relative '../../../app/models/visualization'
 require_relative '../../../app/models/visualization/member'
@@ -38,11 +39,17 @@ describe CartoDB::Visualization::Locator do
     end
 
     it 'fetches a Table if passed a table id' do
-      table_class = stub('find_by_subdomain')
+      table_class = Object.new
+      def table_class.called; @called_arguments; end
+      def table_class.find_by_subdomain(*args); 
+        @called_arguments = args;
+        OpenStruct.new
+      end
+
       locator     = CartoDB::Visualization::Locator.new(table_class)
 
-      table_class.should_receive(:find_by_subdomain).with('foo', 0)
       locator.get(0, 'foo')
+      table_class.called.should == ['foo', 0]
     end
 
     it 'returns nil if no visualization or table found' do

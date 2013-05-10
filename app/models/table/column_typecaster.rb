@@ -22,6 +22,10 @@ module CartoDB
         'timestamp'         => 'string_to_datetime',
         'double precision'  => 'string_to_number',
         'boolean'           => 'string_to_boolean'
+      },
+      'date' => {
+        'double precision'  => 'date_to_number',
+        'boolean'           => 'date_to_boolean'
       }
     }
 
@@ -71,12 +75,13 @@ module CartoDB
       }.flatten.last.fetch(:db_type).to_s
     end #column_type
 
-    def straight_cast(new_type=self.new_type)
+    def straight_cast(new_type=self.new_type, options = {})
+      cast = (options[:cast].present? ? options[:cast] : "cast(#{column_name} as #{new_type})")
       user_database.run(%Q{
         ALTER TABLE "#{table_name}"
         ALTER COLUMN #{column_name}
         TYPE #{new_type}
-        USING cast(#{column_name} as #{new_type})
+        USING #{cast}
       })
     end #straight_cast
 
@@ -87,7 +92,7 @@ module CartoDB
     end #string_to_number
 
     def string_to_datetime
-      normalize_empty_string_to_null
+      straight_cast("date", cast: "CDB_StringToDate(#{column_name})")
     end #string_to_datetime
 
     def string_to_boolean
@@ -159,6 +164,14 @@ module CartoDB
       })
     end #number_to_boolean
 
+    def date_to_number
+      straight_cast("double precision", cast: "CDB_DateToNumber(#{column_name})")
+    end
+
+    def date_to_boolean
+      nullify
+    end
+
     def normalize_empty_string_to_null
       user_database.run(%Q{
         UPDATE "#{table_name}"
@@ -200,4 +213,3 @@ module CartoDB
     end #normalize_digit_separators
   end # ColumnTypecaster
 end # CartoDB
-

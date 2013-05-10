@@ -94,4 +94,7 @@ group :development, :test do
   gem "rb-fchange", :require => false
   gem "guard"
   gem "guard-minitest"
+
+  # Server
+  gem 'thin'
 end

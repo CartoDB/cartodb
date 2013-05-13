@@ -32,7 +32,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
                   ).fetch
       member    = Visualization::Copier.new(
                     current_user, source, params.fetch(:name, nil)
-                  )
+                  ).copy.store
     elsif params[:tables]
       tables    = params[:tables].map do |table_name| 
                     ::Table.find_by_subdomain(request.subdomain, table_name)

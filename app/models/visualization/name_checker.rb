@@ -1,26 +1,26 @@
 # encoding: utf-8
+require_relative './collection'
 
 module CartoDB
   module Visualization 
     class NameChecker
-      def initialize(user, db=Sequel.sqlite)
+      def initialize(user)
         @user = user
-        @db   = db
       end #initialize
 
       def available?(candidate)
-        matches = db[:visualizations]
-                    .select(:name)
-                    .where(map_id: user.maps.map(&:id))
-
-        return true if matches.nil? || matches.empty?
-        names = matches.map { |record| record.fetch(:name) }
-        !names.include?(candidate)
+        !taken_names_for(user).include?(candidate)
       end #available?
+
+      def taken_names_for(user)
+        Visualization::Collection.new
+          .fetch(map_id: user.maps.map(&:id))
+          .map(&:name)
+      end #taken_names
 
       private
 
-      attr_reader :user, :db
+      attr_reader :user
     end # NameChecker
   end # Visualization
 end # CartoDB

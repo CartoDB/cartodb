@@ -1,5 +1,6 @@
 # encoding: utf-8
 require 'ostruct'
+require_relative '../../spec_helper'
 require_relative '../../../app/models/visualization/name_generator'
 
 include CartoDB

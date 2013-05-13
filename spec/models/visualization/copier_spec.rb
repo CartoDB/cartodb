@@ -1,15 +1,20 @@
 # encoding: utf-8
 require 'ostruct'
+require 'sequel'
 require_relative '../../spec_helper'
 require_relative '../../../services/data-repository/repository'
 require_relative '../../../app/models/visualization/member'
 require_relative '../../../app/models/visualization/copier'
+require_relative '../../../app/models/visualization/migrator'
 
 include CartoDB
 
 describe Visualization::Copier do
   before do
-    Visualization.repository = DataRepository.new
+    @db   = Sequel.sqlite
+    Visualization::Migrator.new(@db).migrate
+    Visualization.repository = 
+      DataRepository::Backend::Sequel.new(@db, :visualizations)
     @user = OpenStruct.new(id: rand(999), maps: [])
   end
 

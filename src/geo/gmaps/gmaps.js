@@ -160,7 +160,6 @@ if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
           idx = Math.max(0, idx); // avoid -1
           self.map_googlemaps.overlayMapTypes.setAt(idx, layer_view.gmapsLayer);
         }
-        layer_view.index = idx;
         this.trigger('newLayerView', layer_view, this);
       } else {
         cdb.log.error("layer type not supported");

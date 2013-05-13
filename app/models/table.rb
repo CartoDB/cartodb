@@ -1286,7 +1286,7 @@ TRIGGER
   end
 
   def visualizations
-    CartoDB::Visualization::Collection.new(map_id: [map_id]).fetch
+    CartoDB::Visualization::Collection.new.fetch(map_id: [map_id])
   end #visualizations
 
   def visualization_ids

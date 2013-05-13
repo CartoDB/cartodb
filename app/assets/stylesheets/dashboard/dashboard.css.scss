@@ -35,6 +35,10 @@
 
     &.no_vis {
 
+      display:none;
+
+      &.active { display: block; }
+
       section.empty {
         margin: 0;
         border:1px solid #D1D1D1;

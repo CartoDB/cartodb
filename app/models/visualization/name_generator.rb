@@ -1,4 +1,5 @@
 # encoding: utf-8
+require_relative './name_checker'
 
 module CartoDB
   module Visualization
@@ -7,7 +8,7 @@ module CartoDB
 
       def initialize(user, checker=nil)
         @user     = user
-        @checker  = checker || NameChecker.new(user, Rails::Sequel.connection)
+        @checker  = checker || NameChecker.new(user)
       end #initialize
 
       def name(candidate=PATTERN, iteration=0)

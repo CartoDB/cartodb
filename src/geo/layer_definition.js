@@ -15,6 +15,8 @@ function LayerDefinition(layerDefinition, options) {
   this.layerToken = null;
   this.urls = null;
   this.silent = false;
+  this._layerTokenQueue = [];
+  this._timeout = -1;
 }
 
 LayerDefinition.prototype = {
@@ -100,8 +102,19 @@ LayerDefinition.prototype = {
     return this.options.btoa(encoded.join(''))
   },
 
-  //TODO: support old browsers
   getLayerToken: function(callback) {
+    var self = this;
+    clearTimeout(this._timeout);
+    this._layerTokenQueue.push(callback);
+    this._timeout = setTimeout(function() {
+      self._getLayerToken(function(data) {
+        var fn;
+        while(fn = self._layerTokenQueue.pop()) fn(data);
+      });
+    }, 4);
+  },
+
+  _getLayerToken: function(callback) {
     var ajax = this.options.ajax;
     if(this.options.cors) {
       ajax({

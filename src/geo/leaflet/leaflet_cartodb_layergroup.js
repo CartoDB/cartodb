@@ -204,9 +204,9 @@ L.CartoDBGroupLayer = L.TileLayer.extend({
   /**
    * Bind off event for wax interaction
    */
-  _manageOffEvents: function(){
+  _manageOffEvents: function(map, o) {
     if (this.options.featureOut) {
-      return this.options.featureOut && this.options.featureOut();
+      return this.options.featureOut && this.options.featureOut(o.e, o.layer);
     }
   },
 

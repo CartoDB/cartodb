@@ -124,7 +124,9 @@ CartoDBLayerCommon.prototype = {
             self._manageOnEvents(self.options.map, o);
           })
           .on('off', function(o) {
-            self._manageOffEvents();
+            o = o || {}
+            o.layer = layer;
+            self._manageOffEvents(self.options.map, o);
           });
       }
     }

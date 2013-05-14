@@ -196,9 +196,9 @@ CartoDBLayerGroup.prototype._findPos = function (map,o) {
   );
 };
 
-CartoDBLayerGroup.prototype._manageOffEvents = function(){
+CartoDBLayerGroup.prototype._manageOffEvents = function(map, o){
   if (this.options.featureOut) {
-    return this.options.featureOut && this.options.featureOut();
+    return this.options.featureOut && this.options.featureOut(o.e, o.layer);
   }
 };
 

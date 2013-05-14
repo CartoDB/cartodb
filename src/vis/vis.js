@@ -479,11 +479,18 @@ var Vis = cdb.core.View.extend({
           .showInfowindow();
     });
 
-    layerView.bind('featureOver', function(e, latlon, pxPos, data) {
-      mapView.setCursor('pointer');
+    var hovers = [];
+
+    layerView.bind('featureOver', function(e, latlon, pxPos, data, layer) {
+      hovers[layer] = 1;
+      if(_.any(hovers))
+        mapView.setCursor('pointer');
     });
-    layerView.bind('featureOut', function() {
-      mapView.setCursor('auto');
+
+    layerView.bind('featureOut', function(m, layer) {
+      hovers[layer] = 0;
+      if(!_.any(hovers))
+        mapView.setCursor('auto');
     });
 
     layerView.infowindow = infowindow.model;

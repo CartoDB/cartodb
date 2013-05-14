@@ -100,6 +100,51 @@ describe Map do
     end
   end #updated_at
 
+  describe '#admits?' do
+    it 'returns false if passed a base layer
+    and it is already linked to a a base layer' do
+      map   = Map.create(user_id: @user.id, table_id: @table.id)
+      layer = Layer.new(kind: 'tiled')
+
+      map.admits_layer?(layer).should == true
+      map.add_layer(layer)
+      map.save.reload
+
+      map.admits_layer?(Layer.new(kind: 'tiled')).should == false
+    end
+
+    describe 'when linked to a table visualization' do
+      it 'returns false when passed a data layer 
+      and it is already linked to a base layer' do
+        map = Map.create(user_id: @user.id, table_id: @table.id)
+        def map.table_visualization; Object.new; end
+
+        map.admits_layer?(Layer.new(kind: 'carto')).should == true
+        map.add_layer(Layer.new(kind: 'carto'))
+        map.save.reload
+
+        map.admits_layer?(Layer.new(kind: 'carto')).should == false
+      end
+    end
+
+    describe 'when not linked to a table visualization' do
+      it 'returns true when passed a data layer' do
+        map = Map.create(user_id: @user.id, table_id: @table.id)
+
+        map.add_layer(Layer.new(kind: 'carto'))
+        map.admits_layer?(Layer.new(kind: 'carto')).should == true
+        map.save.reload
+
+        map.add_layer(Layer.new(kind: 'carto'))
+        map.admits_layer?(Layer.new(kind: 'carto')).should == true
+        map.save.reload
+
+        map.add_layer(Layer.new(kind: 'carto'))
+        map.admits_layer?(Layer.new(kind: 'carto')).should == true
+      end
+    end
+  end #admits?
+
   it "should correcly set vizjson updated_at" do
     map = Map.create(user_id: @user.id, table_id: @table.id)
 

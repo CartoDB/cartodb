@@ -16,7 +16,7 @@ module CartoDB
           type:             visualization.type,
           tags:             visualization.tags,
           description:      visualization.description,
-          privacy:          visualization.privacy,
+          privacy:          visualization.privacy.upcase,
           table:            table_data_for(visualization.table),
           related_tables:   visualization.related_tables
         }

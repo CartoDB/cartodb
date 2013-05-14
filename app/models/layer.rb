@@ -90,4 +90,12 @@ class Layer < Sequel::Model
     attributes = public_values.select { |k, v| k != 'id' }
     Layer.new(attributes)
   end #copy
+
+  def data_layer?
+    kind == 'carto'
+  end #data_layer?
+
+  def base_layer?
+    !data_layer?
+  end #base_layer?
 end

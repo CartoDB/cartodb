@@ -88,6 +88,11 @@ class Map < Sequel::Model
     CartoDB::Map::Copier.new(self, user).copy
   end #copy
 
+  def admits_layer?(layer)
+    return admits_more_data_layers? if layer.data_layer?
+    return admits_more_base_layers? if layer.base_layer?
+  end #admits?
+
   private
 
   def get_the_last_time_tiles_have_changed_to_render_it_in_vizjsons
@@ -136,5 +141,24 @@ class Map < Sequel::Model
     return maximum if value > maximum
     return value
   end #bound_for
+
+  def is_table_visualization?
+    !!table_visualization
+  end #is_table_visualization?
+
+  def table_visualization
+    CartoDB::Visualization::Collection.new
+      .fetch(map_id: [self.id], type: 'table')
+      .first
+  end #table_visualization
+
+  def admits_more_data_layers?
+    return false if data_layers.length >= 1 && is_table_visualization?
+    return true
+  end #admits_mode_data_layers?
+
+  def admits_more_base_layers?
+    user_layers.length < 1
+  end #admits_mode_data_layers?
 end # Map
 

@@ -61,6 +61,11 @@ module CartoDB
         self
       end #delete
 
+      def privacy=(privacy)
+        privacy = privacy.downcase if privacy
+        super(privacy)
+      end #privacy=
+
       def public?
         privacy == 'public'
       end #public?

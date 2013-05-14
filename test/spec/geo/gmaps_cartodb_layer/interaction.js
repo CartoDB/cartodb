@@ -46,7 +46,7 @@ describe('Interaction funcionality', function() {
   });
 
 
-  it('If there is interaction defined, click should work', function() {
+  xit('If there is interaction defined, click should work', function() {
 
     runs(function () {
       cdb_layer.setOptions({
@@ -73,7 +73,7 @@ describe('Interaction funcionality', function() {
       cdb_layer.interaction.click(e,{x:100,y:100});
     });
 
-    waits(3000);
+    waits(5000);
 
     runs(function () {
       expect(cdb_layer._manageOnEvents).toHaveBeenCalled();

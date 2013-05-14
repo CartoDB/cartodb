@@ -261,8 +261,7 @@ describe("common.ui.Table", function() {
         var t1 = new Date().getTime();
         mean += t1 - t0;
       }
-      console.log("mean time", mean/count);
-      expect(mean/count).toBeLessThan(1000);
+      expect(mean/count).toBeLessThan(1300);
 
     });
 

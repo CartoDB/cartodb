@@ -215,14 +215,12 @@
         display:block;
         width:auto!important; // TODO: try to remove this
 
-        /*margin: 4px 0 0 0;*/
-
         a {
           @include inline-block();
           @include size(auto, 14px);
 
           padding:2px 7px;
-          margin:0 0 4px 0;
+          margin: 0 0 4px 0;
 
           font:normal 11px $text-fonts2;
           color:#666666;
@@ -481,6 +479,12 @@
         padding:0;
 
         &.hidden { display: none; }
+
+
+        .tags a {
+          float:right;
+          margin:0 0 4px 5px;
+        }
 
         ul {
           li {
@@ -818,9 +822,16 @@
       position:relative;
       float:left;
       display:block;
-      margin:20px auto 0;
-      width:880px;
+      margin: 0 auto;
+      padding: 20px 0 40px 0;
+      width:100%;
       height:20px;
+
+      letter-spacing:0;
+      text-align: right;
+      border-top: 1px solid #EDEDED;
+
+      .all { margin-right: 35px; }
 
       ul {
         position:absolute;

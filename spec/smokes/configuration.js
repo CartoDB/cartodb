@@ -9,4 +9,3 @@ configuration.API_KEY       = options['cartodb_api_key']			// API key
 configuration.USER_EMAIL    = options['cartodb_user_email']			// email
 configuration.USER_PASSWORD = options['cartodb_user_password']		// password
 module.exports = configuration
-

@@ -13,6 +13,10 @@ CartoDB::Application.routes.draw do
 
   scope :module => "admin" do
     get '/dashboard/'               => 'visualizations#index', :as => :dashboard
+    get '/dashboard/tables'         => 'visualizations#index'
+    get '/dashboard/visualizations' => 'visualizations#index'
+    get '/dashboard/tag/:tag'       => 'visualizations#index'
+
     get '/dashboard/common_data'    => 'pages#common_data'
 
     get '/tables/track_embed'       => 'visualizations#track_embed'

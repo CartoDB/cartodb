@@ -472,6 +472,8 @@ var Vis = cdb.core.View.extend({
           infowindow.setError();
         })
 
+        infowindow.model.set('template', infowindowFields.template);
+
         // Show infowindow with loading state
         infowindow
           .setLatLng(latlng)

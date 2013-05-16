@@ -23,14 +23,9 @@
       display:none;
       padding:0;
 
-      /*@include transform-style("linear");
-      @include transition-property("margin");
-      @include transition-duration(1000ms);*/
-
       // If there are NO tables, this section is active
       &.active {
         display:block;
-        /*margin:-25px 0 -30px 0; // Hacky hacky*/
         padding:113px 0 80px;
       }
     } // .no_tables
@@ -38,8 +33,6 @@
     &.no_vis {
 
       display:none;
-
-      &.active { display: block; }
 
       section.empty {
         margin: 0;
@@ -122,32 +115,18 @@
     &.visualizations aside .head { margin-top: 25px; }
     &.tables aside .head { margin-top: 55px; }
 
-    // TODO: fix this
-    &.tables.active { padding-top: 55px!important; }
-    /*&.visualizations.active { padding-bottom: 0!important; }*/
-
     // Common elements for visualizations and tables
     &.visualizations,
     &.tables {
       display:none;
 
-      /*height:0;*/
       margin:0;
       padding:0;
       overflow:hidden;
 
-      /*@include opacity(0);*/
-
-      /*@include transform-style("linear");*/
-      /*@include transition-property("all");*/
-      /*@include transition-duration(1000ms);*/
-
       // If there are tables or visualizations, this section will become .active
       &.active {
         display:block;
-        /*height:auto;*/
-        /*margin:-25px 0 0 0; // Hacky hacky*/
-        /*@include opacity(1);*/
         padding:70px 0 0 0;
       }
 
@@ -282,6 +261,20 @@
 
         & > li {
           @extend .cdb-block; /* Lovely box */
+
+          &.empty {
+            @include box-shadow(none);
+            border: 1px solid #ccc;
+            @include opacity(.6);
+            &:hover .content { background: #FFF; }
+
+            i {
+              display:block;
+              @include size(34px, 10px);
+              @include absolute-center(34px, 10px);
+              @include icons-sprite(static_loader);
+            }
+          }
 
           @include inline-block();
           @include size(274px, 222px);

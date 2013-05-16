@@ -32,6 +32,8 @@ RSpec::Matchers.define :have_required_indexes_and_triggers do
     @diff << "track_updates"                       unless actual.has_trigger?('track_updates')
     @diff << "the_geom_idx"                        unless actual.has_index?("#{actual.name}_the_geom_idx")
     @diff << "the_geom_webmercator_idx"            unless actual.has_index?("#{actual.name[0..37]}_the_geom_webmercator_idx")
+    @diff << "created_at_default"                  unless actual.owner.in_database.schema(actual.name).select {|i| i[0] == :created_at }[0][1][:default] == "now()"
+    @diff << "updated_at_default"                  unless actual.owner.in_database.schema(actual.name).select {|i| i[0] == :updated_at }[0][1][:default] == "now()"
     @diff.should == []
   end
 

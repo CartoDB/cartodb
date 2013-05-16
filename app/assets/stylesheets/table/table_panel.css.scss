@@ -950,32 +950,82 @@
 
           .fields {
             position:relative;
-            margin: 0 0 29px 0;
+            margin: 0 0 20px 0;
+
             &.only, &.empty { margin: 0 0 15px 0; }
             &.only .items, &.empty .items { display:none; }
 
             &.boolean { margin-bottom: 10px; }
+
+            &.list {
+              margin: 0 0 20px 0;
+              .options { margin: -6px 0 0 30px; }
+            }
+
+            &.list.has_scrollers {
+              margin: 0 0 16px 0;
+              .options { margin: 2px 0 0 30px; }
+            }
+
           }
 
-          .textarea {
+          .input_field {
             @include box-sizing(border-box);
             @include position(0, false, false, 0);
-            @include size(100%, 80px);
+            @include size(323px, 40px);
             display:none;
-            padding: 0 30px;
+            padding: 0;
+            margin: 0 0 0 30px;
 
-            textarea {
+            @include border-radius(4px);
+            border: 1px solid #B7B7B7;
+
+            .apply {
+              @include position(6px, 7px, false, false);
+              padding: 6px 7px 6px 6px;
+
+              background: #E7E7E7;
+              @include background(linear-gradient(top, rgba(#F9F9F9, 0), rgba(#E7E7E7, .7)));
+              color: #555;
+              font:bold 11px $text-fonts2;
+              line-height:normal;
+              text-shadow:0 1px 0 white;
+              background:#F9F9F9; // IE
+              @include background(linear-gradient(#F9F9F9,#EBEBEB));
+              @include border-radius(5px);
+              border:1px solid #B0B0B0;
+              letter-spacing:-1px;
+              @include transform-style("linear");
+              @include transition-property("box-shadow,border");
+              @include transition-duration(250ms);
+
+              // Hover
+              &:hover {
+                background:#DEDEDE; // IE
+                @include background(linear-gradient(#F9F9F9,#E1E1E1));
+                text-decoration:none;
+                cursor:pointer;
+              }
+              // Active
+              &:active {
+                border-color:#ACACAC;
+                background:#D3D3D3; // IE
+                @include background(linear-gradient(#F9F9F9,#E1E1E1));
+                @include box-shadow(rgba(255,255,255,0) 0 0 1px 0,rgba(130,126,111,0.6) 0 1px 3px 0 inset,#fff 0 1px 0 0);
+              }
+
+            }
+
+            input {
               @include box-sizing(border-box);
-              @include size(100%, 40px);
+              @include size(275px, 39px);
               max-width:100%;
-              max-height:40px;
+              max-height:39px;
               padding: 11px;
-
+              border:none;
               font-family: "Helvetica Neue", "Helvetica", Arial;
-              @include border-radius(4px);
               font-size:13px;
-              background:#fff;
-              border: 1px solid #B7B7B7;
+              background:none;
               outline:none;
               resize: none;
             }
@@ -995,7 +1045,7 @@
 
             }
 
-            .scroll { width: 380px; max-height: 167px; overflow: hidden; outline:none; }
+            .scroll { width: 380px; max-height: 156px; overflow: hidden; outline:none; }
 
           } // data
 
@@ -1003,7 +1053,7 @@
           .options {
             position:relative;
             width: 325px;
-            margin: 0 0 0 30px;
+            margin: 2px 0 0 30px;
             padding: 0;
             clear:both;
             overflow:hidden;
@@ -1082,7 +1132,7 @@
 
               position:relative;
               padding: 10px 0 10px 15px;
-              margin: 0 0 5px 0;
+              margin: 0;
               color: #666666;
               font-size:13px;
               border-top: 1px solid rgba(#999, .25);
@@ -1090,8 +1140,10 @@
               cursor: pointer;
 
               p {
+
                 float: left;
                 width: 275px;
+                min-height: 15px;
 
                 &.empty { font-style:italic; color: #ccc; }
               }

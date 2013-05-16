@@ -20,15 +20,17 @@
     // Empty dashboard -> article
 
     &.no_vis, &.no_tables {
-      margin:-750px 0 0 0;
+      display:none;
       padding:0;
-      @include transform-style("linear");
+
+      /*@include transform-style("linear");
       @include transition-property("margin");
-      @include transition-duration(1000ms);
+      @include transition-duration(1000ms);*/
 
       // If there are NO tables, this section is active
       &.active {
-        margin:-25px 0 -30px 0; // Hacky hacky
+        display:block;
+        /*margin:-25px 0 -30px 0; // Hacky hacky*/
         padding:113px 0 80px;
       }
     } // .no_tables
@@ -127,23 +129,24 @@
     // Common elements for visualizations and tables
     &.visualizations,
     &.tables {
-
-      height:0;
+      /*height:0;*/
       margin:0;
       padding:0;
       overflow:hidden;
 
-      @include opacity(0);
+      /*@include opacity(0);*/
+      display:none;
 
-      @include transform-style("linear");
-      @include transition-property("all");
-      @include transition-duration(1000ms);
+      /*@include transform-style("linear");*/
+      /*@include transition-property("all");*/
+      /*@include transition-duration(1000ms);*/
 
       // If there are tables or visualizations, this section will become .active
       &.active {
-        height:auto;
-        margin:-25px 0 0 0; // Hacky hacky
-        @include opacity(1);
+        display:block;
+        /*height:auto;*/
+        /*margin:-25px 0 0 0; // Hacky hacky*/
+        /*@include opacity(1);*/
         padding:70px 0 0 0;
       }
 
@@ -884,6 +887,7 @@
       padding:16px 0 22px;
       @include background(image-url('layout/bkg.jpg') repeat);
       border-top:1px solid rgba(black,0.05);
+      clear:both; overflow:hidden;
 
       &:before {
         position:absolute;

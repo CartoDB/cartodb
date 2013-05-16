@@ -463,6 +463,12 @@ class Table < Sequel::Model(:user_tables)
           ALTER COLUMN #{column}
           SET DEFAULT now()
         })
+      elsif column_type == 'date'
+        database.run(%Q{
+          ALTER TABLE "#{name}"
+          ALTER COLUMN #{column}
+          SET DEFAULT now()
+        })
       end
     end
   end #normalize_timestamp_field

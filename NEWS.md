@@ -1,5 +1,10 @@
 2.0.13
 ------
+* Adds booleans filters feature.
+* Allows adding filters from the column name tooltip.
+* Fixed public table view
+* Fixes some importer errors
+
 
 2.0.12
 ------

@@ -71,14 +71,14 @@ describe Admin::VisualizationsController do
 
   describe 'GET /viz/:name/embed_map' do
     it 'renders the view by passing a visualization name' do
-      attributes  = factory
-      name        = URI::encode(attributes.fetch('name'))
-      id          = attributes.fetch('id')
+      table_attributes = table_factory
+      name = table_attributes.fetch('table_visualization').fetch('name')
+      name = URI::encode(name)
 
       login_as(@user, scope: 'test')
 
       get "/viz/#{name}/embed_map", {}, @headers
-      last_response.status.should == 403
+      last_response.status.should == 200
     end
   end # GET /viz/:name/embed_map
 

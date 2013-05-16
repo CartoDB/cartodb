@@ -85,11 +85,11 @@ class Api::Json::VisualizationsController < Api::ApplicationController
 
   def vizjson1
     @visualization, @table = locator.get(params.fetch(:id), request.subdomain)
-    return(head 403) unless allow_vizjson_v1_for?(@table)
-    set_vizjson_response_headers_for(@table)
+    return(head 403) unless allow_vizjson_v1_for?(@visualization.table)
+    set_vizjson_response_headers_for(@visualization.table)
     render_jsonp(CartoDB::Map::Presenter.new(
-      @table.map, 
-      { full: false, url: "/api/v1/tables/#{@table.id}" },
+      @visualization.map, 
+      { full: false, url: "/api/v1/tables/#{@visualization.table.id}" },
       Cartodb.config, 
       CartoDB::Logger
     ).to_poro)

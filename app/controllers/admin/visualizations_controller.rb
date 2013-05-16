@@ -29,8 +29,8 @@ class Admin::VisualizationsController < ApplicationController
     @visualization, @table = locator.get(params.fetch(:id), request.subdomain)
 
     @vizjson = CartoDB::Map::Presenter.new(
-      @table.map, 
-      { full: false, url: "/api/v1/tables/#{@table.id}" },
+      @visualization.map, 
+      { full: false, url: "/api/v1/tables/#{@visualization.table.id}" },
       Cartodb.config, 
       CartoDB::Logger
     ).to_poro
@@ -43,7 +43,7 @@ class Admin::VisualizationsController < ApplicationController
   def embed_map
     @visualization, @table = locator.get(params.fetch(:id), request.subdomain)
 
-    return(head :forbidden) if @table.blank? || @table.private?
+    return(head :forbidden) if @visualization.private?
 
     respond_to do |format|
       format.html { render layout: false }

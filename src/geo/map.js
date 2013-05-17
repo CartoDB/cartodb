@@ -119,9 +119,9 @@ cdb.geo.CartoDBLayer = cdb.geo.MapLayer.extend({
     tiler_domain: "cartodb.com",
     tiler_port: "80",
     tiler_protocol: "http",
-    sql_domain: "cartodb.com",
-    sql_port: "80",
-    sql_protocol: "http",
+    sql_api_domain: "cartodb.com",
+    sql_api_port: "80",
+    sql_api_protocol: "http",
     extra_params: {},
     cdn_url: null,
     maxZoom: 28

@@ -384,9 +384,9 @@ var Vis = cdb.core.View.extend({
   },
 
   _getSqlApi: function(attrs) {
-    var port = attrs.sql_port
-    var domain = attrs.sql_domain + (port ? ':' + port: '')
-    var protocol = attrs.sql_protocol;
+    var port = attrs.sql_api_port
+    var domain = attrs.sql_api_domain + (port ? ':' + port: '')
+    var protocol = attrs.sql_api_protocol;
     var version = 'v1';
     if (domain.indexOf('cartodb.com') !== -1) {
       protocol = 'http';

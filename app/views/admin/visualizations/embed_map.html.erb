@@ -92,9 +92,8 @@
         opt.no_cdn = true;
         <% end %>
 
-        cartodb.createVis('map', '/api/v2/viz/<%= @visualization.name %>/viz', opt, function(vis) {
+        cartodb.createVis('map', '<%= v2_vizjson_url(@visualization) %>', opt, function(vis) {
           // add here your code
-          // http://development.localhost.lan:3000/api/v2/viz/jamon/viz
           window.vis = vis;
         });
       });

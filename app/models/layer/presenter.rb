@@ -20,7 +20,7 @@ module CartoDB
           type:       'CartoDB',
           infowindow: infowindow_data,
           order:      layer.order,
-          options:    options_data
+          options:    options_data_v2
         }
       end #to_vizjson_v2
 
@@ -31,7 +31,7 @@ module CartoDB
           kind:       'CartoDB',
           infowindow: infowindow_data,
           order:      layer.order,
-          options:    options_data
+          options:    options_data_v1
         }
 
         options = representation.fetch(:options, {})
@@ -57,19 +57,31 @@ module CartoDB
       rescue => exception
       end #infowindow_data
 
-      def options_data
+      def options_data_v2
+        return layer.options if options[:full]
+        sql = sql_from(layer.options)
+        {
+          sql:                wrap(sql, layer.options),
+          cartocss:           layer.options.fetch('tile_style'),
+          cartocss_version:   CARTO_CSS_VERSION,
+          interactivity:      layer.options.fetch('interactivity')
+        }
+      end #options_data_v2
+
+      def options_data_v1
         return layer.options if options[:full]
         sql = sql_from(layer.options)
 
         layer.options.select { |key, value| 
           public_options.include?(key.to_s) 
-        }.merge(
-          sql:                sql,
-          query:              wrap(sql, layer.options),
-          cartocss:           layer.options.fetch('tile_style'),
-          cartocss_version:   CARTO_CSS_VERSION,
-          interactivity:      layer.options.fetch('interactivity')
-        )
+        }
+        #.merge(
+        #  sql:                sql,
+        #  query:              wrap(sql, layer.options),
+        #  cartocss:           layer.options.fetch('tile_style'),
+        #  cartocss_version:   CARTO_CSS_VERSION,
+        #  interactivity:      layer.options.fetch('interactivity')
+        #)
       end #options_data
 
       def sql_from(options)

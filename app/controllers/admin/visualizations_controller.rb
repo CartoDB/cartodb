@@ -61,6 +61,14 @@ class Admin::VisualizationsController < ApplicationController
     render 'track', layout: false
   end #track_embed
 
+  def v1_vizjson_url(visualization)
+    "/api/v1/viz/#{visualization.id}/viz"
+  end #vz_vizjson_url
+
+  def v2_vizjson_url(visualization)
+    "/api/v2/viz/#{visualization.id}/viz"
+  end #v2_vizjon_url
+
   private
 
   def download_formats table, format

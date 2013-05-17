@@ -43,12 +43,14 @@ class Admin::VisualizationsController < ApplicationController
   def embed_map
     @visualization, @table = locator.get(params.fetch(:id), request.subdomain)
 
-    return(head :forbidden) if @visualization.private?
+    return(embed_forbidden) if @visualization.private?
 
     respond_to do |format|
       format.html { render layout: false }
       format.js { render 'embed_map', content_type: 'application/javascript' }
     end
+  rescue
+    embed_forbidden
   end #embed_map
 
   def embed_forbidden
@@ -60,14 +62,6 @@ class Admin::VisualizationsController < ApplicationController
     response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
     render 'track', layout: false
   end #track_embed
-
-  def v1_vizjson_url(visualization)
-    "/api/v1/viz/#{visualization.id}/viz"
-  end #vz_vizjson_url
-
-  def v2_vizjson_url(visualization)
-    "/api/v2/viz/#{visualization.id}/viz"
-  end #v2_vizjon_url
 
   private
 

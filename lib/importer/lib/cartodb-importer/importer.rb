@@ -233,9 +233,7 @@ module CartoDB
             @data_import.set_error_code(1002)
           else
             begin
-
               out = loader.process!
-
               out.each { |d| payloads << d }
               @data_import.log_update("#{data[:ext]} successfully loaded")
             rescue => e

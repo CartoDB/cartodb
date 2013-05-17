@@ -21,7 +21,7 @@ describe Collection do
   describe '#add' do
     it 'adds a member to the collection' do
       member      = @dummy_class.new(id: 1)
-      collection  = Collection.new({}, @defaults)
+      collection  = Collection.new(@defaults)
       collection.add(member)
       collection.to_a.must_include member
     end
@@ -30,7 +30,7 @@ describe Collection do
   describe '#delete' do
     it 'deletes a member from the collection' do
       member      = @dummy_class.new(id: 1)
-      collection  = Collection.new({}, @defaults)
+      collection  = Collection.new(@defaults)
       collection.add(member)
       collection.delete(member)
       collection.to_a.wont_include member
@@ -40,22 +40,24 @@ describe Collection do
   describe '#each' do
     it 'yields members of the collection as the initialized member_class' do
       member      = @dummy_class.new(id: 1)
-      collection  = Collection.new({}, @defaults)
+      collection  = Collection.new(@defaults)
       collection.add(member)
       collection.store
 
-      rehydrated_collection = Collection.new({ signature: collection.signature }, @defaults)
+      rehydrated_collection = 
+        Collection.new(@defaults.merge(signature: collection.signature))
       rehydrated_collection.fetch
       rehydrated_collection.to_a.first.must_be_instance_of @dummy_class
     end
 
     it 'returns an enumerator if no block given' do
       member      = @dummy_class.new(id: 1)
-      collection  = Collection.new({}, { repository: @repository })
+      collection  = Collection.new({ repository: @repository })
       collection.add(member)
       collection.store
 
-      rehydrated_collection = Collection.new({ signature: collection.signature }, @defaults)
+      rehydrated_collection = 
+        Collection.new(@defaults.merge(signature: collection.signature))
       rehydrated_collection.fetch
 
       enumerator = rehydrated_collection.each
@@ -67,11 +69,12 @@ describe Collection do
     it 'resets the collection with data from the data repository' do
       member1     = @dummy_class.new(id: 1)
       member2     = @dummy_class.new(id: 2)
-      collection  = Collection.new({}, @defaults)
+      collection  = Collection.new(@defaults)
       collection.add(member1)
       collection.store
 
-      rehydrated_collection = Collection.new({ signature: collection.signature }, @defaults)
+      rehydrated_collection = 
+        Collection.new(@defaults.merge(signature: collection.signature))
       rehydrated_collection.add(member2) 
 
       rehydrated_collection.to_a.must_include(member2)
@@ -83,7 +86,7 @@ describe Collection do
 
     it 'empties the collection if it was not persisted to the repository' do
       member      = @dummy_class.new(id: 1)
-      collection  = Collection.new({}, @defaults)
+      collection  = Collection.new(@defaults)
       collection.add(member)
       collection.to_a.length.must_equal 1
       collection.fetch
@@ -94,11 +97,12 @@ describe Collection do
   describe '#store' do
     it 'persists the collection to the data repository' do
       member      = @dummy_class.new(id: 1)
-      collection  = Collection.new({}, @defaults)
+      collection  = Collection.new(@defaults)
       collection.add(member)
       collection.store
 
-      rehydrated_collection = Collection.new({ signature: collection.signature }, @defaults)
+      rehydrated_collection = 
+        Collection.new(@defaults.merge(signature: collection.signature))
       rehydrated_collection.fetch
       rehydrated_collection.map { |member| member.id }.must_include member.id
     end
@@ -107,7 +111,7 @@ describe Collection do
   describe '#to_json' do
     it 'renders a JSON representation of the collection' do
       member      = @dummy_class.new(id: 1)
-      collection  = Collection.new({}, @defaults)
+      collection  = Collection.new(@defaults)
       collection.add(member)
       collection.store
 

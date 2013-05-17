@@ -47,20 +47,21 @@ describe Api::Json::VisualizationsController do
   end
 
   describe 'POST /api/v1/viz' do
-    it 'creates a visualization' do
-      payload = factory
+    it 'creates a visualization', now: true do
+      payload = factory.merge(type: 'table')
 
       post "/api/v1/viz?api_key=#{@api_key}",
             payload.to_json, @headers
 
       last_response.status.should == 200
       response = JSON.parse(last_response.body)
-
       response.fetch('name')        .should =~ /visualization/
       response.fetch('tags')        .should == payload.fetch(:tags)
       response.fetch('map_id')      .should == payload.fetch(:map_id)
       response.fetch('description') .should == payload.fetch(:description)
-      id = response.fetch('id')
+
+      id      = response.fetch('id')
+      map_id  = response.fetch('map_id')
 
       get "/api/v1/viz/#{id}?api_key=#{@api_key}",
         {}, @headers
@@ -69,6 +70,16 @@ describe Api::Json::VisualizationsController do
       response = JSON.parse(last_response.body)
       response.fetch('name')        .should_not == nil
       response.fetch('tags')        .should_not == payload.fetch(:tags).to_json
+
+      payload = { kind: 'carto', order: 1 }
+      post "/api/v1/maps/#{map_id}/layers?api_key=#{@api_key}",
+        payload.to_json, @headers
+      last_response.status.should == 200
+
+      payload = { kind: 'carto', order: 2 }
+      post "/api/v1/maps/#{map_id}/layers?api_key=#{@api_key}",
+        payload.to_json, @headers
+      last_response.status.should == 400
     end
 
     it 'creates a visualization from a list of tables' do
@@ -223,6 +234,22 @@ describe Api::Json::VisualizationsController do
       response.fetch('related_tables')  .should_not be_nil
     end
   end # GET /api/v1/viz/:id
+
+  describe 'GET /api/v1/viz/:id/stats' do
+    it 'returns view stats for the visualization' do
+      payload = factory
+
+      post "/api/v1/viz?api_key=#{@api_key}",
+        payload.to_json, @headers
+      id = JSON.parse(last_response.body).fetch('id')
+
+      get "/api/v1/viz/#{id}/stats?api_key=#{@api_key}", {}, @headers
+
+      last_response.status.should == 200
+      response = JSON.parse(last_response.body)
+      response.keys.length.should == 30
+    end
+  end # GET /api/v1/viz/:id/stats
 
   describe 'PUT /api/v1/viz/:id' do
     it 'updates an existing visualization' do

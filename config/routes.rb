@@ -116,6 +116,7 @@ CartoDB::Application.routes.draw do
       get     'viz/tags' => 'tags#index', :as => 'list_tags'
       get     'viz'                                 => 'visualizations#index'
       post    'viz'                                 => 'visualizations#create'
+      get     'viz/:id/stats'                       => 'visualizations#stats'
       get     'viz/:id'                             => 'visualizations#show'
       put     'viz/:id'                             => 'visualizations#update'
       delete  'viz/:id'                             => 'visualizations#destroy'

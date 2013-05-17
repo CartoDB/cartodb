@@ -106,4 +106,11 @@ Cartodb.config[:google_analytics]["primary"].blank?
     end if Rails.env.development?
   end
 
+  def v1_vizjson_url(visualization)
+    "/api/v1/viz/#{visualization.id}/viz"
+  end #v1_vizjson_url
+
+  def v2_vizjson_url(visualization)
+    "/api/v2/viz/#{visualization.id}/viz"
+  end #v2_vizjon_url
 end

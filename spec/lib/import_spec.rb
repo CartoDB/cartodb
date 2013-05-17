@@ -448,6 +448,21 @@ describe CartoDB::Importer do
       end
     end
 
+    describe "#OSM" do
+      it "should import osm files" do
+        importer = create_importer 'map2.osm'
+        results,errors = importer.import!
+        errors.length.should            == 0
+        results.length.should           == 2
+        results[0].name.should          == 'map2_line'
+        results[0].rows_imported.should == 1
+        results[0].import_type.should   == '.osm'
+        results[1].name.should          == 'map2_point'
+        results[1].rows_imported.should == 5
+        results[1].import_type.should   == '.osm'
+      end
+    end
+
     describe "#GTIFF" do
       it "should import a GTIFF file in the given database in a table named like the file" do
         importer = create_importer 'GLOBAL_ELEVATION_SIMPLE.zip'

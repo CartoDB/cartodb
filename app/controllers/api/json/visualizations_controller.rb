@@ -83,6 +83,14 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     return head 204
   end #destroy
 
+  def stats
+    member = Visualization::Member.new(id: params.fetch('id')).fetch
+    return(head 401) unless member.authorize?(current_user)
+    render_jsonp(member.stats)
+  rescue KeyError
+    head(404)
+  end #stats
+
   def vizjson1
     @visualization, @table = locator.get(params.fetch(:id), request.subdomain)
     return(head 403) unless allow_vizjson_v1_for?(@visualization.table)

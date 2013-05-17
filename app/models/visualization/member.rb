@@ -8,6 +8,7 @@ require_relative './presenter'
 require_relative './vizjson'
 require_relative '../table'
 require_relative '../table/privacy_manager'
+require_relative './stats'
 
 module CartoDB
   module Visualization
@@ -112,6 +113,10 @@ module CartoDB
       def authorize?(user)
         user.maps.map(&:id).include?(map_id)
       end #authorize?
+
+      def stats
+        CartoDB::Visualization::Stats.new(self).to_poro
+      end #stats
 
       private
 

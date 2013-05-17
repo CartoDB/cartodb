@@ -96,6 +96,7 @@ node,way   width        text         linear
 node,way   wood         text         linear
 node,way   z_order      int4         linear # This is calculated during import
 way        way_area     real                # This is calculated during import
+node,way   height       text
 
 # If you're interested in bicycle routes, you may want the following fields
 # To make these work you need slim mode or the necessary data won't be remembered.

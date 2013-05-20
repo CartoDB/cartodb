@@ -28,6 +28,7 @@
         display:block;
         padding:113px 0 80px;
       }
+
     } // .no_tables
 
     &.no_vis {
@@ -128,6 +129,10 @@
       &.active {
         display:block;
         padding:70px 0 0 0;
+      }
+
+      &.hidden {
+        display:none;
       }
 
       aside {
@@ -701,9 +706,6 @@
               } // status
 
             } // hgroup
-
-
-
 
             &.empty {
               padding-top:150px;

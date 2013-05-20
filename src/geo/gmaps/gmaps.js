@@ -29,6 +29,7 @@ cdb.geo.GoogleMapsMapView = cdb.geo.MapView.extend({
     }
     var center = this.map.get('center');
     if(!this.options.map_object) {
+      google.maps.visualRefresh = true;
       this.map_googlemaps = new google.maps.Map(this.el, {
         center: new google.maps.LatLng(center[0], center[1]),
         zoom: this.map.get('zoom'),

@@ -45,7 +45,7 @@ module CartoDB
 
       data_import.log_update(full_osm_command)
       stdin,  stdout, stderr = Open3.popen3(full_osm_command)
-      sleep 10
+      sleep 50
       if $?.exitstatus != 0
         data_import.set_error_code(6000)
         data_import.log_update(stdout.read)

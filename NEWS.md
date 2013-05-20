@@ -1,3 +1,6 @@
+2.0.15
+------
+
 2.0.14
 ------
 * Fixes error when importing OSM files

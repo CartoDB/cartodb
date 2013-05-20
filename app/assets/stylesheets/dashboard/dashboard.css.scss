@@ -538,11 +538,11 @@
             } //li:hover
 
             div.table_info {
+              position:relative;
               @include box-sizing(border-box);
               min-height:102px;
               padding: 22px 0 33px 0;
               border-top:1px solid #EDEDED;
-              overflow:hidden;
 
               .left  { width:32%; }
               .right { width:66%; }

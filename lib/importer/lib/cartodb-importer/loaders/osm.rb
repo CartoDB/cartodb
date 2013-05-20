@@ -68,8 +68,8 @@ module CartoDB
       rescue => ex
         data_import.log_update(stdout.read)
         data_import.log_update(stderr.read)
-        data_import.log_error("ERROR: failed to import #{path}")
-        raise "ERROR: failed to import #{path}"
+        data_import.log_error("ERROR: failed to import #{path} #{ex}")
+        raise "ERROR: failed to import #{path} #{ex}"
       end
 
       import_tag    = "#{suggested_name}_#{Time.now.to_i}"

@@ -45,7 +45,7 @@ module CartoDB
 
       data_import.log_update(full_osm_command)
       stdin,  stdout, stderr = Open3.popen3(full_osm_command)
-
+      sleep 10
       if $?.exitstatus != 0
         data_import.set_error_code(6000)
         data_import.log_update(stdout.read)
@@ -85,7 +85,7 @@ module CartoDB
           entries.each{ |entry| FileUtils.rm_rf(entry) } if entries.any?
 
           osm_geom_name = "way"
-          geoms = db["SELECT count(*) as count from #{table_name}"].first[:count]
+          geoms = db["SELECT count(*) as count from #{table_name} LIMIT 10"].first[:count]
           unless geoms.nil? || geoms == 0
             rename_geom_column(table_name, osm_geom_name)
             normalize_geom(feature) if feature == "polygon"

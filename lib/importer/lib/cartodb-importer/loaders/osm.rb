@@ -41,7 +41,7 @@ module CartoDB
 
       # I tried running the -G or --multi-geometry option to force multigeometries
       # but the result is always a column with mixed types, polygons and multipolgons!
-      full_osm_command = "#{osm2pgsql_bin_path} #{host} #{port} --style #{Rails.root.join('config', 'os2pgsql.style')} -U #{db_configuration[:username]} -d #{db_configuration[:database]} -u -I -C #{allowed_cache_size} --multi-geometry --latlong -p #{random_table_prefix} #{path}"
+      full_osm_command = "#{osm2pgsql_bin_path} #{host} #{port} --style #{Rails.root.join('config', 'osm2pgsql.style')} -U #{db_configuration[:username]} -d #{db_configuration[:database]} -u -I -C #{allowed_cache_size} --multi-geometry --latlong -p #{random_table_prefix} #{path}"
 
       data_import.log_update(full_osm_command)
       stdin,  stdout, stderr = Open3.popen3(full_osm_command)

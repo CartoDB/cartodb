@@ -854,9 +854,12 @@
       }
 
 
-      /* Filters module */
+      // FILTERS MODULE
       div.filters_panel {
+        width:auto;
         @include box-sizing(border-box);
+
+        h3 { padding-left:30px; }
 
         & > .white-gradient-shadow {
 

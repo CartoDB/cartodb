@@ -1,6 +1,8 @@
 2.0.14
 ------
 * Fixes error when importing OSM files
+* Fix error editing color basemap
+* Workaround exporting CSV with latitude or longitude column names
 
 2.0.13
 ------

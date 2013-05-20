@@ -86,18 +86,14 @@
 
           div.right {
             position:relative;
-            height: 100%;
-            width: 602px;
+            @include size(602px, 100%);
 
             .tables {
               @include size(602px, 273px);
-              position:absolute;
-              bottom: 0;
-              left: 0;
+              @include position(false, false, 0, 0);
               background:image-url("layout/empty_vis_tables.png") repeat-y 0 0;
 
               .create_new {
-                position:absolute;
                 @include position(123px, false, false, 185px);
                 font-weight:normal;
                 font-size:17px;
@@ -105,10 +101,8 @@
                 @include text-shadow(0 1px 1px #455d1e);
                 @include glow(.2, 10px, 5px);
               }
-
             }
           }
-
         }
       }
     }
@@ -130,6 +124,8 @@
         display:block;
         padding:70px 0 0 0;
       }
+
+      &.no_padding, &.active.no_padding { padding-top: 0; }
 
       &.hidden {
         display:none;

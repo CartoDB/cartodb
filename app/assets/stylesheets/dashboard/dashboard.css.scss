@@ -28,6 +28,7 @@
         display:block;
         padding:113px 0 80px;
       }
+
     } // .no_tables
 
     &.no_vis {
@@ -85,18 +86,14 @@
 
           div.right {
             position:relative;
-            height: 100%;
-            width: 602px;
+            @include size(602px, 100%);
 
             .tables {
               @include size(602px, 273px);
-              position:absolute;
-              bottom: 0;
-              left: 0;
+              @include position(false, false, 0, 0);
               background:image-url("layout/empty_vis_tables.png") repeat-y 0 0;
 
               .create_new {
-                position:absolute;
                 @include position(123px, false, false, 185px);
                 font-weight:normal;
                 font-size:17px;
@@ -104,10 +101,8 @@
                 @include text-shadow(0 1px 1px #455d1e);
                 @include glow(.2, 10px, 5px);
               }
-
             }
           }
-
         }
       }
     }
@@ -128,6 +123,12 @@
       &.active {
         display:block;
         padding:70px 0 0 0;
+      }
+
+      &.no_padding, &.active.no_padding { padding-top: 0; }
+
+      &.hidden {
+        display:none;
       }
 
       aside {
@@ -225,10 +226,19 @@
         }
       } // span.tags
 
+      section.tables > .head {
+
+        position:relative;
+        padding: 30px 0 60px 0;
+        border-bottom:1px solid #E5E5E5;
+
+      }
+
       section.visualizations > .head {
 
         @include box-sizing(border-box);
         margin: 0 0 27px 0;
+        padding: 7px 0;
 
         clear:both;
         overflow:hidden;
@@ -302,7 +312,6 @@
               .graph {
                 float:left;
                 @include size(128px, 34px);
-                background:#ddd;
               }
 
               .colors {
@@ -405,15 +414,10 @@
       }
     }
 
-    section.tables {
-      @include inline-block();
-      width: 880px;
-      letter-spacing:0px;
+    section.visualizations, section.tables {
 
-      div.head {
-        position:relative;
-        padding: 30px 0 60px 0;
-        border-bottom:1px solid #E5E5E5;
+      .head {
+
 
         h2 {
 
@@ -470,6 +474,12 @@
           background:image-url("layout/loader_gray.gif") no-repeat 0 0;
         }
       }
+    }
+
+    section.tables {
+      @include inline-block();
+      width: 880px;
+      letter-spacing:0px;
 
       // Tables list
       div.content {
@@ -693,9 +703,6 @@
 
             } // hgroup
 
-
-
-
             &.empty {
               padding-top:150px;
               padding-bottom:200px;
@@ -760,7 +767,7 @@
         position:relative;
       }
 
-      div.head {
+      .head {
         border:none;
       }
 

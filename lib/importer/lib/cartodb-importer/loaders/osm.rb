@@ -41,11 +41,13 @@ module CartoDB
 
       # I tried running the -G or --multi-geometry option to force multigeometries
       # but the result is always a column with mixed types, polygons and multipolgons!
-      full_osm_command = "#{osm2pgsql_bin_path} #{host} #{port} --style #{Rails.root.join('config', 'osm2pgsql.style')} -U #{db_configuration[:username]} -d #{db_configuration[:database]} -u -I -C #{allowed_cache_size} --multi-geometry --latlong -p #{random_table_prefix} #{path}"
+      full_osm_command = "#{osm2pgsql_bin_path} #{host} #{port} --slim --style #{Rails.root.join('config', 'osm2pgsql.style')} -U #{db_configuration[:username]} -d #{db_configuration[:database]} -u -I -C #{allowed_cache_size} --multi-geometry --latlong -p #{random_table_prefix} #{path}"
 
       data_import.log_update(full_osm_command)
       stdin,  stdout, stderr = Open3.popen3(full_osm_command)
-      sleep 50
+
+      wait_until_table_present("#{random_table_prefix}_line")
+
       if $?.exitstatus != 0
         data_import.set_error_code(6000)
         data_import.log_update(stdout.read)
@@ -88,7 +90,7 @@ module CartoDB
           geoms = db["SELECT count(*) as count from #{table_name} LIMIT 10"].first[:count]
           unless geoms.nil? || geoms == 0
             rename_geom_column(table_name, osm_geom_name)
-            normalize_geom(feature) if feature == "polygon"
+            normalize_geom(feature, table_name) if feature == "polygon"
 
             CartoDB::Indexer.new(db)
               .add(table_name, "importing_#{Time.now.to_i}_#{table_name}")
@@ -154,7 +156,7 @@ module CartoDB
       raise DatabaseImportError
     end #rename_geom_column
 
-    def normalize_geom(type)
+    def normalize_geom(type, table_name)
       # because the osm2pgsql importer isn't being complete about multi geom type
       # i use this check, instead of the full geom rebuild used in the table methods
       # to get all geoms to the same type
@@ -169,6 +171,19 @@ module CartoDB
     def get_valid_name(name)
       ::Table.get_valid_table_name(name, connection: db)
     end #get_valid_name
+
+    def wait_until_table_present(table_name)
+      started_at = Time.now
+      begin
+        db["SELECT count(*) as count from #{table_name}"].first[:count]
+      rescue => exception
+        if Time.now - started_at < 120
+          retry
+        else
+          raise exception
+        end
+      end
+      sleep 1
+    end
   end # OSM
 end # CartoDB
-

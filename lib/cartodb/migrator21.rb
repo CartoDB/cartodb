@@ -18,7 +18,8 @@ module CartoDB
               map_id: table.map_id, 
               type: "table", 
               description: table.description,
-              tags: table.tags.to_s.split(',')
+              tags: table.tags.to_s.split(','),
+              privacy: (table.privacy == ::Table::PUBLIC ? 'public' : 'private')
             ).store
 
             migrated!(table)

@@ -195,16 +195,19 @@
 
       }
 
-      div.tags {
+      .tags {
         display:block;
-        width:auto!important; // TODO: try to remove this
+        float:right;
 
         a {
           @include inline-block();
           @include size(auto, 14px);
 
           padding:2px 7px;
-          margin: 0 0 4px 0;
+          /*margin: 0 0 4px 0;*/
+
+          float:right;
+          margin:0 0 4px 5px;
 
           font:normal 11px $text-fonts2;
           color:#666666;
@@ -264,6 +267,14 @@
         line-height:normal;
       }
 
+      // Visualizations dashboard -> article
+
+      section.visualizations {
+        @include inline-block();
+        width: 880px;
+        letter-spacing:0px;
+      }
+
       // List of visualizations
       section.visualizations > .content > ul {
 
@@ -291,8 +302,18 @@
 
           margin: 0 25px 29px 0;
 
-          &:hover > .content { background: #F7F7F7; }
-          &:hover > .content h3 .delete { display:block; @include opacity(1); }
+          &:hover > .content {
+            background: #F7F7F7;
+            h3 .delete { display:block; @include opacity(1); }
+          }
+
+          .tags { width: 140px; }
+
+          .status {
+            position:relative;
+            top: 0; left: 0;
+            float: left;
+          }
 
           &:nth-child(3n)  { margin-right: 0; }
 
@@ -358,15 +379,6 @@
 
     }
 
-    // Visualizations dashboard -> article
-    &.visualizations {
-      section.visualizations {
-        @include inline-block();
-        width: 880px;
-        letter-spacing:0px;
-      }
-    }
-
     section.empty {
       margin: 0;
       border:1px solid #D1D1D1;
@@ -414,10 +426,10 @@
       }
     }
 
-    section.visualizations, section.tables {
+    section.visualizations,
+    section.tables {
 
       .head {
-
 
         h2 {
 
@@ -441,39 +453,55 @@
             @include border-radius(3px);
 
             &:before {
-              position:absolute;
+              @include position(11px, 12px, false, false);
               display:block;
-              top:11px;
-              right:12px;
               content:'x';
               color:#2483B4;
               font:normal 15px $text-fonts2;
               line-height:normal;
             }
+
             &:after {
-              position:absolute;
-              top:0px;
-              bottom:0px;
-              right:30px;
+              @include position(0, 30px, 0, false);
+              @include size(1px, 100%);
               content:'';
-              width:1px;
-              height:100%;
               background:#C7D1D9;
             }
+
             &:hover {color:black; &:before {color:red;}}
           }
         }
 
         div.loader {
-          position:absolute;
           display:none;
-          top:42px;
-          left: 311px;
-          width:38px;
-          height:16px;
+          @include position(42px, false, false, 311px);
+          @include size(38px, 16px);
           background:image-url("layout/loader_gray.gif") no-repeat 0 0;
         }
       }
+
+      // Status selector
+
+      .status {
+        padding:3px 10px 2px;
+        @include border-radius(25px);
+        font:bold 11px $text-fonts2;
+        color:white;
+        line-height:normal;
+        &:hover {color:white; text-decoration:none; cursor:pointer}
+
+        &.public {
+          background:rgba(146,188,65,0.5);
+          &:hover {background:rgba(146,188,65,0.8)}
+        }
+
+        &.private {
+          background:rgba(255,0,0,0.5);
+          &:hover {background:rgba(255,0,0,0.8)}
+        }
+
+      } // status
+
     }
 
     section.tables {
@@ -486,7 +514,6 @@
         padding:0;
 
         &.hidden { display: none; }
-
 
         .tags a {
           float:right;
@@ -529,11 +556,12 @@
                 @include simple-transition(color, 75ms);
               }
 
-              .table_info hgroup a.delete { @include opacity(1); }
-              .table_info .time { @include opacity(1); }
+              .table_info {
+                hgroup a.delete, .time { @include opacity(1); }
+              }
 
-              &:after  { content:' '; position:absolute; left:0; bottom:0; width:100%; height:1px; background:#E8E8E8;}
-              &:before { content:' '; position:absolute; left:0; top:0;    width:100%; height:1px; background:#E8E8E8; }
+              &:after  { content:' '; @include position(false, false, 0, 0); @include size(100%, 1px); background:#E8E8E8;}
+              &:before { content:' '; @include position(0, false, false, 0); @include size(100%, 1px); background:#E8E8E8; }
 
             } //li:hover
 
@@ -544,17 +572,15 @@
               padding: 22px 0 33px 0;
               border-top:1px solid #EDEDED;
 
-              .left  { width:32%; }
-              .right { width:66%; }
+              .left  { width:400px; }
+              .right { width:400px; }
 
               hgroup {
                 display:block;
                 width:100%;
 
                 &.options {
-                  position:absolute;
-                  top:27px;
-                  right:30px;
+                  @include position(27px, 0, false, false);
                   display:block;
                   width:auto;
                 }
@@ -682,24 +708,6 @@
 
                 } // a.delete
               } // hgroup
-
-              .status {
-                padding:3px 10px 2px;
-                @include border-radius(25px);
-                font:bold 11px $text-fonts2;
-                color:white;
-                line-height:normal;
-                &:hover {color:white; text-decoration:none; cursor:pointer}
-
-                &.public {
-                  background:rgba(146,188,65,0.5);
-                  &:hover {background:rgba(146,188,65,0.8)}
-                }
-                &.private {
-                  background:rgba(255,0,0,0.5);
-                  &:hover {background:rgba(255,0,0,0.8)}
-                }
-              } // status
 
             } // hgroup
 

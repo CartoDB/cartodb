@@ -5,8 +5,15 @@ require_relative '../../../services/data-repository/structures/collection'
 
 module CartoDB
   module Visualization
-    SIGNATURE         = 'visualizations'
-    AVAILABLE_FILTERS = %w{ name type description map_id }
+    SIGNATURE           = 'visualizations'
+    AVAILABLE_FILTERS   = %w{ name type description map_id }
+    PARTIAL_MATCH_QUERY = %Q{
+      to_tsvector(
+        'english', coalesce(name, '') || ' ' 
+        || coalesce(description, '')
+      ) @@ plainto_tsquery('english', ?) 
+      OR CONCAT(name, ' ', description) ILIKE ?
+    }
 
     class << self
       attr_accessor :repository
@@ -33,7 +40,7 @@ module CartoDB
         dataset = repository.collection(filters, AVAILABLE_FILTERS)
         tags    = filters.delete(:tags).to_s.split(',')
         dataset = dataset.where(has_tags(tags))
-        #dataset = partial_match(dataset, filters.delete(:q))
+        dataset = partial_match(dataset, filters.delete(:q))
         self.total_entries = dataset.count
         dataset = repository.paginate(dataset, filters)
 
@@ -67,15 +74,9 @@ module CartoDB
         [filter].concat(tags)
       end #with_tags
 
-      def partial_match(dataset, query=nil)
-        return dataset if query.nil? || query.empty?
-        conditions = %Q{
-          to_tsvector(
-            'english', coalesce(name, '') || ' ' 
-            || coalesce(description, '')
-          ) @@ plainto_tsquery('english', ?) OR name ILIKE ?
-        }
-        dataset.where(conditions, query, "%#{query}%")
+      def partial_match(dataset, pattern=nil)
+        return dataset if pattern.nil? || pattern.empty?
+        dataset.where(PARTIAL_MATCH_QUERY, pattern, "%#{pattern}%")
       end #partial_match
     end # Collection
   end # Visualization

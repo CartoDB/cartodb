@@ -33,7 +33,7 @@
       right:0;
       left:0;
       width: 100%;
-      @include border-radius(3px);
+      @include border-bottom-radius(3px);
       overflow:hidden!important;
     }
 

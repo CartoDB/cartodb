@@ -8,7 +8,7 @@ module CartoDB
         tables_migrated:    0,
         tables_with_errors: {}
       }
-      @tables_to_migrate = Table
+      @tables_to_migrate = ::Table
       @version           = version.gsub(/\D/, '')
 
       require Rails.root.join("lib/cartodb/migrator#{@version}")

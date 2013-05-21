@@ -18,7 +18,8 @@ describe CartoDB::Visualization::Locator do
       DataRepository::Backend::Sequel.new(@db, :visualizations)
     @visualization  = CartoDB::Visualization::Member.new(
       name:         'Visualization 1',
-      description:  'A sample visualization'
+      description:  'A sample visualization',
+      privacy:      'public'
     ).store
     @locator        = CartoDB::Visualization::Locator.new(table_fake)
   end

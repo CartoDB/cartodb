@@ -23,6 +23,10 @@ module CartoDB
       #needs to be 8+2 less than normal names because of _polygon_n
       @suggested_name     = arguments.fetch(:working_data)
                               .fetch(:suggested_name)[0..9]
+      @path               = arguments.fetch(:working_data)
+                              .fetch(:path)
+      @ext                = arguments.fetch(:working_data)
+                              .fetch(:ext)
     end #initialize
 
     def process!
@@ -37,10 +41,12 @@ module CartoDB
 
       # I tried running the -G or --multi-geometry option to force multigeometries
       # but the result is always a column with mixed types, polygons and multipolgons!
-      full_osm_command = "#{osm2pgsql_bin_path} #{host} #{port} -U #{db_configuration[:username]} -d #{db_configuration[:database]} -u -I -C #{allowed_cache_size} --multi-geometry --latlong -p #{random_table_prefix} #{path}"
+      full_osm_command = "#{osm2pgsql_bin_path} #{host} #{port} --slim --style #{Rails.root.join('config', 'osm2pgsql.style')} -U #{db_configuration[:username]} -d #{db_configuration[:database]} -u -I -C #{allowed_cache_size} --multi-geometry --latlong -p #{random_table_prefix} #{path}"
 
       data_import.log_update(full_osm_command)
       stdin,  stdout, stderr = Open3.popen3(full_osm_command)
+
+      wait_until_table_present("#{random_table_prefix}_line")
 
       if $?.exitstatus != 0
         data_import.set_error_code(6000)
@@ -49,8 +55,6 @@ module CartoDB
         data_import.log_error("ERROR: failed to import #{path}")
         raise "ERROR: failed to import #{path}"
       end
-
-      #@runlog.stdout << reg unless (reg = stdout.read).empty?
 
       valid_tables = Array.new
       begin
@@ -66,14 +70,13 @@ module CartoDB
       rescue => ex
         data_import.log_update(stdout.read)
         data_import.log_update(stderr.read)
-        data_import.log_error("ERROR: failed to import #{path}")
-        raise "ERROR: failed to import #{path}"
+        data_import.log_error("ERROR: failed to import #{path} #{ex}")
+        raise "ERROR: failed to import #{path} #{ex}"
       end
 
       import_tag    = "#{suggested_name}_#{Time.now.to_i}"
       import_tables = Array.new
       payloads      = Array.new
-
       valid_tables.each do |feature|
         old_table_name = "#{random_table_prefix}_#{feature}"
         table_name     = get_valid_name("#{suggested_name}_#{feature}")
@@ -84,10 +87,10 @@ module CartoDB
           entries.each{ |entry| FileUtils.rm_rf(entry) } if entries.any?
 
           osm_geom_name = "way"
-          geoms = db["SELECT count(*) as count from #{table_name}"].first[:count]
+          geoms = db["SELECT count(*) as count from #{table_name} LIMIT 10"].first[:count]
           unless geoms.nil? || geoms == 0
             rename_geom_column(table_name, osm_geom_name)
-            normalize_geom(feature) if feature == "polygon"
+            normalize_geom(feature, table_name) if feature == "polygon"
 
             CartoDB::Indexer.new(db)
               .add(table_name, "importing_#{Time.now.to_i}_#{table_name}")
@@ -100,7 +103,7 @@ module CartoDB
 
           data_import.save
 
-          payloads = OpenStruct.new(
+          payloads << OpenStruct.new(
             name:           table_name,
             rows_imported:  rows_imported_for(table_name),
             import_type:    '.osm',
@@ -128,7 +131,7 @@ module CartoDB
 
     private
 
-    attr_reader :data_import, :entries, :db, :db_configuration, :suggested_name
+    attr_reader :data_import, :entries, :db, :db_configuration, :suggested_name, :path, :ext
 
     def rename_table(old_name, new_name)
       db.run(%Q{
@@ -153,7 +156,7 @@ module CartoDB
       raise DatabaseImportError
     end #rename_geom_column
 
-    def normalize_geom(type)
+    def normalize_geom(type, table_name)
       # because the osm2pgsql importer isn't being complete about multi geom type
       # i use this check, instead of the full geom rebuild used in the table methods
       # to get all geoms to the same type
@@ -166,8 +169,21 @@ module CartoDB
     end #normalize_geom_type
 
     def get_valid_name(name)
-      Table.get_valid_table_name(name, connection: db)
+      ::Table.get_valid_table_name(name, connection: db)
     end #get_valid_name
+
+    def wait_until_table_present(table_name)
+      started_at = Time.now
+      begin
+        db["SELECT count(*) as count from #{table_name}"].first[:count]
+      rescue => exception
+        if Time.now - started_at < 120
+          retry
+        else
+          raise exception
+        end
+      end
+      sleep 1
+    end
   end # OSM
 end # CartoDB
-

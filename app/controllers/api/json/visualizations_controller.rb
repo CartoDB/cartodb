@@ -39,11 +39,11 @@ class Api::Json::VisualizationsController < Api::ApplicationController
                   end
       map       = Visualization::TableBlender.new(current_user, tables).blend
       member    = Visualization::Member.new(
-                    payload.merge(map_id: map.id, type: 'derived')
+                    payload.merge(map_id: map.id, type: 'derived', privacy: (current_user.private_tables_enabled ? 'private' : 'public'))
                   )
       member.store
     else
-      member    = Visualization::Member.new(payload).store
+      member    = Visualization::Member.new(payload.merge(privacy: (current_user.private_tables_enabled ? 'private' : 'public'))).store
     end
 
     collection  = Visualization::Collection.new.fetch

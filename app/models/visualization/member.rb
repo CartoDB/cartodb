@@ -1,6 +1,7 @@
 # encoding: utf-8
 require 'ostruct'
 require 'virtus'
+require 'aequitas'
 require 'json'
 require_relative './collection'
 require_relative '../overlay/collection'
@@ -14,6 +15,7 @@ module CartoDB
   module Visualization
     class Member
       include Virtus
+      include Aequitas
 
       LAYER_SCOPES = {
         base:     :user_layers,
@@ -25,11 +27,14 @@ module CartoDB
       attribute :map_id,            Integer
       attribute :active_layer_id,   Integer
       attribute :type,              String
-      attribute :privacy,           String, default: 'public'
+      attribute :privacy,           String
       attribute :tags,              Array[String], default: []
       attribute :description,       String
       attribute :created_at,        Time
       attribute :updated_at,        Time
+
+      validates_presence_of         :privacy
+      validates_within              :privacy, set: ['public', 'private']
 
       def initialize(attributes={}, repository=Visualization.repository)
         super(attributes)
@@ -38,6 +43,7 @@ module CartoDB
       end #initialize
 
       def store
+        raise CartoDB::InvalidMember unless self.valid?
         propagate_privacy_to(table) if table
         self.created_at ||= Time.now.utc
         self.updated_at = Time.now.utc

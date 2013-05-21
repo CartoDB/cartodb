@@ -94,7 +94,8 @@ describe Api::Json::VisualizationsController do
           table1.fetch('name'),
           table2.fetch('name'),
           table3.fetch('name')
-        ]
+        ],
+        privacy: 'public'
       }
 
       post "/api/v1/viz?api_key=#{@api_key}",
@@ -401,7 +402,8 @@ describe Api::Json::VisualizationsController do
       tags:         ['foo', 'bar'],
       map_id:       map.id,
       description:  'bogus',
-      type:         'derived'
+      type:         'derived',
+      privacy:      'public'
     }
   end #factory
 

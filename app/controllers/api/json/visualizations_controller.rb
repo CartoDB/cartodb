@@ -32,20 +32,23 @@ class Api::Json::VisualizationsController < Api::ApplicationController
                   ).fetch
       member    = Visualization::Copier.new(
                     current_user, source, params.fetch(:name, nil)
-                  ).copy.store
+                  ).copy
     elsif params[:tables]
       tables    = params[:tables].map do |table_name| 
                     ::Table.find_by_subdomain(request.subdomain, table_name)
                   end
       map       = Visualization::TableBlender.new(current_user, tables).blend
       member    = Visualization::Member.new(
-                    payload.merge(map_id: map.id, type: 'derived', privacy: (current_user.private_tables_enabled ? 'private' : 'public'))
+                    payload_with_default_privacy.merge(
+                      map_id:   map.id,
+                      type:     'derived',
+                    )
                   )
-      member.store
     else
-      member    = Visualization::Member.new(payload.merge(privacy: (current_user.private_tables_enabled ? 'private' : 'public'))).store
+      member    = Visualization::Member.new(payload_with_default_privacy)
     end
 
+    member.store
     collection  = Visualization::Collection.new.fetch
     collection.add(member)
     collection.store
@@ -145,5 +148,13 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     request.body.rewind
     ::JSON.parse(request.body.read.to_s || String.new)
   end #payload
+
+  def payload_with_default_privacy
+    { privacy: default_privacy}.merge(payload)
+  end #payload_with_default_privacy
+
+  def default_privacy
+    current_user.private_tables_enabled ? 'private' : 'public'
+  end #default_privacy
 end # Api::Json::VisualizationsController
 

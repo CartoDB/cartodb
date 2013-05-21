@@ -11,21 +11,20 @@ module DataRepository
 
       def initialize(db=Sequel.sqlite, relation=nil)
         @db         = db
-        @relation   = relation
+        @relation   = relation.to_sym
         ::Sequel.extension :pagination
         @db.extension :pg_array if postgres?(@db)
       end #initialize
 
       def collection(filter={}, available_filters=[])
-        dataset = paginate(db[relation], filter)
-        return dataset if filter.nil? || filter.empty?
+        return db[relation] if filter.nil? || filter.empty?
         available_filters   = symbolize_elements(available_filters)
 
         filter = symbolize_keys(filter).select { |key, value|
           available_filters.include?(key)
         } unless available_filters.empty?
 
-        dataset.where(filter)
+        db[relation].where(filter)
       end #collection
 
       def store(key, data={})
@@ -43,6 +42,11 @@ module DataRepository
       def next_id
         UUIDTools::UUID.timestamp_create
       end #next_id
+
+      def paginate(dataset, filter={})
+        page, per_page = pagination_params_from(filter)
+        dataset.paginate(page, per_page)
+      end #paginate
 
       private
 
@@ -107,11 +111,6 @@ module DataRepository
       def symbolize_keys(hash={})
         Hash[ hash.map { |k, v| [k.to_sym, v] } ]
       end #symbolize_keys
-
-      def paginate(dataset, filter={})
-        page, per_page = pagination_params_from(filter)
-        dataset.paginate(page, per_page)
-      end #paginate
 
       def pagination_params_from(filter)
         page      = (filter.delete(:page)      || PAGE).to_i

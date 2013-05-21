@@ -33,6 +33,9 @@ module CartoDB
         dataset = repository.collection(filters, AVAILABLE_FILTERS)
         tags    = filters.delete(:tags).to_s.split(',')
         dataset = dataset.where(has_tags(tags))
+        #dataset = partial_match(dataset, filters.delete(:q))
+        self.total_entries = dataset.count
+        dataset = repository.paginate(dataset, filters)
 
         collection.storage = 
           Set.new(dataset.map { |record| record.fetch(:id) })
@@ -49,9 +52,12 @@ module CartoDB
         self
       end #destroy
 
+      attr_reader :total_entries
+
       private
 
       attr_reader :collection
+      attr_writer :total_entries
 
       def has_tags(tags=[])
         return {} if tags.nil? || tags.empty?
@@ -60,6 +66,17 @@ module CartoDB
        
         [filter].concat(tags)
       end #with_tags
+
+      def partial_match(dataset, query=nil)
+        return dataset if query.nil? || query.empty?
+        conditions = %Q{
+          to_tsvector(
+            'english', coalesce(name, '') || ' ' 
+            || coalesce(description, '')
+          ) @@ plainto_tsquery('english', ?) OR name ILIKE ?
+        }
+        dataset.where(conditions, query, "%#{query}%")
+      end #partial_match
     end # Collection
   end # Visualization
 end # CartoDB

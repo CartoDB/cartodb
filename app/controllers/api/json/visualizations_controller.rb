@@ -20,7 +20,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     )
     response    = {
       visualizations: collection,
-      total_entries:  collection.count
+      total_entries:  collection.total_entries
     }
     render_jsonp(response)
   end #index

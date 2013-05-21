@@ -2,6 +2,7 @@
 require 'sequel'
 require 'rack/test'
 require 'json'
+require 'uri'
 require_relative '../../spec_helper'
 require_relative '../../../app/controllers/api/json/visualizations_controller'
 require_relative '../../../services/data-repository/backend/sequel'
@@ -47,7 +48,7 @@ describe Api::Json::VisualizationsController do
   end
 
   describe 'POST /api/v1/viz' do
-    it 'creates a visualization', now: true do
+    it 'creates a visualization' do
       payload = factory.merge(type: 'table')
 
       post "/api/v1/viz?api_key=#{@api_key}",
@@ -173,9 +174,10 @@ describe Api::Json::VisualizationsController do
     end
 
     it 'paginates results' do
-      per_page = 10
+      per_page      = 10
+      total_entries = 20
 
-      20.times do 
+      total_entries.times do 
         post "/api/v1/viz?api_key=#{@api_key}",
           factory.to_json, @headers
       end
@@ -187,6 +189,7 @@ describe Api::Json::VisualizationsController do
       response    = JSON.parse(last_response.body)
       collection  = response.fetch('visualizations')
       collection.length.should == per_page
+      response.fetch('total_entries').should == total_entries
     end
 
     it 'returns filtered results' do
@@ -211,6 +214,20 @@ describe Api::Json::VisualizationsController do
       response    = JSON.parse(last_response.body)
       collection  = response.fetch('visualizations')
       collection.size.should == 2
+    end
+
+    it 'accepts search queries' do
+      pending
+      attributes  = factory
+      name        = URI.escape(attributes.fetch(:name))
+      post "/api/v1/viz?api_key=#{@api_key}",
+        attributes.to_json, @headers
+      get "/api/v1/viz?api_key=#{@api_key}&q=#{name}&type=table",
+        {}, @headers
+      last_response.status.should == 200
+
+      response = JSON.parse(last_response.body)
+      response.length.should == 1
     end
   end # GET /api/v1/viz
 

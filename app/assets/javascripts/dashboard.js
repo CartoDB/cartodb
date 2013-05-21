@@ -1,4 +1,5 @@
 //= require d3.v2
+//= require select2.min
 //= require jquery-ui.core.min
 //= require jquery.fileupload
 //= require jquery.fileupload-fp
@@ -12,5 +13,8 @@
 //= require ../../../lib/assets/javascripts/cartodb/dashboard/dashboard
 //= require_tree ../../../lib/assets/javascripts/cartodb/dashboard/views
 //= require_tree ../../../lib/assets/javascripts/cartodb/common/views
-//= require ../../../lib/assets/javascripts/cartodb/table/export_dialog
+//= require ../../../lib/assets/javascripts/cartodb/common/export_table_dialog
+//= require ../../../lib/assets/javascripts/cartodb/visualization/visualization_view
+//= require ../../../lib/assets/javascripts/cartodb/table/header/name_visualization_dialog
+//= require ../../../lib/assets/javascripts/cartodb/table/header/views/name_visualization_dialog
 //= require moment

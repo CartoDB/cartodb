@@ -19,8 +19,8 @@ class Layer < Sequel::Model
   plugin :association_dependencies, :maps => :nullify, :users => :nullify
 
   def public_values
-    Hash[PUBLIC_ATTRIBUTES.map{ |a| [a.sub(/_for_api$/, ''), self.send(a)] }]
-  end
+    Hash[ PUBLIC_ATTRIBUTES.map { |attribute| [attribute, send(attribute)] } ]
+  end #public_values
 
   def validate
     super
@@ -48,23 +48,10 @@ class Layer < Sequel::Model
   # Returns an array of tables used on the layer
   #
   def affected_tables
-    if maps.first.present? && options.present? && options[:query].present?
-      begin
-        query = options[:query]
-        tables_per_statement = maps.first.user.in_database.select { 
-          cdb_querytables(Sequel.function(:cdb_querystatements, query))
-        }.all
-
-        tables_per_statement.map do |s|
-          s[:cdb_querytables].split(',').map do |table_name|
-            table_name.gsub!(/[\{\}]/, '') 
-            Table.select(:id, :name, :user_id)
-              .where(user_id: maps.first.user.id, name: table_name).all
-          end
-        end.flatten.compact.uniq
-      rescue Sequel::DatabaseError
-        []
-      end
+    if maps.first.present? && options.present? && options.symbolize_keys[:query].present?
+      table_names = CartoDB::SqlParser.new(options.symbolize_keys[:query], connection: maps.first.user.in_database).affected_tables
+      Table.select(:id, :name, :user_id)
+        .where(user_id: maps.first.user.id, name: table_names).all
     else
       []
     end
@@ -98,4 +85,17 @@ class Layer < Sequel::Model
       "tiles" => [url]
     }.to_json
   end
+
+  def copy
+    attributes = public_values.select { |k, v| k != 'id' }
+    Layer.new(attributes)
+  end #copy
+
+  def data_layer?
+    kind == 'carto'
+  end #data_layer?
+
+  def base_layer?
+    !data_layer?
+  end #base_layer?
 end

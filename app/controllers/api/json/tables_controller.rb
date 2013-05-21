@@ -1,5 +1,5 @@
 # coding: UTF-8
-require_relative '../../../helpers/vizzjson/map'
+require_relative '../../../models/visualization/presenter'
 
 class Api::Json::TablesController < Api::ApplicationController
   ssl_required :index, :show, :create, :update, :destroy
@@ -7,24 +7,10 @@ class Api::Json::TablesController < Api::ApplicationController
 
   before_filter :load_table, :except => [:index, :create, :vizzjson]
   before_filter :set_start_time
-  after_filter  :record_query_threshold
   #before_filter :link_ghost_tables
 
   def index
-    @tables = unless params[:tag_name].blank?
-      tag_name = CGI::unescape(params[:tag_name]).sanitize_sql
-
-      Table.fetch("select user_tables.*,
-                      array_to_string(array(select tags.name from tags where tags.table_id = user_tables.id),',') as tags_names
-                          from user_tables, tags
-                          where user_tables.user_id = ?
-                          and user_tables.id = tags.table_id
-                          and tags.name = ? order by user_tables.id desc", current_user.id, tag_name)
-    else
-      Table.select("*, array_to_string(array(select tags.name from tags where tags.table_id = user_tables.id),',') as tags_names".lit)
-        .where(:user_id => current_user.id).order(:id.desc)
-    end
-
+    @tables = Table.where(:user_id => current_user.id).order(:id.desc)
     @tables = @tables.search(params[:q]) unless params[:q].blank?
 
     page     = params[:page].to_i > 0 ? params[:page].to_i : 1
@@ -46,10 +32,8 @@ class Api::Json::TablesController < Api::ApplicationController
     @table.import_from_query = params[:from_query]  if params[:from_query]
 
     if @table.valid? && @table.save
-      @table = Table.fetch("select *, array_to_string(array(select tags.name from tags where tags.table_id = user_tables.id),',') as tags_names
-                            from user_tables
-                            where id=?",@table.id).first
-      render_jsonp(@table.public_values, 200, { :location => table_path(@table) })
+      @table = Table.where(id: @table.id).first
+      render_jsonp(@table.public_values, 200, { location: "/tables/#{@table.id}" })
     else
       CartoDB::Logger.info "Error on tables#create", @table.errors.full_messages
       render_jsonp( { :description => @table.errors.full_messages,
@@ -107,11 +91,8 @@ class Api::Json::TablesController < Api::ApplicationController
       @table.georeference_from!(:latitude_column => latitude_column, :longitude_column => longitude_column)
       render_jsonp(@table.public_values.merge(warnings: warnings)) and return
     end
-    @table.tags = params[:tags] if params[:tags]
     if @table.update(@table.values.delete_if {|k,v| k == :tags_names}) != false
-      @table = Table.fetch("select *, array_to_string(array(select tags.name from tags where tags.table_id = user_tables.id),',') as tags_names
-                            from user_tables
-                            where id=?",@table.id).first
+      @table = Table.where(id: @table.id).first
 
       render_jsonp(@table.public_values.merge(warnings: warnings))
     else
@@ -132,14 +113,7 @@ class Api::Json::TablesController < Api::ApplicationController
     if @table.present? && (@table.public? || (current_user.present? && @table.owner.id == current_user.id))
       response.headers['X-Cache-Channel'] = "#{@table.varnish_key}:vizjson"
       response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
-      render_jsonp(
-        CartoDB::VizzJSON::Map.new(
-          @table.map, 
-          { full: false, url: table_url(@table) }, 
-          Cartodb.config, 
-          CartoDB::Logger
-        ).to_poro
-      )
+      render_jsonp({})
     else
       head :forbidden
     end
@@ -150,16 +124,5 @@ class Api::Json::TablesController < Api::ApplicationController
   def load_table
     @table = Table.find_by_identifier(current_user.id, params[:id])
   end
-
-  def record_query_threshold
-    if [200, 204].include?(response.status)
-      case action_name
-        when "create"
-          CartoDB::QueriesThreshold.incr(current_user.id, "other", Time.now - @time_start)
-        when "destroy"
-          CartoDB::QueriesThreshold.incr(current_user.id, "other", Time.now - @time_start)
-      end
-    end
-  end
-
 end
+

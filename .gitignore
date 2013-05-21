@@ -2,7 +2,7 @@
 .bundle
 dump.rdb
 db/*.sqlite3
-log/*.log
+log
 tmp/*
 tmp/**/*
 public/system

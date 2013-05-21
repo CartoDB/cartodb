@@ -269,7 +269,7 @@ module CartoDB
       rescue => e
         puts e
         @data_import.refresh
-        drop_created_tables payloads.map(&:name)
+        drop_created_tables(payloads.map(&:name)) unless payloads.blank?
         raise e
       ensure
         @db_connection.disconnect
@@ -378,7 +378,7 @@ module CartoDB
     end
 
     def get_valid_name(name)
-      Table.get_valid_table_name(name, connection: @db_connection)
+      ::Table.get_valid_table_name(name, connection: @db_connection)
     end #get_valid_name
 
     DECOMPRESSORS = {
@@ -421,7 +421,8 @@ module CartoDB
       DECOMPRESSORS.fetch(key).new(
         data_import:    @data_import,
         path:           @path,
-        suggested_name: @suggested_name
+        suggested_name: @suggested_name,
+        log:            @data_import.log
       )
     end #decompressor_for
 

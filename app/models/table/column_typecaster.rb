@@ -4,7 +4,7 @@ module CartoDB
   class ColumnTypecaster
 
     CONVERSION_MAP = {
-      'float' => {
+      'number' => {
         'boolean'           => 'number_to_boolean',
         'date'              => 'number_to_datetime',
         'datetime'          => 'number_to_datetime',
@@ -22,6 +22,10 @@ module CartoDB
         'timestamp'         => 'string_to_datetime',
         'double precision'  => 'string_to_number',
         'boolean'           => 'string_to_boolean'
+      },
+      'date' => {
+        'double precision'  => 'date_to_number',
+        'boolean'           => 'date_to_boolean'
       }
     }
 
@@ -33,7 +37,8 @@ module CartoDB
     end #initialize
 
     def run
-      user_database.transaction do straight_cast end
+      return if nothing_to_do
+      user_database.transaction do straight_cast(@new_type.convert_to_db_type) end
     rescue => exception
       # attempt various lossy conversions by regex nullifying 
       # unmatching data and retrying conversion.
@@ -41,11 +46,10 @@ module CartoDB
       # conversions ok by default:
       #   * number => string
       #   * boolean => string
-
       user_database.transaction do
-        old_type = column_type(column_name)
+        old_type = column_type(column_name).convert_to_cartodb_type
         self.send conversion_method_for(old_type, new_type)
-        straight_cast
+        straight_cast(@new_type.convert_to_db_type)
       end
     end #run
 
@@ -57,22 +61,27 @@ module CartoDB
 
     attr_reader :user_database, :table_name, :old_type
 
+    def nothing_to_do
+      @new_type.blank? || @new_type == column_type(@column_name).convert_to_cartodb_type
+    end
+
     def conversion_method_for(old_type, new_type)
-      CONVERSION_MAP.fetch(old_type.to_s).fetch(new_type.to_s)
+      CONVERSION_MAP.fetch(old_type.to_s).fetch(new_type.to_s.convert_to_db_type)
     end #conversion_method_for
 
     def column_type(column_name)
       user_database.schema(table_name).select { |c|
         c[0] == column_name.to_sym
-      }.flatten.last.fetch(:type).to_s
+      }.flatten.last.fetch(:db_type).to_s
     end #column_type
 
-    def straight_cast(new_type=self.new_type)
+    def straight_cast(new_type=self.new_type, options = {})
+      cast = (options[:cast].present? ? options[:cast] : "cast(#{column_name} as #{new_type})")
       user_database.run(%Q{
         ALTER TABLE "#{table_name}"
         ALTER COLUMN #{column_name}
         TYPE #{new_type}
-        USING cast(#{column_name} as #{new_type})
+        USING #{cast}
       })
     end #straight_cast
 
@@ -83,7 +92,7 @@ module CartoDB
     end #string_to_number
 
     def string_to_datetime
-      normalize_empty_string_to_null
+      straight_cast("date", cast: "CDB_StringToDate(#{column_name})")
     end #string_to_datetime
 
     def string_to_boolean
@@ -155,6 +164,14 @@ module CartoDB
       })
     end #number_to_boolean
 
+    def date_to_number
+      straight_cast("double precision", cast: "CDB_DateToNumber(#{column_name})")
+    end
+
+    def date_to_boolean
+      nullify
+    end
+
     def normalize_empty_string_to_null
       user_database.run(%Q{
         UPDATE "#{table_name}"
@@ -196,4 +213,3 @@ module CartoDB
     end #normalize_digit_separators
   end # ColumnTypecaster
 end # CartoDB
-

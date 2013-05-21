@@ -214,6 +214,17 @@ describe CartoDB::Importer do
         errors.should be_empty
         results[0].name.should == 'cartodb_csv_multipoly_export'
         results[0].rows_imported.should == 601
+        @db.schema(results[0].name).map {|i| i.first }.should_not include(:invalid_the_geom)
+        results[0].import_type.should == '.csv'
+      end
+
+      it "should import CSV with semicolons as field separators" do
+        importer = create_importer 'csv_semicolon.csv', 'csv_semicolon'
+        results,errors = importer.import!
+
+        errors.should be_empty
+        results[0].name.should == 'csv_semicolon'
+        results[0].rows_imported.should == 4
         results[0].import_type.should == '.csv'
       end
 
@@ -286,7 +297,7 @@ describe CartoDB::Importer do
         results[0].import_type.should == '.csv'
         results[0].rows_imported.should == 7
         columns = @db[:twitters_with_headerless_column].columns
-        columns.grep(/header_/).empty?.should == false
+        columns.grep(/field_/).empty?.should == false
       end
 
       it 'imports a csv with an existing cartodb_id column' do
@@ -747,7 +758,7 @@ describe CartoDB::Importer do
   before(:all) do
     @db = CartoDB::ImportDatabaseConnection.connection
     @db_opts = {:database => "cartodb_importer_test",
-                :username => "lorenzo", :password => '',
+                :username => "postgres", :password => '',
                 :host => 'localhost',
                 :port => 5432}
     create_user(:username => 'test', :email => "client@example.com", :password => "clientex", :table_quota => 100, :disk_quota => 500.megabytes)

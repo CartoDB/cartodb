@@ -1,24 +1,30 @@
-# encoding: utf-8
-require_relative '../../acceptance_helper'
+#encoding: UTF-8
 
-feature "API 1.0 columns management" do
+require 'spec_helper'
+
+describe "Columns API" do
 
   before(:all) do
-    Capybara.current_driver = :rack_test
-    @user  = create_user({:username => 'test'})
+    @user = create_user(:username => 'test', :email => "client@example.com", :password => "clientex")
+    @user.set_map_key
     @table = create_table :user_id => @user.id
   end
 
-  scenario "Get the columns from a table" do    
-    get_json api_table_columns_url(@table.name) do |response|
+  before(:each) do
+    delete_user_data @user
+    host! 'test.localhost.lan'
+  end
+
+  let(:params) { { :api_key => @user.get_map_key } }
+
+  it "gets the columns from a table" do    
+    get_json v1_table_columns_url(@table.name, param) do |response|
       response.status.should be_success
       (response.body -  default_schema).should be_empty
     end
   end
 
-  scenario "Add a new column to a table" do
-    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
-    
+  it "adds a new column to a table" do
     post_json api_table_columns_url(@table.name), { :type => "Number", :name => "postal code" } do |response|
       response.status.should be_success
       response.body.should == {
@@ -29,30 +35,26 @@ feature "API 1.0 columns management" do
     end
   end
 
-  scenario "Try to add a new column of an invalid type" do
-    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).never
-    
+  it "Try to add a new column of an invalid type" do
     post_json api_table_columns_url(@table.name), { :type => "integerrr", :name => "postal code" } do |response|
       response.status.should == 400
     end
   end
 
-  scenario "Get the type of a column" do
+  it "Get the type of a column" do
     get_json api_table_column_url(@table.name, "name") do |response|
       response.status.should be_success
       response.body[:type].should == "string"
     end
   end
 
-  scenario "Get the type of a column that doesn't exist" do
+  it "Get the type of a column that doesn't exist" do
     get_json api_table_column_url(@table.name, "namiz") do |response|
       response.status.should == 404
     end
   end
 
-  scenario "Update the type of a given column" do
-    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
-    
+  it "Update the type of a given column" do
     put_json api_table_column_url(@table.name, "name"), {:type => "number"} do |response|
       response.status.should be_success
       response.body.should == {
@@ -63,20 +65,16 @@ feature "API 1.0 columns management" do
     end
   end
 
-  scenario "Update the type of a given column with an invalid type" do
-    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).never
-    
+  it "Update the type of a given column with an invalid type" do
     put_json api_table_column_url(@table.name, "name"), {:type => "integerr"} do |response|
       response.status.should == 400
     end
   end
 
-  scenario "Rename a column" do
+  it "Rename a column" do
     delete_user_data @user
     @table = create_table :user_id => @user.id
 
-    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
-    
     put_json api_table_column_url(@table.name, "name"), {:new_name => "nombresito"} do |response|
       response.status.should be_success
       response.body.should == {
@@ -87,7 +85,7 @@ feature "API 1.0 columns management" do
     end
   end
 
-  scenario "Drop a column" do
+  it "Drop a column" do
     delete_user_data @user
     @table = create_table :user_id => @user.id    
     
@@ -96,4 +94,3 @@ feature "API 1.0 columns management" do
     end
   end
 end
-

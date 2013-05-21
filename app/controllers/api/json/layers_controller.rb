@@ -1,5 +1,5 @@
 # coding: UTF-8
-require_relative '../../../helpers/vizzjson/layer'
+require_relative '../../../models/layer/presenter'
 
 class Api::Json::LayersController < Api::ApplicationController
   ssl_required :index, :show, :create, :update, :destroy
@@ -22,7 +22,7 @@ class Api::Json::LayersController < Api::ApplicationController
        render :text => "#{params[:callback]}( #{@layer.to_tilejson} )"
       end
       format.json do 
-        render_jsonp(CartoDB::VizzJSON::Layer.new(
+        render_jsonp(CartoDB::Layer::Presenter.new(
             @layer, { full: false }, Cartodb.config
           ).to_poro
         )
@@ -32,6 +32,11 @@ class Api::Json::LayersController < Api::ApplicationController
 
   def create
     @layer = Layer.new(params.slice(:kind, :options, :infowindow, :order))
+    if @parent.is_a?(Map) && !@parent.admits_layer?(@layer)
+      render  status: 400,
+              text: "Can't add more layers of this type"
+      return
+    end
 
     if @layer.save
       @parent.add_layer(@layer.id)
@@ -62,15 +67,19 @@ class Api::Json::LayersController < Api::ApplicationController
     head :no_content
   end
 
-
   protected
-  
+
   def load_parent
-    if params[:user_id]
-      @parent = current_user
-    elsif params[:map_id]
-      @parent = Map.filter(:user_id => current_user.id, :id => params[:map_id]).first
-    end
+    @parent = user_from(params) || map_from(params)
     raise RecordNotFound if @parent.nil?
-  end
+  end #load_parent
+
+  def user_from(params={})
+    current_user if params[:user_id]
+  end #user_from
+
+  def map_from(params={})
+    return unless params[:map_id]
+    Map.filter(user_id: current_user.id, id: params[:map_id]).first
+  end #map_from
 end

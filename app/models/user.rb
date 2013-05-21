@@ -1,8 +1,12 @@
 # coding: UTF-8
+require_relative './user/user_decorator'
+
 class User < Sequel::Model
   include CartoDB::MiniSequel
+  include CartoDB::UserDecorator
 
   one_to_one :client_application
+  plugin :association_dependencies, :client_application => :destroy
   one_to_many :tokens, :class => :OauthToken
   one_to_many :maps
   one_to_many :assets
@@ -55,6 +59,7 @@ class User < Sequel::Model
     super
     setup_user
     save_metadata
+    monitor_user_notification
   end
 
   def before_destroy
@@ -82,6 +87,7 @@ class User < Sequel::Model
         conn.run("DROP DATABASE #{database_name}")
         conn.run("DROP USER #{database_username}")
     end.join
+    monitor_user_notification
   end
 
   def invalidate_varnish_cache
@@ -142,20 +148,21 @@ class User < Sequel::Model
   end
 
   def in_database(options = {}, &block)
+    logger = (Rails.env.development? || Rails.env.test? ? ::Rails.logger : nil)
     configuration = if options[:as]
       if options[:as] == :superuser
         ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-          'database' => self.database_name, :logger => ::Rails.logger
+          'database' => self.database_name, :logger => logger
         )
       elsif options[:as] == :public_user
         ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-          'database' => self.database_name, :logger => ::Rails.logger,
+          'database' => self.database_name, :logger => logger,
           'username' => CartoDB::PUBLIC_DB_USER, 'password' => ''
         )
       end
     else
       ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-        'database' => self.database_name, :logger => ::Rails.logger,
+        'database' => self.database_name, :logger => logger,
         'username' => database_username, 'password' => database_password
       )
     end
@@ -261,6 +268,17 @@ class User < Sequel::Model
     end
   end
 
+  def dedicated_support?
+    [/FREE/i, /MAGELLAN/i].select { |rx| self.account_type =~ rx }.empty?
+  end
+
+  def remove_logo?
+    [/FREE/i, /MAGELLAN/i, /JOHN SNOW/i].select { |rx| self.account_type =~ rx }.empty?
+  end
+
+  def import_quota
+    self.account_type.downcase == 'free' ? 1 : 3
+  end
 
   # create the core user_metadata key that is used in redis
   def key
@@ -447,6 +465,12 @@ class User < Sequel::Model
     (remaining_table_quota && remaining_table_quota <= 0) ? true : false
   end
 
+  def account_type_name
+    self.account_type.gsub(" ", "_").downcase
+    rescue
+    ""
+  end
+
   #can be nil table quotas
   def remaining_table_quota
     if self.table_quota.present?
@@ -472,13 +496,19 @@ class User < Sequel::Model
     end
   end
 
-  # This user's currently running import jobs
   def importing_jobs
     imports = DataImport.where(state: ['complete', 'failure']).invert
       .where(user_id: self.id)
       .where { created_at > Time.now - 24.hours }.all
-    
-    imports.delete_if &:mark_as_failed_if_stuck!
+    running_import_ids = Resque::Worker.all.map { |worker| worker.job["payload"]["args"].first["job_id"] rescue nil }.compact
+    imports.map do |import|
+      if import.created_at < Time.now - 5.minutes && !running_import_ids.include?(import.id)
+        import.failed!
+        nil
+      else
+        import
+      end
+    end.compact
   end
 
   def job_tracking_identifier
@@ -529,14 +559,23 @@ class User < Sequel::Model
   end
 
   # Cartodb functions
-  def load_cartodb_functions
+  def load_cartodb_functions(files = [])
     in_database(:as => :superuser) do |user_database|
       user_database.transaction do
-        glob = Rails.root.join('lib/sql/*.sql')
-
-        Dir.glob(glob).each do |f|
-          @sql = File.new(f).read
-          user_database.run(@sql)
+        if files.empty?
+          glob = Rails.root.join('lib/sql/*.sql')
+          sql_files = Dir.glob(glob).sort
+        else
+          sql_files = files.map {|sql| Rails.root.join('lib/sql', sql).to_s}.sort
+        end
+        sql_files.each do |f|
+          if File.exists?(f)
+            CartoDB::Logger.info "Loading CartoDB SQL function #{File.basename(f)} into #{database_name}"
+            @sql = File.new(f).read
+            user_database.run(@sql)
+          else
+            CartoDB::Logger.info "SQL function #{File.basename(f)} doesn't exist in lib/sql directory. Not loading it."
+          end
         end
       end
     end
@@ -572,40 +611,6 @@ class User < Sequel::Model
 
         # yield(something) if block_given?
       end
-    end
-  end
-
-  def data(options = {})
-    data = { 
-      :id                         => self.id,
-      :email                      => self.email,
-      :username                   => self.username,
-      :account_type               => self.account_type,
-      :private_tables             => self.private_tables_enabled,
-      :table_quota                => self.table_quota,
-      :table_count                => self.table_count,
-      :byte_quota                 => self.quota_in_bytes,
-      :remaining_table_quota      => self.remaining_table_quota,
-      :remaining_byte_quota       => self.remaining_quota.to_f,
-      :api_calls                  => self.get_api_calls["per_day"],
-      :api_key                    => self.get_map_key,
-      :layers                     => self.layers.map(&:public_values),
-    }
-
-    if !options[:extended]
-      data
-    else
-      biggest_table = self.tables.select(:id, :name, :user_id).all.map { |t| 
-        {:name => t.name, :size_diff => (t.table_size - 10)} 
-      }.sort_by {|h| h[:size_diff] }.last
-      data.merge({
-        :real_table_count           => self.real_tables.size,
-        :last_active_time           => self.get_last_active_time,
-        :db_size_in_bytes           => self.db_size_in_bytes,
-        :total_db_size_in_bytes     => self.db_size_in_bytes(true),
-        :biggest_table_name         => (biggest_table.blank? ? nil : biggest_table[:name]),
-        :biggest_table_size_diff    => (biggest_table.blank? ? nil : biggest_table[:size_diff])
-      })
     end
   end
 
@@ -667,24 +672,7 @@ class User < Sequel::Model
     end
   end
 
-  def stats(date = Date.today)
-    puts "==========================================="
-    puts "Stats for user #{self.email} - #{self.id}"
-    puts "==========================================="
-    puts "day #{date.strftime("%Y-%m-%d")}:"
-    puts "    - queries: #{CartoDB::QueriesThreshold.get(self.id, date.strftime("%Y-%m-%d"))}"
-    puts "    - time: #{CartoDB::QueriesThreshold.get(self.id, date.strftime("%Y-%m-%d"), "time")}"
-    puts
-    puts "month #{date.strftime("%Y-%m")}"
-    puts "   - queries: #{CartoDB::QueriesThreshold.get(self.id, date.strftime("%Y-%m"))}"
-    puts "   - time: #{CartoDB::QueriesThreshold.get(self.id, date.strftime("%Y-%m"), "time")}"
-    puts "   - select: #{CartoDB::QueriesThreshold.get(self.id, date.strftime("%Y-%m"), "select")}"
-    puts "   - insert: #{CartoDB::QueriesThreshold.get(self.id, date.strftime("%Y-%m"), "insert")}"
-    puts "   - update: #{CartoDB::QueriesThreshold.get(self.id, date.strftime("%Y-%m"), "update")}"
-    puts "   - delete: #{CartoDB::QueriesThreshold.get(self.id, date.strftime("%Y-%m"), "delete")}"
-    puts "   - other: #{CartoDB::QueriesThreshold.get(self.id, date.strftime("%Y-%m"), "other")}"
-    puts
-    puts "total queries: #{CartoDB::QueriesThreshold.get(self.id, "total")}"
-    puts "==========================================="
+  def monitor_user_notification
+    FileUtils.touch(Rails.root.join('log', 'users_modifications'))
   end
 end

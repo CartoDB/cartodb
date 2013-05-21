@@ -78,19 +78,19 @@ module CartoDB
           if srid = @db_connection["select st_srid(the_geom) from #{@suggested_name} limit 1"].first
             srid = srid[:st_srid] if srid.is_a?(Hash)
             begin
-              if srid != 4326
-                @data_import.log_update("transforming the_geom from #{srid} to 4326")
+              if srid.to_s != "4326"
+                @data_import.log_update("Transforming the_geom from #{srid} to 4326")
                 # move original geometry column around
                 @db_connection.run("UPDATE #{@suggested_name} SET the_geom = ST_Transform(the_geom, 4326);")
                 @db_connection.run("CREATE INDEX #{@suggested_name}_the_geom_gist ON #{@suggested_name} USING GIST (the_geom)")
               end
             rescue => e
-              @data_import.log_error("failed to transform the_geom to 4326 #{@suggested_name}. #{e.inspect}")
-              @runlog.err << "failed to transform the_geom to 4326 #{@suggested_name}. #{e.inspect}"
+              @data_import.log_error("Failed to transform the_geom from #{srid} to 4326 #{@suggested_name}. #{e.inspect}")
+              @runlog.err << "Failed to transform the_geom from #{srid} to 4326 #{@suggested_name}. #{e.inspect}"
             end
           end
-        rescue
-          @data_import.log_error("failed to import the_geom renaming to invalid_the_geom")
+        rescue => e
+          @data_import.log_error("Failed to process the_geom renaming to invalid_the_geom. #{e.inspect}")
           # if no SRID or invalid the_geom, we need to remove it from the table
           @db_connection.run("ALTER TABLE #{@suggested_name} RENAME COLUMN the_geom TO invalid_the_geom")
           column_names.delete("the_geom")

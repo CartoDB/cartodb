@@ -55,9 +55,9 @@ module ApplicationHelper
 
   def frontend_config
     {
-      tiler_protocol:              Cartodb.config[:tile_protocol],
-      tiler_port:                  Cartodb.config[:tile_port],
-      tiler_domain:                Cartodb.config[:tile_host],
+      tiler_protocol:              Cartodb.config[:tiler_protocol],
+      tiler_port:                  Cartodb.config[:tiler_port],
+      tiler_domain:                Cartodb.config[:tiler_domain],
       sql_api_protocol:            Cartodb.config[:sql_api_protocol],
       sql_api_domain:              "#{request.subdomain}.#{Cartodb.config[:sql_api_domain]}",
       sql_api_endpoint:            Cartodb.config[:sql_api_endpoint],
@@ -106,4 +106,11 @@ Cartodb.config[:google_analytics]["primary"].blank?
     end if Rails.env.development?
   end
 
+  def v1_vizjson_url(visualization)
+    "/api/v1/viz/#{visualization.id}/viz"
+  end #v1_vizjson_url
+
+  def v2_vizjson_url(visualization)
+    "/api/v2/viz/#{visualization.id}/viz"
+  end #v2_vizjon_url
 end

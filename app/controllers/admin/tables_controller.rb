@@ -1,4 +1,5 @@
 # coding: utf-8
+require_relative '../../models/map/presenter'
 
 class Admin::TablesController < ApplicationController
   ssl_required :index, :show
@@ -31,7 +32,7 @@ class Admin::TablesController < ApplicationController
     end
   end
 
-  def show_public
+  def public
     @subdomain = request.subdomain
     @table     = Table.find_by_subdomain(@subdomain, params[:id])
 
@@ -39,13 +40,20 @@ class Admin::TablesController < ApplicationController
     if @table.blank? || @table.private? || ((current_user && current_user.id != @table.user_id) && @table.private?)
       render_403
     else
+      @vizzjson = CartoDB::Map::Presenter.new(
+        @table.map,
+        { full: true },
+        Cartodb.config
+      )
       begin
         respond_to do |format|
-          format.html { render 'show_public', :layout => 'application_public' }
+          format.html { render 'public', layout: 'application_public' }
           download_formats @table, format
         end
-      rescue
-        redirect_to public_table_path(@table), :alert => "There was an error exporting the table"
+      rescue => exception
+        puts exception
+        redirect_to public_table_path(@table), 
+                    alert: "There was an error exporting the table"
       end
     end
   end

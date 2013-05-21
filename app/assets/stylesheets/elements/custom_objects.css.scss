@@ -585,22 +585,39 @@
 
     &:hover {cursor:pointer!important;}
 
+    // Working
     &.working {
       @include opacity(0.5);
       &:hover {cursor:default!important;}
     }
 
+    // Small type
+    &.small {
+      width:23px;
+      height:12px;
 
+      span.handle {
+        position:absolute;
+        top:0px;
+        left:11px;
+        width:10px;
+        height:10px;
+        @include border-radius(10px);
+      }
+
+      &.disabled span.handle { left:1px; }
+      &.enabled span.handle { left:11px; }
+    }
   }
 
 
-  // ROUNDED WHITE BUTTON
+  // ROUNDED BUTTON (WHITE, ORANGE, GREEN, ...)
 
   /*
-    <a href="#xxxx" class="rounded_white {enabled}"></a>
+    <a href="#xxxx" class="rounded white {enabled}"></a>
   */
 
-  .rounded_white {
+  .rounded {
     padding:2px 6px;
     background:white;
     @include border-radius(25px);
@@ -608,10 +625,29 @@
     font-size:11px;
     line-height:12px;
     color:#3474AF;
-    @include box-shadow(rgba(black,0.09) 0 0 2px 2px);
-    &:hover {
-      text-decoration:none;
-      @include box-shadow(rgba(black,0.19) 0 0 2px 2px);
-    }
     text-transform: uppercase;
+    @include box-shadow(rgba(black,0.09) 0 0 2px 2px);
+
+    &:hover {text-decoration:none;}
+
+    &.white {
+      &:hover {
+        text-decoration:none;
+        @include box-shadow(rgba(black,0.19) 0 0 2px 2px);
+      }
+    }
+
+    &.orange {
+      background:#FF9326;
+      color:white;
+      text-shadow:none;
+      &:hover {@include box-shadow(rgba(black,0.19) 0 0 2px 2px);}
+    }
+
+    &.green {
+      background:#97C341;
+      color:white;
+      text-shadow:none;
+      &:hover {@include box-shadow(rgba(black,0.19) 0 0 2px 2px);}
+    }
   }

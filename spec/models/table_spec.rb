@@ -54,13 +54,24 @@ describe Table do
       table2.name.should == "untitled_table_1"
     end
 
+    it 'is invalid with a "layergroup" name' do
+      table         = Table.new
+      table.user_id = @user.id
+      table.name    = 'layergroup'
+
+      table.valid?.should == false
+      table.errors.fetch(:name).first.should =~ /reserved keyword/
+    end
+
     it "should not allow to create tables using system names" do
       table = create_table(name: "cdb_tablemetadata", user_id: @user.id)
       table.name.should == "cdb_tablemetadata_1"
     end
 
     it "should create default associated map and layers" do
-      table = create_table({:name => "epaminondas_pantulis", :user_id => @user.id})
+      visualizations = CartoDB::Visualization::Collection.new.fetch.to_a.length
+      table = create_table(name: "epaminondas_pantulis", user_id: @user.id)
+      CartoDB::Visualization::Collection.new.fetch.to_a.length.should == visualizations + 1
 
       table.map.should be_an_instance_of(Map)
       table.map.values.slice(:zoom, :bounding_box_sw, :bounding_box_ne, :provider).should == { zoom: 3, bounding_box_sw: "[0, 0]", bounding_box_ne: "[0, 0]", provider: 'leaflet'}
@@ -79,6 +90,58 @@ describe Table do
       table = create_table :user_id => @user.id
       table.should be_private
       $tables_metadata.hget(table.key,"privacy").to_i.should == Table::PRIVATE
+    end
+
+    it 'propagates privacy changes to the associated visualization' do
+      table = create_table(user_id: @user.id)
+      table.should be_private
+      table.table_visualization.should be_private
+
+      table.privacy = Table::PUBLIC
+      table.save
+      table.reload
+      table                           .should be_public
+      table.table_visualization       .should be_public
+
+      rehydrated = Table.where(id: table.id).first
+      rehydrated                      .should be_public
+      rehydrated.table_visualization  .should be_public
+
+      table.privacy = Table::PRIVATE
+      table.save
+      table.reload
+      table                           .should be_private
+      table.table_visualization       .should be_private
+
+      rehydrated = Table.where(id: table.id).first
+      rehydrated                      .should be_private
+      rehydrated.table_visualization  .should be_private
+    end
+
+    it 'receives privacy changes from the associated visualization' do
+      table = create_table(user_id: @user.id)
+      table.should be_private
+      table.table_visualization.should be_private
+
+      table.table_visualization.privacy = 'public'
+      table.table_visualization.store
+      table.reload
+      table                           .should be_public
+      table.table_visualization       .should be_public
+
+      rehydrated = Table.where(id: table.id).first
+      rehydrated                      .should be_public
+      rehydrated.table_visualization  .should be_public
+
+      table.table_visualization.privacy = 'private'
+      table.table_visualization.store
+      table.reload
+      table                           .should be_private
+      table.table_visualization       .should be_private
+
+      rehydrated = Table.where(id: table.id).first
+      rehydrated                      .should be_private
+      rehydrated.table_visualization  .should be_private
     end
 
     it "should be public if the creating user doesn't have the ability to make private tables" do
@@ -448,6 +511,13 @@ describe Table do
     end
 
     it "can modify a column using a CartoDB::TYPE type" do
+      table = create_table(user_id: @user.id)
+
+      resp = table.modify_column!(name: "name", type: "number")
+      resp.should == { name: "name", type: "double precision", cartodb_type: "number" }
+    end
+
+    it "can modify a column using a CartoDB::TYPE type" do
       table = create_table(:user_id => @user.id)
 
       resp = table.modify_column!(:name => "name", :type => "number")
@@ -457,32 +527,32 @@ describe Table do
     it "should not modify the name of a column to a number" do
       table = create_table(:user_id => @user.id)
       lambda {
-        table.modify_column!(:old_name => "name", :new_name => "1")
+        table.modify_column!(:name => "name", :new_name => "1")
       }.should raise_error(CartoDB::InvalidColumnName)
     end
 
     it "can modify its schema" do
-      table = create_table(:user_id => @user.id)
-      table.schema(:cartodb_types => false).should be_equal_to_default_db_schema
+      table = create_table(user_id: @user.id)
+      table.schema(cartodb_types: false).should be_equal_to_default_db_schema
 
       lambda {
-        table.add_column!(:name => "my column with bad type", :type => "textttt")
+        table.add_column!(name: "my column with bad type", type: "textttt")
       }.should raise_error(CartoDB::InvalidType)
 
-      resp = table.add_column!(:name => "my new column", :type => "integer")
-      resp.should == {:name => 'my_new_column', :type => 'integer', :cartodb_type => 'number'}
+      resp = table.add_column!(name: "my new column", type: "integer")
+      resp.should == { name: 'my_new_column', type: 'integer', cartodb_type: 'number'}
       table.reload
-      table.schema(:cartodb_types => false).should include([:my_new_column, "integer"])
+      table.schema(cartodb_types: false).should include([:my_new_column, "integer"])
 
-      resp = table.modify_column!(:old_name => "my_new_column", :new_name => "my new column new name", :type => "text")
-      resp.should == {:name => 'my_new_column_new_name', :type => 'text', :cartodb_type => 'string'}
+      resp = table.modify_column!(name: "my_new_column", new_name: "my new column new name", type: "text")
+      resp.should == { name: 'my_new_column_new_name', type: 'text', cartodb_type: 'string' }
       table.reload
-      table.schema(:cartodb_types => false).should include([:my_new_column_new_name, "text"])
+      table.schema(cartodb_types: false).should include([:my_new_column_new_name, "text"])
 
-      resp = table.modify_column!(:old_name => "my_new_column_new_name", :new_name => "my new column")
-      resp.should == {:name => 'my_new_column', :type => "text", :cartodb_type => "string"}
+      resp = table.modify_column!(name: "my_new_column_new_name", new_name: "my new column")
+      resp.should == { name: 'my_new_column', type: "text", cartodb_type: "string"}
       table.reload
-      table.schema(:cartodb_types => false).should include([:my_new_column, "text"])
+      table.schema(cartodb_types: false).should include([:my_new_column, "text"])
 
       resp = table.modify_column!(:name => "my_new_column", :type => "text")
       resp.should == {:name => 'my_new_column', :type => 'text', :cartodb_type => 'string'}
@@ -503,13 +573,13 @@ describe Table do
       original_schema = table.schema(:cartodb_types => false)
 
       lambda {
-        table.modify_column!(:old_name => "cartodb_id", :new_name => "new_id", :type => "integer")
+        table.modify_column!(:name => "cartodb_id", :new_name => "new_id", :type => "integer")
       }.should raise_error
       table.reload
       table.schema(:cartodb_types => false).should == original_schema
 
       lambda {
-        table.modify_column!(:old_name => "cartodb_id", :new_name => "cartodb_id", :type => "float")
+        table.modify_column!(:name => "cartodb_id", :new_name => "cartodb_id", :type => "float")
       }.should raise_error
       table.reload
       table.schema(:cartodb_types => false).should == original_schema
@@ -532,7 +602,7 @@ describe Table do
 
       pk = table.insert_row!(name: "Text", my_new_column: "1")
       table.modify_column!(
-        old_name:     "my_new_column",
+        name:     "my_new_column",
         new_name:     "my new column new name",
         type:         "integer",
         force_value:  "NULL"
@@ -1062,7 +1132,7 @@ describe Table do
     it "should raise an error when renaming a column with reserved name" do
       table = create_table(:user_id => @user.id)
       lambda {
-        table.modify_column!(:old_name => "name", :new_name => "xmin")
+        table.modify_column!(:name => "name", :new_name => "xmin")
       }.should raise_error(CartoDB::InvalidColumnName)
     end
 
@@ -1170,11 +1240,10 @@ describe Table do
       table = new_table :user_id => @user.id
       table.name = "clubbing"
       importer, errors = create_import @user, "#{Rails.root}/db/fake_data/short_clubbing.csv"
-
       table.migrate_existing_table = importer[0].name
       table.save.reload
 
-      table.modify_column! :name=> "club_id", :type=>"number", :old_name=>"club_id", :new_name=>nil
+      table.modify_column! :name=> "club_id", :type=>"number"
 
       table.sequel.where(:cartodb_id => '1').first[:club_id].should == 709
       table.sequel.where(:cartodb_id => '2').first[:club_id].should == 892
@@ -1201,7 +1270,7 @@ describe Table do
       table.sequel.insert(:test_id => '12', :f1 => "")
 
       # update datatype
-      table.modify_column! :name=>"f1", :type=>"boolean", :old_name=>"f1", :new_name=>nil
+      table.modify_column! :name=>"f1", :type=>"boolean", :name=>"f1", :new_name=>nil
 
       # test
       table.sequel.where(:cartodb_id => '1').first[:f1].should == true
@@ -1226,8 +1295,8 @@ describe Table do
       table.migrate_existing_table = importer[0].name
       table.save.reload
 
-      table.modify_column! :name=>"f1", :type=>"boolean", :old_name=>"f1", :new_name=>nil
-      table.modify_column! :name=>"f1", :type=>"string", :old_name=>"f1", :new_name=>nil
+      table.modify_column! :name=>"f1", :type=>"boolean"
+      table.modify_column! :name=>"f1", :type=>"string"
 
       table.sequel.select(:f1).where(:test_id => '1').first[:f1].should == 'true'
       table.sequel.select(:f1).where(:test_id => '8').first[:f1].should == 'false'
@@ -1241,8 +1310,8 @@ describe Table do
       table.migrate_existing_table = importer[0].name
       table.save.reload
 
-      table.modify_column! :name=>"f1", :type=>"boolean", :old_name=>"f1", :new_name=>nil
-      table.modify_column! :name=>"f1", :type=>"number", :old_name=>"f1", :new_name=>nil
+      table.modify_column! :name=>"f1", :type=>"boolean"
+      table.modify_column! :name=>"f1", :type=>"number"
 
       table.sequel.select(:f1).where(:test_id => '1').first[:f1].should == 1
       table.sequel.select(:f1).where(:test_id => '8').first[:f1].should == 0
@@ -1256,8 +1325,8 @@ describe Table do
       table.migrate_existing_table = importer[0].name
       table.save.reload
 
-      table.modify_column! :name=>"f1", :type=>"number", :old_name=>"f1", :new_name=>nil
-      table.modify_column! :name=>"f1", :type=>"boolean", :old_name=>"f1", :new_name=>nil
+      table.modify_column! :name=>"f1", :type=>"number"
+      table.modify_column! :name=>"f1", :type=>"boolean"
 
       table.sequel.select(:f1).where(:test_id => '1').first[:f1].should == true
       table.sequel.select(:f1).where(:test_id => '2').first[:f1].should == false
@@ -1579,6 +1648,5 @@ describe Table do
       new_table.should == nil
     end
   end
-
 end
 

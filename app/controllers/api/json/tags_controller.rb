@@ -1,10 +1,13 @@
-# coding: UTF-8
+# encoding: utf-8
+require_relative '../../../models/visualization/tag_counter'
 
 class Api::Json::TagsController < Api::ApplicationController
   ssl_required :index
 
   def index
-    limit = params[:limit].nil? ? 500 : params[:limit].to_i    
-    render_jsonp(Tag.load_user_tags(current_user.id, :limit => limit))
+    tag_counts = CartoDB::Visualization::TagCounter.new(current_user)
+                  .count(params)
+    render_jsonp(tag_counts)
   end
 end
+

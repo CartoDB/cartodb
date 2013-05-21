@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <link rel="shortcut icon" href="/favicons/favicon.ico" />
+    <title><%= @visualization.name.gsub(/_/," ") %> | CartoDB</title>
+    <meta name="description" content="<%= @visualization.description || @visualization.name.gsub(/_/," ") %>">
+    <meta name="keywords" content="Map,cartodb,<%= @visualization.name.gsub(/_/,",").gsub(/ /,",") %>">
+    <meta name="author" content="CartoDB">
+    <meta name="DC.title" content="<%= @visualization.description %> | CartoDB">
+    <meta property="og:title" content="<%= @visualization.name.gsub(/_/," ") %> | CartoDB"/>
+    <meta property="og:description" content="<%= @visualization.description || @visualization.name.gsub(/_/," ") %>"/> 
+    <meta property="og:type" content="Visualization"/>
+    <meta property="og:url" content="<%= request.fullpath %>" />
+    <meta property="og:image" content="<%= asset_path "layout/cartofante_blue.png" %>"/>
+
+    <style type="text/css">
+      html, body {height: 100%; padding: 0; margin: 0;}
+      #map {position:absolute; width:100%; top:0; right:0; bottom:0; left:0;}
+    </style>
+
+    <% if Rails.env.development? %>
+      <%= stylesheet_link_tag 'cdb/themes/css/cartodb' %>
+      <!--[if lte IE 8]>
+      <%= stylesheet_link_tag 'cdb/themes/css/cartodb.ie' %>
+      <![endif]-->
+    <% else %>
+      <link rel="stylesheet" href="http://libs.cartodb.com/cartodb.js/v2/themes/css/cartodb.css" />
+      <!--[if lte IE 8]>
+      <link rel="stylesheet" href="http://libs.cartodb.com/cartodb.js/v2/themes/css/cartodb.ie.css" />
+      <![endif]-->
+    <% end %>
+
+  </head>
+  <body>
+    <% if @visualization.public? %>
+      <div id="map"></div>
+    <% end %>
+
+    <% if @visualization.map.provider == 'googlemaps' %>
+      <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
+    <% else %>
+      <!-- if you are using google maps, uncomment the following line -->
+      <!-- <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script> -->
+    <% end %>
+
+    <% if Rails.env.development? %>
+      <%= javascript_include_tag :jquery ,:cdb %>
+    <% else %>
+      <script src="http://libs.cartocdn.com/cartodb.js/v2/cartodb.js"></script>
+    <% end %>
+
+    <script>
+
+      function get_url_params(conversion) {
+
+        conversion = conversion || {};
+
+        var tokens = location.search.slice(1).split('&');
+        var params = {};
+
+        for (var i = 0; i < tokens.length; ++i) {
+
+          var tk = tokens[i].split('=');
+          var fn = conversion[tk[0]] || function(v) { return v };
+
+          if (tk.length === 2) {
+            params[tk[0]] = fn(decodeURIComponent(tk[1]));
+          }
+        }
+
+        return params;
+      }
+
+      $(document).ready(function(){
+
+        var bool_fn = function(v) { return v == 'true' }
+        , is_custom_install = <%= Cartodb.config[:cartodb_com_hosted].present? %>
+        , logo_fn = function(v) { return ("<%= @visualization.user.account_type.downcase %>" != "coronelli" || is_custom_install) ? true : v == 'true' };
+
+        var opt = get_url_params({
+          'search':       bool_fn,
+          'title':        bool_fn,
+          'description':  bool_fn,
+          'shareable':    bool_fn,
+          'cartodb_logo': logo_fn,
+          'scrollwheel':  bool_fn
+        });
+
+        <% if Rails.env.development? %>
+        opt.no_cdn = true;
+        <% end %>
+
+        cartodb.createVis('map', '<%= v2_vizjson_url(@visualization) %>', opt, function(vis) {
+          // add here your code
+          window.vis = vis;
+        });
+      });
+
+    </script>
+    <%= render 'shared/analytics', ua: Cartodb.config[:google_analytics]["embeds"] %>
+  </body>
+</html>

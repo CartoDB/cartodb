@@ -1,78 +1,116 @@
 # encoding: utf-8
-require 'minitest/autorun'
+require 'sequel'
 require 'rack/test'
 require 'json'
-require_relative '../../../app/controllers/api/json/overlay'
+require_relative '../../spec_helper'
+require_relative '../../../app/controllers/api/json/overlays_controller'
+require_relative '../../../app/models/visualization/migrator'
+require_relative '../../../app/models/overlay/migrator'
 
 def app
-  CartoDB::Overlay::API.new
+  CartoDB::Application.new
 end #app
 
-include CartoDB
-
-describe Overlay::API do
+describe Api::Json::OverlaysController do
   include Rack::Test::Methods
-  
-  describe 'POST /api/v1/visualizations/:visualization_id/overlays' do
+  include DataRepository
+
+  before(:all) do
+    @user = create_user(
+      username: 'test',
+      email:    "client@example.com",
+      password: "clientex"
+    )
+    @user.set_map_key
+    @api_key = @user.get_map_key
+  end
+
+  before(:each) do
+    @db = Sequel.sqlite
+    Sequel.extension(:pagination)
+
+    CartoDB::Visualization::Migrator.new(@db).migrate
+    CartoDB::Visualization.repository  = 
+      DataRepository::Backend::Sequel.new(@db, :visualizations)
+
+    CartoDB::Overlay::Migrator.new(@db).migrate
+    CartoDB::Overlay.repository        =
+      DataRepository::Backend::Sequel.new(@db, :overlays)
+
+    delete_user_data @user
+    @headers = { 
+      "CONTENT_TYPE" => 'application/json',
+      "HTTP_HOST" => "test.localhost.lan"
+    }
+  end
+
+  describe 'POST /api/v1/viz/:visualization_id/overlays' do
     it 'creates an overlay for visualization' do
       base_url = base_url_for(rand(100))
 
-      post base_url, sample_payload.to_json
-      last_response.status.must_equal 201
+      post "#{base_url}?api_key=#{@api_key}",
+        sample_payload.to_json, @headers
+      last_response.status.should == 200
 
       response = JSON.parse(last_response.body)
 
-      response.fetch('id')      .wont_be_nil
-      response.fetch('type')    .must_equal sample_payload.fetch(:type)
+      response.fetch('id')      .should_not be_nil
+      response.fetch('type')    .should == sample_payload.fetch(:type)
 
-      get "#{base_url}/#{response.fetch('id')}"
-      last_response.status.must_equal 200
+      get "#{base_url}/#{response.fetch('id')}?api_key=#{@api_key}",
+        {}, @headers
+      last_response.status.should == 200
 
       response = JSON.parse(last_response.body)
-      response.fetch('type')    .must_equal sample_payload.fetch(:type)
+      response.fetch('type')    .should == sample_payload.fetch(:type)
     end
-  end # POST /api/v1/visualizations/:visualization_id/overlays
+  end # POST /api/v1/viz/:visualization_id/overlays
 
-  describe 'GET /api/v1/visualizations/:visualization_id/overlays/:id' do
+  describe 'GET /api/v1/viz/:visualization_id/overlays/:id' do
     it 'returns an overlay from a visualization' do
       base_url, overlay_id = create_overlay
-      get "#{base_url}/#{overlay_id}"
+      get "#{base_url}/#{overlay_id}?api_key=#{@api_key}",
+        {}, @headers
 
-      last_response.status.must_equal 200
+      last_response.status.should == 200
       response = JSON.parse(last_response.body)
 
-      response.fetch('id')                .wont_be_nil
-      response.fetch('type')              .wont_be_nil
-      response.fetch('visualization_id')  .wont_be_nil
-      response.has_key?('options')        .must_equal true
-      response.has_key?('order')          .must_equal true
+      response.fetch('id')                .should_not be_nil
+      response.fetch('type')              .should_not be_nil
+      response.fetch('visualization_id')  .should_not be_nil
+      response.has_key?('options')        .should == true
+      response.has_key?('order')          .should == true
     end
-  end # GET /api/v1/visualizations/:visualization_id/overlays/:id
+  end # GET /api/v1/viz/:visualization_id/overlays/:id
 
-  describe 'PUT /api/v1/visualizations/:visualization_id/overlays/:id' do
+  describe 'PUT /api/v1/viz/:visualization_id/overlays/:id' do
     it 'updates an existing visualization' do
       base_url, overlay_id = create_overlay
 
-      put "#{base_url}/#{overlay_id}", { type: 'changed' }.to_json
-      last_response.status.must_equal 200
+      put "#{base_url}/#{overlay_id}?api_key=#{@api_key}",
+        { type: 'changed' }.to_json, @headers
+      last_response.status.should == 200
 
       response = JSON.parse(last_response.body)
-      response.fetch('type').must_equal 'changed'
+      response.fetch('type').should == 'changed'
     end
-  end # PUT /api/v1/visualizations/:visualization_id/overlays/:id
+  end # PUT /api/v1/viz/:visualization_id/overlays/:id
 
-  describe 'DELETE /api/v1/visualizations/:visualization_id/overlays/:id' do
+  describe 'DELETE /api/v1/viz/:visualization_id/overlays/:id' do
     it 'deletes the visualization' do
       base_url, overlay_id = create_overlay
 
-      delete "#{base_url}/#{overlay_id}"
-      last_response.status.must_equal 204
-      last_response.body.must_be_empty
+      delete "#{base_url}/#{overlay_id}?api_key=#{@api_key}",
+        {}, @headers
 
-      get "#{base_url}/#{overlay_id}"
-      last_response.status.must_equal 404
+      last_response.status.should == 204
+      last_response.body.should be_empty
+
+      get "#{base_url}/#{overlay_id}?api_key=#{@api_key}",
+        {}, @headers
+      last_response.status.should == 404
     end
-  end # DELETE /api/v1/visualizations/:visualization_id/overlays/:id
+  end # DELETE /api/v1/viz/:visualization_id/overlays/:id
 
   def sample_payload
     {
@@ -88,15 +126,16 @@ describe Overlay::API do
   def create_overlay
     base_url = base_url_for(rand(100))     
 
-    post base_url, sample_payload.to_json
-    last_response.status.must_equal 201
+    post "#{base_url}?api_key=#{@api_key}",
+      sample_payload.to_json, @headers
+    last_response.status.should == 200
 
     overlay_id = JSON.parse(last_response.body).fetch('id')
     [base_url, overlay_id]
   end #base_url
 
   def base_url_for(visualization_id)
-    "/api/v1/visualizations/#{visualization_id}/overlays"
+    "/api/v1/viz/#{visualization_id}/overlays"
   end #base_url
-end # Overlay::API
+end # Api::Json::OverlaysController
 

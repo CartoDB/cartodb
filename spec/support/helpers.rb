@@ -1,3 +1,7 @@
+class Fixnum
+  def success?; self == 200; end
+end
+
 #encoding: UTF-8
 module HelperMethods
 
@@ -47,5 +51,42 @@ module HelperMethods
       b.join
       a.join
     end
+  end
+
+
+  def get_json(path, params = {}, headers ={}, &block)
+    get path, params, headers
+    response_parsed = response.body.blank? ? {} : Yajl::Parser.new.parse(response.body)
+    yield OpenStruct.new(:body => (response_parsed.is_a?(Hash) ? response_parsed.symbolize_keys : response_parsed), :status => response.status, :headers => response.headers) if block_given?
+  end
+
+  def put_json(path, params = {}, headers ={}, &block)
+    put path, params, headers
+    response_parsed = response.body.blank? ? {} : Yajl::Parser.new.parse(response.body)
+    yield OpenStruct.new(:body => (response_parsed.is_a?(Hash) ? response_parsed.symbolize_keys : response_parsed), :status => response.status, :headers => response.headers) if block_given?
+  end
+
+  def post_json(path, params = {}, headers ={}, &block)
+    post path, params, headers
+    response_parsed = response.body.blank? ? {} : Yajl::Parser.new.parse(response.body)
+    yield OpenStruct.new(:body => (response_parsed.is_a?(Hash) ? response_parsed.symbolize_keys : response_parsed), :status => response.status, :headers => response.headers) if block_given?
+  end
+
+  def delete_json(path, headers ={}, &block)
+    delete path, {}, headers
+    response_parsed = response.body.blank? ? {} : Yajl::Parser.new.parse(response.body)
+    yield OpenStruct.new(:body => (response_parsed.is_a?(Hash) ? response_parsed.symbolize_keys : response_parsed), :status => response.status, :headers => response.headers) if block_given?
+  end
+
+  def parse_json(response, &block)
+    response_parsed = response.body.blank? ? {} : JSON.parse(response.body)
+    yield OpenStruct.new(:body => (response_parsed.is_a?(Hash) ? response_parsed.symbolize_keys : response_parsed), :status => response.status)
+  end
+
+  def default_schema
+    [
+      ["cartodb_id", "number"], ["name", "string"], ["description", "string"],
+      ["the_geom", "geometry", "geometry", "geometry"], ["created_at", "date"], ["updated_at", "date"]
+    ]
   end
 end

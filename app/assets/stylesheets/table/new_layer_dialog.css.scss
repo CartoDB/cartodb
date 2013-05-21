@@ -1,0 +1,15 @@
+  
+  /**
+   *  New layer dialog styles
+   */
+
+  @import "compass";
+
+  .new_layer_dialog {
+    .combo_wrapper {
+      display:block;
+      padding:12px;
+      background:#F2F2F2;
+      @include border-radius(6px);
+    }
+  }

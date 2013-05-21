@@ -46,7 +46,7 @@ end
 # Importer
 gem "ruby-ole",                "1.2.11.3"
 gem "rchardet19",              "1.3.5"
-gem "roo",                     "1.9.7"
+gem "roo",                     "1.11.2"
 gem "spreadsheet",             "0.6.5.9"
 gem "google-spreadsheet-ruby", "0.1.8"
 gem "rubyzip",                 "0.9.9"
@@ -54,10 +54,11 @@ gem "builder",                 "3.0.0"
 gem "state_machine",           "1.1.2"
 
 # Service components (/services)
-gem "virtus"
+gem "virtus",                  git: "https://github.com/solnic/virtus.git"
 gem "aequitas"
 gem "uuidtools"
 gem "rubyzip",                  "0.9.9"
+gem "sinatra",                  "1.3.4", require: 'sinatra/base'
 
 # TODO we should be able to remove this using the new
 #      Rails routes DSL
@@ -68,6 +69,7 @@ gem "spin",                    "0.5.3", :require => false, :group => :test
 
 group :development, :test do
   gem "webrick",               "1.3.1"
+  gem "sqlite3",               "1.3.7"
   gem "poltergeist",           ">= 1.0.0"
   gem "minitest",              "2.0.2", :require => 'minitest/unit'
   gem "selenium-webdriver",    ">= 2.5.0"
@@ -94,4 +96,7 @@ group :development, :test do
   gem "rb-fchange", :require => false
   gem "guard"
   gem "guard-minitest"
+
+  # Server
+  gem 'thin'
 end

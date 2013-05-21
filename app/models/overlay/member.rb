@@ -1,8 +1,6 @@
 # encoding: utf-8
-require 'json'
 require 'virtus'
-require_relative '../visualization'
-require_relative '../../../services/data-repository/repository'
+require_relative './collection'
 
 module CartoDB
   module Overlay
@@ -15,7 +13,7 @@ module CartoDB
       attribute :options,           Hash
       attribute :visualization_id,  String
 
-      def initialize(attributes={}, repository=Visualization.repository)
+      def initialize(attributes={}, repository=Overlay.repository)
         self.attributes = attributes
         @repository     = repository
         self.id         ||= @repository.next_id
@@ -27,7 +25,9 @@ module CartoDB
       end #store
 
       def fetch
-        self.attributes = repository.fetch(id)
+        result = repository.fetch(id)
+        raise KeyError if result.nil?
+        self.attributes = result
         self
       end #fetch
 

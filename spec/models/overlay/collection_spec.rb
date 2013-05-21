@@ -5,14 +5,18 @@ require_relative '../../../app/models/overlay/collection'
 include CartoDB
 
 describe Overlay::Collection do
+  before do
+    Overlay.repository = DataRepository.new
+  end
+
   describe 'validations' do
     describe '#visualization_id' do
       it 'must be present' do
         collection = Overlay::Collection.new
-        collection.valid?.must_equal false
+        collection.valid?.should == false
         collection.errors.fetch(:visualization_id)
           .map(&:rule).map(&:class)
-          .must_include Aequitas::Rule::Presence::NotBlank
+          .should include Aequitas::Rule::Presence::NotBlank
       end
     end #visualization_id
   end # validations

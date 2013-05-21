@@ -1,80 +1,138 @@
 # encoding: utf-8
+require 'ostruct'
 require 'virtus'
-require_relative '../visualization'
+require 'json'
+require_relative './collection'
 require_relative '../overlay/collection'
+require_relative './presenter'
+require_relative './vizjson'
+require_relative '../table'
+require_relative '../table/privacy_manager'
+require_relative './stats'
 
 module CartoDB
   module Visualization
     class Member
       include Virtus
 
-      attribute :id,            String
-      attribute :name,          String
-      attribute :map_id,        Integer
-      attribute :type,          String
-      attribute :tags,          Array[String]
-      attribute :description,   String
+      LAYER_SCOPES = {
+        base:     :user_layers,
+        cartodb:  :data_layers
+      }
+
+      attribute :id,                String
+      attribute :name,              String
+      attribute :map_id,            Integer
+      attribute :active_layer_id,   Integer
+      attribute :type,              String
+      attribute :privacy,           String, default: 'public'
+      attribute :tags,              Array[String], default: []
+      attribute :description,       String
 
       def initialize(attributes={}, repository=Visualization.repository)
+        super(attributes)
         @repository     = repository
-        self.attributes = attributes
         self.id         ||= @repository.next_id
       end #initialize
 
       def store
-        data = attributes.to_hash
-        (data.delete(:tags) || []).each { |tag| store_tag(id, tag) }
-        repository.store(id, data)
+        propagate_privacy_to(table) if table
+        repository.store(id, attributes.to_hash)
         self
       end #store
 
+      def store_using_table(privacy)
+        self.privacy = privacy
+        repository.store(id, attributes.to_hash)
+        self
+      end #store_using_table
+
       def fetch
-        self.attributes = repository.fetch(id)
+        data = repository.fetch(id)
+        raise KeyError if data.nil?
+        self.attributes = data
         self
       end #fetch
 
-      def to_json(*args)
-        { 
-          id:           id,
-          name:         name,
-          map_id:       map_id,
-          type:         type,
-          tags:         tags.join(','),
-          description:  description
-        }
-      end #to_json
-
       def delete
+        overlays.destroy
+        table.destroy if type == 'table' && table
         repository.delete(id)
-        self.attributes.keys.each { |k| self.send("#{k}=", nil) }
+        self.attributes.keys.each { |key| self.send("#{key}=", nil) }
         self
       end #delete
 
+      def privacy=(privacy)
+        privacy = privacy.downcase if privacy
+        super(privacy)
+      end #privacy=
+
+      def public?
+        privacy == 'public'
+      end #public?
+
+      def private?
+        !public?
+      end #private?
+
+      def to_hash
+        Presenter.new(self).to_poro
+      end #to_hash
+
+      def to_vizjson
+        options = { full: false, user_name: user.username }
+        VizJSON.new(self, options, configuration).to_poro
+      end #to_hash
+
       def overlays
-        Overlay::Collection.new(visualization_id: id).fetch
+        @overlays ||= Overlay::Collection.new(visualization_id: id).fetch
       end #overlays
+
+      def map
+        (@map ||= ::Map.where(id: map_id).first) || OpenStruct.new
+      end #map
+
+      def user
+        map.user || OpenStruct.new
+      end #user
+
+      def table
+        return nil unless defined?(::Table)
+        ::Table.where(map_id: map_id).first 
+      end #table
+
+      def related_tables
+        layers(:cartodb).flat_map(&:affected_tables).map(&:name)
+      end #related_tables
+
+      def layers(kind)
+        return [] unless map.id
+        return map.send(LAYER_SCOPES.fetch(kind))
+      end #layers
+
+      def authorize?(user)
+        user.maps.map(&:id).include?(map_id)
+      end #authorize?
+
+      def stats
+        CartoDB::Visualization::Stats.new(self).to_poro
+      end #stats
 
       private
 
       attr_reader :repository
 
-      def store_tag(visualization_id, tag)
-        Tag::Member.new(
-          name:             tag, 
-          visualization_id: visualization_id
-        ).store
-      end #store_ta:
+      def propagate_privacy_to(table)
+        Table::PrivacyManager.new(table)
+          .set_from(self)
+          .propagate_to_redis_and_varnish
+      end #propagate_privacy_to
+
+      def configuration
+        return {} unless defined?(Cartodb)
+        Cartodb.config
+      end #configuration
     end # Member
   end # Visualization
-
-  module Tag
-    class Member
-      def initialize(attributes={})
-      end #initilize
-
-      def store(*args)
-      end #store
-    end # Member
-  end # Tag
 end # CartoDB
 

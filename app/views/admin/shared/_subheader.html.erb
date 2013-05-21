@@ -2,13 +2,13 @@
   <section class="stats">
     <div class="inner">
       <ul>
-        <li>
+        <li class="tables">
           <div class="progress">
             <span class="" style="width:2%"></span>
           </div>
           <p class="center"><strong>0 of 0</strong> tables created</p>
         </li>
-        <li>
+        <li class="size">
           <div class="progress">
             <span class="" style="width:2%"></span>
           </div>
@@ -18,9 +18,12 @@
           <div class="stats" data-requests="0"></div>
           <p class="center"><strong>0</strong> map views the last 21 days</p>
         </li>
+        <li class="badge">
+          <i class="<%= current_user.account_type_name %>"></i>
+        </li>
       </ul>
     </div>
-  </section>
+    </section>
   <section class="warning">
     <div class="inner">
       <p class="dark limit">Hey <strong><%= current_user.username %></strong>, looks like you're about to reach your account limit. Start thinking about <%= link_to "upgrading your plan", upgrade_url, :class => "underline" %>.</p>

@@ -1,8 +1,42 @@
-2.0.10
-------
+2.1
+---
 
-2.0.9
------
+After updating to 2.1 you'll need to upgrade your system:
+
+```
+$ bundle install
+$ bundle exec rake db:migrate
+$ bundle exec rake cartodb:db:load_functions
+$ bundle exec rake cartodb:db:migrate_to[2.1]
+```
+
+2.0.13
+------
+* Adds booleans filters feature.
+* Allows adding filters from the column name tooltip.
+* Fixed public table view
+* Fixes some importer errors
+
+
+2.0.12
+------
+* Adds new filter feature.
+* Fixed problem some compressed imports
+* Fixed some problems with xls imports
+
+2.0.11
+------
+* Imports now never get stuck on the UI
+* Imports will populate created_at and updated_at fields as strings
+  as a fallback if dates cannot be parsed.
+* Conversion of a numeric column to date is properly handled, 
+  by nullifying data in the column.
+* Vizjson now works with and without SSL
+* Fixed various errors when changing column types using the UI
+* Invalidates varnish cache after column modifications using the UI
+* Fixed error when trying to import urls with query string parameters
+* Added function CDB_UserTables to get user tables list
+* Added function CDB_ColumnType to get a user table column type
 
 2.0.8 (25/03/13)
 -----

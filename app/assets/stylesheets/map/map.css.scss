@@ -30,20 +30,6 @@ div.map {
     @include background(linear-gradient(top,#FDFDFD,#F2F2F2));
   }
 
-  div.share {
-    position:absolute;
-    top:0;
-    right:57px;
-    @include inline-block();
-    padding:8px 20px 8px 30px;
-    @include transform-style("linear");
-    @include transition-property("right");
-    @include transition-duration(300ms);
-    z-index:50;
-
-    a {float:left;}
-  }
-
   .options {
     @include inline-block();
     margin: 17px 0 0 45px;
@@ -125,7 +111,6 @@ div.map {
 
   div.dropdown.basemap {
 
-    height: 247px;
     width: 648px;
     border: 1px solid #999999;
 

@@ -6,10 +6,11 @@ namespace :cartodb do
     ########################
     desc "Install/upgrade CARTODB SQL functions"
     task :load_functions => :environment do
+      functions_list = ENV['FUNCTIONS'].blank? ? [] : ENV['FUNCTIONS'].split(',')
       count = User.count
       User.all.each_with_index do |user, i|
         begin
-          user.load_cartodb_functions
+          user.load_cartodb_functions(functions_list)
           user.in_database(:as => :superuser).run("DROP FUNCTION IF EXISTS check_quota() CASCADE;")
           user.tables.all.each do |table|
             begin
@@ -306,6 +307,15 @@ namespace :cartodb do
           end
         end
       end
+    end
+
+    desc "Runs the specified CartoDB migration script"
+    task :migrate_to, [:version] => :environment do |t, args|
+      usage = "usage: rake cartodb:db:migrate_to[version]"
+      raise usage if args[:version].blank?
+      require Rails.root.join("lib/cartodb/generic_migrator.rb")
+
+      CartoDB::GenericMigrator.new(args[:version]).migrate!
     end
   end
 end

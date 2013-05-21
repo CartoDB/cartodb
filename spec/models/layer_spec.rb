@@ -165,4 +165,28 @@ describe Layer do
     end
   end
 
+  describe '#copy' do
+    it 'returns a copy of the layer' do
+      layer       = Layer.new(kind: 'carto', options: { style: 'bogus' }).save
+      layer_copy  = layer.copy
+
+      layer_copy.kind.should    == layer.kind
+      layer_copy.options.should == layer.options
+      layer_copy.id.should be_nil
+    end
+  end
+
+  describe '#base_layer?' do
+    it 'returns true if its kind is different from carto' do
+      layer = Layer.new(kind: 'bogus')
+      layer.base_layer?.should == true
+    end 
+  end #base_layer?
+
+  describe '#data_layer?' do
+    it 'returns true if its of a carto kind' do
+      layer = Layer.new(kind: 'carto')
+      layer.data_layer?.should == true
+    end
+  end #data_layer?
 end

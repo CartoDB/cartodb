@@ -1,6 +1,9 @@
+#encoding: UTF-8
+
 require 'spec_helper'
 
 describe Asset do
+
   before(:all) do
     @user = create_user(:username => 'test', :email => "client@example.com", :password => "clientex")
   end

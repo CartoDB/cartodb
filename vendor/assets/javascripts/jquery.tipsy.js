@@ -148,6 +148,7 @@
           }
         },
         
+        remove: function() { this.enabled = false; this.$tip && this.$tip.remove(); },
         enable: function() { this.enabled = true; },
         disable: function() { this.enabled = false; },
         toggleEnabled: function() { this.enabled = !this.enabled; }

@@ -9,19 +9,24 @@
   @import "../common/sprites";
   @import "../common/vars";
 
+  $corner_radius: 6px;
+
   .table_panel {
     position:fixed;
     right:0;
-    top:140px;
+    top:64px;
+    bottom:0px;
     width:600px;
-    bottom:-1px;
+    padding-top:14px;
     background:white;
-    z-index:20;
     letter-spacing:-4px;
     border:1px solid rgba(black,0.4);
+    border-bottom:0;
     border-right:0;
+    background:#EDEDED;
     @include box-shadow(rgba(black,0.15) 0 0 2px 2px);
-    @include border-top-left-radius(6px);
+    @include border-top-left-radius($corner_radius);
+    z-index:20;
 
     &:before {
       content:'';
@@ -30,24 +35,137 @@
       top:-1px;
       right:-1px;
       left:-1px;
+      width:100%;
+      height:83px;
       border-top:1px solid rgba(black,0.5);
       border-left:1px solid rgba(black,0.5);
       z-index:0;
-      @include border-top-left-radius(4px);
+      @include border-top-left-radius($corner_radius);
+    }
+    
+    // Hello layer panel, let's play a little bit
+    /* 
+      .Layer-panel
+        - .layer_info
+        - .sidebar
+        - .views
+
+    */
+    .layer_panel {
+      position:relative;
+      width:100%;
+      height:100%;
+      margin-top:-15px;
+      background:#EDEDED;
+      border-top:1px solid #999999;
+      @include border-top-left-radius($corner_radius);
+      z-index:1;
+
+      &:first-child {margin-top:0;}
     }
 
+    .add_layer {
+      position:relative;
+      height:60px;
+      margin-top:-15px;
+      line-height:60px;
+
+      div.left {margin-left:24px;}
+      div.right {margin-right:20px;}
+    }
+
+    // Layer info, as name, order, ... etc
+    .layer_info {
+      position:absolute;
+      top:0; right:0; bottom:auto; left:0;
+      line-height:67px;
+      @include border-top-left-radius($corner_radius);
+      border-bottom:1px solid rgba(#999999,0.25);
+      z-index:0;
+      
+      div.left {margin-left:24px;}
+      div.right {margin-right:20px;}
+    }
+
+    // Layer info
+    a.info {
+      * {@include inline-block(); vertical-align:middle; letter-spacing:0px;}
+
+      .order {
+        width:16px;
+        padding:1px 0;
+        line-height:16px;
+        text-align:center;
+        font:bold 11px $text-fonts;
+        color:#ECECEC;
+        background:#A9A9A9;
+        @include border-radius(2px);
+      }
+
+      .add {
+        width:16px;
+        height:16px;
+        text-align:center;
+        font:bold 11px $text-fonts;
+        color:#ECECEC;
+        background:#A9A9A9;
+        @include text-indent();
+        @include border-radius(2px);
+        @include background(sprite($icons-sprites, add_layer, $offset-x:0, $offset-y:0) no-repeat);
+      }
+
+      .name {
+        margin-left:27px;
+        font:bold 17px $text-fonts;
+        color:#A9A9A9;
+        line-height:20px;
+        &:hover { cursor:move; }
+      }
+
+      .action {
+        margin-left:27px;
+        font:500 17px $text-fonts;
+        line-height:20px; 
+      }
+
+      &:hover {
+        text-decoration:none;
+        .name {color:#666;}
+        .action {color: #3A77A6;}
+        .order {background:#666;}
+        .add { @include background(sprite($icons-sprites, add_layer, $offset-x:0, $offset-y:-16px) no-repeat); }
+      }
+    }
+
+    // layer actions
+    .visibility {
+
+    }
+
+    .remove {
+      @include inline-block();
+      vertical-align:middle;
+      letter-spacing:0px;
+      width:13px;
+      height:13px;
+      margin-left:5px;
+      @include background(sprite($icons-sprites, close_grey, $offset-x:0, $offset-y:0) no-repeat);
+      &:hover {@include background(sprite($icons-sprites, close_grey, $offset-x:0, $offset-y:-13px) no-repeat);}
+      &:active {@include background(sprite($icons-sprites, close_grey, $offset-x:0, $offset-y:-26px) no-repeat);}
+    }
+
+    // Layer actions sidebar
     .sidebar {
       position:absolute;
-      top:0;
+      top:68px;
       bottom:0;
       left:0;
       @include inline-block();
-      @include size(65px, 100%);
-      background:#EDEDED;
+      @include size(65px, auto);
       letter-spacing:0;
       @include border-left-radius(4px);
       @include single-box-shadow(rgba(black,0.03), -4px, 0, 5px, 0, true);
-      z-index:0;
+      z-index:6;
 
       nav {
         position:absolute;
@@ -56,7 +174,6 @@
 
         &.tools {
           top:0;
-          a:first-child {@include border-top-left-radius(4px);}
           a.has_errors {
             position:relative;
 
@@ -80,12 +197,39 @@
             }
           }
 
+          a.applied {
+            span.run {
+              position:absolute;
+              top:32px;
+              left:39px;
+              width:8px;
+              height:8px;
+              background:#36D900;
+              @include background(linear-gradient(#36D900,#238C00));
+              @include border-radius(10px);
+              @include box-shadow(rgba(#E5E5E5,1) 0 0 0 1px);
+              color:white;
+              font-size:8px;
+              line-height:10px;
+              
+              &:before {
+                content:'';
+                position:absolute;
+                top:2px;
+                left:3px;
+                width:0;
+                height:0;
+                border-bottom:2px solid transparent;
+                border-top:2px solid transparent;
+                border-left:2px solid white;
+              }
+            }
+          }
         }
 
         &.edit {
           bottom:0;
           a.merge_tables {border-top:1px solid rgba(#999999,0.25);}
-          a:last-child {border:none;}
         }
 
         a {
@@ -99,18 +243,13 @@
           @include opacity(0.75);
 
           &.sql_mod        { @include icons-sprite(table_icons, $offset-x:20px, $offset-y:-3px);}
-          &.cartocss_mod   { @include icons-sprite(table_icons, $offset-x:21px, $offset-y:-549px);}
           &.filters_mod    { @include icons-sprite(table_icons, $offset-x:21px, $offset-y:-62px);}
+          &.cartocss_mod   { @include icons-sprite(table_icons, $offset-x:21px, $offset-y:-549px);}
           &.infowindow_mod { @include icons-sprite(table_icons, $offset-x:20px, $offset-y:-430px);}
           &.wizards_mod    {
             @include icons-sprite(table_icons, $offset-x:21px, $offset-y:-370px);
-            &.selected:before {
-              border-right-color: #575757;
-            }
-            &.selected:after {
-              border-right-color: #575757;
-              right: 0;
-            }
+            &.selected:before, &.selected:after { border-right-color: #575757; }
+            &.selected:after {right:-1px;}
           }
 
           // tool buttons
@@ -139,7 +278,7 @@
             &:before {
               position:absolute;
               content:'';
-              right:0;
+              right:-1px;
               top:50%;
               margin:-7px 0 0 0;
               width:0;
@@ -147,36 +286,43 @@
               border-top:7px solid transparent;
               border-bottom:7px solid transparent;
               border-right:7px solid white;
-              z-index:2;
+              z-index:1;
             }
             &:after {
               position:absolute;
               content:'';
-              right:1px;
+              right:0;
               top:50%;
               margin:-7px 0 0 0;
               width:0;
               height:0;
               border-top:7px solid transparent;
               border-bottom:7px solid transparent;
-              border-right:7px solid #E5E5E5;
-              z-index:1;
+              border-right:7px solid #D0D0D0;
+              z-index:0;
             }
           }
         }
       }
-    }
+    } // end sidebar
 
+
+    // Layer actions view!
     .views {
       position:absolute;
-      top:0;
+      top:60px;
       right:0;
       left:65px;
       bottom:0;
       @include inline-block();
-      height:100%;
+      background:white;
+      @include border-top-left-radius($corner_radius);
+      border:1px solid #D0D0D0;
+      border-right:0;
+      border-bottom:0;
+      @include box-shadow(rgba(black, 0.07) 2px -1px 8px 0);
       letter-spacing:0;
-      z-index:1;
+      z-index:5;
 
       h3 {
         padding: 22px 0 21px 30px;
@@ -217,19 +363,10 @@
         div.no_content {margin:20px 0 0 0; border:1px solid #E6E6E6; @include border-radius(4px); padding:20px; color:#666666; text-align:center; line-height:18px;}
       }
 
-      .sql_panel, .wizards_panel, .csseditor_panel {
-        width:535px;
-        h3 {padding-left:52px;}
-      }
-
-      .filters_panel {
-        width:100%;
-        h3 { padding-left:30px; }
-      }
-
       // SQL PANEL & CARTO PANEL
       .sql_panel, .wizards_panel, .csseditor_panel, .filters_panel {
         @include inline-block();
+        width:535px;
         height:100%;
 
         // Info icon
@@ -255,6 +392,8 @@
             background:#898989;
           }
         }
+
+        h3 {padding-left:52px;}
 
         div.actions {
           position:absolute;
@@ -714,8 +853,13 @@
         }
       }
 
+
+      // FILTERS MODULE
       div.filters_panel {
+        width:auto;
         @include box-sizing(border-box);
+
+        h3 { padding-left:30px; }
 
         & > .white-gradient-shadow {
 
@@ -855,8 +999,7 @@
           position:relative;
 
           width: 385px;
-          margin: 0 0 0 0;
-          width: 385px;
+          margin: 0;
 
           .filter { // generic styles for all the filters
             position:relative;
@@ -874,14 +1017,18 @@
               margin: 0;
               width: 340px;
 
+              text-align:left;
+
               clear:both;
               overflow:hidden;
 
               .hidden { display: none; }
 
-              .legend { font-size:13px; color: #666666; }
-              .empty  { font-size:13px; color: #FF9999; }
-              .range  { font-size:13px; color: #4DC964; }
+              .legend    { float:left; margin: 0 5px 0 0; font-size:13px; color: #666666; text-align: left; }
+              .empty     { float: left; display:none; font-size:13px; color: #FF9999; vertical-align: top; }
+              .only      { float: left; display:none; font-size:13px; color: #FFAB37; vertical-align: top; }
+              .loading   { float: left; display:none; font-size:13px; color: #FFAB37; vertical-align: top; }
+              .range     { float:left;  display:none; font-size:13px; color: #4DC964; }
 
               .title  { float: left; margin: 0 0 0 30px; }
             }
@@ -894,7 +1041,7 @@
               @include opacity(0);
 
               @include size(12px);
-              @include position(20px, 30px, false, false);
+              @include position(21px, 30px, false, false);
               @include simple-transition(opacity, 150ms);
 
               background: image-url('icons/remove_filter.png') no-repeat;
@@ -908,11 +1055,16 @@
           &:hover .scroll .jspVerticalBar { @include opacity(1); }
 
           .header {
+
             height: 35px;
             padding-left: 0;
             padding-right: 0;
 
-            &.empty { height: auto; padding-bottom: 0; }
+            &.loading, &.empty, &.only { height: auto; }
+
+            .title {
+              .loading, .empty, .only   { display: block; }
+            }
 
           }
 
@@ -924,15 +1076,13 @@
 
             &.hidden { display: none; }
 
-            @include inline-block();
-            vertical-align: top;
+            float:left;
 
             li {
-              @include inline-block();
-              vertical-align: top;
               color: #4DC964;
 
               a {
+                vertical-align: top;
                 color: #4DC964;
                 font-size:13px;
 
@@ -944,29 +1094,82 @@
 
           .fields {
             position:relative;
-            margin: 0 0 29px 0;
-            &.empty { margin: 0 0 20px 0; }
+            margin: 0 0 20px 0;
+
+            &.only, &.empty { margin: 0 0 15px 0; }
+            &.only .items, &.empty .items { display:none; }
+
+            &.boolean { margin-bottom: 10px; }
+
+            &.list {
+              margin: 0 0 20px 0;
+              .options { margin: -6px 0 0 30px; }
+            }
+
+            &.list.has_scrollers {
+              margin: 0 0 16px 0;
+              .options { margin: 2px 0 0 30px; }
+            }
+
           }
 
-          .textarea {
+          .input_field {
             @include box-sizing(border-box);
             @include position(0, false, false, 0);
-            @include size(100%, 80px);
+            @include size(323px, 40px);
             display:none;
-            padding: 0 30px;
+            padding: 0;
+            margin: 0 0 0 30px;
 
-            textarea {
+            @include border-radius(4px);
+            border: 1px solid #B7B7B7;
+
+            .apply {
+              @include position(6px, 7px, false, false);
+              padding: 6px 7px 6px 6px;
+
+              background: #E7E7E7;
+              @include background(linear-gradient(top, rgba(#F9F9F9, 0), rgba(#E7E7E7, .7)));
+              color: #555;
+              font:bold 11px $text-fonts2;
+              line-height:normal;
+              text-shadow:0 1px 0 white;
+              background:#F9F9F9; // IE
+              @include background(linear-gradient(#F9F9F9,#EBEBEB));
+              @include border-radius(5px);
+              border:1px solid #B0B0B0;
+              letter-spacing:-1px;
+              @include transform-style("linear");
+              @include transition-property("box-shadow,border");
+              @include transition-duration(250ms);
+
+              // Hover
+              &:hover {
+                background:#DEDEDE; // IE
+                @include background(linear-gradient(#F9F9F9,#E1E1E1));
+                text-decoration:none;
+                cursor:pointer;
+              }
+              // Active
+              &:active {
+                border-color:#ACACAC;
+                background:#D3D3D3; // IE
+                @include background(linear-gradient(#F9F9F9,#E1E1E1));
+                @include box-shadow(rgba(255,255,255,0) 0 0 1px 0,rgba(130,126,111,0.6) 0 1px 3px 0 inset,#fff 0 1px 0 0);
+              }
+
+            }
+
+            input {
               @include box-sizing(border-box);
-              @include size(100%, 40px);
+              @include size(275px, 39px);
               max-width:100%;
-              max-height:40px;
+              max-height:39px;
               padding: 11px;
-
+              border:none;
               font-family: "Helvetica Neue", "Helvetica", Arial;
-              @include border-radius(4px);
               font-size:13px;
-              background:#fff;
-              border: 1px solid #B7B7B7;
+              background:none;
               outline:none;
               resize: none;
             }
@@ -986,7 +1189,7 @@
 
             }
 
-            .scroll { width: 380px; max-height: 167px; overflow: hidden; outline:none; }
+            .scroll { width: 380px; max-height: 156px; overflow: hidden; outline:none; }
 
           } // data
 
@@ -994,8 +1197,8 @@
           .options {
             position:relative;
             width: 325px;
-            margin: 0 0 0 30px;
-            padding: 10px 0 0 0;
+            margin: 2px 0 0 30px;
+            padding: 0;
             clear:both;
             overflow:hidden;
             z-index: 100;
@@ -1064,17 +1267,32 @@
           .items {
             text-align:left;
             margin: 0 0 0 30px;
+            padding: 0;
             width: 325px;
 
             li {
+              clear:both;
+              overflow:hidden;
+
               position:relative;
               padding: 10px 0 10px 15px;
-              margin: 0 0 5px 0;
+              margin: 0;
               color: #666666;
               font-size:13px;
               border-top: 1px solid rgba(#999, .25);
 
               cursor: pointer;
+
+              p {
+
+                float: left;
+                width: 275px;
+                min-height: 15px;
+
+                &.empty { font-style:italic; color: #ccc; }
+              }
+
+              &:last-child { margin-bottom: 0; }
 
               &:before {
                 @include position(12px, false, false, 0);
@@ -1105,7 +1323,8 @@
               &.selected .value { background: #82D992; color:#fff; }
 
               .value {
-                float:right;
+                position:absolute;
+                top: 10px; right: 0;
                 font-size:10px;
                 padding: 2px 4px;
                 border:1px solid #82D992;
@@ -1126,6 +1345,8 @@
 
           .empty  { display:none; }
 
+          .loading   { display:block; }
+
           .hist { margin: auto; position: relative; @include inline-block(); bottom: -3px; }
           .background.bar { fill: #E5E5E5; }
           .foreground.bar { fill: #4DC964; fill-opacity: .3; }
@@ -1136,6 +1357,32 @@
         }
 
       }
+
+    } // end view!
+
+
+    // ANIMATIONS FOR LAYER_PANEL
+
+    // .layer_panel:hover {
+    //   margin-top:-10px;
+    // }
+
+    // Active layer
+    .layer_panel.active {
+
+      @include box-shadow(rgba(black,0.1) 0 10px 0 0);
+
+      .layer_info a.info {
+        .order {background:#666666;}
+        .name {color:#666666;}
+        &:hover {
+          cursor:default;
+        }
+      }
+    }
+
+    .layer_panel.placeholder {
+      height:66px!important;
+      background:red!important;
     }
   }
-

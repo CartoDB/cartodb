@@ -1,6 +1,7 @@
 # coding: UTF-8
 # Proxies management of a table in the users database
 require_relative './table/column_typecaster'
+require_relative './table/privacy_manager'
 
 class Table < Sequel::Model(:user_tables)
 
@@ -11,10 +12,13 @@ class Table < Sequel::Model(:user_tables)
   THE_GEOM_WEBMERCATOR = :the_geom_webmercator
   THE_GEOM = :the_geom
   RESERVED_COLUMN_NAMES = %W{ oid tableoid xmin cmin xmax cmax ctid ogc_fid }
-  PUBLIC_ATTRIBUTES = { :id => :id, :name => :name, :privacy => :privacy_text, :tags => :tags_names,
-                        :schema => :schema, :updated_at => :updated_at, :rows_counted => :rows_estimated,
-                        :table_size => :table_size, :map_id => :map_id, :description => :description,
-                        :geometry_types => :geometry_types }
+  PUBLIC_ATTRIBUTES = { 
+    :id => :id, :name => :name, :privacy => :privacy_text, :schema => :schema,
+    :updated_at => :updated_at, :rows_counted => :rows_estimated,
+    :table_size => :table_size, :map_id => :map_id, :description => :description,
+    :geometry_types => :geometry_types, :visualization_ids => :visualization_ids,
+    :table_visualization => :table_visualization
+  }
 
   DEFAULT_THE_GEOM_TYPE = "geometry"
 
@@ -23,7 +27,12 @@ class Table < Sequel::Model(:user_tables)
   plugin :dirty
 
   def public_values(options = {})
-    selected_attrs = options[:except].present? ? PUBLIC_ATTRIBUTES.select { |k, v| !options[:except].include?(k.to_sym) } : PUBLIC_ATTRIBUTES
+    selected_attrs = if options[:except].present?
+      PUBLIC_ATTRIBUTES.select { |k, v| !options[:except].include?(k.to_sym) }
+    else
+      PUBLIC_ATTRIBUTES
+    end
+
     Hash[selected_attrs.map{ |k, v| [k, (self.send(v) rescue self[v].to_s)] }]
   end
 
@@ -69,11 +78,12 @@ class Table < Sequel::Model(:user_tables)
     # tables must have a user
     errors.add(:user_id, "can't be blank") if user_id.blank?
 
+    errors.add(
+      :name, "is a reserved keyword, please choose a different one"
+    ) if self.name == 'layergroup'
+
     # privacy setting must be a sane value
     errors.add(:privacy, 'has an invalid value') if privacy != PRIVATE && privacy != PUBLIC
-
-
-    ## QUOTA CHECKS
 
     # Branch if owner dows not have private table privileges
     if !self.owner.try(:private_tables_enabled)
@@ -184,9 +194,9 @@ class Table < Sequel::Model(:user_tables)
       # If we already have a cartodb_id column let's rename it to an auxiliary column
       aux_cartodb_id_column = nil
       if schema.present? && schema.flatten.include?(:cartodb_id)
+         @data_import.log_update('Renaming cartodb_id from import file')
          aux_cartodb_id_column = "cartodb_id_aux_#{Time.now.to_i}"
          user_database.run(%Q{ALTER TABLE "#{self.name}" RENAME COLUMN cartodb_id TO #{aux_cartodb_id_column}})
-         @data_import.log_update('renaming cartodb_id from import file')
          self.schema
       end
 
@@ -198,16 +208,16 @@ class Table < Sequel::Model(:user_tables)
         if aux_cartodb_id_column.nil?
           aux_cartodb_id_column = "ogc_fid"
         else
+          @data_import.log_update('Removing ogc_fid from import file')
           user_database.run(%Q{ALTER TABLE "#{self.name}" DROP COLUMN ogc_fid})
-          @data_import.log_update('removing ogc_fid from import file')
         end
       end
       if schema.present? && schema.flatten.include?(:gid)
         if aux_cartodb_id_column.nil?
           aux_cartodb_id_column = "gid"
         else
+          @data_import.log_update('Removing gid from import file')
           user_database.run(%Q{ALTER TABLE "#{self.name}" DROP COLUMN gid})
-          @data_import.log_update('removing gid from import file')
         end
       end
       self.schema(:reload => true, :cartodb_types => false).each do |column|
@@ -222,6 +232,7 @@ class Table < Sequel::Model(:user_tables)
       # If there's an auxiliary column, copy and restart the sequence to the max(cartodb_id)+1
       # Do this before adding constraints cause otherwise we can have duplicate key errors
       if aux_cartodb_id_column.present?
+        @data_import.log_update('Cleaning supplied cartodb_id')
         user_database.run(%Q{UPDATE "#{self.name}" SET cartodb_id = CAST(#{aux_cartodb_id_column} AS INTEGER)})
         user_database.run(%Q{ALTER TABLE "#{self.name}" DROP COLUMN #{aux_cartodb_id_column}})
         cartodb_id_sequence_name = user_database["SELECT pg_get_serial_sequence('#{self.name}', 'cartodb_id')"].first[:pg_get_serial_sequence]
@@ -232,7 +243,6 @@ class Table < Sequel::Model(:user_tables)
         if max_cartodb_id
           user_database.run("ALTER SEQUENCE #{cartodb_id_sequence_name} RESTART WITH #{max_cartodb_id+1}")
         end
-        @data_import.log_update('cleaning supplied cartodb_id')
       end
 
       # Try to use the selected cartodb_id column as primary key,
@@ -249,8 +259,8 @@ class Table < Sequel::Model(:user_tables)
         user_database.run(%Q{ALTER TABLE "#{self.name}" ADD PRIMARY KEY (cartodb_id)})
       end
 
-      normalize_timestamp_field!(:created_at, user_database)
-      normalize_timestamp_field!(:updated_at, user_database)
+      normalize_timestamp(user_database, :created_at)
+      normalize_timestamp(user_database, :updated_at)
     end
   end
 
@@ -302,18 +312,19 @@ class Table < Sequel::Model(:user_tables)
     super
     manage_tags
     update_name_changes
-    self.manage_privacy
     self.map.save
 
-    # Privacy changes should invalidate varnish cache
-    if self.previous_changes.keys.include?(:privacy)
-      self.invalidate_varnish_cache
-    end
+    manager = CartoDB::Table::PrivacyManager.new(self)
+    manager.set_private if privacy == PRIVATE
+    manager.set_public  if privacy == PUBLIC
+    manager.propagate_to(table_visualization)
+    manager.propagate_to_redis_and_varnish if privacy_changed?
   end
 
   def after_create
     super
     self.create_default_map_and_layers
+    self.create_default_visualization
     self.send_tile_style_request
 
     owner.in_database(:as => :superuser).run(%Q{GRANT SELECT ON "#{self.name}" TO #{CartoDB::TILE_DB_USER};})
@@ -328,31 +339,22 @@ class Table < Sequel::Model(:user_tables)
       @data_import = DataImport.find(id: data_import_id)
       @data_import.table_id   = id
       @data_import.table_name = name
-      @data_import.finished
+      @data_import.save
     end
     add_table_to_stats
   rescue => e
     self.handle_creation_error(e)
   end
 
+  def optimize
+    owner.in_database.run("VACUUM FULL #{name}")
+  end
+
   def after_commit
     super
     if self.new_table
       begin
-        # VACUUM can't be run inside a transaction, so we have to perform
-        # this operation after the transaction has been commited
-        owner.in_database.run("VACUUM FULL \"#{self.name}\"") rescue ""
         update_table_pg_stats
-
-        # Check if owner is over quota, raise an exception if so
-        if owner.over_disk_quota?
-          unless @data_import.nil?
-            @data_import.reload
-            @data_import.set_error_code(8001)
-            @data_import.log_error("#{owner.disk_quota_overspend / 1024}KB more space is required" )
-          end
-          raise CartoDB::QuotaExceeded, "#{owner.disk_quota_overspend / 1024}KB more space is required"
-        end
 
         # Set default triggers
         add_python
@@ -370,11 +372,10 @@ class Table < Sequel::Model(:user_tables)
 
     # Remove the table, except if it already exists
     unless self.name.blank? || e.message =~ /relation .* already exists/
+      @data_import.log_update("Dropping table #{self.name}") if @data_import
       $tables_metadata.del key
 
-      self.remove_table_from_user_database
-      
-      @data_import.log_update("Dropping table #{self.name}") if @data_import
+      self.remove_table_from_user_database      
     end
 
     @data_import.log_error("Import Error: #{e.try(:message)}") if @data_import
@@ -403,6 +404,16 @@ class Table < Sequel::Model(:user_tables)
     m.add_layer(data_layer)
   end
 
+  def create_default_visualization
+    CartoDB::Visualization::Member.new(
+      name:         self.name, 
+      map_id:       self.map_id, 
+      type:         'table', 
+      description:  self.description,
+      tags:         (tags.split(',') if tags)
+    ).store
+  end
+
   ##
   # Post the style to the tiler
   #
@@ -418,6 +429,10 @@ class Table < Sequel::Model(:user_tables)
     end
   end
 
+  def before_destroy
+    memoize_table_visualization_to_be_available_in_after_destroy
+  end
+
   def after_destroy
     super
     $tables_metadata.del key
@@ -426,6 +441,7 @@ class Table < Sequel::Model(:user_tables)
     remove_table_from_stats
     invalidate_varnish_cache
     delete_tile_style
+    table_visualization.delete if table_visualization
   end
 
   def remove_table_from_user_database
@@ -443,61 +459,72 @@ class Table < Sequel::Model(:user_tables)
   ##
   # This method removes all the vanish cached objects for the table,
   # tiles included. Use with care O:-)
-  #
+
   def invalidate_varnish_cache
     CartoDB::Varnish.new.purge("obj.http.X-Cache-Channel ~ #{varnish_key}.*")
   end
-
+  
   def varnish_key
     "#{self.owner.database_name}:#{self.name}"
   end
 
   # adds the column if not exists or cast it to timestamp field
-  def normalize_timestamp_field!(field, user_database)
-    schema = self.schema(:reload => true)
-    if schema.nil? || !schema.flatten.include?(field)
-        user_database.run(%Q{ALTER TABLE "#{self.name}" ADD COLUMN #{field.to_s} timestamp DEFAULT NOW()})
+  def normalize_timestamp(database, column)
+    schema = self.schema(reload: true)
+
+    if schema.nil? || !schema.flatten.include?(column)
+      database.run(%Q{
+        ALTER TABLE "#{name}"
+        ADD COLUMN #{column} timestamp
+        DEFAULT NOW()
+      })
     end
 
     if schema.present?
-      field_type = Hash[schema][field]
+      column_type = Hash[schema][column]
       # if column already exists, cast to timestamp value and set default
-      if field_type == 'string' && schema.flatten.include?(field)
-          #TODO: check type
+      if column_type == 'string' && schema.flatten.include?(column)
+        success = ms_to_timestamp(database, name, column)
+        success = string_to_timestamp(database, name, column) unless success
 
-          #if date is in milliseconds
-          begin
-            user_database.run(%Q{
-              ALTER TABLE "#{self.name}"
-              ALTER COLUMN #{field}
-              TYPE timestamp without time zone
-              USING to_timestamp(#{field}::float / 1000)
-            })
-
-          #if date is a string
-          rescue => exception
-            begin
-              user_database.run(%Q{
-                ALTER TABLE "#{self.name}"
-                ALTER COLUMN #{field.to_s}
-                TYPE timestamp without time zone
-                USING to_timestamp(#{field}, 'YYYY-MM-DD HH24:MI:SS.MS.US')
-              })
-            rescue
-              user_database.run(%Q{
-                ALTER TABLE "#{self.name}"
-                ALTER COLUMN #{field.to_s}
-                TYPE timestamp without time zone
-                USING to_timestamp(#{field}, 'YYYY-MM-DD HH24:MI:SS')
-              })
-            end
-          end
-
-          user_database.run(%Q{ALTER TABLE "#{self.name}" ALTER COLUMN #{field.to_s} SET DEFAULT now();})
+        database.run(%Q{
+          ALTER TABLE "#{name}"
+          ALTER COLUMN #{column}
+          SET DEFAULT now()
+        })
+      elsif column_type == 'date'
+        database.run(%Q{
+          ALTER TABLE "#{name}"
+          ALTER COLUMN #{column}
+          SET DEFAULT now()
+        })
       end
     end
-  end
+  end #normalize_timestamp_field
 
+  def ms_to_timestamp(database, table, column)
+    database.run(%Q{
+      ALTER TABLE "#{table}"
+      ALTER COLUMN #{column}
+      TYPE timestamp without time zone
+      USING to_timestamp(#{column}::float / 1000)
+    })
+    true
+  rescue
+    false
+  end #normalize_ms_to_timestamp
+
+  def string_to_timestamp(database, table, column)
+    database.run(%Q{
+      ALTER TABLE "#{table}"
+      ALTER COLUMN #{column}
+      TYPE timestamp without time zone
+      USING to_timestamp(#{column}, 'YYYY-MM-DD HH24:MI:SS.MS.US')
+    })
+    true
+  rescue
+    false
+  end #string_to_timestamp
 
   def make_geom_valid
     begin
@@ -521,6 +548,7 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def tags=(value)
+    return unless value
     self[:tags] = value.split(',').map{ |t| t.strip }.compact.delete_if{ |t| t.blank? }.uniq.join(',')
   end
 
@@ -537,16 +565,6 @@ class Table < Sequel::Model(:user_tables)
     save
   end
 
-  def manage_privacy
-    if privacy == PRIVATE
-      owner.in_database(:as => :superuser).run(%Q{REVOKE SELECT ON "#{self.name}" FROM #{CartoDB::PUBLIC_DB_USER};})
-      $tables_metadata.hset key, "privacy", PRIVATE
-    elsif privacy == PUBLIC
-      $tables_metadata.hset key, "privacy", PUBLIC
-      owner.in_database(:as => :superuser).run(%Q{GRANT SELECT ON "#{self.name}" TO #{CartoDB::PUBLIC_DB_USER};})
-    end
-  end
-
   # enforce standard format for this field
   def privacy=(value)
     if value == "PRIVATE" || value == PRIVATE || value == PRIVATE.to_s
@@ -555,6 +573,30 @@ class Table < Sequel::Model(:user_tables)
       self[:privacy] = PUBLIC
     end
   end
+
+  def privacy_changed?
+    previous_changes.keys.include?(:privacy)
+  end #privacy_changed?
+
+  # TO BE DELETED
+  #def manage_privacy
+    #if privacy == PRIVATE
+    #  owner.in_database(:as => :superuser).run(%Q{REVOKE SELECT ON "#{self.name}" FROM #{CartoDB::PUBLIC_DB_USER};})
+    #  $tables_metadata.hset key, "privacy", PRIVATE
+    #elsif privacy == PUBLIC
+    #  $tables_metadata.hset key, "privacy", PUBLIC
+    #  owner.in_database(:as => :superuser).run(%Q{GRANT SELECT ON "#{self.name}" TO #{CartoDB::PUBLIC_DB_USER};})
+    #end
+  #end
+
+  # TO BE DELETED
+  # sets table privacy without callbacks
+  #def set_privacy!(value)
+    #self.this.update(privacy: value)
+    #self.reload
+    #self.manage_privacy
+    #self.invalidate_varnish_cache
+  #end
 
   def key
     Table.key(database_name, name)
@@ -586,13 +628,13 @@ class Table < Sequel::Model(:user_tables)
     sequel.count
   end
 
-  # returns table size in bytes
+  # Returns table size in bytes
   def table_size
-    @table_size ||= owner.in_database["SELECT pg_total_relation_size('#{self.name}') as size"].first[:size] / 2
+    @table_size ||= Table.table_size(name, connection: owner.in_database)
   end
 
-  def total_table_size
-    @total_table_size ||= owner.in_database["SELECT pg_total_relation_size('#{self.name}') as size"].first[:size] / 2
+  def self.table_size(name, options)
+    options[:connection]["SELECT pg_total_relation_size(?) as size", name].first[:size] / 2
   end
 
   # TODO: make predictable. Alphabetical would be better
@@ -648,7 +690,7 @@ class Table < Sequel::Model(:user_tables)
           attributes.invert[invalid_value] # which is the column of the name that raises error
         else
           if m = message.match(/PGError: ERROR:  value too long for type (.+)$/)
-            if candidate = schema(:cartodb_types => false).select{ |c| c[1].to_s == m[1].to_s }.first
+            if candidate = schema(cartodb_types: false).select{ |c| c[1].to_s == m[1].to_s }.first
               candidate[0]
             end
           end
@@ -657,7 +699,7 @@ class Table < Sequel::Model(:user_tables)
         if invalid_column.nil? || new_column_type != get_new_column_type(invalid_column)
           raise e
         else
-          user_database.set_column_type self.name, invalid_column.to_sym, new_column_type
+          user_database.set_column_type(self.name, invalid_column.to_sym, new_column_type)
           retry
         end
       end
@@ -716,6 +758,7 @@ class Table < Sequel::Model(:user_tables)
     type = options[:type].convert_to_db_type
     cartodb_type = options[:type].convert_to_cartodb_type
     owner.in_database.add_column name, options[:name].to_s.sanitize, type
+    self.invalidate_varnish_cache
     return {:name => options[:name].to_s.sanitize, :type => type, :cartodb_type => cartodb_type}
   rescue => e
     if e.message =~ /^PGError/
@@ -728,29 +771,27 @@ class Table < Sequel::Model(:user_tables)
   def drop_column!(options)
     raise if CARTODB_COLUMNS.include?(options[:name].to_s)
     owner.in_database.drop_column name, options[:name].to_s
+    self.invalidate_varnish_cache
   end
 
   def modify_column!(options)
-    old_name  = options.fetch(:old_name, '').sanitize
-    new_name  = options.fetch(:new_name, '').sanitize
+    old_name  = options.fetch(:name, '').to_s.sanitize
+    new_name  = options.fetch(:new_name, '').to_s.sanitize
+    raise 'This column cannot be modified' if CARTODB_COLUMNS.include?(old_name.to_s)
 
-    rename_column(old_name, new_name) if new_name.present?
-
-    column_name = (new_name || options.fetch(:name)).sanitize
-    new_type = options.fetch(:type, column_type_for(column_name))
-                .try(:convert_to_db_type)
-
-    cartodb_type = new_type.try(:convert_to_cartodb_type)
-
-    owner.in_database do |user_database|
-      change_type(user_database, name, column_name, new_type)
+    if new_name.present? && new_name != old_name
+      rename_column(old_name, new_name)
     end
 
-    { name: column_name, type: new_type, cartodb_type: cartodb_type }
+    column_name = (new_name.present? ? new_name : old_name)
+    convert_column_datatype(owner.in_database, name, column_name, options[:type])
+    column_type = column_type_for(column_name)
+    self.invalidate_varnish_cache
+    { name: column_name, type: column_type, cartodb_type: column_type.convert_to_cartodb_type }
   end #modify_column!
 
   def column_type_for(column_name)
-    schema(cartodb_types: false).select { |c|
+    schema(cartodb_types: false, reload: true).select { |c|
       c[0] == column_name.to_sym 
     }.first[1]
   end #column_type_for
@@ -774,13 +815,6 @@ class Table < Sequel::Model(:user_tables)
       user_database.rename_column(name, old_name.to_sym, new_name.to_sym)
     end
   end #rename_column
-
-  def change_type(database, table_name, column_name, new_type)
-    database.set_column_type(table_name, column_name, new_type)
-  rescue => exception
-    raise exception unless exception.message =~ /cannot be cast to type/
-    convert_column_datatype(database, table_name, column_name, new_type)
-  end #change_type
 
   def convert_column_datatype(database, table_name, column_name, new_type)
     CartoDB::ColumnTypecaster.new(
@@ -1057,9 +1091,13 @@ class Table < Sequel::Model(:user_tables)
   def self.find_by_identifier(user_id, identifier)
     col = (identifier =~ /\A\d+\Z/ || identifier.is_a?(Fixnum)) ? 'id' : 'name'
 
-    table = fetch("SELECT *, array_to_string(array(
-                     SELECT tags.name FROM tags WHERE tags.table_id = user_tables.id ORDER BY tags.id),',') AS tags_names
-                   FROM user_tables WHERE user_tables.user_id = ? AND user_tables.#{col} = ?", user_id, identifier).first
+    table = fetch(%Q{
+      SELECT *
+      FROM user_tables
+      WHERE user_tables.user_id = ?
+      AND user_tables.#{col} = ?},
+      user_id, identifier
+    ).first
     raise RecordNotFound if table.nil?
     table
   end
@@ -1243,6 +1281,27 @@ TRIGGER
     nil
   end
 
+  def privacy_text
+    self.private? ? 'PRIVATE' : 'PUBLIC'
+  end
+
+  def visualizations
+    CartoDB::Visualization::Collection.new.fetch(map_id: [map_id])
+  end #visualizations
+
+  def visualization_ids
+    visualizations.map(&:id)
+  end #visualization_ids
+
+  def table_visualization
+    @table_visualization ||= CartoDB::Visualization::Collection.new.fetch(
+      map_id: [map_id],
+      type:   'table'
+    ).first
+  end #table_visualization
+
+  alias_method :memoize_table_visualization_to_be_available_in_after_destroy,
+                :table_visualization
   private
 
   def update_updated_at
@@ -1434,10 +1493,6 @@ SQL
     owner.in_database.run(%Q{UPDATE "#{self.name}" SET the_geom = ST_GeomFromText('#{geo_json}',#{CartoDB::SRID}) where cartodb_id = #{primary_key}})
   end
 
-  def privacy_text
-    self.private? ? 'PRIVATE' : 'PUBLIC'
-  end
-
   def manage_tags
     if self[:tags].blank?
       Tag.filter(:user_id => user_id, :table_id => id).delete
@@ -1507,13 +1562,13 @@ SQL
   end
 
   def tile_request(request_method, request_uri, form = {})
-    uri  = "#{owner.username}.#{Cartodb.config[:tile_host]}"
+    uri  = "#{owner.username}.#{Cartodb.config[:tiler_domain]}"
     ip   = '127.0.0.1'
-    port = Cartodb.config[:tile_port] || 80
+    port = Cartodb.config[:tiler_port] || 80
     http_req = Net::HTTP.new ip, port
-    http_req.use_ssl = Cartodb.config[:tile_protocol] == 'https' ? true : false
+    http_req.use_ssl = Cartodb.config[:tiler_protocol] == 'https' ? true : false
     http_req.verify_mode = OpenSSL::SSL::VERIFY_NONE
-    request_headers = {'Host' => "#{owner.username}.#{Cartodb.config[:tile_host]}"}
+    request_headers = {'Host' => "#{owner.username}.#{Cartodb.config[:tiler_domain]}"}
     case request_method
       when 'GET'
         http_res = http_req.request_get(request_uri, request_headers)
@@ -1574,5 +1629,5 @@ SQL
       SELECT check_the_geom_exists('#{table_name}');
     SQL
   end
-
 end
+

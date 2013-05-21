@@ -1,0 +1,32 @@
+#!/bin/bash
+echo "--- CartoDB stack starter for testing ---"
+
+echo "---> Killing Rails.."
+kill -INT $(lsof -i:3000) &> /dev/null
+
+echo "---> Killing Tiler.."
+kill -INT $(lsof -i:8080) &> /dev/null
+
+echo "---> Killing SQL API.."
+kill -INT $(lsof -i:8181) &> /dev/null
+
+echo "---> Killing our Redis server..."
+kill -INT $(lsof -i:6379) &> /dev/null
+
+echo "---> Restarting PostgreSQL.."
+sudo /etc/init.d/postgresql restart
+
+echo "---> Stopping system Redis server (if any)..."
+sudo /etc/init.d/redis-server stop
+
+echo "Starting Redis..."
+redis-server &
+
+echo "---> Starting Rails..."
+bundle exec rails server -p 3000 -d
+ 
+echo "---> Starting Tiler.."
+node ../CartoDB-SQL-API/app.js development &
+
+echo "---> Starting SQL API..."
+node ../Windshaft-cartodb/app.js development &

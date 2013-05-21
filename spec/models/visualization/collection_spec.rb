@@ -27,8 +27,8 @@ describe Visualization::Collection do
 
   describe '#fetch' do
     it 'filters by tag if the backend supports array columns' do
-      attributes_1  = { name: 'viz 1', tags: ['tag 1', 'tag 11'] }
-      attributes_2  = { name: 'viz 2', tags: ['tag 2', 'tag 22'] }
+      attributes_1  = { name: 'viz 1', tags: ['tag 1', 'tag 11'], privacy: 'public' }
+      attributes_2  = { name: 'viz 2', tags: ['tag 2', 'tag 22'], privacy: 'public' }
       Visualization::Member.new(attributes_1).store
       Visualization::Member.new(attributes_2).store
 
@@ -37,8 +37,8 @@ describe Visualization::Collection do
     end
 
     it 'filters by partial name / description match' do
-      attributes_1  = { name: 'viz_1', description: 'description_11' }
-      attributes_2  = { name: 'viz_2', description: 'description_22' }
+      attributes_1  = { name: 'viz_1', description: 'description_11', privacy: 'public' }
+      attributes_2  = { name: 'viz_2', description: 'description_22', privacy: 'public' }
       Visualization::Member.new(attributes_1).store
       Visualization::Member.new(attributes_2).store
 

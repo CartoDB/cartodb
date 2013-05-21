@@ -410,7 +410,8 @@ class Table < Sequel::Model(:user_tables)
       map_id:       self.map_id, 
       type:         'table', 
       description:  self.description,
-      tags:         (tags.split(',') if tags)
+      tags:         (tags.split(',') if tags),
+      privacy:      (self.privacy == PUBLIC ? 'public' : 'private')
     ).store
   end
 

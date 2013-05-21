@@ -10,6 +10,8 @@ module CartoDB
   class InvalidGeoJSONFormat < StandardError; end
   class QueryNotAllowed < StandardError; end
   
+  class InvalidMember < StandardError; end
+  
   # importer errors
   class EmptyFile < StandardError 
     def detail

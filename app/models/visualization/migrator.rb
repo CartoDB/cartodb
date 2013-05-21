@@ -19,6 +19,8 @@ module CartoDB
           Integer   :active_layer_id
           String    :type
           String    :privacy
+          DateTime  :created_at, null: false
+          DateTime  :updated_at, null: false
         end
 
         @db.run(%Q{

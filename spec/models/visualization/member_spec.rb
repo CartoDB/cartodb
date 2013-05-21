@@ -38,11 +38,16 @@ describe Visualization::Member do
     end
 
     it 'persists tags as an array if the backend supports it' do
-      db          = Sequel.postgres(host: Rails.configuration.database_configuration[Rails.env]["host"], port: Rails.configuration.database_configuration[Rails.env]["port"], username: Rails.configuration.database_configuration[Rails.env]["username"])
-      relation    = :"visualizations_#{Time.now.to_i}"
-      create_visualizations_table_in(db, relation)
-
+      db_config   = Rails.configuration.database_configuration[Rails.env]
+      db          = Sequel.postgres(
+                      host:     db_config.fetch('host'),
+                      port:     db_config.fetch('port'),
+                      username: db_config.fetch('username')
+                    )
+      relation    = "visualizations_#{Time.now.to_i}".to_sym
       repository  = DataRepository::Backend::Sequel.new(db, relation)
+      Visualization::Migrator.new(db).migrate(relation)
+
       attributes  = { name: 'foo', tags: ['tag 1', 'tag 2'] }
       member      = Visualization::Member.new(attributes, repository)
       member.store
@@ -52,7 +57,7 @@ describe Visualization::Member do
       member.tags.should include('tag 1')
       member.tags.should include('tag 2')
 
-      drop_table_from(db, relation)
+      Visualization::Migrator.new(db).drop(relation)
     end
 
     it 'persists tags as JSON if the backend does not support arrays' do

@@ -28,6 +28,8 @@ module CartoDB
       attribute :privacy,           String, default: 'public'
       attribute :tags,              Array[String], default: []
       attribute :description,       String
+      attribute :created_at,        Time
+      attribute :updated_at,        Time
 
       def initialize(attributes={}, repository=Visualization.repository)
         super(attributes)
@@ -37,6 +39,8 @@ module CartoDB
 
       def store
         propagate_privacy_to(table) if table
+        self.created_at ||= Time.now.utc
+        self.updated_at = Time.now.utc
         repository.store(id, attributes.to_hash)
         self
       end #store

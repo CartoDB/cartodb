@@ -38,14 +38,15 @@ module CartoDB
 
       def fetch(filters={})
         dataset = repository.collection(filters, AVAILABLE_FILTERS)
-        tags    = filters.delete(:tags).to_s.split(',')
-        dataset = dataset.where(has_tags(tags))
-        dataset = partial_match(dataset, filters.delete(:q))
+        dataset = filter_by_tags(dataset, tags_from(filters))
+        dataset = filter_by_partial_match(dataset, filters.delete(:q))
+
         self.total_entries = dataset.count
         dataset = repository.paginate(dataset, filters)
 
         collection.storage = 
           Set.new(dataset.map { |record| record.fetch(:id) })
+
         self
       end #fetch
 
@@ -66,18 +67,22 @@ module CartoDB
       attr_reader :collection
       attr_writer :total_entries
 
-      def has_tags(tags=[])
-        return {} if tags.nil? || tags.empty?
+      def filter_by_tags(dataset, tags=[])
+        return dataset if tags.nil? || tags.empty?
         placeholders = tags.length.times.map { "?" }.join(", ")
         filter       = "tags && ARRAY[#{placeholders}]"
        
-        [filter].concat(tags)
-      end #with_tags
+        dataset.where([filter].concat(tags))
+      end #filter_by_tags
 
-      def partial_match(dataset, pattern=nil)
+      def filter_by_partial_match(dataset, pattern=nil)
         return dataset if pattern.nil? || pattern.empty?
         dataset.where(PARTIAL_MATCH_QUERY, pattern, "%#{pattern}%")
-      end #partial_match
+      end #filter_by_partial_match
+
+      def tags_from(filters={})
+        filters.delete(:tags).to_s.split(',')
+      end #tags_from
     end # Collection
   end # Visualization
 end # CartoDB

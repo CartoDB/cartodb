@@ -830,7 +830,8 @@
       }
     }
 
-    .paginator {
+    .tables .content .paginator,
+    section.visualizations .paginator {
       @include size(100%, 20px);
 
       position:relative;
@@ -845,13 +846,16 @@
       border-bottom: 1px solid #EDEDED;
 
       .all { margin-right: 35px; }
+      &.view_all { border-bottom: none; }
 
-      ul {
+      & > ul {
 
         li {
           @include inline-block();
 
           &:last-child {margin:0}
+          padding: 0;
+          &:hover { display:none; }
 
           a {
             @include inline-block();

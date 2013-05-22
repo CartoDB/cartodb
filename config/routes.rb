@@ -18,9 +18,10 @@ CartoDB::Application.routes.draw do
     get '/dashboard/tables/:page'             => 'visualizations#index'
     get '/dashboard/tables/tag/:tag'          => 'visualizations#index'
 
-    get '/dashboard/visualizations/tag/:tag'  => 'visualizations#index'
-    get '/dashboard/visualizations'           => 'visualizations#index'
-    get '/dashboard/visualizations/:page'     => 'visualizations#index'
+    get '/dashboard/visualizations/tag/:tag'        => 'visualizations#index'
+    get '/dashboard/visualizations/tag/:tag/:page'  => 'visualizations#index'
+    get '/dashboard/visualizations'                 => 'visualizations#index'
+    get '/dashboard/visualizations/:page'           => 'visualizations#index'
 
     get '/dashboard/tag/:tag'                 => 'visualizations#index'
 

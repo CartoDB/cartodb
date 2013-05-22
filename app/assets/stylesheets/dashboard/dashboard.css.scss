@@ -830,18 +830,19 @@
       }
     }
 
-    div.paginator {
+    .paginator {
+      @include size(100%, 20px);
+
       position:relative;
       float:left;
       display:block;
-      margin: 0 auto;
-      padding: 20px 0 40px 0;
-      width:100%;
-      height:20px;
+      margin: 0 auto 40px 0;
+      padding: 20px 0 20px 0;
 
       letter-spacing:0;
       text-align: right;
       border-top: 1px solid #EDEDED;
+      border-bottom: 1px solid #EDEDED;
 
       .all { margin-right: 35px; }
 
@@ -872,18 +873,23 @@
             @include box-shadow(rgba(0,0,0,0.07) 0 0 4px 1px);
             @include text-indent();
 
-            &:hover {
-              cursor:pointer;
-              background: white;
+            &:hover { cursor:pointer; }
+
+            &.button {
+              padding: 3px 10px;
+              font-size:13px;
+              height: 23px; width: 28px;
+              font-weight:bold;
+
+              &.prev { @include icons-sprite(paginator_arrows, $offset-y:0px); }
+              &.next { @include icons-sprite(paginator_arrows, $offset-y:-8px); }
+
             }
 
-            &.selected {
-              background:white;
-              &:hover {
-                background:white;
-                cursor:default;
-              }
+            &.selected:hover {
+              cursor:default;
             }
+
           }
         }
       }

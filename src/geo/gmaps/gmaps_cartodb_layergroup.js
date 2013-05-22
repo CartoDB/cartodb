@@ -94,9 +94,9 @@ CartoDBLayerGroup.prototype.getTile = function(coord, zoom, ownerDocument) {
 
   var self = this;
 
-  if(!this.options.added) {
+  /*if(!this.options.added) {
     this.onAdd();
-  }
+  }*/
 
   this.options.added = true;
 
@@ -124,11 +124,12 @@ CartoDBLayerGroup.prototype.getTile = function(coord, zoom, ownerDocument) {
     }
   }
 
+
   return im;
 }
 
 CartoDBLayerGroup.prototype.onAdd = function () {
-  this.update();
+  //this.update();
 };
 
 CartoDBLayerGroup.prototype.clear = function () {
@@ -142,6 +143,7 @@ CartoDBLayerGroup.prototype.update = function (done) {
     if(urls) {
       self.tilejson = urls;
       self.options.tiles = urls.tiles;
+      self.tiles = 0;
       self.cache = {};
       self._reloadInteraction();
       self.refreshView();

@@ -83,6 +83,18 @@ describe Api::Json::VisualizationsController do
       last_response.status.should == 400
     end
 
+    it 'creates a visualization from a source_visualization_id' do
+      table                 = table_factory
+      source_visualization  = table.fetch('table_visualization')
+
+      payload = { source_visualization_id: source_visualization.fetch('id') }
+      
+      post "/api/v1/viz?api_key=#{@api_key}",
+        payload.to_json, @headers
+
+      last_response.status.should == 200
+    end
+
     it 'creates a visualization from a list of tables' do
       table1 = table_factory
       table2 = table_factory
@@ -215,20 +227,6 @@ describe Api::Json::VisualizationsController do
       response    = JSON.parse(last_response.body)
       collection  = response.fetch('visualizations')
       collection.size.should == 2
-    end
-
-    it 'accepts search queries' do
-      pending
-      attributes  = factory
-      name        = URI.escape(attributes.fetch(:name))
-      post "/api/v1/viz?api_key=#{@api_key}",
-        attributes.to_json, @headers
-      get "/api/v1/viz?api_key=#{@api_key}&q=#{name}&type=table",
-        {}, @headers
-      last_response.status.should == 200
-
-      response = JSON.parse(last_response.body)
-      response.length.should == 1
     end
   end # GET /api/v1/viz
 

@@ -227,6 +227,110 @@ CartoDBLayerGroup.prototype._manageOnEvents = function(map,o) {
 
 cdb.geo.CartoDBLayerGroupGMaps = CartoDBLayerGroup;
 
+/*
+ *
+ *  cartodb layer group view
+ *
+ */
+
+var GMapsCartoDBLayerGroupView = function(layerModel, gmapsMap) {
+  var self = this;
+
+  _.bindAll(this, 'featureOut', 'featureOver', 'featureClick');
+
+  // CartoDB new attribution,
+  // also we have the logo
+  layerModel.attributes.attribution = "CartoDB <a href='http://cartodb.com/attributions' target='_blank'>attribution</a>";
+
+  var opts = _.clone(layerModel.attributes);
+
+  opts.map =  gmapsMap;
+
+  var // preserve the user's callbacks
+  _featureOver  = opts.featureOver,
+  _featureOut   = opts.featureOut,
+  _featureClick = opts.featureClick;
+
+  opts.featureOver  = function() {
+    _featureOver  && _featureOver.apply(this, arguments);
+    self.featureOver  && self.featureOver.apply(this, arguments);
+  };
+
+  opts.featureOut  = function() {
+    _featureOut  && _featureOut.apply(this, arguments);
+    self.featureOut  && self.featureOut.apply(this, arguments);
+  };
+
+  opts.featureClick  = function() {
+    _featureClick  && _featureClick.apply(this, arguments);
+    self.featureClick  && self.featureClick.apply(opts, arguments);
+  };
+
+  
+  CartoDBLayerGroup.call(this, opts);
+  cdb.geo.GMapsLayerView.call(this, layerModel, this, gmapsMap);
+};
+
+
+
+_.extend(
+  GMapsCartoDBLayerGroupView.prototype,
+  cdb.geo.GMapsLayerView.prototype,
+  CartoDBLayerGroup.prototype,
+  {
+
+  _update: function() {
+    this.setOptions(this.model.attributes);
+  },
+
+  reload: function() {
+    this.model.invalidate();
+  },
+
+  remove: function() {
+    cdb.geo.GMapsLayerView.prototype.remove.call(this);
+    this.clear();
+  },
+
+  featureOver: function(e, latlon, pixelPos, data, layer) {
+    // dont pass gmaps LatLng
+    this.trigger('featureOver', e, [latlon.lat(), latlon.lng()], pixelPos, data, layer);
+  },
+
+  featureOut: function(e, layer) {
+    this.trigger('featureOut', e, layer);
+  },
+
+  featureClick: function(e, latlon, pixelPos, data, layer) {
+    // dont pass leaflet lat/lon
+    this.trigger('featureClick', e, [latlon.lat(), latlon.lng()], pixelPos, data, layer);
+  },
+
+  error: function(e) {
+    if(this.model) {
+      //trigger the error form _checkTiles in the model
+      this.model.trigger('error', e?e.error:'unknown error');
+      this.model.trigger('tileError', e?e.error:'unknown error');
+    }
+  },
+
+  tilesOk: function(e) {
+    this.model.trigger('tileOk');
+  },
+
+  loading: function() {
+    this.trigger("loading");
+  },
+
+  finishLoading: function() {
+    this.trigger("load");
+  }
+
+
+});
+
+cdb.geo.GMapsCartoDBLayerGroupView = GMapsCartoDBLayerGroupView;
+
 /**
 * gmaps cartodb layer
 */

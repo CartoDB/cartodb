@@ -13,7 +13,8 @@ if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
       "cartodb": cdb.geo.GMapsCartoDBLayerView,
       "carto": cdb.geo.GMapsCartoDBLayerView,
       "plain": cdb.geo.GMapsPlainLayerView,
-      "gmapsbase": cdb.geo.GMapsBaseLayerView
+      "gmapsbase": cdb.geo.GMapsBaseLayerView,
+      "layergroup": cdb.geo.GMapsCartoDBLayerGroupView
     },
 
     initialize: function() {

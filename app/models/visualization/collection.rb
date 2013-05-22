@@ -52,7 +52,7 @@ module CartoDB
       end #fetch
 
       def store
-        map { |member| member.fetch.store }
+        #map { |member| member.fetch.store }
         self
       end #store
 

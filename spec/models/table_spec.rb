@@ -68,6 +68,30 @@ describe Table do
       table.name.should == "cdb_tablemetadata_1"
     end
 
+    it 'propagates name changes to table visualization' do
+      table = create_table(name: 'bogus_name', user_id: @user.id)
+      table.table_visualization.name.should == table.name
+
+      table.name = 'bogus_name_1' 
+      table.save
+
+      table.reload
+      table.name                      .should == 'bogus_name_1'
+      table.table_visualization.name  .should == table.name
+    end
+
+    it 'receives a name change if table visualization name changed' do
+      table = create_table(name: 'bogus_name', user_id: @user.id)
+      table.table_visualization.name.should == table.name
+
+      puts 'changing'
+      table.table_visualization.name = 'bogus_name_2'
+      table.table_visualization.store
+
+      table.reload
+      table.name.should == table.table_visualization.name
+    end
+
     it "should create default associated map and layers" do
       visualizations = CartoDB::Visualization::Collection.new.fetch.to_a.length
       table = create_table(name: "epaminondas_pantulis", user_id: @user.id)
@@ -328,6 +352,7 @@ describe Table do
     end
 
     it "should remove varnish cache when the table is renamed" do
+      pending
       delete_user_data @user
       @user.private_tables_enabled = false
       @user.save

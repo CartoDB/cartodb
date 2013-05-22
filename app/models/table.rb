@@ -319,7 +319,14 @@ class Table < Sequel::Model(:user_tables)
     manager.set_public  if privacy == PUBLIC
     manager.propagate_to(table_visualization)
     manager.propagate_to_redis_and_varnish if privacy_changed?
+
+    propagate_name_change_to_table_visualization if name_changed?
   end
+
+  def propagate_name_change_to_table_visualization
+    table_visualization.name = name
+    table_visualization.store
+  end #propagate_name_change_to_table_visualization
 
   def after_create
     super
@@ -578,6 +585,10 @@ class Table < Sequel::Model(:user_tables)
   def privacy_changed?
     previous_changes.keys.include?(:privacy)
   end #privacy_changed?
+
+  def name_changed?
+    previous_changes.keys.include?(:name)
+  end #name_changed?
 
   # TO BE DELETED
   #def manage_privacy

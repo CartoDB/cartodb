@@ -97,9 +97,19 @@ L.CartoDBGroupLayer = L.TileLayer.extend({
     this.options.map = map;
     this._addWadus({left:8, bottom:8}, 0, map._container);
     this.__update(function() {
-      L.TileLayer.prototype.onAdd.call(self, map);
-      self.fire('added');
-      self.options.added = true;
+      // remove this hack when leaflet 0.6 was released
+      var add = function() {
+        L.TileLayer.prototype.onAdd.call(self, map);
+        self.fire('added');
+        self.options.added = true;
+        map.off('zoomend', add);
+      }
+      if(!map._animatingZoom) {
+        add();
+      } else {
+        // wait until zoom animation finishes
+        map.on('zoomend', add);
+      }
     });
   },
 

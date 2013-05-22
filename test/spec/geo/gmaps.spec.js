@@ -129,6 +129,27 @@
       expect(cdb.geo.GMapsCartoDBLayerView.prototype.isPrototypeOf(layerView)).toBeTruthy();
     });
 
+    it("should create a CartoDBGroupLayer when the layer is layergroup", function() {
+      layer = new cdb.geo.CartoDBGroupLayer({
+        layer_definition: {
+          version: '1.0.0',
+          layers: [{
+             type: 'cartodb', 
+             options: {
+               sql: "select * from european_countries_export",
+               cartocss: '#layer { polygon-fill: #000; polygon-opacity: 0.8;}',
+               cartocss_version : '2.0.0',
+               interactivity: ['test2', 'cartodb_id2']
+             }
+           }]
+        }
+      });
+      map.addLayer(new cdb.geo.PlainLayer({}));
+      var lyr = map.addLayer(layer);
+      var layerView = mapView.getLayerByCid(lyr);
+      expect(cdb.geo.GMapsCartoDBLayerGroupView.prototype.isPrototypeOf(layerView)).toBeTruthy();
+    });
+
     it("should create a cartodb logo when layer is cartodb", function() {
       runs(function() {
         layer = new cdb.geo.CartoDBLayer({ table_name: "INVENTADO", tile_style: 'test', user_name: 'test'});

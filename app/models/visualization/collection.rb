@@ -70,7 +70,7 @@ module CartoDB
 
       def sort(dataset, criteria={})
         return dataset if criteria.nil? || criteria.empty?
-        dataset.order(order_params_from(criteria))
+        dataset.order(*order_params_from(criteria))
       end #sort
 
       def filter_by_tags(dataset, tags=[])
@@ -91,7 +91,7 @@ module CartoDB
       end #tags_from
 
       def order_params_from(criteria)
-        criteria.map { |key, order| Sequel.send(order.to_sym, key.to_sym) } 
+        criteria.map { |key, order| Sequel.send(order.to_sym, key.to_sym) }
       end #order_params_from
     end # Collection
   end # Visualization

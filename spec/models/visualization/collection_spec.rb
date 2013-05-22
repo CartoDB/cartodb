@@ -53,17 +53,16 @@ describe Visualization::Collection do
     end
 
     it 'orders the collection by the passed criteria' do
-      pending
       attributes_1  = { name: 'viz_1', description: 'description_11', privacy: 'public' }
       attributes_2  = { name: 'viz_2', description: 'description_22', privacy: 'public' }
       Visualization::Member.new(attributes_1).store
       Visualization::Member.new(attributes_2).store
 
       collection    = Visualization::Collection.new
-      records       = collection.fetch(q: 'description', sort: { name: 'asc' })
+      records       = collection.fetch(sort: { name: 'asc' })
       records.first.name.should == 'viz_1'
 
-      records       = collection.fetch(q: 'description', sort: { name: 'desc' })
+      records       = collection.fetch(sort: { name: 'desc' })
       records.first.name.should == 'viz_2'
     end
   end

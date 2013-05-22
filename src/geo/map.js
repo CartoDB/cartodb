@@ -340,6 +340,13 @@ cdb.geo.Map = cdb.core.Model.extend({
   },
 
   /**
+  * Get CartoDB layers in the map
+  */
+  getCartoDBLayers: function() {
+    return _.size(_.filter(this.layers.models, function(layer) { return layer.get('type') == "CartoDB" } ));
+  },
+
+  /**
   * Checks if the base layer is already in the map as base map
   */
   isBaseLayerAdded: function(layer) {

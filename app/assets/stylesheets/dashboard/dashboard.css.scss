@@ -851,8 +851,13 @@
       border-top: 1px solid #EDEDED;
       border-bottom: 1px solid #EDEDED;
 
-      .all { margin-right: 35px; }
-      &.view_all { border-bottom: none; }
+
+      &.view_all {
+        border-bottom: none;
+        a { margin-right: 35px; }
+      }
+
+      &.empty { border: none; }
 
       & > ul {
 

@@ -60,18 +60,20 @@ CartoDBLayerCommon.prototype = {
    * It needs a position, timeout if it is needed and the container where add it
    */
   _addWadus: function(position, timeout, container) {
-    if (this.options.cartodb_logo !== false && !this._isWadusAdded(container, 'cartodb-logo')) {
-      var cartodb_link = document.createElement("div");
-      var is_retina = this._isRetinaBrowser();
-      cartodb_link.setAttribute('class','cartodb-logo');
-      setTimeout(function() {
-        cartodb_link.setAttribute('style',"position:absolute; bottom:0; left:0; display:block; border:none; z-index:1000000;");
-        var protocol = location.protocol.indexOf('https') === -1 ? 'http': 'https';
-        cartodb_link.innerHTML = "<a href='http://www.cartodb.com' target='_blank'><img width='71' height='29' src='" + protocol + "://cartodb.s3.amazonaws.com/static/new_logo" + (is_retina ? '@2x' : '') + ".png' style='position:absolute; bottom:" + 
-          ( position.bottom || 0 ) + "px; left:" + ( position.left || 0 ) + "px; display:block; width:71px!important; height:29px!important; border:none; outline:none;' alt='CartoDB' title='CartoDB' />";
-        container.appendChild(cartodb_link);
-      },( timeout || 0 ));
-    }
+    var self = this;
+    setTimeout(function() {
+      if (self.options.cartodb_logo !== false && !self._isWadusAdded(container, 'cartodb-logo')) {
+        var cartodb_link = document.createElement("div");
+        var is_retina = self._isRetinaBrowser();
+        cartodb_link.setAttribute('class','cartodb-logo');
+        
+          cartodb_link.setAttribute('style',"position:absolute; bottom:0; left:0; display:block; border:none; z-index:1000000;");
+          var protocol = location.protocol.indexOf('https') === -1 ? 'http': 'https';
+          cartodb_link.innerHTML = "<a href='http://www.cartodb.com' target='_blank'><img width='71' height='29' src='" + protocol + "://cartodb.s3.amazonaws.com/static/new_logo" + (is_retina ? '@2x' : '') + ".png' style='position:absolute; bottom:" + 
+            ( position.bottom || 0 ) + "px; left:" + ( position.left || 0 ) + "px; display:block; width:71px!important; height:29px!important; border:none; outline:none;' alt='CartoDB' title='CartoDB' />";
+          container.appendChild(cartodb_link);
+      }
+    },( timeout || 0 ));
   },
 
   /**

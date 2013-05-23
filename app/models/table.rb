@@ -54,6 +54,16 @@ class Table < Sequel::Model(:user_tables)
     where(conditions, query, "%#{query}%")
   end
 
+  def_dataset_method(:multiple_order) do |criteria|
+    return order(:id) if criteria.nil? || criteria.empty?
+    order_params = criteria.map do |key, order|
+      Sequel.send(order.to_sym, key.to_sym)
+    end
+
+    order(*order_params)
+  end #multiple_order
+
+
   # Ignore mass-asigment on not allowed columns
   self.strict_param_setting = false
 
@@ -1314,6 +1324,7 @@ TRIGGER
 
   alias_method :memoize_table_visualization_to_be_available_in_after_destroy,
                 :table_visualization
+
   private
 
   def update_updated_at

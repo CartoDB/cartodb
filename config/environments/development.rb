@@ -37,4 +37,13 @@ CartoDB::Application.configure do
   
   # Expands the lines which load the assets
   config.assets.debug = true
+
+  # Add non-conventional classes to autoload path
+  config.autoload_paths += ["#{config.root}/app/models/visualization"]
+  config.autoload_paths += ["#{config.root}/app/models/overlay"]
+  config.autoload_paths += ["#{config.root}/app/models/layer"]
+  config.autoload_paths += ["#{config.root}/app/models/layergroup"]
+  config.autoload_paths += ["#{config.root}/app/models/map"]
+  config.autoload_paths += ["#{config.root}/app/models/table"]
+  config.autoload_paths += ["#{config.root}/app/models/user"]
 end

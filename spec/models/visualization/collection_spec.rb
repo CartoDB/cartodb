@@ -59,10 +59,10 @@ describe Visualization::Collection do
       Visualization::Member.new(attributes_2).store
 
       collection    = Visualization::Collection.new
-      records       = collection.fetch(sort: { name: 'asc' })
+      records       = collection.fetch(o: { name: 'asc' })
       records.first.name.should == 'viz_1'
 
-      records       = collection.fetch(sort: { name: 'desc' })
+      records       = collection.fetch(o: { name: 'desc' })
       records.first.name.should == 'viz_2'
     end
   end

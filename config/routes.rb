@@ -14,16 +14,23 @@ CartoDB::Application.routes.draw do
   scope :module => "admin" do
     get '/dashboard/'                         => 'visualizations#index', :as => :dashboard
 
+    # Tables
     get '/dashboard/tables'                         => 'visualizations#index'
     get '/dashboard/tables/:page'                   => 'visualizations#index'
     get '/dashboard/tables/tag/:tag'                => 'visualizations#index'
     get '/dashboard/tables/tag/:tag/:page'          => 'visualizations#index'
 
+    # Visualizations
     get '/dashboard/visualizations'                 => 'visualizations#index'
     get '/dashboard/visualizations/:page'           => 'visualizations#index'
     get '/dashboard/visualizations/tag/:tag'        => 'visualizations#index'
     get '/dashboard/visualizations/tag/:tag/:page'  => 'visualizations#index'
 
+    # Search
+    get '/dashboard/search/:q'                      => 'visualizations#index'
+    get '/dashboard/search/:q/:page'                => 'visualizations#index'
+
+    # Tags
     get '/dashboard/tag/:tag'                       => 'visualizations#index'
 
     get '/dashboard/common_data'    => 'pages#common_data'

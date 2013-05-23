@@ -84,7 +84,6 @@ describe Table do
       table = create_table(name: 'bogus_name', user_id: @user.id)
       table.table_visualization.name.should == table.name
 
-      puts 'changing'
       table.table_visualization.name = 'bogus_name_2'
       table.table_visualization.store
 
@@ -1629,8 +1628,17 @@ describe Table do
       tables.should_not be_empty
       tables.first.id.should == table.id
     end
-
   end
+
+  describe 'Table.multiple_order' do
+    it 'returns sorted records' do
+      table_1 = create_table(name: "bogus_table_1", user_id: @user.id)
+      table_2 = create_table(name: "bogus_table_2", user_id: @user.id)
+
+      Table.multiple_order(name: 'asc').to_a.first.name.should == 'bogus_table_1'
+      Table.multiple_order(name: 'desc').to_a.first.name.should == 'bogus_table_2'
+    end
+  end # Table.multiple_order
 
   context "retrieving tables from ids" do
     it "should be able to find a table by name or by identifier" do

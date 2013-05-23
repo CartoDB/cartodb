@@ -34,14 +34,16 @@ module CartoDB
       attribute :created_at,        Time
       attribute :updated_at,        Time
 
-      validates_presence_of         :privacy
-      validates_within              :privacy, set: ['public', 'private']
+      validates_presence_of         :name, :privacy, :type
       validates_with_method         :name, method: :available_name?
+      validates_within              :privacy, set: ['public', 'private']
 
-      def initialize(attributes={}, repository=Visualization.repository)
+      def initialize(attributes={}, repository=Visualization.repository,
+      name_checker=nil)
         super(attributes)
-        @repository     = repository
-        self.id         ||= @repository.next_id
+        @repository   = repository
+        self.id       ||= @repository.next_id
+        @name_checker = name_checker
       end #initialize
 
       def store
@@ -111,7 +113,7 @@ module CartoDB
       end #map
 
       def user
-        map.user
+        map.user if map
       end #user
 
       def table
@@ -138,7 +140,7 @@ module CartoDB
 
       private
 
-      attr_reader :repository
+      attr_reader   :repository, :name_checker
       attr_accessor :privacy_changed, :name_changed
 
       def propagate_privacy_and_name_to(table)
@@ -167,6 +169,10 @@ module CartoDB
         self
       end #set_timestamps
 
+      def name_checker
+        @name_checker ||NameChecker.new(user)
+      end #name_cheker
+
       def configuration
         return {} unless defined?(Cartodb)
         Cartodb.config
@@ -174,7 +180,7 @@ module CartoDB
 
       def available_name?
         return true unless name_changed && user
-        NameChecker.new(user).available?(name)
+        name_checker.available?(name)
       end #available_name?
     end # Member
   end # Visualization

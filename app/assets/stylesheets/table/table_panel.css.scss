@@ -83,8 +83,8 @@
       border-bottom:1px solid rgba(#999999,0.25);
       z-index:0;
       
-      div.left {margin-left:24px;}
-      div.right {margin-right:20px;}
+      div.left {width:80%; margin-left:24px;}
+      div.right {width:10%; margin-right:20px;}
     }
 
     // Layer info
@@ -115,10 +115,14 @@
       }
 
       .name {
+        width:80%;
+        @include text-overflow();
+        overflow:hidden;
         margin-left:27px;
         font:bold 17px $text-fonts;
         color:#A9A9A9;
         line-height:20px;
+
         &:hover { cursor:move; }
       }
 

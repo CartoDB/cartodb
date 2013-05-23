@@ -44,9 +44,9 @@ module CartoDB
 
       def store
         raise CartoDB::InvalidMember unless self.valid?
-        propagate_privacy_to(table) if table
-        self.created_at ||= Time.now.utc
-        self.updated_at = Time.now.utc
+
+        propagate_privacy_and_name_to(table) if table
+        set_timestamps
         repository.store(id, attributes.to_hash)
         self
       end #store
@@ -132,11 +132,29 @@ module CartoDB
 
       attr_reader :repository
 
+      def propagate_privacy_and_name_to(table)
+        return self unless table
+        propagate_privacy_to(table)
+        propagate_name_to(table)
+      end #propagate_privacy_and_name_to
+
       def propagate_privacy_to(table)
         Table::PrivacyManager.new(table)
           .set_from(self)
           .propagate_to_redis_and_varnish
       end #propagate_privacy_to
+
+      def propagate_name_to(table)
+        table.name = self.name
+        table.update(name: self.name)
+        table.send :update_name_changes
+        self
+      end #propagate_name_to
+
+      def set_timestamps
+        self.created_at ||= Time.now.utc
+        self.updated_at = Time.now.utc
+      end #set_timestamps
 
       def configuration
         return {} unless defined?(Cartodb)

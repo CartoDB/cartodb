@@ -40,6 +40,7 @@ module CartoDB
         dataset = repository.collection(filters, AVAILABLE_FILTERS)
         dataset = filter_by_tags(dataset, tags_from(filters))
         dataset = filter_by_partial_match(dataset, filters.delete(:q))
+        dataset = sort(dataset, filters.delete(:sort))
 
         self.total_entries = dataset.count
         dataset = repository.paginate(dataset, filters)
@@ -51,7 +52,7 @@ module CartoDB
       end #fetch
 
       def store
-        map { |member| member.fetch.store }
+        #map { |member| member.fetch.store }
         self
       end #store
 
@@ -66,6 +67,11 @@ module CartoDB
 
       attr_reader :collection
       attr_writer :total_entries
+
+      def sort(dataset, criteria={})
+        return dataset if criteria.nil? || criteria.empty?
+        dataset.order(*order_params_from(criteria))
+      end #sort
 
       def filter_by_tags(dataset, tags=[])
         return dataset if tags.nil? || tags.empty?
@@ -83,6 +89,10 @@ module CartoDB
       def tags_from(filters={})
         filters.delete(:tags).to_s.split(',')
       end #tags_from
+
+      def order_params_from(criteria)
+        criteria.map { |key, order| Sequel.send(order.to_sym, key.to_sym) }
+      end #order_params_from
     end # Collection
   end # Visualization
 end # CartoDB

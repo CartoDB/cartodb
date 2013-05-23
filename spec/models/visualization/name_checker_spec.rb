@@ -20,15 +20,21 @@ describe Visualization::NameChecker do
     )
 
     @db[:visualizations].insert(
-      id:     '1',
-      name:   'Visualization 1',
-      map_id: 1
+      id:         '1',
+      name:       'Visualization 1',
+      privacy:    'public',
+      created_at: Time.now,
+      updated_at: Time.now,
+      map_id:     1
     )
 
     @db[:visualizations].insert(
-      id:     '2',
-      name:   'Visualization 2',
-      map_id: 2
+      id:         '2',
+      name:       'Visualization 2',
+      privacy:    'public',
+      created_at: Time.now,
+      updated_at: Time.now,
+      map_id:     2
     )
   end
 

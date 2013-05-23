@@ -243,14 +243,17 @@
         margin: 0 0 27px 0;
         padding: 7px 0;
 
-        clear:both;
-        overflow:hidden;
+        @extend .clearfix;
 
         h2 i {
           @include inline-block();
           @include size(23px, 17px);
           @include icons-sprite(v);
           margin: 0 7px 5px 0;
+        }
+
+        .loader {
+          @include position(16px, false, false, -50px);
         }
 
       }
@@ -431,6 +434,8 @@
 
       .head {
 
+        position:relative;
+
         h2 {
 
           i {
@@ -472,12 +477,13 @@
           }
         }
 
-        div.loader {
+        .loader {
           display:none;
-          @include position(42px, false, false, 311px);
+          @include position(40px, false, false, -50px);
           @include size(38px, 16px);
           background:image-url("layout/loader_gray.gif") no-repeat 0 0;
         }
+
       }
 
       // Status selector
@@ -845,8 +851,13 @@
       border-top: 1px solid #EDEDED;
       border-bottom: 1px solid #EDEDED;
 
-      .all { margin-right: 35px; }
-      &.view_all { border-bottom: none; }
+
+      &.view_all {
+        border-bottom: none;
+        a { margin-right: 35px; }
+      }
+
+      &.empty { border: none; }
 
       & > ul {
 
@@ -903,7 +914,9 @@
       padding:16px 0 22px;
       @include background(image-url('layout/bkg.jpg') repeat);
       border-top:1px solid rgba(black,0.05);
-      clear:both; overflow:hidden;
+
+      clear:both;
+      overflow:hidden;
 
       &:before {
         position:absolute;

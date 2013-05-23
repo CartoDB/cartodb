@@ -1635,8 +1635,10 @@ describe Table do
       table_1 = create_table(name: "bogus_table_1", user_id: @user.id)
       table_2 = create_table(name: "bogus_table_2", user_id: @user.id)
 
-      Table.multiple_order(name: 'asc').to_a.first.name.should == 'bogus_table_1'
-      Table.multiple_order(name: 'desc').to_a.first.name.should == 'bogus_table_2'
+      Table.search('bogus').multiple_order(name: 'asc')
+        .to_a.first.name.should == 'bogus_table_1'
+      Table.search('bogus').multiple_order(name: 'desc')
+        .to_a.first.name.should == 'bogus_table_2'
     end
   end # Table.multiple_order
 

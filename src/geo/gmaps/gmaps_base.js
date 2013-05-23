@@ -60,7 +60,9 @@ _.extend(GMapsLayerView.prototype, {
       this.gmapsMap.setMapTypeId(a);
     } else {
       var idx = this._searchLayerIndex();
-      this.gmapsMap.overlayMapTypes.setAt(idx, this);
+      if(idx >= 0) {
+        this.gmapsMap.overlayMapTypes.setAt(idx, this);
+      }
     }
   },
 

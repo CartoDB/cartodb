@@ -64,7 +64,7 @@ var CartoDBLayerGroup = function(opts) {
   this.projector = new Projector(opts.map);
   LayerDefinition.call(this, opts.layer_definition, this.options);
   // precache
-  this.getTiles();
+  this.update();
 };
 
 CartoDBLayerGroup.Projector = Projector;

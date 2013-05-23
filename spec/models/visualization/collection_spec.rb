@@ -27,20 +27,22 @@ describe Visualization::Collection do
 
   describe '#fetch' do
     it 'filters by tag if the backend supports array columns' do
-      attributes_1  = { name: 'viz 1', tags: ['tag 1', 'tag 11'], privacy: 'public' }
-      attributes_2  = { name: 'viz 2', tags: ['tag 2', 'tag 22'], privacy: 'public' }
-      Visualization::Member.new(attributes_1).store
-      Visualization::Member.new(attributes_2).store
+      attributes1  = random_attributes(tags: ['tag 1', 'tag 11'])
+      attributes2  = random_attributes(tags: ['tag 2', 'tag 22'])
+      Visualization::Member.new(attributes1).store
+      Visualization::Member.new(attributes2).store
 
       collection    = Visualization::Collection.new({})
       collection.fetch(tags: 'tag 1').count.should == 1
     end
 
     it 'filters by partial name / description match' do
-      attributes_1  = { name: 'viz_1', description: 'description_11', privacy: 'public' }
-      attributes_2  = { name: 'viz_2', description: 'description_22', privacy: 'public' }
-      Visualization::Member.new(attributes_1).store
-      Visualization::Member.new(attributes_2).store
+      attributes1 =
+        random_attributes(name: 'viz_1', description: 'description_11')
+      attributes2 =
+        random_attributes(name: 'viz_2', description: 'description_22')
+      Visualization::Member.new(attributes1).store
+      Visualization::Member.new(attributes2).store
 
       collection    = Visualization::Collection.new
       collection.fetch(q: 'viz').count.should   == 2
@@ -53,10 +55,8 @@ describe Visualization::Collection do
     end
 
     it 'orders the collection by the passed criteria' do
-      attributes_1  = { name: 'viz_1', description: 'description_11', privacy: 'public' }
-      attributes_2  = { name: 'viz_2', description: 'description_22', privacy: 'public' }
-      Visualization::Member.new(attributes_1).store
-      Visualization::Member.new(attributes_2).store
+      Visualization::Member.new(random_attributes(name: 'viz_1')).store
+      Visualization::Member.new(random_attributes(name: 'viz_2')).store
 
       collection    = Visualization::Collection.new
       records       = collection.fetch(o: { name: 'asc' })
@@ -66,5 +66,16 @@ describe Visualization::Collection do
       records.first.name.should == 'viz_2'
     end
   end
+
+  def random_attributes(attributes={})
+    random = rand(999)
+    {
+      name:         attributes.fetch(:name, "name #{random}"),
+      description:  attributes.fetch(:description, "description #{random}"),
+      privacy:      attributes.fetch(:privacy, 'public'),
+      tags:         attributes.fetch(:tags, ['tag 1']),
+      type:         attributes.fetch(:type, 'public')
+    }
+  end #random_attributes
 end # Visualization::Collection
 

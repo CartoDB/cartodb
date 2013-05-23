@@ -2,6 +2,7 @@
 require_relative '../../spec_helper'
 require_relative '../../../services/data-repository/backend/sequel'
 require_relative '../../../app/models/visualization/member'
+require_relative '../../../app/models/visualization/migrator'
 require_relative '../../../services/data-repository/repository'
 
 include CartoDB
@@ -23,20 +24,17 @@ describe Visualization::Member do
 
   describe '#store' do
     it 'persists attributes to the data repository' do
-      member = Visualization::Member.new(
-        name:             'foo',
-        active_layer_id:  3,
-        privacy:          'public'
-      )
+      attributes  = random_attributes
+      member      = Visualization::Member.new(attributes)
       member.store
 
       member = Visualization::Member.new(id: member.id)
       member.name.should be_nil
 
       member.fetch
-      member.name             .should == 'foo'
-      member.active_layer_id  .should == 3
-      member.privacy          .should == 'public'
+      member.name             .should == attributes.fetch(:name)
+      member.active_layer_id  .should == attributes.fetch(:active_layer_id)
+      member.privacy          .should == attributes.fetch(:privacy)
     end
 
     it 'persists tags as an array if the backend supports it' do
@@ -49,7 +47,7 @@ describe Visualization::Member do
       relation    = "visualizations_#{Time.now.to_i}".to_sym
       repository  = DataRepository::Backend::Sequel.new(db, relation)
       Visualization::Migrator.new(db).migrate(relation)
-      attributes  = { name: 'foo', tags: ['tag 1', 'tag 2'], privacy: 'public' }
+      attributes  = random_attributes(tags: ['tag 1', 'tag 2'])
       member      = Visualization::Member.new(attributes, repository)
       member.store
       
@@ -62,7 +60,8 @@ describe Visualization::Member do
     end
 
     it 'persists tags as JSON if the backend does not support arrays' do
-      member = Visualization::Member.new(name: 'foo', tags: ['tag 1', 'tag 2'], privacy: 'public')
+      attributes  = random_attributes(tags: ['tag 1', 'tag 2'])
+      member      = Visualization::Member.new(attributes)
       member.store
 
       member = Visualization::Member.new(id: member.id)
@@ -74,21 +73,18 @@ describe Visualization::Member do
 
   describe '#fetch' do
     it 'fetches attributes from the data repository' do
-      member = Visualization::Member.new(name: 'foo', privacy: 'public')
-      member.store
-
-      member = Visualization::Member.new(id: member.id)
+      attributes  = random_attributes
+      member      = Visualization::Member.new(attributes).store
+      member      = Visualization::Member.new(id: member.id)
       member.name = 'changed'
       member.fetch
-      member.name.should == 'foo'
+      member.name.should == attributes.fetch(:name)
     end
   end #fetch
 
   describe '#delete' do
     it 'deletes this member data from the data repository' do
-      member = Visualization::Member.new(name: 'foo', privacy: 'public')
-      member.store
-
+      member = Visualization::Member.new(random_attributes).store
       member.fetch
       member.name.should_not be_nil
 
@@ -145,26 +141,27 @@ describe Visualization::Member do
           .should include Aequitas::Rule::Within
       end
     end # privacy
+
+    describe '#name' do
+      it 'must be available for the user (uniqueness)' do
+        pending
+        visualization =
+          Visualization::Member.new({}, Visualization.repository, name_checker)
+        visualization.valid?
+      end
+    end #name
   end # validations
 
-  def create_visualizations_table_in(db, relation)
-    db.create_table relation do
-      String    :id, primary_key: true
-      String    :name
-      String    :description
-      Integer   :map_id, index: true
-      Integer   :active_layer_id
-      String    :type
-      String    :privacy
-    end
-
-    db.run(%Q{
-      ALTER TABLE "#{relation}"
-      ADD COLUMN tags text[]
-    })
-  end #create_visualizations_table_in
-
-  def drop_table_from(db, relation)
-    db.drop_table relation.to_sym
-  end #drop_table_from
+  def random_attributes(attributes={})
+    random = rand(999)
+    {
+      name:         attributes.fetch(:name, "name #{random}"),
+      description:  attributes.fetch(:description, "description #{random}"),
+      privacy:      attributes.fetch(:privacy, 'public'),
+      tags:         attributes.fetch(:tags, ['tag 1']),
+      type:         attributes.fetch(:type, 'public'),
+      active_layer_id: random
+    }
+  end #random_attributes
 end # Visualization
+

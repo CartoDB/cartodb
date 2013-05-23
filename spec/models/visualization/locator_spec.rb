@@ -19,7 +19,8 @@ describe CartoDB::Visualization::Locator do
     @visualization  = CartoDB::Visualization::Member.new(
       name:         'Visualization 1',
       description:  'A sample visualization',
-      privacy:      'public'
+      privacy:      'public',
+      type:         'derived'
     ).store
     @locator        = CartoDB::Visualization::Locator.new(table_fake)
   end
@@ -40,17 +41,10 @@ describe CartoDB::Visualization::Locator do
     end
 
     it 'fetches a Table if passed a table id' do
-      table_class = Object.new
-      def table_class.called; @called_arguments; end
-      def table_class.find_by_subdomain(*args); 
-        @called_arguments = args;
-        OpenStruct.new
-      end
-
-      locator     = CartoDB::Visualization::Locator.new(table_class)
-
+      fake    = table_fake
+      locator = CartoDB::Visualization::Locator.new(fake)
       locator.get(0, 'foo')
-      table_class.called.should == ['foo', 0]
+      fake.called_arguments.should == ['foo', 0]
     end
 
     it 'returns nil if no visualization or table found' do
@@ -60,9 +54,11 @@ describe CartoDB::Visualization::Locator do
 
   def table_fake
     table_klass = Object.new
-    def table_klass.find_by_subdomain(subdomain, identifier)
+    def table_klass.find_by_subdomain(*args)
+      @called_arguments = args
       OpenStruct.new
     end
+    def table_klass.called_arguments; @called_arguments; end
     table_klass
   end #table_fake
 end # CartoDB::Visualization::Locator

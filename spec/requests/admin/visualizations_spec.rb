@@ -80,6 +80,37 @@ describe Admin::VisualizationsController do
       get "/viz/#{name}/embed_map", {}, @headers
       last_response.status.should == 200
     end
+
+    it 'renders embed map error page if visualization private' do
+      table_attributes = table_factory
+      put "/api/v1/tables/#{table_attributes.fetch('id')}?api_key=#{@api_key}",
+        { privacy: 0 }.to_json, @headers
+
+      name = table_attributes.fetch('table_visualization').fetch('name')
+      name = URI::encode(name)
+
+      login_as(@user, scope: 'test')
+
+      get "/viz/#{name}/embed_map", {}, @headers
+      last_response.status.should == 403
+      last_response.body.should =~ /cartodb-embed-error/
+
+      get "/viz/#{name}/embed_map.js", {}, @headers
+      last_response.status.should == 403
+      last_response.body.should =~ /get_url_params/
+    end
+
+    it 'renders embed map error when an exception is raised' do
+      login_as(@user, scope: 'test')
+
+      get "/viz/non_existent/embed_map", {}, @headers
+      last_response.status.should == 403
+      last_response.body.should =~ /cartodb-embed-error/
+
+      get "/viz/non_existent/embed_map.js", {}, @headers
+      last_response.status.should == 403
+      last_response.body.should =~ /get_url_params/
+    end
   end # GET /viz/:name/embed_map
 
   describe 'GET /viz/:name/track_embed' do

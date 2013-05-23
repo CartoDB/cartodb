@@ -145,6 +145,11 @@ describe Visualization::Member do
           .should include Aequitas::Rule::Within
       end
     end # privacy
+
+    describe '#name' do
+      it 'must be available for the user (uniqueness)' do
+      end
+    end #name
   end # validations
 
   def create_visualizations_table_in(db, relation)

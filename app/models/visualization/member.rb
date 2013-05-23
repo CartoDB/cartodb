@@ -10,6 +10,7 @@ require_relative './vizjson'
 require_relative '../table'
 require_relative '../table/privacy_manager'
 require_relative './stats'
+require_relative './name_checker'
 
 module CartoDB
   module Visualization
@@ -35,6 +36,7 @@ module CartoDB
 
       validates_presence_of         :privacy
       validates_within              :privacy, set: ['public', 'private']
+      validates_with_method         :name, method: :available_name?
 
       def initialize(attributes={}, repository=Visualization.repository)
         super(attributes)
@@ -72,8 +74,14 @@ module CartoDB
         self
       end #delete
 
+      def name=(name)
+        self.name_changed = true if name != @name && !@name.nil?
+        super(name)
+      end #name=
+
       def privacy=(privacy)
         privacy = privacy.downcase if privacy
+        self.privacy_changed = true if privacy != @privacy && !@privacy.nil?
         super(privacy)
       end #privacy=
 
@@ -99,11 +107,11 @@ module CartoDB
       end #overlays
 
       def map
-        (@map ||= ::Map.where(id: map_id).first) || OpenStruct.new
+        @map ||= ::Map.where(id: map_id).first
       end #map
 
       def user
-        map.user || OpenStruct.new
+        map.user
       end #user
 
       def table
@@ -131,35 +139,43 @@ module CartoDB
       private
 
       attr_reader :repository
+      attr_accessor :privacy_changed, :name_changed
 
       def propagate_privacy_and_name_to(table)
         return self unless table
-        propagate_privacy_to(table)
-        propagate_name_to(table)
+        propagate_privacy_to(table) if privacy_changed
+        propagate_name_to(table)    if name_changed
       end #propagate_privacy_and_name_to
 
       def propagate_privacy_to(table)
         Table::PrivacyManager.new(table)
           .set_from(self)
           .propagate_to_redis_and_varnish
+        self
       end #propagate_privacy_to
 
       def propagate_name_to(table)
         table.name = self.name
         table.update(name: self.name)
-        table.send :update_name_changes
+        table.send(:update_name_changes)
         self
       end #propagate_name_to
 
       def set_timestamps
         self.created_at ||= Time.now.utc
         self.updated_at = Time.now.utc
+        self
       end #set_timestamps
 
       def configuration
         return {} unless defined?(Cartodb)
         Cartodb.config
       end #configuration
+
+      def available_name?
+        return true unless name_changed && user
+        NameChecker.new(user).available?(name)
+      end #available_name?
     end # Member
   end # Visualization
 end # CartoDB

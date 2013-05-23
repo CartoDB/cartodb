@@ -3,7 +3,6 @@ require_relative '../../acceptance_helper'
 require_relative '../../spec_helper'
 
 describe "Tables API" do
-  include Rack::Test::Methods
 
   before(:all) do
     @user = create_user(:username => 'test', :email => "client@example.com", :password => "clientex")
@@ -21,6 +20,20 @@ describe "Tables API" do
   end
 
   let(:params) { { :api_key => @user.get_map_key } }
+
+  describe 'GET /api/v1/tables', now: true do
+    it 'returns ordered results based on query params' do
+      table1  = create_table(name: 'bogus_table_1', user_id: @user.id)
+      table2  = create_table(name: 'bogus_table_2', user_id: @user.id)
+      order_params = Addressable::URI.new
+      order_params.query_values = { o: { name: 'asc' } }
+
+      get "/api/v1/tables?api_key=#{@user.get_map_key}&#{order_params.query}",
+        {}, @headers
+
+      last_response.status.should == 200
+    end
+  end # GET /api/v1/tables
 
   describe 'GET /api/v1/tables/:id' do
     it 'returns table attributes' do

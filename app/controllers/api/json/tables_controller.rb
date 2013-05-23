@@ -12,6 +12,7 @@ class Api::Json::TablesController < Api::ApplicationController
   def index
     @tables = Table.where(:user_id => current_user.id).order(:id.desc)
     @tables = @tables.search(params[:q]) unless params[:q].blank?
+    @tables = @tables.multiple_order(params.delete(:o))
 
     page     = params[:page].to_i > 0 ? params[:page].to_i : 1
     per_page = params[:per_page].to_i > 0 ? params[:per_page].to_i : 1000

@@ -1,10 +1,11 @@
 # encoding: utf-8
 require 'json'
 require_relative '../../../models/visualization/member'
-require_relative '../../../models/visualization/presenter'
 require_relative '../../../models/visualization/collection'
+require_relative '../../../models/visualization/presenter'
 require_relative '../../../models/visualization/locator'
 require_relative '../../../models/visualization/copier'
+require_relative '../../../models/visualization/name_generator'
 require_relative '../../../models/visualization/table_blender'
 require_relative '../../../models/map/presenter'
 
@@ -26,12 +27,14 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   end #index
 
   def create
+    name_candidate = Visualization::NameGenerator.new(current_user)
+                      .name(params[:name])
     if params[:source_visualization_id]
       source    = Visualization::Member.new(
                     id: params.fetch(:source_visualization_id)
                   ).fetch
       member    = Visualization::Copier.new(
-                    current_user, source, params.fetch(:name, nil)
+                    current_user, source, name_candidate
                   ).copy
     elsif params[:tables]
       tables    = params[:tables].map do |table_name| 
@@ -40,12 +43,15 @@ class Api::Json::VisualizationsController < Api::ApplicationController
       map       = Visualization::TableBlender.new(current_user, tables).blend
       member    = Visualization::Member.new(
                     payload_with_default_privacy.merge(
+                      name:     name_candidate,
                       map_id:   map.id,
                       type:     'derived',
                     )
                   )
     else
-      member    = Visualization::Member.new(payload_with_default_privacy)
+      member    = Visualization::Member.new(
+                    payload_with_default_privacy.merge(name: name_candidate)
+                  )
     end
 
     member.store

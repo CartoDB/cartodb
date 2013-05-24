@@ -601,14 +601,10 @@
                   vertical-align:middle;
 
                   a {
-                    max-width: 280px;
                     padding:0 1px 0 0;
                     margin:0;
                     vertical-align:top;
                     line-height:normal;
-                    text-overflow:ellipsis;
-                    overflow:hidden;
-                    white-space:nowrap;
                     font-family: $title-fonts;
                     font-size:21px;
                     letter-spacing:-1px;

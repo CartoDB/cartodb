@@ -296,6 +296,11 @@ Version: 3.1 Timestamp: Tue Aug 14 09:05:17 PDT 2012
   margin: 0;
   cursor: pointer;
   font-size:13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 90%;
+  display: inline-block;
+  overflow: hidden;
 }
 
 .select2-results .select2-highlighted {
@@ -539,7 +544,7 @@ disabled look for already selected choices in the results dropdown
       display: table-cell!important;
 
       &:first-child {
-        @include border-left-radius(4px);  
+        @include border-left-radius(4px);
       }
       &:last-child {
         border-bottom: 1px solid rgba(229, 229, 229, 0.2)!important;

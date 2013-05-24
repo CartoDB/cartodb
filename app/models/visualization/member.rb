@@ -180,7 +180,9 @@ module CartoDB
 
       def available_name?
         return true unless name_changed && user
-        name_checker.available?(name)
+        available = name_checker.available?(name)
+        return([false, 'name not available']) unless available
+        available
       end #available_name?
     end # Member
   end # Visualization

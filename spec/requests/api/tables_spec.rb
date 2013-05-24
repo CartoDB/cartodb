@@ -21,7 +21,7 @@ describe "Tables API" do
 
   let(:params) { { :api_key => @user.get_map_key } }
 
-  describe 'GET /api/v1/tables', now: true do
+  describe 'GET /api/v1/tables' do
     it 'returns ordered results based on query params' do
       table1  = create_table(name: 'bogus_table_1', user_id: @user.id)
       table2  = create_table(name: 'bogus_table_2', user_id: @user.id)

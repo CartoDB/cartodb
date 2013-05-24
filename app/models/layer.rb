@@ -41,21 +41,16 @@ class Layer < Sequel::Model
     maps.each { |map| map.invalidate_varnish_cache }
 
     # Invalidate related tables cache on varnish (only for carto layers)
-    affected_tables.map &:invalidate_varnish_cache if kind == 'carto'
+    affected_tables.map &:invalidate_varnish_cache if data_layer?
   end
 
   ##
   # Returns an array of tables used on the layer
   #
   def affected_tables
-    if maps.first.present? && options.present? && options.symbolize_keys[:query].present?
-      table_names = CartoDB::SqlParser.new(options.symbolize_keys[:query], connection: maps.first.user.in_database).affected_tables
-      Table.select(:id, :name, :user_id)
-        .where(user_id: maps.first.user.id, name: table_names).all
-    else
-      []
-    end
-  end
+    return [] unless maps.first.present? && options.present?
+    (tables_from_query_option + tables_from_table_name_option).compact.uniq
+  end #affected_tables
 
   def key
     "rails:layer_styles:#{self.id}"
@@ -98,4 +93,33 @@ class Layer < Sequel::Model
   def base_layer?
     !data_layer?
   end #base_layer?
+
+  private
+
+  def tables_from_query_option
+    return [] unless query.present?
+    tables_from(affected_table_names)
+  end
+
+  def tables_from_table_name_option
+    tables_from([options.symbolize_keys[:table_name]])
+  end #tables_from_table_name_option
+
+  def tables_from(names)
+    Table.select(:id, :name, :user_id)
+      .where(user_id: user.id, name: names)
+      .all
+  end #tables_from
+
+  def affected_table_names
+    CartoDB::SqlParser.new(query, connection: user.in_database).affected_tables
+  end #affected_table_names
+
+  def user
+    maps.first.user
+  end #user
+
+  def query
+    options.symbolize_keys[:query]
+  end #query
 end

@@ -143,6 +143,16 @@ describe Layer do
       layer.affected_tables.map(&:name).should =~ []
     end
 
+    it 'includes table_name option in the results' do
+      map = Map.create(user_id: @user.id, table_id: @table.id)
+      layer = Layer.create(
+        kind: 'carto',
+        options: { query: "select 1", table_name: @table.name }
+      )
+      map.add_layer(layer)
+
+      layer.affected_tables.map(&:name).should =~ [@table.name]
+    end
   end
 
   context "redis syncs" do

@@ -124,6 +124,24 @@ describe Api::Json::VisualizationsController do
         {}, @headers
       last_response.status.should == 200
     end
+
+    it 'assigns a generated name if name taken', now: true do
+      table               = table_factory
+      visualization       = table.fetch('table_visualization')
+      visualization_name  = visualization.fetch('name')
+
+      payload = {
+        source_visualization_id:  visualization.fetch('id'),
+        name:                     visualization_name
+      }
+      
+      post "/api/v1/viz?api_key=#{@api_key}",
+        payload.to_json, @headers
+      last_response.status.should == 200
+
+      response  = JSON.parse(last_response.body)
+      response.fetch('name').should =~ /#{visualization_name} 0/
+    end
   end # POST /api/v1/viz
 
   describe 'GET /api/v1/viz' do
@@ -394,9 +412,10 @@ describe Api::Json::VisualizationsController do
   end # GET /api/v2/viz/:id/viz
 
   def factory
-    map = ::Map.create(user_id: @user.id)
+    map   = ::Map.create(user_id: @user.id)
+    name  = "visualization #{rand(9999)}"
     {
-      name:         "visualization #{rand(9999)}",
+      name:         name,
       tags:         ['foo', 'bar'],
       map_id:       map.id,
       description:  'bogus',

@@ -17,7 +17,8 @@ class Table < Sequel::Model(:user_tables)
     :updated_at => :updated_at, :rows_counted => :rows_estimated,
     :table_size => :table_size, :map_id => :map_id, :description => :description,
     :geometry_types => :geometry_types, :visualization_ids => :visualization_ids,
-    :table_visualization => :table_visualization
+    :table_visualization => :table_visualization,
+    :affected_visualizations => :serialize_affected_visualizations
   }
 
   DEFAULT_THE_GEOM_TYPE = "geometry"
@@ -448,6 +449,7 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def before_destroy
+    visualization_dependencies.delete
     memoize_table_visualization_to_be_available_in_after_destroy
   end
 
@@ -1325,7 +1327,21 @@ TRIGGER
   alias_method :memoize_table_visualization_to_be_available_in_after_destroy,
                 :table_visualization
 
+  def serialize_affected_visualizations
+    affected_visualizations.map(&:to_hash)
+  end #serialize_affected_visualizations
+
   private
+
+  def affected_visualizations
+    Table.fetch(%Q{
+      SELECT  visualizations.id, visualizations.name
+      FROM    layers_user_tables, layers_maps, visualizations
+      WHERE   layers_user_tables.user_table_id = #{id}
+      AND     layers_user_tables.layer_id = layers_maps.layer_id
+      AND     layers_maps.map_id = visualizations.map_id
+    })
+  end #affected_visualizations
 
   def update_updated_at
     self.updated_at = Time.now

@@ -41,7 +41,8 @@ class Layer < Sequel::Model
     maps.each { |map| map.invalidate_varnish_cache }
 
     # Invalidate related tables cache on varnish (only for carto layers)
-    affected_tables.map &:invalidate_varnish_cache if data_layer?
+    affected_tables.map(&:invalidate_varnish_cache) if data_layer?
+    register_table_dependencies if data_layer?
   end
 
   ##
@@ -94,7 +95,27 @@ class Layer < Sequel::Model
     !data_layer?
   end #base_layer?
 
+  def register_table_dependencies
+    db          = Rails::Sequel.connection
+    join_table  = db[:layers_user_tables]
+
+    db.transaction do
+      delete_table_dependencies(join_table)
+      insert_table_dependencies(join_table)
+    end
+  end #register_table_dependencies
+
   private
+
+  def delete_table_dependencies(relation)
+    relation.where(layer_id: id).delete
+  end #delete_table_dependencies
+
+  def insert_table_dependencies(relation)
+    affected_tables.map do |table| 
+      relation.insert(user_table_id: table.id, layer_id: id)
+    end
+  end #insert_table_dependencies
 
   def tables_from_query_option
     return [] unless query.present?

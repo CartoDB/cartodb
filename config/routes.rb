@@ -30,6 +30,12 @@ CartoDB::Application.routes.draw do
     get '/dashboard/search/:q'                      => 'visualizations#index'
     get '/dashboard/search/:q/:page'                => 'visualizations#index'
 
+    get '/dashboard/visualizations/search/:q'                      => 'visualizations#index'
+    get '/dashboard/visualizations/search/:q/:page'                => 'visualizations#index'
+
+    get '/dashboard/tables/search/:q'                      => 'visualizations#index'
+    get '/dashboard/tables/search/:q/:page'                => 'visualizations#index'
+
     # Tags
     get '/dashboard/tag/:tag'                       => 'visualizations#index'
 

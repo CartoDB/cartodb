@@ -449,7 +449,6 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def before_destroy
-    visualization_dependencies.delete
     memoize_table_visualization_to_be_available_in_after_destroy
   end
 

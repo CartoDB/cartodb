@@ -109,7 +109,7 @@ module CartoDB
       end #overlays
 
       def map
-        @map ||= ::Map.where(id: map_id).first
+        ::Map.where(id: map_id).first
       end #map
 
       def user
@@ -122,7 +122,7 @@ module CartoDB
       end #table
 
       def related_tables
-        layers(:cartodb).flat_map(&:affected_tables).map(&:name)
+        layers(:cartodb).flat_map(&:affected_tables).map(&:name).uniq
       end #related_tables
 
       def layers(kind)
@@ -180,7 +180,9 @@ module CartoDB
 
       def available_name?
         return true unless name_changed && user
-        name_checker.available?(name)
+        available = name_checker.available?(name)
+        return([false, 'name not available']) unless available
+        available
       end #available_name?
     end # Member
   end # Visualization

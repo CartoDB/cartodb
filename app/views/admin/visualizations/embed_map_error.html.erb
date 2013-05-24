@@ -18,6 +18,9 @@
           Looks like this map no loger exists or is set as private
         </p>
     </div>
-    <%= render 'shared/analytics', ua: Cartodb.config[:google_analytics]["embeds"] %>
+    <%= render partial: 'shared/analytics', locals: { 
+      ua:     Cartodb.config[:google_analytics]['embeds'],
+      domain: Cartodb.config[:google_analytics]['domain']
+    } %>
   </body>
 </html>

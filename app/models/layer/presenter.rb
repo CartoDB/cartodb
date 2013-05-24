@@ -68,6 +68,8 @@ module CartoDB
         }
       end #options_data_v2
 
+      alias_method :to_poro, :to_vizjson_v1
+
       def options_data_v1
         return layer.options if options[:full]
         sql = sql_from(layer.options)

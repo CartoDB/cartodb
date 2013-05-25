@@ -27,8 +27,6 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   end #index
 
   def create
-    name_candidate = Visualization::NameGenerator.new(current_user)
-                      .name(params[:name])
     if params[:source_visualization_id]
       source    = Visualization::Member.new(
                     id: params.fetch(:source_visualization_id)
@@ -162,5 +160,11 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   def default_privacy
     current_user.private_tables_enabled ? 'private' : 'public'
   end #default_privacy
+
+  def name_candidate
+    return if params[:name].nil? || params[:name].empty?
+    Visualization::NameGenerator.new(current_user)
+                      .name(params[:name])
+  end #name_candidate
 end # Api::Json::VisualizationsController
 

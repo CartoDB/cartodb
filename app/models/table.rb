@@ -2,6 +2,7 @@
 # Proxies management of a table in the users database
 require_relative './table/column_typecaster'
 require_relative './table/privacy_manager'
+require_relative './visualization/member'
 
 class Table < Sequel::Model(:user_tables)
 
@@ -16,15 +17,18 @@ class Table < Sequel::Model(:user_tables)
     :id => :id, :name => :name, :privacy => :privacy_text, :schema => :schema,
     :updated_at => :updated_at, :rows_counted => :rows_estimated,
     :table_size => :table_size, :map_id => :map_id, :description => :description,
-    :geometry_types => :geometry_types, :visualization_ids => :visualization_ids,
-    :table_visualization => :table_visualization,
+    :geometry_types => :geometry_types, :table_visualization => :table_visualization,
     :affected_visualizations => :serialize_affected_visualizations
   }
 
   DEFAULT_THE_GEOM_TYPE = "geometry"
 
   many_to_one :map
-  plugin :association_dependencies, :map => :destroy
+  many_to_many :layers,
+                join_table: :layers_user_tables,
+                left_key: :user_table_id, right_key: :layer_id,
+                reciprocal: :user_tables
+  plugin :association_dependencies, :map => :destroy, layers: :nullify
   plugin :dirty
 
   def public_values(options = {})
@@ -449,6 +453,11 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def before_destroy
+    #puts affected_visualizations.inspect
+    #affected_visualizations.each(&:delete)
+    #puts affected_visualizations.inspect
+    super
+    @affected_visualizations_cache = affected_visualizations.to_a
     memoize_table_visualization_to_be_available_in_after_destroy
   end
 
@@ -460,6 +469,11 @@ class Table < Sequel::Model(:user_tables)
     remove_table_from_stats
     invalidate_varnish_cache
     delete_tile_style
+    @affected_visualizations_cache.each do |visualization|
+      puts visualization.inspect
+      visualization.delete
+      puts visualization.inspect
+    end
     table_visualization.delete if table_visualization
   end
 
@@ -1308,12 +1322,14 @@ TRIGGER
     self.private? ? 'PRIVATE' : 'PUBLIC'
   end
 
-  def visualizations
-    CartoDB::Visualization::Collection.new.fetch(map_id: [map_id])
-  end #visualizations
+  #def visualizations
+  #  affected_visualizations.to_a
+  #end #visualizations
 
   def visualization_ids
-    visualizations.map(&:id)
+    affected_visualization_records.select(:id).map do |visualization|
+      visualization.fetch(:id)
+    end
   end #visualization_ids
 
   def table_visualization
@@ -1327,20 +1343,27 @@ TRIGGER
                 :table_visualization
 
   def serialize_affected_visualizations
-    affected_visualizations.map(&:to_hash)
+    affected_visualization_records.select(:id, :name).map(&:to_hash)
   end #serialize_affected_visualizations
 
   private
 
   def affected_visualizations
-    Table.fetch(%Q{
-      SELECT  visualizations.id, visualizations.name
+    affected_visualization_records.map do |attributes|
+      CartoDB::Visualization::Member.new(attributes)
+    end
+  end #affected_visualizations
+
+  def affected_visualization_records
+    #  visualizations.id, visualizations.name
+    Rails::Sequel.connection[:visualizations].with_sql(%Q{
+      SELECT  *
       FROM    layers_user_tables, layers_maps, visualizations
       WHERE   layers_user_tables.user_table_id = #{id}
       AND     layers_user_tables.layer_id = layers_maps.layer_id
       AND     layers_maps.map_id = visualizations.map_id
     })
-  end #affected_visualizations
+  end #affected_visualization_records
 
   def update_updated_at
     self.updated_at = Time.now

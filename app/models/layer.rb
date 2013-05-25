@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 class Layer < Sequel::Model
   plugin :serialization, :json, :options, :infowindow
   
@@ -15,8 +17,13 @@ class Layer < Sequel::Model
 
   many_to_many :maps,  :after_add => proc { |layer, parent| layer.set_default_order(parent) }
   many_to_many :users, :after_add => proc { |layer, parent| layer.set_default_order(parent) }
+  many_to_many :user_tables,
+                join_table: :layers_user_tables,
+                left_key: :layer_id, right_key: :user_table_id,
+                reciprocal: :layers, class: Table
   
-  plugin :association_dependencies, :maps => :nullify, :users => :nullify
+  plugin  :association_dependencies, :maps => :nullify, :users => :nullify,
+          :user_tables => :nullify
 
   def public_values
     Hash[ PUBLIC_ATTRIBUTES.map { |attribute| [attribute, send(attribute)] } ]
@@ -24,13 +31,11 @@ class Layer < Sequel::Model
 
   def validate
     super
-
     errors.add(:kind, "not accepted") unless ALLOWED_KINDS.include?(kind)
   end
 
   def before_save
     super  
-
     self.updated_at = Time.now
   end
 
@@ -44,6 +49,11 @@ class Layer < Sequel::Model
     affected_tables.map(&:invalidate_varnish_cache) if data_layer?
     register_table_dependencies if data_layer?
   end
+
+  def before_destroy
+    super
+    puts 'destroying'
+  end #before_destroy
 
   ##
   # Returns an array of tables used on the layer
@@ -95,26 +105,21 @@ class Layer < Sequel::Model
     !data_layer?
   end #base_layer?
 
-  def register_table_dependencies
-    db          = Rails::Sequel.connection
-    join_table  = db[:layers_user_tables]
-
+  def register_table_dependencies(db=Rails::Sequel.connection)
     db.transaction do
-      delete_table_dependencies(join_table)
-      insert_table_dependencies(join_table)
+      delete_table_dependencies
+      insert_table_dependencies
     end
   end #register_table_dependencies
 
   private
 
-  def delete_table_dependencies(relation)
-    relation.where(layer_id: id).delete
+  def delete_table_dependencies
+    user_tables.map { |table| remove_user_table(table) }
   end #delete_table_dependencies
 
-  def insert_table_dependencies(relation)
-    affected_tables.map do |table| 
-      relation.insert(user_table_id: table.id, layer_id: id)
-    end
+  def insert_table_dependencies
+    affected_tables.map { |table| add_user_table(table) }
   end #insert_table_dependencies
 
   def tables_from_query_option

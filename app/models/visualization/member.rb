@@ -70,6 +70,9 @@ module CartoDB
 
       def delete
         overlays.destroy
+        layers(:base).map(&:destroy)
+        layers(:cartodb).map(&:destroy)
+        map.destroy if map
         table.destroy if type == 'table' && table
         repository.delete(id)
         self.attributes.keys.each { |key| self.send("#{key}=", nil) }
@@ -126,7 +129,7 @@ module CartoDB
       end #related_tables
 
       def layers(kind)
-        return [] unless map.id
+        return [] unless map
         return map.send(LAYER_SCOPES.fetch(kind))
       end #layers
 

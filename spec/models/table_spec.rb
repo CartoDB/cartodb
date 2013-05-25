@@ -1697,5 +1697,15 @@ describe Table do
       new_table.should == nil
     end
   end
+
+  describe '#name=' do
+    it 'does not change the name if it is equivalent to the current one' do
+      table = Table.new
+      table.name = 'new name'
+      table.name.should == 'new_name'
+      table.name = 'new name'
+      table.name.should == 'new_name'
+    end
+  end #name=
 end
 

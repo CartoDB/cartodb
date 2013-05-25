@@ -558,11 +558,11 @@ class Table < Sequel::Model(:user_tables)
 
   def name=(value)
     return if value == self[:name] || value.blank?
-    new_name = get_valid_name(value)
+    new_name = get_valid_name(value, current_name: self.name)
 
     # Do not keep track of name changes until table has been saved
     @name_changed_from = self.name if !new? && self.name.present?
-    self.invalidate_varnish_cache
+    self.invalidate_varnish_cache if self.database_name
     self[:name] = new_name
   end
 
@@ -1350,9 +1350,12 @@ TRIGGER
     update_updated_at && save_changes
   end
 
-  def get_valid_name(name)
-    Table.get_valid_table_name(name, 
-      name_candidates: self.owner.tables.select_map(:name))
+  def get_valid_name(name, options={})
+    name_candidates = [] 
+    name_candidates = self.owner.tables.select_map(:name) if owner
+
+    options.merge!(name_candidates: name_candidates)
+    Table.get_valid_table_name(name, options)
   end
 
   # Gets a valid postgresql table name for a given database
@@ -1371,6 +1374,7 @@ TRIGGER
     # Postgresql table name limit
     name = name[0..62]
 
+    return name if name == options[:current_name]
     # We don't want to use an existing table name
     existing_names = options[:name_candidates] || options[:connection]["select relname from pg_stat_user_tables WHERE schemaname='public'"].map(:relname)
     existing_names = existing_names + User::SYSTEM_TABLE_NAMES

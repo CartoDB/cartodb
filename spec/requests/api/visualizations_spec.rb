@@ -125,7 +125,7 @@ describe Api::Json::VisualizationsController do
       last_response.status.should == 200
     end
 
-    it 'assigns a generated name if name taken', now: true do
+    it 'assigns a generated name if name taken' do
       table               = table_factory
       visualization       = table.fetch('table_visualization')
       visualization_name  = visualization.fetch('name')

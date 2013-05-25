@@ -31,6 +31,14 @@ describe Visualization::NameGenerator do
 
       generator.name.should =~ /#{Visualization::NameGenerator::PATTERN}/
     end
+
+    it 'accepts names with non-ASCII characters' do
+      user        = Object.new
+      checker     = positive_checker
+      candidate   = "Me gustan los ñúes"
+      generator   = Visualization::NameGenerator.new(user, checker)
+      generator.name(candidate).should == candidate
+    end
   end
 
   def positive_checker

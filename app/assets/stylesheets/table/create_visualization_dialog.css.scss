@@ -7,7 +7,7 @@
   @import "compass";
   @import "common/forms";
 
-  .name_visualization_dialog {
+  .create_visualization {
 
     @include default-form-info();
     @include default-input();
@@ -17,19 +17,11 @@
       padding:14px 11px;
     }
 
-    // .duplicate_content {
-    //   padding:80px 40px;
-    // }
-
-    // section.block {
-    //   .content {
-    //     padding: 40px 40px 25px 40px;
-    //   }
-    // }
-
     .modal.creating {
       display:none;
       width:300px!important;
+
+      .creating_content {padding:80px 40px;}
 
       div.loader {
         padding-top:40px;

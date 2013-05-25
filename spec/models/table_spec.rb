@@ -68,7 +68,7 @@ describe Table do
       table.name.should == "cdb_tablemetadata_1"
     end
 
-    it 'propagates name changes to table visualization' do
+    it 'propagates name changes to table visualization', now: true do
       table = create_table(name: 'bogus_name', user_id: @user.id)
       table.table_visualization.name.should == table.name
 
@@ -77,6 +77,20 @@ describe Table do
 
       table.reload
       table.name                      .should == 'bogus_name_1'
+      table.table_visualization.name  .should == table.name
+
+      table.name = 'viva la pepa'
+      table.save
+
+      table.reload
+      table.name                      .should == 'viva_la_pepa'
+      table.table_visualization.name  .should == table.name
+
+      table.name = '     viva el pepe     '
+      table.save
+
+      table.reload
+      table.name                      .should == 'viva_el_pepe'
       table.table_visualization.name  .should == table.name
     end
 

@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
   <body>
-    <%= render 'shared/analytics', ua: Cartodb.config[:google_analytics]["embeds"] %>
-  </body>
+    <%= render partial: 'shared/analytics', locals: { 
+      ua:     Cartodb.config[:google_analytics]['embeds'],
+      domain: Cartodb.config[:google_analytics]['domain']
+    } %>
 </html>

@@ -12,7 +12,7 @@ module CartoDB
       end #initialize
 
       def name(candidate=PATTERN, iteration=0)
-        candidate = candidate.strip
+        candidate = (candidate || PATTERN).strip
         return candidate if checker.available?(candidate)
 
         new_candidate = "#{candidate} #{iteration}"

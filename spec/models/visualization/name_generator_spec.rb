@@ -47,6 +47,14 @@ describe Visualization::NameGenerator do
       generator   = Visualization::NameGenerator.new(user, checker)
       generator.name(candidate).should == 'viva la pepa'
     end
+
+    it 'assigns a valid name if a explicit nil candidate is passed' do
+      user        = Object.new
+      checker     = positive_checker
+      candidate   = '      viva la pepa     '
+      generator   = Visualization::NameGenerator.new(user, checker)
+      generator.name(nil).should == Visualization::NameGenerator::PATTERN
+    end
   end
 
   def positive_checker

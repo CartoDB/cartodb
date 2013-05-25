@@ -68,7 +68,7 @@ describe Table do
       table.name.should == "cdb_tablemetadata_1"
     end
 
-    it 'propagates name changes to table visualization', now: true do
+    it 'propagates name changes to table visualization' do
       table = create_table(name: 'bogus_name', user_id: @user.id)
       table.table_visualization.name.should == table.name
 

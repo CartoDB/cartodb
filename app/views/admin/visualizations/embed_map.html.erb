@@ -99,6 +99,9 @@
       });
 
     </script>
-    <%= render 'shared/analytics', ua: Cartodb.config[:google_analytics]["embeds"] %>
+    <%= render partial: 'shared/analytics', locals: { 
+      ua:     Cartodb.config[:google_analytics]['embeds'],
+      domain: Cartodb.config[:google_analytics]['domain']
+    } %>
   </body>
 </html>

@@ -453,11 +453,8 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def before_destroy
-    #puts affected_visualizations.inspect
-    #affected_visualizations.each(&:delete)
-    #puts affected_visualizations.inspect
-    super
     @affected_visualizations_cache = affected_visualizations.to_a
+    super
     memoize_table_visualization_to_be_available_in_after_destroy
   end
 
@@ -469,11 +466,7 @@ class Table < Sequel::Model(:user_tables)
     remove_table_from_stats
     invalidate_varnish_cache
     delete_tile_style
-    @affected_visualizations_cache.each do |visualization|
-      puts visualization.inspect
-      visualization.delete
-      puts visualization.inspect
-    end
+    @affected_visualizations_cache.each(&:delete)
     table_visualization.delete if table_visualization
   end
 

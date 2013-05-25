@@ -1707,5 +1707,22 @@ describe Table do
       table.name.should == 'new_name'
     end
   end #name=
+
+  describe '#destroy', now: true do
+    it 'deletes derived visualizations that depend on this table' do
+      table   = create_table(name: 'bogus_name', user_id: @user.id)
+      source  = table.table_visualization
+      derived = CartoDB::Visualization::Copier.new(@user, source).copy
+      derived.store
+
+      rehydrated = CartoDB::Visualization::Member.new(id: derived.id).fetch
+      table.reload
+
+      table.destroy
+      expect {
+        CartoDB::Visualization::Member.new(id: derived.id).fetch
+      }.to raise_error KeyError
+    end
+  end #destroy
 end
 

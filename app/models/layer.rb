@@ -50,11 +50,6 @@ class Layer < Sequel::Model
     register_table_dependencies if data_layer?
   end
 
-  def before_destroy
-    super
-    puts 'destroying'
-  end #before_destroy
-
   ##
   # Returns an array of tables used on the layer
   #

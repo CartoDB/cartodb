@@ -108,7 +108,6 @@ describe Table do
     it 'propagates name changes to affected layers' do
       table = create_table(name: 'bogus_name', user_id: @user.id)
       layer = table.layers.first
-      puts table.layers.inspect
 
       table.name = 'bogus_name_1' 
       table.save
@@ -931,8 +930,15 @@ describe Table do
     it "updates data_last_modified when changing data" do
       table = create_table(:user_id => @user.id)
       table.data_last_modified.should be_nil
+
       table.insert_row!({})
-      table.data_last_modified.to_s.should == Time.now.to_s
+      time1 = table.data_last_modified.to_f
+
+      sleep(0.5)
+      table.insert_row!({})
+      time2 = table.data_last_modified.to_f
+
+      (time2 > time1).should be_true
     end
 
     it "should be able to insert a row with a geometry value" do

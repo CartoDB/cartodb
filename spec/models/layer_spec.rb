@@ -199,4 +199,30 @@ describe Layer do
       layer.data_layer?.should == true
     end
   end #data_layer?
+
+  describe '#rename_table' do
+    it 'renames table in layer options', now: true do
+      table_name      = 'table_name'
+      new_table_name  = 'changed_name'
+
+      tile_style      = "##{table_name} { color:red; }"
+      query           = "SELECT * FROM table_name, other_table"
+      options         = {
+                          table_name: table_name,
+                          tile_style: tile_style,
+                          query:      query
+                        }.to_json
+
+      layer           = Layer.new(kind: 'carto', options: options)
+      layer.rename_table(table_name, new_table_name)
+      
+      options = JSON.parse(layer.options)
+      options.fetch('tile_style') .should      =~ /#{new_table_name}/
+      options.fetch('tile_style') .should_not  =~ /#{table_name}/
+      options.fetch('query')      .should      =~ /#{new_table_name}/
+      options.fetch('query')      .should_not  =~ /#{table_name}/
+      options.fetch('table_name') .should      =~ /#{new_table_name}/
+      options.fetch('table_name') .should_not  =~ /#{table_name}/
+    end
+  end #rename_table
 end

@@ -107,7 +107,24 @@ class Layer < Sequel::Model
     end
   end #register_table_dependencies
 
+  def rename_table(current_table_name, new_table_name)
+    target_keys = %w{ table_name tile_style query }
+    options     = JSON.parse(self.options)
+
+    targets = options.select { |key, value| target_keys.include?(key) }
+    renamed = targets.map do |key, value|
+      [key, rename_in(value, current_table_name, new_table_name)]
+    end
+
+    self.options = options.merge(Hash[renamed]).to_json
+  end #rename_table
+
   private
+
+  def rename_in(target, anchor, substitution)
+    regex = /(\A|\W+)(#{anchor})(\W+|\z)/
+    target.gsub!(regex) { |match| match.gsub(anchor, substitution) }
+  end #rename_in
 
   def delete_table_dependencies
     user_tables.map { |table| remove_user_table(table) }

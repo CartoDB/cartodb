@@ -201,7 +201,7 @@ describe Layer do
   end #data_layer?
 
   describe '#rename_table' do
-    it 'renames table in layer options', now: true do
+    it 'renames table in layer options' do
       table_name      = 'table_name'
       new_table_name  = 'changed_name'
 
@@ -211,12 +211,14 @@ describe Layer do
                           table_name: table_name,
                           tile_style: tile_style,
                           query:      query
-                        }.to_json
+                        }
 
-      layer           = Layer.new(kind: 'carto', options: options)
+      layer           = Layer.create(kind: 'carto', options: options)
       layer.rename_table(table_name, new_table_name)
+      layer.save
+      layer.reload
       
-      options = JSON.parse(layer.options)
+      options = layer.options
       options.fetch('tile_style') .should      =~ /#{new_table_name}/
       options.fetch('tile_style') .should_not  =~ /#{table_name}/
       options.fetch('query')      .should      =~ /#{new_table_name}/

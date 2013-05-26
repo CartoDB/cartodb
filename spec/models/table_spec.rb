@@ -104,6 +104,19 @@ describe Table do
       table.reload
       table.name.should == table.table_visualization.name
     end
+    
+    it 'propagates name changes to affected layers' do
+      table = create_table(name: 'bogus_name', user_id: @user.id)
+      layer = table.layers.first
+      puts table.layers.inspect
+
+      table.name = 'bogus_name_1' 
+      table.save
+
+      table.reload
+      layer.reload
+      layer.options.fetch('table_name').should == table.name
+    end
 
     it "should create default associated map and layers" do
       visualizations = CartoDB::Visualization::Collection.new.fetch.to_a.length
@@ -1708,7 +1721,7 @@ describe Table do
     end
   end #name=
 
-  describe '#destroy', now: true do
+  describe '#destroy' do
     it 'deletes derived visualizations that depend on this table' do
       table   = create_table(name: 'bogus_name', user_id: @user.id)
       source  = table.table_visualization

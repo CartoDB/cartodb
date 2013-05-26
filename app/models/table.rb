@@ -1582,6 +1582,9 @@ SQL
       # update metadata records
       $tables_metadata.rename(Table.key(database_name,@name_changed_from), key)
       owner.in_database.rename_table(@name_changed_from, name)
+      layers.each do |layer| 
+        layer.rename_table(@name_changed_from, name).save
+      end
 
       # update tile styles
       begin

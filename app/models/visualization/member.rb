@@ -125,7 +125,7 @@ module CartoDB
       end #table
 
       def related_tables
-        layers(:cartodb).flat_map(&:affected_tables).map(&:name).uniq
+        layers(:cartodb).flat_map(&:affected_tables).uniq
       end #related_tables
 
       def layers(kind)

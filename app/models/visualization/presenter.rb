@@ -41,7 +41,9 @@ module CartoDB
 
       def without_associated_table(tables)
         return tables unless visualization.table
-        tables.delete(visualization.table.name)
+        tables.delete_if { |table|
+          table.id == visualization.table.id
+        }.map { |table| table_data_for(table) }
       end #without_associated_table
     end # Presenter
   end # Visualization

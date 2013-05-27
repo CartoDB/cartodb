@@ -200,11 +200,17 @@
       // add them again, in correct order
       if(appending) {
         cdb.geo.LeafletMapView.addLayerToMap(layer_view, self.map_leaflet);
+        if(layer_view.setZIndex) {
+          layer_view.setZIndex(layer.get('order'))
+        }
       } else {
         this.map.layers.each(function(layerModel) {
           var v = self.layers[layerModel.cid];
           if(v) {
             cdb.geo.LeafletMapView.addLayerToMap(v, self.map_leaflet);
+            if(layer_view.setZIndex) {
+              v.setZIndex(layer.get('order'))
+            }
           }
         });
       }

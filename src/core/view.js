@@ -17,6 +17,7 @@
     },
 
     add_related_model: function(m) {
+      if(!m) throw "added non valid model"
       this._models.push(m);
     },
 

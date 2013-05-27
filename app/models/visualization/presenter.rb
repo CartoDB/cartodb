@@ -31,6 +31,8 @@ module CartoDB
         return {} unless table
         {
           id:               table.id,
+          name:             table.name,
+          privacy:          table.privacy_text,
           size:             table.table_size,
           row_count:        table.rows_estimated,
           updated_at:       table.updated_at

@@ -96,7 +96,12 @@ module CartoDB
 
       def load_database
         dump    = File.join(Relocator::TMP_DIR, relocation.path_for('dump.sql'))
-        command = "#{psql} -U postgres #{user.database_name} < #{dump}"
+        configuration = Rails.configuration.database_configuration
+        host          = configuration[Rails.env]["host"]
+        database      = configuration[Rails.env]["database"]
+        username      = configuration[Rails.env]["username"]
+        password      = configuration[Rails.env]["password"]
+        command = "#{psql} -U #{username} #{user.database_name} < #{dump}"
 
         `#{command}`
         puts $?

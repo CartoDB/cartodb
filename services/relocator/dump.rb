@@ -56,7 +56,12 @@ module CartoDB
                   :environment
 
       def dump(database_name)
-        command = "#{pg_dump} #{database_name}"
+        configuration = Rails.configuration.database_configuration
+        host          = configuration[Rails.env]["host"]
+        database      = configuration[Rails.env]["database"]
+        username      = configuration[Rails.env]["username"]
+        password      = configuration[Rails.env]["password"]
+        command       = "#{pg_dump} -U #{username} -w #{database_name}"
 
         Open3.popen3(command) do |stdin, stdout, stderr, process| 
           relocation.store('dump.sql', stdout)

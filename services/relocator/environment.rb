@@ -9,11 +9,13 @@ module CartoDB
       end #initialize
 
       def database_username
+        return "cartodb_user_#{user_id}" if environment == 'production'
         return "cartodb_staging_user_#{user_id}" if environment == 'staging'
         "#{environment}_cartodb_user_#{user_id}"
       end #database_username
 
       def user_database
+        return "cartodb_user_#{user_id}_db" if environment == 'production'
         return "cartodb_dev_user_#{user_id}_db" if environment == 'development'
         "cartodb_#{environment}_user_#{user_id}_db"
       end #user_database
@@ -24,4 +26,3 @@ module CartoDB
     end # Environment
   end # Relocator
 end # CartoDB
-

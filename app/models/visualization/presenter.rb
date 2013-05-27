@@ -18,7 +18,7 @@ module CartoDB
           description:      visualization.description,
           privacy:          visualization.privacy.upcase,
           table:            table_data_for(visualization.table),
-          related_tables:   without_associated_table(visualization.related_tables),
+          related_tables:   related_tables,
           stats:            visualization.stats
         }
       end #to_poro
@@ -29,6 +29,7 @@ module CartoDB
 
       def table_data_for(table=nil)
         return {} unless table
+        puts table.inspect
         {
           id:               table.id,
           name:             table.name,
@@ -39,11 +40,14 @@ module CartoDB
         }
       end #table_data_for
 
+      def related_tables
+        without_associated_table(visualization.related_tables)
+          .map { |table| table_data_for(table) }
+      end #related_tables
+
       def without_associated_table(tables)
         return tables unless visualization.table
-        tables.delete_if { |table|
-          table.id == visualization.table.id
-        }.map { |table| table_data_for(table) }
+        tables.select { |table| table.id != visualization.table.id }
       end #without_associated_table
     end # Presenter
   end # Visualization

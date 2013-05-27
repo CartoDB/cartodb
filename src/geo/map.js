@@ -166,18 +166,20 @@ cdb.geo.Layers = Backbone.Collection.extend({
   model: cdb.geo.MapLayer,
 
   initialize: function() {
-    this.bind('add remove', this._asignIndexes, this);
+    this.comparator = function(a, b) {
+      return b.get('order') - a.get('order');
+    }
   },
 
   /**
    * each time a layer is added or removed
    * the index should be recalculated
    */
-  _asignIndexes: function() {
+  /*_asignIndexes: function() {
     for(var i = 0; i < this.size(); ++i) {
       this.models[i].set({ order: i }, { silent: true });
     }
-  }
+  }*/
 });
 
 /**
@@ -590,9 +592,18 @@ cdb.geo.MapView = cdb.core.View.extend({
 
   _addLayers: function() {
     var self = this;
+    this._removeLayers();
     this.map.layers.each(function(lyr) {
       self._addLayer(lyr);
     });
+  },
+
+  _removeLayers: function(layer) {
+    for(var i in this.layers) {
+      var layer_view = this.layers[i];
+      layer_view.remove();
+      delete this.layers[i];
+    }
   },
 
   _removeLayer: function(layer) {

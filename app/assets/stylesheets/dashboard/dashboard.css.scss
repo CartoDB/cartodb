@@ -10,6 +10,11 @@
   @import "../common/vars";
   @import "../common/forms";
 
+  header {
+
+    ul li > .disabled:hover { color:white; }
+
+  }
 
   article {
 

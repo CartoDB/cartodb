@@ -55,18 +55,18 @@ module ApplicationHelper
 
   def frontend_config
     {
-      tiler_protocol:              Cartodb.config[:tiler_protocol],
-      tiler_port:                  Cartodb.config[:tiler_port],
-      tiler_domain:                Cartodb.config[:tiler_domain],
-      sql_api_protocol:            Cartodb.config[:sql_api_protocol],
-      sql_api_domain:              "#{request.subdomain}.#{Cartodb.config[:sql_api_domain]}",
-      sql_api_endpoint:            Cartodb.config[:sql_api_endpoint],
-      sql_api_port:                Cartodb.config[:sql_api_port],
-      cartodb_com_hosted:          Cartodb.config[:cartodb_com_hosted],
-      account_host:                Cartodb.config[:account_host]
+      tiler_protocol:     Cartodb.config[:tiler_protocol],
+      tiler_port:         Cartodb.config[:tiler_port],
+      tiler_domain:       Cartodb.config[:tiler_domain],
+      sql_api_protocol:   Cartodb.config[:sql_api_protocol],
+      sql_api_domain:     "#{request.subdomain}.#{Cartodb.config[:sql_api_domain]}",
+      sql_api_endpoint:   Cartodb.config[:sql_api_endpoint],
+      sql_api_port:       Cartodb.config[:sql_api_port],
+      cartodb_com_hosted: Cartodb.config[:cartodb_com_hosted],
+      account_host:       Cartodb.config[:account_host]
     }.to_json
   end
-Cartodb.config[:google_analytics]["primary"].blank?
+
   def stringified_member_type
     current_user.present? ? current_user.account_type.to_s.upcase : 'UNAUTHENTICATED'
   end

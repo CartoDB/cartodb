@@ -29,7 +29,6 @@ module CartoDB
 
       def table_data_for(table=nil)
         return {} unless table
-        puts table.inspect
         {
           id:               table.id,
           name:             table.name,

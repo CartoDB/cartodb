@@ -453,7 +453,6 @@ describe CartoDB::Importer do
         importer = create_importer 'map2.osm'
         results,errors = importer.import!
         errors.length.should == 0
-        debuggger
         results.should =~ [
           OpenStruct.new(name: "map2_line",    rows_imported: 17, import_type: ".osm", log: ""), 
           OpenStruct.new(name: "map2_polygon", rows_imported: 17, import_type: ".osm", log: ""),

@@ -48,6 +48,8 @@ module CartoDB
 
       wait_until_table_present("#{random_table_prefix}_line")
 
+      remove_auxiliary_tables(random_table_prefix)
+
       if $?.exitstatus != 0
         data_import.set_error_code(6000)
         data_import.log_update(stdout.read)
@@ -184,6 +186,10 @@ module CartoDB
         end
       end
       sleep 1
+    end
+
+    def remove_auxiliary_tables(table_prefix)
+      ["ways", "rels", "nodes"].each { |aux_table| db.drop_table("#{table_prefix}_#{aux_table}") }
     end
   end # OSM
 end # CartoDB

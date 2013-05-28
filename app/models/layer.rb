@@ -41,12 +41,8 @@ class Layer < Sequel::Model
 
   def after_save
     super
-
-    # Invalidate varnish cache (vizjson) for all the maps including this layer
-    maps.each { |map| map.invalidate_varnish_cache }
-
-    # Invalidate related tables cache on varnish (only for carto layers)
-    affected_tables.map(&:invalidate_varnish_cache) if data_layer?
+    maps.each(&:invalidate_vizjson_varnish_cache)
+    affected_tables.each(&:invalidate_varnish_cache) if data_layer?
     register_table_dependencies if data_layer?
   end
 

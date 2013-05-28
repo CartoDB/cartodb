@@ -11,6 +11,7 @@ article.public_tables {
 
   margin: auto;
   letter-spacing: 0;
+  background: image-url('layout/bkg.jpg') repeat 0 0;
 
   i {
     @include inline-block();
@@ -22,7 +23,7 @@ article.public_tables {
 
   .header {
 
-    width:960px;
+    width: 1026px;
     padding: 27px 0 25px 0;
 
     @include clearfix();
@@ -46,7 +47,7 @@ article.public_tables {
   }
 
   table {
-    width:960px;
+    width:100%;
     margin: 0 0 70px 0;
 
     border-top: 1px solid rgba($cGray4, .5);
@@ -152,7 +153,7 @@ article.public_tables {
     .size {
       color:#FF7373;
     }
-    
+
     a.copy {
       @include icons-sprite(prohibited, $offset-x: 4px, $offset-y: 5px);
       &:hover {cursor:default;}

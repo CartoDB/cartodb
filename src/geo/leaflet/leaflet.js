@@ -209,7 +209,7 @@
           if(v) {
             cdb.geo.LeafletMapView.addLayerToMap(v, self.map_leaflet);
             if(layer_view.setZIndex) {
-              v.setZIndex(layer.get('order'))
+              v.setZIndex(layerModel.get('order'))
             }
           }
         });

@@ -141,6 +141,12 @@ module CartoDB
         CartoDB::Visualization::Stats.new(self).to_poro
       end #stats
 
+      def varnish_key
+        "#{related_tables.map(&:name)
+          .sort { |i, j| i <=> j }
+          .join(',')},#{id}"
+      end #varnish_key
+
       private
 
       attr_reader   :repository, :name_checker

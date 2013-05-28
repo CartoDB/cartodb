@@ -99,10 +99,10 @@
     opt.version = opt.version ? (opt.version + '/'): '';
 
     if(!global_info.css_included) {
-      doc.write('<link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/' + opt.version + 'themes/css/cartodb.css" />');
+      doc.write('<link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/' + opt.version + 'themes/css/cartodb.css" />');
       var ua = navigator.userAgent;
       if(ua.indexOf('MSIE 8') != -1 || ua.indexOf('MSIE 7') != -1) {
-        doc.write('<link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/' + opt.version + 'themes/css/cartodb.ie.css" />');
+        doc.write('<link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/' + opt.version + 'themes/css/cartodb.ie.css" />');
       }
       global_info.css_included = true
     }
@@ -119,7 +119,7 @@
         if(global_info.loading) {
             global_info.load_queue.push([map_id, opt.url || VIZJSON_URL, opt]);
         } else {
-          load_script('http://libs.cartocdn.com/cartodb.js/v2/' + (opt.debug ? ( opt.version + 'cartodb.uncompressed.js'):'cartodb.js'), function() {
+          load_script('http://libs.cartocdn.com/cartodb.js/v3/' + (opt.debug ? ( opt.version + 'cartodb.uncompressed.js'):'cartodb.js'), function() {
             cartodb.createVis(map_id, opt.url || VIZJSON_URL, opt);
 
             for(var g in global_info.load_queue) {

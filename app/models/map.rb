@@ -49,7 +49,7 @@ class Map < Sequel::Model
   def after_save
     super
     update_map_id_on_associated_table
-    invalidate_varnish_cache
+    invalidate_vizjson_varnish_cache
   end #after_save
 
   def public_values
@@ -75,13 +75,15 @@ class Map < Sequel::Model
     get_the_last_time_tiles_have_changed_to_render_it_in_vizjsons
   end #viz_updated_at
 
-  def invalidate_varnish_cache
-    t = tables_dataset.select(:id, :user_id, :name).first
-    return true if t.blank?
+  def invalidate_vizjson_varnish_cache
+    return self if visualizations.empty?
 
-    CartoDB::Varnish.new.purge(
-      "obj.http.X-Cache-Channel ~ #{t.varnish_key}:vizjson"
-    )
+    visualizations.each do |visualization|
+      key = visualization.varnish_key
+      CartoDB::Varnish.new.purge(
+        "obj.http.X-Cache-Channel ~ #{key}:vizjson"
+      )
+    end
   end #invalidate_varnish_cache
 
   def copy_for(user)
@@ -92,6 +94,10 @@ class Map < Sequel::Model
     return admits_more_data_layers? if layer.data_layer?
     return admits_more_base_layers? if layer.base_layer?
   end #admits?
+
+  def visualizations
+    CartoDB::Visualization::Collection.new.fetch(map_id: [self.id]).to_a
+  end #visualizations
 
   private
 

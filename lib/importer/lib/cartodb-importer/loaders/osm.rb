@@ -32,7 +32,7 @@ module CartoDB
     def process!
       osm2pgsql_bin_path = `which osm2pgsql`.strip
       host = db_configuration[:host] ? "-H #{db_configuration[:host]}" : ""
-      port = db_configuration[:port] ? "-P #{db_configuration[:port]}" : ""
+      port = db_configuration[:osm2pgsql_port] ? "-P #{db_configuration[:osm2pgsql_port]}" : ""
 
       # TODO Create either a dynamic cache size based on user account type
       # or pick a wiser number for everybody

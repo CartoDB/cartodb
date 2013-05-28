@@ -26,18 +26,13 @@ module CartoDB
 
       def to_vizjson_v1
         return layer.public_values if base?(layer)
-        representation = {
+        {
           id:         layer.id,
           kind:       'CartoDB',
           infowindow: infowindow_data,
           order:      layer.order,
           options:    options_data_v1
         }
-
-        options = representation.fetch(:options, {})
-        options.store(:tile_style,  options.delete(:cartocss))
-        representation.store(:options,  options)
-        representation
       end #to_vizjson_v1
   
       private
@@ -63,7 +58,8 @@ module CartoDB
         {
           sql:                wrap(sql, layer.options),
           cartocss:           layer.options.fetch('tile_style'),
-          cartocss_version:   CARTO_CSS_VERSION,
+          cartocss_version:   layer.options
+                                .fetch('tile_style_version', CARTO_CSS_VERSION),
           interactivity:      layer.options.fetch('interactivity')
         }
       end #options_data_v2
@@ -73,10 +69,7 @@ module CartoDB
       def options_data_v1
         return layer.options if options[:full]
         sql = sql_from(layer.options)
-
-        layer.options.select { |key, value| 
-          public_options.include?(key.to_s) 
-        }
+        layer.options.select { |key, value| public_options.include?(key.to_s) }
         #.merge(
         #  sql:                sql,
         #  query:              wrap(sql, layer.options),

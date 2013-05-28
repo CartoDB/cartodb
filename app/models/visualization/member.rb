@@ -49,6 +49,7 @@ module CartoDB
       def store
         raise CartoDB::InvalidMember unless self.valid?
 
+        invalidate_varnish_cache if name_changed || privacy_changed
         propagate_privacy_and_name_to(table) if table
         set_timestamps
         repository.store(id, attributes.to_hash)
@@ -152,6 +153,11 @@ module CartoDB
       attr_reader   :repository, :name_checker
       attr_accessor :privacy_changed, :name_changed
 
+      def invalidate_varnish_cache
+        CartoDB::Varnish.new
+          .purge("obj.http.X-Cache-Channel ~ #{varnish_key}:vizjson")
+      end #invalidate_varnish_cache
+
       def propagate_privacy_and_name_to(table)
         return self unless table
         propagate_privacy_to(table) if privacy_changed
@@ -189,9 +195,7 @@ module CartoDB
 
       def available_name?
         return true unless name_changed && user
-        available = name_checker.available?(name)
-        return([false, 'name not available']) unless available
-        available
+        name_checker.available?(name)
       end #available_name?
     end # Member
   end # Visualization

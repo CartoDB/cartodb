@@ -43,7 +43,8 @@ if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
           scrollwheel: this.map.get("scrollwheel"),
           mapTypeControl:false,
           mapTypeId: google.maps.MapTypeId.ROADMAP,
-          backgroundColor: 'white'
+          backgroundColor: 'white',
+          tilt: 0
         });
 
       } else {

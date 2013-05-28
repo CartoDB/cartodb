@@ -125,7 +125,8 @@
 
       options = options || {};
       options = _.defaults(options, {
-          infowindow: true
+        infowindow: true,
+        https: false
       })
 
       // create a dummy viz
@@ -141,6 +142,7 @@
         });
 
         viz.updated_at = visData.updated_at;
+        viz.https = options.https;
       }
 
       layerView = viz.createLayer(layerData, { no_base_layer: true });

@@ -440,20 +440,22 @@ var Vis = cdb.core.View.extend({
             var fields = infowindowFields.fields;
             for(var j = 0; j < fields.length; ++j) {
               var f = fields[j];
-              if(interact_data[f.name] != undefined && interact_data[f.name] != "") {
+              var value = String(interact_data[f.name]);
+              if(interact_data[f.name] != undefined && value != "") {
                 render_fields.push({
-                  title: f.title ? f.name: null,
+                  title: f.title ? f.name : null,
                   value: interact_data[f.name],
-                  index: j ? j:null // mustache does not recognize 0 as false :(
+                  index: j ? j : null
                 });
               }
             }
+
             // manage when there is no data to render
             if (render_fields.length === 0) {
               render_fields.push({
                 title: null,
                 value: 'No data available',
-                index: j ? j:null, // mustache does not recognize 0 as false :(
+                index: j ? j : null,
                 type: 'empty'
               });
             }

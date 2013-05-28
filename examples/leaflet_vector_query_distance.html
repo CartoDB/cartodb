@@ -32,35 +32,52 @@
 
       var map = L.map('map', { 
         zoomControl: false,
-        center: [43, 0],
-        zoom: 3
+        center: [40.78151171, -73.94959818,0], 
+        zoom: 13
       })
+
+      var sql = new cartodb.SQL({ user: 'examples', format: 'geojson' });
 
       L.tileLayer('http://tile.stamen.com/toner/{z}/{x}/{y}.png', {
         attribution: 'Stamen'
       }).addTo(map);
 
-      cartodb.createLayer(map, 'http://examples.cartodb.com/api/v1/viz/european_countries_e/viz.json', {
-        query: 'select * from {{table_name}} where area::float > 10000' // if you remove this the query applied in the editor will be used
-      })
-       .on('done', function(layer) {
-        map.addLayer(layer);
 
-        layer.on('featureOver', function(e, pos, latlng, data) {
-          cartodb.log.log(e, pos, latlng, data);
-        });
-
-        layer.on('error', function(err) {
-          cartodb.log.log('error: ' + err);
-        });
-
-      }).on('error', function() {
-        cartodb.log.log("some error occurred");
+      map.on('click', function(e) {
+        show_wifi_near(e.latlng, 500); //500 meters
       });
+
+      var geojsonMarkerOptions = {
+        radius: 3,
+        fillColor: "#ff7800",
+        color: "#000",
+        weight: 1,
+        opacity: 1,
+        fillOpacity: 0.8
+      };
+
+      var wifiPoints = L.geoJson(null, {
+        pointToLayer: function (feature, latlng) {
+          return L.circleMarker(latlng, geojsonMarkerOptions);
+        }
+      }).addTo(map);
+
+
+      function show_wifi_near(position, radioMeters) {
+        var vars = {
+          lat: position.lat,
+          lon: position.lng,
+          radio: radioMeters
+        }
+        sql.execute("select * from nyc_wifi where ST_Distance(the_geom::geography, ST_SetSRID(ST_MakePoint({{lon}}, {{lat}}), 4326)::geography) < {{radio}}", vars).done(function(geojson) {
+            wifiPoints.addData(geojson);
+        });
+      }
+
+
 
     }
 
-    // you could use $(window).load(main);
     window.onload = main;
 
   </script>

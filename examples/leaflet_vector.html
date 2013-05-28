@@ -36,31 +36,24 @@
         zoom: 3
       })
 
+      var sql = new cartodb.SQL({ user: 'examples', format: 'geojson' });
+
       L.tileLayer('http://tile.stamen.com/toner/{z}/{x}/{y}.png', {
         attribution: 'Stamen'
       }).addTo(map);
 
-      cartodb.createLayer(map, 'http://examples.cartodb.com/api/v1/viz/european_countries_e/viz.json', {
-        query: 'select * from {{table_name}} where area::float > 10000' // if you remove this the query applied in the editor will be used
-      })
-       .on('done', function(layer) {
-        map.addLayer(layer);
+      // create the layer and add to the map, then will be filled with data
+      var countriesLayer = L.geoJson().addTo(map);
+      //sql.execute("select * from european_countries_e").done(function(geojson) {
+        //sql.execute("select * from european_countries_e where area::float > {{area}}", { area: 10000 }).done(function(geojson) {
+      sql.execute("select ST_Simplify(the_geom, 2) as the_geom from european_countries_e").done(function(geojson) {
 
-        layer.on('featureOver', function(e, pos, latlng, data) {
-          cartodb.log.log(e, pos, latlng, data);
-        });
 
-        layer.on('error', function(err) {
-          cartodb.log.log('error: ' + err);
-        });
-
-      }).on('error', function() {
-        cartodb.log.log("some error occurred");
+        countriesLayer.addData(geojson);
       });
 
     }
 
-    // you could use $(window).load(main);
     window.onload = main;
 
   </script>

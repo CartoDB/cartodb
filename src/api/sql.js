@@ -64,6 +64,15 @@
       params.dataType = 'jsonp';
     }
 
+    // Substitute mapnik tokens
+    // resolution at zoom level 0
+    var res = '156543.03515625';
+    // full webmercator extent
+    var ext = 'ST_MakeEnvelope(-20037508.5,-20037508.5,20037508.5,20037508.5,3857)';
+    sql = sql.replace('!bbox!', ext)
+             .replace('!pixel_width!', res)
+             .replace('!pixel_height!', res);
+
     // create query
     var query = Mustache.render(sql, vars);
     var q = 'q=' + encodeURIComponent(query);

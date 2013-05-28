@@ -189,10 +189,12 @@ L.CartoDBGroupLayer = L.TileLayer.extend({
   _manageOnEvents: function(map, o) {
     var layer_point = this._findPos(map,o),
         latlng = map.layerPointToLatLng(layer_point);
+    var event_type = o.e.type.toLowerCase();
+
 
     var screenPos = map.layerPointToContainerPoint(layer_point);
 
-    switch (o.e.type) {
+    switch (event_type) {
       case 'mousemove':
         if (this.options.featureOver) {
           return this.options.featureOver(o.e,latlng, screenPos, o.data, o.layer);
@@ -201,6 +203,7 @@ L.CartoDBGroupLayer = L.TileLayer.extend({
 
       case 'click':
       case 'touchend':
+      case 'mspointerup':
         if (this.options.featureClick) {
           this.options.featureClick(o.e,latlng, screenPos, o.data, o.layer);
         }

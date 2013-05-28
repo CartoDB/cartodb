@@ -109,6 +109,44 @@ describe('api.layers', function() {
         });
       });
 
+      it("should use https when https == true", function() {
+        var layer;
+        runs(function() {
+          cartodb.createLayer(map, { kind: 'cartodb', options: {tile_style: 'test', table_name: 'table', user_name: 'test'} }, {https: true}, function(l) {
+            layer = l;
+          });
+        });
+        waits(100);
+        runs(function() {
+          expect(layer._host().indexOf('https')).toEqual(0)
+        });
+      });
+
+      it("should not use https when https == false", function() {
+        var layer;
+        runs(function() {
+          cartodb.createLayer(map, { kind: 'cartodb', options: {tile_style: 'test', table_name: 'table', user_name: 'test'} }, {https: false}, function(l) {
+            layer = l;
+          });
+        });
+        waits(100);
+        runs(function() {
+          expect(layer._host().indexOf('https')).toEqual(-1)
+        });
+      });
+
+      it("should not substitute mapnik tokens", function() {
+        var layer;
+        runs(function() {
+          cartodb.createLayer(map, { kind: 'cartodb', options: {tile_style: 'test', table_name: 'table', user_name: 'test'} }, {query: 'select !bbox!'}, function(l) {
+            layer = l
+          })
+        });
+        waits(100);
+        runs(function() {
+          expect(layer.getQuery()).toEqual('select !bbox!');
+        });
+      });
 
       it("should manage errors", function() {
         var s = sinon.spy();
@@ -176,13 +214,18 @@ describe('api.layers', function() {
             layer = lyr;
           });
         });
+
         waits(10);
+
         runs(function() {
           expect(s.called).toEqual(true);
         });
-      });
-    });
 
-  };
+      });
+
+    //});
+
+    });
+  }
 
 });

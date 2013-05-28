@@ -31,6 +31,10 @@ defaults: &defaults
   superadmin:
     username: "superadmin"
     password: "monkey"
+  importer:
+    # OSM imports require osm2pgsql and this tool doesn't
+    # play well with pgbouncer.
+    osm2pgsql_port: 5432
 
 
 

@@ -347,7 +347,8 @@ class DataImport < Sequel::Model
       :debug            => (Rails.env.development?),
       :remaining_quota  => current_user.remaining_quota,
       :remaining_tables => current_user.remaining_table_quota,
-      :data_import_id   => id
+      :data_import_id   => id,
+      :osm2pgsql_port   => Cartodb.config[:importer]["osm2pgsql_port"]
     )
     importer = CartoDB::Importer.new hash_in
     importer, errors = importer.import!

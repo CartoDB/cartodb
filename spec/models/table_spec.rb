@@ -377,18 +377,13 @@ describe Table do
     end
 
     it "should remove varnish cache when the table is renamed" do
-      pending
       delete_user_data @user
       @user.private_tables_enabled = false
       @user.save
 
       table = create_table({:name => 'Wadus table', :user_id => @user.id})
-      CartoDB::Varnish.any_instance.expects(:purge)
-        .with("obj.http.X-Cache-Channel ~ #{@user.database_name}:wadus_table_23:vizjson").returns(true)
-      #CartoDB::Varnish.any_instance.expects(:purge)
-      #  .with("obj.http.X-Cache-Channel ~ #{@user.database_name}:wadus_table_23.*").returns(true)
-      CartoDB::Varnish.any_instance.expects(:purge)
-        .with("obj.http.X-Cache-Channel ~ #{@user.database_name}:wadus_table.*").returns(true)
+      CartoDB::Table::PrivacyManager.any_instance
+      table.expects(:invalidate_varnish_cache)
       table.name = 'Wadus table #23'
       table.save
     end
@@ -491,8 +486,7 @@ describe Table do
 
     it "should remove varnish cache when removing the table" do
       table = create_table(:user_id => @user.id)
-      CartoDB::Varnish.any_instance.expects(:purge).with("obj.http.X-Cache-Channel ~ #{table.varnish_key}.*").returns(true)
-
+      table.expects(:invalidate_varnish_cache)
       table.destroy
     end
 
@@ -500,13 +494,13 @@ describe Table do
       @user.private_tables_enabled = true
       @user.save
       table = create_table(user_id: @user.id, name: "varnish_privacy", privacy: Table::PRIVATE)
-      CartoDB::Varnish.any_instance.expects(:purge).times(1).with("obj.http.X-Cache-Channel ~ #{table.varnish_key}:vizjson").returns(true)
-      CartoDB::Varnish.any_instance.expects(:purge).times(0).with("obj.http.X-Cache-Channel ~ #{table.varnish_key}.*").returns(true)
-      table.save
+      
+      key = table.table_visualization.varnish_key
+      CartoDB::Varnish.any_instance.expects(:purge).times(1).with("obj.http.X-Cache-Channel ~ #{key}:vizjson").returns(true)
 
+      CartoDB::Table::PrivacyManager.any_instance
+        .expects(:propagate_to_redis_and_varnish)
       table.privacy = Table::PUBLIC
-      CartoDB::Varnish.any_instance.expects(:purge).times(1).with("obj.http.X-Cache-Channel ~ #{table.varnish_key}:vizjson").returns(true)
-      CartoDB::Varnish.any_instance.expects(:purge).times(1).with("obj.http.X-Cache-Channel ~ #{table.varnish_key}.*").returns(true)
       table.save
     end
   end

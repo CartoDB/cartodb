@@ -63,10 +63,8 @@ describe Map do
 
   describe '#after_save' do
     it 'invalidates varnish cache' do
-
-      map = Map.create(:user_id => @user.id, :table_id => @table.id)
-      CartoDB::Varnish.any_instance.expects(:purge).times(1).with("obj.http.X-Cache-Channel ~ #{@table.varnish_key}:vizjson").returns(true)
-      CartoDB::Varnish.any_instance.expects(:purge).times(0).with("obj.http.X-Cache-Channel ~ #{@table.varnish_key}.*")
+      map = @table.map
+      map.expects(:invalidate_vizjson_varnish_cache)
       map.save
     end
 

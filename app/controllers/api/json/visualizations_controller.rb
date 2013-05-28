@@ -99,22 +99,22 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   end #stats
 
   def vizjson1
-    @visualization, @table = locator.get(params.fetch(:id), request.subdomain)
-    return(head 403) unless allow_vizjson_v1_for?(@visualization.table)
-    set_vizjson_response_headers_for(@visualization.table)
+    visualization, table = locator.get(params.fetch(:id), request.subdomain)
+    return(head 403) unless allow_vizjson_v1_for?(visualization.table)
+    set_vizjson_response_headers_for(visualization)
     render_jsonp(CartoDB::Map::Presenter.new(
-      @visualization.map, 
-      { full: false, url: "/api/v1/tables/#{@visualization.table.id}" },
+      visualization.map, 
+      { full: false, url: "/api/v1/tables/#{visualization.table.id}" },
       Cartodb.config, 
       CartoDB::Logger
     ).to_poro)
   end #vizjson1
 
   def vizjson2
-    @visualization, @table = locator.get(params.fetch(:id), request.subdomain)
-    return(head 403) unless allow_vizjson_v2_for?(@visualization)
-    #set_vizjson_response_headers_for(@table)
-    render_jsonp(@visualization.to_vizjson)
+    visualization, table = locator.get(params.fetch(:id), request.subdomain)
+    return(head 403) unless allow_vizjson_v2_for?(visualization)
+    set_vizjson_response_headers_for(visualization)
+    render_jsonp(visualization.to_vizjson)
   rescue KeyError
     head 403
   end #vizjson
@@ -141,9 +141,9 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     current_user.present? && (table.owner.id == current_user.id)
   end #current_user_is_owner?
 
-  def set_vizjson_response_headers_for(table)
+  def set_vizjson_response_headers_for(visualization)
     response.headers['X-Cache-Channel'] = 
-      "#{table.varnish_key}:vizjson"
+      "#{visualization.varnish_key}:vizjson"
     response.headers['Cache-Control']   =
       "no-cache,max-age=86400,must-revalidate, public"
   end #set_vizjson_response_headers

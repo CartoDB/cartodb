@@ -86,10 +86,14 @@ describe Layer do
       end
 
       it "should invalidate its maps and related tables varnish cache" do
+        @layer.maps.each do |map|
+          map.expects(:invalidate_vizjson_varnish_cache).times(1)
+        end
+
+        key = @layer.affected_tables.first.varnish_key
         CartoDB::Varnish.any_instance.expects(:purge).times(1)
-          .with("obj.http.X-Cache-Channel ~ #{@table.varnish_key}:vizjson").returns(true)
-        CartoDB::Varnish.any_instance.expects(:purge).times(1)
-          .with("obj.http.X-Cache-Channel ~ #{@table.varnish_key}.*").returns(true)
+          .with("obj.http.X-Cache-Channel ~ #{key}.*").returns(true)
+
         @layer.save
       end
     end
@@ -102,14 +106,17 @@ describe Layer do
       end
 
       it "should not invalidate its related tables varnish cache" do
-        CartoDB::Varnish.any_instance.expects(:purge).times(1)
-          .with("obj.http.X-Cache-Channel ~ #{@table.varnish_key}:vizjson").returns(true)
-        CartoDB::Varnish.any_instance.expects(:purge).times(0)
-          .with("obj.http.X-Cache-Channel ~ #{@table.varnish_key}.*").returns(true)
+        @layer.maps.each do |map|
+          map.expects(:invalidate_vizjson_varnish_cache).times(1)
+        end
+
+        @layer.affected_tables.each do |table|
+          table.expects(:invalidate_varnish_cache).times(0)
+        end
+
         @layer.save
       end
     end
-
 
     it "should update updated_at after saving" do
       layer = Layer.create(:kind => 'carto')

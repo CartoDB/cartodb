@@ -69,6 +69,20 @@ describe Visualization::Member do
       member.tags.should include('tag 1')
       member.tags.should include('tag 2')
     end
+
+    it 'invalidates vizjson cache in varnish if privacy or name changed',
+      now: true do
+      member      = Visualization::Member.new(random_attributes)
+      member.store
+
+      member.expects(:invalidate_varnish_cache)
+      member.name = 'changed'
+      member.store
+
+      member.expects(:invalidate_varnish_cache)
+      member.privacy = 'private'
+      member.store
+    end
   end #store
 
   describe '#fetch' do
@@ -145,9 +159,6 @@ describe Visualization::Member do
     describe '#name' do
       it 'must be available for the user (uniqueness)' do
         pending
-        visualization =
-          Visualization::Member.new({}, Visualization.repository, name_checker)
-        visualization.valid?
       end
     end #name
   end # validations

@@ -24,7 +24,6 @@ module CartoDB
 
         def tables_metadata_for(database_name)
           redis.select Relocator::REDIS_DATABASES.fetch(:tables_metadata)
-
           tables_in(database_name).inject(Hash.new) do |memo, table_name|
             key = key_master.table_metadata(database_name, table_name)
             memo.store(key, redis.hgetall(key))
@@ -53,7 +52,7 @@ module CartoDB
         attr_accessor :redis, :key_master
 
         def tables_in(database_name)
-          redis.keys(key_master.database_metadata(database_name) + '*')
+          redis.keys(key_master.database_metadata(database_name) + '*').map {|table| table.split(':').last }
         end #tables_in
 
         def threshold_keys_for(user_id)

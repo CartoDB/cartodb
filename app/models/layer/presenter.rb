@@ -5,8 +5,6 @@ require 'ejs'
 module CartoDB
   class Layer
     class Presenter
-      CARTO_CSS_VERSION = '2.0.1'
-
       def initialize(layer, options={}, configuration={})
         @layer          = layer
         @options        = options
@@ -58,8 +56,7 @@ module CartoDB
         {
           sql:                wrap(sql, layer.options),
           cartocss:           layer.options.fetch('tile_style'),
-          cartocss_version:   layer.options
-                                .fetch('tile_style_version', CARTO_CSS_VERSION),
+          cartocss_version:   layer.options.fetch('style_version'),
           interactivity:      layer.options.fetch('interactivity')
         }
       end #options_data_v2

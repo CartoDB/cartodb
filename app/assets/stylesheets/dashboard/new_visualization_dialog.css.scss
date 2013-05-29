@@ -11,6 +11,7 @@
   width: 200px;
 
   p { margin: 0 0 20px 0; }
+  .hidden { display: none; }
 
   .tables {
 
@@ -35,9 +36,17 @@
     }
   }
 
-  .combo_wrapper {
+  .loader {
+    &.hidden { display:none; }
 
     display:block;
+    @include absolute-landscape-center(38px);
+    @include size(38px, 16px);
+    background:image-url("layout/loader.gif") no-repeat 0 0;
+  }
+
+  .combo_wrapper {
+
     padding:12px;
     background:#F2F2F2;
     @include border-radius(6px);

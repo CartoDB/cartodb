@@ -153,7 +153,7 @@ module CartoDB
       end #varnish_key
 
       def full_errors
-        errors.map { |attribute, message| "#{attribute}, #{message}" }
+        errors.map { |attribute, message| "#{attribute} #{message}" }
       end #full_errors
 
       attr_reader   :errors
@@ -215,7 +215,7 @@ module CartoDB
       def validate_available_name
         return self unless name_changed && user
         unless name_checker.available?(name)
-          @errors.store(:name, "name is not available")
+          @errors.store(:name, "is already taken")
         end
       end #validate_available_name
 

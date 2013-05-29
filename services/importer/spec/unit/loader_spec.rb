@@ -8,17 +8,34 @@ include CartoDB
 describe Importer::Loader do
   describe '#run' do
     it 'logs the database connection used' do
-      connection  = connection_factory
-      filepath    = '/var/tmp/foo.txt'
-
-      loader      = Importer::Loader.new(connection)
+      environment = environment_factory
+      loader      = Importer::Loader.new(environment)
       loader.run
-      loader.log.to_s.must_match /#{connection}/
+      environment.logger.to_s.must_match /#{environment.connection}/
+    end
+
+    it 'runs the ogr2ogr command to load the file' do
+      ogr2ogr = Minitest::Mock.new
+      loader  = Importer::Loader.new(environment_factory, ogr2ogr)
+
+      ogr2ogr.expect(:run, 0, [])
+      loader.run
+      ogr2ogr.verify
     end
   end #run
 
-  def connection_factory
-    SQLite3::Database.new ":memory:"
-  end #connection_factory
+  def environment_factory
+    environment = OpenStruct.new(
+      connection: SQLite3::Database.new(":memory:"),
+      filepath:   '/var/tmp/foo.txt',
+      job_id:     rand(999),
+      logger:     TrackRecord::Log.new
+    )
+
+    def environment.log(*args)
+      logger.append(*args);
+    end #log
+    environment
+  end #environment_factory
 end # Importer::Loader
 

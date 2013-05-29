@@ -41,5 +41,16 @@ module CartoDB
       log("#{(@stats[:tables_with_errors])}")
     end
 
+    def rollback!
+      # Remove any visualizations and related data
+      ::Table.db["delete from visualizations"]
+      ::Table.db["delete from overlays"]
+      ::Table.db["delete from layers_user_tables"]
+      # Remove redis keys
+      @tables_to_migrate.all.each do |table|
+        $tables_metadata.hdel(table.key, "migrated_to_#{@version}")
+      end
+    end
+
   end # DataMigrator
 end # CartoDB

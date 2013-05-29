@@ -317,5 +317,14 @@ namespace :cartodb do
 
       CartoDB::GenericMigrator.new(args[:version]).migrate!
     end
+    
+    desc "Undo migration changes USE WITH CARE"
+    task :rollback_migration, [:version] => :environment do |t, args|
+      usage = "usage: rake cartodb:db:rollback_migration[version]"
+      raise usage if args[:version].blank?
+      require Rails.root.join("lib/cartodb/generic_migrator.rb")
+
+      CartoDB::GenericMigrator.new(args[:version]).rollback!
+    end
   end
 end

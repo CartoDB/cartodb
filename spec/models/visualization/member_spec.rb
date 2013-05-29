@@ -158,7 +158,7 @@ describe Visualization::Member do
     end #name
 
     describe '#full_errors' do
-      it 'returns full error messages', now: true do
+      it 'returns full error messages' do
         visualization = Visualization::Member.new
         visualization.valid?.should == false
 

@@ -1,28 +1,36 @@
 # encoding: utf-8
-require 'sqlite3'
+require 'uuidtools'
+require_relative './loader'
 require_relative '../track_record/track_record'
 
 module CartoDB
   module Importer
     class Job
-      def initialize(connection, filepath)
-        @connection = connection
-        @filepath   = filepath
+      def initialize(connection, filepath, loader=nil)
+        self.id     = UUIDTools::UUID.timestamp_create
         self.log    = TrackRecord::Log.new
+        @filepath   = filepath
+        self.loader = loader || loader_for(connection, log)
       end #initialize
 
       def run
-        log.append "Using database connection #{connection}"
         log.append "Importing file #{filepath}"
-        return 0
+        exit_code = loader.run(filepath)
+        log.append "Loader exited with code #{exit_code}"
+
+        exit_code
       end #run
 
-      attr_reader :log
+      attr_reader :log, :id
 
       private
 
-      attr_reader :connection, :filepath
-      attr_writer :log
+      attr_reader :filepath, :loader
+      attr_writer :log, :id, :loader
+
+      def loader_for(connection, log)
+        Loader.new(connection, log)
+      end #loader_for
     end # Job
   end # Importer
 end # CartoDB

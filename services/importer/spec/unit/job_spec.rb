@@ -43,7 +43,7 @@ describe Importer::Job do
       importer.run.must_equal exit_code
     end
 
-    it 'logs the file path to be importer' do
+    it 'logs the file path to be imported' do
       connection  = connection_factory
       filepath    = '/var/tmp/foo.txt'
 

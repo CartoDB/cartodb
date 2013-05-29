@@ -1,4 +1,5 @@
 # encoding: utf-8
+require_relative '../track_record/track_record'
 
 module CartoDB
   module Importer

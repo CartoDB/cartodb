@@ -50,7 +50,7 @@ describe('Hide funcionality', function() {
         , opacity = cdb_layer.options.opacity
         , before_opacity = cdb_layer.options.previous_opacity;
 
-      expect(cdb_layer.options.visible).toBeFalsy();
+      expect(cdb_layer.visible).toBeFalsy();
       expect($tile.css("opacity")).toEqual('0');
       expect(opacity).toEqual(0);
       expect(before_opacity).not.toEqual(0);

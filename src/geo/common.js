@@ -4,7 +4,7 @@
  */
 
 function CartoDBLayerCommon() {
-  
+  this.visible = true;
 }
 
 CartoDBLayerCommon.prototype = {
@@ -12,24 +12,24 @@ CartoDBLayerCommon.prototype = {
   // the way to show/hidelayer is to set opacity
   // removing the interactivty at the same time
   show: function() {
-    if (this.options.visible) {
+    if (this.visible) {
       return;
     }
-    this.options.visible = true;
-    this.setOpacity(this.options.previous_opacity);
+    this.visible = true;
+    this.setOpacity(this.options.previous_opacity === undefined ? 0.99: this.options.previous_opacity);
     delete this.options.previous_opacity;
     this.setInteraction(true);
   },
 
   hide: function() {
-    if (!this.options.visible) {
+    if (!this.visible) {
       return;
     }
     this.options.previous_opacity = this.options.opacity;
     this.setOpacity(0);
     this.setInteraction(false);
 
-    this.options.visible = false;
+    this.visible = false;
   },
 
   /**
@@ -80,7 +80,7 @@ CartoDBLayerCommon.prototype = {
    * Returns if the layer is visible or not
    */
   isVisible: function() {
-    return this.options.visible
+    return this.visible;
   },
 
   /**
@@ -138,7 +138,7 @@ CartoDBLayerCommon.prototype = {
   setOptions: function (opts) {
 
     if (typeof opts != "object" || opts.length) {
-      throw new Error(opts + ' options has to be an object');
+      throw new Error(opts + ' options must be an object');
     }
 
     _.extend(this.options, opts);
@@ -157,6 +157,7 @@ CartoDBLayerCommon.prototype = {
     opts.tile_style && this.setCartoCSS(opts.tile_style.replace(new RegExp( opts.table_name, "g"), "layer0"));
     opts.cartocss && this.setCartoCSS(opts.cartocss);
     opts.interactivity && this.setInteractivity(opts.interactivity);
+    opts.visible ? this.show() : this.hide();
     this.setSilent(false);
     this._definitionUpdated();
 

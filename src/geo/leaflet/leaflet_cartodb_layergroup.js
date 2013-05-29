@@ -46,6 +46,7 @@ L.CartoDBGroupLayer = L.TileLayer.extend({
 
     this.fire = this.trigger;
 
+    CartoDBLayerCommon.call(this);
     L.TileLayer.prototype.initialize.call(this);
     this.interaction = [];
     this.interactionEnabled = [];

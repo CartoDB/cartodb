@@ -24,6 +24,7 @@
       this.model.unbind(null, null, this);
       this.unbind();
     },
+    /*
 
     show: function() {
       this.leafletLayer.setOpacity(1.0);
@@ -32,6 +33,7 @@
     hide: function() {
       this.leafletLayer.setOpacity(0.0);
     },
+    */
 
     /**
      * reload the tiles

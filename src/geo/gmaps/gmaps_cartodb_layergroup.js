@@ -63,6 +63,7 @@ var CartoDBLayerGroup = function(opts) {
    _.extend(this.options, opts);
   this.projector = new Projector(opts.map);
   LayerDefinition.call(this, opts.layer_definition, this.options);
+  CartoDBLayerCommon.call(this);
   // precache
   this.update();
 };

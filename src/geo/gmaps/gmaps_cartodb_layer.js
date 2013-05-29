@@ -108,10 +108,6 @@ var GMapsCartoDBLayerView = function(layerModel, gmapsMap) {
     self.featureClick  && self.featureClick.apply(opts, arguments);
   };
 
-  layerModel.bind('change:visible', function() {
-    self.model.get('visible') ? self.show(): self.hide();
-  }, this);
-
   cdb.geo.CartoDBLayerGMaps.call(this, opts);
   cdb.geo.GMapsLayerView.call(this, layerModel, this, gmapsMap);
 };

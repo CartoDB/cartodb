@@ -70,8 +70,7 @@ describe Visualization::Member do
       member.tags.should include('tag 2')
     end
 
-    it 'invalidates vizjson cache in varnish if privacy or name changed',
-      now: true do
+    it 'invalidates vizjson cache in varnish if privacy or name changed' do
       member      = Visualization::Member.new(random_attributes)
       member.store
 
@@ -142,17 +141,13 @@ describe Visualization::Member do
       it 'must be present' do
         visualization = Visualization::Member.new
         visualization.valid?.should == false
-        visualization.errors.fetch(:privacy)
-          .map(&:rule).map(&:class)
-          .should include Aequitas::Rule::Presence::NotBlank
+        visualization.errors.fetch(:privacy).should_not be_nil
       end
 
       it 'must be valid' do
         visualization = Visualization::Member.new(privacy: 'wadus')
         visualization.valid?.should == false
-        visualization.errors.fetch(:privacy)
-          .map(&:rule).map(&:class)
-          .should include Aequitas::Rule::Within
+        visualization.errors.fetch(:privacy).should_not be_nil
       end
     end # privacy
 
@@ -161,6 +156,17 @@ describe Visualization::Member do
         pending
       end
     end #name
+
+    describe '#full_errors' do
+      it 'returns full error messages' do
+        visualization = Visualization::Member.new
+        visualization.valid?.should == false
+
+        visualization.full_errors.join("\n").should =~ /privacy/
+        visualization.full_errors.join("\n").should =~ /type/
+        visualization.full_errors.join("\n").should =~ /name/
+      end
+    end
   end # validations
 
   def random_attributes(attributes={})

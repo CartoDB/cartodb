@@ -57,29 +57,29 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     collection.add(member)
     collection.store
     render_jsonp(member)
+  rescue CartoDB::InvalidMember => exception
+    render_jsonp({ errors: member.full_errors }, 400)
   end #create
 
   def show
-    begin
-      member = Visualization::Member.new(id: params.fetch('id')).fetch
-      return(head 401) unless member.authorize?(current_user)
-      render_jsonp(member)
-    rescue KeyError
-      head :not_found
-    end
+    member = Visualization::Member.new(id: params.fetch('id')).fetch
+    return(head 401) unless member.authorize?(current_user)
+    render_jsonp(member)
+  rescue KeyError
+    head :not_found
   end #show
   
   def update
-    begin
-      member = Visualization::Member.new(id: params.fetch('id')).fetch
-      return head(401) unless member.authorize?(current_user)
+    member = Visualization::Member.new(id: params.fetch('id')).fetch
+    return head(401) unless member.authorize?(current_user)
 
-      member.attributes = payload
-      member.store
-      render_jsonp(member)
-    rescue KeyError
-      head :not_found
-    end
+    member.attributes = payload
+    member.store.fetch
+    render_jsonp(member)
+  rescue KeyError
+    head :not_found
+  rescue CartoDB::InvalidMember => exception
+    render_jsonp({ errors: member.full_errors }, 400)
   end #update
 
   def destroy

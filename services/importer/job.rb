@@ -10,7 +10,7 @@ module CartoDB
         self.id     = UUIDTools::UUID.timestamp_create
         self.log    = TrackRecord::Log.new
         @filepath   = filepath
-        self.loader = loader || loader_for(connection, log)
+        self.loader = loader || Loader.new(connection, log)
       end #initialize
 
       def run
@@ -27,10 +27,6 @@ module CartoDB
 
       attr_reader :filepath, :loader
       attr_writer :log, :id, :loader
-
-      def loader_for(connection, log)
-        Loader.new(connection, log)
-      end #loader_for
     end # Job
   end # Importer
 end # CartoDB

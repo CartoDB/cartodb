@@ -324,6 +324,21 @@ describe Api::Json::VisualizationsController do
       response.fetch('active_layer_id').should == active_layer_id
       response.fetch('tags').should == ['foo', 'bar']
     end
+
+    it 'returns a sanitized name', now: true do
+      table_attributes = table_factory
+      id = table_attributes.fetch('table_visualization').fetch('id')
+
+      put "/api/v1/viz/#{id}?api_key=#{@api_key}",
+        { name: 'changed name' }.to_json, @headers
+      last_response.status.should == 200
+      response = JSON.parse(last_response.body)
+      response.fetch('name').should == 'changed_name'
+
+      get "/api/v1/viz/#{id}?api_key=#{@api_key}", {}, @headers
+      response = JSON.parse(last_response.body)
+      response.fetch('name').should == 'changed_name'
+    end
   end # PUT /api/v1/viz/:id
 
   describe 'DELETE /api/v1/viz/:id' do

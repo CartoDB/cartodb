@@ -74,7 +74,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     return head(401) unless member.authorize?(current_user)
 
     member.attributes = payload
-    member.store
+    member.store.fetch
     render_jsonp(member)
   rescue KeyError
     head :not_found

@@ -46,9 +46,9 @@ module CartoDB
         raise CartoDB::InvalidMember unless self.valid?
 
         invalidate_varnish_cache if name_changed || privacy_changed
-        propagate_privacy_and_name_to(table) if table
         set_timestamps
         repository.store(id, attributes.to_hash)
+        propagate_privacy_and_name_to(table) if table
         self
       end #store
 

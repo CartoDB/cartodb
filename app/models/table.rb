@@ -334,8 +334,6 @@ class Table < Sequel::Model(:user_tables)
     manager.set_public  if privacy == PUBLIC
     manager.propagate_to(table_visualization)
     manager.propagate_to_redis_and_varnish if privacy_changed?
-
-    propagate_name_change_to_table_visualization if name_changed?
   end
 
   def propagate_name_change_to_table_visualization
@@ -614,30 +612,6 @@ class Table < Sequel::Model(:user_tables)
   def privacy_changed?
     previous_changes.keys.include?(:privacy)
   end #privacy_changed?
-
-  def name_changed?
-    previous_changes.keys.include?(:name)
-  end #name_changed?
-
-  # TO BE DELETED
-  #def manage_privacy
-    #if privacy == PRIVATE
-    #  owner.in_database(:as => :superuser).run(%Q{REVOKE SELECT ON "#{self.name}" FROM #{CartoDB::PUBLIC_DB_USER};})
-    #  $tables_metadata.hset key, "privacy", PRIVATE
-    #elsif privacy == PUBLIC
-    #  $tables_metadata.hset key, "privacy", PUBLIC
-    #  owner.in_database(:as => :superuser).run(%Q{GRANT SELECT ON "#{self.name}" TO #{CartoDB::PUBLIC_DB_USER};})
-    #end
-  #end
-
-  # TO BE DELETED
-  # sets table privacy without callbacks
-  #def set_privacy!(value)
-    #self.this.update(privacy: value)
-    #self.reload
-    #self.manage_privacy
-    #self.invalidate_varnish_cache
-  #end
 
   def key
     Table.key(database_name, name)
@@ -1593,6 +1567,8 @@ SQL
       # update metadata records
       $tables_metadata.rename(Table.key(database_name,@name_changed_from), key)
       owner.in_database.rename_table(@name_changed_from, name)
+      propagate_name_change_to_table_visualization
+
       layers.each do |layer| 
         layer.rename_table(@name_changed_from, name).save
       end

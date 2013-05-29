@@ -94,7 +94,7 @@ describe Table do
       table.table_visualization.name  .should == table.name
     end
 
-    it 'receives a name change if table visualization name changed' do
+    it 'receives a name change if table visualization name changed', now: true do
       table = create_table(name: 'bogus_name', user_id: @user.id)
       table.table_visualization.name.should == table.name
 
@@ -102,7 +102,23 @@ describe Table do
       table.table_visualization.store
 
       table.reload
+      table.table_visualization.name.should == 'bogus_name_2'
+      table.name.should == 'bogus_name_2'
       table.name.should == table.table_visualization.name
+
+      visualization_id = table.table_visualization.id
+      visualization = CartoDB::Visualization::Member.new(id: visualization_id)
+        .fetch
+      visualization.name = 'bogus name 3'
+      visualization.store 
+      table.reload
+      table.name.should == 'bogus_name_3'
+
+      visualization = CartoDB::Visualization::Member.new(id: visualization.id)
+        .fetch
+      visualization.name.should == 'bogus_name_3'
+      table.reload
+      table.name.should == 'bogus_name_3'
     end
     
     it 'propagates name changes to affected layers' do

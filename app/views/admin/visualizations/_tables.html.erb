@@ -22,39 +22,25 @@
 </div>
 </article>
 
-<%= render 'admin/visualizations/visualizations' %>
-
-<article class="tables <%= 'active' if @tables_count > 0 %>">
+<article class="no_vis">
 <div class="inner">
-  <section class="left tables">
-  <div class="head">
-    <div class="loader"></div>
-    <h2>
-      <i></i>
-      <span><%= pluralize(@tables_count, 'table', 'tables') %></span>
-    </h2>
-  </div>
+  <section class="block empty">
+  <!-- <a href="#close" class="close"><i></i></a> -->
   <div class="content">
-    <ul id="tablelist">
-      <%= render :partial => 'shared/flash_message' %>
-    </ul>
-
-    <div class="paginator"></div>
-
+    <div class="left">
+      <h2>Create your first visualization</h2>
+      <p class="margin20">A visualization is a mashup of layers and components using your cartodb data and the wizards.</p>
+      <p>Definitely the best way to publish your maps on the web.</p>
+    </div>
+    <div class="right">
+      <div class="tables">
+        <a href="#create_a_table" class="green button create_new">Create your first vizz</a>
+      </div>
+    </div>
   </div>
   </section>
-  <aside class="right">
-  <div class="head">
-    <a href="#" class="create border create_new">
-      <div class="content">
-        <div class="plus"></div>
-      </div>
-      <div class="title">New table</div>
-    </a>
-  </div>
-  <div class="content">
-    <ul></ul>
-  </div>
-  </aside>
 </div>
 </article>
+
+<article class="visualizations"></article>
+<article class="tables"></article>

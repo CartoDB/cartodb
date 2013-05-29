@@ -514,6 +514,9 @@
 
       } // status
 
+
+      &.view_all .paginator .view_all { display: block; }
+
     }
 
     section.tables {
@@ -829,7 +832,9 @@
             &:last-child {margin:0}
 
             &.view_all {
-              a {color:#2483B4;}
+              display:none;
+
+              a { color:#2483B4; }
             }
           }
 

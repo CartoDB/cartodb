@@ -227,6 +227,7 @@ cdb.ui.common.Table = cdb.core.View.extend({
     }
     this.dataModel = dm;
     this.dataModel.bind('reset', this._renderRows, this);
+    this.dataModel.bind('error', this._renderRows, this);
     this.dataModel.bind('add', this.addRow, this);
   },
 

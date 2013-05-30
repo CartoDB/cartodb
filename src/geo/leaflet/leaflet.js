@@ -208,7 +208,7 @@
           var v = self.layers[layerModel.cid];
           if(v) {
             cdb.geo.LeafletMapView.addLayerToMap(v, self.map_leaflet);
-            if(layer_view.setZIndex) {
+            if(v.setZIndex) {
               v.setZIndex(layerModel.get('order'))
             }
           }

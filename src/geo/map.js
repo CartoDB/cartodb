@@ -169,17 +169,22 @@ cdb.geo.Layers = Backbone.Collection.extend({
     this.comparator = function(a, b) {
       return a.get('order') - b.get('order');
     }
+    this.bind('add', this._assignIndexes);
   },
 
   /**
    * each time a layer is added or removed
    * the index should be recalculated
    */
-  /*_asignIndexes: function() {
-    for(var i = 0; i < this.size(); ++i) {
-      this.models[i].set({ order: i }, { silent: true });
+  _assignIndexes: function(model, col, options) {
+    var from = this.size() - 1;
+    if(options && options.at !== undefined) {
+      from = options.at;
     }
-  }*/
+    for(var i = from; i < this.size(); ++i) {
+      this.models[i].set({ order: i });
+    }
+  }
 });
 
 /**

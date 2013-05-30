@@ -449,17 +449,17 @@ describe CartoDB::Importer do
     end
 
     describe "#OSM" do
-      it "should import osm files" do
+      it "should import osm files and process custom tags" do
         importer = create_importer 'map2.osm'
         results,errors = importer.import!
-        errors.length.should            == 0
-        results.length.should           == 2
-        results[0].name.should          == 'map2_line'
-        results[0].rows_imported.should == 1
-        results[0].import_type.should   == '.osm'
-        results[1].name.should          == 'map2_point'
-        results[1].rows_imported.should == 5
-        results[1].import_type.should   == '.osm'
+        errors.length.should == 0
+        results.should =~ [
+          OpenStruct.new(name: "map2_line",    rows_imported: 17, import_type: ".osm", log: ""), 
+          OpenStruct.new(name: "map2_polygon", rows_imported: 17, import_type: ".osm", log: ""),
+          OpenStruct.new(name: "map2_roads",   rows_imported: 6,  import_type: ".osm", log: ""),
+          OpenStruct.new(name: "map2_point",   rows_imported: 5,  import_type: ".osm", log: "")
+        ]
+        @db["select height from map2_polygon where height is not null"].first[:height].should == "15m"
       end
     end
 
@@ -591,10 +591,7 @@ describe CartoDB::Importer do
         importer = create_importer "http://www.openstreetmap.org/?lat=40.01005&lon=-105.27517&zoom=15&layers=M", "osm", true
         results,errors = importer.import!
 
-        results.should include(OpenStruct.new(name: 'osm_line',    rows_imported: 840, import_type: '.osm', log: ''),
-                               OpenStruct.new(name: 'osm_polygon', rows_imported: 265, import_type: '.osm', log: ''),
-                               OpenStruct.new(name: 'osm_roads',   rows_imported: 53,  import_type: '.osm', log: ''),
-                               OpenStruct.new(name: 'osm_point',   rows_imported: 451, import_type: '.osm', log: ''))
+        results.map(&:name).should include('osm_line', 'osm_roads', 'osm_point', 'osm_polygon')
       end
 
       it "throws an error for OSM imports when the zoom is too big" do
@@ -606,11 +603,7 @@ describe CartoDB::Importer do
       it "can import a specific OSM url" do
         importer = create_importer "http://www.openstreetmap.org/?lat=37.39296&lon=-5.99099&zoom=15&layers=M", "osm", true
         results,errors = importer.import!
-
-        results.should include(OpenStruct.new(name: 'osm_line',    rows_imported: 1338, import_type: '.osm', log: ''),
-                               OpenStruct.new(name: 'osm_polygon', rows_imported: 543,  import_type: '.osm', log: ''),
-                               OpenStruct.new(name: 'osm_roads',   rows_imported: 74,   import_type: '.osm', log: ''),
-                               OpenStruct.new(name: 'osm_point',   rows_imported: 1438, import_type: '.osm', log: ''))
+        results.map(&:name).should include("osm_line", "osm_roads", "osm_point", "osm_polygon")
       end
 
     end
@@ -631,7 +624,7 @@ describe CartoDB::Importer do
       results, errors = importer.import!
 
       errors.should have(1).item
-      errors[0].code.should be == 3008
+      errors[0].code.should be == 3102
     end
   end
 
@@ -775,6 +768,7 @@ describe CartoDB::Importer do
     @db_opts = {:database => "cartodb_importer_test",
                 :username => "postgres", :password => '',
                 :host => 'localhost',
+                :osm2pgsql_port => Cartodb.config[:importer]["osm2pgsql_port"],
                 :port => 5432}
     create_user(:username => 'test', :email => "client@example.com", :password => "clientex", :table_quota => 100, :disk_quota => 500.megabytes)
     @user = User.first
@@ -820,5 +814,3 @@ describe CartoDB::Importer do
     @data_import.id
   end
 end
-
-

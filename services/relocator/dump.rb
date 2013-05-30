@@ -30,8 +30,8 @@ module CartoDB
         to_stdout("Dumping user metadata")
         meta_dumper.run
 
-        to_stdout("Renaming database user to a token")
-        rdbms.rename_user(environment.database_username, relocation.token)
+        #to_stdout("Renaming database user to a token")
+        #rdbms.rename_user(environment.database_username, relocation.token)
 
         to_stdout("Dumping data from #{environment.user_database}")
         dump(environment.user_database)
@@ -41,8 +41,8 @@ module CartoDB
         relocation.upload
         to_stdout("Data bundle uploaded")
 
-        to_stdout("Renaming database user to original name")
-        rdbms.rename_user(relocation.token, environment.database_username)
+        #to_stdout("Renaming database user to original name")
+        #rdbms.rename_user(relocation.token, environment.database_username)
 
         to_stdout("Finished dump stage for relocation ID: #{relocation.id}")
       #rescue => exception

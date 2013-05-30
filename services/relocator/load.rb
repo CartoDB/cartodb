@@ -47,14 +47,20 @@ module CartoDB
         to_stdout("Creating user database #{user.database_name}")
         rdbms.create_database(user.database_name, database_owner)
 
-        to_stdout("Creating temporary database user")
-        rdbms.create_user(relocation.token, user.database_password)
+        #to_stdout("Creating temporary database user")
+        #rdbms.create_user(relocation.token, user.database_password)
+       
+        to_stdout("Replacing original user and db name in dump")
+        gsub_dump()
         
+        to_stdout("Creating database user")
+        rdbms.create_user(environment.database_username, user.database_password)
+
         to_stdout("Loading data from filesystem to #{user.database_name}")
         load_database
 
-        to_stdout("Renaming database user")
-        rdbms.rename_user(relocation.token, environment.database_username)
+        #to_stdout("Renaming database user")
+        #rdbms.rename_user(relocation.token, environment.database_username)
 
         to_stdout("Setting password for database user")
         rdbms.set_password(environment.database_username, user.database_password)
@@ -101,7 +107,7 @@ module CartoDB
         database      = configuration[Rails.env]["database"]
         username      = configuration[Rails.env]["username"]
         password      = configuration[Rails.env]["password"]
-        command = "#{psql} -U #{username} #{user.database_name} < #{dump}"
+        command = "#{psql} -U #{username} #{user.database_name} -f #{dump}"
 
         `#{command}`
         puts $?
@@ -109,6 +115,17 @@ module CartoDB
         #  print_and_raise(stderr) unless process.value.to_s =~ /exit 0/
         #end
       end #load_database
+
+      def gsub_dump
+        #@user = User.where(:username => new_username).first
+        #@environment        = Environment.new(environment, user.id)
+        dump    = File.join(Relocator::TMP_DIR, relocation.path_for('dump.sql'))
+        to_stdout "sed -r -i 's/#{environment.db_username_prefix}[0-9]+/#{environment.db_username_prefix}#{user.id}/' #{dump}"
+        `sed -r -i 's/#{environment.db_username_prefix}[0-9]+/#{environment.db_username_prefix}#{user.id}/' #{dump}`
+        if environment == 'development'
+          `sed -r -i 's/#{environment.database_name_prefix}[0-9]+/#{environment.database_name_prefix}#{user.id}/' #{dump}`
+        end
+      end #gsub_dump
     end # Load
   end # Relocator
 end # CartoDB

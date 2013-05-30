@@ -4,8 +4,7 @@
 cdb.geo.ui.Layer = cdb.core.Model.extend({
 
   defaults: {
-    disabled: true,
-    selected: false
+    visible: true
   }
 
 });
@@ -18,7 +17,7 @@ cdb.geo.ui.LayerView = cdb.core.View.extend({
   tagName: "li",
 
   defaults: {
-    template: '<a class="layer" href="#"><%= name %></a> <a href="#switch" class="right switch disabled"><span class="handle"></span></a>'
+    template: '<a class="layer" href="#"><%= options.table_name %></a> <a href="#switch" class="right enabled switch"><span class="handle"></span></a>'
   },
 
   events: {
@@ -27,20 +26,17 @@ cdb.geo.ui.LayerView = cdb.core.View.extend({
 
   initialize: function() {
 
-    this.model = new cdb.geo.ui.Layer();
+    this.add_related_model(this.model);
 
-    this.model.bind("change:selected", this._onSwitchSelected, this);
-
-    if (!this.options.template) this.options.template = this.defaults.template;
+    this.model.bind("change:visible", this._onSwitchSelected, this);
 
     // Template
-    this.template = this.options.template_base ? cdb.templates.getTemplate(this.options.template_base) : _.template(this.options.template);
+    this.template = this.options.template ? cdb.templates.getTemplate(this.options.template) : _.template(this.defaults.template);
 
   },
 
   render: function() {
-
-    this.$el.append(this.template(this.options))
+    this.$el.append(this.template(this.model.toJSON()));
     return this;
 
   },
@@ -50,13 +46,11 @@ cdb.geo.ui.LayerView = cdb.core.View.extend({
   */
   _onSwitchSelected: function() {
 
-    var enabled = this.model.get('selected');
+    var enabled = this.model.get('visible');
 
     this.$el.find(".switch")
     .removeClass(enabled ? 'disabled' : 'enabled')
     .addClass(enabled    ? 'enabled'  : 'disabled');
-
-    this.trigger("switchChanged", enabled);
 
   },
 
@@ -65,8 +59,7 @@ cdb.geo.ui.LayerView = cdb.core.View.extend({
     e.preventDefault();
     e.stopPropagation();
 
-    this.model.set("selected", !this.model.get("selected"));
-
+    this.model.set("visible", !this.model.get("visible"));
   }
 
 });
@@ -93,8 +86,10 @@ cdb.geo.ui.LayerSelector = cdb.core.View.extend({
 
   initialize: function() {
 
+    _.bindAll(this, "switchChanged");
+
     this.model = new cdb.core.Model({
-      count: 0
+      count: this.options.layers.length - 1
     });
 
     this.model.bind("change:count", this._onCountChange, this);
@@ -102,8 +97,6 @@ cdb.geo.ui.LayerSelector = cdb.core.View.extend({
   },
 
   render: function() {
-
-    var self = this;
 
     this.$el.html(this.options.template(_.extend(this.model.toJSON(), this.options)));
 
@@ -125,33 +118,45 @@ cdb.geo.ui.LayerSelector = cdb.core.View.extend({
 
     this.$el.append(this.dropdown.render().el);
 
-    this.options.layers.each(function(l) {
-
-      var layerView = new cdb.geo.ui.LayerView({
-        name: l.get("name"),
-        template_base: 'table/views/layer_item'
-      }).bind("switchChanged", self.switchChanged, self);
-
-      self.$el.find("ul").append(layerView.render().el);
-
-    });
-
+    this._createLayers();
 
     return this;
 
   },
 
-  switchChanged: function(e) {
-    if (e) {
-      this.model.set("count", this.model.get("count") + 1)
-    }
-    else this.model.set("count", this.model.get("count") - 1)
+  _createLayers: function() {
+
+    var self = this;
+
+    var layers = _.filter(this.options.layers, function(layer) { return layer.get("type") == 'CartoDB'; });
+
+    layers.each(function(layer) {
+
+      layer.bind("change:visible", self.switchChanged, this);
+
+      var layerView = new cdb.geo.ui.LayerView({
+        model: layer,
+        template_base: 'table/views/layer_item'
+      });
+
+      self.$el.find("ul").append(layerView.render().el);
+
+    });
+
+  },
+
+  switchChanged: function(layer) {
+
+    var layers = layer.collection.filter(function(layer) {
+      return layer.get("visible") && layer.get("type") == 'CartoDB'
+    });
+
+    this.model.set("count", layers.length);
+
   },
 
   _onCountChange: function() {
-
     this.$el.find(".count").html(this.model.get("count"));
-
   },
 
   _stopPropagation: function(e) {

@@ -180,7 +180,7 @@ describe('api.layers', function() {
         var layer;
         var s = sinon.spy();
         runs(function() {
-          cartodb.createLayer(map, { 
+          cartodb.createLayer(map, {
             updated_at: 'jaja',
             layers: [
               null,
@@ -204,7 +204,7 @@ describe('api.layers', function() {
         var layer;
         var s = sinon.spy();
         runs(function() {
-          cartodb.createLayer(map, { 
+          cartodb.createLayer(map, {
             updated_at: 'jaja',
             layers: [
               null,

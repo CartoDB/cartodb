@@ -1,5 +1,7 @@
 2.0.15
 ------
+* Fixed OSM imports
+* General bug fixes
 
 2.0.14
 ------

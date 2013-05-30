@@ -45,11 +45,32 @@ describe Importer::Loader do
     end
   end #run
 
+  describe '#ogr2ogr' do
+    it 'returns the passed ogr2ogr instance' do
+      job     = job_factory
+      ogr2ogr = Object.new
+      loader  = Importer::Loader.new(job, ogr2ogr)
+
+      loader.ogr2ogr.must_equal ogr2ogr
+    end
+
+    it 'initializes an ogr2ogr command wrapper if none passed' do
+      job     = Minitest::Mock.new
+      loader  = Importer::Loader.new(job)
+
+      job.expect :filepath, {}
+      job.expect :pg_options, {}
+      job.expect :log, {}
+      job.expect :id, {}
+      loader.ogr2ogr.must_be_instance_of Importer::Ogr2ogr
+    end
+  end  #ogr2ogr
+
   def job_factory
     job = OpenStruct.new(
-      connection: SQLite3::Database.new(":memory:"),
+      id:         rand(999),
       filepath:   '/var/tmp/foo.txt',
-      job_id:     rand(999),
+      pg_options: {},
       logger:     TrackRecord::Log.new
     )
 

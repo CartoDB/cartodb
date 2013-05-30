@@ -1,25 +1,25 @@
 # encoding: utf-8
 require 'minitest/autorun'
-require 'csv'
 require 'pg'
 require 'sequel'
 require_relative '../../ogr2ogr'
 require_relative '../doubles/job'
+require_relative '../factories/csv'
 
 include CartoDB
 
 describe Importer::Ogr2ogr do
   before do
     @job_id       = rand(999)
-    @filepath     = csv_factory
+    @csv          = Importer::Factories::CSV.new.write
+    @filepath     = @csv.filepath
     @pg_options   = pg_options_factory
-
     @db           = Sequel.postgres(@pg_options)
-    @wrapper = Importer::Ogr2ogr.new(@filepath, @pg_options, @job_id)
+    @wrapper      = Importer::Ogr2ogr.new(@filepath, @pg_options, @job_id)
   end
 
   after do
-    File.delete(@filepath)
+    @csv.delete
   end
 
   describe '#initialize' do
@@ -77,11 +77,8 @@ describe Importer::Ogr2ogr do
 
   describe '#run' do
     it 'imports a CSV to a Postgres table' do
-      wrapper   = Importer::Ogr2ogr.new(@filepath, @pg_options)
-      db        = Sequel.postgres(@pg_options)
-
-      wrapper.run
-      records   = db[wrapper.output_name.to_sym].to_a
+      @wrapper.run
+      records   = @db[@wrapper.output_name.to_sym].to_a
 
       records.length      .must_equal 10
       records.first.keys  .must_include :header_1
@@ -89,11 +86,8 @@ describe Importer::Ogr2ogr do
     end
 
     it 'adds a cartodb_id column to imported records' do
-      wrapper   = Importer::Ogr2ogr.new(@filepath, @pg_options)
-      db        = Sequel.postgres(@pg_options)
-
-      wrapper.run
-      record    = db[wrapper.output_name.to_sym].first
+      @wrapper.run
+      record    = @db[@wrapper.output_name.to_sym].first
       record.keys.must_include :cartodb_id
     end
   end #run
@@ -102,12 +96,10 @@ describe Importer::Ogr2ogr do
     it 'returns stdout and stderr from ogr2ogr binary' do
       wrapper   = Importer::Ogr2ogr.new('non_existent', @pg_options)
       wrapper.run
-
       wrapper.command_output.wont_be_empty
 
       wrapper   = Importer::Ogr2ogr.new(@filepath, @pg_options)
       wrapper.run
-
       wrapper.command_output.must_be_empty
     end
   end #command_output
@@ -123,18 +115,6 @@ describe Importer::Ogr2ogr do
       wrapper.exit_code.must_equal 0
     end
   end #exit_code
-
-  def csv_factory(name=nil)
-    name      ||= "importer#{rand(999)}"
-    filepath  = "/var/tmp/#{name}.csv"
-
-    CSV.open(filepath, "wb") do |csv|
-      csv << ["header_1", "header_2"]
-      10.times { csv << ["cell_#{rand(999)}", "cell_#{rand(999)}"] }
-    end
-    
-    filepath
-  end #csv_factory
 
   def pg_options_factory
     pg_options  = {

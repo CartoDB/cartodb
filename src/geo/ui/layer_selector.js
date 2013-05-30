@@ -96,8 +96,6 @@ cdb.geo.ui.LayerSelector = cdb.core.View.extend({
     });
 
     this.model.bind("change:count", this._onCountChange, this);
-
-
   },
 
   render: function() {
@@ -106,7 +104,7 @@ cdb.geo.ui.LayerSelector = cdb.core.View.extend({
 
     this.dropdown = new cdb.ui.common.Dropdown({
       className:" dropdown border",
-      template_base: 'table/views/layer_dropdown',
+      template: this.options.dropdown_template,
       target: this.$el.find("a"),
       speedIn: 300,
       speedOut: 200,
@@ -118,7 +116,7 @@ cdb.geo.ui.LayerSelector = cdb.core.View.extend({
       horizontal_offset: 13
     });
 
-    cdb.god.bind("closeDialogs", this.dropdown.hide, this.dropdown);
+    if (cdb.god) cdb.god.bind("closeDialogs", this.dropdown.hide, this.dropdown);
 
     this.$el.append(this.dropdown.render().el);
 

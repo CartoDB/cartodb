@@ -17,7 +17,7 @@ module CartoDB
       end #user_database
 
       def db_username_prefix
-        return "cartodb_user_" if environment == 'development' if environment == 'production'
+        return "cartodb_user_" if environment == 'production'
         return "development_cartodb_user_" if environment == 'development'
         "cartodb_user_#{environment}_"
       end #username_prefix

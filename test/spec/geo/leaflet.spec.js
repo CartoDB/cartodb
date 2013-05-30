@@ -290,10 +290,10 @@ describe('LeafletMapView', function() {
   });
 
   it("should set z-order", function() {
-    var layer1 = new cdb.geo.TileLayer({ order: 1347, urlTemplate:'test'});
-    var layer2 = new cdb.geo.TileLayer({ order: 1337, urlTemplate:'test'});
+    var layer1 = new cdb.geo.TileLayer({ urlTemplate:'test1'});
+    var layer2 = new cdb.geo.TileLayer({ urlTemplate:'test2'});
     var layerView1 = mapView.getLayerByCid(map.addLayer(layer1));
-    var layerView2 = mapView.getLayerByCid(map.addLayer(layer2));
+    var layerView2 = mapView.getLayerByCid(map.addLayer(layer2, { at: 0 }));
     console.log(layerView1.options.zIndex,layerView2.options.zIndex)
     expect(layerView1.options.zIndex > layerView2.options.zIndex).toEqual(true);
   });

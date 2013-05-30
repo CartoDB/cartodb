@@ -59,6 +59,19 @@ describe("geo.map", function() {
       expect(layer3.isEqual(layer4)).toBeTruthy();
     })
 
+    it("should assign indices", function() {
+      var layer1 = new cdb.geo.PlainLayer({order: 10, color: '#zipote'});
+      var layer2 = new cdb.geo.PlainLayer({});
+      var layer3 = new cdb.geo.PlainLayer({});
+      layers.add(layer1);
+      expect(layer1.get('order')).toEqual(0);
+      layers.add(layer2);
+      expect(layer2.get('order')).toEqual(1);
+      layers.add(layer3, { at: 1});
+      expect(layer2.get('order')).toEqual(2);
+      expect(layer3.get('order')).toEqual(1);
+    });
+
   });
   describe("Map", function() {
     var map;

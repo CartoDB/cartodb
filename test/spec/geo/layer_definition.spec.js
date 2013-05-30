@@ -196,5 +196,12 @@ describe("LayerDefinition", function() {
     });
   });
 
+  /*
+  it("should fix cartocss", function() {
+    layerDefinition.addLayer({ sql : 'b', cartocss: '#rambo {} #rambo     [zoom=2]{}'});
+    expect(layerDefinition.getLayer(0).cartocss).toEqual('#layer{} #layer [zoom=2]{}');
+  });
+  */
+
 });
 

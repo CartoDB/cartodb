@@ -96,6 +96,18 @@ describe Importer::Ogr2ogr do
     end
   end #run
 
+  describe '#exit_code' do
+    it 'returns the exit code from the ogr2ogr binary' do
+      wrapper   = Importer::Ogr2ogr.new('non_existent', @pg_options)
+      wrapper.run
+      wrapper.exit_code.wont_equal 0
+
+      wrapper   = Importer::Ogr2ogr.new(@filepath, @pg_options)
+      wrapper.run
+      wrapper.exit_code.must_equal 0
+    end
+  end #exit_code
+
   def csv_factory(name=nil)
     name      ||= "importer#{rand(999)}"
     filepath  = "/var/tmp/#{name}.csv"

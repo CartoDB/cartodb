@@ -1,4 +1,5 @@
 # encoding: utf-8
+require 'open3'
 
 module CartoDB
   module Importer
@@ -30,11 +31,15 @@ module CartoDB
       end #output_name
 
       def run(*args)
-        `#{command}`
+        stdout, stderr, status = Open3.capture3(command)
+        self.exit_code = status.to_i
+        self
       end #run
 
+      attr_reader   :exit_code
       private
 
+      attr_writer   :exit_code
       attr_accessor :filepath, :prefix, :pg_options
 
       def output_format_option

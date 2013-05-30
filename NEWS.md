@@ -11,6 +11,8 @@ $ bundle exec rake cartodb:db:migrate_to[2.1]
 
 2.0.15
 ------
+* Fixed OSM imports
+* General bug fixes
 
 2.0.14
 ------

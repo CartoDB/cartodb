@@ -16,6 +16,8 @@ module CartoDB
       def run(*args)
         log "Using database connection #{connection}"
         ogr2ogr.run
+        log "ogr2ogr output:    #{ogr2ogr.command_output}"
+        log "ogr2ogr exit code: #{ogr2ogr.exit_code}"
       end #run
 
       def ogr2ogr

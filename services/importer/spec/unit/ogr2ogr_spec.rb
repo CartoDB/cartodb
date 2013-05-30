@@ -4,15 +4,17 @@ require 'csv'
 require 'pg'
 require 'sequel'
 require_relative '../../ogr2ogr'
+require_relative '../doubles/job'
 
 include CartoDB
 
 describe Importer::Ogr2ogr do
   before do
-    @job_id        = rand(999)
-    @filepath      = csv_factory
-    @pg_options    = pg_options_factory
+    @job_id       = rand(999)
+    @filepath     = csv_factory
+    @pg_options   = pg_options_factory
 
+    @db           = Sequel.postgres(@pg_options)
     @wrapper = Importer::Ogr2ogr.new(@filepath, @pg_options, @job_id)
   end
 
@@ -95,6 +97,20 @@ describe Importer::Ogr2ogr do
       record.keys.must_include :cartodb_id
     end
   end #run
+
+  describe '#command_output' do
+    it 'returns stdout and stderr from ogr2ogr binary' do
+      wrapper   = Importer::Ogr2ogr.new('non_existent', @pg_options)
+      wrapper.run
+
+      wrapper.command_output.wont_be_empty
+
+      wrapper   = Importer::Ogr2ogr.new(@filepath, @pg_options)
+      wrapper.run
+
+      wrapper.command_output.must_be_empty
+    end
+  end #command_output
 
   describe '#exit_code' do
     it 'returns the exit code from the ogr2ogr binary' do

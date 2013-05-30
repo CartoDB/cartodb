@@ -275,6 +275,8 @@
     padding: 8px;
     color: #CCC;
     text-decoration:none;
+
+    font-family: "robotoregular", Helvetica, Arial, Sans-serif;
   }
   
   div.cartodb-layer-selector-box a.layers:hover {

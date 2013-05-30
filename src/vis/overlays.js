@@ -105,6 +105,34 @@ cdb.vis.Overlay.register('infowindow', function(data, vis) {
 });
 
 
+// layer_selector
+cdb.vis.Overlay.register('layer_selector', function(data, vis) {
+
+  var template = cdb.core.Template.compile(
+    data.template || '\
+      <a href="#" class="layers">Visible layers<div class="count"><%= count %></div></a>\
+      ',
+    data.templateType || 'underscore'
+  );
+
+  var dropdown_template = cdb.core.Template.compile(
+    data.template || '\
+      <ul></ul>\
+      ',
+    data.templateType || 'underscore'
+  );
+
+  var layerSelector = new cdb.geo.ui.LayerSelector({
+    model: vis.map,
+    layers: vis.map.layers,
+    template: template,
+    dropdown_template: dropdown_template
+  });
+
+
+  return layerSelector.render();
+});
+
 // search content
 cdb.vis.Overlay.register('search', function(data, vis) {
 
@@ -127,7 +155,7 @@ cdb.vis.Overlay.register('search', function(data, vis) {
   return search.render();
 });
 
-// tooltip 
+// tooltip
 cdb.vis.Overlay.register('tooltip', function(data, vis) {
   var layer;
   var layers = vis.getLayers();

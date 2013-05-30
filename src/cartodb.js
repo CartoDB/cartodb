@@ -84,7 +84,6 @@
         'geo/leaflet/leaflet_cartodb_layer.js',
         'geo/leaflet/leaflet.js',
 
-
         'geo/gmaps/gmaps_base.js',
         'geo/gmaps/gmaps_baselayer.js',
         'geo/gmaps/gmaps_plainlayer.js',
@@ -96,6 +95,7 @@
         'ui/common/dialog.js',
         'ui/common/notification.js',
         'ui/common/table.js',
+        'ui/common/dropdown.js',
 
         'vis/vis.js',
         'vis/overlays.js',

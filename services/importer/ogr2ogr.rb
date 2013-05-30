@@ -5,19 +5,17 @@ module CartoDB
     class Ogr2ogr
       ENCODING = 'UTF-8'
 
-      def initialize(filepath, prefix=nil)
-        self.filepath = filepath
-        self.prefix   = prefix
+      def initialize(filepath, pg_options, prefix=nil)
+        self.filepath   = filepath
+        self.pg_options = pg_options
+        self.prefix     = prefix
       end #initialize
 
-      def run(*args)
-        return 0
-      end #run
-
       def command
-        "#{encoding_option} #{executable_path} -lco " +
+        "#{encoding_option} #{executable_path} " +
+        "-lco FID=cartodb_id " +
         "#{output_format_option} #{postgres_options} " +
-        "#{layer_name_option} #{filepath}"
+        "#{filepath} #{layer_name_option}"
       end #command
 
       def executable_path
@@ -25,12 +23,19 @@ module CartoDB
       end #executable_path
 
       def output_name
-        [prefix, File.basename(filepath)].compact.join('_')
+        basename  = File.basename(filepath)
+        name      = basename.gsub File.extname(filepath), ''
+        name      = name.gsub(/\./, '_')
+        [prefix, name].compact.join('_').downcase
       end #output_name
+
+      def run(*args)
+        `#{command}`
+      end #run
 
       private
 
-      attr_accessor :filepath, :prefix
+      attr_accessor :filepath, :prefix, :pg_options
 
       def output_format_option
         "-f PostgreSQL"
@@ -45,10 +50,10 @@ module CartoDB
       end #layer_name_option
 
       def postgres_options
-        %Q{PG:"host=#{db_configuration[:host]} }    +
-        %Q{port=#{db_configuration[:port]} }        +
-        %Q{user=#{db_configuration[:username]} }    +
-        %Q{dbname=#{db_configuration[:database]}" }
+        %Q{PG:"host=#{pg_options.fetch(:host)} }    +
+        %Q{port=#{pg_options.fetch(:port)} }        +
+        %Q{user=#{pg_options.fetch(:user)} }    +
+        %Q{dbname=#{pg_options.fetch(:database)}" }
       end #postgres_options
     end # Ogr2ogr
   end # Importer

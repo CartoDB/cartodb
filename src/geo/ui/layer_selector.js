@@ -88,11 +88,15 @@ cdb.geo.ui.LayerSelector = cdb.core.View.extend({
 
     _.bindAll(this, "switchChanged");
 
+    this.layers = this.options.layers;
+    this.cartoDBLayers = _.filter(this.layers.models, function(layer) { return layer.get("type") == 'CartoDB'; });
+
     this.model = new cdb.core.Model({
-      count: this.options.layers.length - 1
+      count: this.cartoDBLayers.length
     });
 
     this.model.bind("change:count", this._onCountChange, this);
+
 
   },
 
@@ -128,9 +132,7 @@ cdb.geo.ui.LayerSelector = cdb.core.View.extend({
 
     var self = this;
 
-    var layers = _.filter(this.options.layers, function(layer) { return layer.get("type") == 'CartoDB'; });
-
-    layers.each(function(layer) {
+    _.each(this.cartoDBLayers, function(layer) {
 
       layer.bind("change:visible", self.switchChanged, this);
 

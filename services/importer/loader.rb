@@ -19,7 +19,7 @@ module CartoDB
       end #run
 
       def ogr2ogr
-        @ogr2ogr || Ogr2ogr.new(filepath, id)
+        @ogr2ogr || Ogr2ogr.new(filepath, pg_options, id)
       end #ogr2ogr
 
       private
@@ -28,6 +28,16 @@ module CartoDB
       attr_writer   :ogr2ogr
 
       def_delegators :job, :log, :id, :connection, :filepath
+
+      def pg_options
+        {
+          host:     'localhost',
+          port:     5432,
+          user:     'lorenzo',
+          password: nil,
+          database: 'test'
+        }
+      end #pg_options
     end # Loader
   end # Importer
 end # CartoDB

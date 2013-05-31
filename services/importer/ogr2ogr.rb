@@ -1,4 +1,5 @@
 # encoding: utf-8
+require 'open3'
 
 module CartoDB
   module Importer
@@ -26,15 +27,20 @@ module CartoDB
         basename  = File.basename(filepath)
         name      = basename.gsub File.extname(filepath), ''
         name      = name.gsub(/\./, '_')
-        [prefix, name].compact.join('_').downcase
+        ['import', prefix, name].compact.join('_').downcase
       end #output_name
 
       def run(*args)
-        `#{command}`
+        stdout, stderr, status  = Open3.capture3(command)
+        self.command_output     = stdout + stderr
+        self.exit_code          = status.to_i
+        self
       end #run
 
+      attr_reader   :exit_code, :command_output
       private
 
+      attr_writer   :exit_code, :command_output
       attr_accessor :filepath, :prefix, :pg_options
 
       def output_format_option

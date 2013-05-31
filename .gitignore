@@ -24,3 +24,4 @@ coverage
 .sass-cache
 public/js/lib/cdb.js
 *billing*
+services/importer/spec/factories/database.json

@@ -156,6 +156,14 @@ module CartoDB
         errors.map { |attribute, message| "#{attribute} #{message}" }
       end #full_errors
 
+      def derived?
+        type == 'derived'
+      end #derived?
+
+      def table?
+        type == 'table'
+      end #table?
+
       attr_reader   :errors
       private
 

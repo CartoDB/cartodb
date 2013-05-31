@@ -68,14 +68,28 @@ describe Admin::VisualizationsController do
       last_response.status.should == 200
     end
 
+    it 'returns a 404 if table is private', now: true do
+      payload = { 
+        name:     "table #{rand(9999)}",
+        privacy:  "private"
+      }
+      post "/api/v1/tables?api_key=#{@api_key}",
+        payload.to_json, @headers
+
+      table_attributes = JSON.parse(last_response.body)
+      id = table_attributes.fetch('id')
+
+      get "/viz/#{id}/public", {}, @headers
+      last_response.status.should == 404
+    end
+
     it "redirects to embed_map if visualization is 'derived'" do
       table_attributes  = table_factory
       id                = table_attributes.fetch('table_visualization')
                             .fetch('id')
-      api_key           = @user.get_map_key
       payload           = { source_visualization_id: id }
 
-      post "/api/v1/viz?api_key=#{api_key}", 
+      post "/api/v1/viz?api_key=#{@api_key}", 
         payload.to_json, @headers
       last_response.status.should == 200
 

@@ -28,6 +28,7 @@ class Admin::VisualizationsController < ApplicationController
   def public
     @visualization, @table = locator.get(params.fetch(:id), request.subdomain)
 
+    return(head 404) if @visualization.private?
     if @visualization.derived?
       return(redirect_to "/viz/#{params[:id]}/embed_map")
     end

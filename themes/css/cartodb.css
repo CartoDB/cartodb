@@ -945,9 +945,10 @@ div.cartodb-popup.header.yellow a.cartodb-popup-close-button:hover {
   div.cartodb-layer-selector-box a.layers {
     display:block;
     width: 126px;
-    padding: 8px;
+    padding: 7px 8px;
     color: #CCC;
     text-decoration:none;
+    font-family: "robotoregular", Helvetica, Arial, Sans-serif;
   }
   
   div.cartodb-layer-selector-box a.layers:hover {

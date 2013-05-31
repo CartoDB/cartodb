@@ -123,8 +123,7 @@ cdb.vis.Overlay.register('layer_selector', function(data, vis) {
   );
 
   var layerSelector = new cdb.geo.ui.LayerSelector({
-    model: vis.map,
-    layers: vis.map.layers,
+    map: vis.map,
     template: template,
     dropdown_template: dropdown_template
   });

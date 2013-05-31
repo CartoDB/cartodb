@@ -88,14 +88,42 @@ cdb.geo.ui.LayerSelector = cdb.core.View.extend({
 
     _.bindAll(this, "switchChanged");
 
-    this.layers = this.options.layers;
-    this.cartoDBLayers = _.filter(this.layers.models, function(layer) { return layer.get("type") == 'CartoDB'; });
+    this.map           = this.options.map;
+    this.layers        = this.map.layers;
+    this.cartoDBLayers = this._getCartoDBLayers();
 
     this.model = new cdb.core.Model({
       count: this.cartoDBLayers.length
     });
 
     this.model.bind("change:count", this._onCountChange, this);
+  },
+
+  _getCartoDBGroupLayers: function(layers) {
+
+    return _.filter(layers.models, function(layer) {
+        return layer.get("type") == 'CartoDB';
+    });
+
+  },
+
+  _getCartoDBLayers: function() {
+
+    var self = this;
+    var layers = [];
+
+    _.each(this.layers.models, function(layer) {
+      if (layer.get("type") == 'CartoDB') {
+        layers.push(layer);
+      }
+      else if (layer.get("type") == 'layergroup') {
+        var  group = self._getCartoDBGroupLayers(layer.get("layer_definition").layers);
+        layers.push(group);
+      }
+    });
+
+    return _.flatten(layers);
+
   },
 
   render: function() {

@@ -105,7 +105,7 @@
             font-size:13px;
             // Actions
             &.error {border-color:rgba(red,0.5);}
-            &[disabled] {border-color:#DDDDDD;}
+            &[readonly] {background:#f4f4f4; border-color:#DDDDDD;}
           }
         }
 

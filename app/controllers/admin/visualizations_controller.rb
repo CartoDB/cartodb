@@ -15,12 +15,11 @@ class Admin::VisualizationsController < ApplicationController
 
   def show
     update_user_api_calls
-    if current_user.present?
-      @visualization, @table = locator.get(params.fetch(:id), request.subdomain)
-      respond_to { |format| format.html }
-    else
-      redirect_to "/viz/#{params[:id]}/public"
-    end
+
+    id = params.fetch(:id)
+    return(redirect_to "/viz/#{id}/public") unless current_user.present?
+    @visualization, @table = locator.get(id, request.subdomain)
+    respond_to { |format| format.html }
 
     update_user_last_activity
   end #show
@@ -28,10 +27,9 @@ class Admin::VisualizationsController < ApplicationController
   def public
     @visualization, @table = locator.get(params.fetch(:id), request.subdomain)
 
-    return(head 404) if @visualization.private?
-    if @visualization.derived?
-      return(redirect_to "/viz/#{params[:id]}/embed_map")
-    end
+    id = params.fetch(:id)
+    return(pretty_404) if @visualization.private?
+    return(redirect_to "/viz/#{id}/embed_map") if @visualization.derived?
     
     @vizjson = @visualization.to_vizjson
 
@@ -88,6 +86,10 @@ class Admin::VisualizationsController < ApplicationController
     return false unless current_user.present?
     current_user.set_api_calls
   end
+
+  def pretty_404
+    render(file: "public/404", layout: false, status: 404)
+  end #pretty_404
 
   def locator
     CartoDB::Visualization::Locator.new

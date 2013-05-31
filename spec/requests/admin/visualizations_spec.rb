@@ -60,12 +60,48 @@ describe Admin::VisualizationsController do
   end # GET /viz/:id
 
   describe 'GET /viz/:id/public' do
-    it 'returns public data for a visualization' do
+    it 'returns public data for a table visualization' do
       table_attributes = table_factory
       id = table_attributes.fetch('id')
 
       get "/viz/#{id}/public", {}, @headers
       last_response.status.should == 200
+    end
+
+    it 'returns a 404 if table is private', now: true do
+      payload = { 
+        name:     "table #{rand(9999)}",
+        privacy:  "private"
+      }
+      post "/api/v1/tables?api_key=#{@api_key}",
+        payload.to_json, @headers
+
+      table_attributes = JSON.parse(last_response.body)
+      id = table_attributes.fetch('id')
+
+      get "/viz/#{id}/public", {}, @headers
+      last_response.status.should == 404
+    end
+
+    it "redirects to embed_map if visualization is 'derived'" do
+      table_attributes  = table_factory
+      id                = table_attributes.fetch('table_visualization')
+                            .fetch('id')
+      payload           = { source_visualization_id: id }
+
+      post "/api/v1/viz?api_key=#{@api_key}", 
+        payload.to_json, @headers
+      last_response.status.should == 200
+
+      derived_visualization = JSON.parse(last_response.body)
+      id = derived_visualization.fetch('id')
+
+      get "/viz/#{id}/public", {}, @headers
+      last_response.status.should == 302
+      follow_redirect!
+
+      last_response.status.should == 200
+      last_request.url.should =~ %r{.*#{id}/embed_map.*}
     end
   end # GET /viz/:id/public
 

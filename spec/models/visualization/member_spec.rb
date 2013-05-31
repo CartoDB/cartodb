@@ -169,6 +169,30 @@ describe Visualization::Member do
     end
   end # validations
 
+  describe '#derived?' do
+    it "returns true if type is derived" do
+      visualization = Visualization::Member.new(type: 'derived')
+      visualization.derived?.should be_true
+      visualization.table?.should be_false
+
+      visualization.type = 'bogus'
+      visualization.derived?.should be_false
+      visualization.table?.should be_false
+    end
+  end #derived?
+
+  describe '#table?' do
+    it "returns true if type is 'table'" do
+      visualization = Visualization::Member.new(type: 'table')
+      visualization.derived?.should be_false
+      visualization.table?.should be_true
+
+      visualization.type = 'bogus'
+      visualization.derived?.should be_false
+      visualization.table?.should be_false
+    end
+  end
+
   def random_attributes(attributes={})
     random = rand(999)
     {

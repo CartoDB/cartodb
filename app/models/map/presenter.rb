@@ -32,7 +32,6 @@ module CartoDB
             CartoDB::Layer::Presenter.new(
               map.data_layers.first, options, configuration
             ).to_vizjson_v1
-            #VizzJSON::Layer.new(map.data_layers.first, options, configuration) .to_poro
           ],
 
           overlays: [

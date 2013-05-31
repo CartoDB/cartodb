@@ -362,6 +362,17 @@
     &.opacity {
       @include background(image-url("layout/alpha_bkg.png") repeat 0 0);
     }
+
+    // Disabled state
+    &.disabled {
+      background:#f4f4f4!important;
+      a { 
+        background:#f4f4f4!important;
+        @include opacity(0.5);
+        &:hover {cursor:default;}
+      }
+      &:hover {cursor:default;}
+    }
   }
 
 

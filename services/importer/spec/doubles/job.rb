@@ -4,16 +4,20 @@ module CartoDB
   module Importer
     module Doubles
       class Job
-        def initialize(*args); self; end
-        def logger(*args); logger_fake; end
-      
-        private
+        def initialize(*args);  @log = ''; end
+        def logger(*args);      @log; end
+        def log(message);       @log << message; end
+        def filepath;           ''; end
+        def id;                 0; end
+        def pg_options
+          {
+            host:     '',
+            user:     '',
+            password: '',
+            database: '' 
+          }
+        end #pg_options
 
-        def logger_fake
-          fake = Object.new
-          def fake.log(*args); end
-          fake
-        end #logger_fake
       end # Job
     end # Doubles
   end # Importer

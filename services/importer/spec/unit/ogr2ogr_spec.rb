@@ -5,6 +5,7 @@ require 'sequel'
 require_relative '../../ogr2ogr'
 require_relative '../doubles/job'
 require_relative '../factories/csv'
+require_relative '../factories/pg_connection'
 
 include CartoDB
 
@@ -13,8 +14,8 @@ describe Importer::Ogr2ogr do
     @job_id       = rand(999)
     @csv          = Importer::Factories::CSV.new.write
     @filepath     = @csv.filepath
-    @pg_options   = pg_options_factory
-    @db           = Sequel.postgres(@pg_options)
+    @pg_options   = Importer::Factories::PGConnection.new.pg_options
+    @db           = Importer::Factories::PGConnection.new.connection
     @wrapper      = Importer::Ogr2ogr.new(@filepath, @pg_options, @job_id)
   end
 
@@ -115,15 +116,5 @@ describe Importer::Ogr2ogr do
       wrapper.exit_code.must_equal 0
     end
   end #exit_code
-
-  def pg_options_factory
-    pg_options  = {
-      host:     'localhost',
-      port:     5432,
-      user:     'lorenzo',
-      password: nil,
-      database: 'test'
-    }
-  end #pg_options_factory
 end # Importer::Ogr2ogr
 

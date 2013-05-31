@@ -21,6 +21,7 @@ describe Importer::Ogr2ogr do
 
   after do
     @csv.delete
+    @db.drop_table? @wrapper.output_name
   end
 
   describe '#initialize' do

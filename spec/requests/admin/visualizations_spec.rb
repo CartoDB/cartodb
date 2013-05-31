@@ -68,7 +68,7 @@ describe Admin::VisualizationsController do
       last_response.status.should == 200
     end
 
-    it 'returns a 404 if table is private', now: true do
+    it 'returns a 404 if table is private' do
       payload = { 
         name:     "table #{rand(9999)}",
         privacy:  "private"
@@ -81,6 +81,7 @@ describe Admin::VisualizationsController do
 
       get "/viz/#{id}/public", {}, @headers
       last_response.status.should == 404
+      last_response.body.should =~ %r{<title>CartoDB - 404 Error</title>}
     end
 
     it "redirects to embed_map if visualization is 'derived'" do

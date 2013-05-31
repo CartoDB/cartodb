@@ -28,7 +28,7 @@ class Admin::VisualizationsController < ApplicationController
     @visualization, @table = locator.get(params.fetch(:id), request.subdomain)
 
     id = params.fetch(:id)
-    return(head 404) if @visualization.private?
+    return(pretty_404) if @visualization.private?
     return(redirect_to "/viz/#{id}/embed_map") if @visualization.derived?
     
     @vizjson = @visualization.to_vizjson
@@ -86,6 +86,10 @@ class Admin::VisualizationsController < ApplicationController
     return false unless current_user.present?
     current_user.set_api_calls
   end
+
+  def pretty_404
+    render(file: "public/404", layout: false, status: 404)
+  end #pretty_404
 
   def locator
     CartoDB::Visualization::Locator.new

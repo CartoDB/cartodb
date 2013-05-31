@@ -55,6 +55,7 @@ module CartoDB
         sql = sql_from(layer.options)
         {
           sql:                wrap(sql, layer.options),
+          layer_name:         layer.options.fetch('table_name'),
           cartocss:           layer.options.fetch('tile_style'),
           cartocss_version:   layer.options.fetch('style_version'),
           interactivity:      layer.options.fetch('interactivity')

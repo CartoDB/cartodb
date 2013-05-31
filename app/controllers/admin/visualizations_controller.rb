@@ -28,13 +28,10 @@ class Admin::VisualizationsController < ApplicationController
   def public
     @visualization, @table = locator.get(params.fetch(:id), request.subdomain)
 
-    #@vizjson = CartoDB::Map::Presenter.new(
-    #  @visualization.map, 
-    #  { full: false, url: "/api/v1/tables/#{@visualization.table.id}" },
-    #  Cartodb.config, 
-    #  CartoDB::Logger
-    #).to_poro
-
+    if @visualization.derived?
+      return(redirect_to "/viz/#{params[:id]}/embed_map")
+    end
+    
     @vizjson = @visualization.to_vizjson
 
     respond_to do |format|

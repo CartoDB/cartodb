@@ -16,7 +16,7 @@ module CartoDB
       def run
         log "Importing file #{filepath}"
         loader.run(filepath)
-        log "Loader exited with code #{loader.exit_code}"
+        log "Loader exit code: #{loader.exit_code}"
         self
       end #run
 

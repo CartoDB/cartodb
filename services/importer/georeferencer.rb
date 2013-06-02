@@ -3,6 +3,11 @@
 module CartoDB
   module Importer
     class Georeferencer
+      LATITUDE_POSSIBLE_NAMES   = %w{ latitude lat latitudedecimal
+        latitud lati decimallatitude decimallat }
+      LONGITUDE_POSSIBLE_NAMES  = %w{ longitude lon lng 
+        longitudedecimal longitud long decimallongitude decimallong }
+
       def initialize(db, table_name)
         @db         = db
         @table_name = table_name
@@ -10,7 +15,10 @@ module CartoDB
 
       def run
         create_the_geom_in(table_name)
-        georeference(table_name, 'lat', 'lon')
+
+        latitude_column_name  = latitude_column_name_in(table_name)
+        longitude_column_name = longitude_column_name_in(table_name)
+        georeference(table_name, latitude_column_name, longitude_column_name)
         self
       end #run
 
@@ -43,6 +51,29 @@ module CartoDB
       def columns_in(table_name)
         db.schema(table_name, reload: true).map(&:first)
       end #columns_in
+
+      def latitude_column_name_in(table_name)
+        names = LATITUDE_POSSIBLE_NAMES.map { |name| "'#{name}'" }.join(',')
+        
+        db[%Q{
+          SELECT column_name
+          FROM information_schema.columns
+          WHERE table_name ='#{table_name}'
+          AND lower(column_name) in (#{names})
+          LIMIT 1
+        }].first.fetch(:column_name)
+      end #latitude_column_name_in
+
+      def longitude_column_name_in(table_name)
+        names = LONGITUDE_POSSIBLE_NAMES.map { |name| "'#{name}'" }.join(',')
+        db[%Q{
+          SELECT column_name 
+          FROM information_schema.columns
+          WHERE table_name ='#{table_name}'
+          AND lower(column_name) in (#{names})
+          LIMIT 1
+        }].first.fetch(:column_name)
+      end #longitude_column_name_in
 
       private
 

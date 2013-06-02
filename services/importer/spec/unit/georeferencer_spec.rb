@@ -41,14 +41,28 @@ describe Importer::Georeferencer do
 
   describe '#georeference' do
     it 'populates the_geom from lat / lon values' do
-      georeferencer = Importer::Georeferencer.new(@db, @table_name)
-      dataset       = @db[@table_name.to_sym]
+      lat = Importer::Georeferencer::LATITUDE_POSSIBLE_NAMES.sample
+      lon = Importer::Georeferencer::LONGITUDE_POSSIBLE_NAMES.sample
 
-      georeferencer.create_the_geom_in(@table_name)
-      dataset.insert(random_record)
+      table_name = create_table(
+        @db,
+        latitude_column:  lat,
+        longitude_column: lon
+      )
+
+      georeferencer = Importer::Georeferencer.new(@db, table_name)
+      dataset       = @db[table_name.to_sym]
+
+      georeferencer.create_the_geom_in(table_name)
+      dataset.insert(
+        :name         => 'bogus',
+        :description  => 'bogus',
+        :"#{lat}"     => rand(90),
+        :"#{lon}"     => rand(180)
+      )
+
       dataset.first.fetch(:the_geom).must_be_nil
-
-      georeferencer.georeference(@table_name, 'lat', 'lon')
+      georeferencer.georeference(table_name, lat, lon)
       dataset.first.fetch(:the_geom).wont_be_nil
     end
   end #georeference
@@ -85,13 +99,16 @@ describe Importer::Georeferencer do
     end
   end #columns_in
 
-  def create_table(db, name=nil)
-    table_name ||= "importer_georeferencer_#{rand(999)}"
+  def create_table(db, options={})
+    table_name        = options.fetch(:table_name, "importer_#{rand(999)}")
+    latitude_column   = options.fetch(:latitude_column, :lat)
+    longitude_column  = options.fetch(:longitude_column, :lon)
+
     db.create_table? table_name do
       String    :name
       String    :description
-      String    :lat
-      String    :lon
+      String    latitude_column.to_sym
+      String    longitude_column.to_sym
     end
 
     table_name

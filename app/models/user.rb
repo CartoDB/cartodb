@@ -398,13 +398,12 @@ class User < Sequel::Model
   end
 
   def link_outdated_tables
-    metadata_tables_without_id = self.tables.filter(:table_id => nil).map(&:name)
+    metadata_tables_without_id = self.tables.filter(table_id: nil).map(&:name)
     outdated_tables = real_tables.select{|t| metadata_tables_without_id.include?(t[:relname])}
     outdated_tables.each do |t|
-      table = Table.find(:name => t[:relname])
-      table.table_id = t[:oid]
+      table = Table.find(name: t[:relname])
       begin
-        table.save
+        table.this.update table_id: t[:oid]
       rescue Sequel::DatabaseError => e
         raise unless e.message =~ /must be owner of relation/
       end

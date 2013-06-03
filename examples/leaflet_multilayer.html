@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <title>Leaflet multilayer example | CartoDB.js</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <link rel="shortcut icon" href="http://cartodb.com/assets/favicon.ico" />
     <style>
       html, body, #map {
         height: 100%;
@@ -15,148 +19,145 @@
     <![endif]-->
 
   </head>
-    
   <body>
     <div id="map"></div>
-  </body>
 
+    <!-- include cartodb.js library -->
+    <script src="../src/cartodb.js"></script>
+    <script>
 
-  <!-- include cartodb.js library -->
-  <script src="../src/cartodb.js"></script>
-  <script>
+      function main() {
 
-    function main() {
+        var map = L.map('map', { 
+          zoomControl: false,
+          center: [43, 0],
+          zoom: 3
+        })
 
-      var map = L.map('map', { 
-        zoomControl: false,
-        center: [43, 0],
-        zoom: 3
-      })
+        L.tileLayer('http://tile.stamen.com/toner/{z}/{x}/{y}.png', {
+          attribution: 'MapBox'
+        }).addTo(map);
 
-      L.tileLayer('http://tile.stamen.com/toner/{z}/{x}/{y}.png', {
-        attribution: 'MapBox'
-      }).addTo(map);
+        /*var layer = new L.CartoDBLayer({
+          tiler_domain: "localhost.lan",
+          tiler_port: "8181",
+          user_name: 'development',
+          table_name: "european_countries_export",
+          tile_style: '#layer { polygon-fill: #000; polygon-opacity: 0.8;}',
+          no_cdn: true,
+          featureOver: function(e, pos, latlng, data) {
+            cartodb.log.log(e, pos, latlng, data);
+          }
+        }).addTo(map);
 
-      /*var layer = new L.CartoDBLayer({
-        tiler_domain: "localhost.lan",
-        tiler_port: "8181",
-        user_name: 'development',
-        table_name: "european_countries_export",
-        tile_style: '#layer { polygon-fill: #000; polygon-opacity: 0.8;}',
-        no_cdn: true,
-        featureOver: function(e, pos, latlng, data) {
-          cartodb.log.log(e, pos, latlng, data);
-        }
-      }).addTo(map);
-
-      layer.setInteractivity('cartodb_id').setInteraction(0, true) 
-      layer.on('featureOver', function(e, pos, latlng, data) {
-        cartodb.log.log(e, pos, latlng, data);
-      });
-      return;
-
-      setTimeout(function() {
-        layer.setCartoCSS('#layer { polygon-fill: #F00; polygon-opacity: 0.8;}');
-      }, 3000);
-
-      setTimeout(function() {
-        layer.setQuery('select * from european_countries_export limit 10');
-      }, 6000);
-      */
-
-      var layer = new L.CartoDBGroupLayer({
-        layer_definition: {
-          version: '1.0.0',
-          layers: [{
-             type: 'cartodb', 
-             options: {
-               sql: 'select * from ne_10m_populated_places_simple',
-               cartocss: '#layer { marker-fill: red; }'
-             }
-           }, {
-             type: 'cartodb', 
-             options: {
-               sql: "select * from european_countries_export",
-               cartocss: '#layer { polygon-fill: #000; polygon-opacity: 0.8;}'
-             }
-           }
-          ]
-        },
-        tiler_domain: "localhost.lan",
-        tiler_port: "8181",
-        user_name: 'development',
-        no_cdn: true,
-        featureOver: function(e, pos, latlng, data, layer) {
-          console.log(layer);
-        }
-      }).addTo(map);
-
-      layer.setInteraction(0, 'cartodb_id');
-      layer.setInteraction(1, 'cartodb_id');
-
-      setTimeout(function() {
-        layer.removeLayer(0);
-      }, 5000);
-
-      /*layer.setInteraction(0, '........');
-      layer.setInteraction({
-        '9': '....',
-        '10': '....',
-      });
-      */
-
-      setTimeout(function() {
-        /*layer.addLayer({
-           sql: 'select * from ne_10m_populated_places_simple',
-           cartocss: '#layer { marker-fill: #00FF00; }', 
-        });
-        */
-      }, 6000);
-
-  /*
-
-      cartodb.createLayer(map, 'http://development.localhost.lan:3000/api/v1/viz/ne_10m_populated_places_simple/viz.json', {
-        no_cdn: true
-
-      })
-       .on('done', function(layer) {
-        map.addLayer(layer);
-
+        layer.setInteractivity('cartodb_id').setInteraction(0, true) 
         layer.on('featureOver', function(e, pos, latlng, data) {
           cartodb.log.log(e, pos, latlng, data);
         });
+        return;
 
-        layer.on('error', function(err) {
-          cartodb.log.log('error: ' + err);
-        });
+        setTimeout(function() {
+          layer.setCartoCSS('#layer { polygon-fill: #F00; polygon-opacity: 0.8;}');
+        }, 3000);
 
+        setTimeout(function() {
+          layer.setQuery('select * from european_countries_export limit 10');
+        }, 6000);
+        */
 
-        layer.layerToken({
-          version: '1.0.0',
-          layers: [{
-             type: 'cartodb', 
-             options: {
-               sql: 'select * from european_countries_e limit 10',
-               cartocss: '#layer { polygon-fill: red; }', 
+        var layer = new L.CartoDBGroupLayer({
+          layer_definition: {
+            version: '1.0.0',
+            layers: [{
+               type: 'cartodb', 
+               options: {
+                 sql: 'select * from ne_10m_populated_places_simple',
+                 cartocss: '#layer { marker-fill: red; }'
+               }
+             }, {
+               type: 'cartodb', 
+               options: {
+                 sql: "select * from european_countries_export",
+                 cartocss: '#layer { polygon-fill: #000; polygon-opacity: 0.8;}'
+               }
              }
-          }]
-        }, function(data) {
-        console.log(data);
+            ]
+          },
+          tiler_domain: "localhost.lan",
+          tiler_port: "8181",
+          user_name: 'development',
+          no_cdn: true,
+          featureOver: function(e, pos, latlng, data, layer) {
+            console.log(layer);
+          }
+        }).addTo(map);
+
+        layer.setInteraction(0, 'cartodb_id');
+        layer.setInteraction(1, 'cartodb_id');
+
+        setTimeout(function() {
+          layer.removeLayer(0);
+        }, 5000);
+
+        /*layer.setInteraction(0, '........');
+        layer.setInteraction({
+          '9': '....',
+          '10': '....',
+        });
+        */
+
+        setTimeout(function() {
+          /*layer.addLayer({
+             sql: 'select * from ne_10m_populated_places_simple',
+             cartocss: '#layer { marker-fill: #00FF00; }', 
+          });
+          */
+        }, 6000);
+
+    /*
+
+        cartodb.createLayer(map, 'http://development.localhost.lan:3000/api/v1/viz/ne_10m_populated_places_simple/viz.json', {
+          no_cdn: true
+
+        })
+         .on('done', function(layer) {
+          map.addLayer(layer);
+
+          layer.on('featureOver', function(e, pos, latlng, data) {
+            cartodb.log.log(e, pos, latlng, data);
+          });
+
+          layer.on('error', function(err) {
+            cartodb.log.log('error: ' + err);
+          });
+
+
+          layer.layerToken({
+            version: '1.0.0',
+            layers: [{
+               type: 'cartodb', 
+               options: {
+                 sql: 'select * from european_countries_e limit 10',
+                 cartocss: '#layer { polygon-fill: red; }', 
+               }
+            }]
+          }, function(data) {
+          console.log(data);
+          });
+
+        }).on('error', function() {
+          cartodb.log.log("some error occurred");
         });
 
-      }).on('error', function() {
-        cartodb.log.log("some error occurred");
-      });
+      */
+      }
 
-    */
-    }
+      // you could use $(window).load(main);
+      window.onload = function() {
+        cdb.load("../src/", main);
+      }
 
-    // you could use $(window).load(main);
-    window.onload = function() {
-      cdb.load("../src/", main);
-    }
+    </script>
 
-  </script>
-
-
+  </body>
 </html>

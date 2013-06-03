@@ -29,7 +29,7 @@ module CartoDB
           bounds:         bounds_from(map),
           center:         map.center,
           zoom:           map.zoom,
-          updated_at:     Time.now, #map.viz_updated_at,
+          updated_at:     map.viz_updated_at,
           layers:         layers_for(visualization),
           overlays:       overlays_for(visualization)
         }

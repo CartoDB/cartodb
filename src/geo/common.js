@@ -4,7 +4,6 @@
  */
 
 function CartoDBLayerCommon() {
-  this.visible = true;
 }
 
 CartoDBLayerCommon.prototype = {
@@ -12,24 +11,17 @@ CartoDBLayerCommon.prototype = {
   // the way to show/hidelayer is to set opacity
   // removing the interactivty at the same time
   show: function() {
-    if (this.visible) {
-      return;
-    }
-    this.visible = true;
     this.setOpacity(this.options.previous_opacity === undefined ? 0.99: this.options.previous_opacity);
     delete this.options.previous_opacity;
     this.setInteraction(true);
   },
 
   hide: function() {
-    if (!this.visible) {
-      return;
+    if(this.options.previous_opacity == undefined) {
+      this.options.previous_opacity = this.options.opacity;
     }
-    this.options.previous_opacity = this.options.opacity;
     this.setOpacity(0);
     this.setInteraction(false);
-
-    this.visible = false;
   },
 
   /**
@@ -122,12 +114,12 @@ CartoDBLayerCommon.prototype = {
           .map(this.options.map)
           .tilejson(tilejson)
           .on('on', function(o) {
-            o.layer = layer;
+            o.layer = layer || 0;
             self._manageOnEvents(self.options.map, o);
           })
           .on('off', function(o) {
             o = o || {}
-            o.layer = layer;
+            o.layer = layer || 0;
             self._manageOffEvents(self.options.map, o);
           });
       }

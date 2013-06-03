@@ -136,16 +136,16 @@ _.extend(
 
   featureOver: function(e, latlon, pixelPos, data) {
     // dont pass gmaps LatLng
-    this.trigger('featureOver', e, [latlon.lat(), latlon.lng()], pixelPos, data);
+    this.trigger('featureOver', e, [latlon.lat(), latlon.lng()], pixelPos, data, 0);
   },
 
   featureOut: function(e) {
     this.trigger('featureOut', e);
   },
 
-  featureClick: function(e, latlon, pixelPos, data) {
+  featureClick: function(e, latlon, pixelPos, data, layer) {
     // dont pass leaflet lat/lon
-    this.trigger('featureClick', e, [latlon.lat(), latlon.lng()], pixelPos, data);
+    this.trigger('featureClick', e, [latlon.lat(), latlon.lng()], pixelPos, data, 0);
   },
 
   error: function(e) {

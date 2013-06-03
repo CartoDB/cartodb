@@ -10,7 +10,7 @@
 
 
   // Big mamufas css
-  div.drag_mamufas {    
+  div.drag_mamufas {
     position:fixed;
     top:0;
     left:0;
@@ -68,7 +68,7 @@
           margin:0;
           margin-bottom:22px;
           border-bottom:0;
-          
+
           div.cont {
             display:none;
 
@@ -76,6 +76,8 @@
               position:absolute;
               top:3px;
               right:0;
+
+              &.light { color: #CCC; }
             }
 
             div.upload {
@@ -192,7 +194,7 @@
               display:block;
             }
           }
-        
+
           // States
           &.active {
             div.cont {display:block}
@@ -201,7 +203,7 @@
           &.disabled {
             @include opacity(0.4);
           }
-          
+
           // Position
           &:last-child {
             margin-bottom:0;
@@ -243,7 +245,7 @@
           @include background-size(30px 30px);
           @include border-radius(4px);
           @include progress-background(rgba(74, 132, 194, 1));
-          overflow: hidden;          
+          overflow: hidden;
         }
 
         a.stop {
@@ -304,16 +306,16 @@
   @-webkit-keyframes progress{
     0% {background-position: 0 0;}
     100% {background-position: 30px 30px;}
-  } 
+  }
   @-moz-keyframes progress{
     0% {background-position: 0 0;}
     100% {background-position: 30px 30px;}
-  } 
+  }
   @-ms-keyframes progress{
     0% {background-position: 0 0;}
     100% {background-position: 30px 30px;}
-  } 
+  }
   @keyframes progress{
     0% {background-position: 0 0;}
     100% {background-position: 30px 30px;}
-  } 
+  }

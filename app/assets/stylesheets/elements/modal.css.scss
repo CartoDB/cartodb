@@ -82,7 +82,17 @@
         div.foot {
           padding-top:0;
           border:none;
-          a.cancel {display:none}
+
+          .privacy {
+            position:relative;
+            top:13px;
+
+            .switch { margin: 0 10px 0 0; }
+            label { cursor: pointer; color:#999999; }
+
+          }
+
+          /*a.cancel {display:none}*/
         }
       }
 

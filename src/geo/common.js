@@ -114,12 +114,12 @@ CartoDBLayerCommon.prototype = {
           .map(this.options.map)
           .tilejson(tilejson)
           .on('on', function(o) {
-            o.layer = layer;
+            o.layer = layer || 0;
             self._manageOnEvents(self.options.map, o);
           })
           .on('off', function(o) {
             o = o || {}
-            o.layer = layer;
+            o.layer = layer || 0;
             self._manageOffEvents(self.options.map, o);
           });
       }

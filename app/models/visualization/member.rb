@@ -205,7 +205,7 @@ module CartoDB
       end #name_cheker
 
       def available_name?
-        return true unless user
+        return true unless user && name_changed
         name_checker.available?(name)
       end #available_name?
 

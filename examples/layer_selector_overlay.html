@@ -7,6 +7,7 @@
     <link rel="shortcut icon" href="http://cartodb.com/assets/favicon.ico" />
     <style>
       html, body, #map {
+        width:100%;
         height: 100%;
         padding: 0;
         margin: 0;
@@ -23,12 +24,13 @@
     <div id="map"></div>
 
     <!-- include cartodb.js library -->
-    <script src="/src/cartodb.js"></script>
+    <script src="/dist/cartodb.js"></script>
 
     <script>
 
       function main() {
-        cartodb.createVis('map', 'http://development.localhost.lan:3000/api/v2/viz/825ff3a2-cc36-11e2-85e3-94942608096a/viz?callback=vizjson', {
+        // 'http://development.localhost.lan:3000/api/v2/viz/825ff3a2-cc36-11e2-85e3-94942608096a/viz?callback=vizjson'
+        cartodb.createVis('map', {"id":"825ff3a2-cc36-11e2-85e3-94942608096a","version":"0.1.0","title":"trying visualization","description":null,"url":null,"map_provider":"leaflet","bounds":[[-14.093957177836224,-62.9296875],[60.84491057364912,63.80859374999999]],"center":"[29.99300228455108, 0.439453125]","zoom":3,"updated_at":"2013-06-03T16:19:50+02:00","layers":[{"options":{"visible":true,"type":"Tiled","urlTemplate":"https://maps.nlp.nokia.com/maptiler/v2/maptile/newest/normal.day/{z}/{x}/{y}/256/png8?lg=eng&token=61YWYROufLu_f8ylE0vn0Q&app_id=qIWDkliFCtLntLma2e6O","name":"Nokia Day","className":"nokia_day","attribution":"\u00a92012 Nokia <a href='http://here.net/services/terms' target='_blank'>Terms of use</a>"},"infowindow":null,"id":360,"order":0,"type":"tiled"},{"type":"layergroup","options":{"user_name":"development","tiler_protocol":"http","tiler_domain":"localhost.lan","tiler_port":8181,"sql_api_protocol":"http","sql_api_domain":"localhost.lan","sql_api_endpoint":"/api/v1/sql","sql_api_port":8080,"layer_definition":{"version":"1.0.1","layers":[{"id":366,"type":"CartoDB","infowindow":{"fields":[{"name":"description","title":true,"position":2},{"name":"name","title":true,"position":3}],"template_name":"table/views/infowindow_light","template":"<div class=\"cartodb-popup\">\n  <a href=\"#close\" class=\"cartodb-popup-close-button close\">x</a>\n  <div class=\"cartodb-popup-content-wrapper\">\n    <div class=\"cartodb-popup-content\">\n      {{#content.fields}}\n        {{#title}}<h4>{{title}}</h4>{{/title}}\n        {{#value}}\n          <p {{#type}}class=\"{{ type }}\"{{/type}}>{{{ value }}}</p>\n        {{/value}}\n        {{^value}}\n          <p class=\"empty\">null</p>\n        {{/value}}\n      {{/content.fields}}\n    </div>\n  </div>\n  <div class=\"cartodb-popup-tip-container\"></div>\n</div>\n"},"order":2,"options":{"sql":"select * from untitled_table_1","layer_name":"untitled_table_1","cartocss":"#untitled_table_1 {\n // points\n [mapnik-geometry-type=point] {\n \u00a0 \u00a0marker-fill: #FF6600;\n \u00a0 \u00a0marker-opacity: 1;\n \u00a0 \u00a0marker-width: 12;\n \u00a0 \u00a0marker-line-color: white;\n \u00a0 \u00a0marker-line-width: 3;\n \u00a0 \u00a0marker-line-opacity: 0.9;\n \u00a0 \u00a0marker-placement: point;\n \u00a0 \u00a0marker-type: ellipse;marker-allow-overlap: true;\n \u00a0}\n\n //lines\n [mapnik-geometry-type=linestring] {\n \u00a0 \u00a0line-color: #FF6600; \n \u00a0 \u00a0line-width: 2; \n \u00a0 \u00a0line-opacity: 0.7;\n \u00a0}\n\n //polygons\n [mapnik-geometry-type=polygon] {\n \u00a0 \u00a0polygon-fill:#FF6600;\n \u00a0 \u00a0polygon-opacity: 0.7;\n \u00a0 \u00a0line-opacity:1;\n \u00a0 \u00a0line-color: #FFFFFF;\n \u00a0 }\n }","cartocss_version":"2.1.1","interactivity":"cartodb_id"}}]}}}],"overlays":[{"type":"zoom","order":null,"options":null,"template":"<a class=\"zoom_in\">+</a><a class=\"zoom_out\">-</a>"},{"type":"loader","order":null,"options":null,"template":"<div class=\"loader\"></div>"}]}, {
           shareable: true,
           title: true,
           description: true,
@@ -47,7 +49,7 @@
 
           // you can get the native map to work with it
           // depending if you use google maps or leaflet
-          map = vis.getNativeMap();
+          // map = vis.getNativeMap();
 
           vis.addOverlay({
             type: 'layer_selector'
@@ -63,8 +65,8 @@
 
       //window.onload = main;
       var fn = function() { cartodb.load('../src/', main); }
-      window.onload = fn;
-
+      // window.onload = fn;
+      $(document).ready(main);
     </script>
   </body>
 </html>

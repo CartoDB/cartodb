@@ -3,16 +3,14 @@ require 'minitest/autorun'
 require 'sqlite3'
 require_relative '../../loader'
 require_relative '../doubles/job'
+require_relative '../doubles/ogr2ogr'
 
 include CartoDB
 
 describe Importer::Loader do
   before do
     @job      = Importer::Doubles::Job.new
-    @ogr2ogr  = Minitest::Mock.new
-    @ogr2ogr.expect(:run, Object.new, [])
-    @ogr2ogr.expect(:exit_code, 0, [])
-    @ogr2ogr.expect(:command_output, '', [])
+    @ogr2ogr  = Importer::Doubles::Ogr2ogr.new
   end
 
   describe '#run' do
@@ -23,10 +21,15 @@ describe Importer::Loader do
     end
 
     it 'runs the ogr2ogr command to load the file' do
-      loader  = Importer::Loader.new(@job, @ogr2ogr)
+      ogr2ogr = Minitest::Mock.new
+      loader  = Importer::Loader.new(@job, ogr2ogr)
 
+      def ogr2ogr.commnad_output; end
+      ogr2ogr.expect :run, Object.new
+      ogr2ogr.expect :command_output, ''
+      ogr2ogr.expect :exit_code, 0
       loader.run
-      @ogr2ogr.verify
+      ogr2ogr.verify
     end
 
     it 'logs the exit code from ogr2ogr' do

@@ -392,8 +392,8 @@ class User < Sequel::Model
 
     metadata_tables_ids = self.tables.select(:table_id).map(&:table_id)
 
-    link_created_tables(metadata_tables_ids)
-    link_renamed_tables(metadata_tables_ids)
+    # link_created_tables(metadata_tables_ids)
+    # link_renamed_tables(metadata_tables_ids)
     link_deleted_tables(metadata_tables_ids)
   end
 

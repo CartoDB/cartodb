@@ -14,6 +14,10 @@ describe User do
     puts "[rspec][user_spec] Running..."
   end
 
+  before(:each) do
+    CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
+  end
+
   it "should set up a user after create" do
     @new_user.save
     @new_user.reload

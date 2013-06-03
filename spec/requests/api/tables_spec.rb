@@ -12,6 +12,7 @@ describe "Tables API" do
 
   before(:each) do
     delete_user_data @user
+    CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
     host! 'test.localhost.lan'
     @headers = { 
       'CONTENT_TYPE'  => 'application/json',
@@ -156,7 +157,7 @@ describe "Tables API" do
     end
   end
 
-  pending "removes metadata of tables destroyed via SQL API" do
+  it "removes metadata of tables destroyed via SQL API" do
     table = FactoryGirl.create(:table, :user_id => @user.id)
 
     get_json v1_tables_url(params) do |response|

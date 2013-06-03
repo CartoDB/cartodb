@@ -51,14 +51,14 @@ module CartoDB
                                     :table_name    => 'import_csv_1',
                                     :data_source   => "/../db/fake_data/import_csv_1.csv" )
       import1.run_import!
-      Table[import1.table_id]    
+      ::Table[import1.table_id]    
 
       # Import tweets file as table
       import2 = DataImport.create(  :user_id       => user.id,
                                     :table_name    => 'twitters',
                                     :data_source   => "/../db/fake_data/twitters.csv" )
       import2.run_import!
-      Table[import2.table_id]    
+      ::Table[import2.table_id]    
     end
 
     def delete_user_data user

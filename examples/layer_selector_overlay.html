@@ -13,9 +13,9 @@
       }
     </style>
 
-    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/themes/css/cartodb.css" />
+    <link rel="stylesheet" href="/themes/css/cartodb.css" />
     <!--[if lte IE 8]>
-        <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/themes/css/cartodb.ie.css" />
+        <link rel="stylesheet" href="/themes/css/cartodb.ie.css" />
     <![endif]-->
   </head>
     
@@ -23,21 +23,21 @@
     <div id="map"></div>
 
     <!-- include cartodb.js library -->
-    <script src="../src/cartodb.js"></script>
+    <script src="/src/cartodb.js"></script>
 
     <script>
 
       function main() {
-        cartodb.createVis('map', 'http://development.localhost.lan:3000/api/v2/viz/2bf0e046-ca09-11e2-82ad-94942608096a/viz?callback=vizjson', {
-            shareable: true,
-            title: true,
-            description: true,
-            search: true,
-            tiles_loader: true,
-            center_lat: 0,
-            center_lon: 0,
-            zoom: 2,
-            no_cdn: true
+        cartodb.createVis('map', 'http://development.localhost.lan:3000/api/v2/viz/825ff3a2-cc36-11e2-85e3-94942608096a/viz?callback=vizjson', {
+          shareable: true,
+          title: true,
+          description: true,
+          search: true,
+          tiles_loader: true,
+          center_lat: 0,
+          center_lon: 0,
+          zoom: 2,
+          no_cdn: true
         })
         .done(function(vis, layers) {
           // layer 0 is the base layer, layer 1 is cartodb layer
@@ -48,8 +48,6 @@
           // you can get the native map to work with it
           // depending if you use google maps or leaflet
           map = vis.getNativeMap();
-          // map.setZoom(3)
-          // map.setCenter(new google.maps.Latlng(...))
 
           vis.addOverlay({
             type: 'layer_selector'

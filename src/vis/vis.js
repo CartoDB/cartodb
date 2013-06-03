@@ -41,7 +41,6 @@ var Layers = {
 
   create: function(type, vis, data) {
     if (!type) {
-      debugger;
       cdb.log.error("creating a layer without type");
       return null;
     }
@@ -509,7 +508,7 @@ var Vis = cdb.core.View.extend({
     var layerView = mapView.getLayerByCid(layer_cid);
 
     // add the associated overlays
-    if(layerData.type == 'layergroup' && layerView.containInfowindow()) {
+    if(layerView.containInfowindow && layerView.containInfowindow()) {
       this.addInfowindow(layerView);
     }
 

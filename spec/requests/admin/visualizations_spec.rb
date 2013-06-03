@@ -47,6 +47,11 @@ describe Admin::VisualizationsController do
       get "/viz", {}, @headers
       last_response.status.should == 200
     end
+
+    it 'returns 403 if user not logged in' do
+      get "/viz", {}, @headers
+      last_response.status.should == 302
+    end
   end # GET /viz
 
   describe 'GET /viz:id' do

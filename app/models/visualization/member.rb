@@ -1,4 +1,5 @@
 # encoding: utf-8
+require 'forwardable'
 require 'ostruct'
 require 'virtus'
 require 'json'
@@ -10,10 +11,12 @@ require_relative '../table'
 require_relative '../table/privacy_manager'
 require_relative './stats'
 require_relative './name_checker'
+require_relative '../../../services/minimal-validation/validator'
 
 module CartoDB
   module Visualization
     class Member
+      extend Forwardable
       include Virtus
 
       PRIVACY_VALUES  = %w{ public private }
@@ -33,13 +36,15 @@ module CartoDB
       attribute :created_at,        Time
       attribute :updated_at,        Time
 
+      def_delegators :validator,   :errors, :full_errors
+
       def initialize(attributes={}, repository=Visualization.repository,
       name_checker=nil)
         super(attributes)
         @repository   = repository
         self.id       ||= @repository.next_id
         @name_checker = name_checker
-        self.errors   = {}
+        @validator    = MinimalValidator::Validator.new
       end #initialize
 
       def store
@@ -53,11 +58,10 @@ module CartoDB
       end #store
 
       def valid?
-        validate_presence_of([:name, :privacy, :type])
-        validate_available_name
-        validate_privacy_in(PRIVACY_VALUES)
-
-        errors.empty?
+        validator.validate_presence_of(name: name, privacy: privacy, type: type)
+        validator.validate_in(:privacy, privacy, PRIVACY_VALUES)
+        validator.validate_uniqueness_of(:name, available_name?)
+        validator.valid?
       end #valid?
 
       def store_using_table(privacy)
@@ -152,10 +156,6 @@ module CartoDB
           .join(',')},#{id}"
       end #varnish_key
 
-      def full_errors
-        errors.map { |attribute, message| "#{attribute} #{message}" }
-      end #full_errors
-
       def derived?
         type == 'derived'
       end #derived?
@@ -164,11 +164,9 @@ module CartoDB
         type == 'table'
       end #table?
 
-      attr_reader   :errors
       private
 
-      attr_reader   :repository, :name_checker
-      attr_writer   :errors
+      attr_reader   :repository, :name_checker, :validator
       attr_accessor :privacy_changed, :name_changed
 
       def invalidate_varnish_cache
@@ -203,35 +201,17 @@ module CartoDB
       end #set_timestamps
 
       def name_checker
-        @name_checker ||NameChecker.new(user)
+        @name_checker || NameChecker.new(user)
       end #name_cheker
+
+      def available_name?
+        name_checker.available?(name)) if user
+      end #available_name?
 
       def configuration
         return {} unless defined?(Cartodb)
         Cartodb.config
       end #configuration
-
-      def validate_presence_of(attributes)
-        attributes.each do |attribute|
-          value = self.send(attribute)
-          if (value.nil? || value.empty?)
-            @errors.store(attribute.to_sym, "can't be blank")
-          end
-        end
-      end #validate_presence_of
-
-      def validate_available_name
-        return self unless name_changed && user
-        unless name_checker.available?(name)
-          @errors.store(:name, "is already taken")
-        end
-      end #validate_available_name
-
-      def validate_privacy_in(values)
-        unless values.include?(privacy)
-          @errors.store(:privacy, "must be one of #{values.join(', ')}")
-        end
-      end #validate_privacy_in
     end # Member
   end # Visualization
 end # CartoDB

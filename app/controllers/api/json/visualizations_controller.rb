@@ -14,6 +14,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
 
   ssl_required :index, :show, :create, :update, :destroy
   skip_before_filter :api_authorization_required, only: [:vizjson1, :vizjson2]
+  before_filter :link_ghost_tables, only: [:index, :show]
 
   def index
     collection  = Visualization::Collection.new.fetch(

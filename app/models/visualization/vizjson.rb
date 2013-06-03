@@ -13,7 +13,7 @@ module CartoDB
       def initialize(visualization, options={}, configuration={}, logger=nil)
         @visualization    = visualization
         @map              = visualization.map
-        @options          = { full: true }.merge(options)
+        @options          = default_options.merge(options)
         @configuration    = configuration
         logger.info(map.inspect) if logger
       end #initialize
@@ -87,6 +87,10 @@ module CartoDB
           template: '<div class="loader"></div>'
         )
       end #loader_overlay
+
+      def default_options
+        { full: true, visualization_id: visualization.id }
+      end #default_options
     end # VizJSON
   end # Visualization
 end # CartoDB

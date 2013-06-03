@@ -60,7 +60,7 @@ module CartoDB
       def valid?
         validator.validate_presence_of(name: name, privacy: privacy, type: type)
         validator.validate_in(:privacy, privacy, PRIVACY_VALUES)
-        #validator.validate_uniqueness_of(:name, available_name?)
+        validator.validate_uniqueness_of(:name, available_name?)
         validator.valid?
       end #valid?
 
@@ -205,7 +205,8 @@ module CartoDB
       end #name_cheker
 
       def available_name?
-        !!(name_checker.available?(name) if user)
+        return true unless user
+        name_checker.available?(name)
       end #available_name?
 
       def configuration

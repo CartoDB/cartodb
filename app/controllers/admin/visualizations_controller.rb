@@ -8,14 +8,11 @@ class Admin::VisualizationsController < ApplicationController
   skip_before_filter :browser_is_html5_compliant?, only: [:embed_map]
 
   def index
-    update_user_api_calls
     @tables_count  = current_user.tables.count
     update_user_last_activity
   end #index
 
   def show
-    update_user_api_calls
-
     id = params.fetch(:id)
     return(redirect_to "/viz/#{id}/public") unless current_user.present?
     @visualization, @table = locator.get(id, request.subdomain)
@@ -80,11 +77,6 @@ class Admin::VisualizationsController < ApplicationController
   def update_user_last_activity
     return false unless current_user.present?
     current_user.set_last_active_time
-  end
-
-  def update_user_api_calls
-    return false unless current_user.present?
-    current_user.set_api_calls
   end
 
   def pretty_404

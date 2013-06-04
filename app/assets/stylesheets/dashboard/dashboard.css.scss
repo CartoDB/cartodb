@@ -64,23 +64,32 @@
 
     }
 
-    &.no_tables { margin-top: -15px; }
-
-    &.no_vis, &.no_tables {
-      display:none;
-      padding:0;
+    &.no_tables {
+      margin-top: -15px;
 
       // If there are NO tables, this section is active
       &.active {
         display:block;
-        padding:113px 0 80px;
+        padding:42px 0 77px 0;
       }
+    }
+
+    &.no_vis, &.no_tables {
+      display:none;
+      padding:0;
 
     } // .no_tables
 
     &.no_vis {
 
       display:none;
+
+      &.active {
+        display:block;
+        padding:40px 0 0 0;
+      }
+
+      &.only { padding: 40px 0 40px 0; }
 
       section.empty {
         margin: 0;
@@ -157,6 +166,16 @@
     &.visualizations aside .head { margin-top: 25px; }
     &.tables aside .head { margin-top: 55px; }
 
+    &.tables.active {
+      display:block;
+      padding:37px 0 50px 0;
+    }
+
+    &.visualizations.active {
+      display:block;
+      padding:60px 0 50px 0;
+    }
+
     // Common elements for visualizations and tables
     &.visualizations,
     &.tables {
@@ -166,13 +185,10 @@
       padding:0;
       overflow:hidden;
 
-      // If there are tables or visualizations, this section will become .active
-      &.active {
-        display:block;
-        padding:70px 0 50px 0;
-      }
-
-      &.no_padding, &.active.no_padding { padding-top: 0; }
+      &.no_padding,
+      &.active.no_padding { padding-top: 0; }
+      &.active.no_margin { padding-bottom: 0; }
+      &.active.no_margin .inner section .paginator { margin-bottom: 0px; }
 
       &.hidden {
         display:none;
@@ -974,7 +990,10 @@
         border-bottom: none;
       }
 
-      &.empty { border: none; }
+      &.empty {
+        border: none;
+        height: 0; padding: 0; margin: 0;
+      }
 
       & > ul {
 

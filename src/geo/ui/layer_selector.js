@@ -22,7 +22,13 @@ cdb.geo.ui.LayerSelector = cdb.core.View.extend({
 
   initialize: function() {
     this.map = this.options.mapView.map;
+
     this.mapView  = this.options.mapView;
+    this.mapView.bind('click zoomstart drag', function() {
+      this.dropdown && this.dropdown.hide()
+    }, this);
+    this.add_related_model(this.mapView);
+
     this.layers = [];
   },
 

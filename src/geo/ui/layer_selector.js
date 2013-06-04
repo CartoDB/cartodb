@@ -90,7 +90,7 @@ cdb.geo.ui.LayerSelector = cdb.core.View.extend({
     var count = 0;
     for (var i = 0, l = this.layers.length; i < l; ++i) {
       var l = this.layers[i];
-      if (l.model.get('active')) {
+      if (l.model.get('visible')) {
         count++;
       }
     }
@@ -127,7 +127,7 @@ cdb.geo.ui.LayerView = cdb.core.View.extend({
   defaults: {
     template: '\
       <a class="layer" href="#/change-layer"><%= table_name %></a>\
-      <a href="#switch" class="right <%= active ? "enabled" : "enabled" %> switch"><span class="handle"></span></a>\
+      <a href="#switch" class="right <%= visible ? "enabled" : "enabled" %> switch"><span class="handle"></span></a>\
     '
   },
 
@@ -137,10 +137,10 @@ cdb.geo.ui.LayerView = cdb.core.View.extend({
 
   initialize: function() {
 
-    // Check if it has active parameter set
-    if (!this.model.get('active')) this.model.set('active', true);
+    // Check if it has visible parameter set
+    if (!this.model.get('visible')) this.model.set('visible', true);
 
-    this.model.bind("change:active", this._onSwitchSelected, this);
+    this.model.bind("change:visible", this._onSwitchSelected, this);
 
     // Template
     this.template = this.options.template ? cdb.templates.getTemplate(this.options.template) : _.template(this.defaults.template);
@@ -155,7 +155,7 @@ cdb.geo.ui.LayerView = cdb.core.View.extend({
   * Throw an event when the user clicks in the switch button
   */
   _onSwitchSelected: function() {
-    var enabled = this.model.get('active');
+    var enabled = this.model.get('visible');
 
     // Change switch
     this.$el.find(".switch")
@@ -170,7 +170,7 @@ cdb.geo.ui.LayerView = cdb.core.View.extend({
     this.killEvent(e);
 
     // Set model
-    this.model.set("active", !this.model.get("active"));
+    this.model.set("visible", !this.model.get("visible"));
   }
 
 });
@@ -194,7 +194,7 @@ cdb.geo.ui.LayerViewFromLayerGroup = cdb.geo.ui.LayerView.extend({
   defaults: {
     template: '\
       <a class="layer" href="#/change-layer"><%= options.layer_name %></a>\
-      <a href="#switch" class="right <%= active ? "enabled" : "enabled" %> switch"><span class="handle"></span></a>\
+      <a href="#switch" class="right <%= visible ? "enabled" : "enabled" %> switch"><span class="handle"></span></a>\
     '
   },
 
@@ -203,7 +203,7 @@ cdb.geo.ui.LayerViewFromLayerGroup = cdb.geo.ui.LayerView.extend({
     cdb.geo.ui.LayerView.prototype._onSwitchSelected.call(this);    
 
     // Change layer_definition
-    if (this.model.get('active')) {
+    if (this.model.get('visible')) {
       this.options.layer_definition.addLayer(this.model.toJSON().options, this.model.get('order'));
     } else {
       this.options.layer_definition.removeLayer(this.model.get('order'));

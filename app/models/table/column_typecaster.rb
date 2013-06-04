@@ -92,8 +92,9 @@ module CartoDB
     end #string_to_number
 
     def string_to_datetime
-      convertible = convertible_to_datetime?(table_name, column_name)
-      raise CartoDB::NonConvertibleData unless convertible
+      raise(
+        CartoDB::NonConvertibleData, 'Timestamp format not supported'
+      ) unless convertible_to_datetime?(table_name, column_name)
 
       straight_cast("date", cast: "CDB_StringToDate(#{column_name})")
     end #string_to_datetime

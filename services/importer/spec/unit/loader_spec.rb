@@ -1,4 +1,5 @@
 # encoding: utf-8
+gem 'minitest'
 require 'minitest/autorun'
 require 'sqlite3'
 require_relative '../../loader'
@@ -21,7 +22,7 @@ describe Importer::Loader do
     end
 
     it 'runs the ogr2ogr command to load the file' do
-      ogr2ogr = Minitest::Mock.new
+      ogr2ogr = MiniTest::Mock.new
       loader  = Importer::Loader.new(@job, ogr2ogr)
 
       def ogr2ogr.commnad_output; end

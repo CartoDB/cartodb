@@ -36,6 +36,36 @@
 
     // Empty dashboard -> article
 
+    &.empty_search {
+
+      display:none;
+      padding: 91px 0 45px 0;
+
+      section.empty {
+        margin: 0;
+        z-index:0;
+        border:1px solid rgba(#ccc, .5);
+
+        & > .content {
+          @include box-sizing(border-box);
+          background: #fff;
+          @include border-radius(5px);
+          padding:110px 0;
+          height:308px;
+          text-align:center;
+
+          background:#fff;
+          background-image: none;
+          overflow:hidden;
+
+          h3 { margin: 0 0 10px 0; }
+        }
+      }
+
+    }
+
+    &.no_tables { margin-top: -15px; }
+
     &.no_vis, &.no_tables {
       display:none;
       padding:0;
@@ -139,7 +169,7 @@
       // If there are tables or visualizations, this section will become .active
       &.active {
         display:block;
-        padding:70px 0 0 0;
+        padding:70px 0 50px 0;
       }
 
       &.no_padding, &.active.no_padding { padding-top: 0; }
@@ -180,6 +210,7 @@
         .selected {
           color: #333333;
           font-weight: bold;
+          text-decoration:none;
         }
 
       }
@@ -208,8 +239,16 @@
             @include absolute-center(25px, 24px);
             @include icons-sprite(plus_big);
           }
-        }
 
+          &:hover .plus {
+            @include icons-sprite(plus_big_selected);
+          }
+
+          &:active .plus {
+            margin-top:-11px;
+            @include icons-sprite(plus_big_selected);
+          }
+        }
       }
 
       .tags {
@@ -320,7 +359,7 @@
           @include inline-block();
           @include size(274px, 222px);
 
-          margin: 0 25px 29px 0;
+          margin: 0 29px 29px 0;
 
           &:hover > .content {
             background: #F7F7F7;
@@ -527,7 +566,6 @@
 
 
       &.view_all .paginator .view_all { display: block; }
-
     }
 
     section.tables {
@@ -934,18 +972,20 @@
 
       &.view_all {
         border-bottom: none;
-        a { margin-right: 35px; }
       }
 
       &.empty { border: none; }
 
       & > ul {
 
+        margin: 0 30px 0 0;
+
         li {
           @include inline-block();
 
-          &:last-child {margin:0}
           padding: 0;
+
+          &:last-child {margin:0}
           &:hover { display:none; }
 
           a {

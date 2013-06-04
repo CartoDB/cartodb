@@ -1,133 +1,34 @@
-/**
-* Model for the Layer collection
-*/
-cdb.geo.ui.Layer = cdb.core.Model.extend({
-
-  defaults: {
-    visible: true
-  }
-
-});
 
 /**
-* View for each one of the layers
-*/
-cdb.geo.ui.LayerView = cdb.core.View.extend({
+ *  Layer selector: it allows to select the layers that will be shown in the map
+ *  - It needs the mapview, the element template and the dropdown template
+ *
+ *  var layer_selector = new cdb.geo.ui.LayerSelector({
+ *    mapView: mapView,
+ *    template: element_template,
+ *    dropdown_template: dropdown_template
+ *  });
+ */
 
-  tagName: "li",
-
-  defaults: {
-    template: '<a class="layer" href="#"><%= options.layer_name %></a> <a href="#switch" class="right enabled switch"><span class="handle"></span></a>'
-  },
-
-  events: {
-    "click": '_onSwitchClick'
-  },
-
-  initialize: function() {
-
-    this.add_related_model(this.model);
-
-    this.model.bind("change:visible", this._onSwitchSelected, this);
-
-    // Template
-    this.template = this.options.template ? cdb.templates.getTemplate(this.options.template) : _.template(this.defaults.template);
-
-  },
-
-  render: function() {
-    this.$el.append(this.template(this.model.toJSON()));
-    return this;
-
-  },
-
-  /*
-  * Throw an event when the user clicks in the switch button
-  */
-  _onSwitchSelected: function() {
-
-    var enabled = this.model.get('visible');
-
-    this.$el.find(".switch")
-    .removeClass(enabled ? 'disabled' : 'enabled')
-    .addClass(enabled    ? 'enabled'  : 'disabled');
-
-  },
-
-  _onSwitchClick: function(e){
-
-    e.preventDefault();
-    e.stopPropagation();
-
-    this.model.set("visible", !this.model.get("visible"));
-  }
-
-});
-
-/**
-* Collection of layers
-*/
-cdb.geo.ui.Layers = Backbone.Collection.extend({
-  model: cdb.geo.ui.Layer
-});
-
-/**
-* Layer selector: it allows to select the layers that will be shown in the map
-*/
 cdb.geo.ui.LayerSelector = cdb.core.View.extend({
 
   className: 'cartodb-layer-selector-box',
 
   events: {
     "click":     '_openDropdown',
-    "dblclick":  '_stopPropagation',
-    "mousedown": '_stopPropagation'
+    "dblclick":  'killEvent',
+    "mousedown": 'killEvent'
   },
 
   initialize: function() {
-
-    _.bindAll(this, "switchChanged");
-
-    this.map           = this.options.map;
-    this.layers        = this.map.layers;
-    this.cartoDBLayers = this._getCartoDBLayers();
-
-    this.model = new cdb.core.Model({
-      count: this.cartoDBLayers.length
-    });
-
-    this.model.bind("change:count", this._onCountChange, this);
-  },
-
-  _getCartoDBGroupLayers: function(layers) {
-
-    return _.map(layers, function(layer) {
-      return (layer.type == 'CartoDB') && new cdb.geo.CartoDBLayer(layer);
-    });
-
-  },
-
-  _getCartoDBLayers: function() {
-
-    var self = this;
-    var layers = [];
-
-    _.each(this.layers.models, function(layer) {
-      if (layer.get("type") == 'CartoDB') {
-        layers.push(layer);
-      } else if (layer.get("type") == 'layergroup') {
-        var  group = self._getCartoDBGroupLayers(layer.get("layer_definition").layers);
-        layers.push(group);
-      }
-    });
-
-    return _.flatten(layers);
-
+    this.map = this.options.mapView.map;
+    this.mapView  = this.options.mapView;
+    this.layers = [];
   },
 
   render: function() {
 
-    this.$el.html(this.options.template(_.extend(this.model.toJSON(), this.options)));
+    this.$el.html(this.options.template(this.options));
 
     this.dropdown = new cdb.ui.common.Dropdown({
       className:"cartodb-dropdown border",
@@ -147,52 +48,165 @@ cdb.geo.ui.LayerSelector = cdb.core.View.extend({
 
     this.$el.append(this.dropdown.render().el);
 
-    this._createLayers();
+    this._getLayers();
+    this._setCount();
 
     return this;
-
   },
 
-  _createLayers: function() {
-
+  _getLayers: function() {
     var self = this;
 
-    _.each(this.cartoDBLayers, function(layer) {
+    _.each(this.map.layers.models, function(layer) {
+      
+      if (layer.get("type") == 'layergroup') {
+        var layer_definition = self.mapView.getLayerByCid(layer.cid);
 
-      layer.bind("change:visible", self.switchChanged, this);
+        for (var i = 0 ; i < layer_definition.getLayerCount(); ++i) {
+          var l = layer_definition.getLayer(i);
+          var m = new cdb.core.Model(l);
+          m.set('order', i);
+          var layerView = self._createLayer('LayerViewFromLayerGroup', { model: m, layer_definition: layer_definition });
+          layerView.bind('switchChanged', self._setCount, self);
+          self.layers.push(layerView);
+        }
+      } else if (layer.get("type") == "CartoDB") {
+        var layerView = self._createLayer('LayerView', { model: layer });
+        layerView.bind('switchChanged', self._setCount, self);
+        self.layers.push(layerView);
+      }
 
-      var layerView = new cdb.geo.ui.LayerView({
-        model: layer,
-        template_base: 'table/views/layer_item'
-      });
-
-      self.$("ul").append(layerView.render().el);
     });
   },
 
-  switchChanged: function(layer) {
-    // Set visible
-    // ...
-
-    // var layers = layer.collection.filter(function(layer) {
-    //   return layer.get("visible") && layer.get("type") == 'CartoDB'
-    // });
-
-    // Set new count
-    // this.model.set("count", layers.length);
+  _createLayer: function(_class, opts) {
+    var layerView = new cdb.geo.ui[_class](opts);
+    this.$("ul").append(layerView.render().el);
+    this.addView(layerView);
+    return layerView;
   },
 
-  _onCountChange: function() {
-    this.$el.find(".count").html(this.model.get("count"));
-  },
+  _setCount: function() {
+    var count = 0;
+    for (var i = 0, l = this.layers.length; i < l; ++i) {
+      var l = this.layers[i];
+      if (l.model.get('active')) {
+        count++;
+      }
+    }
 
-  _stopPropagation: function(e) {
-    e.preventDefault();
-    e.stopPropagation();
+    this.$('.count').text(count);
   },
 
   _openDropdown: function() {
     this.dropdown.open();
   }
 
+});
+
+
+
+
+
+
+/**
+ *  View for each CartoDB layer
+ *  - It needs a model to make it work.
+ *
+ *  var layerView = new cdb.geo.ui.LayerView({
+ *    model: layer_model,
+ *    layer_definition: layer_definition
+ *  });
+ *  
+ */
+
+cdb.geo.ui.LayerView = cdb.core.View.extend({
+
+  tagName: "li",
+
+  defaults: {
+    template: '\
+      <a class="layer" href="#/change-layer"><%= table_name %></a>\
+      <a href="#switch" class="right <%= active ? "enabled" : "enabled" %> switch"><span class="handle"></span></a>\
+    '
+  },
+
+  events: {
+    "click": '_onSwitchClick'
+  },
+
+  initialize: function() {
+
+    // Check if it has active parameter set
+    if (!this.model.get('active')) this.model.set('active', true);
+
+    this.model.bind("change:active", this._onSwitchSelected, this);
+
+    // Template
+    this.template = this.options.template ? cdb.templates.getTemplate(this.options.template) : _.template(this.defaults.template);
+  },
+
+  render: function() {
+    this.$el.append(this.template(this.model.toJSON()));
+    return this;
+  },
+
+  /*
+  * Throw an event when the user clicks in the switch button
+  */
+  _onSwitchSelected: function() {
+    var enabled = this.model.get('active');
+
+    // Change switch
+    this.$el.find(".switch")
+      .removeClass(enabled ? 'disabled' : 'enabled')
+      .addClass(enabled    ? 'enabled'  : 'disabled');
+
+    // Send trigger
+    this.trigger('switchChanged');
+  },
+
+  _onSwitchClick: function(e){
+    this.killEvent(e);
+
+    // Set model
+    this.model.set("active", !this.model.get("active"));
+  }
+
+});
+
+
+
+
+/**
+ *  View for each layer from a layer group
+ *  - It needs a model and the layer_definition to make it work.
+ *
+ *  var layerView = new cdb.geo.ui.LayerViewFromLayerGroup({
+ *    model: layer_model,
+ *    layer_definition: layer_definition
+ *  });
+ *  
+ */
+
+cdb.geo.ui.LayerViewFromLayerGroup = cdb.geo.ui.LayerView.extend({
+
+  defaults: {
+    template: '\
+      <a class="layer" href="#/change-layer"><%= options.layer_name %></a>\
+      <a href="#switch" class="right <%= active ? "enabled" : "enabled" %> switch"><span class="handle"></span></a>\
+    '
+  },
+
+  _onSwitchSelected: function() {
+  
+    cdb.geo.ui.LayerView.prototype._onSwitchSelected.call(this);    
+
+    // Change layer_definition
+    if (this.model.get('active')) {
+      this.options.layer_definition.addLayer(this.model.toJSON().options, this.model.get('order'));
+    } else {
+      this.options.layer_definition.removeLayer(this.model.get('order'));
+    }
+  }
 });

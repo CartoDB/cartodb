@@ -110,7 +110,7 @@ cdb.vis.Overlay.register('layer_selector', function(data, vis) {
 
   var template = cdb.core.Template.compile(
     data.template || '\
-      <a href="#" class="layers">Visible layers<div class="count"><%= count %></div></a>\
+      <a href="#" class="layers">Visible layers<div class="count"></div></a>\
       ',
     data.templateType || 'underscore'
   );
@@ -123,7 +123,7 @@ cdb.vis.Overlay.register('layer_selector', function(data, vis) {
   );
 
   var layerSelector = new cdb.geo.ui.LayerSelector({
-    map: vis.map,
+    mapView: vis.mapView,
     template: template,
     dropdown_template: dropdown_template
   });

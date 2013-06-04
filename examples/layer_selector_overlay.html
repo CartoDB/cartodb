@@ -35,21 +35,11 @@
           description: true,
           search: true,
           tiles_loader: true,
+          layer_selector: true,
           center_lat: 0,
           center_lon: 0,
           zoom: 2,
           no_cdn: true
-        })
-        .done(function(vis, layers) {
-          // layer 0 is the base layer, layer 1 is cartodb layer
-          layers[1].on('featureOver', function(e, pos, latlng, data) {
-            cartodb.log.log(e, pos, latlng, data);
-          });
-
-          vis.addOverlay({
-            type: 'layer_selector'
-          });
-
         })
         .error(function(err) {
           console.log(err);

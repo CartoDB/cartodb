@@ -308,6 +308,10 @@ class User < Sequel::Model
     end
   end
 
+  def billing_period
+    Time.now - 15.days
+  end
+
   def api_calls_quota
     case account_type
     when /FREE/

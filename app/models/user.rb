@@ -300,10 +300,26 @@ class User < Sequel::Model
     $users_metadata.HMGET(key, 'map_key').first
   end
 
-  def get_api_calls
-    (0..29).map do |t|
+  def get_api_calls(options = {})
+    options[:days] = 29
+    (0..options[:days]).map do |t|
       date = Date.today - t.days
       $users_metadata.ZSCORE("user:#{username}:mapviews:global", date.to_time.to_i).to_i
+    end
+  end
+
+  def api_calls_quota
+    case account_type
+    when /FREE/
+      10000
+    when /.*MAGELLAN.*/
+      50000
+    when /.*JOHN SNOW.*/
+      100000
+    when /.*CORONELLI.*/
+      500000
+    when /.*DEDICATED.*/
+      800000
     end
   end
 

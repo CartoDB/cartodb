@@ -76,7 +76,7 @@ module CartoDB
     end #column_type
 
     def straight_cast(new_type=self.new_type, options = {})
-      cast = (options[:cast].present? ? options[:cast] : "cast(#{column_name} as #{new_type})")
+      cast = options.fetch(:cast, "cast(#{column_name} as #{new_type})")
       user_database.run(%Q{
         ALTER TABLE "#{table_name}"
         ALTER COLUMN #{column_name}

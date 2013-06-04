@@ -180,6 +180,7 @@
         .selected {
           color: #333333;
           font-weight: bold;
+          text-decoration:none;
         }
 
       }
@@ -208,8 +209,16 @@
             @include absolute-center(25px, 24px);
             @include icons-sprite(plus_big);
           }
-        }
 
+          &:hover .plus {
+            @include icons-sprite(plus_big_selected);
+          }
+
+          &:active .plus {
+            margin-top:-11px;
+            @include icons-sprite(plus_big_selected);
+          }
+        }
       }
 
       .tags {

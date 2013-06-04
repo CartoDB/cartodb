@@ -304,7 +304,7 @@ class User < Sequel::Model
     options[:days] = 29
     (0..options[:days]).map do |t|
       date = Date.today - t.days
-      $users_metadata.ZSCORE("user:#{username}:mapviews:global", date.to_time.to_i).to_i
+      $users_metadata.ZSCORE("user:#{username}:mapviews:global", date.strftime("%Y%m%d")).to_i
     end
   end
 

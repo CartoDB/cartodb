@@ -11,7 +11,7 @@ module CartoDB
         data_points = (0..29).map do |t|
           date = Date.today - t.days
           [ date.iso8601,
-            $users_metadata.ZSCORE(visualization_stats_key, date.to_time.to_i).to_i ]
+            $users_metadata.ZSCORE(visualization_stats_key, date.strftime("%Y%m%d")).to_i ]
         end
         Hash[data_points]
       end #to_poro

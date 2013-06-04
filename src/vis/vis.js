@@ -264,6 +264,7 @@ var Vis = cdb.core.View.extend({
       tiles_loader: true,
       zoomControl: true,
       loaderControl: true,
+      layer_selector: false,
       searchControl: false,
       infowindow: true
     });
@@ -307,6 +308,12 @@ var Vis = cdb.core.View.extend({
         type: "header",
         shareable: opt.shareable ? true: false,
         url: vizjson.url
+      });
+    }
+
+    if (opt.layer_selector) {
+      vizjson.overlays.push({
+        type: "layer_selector"
       });
     }
 

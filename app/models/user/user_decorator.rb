@@ -12,7 +12,8 @@ module CartoDB
         byte_quota: self.quota_in_bytes,
         remaining_table_quota: self.remaining_table_quota,
         remaining_byte_quota: self.remaining_quota.to_f,
-        api_calls: self.get_api_calls["per_day"],
+        api_calls: self.get_api_calls,
+        api_calls_quota: self.api_calls_quota,
         api_key: self.get_map_key,
         layers: self.layers.map(&:public_values),
         actions: {

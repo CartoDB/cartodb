@@ -8,24 +8,24 @@ module CartoDB
       end #initialize
       
       def to_poro
-        data_points = (1..30).map do |i| 
-          time    = Time.at(Time.now.to_i - (86400 * (31 - i)))
-          [convert_to_iso8601(time), rand(999) ]
+        data_points = (0..29).map do |t|
+          date = Date.today - t.days
+          [ date.iso8601,
+            $users_metadata.ZSCORE(visualization_stats_key, date.strftime("%Y%m%d")).to_i ]
         end
         Hash[data_points]
       end #to_poro
+
+      # Specifications here:
+      # https://github.com/Vizzuality/Windshaft-cartodb/wiki/Redis-stats-format
+      def visualization_stats_key
+        "user:#{@visualization.user.username}:mapviews:stat_tag:#{@visualization.id}"
+      end
 
       private
 
       attr_reader :member
 
-      def convert_to_iso8601(time)
-        seconds = time.sec + Rational(time.usec, 10**6)
-        offset  = Rational(time.utc_offset, 60 * 60 * 24)
-
-        DateTime.new(time.year, time.month, time.day, time.hour,
-                    time.min, seconds, offset).iso8601
-      end #convert_to_iso8601
     end # Stats
   end # Visualization
 end # CartoDB

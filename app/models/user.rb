@@ -296,28 +296,31 @@ class User < Sequel::Model
     $users_metadata.HMSET key, 'map_key',  token
   end
 
-  ##
-  # Load api calls from external service
-  #
-  def set_api_calls(options = {})
-    # Ensure we update only once every 12 hours
-    if options[:force_update] || get_api_calls["updated_at"].to_i < 3.hours.ago.to_i
-      api_calls = JSON.parse(
-        open("#{Cartodb.config[:api_requests_service_url]}?username=#{self.username}").read
-      ) rescue {}
+  def get_map_key
+    $users_metadata.HMGET(key, 'map_key').first
+  end
 
-      # Manually set updated_at
-      api_calls["updated_at"] = Time.now.to_i
-      $users_metadata.HMSET key, 'api_calls', api_calls.to_json
+  def get_api_calls(options = {})
+    options[:days] = 29
+    (0..options[:days]).map do |t|
+      date = Date.today - t.days
+      $users_metadata.ZSCORE("user:#{username}:mapviews:global", date.strftime("%Y%m%d")).to_i
     end
   end
 
-  def get_api_calls
-    JSON.parse($users_metadata.HMGET(key, 'api_calls').first) rescue {}
-  end
-
-  def get_map_key
-    $users_metadata.HMGET(key, 'map_key').first
+  def api_calls_quota
+    case account_type
+    when /FREE/
+      10000
+    when /.*MAGELLAN.*/
+      50000
+    when /.*JOHN SNOW.*/
+      100000
+    when /.*CORONELLI.*/
+      500000
+    when /.*DEDICATED.*/
+      800000
+    end
   end
 
   def set_last_active_time
@@ -398,13 +401,12 @@ class User < Sequel::Model
   end
 
   def link_outdated_tables
-    metadata_tables_without_id = self.tables.filter(:table_id => nil).map(&:name)
+    metadata_tables_without_id = self.tables.filter(table_id: nil).map(&:name)
     outdated_tables = real_tables.select{|t| metadata_tables_without_id.include?(t[:relname])}
     outdated_tables.each do |t|
-      table = Table.find(:name => t[:relname])
-      table.table_id = t[:oid]
+      table = Table.find(name: t[:relname])
       begin
-        table.save
+        table.this.update table_id: t[:oid]
       rescue Sequel::DatabaseError => e
         raise unless e.message =~ /must be owner of relation/
       end

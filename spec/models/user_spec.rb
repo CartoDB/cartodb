@@ -86,25 +86,7 @@ describe User do
   end
 
   it "should read api calls from external service" do
-    file = Tempfile.new 'foo'
-    wadus = {"per_day" => [1, 2, 3, 4, 5], "total" => 15 }
-    file.write(wadus.to_json)
-    file.rewind
-    @user.stubs(:open).returns(file)
-    
-    @user.set_api_calls
-    @user.get_api_calls['per_day'].should == wadus['per_day']
-    @user.get_api_calls['total'].should == wadus['total']
-    @user.get_api_calls['updated_at'].should be <= Time.now.to_i
-    file.close
-
-    # Should update api calls only once every 24 hours
-    $users_metadata.HMSET @user.key, 'api_calls', {"updated_at" => 25.hours.ago}.to_json
-    @user.expects(:open).times(1)
-    @user.set_api_calls
-    $users_metadata.HMSET @user.key, 'api_calls', {"updated_at" => 20.hours.ago}.to_json
-    @user.expects(:open).times(0)
-    @user.set_api_calls
+    @user.get_api_calls.should == (1..30).map { 0 }
   end
 
   it "should have many tables" do

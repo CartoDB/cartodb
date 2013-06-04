@@ -54,23 +54,20 @@ module CartoDB
 
       def latitude_column_name_in(table_name)
         names = LATITUDE_POSSIBLE_NAMES.map { |name| "'#{name}'" }.join(',')
-        
-        db[%Q{
-          SELECT column_name
-          FROM information_schema.columns
-          WHERE table_name ='#{table_name}'
-          AND lower(column_name) in (#{names})
-          LIMIT 1
-        }].first.fetch(:column_name)
+        find_column_in(table_name, names)
       end #latitude_column_name_in
 
       def longitude_column_name_in(table_name)
         names = LONGITUDE_POSSIBLE_NAMES.map { |name| "'#{name}'" }.join(',')
+        find_column_in(table_name, names)
+      end #longitude_column_name_in
+
+      def find_column_in(table_name, possible_names)
         db[%Q{
           SELECT column_name 
           FROM information_schema.columns
           WHERE table_name ='#{table_name}'
-          AND lower(column_name) in (#{names})
+          AND lower(column_name) in (#{possible_names})
           LIMIT 1
         }].first.fetch(:column_name)
       end #longitude_column_name_in

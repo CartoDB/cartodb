@@ -19,6 +19,7 @@ describe Api::Json::VisualizationsController do
   include DataRepository
 
   before(:all) do
+    CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
     @user = create_user(
       username: 'test',
       email:    'client@example.com',
@@ -29,6 +30,7 @@ describe Api::Json::VisualizationsController do
   end
 
   before(:each) do
+    CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
     @db = Sequel.sqlite
     Sequel.extension(:pagination)
 

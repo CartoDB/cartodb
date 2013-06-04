@@ -57,7 +57,6 @@ cdb.geo.ui.LayerSelector = cdb.core.View.extend({
   _getLayers: function() {
     var self = this;
 
-    debugger;
     _.each(this.map.layers.models, function(layer) {
       
       if (layer.get("type") == 'layergroup') {

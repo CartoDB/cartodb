@@ -296,28 +296,15 @@ class User < Sequel::Model
     $users_metadata.HMSET key, 'map_key',  token
   end
 
-  ##
-  # Load api calls from external service
-  #
-  def set_api_calls(options = {})
-    # Ensure we update only once every 12 hours
-    if options[:force_update] || get_api_calls["updated_at"].to_i < 3.hours.ago.to_i
-      api_calls = JSON.parse(
-        open("#{Cartodb.config[:api_requests_service_url]}?username=#{self.username}").read
-      ) rescue {}
-
-      # Manually set updated_at
-      api_calls["updated_at"] = Time.now.to_i
-      $users_metadata.HMSET key, 'api_calls', api_calls.to_json
-    end
+  def get_map_key
+    $users_metadata.HMGET(key, 'map_key').first
   end
 
   def get_api_calls
-    JSON.parse($users_metadata.HMGET(key, 'api_calls').first) rescue {}
-  end
-
-  def get_map_key
-    $users_metadata.HMGET(key, 'map_key').first
+    (0..29).map do |t|
+      date = Date.today - t.days
+      $users_metadata.ZSCORE("user:#{username}:mapviews:global", date.to_time.to_i).to_i
+    end
   end
 
   def set_last_active_time

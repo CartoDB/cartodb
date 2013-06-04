@@ -57,6 +57,7 @@ cdb.geo.ui.LayerSelector = cdb.core.View.extend({
   _getLayers: function() {
     var self = this;
 
+    debugger;
     _.each(this.map.layers.models, function(layer) {
       
       if (layer.get("type") == 'layergroup') {
@@ -89,8 +90,8 @@ cdb.geo.ui.LayerSelector = cdb.core.View.extend({
   _setCount: function() {
     var count = 0;
     for (var i = 0, l = this.layers.length; i < l; ++i) {
-      var l = this.layers[i];
-      if (l.model.get('visible')) {
+      var lyr = this.layers[i];
+      if (lyr.model.get('visible')) {
         count++;
       }
     }

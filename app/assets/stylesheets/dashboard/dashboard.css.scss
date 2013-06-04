@@ -10,6 +10,17 @@
   @import "../common/vars";
   @import "../common/forms";
 
+  .tipsy.privacy_info {
+    font-size: 13px;
+
+    .tipsy-inner {
+      padding: 12px;
+      line-height:normal;
+    }
+
+    a { display:block; text-decoration:underline; margin: 7px 0 0 0; color: #fff; }
+  }
+
   header {
 
     ul li > .disabled:hover { color:white; }

@@ -133,6 +133,7 @@
                 height:41px;
                 margin:0;
                 padding:10px 0 15px;
+                background: -ms-linear-gradient(top, #FDFDFD 0%, #F2F2F2 100%);
                 @include background(linear-gradient(top,#FDFDFD,#F2F2F2));
                 border-bottom:1px solid #CCCCCC;
                 z-index:1;

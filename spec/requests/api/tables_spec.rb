@@ -5,12 +5,14 @@ require_relative '../../spec_helper'
 describe "Tables API" do
 
   before(:all) do
+    CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
     @user = create_user(:username => 'test', :email => "client@example.com", :password => "clientex")
     @user.set_map_key
     @another_user = create_user
   end
 
   before(:each) do
+    CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
     delete_user_data @user
     host! 'test.localhost.lan'
     @headers = { 
@@ -76,11 +78,7 @@ describe "Tables API" do
         response.status.should be_success
         response.body[:total_entries].should == 3
         response.body[:tables].map { |t| t['id'] }.should =~ [@table1.id, @table2.id, @table4.id]
-        response.body[:tables][0]["name"].should == "my_table_3"
-        response.body[:tables][0]["privacy"].should == "PRIVATE"
-        response.body[:tables][0]["tags"].should == "tag 1"
-        response.body[:tables][0]["rows_counted"].should == 0
-        response.body[:tables][0]["table_size"].should == 0
+        response.body[:tables][0]["name"].should == "my_table_1"
         response.body[:tables][0].keys.should =~ ["id", "name", "privacy", "tags", "updated_at", "rows_counted", "table_size", "map_id", "description"]
       end
     end
@@ -156,7 +154,7 @@ describe "Tables API" do
     end
   end
 
-  pending "removes metadata of tables destroyed via SQL API" do
+  it "removes metadata of tables destroyed via SQL API" do
     table = FactoryGirl.create(:table, :user_id => @user.id)
 
     get_json v1_tables_url(params) do |response|

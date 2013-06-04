@@ -17,6 +17,7 @@ module CartoDB
           type:               'layergroup',
           options:            {
             user_name:          options.fetch(:user_name),
+            stats_tag:          options.fetch(:visualization_id),
             tiler_protocol:     configuration.fetch(:tiler_protocol, nil),
             tiler_domain:       configuration.fetch(:tiler_domain, nil),
             tiler_port:         configuration.fetch(:tiler_port, nil),

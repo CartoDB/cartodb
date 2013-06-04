@@ -11,6 +11,7 @@ function LayerDefinition(layerDefinition, options) {
   });
 
   this.version = layerDefinition.version || '1.0.0';
+  this.stat_tag = layerDefinition.stat_tag;
   this.layers = _.clone(layerDefinition.layers);
   this.layerToken = null;
   this.urls = null;
@@ -39,6 +40,9 @@ LayerDefinition.prototype = {
   toJSON: function() {
     var obj = {};
     obj.version = this.version;
+    if(this.stat_tag) {
+      obj.stat_tag = this.stat_tag;
+    }
     obj.layers = [];
     for(var i in this.layers) {
       var layer = this.layers[i];

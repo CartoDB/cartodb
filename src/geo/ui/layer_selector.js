@@ -147,7 +147,7 @@ cdb.geo.ui.LayerView = cdb.core.View.extend({
   },
 
   render: function() {
-    this.$el.append(this.template(this.model.toJSON()));
+    this.$el.append(this.template(this.model.attributes));
     return this;
   },
 

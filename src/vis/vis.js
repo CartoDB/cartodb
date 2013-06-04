@@ -426,7 +426,7 @@ var Vis = cdb.core.View.extend({
         var infowindowFields = layerView.getInfowindowData(layer)
         var fields = infowindowFields.fields;
         // Send request
-        sql.execute("select {{fields}} from ({{sql}}) as _cartodbjs_alias where cartodb_id = {{ cartodb_id }}", {
+        sql.execute("select {{{fields}}} from ({{{sql}}}) as _cartodbjs_alias where cartodb_id = {{{ cartodb_id }}}", {
           fields: _.pluck(fields, 'name').join(','),
           cartodb_id: cartodb_id,
           sql: layerView.getQuery(layer)

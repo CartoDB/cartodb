@@ -110,7 +110,7 @@ cdb.vis.Overlay.register('layer_selector', function(data, vis) {
 
   var template = cdb.core.Template.compile(
     data.template || '\
-      <a href="#" class="layers">Visible layers<div class="count"></div></a>\
+      <a href="#/change-visibility" class="layers">Visible layers<div class="count"></div></a>\
       ',
     data.templateType || 'underscore'
   );

@@ -3,6 +3,7 @@ describe("LayerDefinition", function() {
   beforeEach(function(){
     var  layer_definition = {
       version: '1.0.0',
+      stat_tag: 'vis_id',
       layers: [{
          type: 'cartodb', 
          options: {
@@ -82,6 +83,7 @@ describe("LayerDefinition", function() {
   it("should return json spec of layers", function() {
     expect(layerDefinition.toJSON()).toEqual({
       version: '1.0.0',
+      stat_tag: 'vis_id',
       layers: [{
          type: 'cartodb', 
          options: {

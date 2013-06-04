@@ -74,7 +74,7 @@
              .replace('!pixel_height!', res);
 
     // create query
-    var query = Mustache.render(sql, vars);
+    var query = Mustache.render(sql.replace(/{{/g,'{{{').replace(/}}/g,'}}}'), vars);
     var q = 'q=' + encodeURIComponent(query);
 
     // request params

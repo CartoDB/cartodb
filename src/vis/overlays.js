@@ -117,7 +117,7 @@ cdb.vis.Overlay.register('layer_selector', function(data, vis) {
 
   var dropdown_template = cdb.core.Template.compile(
     data.template || '\
-      <ul></ul>\
+      <ul></ul><div class="tail"><span class="border"></span></div>\
       ',
     data.templateType || 'underscore'
   );

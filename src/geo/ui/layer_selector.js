@@ -17,7 +17,7 @@ cdb.geo.ui.LayerView = cdb.core.View.extend({
   tagName: "li",
 
   defaults: {
-    template: '<a class="layer" href="#"><%= options.table_name %></a> <a href="#switch" class="right enabled switch"><span class="handle"></span></a>'
+    template: '<a class="layer" href="#"><%= options.layer_name %></a> <a href="#switch" class="right enabled switch"><span class="handle"></span></a>'
   },
 
   events: {
@@ -101,8 +101,8 @@ cdb.geo.ui.LayerSelector = cdb.core.View.extend({
 
   _getCartoDBGroupLayers: function(layers) {
 
-    return _.filter(layers.models, function(layer) {
-        return layer.get("type") == 'CartoDB';
+    return _.map(layers, function(layer) {
+      return (layer.type == 'CartoDB') && new cdb.geo.CartoDBLayer(layer);
     });
 
   },
@@ -115,8 +115,7 @@ cdb.geo.ui.LayerSelector = cdb.core.View.extend({
     _.each(this.layers.models, function(layer) {
       if (layer.get("type") == 'CartoDB') {
         layers.push(layer);
-      }
-      else if (layer.get("type") == 'layergroup') {
+      } else if (layer.get("type") == 'layergroup') {
         var  group = self._getCartoDBGroupLayers(layer.get("layer_definition").layers);
         layers.push(group);
       }
@@ -131,7 +130,7 @@ cdb.geo.ui.LayerSelector = cdb.core.View.extend({
     this.$el.html(this.options.template(_.extend(this.model.toJSON(), this.options)));
 
     this.dropdown = new cdb.ui.common.Dropdown({
-      className:" dropdown border",
+      className:"cartodb-dropdown border",
       template: this.options.dropdown_template,
       target: this.$el.find("a"),
       speedIn: 300,
@@ -167,20 +166,20 @@ cdb.geo.ui.LayerSelector = cdb.core.View.extend({
         template_base: 'table/views/layer_item'
       });
 
-      self.$el.find("ul").append(layerView.render().el);
-
+      self.$("ul").append(layerView.render().el);
     });
-
   },
 
   switchChanged: function(layer) {
+    // Set visible
+    // ...
 
-    var layers = layer.collection.filter(function(layer) {
-      return layer.get("visible") && layer.get("type") == 'CartoDB'
-    });
+    // var layers = layer.collection.filter(function(layer) {
+    //   return layer.get("visible") && layer.get("type") == 'CartoDB'
+    // });
 
-    this.model.set("count", layers.length);
-
+    // Set new count
+    // this.model.set("count", layers.length);
   },
 
   _onCountChange: function() {

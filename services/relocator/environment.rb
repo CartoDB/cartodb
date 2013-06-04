@@ -9,17 +9,25 @@ module CartoDB
       end #initialize
 
       def database_username
-        return "cartodb_user_#{user_id}" if environment == 'production'
-        return "cartodb_staging_user_#{user_id}" if environment == 'staging'
-        "#{environment}_cartodb_user_#{user_id}"
+        "#{db_username_prefix}#{user_id}"
       end #database_username
 
       def user_database
-        return "cartodb_user_#{user_id}_db" if environment == 'production'
-        return "cartodb_dev_user_#{user_id}_db" if environment == 'development'
-        "cartodb_#{environment}_user_#{user_id}_db"
+        "#{database_name_prefix}#{user_id}_db"
       end #user_database
 
+      def db_username_prefix
+        return "cartodb_user_" if environment == 'production'
+        return "development_cartodb_user_" if environment == 'development'
+        "cartodb_user_#{environment}_"
+      end #username_prefix
+
+      def database_name_prefix
+        return "cartodb_user_" if environment == 'production'
+        return "cartodb_dev_user_" if environment == 'development'
+        "cartodb_#{environment}_user_"
+      end #database_prefix
+      
       private
 
       attr_accessor :environment, :user_id

@@ -6,7 +6,7 @@ module DataRepository
   module Backend
     class Sequel
       PAGE          = 1
-      PER_PAGE      = 100
+      PER_PAGE      = 300
       ARRAY_RE      = %r{\[.*\]}
 
       def initialize(db=Sequel.sqlite, relation=nil)

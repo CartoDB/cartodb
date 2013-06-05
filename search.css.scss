@@ -7,9 +7,11 @@
 div.search {
   position:absolute;
   width: 100%;
-  padding: 13px 0;
+  padding: 13px 0 8px 0;
 
   border-bottom: 1px solid #E1E1E1;
+
+  @include opacity(0);
 
   form {
     float:left;
@@ -23,6 +25,7 @@ div.search {
       outline:none;
 
       font-size: 13px;
+      font-family: "Helvetica", Arial;
       letter-spacing:0;
 
       &::-webkit-input-placeholder { font-style: italic; color: #397DB8; }
@@ -42,12 +45,13 @@ div.search {
 
   .filter {
     position:relative;
+    top: -2px;
     float:right;
     color: #333;
     font-size: 13px;
     font-weight:bold;
     border: 1px solid #B0B0B0;
-    padding: 6px 18px 6px 10px;
+    padding: 5px 18px 5px 10px;
     @include border-radius(3px);
 
     background: #f9f9f9; /* Old browsers */
@@ -73,7 +77,7 @@ div.search {
     }
 
     &:after {
-      top: 12px;
+      top: 11px;
       left: 87%;
       content: ' ';
       position:absolute;

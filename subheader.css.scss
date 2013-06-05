@@ -51,7 +51,7 @@ div.subheader {
 
         &.size { }
 
-        &.stats { }
+        &.mapviews { }
 
         &.badge {
           width:93px;
@@ -137,8 +137,8 @@ div.subheader {
         }
 
         div.stats {
-          display:block;
-          height:36px;
+          /*display:block;*/
+          /*height:36px;*/
         }
 
         p {
@@ -154,6 +154,8 @@ div.subheader {
       }
     }
   }
+
+  section.welcome { display:none; }
 
   section.warning {
     position:relative;

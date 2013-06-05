@@ -1,7 +1,7 @@
 <header>
   <div class="inner">
     <h1 class="left"><%= link_to "CartoDB", root_path %></h1>
-    <ul class="right <%= 'margin5' if (current_path == dashboard_common_data_path) %>">
+    <ul class="right">
       <li><%= link_to 'dashboard', dashboard_path, :class => "dashboard " + selected_if(current_path == dashboard_path) %></li>
 
       <li><%= link_to 'tables', "/dashboard/tables", :class => :tables %></a></li>

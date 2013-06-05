@@ -5,9 +5,9 @@ class Api::Json::TablesController < Api::ApplicationController
   ssl_required :index, :show, :create, :update, :destroy
   skip_before_filter :api_authorization_required, :only => [ :vizzjson ]
 
-  before_filter :load_table, :except => [:index, :create, :vizzjson]
+  before_filter :load_table, except: [:index, :create, :vizzjson]
   before_filter :set_start_time
-  before_filter :link_ghost_tables
+  before_filter :link_ghost_tables, only: [:index, :show]
 
   def index
     @tables = Table.where(:user_id => current_user.id).order(:id.desc)

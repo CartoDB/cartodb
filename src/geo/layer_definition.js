@@ -180,6 +180,7 @@ LayerDefinition.prototype = {
   invalidate: function() {
     this.layerToken = null;
     this.urls = null;
+    this.onLayerDefinitionUpdated();
   },
 
   setLayer: function(layer, def) {
@@ -292,7 +293,6 @@ LayerDefinition.prototype = {
   _definitionUpdated: function() {
     if(this.silent) return;
     this.invalidate();
-    this.onLayerDefinitionUpdated();
   },
 
   _tileJSONfromTiles: function(layer, urls) {

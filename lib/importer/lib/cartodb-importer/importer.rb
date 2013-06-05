@@ -34,7 +34,7 @@ module CartoDB
       @remaining_tables = options[:remaining_tables]
       @append_to_table  = options[:append_to_table]
       @working_data     = nil;
-      @db_configuration = options.slice :database, :username, :password, :host, :port
+      @db_configuration = options.slice :database, :username, :password, :host, :port, :osm2pgsql_port
       @db_configuration = {:port => 5432, :host => '127.0.0.1'}.merge @db_configuration
       @db_connection    = Sequel.connect("postgres://#{@db_configuration[:username]}:#{@db_configuration[:password]}@#{@db_configuration[:host]}:#{@db_configuration[:port]}/#{@db_configuration[:database]}")
 

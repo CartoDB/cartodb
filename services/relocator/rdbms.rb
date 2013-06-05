@@ -204,6 +204,7 @@ module CartoDB
           record.store('map_id', maps_map.fetch(old_map_id))
           record.store('table_id', table_id)
           record.store('database_name', database_name)
+          record.store('privacy', record.fetch('privacy').to_i)
 
           if old_data_import_id
             record.store('data_import_id', data_imports_map.fetch(old_data_import_id))

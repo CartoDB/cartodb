@@ -22,7 +22,8 @@ class Admin::VisualizationsController < ApplicationController
   end #show
 
   def public
-    @visualization, @table = locator.get(params.fetch(:id), request.subdomain)
+    id = params.fetch(:id)
+    @visualization, @table = locator.get(id, request.subdomain)
 
     id = params.fetch(:id)
     return(pretty_404) if @visualization.private?
@@ -36,7 +37,8 @@ class Admin::VisualizationsController < ApplicationController
   end #public
 
   def embed_map
-    @visualization, @table = locator.get(params.fetch(:id), request.subdomain)
+    id = params.fetch(:id)
+    @visualization, @table = locator.get(id, request.subdomain)
 
     return(embed_forbidden) if @visualization.private?
 

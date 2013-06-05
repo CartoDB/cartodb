@@ -1,6 +1,7 @@
 # encoding: utf-8
 require_relative '../visualization'
 require_relative './member'
+require_relative '../user'
 
 module CartoDB
   module Visualization
@@ -10,9 +11,10 @@ module CartoDB
         @repository   = repository
       end #initialize
 
-      def get(id_or_name, subdomain=nil)
-        get_visualization(id_or_name)     || 
-        get_table(id_or_name, subdomain)  ||
+      def get(id_or_name, subdomain)
+        user = User.find(:username => subdomain)
+        get_visualization(id_or_name, user)  || 
+        get_table(id_or_name, subdomain)     ||
         [nil, nil]
       end #get
 
@@ -20,8 +22,8 @@ module CartoDB
 
       attr_reader :repository, :table_model
 
-      def get_visualization(id_or_name)
-        attributes = get_by_id(id_or_name) || get_by_name(id_or_name)
+      def get_visualization(id_or_name, user)
+        attributes = get_by_id(id_or_name) || get_by_name(id_or_name, user)
         return false if attributes.nil? || attributes.empty?
         
         visualization = Visualization::Member.new(attributes)
@@ -40,8 +42,8 @@ module CartoDB
         repository.fetch(uuid)
       end #get_by_id
 
-      def get_by_name(name)
-        repository.collection(name: name).first
+      def get_by_name(name, user)
+        repository.collection(name: name, map_id: user.maps.map(&:id) ).first
       end #get_by_name
     end # Locator
   end # Visualization

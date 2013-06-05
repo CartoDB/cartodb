@@ -769,6 +769,7 @@ describe CartoDB::Importer do
     @db_opts = {:database => "cartodb_importer_test",
                 :username => "postgres", :password => '',
                 :host => 'localhost',
+                :osm2pgsql_port => Cartodb.config[:importer]["osm2pgsql_port"],
                 :port => 5432}
     create_user(:username => 'test', :email => "client@example.com", :password => "clientex", :table_quota => 100, :disk_quota => 500.megabytes)
     @user = User.first

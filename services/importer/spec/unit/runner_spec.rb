@@ -1,5 +1,7 @@
 # encoding: utf-8
+gem 'minitest', '5.0.3'
 require 'minitest/autorun'
+require 'minitest/mock'
 require 'sqlite3'
 require_relative '../../runner'
 require_relative '../doubles/loader'
@@ -28,7 +30,7 @@ describe Importer::Runner do
 
   describe '#run' do
     it 'loads the data through the loader' do
-      loader    = Minitest::Mock.new
+      loader    = MiniTest::Mock.new
       importer  = Importer::Runner.new(@pg_options, @filepath, loader)
 
       loader.expect(:run, Object.new, [@filepath])
@@ -52,7 +54,7 @@ describe Importer::Runner do
 
   describe '#exit_code' do
     it 'returns the exit code from the loader' do
-      loader    = Minitest::Mock.new
+      loader    = MiniTest::Mock.new
       importer  = Importer::Runner.new(@pg_options, @filepath, loader)
       loader.expect :exit_code, @exit_code
       importer.exit_code.must_equal @exit_code

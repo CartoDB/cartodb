@@ -44,6 +44,22 @@ module CartoDB
         memoize('users', transform(rdbms.export_user(user_id)))
       end #users
 
+      def visualizations
+        memoize('visualizations', rdbms.export_visualizations_for(user_id))
+      end #visualizations
+
+      def overlays
+        visualization_ids = metadata.fetch('visualizations').map do |record|
+          record.fetch(:id)
+        end
+        memoize('overlays', rdbms.export_overlays_for(visualization_ids))
+      end #overlays
+
+      def layers_user_tables
+        layers_user_tables = rdbms.export_layers_user_tables_for(user_id)
+        memoize('layers_user_tables', layers_user_tables)
+      end #layers_user_tables
+
       def thresholds_metadata
         memoize('thresholds_metadata', redis_dumper.thresholds_for(user_id))
       end #thresholds_metadata

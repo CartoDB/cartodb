@@ -22,7 +22,13 @@ cdb.geo.ui.LayerSelector = cdb.core.View.extend({
 
   initialize: function() {
     this.map = this.options.mapView.map;
+
     this.mapView  = this.options.mapView;
+    this.mapView.bind('click zoomstart drag', function() {
+      this.dropdown && this.dropdown.hide()
+    }, this);
+    this.add_related_model(this.mapView);
+
     this.layers = [];
   },
 
@@ -57,7 +63,6 @@ cdb.geo.ui.LayerSelector = cdb.core.View.extend({
   _getLayers: function() {
     var self = this;
 
-    debugger;
     _.each(this.map.layers.models, function(layer) {
       
       if (layer.get("type") == 'layergroup') {
@@ -67,8 +72,10 @@ cdb.geo.ui.LayerSelector = cdb.core.View.extend({
           var l = layer_definition.getLayer(i);
           var m = new cdb.core.Model(l);
           m.set('order', i);
+          m.set('type', 'layergroup');
           var layerView = self._createLayer('LayerViewFromLayerGroup', { model: m, layer_definition: layer_definition });
           layerView.bind('switchChanged', self._setCount, self);
+          layerView.bind('layergroupChanged', self._setLayerGroup, self)
           self.layers.push(layerView);
         }
       } else if (layer.get("type") == "CartoDB") {
@@ -85,6 +92,25 @@ cdb.geo.ui.LayerSelector = cdb.core.View.extend({
     this.$("ul").append(layerView.render().el);
     this.addView(layerView);
     return layerView;
+  },
+
+  _setLayerGroup: function(layer_definition) {
+    var self = this;
+
+    for (var i = this.layers.length - 1; i >= 0; --i) {
+      if (self.layers[i].model.get('type') == "layergroup") {
+        layer_definition.removeLayer(i);
+      }
+    }
+
+    var order = 0;
+
+    for (var i = 0, l = this.layers.length; i < l; ++i) {
+      if (self.layers[i].model.get('type') == "layergroup" && self.layers[i].model.get('visible')) {
+        layer_definition.addLayer(self.layers[i].model.toJSON().options, order);
+        order++;
+      }
+    }
   },
 
   _setCount: function() {
@@ -201,13 +227,8 @@ cdb.geo.ui.LayerViewFromLayerGroup = cdb.geo.ui.LayerView.extend({
 
   _onSwitchSelected: function() {
   
-    cdb.geo.ui.LayerView.prototype._onSwitchSelected.call(this);    
+    cdb.geo.ui.LayerView.prototype._onSwitchSelected.call(this);
 
-    // Change layer_definition
-    if (this.model.get('visible')) {
-      this.options.layer_definition.addLayer(this.model.toJSON().options, this.model.get('order'));
-    } else {
-      this.options.layer_definition.removeLayer(this.model.get('order'));
-    }
+    this.trigger('layergroupChanged', this.options.layer_definition);
   }
 });

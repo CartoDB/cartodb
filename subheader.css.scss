@@ -51,7 +51,7 @@ div.subheader {
 
         &.size { }
 
-        &.stats { }
+        &.mapviews { }
 
         &.badge {
           width:93px;
@@ -137,8 +137,8 @@ div.subheader {
         }
 
         div.stats {
-          display:block;
-          height:36px;
+          /*display:block;*/
+          /*height:36px;*/
         }
 
         p {
@@ -155,18 +155,21 @@ div.subheader {
     }
   }
 
+  section.welcome { display:none; }
+
   section.warning {
     position:relative;
     margin:-70px 0 0 0;
     padding:25px 0;
-    background:#FFF7EA;
+    background:rgba(#FFE599, .35);
     border-bottom:1px solid rgba(#CCCCCC,0.5);
     z-index:-1;
     @include transform-style("linear");
     @include transition-property("all");
     @include transition-duration(500ms);
 
-    p.upgraded, p.cartodb20 {display:none;}
+    .dark { color: #666666; }
+    p.upgraded, p.cartodb20 { display:none; }
 
     a.close {
       position:absolute;

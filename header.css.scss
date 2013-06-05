@@ -54,6 +54,9 @@ header { // general header
   }
 
   ul {
+    position:relative;
+    top: 9px;
+
     display:block;
     letter-spacing:-4px;
     width:auto;
@@ -177,7 +180,7 @@ header { // general header
 
 
   // Visualizaiton view header
-  &.vis { 
+  &.vis {
     position:fixed;
     left:0;
     top:0;
@@ -297,7 +300,7 @@ header { // general header
         }
       }
 
-      // Clear view button type  
+      // Clear view button type
       a.button_header {
         margin:3px 0 0 10px;
         @include inline-block();

@@ -17,7 +17,9 @@ class User < Sequel::Model
   }
 
   # Sequel setup & plugins
-  set_allowed_columns :email, :map_enabled, :password_confirmation, :quota_in_bytes, :table_quota, :account_type, :private_tables_enabled
+  set_allowed_columns :email, :map_enabled, :password_confirmation, 
+    :quota_in_bytes, :table_quota, :account_type, :private_tables_enabled, 
+    :period_end_date, :map_view_quota
   plugin :validation_helpers
   plugin :json_serializer
 
@@ -310,33 +312,14 @@ class User < Sequel::Model
     return calls
   end
 
-  def billing_period
-    Time.now - 15.days
-  end
-
   def last_billing_cycle
-    day = billing_period.day
-    date = (billing_period.day > Date.today.day ? Date.today<<1 : Date.today)
+    day = period_end_date.day
+    date = (day > Date.today.day ? Date.today<<1 : Date.today)
     begin
       Date.parse("#{date.year}-#{date.month}-#{day}")
     rescue ArgumentError
       day = day - 1
       retry
-    end
-  end
-
-  def api_calls_quota
-    case account_type
-    when /FREE/
-      10000
-    when /.*MAGELLAN.*/
-      50000
-    when /.*JOHN SNOW.*/
-      100000
-    when /.*CORONELLI.*/
-      500000
-    when /.*DEDICATED.*/
-      800000
     end
   end
 

@@ -18,6 +18,8 @@ class Superadmin::UsersController < Superadmin::SuperadminController
       @user.table_quota             = attributes[:table_quota]              if attributes.has_key?(:table_quota)
       @user.account_type            = attributes[:account_type]             if attributes.has_key?(:account_type)
       @user.private_tables_enabled  = attributes[:private_tables_enabled]   if attributes.has_key?(:private_tables_enabled)
+      @user.map_view_quota          = attributes[:map_view_quota]           if attributes.has_key?(:map_view_quota)
+      @user.period_end_date         = attributes[:period_end_date]          if attributes.has_key?(:period_end_date)
 
       if attributes[:password].present?
         @user.password              = attributes[:password]
@@ -44,6 +46,8 @@ class Superadmin::UsersController < Superadmin::SuperadminController
       @user.table_quota             = attributes[:table_quota]              if attributes.has_key?(:table_quota)
       @user.account_type            = attributes[:account_type]             if attributes.has_key?(:account_type)
       @user.private_tables_enabled  = attributes[:private_tables_enabled]   if attributes.has_key?(:private_tables_enabled)
+      @user.map_view_quota          = attributes[:map_view_quota]           if attributes.has_key?(:map_view_quota)
+      @user.period_end_date         = attributes[:period_end_date]          if attributes.has_key?(:period_end_date)
 
       if attributes[:password].present?
         @user.password = attributes[:password]

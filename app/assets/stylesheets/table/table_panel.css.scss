@@ -42,9 +42,9 @@
       z-index:0;
       @include border-top-left-radius($corner_radius);
     }
-    
+
     // Hello layer panel, let's play a little bit
-    /* 
+    /*
       .Layer-panel
         - .layer_info
         - .sidebar
@@ -82,7 +82,7 @@
       @include border-top-left-radius($corner_radius);
       border-bottom:1px solid rgba(#999999,0.25);
       z-index:0;
-      
+
       div.left {width:80%; margin-left:24px;}
       div.right {width:10%; margin-right:20px;}
     }
@@ -129,7 +129,7 @@
       .action {
         margin-left:27px;
         font:500 17px $text-fonts;
-        line-height:20px; 
+        line-height:20px;
       }
 
       &:hover {
@@ -215,7 +215,7 @@
               color:white;
               font-size:8px;
               line-height:10px;
-              
+
               &:before {
                 content:'';
                 position:absolute;
@@ -888,6 +888,20 @@
 
             text-align: center;
             z-index: 100;
+
+            .applied_query {
+              display:none;
+
+              .clear {
+                background: rgba(#FFEFBF, .5);
+                padding: 14px 20px;
+                @include border-radius(5px);
+
+                font-size: 15px;
+                a { color:  #666; text-decoration:underline; }
+                a:hover { color: #333; }
+              }
+            }
 
             .no_filters {
               @include size(102px, 81px);

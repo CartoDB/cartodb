@@ -104,4 +104,6 @@ module CartoDB
       CartoDB::Logger.info "InvalidAttributes", message      
     end
   end
+
+  class NonConvertibleData < StandardError; end
 end  

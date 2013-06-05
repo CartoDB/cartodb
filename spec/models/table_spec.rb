@@ -807,25 +807,6 @@ describe Table do
       table.schema(:cartodb_types => false).should include([:where, "double precision"])
     end
 
-    it "properly empties blank columns when changing its data type from String to Date" do
-      table = create_table(:user_id => @user.id)
-      resp = table.add_column!(:name => "wadus", :type => "string")
-
-      pk = table.insert_row!(:wadus => "")
-      pk = table.insert_row!(:wadus => "")
-      pk = table.insert_row!(:wadus => "")
-      pk = table.insert_row!(:wadus => "")
-      pk = table.insert_row!(:wadus => "")
-
-      expect{table.modify_column!(:name => "wadus", :type => "date")}.to_not raise_error(Sequel::DatabaseError)
-
-      table.records[:rows][0][:wadus].should be_nil
-      table.records[:rows][1][:wadus].should be_nil
-      table.records[:rows][2][:wadus].should be_nil
-      table.records[:rows][3][:wadus].should be_nil
-      table.records[:rows][4][:wadus].should be_nil
-    end
-
     it 'nullifies the collumn when converting from boolean to date' do
       table = create_table(user_id: @user.id)
       table.add_column!(name: 'new', type: 'boolean')

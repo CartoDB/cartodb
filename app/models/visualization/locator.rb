@@ -2,48 +2,57 @@
 require_relative '../visualization'
 require_relative './member'
 require_relative '../user'
+require_relative '../table'
 
 module CartoDB
   module Visualization
     class Locator
-      def initialize(table_model=::Table, repository=Visualization.repository)
-        @table_model  = table_model
-        @repository   = repository
+      def initialize(table_model=nil, user_model=nil, repository=nil)
+        @table_model  = table_model || ::Table
+        @user_model   = user_model  || ::User
+        @repository   = repository  || Visualization.repository
       end #initialize
 
       def get(id_or_name, subdomain)
-        user = User.find(:username => subdomain)
-        get_visualization(id_or_name, user)  || 
-        get_table(id_or_name, subdomain)     ||
+        user = user_from(subdomain)
+
+        visualization_from(id_or_name, user) || 
+        table_from(id_or_name, user)         ||
         [nil, nil]
       end #get
 
       private
 
-      attr_reader :repository, :table_model
+      attr_reader :repository, :table_model, :user_model
 
-      def get_visualization(id_or_name, user)
+      def user_from(subdomain)
+        @user ||= user_model.where(username: subdomain).first
+      end #user_from
+
+      def visualization_from(id_or_name, user)
         attributes = get_by_id(id_or_name) || get_by_name(id_or_name, user)
         return false if attributes.nil? || attributes.empty?
         
         visualization = Visualization::Member.new(attributes)
         [visualization, visualization.table]
-      end # get_visualization
+      end # visualization_from
 
-      def get_table(id_or_name, subdomain=nil)
-        return false unless subdomain
-        table = table_model.find_by_subdomain(subdomain, id_or_name)
+      def table_from(id_or_name, user)
+        table = table_model.where(id: id_or_name, user_id: user.id).first
 
         return false unless table && table.table_visualization
         [table.table_visualization, table]
-      end #get_table
+      end #table_from
         
       def get_by_id(uuid)
         repository.fetch(uuid)
       end #get_by_id
 
       def get_by_name(name, user)
-        repository.collection(name: name, map_id: user.maps.map(&:id) ).first
+        repository.collection(
+          name:   name, 
+          map_id: user.maps.map(&:id)
+        ).first
       end #get_by_name
     end # Locator
   end # Visualization

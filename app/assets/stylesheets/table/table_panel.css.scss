@@ -84,11 +84,14 @@
       z-index:0;
 
       div.left {width:80%; margin-left:24px;}
-      div.right {width:10%; margin-right:20px;}
+      div.right {width:45px; margin-right:20px;}
     }
 
     // Layer info
     a.info {
+      width:100%;
+      @include inline-block();
+
       * {@include inline-block(); vertical-align:middle; letter-spacing:0px;}
 
       .order {

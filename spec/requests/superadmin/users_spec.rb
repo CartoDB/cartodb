@@ -62,12 +62,14 @@ feature "Superadmin's users API" do
 
   scenario "user create default account settings" do
     @user_atts[:private_tables_enabled] = false
+    @user_atts[:map_view_quota] = 80
     post_json superadmin_users_path, { :user => @user_atts }, default_headers do |response|
       response.status.should == 201
       response.body[:quota_in_bytes].should == 104857600
       response.body[:table_quota].should == 5
       response.body[:account_type].should == 'FREE'
       response.body[:private_tables_enabled].should == false
+      response.body[:map_view_quota].should == 80
 
       # Double check that the user has been created properly
       user = User.filter(:email => @user_atts[:email]).first
@@ -138,11 +140,12 @@ feature "Superadmin's users API" do
 
   scenario "user update success" do
     user = create_user
-    put_json superadmin_user_path(user), { :user => { :email => "newmail@test.com" } }, default_headers do |response|
+    put_json superadmin_user_path(user), { :user => { :email => "newmail@test.com", :map_view_quota => 80 } }, default_headers do |response|
       response.status.should == 204
     end
     user = User[user.id]
     user.email.should == "newmail@test.com"
+    user.map_view_quota.should == 80
   end
 
   scenario "user delete success" do

@@ -14,7 +14,7 @@ class Admin::VisualizationsController < ApplicationController
 
   def show
     id = params.fetch(:id)
-    return(redirect_to "/viz/#{id}/public") unless current_user.present?
+    return(redirect_to public_url_for(id)) unless current_user.present?
     @visualization, @table = locator.get(id, request.subdomain)
     respond_to { |format| format.html }
 
@@ -22,11 +22,12 @@ class Admin::VisualizationsController < ApplicationController
   end #show
 
   def public
-    @visualization, @table = locator.get(params.fetch(:id), request.subdomain)
+    id = params.fetch(:id)
+    @visualization, @table = locator.get(id, request.subdomain)
 
     id = params.fetch(:id)
     return(pretty_404) if @visualization.private?
-    return(redirect_to "/viz/#{id}/embed_map") if @visualization.derived?
+    return(redirect_to embed_map_url_for(id)) if @visualization.derived?
     
     @vizjson = @visualization.to_vizjson
 
@@ -36,7 +37,8 @@ class Admin::VisualizationsController < ApplicationController
   end #public
 
   def embed_map
-    @visualization, @table = locator.get(params.fetch(:id), request.subdomain)
+    id = params.fetch(:id)
+    @visualization, @table = locator.get(id, request.subdomain)
 
     return(embed_forbidden) if @visualization.private?
 
@@ -59,6 +61,19 @@ class Admin::VisualizationsController < ApplicationController
   end #track_embed
 
   private
+
+  def public_url_for(id)
+    "/#{resource_base}/#{id}/public"
+  end #public_url_for
+
+  def embed_map_url_for(id)
+    "/#{resource_base}/#{id}/embed_map"
+  end #public_url_for
+
+  def resource_base
+    return 'viz'    if request.path_info =~ %r{/viz/}
+    return 'tables' if request.path_info =~ %r{/tables/}
+  end #resource_base
 
   def download_formats table, format
     format.sql  { send_data table.to_sql, data_for(table, 'zip', 'zip') }

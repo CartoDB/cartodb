@@ -62,6 +62,22 @@ describe Admin::VisualizationsController do
       get "/viz/#{id}", {}, @headers
       last_response.status.should == 200
     end
+
+    it 'redirects to the public view if visualization private' do
+      id = factory.fetch('id')
+
+      get "/viz/#{id}", {}, @headers
+      follow_redirect!
+      last_request.path.should =~ %r{/viz/}
+    end
+
+    it 'keeps the base path (table|visualization) when redirecting' do
+      id = table_factory.fetch('id')
+
+      get "/tables/#{id}", {}, @headers
+      follow_redirect!
+      last_request.path.should =~ %r{/tables/}
+    end
   end # GET /viz/:id
 
   describe 'GET /viz/:id/public' do

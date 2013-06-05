@@ -90,6 +90,28 @@ module CartoDB
         ", &:to_a)
       end #export_records_for
 
+      def export_visualizations_for(user_id)
+        map_ids = connection[:maps].select(:id)
+                  .where(user_id: user_id)
+                  .map { |record| record.fetch(:id) }
+        connection[:visualizations].where(map_id: map_ids).to_a
+      end #export_visualizations_for
+
+      def export_overlays_for(visualization_ids)
+        connection[:overlays].where(visualization_id: visualization_ids).to_a
+      end #export_overlays_for
+
+      def export_layers_user_tables_for(user_id)
+        connection.execute(%Q{
+          SELECT  layers_user_tables.id,
+                  layers_user_tables.layer_id,
+                  layers_user_tables.user_table_id
+          FROM    user_tables, layers_user_tables
+          WHERE   user_tables.user_id = #{user_id}
+          AND     user_tables.id = layers_user_tables.user_table_id
+        }, &:to_a)
+      end #export_layers_user_tables
+
       def insert_in(table_name, records=[], user=nil)
         map = {}
         records.each do |record| 

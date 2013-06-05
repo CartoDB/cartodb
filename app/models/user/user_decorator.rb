@@ -1,6 +1,8 @@
 module CartoDB
   module UserDecorator
     def data(options = {})
+      calls = self.get_api_calls(from: self.last_billing_cycle, to: Date.today)
+      calls.fill(0, calls.size..29)
       data = { 
         id: self.id,
         email: self.email,
@@ -11,7 +13,7 @@ module CartoDB
         byte_quota: self.quota_in_bytes,
         remaining_table_quota: self.remaining_table_quota,
         remaining_byte_quota: self.remaining_quota.to_f,
-        api_calls: self.get_api_calls(from: self.last_billing_cycle, to: Date.today),
+        api_calls: calls,
         api_calls_quota: self.map_view_quota,
         billing_period: self.last_billing_cycle,
         api_key: self.get_map_key,

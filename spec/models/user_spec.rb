@@ -114,7 +114,7 @@ describe User do
       byte_quota: 104857600, 
       remaining_table_quota: 5,
       remaining_byte_quota: 104857600.0,
-      api_calls: [0],
+      api_calls: (0..29).map { 0 },
       api_calls_quota: 10000,
       api_key: @user2.get_map_key,
       actions: { private_tables: true, dedicated_support: false, import_quota: 1, remove_logo: false },

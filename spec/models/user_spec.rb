@@ -104,28 +104,28 @@ describe User do
   end
 
   it "should generate a data report" do
-    @user2.data(:extended => true).should == {
+    @user2.data(extended: true).should == {
       id: @user2.id,
       email: "user@example.com",
       username: "user",
       account_type: "FREE",
       table_quota: 5,
-      table_count: 1,
+      table_count: 0,
       byte_quota: 104857600, 
-      remaining_table_quota: 4, 
-      remaining_byte_quota: 104841216.0, 
-      api_calls: nil, 
-      api_key: @user2.get_map_key, 
+      remaining_table_quota: 5,
+      remaining_byte_quota: 104857600.0,
+      api_calls: [0],
+      api_calls_quota: 10000,
+      api_key: @user2.get_map_key,
       actions: { private_tables: true, dedicated_support: false, import_quota: 1, remove_logo: false },
       layers: [],
+      billing_period: Date.today,
       last_active_time: nil,
-      db_size_in_bytes: 16384,
-      real_table_count: 1,
-      biggest_table_name: "my_first_table",
-      biggest_table_size_diff: 16374
+      db_size_in_bytes: 0,
+      real_table_count: 0
     }
 
-    @user2.data.keys.should =~ [:id, :email, :username, :account_type, :actions, :table_quota, :table_count, :byte_quota, :remaining_table_quota, :remaining_byte_quota, :api_calls, :api_key, :layers]
+    @user2.data.keys.should =~ [:id, :email, :username, :account_type, :actions, :table_quota, :table_count, :byte_quota, :remaining_table_quota, :remaining_byte_quota, :api_calls, :api_key, :layers, :billing_period, :api_calls_quota]
   end
 
   it "should update remaining quotas when adding or removing tables" do
@@ -411,19 +411,19 @@ describe User do
   it "should correctly identify last billing cycle" do
     user = create_user :email => 'example@example.com', :username => 'example', :password => 'testingbilling'
     Timecop.freeze(Date.parse("2013-01-01")) do
-      user.stubs(:billing_period).returns(Date.parse("2012-12-15"))
+      user.stubs(:period_end_date).returns(Date.parse("2012-12-15"))
       user.last_billing_cycle.should == Date.parse("2012-12-15")
     end
     Timecop.freeze(Date.parse("2013-01-01")) do
-      user.stubs(:billing_period).returns(Date.parse("2012-12-02"))
+      user.stubs(:period_end_date).returns(Date.parse("2012-12-02"))
       user.last_billing_cycle.should == Date.parse("2012-12-02")
     end
     Timecop.freeze(Date.parse("2013-03-01")) do
-      user.stubs(:billing_period).returns(Date.parse("2012-12-31"))
+      user.stubs(:period_end_date).returns(Date.parse("2012-12-31"))
       user.last_billing_cycle.should == Date.parse("2013-02-28")
     end
     Timecop.freeze(Date.parse("2013-03-15")) do
-      user.stubs(:billing_period).returns(Date.parse("2012-12-02"))
+      user.stubs(:period_end_date).returns(Date.parse("2012-12-02"))
       user.last_billing_cycle.should == Date.parse("2013-03-02")
     end
   end

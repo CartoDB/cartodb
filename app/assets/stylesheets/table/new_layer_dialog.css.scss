@@ -4,12 +4,35 @@
    */
 
   @import "compass";
+  @import "../common/vars";
+  @import "../common/mixins";
+  @import "../common/sprites";
 
   .new_layer_dialog {
+
+    span.loader {
+      display:block;
+      width:100%;
+      margin:15px 0 0 0;
+      padding:28px 0 0 0;
+      text-align:center;
+      background:image-url("layout/loader.gif") no-repeat center top;
+      color:#898989;
+    }
+
+    ul.options { @include opacity(0); }
+
     .combo_wrapper {
       display:block;
       padding:12px;
       background:#F2F2F2;
       @include border-radius(6px);
+    }
+
+    p.error {
+      display:none;
+      margin:20px 0 0;
+      color: rgba(red,0.5);
+      text-align:center;
     }
   }

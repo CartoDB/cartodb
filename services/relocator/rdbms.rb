@@ -130,7 +130,7 @@ module CartoDB
         user      = arguments.fetch(:user)
 
         records.each do |record|
-          old_id  = record.fetch('client_application_id')
+          old_id  = record.fetch('client_application_id').to_s
           record.delete('id')
           record.store('user_id', user.id)
           record.store('client_application_id', map.fetch(old_id))
@@ -183,8 +183,8 @@ module CartoDB
         maps_map    = arguments.fetch(:maps_map)
 
         records.each do |record| 
-          old_layer_id  = record.fetch('layer_id')
-          old_map_id    = record.fetch('map_id')
+          old_layer_id  = record.fetch('layer_id').to_s
+          old_map_id    = record.fetch('map_id').to_s
           record.delete('id')
 
           record.store('layer_id', layers_map.fetch(old_layer_id))
@@ -199,7 +199,7 @@ module CartoDB
         user        = arguments.fetch(:user)
 
         records.each do |record| 
-          old_layer_id  = record.fetch('layer_id')
+          old_layer_id  = record.fetch('layer_id').to_s
           record.delete('id')
 
           record.store('layer_id', layers_map.fetch(old_layer_id))
@@ -217,8 +217,8 @@ module CartoDB
         map               = {}
 
         records.each do |record|
-          old_map_id          = record.fetch('map_id')
-          old_data_import_id  = record.fetch('data_import_id')
+          old_map_id          = record.fetch('map_id').to_s
+          old_data_import_id  = record.fetch('data_import_id').to_s
           table_id            = table_id_for(user, record.fetch('name'))
 
           old_id = record.delete('id')
@@ -253,6 +253,40 @@ module CartoDB
           connection[:tags].insert(record)
         end
       end #insert_tags_for
+
+      def insert_visualizations_for(arguments)
+        records   = arguments.fetch(:records)
+        maps_map  = arguments.fetch(:maps_map)
+
+        records.each do |record|
+          old_map_id = record.fetch('map_id').to_s
+          record.store('map_id', maps_map.fetch(old_map_id))
+          connection[:visualizations].insert(record)
+        end
+      end #insert_visualizations_for
+
+      def insert_overlays_for(arguments)
+        arguments.fetch(:records).each do |record|
+          connection[:overlays].insert(record)
+        end
+      end #insert_overlays_for
+
+      def insert_layers_user_tables_for(arguments)
+        records     = arguments.fetch(:records)
+        layers_map  = arguments.fetch(:layers_map)
+        tables_map  = arguments.fetch(:tables_map)
+
+        arguments.fetch(:records).each do |record|
+          old_layer_id = record.fetch('layer_id').to_s
+          old_table_id = record.fetch('user_table_id').to_s
+
+          record.store('layer_id', layers_map.fetch(old_layer_id))
+          record.store('user_table_id', tables_map.fetch(old_table_id))
+          record.delete('id')
+
+          connection[:layers_user_tables].insert(record)
+        end
+      end #insert_layers_user_tables_for
 
       def table_id_for(user, table_name)
         user.in_database

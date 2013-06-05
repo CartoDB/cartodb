@@ -408,4 +408,24 @@ describe User do
     Layer.db["SELECT * from layers_users WHERE user_id = #{doomed_user.id}"].count.should == 0
   end
 
+  it "should correctly identify last billing cycle" do
+    user = create_user :email => 'example@example.com', :username => 'example', :password => 'testingbilling'
+    Timecop.freeze(Date.parse("2013-01-01")) do
+      user.stubs(:billing_period).returns(Date.parse("2012-12-15"))
+      user.last_billing_cycle.should == Date.parse("2012-12-15")
+    end
+    Timecop.freeze(Date.parse("2013-01-01")) do
+      user.stubs(:billing_period).returns(Date.parse("2012-12-02"))
+      user.last_billing_cycle.should == Date.parse("2012-12-02")
+    end
+    Timecop.freeze(Date.parse("2013-03-01")) do
+      user.stubs(:billing_period).returns(Date.parse("2012-12-31"))
+      user.last_billing_cycle.should == Date.parse("2013-02-28")
+    end
+    Timecop.freeze(Date.parse("2013-03-15")) do
+      user.stubs(:billing_period).returns(Date.parse("2012-12-02"))
+      user.last_billing_cycle.should == Date.parse("2013-03-02")
+    end
+  end
+
 end

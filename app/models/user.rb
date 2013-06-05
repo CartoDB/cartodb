@@ -301,15 +301,28 @@ class User < Sequel::Model
   end
 
   def get_api_calls(options = {})
-    options[:days] = 29
-    (0..options[:days]).map do |t|
-      date = Date.today - t.days
-      $users_metadata.ZSCORE("user:#{username}:mapviews:global", date.strftime("%Y%m%d")).to_i
+    date_to = (options[:to] ? options[:to].to_date : Date.today)
+    date_from = (options[:from] ? options[:from].to_date : Date.today - 29.days)
+    calls = []
+    date_to.downto(date_from) do |date|
+      calls << $users_metadata.ZSCORE("user:#{username}:mapviews:global", date.strftime("%Y%m%d")).to_i
     end
+    return calls
   end
 
   def billing_period
     Time.now - 15.days
+  end
+
+  def last_billing_cycle
+    day = billing_period.day
+    date = (billing_period.day > Date.today.day ? Date.today<<1 : Date.today)
+    begin
+      Date.parse("#{date.year}-#{date.month}-#{day}")
+    rescue ArgumentError
+      day = day - 1
+      retry
+    end
   end
 
   def api_calls_quota

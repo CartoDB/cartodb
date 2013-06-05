@@ -228,6 +228,7 @@
       }
 
       this.trigger('newLayerView', layer_view, this);
+      return layer_view;
     },
 
     latLonToPixel: function(latlon) {

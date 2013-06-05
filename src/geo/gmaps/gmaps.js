@@ -180,6 +180,8 @@ if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
         this.map.set({ attribution: attributions });
       }
 
+      return layer_view;
+
     },
 
     latLonToPixel: function(latlon) {

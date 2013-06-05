@@ -10,9 +10,7 @@ function LayerDefinition(layerDefinition, options) {
     btoa: this.isBtoaSupported() ? this._encodeBase64Native : this._encodeBase64
   });
 
-  this.version = layerDefinition.version || '1.0.0';
-  this.stat_tag = layerDefinition.stat_tag;
-  this.layers = _.clone(layerDefinition.layers);
+  this.setLayerDefinition(layerDefinition, { silent: true });
   this.layerToken = null;
   this.urls = null;
   this.silent = false;
@@ -35,6 +33,16 @@ LayerDefinition.prototype = {
 
   getLayerCount: function() {
     return this.layers.length;
+  },
+
+  setLayerDefinition: function(layerDefinition, options) {
+    options = options || {};
+    this.version = layerDefinition.version || '1.0.0';
+    this.stat_tag = layerDefinition.stat_tag;
+    this.layers = _.clone(layerDefinition.layers);
+    if(!options.silent) {
+      this._definitionUpdated();
+    }
   },
 
   toJSON: function() {

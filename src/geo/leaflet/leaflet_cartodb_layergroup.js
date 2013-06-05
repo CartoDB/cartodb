@@ -100,10 +100,17 @@ L.CartoDBGroupLayer = L.TileLayer.extend({
     this.__update(function() {
       // remove this hack when leaflet 0.6 was released
       var add = function() {
+        map.off('zoomend', add);
+        // if while the layer was processed in the server is removed
+        // it should not be added to the map
+        var id = L.stamp(self);
+        if (!map._layers[id]) { 
+          return; 
+        }
+
         L.TileLayer.prototype.onAdd.call(self, map);
         self.fire('added');
         self.options.added = true;
-        map.off('zoomend', add);
       }
       if(!map._animatingZoom) {
         add();

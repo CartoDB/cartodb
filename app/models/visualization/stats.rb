@@ -8,7 +8,7 @@ module CartoDB
       end #initialize
       
       def to_poro
-        data_points = (0..29).map do |t|
+        data_points = (29..0).map do |t|
           date = Date.today - t.days
           [ date.iso8601,
             $users_metadata.ZSCORE(visualization_stats_key, date.strftime("%Y%m%d")).to_i ]

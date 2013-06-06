@@ -139,6 +139,26 @@ describe Admin::VisualizationsController do
       last_response.status.should == 200
     end
 
+    it 'renders embed_map.js' do
+      table_attributes  = table_factory
+      id                = table_attributes.fetch('table_visualization')
+                            .fetch('id')
+      payload           = { source_visualization_id: id }
+
+      post "/api/v1/viz?api_key=#{@api_key}", 
+        payload.to_json, @headers
+      last_response.status.should == 200
+
+      derived_visualization = JSON.parse(last_response.body)
+      id = derived_visualization.fetch('id')
+
+      login_as(@user, scope: 'test')
+
+      get "/viz/#{id}/embed_map.js", {}, @headers
+      puts last_response.body
+      last_response.status.should == 200
+    end
+
     it 'renders embed map error page if visualization private' do
       table_attributes = table_factory
       put "/api/v1/tables/#{table_attributes.fetch('id')}?api_key=#{@api_key}",

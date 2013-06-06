@@ -73,6 +73,19 @@ module CartoDB
           tables_map:               @tables_map,
         )
 
+        rdbms.insert_visualizations_for(
+          records:                  records_for(:visualizations),
+          maps_map:                 @maps_map
+        )
+
+        rdbms.insert_overlays_for(records: records_for(:overlays))
+
+        rdbms.insert_layers_user_tables_for(
+          records:                  records_for(:layers_user_tables),
+          layers_map:               @layers_map,
+          tables_map:               @tables_map
+        )
+
         ThresholdMetadata.new(user.id)
           .load(records_for('redis/thresholds_metadata'))
         APICredentialMetadata.new(user.id)

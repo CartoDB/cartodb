@@ -67,7 +67,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     return(head 401) unless member.authorize?(current_user)
     render_jsonp(member)
   rescue KeyError
-    head :not_found
+    head(404)
   end #show
   
   def update
@@ -78,7 +78,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     member.store.fetch
     render_jsonp(member)
   rescue KeyError
-    head :not_found
+    head(404)
   rescue CartoDB::InvalidMember => exception
     render_jsonp({ errors: member.full_errors }, 400)
   end #update
@@ -89,6 +89,8 @@ class Api::Json::VisualizationsController < Api::ApplicationController
 
     member.delete
     return head 204
+  rescue KeyError
+    head(404)
   end #destroy
 
   def stats
@@ -101,6 +103,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
 
   def vizjson1
     visualization, table = locator.get(params.fetch(:id), request.subdomain)
+    return(head 404) unless visualization
     return(head 403) unless allow_vizjson_v1_for?(visualization.table)
     set_vizjson_response_headers_for(visualization)
     render_jsonp(CartoDB::Map::Presenter.new(
@@ -113,6 +116,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
 
   def vizjson2
     visualization, table = locator.get(params.fetch(:id), request.subdomain)
+    return(head 404) unless visualization
     return(head 403) unless allow_vizjson_v2_for?(visualization)
     set_vizjson_response_headers_for(visualization)
     render_jsonp(visualization.to_vizjson)

@@ -16,6 +16,7 @@ class Admin::VisualizationsController < ApplicationController
     id = params.fetch(:id)
     return(redirect_to public_url_for(id)) unless current_user.present?
     @visualization, @table = locator.get(id, request.subdomain)
+    return(pretty_404) unless @visualization
     respond_to { |format| format.html }
 
     update_user_last_activity
@@ -26,7 +27,7 @@ class Admin::VisualizationsController < ApplicationController
     @visualization, @table = locator.get(id, request.subdomain)
 
     id = params.fetch(:id)
-    return(pretty_404) if @visualization.private?
+    return(pretty_404) if @visualization.nil? || @visualization.private?
     return(redirect_to embed_map_url_for(id)) if @visualization.derived?
     
     @vizjson = @visualization.to_vizjson
@@ -39,7 +40,8 @@ class Admin::VisualizationsController < ApplicationController
   def embed_map
     id = params.fetch(:id)
     @visualization, @table = locator.get(id, request.subdomain)
-
+    
+    return(pretty_404) unless @visualization
     return(embed_forbidden) if @visualization.private?
 
     respond_to do |format|

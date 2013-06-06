@@ -181,6 +181,21 @@ describe Admin::VisualizationsController do
     end
   end # GET /viz/:name/track_embed
 
+  describe 'non existent visualization' do
+    it 'returns 404' do
+      login_as(@user, scope: 'test')
+
+      get "/viz/9999?api_key=#{@api_key}", {}, @headers
+      last_response.status.should == 404
+
+      get "/viz/9999/public?api_key=#{@api_key}", {}, @headers
+      last_response.status.should == 404
+
+      get "/viz/9999/embed_map?api_key=#{@api_key}", {}, @headers
+      last_response.status.should == 404
+    end
+  end # non existent visualization
+
   def factory
     map     = Map.create(user_id: @user.id)
     payload = {

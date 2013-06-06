@@ -915,7 +915,7 @@
       position:relative;
       float:left;
       display:block;
-      margin: 0 auto 40px 0;
+      margin: 0;
       padding: 20px 0 20px 0;
 
       letter-spacing:0;
@@ -988,6 +988,7 @@
 
       &.view_all {
         border-bottom: none;
+        padding: 20px 0 10px 0;
       }
 
       &.empty {

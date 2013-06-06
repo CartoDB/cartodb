@@ -76,6 +76,11 @@ cdb.ui.common.TabPane = cdb.core.View.extend({
     return _.size(this.tabs);
   },
 
+  clean: function() {
+    this.removeTabs();
+    cdb.core.View.prototype.clean.call(this)
+  },
+
   removeTab: function(name) {
     if (this.tabs[name] !== undefined) {
       var vid = this.tabs[name];

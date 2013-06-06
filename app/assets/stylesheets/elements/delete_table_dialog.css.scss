@@ -1,53 +1,66 @@
+/**
+ * Delete dialog (with export section)
+ */
 
-  /**
-   * Delete dialog (with export section)
-   */
+@import "compass";
+@import "common/sprites";
+@import "common/mixins";
 
-  @import "compass";
+.delete_table_dialog {
 
-  .delete_table_dialog {
-
-    .export_content {
-      padding: 40px;
-    }
-
-    .content {
-      p { margin: 0; }
-
-      ul {
-        margin: 15px 0 0 0;
-
-        li {
-
-          padding: 15px 0;
-          &:last-child { padding-bottom: 0; }
-          a { font-weight: bold; }
-        }
-      }
-    }
-
-    .modal.export {
-      display:none;
-
-      nav {
-        display:table;
-        width:100%;
-
-        a.button.grey {
-          display: table-cell;
-          text-align:center;
-          @include border-radius(0px);
-          border-right-width:0;
-
-          &:first-child {
-            @include border-left-radius(3px);
-          }
-
-          &:last-child {
-            border-right-width:1px;
-            @include border-right-radius(3px);
-          }
-        }
-      }
-    } // .modal.export
+  .export_content {
+    padding: 40px;
   }
+
+  .loader {
+
+    &.hidden { display:none; }
+
+    display:block;
+    margin: auto;
+    @include absolute-landscape-center(38px);
+    @include size(38px, 16px);
+    background:image-url("layout/loader.gif") no-repeat 0 0;
+  }
+
+  .content {
+    p { margin: 0; }
+
+    ul {
+      display:none;
+      margin: 15px 0 0 0;
+
+      li {
+
+        padding: 15px 0;
+        &:last-child { padding-bottom: 0; }
+        a { font-weight: bold; }
+      }
+    }
+  }
+
+  .modal.export {
+    display:none;
+
+    nav {
+      display:table;
+      width:100%;
+
+      a.button.grey {
+        display: table-cell;
+        text-align:center;
+        @include border-radius(0px);
+        border-right-width:0;
+
+        &:first-child {
+          @include border-left-radius(3px);
+        }
+
+        &:last-child {
+          border-right-width:1px;
+          @include border-right-radius(3px);
+        }
+      }
+    }
+  } // .modal.export
+}

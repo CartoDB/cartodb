@@ -19,7 +19,9 @@ module CartoDB
           privacy:          visualization.privacy.upcase,
           table:            table_data_for(visualization.table),
           related_tables:   related_tables,
-          stats:            visualization.stats
+          stats:            visualization.stats,
+          created_at:       visualization.created_at,
+          updated_at:       visualization.updated_at
         }
       end #to_poro
 

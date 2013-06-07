@@ -309,6 +309,17 @@ describe CartoDB::Importer do
         results[0].import_type.should == '.csv'
         results[0].rows_imported.should == 1904
       end
+
+      it 'imports a CSV previously exported from the SQL API', now: true do
+        importer = create_importer 'ne_10m_populated_places_simple.csv'
+        results, errors = importer.import!
+
+        errors.should be_empty
+        results[0].name.should == 'ne_10m_populated_places_simple'
+        results[0].import_type.should == '.csv'
+        puts results[0]
+        results[0].rows_imported.should > 0
+      end
     end # CSV
 
     describe "#XLSX" do

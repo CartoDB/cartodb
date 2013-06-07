@@ -26,6 +26,10 @@ module CartoDB
         def map_style_metadata(user_id)
           "*map_style|*_user_#{user_id}_db|*"
         end #map_style_metadata
+
+        def visualization_stats(username)
+          "user:#{username}:mapviews:stat_tag:"
+        end #visualization_stats
       end # KeyMaster
     end # Redis
   end # Relocator

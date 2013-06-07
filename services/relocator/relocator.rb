@@ -14,14 +14,15 @@ module CartoDB
       COMPLEX_TABLES    = %w{ layers layers_maps users layers_user_tables }
       REDIS_DATA        = %w{ thresholds_metadata api_credentials_metadata
                               tables_metadata users_metadata
-                              map_styles_metadata }
+                              map_styles_metadata visualization_stats }
       TABLES            = SIMPLE_TABLES + COMPLEX_TABLES
       REDIS_DATABASES   = {
-                            tables_metadata:  0,
-                            map_style:        0,
-                            threshold:        2,
-                            api_credentials:  3,
-                            users_metadata:   5
+                            tables_metadata:      0,
+                            map_style:            0,
+                            threshold:            2,
+                            api_credentials:      3,
+                            users_metadata:       5,
+                            visualization_stats:  5
                           }
       TMP_DIR           = File.join(File.dirname(__FILE__), '..', '..',
                           'tmp', 'relocator')

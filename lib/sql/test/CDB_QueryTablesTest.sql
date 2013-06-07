@@ -14,6 +14,8 @@ WITH inp AS ( select 'SELECT a.oid, b.oid FROM pg_class a, pg_class b'::text as 
 WITH inp AS ( select 'SELECT 1 as col1; select 2 as col2'::text as q )
  SELECT q, CDB_QueryTables(q) from inp;
 
--- Cannot automate this until I figure how to omit filename from the WARNING output..
---WITH inp AS ( select 'select 1 from nonexistent'::text as q )
--- SELECT q, CDB_QueryTables(q) from inp;
+WITH inp AS ( select 'select 1 from nonexistant'::text as q )
+ SELECT q, CDB_QueryTables(q) from inp;
+
+WITH inp AS ( select 'begin; select * from pg_class; commit;'::text as q )
+ SELECT q, CDB_QueryTables(q) from inp;

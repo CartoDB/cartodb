@@ -16,10 +16,14 @@ BEGIN
 
   FOR rec IN SELECT CDB_QueryStatements(query) q LOOP
 
+    IF rec.q ilike 'begin' or rec.q ilike 'commit' or rec.q ilike 'rollback' THEN
+      CONTINUE;
+    END IF;
+
     BEGIN
       EXECUTE 'EXPLAIN (FORMAT XML) ' || rec.q INTO STRICT exp;
     EXCEPTION WHEN others THEN
-      RAISE WARNING 'Cannot explain query: % (%)', rec.q, SQLERRM;
+      RAISE EXCEPTION 'Cannot explain query: % (%: %)', rec.q, SQLSTATE, SQLERRM;
       CONTINUE;
     END;
 

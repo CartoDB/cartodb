@@ -7,6 +7,7 @@ require_relative './redis/user_metadata'
 require_relative './redis/threshold_metadata'
 require_relative './redis/table_metadata'
 require_relative './redis/api_credential_metadata'
+require_relative './redis/visualization_stats'
 
 Encoding.default_external = "utf-8"
 
@@ -96,6 +97,8 @@ module CartoDB
           .load(records_for('redis/tables_metadata' ))
         UserMetadata.new(user)
           .load(records_for('redis/users_metadata'))
+        VisualizationStats.new(user.username)
+          .load(records_for('redis/visualization_stats'))
       end #run
 
       private

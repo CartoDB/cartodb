@@ -5,6 +5,7 @@ require_relative './rdbms'
 require_relative './helpers'
 require_relative './redis/dumper'
 require_relative './redis/map_style_metadata'
+require_relative './redis/visualization_stats'
 
 module CartoDB
   module Relocator
@@ -84,6 +85,11 @@ module CartoDB
       def map_styles_metadata
         memoize('map_styles_metadata', MapStyleMetadata.new(user_id).dump)
       end #map_styles_metadata
+
+      def visualization_stats
+        username = metadata.fetch('users').first.fetch('username')
+        memoize('visualization_stats', VisualizationStats.new(username).dump)
+      end #visualization_stats_for
 
       private
 

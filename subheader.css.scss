@@ -32,6 +32,8 @@ div.subheader {
     border-bottom:1px solid #CDCDCD;
     @include single-box-shadow(rgba(0,0,0,0.07), 0, 4px, 3px, 0, false);
 
+    z-index: 1000;
+
     ul {
       clear:both;
       overflow:hidden;

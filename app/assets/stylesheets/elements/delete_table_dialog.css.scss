@@ -16,23 +16,25 @@
 
     &.hidden { display:none; }
 
-    display:block;
-    margin: auto;
-    @include absolute-landscape-center(38px);
+    margin: 40px auto;
     @include size(38px, 16px);
+
     background:image-url("layout/loader.gif") no-repeat 0 0;
   }
 
+  .foot { display:none; }
+
   .content {
+    display:none;
+
     p { margin: 0; }
 
     ul {
-      display:none;
       margin: 15px 0 0 0;
 
       li {
-
         padding: 15px 0;
+
         &:last-child { padding-bottom: 0; }
         a { font-weight: bold; }
       }

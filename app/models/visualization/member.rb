@@ -1,16 +1,13 @@
 # encoding: utf-8
 require 'forwardable'
-require 'ostruct'
 require 'virtus'
 require 'json'
 require_relative './collection'
-require_relative '../overlay/collection'
 require_relative './presenter'
 require_relative './vizjson'
-require_relative '../table'
-require_relative '../table/privacy_manager'
-require_relative './stats'
 require_relative './name_checker'
+require_relative './relator'
+require_relative '../table/privacy_manager'
 require_relative '../../../services/minimal-validation/validator'
 
 module CartoDB
@@ -20,10 +17,6 @@ module CartoDB
       include Virtus
 
       PRIVACY_VALUES  = %w{ public private }
-      LAYER_SCOPES    = {
-                          base:     :user_layers,
-                          cartodb:  :data_layers
-                        }
 
       attribute :id,                String
       attribute :name,              String
@@ -36,7 +29,8 @@ module CartoDB
       attribute :created_at,        Time
       attribute :updated_at,        Time
 
-      def_delegators :validator,   :errors, :full_errors
+      def_delegators :validator,    :errors, :full_errors
+      def_delegators :relator,      *Relator::INTERFACE
 
       def initialize(attributes={}, repository=Visualization.repository,
       name_checker=nil)
@@ -116,39 +110,9 @@ module CartoDB
         VizJSON.new(self, options, configuration).to_poro
       end #to_hash
 
-      def overlays
-        @overlays ||= Overlay::Collection.new(visualization_id: id).fetch
-      end #overlays
-
-      def map
-        ::Map.where(id: map_id).first
-      end #map
-
-      def user
-        map.user if map
-      end #user
-
-      def table
-        return nil unless defined?(::Table)
-        ::Table.where(map_id: map_id).first 
-      end #table
-
-      def related_tables
-        layers(:cartodb).flat_map(&:affected_tables).uniq
-      end #related_tables
-
-      def layers(kind)
-        return [] unless map
-        return map.send(LAYER_SCOPES.fetch(kind))
-      end #layers
-
       def authorize?(user)
         user.maps.map(&:id).include?(map_id)
       end #authorize?
-
-      def stats
-        CartoDB::Visualization::Stats.new(self).to_poro
-      end #stats
 
       def varnish_key
         "#{related_tables.map(&:name)
@@ -199,6 +163,10 @@ module CartoDB
         self.updated_at = Time.now.utc
         self
       end #set_timestamps
+
+      def relator
+        Relator.new(attributes)
+      end #relator
 
       def name_checker
         @name_checker || NameChecker.new(user)

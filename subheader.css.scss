@@ -159,14 +159,15 @@ div.subheader {
     position:relative;
     margin:-70px 0 0 0;
     padding:25px 0;
-    background:#FFF7EA;
+    background:rgba(#FFE599, .35);
     border-bottom:1px solid rgba(#CCCCCC,0.5);
     z-index:-1;
     @include transform-style("linear");
     @include transition-property("all");
     @include transition-duration(500ms);
 
-    p.upgraded, p.cartodb20 {display:none;}
+    .dark { color: #666666; }
+    p.migrated, p.upgraded, p.cartodb20 { display:none; }
 
     a.close {
       position:absolute;
@@ -183,8 +184,14 @@ div.subheader {
 
     &.upgraded {
       background:rgba(#8DB73F,0.15);
-      p.limit, p.cartodb20 {display:none;}
+      p.limit, p.migrated, p.cartodb20 {display:none;}
       p.upgraded {display:block;}
+    }
+
+    &.migrated {
+      background:rgba(#FFE599, .35);
+      p.limit, p.upgrated, p.cartodb20 {display:none;}
+      p.migrated {display:block;}
     }
 
     &.cartodb20 {

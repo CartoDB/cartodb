@@ -47,6 +47,13 @@ describe Importer::Loader do
     end
   end #run
 
+  describe '#temporary_table' do
+    it 'is based upon the job_id' do
+      loader  = Importer::Loader.new(@job, @ogr2ogr)
+      loader.temporary_table_name.must_match /#{@job.id}/
+    end
+  end #temporary_table
+
   describe '#ogr2ogr' do
     it 'returns the passed ogr2ogr instance' do
       ogr2ogr = Object.new

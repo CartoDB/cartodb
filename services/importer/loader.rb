@@ -7,6 +7,8 @@ module CartoDB
     class Loader
       extend Forwardable
 
+      TABLE_PREFIX = 'importer'
+
       def initialize(job, ogr2ogr=nil)
         self.job      = job
         self.ogr2ogr  = ogr2ogr
@@ -20,8 +22,12 @@ module CartoDB
       end #run
 
       def ogr2ogr
-        @ogr2ogr ||= Ogr2ogr.new(filepath, pg_options, id)
+        @ogr2ogr ||= Ogr2ogr.new(filepath, pg_options, temporary_table_name)
       end #ogr2ogr
+
+      def temporary_table_name
+        [TABLE_PREFIX, job.id].compact.join('_').downcase
+      end #temporary_table_name
 
       private
 

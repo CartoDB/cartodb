@@ -11,6 +11,7 @@
 //= require tag-it
 //= require jquery.tipsy
 //= require d3.v2
+//= require carto
 //= require ../../../lib/assets/javascripts/utils/postgres.codemirror
 //= require ../../../lib/assets/javascripts/utils/carto.codemirror
 //= require_tree ../../../lib/assets/javascripts/cartodb/models

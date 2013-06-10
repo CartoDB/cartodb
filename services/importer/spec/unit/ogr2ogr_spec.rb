@@ -60,21 +60,8 @@ describe Importer::Ogr2ogr do
   end #executable_path 
 
   describe '#output_name' do
-    it 'is based on the name of the input file' do
-      name = File.basename(@filepath).split('.').first
-      @wrapper.output_name.must_match /#{name}/
-    end
-
-    it 'uses the prefix if passed at initialization time' do
+    it 'is based on the job_id' do
       @wrapper.output_name.must_match /#{@job_id}/
-    end
-
-    it 'is sanitized' do
-      wrapper   = Importer::Ogr2ogr.new('foo.bar', @pg_options)
-      #wrapper.output_name.must_match /foo_bar/
-      
-      wrapper   = Importer::Ogr2ogr.new('FOO_BAR', @pg_options)
-      wrapper.output_name.must_match /foo_bar/
     end
   end #output_name
 
@@ -97,11 +84,11 @@ describe Importer::Ogr2ogr do
 
   describe '#command_output' do
     it 'returns stdout and stderr from ogr2ogr binary' do
-      wrapper   = Importer::Ogr2ogr.new('non_existent', @pg_options)
+      wrapper   = Importer::Ogr2ogr.new('non_existent', @pg_options, @job_id)
       wrapper.run
       wrapper.command_output.wont_be_empty
 
-      wrapper   = Importer::Ogr2ogr.new(@filepath, @pg_options)
+      wrapper   = Importer::Ogr2ogr.new(@filepath, @pg_options, @job_id)
       wrapper.run
       wrapper.command_output.must_be_empty
     end
@@ -109,11 +96,11 @@ describe Importer::Ogr2ogr do
 
   describe '#exit_code' do
     it 'returns the exit code from the ogr2ogr binary' do
-      wrapper   = Importer::Ogr2ogr.new('non_existent', @pg_options)
+      wrapper   = Importer::Ogr2ogr.new('non_existent', @pg_options, @job_id)
       wrapper.run
       wrapper.exit_code.wont_equal 0
 
-      wrapper   = Importer::Ogr2ogr.new(@filepath, @pg_options)
+      wrapper   = Importer::Ogr2ogr.new(@filepath, @pg_options, @job_id)
       wrapper.run
       wrapper.exit_code.must_equal 0
     end

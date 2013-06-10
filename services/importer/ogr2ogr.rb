@@ -6,10 +6,10 @@ module CartoDB
     class Ogr2ogr
       ENCODING = 'UTF-8'
 
-      def initialize(filepath, pg_options, prefix=nil)
+      def initialize(filepath, pg_options, job_id)
         self.filepath   = filepath
         self.pg_options = pg_options
-        self.prefix     = prefix
+        self.job_id     = job_id
       end #initialize
 
       def command
@@ -24,10 +24,10 @@ module CartoDB
       end #executable_path
 
       def output_name
-        basename  = File.basename(filepath)
-        name      = basename.gsub File.extname(filepath), ''
-        name      = name.gsub(/\./, '_')
-        ['import', prefix, name].compact.join('_').downcase
+        #basename  = File.basename(filepath)
+        #name      = basename.gsub File.extname(filepath), ''
+        #name      = name.gsub(/\./, '_')
+        ['import', job_id].compact.join('_').downcase
       end #output_name
 
       def run(*args)
@@ -41,7 +41,7 @@ module CartoDB
       private
 
       attr_writer   :exit_code, :command_output
-      attr_accessor :filepath, :prefix, :pg_options
+      attr_accessor :filepath, :job_id, :pg_options
 
       def output_format_option
         "-f PostgreSQL"

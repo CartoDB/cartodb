@@ -16,13 +16,16 @@ BEGIN
 
   FOR rec IN SELECT CDB_QueryStatements(query) q LOOP
 
-    IF rec.q ilike 'begin' or rec.q ilike 'commit' or rec.q ilike 'rollback' THEN
+    IF NOT ( rec.q ilike 'select %' or rec.q ilike 'with %' ) THEN
+      --RAISE WARNING 'Skipping %', rec.q;
       CONTINUE;
     END IF;
 
     BEGIN
       EXECUTE 'EXPLAIN (FORMAT XML) ' || rec.q INTO STRICT exp;
     EXCEPTION WHEN others THEN
+      -- TODO: if error is 'relation "xxxxxx" does not exist', take xxxxxx as
+      --       the affected table ?
       RAISE EXCEPTION 'Cannot explain query: % (%: %)', rec.q, SQLSTATE, SQLERRM;
       CONTINUE;
     END;

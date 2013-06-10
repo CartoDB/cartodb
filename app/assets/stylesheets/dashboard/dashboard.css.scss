@@ -267,6 +267,13 @@
         }
       }
 
+      .more {
+        float:right;
+        margin: 3px 0 0 5px;
+        font:normal 11px $text-fonts2;
+        color:#666666;
+      }
+
       .tags {
         display:block;
         float:right;
@@ -276,7 +283,6 @@
           @include size(auto, 14px);
 
           padding:2px 7px;
-          /*margin: 0 0 4px 0;*/
 
           float:right;
           margin:0 0 4px 5px;
@@ -652,8 +658,8 @@
               padding: 22px 0 33px 0;
               border-top:1px solid #EDEDED;
 
-              .left  { width:400px; }
-              .right { width:400px; }
+              & > .left  { width:400px; }
+              & > .right { width:480px; }
 
               hgroup {
                 display:block;

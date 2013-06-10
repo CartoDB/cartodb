@@ -140,7 +140,7 @@ CartoDBLayerGroup.prototype.clear = function () {
 
 CartoDBLayerGroup.prototype.update = function (done) {
   var self = this;
-  this.getTiles(function(urls) {
+  this.getTiles(function(urls, err) {
     if(urls) {
       self.tilejson = urls;
       self.options.tiles = urls.tiles;
@@ -148,18 +148,12 @@ CartoDBLayerGroup.prototype.update = function (done) {
       self.cache = {};
       self._reloadInteraction();
       self.refreshView();
+      self.ok && self.ok();
       done && done();
     } else {
-      //TODO: manage error
+      self.error && self.error(err)
     }
   });
-  // clear wax cache
-  // set new tiles to wax
-  //this._addInteraction();
-
-  //this._checkTiles();
-
-  // reload the tiles
 };
 
 
@@ -315,9 +309,13 @@ _.extend(
   error: function(e) {
     if(this.model) {
       //trigger the error form _checkTiles in the model
-      this.model.trigger('error', e?e.error:'unknown error');
-      this.model.trigger('tileError', e?e.error:'unknown error');
+      this.model.trigger('error', e?e.errors:'unknown error');
+      this.model.trigger('tileError', e?e.errors:'unknown error');
     }
+  },
+
+  ok: function(e) {
+    this.model.trigger('tileOk');
   },
 
   tilesOk: function(e) {

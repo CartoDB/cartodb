@@ -245,6 +245,7 @@ header { // general header
 
       ul.actions {
         margin:0;
+        top: 0;
         li { margin:0; }
       }
 
@@ -358,7 +359,7 @@ header { // general header
 
       // Author
       span.author {
-        display:block;        
+        display:block;
         margin:4px 0 0 10px;
         font:300 0.81em $text-fonts;
         color:white;

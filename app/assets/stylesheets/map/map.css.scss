@@ -561,3 +561,16 @@ div.cartodb-popup.dark  {
     }
   }
 }
+
+
+
+// Custom styles for Leaflet maps
+
+// Same css for editing markers in Leaflet and GMaps
+.leaflet-editing-icon {
+  width:9px!important;
+  height:9px!important;
+  margin:-4.5px 0 0 -4.5px!important;
+  @include border-radius(6px);
+  border:1px solid #397DBA;
+}

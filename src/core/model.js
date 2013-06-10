@@ -64,7 +64,7 @@
       var self = this;
       obj.bind && obj.bind(ev, function() {
         self.trigger(retrigEvent);
-      })
+      }, self)
     },
 
     /**

@@ -119,28 +119,40 @@ LayerDefinition.prototype = {
     clearTimeout(this._timeout);
     this._layerTokenQueue.push(callback);
     this._timeout = setTimeout(function() {
-      self._getLayerToken(function(data) {
+      self._getLayerToken(function(data, err) {
         var fn;
-        while(fn = self._layerTokenQueue.pop()) fn(data);
+        while(fn = self._layerTokenQueue.pop()) fn(data, err);
       });
     }, 4);
   },
 
   _getLayerToken: function(callback) {
+    var params = [];
+    callback = callback || function() {};
     var ajax = this.options.ajax;
+    var extra_params = this.options.extra_params || {};
+    var api_key = this.options.map_key || this.options.api_key || extra_params.map_key || extra_params.api_key;
+    var extra = '';
+    if(api_key) {
+      params.push("map_key=" + api_key);
+    }
     if(this.options.cors) {
       ajax({
         crossOrigin: true,
         type: 'POST',
         dataType: 'json',
         contentType: 'application/json',
-        url: this._tilerHost() + '/tiles/layergroup',
+        url: this._tilerHost() + '/tiles/layergroup' + (params.length ? "?" + params.join('&'): ''),
         data: JSON.stringify(this.toJSON()),
         success: function(data) {
           callback(data);
         },
-        error: function() {
-          callback(null);
+        error: function(xhr) {
+          var err = { errors: ['unknow error'] };
+          try {
+            err = JSON.parse(xhr.responseText);
+          } catch(e) {}
+          callback(null, err);
         }
       });
     } else {
@@ -150,14 +162,18 @@ LayerDefinition.prototype = {
         '"}';
       LZMA.compress(json, 3, function(encoded) {
         encoded = self._array2hex(encoded);
+        params.push("lzma=" + encodeURIComponent(encoded));
         ajax({
           dataType: 'jsonp',
-          url: self._tilerHost() + '/tiles/layergroup?lzma=' + encodeURIComponent(encoded),
+          url: self._tilerHost() + '/tiles/layergroup?' + params.join('&'),
           success: function(data) {
             callback(data);
           },
-          error: function() {
-            callback(null);
+          error: function(data) {
+            var err = { errors: ['unknow error'] };
+            try {
+              err = JSON.parse(xhr.responseText);
+            } catch(e) {}
           }
         });
       });
@@ -212,13 +228,13 @@ LayerDefinition.prototype = {
       callback && callback(self._layerGroupTiles(self.layerToken, self.options.extra_params));
       return this;
     }
-    this.getLayerToken(function(data) {
+    this.getLayerToken(function(data, err) {
       if(data) {
         self.layerToken = data.layergroupid;
         self.urls = self._layerGroupTiles(data.layergroupid, self.options.extra_params);
         callback && callback(self.urls);
       } else {
-        callback && callback(null);
+        callback && callback(null, err);
       }
     });
     return this;

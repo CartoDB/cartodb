@@ -24,9 +24,6 @@ module CartoDB
       end #executable_path
 
       def output_name
-        #basename  = File.basename(filepath)
-        #name      = basename.gsub File.extname(filepath), ''
-        #name      = name.gsub(/\./, '_')
         ['import', job_id].compact.join('_').downcase
       end #output_name
 

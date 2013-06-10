@@ -106,6 +106,14 @@ describe Visualization::Member do
 
       lambda { member.fetch }.should raise_error KeyError
     end
+
+    it 'invalidates vizjson cache' do
+      member      = Visualization::Member.new(random_attributes)
+      member.store
+
+      member.expects(:invalidate_varnish_cache)
+      member.delete
+    end
   end #delete
 
   describe '#public?' do

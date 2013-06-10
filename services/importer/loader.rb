@@ -20,7 +20,7 @@ module CartoDB
       end #run
 
       def ogr2ogr
-        @ogr2ogr || Ogr2ogr.new(filepath, pg_options, id)
+        @ogr2ogr ||= Ogr2ogr.new(filepath, pg_options, id)
       end #ogr2ogr
 
       private

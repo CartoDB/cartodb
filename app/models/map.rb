@@ -52,6 +52,10 @@ class Map < Sequel::Model
     invalidate_vizjson_varnish_cache
   end #after_save
 
+  def before_destroy
+    invalidate_vizjson_varnish_cache
+  end #before_destroy
+
   def public_values
     Hash[PUBLIC_ATTRIBUTES.map { |a| [a, send(a)] }]
   end #public_values

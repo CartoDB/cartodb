@@ -56,9 +56,13 @@ L.CartoDBGroupLayer = L.TileLayer.extend({
   // overwrite getTileUrl in order to
   // support different tiles subdomains in tilejson way
   getTileUrl: function (tilePoint) {
+    var EMPTY_GIF = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
     this._adjustTilePoint(tilePoint);
 
-    var tiles = this.tilejson.tiles;
+    var tiles = [EMPTY_GIF];
+    if(this.tilejson) {
+      tiles = this.tilejson.tiles;
+    }
 
     var index = (tilePoint.x + tilePoint.y) % tiles.length;
 
@@ -145,15 +149,17 @@ L.CartoDBGroupLayer = L.TileLayer.extend({
     var self = this;
     this.fire('updated');
 
-    this.getTiles(function(urls) {
+    this.getTiles(function(urls, err) {
       if(urls) {
         self.tilejson = urls;
         self.setUrl(self.tilejson.tiles[0]);
         // manage interaction
         self._reloadInteraction();
+        self.ok && self.ok();
         done && done();
       } else {
-        //TODO: manage error
+        self.error && self.error(err);
+        done && done();
       }
     });
 
@@ -314,6 +320,16 @@ cdb.geo.LeafLetCartoDBLayerGroupView = L.CartoDBGroupLayer.extend({
     // dont pass leaflet lat/lon
     this.trigger('featureClick', e, [latlon.lat, latlon.lng], pixelPos, data, layer);
   },
+
+  error: function(e) {
+    this.trigger('error', e ? e.errors : 'unknown error');
+    this.model.trigger('error', e?e.errors:'unknown error');
+  },
+
+  ok: function(e) {
+    this.model.trigger('tileOk');
+  }
+
 });
 
 })();

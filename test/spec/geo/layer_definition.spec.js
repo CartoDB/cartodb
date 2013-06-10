@@ -162,6 +162,7 @@ describe("LayerDefinition", function() {
   it("it should use jsonp when cors is not available", function() {
     var params, lzma;
     layerDefinition.options.cors = false;
+    layerDefinition.options.api_key = 'test';
     layerDefinition.options.ajax = function(p) { 
       params = p;
       p.success({ layergroupid: 'test' });
@@ -180,11 +181,39 @@ describe("LayerDefinition", function() {
     });
     waits(100);
     runs(function() {
-      expect(params.url).toEqual(layerDefinition._tilerHost() + '/tiles/layergroup?lzma=' + encodeURIComponent(lzma));
+      expect(params.url).toEqual(layerDefinition._tilerHost() + '/tiles/layergroup?map_key=test&lzma=' + encodeURIComponent(lzma));
     });
-
-
   });
+
+  it("should add api_key", function() {
+    var url = null;
+    layerDefinition.options.cors = true;
+    layerDefinition.options.ajax = function(p) { 
+      url = p.url;
+    };
+
+    layerDefinition.options.api_key = 'key';
+    layerDefinition._getLayerToken();
+    expect(url.indexOf('map_key=key')).not.toEqual(-1);
+
+    layerDefinition.options.map_key = 'key2';
+    delete layerDefinition.options.api_key
+    layerDefinition._getLayerToken();
+    expect(url.indexOf('map_key=key2')).not.toEqual(-1);
+
+
+    delete layerDefinition.options.map_key
+    layerDefinition.options.extra_params = {}
+    layerDefinition.options.extra_params.map_key = 'key4';
+    layerDefinition._getLayerToken();
+    expect(url.indexOf('map_key=key4')).not.toEqual(-1);
+
+    layerDefinition.options.extra_params = {}
+    layerDefinition.options.extra_params.api_key = 'key4';
+    layerDefinition._getLayerToken();
+    expect(url.indexOf('map_key=key4')).not.toEqual(-1);
+  });
+
 
   it("getTiles should include extra params", function() {
     layerDefinition.options.extra_params = {

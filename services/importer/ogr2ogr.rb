@@ -6,10 +6,10 @@ module CartoDB
     class Ogr2ogr
       ENCODING = 'UTF-8'
 
-      def initialize(filepath, pg_options, prefix=nil)
+      def initialize(filepath, pg_options, table_name)
         self.filepath   = filepath
         self.pg_options = pg_options
-        self.prefix     = prefix
+        self.table_name = table_name
       end #initialize
 
       def command
@@ -23,13 +23,6 @@ module CartoDB
         `which ogr2ogr`.strip
       end #executable_path
 
-      def output_name
-        basename  = File.basename(filepath)
-        name      = basename.gsub File.extname(filepath), ''
-        name      = name.gsub(/\./, '_')
-        ['import', prefix, name].compact.join('_').downcase
-      end #output_name
-
       def run(*args)
         stdout, stderr, status  = Open3.capture3(command)
         self.command_output     = stdout + stderr
@@ -37,11 +30,12 @@ module CartoDB
         self
       end #run
 
-      attr_reader   :exit_code, :command_output
+      attr_reader   :exit_code, :command_output, :table_name
+
       private
 
-      attr_writer   :exit_code, :command_output
-      attr_accessor :filepath, :prefix, :pg_options
+      attr_writer   :exit_code, :command_output, :table_name
+      attr_accessor :filepath, :pg_options
 
       def output_format_option
         "-f PostgreSQL"
@@ -52,7 +46,7 @@ module CartoDB
       end #encoding_option
 
       def layer_name_option
-        "-nln #{output_name}"
+        "-nln #{table_name}"
       end #layer_name_option
 
       def postgres_options

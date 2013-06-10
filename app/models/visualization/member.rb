@@ -72,6 +72,7 @@ module CartoDB
       end #fetch
 
       def delete
+        invalidate_varnish_cache
         overlays.destroy
         layers(:base).map(&:destroy)
         layers(:cartodb).map(&:destroy)

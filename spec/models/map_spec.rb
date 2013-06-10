@@ -156,5 +156,13 @@ describe Map do
     map.stubs(:data_layers).returns([Layer.new(updated_at: time)])
     map.viz_updated_at.to_s.should == time.to_s
   end
+
+  describe '#before_destroy' do
+    it 'invalidates varnish cache' do
+      map = @table.map
+      map.expects(:invalidate_vizjson_varnish_cache)
+      map.destroy
+    end 
+  end #before_destroy
 end
 

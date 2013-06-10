@@ -16,7 +16,7 @@ module CartoDB
         logger.append(message)
       end #log
 
-      attr_reader :logger, :id, :connection, :filepath
+      attr_reader :logger, :id, :connection, :filepath, :pg_options
     end # Job
   end # Importer
 end # CartoDB

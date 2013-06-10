@@ -1,5 +1,5 @@
 # encoding: utf-8
-gem 'minitest', '5.0.3'
+gem 'minitest'
 require 'minitest'
 require 'rake/testtask'
 

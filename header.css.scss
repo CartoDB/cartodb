@@ -279,24 +279,50 @@ header { // general header
       // Visualization title
       h1 {
         position:relative;
-        margin:0 0 1px 8px;
+        margin:0;
 
-        a.title {
-          display:block;
-          max-width:440px;
-          width:auto;
-          height:auto;
-          margin:0;
-          padding:0;
-          font:500 1.313em $title-fonts2;
-          color:white;
-          @include text-overflow();
-          white-space:nowrap;
-          text-shadow:0 1px $text-shadow-color;
-          background:none;
-          text-indent:0;
-          line-height:normal;
-          text-transform: none;
+        a {
+          &.title {
+            display:block;
+            max-width:440px;
+            width:auto;
+            height:auto;
+            margin:0 0 1px 8px;
+            padding:0;
+            font:500 1.313em $title-fonts2;
+            color:white;
+            @include text-overflow();
+            white-space:nowrap;
+            text-shadow:0 1px $text-shadow-color;
+            background:none;
+            text-indent:0;
+            line-height:normal;
+            text-transform: none;
+          }
+          &.logo {
+            margin:1px 0 0 24px;
+          }
+        }
+      }
+
+      // Public vis title
+      h2 {
+        width:auto;
+        height:auto;
+        margin:0 0 0 10px;
+        padding:0;
+        font:500 20px $title-fonts2;
+        color:white;
+        text-shadow:0 1px $text-shadow-color;
+        letter-spacing:0;
+        line-height:normal;
+
+        &:before {
+          content:'|';
+          margin-right:10px;
+          font-weight:300!important;
+          text-shadow:none;
+          color: rgba(white, 0.25);
         }
       }
 
@@ -324,11 +350,18 @@ header { // general header
         a {
           @include inline-block();
           vertical-align:middle;
-
           font:normal 0.688em $text-fonts;
           text-transform: uppercase;
           color:white;
         }
+      }
+
+      // Author
+      span.author {
+        display:block;        
+        margin:4px 0 0 10px;
+        font:300 0.81em $text-fonts;
+        color:white;
       }
 
       // Description
@@ -344,6 +377,10 @@ header { // general header
           color: rgba(255, 255, 255, 0.5);
           font-style: italic;
           padding-left:15px;
+
+          &.public {
+            margin-left:116px;
+          }
 
           a {
             font-style:normal;

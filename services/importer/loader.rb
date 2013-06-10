@@ -28,7 +28,8 @@ module CartoDB
       attr_accessor :job
       attr_writer   :ogr2ogr
 
-      def_delegators :job, :log, :id, :pg_options, :filepath
+      def_delegators :job,      :log, :id, :pg_options, :filepath
+      def_delegators :ogr2ogr,  :exit_code
     end # Loader
   end # Importer
 end # CartoDB

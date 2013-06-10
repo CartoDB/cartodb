@@ -53,6 +53,7 @@ class Map < Sequel::Model
   end #after_save
 
   def before_destroy
+    super
     invalidate_vizjson_varnish_cache
   end #before_destroy
 

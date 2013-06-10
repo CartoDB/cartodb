@@ -160,7 +160,6 @@ describe Map do
   describe '#before_destroy' do
     it 'invalidates varnish cache' do
       map = @table.map
-      map.layers.each(&:destroy)
       map.expects(:invalidate_vizjson_varnish_cache)
       map.destroy
     end 

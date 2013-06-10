@@ -234,4 +234,15 @@ describe Layer do
       options.fetch('table_name') .should_not  =~ /#{table_name}/
     end
   end #rename_table
+
+  describe '#before_destroy' do
+    it 'invalidates the vizjson cache of all related maps' do
+      map   = Map.create(:user_id => @user.id, :table_id => @table.id)
+      layer = Layer.create(kind: 'carto')
+      map.add_layer(layer)
+
+      layer.maps.each { |map| map.expects(:invalidate_vizjson_varnish_cache) }
+      layer.destroy
+    end
+  end #before_destroy
 end

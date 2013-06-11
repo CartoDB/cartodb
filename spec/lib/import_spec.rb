@@ -310,7 +310,7 @@ describe CartoDB::Importer do
         results[0].rows_imported.should == 1904
       end
 
-      it 'imports a CSV previously exported from the SQL API', now: true do
+      it 'imports a CSV previously exported from the SQL API' do
         importer = create_importer 'ne_10m_populated_places_simple.csv'
         results, errors = importer.import!
 

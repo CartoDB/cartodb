@@ -158,7 +158,7 @@
             position:relative;
             @include size(602px, 393px);
 
-            .tables {
+            .visualizations {
               @include size(602px, 393px);
               @include position(false, false, 0, 0);
               background:image-url("layout/empty_vis_tables.png") repeat-y 0 0;

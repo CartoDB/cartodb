@@ -70,7 +70,6 @@
       margin-top:-15px;
       line-height:60px;
 
-      div.left {margin-left:24px;}
       div.right {margin-right:20px;}
     }
 
@@ -83,14 +82,14 @@
       border-bottom:1px solid rgba(#999999,0.25);
       z-index:0;
 
-      div.left {width:80%; margin-left:24px;}
+      div.left {width:82%;}
       div.right {width:45px; margin-right:20px;}
     }
 
     // Layer info
     a.info {
-      width:100%;
-      @include inline-block();
+      display:block;
+      padding-left:24px;
 
       * {@include inline-block(); vertical-align:middle; letter-spacing:0px;}
 
@@ -125,8 +124,6 @@
         font:bold 17px $text-fonts;
         color:#A9A9A9;
         line-height:20px;
-
-        &:hover { cursor:move; }
       }
 
       .action {
@@ -137,6 +134,7 @@
 
       &:hover {
         text-decoration:none;
+        cursor:pointer;
         .name {color:#666;}
         .action {color: #3A77A6;}
         .order {background:#666;}

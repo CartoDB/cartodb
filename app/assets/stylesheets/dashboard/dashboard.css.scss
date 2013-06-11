@@ -77,7 +77,6 @@
     &.no_vis, &.no_tables {
       display:none;
       padding:0;
-
     } // .no_tables
 
     &.no_vis {
@@ -86,7 +85,7 @@
 
       &.active {
         display:block;
-        padding:40px 0 0 0;
+        padding:40px 0 40px 0;
       }
 
       &.only { padding: 40px 0 40px 0; }
@@ -127,7 +126,7 @@
         div.content {
           @include box-sizing(border-box);
           padding:40px 36px 0 40px;
-          height:308px;
+          /*height:308px;*/
 
           background:image-url("layout/empty_vis_bkg.png") repeat-y 1px 0;
           overflow:hidden;
@@ -137,20 +136,35 @@
             padding:23px 0 0 0;
 
             h2 { margin: 0 0 20px 0; font-size:27px; line-height: 27px; }
-            p  { margin: 0 0 25px 0; }
+            p  { margin: 0 0 20px 0; }
+
+            ul {
+
+              li {
+                @include icons-sprite(square, $offset-y: 7px);
+                margin: 0 0 6px -10px;
+                padding-left: 10px;
+                font-family:"Helvetica Neue", "Helvetica", Arial;
+                border:none;
+                line-height:normal;
+                letter-spacing: 0;
+                color: #666666;
+              }
+
+            }
           }
 
           div.right {
             position:relative;
-            @include size(602px, 100%);
+            @include size(602px, 393px);
 
             .tables {
-              @include size(602px, 273px);
+              @include size(602px, 393px);
               @include position(false, false, 0, 0);
               background:image-url("layout/empty_vis_tables.png") repeat-y 0 0;
 
               .create_new {
-                @include position(123px, false, false, 185px);
+                @include position(188px, false, false, 194px);
                 font-weight:normal;
                 font-size:17px;
 
@@ -271,7 +285,7 @@
         float:right;
         margin: 3px 0 0 5px;
         font:normal 11px $text-fonts2;
-        color:#666666;
+        color:#c3c3c3;
       }
 
       .tags {

@@ -190,6 +190,7 @@ describe("LayerDefinition", function() {
     layerDefinition.options.cors = true;
     layerDefinition.options.ajax = function(p) { 
       url = p.url;
+      p.success({ layergroupid: 'test' });
     };
 
     layerDefinition.options.api_key = 'key';

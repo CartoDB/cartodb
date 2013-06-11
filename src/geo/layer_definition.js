@@ -16,6 +16,8 @@ function LayerDefinition(layerDefinition, options) {
   this.silent = false;
   this._layerTokenQueue = [];
   this._timeout = -1;
+  this._queue = [];
+  this._waiting = false;
 }
 
 LayerDefinition.prototype = {
@@ -121,63 +123,97 @@ LayerDefinition.prototype = {
     this._timeout = setTimeout(function() {
       self._getLayerToken(function(data, err) {
         var fn;
-        while(fn = self._layerTokenQueue.pop()) fn(data, err);
+        while(fn = self._layerTokenQueue.pop()) {
+          fn(data, err);
+        }
       });
     }, 4);
   },
 
-  _getLayerToken: function(callback) {
-    var params = [];
-    callback = callback || function() {};
-    var ajax = this.options.ajax;
-    var extra_params = this.options.extra_params || {};
-    var api_key = this.options.map_key || this.options.api_key || extra_params.map_key || extra_params.api_key;
-    var extra = '';
-    if(api_key) {
-      params.push("map_key=" + api_key);
+  _requestFinished: function() {
+    this._waiting = false;
+    if(this._queue.length) {
+      this._getLayerToken(this._queue.pop());
     }
-    if(this.options.cors) {
+  },
+
+  _requestPOST: function(params, callback) {
+    var self = this;
+    var ajax = this.options.ajax;
+    ajax({
+      crossOrigin: true,
+      type: 'POST',
+      dataType: 'json',
+      contentType: 'application/json',
+      url: this._tilerHost() + '/tiles/layergroup' + (params.length ? "?" + params.join('&'): ''),
+      data: JSON.stringify(this.toJSON()),
+      success: function(data) {
+        callback(data);
+        self._requestFinished();
+      },
+      error: function(xhr) {
+        var err = { errors: ['unknow error'] };
+        try {
+          err = JSON.parse(xhr.responseText);
+        } catch(e) {}
+        callback(null, err);
+        self._requestFinished();
+      }
+    });
+  },
+
+  _requestGET: function(params, callback) {
+    var self = this;
+    var ajax = this.options.ajax;
+    var json = '{ "config": "' +
+      JSON.stringify(this.toJSON()).replace(/"/g, '\\"') +
+    '"}';
+    LZMA.compress(json, 3, function(encoded) {
+      encoded = self._array2hex(encoded);
+      params.push("lzma=" + encodeURIComponent(encoded));
       ajax({
-        crossOrigin: true,
-        type: 'POST',
-        dataType: 'json',
-        contentType: 'application/json',
-        url: this._tilerHost() + '/tiles/layergroup' + (params.length ? "?" + params.join('&'): ''),
-        data: JSON.stringify(this.toJSON()),
+        dataType: 'jsonp',
+        url: self._tilerHost() + '/tiles/layergroup?' + params.join('&'),
         success: function(data) {
           callback(data);
+          self._requestFinished();
         },
-        error: function(xhr) {
+        error: function(data) {
           var err = { errors: ['unknow error'] };
           try {
             err = JSON.parse(xhr.responseText);
           } catch(e) {}
-          callback(null, err);
+          self._requestFinished();
         }
       });
-    } else {
-      var self = this;
-      var json = '{ "config": "' +
-        JSON.stringify(this.toJSON()).replace(/"/g, '\\"') +
-        '"}';
-      LZMA.compress(json, 3, function(encoded) {
-        encoded = self._array2hex(encoded);
-        params.push("lzma=" + encodeURIComponent(encoded));
-        ajax({
-          dataType: 'jsonp',
-          url: self._tilerHost() + '/tiles/layergroup?' + params.join('&'),
-          success: function(data) {
-            callback(data);
-          },
-          error: function(data) {
-            var err = { errors: ['unknow error'] };
-            try {
-              err = JSON.parse(xhr.responseText);
-            } catch(e) {}
-          }
-        });
-      });
+    });
+  },
+
+  _getLayerToken: function(callback) {
+    var self = this;
+    var params = [];
+    callback = callback || function() {};
+    // if the previous request didn't finish, queue it
+    if(this._waiting) {
+      this._queue.push(callback);
+      return this;
     }
+
+    // setup params
+    var extra_params = this.options.extra_params || {};
+    var api_key = this.options.map_key || this.options.api_key || extra_params.map_key || extra_params.api_key;
+    if(api_key) {
+      params.push("map_key=" + api_key);
+    }
+    // mark as the request is being done 
+    this._waiting = true;
+    var req = null;
+    if(this.options.cors) {
+      req = this._requestPOST;
+    } else {
+      req = this._requestGET;
+    }
+    req.call(this, params, callback);
     return this;
   },
 

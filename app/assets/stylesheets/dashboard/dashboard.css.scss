@@ -77,7 +77,6 @@
     &.no_vis, &.no_tables {
       display:none;
       padding:0;
-
     } // .no_tables
 
     &.no_vis {
@@ -86,7 +85,7 @@
 
       &.active {
         display:block;
-        padding:40px 0 0 0;
+        padding:40px 0 40px 0;
       }
 
       &.only { padding: 40px 0 40px 0; }

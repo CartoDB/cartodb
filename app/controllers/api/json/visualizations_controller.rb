@@ -120,8 +120,8 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     return(head 403) unless allow_vizjson_v2_for?(visualization)
     set_vizjson_response_headers_for(visualization)
     render_jsonp(visualization.to_vizjson)
-  rescue KeyError
-    head 403
+  rescue KeyError => exception
+    render(text: exception.message, status: 403)
   end #vizjson
 
   private

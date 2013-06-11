@@ -16,10 +16,17 @@ BEGIN
 
   FOR rec IN SELECT CDB_QueryStatements(query) q LOOP
 
+    IF NOT ( rec.q ilike 'select %' or rec.q ilike 'with %' ) THEN
+      --RAISE WARNING 'Skipping %', rec.q;
+      CONTINUE;
+    END IF;
+
     BEGIN
       EXECUTE 'EXPLAIN (FORMAT XML) ' || rec.q INTO STRICT exp;
     EXCEPTION WHEN others THEN
-      RAISE WARNING 'Cannot explain query: % (%)', rec.q, SQLERRM;
+      -- TODO: if error is 'relation "xxxxxx" does not exist', take xxxxxx as
+      --       the affected table ?
+      RAISE EXCEPTION 'Cannot explain query: % (%: %)', rec.q, SQLSTATE, SQLERRM;
       CONTINUE;
     END;
 

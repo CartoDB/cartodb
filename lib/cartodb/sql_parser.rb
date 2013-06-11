@@ -8,11 +8,25 @@ module CartoDB
 
     # Returns the tables involved in a query
     def affected_tables
-      tables_per_statement = @connection["SELECT CDB_QueryTables(?)", @query].all
-      tables_per_statement.map do |s|
-        s[:cdb_querytables].split(',').map do |table_name|
-          table_name.gsub!(/[\{\}]/, '') 
+      statements.map do |statement|
+        tables_per_statement = begin
+          @connection["SELECT CDB_QueryTables(?)", statement].all
+        rescue Sequel::DatabaseError => exception
+          raise unless exception.message =~ /Cannot explain query/
+          []
         end
+        tables_per_statement.map do |s|
+          s[:cdb_querytables].split(',').map do |table_name|
+            t = table_name.gsub!(/[\{\}]/, '')
+            (t.blank? ? nil : t)
+          end
+        end
+      end.flatten.compact.uniq
+    end
+
+    def statements
+      @connection["SELECT CDB_QueryStatements(?)", @query].all.map do |s|
+        s[:cdb_querystatements]
       end.flatten.compact.uniq
     end
   end

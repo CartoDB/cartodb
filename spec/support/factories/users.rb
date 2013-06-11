@@ -22,9 +22,11 @@ module CartoDB
       user.admin                 = attributes[:admin] == false ? false : true
       user.private_tables_enabled= attributes[:private_tables_enabled] == false ? false : true
       user.enabled               = attributes[:enabled] == false ? false : true
-      user.table_quota           = attributes[:table_quota]    if attributes[:table_quota]
-      user.quota_in_bytes        = attributes[:quota_in_bytes] if attributes[:quota_in_bytes]
-      user.account_type          = attributes[:account_type]   if attributes[:account_type]
+      user.table_quota           = attributes[:table_quota]     if attributes[:table_quota]
+      user.quota_in_bytes        = attributes[:quota_in_bytes]  if attributes[:quota_in_bytes]
+      user.account_type          = attributes[:account_type]    if attributes[:account_type]
+      user.map_view_quota        = attributes[:map_view_quota]  if attributes.has_key?(:map_view_quota)
+      user.period_end_date       = attributes[:period_end_date] if attributes.has_key?(:period_end_date)
       user
     end
 

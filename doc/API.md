@@ -526,7 +526,7 @@ Promise object. You can listen for the following events:
 
 ##### **layer.addLayer(layerDefinition[, layerIndex])**
 
-    add a new data to the current layer. With this method data from multiple tables can be easily visualized. New in v3
+Adds a new data to the current layer. With this method data from multiple tables can be easily visualized. New in v3
 
 ###### ARGUMENTS
 
@@ -558,7 +558,7 @@ Promise object. You can listen for the following events:
 
 ##### **layer.setLayer(layerIndex, layerDefinition)**
 
-    change layerDefinition for layerIndex. New in v3
+Changes layerDefinition for layerIndex. New in v3
 
 ###### ARGUMENTS
 
@@ -578,7 +578,7 @@ Promise object. You can listen for the following events:
 
 ##### **layer.invalidate() **
 
-    refresh the data. If the data has been changed in CartoDB server it is displayed. If not nothing happens. New in v3.
+Refresh the data. If the data has been changed in CartoDB server it is displayed. If not nothing happens. New in v3.
 
 ###### ARGUMENTS
 

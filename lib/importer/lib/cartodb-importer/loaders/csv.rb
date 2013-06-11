@@ -39,9 +39,18 @@ module CartoDB
 
       def process!
         import_csv_data
-        error_helper(5001) if rows_imported == 0
-        rename_to_the_geom if column_names.include? "wkb_geometry"
-        column_names.include?("geojson") ?  read_as_geojson : create_the_geom
+        error_helper(5001)  if rows_imported == 0
+
+        read_as_geojson     if column_names.include?('geojson')
+
+        %w{ the_geom the_geom_webmercator }.each do |column_name|
+          if column_names.include?(column_name) && !column_names.include?('geojson')
+            parse_geometry(suggested_name, column_name)
+          end
+        end
+
+        rename_to_the_geom  if column_names.include?('wkb_geometry')
+        create_the_geom unless column_names.include?('the_geom')
 
         unless CartoDB::ColumnSanitizer.new(db, suggested_name).run
           data_import.log_update("ERROR: Failed to sanitize some column names")
@@ -275,6 +284,40 @@ module CartoDB
         db.drop_table suggested_name
         raise exception
       end #cleanup_tables
+
+      def parse_geometry(table_name, column_name)
+        table_name, column_name = table_name.to_sym, column_name.to_sym
+
+        db.run(%Q{
+          UPDATE #{table_name}
+          SET #{column_name} ST_GeomFromWKT(#{column_name})
+        })
+      rescue
+        data_import
+          .log_update("Converting #{column_name} in #{table_name} to geometry")
+
+        if is_wkb?(table_name, column_name)
+          cast_to_geometry(table_name, column_name) 
+        end
+      end
+
+      def is_wkb?(table_name, column_name)
+        sample = db[table_name].with_sql(%Q{
+          SELECT * FROM #{table_name}
+          WHERE #{column_name} IS NOT NULL
+        }).to_a.first.fetch(column_name)
+
+        sample.to_s =~ /^\d{2}/
+      end #is_wkb?
+
+      def cast_to_geometry(table_name, column_name)
+        db.run(%Q{
+          ALTER TABLE #{table_name}
+          ALTER #{column_name}
+          TYPE geometry
+          USING #{column_name}::geometry
+        })
+      end #cast_to_geometry
     end # Loader
   end # CSV
 end # CartoDB

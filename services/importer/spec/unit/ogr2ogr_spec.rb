@@ -12,17 +12,17 @@ include CartoDB
 
 describe Importer::Ogr2ogr do
   before do
-    @job_id       = rand(999)
     @csv          = Importer::Factories::CSV.new.write
     @filepath     = @csv.filepath
     @pg_options   = Importer::Factories::PGConnection.new.pg_options
+    @table_name   = "importer_#{rand(999)}"
     @db           = Importer::Factories::PGConnection.new.connection
-    @wrapper      = Importer::Ogr2ogr.new(@filepath, @pg_options, @job_id)
+    @wrapper      = Importer::Ogr2ogr.new(@filepath, @pg_options, @table_name)
   end
 
   after do
     @csv.delete
-    @db.drop_table? @wrapper.output_name
+    @db.drop_table? @wrapper.table_name
   end
 
   describe '#initialize' do
@@ -45,7 +45,7 @@ describe Importer::Ogr2ogr do
     end
 
     it 'includes the desired output table name' do
-      @wrapper.command.must_match /#{@wrapper.output_name}/
+      @wrapper.command.must_match /#{@wrapper.table_name}/
     end
 
     it 'includes the filepath to process' do
@@ -59,29 +59,10 @@ describe Importer::Ogr2ogr do
     end
   end #executable_path 
 
-  describe '#output_name' do
-    it 'is based on the name of the input file' do
-      name = File.basename(@filepath).split('.').first
-      @wrapper.output_name.must_match /#{name}/
-    end
-
-    it 'uses the prefix if passed at initialization time' do
-      @wrapper.output_name.must_match /#{@job_id}/
-    end
-
-    it 'is sanitized' do
-      wrapper   = Importer::Ogr2ogr.new('foo.bar', @pg_options)
-      #wrapper.output_name.must_match /foo_bar/
-      
-      wrapper   = Importer::Ogr2ogr.new('FOO_BAR', @pg_options)
-      wrapper.output_name.must_match /foo_bar/
-    end
-  end #output_name
-
   describe '#run' do
     it 'imports a CSV to a Postgres table' do
       @wrapper.run
-      records   = @db[@wrapper.output_name.to_sym].to_a
+      records   = @db[@wrapper.table_name.to_sym].to_a
 
       records.length      .must_equal 10
       records.first.keys  .must_include :header_1
@@ -90,18 +71,18 @@ describe Importer::Ogr2ogr do
 
     it 'adds a cartodb_id column to imported records' do
       @wrapper.run
-      record    = @db[@wrapper.output_name.to_sym].first
+      record    = @db[@wrapper.table_name.to_sym].first
       record.keys.must_include :cartodb_id
     end
   end #run
 
   describe '#command_output' do
     it 'returns stdout and stderr from ogr2ogr binary' do
-      wrapper   = Importer::Ogr2ogr.new('non_existent', @pg_options)
+      wrapper   = Importer::Ogr2ogr.new('non_existent', @pg_options, @table_name)
       wrapper.run
       wrapper.command_output.wont_be_empty
 
-      wrapper   = Importer::Ogr2ogr.new(@filepath, @pg_options)
+      wrapper   = Importer::Ogr2ogr.new(@filepath, @pg_options, @table_name)
       wrapper.run
       wrapper.command_output.must_be_empty
     end
@@ -109,11 +90,11 @@ describe Importer::Ogr2ogr do
 
   describe '#exit_code' do
     it 'returns the exit code from the ogr2ogr binary' do
-      wrapper   = Importer::Ogr2ogr.new('non_existent', @pg_options)
+      wrapper   = Importer::Ogr2ogr.new('non_existent', @pg_options, @table_name)
       wrapper.run
       wrapper.exit_code.wont_equal 0
 
-      wrapper   = Importer::Ogr2ogr.new(@filepath, @pg_options)
+      wrapper   = Importer::Ogr2ogr.new(@filepath, @pg_options, @table_name)
       wrapper.run
       wrapper.exit_code.must_equal 0
     end

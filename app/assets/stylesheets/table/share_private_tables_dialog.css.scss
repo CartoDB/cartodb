@@ -23,6 +23,7 @@
       
       a.name {
         float:left;
+        height:18px;
         max-width:200px;
         margin:7px 0 0 0;
         font-weight:bold;
@@ -33,7 +34,7 @@
       span.status {
         float:left;
         margin:5px 0 0 10px;
-        padding:2px 10px 2px;
+        padding:3px 13px;
         @include border-radius(25px);
         font:bold 0.688em $text-fonts2;
         color:white;

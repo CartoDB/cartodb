@@ -1,0 +1,20 @@
+
+
+  /**
+   *  Table privacy dialog styles
+   */
+
+  .table_privacy_dialog {
+    .content {
+      ul {
+        margin: 15px 0 0 0;
+
+        li {
+          padding: 15px 0;
+
+          &:last-child { padding-bottom: 0; }
+          a { font-weight: bold; }
+        }
+      }
+    }
+  }

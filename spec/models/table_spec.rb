@@ -183,6 +183,26 @@ describe Table do
       rehydrated.table_visualization  .should be_private
     end
 
+    it 'propagates changes to affected visualizations
+    if privacy set to PRIVATE', now: true do
+      table = create_table(user_id: @user.id)
+      table.should be_private
+      table.table_visualization.should be_private
+      derived = CartoDB::Visualization::Copier.new(
+        @user, table.table_visualization
+      ).copy
+
+      table.privacy = Table::PUBLIC
+      table.save
+
+      table.affected_visualizations.first.public?.should == true
+
+      table.privacy = Table::PRIVATE
+      table.save
+
+      table.affected_visualizations.first.private?.should == true
+    end
+
     it 'receives privacy changes from the associated visualization' do
       table = create_table(user_id: @user.id)
       table.should be_private

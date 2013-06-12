@@ -334,6 +334,9 @@ class Table < Sequel::Model(:user_tables)
     manager.set_public  if privacy == PUBLIC
     manager.propagate_to(table_visualization)
     manager.propagate_to_redis_and_varnish if privacy_changed?
+    affected_visualizations.each { |visualization|
+      manager.propagate_to(visualization)
+    } if privacy == PRIVATE
   end
 
   def propagate_name_change_to_table_visualization
@@ -1324,13 +1327,13 @@ TRIGGER
     affected_visualization_records.select(:id, :name).map(&:to_hash)
   end #serialize_affected_visualizations
 
-  private
-
   def affected_visualizations
     affected_visualization_records.map do |attributes|
       CartoDB::Visualization::Member.new(attributes)
     end
   end #affected_visualizations
+
+  private
 
   def affected_visualization_records
     #  visualizations.id, visualizations.name

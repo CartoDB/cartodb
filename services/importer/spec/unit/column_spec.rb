@@ -10,37 +10,52 @@ describe Column do
   before do
     @db           = Factories::PGConnection.new.connection
     @table_name   = create_table(@db)
-    column_name   = 'the_geom'
-    @column       = Column.new(@db, @table_name, column_name)
+    @column_name  = 'the_geom'
+    @column       = Column.new(@db, @table_name, @column_name)
+    @dataset      = @db[@table_name.to_sym]
   end
 
   after do
     @db.drop_table?(@table_name)
   end
 
-  describe '#parse_geometry' do
+  describe '#type' do
+    it 'returns the type of the column as returned by the database' do
+      5.times { @dataset.insert(random_hexewkb_record) }
+      @column.type.must_equal 'text'
+      @column.geometrify
+      @column.type.must_match 'geometry'
+    end
+  end #type
+
+  describe '#geometrify' do
     it "parses and updates the passed geometry column if it's in WKT" do
-      5.times { @db[@table_name.to_sym].insert(random_wkt_record) }
-      @column.parse_geometry
+      5.times { @dataset.insert(random_wkt_record) }
+      @column.geometrify
+    end
+
+    it 'handles empty geometry columns' do
+      5.times { @dataset.insert(name: '', description:'', the_geom: '') }
+      @column.geometrify
     end
 
     it "guarantees the geometry column ends up with a geometry type" do
-      5.times { @db[@table_name.to_sym].insert(random_hexewkb_record) }
-      @column.parse_geometry
+      5.times { @dataset.insert(random_hexewkb_record) }
+      @column.geometrify
+      @column.type.must_match /geometry/
     end
   end #parse
 
   describe '#convert_from_wkt' do
     it 'populates an existing geometry column parsing its values in WKT' do
-      @db[@table_name.to_sym].insert(random_wkt_record)
+      @dataset.insert(random_wkt_record)
 
       @column.convert_from_wkt
-      @db[@table_name.to_sym].first.fetch(:the_geom).must_match /^0101/
+      @column.sample.must_match /^0101/
     end
 
     it "raises if column contents aren't in WKT" do
-      @db[@table_name.to_sym]
-        .insert(name: 'bogus', description: 'bogus', the_geom: 'bogus')
+      @dataset.insert(name: 'bogus', description: 'bogus', the_geom: 'bogus')
 
       lambda { @column.convert_from_wkt }.must_raise Sequel::DatabaseError
     end
@@ -48,26 +63,26 @@ describe Column do
 
   describe '#wkb?' do
     it 'returns true if the passed column contains geometries in WKB' do
-      5.times { @db[@table_name.to_sym].insert(random_hexewkb_record) }
+      5.times { @dataset.insert(random_hexewkb_record) }
       @column.wkb?.must_equal true
     end
 
     it 'returns false otherwise' do
-      @db[@table_name.to_sym].insert(
-        name: 'bogus', description: 'bogus', the_geom: 'bogus'
-      )
+      @dataset.insert(name: 'bogus', description: 'bogus', the_geom: 'bogus')
       @column.wkb?.must_equal false
     end
   end #wkb?
 
   describe '#cast_to' do
     it 'casts the passed column to a geometry type' do
-      5.times { @db[@table_name.to_sym].insert(random_hexewkb_record) }
+      5.times { @dataset.insert(random_hexewkb_record) }
+      @column.type.must_equal 'text'
       @column.cast_to('geometry')
+      @column.type.must_match 'geometry'
     end
 
     it "raises if column contents aren't geometries" do
-      @db[@table_name.to_sym].insert(
+      @dataset.insert(
         name: 'bogus', description: 'bogus', the_geom: 'bogus'
       )
 
@@ -75,13 +90,35 @@ describe Column do
     end
   end #cast_to
 
-  describe '#sample_geometry' do
-    it "retrieves the passed geometry column from the first record
+  describe '#sample' do
+    it "retrieves the passed column from the first record
     where it isn't null" do
-      5.times { @db[@table_name.to_sym].insert(random_hexewkb_record) }
-      @column.sample_geometry.must_match /0101/
+      5.times { @dataset.insert(random_hexewkb_record) }
+      @column.sample.must_match /0101/
     end
-  end # sample_geometry
+
+    it 'returns nil if no records with data in the column' do
+      @column.sample.must_be_nil
+    end
+  end # sample
+
+  describe '#records_with_data' do
+    it 'returns a dataset with those records with  data in this column' do
+      @column.records_with_data.must_be_empty
+      @column.records_with_data.must_be_instance_of Sequel::Postgres::Dataset
+
+      @dataset.insert(random_wkt_record)
+      @column.records_with_data.wont_be_empty
+    end
+  end #records_with_data
+
+  describe '#empty?' do
+    it 'returns true if no records with data in this column' do
+      @column.empty?.must_equal true
+      @dataset.insert(random_wkt_record)
+      @column.empty?.must_equal false
+    end
+  end #empty?
 
   def create_table(db, options={})
     table_name = options.fetch(:table_name, "importer_#{rand(999)}")
@@ -108,8 +145,8 @@ describe Column do
     {
       name:         "bogus #{rand(999)}",
       description:  "bogus #{rand(999)}",
-      the_geom: 'POINT(-71.060316 48.432044)'
+      the_geom:     'POINT(-71.060316 48.432044)'
     }
   end #random_wkt_record
-end
+end # Column
 

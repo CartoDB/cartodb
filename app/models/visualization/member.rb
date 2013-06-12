@@ -60,6 +60,8 @@ module CartoDB
 
       def store_using_table(privacy)
         self.privacy = privacy
+        invalidate_varnish_cache if privacy_changed
+        set_timestamps
         repository.store(id, attributes.to_hash)
         self
       end #store_using_table

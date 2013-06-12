@@ -512,7 +512,7 @@ describe Table do
       table = create_table(user_id: @user.id, name: "varnish_privacy", privacy: Table::PRIVATE)
       
       key = table.table_visualization.varnish_key
-      CartoDB::Varnish.any_instance.expects(:purge).times(1).with("obj.http.X-Cache-Channel ~ #{key}:vizjson").returns(true)
+      CartoDB::Varnish.any_instance.expects(:purge).times(2).with("obj.http.X-Cache-Channel ~ #{key}:vizjson").returns(true)
 
       CartoDB::Table::PrivacyManager.any_instance
         .expects(:propagate_to_redis_and_varnish)

@@ -1,10 +1,13 @@
 # coding: UTF-8
 # Proxies management of a table in the users database
+require 'forwardable'
 require_relative './table/column_typecaster'
 require_relative './table/privacy_manager'
+require_relative './table/relator'
 require_relative './visualization/member'
 
 class Table < Sequel::Model(:user_tables)
+  extend Forwardable
 
   # Table constants
   PRIVATE = 0
@@ -31,6 +34,8 @@ class Table < Sequel::Model(:user_tables)
                 reciprocal: :user_tables
   plugin :association_dependencies, :map => :destroy, layers: :nullify
   plugin :dirty
+
+  def_delegators :relator, *CartoDB::Table::Relator::INTERFACE
 
   def public_values(options = {})
     selected_attrs = if options[:except].present?
@@ -455,10 +460,10 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def before_destroy
+    @table_visualization                = table_visualization
     @dependent_visualizations_cache     = dependent_visualizations.to_a
     @non_dependent_visualizations_cache = non_dependent_visualizations.to_a
     super
-    memoize_table_visualization_to_be_available_in_after_destroy
   end
 
   def after_destroy
@@ -470,7 +475,7 @@ class Table < Sequel::Model(:user_tables)
     invalidate_varnish_cache
     delete_tile_style
 
-    table_visualization.delete if table_visualization
+    @table_visualization.delete if @table_visualization
     @dependent_visualizations_cache.each(&:delete)
     @non_dependent_visualizations_cache.each do |visualization|
       visualization.unlink_from(table)
@@ -1315,62 +1320,11 @@ TRIGGER
   #  end
   #end #visualization_ids
 
-  def table_visualization
-    @table_visualization ||= CartoDB::Visualization::Collection.new.fetch(
-      map_id: [map_id],
-      type:   'table'
-    ).first
-  end #table_visualization
-
-  alias_method :memoize_table_visualization_to_be_available_in_after_destroy,
-                :table_visualization
-
-  def serialize_affected_visualizations
-    affected_visualization_records.select(:id, :name).map(&:to_hash)
-  end #serialize_affected_visualizations
-
-  def serialize_dependent_visualizations
-    dependent_visualizations.map { |visualization|
-      { id: visualization.id, name: visualization.name }
-    }
-  end #serialize_dependent_visualizations
-
-  def serialize_non_dependent_visualizations
-    non_dependent_visualizations.map { |visualization|
-      { id: visualization.id, name: visualization.name }
-    }
-  end #serialize_non_dependent_visualizations
-
-  def affected_visualizations
-    affected_visualization_records.map do |attributes|
-      CartoDB::Visualization::Member.new(attributes)
-    end
-  end #affected_visualizations
-
-  def dependent_visualizations
-    affected_visualizations.select do |visualization|
-      visualization.layers(:cartodb).to_a.length == 1
-    end
-  end #dependent_visualizations
-
-  def non_dependent_visualizations
-    affected_visualizations.select do |visualization|
-      visualization.layers(:cartodb).to_a.length > 1
-    end
-  end #non_dependent_visualizations
+  def relator
+    @relator ||= CartoDB::Table::Relator.new(Rails::Sequel.connection, self)
+  end #relator
 
   private
-
-  def affected_visualization_records
-    #  visualizations.id, visualizations.name
-    Rails::Sequel.connection[:visualizations].with_sql(%Q{
-      SELECT  *
-      FROM    layers_user_tables, layers_maps, visualizations
-      WHERE   layers_user_tables.user_table_id = #{id}
-      AND     layers_user_tables.layer_id = layers_maps.layer_id
-      AND     layers_maps.map_id = visualizations.map_id
-    })
-  end #affected_visualization_records
 
   def update_updated_at
     self.updated_at = Time.now

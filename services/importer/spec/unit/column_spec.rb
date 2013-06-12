@@ -1,116 +1,87 @@
 # encoding: utf-8
 gem 'minitest'
 require 'minitest/autorun'
-require_relative '../../geometry_processor'
+require_relative '../../column'
 require_relative '../factories/pg_connection'
 
 include CartoDB::Importer
 
-describe GeometryProcessor do
+describe Column do
   before do
     @db           = Factories::PGConnection.new.connection
     @table_name   = create_table(@db)
+    column_name   = 'the_geom'
+    @column       = Column.new(@db, @table_name, column_name)
   end
 
   after do
     @db.drop_table?(@table_name)
   end
 
-  describe '#parse' do
+  describe '#parse_geometry' do
     it "parses and updates the passed geometry column if it's in WKT" do
-      column_name = 'the_geom'
-      processor   = GeometryProcessor.new(@db, @table_name)
-
       5.times { @db[@table_name.to_sym].insert(random_wkt_record) }
-      processor.parse(column_name)
+      @column.parse_geometry
     end
 
     it "guarantees the geometry column ends up with a geometry type" do
-      column_name = 'the_geom'
-      processor   = GeometryProcessor.new(@db, @table_name)
-
       5.times { @db[@table_name.to_sym].insert(random_hexewkb_record) }
-      processor.parse(column_name)
+      @column.parse_geometry
     end
   end #parse
 
   describe '#convert_from_wkt' do
     it 'populates an existing geometry column parsing its values in WKT' do
-      column_name = 'the_geom'
-      processor   = GeometryProcessor.new(@db, @table_name)
-
       @db[@table_name.to_sym].insert(random_wkt_record)
 
-      processor.convert_from_wkt(column_name)
+      @column.convert_from_wkt
       @db[@table_name.to_sym].first.fetch(:the_geom).must_match /^0101/
     end
 
     it "raises if column contents aren't in WKT" do
-      column_name = 'the_geom'
-      processor   = GeometryProcessor.new(@db, @table_name)
-
       @db[@table_name.to_sym]
         .insert(name: 'bogus', description: 'bogus', the_geom: 'bogus')
 
-      lambda { processor.convert_from_wkt(column_name) }
-        .must_raise Sequel::DatabaseError
+      lambda { @column.convert_from_wkt }.must_raise Sequel::DatabaseError
     end
   end #convert_from_wkt
 
-  describe '#is_wkb?' do
+  describe '#wkb?' do
     it 'returns true if the passed column contains geometries in WKB' do
-      column_name = 'the_geom'
-      processor   = GeometryProcessor.new(@db, @table_name)
-
       5.times { @db[@table_name.to_sym].insert(random_hexewkb_record) }
-      processor.is_wkb?(column_name).must_equal true
+      @column.wkb?.must_equal true
     end
 
     it 'returns false otherwise' do
-      column_name = 'the_geom'
-      processor   = GeometryProcessor.new(@db, @table_name)
-
       @db[@table_name.to_sym].insert(
         name: 'bogus', description: 'bogus', the_geom: 'bogus'
       )
-
-      processor.is_wkb?(column_name).must_equal false
+      @column.wkb?.must_equal false
     end
-  end #is_wkb?
+  end #wkb?
 
-  describe '#cast_to_geometry' do
+  describe '#cast_to' do
     it 'casts the passed column to a geometry type' do
-      column_name = 'the_geom'
-      processor   = GeometryProcessor.new(@db, @table_name)
-
       5.times { @db[@table_name.to_sym].insert(random_hexewkb_record) }
-      processor.cast_to_geometry(column_name)
+      @column.cast_to('geometry')
     end
 
     it "raises if column contents aren't geometries" do
-      column_name = 'the_geom'
-      processor   = GeometryProcessor.new(@db, @table_name)
-
       @db[@table_name.to_sym].insert(
         name: 'bogus', description: 'bogus', the_geom: 'bogus'
       )
 
-      lambda { processor.cast_to_geometry(column_name) }
-        .must_raise Sequel::DatabaseError
+      lambda { @column.cast_to('geometry') }.must_raise Sequel::DatabaseError
     end
-  end #cast_to_geometry
+  end #cast_to
 
-  describe '#sample_geometry_from' do
+  describe '#sample_geometry' do
     it "retrieves the passed geometry column from the first record
     where it isn't null" do
-      column_name = 'the_geom'
-      processor   = GeometryProcessor.new(@db, @table_name)
-
       5.times { @db[@table_name.to_sym].insert(random_hexewkb_record) }
-      processor.sample_geometry_from(column_name).wont_be_nil
-      processor.sample_geometry_from(column_name).must_match /0101/
+      @column.sample_geometry.must_match /0101/
     end
-  end # sample_geometry_from
+  end # sample_geometry
 
   def create_table(db, options={})
     table_name = options.fetch(:table_name, "importer_#{rand(999)}")

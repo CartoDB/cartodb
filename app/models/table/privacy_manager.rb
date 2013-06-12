@@ -29,8 +29,7 @@ module CartoDB
       end #set_from
 
       def propagate_to(visualization)
-        return unless table.table_visualization
-        table.table_visualization.store_using_table(privacy_text)
+        visualization.store_using_table(privacy_text)
         self
       end #propagate_to
 

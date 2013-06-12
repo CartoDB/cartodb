@@ -82,7 +82,7 @@ module CartoDB
         table_name     = get_valid_name("#{suggested_name}_#{feature}")
 
         begin
-          revoke_privileges_from_public
+          revoke_all_privileges_from_public
           rename_table(old_table_name, table_name)
           #@table_created = true
           entries.each{ |entry| FileUtils.rm_rf(entry) } if entries.any?

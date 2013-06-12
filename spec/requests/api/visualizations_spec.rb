@@ -327,7 +327,7 @@ describe Api::Json::VisualizationsController do
       response.fetch('tags').should == ['foo', 'bar']
     end
 
-    it 'returns a sanitized name', now: true do
+    it 'returns a sanitized name' do
       table_attributes = table_factory
       id = table_attributes.fetch('table_visualization').fetch('id')
 

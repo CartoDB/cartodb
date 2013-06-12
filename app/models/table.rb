@@ -18,7 +18,8 @@ class Table < Sequel::Model(:user_tables)
     :updated_at => :updated_at, :rows_counted => :rows_estimated,
     :table_size => :table_size, :map_id => :map_id, :description => :description,
     :geometry_types => :geometry_types, :table_visualization => :table_visualization,
-    :affected_visualizations => :serialize_affected_visualizations
+    :dependent_visualizations     => :serialize_dependent_visualizations,
+    :non_dependent_visualizations => :serialize_non_dependent_visualizations
   }
 
   DEFAULT_THE_GEOM_TYPE = "geometry"
@@ -454,7 +455,8 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def before_destroy
-    @affected_visualizations_cache = affected_visualizations.to_a
+    @dependent_visualizations_cache     = dependent_visualizations.to_a
+    @non_dependent_visualizations_cache = non_dependent_visualizations.to_a
     super
     memoize_table_visualization_to_be_available_in_after_destroy
   end
@@ -467,8 +469,12 @@ class Table < Sequel::Model(:user_tables)
     remove_table_from_stats
     invalidate_varnish_cache
     delete_tile_style
-    @affected_visualizations_cache.each(&:delete)
+
     table_visualization.delete if table_visualization
+    @dependent_visualizations_cache.each(&:delete)
+    @non_dependent_visualizations_cache.each do |visualization|
+      visualization.unlink_from(table)
+    end
   end
 
   def remove_table_from_user_database
@@ -1327,11 +1333,35 @@ TRIGGER
     affected_visualization_records.select(:id, :name).map(&:to_hash)
   end #serialize_affected_visualizations
 
+  def serialize_dependent_visualizations
+    dependent_visualizations.map { |visualization|
+      { id: visualization.id, name: visualization.name }
+    }
+  end #serialize_dependent_visualizations
+
+  def serialize_non_dependent_visualizations
+    non_dependent_visualizations.map { |visualization|
+      { id: visualization.id, name: visualization.name }
+    }
+  end #serialize_non_dependent_visualizations
+
   def affected_visualizations
     affected_visualization_records.map do |attributes|
       CartoDB::Visualization::Member.new(attributes)
     end
   end #affected_visualizations
+
+  def dependent_visualizations
+    affected_visualizations.select do |visualization|
+      visualization.layers(:cartodb).to_a.length == 1
+    end
+  end #dependent_visualizations
+
+  def non_dependent_visualizations
+    affected_visualizations.select do |visualization|
+      visualization.layers(:cartodb).to_a.length > 1
+    end
+  end #non_dependent_visualizations
 
   private
 

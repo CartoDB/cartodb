@@ -85,6 +85,15 @@ module CartoDB
         self
       end #delete
 
+      def unlink_from(table)
+        invalidate_varnish_cache
+
+        layers(:cartodb).select { |layer|
+          layer.affected_tables.include?(table)
+        }.each(&:destroy)
+        self
+      end #unlink_from
+
       def name=(name)
         self.name_changed = true if name != @name && !@name.nil?
         super(name)

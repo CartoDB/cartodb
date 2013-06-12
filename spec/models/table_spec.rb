@@ -184,7 +184,7 @@ describe Table do
     end
 
     it 'propagates changes to affected visualizations
-    if privacy set to PRIVATE', now: true do
+    if privacy set to PRIVATE' do
       table = create_table(user_id: @user.id)
       table.should be_private
       table.table_visualization.should be_private

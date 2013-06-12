@@ -155,7 +155,6 @@ describe Admin::VisualizationsController do
       login_as(@user, scope: 'test')
 
       get "/viz/#{id}/embed_map.js", {}, @headers
-      puts last_response.body
       last_response.status.should == 200
     end
 

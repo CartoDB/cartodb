@@ -60,6 +60,8 @@ module CartoDB
 
       def store_using_table(privacy)
         self.privacy = privacy
+        invalidate_varnish_cache if privacy_changed
+        set_timestamps
         repository.store(id, attributes.to_hash)
         self
       end #store_using_table
@@ -82,6 +84,15 @@ module CartoDB
         self.attributes.keys.each { |key| self.send("#{key}=", nil) }
         self
       end #delete
+
+      def unlink_from(table)
+        invalidate_varnish_cache
+
+        layers(:cartodb).select { |layer|
+          layer.affected_tables.include?(table)
+        }.each(&:destroy)
+        self
+      end #unlink_from
 
       def name=(name)
         self.name_changed = true if name != @name && !@name.nil?

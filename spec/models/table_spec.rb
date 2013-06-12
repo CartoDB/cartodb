@@ -183,6 +183,26 @@ describe Table do
       rehydrated.table_visualization  .should be_private
     end
 
+    it 'propagates changes to affected visualizations
+    if privacy set to PRIVATE' do
+      table = create_table(user_id: @user.id)
+      table.should be_private
+      table.table_visualization.should be_private
+      derived = CartoDB::Visualization::Copier.new(
+        @user, table.table_visualization
+      ).copy
+
+      table.privacy = Table::PUBLIC
+      table.save
+
+      table.affected_visualizations.first.public?.should == true
+
+      table.privacy = Table::PRIVATE
+      table.save
+
+      table.affected_visualizations.first.private?.should == true
+    end
+
     it 'receives privacy changes from the associated visualization' do
       table = create_table(user_id: @user.id)
       table.should be_private
@@ -512,7 +532,7 @@ describe Table do
       table = create_table(user_id: @user.id, name: "varnish_privacy", privacy: Table::PRIVATE)
       
       key = table.table_visualization.varnish_key
-      CartoDB::Varnish.any_instance.expects(:purge).times(1).with("obj.http.X-Cache-Channel ~ #{key}:vizjson").returns(true)
+      CartoDB::Varnish.any_instance.expects(:purge).times(2).with("obj.http.X-Cache-Channel ~ #{key}:vizjson").returns(true)
 
       CartoDB::Table::PrivacyManager.any_instance
         .expects(:propagate_to_redis_and_varnish)

@@ -116,6 +116,14 @@ describe Visualization::Member do
     end
   end #delete
 
+  describe '#unlink_from' do
+    it 'invalidates varnish cache' do
+      member = Visualization::Member.new(random_attributes).store
+      member.expects(:invalidate_varnish_cache)
+      member.unlink_from(Object.new)
+    end
+  end #unlink_from
+
   describe '#public?' do
     it 'returns true if privacy set to public' do
       visualization = Visualization::Member.new(privacy: 'public')

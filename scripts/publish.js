@@ -18,7 +18,6 @@ function put_files(files, local_path, remote_path, content_type) {
   var uploaded = 0;
   for(var i in  files) {
     var file = files[i];
-    console.log(local_path + '/' + file, ' => ', remote_path + '/' + file);
     var content_type = {
       'png': 'image/png',
       'gif': 'image/gif',
@@ -27,7 +26,15 @@ function put_files(files, local_path, remote_path, content_type) {
     }
     var ext = file.split('.');
     ext = ext[ext.length - 1];
-    knox.putFile(local_path + '/' + file, remote_path + '/' + file, {'Content-Type': content_type[ext], 'x-amz-acl': 'public-read' }, function(err, result) {
+    var local_file = file
+    var headers = { 'Content-Type': content_type[ext], 'x-amz-acl': 'public-read' };
+    if(ext == 'js' || ext == 'css') {
+      _exec('gzip -c -9 ' + local_path + '/' + file + ' > ' + local_path + '/' + file + '.gz');
+      local_file = file + '.gz'
+      headers['Content-Encoding'] = 'gzip';
+    }
+    console.log(local_path + '/' + local_file, ' => ', remote_path + '/' + file);
+    knox.putFile(local_path + '/' + local_file, remote_path + '/' + file, headers , function(err, result) {
       if(!err) {
         if (200 == result.statusCode) { 
           uploaded++

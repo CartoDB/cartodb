@@ -1309,15 +1309,11 @@ TRIGGER
     self.private? ? 'PRIVATE' : 'PUBLIC'
   end
 
-  #def visualizations
-  #  affected_visualizations.to_a
-  #end #visualizations
-
-  def visualization_ids
-    affected_visualization_records.select(:id).map do |visualization|
-      visualization.fetch(:id)
-    end
-  end #visualization_ids
+  #def visualization_ids
+  #  affected_visualization_records.select(:id).map do |visualization|
+  #    visualization.fetch(:id)
+  #  end
+  #end #visualization_ids
 
   def table_visualization
     @table_visualization ||= CartoDB::Visualization::Collection.new.fetch(

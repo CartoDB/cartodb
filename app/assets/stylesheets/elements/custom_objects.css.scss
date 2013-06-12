@@ -366,7 +366,7 @@
     // Disabled state
     &.disabled {
       background:#f4f4f4!important;
-      a { 
+      a {
         background:#f4f4f4!important;
         @include opacity(0.5);
         &:hover {cursor:default;}
@@ -629,7 +629,7 @@
   */
 
   .rounded {
-    padding:2px 12px;
+    padding:3px 12px;
     background:white;
     @include border-radius(25px);
     font-weight:bold;

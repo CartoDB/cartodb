@@ -691,14 +691,15 @@
                   margin:0 8px 0 0;
                   padding:0;
                   letter-spacing:0;
-                  line-height:normal;
+                  line-height:21px;
                   vertical-align:middle;
 
                   a {
+                    display:block;
                     padding:0 1px 0 0;
                     margin:0;
-                    vertical-align:top;
-                    line-height:normal;
+                    vertical-align:middle;
+                    line-height:21px;
                     font-family: $title-fonts;
                     font-size:21px;
                     letter-spacing:-1px;
@@ -711,7 +712,7 @@
 
                 a {
                   @include inline-block(); width:auto; letter-spacing:0;
-                  &.status {vertical-align:top; margin:8px 0 0 0;}
+                  &.status {vertical-align:middle; margin:4px 0 0;}
                 }
 
                 p {
@@ -782,12 +783,15 @@
                 } // p
 
                 a.delete {
+                  @include inline-block();
                   @include icons-sprite(trash);
                   @include text-indent();
+                  vertical-align:middle;
                   position:relative;
                   width:13px;
                   height:14px;
-                  margin:0px 0 0 10px;
+                  line-height:21px;
+                  margin:4px 0 0 10px;
 
                   @include opacity(0);
                   @include simple-transition(opacity, 250ms);

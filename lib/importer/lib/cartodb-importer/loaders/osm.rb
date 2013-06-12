@@ -82,6 +82,7 @@ module CartoDB
         table_name     = get_valid_name("#{suggested_name}_#{feature}")
 
         begin
+          revoke_privileges_from_public
           rename_table(old_table_name, table_name)
           #@table_created = true
           entries.each{ |entry| FileUtils.rm_rf(entry) } if entries.any?
@@ -167,6 +168,14 @@ module CartoDB
         WHERE geometrytype(the_geom) != '#{TYPE_CONVERSIONS.fetch(type)}'
       })
     end #normalize_geom_type
+
+    def revoke_all_privileges_from_public
+      db.run(%Q{
+        REVOKE ALL PRIVILEGES
+        ON TABLE #{table_name}
+        FROM public
+      })
+    end #revoke_all_privileges_from_public
 
     def get_valid_name(name)
       ::Table.get_valid_table_name(name, connection: db)

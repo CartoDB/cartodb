@@ -77,6 +77,11 @@
     &.no_vis, &.no_tables {
       display:none;
       padding:0;
+
+      &.active {
+        margin-top:-15px;
+      }
+
     } // .no_tables
 
     &.no_vis {

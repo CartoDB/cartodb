@@ -90,7 +90,8 @@ module CartoDB
 
         layers(:cartodb).select { |layer|
           layer.affected_tables.include?(table)
-        }.each(:destroy)
+        }.each(&:destroy)
+        self
       end #unlink_from
 
       def name=(name)

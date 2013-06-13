@@ -5,39 +5,146 @@ var carto_initialize = function(carto, uri, callback) {
 window.carto = window.carto || {};
 
 var _mapnik_reference_latest = {
-    "version": "2.1.0",
+    "version": "2.1.1",
     "style": {
-        "name": {
-        },
         "filter-mode": {
-        }
-    },
-    "font-set": {
-        "name": {
+            "type": [
+                "all",
+                "first"
+            ],
+            "doc": "Control the processing behavior of Rule filters within a Style. If 'all' is used then all Rules are processed sequentially independent of whether any previous filters matched. If 'first' is used then it means processing ends after the first match (a positive filter evaluation) and no further Rules in the Style are processed ('first' is usually the default for CSS implementations on top of Mapnik to simplify translation from CSS to Mapnik XML)",
+            "default-value": "all",
+            "default-meaning": "All Rules in a Style are processed whether they have filters or not and whether or not the filter conditions evaluate to true."
         },
-        "font": {
-            "face-name": {
-            }
+        "image-filters": {
+            "css": "image-filters",
+            "default-value": "none",
+            "default-meaning": "no filters",
+            "type": "functions",
+            "functions": [
+                ["agg-stack-blur", 2],
+                ["emboss", 0],
+                ["blur", 0],
+                ["gray", 0],
+                ["sobel", 0],
+                ["edge-detect", 0],
+                ["x-gradient", 0],
+                ["y-gradient", 0],
+                ["invert", 0],
+                ["sharpen", 0]
+            ],
+            "doc": "A list of image filters."
+        },
+        "comp-op": {
+            "css": "comp-op",
+            "default-value": "src-over",
+            "default-meaning": "add the current layer on top of other layers",
+            "doc": "Composite operation. This defines how this layer should behave relative to layers atop or below it.",
+            "type": ["clear",
+                "src",
+                "dst",
+                "src-over",
+                "dst-over",
+                "src-in",
+                "dst-in",
+                "src-out",
+                "dst-out",
+                "src-atop",
+                "dst-atop",
+                "xor",
+                "plus",
+                "minus",
+                "multiply",
+                "screen",
+                "overlay",
+                "darken",
+                "lighten",
+                "color-dodge",
+                "color-burn",
+                "hard-light",
+                "soft-light",
+                "difference",
+                "exclusion",
+                "contrast",
+                "invert",
+                "invert-rgb",
+                "grain-merge",
+                "grain-extract",
+                "hue",
+                "saturation",
+                "color",
+                "value"
+            ]
+        },
+        "opacity": {
+            "css": "opacity",
+            "type": "float",
+            "doc": "An alpha value for the style (which means an alpha applied to all features in separate buffer and then composited back to main buffer)",
+            "default-value": 1,
+            "default-meaning": "no separate buffer will be used and no alpha will be applied to the style after rendering"
         }
     },
     "layer" : {
         "name": {
+            "default-value": "",
+            "type":"string",
+            "required" : true,
+            "default-meaning": "No layer name has been provided",
+            "doc": "The name of a layer. Can be anything you wish and is not strictly validated, but ideally unique  in the map"
         },
         "srs": {
+            "default-value": "",
+            "type":"string",
+            "default-meaning": "No srs value is provided and the value will be inherited from the Map's srs",
+            "doc": "The spatial reference system definition for the layer, aka the projection. Can either be a proj4 literal string like '+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs' or, if the proper proj4 epsg/nad/etc identifier files are installed, a string that uses an id like: '+init=epsg:4326'"
         },
         "status": {
-        },
-        "title": {
-        },
-        "abstract": {
+            "default-value": true,
+            "type":"boolean",
+            "default-meaning": "This layer will be marked as active and available for processing",
+            "doc": "A property that can be set to false to disable this layer from being processed"
         },
         "minzoom": {
+            "default-value": "0",
+            "type":"float",
+            "default-meaning": "The layer will be visible at the minimum possible scale",
+            "doc": "The minimum scale denominator that this layer will be visible at. A layer's visibility is determined by whether its status is true and if the Map scale >= minzoom - 1e-6 and scale < maxzoom + 1e-6"
         },
         "maxzoom": {
+            "default-value": "1.79769e+308",
+            "type":"float",
+            "default-meaning": "The layer will be visible at the maximum possible scale",
+            "doc": "The maximum scale denominator that this layer will be visible at. The default is the numeric limit of the C++ double type, which may vary slightly by system, but is likely a massive number like 1.79769e+308 and ensures that this layer will always be visible unless the value is reduced. A layer's visibility is determined by whether its status is true and if the Map scale >= minzoom - 1e-6 and scale < maxzoom + 1e-6"
         },
         "queryable": {
+            "default-value": false,
+            "type":"boolean",
+            "default-meaning": "The layer will not be available for the direct querying of data values",
+            "doc": "This property was added for GetFeatureInfo/WMS compatibility and is rarely used. It is off by default meaning that in a WMS context the layer will not be able to be queried unless the property is explicitly set to true"
         },
         "clear-label-cache": {
+            "default-value": false,
+            "type":"boolean",
+            "default-meaning": "The renderer's collision detector cache (used for avoiding duplicate labels and overlapping markers) will not be cleared immediately before processing this layer",
+            "doc": "This property, by default off, can be enabled to allow a user to clear the collision detector cache before a given layer is processed. This may be desirable to ensure that a given layers data shows up on the map even if it normally would not because of collisions with previously rendered labels or markers"
+        },
+        "group-by": {
+            "default-value": "",
+            "type":"string",
+            "default-meaning": "No special layer grouping will be used during rendering",
+            "doc": "https://github.com/mapnik/mapnik/wiki/Grouped-rendering"
+        },
+        "buffer-size": {
+            "default-value": "0",
+            "type":"float",
+            "default-meaning": "No buffer will be used",
+            "doc": "Extra tolerance around the Layer extent (in pixels) used to when querying and (potentially) clipping the layer data during rendering"
+        },
+        "maximum-extent": {
+            "default-value": "none",
+            "type":"bbox",
+            "default-meaning": "No clipping extent will be used",
+            "doc": "An extent to be used to limit the bounds used to query this specific layer data during rendering. Should be minx, miny, maxx, maxy in the coordinates of the Layer."
         }
     },
     "symbolizers" : {
@@ -62,7 +169,7 @@ var _mapnik_reference_latest = {
                 "doc": "A list of image filters."
             },
             "comp-op": {
-                "css": "composite-operation",
+                "css": "comp-op",
                 "default-value": "src-over",
                 "default-meaning": "add the current layer on top of other layers",
                 "doc": "Composite operation. This defines how this layer should behave relative to layers atop or below it.",
@@ -99,8 +206,7 @@ var _mapnik_reference_latest = {
                     "hue",
                     "saturation",
                     "color",
-                    "value",
-                    "colorize-alpha"
+                    "value"
                 ]
             },
             "opacity": {
@@ -130,6 +236,8 @@ var _mapnik_reference_latest = {
             "srs": {
                 "css": "srs",
                 "type": "string",
+                "default-value": "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs",
+                "default-meaning": "The proj4 literal of EPSG:4326 is assumed to be the Map's spatial reference and all data from layers within this map will be plotted using this coordinate system. If any layers do not declare an srs value then they will be assumed to be in the same srs as the Map and not transformations will be needed to plot them in the Map's coordinate space",
                 "doc": "Map spatial reference (proj4 string)"
             },
             "buffer-size": {
@@ -138,6 +246,13 @@ var _mapnik_reference_latest = {
                 "type":"float",
                 "default-meaning": "No buffer will be used",
                 "doc": "Extra tolerance around the map (in pixels) used to ensure labels crossing tile boundaries are equally rendered in each tile (e.g. cut in each tile). Not intended to be used in combination with \"avoid-edges\"."
+            },
+            "maximum-extent": {
+                "css": "",
+                "default-value": "none",
+                "type":"bbox",
+                "default-meaning": "No clipping extent will be used",
+                "doc": "An extent to be used to limit the bounds used to query all layers during rendering. Should be minx, miny, maxx, maxy in the coordinates of the Map."
             },
             "base": {
                 "css": "base",
@@ -176,6 +291,13 @@ var _mapnik_reference_latest = {
                 "default-meaning": "gray and fully opaque (alpha = 1), same as rgb(128,128,128)",
                 "doc": "Fill color to assign to a polygon"
             },
+            "fill-opacity": {
+                "css": "polygon-opacity",
+                "type": "float",
+                "doc": "The opacity of the polygon",
+                "default-value": 1,
+                "default-meaning": "opaque"
+            },
             "gamma": {
                 "css": "polygon-gamma",
                 "type": "float",
@@ -184,12 +306,25 @@ var _mapnik_reference_latest = {
                 "range": "0-1",
                 "doc": "Level of antialiasing of polygon edges"
             },
-            "fill-opacity": {
-                "css": "polygon-opacity",
-                "type": "float",
-                "doc": "The opacity of the polygon",
-                "default-value": 1,
-                "default-meaning": "opaque"
+            "gamma-method": {
+                "css": "polygon-gamma-method",
+                "type": [
+                    "power",
+                    "linear",
+                    "none",
+                    "threshold",
+                    "multiply"
+                ],
+                "default-value": "power",
+                "default-meaning": "pow(x,gamma) is used to calculate pixel gamma, which produces slightly smoother line and polygon antialiasing than the 'linear' method, while other methods are usually only used to disable AA",
+                "doc": "An Antigrain Geometry specific rendering hint to control the quality of antialiasing. Under the hood in Mapnik this method is used in combination with the 'gamma' value (which defaults to 1). The methods are in the AGG source at https://github.com/mapnik/mapnik/blob/master/deps/agg/include/agg_gamma_functions.h"
+            },
+            "clip": {
+                "css": "polygon-clip",
+                "type": "boolean",
+                "default-value": true,
+                "default-meaning": "geometry will be clipped to map bounds before rendering",
+                "doc": "geometries are clipped to map bounds by default for best rendering performance. In some cases users may wish to disable this to avoid rendering artifacts."
             },
             "smooth": {
                 "css": "polygon-smooth",
@@ -197,10 +332,25 @@ var _mapnik_reference_latest = {
                 "default-value": 0,
                 "default-meaning": "no smoothing",
                 "range": "0-1",
-                "doc": "Smooths out polygon angles. 0 is no smoothing, 1 is fully smoothed. Values greater than 1 will produce wild, looping geometries."
+                "doc": "Smooths out geometry angles. 0 is no smoothing, 1 is fully smoothed. Values greater than 1 will produce wild, looping geometries."
+            },
+            "geometry-transform": {
+                "css": "polygon-geometry-transform",
+                "type": "functions",
+                "default-value": "none",
+                "default-meaning": "geometry will not be transformed",
+                "doc": "Allows transformation functions to be applied to the geometry.",
+                "functions": [
+                    ["matrix", 6],
+                    ["translate", 2],
+                    ["scale", 2],
+                    ["rotate", 3],
+                    ["skewX", 1],
+                    ["skewY", 1]
+                ]
             },
             "comp-op": {
-                "css": "polygon-composite-operation",
+                "css": "polygon-comp-op",
                 "default-value": "src-over",
                 "default-meaning": "add the current symbolizer on top of other symbolizer",
                 "doc": "Composite operation. This defines how this symbolizer should behave relative to symbolizers atop or below it.",
@@ -237,8 +387,7 @@ var _mapnik_reference_latest = {
                     "hue",
                     "saturation",
                     "color",
-                    "value",
-                    "colorize-alpha"
+                    "value"
                 ]
             }
         },
@@ -291,6 +440,19 @@ var _mapnik_reference_latest = {
                 "range": "0-1",
                 "doc": "Level of antialiasing of stroke line"
             },
+            "stroke-gamma-method": {
+                "css": "line-gamma-method",
+                "type": [
+                    "power",
+                    "linear",
+                    "none",
+                    "threshold",
+                    "multiply"
+                ],
+                "default-value": "power",
+                "default-meaning": "pow(x,gamma) is used to calculate pixel gamma, which produces slightly smoother line and polygon antialiasing than the 'linear' method, while other methods are usually only used to disable AA",
+                "doc": "An Antigrain Geometry specific rendering hint to control the quality of antialiasing. Under the hood in Mapnik this method is used in combination with the 'gamma' value (which defaults to 1). The methods are in the AGG source at https://github.com/mapnik/mapnik/blob/master/deps/agg/include/agg_gamma_functions.h"
+            },
             "stroke-dasharray": {
                 "css": "line-dasharray",
                 "type": "numbers",
@@ -298,12 +460,19 @@ var _mapnik_reference_latest = {
                 "default-value": "none",
                 "default-meaning": "solid line"
             },
-            "stroke-dash-offset": {
+            "stroke-dashoffset": {
                 "css": "line-dash-offset",
                 "type": "numbers",
-                "doc": "valid parameter but not currently used in renderers",
+                "doc": "valid parameter but not currently used in renderers (only exists for experimental svg support in Mapnik which is not yet enabled)",
                 "default-value": "none",
                 "default-meaning": "solid line"
+            },
+            "stroke-miterlimit": {
+                "css": "line-miterlimit",
+                "type": "float",
+                "doc": "The limit on the ratio of the miter length to the stroke-width. Used to automatically convert miter joins to bevel joins for sharp angles to avoid the miter extending beyond the thickness of the stroking path. Normally will not need to be set, but a larger value can sometimes help avoid jaggy artifacts.",
+                "default-value": 4.0,
+                "default-meaning": "Will auto-convert miters to bevel line joins when theta is less than 29 degrees as per the SVG spec: 'miterLength / stroke-width = 1 / sin ( theta / 2 )'"
             },
             "clip": {
                 "css": "line-clip",
@@ -318,7 +487,7 @@ var _mapnik_reference_latest = {
                 "default-value": 0,
                 "default-meaning": "no smoothing",
                 "range": "0-1",
-                "doc": "Smooths out line angles. 0 is no smoothing, 1 is fully smoothed. Values greater than 1 will produce wild, looping geometries."
+                "doc": "Smooths out geometry angles. 0 is no smoothing, 1 is fully smoothed. Values greater than 1 will produce wild, looping geometries."
             },
             "offset": {
                 "css": "line-offset",
@@ -336,8 +505,23 @@ var _mapnik_reference_latest = {
                 "default-value": "full",
                 "doc": "Exposes an alternate AGG rendering method that sacrifices some accuracy for speed."
             },
+            "geometry-transform": {
+                "css": "line-geometry-transform",
+                "type": "functions",
+                "default-value": "none",
+                "default-meaning": "geometry will not be transformed",
+                "doc": "Allows transformation functions to be applied to the geometry.",
+                "functions": [
+                    ["matrix", 6],
+                    ["translate", 2],
+                    ["scale", 2],
+                    ["rotate", 3],
+                    ["skewX", 1],
+                    ["skewY", 1]
+                ]
+            },
             "comp-op": {
-                "css": "line-composite-operation",
+                "css": "line-comp-op",
                 "default-value": "src-over",
                 "default-meaning": "add the current symbolizer on top of other symbolizer",
                 "doc": "Composite operation. This defines how this symbolizer should behave relative to symbolizers atop or below it.",
@@ -374,8 +558,7 @@ var _mapnik_reference_latest = {
                     "hue",
                     "saturation",
                     "color",
-                    "value",
-                    "colorize-alpha"
+                    "value"
                 ]
             }
         },
@@ -389,7 +572,14 @@ var _mapnik_reference_latest = {
             },
             "opacity": {
                 "css": "marker-opacity",
-                "doc": "The overall opacity of the marker",
+                "doc": "The overall opacity of the marker, if set, overrides both the opacity of both the fill and stroke",
+                "default-value": 1,
+                "default-meaning": "The stroke-opacity and fill-opacity will be used",
+                "type": "float"
+            },
+            "fill-opacity": {
+                "css": "marker-fill-opacity",
+                "doc": "The fill opacity of the marker",
                 "default-value": 1,
                 "default-meaning": "opaque",
                 "type": "float"
@@ -416,10 +606,23 @@ var _mapnik_reference_latest = {
                 "css": "marker-placement",
                 "type": [
                     "point",
-                    "line"
+                    "line",
+                    "interior"
                 ],
-                "doc": "Attempt to place markers on a point once or on a line repeatedly",
-                "default-value": "line"
+                "default-value": "point",
+                "default-meaning": "Place markers at the center point (centroid) of the geometry",
+                "doc": "Attempt to place markers on a point, in the center of a polygon, or if markers-placement:line, then multiple times along a line. 'interior' placement can be used to ensure that points placed on polygons are forced to be inside the polygon interior"
+            },
+            "multi-policy": {
+                "css": "marker-multi-policy",
+                "type": [
+                    "each",
+                    "whole",
+                    "largest"
+                ],
+                "default-value": "each",
+                "default-meaning": "If a feature contains multiple geometries and the placement type is either point or interior then a marker will be rendered for each",
+                "doc": "A special setting to allow the user to control rendering behavior for 'multi-geometries' (when a feature contains multiple geometries). This setting does not apply to markers placed along lines. The 'each' policy is default and means all geometries will get a marker. The 'whole' policy means that the aggregate centroid between all geometries will be used. The 'largest' policy means that only the largest (by bounding box areas) feature will get a rendered marker (this is how text labeling behaves by default)."
             },
             "marker-type": {
                 "css": "marker-type",
@@ -433,7 +636,7 @@ var _mapnik_reference_latest = {
             "width": {
                 "css": "marker-width",
                 "default-value": 10,
-                "doc": "The height of the marker, if using one of the default types.",
+                "doc": "The width of the marker, if using one of the default types.",
                 "type": "expression"
             },
             "height": {
@@ -459,7 +662,7 @@ var _mapnik_reference_latest = {
                 "css": "marker-ignore-placement",
                 "type": "boolean",
                 "default-value": false,
-                "default-meaning": "do not store the bbox of this marker in the collision detector cache",
+                "default-meaning": "do not store the bbox of this geometry in the collision detector cache",
                 "doc": "value to control whether the placement of the feature will prevent the placement of other features"
             },
             "spacing": {
@@ -489,8 +692,38 @@ var _mapnik_reference_latest = {
                 "default-meaning": "No transformation",
                 "doc": "SVG transformation definition"
             },
+            "clip": {
+                "css": "marker-clip",
+                "type": "boolean",
+                "default-value": true,
+                "default-meaning": "geometry will be clipped to map bounds before rendering",
+                "doc": "geometries are clipped to map bounds by default for best rendering performance. In some cases users may wish to disable this to avoid rendering artifacts."
+            },
+            "smooth": {
+                "css": "marker-smooth",
+                "type": "float",
+                "default-value": 0,
+                "default-meaning": "no smoothing",
+                "range": "0-1",
+                "doc": "Smooths out geometry angles. 0 is no smoothing, 1 is fully smoothed. Values greater than 1 will produce wild, looping geometries."
+            },
+            "geometry-transform": {
+                "css": "marker-geometry-transform",
+                "type": "functions",
+                "default-value": "none",
+                "default-meaning": "geometry will not be transformed",
+                "doc": "Allows transformation functions to be applied to the geometry.",
+                "functions": [
+                    ["matrix", 6],
+                    ["translate", 2],
+                    ["scale", 2],
+                    ["rotate", 3],
+                    ["skewX", 1],
+                    ["skewY", 1]
+                ]
+            },
             "comp-op": {
-                "css": "marker-composite-operation",
+                "css": "marker-comp-op",
                 "default-value": "src-over",
                 "default-meaning": "add the current symbolizer on top of other symbolizer",
                 "doc": "Composite operation. This defines how this symbolizer should behave relative to symbolizers atop or below it.",
@@ -527,8 +760,7 @@ var _mapnik_reference_latest = {
                     "hue",
                     "saturation",
                     "color",
-                    "value",
-                    "colorize-alpha"
+                    "value"
                 ]
             }
         },
@@ -536,9 +768,15 @@ var _mapnik_reference_latest = {
             "name": {
                 "css": "shield-name",
                 "type": "expression",
-                "required": true,
                 "serialization": "content",
                 "doc": "Value to use for a shield\"s text label. Data columns are specified using brackets like [column_name]"
+            },
+            "file": {
+                "css": "shield-file",
+                "required": true,
+                "type": "uri",
+                "default-value": "none",
+                "doc": "Image file to render behind the shield text"
             },
             "face-name": {
                 "css": "shield-face-name",
@@ -547,6 +785,13 @@ var _mapnik_reference_latest = {
                 "doc": "Font name and style to use for the shield text",
                 "default-value": "",
                 "required": true
+            },
+            "unlock-image": {
+                "css": "shield-unlock-image",
+                "type": "boolean",
+                "doc": "This parameter should be set to true if you are trying to position text beside rather than on top of the shield image",
+                "default-value": false,
+                "default-meaning": "text alignment relative to the shield image uses the center of the image as the anchor for text positioning."
             },
             "size": {
                 "css": "shield-size",
@@ -602,9 +847,9 @@ var _mapnik_reference_latest = {
             },
             "wrap-width": {
                 "css": "shield-wrap-width",
-                "type": "float",
+                "type": "unsigned",
                 "default-value": 0,
-                "doc": "Length before wrapping long names."
+                "doc": "Length of a chunk of text in characters before wrapping text"
             },
             "wrap-before": {
                 "css": "shield-wrap-before",
@@ -634,20 +879,14 @@ var _mapnik_reference_latest = {
             },
             "character-spacing": {
                 "css": "shield-character-spacing",
-                "type": "float",
+                "type": "unsigned",
                 "default-value": 0,
                 "doc": "Horizontal spacing between characters (in pixels). Currently works for point placement only, not line placement."
             },
             "line-spacing": {
                 "css": "shield-line-spacing",
                 "doc": "Vertical spacing between lines of multiline labels (in pixels)",
-                "type": "float"
-            },
-            "file": {
-                "css": "shield-file",
-                "type": "uri",
-                "default-value": "none",
-                "doc": "Image file to render behind the shield text"
+                "type": "unsigned"
             },
             "dx": {
                 "css": "shield-text-dx",
@@ -718,12 +957,6 @@ var _mapnik_reference_latest = {
                 "doc": "Transform the case of the characters",
                 "default-value": "none"
             },
-            "no-text": {
-                "css": "shield-no-text",
-                "type": "boolean",
-                "doc": "Whether the shield should make room for a text label.",
-                "default-value": "false"
-            },
             "justify-alignment": {
                 "css": "shield-justify-alignment",
                 "type": [
@@ -735,8 +968,15 @@ var _mapnik_reference_latest = {
                 "doc": "Define how text in a shield's label is justified",
                 "default-value": "auto"
             },
+            "clip": {
+                "css": "shield-clip",
+                "type": "boolean",
+                "default-value": true,
+                "default-meaning": "geometry will be clipped to map bounds before rendering",
+                "doc": "geometries are clipped to map bounds by default for best rendering performance. In some cases users may wish to disable this to avoid rendering artifacts."
+            },
             "comp-op": {
-                "css": "shield-composite-operation",
+                "css": "shield-comp-op",
                 "default-value": "src-over",
                 "default-meaning": "add the current symbolizer on top of other symbolizer",
                 "doc": "Composite operation. This defines how this symbolizer should behave relative to symbolizers atop or below it.",
@@ -773,8 +1013,7 @@ var _mapnik_reference_latest = {
                     "hue",
                     "saturation",
                     "color",
-                    "value",
-                    "colorize-alpha"
+                    "value"
                 ]
             }
         },
@@ -785,6 +1024,77 @@ var _mapnik_reference_latest = {
                 "default-value": "none",
                 "required": true,
                 "doc": "An image file to be repeated and warped along a line"
+            },
+            "clip": {
+                "css": "line-pattern-clip",
+                "type": "boolean",
+                "default-value": true,
+                "default-meaning": "geometry will be clipped to map bounds before rendering",
+                "doc": "geometries are clipped to map bounds by default for best rendering performance. In some cases users may wish to disable this to avoid rendering artifacts."
+            },
+            "smooth": {
+                "css": "line-pattern-smooth",
+                "type": "float",
+                "default-value": 0,
+                "default-meaning": "no smoothing",
+                "range": "0-1",
+                "doc": "Smooths out geometry angles. 0 is no smoothing, 1 is fully smoothed. Values greater than 1 will produce wild, looping geometries."
+            },
+            "geometry-transform": {
+                "css": "line-pattern-geometry-transform",
+                "type": "functions",
+                "default-value": "none",
+                "default-meaning": "geometry will not be transformed",
+                "doc": "Allows transformation functions to be applied to the geometry.",
+                "functions": [
+                    ["matrix", 6],
+                    ["translate", 2],
+                    ["scale", 2],
+                    ["rotate", 3],
+                    ["skewX", 1],
+                    ["skewY", 1]
+                ]
+            },
+            "comp-op": {
+                "css": "line-pattern-comp-op",
+                "default-value": "src-over",
+                "default-meaning": "add the current symbolizer on top of other symbolizer",
+                "doc": "Composite operation. This defines how this symbolizer should behave relative to symbolizers atop or below it.",
+                "type": ["clear",
+                    "src",
+                    "dst",
+                    "src-over",
+                    "dst-over",
+                    "src-in",
+                    "dst-in",
+                    "src-out",
+                    "dst-out",
+                    "src-atop",
+                    "dst-atop",
+                    "xor",
+                    "plus",
+                    "minus",
+                    "multiply",
+                    "screen",
+                    "overlay",
+                    "darken",
+                    "lighten",
+                    "color-dodge",
+                    "color-burn",
+                    "hard-light",
+                    "soft-light",
+                    "difference",
+                    "exclusion",
+                    "contrast",
+                    "invert",
+                    "invert-rgb",
+                    "grain-merge",
+                    "grain-extract",
+                    "hue",
+                    "saturation",
+                    "color",
+                    "value"
+                ]
             }
         },
         "polygon-pattern": {
@@ -811,6 +1121,84 @@ var _mapnik_reference_latest = {
                 "default-meaning": "fully antialiased",
                 "range": "0-1",
                 "doc": "Level of antialiasing of polygon pattern edges"
+            },
+            "opacity": {
+                "css": "polygon-pattern-opacity",
+                "type": "float",
+                "doc": "(Default 1.0) - Apply an opacity level to the image used for the pattern",
+                "default-value": 1,
+                "default-meaning": "The image is rendered without modifications"
+            },
+            "clip": {
+                "css": "polygon-pattern-clip",
+                "type": "boolean",
+                "default-value": true,
+                "default-meaning": "geometry will be clipped to map bounds before rendering",
+                "doc": "geometries are clipped to map bounds by default for best rendering performance. In some cases users may wish to disable this to avoid rendering artifacts."
+            },
+            "smooth": {
+                "css": "polygon-pattern-smooth",
+                "type": "float",
+                "default-value": 0,
+                "default-meaning": "no smoothing",
+                "range": "0-1",
+                "doc": "Smooths out geometry angles. 0 is no smoothing, 1 is fully smoothed. Values greater than 1 will produce wild, looping geometries."
+            },
+            "geometry-transform": {
+                "css": "polygon-pattern-geometry-transform",
+                "type": "functions",
+                "default-value": "none",
+                "default-meaning": "geometry will not be transformed",
+                "doc": "Allows transformation functions to be applied to the geometry.",
+                "functions": [
+                    ["matrix", 6],
+                    ["translate", 2],
+                    ["scale", 2],
+                    ["rotate", 3],
+                    ["skewX", 1],
+                    ["skewY", 1]
+                ]
+            },
+            "comp-op": {
+                "css": "polygon-pattern-comp-op",
+                "default-value": "src-over",
+                "default-meaning": "add the current symbolizer on top of other symbolizer",
+                "doc": "Composite operation. This defines how this symbolizer should behave relative to symbolizers atop or below it.",
+                "type": ["clear",
+                    "src",
+                    "dst",
+                    "src-over",
+                    "dst-over",
+                    "src-in",
+                    "dst-in",
+                    "src-out",
+                    "dst-out",
+                    "src-atop",
+                    "dst-atop",
+                    "xor",
+                    "plus",
+                    "minus",
+                    "multiply",
+                    "screen",
+                    "overlay",
+                    "darken",
+                    "lighten",
+                    "color-dodge",
+                    "color-burn",
+                    "hard-light",
+                    "soft-light",
+                    "difference",
+                    "exclusion",
+                    "contrast",
+                    "invert",
+                    "invert-rgb",
+                    "grain-merge",
+                    "grain-extract",
+                    "hue",
+                    "saturation",
+                    "color",
+                    "value"
+                ]
             }
         },
         "raster": {
@@ -820,18 +1208,6 @@ var _mapnik_reference_latest = {
                 "default-meaning": "opaque",
                 "type": "float",
                 "doc": "The opacity of the raster symbolizer on top of other symbolizers."
-            },
-            "mode": {
-                "css": "raster-mode",
-                "default-value": "src-over",
-                "default-meaning": "add the current layer on top of other layers",
-                "doc": "Composite operation. This defines how this layer should behave relative to layers atop or below it.",
-                "type": ["clear", "src", "dst", "src-over", "dst-over", "src-in", "dst-in", "src-out",
-                         "dst-out", "src-atop", "dst-atop", "xor", "plus", "minus", "multiply", "screen",
-                         "overlay", "darken", "lighten", "color-dodge", "color-burn", "hard-light", "soft-light",
-                         "difference", "exclusion", "contrast", "invert", "invert-rgb", "grain-merge", "grain-extract"
-                ],
-                "doc": "The blending technique used to overlay this raster image on the layer below. 'src-over' simply covers the layer. Grain merge adds the two layers together and subtracts 128 from the value, making the resulting area sometimes high-contrast. Screen often gives a lighter, washed-out appearance. Multiply multiplies the pixels, giving a high-contrast result. Divide divides the upper layer by the lower layer, making a lighter version."
             },
             "filter-factor": {
                 "css": "raster-filter-factor",
@@ -870,11 +1246,11 @@ var _mapnik_reference_latest = {
                 "css": "raster-mesh-size",
                 "default-value": 16,
                 "default-meaning": "Reprojection mesh will be 1/16 of the resolution of the source image",
-                "type": "integer",
+                "type": "unsigned",
                 "doc": "A reduced resolution mesh is used for raster reprojection, and the total image size is divided by the mesh-size to determine the quality of that mesh. Values for mesh-size larger than the default will result in faster reprojection but might lead to distortion."
             },
             "comp-op": {
-                "css": "raster-composite-operation",
+                "css": "raster-comp-op",
                 "default-value": "src-over",
                 "default-meaning": "add the current symbolizer on top of other symbolizer",
                 "doc": "Composite operation. This defines how this symbolizer should behave relative to symbolizers atop or below it.",
@@ -911,8 +1287,7 @@ var _mapnik_reference_latest = {
                     "hue",
                     "saturation",
                     "color",
-                    "value",
-                    "colorize-alpha"
+                    "value"
                 ]
             }
         },
@@ -920,7 +1295,7 @@ var _mapnik_reference_latest = {
             "file": {
                 "css": "point-file",
                 "type": "uri",
-                "required": true,
+                "required": false,
                 "default-value": "none",
                 "doc": "Image file to represent a point"
             },
@@ -935,7 +1310,7 @@ var _mapnik_reference_latest = {
                 "css": "point-ignore-placement",
                 "type": "boolean",
                 "default-value": false,
-                "default-meaning": "do not store the bbox of this point in the collision detector cache",
+                "default-meaning": "do not store the bbox of this geometry in the collision detector cache",
                 "doc": "value to control whether the placement of the feature will prevent the placement of other features"
             },
             "opacity": {
@@ -970,7 +1345,7 @@ var _mapnik_reference_latest = {
                 "doc": "SVG transformation definition"
             },
             "comp-op": {
-                "css": "point-composite-operation",
+                "css": "point-comp-op",
                 "default-value": "src-over",
                 "default-meaning": "add the current symbolizer on top of other symbolizer",
                 "doc": "Composite operation. This defines how this symbolizer should behave relative to symbolizers atop or below it.",
@@ -1007,8 +1382,7 @@ var _mapnik_reference_latest = {
                     "hue",
                     "saturation",
                     "color",
-                    "value",
-                    "colorize-alpha"
+                    "value"
                 ]
             }
         },
@@ -1038,14 +1412,13 @@ var _mapnik_reference_latest = {
                 "css": "text-ratio",
                 "doc": "Define the amount of text (of the total) present on successive lines when wrapping occurs",
                 "default-value": 0,
-                "type": "float",
-                "type": "none"
+                "type": "unsigned"
             },
             "wrap-width": {
                 "css": "text-wrap-width",
                 "doc": "Length of a chunk of text in characters before wrapping text",
                 "default-value": 0,
-                "type": "float"
+                "type": "unsigned"
             },
             "wrap-before": {
                 "css": "text-wrap-before",
@@ -1061,8 +1434,8 @@ var _mapnik_reference_latest = {
             },
             "spacing": {
                 "css": "text-spacing",
-                "type": "float",
-                "doc": "Distance between repeated text labels on a line"
+                "type": "unsigned",
+                "doc": "Distance between repeated text labels on a line (aka. label-spacing)"
             },
             "character-spacing": {
                 "css": "text-character-spacing",
@@ -1073,20 +1446,20 @@ var _mapnik_reference_latest = {
             "line-spacing": {
                 "css": "text-line-spacing",
                 "default-value": 0,
-                "type": "float",
+                "type": "unsigned",
                 "doc": "Vertical spacing adjustment between lines in pixels"
             },
             "label-position-tolerance": {
                 "css": "text-label-position-tolerance",
                 "default-value": 0,
-                "type": "float",
-                "doc": "Allows the label to be displaced from its ideal position by a number of pixels"
+                "type": "unsigned",
+                "doc": "Allows the label to be displaced from its ideal position by a number of pixels (only works with placement:line)"
             },
             "max-char-angle-delta": {
                 "css": "text-max-char-angle-delta",
                 "type": "float",
-                "default-value": "none",
-                "doc": "If present, the maximum angle change, in degrees, allowed between adjacent characters in a label.  This will stop label placement around sharp corners."
+                "default-value": "22.5",
+                "doc": "The maximum angle change, in degrees, allowed between adjacent characters in a label. This value internally is converted to radians to the default is 22.5*math.pi/180.0. The higher the value the fewer labels will be placed around around sharp corners."
             },
             "fill": {
                 "css": "text-fill",
@@ -1198,7 +1571,7 @@ var _mapnik_reference_latest = {
                 "css": "text-placements",
                 "type": "string",
                 "default-value": "",
-                "doc": "If \"placement-type\" is set to \"simple\", use this \"POSITIONS,[SIZES]\" string. See TextSymbolizer docs for format."
+                "doc": "If \"placement-type\" is set to \"simple\", use this \"POSITIONS,[SIZES]\" string. An example is `text-placements: \"E,NE,SE,W,NW,SW\";` "
             },
             "text-transform": {
                 "css": "text-transform",
@@ -1234,8 +1607,15 @@ var _mapnik_reference_latest = {
                 "default-value": "auto",
                 "default-meaning": "Auto alignment means that text will be centered by default except when using the `placement-type` parameter - in that case either right or left justification will be used automatically depending on where the text could be fit given the `text-placements` directives"
             },
+            "clip": {
+                "css": "text-clip",
+                "type": "boolean",
+                "default-value": true,
+                "default-meaning": "geometry will be clipped to map bounds before rendering",
+                "doc": "geometries are clipped to map bounds by default for best rendering performance. In some cases users may wish to disable this to avoid rendering artifacts."
+            },
             "comp-op": {
-                "css": "text-composite-operation",
+                "css": "text-comp-op",
                 "default-value": "src-over",
                 "default-meaning": "add the current symbolizer on top of other symbolizer",
                 "doc": "Composite operation. This defines how this symbolizer should behave relative to symbolizers atop or below it.",
@@ -1272,8 +1652,7 @@ var _mapnik_reference_latest = {
                     "hue",
                     "saturation",
                     "color",
-                    "value",
-                    "colorize-alpha"
+                    "value"
                 ]
             }
         },
@@ -1295,48 +1674,6 @@ var _mapnik_reference_latest = {
                 "doc": "The height of the building in pixels.",
                 "type": "expression",
                 "default-value": "0"
-            },
-            "comp-op": {
-                "css": "building-composite-operation",
-                "default-value": "src-over",
-                "default-meaning": "add the current symbolizer on top of other symbolizer",
-                "doc": "Composite operation. This defines how this symbolizer should behave relative to symbolizers atop or below it.",
-                "type": ["clear",
-                    "src",
-                    "dst",
-                    "src-over",
-                    "dst-over",
-                    "src-in",
-                    "dst-in",
-                    "src-out",
-                    "dst-out",
-                    "src-atop",
-                    "dst-atop",
-                    "xor",
-                    "plus",
-                    "minus",
-                    "multiply",
-                    "screen",
-                    "overlay",
-                    "darken",
-                    "lighten",
-                    "color-dodge",
-                    "color-burn",
-                    "hard-light",
-                    "soft-light",
-                    "difference",
-                    "exclusion",
-                    "contrast",
-                    "invert",
-                    "invert-rgb",
-                    "grain-merge",
-                    "grain-extract",
-                    "hue",
-                    "saturation",
-                    "color",
-                    "value",
-                    "colorize-alpha"
-                ]
             }
         }
     },
@@ -1488,13 +1825,24 @@ var _mapnik_reference_latest = {
         "yellow":  [255, 255, 0],
         "yellowgreen":  [154, 205, 50],
         "transparent":  [0, 0, 0, 0]
+    },
+    "filter": {
+        "value": [
+            "true",
+            "false",
+            "null",
+            "point",
+            "linestring",
+            "polygon",
+            "collection"
+        ]
     }
-};
+}
 
 window.carto['mapnik-reference'] =  {
   version: {
     latest: _mapnik_reference_latest,
-    '2.1.0': _mapnik_reference_latest
+    '2.1.1': _mapnik_reference_latest
   }
 }
 //

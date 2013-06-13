@@ -50,10 +50,9 @@ module CartoDB
       end #non_dependent_visualizations
 
       def affected_visualizations
-        @affected_visualizations ||
-          affected_visualization_records.map do |attributes|
-            CartoDB::Visualization::Member.new(attributes)
-          end
+        affected_visualization_records.map do |attributes|
+          CartoDB::Visualization::Member.new(attributes)
+        end
       end #affected_visualizations
 
       private
@@ -62,7 +61,7 @@ module CartoDB
 
       def affected_visualization_records
         db[:visualizations].with_sql(%Q{
-          SELECT  visualizations.id, visualizations.name, visualizations.map_id
+          SELECT  *
           FROM    layers_user_tables, layers_maps, visualizations
           WHERE   layers_user_tables.user_table_id = #{table.id}
           AND     layers_user_tables.layer_id = layers_maps.layer_id

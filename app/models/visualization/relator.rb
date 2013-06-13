@@ -18,7 +18,7 @@ module CartoDB
       end #initialize
 
       def overlays
-        Overlay::Collection.new(visualization_id: id).fetch
+        @overlas ||= Overlay::Collection.new(visualization_id: id).fetch
       end #overlays
 
       def map
@@ -26,25 +26,25 @@ module CartoDB
       end #map
 
       def user
-        map.user if map
+        @user ||= map.user if map
       end #user
 
       def table
         return nil unless defined?(::Table)
-        ::Table.where(map_id: map_id).first 
+        @table ||= ::Table.where(map_id: map_id).first 
       end #table
 
       def related_tables
-        layers(:cartodb).flat_map(&:affected_tables).uniq
+        @related_tables ||= layers(:cartodb).flat_map(&:affected_tables).uniq
       end #related_tables
 
       def layers(kind)
         return [] unless map
-        return map.send(LAYER_SCOPES.fetch(kind))
+        map.send(LAYER_SCOPES.fetch(kind))
       end #layers
 
       def stats
-        Visualization::Stats.new(self).to_poro
+        @stats ||= Visualization::Stats.new(self).to_poro
       end #stats
 
       attr_reader :id, :map_id

@@ -196,3 +196,19 @@
     background: $INNER_BKG_COLOR;
   }
 }
+
+.white-gradient-shadow-top {
+  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, rgba(255,255,255,0.95)), color-stop(100%, rgba(255,255,255,0.04)));
+  background-image: -webkit-linear-gradient(top, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.04) 100%);
+  background-image: -moz-linear-gradient(top, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.04) 100%);
+  background-image: -o-linear-gradient(top, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.04) 100%);
+  background-image: linear-gradient(top, rgba(255,255,255,0.95) 0%,rgba(255,255,255,0.04) 100%);
+}
+
+.white-gradient-shadow-bottom {
+  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, rgba(255,255,255,0.04)), color-stop(100%, rgba(255,255,255,0.95)));
+  background-image: -webkit-linear-gradient(top, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.95) 100%);
+  background-image: -moz-linear-gradient(top, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.95) 100%);
+  background-image: -o-linear-gradient(top, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.95) 100%);
+  background-image: linear-gradient(top, rgba(255,255,255,0.04) 0%,rgba(255,255,255,0.95) 100%);
+}

@@ -22,7 +22,7 @@ module CartoDB
       end #overlays
 
       def map
-        ::Map.where(id: map_id).first
+        @map ||= ::Map.where(id: map_id).first
       end #map
 
       def user

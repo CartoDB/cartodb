@@ -29,10 +29,17 @@
       @include border-radius(6px);
     }
 
-    p.error {
+    p.warning {
       display:none;
-      margin:20px 0 0;
-      color: rgba(red,0.5);
-      text-align:center;
+      padding:0 14px;
+      margin:4px 0 0;
+      line-height:44px;
+      @include border-radius(3px);
+      background:#FFF8E3;
+      color:#666666;
+      font-size:14px;
+      font-family: $text-fonts;
+
+      &.geo, &.error {background:#FFEAEA;}
     }
   }

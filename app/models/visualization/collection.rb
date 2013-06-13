@@ -61,10 +61,6 @@ module CartoDB
         self
       end #destroy
 
-      def to_json(*args)
-        map { |member| member.to_hash(related: false) }.to_json(*args)
-      end #to_json
-
       attr_reader :total_entries
 
       private

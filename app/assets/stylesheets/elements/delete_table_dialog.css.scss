@@ -29,6 +29,59 @@
 
     p { margin: 0; }
 
+    .non_dependent, .dependent {
+
+      &.open .visualizations {
+        display:block;
+      }
+
+      &.open .msg {
+        @include border-radius(4px 4px 0 0);
+        margin: 0 0 1px 0;
+      }
+
+      .visualizations {
+        display:none;
+        padding: 13px 14px;
+        color: #666666;
+        font-size: 15px;
+        @include border-radius(0 0 4px 4px);
+        margin: 0 0 5px 0;
+
+        a {
+          font-style: italic;
+          color: #2483B4;
+        }
+
+      }
+
+      .msg {
+        padding: 13px 14px;
+        color: #666666;
+        font-size: 15px;
+        @include border-radius(4px);
+
+        a {
+          color: #666;
+          border-bottom: 1px solid #666;
+          text-decoration:none;
+          &:hover { color: #333; border-color: #666; }
+        }
+      }
+    }
+
+    .non_dependent > div {
+      background:rgba(#FFDC73, .2);
+    }
+
+    .dependent > div {
+      background:rgba(#FECBCB, .4);
+    }
+
+    .non_dependent .msg {
+      margin: 0 0 4px 0;
+    }
+
     ul {
       margin: 15px 0 0 0;
 

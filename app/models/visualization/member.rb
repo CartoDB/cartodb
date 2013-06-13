@@ -113,8 +113,8 @@ module CartoDB
         !public?
       end #private?
 
-      def to_hash
-        Presenter.new(self).to_poro
+      def to_hash(options={})
+        Presenter.new(self, options).to_poro
       end #to_hash
 
       def to_vizjson

@@ -56,6 +56,8 @@ div.subheader {
         &.mapviews { }
 
         &.badge {
+          position:relative;
+          top: -5px;
           width:93px;
           padding-right:0;
           border:none;
@@ -64,13 +66,16 @@ div.subheader {
             display: block;
             margin: 4px 0 0 0;
             @include size(93px, 74px);
+            @include icons-sprite(badge_default);
 
             &.free      { @include icons-sprite(badge_free_server); }
             &.magellan  { @include icons-sprite(badge_magellan); }
             &.john_snow { @include icons-sprite(badge_john_snow); }
+            &.mercator  { @include icons-sprite(badge_mercator); }
             &.coronelli { @include icons-sprite(badge_coronelli); }
             &.dedicated { @include icons-sprite(badge_dedicated_server); }
 
+            &.coronelli, &.dedicated { top: -15px; }
           }
         }
 

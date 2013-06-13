@@ -423,13 +423,14 @@ class Table < Sequel::Model(:user_tables)
     data_layer.options["user_name"] = self.owner.username
     data_layer.options["tile_style"] = "##{self.name} #{Cartodb.config[:layer_opts]["default_tile_styles"][self.the_geom_type]}"
     data_layer.infowindow ||= {}
-    data_layer.infowindow['fields'] = self.schema(reload: true).map { |field|
-        if !["the_geom", "updated_at", "created_at"].include?(field.first.to_s.downcase) && !(field[1].to_s =~ /^geo/)
-          field.first.to_s
-        end
-      }.compact.each_with_index.map { |column_name, i|
-        { name: column_name, title: true, position: i+1 }
-      }
+    data_layer.infowindow['fields'] = []
+    #data_layer.infowindow['fields'] = self.schema(reload: true).map { |field|
+        #if !["the_geom", "updated_at", "created_at"].include?(field.first.to_s.downcase) && !(field[1].to_s =~ /^geo/)
+          #field.first.to_s
+        #end
+      #}.compact.each_with_index.map { |column_name, i|
+        #{ name: column_name, title: true, position: i+1 }
+      #}
     m.add_layer(data_layer)
   end
 

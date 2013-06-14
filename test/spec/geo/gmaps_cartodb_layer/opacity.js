@@ -22,7 +22,7 @@ describe('Opacity interaction', function() {
       table_name: 'earthquakes',
       query: "SELECT * FROM {{table_name}}",
       tile_style: "#{{table_name}}{marker-fill:#E25B5B}",
-      opacity:0.8,
+      opacity: 0.8,
       interactivity: "cartodb_id, magnitude",
       featureOver: function(ev,latlng,pos,data) {},
       featureOut: function() {},
@@ -33,7 +33,7 @@ describe('Opacity interaction', function() {
 
   });
 
-  it('Layer opacity should be 0.8', function() {
+  xit('Layer opacity should be 0.8', function() {
 
     waits(500);
 
@@ -47,7 +47,7 @@ describe('Opacity interaction', function() {
   });
 
 
-  it('Opacity shouldn\'t change if it is not visible', function() {
+  xit('Opacity shouldn\'t change if it is not visible', function() {
     
     waits(500);
 

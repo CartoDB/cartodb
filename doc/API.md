@@ -45,11 +45,11 @@ To use CartoDB.js in your web-page, you no longer need to host the library on yo
 
 <div class="margin20"></div>
 ``` html
-    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/themes/css/cartodb.css" />
+    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.css" />
     <!--[if lte IE 8]>
-        <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/themes/css/cartodb.ie.css" />
+        <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.ie.css" />
     <![endif]-->
-    <script src="http://libs.cartocdn.com/cartodb.js/v2/cartodb.js"></script>
+    <script src="http://libs.cartocdn.com/cartodb.js/v3/cartodb.js"></script>
 ```
 <div class="margin20"></div>
 
@@ -77,8 +77,8 @@ You can also use the returned **layer** to build functionality (show/hide, click
     cartodb.createVis('map', 'http://examples-beta.cartodb.com/api/v1/viz/791/viz.json')
         .done(function(vis, layers) {
             // layer 0 is the base layer, layer 1 is cartodb layer
-            layers[1].on('featureOver', function(e, latlng, pos, data) {
-              cartodb.log.log(e, latlng, pos, data);
+            layers[1].on('featureOver', function(e, latlng, pos, data, layerNumber) {
+              cartodb.log.log(e, latlng, pos, data, layerNumber);
             });
     
             // you can also get the map object created by cartodb.js
@@ -102,11 +102,11 @@ To show you just how simple CartoDB.js can be, let's put it all together. Start 
 
 <div class="margin20"></div>
 ``` html
-    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/themes/css/cartodb.css" />
+    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.css" />
     <!--[if lte IE 8]>
-        <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/themes/css/cartodb.ie.css" />
+        <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.ie.css" />
     <![endif]-->
-    <script src="http://libs.cartocdn.com/cartodb.js/v2/cartodb.js"></script>
+    <script src="http://libs.cartocdn.com/cartodb.js/v3/cartodb.js"></script>
 ```
 <div class="margin20"></div>
 
@@ -120,7 +120,9 @@ Next, in the BODY of your HTML include a DIV for your map and the minimum CartoD
           center: [0,0],
           zoom: 2
         })
-        cartodb.createLayer(map, 'http://examples-beta.cartodb.com/api/v1/viz/766/viz.json')
+        cartodb.createLayer(map, 'http://examples-beta.cartodb.com/api/v1/viz/766/viz.json').on('done', function(layer) {
+            map.addLayer(layer);
+        })
           .on('error', function(err) {
             alert("some error occurred: " + err);
           });
@@ -146,8 +148,9 @@ When you create a visualization using the CartoDB website, you get automatically
         type: 'cartodb',
         options: {
             table_name: 'mytable',
-            user_name: 'cartodb_username'
-            query: 'select * from mytable where age > 10'
+            user_name: 'cartodb_username',
+            query: 'select * from mytable where age > 10',
+            tile_style: '#table { marker-fill: red }' // new in v3, this param is mandatory
         }
     }).done(function(layer) {
         map.addLayer(layer);
@@ -169,7 +172,7 @@ Although the Viz JSON file stores all your map settings, all the values are also
 
 <div class="margin20"></div>
 ``` javascript
-    cartodb.createVis('map', 'http://examples.cartodb.com/api/v1/viz/ne_10m_populated_p_1/viz.json')
+    cartodb.createVis('map', 'http://examples.cartodb.com/api/v2/viz/ne_10m_populated_p_1/viz.json')
 ```
 
 ##### Bounds wrapper
@@ -209,7 +212,7 @@ The next important set of events for you to use happen on those layers that are 
 
 <div class="margin20"></div>
 ``` javascript
-    layer.on('featureClick', function(e, latlng, pos, data) {
+    layer.on('featureClick', function(e, latlng, pos, data, layer) {
       console.log("mouse clicked polygon with data: " + data);
     });
 ```
@@ -219,7 +222,7 @@ The second event is the **featureOver** event, which lets you listen for when th
 
 <div class="margin20"></div>
 ``` javascript
-    layer.on('featureOver', function(e, latlng, pos, data) {
+    layer.on('featureOver', function(e, latlng, pos, data, layer) {
       console.log("mouse over polygon with data: " + data);
     });
 ```
@@ -229,7 +232,7 @@ Similarly, there is the **featureOut** event. This is best used if you do things
 
 <div class="margin20"></div>
 ``` javascript
-    layer.on('featureOut', function(e, latlng, pos, data) {
+    layer.on('featureOut', function(e, latlng, pos, data, layer) {
       console.log("mouse left polygon with data: " + data);
     });
 ```
@@ -241,8 +244,8 @@ If you want to use [Leaflet](http://leafletjs.com) it gets even easier, CartoDB.
 
 <div class="margin20"></div>
 ``` html
-    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/themes/css/cartodb.css" />
-    <script src="http://libs.cartocdn.com/cartodb.js/v2/cartodb.js"></script>
+    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.css" />
+    <script src="http://libs.cartocdn.com/cartodb.js/v3/cartodb.js"></script>
 ```
 
 ##### IE support
@@ -251,11 +254,11 @@ We have worked hard to support Internet Explorer with CartoDB.js. It currently w
 
 <div class="margin20"></div>
 ``` html
-    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/themes/css/cartodb.css" />
+    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.css" />
     <!--[if lte IE 8]>
-        <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/themes/css/cartodb.ie.css" />
+        <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.ie.css" />
     <![endif]-->
-    <script src="http://libs.cartocdn.com/cartodb.js/v2/cartodb.js"></script>
+    <script src="http://libs.cartocdn.com/cartodb.js/v3/cartodb.js"></script>
 ```
 
 ##### HTTPS support
@@ -270,7 +273,7 @@ You can use all the functionality of cartodb.js with HTTPs support. Be sure to a
           center: [0,0],
           zoom: 2
         })
-        cartodb.createLayer(map, 'https://examples-beta.cartodb.com/api/v1/viz/766/viz.json', { https: true })
+        cartodb.createLayer(map, 'https://examples-beta.cartodb.com/api/v2/viz/766/viz.json', { https: true })
           .on('error', function(err) {
             alert("some error occurred: " + err);
           });
@@ -286,7 +289,7 @@ We recommend that you always develop against the most recent version of CartoDB.
 
 <div class="margin20"></div>
 ``` javascript
-    http://libs.cartocdn.com/cartodb.js/v2/cartodb.js
+    http://libs.cartocdn.com/cartodb.js/v3/cartodb.js
 ```
 <div class="margin20"></div>
 
@@ -294,7 +297,7 @@ Anytime you wish to push a stable version of your site to the web though, you ca
 
 <div class="margin20"></div>
 ``` javascript
-    http://libs.cartocdn.com/cartodb.js/v2/cartodb.js
+    http://libs.cartocdn.com/cartodb.js/v3/cartodb.js
 ```
 <div class="margin20"></div>
 
@@ -310,7 +313,7 @@ Now, that you have your CartoDB.js version, you can point your site at that rele
 
 <div class="margin20"></div>
 ``` javascript
-    http://libs.cartocdn.com/cartodb.js/v2/2.0.11/cartodb.js
+    http://libs.cartocdn.com/cartodb.js/v3/2.0.11/cartodb.js
 ```
 <div class="margin20"></div>
 
@@ -318,7 +321,7 @@ You can do the same for the CSS documents we provide:
 
 <div class="margin20"></div>
 ``` javascript
-    http://libs.cartocdn.com/cartodb.js/v2/2.0.11/themes/css/cartodb.css
+    http://libs.cartocdn.com/cartodb.js/v3/2.0.11/themes/css/cartodb.css
 ```
 <div class="margin20"></div>
 
@@ -355,7 +358,7 @@ Creates a visualization inside the map_id DOM object:
 
 <div class="margin20"></div>
 ``` javascript
-    var url = 'http://examples-beta.cartodb.com/api/v1/viz/791/viz.json';
+    var url = 'http://examples-beta.cartodb.com/api/v2/viz/791/viz.json';
     cartodb.createVis('map', url)
       .done(function(vis, layers) {
       });
@@ -507,7 +510,7 @@ Promise object. You can listen for the following events:
 
 ##### layer.isVisible()
 
-  Get the visibility of the layer. Returns true or false.
+  Get the visibility of the layer. Returns true or false. This refers to the whole layer not each data layer that this layer could contain
 
 ###### RETURNS
 
@@ -521,37 +524,97 @@ Promise object. You can listen for the following events:
 
   + **opacity**: value in range [0, 1].
 
-##### **layer.setInteraction(enable)**
+##### **layer.addLayer(layerDefinition[, layerIndex])**
+
+Adds a new data to the current layer. With this method data from multiple tables can be easily visualized. New in v3
+
+###### ARGUMENTS
+
+  + **layerDefinition**: an object with the sql and cartocss that defines the data, should be like
+  ```
+  {
+      sql: "select * from table",
+      cartocss: "#layer { marker-fill: red; }",
+      interactivity: 'cartodb_id, area, column'
+  }
+  ```
+  sql and cartocss are mandatory, an exception is raised if any of them are not present. If the interactivity is not set, there is no interactivity enabled for that layer (better performance).
+  + **layerIndex**: position where the new data should be inserted. By default it appends to the current data being shown
+
+###### EXAMPLE
+  ``` javascript
+    cartodb.createLayer(map, 'http://examples.cartodb.com/api/v2/viz/european_countries_e/viz.json', function(layer) {
+
+       // add the layer to the map
+       map.addLayer(layer);
+
+       // add populated places points over the countries layer
+       layer.addLayer({
+         sql: 'select * from ne_10m_populated_places_simple',
+         cartocss: '#layer { marker-fill: red; }'
+       });
+    });
+  ```
+
+##### **layer.setLayer(layerIndex, layerDefinition)**
+
+Changes layerDefinition for layerIndex. New in v3
+
+###### ARGUMENTS
+
+  + **layerDefinition**: an object with the sql and cartocss that defines the data, should be like
+  ```
+  {
+      sql: "select * from table",
+      cartocss: "#layer { marker-fill: red; }",
+      interactivity: 'cartodb_id, area, column'
+  }
+  ```
+  + **layerIndex**: position of the data to be changed
+
+##### **layer.removeLayer(layerIndex)**
+
+    remove the data in layerIndex. New in v3
+
+##### **layer.invalidate() **
+
+Refresh the data. If the data has been changed in CartoDB server it is displayed. If not nothing happens. New in v3.
+
+###### ARGUMENTS
+
+##### **layer.setInteraction([layerIndex,] enable)**
 
   Sets the interaction of your layer to true (enabled) or false (disabled). When is disabled **featureOver**, **featureClick** and **featureOut** are **not** triggered.
+  if layer is not present it takes layer 0.
 
 ###### ARGUMENTS
 
   + **enable**: true if the interaction needs to be enabled.
 
-##### **layer.setQuery(sql)**
+##### **layer.setQuery([layerIndex,]sql)**
 
-  Sets the sql query. The layer will show the geometry returned by this query. When the query raises an error, **error** event is triggered. If you set sql to null the query is set to 'select * form {{table_name}}'.
+  Sets the sql query for layerIndex. The layer will show the geometry returned by this query. When the query raises an error, **error** event is triggered.
 
   The layer is refreshed just after you execute this function.
 
 ###### ARGUMENTS
 
+  + **layerIndex**: 0-based index of layer to be set the sql. Should be between 0 and getLayerCount() - 1. if this param is ommited and only sql is pass, layerIndex 0 is used
   + **sql**: postgres valid sql query. {{table_name}} can be used as variable, it will replaced by the table_name used in the visualization.
 
 ###### EXAMPLE
   ``` javascript
       // this will show in the map the geometries with area greater than 10
-      layer.setQuery("SELECT * FROM {{table_name}} WHERE area > 10");
+      layer.setQuery(0, "SELECT * FROM {{table_name}} WHERE area > 10");
   
       // error management
-      layer.setQuery("wrong syntax query");
+      layer.setQuery(0, "wrong syntax query");
       layer.on('error', function(err) {
         console.log("there was some problem: " + err);
       });
   ```
 
-##### layer.setCartoCSS(cartoCSS, version='2.0.1')
+##### layer.setCartoCSS([layerIndex,] cartoCSS, version='2.0.1')
 
   Changes the style of the layer.
   An 'error' event is triggered on the layer if something is wrong with the style.
@@ -559,6 +622,7 @@ Promise object. You can listen for the following events:
 
 ###### ARGUMENTS
 
+  + **layerIndex**: 0-based index of layer to be set the cartoCSS. Should be between 0 and getLayerCount() - 1. if this param is ommited and only sql is pass, layerIndex 0 is used
   + **cartoCSS**: Changes the cartoCSS style applied to the tiles.
   + **version**: cartoCSS version. You usually do not need to include this.
 
@@ -574,7 +638,7 @@ Promise object. You can listen for the following events:
 
 ##### layer.setOptions(options)
 
-  Change any parameter at the same time refreshing the tiles once.
+  Change any parameter at the same time refreshing the tiles once. Only change the data for the first dataLayer. This method is deprecated, you should use setLayer
 
 ###### available options
 
@@ -600,7 +664,7 @@ Promise object. You can listen for the following events:
 
 You can add custom functions to layer events. This is useful for integrating your website with your maps, adding events for mouseovers and click events.
 
-##### layer.featureOver -> (event, latlng, pos, data)
+##### layer.featureOver -> (event, latlng, pos, data, layerIndex)
 
    A callback when hovers in a feature.
 
@@ -610,20 +674,21 @@ You can add custom functions to layer events. This is useful for integrating you
    + latlng: The LatLng in an array [lat,lng] where was clicked.
    + pos: Object with x and y position in the DOM map element.
    + data: The CartoDB data of the clicked feature with the **interactivity** param.
+   + layerIndex: the layerIndex where the event happened
 
 ###### EXAMPLE
 
 ``` javascript
-    layer.on('featureOver', function(e, latlng, pos, data) {
+    layer.on('featureOver', function(e, latlng, pos, data, layerIndex) {
       console.log("mouse over polygon with data: " + data);
     });
 ```
 
-##### layer.featureOut -> ()
+##### layer.featureOut -> (layerIndex)
 
   A callback when hovers out any feature.
 
-##### layer.featureClick -> (event, latlng, pos, data)
+##### layer.featureClick -> (event, latlng, pos, data, layerIndex)
 
   A callback when clicks in a feature.
 
@@ -761,7 +826,7 @@ Keep in mind the version of CartoDB.js you are using for development. For any li
 
 ##### **cartodb.VERSION**
 
-Contains the library version, should be something like '2.0.11'.
+Contains the library version, should be something like '3.0.1'.
 
 
 

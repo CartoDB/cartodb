@@ -86,7 +86,7 @@ describe('api.layers', function() {
       it("should create a layer with type", function() {
         var layer;
         runs(function() {
-          cartodb.createLayer(map, { kind: 'cartodb', options: {} }, function(l) {
+          cartodb.createLayer(map, { kind: 'cartodb', options: { tile_style: 'test', table_name: 'table', user_name: 'test'} }, function(l) {
             layer = l;
           });
         });
@@ -99,7 +99,7 @@ describe('api.layers', function() {
       it("should create a layer with options", function() {
         var layer;
         runs(function() {
-          cartodb.createLayer(map, { kind: 'cartodb', options: {} }, {query: 'select test'}, function(l) {
+          cartodb.createLayer(map, { kind: 'cartodb', options: {tile_style: 'test', table_name: 'table', user_name: 'test'} }, {query: 'select test'}, function(l) {
             layer = l;
           });
         });
@@ -112,39 +112,39 @@ describe('api.layers', function() {
       it("should use https when https == true", function() {
         var layer;
         runs(function() {
-          cartodb.createLayer(map, { kind: 'cartodb', options: {} }, {https: true}, function(l) {
+          cartodb.createLayer(map, { kind: 'cartodb', options: {tile_style: 'test', table_name: 'table', user_name: 'test'} }, {https: true}, function(l) {
             layer = l;
           });
         });
         waits(100);
         runs(function() {
-          expect(layer._tileJSON().tiles[0].indexOf('https')).toEqual(0)
+          expect(layer._host().indexOf('https')).toEqual(0)
         });
       });
 
       it("should not use https when https == false", function() {
         var layer;
         runs(function() {
-          cartodb.createLayer(map, { kind: 'cartodb', options: {} }, {https: false}, function(l) {
+          cartodb.createLayer(map, { kind: 'cartodb', options: {tile_style: 'test', table_name: 'table', user_name: 'test'} }, {https: false}, function(l) {
             layer = l;
           });
         });
         waits(100);
         runs(function() {
-          expect(layer._tileJSON().tiles[0].indexOf('https')).toEqual(-1)
+          expect(layer._host().indexOf('https')).toEqual(-1)
         });
       });
 
       it("should not substitute mapnik tokens", function() {
         var layer;
         runs(function() {
-          cartodb.createLayer(map, { kind: 'cartodb', options: {} }, {query: 'select !bbox!'}, function(l) {
+          cartodb.createLayer(map, { kind: 'cartodb', options: {tile_style: 'test', table_name: 'table', user_name: 'test'} }, {query: 'select !bbox!'}, function(l) {
             layer = l
           })
         });
         waits(100);
         runs(function() {
-          expect(layer.options.query).toEqual('select !bbox!');
+          expect(layer.getQuery()).toEqual('select !bbox!');
         });
       });
 
@@ -180,12 +180,12 @@ describe('api.layers', function() {
         var layer;
         var s = sinon.spy();
         runs(function() {
-          cartodb.createLayer(map, { 
+          cartodb.createLayer(map, {
             updated_at: 'jaja',
             layers: [
               null,
               //{kind: 'plain', options: {} }
-              {kind: 'cartodb', options: { user_name: 'test', table: 'test', extra_params: { cache_buster: 'cb' }} }
+              {kind: 'cartodb', options: { tile_style: 'test', user_name: 'test', table_name: 'test', extra_params: { cache_buster: 'cb' }} }
             ]
           }, s).done(function(lyr) {
             layer = lyr;
@@ -204,11 +204,11 @@ describe('api.layers', function() {
         var layer;
         var s = sinon.spy();
         runs(function() {
-          cartodb.createLayer(map, { 
+          cartodb.createLayer(map, {
             updated_at: 'jaja',
             layers: [
               null,
-              {kind: 'cartodb', options: { user_name: 'test'}, infowindow: { fields: [], template: '' } }
+              {kind: 'cartodb', options: { user_name: 'test', table_name: 'test', tile_style: 'test'}, infowindow: { fields: [], template: '' } }
             ]
           }, s).done(function(lyr) {
             layer = lyr;

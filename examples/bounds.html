@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <title>Bounds example | CartoDB.js</title>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
     <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
-    
+    <link rel="shortcut icon" href="http://cartodb.com/assets/favicon.ico" />
     <style>
       html, body, #map {
         height: 100%;
@@ -16,63 +17,59 @@
     <!--[if lte IE 8]>
         <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/themes/css/cartodb.ie.css" />
     <![endif]-->
-
   </head>
-    
   <body>
     <div id="map"></div>
-  </body>
 
+    <!-- include cartodb.js library -->
+    <script src="http://libs.cartocdn.com/cartodb.js/v2/cartodb.js"></script>
+    <script>
+      var layer;
+      function main() {
+        
 
-  <!-- include cartodb.js library -->
-  <script src="http://libs.cartocdn.com/cartodb.js/v2/cartodb.js"></script>
-  <script>
-var layer;
-    function main() {
-      
+        var map = L.map('map', { 
+          zoomControl: false,
+          center: [43, 0],
+          zoom: 3
+        });
 
-      var map = L.map('map', { 
-        zoomControl: false,
-        center: [43, 0],
-        zoom: 3
-      });
+        // Setting bounds to Spain country
+        var sql = new cartodb.SQL({ user: 'examples' });
+        sql.getBounds("select * from european_countries_e where name='Spain'").done(function(bounds) {
+          map.fitBounds(bounds)
+        });
 
-      // Setting bounds to Spain country
-      var sql = new cartodb.SQL({ user: 'examples' });
-      sql.getBounds("select * from european_countries_e where name='Spain'").done(function(bounds) {
-        map.fitBounds(bounds)
-      });
-
-      cartodb.createLayer(map, {
-        type: 'cartodb',
-        options: {
-          table_name: 'european_countries_e',
-          user_name: 'examples',
-          interactivity: 'cartodb_id',
-          featureOver: function() {
-            console.log("jamon-over");
-          },
-          featureClick: function() {
-            console.log("jamon-click");
-          },
-          featureOut: function() {
-            console.log("jamon-out");
+        cartodb.createLayer(map, {
+          type: 'cartodb',
+          options: {
+            table_name: 'european_countries_e',
+            user_name: 'examples',
+            interactivity: 'cartodb_id',
+            featureOver: function() {
+              console.log("jamon-over");
+            },
+            featureClick: function() {
+              console.log("jamon-click");
+            },
+            featureOut: function() {
+              console.log("jamon-out");
+            }
           }
-        }
-      })
-      .on('done', function(layer_) {
-        layer = layer_;
-        map.addLayer(layer);
-      }).on('error', function() {
-        cartodb.log.log("some error occurred");
-      });
+        })
+        .on('done', function(layer_) {
+          layer = layer_;
+          map.addLayer(layer);
+        }).on('error', function() {
+          cartodb.log.log("some error occurred");
+        });
 
-    }
+      }
 
-    // you could use $(window).load(main);
-    window.onload = main;
+      // you could use $(window).load(main);
+      window.onload = main;
 
-  </script>
+    </script>
 
-
+  </body>
 </html>

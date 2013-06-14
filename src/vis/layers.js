@@ -63,24 +63,21 @@ var cartoLayer = function(vis, data) {
   }
 
   data.tiler_protocol = vis.https ? 'https': 'http';
-  if(!data.no_cdn) {
+  /*if(!data.no_cdn) {
     data.tiler_protocol = vis.https ? 'https': 'http';
     data.tiler_port = vis.https ? 443: 80;
-  }
+  }*/
   data.extra_params = data.extra_params || {};
-  if(vis.updated_at) {
-    // see #1724 (internal)
-    data.extra_params.cache_buster = vis.updated_at;
-    //delete data.extra_params.cache_buster;
-  } else {
-    data.no_cdn = true;
-  }
-  data.cartodb_logo = vis.cartodb_logo;
+  data.cartodb_logo = vis.cartodb_logo == undefined ? data.cartodb_logo : vis.cartodb_logo;
 
   return new cdb.geo.CartoDBLayer(data);
 };
 
 Layers.register('cartodb', cartoLayer);
 Layers.register('carto', cartoLayer);
+
+Layers.register('layergroup', function(vis, data) {
+  return new cdb.geo.CartoDBGroupLayer(data);
+});
 
 })();

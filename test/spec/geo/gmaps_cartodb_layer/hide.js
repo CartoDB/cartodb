@@ -18,6 +18,7 @@ describe('Hide funcionality', function() {
     cdb_layer = new cdb.geo.CartoDBLayerGMaps({
       map: map,
       user_name:"examples",
+      tile_style: 'test',
       table_name: 'earthquakes',
       query: "SELECT * FROM {{table_name}}",
       tile_style: "#{{table_name}}{marker-fill:#E25B5B}",
@@ -49,7 +50,7 @@ describe('Hide funcionality', function() {
         , opacity = cdb_layer.options.opacity
         , before_opacity = cdb_layer.options.previous_opacity;
 
-      expect(cdb_layer.options.visible).toBeFalsy();
+      expect(cdb_layer.visible).toBeFalsy();
       expect($tile.css("opacity")).toEqual('0');
       expect(opacity).toEqual(0);
       expect(before_opacity).not.toEqual(0);

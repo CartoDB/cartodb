@@ -21,7 +21,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
       params.dup.merge(scope_for(current_user))
     )
     response    = {
-      visualizations: collection,
+      visualizations: collection.to_poro,
       total_entries:  collection.total_entries
     }
     render_jsonp(response)

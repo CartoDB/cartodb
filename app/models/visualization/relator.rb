@@ -11,7 +11,9 @@ module CartoDB
                         cartodb:  :data_layers
                       }
 
-      INTERFACE     = %w{ overlays map user table related_tables layers stats }
+      INTERFACE     = %w{ overlays map user table related_tables layers stats
+                      single_data_layer? }
+
       def initialize(attributes={})
         @id     = attributes.fetch(:id)
         @map_id = attributes.fetch(:map_id)
@@ -46,6 +48,10 @@ module CartoDB
       def stats
         Visualization::Stats.new(self).to_poro
       end #stats
+
+      def single_data_layer?
+        layers(:cartodb).to_a.length == 1
+      end #single_data_layer?
 
       attr_reader :id, :map_id
     end # Relator

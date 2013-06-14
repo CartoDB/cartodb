@@ -472,7 +472,7 @@ class Table < Sequel::Model(:user_tables)
     @table_visualization.delete if @table_visualization
     @dependent_visualizations_cache.each(&:delete)
     @non_dependent_visualizations_cache.each do |visualization|
-      visualization.unlink_from(table)
+      visualization.unlink_from(self)
     end
   end
 

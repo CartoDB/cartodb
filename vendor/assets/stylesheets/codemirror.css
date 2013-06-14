@@ -7,10 +7,9 @@
   display:block;
   padding: 8px 0;
   line-height: 1em;
-  font-family: monospace, "Courier";
+  font-family: "Courier New", "Liberation Mono", "Arial";
   z-index:1;
   line-height: 1em;
-  font-family: monospace;
 
   /* Necessary so the scrollbar can be absolutely positioned within the wrapper on Lion. */
   /*position: relative;*/

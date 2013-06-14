@@ -10,6 +10,20 @@
   @import "../common/vars";
   @import "../common/forms";
 
+  .main_loader {
+    position:relative;
+    width: 100%;
+    height: 500px;
+    background: image-url('layout/bkg.jpg') repeat 0 0;
+
+    i {
+      /*display:none;*/
+      @include absolute-center(38px, 16px);
+      background:image-url("layout/loader_gray.gif") no-repeat 0 0;
+    }
+
+  }
+
   .tipsy.privacy_info {
     font-size: 13px;
 

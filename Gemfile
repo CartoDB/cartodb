@@ -89,6 +89,7 @@ group :development, :test do
   gem "rack-test"
   gem "foreman",               "0.46.0"
   gem "factory_girl_rails",    "~> 4.0.0"
+  gem "bogus",                 "0.0.3"
 
   # Guard
   gem 'rb-inotify', '~> 0.8.8', :require => false

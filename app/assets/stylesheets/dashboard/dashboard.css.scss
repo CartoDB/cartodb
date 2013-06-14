@@ -17,7 +17,6 @@
     background: image-url('layout/bkg.jpg') repeat 0 0;
 
     i {
-      /*display:none;*/
       @include absolute-center(38px, 16px);
       background:image-url("layout/loader_gray.gif") no-repeat 0 0;
     }
@@ -1142,23 +1141,22 @@
         li {
           @include inline-block();
           width:268px;
-          margin:0 27px 0 0;
+          margin:0 20px 0 0;
           vertical-align: top;
           letter-spacing:0;
+          /*background:red;*/
 
-          &:last-child {margin:0;}
+          &:last-child { margin:0; }
 
           a {
             display:block;
             height: 56px;
-            /*@include size(45px, 56px);*/
             padding:10px 0 0 55px;
             line-height:18px;
             letter-spacing:0;
             @include icons-sprite(download_dataset_people);
           }
 
-          /*&:first-child {width:350px;}*/
         }
       }
 

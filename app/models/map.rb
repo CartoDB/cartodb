@@ -104,6 +104,15 @@ class Map < Sequel::Model
     CartoDB::Visualization::Collection.new.fetch(map_id: [self.id]).to_a
   end #visualizations
 
+  def process_privacy_in(layer)
+    return self unless layer.uses_private_tables?
+    
+    visualizations.each do |visualization|
+      visualization.privacy = 'private'
+      visualization.store
+    end
+  end #process_privacy_in
+
   private
 
   def get_the_last_time_tiles_have_changed_to_render_it_in_vizjsons

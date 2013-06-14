@@ -140,6 +140,14 @@ module CartoDB
         type == 'table'
       end #table?
 
+      def dependent?
+        derived? && single_data_layer?
+      end #dependent?
+
+      def non_dependent?
+        derived? && !single_data_layer?
+      end #non_dependent?
+
       private
 
       attr_reader   :repository, :name_checker, :validator

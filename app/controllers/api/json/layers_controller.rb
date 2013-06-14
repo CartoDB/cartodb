@@ -33,14 +33,14 @@ class Api::Json::LayersController < Api::ApplicationController
   def create
     @layer = Layer.new(params.slice(:kind, :options, :infowindow, :order))
     if @parent.is_a?(Map) && !@parent.admits_layer?(@layer)
-      render  status: 400,
-              text: "Can't add more layers of this type"
-      return
+      return(render  status: 400, text: "Can't add more layers of this type")
     end
 
     if @layer.save
       @parent.add_layer(@layer.id)
       @layer.reload
+      @parent.process_privacy_in(@layer) if @parent.is_a?(Map)
+        
       render_jsonp(@layer.public_values)
     else
       CartoDB::Logger.info "Error on layers#create", @layer.errors.full_messages

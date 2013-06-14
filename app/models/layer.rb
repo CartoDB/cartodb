@@ -122,6 +122,10 @@ class Layer < Sequel::Model
     self
   end #rename_table
 
+  def uses_private_tables?
+    !(affected_tables.select(&:private?).empty?)
+  end #uses_private_tables?
+
   private
 
   def rename_in(target, anchor, substitution)

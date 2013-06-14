@@ -164,5 +164,42 @@ describe Map do
       map.destroy
     end 
   end #before_destroy
+
+  describe '#process_privacy_in' do
+    it 'sets related visualization private if layer uses private tables' do
+      @table1 = Table.new
+      @table1.user_id = @user.id
+      @table1.save
+
+      @table2 = Table.new
+      @table2.user_id = @user.id
+      @table2.save
+
+      source  = @table1.table_visualization
+      derived = CartoDB::Visualization::Copier.new(@user, source).copy
+      derived.store
+
+      derived.layers(:cartodb).length.should == 1
+      @table1.privacy = 1
+      @table1.save
+      derived.privacy = 'public'
+      derived.store
+
+      derived.fetch.private?.should be_false
+
+      layer = Layer.create(
+        kind:     'carto',
+        options:  { table_name: @table2.name }
+      )
+      layer.add_map(derived.map)
+      layer.save
+      layer.reload
+
+      layer.uses_private_tables?.should be_true
+
+      derived.map.process_privacy_in(layer)
+      derived.fetch.private?.should be_true
+    end
+  end #process_privacy_in
 end
 

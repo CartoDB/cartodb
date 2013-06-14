@@ -7,7 +7,7 @@
   display:block;
   padding: 8px 0;
   line-height: 1em;
-  font-family: "Courier New", "Liberation Mono", "Arial";
+  font-family: "Liberation Mono", monospace, "Courier New", "Arial";
   z-index:1;
   line-height: 1em;
 

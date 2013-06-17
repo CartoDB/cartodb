@@ -460,7 +460,68 @@ LayerDefinition.prototype = {
         return true;
       }
     }
-    return false
+    return false;
+  },
+
+  createSubLayer: function(attrs, options) {
+    this.addLayer(attrs);
+    return new SubLayer(this, this.getLayerCount() - 1);
+  },
+
+  getSubLayer: function(index) {
+    return new SubLayer(this, index);
+  },
+
+  getSubLayerCount: function() {
+    return this.getLayerCount();
   }
 
+
 };
+
+function SubLayer(_parent, position) {
+  this._parent = _parent;
+  this._position = position;
+}
+
+SubLayer.prototype = {
+
+  remove: function() {
+    this._parent.removeLayer(this._position);
+  },
+
+  setSQL: function(sql) {
+    return this.set({
+      sql: sql
+    });
+  },
+
+  setCartoCSS: function(cartocss) {
+    return this.set({
+      cartocss: cartocss
+    });
+  },
+
+  getSQL: function() {
+    return this.get('sql');
+  },
+
+  getCartoCSS: function() {
+    return this.get('cartocss');
+  },
+
+  get: function(attr) {
+    var attrs = this._parent.getLayer(this._position);
+    return attrs.options[attr];
+  },
+
+  set: function(new_attrs) {
+    var def = this._parent.getLayer(this._position);
+    var attrs = def.options;
+    for(var i in new_attrs) {
+      attrs[i] = new_attrs[i];
+    }
+    this._parent.setLayer(this._position, def);
+  }
+
+}

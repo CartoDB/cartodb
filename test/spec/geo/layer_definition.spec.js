@@ -228,6 +228,46 @@ describe("LayerDefinition", function() {
     });
   });
 
+  describe("sublayers", function() {
+
+
+    it("should create sublayer", function() {
+      var subLayer = layerDefinition.createSubLayer({
+        sql: 'select * from table',
+        cartocss: 'test',
+        interactivity: 'test'
+      });
+      expect(!!subLayer).toEqual(true)
+    });
+
+    it("should get cartocss and sql", function() {
+      var layer = layerDefinition.getSubLayer(0)
+      expect(layer.getSQL()).toEqual('select * from ne_10m_populated_places_simple');
+      expect(layer.getCartoCSS()).toEqual('#layer { marker-fill: red; }');
+    });
+
+    it("should set sql and cartocss by name", function() {
+      var q;
+      var layer = layerDefinition.getSubLayer(0);
+      layer.setSQL(q='select * from rambisimo');
+      expect(layerDefinition.toJSON().layers[0].options.sql).toEqual(q);
+      layer.setCartoCSS(q='cartocss');
+      expect(layerDefinition.toJSON().layers[0].options.cartocss).toEqual(q);
+    });
+
+    it("should get sublayer count", function() {
+      expect(layerDefinition.getSubLayerCount()).toEqual(2);
+      var sub = layerDefinition.createSubLayer({
+        sql: 'select * from table',
+        cartocss: 'test',
+        interactivity: 'test'
+      });
+      expect(layerDefinition.getSubLayerCount()).toEqual(3);
+      sub.remove();
+      expect(layerDefinition.getSubLayerCount()).toEqual(2);
+    })
+  });
+
   /*
   it("should fix cartocss", function() {
     layerDefinition.addLayer({ sql : 'b', cartocss: '#rambo {} #rambo     [zoom=2]{}'});

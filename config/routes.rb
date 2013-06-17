@@ -47,6 +47,8 @@ CartoDB::Application.routes.draw do
     get '/tables/:id/map'           => 'visualizations#show'
     get '/tables/:id/table'         => 'visualizations#show'
     get '/tables/:id/public'        => 'visualizations#public'
+    get '/tables/:id/public/table'  => 'visualizations#public'
+    get '/tables/:id/public/map'    => 'visualizations#public'
     get '/tables/:id/embed_map'     => 'visualizations#embed_map'
 
     get '/viz'                      => 'visualizations#index'

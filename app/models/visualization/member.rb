@@ -89,8 +89,13 @@ module CartoDB
         invalidate_varnish_cache
 
         layers(:cartodb).select { |layer|
-          layer.affected_tables.include?(table)
-        }.each(&:destroy)
+          (layer.affected_tables.map(&:name) +
+            [layer.options.fetch('table_name', nil)]
+          ).include?(table.name)
+        }.each { |layer|
+          self.map.remove_layer(layer)
+          layer.destroy
+        }
         self
       end #unlink_from
 

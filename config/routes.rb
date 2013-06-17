@@ -44,6 +44,8 @@ CartoDB::Application.routes.draw do
     get '/tables/track_embed'       => 'visualizations#track_embed'
     get '/tables/embed_forbidden'   => 'visualizations#embed_forbidden'
     get '/tables/:id'               => 'visualizations#show'
+    get '/tables/:id/map'           => 'visualizations#show'
+    get '/tables/:id/table'         => 'visualizations#show'
     get '/tables/:id/public'        => 'visualizations#public'
     get '/tables/:id/embed_map'     => 'visualizations#embed_map'
 
@@ -51,6 +53,8 @@ CartoDB::Application.routes.draw do
     get '/viz/track_embed'          => 'visualizations#track_embed'
     get '/viz/embed_forbidden'      => 'visualizations#embed_forbidden'
     get '/viz/:id'                  => 'visualizations#show'
+    get '/viz/:id/map'              => 'visualizations#show'
+    get '/viz/:id/table'            => 'visualizations#show'
     get '/viz/:id/public'           => 'visualizations#public'
     get '/viz/:id/embed_map'        => 'visualizations#embed_map'
 

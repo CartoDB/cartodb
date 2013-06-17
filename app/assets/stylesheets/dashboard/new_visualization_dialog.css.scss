@@ -70,6 +70,12 @@
 
   .combo_wrapper {
 
+    &.disabled {
+      .tableListCombo { @include opacity(.3); }
+      .add { @include opacity(.3); }
+      .add:hover { text-decoration: none; }
+    }
+
     padding:12px;
     background:#F2F2F2;
     @include border-radius(6px);

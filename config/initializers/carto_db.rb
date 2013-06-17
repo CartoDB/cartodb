@@ -81,7 +81,7 @@ module CartoDB
     },
     1002 => {
       title: 'Unsupported file type',
-      what_about: "Should we support this filetype? Email our user thread and let us know!"
+      what_about: "Should we support this filetype? Let us know in our <a href='mailto:support-suggestions@cartodb.com'>support email</a>!"
     },
     1003 => {
       title: 'Decompression error',
@@ -93,11 +93,11 @@ module CartoDB
     },
     1005 => {
       title: 'Zero byte file',
-      what_about: "The file appears to have no information. Double check using a local tool such as QGIS that the file is indeed correct. If everything appears fine, try uploading it again or emailing our support thread."
+      what_about: "The file appears to have no information. Double check using a local tool such as QGIS that the file is indeed correct. If everything appears fine, try uploading it again or <a href='mailto:support@cartodb.com?subject=Zero byte file'>contact us</a>."
     },
     1006 => {
       title: 'Invalid SHP file',
-      what_about: "Your file appears broken. Double check that all the necessary parts of the file are included in your ZIP archive (including .shp, .prj etc.). Also, try opening the file locally using QGIS or another tool. If everything appears okay, email our support thread."
+      what_about: "Your file appears broken. Double check that all the necessary parts of the file are included in your ZIP archive (including .shp, .prj etc.). Also, try opening the file locally using QGIS or another tool. If everything appears okay, <a href='mailto:support@cartodb.com?subject=Invalid SHP file'>contact us</a>."
     },
     1007 => {
       title: 'Multifile import errors',
@@ -121,7 +121,7 @@ module CartoDB
     },
     3004 => {
       title: 'Unable to read SHP file',
-      what_about: "Try opening your SHP file locally first using a tool like QGIS. If that doesn't work, submit a question to our user thread."
+      what_about: "Try opening your SHP file locally first using a tool like QGIS. If that doesn't work, submit a question to our <a href='mailto:support@cartodb.com?subject=Unable to read SHP file'>support email</a>."
     },
     3005 => {
       title: 'SHP to PGSQL error',
@@ -129,7 +129,7 @@ module CartoDB
     },
     3006 => {
       title: 'CSV to PGSQL error',
-      what_about: "There was a problem reading your CSV. Try opening it locally and check that it is a valid CSV. If you can't find anything wrong, contact us on the user thread and we will try to find a solution."
+      what_about: "There was a problem reading your CSV. Try opening it locally and check that it is a valid CSV. If you can't find anything wrong, <a href='mailto:support@cartodb.com?subject=CSV to PGSQL error'>contact us</a> and we will try to find a solution."
     },
     3007 => {
       title: 'JSON may not be valid GeoJSON',
@@ -173,7 +173,7 @@ module CartoDB
     },
     5000 => {
       title: 'Database import error',
-      what_about: "This looks like a problem on our end. Try uploading your file again. If that fails, please contact us on the user thread and we will help resolve this promptly."
+      what_about: "This looks like a problem on our end. Try uploading your file again. If that fails, please <a href='mailto:support@cartodb.com?subject=Database import error'>contact us</a> and we will help resolve this promptly."
     },
     5001 => {
       title: 'Empty table',
@@ -201,7 +201,7 @@ module CartoDB
     },
     99999 => {
       title: 'Unknown',
-      what_about: "Sorry, something went wrong and we're not sure what. Try uploading your file again. If not, read through the log here and see if there are some clues. Finally, email our user thread and we'll try to help you quickly."
+      what_about: "Sorry, something went wrong and we're not sure what. Try uploading your file again. If not, read through the log here and see if there are some clues. Finally, <a href='mailto:support@cartodb.com?subject=Unknown error'>contact us</a> and we'll try to help you quickly."
     }
   }
 end

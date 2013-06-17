@@ -473,7 +473,7 @@ describe Api::Json::VisualizationsController do
         .should == 1
 
       get "/api/v1/maps/#{map_id}/layers?api_key=#{@api_key}", {}, @headers
-      puts JSON.parse(last_response.body)
+      JSON.parse(last_response.body).length.should == 2
     end
   end # DELETE /api/v1/tables/:id
 

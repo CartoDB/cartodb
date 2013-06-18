@@ -441,8 +441,8 @@ class Table < Sequel::Model(:user_tables)
   ##
   # Post the style to the tiler
   #
-  def send_tile_style_request
-    data_layer = self.map.data_layers.first
+  def send_tile_style_request(data_layer=nil)
+    data_layer ||= self.map.data_layers.first
     tile_request('POST', "/tiles/#{self.name}/style?map_key=#{owner.get_map_key}", {
       'style_version' => data_layer.options["style_version"],
       'style'         => data_layer.options["tile_style"]

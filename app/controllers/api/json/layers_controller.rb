@@ -37,8 +37,8 @@ class Api::Json::LayersController < Api::ApplicationController
     end
 
     if @layer.save
-      @parent.add_layer(@layer.id)
-      @layer.reload
+      @parent.add_layer(@layer)
+      @layer.register_table_dependencies if @parent.is_a?(Map)
       @parent.process_privacy_in(@layer) if @parent.is_a?(Map)
         
       render_jsonp(@layer.public_values)

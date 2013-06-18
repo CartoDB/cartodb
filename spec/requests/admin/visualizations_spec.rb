@@ -181,12 +181,12 @@ describe Admin::VisualizationsController do
       login_as(@user, scope: 'test')
 
       get "/viz/non_existent/embed_map", {}, @headers
-      last_response.status.should == 403
-      last_response.body.should =~ /cartodb-embed-error/
+      last_response.status.should == 404
+      last_response.body.should =~ /pity/
 
       get "/viz/non_existent/embed_map.js", {}, @headers
-      last_response.status.should == 403
-      last_response.body.should =~ /get_url_params/
+      last_response.status.should == 404
+      last_response.body.should =~ /pity/
     end
   end # GET /viz/:name/embed_map
 

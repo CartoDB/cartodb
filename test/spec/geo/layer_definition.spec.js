@@ -266,6 +266,28 @@ describe("LayerDefinition", function() {
       sub.remove();
       expect(layerDefinition.getSubLayerCount()).toEqual(2);
     })
+
+    it("should show/hide", function() {
+      layerDefinition.getSubLayer(0).hide();
+      expect(layerDefinition.toJSON().layers.length).toEqual(1);
+      expect(layerDefinition.getSubLayerCount()).toEqual(2);
+      layerDefinition.getSubLayer(0).show();
+      expect(layerDefinition.toJSON().layers.length).toEqual(2);
+      expect(layerDefinition.getSubLayerCount()).toEqual(2);
+    });
+
+    it("should raise an exception when change something after remove", function() {
+      var sub = layerDefinition.getSubLayer(0);
+      sub.remove();
+      var a = false;
+      try {
+        sub.setSQL('test');
+      } catch(e) {
+        a = true;
+      }
+      expect(a).toEqual(true);
+
+    });
   });
 
   /*

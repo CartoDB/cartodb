@@ -56,15 +56,17 @@ LayerDefinition.prototype = {
     obj.layers = [];
     for(var i in this.layers) {
       var layer = this.layers[i];
-      obj.layers.push({
-        type: 'cartodb',
-        options: {
-          sql: layer.options.sql,
-          cartocss: layer.options.cartocss,
-          cartocss_version: layer.options.cartocss_version || '2.1.0',
-          interactivity: layer.options.interactivity
-        }
-      });
+      if(!layer.options.hidden) {
+        obj.layers.push({
+          type: 'cartodb',
+          options: {
+            sql: layer.options.sql,
+            cartocss: layer.options.cartocss,
+            cartocss_version: layer.options.cartocss_version || '2.1.0',
+            interactivity: layer.options.interactivity
+          }
+        });
+      }
     }
     return obj;
   },
@@ -482,12 +484,26 @@ LayerDefinition.prototype = {
 function SubLayer(_parent, position) {
   this._parent = _parent;
   this._position = position;
+  this._added = true;
 }
 
 SubLayer.prototype = {
 
   remove: function() {
     this._parent.removeLayer(this._position);
+    this._added = false;
+  },
+
+  show: function() {
+    this.set({
+      hidden: false
+    });
+  },
+
+  hide: function() {
+    this.set({
+      hidden: true
+    });
   },
 
   setSQL: function(sql) {
@@ -510,12 +526,18 @@ SubLayer.prototype = {
     return this.get('cartocss');
   },
 
+  _check: function() {
+    if(!this._added) throw "sublayer was removed";
+  },
+
   get: function(attr) {
+    this._check();
     var attrs = this._parent.getLayer(this._position);
     return attrs.options[attr];
   },
 
   set: function(new_attrs) {
+    this._check();
     var def = this._parent.getLayer(this._position);
     var attrs = def.options;
     for(var i in new_attrs) {

@@ -31,14 +31,11 @@ describe Api::Json::VisualizationsController do
 
   before(:each) do
     CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
-    @db = Sequel.sqlite
+    @db = Rails::Sequel.connection
     Sequel.extension(:pagination)
 
-    CartoDB::Visualization::Migrator.new(@db).migrate
     CartoDB::Visualization.repository  = 
       DataRepository::Backend::Sequel.new(@db, :visualizations)
-
-    CartoDB::Overlay::Migrator.new(@db).migrate
     CartoDB::Overlay.repository        =
       DataRepository::Backend::Sequel.new(@db, :overlays)
 
@@ -406,6 +403,78 @@ describe Api::Json::VisualizationsController do
       get "/api/v1/viz/#{visualization_id}?api_key=#{@api_key}",
         {}, @headers
       last_response.status.should == 404
+    end
+
+    it 'deletes dependent visualizations' do
+      table_attributes = table_factory
+      table_id         = table_attributes.fetch('id')
+
+      get "/api/v1/tables/#{table_id}?api_key=#{@api_key}",
+        {}, @headers
+      last_response.status.should == 200
+      table                   = JSON.parse(last_response.body)
+      source_visualization_id = table.fetch('table_visualization').fetch('id')
+
+      payload = { source_visualization_id: source_visualization_id }
+      
+      post "/api/v1/viz?api_key=#{@api_key}", payload.to_json, @headers
+      response          = JSON.parse(last_response.body)
+      visualization_id  = response.fetch('id')
+
+      get "/api/v1/viz/#{visualization_id}?api_key=#{@api_key}", {}, @headers
+      last_response.status.should == 200
+
+      delete "/api/v1/tables/#{table_id}?api_key=#{@api_key}", {}, @headers
+      
+      get "/api/v1/viz/#{visualization_id}?api_key=#{@api_key}", {}, @headers
+      last_response.status.should == 404
+
+      get "/api/v1/viz/#{source_visualization_id}?api_key=#{@api_key}",
+        {}, @headers
+      last_response.status.should == 404
+    end
+
+    it 'removes the layer from non dependent visualizations', now: true do
+      table1    = table_factory
+      table2    = table_factory
+      table1_id = table1.fetch('id')
+      table2_id = table1.fetch('id')
+
+      payload = { tables: [table1.fetch('name'), table2.fetch('name')] }
+
+      post "/api/v1/viz?api_key=#{@api_key}", payload.to_json, @headers
+      response          = JSON.parse(last_response.body)
+      visualization_id  = response.fetch('id')
+      map_id            = response.fetch('map_id')
+
+      get "/api/v1/viz/#{visualization_id}?api_key=#{@api_key}", {}, @headers
+      last_response.status.should == 200
+
+      JSON.parse(last_response.body).fetch('related_tables').length
+        .should == 2
+
+      get "/api/v1/tables/#{table1_id}?api_key=#{@api_key}", {}, @headers
+      table1 = JSON.parse(last_response.body)
+      table1.fetch('non_dependent_visualizations').length.should == 1
+      table1.fetch('dependent_visualizations').length.should == 0
+
+      get "/api/v1/tables/#{table2_id}?api_key=#{@api_key}", {}, @headers
+      table2 = JSON.parse(last_response.body)
+      table2.fetch('non_dependent_visualizations').length.should == 1
+      table2.fetch('dependent_visualizations').length.should == 0
+
+      delete "/api/v1/tables/#{table1_id}?api_key=#{@api_key}", {}, @headers
+
+      get "/api/v1/tables/#{table1_id}?api_key=#{@api_key}", {}, @headers
+      last_response.status.should == 404
+
+      get "/api/v1/viz/#{visualization_id}?api_key=#{@api_key}", {}, @headers
+      last_response.status.should == 200
+      JSON.parse(last_response.body).fetch('related_tables').length
+        .should == 1
+
+      get "/api/v1/maps/#{map_id}/layers?api_key=#{@api_key}", {}, @headers
+      JSON.parse(last_response.body).length.should == 2
     end
   end # DELETE /api/v1/tables/:id
 

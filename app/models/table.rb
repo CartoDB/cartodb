@@ -423,13 +423,7 @@ class Table < Sequel::Model(:user_tables)
     data_layer.options["user_name"] = self.owner.username
     data_layer.options["tile_style"] = "##{self.name} #{Cartodb.config[:layer_opts]["default_tile_styles"][self.the_geom_type]}"
     data_layer.infowindow ||= {}
-    data_layer.infowindow['fields'] = self.schema(reload: true).map { |field|
-        if !["the_geom", "updated_at", "created_at"].include?(field.first.to_s.downcase) && !(field[1].to_s =~ /^geo/)
-          field.first.to_s
-        end
-      }.compact.each_with_index.map { |column_name, i|
-        { name: column_name, title: true, position: i+1 }
-      }
+    data_layer.infowindow['fields'] = []
     m.add_layer(data_layer)
   end
 
@@ -448,15 +442,13 @@ class Table < Sequel::Model(:user_tables)
   # Post the style to the tiler
   #
   def send_tile_style_request
-    begin
-      data_layer = self.map.data_layers.first
-      tile_request('POST', "/tiles/#{self.name}/style?map_key=#{owner.get_map_key}", {
-        'style_version' => data_layer.options["style_version"],
-        'style'         => data_layer.options["tile_style"]
-      })
-    rescue => e
-      raise e if Rails.env.production? || Rails.env.staging?
-    end
+    data_layer = self.map.data_layers.first
+    tile_request('POST', "/tiles/#{self.name}/style?map_key=#{owner.get_map_key}", {
+      'style_version' => data_layer.options["style_version"],
+      'style'         => data_layer.options["tile_style"]
+    })
+  rescue => exception
+    raise exception if Rails.env.production? || Rails.env.staging?
   end
 
   def before_destroy
@@ -478,7 +470,7 @@ class Table < Sequel::Model(:user_tables)
     @table_visualization.delete if @table_visualization
     @dependent_visualizations_cache.each(&:delete)
     @non_dependent_visualizations_cache.each do |visualization|
-      visualization.unlink_from(table)
+      visualization.unlink_from(self)
     end
   end
 
@@ -1577,19 +1569,15 @@ SQL
   end
 
   def delete_tile_style
-    begin
-      tile_request('DELETE', "/tiles/#{self.name}/style?map_key=#{owner.get_map_key}")
-    rescue => e
-      CartoDB::Logger.info "tilestyle#delete error", "#{e.inspect}"
-    end
+    tile_request('DELETE', "/tiles/#{self.name}/style?map_key=#{owner.get_map_key}")
+  rescue => exception
+    CartoDB::Logger.info "tilestyle#delete error", "#{exception.inspect}"
   end
 
   def flush_cache
-    begin
-      tile_request('DELETE', "/tiles/#{self.name}/flush_cache?map_key=#{owner.get_map_key}")
-    rescue => e
-      CartoDB::Logger.info "cache#flush error", "#{e.inspect}"
-    end
+    tile_request('DELETE', "/tiles/#{self.name}/flush_cache?map_key=#{owner.get_map_key}")
+  rescue => exception
+    CartoDB::Logger.info "cache#flush error", "#{exception.inspect}"
   end
 
   def tile_request(request_method, request_uri, form = {})

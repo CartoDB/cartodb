@@ -167,7 +167,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   end #default_privacy
 
   def name_candidate
-    return if params[:name].nil? || params[:name].empty?
+    #return if params[:name].nil? || params[:name].empty?
     Visualization::NameGenerator.new(current_user)
                       .name(params[:name])
   end #name_candidate

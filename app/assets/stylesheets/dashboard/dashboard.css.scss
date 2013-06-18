@@ -10,6 +10,19 @@
   @import "../common/vars";
   @import "../common/forms";
 
+  .main_loader {
+    position:relative;
+    width: 100%;
+    height: 500px;
+    background: image-url('layout/bkg.jpg') repeat 0 0;
+
+    i {
+      @include absolute-center(38px, 16px);
+      background:image-url("layout/loader_gray.gif") no-repeat 0 0;
+    }
+
+  }
+
   .tipsy.privacy_info {
     font-size: 13px;
 
@@ -70,7 +83,7 @@
       // If there are NO tables, this section is active
       &.active {
         display:block;
-        padding:42px 0 77px 0;
+        padding:80px 0 80px 0;
       }
     }
 
@@ -90,10 +103,8 @@
 
       &.active {
         display:block;
-        padding:40px 0 40px 0;
+        padding:80px 0 80px 0;
       }
-
-      &.only { padding: 40px 0 40px 0; }
 
       section.empty {
         margin: 0;
@@ -187,7 +198,7 @@
 
     &.tables.active {
       display:block;
-      padding:37px 0 50px 0;
+      padding:59px 0 50px 0;
     }
 
     &.visualizations.active {
@@ -288,18 +299,19 @@
 
       .more {
         float:right;
-        margin: 3px 0 0 5px;
+        margin: 4px 0 0 5px;
         font:normal 11px $text-fonts2;
         color:#c3c3c3;
       }
 
       .tags {
+        margin-top: 1px;
         display:block;
         float:right;
 
         a {
           @include inline-block();
-          @include size(auto, 14px);
+          @include size(auto, 13px);
 
           padding:2px 7px;
 
@@ -329,7 +341,7 @@
       section.tables > .head {
 
         position:relative;
-        padding: 30px 0 60px 0;
+        padding: 30px 0 56px 0;
         border-bottom:1px solid #E5E5E5;
 
       }
@@ -338,7 +350,7 @@
 
         @include box-sizing(border-box);
         margin: 0 0 27px 0;
-        padding: 7px 7px 30px 0;
+        padding: 19px 7px 30px 0;
 
         @extend .clearfix;
 
@@ -346,7 +358,7 @@
           @include inline-block();
           @include size(23px, 17px);
           @include icons-sprite(v);
-          margin: 0 7px 5px 0;
+          margin: 0 2px 5px 0;
         }
 
         .loader {
@@ -539,7 +551,7 @@
             @include inline-block();
             @include size(23px, 17px);
             @include icons-sprite(t);
-            margin: 0 7px 5px 0;
+            margin: 0 2px 5px 0;
           }
 
           a {
@@ -586,7 +598,7 @@
       // Status selector
 
       .status {
-        padding:3px 12px;
+        padding:2px 8px;
         @include border-radius(25px);
         font:bold 11px $text-fonts2;
         color:white;
@@ -678,14 +690,19 @@
               border-top:1px solid #EDEDED;
 
               & > .left  { width:400px; }
-              & > .right { width:480px; }
+              & > .right { width:420px; }
+
+              & > .left  p {
+                @include ellipsis();
+              }
 
               hgroup {
+                margin: 0 0 9px 0;
                 display:block;
                 width:100%;
 
                 &.options {
-                  @include position(27px, 0, false, false);
+                  @include position(26px, 0, false, false);
                   display:block;
                   width:auto;
                 }
@@ -1034,8 +1051,7 @@
 
           padding: 0;
 
-          &:last-child {margin:0}
-          &:hover { display:none; }
+          &:last-child { margin:0; }
 
           a {
             @include inline-block();
@@ -1074,6 +1090,85 @@
           }
         }
       }
+    }
+
+    &.more_data {
+      display:none;
+      position:relative;
+      padding:29px 0 31px 0;
+      @include background(image-url('layout/bkg.jpg') repeat);
+      border-top:1px solid rgba(black,0.05);
+
+      clear:both;
+      overflow:hidden;
+
+      &:before {
+        @include position(0, 0, 0, 0);
+        content:'';
+        background:rgba(black,0.02);
+        z-index:0;
+      }
+
+      h3 {
+        margin:3px 0 2px 0;
+        letter-spacing:-1px;
+        font-size:21px;
+        color: #333333;
+
+        span.type {
+          position: relative;
+          top: -2px;
+          @include inline-block();
+          vertical-align: middle;
+          @include size(23px, 17px);
+          margin: 2px 2px 0 0;
+          text-indent:-9999px;
+          @include icons-sprite(t_plus, $offset-y:0);
+        }
+
+      }
+
+      p {
+        margin: 0 0 27px 30px;
+        font-size: 15px;
+        color: #868686;
+        letter-spacing:0px;
+
+        a { text-decoration: underline; }
+      }
+
+
+      ul {
+
+        display:block;
+        margin: 0 0 0 30px;
+
+        li {
+          @include inline-block();
+          width:272px;
+          margin:0 25px 0 0;
+          vertical-align: top;
+          letter-spacing:0;
+          /*background:red;*/
+
+          &:last-child { margin:0; }
+
+          a {
+            display:block;
+            height: 56px;
+            padding:10px 0 0 55px;
+            line-height:18px;
+            letter-spacing:0;
+            @include icons-sprite(download_dataset_people);
+          }
+
+        }
+      }
+
+
+
+
+
     }
 
     // Dedicated support

@@ -17,7 +17,7 @@
     top:64px;
     bottom:0px;
     width:600px;
-    padding-top:14px;
+    padding-top:25px;
     background:white;
     letter-spacing:-4px;
     border:1px solid rgba(black,0.4);
@@ -55,20 +55,31 @@
       position:relative;
       width:100%;
       height:100%;
-      margin-top:-15px;
+      margin-top:-25px;
       background:#EDEDED;
       border-top:1px solid #999999;
       @include border-top-left-radius($corner_radius);
+      @include box-shadow(rgba(black,0.1) 0 -10px 20px 0);
+      @include transform-style("linear");
+      @include transition-property("padding,margin");
+      @include transition-duration(250ms);
       z-index:1;
 
+      &:hover {padding-bottom:15px}
       &:first-child {margin-top:0;}
+      &:last-child:hover {margin-top:-38px}
     }
 
     .add_layer {
       position:relative;
-      height:60px;
+      height:55px;
       margin-top:-15px;
-      line-height:60px;
+      line-height:50px;
+      @include transform-style("linear");
+      @include transition-property("height");
+      @include transition-duration(250ms);
+
+      &:hover {height:70px}
 
       div.right {margin-right:20px;}
     }
@@ -1389,8 +1400,14 @@
 
     // Active layer
     .layer_panel.active {
+      margin-bottom:20px;
+      padding-bottom:0;
 
-      @include box-shadow(rgba(black,0.1) 0 10px 0 0);
+      &:hover {
+        margin-bottom:20px;
+        padding-bottom:0;
+        margin-top:-25px;
+      }
 
       .layer_info a.info {
         .order {background:#666666;}

@@ -3,12 +3,13 @@
 module CartoDB
   module Visualization
     class Presenter
-      def initialize(visualization)
-        @visualization = visualization
+      def initialize(visualization, options={})
+        @visualization  = visualization
+        @options        = options
       end #initialize
 
       def to_poro
-        {
+        poro = {
           id:               visualization.id,
           name:             visualization.name,
           map_id:           visualization.map_id,
@@ -17,17 +18,22 @@ module CartoDB
           tags:             visualization.tags,
           description:      visualization.description,
           privacy:          visualization.privacy.upcase,
-          table:            table_data_for(visualization.table),
-          related_tables:   related_tables,
           stats:            visualization.stats,
           created_at:       visualization.created_at,
-          updated_at:       visualization.updated_at
+          updated_at:       visualization.updated_at,
+          table:            table_data_for(visualization.table)
         }
+        poro.merge!(related) if options.fetch(:related, true)
+        poro
       end #to_poro
 
       private
 
-      attr_reader :visualization
+      attr_reader :visualization, :options
+
+      def related
+        { related_tables:   related_tables }
+      end #related
 
       def table_data_for(table=nil)
         return {} unless table

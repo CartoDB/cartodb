@@ -441,16 +441,14 @@ class Table < Sequel::Model(:user_tables)
   ##
   # Post the style to the tiler
   #
-  def send_tile_style_request
-    begin
-      data_layer = self.map.data_layers.first
-      tile_request('POST', "/tiles/#{self.name}/style?map_key=#{owner.get_map_key}", {
-        'style_version' => data_layer.options["style_version"],
-        'style'         => data_layer.options["tile_style"]
-      })
-    rescue => e
-      raise e if Rails.env.production? || Rails.env.staging?
-    end
+  def send_tile_style_request(data_layer=nil)
+    data_layer ||= self.map.data_layers.first
+    tile_request('POST', "/tiles/#{self.name}/style?map_key=#{owner.get_map_key}", {
+      'style_version' => data_layer.options["style_version"],
+      'style'         => data_layer.options["tile_style"]
+    })
+  rescue => exception
+    raise exception if Rails.env.production? || Rails.env.staging?
   end
 
   def before_destroy
@@ -1571,19 +1569,15 @@ SQL
   end
 
   def delete_tile_style
-    begin
-      tile_request('DELETE', "/tiles/#{self.name}/style?map_key=#{owner.get_map_key}")
-    rescue => e
-      CartoDB::Logger.info "tilestyle#delete error", "#{e.inspect}"
-    end
+    tile_request('DELETE', "/tiles/#{self.name}/style?map_key=#{owner.get_map_key}")
+  rescue => exception
+    CartoDB::Logger.info "tilestyle#delete error", "#{exception.inspect}"
   end
 
   def flush_cache
-    begin
-      tile_request('DELETE', "/tiles/#{self.name}/flush_cache?map_key=#{owner.get_map_key}")
-    rescue => e
-      CartoDB::Logger.info "cache#flush error", "#{e.inspect}"
-    end
+    tile_request('DELETE', "/tiles/#{self.name}/flush_cache?map_key=#{owner.get_map_key}")
+  rescue => exception
+    CartoDB::Logger.info "cache#flush error", "#{exception.inspect}"
   end
 
   def tile_request(request_method, request_uri, form = {})

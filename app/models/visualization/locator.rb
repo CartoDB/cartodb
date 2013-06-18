@@ -42,6 +42,8 @@ module CartoDB
 
         return false unless table && table.table_visualization
         [table.table_visualization, table]
+      rescue
+        false
       end #table_from
         
       def get_by_id(uuid)

@@ -7,6 +7,9 @@
   .table_privacy_dialog {
     .content {
       ul {
+        max-height:220px;
+        overflow-y:auto;
+        overflow-x:hidden;
         margin: 15px 0 0 0;
 
         li {

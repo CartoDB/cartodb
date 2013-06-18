@@ -872,7 +872,7 @@
 
       // FILTERS MODULE
       div.filters_panel {
-        width:auto;
+        width:100%;
         @include box-sizing(border-box);
 
         h3 { padding-left:30px; }

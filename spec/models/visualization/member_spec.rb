@@ -120,6 +120,7 @@ describe Visualization::Member do
     it 'invalidates varnish cache' do
       member = Visualization::Member.new(random_attributes).store
       member.expects(:invalidate_varnish_cache)
+      member.expects(:remove_layers_from)
       member.unlink_from(Object.new)
     end
   end #unlink_from
@@ -216,7 +217,7 @@ describe Visualization::Member do
       description:  attributes.fetch(:description, "description #{random}"),
       privacy:      attributes.fetch(:privacy, 'public'),
       tags:         attributes.fetch(:tags, ['tag 1']),
-      type:         attributes.fetch(:type, 'public'),
+      type:         attributes.fetch(:type, 'table'),
       active_layer_id: random
     }
   end #random_attributes

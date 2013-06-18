@@ -113,6 +113,11 @@ class Map < Sequel::Model
     end
   end #process_privacy_in
 
+  def set_tile_style_from(layer)
+    return self unless is_table_visualization?
+    table_visualization.table.send_tile_style_request(layer)
+  end #set_tile_style_from
+
   private
 
   def get_the_last_time_tiles_have_changed_to_render_it_in_vizjsons

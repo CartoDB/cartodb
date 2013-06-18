@@ -114,8 +114,9 @@ describe Map do
     describe 'when linked to a table visualization' do
       it 'returns false when passed a data layer 
       and it is already linked to a base layer' do
-        map = Map.create(user_id: @user.id, table_id: @table.id)
-        def map.table_visualization; Object.new; end
+        map = @table.map
+        map.remove_layer(map.data_layers.first)
+        map.reload
 
         map.admits_layer?(Layer.new(kind: 'carto')).should == true
         map.add_layer(Layer.new(kind: 'carto'))

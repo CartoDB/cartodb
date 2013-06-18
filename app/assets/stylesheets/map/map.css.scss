@@ -58,10 +58,9 @@ div.map {
         @include inline-block();
         @include size(24px);
         margin: 0 2px 0 0;
-
         border: 1px solid rgba(0,0,0,.2);
         @include border-radius(3px);
-        background-size: 24px 24px;
+        @include icons-sprite(basemap_default); 
       }
 
       .info {

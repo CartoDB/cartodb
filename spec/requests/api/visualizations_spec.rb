@@ -70,6 +70,7 @@ describe Api::Json::VisualizationsController do
       response = JSON.parse(last_response.body)
       response.fetch('name')        .should_not == nil
       response.fetch('tags')        .should_not == payload.fetch(:tags).to_json
+      response.keys.should_not include 'related'
 
       payload = { kind: 'carto', order: 1 }
       post "/api/v1/maps/#{map_id}/layers?api_key=#{@api_key}",

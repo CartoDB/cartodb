@@ -20,7 +20,8 @@ module CartoDB
           privacy:          visualization.privacy.upcase,
           stats:            visualization.stats,
           created_at:       visualization.created_at,
-          updated_at:       visualization.updated_at
+          updated_at:       visualization.updated_at,
+          table:            table_data_for(visualization.table)
         }
         poro.merge!(related) if options.fetch(:related, true)
         poro
@@ -31,10 +32,7 @@ module CartoDB
       attr_reader :visualization, :options
 
       def related
-        {
-          table:            table_data_for(visualization.table),
-          related_tables:   related_tables,
-        }
+        { related_tables:   related_tables }
       end #related
 
       def table_data_for(table=nil)

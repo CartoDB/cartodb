@@ -87,16 +87,7 @@ module CartoDB
 
       def unlink_from(table)
         invalidate_varnish_cache
-
-        layers(:cartodb).select { |layer|
-          (layer.affected_tables.map(&:name) +
-            [layer.options.fetch('table_name', nil)]
-          ).include?(table.name)
-        }.each { |layer|
-          self.map.remove_layer(layer)
-          layer.destroy
-        }
-        self
+        remove_layers_from(table)
       end #unlink_from
 
       def name=(name)
@@ -206,6 +197,24 @@ module CartoDB
         return {} unless defined?(Cartodb)
         Cartodb.config
       end #configuration
+
+      def remove_layers_from(table)
+        related_layers_from(table).each { |layer|
+          map.remove_layer(layer)
+          layer.destroy
+        }
+        self.active_layer_id = layers(:cartodb).first.id
+        store
+        self
+      end #remove_layers_from
+        
+      def related_layers_from(table)
+        layers(:cartodb).select do |layer|
+          (layer.affected_tables.map(&:name) +
+            [layer.options.fetch('table_name', nil)]
+          ).include?(table.name)
+        end
+      end #related_layers_from
     end # Member
   end # Visualization
 end # CartoDB

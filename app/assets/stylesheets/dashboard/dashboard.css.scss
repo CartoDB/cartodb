@@ -474,6 +474,9 @@
 
               a {
 
+                @include inline-block();
+                line-height: 110%;
+
                 color: $cBlue;
                 @include simple-transition(color, 75ms);
 

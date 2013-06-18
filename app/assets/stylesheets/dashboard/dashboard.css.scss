@@ -421,12 +421,21 @@
             h3 .delete { display:block; @include opacity(1); }
           }
 
-          .tags { width: 140px; }
+          .tags {
+
+            width: 100%;
+
+            a {
+              float:left;
+              margin:0 5px 0 0;
+              &:last-child { margin-right: 0; }
+            }
+
+          }
 
           .status {
-            position:relative;
-            top: 0; left: 0;
-            float: left;
+            @include position(false, false, 26px, 25px);
+            z-index: 1;
           }
 
           &:nth-child(3n)  { margin-right: 0; }
@@ -446,8 +455,8 @@
               z-index: 0;
 
               .graph {
-                float:left;
-                @include size(128px, 34px);
+                float:right;
+                @include size(119px, 34px);
               }
 
               .colors {
@@ -484,7 +493,7 @@
             } // h3
 
             p {
-              margin: 0 0 10px 0;
+              margin: 0 0 9px 0;
               font-size: 15px;
               color: #999999;
             }
@@ -737,7 +746,7 @@
 
                 a {
                   @include inline-block(); width:auto; letter-spacing:0;
-                  &.status {vertical-align:middle; margin:4px 0 0;}
+                  &.status { vertical-align:middle; margin:4px 0 0; }
                 }
 
                 p {

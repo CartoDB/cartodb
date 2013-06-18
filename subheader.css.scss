@@ -6,6 +6,10 @@
 @import "../common/sprites";
 @import "../common/mixins";
 
+.tipsy.stats.tipsy-s {
+  line-height: 130%;
+}
+
 div.subheader {
   position:relative;
   @include inline-block();
@@ -71,6 +75,25 @@ div.subheader {
             &.dedicated { @include icons-sprite(badge_dedicated_server); }
 
             &.coronelli, &.dedicated { top: -15px; }
+          }
+        }
+
+        .info {
+          @include inline-block();
+          width: 6px;
+          padding: 2px 5px;
+          top: -2px;
+          @include border-radius(40px);
+          color:#fff;
+          background:#ddd;
+          font-size: 11px;
+          text-align: center;
+          position:relative;
+          cursor: help;
+
+          &:hover {
+            text-decoration:none;
+            background:#ccc;
           }
         }
 

@@ -60,7 +60,11 @@ div.map {
         margin: 0 2px 0 0;
         border: 1px solid rgba(0,0,0,.2);
         @include border-radius(3px);
-        @include icons-sprite(basemap_default); 
+        // Set nokia basemap as default
+        background-image: url("https://maps.nlp.nokia.com/maptiler/v2/maptile/newest/normal.day/6/30/24/256/png8?lg=spa&token=A7tBPacePg9Mj_zghvKt9Q&app_id=KuYppsdXZznpffJsKT24");
+        background-size: 34px;
+        background-color: rgba(0, 0, 0, 0);
+        background-position: 50% 50%;
       }
 
       .info {

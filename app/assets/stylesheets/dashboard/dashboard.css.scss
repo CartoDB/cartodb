@@ -305,9 +305,11 @@
       }
 
       .tags {
+        position:relative;
         margin-top: 1px;
         display:block;
         float:right;
+        z-index: 1;
 
         a {
           @include inline-block();
@@ -441,6 +443,7 @@
               @include size(100%, auto);
               @include position(none, none, 0, 0);
               padding: 27px;
+              z-index: 0;
 
               .graph {
                 float:left;

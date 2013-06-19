@@ -21,22 +21,26 @@ module DataRepository
     end #initialize
 
     def add(member)
-      storage.add(member.id)
+      storage.add(member)
       self
     end #add
 
     def delete(member)
-      storage.delete(member.id)
+      storage.delete(member)
       self
     end #delete
 
     def each(&block)
-      return members(&block) if block
+      return storage.each(&block)
       Enumerator.new(self, :each)
     end #each
 
     def fetch
-      self.storage = Set[*repository.fetch(signature)]
+      self.storage = Set[*repository.fetch(signature)].map do |attributes|
+        puts attributes.inspect
+        member_class.new(attributes)
+      end
+        
       self
     rescue => exception
       storage.clear
@@ -44,12 +48,12 @@ module DataRepository
     end #fetch
 
     def store
-      repository.store(signature, storage.to_a)
+      repository.store(signature, storage.map(&:id).to_a)
       self
     end #store
 
     def to_json(*args)
-      map { |member| member.fetch.to_hash }.to_json(*args)
+      map { |member| member.to_hash }.to_json(*args)
     end #to_json
 
     def count

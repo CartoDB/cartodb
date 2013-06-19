@@ -7,7 +7,7 @@
 div.search {
   position:absolute;
   width: 100%;
-  padding: 18px 0 16px 0;
+  padding: 9px 0 8px 0;
 
   border-bottom: 1px solid #E1E1E1;
 
@@ -15,12 +15,14 @@ div.search {
 
   form {
     float:left;
-    top: 2px;
+    top: 1px;
+    left: 10px;
     position:relative;
 
     input[type="text"] {
 
       width: 600px;
+      height: 40px;
 
       border:none;
       background:none;
@@ -39,6 +41,8 @@ div.search {
   }
 
   i {
+    top: 1px;
+    position:relative;
     display:block;
     @include size(15px);
     @include inline-block();
@@ -47,7 +51,7 @@ div.search {
 
   .filter {
     position:relative;
-    top: -1px;
+    top: 8px;
     float:right;
     color: #333;
     font-size: 13px;

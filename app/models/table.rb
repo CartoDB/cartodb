@@ -641,8 +641,9 @@ class Table < Sequel::Model(:user_tables)
     end
   end
 
-  def rows_estimated
-    owner.in_database["SELECT reltuples::integer FROM pg_class WHERE oid = '#{self.name}'::regclass"].first[:reltuples];
+  def rows_estimated(user=nil)
+    user ||= self.owner
+    user.in_database["SELECT reltuples::integer FROM pg_class WHERE oid = '#{self.name}'::regclass"].first[:reltuples];
   end
 
   def rows_counted
@@ -650,8 +651,9 @@ class Table < Sequel::Model(:user_tables)
   end
 
   # Returns table size in bytes
-  def table_size
-    @table_size ||= Table.table_size(name, connection: owner.in_database)
+  def table_size(user=nil)
+    user ||= self.owner
+    @table_size ||= Table.table_size(name, connection: user.in_database)
   end
 
   def self.table_size(name, options)

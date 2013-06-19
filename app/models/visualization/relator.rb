@@ -45,8 +45,8 @@ module CartoDB
         map.send(LAYER_SCOPES.fetch(kind))
       end #layers
 
-      def stats
-        @stats ||= Visualization::Stats.new(self).to_poro
+      def stats(user=nil)
+        @stats ||= Visualization::Stats.new(self, user).to_poro
       end #stats
 
       def single_data_layer?

@@ -45,8 +45,9 @@ module CartoDB
         self.total_entries = dataset.count
         dataset = repository.paginate(dataset, filters)
 
-        collection.storage = 
-          Set.new(dataset.map { |record| record.fetch(:id) })
+        collection.storage = Set.new(dataset.map { |attributes|
+          Visualization::Member.new(attributes)
+        })
 
         self
       end #fetch

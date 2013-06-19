@@ -3,8 +3,9 @@
 module CartoDB
   module Visualization
     class Stats
-      def initialize(visualization)
-        @visualization = visualization
+      def initialize(visualization, user=nil)
+        @visualization  = visualization
+        @user           = user || visualization.user
       end #initialize
       
       def to_poro
@@ -19,13 +20,12 @@ module CartoDB
       # Specifications here:
       # https://github.com/Vizzuality/Windshaft-cartodb/wiki/Redis-stats-format
       def visualization_stats_key
-        "user:#{@visualization.user.username}:mapviews:stat_tag:#{@visualization.id}"
+        "user:#{user.username}:mapviews:stat_tag:#{visualization.id}"
       end
 
       private
 
-      attr_reader :member
-
+      attr_reader :visualization, :user
     end # Stats
   end # Visualization
 end # CartoDB

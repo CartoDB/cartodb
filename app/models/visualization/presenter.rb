@@ -6,6 +6,8 @@ module CartoDB
       def initialize(visualization, options={})
         @visualization  = visualization
         @options        = options
+        @user           = options.fetch(:user, nil)
+        @table          = options[:table] || visualization.table
       end #initialize
 
       def to_poro
@@ -18,10 +20,10 @@ module CartoDB
           tags:             visualization.tags,
           description:      visualization.description,
           privacy:          visualization.privacy.upcase,
-          stats:            visualization.stats,
+          stats:            visualization.stats(user),
           created_at:       visualization.created_at,
           updated_at:       visualization.updated_at,
-          table:            table_data_for(visualization.table)
+          table:            table_data_for(table)
         }
         poro.merge!(related) if options.fetch(:related, true)
         poro
@@ -29,7 +31,7 @@ module CartoDB
 
       private
 
-      attr_reader :visualization, :options
+      attr_reader :visualization, :options, :user, :table
 
       def related
         { related_tables:   related_tables }
@@ -41,8 +43,8 @@ module CartoDB
           id:               table.id,
           name:             table.name,
           privacy:          table.privacy_text,
-          size:             table.table_size,
-          row_count:        table.rows_estimated,
+          size:             table.table_size(user),
+          row_count:        table.rows_estimated(user),
           updated_at:       table.updated_at
         }
       end #table_data_for

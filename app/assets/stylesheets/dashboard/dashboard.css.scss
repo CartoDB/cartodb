@@ -421,6 +421,13 @@
             h3 .delete { display:block; @include opacity(1); }
           }
 
+          .more {
+            float:left;
+            margin: 4px 0 0 5px;
+            font:normal 11px $text-fonts2;
+            color:#c3c3c3;
+          }
+
           .tags {
 
             width: 100%;

@@ -227,7 +227,9 @@
         this.map.set({ attribution: attributions });
       }
 
-      this.trigger('newLayerView', layer_view, this);
+      if(opts == undefined || !opts.silent) {
+        this.trigger('newLayerView', layer_view, this);
+      }
       return layer_view;
     },
 

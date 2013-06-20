@@ -162,7 +162,9 @@ if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
           idx = Math.max(0, idx); // avoid -1
           self.map_googlemaps.overlayMapTypes.setAt(idx, layer_view.gmapsLayer);
         }
-        this.trigger('newLayerView', layer_view, this);
+        if(opts == undefined || !opts.silent) {
+          this.trigger('newLayerView', layer_view, this);
+        }
       } else {
         cdb.log.error("layer type not supported");
       }

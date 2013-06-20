@@ -49,8 +49,13 @@ var CartoDBLayerGroup = function(opts) {
   this.interaction = [];
   this.interactionEnabled = [];
   
-  if (!opts.layer_definition) {
-    throw new Error('cartodb-gmaps needs at least the layer_definition');
+  if (!opts.layer_definition && !opts.sublayers) {
+      throw new Error('cartodb-leaflet needs at least the layer_definition or sublayer list');
+  }
+
+  // if only sublayers is available, generate layer_definition from it
+  if(!opts.layer_definition) {
+    opts.layer_definition = LayerDefinition.layerDefFromSubLayers(opts.sublayers);
   }
 
   // Add CartoDB logo
@@ -95,10 +100,6 @@ CartoDBLayerGroup.prototype.getTile = function(coord, zoom, ownerDocument) {
 
   var self = this;
 
-  /*if(!this.options.added) {
-    this.onAdd();
-  }*/
-
   this.options.added = true;
 
   if(this.tilejson == null) {
@@ -111,23 +112,21 @@ CartoDBLayerGroup.prototype.getTile = function(coord, zoom, ownerDocument) {
 
   var im = wax.g.connector.prototype.getTile.call(this, coord, zoom, ownerDocument);
 
-  if (this.tiles == 0) {
+  if (this.tiles === 0) {
     this.loading && this.loading();
-    //this.trigger("loading");
   }
 
   this.tiles++;
 
   im.onload = im.onerror = function() {
     self.tiles--;
-    if (self.tiles == 0) {
+    if (self.tiles === 0) {
       self.finishLoading && self.finishLoading();
     }
-  }
-
+  };
 
   return im;
-}
+};
 
 CartoDBLayerGroup.prototype.onAdd = function () {
   //this.update();

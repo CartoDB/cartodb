@@ -230,18 +230,17 @@ describe("LayerDefinition", function() {
 
   describe("sublayers", function() {
 
-
     it("should create sublayer", function() {
       var subLayer = layerDefinition.createSubLayer({
         sql: 'select * from table',
         cartocss: 'test',
         interactivity: 'test'
       });
-      expect(!!subLayer).toEqual(true)
+      expect(!!subLayer).toEqual(true);
     });
 
     it("should get cartocss and sql", function() {
-      var layer = layerDefinition.getSubLayer(0)
+      var layer = layerDefinition.getSubLayer(0);
       expect(layer.getSQL()).toEqual('select * from ne_10m_populated_places_simple');
       expect(layer.getCartoCSS()).toEqual('#layer { marker-fill: red; }');
     });
@@ -265,7 +264,7 @@ describe("LayerDefinition", function() {
       expect(layerDefinition.getSubLayerCount()).toEqual(3);
       sub.remove();
       expect(layerDefinition.getSubLayerCount()).toEqual(2);
-    })
+    });
 
     it("should show/hide", function() {
       layerDefinition.getSubLayer(0).hide();
@@ -290,12 +289,27 @@ describe("LayerDefinition", function() {
     });
   });
 
-  /*
-  it("should fix cartocss", function() {
-    layerDefinition.addLayer({ sql : 'b', cartocss: '#rambo {} #rambo     [zoom=2]{}'});
-    expect(layerDefinition.getLayer(0).cartocss).toEqual('#layer{} #layer [zoom=2]{}');
+  describe('layerDefFromSubLayers', function() {
+    it("should generate layerdef", function() {
+      var layerDef = LayerDefinition.layerDefFromSubLayers([{
+        sql: 'test',
+        cartocss:'test'
+      }]);
+
+      expect(layerDef).toEqual({
+          version: '1.0.0',
+          stat_tag: 'API',
+          layers: [{
+            type: 'cartodb',
+            options: {
+              sql: 'test',
+              cartocss:'test'
+            }
+          }]
+      });
+
+    });
   });
-  */
 
 });
 

@@ -50,26 +50,33 @@ Layers.register('background', function(vis, data) {
   return new cdb.geo.PlainLayer(data);
 });
 
-var cartoLayer = function(vis, data) {
 
+function normalizeOptions(vis, data) {
   if(data.infowindow && data.infowindow.fields) {
     if(data.interactivity) {
       if(data.interactivity.indexOf('cartodb_id') === -1) {
-        data.interactivity = data.interactivity + ",cartodb_id"
+        data.interactivity = data.interactivity + ",cartodb_id";
       }
     } else {
       data.interactivity = 'cartodb_id';
     }
   }
-
   data.tiler_protocol = vis.https ? 'https': 'http';
-  /*if(!data.no_cdn) {
-    data.tiler_protocol = vis.https ? 'https': 'http';
-    data.tiler_port = vis.https ? 443: 80;
-  }*/
-  data.extra_params = data.extra_params || {};
+  if(!data.no_cdn) {
+    data.tiler_protocol = vis.https ? 'https': data.tiler_protocol;
+    data.tiler_port = vis.https ? 443: data.tiler_port;
+  }
   data.cartodb_logo = vis.cartodb_logo == undefined ? data.cartodb_logo : vis.cartodb_logo;
+}
 
+var cartoLayer = function(vis, data) {
+  normalizeOptions(vis, data);
+  // if sublayers are included that means a layergroup should
+  // be created
+  if(data.sublayers) {
+    data.type = 'layergroup';
+    return new cdb.geo.CartoDBGroupLayer(data);
+  }
   return new cdb.geo.CartoDBLayer(data);
 };
 
@@ -77,6 +84,7 @@ Layers.register('cartodb', cartoLayer);
 Layers.register('carto', cartoLayer);
 
 Layers.register('layergroup', function(vis, data) {
+  normalizeOptions(vis, data);
   return new cdb.geo.CartoDBGroupLayer(data);
 });
 

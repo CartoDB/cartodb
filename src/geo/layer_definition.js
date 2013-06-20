@@ -20,6 +20,39 @@ function LayerDefinition(layerDefinition, options) {
   this._waiting = false;
 }
 
+/**
+ * given a list of sublayers as: 
+ * {
+ *   sql: '...',
+ *   cartocss: '..',
+ *   cartocss_version:'...', //optional
+ *   interactivity: '...' //optional
+ * }
+ * returns the layer definition for version 1.0.0
+ *
+ * ``sublayers`` should be an array, an exception is thrown otherewise
+ *
+ */
+LayerDefinition.layerDefFromSubLayers = function(sublayers) {
+
+  if(!sublayers || sublayers.length === undefined) throw new Error("sublayers should be an array");
+
+  var layer_definition = {
+    version: '1.0.0',
+    stat_tag: 'API',
+    layers: []
+  };
+
+  for (var i in sublayers) {
+    layer_definition.layers.push({
+      type: 'cartodb',
+      options: sublayers[i]
+    });
+  }
+
+  return layer_definition;
+}
+
 LayerDefinition.prototype = {
 
   /*

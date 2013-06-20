@@ -35,7 +35,7 @@
    */
   function _getLayerJson(layer, callback) {
     var url = null;
-    if(layer.layers !== undefined || ((layer.kind || layer.type) !== undefined && layer.options !== undefined)) {
+    if(layer.layers !== undefined || ((layer.kind || layer.type) !== undefined)) {
       // layer object contains the layer data
       _.defer(function() { callback(layer); });
       return;

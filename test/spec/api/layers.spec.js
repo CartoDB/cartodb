@@ -223,6 +223,42 @@ describe('api.layers', function() {
 
       });
 
+      it("should create layer form sublayer list", function() {
+        var layer;
+        runs(function() {
+          cartodb.createLayer(map, {
+            type: 'cartodb',
+            sublayers: [{
+              sql: 'select * from table',
+              cartocss: 'test',
+              interactivity: 'testi'
+            }]
+          }).done(function(lyr) {
+            layer = lyr;
+          });
+        });
+
+        waits(100);
+
+        runs(function() {
+          expect(layer).not.toEqual(undefined);
+          expect(layer.toJSON()).toEqual({
+            version: '1.0.0',
+            stat_tag: 'API',
+            layers: [{
+              type: 'cartodb',
+              options: {
+                sql: 'select * from table',
+                cartocss: 'test',
+                cartocss_version: '2.1.0',
+                interactivity: 'testi'
+              }
+            }]
+          });
+        });
+
+      });
+
     //});
 
     });

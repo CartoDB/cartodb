@@ -19,8 +19,8 @@ header { // general header
 
   $bkgColor: #428AC6;
 
-  background: image-url('layout/relief.png') repeat 0 0 $bkgColor; // IE
-  @include background(image-url("layout/relief.png") repeat 0 0 $bkgColor);
+  background: image-url('layout/relief.png') repeat center 0 $bkgColor; // IE
+  @include background(image-url("layout/relief.png") repeat center 0 $bkgColor);
 
   @include box-shadow(rgba(black, 0.3) 0 0 12px, rgba(0,0,0, 0.09) 0 -5px 3px 0 inset);
   @include transform-style("linear");

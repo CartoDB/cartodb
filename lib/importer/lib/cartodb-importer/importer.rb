@@ -97,8 +97,17 @@ module CartoDB
               @ext=".tgz"
             end
 
+            # Try to infer file name from http Content-Disposition
+            file_name = begin
+              res.meta["content-disposition"].split(";")
+                .select { |c| c[/.*filename\s?=/] }[0]
+                .gsub(/.*filename\s?=/, "").strip.downcase
+            rescue
+              @import_from_file
+            end
+
             @iconv ||= Iconv.new('UTF-8//IGNORE', 'UTF-8')
-            file_name = File.basename(@iconv.iconv(@import_from_file)).to_s.gsub(/#{Regexp.escape(@ext)}.*/, '').downcase.sanitize
+            file_name = File.basename(@iconv.iconv(file_name)).to_s.gsub(/#{Regexp.escape(@ext)}.*/, '').downcase.sanitize
             @original_name ||= get_valid_name(file_name)
 
             @import_from_file = Tempfile.new([@original_name, @ext], :encoding => 'utf-8')

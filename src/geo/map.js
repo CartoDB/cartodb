@@ -142,7 +142,7 @@ cdb.geo.CartoDBLayer = cdb.geo.MapLayer.extend({
     var e = this.get('extra_params') || e;
     e.cache_buster = new Date().getTime();
     this.set('extra_params', e);
-    this.trigger('change');
+    this.trigger('change', this);
   },
 
   toggle: function() {

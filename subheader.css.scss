@@ -7,8 +7,39 @@
 @import "../common/mixins";
 
 .tipsy.stats.tipsy-s {
-  line-height: 135%;
+  line-height: 120%;
 }
+
+.mapviews_tooltip {
+  position: absolute;
+  text-align: center;
+  background:#333;
+  color:#fff;
+  padding: 5px;
+  font: 10px sans-serif;
+  @include border-radius(2px);
+  pointer-events: none;
+
+  .tip {
+    position:absolute;
+    left:10px;
+    bottom:0px;
+
+    &:before{
+      content:'';
+      display:block;
+      width:0;
+      height:0;
+      position:absolute;
+
+      border-left: 4px solid transparent;
+      border-right: 4px solid transparent;
+      border-top: 4px solid #333;
+      margin: auto;
+    }
+  }
+}
+
 
 div.subheader {
   position:relative;

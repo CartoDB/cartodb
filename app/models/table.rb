@@ -1350,7 +1350,7 @@ TRIGGER
     name = name.gsub(/[^a-z0-9]/,'_').gsub(/_{2,}/, '_')
 
     # Postgresql table name limit
-    name = name[0..62]
+    name = name[0..45]
 
     return name if name == options[:current_name]
     # We don't want to use an existing table name

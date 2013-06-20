@@ -254,6 +254,10 @@
     word-wrap: break-word;
   }
 
+  div.cartodb-popup p.italic {
+    font-style: italic;
+  }
+
   div.cartodb-popup p.loading {
     position:relative;
     display:block;

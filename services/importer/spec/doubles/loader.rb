@@ -4,7 +4,7 @@ module CartoDB
   module Importer
     module Doubles
       class Loader
-        def run(filepath); Object.new; end
+        def run; Object.new; end
         def exit_code; 0; end
       end # Loader
     end # Doubles

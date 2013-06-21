@@ -33,7 +33,7 @@ describe Importer::Runner do
       loader    = MiniTest::Mock.new
       importer  = Importer::Runner.new(@pg_options, @filepath, loader)
 
-      loader.expect(:run, Object.new, [@filepath])
+      loader.expect(:run, Object.new)
       loader.expect(:exit_code, @exit_code)
       importer.run
       loader.verify

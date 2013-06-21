@@ -278,7 +278,7 @@
     layerTypeMap: {
       "tiled": cdb.geo.LeafLetTiledLayerView,
       "cartodb": cdb.geo.LeafLetLayerCartoDBView,
-      "carto": cdb.geo.LeafLetCartoDBLayerGroupView,
+      "carto": cdb.geo.LeafLetLayerCartoDBView,
       "plain": cdb.geo.LeafLetPlainLayerView,
       // for google maps create a plain layer
       "gmapsbase": cdb.geo.LeafLetPlainLayerView,

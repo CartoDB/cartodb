@@ -53,7 +53,6 @@ L.CartoDBGroupLayer = L.TileLayer.extend({
     CartoDBLayerCommon.call(this);
     L.TileLayer.prototype.initialize.call(this);
     this.interaction = [];
-    this.interactionEnabled = [];
   },
 
 

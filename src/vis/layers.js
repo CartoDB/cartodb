@@ -62,10 +62,9 @@ function normalizeOptions(vis, data) {
     }
   }
   // if https is forced
-  data.tiler_protocol = vis.https ? 'https': data.tiler_protocol;
-  if(!data.no_cdn) {
-    data.tiler_protocol = vis.https ? 'https': data.tiler_protocol;
-    data.tiler_port = vis.https ? 443: data.tiler_port;
+  if(vis.https) {
+    data.tiler_protocol = 'https';
+    data.tiler_port = 443;
   }
   data.cartodb_logo = vis.cartodb_logo == undefined ? data.cartodb_logo : vis.cartodb_logo;
 }

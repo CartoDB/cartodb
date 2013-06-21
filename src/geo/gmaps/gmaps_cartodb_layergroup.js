@@ -47,8 +47,7 @@ var CartoDBLayerGroup = function(opts) {
   this.tiles = 0;
   this.tilejson = null;
   this.interaction = [];
-  this.interactionEnabled = [];
-  
+
   if (!opts.layer_definition && !opts.sublayers) {
       throw new Error('cartodb-leaflet needs at least the layer_definition or sublayer list');
   }

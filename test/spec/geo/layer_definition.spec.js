@@ -275,6 +275,12 @@ describe("LayerDefinition", function() {
       expect(layerDefinition.getSubLayerCount()).toEqual(2);
     });
 
+    it("should be the same object for the same sublayer", function() {
+      expect(layerDefinition.getSubLayer(0)).toBe(layerDefinition.getSubLayer(0));
+    });
+
+
+
     it("should raise an exception when change something after remove", function() {
       var sub = layerDefinition.getSubLayer(0);
       sub.remove();

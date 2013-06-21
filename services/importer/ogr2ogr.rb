@@ -6,22 +6,33 @@ module CartoDB
     class Ogr2ogr
       ENCODING = 'UTF-8'
 
-      def initialize(filepath, pg_options, table_name)
+      def initialize(filepath, pg_options, table_name, options={})
         self.filepath   = filepath
         self.pg_options = pg_options
         self.table_name = table_name
+        self.options    = options
       end #initialize
 
       def command
-        "#{encoding_option} #{executable_path} " +
-        "-lco FID=cartodb_id " +
-        "#{output_format_option} #{postgres_options} " +
+        "#{encoding_option} #{executable_path} "        +
+        "#{cartodb_id_option} "                         +
+        "#{output_format_option} #{postgres_options} "  +
         "#{filepath} #{layer_name_option}"
       end #command
+
+      def cartodb_id_option
+        option = "-lco FID=cartodb_id"
+        option.prepend('-preserve_fid ') if preserve_cartodb_id?
+        option
+      end #cartodb_id_option
 
       def executable_path
         `which ogr2ogr`.strip
       end #executable_path
+
+      def preserve_cartodb_id?
+        options.fetch(:preserve_cartodb_id, false)
+      end #preserve_cartodb_id?
 
       def run(*args)
         stdout, stderr, status  = Open3.capture3(command)
@@ -35,7 +46,7 @@ module CartoDB
       private
 
       attr_writer   :exit_code, :command_output, :table_name
-      attr_accessor :filepath, :pg_options
+      attr_accessor :filepath, :pg_options, :options
 
       def output_format_option
         "-f PostgreSQL"

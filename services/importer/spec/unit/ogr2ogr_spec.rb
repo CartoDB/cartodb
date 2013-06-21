@@ -8,16 +8,16 @@ require_relative '../doubles/job'
 require_relative '../factories/csv'
 require_relative '../factories/pg_connection'
 
-include CartoDB
+include CartoDB::Importer
 
-describe Importer::Ogr2ogr do
+describe Ogr2ogr do
   before do
-    @csv          = Importer::Factories::CSV.new.write
+    @csv          = Factories::CSV.new.write
     @filepath     = @csv.filepath
-    @pg_options   = Importer::Factories::PGConnection.new.pg_options
+    @pg_options   = Factories::PGConnection.new.pg_options
     @table_name   = "importer_#{rand(999)}"
-    @db           = Importer::Factories::PGConnection.new.connection
-    @wrapper      = Importer::Ogr2ogr.new(@filepath, @pg_options, @table_name)
+    @db           = Factories::PGConnection.new.connection
+    @wrapper      = Ogr2ogr.new(@filepath, @pg_options, @table_name)
   end
 
   after do
@@ -27,8 +27,8 @@ describe Importer::Ogr2ogr do
 
   describe '#initialize' do
     it 'requires a filepath and postgres options' do
-      lambda { Importer::Ogr2ogr.new }.must_raise ArgumentError
-      lambda { Importer::Ogr2ogr.new('bogus.txt') }.must_raise ArgumentError
+      lambda { Ogr2ogr.new }.must_raise ArgumentError
+      lambda { Ogr2ogr.new('bogus.txt') }.must_raise ArgumentError
     end
   end #initialize
 
@@ -74,15 +74,30 @@ describe Importer::Ogr2ogr do
       record    = @db[@wrapper.table_name.to_sym].first
       record.keys.must_include :cartodb_id
     end
+
+    it 'keeps an existing cartodb_id column in imported records' do
+      skip
+      header    = ["cartodb_id", "header_2"]
+      data      = ["5", "cell_#{rand(999)}"]
+      csv       = Factories::CSV.new.write(header, data)
+
+      @wrapper  = Ogr2ogr.new(
+        csv.filepath, @pg_options, @table_name, preserve_cartodb_id: true
+      )
+      @wrapper.run
+
+      record    = @db[@wrapper.table_name.to_sym].first
+      record.fetch(:cartodb_id).must_equal 5
+    end
   end #run
 
   describe '#command_output' do
     it 'returns stdout and stderr from ogr2ogr binary' do
-      wrapper   = Importer::Ogr2ogr.new('non_existent', @pg_options, @table_name)
+      wrapper   = Ogr2ogr.new('non_existent', @pg_options, @table_name)
       wrapper.run
       wrapper.command_output.wont_be_empty
 
-      wrapper   = Importer::Ogr2ogr.new(@filepath, @pg_options, @table_name)
+      wrapper   = Ogr2ogr.new(@filepath, @pg_options, @table_name)
       wrapper.run
       wrapper.command_output.must_be_empty
     end
@@ -90,14 +105,14 @@ describe Importer::Ogr2ogr do
 
   describe '#exit_code' do
     it 'returns the exit code from the ogr2ogr binary' do
-      wrapper   = Importer::Ogr2ogr.new('non_existent', @pg_options, @table_name)
+      wrapper   = Ogr2ogr.new('non_existent', @pg_options, @table_name)
       wrapper.run
       wrapper.exit_code.wont_equal 0
 
-      wrapper   = Importer::Ogr2ogr.new(@filepath, @pg_options, @table_name)
+      wrapper   = Ogr2ogr.new(@filepath, @pg_options, @table_name)
       wrapper.run
       wrapper.exit_code.must_equal 0
     end
   end #exit_code
-end # Importer::Ogr2ogr
+end # Ogr2ogr
 

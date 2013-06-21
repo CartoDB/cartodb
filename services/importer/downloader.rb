@@ -26,7 +26,7 @@ module CartoDB
 
       def filename_from(headers, url)
         filename_from_http(headers) || filename_in(url)
-      end #filename
+      end #filename_from
 
       attr_reader :url, :candidate
 
@@ -47,12 +47,12 @@ module CartoDB
 
       def filepath_from(seed=nil)
         [DEFAULT_FILENAME, seed].compact.join('_')
-      end #filepath
+      end #filepath_from
 
       def filename_from_http(headers)
         disposition = headers.fetch('Content-Disposition', nil)
         disposition && disposition.match(CONTENT_DISPOSITION_RE)[1]
-      end #filename_form_http
+      end #filename_from_http
 
       def filename_in(url)
         url.split('/').last

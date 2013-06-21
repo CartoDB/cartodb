@@ -61,7 +61,8 @@ function normalizeOptions(vis, data) {
       data.interactivity = 'cartodb_id';
     }
   }
-  data.tiler_protocol = vis.https ? 'https': 'http';
+  // if https is forced
+  data.tiler_protocol = vis.https ? 'https': data.tiler_protocol;
   if(!data.no_cdn) {
     data.tiler_protocol = vis.https ? 'https': data.tiler_protocol;
     data.tiler_port = vis.https ? 443: data.tiler_port;

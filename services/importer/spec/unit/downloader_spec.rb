@@ -58,6 +58,11 @@ describe Downloader do
       downloader.candidate.must_equal({})
     end
 
+    it 'returns an empty hash if URL not valid' do
+      downloader = Downloader.new('/foo/bar')
+      downloader.candidate.must_equal({})
+    end
+
     it 'returns a candidate name' do
       downloader = Downloader.new(@file_url)
       downloader.run

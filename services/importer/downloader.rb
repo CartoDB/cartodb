@@ -16,6 +16,8 @@ module CartoDB
       end #initialize
 
       def run
+        return self unless url =~ %r{://}
+
         response        = Typhoeus.get(url, followlocation: true)
         filename        = filename_from(response.headers, url)
         self.candidate  = candidate_for(filename, filepath)

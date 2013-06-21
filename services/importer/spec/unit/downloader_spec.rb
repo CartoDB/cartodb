@@ -26,7 +26,7 @@ describe Downloader do
     it 'downloads a file from a url' do
       downloader = Downloader.new(@file_url, nil, @repository)
       downloader.run
-      @repository.exists?(downloader.candidate.fetch(:path)).must_equal true
+      File.exists?(downloader.candidate.fetch(:path)).must_equal true
     end
 
     it 'extracts the candidate name from the URL' do

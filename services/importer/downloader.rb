@@ -37,11 +37,12 @@ module CartoDB
 
       def candidate_for(filename, filepath)
         extension = File.extname(filename)
+        path = DataRepository::Filesystem::Local::DEFAULT_PREFIX + '/' + filepath
 
         {
           name:         File.basename(filename, extension),
           extension:    extension,
-          path:         filepath
+          path:         path
         }
       end #candidate_for
 

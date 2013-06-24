@@ -306,7 +306,7 @@ Promise object. You can listen for the following events:
   + **error**: triggered when the layer couldn't be created. The error string is the first argument.
 
 
-###### example:
+###### EXAMPLE
 
 <div class="margin20"></div>
 ``` javascript

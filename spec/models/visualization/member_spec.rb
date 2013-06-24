@@ -119,7 +119,7 @@ describe Visualization::Member do
   describe '#unlink_from' do
     it 'invalidates varnish cache' do
       member = Visualization::Member.new(random_attributes).store
-      member.expects(:invalidate_varnish_cache).times(2)
+      member.expects(:invalidate_varnish_cache)
       member.expects(:remove_layers_from)
       member.unlink_from(Object.new)
     end

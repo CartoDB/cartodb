@@ -434,7 +434,7 @@ describe Api::Json::VisualizationsController do
       last_response.status.should == 404
     end
 
-    it 'removes the layer from non dependent visualizations', now: true do
+    it 'removes the layer from non dependent visualizations' do
       table1    = table_factory
       table2    = table_factory
       table1_id = table1.fetch('id')
@@ -475,6 +475,26 @@ describe Api::Json::VisualizationsController do
 
       get "/api/v1/maps/#{map_id}/layers?api_key=#{@api_key}", {}, @headers
       JSON.parse(last_response.body).length.should == 2
+    end
+
+    it 'removes dependent visualizations that have the same layer twice' do
+      table     = table_factory
+      table_id  = table.fetch('id')
+      payload   = { tables: [table.fetch('name'), table.fetch('name')] }
+
+      post "/api/v1/viz?api_key=#{@api_key}", payload.to_json, @headers
+      response          = JSON.parse(last_response.body)
+      visualization_id  = response.fetch('id')
+      map_id            = response.fetch('map_id')
+
+      delete "/api/v1/tables/#{table_id}?api_key=#{@api_key}", {}, @headers
+      last_response.status.should == 204
+
+      get "/api/v1/tables/#{table_id}?api_key=#{@api_key}", {}, @headers
+      last_response.status.should == 404
+
+      get "/api/v1/tables?api_key=#{@api_key}", {}, @headers
+      last_response.status.should == 200
     end
   end # DELETE /api/v1/tables/:id
 

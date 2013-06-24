@@ -88,6 +88,7 @@ module CartoDB
       def unlink_from(table)
         invalidate_varnish_cache
         remove_layers_from(table)
+        delete if layers(:cartodb).empty?
       end #unlink_from
 
       def name=(name)
@@ -203,7 +204,8 @@ module CartoDB
           map.remove_layer(layer)
           layer.destroy
         }
-        self.active_layer_id = layers(:cartodb).first.id
+        layers = layers(:cartodb)
+        self.active_layer_id = layers.first.id unless layers.empty?
         store
         self
       end #remove_layers_from

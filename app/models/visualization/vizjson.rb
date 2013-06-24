@@ -19,7 +19,7 @@ module CartoDB
       end #initialize
     
       def to_poro
-        vizjson = {
+        {
           id:             visualization.id,
           version:        VIZJSON_VERSION,
           title:          visualization.name,
@@ -33,15 +33,6 @@ module CartoDB
           layers:         layers_for(visualization),
           overlays:       overlays_for(visualization)
         }
-        
-        if Cartodb.config[:cdn_url].present?
-          vizjson[:cdn_url] = {
-            http:         Cartodb.config[:cdn_url].try("fetch", "http", nil),
-            https:        Cartodb.config[:cdn_url].try("fetch", "https", nil)
-          }
-        end
-
-        vizjson
       end #to_poro
 
       private

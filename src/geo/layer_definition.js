@@ -491,7 +491,7 @@ LayerDefinition.prototype = {
       if (subhost) {
         h += subhost + ".";
       }
-      var cdn_host = opts.cdn_host || cdb.CDB_HOST;
+      var cdn_host = opts.cdn_url || cdb.CDB_HOST;
       if(!cdn_host.http && !cdn_host.https) {
         throw new Error("cdn_host should contain http and/or https entries");
       }

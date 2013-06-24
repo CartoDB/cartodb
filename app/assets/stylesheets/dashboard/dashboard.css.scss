@@ -494,7 +494,7 @@
               }
 
               .delete {
-                @include position(9px, 0, none, none);
+                @include position(11px, 0, none, none);
                 @include size(13px, 14px);
                 @include simple-transition(opacity, 250ms);
 

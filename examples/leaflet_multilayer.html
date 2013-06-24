@@ -23,7 +23,7 @@
     <div id="map"></div>
 
     <!-- include cartodb.js library -->
-    <script src="../src/cartodb.js"></script>
+    <script src="http://libs.cartocdn.com/cartodb.js/v3/cartodb.js"></script>
     <script>
 
       function main() {
@@ -50,7 +50,6 @@
           }]
         }).done(function(layer) {
           var population;
-          window.layer = layer;
           map.addLayer(layer);
 
           // wait a little bit and add the most populated places

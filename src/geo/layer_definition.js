@@ -491,7 +491,11 @@ LayerDefinition.prototype = {
       if (subhost) {
         h += subhost + ".";
       }
-      h += cdb.CDB_HOST[opts.tiler_protocol] + "/" + opts.user_name;
+      var cdn_host = opts.cdn_url || cdb.CDB_HOST;
+      if(!cdn_host.http && !cdn_host.https) {
+        throw new Error("cdn_host should contain http and/or https entries");
+      }
+      h += cdn_host[opts.tiler_protocol] + "/" + opts.user_name;
       return h;
     }
   },

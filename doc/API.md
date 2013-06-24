@@ -399,11 +399,6 @@ Refresh the data. If the data has been changed in CartoDB server it is displayed
 
 #### cartodb.CartoDBLayer.SubLayer
 
-##### **cartodb.CartoDBLayer.SubLayer.setSQL(sql) **
-
-changes sql for sublayer. It refreshs the layer
-
-
 ##### **cartodb.CartoDBLayer.SubLayer.set(layerDefinition) **
 sets sublayer parameters. Useful when more than one parameter need to be changed. See setSQL and setCartoCSS
 

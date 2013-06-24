@@ -43,9 +43,11 @@ module CartoDB
       end #non_dependent_visualizations
 
       def affected_visualizations
-        affected_visualization_records.map do |attributes|
+        affected_visualization_records.to_a.uniq { |attributes|
+          attributes.fetch(:id)
+        }.map { |attributes|
           Visualization::Member.new(attributes)
-        end
+        }
       end #affected_visualizations
 
       def preview_for(object)

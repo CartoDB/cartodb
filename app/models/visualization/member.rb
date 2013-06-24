@@ -205,7 +205,6 @@ module CartoDB
         }
         self.active_layer_id = layers(:cartodb).first.id
         store
-        self
       end #remove_layers_from
         
       def related_layers_from(table)

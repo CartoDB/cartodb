@@ -14,7 +14,7 @@ module CartoDB
         self.ogr2ogr  = ogr2ogr
       end #initialize
 
-      def run(*args)
+      def run
         log "Using database connection #{pg_options}"
         ogr2ogr.run
         log "ogr2ogr output:    #{ogr2ogr.command_output}"

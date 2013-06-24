@@ -12,13 +12,13 @@ module DataRepository
       end #initialize
 
       def store(path, data)
-        FileUtils.mkpath( File.dirname( destination_for(path) ) )
+        FileUtils.mkpath( File.dirname( fullpath_for(path) ) )
 
-        File.open(destination_for(path), 'wb') do |file|
+        File.open(fullpath_for(path), 'wb') do |file|
           data.read { |chunk| file.write(chunk)}
         end if data.respond_to?(:bucket)
         
-        File.open(destination_for(path), 'wb') do |file|
+        File.open(fullpath_for(path), 'wb') do |file|
           while chunk = data.gets
             file.write(chunk) 
           end
@@ -28,16 +28,16 @@ module DataRepository
       end #store
 
       def fetch(path)
-        File.open(destination_for(path), 'r')
+        File.open(fullpath_for(path), 'r')
       end #fetch
 
       def exists?(path)
-        File.exists?(destination_for(path))
+        File.exists?(fullpath_for(path))
       end #exists?
 
       def zip(path)
-        zip_path            = "#{destination_for(path)}.zip"
-        zip_base_directory  = File.dirname(destination_for(path))
+        zip_path            = "#{fullpath_for(path)}.zip"
+        zip_base_directory  = File.dirname(fullpath_for(path))
 
         Zip::ZipFile.open(zip_path, 1) do |zip|
           targets_for(path).each do |path|
@@ -49,7 +49,7 @@ module DataRepository
       end #zip
 
       def unzip(zip_path)
-        Zip::ZipFile.open(destination_for(zip_path)) do |zipfile|
+        Zip::ZipFile.open(fullpath_for(zip_path)) do |zipfile|
           zipfile.each do |entry|
             next if entry.directory?
             self.store(entry.name, entry.get_input_stream)
@@ -57,12 +57,16 @@ module DataRepository
         end
       end #unzip
 
+      def fullpath_for(path)
+        File.join(base_directory, path)
+      end #fullpath_for
+
       private
 
       attr_reader :base_directory
 
       def targets_for(path)
-        fullpath = destination_for(path)
+        fullpath = fullpath_for(path)
         [ 
           Dir.glob(fullpath),
           Dir.glob("#{fullpath}/*"),
@@ -79,10 +83,6 @@ module DataRepository
       def relative_path_for(path, base_directory)
        (path.split('/') - base_directory.split('/')).join('/')
       end #relative_path_for
-
-      def destination_for(path)
-        File.join(base_directory, path)
-      end #destination_for
     end # Local
   end # Filesystem
 end # DataRepository

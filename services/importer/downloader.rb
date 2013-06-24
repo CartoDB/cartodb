@@ -1,17 +1,22 @@
 # encoding: utf-8
+require 'forwardable'
 require 'typhoeus'
+require_relative 'candidate'
 require_relative '../data-repository/filesystem/local'
 
 module CartoDB
   module Importer
     class Downloader
-      DEFAULT_FILENAME        = 'importer_download'
+      extend Forwardable
+
+      DEFAULT_FILENAME        = 'importer'
       CONTENT_DISPOSITION_RE  = %r{attachment; filename=\"(.*)\"}
+
+      def_delegators :candidate, :name, :extension, :filepath, :fullpath
 
       def initialize(url, seed=nil, repository=nil)
         self.url        = url
         self.filepath   = filepath_from(seed)
-        self.candidate  = {}
         self.repository = repository || DataRepository::Filesystem::Local.new
       end #initialize
 
@@ -20,9 +25,10 @@ module CartoDB
 
         response        = Typhoeus.get(url, followlocation: true)
         filename        = filename_from(response.headers, url)
-        self.candidate  = candidate_for(filename, filepath)
+        data            = StringIO.new(response.response_body)
+        self.candidate  = candidate_for(filename)
 
-        repository.store(filepath, StringIO.new(response.response_body))
+        repository.store(candidate.filepath, data)
         self
       end #run
 
@@ -37,15 +43,15 @@ module CartoDB
       attr_accessor :filepath, :repository
       attr_writer :url, :candidate
 
-      def candidate_for(filename, filepath)
+      def candidate_for(filename)
         extension = File.extname(filename)
-        path = DataRepository::Filesystem::Local::DEFAULT_PREFIX + '/' + filepath
 
-        {
+        Candidate.new(
           name:         File.basename(filename, extension),
           extension:    extension,
-          path:         path
-        }
+          filepath:     filepath + extension,
+          fullpath:     repository.fullpath_for(filepath) + extension
+        )
       end #candidate_for
 
       def filepath_from(seed=nil)

@@ -2,6 +2,7 @@
 require 'forwardable'
 require_relative './job'
 require_relative './loader'
+require_relative './downloader'
 
 module CartoDB
   module Importer
@@ -14,8 +15,13 @@ module CartoDB
       end #initialize
 
       def run
+        log "Getting file #{filepath}"
+
+        downloader    = Importer::Downloader.new(filepath, job.id).run
+        job.filepath  = downloader.fullpath if downloader.candidate
+
         log "Importing file #{filepath}"
-        loader.run(filepath)
+        loader.run
         log "Loader exit code: #{loader.exit_code}"
         self
       end #run

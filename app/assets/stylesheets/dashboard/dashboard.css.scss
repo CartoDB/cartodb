@@ -482,6 +482,8 @@
               a {
 
                 @include inline-block();
+                @include ellipsis();
+                width: 200px;
                 line-height: 110%;
 
                 color: $cBlue;

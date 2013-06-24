@@ -16,6 +16,18 @@ describe 'csv regression tests' do
     runner.exit_code.must_equal 0
   end
 
+  it 'imports files from Google Fusion Tables' do
+    url =
+      "https://www.google.com/fusiontables/exporttable" +
+      "?query=select+*+from+1dimNIKKwROG1yTvJ6JlMm4-B4LxMs2YbncM4p9g"
+    pg_options  = Factories::PGConnection.new.pg_options
+    runner      = Runner.new(pg_options, url)
+    runner.run
+
+    puts runner.job.logger.to_s
+    runner.exit_code.must_equal 0
+  end
+
   def path_to(filepath)
     File.join(File.dirname(__FILE__), "../fixtures/#{filepath}")
   end #path_to

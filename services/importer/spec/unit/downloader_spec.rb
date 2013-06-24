@@ -26,48 +26,52 @@ describe Downloader do
     it 'downloads a file from a url' do
       downloader = Downloader.new(@file_url, nil, @repository)
       downloader.run
-      @repository.exists?(downloader.candidate.fetch(:path)).must_equal true
+      File.exists?(downloader.candidate.fullpath).must_equal true
     end
 
     it 'extracts the candidate name from the URL' do
       downloader = Downloader.new(@file_url)
-      downloader.candidate.must_be_empty
+      downloader.candidate.must_be_nil
       downloader.run
-      downloader.candidate.fetch(:name).must_equal 'foo'
+      downloader.candidate.name.must_equal 'foo'
     end
 
     it 'extracts the candidate name from Content-Disposition header' do
       downloader = Downloader.new(@fusion_tables_url)
 
-      downloader.candidate.must_be_empty
+      downloader.candidate.must_be_nil
       downloader.run
-      downloader.candidate.fetch(:name)
-        .must_equal 'dec_2012_modis_forest_change'
+      downloader.candidate.name.must_equal 'dec_2012_modis_forest_change'
     end
     
     it 'supports FTP urls' do
       downloader = Downloader.new(@ftp_url)
       downloader.run
-      downloader.candidate.fetch(:name).must_equal 'INDEX'
+      downloader.candidate.name.must_equal 'INDEX'
     end
   end
 
   describe '#candidate' do
-    it 'returns an empty hash if no download initiated' do
+    it 'returns nil if no download initiated' do
       downloader = Downloader.new(@file_url)
-      downloader.candidate.must_equal({})
+      downloader.candidate.must_be_nil
+    end
+
+    it 'returns nil if URL not valid' do
+      downloader = Downloader.new('/foo/bar')
+      downloader.candidate.must_be_nil
     end
 
     it 'returns a candidate name' do
       downloader = Downloader.new(@file_url)
       downloader.run
-      downloader.candidate.fetch(:name).must_equal 'foo'
+      downloader.candidate.name.must_equal 'foo'
     end
 
     it 'returns a file extension' do
       downloader = Downloader.new(@file_url)
       downloader.run
-      downloader.candidate.fetch(:extension).must_equal '.png'
+      downloader.candidate.extension.must_equal '.png'
     end
 
     it 'returns a local filepath' do
@@ -75,7 +79,7 @@ describe Downloader do
 
       downloader = Downloader.new(@file_url, seed)
       downloader.run
-      downloader.candidate.fetch(:path).must_match /#{seed}/
+      downloader.candidate.fullpath.must_match /#{seed}/
     end
   end #candidate
 

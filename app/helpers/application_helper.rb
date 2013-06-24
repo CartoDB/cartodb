@@ -54,7 +54,7 @@ module ApplicationHelper
   end
 
   def frontend_config
-    {
+    config = {
       tiler_protocol:     Cartodb.config[:tiler_protocol],
       tiler_port:         Cartodb.config[:tiler_port],
       tiler_domain:       Cartodb.config[:tiler_domain],
@@ -64,7 +64,14 @@ module ApplicationHelper
       sql_api_port:       Cartodb.config[:sql_api_port],
       cartodb_com_hosted: Cartodb.config[:cartodb_com_hosted],
       account_host:       Cartodb.config[:account_host]
-    }.to_json
+    }
+    if Cartodb.config[:cdn_url].present?
+      config[:cdn_url] = {
+        http:             Cartodb.config[:cdn_url].try("fetch", "http", nil),
+        https:            Cartodb.config[:cdn_url].try("fetch", "https", nil)
+      }
+    end
+    config.to_json
   end
 
   def stringified_member_type

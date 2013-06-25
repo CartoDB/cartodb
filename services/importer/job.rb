@@ -9,15 +9,13 @@ module CartoDB
         @id         = attributes.fetch(:id, UUIDTools::UUID.timestamp_create)
         @logger     = attributes.fetch(:logger, TrackRecord::Log.new)
         @pg_options = attributes.fetch(:pg_options, {})
-        @filepath   = attributes.fetch(:filepath)
       end #initalize
 
       def log(message)
         logger.append(message)
       end #log
 
-      attr_writer :filepath
-      attr_reader :logger, :id, :connection, :filepath, :pg_options
+      attr_reader :id, :logger, :pg_options
     end # Job
   end # Importer
 end # CartoDB

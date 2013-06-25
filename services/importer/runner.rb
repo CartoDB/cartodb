@@ -1,40 +1,44 @@
 # encoding: utf-8
-require 'forwardable'
-require_relative './job'
 require_relative './loader'
-require_relative './downloader'
 
 module CartoDB
   module Importer
     class Runner
-      extend Forwardable
-
-      def initialize(pg_options, filepath, loader=nil)
-        self.job    = Job.new(filepath: filepath, pg_options: pg_options)
-        self.loader = loader || Loader.new(job)
+      def initialize(job, downloader)
+        self.job        = job
+        self.downloader = downloader
+        @loader         = nil
       end #initialize
 
       def run
-        log "Getting file #{filepath}"
-
-        downloader    = Importer::Downloader.new(filepath, job.id).run
-        job.filepath  = downloader.fullpath if downloader.candidate
-
-        log "Importing file #{filepath}"
+        job.log "Starting import with job ID: #{job.id}"
+        job.log "Getting file from #{downloader.url}"
+        downloader.run
+        job.log "Importing data from #{downloader.source_file.fullpath}"
         loader.run
-        log "Loader exit code: #{loader.exit_code}"
+        job.log "Loader exit code: #{loader.exit_code}"
         self
       end #run
+      
+      def report
+        job.logger.to_s
+      end #report
 
-      attr_reader :job
+      def exit_code
+        loader.exit_code
+      end #exit_code
 
       private
 
-      attr_accessor :loader
-      attr_writer   :job
+      attr_accessor :job, :downloader, :loader
 
-      def_delegators :job, :log, :id, :pg_options, :filepath
-      def_delegators :loader, :exit_code
+      def loader
+        @loader ||= Loader.new(job, source_file)
+      end #loader
+
+      def source_file
+        downloader.source_file
+      end #source_file
     end # Runner
   end # Importer
 end # CartoDB

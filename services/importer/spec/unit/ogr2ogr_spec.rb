@@ -17,7 +17,7 @@ describe Ogr2ogr do
     @pg_options   = Factories::PGConnection.new.pg_options
     @table_name   = "importer_#{rand(999)}"
     @db           = Factories::PGConnection.new.connection
-    @wrapper      = Ogr2ogr.new(@filepath, @pg_options, @table_name)
+    @wrapper      = Ogr2ogr.new(@table_name, @filepath, @pg_options)
   end
 
   after do
@@ -93,11 +93,11 @@ describe Ogr2ogr do
 
   describe '#command_output' do
     it 'returns stdout and stderr from ogr2ogr binary' do
-      wrapper   = Ogr2ogr.new('non_existent', @pg_options, @table_name)
+      wrapper   = Ogr2ogr.new(@table_name, 'non_existent', @pg_options)
       wrapper.run
       wrapper.command_output.wont_be_empty
 
-      wrapper   = Ogr2ogr.new(@filepath, @pg_options, @table_name)
+      wrapper   = Ogr2ogr.new(@table_name, @filepath, @pg_options)
       wrapper.run
       wrapper.command_output.must_be_empty
     end
@@ -105,11 +105,11 @@ describe Ogr2ogr do
 
   describe '#exit_code' do
     it 'returns the exit code from the ogr2ogr binary' do
-      wrapper   = Ogr2ogr.new('non_existent', @pg_options, @table_name)
+      wrapper   = Ogr2ogr.new(@table_name, 'non_existent', @pg_options)
       wrapper.run
       wrapper.exit_code.wont_equal 0
 
-      wrapper   = Ogr2ogr.new(@filepath, @pg_options, @table_name)
+      wrapper   = Ogr2ogr.new(@table_name, @filepath, @pg_options)
       wrapper.run
       wrapper.exit_code.must_equal 0
     end

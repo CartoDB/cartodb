@@ -491,7 +491,7 @@ class Table < Sequel::Model(:user_tables)
   # tiles included. Use with care O:-)
 
   def invalidate_varnish_cache
-    CartoDB::Varnish.new.purge("obj.http.X-Cache-Channel ~ #{varnish_key}.*")
+    CartoDB::Varnish.new.purge("obj.http.X-Cache-Channel ~ #{varnish_key}")
     invalidate_cache_for(affected_visualizations) if id && table_visualization
     self
   end
@@ -499,14 +499,13 @@ class Table < Sequel::Model(:user_tables)
   def invalidate_cache_for(visualizations)
     visualizations.each do |visualization|
       key = visualization.varnish_key
-      CartoDB::Varnish.new.purge(
-        "obj.http.X-Cache-Channel ~ #{key}:vizjson"
-      )
+      CartoDB::Varnish.new.purge("obj.http.X-Cache-Channel ~ #{key}:vizjson")
     end
   end #invalidate_cache_for
   
   def varnish_key
-    "#{self.owner.database_name}:#{self.name}"
+    #"#{self.owner.database_name}:(.*#{self.name}.*)"
+    "^#{self.database_name}:(.*#{self.name}.*)|(table)$"
   end
 
   # adds the column if not exists or cast it to timestamp field

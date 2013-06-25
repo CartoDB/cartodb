@@ -26,52 +26,45 @@ describe Downloader do
     it 'downloads a file from a url' do
       downloader = Downloader.new(@file_url, nil, @repository)
       downloader.run
-      File.exists?(downloader.candidate.fullpath).must_equal true
+      File.exists?(downloader.source_file.fullpath).must_equal true
     end
 
-    it 'extracts the candidate name from the URL' do
+    it 'extracts the source_file name from the URL' do
       downloader = Downloader.new(@file_url)
-      downloader.candidate.must_be_nil
       downloader.run
-      downloader.candidate.name.must_equal 'foo'
+      downloader.source_file.name.must_equal 'foo'
     end
 
-    it 'extracts the candidate name from Content-Disposition header' do
+    it 'extracts the source_file name from Content-Disposition header' do
       downloader = Downloader.new(@fusion_tables_url)
 
-      downloader.candidate.must_be_nil
       downloader.run
-      downloader.candidate.name.must_equal 'dec_2012_modis_forest_change'
+      downloader.source_file.name.must_equal 'dec_2012_modis_forest_change'
     end
     
     it 'supports FTP urls' do
       downloader = Downloader.new(@ftp_url)
       downloader.run
-      downloader.candidate.name.must_equal 'INDEX'
+      downloader.source_file.name.must_equal 'INDEX'
     end
   end
 
-  describe '#candidate' do
+  describe '#source_file' do
     it 'returns nil if no download initiated' do
       downloader = Downloader.new(@file_url)
-      downloader.candidate.must_be_nil
+      downloader.source_file.must_be_nil
     end
 
-    it 'returns nil if URL not valid' do
+    it 'returns a source file based on the path if passed a file path' do
       downloader = Downloader.new('/foo/bar')
-      downloader.candidate.must_be_nil
+      downloader.run
+      downloader.source_file.fullpath.must_equal '/foo/bar'
     end
 
-    it 'returns a candidate name' do
+    it 'returns a source_file name' do
       downloader = Downloader.new(@file_url)
       downloader.run
-      downloader.candidate.name.must_equal 'foo'
-    end
-
-    it 'returns a file extension' do
-      downloader = Downloader.new(@file_url)
-      downloader.run
-      downloader.candidate.extension.must_equal '.png'
+      downloader.source_file.name.must_equal 'foo'
     end
 
     it 'returns a local filepath' do
@@ -79,22 +72,22 @@ describe Downloader do
 
       downloader = Downloader.new(@file_url, seed)
       downloader.run
-      downloader.candidate.fullpath.must_match /#{seed}/
+      downloader.source_file.fullpath.must_match /#{seed}/
     end
-  end #candidate
+  end #source_file
 
-  describe '#filename_from' do
+  describe '#name_from' do
     it 'gets the file name from the Content-Disposition header if present' do
       headers = { "Content-Disposition" => %{attachment; filename="bar.csv"} }
       downloader = Downloader.new(@file_url)
-      downloader.filename_from(headers, @file_url).must_equal 'bar.csv'
+      downloader.name_from(headers, @file_url).must_equal 'bar.csv'
     end
 
     it 'gets the file name from the URL if no Content-Disposition header' do
       headers = {}
       downloader = Downloader.new(@file_url)
-      downloader.filename_from(headers, @file_url).must_equal 'foo.png'
+      downloader.name_from(headers, @file_url).must_equal 'foo.png'
     end
-  end #filename_from
+  end #name_from
 end # Downloader
 

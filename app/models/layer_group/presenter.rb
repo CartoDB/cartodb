@@ -24,6 +24,7 @@ module CartoDB
             sql_api_domain:     configuration.fetch(:sql_api_domain, nil),
             sql_api_endpoint:   configuration.fetch(:sql_api_endpoint, nil),
             sql_api_port:       configuration.fetch(:sql_api_port, nil),
+            cdn_url:            configuration.fetch(:cdn_url, nil),
             layer_definition:   {
               stat_tag:           options.fetch(:visualization_id),
               version:            LAYER_GROUP_VERSION,

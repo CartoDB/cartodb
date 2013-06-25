@@ -174,7 +174,7 @@
     // Sorting
     .ui-sortable-placeholder {
       visibility: visible!important;
-      
+
       &:after {
         content:'';
         position:absolute;
@@ -193,7 +193,7 @@
         top:25px;
         left:0;
         right:0;
-        bottom:0; 
+        bottom:0;
         width:100%;
         text-align: center;
         font:bold 17px $text-fonts;
@@ -1302,7 +1302,13 @@
               }
             }
 
-            .scrollers { display:none; float: right; margin: 0 3px 0 0; }
+            .scrollers {
+              float: right;
+              margin: 0 3px 0 0;
+
+              &.hidden { display: none; }
+
+            }
 
             .btn {
               @include inline-block();

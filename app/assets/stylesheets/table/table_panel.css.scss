@@ -773,6 +773,12 @@
                 &.line { background: image-url('layout/wizard-choropleth-polyline.png') no-repeat;}
               }
 
+              &.color {
+                background: image-url('layout/wizard-color.png') no-repeat;
+                &.polygon { background: image-url('layout/wizard-color-polygon.png') no-repeat;}
+                &.line { background: image-url('layout/wizard-color-polyline.png') no-repeat;}
+              }
+
               &.bubble  { background: image-url('layout/wizard-bubble.png') no-repeat;}
               &.density { background: image-url('layout/wizard-density-hex.png') no-repeat;}
 

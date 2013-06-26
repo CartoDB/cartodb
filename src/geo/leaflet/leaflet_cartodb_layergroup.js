@@ -153,21 +153,29 @@ L.CartoDBGroupLayer = L.TileLayer.extend({
   __update: function(done) {
     var self = this;
     this.fire('updated');
-
+    var map = this.options.map;
     this.getTiles(function(urls, err) {
-      if(urls) {
-        self.tilejson = urls;
-        self.setUrl(self.tilejson.tiles[0]);
-        // manage interaction
-        self._reloadInteraction();
-        self.ok && self.ok();
-        done && done();
+      var update = function() { 
+        map.off('zoomend', update);
+        if(urls) {
+          self.tilejson = urls;
+          self.setUrl(self.tilejson.tiles[0]);
+          // manage interaction
+          self._reloadInteraction();
+          self.ok && self.ok();
+          done && done();
+        } else {
+          self.error && self.error(err);
+          done && done();
+        }
+      };
+      if(!map._animatingZoom) {
+        update();
       } else {
-        self.error && self.error(err);
-        done && done();
+        // wait until zoom animation finishes
+        map.on('zoomend', update);
       }
     });
-
   },
 
 

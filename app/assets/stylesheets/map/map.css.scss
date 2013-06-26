@@ -55,16 +55,27 @@ div.map {
       cursor: pointer;
 
       & > .thumb {
+        position:relative;
         @include inline-block();
-        @include size(24px);
-        margin: 0 2px 0 0;
-        border: 1px solid rgba(0,0,0,.2);
-        @include border-radius(3px);
+        @include size(30px);
+        margin: 0 5px 0 0;
+        @include border-radius(2px);
         // Set nokia basemap as default
         background-image: url("https://maps.nlp.nokia.com/maptiler/v2/maptile/newest/normal.day/6/30/24/256/png8?lg=spa&token=A7tBPacePg9Mj_zghvKt9Q&app_id=KuYppsdXZznpffJsKT24");
         background-size: 34px;
         background-color: rgba(0, 0, 0, 0);
         background-position: 50% 50%;
+
+        &:before {
+          content: ' ';
+          position:absolute;
+          top:0;
+          left:0;
+          right:0;
+          bottom:0;
+          border: 1px solid rgba(0,0,0, 0.15);
+          @include border-radius(2px);
+        }
       }
 
       .info {
@@ -173,9 +184,18 @@ div.map {
           @include text-indent();
           background-size: 34px 34px;
           background-position: 50% 50%;
-
           text-decoration:none;
-          border: 1px solid rgba(0,0,0, 0.3);
+
+          &:before {
+            content: '';
+            position:absolute;
+            top:0;
+            left:0;
+            right:0;
+            bottom:0;
+            border: 1px solid rgba(0,0,0, 0.15);
+            @include border-radius(2px);
+          }
 
           .remove_layer {
 
@@ -226,6 +246,11 @@ div.map {
         &.roadmap .thumb{
           background-size:auto;
           @include icons-sprite(gmaps_roadmap);
+        }
+
+        &.terrain .thumb{
+          background-size:auto;
+          @include icons-sprite(gmaps_terrain);
         }
 
         &.satellite .thumb {

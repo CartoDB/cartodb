@@ -184,7 +184,10 @@ LayerDefinition.prototype = {
       url: this._tilerHost() + '/tiles/layergroup' + (params.length ? "?" + params.join('&'): ''),
       data: JSON.stringify(this.toJSON()),
       success: function(data) {
-        callback(data);
+        // discard previous calls when there is another call waiting
+        if(0 === self._queue.length) {
+          callback(data);
+        }
         self._requestFinished();
       },
       error: function(xhr) {
@@ -192,7 +195,9 @@ LayerDefinition.prototype = {
         try {
           err = JSON.parse(xhr.responseText);
         } catch(e) {}
-        callback(null, err);
+        if(0 === self._queue.length) {
+          callback(null, err);
+        }
         self._requestFinished();
       }
     });
@@ -211,7 +216,9 @@ LayerDefinition.prototype = {
         dataType: 'jsonp',
         url: self._tilerHost() + '/tiles/layergroup?' + params.join('&'),
         success: function(data) {
-          callback(data);
+          if(0 === self._queue.length) {
+            callback(data);
+          }
           self._requestFinished();
         },
         error: function(data) {
@@ -219,6 +226,9 @@ LayerDefinition.prototype = {
           try {
             err = JSON.parse(xhr.responseText);
           } catch(e) {}
+          if(0 === self._queue.length) {
+            callback(null, err);
+          }
           self._requestFinished();
         }
       });

@@ -19,7 +19,7 @@ class User < Sequel::Model
   # Sequel setup & plugins
   set_allowed_columns :email, :map_enabled, :password_confirmation, 
     :quota_in_bytes, :table_quota, :account_type, :private_tables_enabled, 
-    :period_end_date, :map_view_quota
+    :period_end_date, :map_view_quota, :max_layers
   plugin :validation_helpers
   plugin :json_serializer
 

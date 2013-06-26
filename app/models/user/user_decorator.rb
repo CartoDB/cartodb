@@ -16,6 +16,7 @@ module CartoDB
         api_calls: calls,
         api_calls_quota: self.map_view_quota,
         billing_period: self.last_billing_cycle,
+        max_layers: self.max_layers,
         api_key: self.get_map_key,
         layers: self.layers.map(&:public_values),
         actions: {

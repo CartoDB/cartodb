@@ -73,6 +73,11 @@ cdb.geo.ui.LayerSelector = cdb.core.View.extend({
           var m = new cdb.core.Model(l);
           m.set('order', i);
           m.set('type', 'layergroup');
+          if(self.options.layer_names) {
+            m.set('layer_name', self.options.layer_names[i]);
+          } else {
+            m.set('layer_name', l.options.layer_name);
+          }
           var layerView = self._createLayer('LayerViewFromLayerGroup', { model: m, layer_definition: layer_definition });
           layerView.bind('switchChanged', self._setCount, self);
           layerView.bind('layergroupChanged', self._setLayerGroup, self)
@@ -220,7 +225,7 @@ cdb.geo.ui.LayerViewFromLayerGroup = cdb.geo.ui.LayerView.extend({
 
   defaults: {
     template: '\
-      <a class="layer" href="#/change-layer"><%= options.layer_name %></a>\
+      <a class="layer" href="#/change-layer"><%= layer_name %></a>\
       <a href="#switch" class="right <%= visible ? "enabled" : "enabled" %> switch"><span class="handle"></span></a>\
     '
   },

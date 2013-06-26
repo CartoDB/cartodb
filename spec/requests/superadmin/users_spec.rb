@@ -108,6 +108,7 @@ feature "Superadmin's users API" do
     user = create_user
     @update_atts = {:quota_in_bytes => 2000,
                     :table_quota    => 20,
+                    :max_layers     => 10,
                     :account_type   => 'Juliet',
                     :private_tables_enabled => true}
 
@@ -120,6 +121,7 @@ feature "Superadmin's users API" do
     user.table_quota.should == 20
     user.account_type.should == 'Juliet'
     user.private_tables_enabled.should == true
+    user.max_layers.should == 10
 
     # then test back to false
     put_json superadmin_user_path(user), { :user => {:private_tables_enabled => false} }, default_headers do |response|

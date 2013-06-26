@@ -1,7 +1,7 @@
 # encoding: utf-8
 gem 'minitest'
 require 'minitest/autorun'
-require_relative '../../column'
+require_relative '../../lib/importer/column'
 require_relative '../factories/pg_connection'
 
 include CartoDB::Importer

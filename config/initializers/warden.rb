@@ -10,7 +10,7 @@ class Warden::SessionSerializer
   end
 
   def deserialize(username)
-    User.filter(:username => username).select(:id,:email,:username,:tables_count,:crypted_password,:database_name,:admin, :map_enabled, :quota_in_bytes, :table_quota, :account_type, :private_tables_enabled).first
+    User.filter(username: username).first
   end
 end
 

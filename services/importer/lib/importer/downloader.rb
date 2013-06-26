@@ -2,7 +2,7 @@
 require 'forwardable'
 require 'typhoeus'
 require_relative './source_file'
-require_relative '../data-repository/filesystem/local'
+require_relative '../../../data-repository/filesystem/local'
 
 module CartoDB
   module Importer

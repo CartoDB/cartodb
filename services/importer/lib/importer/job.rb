@@ -1,6 +1,6 @@
 # encoding: utf-8
 require 'uuidtools'
-require_relative '../track_record/track_record'
+require_relative '../../../track_record/track_record'
 
 module CartoDB
   module Importer

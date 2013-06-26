@@ -19,7 +19,7 @@ class User < Sequel::Model
   # Sequel setup & plugins
   set_allowed_columns :email, :map_enabled, :password_confirmation, 
     :quota_in_bytes, :table_quota, :account_type, :private_tables_enabled, 
-    :period_end_date, :map_view_quota
+    :period_end_date, :map_view_quota, :max_layers
   plugin :validation_helpers
   plugin :json_serializer
 
@@ -599,7 +599,7 @@ class User < Sequel::Model
           tname = File.basename(f, '.sql')
           expfile = File.dirname(f) + '/' + tname + '_expect'
           print "  #{tname} ... "
-          cmd = "#{env} psql -X -tA -f #{f} #{database_name} 2>&1 | diff -U2 #{expfile} - 2>&1"
+          cmd = "#{env} psql -X -tA < #{f} #{database_name} 2>&1 | diff -U2 #{expfile} - 2>&1"
           result = `#{cmd}`
           if $? != 0
             puts "fail"

@@ -1284,7 +1284,7 @@ TRIGGER
   end
 
   def owner
-    @owner ||= User.select(:id,:database_name,:crypted_password,:quota_in_bytes,:username, :private_tables_enabled, :table_quota, :account_type).filter(:id => self.user_id).first
+    @owner ||= User.where(id: self.user_id).first
   end
 
   def table_style

@@ -19,6 +19,8 @@ function LayerDefinition(layerDefinition, options) {
   this._timeout = -1;
   this._queue = [];
   this._waiting = false;
+  this.lastTimeUpdated = null;
+  this._refreshTimer = -1;
 }
 
 /**
@@ -167,7 +169,17 @@ LayerDefinition.prototype = {
   },
 
   _requestFinished: function() {
+    var self = this;
     this._waiting = false;
+    this.lastTimeUpdated = new Date().getTime();
+
+    // refresh layer when invalidation time has passed
+    clearTimeout(this._refreshTimer);
+    this._refreshTimer = setTimeout(function() {
+      self.invalidate();
+    }, this.options.refreshTime || (10*1000));
+
+    // check request queue
     if(this._queue.length) {
       this._getLayerToken(this._queue.pop());
     }
@@ -239,6 +251,7 @@ LayerDefinition.prototype = {
     var self = this;
     var params = [];
     callback = callback || function() {};
+
     // if the previous request didn't finish, queue it
     if(this._waiting) {
       this._queue.push(callback);

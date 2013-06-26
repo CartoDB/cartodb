@@ -195,7 +195,7 @@ describe('api.layers', function() {
         runs(function() {
           expect(s.called).toEqual(true);
           //expect(layer.model.attributes.extra_params.updated_at).toEqual('jaja');
-          expect(layer.model.attributes.extra_params.cache_buster).toEqual('jaja');
+          expect(layer.model.attributes.extra_params.cache_buster).toEqual('cb');
           //expect(layer.model.attributes.extra_params.cache_buster).toEqual(undefined);
         });
       });
@@ -251,7 +251,7 @@ describe('api.layers', function() {
                 sql: 'select * from table',
                 cartocss: 'test',
                 cartocss_version: '2.1.0',
-                interactivity: 'testi'
+                interactivity: ['testi']
               }
             }]
           });

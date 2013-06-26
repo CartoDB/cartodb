@@ -40,15 +40,9 @@ class Admin::TablesController < ApplicationController
         { full: true },
         Cartodb.config
       )
-      begin
-        respond_to do |format|
-          format.html { render 'public', layout: 'application_public' }
-          download_formats @table, format
-        end
-      rescue => exception
-        puts exception
-        redirect_to public_table_path(@table), 
-                    alert: "There was an error exporting the table"
+      respond_to do |format|
+        format.html { render 'public', layout: 'application_public' }
+        download_formats @table, format
       end
     end
   end

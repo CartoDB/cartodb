@@ -355,6 +355,23 @@ CartoDBLayer allows you to manage tiled layers from CartoDB. It manages the subl
 
   + **opacity**: value in range [0, 1].
 
+##### **layer.getSubLayer(layerIndex)**
+get a previously created sublayer. And exception is raised if not exists
+
+###### ARGUMENTS
+  + **layerIndex**: 0 based index of the sublayer to get. Should be within [0, getSubLayerCount())
+
+###### RETURNS
+    SubLayer object
+
+###### EXAMPLE
+  ``` javascript
+    layer.getSubLayer(1).hide();
+    var sublayer = layer.getSubLayer(0);
+    sublayer.setSQL('select * from table limit 10');
+  ```
+
+
 ##### **layer.createSubLayer(layerDefinition)**
 
 Adds a new data to the current layer. With this method data from multiple tables can be easily visualized. New in v3

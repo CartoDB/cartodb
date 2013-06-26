@@ -229,7 +229,7 @@ describe("LayerDefinition", function() {
   });
 
   it("should set refresh timer after being updated", function() {
-    layerDefinition.options.refreshTime = 100;
+    layerDefinition.options.refreshTime = 10;
     layerDefinition.options.ajax = function(p) { 
       params = p;
       p.success({ layergroupid: 'test' });

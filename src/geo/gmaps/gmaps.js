@@ -186,6 +186,7 @@ if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
 
     },
 
+
     latLonToPixel: function(latlon) {
       return this.projector.latLngToPixel(new google.maps.LatLng(latlon[0], latlon[1]));
     },
@@ -274,6 +275,11 @@ if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
     }
 
   }, {
+
+    addLayerToMap: function(layer, map, pos) {
+      pos = pos || 0;
+      map.overlayMapTypes.setAt(pos, layer);
+    },
 
     /**
     * create the view for the geometry model

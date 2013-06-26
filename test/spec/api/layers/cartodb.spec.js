@@ -154,6 +154,29 @@ describe('api.layers.cartodb', function() {
       });
     });
 
+    it("should add to the map when done", function() {
+      runs(function() {
+        cartodb.createLayer(map, { 
+            kind: 'cartodb', 
+            options: { 
+              table_name: 'test',
+              user_name: 'test',
+              tile_style: 'test'
+            },
+            infowindow: { 
+              template: '<div></div>',
+              fields: [{name: 'test', title: true, order: 0}] 
+            }
+        }, {
+          interactivity: 'myname,jaja',
+          interaction: false
+        }, function(l) {
+          addFn(map, l);
+          layer = l;
+        });
+      });
+    });
+
 
   };
 

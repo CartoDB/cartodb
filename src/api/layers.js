@@ -78,9 +78,16 @@
       callback = fn;
     }
     
+    promise.addTo = function(map, position) {
+      promise.on('done', function() {
+        MapType.addLayerToMap(layerView, map, position);
+      });
+      return promise;
+    };
+    
     _getLayerJson(layer, function(visData) {
 
-      var layerData, MapType;
+      var layerData;
 
       if(!visData) {
         promise.trigger('error');
@@ -101,17 +108,6 @@
         return;
       }
 
-      // check map type
-      // TODO: improve checking
-      if(typeof(map.overlayMapTypes) !== "undefined") {
-        MapType = cdb.geo.GoogleMapsMapView;
-        // check if leaflet is loaded globally
-      } else if(map instanceof L.Map || (window.L && map instanceof window.L.Map)) {
-        MapType = cdb.geo.LeafletMapView;
-      } else {
-        promise.trigger('error', "cartodb.js can't guess the map type");
-        return;
-      }
 
       // update options
       if(options && !_.isFunction(options)) {
@@ -123,6 +119,18 @@
         infowindow: true,
         https: false
       })
+
+      // check map type
+      // TODO: improve checking
+      if(typeof(map.overlayMapTypes) !== "undefined") {
+        MapType = cdb.geo.GoogleMapsMapView;
+        // check if leaflet is loaded globally
+      } else if(map instanceof L.Map || (window.L && map instanceof window.L.Map)) {
+        MapType = cdb.geo.LeafletMapView;
+      } else {
+        promise.trigger('error', "cartodb.js can't guess the map type");
+        return promise;
+      }
 
       // create a dummy viz
       var viz = map.viz;

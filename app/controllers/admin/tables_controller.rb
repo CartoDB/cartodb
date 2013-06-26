@@ -18,13 +18,9 @@ class Admin::TablesController < ApplicationController
   def show
     if current_user.present?
       @table = Table.find_by_identifier(current_user.id, params[:id])
-      begin
-        respond_to do |format|
-          format.html
-          download_formats @table, format
-        end
-      rescue
-        redirect_to table_path(@table), :alert => "There was an error exporting the table"
+      respond_to do |format|
+        format.html
+        download_formats @table, format
       end
     else
       redirect_to public_table_path(params[:id], :format => params[:format])

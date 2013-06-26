@@ -229,8 +229,6 @@ Creates a visualization inside the map_id DOM object:
     - zoom: initial zoom.
     - cartodb_logo: default to true, set to false if you want to remove the cartodb logo
     - infowindow: set to false if you want to disable the infowindow (enabled by default)
-    - sql: sql query applied.
-    - tile_style: cartocss applied.
     - https: if true forces tiles to be fetched using https. If false it uses the predefined method
 
 ##### cartodb.Vis.getLayers()

@@ -26,7 +26,9 @@ L.CartoDBGroupLayer = L.TileLayer.extend({
     sql_api_domain:     "cartodb.com",
     sql_api_port:       "80",
     sql_api_protocol:   "http",
-    extra_params:   {},
+    extra_params:   {
+      cache_policy: 'persist'
+    },
     cdn_url:        null,
     subdomains:     null
   },

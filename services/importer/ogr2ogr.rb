@@ -6,7 +6,7 @@ module CartoDB
     class Ogr2ogr
       ENCODING = 'UTF-8'
 
-      def initialize(filepath, pg_options, table_name, options={})
+      def initialize(table_name, filepath, pg_options, options={})
         self.filepath   = filepath
         self.pg_options = pg_options
         self.table_name = table_name

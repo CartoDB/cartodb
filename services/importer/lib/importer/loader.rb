@@ -1,6 +1,7 @@
 # encoding: utf-8
 require 'forwardable'
 require_relative './ogr2ogr'
+require_relative './georeferencer'
 
 module CartoDB
   module Importer
@@ -23,7 +24,7 @@ module CartoDB
       end #run
 
       def ogr2ogr
-        @ogr2ogr ||= Ogr2ogr.new("importer_#{job.id}", fullpath, pg_options)
+        @ogr2ogr ||= Ogr2ogr.new(job.table_name, fullpath, pg_options)
       end #ogr2ogr
 
       private

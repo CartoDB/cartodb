@@ -20,6 +20,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
       @user.private_tables_enabled  = attributes[:private_tables_enabled]   if attributes.has_key?(:private_tables_enabled)
       @user.map_view_quota          = attributes[:map_view_quota]           if attributes.has_key?(:map_view_quota)
       @user.period_end_date         = attributes[:period_end_date]          if attributes.has_key?(:period_end_date)
+      @user.max_layers              = attributes[:max_layers]               if attributes.has_key?(:max_layers)
 
       if attributes[:password].present?
         @user.password              = attributes[:password]
@@ -48,6 +49,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
       @user.private_tables_enabled  = attributes[:private_tables_enabled]   if attributes.has_key?(:private_tables_enabled)
       @user.map_view_quota          = attributes[:map_view_quota]           if attributes.has_key?(:map_view_quota)
       @user.period_end_date         = attributes[:period_end_date]          if attributes.has_key?(:period_end_date)
+      @user.max_layers              = attributes[:max_layers]               if attributes.has_key?(:max_layers)
 
       if attributes[:password].present?
         @user.password = attributes[:password]

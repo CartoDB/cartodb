@@ -3,8 +3,8 @@ gem 'minitest'
 require 'minitest/autorun'
 require 'sqlite3'
 
-require_relative '../../loader'
-require_relative '../../source_file'
+require_relative '../../lib/importer/loader'
+require_relative '../../lib/importer/source_file'
 require_relative '../doubles/job'
 require_relative '../doubles/ogr2ogr'
 

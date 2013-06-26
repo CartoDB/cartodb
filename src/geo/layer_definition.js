@@ -97,7 +97,7 @@ LayerDefinition.prototype = {
             sql: layer.options.sql,
             cartocss: layer.options.cartocss,
             cartocss_version: layer.options.cartocss_version || '2.1.0',
-            interactivity: layer.options.interactivity
+            interactivity: this._cleanInteractivity(layer.options.interactivity)
           }
         });
       }
@@ -367,6 +367,19 @@ LayerDefinition.prototype = {
       grids: grids
     }
 
+  },
+
+  _cleanInteractivity: function(attributes) {
+    if(!attributes) return;
+    if(typeof(attributes) == 'string') {
+      attributes = attributes.split(',');
+    }
+
+    for(var i = 0; i < attributes.length; ++i) {
+      attributes[i] = attributes[i].replace(/ /g, '');
+    }
+
+    return attributes;
   },
 
   /**

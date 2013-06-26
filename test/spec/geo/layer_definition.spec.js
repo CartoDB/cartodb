@@ -17,7 +17,7 @@ describe("LayerDefinition", function() {
            sql: "select * from european_countries_export",
            cartocss: '#layer { polygon-fill: #000; polygon-opacity: 0.8;}',
            cartocss_version : '2.0.0',
-           interactivity: ['test2', 'cartodb_id2']
+           interactivity: ['       test2    ', 'cartodb_id2']
          }
        }
       ]
@@ -55,7 +55,7 @@ describe("LayerDefinition", function() {
          sql: "select * from european_countries_export",
          cartocss: '#layer { polygon-fill: #000; polygon-opacity: 0.8;}',
          cartocss_version: '2.0.0',
-         interactivity: ['test2', 'cartodb_id2']
+         interactivity: ['       test2    ', 'cartodb_id2']
        }
     });
   });

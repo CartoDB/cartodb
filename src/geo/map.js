@@ -181,8 +181,13 @@ cdb.geo.Layers = Backbone.Collection.extend({
     if(options && options.at !== undefined) {
       from = options.at;
     }
+    if(from === 0) {
+      this.models[0].set({ order: 0 });
+      ++from;
+    }
     for(var i = from; i < this.size(); ++i) {
-      this.models[i].set({ order: i });
+      var prev = this.models[i - 1].get('order');
+      this.models[i].set({ order: prev + 1 });
     }
   }
 });

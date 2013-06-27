@@ -166,9 +166,9 @@ cdb.geo.Layers = Backbone.Collection.extend({
   model: cdb.geo.MapLayer,
 
   initialize: function() {
-    this.comparator = function(a, b) {
-      return a.get('order') - b.get('order');
-    }
+    this.comparator = function(m) {
+      return parseInt(m.get('order'), 10);
+    };
     this.bind('add', this._assignIndexes);
   },
 

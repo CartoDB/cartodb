@@ -228,6 +228,22 @@ describe("LayerDefinition", function() {
     });
   });
 
+  it("should set refresh timer after being updated", function() {
+    layerDefinition.options.refreshTime = 10;
+    layerDefinition.options.ajax = function(p) { 
+      params = p;
+      p.success({ layergroupid: 'test' });
+    };
+    runs(function() {
+      layerDefinition.getTiles(function(tiles) {});
+    });
+    spyOn(layerDefinition,'invalidate');
+    waits(200);
+    runs(function() {
+      expect(layerDefinition.invalidate).toHaveBeenCalled();
+    });
+  });
+
   describe("sublayers", function() {
 
     it("should create sublayer", function() {

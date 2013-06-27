@@ -297,8 +297,13 @@
       return layer_view;
     },
 
-    addLayerToMap: function(layer_view, map) {
+    addLayerToMap: function(layer_view, map, pos) {
       map.addLayer(layer_view.leafletLayer);
+      if(pos != undefined) {
+        if(v.setZIndex) {
+          v.setZIndex(pos);
+        }
+      }
     },
 
     /**

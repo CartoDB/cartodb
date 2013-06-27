@@ -28,7 +28,7 @@ describe('api.layers', function() {
           err = true;
         });
       })
-      waits(10);
+      waits(100);
       runs(function() {
         expect(err).toEqual(true);
       });
@@ -255,6 +255,37 @@ describe('api.layers', function() {
               }
             }]
           });
+        });
+
+      });
+
+      it("should have addTo", function() {
+        var layer;
+        runs(function() {
+          debugger;
+          cartodb.createLayer(map, {
+            type: 'cartodb',
+            sublayers: [{
+              sql: 'select * from table',
+              cartocss: 'test',
+              interactivity: 'testi'
+            }]
+          })
+          .addTo(map)
+          .done(function(lyr) {
+            layer = lyr;
+          });
+        });
+
+        waits(100);
+
+        runs(function() {
+          expect(layer).not.toEqual(undefined);
+          if(map.overlayMapTypes) {
+            expect(layer).toBe(map.overlayMapTypes.getAt(0));
+          } else {
+            expect(layer).toBe(map._layers[L.stamp(layer)]);
+          }
         });
 
       });

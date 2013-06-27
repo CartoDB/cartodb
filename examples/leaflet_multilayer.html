@@ -23,7 +23,7 @@
     <div id="map"></div>
 
     <!-- include cartodb.js library -->
-    <script src="http://libs.cartocdn.com/cartodb.js/v3/cartodb.js"></script>
+    <script src="../src/cartodb.js"></script>
     <script>
 
       function main() {
@@ -48,9 +48,10 @@
              sql: 'select * from country_boundaries',
              cartocss: '#layer { polygon-fill: #F00; polygon-opacity: 0.3; line-color: #F00; }'
           }]
-        }).done(function(layer) {
+        })
+        .addTo(map)
+        .done(function(layer) {
           var population;
-          map.addLayer(layer);
 
           // wait a little bit and add the most populated places
           setTimeout(function() {
@@ -80,9 +81,8 @@
           setTimeout(function() {
             layer.getSubLayer(0).remove();
           }, 10000);
-
-
         });
+
 
       }
 

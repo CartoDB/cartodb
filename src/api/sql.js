@@ -64,6 +64,10 @@
       params.dataType = 'jsonp';
     }
 
+    if(options.cache) {
+      params.cache = options.cache; 
+    }
+
     // Substitute mapnik tokens
     // resolution at zoom level 0
     var res = '156543.03515625';

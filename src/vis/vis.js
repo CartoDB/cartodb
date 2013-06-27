@@ -413,15 +413,17 @@ var Vis = cdb.core.View.extend({
   addInfowindow: function(layerView) {
     var mapView = this.mapView;
     var eventType = 'featureClick';
-    var infowindow = Overlay.create('infowindow', this, layerView.getInfowindowData(0), true);
-
-    mapView.addInfowindow(infowindow);
+    var infowindow = null;
 
     var sql = this._getSqlApi(layerView.options)
 
     // activate interactivity for layers with infowindows
     for(var i = 0; i < layerView.getLayerCount(); ++i) {
       if(layerView.getInfowindowData(i)) {
+        if(!infowindow) {
+          infowindow = Overlay.create('infowindow', this, layerView.getInfowindowData(i), true);
+          mapView.addInfowindow(infowindow);
+        }
         layerView.setInteraction(i, true);
       }
     }

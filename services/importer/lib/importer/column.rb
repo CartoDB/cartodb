@@ -3,7 +3,7 @@ module CartoDB
   module Importer
     class Column
       DEFAULT_SRID  = 4326
-      WKB_REGEX     = /^\d{2}/
+      WKB_RE        = /^\d{2}/
       GEOJSON_RE    = /coordinates/
       WKT_RE        = /POINT|LINESTRING|POLYGON/
       KML_MULTI_RE  = /<Line|<Polygon/
@@ -62,7 +62,7 @@ module CartoDB
       end #convert_from_kml_multi
 
       def wkb?
-        !!(sample.to_s =~ WKB_REGEX)
+        !!(sample.to_s =~ WKB_RE)
       end #wkb?
 
       def wkt?

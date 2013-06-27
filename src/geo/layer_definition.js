@@ -219,7 +219,7 @@ LayerDefinition.prototype = {
     var self = this;
     var ajax = this.options.ajax;
     var json = '{ "config": "' +
-      JSON.stringify(this.toJSON()).replace(/"/g, '\\"') +
+      JSON.stringify(this.toJSON()).replace(/"/g, '\\"').replace(/\\n/g, '') +
     '"}';
     LZMA.compress(json, 3, function(encoded) {
       encoded = self._array2hex(encoded);

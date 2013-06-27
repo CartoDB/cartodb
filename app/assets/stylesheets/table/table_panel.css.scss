@@ -1450,10 +1450,11 @@
       }
 
       .layer_info a.info {
-        .order {background:#666666;}
-        .name {color:#666666;}
+        .order {background:#666666;} 
+        .name {color:#666;}
         &:hover {
-          cursor:default;
+          cursor:move;
+          .order { @include icons-sprite(layer_move_icon); background-color:none; text-indent:-9999px}
         }
       }
     }

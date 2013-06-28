@@ -540,7 +540,11 @@ LayerDefinition.prototype = {
   },
 
   getInfowindowData: function(layer) {
-    return this.options.layer_definition.layers[layer].infowindow;
+    var infowindow = this.options.layer_definition.layers[layer].infowindow;
+    if (infowindow && infowindow.fields && infowindow.fields.length > 0) {
+      return infowindow;
+    }
+    return null;
   },
 
   containInfowindow: function() {

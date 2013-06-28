@@ -64,12 +64,11 @@ cdb.geo.ui.LayerSelector = cdb.core.View.extend({
     var self = this;
 
     _.each(this.map.layers.models, function(layer) {
-      
-      if (layer.get("type") == 'layergroup') {
-        var layer_definition = self.mapView.getLayerByCid(layer.cid);
 
-        for (var i = 0 ; i < layer_definition.getLayerCount(); ++i) {
-          var l = layer_definition.getLayer(i);
+      if (layer.get("type") == 'layergroup') {
+        var layerGroupView = self.mapView.getLayerByCid(layer.cid);
+        for (var i = 0 ; i < layerGroupView.getLayerCount(); ++i) {
+          var l = layerGroupView.getLayer(i);
           var m = new cdb.core.Model(l);
           m.set('order', i);
           m.set('type', 'layergroup');
@@ -78,9 +77,12 @@ cdb.geo.ui.LayerSelector = cdb.core.View.extend({
           } else {
             m.set('layer_name', l.options.layer_name);
           }
-          var layerView = self._createLayer('LayerViewFromLayerGroup', { model: m, layer_definition: layer_definition });
+          var layerView = self._createLayer('LayerViewFromLayerGroup', { 
+            model: m,
+            layerView: layerGroupView,
+            layerIndex: i
+          });
           layerView.bind('switchChanged', self._setCount, self);
-          layerView.bind('layergroupChanged', self._setLayerGroup, self)
           self.layers.push(layerView);
         }
       } else if (layer.get("type") == "CartoDB") {
@@ -97,25 +99,6 @@ cdb.geo.ui.LayerSelector = cdb.core.View.extend({
     this.$("ul").append(layerView.render().el);
     this.addView(layerView);
     return layerView;
-  },
-
-  _setLayerGroup: function(layer_definition) {
-    var self = this;
-
-    for (var i = this.layers.length - 1; i >= 0; --i) {
-      if (self.layers[i].model.get('type') == "layergroup") {
-        layer_definition.removeLayer(i);
-      }
-    }
-
-    var order = 0;
-
-    for (var i = 0, l = this.layers.length; i < l; ++i) {
-      if (self.layers[i].model.get('type') == "layergroup" && self.layers[i].model.get('visible')) {
-        layer_definition.addLayer(self.layers[i].model.toJSON().options, order);
-        order++;
-      }
-    }
   },
 
   _setCount: function() {
@@ -149,7 +132,7 @@ cdb.geo.ui.LayerSelector = cdb.core.View.extend({
  *    model: layer_model,
  *    layer_definition: layer_definition
  *  });
- *  
+ *
  */
 
 cdb.geo.ui.LayerView = cdb.core.View.extend({
@@ -216,9 +199,9 @@ cdb.geo.ui.LayerView = cdb.core.View.extend({
  *
  *  var layerView = new cdb.geo.ui.LayerViewFromLayerGroup({
  *    model: layer_model,
- *    layer_definition: layer_definition
+ *    layerView: layweView 
  *  });
- *  
+ *
  */
 
 cdb.geo.ui.LayerViewFromLayerGroup = cdb.geo.ui.LayerView.extend({
@@ -231,9 +214,14 @@ cdb.geo.ui.LayerViewFromLayerGroup = cdb.geo.ui.LayerView.extend({
   },
 
   _onSwitchSelected: function() {
-  
-    cdb.geo.ui.LayerView.prototype._onSwitchSelected.call(this);
 
-    this.trigger('layergroupChanged', this.options.layer_definition);
+    cdb.geo.ui.LayerView.prototype._onSwitchSelected.call(this);
+    var sublayer = this.options.layerView.getSubLayer(this.options.layerIndex)
+    var visible = this.model.get('visible');
+    if(visible) {
+      sublayer.show();
+    } else {
+      sublayer.hide();
+    }
   }
 });

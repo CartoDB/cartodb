@@ -119,9 +119,9 @@ cdb.geo.CartoDBLayer = cdb.geo.MapLayer.extend({
     tiler_domain: "cartodb.com",
     tiler_port: "80",
     tiler_protocol: "http",
-    sql_domain: "cartodb.com",
-    sql_port: "80",
-    sql_protocol: "http",
+    sql_api_domain: "cartodb.com",
+    sql_api_port: "80",
+    sql_api_protocol: "http",
     extra_params: {},
     cdn_url: null,
     maxZoom: 28
@@ -142,7 +142,7 @@ cdb.geo.CartoDBLayer = cdb.geo.MapLayer.extend({
     var e = this.get('extra_params') || e;
     e.cache_buster = new Date().getTime();
     this.set('extra_params', e);
-    this.trigger('change');
+    this.trigger('change', this);
   },
 
   toggle: function() {
@@ -154,37 +154,40 @@ cdb.geo.CartoDBLayer = cdb.geo.MapLayer.extend({
   }
 });
 
+cdb.geo.CartoDBGroupLayer = cdb.geo.MapLayer.extend({
+  defaults: {
+    visible: true,
+    type: 'layergroup'
+  }
+});
+
 cdb.geo.Layers = Backbone.Collection.extend({
 
   model: cdb.geo.MapLayer,
 
   initialize: function() {
-    this.bind('add remove', this._asignIndexes, this);
-  },
-
-  clone: function() {
-    var layers = new cdb.geo.Layers();
-    this.each(function(layer) {
-      if(layer.clone) {
-        var lyr = layer.clone();
-        lyr.set('id', null);
-        layers.add(lyr);
-      } else {
-        var attrs = _.clone(layer.attributes);
-        delete attrs.id;
-        layers.add(attrs);
-      }
-    });
-    return layers;
+    this.comparator = function(m) {
+      return parseInt(m.get('order'), 10);
+    };
+    this.bind('add', this._assignIndexes);
   },
 
   /**
    * each time a layer is added or removed
    * the index should be recalculated
    */
-  _asignIndexes: function() {
-    for(var i = 0; i < this.size(); ++i) {
-      this.models[i].set({ order: i }, { silent: true });
+  _assignIndexes: function(model, col, options) {
+    var from = this.size() - 1;
+    if(options && options.at !== undefined) {
+      from = options.at;
+    }
+    if(from === 0) {
+      this.models[0].set({ order: 0 });
+      ++from;
+    }
+    for(var i = from; i < this.size(); ++i) {
+      var prev = this.models[i - 1].get('order');
+      this.models[i].set({ order: prev + 1 });
     }
   }
 });
@@ -205,6 +208,7 @@ cdb.geo.Map = cdb.core.Model.extend({
 
   initialize: function() {
     this.layers = new cdb.geo.Layers();
+
     this.layers.bind('reset', function() {
       if(this.layers.size() >= 1) {
         this._adjustZoomtoLayer(this.layers.models[0]);
@@ -252,24 +256,6 @@ cdb.geo.Map = cdb.core.Model.extend({
     });
   },
 
-  clone: function() {
-    var m = new cdb.geo.Map(_.clone(this.attributes));
-
-    // clone lists
-    m.set({
-      center:           _.clone(this.attributes.center),
-      bounding_box_sw:  _.clone(this.attributes.bounding_box_sw),
-      bounding_box_ne:  _.clone(this.attributes.bounding_box_ne),
-      view_bounds_sw:   _.clone(this.attributes.view_bounds_sw),
-      view_bounds_ne:   _.clone(this.attributes.view_bounds_ne),
-      attribution:      _.clone(this.attributes.attribution)
-    });
-    // layers
-    m.layers = this.layers.clone();
-    return m;
-
-  },
-
   /**
   * Change multiple options at the same time
   * @params {Object} New options object
@@ -284,7 +270,7 @@ cdb.geo.Map = cdb.core.Model.extend({
     }
 
     // Set options
-    _.defauls(this.options, options);
+    _.defaults(this.options, options);
 
   },
 
@@ -382,50 +368,6 @@ cdb.geo.Map = cdb.core.Model.extend({
     if(baseLayer && baseLayer.get('options'))  {
       return baseLayer.get('options').urlTemplate;
     }
-  },
-
-
-  // remove current base layer and set the specified
-  // current base layer is removed
-  setBaseLayer: function(layer, opts) {
-    opts = opts || {};
-    var self = this;
-    var old = this.layers.at(0);
-
-    // Check if the selected base layer is already selected
-    if (this.isBaseLayerAdded(layer)) {
-      opts.alreadyAdded && opts.alreadyAdded();
-      return false;
-    }
-
-    if (old) { // defensive programming FTW!!
-      //remove layer from the view
-      //change all the attributes and save it again
-      //it will saved in the server and recreated in the client
-      self.layers.remove(old);
-      layer.set('id', old.get('id'));
-      layer.set('order', old.get('order'));
-      this.layers.add(layer, { at: 0 });
-      layer.save(null, {
-        success: function() {
-          self.trigger('baseLayerAdded');
-          self._adjustZoomtoLayer(layer);
-          opts.success && opts.success();
-        },
-        error: opts.error
-      })
-
-    } else {
-      self.layers.add(layer, { at: 0 });
-      self.trigger('baseLayerAdded');
-      self._adjustZoomtoLayer(layer);
-      opts.success && opts.success();
-    }
-
-    // Update attribution removing old one and adding new one
-    this.updateAttribution(old,layer);
-
-    return layer;
   },
 
   updateAttribution: function(old,new_) {
@@ -542,7 +484,7 @@ cdb.geo.MapView = cdb.core.View.extend({
   initialize: function() {
 
     if (this.options.map === undefined) {
-      throw new Exception("you should specify a map model");
+      throw "you should specify a map model";
     }
 
     this.map = this.options.map;
@@ -621,8 +563,8 @@ cdb.geo.MapView = cdb.core.View.extend({
     this.map.bind('change:view_bounds_sw',  this._changeBounds, this);
     this.map.bind('change:view_bounds_ne',  this._changeBounds, this);
     this.map.bind('change:zoom',            this._setZoom, this);
-    this.map.bind('change:center',          this._setCenter, this);
     this.map.bind('change:scrollwheel',     this._setScrollWheel, this);
+    this.map.bind('change:center',          this._setCenter, this);
     this.map.bind('change:attribution',     this._setAttribution, this);
   },
 
@@ -635,10 +577,11 @@ cdb.geo.MapView = cdb.core.View.extend({
     this.map.unbind('change:view_bounds_ne', this._changeBounds, this);
     */
 
-    this.map.unbind('change:zoom',            null, this);
-    this.map.unbind('change:center',          null, this);
     this.map.unbind('change:view_bounds_sw',  null, this);
     this.map.unbind('change:view_bounds_ne',  null, this);
+    this.map.unbind('change:zoom',            null, this);
+    this.map.unbind('change:scrollwheel',     null, this);
+    this.map.unbind('change:center',          null, this);
     this.map.unbind('change:attribution',     null, this);
   },
 
@@ -659,9 +602,18 @@ cdb.geo.MapView = cdb.core.View.extend({
 
   _addLayers: function() {
     var self = this;
+    this._removeLayers();
     this.map.layers.each(function(lyr) {
       self._addLayer(lyr);
     });
+  },
+
+  _removeLayers: function(layer) {
+    for(var i in this.layers) {
+      var layer_view = this.layers[i];
+      layer_view.remove();
+      delete this.layers[i];
+    }
   },
 
   _removeLayer: function(layer) {
@@ -680,7 +632,7 @@ cdb.geo.MapView = cdb.core.View.extend({
   getLayerByCid: function(cid) {
     var l = this.layers[cid];
     if(!l) {
-      cdb.log.error("layer with cid " + cid + " can't be get");
+      cdb.log.debug("layer with cid " + cid + " can't be get");
     }
     return l;
   },

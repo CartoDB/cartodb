@@ -1,6 +1,6 @@
-// cartodb.js version: 2.0.28
+// cartodb.js version: 2.0.25-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: cbcc993b7eb90a88c84244f974cb521266ca05d9
+// sha: c050c7a3cb41d49095f6f0430207fef3598c29b1
 (function() {
   var root = this;
 
@@ -9812,14 +9812,13 @@ L.Map.include({
 });
 
 
-}(this, document));/* wax - 7.0.0dev10 - v6.0.4-147-gca63e3e */
+}(this, document));/* wax - 7.0.0dev10 - v6.0.4-133-g57c8e4a */
 
 
 !function (name, context, definition) {
-  //if (typeof module !== 'undefined') module.exports = definition(name, context);
-  //else if (typeof define === 'function' && typeof define.amd  === 'object') define(definition);
-  //else context[name] = definition(name, context);
-  context[name] = definition(name, context);
+  if (typeof module !== 'undefined') module.exports = definition(name, context);
+  else if (typeof define === 'function' && typeof define.amd  === 'object') define(definition);
+  else context[name] = definition(name, context);
 }('bean', this, function (name, context) {
   var win = window
     , old = context[name]
@@ -9860,8 +9859,6 @@ L.Map.include({
             'input invalid ' +                                                 // form elements
             'touchstart touchmove touchend touchcancel ' +                     // touch
             'gesturestart gesturechange gestureend ' +                         // gesture
-            'MSPointerUp MSPointerDown MSPointerCancel MSPointerMove ' +       // MS Pointer events
-            'MSPointerOver MSPointerOut ' +                                    // MS Pointer events
             'message readystatechange pageshow pagehide popstate ' +           // window
             'hashchange offline online ' +                                     // window
             'afterprint beforeprint ' +                                        // printing
@@ -11838,521 +11835,11 @@ var Mustache = (typeof module !== "undefined" && module.exports) || {};
 })(Mustache);
 /*!
   * Reqwest! A general purpose XHR connection manager
-  * (c) Dustin Diaz 2012
+  * (c) Dustin Diaz 2011
   * https://github.com/ded/reqwest
   * license MIT
   */
-;(function (name, context, definition) {
-  if (typeof module != 'undefined' && module.exports) module.exports = definition()
-  else if (typeof define == 'function' && define.amd) define(definition)
-  else context[name] = definition()
-})('reqwest', this, function () {
-
-  var win = window
-    , doc = document
-    , twoHundo = /^20\d$/
-    , byTag = 'getElementsByTagName'
-    , readyState = 'readyState'
-    , contentType = 'Content-Type'
-    , requestedWith = 'X-Requested-With'
-    , head = doc[byTag]('head')[0]
-    , uniqid = 0
-    , callbackPrefix = 'reqwest_' + (+new Date())
-    , lastValue // data stored by the most recent JSONP callback
-    , xmlHttpRequest = 'XMLHttpRequest'
-    , noop = function () {}
-
-    , isArray = typeof Array.isArray == 'function'
-        ? Array.isArray
-        : function (a) {
-            return a instanceof Array
-          }
-
-    , defaultHeaders = {
-          contentType: 'application/x-www-form-urlencoded'
-        , requestedWith: xmlHttpRequest
-        , accept: {
-              '*':  'text/javascript, text/html, application/xml, text/xml, */*'
-            , xml:  'application/xml, text/xml'
-            , html: 'text/html'
-            , text: 'text/plain'
-            , json: 'application/json, text/javascript'
-            , js:   'application/javascript, text/javascript'
-          }
-      }
-
-    , xhr = win[xmlHttpRequest]
-        ? function () {
-            return new XMLHttpRequest()
-          }
-        : function () {
-            return new ActiveXObject('Microsoft.XMLHTTP')
-          }
-
-  function handleReadyState (r, success, error) {
-    return function () {
-      // use _aborted to mitigate against IE err c00c023f
-      // (can't read props on aborted request objects)
-      if (r._aborted) return error(r.request)
-      if (r.request && r.request[readyState] == 4) {
-        r.request.onreadystatechange = noop
-        if (twoHundo.test(r.request.status))
-          success(r.request)
-        else
-          error(r.request)
-      }
-    }
-  }
-
-  function setHeaders (http, o) {
-    var headers = o.headers || {}
-      , h
-
-    headers.Accept = headers.Accept
-      || defaultHeaders.accept[o.type]
-      || defaultHeaders.accept['*']
-
-    // breaks cross-origin requests with legacy browsers
-    if (!o.crossOrigin && !headers[requestedWith]) headers[requestedWith] = defaultHeaders.requestedWith
-    if (!headers[contentType]) headers[contentType] = o.contentType || defaultHeaders.contentType
-    for (h in headers)
-      headers.hasOwnProperty(h) && http.setRequestHeader(h, headers[h])
-  }
-
-  function setCredentials (http, o) {
-    if (typeof o.withCredentials !== 'undefined' && typeof http.withCredentials !== 'undefined') {
-      http.withCredentials = !!o.withCredentials
-    }
-  }
-
-  function generalCallback (data) {
-    lastValue = data
-  }
-
-  function urlappend (url, s) {
-    return url + (/\?/.test(url) ? '&' : '?') + s
-  }
-
-  function handleJsonp (o, fn, err, url) {
-    var reqId = uniqid++
-      , cbkey = o.jsonpCallback || 'callback' // the 'callback' key
-      , cbval = o.jsonpCallbackName || reqwest.getcallbackPrefix(reqId)
-      // , cbval = o.jsonpCallbackName || ('reqwest_' + reqId) // the 'callback' value
-      , cbreg = new RegExp('((^|\\?|&)' + cbkey + ')=([^&]+)')
-      , match = url.match(cbreg)
-      , script = doc.createElement('script')
-      , loaded = 0
-      , isIE10 = navigator.userAgent.indexOf('MSIE 10.0') !== -1
-      , isIE9 = navigator.userAgent.indexOf('MSIE 9.0') !== -1;
-
-    if (match) {
-      if (match[3] === '?') {
-        url = url.replace(cbreg, '$1=' + cbval) // wildcard callback func name
-      } else {
-        cbval = match[3] // provided callback func name
-      }
-    } else {
-      url = urlappend(url, cbkey + '=' + cbval) // no callback details, add 'em
-    }
-
-    win[cbval] = generalCallback
-
-    script.type = 'text/javascript'
-    script.src = url
-    script.async = true
-    if (typeof script.onreadystatechange !== 'undefined' && !isIE10 && !isIE9) {
-      // need this for IE due to out-of-order onreadystatechange(), binding script
-      // execution to an event listener gives us control over when the script
-      // is executed. See http://jaubourg.net/2010/07/loading-script-as-onclick-handler-of.html
-      //
-      // if this hack is used in IE10 jsonp callback are never called
-      script.event = 'onclick'
-      script.htmlFor = script.id = '_reqwest_' + reqId
-    }
-
-    script.onload = script.onreadystatechange = function () {
-      if ((script[readyState] && script[readyState] !== 'complete' && script[readyState] !== 'loaded') || loaded) {
-        return false
-      }
-      script.onload = script.onreadystatechange = null
-      script.onclick && script.onclick()
-      // Call the user callback with the last value stored and clean up values and scripts.
-      o.success && o.success(lastValue)
-      lastValue = undefined
-      head.removeChild(script)
-      loaded = 1
-    }
-
-    // Add the script to the DOM head
-    head.appendChild(script)
-
-    // Enable JSONP timeout
-    return {
-      abort: function () {
-        script.onload = script.onreadystatechange = null
-        o.error && o.error({}, 'Request is aborted: timeout', {})
-        lastValue = undefined
-        head.removeChild(script)
-        loaded = 1
-      }
-    }
-  }
-
-  function getRequest (fn, err) {
-    var o = this.o
-      , method = (o.method || 'GET').toUpperCase()
-      , url = typeof o === 'string' ? o : o.url
-      // convert non-string objects to query-string form unless o.processData is false
-      , data = (o.processData !== false && o.data && typeof o.data !== 'string')
-        ? reqwest.toQueryString(o.data)
-        : (o.data || null)
-      , http
-
-    // if we're working on a GET request and we have data then we should append
-    // query string to end of URL and not post data
-    if ((o.type == 'jsonp' || method == 'GET') && data) {
-      url = urlappend(url, data)
-      data = null
-    }
-
-    if (o.type == 'jsonp') return handleJsonp(o, fn, err, url)
-
-    http = xhr()
-    http.open(method, url, true)
-    setHeaders(http, o)
-    setCredentials(http, o)
-    http.onreadystatechange = handleReadyState(this, fn, err)
-    o.before && o.before(http)
-    http.send(data)
-    return http
-  }
-
-  function Reqwest (o, fn) {
-    this.o = o
-    this.fn = fn
-
-    init.apply(this, arguments)
-  }
-
-  function setType (url) {
-    var m = url.match(/\.(json|jsonp|html|xml)(\?|$)/)
-    return m ? m[1] : 'js'
-  }
-
-  function init (o, fn) {
-
-    this.url = typeof o == 'string' ? o : o.url
-    this.timeout = null
-
-    // whether request has been fulfilled for purpose
-    // of tracking the Promises
-    this._fulfilled = false
-    // success handlers
-    this._fulfillmentHandlers = []
-    // error handlers
-    this._errorHandlers = []
-    // complete (both success and fail) handlers
-    this._completeHandlers = []
-    this._erred = false
-    this._responseArgs = {}
-
-    var self = this
-      , type = o.type || setType(this.url)
-
-    fn = fn || function () {}
-
-    if (o.timeout) {
-      this.timeout = setTimeout(function () {
-        self.abort()
-      }, o.timeout)
-    }
-
-    if (o.success) {
-      this._fulfillmentHandlers.push(function () {
-        o.success.apply(o, arguments)
-      })
-    }
-
-    if (o.error) {
-      this._errorHandlers.push(function () {
-        o.error.apply(o, arguments)
-      })
-    }
-
-    if (o.complete) {
-      this._completeHandlers.push(function () {
-        o.complete.apply(o, arguments)
-      })
-    }
-
-    function complete (resp) {
-      o.timeout && clearTimeout(self.timeout)
-      self.timeout = null
-      while (self._completeHandlers.length > 0) {
-        self._completeHandlers.shift()(resp)
-      }
-    }
-
-    function success (resp) {
-      var r = resp.responseText
-      if (r) {
-        switch (type) {
-        case 'json':
-          try {
-            resp = win.JSON ? win.JSON.parse(r) : eval('(' + r + ')')
-          } catch (err) {
-            return error(resp, 'Could not parse JSON in response', err)
-          }
-          break
-        case 'js':
-          resp = eval(r)
-          break
-        case 'html':
-          resp = r
-          break
-        case 'xml':
-          resp = resp.responseXML
-              && resp.responseXML.parseError // IE trololo
-              && resp.responseXML.parseError.errorCode
-              && resp.responseXML.parseError.reason
-            ? null
-            : resp.responseXML
-          break
-        }
-      }
-
-      self._responseArgs.resp = resp
-      self._fulfilled = true
-      fn(resp)
-      while (self._fulfillmentHandlers.length > 0) {
-        self._fulfillmentHandlers.shift()(resp)
-      }
-
-      complete(resp)
-    }
-
-    function error (resp, msg, t) {
-      self._responseArgs.resp = resp
-      self._responseArgs.msg = msg
-      self._responseArgs.t = t
-      self._erred = true
-      while (self._errorHandlers.length > 0) {
-        self._errorHandlers.shift()(resp, msg, t)
-      }
-      complete(resp)
-    }
-
-    this.request = getRequest.call(this, success, error)
-  }
-
-  Reqwest.prototype = {
-    abort: function () {
-      this._aborted = true
-      this.request.abort()
-    }
-
-  , retry: function () {
-      init.call(this, this.o, this.fn)
-    }
-
-    /**
-     * Small deviation from the Promises A CommonJs specification
-     * http://wiki.commonjs.org/wiki/Promises/A
-     */
-
-    /**
-     * `then` will execute upon successful requests
-     */
-  , then: function (success, fail) {
-      if (this._fulfilled) {
-        success(this._responseArgs.resp)
-      } else if (this._erred) {
-        fail(this._responseArgs.resp, this._responseArgs.msg, this._responseArgs.t)
-      } else {
-        this._fulfillmentHandlers.push(success)
-        this._errorHandlers.push(fail)
-      }
-      return this
-    }
-
-    /**
-     * `always` will execute whether the request succeeds or fails
-     */
-  , always: function (fn) {
-      if (this._fulfilled || this._erred) {
-        fn(this._responseArgs.resp)
-      } else {
-        this._completeHandlers.push(fn)
-      }
-      return this
-    }
-
-    /**
-     * `fail` will execute when the request fails
-     */
-  , fail: function (fn) {
-      if (this._erred) {
-        fn(this._responseArgs.resp, this._responseArgs.msg, this._responseArgs.t)
-      } else {
-        this._errorHandlers.push(fn)
-      }
-      return this
-    }
-  }
-
-  function reqwest (o, fn) {
-    return new Reqwest(o, fn)
-  }
-
-  // normalize newline variants according to spec -> CRLF
-  function normalize (s) {
-    return s ? s.replace(/\r?\n/g, '\r\n') : ''
-  }
-
-  function serial (el, cb) {
-    var n = el.name
-      , t = el.tagName.toLowerCase()
-      , optCb = function (o) {
-          // IE gives value="" even where there is no value attribute
-          // 'specified' ref: http://www.w3.org/TR/DOM-Level-3-Core/core.html#ID-862529273
-          if (o && !o.disabled)
-            cb(n, normalize(o.attributes.value && o.attributes.value.specified ? o.value : o.text))
-        }
-      , ch, ra, val, i
-
-    // don't serialize elements that are disabled or without a name
-    if (el.disabled || !n) return
-
-    switch (t) {
-    case 'input':
-      if (!/reset|button|image|file/i.test(el.type)) {
-        ch = /checkbox/i.test(el.type)
-        ra = /radio/i.test(el.type)
-        val = el.value
-        // WebKit gives us "" instead of "on" if a checkbox has no value, so correct it here
-        ;(!(ch || ra) || el.checked) && cb(n, normalize(ch && val === '' ? 'on' : val))
-      }
-      break
-    case 'textarea':
-      cb(n, normalize(el.value))
-      break
-    case 'select':
-      if (el.type.toLowerCase() === 'select-one') {
-        optCb(el.selectedIndex >= 0 ? el.options[el.selectedIndex] : null)
-      } else {
-        for (i = 0; el.length && i < el.length; i++) {
-          el.options[i].selected && optCb(el.options[i])
-        }
-      }
-      break
-    }
-  }
-
-  // collect up all form elements found from the passed argument elements all
-  // the way down to child elements; pass a '<form>' or form fields.
-  // called with 'this'=callback to use for serial() on each element
-  function eachFormElement () {
-    var cb = this
-      , e, i
-      , serializeSubtags = function (e, tags) {
-          var i, j, fa
-          for (i = 0; i < tags.length; i++) {
-            fa = e[byTag](tags[i])
-            for (j = 0; j < fa.length; j++) serial(fa[j], cb)
-          }
-        }
-
-    for (i = 0; i < arguments.length; i++) {
-      e = arguments[i]
-      if (/input|select|textarea/i.test(e.tagName)) serial(e, cb)
-      serializeSubtags(e, [ 'input', 'select', 'textarea' ])
-    }
-  }
-
-  // standard query string style serialization
-  function serializeQueryString () {
-    return reqwest.toQueryString(reqwest.serializeArray.apply(null, arguments))
-  }
-
-  // { 'name': 'value', ... } style serialization
-  function serializeHash () {
-    var hash = {}
-    eachFormElement.apply(function (name, value) {
-      if (name in hash) {
-        hash[name] && !isArray(hash[name]) && (hash[name] = [hash[name]])
-        hash[name].push(value)
-      } else hash[name] = value
-    }, arguments)
-    return hash
-  }
-
-  // [ { name: 'name', value: 'value' }, ... ] style serialization
-  reqwest.serializeArray = function () {
-    var arr = []
-    eachFormElement.apply(function (name, value) {
-      arr.push({name: name, value: value})
-    }, arguments)
-    return arr
-  }
-
-  reqwest.serialize = function () {
-    if (arguments.length === 0) return ''
-    var opt, fn
-      , args = Array.prototype.slice.call(arguments, 0)
-
-    opt = args.pop()
-    opt && opt.nodeType && args.push(opt) && (opt = null)
-    opt && (opt = opt.type)
-
-    if (opt == 'map') fn = serializeHash
-    else if (opt == 'array') fn = reqwest.serializeArray
-    else fn = serializeQueryString
-
-    return fn.apply(null, args)
-  }
-
-  reqwest.toQueryString = function (o) {
-    var qs = '', i
-      , enc = encodeURIComponent
-      , push = function (k, v) {
-          qs += enc(k) + '=' + enc(v) + '&'
-        }
-      , k, v
-
-    if (isArray(o)) {
-      for (i = 0; o && i < o.length; i++) push(o[i].name, o[i].value)
-    } else {
-      for (k in o) {
-        if (!Object.hasOwnProperty.call(o, k)) continue
-        v = o[k]
-        if (isArray(v)) {
-          for (i = 0; i < v.length; i++) push(k, v[i])
-        } else push(k, o[k])
-      }
-    }
-
-    // spaces should be + according to spec
-    return qs.replace(/&$/, '').replace(/%20/g, '+')
-  }
-
-  reqwest.getcallbackPrefix = function () {
-    return callbackPrefix
-  }
-
-  // jQuery and Zepto compatibility, differences can be remapped here so you can call
-  // .ajax.compat(options, callback)
-  reqwest.compat = function (o, fn) {
-    if (o) {
-      o.type && (o.method = o.type) && delete o.type
-      o.dataType && (o.type = o.dataType)
-      o.jsonpCallback && (o.jsonpCallbackName = o.jsonpCallback) && delete o.jsonpCallback
-      o.jsonp && (o.jsonpCallback = o.jsonp)
-    }
-    return new Reqwest(o, fn)
-  }
-
-  return reqwest
-});wax = wax || {};
+!function(a,b){typeof module!="undefined"?module.exports=b():typeof define=="function"&&define.amd?define(a,b):this[a]=b()}("reqwest",function(){function handleReadyState(a,b,c){return function(){a&&a[readyState]==4&&(twoHundo.test(a.status)?b(a):c(a))}}function setHeaders(a,b){var c=b.headers||{},d;c.Accept=c.Accept||defaultHeaders.accept[b.type]||defaultHeaders.accept["*"],!b.crossOrigin&&!c[requestedWith]&&(c[requestedWith]=defaultHeaders.requestedWith),c[contentType]||(c[contentType]=b.contentType||defaultHeaders.contentType);for(d in c)c.hasOwnProperty(d)&&a.setRequestHeader(d,c[d])}function generalCallback(a){lastValue=a}function urlappend(a,b){return a+(/\?/.test(a)?"&":"?")+b}function handleJsonp(a,b,c,d){var e=uniqid++,f=a.jsonpCallback||"callback",g=a.jsonpCallbackName||"reqwest_"+e,h=new RegExp("((^|\\?|&)"+f+")=([^&]+)"),i=d.match(h),j=doc.createElement("script"),k=0;i?i[3]==="?"?d=d.replace(h,"$1="+g):g=i[3]:d=urlappend(d,f+"="+g),win[g]=generalCallback,j.type="text/javascript",j.src=d,j.async=!0,typeof j.onreadystatechange!="undefined"&&(j.event="onclick",j.htmlFor=j.id="_reqwest_"+e),j.onload=j.onreadystatechange=function(){if(j[readyState]&&j[readyState]!=="complete"&&j[readyState]!=="loaded"||k)return!1;j.onload=j.onreadystatechange=null,j.onclick&&j.onclick(),a.success&&a.success(lastValue),lastValue=undefined,head.removeChild(j),k=1},head.appendChild(j)}function getRequest(a,b,c){var d=(a.method||"GET").toUpperCase(),e=typeof a=="string"?a:a.url,f=a.processData!==!1&&a.data&&typeof a.data!="string"?reqwest.toQueryString(a.data):a.data||null,g;return(a.type=="jsonp"||d=="GET")&&f&&(e=urlappend(e,f),f=null),a.type=="jsonp"?handleJsonp(a,b,c,e):(g=xhr(),g.open(d,e,!0),setHeaders(g,a),g.onreadystatechange=handleReadyState(g,b,c),a.before&&a.before(g),g.send(f),g)}function Reqwest(a,b){this.o=a,this.fn=b,init.apply(this,arguments)}function setType(a){var b=a.match(/\.(json|jsonp|html|xml)(\?|$)/);return b?b[1]:"js"}function init(o,fn){function complete(a){o.timeout&&clearTimeout(self.timeout),self.timeout=null,o.complete&&o.complete(a)}function success(resp){var r=resp.responseText;if(r)switch(type){case"json":try{resp=win.JSON?win.JSON.parse(r):eval("("+r+")")}catch(err){return error(resp,"Could not parse JSON in response",err)}break;case"js":resp=eval(r);break;case"html":resp=r}fn(resp),o.success&&o.success(resp),complete(resp)}function error(a,b,c){o.error&&o.error(a,b,c),complete(a)}this.url=typeof o=="string"?o:o.url,this.timeout=null;var type=o.type||setType(this.url),self=this;fn=fn||function(){},o.timeout&&(this.timeout=setTimeout(function(){self.abort()},o.timeout)),this.request=getRequest(o,success,error)}function reqwest(a,b){return new Reqwest(a,b)}function normalize(a){return a?a.replace(/\r?\n/g,"\r\n"):""}function serial(a,b){var c=a.name,d=a.tagName.toLowerCase(),e=function(a){a&&!a.disabled&&b(c,normalize(a.attributes.value&&a.attributes.value.specified?a.value:a.text))};if(a.disabled||!c)return;switch(d){case"input":if(!/reset|button|image|file/i.test(a.type)){var f=/checkbox/i.test(a.type),g=/radio/i.test(a.type),h=a.value;(!f&&!g||a.checked)&&b(c,normalize(f&&h===""?"on":h))}break;case"textarea":b(c,normalize(a.value));break;case"select":if(a.type.toLowerCase()==="select-one")e(a.selectedIndex>=0?a.options[a.selectedIndex]:null);else for(var i=0;a.length&&i<a.length;i++)a.options[i].selected&&e(a.options[i])}}function eachFormElement(){var a=this,b,c,d,e=function(b,c){for(var e=0;e<c.length;e++){var f=b[byTag](c[e]);for(d=0;d<f.length;d++)serial(f[d],a)}};for(c=0;c<arguments.length;c++)b=arguments[c],/input|select|textarea/i.test(b.tagName)&&serial(b,a),e(b,["input","select","textarea"])}function serializeQueryString(){return reqwest.toQueryString(reqwest.serializeArray.apply(null,arguments))}function serializeHash(){var a={};return eachFormElement.apply(function(b,c){b in a?(a[b]&&!isArray(a[b])&&(a[b]=[a[b]]),a[b].push(c)):a[b]=c},arguments),a}var win=window,doc=document,twoHundo=/^20\d$/,byTag="getElementsByTagName",readyState="readyState",contentType="Content-Type",requestedWith="X-Requested-With",head=doc[byTag]("head")[0],uniqid=0,lastValue,xmlHttpRequest="XMLHttpRequest",isArray=typeof Array.isArray=="function"?Array.isArray:function(a){return a instanceof Array},defaultHeaders={contentType:"application/x-www-form-urlencoded",accept:{"*":"text/javascript, text/html, application/xml, text/xml, */*",xml:"application/xml, text/xml",html:"text/html",text:"text/plain",json:"application/json, text/javascript",js:"application/javascript, text/javascript"},requestedWith:xmlHttpRequest},xhr=win[xmlHttpRequest]?function(){return new XMLHttpRequest}:function(){return new ActiveXObject("Microsoft.XMLHTTP")};return Reqwest.prototype={abort:function(){this.request.abort()},retry:function(){init.call(this,this.o,this.fn)}},reqwest.serializeArray=function(){var a=[];return eachFormElement.apply(function(b,c){a.push({name:b,value:c})},arguments),a},reqwest.serialize=function(){if(arguments.length===0)return"";var a,b,c=Array.prototype.slice.call(arguments,0);return a=c.pop(),a&&a.nodeType&&c.push(a)&&(a=null),a&&(a=a.type),a=="map"?b=serializeHash:a=="array"?b=reqwest.serializeArray:b=serializeQueryString,b.apply(null,c)},reqwest.toQueryString=function(a){var b="",c,d=encodeURIComponent,e=function(a,c){b+=d(a)+"="+d(c)+"&"};if(isArray(a))for(c=0;a&&c<a.length;c++)e(a[c].name,a[c].value);else for(var f in a){if(!Object.hasOwnProperty.call(a,f))continue;var g=a[f];if(isArray(g))for(c=0;c<g.length;c++)e(f,g[c]);else e(f,a[f])}return b.replace(/&$/,"").replace(/%20/g,"+")},reqwest.compat=function(a,b){return a&&(a.type&&(a.method=a.type)&&delete a.type,a.dataType&&(a.type=a.dataType),a.jsonpCallback&&(a.jsonpCallbackName=a.jsonpCallback)&&delete a.jsonpCallback,a.jsonp&&(a.jsonpCallback=a.jsonp)),new Reqwest(a,b)},reqwest});wax = wax || {};
 
 // Attribution
 // -----------
@@ -12786,12 +12273,6 @@ wax.interaction = function() {
         touchcancel: touchCancel
     };
 
-    var pointerEnds = {
-        MSPointerUp: onUp,
-        MSPointerMove: onUp,
-        MSPointerCancel: touchCancel
-    };
-
     // Abstract getTile method. Depends on a tilegrid with
     // grid[ [x, y, tile] ] structure.
     function getTile(e) {
@@ -12828,8 +12309,7 @@ wax.interaction = function() {
         // to avoid performance hits.
         if (_downLock) return;
 
-        var _e = (e.type != "MSPointerMove" ? e : e.originalEvent);
-        var pos = wax.u.eventoffset(_e);
+        var pos = wax.u.eventoffset(e);
 
         interaction.screen_feature(pos, function(feature) {
             if (feature) {
@@ -12854,8 +12334,7 @@ wax.interaction = function() {
         // Store this event so that we can compare it to the
         // up event
         _downLock = true;
-        var _e = (e.type != "MSPointerDown" ? e : e.originalEvent); 
-        _d = wax.u.eventoffset(_e);
+        _d = wax.u.eventoffset(e);
         if (e.type === 'mousedown') {
             bean.add(document.body, 'click', onUp);
             // track mouse up to remove lockDown when the drags end
@@ -12868,13 +12347,7 @@ wax.interaction = function() {
             bean.fire(interaction, 'off');
             // Touch moves invalidate touches
             bean.add(parent(), touchEnds);
-        } else if (e.originalEvent.type === "MSPointerDown" && e.originalEvent.touches.length === 1) {
-          // Don't make the user click close if they hit another tooltip
-            bean.fire(interaction, 'off');
-            // Touch moves invalidate touches
-            bean.add(parent(), pointerEnds);
         }
-
     }
 
     function dragEnd() {
@@ -12883,38 +12356,27 @@ wax.interaction = function() {
 
     function touchCancel() {
         bean.remove(parent(), touchEnds);
-        bean.remove(parent(), pointerEnds);
         _downLock = false;
     }
 
     function onUp(e) {
         var evt = {},
-            _e = (e.type != "MSPointerMove" && e.type != "MSPointerUp" ? e : e.originalEvent),
-            pos = wax.u.eventoffset(_e);
+            pos = wax.u.eventoffset(e);
         _downLock = false;
 
-        for (var key in _e) {
-          evt[key] = _e[key];
+        // TODO: refine
+        for (var key in e) {
+          evt[key] = e[key];
         }
-
-        // for (var key in e) {
-        //   evt[key] = e[key];
-        // }
-
-
-        evt.changedTouches = [];
 
         bean.remove(document.body, 'mouseup', onUp);
         bean.remove(parent(), touchEnds);
-        bean.remove(parent(), pointerEnds);
 
         if (e.type === 'touchend') {
             // If this was a touch and it survived, there's no need to avoid a double-tap
             // but also wax.u.eventoffset will have failed, since this touch
             // event doesn't have coordinates
             interaction.click(e, _d);
-        } else if (evt.type === "MSPointerMove" || evt.type === "MSPointerUp") {
-            interaction.click(evt, pos);
         } else if (Math.round(pos.y / tol) === Math.round(_d.y / tol) &&
             Math.round(pos.x / tol) === Math.round(_d.x / tol)) {
             // Contain the event data in a closure.
@@ -12975,7 +12437,6 @@ wax.interaction = function() {
         if (attach) attach(map);
         bean.add(parent(), defaultEvents);
         bean.add(parent(), 'touchstart', onDown);
-        bean.add(parent(), 'MSPointerDown', onDown);
         return interaction;
     };
 
@@ -13249,12 +12710,6 @@ wax.u = {
         var posx = 0;
         var posy = 0;
         if (!e) { e = window.event; }
-        if (e.type == "MSPointerMove" || e.type == "MSPointerDown" || e.type == "MSPointerUp") {
-          return {
-            x: e.pageX + window.pageXOffset,
-            y: e.pageY + window.pageYOffset
-          }
-        }
         if (e.pageX || e.pageY) {
             // Good browsers
             return {
@@ -15506,7 +14961,7 @@ $(function(){
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '2.0.28';
+    cdb.VERSION = '2.0.25-dev';
 
     cdb.CARTOCSS_VERSIONS = {
       '2.0.0': '',
@@ -15567,6 +15022,7 @@ $(function(){
         'geo/ui/infowindow.js',
         'geo/ui/header.js',
         'geo/ui/search.js',
+        'geo/ui/layer_selector.js',
         'geo/ui/tiles_loader.js',
         'geo/ui/infobox.js',
         'geo/ui/tooltip.js',
@@ -15577,6 +15033,7 @@ $(function(){
         'geo/leaflet/leaflet_base.js',
         'geo/leaflet/leaflet_plainlayer.js',
         'geo/leaflet/leaflet_tiledlayer.js',
+        'geo/leaflet/leaflet_cartodb_layergroup.js',
         'geo/leaflet/leaflet_cartodb_layer.js',
         'geo/leaflet/leaflet.js',
 
@@ -16852,7 +16309,7 @@ cdb.geo.Map = cdb.core.Model.extend({
     }
 
     // Set options
-    _.defauls(this.options, options);
+    _.defaults(this.options, options);
 
   },
 
@@ -17189,6 +16646,7 @@ cdb.geo.MapView = cdb.core.View.extend({
     this.map.bind('change:view_bounds_sw',  this._changeBounds, this);
     this.map.bind('change:view_bounds_ne',  this._changeBounds, this);
     this.map.bind('change:zoom',            this._setZoom, this);
+    this.map.bind('change:scrollwheel',     this._setScrollWheel, this);
     this.map.bind('change:center',          this._setCenter, this);
     this.map.bind('change:scrollwheel',     this._setScrollWheel, this);
     this.map.bind('change:attribution',     this._setAttribution, this);
@@ -17750,19 +17208,17 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
 
   events: {
     // Close bindings
-    "click .close":         "_closeInfowindow",
-    "touchstart .close":    "_closeInfowindow",
-    "MSPointerDown .close": "_closeInfowindow",
+    "click .close":       "_closeInfowindow",
+    "touchstart .close":  "_closeInfowindow",
     // Rest infowindow bindings
-    "dragstart":            "_checkOrigin",
-    "mousedown":            "_checkOrigin",
-    "touchstart":           "_checkOrigin",
-    "MSPointerDown":        "_checkOrigin",
-    "dblclick":             "_stopPropagation",
-    "mousewheel":           "_stopPropagation",
-    "DOMMouseScroll":       "_stopPropagation",
-    "dbclick":              "_stopPropagation",
-    "click":                "_stopPropagation"
+    "dragstart":          "_checkOrigin",
+    "mousedown":          "_checkOrigin",
+    "touchstart":         "_checkOrigin",
+    "dblclick":           "_stopPropagation",
+    "mousewheel":         "_stopPropagation",
+    "DOMMouseScroll":     "_stopPropagation",
+    "dbclick":            "_stopPropagation",
+    "click":              "_stopPropagation"
   },
 
   initialize: function(){
@@ -17811,21 +17267,14 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
         $jscrollpane.data().jsp && $jscrollpane.data().jsp.destroy();
       }
 
-      // Clone fields and template name
-      var fields = _.map(this.model.attributes.content.fields, function(field){
-        return _.clone(field);
-      });
-      var template_name = _.clone(this.model.attributes.template_name);
-      // Sanitized them
-      var sanitized_fields = this._fieldsToString(fields, template_name);
-      var data = this.model.get('content') ? this.model.get('content').data : {}
-      this.$el.html($(this.template({ 
-          content: {
-            fields: sanitized_fields,
-            data: data 
-          }
-        })
-      ));
+      var attrs = _.clone(this.model.attributes);
+
+      // Mustache doesn't support 0 values, we have to convert number to strings
+      // before apply the template
+
+      var fields = this._fieldsToString(attrs);
+
+      this.$el.html($(this.template(fields)));
 
       // Hello jscrollpane hacks!
       // It needs some time to initialize, if not it doesn't render properly the fields
@@ -17845,7 +17294,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
 
       // If the template is 'cover-enabled', load the cover
       this._loadCover();
-    }
+    };
 
     return this;
   },
@@ -17887,16 +17336,16 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
   /**
    *  Convert values to string unless value is NULL
    */
-  _fieldsToString: function(fields, template_name) {
-    var fields_sanitized = [];
-    if (fields && fields.length > 0) {
+  _fieldsToString: function(attrs) {
+    if (attrs.content && attrs.content.fields) {
       var self = this;
-      fields_sanitized = _.map(fields, function(field,i) {
+      attrs.content.fields = _.map(attrs.content.fields, function(attr,i) {
         // Return whole attribute sanitized
-        return self._sanitizeField(field, template_name, field.index || i);
+        return self._sanitizeField(attr, attrs.template_name, attr.index || i);
       });
     }
-    return fields_sanitized;
+
+    return attrs;
   },
 
   /**
@@ -17916,13 +17365,19 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     // Cast all values to string due to problems with Mustache 0 number rendering
     var new_value = attr.value.toString();
 
-    // Remove '_' character from titles
-    if (attr.title)
-      attr.title = attr.title.replace(/_/g,' ');
+    //Link? go ahead!
+    if (!attr.type && this._isValidURL(new_value)) {
+      attr.url = attr.value;
+    }
 
     // If it is index 0, not any field type, header template type and length bigger than 30... cut off the text!
     if (!attr.type && pos==0 && attr.value.length > 35 && template_name && template_name.search('_header_') != -1) {
       new_value = attr.value.substr(0,32) + "...";
+    }
+
+    // If it is index 0, not any field type, header image template type... don't cut off the text!
+    if (pos==0 && template_name.search('_header_with_image') != -1) {
+      new_value = attr.value;
     }
 
     // If it is index 1, not any field type, header image template type and length bigger than 30... cut off the text!
@@ -17930,17 +17385,6 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
       new_value = attr.value.substr(0,32) + "...";
     }
 
-    // Is it the value a link?
-    if (this._isValidURL(attr.value)) {
-      new_value = "<a href='" + attr.value + "' target='_blank'>" + new_value + "</a>"
-    }
-
-    // If it is index 0, not any field type, header image template type... don't cut off the text or add any link!!
-    if (pos==0 && template_name.search('_header_with_image') != -1) {
-      new_value = attr.value;
-    }
-
-    // Save new sanitized value
     attr.value = new_value;
 
     return attr;
@@ -18002,10 +17446,16 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
    *  Get cover URL
    */
   _getCoverURL: function() {
+
     var content = this.model.get("content");
 
-    if (content && content.fields && content.fields.length > 0) {
-      return (content.fields[0].value).toString();
+    if (content && content.fields) {
+
+      if (content.fields && content.fields.length > 0) {
+        // Force always the value to be a string
+        return (content.fields[0].value).toString();
+      }
+      return false;
     }
 
     return false;
@@ -18081,8 +17531,8 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
    */
   _isValidURL: function(url) {
     if (url) {
-      var urlPattern = /^(http|ftp|https):\/\/[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:\/~+#-]*[\w@?^=%&amp;\/~+#-])?$/
-      return String(url).match(urlPattern) != null ? true : false;
+      var urlPattern = /(http|ftp|https):\/\/[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:\/~+#-]*[\w@?^=%&amp;\/~+#-])?/
+      return url.match(urlPattern) != null ? true : false;
     }
 
     return false;
@@ -18403,6 +17853,173 @@ cdb.geo.ui.Search = cdb.core.View.extend({
   }
 });
 /**
+* Model for the Layer collection
+*/
+cdb.geo.ui.Layer = cdb.core.Model.extend({
+
+  defaults: {
+    disabled: true,
+    selected: false
+  }
+
+});
+
+/**
+* View for each one of the layers
+*/
+cdb.geo.ui.LayerView = cdb.core.View.extend({
+
+  tagName: "li",
+
+  defaults: {
+    template: '<a class="layer" href="#"><%= name %></a> <a href="#switch" class="right switch disabled"><span class="handle"></span></a>'
+  },
+
+  events: {
+    "click": '_onSwitchClick',
+  },
+
+  initialize: function() {
+
+    this.model = new cdb.geo.ui.Layer();
+
+    this.model.bind("change:selected", this._onSwitchSelected, this);
+
+    if (!this.options.template) this.options.template = this.defaults.template;
+
+    // Template
+    this.template = this.options.template_base ? cdb.templates.getTemplate(this.options.template_base) : _.template(this.options.template);
+
+  },
+
+  render: function() {
+
+    this.$el.append(this.template(this.options))
+    return this;
+
+  },
+
+  /*
+  * Throw an event when the user clicks in the switch button
+  */
+  _onSwitchSelected: function() {
+
+    var enabled = this.model.get('selected');
+
+    this.$el.find(".switch")
+    .removeClass(enabled ? 'disabled' : 'enabled')
+    .addClass(enabled    ? 'enabled'  : 'disabled');
+
+    this.trigger("switchChanged", enabled);
+
+  },
+
+  _onSwitchClick: function(e){
+
+    e.preventDefault();
+    e.stopPropagation();
+
+    this.model.set("selected", !this.model.get("selected"));
+
+  }
+
+});
+
+/**
+* Collection of layers
+*/
+cdb.geo.ui.Layers = Backbone.Collection.extend({
+  model: cdb.geo.ui.Layer
+});
+
+/**
+* Layer selector: it allows to select the layers that will be shown in the map
+*/
+cdb.geo.ui.LayerSelector = cdb.core.View.extend({
+
+  className: 'layer_selector_box',
+
+  events: {
+    "click":     '_openDropdown',
+    "dblclick":  '_stopPropagation',
+    "mousedown": '_stopPropagation'
+  },
+
+  initialize: function() {
+
+    this.model = new cdb.core.Model({
+      count: 0
+    });
+
+    this.model.bind("change:count", this._onCountChange, this);
+
+  },
+
+  render: function() {
+
+    var self = this;
+//debugger;
+
+    this.$el.html(this.options.template(_.extend(this.model.toJSON(), this.options)));
+
+    this.dropdown = new cdb.ui.common.Dropdown({
+      className:" dropdown border",
+      template_base: 'table/views/layer_dropdown',
+      target: this.$el.find("a"),
+      speedIn: 300,
+      speedOut: 200,
+      position: "position",
+      tick: "right",
+      vertical_position: "down",
+      horizontal_position: "right",
+      vertical_offset: 7,
+      horizontal_offset: 13
+    });
+
+    cdb.god.bind("closeDialogs", this.dropdown.hide, this.dropdown);
+
+    this.$el.append(this.dropdown.render().el);
+
+    this.options.layers.each(function(l) {
+
+      var layerView = new cdb.geo.ui.LayerView({
+        name: l.get("name"),
+        template_base: 'table/views/layer_item',
+      }).bind("switchChanged", self.switchChanged, self);
+
+      self.$el.find("ul").append(layerView.render().el);
+
+    });
+
+
+    return this;
+
+  },
+
+  switchChanged: function(e) {
+    if (e) {
+      this.model.set("count", this.model.get("count") + 1)
+    }
+    else this.model.set("count", this.model.get("count") - 1)
+  },
+
+  _onCountChange: function() {
+
+    this.$el.find(".count").html(this.model.get("count"));
+
+  },
+
+  _stopPropagation: function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+  },
+
+  _openDropdown: function() {
+    this.dropdown.open();
+  }
+
+});
+/**
  * Show or hide tiles loader
  *
  * Usage:
@@ -18623,28 +18240,34 @@ CartoDBLayerCommon.prototype = {
    * It needs a position, timeout if it is needed and the container where add it
    */
   _addWadus: function(position, timeout, container) {
-    if (this.options.cartodb_logo !== false && !this._isWadusAdded(container, 'cartodb-logo')) {
-      var cartodb_link = document.createElement("div");
+    if (this.options.cartodb_logo !== false && !this._isWadusAdded(container, 'cartodb_logo')) {
+      var cartodb_link = document.createElement("a");
       var is_retina = this._isRetinaBrowser();
-      cartodb_link.setAttribute('class','cartodb-logo');
+      cartodb_link.setAttribute('class','cartodb_logo');
+      container.appendChild(cartodb_link);
       setTimeout(function() {
-        cartodb_link.setAttribute('style',"position:absolute; bottom:0; left:0; display:block; border:none; z-index:1000000;");
+        cartodb_link.setAttribute('style',"position:absolute; bottom:0; left:0; display:block; border:none; z-index:10000;");
+        cartodb_link.setAttribute('href','http://www.cartodb.com');
+        cartodb_link.setAttribute('target','_blank');
         var protocol = location.protocol.indexOf('https') === -1 ? 'http': 'https';
-        cartodb_link.innerHTML = "<a href='http://www.cartodb.com' target='_blank'><img width='71' height='29' src='" + protocol + "://cartodb.s3.amazonaws.com/static/new_logo" + (is_retina ? '@2x' : '') + ".png' style='position:absolute; bottom:" + 
+        cartodb_link.innerHTML = "<img width='71' height='29' src='" + protocol + "://cartodb.s3.amazonaws.com/static/new_logo" + (is_retina ? '@2x' : '') + ".png' style='position:absolute; bottom:" + 
           ( position.bottom || 0 ) + "px; left:" + ( position.left || 0 ) + "px; display:block; width:71px!important; height:29px!important; border:none; outline:none;' alt='CartoDB' title='CartoDB' />";
-        container.appendChild(cartodb_link);
       },( timeout || 0 ));
     }
   },
 
+  _tilerHost: function() {
+    var opts = this.options;
+    return opts.tiler_protocol +
+         "://" + ((opts.user_name) ? opts.user_name+".":"")  +
+         opts.tiler_domain +
+         ((opts.tiler_port != "") ? (":" + opts.tiler_port) : "");
+  },
 
   _host: function(subhost) {
     var opts = this.options;
     if (opts.no_cdn) {
-      return opts.tiler_protocol +
-         "://" + ((opts.user_name) ? opts.user_name+".":"")  +
-         opts.tiler_domain +
-         ((opts.tiler_port != "") ? (":" + opts.tiler_port) : "");
+      return this._tilerHost();
     } else {
       var h = opts.tiler_protocol + "://";
       if (subhost) {
@@ -18714,6 +18337,91 @@ CartoDBLayerCommon.prototype = {
     return this.options.tiler_protocol === 'https';
   },
 
+
+  _encodeParams: function(params, included) {
+    var url_params = [];
+    included = included || _.keys(params);
+    for(var i in included) {
+      var k = included[i]
+      var p = params[k];
+      if(p) {
+        var q = encodeURIComponent(p);
+        q = q.replace(/%7Bx%7D/g,"{x}").replace(/%7By%7D/g,"{y}").replace(/%7Bz%7D/g,"{z}");
+        url_params.push(k + "=" + q);
+      }
+    }
+    return url_params.join('&')
+  },
+
+  _layerGroupTiles: function(layerGroupId, params) {
+    var subdomains = this.options.subdomains || ['0', '1', '2', '3'];
+    if(this.isHttps()) {
+      subdomains = [null]; // no subdomain
+    } 
+
+
+    var tileTemplate = '/{z}/{x}/{y}';
+
+    var grids = []
+    var tiles = [];
+
+    var pngParams = this._encodeParams(params, ['api_key', 'cache_policy', 'updated_at']);
+    for(var i = 0; i < subdomains.length; ++i) {
+      var s = subdomains[i]
+      var cartodb_url = this._host(s) + '/tiles/layergroup/' + layerGroupId 
+      tiles.push(cartodb_url + tileTemplate + ".png?" + pngParams );
+    }
+
+    var gridParams = this._encodeParams(params, ['api_key', 'cache_policy', 'updated_at', 'interactivity']);
+
+    for(var i = 0; i < subdomains.length; ++i) {
+      var s = subdomains[i]
+      var cartodb_url = this._host(s) + '/tiles/layergroup/' + layerGroupId 
+      for(var layer in this.options.layer_definition.layers) {
+        grids[layer] = grids[layer] || [];
+        grids[layer].push(cartodb_url + "/" + layer + "/" + tileTemplate + ".grid.json?" + gridParams);
+      }
+    }
+    
+    return {
+      tiles: tiles,
+      grids: grids
+    }
+
+  },
+
+  getLayerCount: function() {
+    return this.options.layer_definition.layers.length;
+  },
+
+  removeLayer: function(layer) {
+    if(layer < this.getLayerCount() && layer >= 0) {
+      this.options.layer_definition.layers.splice(layer, 1);
+      this.onLayerDefinitionUpdated();
+    }
+    return this;
+  },
+
+  getLayer: function(index) {
+    return this.options.layer_definition.layers[index]
+  },
+
+  addLayer: function(def, layer) {
+    layer = layer === undefined ? this.getLayerCount(): layer;
+    if(layer <= this.getLayerCount() && layer >= 0) {
+      if(!def.sql || !def.cartocss) {
+        throw new Error("layer definition should contain at least a sql and a cartocss");
+        return this;
+      }
+      this.options.layer_definition.layers.splice(layer, 0, {
+        type: 'cartodb',
+        options: def
+      });
+      this.onLayerDefinitionUpdated();
+    }
+    return this;
+  },
+
   _tileJSON: function () {
     var grids = [];
     var tiles = [];
@@ -18735,6 +18443,37 @@ CartoDBLayerCommon.prototype = {
         tiles: tiles,
         formatter: function(options, data) { return data; }
     };
+  },
+
+  _getTileJSON: function(layergroupTiles, layer) {
+    layer = layer == undefined ? 0: layer;
+
+    return {
+        tilejson: '2.0.0',
+        scheme: 'xyz',
+        grids: layergroupTiles.grids[layer],
+        tiles: layergroupTiles.tiles,
+        formatter: function(options, data) { return data; }
+    };
+  },
+
+  //TODO: support old browsers
+  layerToken: function(layerGroup, callback) {
+    var ajax = this.options.ajax || $.ajax;
+    ajax({
+      crossOrigin: true,
+      type: 'POST',
+      dataType: 'json',
+      contentType: 'application/json',
+      url: this._tilerHost() + '/tiles/layergroup',
+      data: JSON.stringify(this.options.layer_definition),
+      success: function(data) {
+        callback(data);
+      },
+      error: function() {
+        callback(null);
+      }
+    });
   },
 
   error: function(e) {
@@ -18776,7 +18515,9 @@ CartoDBLayerCommon.prototype = {
       self.error("tile timeout");
     }, 30000);
 
-  }
+  },
+
+  onLayerDefinitionUpdated: function() {}
 
 };
 
@@ -19121,16 +18862,390 @@ _.extend(LeafLetTiledLayerView.prototype, cdb.geo.LeafLetLayerView.prototype, {
 cdb.geo.LeafLetTiledLayerView = LeafLetTiledLayerView;
 
 })();
-/**
- * @name cartodb-leaflet
- * @author: Vizzuality.com
- * @fileoverview <b>Author:</b> Vizzuality.com<br/> <b>Licence:</b>
- *               Licensed under <a
- *               href="http://opensource.org/licenses/mit-license.php">MIT</a>
- *               license.<br/> This library lets you to use CartoDB with Leaflet.
- *
- */
 
+if(typeof(L) == "undefined")
+  return;
+
+L.CartoDBGroupLayer = L.TileLayer.extend({
+
+  includes: [
+    cdb.geo.LeafLetLayerView.prototype,
+    CartoDBLayerCommon.prototype
+  ],
+
+  options: {
+    opacity:        0.99,
+    attribution:    "CartoDB",
+    debug:          false,
+    visible:        true,
+    added:          false,
+    tiler_domain:   "cartodb.com",
+    tiler_port:     "80",
+    tiler_protocol: "http",
+    sql_domain:     "cartodb.com",
+    sql_port:       "80",
+    sql_protocol:   "http",
+    extra_params:   {},
+    cdn_url:        null,
+    subdomains:     null
+  },
+
+
+  initialize: function (options) {
+    // Set options
+    L.Util.setOptions(this, options);
+
+    // Some checks
+    if (!options.layer_definition || !options.map) {
+      if (options.debug) {
+        throw('cartodb-leaflet needs at least the layer_definition name and the Leaflet map object');
+      } else { return }
+    }
+
+    // Bounds? CartoDB does it
+    if (options.auto_bound)
+      this.setBounds();
+
+    // Add cartodb logo, yes sir!
+    this._addWadus({left:8, bottom:8}, 0, this.options.map._container);
+
+    this.fire = this.trigger;
+
+    L.TileLayer.prototype.initialize.call(this);
+  },
+
+
+  // overwrite getTileUrl in order to
+  // support different tiles subdomains in tilejson way
+  getTileUrl: function (tilePoint) {
+    this._adjustTilePoint(tilePoint);
+
+    var tiles = this.tilejson.tiles;
+
+    var index = (tilePoint.x + tilePoint.y) % tiles.length;
+
+    return L.Util.template(tiles[index], L.Util.extend({
+      z: this._getZoomForUrl(),
+      x: tilePoint.x,
+      y: tilePoint.y
+    }, this.options));
+  },
+
+  /**
+   * Change opacity of the layer
+   * @params {Integer} New opacity
+   */
+  setOpacity: function(opacity) {
+
+    this._checkLayer();
+
+    if (isNaN(opacity) || opacity>1 || opacity<0) {
+      throw new Error(opacity + ' is not a valid value');
+    }
+
+    // Leaflet only accepts 0-0.99... Weird!
+    this.options.opacity = Math.min(opacity, 0.99);
+
+    if (this.options.visible) {
+      L.TileLayer.prototype.setOpacity.call(this, this.options.opacity);
+      this.fire('updated');
+    }
+  },
+
+
+  /**
+   * When Leaflet adds the layer... go!
+   * @params {map}
+   */
+  onAdd: function(map) {
+    var self = this;
+    this.__update(function() {
+      L.TileLayer.prototype.onAdd.call(self, map);
+      self.fire('added');
+      self.options.added = true;
+    });
+  },
+
+
+  /**
+   * When removes the layer, destroy interactivity if exist
+   */
+  onRemove: function(map) {
+    this.options.added = false;
+    L.TileLayer.prototype.onRemove.call(this, map);
+  },
+
+  onLayerDefinitionUpdated: function() {
+    this.__update();
+  },
+
+  /**
+   * Update CartoDB layer
+   * generates a new url for tiles and refresh leaflet layer
+   * do not collide with leaflet _update
+   */
+  __update: function(done) {
+    var self = this;
+    this.fire('updated');
+
+    this.layerToken(this.options.layer_definition, function(layer) {
+      if(layer) {
+        self.tilejson = self._layerGroupTiles(layer.layergroupid);
+        self.setUrl(self.tilejson.tiles[0]);
+        done && done();
+      } else {
+        //TODO: manage error
+      }
+    });
+    // generate the tilejson
+
+    // check the tiles
+    //this._checkTiles();
+
+    /*
+    if(this.interaction) {
+      this.interaction.remove();
+      this.interaction = null;
+    }
+    */
+
+    // add the interaction?
+    /*
+    if (this.options.interactivity && this.options.interaction) {
+      this.interaction = wax.leaf.interaction()
+        .map(this.options.map)
+        .tilejson(this.tilejson)
+        .on('on', function(o) {
+          self._bindWaxOnEvents(self.options.map,o)
+        })
+        .on('off', function(o) {
+          self._bindWaxOffEvents()
+        });
+    }
+    */
+
+  },
+
+  enableInteraction: function(layer) {
+    var self = this;
+    this.interaction = wax.leaf.interaction()
+      .map(this.options.map)
+      .tilejson(this._getTileJSON(this.tilejson, layer))
+      .on('on', function(o) {
+        o.layer = layer;
+        self._bindWaxOnEvents(self.options.map, o);
+      })
+      .on('off', function(o) {
+        self._bindWaxOffEvents();
+      });
+  },
+
+  _checkLayer: function() {
+    if (!this.options.added) {
+      throw new Error('the layer is not still added to the map');
+    }
+  },
+
+  /**
+   * Change query of the tiles
+   * @params {str} New sql for the tiles
+   */
+  setQuery: function(layer, sql) {
+
+    this._checkLayer();
+
+    /*this.setOptions({
+      query: sql
+    });*/
+
+  },
+
+
+  /**
+   * Change style of the tiles
+   * @params {style} New carto for the tiles
+   */
+  setCartoCSS: function(layer, style, version) {
+    this._checkLayer();
+
+    version = version || cdb.CARTOCSS_DEFAULT_VERSION;
+
+    /*this.setOptions({
+      tile_style: style,
+      style_version: version
+    });*/
+
+  },
+
+
+  /**
+   * Change the query when clicks in a feature
+   * @params {Boolean | String} New sql for the request
+   */
+  setInteractivity: function(value) {
+/*
+    if (!this.options.added) {
+      if (this.options.debug) {
+        throw('the layer is not still added to the map');
+      } else { return }
+    }
+
+    if (!isNaN(value)) {
+      if (this.options.debug) {
+        throw(value + ' is not a valid setInteractivity value');
+      } else { return }
+    }
+
+    this.setOptions({
+      interactivity: value
+    });
+    */
+
+  },
+
+
+  /**
+   * Active or desactive interaction
+   * @params {Boolean} Choose if wants interaction or not
+   */
+  setInteraction: function(enable) {
+    /*this.setOptions({
+      interaction: enable
+    })*/
+  },
+
+
+  /**
+   * Set a new layer attribution
+   * @params {String} New attribution string
+   */
+  setAttribution: function(attribution) {
+    this._checkLayer();
+
+    // Remove old one
+    this.map.attributionControl.removeAttribution(this.options.attribution);
+
+    // Set new attribution in the options
+    this.options.attribution = attribution;
+
+    // Change text
+    this.map.attributionControl.addAttribution(this.options.attribution);
+
+    // Change in the layer
+    this.options.attribution = this.options.attribution;
+    this.tilejson.attribution = this.options.attribution;
+
+    this.fire('updated');
+  },
+
+
+  /**
+   * Change multiple options at the same time
+   * @params {Object} New options object
+   */
+  /*setOptions: function(opts) {
+
+    if (typeof opts != "object" || opts.length) {
+      throw new Error(opts + ' options has to be an object');
+    }
+
+    L.Util.setOptions(this, opts);
+
+    if(opts.interactivity) {
+      var i = opts.interactivity;
+      this.options.interactivity = i.join ? i.join(','): i;
+    }
+    if(opts.opacity !== undefined) {
+      this.setOpacity(this.options.opacity);
+    }
+
+    // Update tiles
+    if(opts.query != undefined || opts.style != undefined || opts.tile_style != undefined || opts.interactivity != undefined || opts.interaction != undefined) {
+      this.__update();
+    }
+  },*/
+
+
+  /**
+   * Returns if the layer is visible or not
+   */
+  isVisible: function() {
+    return this.options.visible
+  },
+
+
+  /**
+   * Returns if the layer belongs to the map
+   */
+  isAdded: function() {
+    return this.options.added
+  },
+
+
+  /**
+   * Bind events for wax interaction
+   * @param {Object} Layer map object
+   * @param {Event} Wax event
+   */
+  _bindWaxOnEvents: function(map,o) {
+    var layer_point = this._findPos(map,o),
+        latlng = map.layerPointToLatLng(layer_point);
+
+    var screenPos = map.layerPointToContainerPoint(layer_point);
+
+    switch (o.e.type) {
+
+      case 'mousemove':
+        if (this.options.featureOver) {
+          return this.options.featureOver(o.e,latlng, screenPos, o.data);
+        }
+        break;
+
+      case 'click':
+      case 'touchend':
+        if (this.options.featureClick) {
+          this.options.featureClick(o.e,latlng, screenPos, o.data);
+        }
+        break;
+      default:
+        break;
+    }
+  },
+
+
+  /**
+   * Bind off event for wax interaction
+   */
+  _bindWaxOffEvents: function(){
+    if (this.options.featureOut) {
+      return this.options.featureOut && this.options.featureOut();
+    }
+  },
+
+  /**
+   * Get the Leaflet Point of the event
+   * @params {Object} Map object
+   * @params {Object} Wax event object
+   */
+  _findPos: function (map,o) {
+    var curleft = 0, curtop = 0;
+    var obj = map.getContainer();
+
+
+    if (obj.offsetParent) {
+      // Modern browsers
+      do {
+        curleft += obj.offsetLeft;
+        curtop += obj.offsetTop;
+      } while (obj = obj.offsetParent);
+      return map.containerPointToLayerPoint(new L.Point((o.e.clientX || o.e.changedTouches[0].clientX) - curleft,(o.e.clientY || o.e.changedTouches[0].clientY) - curtop))
+    } else {
+      // IE
+      return map.mouseEventToLayerPoint(o.e)
+    }
+  }
+
+});
 
 (function() {
 
@@ -19421,13 +19536,13 @@ L.CartoDBLayer = L.TileLayer.extend({
    * @param {Event} Wax event
    */
   _bindWaxOnEvents: function(map,o) {
-    var layer_point = this._findPos(map,o)
-      , latlng = map.layerPointToLatLng(layer_point)
-      , event_type = o.e.type.toLowerCase();
+    var layer_point = this._findPos(map,o),
+        latlng = map.layerPointToLatLng(layer_point);
 
     var screenPos = map.layerPointToContainerPoint(layer_point);
 
-    switch (event_type) {
+    switch (o.e.type) {
+
       case 'mousemove':
         if (this.options.featureOver) {
           return this.options.featureOver(o.e,latlng, screenPos, o.data);
@@ -19436,7 +19551,6 @@ L.CartoDBLayer = L.TileLayer.extend({
 
       case 'click':
       case 'touchend':
-      case 'mspointerup':
         if (this.options.featureClick) {
           this.options.featureClick(o.e,latlng, screenPos, o.data);
         }
@@ -19620,11 +19734,14 @@ cdb.geo.LeafLetLayerCartoDBView = LeafLetLayerCartoDBView;
         minZoom: this.map.get('minZoom'),
         maxZoom: this.map.get('maxZoom')
       };
+
+
       if (this.map.get('bounding_box_ne')) {
         //mapConfig.maxBounds = [this.map.get('bounding_box_ne'), this.map.get('bounding_box_sw')];
       }
 
-      if(!this.options.map_object) {
+      if (!this.options.map_object) {
+
         this.map_leaflet = new L.Map(this.el, mapConfig);
 
         // remove the "powered by leaflet"
@@ -19634,16 +19751,20 @@ cdb.geo.LeafLetLayerCartoDBView = LeafLetLayerCartoDBView;
         if (this.map.get("scrollwheel") == false) this.map_leaflet.scrollWheelZoom.disable();
 
       } else {
+
         this.map_leaflet = this.options.map_object;
         this.setElement(this.map_leaflet.getContainer());
+
         var c = self.map_leaflet.getCenter();
+
         self._setModelProperty({ center: [c.lat, c.lng] });
         self._setModelProperty({ zoom: self.map_leaflet.getZoom() });
+
         // unset bounds to not change mapbounds
         self.map.unset('view_bounds_sw', { silent: true });
         self.map.unset('view_bounds_ne', { silent: true });
-      }
 
+      }
 
       this.map.bind('set_view', this._setView, this);
       this.map.layers.bind('add', this._addLayer, this);
@@ -19705,11 +19826,11 @@ cdb.geo.LeafLetLayerCartoDBView = LeafLetLayerCartoDBView;
 
       // looks like leaflet dont like to change the bounds just after the inicialization
       var bounds = this.map.getViewBounds();
-      if(bounds) {
+
+      if (bounds) {
         this.showBounds(bounds);
       }
     },
-
 
     clean: function() {
       //see https://github.com/CloudMade/Leaflet/issues/1101
@@ -20388,11 +20509,10 @@ CartoDBLayer.prototype._manageOffEvents = function(){
 
 
 CartoDBLayer.prototype._manageOnEvents = function(map,o) {
-  var point = this._findPos(map, o)
-    , latlng = this.projector.pixelToLatLng(point)
-    , event_type = o.e.type.toLowerCase();
+  var point  = this._findPos(map, o);
+  var latlng = this.projector.pixelToLatLng(point);
 
-  switch (event_type) {
+  switch (o.e.type) {
     case 'mousemove':
       if (this.options.featureOver) {
         return this.options.featureOver(o.e,latlng, point, o.data);
@@ -20401,7 +20521,6 @@ CartoDBLayer.prototype._manageOnEvents = function(map,o) {
 
     case 'click':
     case 'touchend':
-    case 'mspointerup':
       if (this.options.featureClick) {
         this.options.featureClick(o.e,latlng, point, o.data);
       }
@@ -20523,277 +20642,284 @@ _.extend(
 // if google maps is not defined do not load the class
 if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
 
-var DEFAULT_MAP_STYLE = [ { stylers: [ { saturation: -65 }, { gamma: 1.52 } ] },{ featureType: "administrative", stylers: [ { saturation: -95 }, { gamma: 2.26 } ] },{ featureType: "water", elementType: "labels", stylers: [ { visibility: "off" } ] },{ featureType: "administrative.locality", stylers: [ { visibility: "off" } ] },{ featureType: "road", stylers: [ { visibility: "simplified" }, { saturation: -99 }, { gamma: 2.22 } ] },{ featureType: "poi", elementType: "labels", stylers: [ { visibility: "off" } ] },{ featureType: "road.arterial", stylers: [ { visibility: "off" } ] },{ featureType: "road.local", elementType: "labels", stylers: [ { visibility: "off" } ] },{ featureType: "transit", stylers: [ { visibility: "off" } ] },{ featureType: "road", elementType: "labels", stylers: [ { visibility: "off" } ] },{ featureType: "poi", stylers: [ { saturation: -55 } ] } ];
+  var DEFAULT_MAP_STYLE = [ { stylers: [ { saturation: -65 }, { gamma: 1.52 } ] },{ featureType: "administrative", stylers: [ { saturation: -95 }, { gamma: 2.26 } ] },{ featureType: "water", elementType: "labels", stylers: [ { visibility: "off" } ] },{ featureType: "administrative.locality", stylers: [ { visibility: "off" } ] },{ featureType: "road", stylers: [ { visibility: "simplified" }, { saturation: -99 }, { gamma: 2.22 } ] },{ featureType: "poi", elementType: "labels", stylers: [ { visibility: "off" } ] },{ featureType: "road.arterial", stylers: [ { visibility: "off" } ] },{ featureType: "road.local", elementType: "labels", stylers: [ { visibility: "off" } ] },{ featureType: "transit", stylers: [ { visibility: "off" } ] },{ featureType: "road", elementType: "labels", stylers: [ { visibility: "off" } ] },{ featureType: "poi", stylers: [ { saturation: -55 } ] } ];
 
 
 
-cdb.geo.GoogleMapsMapView = cdb.geo.MapView.extend({
+  cdb.geo.GoogleMapsMapView = cdb.geo.MapView.extend({
 
-  layerTypeMap: {
-    "tiled": cdb.geo.GMapsTiledLayerView,
-    "cartodb": cdb.geo.GMapsCartoDBLayerView,
-    "carto": cdb.geo.GMapsCartoDBLayerView,
-    "plain": cdb.geo.GMapsPlainLayerView,
-    "gmapsbase": cdb.geo.GMapsBaseLayerView
-  },
+    layerTypeMap: {
+      "tiled": cdb.geo.GMapsTiledLayerView,
+      "cartodb": cdb.geo.GMapsCartoDBLayerView,
+      "carto": cdb.geo.GMapsCartoDBLayerView,
+      "plain": cdb.geo.GMapsPlainLayerView,
+      "gmapsbase": cdb.geo.GMapsBaseLayerView
+    },
 
-  initialize: function() {
-    _.bindAll(this, '_ready');
-    this._isReady = false;
-    var self = this;
+    initialize: function() {
+      _.bindAll(this, '_ready');
+      this._isReady = false;
+      var self = this;
 
-    cdb.geo.MapView.prototype.initialize.call(this);
+      cdb.geo.MapView.prototype.initialize.call(this);
 
-    var bounds = this.map.getViewBounds();
-    if(bounds) {
-      this.showBounds(bounds);
-    }
-    var center = this.map.get('center');
-    if(!this.options.map_object) {
-      this.map_googlemaps = new google.maps.Map(this.el, {
-        center: new google.maps.LatLng(center[0], center[1]),
-        zoom: this.map.get('zoom'),
-        minZoom: this.map.get('minZoom'),
-        maxZoom: this.map.get('maxZoom'),
-        disableDefaultUI: true,
-        scrollwheel: this.map.get("scrollwheel"),
-        mapTypeControl:false,
-        mapTypeId: google.maps.MapTypeId.ROADMAP,
-        backgroundColor: 'white',
-        tilt: 0
-      });
-    } else {
-      this.map_googlemaps = this.options.map_object;
-      this.setElement(this.map_googlemaps.getDiv());
-      // fill variables
-      var c = self.map_googlemaps.getCenter();
-      self._setModelProperty({ center: [c.lat(), c.lng()] });
-      self._setModelProperty({ zoom: self.map_googlemaps.getZoom() });
-      // unset bounds to not change mapbounds
-      self.map.unset('view_bounds_sw', { silent: true });
-      self.map.unset('view_bounds_ne', { silent: true });
-    }
+      var bounds = this.map.getViewBounds();
+
+      if (bounds) {
+        this.showBounds(bounds);
+      }
+
+      var center = this.map.get('center');
+
+      if (!this.options.map_object) {
+
+        this.map_googlemaps = new google.maps.Map(this.el, {
+          center: new google.maps.LatLng(center[0], center[1]),
+          zoom: this.map.get('zoom'),
+          minZoom: this.map.get('minZoom'),
+          maxZoom: this.map.get('maxZoom'),
+          disableDefaultUI: true,
+          scrollwheel: this.map.get("scrollwheel"),
+          mapTypeControl:false,
+          mapTypeId: google.maps.MapTypeId.ROADMAP,
+          backgroundColor: 'white'
+        });
+
+      } else {
+
+        this.map_googlemaps = this.options.map_object;
+        this.setElement(this.map_googlemaps.getDiv());
+
+        // fill variables
+        var c = self.map_googlemaps.getCenter();
+
+        self._setModelProperty({ center: [c.lat(), c.lng()] });
+        self._setModelProperty({ zoom: self.map_googlemaps.getZoom() });
+
+        // unset bounds to not change mapbounds
+        self.map.unset('view_bounds_sw', { silent: true });
+        self.map.unset('view_bounds_ne', { silent: true });
+
+      }
+
+      this.map.geometries.bind('add', this._addGeometry, this);
+      this.map.geometries.bind('remove', this._removeGeometry, this);
 
 
-    this.map.geometries.bind('add', this._addGeometry, this);
-    this.map.geometries.bind('remove', this._removeGeometry, this);
+      this._bindModel();
+      this._addLayers();
 
-
-    this._bindModel();
-    this._addLayers();
-
-    google.maps.event.addListener(this.map_googlemaps, 'center_changed', function() {
+      google.maps.event.addListener(this.map_googlemaps, 'center_changed', function() {
         var c = self.map_googlemaps.getCenter();
         self._setModelProperty({ center: [c.lat(), c.lng()] });
-    });
-
-    google.maps.event.addListener(this.map_googlemaps, 'zoom_changed', function() {
-      self._setModelProperty({
-        zoom: self.map_googlemaps.getZoom()
       });
-    });
 
-    google.maps.event.addListener(this.map_googlemaps, 'click', function(e) {
+      google.maps.event.addListener(this.map_googlemaps, 'zoom_changed', function() {
+        self._setModelProperty({
+          zoom: self.map_googlemaps.getZoom()
+        });
+      });
+
+      google.maps.event.addListener(this.map_googlemaps, 'click', function(e) {
         self.trigger('click', e, [e.latLng.lat(), e.latLng.lng()]);
-    });
+      });
 
-    google.maps.event.addListener(this.map_googlemaps, 'dblclick', function(e) {
+      google.maps.event.addListener(this.map_googlemaps, 'dblclick', function(e) {
         self.trigger('dblclick', e);
-    });
+      });
 
-    this.map.layers.bind('add', this._addLayer, this);
-    this.map.layers.bind('remove', this._removeLayer, this);
-    this.map.layers.bind('reset', this._addLayers, this);
+      this.map.layers.bind('add', this._addLayer, this);
+      this.map.layers.bind('remove', this._removeLayer, this);
+      this.map.layers.bind('reset', this._addLayers, this);
 
-    this.projector = new cdb.geo.CartoDBLayerGMaps.Projector(this.map_googlemaps);
+      this.projector = new cdb.geo.CartoDBLayerGMaps.Projector(this.map_googlemaps);
 
-    this.projector.draw = this._ready;
+      this.projector.draw = this._ready;
 
-  },
+    },
 
-  _ready: function() {
-    this.projector.draw = function() {};
-    this.trigger('ready');
-    this._isReady = true;
-  },
+    _ready: function() {
+      this.projector.draw = function() {};
+      this.trigger('ready');
+      this._isReady = true;
+    },
 
-  _setScrollWheel: function(model, z) {
-    this.map_googlemaps.setOptions({ scrollwheel: z });
-  },
+    _setScrollWheel: function(model, z) {
+      this.map_googlemaps.setOptions({ scrollwheel: z });
+    },
 
-  _setZoom: function(model, z) {
-    z = z || 0;
-    this.map_googlemaps.setZoom(z);
-  },
+    _setZoom: function(model, z) {
+      z = z || 0;
+      this.map_googlemaps.setZoom(z);
+    },
 
-  _setCenter: function(model, center) {
-    var c = new google.maps.LatLng(center[0], center[1]);
-    this.map_googlemaps.setCenter(c);
-  },
+    _setCenter: function(model, center) {
+      var c = new google.maps.LatLng(center[0], center[1]);
+      this.map_googlemaps.setCenter(c);
+    },
 
-  createLayer: function(layer) {
-    var layer_view,
-        layerClass = this.layerTypeMap[layer.get('type').toLowerCase()];
+    createLayer: function(layer) {
+      var layer_view,
+      layerClass = this.layerTypeMap[layer.get('type').toLowerCase()];
 
-    if (layerClass) {
-      layer_view = new layerClass(layer, this.map_googlemaps);
-    } else {
-      cdb.log.error("MAP: " + layer.get('type') + " can't be created");
-    }
-    return layer_view;
-  },
+      if (layerClass) {
+        layer_view = new layerClass(layer, this.map_googlemaps);
+      } else {
+        cdb.log.error("MAP: " + layer.get('type') + " can't be created");
+      }
+      return layer_view;
+    },
 
-  _addLayer: function(layer, layers, opts) {
-    opts = opts || {};
-    var self = this;
-    var lyr, layer_view;
+    _addLayer: function(layer, layers, opts) {
+      opts = opts || {};
+      var self = this;
+      var lyr, layer_view;
 
-    layer_view = this.createLayer(layer);
+      layer_view = this.createLayer(layer);
 
-    if (!layer_view) {
-      return;
-    }
+      if (!layer_view) {
+        return;
+      }
 
-    this.layers[layer.cid] = layer_view;
+      this.layers[layer.cid] = layer_view;
 
-    if (layer_view) {
-      var idx = _.keys(this.layers).length  - 1;
-      var isBaseLayer = idx === 0 || (opts && opts.index === 0);
-      // set base layer
-      if(isBaseLayer && !opts.no_base_layer) {
-        var m = layer_view.model;
-        if(m.get('type') == 'GMapsBase') {
-          layer_view._update();
+      if (layer_view) {
+        var idx = _.keys(this.layers).length  - 1;
+        var isBaseLayer = idx === 0 || (opts && opts.index === 0);
+        // set base layer
+        if(isBaseLayer && !opts.no_base_layer) {
+          var m = layer_view.model;
+          if(m.get('type') == 'GMapsBase') {
+            layer_view._update();
+          } else {
+            layer_view.isBase = true;
+            layer_view._update();
+          }
         } else {
-          layer_view.isBase = true;
-          layer_view._update();
+          idx -= 1;
+          idx = Math.max(0, idx); // avoid -1
+          self.map_googlemaps.overlayMapTypes.setAt(idx, layer_view.gmapsLayer);
+        }
+        layer_view.index = idx;
+        this.trigger('newLayerView', layer_view, this);
+      } else {
+        cdb.log.error("layer type not supported");
+      }
+
+      var attribution = layer.get('attribution');
+
+      if (attribution) {
+        // Setting attribution in map model
+        // it doesn't persist in the backend, so this is needed.
+        var attributions = this.map.get('attribution') || [];
+        if (!_.contains(attributions, attribution)) {
+          attributions.push(attribution);
+        }
+
+        this.map.set({ attribution: attributions });
+      }
+
+    },
+
+    latLonToPixel: function(latlon) {
+      return this.projector.latLngToPixel(new google.maps.LatLng(latlon[0], latlon[1]));
+    },
+
+    getSize: function() {
+      return {
+        x: this.$el.width(),
+        y: this.$el.height()
+      };
+    },
+
+    panBy: function(p) {
+      var c = this.map.get('center');
+      var pc = this.latLonToPixel(c);
+      p.x += pc.x;
+      p.y += pc.y;
+      var ll = this.projector.pixelToLatLng(p);
+      this.map.setCenter([ll.lat(), ll.lng()]);
+    },
+
+    getBounds: function() {
+      if(this._isReady) {
+        var b = this.map_googlemaps.getBounds();
+        var sw = b.getSouthWest();
+        var ne = b.getNorthEast();
+        return [
+          [sw.lat(), sw.lng()],
+          [ne.lat(), ne.lng()]
+        ];
+      }
+      return [ [0,0], [0,0] ];
+    },
+
+    setAttribution: function(m) {
+      // Remove old one
+      var old = document.getElementById("cartodb-gmaps-attribution")
+        , attribution = m.get("attribution").join(", ");
+
+      // If div already exists, remove it
+      if (old) {
+        old.parentNode.removeChild(old);
+      }
+
+      // Add new one
+      var container           = this.map_googlemaps.getDiv()
+        , cartodb_attribution = document.createElement("div");
+
+      cartodb_attribution.setAttribute('id','cartodb-gmaps-attribution');
+      cartodb_attribution.setAttribute('class', 'gmaps');
+      container.appendChild(cartodb_attribution);
+      cartodb_attribution.innerHTML = attribution;
+    },
+
+    setCursor: function(cursor) {
+      this.map_googlemaps.setOptions({ draggableCursor: cursor });
+    },
+
+    _addGeomToMap: function(geom) {
+      var geo = cdb.geo.GoogleMapsMapView.createGeometry(geom);
+      if(geo.geom.length) {
+        for(var i = 0 ; i < geo.geom.length; ++i) {
+          geo.geom[i].setMap(this.map_googlemaps);
         }
       } else {
-        idx -= 1;
-        idx = Math.max(0, idx); // avoid -1
-        self.map_googlemaps.overlayMapTypes.setAt(idx, layer_view.gmapsLayer);
+          geo.geom.setMap(this.map_googlemaps);
       }
-      layer_view.index = idx;
-      this.trigger('newLayerView', layer_view, this);
-    } else {
-      cdb.log.error("layer type not supported");
-    }
+      return geo;
+    },
 
-
-    var attribution = layer.get('attribution');
-
-    if (attribution) {
-      // Setting attribution in map model
-      // it doesn't persist in the backend, so this is needed.
-      var attributions = this.map.get('attribution') || [];
-      if (!_.contains(attributions, attribution)) {
-        attributions.push(attribution);
+    _removeGeomFromMap: function(geo) {
+      if(geo.geom.length) {
+        for(var i = 0 ; i < geo.geom.length; ++i) {
+          geo.geom[i].setMap(null);
+        }
+      } else {
+        geo.geom.setMap(null);
       }
+    },
 
-      this.map.set({ attribution: attributions });
+    getNativeMap: function() {
+      return this.map_googlemaps;
+    },
+
+    invalidateSize: function() {
+      google.maps.event.trigger(this.map_googlemaps, 'resize');
     }
 
-  },
+  }, {
 
-  latLonToPixel: function(latlon) {
-    return this.projector.latLngToPixel(new google.maps.LatLng(latlon[0], latlon[1]));
-  },
-
-  getSize: function() {
-    return {
-      x: this.$el.width(),
-      y: this.$el.height()
-    };
-  },
-
-  panBy: function(p) {
-    var c = this.map.get('center');
-    var pc = this.latLonToPixel(c);
-    p.x += pc.x;
-    p.y += pc.y;
-    var ll = this.projector.pixelToLatLng(p);
-    this.map.setCenter([ll.lat(), ll.lng()]);
-  },
-
-  getBounds: function() {
-    if(this._isReady) {
-      var b = this.map_googlemaps.getBounds();
-      var sw = b.getSouthWest();
-      var ne = b.getNorthEast();
-      return [
-        [sw.lat(), sw.lng()],
-        [ne.lat(), ne.lng()]
-      ];
-    }
-    return [ [0,0], [0,0] ];
-  },
-
-  setAttribution: function(m) {
-    // Remove old one
-    var old = document.getElementById("cartodb-gmaps-attribution")
-      , attribution = m.get("attribution").join(", ");
-
-    // If div already exists, remove it
-    if (old) {
-      old.parentNode.removeChild(old);
-    }
-
-    // Add new one
-    var container           = this.map_googlemaps.getDiv()
-      , cartodb_attribution = document.createElement("div");
-
-    cartodb_attribution.setAttribute('id','cartodb-gmaps-attribution');
-    cartodb_attribution.setAttribute('class', 'gmaps');
-    container.appendChild(cartodb_attribution);
-    cartodb_attribution.innerHTML = attribution;
-  },
-
-  setCursor: function(cursor) {
-    this.map_googlemaps.setOptions({ draggableCursor: cursor });
-  },
-
-  _addGeomToMap: function(geom) {
-    var geo = cdb.geo.GoogleMapsMapView.createGeometry(geom);
-    if(geo.geom.length) {
-      for(var i = 0 ; i < geo.geom.length; ++i) {
-        geo.geom[i].setMap(this.map_googlemaps);
+    /**
+    * create the view for the geometry model
+    */
+    createGeometry: function(geometryModel) {
+      if(geometryModel.isPoint()) {
+        return new cdb.geo.gmaps.PointView(geometryModel);
       }
-    } else {
-        geo.geom.setMap(this.map_googlemaps);
+      return new cdb.geo.gmaps.PathView(geometryModel);
     }
-    return geo;
-  },
-
-  _removeGeomFromMap: function(geo) {
-    if(geo.geom.length) {
-      for(var i = 0 ; i < geo.geom.length; ++i) {
-        geo.geom[i].setMap(null);
-      }
-    } else {
-      geo.geom.setMap(null);
-    }
-  },
-
-  getNativeMap: function() {
-    return this.map_googlemaps;
-  },
-
-  invalidateSize: function() {
-    google.maps.event.trigger(this.map_googlemaps, 'resize');
-  }
-
-}, {
-
-  /**
-   * create the view for the geometry model
-   */
-  createGeometry: function(geometryModel) {
-    if(geometryModel.isPoint()) {
-      return new cdb.geo.gmaps.PointView(geometryModel);
-    }
-    return new cdb.geo.gmaps.PathView(geometryModel);
-  }
-});
+  });
 
 }
 /**
@@ -21506,7 +21632,7 @@ var Overlay = {
   // raise an exception if the type does not exist
   create: function(type, vis, data) {
     var t = Overlay._types[type];
-    if(!t) {
+    if (!t) {
       cdb.log.error("Overlay: " + type + " does not exist");
     }
     var widget = t(data, vis);
@@ -21527,7 +21653,7 @@ var Layers = {
   },
 
   create: function(type, vis, data) {
-    if(!type) {
+    if (!type) {
       cdb.log.error("creating a layer without type");
       return null;
     }
@@ -21551,14 +21677,14 @@ var Loader = cdb.vis.Loader = {
   head: null,
 
   get: function(url, callback) {
-    if(!Loader._script) {
+    if (!Loader._script) {
       Loader.current = callback;
       var script = document.createElement('script');
       script.type = 'text/javascript';
       script.src = url + (~url.indexOf('?') ? '&' : '?') + 'callback=vizjson';
       script.async = true;
       Loader._script = script;
-      if(!Loader.head) {
+      if (!Loader.head) {
         Loader.head = document.getElementsByTagName('head')[0];
       }
       Loader.head.appendChild(script);
@@ -21576,7 +21702,7 @@ window.vizjson = function(data) {
   Loader._script = null;
   // next element
   var a = Loader.queue.shift();
-  if(a) {
+  if (a) {
     Loader.get(a[0], a[1]);
   }
 };
@@ -21592,7 +21718,7 @@ var Vis = cdb.core.View.extend({
     this.https = false;
     this.overlays = [];
 
-    if(this.options.mapView) {
+    if (this.options.mapView) {
       this.mapView = this.options.mapView;
       this.map = this.mapView.map;
     }
@@ -21601,10 +21727,10 @@ var Vis = cdb.core.View.extend({
 
   load: function(data, options) {
     var self = this;
-    if(typeof(data) === 'string') {
+    if (typeof(data) === 'string') {
       var url = data;
       cdb.vis.Loader.get(url, function(data) {
-        if(data) {
+        if (data) {
           self.load(data, options);
         } else {
           self.trigger('error', 'error fetching viz.json file');
@@ -21614,21 +21740,22 @@ var Vis = cdb.core.View.extend({
     }
 
     // configure the vis in http or https
-    if(window && window.location.protocol && window.location.protocol === 'https:') {
+    if (window && window.location.protocol && window.location.protocol === 'https:') {
       this.https = true;
     }
 
-    if(data.https) {
+    if (data.https) {
       this.https = data.https;
     }
 
     var scrollwheel = true;
-    
-    options = options || {};
 
-    this._applyOptions(data, options);
-    this.cartodb_logo = options.cartodb_logo;
-    scrollwheel       = options.scrollwheel;
+    if (options) {
+      this._applyOptions(data, options);
+
+      this.cartodb_logo = options.cartodb_logo;
+      scrollwheel       = options.scrollwheel;
+    }
 
     // map
     data.maxZoom || (data.maxZoom = 20);
@@ -21644,11 +21771,11 @@ var Vis = cdb.core.View.extend({
     };
 
     // if the boundaries are defined, we add them to the map
-    if(data.bounding_box_sw && data.bounding_box_ne) {
+    if (data.bounding_box_sw && data.bounding_box_ne) {
       mapConfig.bounding_box_sw = data.bounding_box_sw;
       mapConfig.bounding_box_ne = data.bounding_box_ne;
     }
-    if(data.bounds) {
+    if (data.bounds) {
       mapConfig.view_bounds_sw = data.bounds[0];
       mapConfig.view_bounds_ne = data.bounds[1];
     } else {
@@ -21725,7 +21852,7 @@ var Vis = cdb.core.View.extend({
       v.bind('clean', function() {
         for(var i in this.overlays) {
           var o = this.overlays[i];
-          if(v.cid === o.cid) {
+          if (v.cid === o.cid) {
             this.overlays.splice(i, 1)
             return;
           }
@@ -21758,18 +21885,18 @@ var Vis = cdb.core.View.extend({
     vizjson.layers = vizjson.layers || [];
 
     function search_overlay(name) {
-      if(!vizjson.overlays) return null;
+      if (!vizjson.overlays) return null;
       for(var i = 0; i < vizjson.overlays.length; ++i) {
-        if(vizjson.overlays[i].type === name) {
+        if (vizjson.overlays[i].type === name) {
           return vizjson.overlays[i];
         }
       }
     }
 
     function remove_overlay(name) {
-      if(!vizjson.overlays) return;
+      if (!vizjson.overlays) return;
       for(var i = 0; i < vizjson.overlays.length; ++i) {
-        if(vizjson.overlays[i].type === name) {
+        if (vizjson.overlays[i].type === name) {
           vizjson.overlays.splice(i, 1);
           return;
         }
@@ -21789,7 +21916,7 @@ var Vis = cdb.core.View.extend({
       });
     }
 
-    if(opt.title  || opt.description || opt.shareable) {
+    if (opt.title  || opt.description || opt.shareable) {
       vizjson.overlays.unshift({
         type: "header",
         shareable: opt.shareable ? true: false,
@@ -21797,54 +21924,54 @@ var Vis = cdb.core.View.extend({
       });
     }
 
-    if(!opt.title) {
+    if (!opt.title) {
       vizjson.title = null;
     }
 
-    if(!opt.description) {
+    if (!opt.description) {
       vizjson.description = null;
     }
 
-    if(!opt.tiles_loader) {
+    if (!opt.tiles_loader) {
       remove_overlay('loader');
     }
 
-    if(!opt.zoomControl) {
+    if (!opt.zoomControl) {
       remove_overlay('zoom');
     }
 
-    if(!opt.loaderControl) {
+    if (!opt.loaderControl) {
       remove_overlay('loader');
     }
 
     // if bounds are present zoom and center will not taken into account
-    if(opt.zoom !== undefined) {
+    if (opt.zoom !== undefined) {
       vizjson.zoom = parseFloat(opt.zoom);
       vizjson.bounds = null;
     }
 
-    if(opt.center_lat !== undefined) {
+    if (opt.center_lat !== undefined) {
       vizjson.center = [parseFloat(opt.center_lat), parseFloat(opt.center_lon)];
       vizjson.bounds = null;
     }
 
-    if(opt.center !== undefined) {
+    if (opt.center !== undefined) {
       vizjson.center = opt.center;
       vizjson.bounds = null;
     }
 
-    if(opt.sw_lat !== undefined) {
+    if (opt.sw_lat !== undefined) {
       vizjson.bounds = [
         [parseFloat(opt.sw_lat), parseFloat(opt.sw_lon)],
         [parseFloat(opt.ne_lat), parseFloat(opt.ne_lon)],
       ];
     }
 
-    if(vizjson.layers.length > 1) {
-      if(opt.sql) {
+    if (vizjson.layers.length > 1) {
+      if (opt.sql) {
         vizjson.layers[1].options.query = opt.sql;
       }
-      if(opt.style) {
+      if (opt.style) {
         vizjson.layers[1].options.tile_style = opt.style;
       }
 
@@ -21882,7 +22009,7 @@ var Vis = cdb.core.View.extend({
     var domain = model.get('sql_domain') + (port ? ':' + port: '')
     var protocol = model.get('sql_protocol');
     var version = 'v1';
-    if(domain.indexOf('cartodb.com') !== -1) {
+    if (domain.indexOf('cartodb.com') !== -1) {
       protocol = 'http';
       domain = "cartodb.com";
       version = 'v2';
@@ -21909,29 +22036,27 @@ var Vis = cdb.core.View.extend({
           table_name: model.get('table_name')
         })
         .done(function(interact_data) {
-          if(interact_data.rows.length == 0 ) return;
+          if (interact_data.rows.length == 0 ) return;
           interact_data = interact_data.rows[0];
-          if(infowindowFields) {
+          if (infowindowFields) {
             var render_fields = [];
             var fields = infowindowFields.fields;
             for(var j = 0; j < fields.length; ++j) {
               var f = fields[j];
-              var value = String(interact_data[f.name]);
-              if(interact_data[f.name] != undefined && value != "") {
+              if(interact_data[f.name] != undefined && interact_data[f.name] != "") {
                 render_fields.push({
-                  title: f.title ? f.name : null,
+                  title: f.title ? f.name: null,
                   value: interact_data[f.name],
-                  index: j ? j : null
+                  index: j ? j:null // mustache does not recognize 0 as false :(
                 });
               }
             }
-
             // manage when there is no data to render
-            if(render_fields.length === 0) {
+            if (render_fields.length === 0) {
               render_fields.push({
                 title: null,
                 value: 'No data available',
-                index: j ? j : null,
+                index: j ? j:null, // mustache does not recognize 0 as false :(
                 type: 'empty'
               });
             }
@@ -21976,7 +22101,7 @@ var Vis = cdb.core.View.extend({
     var layerView = mapView.getLayerByCid(layer_cid);
 
     // add the associated overlays
-    if(layerData.infowindow &&
+    if (layerData.infowindow &&
       layerData.infowindow.fields &&
       layerData.infowindow.fields.length > 0 &&
       this.infowindow) {
@@ -21993,13 +22118,13 @@ var Vis = cdb.core.View.extend({
   },
 
   loadingTiles: function() {
-    if(this.loader) {
+    if (this.loader) {
       this.loader.show()
     }
   },
 
   loadTiles: function() {
-    if(this.loader) {
+    if (this.loader) {
       this.loader.hide();
     }
   },
@@ -22261,10 +22386,10 @@ var cartoLayer = function(vis, data) {
   }
 
   data.tiler_protocol = vis.https ? 'https': 'http';
-  if(!data.no_cdn) {
+  /*if(!data.no_cdn) {
     data.tiler_protocol = vis.https ? 'https': 'http';
     data.tiler_port = vis.https ? 443: 80;
-  }
+  }*/
   data.extra_params = data.extra_params || {};
   if(vis.updated_at) {
     // see #1724 (internal)
@@ -22409,8 +22534,7 @@ Layers.register('carto', cartoLayer);
 
       options = options || {};
       options = _.defaults(options, {
-        infowindow: true,
-        https: false
+          infowindow: true
       })
 
       // create a dummy viz
@@ -22426,7 +22550,6 @@ Layers.register('carto', cartoLayer);
         });
 
         viz.updated_at = visData.updated_at;
-        viz.https = options.https;
       }
 
       layerView = viz.createLayer(layerData, { no_base_layer: true });
@@ -22508,15 +22631,6 @@ Layers.register('carto', cartoLayer);
       delete params.crossDomain;
       params.dataType = 'jsonp';
     }
-
-    // Substitute mapnik tokens
-    // resolution at zoom level 0
-    var res = '156543.03515625';
-    // full webmercator extent
-    var ext = 'ST_MakeEnvelope(-20037508.5,-20037508.5,20037508.5,20037508.5,3857)';
-    sql = sql.replace('!bbox!', ext)
-             .replace('!pixel_width!', res)
-             .replace('!pixel_height!', res);
 
     // create query
     var query = Mustache.render(sql, vars);
@@ -22703,23 +22817,35 @@ Layers.register('carto', cartoLayer);
 (function() {
 
   cartodb.createVis = function(el, vizjson, options, callback) {
-    if(!el) {
-      throw new TypeError("an dom element should be provided");
+
+    if (!el) {
+      throw new TypeError("a DOM element should be provided");
     }
-    var args = arguments,
-    fn = args[args.length -1];
-    if(_.isFunction(fn)) {
+
+    var
+    args = arguments,
+    fn   = args[args.length -1];
+
+    if (_.isFunction(fn)) {
       callback = fn;
     }
+
     el = (typeof el === 'string' ? document.getElementById(el) : el);
+
     var vis = new cartodb.vis.Vis({ el: el });
-    if(vizjson) {
+
+    if (vizjson) {
+
       vis.load(vizjson, options);
-      if(callback) {
+
+      if (callback) {
         vis.done(callback);
       }
+
     }
+
     return vis;
+
   };
 
 })();

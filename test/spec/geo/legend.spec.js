@@ -6,7 +6,8 @@ describe("common.geo.ui.Legend", function() {
   beforeEach(function() {
 
     legend = new cdb.geo.ui.Legend({
-      template: "<ul></ul>"
+      template: _.template("<ul></ul>"),
+      model: new cdb.core.Model()
     });
 
     $("body").append(legend.render().$el);

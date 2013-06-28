@@ -262,4 +262,11 @@ describe('core.ui.common.TabPane', function() {
 
   });
 
+  it("clean should remove all tabs", function() {
+    spyOn(pane, "removeTabs");
+    pane.clean();
+    expect(pane.removeTabs).toHaveBeenCalled();
+
+  });
+
 });

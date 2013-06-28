@@ -62,7 +62,7 @@ describe('Show funcionality', function() {
     runs(function () {
       cdb_layer.hide();
       cdb_layer.setOpacity(0.2);
-      expect(cdb_layer.options.visible).toBeFalsy();
+      expect(cdb_layer.visible).toBeFalsy();
     });
   });
 });

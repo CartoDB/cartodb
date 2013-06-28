@@ -35,7 +35,7 @@
    */
   function _getLayerJson(layer, callback) {
     var url = null;
-    if(layer.layers !== undefined || ((layer.kind || layer.type) !== undefined && layer.options !== undefined)) {
+    if(layer.layers !== undefined || ((layer.kind || layer.type) !== undefined)) {
       // layer object contains the layer data
       _.defer(function() { callback(layer); });
       return;
@@ -78,9 +78,16 @@
       callback = fn;
     }
     
+    promise.addTo = function(map, position) {
+      promise.on('done', function() {
+        MapType.addLayerToMap(layerView, map, position);
+      });
+      return promise;
+    };
+    
     _getLayerJson(layer, function(visData) {
 
-      var layerData, MapType;
+      var layerData;
 
       if(!visData) {
         promise.trigger('error');
@@ -92,11 +99,6 @@
           promise.trigger('error', "visualization file does not contain layer info");
         }
         layerData = visData.layers[1];
-        // add the timestamp to options
-        layerData.options.extra_params = layerData.options.extra_params || {};
-        //layerData.options.extra_params.updated_at = visData.updated_at;
-        layerData.options.extra_params.cache_buster = visData.updated_at;
-        //delete layerData.options.cache_buster;
       } else {
         layerData = visData;
       }
@@ -106,17 +108,6 @@
         return;
       }
 
-      // check map type
-      // TODO: improve checking
-      if(typeof(map.overlayMapTypes) !== "undefined") {
-        MapType = cdb.geo.GoogleMapsMapView;
-        // check if leaflet is loaded globally
-      } else if(map instanceof L.Map || (window.L && map instanceof window.L.Map)) {
-        MapType = cdb.geo.LeafletMapView;
-      } else {
-        promise.trigger('error', "cartodb.js can't guess the map type");
-        return;
-      }
 
       // update options
       if(options && !_.isFunction(options)) {
@@ -128,6 +119,18 @@
         infowindow: true,
         https: false
       })
+
+      // check map type
+      // TODO: improve checking
+      if(typeof(map.overlayMapTypes) !== "undefined") {
+        MapType = cdb.geo.GoogleMapsMapView;
+        // check if leaflet is loaded globally
+      } else if(map instanceof L.Map || (window.L && map instanceof window.L.Map)) {
+        MapType = cdb.geo.LeafletMapView;
+      } else {
+        promise.trigger('error', "cartodb.js can't guess the map type");
+        return promise;
+      }
 
       // create a dummy viz
       var viz = map.viz;

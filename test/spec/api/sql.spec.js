@@ -6,19 +6,13 @@ describe('SQL api client', function() {
   var ajaxParams;
   var throwError = false;
   var jquery_ajax;
+  var ajax;
   beforeEach(function() {
     ajaxParams = null;
-    sql = new cartodb.SQL({
-      user: USER,
-      protocol: 'https'
-    })
-
-    jquery_ajax = $.ajax;
-    $.ajax = function(params) {
-
+    ajax = function(params) {
       ajaxParams = params;
       _.defer(function() {
-        if(!throwError && params.success) params.success(TEST_DATA);
+        if(!throwError && params.success) params.success(TEST_DATA, 200);
         throwError && params.error && params.error({
           responseText: JSON.stringify({
             error: ['jaja']
@@ -26,6 +20,13 @@ describe('SQL api client', function() {
         });
       });
     }
+    sql = new cartodb.SQL({
+      user: USER,
+      protocol: 'https',
+      ajax: ajax
+    })
+
+    jquery_ajax = $.ajax;
   });
 
   afterEach(function() {
@@ -123,7 +124,8 @@ describe('SQL api client', function() {
       format: 'geojson',
       protocol: 'http',
       host: 'charlies.com',
-      api_key: 'testkey'
+      api_key: 'testkey',
+      ajax: ajax
     })
     s.execute('select * from rambo', null, {
       dp: 2
@@ -137,7 +139,7 @@ describe('SQL api client', function() {
 
   it("should use jsonp if browser does not support cors", function() {
     $.support.cors = false;
-    s = new cartodb.SQL({ user: 'jaja' });
+    s = new cartodb.SQL({ user: 'jaja', ajax: ajax });
     expect(s.options.jsonp).toEqual(true);
     s.execute('select * from rambo', null, {
       dp: 2
@@ -154,13 +156,13 @@ describe('SQL api client', function() {
             '       ST_XMax(ST_Extent(the_geom)) as maxx,' +
             '       ST_YMax(ST_Extent(the_geom)) as maxy' +
             ' from (select * from rambo where id=2) as subq';
-    s = new cartodb.SQL({ user: 'jaja' });
+    s = new cartodb.SQL({ user: 'jaja', ajax: ajax });
     s.getBounds('select * from rambo where id={{id}}', {id: 2});
     expect(ajaxParams.url.indexOf(encodeURIComponent(sql))).not.toEqual(-1);
   });
 
   it("should get bounds for query with appostrophes", function() {
-    s = new cartodb.SQL({ user: 'jaja' });
+    s = new cartodb.SQL({ user: 'jaja', ajax: ajax });
     s.getBounds("select * from country where name={{ name }}", { name: "'Spain'"});
     expect(ajaxParams.url.indexOf("%26amp%3B%2339%3B")).toEqual(-1);
   });

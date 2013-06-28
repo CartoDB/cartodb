@@ -5,51 +5,6 @@
 
   root.cartodb = root.cartodb || {};
 
-  function Event() {}
-  Event.prototype.on = function(evt, callback) {
-      var cb = this.callbacks = this.callbacks || {};
-      var l = cb[evt] || (cb[evt] = []);
-      l.push(callback);
-  };
-  Event.prototype.trigger = function(evt) {
-      var c = this.callbacks && this.callbacks[evt];
-      for(var i = 0; c && i < c.length; ++i) {
-          c[i].apply(this, Array.prototype.slice.call(arguments, 1));
-      }
-  };
-
-  if(cartodb._Promise === undefined) {
-    function _Promise() { }
-    _Promise.prototype = new Event();
-    _Promise.prototype.done = function(fn) {
-        return this.on('done', fn);
-    }
-    _Promise.prototype.error = function(fn) {
-        return this.on('error', fn);
-    }
-    cartodb._Promise = _Promise;
-  }
-
-  if(typeof(_) === 'undefined') {
-    var _ = {
-      extend: function(obj, prop) { 
-        for(var p in prop) { obj[p] = prop[p]; } 
-        return obj;
-      },
-      defaults: function(obj, def) {
-        for(var p in def) {
-          if(obj[p] == undefined) {
-            obj[p] = def[p];
-          }
-        }
-        return obj;
-      },
-      isFunction: function(fn) {
-        return typeof(fn) === 'function';
-      }
-    }
-  }
-
   function SQL(options) {
     if(cartodb === this || window === this) {
       return new SQL(options);
@@ -63,7 +18,7 @@
       loc = 'https';
     }
 
-    this.ajax = typeof(jQuery) !== 'undefined' ? jQuery.ajax: reqwest;
+    this.ajax = options.ajax || (typeof(jQuery) !== 'undefined' ? jQuery.ajax: reqwest);
     if(!this.ajax) {
       throw new Error("jQuery or reqwest should be loaded");
     }
@@ -184,7 +139,7 @@
   }
 
   SQL.prototype.getBounds = function(sql, vars, options, callback) {
-      var promise = new cartdob._Promise();
+      var promise = new cartodb._Promise();
       var args = arguments,
       fn = args[args.length -1];
       if(_.isFunction(fn)) {

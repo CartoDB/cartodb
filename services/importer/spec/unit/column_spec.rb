@@ -55,11 +55,56 @@ describe Column do
     end
 
     it "raises if column contents aren't in WKT" do
-      @dataset.insert(name: 'bogus', description: 'bogus', the_geom: 'bogus')
+      @dataset.insert(bogus_record)
 
       lambda { @column.convert_from_wkt }.must_raise Sequel::DatabaseError
     end
   end #convert_from_wkt
+
+  describe '#convert_from_geojson' do
+    it 'populates an existing geometry column parsing its values in GeoJSON' do
+      @dataset.insert(random_geojson_record)
+
+      @column.convert_from_geojson
+      @column.sample.must_match /^0101/
+    end
+
+    it "raises if column contents aren't in GeoJSON" do
+      @dataset.insert(bogus_record)
+
+      lambda { @column.convert_from_geojson }.must_raise Sequel::DatabaseError
+    end
+  end
+
+  describe '#convert_from_kml_point' do
+    it 'populates an existing geometry column parsing its values in KML Point' do
+      @dataset.insert(random_kml_point_record)
+
+      @column.convert_from_kml_point
+      @column.sample.must_match /^0101/
+    end
+
+    it "raises if column contents aren't in KML Point" do
+      @dataset.insert(bogus_record)
+
+      lambda { @column.convert_from_kml_point }.must_raise Sequel::DatabaseError
+    end
+  end
+  
+  describe '#convert_from_kml_multi' do
+    it 'populates an existing geometry column parsing its values in KML Multi' do
+      @dataset.insert(random_kml_multi_record)
+
+      @column.convert_from_kml_multi
+      @column.sample.must_match /^0105/
+    end
+
+    it "raises if column contents aren't in KML Point" do
+      @dataset.insert(bogus_record)
+
+      lambda { @column.convert_from_kml_multi }.must_raise Sequel::DatabaseError
+    end
+  end
 
   describe '#wkb?' do
     it 'returns true if the passed column contains geometries in WKB' do
@@ -68,10 +113,46 @@ describe Column do
     end
 
     it 'returns false otherwise' do
-      @dataset.insert(name: 'bogus', description: 'bogus', the_geom: 'bogus')
+      @dataset.insert(bogus_record)
       @column.wkb?.must_equal false
     end
   end #wkb?
+
+  describe '#geojson?' do
+    it 'returns true if the passed column contains geometries in WKB' do
+      5.times { @dataset.insert(random_hexewkb_record) }
+      @column.wkb?.must_equal true
+    end
+
+    it 'returns false otherwise' do
+      @dataset.insert(bogus_record)
+      @column.wkb?.must_equal false
+    end
+  end
+
+  describe '#kml_point?' do
+    it 'returns true if the passed column contains geometries in KML Point' do
+      5.times { @dataset.insert(random_kml_point_record) }
+      @column.kml_point?.must_equal true
+    end
+
+    it 'returns false otherwise' do
+      @dataset.insert(bogus_record)
+      @column.kml_point?.must_equal false
+    end
+  end
+
+  describe '#kml_multi?' do
+    it 'returns true if the passed column contains geometries in KML Multi' do
+      5.times { @dataset.insert(random_kml_multi_record) }
+      @column.kml_multi?.must_equal true
+    end
+
+    it 'returns false otherwise' do
+      @dataset.insert(bogus_record)
+      @column.kml_multi?.must_equal false
+    end
+  end
 
   describe '#cast_to' do
     it 'casts the passed column to a geometry type' do
@@ -131,6 +212,14 @@ describe Column do
     table_name
   end #create_table
 
+  def bogus_record
+    {
+      name: 'bogus',
+      description: 'bogus',
+      the_geom: 'bogus'
+    }
+  end #bogus_record
+
   def random_hexewkb_record
     random = rand(999)
     {
@@ -148,5 +237,48 @@ describe Column do
       the_geom:     'POINT(-71.060316 48.432044)'
     }
   end #random_wkt_record
+
+  def random_geojson_record
+    random = rand(999)
+    {
+      name:         "bogus #{rand(999)}",
+      description:  "bogus #{rand(999)}",
+      the_geom:     { type: "Point", coordinates: [102.0, 0.5] }.to_json
+    }
+  end #random_geojson_record
+
+  def random_kml_point_record
+    random = rand(999)
+    {
+      name:         "bogus #{rand(999)}",
+      description:  "bogus #{rand(999)}",
+      the_geom:     "<Point><coordinates>137.625,36.975</coordinates></Point>"
+    }
+  end #random_kml_point_record
+
+  def random_kml_multi_record
+    random = rand(999)
+    {
+      name:         "bogus #{rand(999)}",
+      description:  "bogus #{rand(999)}",
+      the_geom:     %Q{
+                      <LineString>
+                        <coordinates>
+                          -112.2550785337791,36.07954952145647,2357
+                          -112.2549277039738,36.08117083492122,2357
+                          -112.2552505069063,36.08260761307279,2357
+                          -112.2564540158376,36.08395660588506,2357
+                          -112.2580238976449,36.08511401044813,2357
+                          -112.2595218489022,36.08584355239394,2357
+                          -112.2608216347552,36.08612634548589,2357
+                          -112.262073428656,36.08626019085147,2357
+                          -112.2633204928495,36.08621519860091,2357
+                          -112.2644963846444,36.08627897945274,2357
+                          -112.2656969554589,36.08649599090644,2357 
+                        </coordinates>
+                      </LineString>
+                    } 
+    }
+  end #random_kml_multi_record
 end # Column
 

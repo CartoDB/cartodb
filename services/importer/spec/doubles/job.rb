@@ -9,6 +9,7 @@ module CartoDB
         def log(message);       @log << message; end
         def filepath;           ''; end
         def name;               ''; end
+        def table_name;         ''; end
         def id;                 0; end
         def pg_options
           {

@@ -3,6 +3,7 @@ require_relative '../acceptance_helper'
 
 feature 'Table' do
   background do
+    CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
     @user = FactoryGirl.create(:user)
     @table = FactoryGirl.create(:table, :user_id => @user.id, :tags => 'tag 1, wadus')
   end

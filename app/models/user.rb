@@ -599,7 +599,7 @@ class User < Sequel::Model
           tname = File.basename(f, '.sql')
           expfile = File.dirname(f) + '/' + tname + '_expect'
           print "  #{tname} ... "
-          cmd = "#{env} psql -X -tA -f #{f} #{database_name} 2>&1 | diff -U2 #{expfile} - 2>&1"
+          cmd = "#{env} psql -X -tA < #{f} #{database_name} 2>&1 | diff -U2 #{expfile} - 2>&1"
           result = `#{cmd}`
           if $? != 0
             puts "fail"

@@ -13,6 +13,7 @@ describe Admin::TablesController do
   include Warden::Test::Helpers
 
   before(:all) do
+    CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
     @user = create_user(
       username: 'test',
       email:    'test@test.com',
@@ -23,6 +24,7 @@ describe Admin::TablesController do
   end
 
   before(:each) do
+    CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
     @db = Sequel.sqlite
     delete_user_data @user
     @headers = { 

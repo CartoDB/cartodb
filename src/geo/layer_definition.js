@@ -401,10 +401,13 @@ LayerDefinition.prototype = {
    * set
    */
   setInteractivity: function(layer, attributes) {
-
     if(attributes === undefined) {
       attributes = layer;
       layer = 0;
+    }
+
+    if(layer >= this.getLayerCount() && layer < 0) {
+      throw new Error("layer does not exist");
     }
 
     if(typeof(attributes) == 'string') {

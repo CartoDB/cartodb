@@ -10,3 +10,7 @@ AS $$
         AND table_name = '' || $1 || '';
          
 $$ LANGUAGE SQL;
+
+-- This is a private function, so only the db owner need privileges
+REVOKE ALL ON FUNCTION CDB_ColumnNames(REGCLASS) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION CDB_ColumnNames(REGCLASS) TO :DATABASE_USERNAME;

@@ -11,3 +11,7 @@ AS $$
         AND column_name = '' || quote_ident($2) || '';
          
 $$ LANGUAGE SQL;
+
+-- This is a private function, so only the db owner need privileges
+REVOKE ALL ON FUNCTION CDB_ColumnType(REGCLASS, TEXT) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION CDB_ColumnType(REGCLASS, TEXT) TO :DATABASE_USERNAME;

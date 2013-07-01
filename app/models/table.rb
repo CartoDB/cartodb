@@ -505,7 +505,7 @@ class Table < Sequel::Model(:user_tables)
   
   def varnish_key
     #"#{self.owner.database_name}:(.*#{self.name}.*)"
-    "^#{self.database_name}:(.*#{self.name}.*)|(table)$"
+    "^#{self.owner.database_name}:(.*#{self.name}.*)|(table)$"
   end
 
   # adds the column if not exists or cast it to timestamp field

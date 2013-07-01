@@ -657,6 +657,8 @@ class Table < Sequel::Model(:user_tables)
 
   def self.table_size(name, options)
     options[:connection]["SELECT pg_total_relation_size(?) as size", name].first[:size] / 2
+  rescue Sequel::DatabaseError => e
+    nil
   end
 
   # TODO: make predictable. Alphabetical would be better

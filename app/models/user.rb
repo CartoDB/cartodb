@@ -444,7 +444,10 @@ class User < Sequel::Model
 
   def link_deleted_tables(metadata_tables_ids)
     dropped_tables = metadata_tables_ids - real_tables.map{|t| t[:oid]}
-    Table.filter(:table_id => dropped_tables).destroy if dropped_tables.present?
+    self.tables.where(
+      table_id: dropped_tables,
+      table_id: nil,
+    ).destroy if dropped_tables.present?
   end
 
   def exceeded_quota?

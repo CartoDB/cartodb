@@ -1,4 +1,4 @@
-/* wax - 7.0.0dev10 - v6.0.4-147-gca63e3e */
+/* wax - 7.0.0dev10 - v6.0.4-148-gcfdd624 */
 
 
 !function (name, context, definition) {
@@ -2029,9 +2029,7 @@ var Mustache = (typeof module !== "undefined" && module.exports) || {};
   * license MIT
   */
 ;(function (name, context, definition) {
-  if (typeof module != 'undefined' && module.exports) module.exports = definition()
-  else if (typeof define == 'function' && define.amd) define(definition)
-  else context[name] = definition()
+  context[name] = definition()
 })('reqwest', this, function () {
 
   var win = window
@@ -2538,7 +2536,8 @@ var Mustache = (typeof module !== "undefined" && module.exports) || {};
   }
 
   return reqwest
-});wax = wax || {};
+})
+;wax = wax || {};
 
 // Attribution
 // -----------

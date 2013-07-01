@@ -262,7 +262,6 @@ describe('api.layers', function() {
       it("should have addTo", function() {
         var layer;
         runs(function() {
-          debugger;
           cartodb.createLayer(map, {
             type: 'cartodb',
             sublayers: [{

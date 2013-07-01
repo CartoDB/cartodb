@@ -219,7 +219,7 @@ LayerDefinition.prototype = {
     var self = this;
     var ajax = this.options.ajax;
     var json = '{ "config": "' +
-      JSON.stringify(this.toJSON()).replace(/"/g, '\\"') +
+      JSON.stringify(this.toJSON()).replace(/"/g, '\\"').replace(/\\n/g, '') +
     '"}';
     LZMA.compress(json, 3, function(encoded) {
       encoded = self._array2hex(encoded);
@@ -401,10 +401,13 @@ LayerDefinition.prototype = {
    * set
    */
   setInteractivity: function(layer, attributes) {
-
     if(attributes === undefined) {
       attributes = layer;
       layer = 0;
+    }
+
+    if(layer >= this.getLayerCount() && layer < 0) {
+      throw new Error("layer does not exist");
     }
 
     if(typeof(attributes) == 'string') {
@@ -537,7 +540,11 @@ LayerDefinition.prototype = {
   },
 
   getInfowindowData: function(layer) {
-    return this.options.layer_definition.layers[layer].infowindow;
+    var infowindow = this.options.layer_definition.layers[layer].infowindow;
+    if (infowindow && infowindow.fields && infowindow.fields.length > 0) {
+      return infowindow;
+    }
+    return null;
   },
 
   containInfowindow: function() {

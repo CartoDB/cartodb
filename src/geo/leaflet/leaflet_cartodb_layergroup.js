@@ -153,7 +153,9 @@ L.CartoDBGroupLayer = L.TileLayer.extend({
   __update: function(done) {
     var self = this;
     this.fire('updated');
+    this.fire('loading');
     var map = this.options.map;
+
     this.getTiles(function(urls, err) {
       var update = function() { 
         map.off('zoomend', update);

@@ -1,6 +1,6 @@
 describe("cdb.geo.ui.LayerSelector", function() {
 
-  var layerSelector, layerSelector2;
+  var layerSelector, layerSelector2, layerGroup;
 
   beforeEach(function() {
 
@@ -12,11 +12,11 @@ describe("cdb.geo.ui.LayerSelector", function() {
     var l2 = new cdb.geo.CartoDBLayer({ type: "CartoDB", attribution: "CartoDB <a href='http://cartodb.com/attributions' target='_blank'>attribution</a>", active: true, query: null, opacity: 0.99, interactivity: "cartodb_id", interaction: true, debug: false, tiler_domain: "localhost.lan", tiler_port: "8181", tiler_protocol: "http", sql_api_domain: "development.localhost.lan", sql_api_port: 8080, sql_api_protocol: "http", extra_params: { cache_policy: "persist", cache_buster: 1369995364392 }, cdn_url: "", maxZoom: 28, auto_bound: false, visible: true, sql_domain: "localhost.lan", sql_port: "8080", sql_protocol: "http", tile_style_history: [ "#untitled_table1 { // polygons [mapnik-geometry-type=polygons] { marker-fill: #FF6600; marker-opacity: 1; marker-width: 12; marker-line-color: white; marker-line-width: 3; marker-line-opacity: 0.9; marker-placement: point; marker-type: ellipse;marker-allow-overlap: true; } //lines [mapnik-geometry-type=linestring] { line-color: #FF6600; line-width: 2; line-opacity: 0.7; } //polygons [mapnik-geometry-type=polygon] { polygon-fill:#FF6600; polygon-opacity: 0.7; line-opacity:1; line-color: #FFFFFF; } }" ], style_version: "2.1.1", table_name: "points", user_name: "development", tile_style: "#untitled_table { // points [mapnik-geometry-type=point] { marker-fill: #FF6600; marker-opacity: 1; marker-width: 12; marker-line-color: white; marker-line-width: 3; marker-line-opacity: 0.9; marker-placement: point; marker-type: ellipse;marker-allow-overlap: true; } //lines [mapnik-geometry-type=linestring] { line-color: #FF6600; line-width: 2; line-opacity: 0.7; } //polygons [mapnik-geometry-type=polygon] { polygon-fill:#FF6600; polygon-opacity: 0.7; line-opacity:1; line-color: #FFFFFF; } }", use_server_style: true, query_history: [ ], sql_api_endpoint: "/api/v1/sql", no_cdn: true, order: 2, kind: "carto", template_name: "table/views/infowindow_light" , id: 231, order: 1 });
     var l3 = new cdb.geo.CartoDBLayer({ type: "CartoDB", attribution: "CartoDB <a href='http://cartodb.com/attributions' target='_blank'>attribution</a>", active: true, query: null, opacity: 0.99, interactivity: "cartodb_id", interaction: true, debug: false, tiler_domain: "localhost.lan", tiler_port: "8181", tiler_protocol: "http", sql_api_domain: "development.localhost.lan", sql_api_port: 8080, sql_api_protocol: "http", extra_params: { cache_policy: "persist", cache_buster: 1369995364392 }, cdn_url: "", maxZoom: 28, auto_bound: false, visible: true, sql_domain: "localhost.lan", sql_port: "8080", sql_protocol: "http", tile_style_history: [ "#untitled_table { // points [mapnik-geometry-type=point] { marker-fill: #FF6600; marker-opacity: 1; marker-width: 12; marker-line-color: white; marker-line-width: 3; marker-line-opacity: 0.9; marker-placement: point; marker-type: ellipse;marker-allow-overlap: true; } //lines [mapnik-geometry-type=linestring] { line-color: #FF6600; line-width: 2; line-opacity: 0.7; } //polygons [mapnik-geometry-type=polygon] { polygon-fill:#FF6600; polygon-opacity: 0.7; line-opacity:1; line-color: #FFFFFF; } }" ], style_version: "2.1.1", table_name: "polygons", user_name: "development", tile_style: "#untitled_table { // points [mapnik-geometry-type=point] { marker-fill: #FF6600; marker-opacity: 1; marker-width: 12; marker-line-color: white; marker-line-width: 3; marker-line-opacity: 0.9; marker-placement: point; marker-type: ellipse;marker-allow-overlap: true; } //lines [mapnik-geometry-type=linestring] { line-color: #FF6600; line-width: 2; line-opacity: 0.7; } //polygons [mapnik-geometry-type=polygon] { polygon-fill:#FF6600; polygon-opacity: 0.7; line-opacity:1; line-color: #FFFFFF; } }", use_server_style: true, query_history: [ ], sql_api_endpoint: "/api/v1/sql", no_cdn: true, order: 2, kind: "carto", template_name: "table/views/infowindow_light" , id: 1231, order: 2 });
 
-    var layerGroup = new cdb.geo.CartoDBGroupLayer({
+    layerGroup = new cdb.geo.CartoDBGroupLayer({
       layer_definition: {
         version: '1.0.0',
         layers: [{
-           type: 'cartodb', 
+           type: 'cartodb',
            options: {
              sql: "select * from european_countries_export",
              cartocss: '#layer { polygon-fill: #000; polygon-opacity: 0.8;}',
@@ -25,7 +25,7 @@ describe("cdb.geo.ui.LayerSelector", function() {
              interactivity: ['created_at', 'cartodb_id']
            }
          },{
-           type: 'cartodb', 
+           type: 'cartodb',
            options: {
              sql: "select * from jamon_countries",
              cartocss: '#layer { polygon-fill: #000; polygon-opacity: 0.8;}',
@@ -40,7 +40,7 @@ describe("cdb.geo.ui.LayerSelector", function() {
     map.layers = new cdb.geo.Layers([l1, l2, l3]);
     map2.layers = new cdb.geo.Layers([l1, layerGroup]);
 
-    
+
     var mapView = new cdb.geo.LeafletMapView({
       el: $("<div>"),
       map: map
@@ -93,10 +93,10 @@ describe("cdb.geo.ui.LayerSelector", function() {
 
     it("should change the select status when the switch button is clicked and trigger and event", function() {
       layerSelector.render();
-      
+
       for(var key in layerSelector._subviews) break;
       var view = layerSelector._subviews[key];
-      
+
       view.$el.find(".switch").click();
       expect(view.model.get("visible")).toBeFalsy();
 
@@ -139,89 +139,17 @@ describe("cdb.geo.ui.LayerSelector", function() {
       expect(layerSelector2.layers.length).toBe(2);
     });
 
-    it("should trigger a layergroupChanged event when the switch button is clicked", function() {
+    it("should hide the layer when the switch button is clicked", function() {
       layerSelector2.render();
-      for(var key in layerSelector2._subviews) break;
-      var view = layerSelector2._subviews[key];
-      var called = false;
-      view.bind('layergroupChanged', function() {
-        called = true;
-      })
-      
-      view.$el.find(".switch").click();
-      expect(called).toBe(true);
+      var switcher = $(layerSelector2.$('li')[0]);
+      switcher.find(".switch").click();
+      var layerGroupView = layerSelector2.mapView.getLayerByCid(layerGroup.cid);
+
+      expect(layerGroupView.getSubLayer(0).get('hidden')).toEqual(true);
+      expect(!layerGroupView.getSubLayer(1).get('hidden')).toEqual(true);
+      expect(layerSelector2.$('div.count').text()).toBe("1")
     });
 
-    it("should complete _setLayerGroup function when there is a visible change (1)", function() {
-      layerSelector2.render();
-      for(var key in layerSelector2._subviews) break;
-      var view1 = layerSelector2._subviews[key];
-      for(var key in layerSelector2._subviews)
-      var view2 = layerSelector2._subviews[key];
-      var layer_definition = view1.options.layer_definition;
-      
-      spyOn(layer_definition, 'removeLayer');
-      spyOn(layer_definition, 'addLayer');
-      
-      view1.$el.find(".switch").click();
-      
-      expect(layer_definition.removeLayer.callCount).toBe(2);
-      expect(layer_definition.addLayer.callCount).toBe(1);
-    });
-
-    it("should complete _setLayerGroup function when there is a visible change (2)", function() {
-      layerSelector2.render();
-      for(var key in layerSelector2._subviews) break;
-      var view1 = layerSelector2._subviews[key];
-      for(var key in layerSelector2._subviews)
-      var view2 = layerSelector2._subviews[key];
-      var layer_definition = view1.options.layer_definition;
-      
-      spyOn(layer_definition, 'removeLayer');
-      spyOn(layer_definition, 'addLayer');
-      
-      view2.$el.find(".switch").click();
-      
-      expect(layer_definition.removeLayer.callCount).toBe(2);
-      expect(layer_definition.addLayer.callCount).toBe(1);
-    });
-
-    it("should complete _setLayerGroup function when there is a visible change (3)", function() {
-      layerSelector2.render();
-      for(var key in layerSelector2._subviews) break;
-      var view1 = layerSelector2._subviews[key];
-      for(var key in layerSelector2._subviews)
-      var view2 = layerSelector2._subviews[key];
-      var layer_definition = view1.options.layer_definition;
-      
-      spyOn(layer_definition, 'removeLayer');
-      spyOn(layer_definition, 'addLayer');
-      
-      view1.$el.find(".switch").click();
-      view2.$el.find(".switch").click();
-      
-      expect(layer_definition.removeLayer.callCount).toBe(4);
-      expect(layer_definition.addLayer.callCount).toBe(1);
-    });
-
-    it("should complete _setLayerGroup function when there is a visible change (4)", function() {
-      layerSelector2.render();
-      for(var key in layerSelector2._subviews) break;
-      var view1 = layerSelector2._subviews[key];
-      for(var key in layerSelector2._subviews)
-      var view2 = layerSelector2._subviews[key];
-      var layer_definition = view1.options.layer_definition;
-      
-      spyOn(layer_definition, 'removeLayer');
-      spyOn(layer_definition, 'addLayer');
-      
-      view1.$el.find(".switch").click();
-      view2.$el.find(".switch").click();
-      view1.$el.find(".switch").click();
-      
-      expect(layer_definition.removeLayer.callCount).toBe(6);
-      expect(layer_definition.addLayer.callCount).toBe(2);
-    });
   });
 
 });

@@ -568,10 +568,10 @@ class User < Sequel::Model
     in_database(:as => :superuser) do |user_database|
       user_database.transaction do
         if files.empty?
-          glob = Rails.root.join('lib/sql/*.sql')
+          glob = Rails.root.join('lib/sql/scripts-enabled/*.sql')
           sql_files = Dir.glob(glob).sort
         else
-          sql_files = files.map {|sql| Rails.root.join('lib/sql', sql).to_s}.sort
+          sql_files = files.map {|sql| Rails.root.join('lib/sql/scripts-enabled', sql).to_s}.sort
         end
         sql_files.each do |f|
           if File.exists?(f)
@@ -579,7 +579,7 @@ class User < Sequel::Model
             @sql = File.new(f).read
             user_database.run(@sql)
           else
-            CartoDB::Logger.info "SQL function #{File.basename(f)} doesn't exist in lib/sql directory. Not loading it."
+            CartoDB::Logger.info "SQL function #{File.basename(f)} doesn't exist in lib/sql/scripts-enabled directory. Not loading it."
           end
         end
       end

@@ -1,4 +1,4 @@
-  
+
   /**
    *  New layer dialog styles
    */
@@ -20,13 +20,16 @@
       color:#898989;
     }
 
-    ul.options { @include opacity(0); }
+    ul.options {
+      @include opacity(0);
+    }
 
     .combo_wrapper {
       display:block;
       padding:12px;
       background:#F2F2F2;
       @include border-radius(6px);
+      margin: 10px 0 0 0;
     }
 
     p.warning {

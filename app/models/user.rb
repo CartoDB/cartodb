@@ -444,7 +444,10 @@ class User < Sequel::Model
 
   def link_deleted_tables(metadata_tables_ids)
     dropped_tables = metadata_tables_ids - real_tables.map{|t| t[:oid]}
-    Table.filter(:table_id => dropped_tables).destroy if dropped_tables.present?
+    self.tables.where(
+      table_id: dropped_tables,
+      table_id: nil,
+    ).destroy if dropped_tables.present?
   end
 
   def exceeded_quota?
@@ -565,10 +568,10 @@ class User < Sequel::Model
     in_database(:as => :superuser) do |user_database|
       user_database.transaction do
         if files.empty?
-          glob = Rails.root.join('lib/sql/*.sql')
+          glob = Rails.root.join('lib/sql/scripts-enabled/*.sql')
           sql_files = Dir.glob(glob).sort
         else
-          sql_files = files.map {|sql| Rails.root.join('lib/sql', sql).to_s}.sort
+          sql_files = files.map {|sql| Rails.root.join('lib/sql/scripts-enabled', sql).to_s}.sort
         end
         sql_files.each do |f|
           if File.exists?(f)
@@ -576,7 +579,7 @@ class User < Sequel::Model
             @sql = File.new(f).read
             user_database.run(@sql)
           else
-            CartoDB::Logger.info "SQL function #{File.basename(f)} doesn't exist in lib/sql directory. Not loading it."
+            CartoDB::Logger.info "SQL function #{File.basename(f)} doesn't exist in lib/sql/scripts-enabled directory. Not loading it."
           end
         end
       end

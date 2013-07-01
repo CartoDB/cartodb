@@ -1,3 +1,4 @@
+BEGIN
 CREATE TABLE
 none||
 only_com_dec|.|,
@@ -9,3 +10,4 @@ both_dot_dec|,|.
 only_com_AMB||
 only_dot_AMB||
 DROP TABLE
+COMMIT

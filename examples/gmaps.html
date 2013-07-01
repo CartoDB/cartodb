@@ -13,9 +13,9 @@
       }
     </style>
 
-    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/themes/css/cartodb.css" />
+    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.css" />
     <!--[if lte IE 8]>
-        <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/themes/css/cartodb.ie.css" />
+        <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.ie.css" />
     <![endif]-->
   </head>
     
@@ -25,40 +25,42 @@
     <!-- include google maps library *before* load cartodb.js -->
     <script src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
     <!-- include cartodb.js library -->
-    <script src="http://libs.cartocdn.com/cartodb.js/v2/cartodb.js"></script>
+    <script src="http://libs.cartocdn.com/cartodb.js/v3/cartodb.uncompressed.js"></script>
 
     <script>
 
       function main() {
 
-          var map;
+          // var map;
 
-          // create google maps map
-          var mapOptions = {
-            zoom: 3,
-            center: new google.maps.LatLng(43, 0),
-            mapTypeId: google.maps.MapTypeId.ROADMAP
-          };
-          map = new google.maps.Map(document.getElementById('map'),  mapOptions);
+          // // create google maps map
+          // var mapOptions = {
+          //   zoom: 3,
+          //   center: new google.maps.LatLng(43, 0),
+          //   mapTypeId: google.maps.MapTypeId.ROADMAP
+          // };
+          // map = new google.maps.Map(document.getElementById('map'),  mapOptions);
 
-          cartodb.createLayer(map, 'http://examples.cartodb.com/api/v1/viz/european_countries_e/viz.json', {
-            query: 'select * from {{table_name}} where area::float > 10000' // if you remove this the query applied in the editor will be used
+          cartodb.createVis('map', 'http://staging.cartodb-staging.com/api/v2/viz/90834952-d8fc-11e2-9026-040101c8f401/viz.json');
+
+          // cartodb.createLayer(map, 'http://examples.cartodb.com/api/v1/viz/european_countries_e/viz.json', {
+          //   query: 'select * from {{table_name}} where area::float > 10000' // if you remove this the query applied in the editor will be used
             
-          })
-           .on('done', function(layer) {
-            map.overlayMapTypes.setAt(0, layer);
+          // })
+          //  .on('done', function(layer) {
+          //   map.overlayMapTypes.setAt(0, layer);
 
-            layer.on('featureOver', function(e, pos, latlng, data) {
-              cartodb.log.log(e, pos, latlng, data);
-            });
+          //   layer.on('featureOver', function(e, pos, latlng, data) {
+          //     cartodb.log.log(e, pos, latlng, data);
+          //   });
 
-            layer.on('error', function(err) {
-              cartodb.log.log('error: ' + err);
-            });
+          //   layer.on('error', function(err) {
+          //     cartodb.log.log('error: ' + err);
+          //   });
 
-          }).on('error', function() {
-            cartodb.log.log("some error occurred");
-          });
+          // }).on('error', function() {
+          //   cartodb.log.log("some error occurred");
+          // });
 
       }
 

@@ -228,7 +228,7 @@
       }
 
       if(opts == undefined || !opts.silent) {
-        this.trigger('newLayerView', layer_view, this);
+        this.trigger('newLayerView', layer_view, layer, this);
       }
       return layer_view;
     },

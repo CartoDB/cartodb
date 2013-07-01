@@ -140,6 +140,7 @@ CartoDBLayerGroup.prototype.clear = function () {
 
 CartoDBLayerGroup.prototype.update = function (done) {
   var self = this;
+  this.loading && this.loading();
   this.getTiles(function(urls, err) {
     if(urls) {
       self.tilejson = urls;

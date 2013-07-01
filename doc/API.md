@@ -25,7 +25,7 @@ The simplest way to use a visualization created in CartoDB on an external site i
         // - click on share
         // - go to API tab
         window.onload = function() {
-          cartodb.createVis('map', 'http://examples-beta.cartodb.com/api/v1/viz/219/viz.json');
+          cartodb.createVis('map', 'http://examples.cartodb.com/api/v1/viz/15589/viz.json');
         }
     </script>
 ```
@@ -64,7 +64,7 @@ This is the easiest way to quickly get a CartoDB map onto your webpage. It handl
 
 <div class="margin20"></div>
 ``` javascript
-    cartodb.createVis('map', 'http://examples-beta.cartodb.com/api/v1/viz/791/viz.json');
+    cartodb.createVis('map', 'http://examples.cartodb.com/api/v1/viz/15589/viz.json');
 ```
 <div class="margin20"></div>
 
@@ -74,7 +74,7 @@ You can also use the returned **layer** to build functionality (show/hide, click
 
 <div class="margin20"></div>
 ``` javascript
-    cartodb.createVis('map', 'http://examples-beta.cartodb.com/api/v1/viz/791/viz.json')
+    cartodb.createVis('map', 'http://examples.cartodb.com/api/v1/viz/15589/viz.json')
         .done(function(vis, layers) {
             // layer 0 is the base layer, layer 1 is cartodb layer
             layers[1].on('featureOver', function(e, latlng, pos, data) {
@@ -120,7 +120,7 @@ Next, in the BODY of your HTML include a DIV for your map and the minimum CartoD
           center: [0,0],
           zoom: 2
         })
-        cartodb.createLayer(map, 'http://examples-beta.cartodb.com/api/v1/viz/766/viz.json')
+        cartodb.createLayer(map, 'http://examples.cartodb.com/api/v1/viz/15589/viz.json')
           .on('error', function(err) {
             alert("some error occurred: " + err);
           });
@@ -335,7 +335,7 @@ Creates a visualization inside the map_id DOM object:
 
 <div class="margin20"></div>
 ``` javascript
-    var url = 'http://examples-beta.cartodb.com/api/v1/viz/791/viz.json';
+    var url = 'http://examples.cartodb.com/api/v1/viz/15589/viz.json';
     cartodb.createVis('map', url)
       .done(function(vis, layers) {
       });

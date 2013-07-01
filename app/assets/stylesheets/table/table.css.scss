@@ -196,6 +196,12 @@
                   @include inline-block();
                   margin:6px 0 5px 5px;
                   color:#7C7C7C;
+
+                  &:hover {
+                    text-decoration:none;
+                    cursor:default;
+                  }
+
                   span.geo {
                     @include border-radius(2px);
                     margin:0 0 0 3px;

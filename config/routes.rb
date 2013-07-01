@@ -82,47 +82,22 @@ CartoDB::Application.routes.draw do
   scope "/api" do
     namespace CartoDB::API::VERSION_1, :format => :json, :module => "api/json" do
       get    '/column_types'                                    => 'meta#column_types'
-      #we should depricate the following five
-      get    '/tables/:table_id.:format'                        => 'export_tables#show'
-      get    '/tables/:table_id/export/csv'                     => 'export_tables#show', :format  => :csv
-      get    '/tables/:table_id/export/shp'                     => 'export_tables#show', :format  => :shp
-      get    '/tables/:table_id/export/kml'                     => 'export_tables#show', :format  => :kml
-      get    '/tables/:table_id/export/sql'                     => 'export_tables#show', :format  => :sql
       get    '/queries'                                         => 'queries#run'
       put    '/queries'                                         => 'queries#run'
 
 
-      # get    '/tables'                                          => 'tables#index'
-      # post   '/tables'                                          => 'tables#create'
-      # get    '/tables/:id'                                      => 'tables#show'
-      # put    '/tables/:id'                                      => 'tables#update'
-      # delete '/tables/:id'                                      => 'tables#destroy'
       resources :tables, :only => [:index, :create, :show, :update, :destroy] do
         collection do
-          # get    '/tables/tags/:tag_name'                           => 'tables#index'
           get '/tags/:tag_name' => 'tables#index', :as => 'show_tag'
-          # get    '/tables/tags'                                     => 'tags#index'
         end
-        # get    '/tables/:table_id/records'                        => 'records#index'
-        # post   '/tables/:table_id/records'                        => 'records#create'
-        # get    '/tables/:table_id/records/:id'                    => 'records#show'
-        # put    '/tables/:table_id/records/:id'                    => 'records#update'
-        # delete '/tables/:table_id/records/:id'                    => 'records#destroy'
+
         resources :records, :only => [:index, :create, :show, :update, :destroy] do
-          # get    '/tables/:table_id/records/pending_addresses'      => 'records#pending_addresses'
           get '/pending_addresses' => 'records#pending_addresses'
           resources :columns do
-            # get    '/tables/:table_id/records/:record_id/columns/:id' => 'records#show_column'
             get '/:id' => 'records#show_column'
-            # put    '/tables/:table_id/records/:record_id/columns/:id' => 'records#update_column'
             put '/:id' => 'records#update_column'
           end
         end
-        # get    '/tables/:table_id/columns'                        => 'columns#index'
-        # post   '/tables/:table_id/columns'                        => 'columns#create'
-        # get    '/tables/:table_id/columns/:id'                    => 'columns#show'
-        # put    '/tables/:table_id/columns/:id'                    => 'columns#update'
-        # delete '/tables/:table_id/columns/:id'                    => 'columns#delete'
         resources :columns, :only => [:index, :create, :show, :update, :destroy]
       end
 

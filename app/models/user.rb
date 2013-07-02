@@ -404,7 +404,7 @@ class User < Sequel::Model
     metadata_tables_without_id = self.tables.filter(table_id: nil).map(&:name)
     outdated_tables = real_tables.select{|t| metadata_tables_without_id.include?(t[:relname])}
     outdated_tables.each do |t|
-      table = Table.find(name: t[:relname])
+      table = self.tables.where(name: t[:relname]).first
       begin
         table.this.update table_id: t[:oid]
       rescue Sequel::DatabaseError => e

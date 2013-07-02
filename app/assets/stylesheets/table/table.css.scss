@@ -197,10 +197,7 @@
                   margin:6px 0 5px 5px;
                   color:#7C7C7C;
 
-                  &:hover {
-                    text-decoration:none;
-                    cursor:default;
-                  }
+                  &:hover { text-decoration:none; }
 
                   span.geo {
                     @include border-radius(2px);
@@ -210,6 +207,7 @@
                     background:orange;
                     color:white;
                     text-decoration:uppercase;
+                    &:hover { cursor:pointer; }
                   }
                 }
                 // Default and then replace it

@@ -55,9 +55,9 @@ module ApplicationHelper
 
   def frontend_config
     config = {
-      tiler_protocol:     Cartodb.config[:tiler_protocol],
-      tiler_port:         Cartodb.config[:tiler_port],
-      tiler_domain:       Cartodb.config[:tiler_domain],
+      tiler_protocol:     Cartodb.config[:tiler]["private"]["protocol"],
+      tiler_port:         Cartodb.config[:tiler]["private"]["port"],
+      tiler_domain:       Cartodb.config[:tiler]["private"]["domain"],
       sql_api_protocol:   Cartodb.config[:sql_api_protocol],
       sql_api_domain:     "#{request.subdomain}.#{Cartodb.config[:sql_api_domain]}",
       sql_api_endpoint:   Cartodb.config[:sql_api_endpoint],

@@ -98,6 +98,7 @@ CartoDBLayerGroup.prototype.setOpacity = function(opacity) {
 CartoDBLayerGroup.prototype.setAttribution = function() {};
 
 CartoDBLayerGroup.prototype.getTile = function(coord, zoom, ownerDocument) {
+  var EMPTY_GIF = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
 
   var self = this;
 
@@ -106,6 +107,7 @@ CartoDBLayerGroup.prototype.getTile = function(coord, zoom, ownerDocument) {
   if(this.tilejson == null) {
     var key = zoom + '/' + coord.x + '/' + coord.y;
     var i = this.cache[key] = new Image(256, 256);
+    i.src = EMPTY_GIF;
     i.setAttribute('gTileKey', key);
     i.style.opacity = this.options.opacity;
     return i;

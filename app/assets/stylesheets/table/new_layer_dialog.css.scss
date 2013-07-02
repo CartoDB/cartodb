@@ -21,13 +21,13 @@
     }
 
     ul.options {
-      ul.options {
-      @include opacity(0);
-    }
+      div.options {
+        @include opacity(0);
+      }
     }
 
     .combo_wrapper {
-      display:block;
+      display:none;
       padding:12px;
       background:#F2F2F2;
       @include border-radius(6px);

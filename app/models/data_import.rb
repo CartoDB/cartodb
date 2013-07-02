@@ -298,17 +298,21 @@ class DataImport < Sequel::Model
   end
 
   def proper_import
+    success_status  = false
     imports, errors = import_to_cartodb(data_type, data_source)
+
     if imports.present?
       imports.each do | import |
         self.log << "Linking #{import.name} to CartoDB UI"
         unless migrate_existing(import.name, table_name)
           current_user.in_database.drop_table(import.name) rescue ""
         else
-          imported_something = true
+          success_status = true
         end
       end
     end
+
+    success_status
   end
 
   def get_valid_name(name)

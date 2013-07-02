@@ -21,7 +21,9 @@
     }
 
     ul.options {
+      ul.options {
       @include opacity(0);
+    }
     }
 
     .combo_wrapper {

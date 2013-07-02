@@ -39,22 +39,23 @@ class DataImport < Sequel::Model
   end
 
   def run_import!
-    imported_something = false
-    append_to_existing if append.present?
-    imported_something = migrate_existing(migrate_table) if migrate_table.present?
-    imported_something = from_table if table_copy.present? || from_query.present?
-    imported_something = proper_import if %w(url file).include?(data_type)
-
-    finished! if imported_something
-    failed!   unless imported_something
-    
+    success = !!dispatch
+    finished! if success
+    failed!   unless success
     self
-  rescue => e
+  rescue => exception
     reload
     failed!
-    self.log << ("Exception while running import: " + e.inspect)
+    self.log << ("Exception while running import: " + exception.inspect)
     self
   end
+
+  def dispatch
+    return append_to_existing if append.present?
+    return migrate_existing   if migrate_table.present?
+    return from_table         if table_copy.present? || from_query.present?
+    return proper_import      if %w(url file).include?(data_type)
+  end #dispatch
 
   def log_update(update_msg)
     self.log << "UPDATE: #{update_msg}\n"
@@ -219,14 +220,14 @@ class DataImport < Sequel::Model
   end
 
   def append_to_existing
-    imports, errors = import_to_cartodb data_type, data_source
+    imports, errors = import_to_cartodb(data_type, data_source)
     # table_names is null, since we're just appending data to
     # an existing table, not creating a new one
     self.update :table_names => nil
 
     @table = Table.filter(:user_id => current_user.id, :id => table_id).first
     (imports || []).each do |import|
-      migrate_existing import.name, table_name
+      migrate_existing(import.name, table_name)
       @new_table = Table.filter(:name => import.name).first
       @table.append_to_table(:from_table => @new_table)
       @table.save
@@ -267,7 +268,7 @@ class DataImport < Sequel::Model
     return uniname
   end
 
-  def migrate_existing(imported_name, name=nil)
+  def migrate_existing(imported_name=migrate_table, name=nil)
     new_name = imported_name || name
 
     @new_table = Table.new

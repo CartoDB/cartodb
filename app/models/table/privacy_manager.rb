@@ -73,7 +73,6 @@ module CartoDB
       end #invalidate_varnish_cache
 
       def varnish_key
-        #".*#{table.database_name}:#{table.name}.*"
         "^#{table.database_name}:(.*#{table.name}.*)|(table)$"
       end #varnish_key
 

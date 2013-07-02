@@ -397,7 +397,7 @@ class User < Sequel::Model
 
     # link_created_tables(metadata_tables_ids)
     # link_renamed_tables(metadata_tables_ids)
-    link_deleted_tables(metadata_tables_ids)
+    #link_deleted_tables(metadata_tables_ids)
   end
 
   def link_outdated_tables
@@ -445,9 +445,11 @@ class User < Sequel::Model
   def link_deleted_tables(metadata_tables_ids)
     dropped_tables = metadata_tables_ids - real_tables.map{|t| t[:oid]}
     self.tables.where(
-      table_id: dropped_tables,
-      table_id: nil,
+      table_id: dropped_tables
     ).destroy if dropped_tables.present?
+    # self.tables.filter(table_id: nil).each do |t|
+    #   t.destroy unless u.real_tables.map {|t| t[:relname]}.include?(t.name)
+    # end if dropped_tables.present? && dropped_tables.include?(nil)
   end
 
   def exceeded_quota?

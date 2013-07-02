@@ -3,7 +3,7 @@
 function LayerDefinition(layerDefinition, options) {
 
   this.options = _.defaults(options, {
-    ajax: $.ajax,
+    ajax: window.$ ? window.$.ajax : reqwest.compat,
     pngParams: ['map_key', 'api_key', 'cache_policy', 'updated_at'],
     gridParams: ['map_key', 'api_key', 'cache_policy', 'updated_at'],
     cors: this.isCORSSupported(),
@@ -191,6 +191,7 @@ LayerDefinition.prototype = {
     ajax({
       crossOrigin: true,
       type: 'POST',
+      method: 'POST',
       dataType: 'json',
       contentType: 'application/json',
       url: this._tilerHost() + '/tiles/layergroup' + (params.length ? "?" + params.join('&'): ''),
@@ -489,7 +490,7 @@ LayerDefinition.prototype = {
       layer = 0;
     }
 
-    version = version || cdb.CARTOCSS_DEFAULT_VERSION;
+    version = version || cartodb.CARTOCSS_DEFAULT_VERSION;
 
     this.layers[layer].options.cartocss = style;
     this.layers[layer].options.cartocss_version = version;

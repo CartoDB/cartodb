@@ -3,8 +3,10 @@
  * as much as posible
  */
 
-(function() {
+;(function() {
 
+  var slice = Array.prototype.slice;
+  var splice = Array.prototype.splice;
   var eventSplitter = /\s+/;
 
   // A module that can be mixed in to *any object* in order to provide it with
@@ -116,7 +118,7 @@
 
   if(cartodb._Promise === undefined) {
     function _Promise() { }
-    _Promise.prototype = new Event();
+    _Promise.prototype = Events;
     _Promise.prototype.done = function(fn) {
         return this.on('done', fn);
     }

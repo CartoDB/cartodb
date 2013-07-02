@@ -1136,6 +1136,14 @@ describe Table do
       table.table_size.should == 2351104
     end
 
+    it "should assign table_id" do
+      data_import = DataImport.create( :user_id       => @user.id,
+                                       :data_source   => '/../db/fake_data/SHP1.zip' )
+      data_import.run_import!
+      table = Table[data_import.table_id]
+      table.table_id.should_not be_nil
+    end
+
     it "should add a the_geom column after importing a CSV" do
       data_import = DataImport.create( :user_id       => @user.id,
                                        :data_source   => '/../db/fake_data/twitters.csv' )

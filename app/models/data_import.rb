@@ -50,13 +50,6 @@ class DataImport < Sequel::Model
     self
   end
 
-  def dispatch
-    return append_to_existing if append.present?
-    return migrate_existing   if migrate_table.present?
-    return from_table         if table_copy.present? || from_query.present?
-    return proper_import      if %w(url file).include?(data_type)
-  end #dispatch
-
   def log_update(update_msg)
     self.log << "UPDATE: #{update_msg}\n"
     self.save
@@ -137,6 +130,13 @@ class DataImport < Sequel::Model
   private
 
   attr_writer :log
+
+  def dispatch
+    return append_to_existing if append.present?
+    return migrate_existing   if migrate_table.present?
+    return from_table         if table_copy.present? || from_query.present?
+    return proper_import      if %w(url file).include?(data_type)
+  end #dispatch
 
   def running_import_ids
     Resque::Worker.all.map do |worker|
@@ -298,17 +298,21 @@ class DataImport < Sequel::Model
   end
 
   def proper_import
+    success_status  = false
     imports, errors = import_to_cartodb(data_type, data_source)
+
     if imports.present?
       imports.each do | import |
         self.log << "Linking #{import.name} to CartoDB UI"
         unless migrate_existing(import.name, table_name)
           current_user.in_database.drop_table(import.name) rescue ""
         else
-          imported_something = true
+          success_status = true
         end
       end
     end
+
+    success_status
   end
 
   def get_valid_name(name)

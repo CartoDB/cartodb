@@ -1103,6 +1103,8 @@
               .title  { float: left; margin: 0 0 0 30px; }
             }
 
+            &.date .range { clear:both; margin: 6px 0 0 0; }
+
             &:hover .remove { @include opacity(1); }
 
             .remove {
@@ -1450,7 +1452,7 @@
       padding-bottom:0;
 
       .layer_info a.info {
-        .order {background:#666666;} 
+        .order {background:#666666;}
         .name {color:#666;}
       }
 

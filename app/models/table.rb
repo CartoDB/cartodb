@@ -314,6 +314,7 @@ class Table < Sequel::Model(:user_tables)
 
       import_cleanup
       set_the_geom_column!
+      set_table_id
       @data_import.formatted
       @data_import.save
     else

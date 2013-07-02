@@ -50,13 +50,6 @@ class DataImport < Sequel::Model
     self
   end
 
-  def dispatch
-    return append_to_existing if append.present?
-    return migrate_existing   if migrate_table.present?
-    return from_table         if table_copy.present? || from_query.present?
-    return proper_import      if %w(url file).include?(data_type)
-  end #dispatch
-
   def log_update(update_msg)
     self.log << "UPDATE: #{update_msg}\n"
     self.save
@@ -137,6 +130,13 @@ class DataImport < Sequel::Model
   private
 
   attr_writer :log
+
+  def dispatch
+    return append_to_existing if append.present?
+    return migrate_existing   if migrate_table.present?
+    return from_table         if table_copy.present? || from_query.present?
+    return proper_import      if %w(url file).include?(data_type)
+  end #dispatch
 
   def running_import_ids
     Resque::Worker.all.map do |worker|

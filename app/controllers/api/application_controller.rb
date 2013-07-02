@@ -17,6 +17,6 @@ class Api::ApplicationController < ApplicationController
 
   def link_ghost_tables
     return true unless current_user.present?
-    #current_user.link_ghost_tables
+    current_user.link_ghost_tables
   end
 end

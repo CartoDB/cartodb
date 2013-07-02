@@ -28,6 +28,10 @@ defaults: &defaults
   redis:
     host: '127.0.0.1'
     port: 6379
+  mixpanel:
+    api_key: xxx
+    api_secret: xxx
+    token: xxx
   superadmin:
     username: "superadmin"
     password: "monkey"

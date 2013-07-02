@@ -16,10 +16,6 @@ class Api::Json::ImportsController < Api::ApplicationController
   def create
     file_uri = params[:url].present? ? params[:url] : _upload_file
 
-    if synchronous_import?
-      #@data_import = Resque::ImporterJobs.process(current_user[:id], params[:table_name], file_uri)
-      #render :json => {:item_queue_id => job_meta.meta_id, :success => true}
-    else
     options = { user_id: current_user.id,
                 table_name:  params[:table_name].presence,
                 data_source: file_uri.presence,
@@ -28,13 +24,10 @@ class Api::Json::ImportsController < Api::ApplicationController
                 table_copy:  params[:table_copy].presence,
                 from_query:  params[:sql].presence }
       
-      data_import = DataImport.create(options)
-      Resque.enqueue(Resque::ImporterJobs, job_id: data_import.id)
+    data_import = DataImport.create(options)
+    Resque.enqueue(Resque::ImporterJobs, job_id: data_import.id)
 
-      render_jsonp({ item_queue_id: data_import.id, success: true })
-    end
-  #rescue => e
-  #  render_jsonp({ :description => e.message, :code => (@data_import.error_code rescue '') }, 400)
+    render_jsonp({ item_queue_id: data_import.id, success: true })
   end
 
   protected

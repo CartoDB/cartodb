@@ -9,6 +9,7 @@
     <%= yield :js %>
     <%= csrf_meta_tag %>
     <%= insert_google_analytics('primary') %>
+    <%= render 'shared/mixpanel' %>
     <noscript><meta http-equiv="refresh" content="0;url=/no_javascript.html"></noscript>
   </head>
   <body>

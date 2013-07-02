@@ -8,7 +8,8 @@
     var username = "<%= current_user.username %>"
     , user_data = <%=raw current_user.data.to_json.html_safe %>
     , config = <%=raw frontend_config.html_safe %>
-    , upgrade_url = "<%= upgrade_url %>";
+    , upgrade_url = "<%= upgrade_url %>"
+    , mixpanel_token = "<%= Cartodb.config[:mixpanel]['token'] if Cartodb.config[:mixpanel].present? %>";
   </script>
 <% end %>
 <%= content_for(:css) do %>

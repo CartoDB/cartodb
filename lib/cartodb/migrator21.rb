@@ -8,6 +8,9 @@ module CartoDB
         if already_migrated?(table)
           @stats[:tables_skipped] += 1
           log "* Skipping: #{table.owner.username}/#{table.name} (id #{table.id})" rescue ""
+        elsif table.table_visualization.present?
+          @stats[:tables_skipped] += 1
+          log "* Already has table visualization, skipping: #{table.owner.username}/#{table.name} (id #{table.id})" rescue ""
         else
           begin
             log "* (#{index+1}/#{total_tables}) Migrating: #{table.owner.username}/#{table.name} id #{table.id}"

@@ -47,8 +47,6 @@ describe "Imports API" do
     last_import.state.should be == 'complete'
   end
 
-  it 'performs synchronous imports'
-
   it 'gets a list of all pending imports' do
     Resque.inline = false
     serve_file(Rails.root.join('spec/support/data/ESP_adm.zip')) do |url|

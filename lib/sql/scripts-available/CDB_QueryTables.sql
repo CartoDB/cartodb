@@ -26,7 +26,8 @@ BEGIN
     EXCEPTION WHEN others THEN
       -- TODO: if error is 'relation "xxxxxx" does not exist', take xxxxxx as
       --       the affected table ?
-      RAISE EXCEPTION 'Cannot explain query: % (%: %)', rec.q, SQLSTATE, SQLERRM;
+      RAISE WARNING 'CDB_QueryTables cannot explain query: % (%: %)', rec.q, SQLSTATE, SQLERRM;
+      RAISE EXCEPTION '%', SQLERRM;
       CONTINUE;
     END;
 

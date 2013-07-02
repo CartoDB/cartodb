@@ -69,15 +69,16 @@ module CartoDB
       end #grant_query
 
       def invalidate_varnish_cache
-        Varnish.new.purge("obj.http.X-Cache-Channel ~ .*#{varnish_key}.*")
+        Varnish.new.purge("obj.http.X-Cache-Channel ~ #{varnish_key}")
       end #invalidate_varnish_cache
 
       def varnish_key
-        "#{table.database_name}:#{table.name}"
+        #".*#{table.database_name}:#{table.name}.*"
+        "^#{table.database_name}:(.*#{table.name}.*)|(table)$"
       end #varnish_key
 
       def redis_key
-        "rails:#{varnish_key}"
+        "rails:#{table.database_name}:#{table.name}"
       end #redis_key
 
       def privacy_text

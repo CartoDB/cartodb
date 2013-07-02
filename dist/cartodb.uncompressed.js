@@ -1,6 +1,6 @@
-// cartodb.js version: 2.0.25-dev
+// cartodb.js version: 3.0.00-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: c050c7a3cb41d49095f6f0430207fef3598c29b1
+// sha: d9fd429006817a011113c2fd0707b4fadce35f36
 (function() {
   var root = this;
 
@@ -25,6 +25,492 @@
 (function(a,b){function cy(a){return f.isWindow(a)?a:a.nodeType===9?a.defaultView||a.parentWindow:!1}function cu(a){if(!cj[a]){var b=c.body,d=f("<"+a+">").appendTo(b),e=d.css("display");d.remove();if(e==="none"||e===""){ck||(ck=c.createElement("iframe"),ck.frameBorder=ck.width=ck.height=0),b.appendChild(ck);if(!cl||!ck.createElement)cl=(ck.contentWindow||ck.contentDocument).document,cl.write((f.support.boxModel?"<!doctype html>":"")+"<html><body>"),cl.close();d=cl.createElement(a),cl.body.appendChild(d),e=f.css(d,"display"),b.removeChild(ck)}cj[a]=e}return cj[a]}function ct(a,b){var c={};f.each(cp.concat.apply([],cp.slice(0,b)),function(){c[this]=a});return c}function cs(){cq=b}function cr(){setTimeout(cs,0);return cq=f.now()}function ci(){try{return new a.ActiveXObject("Microsoft.XMLHTTP")}catch(b){}}function ch(){try{return new a.XMLHttpRequest}catch(b){}}function cb(a,c){a.dataFilter&&(c=a.dataFilter(c,a.dataType));var d=a.dataTypes,e={},g,h,i=d.length,j,k=d[0],l,m,n,o,p;for(g=1;g<i;g++){if(g===1)for(h in a.converters)typeof h=="string"&&(e[h.toLowerCase()]=a.converters[h]);l=k,k=d[g];if(k==="*")k=l;else if(l!=="*"&&l!==k){m=l+" "+k,n=e[m]||e["* "+k];if(!n){p=b;for(o in e){j=o.split(" ");if(j[0]===l||j[0]==="*"){p=e[j[1]+" "+k];if(p){o=e[o],o===!0?n=p:p===!0&&(n=o);break}}}}!n&&!p&&f.error("No conversion from "+m.replace(" "," to ")),n!==!0&&(c=n?n(c):p(o(c)))}}return c}function ca(a,c,d){var e=a.contents,f=a.dataTypes,g=a.responseFields,h,i,j,k;for(i in g)i in d&&(c[g[i]]=d[i]);while(f[0]==="*")f.shift(),h===b&&(h=a.mimeType||c.getResponseHeader("content-type"));if(h)for(i in e)if(e[i]&&e[i].test(h)){f.unshift(i);break}if(f[0]in d)j=f[0];else{for(i in d){if(!f[0]||a.converters[i+" "+f[0]]){j=i;break}k||(k=i)}j=j||k}if(j){j!==f[0]&&f.unshift(j);return d[j]}}function b_(a,b,c,d){if(f.isArray(b))f.each(b,function(b,e){c||bD.test(a)?d(a,e):b_(a+"["+(typeof e=="object"?b:"")+"]",e,c,d)});else if(!c&&f.type(b)==="object")for(var e in b)b_(a+"["+e+"]",b[e],c,d);else d(a,b)}function b$(a,c){var d,e,g=f.ajaxSettings.flatOptions||{};for(d in c)c[d]!==b&&((g[d]?a:e||(e={}))[d]=c[d]);e&&f.extend(!0,a,e)}function bZ(a,c,d,e,f,g){f=f||c.dataTypes[0],g=g||{},g[f]=!0;var h=a[f],i=0,j=h?h.length:0,k=a===bS,l;for(;i<j&&(k||!l);i++)l=h[i](c,d,e),typeof l=="string"&&(!k||g[l]?l=b:(c.dataTypes.unshift(l),l=bZ(a,c,d,e,l,g)));(k||!l)&&!g["*"]&&(l=bZ(a,c,d,e,"*",g));return l}function bY(a){return function(b,c){typeof b!="string"&&(c=b,b="*");if(f.isFunction(c)){var d=b.toLowerCase().split(bO),e=0,g=d.length,h,i,j;for(;e<g;e++)h=d[e],j=/^\+/.test(h),j&&(h=h.substr(1)||"*"),i=a[h]=a[h]||[],i[j?"unshift":"push"](c)}}}function bB(a,b,c){var d=b==="width"?a.offsetWidth:a.offsetHeight,e=b==="width"?1:0,g=4;if(d>0){if(c!=="border")for(;e<g;e+=2)c||(d-=parseFloat(f.css(a,"padding"+bx[e]))||0),c==="margin"?d+=parseFloat(f.css(a,c+bx[e]))||0:d-=parseFloat(f.css(a,"border"+bx[e]+"Width"))||0;return d+"px"}d=by(a,b);if(d<0||d==null)d=a.style[b];if(bt.test(d))return d;d=parseFloat(d)||0;if(c)for(;e<g;e+=2)d+=parseFloat(f.css(a,"padding"+bx[e]))||0,c!=="padding"&&(d+=parseFloat(f.css(a,"border"+bx[e]+"Width"))||0),c==="margin"&&(d+=parseFloat(f.css(a,c+bx[e]))||0);return d+"px"}function bo(a){var b=c.createElement("div");bh.appendChild(b),b.innerHTML=a.outerHTML;return b.firstChild}function bn(a){var b=(a.nodeName||"").toLowerCase();b==="input"?bm(a):b!=="script"&&typeof a.getElementsByTagName!="undefined"&&f.grep(a.getElementsByTagName("input"),bm)}function bm(a){if(a.type==="checkbox"||a.type==="radio")a.defaultChecked=a.checked}function bl(a){return typeof a.getElementsByTagName!="undefined"?a.getElementsByTagName("*"):typeof a.querySelectorAll!="undefined"?a.querySelectorAll("*"):[]}function bk(a,b){var c;b.nodeType===1&&(b.clearAttributes&&b.clearAttributes(),b.mergeAttributes&&b.mergeAttributes(a),c=b.nodeName.toLowerCase(),c==="object"?b.outerHTML=a.outerHTML:c!=="input"||a.type!=="checkbox"&&a.type!=="radio"?c==="option"?b.selected=a.defaultSelected:c==="input"||c==="textarea"?b.defaultValue=a.defaultValue:c==="script"&&b.text!==a.text&&(b.text=a.text):(a.checked&&(b.defaultChecked=b.checked=a.checked),b.value!==a.value&&(b.value=a.value)),b.removeAttribute(f.expando),b.removeAttribute("_submit_attached"),b.removeAttribute("_change_attached"))}function bj(a,b){if(b.nodeType===1&&!!f.hasData(a)){var c,d,e,g=f._data(a),h=f._data(b,g),i=g.events;if(i){delete h.handle,h.events={};for(c in i)for(d=0,e=i[c].length;d<e;d++)f.event.add(b,c,i[c][d])}h.data&&(h.data=f.extend({},h.data))}}function bi(a,b){return f.nodeName(a,"table")?a.getElementsByTagName("tbody")[0]||a.appendChild(a.ownerDocument.createElement("tbody")):a}function U(a){var b=V.split("|"),c=a.createDocumentFragment();if(c.createElement)while(b.length)c.createElement(b.pop());return c}function T(a,b,c){b=b||0;if(f.isFunction(b))return f.grep(a,function(a,d){var e=!!b.call(a,d,a);return e===c});if(b.nodeType)return f.grep(a,function(a,d){return a===b===c});if(typeof b=="string"){var d=f.grep(a,function(a){return a.nodeType===1});if(O.test(b))return f.filter(b,d,!c);b=f.filter(b,d)}return f.grep(a,function(a,d){return f.inArray(a,b)>=0===c})}function S(a){return!a||!a.parentNode||a.parentNode.nodeType===11}function K(){return!0}function J(){return!1}function n(a,b,c){var d=b+"defer",e=b+"queue",g=b+"mark",h=f._data(a,d);h&&(c==="queue"||!f._data(a,e))&&(c==="mark"||!f._data(a,g))&&setTimeout(function(){!f._data(a,e)&&!f._data(a,g)&&(f.removeData(a,d,!0),h.fire())},0)}function m(a){for(var b in a){if(b==="data"&&f.isEmptyObject(a[b]))continue;if(b!=="toJSON")return!1}return!0}function l(a,c,d){if(d===b&&a.nodeType===1){var e="data-"+c.replace(k,"-$1").toLowerCase();d=a.getAttribute(e);if(typeof d=="string"){try{d=d==="true"?!0:d==="false"?!1:d==="null"?null:f.isNumeric(d)?+d:j.test(d)?f.parseJSON(d):d}catch(g){}f.data(a,c,d)}else d=b}return d}function h(a){var b=g[a]={},c,d;a=a.split(/\s+/);for(c=0,d=a.length;c<d;c++)b[a[c]]=!0;return b}var c=a.document,d=a.navigator,e=a.location,f=function(){function J(){if(!e.isReady){try{c.documentElement.doScroll("left")}catch(a){setTimeout(J,1);return}e.ready()}}var e=function(a,b){return new e.fn.init(a,b,h)},f=a.jQuery,g=a.$,h,i=/^(?:[^#<]*(<[\w\W]+>)[^>]*$|#([\w\-]*)$)/,j=/\S/,k=/^\s+/,l=/\s+$/,m=/^<(\w+)\s*\/?>(?:<\/\1>)?$/,n=/^[\],:{}\s]*$/,o=/\\(?:["\\\/bfnrt]|u[0-9a-fA-F]{4})/g,p=/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g,q=/(?:^|:|,)(?:\s*\[)+/g,r=/(webkit)[ \/]([\w.]+)/,s=/(opera)(?:.*version)?[ \/]([\w.]+)/,t=/(msie) ([\w.]+)/,u=/(mozilla)(?:.*? rv:([\w.]+))?/,v=/-([a-z]|[0-9])/ig,w=/^-ms-/,x=function(a,b){return(b+"").toUpperCase()},y=d.userAgent,z,A,B,C=Object.prototype.toString,D=Object.prototype.hasOwnProperty,E=Array.prototype.push,F=Array.prototype.slice,G=String.prototype.trim,H=Array.prototype.indexOf,I={};e.fn=e.prototype={constructor:e,init:function(a,d,f){var g,h,j,k;if(!a)return this;if(a.nodeType){this.context=this[0]=a,this.length=1;return this}if(a==="body"&&!d&&c.body){this.context=c,this[0]=c.body,this.selector=a,this.length=1;return this}if(typeof a=="string"){a.charAt(0)!=="<"||a.charAt(a.length-1)!==">"||a.length<3?g=i.exec(a):g=[null,a,null];if(g&&(g[1]||!d)){if(g[1]){d=d instanceof e?d[0]:d,k=d?d.ownerDocument||d:c,j=m.exec(a),j?e.isPlainObject(d)?(a=[c.createElement(j[1])],e.fn.attr.call(a,d,!0)):a=[k.createElement(j[1])]:(j=e.buildFragment([g[1]],[k]),a=(j.cacheable?e.clone(j.fragment):j.fragment).childNodes);return e.merge(this,a)}h=c.getElementById(g[2]);if(h&&h.parentNode){if(h.id!==g[2])return f.find(a);this.length=1,this[0]=h}this.context=c,this.selector=a;return this}return!d||d.jquery?(d||f).find(a):this.constructor(d).find(a)}if(e.isFunction(a))return f.ready(a);a.selector!==b&&(this.selector=a.selector,this.context=a.context);return e.makeArray(a,this)},selector:"",jquery:"1.7.2",length:0,size:function(){return this.length},toArray:function(){return F.call(this,0)},get:function(a){return a==null?this.toArray():a<0?this[this.length+a]:this[a]},pushStack:function(a,b,c){var d=this.constructor();e.isArray(a)?E.apply(d,a):e.merge(d,a),d.prevObject=this,d.context=this.context,b==="find"?d.selector=this.selector+(this.selector?" ":"")+c:b&&(d.selector=this.selector+"."+b+"("+c+")");return d},each:function(a,b){return e.each(this,a,b)},ready:function(a){e.bindReady(),A.add(a);return this},eq:function(a){a=+a;return a===-1?this.slice(a):this.slice(a,a+1)},first:function(){return this.eq(0)},last:function(){return this.eq(-1)},slice:function(){return this.pushStack(F.apply(this,arguments),"slice",F.call(arguments).join(","))},map:function(a){return this.pushStack(e.map(this,function(b,c){return a.call(b,c,b)}))},end:function(){return this.prevObject||this.constructor(null)},push:E,sort:[].sort,splice:[].splice},e.fn.init.prototype=e.fn,e.extend=e.fn.extend=function(){var a,c,d,f,g,h,i=arguments[0]||{},j=1,k=arguments.length,l=!1;typeof i=="boolean"&&(l=i,i=arguments[1]||{},j=2),typeof i!="object"&&!e.isFunction(i)&&(i={}),k===j&&(i=this,--j);for(;j<k;j++)if((a=arguments[j])!=null)for(c in a){d=i[c],f=a[c];if(i===f)continue;l&&f&&(e.isPlainObject(f)||(g=e.isArray(f)))?(g?(g=!1,h=d&&e.isArray(d)?d:[]):h=d&&e.isPlainObject(d)?d:{},i[c]=e.extend(l,h,f)):f!==b&&(i[c]=f)}return i},e.extend({noConflict:function(b){a.$===e&&(a.$=g),b&&a.jQuery===e&&(a.jQuery=f);return e},isReady:!1,readyWait:1,holdReady:function(a){a?e.readyWait++:e.ready(!0)},ready:function(a){if(a===!0&&!--e.readyWait||a!==!0&&!e.isReady){if(!c.body)return setTimeout(e.ready,1);e.isReady=!0;if(a!==!0&&--e.readyWait>0)return;A.fireWith(c,[e]),e.fn.trigger&&e(c).trigger("ready").off("ready")}},bindReady:function(){if(!A){A=e.Callbacks("once memory");if(c.readyState==="complete")return setTimeout(e.ready,1);if(c.addEventListener)c.addEventListener("DOMContentLoaded",B,!1),a.addEventListener("load",e.ready,!1);else if(c.attachEvent){c.attachEvent("onreadystatechange",B),a.attachEvent("onload",e.ready);var b=!1;try{b=a.frameElement==null}catch(d){}c.documentElement.doScroll&&b&&J()}}},isFunction:function(a){return e.type(a)==="function"},isArray:Array.isArray||function(a){return e.type(a)==="array"},isWindow:function(a){return a!=null&&a==a.window},isNumeric:function(a){return!isNaN(parseFloat(a))&&isFinite(a)},type:function(a){return a==null?String(a):I[C.call(a)]||"object"},isPlainObject:function(a){if(!a||e.type(a)!=="object"||a.nodeType||e.isWindow(a))return!1;try{if(a.constructor&&!D.call(a,"constructor")&&!D.call(a.constructor.prototype,"isPrototypeOf"))return!1}catch(c){return!1}var d;for(d in a);return d===b||D.call(a,d)},isEmptyObject:function(a){for(var b in a)return!1;return!0},error:function(a){throw new Error(a)},parseJSON:function(b){if(typeof b!="string"||!b)return null;b=e.trim(b);if(a.JSON&&a.JSON.parse)return a.JSON.parse(b);if(n.test(b.replace(o,"@").replace(p,"]").replace(q,"")))return(new Function("return "+b))();e.error("Invalid JSON: "+b)},parseXML:function(c){if(typeof c!="string"||!c)return null;var d,f;try{a.DOMParser?(f=new DOMParser,d=f.parseFromString(c,"text/xml")):(d=new ActiveXObject("Microsoft.XMLDOM"),d.async="false",d.loadXML(c))}catch(g){d=b}(!d||!d.documentElement||d.getElementsByTagName("parsererror").length)&&e.error("Invalid XML: "+c);return d},noop:function(){},globalEval:function(b){b&&j.test(b)&&(a.execScript||function(b){a.eval.call(a,b)})(b)},camelCase:function(a){return a.replace(w,"ms-").replace(v,x)},nodeName:function(a,b){return a.nodeName&&a.nodeName.toUpperCase()===b.toUpperCase()},each:function(a,c,d){var f,g=0,h=a.length,i=h===b||e.isFunction(a);if(d){if(i){for(f in a)if(c.apply(a[f],d)===!1)break}else for(;g<h;)if(c.apply(a[g++],d)===!1)break}else if(i){for(f in a)if(c.call(a[f],f,a[f])===!1)break}else for(;g<h;)if(c.call(a[g],g,a[g++])===!1)break;return a},trim:G?function(a){return a==null?"":G.call(a)}:function(a){return a==null?"":(a+"").replace(k,"").replace(l,"")},makeArray:function(a,b){var c=b||[];if(a!=null){var d=e.type(a);a.length==null||d==="string"||d==="function"||d==="regexp"||e.isWindow(a)?E.call(c,a):e.merge(c,a)}return c},inArray:function(a,b,c){var d;if(b){if(H)return H.call(b,a,c);d=b.length,c=c?c<0?Math.max(0,d+c):c:0;for(;c<d;c++)if(c in b&&b[c]===a)return c}return-1},merge:function(a,c){var d=a.length,e=0;if(typeof c.length=="number")for(var f=c.length;e<f;e++)a[d++]=c[e];else while(c[e]!==b)a[d++]=c[e++];a.length=d;return a},grep:function(a,b,c){var d=[],e;c=!!c;for(var f=0,g=a.length;f<g;f++)e=!!b(a[f],f),c!==e&&d.push(a[f]);return d},map:function(a,c,d){var f,g,h=[],i=0,j=a.length,k=a instanceof e||j!==b&&typeof j=="number"&&(j>0&&a[0]&&a[j-1]||j===0||e.isArray(a));if(k)for(;i<j;i++)f=c(a[i],i,d),f!=null&&(h[h.length]=f);else for(g in a)f=c(a[g],g,d),f!=null&&(h[h.length]=f);return h.concat.apply([],h)},guid:1,proxy:function(a,c){if(typeof c=="string"){var d=a[c];c=a,a=d}if(!e.isFunction(a))return b;var f=F.call(arguments,2),g=function(){return a.apply(c,f.concat(F.call(arguments)))};g.guid=a.guid=a.guid||g.guid||e.guid++;return g},access:function(a,c,d,f,g,h,i){var j,k=d==null,l=0,m=a.length;if(d&&typeof d=="object"){for(l in d)e.access(a,c,l,d[l],1,h,f);g=1}else if(f!==b){j=i===b&&e.isFunction(f),k&&(j?(j=c,c=function(a,b,c){return j.call(e(a),c)}):(c.call(a,f),c=null));if(c)for(;l<m;l++)c(a[l],d,j?f.call(a[l],l,c(a[l],d)):f,i);g=1}return g?a:k?c.call(a):m?c(a[0],d):h},now:function(){return(new Date).getTime()},uaMatch:function(a){a=a.toLowerCase();var b=r.exec(a)||s.exec(a)||t.exec(a)||a.indexOf("compatible")<0&&u.exec(a)||[];return{browser:b[1]||"",version:b[2]||"0"}},sub:function(){function a(b,c){return new a.fn.init(b,c)}e.extend(!0,a,this),a.superclass=this,a.fn=a.prototype=this(),a.fn.constructor=a,a.sub=this.sub,a.fn.init=function(d,f){f&&f instanceof e&&!(f instanceof a)&&(f=a(f));return e.fn.init.call(this,d,f,b)},a.fn.init.prototype=a.fn;var b=a(c);return a},browser:{}}),e.each("Boolean Number String Function Array Date RegExp Object".split(" "),function(a,b){I["[object "+b+"]"]=b.toLowerCase()}),z=e.uaMatch(y),z.browser&&(e.browser[z.browser]=!0,e.browser.version=z.version),e.browser.webkit&&(e.browser.safari=!0),j.test(" ")&&(k=/^[\s\xA0]+/,l=/[\s\xA0]+$/),h=e(c),c.addEventListener?B=function(){c.removeEventListener("DOMContentLoaded",B,!1),e.ready()}:c.attachEvent&&(B=function(){c.readyState==="complete"&&(c.detachEvent("onreadystatechange",B),e.ready())});return e}(),g={};f.Callbacks=function(a){a=a?g[a]||h(a):{};var c=[],d=[],e,i,j,k,l,m,n=function(b){var d,e,g,h,i;for(d=0,e=b.length;d<e;d++)g=b[d],h=f.type(g),h==="array"?n(g):h==="function"&&(!a.unique||!p.has(g))&&c.push(g)},o=function(b,f){f=f||[],e=!a.memory||[b,f],i=!0,j=!0,m=k||0,k=0,l=c.length;for(;c&&m<l;m++)if(c[m].apply(b,f)===!1&&a.stopOnFalse){e=!0;break}j=!1,c&&(a.once?e===!0?p.disable():c=[]:d&&d.length&&(e=d.shift(),p.fireWith(e[0],e[1])))},p={add:function(){if(c){var a=c.length;n(arguments),j?l=c.length:e&&e!==!0&&(k=a,o(e[0],e[1]))}return this},remove:function(){if(c){var b=arguments,d=0,e=b.length;for(;d<e;d++)for(var f=0;f<c.length;f++)if(b[d]===c[f]){j&&f<=l&&(l--,f<=m&&m--),c.splice(f--,1);if(a.unique)break}}return this},has:function(a){if(c){var b=0,d=c.length;for(;b<d;b++)if(a===c[b])return!0}return!1},empty:function(){c=[];return this},disable:function(){c=d=e=b;return this},disabled:function(){return!c},lock:function(){d=b,(!e||e===!0)&&p.disable();return this},locked:function(){return!d},fireWith:function(b,c){d&&(j?a.once||d.push([b,c]):(!a.once||!e)&&o(b,c));return this},fire:function(){p.fireWith(this,arguments);return this},fired:function(){return!!i}};return p};var i=[].slice;f.extend({Deferred:function(a){var b=f.Callbacks("once memory"),c=f.Callbacks("once memory"),d=f.Callbacks("memory"),e="pending",g={resolve:b,reject:c,notify:d},h={done:b.add,fail:c.add,progress:d.add,state:function(){return e},isResolved:b.fired,isRejected:c.fired,then:function(a,b,c){i.done(a).fail(b).progress(c);return this},always:function(){i.done.apply(i,arguments).fail.apply(i,arguments);return this},pipe:function(a,b,c){return f.Deferred(function(d){f.each({done:[a,"resolve"],fail:[b,"reject"],progress:[c,"notify"]},function(a,b){var c=b[0],e=b[1],g;f.isFunction(c)?i[a](function(){g=c.apply(this,arguments),g&&f.isFunction(g.promise)?g.promise().then(d.resolve,d.reject,d.notify):d[e+"With"](this===i?d:this,[g])}):i[a](d[e])})}).promise()},promise:function(a){if(a==null)a=h;else for(var b in h)a[b]=h[b];return a}},i=h.promise({}),j;for(j in g)i[j]=g[j].fire,i[j+"With"]=g[j].fireWith;i.done(function(){e="resolved"},c.disable,d.lock).fail(function(){e="rejected"},b.disable,d.lock),a&&a.call(i,i);return i},when:function(a){function m(a){return function(b){e[a]=arguments.length>1?i.call(arguments,0):b,j.notifyWith(k,e)}}function l(a){return function(c){b[a]=arguments.length>1?i.call(arguments,0):c,--g||j.resolveWith(j,b)}}var b=i.call(arguments,0),c=0,d=b.length,e=Array(d),g=d,h=d,j=d<=1&&a&&f.isFunction(a.promise)?a:f.Deferred(),k=j.promise();if(d>1){for(;c<d;c++)b[c]&&b[c].promise&&f.isFunction(b[c].promise)?b[c].promise().then(l(c),j.reject,m(c)):--g;g||j.resolveWith(j,b)}else j!==a&&j.resolveWith(j,d?[a]:[]);return k}}),f.support=function(){var b,d,e,g,h,i,j,k,l,m,n,o,p=c.createElement("div"),q=c.documentElement;p.setAttribute("className","t"),p.innerHTML="   <link/><table></table><a href='/a' style='top:1px;float:left;opacity:.55;'>a</a><input type='checkbox'/>",d=p.getElementsByTagName("*"),e=p.getElementsByTagName("a")[0];if(!d||!d.length||!e)return{};g=c.createElement("select"),h=g.appendChild(c.createElement("option")),i=p.getElementsByTagName("input")[0],b={leadingWhitespace:p.firstChild.nodeType===3,tbody:!p.getElementsByTagName("tbody").length,htmlSerialize:!!p.getElementsByTagName("link").length,style:/top/.test(e.getAttribute("style")),hrefNormalized:e.getAttribute("href")==="/a",opacity:/^0.55/.test(e.style.opacity),cssFloat:!!e.style.cssFloat,checkOn:i.value==="on",optSelected:h.selected,getSetAttribute:p.className!=="t",enctype:!!c.createElement("form").enctype,html5Clone:c.createElement("nav").cloneNode(!0).outerHTML!=="<:nav></:nav>",submitBubbles:!0,changeBubbles:!0,focusinBubbles:!1,deleteExpando:!0,noCloneEvent:!0,inlineBlockNeedsLayout:!1,shrinkWrapBlocks:!1,reliableMarginRight:!0,pixelMargin:!0},f.boxModel=b.boxModel=c.compatMode==="CSS1Compat",i.checked=!0,b.noCloneChecked=i.cloneNode(!0).checked,g.disabled=!0,b.optDisabled=!h.disabled;try{delete p.test}catch(r){b.deleteExpando=!1}!p.addEventListener&&p.attachEvent&&p.fireEvent&&(p.attachEvent("onclick",function(){b.noCloneEvent=!1}),p.cloneNode(!0).fireEvent("onclick")),i=c.createElement("input"),i.value="t",i.setAttribute("type","radio"),b.radioValue=i.value==="t",i.setAttribute("checked","checked"),i.setAttribute("name","t"),p.appendChild(i),j=c.createDocumentFragment(),j.appendChild(p.lastChild),b.checkClone=j.cloneNode(!0).cloneNode(!0).lastChild.checked,b.appendChecked=i.checked,j.removeChild(i),j.appendChild(p);if(p.attachEvent)for(n in{submit:1,change:1,focusin:1})m="on"+n,o=m in p,o||(p.setAttribute(m,"return;"),o=typeof p[m]=="function"),b[n+"Bubbles"]=o;j.removeChild(p),j=g=h=p=i=null,f(function(){var d,e,g,h,i,j,l,m,n,q,r,s,t,u=c.getElementsByTagName("body")[0];!u||(m=1,t="padding:0;margin:0;border:",r="position:absolute;top:0;left:0;width:1px;height:1px;",s=t+"0;visibility:hidden;",n="style='"+r+t+"5px solid #000;",q="<div "+n+"display:block;'><div style='"+t+"0;display:block;overflow:hidden;'></div></div>"+"<table "+n+"' cellpadding='0' cellspacing='0'>"+"<tr><td></td></tr></table>",d=c.createElement("div"),d.style.cssText=s+"width:0;height:0;position:static;top:0;margin-top:"+m+"px",u.insertBefore(d,u.firstChild),p=c.createElement("div"),d.appendChild(p),p.innerHTML="<table><tr><td style='"+t+"0;display:none'></td><td>t</td></tr></table>",k=p.getElementsByTagName("td"),o=k[0].offsetHeight===0,k[0].style.display="",k[1].style.display="none",b.reliableHiddenOffsets=o&&k[0].offsetHeight===0,a.getComputedStyle&&(p.innerHTML="",l=c.createElement("div"),l.style.width="0",l.style.marginRight="0",p.style.width="2px",p.appendChild(l),b.reliableMarginRight=(parseInt((a.getComputedStyle(l,null)||{marginRight:0}).marginRight,10)||0)===0),typeof p.style.zoom!="undefined"&&(p.innerHTML="",p.style.width=p.style.padding="1px",p.style.border=0,p.style.overflow="hidden",p.style.display="inline",p.style.zoom=1,b.inlineBlockNeedsLayout=p.offsetWidth===3,p.style.display="block",p.style.overflow="visible",p.innerHTML="<div style='width:5px;'></div>",b.shrinkWrapBlocks=p.offsetWidth!==3),p.style.cssText=r+s,p.innerHTML=q,e=p.firstChild,g=e.firstChild,i=e.nextSibling.firstChild.firstChild,j={doesNotAddBorder:g.offsetTop!==5,doesAddBorderForTableAndCells:i.offsetTop===5},g.style.position="fixed",g.style.top="20px",j.fixedPosition=g.offsetTop===20||g.offsetTop===15,g.style.position=g.style.top="",e.style.overflow="hidden",e.style.position="relative",j.subtractsBorderForOverflowNotVisible=g.offsetTop===-5,j.doesNotIncludeMarginInBodyOffset=u.offsetTop!==m,a.getComputedStyle&&(p.style.marginTop="1%",b.pixelMargin=(a.getComputedStyle(p,null)||{marginTop:0}).marginTop!=="1%"),typeof d.style.zoom!="undefined"&&(d.style.zoom=1),u.removeChild(d),l=p=d=null,f.extend(b,j))});return b}();var j=/^(?:\{.*\}|\[.*\])$/,k=/([A-Z])/g;f.extend({cache:{},uuid:0,expando:"jQuery"+(f.fn.jquery+Math.random()).replace(/\D/g,""),noData:{embed:!0,object:"clsid:D27CDB6E-AE6D-11cf-96B8-444553540000",applet:!0},hasData:function(a){a=a.nodeType?f.cache[a[f.expando]]:a[f.expando];return!!a&&!m(a)},data:function(a,c,d,e){if(!!f.acceptData(a)){var g,h,i,j=f.expando,k=typeof c=="string",l=a.nodeType,m=l?f.cache:a,n=l?a[j]:a[j]&&j,o=c==="events";if((!n||!m[n]||!o&&!e&&!m[n].data)&&k&&d===b)return;n||(l?a[j]=n=++f.uuid:n=j),m[n]||(m[n]={},l||(m[n].toJSON=f.noop));if(typeof c=="object"||typeof c=="function")e?m[n]=f.extend(m[n],c):m[n].data=f.extend(m[n].data,c);g=h=m[n],e||(h.data||(h.data={}),h=h.data),d!==b&&(h[f.camelCase(c)]=d);if(o&&!h[c])return g.events;k?(i=h[c],i==null&&(i=h[f.camelCase(c)])):i=h;return i}},removeData:function(a,b,c){if(!!f.acceptData(a)){var d,e,g,h=f.expando,i=a.nodeType,j=i?f.cache:a,k=i?a[h]:h;if(!j[k])return;if(b){d=c?j[k]:j[k].data;if(d){f.isArray(b)||(b in d?b=[b]:(b=f.camelCase(b),b in d?b=[b]:b=b.split(" ")));for(e=0,g=b.length;e<g;e++)delete d[b[e]];if(!(c?m:f.isEmptyObject)(d))return}}if(!c){delete j[k].data;if(!m(j[k]))return}f.support.deleteExpando||!j.setInterval?delete j[k]:j[k]=null,i&&(f.support.deleteExpando?delete a[h]:a.removeAttribute?a.removeAttribute(h):a[h]=null)}},_data:function(a,b,c){return f.data(a,b,c,!0)},acceptData:function(a){if(a.nodeName){var b=f.noData[a.nodeName.toLowerCase()];if(b)return b!==!0&&a.getAttribute("classid")===b}return!0}}),f.fn.extend({data:function(a,c){var d,e,g,h,i,j=this[0],k=0,m=null;if(a===b){if(this.length){m=f.data(j);if(j.nodeType===1&&!f._data(j,"parsedAttrs")){g=j.attributes;for(i=g.length;k<i;k++)h=g[k].name,h.indexOf("data-")===0&&(h=f.camelCase(h.substring(5)),l(j,h,m[h]));f._data(j,"parsedAttrs",!0)}}return m}if(typeof a=="object")return this.each(function(){f.data(this,a)});d=a.split(".",2),d[1]=d[1]?"."+d[1]:"",e=d[1]+"!";return f.access(this,function(c){if(c===b){m=this.triggerHandler("getData"+e,[d[0]]),m===b&&j&&(m=f.data(j,a),m=l(j,a,m));return m===b&&d[1]?this.data(d[0]):m}d[1]=c,this.each(function(){var b=f(this);b.triggerHandler("setData"+e,d),f.data(this,a,c),b.triggerHandler("changeData"+e,d)})},null,c,arguments.length>1,null,!1)},removeData:function(a){return this.each(function(){f.removeData(this,a)})}}),f.extend({_mark:function(a,b){a&&(b=(b||"fx")+"mark",f._data(a,b,(f._data(a,b)||0)+1))},_unmark:function(a,b,c){a!==!0&&(c=b,b=a,a=!1);if(b){c=c||"fx";var d=c+"mark",e=a?0:(f._data(b,d)||1)-1;e?f._data(b,d,e):(f.removeData(b,d,!0),n(b,c,"mark"))}},queue:function(a,b,c){var d;if(a){b=(b||"fx")+"queue",d=f._data(a,b),c&&(!d||f.isArray(c)?d=f._data(a,b,f.makeArray(c)):d.push(c));return d||[]}},dequeue:function(a,b){b=b||"fx";var c=f.queue(a,b),d=c.shift(),e={};d==="inprogress"&&(d=c.shift()),d&&(b==="fx"&&c.unshift("inprogress"),f._data(a,b+".run",e),d.call(a,function(){f.dequeue(a,b)},e)),c.length||(f.removeData(a,b+"queue "+b+".run",!0),n(a,b,"queue"))}}),f.fn.extend({queue:function(a,c){var d=2;typeof a!="string"&&(c=a,a="fx",d--);if(arguments.length<d)return f.queue(this[0],a);return c===b?this:this.each(function(){var b=f.queue(this,a,c);a==="fx"&&b[0]!=="inprogress"&&f.dequeue(this,a)})},dequeue:function(a){return this.each(function(){f.dequeue(this,a)})},delay:function(a,b){a=f.fx?f.fx.speeds[a]||a:a,b=b||"fx";return this.queue(b,function(b,c){var d=setTimeout(b,a);c.stop=function(){clearTimeout(d)}})},clearQueue:function(a){return this.queue(a||"fx",[])},promise:function(a,c){function m(){--h||d.resolveWith(e,[e])}typeof a!="string"&&(c=a,a=b),a=a||"fx";var d=f.Deferred(),e=this,g=e.length,h=1,i=a+"defer",j=a+"queue",k=a+"mark",l;while(g--)if(l=f.data(e[g],i,b,!0)||(f.data(e[g],j,b,!0)||f.data(e[g],k,b,!0))&&f.data(e[g],i,f.Callbacks("once memory"),!0))h++,l.add(m);m();return d.promise(c)}});var o=/[\n\t\r]/g,p=/\s+/,q=/\r/g,r=/^(?:button|input)$/i,s=/^(?:button|input|object|select|textarea)$/i,t=/^a(?:rea)?$/i,u=/^(?:autofocus|autoplay|async|checked|controls|defer|disabled|hidden|loop|multiple|open|readonly|required|scoped|selected)$/i,v=f.support.getSetAttribute,w,x,y;f.fn.extend({attr:function(a,b){return f.access(this,f.attr,a,b,arguments.length>1)},removeAttr:function(a){return this.each(function(){f.removeAttr(this,a)})},prop:function(a,b){return f.access(this,f.prop,a,b,arguments.length>1)},removeProp:function(a){a=f.propFix[a]||a;return this.each(function(){try{this[a]=b,delete this[a]}catch(c){}})},addClass:function(a){var b,c,d,e,g,h,i;if(f.isFunction(a))return this.each(function(b){f(this).addClass(a.call(this,b,this.className))});if(a&&typeof a=="string"){b=a.split(p);for(c=0,d=this.length;c<d;c++){e=this[c];if(e.nodeType===1)if(!e.className&&b.length===1)e.className=a;else{g=" "+e.className+" ";for(h=0,i=b.length;h<i;h++)~g.indexOf(" "+b[h]+" ")||(g+=b[h]+" ");e.className=f.trim(g)}}}return this},removeClass:function(a){var c,d,e,g,h,i,j;if(f.isFunction(a))return this.each(function(b){f(this).removeClass(a.call(this,b,this.className))});if(a&&typeof a=="string"||a===b){c=(a||"").split(p);for(d=0,e=this.length;d<e;d++){g=this[d];if(g.nodeType===1&&g.className)if(a){h=(" "+g.className+" ").replace(o," ");for(i=0,j=c.length;i<j;i++)h=h.replace(" "+c[i]+" "," ");g.className=f.trim(h)}else g.className=""}}return this},toggleClass:function(a,b){var c=typeof a,d=typeof b=="boolean";if(f.isFunction(a))return this.each(function(c){f(this).toggleClass(a.call(this,c,this.className,b),b)});return this.each(function(){if(c==="string"){var e,g=0,h=f(this),i=b,j=a.split(p);while(e=j[g++])i=d?i:!h.hasClass(e),h[i?"addClass":"removeClass"](e)}else if(c==="undefined"||c==="boolean")this.className&&f._data(this,"__className__",this.className),this.className=this.className||a===!1?"":f._data(this,"__className__")||""})},hasClass:function(a){var b=" "+a+" ",c=0,d=this.length;for(;c<d;c++)if(this[c].nodeType===1&&(" "+this[c].className+" ").replace(o," ").indexOf(b)>-1)return!0;return!1},val:function(a){var c,d,e,g=this[0];{if(!!arguments.length){e=f.isFunction(a);return this.each(function(d){var g=f(this),h;if(this.nodeType===1){e?h=a.call(this,d,g.val()):h=a,h==null?h="":typeof h=="number"?h+="":f.isArray(h)&&(h=f.map(h,function(a){return a==null?"":a+""})),c=f.valHooks[this.type]||f.valHooks[this.nodeName.toLowerCase()];if(!c||!("set"in c)||c.set(this,h,"value")===b)this.value=h}})}if(g){c=f.valHooks[g.type]||f.valHooks[g.nodeName.toLowerCase()];if(c&&"get"in c&&(d=c.get(g,"value"))!==b)return d;d=g.value;return typeof d=="string"?d.replace(q,""):d==null?"":d}}}}),f.extend({valHooks:{option:{get:function(a){var b=a.attributes.value;return!b||b.specified?a.value:a.text}},select:{get:function(a){var b,c,d,e,g=a.selectedIndex,h=[],i=a.options,j=a.type==="select-one";if(g<0)return null;c=j?g:0,d=j?g+1:i.length;for(;c<d;c++){e=i[c];if(e.selected&&(f.support.optDisabled?!e.disabled:e.getAttribute("disabled")===null)&&(!e.parentNode.disabled||!f.nodeName(e.parentNode,"optgroup"))){b=f(e).val();if(j)return b;h.push(b)}}if(j&&!h.length&&i.length)return f(i[g]).val();return h},set:function(a,b){var c=f.makeArray(b);f(a).find("option").each(function(){this.selected=f.inArray(f(this).val(),c)>=0}),c.length||(a.selectedIndex=-1);return c}}},attrFn:{val:!0,css:!0,html:!0,text:!0,data:!0,width:!0,height:!0,offset:!0},attr:function(a,c,d,e){var g,h,i,j=a.nodeType;if(!!a&&j!==3&&j!==8&&j!==2){if(e&&c in f.attrFn)return f(a)[c](d);if(typeof a.getAttribute=="undefined")return f.prop(a,c,d);i=j!==1||!f.isXMLDoc(a),i&&(c=c.toLowerCase(),h=f.attrHooks[c]||(u.test(c)?x:w));if(d!==b){if(d===null){f.removeAttr(a,c);return}if(h&&"set"in h&&i&&(g=h.set(a,d,c))!==b)return g;a.setAttribute(c,""+d);return d}if(h&&"get"in h&&i&&(g=h.get(a,c))!==null)return g;g=a.getAttribute(c);return g===null?b:g}},removeAttr:function(a,b){var c,d,e,g,h,i=0;if(b&&a.nodeType===1){d=b.toLowerCase().split(p),g=d.length;for(;i<g;i++)e=d[i],e&&(c=f.propFix[e]||e,h=u.test(e),h||f.attr(a,e,""),a.removeAttribute(v?e:c),h&&c in a&&(a[c]=!1))}},attrHooks:{type:{set:function(a,b){if(r.test(a.nodeName)&&a.parentNode)f.error("type property can't be changed");else if(!f.support.radioValue&&b==="radio"&&f.nodeName(a,"input")){var c=a.value;a.setAttribute("type",b),c&&(a.value=c);return b}}},value:{get:function(a,b){if(w&&f.nodeName(a,"button"))return w.get(a,b);return b in a?a.value:null},set:function(a,b,c){if(w&&f.nodeName(a,"button"))return w.set(a,b,c);a.value=b}}},propFix:{tabindex:"tabIndex",readonly:"readOnly","for":"htmlFor","class":"className",maxlength:"maxLength",cellspacing:"cellSpacing",cellpadding:"cellPadding",rowspan:"rowSpan",colspan:"colSpan",usemap:"useMap",frameborder:"frameBorder",contenteditable:"contentEditable"},prop:function(a,c,d){var e,g,h,i=a.nodeType;if(!!a&&i!==3&&i!==8&&i!==2){h=i!==1||!f.isXMLDoc(a),h&&(c=f.propFix[c]||c,g=f.propHooks[c]);return d!==b?g&&"set"in g&&(e=g.set(a,d,c))!==b?e:a[c]=d:g&&"get"in g&&(e=g.get(a,c))!==null?e:a[c]}},propHooks:{tabIndex:{get:function(a){var c=a.getAttributeNode("tabindex");return c&&c.specified?parseInt(c.value,10):s.test(a.nodeName)||t.test(a.nodeName)&&a.href?0:b}}}}),f.attrHooks.tabindex=f.propHooks.tabIndex,x={get:function(a,c){var d,e=f.prop(a,c);return e===!0||typeof e!="boolean"&&(d=a.getAttributeNode(c))&&d.nodeValue!==!1?c.toLowerCase():b},set:function(a,b,c){var d;b===!1?f.removeAttr(a,c):(d=f.propFix[c]||c,d in a&&(a[d]=!0),a.setAttribute(c,c.toLowerCase()));return c}},v||(y={name:!0,id:!0,coords:!0},w=f.valHooks.button={get:function(a,c){var d;d=a.getAttributeNode(c);return d&&(y[c]?d.nodeValue!=="":d.specified)?d.nodeValue:b},set:function(a,b,d){var e=a.getAttributeNode(d);e||(e=c.createAttribute(d),a.setAttributeNode(e));return e.nodeValue=b+""}},f.attrHooks.tabindex.set=w.set,f.each(["width","height"],function(a,b){f.attrHooks[b]=f.extend(f.attrHooks[b],{set:function(a,c){if(c===""){a.setAttribute(b,"auto");return c}}})}),f.attrHooks.contenteditable={get:w.get,set:function(a,b,c){b===""&&(b="false"),w.set(a,b,c)}}),f.support.hrefNormalized||f.each(["href","src","width","height"],function(a,c){f.attrHooks[c]=f.extend(f.attrHooks[c],{get:function(a){var d=a.getAttribute(c,2);return d===null?b:d}})}),f.support.style||(f.attrHooks.style={get:function(a){return a.style.cssText.toLowerCase()||b},set:function(a,b){return a.style.cssText=""+b}}),f.support.optSelected||(f.propHooks.selected=f.extend(f.propHooks.selected,{get:function(a){var b=a.parentNode;b&&(b.selectedIndex,b.parentNode&&b.parentNode.selectedIndex);return null}})),f.support.enctype||(f.propFix.enctype="encoding"),f.support.checkOn||f.each(["radio","checkbox"],function(){f.valHooks[this]={get:function(a){return a.getAttribute("value")===null?"on":a.value}}}),f.each(["radio","checkbox"],function(){f.valHooks[this]=f.extend(f.valHooks[this],{set:function(a,b){if(f.isArray(b))return a.checked=f.inArray(f(a).val(),b)>=0}})});var z=/^(?:textarea|input|select)$/i,A=/^([^\.]*)?(?:\.(.+))?$/,B=/(?:^|\s)hover(\.\S+)?\b/,C=/^key/,D=/^(?:mouse|contextmenu)|click/,E=/^(?:focusinfocus|focusoutblur)$/,F=/^(\w*)(?:#([\w\-]+))?(?:\.([\w\-]+))?$/,G=function(
 a){var b=F.exec(a);b&&(b[1]=(b[1]||"").toLowerCase(),b[3]=b[3]&&new RegExp("(?:^|\\s)"+b[3]+"(?:\\s|$)"));return b},H=function(a,b){var c=a.attributes||{};return(!b[1]||a.nodeName.toLowerCase()===b[1])&&(!b[2]||(c.id||{}).value===b[2])&&(!b[3]||b[3].test((c["class"]||{}).value))},I=function(a){return f.event.special.hover?a:a.replace(B,"mouseenter$1 mouseleave$1")};f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3||a.nodeType===8||!c||!d||!(h=f._data(a)))){d.handler&&(p=d,d=p.handler,g=p.selector),d.guid||(d.guid=f.guid++),j=h.events,j||(h.events=j={}),i=h.handle,i||(h.handle=i=function(a){return typeof f!="undefined"&&(!a||f.event.triggered!==a.type)?f.event.dispatch.apply(i.elem,arguments):b},i.elem=a),c=f.trim(I(c)).split(" ");for(k=0;k<c.length;k++){l=A.exec(c[k])||[],m=l[1],n=(l[2]||"").split(".").sort(),s=f.event.special[m]||{},m=(g?s.delegateType:s.bindType)||m,s=f.event.special[m]||{},o=f.extend({type:m,origType:l[1],data:e,handler:d,guid:d.guid,selector:g,quick:g&&G(g),namespace:n.join(".")},p),r=j[m];if(!r){r=j[m]=[],r.delegateCount=0;if(!s.setup||s.setup.call(a,e,n,i)===!1)a.addEventListener?a.addEventListener(m,i,!1):a.attachEvent&&a.attachEvent("on"+m,i)}s.add&&(s.add.call(a,o),o.handler.guid||(o.handler.guid=d.guid)),g?r.splice(r.delegateCount++,0,o):r.push(o),f.event.global[m]=!0}a=null}},global:{},remove:function(a,b,c,d,e){var g=f.hasData(a)&&f._data(a),h,i,j,k,l,m,n,o,p,q,r,s;if(!!g&&!!(o=g.events)){b=f.trim(I(b||"")).split(" ");for(h=0;h<b.length;h++){i=A.exec(b[h])||[],j=k=i[1],l=i[2];if(!j){for(j in o)f.event.remove(a,j+b[h],c,d,!0);continue}p=f.event.special[j]||{},j=(d?p.delegateType:p.bindType)||j,r=o[j]||[],m=r.length,l=l?new RegExp("(^|\\.)"+l.split(".").sort().join("\\.(?:.*\\.)?")+"(\\.|$)"):null;for(n=0;n<r.length;n++)s=r[n],(e||k===s.origType)&&(!c||c.guid===s.guid)&&(!l||l.test(s.namespace))&&(!d||d===s.selector||d==="**"&&s.selector)&&(r.splice(n--,1),s.selector&&r.delegateCount--,p.remove&&p.remove.call(a,s));r.length===0&&m!==r.length&&((!p.teardown||p.teardown.call(a,l)===!1)&&f.removeEvent(a,j,g.handle),delete o[j])}f.isEmptyObject(o)&&(q=g.handle,q&&(q.elem=null),f.removeData(a,["events","handle"],!0))}},customEvent:{getData:!0,setData:!0,changeData:!0},trigger:function(c,d,e,g){if(!e||e.nodeType!==3&&e.nodeType!==8){var h=c.type||c,i=[],j,k,l,m,n,o,p,q,r,s;if(E.test(h+f.event.triggered))return;h.indexOf("!")>=0&&(h=h.slice(0,-1),k=!0),h.indexOf(".")>=0&&(i=h.split("."),h=i.shift(),i.sort());if((!e||f.event.customEvent[h])&&!f.event.global[h])return;c=typeof c=="object"?c[f.expando]?c:new f.Event(h,c):new f.Event(h),c.type=h,c.isTrigger=!0,c.exclusive=k,c.namespace=i.join("."),c.namespace_re=c.namespace?new RegExp("(^|\\.)"+i.join("\\.(?:.*\\.)?")+"(\\.|$)"):null,o=h.indexOf(":")<0?"on"+h:"";if(!e){j=f.cache;for(l in j)j[l].events&&j[l].events[h]&&f.event.trigger(c,d,j[l].handle.elem,!0);return}c.result=b,c.target||(c.target=e),d=d!=null?f.makeArray(d):[],d.unshift(c),p=f.event.special[h]||{};if(p.trigger&&p.trigger.apply(e,d)===!1)return;r=[[e,p.bindType||h]];if(!g&&!p.noBubble&&!f.isWindow(e)){s=p.delegateType||h,m=E.test(s+h)?e:e.parentNode,n=null;for(;m;m=m.parentNode)r.push([m,s]),n=m;n&&n===e.ownerDocument&&r.push([n.defaultView||n.parentWindow||a,s])}for(l=0;l<r.length&&!c.isPropagationStopped();l++)m=r[l][0],c.type=r[l][1],q=(f._data(m,"events")||{})[c.type]&&f._data(m,"handle"),q&&q.apply(m,d),q=o&&m[o],q&&f.acceptData(m)&&q.apply(m,d)===!1&&c.preventDefault();c.type=h,!g&&!c.isDefaultPrevented()&&(!p._default||p._default.apply(e.ownerDocument,d)===!1)&&(h!=="click"||!f.nodeName(e,"a"))&&f.acceptData(e)&&o&&e[h]&&(h!=="focus"&&h!=="blur"||c.target.offsetWidth!==0)&&!f.isWindow(e)&&(n=e[o],n&&(e[o]=null),f.event.triggered=h,e[h](),f.event.triggered=b,n&&(e[o]=n));return c.result}},dispatch:function(c){c=f.event.fix(c||a.event);var d=(f._data(this,"events")||{})[c.type]||[],e=d.delegateCount,g=[].slice.call(arguments,0),h=!c.exclusive&&!c.namespace,i=f.event.special[c.type]||{},j=[],k,l,m,n,o,p,q,r,s,t,u;g[0]=c,c.delegateTarget=this;if(!i.preDispatch||i.preDispatch.call(this,c)!==!1){if(e&&(!c.button||c.type!=="click")){n=f(this),n.context=this.ownerDocument||this;for(m=c.target;m!=this;m=m.parentNode||this)if(m.disabled!==!0){p={},r=[],n[0]=m;for(k=0;k<e;k++)s=d[k],t=s.selector,p[t]===b&&(p[t]=s.quick?H(m,s.quick):n.is(t)),p[t]&&r.push(s);r.length&&j.push({elem:m,matches:r})}}d.length>e&&j.push({elem:this,matches:d.slice(e)});for(k=0;k<j.length&&!c.isPropagationStopped();k++){q=j[k],c.currentTarget=q.elem;for(l=0;l<q.matches.length&&!c.isImmediatePropagationStopped();l++){s=q.matches[l];if(h||!c.namespace&&!s.namespace||c.namespace_re&&c.namespace_re.test(s.namespace))c.data=s.data,c.handleObj=s,o=((f.event.special[s.origType]||{}).handle||s.handler).apply(q.elem,g),o!==b&&(c.result=o,o===!1&&(c.preventDefault(),c.stopPropagation()))}}i.postDispatch&&i.postDispatch.call(this,c);return c.result}},props:"attrChange attrName relatedNode srcElement altKey bubbles cancelable ctrlKey currentTarget eventPhase metaKey relatedTarget shiftKey target timeStamp view which".split(" "),fixHooks:{},keyHooks:{props:"char charCode key keyCode".split(" "),filter:function(a,b){a.which==null&&(a.which=b.charCode!=null?b.charCode:b.keyCode);return a}},mouseHooks:{props:"button buttons clientX clientY fromElement offsetX offsetY pageX pageY screenX screenY toElement".split(" "),filter:function(a,d){var e,f,g,h=d.button,i=d.fromElement;a.pageX==null&&d.clientX!=null&&(e=a.target.ownerDocument||c,f=e.documentElement,g=e.body,a.pageX=d.clientX+(f&&f.scrollLeft||g&&g.scrollLeft||0)-(f&&f.clientLeft||g&&g.clientLeft||0),a.pageY=d.clientY+(f&&f.scrollTop||g&&g.scrollTop||0)-(f&&f.clientTop||g&&g.clientTop||0)),!a.relatedTarget&&i&&(a.relatedTarget=i===a.target?d.toElement:i),!a.which&&h!==b&&(a.which=h&1?1:h&2?3:h&4?2:0);return a}},fix:function(a){if(a[f.expando])return a;var d,e,g=a,h=f.event.fixHooks[a.type]||{},i=h.props?this.props.concat(h.props):this.props;a=f.Event(g);for(d=i.length;d;)e=i[--d],a[e]=g[e];a.target||(a.target=g.srcElement||c),a.target.nodeType===3&&(a.target=a.target.parentNode),a.metaKey===b&&(a.metaKey=a.ctrlKey);return h.filter?h.filter(a,g):a},special:{ready:{setup:f.bindReady},load:{noBubble:!0},focus:{delegateType:"focusin"},blur:{delegateType:"focusout"},beforeunload:{setup:function(a,b,c){f.isWindow(this)&&(this.onbeforeunload=c)},teardown:function(a,b){this.onbeforeunload===b&&(this.onbeforeunload=null)}}},simulate:function(a,b,c,d){var e=f.extend(new f.Event,c,{type:a,isSimulated:!0,originalEvent:{}});d?f.event.trigger(e,null,b):f.event.dispatch.call(b,e),e.isDefaultPrevented()&&c.preventDefault()}},f.event.handle=f.event.dispatch,f.removeEvent=c.removeEventListener?function(a,b,c){a.removeEventListener&&a.removeEventListener(b,c,!1)}:function(a,b,c){a.detachEvent&&a.detachEvent("on"+b,c)},f.Event=function(a,b){if(!(this instanceof f.Event))return new f.Event(a,b);a&&a.type?(this.originalEvent=a,this.type=a.type,this.isDefaultPrevented=a.defaultPrevented||a.returnValue===!1||a.getPreventDefault&&a.getPreventDefault()?K:J):this.type=a,b&&f.extend(this,b),this.timeStamp=a&&a.timeStamp||f.now(),this[f.expando]=!0},f.Event.prototype={preventDefault:function(){this.isDefaultPrevented=K;var a=this.originalEvent;!a||(a.preventDefault?a.preventDefault():a.returnValue=!1)},stopPropagation:function(){this.isPropagationStopped=K;var a=this.originalEvent;!a||(a.stopPropagation&&a.stopPropagation(),a.cancelBubble=!0)},stopImmediatePropagation:function(){this.isImmediatePropagationStopped=K,this.stopPropagation()},isDefaultPrevented:J,isPropagationStopped:J,isImmediatePropagationStopped:J},f.each({mouseenter:"mouseover",mouseleave:"mouseout"},function(a,b){f.event.special[a]={delegateType:b,bindType:b,handle:function(a){var c=this,d=a.relatedTarget,e=a.handleObj,g=e.selector,h;if(!d||d!==c&&!f.contains(c,d))a.type=e.origType,h=e.handler.apply(this,arguments),a.type=b;return h}}}),f.support.submitBubbles||(f.event.special.submit={setup:function(){if(f.nodeName(this,"form"))return!1;f.event.add(this,"click._submit keypress._submit",function(a){var c=a.target,d=f.nodeName(c,"input")||f.nodeName(c,"button")?c.form:b;d&&!d._submit_attached&&(f.event.add(d,"submit._submit",function(a){a._submit_bubble=!0}),d._submit_attached=!0)})},postDispatch:function(a){a._submit_bubble&&(delete a._submit_bubble,this.parentNode&&!a.isTrigger&&f.event.simulate("submit",this.parentNode,a,!0))},teardown:function(){if(f.nodeName(this,"form"))return!1;f.event.remove(this,"._submit")}}),f.support.changeBubbles||(f.event.special.change={setup:function(){if(z.test(this.nodeName)){if(this.type==="checkbox"||this.type==="radio")f.event.add(this,"propertychange._change",function(a){a.originalEvent.propertyName==="checked"&&(this._just_changed=!0)}),f.event.add(this,"click._change",function(a){this._just_changed&&!a.isTrigger&&(this._just_changed=!1,f.event.simulate("change",this,a,!0))});return!1}f.event.add(this,"beforeactivate._change",function(a){var b=a.target;z.test(b.nodeName)&&!b._change_attached&&(f.event.add(b,"change._change",function(a){this.parentNode&&!a.isSimulated&&!a.isTrigger&&f.event.simulate("change",this.parentNode,a,!0)}),b._change_attached=!0)})},handle:function(a){var b=a.target;if(this!==b||a.isSimulated||a.isTrigger||b.type!=="radio"&&b.type!=="checkbox")return a.handleObj.handler.apply(this,arguments)},teardown:function(){f.event.remove(this,"._change");return z.test(this.nodeName)}}),f.support.focusinBubbles||f.each({focus:"focusin",blur:"focusout"},function(a,b){var d=0,e=function(a){f.event.simulate(b,a.target,f.event.fix(a),!0)};f.event.special[b]={setup:function(){d++===0&&c.addEventListener(a,e,!0)},teardown:function(){--d===0&&c.removeEventListener(a,e,!0)}}}),f.fn.extend({on:function(a,c,d,e,g){var h,i;if(typeof a=="object"){typeof c!="string"&&(d=d||c,c=b);for(i in a)this.on(i,c,d,a[i],g);return this}d==null&&e==null?(e=c,d=c=b):e==null&&(typeof c=="string"?(e=d,d=b):(e=d,d=c,c=b));if(e===!1)e=J;else if(!e)return this;g===1&&(h=e,e=function(a){f().off(a);return h.apply(this,arguments)},e.guid=h.guid||(h.guid=f.guid++));return this.each(function(){f.event.add(this,a,e,d,c)})},one:function(a,b,c,d){return this.on(a,b,c,d,1)},off:function(a,c,d){if(a&&a.preventDefault&&a.handleObj){var e=a.handleObj;f(a.delegateTarget).off(e.namespace?e.origType+"."+e.namespace:e.origType,e.selector,e.handler);return this}if(typeof a=="object"){for(var g in a)this.off(g,c,a[g]);return this}if(c===!1||typeof c=="function")d=c,c=b;d===!1&&(d=J);return this.each(function(){f.event.remove(this,a,d,c)})},bind:function(a,b,c){return this.on(a,null,b,c)},unbind:function(a,b){return this.off(a,null,b)},live:function(a,b,c){f(this.context).on(a,this.selector,b,c);return this},die:function(a,b){f(this.context).off(a,this.selector||"**",b);return this},delegate:function(a,b,c,d){return this.on(b,a,c,d)},undelegate:function(a,b,c){return arguments.length==1?this.off(a,"**"):this.off(b,a,c)},trigger:function(a,b){return this.each(function(){f.event.trigger(a,b,this)})},triggerHandler:function(a,b){if(this[0])return f.event.trigger(a,b,this[0],!0)},toggle:function(a){var b=arguments,c=a.guid||f.guid++,d=0,e=function(c){var e=(f._data(this,"lastToggle"+a.guid)||0)%d;f._data(this,"lastToggle"+a.guid,e+1),c.preventDefault();return b[e].apply(this,arguments)||!1};e.guid=c;while(d<b.length)b[d++].guid=c;return this.click(e)},hover:function(a,b){return this.mouseenter(a).mouseleave(b||a)}}),f.each("blur focus focusin focusout load resize scroll unload click dblclick mousedown mouseup mousemove mouseover mouseout mouseenter mouseleave change select submit keydown keypress keyup error contextmenu".split(" "),function(a,b){f.fn[b]=function(a,c){c==null&&(c=a,a=null);return arguments.length>0?this.on(b,null,a,c):this.trigger(b)},f.attrFn&&(f.attrFn[b]=!0),C.test(b)&&(f.event.fixHooks[b]=f.event.keyHooks),D.test(b)&&(f.event.fixHooks[b]=f.event.mouseHooks)}),function(){function x(a,b,c,e,f,g){for(var h=0,i=e.length;h<i;h++){var j=e[h];if(j){var k=!1;j=j[a];while(j){if(j[d]===c){k=e[j.sizset];break}if(j.nodeType===1){g||(j[d]=c,j.sizset=h);if(typeof b!="string"){if(j===b){k=!0;break}}else if(m.filter(b,[j]).length>0){k=j;break}}j=j[a]}e[h]=k}}}function w(a,b,c,e,f,g){for(var h=0,i=e.length;h<i;h++){var j=e[h];if(j){var k=!1;j=j[a];while(j){if(j[d]===c){k=e[j.sizset];break}j.nodeType===1&&!g&&(j[d]=c,j.sizset=h);if(j.nodeName.toLowerCase()===b){k=j;break}j=j[a]}e[h]=k}}}var a=/((?:\((?:\([^()]+\)|[^()]+)+\)|\[(?:\[[^\[\]]*\]|['"][^'"]*['"]|[^\[\]'"]+)+\]|\\.|[^ >+~,(\[\\]+)+|[>+~])(\s*,\s*)?((?:.|\r|\n)*)/g,d="sizcache"+(Math.random()+"").replace(".",""),e=0,g=Object.prototype.toString,h=!1,i=!0,j=/\\/g,k=/\r\n/g,l=/\W/;[0,0].sort(function(){i=!1;return 0});var m=function(b,d,e,f){e=e||[],d=d||c;var h=d;if(d.nodeType!==1&&d.nodeType!==9)return[];if(!b||typeof b!="string")return e;var i,j,k,l,n,q,r,t,u=!0,v=m.isXML(d),w=[],x=b;do{a.exec(""),i=a.exec(x);if(i){x=i[3],w.push(i[1]);if(i[2]){l=i[3];break}}}while(i);if(w.length>1&&p.exec(b))if(w.length===2&&o.relative[w[0]])j=y(w[0]+w[1],d,f);else{j=o.relative[w[0]]?[d]:m(w.shift(),d);while(w.length)b=w.shift(),o.relative[b]&&(b+=w.shift()),j=y(b,j,f)}else{!f&&w.length>1&&d.nodeType===9&&!v&&o.match.ID.test(w[0])&&!o.match.ID.test(w[w.length-1])&&(n=m.find(w.shift(),d,v),d=n.expr?m.filter(n.expr,n.set)[0]:n.set[0]);if(d){n=f?{expr:w.pop(),set:s(f)}:m.find(w.pop(),w.length===1&&(w[0]==="~"||w[0]==="+")&&d.parentNode?d.parentNode:d,v),j=n.expr?m.filter(n.expr,n.set):n.set,w.length>0?k=s(j):u=!1;while(w.length)q=w.pop(),r=q,o.relative[q]?r=w.pop():q="",r==null&&(r=d),o.relative[q](k,r,v)}else k=w=[]}k||(k=j),k||m.error(q||b);if(g.call(k)==="[object Array]")if(!u)e.push.apply(e,k);else if(d&&d.nodeType===1)for(t=0;k[t]!=null;t++)k[t]&&(k[t]===!0||k[t].nodeType===1&&m.contains(d,k[t]))&&e.push(j[t]);else for(t=0;k[t]!=null;t++)k[t]&&k[t].nodeType===1&&e.push(j[t]);else s(k,e);l&&(m(l,h,e,f),m.uniqueSort(e));return e};m.uniqueSort=function(a){if(u){h=i,a.sort(u);if(h)for(var b=1;b<a.length;b++)a[b]===a[b-1]&&a.splice(b--,1)}return a},m.matches=function(a,b){return m(a,null,null,b)},m.matchesSelector=function(a,b){return m(b,null,null,[a]).length>0},m.find=function(a,b,c){var d,e,f,g,h,i;if(!a)return[];for(e=0,f=o.order.length;e<f;e++){h=o.order[e];if(g=o.leftMatch[h].exec(a)){i=g[1],g.splice(1,1);if(i.substr(i.length-1)!=="\\"){g[1]=(g[1]||"").replace(j,""),d=o.find[h](g,b,c);if(d!=null){a=a.replace(o.match[h],"");break}}}}d||(d=typeof b.getElementsByTagName!="undefined"?b.getElementsByTagName("*"):[]);return{set:d,expr:a}},m.filter=function(a,c,d,e){var f,g,h,i,j,k,l,n,p,q=a,r=[],s=c,t=c&&c[0]&&m.isXML(c[0]);while(a&&c.length){for(h in o.filter)if((f=o.leftMatch[h].exec(a))!=null&&f[2]){k=o.filter[h],l=f[1],g=!1,f.splice(1,1);if(l.substr(l.length-1)==="\\")continue;s===r&&(r=[]);if(o.preFilter[h]){f=o.preFilter[h](f,s,d,r,e,t);if(!f)g=i=!0;else if(f===!0)continue}if(f)for(n=0;(j=s[n])!=null;n++)j&&(i=k(j,f,n,s),p=e^i,d&&i!=null?p?g=!0:s[n]=!1:p&&(r.push(j),g=!0));if(i!==b){d||(s=r),a=a.replace(o.match[h],"");if(!g)return[];break}}if(a===q)if(g==null)m.error(a);else break;q=a}return s},m.error=function(a){throw new Error("Syntax error, unrecognized expression: "+a)};var n=m.getText=function(a){var b,c,d=a.nodeType,e="";if(d){if(d===1||d===9||d===11){if(typeof a.textContent=="string")return a.textContent;if(typeof a.innerText=="string")return a.innerText.replace(k,"");for(a=a.firstChild;a;a=a.nextSibling)e+=n(a)}else if(d===3||d===4)return a.nodeValue}else for(b=0;c=a[b];b++)c.nodeType!==8&&(e+=n(c));return e},o=m.selectors={order:["ID","NAME","TAG"],match:{ID:/#((?:[\w\u00c0-\uFFFF\-]|\\.)+)/,CLASS:/\.((?:[\w\u00c0-\uFFFF\-]|\\.)+)/,NAME:/\[name=['"]*((?:[\w\u00c0-\uFFFF\-]|\\.)+)['"]*\]/,ATTR:/\[\s*((?:[\w\u00c0-\uFFFF\-]|\\.)+)\s*(?:(\S?=)\s*(?:(['"])(.*?)\3|(#?(?:[\w\u00c0-\uFFFF\-]|\\.)*)|)|)\s*\]/,TAG:/^((?:[\w\u00c0-\uFFFF\*\-]|\\.)+)/,CHILD:/:(only|nth|last|first)-child(?:\(\s*(even|odd|(?:[+\-]?\d+|(?:[+\-]?\d*)?n\s*(?:[+\-]\s*\d+)?))\s*\))?/,POS:/:(nth|eq|gt|lt|first|last|even|odd)(?:\((\d*)\))?(?=[^\-]|$)/,PSEUDO:/:((?:[\w\u00c0-\uFFFF\-]|\\.)+)(?:\((['"]?)((?:\([^\)]+\)|[^\(\)]*)+)\2\))?/},leftMatch:{},attrMap:{"class":"className","for":"htmlFor"},attrHandle:{href:function(a){return a.getAttribute("href")},type:function(a){return a.getAttribute("type")}},relative:{"+":function(a,b){var c=typeof b=="string",d=c&&!l.test(b),e=c&&!d;d&&(b=b.toLowerCase());for(var f=0,g=a.length,h;f<g;f++)if(h=a[f]){while((h=h.previousSibling)&&h.nodeType!==1);a[f]=e||h&&h.nodeName.toLowerCase()===b?h||!1:h===b}e&&m.filter(b,a,!0)},">":function(a,b){var c,d=typeof b=="string",e=0,f=a.length;if(d&&!l.test(b)){b=b.toLowerCase();for(;e<f;e++){c=a[e];if(c){var g=c.parentNode;a[e]=g.nodeName.toLowerCase()===b?g:!1}}}else{for(;e<f;e++)c=a[e],c&&(a[e]=d?c.parentNode:c.parentNode===b);d&&m.filter(b,a,!0)}},"":function(a,b,c){var d,f=e++,g=x;typeof b=="string"&&!l.test(b)&&(b=b.toLowerCase(),d=b,g=w),g("parentNode",b,f,a,d,c)},"~":function(a,b,c){var d,f=e++,g=x;typeof b=="string"&&!l.test(b)&&(b=b.toLowerCase(),d=b,g=w),g("previousSibling",b,f,a,d,c)}},find:{ID:function(a,b,c){if(typeof b.getElementById!="undefined"&&!c){var d=b.getElementById(a[1]);return d&&d.parentNode?[d]:[]}},NAME:function(a,b){if(typeof b.getElementsByName!="undefined"){var c=[],d=b.getElementsByName(a[1]);for(var e=0,f=d.length;e<f;e++)d[e].getAttribute("name")===a[1]&&c.push(d[e]);return c.length===0?null:c}},TAG:function(a,b){if(typeof b.getElementsByTagName!="undefined")return b.getElementsByTagName(a[1])}},preFilter:{CLASS:function(a,b,c,d,e,f){a=" "+a[1].replace(j,"")+" ";if(f)return a;for(var g=0,h;(h=b[g])!=null;g++)h&&(e^(h.className&&(" "+h.className+" ").replace(/[\t\n\r]/g," ").indexOf(a)>=0)?c||d.push(h):c&&(b[g]=!1));return!1},ID:function(a){return a[1].replace(j,"")},TAG:function(a,b){return a[1].replace(j,"").toLowerCase()},CHILD:function(a){if(a[1]==="nth"){a[2]||m.error(a[0]),a[2]=a[2].replace(/^\+|\s*/g,"");var b=/(-?)(\d*)(?:n([+\-]?\d*))?/.exec(a[2]==="even"&&"2n"||a[2]==="odd"&&"2n+1"||!/\D/.test(a[2])&&"0n+"+a[2]||a[2]);a[2]=b[1]+(b[2]||1)-0,a[3]=b[3]-0}else a[2]&&m.error(a[0]);a[0]=e++;return a},ATTR:function(a,b,c,d,e,f){var g=a[1]=a[1].replace(j,"");!f&&o.attrMap[g]&&(a[1]=o.attrMap[g]),a[4]=(a[4]||a[5]||"").replace(j,""),a[2]==="~="&&(a[4]=" "+a[4]+" ");return a},PSEUDO:function(b,c,d,e,f){if(b[1]==="not")if((a.exec(b[3])||"").length>1||/^\w/.test(b[3]))b[3]=m(b[3],null,null,c);else{var g=m.filter(b[3],c,d,!0^f);d||e.push.apply(e,g);return!1}else if(o.match.POS.test(b[0])||o.match.CHILD.test(b[0]))return!0;return b},POS:function(a){a.unshift(!0);return a}},filters:{enabled:function(a){return a.disabled===!1&&a.type!=="hidden"},disabled:function(a){return a.disabled===!0},checked:function(a){return a.checked===!0},selected:function(a){a.parentNode&&a.parentNode.selectedIndex;return a.selected===!0},parent:function(a){return!!a.firstChild},empty:function(a){return!a.firstChild},has:function(a,b,c){return!!m(c[3],a).length},header:function(a){return/h\d/i.test(a.nodeName)},text:function(a){var b=a.getAttribute("type"),c=a.type;return a.nodeName.toLowerCase()==="input"&&"text"===c&&(b===c||b===null)},radio:function(a){return a.nodeName.toLowerCase()==="input"&&"radio"===a.type},checkbox:function(a){return a.nodeName.toLowerCase()==="input"&&"checkbox"===a.type},file:function(a){return a.nodeName.toLowerCase()==="input"&&"file"===a.type},password:function(a){return a.nodeName.toLowerCase()==="input"&&"password"===a.type},submit:function(a){var b=a.nodeName.toLowerCase();return(b==="input"||b==="button")&&"submit"===a.type},image:function(a){return a.nodeName.toLowerCase()==="input"&&"image"===a.type},reset:function(a){var b=a.nodeName.toLowerCase();return(b==="input"||b==="button")&&"reset"===a.type},button:function(a){var b=a.nodeName.toLowerCase();return b==="input"&&"button"===a.type||b==="button"},input:function(a){return/input|select|textarea|button/i.test(a.nodeName)},focus:function(a){return a===a.ownerDocument.activeElement}},setFilters:{first:function(a,b){return b===0},last:function(a,b,c,d){return b===d.length-1},even:function(a,b){return b%2===0},odd:function(a,b){return b%2===1},lt:function(a,b,c){return b<c[3]-0},gt:function(a,b,c){return b>c[3]-0},nth:function(a,b,c){return c[3]-0===b},eq:function(a,b,c){return c[3]-0===b}},filter:{PSEUDO:function(a,b,c,d){var e=b[1],f=o.filters[e];if(f)return f(a,c,b,d);if(e==="contains")return(a.textContent||a.innerText||n([a])||"").indexOf(b[3])>=0;if(e==="not"){var g=b[3];for(var h=0,i=g.length;h<i;h++)if(g[h]===a)return!1;return!0}m.error(e)},CHILD:function(a,b){var c,e,f,g,h,i,j,k=b[1],l=a;switch(k){case"only":case"first":while(l=l.previousSibling)if(l.nodeType===1)return!1;if(k==="first")return!0;l=a;case"last":while(l=l.nextSibling)if(l.nodeType===1)return!1;return!0;case"nth":c=b[2],e=b[3];if(c===1&&e===0)return!0;f=b[0],g=a.parentNode;if(g&&(g[d]!==f||!a.nodeIndex)){i=0;for(l=g.firstChild;l;l=l.nextSibling)l.nodeType===1&&(l.nodeIndex=++i);g[d]=f}j=a.nodeIndex-e;return c===0?j===0:j%c===0&&j/c>=0}},ID:function(a,b){return a.nodeType===1&&a.getAttribute("id")===b},TAG:function(a,b){return b==="*"&&a.nodeType===1||!!a.nodeName&&a.nodeName.toLowerCase()===b},CLASS:function(a,b){return(" "+(a.className||a.getAttribute("class"))+" ").indexOf(b)>-1},ATTR:function(a,b){var c=b[1],d=m.attr?m.attr(a,c):o.attrHandle[c]?o.attrHandle[c](a):a[c]!=null?a[c]:a.getAttribute(c),e=d+"",f=b[2],g=b[4];return d==null?f==="!=":!f&&m.attr?d!=null:f==="="?e===g:f==="*="?e.indexOf(g)>=0:f==="~="?(" "+e+" ").indexOf(g)>=0:g?f==="!="?e!==g:f==="^="?e.indexOf(g)===0:f==="$="?e.substr(e.length-g.length)===g:f==="|="?e===g||e.substr(0,g.length+1)===g+"-":!1:e&&d!==!1},POS:function(a,b,c,d){var e=b[2],f=o.setFilters[e];if(f)return f(a,c,b,d)}}},p=o.match.POS,q=function(a,b){return"\\"+(b-0+1)};for(var r in o.match)o.match[r]=new RegExp(o.match[r].source+/(?![^\[]*\])(?![^\(]*\))/.source),o.leftMatch[r]=new RegExp(/(^(?:.|\r|\n)*?)/.source+o.match[r].source.replace(/\\(\d+)/g,q));o.match.globalPOS=p;var s=function(a,b){a=Array.prototype.slice.call(a,0);if(b){b.push.apply(b,a);return b}return a};try{Array.prototype.slice.call(c.documentElement.childNodes,0)[0].nodeType}catch(t){s=function(a,b){var c=0,d=b||[];if(g.call(a)==="[object Array]")Array.prototype.push.apply(d,a);else if(typeof a.length=="number")for(var e=a.length;c<e;c++)d.push(a[c]);else for(;a[c];c++)d.push(a[c]);return d}}var u,v;c.documentElement.compareDocumentPosition?u=function(a,b){if(a===b){h=!0;return 0}if(!a.compareDocumentPosition||!b.compareDocumentPosition)return a.compareDocumentPosition?-1:1;return a.compareDocumentPosition(b)&4?-1:1}:(u=function(a,b){if(a===b){h=!0;return 0}if(a.sourceIndex&&b.sourceIndex)return a.sourceIndex-b.sourceIndex;var c,d,e=[],f=[],g=a.parentNode,i=b.parentNode,j=g;if(g===i)return v(a,b);if(!g)return-1;if(!i)return 1;while(j)e.unshift(j),j=j.parentNode;j=i;while(j)f.unshift(j),j=j.parentNode;c=e.length,d=f.length;for(var k=0;k<c&&k<d;k++)if(e[k]!==f[k])return v(e[k],f[k]);return k===c?v(a,f[k],-1):v(e[k],b,1)},v=function(a,b,c){if(a===b)return c;var d=a.nextSibling;while(d){if(d===b)return-1;d=d.nextSibling}return 1}),function(){var a=c.createElement("div"),d="script"+(new Date).getTime(),e=c.documentElement;a.innerHTML="<a name='"+d+"'/>",e.insertBefore(a,e.firstChild),c.getElementById(d)&&(o.find.ID=function(a,c,d){if(typeof c.getElementById!="undefined"&&!d){var e=c.getElementById(a[1]);return e?e.id===a[1]||typeof e.getAttributeNode!="undefined"&&e.getAttributeNode("id").nodeValue===a[1]?[e]:b:[]}},o.filter.ID=function(a,b){var c=typeof a.getAttributeNode!="undefined"&&a.getAttributeNode("id");return a.nodeType===1&&c&&c.nodeValue===b}),e.removeChild(a),e=a=null}(),function(){var a=c.createElement("div");a.appendChild(c.createComment("")),a.getElementsByTagName("*").length>0&&(o.find.TAG=function(a,b){var c=b.getElementsByTagName(a[1]);if(a[1]==="*"){var d=[];for(var e=0;c[e];e++)c[e].nodeType===1&&d.push(c[e]);c=d}return c}),a.innerHTML="<a href='#'></a>",a.firstChild&&typeof a.firstChild.getAttribute!="undefined"&&a.firstChild.getAttribute("href")!=="#"&&(o.attrHandle.href=function(a){return a.getAttribute("href",2)}),a=null}(),c.querySelectorAll&&function(){var a=m,b=c.createElement("div"),d="__sizzle__";b.innerHTML="<p class='TEST'></p>";if(!b.querySelectorAll||b.querySelectorAll(".TEST").length!==0){m=function(b,e,f,g){e=e||c;if(!g&&!m.isXML(e)){var h=/^(\w+$)|^\.([\w\-]+$)|^#([\w\-]+$)/.exec(b);if(h&&(e.nodeType===1||e.nodeType===9)){if(h[1])return s(e.getElementsByTagName(b),f);if(h[2]&&o.find.CLASS&&e.getElementsByClassName)return s(e.getElementsByClassName(h[2]),f)}if(e.nodeType===9){if(b==="body"&&e.body)return s([e.body],f);if(h&&h[3]){var i=e.getElementById(h[3]);if(!i||!i.parentNode)return s([],f);if(i.id===h[3])return s([i],f)}try{return s(e.querySelectorAll(b),f)}catch(j){}}else if(e.nodeType===1&&e.nodeName.toLowerCase()!=="object"){var k=e,l=e.getAttribute("id"),n=l||d,p=e.parentNode,q=/^\s*[+~]/.test(b);l?n=n.replace(/'/g,"\\$&"):e.setAttribute("id",n),q&&p&&(e=e.parentNode);try{if(!q||p)return s(e.querySelectorAll("[id='"+n+"'] "+b),f)}catch(r){}finally{l||k.removeAttribute("id")}}}return a(b,e,f,g)};for(var e in a)m[e]=a[e];b=null}}(),function(){var a=c.documentElement,b=a.matchesSelector||a.mozMatchesSelector||a.webkitMatchesSelector||a.msMatchesSelector;if(b){var d=!b.call(c.createElement("div"),"div"),e=!1;try{b.call(c.documentElement,"[test!='']:sizzle")}catch(f){e=!0}m.matchesSelector=function(a,c){c=c.replace(/\=\s*([^'"\]]*)\s*\]/g,"='$1']");if(!m.isXML(a))try{if(e||!o.match.PSEUDO.test(c)&&!/!=/.test(c)){var f=b.call(a,c);if(f||!d||a.document&&a.document.nodeType!==11)return f}}catch(g){}return m(c,null,null,[a]).length>0}}}(),function(){var a=c.createElement("div");a.innerHTML="<div class='test e'></div><div class='test'></div>";if(!!a.getElementsByClassName&&a.getElementsByClassName("e").length!==0){a.lastChild.className="e";if(a.getElementsByClassName("e").length===1)return;o.order.splice(1,0,"CLASS"),o.find.CLASS=function(a,b,c){if(typeof b.getElementsByClassName!="undefined"&&!c)return b.getElementsByClassName(a[1])},a=null}}(),c.documentElement.contains?m.contains=function(a,b){return a!==b&&(a.contains?a.contains(b):!0)}:c.documentElement.compareDocumentPosition?m.contains=function(a,b){return!!(a.compareDocumentPosition(b)&16)}:m.contains=function(){return!1},m.isXML=function(a){var b=(a?a.ownerDocument||a:0).documentElement;return b?b.nodeName!=="HTML":!1};var y=function(a,b,c){var d,e=[],f="",g=b.nodeType?[b]:b;while(d=o.match.PSEUDO.exec(a))f+=d[0],a=a.replace(o.match.PSEUDO,"");a=o.relative[a]?a+"*":a;for(var h=0,i=g.length;h<i;h++)m(a,g[h],e,c);return m.filter(f,e)};m.attr=f.attr,m.selectors.attrMap={},f.find=m,f.expr=m.selectors,f.expr[":"]=f.expr.filters,f.unique=m.uniqueSort,f.text=m.getText,f.isXMLDoc=m.isXML,f.contains=m.contains}();var L=/Until$/,M=/^(?:parents|prevUntil|prevAll)/,N=/,/,O=/^.[^:#\[\.,]*$/,P=Array.prototype.slice,Q=f.expr.match.globalPOS,R={children:!0,contents:!0,next:!0,prev:!0};f.fn.extend({find:function(a){var b=this,c,d;if(typeof a!="string")return f(a).filter(function(){for(c=0,d=b.length;c<d;c++)if(f.contains(b[c],this))return!0});var e=this.pushStack("","find",a),g,h,i;for(c=0,d=this.length;c<d;c++){g=e.length,f.find(a,this[c],e);if(c>0)for(h=g;h<e.length;h++)for(i=0;i<g;i++)if(e[i]===e[h]){e.splice(h--,1);break}}return e},has:function(a){var b=f(a);return this.filter(function(){for(var a=0,c=b.length;a<c;a++)if(f.contains(this,b[a]))return!0})},not:function(a){return this.pushStack(T(this,a,!1),"not",a)},filter:function(a){return this.pushStack(T(this,a,!0),"filter",a)},is:function(a){return!!a&&(typeof a=="string"?Q.test(a)?f(a,this.context).index(this[0])>=0:f.filter(a,this).length>0:this.filter(a).length>0)},closest:function(a,b){var c=[],d,e,g=this[0];if(f.isArray(a)){var h=1;while(g&&g.ownerDocument&&g!==b){for(d=0;d<a.length;d++)f(g).is(a[d])&&c.push({selector:a[d],elem:g,level:h});g=g.parentNode,h++}return c}var i=Q.test(a)||typeof a!="string"?f(a,b||this.context):0;for(d=0,e=this.length;d<e;d++){g=this[d];while(g){if(i?i.index(g)>-1:f.find.matchesSelector(g,a)){c.push(g);break}g=g.parentNode;if(!g||!g.ownerDocument||g===b||g.nodeType===11)break}}c=c.length>1?f.unique(c):c;return this.pushStack(c,"closest",a)},index:function(a){if(!a)return this[0]&&this[0].parentNode?this.prevAll().length:-1;if(typeof a=="string")return f.inArray(this[0],f(a));return f.inArray(a.jquery?a[0]:a,this)},add:function(a,b){var c=typeof a=="string"?f(a,b):f.makeArray(a&&a.nodeType?[a]:a),d=f.merge(this.get(),c);return this.pushStack(S(c[0])||S(d[0])?d:f.unique(d))},andSelf:function(){return this.add(this.prevObject)}}),f.each({parent:function(a){var b=a.parentNode;return b&&b.nodeType!==11?b:null},parents:function(a){return f.dir(a,"parentNode")},parentsUntil:function(a,b,c){return f.dir(a,"parentNode",c)},next:function(a){return f.nth(a,2,"nextSibling")},prev:function(a){return f.nth(a,2,"previousSibling")},nextAll:function(a){return f.dir(a,"nextSibling")},prevAll:function(a){return f.dir(a,"previousSibling")},nextUntil:function(a,b,c){return f.dir(a,"nextSibling",c)},prevUntil:function(a,b,c){return f.dir(a,"previousSibling",c)},siblings:function(a){return f.sibling((a.parentNode||{}).firstChild,a)},children:function(a){return f.sibling(a.firstChild)},contents:function(a){return f.nodeName(a,"iframe")?a.contentDocument||a.contentWindow.document:f.makeArray(a.childNodes)}},function(a,b){f.fn[a]=function(c,d){var e=f.map(this,b,c);L.test(a)||(d=c),d&&typeof d=="string"&&(e=f.filter(d,e)),e=this.length>1&&!R[a]?f.unique(e):e,(this.length>1||N.test(d))&&M.test(a)&&(e=e.reverse());return this.pushStack(e,a,P.call(arguments).join(","))}}),f.extend({filter:function(a,b,c){c&&(a=":not("+a+")");return b.length===1?f.find.matchesSelector(b[0],a)?[b[0]]:[]:f.find.matches(a,b)},dir:function(a,c,d){var e=[],g=a[c];while(g&&g.nodeType!==9&&(d===b||g.nodeType!==1||!f(g).is(d)))g.nodeType===1&&e.push(g),g=g[c];return e},nth:function(a,b,c,d){b=b||1;var e=0;for(;a;a=a[c])if(a.nodeType===1&&++e===b)break;return a},sibling:function(a,b){var c=[];for(;a;a=a.nextSibling)a.nodeType===1&&a!==b&&c.push(a);return c}});var V="abbr|article|aside|audio|bdi|canvas|data|datalist|details|figcaption|figure|footer|header|hgroup|mark|meter|nav|output|progress|section|summary|time|video",W=/ jQuery\d+="(?:\d+|null)"/g,X=/^\s+/,Y=/<(?!area|br|col|embed|hr|img|input|link|meta|param)(([\w:]+)[^>]*)\/>/ig,Z=/<([\w:]+)/,$=/<tbody/i,_=/<|&#?\w+;/,ba=/<(?:script|style)/i,bb=/<(?:script|object|embed|option|style)/i,bc=new RegExp("<(?:"+V+")[\\s/>]","i"),bd=/checked\s*(?:[^=]|=\s*.checked.)/i,be=/\/(java|ecma)script/i,bf=/^\s*<!(?:\[CDATA\[|\-\-)/,bg={option:[1,"<select multiple='multiple'>","</select>"],legend:[1,"<fieldset>","</fieldset>"],thead:[1,"<table>","</table>"],tr:[2,"<table><tbody>","</tbody></table>"],td:[3,"<table><tbody><tr>","</tr></tbody></table>"],col:[2,"<table><tbody></tbody><colgroup>","</colgroup></table>"],area:[1,"<map>","</map>"],_default:[0,"",""]},bh=U(c);bg.optgroup=bg.option,bg.tbody=bg.tfoot=bg.colgroup=bg.caption=bg.thead,bg.th=bg.td,f.support.htmlSerialize||(bg._default=[1,"div<div>","</div>"]),f.fn.extend({text:function(a){return f.access(this,function(a){return a===b?f.text(this):this.empty().append((this[0]&&this[0].ownerDocument||c).createTextNode(a))},null,a,arguments.length)},wrapAll:function(a){if(f.isFunction(a))return this.each(function(b){f(this).wrapAll(a.call(this,b))});if(this[0]){var b=f(a,this[0].ownerDocument).eq(0).clone(!0);this[0].parentNode&&b.insertBefore(this[0]),b.map(function(){var a=this;while(a.firstChild&&a.firstChild.nodeType===1)a=a.firstChild;return a}).append(this)}return this},wrapInner:function(a){if(f.isFunction(a))return this.each(function(b){f(this).wrapInner(a.call(this,b))});return this.each(function(){var b=f(this),c=b.contents();c.length?c.wrapAll(a):b.append(a)})},wrap:function(a){var b=f.isFunction(a);return this.each(function(c){f(this).wrapAll(b?a.call(this,c):a)})},unwrap:function(){return this.parent().each(function(){f.nodeName(this,"body")||f(this).replaceWith(this.childNodes)}).end()},append:function(){return this.domManip(arguments,!0,function(a){this.nodeType===1&&this.appendChild(a)})},prepend:function(){return this.domManip(arguments,!0,function(a){this.nodeType===1&&this.insertBefore(a,this.firstChild)})},before:function(){if(this[0]&&this[0].parentNode)return this.domManip(arguments,!1,function(a){this.parentNode.insertBefore(a,this)});if(arguments.length){var a=f
 .clean(arguments);a.push.apply(a,this.toArray());return this.pushStack(a,"before",arguments)}},after:function(){if(this[0]&&this[0].parentNode)return this.domManip(arguments,!1,function(a){this.parentNode.insertBefore(a,this.nextSibling)});if(arguments.length){var a=this.pushStack(this,"after",arguments);a.push.apply(a,f.clean(arguments));return a}},remove:function(a,b){for(var c=0,d;(d=this[c])!=null;c++)if(!a||f.filter(a,[d]).length)!b&&d.nodeType===1&&(f.cleanData(d.getElementsByTagName("*")),f.cleanData([d])),d.parentNode&&d.parentNode.removeChild(d);return this},empty:function(){for(var a=0,b;(b=this[a])!=null;a++){b.nodeType===1&&f.cleanData(b.getElementsByTagName("*"));while(b.firstChild)b.removeChild(b.firstChild)}return this},clone:function(a,b){a=a==null?!1:a,b=b==null?a:b;return this.map(function(){return f.clone(this,a,b)})},html:function(a){return f.access(this,function(a){var c=this[0]||{},d=0,e=this.length;if(a===b)return c.nodeType===1?c.innerHTML.replace(W,""):null;if(typeof a=="string"&&!ba.test(a)&&(f.support.leadingWhitespace||!X.test(a))&&!bg[(Z.exec(a)||["",""])[1].toLowerCase()]){a=a.replace(Y,"<$1></$2>");try{for(;d<e;d++)c=this[d]||{},c.nodeType===1&&(f.cleanData(c.getElementsByTagName("*")),c.innerHTML=a);c=0}catch(g){}}c&&this.empty().append(a)},null,a,arguments.length)},replaceWith:function(a){if(this[0]&&this[0].parentNode){if(f.isFunction(a))return this.each(function(b){var c=f(this),d=c.html();c.replaceWith(a.call(this,b,d))});typeof a!="string"&&(a=f(a).detach());return this.each(function(){var b=this.nextSibling,c=this.parentNode;f(this).remove(),b?f(b).before(a):f(c).append(a)})}return this.length?this.pushStack(f(f.isFunction(a)?a():a),"replaceWith",a):this},detach:function(a){return this.remove(a,!0)},domManip:function(a,c,d){var e,g,h,i,j=a[0],k=[];if(!f.support.checkClone&&arguments.length===3&&typeof j=="string"&&bd.test(j))return this.each(function(){f(this).domManip(a,c,d,!0)});if(f.isFunction(j))return this.each(function(e){var g=f(this);a[0]=j.call(this,e,c?g.html():b),g.domManip(a,c,d)});if(this[0]){i=j&&j.parentNode,f.support.parentNode&&i&&i.nodeType===11&&i.childNodes.length===this.length?e={fragment:i}:e=f.buildFragment(a,this,k),h=e.fragment,h.childNodes.length===1?g=h=h.firstChild:g=h.firstChild;if(g){c=c&&f.nodeName(g,"tr");for(var l=0,m=this.length,n=m-1;l<m;l++)d.call(c?bi(this[l],g):this[l],e.cacheable||m>1&&l<n?f.clone(h,!0,!0):h)}k.length&&f.each(k,function(a,b){b.src?f.ajax({type:"GET",global:!1,url:b.src,async:!1,dataType:"script"}):f.globalEval((b.text||b.textContent||b.innerHTML||"").replace(bf,"/*$0*/")),b.parentNode&&b.parentNode.removeChild(b)})}return this}}),f.buildFragment=function(a,b,d){var e,g,h,i,j=a[0];b&&b[0]&&(i=b[0].ownerDocument||b[0]),i.createDocumentFragment||(i=c),a.length===1&&typeof j=="string"&&j.length<512&&i===c&&j.charAt(0)==="<"&&!bb.test(j)&&(f.support.checkClone||!bd.test(j))&&(f.support.html5Clone||!bc.test(j))&&(g=!0,h=f.fragments[j],h&&h!==1&&(e=h)),e||(e=i.createDocumentFragment(),f.clean(a,i,e,d)),g&&(f.fragments[j]=h?e:1);return{fragment:e,cacheable:g}},f.fragments={},f.each({appendTo:"append",prependTo:"prepend",insertBefore:"before",insertAfter:"after",replaceAll:"replaceWith"},function(a,b){f.fn[a]=function(c){var d=[],e=f(c),g=this.length===1&&this[0].parentNode;if(g&&g.nodeType===11&&g.childNodes.length===1&&e.length===1){e[b](this[0]);return this}for(var h=0,i=e.length;h<i;h++){var j=(h>0?this.clone(!0):this).get();f(e[h])[b](j),d=d.concat(j)}return this.pushStack(d,a,e.selector)}}),f.extend({clone:function(a,b,c){var d,e,g,h=f.support.html5Clone||f.isXMLDoc(a)||!bc.test("<"+a.nodeName+">")?a.cloneNode(!0):bo(a);if((!f.support.noCloneEvent||!f.support.noCloneChecked)&&(a.nodeType===1||a.nodeType===11)&&!f.isXMLDoc(a)){bk(a,h),d=bl(a),e=bl(h);for(g=0;d[g];++g)e[g]&&bk(d[g],e[g])}if(b){bj(a,h);if(c){d=bl(a),e=bl(h);for(g=0;d[g];++g)bj(d[g],e[g])}}d=e=null;return h},clean:function(a,b,d,e){var g,h,i,j=[];b=b||c,typeof b.createElement=="undefined"&&(b=b.ownerDocument||b[0]&&b[0].ownerDocument||c);for(var k=0,l;(l=a[k])!=null;k++){typeof l=="number"&&(l+="");if(!l)continue;if(typeof l=="string")if(!_.test(l))l=b.createTextNode(l);else{l=l.replace(Y,"<$1></$2>");var m=(Z.exec(l)||["",""])[1].toLowerCase(),n=bg[m]||bg._default,o=n[0],p=b.createElement("div"),q=bh.childNodes,r;b===c?bh.appendChild(p):U(b).appendChild(p),p.innerHTML=n[1]+l+n[2];while(o--)p=p.lastChild;if(!f.support.tbody){var s=$.test(l),t=m==="table"&&!s?p.firstChild&&p.firstChild.childNodes:n[1]==="<table>"&&!s?p.childNodes:[];for(i=t.length-1;i>=0;--i)f.nodeName(t[i],"tbody")&&!t[i].childNodes.length&&t[i].parentNode.removeChild(t[i])}!f.support.leadingWhitespace&&X.test(l)&&p.insertBefore(b.createTextNode(X.exec(l)[0]),p.firstChild),l=p.childNodes,p&&(p.parentNode.removeChild(p),q.length>0&&(r=q[q.length-1],r&&r.parentNode&&r.parentNode.removeChild(r)))}var u;if(!f.support.appendChecked)if(l[0]&&typeof (u=l.length)=="number")for(i=0;i<u;i++)bn(l[i]);else bn(l);l.nodeType?j.push(l):j=f.merge(j,l)}if(d){g=function(a){return!a.type||be.test(a.type)};for(k=0;j[k];k++){h=j[k];if(e&&f.nodeName(h,"script")&&(!h.type||be.test(h.type)))e.push(h.parentNode?h.parentNode.removeChild(h):h);else{if(h.nodeType===1){var v=f.grep(h.getElementsByTagName("script"),g);j.splice.apply(j,[k+1,0].concat(v))}d.appendChild(h)}}}return j},cleanData:function(a){var b,c,d=f.cache,e=f.event.special,g=f.support.deleteExpando;for(var h=0,i;(i=a[h])!=null;h++){if(i.nodeName&&f.noData[i.nodeName.toLowerCase()])continue;c=i[f.expando];if(c){b=d[c];if(b&&b.events){for(var j in b.events)e[j]?f.event.remove(i,j):f.removeEvent(i,j,b.handle);b.handle&&(b.handle.elem=null)}g?delete i[f.expando]:i.removeAttribute&&i.removeAttribute(f.expando),delete d[c]}}}});var bp=/alpha\([^)]*\)/i,bq=/opacity=([^)]*)/,br=/([A-Z]|^ms)/g,bs=/^[\-+]?(?:\d*\.)?\d+$/i,bt=/^-?(?:\d*\.)?\d+(?!px)[^\d\s]+$/i,bu=/^([\-+])=([\-+.\de]+)/,bv=/^margin/,bw={position:"absolute",visibility:"hidden",display:"block"},bx=["Top","Right","Bottom","Left"],by,bz,bA;f.fn.css=function(a,c){return f.access(this,function(a,c,d){return d!==b?f.style(a,c,d):f.css(a,c)},a,c,arguments.length>1)},f.extend({cssHooks:{opacity:{get:function(a,b){if(b){var c=by(a,"opacity");return c===""?"1":c}return a.style.opacity}}},cssNumber:{fillOpacity:!0,fontWeight:!0,lineHeight:!0,opacity:!0,orphans:!0,widows:!0,zIndex:!0,zoom:!0},cssProps:{"float":f.support.cssFloat?"cssFloat":"styleFloat"},style:function(a,c,d,e){if(!!a&&a.nodeType!==3&&a.nodeType!==8&&!!a.style){var g,h,i=f.camelCase(c),j=a.style,k=f.cssHooks[i];c=f.cssProps[i]||i;if(d===b){if(k&&"get"in k&&(g=k.get(a,!1,e))!==b)return g;return j[c]}h=typeof d,h==="string"&&(g=bu.exec(d))&&(d=+(g[1]+1)*+g[2]+parseFloat(f.css(a,c)),h="number");if(d==null||h==="number"&&isNaN(d))return;h==="number"&&!f.cssNumber[i]&&(d+="px");if(!k||!("set"in k)||(d=k.set(a,d))!==b)try{j[c]=d}catch(l){}}},css:function(a,c,d){var e,g;c=f.camelCase(c),g=f.cssHooks[c],c=f.cssProps[c]||c,c==="cssFloat"&&(c="float");if(g&&"get"in g&&(e=g.get(a,!0,d))!==b)return e;if(by)return by(a,c)},swap:function(a,b,c){var d={},e,f;for(f in b)d[f]=a.style[f],a.style[f]=b[f];e=c.call(a);for(f in b)a.style[f]=d[f];return e}}),f.curCSS=f.css,c.defaultView&&c.defaultView.getComputedStyle&&(bz=function(a,b){var c,d,e,g,h=a.style;b=b.replace(br,"-$1").toLowerCase(),(d=a.ownerDocument.defaultView)&&(e=d.getComputedStyle(a,null))&&(c=e.getPropertyValue(b),c===""&&!f.contains(a.ownerDocument.documentElement,a)&&(c=f.style(a,b))),!f.support.pixelMargin&&e&&bv.test(b)&&bt.test(c)&&(g=h.width,h.width=c,c=e.width,h.width=g);return c}),c.documentElement.currentStyle&&(bA=function(a,b){var c,d,e,f=a.currentStyle&&a.currentStyle[b],g=a.style;f==null&&g&&(e=g[b])&&(f=e),bt.test(f)&&(c=g.left,d=a.runtimeStyle&&a.runtimeStyle.left,d&&(a.runtimeStyle.left=a.currentStyle.left),g.left=b==="fontSize"?"1em":f,f=g.pixelLeft+"px",g.left=c,d&&(a.runtimeStyle.left=d));return f===""?"auto":f}),by=bz||bA,f.each(["height","width"],function(a,b){f.cssHooks[b]={get:function(a,c,d){if(c)return a.offsetWidth!==0?bB(a,b,d):f.swap(a,bw,function(){return bB(a,b,d)})},set:function(a,b){return bs.test(b)?b+"px":b}}}),f.support.opacity||(f.cssHooks.opacity={get:function(a,b){return bq.test((b&&a.currentStyle?a.currentStyle.filter:a.style.filter)||"")?parseFloat(RegExp.$1)/100+"":b?"1":""},set:function(a,b){var c=a.style,d=a.currentStyle,e=f.isNumeric(b)?"alpha(opacity="+b*100+")":"",g=d&&d.filter||c.filter||"";c.zoom=1;if(b>=1&&f.trim(g.replace(bp,""))===""){c.removeAttribute("filter");if(d&&!d.filter)return}c.filter=bp.test(g)?g.replace(bp,e):g+" "+e}}),f(function(){f.support.reliableMarginRight||(f.cssHooks.marginRight={get:function(a,b){return f.swap(a,{display:"inline-block"},function(){return b?by(a,"margin-right"):a.style.marginRight})}})}),f.expr&&f.expr.filters&&(f.expr.filters.hidden=function(a){var b=a.offsetWidth,c=a.offsetHeight;return b===0&&c===0||!f.support.reliableHiddenOffsets&&(a.style&&a.style.display||f.css(a,"display"))==="none"},f.expr.filters.visible=function(a){return!f.expr.filters.hidden(a)}),f.each({margin:"",padding:"",border:"Width"},function(a,b){f.cssHooks[a+b]={expand:function(c){var d,e=typeof c=="string"?c.split(" "):[c],f={};for(d=0;d<4;d++)f[a+bx[d]+b]=e[d]||e[d-2]||e[0];return f}}});var bC=/%20/g,bD=/\[\]$/,bE=/\r?\n/g,bF=/#.*$/,bG=/^(.*?):[ \t]*([^\r\n]*)\r?$/mg,bH=/^(?:color|date|datetime|datetime-local|email|hidden|month|number|password|range|search|tel|text|time|url|week)$/i,bI=/^(?:about|app|app\-storage|.+\-extension|file|res|widget):$/,bJ=/^(?:GET|HEAD)$/,bK=/^\/\//,bL=/\?/,bM=/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,bN=/^(?:select|textarea)/i,bO=/\s+/,bP=/([?&])_=[^&]*/,bQ=/^([\w\+\.\-]+:)(?:\/\/([^\/?#:]*)(?::(\d+))?)?/,bR=f.fn.load,bS={},bT={},bU,bV,bW=["*/"]+["*"];try{bU=e.href}catch(bX){bU=c.createElement("a"),bU.href="",bU=bU.href}bV=bQ.exec(bU.toLowerCase())||[],f.fn.extend({load:function(a,c,d){if(typeof a!="string"&&bR)return bR.apply(this,arguments);if(!this.length)return this;var e=a.indexOf(" ");if(e>=0){var g=a.slice(e,a.length);a=a.slice(0,e)}var h="GET";c&&(f.isFunction(c)?(d=c,c=b):typeof c=="object"&&(c=f.param(c,f.ajaxSettings.traditional),h="POST"));var i=this;f.ajax({url:a,type:h,dataType:"html",data:c,complete:function(a,b,c){c=a.responseText,a.isResolved()&&(a.done(function(a){c=a}),i.html(g?f("<div>").append(c.replace(bM,"")).find(g):c)),d&&i.each(d,[c,b,a])}});return this},serialize:function(){return f.param(this.serializeArray())},serializeArray:function(){return this.map(function(){return this.elements?f.makeArray(this.elements):this}).filter(function(){return this.name&&!this.disabled&&(this.checked||bN.test(this.nodeName)||bH.test(this.type))}).map(function(a,b){var c=f(this).val();return c==null?null:f.isArray(c)?f.map(c,function(a,c){return{name:b.name,value:a.replace(bE,"\r\n")}}):{name:b.name,value:c.replace(bE,"\r\n")}}).get()}}),f.each("ajaxStart ajaxStop ajaxComplete ajaxError ajaxSuccess ajaxSend".split(" "),function(a,b){f.fn[b]=function(a){return this.on(b,a)}}),f.each(["get","post"],function(a,c){f[c]=function(a,d,e,g){f.isFunction(d)&&(g=g||e,e=d,d=b);return f.ajax({type:c,url:a,data:d,success:e,dataType:g})}}),f.extend({getScript:function(a,c){return f.get(a,b,c,"script")},getJSON:function(a,b,c){return f.get(a,b,c,"json")},ajaxSetup:function(a,b){b?b$(a,f.ajaxSettings):(b=a,a=f.ajaxSettings),b$(a,b);return a},ajaxSettings:{url:bU,isLocal:bI.test(bV[1]),global:!0,type:"GET",contentType:"application/x-www-form-urlencoded; charset=UTF-8",processData:!0,async:!0,accepts:{xml:"application/xml, text/xml",html:"text/html",text:"text/plain",json:"application/json, text/javascript","*":bW},contents:{xml:/xml/,html:/html/,json:/json/},responseFields:{xml:"responseXML",text:"responseText"},converters:{"* text":a.String,"text html":!0,"text json":f.parseJSON,"text xml":f.parseXML},flatOptions:{context:!0,url:!0}},ajaxPrefilter:bY(bS),ajaxTransport:bY(bT),ajax:function(a,c){function w(a,c,l,m){if(s!==2){s=2,q&&clearTimeout(q),p=b,n=m||"",v.readyState=a>0?4:0;var o,r,u,w=c,x=l?ca(d,v,l):b,y,z;if(a>=200&&a<300||a===304){if(d.ifModified){if(y=v.getResponseHeader("Last-Modified"))f.lastModified[k]=y;if(z=v.getResponseHeader("Etag"))f.etag[k]=z}if(a===304)w="notmodified",o=!0;else try{r=cb(d,x),w="success",o=!0}catch(A){w="parsererror",u=A}}else{u=w;if(!w||a)w="error",a<0&&(a=0)}v.status=a,v.statusText=""+(c||w),o?h.resolveWith(e,[r,w,v]):h.rejectWith(e,[v,w,u]),v.statusCode(j),j=b,t&&g.trigger("ajax"+(o?"Success":"Error"),[v,d,o?r:u]),i.fireWith(e,[v,w]),t&&(g.trigger("ajaxComplete",[v,d]),--f.active||f.event.trigger("ajaxStop"))}}typeof a=="object"&&(c=a,a=b),c=c||{};var d=f.ajaxSetup({},c),e=d.context||d,g=e!==d&&(e.nodeType||e instanceof f)?f(e):f.event,h=f.Deferred(),i=f.Callbacks("once memory"),j=d.statusCode||{},k,l={},m={},n,o,p,q,r,s=0,t,u,v={readyState:0,setRequestHeader:function(a,b){if(!s){var c=a.toLowerCase();a=m[c]=m[c]||a,l[a]=b}return this},getAllResponseHeaders:function(){return s===2?n:null},getResponseHeader:function(a){var c;if(s===2){if(!o){o={};while(c=bG.exec(n))o[c[1].toLowerCase()]=c[2]}c=o[a.toLowerCase()]}return c===b?null:c},overrideMimeType:function(a){s||(d.mimeType=a);return this},abort:function(a){a=a||"abort",p&&p.abort(a),w(0,a);return this}};h.promise(v),v.success=v.done,v.error=v.fail,v.complete=i.add,v.statusCode=function(a){if(a){var b;if(s<2)for(b in a)j[b]=[j[b],a[b]];else b=a[v.status],v.then(b,b)}return this},d.url=((a||d.url)+"").replace(bF,"").replace(bK,bV[1]+"//"),d.dataTypes=f.trim(d.dataType||"*").toLowerCase().split(bO),d.crossDomain==null&&(r=bQ.exec(d.url.toLowerCase()),d.crossDomain=!(!r||r[1]==bV[1]&&r[2]==bV[2]&&(r[3]||(r[1]==="http:"?80:443))==(bV[3]||(bV[1]==="http:"?80:443)))),d.data&&d.processData&&typeof d.data!="string"&&(d.data=f.param(d.data,d.traditional)),bZ(bS,d,c,v);if(s===2)return!1;t=d.global,d.type=d.type.toUpperCase(),d.hasContent=!bJ.test(d.type),t&&f.active++===0&&f.event.trigger("ajaxStart");if(!d.hasContent){d.data&&(d.url+=(bL.test(d.url)?"&":"?")+d.data,delete d.data),k=d.url;if(d.cache===!1){var x=f.now(),y=d.url.replace(bP,"$1_="+x);d.url=y+(y===d.url?(bL.test(d.url)?"&":"?")+"_="+x:"")}}(d.data&&d.hasContent&&d.contentType!==!1||c.contentType)&&v.setRequestHeader("Content-Type",d.contentType),d.ifModified&&(k=k||d.url,f.lastModified[k]&&v.setRequestHeader("If-Modified-Since",f.lastModified[k]),f.etag[k]&&v.setRequestHeader("If-None-Match",f.etag[k])),v.setRequestHeader("Accept",d.dataTypes[0]&&d.accepts[d.dataTypes[0]]?d.accepts[d.dataTypes[0]]+(d.dataTypes[0]!=="*"?", "+bW+"; q=0.01":""):d.accepts["*"]);for(u in d.headers)v.setRequestHeader(u,d.headers[u]);if(d.beforeSend&&(d.beforeSend.call(e,v,d)===!1||s===2)){v.abort();return!1}for(u in{success:1,error:1,complete:1})v[u](d[u]);p=bZ(bT,d,c,v);if(!p)w(-1,"No Transport");else{v.readyState=1,t&&g.trigger("ajaxSend",[v,d]),d.async&&d.timeout>0&&(q=setTimeout(function(){v.abort("timeout")},d.timeout));try{s=1,p.send(l,w)}catch(z){if(s<2)w(-1,z);else throw z}}return v},param:function(a,c){var d=[],e=function(a,b){b=f.isFunction(b)?b():b,d[d.length]=encodeURIComponent(a)+"="+encodeURIComponent(b)};c===b&&(c=f.ajaxSettings.traditional);if(f.isArray(a)||a.jquery&&!f.isPlainObject(a))f.each(a,function(){e(this.name,this.value)});else for(var g in a)b_(g,a[g],c,e);return d.join("&").replace(bC,"+")}}),f.extend({active:0,lastModified:{},etag:{}});var cc=f.now(),cd=/(\=)\?(&|$)|\?\?/i;f.ajaxSetup({jsonp:"callback",jsonpCallback:function(){return f.expando+"_"+cc++}}),f.ajaxPrefilter("json jsonp",function(b,c,d){var e=typeof b.data=="string"&&/^application\/x\-www\-form\-urlencoded/.test(b.contentType);if(b.dataTypes[0]==="jsonp"||b.jsonp!==!1&&(cd.test(b.url)||e&&cd.test(b.data))){var g,h=b.jsonpCallback=f.isFunction(b.jsonpCallback)?b.jsonpCallback():b.jsonpCallback,i=a[h],j=b.url,k=b.data,l="$1"+h+"$2";b.jsonp!==!1&&(j=j.replace(cd,l),b.url===j&&(e&&(k=k.replace(cd,l)),b.data===k&&(j+=(/\?/.test(j)?"&":"?")+b.jsonp+"="+h))),b.url=j,b.data=k,a[h]=function(a){g=[a]},d.always(function(){a[h]=i,g&&f.isFunction(i)&&a[h](g[0])}),b.converters["script json"]=function(){g||f.error(h+" was not called");return g[0]},b.dataTypes[0]="json";return"script"}}),f.ajaxSetup({accepts:{script:"text/javascript, application/javascript, application/ecmascript, application/x-ecmascript"},contents:{script:/javascript|ecmascript/},converters:{"text script":function(a){f.globalEval(a);return a}}}),f.ajaxPrefilter("script",function(a){a.cache===b&&(a.cache=!1),a.crossDomain&&(a.type="GET",a.global=!1)}),f.ajaxTransport("script",function(a){if(a.crossDomain){var d,e=c.head||c.getElementsByTagName("head")[0]||c.documentElement;return{send:function(f,g){d=c.createElement("script"),d.async="async",a.scriptCharset&&(d.charset=a.scriptCharset),d.src=a.url,d.onload=d.onreadystatechange=function(a,c){if(c||!d.readyState||/loaded|complete/.test(d.readyState))d.onload=d.onreadystatechange=null,e&&d.parentNode&&e.removeChild(d),d=b,c||g(200,"success")},e.insertBefore(d,e.firstChild)},abort:function(){d&&d.onload(0,1)}}}});var ce=a.ActiveXObject?function(){for(var a in cg)cg[a](0,1)}:!1,cf=0,cg;f.ajaxSettings.xhr=a.ActiveXObject?function(){return!this.isLocal&&ch()||ci()}:ch,function(a){f.extend(f.support,{ajax:!!a,cors:!!a&&"withCredentials"in a})}(f.ajaxSettings.xhr()),f.support.ajax&&f.ajaxTransport(function(c){if(!c.crossDomain||f.support.cors){var d;return{send:function(e,g){var h=c.xhr(),i,j;c.username?h.open(c.type,c.url,c.async,c.username,c.password):h.open(c.type,c.url,c.async);if(c.xhrFields)for(j in c.xhrFields)h[j]=c.xhrFields[j];c.mimeType&&h.overrideMimeType&&h.overrideMimeType(c.mimeType),!c.crossDomain&&!e["X-Requested-With"]&&(e["X-Requested-With"]="XMLHttpRequest");try{for(j in e)h.setRequestHeader(j,e[j])}catch(k){}h.send(c.hasContent&&c.data||null),d=function(a,e){var j,k,l,m,n;try{if(d&&(e||h.readyState===4)){d=b,i&&(h.onreadystatechange=f.noop,ce&&delete cg[i]);if(e)h.readyState!==4&&h.abort();else{j=h.status,l=h.getAllResponseHeaders(),m={},n=h.responseXML,n&&n.documentElement&&(m.xml=n);try{m.text=h.responseText}catch(a){}try{k=h.statusText}catch(o){k=""}!j&&c.isLocal&&!c.crossDomain?j=m.text?200:404:j===1223&&(j=204)}}}catch(p){e||g(-1,p)}m&&g(j,k,m,l)},!c.async||h.readyState===4?d():(i=++cf,ce&&(cg||(cg={},f(a).unload(ce)),cg[i]=d),h.onreadystatechange=d)},abort:function(){d&&d(0,1)}}}});var cj={},ck,cl,cm=/^(?:toggle|show|hide)$/,cn=/^([+\-]=)?([\d+.\-]+)([a-z%]*)$/i,co,cp=[["height","marginTop","marginBottom","paddingTop","paddingBottom"],["width","marginLeft","marginRight","paddingLeft","paddingRight"],["opacity"]],cq;f.fn.extend({show:function(a,b,c){var d,e;if(a||a===0)return this.animate(ct("show",3),a,b,c);for(var g=0,h=this.length;g<h;g++)d=this[g],d.style&&(e=d.style.display,!f._data(d,"olddisplay")&&e==="none"&&(e=d.style.display=""),(e===""&&f.css(d,"display")==="none"||!f.contains(d.ownerDocument.documentElement,d))&&f._data(d,"olddisplay",cu(d.nodeName)));for(g=0;g<h;g++){d=this[g];if(d.style){e=d.style.display;if(e===""||e==="none")d.style.display=f._data(d,"olddisplay")||""}}return this},hide:function(a,b,c){if(a||a===0)return this.animate(ct("hide",3),a,b,c);var d,e,g=0,h=this.length;for(;g<h;g++)d=this[g],d.style&&(e=f.css(d,"display"),e!=="none"&&!f._data(d,"olddisplay")&&f._data(d,"olddisplay",e));for(g=0;g<h;g++)this[g].style&&(this[g].style.display="none");return this},_toggle:f.fn.toggle,toggle:function(a,b,c){var d=typeof a=="boolean";f.isFunction(a)&&f.isFunction(b)?this._toggle.apply(this,arguments):a==null||d?this.each(function(){var b=d?a:f(this).is(":hidden");f(this)[b?"show":"hide"]()}):this.animate(ct("toggle",3),a,b,c);return this},fadeTo:function(a,b,c,d){return this.filter(":hidden").css("opacity",0).show().end().animate({opacity:b},a,c,d)},animate:function(a,b,c,d){function g(){e.queue===!1&&f._mark(this);var b=f.extend({},e),c=this.nodeType===1,d=c&&f(this).is(":hidden"),g,h,i,j,k,l,m,n,o,p,q;b.animatedProperties={};for(i in a){g=f.camelCase(i),i!==g&&(a[g]=a[i],delete a[i]);if((k=f.cssHooks[g])&&"expand"in k){l=k.expand(a[g]),delete a[g];for(i in l)i in a||(a[i]=l[i])}}for(g in a){h=a[g],f.isArray(h)?(b.animatedProperties[g]=h[1],h=a[g]=h[0]):b.animatedProperties[g]=b.specialEasing&&b.specialEasing[g]||b.easing||"swing";if(h==="hide"&&d||h==="show"&&!d)return b.complete.call(this);c&&(g==="height"||g==="width")&&(b.overflow=[this.style.overflow,this.style.overflowX,this.style.overflowY],f.css(this,"display")==="inline"&&f.css(this,"float")==="none"&&(!f.support.inlineBlockNeedsLayout||cu(this.nodeName)==="inline"?this.style.display="inline-block":this.style.zoom=1))}b.overflow!=null&&(this.style.overflow="hidden");for(i in a)j=new f.fx(this,b,i),h=a[i],cm.test(h)?(q=f._data(this,"toggle"+i)||(h==="toggle"?d?"show":"hide":0),q?(f._data(this,"toggle"+i,q==="show"?"hide":"show"),j[q]()):j[h]()):(m=cn.exec(h),n=j.cur(),m?(o=parseFloat(m[2]),p=m[3]||(f.cssNumber[i]?"":"px"),p!=="px"&&(f.style(this,i,(o||1)+p),n=(o||1)/j.cur()*n,f.style(this,i,n+p)),m[1]&&(o=(m[1]==="-="?-1:1)*o+n),j.custom(n,o,p)):j.custom(n,h,""));return!0}var e=f.speed(b,c,d);if(f.isEmptyObject(a))return this.each(e.complete,[!1]);a=f.extend({},a);return e.queue===!1?this.each(g):this.queue(e.queue,g)},stop:function(a,c,d){typeof a!="string"&&(d=c,c=a,a=b),c&&a!==!1&&this.queue(a||"fx",[]);return this.each(function(){function h(a,b,c){var e=b[c];f.removeData(a,c,!0),e.stop(d)}var b,c=!1,e=f.timers,g=f._data(this);d||f._unmark(!0,this);if(a==null)for(b in g)g[b]&&g[b].stop&&b.indexOf(".run")===b.length-4&&h(this,g,b);else g[b=a+".run"]&&g[b].stop&&h(this,g,b);for(b=e.length;b--;)e[b].elem===this&&(a==null||e[b].queue===a)&&(d?e[b](!0):e[b].saveState(),c=!0,e.splice(b,1));(!d||!c)&&f.dequeue(this,a)})}}),f.each({slideDown:ct("show",1),slideUp:ct("hide",1),slideToggle:ct("toggle",1),fadeIn:{opacity:"show"},fadeOut:{opacity:"hide"},fadeToggle:{opacity:"toggle"}},function(a,b){f.fn[a]=function(a,c,d){return this.animate(b,a,c,d)}}),f.extend({speed:function(a,b,c){var d=a&&typeof a=="object"?f.extend({},a):{complete:c||!c&&b||f.isFunction(a)&&a,duration:a,easing:c&&b||b&&!f.isFunction(b)&&b};d.duration=f.fx.off?0:typeof d.duration=="number"?d.duration:d.duration in f.fx.speeds?f.fx.speeds[d.duration]:f.fx.speeds._default;if(d.queue==null||d.queue===!0)d.queue="fx";d.old=d.complete,d.complete=function(a){f.isFunction(d.old)&&d.old.call(this),d.queue?f.dequeue(this,d.queue):a!==!1&&f._unmark(this)};return d},easing:{linear:function(a){return a},swing:function(a){return-Math.cos(a*Math.PI)/2+.5}},timers:[],fx:function(a,b,c){this.options=b,this.elem=a,this.prop=c,b.orig=b.orig||{}}}),f.fx.prototype={update:function(){this.options.step&&this.options.step.call(this.elem,this.now,this),(f.fx.step[this.prop]||f.fx.step._default)(this)},cur:function(){if(this.elem[this.prop]!=null&&(!this.elem.style||this.elem.style[this.prop]==null))return this.elem[this.prop];var a,b=f.css(this.elem,this.prop);return isNaN(a=parseFloat(b))?!b||b==="auto"?0:b:a},custom:function(a,c,d){function h(a){return e.step(a)}var e=this,g=f.fx;this.startTime=cq||cr(),this.end=c,this.now=this.start=a,this.pos=this.state=0,this.unit=d||this.unit||(f.cssNumber[this.prop]?"":"px"),h.queue=this.options.queue,h.elem=this.elem,h.saveState=function(){f._data(e.elem,"fxshow"+e.prop)===b&&(e.options.hide?f._data(e.elem,"fxshow"+e.prop,e.start):e.options.show&&f._data(e.elem,"fxshow"+e.prop,e.end))},h()&&f.timers.push(h)&&!co&&(co=setInterval(g.tick,g.interval))},show:function(){var a=f._data(this.elem,"fxshow"+this.prop);this.options.orig[this.prop]=a||f.style(this.elem,this.prop),this.options.show=!0,a!==b?this.custom(this.cur(),a):this.custom(this.prop==="width"||this.prop==="height"?1:0,this.cur()),f(this.elem).show()},hide:function(){this.options.orig[this.prop]=f._data(this.elem,"fxshow"+this.prop)||f.style(this.elem,this.prop),this.options.hide=!0,this.custom(this.cur(),0)},step:function(a){var b,c,d,e=cq||cr(),g=!0,h=this.elem,i=this.options;if(a||e>=i.duration+this.startTime){this.now=this.end,this.pos=this.state=1,this.update(),i.animatedProperties[this.prop]=!0;for(b in i.animatedProperties)i.animatedProperties[b]!==!0&&(g=!1);if(g){i.overflow!=null&&!f.support.shrinkWrapBlocks&&f.each(["","X","Y"],function(a,b){h.style["overflow"+b]=i.overflow[a]}),i.hide&&f(h).hide();if(i.hide||i.show)for(b in i.animatedProperties)f.style(h,b,i.orig[b]),f.removeData(h,"fxshow"+b,!0),f.removeData(h,"toggle"+b,!0);d=i.complete,d&&(i.complete=!1,d.call(h))}return!1}i.duration==Infinity?this.now=e:(c=e-this.startTime,this.state=c/i.duration,this.pos=f.easing[i.animatedProperties[this.prop]](this.state,c,0,1,i.duration),this.now=this.start+(this.end-this.start)*this.pos),this.update();return!0}},f.extend(f.fx,{tick:function(){var a,b=f.timers,c=0;for(;c<b.length;c++)a=b[c],!a()&&b[c]===a&&b.splice(c--,1);b.length||f.fx.stop()},interval:13,stop:function(){clearInterval(co),co=null},speeds:{slow:600,fast:200,_default:400},step:{opacity:function(a){f.style(a.elem,"opacity",a.now)},_default:function(a){a.elem.style&&a.elem.style[a.prop]!=null?a.elem.style[a.prop]=a.now+a.unit:a.elem[a.prop]=a.now}}}),f.each(cp.concat.apply([],cp),function(a,b){b.indexOf("margin")&&(f.fx.step[b]=function(a){f.style(a.elem,b,Math.max(0,a.now)+a.unit)})}),f.expr&&f.expr.filters&&(f.expr.filters.animated=function(a){return f.grep(f.timers,function(b){return a===b.elem}).length});var cv,cw=/^t(?:able|d|h)$/i,cx=/^(?:body|html)$/i;"getBoundingClientRect"in c.documentElement?cv=function(a,b,c,d){try{d=a.getBoundingClientRect()}catch(e){}if(!d||!f.contains(c,a))return d?{top:d.top,left:d.left}:{top:0,left:0};var g=b.body,h=cy(b),i=c.clientTop||g.clientTop||0,j=c.clientLeft||g.clientLeft||0,k=h.pageYOffset||f.support.boxModel&&c.scrollTop||g.scrollTop,l=h.pageXOffset||f.support.boxModel&&c.scrollLeft||g.scrollLeft,m=d.top+k-i,n=d.left+l-j;return{top:m,left:n}}:cv=function(a,b,c){var d,e=a.offsetParent,g=a,h=b.body,i=b.defaultView,j=i?i.getComputedStyle(a,null):a.currentStyle,k=a.offsetTop,l=a.offsetLeft;while((a=a.parentNode)&&a!==h&&a!==c){if(f.support.fixedPosition&&j.position==="fixed")break;d=i?i.getComputedStyle(a,null):a.currentStyle,k-=a.scrollTop,l-=a.scrollLeft,a===e&&(k+=a.offsetTop,l+=a.offsetLeft,f.support.doesNotAddBorder&&(!f.support.doesAddBorderForTableAndCells||!cw.test(a.nodeName))&&(k+=parseFloat(d.borderTopWidth)||0,l+=parseFloat(d.borderLeftWidth)||0),g=e,e=a.offsetParent),f.support.subtractsBorderForOverflowNotVisible&&d.overflow!=="visible"&&(k+=parseFloat(d.borderTopWidth)||0,l+=parseFloat(d.borderLeftWidth)||0),j=d}if(j.position==="relative"||j.position==="static")k+=h.offsetTop,l+=h.offsetLeft;f.support.fixedPosition&&j.position==="fixed"&&(k+=Math.max(c.scrollTop,h.scrollTop),l+=Math.max(c.scrollLeft,h.scrollLeft));return{top:k,left:l}},f.fn.offset=function(a){if(arguments.length)return a===b?this:this.each(function(b){f.offset.setOffset(this,a,b)});var c=this[0],d=c&&c.ownerDocument;if(!d)return null;if(c===d.body)return f.offset.bodyOffset(c);return cv(c,d,d.documentElement)},f.offset={bodyOffset:function(a){var b=a.offsetTop,c=a.offsetLeft;f.support.doesNotIncludeMarginInBodyOffset&&(b+=parseFloat(f.css(a,"marginTop"))||0,c+=parseFloat(f.css(a,"marginLeft"))||0);return{top:b,left:c}},setOffset:function(a,b,c){var d=f.css(a,"position");d==="static"&&(a.style.position="relative");var e=f(a),g=e.offset(),h=f.css(a,"top"),i=f.css(a,"left"),j=(d==="absolute"||d==="fixed")&&f.inArray("auto",[h,i])>-1,k={},l={},m,n;j?(l=e.position(),m=l.top,n=l.left):(m=parseFloat(h)||0,n=parseFloat(i)||0),f.isFunction(b)&&(b=b.call(a,c,g)),b.top!=null&&(k.top=b.top-g.top+m),b.left!=null&&(k.left=b.left-g.left+n),"using"in b?b.using.call(a,k):e.css(k)}},f.fn.extend({position:function(){if(!this[0])return null;var a=this[0],b=this.offsetParent(),c=this.offset(),d=cx.test(b[0].nodeName)?{top:0,left:0}:b.offset();c.top-=parseFloat(f.css(a,"marginTop"))||0,c.left-=parseFloat(f.css(a,"marginLeft"))||0,d.top+=parseFloat(f.css(b[0],"borderTopWidth"))||0,d.left+=parseFloat(f.css(b[0],"borderLeftWidth"))||0;return{top:c.top-d.top,left:c.left-d.left}},offsetParent:function(){return this.map(function(){var a=this.offsetParent||c.body;while(a&&!cx.test(a.nodeName)&&f.css(a,"position")==="static")a=a.offsetParent;return a})}}),f.each({scrollLeft:"pageXOffset",scrollTop:"pageYOffset"},function(a,c){var d=/Y/.test(c);f.fn[a]=function(e){return f.access(this,function(a,e,g){var h=cy(a);if(g===b)return h?c in h?h[c]:f.support.boxModel&&h.document.documentElement[e]||h.document.body[e]:a[e];h?h.scrollTo(d?f(h).scrollLeft():g,d?g:f(h).scrollTop()):a[e]=g},a,e,arguments.length,null)}}),f.each({Height:"height",Width:"width"},function(a,c){var d="client"+a,e="scroll"+a,g="offset"+a;f.fn["inner"+a]=function(){var a=this[0];return a?a.style?parseFloat(f.css(a,c,"padding")):this[c]():null},f.fn["outer"+a]=function(a){var b=this[0];return b?b.style?parseFloat(f.css(b,c,a?"margin":"border")):this[c]():null},f.fn[c]=function(a){return f.access(this,function(a,c,h){var i,j,k,l;if(f.isWindow(a)){i=a.document,j=i.documentElement[d];return f.support.boxModel&&j||i.body&&i.body[d]||j}if(a.nodeType===9){i=a.documentElement;if(i[d]>=i[e])return i[d];return Math.max(a.body[e],i[e],a.body[g],i[g])}if(h===b){k=f.css(a,c),l=parseFloat(k);return f.isNumeric(l)?l:k}f(a).css(c,h)},c,a,arguments.length,null)}}),a.jQuery=a.$=f,typeof define=="function"&&define.amd&&define.amd.jQuery&&define("jquery",[],function(){return f})})(window);(function(){var n=this,t=n._,r={},e=Array.prototype,u=Object.prototype,i=Function.prototype,a=e.push,o=e.slice,c=e.concat,l=u.toString,f=u.hasOwnProperty,s=e.forEach,p=e.map,h=e.reduce,v=e.reduceRight,d=e.filter,g=e.every,m=e.some,y=e.indexOf,b=e.lastIndexOf,x=Array.isArray,_=Object.keys,j=i.bind,w=function(n){return n instanceof w?n:this instanceof w?(this._wrapped=n,void 0):new w(n)};"undefined"!=typeof exports?("undefined"!=typeof module&&module.exports&&(exports=module.exports=w),exports._=w):n._=w,w.VERSION="1.4.4";var A=w.each=w.forEach=function(n,t,e){if(null!=n)if(s&&n.forEach===s)n.forEach(t,e);else if(n.length===+n.length){for(var u=0,i=n.length;i>u;u++)if(t.call(e,n[u],u,n)===r)return}else for(var a in n)if(w.has(n,a)&&t.call(e,n[a],a,n)===r)return};w.map=w.collect=function(n,t,r){var e=[];return null==n?e:p&&n.map===p?n.map(t,r):(A(n,function(n,u,i){e[e.length]=t.call(r,n,u,i)}),e)};var O="Reduce of empty array with no initial value";w.reduce=w.foldl=w.inject=function(n,t,r,e){var u=arguments.length>2;if(null==n&&(n=[]),h&&n.reduce===h)return e&&(t=w.bind(t,e)),u?n.reduce(t,r):n.reduce(t);if(A(n,function(n,i,a){u?r=t.call(e,r,n,i,a):(r=n,u=!0)}),!u)throw new TypeError(O);return r},w.reduceRight=w.foldr=function(n,t,r,e){var u=arguments.length>2;if(null==n&&(n=[]),v&&n.reduceRight===v)return e&&(t=w.bind(t,e)),u?n.reduceRight(t,r):n.reduceRight(t);var i=n.length;if(i!==+i){var a=w.keys(n);i=a.length}if(A(n,function(o,c,l){c=a?a[--i]:--i,u?r=t.call(e,r,n[c],c,l):(r=n[c],u=!0)}),!u)throw new TypeError(O);return r},w.find=w.detect=function(n,t,r){var e;return E(n,function(n,u,i){return t.call(r,n,u,i)?(e=n,!0):void 0}),e},w.filter=w.select=function(n,t,r){var e=[];return null==n?e:d&&n.filter===d?n.filter(t,r):(A(n,function(n,u,i){t.call(r,n,u,i)&&(e[e.length]=n)}),e)},w.reject=function(n,t,r){return w.filter(n,function(n,e,u){return!t.call(r,n,e,u)},r)},w.every=w.all=function(n,t,e){t||(t=w.identity);var u=!0;return null==n?u:g&&n.every===g?n.every(t,e):(A(n,function(n,i,a){return(u=u&&t.call(e,n,i,a))?void 0:r}),!!u)};var E=w.some=w.any=function(n,t,e){t||(t=w.identity);var u=!1;return null==n?u:m&&n.some===m?n.some(t,e):(A(n,function(n,i,a){return u||(u=t.call(e,n,i,a))?r:void 0}),!!u)};w.contains=w.include=function(n,t){return null==n?!1:y&&n.indexOf===y?n.indexOf(t)!=-1:E(n,function(n){return n===t})},w.invoke=function(n,t){var r=o.call(arguments,2),e=w.isFunction(t);return w.map(n,function(n){return(e?t:n[t]).apply(n,r)})},w.pluck=function(n,t){return w.map(n,function(n){return n[t]})},w.where=function(n,t,r){return w.isEmpty(t)?r?null:[]:w[r?"find":"filter"](n,function(n){for(var r in t)if(t[r]!==n[r])return!1;return!0})},w.findWhere=function(n,t){return w.where(n,t,!0)},w.max=function(n,t,r){if(!t&&w.isArray(n)&&n[0]===+n[0]&&65535>n.length)return Math.max.apply(Math,n);if(!t&&w.isEmpty(n))return-1/0;var e={computed:-1/0,value:-1/0};return A(n,function(n,u,i){var a=t?t.call(r,n,u,i):n;a>=e.computed&&(e={value:n,computed:a})}),e.value},w.min=function(n,t,r){if(!t&&w.isArray(n)&&n[0]===+n[0]&&65535>n.length)return Math.min.apply(Math,n);if(!t&&w.isEmpty(n))return 1/0;var e={computed:1/0,value:1/0};return A(n,function(n,u,i){var a=t?t.call(r,n,u,i):n;e.computed>a&&(e={value:n,computed:a})}),e.value},w.shuffle=function(n){var t,r=0,e=[];return A(n,function(n){t=w.random(r++),e[r-1]=e[t],e[t]=n}),e};var k=function(n){return w.isFunction(n)?n:function(t){return t[n]}};w.sortBy=function(n,t,r){var e=k(t);return w.pluck(w.map(n,function(n,t,u){return{value:n,index:t,criteria:e.call(r,n,t,u)}}).sort(function(n,t){var r=n.criteria,e=t.criteria;if(r!==e){if(r>e||r===void 0)return 1;if(e>r||e===void 0)return-1}return n.index<t.index?-1:1}),"value")};var F=function(n,t,r,e){var u={},i=k(t||w.identity);return A(n,function(t,a){var o=i.call(r,t,a,n);e(u,o,t)}),u};w.groupBy=function(n,t,r){return F(n,t,r,function(n,t,r){(w.has(n,t)?n[t]:n[t]=[]).push(r)})},w.countBy=function(n,t,r){return F(n,t,r,function(n,t){w.has(n,t)||(n[t]=0),n[t]++})},w.sortedIndex=function(n,t,r,e){r=null==r?w.identity:k(r);for(var u=r.call(e,t),i=0,a=n.length;a>i;){var o=i+a>>>1;u>r.call(e,n[o])?i=o+1:a=o}return i},w.toArray=function(n){return n?w.isArray(n)?o.call(n):n.length===+n.length?w.map(n,w.identity):w.values(n):[]},w.size=function(n){return null==n?0:n.length===+n.length?n.length:w.keys(n).length},w.first=w.head=w.take=function(n,t,r){return null==n?void 0:null==t||r?n[0]:o.call(n,0,t)},w.initial=function(n,t,r){return o.call(n,0,n.length-(null==t||r?1:t))},w.last=function(n,t,r){return null==n?void 0:null==t||r?n[n.length-1]:o.call(n,Math.max(n.length-t,0))},w.rest=w.tail=w.drop=function(n,t,r){return o.call(n,null==t||r?1:t)},w.compact=function(n){return w.filter(n,w.identity)};var R=function(n,t,r){return A(n,function(n){w.isArray(n)?t?a.apply(r,n):R(n,t,r):r.push(n)}),r};w.flatten=function(n,t){return R(n,t,[])},w.without=function(n){return w.difference(n,o.call(arguments,1))},w.uniq=w.unique=function(n,t,r,e){w.isFunction(t)&&(e=r,r=t,t=!1);var u=r?w.map(n,r,e):n,i=[],a=[];return A(u,function(r,e){(t?e&&a[a.length-1]===r:w.contains(a,r))||(a.push(r),i.push(n[e]))}),i},w.union=function(){return w.uniq(c.apply(e,arguments))},w.intersection=function(n){var t=o.call(arguments,1);return w.filter(w.uniq(n),function(n){return w.every(t,function(t){return w.indexOf(t,n)>=0})})},w.difference=function(n){var t=c.apply(e,o.call(arguments,1));return w.filter(n,function(n){return!w.contains(t,n)})},w.zip=function(){for(var n=o.call(arguments),t=w.max(w.pluck(n,"length")),r=Array(t),e=0;t>e;e++)r[e]=w.pluck(n,""+e);return r},w.object=function(n,t){if(null==n)return{};for(var r={},e=0,u=n.length;u>e;e++)t?r[n[e]]=t[e]:r[n[e][0]]=n[e][1];return r},w.indexOf=function(n,t,r){if(null==n)return-1;var e=0,u=n.length;if(r){if("number"!=typeof r)return e=w.sortedIndex(n,t),n[e]===t?e:-1;e=0>r?Math.max(0,u+r):r}if(y&&n.indexOf===y)return n.indexOf(t,r);for(;u>e;e++)if(n[e]===t)return e;return-1},w.lastIndexOf=function(n,t,r){if(null==n)return-1;var e=null!=r;if(b&&n.lastIndexOf===b)return e?n.lastIndexOf(t,r):n.lastIndexOf(t);for(var u=e?r:n.length;u--;)if(n[u]===t)return u;return-1},w.range=function(n,t,r){1>=arguments.length&&(t=n||0,n=0),r=arguments[2]||1;for(var e=Math.max(Math.ceil((t-n)/r),0),u=0,i=Array(e);e>u;)i[u++]=n,n+=r;return i},w.bind=function(n,t){if(n.bind===j&&j)return j.apply(n,o.call(arguments,1));var r=o.call(arguments,2);return function(){return n.apply(t,r.concat(o.call(arguments)))}},w.partial=function(n){var t=o.call(arguments,1);return function(){return n.apply(this,t.concat(o.call(arguments)))}},w.bindAll=function(n){var t=o.call(arguments,1);return 0===t.length&&(t=w.functions(n)),A(t,function(t){n[t]=w.bind(n[t],n)}),n},w.memoize=function(n,t){var r={};return t||(t=w.identity),function(){var e=t.apply(this,arguments);return w.has(r,e)?r[e]:r[e]=n.apply(this,arguments)}},w.delay=function(n,t){var r=o.call(arguments,2);return setTimeout(function(){return n.apply(null,r)},t)},w.defer=function(n){return w.delay.apply(w,[n,1].concat(o.call(arguments,1)))},w.throttle=function(n,t){var r,e,u,i,a=0,o=function(){a=new Date,u=null,i=n.apply(r,e)};return function(){var c=new Date,l=t-(c-a);return r=this,e=arguments,0>=l?(clearTimeout(u),u=null,a=c,i=n.apply(r,e)):u||(u=setTimeout(o,l)),i}},w.debounce=function(n,t,r){var e,u;return function(){var i=this,a=arguments,o=function(){e=null,r||(u=n.apply(i,a))},c=r&&!e;return clearTimeout(e),e=setTimeout(o,t),c&&(u=n.apply(i,a)),u}},w.once=function(n){var t,r=!1;return function(){return r?t:(r=!0,t=n.apply(this,arguments),n=null,t)}},w.wrap=function(n,t){return function(){var r=[n];return a.apply(r,arguments),t.apply(this,r)}},w.compose=function(){var n=arguments;return function(){for(var t=arguments,r=n.length-1;r>=0;r--)t=[n[r].apply(this,t)];return t[0]}},w.after=function(n,t){return 0>=n?t():function(){return 1>--n?t.apply(this,arguments):void 0}},w.keys=_||function(n){if(n!==Object(n))throw new TypeError("Invalid object");var t=[];for(var r in n)w.has(n,r)&&(t[t.length]=r);return t},w.values=function(n){var t=[];for(var r in n)w.has(n,r)&&t.push(n[r]);return t},w.pairs=function(n){var t=[];for(var r in n)w.has(n,r)&&t.push([r,n[r]]);return t},w.invert=function(n){var t={};for(var r in n)w.has(n,r)&&(t[n[r]]=r);return t},w.functions=w.methods=function(n){var t=[];for(var r in n)w.isFunction(n[r])&&t.push(r);return t.sort()},w.extend=function(n){return A(o.call(arguments,1),function(t){if(t)for(var r in t)n[r]=t[r]}),n},w.pick=function(n){var t={},r=c.apply(e,o.call(arguments,1));return A(r,function(r){r in n&&(t[r]=n[r])}),t},w.omit=function(n){var t={},r=c.apply(e,o.call(arguments,1));for(var u in n)w.contains(r,u)||(t[u]=n[u]);return t},w.defaults=function(n){return A(o.call(arguments,1),function(t){if(t)for(var r in t)null==n[r]&&(n[r]=t[r])}),n},w.clone=function(n){return w.isObject(n)?w.isArray(n)?n.slice():w.extend({},n):n},w.tap=function(n,t){return t(n),n};var I=function(n,t,r,e){if(n===t)return 0!==n||1/n==1/t;if(null==n||null==t)return n===t;n instanceof w&&(n=n._wrapped),t instanceof w&&(t=t._wrapped);var u=l.call(n);if(u!=l.call(t))return!1;switch(u){case"[object String]":return n==t+"";case"[object Number]":return n!=+n?t!=+t:0==n?1/n==1/t:n==+t;case"[object Date]":case"[object Boolean]":return+n==+t;case"[object RegExp]":return n.source==t.source&&n.global==t.global&&n.multiline==t.multiline&&n.ignoreCase==t.ignoreCase}if("object"!=typeof n||"object"!=typeof t)return!1;for(var i=r.length;i--;)if(r[i]==n)return e[i]==t;r.push(n),e.push(t);var a=0,o=!0;if("[object Array]"==u){if(a=n.length,o=a==t.length)for(;a--&&(o=I(n[a],t[a],r,e)););}else{var c=n.constructor,f=t.constructor;if(c!==f&&!(w.isFunction(c)&&c instanceof c&&w.isFunction(f)&&f instanceof f))return!1;for(var s in n)if(w.has(n,s)&&(a++,!(o=w.has(t,s)&&I(n[s],t[s],r,e))))break;if(o){for(s in t)if(w.has(t,s)&&!a--)break;o=!a}}return r.pop(),e.pop(),o};w.isEqual=function(n,t){return I(n,t,[],[])},w.isEmpty=function(n){if(null==n)return!0;if(w.isArray(n)||w.isString(n))return 0===n.length;for(var t in n)if(w.has(n,t))return!1;return!0},w.isElement=function(n){return!(!n||1!==n.nodeType)},w.isArray=x||function(n){return"[object Array]"==l.call(n)},w.isObject=function(n){return n===Object(n)},A(["Arguments","Function","String","Number","Date","RegExp"],function(n){w["is"+n]=function(t){return l.call(t)=="[object "+n+"]"}}),w.isArguments(arguments)||(w.isArguments=function(n){return!(!n||!w.has(n,"callee"))}),"function"!=typeof/./&&(w.isFunction=function(n){return"function"==typeof n}),w.isFinite=function(n){return isFinite(n)&&!isNaN(parseFloat(n))},w.isNaN=function(n){return w.isNumber(n)&&n!=+n},w.isBoolean=function(n){return n===!0||n===!1||"[object Boolean]"==l.call(n)},w.isNull=function(n){return null===n},w.isUndefined=function(n){return n===void 0},w.has=function(n,t){return f.call(n,t)},w.noConflict=function(){return n._=t,this},w.identity=function(n){return n},w.times=function(n,t,r){for(var e=Array(n),u=0;n>u;u++)e[u]=t.call(r,u);return e},w.random=function(n,t){return null==t&&(t=n,n=0),n+Math.floor(Math.random()*(t-n+1))};var M={escape:{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#x27;","/":"&#x2F;"}};M.unescape=w.invert(M.escape);var S={escape:RegExp("["+w.keys(M.escape).join("")+"]","g"),unescape:RegExp("("+w.keys(M.unescape).join("|")+")","g")};w.each(["escape","unescape"],function(n){w[n]=function(t){return null==t?"":(""+t).replace(S[n],function(t){return M[n][t]})}}),w.result=function(n,t){if(null==n)return null;var r=n[t];return w.isFunction(r)?r.call(n):r},w.mixin=function(n){A(w.functions(n),function(t){var r=w[t]=n[t];w.prototype[t]=function(){var n=[this._wrapped];return a.apply(n,arguments),D.call(this,r.apply(w,n))}})};var N=0;w.uniqueId=function(n){var t=++N+"";return n?n+t:t},w.templateSettings={evaluate:/<%([\s\S]+?)%>/g,interpolate:/<%=([\s\S]+?)%>/g,escape:/<%-([\s\S]+?)%>/g};var T=/(.)^/,q={"'":"'","\\":"\\","\r":"r","\n":"n","	":"t","\u2028":"u2028","\u2029":"u2029"},B=/\\|'|\r|\n|\t|\u2028|\u2029/g;w.template=function(n,t,r){var e;r=w.defaults({},r,w.templateSettings);var u=RegExp([(r.escape||T).source,(r.interpolate||T).source,(r.evaluate||T).source].join("|")+"|$","g"),i=0,a="__p+='";n.replace(u,function(t,r,e,u,o){return a+=n.slice(i,o).replace(B,function(n){return"\\"+q[n]}),r&&(a+="'+\n((__t=("+r+"))==null?'':_.escape(__t))+\n'"),e&&(a+="'+\n((__t=("+e+"))==null?'':__t)+\n'"),u&&(a+="';\n"+u+"\n__p+='"),i=o+t.length,t}),a+="';\n",r.variable||(a="with(obj||{}){\n"+a+"}\n"),a="var __t,__p='',__j=Array.prototype.join,"+"print=function(){__p+=__j.call(arguments,'');};\n"+a+"return __p;\n";try{e=Function(r.variable||"obj","_",a)}catch(o){throw o.source=a,o}if(t)return e(t,w);var c=function(n){return e.call(this,n,w)};return c.source="function("+(r.variable||"obj")+"){\n"+a+"}",c},w.chain=function(n){return w(n).chain()};var D=function(n){return this._chain?w(n).chain():n};w.mixin(w),A(["pop","push","reverse","shift","sort","splice","unshift"],function(n){var t=e[n];w.prototype[n]=function(){var r=this._wrapped;return t.apply(r,arguments),"shift"!=n&&"splice"!=n||0!==r.length||delete r[0],D.call(this,r)}}),A(["concat","join","slice"],function(n){var t=e[n];w.prototype[n]=function(){return D.call(this,t.apply(this._wrapped,arguments))}}),w.extend(w.prototype,{chain:function(){return this._chain=!0,this},value:function(){return this._wrapped}})}).call(this);
+/*
+    json2.js
+    2012-10-08
+
+    Public Domain.
+
+    NO WARRANTY EXPRESSED OR IMPLIED. USE AT YOUR OWN RISK.
+
+    See http://www.JSON.org/js.html
+
+
+    This code should be minified before deployment.
+    See http://javascript.crockford.com/jsmin.html
+
+    USE YOUR OWN COPY. IT IS EXTREMELY UNWISE TO LOAD CODE FROM SERVERS YOU DO
+    NOT CONTROL.
+
+
+    This file creates a global JSON object containing two methods: stringify
+    and parse.
+
+        JSON.stringify(value, replacer, space)
+            value       any JavaScript value, usually an object or array.
+
+            replacer    an optional parameter that determines how object
+                        values are stringified for objects. It can be a
+                        function or an array of strings.
+
+            space       an optional parameter that specifies the indentation
+                        of nested structures. If it is omitted, the text will
+                        be packed without extra whitespace. If it is a number,
+                        it will specify the number of spaces to indent at each
+                        level. If it is a string (such as '\t' or '&nbsp;'),
+                        it contains the characters used to indent at each level.
+
+            This method produces a JSON text from a JavaScript value.
+
+            When an object value is found, if the object contains a toJSON
+            method, its toJSON method will be called and the result will be
+            stringified. A toJSON method does not serialize: it returns the
+            value represented by the name/value pair that should be serialized,
+            or undefined if nothing should be serialized. The toJSON method
+            will be passed the key associated with the value, and this will be
+            bound to the value
+
+            For example, this would serialize Dates as ISO strings.
+
+                Date.prototype.toJSON = function (key) {
+                    function f(n) {
+                        // Format integers to have at least two digits.
+                        return n < 10 ? '0' + n : n;
+                    }
+
+                    return this.getUTCFullYear()   + '-' +
+                         f(this.getUTCMonth() + 1) + '-' +
+                         f(this.getUTCDate())      + 'T' +
+                         f(this.getUTCHours())     + ':' +
+                         f(this.getUTCMinutes())   + ':' +
+                         f(this.getUTCSeconds())   + 'Z';
+                };
+
+            You can provide an optional replacer method. It will be passed the
+            key and value of each member, with this bound to the containing
+            object. The value that is returned from your method will be
+            serialized. If your method returns undefined, then the member will
+            be excluded from the serialization.
+
+            If the replacer parameter is an array of strings, then it will be
+            used to select the members to be serialized. It filters the results
+            such that only members with keys listed in the replacer array are
+            stringified.
+
+            Values that do not have JSON representations, such as undefined or
+            functions, will not be serialized. Such values in objects will be
+            dropped; in arrays they will be replaced with null. You can use
+            a replacer function to replace those with JSON values.
+            JSON.stringify(undefined) returns undefined.
+
+            The optional space parameter produces a stringification of the
+            value that is filled with line breaks and indentation to make it
+            easier to read.
+
+            If the space parameter is a non-empty string, then that string will
+            be used for indentation. If the space parameter is a number, then
+            the indentation will be that many spaces.
+
+            Example:
+
+            text = JSON.stringify(['e', {pluribus: 'unum'}]);
+            // text is '["e",{"pluribus":"unum"}]'
+
+
+            text = JSON.stringify(['e', {pluribus: 'unum'}], null, '\t');
+            // text is '[\n\t"e",\n\t{\n\t\t"pluribus": "unum"\n\t}\n]'
+
+            text = JSON.stringify([new Date()], function (key, value) {
+                return this[key] instanceof Date ?
+                    'Date(' + this[key] + ')' : value;
+            });
+            // text is '["Date(---current time---)"]'
+
+
+        JSON.parse(text, reviver)
+            This method parses a JSON text to produce an object or array.
+            It can throw a SyntaxError exception.
+
+            The optional reviver parameter is a function that can filter and
+            transform the results. It receives each of the keys and values,
+            and its return value is used instead of the original value.
+            If it returns what it received, then the structure is not modified.
+            If it returns undefined then the member is deleted.
+
+            Example:
+
+            // Parse the text. Values that look like ISO date strings will
+            // be converted to Date objects.
+
+            myData = JSON.parse(text, function (key, value) {
+                var a;
+                if (typeof value === 'string') {
+                    a =
+/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2}(?:\.\d*)?)Z$/.exec(value);
+                    if (a) {
+                        return new Date(Date.UTC(+a[1], +a[2] - 1, +a[3], +a[4],
+                            +a[5], +a[6]));
+                    }
+                }
+                return value;
+            });
+
+            myData = JSON.parse('["Date(09/09/2001)"]', function (key, value) {
+                var d;
+                if (typeof value === 'string' &&
+                        value.slice(0, 5) === 'Date(' &&
+                        value.slice(-1) === ')') {
+                    d = new Date(value.slice(5, -1));
+                    if (d) {
+                        return d;
+                    }
+                }
+                return value;
+            });
+
+
+    This is a reference implementation. You are free to copy, modify, or
+    redistribute.
+*/
+
+/*jslint evil: true, regexp: true */
+
+/*members "", "\b", "\t", "\n", "\f", "\r", "\"", JSON, "\\", apply,
+    call, charCodeAt, getUTCDate, getUTCFullYear, getUTCHours,
+    getUTCMinutes, getUTCMonth, getUTCSeconds, hasOwnProperty, join,
+    lastIndex, length, parse, prototype, push, replace, slice, stringify,
+    test, toJSON, toString, valueOf
+*/
+
+
+// Create a JSON object only if one does not already exist. We create the
+// methods in a closure to avoid creating global variables.
+
+if (typeof JSON !== 'object') {
+    JSON = {};
+}
+
+(function () {
+    'use strict';
+
+    function f(n) {
+        // Format integers to have at least two digits.
+        return n < 10 ? '0' + n : n;
+    }
+
+    if (typeof Date.prototype.toJSON !== 'function') {
+
+        Date.prototype.toJSON = function (key) {
+
+            return isFinite(this.valueOf())
+                ? this.getUTCFullYear()     + '-' +
+                    f(this.getUTCMonth() + 1) + '-' +
+                    f(this.getUTCDate())      + 'T' +
+                    f(this.getUTCHours())     + ':' +
+                    f(this.getUTCMinutes())   + ':' +
+                    f(this.getUTCSeconds())   + 'Z'
+                : null;
+        };
+
+        String.prototype.toJSON      =
+            Number.prototype.toJSON  =
+            Boolean.prototype.toJSON = function (key) {
+                return this.valueOf();
+            };
+    }
+
+    var cx = /[\u0000\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g,
+        escapable = /[\\\"\x00-\x1f\x7f-\x9f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g,
+        gap,
+        indent,
+        meta = {    // table of character substitutions
+            '\b': '\\b',
+            '\t': '\\t',
+            '\n': '\\n',
+            '\f': '\\f',
+            '\r': '\\r',
+            '"' : '\\"',
+            '\\': '\\\\'
+        },
+        rep;
+
+
+    function quote(string) {
+
+// If the string contains no control characters, no quote characters, and no
+// backslash characters, then we can safely slap some quotes around it.
+// Otherwise we must also replace the offending characters with safe escape
+// sequences.
+
+        escapable.lastIndex = 0;
+        return escapable.test(string) ? '"' + string.replace(escapable, function (a) {
+            var c = meta[a];
+            return typeof c === 'string'
+                ? c
+                : '\\u' + ('0000' + a.charCodeAt(0).toString(16)).slice(-4);
+        }) + '"' : '"' + string + '"';
+    }
+
+
+    function str(key, holder) {
+
+// Produce a string from holder[key].
+
+        var i,          // The loop counter.
+            k,          // The member key.
+            v,          // The member value.
+            length,
+            mind = gap,
+            partial,
+            value = holder[key];
+
+// If the value has a toJSON method, call it to obtain a replacement value.
+
+        if (value && typeof value === 'object' &&
+                typeof value.toJSON === 'function') {
+            value = value.toJSON(key);
+        }
+
+// If we were called with a replacer function, then call the replacer to
+// obtain a replacement value.
+
+        if (typeof rep === 'function') {
+            value = rep.call(holder, key, value);
+        }
+
+// What happens next depends on the value's type.
+
+        switch (typeof value) {
+        case 'string':
+            return quote(value);
+
+        case 'number':
+
+// JSON numbers must be finite. Encode non-finite numbers as null.
+
+            return isFinite(value) ? String(value) : 'null';
+
+        case 'boolean':
+        case 'null':
+
+// If the value is a boolean or null, convert it to a string. Note:
+// typeof null does not produce 'null'. The case is included here in
+// the remote chance that this gets fixed someday.
+
+            return String(value);
+
+// If the type is 'object', we might be dealing with an object or an array or
+// null.
+
+        case 'object':
+
+// Due to a specification blunder in ECMAScript, typeof null is 'object',
+// so watch out for that case.
+
+            if (!value) {
+                return 'null';
+            }
+
+// Make an array to hold the partial results of stringifying this object value.
+
+            gap += indent;
+            partial = [];
+
+// Is the value an array?
+
+            if (Object.prototype.toString.apply(value) === '[object Array]') {
+
+// The value is an array. Stringify every element. Use null as a placeholder
+// for non-JSON values.
+
+                length = value.length;
+                for (i = 0; i < length; i += 1) {
+                    partial[i] = str(i, value) || 'null';
+                }
+
+// Join all of the elements together, separated with commas, and wrap them in
+// brackets.
+
+                v = partial.length === 0
+                    ? '[]'
+                    : gap
+                    ? '[\n' + gap + partial.join(',\n' + gap) + '\n' + mind + ']'
+                    : '[' + partial.join(',') + ']';
+                gap = mind;
+                return v;
+            }
+
+// If the replacer is an array, use it to select the members to be stringified.
+
+            if (rep && typeof rep === 'object') {
+                length = rep.length;
+                for (i = 0; i < length; i += 1) {
+                    if (typeof rep[i] === 'string') {
+                        k = rep[i];
+                        v = str(k, value);
+                        if (v) {
+                            partial.push(quote(k) + (gap ? ': ' : ':') + v);
+                        }
+                    }
+                }
+            } else {
+
+// Otherwise, iterate through all of the keys in the object.
+
+                for (k in value) {
+                    if (Object.prototype.hasOwnProperty.call(value, k)) {
+                        v = str(k, value);
+                        if (v) {
+                            partial.push(quote(k) + (gap ? ': ' : ':') + v);
+                        }
+                    }
+                }
+            }
+
+// Join all of the member texts together, separated with commas,
+// and wrap them in braces.
+
+            v = partial.length === 0
+                ? '{}'
+                : gap
+                ? '{\n' + gap + partial.join(',\n' + gap) + '\n' + mind + '}'
+                : '{' + partial.join(',') + '}';
+            gap = mind;
+            return v;
+        }
+    }
+
+// If the JSON object does not yet have a stringify method, give it one.
+
+    if (typeof JSON.stringify !== 'function') {
+        JSON.stringify = function (value, replacer, space) {
+
+// The stringify method takes a value and an optional replacer, and an optional
+// space parameter, and returns a JSON text. The replacer can be a function
+// that can replace values, or an array of strings that will select the keys.
+// A default replacer method can be provided. Use of the space parameter can
+// produce text that is more easily readable.
+
+            var i;
+            gap = '';
+            indent = '';
+
+// If the space parameter is a number, make an indent string containing that
+// many spaces.
+
+            if (typeof space === 'number') {
+                for (i = 0; i < space; i += 1) {
+                    indent += ' ';
+                }
+
+// If the space parameter is a string, it will be used as the indent string.
+
+            } else if (typeof space === 'string') {
+                indent = space;
+            }
+
+// If there is a replacer, it must be a function or an array.
+// Otherwise, throw an error.
+
+            rep = replacer;
+            if (replacer && typeof replacer !== 'function' &&
+                    (typeof replacer !== 'object' ||
+                    typeof replacer.length !== 'number')) {
+                throw new Error('JSON.stringify');
+            }
+
+// Make a fake root object containing our value under the key of ''.
+// Return the result of stringifying the value.
+
+            return str('', {'': value});
+        };
+    }
+
+
+// If the JSON object does not yet have a parse method, give it one.
+
+    if (typeof JSON.parse !== 'function') {
+        JSON.parse = function (text, reviver) {
+
+// The parse method takes a text and an optional reviver function, and returns
+// a JavaScript value if the text is a valid JSON text.
+
+            var j;
+
+            function walk(holder, key) {
+
+// The walk method is used to recursively walk the resulting structure so
+// that modifications can be made.
+
+                var k, v, value = holder[key];
+                if (value && typeof value === 'object') {
+                    for (k in value) {
+                        if (Object.prototype.hasOwnProperty.call(value, k)) {
+                            v = walk(value, k);
+                            if (v !== undefined) {
+                                value[k] = v;
+                            } else {
+                                delete value[k];
+                            }
+                        }
+                    }
+                }
+                return reviver.call(holder, key, value);
+            }
+
+
+// Parsing happens in four stages. In the first stage, we replace certain
+// Unicode characters with escape sequences. JavaScript handles many characters
+// incorrectly, either silently deleting them, or treating them as line endings.
+
+            text = String(text);
+            cx.lastIndex = 0;
+            if (cx.test(text)) {
+                text = text.replace(cx, function (a) {
+                    return '\\u' +
+                        ('0000' + a.charCodeAt(0).toString(16)).slice(-4);
+                });
+            }
+
+// In the second stage, we run the text against regular expressions that look
+// for non-JSON patterns. We are especially concerned with '()' and 'new'
+// because they can cause invocation, and '=' because it can cause mutation.
+// But just to be safe, we want to reject all unexpected forms.
+
+// We split the second stage into 4 regexp operations in order to work around
+// crippling inefficiencies in IE's and Safari's regexp engines. First we
+// replace the JSON backslash pairs with '@' (a non-JSON character). Second, we
+// replace all simple value tokens with ']' characters. Third, we delete all
+// open brackets that follow a colon or comma or that begin the text. Finally,
+// we look to see that the remaining characters are only whitespace or ']' or
+// ',' or ':' or '{' or '}'. If that is so, then the text is safe for eval.
+
+            if (/^[\],:{}\s]*$/
+                    .test(text.replace(/\\(?:["\\\/bfnrt]|u[0-9a-fA-F]{4})/g, '@')
+                        .replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g, ']')
+                        .replace(/(?:^|:|,)(?:\s*\[)+/g, ''))) {
+
+// In the third stage we use the eval function to compile the text into a
+// JavaScript structure. The '{' operator is subject to a syntactic ambiguity
+// in JavaScript: it can begin a block or an object literal. We wrap the text
+// in parens to eliminate the ambiguity.
+
+                j = eval('(' + text + ')');
+
+// In the optional fourth stage, we recursively walk the new structure, passing
+// each name/value pair to a reviver function for possible transformation.
+
+                return typeof reviver === 'function'
+                    ? walk({'': j}, '')
+                    : j;
+            }
+
+// If the text is not JSON parseable, then a SyntaxError is thrown.
+
+            throw new SyntaxError('JSON.parse');
+        };
+    }
+}());
 //     Backbone.js 0.9.2
 
 //     (c) 2010-2012 Jeremy Ashkenas, DocumentCloud Inc.
@@ -9812,13 +10298,14 @@ L.Map.include({
 });
 
 
-}(this, document));/* wax - 7.0.0dev10 - v6.0.4-133-g57c8e4a */
+}(this, document));/* wax - 7.0.0dev10 - v6.0.4-147-gca63e3e */
 
 
 !function (name, context, definition) {
-  if (typeof module !== 'undefined') module.exports = definition(name, context);
-  else if (typeof define === 'function' && typeof define.amd  === 'object') define(definition);
-  else context[name] = definition(name, context);
+  //if (typeof module !== 'undefined') module.exports = definition(name, context);
+  //else if (typeof define === 'function' && typeof define.amd  === 'object') define(definition);
+  //else context[name] = definition(name, context);
+  context[name] = definition(name, context);
 }('bean', this, function (name, context) {
   var win = window
     , old = context[name]
@@ -9859,6 +10346,8 @@ L.Map.include({
             'input invalid ' +                                                 // form elements
             'touchstart touchmove touchend touchcancel ' +                     // touch
             'gesturestart gesturechange gestureend ' +                         // gesture
+            'MSPointerUp MSPointerDown MSPointerCancel MSPointerMove ' +       // MS Pointer events
+            'MSPointerOver MSPointerOut ' +                                    // MS Pointer events
             'message readystatechange pageshow pagehide popstate ' +           // window
             'hashchange offline online ' +                                     // window
             'afterprint beforeprint ' +                                        // printing
@@ -11835,11 +12324,521 @@ var Mustache = (typeof module !== "undefined" && module.exports) || {};
 })(Mustache);
 /*!
   * Reqwest! A general purpose XHR connection manager
-  * (c) Dustin Diaz 2011
+  * (c) Dustin Diaz 2012
   * https://github.com/ded/reqwest
   * license MIT
   */
-!function(a,b){typeof module!="undefined"?module.exports=b():typeof define=="function"&&define.amd?define(a,b):this[a]=b()}("reqwest",function(){function handleReadyState(a,b,c){return function(){a&&a[readyState]==4&&(twoHundo.test(a.status)?b(a):c(a))}}function setHeaders(a,b){var c=b.headers||{},d;c.Accept=c.Accept||defaultHeaders.accept[b.type]||defaultHeaders.accept["*"],!b.crossOrigin&&!c[requestedWith]&&(c[requestedWith]=defaultHeaders.requestedWith),c[contentType]||(c[contentType]=b.contentType||defaultHeaders.contentType);for(d in c)c.hasOwnProperty(d)&&a.setRequestHeader(d,c[d])}function generalCallback(a){lastValue=a}function urlappend(a,b){return a+(/\?/.test(a)?"&":"?")+b}function handleJsonp(a,b,c,d){var e=uniqid++,f=a.jsonpCallback||"callback",g=a.jsonpCallbackName||"reqwest_"+e,h=new RegExp("((^|\\?|&)"+f+")=([^&]+)"),i=d.match(h),j=doc.createElement("script"),k=0;i?i[3]==="?"?d=d.replace(h,"$1="+g):g=i[3]:d=urlappend(d,f+"="+g),win[g]=generalCallback,j.type="text/javascript",j.src=d,j.async=!0,typeof j.onreadystatechange!="undefined"&&(j.event="onclick",j.htmlFor=j.id="_reqwest_"+e),j.onload=j.onreadystatechange=function(){if(j[readyState]&&j[readyState]!=="complete"&&j[readyState]!=="loaded"||k)return!1;j.onload=j.onreadystatechange=null,j.onclick&&j.onclick(),a.success&&a.success(lastValue),lastValue=undefined,head.removeChild(j),k=1},head.appendChild(j)}function getRequest(a,b,c){var d=(a.method||"GET").toUpperCase(),e=typeof a=="string"?a:a.url,f=a.processData!==!1&&a.data&&typeof a.data!="string"?reqwest.toQueryString(a.data):a.data||null,g;return(a.type=="jsonp"||d=="GET")&&f&&(e=urlappend(e,f),f=null),a.type=="jsonp"?handleJsonp(a,b,c,e):(g=xhr(),g.open(d,e,!0),setHeaders(g,a),g.onreadystatechange=handleReadyState(g,b,c),a.before&&a.before(g),g.send(f),g)}function Reqwest(a,b){this.o=a,this.fn=b,init.apply(this,arguments)}function setType(a){var b=a.match(/\.(json|jsonp|html|xml)(\?|$)/);return b?b[1]:"js"}function init(o,fn){function complete(a){o.timeout&&clearTimeout(self.timeout),self.timeout=null,o.complete&&o.complete(a)}function success(resp){var r=resp.responseText;if(r)switch(type){case"json":try{resp=win.JSON?win.JSON.parse(r):eval("("+r+")")}catch(err){return error(resp,"Could not parse JSON in response",err)}break;case"js":resp=eval(r);break;case"html":resp=r}fn(resp),o.success&&o.success(resp),complete(resp)}function error(a,b,c){o.error&&o.error(a,b,c),complete(a)}this.url=typeof o=="string"?o:o.url,this.timeout=null;var type=o.type||setType(this.url),self=this;fn=fn||function(){},o.timeout&&(this.timeout=setTimeout(function(){self.abort()},o.timeout)),this.request=getRequest(o,success,error)}function reqwest(a,b){return new Reqwest(a,b)}function normalize(a){return a?a.replace(/\r?\n/g,"\r\n"):""}function serial(a,b){var c=a.name,d=a.tagName.toLowerCase(),e=function(a){a&&!a.disabled&&b(c,normalize(a.attributes.value&&a.attributes.value.specified?a.value:a.text))};if(a.disabled||!c)return;switch(d){case"input":if(!/reset|button|image|file/i.test(a.type)){var f=/checkbox/i.test(a.type),g=/radio/i.test(a.type),h=a.value;(!f&&!g||a.checked)&&b(c,normalize(f&&h===""?"on":h))}break;case"textarea":b(c,normalize(a.value));break;case"select":if(a.type.toLowerCase()==="select-one")e(a.selectedIndex>=0?a.options[a.selectedIndex]:null);else for(var i=0;a.length&&i<a.length;i++)a.options[i].selected&&e(a.options[i])}}function eachFormElement(){var a=this,b,c,d,e=function(b,c){for(var e=0;e<c.length;e++){var f=b[byTag](c[e]);for(d=0;d<f.length;d++)serial(f[d],a)}};for(c=0;c<arguments.length;c++)b=arguments[c],/input|select|textarea/i.test(b.tagName)&&serial(b,a),e(b,["input","select","textarea"])}function serializeQueryString(){return reqwest.toQueryString(reqwest.serializeArray.apply(null,arguments))}function serializeHash(){var a={};return eachFormElement.apply(function(b,c){b in a?(a[b]&&!isArray(a[b])&&(a[b]=[a[b]]),a[b].push(c)):a[b]=c},arguments),a}var win=window,doc=document,twoHundo=/^20\d$/,byTag="getElementsByTagName",readyState="readyState",contentType="Content-Type",requestedWith="X-Requested-With",head=doc[byTag]("head")[0],uniqid=0,lastValue,xmlHttpRequest="XMLHttpRequest",isArray=typeof Array.isArray=="function"?Array.isArray:function(a){return a instanceof Array},defaultHeaders={contentType:"application/x-www-form-urlencoded",accept:{"*":"text/javascript, text/html, application/xml, text/xml, */*",xml:"application/xml, text/xml",html:"text/html",text:"text/plain",json:"application/json, text/javascript",js:"application/javascript, text/javascript"},requestedWith:xmlHttpRequest},xhr=win[xmlHttpRequest]?function(){return new XMLHttpRequest}:function(){return new ActiveXObject("Microsoft.XMLHTTP")};return Reqwest.prototype={abort:function(){this.request.abort()},retry:function(){init.call(this,this.o,this.fn)}},reqwest.serializeArray=function(){var a=[];return eachFormElement.apply(function(b,c){a.push({name:b,value:c})},arguments),a},reqwest.serialize=function(){if(arguments.length===0)return"";var a,b,c=Array.prototype.slice.call(arguments,0);return a=c.pop(),a&&a.nodeType&&c.push(a)&&(a=null),a&&(a=a.type),a=="map"?b=serializeHash:a=="array"?b=reqwest.serializeArray:b=serializeQueryString,b.apply(null,c)},reqwest.toQueryString=function(a){var b="",c,d=encodeURIComponent,e=function(a,c){b+=d(a)+"="+d(c)+"&"};if(isArray(a))for(c=0;a&&c<a.length;c++)e(a[c].name,a[c].value);else for(var f in a){if(!Object.hasOwnProperty.call(a,f))continue;var g=a[f];if(isArray(g))for(c=0;c<g.length;c++)e(f,g[c]);else e(f,a[f])}return b.replace(/&$/,"").replace(/%20/g,"+")},reqwest.compat=function(a,b){return a&&(a.type&&(a.method=a.type)&&delete a.type,a.dataType&&(a.type=a.dataType),a.jsonpCallback&&(a.jsonpCallbackName=a.jsonpCallback)&&delete a.jsonpCallback,a.jsonp&&(a.jsonpCallback=a.jsonp)),new Reqwest(a,b)},reqwest});wax = wax || {};
+;(function (name, context, definition) {
+  if (typeof module != 'undefined' && module.exports) module.exports = definition()
+  else if (typeof define == 'function' && define.amd) define(definition)
+  else context[name] = definition()
+})('reqwest', this, function () {
+
+  var win = window
+    , doc = document
+    , twoHundo = /^20\d$/
+    , byTag = 'getElementsByTagName'
+    , readyState = 'readyState'
+    , contentType = 'Content-Type'
+    , requestedWith = 'X-Requested-With'
+    , head = doc[byTag]('head')[0]
+    , uniqid = 0
+    , callbackPrefix = 'reqwest_' + (+new Date())
+    , lastValue // data stored by the most recent JSONP callback
+    , xmlHttpRequest = 'XMLHttpRequest'
+    , noop = function () {}
+
+    , isArray = typeof Array.isArray == 'function'
+        ? Array.isArray
+        : function (a) {
+            return a instanceof Array
+          }
+
+    , defaultHeaders = {
+          contentType: 'application/x-www-form-urlencoded'
+        , requestedWith: xmlHttpRequest
+        , accept: {
+              '*':  'text/javascript, text/html, application/xml, text/xml, */*'
+            , xml:  'application/xml, text/xml'
+            , html: 'text/html'
+            , text: 'text/plain'
+            , json: 'application/json, text/javascript'
+            , js:   'application/javascript, text/javascript'
+          }
+      }
+
+    , xhr = win[xmlHttpRequest]
+        ? function () {
+            return new XMLHttpRequest()
+          }
+        : function () {
+            return new ActiveXObject('Microsoft.XMLHTTP')
+          }
+
+  function handleReadyState (r, success, error) {
+    return function () {
+      // use _aborted to mitigate against IE err c00c023f
+      // (can't read props on aborted request objects)
+      if (r._aborted) return error(r.request)
+      if (r.request && r.request[readyState] == 4) {
+        r.request.onreadystatechange = noop
+        if (twoHundo.test(r.request.status))
+          success(r.request)
+        else
+          error(r.request)
+      }
+    }
+  }
+
+  function setHeaders (http, o) {
+    var headers = o.headers || {}
+      , h
+
+    headers.Accept = headers.Accept
+      || defaultHeaders.accept[o.type]
+      || defaultHeaders.accept['*']
+
+    // breaks cross-origin requests with legacy browsers
+    if (!o.crossOrigin && !headers[requestedWith]) headers[requestedWith] = defaultHeaders.requestedWith
+    if (!headers[contentType]) headers[contentType] = o.contentType || defaultHeaders.contentType
+    for (h in headers)
+      headers.hasOwnProperty(h) && http.setRequestHeader(h, headers[h])
+  }
+
+  function setCredentials (http, o) {
+    if (typeof o.withCredentials !== 'undefined' && typeof http.withCredentials !== 'undefined') {
+      http.withCredentials = !!o.withCredentials
+    }
+  }
+
+  function generalCallback (data) {
+    lastValue = data
+  }
+
+  function urlappend (url, s) {
+    return url + (/\?/.test(url) ? '&' : '?') + s
+  }
+
+  function handleJsonp (o, fn, err, url) {
+    var reqId = uniqid++
+      , cbkey = o.jsonpCallback || 'callback' // the 'callback' key
+      , cbval = o.jsonpCallbackName || reqwest.getcallbackPrefix(reqId)
+      // , cbval = o.jsonpCallbackName || ('reqwest_' + reqId) // the 'callback' value
+      , cbreg = new RegExp('((^|\\?|&)' + cbkey + ')=([^&]+)')
+      , match = url.match(cbreg)
+      , script = doc.createElement('script')
+      , loaded = 0
+      , isIE10 = navigator.userAgent.indexOf('MSIE 10.0') !== -1
+      , isIE9 = navigator.userAgent.indexOf('MSIE 9.0') !== -1;
+
+    if (match) {
+      if (match[3] === '?') {
+        url = url.replace(cbreg, '$1=' + cbval) // wildcard callback func name
+      } else {
+        cbval = match[3] // provided callback func name
+      }
+    } else {
+      url = urlappend(url, cbkey + '=' + cbval) // no callback details, add 'em
+    }
+
+    win[cbval] = generalCallback
+
+    script.type = 'text/javascript'
+    script.src = url
+    script.async = true
+    if (typeof script.onreadystatechange !== 'undefined' && !isIE10 && !isIE9) {
+      // need this for IE due to out-of-order onreadystatechange(), binding script
+      // execution to an event listener gives us control over when the script
+      // is executed. See http://jaubourg.net/2010/07/loading-script-as-onclick-handler-of.html
+      //
+      // if this hack is used in IE10 jsonp callback are never called
+      script.event = 'onclick'
+      script.htmlFor = script.id = '_reqwest_' + reqId
+    }
+
+    script.onload = script.onreadystatechange = function () {
+      if ((script[readyState] && script[readyState] !== 'complete' && script[readyState] !== 'loaded') || loaded) {
+        return false
+      }
+      script.onload = script.onreadystatechange = null
+      script.onclick && script.onclick()
+      // Call the user callback with the last value stored and clean up values and scripts.
+      o.success && o.success(lastValue)
+      lastValue = undefined
+      head.removeChild(script)
+      loaded = 1
+    }
+
+    // Add the script to the DOM head
+    head.appendChild(script)
+
+    // Enable JSONP timeout
+    return {
+      abort: function () {
+        script.onload = script.onreadystatechange = null
+        o.error && o.error({}, 'Request is aborted: timeout', {})
+        lastValue = undefined
+        head.removeChild(script)
+        loaded = 1
+      }
+    }
+  }
+
+  function getRequest (fn, err) {
+    var o = this.o
+      , method = (o.method || 'GET').toUpperCase()
+      , url = typeof o === 'string' ? o : o.url
+      // convert non-string objects to query-string form unless o.processData is false
+      , data = (o.processData !== false && o.data && typeof o.data !== 'string')
+        ? reqwest.toQueryString(o.data)
+        : (o.data || null)
+      , http
+
+    // if we're working on a GET request and we have data then we should append
+    // query string to end of URL and not post data
+    if ((o.type == 'jsonp' || method == 'GET') && data) {
+      url = urlappend(url, data)
+      data = null
+    }
+
+    if (o.type == 'jsonp') return handleJsonp(o, fn, err, url)
+
+    http = xhr()
+    http.open(method, url, true)
+    setHeaders(http, o)
+    setCredentials(http, o)
+    http.onreadystatechange = handleReadyState(this, fn, err)
+    o.before && o.before(http)
+    http.send(data)
+    return http
+  }
+
+  function Reqwest (o, fn) {
+    this.o = o
+    this.fn = fn
+
+    init.apply(this, arguments)
+  }
+
+  function setType (url) {
+    var m = url.match(/\.(json|jsonp|html|xml)(\?|$)/)
+    return m ? m[1] : 'js'
+  }
+
+  function init (o, fn) {
+
+    this.url = typeof o == 'string' ? o : o.url
+    this.timeout = null
+
+    // whether request has been fulfilled for purpose
+    // of tracking the Promises
+    this._fulfilled = false
+    // success handlers
+    this._fulfillmentHandlers = []
+    // error handlers
+    this._errorHandlers = []
+    // complete (both success and fail) handlers
+    this._completeHandlers = []
+    this._erred = false
+    this._responseArgs = {}
+
+    var self = this
+      , type = o.type || setType(this.url)
+
+    fn = fn || function () {}
+
+    if (o.timeout) {
+      this.timeout = setTimeout(function () {
+        self.abort()
+      }, o.timeout)
+    }
+
+    if (o.success) {
+      this._fulfillmentHandlers.push(function () {
+        o.success.apply(o, arguments)
+      })
+    }
+
+    if (o.error) {
+      this._errorHandlers.push(function () {
+        o.error.apply(o, arguments)
+      })
+    }
+
+    if (o.complete) {
+      this._completeHandlers.push(function () {
+        o.complete.apply(o, arguments)
+      })
+    }
+
+    function complete (resp) {
+      o.timeout && clearTimeout(self.timeout)
+      self.timeout = null
+      while (self._completeHandlers.length > 0) {
+        self._completeHandlers.shift()(resp)
+      }
+    }
+
+    function success (resp) {
+      var r = resp.responseText
+      if (r) {
+        switch (type) {
+        case 'json':
+          try {
+            resp = win.JSON ? win.JSON.parse(r) : eval('(' + r + ')')
+          } catch (err) {
+            return error(resp, 'Could not parse JSON in response', err)
+          }
+          break
+        case 'js':
+          resp = eval(r)
+          break
+        case 'html':
+          resp = r
+          break
+        case 'xml':
+          resp = resp.responseXML
+              && resp.responseXML.parseError // IE trololo
+              && resp.responseXML.parseError.errorCode
+              && resp.responseXML.parseError.reason
+            ? null
+            : resp.responseXML
+          break
+        }
+      }
+
+      self._responseArgs.resp = resp
+      self._fulfilled = true
+      fn(resp)
+      while (self._fulfillmentHandlers.length > 0) {
+        self._fulfillmentHandlers.shift()(resp)
+      }
+
+      complete(resp)
+    }
+
+    function error (resp, msg, t) {
+      self._responseArgs.resp = resp
+      self._responseArgs.msg = msg
+      self._responseArgs.t = t
+      self._erred = true
+      while (self._errorHandlers.length > 0) {
+        self._errorHandlers.shift()(resp, msg, t)
+      }
+      complete(resp)
+    }
+
+    this.request = getRequest.call(this, success, error)
+  }
+
+  Reqwest.prototype = {
+    abort: function () {
+      this._aborted = true
+      this.request.abort()
+    }
+
+  , retry: function () {
+      init.call(this, this.o, this.fn)
+    }
+
+    /**
+     * Small deviation from the Promises A CommonJs specification
+     * http://wiki.commonjs.org/wiki/Promises/A
+     */
+
+    /**
+     * `then` will execute upon successful requests
+     */
+  , then: function (success, fail) {
+      if (this._fulfilled) {
+        success(this._responseArgs.resp)
+      } else if (this._erred) {
+        fail(this._responseArgs.resp, this._responseArgs.msg, this._responseArgs.t)
+      } else {
+        this._fulfillmentHandlers.push(success)
+        this._errorHandlers.push(fail)
+      }
+      return this
+    }
+
+    /**
+     * `always` will execute whether the request succeeds or fails
+     */
+  , always: function (fn) {
+      if (this._fulfilled || this._erred) {
+        fn(this._responseArgs.resp)
+      } else {
+        this._completeHandlers.push(fn)
+      }
+      return this
+    }
+
+    /**
+     * `fail` will execute when the request fails
+     */
+  , fail: function (fn) {
+      if (this._erred) {
+        fn(this._responseArgs.resp, this._responseArgs.msg, this._responseArgs.t)
+      } else {
+        this._errorHandlers.push(fn)
+      }
+      return this
+    }
+  }
+
+  function reqwest (o, fn) {
+    return new Reqwest(o, fn)
+  }
+
+  // normalize newline variants according to spec -> CRLF
+  function normalize (s) {
+    return s ? s.replace(/\r?\n/g, '\r\n') : ''
+  }
+
+  function serial (el, cb) {
+    var n = el.name
+      , t = el.tagName.toLowerCase()
+      , optCb = function (o) {
+          // IE gives value="" even where there is no value attribute
+          // 'specified' ref: http://www.w3.org/TR/DOM-Level-3-Core/core.html#ID-862529273
+          if (o && !o.disabled)
+            cb(n, normalize(o.attributes.value && o.attributes.value.specified ? o.value : o.text))
+        }
+      , ch, ra, val, i
+
+    // don't serialize elements that are disabled or without a name
+    if (el.disabled || !n) return
+
+    switch (t) {
+    case 'input':
+      if (!/reset|button|image|file/i.test(el.type)) {
+        ch = /checkbox/i.test(el.type)
+        ra = /radio/i.test(el.type)
+        val = el.value
+        // WebKit gives us "" instead of "on" if a checkbox has no value, so correct it here
+        ;(!(ch || ra) || el.checked) && cb(n, normalize(ch && val === '' ? 'on' : val))
+      }
+      break
+    case 'textarea':
+      cb(n, normalize(el.value))
+      break
+    case 'select':
+      if (el.type.toLowerCase() === 'select-one') {
+        optCb(el.selectedIndex >= 0 ? el.options[el.selectedIndex] : null)
+      } else {
+        for (i = 0; el.length && i < el.length; i++) {
+          el.options[i].selected && optCb(el.options[i])
+        }
+      }
+      break
+    }
+  }
+
+  // collect up all form elements found from the passed argument elements all
+  // the way down to child elements; pass a '<form>' or form fields.
+  // called with 'this'=callback to use for serial() on each element
+  function eachFormElement () {
+    var cb = this
+      , e, i
+      , serializeSubtags = function (e, tags) {
+          var i, j, fa
+          for (i = 0; i < tags.length; i++) {
+            fa = e[byTag](tags[i])
+            for (j = 0; j < fa.length; j++) serial(fa[j], cb)
+          }
+        }
+
+    for (i = 0; i < arguments.length; i++) {
+      e = arguments[i]
+      if (/input|select|textarea/i.test(e.tagName)) serial(e, cb)
+      serializeSubtags(e, [ 'input', 'select', 'textarea' ])
+    }
+  }
+
+  // standard query string style serialization
+  function serializeQueryString () {
+    return reqwest.toQueryString(reqwest.serializeArray.apply(null, arguments))
+  }
+
+  // { 'name': 'value', ... } style serialization
+  function serializeHash () {
+    var hash = {}
+    eachFormElement.apply(function (name, value) {
+      if (name in hash) {
+        hash[name] && !isArray(hash[name]) && (hash[name] = [hash[name]])
+        hash[name].push(value)
+      } else hash[name] = value
+    }, arguments)
+    return hash
+  }
+
+  // [ { name: 'name', value: 'value' }, ... ] style serialization
+  reqwest.serializeArray = function () {
+    var arr = []
+    eachFormElement.apply(function (name, value) {
+      arr.push({name: name, value: value})
+    }, arguments)
+    return arr
+  }
+
+  reqwest.serialize = function () {
+    if (arguments.length === 0) return ''
+    var opt, fn
+      , args = Array.prototype.slice.call(arguments, 0)
+
+    opt = args.pop()
+    opt && opt.nodeType && args.push(opt) && (opt = null)
+    opt && (opt = opt.type)
+
+    if (opt == 'map') fn = serializeHash
+    else if (opt == 'array') fn = reqwest.serializeArray
+    else fn = serializeQueryString
+
+    return fn.apply(null, args)
+  }
+
+  reqwest.toQueryString = function (o) {
+    var qs = '', i
+      , enc = encodeURIComponent
+      , push = function (k, v) {
+          qs += enc(k) + '=' + enc(v) + '&'
+        }
+      , k, v
+
+    if (isArray(o)) {
+      for (i = 0; o && i < o.length; i++) push(o[i].name, o[i].value)
+    } else {
+      for (k in o) {
+        if (!Object.hasOwnProperty.call(o, k)) continue
+        v = o[k]
+        if (isArray(v)) {
+          for (i = 0; i < v.length; i++) push(k, v[i])
+        } else push(k, o[k])
+      }
+    }
+
+    // spaces should be + according to spec
+    return qs.replace(/&$/, '').replace(/%20/g, '+')
+  }
+
+  reqwest.getcallbackPrefix = function () {
+    return callbackPrefix
+  }
+
+  // jQuery and Zepto compatibility, differences can be remapped here so you can call
+  // .ajax.compat(options, callback)
+  reqwest.compat = function (o, fn) {
+    if (o) {
+      o.type && (o.method = o.type) && delete o.type
+      o.dataType && (o.type = o.dataType)
+      o.jsonpCallback && (o.jsonpCallbackName = o.jsonpCallback) && delete o.jsonpCallback
+      o.jsonp && (o.jsonpCallback = o.jsonp)
+    }
+    return new Reqwest(o, fn)
+  }
+
+  return reqwest
+});wax = wax || {};
 
 // Attribution
 // -----------
@@ -12273,6 +13272,12 @@ wax.interaction = function() {
         touchcancel: touchCancel
     };
 
+    var pointerEnds = {
+        MSPointerUp: onUp,
+        MSPointerMove: onUp,
+        MSPointerCancel: touchCancel
+    };
+
     // Abstract getTile method. Depends on a tilegrid with
     // grid[ [x, y, tile] ] structure.
     function getTile(e) {
@@ -12309,7 +13314,8 @@ wax.interaction = function() {
         // to avoid performance hits.
         if (_downLock) return;
 
-        var pos = wax.u.eventoffset(e);
+        var _e = (e.type != "MSPointerMove" ? e : e.originalEvent);
+        var pos = wax.u.eventoffset(_e);
 
         interaction.screen_feature(pos, function(feature) {
             if (feature) {
@@ -12334,7 +13340,8 @@ wax.interaction = function() {
         // Store this event so that we can compare it to the
         // up event
         _downLock = true;
-        _d = wax.u.eventoffset(e);
+        var _e = (e.type != "MSPointerDown" ? e : e.originalEvent); 
+        _d = wax.u.eventoffset(_e);
         if (e.type === 'mousedown') {
             bean.add(document.body, 'click', onUp);
             // track mouse up to remove lockDown when the drags end
@@ -12347,7 +13354,13 @@ wax.interaction = function() {
             bean.fire(interaction, 'off');
             // Touch moves invalidate touches
             bean.add(parent(), touchEnds);
+        } else if (e.originalEvent.type === "MSPointerDown" && e.originalEvent.touches.length === 1) {
+          // Don't make the user click close if they hit another tooltip
+            bean.fire(interaction, 'off');
+            // Touch moves invalidate touches
+            bean.add(parent(), pointerEnds);
         }
+
     }
 
     function dragEnd() {
@@ -12356,27 +13369,38 @@ wax.interaction = function() {
 
     function touchCancel() {
         bean.remove(parent(), touchEnds);
+        bean.remove(parent(), pointerEnds);
         _downLock = false;
     }
 
     function onUp(e) {
         var evt = {},
-            pos = wax.u.eventoffset(e);
+            _e = (e.type != "MSPointerMove" && e.type != "MSPointerUp" ? e : e.originalEvent),
+            pos = wax.u.eventoffset(_e);
         _downLock = false;
 
-        // TODO: refine
-        for (var key in e) {
-          evt[key] = e[key];
+        for (var key in _e) {
+          evt[key] = _e[key];
         }
+
+        // for (var key in e) {
+        //   evt[key] = e[key];
+        // }
+
+
+        evt.changedTouches = [];
 
         bean.remove(document.body, 'mouseup', onUp);
         bean.remove(parent(), touchEnds);
+        bean.remove(parent(), pointerEnds);
 
         if (e.type === 'touchend') {
             // If this was a touch and it survived, there's no need to avoid a double-tap
             // but also wax.u.eventoffset will have failed, since this touch
             // event doesn't have coordinates
             interaction.click(e, _d);
+        } else if (evt.type === "MSPointerMove" || evt.type === "MSPointerUp") {
+            interaction.click(evt, pos);
         } else if (Math.round(pos.y / tol) === Math.round(_d.y / tol) &&
             Math.round(pos.x / tol) === Math.round(_d.x / tol)) {
             // Contain the event data in a closure.
@@ -12437,6 +13461,7 @@ wax.interaction = function() {
         if (attach) attach(map);
         bean.add(parent(), defaultEvents);
         bean.add(parent(), 'touchstart', onDown);
+        bean.add(parent(), 'MSPointerDown', onDown);
         return interaction;
     };
 
@@ -12710,6 +13735,12 @@ wax.u = {
         var posx = 0;
         var posy = 0;
         if (!e) { e = window.event; }
+        if (e.type == "MSPointerMove" || e.type == "MSPointerDown" || e.type == "MSPointerUp") {
+          return {
+            x: e.pageX + window.pageXOffset,
+            y: e.pageY + window.pageYOffset
+          }
+        }
         if (e.pageX || e.pageY) {
             // Good browsers
             return {
@@ -14938,6 +15969,3897 @@ $(function(){
 });
 })(jQuery);//fgnass.github.com/spin.js#v1.2.5
 (function(a,b,c){function g(a,c){var d=b.createElement(a||"div"),e;for(e in c)d[e]=c[e];return d}function h(a){for(var b=1,c=arguments.length;b<c;b++)a.appendChild(arguments[b]);return a}function j(a,b,c,d){var g=["opacity",b,~~(a*100),c,d].join("-"),h=.01+c/d*100,j=Math.max(1-(1-a)/b*(100-h),a),k=f.substring(0,f.indexOf("Animation")).toLowerCase(),l=k&&"-"+k+"-"||"";return e[g]||(i.insertRule("@"+l+"keyframes "+g+"{"+"0%{opacity:"+j+"}"+h+"%{opacity:"+a+"}"+(h+.01)+"%{opacity:1}"+(h+b)%100+"%{opacity:"+a+"}"+"100%{opacity:"+j+"}"+"}",0),e[g]=1),g}function k(a,b){var e=a.style,f,g;if(e[b]!==c)return b;b=b.charAt(0).toUpperCase()+b.slice(1);for(g=0;g<d.length;g++){f=d[g]+b;if(e[f]!==c)return f}}function l(a,b){for(var c in b)a.style[k(a,c)||c]=b[c];return a}function m(a){for(var b=1;b<arguments.length;b++){var d=arguments[b];for(var e in d)a[e]===c&&(a[e]=d[e])}return a}function n(a){var b={x:a.offsetLeft,y:a.offsetTop};while(a=a.offsetParent)b.x+=a.offsetLeft,b.y+=a.offsetTop;return b}var d=["webkit","Moz","ms","O"],e={},f,i=function(){var a=g("style");return h(b.getElementsByTagName("head")[0],a),a.sheet||a.styleSheet}(),o={lines:12,length:7,width:5,radius:10,rotate:0,color:"#000",speed:1,trail:100,opacity:.25,fps:20,zIndex:2e9,className:"spinner",top:"auto",left:"auto"},p=function q(a){if(!this.spin)return new q(a);this.opts=m(a||{},q.defaults,o)};p.defaults={},m(p.prototype,{spin:function(a){this.stop();var b=this,c=b.opts,d=b.el=l(g(0,{className:c.className}),{position:"relative",zIndex:c.zIndex}),e=c.radius+c.length+c.width,h,i;a&&(a.insertBefore(d,a.firstChild||null),i=n(a),h=n(d),l(d,{left:(c.left=="auto"?i.x-h.x+(a.offsetWidth>>1):c.left+e)+"px",top:(c.top=="auto"?i.y-h.y+(a.offsetHeight>>1):c.top+e)+"px"})),d.setAttribute("aria-role","progressbar"),b.lines(d,b.opts);if(!f){var j=0,k=c.fps,m=k/c.speed,o=(1-c.opacity)/(m*c.trail/100),p=m/c.lines;!function q(){j++;for(var a=c.lines;a;a--){var e=Math.max(1-(j+a*p)%m*o,c.opacity);b.opacity(d,c.lines-a,e,c)}b.timeout=b.el&&setTimeout(q,~~(1e3/k))}()}return b},stop:function(){var a=this.el;return a&&(clearTimeout(this.timeout),a.parentNode&&a.parentNode.removeChild(a),this.el=c),this},lines:function(a,b){function e(a,d){return l(g(),{position:"absolute",width:b.length+b.width+"px",height:b.width+"px",background:a,boxShadow:d,transformOrigin:"left",transform:"rotate("+~~(360/b.lines*c+b.rotate)+"deg) translate("+b.radius+"px"+",0)",borderRadius:(b.width>>1)+"px"})}var c=0,d;for(;c<b.lines;c++)d=l(g(),{position:"absolute",top:1+~(b.width/2)+"px",transform:b.hwaccel?"translate3d(0,0,0)":"",opacity:b.opacity,animation:f&&j(b.opacity,b.trail,c,b.lines)+" "+1/b.speed+"s linear infinite"}),b.shadow&&h(d,l(e("#000","0 0 4px #000"),{top:"2px"})),h(a,h(d,e(b.color,"0 0 1px rgba(0,0,0,.1)")));return a},opacity:function(a,b,c){b<a.childNodes.length&&(a.childNodes[b].style.opacity=c)}}),!function(){function a(a,b){return g("<"+a+' xmlns="urn:schemas-microsoft.com:vml" class="spin-vml">',b)}var b=l(g("group"),{behavior:"url(#default#VML)"});!k(b,"transform")&&b.adj?(i.addRule(".spin-vml","behavior:url(#default#VML)"),p.prototype.lines=function(b,c){function f(){return l(a("group",{coordsize:e+" "+e,coordorigin:-d+" "+ -d}),{width:e,height:e})}function k(b,e,g){h(i,h(l(f(),{rotation:360/c.lines*b+"deg",left:~~e}),h(l(a("roundrect",{arcsize:1}),{width:d,height:c.width,left:c.radius,top:-c.width>>1,filter:g}),a("fill",{color:c.color,opacity:c.opacity}),a("stroke",{opacity:0}))))}var d=c.length+c.width,e=2*d,g=-(c.width+c.length)*2+"px",i=l(f(),{position:"absolute",top:g,left:g}),j;if(c.shadow)for(j=1;j<=c.lines;j++)k(j,-2,"progid:DXImageTransform.Microsoft.Blur(pixelradius=2,makeshadow=1,shadowopacity=.3)");for(j=1;j<=c.lines;j++)k(j);return h(b,i)},p.prototype.opacity=function(a,b,c,d){var e=a.firstChild;d=d.shadow&&d.lines||0,e&&b+d<e.childNodes.length&&(e=e.childNodes[b+d],e=e&&e.firstChild,e=e&&e.firstChild,e&&(e.opacity=c))}):f=k(b,"animation")}(),a.Spinner=p})(window,document);
+var LZMA = (function () {
+	var action_compress   = 1,
+		action_decompress = 2,
+		action_update	  = 3;
+	
+	function update_progress(percent, callback_num) {
+		///TODO: Calculate ETA.
+		postMessage({
+			action: 3,
+			callback_num: callback_num,
+			result: percent
+		});
+	}
+	
+	var $moduleName, $moduleBase;
+	
+	var _,
+		N8000000000000000_longLit = [0, -9223372036854775808],
+		N1_longLit = [4294967295, -4294967296],
+		P0_longLit = [0, 0],
+		P1_longLit = [1, 0],
+		P4_longLit = [4, 0],
+		P1000_longLit = [4096, 0],
+		Pffffff_longLit = [16777215, 0],
+		P1000000_longLit = [16777216, 0],
+		Pff000000_longLit = [4278190080, 0],
+		Pffffffff_longLit = [4294967295, 0],
+		P7fffffffffffffff_longLit = [4294967295, 9223372032559808512];
+
+	function getClass_18() {
+		return Ljava_lang_Object_2_classLit;
+	}
+	
+	function Object_0() {
+	}
+	
+	_ = Object_0.prototype = {};
+	_.getClass$ = getClass_18;
+	_.typeMarker$ = nullMethod;
+	_.typeId$ = 1;
+	function getClass_22() {
+		return Ljava_lang_Throwable_2_classLit;
+	}
+	
+	function Throwable() {
+	}
+	
+	_ = Throwable.prototype = new Object_0();
+	_.getClass$ = getClass_22;
+	_.typeId$ = 3;
+	_.detailMessage = null;
+	function getClass_13() {
+		return Ljava_lang_Exception_2_classLit;
+	}
+	
+	function Exception() {
+	}
+	
+	_ = Exception.prototype = new Throwable();
+	_.getClass$ = getClass_13;
+	_.typeId$ = 4;
+	function $RuntimeException(this$static, message) {
+		this$static.detailMessage = message;
+		return this$static;
+	}
+	
+	function getClass_19() {
+		return Ljava_lang_RuntimeException_2_classLit;
+	}
+	
+	function RuntimeException() {
+	}
+	
+	_ = RuntimeException.prototype = new Exception();
+	_.getClass$ = getClass_19;
+	_.typeId$ = 5;
+	function $JavaScriptException(this$static, e) {
+		return this$static;
+	}
+	
+	function getClass_0() {
+		return Lcom_google_gwt_core_client_JavaScriptException_2_classLit;
+	}
+	
+	function JavaScriptException() {
+	}
+	
+	_ = JavaScriptException.prototype = new RuntimeException();
+	_.getClass$ = getClass_0;
+	_.typeId$ = 6;
+	function $append(a, x) {
+		a[a.explicitLength++] = x;
+	}
+	
+	function $appendNonNull(a, x) {
+		a[a.explicitLength++] = x;
+	}
+	
+	function $toString(a) {
+		var s_0, s;
+		s_0 = (s = a.join('') , a.length = a.explicitLength = 0 , s);
+		a[a.explicitLength++] = s_0;
+		return s_0;
+	}
+	
+	function createFromSeed(seedType, length_0) {
+		var array = new Array(length_0);
+		if (seedType > 0) {
+			var value = [null, 0, false, [0, 0]][seedType];
+			for (var i = 0; i < length_0; ++i) {
+				array[i] = value;
+			}
+		}
+		return array;
+	}
+	
+	function getClass_2() {
+		return this.arrayClass$;
+	}
+	
+	function initDim(arrayClass, typeId, queryId, length_0, seedType) {
+		var result;
+		result = createFromSeed(seedType, length_0);
+		$clinit_4();
+		wrapArray(result, expandoNames_0, expandoValues_0);
+		result.arrayClass$ = arrayClass;
+		result.typeId$ = typeId;
+		result.queryId$ = queryId;
+		return result;
+	}
+	
+	function initValues(arrayClass, typeId, queryId, array) {
+		$clinit_4();
+		wrapArray(array, expandoNames_0, expandoValues_0);
+		array.arrayClass$ = arrayClass;
+		array.typeId$ = typeId;
+		array.queryId$ = queryId;
+		return array;
+	}
+	
+	function setCheck(array, index, value) {
+		if (value != null) {
+			if (array.queryId$ > 0 && !canCastUnsafe(value.typeId$, array.queryId$)) {
+			throw new ArrayStoreException();
+			}
+			if (array.queryId$ < 0 && (value.typeMarker$ == nullMethod || value.typeId$ == 2)) {
+			throw new ArrayStoreException();
+			}
+		}
+		return array[index] = value;
+	}
+	
+	function Array_0() {
+	}
+	
+	_ = Array_0.prototype = new Object_0();
+	_.getClass$ = getClass_2;
+	_.typeId$ = 0;
+	_.arrayClass$ = null;
+	_.length = 0;
+	_.queryId$ = 0;
+	function $clinit_4() {
+		$clinit_4 = nullMethod;
+		expandoNames_0 = [];
+		expandoValues_0 = [];
+		initExpandos(new Array_0(), expandoNames_0, expandoValues_0);
+	}
+	
+	function initExpandos(protoType, expandoNames, expandoValues) {
+		var i = 0, value;
+		for (var name_0 in protoType) {
+			if (value = protoType[name_0]) {
+			expandoNames[i] = name_0;
+			expandoValues[i] = value;
+			++i;
+			}
+		}
+	}
+	
+	function wrapArray(array, expandoNames, expandoValues) {
+		$clinit_4();
+		for (var i = 0, c = expandoNames.length; i < c; ++i) {
+			array[expandoNames[i]] = expandoValues[i];
+		}
+	}
+	
+	var expandoNames_0, expandoValues_0;
+	function canCast(srcId, dstId) {
+		return srcId && !!typeIdArray[srcId][dstId];
+	}
+	
+	function canCastUnsafe(srcId, dstId) {
+		return srcId && typeIdArray[srcId][dstId];
+	}
+	
+	function dynamicCast(src, dstId) {
+		if (src != null && !canCastUnsafe(src.typeId$, dstId)) {
+			throw new ClassCastException();
+		}
+		return src;
+	}
+	
+	function instanceOf(src, dstId) {
+		return src != null && canCast(src.typeId$, dstId);
+	}
+	
+	function round_int(x) {
+		return ~~Math.max(Math.min(x, 2147483647), -2147483648);
+	}
+	
+	var typeIdArray = [
+			{},
+			{},
+			{1:1},
+			{2:1},
+			{2:1},
+			{2:1},
+			{2:1},
+			{2:1, 10:1},
+			{2:1},
+			{2:1},
+			{2:1},
+			{2:1},
+			{2:1},
+			{2:1, 11:1},
+			{2:1},
+			{2:1},
+			{2:1},
+			{4:1},
+			{5:1},
+			{6:1},
+			{7:1},
+			{8:1},
+			{9:1}
+		];
+
+	function caught(e) {
+		if (e != null && canCast(e.typeId$, 2)) {
+			return e;
+		}
+		return $JavaScriptException(new JavaScriptException(), e);
+	}
+	
+	function add(a, b) {
+		var newHigh, newLow;
+		newHigh = a[1] + b[1];
+		newLow = a[0] + b[0];
+		return create(newLow, newHigh);
+	}
+	
+	function addTimes(accum, a, b) {
+		if (a == 0) {
+			return accum;
+		}
+		if (b == 0) {
+			return accum;
+		}
+		return add(accum, create(a * b, 0));
+	}
+	
+	function and(a, b) {
+		return makeFromBits(~~Math.max(Math.min(a[1] / 4294967296, 2147483647), -2147483648) & ~~Math.max(Math.min(b[1] / 4294967296, 2147483647), -2147483648), lowBits_0(a) & lowBits_0(b));
+	}
+	
+	function compare(a, b) {
+		var nega, negb;
+		if (a[0] == b[0] && a[1] == b[1]) {
+			return 0;
+		}
+		nega = a[1] < 0;
+		negb = b[1] < 0;
+		if (nega && !negb) {
+			return -1;
+		}
+		if (!nega && negb) {
+			return 1;
+		}
+		if (sub(a, b)[1] < 0) {
+			return -1;
+		}
+		else {
+			return 1;
+		}
+	}
+	
+	function create(valueLow, valueHigh) {
+		var diffHigh, diffLow;
+		valueHigh %= 1.8446744073709552E19;
+		valueLow %= 1.8446744073709552E19;
+		diffHigh = valueHigh % 4294967296;
+		diffLow = Math.floor(valueLow / 4294967296) * 4294967296;
+		valueHigh = valueHigh - diffHigh + diffLow;
+		valueLow = valueLow - diffLow + diffHigh;
+		while (valueLow < 0) {
+			valueLow += 4294967296;
+			valueHigh -= 4294967296;
+		}
+		while (valueLow > 4294967295) {
+			valueLow -= 4294967296;
+			valueHigh += 4294967296;
+		}
+		valueHigh = valueHigh % 1.8446744073709552E19;
+		while (valueHigh > 9223372032559808512) {
+			valueHigh -= 1.8446744073709552E19;
+		}
+		while (valueHigh < -9223372036854775808) {
+			valueHigh += 1.8446744073709552E19;
+		}
+		return [valueLow, valueHigh];
+	}
+	
+	function div(a, b) {
+		var approx, deltaRem, deltaResult, halfa, rem, result;
+		if (b[0] == 0 && b[1] == 0) {
+			throw $ArithmeticException(new ArithmeticException(), '/ by zero');
+		}
+		if (a[0] == 0 && a[1] == 0) {
+			return $clinit_10() , ZERO;
+		}
+		if (eq(a, ($clinit_10() , MIN_VALUE))) {
+			if (eq(b, ONE) || eq(b, NEG_ONE)) {
+				return MIN_VALUE;
+			}
+			halfa = shr(a, 1);
+			approx = shl(div(halfa, b), 1);
+			rem = sub(a, mul(b, approx));
+			return add(approx, div(rem, b));
+		}
+		if (eq(b, MIN_VALUE)) {
+			return ZERO;
+		}
+		if (a[1] < 0) {
+			if (b[1] < 0) {
+				return div(neg(a), neg(b));
+			} else {
+				return neg(div(neg(a), b));
+			}
+		}
+		if (b[1] < 0) {
+			return neg(div(a, neg(b)));
+		}
+		result = ZERO;
+		rem = a;
+		while (compare(rem, b) >= 0) {
+			deltaResult = fromDouble(Math.floor(toDoubleRoundDown(rem) / toDoubleRoundUp(b)));
+			if (deltaResult[0] == 0 && deltaResult[1] == 0) {
+				deltaResult = ONE;
+			}
+			deltaRem = mul(deltaResult, b);
+			result = add(result, deltaResult);
+			rem = sub(rem, deltaRem);
+		}
+		return result;
+	}
+	
+	function eq(a, b) {
+		return a[0] == b[0] && a[1] == b[1];
+	}
+	
+	function fromDouble(value) {
+		if (isNaN(value)) {
+			return $clinit_10() , ZERO;
+		}
+		if (value < -9223372036854775808) {
+			return $clinit_10() , MIN_VALUE;
+		}
+		if (value >= 9223372036854775807) {
+			return $clinit_10() , MAX_VALUE;
+		}
+		if (value > 0) {
+			return create(Math.floor(value), 0);
+		} else {
+			return create(Math.ceil(value), 0);
+		}
+	}
+	
+	function fromInt(value) {
+		var rebase, result;
+		if (value > -129 && value < 128) {
+			rebase = value + 128;
+			result = ($clinit_9() , boxedValues)[rebase];
+			if (result == null) {
+				result = boxedValues[rebase] = internalFromInt(value);
+			}
+			return result;
+		}
+		return internalFromInt(value);
+	}
+	
+	function internalFromInt(value) {
+		if (value >= 0) {
+			return [value, 0];
+		} else {
+			return [value + 4294967296, -4294967296];
+		}
+	}
+	
+	function lowBits_0(a) {
+		if (a[0] >= 2147483648) {
+			return ~~Math.max(Math.min(a[0] - 4294967296, 2147483647), -2147483648);
+		} else {
+			return ~~Math.max(Math.min(a[0], 2147483647), -2147483648);
+		}
+	}
+	
+	function makeFromBits(highBits, lowBits) {
+		var high, low;
+		high = highBits * 4294967296;
+		low = lowBits;
+		if (lowBits < 0) {
+			low += 4294967296;
+		}
+		return [low, high];
+	}
+	
+	function mul(a, b) {
+		var a1, a2, a3, a4, b1, b2, b3, b4, res;
+		if (a[0] == 0 && a[1] == 0) {
+			return $clinit_10() , ZERO;
+		}
+		if (b[0] == 0 && b[1] == 0) {
+			return $clinit_10() , ZERO;
+		}
+		if (eq(a, ($clinit_10() , MIN_VALUE))) {
+			return multByMinValue(b);
+		}
+		if (eq(b, MIN_VALUE)) {
+			return multByMinValue(a);
+		}
+		if (a[1] < 0) {
+			if (b[1] < 0) {
+				return mul(neg(a), neg(b));
+			} else {
+				return neg(mul(neg(a), b));
+			}
+		}
+		if (b[1] < 0) {
+			return neg(mul(a, neg(b)));
+		}
+		if (compare(a, TWO_PWR_24) < 0 && compare(b, TWO_PWR_24) < 0) {
+			return create((a[1] + a[0]) * (b[1] + b[0]), 0);
+		}
+		a3 = a[1] % 281474976710656;
+		a4 = a[1] - a3;
+		a1 = a[0] % 65536;
+		a2 = a[0] - a1;
+		b3 = b[1] % 281474976710656;
+		b4 = b[1] - b3;
+		b1 = b[0] % 65536;
+		b2 = b[0] - b1;
+		res = ZERO;
+		res = addTimes(res, a4, b1);
+		res = addTimes(res, a3, b2);
+		res = addTimes(res, a3, b1);
+		res = addTimes(res, a2, b3);
+		res = addTimes(res, a2, b2);
+		res = addTimes(res, a2, b1);
+		res = addTimes(res, a1, b4);
+		res = addTimes(res, a1, b3);
+		res = addTimes(res, a1, b2);
+		res = addTimes(res, a1, b1);
+		return res;
+	}
+	
+	function multByMinValue(a) {
+		if ((lowBits_0(a) & 1) == 1) {
+			return $clinit_10() , MIN_VALUE;
+		} else {
+			return $clinit_10() , ZERO;
+		}
+	}
+	
+	function neg(a) {
+		var newHigh, newLow;
+		if (eq(a, ($clinit_10() , MIN_VALUE))) {
+			return MIN_VALUE;
+		}
+		newHigh = -a[1];
+		newLow = -a[0];
+		if (newLow > 4294967295) {
+			newLow -= 4294967296;
+			newHigh += 4294967296;
+		}
+		if (newLow < 0) {
+			newLow += 4294967296;
+			newHigh -= 4294967296;
+		}
+		return [newLow, newHigh];
+	}
+	
+	function pwrAsDouble(n) {
+		if (n <= 30) {
+			return 1 << n;
+		} else {
+			return pwrAsDouble(30) * pwrAsDouble(n - 30);
+		}
+	}
+	
+	function shl(a, n) {
+		var diff, newHigh, newLow, twoToN;
+		n &= 63;
+		if (eq(a, ($clinit_10() , MIN_VALUE))) {
+			if (n == 0) {
+				return a;
+			} else {
+				return ZERO;
+			}
+		}
+		if (a[1] < 0) {
+			return neg(shl(neg(a), n));
+		}
+		twoToN = pwrAsDouble(n);
+		newHigh = a[1] * twoToN % 1.8446744073709552E19;
+		newLow = a[0] * twoToN;
+		diff = newLow - newLow % 4294967296;
+		newHigh += diff;
+		newLow -= diff;
+		if (newHigh >= 9223372036854775807) {
+			newHigh -= 1.8446744073709552E19;
+		}
+		return [newLow, newHigh];
+	}
+	
+	function shr(a, n) {
+		var newHigh, newLow, shiftFact;
+		n &= 63;
+		shiftFact = pwrAsDouble(n);
+		newHigh = a[1] / shiftFact;
+		newLow = Math.floor(a[0] / shiftFact);
+		return create(newLow, newHigh);
+	}
+	
+	function shru(a, n) {
+		var sr;
+		n &= 63;
+		sr = shr(a, n);
+		if (a[1] < 0) {
+			sr = add(sr, shl(($clinit_10() , TWO), 63 - n));
+		}
+		return sr;
+	}
+	
+	function sub(a, b) {
+		var newHigh, newLow;
+		newHigh = a[1] - b[1];
+		newLow = a[0] - b[0];
+		return create(newLow, newHigh);
+	}
+	
+	function toDoubleRoundDown(a) {
+		var diff, magnitute, toSubtract;
+		magnitute = round_int(Math.log(a[1]) / ($clinit_10() , LN_2));
+		if (magnitute <= 48) {
+			return a[1] + a[0];
+		} else {
+			diff = magnitute - 48;
+			toSubtract = (1 << diff) - 1;
+			return a[1] + (a[0] - toSubtract);
+		}
+	}
+	
+	function toDoubleRoundUp(a) {
+		var diff, magnitute, toAdd;
+		magnitute = round_int(Math.log(a[1]) / ($clinit_10() , LN_2));
+		if (magnitute <= 48) {
+			return a[1] + a[0];
+		} else {
+			diff = magnitute - 48;
+			toAdd = (1 << diff) - 1;
+			return a[1] + (a[0] + toAdd);
+		}
+	}
+	
+	function toString_0(a) {
+		var digits, rem, remDivTenPower, res, tenPowerLong, zeroesNeeded;
+		if (a[0] == 0 && a[1] == 0) {
+			return '0';
+		}
+		if (eq(a, ($clinit_10() , MIN_VALUE))) {
+			return '-9223372036854775808';
+		}
+		if (a[1] < 0) {
+			return '-' + toString_0(neg(a));
+		}
+		rem = a;
+		res = '';
+		while (!(rem[0] == 0 && rem[1] == 0)) {
+			tenPowerLong = fromInt(1000000000);
+			remDivTenPower = div(rem, tenPowerLong);
+			digits = '' + lowBits_0(sub(rem, mul(remDivTenPower, tenPowerLong)));
+			rem = remDivTenPower;
+			if (!(rem[0] == 0 && rem[1] == 0)) {
+				zeroesNeeded = 9 - digits.length;
+				for (; zeroesNeeded > 0; --zeroesNeeded) {
+					digits = '0' + digits;
+				}
+			}
+			res = digits + res;
+		}
+		return res;
+	}
+	
+	function $clinit_9() {
+		$clinit_9 = nullMethod;
+		boxedValues = initDim(_3_3D_classLit, 0, 9, 256, 0);
+	}
+	
+	var boxedValues;
+	function $clinit_10() {
+		$clinit_10 = nullMethod;
+		LN_2 = Math.log(2);
+		MAX_VALUE = P7fffffffffffffff_longLit;
+		MIN_VALUE = N8000000000000000_longLit;
+		NEG_ONE = fromInt(-1);
+		ONE = fromInt(1);
+		TWO = fromInt(2);
+		TWO_PWR_24 = P1000000_longLit;
+		ZERO = fromInt(0);
+	}
+	
+	var LN_2, MAX_VALUE, MIN_VALUE, NEG_ONE, ONE, TWO, TWO_PWR_24, ZERO;
+	function getClass_6() {
+		return Ljava_io_InputStream_2_classLit;
+	}
+	
+	function InputStream() {
+	}
+	
+	_ = InputStream.prototype = new Object_0();
+	_.getClass$ = getClass_6;
+	_.typeId$ = 0;
+	function $ByteArrayInputStream(this$static, buf) {
+		$ByteArrayInputStream_0(this$static, buf, 0, buf.length);
+		return this$static;
+	}
+	
+	function $ByteArrayInputStream_0(this$static, buf, off, len) {
+		this$static.buf = buf;
+		this$static.pos = off;
+		this$static.count = off + len;
+		if (this$static.count > buf.length)
+			this$static.count = buf.length;
+		return this$static;
+	}
+	
+	function $read(this$static) {
+		if (this$static.pos >= this$static.count)
+			return -1;
+		return this$static.buf[this$static.pos++] & 255;
+	}
+	
+	function $read_0(this$static, buf, off, len) {
+		if (this$static.pos >= this$static.count)
+			return -1;
+		len = min(len, this$static.count - this$static.pos);
+		arraycopy(this$static.buf, this$static.pos, buf, off, len);
+		this$static.pos += len;
+		return len;
+	}
+	
+	function getClass_3() {
+		return Ljava_io_ByteArrayInputStream_2_classLit;
+	}
+	
+	function ByteArrayInputStream() {
+	}
+	
+	_ = ByteArrayInputStream.prototype = new InputStream();
+	_.getClass$ = getClass_3;
+	_.typeId$ = 0;
+	_.buf = null;
+	_.count = 0;
+	_.pos = 0;
+	function getClass_7() {
+		return Ljava_io_OutputStream_2_classLit;
+	}
+	
+	function OutputStream() {
+	}
+	
+	_ = OutputStream.prototype = new Object_0();
+	_.getClass$ = getClass_7;
+	_.typeId$ = 0;
+	function $ByteArrayOutputStream(this$static) {
+		this$static.buf = initDim(_3B_classLit, 0, -1, 32, 1);
+		return this$static;
+	}
+	
+	function $ensureCapacity(this$static, len) {
+		var newbuf;
+		if (len <= this$static.buf.length)
+			return;
+		len = max(len, this$static.buf.length * 2);
+		newbuf = initDim(_3B_classLit, 0, -1, len, 1);
+		arraycopy(this$static.buf, 0, newbuf, 0, this$static.buf.length);
+		this$static.buf = newbuf;
+	}
+	
+	function $toByteArray(this$static) {
+		var data;
+		data = initDim(_3B_classLit, 0, -1, this$static.count, 1);
+		arraycopy(this$static.buf, 0, data, 0, this$static.count);
+		return data;
+	}
+	
+	function $write(this$static, b) {
+		$ensureCapacity(this$static, this$static.count + 1);
+		this$static.buf[this$static.count++] = b << 24 >> 24;
+	}
+	
+	function $write_0(this$static, buf, off, len) {
+		$ensureCapacity(this$static, this$static.count + len);
+		arraycopy(buf, off, this$static.buf, this$static.count, len);
+		this$static.count += len;
+	}
+	
+	function getClass_4() {
+		return Ljava_io_ByteArrayOutputStream_2_classLit;
+	}
+	
+	function ByteArrayOutputStream() {
+	}
+	
+	_ = ByteArrayOutputStream.prototype = new OutputStream();
+	_.getClass$ = getClass_4;
+	_.typeId$ = 0;
+	_.buf = null;
+	_.count = 0;
+	function $IOException(this$static, message) {
+		this$static.detailMessage = message;
+		return this$static;
+	}
+	
+	function getClass_5() {
+		return Ljava_io_IOException_2_classLit;
+	}
+	
+	function IOException() {
+	}
+	
+	_ = IOException.prototype = new Exception();
+	_.getClass$ = getClass_5;
+	_.typeId$ = 7;
+	function $ArithmeticException(this$static, explanation) {
+		this$static.detailMessage = explanation;
+		return this$static;
+	}
+	
+	function getClass_8() {
+		return Ljava_lang_ArithmeticException_2_classLit;
+	}
+	
+	function ArithmeticException() {
+	}
+	
+	_ = ArithmeticException.prototype = new RuntimeException();
+	_.getClass$ = getClass_8;
+	_.typeId$ = 8;
+	function $ArrayStoreException(this$static, message) {
+		this$static.detailMessage = message;
+		return this$static;
+	}
+	
+	function getClass_9() {
+		return Ljava_lang_ArrayStoreException_2_classLit;
+	}
+	
+	function ArrayStoreException() {
+	}
+	
+	_ = ArrayStoreException.prototype = new RuntimeException();
+	_.getClass$ = getClass_9;
+	_.typeId$ = 9;
+	function createForArray(packageName, className) {
+		var clazz;
+		clazz = new Class();
+		clazz.typeName = packageName + className;
+		return clazz;
+	}
+	
+	function createForClass(packageName, className) {
+		var clazz;
+		clazz = new Class();
+		clazz.typeName = packageName + className;
+		return clazz;
+	}
+	
+	function createForEnum(packageName, className) {
+		var clazz;
+		clazz = new Class();
+		clazz.typeName = packageName + className;
+		return clazz;
+	}
+	
+	function getClass_11() {
+		return Ljava_lang_Class_2_classLit;
+	}
+	
+	function Class() {
+	}
+	
+	_ = Class.prototype = new Object_0();
+	_.getClass$ = getClass_11;
+	_.typeId$ = 0;
+	_.typeName = null;
+	function getClass_10() {
+		return Ljava_lang_ClassCastException_2_classLit;
+	}
+	
+	function ClassCastException() {
+	}
+	
+	_ = ClassCastException.prototype = new RuntimeException();
+	_.getClass$ = getClass_10;
+	_.typeId$ = 12;
+	function getClass_12() {
+		return Ljava_lang_Enum_2_classLit;
+	}
+	
+	function Enum() {
+	}
+	
+	_ = Enum.prototype = new Object_0();
+	_.getClass$ = getClass_12;
+	_.typeId$ = 0;
+	function $IllegalArgumentException(this$static, message) {
+		this$static.detailMessage = message;
+		return this$static;
+	}
+	
+	function getClass_14() {
+		return Ljava_lang_IllegalArgumentException_2_classLit;
+	}
+	
+	function IllegalArgumentException() {
+	}
+	
+	_ = IllegalArgumentException.prototype = new RuntimeException();
+	_.getClass$ = getClass_14;
+	_.typeId$ = 13;
+	function getClass_15() {
+		return Ljava_lang_IllegalStateException_2_classLit;
+	}
+	
+	function IllegalStateException() {
+	}
+	
+	_ = IllegalStateException.prototype = new RuntimeException();
+	_.getClass$ = getClass_15;
+	_.typeId$ = 14;
+	function getClass_16() {
+		return Ljava_lang_IndexOutOfBoundsException_2_classLit;
+	}
+	
+	function IndexOutOfBoundsException() {
+	}
+	
+	_ = IndexOutOfBoundsException.prototype = new RuntimeException();
+	_.getClass$ = getClass_16;
+	_.typeId$ = 15;
+	function max(x, y) {
+		return x > y?x:y;
+	}
+	
+	function min(x, y) {
+		return x < y?x:y;
+	}
+	
+	function getClass_17() {
+		return Ljava_lang_NullPointerException_2_classLit;
+	}
+	
+	function NullPointerException() {
+	}
+	
+	_ = NullPointerException.prototype = new RuntimeException();
+	_.getClass$ = getClass_17;
+	_.typeId$ = 16;
+	function $equals(this$static, other) {
+		if (other == null) {
+			return false;
+		}
+		return String(this$static) == other;
+	}
+	
+	function $getChars(this$static, srcBegin, srcEnd, dst, dstBegin) {
+		var srcIdx;
+		for (srcIdx = srcBegin; srcIdx < srcEnd; ++srcIdx) {
+			dst[dstBegin++] = this$static.charCodeAt(srcIdx);
+		}
+	}
+	
+	function getClass_21() {
+		return Ljava_lang_String_2_classLit;
+	}
+	
+	_ = String.prototype;
+	_.getClass$ = getClass_21;
+	_.typeId$ = 2;
+	function $StringBuilder(this$static) {
+		var array;
+		this$static.data = (array = [] , array.explicitLength = 0 , array);
+		return this$static;
+	}
+	
+	function getClass_20() {
+		return Ljava_lang_StringBuilder_2_classLit;
+	}
+	
+	function StringBuilder() {
+	}
+	
+	_ = StringBuilder.prototype = new Object_0();
+	_.getClass$ = getClass_20;
+	_.typeId$ = 0;
+	function arraycopy(src, srcOfs, dest, destOfs, len) {
+		var destArray, destEnd, destTypeName, destlen, i, srcArray, srcTypeName, srclen;
+		
+		if (src == null || dest == null) {
+			throw new NullPointerException();
+		}
+		
+		srcTypeName  = (src.typeMarker$  == nullMethod || src.typeId$  == 2 ? src.getClass$()  : Lcom_google_gwt_core_client_JavaScriptObject_2_classLit).typeName;
+		destTypeName = (dest.typeMarker$ == nullMethod || dest.typeId$ == 2 ? dest.getClass$() : Lcom_google_gwt_core_client_JavaScriptObject_2_classLit).typeName;
+		
+		if (srcTypeName.charCodeAt(0) != 91 || destTypeName.charCodeAt(0) != 91) {
+			throw $ArrayStoreException(new ArrayStoreException(), 'Must be array types');
+		}
+		if (srcTypeName.charCodeAt(1) != destTypeName.charCodeAt(1)) {
+			throw $ArrayStoreException(new ArrayStoreException(), 'Array types must match');
+		}
+		
+		srclen  = src.length;
+		destlen = dest.length;
+		if (srcOfs < 0 || destOfs < 0 || len < 0 || srcOfs + len > srclen || destOfs + len > destlen) {
+			throw new IndexOutOfBoundsException();
+		}
+		if ((srcTypeName.charCodeAt(1) == 76 || srcTypeName.charCodeAt(1) == 91) && !$equals(srcTypeName, destTypeName)) {
+			srcArray  = dynamicCast(src, 3);
+			destArray = dynamicCast(dest, 3);
+			if ((src == null ? null : src) === (dest == null ? null : dest) && srcOfs < destOfs) {
+				srcOfs += len;
+				for (destEnd = destOfs + len; destEnd-- > destOfs;) {
+					setCheck(destArray, destEnd, srcArray[--srcOfs]);
+				}
+			} else {
+				for (destEnd = destOfs + len; destOfs < destEnd;) {
+					setCheck(destArray, destOfs++, srcArray[srcOfs++]);
+				}
+			}
+		} else {
+			for (i = 0; i < len; ++i) {
+				dest[destOfs + i] = src[srcOfs + i]
+			}
+		}
+	}
+	
+	
+	function $configure(this$static, encoder) {
+	if (!$SetDictionarySize_0(encoder, 1 << this$static.dictionarySize))
+		throw $RuntimeException(new RuntimeException(), 'unexpected failure');
+	if (!$SetNumFastBytes(encoder, this$static.fb))
+		throw $RuntimeException(new RuntimeException(), 'unexpected failure');
+	if (!$SetMatchFinder(encoder, this$static.matchFinder))
+		throw $RuntimeException(new RuntimeException(), 'unexpected failure');
+	if (!$SetLcLpPb_0(encoder, this$static.lc, this$static.lp, this$static.pb))
+		throw $RuntimeException(new RuntimeException(), 'unexpected failure');
+	}
+	
+	function getClass_23() {
+		return Lorg_dellroad_lzma_client_CompressionMode_2_classLit;
+	}
+	
+	function CompressionMode() {
+	}
+	
+	_ = CompressionMode.prototype = new Enum();
+	_.getClass$ = getClass_23;
+	_.typeId$ = 0;
+	_.dictionarySize = 0;
+	_.fb = 0;
+	_.lc = 0;
+	_.lp = 0;
+	_.matchFinder = 0;
+	_.pb = 0;
+	
+	function $execute(this$static) {
+		var $e0;
+		try {
+			return $processChunk(this$static.chunker);
+		}
+		catch ($e0) {
+			$e0 = caught($e0);
+			if (instanceOf($e0, 10)) {
+				return false;
+			} else {
+				throw $e0;
+			}
+		}
+	}
+	
+	function $init(this$static, input, output, length_0, mode) {
+		var encoder, i;
+		if (!mode)
+			throw $IllegalArgumentException(new IllegalArgumentException(), 'null mode');
+		if (compare(length_0, N1_longLit) < 0)
+			throw $IllegalArgumentException(new IllegalArgumentException(), 'invalid length ' + toString_0(length_0));
+		this$static.length_0 = length_0;
+		encoder = $Encoder(new Encoder());
+		$configure(mode, encoder);
+		encoder._writeEndMark = true;
+		$WriteCoderProperties(encoder, output);
+		for (i = 0; i < 64; i += 8)
+			$write(output, lowBits_0(shr(length_0, i)) & 255);
+		this$static.chunker = (encoder._needReleaseMFStream = false , (encoder._inStream = input , encoder._finished = false , $Create_2(encoder) , encoder._rangeEncoder.Stream = output , $Init_4(encoder) , $FillDistancesPrices(encoder) , $FillAlignPrices(encoder) , encoder._lenEncoder._tableSize = encoder._numFastBytes + 1 - 2 , $UpdateTables(encoder._lenEncoder, 1 << encoder._posStateBits) , encoder._repMatchLenEncoder._tableSize = encoder._numFastBytes + 1 - 2 , $UpdateTables(encoder._repMatchLenEncoder, 1 << encoder._posStateBits) , encoder.nowPos64 = P0_longLit , undefined) , $Chunker_0(new Chunker(), encoder));
+	}
+	
+	function getClass_26() {
+		return Lorg_dellroad_lzma_client_LZMACompressor_2_classLit;
+	}
+	
+	function LZMACompressor() {
+	}
+	
+	_ = LZMACompressor.prototype = new Object_0();
+	_.getClass$ = getClass_26;
+	_.typeId$ = 0;
+	_.chunker = null;
+	
+	function $LZMAByteArrayCompressor(this$static, data, mode) {
+		var $e0;
+		this$static.output = $ByteArrayOutputStream(new ByteArrayOutputStream());
+		try {
+			$init(this$static, $ByteArrayInputStream(new ByteArrayInputStream(), data), this$static.output, fromInt(data.length), mode);
+		} catch ($e0) {
+			$e0 = caught($e0);
+			if (instanceOf($e0, 10)) {
+				throw $RuntimeException(new RuntimeException(), 'impossible exception');
+			} else {
+				throw $e0;
+			}
+		}
+		return this$static;
+	}
+	
+	function getClass_24() {
+		return Lorg_dellroad_lzma_client_LZMAByteArrayCompressor_2_classLit;
+	}
+	
+	function LZMAByteArrayCompressor() {
+	}
+	
+	_ = LZMAByteArrayCompressor.prototype = new LZMACompressor();
+	_.getClass$ = getClass_24;
+	_.typeId$ = 0;
+	_.output = null;
+	function $execute_0(this$static) {
+		var $e0, e;
+		try {
+			return $processChunk(this$static.chunker);
+		}
+		catch ($e0) {
+			$e0 = caught($e0);
+			if (instanceOf($e0, 10)) {
+				e = $e0;
+				this$static.exception = e;
+				return false;
+			} else {
+				throw $e0;
+			}
+		}
+	}
+	
+	function $init_0(this$static, input, output) {
+		var decoder,
+			hex_length = "",
+			i,
+			properties,
+			r,
+			tmp_length;
+		
+		properties = initDim(_3B_classLit, 0, -1, 5, 1);
+		for (i = 0; i < properties.length; ++i) {
+			r = $read(input);
+			if (r == -1)
+				throw $IOException(new IOException(), 'truncated input');
+			properties[i] = r << 24 >> 24;
+		}
+		decoder = $Decoder(new Decoder());
+		if (!$SetDecoderProperties(decoder, properties))
+			throw $IOException(new IOException(), 'corrupted input');
+		
+		for (i = 0; i < 64; i += 8) {
+			r = $read(input);
+			if (r == -1)
+				throw $IOException(new IOException(), 'truncated input');
+			r = r.toString(16);
+			if (r.length == 1) r = "0" + r;
+			hex_length = r + "" + hex_length;
+		}
+		
+		/// Was the length set in the header (if it was compressed from a stream, the length is all f's).
+		if (hex_length.toLowerCase() == "ffffffffffffffffff" || hex_length == 0) {
+			/// The length is unknown, so set to -1.
+			this$static.length_0 = N1_longLit;
+		} else {
+			///NOTE: If there is a problem with the decoder because of the length, you can always set the length to -1 (N1_longLit) which means unknown.
+			tmp_length = parseInt(hex_length, 16);
+			/// If the length is too long to handle, just set it to unknown.
+			if (tmp_length > 4294967295) {
+				this$static.length_0 = N1_longLit;
+			} else {
+				this$static.length_0 = fromDouble(tmp_length);
+			}
+		}
+		
+		this$static.chunker = $CodeInChunks(decoder, input, output, this$static.length_0);
+	}
+	
+	function getClass_27() {
+		return Lorg_dellroad_lzma_client_LZMADecompressor_2_classLit;
+	}
+	
+	function LZMADecompressor() {
+	}
+	
+	_ = LZMADecompressor.prototype = new Object_0();
+	_.getClass$ = getClass_27;
+	_.typeId$ = 0;
+	_.chunker = null;
+	_.exception = null;
+	_.length_0 = P0_longLit;
+	function $LZMAByteArrayDecompressor(this$static, data) {
+		this$static.output = $ByteArrayOutputStream(new ByteArrayOutputStream());
+		$init_0(this$static, $ByteArrayInputStream(new ByteArrayInputStream(), data), this$static.output);
+		return this$static;
+	}
+	
+	function getClass_25() {
+		return Lorg_dellroad_lzma_client_LZMAByteArrayDecompressor_2_classLit;
+	}
+	
+	function LZMAByteArrayDecompressor() {
+	}
+	
+	_ = LZMAByteArrayDecompressor.prototype = new LZMADecompressor();
+	_.getClass$ = getClass_25;
+	_.typeId$ = 0;
+	_.output = null;
+	function $Create_4(this$static, keepSizeBefore, keepSizeAfter, keepSizeReserv) {
+		var blockSize;
+		this$static._keepSizeBefore = keepSizeBefore;
+		this$static._keepSizeAfter = keepSizeAfter;
+		blockSize = keepSizeBefore + keepSizeAfter + keepSizeReserv;
+		if (this$static._bufferBase == null || this$static._blockSize != blockSize) {
+			this$static._bufferBase = null;
+			this$static._blockSize = blockSize;
+			this$static._bufferBase = initDim(_3B_classLit, 0, -1, this$static._blockSize, 1);
+		}
+		this$static._pointerToLastSafePosition = this$static._blockSize - keepSizeAfter;
+	}
+	
+	function $GetIndexByte(this$static, index) {
+		return this$static._bufferBase[this$static._bufferOffset + this$static._pos + index];
+	}
+	
+	function $GetMatchLen(this$static, index, distance, limit) {
+		var i, pby;
+		if (this$static._streamEndWasReached) {
+			if (this$static._pos + index + limit > this$static._streamPos) {
+				limit = this$static._streamPos - (this$static._pos + index);
+			}
+		}
+		++distance;
+		pby = this$static._bufferOffset + this$static._pos + index;
+		for (i = 0; i < limit && this$static._bufferBase[pby + i] == this$static._bufferBase[pby + i - distance]; ++i) {
+		}
+		return i;
+	}
+	
+	function $GetNumAvailableBytes(this$static) {
+		return this$static._streamPos - this$static._pos;
+	}
+	
+	function $MoveBlock(this$static) {
+		var i, numBytes, offset;
+		offset = this$static._bufferOffset + this$static._pos - this$static._keepSizeBefore;
+		if (offset > 0) {
+			--offset;
+		}
+		numBytes = this$static._bufferOffset + this$static._streamPos - offset;
+		for (i = 0; i < numBytes; ++i) {
+			this$static._bufferBase[i] = this$static._bufferBase[offset + i];
+		}
+		this$static._bufferOffset -= offset;
+	}
+	
+	function $MovePos_1(this$static) {
+		var pointerToPostion;
+		++this$static._pos;
+		if (this$static._pos > this$static._posLimit) {
+			pointerToPostion = this$static._bufferOffset + this$static._pos;
+			if (pointerToPostion > this$static._pointerToLastSafePosition) {
+				$MoveBlock(this$static);
+			}
+			$ReadBlock(this$static);
+		}
+	}
+	
+	function $ReadBlock(this$static) {
+		var numReadBytes, pointerToPostion, size;
+		if (this$static._streamEndWasReached)
+			return;
+		while (true) {
+			size = -this$static._bufferOffset + this$static._blockSize - this$static._streamPos;
+			if (size == 0)
+				return;
+			numReadBytes = $read_0(this$static._stream, this$static._bufferBase, this$static._bufferOffset + this$static._streamPos, size);
+			if (numReadBytes == -1) {
+				this$static._posLimit = this$static._streamPos;
+				pointerToPostion = this$static._bufferOffset + this$static._posLimit;
+				if (pointerToPostion > this$static._pointerToLastSafePosition) {
+					this$static._posLimit = this$static._pointerToLastSafePosition - this$static._bufferOffset;
+				}
+				this$static._streamEndWasReached = true;
+				return;
+			}
+			this$static._streamPos += numReadBytes;
+			if (this$static._streamPos >= this$static._pos + this$static._keepSizeAfter) {
+				this$static._posLimit = this$static._streamPos - this$static._keepSizeAfter;
+			}
+		}
+	}
+	
+	function $ReduceOffsets(this$static, subValue) {
+		this$static._bufferOffset += subValue;
+		this$static._posLimit -= subValue;
+		this$static._pos -= subValue;
+		this$static._streamPos -= subValue;
+	}
+	
+	function getClass_40() {
+		return Lorg_dellroad_lzma_client_SevenZip_Compression_LZ_InWindow_2_classLit;
+	}
+	
+	function InWindow() {
+	}
+	
+	_ = InWindow.prototype = new Object_0();
+	_.getClass$ = getClass_40;
+	_.typeId$ = 0;
+	_._blockSize = 0;
+	_._bufferBase = null;
+	_._bufferOffset = 0;
+	_._keepSizeAfter = 0;
+	_._keepSizeBefore = 0;
+	_._pointerToLastSafePosition = 0;
+	_._pos = 0;
+	_._posLimit = 0;
+	_._stream = null;
+	_._streamEndWasReached = false;
+	_._streamPos = 0;
+	function $clinit_60() {
+		$clinit_60 = nullMethod;
+		var i, j, r;
+		CrcTable = initDim(_3I_classLit, 0, -1, 256, 1);
+		for (i = 0; i < 256; ++i) {
+			r = i;
+			for (j = 0; j < 8; ++j)
+			if ((r & 1) != 0) {
+				r = r >>> 1 ^ -306674912;
+			} else {
+				r >>>= 1;
+			}
+			CrcTable[i] = r;
+		}
+	}
+	
+	function $Create_3(this$static, historySize, keepAddBufferBefore, matchMaxLen, keepAddBufferAfter) {
+		var cyclicBufferSize, hs, windowReservSize;
+		if (historySize > 1073741567) {
+			return false;
+		}
+
+		this$static._cutValue = 16 + (matchMaxLen >> 1);
+		windowReservSize = ~~((historySize + keepAddBufferBefore + matchMaxLen + keepAddBufferAfter) / 2) + 256;
+		$Create_4(this$static, historySize + keepAddBufferBefore, matchMaxLen + keepAddBufferAfter, windowReservSize);
+		this$static._matchMaxLen = matchMaxLen;
+		cyclicBufferSize = historySize + 1;
+		if (this$static._cyclicBufferSize != cyclicBufferSize) {
+			this$static._son = initDim(_3I_classLit, 0, -1, (this$static._cyclicBufferSize = cyclicBufferSize) * 2, 1);
+		}
+
+		hs = 65536;
+		if (this$static.HASH_ARRAY) {
+			hs = historySize - 1;
+			hs |= hs >> 1;
+			hs |= hs >> 2;
+			hs |= hs >> 4;
+			hs |= hs >> 8;
+			hs >>= 1;
+			hs |= 65535;
+			if (hs > 16777216)
+			hs >>= 1;
+			this$static._hashMask = hs;
+			++hs;
+			hs += this$static.kFixHashSize;
+		}
+
+		if (hs != this$static._hashSizeSum) {
+			this$static._hash = initDim(_3I_classLit, 0, -1, this$static._hashSizeSum = hs, 1);
+		}
+		return true;
+	}
+	
+	function $GetMatches(this$static, distances) {
+		var count, cur, curMatch, curMatch2, curMatch3, cyclicPos, delta, hash2Value, hash3Value, hashValue, len, len0, len1, lenLimit, matchMinPos, maxLen, offset, pby1, ptr0, ptr1, temp;
+		if (this$static._pos + this$static._matchMaxLen <= this$static._streamPos) {
+			lenLimit = this$static._matchMaxLen;
+		} else {
+			lenLimit = this$static._streamPos - this$static._pos;
+			if (lenLimit < this$static.kMinMatchCheck) {
+				$MovePos_0(this$static);
+				return 0;
+			}
+		}
+		offset = 0;
+		matchMinPos = this$static._pos > this$static._cyclicBufferSize?this$static._pos - this$static._cyclicBufferSize:0;
+		cur = this$static._bufferOffset + this$static._pos;
+		maxLen = 1;
+		hash2Value = 0;
+		hash3Value = 0;
+		if (this$static.HASH_ARRAY) {
+			temp = CrcTable[this$static._bufferBase[cur] & 255] ^ this$static._bufferBase[cur + 1] & 255;
+			hash2Value = temp & 1023;
+			temp ^= (this$static._bufferBase[cur + 2] & 255) << 8;
+			hash3Value = temp & 65535;
+			hashValue = (temp ^ CrcTable[this$static._bufferBase[cur + 3] & 255] << 5) & this$static._hashMask;
+		} else {
+			hashValue = this$static._bufferBase[cur] & 255 ^ (this$static._bufferBase[cur + 1] & 255) << 8;
+		}
+
+		curMatch = this$static._hash[this$static.kFixHashSize + hashValue];
+		if (this$static.HASH_ARRAY) {
+			curMatch2 = this$static._hash[hash2Value];
+			curMatch3 = this$static._hash[1024 + hash3Value];
+			this$static._hash[hash2Value] = this$static._pos;
+			this$static._hash[1024 + hash3Value] = this$static._pos;
+			if (curMatch2 > matchMinPos) {
+				if (this$static._bufferBase[this$static._bufferOffset + curMatch2] == this$static._bufferBase[cur]) {
+					distances[offset++] = maxLen = 2;
+					distances[offset++] = this$static._pos - curMatch2 - 1;
+				}
+			}
+			if (curMatch3 > matchMinPos) {
+				if (this$static._bufferBase[this$static._bufferOffset + curMatch3] == this$static._bufferBase[cur]) {
+					if (curMatch3 == curMatch2) {
+						offset -= 2;
+					}
+					distances[offset++] = maxLen = 3;
+					distances[offset++] = this$static._pos - curMatch3 - 1;
+					curMatch2 = curMatch3;
+				}
+			}
+			if (offset != 0 && curMatch2 == curMatch) {
+				offset -= 2;
+				maxLen = 1;
+			}
+		}
+		this$static._hash[this$static.kFixHashSize + hashValue] = this$static._pos;
+		ptr0 = (this$static._cyclicBufferPos << 1) + 1;
+		ptr1 = this$static._cyclicBufferPos << 1;
+		len0 = len1 = this$static.kNumHashDirectBytes;
+		if (this$static.kNumHashDirectBytes != 0) {
+			if (curMatch > matchMinPos) {
+				if (this$static._bufferBase[this$static._bufferOffset + curMatch + this$static.kNumHashDirectBytes] != this$static._bufferBase[cur + this$static.kNumHashDirectBytes]) {
+					distances[offset++] = maxLen = this$static.kNumHashDirectBytes;
+					distances[offset++] = this$static._pos - curMatch - 1;
+				}
+			}
+		}
+		count = this$static._cutValue;
+		while (true) {
+			if (curMatch <= matchMinPos || count-- == 0) {
+				this$static._son[ptr0] = this$static._son[ptr1] = 0;
+				break;
+			}
+			delta = this$static._pos - curMatch;
+			cyclicPos = (delta <= this$static._cyclicBufferPos?this$static._cyclicBufferPos - delta:this$static._cyclicBufferPos - delta + this$static._cyclicBufferSize) << 1;
+			pby1 = this$static._bufferOffset + curMatch;
+			len = len0 < len1?len0:len1;
+			if (this$static._bufferBase[pby1 + len] == this$static._bufferBase[cur + len]) {
+				while (++len != lenLimit) {
+					if (this$static._bufferBase[pby1 + len] != this$static._bufferBase[cur + len]) {
+						break;
+					}
+				}
+				if (maxLen < len) {
+					distances[offset++] = maxLen = len;
+					distances[offset++] = delta - 1;
+					if (len == lenLimit) {
+					this$static._son[ptr1] = this$static._son[cyclicPos];
+					this$static._son[ptr0] = this$static._son[cyclicPos + 1];
+					break;
+					}
+				}
+			}
+			if ((this$static._bufferBase[pby1 + len] & 255) < (this$static._bufferBase[cur + len] & 255)) {
+				this$static._son[ptr1] = curMatch;
+				ptr1 = cyclicPos + 1;
+				curMatch = this$static._son[ptr1];
+				len1 = len;
+			} else {
+				this$static._son[ptr0] = curMatch;
+				ptr0 = cyclicPos;
+				curMatch = this$static._son[ptr0];
+				len0 = len;
+			}
+		}
+		$MovePos_0(this$static);
+		return offset;
+	}
+	
+	function $Init_5(this$static) {
+		var i;
+		this$static._bufferOffset = 0;
+		this$static._pos = 0;
+		this$static._streamPos = 0;
+		this$static._streamEndWasReached = false;
+		$ReadBlock(this$static);
+		for (i = 0; i < this$static._hashSizeSum; ++i) {
+			this$static._hash[i] = 0;
+		}
+		this$static._cyclicBufferPos = 0;
+		$ReduceOffsets(this$static, -1);
+	}
+	
+	function $MovePos_0(this$static) {
+		var subValue;
+		if (++this$static._cyclicBufferPos >= this$static._cyclicBufferSize) {
+			this$static._cyclicBufferPos = 0;
+		}
+		$MovePos_1(this$static);
+		if (this$static._pos == 1073741823) {
+			subValue = this$static._pos - this$static._cyclicBufferSize;
+			$NormalizeLinks(this$static._son, this$static._cyclicBufferSize * 2, subValue);
+			$NormalizeLinks(this$static._hash, this$static._hashSizeSum, subValue);
+			$ReduceOffsets(this$static, subValue);
+		}
+	}
+	
+	function $NormalizeLinks(items, numItems, subValue) {
+		var i, value;
+		for (i = 0; i < numItems; ++i) {
+			value = items[i];
+			if (value <= subValue) {
+				value = 0;
+			} else {
+				value -= subValue;
+			}
+			items[i] = value;
+		}
+	}
+	
+	function $SetType(this$static, numHashBytes) {
+		this$static.HASH_ARRAY = numHashBytes > 2;
+		if (this$static.HASH_ARRAY) {
+			this$static.kNumHashDirectBytes = 0;
+			this$static.kMinMatchCheck = 4;
+			this$static.kFixHashSize = 66560;
+		} else {
+			this$static.kNumHashDirectBytes = 2;
+			this$static.kMinMatchCheck = 3;
+			this$static.kFixHashSize = 0;
+		}
+	}
+	
+	function $Skip(this$static, num) {
+		var count, cur, curMatch, cyclicPos, delta, hash2Value, hash3Value, hashValue, len, len0, len1, lenLimit, matchMinPos, pby1, ptr0, ptr1, temp;
+		do {
+			if (this$static._pos + this$static._matchMaxLen <= this$static._streamPos) {
+				lenLimit = this$static._matchMaxLen;
+			} else {
+				lenLimit = this$static._streamPos - this$static._pos;
+				if (lenLimit < this$static.kMinMatchCheck) {
+					$MovePos_0(this$static);
+					continue;
+				}
+			}
+			matchMinPos = this$static._pos > this$static._cyclicBufferSize?this$static._pos - this$static._cyclicBufferSize:0;
+			cur = this$static._bufferOffset + this$static._pos;
+			if (this$static.HASH_ARRAY) {
+				temp = CrcTable[this$static._bufferBase[cur] & 255] ^ this$static._bufferBase[cur + 1] & 255;
+				hash2Value = temp & 1023;
+				this$static._hash[hash2Value] = this$static._pos;
+				temp ^= (this$static._bufferBase[cur + 2] & 255) << 8;
+				hash3Value = temp & 65535;
+				this$static._hash[1024 + hash3Value] = this$static._pos;
+				hashValue = (temp ^ CrcTable[this$static._bufferBase[cur + 3] & 255] << 5) & this$static._hashMask;
+			} else {
+				hashValue = this$static._bufferBase[cur] & 255 ^ (this$static._bufferBase[cur + 1] & 255) << 8;
+			}
+			curMatch = this$static._hash[this$static.kFixHashSize + hashValue];
+			this$static._hash[this$static.kFixHashSize + hashValue] = this$static._pos;
+			ptr0 = (this$static._cyclicBufferPos << 1) + 1;
+			ptr1 = this$static._cyclicBufferPos << 1;
+			len0 = len1 = this$static.kNumHashDirectBytes;
+			count = this$static._cutValue;
+			while (true) {
+				if (curMatch <= matchMinPos || count-- == 0) {
+					this$static._son[ptr0] = this$static._son[ptr1] = 0;
+					break;
+				}
+				delta = this$static._pos - curMatch;
+				cyclicPos = (delta <= this$static._cyclicBufferPos?this$static._cyclicBufferPos - delta:this$static._cyclicBufferPos - delta + this$static._cyclicBufferSize) << 1;
+				pby1 = this$static._bufferOffset + curMatch;
+				len = len0 < len1?len0:len1;
+				if (this$static._bufferBase[pby1 + len] == this$static._bufferBase[cur + len]) {
+					while (++len != lenLimit) {
+						if (this$static._bufferBase[pby1 + len] != this$static._bufferBase[cur + len]) {
+							break;
+						}
+					}
+					if (len == lenLimit) {
+						this$static._son[ptr1] = this$static._son[cyclicPos];
+						this$static._son[ptr0] = this$static._son[cyclicPos + 1];
+						break;
+					}
+				}
+				if ((this$static._bufferBase[pby1 + len] & 255) < (this$static._bufferBase[cur + len] & 255)) {
+					this$static._son[ptr1] = curMatch;
+					ptr1 = cyclicPos + 1;
+					curMatch = this$static._son[ptr1];
+					len1 = len;
+				} else {
+					this$static._son[ptr0] = curMatch;
+					ptr0 = cyclicPos;
+					curMatch = this$static._son[ptr0];
+					len0 = len;
+				}
+			}
+			$MovePos_0(this$static);
+		}
+		while (--num != 0);
+	}
+	
+	function getClass_39() {
+		return Lorg_dellroad_lzma_client_SevenZip_Compression_LZ_BinTree_2_classLit;
+	}
+	
+	function BinTree() {
+	}
+	
+	_ = BinTree.prototype = new InWindow();
+	_.getClass$ = getClass_39;
+	_.typeId$ = 0;
+	_.HASH_ARRAY = true;
+	_._cutValue = 255;
+	_._cyclicBufferPos = 0;
+	_._cyclicBufferSize = 0;
+	_._hash = null;
+	_._hashMask = 0;
+	_._hashSizeSum = 0;
+	_._matchMaxLen = 0;
+	_._son = null;
+	_.kFixHashSize = 66560;
+	_.kMinMatchCheck = 4;
+	_.kNumHashDirectBytes = 0;
+	var CrcTable;
+	function $CopyBlock(this$static, distance, len) {
+		var pos;
+		pos = this$static._pos - distance - 1;
+		if (pos < 0) {
+			pos += this$static._windowSize;
+		}
+		for (; len != 0; --len) {
+			if (pos >= this$static._windowSize) {
+				pos = 0;
+			}
+			this$static._buffer[this$static._pos++] = this$static._buffer[pos++];
+			if (this$static._pos >= this$static._windowSize) {
+				$Flush_0(this$static);
+			}
+		}
+	}
+	
+	function $Create_5(this$static, windowSize) {
+		if (this$static._buffer == null || this$static._windowSize != windowSize) {
+			this$static._buffer = initDim(_3B_classLit, 0, -1, windowSize, 1);
+		}
+		this$static._windowSize = windowSize;
+		this$static._pos = 0;
+		this$static._streamPos = 0;
+	}
+	
+	function $Flush_0(this$static) {
+		var size;
+		size = this$static._pos - this$static._streamPos;
+		if (size == 0) {
+			return;
+		}
+		$write_0(this$static._stream, this$static._buffer, this$static._streamPos, size);
+		if (this$static._pos >= this$static._windowSize) {
+			this$static._pos = 0;
+		}
+		this$static._streamPos = this$static._pos;
+	}
+	
+	function $GetByte(this$static, distance) {
+		var pos;
+		pos = this$static._pos - distance - 1;
+		if (pos < 0) {
+			pos += this$static._windowSize;
+		}
+		return this$static._buffer[pos];
+	}
+	
+	function $Init_7(this$static, solid) {
+		if (!solid) {
+			this$static._streamPos = 0;
+			this$static._pos = 0;
+		}
+	}
+	
+	function $PutByte(this$static, b) {
+		this$static._buffer[this$static._pos++] = b;
+		if (this$static._pos >= this$static._windowSize) {
+			$Flush_0(this$static);
+		}
+	}
+	
+	function $ReleaseStream(this$static) {
+		$Flush_0(this$static);
+		this$static._stream = null;
+	}
+	
+	function $SetStream_0(this$static, stream) {
+		$Flush_0(this$static);
+		this$static._stream = null;
+		this$static._stream = stream;
+	}
+	
+	function getClass_41() {
+		return Lorg_dellroad_lzma_client_SevenZip_Compression_LZ_OutWindow_2_classLit;
+	}
+	
+	function OutWindow() {
+	}
+	
+	_ = OutWindow.prototype = new Object_0();
+	_.getClass$ = getClass_41;
+	_.typeId$ = 0;
+	_._buffer = null;
+	_._pos = 0;
+	_._stream = null;
+	_._streamPos = 0;
+	_._windowSize = 0;
+	function GetLenToPosState(len) {
+		len -= 2;
+		if (len < 4) {
+			return len;
+		}
+		return 3;
+	}
+	
+	function StateUpdateChar(index) {
+		if (index < 4) {
+			return 0;
+		}
+		if (index < 10) {
+			return index - 3;
+		}
+		return index - 6;
+	}
+	
+	function $Chunker_0(this$static, encoder) {
+		this$static.encoder = encoder;
+		this$static.decoder = null;
+		this$static.alive = true;
+		return this$static;
+	}
+	
+	function $Chunker(this$static, decoder) {
+		this$static.decoder = decoder;
+		this$static.encoder = null;
+		this$static.alive = true;
+		return this$static;
+	}
+	
+	function $processChunk(this$static) {
+		var exception;
+		if (!this$static.alive) {
+			throw new IllegalStateException();
+		}
+		exception = true;
+		try {
+			if (this$static.encoder) {
+				$processEncoderChunk(this$static);
+			} else {
+				$processDecoderChunk(this$static);
+			}
+			exception = false;
+			return this$static.alive;
+		} finally {
+			if (exception) {
+				this$static.alive = false;
+			}
+		}
+	}
+	
+	function $processDecoderChunk(this$static) {
+		var result;
+		result = $CodeOneChunk(this$static.decoder);
+		if (result == -1) {
+			throw $IOException(new IOException(), 'corrupted input');
+		}
+		this$static.inBytesProcessed = N1_longLit;
+		this$static.outBytesProcessed = this$static.decoder.nowPos64;
+		if (result == 1 || compare(this$static.decoder.outSize, P0_longLit) >= 0 && compare(this$static.decoder.nowPos64, this$static.decoder.outSize) >= 0) {
+			$CodeFinish(this$static.decoder);
+			this$static.alive = false;
+		}
+	}
+	
+	function $processEncoderChunk(this$static) {
+		$CodeOneBlock(this$static.encoder, this$static.encoder.processedInSize, this$static.encoder.processedOutSize, this$static.encoder.finished);
+		this$static.inBytesProcessed = this$static.encoder.processedInSize[0];
+		if (this$static.encoder.finished[0]) {
+			$ReleaseStreams(this$static.encoder);
+			this$static.alive = false;
+		}
+	}
+	
+	function getClass_28() {
+		return Lorg_dellroad_lzma_client_SevenZip_Compression_LZMA_Chunker_2_classLit;
+	}
+	
+	function Chunker() {
+	}
+	
+	_ = Chunker.prototype = new Object_0();
+	_.getClass$ = getClass_28;
+	_.typeId$ = 0;
+	_.alive = false;
+	_.decoder = null;
+	_.encoder = null;
+	function $CodeFinish(this$static) {
+		$Flush_0(this$static.m_OutWindow);
+		$ReleaseStream(this$static.m_OutWindow);
+		this$static.m_RangeDecoder.Stream = null;
+	}
+	
+	function $CodeInChunks(this$static, inStream, outStream, outSize) {
+		this$static.m_RangeDecoder.Stream = inStream;
+		$SetStream_0(this$static.m_OutWindow, outStream);
+		$Init_1(this$static);
+		this$static.state = 0;
+		this$static.rep0 = 0;
+		this$static.rep1 = 0;
+		this$static.rep2 = 0;
+		this$static.rep3 = 0;
+		this$static.outSize = outSize;
+		this$static.nowPos64 = P0_longLit;
+		this$static.prevByte = 0;
+		return $Chunker(new Chunker(), this$static);
+	}
+	
+	function $CodeOneChunk(this$static) {
+	var decoder2, distance, len, numDirectBits, posSlot, posState;
+	posState = lowBits_0(this$static.nowPos64) & this$static.m_PosStateMask;
+	if ($DecodeBit(this$static.m_RangeDecoder, this$static.m_IsMatchDecoders, (this$static.state << 4) + posState) == 0) {
+		decoder2 = $GetDecoder(this$static.m_LiteralDecoder, lowBits_0(this$static.nowPos64), this$static.prevByte);
+		if (this$static.state < 7) {
+		this$static.prevByte = $DecodeNormal(decoder2, this$static.m_RangeDecoder);
+		}
+		else {
+		this$static.prevByte = $DecodeWithMatchByte(decoder2, this$static.m_RangeDecoder, $GetByte(this$static.m_OutWindow, this$static.rep0));
+		}
+		$PutByte(this$static.m_OutWindow, this$static.prevByte);
+		this$static.state = StateUpdateChar(this$static.state);
+		this$static.nowPos64 = add(this$static.nowPos64, P1_longLit);
+	} else {
+		if ($DecodeBit(this$static.m_RangeDecoder, this$static.m_IsRepDecoders, this$static.state) == 1) {
+			len = 0;
+			if ($DecodeBit(this$static.m_RangeDecoder, this$static.m_IsRepG0Decoders, this$static.state) == 0) {
+				if ($DecodeBit(this$static.m_RangeDecoder, this$static.m_IsRep0LongDecoders, (this$static.state << 4) + posState) == 0) {
+					this$static.state = this$static.state < 7?9:11;
+					len = 1;
+				}
+			} else {
+				if ($DecodeBit(this$static.m_RangeDecoder, this$static.m_IsRepG1Decoders, this$static.state) == 0) {
+					distance = this$static.rep1;
+				} else {
+					if ($DecodeBit(this$static.m_RangeDecoder, this$static.m_IsRepG2Decoders, this$static.state) == 0) {
+						distance = this$static.rep2;
+					} else {
+						distance = this$static.rep3;
+						this$static.rep3 = this$static.rep2;
+					}
+					this$static.rep2 = this$static.rep1;
+				}
+				this$static.rep1 = this$static.rep0;
+				this$static.rep0 = distance;
+			}
+			if (len == 0) {
+				len = $Decode(this$static.m_RepLenDecoder, this$static.m_RangeDecoder, posState) + 2;
+				this$static.state = this$static.state < 7?8:11;
+			}
+		} else {
+			this$static.rep3 = this$static.rep2;
+			this$static.rep2 = this$static.rep1;
+			this$static.rep1 = this$static.rep0;
+			len = 2 + $Decode(this$static.m_LenDecoder, this$static.m_RangeDecoder, posState);
+			this$static.state = this$static.state < 7?7:10;
+			posSlot = $Decode_0(this$static.m_PosSlotDecoder[GetLenToPosState(len)], this$static.m_RangeDecoder);
+			if (posSlot >= 4) {
+				numDirectBits = (posSlot >> 1) - 1;
+				this$static.rep0 = (2 | posSlot & 1) << numDirectBits;
+				if (posSlot < 14) {
+					this$static.rep0 += ReverseDecode(this$static.m_PosDecoders, this$static.rep0 - posSlot - 1, this$static.m_RangeDecoder, numDirectBits);
+				} else {
+					this$static.rep0 += $DecodeDirectBits(this$static.m_RangeDecoder, numDirectBits - 4) << 4;
+					this$static.rep0 += $ReverseDecode(this$static.m_PosAlignDecoder, this$static.m_RangeDecoder);
+					if (this$static.rep0 < 0) {
+						if (this$static.rep0 == -1) {
+							return 1;
+						}
+						return -1;
+					}
+				}
+			} else 
+				this$static.rep0 = posSlot;
+			}
+			if (compare(fromInt(this$static.rep0), this$static.nowPos64) >= 0 || this$static.rep0 >= this$static.m_DictionarySizeCheck) {
+				return -1;
+			}
+			$CopyBlock(this$static.m_OutWindow, this$static.rep0, len);
+			this$static.nowPos64 = add(this$static.nowPos64, fromInt(len));
+			this$static.prevByte = $GetByte(this$static.m_OutWindow, 0);
+		}
+		return 0;
+	}
+	
+	function $Decoder(this$static) {
+		var i;
+		this$static.m_OutWindow = new OutWindow();
+		this$static.m_RangeDecoder = new Decoder_0();
+		this$static.m_IsMatchDecoders = initDim(_3S_classLit, 0, -1, 192, 1);
+		this$static.m_IsRepDecoders = initDim(_3S_classLit, 0, -1, 12, 1);
+		this$static.m_IsRepG0Decoders = initDim(_3S_classLit, 0, -1, 12, 1);
+		this$static.m_IsRepG1Decoders = initDim(_3S_classLit, 0, -1, 12, 1);
+		this$static.m_IsRepG2Decoders = initDim(_3S_classLit, 0, -1, 12, 1);
+		this$static.m_IsRep0LongDecoders = initDim(_3S_classLit, 0, -1, 192, 1);
+		this$static.m_PosSlotDecoder = initDim(_3Lorg_dellroad_lzma_client_SevenZip_Compression_RangeCoder_BitTreeDecoder_2_classLit, 0, 7, 4, 0);
+		this$static.m_PosDecoders = initDim(_3S_classLit, 0, -1, 114, 1);
+		this$static.m_PosAlignDecoder = $BitTreeDecoder(new BitTreeDecoder(), 4);
+		this$static.m_LenDecoder = $Decoder$LenDecoder(new Decoder$LenDecoder());
+		this$static.m_RepLenDecoder = $Decoder$LenDecoder(new Decoder$LenDecoder());
+		this$static.m_LiteralDecoder = new Decoder$LiteralDecoder();
+		for (i = 0; i < 4; ++i) {
+			this$static.m_PosSlotDecoder[i] = $BitTreeDecoder(new BitTreeDecoder(), 6);
+		}
+		return this$static;
+	}
+	
+	function $Init_1(this$static) {
+		var i;
+		$Init_7(this$static.m_OutWindow, false);
+		InitBitModels(this$static.m_IsMatchDecoders);
+		InitBitModels(this$static.m_IsRep0LongDecoders);
+		InitBitModels(this$static.m_IsRepDecoders);
+		InitBitModels(this$static.m_IsRepG0Decoders);
+		InitBitModels(this$static.m_IsRepG1Decoders);
+		InitBitModels(this$static.m_IsRepG2Decoders);
+		InitBitModels(this$static.m_PosDecoders);
+		$Init_0(this$static.m_LiteralDecoder);
+		for (i = 0; i < 4; ++i) {
+			InitBitModels(this$static.m_PosSlotDecoder[i].Models);
+		}
+		$Init(this$static.m_LenDecoder);
+		$Init(this$static.m_RepLenDecoder);
+		InitBitModels(this$static.m_PosAlignDecoder.Models);
+		$Init_8(this$static.m_RangeDecoder);
+	}
+	
+	function $SetDecoderProperties(this$static, properties) {
+		var dictionarySize, i, lc, lp, pb, remainder, val;
+		if (properties.length < 5)
+			return false;
+		val = properties[0] & 255;
+		lc = val % 9;
+		remainder = ~~(val / 9);
+		lp = remainder % 5;
+		pb = ~~(remainder / 5);
+		dictionarySize = 0;
+		for (i = 0; i < 4; ++i) {
+			dictionarySize += (properties[1 + i] & 255) << i * 8;
+		}
+		if (!$SetLcLpPb(this$static, lc, lp, pb)) {
+			return false;
+		}
+		return $SetDictionarySize(this$static, dictionarySize);
+	}
+	
+	function $SetDictionarySize(this$static, dictionarySize) {
+		if (dictionarySize < 0) {
+			return false;
+		}
+		if (this$static.m_DictionarySize != dictionarySize) {
+			this$static.m_DictionarySize = dictionarySize;
+			this$static.m_DictionarySizeCheck = max(this$static.m_DictionarySize, 1);
+			$Create_5(this$static.m_OutWindow, max(this$static.m_DictionarySizeCheck, 4096));
+		}
+		return true;
+	}
+	
+	function $SetLcLpPb(this$static, lc, lp, pb) {
+		var numPosStates;
+		if (lc > 8 || lp > 4 || pb > 4) {
+			return false;
+		}
+		$Create_0(this$static.m_LiteralDecoder, lp, lc);
+		numPosStates = 1 << pb;
+		$Create(this$static.m_LenDecoder, numPosStates);
+		$Create(this$static.m_RepLenDecoder, numPosStates);
+		this$static.m_PosStateMask = numPosStates - 1;
+		return true;
+	}
+	
+	function getClass_32() {
+		return Lorg_dellroad_lzma_client_SevenZip_Compression_LZMA_Decoder_2_classLit;
+	}
+	
+	function Decoder() {
+	}
+	
+	_ = Decoder.prototype = new Object_0();
+	_.getClass$ = getClass_32;
+	_.typeId$ = 0;
+	_.m_DictionarySize = -1;
+	_.m_DictionarySizeCheck = -1;
+	_.m_PosStateMask = 0;
+	_.nowPos64 = P0_longLit;
+	_.outSize = P0_longLit;
+	_.prevByte = 0;
+	_.rep0 = 0;
+	_.rep1 = 0;
+	_.rep2 = 0;
+	_.rep3 = 0;
+	_.state = 0;
+	function $Create(this$static, numPosStates) {
+		for (; this$static.m_NumPosStates < numPosStates; ++this$static.m_NumPosStates) {
+			this$static.m_LowCoder[this$static.m_NumPosStates] = $BitTreeDecoder(new BitTreeDecoder(), 3);
+			this$static.m_MidCoder[this$static.m_NumPosStates] = $BitTreeDecoder(new BitTreeDecoder(), 3);
+		}
+	}
+	
+	function $Decode(this$static, rangeDecoder, posState) {
+		var symbol;
+		if ($DecodeBit(rangeDecoder, this$static.m_Choice, 0) == 0) {
+			return $Decode_0(this$static.m_LowCoder[posState], rangeDecoder);
+		}
+		symbol = 8;
+		if ($DecodeBit(rangeDecoder, this$static.m_Choice, 1) == 0) {
+			symbol += $Decode_0(this$static.m_MidCoder[posState], rangeDecoder);
+		} else {
+			symbol += 8 + $Decode_0(this$static.m_HighCoder, rangeDecoder);
+		}
+		return symbol;
+	}
+	
+	function $Decoder$LenDecoder(this$static) {
+		this$static.m_Choice = initDim(_3S_classLit, 0, -1, 2, 1);
+		this$static.m_LowCoder = initDim(_3Lorg_dellroad_lzma_client_SevenZip_Compression_RangeCoder_BitTreeDecoder_2_classLit, 0, 7, 16, 0);
+		this$static.m_MidCoder = initDim(_3Lorg_dellroad_lzma_client_SevenZip_Compression_RangeCoder_BitTreeDecoder_2_classLit, 0, 7, 16, 0);
+		this$static.m_HighCoder = $BitTreeDecoder(new BitTreeDecoder(), 8);
+		return this$static;
+	}
+	
+	function $Init(this$static) {
+		var posState;
+		InitBitModels(this$static.m_Choice);
+		for (posState = 0; posState < this$static.m_NumPosStates; ++posState) {
+			InitBitModels(this$static.m_LowCoder[posState].Models);
+			InitBitModels(this$static.m_MidCoder[posState].Models);
+		}
+		InitBitModels(this$static.m_HighCoder.Models);
+	}
+	
+	function getClass_29() {
+		return Lorg_dellroad_lzma_client_SevenZip_Compression_LZMA_Decoder$LenDecoder_2_classLit;
+	}
+	
+	function Decoder$LenDecoder() {
+	}
+	
+	_ = Decoder$LenDecoder.prototype = new Object_0();
+	_.getClass$ = getClass_29;
+	_.typeId$ = 0;
+	_.m_NumPosStates = 0;
+	function $Create_0(this$static, numPosBits, numPrevBits) {
+	var i, numStates;
+	if (this$static.m_Coders != null && this$static.m_NumPrevBits == numPrevBits && this$static.m_NumPosBits == numPosBits)
+		return;
+	this$static.m_NumPosBits = numPosBits;
+	this$static.m_PosMask = (1 << numPosBits) - 1;
+	this$static.m_NumPrevBits = numPrevBits;
+	numStates = 1 << this$static.m_NumPrevBits + this$static.m_NumPosBits;
+	this$static.m_Coders = initDim(_3Lorg_dellroad_lzma_client_SevenZip_Compression_LZMA_Decoder$LiteralDecoder$Decoder2_2_classLit, 0, 4, numStates, 0);
+	for (i = 0; i < numStates; ++i)
+		this$static.m_Coders[i] = $Decoder$LiteralDecoder$Decoder2(new Decoder$LiteralDecoder$Decoder2());
+	}
+	
+	function $GetDecoder(this$static, pos, prevByte) {
+		return this$static.m_Coders[((pos & this$static.m_PosMask) << this$static.m_NumPrevBits) + ((prevByte & 255) >>> 8 - this$static.m_NumPrevBits)];
+	}
+	
+	function $Init_0(this$static) {
+		var i, numStates;
+		numStates = 1 << this$static.m_NumPrevBits + this$static.m_NumPosBits;
+		for (i = 0; i < numStates; ++i) {
+			InitBitModels(this$static.m_Coders[i].m_Decoders);
+		}
+	}
+	
+	function getClass_31() {
+		return Lorg_dellroad_lzma_client_SevenZip_Compression_LZMA_Decoder$LiteralDecoder_2_classLit;
+	}
+	
+	function Decoder$LiteralDecoder() {
+	}
+	
+	_ = Decoder$LiteralDecoder.prototype = new Object_0();
+	_.getClass$ = getClass_31;
+	_.typeId$ = 0;
+	_.m_Coders = null;
+	_.m_NumPosBits = 0;
+	_.m_NumPrevBits = 0;
+	_.m_PosMask = 0;
+	function $DecodeNormal(this$static, rangeDecoder) {
+		var symbol;
+		symbol = 1;
+		do {
+			symbol = symbol << 1 | $DecodeBit(rangeDecoder, this$static.m_Decoders, symbol);
+		} while (symbol < 256);
+		return symbol << 24 >> 24;
+	}
+	
+	function $DecodeWithMatchByte(this$static, rangeDecoder, matchByte) {
+		var bit, matchBit, symbol;
+		symbol = 1;
+		do {
+			matchBit = matchByte >> 7 & 1;
+			matchByte <<= 1;
+			bit = $DecodeBit(rangeDecoder, this$static.m_Decoders, (1 + matchBit << 8) + symbol);
+			symbol = symbol << 1 | bit;
+			if (matchBit != bit) {
+				while (symbol < 256) {
+					symbol = symbol << 1 | $DecodeBit(rangeDecoder, this$static.m_Decoders, symbol);
+				}
+			break;
+			}
+		} while (symbol < 256);
+		return symbol << 24 >> 24;
+	}
+	
+	function $Decoder$LiteralDecoder$Decoder2(this$static) {
+		this$static.m_Decoders = initDim(_3S_classLit, 0, -1, 768, 1);
+		return this$static;
+	}
+	
+	function getClass_30() {
+		return Lorg_dellroad_lzma_client_SevenZip_Compression_LZMA_Decoder$LiteralDecoder$Decoder2_2_classLit;
+	}
+	
+	function Decoder$LiteralDecoder$Decoder2() {
+	}
+	
+	_ = Decoder$LiteralDecoder$Decoder2.prototype = new Object_0();
+	_.getClass$ = getClass_30;
+	_.typeId$ = 17;
+	function $clinit_59() {
+		$clinit_59 = nullMethod;
+		var c, j, k, slotFast;
+		g_FastPos = initDim(_3B_classLit, 0, -1, 2048, 1);
+		c = 2;
+		g_FastPos[0] = 0;
+		g_FastPos[1] = 1;
+		for (slotFast = 2; slotFast < 22; ++slotFast) {
+			k = 1 << (slotFast >> 1) - 1;
+			for (j = 0; j < k; ++j , ++c)
+			g_FastPos[c] = slotFast << 24 >> 24;
+		}
+	}
+	
+	function $Backward(this$static, cur) {
+		var backCur, backMem, posMem, posPrev;
+		this$static._optimumEndIndex = cur;
+		posMem = this$static._optimum[cur].PosPrev;
+		backMem = this$static._optimum[cur].BackPrev;
+		do {
+			if (this$static._optimum[cur].Prev1IsChar) {
+				$MakeAsChar(this$static._optimum[posMem]);
+				this$static._optimum[posMem].PosPrev = posMem - 1;
+				if (this$static._optimum[cur].Prev2) {
+					this$static._optimum[posMem - 1].Prev1IsChar = false;
+					this$static._optimum[posMem - 1].PosPrev = this$static._optimum[cur].PosPrev2;
+					this$static._optimum[posMem - 1].BackPrev = this$static._optimum[cur].BackPrev2;
+				}
+			}
+			posPrev = posMem;
+			backCur = backMem;
+			backMem = this$static._optimum[posPrev].BackPrev;
+			posMem = this$static._optimum[posPrev].PosPrev;
+			this$static._optimum[posPrev].BackPrev = backCur;
+			this$static._optimum[posPrev].PosPrev = cur;
+			cur = posPrev;
+		} while (cur > 0);
+		this$static.backRes = this$static._optimum[0].BackPrev;
+		this$static._optimumCurrentIndex = this$static._optimum[0].PosPrev;
+		return this$static._optimumCurrentIndex;
+	}
+	
+	function $BaseInit(this$static) {
+		var i;
+		this$static._state = 0;
+		this$static._previousByte = 0;
+		for (i = 0; i < 4; ++i) {
+			this$static._repDistances[i] = 0;
+		}
+	}
+	
+	function $CodeOneBlock(this$static, inSize, outSize, finished) {
+		var baseVal, complexState, curByte, distance, footerBits, i, len, lenToPosState, matchByte, pos, posReduced, posSlot, posState, progressPosValuePrev, subCoder;
+		inSize[0] = P0_longLit;
+		outSize[0] = P0_longLit;
+		finished[0] = true;
+		if (this$static._inStream) {
+			this$static._matchFinder._stream = this$static._inStream;
+			$Init_5(this$static._matchFinder);
+			this$static._needReleaseMFStream = true;
+			this$static._inStream = null;
+		}
+		if (this$static._finished) {
+			return;
+		}
+		this$static._finished = true;
+		progressPosValuePrev = this$static.nowPos64;
+		if (eq(this$static.nowPos64, P0_longLit)) {
+			if ($GetNumAvailableBytes(this$static._matchFinder) == 0) {
+				$Flush(this$static, lowBits_0(this$static.nowPos64));
+				return;
+			}
+			$ReadMatchDistances(this$static);
+			posState = lowBits_0(this$static.nowPos64) & this$static._posStateMask;
+			$Encode_3(this$static._rangeEncoder, this$static._isMatch, (this$static._state << 4) + posState, 0);
+			this$static._state = StateUpdateChar(this$static._state);
+			curByte = $GetIndexByte(this$static._matchFinder, -this$static._additionalOffset);
+			$Encode_1($GetSubCoder(this$static._literalEncoder, lowBits_0(this$static.nowPos64), this$static._previousByte), this$static._rangeEncoder, curByte);
+			this$static._previousByte = curByte;
+			--this$static._additionalOffset;
+			this$static.nowPos64 = add(this$static.nowPos64, P1_longLit);
+		}
+		if ($GetNumAvailableBytes(this$static._matchFinder) == 0) {
+			$Flush(this$static, lowBits_0(this$static.nowPos64));
+			return;
+		}
+		while (true) {
+			len = $GetOptimum(this$static, lowBits_0(this$static.nowPos64));
+			pos = this$static.backRes;
+			posState = lowBits_0(this$static.nowPos64) & this$static._posStateMask;
+			complexState = (this$static._state << 4) + posState;
+			if (len == 1 && pos == -1) {
+				$Encode_3(this$static._rangeEncoder, this$static._isMatch, complexState, 0);
+				curByte = $GetIndexByte(this$static._matchFinder, -this$static._additionalOffset);
+				subCoder = $GetSubCoder(this$static._literalEncoder, lowBits_0(this$static.nowPos64), this$static._previousByte);
+				if (this$static._state < 7) {
+					$Encode_1(subCoder, this$static._rangeEncoder, curByte);
+				} else {
+					matchByte = $GetIndexByte(this$static._matchFinder, -this$static._repDistances[0] - 1 - this$static._additionalOffset);
+					$EncodeMatched(subCoder, this$static._rangeEncoder, matchByte, curByte);
+				}
+				this$static._previousByte = curByte;
+				this$static._state = StateUpdateChar(this$static._state);
+			} else {
+				$Encode_3(this$static._rangeEncoder, this$static._isMatch, complexState, 1);
+				if (pos < 4) {
+					$Encode_3(this$static._rangeEncoder, this$static._isRep, this$static._state, 1);
+					if (pos == 0) {
+						$Encode_3(this$static._rangeEncoder, this$static._isRepG0, this$static._state, 0);
+						if (len == 1) {
+							$Encode_3(this$static._rangeEncoder, this$static._isRep0Long, complexState, 0);
+						} else {
+							$Encode_3(this$static._rangeEncoder, this$static._isRep0Long, complexState, 1);
+						}
+					} else {
+						$Encode_3(this$static._rangeEncoder, this$static._isRepG0, this$static._state, 1);
+						if (pos == 1) {
+							$Encode_3(this$static._rangeEncoder, this$static._isRepG1, this$static._state, 0);
+						} else {
+							$Encode_3(this$static._rangeEncoder, this$static._isRepG1, this$static._state, 1);
+							$Encode_3(this$static._rangeEncoder, this$static._isRepG2, this$static._state, pos - 2);
+						}
+					}
+					if (len == 1) {
+						this$static._state = this$static._state < 7?9:11;
+					} else {
+						$Encode_0(this$static._repMatchLenEncoder, this$static._rangeEncoder, len - 2, posState);
+						this$static._state = this$static._state < 7?8:11;
+					}
+					distance = this$static._repDistances[pos];
+					if (pos != 0) {
+						for (i = pos; i >= 1; --i) {
+							this$static._repDistances[i] = this$static._repDistances[i - 1];
+						}
+						this$static._repDistances[0] = distance;
+					}
+				} else {
+					$Encode_3(this$static._rangeEncoder, this$static._isRep, this$static._state, 0);
+					this$static._state = this$static._state < 7?7:10;
+					$Encode_0(this$static._lenEncoder, this$static._rangeEncoder, len - 2, posState);
+					pos -= 4;
+					posSlot = GetPosSlot(pos);
+					lenToPosState = GetLenToPosState(len);
+					$Encode_2(this$static._posSlotEncoder[lenToPosState], this$static._rangeEncoder, posSlot);
+					if (posSlot >= 4) {
+						footerBits = (posSlot >> 1) - 1;
+						baseVal = (2 | posSlot & 1) << footerBits;
+						posReduced = pos - baseVal;
+						if (posSlot < 14) {
+							ReverseEncode(this$static._posEncoders, baseVal - posSlot - 1, this$static._rangeEncoder, footerBits, posReduced);
+						} else {
+							$EncodeDirectBits(this$static._rangeEncoder, posReduced >> 4, footerBits - 4);
+							$ReverseEncode(this$static._posAlignEncoder, this$static._rangeEncoder, posReduced & 15);
+							++this$static._alignPriceCount;
+						}
+					}
+					distance = pos;
+					for (i = 3; i >= 1; --i) {
+						this$static._repDistances[i] = this$static._repDistances[i - 1];
+					}
+					this$static._repDistances[0] = distance;
+					++this$static._matchPriceCount;
+				}
+				this$static._previousByte = $GetIndexByte(this$static._matchFinder, len - 1 - this$static._additionalOffset);
+			}
+			this$static._additionalOffset -= len;
+			this$static.nowPos64 = add(this$static.nowPos64, fromInt(len));
+			if (this$static._additionalOffset == 0) {
+				if (this$static._matchPriceCount >= 128) {
+					$FillDistancesPrices(this$static);
+				}
+				if (this$static._alignPriceCount >= 16) {
+					$FillAlignPrices(this$static);
+				}
+				inSize[0] = this$static.nowPos64;
+				outSize[0] = $GetProcessedSizeAdd(this$static._rangeEncoder);
+				if ($GetNumAvailableBytes(this$static._matchFinder) == 0) {
+					$Flush(this$static, lowBits_0(this$static.nowPos64));
+					return;
+				}
+				if (compare(sub(this$static.nowPos64, progressPosValuePrev), P1000_longLit) >= 0) {
+					this$static._finished = false;
+					finished[0] = false;
+					return;
+				}
+			}
+		}
+	}
+	
+	function $Create_2(this$static) {
+		var bt, numHashBytes;
+		if (!this$static._matchFinder) {
+			bt = ($clinit_60() , new BinTree());
+			numHashBytes = 4;
+			if (this$static._matchFinderType == 0) {
+				numHashBytes = 2;
+			}
+			$SetType(bt, numHashBytes);
+			this$static._matchFinder = bt;
+		}
+		$Create_1(this$static._literalEncoder, this$static._numLiteralPosStateBits, this$static._numLiteralContextBits);
+		if (this$static._dictionarySize == this$static._dictionarySizePrev && this$static._numFastBytesPrev == this$static._numFastBytes) {
+			return;
+		}
+		$Create_3(this$static._matchFinder, this$static._dictionarySize, 4096, this$static._numFastBytes, 274);
+		this$static._dictionarySizePrev = this$static._dictionarySize;
+		this$static._numFastBytesPrev = this$static._numFastBytes;
+	}
+	
+	function $Encoder(this$static) {
+		var i;
+		$clinit_59();
+		this$static._repDistances = initDim(_3I_classLit, 0, -1, 4, 1);
+		this$static._optimum = initDim(_3Lorg_dellroad_lzma_client_SevenZip_Compression_LZMA_Encoder$Optimal_2_classLit, 0, 6, 4096, 0);
+		this$static._rangeEncoder = ($clinit_66() , new Encoder_0());
+		this$static._isMatch = initDim(_3S_classLit, 0, -1, 192, 1);
+		this$static._isRep = initDim(_3S_classLit, 0, -1, 12, 1);
+		this$static._isRepG0 = initDim(_3S_classLit, 0, -1, 12, 1);
+		this$static._isRepG1 = initDim(_3S_classLit, 0, -1, 12, 1);
+		this$static._isRepG2 = initDim(_3S_classLit, 0, -1, 12, 1);
+		this$static._isRep0Long = initDim(_3S_classLit, 0, -1, 192, 1);
+		this$static._posSlotEncoder = initDim(_3Lorg_dellroad_lzma_client_SevenZip_Compression_RangeCoder_BitTreeEncoder_2_classLit, 0, 8, 4, 0);
+		this$static._posEncoders = initDim(_3S_classLit, 0, -1, 114, 1);
+		this$static._posAlignEncoder = $BitTreeEncoder(new BitTreeEncoder(), 4);
+		this$static._lenEncoder = $Encoder$LenPriceTableEncoder(new Encoder$LenPriceTableEncoder());
+		this$static._repMatchLenEncoder = $Encoder$LenPriceTableEncoder(new Encoder$LenPriceTableEncoder());
+		this$static._literalEncoder = new Encoder$LiteralEncoder();
+		this$static._matchDistances = initDim(_3I_classLit, 0, -1, 548, 1);
+		this$static._posSlotPrices = initDim(_3I_classLit, 0, -1, 256, 1);
+		this$static._distancesPrices = initDim(_3I_classLit, 0, -1, 512, 1);
+		this$static._alignPrices = initDim(_3I_classLit, 0, -1, 16, 1);
+		this$static.reps = initDim(_3I_classLit, 0, -1, 4, 1);
+		this$static.repLens = initDim(_3I_classLit, 0, -1, 4, 1);
+		this$static.processedInSize = initDim(_3J_classLit, 0, -1, 1, 3);
+		this$static.processedOutSize = initDim(_3J_classLit, 0, -1, 1, 3);
+		this$static.finished = initDim(_3Z_classLit, 0, -1, 1, 2);
+		this$static.properties = initDim(_3B_classLit, 0, -1, 5, 1);
+		this$static.tempPrices = initDim(_3I_classLit, 0, -1, 128, 1);
+		for (i = 0; i < 4096; ++i) {
+			this$static._optimum[i] = new Encoder$Optimal();
+		}
+		for (i = 0; i < 4; ++i) {
+			this$static._posSlotEncoder[i] = $BitTreeEncoder(new BitTreeEncoder(), 6);
+		}
+		return this$static;
+	}
+	
+	function $FillAlignPrices(this$static) {
+		var i;
+		for (i = 0; i < 16; ++i) {
+			this$static._alignPrices[i] = $ReverseGetPrice(this$static._posAlignEncoder, i);
+		}
+		this$static._alignPriceCount = 0;
+	}
+	
+	function $FillDistancesPrices(this$static) {
+		var baseVal, encoder, footerBits, i, lenToPosState, posSlot, st, st2;
+		for (i = 4; i < 128; ++i) {
+			posSlot = GetPosSlot(i);
+			footerBits = (posSlot >> 1) - 1;
+			baseVal = (2 | posSlot & 1) << footerBits;
+			this$static.tempPrices[i] = ReverseGetPrice(this$static._posEncoders, baseVal - posSlot - 1, footerBits, i - baseVal);
+		}
+		for (lenToPosState = 0; lenToPosState < 4; ++lenToPosState) {
+			encoder = this$static._posSlotEncoder[lenToPosState];
+			st = lenToPosState << 6;
+			for (posSlot = 0; posSlot < this$static._distTableSize; ++posSlot) {
+				this$static._posSlotPrices[st + posSlot] = $GetPrice_1(encoder, posSlot);
+			}
+			for (posSlot = 14; posSlot < this$static._distTableSize; ++posSlot) {
+				this$static._posSlotPrices[st + posSlot] += (posSlot >> 1) - 1 - 4 << 6;
+			}
+			st2 = lenToPosState * 128;
+			for (i = 0; i < 4; ++i) {
+				this$static._distancesPrices[st2 + i] = this$static._posSlotPrices[st + i];
+			}
+			for (; i < 128; ++i) {
+				this$static._distancesPrices[st2 + i] = this$static._posSlotPrices[st + GetPosSlot(i)] + this$static.tempPrices[i];
+			}
+		}
+		this$static._matchPriceCount = 0;
+	}
+	
+	function $Flush(this$static, nowPos) {
+		$ReleaseMFStream(this$static);
+		$WriteEndMarker(this$static, nowPos & this$static._posStateMask);
+		$FlushData(this$static._rangeEncoder);
+	}
+	
+	function $GetOptimum(this$static, position) {
+		var cur, curAnd1Price, curAndLenCharPrice, curAndLenPrice, curBack, curPrice, currentByte, distance, i, len, lenEnd, lenMain, lenRes, lenTest, lenTest2, lenTestTemp, matchByte, matchPrice, newLen, nextIsChar, nextMatchPrice, nextOptimum, nextRepMatchPrice, normalMatchPrice, numAvailableBytes, numAvailableBytesFull, numDistancePairs, offs, offset, opt, optimum, pos, posPrev, posState, posStateNext, price_4, repIndex, repLen, repMatchPrice, repMaxIndex, shortRepPrice, startLen, state, state2, t, price, price_0, price_1, price_2, price_3;
+		if (this$static._optimumEndIndex != this$static._optimumCurrentIndex) {
+			lenRes = this$static._optimum[this$static._optimumCurrentIndex].PosPrev - this$static._optimumCurrentIndex;
+			this$static.backRes = this$static._optimum[this$static._optimumCurrentIndex].BackPrev;
+			this$static._optimumCurrentIndex = this$static._optimum[this$static._optimumCurrentIndex].PosPrev;
+			return lenRes;
+		}
+		this$static._optimumCurrentIndex = this$static._optimumEndIndex = 0;
+		if (this$static._longestMatchWasFound) {
+			lenMain = this$static._longestMatchLength;
+			this$static._longestMatchWasFound = false;
+		} else {
+			lenMain = $ReadMatchDistances(this$static);
+		}
+		numDistancePairs = this$static._numDistancePairs;
+		numAvailableBytes = $GetNumAvailableBytes(this$static._matchFinder) + 1;
+		if (numAvailableBytes < 2) {
+			this$static.backRes = -1;
+			return 1;
+		}
+		if (numAvailableBytes > 273) {
+			numAvailableBytes = 273;
+		}
+		repMaxIndex = 0;
+		for (i = 0; i < 4; ++i) {
+			this$static.reps[i] = this$static._repDistances[i];
+			this$static.repLens[i] = $GetMatchLen(this$static._matchFinder, -1, this$static.reps[i], 273);
+			if (this$static.repLens[i] > this$static.repLens[repMaxIndex]) {
+				repMaxIndex = i;
+			}
+		}
+		if (this$static.repLens[repMaxIndex] >= this$static._numFastBytes) {
+			this$static.backRes = repMaxIndex;
+			lenRes = this$static.repLens[repMaxIndex];
+			$MovePos(this$static, lenRes - 1);
+			return lenRes;
+		}
+		if (lenMain >= this$static._numFastBytes) {
+			this$static.backRes = this$static._matchDistances[numDistancePairs - 1] + 4;
+			$MovePos(this$static, lenMain - 1);
+			return lenMain;
+		}
+		currentByte = $GetIndexByte(this$static._matchFinder, -1);
+		matchByte = $GetIndexByte(this$static._matchFinder, -this$static._repDistances[0] - 1 - 1);
+		if (lenMain < 2 && currentByte != matchByte && this$static.repLens[repMaxIndex] < 2) {
+			this$static.backRes = -1;
+			return 1;
+		}
+		this$static._optimum[0].State = this$static._state;
+		posState = position & this$static._posStateMask;
+		this$static._optimum[1].Price = ($clinit_66() , ProbPrices[this$static._isMatch[(this$static._state << 4) + posState] >>> 2]) + $GetPrice_0($GetSubCoder(this$static._literalEncoder, position, this$static._previousByte), this$static._state >= 7, matchByte, currentByte);
+		$MakeAsChar(this$static._optimum[1]);
+		matchPrice = ProbPrices[2048 - this$static._isMatch[(this$static._state << 4) + posState] >>> 2];
+		repMatchPrice = matchPrice + ProbPrices[2048 - this$static._isRep[this$static._state] >>> 2];
+		if (matchByte == currentByte) {
+			shortRepPrice = repMatchPrice + $GetRepLen1Price(this$static, this$static._state, posState);
+			if (shortRepPrice < this$static._optimum[1].Price) {
+				this$static._optimum[1].Price = shortRepPrice;
+				$MakeAsShortRep(this$static._optimum[1]);
+			}
+		}
+		lenEnd = lenMain >= this$static.repLens[repMaxIndex]?lenMain:this$static.repLens[repMaxIndex];
+		if (lenEnd < 2) {
+			this$static.backRes = this$static._optimum[1].BackPrev;
+			return 1;
+		}
+		this$static._optimum[1].PosPrev = 0;
+		this$static._optimum[0].Backs0 = this$static.reps[0];
+		this$static._optimum[0].Backs1 = this$static.reps[1];
+		this$static._optimum[0].Backs2 = this$static.reps[2];
+		this$static._optimum[0].Backs3 = this$static.reps[3];
+		len = lenEnd;
+		do {
+			this$static._optimum[len--].Price = 268435455;
+		} while (len >= 2);
+		for (i = 0; i < 4; ++i) {
+			repLen = this$static.repLens[i];
+			if (repLen < 2) {
+				continue;
+			}
+			price_4 = repMatchPrice + $GetPureRepPrice(this$static, i, this$static._state, posState);
+			do {
+				curAndLenPrice = price_4 + $GetPrice(this$static._repMatchLenEncoder, repLen - 2, posState);
+				optimum = this$static._optimum[repLen];
+				if (curAndLenPrice < optimum.Price) {
+					optimum.Price = curAndLenPrice;
+					optimum.PosPrev = 0;
+					optimum.BackPrev = i;
+					optimum.Prev1IsChar = false;
+				}
+			} while (--repLen >= 2);
+		}
+		normalMatchPrice = matchPrice + ProbPrices[this$static._isRep[this$static._state] >>> 2];
+		len = this$static.repLens[0] >= 2?this$static.repLens[0] + 1:2;
+		if (len <= lenMain) {
+			offs = 0;
+			while (len > this$static._matchDistances[offs]) {
+				offs += 2;
+			}
+			for (;; ++len) {
+				distance = this$static._matchDistances[offs + 1];
+				curAndLenPrice = normalMatchPrice + $GetPosLenPrice(this$static, distance, len, posState);
+				optimum = this$static._optimum[len];
+				if (curAndLenPrice < optimum.Price) {
+					optimum.Price = curAndLenPrice;
+					optimum.PosPrev = 0;
+					optimum.BackPrev = distance + 4;
+					optimum.Prev1IsChar = false;
+				}
+				if (len == this$static._matchDistances[offs]) {
+					offs += 2;
+					if (offs == numDistancePairs) {
+						break;
+					}
+				}
+			}
+		}
+		cur = 0;
+		while (true) {
+			++cur;
+			if (cur == lenEnd) {
+				return $Backward(this$static, cur);
+			}
+			newLen = $ReadMatchDistances(this$static);
+			numDistancePairs = this$static._numDistancePairs;
+			if (newLen >= this$static._numFastBytes) {
+				this$static._longestMatchLength = newLen;
+				this$static._longestMatchWasFound = true;
+				return $Backward(this$static, cur);
+			}
+			++position;
+			posPrev = this$static._optimum[cur].PosPrev;
+			if (this$static._optimum[cur].Prev1IsChar) {
+				--posPrev;
+				if (this$static._optimum[cur].Prev2) {
+					state = this$static._optimum[this$static._optimum[cur].PosPrev2].State;
+					if (this$static._optimum[cur].BackPrev2 < 4) {
+						state = (state < 7) ? 8 : 11;
+					} else {
+						state = (state < 7) ? 7 : 10;
+					}
+				} else {
+					state = this$static._optimum[posPrev].State;
+				}
+				state = StateUpdateChar(state);
+			} else {
+				state = this$static._optimum[posPrev].State;
+			}
+			if (posPrev == cur - 1) {
+				if (this$static._optimum[cur].BackPrev == 0) {
+					state = state < 7?9:11;
+				} else {
+					state = StateUpdateChar(state);
+				}
+			} else {
+				if (this$static._optimum[cur].Prev1IsChar && this$static._optimum[cur].Prev2) {
+					posPrev = this$static._optimum[cur].PosPrev2;
+					pos = this$static._optimum[cur].BackPrev2;
+					state = state < 7?8:11;
+				} else {
+					pos = this$static._optimum[cur].BackPrev;
+					if (pos < 4) {
+						state = state < 7?8:11;
+					} else {
+						state = state < 7?7:10;
+					}
+				}
+				opt = this$static._optimum[posPrev];
+				if (pos < 4) {
+					if (pos == 0) {
+						this$static.reps[0] = opt.Backs0;
+						this$static.reps[1] = opt.Backs1;
+						this$static.reps[2] = opt.Backs2;
+						this$static.reps[3] = opt.Backs3;
+					} else if (pos == 1) {
+						this$static.reps[0] = opt.Backs1;
+						this$static.reps[1] = opt.Backs0;
+						this$static.reps[2] = opt.Backs2;
+						this$static.reps[3] = opt.Backs3;
+					} else if (pos == 2) {
+						this$static.reps[0] = opt.Backs2;
+						this$static.reps[1] = opt.Backs0;
+						this$static.reps[2] = opt.Backs1;
+						this$static.reps[3] = opt.Backs3;
+					} else {
+						this$static.reps[0] = opt.Backs3;
+						this$static.reps[1] = opt.Backs0;
+						this$static.reps[2] = opt.Backs1;
+						this$static.reps[3] = opt.Backs2;
+					}
+				} else {
+					this$static.reps[0] = pos - 4;
+					this$static.reps[1] = opt.Backs0;
+					this$static.reps[2] = opt.Backs1;
+					this$static.reps[3] = opt.Backs2;
+				}
+			}
+			this$static._optimum[cur].State = state;
+			this$static._optimum[cur].Backs0 = this$static.reps[0];
+			this$static._optimum[cur].Backs1 = this$static.reps[1];
+			this$static._optimum[cur].Backs2 = this$static.reps[2];
+			this$static._optimum[cur].Backs3 = this$static.reps[3];
+			curPrice = this$static._optimum[cur].Price;
+			currentByte = $GetIndexByte(this$static._matchFinder, -1);
+			matchByte = $GetIndexByte(this$static._matchFinder, -this$static.reps[0] - 1 - 1);
+			posState = position & this$static._posStateMask;
+			curAnd1Price = curPrice + ProbPrices[this$static._isMatch[(state << 4) + posState] >>> 2] + $GetPrice_0($GetSubCoder(this$static._literalEncoder, position, $GetIndexByte(this$static._matchFinder, -2)), state >= 7, matchByte, currentByte);
+			nextOptimum = this$static._optimum[cur + 1];
+			nextIsChar = false;
+			if (curAnd1Price < nextOptimum.Price) {
+				nextOptimum.Price = curAnd1Price;
+				nextOptimum.PosPrev = cur;
+				nextOptimum.BackPrev = -1;
+				nextOptimum.Prev1IsChar = false;
+				nextIsChar = true;
+			}
+			matchPrice = curPrice + ProbPrices[2048 - this$static._isMatch[(state << 4) + posState] >>> 2];
+			repMatchPrice = matchPrice + ProbPrices[2048 - this$static._isRep[state] >>> 2];
+			if (matchByte == currentByte && !(nextOptimum.PosPrev < cur && nextOptimum.BackPrev == 0)) {
+				shortRepPrice = repMatchPrice + (ProbPrices[this$static._isRepG0[state] >>> 2] + ProbPrices[this$static._isRep0Long[(state << 4) + posState] >>> 2]);
+				if (shortRepPrice <= nextOptimum.Price) {
+					nextOptimum.Price = shortRepPrice;
+					nextOptimum.PosPrev = cur;
+					nextOptimum.BackPrev = 0;
+					nextOptimum.Prev1IsChar = false;
+					nextIsChar = true;
+				}
+			}
+			numAvailableBytesFull = $GetNumAvailableBytes(this$static._matchFinder) + 1;
+			numAvailableBytesFull = 4095 - cur < numAvailableBytesFull?4095 - cur:numAvailableBytesFull;
+			numAvailableBytes = numAvailableBytesFull;
+			if (numAvailableBytes < 2) {
+				continue;
+			}
+			if (numAvailableBytes > this$static._numFastBytes) {
+				numAvailableBytes = this$static._numFastBytes;
+			}
+			if (!nextIsChar && matchByte != currentByte) {
+				t = min(numAvailableBytesFull - 1, this$static._numFastBytes);
+				lenTest2 = $GetMatchLen(this$static._matchFinder, 0, this$static.reps[0], t);
+				if (lenTest2 >= 2) {
+					state2 = StateUpdateChar(state);
+					posStateNext = position + 1 & this$static._posStateMask;
+					nextRepMatchPrice = curAnd1Price + ProbPrices[2048 - this$static._isMatch[(state2 << 4) + posStateNext] >>> 2] + ProbPrices[2048 - this$static._isRep[state2] >>> 2];
+					offset = cur + 1 + lenTest2;
+					while (lenEnd < offset) {
+						this$static._optimum[++lenEnd].Price = 268435455;
+					}
+					curAndLenPrice = nextRepMatchPrice + (price = $GetPrice(this$static._repMatchLenEncoder, lenTest2 - 2, posStateNext) , price + $GetPureRepPrice(this$static, 0, state2, posStateNext));
+					optimum = this$static._optimum[offset];
+					if (curAndLenPrice < optimum.Price) {
+						optimum.Price = curAndLenPrice;
+						optimum.PosPrev = cur + 1;
+						optimum.BackPrev = 0;
+						optimum.Prev1IsChar = true;
+						optimum.Prev2 = false;
+					}
+				}
+			}
+			startLen = 2;
+			for (repIndex = 0; repIndex < 4; ++repIndex) {
+				lenTest = $GetMatchLen(this$static._matchFinder, -1, this$static.reps[repIndex], numAvailableBytes);
+				if (lenTest < 2) {
+					continue;
+				}
+				lenTestTemp = lenTest;
+				do {
+					while (lenEnd < cur + lenTest) {
+						this$static._optimum[++lenEnd].Price = 268435455;
+					}
+					curAndLenPrice = repMatchPrice + (price_0 = $GetPrice(this$static._repMatchLenEncoder, lenTest - 2, posState) , price_0 + $GetPureRepPrice(this$static, repIndex, state, posState));
+					optimum = this$static._optimum[cur + lenTest];
+					if (curAndLenPrice < optimum.Price) {
+						optimum.Price = curAndLenPrice;
+						optimum.PosPrev = cur;
+						optimum.BackPrev = repIndex;
+						optimum.Prev1IsChar = false;
+					}
+				} while (--lenTest >= 2);
+				lenTest = lenTestTemp;
+				if (repIndex == 0) {
+					startLen = lenTest + 1;
+				}
+				if (lenTest < numAvailableBytesFull) {
+					t = min(numAvailableBytesFull - 1 - lenTest, this$static._numFastBytes);
+					lenTest2 = $GetMatchLen(this$static._matchFinder, lenTest, this$static.reps[repIndex], t);
+					if (lenTest2 >= 2) {
+						state2 = state < 7?8:11;
+						posStateNext = position + lenTest & this$static._posStateMask;
+						curAndLenCharPrice = repMatchPrice + (price_1 = $GetPrice(this$static._repMatchLenEncoder, lenTest - 2, posState) , price_1 + $GetPureRepPrice(this$static, repIndex, state, posState)) + ProbPrices[this$static._isMatch[(state2 << 4) + posStateNext] >>> 2] + $GetPrice_0($GetSubCoder(this$static._literalEncoder, position + lenTest, $GetIndexByte(this$static._matchFinder, lenTest - 1 - 1)), true, $GetIndexByte(this$static._matchFinder, lenTest - 1 - (this$static.reps[repIndex] + 1)), $GetIndexByte(this$static._matchFinder, lenTest - 1));
+						state2 = StateUpdateChar(state2);
+						posStateNext = position + lenTest + 1 & this$static._posStateMask;
+						nextMatchPrice = curAndLenCharPrice + ProbPrices[2048 - this$static._isMatch[(state2 << 4) + posStateNext] >>> 2];
+						nextRepMatchPrice = nextMatchPrice + ProbPrices[2048 - this$static._isRep[state2] >>> 2];
+						offset = lenTest + 1 + lenTest2;
+						while (lenEnd < cur + offset) {
+							this$static._optimum[++lenEnd].Price = 268435455;
+						}
+						curAndLenPrice = nextRepMatchPrice + (price_2 = $GetPrice(this$static._repMatchLenEncoder, lenTest2 - 2, posStateNext) , price_2 + $GetPureRepPrice(this$static, 0, state2, posStateNext));
+						optimum = this$static._optimum[cur + offset];
+						if (curAndLenPrice < optimum.Price) {
+							optimum.Price = curAndLenPrice;
+							optimum.PosPrev = cur + lenTest + 1;
+							optimum.BackPrev = 0;
+							optimum.Prev1IsChar = true;
+							optimum.Prev2 = true;
+							optimum.PosPrev2 = cur;
+							optimum.BackPrev2 = repIndex;
+						}
+					}
+				}
+			}
+			if (newLen > numAvailableBytes) {
+				newLen = numAvailableBytes;
+				for (numDistancePairs = 0; newLen > this$static._matchDistances[numDistancePairs]; numDistancePairs += 2) {
+				}
+				this$static._matchDistances[numDistancePairs] = newLen;
+				numDistancePairs += 2;
+			}
+			if (newLen >= startLen) {
+			normalMatchPrice = matchPrice + ProbPrices[this$static._isRep[state] >>> 2];
+			while (lenEnd < cur + newLen) {
+				this$static._optimum[++lenEnd].Price = 268435455;
+			}
+			offs = 0;
+			while (startLen > this$static._matchDistances[offs]) {
+				offs += 2;
+			}
+			for (lenTest = startLen;; ++lenTest) {
+				curBack = this$static._matchDistances[offs + 1];
+				curAndLenPrice = normalMatchPrice + $GetPosLenPrice(this$static, curBack, lenTest, posState);
+				optimum = this$static._optimum[cur + lenTest];
+				if (curAndLenPrice < optimum.Price) {
+					optimum.Price = curAndLenPrice;
+					optimum.PosPrev = cur;
+					optimum.BackPrev = curBack + 4;
+					optimum.Prev1IsChar = false;
+				}
+				if (lenTest == this$static._matchDistances[offs]) {
+					if (lenTest < numAvailableBytesFull) {
+						t = min(numAvailableBytesFull - 1 - lenTest, this$static._numFastBytes);
+						lenTest2 = $GetMatchLen(this$static._matchFinder, lenTest, curBack, t);
+						if (lenTest2 >= 2) {
+							state2 = state < 7?7:10;
+							posStateNext = position + lenTest & this$static._posStateMask;
+							curAndLenCharPrice = curAndLenPrice + ProbPrices[this$static._isMatch[(state2 << 4) + posStateNext] >>> 2] + $GetPrice_0($GetSubCoder(this$static._literalEncoder, position + lenTest, $GetIndexByte(this$static._matchFinder, lenTest - 1 - 1)), true, $GetIndexByte(this$static._matchFinder, lenTest - (curBack + 1) - 1), $GetIndexByte(this$static._matchFinder, lenTest - 1));
+							state2 = StateUpdateChar(state2);
+							posStateNext = position + lenTest + 1 & this$static._posStateMask;
+							nextMatchPrice = curAndLenCharPrice + ProbPrices[2048 - this$static._isMatch[(state2 << 4) + posStateNext] >>> 2];
+							nextRepMatchPrice = nextMatchPrice + ProbPrices[2048 - this$static._isRep[state2] >>> 2];
+							offset = lenTest + 1 + lenTest2;
+							while (lenEnd < cur + offset) {
+								this$static._optimum[++lenEnd].Price = 268435455;
+							}
+							curAndLenPrice = nextRepMatchPrice + (price_3 = $GetPrice(this$static._repMatchLenEncoder, lenTest2 - 2, posStateNext) , price_3 + $GetPureRepPrice(this$static, 0, state2, posStateNext));
+							optimum = this$static._optimum[cur + offset];
+							if (curAndLenPrice < optimum.Price) {
+								optimum.Price = curAndLenPrice;
+								optimum.PosPrev = cur + lenTest + 1;
+								optimum.BackPrev = 0;
+								optimum.Prev1IsChar = true;
+								optimum.Prev2 = true;
+								optimum.PosPrev2 = cur;
+								optimum.BackPrev2 = curBack + 4;
+							}
+						}
+					}
+					offs += 2;
+					if (offs == numDistancePairs)
+						break;
+					}
+				}
+			}
+		}
+	}
+	
+	function $GetPosLenPrice(this$static, pos, len, posState) {
+		var lenToPosState, price;
+		lenToPosState = GetLenToPosState(len);
+		if (pos < 128) {
+			price = this$static._distancesPrices[lenToPosState * 128 + pos];
+		} else {
+			price = this$static._posSlotPrices[(lenToPosState << 6) + GetPosSlot2(pos)] + this$static._alignPrices[pos & 15];
+		}
+		return price + $GetPrice(this$static._lenEncoder, len - 2, posState);
+	}
+	
+	function $GetPureRepPrice(this$static, repIndex, state, posState) {
+		var price;
+		if (repIndex == 0) {
+			price = ($clinit_66() , ProbPrices[this$static._isRepG0[state] >>> 2]);
+			price += ProbPrices[2048 - this$static._isRep0Long[(state << 4) + posState] >>> 2];
+		} else {
+			price = ($clinit_66() , ProbPrices[2048 - this$static._isRepG0[state] >>> 2]);
+			if (repIndex == 1) {
+				price += ProbPrices[this$static._isRepG1[state] >>> 2];
+			} else {
+				price += ProbPrices[2048 - this$static._isRepG1[state] >>> 2];
+				price += GetPrice(this$static._isRepG2[state], repIndex - 2);
+			}
+		}
+		return price;
+	}
+	
+	function $GetRepLen1Price(this$static, state, posState) {
+		return ($clinit_66() , ProbPrices[this$static._isRepG0[state] >>> 2]) + ProbPrices[this$static._isRep0Long[(state << 4) + posState] >>> 2];
+	}
+	
+	function $Init_4(this$static) {
+		var i;
+		$BaseInit(this$static);
+		$Init_9(this$static._rangeEncoder);
+		InitBitModels_0(this$static._isMatch);
+		InitBitModels_0(this$static._isRep0Long);
+		InitBitModels_0(this$static._isRep);
+		InitBitModels_0(this$static._isRepG0);
+		InitBitModels_0(this$static._isRepG1);
+		InitBitModels_0(this$static._isRepG2);
+		InitBitModels_0(this$static._posEncoders);
+		$Init_3(this$static._literalEncoder);
+		for (i = 0; i < 4; ++i) {
+			InitBitModels(this$static._posSlotEncoder[i].Models);
+		}
+		$Init_2(this$static._lenEncoder, 1 << this$static._posStateBits);
+		$Init_2(this$static._repMatchLenEncoder, 1 << this$static._posStateBits);
+		InitBitModels(this$static._posAlignEncoder.Models);
+		this$static._longestMatchWasFound = false;
+		this$static._optimumEndIndex = 0;
+		this$static._optimumCurrentIndex = 0;
+		this$static._additionalOffset = 0;
+	}
+	
+	function $MovePos(this$static, num) {
+		if (num > 0) {
+			$Skip(this$static._matchFinder, num);
+			this$static._additionalOffset += num;
+		}
+	}
+	
+	function $ReadMatchDistances(this$static) {
+		var lenRes;
+		lenRes = 0;
+		this$static._numDistancePairs = $GetMatches(this$static._matchFinder, this$static._matchDistances);
+		if (this$static._numDistancePairs > 0) {
+			lenRes = this$static._matchDistances[this$static._numDistancePairs - 2];
+			if (lenRes == this$static._numFastBytes)
+			lenRes += $GetMatchLen(this$static._matchFinder, lenRes - 1, this$static._matchDistances[this$static._numDistancePairs - 1], 273 - lenRes);
+		}
+		++this$static._additionalOffset;
+		return lenRes;
+	}
+	
+	function $ReleaseMFStream(this$static) {
+		if (!!this$static._matchFinder && this$static._needReleaseMFStream) {
+			this$static._matchFinder._stream = null;
+			this$static._needReleaseMFStream = false;
+		}
+	}
+	
+	function $ReleaseStreams(this$static) {
+		$ReleaseMFStream(this$static);
+		this$static._rangeEncoder.Stream = null;
+	}
+	
+	function $SetDictionarySize_0(this$static, dictionarySize) {
+		var dicLogSize;
+		if (dictionarySize < 1 || dictionarySize > 536870912) {
+			return false;
+		}
+		this$static._dictionarySize = dictionarySize;
+		for (dicLogSize = 0; dictionarySize > 1 << dicLogSize; ++dicLogSize) {
+		}
+		this$static._distTableSize = dicLogSize * 2;
+		return true;
+	}
+	
+	function $SetLcLpPb_0(this$static, lc, lp, pb) {
+		if (lp < 0 || lp > 4 || lc < 0 || lc > 8 || pb < 0 || pb > 4) {
+			return false;
+		}
+		this$static._numLiteralPosStateBits = lp;
+		this$static._numLiteralContextBits = lc;
+		this$static._posStateBits = pb;
+		this$static._posStateMask = (1 << this$static._posStateBits) - 1;
+		return true;
+	}
+	
+	function $SetMatchFinder(this$static, matchFinderIndex) {
+		var matchFinderIndexPrev;
+		if (matchFinderIndex < 0 || matchFinderIndex > 2) {
+			return false;
+		}
+		matchFinderIndexPrev = this$static._matchFinderType;
+		this$static._matchFinderType = matchFinderIndex;
+		if (!!this$static._matchFinder && matchFinderIndexPrev != this$static._matchFinderType) {
+			this$static._dictionarySizePrev = -1;
+			this$static._matchFinder = null;
+		}
+		return true;
+	}
+	
+	function $SetNumFastBytes(this$static, numFastBytes) {
+		if (numFastBytes < 5 || numFastBytes > 273) {
+			return false;
+		}
+		this$static._numFastBytes = numFastBytes;
+		return true;
+	}
+	
+	function $WriteCoderProperties(this$static, outStream) {
+		var i;
+		this$static.properties[0] = (this$static._posStateBits * 5 + this$static._numLiteralPosStateBits) * 9 + this$static._numLiteralContextBits << 24 >> 24;
+		for (i = 0; i < 4; ++i) {
+			this$static.properties[1 + i] = this$static._dictionarySize >> 8 * i << 24 >> 24;
+		}
+		$write_0(outStream, this$static.properties, 0, 5);
+	}
+	
+	function $WriteEndMarker(this$static, posState) {
+		var lenToPosState;
+		if (!this$static._writeEndMark) {
+			return;
+		}
+		$Encode_3(this$static._rangeEncoder, this$static._isMatch, (this$static._state << 4) + posState, 1);
+		$Encode_3(this$static._rangeEncoder, this$static._isRep, this$static._state, 0);
+		this$static._state = this$static._state < 7?7:10;
+		$Encode_0(this$static._lenEncoder, this$static._rangeEncoder, 0, posState);
+		lenToPosState = GetLenToPosState(2);
+		$Encode_2(this$static._posSlotEncoder[lenToPosState], this$static._rangeEncoder, 63);
+		$EncodeDirectBits(this$static._rangeEncoder, 67108863, 26);
+		$ReverseEncode(this$static._posAlignEncoder, this$static._rangeEncoder, 15);
+	}
+	
+	function GetPosSlot(pos) {
+		if (pos < 2048) {
+			return g_FastPos[pos];
+		}
+		if (pos < 2097152) {
+			return g_FastPos[pos >> 10] + 20;
+		}
+		return g_FastPos[pos >> 20] + 40;
+	}
+	
+	function GetPosSlot2(pos) {
+		if (pos < 131072) {
+			return g_FastPos[pos >> 6] + 12;
+		}
+		if (pos < 134217728) {
+			return g_FastPos[pos >> 16] + 32;
+		}
+		return g_FastPos[pos >> 26] + 52;
+	}
+	
+	function getClass_38() {
+		return Lorg_dellroad_lzma_client_SevenZip_Compression_LZMA_Encoder_2_classLit;
+	}
+	
+	function Encoder() {
+	}
+	
+	_ = Encoder.prototype = new Object_0();
+	_.getClass$ = getClass_38;
+	_.typeId$ = 0;
+	_._additionalOffset = 0;
+	_._alignPriceCount = 0;
+	_._dictionarySize = 4194304;
+	_._dictionarySizePrev = -1;
+	_._distTableSize = 44;
+	_._finished = false;
+	_._inStream = null;
+	_._longestMatchLength = 0;
+	_._longestMatchWasFound = false;
+	_._matchFinder = null;
+	_._matchFinderType = 1;
+	_._matchPriceCount = 0;
+	_._needReleaseMFStream = false;
+	_._numDistancePairs = 0;
+	_._numFastBytes = 32;
+	_._numFastBytesPrev = -1;
+	_._numLiteralContextBits = 3;
+	_._numLiteralPosStateBits = 0;
+	_._optimumCurrentIndex = 0;
+	_._optimumEndIndex = 0;
+	_._posStateBits = 2;
+	_._posStateMask = 3;
+	_._previousByte = 0;
+	_._state = 0;
+	_._writeEndMark = false;
+	_.backRes = 0;
+	_.nowPos64 = P0_longLit;
+	var g_FastPos;
+	function $Encode(this$static, rangeEncoder, symbol, posState) {
+		if (symbol < 8) {
+			$Encode_3(rangeEncoder, this$static._choice, 0, 0);
+			$Encode_2(this$static._lowCoder[posState], rangeEncoder, symbol);
+		} else {
+			symbol -= 8;
+			$Encode_3(rangeEncoder, this$static._choice, 0, 1);
+			if (symbol < 8) {
+				$Encode_3(rangeEncoder, this$static._choice, 1, 0);
+				$Encode_2(this$static._midCoder[posState], rangeEncoder, symbol);
+			} else {
+				$Encode_3(rangeEncoder, this$static._choice, 1, 1);
+				$Encode_2(this$static._highCoder, rangeEncoder, symbol - 8);
+			}
+		}
+	}
+	
+	function $Encoder$LenEncoder(this$static) {
+		var posState;
+		this$static._choice = initDim(_3S_classLit, 0, -1, 2, 1);
+		this$static._lowCoder = initDim(_3Lorg_dellroad_lzma_client_SevenZip_Compression_RangeCoder_BitTreeEncoder_2_classLit, 0, 8, 16, 0);
+		this$static._midCoder = initDim(_3Lorg_dellroad_lzma_client_SevenZip_Compression_RangeCoder_BitTreeEncoder_2_classLit, 0, 8, 16, 0);
+		this$static._highCoder = $BitTreeEncoder(new BitTreeEncoder(), 8);
+		for (posState = 0; posState < 16; ++posState) {
+			this$static._lowCoder[posState] = $BitTreeEncoder(new BitTreeEncoder(), 3);
+			this$static._midCoder[posState] = $BitTreeEncoder(new BitTreeEncoder(), 3);
+		}
+		return this$static;
+	}
+	
+	function $Init_2(this$static, numPosStates) {
+		var posState;
+		InitBitModels_0(this$static._choice);
+		for (posState = 0; posState < numPosStates; ++posState) {
+			InitBitModels(this$static._lowCoder[posState].Models);
+			InitBitModels(this$static._midCoder[posState].Models);
+		}
+		InitBitModels(this$static._highCoder.Models);
+	}
+	
+	function $SetPrices(this$static, posState, numSymbols, prices, st) {
+		var a0, a1, b0, b1, i;
+		a0 = ($clinit_66() , ProbPrices[this$static._choice[0] >>> 2]);
+		a1 = ProbPrices[2048 - this$static._choice[0] >>> 2];
+		b0 = a1 + ProbPrices[this$static._choice[1] >>> 2];
+		b1 = a1 + ProbPrices[2048 - this$static._choice[1] >>> 2];
+		i = 0;
+		for (i = 0; i < 8; ++i) {
+			if (i >= numSymbols)
+			return;
+			prices[st + i] = a0 + $GetPrice_1(this$static._lowCoder[posState], i);
+		}
+		for (; i < 16; ++i) {
+			if (i >= numSymbols)
+			return;
+			prices[st + i] = b0 + $GetPrice_1(this$static._midCoder[posState], i - 8);
+		}
+		for (; i < numSymbols; ++i) {
+			prices[st + i] = b1 + $GetPrice_1(this$static._highCoder, i - 8 - 8);
+		}
+	}
+		
+	function getClass_33() {
+		return Lorg_dellroad_lzma_client_SevenZip_Compression_LZMA_Encoder$LenEncoder_2_classLit;
+	}
+	
+	function Encoder$LenEncoder() {
+	}
+	
+	_ = Encoder$LenEncoder.prototype = new Object_0();
+	_.getClass$ = getClass_33;
+	_.typeId$ = 0;
+	function $Encode_0(this$static, rangeEncoder, symbol, posState) {
+		$Encode(this$static, rangeEncoder, symbol, posState);
+		if (--this$static._counters[posState] == 0) {
+			$SetPrices(this$static, posState, this$static._tableSize, this$static._prices, posState * 272);
+			this$static._counters[posState] = this$static._tableSize;
+		}
+	}
+	
+	function $Encoder$LenPriceTableEncoder(this$static) {
+		$Encoder$LenEncoder(this$static);
+		this$static._prices = initDim(_3I_classLit, 0, -1, 4352, 1);
+		this$static._counters = initDim(_3I_classLit, 0, -1, 16, 1);
+		return this$static;
+	}
+	
+	function $GetPrice(this$static, symbol, posState) {
+		return this$static._prices[posState * 272 + symbol];
+	}
+	
+	function $UpdateTables(this$static, numPosStates) {
+		var posState;
+		for (posState = 0; posState < numPosStates; ++posState) {
+			$SetPrices(this$static, posState, this$static._tableSize, this$static._prices, posState * 272);
+			this$static._counters[posState] = this$static._tableSize;
+		}
+	}
+	
+	function getClass_34() {
+		return Lorg_dellroad_lzma_client_SevenZip_Compression_LZMA_Encoder$LenPriceTableEncoder_2_classLit;
+	}
+	
+	function Encoder$LenPriceTableEncoder() {
+	}
+	
+	_ = Encoder$LenPriceTableEncoder.prototype = new Encoder$LenEncoder();
+	_.getClass$ = getClass_34;
+	_.typeId$ = 0;
+	_._tableSize = 0;
+	function $Create_1(this$static, numPosBits, numPrevBits) {
+		var i, numStates;
+		if (this$static.m_Coders != null && this$static.m_NumPrevBits == numPrevBits && this$static.m_NumPosBits == numPosBits) {
+			return;
+		}
+		this$static.m_NumPosBits = numPosBits;
+		this$static.m_PosMask = (1 << numPosBits) - 1;
+		this$static.m_NumPrevBits = numPrevBits;
+		numStates = 1 << this$static.m_NumPrevBits + this$static.m_NumPosBits;
+		this$static.m_Coders = initDim(_3Lorg_dellroad_lzma_client_SevenZip_Compression_LZMA_Encoder$LiteralEncoder$Encoder2_2_classLit, 0, 5, numStates, 0);
+		for (i = 0; i < numStates; ++i) {
+			this$static.m_Coders[i] = $Encoder$LiteralEncoder$Encoder2(new Encoder$LiteralEncoder$Encoder2());
+		}
+	}
+	
+	function $GetSubCoder(this$static, pos, prevByte) {
+		return this$static.m_Coders[((pos & this$static.m_PosMask) << this$static.m_NumPrevBits) + ((prevByte & 255) >>> 8 - this$static.m_NumPrevBits)];
+	}
+	
+	function $Init_3(this$static) {
+		var i, numStates;
+		numStates = 1 << this$static.m_NumPrevBits + this$static.m_NumPosBits;
+		for (i = 0; i < numStates; ++i) {
+			InitBitModels_0(this$static.m_Coders[i].m_Encoders);
+		}
+	}
+	
+	function getClass_36() {
+		return Lorg_dellroad_lzma_client_SevenZip_Compression_LZMA_Encoder$LiteralEncoder_2_classLit;
+	}
+	
+	function Encoder$LiteralEncoder() {
+	}
+	
+	_ = Encoder$LiteralEncoder.prototype = new Object_0();
+	_.getClass$ = getClass_36;
+	_.typeId$ = 0;
+	_.m_Coders = null;
+	_.m_NumPosBits = 0;
+	_.m_NumPrevBits = 0;
+	_.m_PosMask = 0;
+	function $Encode_1(this$static, rangeEncoder, symbol) {
+		var bit, context, i;
+		context = 1;
+		for (i = 7; i >= 0; --i) {
+			bit = symbol >> i & 1;
+			$Encode_3(rangeEncoder, this$static.m_Encoders, context, bit);
+			context = context << 1 | bit;
+		}
+	}
+	
+	function $EncodeMatched(this$static, rangeEncoder, matchByte, symbol) {
+		var bit, context, i, matchBit, same, state;
+		context = 1;
+		same = true;
+		for (i = 7; i >= 0; --i) {
+			bit = symbol >> i & 1;
+			state = context;
+			if (same) {
+				matchBit = matchByte >> i & 1;
+				state += 1 + matchBit << 8;
+				same = matchBit == bit;
+			}
+			$Encode_3(rangeEncoder, this$static.m_Encoders, state, bit);
+			context = context << 1 | bit;
+		}
+	}
+	
+	function $Encoder$LiteralEncoder$Encoder2(this$static) {
+		this$static.m_Encoders = initDim(_3S_classLit, 0, -1, 768, 1);
+		return this$static;
+	}
+	
+	function $GetPrice_0(this$static, matchMode, matchByte, symbol) {
+		var bit, context, i, matchBit, price;
+		price = 0;
+		context = 1;
+		i = 7;
+		if (matchMode) {
+			for (; i >= 0; --i) {
+				matchBit = matchByte >> i & 1;
+				bit = symbol >> i & 1;
+				price += GetPrice(this$static.m_Encoders[(1 + matchBit << 8) + context], bit);
+				context = context << 1 | bit;
+				if (matchBit != bit) {
+					--i;
+					break;
+				}
+			}
+		}
+		for (; i >= 0; --i) {
+			bit = symbol >> i & 1;
+			price += GetPrice(this$static.m_Encoders[context], bit);
+			context = context << 1 | bit;
+		}
+		return price;
+	}
+	
+	function getClass_35() {
+		return Lorg_dellroad_lzma_client_SevenZip_Compression_LZMA_Encoder$LiteralEncoder$Encoder2_2_classLit;
+	}
+	
+	function Encoder$LiteralEncoder$Encoder2() {
+	}
+	
+	_ = Encoder$LiteralEncoder$Encoder2.prototype = new Object_0();
+	_.getClass$ = getClass_35;
+	_.typeId$ = 18;
+	function $MakeAsChar(this$static) {
+		this$static.BackPrev = -1;
+		this$static.Prev1IsChar = false;
+	}
+	
+	function $MakeAsShortRep(this$static) {
+		this$static.BackPrev = 0;
+		this$static.Prev1IsChar = false;
+	}
+	
+	function getClass_37() {
+		return Lorg_dellroad_lzma_client_SevenZip_Compression_LZMA_Encoder$Optimal_2_classLit;
+	}
+	
+	function Encoder$Optimal() {
+	}
+	
+	_ = Encoder$Optimal.prototype = new Object_0();
+	_.getClass$ = getClass_37;
+	_.typeId$ = 19;
+	_.BackPrev = 0;
+	_.BackPrev2 = 0;
+	_.Backs0 = 0;
+	_.Backs1 = 0;
+	_.Backs2 = 0;
+	_.Backs3 = 0;
+	_.PosPrev = 0;
+	_.PosPrev2 = 0;
+	_.Prev1IsChar = false;
+	_.Prev2 = false;
+	_.Price = 0;
+	_.State = 0;
+	function $BitTreeDecoder(this$static, numBitLevels) {
+		this$static.NumBitLevels = numBitLevels;
+		this$static.Models = initDim(_3S_classLit, 0, -1, 1 << numBitLevels, 1);
+		return this$static;
+	}
+	
+	function $Decode_0(this$static, rangeDecoder) {
+		var bitIndex, m;
+		m = 1;
+		for (bitIndex = this$static.NumBitLevels; bitIndex != 0; --bitIndex) {
+			m = (m << 1) + $DecodeBit(rangeDecoder, this$static.Models, m);
+		}
+		return m - (1 << this$static.NumBitLevels);
+	}
+	
+	function $ReverseDecode(this$static, rangeDecoder) {
+		var bit, bitIndex, m, symbol;
+		m = 1;
+		symbol = 0;
+		for (bitIndex = 0; bitIndex < this$static.NumBitLevels; ++bitIndex) {
+			bit = $DecodeBit(rangeDecoder, this$static.Models, m);
+			m <<= 1;
+			m += bit;
+			symbol |= bit << bitIndex;
+		}
+		return symbol;
+	}
+	
+	function ReverseDecode(Models, startIndex, rangeDecoder, NumBitLevels) {
+		var bit, bitIndex, m, symbol;
+		m = 1;
+		symbol = 0;
+		for (bitIndex = 0; bitIndex < NumBitLevels; ++bitIndex) {
+			bit = $DecodeBit(rangeDecoder, Models, startIndex + m);
+			m <<= 1;
+			m += bit;
+			symbol |= bit << bitIndex;
+		}
+		return symbol;
+	}
+	
+	function getClass_42() {
+		return Lorg_dellroad_lzma_client_SevenZip_Compression_RangeCoder_BitTreeDecoder_2_classLit;
+	}
+	
+	function BitTreeDecoder() {
+	}
+	
+	_ = BitTreeDecoder.prototype = new Object_0();
+	_.getClass$ = getClass_42;
+	_.typeId$ = 20;
+	_.Models = null;
+	_.NumBitLevels = 0;
+	function $BitTreeEncoder(this$static, numBitLevels) {
+		this$static.NumBitLevels = numBitLevels;
+		this$static.Models = initDim(_3S_classLit, 0, -1, 1 << numBitLevels, 1);
+		return this$static;
+	}
+	
+	function $Encode_2(this$static, rangeEncoder, symbol) {
+		var bit, bitIndex, m;
+		m = 1;
+		for (bitIndex = this$static.NumBitLevels; bitIndex != 0;) {
+			--bitIndex;
+			bit = symbol >>> bitIndex & 1;
+			$Encode_3(rangeEncoder, this$static.Models, m, bit);
+			m = m << 1 | bit;
+		}
+	}
+	
+	function $GetPrice_1(this$static, symbol) {
+		var bit, bitIndex, m, price;
+		price = 0;
+		m = 1;
+		for (bitIndex = this$static.NumBitLevels; bitIndex != 0;) {
+			--bitIndex;
+			bit = symbol >>> bitIndex & 1;
+			price += GetPrice(this$static.Models[m], bit);
+			m = (m << 1) + bit;
+		}
+		return price;
+	}
+	
+	function $ReverseEncode(this$static, rangeEncoder, symbol) {
+		var bit, i, m;
+		m = 1;
+		for (i = 0; i < this$static.NumBitLevels; ++i) {
+			bit = symbol & 1;
+			$Encode_3(rangeEncoder, this$static.Models, m, bit);
+			m = m << 1 | bit;
+			symbol >>= 1;
+		}
+	}
+	
+	function $ReverseGetPrice(this$static, symbol) {
+		var bit, i, m, price;
+		price = 0;
+		m = 1;
+		for (i = this$static.NumBitLevels; i != 0; --i) {
+			bit = symbol & 1;
+			symbol >>>= 1;
+			price += GetPrice(this$static.Models[m], bit);
+			m = m << 1 | bit;
+		}
+		return price;
+	}
+	
+	function ReverseEncode(Models, startIndex, rangeEncoder, NumBitLevels, symbol) {
+		var bit, i, m;
+		m = 1;
+		for (i = 0; i < NumBitLevels; ++i) {
+			bit = symbol & 1;
+			$Encode_3(rangeEncoder, Models, startIndex + m, bit);
+			m = m << 1 | bit;
+			symbol >>= 1;
+		}
+	}
+	
+	function ReverseGetPrice(Models, startIndex, NumBitLevels, symbol) {
+		var bit, i, m, price;
+		price = 0;
+		m = 1;
+		for (i = NumBitLevels; i != 0; --i) {
+			bit = symbol & 1;
+			symbol >>>= 1;
+			price += ($clinit_66() , ProbPrices[((Models[startIndex + m] - bit ^ -bit) & 2047) >>> 2]);
+			m = m << 1 | bit;
+		}
+		return price;
+	}
+	
+	function getClass_43() {
+		return Lorg_dellroad_lzma_client_SevenZip_Compression_RangeCoder_BitTreeEncoder_2_classLit;
+	}
+	
+	function BitTreeEncoder() {
+	}
+	
+	_ = BitTreeEncoder.prototype = new Object_0();
+	_.getClass$ = getClass_43;
+	_.typeId$ = 21;
+	_.Models = null;
+	_.NumBitLevels = 0;
+	function $DecodeBit(this$static, probs, index) {
+		var newBound, prob;
+		prob = probs[index];
+		newBound = (this$static.Range >>> 11) * prob;
+		if ((this$static.Code ^ -2147483648) < (newBound ^ -2147483648)) {
+			this$static.Range = newBound;
+			probs[index] = prob + (2048 - prob >>> 5) << 16 >> 16;
+			if ((this$static.Range & -16777216) == 0) {
+				this$static.Code = this$static.Code << 8 | $read(this$static.Stream);
+				this$static.Range <<= 8;
+			}
+			return 0;
+		} else {
+			this$static.Range -= newBound;
+			this$static.Code -= newBound;
+			probs[index] = prob - (prob >>> 5) << 16 >> 16;
+			if ((this$static.Range & -16777216) == 0) {
+				this$static.Code = this$static.Code << 8 | $read(this$static.Stream);
+				this$static.Range <<= 8;
+			}
+			return 1;
+		}
+	}
+	
+	function $DecodeDirectBits(this$static, numTotalBits) {
+		var i, result, t;
+		result = 0;
+		for (i = numTotalBits; i != 0; --i) {
+			this$static.Range >>>= 1;
+			t = this$static.Code - this$static.Range >>> 31;
+			this$static.Code -= this$static.Range & t - 1;
+			result = result << 1 | 1 - t;
+			if ((this$static.Range & -16777216) == 0) {
+				this$static.Code = this$static.Code << 8 | $read(this$static.Stream);
+				this$static.Range <<= 8;
+			}
+		}
+		return result;
+	}
+	
+	function $Init_8(this$static) {
+		var i;
+		this$static.Code = 0;
+		this$static.Range = -1;
+		for (i = 0; i < 5; ++i) {
+			this$static.Code = this$static.Code << 8 | $read(this$static.Stream);
+		}
+	}
+	
+	function InitBitModels(probs) {
+		var i;
+		for (i = 0; i < probs.length; ++i) {
+			probs[i] = 1024;
+		}
+	}
+	
+	function getClass_44() {
+		return Lorg_dellroad_lzma_client_SevenZip_Compression_RangeCoder_Decoder_2_classLit;
+	}
+	
+	function Decoder_0() {
+	}
+	
+	_ = Decoder_0.prototype = new Object_0();
+	_.getClass$ = getClass_44;
+	_.typeId$ = 0;
+	_.Code = 0;
+	_.Range = 0;
+	_.Stream = null;
+	function $clinit_66() {
+		$clinit_66 = nullMethod;
+		var end, i, j, start;
+		ProbPrices = initDim(_3I_classLit, 0, -1, 512, 1);
+		for (i = 8; i >= 0; --i) {
+			start = 1 << 9 - i - 1;
+			end = 1 << 9 - i;
+			for (j = start; j < end; ++j) {
+				ProbPrices[j] = (i << 6) + (end - j << 6 >>> 9 - i - 1);
+			}
+		}
+	}
+	
+	function $Encode_3(this$static, probs, index, symbol) {
+		var newBound, prob;
+		prob = probs[index];
+		newBound = (this$static.Range >>> 11) * prob;
+		if (symbol == 0) {
+			this$static.Range = newBound;
+			probs[index] = prob + (2048 - prob >>> 5) << 16 >> 16;
+		} else {
+			this$static.Low = add(this$static.Low, and(fromInt(newBound), Pffffffff_longLit));
+			this$static.Range -= newBound;
+			probs[index] = prob - (prob >>> 5) << 16 >> 16;
+		}
+		if ((this$static.Range & -16777216) == 0) {
+			this$static.Range <<= 8;
+			$ShiftLow(this$static);
+		}
+	}
+	
+	function $EncodeDirectBits(this$static, v, numTotalBits) {
+		var i;
+		for (i = numTotalBits - 1; i >= 0; --i) {
+			this$static.Range >>>= 1;
+			if ((v >>> i & 1) == 1) {
+				this$static.Low = add(this$static.Low, fromInt(this$static.Range));
+			}
+			if ((this$static.Range & -16777216) == 0) {
+				this$static.Range <<= 8;
+				$ShiftLow(this$static);
+			}
+		}
+	}
+	
+	function $FlushData(this$static) {
+		var i;
+		for (i = 0; i < 5; ++i) {
+			$ShiftLow(this$static);
+		}
+	}
+	
+	function $GetProcessedSizeAdd(this$static) {
+		return add(add(fromInt(this$static._cacheSize), this$static._position), P4_longLit);
+	}
+	
+	function $Init_9(this$static) {
+		this$static._position = P0_longLit;
+		this$static.Low = P0_longLit;
+		this$static.Range = -1;
+		this$static._cacheSize = 1;
+		this$static._cache = 0;
+	}
+	
+	function $ShiftLow(this$static) {
+		var LowHi, temp;
+		LowHi = lowBits_0(shru(this$static.Low, 32));
+		if (LowHi != 0 || compare(this$static.Low, Pff000000_longLit) < 0) {
+			this$static._position = add(this$static._position, fromInt(this$static._cacheSize));
+			temp = this$static._cache;
+			do {
+				$write(this$static.Stream, temp + LowHi);
+				temp = 255;
+			} while (--this$static._cacheSize != 0);
+			this$static._cache = lowBits_0(this$static.Low) >>> 24;
+		}
+		++this$static._cacheSize;
+		this$static.Low = shl(and(this$static.Low, Pffffff_longLit), 8);
+	}
+	
+	function GetPrice(Prob, symbol) {
+		$clinit_66();
+		return ProbPrices[((Prob - symbol ^ -symbol) & 2047) >>> 2];
+	}
+	
+	function InitBitModels_0(probs) {
+		$clinit_66();
+		var i;
+		for (i = 0; i < probs.length; ++i) {
+			probs[i] = 1024;
+		}
+	}
+	
+	function getClass_45() {
+		return Lorg_dellroad_lzma_client_SevenZip_Compression_RangeCoder_Encoder_2_classLit;
+	}
+	
+	function Encoder_0() {
+	}
+	
+	_ = Encoder_0.prototype = new Object_0();
+	_.getClass$ = getClass_45;
+	_.typeId$ = 0;
+	_.Low = P0_longLit;
+	_.Range = 0;
+	_.Stream = null;
+	_._cache = 0;
+	_._cacheSize = 0;
+	_._position = P0_longLit;
+	var ProbPrices;
+	function decode(utf) {
+		var buf, i, x, y, z;
+		buf = $StringBuilder(new StringBuilder());
+		for (i = 0; i < utf.length; ++i) {
+			x = utf[i] & 255;
+			if ((x & 128) == 0) {
+				if (x == 0) {
+					throw $IllegalArgumentException(new IllegalArgumentException(), 'invalid UTF-8');
+				}
+				$appendNonNull(buf.data, String.fromCharCode(x & 65535));
+			} else if ((x & 224) == 192) {
+				if (i + 1 >= utf.length) {
+					throw $IllegalArgumentException(new IllegalArgumentException(), 'invalid UTF-8');
+				}
+				y = utf[++i] & 255;
+				if ((y & 192) != 128) {
+					throw $IllegalArgumentException(new IllegalArgumentException(), 'invalid UTF-8');
+				}
+				$append(buf.data, String.fromCharCode((x & 31) << 6 & 65535 | y & 63));
+			} else if ((x & 240) == 224) {
+				if (i + 2 >= utf.length) {
+					throw $IllegalArgumentException(new IllegalArgumentException(), 'invalid UTF-8');
+				}
+				y = utf[++i] & 255;
+				if ((y & 192) != 128) {
+					throw $IllegalArgumentException(new IllegalArgumentException(), 'invalid UTF-8');
+				}
+				z = utf[++i] & 255;
+				if ((z & 192) != 128) {
+					throw $IllegalArgumentException(new IllegalArgumentException(), 'invalid UTF-8');
+				}
+				$appendNonNull(buf.data, String.fromCharCode(((x & 15) << 12 | (y & 63) << 6 | z & 63) & 65535));
+			} else {
+				throw $IllegalArgumentException(new IllegalArgumentException(), 'invalid UTF-8');
+			}
+		}
+		return $toString(buf.data);
+	}
+	
+	function encode(s) {
+		var ch, chars, data, elen, i, charArr, n;
+		chars = (n = s.length , charArr = initDim(_3C_classLit, 0, -1, n, 1) , $getChars(s, 0, n, charArr, 0) , charArr);
+		elen = 0;
+		for (i = 0; i < s.length; ++i) {
+			ch = chars[i];
+			if (ch >= 1 && ch <= 127) {
+				++elen;
+			} else if (ch == 0 || ch >= 128 && ch <= 2047) {
+				elen += 2;
+			} else {
+				elen += 3;
+			}
+		}
+		data = initDim(_3B_classLit, 0, -1, elen, 1);
+		elen = 0;
+		for (i = 0; i < s.length; ++i) {
+			ch = chars[i];
+			if (ch >= 1 && ch <= 127) {
+				data[elen++] = ch << 24 >> 24;
+			} else if (ch == 0 || ch >= 128 && ch <= 2047) {
+				data[elen++] = (192 | ch >> 6 & 31) << 24 >> 24;
+				data[elen++] = (128 | ch & 63) << 24 >> 24;
+			} else {
+				data[elen++] = (224 | ch >> 12 & 15) << 24 >> 24;
+				data[elen++] = (128 | ch >> 6 & 63) << 24 >> 24;
+				data[elen++] = (128 | ch & 63) << 24 >> 24;
+			}
+		}
+		return data;
+	}
+	
+	function $LZMADemo(this$static) {
+		return this$static;
+	}
+	function toDouble(a) {
+		return a[1] + a[0];
+	}
+	
+	function compress() {
+		var this$static = $LZMADemo(new LZMADemo()),
+			percent,
+			start,
+			/// Arguments
+			str = arguments[0],
+			mode = arguments[1],
+			callback_num,
+			on_finish,
+			on_progress;
+		
+		if (typeof arguments[2] === "function") {
+			on_finish = arguments[2];
+			if (typeof arguments[3] === "function") {
+				on_progress = arguments[3];
+			}
+		} else {
+			callback_num = arguments[2];
+		}
+		
+		this$static.mode = get_mode_obj(mode);
+		
+		this$static.c = $LZMAByteArrayCompressor(new LZMAByteArrayCompressor(), encode(str), this$static.mode);
+		
+		if (on_progress) {
+			on_progress(0);
+		} else if (typeof callback_num !== "undefined") {
+			update_progress(0, callback_num);
+		}
+		
+		function do_action() {
+			var res;
+			start = (new Date).getTime();
+			while ($execute(this$static.c)) {
+				percent = toDouble(this$static.c.chunker.inBytesProcessed) / toDouble(this$static.c.length_0);
+				/// If about 200 miliseconds have passed, update the progress.
+				if ((new Date).getTime() - start > 200) {
+					if (on_progress) {
+						on_progress(percent);
+					} else if (typeof callback_num !== "undefined") {
+						update_progress(percent, callback_num);
+					}
+					setTimeout(do_action, 0);
+					return false;
+				}
+			}
+			
+			if (on_progress) {
+				on_progress(1);
+			} else if (typeof callback_num !== "undefined") {
+				update_progress(1, callback_num);
+			}
+			
+			/// .slice(0) is required for Firefox 4.0 (because I think arrays are now passed by reference, which is not allowed when sending messages to or from web workers).
+			/// .slice(0) simply returns the entire array by value.
+			res = $toByteArray(this$static.c.output).slice(0);
+			
+			if (on_finish) {
+				on_finish(res);
+			} else if (typeof callback_num !== "undefined") {
+				postMessage({
+					action: action_compress,
+					callback_num: callback_num,
+					result: res
+				});
+			}
+		}
+		
+		setTimeout(do_action, 1);
+	}
+	
+	function decompress() {
+		var this$static = $LZMADemo(new LZMADemo()),
+			percent,
+			data,
+			start,
+			text,
+			/// Arguments
+			byte_arr = arguments[0],
+			callback_num,
+			on_finish,
+			on_progress;
+		
+		if (typeof arguments[1] === "function") {
+			on_finish = arguments[1];
+			if (typeof arguments[2] === "function") {
+				on_progress = arguments[2];
+			}
+		} else {
+			callback_num = arguments[1];
+		}
+		
+		data = initValues(_3B_classLit, 0, -1, byte_arr);
+		
+		this$static.d = $LZMAByteArrayDecompressor(new LZMAByteArrayDecompressor(), data);
+		
+		if (on_progress) {
+			on_progress(0);
+		} else if (typeof callback_num !== "undefined") {
+			update_progress(0, callback_num);
+		}
+		
+		function do_action() {
+			var res;
+			start = (new Date).getTime();
+			while ($execute_0(this$static.d)) {
+				percent = toDouble(this$static.d.chunker.decoder.nowPos64) / toDouble(this$static.d.length_0);
+				/// If about 200 miliseconds have passed, update the progress.
+				if ((new Date).getTime() - start > 200) {
+					if (on_progress) {
+						on_progress(percent);
+					} else if (typeof callback_num !== "undefined") {
+						update_progress(percent, callback_num);
+					}
+					setTimeout(do_action, 0);
+					return false;
+				}
+			}
+			
+			if (on_progress) {
+				on_progress(1);
+			} else if (typeof callback_num !== "undefined") {
+				update_progress(1, callback_num);
+			}
+			
+			res = decode($toByteArray(this$static.d.output));
+			
+			if (on_finish) {
+				on_finish(res);
+			} else if (typeof callback_num !== "undefined") {
+				postMessage({
+					action: action_decompress,
+					callback_num: callback_num,
+					result: res
+				});
+			}
+		}
+		
+		setTimeout(do_action, 0);
+	}
+	
+	function $onModuleLoad(this$static) {
+		compress(this$static);
+		decompress(this$static);
+	}
+	
+	function getClass_46() {
+		return Lorg_dellroad_lzma_demo_client_LZMADemo_2_classLit;
+	}
+	
+	function LZMADemo () {}
+	
+	_ = LZMADemo.prototype = new Object_0();
+	_.getClass$ = getClass_46;
+	_.typeId$ = 0;
+	_.c = null;
+	_.d = null;
+	var DEFAULT_COMPRESSION_MODE;
+	function init() {
+		!!$stats && $stats({moduleName:$moduleName, subSystem:'startup', evtGroup:'moduleStartup', millis:(new Date()).getTime(), type:'onModuleLoadStart', className:'org.dellroad.lzma.demo.client.LZMADemo'});
+	}
+	
+	function gwtOnLoad(errFn, modName, modBase) {
+		$moduleName = modName;
+		$moduleBase = modBase;
+		if (errFn) {
+			try {
+				init();
+			}
+			catch (e) {
+				errFn(modName);
+			}
+		} else {
+			init();
+		}
+	}
+	
+	function nullMethod() {
+	}
+	
+	var Ljava_lang_Object_2_classLit = createForClass('java.lang.', 'Object'),
+		Ljava_lang_Throwable_2_classLit = createForClass('java.lang.', 'Throwable'),
+		Ljava_lang_Exception_2_classLit = createForClass('java.lang.', 'Exception'),
+		Ljava_lang_RuntimeException_2_classLit = createForClass('java.lang.', 'RuntimeException'),
+		Lcom_google_gwt_core_client_JavaScriptException_2_classLit = createForClass('com.google.gwt.core.client.', 'JavaScriptException'),
+		Lcom_google_gwt_core_client_JavaScriptObject_2_classLit = createForClass('com.google.gwt.core.client.', 'JavaScriptObject$'), _3_3D_classLit = createForArray('', '[[D'),
+		Ljava_io_InputStream_2_classLit = createForClass('java.io.', 'InputStream'),
+		Ljava_io_ByteArrayInputStream_2_classLit = createForClass('java.io.', 'ByteArrayInputStream'), _3B_classLit = createForArray('', '[B'),
+		Ljava_io_OutputStream_2_classLit = createForClass('java.io.', 'OutputStream'),
+		Ljava_io_ByteArrayOutputStream_2_classLit = createForClass('java.io.', 'ByteArrayOutputStream'),
+		Ljava_io_IOException_2_classLit = createForClass('java.io.', 'IOException'),
+		Ljava_lang_Enum_2_classLit = createForClass('java.lang.', 'Enum'),
+		Ljava_lang_ArithmeticException_2_classLit = createForClass('java.lang.', 'ArithmeticException'),
+		Ljava_lang_ArrayStoreException_2_classLit = createForClass('java.lang.', 'ArrayStoreException'), _3C_classLit = createForArray('', '[C'),
+		Ljava_lang_Class_2_classLit = createForClass('java.lang.', 'Class'),
+		Ljava_lang_ClassCastException_2_classLit = createForClass('java.lang.', 'ClassCastException'),
+		Ljava_lang_IllegalArgumentException_2_classLit = createForClass('java.lang.', 'IllegalArgumentException'),
+		Ljava_lang_IllegalStateException_2_classLit = createForClass('java.lang.', 'IllegalStateException'),
+		Ljava_lang_IndexOutOfBoundsException_2_classLit = createForClass('java.lang.', 'IndexOutOfBoundsException'), _3I_classLit = createForArray('', '[I'),
+		Ljava_lang_NullPointerException_2_classLit = createForClass('java.lang.', 'NullPointerException'),
+		Ljava_lang_String_2_classLit = createForClass('java.lang.', 'String'),
+		Ljava_lang_StringBuilder_2_classLit = createForClass('java.lang.', 'StringBuilder'),
+		Lorg_dellroad_lzma_client_SevenZip_Compression_LZ_InWindow_2_classLit = createForClass('org.dellroad.lzma.client.SevenZip.Compression.LZ.', 'InWindow'),
+		Lorg_dellroad_lzma_client_SevenZip_Compression_LZ_BinTree_2_classLit = createForClass('org.dellroad.lzma.client.SevenZip.Compression.LZ.', 'BinTree'),
+		Lorg_dellroad_lzma_client_SevenZip_Compression_LZ_OutWindow_2_classLit = createForClass('org.dellroad.lzma.client.SevenZip.Compression.LZ.', 'OutWindow'),
+		Lorg_dellroad_lzma_client_SevenZip_Compression_LZMA_Chunker_2_classLit = createForClass('org.dellroad.lzma.client.SevenZip.Compression.LZMA.', 'Chunker'), _3S_classLit = createForArray('', '[S'), _3Lorg_dellroad_lzma_client_SevenZip_Compression_RangeCoder_BitTreeDecoder_2_classLit = createForArray('[Lorg.dellroad.lzma.client.SevenZip.Compression.RangeCoder.', 'BitTreeDecoder;'),
+		Lorg_dellroad_lzma_client_SevenZip_Compression_LZMA_Decoder_2_classLit = createForClass('org.dellroad.lzma.client.SevenZip.Compression.LZMA.', 'Decoder'),
+		Lorg_dellroad_lzma_client_SevenZip_Compression_LZMA_Decoder$LenDecoder_2_classLit = createForClass('org.dellroad.lzma.client.SevenZip.Compression.LZMA.', 'Decoder$LenDecoder'), _3Lorg_dellroad_lzma_client_SevenZip_Compression_LZMA_Decoder$LiteralDecoder$Decoder2_2_classLit = createForArray('[Lorg.dellroad.lzma.client.SevenZip.Compression.LZMA.', 'Decoder$LiteralDecoder$Decoder2;'),
+		Lorg_dellroad_lzma_client_SevenZip_Compression_LZMA_Decoder$LiteralDecoder_2_classLit = createForClass('org.dellroad.lzma.client.SevenZip.Compression.LZMA.', 'Decoder$LiteralDecoder'),
+		Lorg_dellroad_lzma_client_SevenZip_Compression_LZMA_Decoder$LiteralDecoder$Decoder2_2_classLit = createForClass('org.dellroad.lzma.client.SevenZip.Compression.LZMA.', 'Decoder$LiteralDecoder$Decoder2'), _3Lorg_dellroad_lzma_client_SevenZip_Compression_LZMA_Encoder$Optimal_2_classLit = createForArray('[Lorg.dellroad.lzma.client.SevenZip.Compression.LZMA.', 'Encoder$Optimal;'), _3Lorg_dellroad_lzma_client_SevenZip_Compression_RangeCoder_BitTreeEncoder_2_classLit = createForArray('[Lorg.dellroad.lzma.client.SevenZip.Compression.RangeCoder.', 'BitTreeEncoder;'), _3J_classLit = createForArray('', '[J'), _3Z_classLit = createForArray('', '[Z'),
+		Lorg_dellroad_lzma_client_SevenZip_Compression_LZMA_Encoder_2_classLit = createForClass('org.dellroad.lzma.client.SevenZip.Compression.LZMA.', 'Encoder'), _3Lorg_dellroad_lzma_client_SevenZip_Compression_LZMA_Encoder$LiteralEncoder$Encoder2_2_classLit = createForArray('[Lorg.dellroad.lzma.client.SevenZip.Compression.LZMA.', 'Encoder$LiteralEncoder$Encoder2;'),
+		Lorg_dellroad_lzma_client_SevenZip_Compression_LZMA_Encoder$LiteralEncoder_2_classLit = createForClass('org.dellroad.lzma.client.SevenZip.Compression.LZMA.', 'Encoder$LiteralEncoder'),
+		Lorg_dellroad_lzma_client_SevenZip_Compression_LZMA_Encoder$LiteralEncoder$Encoder2_2_classLit = createForClass('org.dellroad.lzma.client.SevenZip.Compression.LZMA.', 'Encoder$LiteralEncoder$Encoder2'),
+		Lorg_dellroad_lzma_client_SevenZip_Compression_LZMA_Encoder$LenEncoder_2_classLit = createForClass('org.dellroad.lzma.client.SevenZip.Compression.LZMA.', 'Encoder$LenEncoder'),
+		Lorg_dellroad_lzma_client_SevenZip_Compression_LZMA_Encoder$LenPriceTableEncoder_2_classLit = createForClass('org.dellroad.lzma.client.SevenZip.Compression.LZMA.', 'Encoder$LenPriceTableEncoder'),
+		Lorg_dellroad_lzma_client_SevenZip_Compression_LZMA_Encoder$Optimal_2_classLit = createForClass('org.dellroad.lzma.client.SevenZip.Compression.LZMA.', 'Encoder$Optimal'),
+		Lorg_dellroad_lzma_client_SevenZip_Compression_RangeCoder_BitTreeDecoder_2_classLit = createForClass('org.dellroad.lzma.client.SevenZip.Compression.RangeCoder.', 'BitTreeDecoder'),
+		Lorg_dellroad_lzma_client_SevenZip_Compression_RangeCoder_BitTreeEncoder_2_classLit = createForClass('org.dellroad.lzma.client.SevenZip.Compression.RangeCoder.', 'BitTreeEncoder'),
+		Lorg_dellroad_lzma_client_SevenZip_Compression_RangeCoder_Decoder_2_classLit = createForClass('org.dellroad.lzma.client.SevenZip.Compression.RangeCoder.', 'Decoder'),
+		Lorg_dellroad_lzma_client_SevenZip_Compression_RangeCoder_Encoder_2_classLit = createForClass('org.dellroad.lzma.client.SevenZip.Compression.RangeCoder.', 'Encoder'),
+		Lorg_dellroad_lzma_client_CompressionMode_2_classLit = createForEnum('org.dellroad.lzma.client.', 'CompressionMode'),
+		Lorg_dellroad_lzma_client_LZMACompressor_2_classLit = createForClass('org.dellroad.lzma.client.', 'LZMACompressor'),
+		Lorg_dellroad_lzma_client_LZMAByteArrayCompressor_2_classLit = createForClass('org.dellroad.lzma.client.', 'LZMAByteArrayCompressor'),
+		Lorg_dellroad_lzma_client_LZMADecompressor_2_classLit = createForClass('org.dellroad.lzma.client.', 'LZMADecompressor'),
+		Lorg_dellroad_lzma_client_LZMAByteArrayDecompressor_2_classLit = createForClass('org.dellroad.lzma.client.', 'LZMAByteArrayDecompressor'),
+		Lorg_dellroad_lzma_demo_client_LZMADemo_2_classLit = createForClass('org.dellroad.lzma.demo.client.', 'LZMADemo');
+	
+	gwtOnLoad(function() {},'lzma_demo','');
+	
+	
+	var get_mode_obj = (function () {
+		var modes = [
+						{dictionarySize: 16, fb: 64,  matchFinder: 0, lc: 3, lp: 0, pb: 2},
+						{dictionarySize: 20, fb: 64,  matchFinder: 0, lc: 3, lp: 0, pb: 2},
+						{dictionarySize: 19, fb: 64,  matchFinder: 1, lc: 3, lp: 0, pb: 2},
+						{dictionarySize: 20, fb: 64,  matchFinder: 1, lc: 3, lp: 0, pb: 2},
+						{dictionarySize: 21, fb: 128, matchFinder: 1, lc: 3, lp: 0, pb: 2},
+						{dictionarySize: 22, fb: 128, matchFinder: 1, lc: 3, lp: 0, pb: 2},
+						{dictionarySize: 23, fb: 128, matchFinder: 1, lc: 3, lp: 0, pb: 2},
+						{dictionarySize: 24, fb: 255, matchFinder: 1, lc: 3, lp: 0, pb: 2},
+						{dictionarySize: 25, fb: 255, matchFinder: 1, lc: 3, lp: 0, pb: 2}
+					];
+		
+		function isNumber(n) {
+			return !isNaN(parseFloat(n)) && isFinite(n);
+		}
+
+		return function (mode) {
+			if (!isNumber(mode)) {
+				mode = 1;
+			} else {
+				if (mode < 1) {
+					mode = 1;
+				} else if (mode > 9) {
+					mode = 9;
+				}
+			}
+			
+			return modes[mode - 1];
+		}
+	}());
+	
+	/// Create the global onmessage function.
+	onmessage = function (e) {
+		if (e.data.action === action_compress) {
+			LZMA.compress(e.data.data, e.data.mode, e.data.callback_num);
+		} else {
+			LZMA.decompress(e.data.data, e.data.callback_num);
+		}
+	}
+		
+	return {
+		compress:   compress,
+		decompress: decompress
+	};
+}());
+
+/// Allow node.js to be able to access this directly if it is included directly.
+this.LZMA = LZMA;
 
 
 
@@ -14961,14 +19883,14 @@ $(function(){
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '2.0.25-dev';
+    cdb.VERSION = '3.0.00-dev';
 
     cdb.CARTOCSS_VERSIONS = {
       '2.0.0': '',
       '2.1.0': ''
     };
 
-    cdb.CARTOCSS_DEFAULT_VERSION = '2.0.0';
+    cdb.CARTOCSS_DEFAULT_VERSION = '2.1.1';
 
     cdb.CDB_HOST = {
       'http': 'tiles.cartocdn.com',
@@ -14993,6 +19915,7 @@ $(function(){
     cdb.files = [
         "../vendor/jquery.min.js",
         "../vendor/underscore-min.js",
+        "../vendor/json2.js",
         "../vendor/backbone.js",
 
         "../vendor/leaflet.js",
@@ -15003,6 +19926,7 @@ $(function(){
         "../vendor/mousewheel.js",
         "../vendor/mwheelIntent.js",
         "../vendor/spin.js",
+        "../vendor/lzma.js",
 
         'core/decorator.js',
         'core/config.js',
@@ -15027,6 +19951,7 @@ $(function(){
         'geo/ui/infobox.js',
         'geo/ui/tooltip.js',
 
+        'geo/layer_definition.js',
         'geo/common.js',
 
         'geo/leaflet/leaflet.geometry.js',
@@ -15037,17 +19962,18 @@ $(function(){
         'geo/leaflet/leaflet_cartodb_layer.js',
         'geo/leaflet/leaflet.js',
 
-
         'geo/gmaps/gmaps_base.js',
         'geo/gmaps/gmaps_baselayer.js',
         'geo/gmaps/gmaps_plainlayer.js',
         'geo/gmaps/gmaps_tiledlayer.js',
+        'geo/gmaps/gmaps_cartodb_layergroup.js',
         'geo/gmaps/gmaps_cartodb_layer.js',
         'geo/gmaps/gmaps.js',
 
         'ui/common/dialog.js',
         'ui/common/notification.js',
         'ui/common/table.js',
+        'ui/common/dropdown.js',
 
         'vis/vis.js',
         'vis/overlays.js',
@@ -15264,9 +20190,11 @@ if(!window.JSON) {
 
         error: function() {
             _console.error.apply(_console, arguments);
-            cdb.errors.create({
-                msg: Array.prototype.slice.call(arguments).join('')
-            });
+            if(cdb.config.ERROR_TRACK_ENABLED) {
+              cdb.errors.create({
+                  msg: Array.prototype.slice.call(arguments).join('')
+              });
+            }
         },
 
         log: function() {
@@ -15678,7 +20606,7 @@ cdb._loadJST = function() {
       var self = this;
       obj.bind && obj.bind(ev, function() {
         self.trigger(retrigEvent);
-      })
+      }, self)
     },
 
     /**
@@ -15721,6 +20649,7 @@ cdb._loadJST = function() {
     },
 
     add_related_model: function(m) {
+      if(!m) throw "added non valid model"
       this._models.push(m);
     },
 
@@ -15941,8 +20870,8 @@ cdb.geo.geocoder.YAHOO = {
 cdb.geo.geocoder.NOKIA = {
 
   keys: {
-    app_id:   "qIWDkliFCtLntLma2e6O",
-    app_code: "61YWYROufLu_f8ylE0vn0Q"
+    app_id:   "KuYppsdXZznpffJsKT24",
+    app_code: "A7tBPacePg9Mj_zghvKt9Q"
   },
 
   geocode: function(address, callback) {
@@ -16144,9 +21073,9 @@ cdb.geo.CartoDBLayer = cdb.geo.MapLayer.extend({
     tiler_domain: "cartodb.com",
     tiler_port: "80",
     tiler_protocol: "http",
-    sql_domain: "cartodb.com",
-    sql_port: "80",
-    sql_protocol: "http",
+    sql_api_domain: "cartodb.com",
+    sql_api_port: "80",
+    sql_api_protocol: "http",
     extra_params: {},
     cdn_url: null,
     maxZoom: 28
@@ -16167,7 +21096,7 @@ cdb.geo.CartoDBLayer = cdb.geo.MapLayer.extend({
     var e = this.get('extra_params') || e;
     e.cache_buster = new Date().getTime();
     this.set('extra_params', e);
-    this.trigger('change');
+    this.trigger('change', this);
   },
 
   toggle: function() {
@@ -16179,37 +21108,40 @@ cdb.geo.CartoDBLayer = cdb.geo.MapLayer.extend({
   }
 });
 
+cdb.geo.CartoDBGroupLayer = cdb.geo.MapLayer.extend({
+  defaults: {
+    visible: true,
+    type: 'layergroup'
+  }
+});
+
 cdb.geo.Layers = Backbone.Collection.extend({
 
   model: cdb.geo.MapLayer,
 
   initialize: function() {
-    this.bind('add remove', this._asignIndexes, this);
-  },
-
-  clone: function() {
-    var layers = new cdb.geo.Layers();
-    this.each(function(layer) {
-      if(layer.clone) {
-        var lyr = layer.clone();
-        lyr.set('id', null);
-        layers.add(lyr);
-      } else {
-        var attrs = _.clone(layer.attributes);
-        delete attrs.id;
-        layers.add(attrs);
-      }
-    });
-    return layers;
+    this.comparator = function(a, b) {
+      return a.get('order') - b.get('order');
+    }
+    this.bind('add', this._assignIndexes);
   },
 
   /**
    * each time a layer is added or removed
    * the index should be recalculated
    */
-  _asignIndexes: function() {
-    for(var i = 0; i < this.size(); ++i) {
-      this.models[i].set({ order: i }, { silent: true });
+  _assignIndexes: function(model, col, options) {
+    var from = this.size() - 1;
+    if(options && options.at !== undefined) {
+      from = options.at;
+    }
+    if(from === 0) {
+      this.models[0].set({ order: 0 });
+      ++from;
+    }
+    for(var i = from; i < this.size(); ++i) {
+      var prev = this.models[i - 1].get('order');
+      this.models[i].set({ order: prev + 1 });
     }
   }
 });
@@ -16230,6 +21162,7 @@ cdb.geo.Map = cdb.core.Model.extend({
 
   initialize: function() {
     this.layers = new cdb.geo.Layers();
+
     this.layers.bind('reset', function() {
       if(this.layers.size() >= 1) {
         this._adjustZoomtoLayer(this.layers.models[0]);
@@ -16275,24 +21208,6 @@ cdb.geo.Map = cdb.core.Model.extend({
     this.set({
       center: latlng
     });
-  },
-
-  clone: function() {
-    var m = new cdb.geo.Map(_.clone(this.attributes));
-
-    // clone lists
-    m.set({
-      center:           _.clone(this.attributes.center),
-      bounding_box_sw:  _.clone(this.attributes.bounding_box_sw),
-      bounding_box_ne:  _.clone(this.attributes.bounding_box_ne),
-      view_bounds_sw:   _.clone(this.attributes.view_bounds_sw),
-      view_bounds_ne:   _.clone(this.attributes.view_bounds_ne),
-      attribution:      _.clone(this.attributes.attribution)
-    });
-    // layers
-    m.layers = this.layers.clone();
-    return m;
-
   },
 
   /**
@@ -16409,50 +21324,6 @@ cdb.geo.Map = cdb.core.Model.extend({
     }
   },
 
-
-  // remove current base layer and set the specified
-  // current base layer is removed
-  setBaseLayer: function(layer, opts) {
-    opts = opts || {};
-    var self = this;
-    var old = this.layers.at(0);
-
-    // Check if the selected base layer is already selected
-    if (this.isBaseLayerAdded(layer)) {
-      opts.alreadyAdded && opts.alreadyAdded();
-      return false;
-    }
-
-    if (old) { // defensive programming FTW!!
-      //remove layer from the view
-      //change all the attributes and save it again
-      //it will saved in the server and recreated in the client
-      self.layers.remove(old);
-      layer.set('id', old.get('id'));
-      layer.set('order', old.get('order'));
-      this.layers.add(layer, { at: 0 });
-      layer.save(null, {
-        success: function() {
-          self.trigger('baseLayerAdded');
-          self._adjustZoomtoLayer(layer);
-          opts.success && opts.success();
-        },
-        error: opts.error
-      })
-
-    } else {
-      self.layers.add(layer, { at: 0 });
-      self.trigger('baseLayerAdded');
-      self._adjustZoomtoLayer(layer);
-      opts.success && opts.success();
-    }
-
-    // Update attribution removing old one and adding new one
-    this.updateAttribution(old,layer);
-
-    return layer;
-  },
-
   updateAttribution: function(old,new_) {
     var attributions = this.get("attribution") || [];
 
@@ -16567,7 +21438,7 @@ cdb.geo.MapView = cdb.core.View.extend({
   initialize: function() {
 
     if (this.options.map === undefined) {
-      throw new Exception("you should specify a map model");
+      throw "you should specify a map model";
     }
 
     this.map = this.options.map;
@@ -16648,7 +21519,6 @@ cdb.geo.MapView = cdb.core.View.extend({
     this.map.bind('change:zoom',            this._setZoom, this);
     this.map.bind('change:scrollwheel',     this._setScrollWheel, this);
     this.map.bind('change:center',          this._setCenter, this);
-    this.map.bind('change:scrollwheel',     this._setScrollWheel, this);
     this.map.bind('change:attribution',     this._setAttribution, this);
   },
 
@@ -16661,10 +21531,11 @@ cdb.geo.MapView = cdb.core.View.extend({
     this.map.unbind('change:view_bounds_ne', this._changeBounds, this);
     */
 
-    this.map.unbind('change:zoom',            null, this);
-    this.map.unbind('change:center',          null, this);
     this.map.unbind('change:view_bounds_sw',  null, this);
     this.map.unbind('change:view_bounds_ne',  null, this);
+    this.map.unbind('change:zoom',            null, this);
+    this.map.unbind('change:scrollwheel',     null, this);
+    this.map.unbind('change:center',          null, this);
     this.map.unbind('change:attribution',     null, this);
   },
 
@@ -16685,9 +21556,18 @@ cdb.geo.MapView = cdb.core.View.extend({
 
   _addLayers: function() {
     var self = this;
+    this._removeLayers();
     this.map.layers.each(function(lyr) {
       self._addLayer(lyr);
     });
+  },
+
+  _removeLayers: function(layer) {
+    for(var i in this.layers) {
+      var layer_view = this.layers[i];
+      layer_view.remove();
+      delete this.layers[i];
+    }
   },
 
   _removeLayer: function(layer) {
@@ -16706,7 +21586,7 @@ cdb.geo.MapView = cdb.core.View.extend({
   getLayerByCid: function(cid) {
     var l = this.layers[cid];
     if(!l) {
-      cdb.log.error("layer with cid " + cid + " can't be get");
+      cdb.log.debug("layer with cid " + cid + " can't be get");
     }
     return l;
   },
@@ -17208,17 +22088,19 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
 
   events: {
     // Close bindings
-    "click .close":       "_closeInfowindow",
-    "touchstart .close":  "_closeInfowindow",
+    "click .close":         "_closeInfowindow",
+    "touchstart .close":    "_closeInfowindow",
+    "MSPointerDown .close": "_closeInfowindow",
     // Rest infowindow bindings
-    "dragstart":          "_checkOrigin",
-    "mousedown":          "_checkOrigin",
-    "touchstart":         "_checkOrigin",
-    "dblclick":           "_stopPropagation",
-    "mousewheel":         "_stopPropagation",
-    "DOMMouseScroll":     "_stopPropagation",
-    "dbclick":            "_stopPropagation",
-    "click":              "_stopPropagation"
+    "dragstart":            "_checkOrigin",
+    "mousedown":            "_checkOrigin",
+    "touchstart":           "_checkOrigin",
+    "MSPointerDown":        "_checkOrigin",
+    "dblclick":             "_stopPropagation",
+    "mousewheel":           "_stopPropagation",
+    "DOMMouseScroll":       "_stopPropagation",
+    "dbclick":              "_stopPropagation",
+    "click":                "_stopPropagation"
   },
 
   initialize: function(){
@@ -17267,14 +22149,21 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
         $jscrollpane.data().jsp && $jscrollpane.data().jsp.destroy();
       }
 
-      var attrs = _.clone(this.model.attributes);
-
-      // Mustache doesn't support 0 values, we have to convert number to strings
-      // before apply the template
-
-      var fields = this._fieldsToString(attrs);
-
-      this.$el.html($(this.template(fields)));
+      // Clone fields and template name
+      var fields = _.map(this.model.attributes.content.fields, function(field){
+        return _.clone(field);
+      });
+      var template_name = _.clone(this.model.attributes.template_name);
+      // Sanitized them
+      var sanitized_fields = this._fieldsToString(fields, template_name);
+      var data = this.model.get('content') ? this.model.get('content').data : {}
+      this.$el.html($(this.template({ 
+          content: {
+            fields: sanitized_fields,
+            data: data 
+          }
+        })
+      ));
 
       // Hello jscrollpane hacks!
       // It needs some time to initialize, if not it doesn't render properly the fields
@@ -17294,7 +22183,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
 
       // If the template is 'cover-enabled', load the cover
       this._loadCover();
-    };
+    }
 
     return this;
   },
@@ -17336,16 +22225,16 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
   /**
    *  Convert values to string unless value is NULL
    */
-  _fieldsToString: function(attrs) {
-    if (attrs.content && attrs.content.fields) {
+  _fieldsToString: function(fields, template_name) {
+    var fields_sanitized = [];
+    if (fields && fields.length > 0) {
       var self = this;
-      attrs.content.fields = _.map(attrs.content.fields, function(attr,i) {
+      fields_sanitized = _.map(fields, function(field,i) {
         // Return whole attribute sanitized
-        return self._sanitizeField(attr, attrs.template_name, attr.index || i);
+        return self._sanitizeField(field, template_name, field.index || i);
       });
     }
-
-    return attrs;
+    return fields_sanitized;
   },
 
   /**
@@ -17365,19 +22254,13 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     // Cast all values to string due to problems with Mustache 0 number rendering
     var new_value = attr.value.toString();
 
-    //Link? go ahead!
-    if (!attr.type && this._isValidURL(new_value)) {
-      attr.url = attr.value;
-    }
+    // Remove '_' character from titles
+    if (attr.title)
+      attr.title = attr.title.replace(/_/g,' ');
 
     // If it is index 0, not any field type, header template type and length bigger than 30... cut off the text!
     if (!attr.type && pos==0 && attr.value.length > 35 && template_name && template_name.search('_header_') != -1) {
       new_value = attr.value.substr(0,32) + "...";
-    }
-
-    // If it is index 0, not any field type, header image template type... don't cut off the text!
-    if (pos==0 && template_name.search('_header_with_image') != -1) {
-      new_value = attr.value;
     }
 
     // If it is index 1, not any field type, header image template type and length bigger than 30... cut off the text!
@@ -17385,6 +22268,17 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
       new_value = attr.value.substr(0,32) + "...";
     }
 
+    // Is it the value a link?
+    if (this._isValidURL(attr.value)) {
+      new_value = "<a href='" + attr.value + "' target='_blank'>" + new_value + "</a>"
+    }
+
+    // If it is index 0, not any field type, header image template type... don't cut off the text or add any link!!
+    if (pos==0 && template_name.search('_header_with_image') != -1) {
+      new_value = attr.value;
+    }
+
+    // Save new sanitized value
     attr.value = new_value;
 
     return attr;
@@ -17446,16 +22340,10 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
    *  Get cover URL
    */
   _getCoverURL: function() {
-
     var content = this.model.get("content");
 
-    if (content && content.fields) {
-
-      if (content.fields && content.fields.length > 0) {
-        // Force always the value to be a string
-        return (content.fields[0].value).toString();
-      }
-      return false;
+    if (content && content.fields && content.fields.length > 0) {
+      return (content.fields[0].value).toString();
     }
 
     return false;
@@ -17531,8 +22419,8 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
    */
   _isValidURL: function(url) {
     if (url) {
-      var urlPattern = /(http|ftp|https):\/\/[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:\/~+#-]*[\w@?^=%&amp;\/~+#-])?/
-      return url.match(urlPattern) != null ? true : false;
+      var urlPattern = /^(http|ftp|https):\/\/[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:\/~+#-]*[\w@?^=%&amp;\/~+#-])?$/
+      return String(url).match(urlPattern) != null ? true : false;
     }
 
     return false;
@@ -17662,7 +22550,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
    *  Animate infowindow to show up
    */
   _animateIn: function(delay) {
-    if (!$.browser.msie || ($.browser.msie && $.browser.version.search("9.") != -1)) {
+    if (!$.browser.msie || ($.browser.msie && parseInt($.browser.version) > 8 )) {
       this.$el.css({
         'marginBottom':'-10px',
         'display':'block',
@@ -17684,7 +22572,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
    *  Animate infowindow to disappear
    */
   _animateOut: function() {
-    if (!$.browser.msie || ($.browser.msie && $.browser.version.search("9.") != -1)) {
+    if (!$.browser.msie || ($.browser.msie && parseInt($.browser.version) > 8 )) {
       var self = this;
       this.$el.animate({
         marginBottom: "-10px",
@@ -17852,119 +22740,47 @@ cdb.geo.ui.Search = cdb.core.View.extend({
     });
   }
 });
-/**
-* Model for the Layer collection
-*/
-cdb.geo.ui.Layer = cdb.core.Model.extend({
-
-  defaults: {
-    disabled: true,
-    selected: false
-  }
-
-});
 
 /**
-* View for each one of the layers
-*/
-cdb.geo.ui.LayerView = cdb.core.View.extend({
+ *  Layer selector: it allows to select the layers that will be shown in the map
+ *  - It needs the mapview, the element template and the dropdown template
+ *
+ *  var layer_selector = new cdb.geo.ui.LayerSelector({
+ *    mapView: mapView,
+ *    template: element_template,
+ *    dropdown_template: dropdown_template
+ *  });
+ */
 
-  tagName: "li",
-
-  defaults: {
-    template: '<a class="layer" href="#"><%= name %></a> <a href="#switch" class="right switch disabled"><span class="handle"></span></a>'
-  },
-
-  events: {
-    "click": '_onSwitchClick',
-  },
-
-  initialize: function() {
-
-    this.model = new cdb.geo.ui.Layer();
-
-    this.model.bind("change:selected", this._onSwitchSelected, this);
-
-    if (!this.options.template) this.options.template = this.defaults.template;
-
-    // Template
-    this.template = this.options.template_base ? cdb.templates.getTemplate(this.options.template_base) : _.template(this.options.template);
-
-  },
-
-  render: function() {
-
-    this.$el.append(this.template(this.options))
-    return this;
-
-  },
-
-  /*
-  * Throw an event when the user clicks in the switch button
-  */
-  _onSwitchSelected: function() {
-
-    var enabled = this.model.get('selected');
-
-    this.$el.find(".switch")
-    .removeClass(enabled ? 'disabled' : 'enabled')
-    .addClass(enabled    ? 'enabled'  : 'disabled');
-
-    this.trigger("switchChanged", enabled);
-
-  },
-
-  _onSwitchClick: function(e){
-
-    e.preventDefault();
-    e.stopPropagation();
-
-    this.model.set("selected", !this.model.get("selected"));
-
-  }
-
-});
-
-/**
-* Collection of layers
-*/
-cdb.geo.ui.Layers = Backbone.Collection.extend({
-  model: cdb.geo.ui.Layer
-});
-
-/**
-* Layer selector: it allows to select the layers that will be shown in the map
-*/
 cdb.geo.ui.LayerSelector = cdb.core.View.extend({
 
-  className: 'layer_selector_box',
+  className: 'cartodb-layer-selector-box',
 
   events: {
     "click":     '_openDropdown',
-    "dblclick":  '_stopPropagation',
-    "mousedown": '_stopPropagation'
+    "dblclick":  'killEvent',
+    "mousedown": 'killEvent'
   },
 
   initialize: function() {
+    this.map = this.options.mapView.map;
 
-    this.model = new cdb.core.Model({
-      count: 0
-    });
+    this.mapView  = this.options.mapView;
+    this.mapView.bind('click zoomstart drag', function() {
+      this.dropdown && this.dropdown.hide()
+    }, this);
+    this.add_related_model(this.mapView);
 
-    this.model.bind("change:count", this._onCountChange, this);
-
+    this.layers = [];
   },
 
   render: function() {
 
-    var self = this;
-//debugger;
-
-    this.$el.html(this.options.template(_.extend(this.model.toJSON(), this.options)));
+    this.$el.html(this.options.template(this.options));
 
     this.dropdown = new cdb.ui.common.Dropdown({
-      className:" dropdown border",
-      template_base: 'table/views/layer_dropdown',
+      className:"cartodb-dropdown border",
+      template: this.options.dropdown_template,
       target: this.$el.find("a"),
       speedIn: 300,
       speedOut: 200,
@@ -17976,48 +22792,192 @@ cdb.geo.ui.LayerSelector = cdb.core.View.extend({
       horizontal_offset: 13
     });
 
-    cdb.god.bind("closeDialogs", this.dropdown.hide, this.dropdown);
+    if (cdb.god) cdb.god.bind("closeDialogs", this.dropdown.hide, this.dropdown);
 
     this.$el.append(this.dropdown.render().el);
 
-    this.options.layers.each(function(l) {
-
-      var layerView = new cdb.geo.ui.LayerView({
-        name: l.get("name"),
-        template_base: 'table/views/layer_item',
-      }).bind("switchChanged", self.switchChanged, self);
-
-      self.$el.find("ul").append(layerView.render().el);
-
-    });
-
+    this._getLayers();
+    this._setCount();
 
     return this;
-
   },
 
-  switchChanged: function(e) {
-    if (e) {
-      this.model.set("count", this.model.get("count") + 1)
+  _getLayers: function() {
+    var self = this;
+
+    _.each(this.map.layers.models, function(layer) {
+      
+      if (layer.get("type") == 'layergroup') {
+        var layer_definition = self.mapView.getLayerByCid(layer.cid);
+
+        for (var i = 0 ; i < layer_definition.getLayerCount(); ++i) {
+          var l = layer_definition.getLayer(i);
+          var m = new cdb.core.Model(l);
+          m.set('order', i);
+          m.set('type', 'layergroup');
+          if(self.options.layer_names) {
+            m.set('layer_name', self.options.layer_names[i]);
+          } else {
+            m.set('layer_name', l.options.layer_name);
+          }
+          var layerView = self._createLayer('LayerViewFromLayerGroup', { model: m, layer_definition: layer_definition });
+          layerView.bind('switchChanged', self._setCount, self);
+          layerView.bind('layergroupChanged', self._setLayerGroup, self)
+          self.layers.push(layerView);
+        }
+      } else if (layer.get("type") == "CartoDB") {
+        var layerView = self._createLayer('LayerView', { model: layer });
+        layerView.bind('switchChanged', self._setCount, self);
+        self.layers.push(layerView);
+      }
+
+    });
+  },
+
+  _createLayer: function(_class, opts) {
+    var layerView = new cdb.geo.ui[_class](opts);
+    this.$("ul").append(layerView.render().el);
+    this.addView(layerView);
+    return layerView;
+  },
+
+  _setLayerGroup: function(layer_definition) {
+    var self = this;
+
+    for (var i = this.layers.length - 1; i >= 0; --i) {
+      if (self.layers[i].model.get('type') == "layergroup") {
+        layer_definition.removeLayer(i);
+      }
     }
-    else this.model.set("count", this.model.get("count") - 1)
+
+    var order = 0;
+
+    for (var i = 0, l = this.layers.length; i < l; ++i) {
+      if (self.layers[i].model.get('type') == "layergroup" && self.layers[i].model.get('visible')) {
+        layer_definition.addLayer(self.layers[i].model.toJSON().options, order);
+        order++;
+      }
+    }
   },
 
-  _onCountChange: function() {
+  _setCount: function() {
+    var count = 0;
+    for (var i = 0, l = this.layers.length; i < l; ++i) {
+      var lyr = this.layers[i];
+      if (lyr.model.get('visible')) {
+        count++;
+      }
+    }
 
-    this.$el.find(".count").html(this.model.get("count"));
-
-  },
-
-  _stopPropagation: function(e) {
-    e.preventDefault();
-    e.stopPropagation();
+    this.$('.count').text(count);
   },
 
   _openDropdown: function() {
     this.dropdown.open();
   }
 
+});
+
+
+
+
+
+
+/**
+ *  View for each CartoDB layer
+ *  - It needs a model to make it work.
+ *
+ *  var layerView = new cdb.geo.ui.LayerView({
+ *    model: layer_model,
+ *    layer_definition: layer_definition
+ *  });
+ *  
+ */
+
+cdb.geo.ui.LayerView = cdb.core.View.extend({
+
+  tagName: "li",
+
+  defaults: {
+    template: '\
+      <a class="layer" href="#/change-layer"><%= table_name %></a>\
+      <a href="#switch" class="right <%= visible ? "enabled" : "enabled" %> switch"><span class="handle"></span></a>\
+    '
+  },
+
+  events: {
+    "click": '_onSwitchClick'
+  },
+
+  initialize: function() {
+
+    // Check if it has visible parameter set
+    if (!this.model.get('visible')) this.model.set('visible', true);
+
+    this.model.bind("change:visible", this._onSwitchSelected, this);
+
+    // Template
+    this.template = this.options.template ? cdb.templates.getTemplate(this.options.template) : _.template(this.defaults.template);
+  },
+
+  render: function() {
+    this.$el.append(this.template(this.model.attributes));
+    return this;
+  },
+
+  /*
+  * Throw an event when the user clicks in the switch button
+  */
+  _onSwitchSelected: function() {
+    var enabled = this.model.get('visible');
+
+    // Change switch
+    this.$el.find(".switch")
+      .removeClass(enabled ? 'disabled' : 'enabled')
+      .addClass(enabled    ? 'enabled'  : 'disabled');
+
+    // Send trigger
+    this.trigger('switchChanged');
+  },
+
+  _onSwitchClick: function(e){
+    this.killEvent(e);
+
+    // Set model
+    this.model.set("visible", !this.model.get("visible"));
+  }
+
+});
+
+
+
+
+/**
+ *  View for each layer from a layer group
+ *  - It needs a model and the layer_definition to make it work.
+ *
+ *  var layerView = new cdb.geo.ui.LayerViewFromLayerGroup({
+ *    model: layer_model,
+ *    layer_definition: layer_definition
+ *  });
+ *  
+ */
+
+cdb.geo.ui.LayerViewFromLayerGroup = cdb.geo.ui.LayerView.extend({
+
+  defaults: {
+    template: '\
+      <a class="layer" href="#/change-layer"><%= layer_name %></a>\
+      <a href="#switch" class="right <%= visible ? "enabled" : "enabled" %> switch"><span class="handle"></span></a>\
+    '
+  },
+
+  _onSwitchSelected: function() {
+  
+    cdb.geo.ui.LayerView.prototype._onSwitchSelected.call(this);
+
+    this.trigger('layergroupChanged', this.options.layer_definition);
+  }
 });
 /**
  * Show or hide tiles loader
@@ -18178,82 +23138,515 @@ cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
 });
 
 
-/*
- *  common functions for cartodb connector
+
+function LayerDefinition(layerDefinition, options) {
+
+  this.options = _.defaults(options, {
+    ajax: $.ajax,
+    pngParams: ['map_key', 'api_key', 'cache_policy', 'updated_at'],
+    gridParams: ['map_key', 'api_key', 'cache_policy', 'updated_at'],
+    cors: this.isCORSSupported(),
+    btoa: this.isBtoaSupported() ? this._encodeBase64Native : this._encodeBase64
+  });
+
+  this.setLayerDefinition(layerDefinition, { silent: true });
+  this.layerToken = null;
+  this.urls = null;
+  this.silent = false;
+  this.interactionEnabled = []; //TODO: refactor, include inside layer
+  this._layerTokenQueue = [];
+  this._timeout = -1;
+  this._queue = [];
+  this._waiting = false;
+  this.lastTimeUpdated = null;
+  this._refreshTimer = -1;
+}
+
+/**
+ * given a list of sublayers as: 
+ * {
+ *   sql: '...',
+ *   cartocss: '..',
+ *   cartocss_version:'...', //optional
+ *   interactivity: '...' //optional
+ * }
+ * returns the layer definition for version 1.0.0
+ *
+ * ``sublayers`` should be an array, an exception is thrown otherewise
+ *
  */
+LayerDefinition.layerDefFromSubLayers = function(sublayers) {
 
-function CartoDBLayerCommon() {}
+  if(!sublayers || sublayers.length === undefined) throw new Error("sublayers should be an array");
 
-CartoDBLayerCommon.prototype = {
+  var layer_definition = {
+    version: '1.0.0',
+    stat_tag: 'API',
+    layers: []
+  };
 
-  // the way to show/hidelayer is to set opacity
-  // removing the interactivty at the same time
-  show: function() {
-    if (this.options.visible) {
-      return;
-    }
-    this.options.visible = true;
-    this.setOpacity(this.options.previous_opacity);
-    delete this.options.previous_opacity;
-    this.setInteraction(true);
+  for (var i in sublayers) {
+    layer_definition.layers.push({
+      type: 'cartodb',
+      options: sublayers[i]
+    });
+  }
+
+  return layer_definition;
+};
+
+LayerDefinition.prototype = {
+
+  /*
+   * TODO: extract these two functions to some core module 
+   */
+  isCORSSupported: function() {
+    return 'withCredentials' in new XMLHttpRequest() || typeof XDomainRequest !== "undefined";
   },
 
-  hide: function() {
-    if (!this.options.visible) {
-      return;
-    }
-    this.options.previous_opacity = this.options.opacity;
-    this.setOpacity(0);
-    this.setInteraction(false);
-
-    this.options.visible = false;
+  isBtoaSupported: function() {
+    return typeof window['btoa'] == 'function';
   },
 
+  getLayerCount: function() {
+    return this.layers.length;
+  },
+
+  setLayerDefinition: function(layerDefinition, options) {
+    options = options || {};
+    this.version = layerDefinition.version || '1.0.0';
+    this.stat_tag = layerDefinition.stat_tag;
+    this.layers = _.clone(layerDefinition.layers);
+    if(!options.silent) {
+      this._definitionUpdated();
+    }
+  },
+
+  toJSON: function() {
+    var obj = {};
+    obj.version = this.version;
+    if(this.stat_tag) {
+      obj.stat_tag = this.stat_tag;
+    }
+    obj.layers = [];
+    for(var i in this.layers) {
+      var layer = this.layers[i];
+      if(!layer.options.hidden) {
+        obj.layers.push({
+          type: 'cartodb',
+          options: {
+            sql: layer.options.sql,
+            cartocss: layer.options.cartocss,
+            cartocss_version: layer.options.cartocss_version || '2.1.0',
+            interactivity: this._cleanInteractivity(layer.options.interactivity)
+          }
+        });
+      }
+    }
+    return obj;
+  },
+
+  _encodeBase64Native: function (input) {
+    return btoa(input)
+  },
+
+  // ie7 btoa,
+  // from http://phpjs.org/functions/base64_encode/
+  _encodeBase64: function (data) {
+    var b64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+    var o1, o2, o3, h1, h2, h3, h4, bits, i = 0,
+      ac = 0,
+      enc = "",
+      tmp_arr = [];
+
+    if (!data) {
+      return data;
+    }
+
+    do { // pack three octets into four hexets
+      o1 = data.charCodeAt(i++);
+      o2 = data.charCodeAt(i++);
+      o3 = data.charCodeAt(i++);
+
+      bits = o1 << 16 | o2 << 8 | o3;
+
+      h1 = bits >> 18 & 0x3f;
+      h2 = bits >> 12 & 0x3f;
+      h3 = bits >> 6 & 0x3f;
+      h4 = bits & 0x3f;
+
+      // use hexets to index into b64, and append result to encoded string
+      tmp_arr[ac++] = b64.charAt(h1) + b64.charAt(h2) + b64.charAt(h3) + b64.charAt(h4);
+    } while (i < data.length);
+
+    enc = tmp_arr.join('');
+
+    var r = data.length % 3;
+    return (r ? enc.slice(0, r - 3) : enc) + '==='.slice(r || 3);
+  },
+
+  _array2hex: function(byteArr) {
+    var encoded = []
+    for(var i = 0; i < byteArr.length; ++i) {
+      encoded.push(String.fromCharCode(byteArr[i] + 128));
+    }
+    return this.options.btoa(encoded.join(''))
+  },
+
+  getLayerToken: function(callback) {
+    var self = this;
+    clearTimeout(this._timeout);
+    this._layerTokenQueue.push(callback);
+    this._timeout = setTimeout(function() {
+      self._getLayerToken(function(data, err) {
+        var fn;
+        while(fn = self._layerTokenQueue.pop()) {
+          fn(data, err);
+        }
+      });
+    }, 4);
+  },
+
+  _requestFinished: function() {
+    var self = this;
+    this._waiting = false;
+    this.lastTimeUpdated = new Date().getTime();
+
+    // refresh layer when invalidation time has passed
+    clearTimeout(this._refreshTimer);
+    this._refreshTimer = setTimeout(function() {
+      self.invalidate();
+    }, this.options.refreshTime || (60*5*1000));
+
+    // check request queue
+    if(this._queue.length) {
+      this._getLayerToken(this._queue.pop());
+    }
+  },
+
+  _requestPOST: function(params, callback) {
+    var self = this;
+    var ajax = this.options.ajax;
+    ajax({
+      crossOrigin: true,
+      type: 'POST',
+      dataType: 'json',
+      contentType: 'application/json',
+      url: this._tilerHost() + '/tiles/layergroup' + (params.length ? "?" + params.join('&'): ''),
+      data: JSON.stringify(this.toJSON()),
+      success: function(data) {
+        // discard previous calls when there is another call waiting
+        if(0 === self._queue.length) {
+          callback(data);
+        }
+        self._requestFinished();
+      },
+      error: function(xhr) {
+        var err = { errors: ['unknow error'] };
+        try {
+          err = JSON.parse(xhr.responseText);
+        } catch(e) {}
+        if(0 === self._queue.length) {
+          callback(null, err);
+        }
+        self._requestFinished();
+      }
+    });
+  },
+
+  _requestGET: function(params, callback) {
+    var self = this;
+    var ajax = this.options.ajax;
+    var json = '{ "config": "' +
+      JSON.stringify(this.toJSON()).replace(/"/g, '\\"') +
+    '"}';
+    LZMA.compress(json, 3, function(encoded) {
+      encoded = self._array2hex(encoded);
+      params.push("lzma=" + encodeURIComponent(encoded));
+      ajax({
+        dataType: 'jsonp',
+        url: self._tilerHost() + '/tiles/layergroup?' + params.join('&'),
+        success: function(data) {
+          if(0 === self._queue.length) {
+            callback(data);
+          }
+          self._requestFinished();
+        },
+        error: function(data) {
+          var err = { errors: ['unknow error'] };
+          try {
+            err = JSON.parse(xhr.responseText);
+          } catch(e) {}
+          if(0 === self._queue.length) {
+            callback(null, err);
+          }
+          self._requestFinished();
+        }
+      });
+    });
+  },
+
+  _getLayerToken: function(callback) {
+    var self = this;
+    var params = [];
+    callback = callback || function() {};
+
+    // if the previous request didn't finish, queue it
+    if(this._waiting) {
+      this._queue.push(callback);
+      return this;
+    }
+
+    // setup params
+    var extra_params = this.options.extra_params || {};
+    var api_key = this.options.map_key || this.options.api_key || extra_params.map_key || extra_params.api_key;
+    if(api_key) {
+      params.push("map_key=" + api_key);
+    }
+    // mark as the request is being done 
+    this._waiting = true;
+    var req = null;
+    if(this.options.cors) {
+      req = this._requestPOST;
+    } else {
+      req = this._requestGET;
+    }
+    req.call(this, params, callback);
+    return this;
+  },
+
+  removeLayer: function(layer) {
+    if(layer < this.getLayerCount() && layer >= 0) {
+      this.layers.splice(layer, 1);
+      this.interactionEnabled.splice(layer, 1);
+      this._reorderSubLayers();
+      this.invalidate();
+    }
+    return this;
+  },
+
+  _reorderSubLayers: function() {
+    for(var i = 0; i < this.layers.length; ++i) {
+      var layer = this.layers[i];
+      if(layer.sub) {
+        layer.sub._setPosition(i);
+      }
+    }
+  },
+
+  getLayer: function(index) {
+    return _.clone(this.layers[index]);
+  },
+
+  invalidate: function() {
+    this.layerToken = null;
+    this.urls = null;
+    this.onLayerDefinitionUpdated();
+  },
+
+  setLayer: function(layer, def) {
+    if(layer < this.getLayerCount() && layer >= 0) {
+      this.layers[layer] = _.clone(def);
+    }
+    this.invalidate();
+    return this;
+  },
+
+  addLayer: function(def, layer) {
+    layer = layer === undefined ? this.getLayerCount(): layer;
+    if(layer <= this.getLayerCount() && layer >= 0) {
+      if(!def.sql || !def.cartocss) {
+        throw new Error("layer definition should contain at least a sql and a cartocss");
+        return this;
+      }
+      this.layers.splice(layer, 0, {
+        type: 'cartodb',
+        options: def
+      });
+      this._definitionUpdated();
+    }
+    return this;
+  },
+
+  getTiles: function(callback) {
+    var self = this;
+    if(self.layerToken) {
+      callback && callback(self._layerGroupTiles(self.layerToken, self.options.extra_params));
+      return this;
+    }
+    this.getLayerToken(function(data, err) {
+      if(data) {
+        self.layerToken = data.layergroupid;
+        self.urls = self._layerGroupTiles(data.layergroupid, self.options.extra_params);
+        callback && callback(self.urls);
+      } else {
+        callback && callback(null, err);
+      }
+    });
+    return this;
+  },
+
+  isHttps: function() {
+    return this.options.tiler_protocol === 'https';
+  },
+
+  _layerGroupTiles: function(layerGroupId, params) {
+    var subdomains = this.options.subdomains || ['0', '1', '2', '3'];
+    if(this.isHttps()) {
+      subdomains = [null]; // no subdomain
+    }
+
+    var tileTemplate = '/{z}/{x}/{y}';
+
+    var grids = []
+    var tiles = [];
+
+    var pngParams = this._encodeParams(params, this.options.pngParams);
+    for(var i = 0; i < subdomains.length; ++i) {
+      var s = subdomains[i]
+      var cartodb_url = this._host(s) + '/tiles/layergroup/' + layerGroupId
+      tiles.push(cartodb_url + tileTemplate + ".png?" + pngParams );
+
+      var gridParams = this._encodeParams(params, this.options.gridParams);
+      for(var layer in this.layers) {
+        grids[layer] = grids[layer] || [];
+        grids[layer].push(cartodb_url + "/" + layer +  tileTemplate + ".grid.json?" + gridParams);
+      }
+    }
+
+    return {
+      tiles: tiles,
+      grids: grids
+    }
+
+  },
+
+  _cleanInteractivity: function(attributes) {
+    if(!attributes) return;
+    if(typeof(attributes) == 'string') {
+      attributes = attributes.split(',');
+    }
+
+    for(var i = 0; i < attributes.length; ++i) {
+      attributes[i] = attributes[i].replace(/ /g, '');
+    }
+
+    return attributes;
+  },
 
   /**
-   * Check if CartoDB logo already exists
+   * set interactivity attributes for a layer.
+   * if attributes are passed as first param layer 0 is
+   * set
    */
-  _isWadusAdded: function(container, className) {
-    // Check if any cartodb-logo exists within container
-    var a = [];
-    var re = new RegExp('\\b' + className + '\\b');
-    var els = container.getElementsByTagName("*");
-    for(var i=0,j=els.length; i<j; i++)
-      if(re.test(els[i].className))a.push(els[i]);
+  setInteractivity: function(layer, attributes) {
 
-    return a.length > 0;
-  },
-
-  
-  /**
-   *  Check if browser supports retina images
-   */
-  _isRetinaBrowser: function() {
-    return  ('devicePixelRatio' in window && window.devicePixelRatio > 1) ||
-            ('matchMedia' in window && window.matchMedia('(min-resolution:144dpi)') &&
-            window.matchMedia('(min-resolution:144dpi)').matches);
-  },
-
-
-  /**
-   * Add Cartodb logo
-   * It needs a position, timeout if it is needed and the container where add it
-   */
-  _addWadus: function(position, timeout, container) {
-    if (this.options.cartodb_logo !== false && !this._isWadusAdded(container, 'cartodb_logo')) {
-      var cartodb_link = document.createElement("a");
-      var is_retina = this._isRetinaBrowser();
-      cartodb_link.setAttribute('class','cartodb_logo');
-      container.appendChild(cartodb_link);
-      setTimeout(function() {
-        cartodb_link.setAttribute('style',"position:absolute; bottom:0; left:0; display:block; border:none; z-index:10000;");
-        cartodb_link.setAttribute('href','http://www.cartodb.com');
-        cartodb_link.setAttribute('target','_blank');
-        var protocol = location.protocol.indexOf('https') === -1 ? 'http': 'https';
-        cartodb_link.innerHTML = "<img width='71' height='29' src='" + protocol + "://cartodb.s3.amazonaws.com/static/new_logo" + (is_retina ? '@2x' : '') + ".png' style='position:absolute; bottom:" + 
-          ( position.bottom || 0 ) + "px; left:" + ( position.left || 0 ) + "px; display:block; width:71px!important; height:29px!important; border:none; outline:none;' alt='CartoDB' title='CartoDB' />";
-      },( timeout || 0 ));
+    if(attributes === undefined) {
+      attributes = layer;
+      layer = 0;
     }
+
+    if(typeof(attributes) == 'string') {
+      attributes = attributes.split(',');
+    }
+
+    for(var i = 0; i < attributes.length; ++i) {
+      attributes[i] = attributes[i].replace(/ /g, '');
+    }
+
+    this.layers[layer].options.interactivity = attributes;
+    this._definitionUpdated();
+    return this;
+  },
+
+  onLayerDefinitionUpdated: function() {},
+
+  setSilent: function(b) {
+    this.silent = b;
+  },
+
+  _definitionUpdated: function() {
+    if(this.silent) return;
+    this.invalidate();
+  },
+
+  _tileJSONfromTiles: function(layer, urls) {
+    return {
+      tilejson: '2.0.0',
+      scheme: 'xyz',
+      grids: urls.grids[layer],
+      tiles: urls.tiles,
+      formatter: function(options, data) { return data; }
+     };
+  },
+
+  /**
+   * get tile json for layer
+   */
+  getTileJSON: function(layer, callback) {
+    layer = layer == undefined ? 0: layer;
+    this.getTiles(function(urls) {
+      if(!urls) {
+        callback(null);
+        return;
+      }
+      if(callback) {
+        callback(this._tileJSONfromTiles(layer, urls));
+      }
+    });
+  },
+
+  /**
+   * Change query of the tiles
+   * @params {str} New sql for the tiles
+   */
+  setQuery: function(layer, sql) {
+    if(sql === undefined) {
+      sql = layer;
+      layer = 0;
+    }
+    this.layers[layer].options.sql = sql
+    this._definitionUpdated();
+  },
+
+  getQuery: function(layer) {
+    layer = layer || 0;
+    return this.layers[layer].options.sql
+  },
+
+  /**
+   * Change style of the tiles
+   * @params {style} New carto for the tiles
+   */
+  setCartoCSS: function(layer, style, version) {
+    if(version === undefined) {
+      version = style;
+      style = layer;
+      layer = 0;
+    }
+
+    version = version || cdb.CARTOCSS_DEFAULT_VERSION;
+
+    this.layers[layer].options.cartocss = style;
+    this.layers[layer].options.cartocss_version = version;
+    this._definitionUpdated();
+
+  },
+
+  _encodeParams: function(params, included) {
+    if(!params) return '';
+    var url_params = [];
+    included = included || _.keys(params);
+    for(var i in included) {
+      var k = included[i]
+      var p = params[k];
+      if(p) {
+        var q = encodeURIComponent(p);
+        q = q.replace(/%7Bx%7D/g,"{x}").replace(/%7By%7D/g,"{y}").replace(/%7Bz%7D/g,"{z}");
+        url_params.push(k + "=" + q);
+      }
+    }
+    return url_params.join('&')
   },
 
   _tilerHost: function() {
@@ -18273,214 +23666,375 @@ CartoDBLayerCommon.prototype = {
       if (subhost) {
         h += subhost + ".";
       }
-      h += cdb.CDB_HOST[opts.tiler_protocol] + "/" + opts.user_name;
+      var cdn_host = opts.cdn_url || cdb.CDB_HOST;
+      if(!cdn_host.http && !cdn_host.https) {
+        throw new Error("cdn_host should contain http and/or https entries");
+      }
+      h += cdn_host[opts.tiler_protocol] + "/" + opts.user_name;
       return h;
     }
   },
 
-  //
-  // param ext tile extension, i.e png, json
-  // 
-  _tilesUrl: function(ext, subdomain) {
-    var opts = this.options;
-    ext = ext || 'png';
-    var cartodb_url = this._host(subdomain) + '/tiles/' + opts.table_name + '/{z}/{x}/{y}.' + ext + '?';
+  getInfowindowData: function(layer) {
+    return this.options.layer_definition.layers[layer].infowindow;
+  },
 
-    // set params
-    var params = {};
-    if(opts.query) {
-      params.sql = opts.query;
-    }
-
-    if(opts.query_wrapper) {
-      params.sql = _.template(opts.query_wrapper)({ sql: params.sql || "select * from " + opts.table_name });
-    }
-
-    if(opts.tile_style && !opts.use_server_style) {
-      params.style = opts.tile_style;
-    }
-    // style_version is only valid when tile_style is present
-    if(opts.tile_style && opts.style_version && !opts.use_server_style) {
-      params.style_version = opts.style_version;
-    }
-
-    if(ext === 'grid.json') {
-      if(opts.interactivity) {
-        params.interactivity = opts.interactivity.replace(/ /g, '');
+  containInfowindow: function() {
+    var layers =  this.options.layer_definition.layers;
+    for(var i = 0; i < layers.length; ++i) {
+      var infowindow = layers[i].infowindow;
+      if (infowindow && infowindow.fields && infowindow.fields.length > 0) {
+        return true;
       }
     }
-
-    // extra_params?
-    for (_param in opts.extra_params) {
-       params[_param] = opts.extra_params[_param];
-    }
-
-    var url_params = [];
-    for(var k in params) {
-      var p = params[k];
-      if(p) {
-        var q = encodeURIComponent(
-          p.replace ? 
-            p.replace(/\{\{table_name\}\}/g, opts.table_name):
-            p
-        );
-        q = q.replace(/%7Bx%7D/g,"{x}").replace(/%7By%7D/g,"{y}").replace(/%7Bz%7D/g,"{z}");
-        url_params.push(k + "=" + q);
-      }
-    }
-    cartodb_url += url_params.join('&');
-
-    return cartodb_url;
+    return false;
   },
 
-  isHttps: function() {
-    return this.options.tiler_protocol === 'https';
+  /**
+   * adds a new sublayer to the layer with the sql and cartocss params
+   */
+  createSubLayer: function(attrs, options) {
+    this.addLayer(attrs);
+    return this.getSubLayer(this.getLayerCount() - 1);
   },
 
-
-  _encodeParams: function(params, included) {
-    var url_params = [];
-    included = included || _.keys(params);
-    for(var i in included) {
-      var k = included[i]
-      var p = params[k];
-      if(p) {
-        var q = encodeURIComponent(p);
-        q = q.replace(/%7Bx%7D/g,"{x}").replace(/%7By%7D/g,"{y}").replace(/%7Bz%7D/g,"{z}");
-        url_params.push(k + "=" + q);
-      }
-    }
-    return url_params.join('&')
+  getSubLayer: function(index) {
+    var layer = this.layers[index];
+    layer.sub = layer.sub || new SubLayer(this, index);
+    return layer.sub;
   },
 
-  _layerGroupTiles: function(layerGroupId, params) {
-    var subdomains = this.options.subdomains || ['0', '1', '2', '3'];
-    if(this.isHttps()) {
-      subdomains = [null]; // no subdomain
-    } 
+  getSubLayerCount: function() {
+    return this.getLayerCount();
+  }
 
 
-    var tileTemplate = '/{z}/{x}/{y}';
+};
 
-    var grids = []
-    var tiles = [];
+function SubLayer(_parent, position) {
+  this._parent = _parent;
+  this._position = position;
+  this._added = true;
 
-    var pngParams = this._encodeParams(params, ['api_key', 'cache_policy', 'updated_at']);
-    for(var i = 0; i < subdomains.length; ++i) {
-      var s = subdomains[i]
-      var cartodb_url = this._host(s) + '/tiles/layergroup/' + layerGroupId 
-      tiles.push(cartodb_url + tileTemplate + ".png?" + pngParams );
-    }
+  this._bindInteraction();
+}
 
-    var gridParams = this._encodeParams(params, ['api_key', 'cache_policy', 'updated_at', 'interactivity']);
+SubLayer.prototype = {
 
-    for(var i = 0; i < subdomains.length; ++i) {
-      var s = subdomains[i]
-      var cartodb_url = this._host(s) + '/tiles/layergroup/' + layerGroupId 
-      for(var layer in this.options.layer_definition.layers) {
-        grids[layer] = grids[layer] || [];
-        grids[layer].push(cartodb_url + "/" + layer + "/" + tileTemplate + ".grid.json?" + gridParams);
-      }
-    }
-    
-    return {
-      tiles: tiles,
-      grids: grids
-    }
-
+  remove: function() {
+    this._check();
+    this._parent.removeLayer(this._position);
+    this._unbindInteraction();
+    this._added = false;
   },
 
-  getLayerCount: function() {
-    return this.options.layer_definition.layers.length;
-  },
-
-  removeLayer: function(layer) {
-    if(layer < this.getLayerCount() && layer >= 0) {
-      this.options.layer_definition.layers.splice(layer, 1);
-      this.onLayerDefinitionUpdated();
-    }
-    return this;
-  },
-
-  getLayer: function(index) {
-    return this.options.layer_definition.layers[index]
-  },
-
-  addLayer: function(def, layer) {
-    layer = layer === undefined ? this.getLayerCount(): layer;
-    if(layer <= this.getLayerCount() && layer >= 0) {
-      if(!def.sql || !def.cartocss) {
-        throw new Error("layer definition should contain at least a sql and a cartocss");
-        return this;
-      }
-      this.options.layer_definition.layers.splice(layer, 0, {
-        type: 'cartodb',
-        options: def
-      });
-      this.onLayerDefinitionUpdated();
-    }
-    return this;
-  },
-
-  _tileJSON: function () {
-    var grids = [];
-    var tiles = [];
-    var subdomains = this.options.subdomains || ['0', '1', '2', '3'];
-    if(this.isHttps()) {
-      subdomains = [null]; // no subdomain
-    } 
-
-    // use subdomains
-    for(var i = 0; i < subdomains.length; ++i) {
-      var s = subdomains[i]
-      grids.push(this._tilesUrl('grid.json', s));
-      tiles.push(this._tilesUrl('png', s));
-    }
-    return {
-        tilejson: '2.0.0',
-        scheme: 'xyz',
-        grids: grids,
-        tiles: tiles,
-        formatter: function(options, data) { return data; }
-    };
-  },
-
-  _getTileJSON: function(layergroupTiles, layer) {
-    layer = layer == undefined ? 0: layer;
-
-    return {
-        tilejson: '2.0.0',
-        scheme: 'xyz',
-        grids: layergroupTiles.grids[layer],
-        tiles: layergroupTiles.tiles,
-        formatter: function(options, data) { return data; }
-    };
-  },
-
-  //TODO: support old browsers
-  layerToken: function(layerGroup, callback) {
-    var ajax = this.options.ajax || $.ajax;
-    ajax({
-      crossOrigin: true,
-      type: 'POST',
-      dataType: 'json',
-      contentType: 'application/json',
-      url: this._tilerHost() + '/tiles/layergroup',
-      data: JSON.stringify(this.options.layer_definition),
-      success: function(data) {
-        callback(data);
-      },
-      error: function() {
-        callback(null);
-      }
+  show: function() {
+    this.set({
+      hidden: false
     });
   },
 
+  hide: function() {
+    this.set({
+      hidden: true
+    });
+  },
+
+  setSQL: function(sql) {
+    return this.set({
+      sql: sql
+    });
+  },
+
+  setCartoCSS: function(cartocss) {
+    return this.set({
+      cartocss: cartocss
+    });
+  },
+
+  getSQL: function() {
+    return this.get('sql');
+  },
+
+  getCartoCSS: function() {
+    return this.get('cartocss');
+  },
+
+  setInteraction: function(active) {
+    this._parent.setInteraction(this._position, active);
+  },
+
+  get: function(attr) {
+    this._check();
+    var attrs = this._parent.getLayer(this._position);
+    return attrs.options[attr];
+  },
+
+  set: function(new_attrs) {
+    this._check();
+    var def = this._parent.getLayer(this._position);
+    var attrs = def.options;
+    for(var i in new_attrs) {
+      attrs[i] = new_attrs[i];
+    }
+    this._parent.setLayer(this._position, def);
+    return this;
+  },
+
+  unset: function(attr) {
+    var def = this._parent.getLayer(this._position);
+    delete def.options[attr];
+    this._parent.setLayer(this._position, def);
+  },
+
+  _check: function() {
+    if(!this._added) throw "sublayer was removed";
+  },
+
+  _unbindInteraction: function() {
+    if(!this._parent.off) return;
+    this._parent.off(null, null, this);
+  },
+
+  _bindInteraction: function() {
+    if(!this._parent.on) return;
+    var self = this;
+    // binds a signal to a layer event and trigger on this sublayer
+    // in case the position matches
+    var _bindSignal = function(signal) {
+      self._parent.on(signal, function() {
+        var args = Array.prototype.slice.call(arguments);
+        if (parseInt(args[args.length - 1], 10) ==  self._position) {
+          self.trigger.apply(self, [signal].concat(args));
+        }
+      }, self);
+    };
+    _bindSignal('featureOver');
+    _bindSignal('featureOut');
+    _bindSignal('featureClick');
+  },
+
+  _setPosition: function(p) {
+    this._position = p;
+  }
+
+};
+
+// give events capabilitues
+_.extend(SubLayer.prototype, Backbone.Events);
+
+/*
+ *  common functions for cartodb connector
+ */
+
+function CartoDBLayerCommon() {
+}
+
+CartoDBLayerCommon.prototype = {
+
+  // the way to show/hidelayer is to set opacity
+  // removing the interactivty at the same time
+  show: function() {
+    this.setOpacity(this.options.previous_opacity === undefined ? 0.99: this.options.previous_opacity);
+    delete this.options.previous_opacity;
+    this.setInteraction(true);
+  },
+
+  hide: function() {
+    if(this.options.previous_opacity == undefined) {
+      this.options.previous_opacity = this.options.opacity;
+    }
+    this.setOpacity(0);
+    this.setInteraction(false);
+  },
+
+  /**
+   * Check if CartoDB logo already exists
+   */
+  _isWadusAdded: function(container, className) {
+    // Check if any cartodb-logo exists within container
+    var a = [];
+    var re = new RegExp('\\b' + className + '\\b');
+    var els = container.getElementsByTagName("*");
+    for(var i=0,j=els.length; i<j; i++)
+      if(re.test(els[i].className))a.push(els[i]);
+
+    return a.length > 0;
+  },
+
+  /**
+   *  Check if browser supports retina images
+   */
+  _isRetinaBrowser: function() {
+    return  ('devicePixelRatio' in window && window.devicePixelRatio > 1) ||
+            ('matchMedia' in window && window.matchMedia('(min-resolution:144dpi)') &&
+            window.matchMedia('(min-resolution:144dpi)').matches);
+  },
+
+  /**
+   * Add Cartodb logo
+   * It needs a position, timeout if it is needed and the container where add it
+   */
+  _addWadus: function(position, timeout, container) {
+    var self = this;
+    setTimeout(function() {
+      if (self.options.cartodb_logo !== false && !self._isWadusAdded(container, 'cartodb-logo')) {
+        var cartodb_link = document.createElement("div");
+        var is_retina = self._isRetinaBrowser();
+        cartodb_link.setAttribute('class','cartodb-logo');
+        
+          cartodb_link.setAttribute('style',"position:absolute; bottom:0; left:0; display:block; border:none; z-index:1000000;");
+          var protocol = location.protocol.indexOf('https') === -1 ? 'http': 'https';
+          cartodb_link.innerHTML = "<a href='http://www.cartodb.com' target='_blank'><img width='71' height='29' src='" + protocol + "://cartodb.s3.amazonaws.com/static/new_logo" + (is_retina ? '@2x' : '') + ".png' style='position:absolute; bottom:" + 
+            ( position.bottom || 0 ) + "px; left:" + ( position.left || 0 ) + "px; display:block; width:71px!important; height:29px!important; border:none; outline:none;' alt='CartoDB' title='CartoDB' />";
+          container.appendChild(cartodb_link);
+      }
+    },( timeout || 0 ));
+  },
+
+  /**
+   * Returns if the layer is visible or not
+   */
+  isVisible: function() {
+    return this.visible;
+  },
+
+  /**
+   * Active or desactive interaction
+   * @params enable {Number} layer number
+   * @params layer {Boolean} Choose if wants interaction or not
+   */
+  setInteraction: function(layer, b) {
+    // shift arguments to maintain caompatibility
+    if(b == undefined) {
+      b = layer;
+      layer = 0;
+    }
+    var layerInteraction;
+    this.interactionEnabled[layer] = b;
+    if(!b) {
+      layerInteraction = this.interaction[layer];
+      if(layerInteraction) {
+        layerInteraction.remove();
+        this.interaction[layer] = null;
+      }
+    } else {
+      // if urls is null it means that setInteraction will be called
+      // when the layergroup token was recieved, then the real interaction
+      // layer will be created
+      if(this.urls) {
+        // generate the tilejson from the urls. wax needs it
+        var tilejson = this._tileJSONfromTiles(layer, this.urls);
+
+        // remove previous
+        layerInteraction = this.interaction[layer];
+        if(layerInteraction) {
+          layerInteraction.remove();
+        }
+        var self = this;
+
+        // add the new one
+        this.interaction[layer] = this.interactionClass()
+          .map(this.options.map)
+          .tilejson(tilejson)
+          .on('on', function(o) {
+            o.layer = layer || 0;
+            self._manageOnEvents(self.options.map, o);
+          })
+          .on('off', function(o) {
+            o = o || {}
+            o.layer = layer || 0;
+            self._manageOffEvents(self.options.map, o);
+          });
+      }
+    }
+    return this;
+  },
+
+  setOptions: function (opts) {
+
+    if (typeof opts != "object" || opts.length) {
+      throw new Error(opts + ' options must be an object');
+    }
+
+    _.extend(this.options, opts);
+
+    var opts = this.options;
+
+    this.options.query = this.options.query || "select * from " + this.options.table_name;
+    if(this.options.query_wrapper) {
+      this.options.query = _.template(this.options.query_wrapper)({ sql: this.options.query });
+    }
+
+    this.setSilent(true);
+    opts.interaction && this.setInteraction(opts.interaction);
+    opts.opacity && this.setOpacity(opts.opacity);
+    opts.query && this.setQuery(opts.query.replace(/\{\{table_name\}\}/g, this.options.table_name));
+    opts.tile_style && this.setCartoCSS(opts.tile_style.replace(new RegExp( opts.table_name, "g"), "layer0"));
+    opts.cartocss && this.setCartoCSS(opts.cartocss);
+    opts.interactivity && this.setInteractivity(opts.interactivity);
+    opts.visible ? this.show() : this.hide();
+    this.setSilent(false);
+    this._definitionUpdated();
+
+  },
+
+  _getLayerDefinition: function() {
+    // set params
+    var params = {};
+    var opts = this.options;
+    var sql, cartocss, cartocss_version;
+    sql = opts.query || "select * from " + opts.table_name;
+
+    if(opts.query_wrapper) {
+      sql = _.template(opts.query_wrapper)({ sql: sql });
+    }
+
+    cartocss = opts.tile_style;
+    cartocss_version = opts.cartocss_version || '2.1.0';
+
+    // extra_params?
+    for (var _param in opts.extra_params) {
+      var v = opts.extra_params[_param]
+      params[_param] = v.replace ? v.replace(/\{\{table_name\}\}/g, opts.table_name): v;
+    }
+    sql = sql.replace(/\{\{table_name\}\}/g, opts.table_name);
+    cartocss = cartocss.replace(/\{\{table_name\}\}/g, opts.table_name);
+    cartocss = cartocss.replace(new RegExp( opts.table_name, "g"), "layer0");
+
+
+    return {
+      sql: sql,
+      cartocss: cartocss,
+      cartocss_version: cartocss_version,
+      params: params,
+      interactivity: opts.interactivity
+    }
+
+  },
+
   error: function(e) {
-    console.log(e.error);
+    //console.log(e.error);
   },
 
   tilesOk: function() {
+  },
+
+  _clearInteraction: function() {
+    for(var i in this.interactionEnabled) {
+      if(this.interactionEnabled[i]) {
+        this.setInteraction(i, false);
+      }
+    }
+  },
+
+  _reloadInteraction: function() {
+    for(var i in this.interactionEnabled) {
+      if(this.interactionEnabled[i]) {
+        this.setInteraction(i, false);
+        this.setInteraction(i, true);
+      }
+    }
   },
 
   /**
@@ -18492,32 +24046,35 @@ CartoDBLayerCommon.prototype = {
       , img = new Image()
       , urls = this._tileJSON()
 
-    var grid_url = urls.tiles[0].replace(/\{z\}/g,xyz.z).replace(/\{x\}/g,xyz.x).replace(/\{y\}/g,xyz.y);
+    getTiles(function(urls) {
 
+      var grid_url = urls.tiles[0]
+          .replace(/\{z\}/g,xyz.z)
+          .replace(/\{x\}/g,xyz.x)
+          .replace(/\{y\}/g,xyz.y);
 
-    $.ajax({
-      method: "get",
-      url: grid_url,
-      crossDomain: true,
-      success: function() {
-        self.tilesOk();
-        clearTimeout(timeout)
-      },
-      error: function(xhr, msg, data) {
-        clearTimeout(timeout);
-        self.error(xhr.responseText && JSON.parse(xhr.responseText));
-      }
+      this.options.ajax({
+        method: "get",
+        url: grid_url,
+        crossDomain: true,
+        success: function() {
+          self.tilesOk();
+          clearTimeout(timeout)
+        },
+        error: function(xhr, msg, data) {
+          clearTimeout(timeout);
+          self.error(xhr.responseText && JSON.parse(xhr.responseText));
+        }
+      });
     });
 
-    // Hacky for reqwest, due to timeout doesn't work very well
     var timeout = setTimeout(function(){
       clearTimeout(timeout);
       self.error("tile timeout");
     }, 30000);
 
-  },
+  }
 
-  onLayerDefinitionUpdated: function() {}
 
 };
 
@@ -18758,6 +24315,7 @@ cdb.geo.leaflet.PathView = PathView;
       this.model.unbind(null, null, this);
       this.unbind();
     },
+    /*
 
     show: function() {
       this.leafletLayer.setOpacity(1.0);
@@ -18766,6 +24324,7 @@ cdb.geo.leaflet.PathView = PathView;
     hide: function() {
       this.leafletLayer.setOpacity(0.0);
     },
+    */
 
     /**
      * reload the tiles
@@ -18863,13 +24422,18 @@ cdb.geo.LeafLetTiledLayerView = LeafLetTiledLayerView;
 
 })();
 
+(function() {
+
 if(typeof(L) == "undefined")
   return;
 
 L.CartoDBGroupLayer = L.TileLayer.extend({
 
+  interactionClass: wax.leaf.interaction,
+
   includes: [
     cdb.geo.LeafLetLayerView.prototype,
+    LayerDefinition.prototype,
     CartoDBLayerCommon.prototype
   ],
 
@@ -18882,45 +24446,51 @@ L.CartoDBGroupLayer = L.TileLayer.extend({
     tiler_domain:   "cartodb.com",
     tiler_port:     "80",
     tiler_protocol: "http",
-    sql_domain:     "cartodb.com",
-    sql_port:       "80",
-    sql_protocol:   "http",
-    extra_params:   {},
+    sql_api_domain:     "cartodb.com",
+    sql_api_port:       "80",
+    sql_api_protocol:   "http",
+    extra_params:   {
+      cache_policy: 'persist'
+    },
     cdn_url:        null,
     subdomains:     null
   },
 
 
   initialize: function (options) {
+    options = options || {};
     // Set options
     L.Util.setOptions(this, options);
 
     // Some checks
-    if (!options.layer_definition || !options.map) {
-      if (options.debug) {
-        throw('cartodb-leaflet needs at least the layer_definition name and the Leaflet map object');
-      } else { return }
+    if (!options.layer_definition && !options.sublayers) {
+        throw new Error('cartodb-leaflet needs at least the layer_definition or sublayer list');
     }
 
-    // Bounds? CartoDB does it
-    if (options.auto_bound)
-      this.setBounds();
+    if(!options.layer_definition) {
+      options.layer_definition = LayerDefinition.layerDefFromSubLayers(options.sublayers);
+    }
 
-    // Add cartodb logo, yes sir!
-    this._addWadus({left:8, bottom:8}, 0, this.options.map._container);
+    LayerDefinition.call(this, options.layer_definition, this.options);
 
     this.fire = this.trigger;
 
+    CartoDBLayerCommon.call(this);
     L.TileLayer.prototype.initialize.call(this);
+    this.interaction = [];
   },
 
 
   // overwrite getTileUrl in order to
   // support different tiles subdomains in tilejson way
   getTileUrl: function (tilePoint) {
+    var EMPTY_GIF = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
     this._adjustTilePoint(tilePoint);
 
-    var tiles = this.tilejson.tiles;
+    var tiles = [EMPTY_GIF];
+    if(this.tilejson) {
+      tiles = this.tilejson.tiles;
+    }
 
     var index = (tilePoint.x + tilePoint.y) % tiles.length;
 
@@ -18936,8 +24506,6 @@ L.CartoDBGroupLayer = L.TileLayer.extend({
    * @params {Integer} New opacity
    */
   setOpacity: function(opacity) {
-
-    this._checkLayer();
 
     if (isNaN(opacity) || opacity>1 || opacity<0) {
       throw new Error(opacity + ' is not a valid value');
@@ -18959,10 +24527,29 @@ L.CartoDBGroupLayer = L.TileLayer.extend({
    */
   onAdd: function(map) {
     var self = this;
+    this.options.map = map;
+    this._addWadus({left:8, bottom:8}, 0, map._container);
     this.__update(function() {
-      L.TileLayer.prototype.onAdd.call(self, map);
-      self.fire('added');
-      self.options.added = true;
+      // remove this hack when leaflet 0.6 was released
+      var add = function() {
+        map.off('zoomend', add);
+        // if while the layer was processed in the server is removed
+        // it should not be added to the map
+        var id = L.stamp(self);
+        if (!map._layers[id]) { 
+          return; 
+        }
+
+        L.TileLayer.prototype.onAdd.call(self, map);
+        self.fire('added');
+        self.options.added = true;
+      }
+      if(!map._animatingZoom) {
+        add();
+      } else {
+        // wait until zoom animation finishes
+        map.on('zoomend', add);
+      }
     });
   },
 
@@ -18971,8 +24558,10 @@ L.CartoDBGroupLayer = L.TileLayer.extend({
    * When removes the layer, destroy interactivity if exist
    */
   onRemove: function(map) {
-    this.options.added = false;
-    L.TileLayer.prototype.onRemove.call(this, map);
+    if(this.options.added) {
+      this.options.added = false;
+      L.TileLayer.prototype.onRemove.call(this, map);
+    }
   },
 
   onLayerDefinitionUpdated: function() {
@@ -18987,133 +24576,37 @@ L.CartoDBGroupLayer = L.TileLayer.extend({
   __update: function(done) {
     var self = this;
     this.fire('updated');
-
-    this.layerToken(this.options.layer_definition, function(layer) {
-      if(layer) {
-        self.tilejson = self._layerGroupTiles(layer.layergroupid);
-        self.setUrl(self.tilejson.tiles[0]);
-        done && done();
+    var map = this.options.map;
+    this.getTiles(function(urls, err) {
+      var update = function() { 
+        map.off('zoomend', update);
+        if(urls) {
+          self.tilejson = urls;
+          self.setUrl(self.tilejson.tiles[0]);
+          // manage interaction
+          self._reloadInteraction();
+          self.ok && self.ok();
+          done && done();
+        } else {
+          self.error && self.error(err);
+          done && done();
+        }
+      };
+      if(!map._animatingZoom) {
+        update();
       } else {
-        //TODO: manage error
+        // wait until zoom animation finishes
+        map.on('zoomend', update);
       }
     });
-    // generate the tilejson
-
-    // check the tiles
-    //this._checkTiles();
-
-    /*
-    if(this.interaction) {
-      this.interaction.remove();
-      this.interaction = null;
-    }
-    */
-
-    // add the interaction?
-    /*
-    if (this.options.interactivity && this.options.interaction) {
-      this.interaction = wax.leaf.interaction()
-        .map(this.options.map)
-        .tilejson(this.tilejson)
-        .on('on', function(o) {
-          self._bindWaxOnEvents(self.options.map,o)
-        })
-        .on('off', function(o) {
-          self._bindWaxOffEvents()
-        });
-    }
-    */
-
   },
 
-  enableInteraction: function(layer) {
-    var self = this;
-    this.interaction = wax.leaf.interaction()
-      .map(this.options.map)
-      .tilejson(this._getTileJSON(this.tilejson, layer))
-      .on('on', function(o) {
-        o.layer = layer;
-        self._bindWaxOnEvents(self.options.map, o);
-      })
-      .on('off', function(o) {
-        self._bindWaxOffEvents();
-      });
-  },
 
   _checkLayer: function() {
     if (!this.options.added) {
       throw new Error('the layer is not still added to the map');
     }
   },
-
-  /**
-   * Change query of the tiles
-   * @params {str} New sql for the tiles
-   */
-  setQuery: function(layer, sql) {
-
-    this._checkLayer();
-
-    /*this.setOptions({
-      query: sql
-    });*/
-
-  },
-
-
-  /**
-   * Change style of the tiles
-   * @params {style} New carto for the tiles
-   */
-  setCartoCSS: function(layer, style, version) {
-    this._checkLayer();
-
-    version = version || cdb.CARTOCSS_DEFAULT_VERSION;
-
-    /*this.setOptions({
-      tile_style: style,
-      style_version: version
-    });*/
-
-  },
-
-
-  /**
-   * Change the query when clicks in a feature
-   * @params {Boolean | String} New sql for the request
-   */
-  setInteractivity: function(value) {
-/*
-    if (!this.options.added) {
-      if (this.options.debug) {
-        throw('the layer is not still added to the map');
-      } else { return }
-    }
-
-    if (!isNaN(value)) {
-      if (this.options.debug) {
-        throw(value + ' is not a valid setInteractivity value');
-      } else { return }
-    }
-
-    this.setOptions({
-      interactivity: value
-    });
-    */
-
-  },
-
-
-  /**
-   * Active or desactive interaction
-   * @params {Boolean} Choose if wants interaction or not
-   */
-  setInteraction: function(enable) {
-    /*this.setOptions({
-      interaction: enable
-    })*/
-  },
-
 
   /**
    * Set a new layer attribution
@@ -19138,73 +24631,31 @@ L.CartoDBGroupLayer = L.TileLayer.extend({
     this.fire('updated');
   },
 
-
-  /**
-   * Change multiple options at the same time
-   * @params {Object} New options object
-   */
-  /*setOptions: function(opts) {
-
-    if (typeof opts != "object" || opts.length) {
-      throw new Error(opts + ' options has to be an object');
-    }
-
-    L.Util.setOptions(this, opts);
-
-    if(opts.interactivity) {
-      var i = opts.interactivity;
-      this.options.interactivity = i.join ? i.join(','): i;
-    }
-    if(opts.opacity !== undefined) {
-      this.setOpacity(this.options.opacity);
-    }
-
-    // Update tiles
-    if(opts.query != undefined || opts.style != undefined || opts.tile_style != undefined || opts.interactivity != undefined || opts.interaction != undefined) {
-      this.__update();
-    }
-  },*/
-
-
-  /**
-   * Returns if the layer is visible or not
-   */
-  isVisible: function() {
-    return this.options.visible
-  },
-
-
-  /**
-   * Returns if the layer belongs to the map
-   */
-  isAdded: function() {
-    return this.options.added
-  },
-
-
   /**
    * Bind events for wax interaction
    * @param {Object} Layer map object
    * @param {Event} Wax event
    */
-  _bindWaxOnEvents: function(map,o) {
+  _manageOnEvents: function(map, o) {
     var layer_point = this._findPos(map,o),
         latlng = map.layerPointToLatLng(layer_point);
+    var event_type = o.e.type.toLowerCase();
+
 
     var screenPos = map.layerPointToContainerPoint(layer_point);
 
-    switch (o.e.type) {
-
+    switch (event_type) {
       case 'mousemove':
         if (this.options.featureOver) {
-          return this.options.featureOver(o.e,latlng, screenPos, o.data);
+          return this.options.featureOver(o.e,latlng, screenPos, o.data, o.layer);
         }
         break;
 
       case 'click':
       case 'touchend':
+      case 'mspointerup':
         if (this.options.featureClick) {
-          this.options.featureClick(o.e,latlng, screenPos, o.data);
+          this.options.featureClick(o.e,latlng, screenPos, o.data, o.layer);
         }
         break;
       default:
@@ -19216,9 +24667,9 @@ L.CartoDBGroupLayer = L.TileLayer.extend({
   /**
    * Bind off event for wax interaction
    */
-  _bindWaxOffEvents: function(){
+  _manageOffEvents: function(map, o) {
     if (this.options.featureOut) {
-      return this.options.featureOut && this.options.featureOut();
+      return this.options.featureOut && this.options.featureOut(o.e, o.layer);
     }
   },
 
@@ -19247,12 +24698,84 @@ L.CartoDBGroupLayer = L.TileLayer.extend({
 
 });
 
+cdb.geo.LeafLetCartoDBLayerGroupView = L.CartoDBGroupLayer.extend({
+
+  includes: [
+    cdb.geo.LeafLetLayerView.prototype,
+    Backbone.Events
+  ],
+
+  initialize: function(layerModel, leafletMap) {
+    var self = this;
+
+    //_.bindAll(this, 'featureOut', 'featureOver', 'featureClick');
+
+    // CartoDB new attribution,
+    // also we have the logo
+    layerModel.attributes.attribution = "CartoDB <a href='http://cartodb.com/attributions' target='_blank'>attribution</a>";
+
+    var opts = _.clone(layerModel.attributes);
+
+    opts.map =  leafletMap;
+
+    var // preserve the user's callbacks
+    _featureOver  = opts.featureOver,
+    _featureOut   = opts.featureOut,
+    _featureClick = opts.featureClick;
+
+    opts.featureOver  = function() {
+      _featureOver  && _featureOver.apply(self, arguments);
+      self.featureOver  && self.featureOver.apply(self, arguments);
+    };
+
+    opts.featureOut  = function() {
+      _featureOut  && _featureOut.apply(self, arguments);
+      self.featureOut  && self.featureOut.apply(self, arguments);
+    };
+
+    opts.featureClick  = function() {
+      _featureClick  && _featureClick.apply(self, arguments);
+      self.featureClick  && self.featureClick.apply(self, arguments);
+    };
+
+    L.CartoDBGroupLayer.prototype.initialize.call(this, opts);
+    cdb.geo.LeafLetLayerView.call(this, layerModel, this, leafletMap);
+
+  },
+
+  featureOver: function(e, latlon, pixelPos, data, layer) {
+    // dont pass leaflet lat/lon
+    this.trigger('featureOver', e, [latlon.lat, latlon.lng], pixelPos, data, layer);
+  },
+
+  featureOut: function(e, layer) {
+    this.trigger('featureOut', e, layer);
+  },
+
+  featureClick: function(e, latlon, pixelPos, data, layer) {
+    // dont pass leaflet lat/lon
+    this.trigger('featureClick', e, [latlon.lat, latlon.lng], pixelPos, data, layer);
+  },
+
+  error: function(e) {
+    this.trigger('error', e ? e.errors : 'unknown error');
+    this.model.trigger('error', e?e.errors:'unknown error');
+  },
+
+  ok: function(e) {
+    this.model.trigger('tileOk');
+  }
+
+});
+
+})();
+
 (function() {
 
 if(typeof(L) == "undefined")
   return;
 
-L.CartoDBLayer = L.TileLayer.extend({
+L.CartoDBLayer = L.CartoDBGroupLayer.extend({
 
   options: {
     query:          "SELECT * FROM {{table_name}}",
@@ -19261,264 +24784,46 @@ L.CartoDBLayer = L.TileLayer.extend({
     debug:          false,
     visible:        true,
     added:          false,
-    tiler_domain:   "cartodb.com",
-    tiler_port:     "80",
-    tiler_protocol: "http",
-    sql_domain:     "cartodb.com",
-    sql_port:       "80",
-    sql_protocol:   "http",
     extra_params:   {},
-    cdn_url:        null,
-    subdomains:     null
+    layer_definition_version: '1.0.0'
   },
 
 
   initialize: function (options) {
-    // Set options
     L.Util.setOptions(this, options);
 
-    // Some checks
-    if (!options.table_name || !options.map) {
-      if (options.debug) {
-        throw('cartodb-leaflet needs at least a CartoDB table name and the Leaflet map object :(');
-      } else { return }
+    if (!options.table_name || !options.user_name || !options.tile_style) {
+        throw ('cartodb-leaflet needs at least a CartoDB table name, user_name and tile_style');
     }
 
-    // Add cartodb logo, yes sir!
-    this._addWadus({left:8, bottom:8}, 0, this.options.map._container);
-
-    this.fire = this.trigger;
-
-    L.TileLayer.prototype.initialize.call(this);
-  },
-
-
-  // overwrite getTileUrl in order to
-  // support different tiles subdomains in tilejson way
-  getTileUrl: function (tilePoint) {
-    this._adjustTilePoint(tilePoint);
-
-    var tiles = this.tilejson.tiles;
-
-    var index = (tilePoint.x + tilePoint.y) % tiles.length;
-
-    return L.Util.template(tiles[index], L.Util.extend({
-      z: this._getZoomForUrl(),
-      x: tilePoint.x,
-      y: tilePoint.y
-    }, this.options));
-  },
-
-  /**
-   * Change opacity of the layer
-   * @params {Integer} New opacity
-   */
-  setOpacity: function(opacity) {
-
-    this._checkLayer();
-
-    if (isNaN(opacity) || opacity>1 || opacity<0) {
-      throw new Error(opacity + ' is not a valid value');
-    }
-
-    // Leaflet only accepts 0-0.99... Weird!
-    this.options.opacity = Math.min(opacity, 0.99);
-
-    if (this.options.visible) {
-      L.TileLayer.prototype.setOpacity.call(this, this.options.opacity);
-      this.fire('updated');
-    }
-  },
-
-
-  /**
-   * When Leaflet adds the layer... go!
-   * @params {map}
-   */
-  onAdd: function(map) {
-    this.__update();
-    this.fire('added');
-    this.options.added = true;
-    L.TileLayer.prototype.onAdd.call(this, map);
-  },
-
-
-  /**
-   * When removes the layer, destroy interactivity if exist
-   */
-  onRemove: function(map) {
-    this.options.added = false;
-    L.TileLayer.prototype.onRemove.call(this, map);
-  },
-
-  /**
-   * Update CartoDB layer
-   * generates a new url for tiles and refresh leaflet layer
-   * do not collide with leaflet _update
-   */
-  __update: function() {
-    var self = this;
-    this.fire('updated');
-
-    // generate the tilejson
-    this.tilejson = this._tileJSON();
-
-    // check the tiles
-    this._checkTiles();
-
-    if(this.interaction) {
-      this.interaction.remove();
-      this.interaction = null;
-    }
-
-    // add the interaction?
-    if (this.options.interactivity && this.options.interaction) {
-      this.interaction = wax.leaf.interaction()
-        .map(this.options.map)
-        .tilejson(this.tilejson)
-        .on('on', function(o) {
-          self._bindWaxOnEvents(self.options.map,o)
-        })
-        .on('off', function(o) {
-          self._bindWaxOffEvents()
-        });
-    }
-
-    this.setUrl(this.tilejson.tiles[0]);
-  },
-
-  _checkLayer: function() {
-    if (!this.options.added) {
-      throw new Error('the layer is not still added to the map');
-    }
-  },
-
-
-
-  /**
-   * Change query of the tiles
-   * @params {str} New sql for the tiles
-   */
-  setQuery: function(sql) {
-
-    this._checkLayer();
-
-    this.setOptions({
-      query: sql
+    L.CartoDBGroupLayer.prototype.initialize.call(this, {
+      layer_definition: {
+        version: this.options.layer_definition_version,
+        layers: [{
+          type: 'cartodb',
+          options: this._getLayerDefinition(),
+          infowindow: this.options.infowindow
+        }]
+      }
     });
 
+    this.setOptions(this.options);
   },
 
-
-  /**
-   * Change style of the tiles
-   * @params {style} New carto for the tiles
-   */
-  setCartoCSS: function(style, version) {
-    this._checkLayer();
-
-    version = version || cdb.CARTOCSS_DEFAULT_VERSION;
-
-    this.setOptions({
-      tile_style: style,
-      style_version: version
-    });
-
+  setQuery: function(layer, sql) {
+    if(sql === undefined) {
+      sql = layer;
+      layer = 0;
+    }
+    sql = sql || 'select * from ' + this.options.table_name;
+    LayerDefinition.prototype.setQuery.call(this, layer, sql);
   },
-
-
-  /**
-   * Change the query when clicks in a feature
-   * @params {Boolean | String} New sql for the request
-   */
-  setInteractivity: function(value) {
-
-    if (!this.options.added) {
-      if (this.options.debug) {
-        throw('the layer is not still added to the map');
-      } else { return }
-    }
-
-    if (!isNaN(value)) {
-      if (this.options.debug) {
-        throw(value + ' is not a valid setInteractivity value');
-      } else { return }
-    }
-
-    this.setOptions({
-      interactivity: value
-    });
-
-  },
-
-
-  /**
-   * Active or desactive interaction
-   * @params {Boolean} Choose if wants interaction or not
-   */
-  setInteraction: function(enable) {
-    this.setOptions({
-      interaction: enable
-    })
-  },
-
-
-  /**
-   * Set a new layer attribution
-   * @params {String} New attribution string
-   */
-  setAttribution: function(attribution) {
-    this._checkLayer();
-
-    // Remove old one
-    this.map.attributionControl.removeAttribution(this.options.attribution);
-
-    // Set new attribution in the options
-    this.options.attribution = attribution;
-
-    // Change text
-    this.map.attributionControl.addAttribution(this.options.attribution);
-
-    // Change in the layer
-    this.options.attribution = this.options.attribution;
-    this.tilejson.attribution = this.options.attribution;
-
-    this.fire('updated');
-  },
-
-
-  /**
-   * Change multiple options at the same time
-   * @params {Object} New options object
-   */
-  setOptions: function(opts) {
-
-    if (typeof opts != "object" || opts.length) {
-      throw new Error(opts + ' options has to be an object');
-    }
-
-    L.Util.setOptions(this, opts);
-
-    if(opts.interactivity) {
-      var i = opts.interactivity;
-      this.options.interactivity = i.join ? i.join(','): i;
-    }
-    if(opts.opacity !== undefined) {
-      this.setOpacity(this.options.opacity);
-    }
-
-    // Update tiles
-    if(opts.query != undefined || opts.style != undefined || opts.tile_style != undefined || opts.interactivity != undefined || opts.interaction != undefined) {
-      this.__update();
-    }
-  },
-
 
   /**
    * Returns if the layer is visible or not
    */
   isVisible: function() {
-    return this.options.visible
+    return this.visible;
   },
 
 
@@ -19526,71 +24831,7 @@ L.CartoDBLayer = L.TileLayer.extend({
    * Returns if the layer belongs to the map
    */
   isAdded: function() {
-    return this.options.added
-  },
-
-
-  /**
-   * Bind events for wax interaction
-   * @param {Object} Layer map object
-   * @param {Event} Wax event
-   */
-  _bindWaxOnEvents: function(map,o) {
-    var layer_point = this._findPos(map,o),
-        latlng = map.layerPointToLatLng(layer_point);
-
-    var screenPos = map.layerPointToContainerPoint(layer_point);
-
-    switch (o.e.type) {
-
-      case 'mousemove':
-        if (this.options.featureOver) {
-          return this.options.featureOver(o.e,latlng, screenPos, o.data);
-        }
-        break;
-
-      case 'click':
-      case 'touchend':
-        if (this.options.featureClick) {
-          this.options.featureClick(o.e,latlng, screenPos, o.data);
-        }
-        break;
-      default:
-        break;
-    }
-  },
-
-
-  /**
-   * Bind off event for wax interaction
-   */
-  _bindWaxOffEvents: function(){
-    if (this.options.featureOut) {
-      return this.options.featureOut && this.options.featureOut();
-    }
-  },
-
-  /**
-   * Get the Leaflet Point of the event
-   * @params {Object} Map object
-   * @params {Object} Wax event object
-   */
-  _findPos: function (map,o) {
-    var curleft = 0, curtop = 0;
-    var obj = map.getContainer();
-
-
-    if (obj.offsetParent) {
-      // Modern browsers
-      do {
-        curleft += obj.offsetLeft;
-        curtop += obj.offsetTop;
-      } while (obj = obj.offsetParent);
-      return map.containerPointToLayerPoint(new L.Point((o.e.clientX || o.e.changedTouches[0].clientX) - curleft,(o.e.clientY || o.e.changedTouches[0].clientY) - curtop))
-    } else {
-      // IE
-      return map.mouseEventToLayerPoint(o.e)
-    }
+    return this.options.added;
   }
 
 });
@@ -19611,9 +24852,6 @@ var LeafLetLayerCartoDBView = L.CartoDBLayer.extend({
     layerModel.attributes.attribution = "CartoDB <a href='http://cartodb.com/attributions' target='_blank'>attribution</a>";
 
     var opts = _.clone(layerModel.attributes);
-    if(layerModel.get('use_server_style')) {
-      opts.tile_style = null;
-    }
 
     opts.map =  leafletMap;
 
@@ -19637,6 +24875,10 @@ var LeafLetLayerCartoDBView = L.CartoDBLayer.extend({
       self.featureClick  && self.featureClick.apply(opts, arguments);
     };
 
+    layerModel.bind('change:visible', function() {
+      self.model.get('visible') ? self.show(): self.hide();
+    }, this);
+
     L.CartoDBLayer.prototype.initialize.call(this, opts);
     cdb.geo.LeafLetLayerView.call(this, layerModel, this, leafletMap);
 
@@ -19644,15 +24886,7 @@ var LeafLetLayerCartoDBView = L.CartoDBLayer.extend({
 
   _modelUpdated: function() {
     var attrs = _.clone(this.model.attributes);
-    // if we want to use the style stored in the server
-    // but we want to store it in the layer model
-    // we should remove it from layer options
-    if(this.model.get('use_server_style')) {
-      attrs.tile_style = null;
-    }
-
     this.leafletLayer.setOptions(attrs);
-
   },
 
   featureOver: function(e, latlon, pixelPos, data) {
@@ -19685,7 +24919,6 @@ var LeafLetLayerCartoDBView = L.CartoDBLayer.extend({
 
   includes: [
     cdb.geo.LeafLetLayerView.prototype,
-    CartoDBLayerCommon.prototype,
     Backbone.Events
   ]
 
@@ -19905,11 +25138,17 @@ cdb.geo.LeafLetLayerCartoDBView = LeafLetLayerCartoDBView;
       // add them again, in correct order
       if(appending) {
         cdb.geo.LeafletMapView.addLayerToMap(layer_view, self.map_leaflet);
+        if(layer_view.setZIndex) {
+          layer_view.setZIndex(layer.get('order'))
+        }
       } else {
         this.map.layers.each(function(layerModel) {
           var v = self.layers[layerModel.cid];
           if(v) {
             cdb.geo.LeafletMapView.addLayerToMap(v, self.map_leaflet);
+            if(v.setZIndex) {
+              v.setZIndex(layerModel.get('order'))
+            }
           }
         });
       }
@@ -19926,7 +25165,10 @@ cdb.geo.LeafLetLayerCartoDBView = LeafLetLayerCartoDBView;
         this.map.set({ attribution: attributions });
       }
 
-      this.trigger('newLayerView', layer_view, this);
+      if(opts == undefined || !opts.silent) {
+        this.trigger('newLayerView', layer_view, this);
+      }
+      return layer_view;
     },
 
     latLonToPixel: function(latlon) {
@@ -19977,7 +25219,8 @@ cdb.geo.LeafLetLayerCartoDBView = LeafLetLayerCartoDBView;
       "carto": cdb.geo.LeafLetLayerCartoDBView,
       "plain": cdb.geo.LeafLetPlainLayerView,
       // for google maps create a plain layer
-      "gmapsbase": cdb.geo.LeafLetPlainLayerView
+      "gmapsbase": cdb.geo.LeafLetPlainLayerView,
+      "layergroup": cdb.geo.LeafLetCartoDBLayerGroupView
     },
 
     createLayer: function(layer, map) {
@@ -19992,8 +25235,13 @@ cdb.geo.LeafLetLayerCartoDBView = LeafLetLayerCartoDBView;
       return layer_view;
     },
 
-    addLayerToMap: function(layer_view, map) {
+    addLayerToMap: function(layer_view, map, pos) {
       map.addLayer(layer_view.leafletLayer);
+      if(pos != undefined) {
+        if(v.setZIndex) {
+          v.setZIndex(pos);
+        }
+      }
     },
 
     /**
@@ -20052,12 +25300,30 @@ var GMapsLayerView = function(layerModel, gmapsLayer, gmapsMap) {
 _.extend(GMapsLayerView.prototype, Backbone.Events);
 _.extend(GMapsLayerView.prototype, {
 
+  // hack function to search layer inside google maps layers
+  _searchLayerIndex: function() {
+    var self = this;
+    var index = -1;
+    this.gmapsMap.overlayMapTypes.forEach(
+      function(layer, i) {
+        if (layer == self) {
+          index = i;
+        }
+      }
+    );
+    return index;
+  },
+
   /**
    * remove layer from the map and unbind events
    */
   remove: function() {
     if(!this.isBase) {
-      this.gmapsMap.overlayMapTypes.removeAt(this.index);
+      var self = this;
+      var idx = this._searchLayerIndex();
+      if(idx > 0) {
+        this.gmapsMap.overlayMapTypes.removeAt(idx);
+      }
       this.model.unbind(null, null, this);
       this.unbind();
     }
@@ -20072,14 +25338,10 @@ _.extend(GMapsLayerView.prototype, {
       this.gmapsMap.mapTypes.set(a, this.gmapsLayer);
       this.gmapsMap.setMapTypeId(a);
     } else {
-      self.gmapsMap.overlayMapTypes.forEach(
-        function(layer, i) {
-          if (layer == self) {
-            self.gmapsMap.overlayMapTypes.setAt(i, self);
-            return;
-          }
-        }
-      );
+      var idx = this._searchLayerIndex();
+      if(idx >= 0) {
+        this.gmapsMap.overlayMapTypes.setAt(idx, this);
+      }
     }
   },
 
@@ -20232,6 +25494,348 @@ cdb.geo.GMapsTiledLayerView = GMapsTiledLayerView;
 })();
 (function() {
 // if google maps is not defined do not load the class
+if(typeof(google) == "undefined" || typeof(google.maps) == "undefined") {
+  return;
+}
+
+// helper to get pixel position from latlon
+var Projector = function(map) { this.setMap(map); };
+Projector.prototype = new google.maps.OverlayView();
+Projector.prototype.draw = function() {};
+Projector.prototype.latLngToPixel = function(point) {
+  var p = this.getProjection();
+  if(p) {
+    return p.fromLatLngToContainerPixel(point);
+  }
+  return [0, 0];
+};
+Projector.prototype.pixelToLatLng = function(point) {
+  var p = this.getProjection();
+  if(p) {
+    return p.fromContainerPixelToLatLng(point);
+  }
+  return [0, 0];
+  //return this.map.getProjection().fromPointToLatLng(point);
+};
+
+var CartoDBLayerGroup = function(opts) {
+
+  var default_options = {
+    opacity:        0.99,
+    attribution:    "CartoDB",
+    debug:          false,
+    visible:        true,
+    added:          false,
+    tiler_domain:   "cartodb.com",
+    tiler_port:     "80",
+    tiler_protocol: "http",
+    sql_api_domain:     "cartodb.com",
+    sql_api_port:       "80",
+    sql_api_protocol:   "http",
+    extra_params:   {
+      cache_policy: 'persist'
+    },
+    cdn_url:        null,
+    subdomains:     null
+  };
+
+  this.options = _.defaults(opts, default_options);
+  this.tiles = 0;
+  this.tilejson = null;
+  this.interaction = [];
+
+  if (!opts.layer_definition && !opts.sublayers) {
+      throw new Error('cartodb-leaflet needs at least the layer_definition or sublayer list');
+  }
+
+  // if only sublayers is available, generate layer_definition from it
+  if(!opts.layer_definition) {
+    opts.layer_definition = LayerDefinition.layerDefFromSubLayers(opts.sublayers);
+  }
+
+  // Add CartoDB logo
+  this._addWadus({left: 74, bottom:8}, 2000, this.options.map.getDiv());
+
+  wax.g.connector.call(this, opts);
+
+  // lovely wax connector overwrites options so set them again
+  // TODO: remove wax.connector here
+   _.extend(this.options, opts);
+  this.projector = new Projector(opts.map);
+  LayerDefinition.call(this, opts.layer_definition, this.options);
+  CartoDBLayerCommon.call(this);
+  // precache
+  this.update();
+};
+
+CartoDBLayerGroup.Projector = Projector;
+
+CartoDBLayerGroup.prototype = new wax.g.connector();
+_.extend(CartoDBLayerGroup.prototype, CartoDBLayerCommon.prototype, LayerDefinition.prototype);
+
+CartoDBLayerGroup.prototype.interactionClass = wax.g.interaction;
+
+CartoDBLayerGroup.prototype.setOpacity = function(opacity) {
+  if (isNaN(opacity) || opacity > 1 || opacity < 0) {
+    throw new Error(opacity + ' is not a valid value, should be in [0, 1] range');
+  }
+  this.opacity = this.options.opacity = opacity;
+  for(var key in this.cache) {
+    var img = this.cache[key];
+    img.style.opacity = opacity;
+    img.style.filter = "alpha(opacity=" + (opacity*100) + ");"
+    //img.setAttribute("style","opacity: " + opacity + "; filter: alpha(opacity="+(opacity*100)+");");
+  }
+
+};
+
+CartoDBLayerGroup.prototype.setAttribution = function() {};
+
+CartoDBLayerGroup.prototype.getTile = function(coord, zoom, ownerDocument) {
+
+  var self = this;
+
+  this.options.added = true;
+
+  if(this.tilejson == null) {
+    var key = zoom + '/' + coord.x + '/' + coord.y;
+    var i = this.cache[key] = new Image(256, 256);
+    i.setAttribute('gTileKey', key);
+    i.style.opacity = this.options.opacity;
+    return i;
+  }
+
+  var im = wax.g.connector.prototype.getTile.call(this, coord, zoom, ownerDocument);
+
+  if (this.tiles === 0) {
+    this.loading && this.loading();
+  }
+
+  this.tiles++;
+
+  im.onload = im.onerror = function() {
+    self.tiles--;
+    if (self.tiles === 0) {
+      self.finishLoading && self.finishLoading();
+    }
+  };
+
+  return im;
+};
+
+CartoDBLayerGroup.prototype.onAdd = function () {
+  //this.update();
+};
+
+CartoDBLayerGroup.prototype.clear = function () {
+  this._clearInteraction();
+  self.finishLoading && self.finishLoading();
+};
+
+CartoDBLayerGroup.prototype.update = function (done) {
+  var self = this;
+  this.getTiles(function(urls, err) {
+    if(urls) {
+      self.tilejson = urls;
+      self.options.tiles = urls.tiles;
+      self.tiles = 0;
+      self.cache = {};
+      self._reloadInteraction();
+      self.refreshView();
+      self.ok && self.ok();
+      done && done();
+    } else {
+      self.error && self.error(err)
+    }
+  });
+};
+
+
+CartoDBLayerGroup.prototype.refreshView = function() {
+  var self = this;
+  var map = this.options.map;
+  map.overlayMapTypes.forEach(
+    function(layer, i) {
+      if (layer == self) {
+        map.overlayMapTypes.setAt(i, self);
+        return;
+      }
+    }
+  );
+}
+CartoDBLayerGroup.prototype.onLayerDefinitionUpdated = function() {
+    this.update();
+}
+
+CartoDBLayerGroup.prototype._checkLayer = function() {
+  if (!this.options.added) {
+    throw new Error('the layer is not still added to the map');
+  }
+}
+
+CartoDBLayerGroup.prototype._findPos = function (map,o) {
+  var curleft, cartop;
+  curleft = curtop = 0;
+  var obj = map.getDiv();
+  do {
+    curleft += obj.offsetLeft;
+    curtop += obj.offsetTop;
+  } while (obj = obj.offsetParent);
+  return new google.maps.Point(
+      (o.e.clientX || o.e.changedTouches[0].clientX) - curleft,
+      (o.e.clientY || o.e.changedTouches[0].clientY) - curtop
+  );
+};
+
+CartoDBLayerGroup.prototype._manageOffEvents = function(map, o){
+  if (this.options.featureOut) {
+    return this.options.featureOut && this.options.featureOut(o.e, o.layer);
+  }
+};
+
+
+CartoDBLayerGroup.prototype._manageOnEvents = function(map,o) {
+  var point  = this._findPos(map, o);
+  var latlng = this.projector.pixelToLatLng(point);
+  var event_type = o.e.type.toLowerCase();
+
+
+  switch (event_type) {
+    case 'mousemove':
+      if (this.options.featureOver) {
+        return this.options.featureOver(o.e,latlng, point, o.data, o.layer);
+      }
+      break;
+
+    case 'click':
+    case 'touchend':
+    case 'mspointerup':
+      if (this.options.featureClick) {
+        this.options.featureClick(o.e,latlng, point, o.data, o.layer);
+      }
+      break;
+    default:
+      break;
+  }
+}
+
+cdb.geo.CartoDBLayerGroupGMaps = CartoDBLayerGroup;
+
+/*
+ *
+ *  cartodb layer group view
+ *
+ */
+
+var GMapsCartoDBLayerGroupView = function(layerModel, gmapsMap) {
+  var self = this;
+
+  _.bindAll(this, 'featureOut', 'featureOver', 'featureClick');
+
+  // CartoDB new attribution,
+  // also we have the logo
+  layerModel.attributes.attribution = "CartoDB <a href='http://cartodb.com/attributions' target='_blank'>attribution</a>";
+
+  var opts = _.clone(layerModel.attributes);
+
+  opts.map =  gmapsMap;
+
+  var // preserve the user's callbacks
+  _featureOver  = opts.featureOver,
+  _featureOut   = opts.featureOut,
+  _featureClick = opts.featureClick;
+
+  opts.featureOver  = function() {
+    _featureOver  && _featureOver.apply(this, arguments);
+    self.featureOver  && self.featureOver.apply(this, arguments);
+  };
+
+  opts.featureOut  = function() {
+    _featureOut  && _featureOut.apply(this, arguments);
+    self.featureOut  && self.featureOut.apply(this, arguments);
+  };
+
+  opts.featureClick  = function() {
+    _featureClick  && _featureClick.apply(this, arguments);
+    self.featureClick  && self.featureClick.apply(opts, arguments);
+  };
+
+  
+  CartoDBLayerGroup.call(this, opts);
+  cdb.geo.GMapsLayerView.call(this, layerModel, this, gmapsMap);
+};
+
+
+
+_.extend(
+  GMapsCartoDBLayerGroupView.prototype,
+  cdb.geo.GMapsLayerView.prototype,
+  CartoDBLayerGroup.prototype,
+  {
+
+  _update: function() {
+    this.setOptions(this.model.attributes);
+  },
+
+  reload: function() {
+    this.model.invalidate();
+  },
+
+  remove: function() {
+    cdb.geo.GMapsLayerView.prototype.remove.call(this);
+    this.clear();
+  },
+
+  featureOver: function(e, latlon, pixelPos, data, layer) {
+    // dont pass gmaps LatLng
+    this.trigger('featureOver', e, [latlon.lat(), latlon.lng()], pixelPos, data, layer);
+  },
+
+  featureOut: function(e, layer) {
+    this.trigger('featureOut', e, layer);
+  },
+
+  featureClick: function(e, latlon, pixelPos, data, layer) {
+    // dont pass leaflet lat/lon
+    this.trigger('featureClick', e, [latlon.lat(), latlon.lng()], pixelPos, data, layer);
+  },
+
+  error: function(e) {
+    if(this.model) {
+      //trigger the error form _checkTiles in the model
+      this.model.trigger('error', e?e.errors:'unknown error');
+      this.model.trigger('tileError', e?e.errors:'unknown error');
+    }
+  },
+
+  ok: function(e) {
+    this.model.trigger('tileOk');
+  },
+
+  tilesOk: function(e) {
+    this.model.trigger('tileOk');
+  },
+
+  loading: function() {
+    this.trigger("loading");
+  },
+
+  finishLoading: function() {
+    this.trigger("load");
+  }
+
+
+});
+
+cdb.geo.GMapsCartoDBLayerGroupView = GMapsCartoDBLayerGroupView;
+
+/**
+* gmaps cartodb layer
+*/
+
+})();
+(function() {
+// if google maps is not defined do not load the class
 if(typeof(google) == "undefined" || typeof(google.maps) == "undefined")
   return;
 
@@ -20255,282 +25859,51 @@ Projector.prototype.pixelToLatLng = function(point) {
   //return this.map.getProjection().fromPointToLatLng(point);
 };
 
-var CartoDBLayer = function(opts) {
+var CartoDBLayer = function(options) {
 
   var default_options = {
     query:          "SELECT * FROM {{table_name}}",
+    opacity:        0.99,
     attribution:    "CartoDB",
     opacity:        1,
     debug:          false,
     visible:        true,
     added:          false,
-    loaded:         null,
-    loading:        null,
-    layer_order:    "top",
-    tiler_domain:   "cartodb.com",
-    tiler_port:     "80",
-    tiler_protocol: "http",
-    sql_domain:     "cartodb.com",
-    sql_port:       "80",
-    sql_protocol:   "http",
-    subdomains:      null
+    extra_params:   {},
+    layer_definition_version: '1.0.0'
   };
 
-  this.options = _.defaults(opts, default_options);
-  opts.tiles = this._tileJSON().tiles;
+  this.options = _.defaults(options, default_options);
 
-  // Set init
-  this.tiles = 0;
-
-  // Add CartoDB logo
-  this._addWadus({left: 74, bottom:8}, 2000, this.options.map.getDiv());
-
-  wax.g.connector.call(this, opts);
-
-  // lovely wax connector overwrites options so set them again
-  // TODO: remove wax.connector here
-   _.extend(this.options, opts);
-  this.projector = new Projector(opts.map);
-  this._addInteraction();
-  this._checkTiles();
-};
-
-CartoDBLayer.Projector = Projector;
-
-CartoDBLayer.prototype = new wax.g.connector();
-_.extend(CartoDBLayer.prototype, CartoDBLayerCommon.prototype);
-
-
-CartoDBLayer.prototype.setOpacity = function(opacity) {
-
-  this._checkLayer();
-
-  if (isNaN(opacity) || opacity > 1 || opacity < 0) {
-    throw new Error(opacity + ' is not a valid value, should be in [0, 1] range');
+  if (!options.table_name || !options.user_name || !options.tile_style) {
+      throw ('cartodb-gmaps needs at least a CartoDB table name, user_name and tile_style');
   }
-  this.opacity = this.options.opacity = opacity;
-  for(var key in this.cache) {
-    var img = this.cache[key];
-    img.style.opacity = opacity;
-    img.style.filter = "alpha(opacity=" + (opacity*100) + ");"
 
-    //img.setAttribute("style","opacity: " + opacity + "; filter: alpha(opacity="+(opacity*100)+");");
-  }
+
+  this.options.layer_definition = {
+    version: this.options.layer_definition_version,
+    layers: [{
+      type: 'cartodb',
+      options: this._getLayerDefinition(),
+      infowindow: this.options.infowindow
+    }]
+  };
+  cdb.geo.CartoDBLayerGroupGMaps.call(this, this.options);
+
+  this.setOptions(this.options);
 
 };
 
-CartoDBLayer.prototype.setAttribution = function() {};
+_.extend(CartoDBLayer.prototype, cdb.geo.CartoDBLayerGroupGMaps.prototype);
 
-CartoDBLayer.prototype.getTile = function(coord, zoom, ownerDocument) {
-
-  var self = this;
-
-  this.options.added = true;
-
-  var im = wax.g.connector.prototype.getTile.call(this, coord, zoom, ownerDocument);
-
-  if (this.tiles == 0) {
-    this.loading && this.loading();
-    //this.trigger("loading");
+CartoDBLayer.prototype.setQuery = function (layer, sql) {
+  if(sql === undefined) {
+    sql = layer;
+    layer = 0;
   }
-
-  this.tiles++;
-
-
-  im.onload = im.onerror = function() {
-    self.tiles--;
-    if (self.tiles == 0) {
-      self.finishLoading && self.finishLoading();
-    }
-  }
-
-  return im;
-}
-
-CartoDBLayer.prototype._addInteraction = function () {
-  var self = this;
-  // add interaction
-  if(this.interaction) {
-    this.interaction.remove();
-    this.interaction = null;
-  }
-
-  if(this.options.interaction) {
-    this.interaction = wax.g.interaction()
-      .map(this.options.map)
-      .tilejson(this._tileJSON())
-      .on('on',function(o) {
-        self._manageOnEvents(self.options.map, o);
-      })
-      .on('off', function(o) {
-        self._manageOffEvents();
-      });
-  }
+  sql = sql || 'select * from ' + this.options.table_name;
+  LayerDefinition.prototype.setQuery.call(this, layer, sql);
 };
-
-CartoDBLayer.prototype.clear = function () {
-  if (this.interaction) {
-    this.interaction.remove();
-    delete this.interaction;
-  }
-  self.finishLoading && self.finishLoading();
-};
-
-CartoDBLayer.prototype.update = function () {
-  var tilejson = this._tileJSON();
-  // clear wax cache
-  this.cache = {};
-  // set new tiles to wax
-  this.options.tiles = tilejson.tiles;
-  this._addInteraction();
-
-  this._checkTiles();
-
-  // reload the tiles
-  this.refreshView();
-};
-
-
-CartoDBLayer.prototype.refreshView = function() {
-}
-
-/**
- * Active or desactive interaction
- * @params {Boolean} Choose if wants interaction or not
- */
-CartoDBLayer.prototype.setInteraction = function(enable) {
-  this.setOptions({
-    interaction: enable
-  });
-
-};
-
-
-CartoDBLayer.prototype.setOptions = function (opts) {
-  _.extend(this.options, opts);
-
-  if (typeof opts != "object" || opts.length) {
-    throw new Error(opts + ' options has to be an object');
-  }
-
-  if(opts.interactivity) {
-    var i = opts.interactivity;
-    this.options.interactivity = i.join ? i.join(','): i;
-  }
-  if(opts.opacity !== undefined) {
-    this.setOpacity(this.options.opacity);
-  }
-
-  // Update tiles
-  if(opts.query != undefined || opts.style != undefined || opts.tile_style != undefined || opts.interactivity != undefined || opts.interaction != undefined) {
-    this.update();
-  }
-}
-
-CartoDBLayer.prototype._checkLayer = function() {
-  if (!this.options.added) {
-    throw new Error('the layer is not still added to the map');
-  }
-}
-/**
- * Change query of the tiles
- * @params {str} New sql for the tiles
- * @params {Boolean}  Choose if the map fits to the sql results bounds (thanks to @fgblanch)
-*/
-CartoDBLayer.prototype.setQuery = function(sql) {
-
-  this._checkLayer();
-
-  /*if (fitToBounds)
-    this.setBounds(sql)
-    */
-
-  // Set the new value to the layer options
-  this.options.query = sql;
-  this.update();
-}
-
-CartoDBLayer.prototype.isVisible = function() {
-  return this.options.visible;
-}
-
-CartoDBLayer.prototype.setCartoCSS = function(style, version) {
-
-  this._checkLayer();
-
-  version = version || cdb.CARTOCSS_DEFAULT_VERSION;
-
-  this.setOptions({
-    tile_style: style,
-    style_version: version
-  });
-}
-
-
-/**
- * Change the query when clicks in a feature
- * @params { Boolean || String } New sql for the request
- */
-CartoDBLayer.prototype.setInteractivity = function(fieldsArray) {
-
-  this._checkLayer();
-
-  if (!fieldsArray) {
-    throw new Error('should specify fieldsArray');
-  }
-
-  // Set the new value to the layer options
-  this.options.interactivity = fieldsArray.join ? fieldsArray.join(','): fieldsArray;
-  // Update tiles
-  this.update();
-}
-
-
-
-CartoDBLayer.prototype._findPos = function (map,o) {
-  var curleft, cartop;
-  curleft = curtop = 0;
-  var obj = map.getDiv();
-  do {
-    curleft += obj.offsetLeft;
-    curtop += obj.offsetTop;
-  } while (obj = obj.offsetParent);
-  return new google.maps.Point(
-      (o.e.clientX || o.e.changedTouches[0].clientX) - curleft,
-      (o.e.clientY || o.e.changedTouches[0].clientY) - curtop
-  );
-};
-
-CartoDBLayer.prototype._manageOffEvents = function(){
-  if (this.options.featureOut) {
-    return this.options.featureOut && this.options.featureOut();
-  }
-};
-
-
-CartoDBLayer.prototype._manageOnEvents = function(map,o) {
-  var point  = this._findPos(map, o);
-  var latlng = this.projector.pixelToLatLng(point);
-
-  switch (o.e.type) {
-    case 'mousemove':
-      if (this.options.featureOver) {
-        return this.options.featureOver(o.e,latlng, point, o.data);
-      }
-      break;
-
-    case 'click':
-    case 'touchend':
-      if (this.options.featureClick) {
-        this.options.featureClick(o.e,latlng, point, o.data);
-      }
-      break;
-    default:
-      break;
-  }
-}
-
-
 
 cdb.geo.CartoDBLayerGMaps = CartoDBLayer;
 
@@ -20585,10 +25958,7 @@ _.extend(
   {
 
   _update: function() {
-    _.extend(this.options, this.model.attributes);
-
-    this.update();
-
+    this.setOptions(this.model.attributes);
   },
 
   reload: function() {
@@ -20602,16 +25972,16 @@ _.extend(
 
   featureOver: function(e, latlon, pixelPos, data) {
     // dont pass gmaps LatLng
-    this.trigger('featureOver', e, [latlon.lat(), latlon.lng()], pixelPos, data);
+    this.trigger('featureOver', e, [latlon.lat(), latlon.lng()], pixelPos, data, 0);
   },
 
   featureOut: function(e) {
     this.trigger('featureOut', e);
   },
 
-  featureClick: function(e, latlon, pixelPos, data) {
+  featureClick: function(e, latlon, pixelPos, data, layer) {
     // dont pass leaflet lat/lon
-    this.trigger('featureClick', e, [latlon.lat(), latlon.lng()], pixelPos, data);
+    this.trigger('featureClick', e, [latlon.lat(), latlon.lng()], pixelPos, data, 0);
   },
 
   error: function(e) {
@@ -20653,7 +26023,8 @@ if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
       "cartodb": cdb.geo.GMapsCartoDBLayerView,
       "carto": cdb.geo.GMapsCartoDBLayerView,
       "plain": cdb.geo.GMapsPlainLayerView,
-      "gmapsbase": cdb.geo.GMapsBaseLayerView
+      "gmapsbase": cdb.geo.GMapsBaseLayerView,
+      "layergroup": cdb.geo.GMapsCartoDBLayerGroupView
     },
 
     initialize: function() {
@@ -20682,7 +26053,8 @@ if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
           scrollwheel: this.map.get("scrollwheel"),
           mapTypeControl:false,
           mapTypeId: google.maps.MapTypeId.ROADMAP,
-          backgroundColor: 'white'
+          backgroundColor: 'white',
+          tilt: 0
         });
 
       } else {
@@ -20732,7 +26104,7 @@ if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
       this.map.layers.bind('remove', this._removeLayer, this);
       this.map.layers.bind('reset', this._addLayers, this);
 
-      this.projector = new cdb.geo.CartoDBLayerGMaps.Projector(this.map_googlemaps);
+      this.projector = new cdb.geo.CartoDBLayerGroupGMaps.Projector(this.map_googlemaps);
 
       this.projector.draw = this._ready;
 
@@ -20800,8 +26172,9 @@ if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
           idx = Math.max(0, idx); // avoid -1
           self.map_googlemaps.overlayMapTypes.setAt(idx, layer_view.gmapsLayer);
         }
-        layer_view.index = idx;
-        this.trigger('newLayerView', layer_view, this);
+        if(opts == undefined || !opts.silent) {
+          this.trigger('newLayerView', layer_view, this);
+        }
       } else {
         cdb.log.error("layer type not supported");
       }
@@ -20819,7 +26192,10 @@ if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
         this.map.set({ attribution: attributions });
       }
 
+      return layer_view;
+
     },
+
 
     latLonToPixel: function(latlon) {
       return this.projector.latLngToPixel(new google.maps.LatLng(latlon[0], latlon[1]));
@@ -20854,10 +26230,10 @@ if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
       return [ [0,0], [0,0] ];
     },
 
-    setAttribution: function(m) {
-      // Remove old one
-      var old = document.getElementById("cartodb-gmaps-attribution")
-        , attribution = m.get("attribution").join(", ");
+  setAttribution: function(m) {
+    // Remove old one
+    var old = document.getElementById("cartodb-gmaps-attribution")
+      , attribution = m.get("attribution").join(", ");
 
       // If div already exists, remove it
       if (old) {
@@ -20909,6 +26285,11 @@ if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
     }
 
   }, {
+
+    addLayerToMap: function(layer, map, pos) {
+      pos = pos || 0;
+      map.overlayMapTypes.setAt(pos, layer);
+    },
 
     /**
     * create the view for the geometry model
@@ -21043,7 +26424,7 @@ cdb.ui.common.Dialog = cdb.core.View.extend({
    if(ev) ev.preventDefault();
 
     if (this.ok) {
-      this.ok();
+      this.ok(this.result);
     }
 
     this.hide();
@@ -21398,6 +26779,7 @@ cdb.ui.common.Table = cdb.core.View.extend({
     }
     this.dataModel = dm;
     this.dataModel.bind('reset', this._renderRows, this);
+    this.dataModel.bind('error', this._renderRows, this);
     this.dataModel.bind('add', this.addRow, this);
   },
 
@@ -21424,10 +26806,15 @@ cdb.ui.common.Table = cdb.core.View.extend({
     this.$('tfoot').remove();
     this.$('tr.noRows').remove();
 
-    while(this.rowViews.length) {
+    // unbind rows before cleaning them when all are gonna be removed
+    var rowView = null;
+    while(rowView = this.rowViews.pop()) {
+      // this is a hack to avoid all the elements are removed one by one
+      rowView.unbind(null, null, this);
       // each element removes itself from rowViews
-      this.rowViews[0].clean();
+      rowView.clean();
     }
+    // clean all the html at the same time
     this.rowViews = [];
   },
 
@@ -21444,13 +26831,13 @@ cdb.ui.common.Table = cdb.core.View.extend({
     tr.tableView = this;
 
     tr.bind('clean', function() {
-      var idx = _.indexOf(self.rowViews,this);
+      var idx = _.indexOf(self.rowViews, tr);
       self.rowViews.splice(idx, 1);
       // update index
       for(var i = idx; i < self.rowViews.length; ++i) {
         self.rowViews[i].$el.attr('data-y', i);
       }
-    });
+    }, this);
     tr.bind('changeRow', this.rowChanged, this);
     tr.bind('saved', this.rowSynched, this);
     tr.bind('errorRow', this.rowFailed, this);
@@ -21611,6 +26998,150 @@ cdb.ui.common.Table = cdb.core.View.extend({
 
 
 });
+/**
+ * Show a dropdown from the target
+ *
+ * It shows the several options of the user settings
+ *
+ * usage example:
+ *
+ *    var settings = new cdb.ui.common.Dropdown({
+ *        el: "#settings_element",
+ *        speedIn: 300,
+ *        speedOut: 200
+ *    });
+ *    // show it
+ *    settings.show();
+ *    // close it
+ *    settings.close();
+*/
+
+cdb.ui.common.Dropdown = cdb.core.View.extend({
+
+  tagName: 'div',
+  className: 'dropdown',
+
+  events: {
+    "click ul li a" : "_fireClick"
+  },
+
+  default_options: {
+    width: 160,
+    speedIn: 150,
+    speedOut: 300,
+    vertical_position: "down",
+    horizontal_position: "right",
+    tick: "right",
+    vertical_offset: 0,
+    horizontal_offset: 0
+  },
+
+  initialize: function() {
+    _.bindAll(this, "open", "hide", "_handleClick", "_keydown");
+
+    // Extend options
+    _.defaults(this.options, this.default_options);
+
+    // Dropdown template
+    if (this.options.template_base) {
+      this.template_base = cdb.templates.getTemplate(this.options.template_base);
+    } else if (this.options.template) {
+      this.template_base = this.options.template;
+    }
+
+    // Bind to target
+    $(this.options.target).bind({"click": this._handleClick});
+
+    // Bind ESC key
+    $(document).bind('keydown', this._keydown);
+
+    // Is open flag
+    this.isOpen = false;
+
+  },
+
+  render: function() {
+    // Render
+    var $el = this.$el;
+    $el
+      .html(this.template_base(this.options))
+      .css({
+        width: this.options.width
+      })
+    return this;
+  },
+
+  _handleClick: function(ev) {
+    //Check if the dropdown is visible to hiding with the click on the target
+    if (ev){
+      ev.preventDefault();
+      ev.stopPropagation();
+    }
+    // If visible
+    if (this.isOpen){
+      this.hide();
+    }else{
+      this.open();
+    }
+  },
+
+  _keydown: function(e) {
+    if (e.keyCode === 27) {
+      this.hide();
+    }
+  },
+
+  hide: function() {
+    this.isOpen = false;
+    this.$el.hide();
+  },
+
+  show: function() {
+    this.$el.css({
+      display: "block",
+      opacity: 1
+    });
+    this.isOpen = true;
+  },
+
+  open: function(ev,target) {
+    // Target
+    var $target = target && $(target) || this.options.target;
+    this.options.target = $target;
+
+    // Positionate
+    var targetPos     = $target[this.options.position || 'offset']()
+      , targetWidth   = $target.outerWidth()
+      , targetHeight  = $target.outerHeight()
+      , elementWidth  = this.$el.outerWidth()
+      , elementHeight = this.$el.outerHeight()
+      , self = this;
+
+    this.$el.css({
+      top: targetPos.top + parseInt((self.options.vertical_position == "up") ? (- elementHeight - 10 - self.options.vertical_offset) : (targetHeight + 10 - self.options.vertical_offset)),
+      left: targetPos.left + parseInt((self.options.horizontal_position == "left") ? (self.options.horizontal_offset - 15) : (targetWidth - elementWidth + 15 - self.options.horizontal_offset))
+    })
+    .addClass(
+      // Add vertical and horizontal position class
+      (this.options.vertical_position == "up" ? "vertical_top" : "vertical_bottom" )
+      + " " +
+      (this.options.horizontal_position == "right" ? "horizontal_right" : "horizontal_left" )
+      + " " +
+      // Add tick class
+      "tick_" + this.options.tick
+    )
+
+    // Show it
+    this.show();
+
+    // Dropdown openned
+    this.isOpen = true;
+  },
+
+  _fireClick: function(ev) {
+    this.trigger("optionClicked", ev, this.el);
+  }
+});
 (function() {
 
 var _requestCache = {};
@@ -21749,13 +27280,12 @@ var Vis = cdb.core.View.extend({
     }
 
     var scrollwheel = true;
+    
+    options = options || {};
 
-    if (options) {
-      this._applyOptions(data, options);
-
-      this.cartodb_logo = options.cartodb_logo;
-      scrollwheel       = options.scrollwheel;
-    }
+    this._applyOptions(data, options);
+    this.cartodb_logo = options.cartodb_logo;
+    scrollwheel       = options.scrollwheel;
 
     // map
     data.maxZoom || (data.maxZoom = 20);
@@ -21878,6 +27408,7 @@ var Vis = cdb.core.View.extend({
       tiles_loader: true,
       zoomControl: true,
       loaderControl: true,
+      layer_selector: false,
       searchControl: false,
       infowindow: true
     });
@@ -21921,6 +27452,12 @@ var Vis = cdb.core.View.extend({
         type: "header",
         shareable: opt.shareable ? true: false,
         url: vizjson.url
+      });
+    }
+
+    if (opt.layer_selector) {
+      vizjson.overlays.push({
+        type: "layer_selector"
       });
     }
 
@@ -21996,18 +27533,10 @@ var Vis = cdb.core.View.extend({
     return this.mapView.createLayer(layerModel);
   },
 
-  addInfowindow: function(layerView) {
-    var model = layerView.model;
-    var eventType = layerView.model.get('eventType') || 'featureClick';
-    var infowindow = Overlay.create('infowindow', this, model.get('infowindow'), true);
-    var mapView = this.mapView;
-    mapView.addInfowindow(infowindow);
-
-    var infowindowFields = layerView.model.get('infowindow');
-    // HACK: REMOVE
-    var port = model.get('sql_port');
-    var domain = model.get('sql_domain') + (port ? ':' + port: '')
-    var protocol = model.get('sql_protocol');
+  _getSqlApi: function(attrs) {
+    var port = attrs.sql_api_port
+    var domain = attrs.sql_api_domain + (port ? ':' + port: '')
+    var protocol = attrs.sql_api_protocol;
     var version = 'v1';
     if (domain.indexOf('cartodb.com') !== -1) {
       protocol = 'http';
@@ -22016,24 +27545,42 @@ var Vis = cdb.core.View.extend({
     }
 
     var sql = new cartodb.SQL({
-      user: model.get('user_name'),
+      user: attrs.user_name,
       protocol: protocol,
       host: domain,
       version: version
     });
 
+    return sql;
+  },
+
+  addInfowindow: function(layerView) {
+    var mapView = this.mapView;
+    var eventType = 'featureClick';
+    var infowindow = Overlay.create('infowindow', this, layerView.getInfowindowData(0), true);
+
+    mapView.addInfowindow(infowindow);
+
+    var sql = this._getSqlApi(layerView.options)
+
+    // activate interactivity for layers with infowindows
+    for(var i = 0; i < layerView.getLayerCount(); ++i) {
+      if(layerView.getInfowindowData(i)) {
+        layerView.setInteraction(i, true);
+      }
+    }
+
     // if the layer has no infowindow just pass the interaction
     // data to the infowindow
-    layerView.bind(eventType, function(e, latlng, pos, data) {
+    layerView.bind(eventType, function(e, latlng, pos, data, layer) {
         var cartodb_id = data.cartodb_id
+        var infowindowFields = layerView.getInfowindowData(layer)
         var fields = infowindowFields.fields;
-
-
         // Send request
-        sql.execute("select {{fields}} from {{table_name}} where cartodb_id = {{cartodb_id }}", {
+        sql.execute("select {{{fields}}} from ({{{sql}}}) as _cartodbjs_alias where cartodb_id = {{{ cartodb_id }}}", {
           fields: _.pluck(fields, 'name').join(','),
           cartodb_id: cartodb_id,
-          table_name: model.get('table_name')
+          sql: layerView.getQuery(layer)
         })
         .done(function(interact_data) {
           if (interact_data.rows.length == 0 ) return;
@@ -22043,20 +27590,22 @@ var Vis = cdb.core.View.extend({
             var fields = infowindowFields.fields;
             for(var j = 0; j < fields.length; ++j) {
               var f = fields[j];
-              if(interact_data[f.name] != undefined && interact_data[f.name] != "") {
+              var value = String(interact_data[f.name]);
+              if(interact_data[f.name] != undefined && value != "") {
                 render_fields.push({
-                  title: f.title ? f.name: null,
+                  title: f.title ? f.name : null,
                   value: interact_data[f.name],
-                  index: j ? j:null // mustache does not recognize 0 as false :(
+                  index: j ? j : null
                 });
               }
             }
+
             // manage when there is no data to render
             if (render_fields.length === 0) {
               render_fields.push({
                 title: null,
                 value: 'No data available',
-                index: j ? j:null, // mustache does not recognize 0 as false :(
+                index: j ? j : null,
                 type: 'empty'
               });
             }
@@ -22075,6 +27624,8 @@ var Vis = cdb.core.View.extend({
           infowindow.setError();
         })
 
+        infowindow.model.set('template', infowindowFields.template);
+
         // Show infowindow with loading state
         infowindow
           .setLatLng(latlng)
@@ -22082,11 +27633,18 @@ var Vis = cdb.core.View.extend({
           .showInfowindow();
     });
 
-    layerView.bind('featureOver', function(e, latlon, pxPos, data) {
-      mapView.setCursor('pointer');
+    var hovers = [];
+
+    layerView.bind('featureOver', function(e, latlon, pxPos, data, layer) {
+      hovers[layer] = 1;
+      if(_.any(hovers))
+        mapView.setCursor('pointer');
     });
-    layerView.bind('featureOut', function() {
-      mapView.setCursor('auto');
+
+    layerView.bind('featureOut', function(m, layer) {
+      hovers[layer] = 0;
+      if(!_.any(hovers))
+        mapView.setCursor('auto');
     });
 
     layerView.infowindow = infowindow.model;
@@ -22095,16 +27653,13 @@ var Vis = cdb.core.View.extend({
   loadLayer: function(layerData, opts) {
     var map = this.map;
     var mapView = this.mapView;
-    layerData.type = layerData.kind;
+    //layerData.type = layerData.kind;
     var layer_cid = map.addLayer(Layers.create(layerData.type || layerData.kind, this, layerData), opts);
 
     var layerView = mapView.getLayerByCid(layer_cid);
 
     // add the associated overlays
-    if (layerData.infowindow &&
-      layerData.infowindow.fields &&
-      layerData.infowindow.fields.length > 0 &&
-      this.infowindow) {
+    if(layerView.containInfowindow && layerView.containInfowindow()) {
       this.addInfowindow(layerView);
     }
 
@@ -22174,8 +27729,12 @@ cdb.vis.Vis = Vis;
 (function() {
 
 // map zoom control
-cdb.vis.Overlay.register('zoom', function(data) {
+cdb.vis.Overlay.register('zoom', function(data, vis) {
 
+  if(!data.template) {
+    vis.trigger('error', 'zoom template is empty')
+    return;
+  }
   var zoom = new cdb.geo.ui.Zoom({
     model: data.map,
     template: cdb.core.Template.compile(data.template)
@@ -22273,6 +27832,34 @@ cdb.vis.Overlay.register('infowindow', function(data, vis) {
 });
 
 
+// layer_selector
+cdb.vis.Overlay.register('layer_selector', function(data, vis) {
+
+  var template = cdb.core.Template.compile(
+    data.template || '\
+      <a href="#/change-visibility" class="layers">Visible layers<div class="count"></div></a>\
+      ',
+    data.templateType || 'underscore'
+  );
+
+  var dropdown_template = cdb.core.Template.compile(
+    data.template || '\
+      <ul></ul><div class="tail"><span class="border"></span></div>\
+      ',
+    data.templateType || 'underscore'
+  );
+
+  var layerSelector = new cdb.geo.ui.LayerSelector({
+    mapView: vis.mapView,
+    template: template,
+    dropdown_template: dropdown_template,
+    layer_names: data.layer_names
+  });
+
+
+  return layerSelector.render();
+});
+
 // search content
 cdb.vis.Overlay.register('search', function(data, vis) {
 
@@ -22295,7 +27882,7 @@ cdb.vis.Overlay.register('search', function(data, vis) {
   return search.render();
 });
 
-// tooltip 
+// tooltip
 cdb.vis.Overlay.register('tooltip', function(data, vis) {
   var layer;
   var layers = vis.getLayers();
@@ -22373,38 +27960,43 @@ Layers.register('background', function(vis, data) {
   return new cdb.geo.PlainLayer(data);
 });
 
-var cartoLayer = function(vis, data) {
 
+function normalizeOptions(vis, data) {
   if(data.infowindow && data.infowindow.fields) {
     if(data.interactivity) {
       if(data.interactivity.indexOf('cartodb_id') === -1) {
-        data.interactivity = data.interactivity + ",cartodb_id"
+        data.interactivity = data.interactivity + ",cartodb_id";
       }
     } else {
       data.interactivity = 'cartodb_id';
     }
   }
-
-  data.tiler_protocol = vis.https ? 'https': 'http';
-  /*if(!data.no_cdn) {
-    data.tiler_protocol = vis.https ? 'https': 'http';
-    data.tiler_port = vis.https ? 443: 80;
-  }*/
-  data.extra_params = data.extra_params || {};
-  if(vis.updated_at) {
-    // see #1724 (internal)
-    data.extra_params.cache_buster = vis.updated_at;
-    //delete data.extra_params.cache_buster;
-  } else {
-    data.no_cdn = true;
+  // if https is forced
+  if(vis.https) {
+    data.tiler_protocol = 'https';
+    data.tiler_port = 443;
   }
-  data.cartodb_logo = vis.cartodb_logo;
+  data.cartodb_logo = vis.cartodb_logo == undefined ? data.cartodb_logo : vis.cartodb_logo;
+}
 
+var cartoLayer = function(vis, data) {
+  normalizeOptions(vis, data);
+  // if sublayers are included that means a layergroup should
+  // be created
+  if(data.sublayers) {
+    data.type = 'layergroup';
+    return new cdb.geo.CartoDBGroupLayer(data);
+  }
   return new cdb.geo.CartoDBLayer(data);
 };
 
 Layers.register('cartodb', cartoLayer);
 Layers.register('carto', cartoLayer);
+
+Layers.register('layergroup', function(vis, data) {
+  normalizeOptions(vis, data);
+  return new cdb.geo.CartoDBGroupLayer(data);
+});
 
 })();
 /**
@@ -22444,7 +28036,7 @@ Layers.register('carto', cartoLayer);
    */
   function _getLayerJson(layer, callback) {
     var url = null;
-    if(layer.layers !== undefined || ((layer.kind || layer.type) !== undefined && layer.options !== undefined)) {
+    if(layer.layers !== undefined || ((layer.kind || layer.type) !== undefined)) {
       // layer object contains the layer data
       _.defer(function() { callback(layer); });
       return;
@@ -22487,9 +28079,16 @@ Layers.register('carto', cartoLayer);
       callback = fn;
     }
     
+    promise.addTo = function(map, position) {
+      promise.on('done', function() {
+        MapType.addLayerToMap(layerView, map, position);
+      });
+      return promise;
+    };
+    
     _getLayerJson(layer, function(visData) {
 
-      var layerData, MapType;
+      var layerData;
 
       if(!visData) {
         promise.trigger('error');
@@ -22501,11 +28100,6 @@ Layers.register('carto', cartoLayer);
           promise.trigger('error', "visualization file does not contain layer info");
         }
         layerData = visData.layers[1];
-        // add the timestamp to options
-        layerData.options.extra_params = layerData.options.extra_params || {};
-        //layerData.options.extra_params.updated_at = visData.updated_at;
-        layerData.options.extra_params.cache_buster = visData.updated_at;
-        //delete layerData.options.cache_buster;
       } else {
         layerData = visData;
       }
@@ -22514,6 +28108,18 @@ Layers.register('carto', cartoLayer);
         promise.trigger('error');
         return;
       }
+
+
+      // update options
+      if(options && !_.isFunction(options)) {
+        _.extend(layerData.options, options);
+      } 
+
+      options = options || {};
+      options = _.defaults(options, {
+        infowindow: true,
+        https: false
+      })
 
       // check map type
       // TODO: improve checking
@@ -22524,18 +28130,8 @@ Layers.register('carto', cartoLayer);
         MapType = cdb.geo.LeafletMapView;
       } else {
         promise.trigger('error', "cartodb.js can't guess the map type");
-        return;
+        return promise;
       }
-
-      // update options
-      if(options && !_.isFunction(options)) {
-        _.extend(layerData.options, options);
-      } 
-
-      options = options || {};
-      options = _.defaults(options, {
-          infowindow: true
-      })
 
       // create a dummy viz
       var viz = map.viz;
@@ -22550,6 +28146,7 @@ Layers.register('carto', cartoLayer);
         });
 
         viz.updated_at = visData.updated_at;
+        viz.https = options.https;
       }
 
       layerView = viz.createLayer(layerData, { no_base_layer: true });
@@ -22631,6 +28228,19 @@ Layers.register('carto', cartoLayer);
       delete params.crossDomain;
       params.dataType = 'jsonp';
     }
+
+    if(options.cache) {
+      params.cache = options.cache; 
+    }
+
+    // Substitute mapnik tokens
+    // resolution at zoom level 0
+    var res = '156543.03515625';
+    // full webmercator extent
+    var ext = 'ST_MakeEnvelope(-20037508.5,-20037508.5,20037508.5,20037508.5,3857)';
+    sql = sql.replace('!bbox!', ext)
+             .replace('!pixel_width!', res)
+             .replace('!pixel_height!', res);
 
     // create query
     var query = Mustache.render(sql, vars);

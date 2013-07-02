@@ -584,6 +584,7 @@ class User < Sequel::Model
           if File.exists?(f)
             CartoDB::Logger.info "Loading CartoDB SQL function #{File.basename(f)} into #{database_name}"
             @sql = File.new(f).read
+            @sql.gsub!(':DATABASE_USERNAME', self.database_username)
             user_database.run(@sql)
           else
             CartoDB::Logger.info "SQL function #{File.basename(f)} doesn't exist in lib/sql/scripts-enabled directory. Not loading it."

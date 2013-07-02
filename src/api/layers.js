@@ -111,6 +111,7 @@
 
       // update options
       if(options && !_.isFunction(options)) {
+        layerData.options = layerData.options || {};
         _.extend(layerData.options, options);
       } 
 

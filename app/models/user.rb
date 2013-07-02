@@ -452,7 +452,7 @@ class User < Sequel::Model
 
     # Remove tables with null oids unless the table name
     # exists on the db
-    self.tables.filter(table_id: nil).each do |t|
+    self.tables.filter(table_id: nil).all.each do |t|
       t.destroy unless self.real_tables.map { |t| t[:relname] }.include?(t.name)
     end if dropped_tables.present? && dropped_tables.include?(nil)
   end

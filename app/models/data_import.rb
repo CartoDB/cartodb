@@ -8,9 +8,10 @@ require_relative './table'
 require_relative '../../lib/cartodb/errors'
 require_relative '../../lib/cartodb_stats'
 require_relative '../../lib/cartodb/mini_sequel'
-require_relative '../../lib/importer/lib/cartodb-importer'
+#require_relative '../../lib/importer/lib/cartodb-importer'
 require_relative '../../services/track_record/track_record/log'
 require_relative '../../config/initializers/redis'
+require_relative '../../services/importer/importer'
 
 class DataImport < Sequel::Model
   include CartoDB::MiniSequel
@@ -135,7 +136,7 @@ class DataImport < Sequel::Model
     return append_to_existing if append.present?
     return migrate_existing   if migrate_table.present?
     return from_table         if table_copy.present? || from_query.present?
-    return proper_import      if %w(url file).include?(data_type)
+    return new_importer       if %w(url file).include?(data_type)
   end #dispatch
 
   def running_import_ids
@@ -298,18 +299,29 @@ class DataImport < Sequel::Model
   end
 
   def proper_import
+    success = false
     imports, errors = import_to_cartodb(data_type, data_source)
+
     if imports.present?
       imports.each do | import |
         self.log << "Linking #{import.name} to CartoDB UI"
         unless migrate_existing(import.name, table_name)
           current_user.in_database.drop_table(import.name) rescue ""
         else
-          imported_something = true
+          success = true
         end
       end
     end
+
+    success
   end
+
+  def new_importer
+    downloader  = CartoDB::Importer::Downloader.new(data_source)
+    runner      = CartoDB::Importer::Runner.new(job, downloader)
+    runner.run
+    runner.exit_code == 0
+  end #new_importer
 
   def get_valid_name(name)
     Table.get_valid_table_name(name, 

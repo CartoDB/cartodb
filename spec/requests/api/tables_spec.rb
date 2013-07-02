@@ -197,7 +197,7 @@ describe "Tables API" do
     end
   end
 
-  pending "updates metadata of outdated tables" do
+  it "updates metadata of outdated tables" do
     Table.destroy
     3.times { FactoryGirl.create(:table, :user_id => @user.id) }
 

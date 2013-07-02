@@ -291,7 +291,9 @@ With visualizations already created through the CartoDB console, you can simply 
       Layer metadata is always in the form: { type: 'LAYER_TYPE_NAME', options: {....} }
       See cartodb.CartoDBLayer too see an example
 
-  + **options**: each type of layer has different options.
+  + **options**: 
+    - https: force https
+    - refreshTime: if is set, the layer is refreshed each ``refreshTime`` milliseconds
 
   + **callback(layer)**: if a function is specified is called when the layer is created passing it as argument.
 

@@ -6,9 +6,9 @@ require_relative '../factories/pg_connection'
 
 include CartoDB
 
-describe Importer::Georeferencer do
+describe Importer2::Georeferencer do
   before do
-    @db           = Importer::Factories::PGConnection.new.connection
+    @db           = Importer2::Factories::PGConnection.new.connection
     @table_name   = create_table(@db)
   end
 
@@ -18,11 +18,11 @@ describe Importer::Georeferencer do
 
   describe '#initialize' do
     it 'requires a db connection and a table name' do
-      lambda { Importer::Georeferencer.new }
+      lambda { Importer2::Georeferencer.new }
         .must_raise ArgumentError
-      lambda { Importer::Georeferencer.new(Object.new) }
+      lambda { Importer2::Georeferencer.new(Object.new) }
         .must_raise ArgumentError
-      lambda { Importer::Georeferencer.new(Object.new, 'bogus') }
+      lambda { Importer2::Georeferencer.new(Object.new, 'bogus') }
     end
   end #initialize
 
@@ -32,7 +32,7 @@ describe Importer::Georeferencer do
 
       10.times { dataset.insert(random_record) }
 
-      georeferencer = Importer::Georeferencer.new(@db, @table_name)
+      georeferencer = Importer2::Georeferencer.new(@db, @table_name)
       georeferencer.run
 
       dataset.first.fetch(:the_geom).wont_be_nil
@@ -42,8 +42,8 @@ describe Importer::Georeferencer do
 
   describe '#georeference' do
     it 'populates the_geom from lat / lon values' do
-      lat = Importer::Georeferencer::LATITUDE_POSSIBLE_NAMES.sample
-      lon = Importer::Georeferencer::LONGITUDE_POSSIBLE_NAMES.sample
+      lat = Importer2::Georeferencer::LATITUDE_POSSIBLE_NAMES.sample
+      lon = Importer2::Georeferencer::LONGITUDE_POSSIBLE_NAMES.sample
 
       table_name = create_table(
         @db,
@@ -51,7 +51,7 @@ describe Importer::Georeferencer do
         longitude_column: lon
       )
 
-      georeferencer = Importer::Georeferencer.new(@db, table_name)
+      georeferencer = Importer2::Georeferencer.new(@db, table_name)
       dataset       = @db[table_name.to_sym]
 
       georeferencer.create_the_geom_in(table_name)
@@ -70,7 +70,7 @@ describe Importer::Georeferencer do
 
   describe '#create_the_geom_in' do
     it 'adds a the_geom column to a table' do
-      georeferencer = Importer::Georeferencer.new(@db, @table_name)
+      georeferencer = Importer2::Georeferencer.new(@db, @table_name)
 
       georeferencer.column_exists_in?(@table_name, 'the_geom')
         .must_equal false
@@ -82,7 +82,7 @@ describe Importer::Georeferencer do
 
   describe '#column_exists_in?' do
     it 'return true if the column exists in the table' do
-      georeferencer = Importer::Georeferencer.new(@db, @table_name)
+      georeferencer = Importer2::Georeferencer.new(@db, @table_name)
       georeferencer.column_exists_in?(@table_name, 'non_existent')
         .must_equal false
       georeferencer.column_exists_in?(@table_name, 'name')
@@ -92,7 +92,7 @@ describe Importer::Georeferencer do
 
   describe '#columns_in' do
     it 'returns the names of columns in a table' do
-      georeferencer = Importer::Georeferencer.new(@db, @table_name)
+      georeferencer = Importer2::Georeferencer.new(@db, @table_name)
       georeferencer.columns_in(@table_name).must_include :name
       georeferencer.columns_in(@table_name).must_include :description
       georeferencer.columns_in(@table_name).must_include :lat
@@ -123,5 +123,5 @@ describe Importer::Georeferencer do
       lon:          rand(180)
     }
   end #random_record
-end # Importer::Georeferencer
+end # Importer2::Georeferencer
 

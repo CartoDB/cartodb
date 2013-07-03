@@ -5,7 +5,7 @@ require_relative './source_file'
 require_relative '../../../data-repository/filesystem/local'
 
 module CartoDB
-  module Importer
+  module Importer2
     class Downloader
       extend Forwardable
 
@@ -64,6 +64,6 @@ module CartoDB
         url.split('/').last
       end #name_in
     end # Downloader
-  end # Importer
+  end # Importer2
 end # CartoDB
 

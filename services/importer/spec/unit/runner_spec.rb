@@ -11,24 +11,24 @@ require_relative '../factories/pg_connection'
 
 include CartoDB
 
-describe Importer::Runner do
+describe Importer2::Runner do
   before do
     @filepath     = '/var/tmp/foo.txt'
-    pg_options    = Importer::Factories::PGConnection.new.pg_options
-    @job          = Importer::Job.new(pg_options: pg_options)
+    pg_options    = Importer2::Factories::PGConnection.new.pg_options
+    @job          = Importer2::Job.new(pg_options: pg_options)
   end
 
   describe '#initialize' do
     it 'requires postgres options and the path to a file' do
-      lambda { Importer::Runner.new }.must_raise ArgumentError
-      lambda { Importer::Runner.new '/var/tmp/foo.txt' }.must_raise ArgumentError
+      lambda { Importer2::Runner.new }.must_raise ArgumentError
+      lambda { Importer2::Runner.new '/var/tmp/foo.txt' }.must_raise ArgumentError
     end
   end #initialize
 
   describe '#run' do
     it 'loads the data through the loader' do
-      downloader  = Importer::Downloader.new(@filepath, @job.id)
-      runner      = Importer::Runner.new(@job, downloader)
+      downloader  = Importer2::Downloader.new(@filepath, @job.id)
+      runner      = Importer2::Runner.new(@job, downloader)
       loader      = Minitest::Mock.new
       exit_code   = rand(999)
 
@@ -40,15 +40,15 @@ describe Importer::Runner do
     end
 
     it 'logs the file path to be imported' do
-      downloader  = Importer::Downloader.new(@filepath, @job.id)
-      runner      = Importer::Runner.new(@job, downloader)
+      downloader  = Importer2::Downloader.new(@filepath, @job.id)
+      runner      = Importer2::Runner.new(@job, downloader)
       runner.run
       runner.report.must_match /#{@filepath}/
     end
 
     it 'logs the exit code of the loader' do
-      downloader  = Importer::Downloader.new(@filepath, @job.id)
-      runner      = Importer::Runner.new(@job, downloader)
+      downloader  = Importer2::Downloader.new(@filepath, @job.id)
+      runner      = Importer2::Runner.new(@job, downloader)
       runner.run
       runner.report.must_match /exit code/
     end
@@ -56,8 +56,8 @@ describe Importer::Runner do
 
   describe '#exit_code' do
     it 'returns the exit code from the loader' do
-      downloader  = Importer::Downloader.new(@filepath, @job.id)
-      runner      = Importer::Runner.new(@job, downloader)
+      downloader  = Importer2::Downloader.new(@filepath, @job.id)
+      runner      = Importer2::Runner.new(@job, downloader)
       loader      = Minitest::Mock.new
       exit_code   = rand(999)
 
@@ -67,5 +67,5 @@ describe Importer::Runner do
       loader.verify
     end
   end #exit_code
-end # Importer::Runner
+end # Importer2::Runner
 

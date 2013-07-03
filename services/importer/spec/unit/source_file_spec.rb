@@ -3,7 +3,7 @@ gem 'minitest'
 require 'minitest/autorun'
 require_relative '../../lib/importer/source_file'
 
-include CartoDB::Importer
+include CartoDB::Importer2
 
 describe SourceFile do
   describe '#basename' do

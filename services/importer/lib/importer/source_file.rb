@@ -1,6 +1,6 @@
 # encoding: utf-8
 module CartoDB
-  module Importer
+  module Importer2
     class SourceFile
       def initialize(filepath, filename=nil)
         self.filepath = filepath
@@ -33,6 +33,6 @@ module CartoDB
       attr_writer   :filename
       attr_accessor :filepath
     end # SourceFile
-  end # Importer
+  end # Importer2
 end # CartoDB
 

@@ -3,7 +3,7 @@ gem 'minitest'
 require 'minitest/autorun'
 require_relative '../../lib/importer/downloader'
 
-include CartoDB::Importer
+include CartoDB::Importer2
 
 describe Downloader do
   before do

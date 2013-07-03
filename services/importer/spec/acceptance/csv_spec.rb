@@ -6,7 +6,7 @@ require_relative '../../lib/importer/job'
 require_relative '../../lib/importer/downloader'
 require_relative '../factories/pg_connection'
 
-include CartoDB::Importer
+include CartoDB::Importer2
 
 describe 'csv regression tests' do
   before do

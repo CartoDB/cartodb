@@ -8,7 +8,7 @@ require_relative '../doubles/job'
 require_relative '../factories/csv'
 require_relative '../factories/pg_connection'
 
-include CartoDB::Importer
+include CartoDB::Importer2
 
 describe Ogr2ogr do
   before do

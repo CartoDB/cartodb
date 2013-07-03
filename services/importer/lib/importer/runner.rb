@@ -2,7 +2,7 @@
 require_relative './loader'
 
 module CartoDB
-  module Importer
+  module Importer2
     class Runner
       def initialize(job, downloader)
         self.job        = job
@@ -40,6 +40,6 @@ module CartoDB
         downloader.source_file
       end #source_file
     end # Runner
-  end # Importer
+  end # Importer2
 end # CartoDB
 

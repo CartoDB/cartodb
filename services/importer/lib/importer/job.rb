@@ -5,7 +5,7 @@ require 'uuidtools'
 require_relative '../../../track_record/track_record'
 
 module CartoDB
-  module Importer
+  module Importer2
     class Job
       def initialize(attributes={})
         @id         = attributes.fetch(:id, UUIDTools::UUID.timestamp_create.to_s)
@@ -27,6 +27,6 @@ module CartoDB
 
       attr_reader :id, :logger, :pg_options
     end # Job
-  end # Importer
+  end # Importer2
 end # CartoDB
 

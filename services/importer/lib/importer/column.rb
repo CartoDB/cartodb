@@ -1,6 +1,6 @@
 # encoding: utf-8
 module CartoDB
-  module Importer
+  module Importer2
     class Column
       DEFAULT_SRID  = 4326
       WKB_RE        = /^\d{2}/
@@ -112,6 +112,6 @@ module CartoDB
 
       attr_reader :db, :table_name, :column_name
     end # Column
-  end # Importer
+  end # Importer2
 end # CartoDB
 

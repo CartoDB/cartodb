@@ -4,7 +4,7 @@ require_relative './ogr2ogr'
 require_relative './georeferencer'
 
 module CartoDB
-  module Importer
+  module Importer2
     class Loader
       extend Forwardable
 
@@ -36,6 +36,6 @@ module CartoDB
       def_delegators  :source_file,   :fullpath, :name, :path
       def_delegators  :ogr2ogr,       :exit_code
     end # Loader
-  end # Importer
+  end # Importer2
 end # CartoDB
 

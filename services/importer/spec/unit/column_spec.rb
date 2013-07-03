@@ -4,7 +4,7 @@ require 'minitest/autorun'
 require_relative '../../lib/importer/column'
 require_relative '../factories/pg_connection'
 
-include CartoDB::Importer
+include CartoDB::Importer2
 
 describe Column do
   before do

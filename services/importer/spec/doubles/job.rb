@@ -1,7 +1,7 @@
 # encoding: utf-8
 
 module CartoDB
-  module Importer
+  module Importer2
     module Doubles
       class Job
         def initialize(*args);  @log = ''; end
@@ -22,6 +22,6 @@ module CartoDB
 
       end # Job
     end # Doubles
-  end # Importer
+  end # Importer2
 end # CartoDB
 

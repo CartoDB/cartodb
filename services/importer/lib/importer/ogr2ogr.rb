@@ -2,7 +2,7 @@
 require 'open3'
 
 module CartoDB
-  module Importer
+  module Importer2
     class Ogr2ogr
       ENCODING = 'UTF-8'
 
@@ -67,6 +67,6 @@ module CartoDB
         %Q{dbname=#{pg_options.fetch(:database)}" }
       end #postgres_options
     end # Ogr2ogr
-  end # Importer
+  end # Importer2
 end # CartoDB
 

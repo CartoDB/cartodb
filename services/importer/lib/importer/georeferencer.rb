@@ -1,7 +1,7 @@
 # encoding: utf-8
 
 module CartoDB
-  module Importer
+  module Importer2
     class Georeferencer
       LATITUDE_POSSIBLE_NAMES   = %w{ latitude lat latitudedecimal
         latitud lati decimallatitude decimallat }
@@ -77,6 +77,6 @@ module CartoDB
       attr_reader :db, :table_name
 
     end # Georeferencer
-  end # Importer
+  end # Importer2
 end # CartoDB
 

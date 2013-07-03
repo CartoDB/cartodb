@@ -18,6 +18,7 @@ module Cartodb
     unless(@config[:mandatory_keys].map(&:to_sym) - @config.keys).blank?
       raise "Missing the following config keys on config/app_config.yml: #{(@config[:mandatory_keys].map(&:to_sym) - @config.keys).join(', ')}"
     end
+    ActionDispatch::Http::URL.tld_length = @config[:session_domain].split('.').delete_if {|i| i.empty? }.length - 1
   end
 
   def self.error_codes

@@ -404,7 +404,7 @@ class User < Sequel::Model
     metadata_tables_without_id = self.tables.filter(table_id: nil).map(&:name)
     outdated_tables = real_tables.select{|t| metadata_tables_without_id.include?(t[:relname])}
     outdated_tables.each do |t|
-      table = Table.find(name: t[:relname])
+      table = self.tables.where(name: t[:relname]).first
       begin
         table.this.update table_id: t[:oid]
       rescue Sequel::DatabaseError => e
@@ -444,10 +444,17 @@ class User < Sequel::Model
 
   def link_deleted_tables(metadata_tables_ids)
     dropped_tables = metadata_tables_ids - real_tables.map{|t| t[:oid]}
+
+    # Remove tables with oids that don't exist on the db
     self.tables.where(
-      table_id: dropped_tables,
-      table_id: nil,
+      table_id: dropped_tables
     ).destroy if dropped_tables.present?
+
+    # Remove tables with null oids unless the table name
+    # exists on the db
+    self.tables.filter(table_id: nil).all.each do |t|
+      t.destroy unless self.real_tables.map { |t| t[:relname] }.include?(t.name)
+    end if dropped_tables.present? && dropped_tables.include?(nil)
   end
 
   def exceeded_quota?
@@ -577,6 +584,7 @@ class User < Sequel::Model
           if File.exists?(f)
             CartoDB::Logger.info "Loading CartoDB SQL function #{File.basename(f)} into #{database_name}"
             @sql = File.new(f).read
+            @sql.gsub!(':DATABASE_USERNAME', self.database_username)
             user_database.run(@sql)
           else
             CartoDB::Logger.info "SQL function #{File.basename(f)} doesn't exist in lib/sql/scripts-enabled directory. Not loading it."

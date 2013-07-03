@@ -12,7 +12,7 @@ module CartoDB
         tables_per_statement = begin
           @connection["SELECT CDB_QueryTables(?)", statement].all
         rescue Sequel::DatabaseError => exception
-          raise unless exception.message =~ /Cannot explain query/
+          raise unless exception.message =~ /cannot explain query|does not exist/i
           []
         end
         tables_per_statement.map do |s|

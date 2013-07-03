@@ -11,7 +11,22 @@ namespace :cartodb do
       User.all.each_with_index do |user, i|
         begin
           user.load_cartodb_functions(functions_list)
-          user.in_database(:as => :superuser).run("DROP FUNCTION IF EXISTS check_quota() CASCADE;")
+          printf "OK %-#{20}s (%-#{4}s/%-#{4}s)\n", user.username, i, count
+        rescue => e
+          printf "FAIL %-#{20}s (%-#{4}s/%-#{4}s) #{e.message}\n", user.username, i, count
+        end
+        sleep(1.0/5.0)
+      end
+    end
+
+    ########################
+    # LOAD CARTODB TRIGGERS
+    ########################
+    desc "Install/upgrade CARTODB SQL triggers"
+    task :load_triggers => :environment do
+      count = User.count
+      User.all.each_with_index do |user, i|
+        begin
           user.tables.all.each do |table|
             begin
               table.add_python

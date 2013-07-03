@@ -1,6 +1,6 @@
 defaults: &defaults
   debug_assets: true
-  mandatory_keys:     [layer_opts, tiler_domain, tiler_port, sql_api_domain, sql_api_endpoint, sql_api_port, varnish_management, redis]
+  mandatory_keys:     [layer_opts, sql_api_domain, sql_api_endpoint, sql_api_port, varnish_management, redis, session_domain]
   session_domain:     '.localhost.lan'
   secret_token:       '71c2b25921b84a1cb21c71503ab8fb23'
   account_host:       'localhost:3000'

@@ -136,7 +136,7 @@ class DataImport < Sequel::Model
     return append_to_existing if append.present?
     return migrate_existing   if migrate_table.present?
     return from_table         if table_copy.present? || from_query.present?
-    return new_importer       if %w(url file).include?(data_type)
+    return proper_import      if %w(url file).include?(data_type)
   end #dispatch
 
   def running_import_ids
@@ -299,7 +299,7 @@ class DataImport < Sequel::Model
   end
 
   def proper_import
-    success = false
+    success_status  = false
     imports, errors = import_to_cartodb(data_type, data_source)
 
     if imports.present?
@@ -308,20 +308,13 @@ class DataImport < Sequel::Model
         unless migrate_existing(import.name, table_name)
           current_user.in_database.drop_table(import.name) rescue ""
         else
-          success = true
+          success_status = true
         end
       end
     end
 
-    success
+    success_status
   end
-
-  def new_importer
-    downloader  = CartoDB::Importer::Downloader.new(data_source)
-    runner      = CartoDB::Importer::Runner.new(job, downloader)
-    runner.run
-    runner.exit_code == 0
-  end #new_importer
 
   def get_valid_name(name)
     Table.get_valid_table_name(name, 

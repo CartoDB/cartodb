@@ -1,4 +1,5 @@
 # encoding: utf-8
+require_relative './column'
 
 module CartoDB
   module Importer2
@@ -7,6 +8,7 @@ module CartoDB
         latitud lati decimallatitude decimallat }
       LONGITUDE_POSSIBLE_NAMES  = %w{ longitude lon lng 
         longitudedecimal longitud long decimallongitude decimallong }
+      GEOMETRY_POSSIBLE_NAMES   = %w{ geometry the_geom }
 
       def initialize(db, table_name)
         @db         = db
@@ -14,17 +16,30 @@ module CartoDB
       end #initialize
 
       def run
+        create_the_geom_from_geometry_column || create_the_geom_from_latlon 
+        self
+      end #run
+
+      def create_the_geom_from_latlon
         latitude_column_name  = latitude_column_name_in(table_name)
         longitude_column_name = longitude_column_name_in(table_name)
-        return self unless latitude_column_name && longitude_column_name
+
+        return false unless latitude_column_name && longitude_column_name
 
         create_the_geom_in(table_name)
         populate_the_geom_from_latlon(
           table_name, latitude_column_name, longitude_column_name
         )
+      end #create_the_geom_from_latlon
 
+      def create_the_geom_from_geometry_column
+        column = Column.new(db, table_name, geometry_column_in(table_name))
+        column.geometrify
+        column.rename_to(:the_geom) unless column_exists_in?(table_name, :the_geom)
         self
-      end #run
+      rescue
+        false
+      end #create_the_geom_from_geometry_column
 
       def populate_the_geom_from_latlon(table_name, latitude_column_name, 
       longitude_column_name)
@@ -68,6 +83,11 @@ module CartoDB
         names = LONGITUDE_POSSIBLE_NAMES.map { |name| "'#{name}'" }.join(',')
         find_column_in(table_name, names)
       end #longitude_column_name_in
+
+      def geometry_column_in(table_name)
+        names = GEOMETRY_POSSIBLE_NAMES.map { |name| "'#{name}'" }.join(',')
+        find_column_in(table_name, names)
+      end #geometry_column_in
 
       def find_column_in(table_name, possible_names)
         sample = db[%Q{

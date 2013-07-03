@@ -21,9 +21,13 @@ module CartoDB
         "importer_#{id.gsub(/-/, '')}"
       end #table_name
 
+      def db
+        @db ||= Sequel.postgres(pg_options)
+      end #db
+
       def dataset
-        Sequel.postgres(pg_options)[table_name.to_sym]
-      end #datset
+        db[table_name.to_sym]
+      end #dataset
 
       attr_reader :id, :logger, :pg_options
     end # Job

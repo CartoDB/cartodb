@@ -5,7 +5,7 @@ CSS_FILES = $(wildcard themes/css/infowindow/*.css themes/css/map/*.css)
 CSS_FILES_IE = $(wildcard themes/css/ie/*.css)
 
 #dist:  dist/cartodb.js dist/cartodb.full.js themes
-dist:  dist/cartodb.js  dist/cartodb.css dist/cartodb.ie.css dist/cartodb.nojquery.js dist/cartodb.core.js
+dist:  dist/cartodb.js dist/cartodb.css dist/cartodb.ie.css dist/cartodb.nojquery.js dist/cartodb.core.js
 
 
 dist_folder:

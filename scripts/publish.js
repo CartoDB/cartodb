@@ -15,6 +15,7 @@ var S3_BUCKET_URL = 'libs.cartocdn.com.s3.amazonaws.com';
 var JS_FILES = [
   'cartodb.js',
   'cartodb.uncompressed.js',
+  'cartodb.core.js',
   'cartodb.nojquery.js'
 ]
 

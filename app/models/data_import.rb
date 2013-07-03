@@ -8,10 +8,10 @@ require_relative './table'
 require_relative '../../lib/cartodb/errors'
 require_relative '../../lib/cartodb_stats'
 require_relative '../../lib/cartodb/mini_sequel'
-#require_relative '../../lib/importer/lib/cartodb-importer'
+require_relative '../../lib/importer/lib/cartodb-importer'
 require_relative '../../services/track_record/track_record/log'
 require_relative '../../config/initializers/redis'
-require_relative '../../services/importer/importer'
+#require_relative '../../services/importer/lib/importer'
 
 class DataImport < Sequel::Model
   include CartoDB::MiniSequel

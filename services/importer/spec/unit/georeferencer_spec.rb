@@ -38,9 +38,29 @@ describe Importer2::Georeferencer do
       dataset.first.fetch(:the_geom).wont_be_nil
       dataset.first.fetch(:the_geom).wont_be_empty
     end
+
+    it 'returns self if no lat / lon columns in the tabl' do
+      table_name  = create_table(@db,
+                      latitude_column: 'bogus_1',
+                      longitude_column: 'bogus_2'
+                    )
+      dataset     = @db[table_name.to_sym]
+
+      dataset.insert(
+        :name         => 'bogus',
+        :description  => 'bogus',
+        :bogus_1      => rand(90),
+        :bogus_2      => rand(180)
+      )
+
+      georeferencer = Importer2::Georeferencer.new(@db, @table_name)
+      georeferencer.run.must_equal georeferencer
+
+      dataset.to_a.first.keys.include?(:the_geom).must_equal false
+    end
   end #run
 
-  describe '#georeference' do
+  describe '#populate_the_geom_from_latlon' do
     it 'populates the_geom from lat / lon values' do
       lat = Importer2::Georeferencer::LATITUDE_POSSIBLE_NAMES.sample
       lon = Importer2::Georeferencer::LONGITUDE_POSSIBLE_NAMES.sample
@@ -63,7 +83,7 @@ describe Importer2::Georeferencer do
       )
 
       dataset.first.fetch(:the_geom).must_be_nil
-      georeferencer.georeference(table_name, lat, lon)
+      georeferencer.populate_the_geom_from_latlon(table_name, lat, lon)
       dataset.first.fetch(:the_geom).wont_be_nil
     end
   end #georeference
@@ -77,6 +97,16 @@ describe Importer2::Georeferencer do
       georeferencer.create_the_geom_in(@table_name)
       georeferencer.column_exists_in?(@table_name, 'the_geom')
         .must_equal true
+    end
+
+    it 'returns false if the_geom column already exists' do
+      georeferencer = Importer2::Georeferencer.new(@db, @table_name)
+
+      georeferencer.column_exists_in?(@table_name, 'the_geom')
+        .must_equal false
+      georeferencer.create_the_geom_in(@table_name)
+
+      georeferencer.create_the_geom_in(@table_name).must_equal false
     end
   end #create_the_geom_in
 
@@ -99,6 +129,57 @@ describe Importer2::Georeferencer do
       georeferencer.columns_in(@table_name).must_include :lon
     end
   end #columns_in
+
+  describe '#latitude_column_name_in' do
+    it 'returns the name of a latitude column within a set of candidates, if
+    existing' do
+      georeferencer = Importer2::Georeferencer.new(@db, @table_name)
+      georeferencer.latitude_column_name_in(@table_name).must_equal 'lat'
+    end
+  end
+
+  describe '#longitude_column_name_in' do
+    it 'returns the name of a longitude column within a set of candidates, if
+    existing' do
+      georeferencer = Importer2::Georeferencer.new(@db, @table_name)
+      georeferencer.longitude_column_name_in(@table_name).must_equal 'lon'
+    end
+  end
+
+  describe '#find_column_in' do
+    it 'returns the name of a column in a set of possible names if one of them
+    actually exists in the table' do
+      georeferencer = Importer2::Georeferencer.new(@db, @table_name)
+      georeferencer.find_column_in(@table_name, "'name','bogus'")
+        .must_equal 'name'
+
+      georeferencer.find_column_in(@table_name, "'bogus'").must_equal false
+    end
+  end #find_column_in
+
+  def create_table(db, options={})
+    table_name        = options.fetch(:table_name, "importer_#{rand(999)}")
+    latitude_column   = options.fetch(:latitude_column, :lat)
+    longitude_column  = options.fetch(:longitude_column, :lon)
+
+    db.create_table? table_name do
+      String    :name
+      String    :description
+      String    latitude_column.to_sym
+      String    longitude_column.to_sym
+    end
+
+    table_name
+  end
+
+  def random_record
+    {
+      name:         'bogus',
+      description:  'bogus',
+      lat:          rand(90),
+      lon:          rand(180)
+    }
+  end
 
   def create_table(db, options={})
     table_name        = options.fetch(:table_name, "importer_#{rand(999)}")

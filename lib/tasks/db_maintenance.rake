@@ -1,6 +1,24 @@
 namespace :cartodb do
   namespace :db do
 
+    #################
+    # LOAD TABLE OIDS
+    #################
+    desc "Load table oids"
+    task :load_oids => :environment do
+      count = User.count
+      User.all.each_with_index do |user, i|
+        begin
+          user.link_outdated_tables
+          printf "OK %-#{20}s (%-#{4}s/%-#{4}s)\n", user.username, i, count
+        rescue => e
+          printf "FAIL %-#{20}s (%-#{4}s/%-#{4}s) #{e.message}\n", user.username, i, count
+        end
+        sleep(1.0/5.0)
+      end
+    end
+
+
     ########################
     # LOAD CARTODB FUNCTIONS
     ########################

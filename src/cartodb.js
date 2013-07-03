@@ -1,5 +1,5 @@
 // entry point
-(function() {
+;(function() {
 
     var root = this;
 

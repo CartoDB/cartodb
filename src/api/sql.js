@@ -1,9 +1,12 @@
-(function() {
+
+;(function() {
 
   var root = this;
 
+  root.cartodb = root.cartodb || {};
+
   function SQL(options) {
-    if(cdb === this || window === this) {
+    if(cartodb === this || window === this) {
       return new SQL(options);
     }
     if(!options.user) {
@@ -15,10 +18,15 @@
       loc = 'https';
     }
 
+    this.ajax = options.ajax || (typeof(jQuery) !== 'undefined' ? jQuery.ajax: reqwest);
+    if(!this.ajax) {
+      throw new Error("jQuery or reqwest should be loaded");
+    }
+
     this.options = _.defaults(options, {
       version: 'v2',
       protocol: loc,
-      jsonp: !$.support.cors
+      jsonp: typeof(jQuery) !== 'undefined' ? !jQuery.support.cors: false
     })
   }
 
@@ -41,8 +49,8 @@
    *    id: '1'
    * })
    */
-  SQL.prototype.execute= function(sql, vars, options, callback) {
-    var promise = new cdb._Promise();
+  SQL.prototype.execute = function(sql, vars, options, callback) {
+    var promise = new cartodb._Promise();
     if(!sql) {
       throw new TypeError("sql should not be null");
     }
@@ -107,11 +115,18 @@
     if(error) delete error.success;
 
     params.error = function(resp) {
-      var errors = resp.responseText && JSON.parse(resp.responseText);
+      var res = resp.responseText || resp.response;
+      var errors = res && JSON.parse(res);
       promise.trigger('error', errors && errors.error, resp)
       if(error) error(resp);
     }
     params.success = function(resp, status, xhr) {
+      // manage rewest
+      if(status == undefined) {
+        status = resp.status;
+        xhr = resp;
+        resp = JSON.parse(resp.response);
+      }
       promise.trigger('done', resp, status, xhr);
       if(success) success(resp, status, xhr);
       if(callback) callback(resp);
@@ -119,12 +134,12 @@
 
     // call ajax
     delete options.jsonp;
-    $.ajax(_.extend(params, options));
+    this.ajax(_.extend(params, options));
     return promise;
   }
 
   SQL.prototype.getBounds = function(sql, vars, options, callback) {
-      var promise = new cdb._Promise();
+      var promise = new cartodb._Promise();
       var args = arguments,
       fn = args[args.length -1];
       if(_.isFunction(fn)) {
@@ -189,12 +204,19 @@
     var _orderDir;
     var _sql = this;
 
-    function _table(callback) {
-      _table.fetch(callback);
+    function _table() {
+      _table.fetch.apply(_table, arguments);
     }
 
-    _table.fetch = function(callback) {
-      _sql.execute(_table.sql(), {}, callback);
+    _table.fetch = function(vars) {
+      vars = vars || {}
+      var args = arguments,
+      fn = args[args.length -1];
+      if(_.isFunction(fn)) {
+        callback = fn;
+        if(args.length === 1) vars = {};
+      }
+      _sql.execute(_table.sql(), vars, callback);
     }
 
     _table.sql = function() {
@@ -204,7 +226,7 @@
       } else {
         s += ' * '
       }
-      
+
       s += "from " + _name;
 
       if(_filters) {
@@ -256,6 +278,26 @@
 
   }
 
-  cartodb.SQL = SQL;
+  /*
+   * sql.filter(sql.f().distance('< 10km')
+   */
+  /*cartodb.SQL.geoFilter = function() {
+    var _sql;
+    function f() {}
+
+    f.distance = function(qty) {
+      qty.replace('km', '*1000')
+      _sql += 'st_distance(the_geom) ' + qty
+    }
+    f.or = function() {
+    }
+
+    f.and = function() {
+    }
+    return f;
+  }
+  */
+
+  root.cartodb.SQL = SQL;
 
 })();

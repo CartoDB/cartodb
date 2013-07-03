@@ -20,9 +20,10 @@ describe 'csv regression tests' do
     runner      = Runner.new(@job, downloader)
     runner.run
 
-    puts "\n" + runner.report
     runner.exit_code.must_equal 0
+
     @job.dataset.first.fetch(:the_geom).wont_be_nil
+    geometry_type_for(@job.dataset).must_equal 'POINT'
   end
 
   it 'imports files exported from the SQL API' do
@@ -31,9 +32,10 @@ describe 'csv regression tests' do
     runner      = Runner.new(@job, downloader)
     runner.run
 
-    puts "\n" + runner.report
     runner.exit_code.must_equal 0
+
     @job.dataset.first.fetch(:the_geom).wont_be_nil
+    geometry_type_for(@job.dataset).must_equal 'POINT'
   end
 
   it 'imports files from Google Fusion Tables' do
@@ -43,13 +45,33 @@ describe 'csv regression tests' do
     runner      = Runner.new(@job, downloader)
     runner.run
 
-    puts "\n" + runner.report
     runner.exit_code.must_equal 0
+
     @job.dataset.first.fetch(:the_geom).wont_be_nil
+    geometry_type_for(@job.dataset).must_equal 'POINT'
+  end
+
+  it 'imports files with a the_geom column in GeoJSON' do
+    filepath    = path_to('csv_with_geojson.csv')
+    downloader  = Downloader.new(filepath)
+    runner      = Runner.new(@job, downloader)
+    runner.run
+
+    runner.exit_code.must_equal 0
+
+    @job.dataset.first.fetch(:the_geom).wont_be_nil
+    geometry_type_for(@job.dataset).must_equal 'MULTIPOLYGON'
   end
 
   def path_to(filepath)
     File.join(File.dirname(__FILE__), "../fixtures/#{filepath}")
   end #path_to
+
+  def geometry_type_for(dataset)
+    @job.dataset.with_sql(%Q{
+      SELECT GeometryType(the_geom)
+      FROM #{@job.table_name}
+    }).first.fetch(:geometrytype)
+  end #geometry_type_for
 end # csv regression tests
 

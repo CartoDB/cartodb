@@ -14,6 +14,17 @@ describe 'csv regression tests' do
     @job        = Job.new(pg_options: pg_options)
   end
 
+  it 'georeferences files with lat / lon columns' do
+    filepath    = path_to('../../../../spec/support/data/csv_with_lat_lon.csv')
+    downloader  = Downloader.new(filepath)
+    runner      = Runner.new(@job, downloader)
+    runner.run
+
+    puts "\n" + runner.report
+    runner.exit_code.must_equal 0
+    @job.dataset.first.fetch(:the_geom).wont_be_nil
+  end
+
   it 'imports files exported from the SQL API' do
     filepath    = path_to('ne_10m_populated_places_simple.csv')
     downloader  = Downloader.new(filepath)
@@ -22,6 +33,7 @@ describe 'csv regression tests' do
 
     puts "\n" + runner.report
     runner.exit_code.must_equal 0
+    @job.dataset.first.fetch(:the_geom).wont_be_nil
   end
 
   it 'imports files from Google Fusion Tables' do
@@ -33,6 +45,7 @@ describe 'csv regression tests' do
 
     puts "\n" + runner.report
     runner.exit_code.must_equal 0
+    @job.dataset.first.fetch(:the_geom).wont_be_nil
   end
 
   def path_to(filepath)

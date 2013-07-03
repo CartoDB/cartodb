@@ -16,7 +16,7 @@ describe Column do
   end
 
   after do
-    @db.drop_table?(@table_name)
+    @db.drop_table?(@table_name.to_sym)
   end
 
   describe '#type' do
@@ -200,6 +200,14 @@ describe Column do
       @column.empty?.must_equal false
     end
   end #empty?
+
+  describe '#rename_to' do
+    it 'renames the column' do
+      @dataset.insert(random_hexewkb_record)
+      @column.rename_to('bogus_name')
+      @dataset.first.keys.must_include :bogus_name
+    end
+  end #rename_to
 
   def create_table(db, options={})
     table_name = options.fetch(:table_name, "importer_#{rand(999)}")

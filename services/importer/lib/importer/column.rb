@@ -24,9 +24,9 @@ module CartoDB
       def geometrify
         return self             if empty?
         convert_from_wkt        if wkt?
-        convert_from_geojson    if geojson?
         convert_from_kml_multi  if kml_multi?
         convert_from_kml_point  if kml_point?
+        convert_from_geojson    if geojson?
         cast_to('geometry')
         self
       end #geometrify
@@ -107,6 +107,14 @@ module CartoDB
           AND #{column_name} != ''
         })
       end #records_with_data
+
+      def rename_to(new_name)
+        db.run(%Q{
+          ALTER TABLE #{table_name}
+          RENAME COLUMN #{column_name} TO #{new_name}
+        })
+        @column_name = new_name
+      end #rename_to
 
       private
 

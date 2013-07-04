@@ -886,7 +886,16 @@
           }
 
           // Color wizard styles
-          ul.custom_colors {margin:0; border-top:1px solid rgba(#E5E5E5,0.5)}
+          ul.custom_colors {
+            margin:0;
+            border-top:1px solid rgba(#E5E5E5,0.5);
+            li.custom_color_item {
+              span {
+                max-width:270px;
+                @include text-overflow();
+              }
+            }
+          }
           div.colors_loader {
             display:none;
             padding:15px 0 0 50px;

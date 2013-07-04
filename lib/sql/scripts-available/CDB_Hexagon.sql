@@ -40,7 +40,7 @@ DECLARE
   vstart FLOAT8;
   vstartary FLOAT8[];
   vstartidx INTEGER;
-  hskip INTEGER;
+  hskip BIGINT;
   hstart FLOAT8;
   hend FLOAT8;
   vend FLOAT8;

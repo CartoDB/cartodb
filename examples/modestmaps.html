@@ -45,6 +45,7 @@
           .replace('{z}','{Z}')
           .replace('{x}','{X}')
           .replace('{y}','{Y}')
+        // use 0,1,2,3 subdomains
         var cartodbLayer = new MM.TemplatedLayer(template, '0123');
         map.insertLayerAt(1, cartodbLayer);
       });

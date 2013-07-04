@@ -99,10 +99,12 @@ div.search {
 }
 
 .dropdown.tag_dropdown {
-
   width: 154px!Important;
 
   ul {
+    max-height: 280px;
+    overflow-x: visible;
+    overflow-y: auto;
 
     li {
       padding: 10px 10px 12px 10px;

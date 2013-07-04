@@ -9,6 +9,8 @@ include CartoDB::Importer2
 describe Column do
   before do
     @db           = Factories::PGConnection.new.connection
+    @db.execute('SET search_path TO importer,public')
+
     @table_name   = create_table(@db)
     @column_name  = 'the_geom'
     @column       = Column.new(@db, @table_name, @column_name)
@@ -211,12 +213,16 @@ describe Column do
 
   def create_table(db, options={})
     table_name = options.fetch(:table_name, "importer_#{rand(999)}")
-    db.create_table? table_name do
+    db.drop_table?(table_name)
+    db.create_table?(table_name) do
       String  :name
       String  :description
       String  :the_geom
     end
 
+    table_name
+  rescue
+    db.run(%Q{DROP TABLE "importer"."#{table_name}"})
     table_name
   end #create_table
 

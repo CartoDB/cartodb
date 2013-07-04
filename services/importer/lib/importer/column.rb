@@ -12,13 +12,15 @@ module CartoDB
       def initialize(db, table_name, column_name)
         @db           = db
         @table_name   = table_name.to_sym
+        @schema       = 'importer'
         @column_name  = column_name.to_sym
       end #initialize
 
       def type
-        db.schema(table_name, reload: true).select { |column_details|
-          column_details.first == column_name
-        }.last.last.fetch(:db_type)
+        db.schema(table_name, reload: true, schema: @schema)
+          .select { |column_details|
+            column_details.first == column_name
+          }.last.last.fetch(:db_type)
       end #type
 
       def geometrify
@@ -33,7 +35,7 @@ module CartoDB
 
       def convert_from_wkt
         db.run(%Q{
-          UPDATE #{table_name}
+          UPDATE #{qualified_table_name}
           SET #{column_name} = ST_GeomFromText(#{column_name}, #{DEFAULT_SRID})
         })
         self
@@ -41,7 +43,7 @@ module CartoDB
 
       def convert_from_geojson
         db.run(%Q{
-          UPDATE #{table_name}
+          UPDATE #{qualified_table_name}
           SET #{column_name} = ST_GeomFromGeoJSON(#{column_name})
         })
         self
@@ -49,14 +51,14 @@ module CartoDB
 
       def convert_from_kml_point
         db.run(%Q{
-          UPDATE #{table_name}
+          UPDATE #{qualified_table_name}
           SET #{column_name} = ST_GeomFromKML(#{column_name})
         })
       end #convert_from_kml_point
 
       def convert_from_kml_multi
         db.run(%Q{
-          UPDATE #{table_name}
+          UPDATE #{qualified_table_name}
           SET #{column_name} = ST_Multi(ST_GeomFromKML(#{column_name}))
         })
       end #convert_from_kml_multi
@@ -83,7 +85,7 @@ module CartoDB
 
       def cast_to(type)
         db.run(%Q{
-          ALTER TABLE #{table_name}
+          ALTER TABLE #{qualified_table_name}
           ALTER #{column_name}
           TYPE #{type}
           USING #{column_name}::#{type}
@@ -101,16 +103,16 @@ module CartoDB
       end #empty?
 
       def records_with_data
-        @records_with_data ||= db[table_name].with_sql(%Q{
-          SELECT * FROM #{table_name}
+        @records_with_data ||= db[%Q{
+          SELECT * FROM "#{schema}"."#{table_name}"
           WHERE #{column_name} IS NOT NULL 
           AND #{column_name} != ''
-        })
+        }]
       end #records_with_data
 
       def rename_to(new_name)
         db.run(%Q{
-          ALTER TABLE #{table_name}
+          ALTER TABLE "#{schema}"."#{table_name}"
           RENAME COLUMN #{column_name} TO #{new_name}
         })
         @column_name = new_name
@@ -118,7 +120,11 @@ module CartoDB
 
       private
 
-      attr_reader :db, :table_name, :column_name
+      attr_reader :db, :table_name, :column_name, :schema
+
+      def qualified_table_name
+        "#{schema}.#{table_name}"
+      end #qualified_table_name
     end # Column
   end # Importer2
 end # CartoDB

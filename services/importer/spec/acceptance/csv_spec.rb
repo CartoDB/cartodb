@@ -12,6 +12,7 @@ describe 'csv regression tests' do
   before do
     pg_options  = Factories::PGConnection.new.pg_options
     @job        = Job.new(pg_options: pg_options)
+    @job.db.execute('SET search_path TO importer,public')
   end
 
   it 'georeferences files with lat / lon columns' do
@@ -21,9 +22,7 @@ describe 'csv regression tests' do
     runner.run
 
     runner.exit_code.must_equal 0
-
-    @job.dataset.first.fetch(:the_geom).wont_be_nil
-    geometry_type_for(@job.dataset).must_equal 'POINT'
+    geometry_type_for(@job).must_equal 'POINT'
   end
 
   it 'imports files exported from the SQL API' do
@@ -33,9 +32,7 @@ describe 'csv regression tests' do
     runner.run
 
     runner.exit_code.must_equal 0
-
-    @job.dataset.first.fetch(:the_geom).wont_be_nil
-    geometry_type_for(@job.dataset).must_equal 'POINT'
+    geometry_type_for(@job).must_equal 'POINT'
   end
 
   it 'imports files from Google Fusion Tables' do
@@ -46,9 +43,7 @@ describe 'csv regression tests' do
     runner.run
 
     runner.exit_code.must_equal 0
-
-    @job.dataset.first.fetch(:the_geom).wont_be_nil
-    geometry_type_for(@job.dataset).must_equal 'POINT'
+    geometry_type_for(@job).must_equal 'POINT'
   end
 
   it 'imports files with a the_geom column in GeoJSON' do
@@ -58,20 +53,18 @@ describe 'csv regression tests' do
     runner.run
 
     runner.exit_code.must_equal 0
-
-    @job.dataset.first.fetch(:the_geom).wont_be_nil
-    geometry_type_for(@job.dataset).must_equal 'MULTIPOLYGON'
+    geometry_type_for(@job).must_equal 'MULTIPOLYGON'
   end
 
   def path_to(filepath)
     File.join(File.dirname(__FILE__), "../fixtures/#{filepath}")
   end #path_to
 
-  def geometry_type_for(dataset)
-    @job.dataset.with_sql(%Q{
+  def geometry_type_for(job)
+    job.db[%Q{
       SELECT GeometryType(the_geom)
-      FROM #{@job.table_name}
-    }).first.fetch(:geometrytype)
+      FROM #{job.table_name}
+    }].first.fetch(:geometrytype)
   end #geometry_type_for
 end # csv regression tests
 

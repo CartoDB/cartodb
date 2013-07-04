@@ -11,6 +11,7 @@ module CartoDB
         @id         = attributes.fetch(:id, UUIDTools::UUID.timestamp_create.to_s)
         @logger     = attributes.fetch(:logger, TrackRecord::Log.new)
         @pg_options = attributes.fetch(:pg_options, {})
+        @schema     = 'importer'
       end #initalize
 
       def log(message)
@@ -18,18 +19,20 @@ module CartoDB
       end #log
 
       def table_name
-        "importer_#{id.gsub(/-/, '')}"
+        %Q(importer_#{id.gsub(/-/, '')})
       end #table_name
 
       def db
         @db ||= Sequel.postgres(pg_options)
       end #db
 
-      def dataset
-        db[table_name.to_sym]
-      end #dataset
+      def qualified_table_name
+        "#{schema}.#{table_name}"
+      end #qualified_table_name
 
-      attr_reader :id, :logger, :pg_options
+      attr_reader :id, :logger, :pg_options, :schema
+
+      private
     end # Job
   end # Importer2
 end # CartoDB

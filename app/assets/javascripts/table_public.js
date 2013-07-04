@@ -11,7 +11,7 @@
 //= require jquery.tipsy
 //= require ../../../lib/assets/javascripts/utils/postgres.codemirror
 //= require ../../../lib/assets/javascripts/utils/carto.codemirror
-//= require_tree ../../../lib/assets/javascripts/cartodb/models
+//= require models
 //= require ../../../lib/assets/javascripts/cartodb/common/dropdown_menu
 //= require ../../../lib/assets/javascripts/cartodb/common/forms/string_field
 //= require_tree ../../../lib/assets/javascripts/cartodb/common

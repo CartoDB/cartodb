@@ -517,19 +517,6 @@ describe Table do
       $tables_metadata.hget(table.key,"the_geom_type").should == "multipolygon"
     end
 
-    it "should remove the table from Redis when removing the table" do
-      table = create_table(:user_id => @user.id)
-      $tables_metadata.exists(table.key).should be_true
-      table.destroy
-      $tables_metadata.exists(table.key).should be_false
-    end
-
-    it "should remove varnish cache when removing the table" do
-      table = create_table(:user_id => @user.id)
-      table.expects(:invalidate_varnish_cache)
-      table.destroy
-    end
-
     it "should remove varnish cache when updating the table privacy" do
       @user.private_tables_enabled = true
       @user.save
@@ -542,6 +529,67 @@ describe Table do
         .expects(:propagate_to_redis_and_varnish)
       table.privacy = Table::PUBLIC
       table.save
+    end
+  end
+
+  context "when removing the table" do
+    before(:all) do
+      CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
+      @doomed_table = create_table(:user_id => @user.id)
+      @doomed_table.destroy
+    end
+    
+    it "should remove the table from the user database" do
+      expect {
+        @user.in_database["select * from #{@doomed_table.name}"].all
+      }.to raise_error
+    end
+
+    it "should not remove the table from the user database if specified" do
+      table = create_table(user_id: @user.id)
+      table.keep_user_database_table = true
+      table.destroy
+      @user.in_database["select * from #{table.name}"].all.should == []
+    end
+
+    it "should remove the table metadata from Redis" do
+      $tables_metadata.exists(@doomed_table.key).should be_false
+    end
+
+    it "should update denormalized counters" do
+      @user.reload
+      @user.tables_count.should == 0
+      Tag.count.should == 0
+      Table.count == 0
+    end
+
+    it "should remove varnish cache" do
+      table = create_table(user_id: @user.id)
+      table.expects(:invalidate_varnish_cache)
+      table.destroy
+    end
+
+    it "should remove the metadata table even when the physical table does not exist" do
+      table = create_table(user_id: @user.id)
+      @user.in_database.drop_table(table.name.to_sym)
+
+      table.destroy
+      Table[table.id].should be_nil
+    end
+
+    it 'deletes derived visualizations that depend on this table' do
+      table   = create_table(name: 'bogus_name', user_id: @user.id)
+      source  = table.table_visualization
+      derived = CartoDB::Visualization::Copier.new(@user, source).copy
+      derived.store
+
+      rehydrated = CartoDB::Visualization::Member.new(id: derived.id).fetch
+      table.reload
+
+      table.destroy
+      expect {
+        CartoDB::Visualization::Member.new(id: derived.id).fetch
+      }.to raise_error KeyError
     end
   end
 
@@ -1070,20 +1118,6 @@ describe Table do
     end
   end
 
-  context "counter updates" do
-    it "should remove and updating the denormalized counters when removed" do
-      delete_user_data(@user) && @user.reload
-      table = create_table :user_id => @user.id, :tags => 'tag 1, tag2'
-
-      table.destroy
-      @user.reload
-      @user.tables_count.should == 0
-      Tag.count.should == 0
-      Table.count == 0
-      @user.in_database{|database| database.table_exists?(table.name).should be_false}
-    end
-
-  end
   context "preimport tests" do
     it "rename a table to a name that exists should add a _1 to the new name" do
       table = new_table :name => 'empty_file', :user_id => @user.id
@@ -1186,20 +1220,6 @@ describe Table do
         user_database.table_exists?(table.name.to_sym).should be_true
         user_database.table_exists?(table2.name.to_sym).should be_true
       end
-    end
-
-    it "should remove the user_table even when phisical table does not exist" do
-      delete_user_data @user
-      table = new_table :name => 'empty_file', :user_id => @user.id
-      table.save.reload
-      table.name.should == 'empty_file'
-
-      @user.in_database do |user_database|
-        user_database.drop_table(table.name.to_sym)
-      end
-
-      table.destroy
-      Table[table.id].should be_nil
     end
 
     it "should raise an error when creating a column with reserved name" do
@@ -1749,22 +1769,5 @@ describe Table do
       table.name.should == 'new_name'
     end
   end #name=
-
-  describe '#destroy' do
-    it 'deletes derived visualizations that depend on this table' do
-      table   = create_table(name: 'bogus_name', user_id: @user.id)
-      source  = table.table_visualization
-      derived = CartoDB::Visualization::Copier.new(@user, source).copy
-      derived.store
-
-      rehydrated = CartoDB::Visualization::Member.new(id: derived.id).fetch
-      table.reload
-
-      table.destroy
-      expect {
-        CartoDB::Visualization::Member.new(id: derived.id).fetch
-      }.to raise_error KeyError
-    end
-  end #destroy
 end
 

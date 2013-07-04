@@ -884,6 +884,15 @@
           &.panel_content {
             top:212px;
           }
+
+          // Color wizard styles
+          ul.custom_colors {margin:0; border-top:1px solid rgba(#E5E5E5,0.5)}
+          div.colors_loader {
+            padding:15px 0 0 50px;
+            background:image-url("layout/loader.gif") no-repeat 0 15px;
+            border-top:1px solid rgba(#E5E5E5,0.5);
+            span {color:$cGray4;}
+          } 
         }
       }
 

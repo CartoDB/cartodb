@@ -12,17 +12,21 @@ include CartoDB::Importer2
 
 describe Ogr2ogr do
   before do
-    @csv          = Factories::CSV.new.write
-    @filepath     = @csv.filepath
-    @pg_options   = Factories::PGConnection.new.pg_options
-    @table_name   = "importer_#{rand(999)}"
-    @db           = Factories::PGConnection.new.connection
-    @wrapper      = Ogr2ogr.new(@table_name, @filepath, @pg_options)
+    @csv              = Factories::CSV.new.write
+    @filepath         = @csv.filepath
+    @pg_options       = Factories::PGConnection.new.pg_options
+    @table_name       = "importer_#{rand(999)}"
+    @db               = Factories::PGConnection.new.connection
+    @dataset          = @db[@table_name.to_sym]
+    @full_table_name  = "importer.#{@table_name}"
+    @wrapper          = Ogr2ogr.new(@full_table_name, @filepath, @pg_options)
+
+    @db.execute('SET search_path TO importer,public')
   end
 
   after do
     @csv.delete
-    @db.drop_table? @wrapper.table_name
+    @db.drop_table? @full_table_name
   end
 
   describe '#initialize' do
@@ -45,7 +49,7 @@ describe Ogr2ogr do
     end
 
     it 'includes the desired output table name' do
-      @wrapper.command.must_match /#{@wrapper.table_name}/
+      @wrapper.command.must_match /#{@full_table_name}/
     end
 
     it 'includes the filepath to process' do
@@ -62,7 +66,7 @@ describe Ogr2ogr do
   describe '#run' do
     it 'imports a CSV to a Postgres table' do
       @wrapper.run
-      records   = @db[@wrapper.table_name.to_sym].to_a
+      records   = @dataset.to_a
 
       records.length      .must_equal 10
       records.first.keys  .must_include :header_1
@@ -71,7 +75,7 @@ describe Ogr2ogr do
 
     it 'adds a cartodb_id column to imported records' do
       @wrapper.run
-      record    = @db[@wrapper.table_name.to_sym].first
+      record    = @dataset.first
       record.keys.must_include :cartodb_id
     end
 
@@ -82,22 +86,22 @@ describe Ogr2ogr do
       csv       = Factories::CSV.new.write(header, data)
 
       @wrapper  = Ogr2ogr.new(
-        csv.filepath, @pg_options, @table_name, preserve_cartodb_id: true
+        @full_table_name, csv.filepath, @pg_options, preserve_cartodb_id: true
       )
       @wrapper.run
 
-      record    = @db[@wrapper.table_name.to_sym].first
+      record    = @dataset.first
       record.fetch(:cartodb_id).must_equal 5
     end
   end #run
 
   describe '#command_output' do
     it 'returns stdout and stderr from ogr2ogr binary' do
-      wrapper   = Ogr2ogr.new(@table_name, 'non_existent', @pg_options)
+      wrapper   = Ogr2ogr.new(@full_table_name, 'non_existent', @pg_options)
       wrapper.run
       wrapper.command_output.wont_be_empty
 
-      wrapper   = Ogr2ogr.new(@table_name, @filepath, @pg_options)
+      wrapper   = Ogr2ogr.new(@full_table_name, @filepath, @pg_options)
       wrapper.run
       wrapper.command_output.must_be_empty
     end
@@ -105,11 +109,11 @@ describe Ogr2ogr do
 
   describe '#exit_code' do
     it 'returns the exit code from the ogr2ogr binary' do
-      wrapper   = Ogr2ogr.new(@table_name, 'non_existent', @pg_options)
+      wrapper   = Ogr2ogr.new(@full_table_name, 'non_existent', @pg_options)
       wrapper.run
       wrapper.exit_code.wont_equal 0
 
-      wrapper   = Ogr2ogr.new(@table_name, @filepath, @pg_options)
+      wrapper   = Ogr2ogr.new(@full_table_name, @filepath, @pg_options)
       wrapper.run
       wrapper.exit_code.must_equal 0
     end

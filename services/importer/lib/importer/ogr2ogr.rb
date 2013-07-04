@@ -4,7 +4,8 @@ require 'open3'
 module CartoDB
   module Importer2
     class Ogr2ogr
-      ENCODING = 'UTF-8'
+      ENCODING  = 'UTF-8'
+      SCHEMA    = 'importer'
 
       def initialize(table_name, filepath, pg_options, options={})
         self.filepath   = filepath
@@ -41,12 +42,12 @@ module CartoDB
         self
       end #run
 
-      attr_reader   :exit_code, :command_output, :table_name
+      attr_reader   :exit_code, :command_output
 
       private
 
-      attr_writer   :exit_code, :command_output, :table_name
-      attr_accessor :filepath, :pg_options, :options
+      attr_writer   :exit_code, :command_output
+      attr_accessor :filepath, :pg_options, :options, :table_name
 
       def output_format_option
         "-f PostgreSQL"
@@ -63,8 +64,9 @@ module CartoDB
       def postgres_options
         %Q{PG:"host=#{pg_options.fetch(:host)} }    +
         %Q{port=#{pg_options.fetch(:port)} }        +
-        %Q{user=#{pg_options.fetch(:user)} }    +
-        %Q{dbname=#{pg_options.fetch(:database)}" }
+        %Q{user=#{pg_options.fetch(:user)} }        +
+        %Q{dbname=#{pg_options.fetch(:database)} }  +
+        %Q{active_schema=#{SCHEMA}"}
       end #postgres_options
     end # Ogr2ogr
   end # Importer2

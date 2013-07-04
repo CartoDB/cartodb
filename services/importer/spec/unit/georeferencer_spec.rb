@@ -9,6 +9,8 @@ include CartoDB
 describe Importer2::Georeferencer do
   before do
     @db           = Importer2::Factories::PGConnection.new.connection
+    @db.execute('SET search_path TO importer,public')
+
     @table_name   = create_table(@db)
   end
 

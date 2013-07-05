@@ -62,10 +62,11 @@ module CartoDB
       end #layer_name_option
 
       def postgres_options
-        %Q{PG:"host=#{pg_options.fetch(:host)} }    +
-        %Q{port=#{pg_options.fetch(:port)} }        +
-        %Q{user=#{pg_options.fetch(:user)} }        +
-        %Q{dbname=#{pg_options.fetch(:database)} }  +
+        %Q{PG:"host=#{pg_options.fetch(:host)} }      +
+        %Q{port=#{pg_options.fetch(:port)} }          +
+        %Q{user=#{pg_options.fetch(:user)} }          +
+        %Q{dbname=#{pg_options.fetch(:database)} }    +
+        %Q{password=#{pg_options.fetch(:password)} }  +
         %Q{active_schema=#{SCHEMA}"}
       end #postgres_options
     end # Ogr2ogr

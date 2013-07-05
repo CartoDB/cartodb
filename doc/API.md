@@ -467,21 +467,21 @@ shortcut for set({'cartocss': '#layer {...}' });
 
 ##### **cartodb.CartoDBLayer.SubLayer.remove **
 
-    remove the sublayer. If a method is called after removing it an exception is thrown.
+remove the sublayer. If a method is called after removing it an exception is thrown.
 
 ##### **cartodb.CartoDBLayer.SubLayer.setInteraction(enable) **
 
-  Sets the interaction of your layer to true (enabled) or false (disabled). When is disabled **featureOver**, **featureClick** and **featureOut** are **not** triggered.
+Sets the interaction of your layer to true (enabled) or false (disabled). When is disabled **featureOver**, **featureClick** and **featureOut** are **not** triggered.
 
 ###### ARGUMENTS
 
   + **enable**: true if the interaction needs to be enabled.
 
 ##### **cartodb.CartoDBLayer.SubLayer.show **
-    show a previously hidden sublayer. The layer is refreshed after calling this function
+show a previously hidden sublayer. The layer is refreshed after calling this function
 
 ##### **cartodb.CartoDBLayer.SubLayer.hide **
-    remove temporally the sublayer from the layer. The layer is refreshed after calling this function
+remove temporally the sublayer from the layer. The layer is refreshed after calling this function
 
 ### events
 

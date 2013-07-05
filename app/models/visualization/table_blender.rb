@@ -16,6 +16,11 @@ module CartoDB
         new_map
       end #blend
 
+      def blended_privacy
+        return 'private' if tables.map(&:privacy_text).include?('PRIVATE')
+        return 'public'
+      end #blended_privacy
+
       private
 
       attr_reader :tables, :user

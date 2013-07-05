@@ -1,3 +1,4 @@
+BEGIN;
 CREATE TEMP TABLE "_CDB_DigitSeparatorTest" (
   none text,
   only_com_dec text,
@@ -35,4 +36,4 @@ SELECT 'only_dot_AMB', * FROM
        CDB_DigitSeparator('"_CDB_DigitSeparatorTest"'::regclass, 'only_dot_AMB');
 
 DROP TABLE "_CDB_DigitSeparatorTest";
-
+COMMIT;

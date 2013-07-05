@@ -35,3 +35,13 @@ UNION ALL
  WHERE NOT ST_Intersects(ST_Centroid(g1.cell), params.env)
 
 	;
+
+
+-- Check robustness of HexagonGrid generation
+
+WITH
+ params AS ( SELECT
+ ST_MakeEnvelope(-20037508.5,20037507,-20037508,20037507.5) as env,
+ 0.002 as radius ),
+ grid AS ( SELECT CDB_HexagonGrid(env, radius) AS cell from params)
+SELECT '#160', count(cell) > 23000 from grid;

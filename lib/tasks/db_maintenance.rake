@@ -24,6 +24,7 @@ namespace :cartodb do
     ########################
     desc "Install/upgrade CARTODB SQL functions"
     task :load_functions => :environment do
+      printf "Starting cartodb:db:load_functions task\n"
       functions_list = ENV['FUNCTIONS'].blank? ? [] : ENV['FUNCTIONS'].split(',')
       count = User.count
       User.all.each_with_index do |user, i|

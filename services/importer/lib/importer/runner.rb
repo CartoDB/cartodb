@@ -19,7 +19,6 @@ module CartoDB
         job.log "Importing data from #{downloader.source_file.fullpath}"
         loader.run
         job.log "Loader exit code: #{loader.exit_code}"
-        puts report
         georeferencer.run
         self
       end #run

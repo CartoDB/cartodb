@@ -395,21 +395,20 @@ class User < Sequel::Model
   def link_ghost_tables
     link_outdated_tables
 
-    metadata_tables_ids = self.tables.select(:table_id).map(&:table_id)
+    # metadata_tables_ids = self.tables.select(:table_id).map(&:table_id)
 
-    link_created_tables(metadata_tables_ids)
-    link_renamed_tables(metadata_tables_ids)
-    link_deleted_tables(metadata_tables_ids)
+    # link_created_tables(metadata_tables_ids)
+    # link_renamed_tables(metadata_tables_ids)
+    # link_deleted_tables(metadata_tables_ids)
   end
 
   def link_outdated_tables
-    metadata_tables_without_id = self.tables.filter(:table_id => nil).map(&:name)
+    metadata_tables_without_id = self.tables.filter(table_id: nil).map(&:name)
     outdated_tables = real_tables.select{|t| metadata_tables_without_id.include?(t[:relname])}
     outdated_tables.each do |t|
-      table = Table.find(:name => t[:relname])
-      table.table_id = t[:oid]
+      table = self.tables.where(name: t[:relname]).first
       begin
-        table.save
+        table.this.update table_id: t[:oid]
       rescue Sequel::DatabaseError => e
         raise unless e.message =~ /must be owner of relation/
       end

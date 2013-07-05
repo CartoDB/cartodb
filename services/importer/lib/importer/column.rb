@@ -36,7 +36,8 @@ module CartoDB
       def convert_from_wkt
         db.run(%Q{
           UPDATE #{qualified_table_name}
-          SET #{column_name} = ST_GeomFromText(#{column_name}, #{DEFAULT_SRID})
+          SET #{column_name} = 
+            public.ST_GeomFromText(#{column_name}, #{DEFAULT_SRID})
         })
         self
       end #convert_from_wkt
@@ -44,7 +45,7 @@ module CartoDB
       def convert_from_geojson
         db.run(%Q{
           UPDATE #{qualified_table_name}
-          SET #{column_name} = ST_GeomFromGeoJSON(#{column_name})
+          SET #{column_name} = public.ST_GeomFromGeoJSON(#{column_name})
         })
         self
       end #convert_from_geojson
@@ -52,14 +53,15 @@ module CartoDB
       def convert_from_kml_point
         db.run(%Q{
           UPDATE #{qualified_table_name}
-          SET #{column_name} = ST_GeomFromKML(#{column_name})
+          SET #{column_name} = public.ST_GeomFromKML(#{column_name})
         })
       end #convert_from_kml_point
 
       def convert_from_kml_multi
         db.run(%Q{
           UPDATE #{qualified_table_name}
-          SET #{column_name} = ST_Multi(ST_GeomFromKML(#{column_name}))
+          SET #{column_name} = 
+            public.ST_Multi(public.ST_GeomFromKML(#{column_name}))
         })
       end #convert_from_kml_multi
 

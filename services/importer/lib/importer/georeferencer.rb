@@ -48,7 +48,7 @@ module CartoDB
       latitude_column_name, longitude_column_name)
         db.run(%Q{
           UPDATE #{qualified_table_name} 
-          SET the_geom = ST_GeomFromText(
+          SET the_geom = public.ST_GeomFromText(
               'POINT(' || trim("#{longitude_column_name}") || ' ' ||
                 trim("#{latitude_column_name}") || ')', 4326
           )
@@ -63,7 +63,7 @@ module CartoDB
         return false if column_exists_in?(table_name, 'the_geom')
 
         db.run(%Q{
-          SELECT AddGeometryColumn(
+          SELECT public.AddGeometryColumn(
             '#{schema}','#{table_name}','the_geom',4326,'POINT',2
           );
         })

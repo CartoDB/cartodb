@@ -12,7 +12,6 @@ describe 'csv regression tests' do
   before do
     pg_options  = Factories::PGConnection.new.pg_options
     @job        = Job.new(pg_options: pg_options)
-    @job.db.execute('SET search_path TO importer,public')
   end
 
   it 'georeferences files with lat / lon columns' do
@@ -62,8 +61,8 @@ describe 'csv regression tests' do
 
   def geometry_type_for(job)
     job.db[%Q{
-      SELECT GeometryType(the_geom)
-      FROM #{job.table_name}
+      SELECT public.GeometryType(the_geom)
+      FROM #{job.qualified_table_name}
     }].first.fetch(:geometrytype)
   end #geometry_type_for
 end # csv regression tests

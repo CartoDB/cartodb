@@ -83,7 +83,7 @@ class Table < Sequel::Model(:user_tables)
 
   attr_accessor :force_schema, :import_from_file,:import_from_url, :import_from_query,
                 :import_from_table_copy, :importing_encoding,
-                :temporal_the_geom_type, :migrate_existing_table, :new_table
+                :temporal_the_geom_type, :migrate_existing_table, :new_table, :keep_user_database_table
 
   ## Callbacks
 
@@ -463,7 +463,7 @@ class Table < Sequel::Model(:user_tables)
     super
     $tables_metadata.del key
     Tag.filter(:user_id => user_id, :table_id => id).delete
-    remove_table_from_user_database
+    remove_table_from_user_database unless keep_user_database_table
     remove_table_from_stats
     invalidate_varnish_cache
     delete_tile_style

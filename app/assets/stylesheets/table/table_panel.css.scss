@@ -773,6 +773,12 @@
                 &.line { background: image-url('layout/wizard-choropleth-polyline.png') no-repeat;}
               }
 
+              &.color {
+                background: image-url('layout/wizard-color.png') no-repeat;
+                &.polygon { background: image-url('layout/wizard-color-polygon.png') no-repeat;}
+                &.line { background: image-url('layout/wizard-color-polyline.png') no-repeat;}
+              }
+
               &.bubble  { background: image-url('layout/wizard-bubble.png') no-repeat;}
               &.density { background: image-url('layout/wizard-density-hex.png') no-repeat;}
 
@@ -877,6 +883,32 @@
 
           &.panel_content {
             top:212px;
+          }
+
+          // Color wizard styles
+          ul.custom_colors {
+            margin:0;
+            border-top:1px solid rgba(#E5E5E5,0.5);
+            li.custom_color_item {
+              span {
+                max-width:270px;
+                @include text-overflow();
+              }
+            }
+          }
+          div.colors_loader {
+            display:none;
+            padding:15px 0 0 50px;
+            background:image-url("layout/loader.gif") no-repeat 0 15px;
+            border-top:1px solid rgba(#E5E5E5,0.5);
+            span {color:$cGray4;}
+          }
+          div.colors_error {
+            display:none;
+            padding:15px;
+            background:rgba(#FECBCB,0.4);
+            @include border-radius($corner_radius);
+            color:#666666;
           }
         }
       }

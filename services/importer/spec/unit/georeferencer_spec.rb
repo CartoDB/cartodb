@@ -188,7 +188,8 @@ describe Importer2::Georeferencer do
     latitude_column   = options.fetch(:latitude_column, :lat)
     longitude_column  = options.fetch(:longitude_column, :lon)
 
-    db.create_table? table_name do
+    db.drop_table?(table_name)
+    db.create_table?(table_name) do
       String    :name
       String    :description
       String    latitude_column.to_sym

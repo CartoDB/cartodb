@@ -30,12 +30,15 @@
 
     LayerDefinition.call(this, options.layer_definition, options);
   };
-  
+
   _.extend(Tiles.prototype, LayerDefinition.prototype);
 
 
   root.cartodb.Tiles = Tiles;
 
+  /**
+   * return the tile url template for the layer requested
+   */
   Tiles.getTiles = function(options, callback) {
     var t = new Tiles(options);
     t.getTiles(callback);

@@ -645,6 +645,81 @@ Return the bounds [ [sw_lat, sw_lon], [ne_lat, ne_lon ] ] for the geometry resul
   + **sql**: a string with the sql query to calculate the bounds from.
 
 
+### Core API functionallity
+
+In case you are not using google maps or Leaflet or you want to implement your own layer object cartodb provide a way to get the tiles url for a layer definition. 
+
+If you want to use this functionallity you only need to load cartodb.core.js from our cdn, no css is needed:
+
+```
+<script src="http://libs.cartocdn.com/cartodb.js/v3/cartodb.core.js"></script>
+```
+
+An example using this funcionallity can be found in modestmaps example: [live](http://cartodb.github.com/cartodb.js/examples/modestmaps.html) | [code](https://github.com/CartoDB/cartodb.js/blob/develop/examples/modestmaps.html) ).
+
+Notice that ``cartodb.SQL`` is also included in that javascript file
+
+
+##### cartodb.Tiles
+
+##### cartodb.Tiles.getTiles(layerOptions, callback)
+
+fetch the tile template for the layerdefinition
+
+###### ARGUMENTS
+
+  + **layerOptions**: the data that defines the layer, it should contain at least user_name and sublayer list. There are the available options:
+    ```
+        user_name: 'mycartodbuser',
+        sublayers: [{
+            sql: "select * from table";
+            cartocss: '#layer { marker-fill: #F0F0F0; }'
+        }],
+        tiler_protocol: 'https', // not required
+        tiler_host: 'cartodb.com', // not required
+        tiler_port: 80 // not required
+    ```
+  + callback(tilesUrl, error): a function that recieves the tiles templates. In case of an error the first param is null and second one is an object with ``errors`` attribute witch is a list of errors. The ``tilesUrl`` object contains url template for tiles and for interactivity grids:
+    ```
+    {
+        tiles: [
+            http://{s}.cartodb.com/HASH/{z}/{x}/{y}.png,
+            ..
+        ],
+        grids: [
+            // for each sublayer there is one entry on this array
+            [
+                http://{s}.cartodb.com/HASH/0/{z}/{x}/{y}.grid.json
+            ],
+            [
+                http://{s}.cartodb.com/HASH/1/{z}/{x}/{y}.grid.json
+            ],
+            ...
+        ]
+
+    }
+    ```
+
+###### EXAMPLE 
+
+    in this example a layer is created with one sublayer with renders all the content from ``table``.
+    ```
+        var layerData = {
+            user_name: 'mycartodbuser',
+            sublayers: [{
+                sql: "select * from table";
+                cartocss: '#layer { marker-fill: #F0F0F0; }'
+            }]
+        };
+        cartodb.Tiles.getTiles(layerData, function(tiles, err) {
+            if(tiler == null) {
+                console.log("error: ", err.errors.join('\n'));
+                return;
+            }
+            console.log("url template is ", tiles.tiles[0]);
+        }
+    ```
+
 
 
 ### Versions

@@ -11,7 +11,7 @@ require_relative '../../lib/cartodb/mini_sequel'
 require_relative '../../lib/importer/lib/cartodb-importer'
 require_relative '../../services/track_record/track_record/log'
 require_relative '../../config/initializers/redis'
-#require_relative '../../services/importer/lib/importer'
+require_relative '../../services/importer/lib/importer'
 
 class DataImport < Sequel::Model
   include CartoDB::MiniSequel
@@ -136,7 +136,7 @@ class DataImport < Sequel::Model
     return append_to_existing if append.present?
     return migrate_existing   if migrate_table.present?
     return from_table         if table_copy.present? || from_query.present?
-    return proper_import      if %w(url file).include?(data_type)
+    return new_importer       if %w(url file).include?(data_type)
   end #dispatch
 
   def running_import_ids
@@ -315,6 +315,72 @@ class DataImport < Sequel::Model
 
     success_status
   end
+
+  def new_importer
+    pg_options  = Rails.configuration.database_configuration[Rails.env]
+                    .symbolize_keys
+    pg_options.store(:user,     table_owner.database_username)
+    pg_options.store(:username, table_owner.database_username)
+    pg_options.store(:password, table_owner.database_password)
+    pg_options.store(:database, table_owner.database_name)
+
+    downloader  = CartoDB::Importer2::Downloader.new(data_source)
+    job         = CartoDB::Importer2::Job.new(pg_options: pg_options)
+    job.db.execute('SET search_path TO importer,public')
+
+    runner      = CartoDB::Importer2::Runner.new(job, downloader)
+    runner.run
+
+
+    runner.results.each do |result|
+      current_user.in_database(as: :superuser).execute(%Q{
+        GRANT ALL PRIVILEGES
+        ON ALL TABLES
+        IN SCHEMA public 
+        TO #{table_owner.database_username};
+      })
+      current_user.in_database(as: :superuser).execute(%Q{
+        GRANT ALL PRIVILEGES
+        ON ALL TABLES
+        IN SCHEMA importer
+        TO #{table_owner.database_username};
+      })
+
+      current_user.in_database.execute(%Q{
+        ALTER TABLE "importer"."#{result.fetch(:table_name)}"
+        SET SCHEMA public
+      })
+
+      name = Table.get_valid_table_name(
+        result.fetch(:name),
+        name_candidates: table_owner.tables.map(&:name)
+      )
+
+      current_user.in_database.execute(%Q{
+        ALTER TABLE "public"."#{result.fetch(:table_name)}"
+        RENAME TO #{name}
+      })
+
+      table                         = Table.new
+      table.user_id                 = table_owner.id
+      table.name                    = name
+      table.migrate_existing_table  = name
+      table.save
+
+      self.table_id   = table.id
+      self.table_name = table.name
+      save
+      self
+    end
+    
+    self.download
+    self.file_ready
+    unless complete?
+      self.imported
+      self.formatted
+    end
+    self.success = (runner.exit_code == 0)
+  end #new_importer
 
   def get_valid_name(name)
     Table.get_valid_table_name(name, 

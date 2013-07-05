@@ -1,11 +1,25 @@
 # encoding: utf-8
 require_relative '../spec_helper'
+require 'ruby-debug'
 
 describe DataImport do
   before(:each) do
     User.all.each(&:destroy)
     @user = create_user(:username => 'test', :email => "client@example.com", :password => "clientex")
     @table = create_table :user_id => @user.id
+    @user.in_database.execute('CREATE SCHEMA importer')
+    @user.in_database(as: :superuser).execute(%Q{
+      GRANT ALL PRIVILEGES
+      ON ALL TABLES
+      IN SCHEMA public 
+      TO #{@user.database_username};
+    })
+    @user.in_database(as: :superuser).execute(%Q{
+      GRANT ALL PRIVILEGES
+      ON ALL TABLES
+      IN SCHEMA importer
+      TO #{@user.database_username};
+    })
   end
 
   it 'should allow to append data to an existing table' do
@@ -47,6 +61,29 @@ describe DataImport do
     duplicated_table.should_not be_nil
     duplicated_table.name.should be == 'from_query'
     duplicated_table.records[:rows].should have(5).items
+  end
+
+  it 'imports a simple file', now: true do
+    data_import = DataImport.create(
+      :user_id       => @user.id,
+      :data_source   => '/../db/fake_data/clubbing.csv',
+      :updated_at    => Time.now
+    ).run_import!
+
+    table = Table[data_import.table_id]
+    table.should_not be_nil
+    table.name.should be == 'clubbing'
+    table.records[:rows].should have(10).items
+  end
+
+  it 'imports a simple file with latlon', now: true do
+    data_import = DataImport.create(
+      :user_id       => @user.id,
+      :data_source   => '/../services/importer/spec/fixtures/csv_with_geojson.csv',
+      :updated_at    => Time.now
+    ).run_import!
+    table = Table[data_import.table_id]
+    table.should_not be_nil
   end
 
   it 'should allow to create a table from a url' do

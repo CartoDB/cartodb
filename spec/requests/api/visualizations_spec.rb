@@ -125,8 +125,7 @@ describe Api::Json::VisualizationsController do
       last_response.status.should == 200
     end
 
-    it 'creates a private visualization if any table in the list is private',
-    now: true do
+    it 'creates a private visualization if any table in the list is private' do
       table1 = table_factory
       table2 = table_factory
       table3 = table_factory(privacy: 0)
@@ -268,6 +267,17 @@ describe Api::Json::VisualizationsController do
       response    = JSON.parse(last_response.body)
       collection  = response.fetch('visualizations')
       collection.size.should == 2
+    end
+
+    it 'does not get table data if passed table_data=false' do
+      table = table_factory
+
+      get "/api/v1/viz?api_key=#{@api_key}&type=table",
+        {}, @headers
+      last_response.status.should == 200
+      response        = JSON.parse(last_response.body)
+      visualizations  = response.fetch('visualizations')
+      visualizations.first.keys.should_not include :table_data
     end
   end # GET /api/v1/viz
 

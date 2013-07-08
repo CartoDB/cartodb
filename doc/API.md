@@ -113,12 +113,12 @@ Below, you have an example using a previously instatiated leaflet map.
         zoom: 2
       });
 
-      cartodb.createLayer(map, ‘http://documentation.cartodb.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json’)
-        .on(’done’, function(layer) {
+      cartodb.createLayer(map, 'http://documentation.cartodb.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json')
+        .on('done', function(layer) {
           map.addLayer(layer);
         })
-        .on(’error’, function(err) {
-          alert(”some error occurred: “ + err);
+        .on('error', function(err) {
+          alert("some error occurred: " + err);
         });
     </script>
   ```
@@ -139,7 +139,7 @@ When you create a visualization using the CartoDB website, you get automatically
       user_name: 'mycartodbuser',
       type: 'cartodb',
       sublayers: [{
-        sql: "select * from table_name",
+        sql: "SELECT * FROM table_name",
         cartocss: '#table_name {marker-fill: #F0F0F0;}'
       }]
     }).done(function(layer) {
@@ -148,7 +148,7 @@ When you create a visualization using the CartoDB website, you get automatically
 
       // create and add a new sublayer
       layer.createSubLayer({
-        sql: "select * from table_name limit 200",
+        sql: "SELECT * FROM table_name limit 200",
         cartocss: '#table_name {marker-fill: #F0F0F0;}'
       });
 
@@ -177,15 +177,15 @@ The documentation below reflects CartoDB.js for the 3.0.x library versions. For 
 
 #### Visualization
 
-##### cartodb.createVis (map_id, vizjson_url[, options] [, callback])
+##### cartodb.createVis(map_id, vizjson_url[, options] [, callback])
 
 Creates a visualization inside the map_id DOM object.
 
 <div class="margin20"></div>
   ``` javascript
-    var url = ‘http://examples.cartodb.com/api/v1/viz/15589/viz.json’;
+    var url = 'http://documentation.cartodb.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json';
 
-    cartodb.createVis(’map’, url)
+    cartodb.createVis('map', url)
       .done(function(vis, layers) {
       });
   ```
@@ -365,7 +365,7 @@ SubLayer object
 
     var sublayer = layer.getSubLayer(0);
 
-    sublayer.setSQL('select * from table limit 10');
+    sublayer.setSQL('SELECT * FROM table_name limit 10');
   ```
 <div class="margin20"></div>
 
@@ -380,7 +380,7 @@ Adds a new data to the current layer. With this method data from multiple tables
 <div class="margin20"></div>
   ```
   {
-    sql: "select * from table",
+    sql: "SELECT * FROM table_name",
     cartocss: "#layer { marker-fill: red; }",
     interactivity: 'cartodb_id, area, column' // optional
   }
@@ -398,13 +398,12 @@ SubLayer object
 <div class="margin20"></div>
   ``` javascript
     cartodb.createLayer(map, 'http://examples.cartodb.com/api/v2/viz/european_countries_e/viz.json', function(layer) {
-
        // add the layer to the map
        map.addLayer(layer);
 
        // add populated places points over the countries layer
        layer.createSubLayer({
-         sql: 'select * from ne_10m_populated_places_simple',
+         sql: 'SELECT * FROM ne_10m_populated_places_simple',
          cartocss: '#layer { marker-fill: red; }'
        });
     });
@@ -428,7 +427,7 @@ Sets sublayer parameters. Useful when more than one parameter need to be changed
 <div class="margin20"></div>
   ```
   {
-    sql: "select * from table",
+    sql: "SELECT * FROM table_name",
     cartocss: "#layer { marker-fill: red; }",
     interactivity: 'cartodb_id, area, column' // optional
   }
@@ -444,7 +443,7 @@ self object
 <div class="margin20"></div>
   ``` javascript
     sublayer.set({
-     query: "SELECT * FROM table WHERE cartodb_id < 100",
+     query: "SELECT * FROM table_name WHERE cartodb_id < 100",
      cartocss: "#layer { marker-fill: red }",
      interactivity: "cartodb_id,the_geom,magnitude"
     });
@@ -469,7 +468,7 @@ Shortcut for get('cartocss')
 
 ##### **cartodb.CartoDBLayer.SubLayer.setSQL(sql) **
 
-Shortcut for set({'sql': 'select * from table'})
+Shortcut for set({'sql': 'SELECT * FROM table_name'})
 
 ##### **cartodb.CartoDBLayer.SubLayer.setCartoCSS(sql) **
 
@@ -606,7 +605,7 @@ CartoDB offers a powerful SQL API for you to query and retreive data from your C
 <div class="margin20"></div>
   ``` javascript
     var sql = new cartodb.SQL({ user: 'cartodb_user' });
-    sql.execute("select * from table where id > {{id}}", { id: 3 })
+    sql.execute("SELECT * FROM table_name WHERE id > {{id}}", { id: 3 })
       .done(function(data) {
         console.log(data.rows);
       })
@@ -646,7 +645,7 @@ You can also use done and error methods:
 
 <div class="margin20"></div>
   ``` javascript
-    sql.execute('select * from table')
+    sql.execute('SELECT * FROM table_name')
       .done(fn)
       .error(fnError)
   ```
@@ -697,7 +696,7 @@ Fetch the tile template for the layerdefinition.
   <div class="margin20"></div>
     user_name: 'mycartodbuser',
     sublayers: [{
-      sql: "select * from table";
+      sql: "SELECT * FROM table_name";
       cartocss: '#layer { marker-fill: #F0F0F0; }'
     }],
     tiler_protocol: 'https', // not required
@@ -735,7 +734,7 @@ In this example a layer is created with one sublayer with renders all the conten
     var layerData = {
       user_name: 'mycartodbuser',
       sublayers: [{
-        sql: "select * from table";
+        sql: "SELECT * FROM table_name";
         cartocss: '#layer { marker-fill: #F0F0F0; }'
       }]
     };
@@ -781,7 +780,7 @@ We have added easy method to get the bounding box for any dataset or filtered qu
   ``` javascript
     var sql = new cartodb.SQL({ user: 'cartodb_user' });
 
-    sql.getBounds('select * from table').done(function(bounds) {
+    sql.getBounds('SELECT * FROM table_name').done(function(bounds) {
       console.log(bounds);
     });
   ```

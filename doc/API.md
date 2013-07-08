@@ -668,6 +668,35 @@ Return the bounds [ [sw_lat, sw_lon], [ne_lat, ne_lon ] ] for the geometry resul
 
   + **sql**: a string with the sql query to calculate the bounds from.
 
+#### Application of getBounds in Leaflet and GMaps
+
+You can use the getBounds results to center data on your maps using Leaflet and GMaps. 
+
+##### getBounds and Leaflet
+
+<div class="margin20"></div>
+  ``` javascript
+    sql.getBounds('select * form table').done(function(bounds) {
+        map.fitBounds(bounds);
+    });
+  ```
+<div class="margin20"></div>
+
+##### getBounds and GMaps V3
+
+<div class="margin20"></div>
+  ``` javascript
+    sql.getBounds('select * form table').done(function(bounds) {
+        var google_bounds = new google.maps.LatLngBounds();
+        var bound_sw = new google.maps.LatLng(bounds[0][0], bounds[0][1]);
+        var bound_ne = new google.maps.LatLng(bounds[1][0], bounds[1][1]);
+        google_bounds.extend(bound_sw);
+        google_bounds.extend(bound_ne);
+        map.fitBounds(bounds);
+    });
+  ```
+<div class="margin20"></div>
+
 ### Core API functionallity
 
 In case you are not using Google Maps or Leaflet or you want to implement your own layer object cartodb provide a way to get the tiles url for a layer definition. 

@@ -657,7 +657,7 @@ Return the bounds [ [sw_lat, sw_lon], [ne_lat, ne_lon ] ] for the geometry resul
 
 <div class="margin20"></div>
   ``` javascript
-    sql.getBounds('select * form table').done(function(bounds) {
+    sql.getBounds('select * from table').done(function(bounds) {
         console.log(bounds);
     });
   ```
@@ -666,6 +666,33 @@ Return the bounds [ [sw_lat, sw_lon], [ne_lat, ne_lon ] ] for the geometry resul
 ###### Arguments
 
   + **sql**: a string with the sql query to calculate the bounds from.
+
+#### Application of getBounds in Leaflet and GMaps
+
+You can use the getBounds results to center data on your maps using Leaflet and GMaps. 
+
+##### getBounds and Leaflet
+
+<div class="margin20"></div>
+  ``` javascript
+    sql.getBounds('select * from table').done(function(bounds) {
+        map.fitBounds(bounds);
+    });
+  ```
+<div class="margin20"></div>
+
+##### getBounds and GMaps V3
+
+<div class="margin20"></div>
+  ``` javascript
+    sql.getBounds('select * from table').done(function(bounds) {
+        var google_bounds = new google.maps.LatLngBounds();
+        google_bounds.extend(new google.maps.LatLng(bounds[0][0], bounds[0][1]));
+        google_bounds.extend(new google.maps.LatLng(bounds[1][0], bounds[1][1]));
+        map.fitBounds(google_bounds);
+    });
+  ```
+<div class="margin20"></div>
 
 ### Core API functionallity
 

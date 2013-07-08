@@ -86,8 +86,18 @@ describe User do
   end
 
   it "should read api calls from external service" do
-    @user.get_api_calls.should == (1..30).map { 0 }
+    @user.stubs(:get_old_api_calls).returns({
+      "per_day" => [0, 0, 0, 0, 24, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 17, 0, 0, 0, 0, 0], 
+      "total"=>49, 
+      "updated_at"=>1370362756
+    })
+    @user.get_api_calls.should == [0, 0, 0, 0, 0, 17, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 24, 0, 0, 0, 0]
+    @user.get_api_calls(
+      from: (Date.today - 6.days), 
+      to: Date.today
+    ).should == [0, 0, 0, 0, 0, 17, 0]
   end
+
 
   it "should have many tables" do
     @user2.tables.should be_empty

@@ -19,11 +19,13 @@ The simplest way to use a visualization created in CartoDB on an external site i
     ...
     <script>
       // get the viz.json url from the CartoDB UI
-      // - go to the map tab
-      // - click on share
+      // - click on visualize
+      // - create new visualization
+      // - make visualization public
+      // - click on publish
       // - go to API tab
       window.onload = function() {
-        cartodb.createVis('map', 'http://examples.cartodb.com/api/v1/viz/15589/viz.json');
+        cartodb.createVis('map', 'http://documentation.cartodb.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json');
       }
     </script>
   ```
@@ -65,7 +67,7 @@ You can start by giving cartodb.js the DIV ID from your HTML where you want to p
 
 <div class="margin20"></div>
   ``` javascript
-    cartodb.createVis('map', 'http://examples.cartodb.com/api/v1/viz/15589/viz.json');
+    cartodb.createVis('map', 'http://documentation.cartodb.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json');
   ```
 <div class="margin20"></div>
 
@@ -73,17 +75,20 @@ That’s it! No need to create the map instance, insert controls, or load layers
 
 <div class="margin20"></div>
   ``` javascript
-    cartodb.createVis('map', 'http://examples.cartodb.com/api/v1/viz/15589/viz.json')
+    cartodb.createVis('map', 'http://documentation.cartodb.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json')
     .done(function(vis, layers) {
       // layer 0 is the base layer, layer 1 is cartodb layer
+      // when setInteraction is disabled featureOver is triggered
+      layers[1].setInteraction(true);
       layers[1].on('featureOver', function(e, latlng, pos, data, layerNumber) {
         cartodb.log.log(e, latlng, pos, data, layerNumber);
       });
 
-      // you can also get the map object created by cartodb.js
+      // you can get the native map to work with it
+      // depending if you use google maps or leaflet
       map = vis.getNativeMap();
 
-      // Now, perform any operations you need
+      // now, perform any operations you need
       // map.setZoom(3)
       // map.setCenter(new google.maps.Latlng(...))
     });
@@ -101,13 +106,14 @@ Below, you have an example using a previously instatiated leaflet map.
 <div class="margin20"></div>
   ``` html
     <div id=”map”></div>
+
     <script>
       var map = new L.Map(’map’, {
         center: [0,0],
         zoom: 2
       });
 
-      cartodb.createLayer(map, ‘http://examples.cartodb.com/api/v1/viz/15589/viz.json’)
+      cartodb.createLayer(map, ‘http://documentation.cartodb.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json’)
         .on(’done’, function(layer) {
           map.addLayer(layer);
         })
@@ -130,24 +136,24 @@ When you create a visualization using the CartoDB website, you get automatically
   ``` javascript
     // create a layer with 1 sublayer
     cartodb.createLayer(map, {
-        user_name: ‘mycartodbuser’,
-        type: ‘cartodb’,
-        sublayers: [{
-            sql: “select * from table_name”;
-            cartocss: ‘#table_name {marker-fill: #F0F0F0;}’
-        }]
+      user_name: 'mycartodbuser',
+      type: 'cartodb',
+      sublayers: [{
+        sql: "select * from table_name",
+        cartocss: '#table_name {marker-fill: #F0F0F0;}'
+      }]
     }).done(function(layer) {
-        // add the layer to our map which already contains 1 sublayer
-        map.addLayer(layer);
+      // add the layer to our map which already contains 1 sublayer
+      map.addLayer(layer);
 
-        // create and add a new sublayer
-        layer.addSubLayer({
-            sql: “select * from table_name limit 200”;
-            cartocss: ‘#table_name {marker-fill: #F0F0F0;}’
-        });
+      // create and add a new sublayer
+      layer.createSubLayer({
+        sql: "select * from table_name limit 200",
+        cartocss: '#table_name {marker-fill: #F0F0F0;}'
+      });
 
-        // change the query for the first layer
-        layer.getSubLayer(0).setSQL(’select * from table where size > 10’);
+      // change the query for the first layer
+      layer.getSubLayer(0).setSQL('');
     });
   ```
 <div class="margin20"></div>
@@ -300,7 +306,7 @@ You can call to addTo(map[, position]) in the promise so when the layer is ready
 
     map = new google.maps.Map(document.getElementById('map'),  mapOptions);
 
-    cartodb.createLayer(map, 'http://examples.cartodb.com/tables/TODO/cartodb.js')
+    cartodb.createLayer(map, 'http://documentation.cartodb.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json')
       .on('done', function(layer) {
         layer
           .on('featureOver', function(e, latlng, pos, data) {
@@ -473,7 +479,7 @@ Shortcut for set({'cartocss': '#layer {...}' });
 
 Remove the sublayer. If a method is called after removing it an exception is thrown.
 
-##### **cartodb.CartoDBLayer.SubLayer.setInteraction(enable) **
+##### **cartodb.CartoDBLayer.SubLayer.setInteraction(true) **
 
 Sets the interaction of your layer to true (enabled) or false (disabled). When is disabled **featureOver**, **featureClick** and **featureOut** are **not** triggered.
 

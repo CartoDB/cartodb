@@ -321,7 +321,7 @@ class User < Sequel::Model
     
     def set_old_api_calls(options = {})
       # Ensure we update only once every 3 hours
-      if options[:force_update] || get_api_calls["updated_at"].to_i < 3.hours.ago.to_i
+      if options[:force_update] || get_old_api_calls["updated_at"].to_i < 3.hours.ago.to_i
         api_calls = JSON.parse(
           open("#{Cartodb.config[:api_requests_service_url]}?username=#{self.username}").read
         ) rescue {}

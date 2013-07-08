@@ -63,7 +63,7 @@ module CartoDB
       end #destroy
 
       def to_poro
-        map { |member| member.to_hash(related: false) }
+        map { |member| member.to_hash(related: false, table_data: true) }
       end #to_poro
 
       attr_reader :total_entries

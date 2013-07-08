@@ -25,9 +25,10 @@ class Api::Json::VisualizationsController < Api::ApplicationController
 
     representation  = collection.map { |member|
       member.to_hash(
-        related:  false,
-        user:     current_user,
-        table:    tables[member.map_id]
+        related:    false,
+        table_data: !(params[:table_data] =~ /false/),
+        user:       current_user,
+        table:      tables[member.map_id]
       )
     }
 

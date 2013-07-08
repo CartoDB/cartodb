@@ -177,7 +177,7 @@ LayerDefinition.prototype = {
     clearTimeout(this._refreshTimer);
     this._refreshTimer = setTimeout(function() {
       self.invalidate();
-    }, this.options.refreshTime || (60*5*1000));
+    }, this.options.refreshTime || (60*120*1000)); // default layergroup ttl
 
     // check request queue
     if(this._queue.length) {

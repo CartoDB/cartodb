@@ -23,9 +23,9 @@ module CartoDB
           stats:            visualization.stats(user),
           created_at:       visualization.created_at,
           updated_at:       visualization.updated_at,
-          table:            table_data_for(table)
         }
-        poro.merge!(related) if options.fetch(:related, true)
+        poro.merge!(table_data_for(table)) if options.fetch(:table_data, true)
+        poro.merge!(related)               if options.fetch(:related, true)
         poro
       end #to_poro
 
@@ -40,12 +40,14 @@ module CartoDB
       def table_data_for(table=nil)
         return {} unless table
         {
-          id:               table.id,
-          name:             table.name,
-          privacy:          table.privacy_text,
-          size:             table.table_size(user),
-          row_count:        table.rows_estimated(user),
-          updated_at:       table.updated_at
+          table: {
+            id:               table.id,
+            name:             table.name,
+            privacy:          table.privacy_text,
+            size:             table.table_size(user),
+            row_count:        table.rows_estimated(user),
+            updated_at:       table.updated_at
+          }
         }
       end #table_data_for
 

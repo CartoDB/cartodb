@@ -688,11 +688,9 @@ You can use the getBounds results to center data on your maps using Leaflet and 
   ``` javascript
     sql.getBounds('select * form table').done(function(bounds) {
         var google_bounds = new google.maps.LatLngBounds();
-        var bound_sw = new google.maps.LatLng(bounds[0][0], bounds[0][1]);
-        var bound_ne = new google.maps.LatLng(bounds[1][0], bounds[1][1]);
-        google_bounds.extend(bound_sw);
-        google_bounds.extend(bound_ne);
-        map.fitBounds(bounds);
+        google_bounds.extend(new google.maps.LatLng(bounds[0][0], bounds[0][1]));
+        google_bounds.extend(new google.maps.LatLng(bounds[1][0], bounds[1][1]));
+        map.fitBounds(google_bounds);
     });
   ```
 <div class="margin20"></div>

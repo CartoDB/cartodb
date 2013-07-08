@@ -11,12 +11,6 @@ describe DataImport do
     @user.in_database(as: :superuser).execute(%Q{
       GRANT ALL PRIVILEGES
       ON ALL TABLES
-      IN SCHEMA public 
-      TO #{@user.database_username};
-    })
-    @user.in_database(as: :superuser).execute(%Q{
-      GRANT ALL PRIVILEGES
-      ON ALL TABLES
       IN SCHEMA importer
       TO #{@user.database_username};
     })

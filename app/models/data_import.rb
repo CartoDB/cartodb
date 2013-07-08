@@ -45,6 +45,7 @@ class DataImport < Sequel::Model
     failed!   unless success
     self
   rescue => exception
+    puts "Exception!!!1 ==== #{exception.inspect}"
     reload
     failed!
     self.log << ("Exception while running import: " + exception.inspect)
@@ -326,28 +327,18 @@ class DataImport < Sequel::Model
 
     downloader  = CartoDB::Importer2::Downloader.new(data_source)
     job         = CartoDB::Importer2::Job.new(pg_options: pg_options)
-    job.db.execute('SET search_path TO importer,public')
-
     runner      = CartoDB::Importer2::Runner.new(job, downloader)
     runner.run
 
 
     runner.results.each do |result|
-      current_user.in_database(as: :superuser).execute(%Q{
-        GRANT ALL PRIVILEGES
-        ON ALL TABLES
-        IN SCHEMA public 
-        TO #{table_owner.database_username};
-      })
-      current_user.in_database(as: :superuser).execute(%Q{
-        GRANT ALL PRIVILEGES
-        ON ALL TABLES
-        IN SCHEMA importer
-        TO #{table_owner.database_username};
-      })
+      puts table_owner.database_name
+      puts current_user.database_name
+      puts table_owner.database_username
+      puts current_user.database_username
 
       current_user.in_database.execute(%Q{
-        ALTER TABLE "importer"."#{result.fetch(:table_name)}"
+        ALTER TABLE importer.#{result.fetch(:table_name)}
         SET SCHEMA public
       })
 

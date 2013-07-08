@@ -312,6 +312,25 @@ class User < Sequel::Model
     return calls
   end
 
+  # Legacy stats fetching
+
+    def get_old_api_calls
+      JSON.parse($users_metadata.HMGET(key, 'api_calls').first) rescue {}
+    end
+    
+    def set_old_api_calls(options = {})
+      # Ensure we update only once every 3 hours
+      if options[:force_update] || get_api_calls["updated_at"].to_i < 3.hours.ago.to_i
+        api_calls = JSON.parse(
+          open("#{Cartodb.config[:api_requests_service_url]}?username=#{self.username}").read
+        ) rescue {}
+
+        # Manually set updated_at
+        api_calls["updated_at"] = Time.now.to_i
+        $users_metadata.HMSET key, 'api_calls', api_calls.to_json
+      end
+    end
+
   def last_billing_cycle
     day = period_end_date.day rescue 29.days.ago.day
     date = (day > Date.today.day ? Date.today<<1 : Date.today)

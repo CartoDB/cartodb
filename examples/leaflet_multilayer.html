@@ -23,7 +23,7 @@
     <div id="map"></div>
 
     <!-- include cartodb.js library -->
-    <script src="../src/cartodb.js"></script>
+    <script src="http://libs.cartocdn.com/cartodb.js/v3/cartodb.js"></script>
     <script>
 
       function main() {
@@ -87,9 +87,7 @@
       }
 
       // you could use $(window).load(main);
-      window.onload = function() {
-        cdb.load("../src/", main);
-      }
+      window.onload = main; 
 
     </script>
 

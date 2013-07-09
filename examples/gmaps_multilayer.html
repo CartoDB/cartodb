@@ -25,8 +25,7 @@
     <!-- include google maps library *before* load cartodb.js -->
     <script src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
     <!-- include cartodb.js library -->
-    <!--<script src="http://libs.cartocdn.com/cartodb.js/v3/cartodb.js"></script>-->
-    <script src="../src/cartodb.js"></script>
+    <script src="http://libs.cartocdn.com/cartodb.js/v3/cartodb.js"></script>
 
     <script>
 
@@ -87,12 +86,9 @@
 
           });
 
-
       }
 
-      window.onload = function() {
-        cdb.load("../src/", main);
-      }
+      window.onload = main;
 
 
     </script>

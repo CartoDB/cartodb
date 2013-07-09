@@ -13,16 +13,16 @@
       }
     </style>
 
-    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/themes/css/cartodb.css" />
+    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.css" />
     <!--[if lte IE 8]>
-        <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/themes/css/cartodb.ie.css" />
+        <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.ie.css" />
     <![endif]-->
   </head>
   <body>
     <div id="map"></div>
 
     <!-- include cartodb.js library -->
-    <script src="http://libs.cartocdn.com/cartodb.js/v2/cartodb.js"></script>
+    <script src="http://libs.cartocdn.com/cartodb.js/v3/cartodb.js"></script>
     <script>
       var layer;
       function main() {
@@ -34,32 +34,23 @@
           zoom: 3
         });
 
-        // Setting bounds to Spain country
-        var sql = new cartodb.SQL({ user: 'examples' });
-        sql.getBounds("select * from european_countries_e where name='Spain'").done(function(bounds) {
-          map.fitBounds(bounds)
-        });
-
         cartodb.createLayer(map, {
           type: 'cartodb',
-          options: {
-            table_name: 'european_countries_e',
-            user_name: 'examples',
-            interactivity: 'cartodb_id',
-            featureOver: function() {
-              console.log("jamon-over");
-            },
-            featureClick: function() {
-              console.log("jamon-click");
-            },
-            featureOut: function() {
-              console.log("jamon-out");
-            }
-          }
+          user_name: 'examples',
+          sublayers: [{
+            sql: 'select * from european_countries_e',
+            cartocss: '#layer { polygon-fill: #F00; polygon-opacity: 0.3; line-color: #F00; }'
+          }]
         })
+        .addTo(map)
         .on('done', function(layer_) {
-          layer = layer_;
-          map.addLayer(layer);
+          // Setting bounds to Spain country
+          setTimeout(function() {
+            var sql = new cartodb.SQL({ user: 'examples' });
+            sql.getBounds("select * from european_countries_e where name='Spain'").done(function(bounds) {
+              map.fitBounds(bounds)
+            });
+          }, 2000);
         }).on('error', function() {
           cartodb.log.log("some error occurred");
         });

@@ -541,7 +541,7 @@ LayerDefinition.prototype = {
   },
 
   getInfowindowData: function(layer) {
-    var infowindow = this.options.layer_definition.layers[layer].infowindow;
+    var infowindow = this.layers[layer].infowindow || this.options.layer_definition.layers[layer].infowindow;
     if (infowindow && infowindow.fields && infowindow.fields.length > 0) {
       return infowindow;
     }
@@ -584,8 +584,13 @@ function SubLayer(_parent, position) {
   this._parent = _parent;
   this._position = position;
   this._added = true;
-
   this._bindInteraction();
+  this.infowindow = new Backbone.Model(this._parent.getLayer(this._position).infowindow);
+  this.infowindow.bind('change', function() {
+    var def = this._parent.getLayer(this._position);
+    def.infowindow = this.infowindow.toJSON();
+    this._parent.setLayer(this._position, def);
+  }, this);
 }
 
 SubLayer.prototype = {

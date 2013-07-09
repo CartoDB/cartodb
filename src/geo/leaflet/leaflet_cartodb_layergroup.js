@@ -45,10 +45,10 @@ L.CartoDBGroupLayer = L.TileLayer.extend({
     }
 
     if(!options.layer_definition) {
-      options.layer_definition = LayerDefinition.layerDefFromSubLayers(options.sublayers);
+      this.options.layer_definition = LayerDefinition.layerDefFromSubLayers(options.sublayers);
     }
 
-    LayerDefinition.call(this, options.layer_definition, this.options);
+    LayerDefinition.call(this, this.options.layer_definition, this.options);
 
     this.fire = this.trigger;
 

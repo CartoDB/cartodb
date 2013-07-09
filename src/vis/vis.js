@@ -390,6 +390,7 @@ var Vis = cdb.core.View.extend({
   },
 
   _getSqlApi: function(attrs) {
+    attrs = attrs || {};
     var port = attrs.sql_api_port
     var domain = attrs.sql_api_domain + (port ? ':' + port: '')
     var protocol = attrs.sql_api_protocol;
@@ -411,11 +412,14 @@ var Vis = cdb.core.View.extend({
   },
 
   addInfowindow: function(layerView) {
+
+    if(!layerView.containInfowindow || !layerView.containInfowindow()) {
+      return;
+    }
+
     var mapView = this.mapView;
     var eventType = 'featureClick';
     var infowindow = null;
-
-    var sql = this._getSqlApi(layerView.options)
 
     // activate interactivity for layers with infowindows
     for(var i = 0; i < layerView.getLayerCount(); ++i) {
@@ -427,6 +431,13 @@ var Vis = cdb.core.View.extend({
         layerView.setInteraction(i, true);
       }
     }
+
+    if(!infowindow) {
+      return;
+    }
+
+    var sql = this._getSqlApi(layerView.options)
+
 
     // if the layer has no infowindow just pass the interaction
     // data to the infowindow

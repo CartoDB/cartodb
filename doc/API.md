@@ -521,6 +521,41 @@ Show a previously hidden sublayer. The layer is refreshed after calling this fun
 
 Remove temporally the sublayer from the layer. The layer is refreshed after calling this function.
 
+##### **sublayer.infowindow.set **
+
+Create a custom infowindow
+
+###### Arguments
+
+  + **template**: Set the custom infowindow template defined on the html. You can write simple html or use Mustache templates http://mustache.github.com/
+
+<div class="margin20"></div>
+<div class="code_title">sublayer.infowindow.set</div>
+  ```
+    <div id="map"></div>
+
+    <script>
+      sublayer.infowindow.set('template', $('#infowindow_template').html());
+    </script>
+
+    <script type="infowindow/html" id="infowindow_template">
+      <span> custom </span>
+      <div class="cartodb-popup">
+        <a href="#close" class="cartodb-popup-close-button close">x</a>
+
+         <div class="cartodb-popup-content-wrapper">
+           <div class="cartodb-popup-content">
+             <img style="width: 100%" src="http://rambo.webcindario.com/images/18447755.jpg"></src>
+             <!-- content.data contains the field info -->
+             <h4>{{content.data.name}}</h4>
+           </div>
+         </div>
+         <div class="cartodb-popup-tip-container"></div>
+      </div>
+    </script>
+  ```
+<div class="margin20"></div>
+
 ### Events
 
 You can add custom functions to layer events. This is useful for integrating your website with your maps, adding events for mouseovers and click events.

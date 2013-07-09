@@ -162,6 +162,24 @@ describe User do
     @user.in_database.test_connection.should == true
   end
 
+  it 'creates an importer schema in the user database' do
+    @user.in_database[%Q(SELECT * FROM pg_namespace)]
+      .map { |record| record.fetch(:nspname) }
+      .should include 'importer'
+  end
+
+  it 'allows access to the importer schema by the owner' do
+    @user.in_database.run(%Q{
+      CREATE TABLE importer.bogus ( bogus varchar(40) )
+    })
+    query = %Q(SELECT * FROM importer.bogus)
+
+    expect { @user.in_database(as: :public_user)[query].to_a }
+      .to raise_error(Sequel::DatabaseError)
+      
+    @user.in_database[query].to_a
+  end
+
   it "should create a dabase user that only can read it's own database" do
 
     connection = ::Sequel.connect(
@@ -404,11 +422,22 @@ describe User do
 
   it "should remove its user tables, layers and data imports after deletion" do
     doomed_user = create_user :email => 'doomed2@example.com', :username => 'doomed2', :password => 'doomed123'
-    DataImport.create(:user_id     => doomed_user.id,
-                      :data_source => '/../db/fake_data/SHP1.zip').run_import!
+    data_import = DataImport.create(:user_id     => doomed_user.id,
+                      :data_source => '/../db/fake_data/clubbing.csv').run_import!
     doomed_user.add_layer Layer.create(:kind => 'carto')
+    table_id  = data_import.table_id
+    uuid      = Table.where(id: table_id).first.table_visualization.id
     
-    #CartoDB::Varnish.any_instance.expects(:purge).with("obj.http.X-Cache-Channel ~ #{doomed_user.database_name}.*").returns(true)
+    CartoDB::Varnish.any_instance.expects(:purge)
+      .with("obj.http.X-Cache-Channel ~ #{doomed_user.database_name}.*")
+      .returns(true)
+    CartoDB::Varnish.any_instance.expects(:purge)
+      .with("obj.http.X-Cache-Channel ~ ^#{doomed_user.database_name}:(.*clubbing.*)|(table)$")
+      .returns(true)
+    CartoDB::Varnish.any_instance.expects(:purge)
+      .with("obj.http.X-Cache-Channel ~ .*#{uuid}:vizjson")
+      .times(2)
+      .returns(true)
     Table.any_instance.expects(:delete_tile_style).returns(true)
     
     doomed_user.destroy

@@ -37,6 +37,7 @@ class User < Sequel::Model
   }
 
   SYSTEM_TABLE_NAMES = %w( spatial_ref_sys geography_columns geometry_columns raster_columns raster_overviews cdb_tablemetadata )
+  SCHEMAS = %w( public importer )
 
   self.raise_on_typecast_failure = false
   self.raise_on_save_failure = false
@@ -587,10 +588,17 @@ class User < Sequel::Model
         end
       end.join
 
+      create_importer_schema
       set_database_permissions
       load_cartodb_functions
     end
   end
+
+  def create_importer_schema
+    in_database(as: :superuser) do |database|
+      database.run(%Q{CREATE SCHEMA importer})
+    end
+  end #create_importer_schema
 
   # Cartodb functions
   def load_cartodb_functions(files = [])
@@ -653,32 +661,33 @@ class User < Sequel::Model
   def set_database_permissions
     in_database(:as => :superuser) do |user_database|
       user_database.transaction do
+        SCHEMAS.each do |schema|
+          # remove all public and tile user permissions
+          user_database.run("REVOKE ALL ON DATABASE #{database_name} FROM PUBLIC")
+          user_database.run("REVOKE ALL ON SCHEMA #{schema} FROM PUBLIC")
+          user_database.run("REVOKE ALL ON ALL SEQUENCES IN SCHEMA #{schema} FROM PUBLIC")
+          user_database.run("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA #{schema} FROM PUBLIC")
+          user_database.run("REVOKE ALL ON ALL TABLES IN SCHEMA #{schema} FROM PUBLIC")
 
-        # remove all public and tile user permissions
-        user_database.run("REVOKE ALL ON DATABASE #{database_name} FROM PUBLIC")
-        user_database.run("REVOKE ALL ON SCHEMA public FROM PUBLIC")
-        user_database.run("REVOKE ALL ON ALL SEQUENCES IN SCHEMA public FROM PUBLIC")
-        user_database.run("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA public FROM PUBLIC")
-        user_database.run("REVOKE ALL ON ALL TABLES IN SCHEMA public FROM PUBLIC")
+          user_database.run("REVOKE ALL ON DATABASE #{database_name} FROM #{CartoDB::PUBLIC_DB_USER}")
+          user_database.run("REVOKE ALL ON SCHEMA #{schema} FROM #{CartoDB::PUBLIC_DB_USER}")
+          user_database.run("REVOKE ALL ON ALL SEQUENCES IN SCHEMA #{schema} FROM #{CartoDB::PUBLIC_DB_USER}")
+          user_database.run("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA #{schema} FROM #{CartoDB::PUBLIC_DB_USER}")
+          user_database.run("REVOKE ALL ON ALL TABLES IN SCHEMA #{schema} FROM #{CartoDB::PUBLIC_DB_USER}")
 
-        user_database.run("REVOKE ALL ON DATABASE #{database_name} FROM #{CartoDB::PUBLIC_DB_USER}")
-        user_database.run("REVOKE ALL ON SCHEMA public FROM #{CartoDB::PUBLIC_DB_USER}")
-        user_database.run("REVOKE ALL ON ALL SEQUENCES IN SCHEMA public FROM #{CartoDB::PUBLIC_DB_USER}")
-        user_database.run("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA public FROM #{CartoDB::PUBLIC_DB_USER}")
-        user_database.run("REVOKE ALL ON ALL TABLES IN SCHEMA public FROM #{CartoDB::PUBLIC_DB_USER}")
+          user_database.run("REVOKE ALL ON DATABASE #{database_name} FROM #{CartoDB::TILE_DB_USER}")
+          user_database.run("REVOKE ALL ON SCHEMA #{schema} FROM #{CartoDB::TILE_DB_USER}")
+          user_database.run("REVOKE ALL ON ALL SEQUENCES IN SCHEMA #{schema} FROM #{CartoDB::TILE_DB_USER}")
+          user_database.run("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA #{schema} FROM #{CartoDB::TILE_DB_USER}")
+          user_database.run("REVOKE ALL ON ALL TABLES IN SCHEMA #{schema} FROM #{CartoDB::TILE_DB_USER}")
 
-        user_database.run("REVOKE ALL ON DATABASE #{database_name} FROM #{CartoDB::TILE_DB_USER}")
-        user_database.run("REVOKE ALL ON SCHEMA public FROM #{CartoDB::TILE_DB_USER}")
-        user_database.run("REVOKE ALL ON ALL SEQUENCES IN SCHEMA public FROM #{CartoDB::TILE_DB_USER}")
-        user_database.run("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA public FROM #{CartoDB::TILE_DB_USER}")
-        user_database.run("REVOKE ALL ON ALL TABLES IN SCHEMA public FROM #{CartoDB::TILE_DB_USER}")
-
-        # grant core permissions to database user
-        user_database.run("GRANT ALL ON DATABASE #{database_name} TO #{database_username}")
-        user_database.run("GRANT ALL ON SCHEMA public TO #{database_username}")
-        user_database.run("GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO #{database_username}")
-        user_database.run("GRANT ALL ON ALL FUNCTIONS IN SCHEMA public TO #{database_username}")
-        user_database.run("GRANT ALL ON ALL TABLES IN SCHEMA public TO #{database_username}")
+          # grant core permissions to database user
+          user_database.run("GRANT ALL ON DATABASE #{database_name} TO #{database_username}")
+          user_database.run("GRANT ALL ON SCHEMA #{schema} TO #{database_username}")
+          user_database.run("GRANT ALL ON ALL SEQUENCES IN SCHEMA #{schema} TO #{database_username}")
+          user_database.run("GRANT ALL ON ALL FUNCTIONS IN SCHEMA #{schema} TO #{database_username}")
+          user_database.run("GRANT ALL ON ALL TABLES IN SCHEMA #{schema} TO #{database_username}")
+        end
 
         # grant select permissions to public user (for SQL API)
         user_database.run("GRANT CONNECT ON DATABASE #{database_name} TO #{CartoDB::PUBLIC_DB_USER}")

@@ -7,13 +7,6 @@ describe DataImport do
     User.all.each(&:destroy)
     @user = create_user(:username => 'test', :email => "client@example.com", :password => "clientex")
     @table = create_table :user_id => @user.id
-    @user.in_database.execute('CREATE SCHEMA importer')
-    @user.in_database(as: :superuser).execute(%Q{
-      GRANT ALL PRIVILEGES
-      ON ALL TABLES
-      IN SCHEMA importer
-      TO #{@user.database_username};
-    })
   end
 
   it 'should allow to append data to an existing table' do

@@ -332,11 +332,6 @@ class DataImport < Sequel::Model
 
 
     runner.results.each do |result|
-      puts table_owner.database_name
-      puts current_user.database_name
-      puts table_owner.database_username
-      puts current_user.database_username
-
       current_user.in_database.execute(%Q{
         ALTER TABLE importer.#{result.fetch(:table_name)}
         SET SCHEMA public

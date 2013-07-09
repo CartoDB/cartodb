@@ -8,7 +8,7 @@ namespace :db do
         .include?('importer')
     rescue => exception
       false
-    end #importer_schema_exists?
+    end #needs_importer_schema?
 
     User.all
       .select { |user| needs_importer_schema?(user) }

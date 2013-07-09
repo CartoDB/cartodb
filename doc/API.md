@@ -521,13 +521,13 @@ Show a previously hidden sublayer. The layer is refreshed after calling this fun
 
 Remove temporally the sublayer from the layer. The layer is refreshed after calling this function.
 
-##### **sublayer.infowindow.set **
+##### **sublayer.infowindow **
 
-Create a custom infowindow
+**sublayer.infowindow** is a Backbone model where we modify the parameters of the infowindow
 
 ###### Arguments
 
-  + **template**: Set the custom infowindow template defined on the html. You can write simple html or use Mustache templates http://mustache.github.com/
+  + **template**: Set the custom infowindow template defined on the html. You can write simple html or use [Mustache templates](http://mustache.github.com/)
 
 <div class="margin20"></div>
 <div class="code_title">sublayer.infowindow.set</div>
@@ -555,6 +555,8 @@ Create a custom infowindow
     </script>
   ```
 <div class="margin20"></div>
+
+[Grab the complete example source code](https://github.com/CartoDB/cartodb.js/blob/develop/examples/custom_infowindow.html)
 
 ### Events
 

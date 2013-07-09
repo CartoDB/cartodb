@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <title>Leaflet example | CartoDB.js</title>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
     <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
-    
+    <link rel="shortcut icon" href="http://cartodb.com/assets/favicon.ico" />
     <style>
       html, body, #map {
         height: 100%;
@@ -11,59 +12,49 @@
         margin: 0;
       }
     </style>
-
-    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/themes/css/cartodb.css" />
+    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.css" />
     <!--[if lte IE 8]>
-        <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/themes/css/cartodb.ie.css" />
+      <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/themes/css/cartodb.ie.css" />
     <![endif]-->
-
   </head>
-    
   <body>
     <div id="map"></div>
+    
+    <!-- include cartodb.js library -->
+    <script src="http://libs.cartocdn.com/cartodb.js/v3/cartodb.js"></script>
+
+    <script>
+      function main() {
+        var map = new L.Map('map', {
+          zoomControl: false,
+          center: [43, 0],
+          zoom: 3
+        });
+
+        L.tileLayer('http://tile.stamen.com/toner/{z}/{x}/{y}.png', {
+          attribution: 'Stamen'
+        }).addTo(map);
+
+        cartodb.createLayer(map, 'http://documentation.cartodb.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json')
+         .on('done', function(layer) {
+          map.addLayer(layer);
+
+          layer.setInteraction(true);
+
+          layer.on('featureOver', function(e, pos, latlng, data) {
+            cartodb.log.log(e, pos, latlng, data);
+          });
+
+          layer.on('error', function(err) {
+            cartodb.log.log('error: ' + err);
+          });
+        }).on('error', function() {
+          cartodb.log.log("some error occurred");
+        });
+      }
+
+      // you could use $(window).load(main);
+      window.onload = main;
+    </script>
   </body>
-
-
-  <!-- include cartodb.js library -->
-  <script src="http://libs.cartocdn.com/cartodb.js/v2/cartodb.js"></script>
-  <script>
-
-    function main() {
-
-      var map = L.map('map', { 
-        zoomControl: false,
-        center: [43, 0],
-        zoom: 3
-      })
-
-      L.tileLayer('http://tile.stamen.com/toner/{z}/{x}/{y}.png', {
-        attribution: 'Stamen'
-      }).addTo(map);
-
-      cartodb.createLayer(map, 'http://examples.cartodb.com/api/v1/viz/european_countries_e/viz.json', {
-        query: 'select * from {{table_name}} where area::float > 10000' // if you remove this the query applied in the editor will be used
-      })
-       .on('done', function(layer) {
-        map.addLayer(layer);
-
-        layer.on('featureOver', function(e, pos, latlng, data) {
-          cartodb.log.log(e, pos, latlng, data);
-        });
-
-        layer.on('error', function(err) {
-          cartodb.log.log('error: ' + err);
-        });
-
-      }).on('error', function() {
-        cartodb.log.log("some error occurred");
-      });
-
-    }
-
-    // you could use $(window).load(main);
-    window.onload = main;
-
-  </script>
-
-
 </html>

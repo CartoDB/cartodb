@@ -1,18 +1,28 @@
+3.0.00 (07//09//2013)
+-----
+- release v3 version
+- multilayer support
+- major refactor, backwards incompatible
+
+2.0.28 (04//17//2013)
+-----
+- Fixed infowindow position when a map is in a scroll page.
+- Added a new example (scroll_map).
+
 2.0.27 (04//15//2013)
 -----
-- fixed infowindow content (#47)
+- Fixed infowindow content (#47).
 
 2.0.26 (04//15//2013)
 -----
-- fixed interaction for IE10 browsers (#43)
-- fixed https option in createLayer (#46)
-
+- Fixed interaction for IE10 browsers (#43).
+- Fixed https option in createLayer (#46).
 
 2.0.25 (03//22//2013)
 -----
-- fixed #37 featureOut is called when the cursor moves between tiles.
-- fixed #38 Infowindow isn't working using 'createVis' function without any parameter.
-- fixed #27 IE styles included in main css file.
+- Fixed #37 featureOut is called when the cursor moves between tiles.
+- Fixed #38 Infowindow isn't working using 'createVis' function without any parameter.
+- Fixed #27 IE styles included in main css file.
 
 2.0.24 (03//13//2013)
 -----

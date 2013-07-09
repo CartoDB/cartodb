@@ -53,7 +53,7 @@ quick start
         // - go to map
         // - click on share
         // - API tab
-        var layerUrl = 'http://examples-beta.cartodb.com/api/v1/viz/219/viz.json';
+        var layerUrl = 'http://examples.cartodb.com/api/v1/viz/15589/viz.json';
         cartodb.createLayer(map, layerUrl, function(layer) {
             map.overlayMapTypes.setAt(0, layer);
         });
@@ -71,7 +71,7 @@ quick start
       }).addTo(map);
       
       // add the cartodb layer
-      var layerUrl = 'http://examples-beta.cartodb.com/api/v1/viz/219/viz.json';
+      var layerUrl = 'http://examples.cartodb.com/api/v1/viz/15589/viz.json';
       cartodb.createLayer(map, layerUrl, function(layer) {
          map.addLayer(layer);
       });

@@ -17,14 +17,18 @@
       layer    = new cdb.geo.TileLayer({ urlTemplate: layerURL });
 
       spy = {
-        zoomChanged: function(){},
-        centerChanged: function(){}
+        zoomChanged:        function(){},
+        centerChanged:      function(){},
+        scrollWheelChanged: function(){}
       };
 
       spyOn(spy, 'zoomChanged');
       spyOn(spy, 'centerChanged');
+      spyOn(spy, 'scrollWheelChanged');
+
       map.bind('change:zoom', spy.zoomChanged);
       map.bind('change:center', spy.centerChanged);
+      map.bind('change:scrollwheel', spy.scrollWheelChanged);
     });
 
     it("should change bounds when center is set", function() {
@@ -53,6 +57,12 @@
         expect(mapView._setCenter).toHaveBeenCalled();
         //expect(s.called).toEqual(true);
       });
+    });
+
+    it("should allow to disable the scroll wheel", function() {
+      map.disableScrollWheel();
+      expect(spy.scrollWheelChanged).toHaveBeenCalled();
+      expect(map.get("scrollwheel")).toEqual(false);
     });
 
     it("should change zoom", function() {
@@ -108,16 +118,41 @@
     });
 
     it("should create a CartoDBLayer when the layer is cartodb", function() {
-      layer = new cdb.geo.CartoDBLayer({});
+      layer = new cdb.geo.CartoDBLayer({
+        table_name: 'test',
+        user_name: 'testuser',
+        tile_style: 'teststyle'
+      });
       map.addLayer(new cdb.geo.PlainLayer({}));
       var lyr = map.addLayer(layer);
       var layerView = mapView.getLayerByCid(lyr);
       expect(cdb.geo.GMapsCartoDBLayerView.prototype.isPrototypeOf(layerView)).toBeTruthy();
     });
 
+    it("should create a CartoDBGroupLayer when the layer is layergroup", function() {
+      layer = new cdb.geo.CartoDBGroupLayer({
+        layer_definition: {
+          version: '1.0.0',
+          layers: [{
+             type: 'cartodb', 
+             options: {
+               sql: "select * from european_countries_export",
+               cartocss: '#layer { polygon-fill: #000; polygon-opacity: 0.8;}',
+               cartocss_version : '2.0.0',
+               interactivity: ['test2', 'cartodb_id2']
+             }
+           }]
+        }
+      });
+      map.addLayer(new cdb.geo.PlainLayer({}));
+      var lyr = map.addLayer(layer);
+      var layerView = mapView.getLayerByCid(lyr);
+      expect(cdb.geo.GMapsCartoDBLayerGroupView.prototype.isPrototypeOf(layerView)).toBeTruthy();
+    });
+
     it("should create a cartodb logo when layer is cartodb", function() {
       runs(function() {
-        layer = new cdb.geo.CartoDBLayer({ table_name: "INVENTADO"});
+        layer = new cdb.geo.CartoDBLayer({ table_name: "INVENTADO", tile_style: 'test', user_name: 'test'});
         var lyr = map.addLayer(layer);
         var layerView = mapView.getLayerByCid(lyr);
       });

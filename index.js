@@ -28,12 +28,14 @@
 //= require cdb/src/geo/geometry
 //= require cdb/src/geo/map
 //
-//= require cdb/src/geo/common.js
+//= require cdb/src/geo/layer_definition
+//= require cdb/src/geo/common
 //
 //= require cdb/src/geo/leaflet/leaflet.geometry
 //= require cdb/src/geo/leaflet/leaflet_base
 //= require cdb/src/geo/leaflet/leaflet_plainlayer
 //= require cdb/src/geo/leaflet/leaflet_tiledlayer
+//= require cdb/src/geo/leaflet/leaflet_cartodb_layergroup
 //= require cdb/src/geo/leaflet/leaflet_cartodb_layer
 //= require cdb/src/geo/leaflet/leaflet
 //
@@ -42,6 +44,7 @@
 //= require cdb/src/geo/gmaps/gmaps_baselayer
 //= require cdb/src/geo/gmaps/gmaps_plainlayer
 //= require cdb/src/geo/gmaps/gmaps_tiledlayer
+//= require cdb/src/geo/gmaps/gmaps_cartodb_layergroup
 //= require cdb/src/geo/gmaps/gmaps_cartodb_layer
 //= require cdb/src/geo/gmaps/gmaps
 //
@@ -52,6 +55,7 @@
 //= require cdb/src/geo/ui/infowindow
 //= require cdb/src/geo/ui/header
 //= require cdb/src/geo/ui/search
+//= require cdb/src/geo/ui/layer_selector
 //= require cdb/src/geo/ui/tiles_loader
 //
 //= require cdb/src/ui/common/tabpane

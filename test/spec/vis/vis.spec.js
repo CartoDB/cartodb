@@ -137,18 +137,6 @@ describe("Vis", function() {
     expect(this.vis.map.getZoom()).toEqual(10);
   });
 
-  it("cartodb layers should include the cache buster", function() {
-    this.mapConfig.layers = [{
-      kind: 'cartodb',
-      options: {
-        table_name: 'test'
-      }
-    }]
-    this.vis.load(this.mapConfig);
-    //expect(this.vis.map.layers.at(0).attributes.extra_params.updated_at).toEqual('cachebuster');
-    expect(this.vis.map.layers.at(0).attributes.extra_params.cache_buster).toEqual('cachebuster');
-  });
-
 
   it("should add an overlay", function() {
     var v = this.vis.addOverlay({

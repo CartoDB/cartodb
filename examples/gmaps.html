@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <title>Gmaps example | CartoDB.js</title>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
     <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <link rel="shortcut icon" href="http://cartodb.com/assets/favicon.ico" />
     <style>
       html, body, #map {
         height: 100%;
@@ -11,58 +13,52 @@
       }
     </style>
 
-    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/themes/css/cartodb.css" />
+    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.css" />
     <!--[if lte IE 8]>
-        <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/themes/css/cartodb.ie.css" />
+      <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.ie.css" />
     <![endif]-->
   </head>
-    
   <body>
     <div id="map"></div>
+
+    <!-- include google maps library *before* load cartodb.js -->
+    <script src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
+    <!-- include cartodb.js library -->
+    <script src="http://libs.cartocdn.com/cartodb.js/v3/cartodb.uncompressed.js"></script>
+
+    <script>
+      function main() {
+          var map;
+
+          // create google maps map
+          var mapOptions = {
+            zoom: 3,
+            center: new google.maps.LatLng(43, 0),
+            mapTypeId: google.maps.MapTypeId.ROADMAP
+          };
+          map = new google.maps.Map(document.getElementById('map'),  mapOptions);
+
+          // create layer and add to the map, then add some intera
+          cartodb.createLayer(map, 'http://documentation.cartodb.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json')
+          .addTo(map)
+          .on('done', function(layer) {
+            var sublayer = layer.getSubLayer(0);
+            sublayer.on('featureOver', function(e, pos, latlng, data) {
+              cartodb.log.log(e, pos, latlng, data);
+            });
+
+            sublayer.on('error', function(err) {
+              cartodb.log.log('error: ' + err);
+            });
+
+          })
+          .on('error', function() {
+            cartodb.log.log("some error occurred");
+          });
+
+      }
+
+      window.onload = main;
+    </script>
   </body>
-
-  <!-- include google maps library *before* load cartodb.js -->
-  <script src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
-  <!-- include cartodb.js library -->
-  <script src="http://libs.cartocdn.com/cartodb.js/v2/cartodb.js"></script>
-
-  <script>
-
-    function main() {
-
-        var map;
-
-        // create google maps map
-        var mapOptions = {
-          zoom: 3,
-          center: new google.maps.LatLng(43, 0),
-          mapTypeId: google.maps.MapTypeId.ROADMAP
-        };
-        map = new google.maps.Map(document.getElementById('map'),  mapOptions);
-
-        cartodb.createLayer(map, 'http://examples.cartodb.com/api/v1/viz/european_countries_e/viz.json', {
-          query: 'select * from {{table_name}} where area::float > 10000' // if you remove this the query applied in the editor will be used
-          
-        })
-         .on('done', function(layer) {
-          map.overlayMapTypes.setAt(0, layer);
-
-          layer.on('featureOver', function(e, pos, latlng, data) {
-            cartodb.log.log(e, pos, latlng, data);
-          });
-
-          layer.on('error', function(err) {
-            cartodb.log.log('error: ' + err);
-          });
-
-        }).on('error', function() {
-          cartodb.log.log("some error occurred");
-        });
-
-    }
-
-    window.onload = main;
-
-  </script>
-
 </html>

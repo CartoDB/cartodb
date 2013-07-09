@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Easy example | CartoDB.js</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <link rel="shortcut icon" href="http://cartodb.com/assets/favicon.ico" />
+    <style>
+      html, body, #map {
+        height: 100%;
+        padding: 0;
+        margin: 0;
+      }
+    </style>
+    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.css" />
+    <!--[if lte IE 8]>
+      <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.ie.css" />
+    <![endif]-->
+  </head>
+  <body>
+    <div id="map"></div>
+
+    <!-- include cartodb.js library -->
+    <script src="http://libs.cartocdn.com/cartodb.js/v3/cartodb.js"></script>
+
+    <script>
+      function main() {
+        var map = new L.Map('map', { 
+          zoomControl: false,
+          center: [43, 0],
+          zoom: 3
+        });
+
+        L.tileLayer('http://tile.stamen.com/toner/{z}/{x}/{y}.png', {
+          attribution: 'Stamen'
+        }).addTo(map);
+
+        // create a layer with 1 sublayer
+        cartodb.createLayer(map, {
+          user_name: 'documentation',
+          type: 'cartodb',
+          sublayers: [{
+            sql: "select * from european_countries_e",
+            cartocss: '#european_countries_e {marker-fill: #F0F0F0;}'
+          }]
+        }).done(function(layer) {
+          // add the layer to our map which already contains 1 sublayer
+          map.addLayer(layer);
+
+          // create and add a new sublayer
+          layer.createSubLayer({
+            sql: "select * from european_countries_e limit 200",
+            cartocss: '#european_countries_e {marker-fill: #F0F0F0;}'
+          });
+
+          // change the query for the first layer
+          layer.getSubLayer(0).setSQL('select * from european_countries_e where area > 10');
+        });
+      }
+
+      window.onload = main;
+    </script>
+  </body>
+</html>

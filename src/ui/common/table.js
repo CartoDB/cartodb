@@ -227,6 +227,7 @@ cdb.ui.common.Table = cdb.core.View.extend({
     }
     this.dataModel = dm;
     this.dataModel.bind('reset', this._renderRows, this);
+    this.dataModel.bind('error', this._renderRows, this);
     this.dataModel.bind('add', this.addRow, this);
   },
 
@@ -253,10 +254,15 @@ cdb.ui.common.Table = cdb.core.View.extend({
     this.$('tfoot').remove();
     this.$('tr.noRows').remove();
 
-    while(this.rowViews.length) {
+    // unbind rows before cleaning them when all are gonna be removed
+    var rowView = null;
+    while(rowView = this.rowViews.pop()) {
+      // this is a hack to avoid all the elements are removed one by one
+      rowView.unbind(null, null, this);
       // each element removes itself from rowViews
-      this.rowViews[0].clean();
+      rowView.clean();
     }
+    // clean all the html at the same time
     this.rowViews = [];
   },
 
@@ -273,13 +279,13 @@ cdb.ui.common.Table = cdb.core.View.extend({
     tr.tableView = this;
 
     tr.bind('clean', function() {
-      var idx = _.indexOf(self.rowViews,this);
+      var idx = _.indexOf(self.rowViews, tr);
       self.rowViews.splice(idx, 1);
       // update index
       for(var i = idx; i < self.rowViews.length; ++i) {
         self.rowViews[i].$el.attr('data-y', i);
       }
-    });
+    }, this);
     tr.bind('changeRow', this.rowChanged, this);
     tr.bind('saved', this.rowSynched, this);
     tr.bind('errorRow', this.rowFailed, this);

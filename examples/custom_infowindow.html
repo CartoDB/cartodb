@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <title>Custom infowindow example | CartoDB.js</title>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
     <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
-    
+    <link rel="shortcut icon" href="http://cartodb.com/assets/favicon.ico" />
     <style>
       html, body, #map {
         height: 100%;
@@ -12,73 +13,58 @@
       }
     </style>
 
-    <link rel="stylesheet" href="http://libs.cartodb.com/cartodb.js/v2/themes/css/cartodb.css" />
+    <link rel="stylesheet" href="http://libs.cartodb.com/cartodb.js/v3/themes/css/cartodb.css" />
     <!--[if lte IE 8]>
-        <link rel="stylesheet" href="http://libs.cartodb.com/cartodb.js/v2/themes/css/cartodb.ie.css" />
+        <link rel="stylesheet" href="http://libs.cartodb.com/cartodb.js/v3/themes/css/cartodb.ie.css" />
     <![endif]-->
-
   </head>
-    
   <body>
     <div id="map"></div>
-  </body>
 
-  <script type="infowindow/html" id="infowindow_template">
-    <div class="cartodb-popup">
+    <script type="infowindow/html" id="infowindow_template">
+      <span> custom </span>
+      <div class="cartodb-popup">
+        <a href="#close" class="cartodb-popup-close-button close">x</a>
 
-      <a href="#close" class="cartodb-popup-close-button close">x</a>
-
-       <div class="cartodb-popup-content-wrapper">
-         <div class="cartodb-popup-content">
-           <img style="width: 100%" src="http://rambo.webcindario.com/images/18447755.jpg"></src>
-           <!-- content.data contains the field info -->
-           <h4>{{content.data.name}}</h4>
+         <div class="cartodb-popup-content-wrapper">
+           <div class="cartodb-popup-content">
+             <img style="width: 100%" src="http://rambo.webcindario.com/images/18447755.jpg"></src>
+             <!-- content.data contains the field info -->
+             <h4>{{content.data.name}}</h4>
+           </div>
          </div>
-       </div>
-       <div class="cartodb-popup-tip-container"></div>
-    </div>
-  </script>
+         <div class="cartodb-popup-tip-container"></div>
+      </div>
+    </script>
 
-  <script src="http://libs.cartocdn.com/cartodb.js/v2/cartodb.js"></script>
-  <script>
+    <script src="http://libs.cartodb.com/cartodb.js/v3/cartodb.js"></script>
 
-    function main() {
-
-      var map = L.map('map', { 
-        zoomControl: false,
-        center: [0, 0],
-        zoom: 3
-      })
-
-      // add a nice baselayer from mapbox
-      L.tileLayer('http://a.tiles.mapbox.com/v3/mapbox.mapbox-streets/{z}/{x}/{y}.png', {
-        attribution: 'MapBox'
-      }).addTo(map);
-
-      cartodb.createLayer(map, 'http://examples.cartodb.com/api/v1/viz/european_countries_e/viz.json')
-       .on('done', function(layer) {
-
-        map.addLayer(layer);
-
-        layer.infowindow.set('template', $('#infowindow_template').html());
-
-        layer.on('featureOver', function(e, pos, latlng, data) {
-          console.log(e, pos, latlng, data);
+    <script>
+      function main() {
+        var map = L.map('map', { 
+          zoomControl: false,
+          center: [0, 0],
+          zoom: 3
         });
 
-        layer.on('error', function(err) {
-          console.log('error: ' + err);
-        });
+        // add a nice baselayer from Stamen 
+        L.tileLayer('http://{s}.tile.stamen.com/toner/{z}/{x}/{y}.png', {
+          attribution: 'Stamen'
+        }).addTo(map);
 
-      }).on('error', function() {
-        console.log("some error occurred");
-      });
+        cartodb.createLayer(map, 'http://documentation.cartodb.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json')
+         .addTo(map)
+         .on('done', function(layer) {
+           // get sublayer 0 and set the infowindow template
+           var sublayer = layer.getSubLayer(0);
+           sublayer.infowindow.set('template', $('#infowindow_template').html());
+          }).on('error', function() {
+            console.log("some error occurred");
+          });
 
-    }
+      }
 
-    window.onload = main;
-
-  </script>
-
-
+      window.onload = main;
+    </script>
+  </body>
 </html>

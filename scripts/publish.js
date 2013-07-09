@@ -1,50 +1,132 @@
 
-var secrets = require('../secrets.json')
-var fs = require('fs')
-var package_ = require('../package')
+var secrets = require('../secrets.json');
+var fs = require('fs');
+var http = require('http');
+var package_ = require('../package');
 var _exec = require('child_process').exec;
+var AWS = require('aws-sdk');
+
+//
+// contants
+// 
+
+var S3_BUCKET_URL = 'libs.cartocdn.com.s3.amazonaws.com';
+
+var JS_FILES = [
+  'cartodb.js',
+  'cartodb.uncompressed.js',
+  'cartodb.core.js',
+  'cartodb.nojquery.js'
+]
+
+var CSS_FILES = [
+  'cartodb.css',
+  'cartodb.ie.css'
+]
+
+var CSS_IMAGE_FILES = fs.readdirSync('themes/css/images')
+var IMG_FILES = fs.readdirSync('themes/img')
+
+var content_type = {
+  'png': 'image/png',
+  'gif': 'image/gif',
+  'css': 'text/css',
+  'js': 'application/x-javascript'
+};
 
 
-var knox = require('knox').createClient({
-    key: secrets.S3_KEY,
-    secret: secrets.S3_SECRET,
-    bucket: secrets.S3_BUCKET
-});
+AWS.config.update({ accessKeyId: secrets.S3_KEY, secretAccessKey: secrets.S3_SECRET });
+var s3 = new AWS.S3({params: {Bucket: secrets.S3_BUCKET}});
 
 
+//
+// global flags
+//
 
-function put_files(files, local_path, remote_path, content_type) {
-  var total = files.length;
-  var uploaded = 0;
-  for(var i in  files) {
-    var file = files[i];
-    console.log(local_path + '/' + file, ' => ', remote_path + '/' + file);
-    var content_type = {
-      'png': 'image/png',
-      'gif': 'image/gif',
-      'css': 'text/css',
-      'js': 'application/x-javascript'
-    }
+var only_invalidate = process.argv.length > 2 && process.argv[2] == '--invalidate';
+var only_current_version = process.argv.length > 2 && process.argv[2] == '--current_version';
+var version = 'v' + package_.version.split('.')[0];
+
+/**
+ * check that the remote file is the same than local one to avoid errors
+ */
+function check_file_upload(local, remote, done) {
+  var fs = require('fs');
+  var file = fs.createWriteStream();
+  var request = http.get("http://im.glogster.com/media/2/5/24/10/5241033.png", function(response) {
+    response.pipe(file);
+    done && done();
+  });
+}
+
+function put_file(local_path, remote_path, file, errors, done) {
+    var local_file = file;
+
+    // extract extension
     var ext = file.split('.');
     ext = ext[ext.length - 1];
-    knox.putFile(local_path + '/' + file, remote_path + '/' + file, {'Content-Type': content_type[ext], 'x-amz-acl': 'public-read' }, function(err, result) {
-      if(!err) {
-        if (200 == result.statusCode) { 
-          uploaded++
-        }
-      }
-      else { 
-          console.log('Failed to upload file to Amazon S3', err); 
-      }
-      total--;
-      if(total == 0) {
-        if(uploaded == files.length) {
-          console.log("files uploaded");
-        } else {
-          console.log("an error ocurred");
-        }
-      }
 
+    var headers = { 'Content-Type': content_type[ext] };
+
+    // define the function that actually puts the tile is S3
+    var _put = function() {
+      var local = local_path + '/' + local_file;
+      var remote = remote_path + '/' + file;
+
+      // dont need to update content length, knox do it
+      var size = fs.statSync(local).size;
+
+      fs.readFile(local, function (err, data) {
+        // send file to S3
+        s3.client.putObject({
+          Key: remote,
+          Body: data,
+          ACL:'public-read',
+          ContentType: headers['Content-Type'],
+          ContentEncoding: headers['Content-Encoding'],
+          ContentLength: size
+        }, function (err, data) {
+          console.log(data);
+          if(err) {
+            errors.push(file + ' Failed to upload file to Amazon S3');
+            //console.log('Failed to upload file to Amazon S3', err); 
+          }
+          console.log( local, ' => ', remote, size, "bytes");
+          done && done();
+        });
+      });
+    }
+
+    // compress depending on the extension
+    if(ext == 'js' || ext == 'css') {
+      _exec('gzip -c -9 ' + local_path + '/' + file + ' > ' + local_path + '/' + file + '.gz', function(err) {
+        if(err) {
+          console.log("there was an error compressing file");
+        }
+        local_file = file + '.gz';
+        headers['Content-Encoding'] = 'gzip';
+        _put();
+      });
+    } else {
+      _put();
+    }
+
+
+
+
+}
+
+function put_files(files, local_path, remote_path, content_type, done) {
+  var total = files.length;
+  var errors = [];
+  for(var i in  files) {
+    var file = files[i];
+    put_file(local_path, remote_path, file, errors, function() {
+      total--;
+      if(total === 0) {
+        console.log("FINISHED");
+        done && done(errors);
+      }
     });
   }
 }
@@ -68,47 +150,36 @@ function invalidate_files(files, remote_path) {
 }
 
 
-var JS_FILES = [
-  'cartodb.js',
-  'cartodb.uncompressed.js',
-  'cartodb.nojquery.js'
-]
 
-var CSS_FILES = [
-  'cartodb.css',
-  'cartodb.ie.css'
-]
+function invalidate_cdn() {
+  console.log(" *** flushing cdn cache")
+  if(!only_current_version) {
+    invalidate_files(JS_FILES,  'cartodb.js/' + version + '')
+    invalidate_files(CSS_FILES, 'cartodb.js/' + version + '/themes/css')
+    invalidate_files(CSS_IMAGE_FILES, 'cartodb.js/' + version + '/themes/css/images')
+    invalidate_files(IMG_FILES, 'cartodb.js/' + version + '/themes/img')
+  }
+  invalidate_files(JS_FILES , 'cartodb.js/' + version + '/' + package_.version)
+  invalidate_files(CSS_FILES, 'cartodb.js/' + version + '/' + package_.version + '/themes/css')
+  invalidate_files(CSS_IMAGE_FILES, 'cartodb.js/' + version + '/' + package_.version + '/themes/css/images')
+  invalidate_files(IMG_FILES, 'cartodb.js/' + version + '/' + package_.version + '/themes/img')
+}
 
-var CSS_IMAGE_FILES = fs.readdirSync('themes/css/images')
-
-var IMG_FILES = fs.readdirSync('themes/img')
-
-var only_invalidate = process.argv.length > 2 && process.argv[2] == '--invalidate';
-var only_current_version = process.argv.length > 2 && process.argv[2] == '--current_version';
 
 if(!only_invalidate) {
   if(!only_current_version) {
-    put_files(JS_FILES, 'v2', 'cartodb.js/v2')
-    put_files(CSS_FILES, 'v2/themes/css', 'cartodb.js/v2/themes/css')
-    put_files(CSS_IMAGE_FILES, 'v2/themes/css/images', 'cartodb.js/v2/themes/css/images')
-    put_files(IMG_FILES, 'v2/themes/img', 'cartodb.js/v2/themes/img')
+    put_files(JS_FILES, '' + version + '', 'cartodb.js/' + version + '')
+    put_files(CSS_FILES, '' + version + '/themes/css', 'cartodb.js/' + version + '/themes/css')
+    put_files(CSS_IMAGE_FILES, '' + version + '/themes/css/images', 'cartodb.js/' + version + '/themes/css/images')
+    put_files(IMG_FILES, '' + version + '/themes/img', 'cartodb.js/' + version + '/themes/img')
   }
 
-  put_files(JS_FILES, 'v2', 'cartodb.js/v2/' + package_.version)
-  put_files(CSS_FILES, 'v2/themes/css', 'cartodb.js/v2/' + package_.version + '/themes/css')
-  put_files(CSS_IMAGE_FILES, 'v2/themes/css/images', 'cartodb.js/v2/' + package_.version + '/themes/css/images')
-  put_files(IMG_FILES, 'v2/themes/img', 'cartodb.js/v2/' + package_.version + '/themes/img')
+  put_files(JS_FILES, '' + version + '', 'cartodb.js/' + version + '/' + package_.version)
+  put_files(CSS_FILES, '' + version + '/themes/css', 'cartodb.js/' + version + '/' + package_.version + '/themes/css')
+  put_files(CSS_IMAGE_FILES, '' + version + '/themes/css/images', 'cartodb.js/' + version + '/' + package_.version + '/themes/css/images')
+  put_files(IMG_FILES, '' + version + '/themes/img', 'cartodb.js/' + version + '/' + package_.version + '/themes/img')
 }
 
+invalidate_cdn();
 
-console.log(" *** flushing cdn cache")
-if(!only_current_version) {
-  invalidate_files(JS_FILES,  'cartodb.js/v2')
-  invalidate_files(CSS_FILES, 'cartodb.js/v2/themes/css')
-  invalidate_files(CSS_IMAGE_FILES, 'cartodb.js/v2/themes/css/images')
-  invalidate_files(IMG_FILES, 'cartodb.js/v2/themes/img')
-}
-invalidate_files(JS_FILES , 'cartodb.js/v2/' + package_.version)
-invalidate_files(CSS_FILES, 'cartodb.js/v2/' + package_.version + '/themes/css')
-invalidate_files(CSS_IMAGE_FILES, 'cartodb.js/v2/' + package_.version + '/themes/css/images')
-invalidate_files(IMG_FILES, 'cartodb.js/v2/' + package_.version + '/themes/img')
+

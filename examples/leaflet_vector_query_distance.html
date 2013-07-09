@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Leaflet vector query distance example | CartoDB.js</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <link rel="shortcut icon" href="http://cartodb.com/assets/favicon.ico" />
+    
+    <style>
+      html, body, #map {
+        height: 100%;
+        padding: 0;
+        margin: 0;
+      }
+    </style>
+
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.6.2/leaflet.css" />
+<!--[if lte IE 8]>
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.6.2/leaflet.ie.css" />
+<![endif]-->
+
+  </head>  
+  <body>
+    <div id="map"></div>
+
+    <script src="http://cdn.leafletjs.com/leaflet-0.6.2/leaflet.js"></script>
+
+    <!-- include cartodb.js library -->
+    <script src="http://libs.cartocdn.com/cartodb.js/v3/cartodb.core.js"></script>
+    <script>
+
+      function main() {
+
+        var map = L.map('map', { 
+          zoomControl: false,
+          center: [40.78151171, -73.94959818,0], 
+          zoom: 13
+        })
+
+        var sql = new cartodb.SQL({ user: 'examples', format: 'geojson' });
+
+        L.tileLayer('http://tile.stamen.com/toner/{z}/{x}/{y}.png', {
+          attribution: 'Stamen'
+        }).addTo(map);
+
+
+        map.on('click', function(e) {
+          show_wifi_near(e.latlng, 500); //500 meters
+        });
+
+        var geojsonMarkerOptions = {
+          radius: 3,
+          fillColor: "#ff7800",
+          color: "#000",
+          weight: 1,
+          opacity: 1,
+          fillOpacity: 0.8
+        };
+
+        var wifiPoints = L.geoJson(null, {
+          pointToLayer: function (feature, latlng) {
+            return L.circleMarker(latlng, geojsonMarkerOptions);
+          }
+        }).addTo(map);
+
+
+        function show_wifi_near(position, radioMeters) {
+          var vars = {
+            lat: position.lat,
+            lon: position.lng,
+            radio: radioMeters
+          }
+          sql.execute("select * from nyc_wifi where ST_Distance(the_geom::geography, ST_SetSRID(ST_MakePoint({{lon}}, {{lat}}), 4326)::geography) < {{radio}}", vars).done(function(geojson) {
+              wifiPoints.addData(geojson);
+          });
+        }
+
+
+
+      }
+
+      window.onload = main;
+
+    </script>
+
+  </body>
+</html>

@@ -29,11 +29,14 @@
         minZoom: this.map.get('minZoom'),
         maxZoom: this.map.get('maxZoom')
       };
+
+
       if (this.map.get('bounding_box_ne')) {
         //mapConfig.maxBounds = [this.map.get('bounding_box_ne'), this.map.get('bounding_box_sw')];
       }
 
-      if(!this.options.map_object) {
+      if (!this.options.map_object) {
+
         this.map_leaflet = new L.Map(this.el, mapConfig);
 
         // remove the "powered by leaflet"
@@ -43,16 +46,20 @@
         if (this.map.get("scrollwheel") == false) this.map_leaflet.scrollWheelZoom.disable();
 
       } else {
+
         this.map_leaflet = this.options.map_object;
         this.setElement(this.map_leaflet.getContainer());
+
         var c = self.map_leaflet.getCenter();
+
         self._setModelProperty({ center: [c.lat, c.lng] });
         self._setModelProperty({ zoom: self.map_leaflet.getZoom() });
+
         // unset bounds to not change mapbounds
         self.map.unset('view_bounds_sw', { silent: true });
         self.map.unset('view_bounds_ne', { silent: true });
-      }
 
+      }
 
       this.map.bind('set_view', this._setView, this);
       this.map.layers.bind('add', this._addLayer, this);
@@ -114,11 +121,11 @@
 
       // looks like leaflet dont like to change the bounds just after the inicialization
       var bounds = this.map.getViewBounds();
-      if(bounds) {
+
+      if (bounds) {
         this.showBounds(bounds);
       }
     },
-
 
     clean: function() {
       //see https://github.com/CloudMade/Leaflet/issues/1101
@@ -193,11 +200,17 @@
       // add them again, in correct order
       if(appending) {
         cdb.geo.LeafletMapView.addLayerToMap(layer_view, self.map_leaflet);
+        if(layer_view.setZIndex) {
+          layer_view.setZIndex(layer.get('order'))
+        }
       } else {
         this.map.layers.each(function(layerModel) {
           var v = self.layers[layerModel.cid];
           if(v) {
             cdb.geo.LeafletMapView.addLayerToMap(v, self.map_leaflet);
+            if(v.setZIndex) {
+              v.setZIndex(layerModel.get('order'))
+            }
           }
         });
       }
@@ -214,7 +227,10 @@
         this.map.set({ attribution: attributions });
       }
 
-      this.trigger('newLayerView', layer_view, this);
+      if(opts == undefined || !opts.silent) {
+        this.trigger('newLayerView', layer_view, layer, this);
+      }
+      return layer_view;
     },
 
     latLonToPixel: function(latlon) {
@@ -265,7 +281,8 @@
       "carto": cdb.geo.LeafLetLayerCartoDBView,
       "plain": cdb.geo.LeafLetPlainLayerView,
       // for google maps create a plain layer
-      "gmapsbase": cdb.geo.LeafLetPlainLayerView
+      "gmapsbase": cdb.geo.LeafLetPlainLayerView,
+      "layergroup": cdb.geo.LeafLetCartoDBLayerGroupView
     },
 
     createLayer: function(layer, map) {
@@ -280,8 +297,13 @@
       return layer_view;
     },
 
-    addLayerToMap: function(layer_view, map) {
+    addLayerToMap: function(layer_view, map, pos) {
       map.addLayer(layer_view.leafletLayer);
+      if(pos != undefined) {
+        if(v.setZIndex) {
+          v.setZIndex(pos);
+        }
+      }
     },
 
     /**

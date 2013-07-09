@@ -24,6 +24,7 @@
   <script type="text/javascript" src="../vendor/GeoJSON.js"></script>
   <script type="text/javascript" src="../vendor/jscrollpane.js"></script>
   <script type="text/javascript" src="../vendor/spin.js"></script>
+  <script type="text/javascript" src="../vendor/lzma.js"></script>
 
   <script type="text/javascript" src="lib/jasmine-1.2.0/jasmine.js"></script>
   <script type="text/javascript" src="lib/jasmine-1.2.0/jasmine-html.js"></script>
@@ -49,11 +50,13 @@
   <script type="text/javascript" src="../src/geo/ui/legend.js"></script>
   <script type="text/javascript" src="../src/geo/ui/infobox.js"></script>
   <script type="text/javascript" src="../src/geo/ui/infowindow.js"></script>
+  <script type="text/javascript" src="../src/geo/ui/layer_selector.js"></script>
   <script type="text/javascript" src="../src/geo/ui/zoom_info.js"></script>
   <script type="text/javascript" src="../src/geo/ui/tiles_loader.js"></script>
   <script type="text/javascript" src="../src/geo/ui/zoom.js"></script>
   <script type="text/javascript" src="../src/geo/ui/tooltip.js"></script>
 
+  <script type="text/javascript" src="../src/geo/layer_definition.js"></script>
   <script type="text/javascript" src="../src/geo/common.js"></script>
 
   <script type="text/javascript" src="../src/geo/leaflet/leaflet.geometry.js"></script>
@@ -61,6 +64,7 @@
   <script type="text/javascript" src="../src/geo/leaflet/leaflet_base.js"></script>
   <script type="text/javascript" src="../src/geo/leaflet/leaflet_plainlayer.js"></script>
   <script type="text/javascript" src="../src/geo/leaflet/leaflet_tiledlayer.js"></script>
+  <script type="text/javascript" src="../src/geo/leaflet/leaflet_cartodb_layergroup.js"></script>
   <script type="text/javascript" src="../src/geo/leaflet/leaflet_cartodb_layer.js"></script>
   <script type="text/javascript" src="../src/geo/leaflet/leaflet.js"></script>
 
@@ -69,6 +73,7 @@
   <script type="text/javascript" src="../src/geo/gmaps/gmaps_baselayer.js"></script>
   <script type="text/javascript" src="../src/geo/gmaps/gmaps_plainlayer.js"></script>
   <script type="text/javascript" src="../src/geo/gmaps/gmaps_tiledlayer.js"></script>
+  <script type="text/javascript" src="../src/geo/gmaps/gmaps_cartodb_layergroup.js"></script>
   <script type="text/javascript" src="../src/geo/gmaps/gmaps_cartodb_layer.js"></script>
   <script type="text/javascript" src="../src/geo/gmaps/gmaps.js"></script>
   <script type="text/javascript" src="../src/geo/geocoder.js"></script>
@@ -78,6 +83,7 @@
   <script type="text/javascript" src="../src/ui/common/notification.js"></script>
   <script type="text/javascript" src="../src/ui/common/table.js"></script>
   <script type="text/javascript" src="../src/ui/common/tabpane.js"></script>
+  <script type="text/javascript" src="../src/ui/common/dropdown.js"></script>
 
   <!-- vis -->
   <script type="text/javascript" src="../src/vis/vis.js"></script>
@@ -104,12 +110,15 @@
   <script type="text/javascript" src="spec/ui/common/tabpane.spec.js"></script>
 
   <!-- Geo specs -->
+  <script type="text/javascript" src="spec/geo/layer_definition.spec.js"></script>
   <script type="text/javascript" src="spec/geo/common.spec.js"></script>
 
   <script type="text/javascript" src="spec/geo/map.spec.js"></script>
+  <script type="text/javascript" src="spec/geo/leaflet.spec.js"></script>
   <script type="text/javascript" src="spec/geo/geometry.spec.js"></script>
   <script type="text/javascript" src="spec/geo/legend.spec.js"></script>
   <script type="text/javascript" src="spec/geo/infowindow.spec.js"></script>
+  <script type="text/javascript" src="spec/geo/layer_selector.spec.js"></script>
   <script type="text/javascript" src="spec/geo/gmaps.spec.js"></script>
   <script type="text/javascript" src="spec/geo/geocoder.spec.js"></script>
 
@@ -126,6 +135,8 @@
   <script type="text/javascript" src="spec/api/layers/cartodb.spec.js"></script>
   <script type="text/javascript" src="spec/api/sql.spec.js"></script>
 
+  <script type="text/javascript" src="console-runner.js"></script>
+  <script type="text/javascript" src="lib/jasmine.junit_reporter.js"></script>
 
   <script type="text/javascript">
 
@@ -164,6 +175,7 @@
       };
 
       jasmineEnv.addReporter(htmlReporter);
+      jasmineEnv.addReporter(new jasmine.JUnitXmlReporter());
       jasmineEnv.specFilter = function(spec) {
         return htmlReporter.specFilter(spec);
       };

@@ -2,6 +2,7 @@ source 'http://rubygems.org'
 
 gem "rails",                   "3.2.2"
 
+
 gem "rake",                    "0.9.2.2"
 gem "pg",                      "0.11"
 gem "sequel",                  "3.42.0"
@@ -67,6 +68,10 @@ gem "bartt-ssl_requirement",   "~>1.4.0", :require => "ssl_requirement"
 
 gem "simplecov",               "0.7.1", :require => false, :group => :test
 gem "spin",                    "0.5.3", :require => false, :group => :test
+
+if ENV["WADUS"]
+  gem 'cartodb-private', :path => 'cartodb-private'
+end
 
 group :development, :test do
   gem "webrick",               "1.3.1"

@@ -12,11 +12,11 @@ function main() {
   cartodb.createVis('map', 'http://saleiva.cartodb.com/api/v1/viz/thehobbit_filmingloc/viz.json', options)
     .done(function(vis, layers) {
       // there are two layers, base layer and points layer
-      var layer = layers[1];
-      layer.setInteractivity(['cartodb_id', 'name_to_display', 'description']);
+      var sublayer = layers[1].getSubLayer(0);
+      sublayer.setInteractivity(['cartodb_id', 'name_to_display', 'description']);
 
       // Set the custom infowindow template defined on the html
-      layer.infowindow.set('template', $('#infowindow_template').html());
+      sublayer.infowindow.set('template', $('#infowindow_template').html());
 
       // add the tooltip show when hover on the point
       vis.addOverlay({

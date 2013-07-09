@@ -144,15 +144,14 @@ module CartoDB
         derived? && !single_data_layer?
       end #non_dependent?
 
+      def invalidate_varnish_cache
+        CartoDB::Varnish.new.purge("obj.http.X-Cache-Channel ~ .*#{id}:vizjson")
+      end #invalidate_varnish_cache
+
       private
 
       attr_reader   :repository, :name_checker, :validator
       attr_accessor :privacy_changed, :name_changed
-
-      def invalidate_varnish_cache
-        CartoDB::Varnish.new
-          .purge("obj.http.X-Cache-Channel ~ #{varnish_key}:vizjson")
-      end #invalidate_varnish_cache
 
       def propagate_privacy_and_name_to(table)
         return self unless table

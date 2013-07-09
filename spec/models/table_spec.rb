@@ -522,8 +522,11 @@ describe Table do
       @user.save
       table = create_table(user_id: @user.id, name: "varnish_privacy", privacy: Table::PRIVATE)
       
-      key = table.table_visualization.varnish_key
-      CartoDB::Varnish.any_instance.expects(:purge).times(2).with("obj.http.X-Cache-Channel ~ #{key}:vizjson").returns(true)
+      id = table.table_visualization.id
+      CartoDB::Varnish.any_instance.expects(:purge)
+        .times(2)
+        .with("obj.http.X-Cache-Channel ~ .*#{id}:vizjson")
+        .returns(true)
 
       CartoDB::Table::PrivacyManager.any_instance
         .expects(:propagate_to_redis_and_varnish)

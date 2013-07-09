@@ -499,13 +499,11 @@ class Table < Sequel::Model(:user_tables)
 
   def invalidate_cache_for(visualizations)
     visualizations.each do |visualization|
-      key = visualization.varnish_key
-      CartoDB::Varnish.new.purge("obj.http.X-Cache-Channel ~ #{key}:vizjson")
+      visualization.invalidate_varnish_cache
     end
   end #invalidate_cache_for
   
   def varnish_key
-    #"#{self.owner.database_name}:(.*#{self.name}.*)"
     "^#{self.owner.database_name}:(.*#{self.name}.*)|(table)$"
   end
 

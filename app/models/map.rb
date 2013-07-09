@@ -81,13 +81,8 @@ class Map < Sequel::Model
   end #viz_updated_at
 
   def invalidate_vizjson_varnish_cache
-    return self if visualizations.empty?
-
     visualizations.each do |visualization|
-      key = visualization.varnish_key
-      CartoDB::Varnish.new.purge(
-        "obj.http.X-Cache-Channel ~ #{key}:vizjson"
-      )
+      visualization.invalidate_varnish_cache
     end
   end #invalidate_varnish_cache
 

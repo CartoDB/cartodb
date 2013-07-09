@@ -17,7 +17,6 @@
     <!--[if lte IE 8]>
         <link rel="stylesheet" href="http://libs.cartodb.com/cartodb.js/v3/themes/css/cartodb.ie.css" />
     <![endif]-->
-
   </head>
   <body>
     <div id="map"></div>
@@ -25,7 +24,6 @@
     <script type="infowindow/html" id="infowindow_template">
       <span> custom </span>
       <div class="cartodb-popup">
-
         <a href="#close" class="cartodb-popup-close-button close">x</a>
 
          <div class="cartodb-popup-content-wrapper">
@@ -40,22 +38,21 @@
     </script>
 
     <script src="http://libs.cartodb.com/cartodb.js/v3/cartodb.js"></script>
+
     <script>
-
       function main() {
-
         var map = L.map('map', { 
           zoomControl: false,
           center: [0, 0],
           zoom: 3
-        })
+        });
 
         // add a nice baselayer from Stamen 
         L.tileLayer('http://{s}.tile.stamen.com/toner/{z}/{x}/{y}.png', {
           attribution: 'Stamen'
         }).addTo(map);
 
-        cartodb.createLayer(map, 'http://viz2.cartodb.com/api/v2/viz/1c365bde-e57c-11e2-8141-5404a6a683d5/viz.json')
+        cartodb.createLayer(map, 'http://documentation.cartodb.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json')
          .addTo(map)
          .on('done', function(layer) {
            // get sublayer 0 and set the infowindow template
@@ -68,7 +65,6 @@
       }
 
       window.onload = main;
-
     </script>
   </body>
 </html>

@@ -40,8 +40,6 @@
             mapTypeId: google.maps.MapTypeId.ROADMAP
           };
           map = new google.maps.Map(document.getElementById('map'),  mapOptions);
-
-
           // add cartodb layer with one sublayer
           cartodb.createLayer(map, {
             user_name: 'examples',

@@ -11,25 +11,25 @@ quick start
 
     ```html
 
-        <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/themes/css/cartodb.css" />
+        <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.css" />
         <!--[if lte IE 8]>
-            <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/themes/css/cartodb.ie.css" />
+            <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.ie.css" />
         <![endif]-->
 
 
         <script src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
-        <script src="http://libs.cartocdn.com/cartodb.js/v2/cartodb.js"></script>
+        <script src="http://libs.cartocdn.com/cartodb.js/v3/cartodb.js"></script>
 
         <!-- use these cartodb.css links if you are using https -->
 
-        <!--link rel="stylesheet" href="https://d3voyrscnb0slx.cloudfront.net/cartodb.js/v2/themes/css/cartodb.css" /-->
+        <!--link rel="stylesheet" href="https://d3voyrscnb0slx.cloudfront.net/cartodb.js/v3/themes/css/cartodb.css" /-->
         <!--[if lte IE 8]>
-            <!--link rel="stylesheet" href="https://d3voyrscnb0slx.cloudfront.net/cartodb.js/v2/themes/css/cartodb.ie.css" /-->
+            <!--link rel="stylesheet" href="https://d3voyrscnb0slx.cloudfront.net/cartodb.js/v3/themes/css/cartodb.ie.css" /-->
         <![endif]-->
 
 
         <!-- use this cartodb.js link if you are using https -->
-        <!-- script src="https://d3voyrscnb0slx.cloudfront.net/cartodb.js/v2/cartodb.js"></script -->
+        <!-- script src="https://d3voyrscnb0slx.cloudfront.net/cartodb.js/v3/cartodb.js"></script -->
     ```
 
 
@@ -54,9 +54,7 @@ quick start
         // - click on share
         // - API tab
         var layerUrl = 'http://examples.cartodb.com/api/v1/viz/15589/viz.json';
-        cartodb.createLayer(map, layerUrl, function(layer) {
-            map.overlayMapTypes.setAt(0, layer);
-        });
+        cartodb.createLayer(map, layerUrl).addTo(map)
 
     ```
 
@@ -72,9 +70,7 @@ quick start
       
       // add the cartodb layer
       var layerUrl = 'http://examples.cartodb.com/api/v1/viz/15589/viz.json';
-      cartodb.createLayer(map, layerUrl, function(layer) {
-         map.addLayer(layer);
-      });
+      cartodb.createLayer(map, layerUrl).addTo(map);
     ```
 
 
@@ -87,6 +83,9 @@ examples
  - [A visulization with a layer selector](http://cartodb.github.com/cartodb.js/examples/layer_selector.html)
  - [How to create a custom infowindow](http://cartodb.github.com/cartodb.js/examples/custom_infowindow.html)
  - [The Hobbit filming location paths](http://cartodb.github.com/cartodb.js/examples/TheHobbitLocations/) a full example with some widgets
+ - [Load a vector layer with google maps](http://cartodb.github.com/cartodb.js/examples/gmaps_vector.html)
+ - [Load a vector layer with Leaflet](http://cartodb.github.com/cartodb.js/examples/leaflet_vector.html)
+ - [Load a vector layer to Leaflet with hover effect](http://cartodb.github.com/cartodb.js/examples/leaflet_vector_hover.html)
 
 
 next steps

@@ -13,9 +13,9 @@
       }
     </style>
 
-    <link rel="stylesheet" href="http://libs.cartodb.com/cartodb.js/v2/themes/css/cartodb.css" />
+    <link rel="stylesheet" href="http://libs.cartodb.com/cartodb.js/v3/themes/css/cartodb.css" />
     <!--[if lte IE 8]>
-        <link rel="stylesheet" href="http://libs.cartodb.com/cartodb.js/v2/themes/css/cartodb.ie.css" />
+        <link rel="stylesheet" href="http://libs.cartodb.com/cartodb.js/v3/themes/css/cartodb.ie.css" />
     <![endif]-->
 
   </head>
@@ -23,6 +23,7 @@
     <div id="map"></div>
 
     <script type="infowindow/html" id="infowindow_template">
+      <span> custom </span>
       <div class="cartodb-popup">
 
         <a href="#close" class="cartodb-popup-close-button close">x</a>
@@ -38,7 +39,7 @@
       </div>
     </script>
 
-    <script src="http://libs.cartocdn.com/cartodb.js/v2/cartodb.js"></script>
+    <script src="http://libs.cartodb.com/cartodb.js/v3/cartodb.js"></script>
     <script>
 
       function main() {
@@ -49,29 +50,20 @@
           zoom: 3
         })
 
-        // add a nice baselayer from mapbox
-        L.tileLayer('http://a.tiles.mapbox.com/v3/mapbox.mapbox-streets/{z}/{x}/{y}.png', {
-          attribution: 'MapBox'
+        // add a nice baselayer from Stamen 
+        L.tileLayer('http://{s}.tile.stamen.com/toner/{z}/{x}/{y}.png', {
+          attribution: 'Stamen'
         }).addTo(map);
 
-        cartodb.createLayer(map, 'http://examples.cartodb.com/api/v1/viz/european_countries_e/viz.json')
+        cartodb.createLayer(map, 'http://viz2.cartodb.com/api/v2/viz/1c365bde-e57c-11e2-8141-5404a6a683d5/viz.json')
+         .addTo(map)
          .on('done', function(layer) {
-
-          map.addLayer(layer);
-
-          layer.infowindow.set('template', $('#infowindow_template').html());
-
-          layer.on('featureOver', function(e, pos, latlng, data) {
-            console.log(e, pos, latlng, data);
+           // get sublayer 0 and set the infowindow template
+           var sublayer = layer.getSubLayer(0);
+           sublayer.infowindow.set('template', $('#infowindow_template').html());
+          }).on('error', function() {
+            console.log("some error occurred");
           });
-
-          layer.on('error', function(err) {
-            console.log('error: ' + err);
-          });
-
-        }).on('error', function() {
-          console.log("some error occurred");
-        });
 
       }
 

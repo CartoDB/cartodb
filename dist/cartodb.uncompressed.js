@@ -1,6 +1,6 @@
-// cartodb.js version: 3.0.00-dev
+// cartodb.js version: 3.0.00
 // uncompressed version: cartodb.uncompressed.js
-// sha: d9fd429006817a011113c2fd0707b4fadce35f36
+// sha: 65758205ac8f7caa357255a801af393a6b3484dc
 (function() {
   var root = this;
 
@@ -10298,7 +10298,7 @@ L.Map.include({
 });
 
 
-}(this, document));/* wax - 7.0.0dev10 - v6.0.4-147-gca63e3e */
+}(this, document));/* wax - 7.0.0dev10 - v6.0.4-148-gcfdd624 */
 
 
 !function (name, context, definition) {
@@ -12329,9 +12329,7 @@ var Mustache = (typeof module !== "undefined" && module.exports) || {};
   * license MIT
   */
 ;(function (name, context, definition) {
-  if (typeof module != 'undefined' && module.exports) module.exports = definition()
-  else if (typeof define == 'function' && define.amd) define(definition)
-  else context[name] = definition()
+  context[name] = definition()
 })('reqwest', this, function () {
 
   var win = window
@@ -12838,7 +12836,8 @@ var Mustache = (typeof module !== "undefined" && module.exports) || {};
   }
 
   return reqwest
-});wax = wax || {};
+})
+;wax = wax || {};
 
 // Attribution
 // -----------
@@ -19877,13 +19876,13 @@ this.LZMA = LZMA;
 
 
     // entry point
-(function() {
+;(function() {
 
     var root = this;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.0.00-dev';
+    cdb.VERSION = '3.0.00';
 
     cdb.CARTOCSS_VERSIONS = {
       '2.0.0': '',
@@ -21120,9 +21119,9 @@ cdb.geo.Layers = Backbone.Collection.extend({
   model: cdb.geo.MapLayer,
 
   initialize: function() {
-    this.comparator = function(a, b) {
-      return a.get('order') - b.get('order');
-    }
+    this.comparator = function(m) {
+      return parseInt(m.get('order'), 10);
+    };
     this.bind('add', this._assignIndexes);
   },
 
@@ -22806,12 +22805,11 @@ cdb.geo.ui.LayerSelector = cdb.core.View.extend({
     var self = this;
 
     _.each(this.map.layers.models, function(layer) {
-      
-      if (layer.get("type") == 'layergroup') {
-        var layer_definition = self.mapView.getLayerByCid(layer.cid);
 
-        for (var i = 0 ; i < layer_definition.getLayerCount(); ++i) {
-          var l = layer_definition.getLayer(i);
+      if (layer.get("type") == 'layergroup') {
+        var layerGroupView = self.mapView.getLayerByCid(layer.cid);
+        for (var i = 0 ; i < layerGroupView.getLayerCount(); ++i) {
+          var l = layerGroupView.getLayer(i);
           var m = new cdb.core.Model(l);
           m.set('order', i);
           m.set('type', 'layergroup');
@@ -22820,9 +22818,12 @@ cdb.geo.ui.LayerSelector = cdb.core.View.extend({
           } else {
             m.set('layer_name', l.options.layer_name);
           }
-          var layerView = self._createLayer('LayerViewFromLayerGroup', { model: m, layer_definition: layer_definition });
+          var layerView = self._createLayer('LayerViewFromLayerGroup', { 
+            model: m,
+            layerView: layerGroupView,
+            layerIndex: i
+          });
           layerView.bind('switchChanged', self._setCount, self);
-          layerView.bind('layergroupChanged', self._setLayerGroup, self)
           self.layers.push(layerView);
         }
       } else if (layer.get("type") == "CartoDB") {
@@ -22839,25 +22840,6 @@ cdb.geo.ui.LayerSelector = cdb.core.View.extend({
     this.$("ul").append(layerView.render().el);
     this.addView(layerView);
     return layerView;
-  },
-
-  _setLayerGroup: function(layer_definition) {
-    var self = this;
-
-    for (var i = this.layers.length - 1; i >= 0; --i) {
-      if (self.layers[i].model.get('type') == "layergroup") {
-        layer_definition.removeLayer(i);
-      }
-    }
-
-    var order = 0;
-
-    for (var i = 0, l = this.layers.length; i < l; ++i) {
-      if (self.layers[i].model.get('type') == "layergroup" && self.layers[i].model.get('visible')) {
-        layer_definition.addLayer(self.layers[i].model.toJSON().options, order);
-        order++;
-      }
-    }
   },
 
   _setCount: function() {
@@ -22891,7 +22873,7 @@ cdb.geo.ui.LayerSelector = cdb.core.View.extend({
  *    model: layer_model,
  *    layer_definition: layer_definition
  *  });
- *  
+ *
  */
 
 cdb.geo.ui.LayerView = cdb.core.View.extend({
@@ -22958,9 +22940,9 @@ cdb.geo.ui.LayerView = cdb.core.View.extend({
  *
  *  var layerView = new cdb.geo.ui.LayerViewFromLayerGroup({
  *    model: layer_model,
- *    layer_definition: layer_definition
+ *    layerView: layweView 
  *  });
- *  
+ *
  */
 
 cdb.geo.ui.LayerViewFromLayerGroup = cdb.geo.ui.LayerView.extend({
@@ -22973,10 +22955,15 @@ cdb.geo.ui.LayerViewFromLayerGroup = cdb.geo.ui.LayerView.extend({
   },
 
   _onSwitchSelected: function() {
-  
-    cdb.geo.ui.LayerView.prototype._onSwitchSelected.call(this);
 
-    this.trigger('layergroupChanged', this.options.layer_definition);
+    cdb.geo.ui.LayerView.prototype._onSwitchSelected.call(this);
+    var sublayer = this.options.layerView.getSubLayer(this.options.layerIndex)
+    var visible = this.model.get('visible');
+    if(visible) {
+      sublayer.show();
+    } else {
+      sublayer.hide();
+    }
   }
 });
 /**
@@ -23142,7 +23129,7 @@ cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
 function LayerDefinition(layerDefinition, options) {
 
   this.options = _.defaults(options, {
-    ajax: $.ajax,
+    ajax: window.$ ? window.$.ajax : reqwest.compat,
     pngParams: ['map_key', 'api_key', 'cache_policy', 'updated_at'],
     gridParams: ['map_key', 'api_key', 'cache_policy', 'updated_at'],
     cors: this.isCORSSupported(),
@@ -23316,7 +23303,7 @@ LayerDefinition.prototype = {
     clearTimeout(this._refreshTimer);
     this._refreshTimer = setTimeout(function() {
       self.invalidate();
-    }, this.options.refreshTime || (60*5*1000));
+    }, this.options.refreshTime || (60*120*1000)); // default layergroup ttl
 
     // check request queue
     if(this._queue.length) {
@@ -23330,6 +23317,7 @@ LayerDefinition.prototype = {
     ajax({
       crossOrigin: true,
       type: 'POST',
+      method: 'POST',
       dataType: 'json',
       contentType: 'application/json',
       url: this._tilerHost() + '/tiles/layergroup' + (params.length ? "?" + params.join('&'): ''),
@@ -23358,7 +23346,7 @@ LayerDefinition.prototype = {
     var self = this;
     var ajax = this.options.ajax;
     var json = '{ "config": "' +
-      JSON.stringify(this.toJSON()).replace(/"/g, '\\"') +
+      JSON.stringify(this.toJSON()).replace(/"/g, '\\"').replace(/\\n/g, '') +
     '"}';
     LZMA.compress(json, 3, function(encoded) {
       encoded = self._array2hex(encoded);
@@ -23540,10 +23528,13 @@ LayerDefinition.prototype = {
    * set
    */
   setInteractivity: function(layer, attributes) {
-
     if(attributes === undefined) {
       attributes = layer;
       layer = 0;
+    }
+
+    if(layer >= this.getLayerCount() && layer < 0) {
+      throw new Error("layer does not exist");
     }
 
     if(typeof(attributes) == 'string') {
@@ -23625,7 +23616,7 @@ LayerDefinition.prototype = {
       layer = 0;
     }
 
-    version = version || cdb.CARTOCSS_DEFAULT_VERSION;
+    version = version || cartodb.CARTOCSS_DEFAULT_VERSION;
 
     this.layers[layer].options.cartocss = style;
     this.layers[layer].options.cartocss_version = version;
@@ -23676,7 +23667,11 @@ LayerDefinition.prototype = {
   },
 
   getInfowindowData: function(layer) {
-    return this.options.layer_definition.layers[layer].infowindow;
+    var infowindow = this.layers[layer].infowindow || this.options.layer_definition.layers[layer].infowindow;
+    if (infowindow && infowindow.fields && infowindow.fields.length > 0) {
+      return infowindow;
+    }
+    return null;
   },
 
   containInfowindow: function() {
@@ -23715,8 +23710,13 @@ function SubLayer(_parent, position) {
   this._parent = _parent;
   this._position = position;
   this._added = true;
-
   this._bindInteraction();
+  this.infowindow = new Backbone.Model(this._parent.getLayer(this._position).infowindow);
+  this.infowindow.bind('change', function() {
+    var def = this._parent.getLayer(this._position);
+    def.infowindow = this.infowindow.toJSON();
+    this._parent.setLayer(this._position, def);
+  }, this);
 }
 
 SubLayer.prototype = {
@@ -24468,10 +24468,10 @@ L.CartoDBGroupLayer = L.TileLayer.extend({
     }
 
     if(!options.layer_definition) {
-      options.layer_definition = LayerDefinition.layerDefFromSubLayers(options.sublayers);
+      this.options.layer_definition = LayerDefinition.layerDefFromSubLayers(options.sublayers);
     }
 
-    LayerDefinition.call(this, options.layer_definition, this.options);
+    LayerDefinition.call(this, this.options.layer_definition, this.options);
 
     this.fire = this.trigger;
 
@@ -24576,7 +24576,9 @@ L.CartoDBGroupLayer = L.TileLayer.extend({
   __update: function(done) {
     var self = this;
     this.fire('updated');
+    this.fire('loading');
     var map = this.options.map;
+
     this.getTiles(function(urls, err) {
       var update = function() { 
         map.off('zoomend', update);
@@ -25166,7 +25168,7 @@ cdb.geo.LeafLetLayerCartoDBView = LeafLetLayerCartoDBView;
       }
 
       if(opts == undefined || !opts.silent) {
-        this.trigger('newLayerView', layer_view, this);
+        this.trigger('newLayerView', layer_view, layer, this);
       }
       return layer_view;
     },
@@ -25592,6 +25594,7 @@ CartoDBLayerGroup.prototype.setOpacity = function(opacity) {
 CartoDBLayerGroup.prototype.setAttribution = function() {};
 
 CartoDBLayerGroup.prototype.getTile = function(coord, zoom, ownerDocument) {
+  var EMPTY_GIF = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
 
   var self = this;
 
@@ -25600,6 +25603,7 @@ CartoDBLayerGroup.prototype.getTile = function(coord, zoom, ownerDocument) {
   if(this.tilejson == null) {
     var key = zoom + '/' + coord.x + '/' + coord.y;
     var i = this.cache[key] = new Image(256, 256);
+    i.src = EMPTY_GIF;
     i.setAttribute('gTileKey', key);
     i.style.opacity = this.options.opacity;
     return i;
@@ -25634,6 +25638,7 @@ CartoDBLayerGroup.prototype.clear = function () {
 
 CartoDBLayerGroup.prototype.update = function (done) {
   var self = this;
+  this.loading && this.loading();
   this.getTiles(function(urls, err) {
     if(urls) {
       self.tilejson = urls;
@@ -26173,7 +26178,7 @@ if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
           self.map_googlemaps.overlayMapTypes.setAt(idx, layer_view.gmapsLayer);
         }
         if(opts == undefined || !opts.silent) {
-          this.trigger('newLayerView', layer_view, this);
+          this.trigger('newLayerView', layer_view, layer, this);
         }
       } else {
         cdb.log.error("layer type not supported");
@@ -27534,6 +27539,7 @@ var Vis = cdb.core.View.extend({
   },
 
   _getSqlApi: function(attrs) {
+    attrs = attrs || {};
     var port = attrs.sql_api_port
     var domain = attrs.sql_api_domain + (port ? ':' + port: '')
     var protocol = attrs.sql_api_protocol;
@@ -27555,20 +27561,32 @@ var Vis = cdb.core.View.extend({
   },
 
   addInfowindow: function(layerView) {
+
+    if(!layerView.containInfowindow || !layerView.containInfowindow()) {
+      return;
+    }
+
     var mapView = this.mapView;
     var eventType = 'featureClick';
-    var infowindow = Overlay.create('infowindow', this, layerView.getInfowindowData(0), true);
-
-    mapView.addInfowindow(infowindow);
-
-    var sql = this._getSqlApi(layerView.options)
+    var infowindow = null;
 
     // activate interactivity for layers with infowindows
     for(var i = 0; i < layerView.getLayerCount(); ++i) {
       if(layerView.getInfowindowData(i)) {
+        if(!infowindow) {
+          infowindow = Overlay.create('infowindow', this, layerView.getInfowindowData(i), true);
+          mapView.addInfowindow(infowindow);
+        }
         layerView.setInteraction(i, true);
       }
     }
+
+    if(!infowindow) {
+      return;
+    }
+
+    var sql = this._getSqlApi(layerView.options)
+
 
     // if the layer has no infowindow just pass the interaction
     // data to the infowindow
@@ -28112,6 +28130,7 @@ Layers.register('layergroup', function(vis, data) {
 
       // update options
       if(options && !_.isFunction(options)) {
+        layerData.options = layerData.options || {};
         _.extend(layerData.options, options);
       } 
 
@@ -28150,7 +28169,7 @@ Layers.register('layergroup', function(vis, data) {
       }
 
       layerView = viz.createLayer(layerData, { no_base_layer: true });
-      if(options.infowindow && layerView.model.get('infowindow') && layerView.model.get('infowindow').fields.length > 0) {
+      if(options.infowindow) {
         viz.addInfowindow(layerView);
       }
       callback && callback(layerView);
@@ -28163,12 +28182,15 @@ Layers.register('layergroup', function(vis, data) {
 
 
 })();
-(function() {
+
+;(function() {
 
   var root = this;
 
+  root.cartodb = root.cartodb || {};
+
   function SQL(options) {
-    if(cdb === this || window === this) {
+    if(cartodb === this || window === this) {
       return new SQL(options);
     }
     if(!options.user) {
@@ -28180,10 +28202,15 @@ Layers.register('layergroup', function(vis, data) {
       loc = 'https';
     }
 
+    this.ajax = options.ajax || (typeof(jQuery) !== 'undefined' ? jQuery.ajax: reqwest);
+    if(!this.ajax) {
+      throw new Error("jQuery or reqwest should be loaded");
+    }
+
     this.options = _.defaults(options, {
       version: 'v2',
       protocol: loc,
-      jsonp: !$.support.cors
+      jsonp: typeof(jQuery) !== 'undefined' ? !jQuery.support.cors: false
     })
   }
 
@@ -28206,8 +28233,8 @@ Layers.register('layergroup', function(vis, data) {
    *    id: '1'
    * })
    */
-  SQL.prototype.execute= function(sql, vars, options, callback) {
-    var promise = new cdb._Promise();
+  SQL.prototype.execute = function(sql, vars, options, callback) {
+    var promise = new cartodb._Promise();
     if(!sql) {
       throw new TypeError("sql should not be null");
     }
@@ -28272,11 +28299,18 @@ Layers.register('layergroup', function(vis, data) {
     if(error) delete error.success;
 
     params.error = function(resp) {
-      var errors = resp.responseText && JSON.parse(resp.responseText);
+      var res = resp.responseText || resp.response;
+      var errors = res && JSON.parse(res);
       promise.trigger('error', errors && errors.error, resp)
       if(error) error(resp);
     }
     params.success = function(resp, status, xhr) {
+      // manage rewest
+      if(status == undefined) {
+        status = resp.status;
+        xhr = resp;
+        resp = JSON.parse(resp.response);
+      }
       promise.trigger('done', resp, status, xhr);
       if(success) success(resp, status, xhr);
       if(callback) callback(resp);
@@ -28284,12 +28318,12 @@ Layers.register('layergroup', function(vis, data) {
 
     // call ajax
     delete options.jsonp;
-    $.ajax(_.extend(params, options));
+    this.ajax(_.extend(params, options));
     return promise;
   }
 
   SQL.prototype.getBounds = function(sql, vars, options, callback) {
-      var promise = new cdb._Promise();
+      var promise = new cartodb._Promise();
       var args = arguments,
       fn = args[args.length -1];
       if(_.isFunction(fn)) {
@@ -28354,12 +28388,19 @@ Layers.register('layergroup', function(vis, data) {
     var _orderDir;
     var _sql = this;
 
-    function _table(callback) {
-      _table.fetch(callback);
+    function _table() {
+      _table.fetch.apply(_table, arguments);
     }
 
-    _table.fetch = function(callback) {
-      _sql.execute(_table.sql(), {}, callback);
+    _table.fetch = function(vars) {
+      vars = vars || {}
+      var args = arguments,
+      fn = args[args.length -1];
+      if(_.isFunction(fn)) {
+        callback = fn;
+        if(args.length === 1) vars = {};
+      }
+      _sql.execute(_table.sql(), vars, callback);
     }
 
     _table.sql = function() {
@@ -28369,7 +28410,7 @@ Layers.register('layergroup', function(vis, data) {
       } else {
         s += ' * '
       }
-      
+
       s += "from " + _name;
 
       if(_filters) {
@@ -28421,7 +28462,27 @@ Layers.register('layergroup', function(vis, data) {
 
   }
 
-  cartodb.SQL = SQL;
+  /*
+   * sql.filter(sql.f().distance('< 10km')
+   */
+  /*cartodb.SQL.geoFilter = function() {
+    var _sql;
+    function f() {}
+
+    f.distance = function(qty) {
+      qty.replace('km', '*1000')
+      _sql += 'st_distance(the_geom) ' + qty
+    }
+    f.or = function() {
+    }
+
+    f.and = function() {
+    }
+    return f;
+  }
+  */
+
+  root.cartodb.SQL = SQL;
 
 })();
 (function() {

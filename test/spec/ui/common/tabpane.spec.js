@@ -262,6 +262,20 @@ describe('core.ui.common.TabPane', function() {
 
   });
 
+
+  it("user after option inserting view after specified index", function() {
+    var v1, v2, v3;
+    v1 = new cdb.core.View(),
+    v2 = new cdb.core.View();
+    v3 = new cdb.core.View();
+    pane.addTab('tab1', v1);
+    pane.addTab('tab2', v2);
+    pane.addTab('tab3', v3, { after: 0 });
+    expect(pane.$el.children()[0]).toEqual(v1.el);
+    expect(pane.$el.children()[1]).toEqual(v3.el);
+    expect(pane.$el.children()[2]).toEqual(v2.el);
+  });
+
   it("clean should remove all tabs", function() {
     spyOn(pane, "removeTabs");
     pane.clean();

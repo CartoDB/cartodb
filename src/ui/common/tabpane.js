@@ -33,7 +33,14 @@ cdb.ui.common.TabPane = cdb.core.View.extend({
     } else {
       this.tabs[name] = view.cid;
       this.addView(view);
-      this.$el.append(view.el);
+      if(options.after !== undefined) {
+        var e = this.$el.children()[options.after];
+        view.$el.insertAfter(e);
+      } else if(options.prepend) {
+        this.$el.prepend(view.el);
+      } else {
+        this.$el.append(view.el);
+      }
       this.trigger('tabAdded', name, view);
       if(options.active) {
         this.active(name);

@@ -36,7 +36,7 @@ With a similar source code you can create a visualization like this one:
 
 <div class="margin20"></div>
 <div class="map_wrapper">
-  <script id='cartodb-1373299922799' src='http://documentation.cartodb.com/viz/bc9443aa-e7e5-11e2-9962-5404a6a683d5/embed_map.js?title=false&description=false&search=false&shareable=false&cartodb_logo=true&layer_selector=false&scrollwheel=false&sql=&sw_lat=43.2862030224633&sw_lon=-72.16232299804688&ne_lat=43.520671902437606&ne_lon=-71.50314331054688&height=400&id=cartodb-1373299922799'></script>
+  <script id='cartodb-1373382536752' src='http://documentation.cartodb.com/viz/681143c2-e8a9-11e2-b296-5404a6a683d5/embed_map.js?title=false&description=false&search=false&shareable=false&cartodb_logo=true&layer_selector=false&scrollwheel=false&sql=&sw_lat=43.2862030224633&sw_lon=-72.16232299804688&ne_lat=43.520671902437606&ne_lon=-71.50314331054688&height=400&id=cartodb-1373382536752'></script>
 </div>
 <div class="margin20"></div>
 
@@ -188,7 +188,9 @@ If you want to start playing with the library, the best way to do it might be to
   
 <h3 id="api">API methods</h3>
 
-The documentation below reflects CartoDB.js for the 3.0.x library versions. For major changes in the library we will update the documentation here. This documentation is meant to help developers find specific methods for using the CartoDB.js library.
+The documentation below reflects CartoDB.js for the v3 library versions. For major changes in the library we will update the documentation here. This documentation is meant to help developers find specific methods for using the CartoDB.js library.
+
+For deprecated versions of this library, refer to [this documentation](/documentation/v2/cartodb-js.html).
 
 #### Visualization
 
@@ -243,7 +245,7 @@ Adds an overlay to the map that can be either a zoom control, a tooltip or an in
 
 ###### Returns
 
-An overlay object, see [cartodb.Vis.Overlays](#overlays)]
+An overlay object, see [vis.Overlays](#overlays)]
 
 ##### vis.getOverlay(type)
 
@@ -266,7 +268,7 @@ Returns a list of overlays currently on the screen (see overlays description).
 
 Returns the native map object being used. It can be google.maps.Map or L.Map depending on the provider you setup in the UI.
 
-##### vis.Overlays
+<h5 id="overlays">vis.Overlays</h5>
 
 An overlay is a control shown on top of the map.
 

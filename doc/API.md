@@ -1031,7 +1031,7 @@ Now, that you have your CartoDB.js version, you can point your site at that rele
 <div class="margin20"></div>
 <div class="code_title">Persistent version hosting</div>
   ``` html
-    http://libs.cartocdn.com/cartodb.js/v3/2.0.11/cartodb.js
+    http://libs.cartocdn.com/cartodb.js/v3/3.0.01/cartodb.js
   ```
 <div class="margin20"></div>
 
@@ -1040,6 +1040,6 @@ You can do the same for the CSS documents we provide:
 <div class="margin20"></div>
 <div class="code_title">Persistent version hosting</div>
   ``` html
-    http://libs.cartocdn.com/cartodb.js/v3/2.0.11/themes/css/cartodb.css
+    http://libs.cartocdn.com/cartodb.js/v3/3.0.01/themes/css/cartodb.css
   ```
 <div class="margin20"></div>

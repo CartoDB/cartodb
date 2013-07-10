@@ -11,6 +11,7 @@ module CartoDB
         def name;                 ''; end
         def table_name;           ''; end
         def qualified_table_name; ''; end
+        def db;                   Object.new; end
         def id;                   0; end
         def pg_options
           {
@@ -20,7 +21,6 @@ module CartoDB
             database: '' 
           }
         end #pg_options
-
       end # Job
     end # Doubles
   end # Importer2

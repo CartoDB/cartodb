@@ -862,7 +862,7 @@ Keep in mind the version of CartoDB.js you are using for development. For any li
 
 Contains the library version, should be something like '3.0.1'.
 
-### FAQ
+### Other important stuff
 
 The CartoDB.js has many great features for you to use in your applications. Let’s take a look at the most important for your application development.
 

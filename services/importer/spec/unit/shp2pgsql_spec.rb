@@ -52,6 +52,15 @@ describe Shp2pgsql do
       wrapper = Shp2pgsql.new(@full_table_name, 'bogus.shp', @pg_options)
       lambda { wrapper.normalize }.must_raise ShpNormalizationError
     end
+
+    it 'raises if no projection detected' do
+      wrapper = Shp2pgsql.new(@full_table_name, 'bogus.shp', @pg_options)
+      begin
+        wrapper.normalize
+      rescue
+        wrapper.detected_projection.must_be_nil
+      end
+    end
   end #normalize
 
   describe '#detected_projection' do

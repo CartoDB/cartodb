@@ -53,5 +53,37 @@ describe Shp2pgsql do
       lambda { wrapper.normalize }.must_raise ShpNormalizationError
     end
   end #normalize
+
+  describe '#detected_projection' do
+    it 'returns the detected projection' do
+      @wrapper.normalize
+      @wrapper.detected_projection.must_equal 4326
+    end
+
+    it 'returns nil if none detected' do
+      wrapper = Shp2pgsql.new(@full_table_name, 'bogus.shp', @pg_options)
+      begin
+        wrapper.normalize
+      rescue
+        wrapper.detected_projection.must_be_nil
+      end
+    end
+  end #detected_projection
+
+  describe '#detected_encoding' do
+    it 'returns the detected encoding' do
+      @wrapper.normalize
+      @wrapper.detected_encoding.must_equal 'LATIN1'
+    end
+    
+    it 'returns LATIN1 by default' do
+      wrapper = Shp2pgsql.new(@full_table_name, 'bogus.shp', @pg_options)
+      begin
+        wrapper.normalize
+      rescue
+        wrapper.detected_encoding.must_equal 'LATIN1'
+      end
+    end
+  end #detected_encoding
 end # Shp2pgsql
 

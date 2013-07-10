@@ -50,13 +50,25 @@ module CartoDB
       end #normalize
 
       def normalizer_command
-        "#{python_bin_path} -Wignore #{normalizer_path} " +
-        "\"#{filepath}\" #{table_name}"
+        %Q(#{python_bin_path} -Wignore #{normalizer_path} ) +
+        %Q("#{filepath}" #{table_name})
       end #normalizer_command
 
       def prj?
         File.exists?(filepath.gsub(%r{\.shp$}, '.prj'))
       end #prj?
+
+      def detected_projection
+        projection = normalizer_output.fetch(:projection)
+        return nil if projection == 'None'
+        projection.to_i
+      end #detected_projection
+
+      def detected_encoding
+        encoding = normalizer_output.fetch(:encoding)
+        return 'LATIN1' if encoding == 'None'
+        encoding
+      end #detected_encoding
 
       attr_reader   :exit_code, :command_output, :normalizer_output
 
@@ -68,12 +80,6 @@ module CartoDB
       def python_bin_path
         `which python`.strip
       end #python_bin_path
-      
-      def detected_projection
-        projection = normalizer_output.fetch(:projection)
-        return nil if projection == 'None'
-        projection
-      end #detected_projection
 
       def normalizer_path
         normalizer_relative_path = "../../../../../lib/importer/misc/shp_normalizer.py"

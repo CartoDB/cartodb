@@ -124,7 +124,7 @@ module CartoDB
         sample = db[%Q{
           SELECT public.GeometryType(ST_Force_2D(#{column_name})) 
           AS type
-          FROM #{table_name}
+          FROM importer.#{table_name}
           WHERE #{column_name} IS NOT NULL
           LIMIT 1
         }].first
@@ -133,7 +133,7 @@ module CartoDB
 
       def drop
         db.run(%Q{
-          ALTER TABLE #{table_name} 
+          ALTER TABLE #{qualified_table_name} 
           DROP COLUMN #{column_name}
         })
       end #drop

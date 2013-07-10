@@ -7,8 +7,9 @@ module CartoDB
     class ShpNormalizationError < StandardError; end
 
     class Shp2pgsql
-      ENCODING  = 'UTF-8'
-      SCHEMA    = 'importer'
+      SCHEMA = 'importer'
+      NORMALIZER_RELATIVE_PATH = 
+        "../../../../../lib/importer/misc/shp_normalizer.py"
 
       def initialize(table_name, filepath, pg_options, options={})
         self.filepath   = filepath
@@ -17,21 +18,19 @@ module CartoDB
         self.options    = options
       end #initialize
 
-      def command
-      end #command
-
-      def executable_path
-        `which shp2pgsql`.strip
-      end #executable_path
-
       def run(*args)
         raise NoPrjAvailableError unless prj?
+
         normalize
-        #stdout, stderr, status  = Open3.capture3(command)
-        #self.command_output     = stdout + stderr
-        #self.exit_code          = status.to_i
-        #self
+        stdout, stderr, status  = Open3.capture3(command)
+        self.command_output     = stdout + stderr
+        self.exit_code          = status.to_i
+        self
       end #run
+
+      def command
+        %Q({ #{statement_timeout } #{shp2pgsql_command} } | #{psql_command})
+      end #command
 
       def normalize
         stdout, stderr, status  = Open3.capture3(normalizer_command)
@@ -48,11 +47,6 @@ module CartoDB
         raise ShpNormalizationError unless detected_projection
         self
       end #normalize
-
-      def normalizer_command
-        %Q(#{python_bin_path} -Wignore #{normalizer_path} ) +
-        %Q("#{filepath}" #{table_name})
-      end #normalizer_command
 
       def prj?
         File.exists?(filepath.gsub(%r{\.shp$}, '.prj'))
@@ -82,13 +76,40 @@ module CartoDB
       end #python_bin_path
 
       def normalizer_path
-        normalizer_relative_path = "../../../../../lib/importer/misc/shp_normalizer.py"
-        File.expand_path(normalizer_relative_path, __FILE__) 
+        File.expand_path(NORMALIZER_RELATIVE_PATH, __FILE__) 
       end #normalizer_path
+
+      def shp2pgsql_path
+        `which shp2pgsql`.strip
+      end #shp2pgsql_path
+
+      def psql_path
+        `which psql`.strip
+      end #psql_path
 
       def statement_timeout
         "echo 'set statement_timeout=600000;';"
       end #statement_timeout
+
+      def normalizer_command
+        %Q(#{python_bin_path} -Wignore #{normalizer_path} ) +
+        %Q("#{filepath}" #{table_name})
+      end #normalizer_command
+
+      def shp2pgsql_command
+        %Q(#{shp2pgsql_path} -s #{detected_projection} -D -i ) +
+        %Q(-g the_geom -W #{detected_encoding} "#{filepath}" #{table_name};)
+      end #shp2pgsql_command
+
+      def psql_command
+        host      = pg_options.fetch(:host)
+        port      = pg_options.fetch(:port)
+        user      = pg_options.fetch(:user)
+        database  = pg_options.fetch(:database)
+
+        %Q(#{psql_path} #{host} #{port} -U #{user} -w -d #{database})
+      end #psql_command
+
     end # Shp2pgsql
   end # Importer2
 end # CartoDB

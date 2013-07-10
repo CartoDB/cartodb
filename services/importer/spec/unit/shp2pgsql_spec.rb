@@ -27,12 +27,6 @@ describe Shp2pgsql do
     @db.drop_table? @full_table_name
   end
 
-  describe '#executable_path' do
-    it 'returns the path to the shp2pgsql binary' do
-      @wrapper.executable_path.must_match /shp2pgsql/
-    end
-  end #executable_path
-
   describe '#prj?' do
     it 'returns true if prj available for the SHP file' do
       @wrapper.prj?.must_equal true
@@ -44,6 +38,10 @@ describe Shp2pgsql do
       wrapper = Shp2pgsql.new(@full_table_name, 'bogus.shp', @pg_options)
       wrapper.prj?.must_equal false
       lambda { wrapper.run }.must_raise NoPrjAvailableError
+    end
+
+    it 'runs' do
+      @wrapper.run
     end
   end #run
 

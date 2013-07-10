@@ -214,6 +214,16 @@ var Vis = cdb.core.View.extend({
       this.addOverlay(data.overlays[i]);
     }
 
+    // set layer options
+    if(options.sublayer_options) {
+      var dataLayer = this.getLayers()[1];
+      for(i = 0; i < options.sublayer_options.length; ++i) {
+        var o = options.sublayer_options[i];
+        var subLayer = dataLayer.getSubLayer(i);
+        o.visible ? subLayer.show(): subLayer.hide();
+      }
+    }
+
     _.defer(function() {
       self.trigger('done', self, self.getLayers());
     })

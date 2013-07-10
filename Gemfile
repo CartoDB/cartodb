@@ -69,10 +69,6 @@ gem "bartt-ssl_requirement",   "~>1.4.0", :require => "ssl_requirement"
 gem "simplecov",               "0.7.1", :require => false, :group => :test
 gem "spin",                    "0.5.3", :require => false, :group => :test
 
-if ENV["WADUS"]
-  gem 'cartodb-private', :path => 'cartodb-private'
-end
-
 group :development, :test do
   gem "webrick",               "1.3.1"
   gem "sqlite3",               "1.3.7"
@@ -106,4 +102,12 @@ group :development, :test do
 
   # Server
   gem 'thin'
+end
+
+# Load optional engines
+Dir["engines" + "/*/*.gemspec"].each do |gemspec_file|
+  dir_name = File.dirname(gemspec_file)
+  gem_name = File.basename(gemspec_file, File.extname(gemspec_file))
+
+  gem gem_name, :path => dir_name, :require => false
 end

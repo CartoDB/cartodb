@@ -1,30 +1,31 @@
 # encoding: utf-8
 require 'open3'
+require_relative './exceptions'
 
 module CartoDB
   module Importer2
-    class NoPrjAvailableError < StandardError; end
-    class ShpNormalizationError < StandardError; end
-
     class Shp2pgsql
       SCHEMA = 'importer'
       NORMALIZER_RELATIVE_PATH = 
         "../../../../../lib/importer/misc/shp_normalizer.py"
 
-      def initialize(table_name, filepath, pg_options, options={})
+      def initialize(table_name, filepath, pg_options)
         self.filepath   = filepath
         self.pg_options = pg_options
         self.table_name = table_name
-        self.options    = options
       end #initialize
 
-      def run(*args)
+      def run
         raise NoPrjAvailableError unless prj?
 
         normalize
         stdout, stderr, status  = Open3.capture3(command)
         self.command_output     = stdout + stderr
         self.exit_code          = status.to_i
+
+        raise InvalidSridError        if command_output =~ /invalid SRID/
+        raise ShpToSqlConversionError if exit_code != 0
+        raise ShpToSqlConversionError if command_output =~ /failure/
         self
       end #run
 
@@ -43,10 +44,13 @@ module CartoDB
         }
 
         raise ShpNormalizationError unless status.to_i == 0 
-        raise ShpNormalizationError unless normalizer_output
-        raise ShpNormalizationError unless detected_projection
+        raise ShpNormalizationError unless normalized?
         self
       end #normalize
+
+      def normalized?
+        normalizer_output && detected_projection
+      end #normalize?
 
       def prj?
         File.exists?(filepath.gsub(%r{\.shp$}, '.prj'))
@@ -70,7 +74,7 @@ module CartoDB
       private
 
       attr_writer   :exit_code, :command_output, :normalizer_output
-      attr_accessor :filepath, :pg_options, :options, :table_name
+      attr_accessor :filepath, :pg_options, :table_name
 
       def python_bin_path
         `which python`.strip
@@ -108,7 +112,7 @@ module CartoDB
         user      = pg_options.fetch(:user)
         database  = pg_options.fetch(:database)
 
-        %Q(#{psql_path} #{host} #{port} -U #{user} -w -d #{database})
+        %Q(#{psql_path} -h #{host} -p #{port} -U #{user} -w -d #{database})
       end #psql_command
 
       def probably_wrongly_detected_codepage?(encoding)

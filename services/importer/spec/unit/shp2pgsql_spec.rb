@@ -43,8 +43,15 @@ describe Shp2pgsql do
     it 'raises if no prj available' do
       wrapper = Shp2pgsql.new(@full_table_name, 'bogus.shp', @pg_options)
       wrapper.prj?.must_equal false
-      lambda { wrapper.run }.must_raise NoPrjAvailable
+      lambda { wrapper.run }.must_raise NoPrjAvailableError
     end
-  end
-end
+  end #run
+
+  describe '#normalize' do
+    it 'raises if normalization fails' do
+      wrapper = Shp2pgsql.new(@full_table_name, 'bogus.shp', @pg_options)
+      lambda { wrapper.normalize }.must_raise ShpNormalizationError
+    end
+  end #normalize
+end # Shp2pgsql
 

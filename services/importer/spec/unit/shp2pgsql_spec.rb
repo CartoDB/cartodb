@@ -68,12 +68,15 @@ describe Shp2pgsql do
     end
 
     it 'returns nil if none detected' do
+      fake_normalizer_output = {
+        projection:   'None',
+        encoding:     'bogus',
+        source:       'bogus',
+        destination:  'bogus'
+      }
       wrapper = Shp2pgsql.new(@full_table_name, 'bogus.shp', @pg_options)
-      begin
-        wrapper.normalize
-      rescue
-        wrapper.detected_projection.must_be_nil
-      end
+      wrapper.send :normalizer_output=, fake_normalizer_output
+      wrapper.detected_projection.must_be_nil
     end
   end #detected_projection
 
@@ -84,12 +87,27 @@ describe Shp2pgsql do
     end
     
     it 'returns LATIN1 by default' do
+      fake_normalizer_output = {
+        projection:   'bogus',
+        encoding:     'None',
+        source:       'bogus',
+        destination:  'bogus'
+      }
       wrapper = Shp2pgsql.new(@full_table_name, 'bogus.shp', @pg_options)
-      begin
-        wrapper.normalize
-      rescue
-        wrapper.detected_encoding.must_equal 'LATIN1'
-      end
+      wrapper.send :normalizer_output=, fake_normalizer_output
+      wrapper.detected_encoding.must_equal 'LATIN1'
+    end
+
+    it 'returns LATIN1 if detected windows codepage' do
+      fake_normalizer_output = {
+        projection:   'bogus',
+        encoding:     'windows',
+        source:       'bogus',
+        destination:  'bogus'
+      }
+      wrapper = Shp2pgsql.new(@full_table_name, 'bogus.shp', @pg_options)
+      wrapper.send :normalizer_output=, fake_normalizer_output
+      wrapper.detected_encoding.must_equal 'LATIN1'
     end
   end #detected_encoding
 end # Shp2pgsql

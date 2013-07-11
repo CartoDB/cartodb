@@ -33,7 +33,7 @@ module CartoDB
 
       def table
         return nil unless defined?(::Table)
-        @table ||= ::Table.where(map_id: map_id).first 
+        ::Table.where(map_id: map_id).first 
       end #table
 
       def related_tables

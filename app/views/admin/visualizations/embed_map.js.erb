@@ -62,11 +62,12 @@
     var bool_fn   = function(v) { return v == 'true' }
     var logo_fn   = function(v) { return ( ACCOUNT_TYPE != "coronelli" || IS_CUSTOM_INSTALL) ? true : v == 'true' };
     var layer_fn  = function(v) {
-
-      return _.map(v.split("|"), function(v) {
-        return { visible: parseInt(v, 10) }
-      });
-
+      var rt = [];
+      var layers = v.split("|");
+      for(var i = 0; i < layers.length; ++i) {
+        rt.push({ visible: parseInt(layers[i], 10) });
+      }
+      return rt;
     };
 
     var opt = get_url_params(url, {

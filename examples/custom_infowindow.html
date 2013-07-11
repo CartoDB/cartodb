@@ -57,11 +57,11 @@
          .on('done', function(layer) {
            // get sublayer 0 and set the infowindow template
            var sublayer = layer.getSubLayer(0);
+
            sublayer.infowindow.set('template', $('#infowindow_template').html());
           }).on('error', function() {
             console.log("some error occurred");
           });
-
       }
 
       window.onload = main;

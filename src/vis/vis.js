@@ -136,7 +136,7 @@ var Vis = cdb.core.View.extend({
     }
 
     var scrollwheel = true;
-    
+
     options = options || {};
 
     this._applyOptions(data, options);
@@ -209,19 +209,21 @@ var Vis = cdb.core.View.extend({
       this.loadLayer(layerData);
     }
 
-    // Create the overlays
-    for (var i in data.overlays) {
-      this.addOverlay(data.overlays[i]);
-    }
-
     // set layer options
     if(options.sublayer_options) {
+
       var dataLayer = this.getLayers()[1];
+
       for(i = 0; i < options.sublayer_options.length; ++i) {
         var o = options.sublayer_options[i];
         var subLayer = dataLayer.getSubLayer(i);
         o.visible ? subLayer.show(): subLayer.hide();
       }
+    }
+
+    // Create the overlays
+    for (var i in data.overlays) {
+      this.addOverlay(data.overlays[i]);
     }
 
     _.defer(function() {
@@ -596,8 +598,6 @@ var Vis = cdb.core.View.extend({
       return v.type == type;
     });
   }
-
-
 
 });
 

@@ -11,7 +11,7 @@
   _.extend(_Promise.prototype,  Backbone.Events, {
     done: function(fn) {
       return this.bind('done', fn);
-    }, 
+    },
     error: function(fn) {
       return this.bind('error', fn);
     }
@@ -55,7 +55,7 @@
 
   /**
    * create a layer for the specified map
-   * 
+   *
    * @param map should be a L.Map or google.maps.Map object
    * @param layer should be an url or a javascript object with the data to create the layer
    * @param options layer options
@@ -77,14 +77,14 @@
     if(_.isFunction(fn)) {
       callback = fn;
     }
-    
+
     promise.addTo = function(map, position) {
       promise.on('done', function() {
         MapType.addLayerToMap(layerView, map, position);
       });
       return promise;
     };
-    
+
     _getLayerJson(layer, function(visData) {
 
       var layerData;
@@ -113,7 +113,7 @@
       if(options && !_.isFunction(options)) {
         layerData.options = layerData.options || {};
         _.extend(layerData.options, options);
-      } 
+      }
 
       options = options || {};
       options = _.defaults(options, {

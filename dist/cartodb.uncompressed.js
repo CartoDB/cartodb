@@ -1,6 +1,6 @@
-// cartodb.js version: 3.0.00
+// cartodb.js version: 3.0.01
 // uncompressed version: cartodb.uncompressed.js
-// sha: 65758205ac8f7caa357255a801af393a6b3484dc
+// sha: 871c875fb5abaf66d8768c8afc384896ecdf621d
 (function() {
   var root = this;
 
@@ -19882,7 +19882,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.0.00';
+    cdb.VERSION = '3.0.01';
 
     cdb.CARTOCSS_VERSIONS = {
       '2.0.0': '',
@@ -24893,16 +24893,16 @@ var LeafLetLayerCartoDBView = L.CartoDBLayer.extend({
 
   featureOver: function(e, latlon, pixelPos, data) {
     // dont pass leaflet lat/lon
-    this.trigger('featureOver', e, [latlon.lat, latlon.lng], pixelPos, data);
+    this.trigger('featureOver', e, [latlon.lat, latlon.lng], pixelPos, data, 0);
   },
 
   featureOut: function(e) {
-    this.trigger('featureOut', e);
+    this.trigger('featureOut', e, 0);
   },
 
   featureClick: function(e, latlon, pixelPos, data) {
     // dont pass leaflet lat/lon
-    this.trigger('featureClick', e, [latlon.lat, latlon.lng], pixelPos, data);
+    this.trigger('featureClick', e, [latlon.lat, latlon.lng], pixelPos, data, 0);
   },
 
   reload: function() {
@@ -27361,6 +27361,16 @@ var Vis = cdb.core.View.extend({
     // Create the overlays
     for (var i in data.overlays) {
       this.addOverlay(data.overlays[i]);
+    }
+
+    // set layer options
+    if(options.sublayer_options) {
+      var dataLayer = this.getLayers()[1];
+      for(i = 0; i < options.sublayer_options.length; ++i) {
+        var o = options.sublayer_options[i];
+        var subLayer = dataLayer.getSubLayer(i);
+        o.visible ? subLayer.show(): subLayer.hide();
+      }
     }
 
     _.defer(function() {

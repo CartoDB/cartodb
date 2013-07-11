@@ -24,7 +24,7 @@ function LayerDefinition(layerDefinition, options) {
 }
 
 /**
- * given a list of sublayers as: 
+ * given a list of sublayers as:
  * {
  *   sql: '...',
  *   cartocss: '..',
@@ -59,7 +59,7 @@ LayerDefinition.layerDefFromSubLayers = function(sublayers) {
 LayerDefinition.prototype = {
 
   /*
-   * TODO: extract these two functions to some core module 
+   * TODO: extract these two functions to some core module
    */
   isCORSSupported: function() {
     return 'withCredentials' in new XMLHttpRequest() || typeof XDomainRequest !== "undefined";
@@ -265,7 +265,7 @@ LayerDefinition.prototype = {
     if(api_key) {
       params.push("map_key=" + api_key);
     }
-    // mark as the request is being done 
+    // mark as the request is being done
     this._waiting = true;
     var req = null;
     if(this.options.cors) {

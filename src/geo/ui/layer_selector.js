@@ -72,12 +72,16 @@ cdb.geo.ui.LayerSelector = cdb.core.View.extend({
           var m = new cdb.core.Model(l);
           m.set('order', i);
           m.set('type', 'layergroup');
+
+          m.set('visible', !layerGroupView.getSubLayer(i).get('hidden'));
+
           if(self.options.layer_names) {
             m.set('layer_name', self.options.layer_names[i]);
           } else {
             m.set('layer_name', l.options.layer_name);
           }
-          var layerView = self._createLayer('LayerViewFromLayerGroup', { 
+
+          var layerView = self._createLayer('LayerViewFromLayerGroup', {
             model: m,
             layerView: layerGroupView,
             layerIndex: i
@@ -86,6 +90,7 @@ cdb.geo.ui.LayerSelector = cdb.core.View.extend({
           self.layers.push(layerView);
         }
       } else if (layer.get("type") == "CartoDB") {
+
         var layerView = self._createLayer('LayerView', { model: layer });
         layerView.bind('switchChanged', self._setCount, self);
         self.layers.push(layerView);
@@ -105,12 +110,14 @@ cdb.geo.ui.LayerSelector = cdb.core.View.extend({
     var count = 0;
     for (var i = 0, l = this.layers.length; i < l; ++i) {
       var lyr = this.layers[i];
+
       if (lyr.model.get('visible')) {
         count++;
       }
     }
 
     this.$('.count').text(count);
+    this.trigger("switchChanged", this);
   },
 
   _openDropdown: function() {
@@ -142,7 +149,7 @@ cdb.geo.ui.LayerView = cdb.core.View.extend({
   defaults: {
     template: '\
       <a class="layer" href="#/change-layer"><%= table_name %></a>\
-      <a href="#switch" class="right <%= visible ? "enabled" : "enabled" %> switch"><span class="handle"></span></a>\
+      <a href="#switch" class="right <%= visible ? "enabled" : "disabled" %> switch"><span class="handle"></span></a>\
     '
   },
 
@@ -152,10 +159,15 @@ cdb.geo.ui.LayerView = cdb.core.View.extend({
 
   initialize: function() {
 
-    // Check if it has visible parameter set
-    if (!this.model.get('visible')) this.model.set('visible', true);
+    console.log(this.model.attributes);
+
+    if (!this.model.has('visible')) this.model.set('visible', false);
 
     this.model.bind("change:visible", this._onSwitchSelected, this);
+
+    this.add_related_model(this.model);
+
+    this._onSwitchSelected();
 
     // Template
     this.template = this.options.template ? cdb.templates.getTemplate(this.options.template) : _.template(this.defaults.template);
@@ -179,6 +191,7 @@ cdb.geo.ui.LayerView = cdb.core.View.extend({
 
     // Send trigger
     this.trigger('switchChanged');
+
   },
 
   _onSwitchClick: function(e){
@@ -190,16 +203,13 @@ cdb.geo.ui.LayerView = cdb.core.View.extend({
 
 });
 
-
-
-
 /**
  *  View for each layer from a layer group
  *  - It needs a model and the layer_definition to make it work.
  *
  *  var layerView = new cdb.geo.ui.LayerViewFromLayerGroup({
  *    model: layer_model,
- *    layerView: layweView 
+ *    layerView: layweView
  *  });
  *
  */
@@ -209,7 +219,7 @@ cdb.geo.ui.LayerViewFromLayerGroup = cdb.geo.ui.LayerView.extend({
   defaults: {
     template: '\
       <a class="layer" href="#/change-layer"><%= layer_name %></a>\
-      <a href="#switch" class="right <%= visible ? "enabled" : "enabled" %> switch"><span class="handle"></span></a>\
+      <a href="#switch" class="right <%= visible ? "enabled" : "disabled" %> switch"><span class="handle"></span></a>\
     '
   },
 
@@ -218,7 +228,9 @@ cdb.geo.ui.LayerViewFromLayerGroup = cdb.geo.ui.LayerView.extend({
     cdb.geo.ui.LayerView.prototype._onSwitchSelected.call(this);
     var sublayer = this.options.layerView.getSubLayer(this.options.layerIndex)
     var visible = this.model.get('visible');
-    if(visible) {
+console.log(visible);
+
+    if (visible) {
       sublayer.show();
     } else {
       sublayer.hide();

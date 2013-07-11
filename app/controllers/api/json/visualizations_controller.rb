@@ -25,9 +25,10 @@ class Api::Json::VisualizationsController < Api::ApplicationController
 
     representation  = collection.map { |member|
       member.to_hash(
-        related:  false,
-        user:     current_user,
-        table:    tables[member.map_id]
+        related:    false,
+        table_data: !(params[:table_data] =~ /false/),
+        user:       current_user,
+        table:      tables[member.map_id]
       )
     }
 
@@ -50,12 +51,14 @@ class Api::Json::VisualizationsController < Api::ApplicationController
       tables    = params[:tables].map do |table_name| 
                     ::Table.find_by_subdomain(request.subdomain, table_name)
                   end
-      map       = Visualization::TableBlender.new(current_user, tables).blend
+      blender   = Visualization::TableBlender.new(current_user, tables)
+      map       = blender.blend
       member    = Visualization::Member.new(
-                    payload_with_default_privacy.merge(
+                    payload.merge(
                       name:     name_candidate,
                       map_id:   map.id,
                       type:     'derived',
+                      privacy:  blender.blended_privacy
                     )
                   )
     else

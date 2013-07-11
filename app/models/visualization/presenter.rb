@@ -41,7 +41,7 @@ module CartoDB
         return {} unless table
         table_data = {
           id:           table.id,
-          name:         table.name
+          name:         visualization.name
         }
 
         table_data.merge!(

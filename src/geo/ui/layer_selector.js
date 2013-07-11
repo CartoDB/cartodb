@@ -159,8 +159,6 @@ cdb.geo.ui.LayerView = cdb.core.View.extend({
 
   initialize: function() {
 
-    console.log(this.model.attributes);
-
     if (!this.model.has('visible')) this.model.set('visible', false);
 
     this.model.bind("change:visible", this._onSwitchSelected, this);
@@ -228,7 +226,6 @@ cdb.geo.ui.LayerViewFromLayerGroup = cdb.geo.ui.LayerView.extend({
     cdb.geo.ui.LayerView.prototype._onSwitchSelected.call(this);
     var sublayer = this.options.layerView.getSubLayer(this.options.layerIndex)
     var visible = this.model.get('visible');
-console.log(visible);
 
     if (visible) {
       sublayer.show();

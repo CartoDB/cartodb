@@ -26,14 +26,13 @@
       var layerUrl = 'http://viz2.cartodb.com/api/v2/viz/ccd8b458-e9de-11e2-aacb-5404a6a683d5/viz.json';
 
       cartodb.createLayer(map, layerUrl)
+       .addTo(map)
        .on('done', function(layer) {
-        map.addLayer(layer);
-
         // change the query for the first layer
         var subLayerOptions = {
-            sql: "SELECT * FROM example_cartodbjs_1 where adm0_a3 = 'USA'",
-            cartocss: "#example_cartodbjs_1{marker-fill: #109DCD; marker-width: 5; marker-line-color: white; marker-line-width: 0;}"
-          }
+          sql: "SELECT * FROM example_cartodbjs_1 where adm0_a3 = 'USA'",
+          cartocss: "#example_cartodbjs_1{marker-fill: #109DCD; marker-width: 5; marker-line-color: white; marker-line-width: 0;}"
+        }
 
         layer.getSubLayer(0).set(subLayerOptions);
       }).on('error', function() {

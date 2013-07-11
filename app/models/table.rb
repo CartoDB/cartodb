@@ -1542,6 +1542,7 @@ SQL
   def update_name_changes
     if @name_changed_from.present? && @name_changed_from != name
       # update metadata records
+      reload
       $tables_metadata.rename(Table.key(database_name,@name_changed_from), key)
       owner.in_database.rename_table(@name_changed_from, name)
       propagate_name_change_to_table_visualization

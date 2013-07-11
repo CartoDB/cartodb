@@ -128,8 +128,9 @@ Below, you have an example using a previously instatiated leaflet map.
       });
 
       cartodb.createLayer(map, 'http://documentation.cartodb.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json')
+        .addTo(map)
         .on('done', function(layer) {
-          map.addLayer(layer);
+            //do stuff
         })
         .on('error', function(err) {
           alert("some error occurred: " + err);
@@ -157,9 +158,9 @@ When you create a visualization using the CartoDB website, you get automatically
         sql: "SELECT * FROM table_name",
         cartocss: '#table_name {marker-fill: #F0F0F0;}'
       }]
-    }).done(function(layer) {
-      // add the layer to our map which already contains 1 sublayer
-      map.addLayer(layer);
+    })
+    .addTo(map) // add the layer to our map which already contains 1 sublayer
+    .done(function(layer) {
 
       // create and add a new sublayer
       layer.createSubLayer({
@@ -331,6 +332,7 @@ You can call to addTo(map[, position]) in the promise so when the layer is ready
     map = new google.maps.Map(document.getElementById('map'),  mapOptions);
 
     cartodb.createLayer(map, 'http://documentation.cartodb.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json')
+      .addTo(map)
       .on('done', function(layer) {
         layer
           .on('featureOver', function(e, latlng, pos, data) {
@@ -425,15 +427,12 @@ SubLayer object
 <div class="code_title">layer.createSubLayer</div>
   ```
     cartodb.createLayer(map, 'http://examples.cartodb.com/api/v2/viz/european_countries_e/viz.json', function(layer) {
-       // add the layer to the map
-       map.addLayer(layer);
-
        // add populated places points over the countries layer
        layer.createSubLayer({
          sql: 'SELECT * FROM ne_10m_populated_places_simple',
          cartocss: '#layer { marker-fill: red; }'
        });
-    });
+    }).addTo(map);
   ```
 <div class="margin20"></div>
 
@@ -905,6 +904,7 @@ The **createLayer** and **createVis** functions returns two important events for
 <div class="code_title">Loading events</div>
   ```
     cartodb.createLayer(map, 'http://examples.cartodb.com/api/v1/viz/0001/viz.json')
+      .addTo(map)
       .on('done', function(layer) {
         alert(‘CartoDB layer loaded!’);
       }).on('error', function(err) {
@@ -989,6 +989,7 @@ You can use all the functionality of cartodb.js with HTTPs support. Be sure to a
         zoom: 2
       })
       cartodb.createLayer(map, 'http://examples.cartodb.com/api/v1/viz/15589/viz.json', { https: true })
+        .addTo(map)
         .on('error', function(err) {
           alert("some error occurred: " + err);
         });

@@ -463,16 +463,16 @@ class Table < Sequel::Model(:user_tables)
     super
     $tables_metadata.del key
     Tag.filter(:user_id => user_id, :table_id => id).delete
-    remove_table_from_user_database unless keep_user_database_table
     remove_table_from_stats
     invalidate_varnish_cache
-    delete_tile_style
-
-    @table_visualization.delete if @table_visualization
     @dependent_visualizations_cache.each(&:delete)
     @non_dependent_visualizations_cache.each do |visualization|
       visualization.unlink_from(self)
     end
+    @table_visualization.delete if @table_visualization
+
+    delete_tile_style
+    remove_table_from_user_database unless keep_user_database_table
   end
 
   def remove_table_from_user_database

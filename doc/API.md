@@ -862,7 +862,7 @@ Keep in mind the version of CartoDB.js you are using for development. For any li
 
 Contains the library version, should be something like '3.0.1'.
 
-### FAQ
+### Other important stuff
 
 The CartoDB.js has many great features for you to use in your applications. Let’s take a look at the most important for your application development.
 
@@ -1031,7 +1031,7 @@ Now, that you have your CartoDB.js version, you can point your site at that rele
 <div class="margin20"></div>
 <div class="code_title">Persistent version hosting</div>
   ``` html
-    http://libs.cartocdn.com/cartodb.js/v3/2.0.11/cartodb.js
+    http://libs.cartocdn.com/cartodb.js/v3/3.0.01/cartodb.js
   ```
 <div class="margin20"></div>
 
@@ -1040,6 +1040,6 @@ You can do the same for the CSS documents we provide:
 <div class="margin20"></div>
 <div class="code_title">Persistent version hosting</div>
   ``` html
-    http://libs.cartocdn.com/cartodb.js/v3/2.0.11/themes/css/cartodb.css
+    http://libs.cartocdn.com/cartodb.js/v3/3.0.01/themes/css/cartodb.css
   ```
 <div class="margin20"></div>

@@ -120,16 +120,16 @@ var LeafLetLayerCartoDBView = L.CartoDBLayer.extend({
 
   featureOver: function(e, latlon, pixelPos, data) {
     // dont pass leaflet lat/lon
-    this.trigger('featureOver', e, [latlon.lat, latlon.lng], pixelPos, data);
+    this.trigger('featureOver', e, [latlon.lat, latlon.lng], pixelPos, data, 0);
   },
 
   featureOut: function(e) {
-    this.trigger('featureOut', e);
+    this.trigger('featureOut', e, 0);
   },
 
   featureClick: function(e, latlon, pixelPos, data) {
     // dont pass leaflet lat/lon
-    this.trigger('featureClick', e, [latlon.lat, latlon.lng], pixelPos, data);
+    this.trigger('featureClick', e, [latlon.lat, latlon.lng], pixelPos, data, 0);
   },
 
   reload: function() {

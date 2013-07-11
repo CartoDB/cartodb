@@ -1,6 +1,6 @@
-// cartodb.js version: 3.0.01
+// cartodb.js version: 3.0.02
 // uncompressed version: cartodb.uncompressed.js
-// sha: 871c875fb5abaf66d8768c8afc384896ecdf621d
+// sha: 373b53771bee9fa26a1d1a3bf2e3682d21f4c90f
 (function() {
   var root = this;
 
@@ -19882,7 +19882,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.0.01';
+    cdb.VERSION = '3.0.02';
 
     cdb.CARTOCSS_VERSIONS = {
       '2.0.0': '',
@@ -22813,12 +22813,16 @@ cdb.geo.ui.LayerSelector = cdb.core.View.extend({
           var m = new cdb.core.Model(l);
           m.set('order', i);
           m.set('type', 'layergroup');
+
+          m.set('visible', !layerGroupView.getSubLayer(i).get('hidden'));
+
           if(self.options.layer_names) {
             m.set('layer_name', self.options.layer_names[i]);
           } else {
             m.set('layer_name', l.options.layer_name);
           }
-          var layerView = self._createLayer('LayerViewFromLayerGroup', { 
+
+          var layerView = self._createLayer('LayerViewFromLayerGroup', {
             model: m,
             layerView: layerGroupView,
             layerIndex: i
@@ -22827,6 +22831,7 @@ cdb.geo.ui.LayerSelector = cdb.core.View.extend({
           self.layers.push(layerView);
         }
       } else if (layer.get("type") == "CartoDB") {
+
         var layerView = self._createLayer('LayerView', { model: layer });
         layerView.bind('switchChanged', self._setCount, self);
         self.layers.push(layerView);
@@ -22846,12 +22851,14 @@ cdb.geo.ui.LayerSelector = cdb.core.View.extend({
     var count = 0;
     for (var i = 0, l = this.layers.length; i < l; ++i) {
       var lyr = this.layers[i];
+
       if (lyr.model.get('visible')) {
         count++;
       }
     }
 
     this.$('.count').text(count);
+    this.trigger("switchChanged", this);
   },
 
   _openDropdown: function() {
@@ -22883,7 +22890,7 @@ cdb.geo.ui.LayerView = cdb.core.View.extend({
   defaults: {
     template: '\
       <a class="layer" href="#/change-layer"><%= table_name %></a>\
-      <a href="#switch" class="right <%= visible ? "enabled" : "enabled" %> switch"><span class="handle"></span></a>\
+      <a href="#switch" class="right <%= visible ? "enabled" : "disabled" %> switch"><span class="handle"></span></a>\
     '
   },
 
@@ -22893,10 +22900,15 @@ cdb.geo.ui.LayerView = cdb.core.View.extend({
 
   initialize: function() {
 
-    // Check if it has visible parameter set
-    if (!this.model.get('visible')) this.model.set('visible', true);
+    console.log(this.model.attributes);
+
+    if (!this.model.has('visible')) this.model.set('visible', false);
 
     this.model.bind("change:visible", this._onSwitchSelected, this);
+
+    this.add_related_model(this.model);
+
+    this._onSwitchSelected();
 
     // Template
     this.template = this.options.template ? cdb.templates.getTemplate(this.options.template) : _.template(this.defaults.template);
@@ -22920,6 +22932,7 @@ cdb.geo.ui.LayerView = cdb.core.View.extend({
 
     // Send trigger
     this.trigger('switchChanged');
+
   },
 
   _onSwitchClick: function(e){
@@ -22931,16 +22944,13 @@ cdb.geo.ui.LayerView = cdb.core.View.extend({
 
 });
 
-
-
-
 /**
  *  View for each layer from a layer group
  *  - It needs a model and the layer_definition to make it work.
  *
  *  var layerView = new cdb.geo.ui.LayerViewFromLayerGroup({
  *    model: layer_model,
- *    layerView: layweView 
+ *    layerView: layweView
  *  });
  *
  */
@@ -22950,7 +22960,7 @@ cdb.geo.ui.LayerViewFromLayerGroup = cdb.geo.ui.LayerView.extend({
   defaults: {
     template: '\
       <a class="layer" href="#/change-layer"><%= layer_name %></a>\
-      <a href="#switch" class="right <%= visible ? "enabled" : "enabled" %> switch"><span class="handle"></span></a>\
+      <a href="#switch" class="right <%= visible ? "enabled" : "disabled" %> switch"><span class="handle"></span></a>\
     '
   },
 
@@ -22959,7 +22969,9 @@ cdb.geo.ui.LayerViewFromLayerGroup = cdb.geo.ui.LayerView.extend({
     cdb.geo.ui.LayerView.prototype._onSwitchSelected.call(this);
     var sublayer = this.options.layerView.getSubLayer(this.options.layerIndex)
     var visible = this.model.get('visible');
-    if(visible) {
+console.log(visible);
+
+    if (visible) {
       sublayer.show();
     } else {
       sublayer.hide();
@@ -23150,7 +23162,7 @@ function LayerDefinition(layerDefinition, options) {
 }
 
 /**
- * given a list of sublayers as: 
+ * given a list of sublayers as:
  * {
  *   sql: '...',
  *   cartocss: '..',
@@ -23185,7 +23197,7 @@ LayerDefinition.layerDefFromSubLayers = function(sublayers) {
 LayerDefinition.prototype = {
 
   /*
-   * TODO: extract these two functions to some core module 
+   * TODO: extract these two functions to some core module
    */
   isCORSSupported: function() {
     return 'withCredentials' in new XMLHttpRequest() || typeof XDomainRequest !== "undefined";
@@ -23391,7 +23403,7 @@ LayerDefinition.prototype = {
     if(api_key) {
       params.push("map_key=" + api_key);
     }
-    // mark as the request is being done 
+    // mark as the request is being done
     this._waiting = true;
     var req = null;
     if(this.options.cors) {
@@ -27285,7 +27297,7 @@ var Vis = cdb.core.View.extend({
     }
 
     var scrollwheel = true;
-    
+
     options = options || {};
 
     this._applyOptions(data, options);
@@ -27358,19 +27370,21 @@ var Vis = cdb.core.View.extend({
       this.loadLayer(layerData);
     }
 
-    // Create the overlays
-    for (var i in data.overlays) {
-      this.addOverlay(data.overlays[i]);
-    }
-
     // set layer options
     if(options.sublayer_options) {
+
       var dataLayer = this.getLayers()[1];
+
       for(i = 0; i < options.sublayer_options.length; ++i) {
         var o = options.sublayer_options[i];
         var subLayer = dataLayer.getSubLayer(i);
         o.visible ? subLayer.show(): subLayer.hide();
       }
+    }
+
+    // Create the overlays
+    for (var i in data.overlays) {
+      this.addOverlay(data.overlays[i]);
     }
 
     _.defer(function() {
@@ -27746,8 +27760,6 @@ var Vis = cdb.core.View.extend({
     });
   }
 
-
-
 });
 
 cdb.vis.Vis = Vis;
@@ -28040,7 +28052,7 @@ Layers.register('layergroup', function(vis, data) {
   _.extend(_Promise.prototype,  Backbone.Events, {
     done: function(fn) {
       return this.bind('done', fn);
-    }, 
+    },
     error: function(fn) {
       return this.bind('error', fn);
     }
@@ -28084,7 +28096,7 @@ Layers.register('layergroup', function(vis, data) {
 
   /**
    * create a layer for the specified map
-   * 
+   *
    * @param map should be a L.Map or google.maps.Map object
    * @param layer should be an url or a javascript object with the data to create the layer
    * @param options layer options
@@ -28106,14 +28118,14 @@ Layers.register('layergroup', function(vis, data) {
     if(_.isFunction(fn)) {
       callback = fn;
     }
-    
+
     promise.addTo = function(map, position) {
       promise.on('done', function() {
         MapType.addLayerToMap(layerView, map, position);
       });
       return promise;
     };
-    
+
     _getLayerJson(layer, function(visData) {
 
       var layerData;
@@ -28142,7 +28154,7 @@ Layers.register('layergroup', function(vis, data) {
       if(options && !_.isFunction(options)) {
         layerData.options = layerData.options || {};
         _.extend(layerData.options, options);
-      } 
+      }
 
       options = options || {};
       options = _.defaults(options, {

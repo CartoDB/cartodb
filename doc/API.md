@@ -169,7 +169,7 @@ When you create a visualization using the CartoDB website, you get automatically
       });
 
       // change the query for the first layer
-      layer.getSubLayer(0).setSQL('');
+      layer.getSubLayer(0).setSQL("SELECT * FROM table_name limit 10");
     });
   ```
 <div class="margin20"></div>

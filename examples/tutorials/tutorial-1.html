@@ -1,7 +1,7 @@
 <html>
 <head>
-  <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/themes/css/cartodb.css" />
-  <script src="http://libs.cartocdn.com/cartodb.js/v2/cartodb.js"></script>
+  <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.css" />
+  <script src="http://libs.cartocdn.com/cartodb.js/v3/cartodb.js"></script>
   <!--[if lte IE 8]>
     <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/themes/css/cartodb.ie.css" />
   <![endif]-->
@@ -11,33 +11,35 @@
   </style>
 
   <script>
+    var map;
+    function init(){
+      // initiate leaflet map
+      map = new L.Map('cartodb-map', {
+        center: [40,-98],
+        zoom: 4
+      })
 
-var map;
-function init(){
-  // initiate leaflet map
-  map = new L.Map('cartodb-map', { 
-    center: [0,0],
-    zoom: 2
-  })
+      L.tileLayer('https://dnv9my2eseobd.cloudfront.net/v3/cartodb.map-4xtxp73f/{z}/{x}/{y}.png', {
+        attribution: 'Mapbox <a href="http://mapbox.com/about/maps" target="_blank">Terms &amp; Feedback</a>'
+      }).addTo(map);
 
-  L.tileLayer('https://dnv9my2eseobd.cloudfront.net/v3/cartodb.map-4xtxp73f/{z}/{x}/{y}.png', {
-    attribution: 'Mapbox <a href="http://mapbox.com/about/maps" target="_blank">Terms &amp; Feedback</a>'
-  }).addTo(map);
+      var layerUrl = 'http://viz2.cartodb.com/api/v2/viz/ccd8b458-e9de-11e2-aacb-5404a6a683d5/viz.json';
 
-  var layerUrl = 'http://examples.cartodb.com/api/v1/viz/15589/viz.json';
-  var layerOptions = {
-        query: "SELECT * FROM {{table_name}} where adm0_a3 = 'USA'",
-        tile_style: "#{{table_name}}{marker-fill: #109DCD; marker-width: 5; marker-line-color: white; marker-line-width: 0;}"
-      }
+      cartodb.createLayer(map, layerUrl)
+       .on('done', function(layer) {
+        map.addLayer(layer);
 
-  cartodb.createLayer(map, layerUrl, layerOptions)
-   .on('done', function(layer) {
-    map.addLayer(layer);
-  }).on('error', function() {
-    //log the error
-  });
-}
-  
+        // change the query for the first layer
+        var subLayerOptions = {
+            sql: "SELECT * FROM example_cartodbjs_1 where adm0_a3 = 'USA'",
+            cartocss: "#example_cartodbjs_1{marker-fill: #109DCD; marker-width: 5; marker-line-color: white; marker-line-width: 0;}"
+          }
+
+        layer.getSubLayer(0).set(subLayerOptions);
+      }).on('error', function() {
+        //log the error
+      });
+    }
   </script>
 </head>
 

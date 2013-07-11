@@ -286,12 +286,14 @@ With visualizations already created through the CartoDB console, you can simply 
   + **map**: Leaflet L.Map or Google Maps google.maps.Map object. The map should be initialized before calling this function.
   + **layerSource**: contains information about the layer. It can be specified in 2 ways:
     - passing the url where the layer data is located:
+    <div class="margin20"></div></p>
     <div class="code_title">cartodb.createLayer</div>
       ```
         cartodb.createLayer(map, 'http://myserver.com/layerdata.json')
       ```
 
     - passing the data directly:
+    <div class="margin20"></div></p>
     <div class="code_title">cartodb.createLayer</div>
       ```
         cartodb.createLayer(map, { ... layer metadata ... });

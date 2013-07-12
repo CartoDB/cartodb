@@ -1,6 +1,7 @@
 # encoding: utf-8
 require_relative './loader'
 require_relative './shp_loader'
+require_relative './indexer'
 
 module CartoDB
   module Importer2
@@ -12,10 +13,10 @@ module CartoDB
         shp:  ShpLoader
       }
 
-      def initialize(job, downloader, georeferencer=nil)
+      def initialize(job, downloader, georeferencer=nil, indexer=nil)
         self.job          = job
         self.downloader   = downloader
-        self.loader       = nil
+        self.indexer      = indexer
       end #initialize
 
       def run
@@ -25,6 +26,7 @@ module CartoDB
         job.log "Importing data from #{downloader.source_file.fullpath}"
         loader.run
         job.log "Loader exit code: #{loader.exit_code}"
+        indexer.add(job.table_name)
         self
       end #run
       
@@ -48,9 +50,14 @@ module CartoDB
       private
 
       attr_accessor :job, :downloader, :georeferencer
-      attr_writer   :loader
+      attr_writer   :loader, :indexer
+
+      def indexer
+        @indexer ||= Indexer.new(job.db)
+      end #indexer
 
       def loader
+        return @loader if @loader
         loader_klass = LOADERS.fetch(source_file.extension.delete('.').to_sym)
         @loader ||= loader_klass.new(job, source_file)
       end #loader

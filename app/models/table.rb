@@ -1318,6 +1318,20 @@ TRIGGER
     @relator ||= CartoDB::Table::Relator.new(Rails::Sequel.connection, self)
   end #relator
 
+  def set_table_id
+    self.table_id = self.get_table_id
+  end
+
+  def get_table_id
+    owner.in_database.select(:pg_class__oid)
+      .from(:pg_class)
+      .join_table(:inner, :pg_namespace, :oid => :relnamespace)
+      .where(:relkind => 'r', :nspname => 'public', :relname => name)
+      .first[:oid]
+  end
+
+
+
   private
 
   def update_updated_at
@@ -1489,14 +1503,6 @@ SQL
         )
       end
     end
-  end
-
-  def set_table_id
-    self.table_id = owner.in_database.select(:pg_class__oid)
-                                     .from(:pg_class)
-                                     .join_table(:inner, :pg_namespace, :oid => :relnamespace)
-                                     .where(:relkind => 'r', :nspname => 'public', :relname => name)
-                                     .first[:oid]
   end
 
   def update_the_geom!(attributes, primary_key)

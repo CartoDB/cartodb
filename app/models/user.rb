@@ -421,7 +421,8 @@ class User < Sequel::Model
   end
 
   def link_outdated_tables
-    metadata_tables_without_id = self.tables.filter(table_id: nil).map(&:name)
+    # Link tables without oid
+    metadata_tables_without_id = self.tables.where(table_id: nil).map(&:name)
     outdated_tables = real_tables.select{|t| metadata_tables_without_id.include?(t[:relname])}
     outdated_tables.each do |t|
       table = self.tables.where(name: t[:relname]).first
@@ -430,6 +431,13 @@ class User < Sequel::Model
       rescue Sequel::DatabaseError => e
         raise unless e.message =~ /must be owner of relation/
       end
+    end
+
+    # Link tables which oid has changed
+    self.tables.where(
+      "table_id not in ?", self.real_tables.map {|t| t[:oid]}
+    ).each do |table|
+      table.this.update table_id: table.get_table_id
     end
   end
 

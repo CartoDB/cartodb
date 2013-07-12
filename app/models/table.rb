@@ -1320,15 +1320,15 @@ TRIGGER
 
   def set_table_id
     self.table_id = self.get_table_id
-  end
+  end # set_table_id
 
   def get_table_id
-    owner.in_database.select(:pg_class__oid)
+    record = owner.in_database.select(:pg_class__oid)
       .from(:pg_class)
       .join_table(:inner, :pg_namespace, :oid => :relnamespace)
-      .where(:relkind => 'r', :nspname => 'public', :relname => name)
-      .first[:oid]
-  end
+      .where(:relkind => 'r', :nspname => 'public', :relname => name).first
+    record.nil? ? nil : record[:oid]
+  end # get_table_id
 
 
 

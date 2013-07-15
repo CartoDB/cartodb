@@ -326,8 +326,7 @@ class DataImport < Sequel::Model
     pg_options.store(:database, table_owner.database_name)
 
     downloader  = CartoDB::Importer2::Downloader.new(data_source)
-    job         = CartoDB::Importer2::Job.new(pg_options: pg_options)
-    runner      = CartoDB::Importer2::Runner.new(job, downloader)
+    runner      = CartoDB::Importer2::Runner.new(pg_options, downloader)
     runner.run
 
 

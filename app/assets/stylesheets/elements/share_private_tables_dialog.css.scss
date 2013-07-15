@@ -58,8 +58,14 @@
     }
 
     p.error {
+      padding:0 14px;
       margin:10px 0 0;
-      color:rgba(255,0,0,0.5);
+      line-height:44px;
+      @include border-radius(3px);
+      background:#FFEAEA;
+      color:#666666;
+      font-size:14px;
+      font-family: $text-fonts;
     }
 
     a.ok {margin:10px 0 0 0;}

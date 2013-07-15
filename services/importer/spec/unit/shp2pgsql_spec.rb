@@ -40,8 +40,13 @@ describe Shp2pgsql do
       lambda { wrapper.run }.must_raise NoPrjAvailableError
     end
 
-    it 'raises if the SHP has an invalid SRID'
-    it 'raises if shp2pgsql command finishes with errors' 
+    it 'raises if the SHP has an invalid SRID' do
+      skip
+    end
+
+    it 'raises if shp2pgsql command finishes with errors' do
+      skip
+    end
   end #run
 
   describe '#normalize' do
@@ -61,7 +66,9 @@ describe Shp2pgsql do
   end #normalize
 
   describe '#normalized?' do
-    it 'returns true if normalizer executed and detected a projection'
+    it 'returns true if normalizer executed and detected a projection' do
+      skip
+    end
   end
 
   describe '#detected_projection' do

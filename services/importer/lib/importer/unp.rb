@@ -15,8 +15,7 @@ module CartoDB
 
       attr_reader :source_files, :temporary_directory
 
-      def initialize(job)
-        @job          = job
+      def initialize
         @source_files = []
       end #initialize
 
@@ -31,7 +30,7 @@ module CartoDB
       end #run
 
       def without_unpacking(path)
-        self.source_files.push(source_file_for(path))
+        self.source_files.push(source_file_for(normalize(path)))
         self
       end #without_unpacking
 

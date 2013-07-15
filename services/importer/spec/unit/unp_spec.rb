@@ -11,8 +11,7 @@ describe Unp do
   describe '#run' do
     it 'extracts the contents of the file' do
       zipfile   = zipfile_factory
-      job       = Object.new
-      unp       = Unp.new(job)
+      unp       = Unp.new
 
       unp.run(zipfile)
       (Dir.entries(unp.temporary_directory).size > 2).must_equal true
@@ -20,8 +19,7 @@ describe Unp do
 
     it 'populates a list of source files' do
       zipfile   = zipfile_factory
-      job       = Object.new
-      unp       = Unp.new(job)
+      unp       = Unp.new
       
       unp.source_files.must_be_empty
       unp.run(zipfile)
@@ -31,8 +29,7 @@ describe Unp do
     it 'populates a single source file for the passed path
     if not compressed' do
       file      = '/var/tmp/bogus.csv'
-      job       = Object.new
-      unp       = Unp.new(job)
+      unp       = Unp.new
       
       unp.source_files.must_be_empty
       unp.run(file)
@@ -42,8 +39,7 @@ describe Unp do
 
   describe '#without_unpacking' do
     it 'pushes a source file for the passed file path to the source files' do
-      job       = Object.new
-      unp       = Unp.new(job)
+      unp       = Unp.new
 
       unp.source_files.must_be_empty
       unp.without_unpacking('bogus.csv')
@@ -53,8 +49,7 @@ describe Unp do
 
   describe '#compressed?' do
     it 'returns true if extension denotes a compressed file' do
-      job       = Object.new
-      unp       = Unp.new(job)
+      unp       = Unp.new
 
       unp.compressed?('bogus.gz').must_equal true
       unp.compressed?('bogus.csv').must_equal false
@@ -63,8 +58,7 @@ describe Unp do
 
   describe '#process' do
     it 'adds a source_file for the path if extension supported' do
-      job = Object.new
-      unp = Unp.new(job)
+      unp = Unp.new
 
       unp.source_files.must_be_empty
       unp.process('/var/tmp/foo.csv')
@@ -81,8 +75,7 @@ describe Unp do
       FileUtils.touch(fixture1)
       FileUtils.touch(fixture2)
 
-      job       = Object.new
-      unp       = Unp.new(job)
+      unp       = Unp.new
       files     = unp.crawl('/var/tmp')
 
       files.must_include(fixture1)
@@ -97,8 +90,7 @@ describe Unp do
     it 'generates a temporary directory' do
       dir       = '/var/tmp/bogus'
       zipfile   = zipfile_factory(dir)
-      job       = Object.new
-      unp       = Unp.new(job).extract(zipfile)
+      unp       = Unp.new.extract(zipfile)
 
       File.directory?(unp.temporary_directory).must_equal true
 
@@ -109,8 +101,7 @@ describe Unp do
     it 'extracts the contents of the file into the temporary directory' do
       dir       = '/var/tmp/bogus'
       zipfile   = zipfile_factory(dir)
-      job       = Object.new
-      unp       = Unp.new(job).extract(zipfile)
+      unp       = Unp.new.extract(zipfile)
 
       (Dir.entries(unp.temporary_directory).size > 2).must_equal true
 
@@ -119,24 +110,21 @@ describe Unp do
     end
 
     it 'raises if unp could not extract the file' do
-      job = Object.new
-      lambda { Unp.new(job).extract('/var/tmp/non_existent.zip') }
+      lambda { Unp.new.extract('/var/tmp/non_existent.zip') }
         .must_raise ExtractionError
     end
   end #extract
 
   describe '#source_file_for' do
     it 'returns a source_file for the passed path' do
-      job = Object.new
-      Unp.new(job).source_file_for('/var/tmp/foo.txt')
+      Unp.new.source_file_for('/var/tmp/foo.txt')
         .must_be_instance_of SourceFile
     end
   end #source_file_for
 
   describe '#command_for' do
     it 'returns the unp command line to be executed' do
-      job = Object.new
-      unp = Unp.new(job)
+      unp = Unp.new
 
       unp.command_for('bogus').must_match /.*unp.*bogus.*/
     end
@@ -144,8 +132,7 @@ describe Unp do
 
   describe '#supported?' do
     it 'returns true if file extension is supported' do
-      job = Object.new
-      unp = Unp.new(job)
+      unp = Unp.new
 
       unp.supported?('foo.doc').must_equal false
       unp.supported?('foo.xls').must_equal true
@@ -157,8 +144,7 @@ describe Unp do
       fixture   = "/var/tmp/#{Time.now.to_i} with spaces.txt"
       File.open(fixture, 'w').close
 
-      job       = Object.new
-      new_name  = Unp.new(job).normalize(fixture)
+      new_name  = Unp.new.normalize(fixture)
       new_name.must_match(/with_spaces/)
     end
 
@@ -166,8 +152,7 @@ describe Unp do
       fixture   = "/var/tmp/#{Time.now.to_i} with spaces.txt"
       File.open(fixture, 'w').close
 
-      job = Object.new
-      unp = Unp.new(job)
+      unp = Unp.new
       unp.normalize(fixture)
 
       File.exists?(fixture).must_equal false
@@ -177,8 +162,7 @@ describe Unp do
   describe '#underscore' do
     it 'substitutes spaces for underscores in the file name' do
       fixture   = "/var/tmp/#{Time.now.to_i} with spaces.txt"
-      job       = Object.new
-      new_name  = Unp.new(job).underscore(fixture)
+      new_name  = Unp.new.underscore(fixture)
       new_name.must_match(/with_spaces/)
     end
 
@@ -195,8 +179,7 @@ describe Unp do
       new_name  = '/var/tmp/foo.txt'
       File.open(fixture, 'w').close
 
-      job = Object.new
-      unp = Unp.new(job)
+      unp = Unp.new
       unp.rename(fixture, new_name)
 
       File.exists?(fixture).must_equal false
@@ -209,8 +192,7 @@ describe Unp do
       fixture   = "/var/tmp/#{Time.now.to_i}.txt"
       File.open(fixture, 'w').close
 
-      job = Object.new
-      unp = Unp.new(job)
+      unp = Unp.new
       unp.rename(fixture, fixture)
 
       File.exists?(fixture).must_equal true
@@ -219,15 +201,13 @@ describe Unp do
 
   describe '#generate_temporary_directory' do
     it 'creates a temporary directory' do
-      job = Object.new
-      unp = Unp.new(job)
+      unp = Unp.new
       unp.generate_temporary_directory
       File.directory?(unp.temporary_directory).must_equal true
     end
 
     it 'sets the temporary_directory instance variable' do
-      job = Object.new
-      unp = Unp.new(job)
+      unp = Unp.new
 
       unp.temporary_directory.must_be_nil
       unp.generate_temporary_directory
@@ -237,15 +217,13 @@ describe Unp do
 
   describe '#hidden?' do
     it 'returns true if filename starts with a dot' do
-      job = Object.new
-      unp = Unp.new(job)
+      unp = Unp.new
       unp.hidden?('.bogus').must_equal true
       unp.hidden?('bogus').must_equal false
     end
 
     it 'returns true if filename starts with two underscores' do
-      job = Object.new
-      unp = Unp.new(job)
+      unp = Unp.new
       unp.hidden?('__bogus').must_equal true
       unp.hidden?('_bogus').must_equal false
     end
@@ -253,13 +231,11 @@ describe Unp do
 
   describe '#unp_failure?'  do
     it 'returns true if unp cannot read the file' do
-      job = Object.new
-      Unp.new(job).unp_failure?('Cannot read', 0).must_equal true
+      Unp.new.unp_failure?('Cannot read', 0).must_equal true
     end
 
     it 'returns true if returned an error exit code' do
-      job = Object.new
-      Unp.new(job).unp_failure?('', 999).must_equal true
+      Unp.new.unp_failure?('', 999).must_equal true
     end
   end #unp_failure?
 

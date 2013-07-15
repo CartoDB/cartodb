@@ -11,6 +11,7 @@ module CartoDB
     class Unp
       HIDDEN_FILE_REGEX     = /^(\.|\_{2})/
       UNP_READ_ERROR_REGEX  = /.*Cannot read.*/
+      COMPRESSED_EXTENSIONS = %w{ .zip .gz .tgz .tar.gz .bz2 .tar .kmz }
 
       attr_reader :source_files, :temporary_directory
 
@@ -20,6 +21,7 @@ module CartoDB
       end #initialize
 
       def run(path)
+        return without_unpacking(path) unless compressed?(path)
         extract(path)
         crawl(temporary_directory).each { |path| process(path) }
 
@@ -27,6 +29,15 @@ module CartoDB
       rescue => exception
         raise ExtractionError
       end #run
+
+      def without_unpacking(path)
+        self.source_files.push(source_file_for(path))
+        self
+      end #without_unpacking
+
+      def compressed?(path)
+        COMPRESSED_EXTENSIONS.include?(File.extname(path))
+      end #compressed?
 
       def process(path)
         source_files.push(source_file_for(path)) if supported?(path)

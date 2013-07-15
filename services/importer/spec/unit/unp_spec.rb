@@ -27,7 +27,39 @@ describe Unp do
       unp.run(zipfile)
       unp.source_files.wont_be_empty
     end
+
+    it 'populates a single source file for the passed path
+    if not compressed' do
+      file      = '/var/tmp/bogus.csv'
+      job       = Object.new
+      unp       = Unp.new(job)
+      
+      unp.source_files.must_be_empty
+      unp.run(file)
+      unp.source_files.length.must_equal 1
+    end
   end #run
+
+  describe '#without_unpacking' do
+    it 'pushes a source file for the passed file path to the source files' do
+      job       = Object.new
+      unp       = Unp.new(job)
+
+      unp.source_files.must_be_empty
+      unp.without_unpacking('bogus.csv')
+      unp.source_files.size.must_equal 1
+    end
+  end #withount_unpacking
+
+  describe '#compressed?' do
+    it 'returns true if extension denotes a compressed file' do
+      job       = Object.new
+      unp       = Unp.new(job)
+
+      unp.compressed?('bogus.gz').must_equal true
+      unp.compressed?('bogus.csv').must_equal false
+    end
+  end #compressed?
 
   describe '#process' do
     it 'adds a source_file for the path if extension supported' do
@@ -171,6 +203,17 @@ describe Unp do
       File.exists?(new_name).must_equal true
 
       FileUtils.rm(new_name)
+    end
+
+    it 'does nothing if destination file name is the same as the original' do
+      fixture   = "/var/tmp/#{Time.now.to_i}.txt"
+      File.open(fixture, 'w').close
+
+      job = Object.new
+      unp = Unp.new(job)
+      unp.rename(fixture, fixture)
+
+      File.exists?(fixture).must_equal true
     end
   end #rename
 

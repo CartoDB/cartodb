@@ -155,23 +155,15 @@ describe "Tables API" do
   end
 
   it "removes metadata of tables destroyed via SQL API" do
+    FactoryGirl.create(:table, :user_id => @user.id)
     table = FactoryGirl.create(:table, :user_id => @user.id)
+
+    @user.in_database.drop_table table.name
 
     get_json v1_tables_url(params) do |response|
       response.status.should be_success
       response.body[:tables].size.should == 1
-      response.body[:tables][0]['name'].should == "untitled_table"
-    end
-
-    @user.in_database.run(
-      <<-SQL
-        DROP TABLE #{table.name};
-      SQL
-    )
-
-    get_json v1_tables_url(params) do |response|
-      response.status.should be_success
-      response.body[:tables].size.should == 0
+      response.body[:tables][0]["name"].should_not == table.name
     end
   end
 

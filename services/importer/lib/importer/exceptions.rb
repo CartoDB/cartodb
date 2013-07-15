@@ -7,6 +7,7 @@ module CartoDB
     class InvalidSridError          < StandardError; end
     class InvalidShpError           < StandardError; end
     class ShpToSqlConversionError   < StandardError; end
+    class ExtractionError           < StandardError; end
   end # Importer2
 end # CartoDB
 

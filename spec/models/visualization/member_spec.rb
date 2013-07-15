@@ -70,16 +70,30 @@ describe Visualization::Member do
       member.tags.should include('tag 2')
     end
 
-    it 'invalidates vizjson cache in varnish if privacy or name changed' do
+    it 'invalidates vizjson cache in varnish if name changed' do
       member      = Visualization::Member.new(random_attributes)
       member.store
 
       member.expects(:invalidate_varnish_cache)
       member.name = 'changed'
       member.store
+    end
+
+    it 'invalidates vizjson cache in varnish if privacy changed' do
+      member      = Visualization::Member.new(random_attributes)
+      member.store
 
       member.expects(:invalidate_varnish_cache)
       member.privacy = 'private'
+      member.store
+    end
+
+    it 'invalidates vizjson cache in varnish if description changed' do
+      member      = Visualization::Member.new(random_attributes)
+      member.store
+
+      member.expects(:invalidate_varnish_cache)
+      member.description = 'changed description'
       member.store
     end
   end #store

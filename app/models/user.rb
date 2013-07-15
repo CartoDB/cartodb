@@ -396,28 +396,24 @@ class User < Sequel::Model
   end
 
   def real_tables
-    @real_tables ||= begin
-      self.in_database(:as => :superuser)
-      .select(:pg_class__oid, :pg_class__relname)
-      .from(:pg_class)
-      .join_table(:inner, :pg_namespace, :oid => :relnamespace)
-      .where(:relkind => 'r', :nspname => 'public')
-      .exclude(:relname => SYSTEM_TABLE_NAMES)
-      .all
-   end
+    self.in_database(:as => :superuser)
+    .select(:pg_class__oid, :pg_class__relname)
+    .from(:pg_class)
+    .join_table(:inner, :pg_namespace, :oid => :relnamespace)
+    .where(:relkind => 'r', :nspname => 'public')
+    .exclude(:relname => SYSTEM_TABLE_NAMES)
+    .all
   end
 
   # Looks for tables created on the user database
   # but not linked to the Rails app database. Creates/Updates/Deletes
   # required records to sync them
   def link_ghost_tables
+    return true if self.real_tables.blank?
     link_outdated_tables
-
-    metadata_tables_ids = self.tables.select(:table_id).map(&:table_id)
-
-    # link_created_tables(metadata_tables_ids)
-    # link_renamed_tables(metadata_tables_ids)
-    link_deleted_tables(metadata_tables_ids)
+    # link_created_tables
+    # link_renamed_tables
+    link_deleted_tables
   end
 
   def link_outdated_tables
@@ -437,11 +433,12 @@ class User < Sequel::Model
     self.tables.where(
       "table_id not in ?", self.real_tables.map {|t| t[:oid]}
     ).each do |table|
-      table.this.update table_id: table.get_table_id
+      real_table_id = table.get_table_id
+      table.this.update(table_id: real_table_id) unless real_table_id.blank?
     end
   end
 
-  def link_created_tables(metadata_tables_ids)
+  def link_created_tables
     created_tables = real_tables.reject{|t| metadata_tables_ids.include?(t[:oid])}
     created_tables.each do |t|
       table = Table.new
@@ -457,7 +454,7 @@ class User < Sequel::Model
     end
   end
 
-  def link_renamed_tables(metadata_tables_ids)
+  def link_renamed_tables
     metadata_table_names = self.tables.select(:name).map(&:name)
     renamed_tables       = real_tables.reject{|t| metadata_table_names.include?(t[:relname])}.select{|t| metadata_tables_ids.include?(t[:oid])}
     renamed_tables.each do |t|
@@ -470,7 +467,8 @@ class User < Sequel::Model
     end
   end
 
-  def link_deleted_tables(metadata_tables_ids)
+  def link_deleted_tables
+    metadata_tables_ids = self.tables.select(:table_id).map(&:table_id)
     dropped_tables = metadata_tables_ids - real_tables.map{|t| t[:oid]}
 
     # Remove tables with oids that don't exist on the db

@@ -66,6 +66,7 @@ module CartoDB
       def result_for(job, source_file)
         { 
           name:                 source_file.name,
+          table_name:           job.table_name,
           qualified_table_name: job.qualified_table_name
         } 
       end #results

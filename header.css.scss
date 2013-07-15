@@ -299,6 +299,8 @@ header { // general header
             text-indent:0;
             line-height:normal;
             text-transform: none;
+
+            &.disabled {@include opacity(1)}
           }
           &.logo {
             margin:1px 0 0 24px;
@@ -354,6 +356,7 @@ header { // general header
           font:normal 0.688em $text-fonts;
           text-transform: uppercase;
           color:white;
+          &.disabled {@include opacity(1)}
         }
       }
 
@@ -388,6 +391,7 @@ header { // general header
             font-weight:300;
             color: rgba(255, 255, 255, 0.5);
             &:hover { cursor:pointer; color:rgba(255, 255, 255, 1); }
+            &.disabled {@include opacity(1)}
           }
         }
       }

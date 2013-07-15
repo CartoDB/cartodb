@@ -2,6 +2,7 @@
 require_relative './loader'
 require_relative './shp_loader'
 require_relative './indexer'
+require_relative './unp'
 
 module CartoDB
   module Importer2
@@ -13,58 +14,61 @@ module CartoDB
         shp:  ShpLoader
       }
 
-      def initialize(job, downloader, georeferencer=nil, indexer=nil)
-        self.job          = job
+      def initialize(pg_options, downloader, log=TrackRecord::Log.new)
+        self.pg_options   = pg_options
         self.downloader   = downloader
-        self.indexer      = indexer
+        self.log          = log
+        self.results      = []
       end #initialize
 
       def run
-        job.log "Starting import with job ID: #{job.id}"
-        job.log "Getting file from #{downloader.url}"
+        log.append "Getting file from #{downloader.url}"
         downloader.run
-        job.log "Importing data from #{downloader.source_file.fullpath}"
-        loader.run
-        job.log "Loader exit code: #{loader.exit_code}"
-        indexer.add(job.table_name)
+
+        unpacker = Unp.new
+        unpacker.run(downloader.source_file.fullpath)
+        unpacker.source_files.each { |source_file| import(source_file) }
+
         self
       end #run
       
+      def import(source_file, job=nil, loader=nil)
+        job     ||= Job.new(logger: log, pg_options: pg_options)
+        loader  ||= loader_for(source_file).new(job, source_file)
+
+        job.log "Importing data from #{source_file.fullpath}"
+        loader.run
+        job.log "Loader exit code: #{loader.exit_code}"
+
+        Indexer.new(job.db).add(job.table_name)
+        self.results.push(result_for(job, source_file))
+      end #import
+
       def report
-        job.logger.to_s
+        log.to_s
       end #report
 
-      def results
-        [
-          { 
-            name:       downloader.source_file.name,
-            table_name: job.table_name
-          } 
-        ]
-      end #results
+      def db
+        @db ||= Sequel.postgres(pg_options)
+      end #db
 
-      def exit_code
-        loader.exit_code
-      end #exit_code
+      def loader_for(source_file)
+        LOADERS.fetch(source_file.extension.delete('.').to_sym)
+      end #loader_for
+
+      attr_reader :results
 
       private
 
-      attr_accessor :job, :downloader, :georeferencer
-      attr_writer   :loader, :indexer
+      attr_accessor :downloader, :log, :pg_options
+      attr_writer   :results
 
-      def indexer
-        @indexer ||= Indexer.new(job.db)
-      end #indexer
-
-      def loader
-        return @loader if @loader
-        loader_klass = LOADERS.fetch(source_file.extension.delete('.').to_sym)
-        @loader ||= loader_klass.new(job, source_file)
-      end #loader
-
-      def source_file
-        downloader.source_file
-      end #source_file
+      def result_for(job, source_file)
+        { 
+          name:                 source_file.name,
+          qualified_table_name: job.qualified_table_name
+        } 
+      end #results
     end # Runner
   end # Importer2
 end # CartoDB

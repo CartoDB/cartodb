@@ -15,10 +15,7 @@ include CartoDB::Importer2
 describe Runner do
   before do
     @filepath       = '/var/tmp/foo.txt'
-    pg_options      = Factories::PGConnection.new.pg_options
-    @job            = Job.new(pg_options: pg_options)
-    @georeferencer  = Object.new
-    @indexer        = Doubles::Indexer.new
+    @pg_options      = Factories::PGConnection.new.pg_options
   end
 
   describe '#initialize' do
@@ -29,46 +26,32 @@ describe Runner do
   end #initialize
 
   describe '#run' do
-    it 'loads the data through the loader' do
-      downloader  = Downloader.new(@filepath, @job.id)
-      runner      = Runner.new(@job, downloader, @georeferencer, @indexer)
-      loader      = Minitest::Mock.new
-      exit_code   = rand(999)
+    it 'calls import for each file to process' do
+      downloader  = Downloader.new(@filepath)
+      runner      = Runner.new(@pg_options, downloader)
+      runner.instance_variable_set(:@import_called, 0)
 
-      runner.send :instance_variable_set, :@loader, loader
-      loader.expect :run, Object.new
-      loader.expect :exit_code, exit_code
+      def runner.import(*args)
+        @import_called = @import_called +1
+      end
+
       runner.run
-      loader.verify
+
+      runner.instance_variable_get(:@import_called).must_equal 1
     end
 
     it 'logs the file path to be imported' do
-      downloader  = Downloader.new(@filepath, @job.id)
-      runner      = Runner.new(@job, downloader, @georeferencer, @indexer)
+      downloader  = Downloader.new(@filepath)
+      runner      = Runner.new(@pg_options, downloader)
+      runner.instance_variable_set(:@import_called, 0)
+
+      def runner.import(*args)
+        @import_called = @import_called +1
+      end
+
       runner.run
       runner.report.must_match /#{@filepath}/
     end
-
-    it 'logs the exit code of the loader' do
-      downloader  = Downloader.new(@filepath, @job.id)
-      runner      = Runner.new(@job, downloader, @georeferencer, @indexer)
-      runner.run
-      runner.report.must_match /exit code/
-    end
   end #run
-
-  describe '#exit_code' do
-    it 'returns the exit code from the loader' do
-      downloader  = Downloader.new(@filepath, @job.id)
-      runner      = Runner.new(@job, downloader, @georeferencer, @indexer)
-      loader      = Minitest::Mock.new
-      exit_code   = rand(999)
-
-      runner.send :instance_variable_set, :@loader, loader
-      loader.expect :exit_code, exit_code
-      runner.exit_code.must_equal exit_code
-      loader.verify
-    end
-  end #exit_code
 end # Runner
 

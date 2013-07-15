@@ -2,6 +2,8 @@
 require_relative '../../../models/visualization/presenter'
 
 class Api::Json::TablesController < Api::ApplicationController
+  TABLE_QUOTA_REACHED_TEXT = 'You have reached your table quota'
+
   ssl_required :index, :show, :create, :update, :destroy
   skip_before_filter :api_authorization_required, :only => [ :vizzjson ]
 
@@ -41,6 +43,8 @@ class Api::Json::TablesController < Api::ApplicationController
                       :stack => @table.errors.full_messages
                     }, 400)
     end
+  rescue CartoDB::QuotaExceeded => exception
+    render_jsonp({ errors: [TABLE_QUOTA_REACHED_TEXT]}, 400)
   end
 
   def show

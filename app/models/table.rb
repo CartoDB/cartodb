@@ -1318,6 +1318,20 @@ TRIGGER
     @relator ||= CartoDB::Table::Relator.new(Rails::Sequel.connection, self)
   end #relator
 
+  def set_table_id
+    self.table_id = self.get_table_id
+  end # set_table_id
+
+  def get_table_id
+    record = owner.in_database.select(:pg_class__oid)
+      .from(:pg_class)
+      .join_table(:inner, :pg_namespace, :oid => :relnamespace)
+      .where(:relkind => 'r', :nspname => 'public', :relname => name).first
+    record.nil? ? nil : record[:oid]
+  end # get_table_id
+
+
+
   private
 
   def update_updated_at
@@ -1491,14 +1505,6 @@ SQL
     end
   end
 
-  def set_table_id
-    self.table_id = owner.in_database.select(:pg_class__oid)
-                                     .from(:pg_class)
-                                     .join_table(:inner, :pg_namespace, :oid => :relnamespace)
-                                     .where(:relkind => 'r', :nspname => 'public', :relname => name)
-                                     .first[:oid]
-  end
-
   def update_the_geom!(attributes, primary_key)
     return unless attributes[THE_GEOM].present? && attributes[THE_GEOM] != 'GeoJSON'
     # TODO: use this once the server geojson is updated
@@ -1546,6 +1552,11 @@ SQL
       $tables_metadata.rename(Table.key(database_name,@name_changed_from), key)
       owner.in_database.rename_table(@name_changed_from, name)
       propagate_name_change_to_table_visualization
+
+      CartoDB::notify_exception(
+        CartoDB::GenericImportError.new("Attempt to rename table without layers #{self.name}"), 
+        user: owner
+      ) if layers.blank?
 
       layers.each do |layer| 
         layer.rename_table(@name_changed_from, name).save

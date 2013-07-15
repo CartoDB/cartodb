@@ -146,6 +146,8 @@ class Layer < Sequel::Model
   def tables_from_query_option
     return [] unless query.present?
     tables_from(affected_table_names)
+  rescue => exception
+    []
   end
 
   def tables_from_table_name_option

@@ -1,5 +1,4 @@
 # encoding: utf-8
-require 'forwardable'
 require 'typhoeus'
 require_relative './source_file'
 require_relative '../../../data-repository/filesystem/local'
@@ -7,13 +6,10 @@ require_relative '../../../data-repository/filesystem/local'
 module CartoDB
   module Importer2
     class Downloader
-      extend Forwardable
 
       DEFAULT_FILENAME        = 'importer'
       CONTENT_DISPOSITION_RE  = %r{attachment; filename=\"(.*)\"}
       URL_RE                  = %r{://}
-
-      def_delegators :source_file, :name, :extension, :path, :fullpath
 
       def initialize(url, seed=nil, repository=nil)
         self.url          = url

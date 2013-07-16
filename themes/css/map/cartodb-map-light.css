@@ -105,7 +105,7 @@
     position:absolute;
     bottom: 35px;
     right: 20px;
-    padding: 10px 20px;
+    padding: 13px 15px 14px 15px;
 
     font:normal 13px "Helvetica",Arial;
     color:#858585;
@@ -123,14 +123,13 @@
   }
 
   div.cartodb-legend ul li {
-    position:relative;
+    padding: 0;
+    margin: 0;
     font-size: 10px;
     color: #666666;
     font-weight:bold;
     font-family: "Helvetica", Arial;
     text-transform: uppercase;
-    padding: 0;
-    margin: 0;
     line-height: normal;
   }
 
@@ -189,22 +188,24 @@
 
   /* Choropleth legend */
   div.cartodb-legend.choropleth {
-
+    padding: 13px 15px 15px 15px;
   }
 
-  div.cartodb-legend.choropleth .min {
+  div.cartodb-legend.choropleth li.min {
     float: left;
+    margin: 0 0 5px 0;
   }
 
-  div.cartodb-legend.choropleth .max {
+  div.cartodb-legend.choropleth li.max {
     float: right;
+    margin: 0 0 5px 0;
   }
 
-  div.cartodb-legend.choropleth .graph {
+  div.cartodb-legend.choropleth li.graph {
     clear:both;
 
-    width: 100%;
-    height: 40px;
+    width: 209px;
+    height: 22px;
     background:#f1f1f1;
 
     -webkit-border-radius: 3px;

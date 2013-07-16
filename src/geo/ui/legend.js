@@ -43,7 +43,7 @@ cdb.geo.ui.ChoroplethLegend = cdb.core.View.extend({
   initialize: function() {
 
     this.items = this.options.items;
-    this.template = _.template('<li><%= min %></li><li class="graph"></li><li><%= max %></li>');
+    this.template = _.template('<li class="min"><%= min %></li><li class="max"><%= max %></li><li class="graph"></li>');
     this.model = new cdb.core.Model();
 
   },
@@ -164,13 +164,20 @@ cdb.geo.ui.Legend = cdb.core.View.extend({
 
     var legend_name = this._capitalize(this.model.get("type")) + "Legend";
 
-    if (!cdb.geo.ui[legend_name]) return;
+    if (!cdb.geo.ui[legend_name]) {
+      // set the previous type
+      this.model.set({ type: this.model.previous("type") }, { silent: true });
+      return;
+    }
 
     if (this.view) this.view.clean();
 
-      this.view = new cdb.geo.ui[legend_name] ({
-        items: self.items
-      });
+    this.view = new cdb.geo.ui[legend_name] ({
+      items: self.items
+    });
+
+    console.log("previous", this.model.get("type"), this.model.previous("type"));
+    console.log(this.$el.attr("class"));
 
     // Sets the type as the element class for styling
     this.$el.removeClass(this.model.previous("type"));

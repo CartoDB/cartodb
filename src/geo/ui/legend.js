@@ -50,14 +50,28 @@ cdb.geo.ui.ChoroplethLegend = cdb.core.View.extend({
 
   _renderGraph: function() {
 
+    var s = "";
+
+    s+= "background: <%= left %>;";
+    s+= "background: -moz-linear-gradient(left, <%= left %> 0%, <%= right %> 100%);";
+    s+= "background: -webkit-gradient(linear, left top, right top, color-stop(0%,<%= left %>), color-stop(100%,<%= right %>));";
+    s+= "background: -webkit-linear-gradient(left, <%= left %> 0%,<%= right %> 100%);";
+    s+= "background: -o-linear-gradient(left, <%= left %> 0%,<%= right %> 100%);";
+    s+= "background: -ms-linear-gradient(left, <%= left %> 0%,<%= right %> 100%)";
+    s+= "background: linear-gradient(to right, <%= left %> 0%,<%= right %> 100%);";
+    s+= "filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='<%= left %>', endColorstr='<%= right %>',GradientType=1 );";
+
+    var backgroundStyle = _.template(s);
+
+    this.$el.find(".graph").attr("style", backgroundStyle({ left: this.min.get("value"), right: this.max.get("value") }));
   },
 
   render: function() {
 
-    var min = this.items.at(0);
-    var max = this.items.at(this.items.length - 1);
+    this.min = this.items.at(0);
+    this.max = this.items.at(this.items.length - 1);
 
-    this.model.set({ min: min.get("name"), max: max.get("name") });
+    this.model.set({ min: this.min.get("name"), max: this.max.get("name") });
     this.$el.html(this.template(this.model.toJSON()));
 
     this._renderGraph();
@@ -151,6 +165,35 @@ cdb.geo.ui.CustomLegend = cdb.core.View.extend({
 
 });
 
+cdb.geo.ui.StackedLegend = cdb.core.View.extend({
+
+  className: "cartodb-legend-stack",
+
+  initialize: function() {
+
+  },
+
+  _renderItems: function() {
+
+    var self = this;
+
+
+    _.each(this.options.legends, function(item) {
+      self.$el.append(item.render().$el);
+    });
+
+  },
+
+  render: function() {
+
+    this._renderItems();
+
+    return this;
+
+  }
+
+});
+
 cdb.geo.ui.Legend = cdb.core.View.extend({
 
   className: "cartodb-legend",
@@ -175,9 +218,6 @@ cdb.geo.ui.Legend = cdb.core.View.extend({
     this.view = new cdb.geo.ui[legend_name] ({
       items: self.items
     });
-
-    console.log("previous", this.model.get("type"), this.model.previous("type"));
-    console.log(this.$el.attr("class"));
 
     // Sets the type as the element class for styling
     this.$el.removeClass(this.model.previous("type"));

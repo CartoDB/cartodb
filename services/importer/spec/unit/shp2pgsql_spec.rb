@@ -1,10 +1,7 @@
 # encoding: utf-8
 gem 'minitest'
 require 'minitest/autorun'
-require 'pg'
-require 'sequel'
 require_relative '../../lib/importer/shp2pgsql'
-require_relative '../doubles/job'
 require_relative '../factories/pg_connection'
 
 include CartoDB::Importer2

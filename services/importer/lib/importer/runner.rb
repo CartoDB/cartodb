@@ -8,10 +8,12 @@ module CartoDB
   module Importer2
     class Runner
       LOADERS = {
-        csv:  Loader,
-        txt:  Loader,
-        xls:  Loader,
-        shp:  ShpLoader
+        csv:      Loader,
+        txt:      Loader,
+        xls:      Loader,
+        json:     Loader,
+        geojson:  Loader,
+        shp:      ShpLoader
       }
 
       def initialize(pg_options, downloader, log=TrackRecord::Log.new)

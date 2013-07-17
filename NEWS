@@ -1,3 +1,8 @@
+3.0.03 (17//11//2013)
+-----
+- fixed collision with older jQuery version
+- fixed infowindows when there is no interaction enabled when loading from viz.json
+
 3.0.02 (07//11//2013)
 -----
 - fixed sublayer_options

@@ -1,127 +1,133 @@
 <html>
 <head>
-  <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/themes/css/cartodb.css" />
-   <!--[if lte IE 8]>
-        <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/themes/css/cartodb.ie.css" />
-    <![endif]-->  
-	<script src="http://libs.cartocdn.com/cartodb.js/v2/cartodb.js"></script>
+  <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.css" />
+  <!--[if lte IE 8]>
+    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.ie.css" />
+  <![endif]-->  
+	<script src="http://libs.cartocdn.com/cartodb.js/v3/cartodb.js"></script>
 	<style>
     html, body {width:100%; height:100%; padding: 0; margin: 0;}
     #map { width: 100%; height:100%; background: black;}
     #menu { position: absolute; top: 5px; right: 10px; width: 400px; height:60px; background: transparent; z-index:10;}
     #menu a { 
-              margin: 15px 10px 0 0;
-              float: right;
-              vertical-align: baseline;
-              width: 30px;
-              padding: 10px;
-              text-align: center;
-              font: bold 15px "Helvetica",Arial;
-              line-height: normal;
-              color: #555;
-              border-radius: 4px;
-              border: 1px solid #777777;
-              background: #ffffff;
-              text-decoration: none;
-              cursor: pointer;
-            }
+      margin: 15px 10px 0 0;
+      float: right;
+      vertical-align: baseline;
+      width: 30px;
+      padding: 10px;
+      text-align: center;
+      font: bold 15px "Helvetica",Arial;
+      line-height: normal;
+      color: #555;
+      border-radius: 4px;
+      border: 1px solid #777777;
+      background: #ffffff;
+      text-decoration: none;
+      cursor: pointer;
+    }
     #menu a.selected,
     #menu a:hover { 
-              color: #000;
-            }            
+      color: #000;
+    }            
 	</style>
+
 	<script>
-  var map;
+    var map;
 
-  function init(){
+    function init() {
+      // initiate leaflet map
+      map = new L.Map('map', { 
+        center: [20,-20],
+        zoom: 3
+      });
 
-    // initiate leaflet map
-    map = new L.Map('map', { 
-      center: [20,-20],
-      zoom: 3
-    })
+      L.tileLayer('https://dnv9my2eseobd.cloudfront.net/v3/cartodb.map-4xtxp73f/{z}/{x}/{y}.png', {
+        attribution: 'MapBox'
+      }).addTo(map);
 
-    L.tileLayer('https://dnv9my2eseobd.cloudfront.net/v3/cartodb.map-4xtxp73f/{z}/{x}/{y}.png', {
-      attribution: 'MapBox'
-    }).addTo(map);
+      var layerUrl = 'http://documentation.cartodb.com/api/v2/viz/9af23dd8-ea10-11e2-b5ac-5404a6a683d5/viz.json';
 
-    var layerUrl = 'http://examples.cartodb.com/api/v1/viz/16499/viz.json';
+      var sublayers = [];
 
-    var layerOptions = {
-      query: "SELECT * FROM {{table_name}} LIMIT 2000"
+      cartodb.createLayer(map, layerUrl)
+        .addTo(map)
+        .on('done', function(layer) {
+          // change the query for the first layer
+          var subLayerOptions = {
+            sql: "SELECT * FROM ne_10m_populated_p_2 LIMIT 2000",
+            cartocss: "#ne_10m_populated_p_2{marker-fill: #F84F40; marker-width: 8; marker-line-color: white; marker-line-width: 2; marker-clip: false; marker-allow-overlap: true;}"
+          }
+
+          var sublayer = layer.getSubLayer(0);
+
+          sublayer.set(subLayerOptions);
+
+          sublayers.push(sublayer);
+          detectUserLocation();
+        }).on('error', function() {
+          //log the error
+        });
+
+      // credit: http://html5doctor.com/finding-your-position-with-geolocation/
+      function detectUserLocation() {
+        if(navigator.geolocation) {
+          var timeoutVal = 10 * 1000 * 1000;
+
+          navigator.geolocation.watchPosition(
+            mapToPosition, 
+            alertError,
+            { enableHighAccuracy: true, timeout: timeoutVal, maximumAge: 0 }
+          );
+        } else {
+          alert("Geolocation is not supported by this browser");
+        }
+        
+        function alertError(error) {
+          var errors = { 
+            1: 'Permission denied',
+            2: 'Position unavailable',
+            3: 'Request timeout'
+          };
+
+          alert("Error: " + errors[error.code]);
+        }
+      }
+
+      function mapToPosition(position){
+        lon = position.coords.longitude;
+        lat = position.coords.latitude;
+        updateQuery();
+        map.setView(new L.LatLng(lat,lon), 7);
+        new L.CircleMarker([lat,lon],{radius: 4}).addTo(map);
+      }
+
+      var lon,
+          lat,
+          total = 10;
+
+      function updateQuery() {
+        sublayers[0].set({
+          sql: "WITH cities AS (SELECT cartodb_id, the_geom, the_geom_webmercator, name FROM ne_10m_populated_p_2 ORDER BY the_geom <-> ST_SetSRID(ST_MakePoint("+lon+","+lat+"),4326) ASC LIMIT "+total+") SELECT null as cartodb_id, ST_MakeLine(ST_Transform(ST_SetSRID(ST_MakePoint("+lon+","+lat+"),4326),3857),the_geom_webmercator) as the_geom_webmercator, null as name FROM cities UNION ALL SELECT cartodb_id, the_geom_webmercator, name FROM cities",
+          cartocss: "#ne_10m_populated_p_2{[mapnik-geometry-type = 1]{text-name: [name]; text-face-name: 'DejaVu Sans Book'; text-size: 12; text-fill: #000; text-allow-overlap: false; text-halo-fill: #FFF; text-halo-radius: 2;} [mapnik-geometry-type = 2]{line-color: white; line-opacity: 0.5;} } "
+        });
+      }
+
+      $('.button').click(function() {
+        $('.button').removeClass('selected'); $(this).addClass('selected');
+        total = $(this).attr('id');
+        updateQuery();
+      });
     }
-
-    var layers = [];
-
-cartodb.createLayer(map, layerUrl, layerOptions)
-  .on('done', function(layer) {
-    map.addLayer(layer);
-    layers.push(layer);
-    detectUserLocation();
-  }).on('error', function() {
-    //log the error
-  });
-
-// credit: http://html5doctor.com/finding-your-position-with-geolocation/
-function detectUserLocation(){
-  if (navigator.geolocation) {
-    var timeoutVal = 10 * 1000 * 1000;
-    navigator.geolocation.watchPosition(
-      mapToPosition, 
-      alertError,
-      { enableHighAccuracy: true, timeout: timeoutVal, maximumAge: 0 }
-    );
-  }
-  else {
-    alert("Geolocation is not supported by this browser");
-  }
-  
-  function alertError(error) {
-    var errors = { 
-      1: 'Permission denied',
-      2: 'Position unavailable',
-      3: 'Request timeout'
-    };
-    alert("Error: " + errors[error.code]);
-  }
-}
-
-  function mapToPosition(position){
-    lon = position.coords.longitude;
-    lat = position.coords.latitude;
-    updateQuery();
-    map.setView(new L.LatLng(lat,lon), 7);
-    new L.CircleMarker([lat,lon],{radius: 4}).addTo(map);
-  }
-
-
-var lon, lat;
-var total = 10;
-function updateQuery(){
-  layers[0].setOptions({
-    query: "WITH cities AS (SELECT cartodb_id, the_geom, the_geom_webmercator, name FROM {{table_name}} ORDER BY the_geom <-> ST_SetSRID(ST_MakePoint("+lon+","+lat+"),4326) ASC LIMIT "+total+") SELECT null as cartodb_id, ST_MakeLine(ST_Transform(ST_SetSRID(ST_MakePoint("+lon+","+lat+"),4326),3857),the_geom_webmercator) as the_geom_webmercator, null as name FROM cities UNION ALL SELECT cartodb_id, the_geom_webmercator, name FROM cities",
-    tile_style: "#{{table_name}}{[mapnik-geometry-type = 1]{text-name: [name]; text-face-name: 'DejaVu Sans Book'; text-size: 12; text-fill: #000; text-allow-overlap: false; text-halo-fill: #FFF; text-halo-radius: 2;} [mapnik-geometry-type = 2]{line-color: white; line-opacity: 0.5;} } "
-  });
-}
-
-$('.button').click(function(){
-      $('.button').removeClass('selected'); $(this).addClass('selected');
-      total = $(this).attr('id');
-      updateQuery();
-    })
-
-
-    }
-
 	</script>
 </head>
+
 <body onload="init()">
   <div id='map'></div>
   <div id='menu'>
-      <a href="#500" id="500" value=500 class="button 500">500</a> 
-      <a href="#100" id="100" value=100 class="button 100">100</a> 
-      <a href="#50" id="50" value=50 class="button 50">50</a> 
-      <a href="#10" id="10" value=10 class="button 10 selected">10</a> 
+    <a href="#500" id="500" value=500 class="button 500">500</a> 
+    <a href="#100" id="100" value=100 class="button 100">100</a> 
+    <a href="#50" id="50" value=50 class="button 50">50</a> 
+    <a href="#10" id="10" value=10 class="button 10 selected">10</a> 
   </div>
 </body>
 </html>

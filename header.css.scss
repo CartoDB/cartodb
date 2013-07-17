@@ -226,6 +226,11 @@ header { // general header
           background-color: #FFEBF1;
         }
 
+        &.warn {
+          color: #555;
+          background-color: rgba(#FFFFBF, 0.90);
+        }
+
         img {
           position: relative;
           top: 3px;

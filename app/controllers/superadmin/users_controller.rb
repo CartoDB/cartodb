@@ -1,7 +1,7 @@
 class Superadmin::UsersController < Superadmin::SuperadminController
   respond_to :json
 
-  ssl_required :create, :update, :destroy, :show if Rails.env.production? || Rails.env.staging?
+  ssl_required :create, :update, :destroy, :show, :index if Rails.env.production? || Rails.env.staging?
   before_filter :get_user, :only => [:update, :destroy, :show]
 
   layout 'application'

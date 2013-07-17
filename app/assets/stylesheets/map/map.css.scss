@@ -329,53 +329,13 @@ div.map {
   }
 
   div.cartodb-legend {
-    position:absolute;
-    bottom: 20px;
-    right: 0;
-    padding: 10px 20px;
+    @include position(false, 0, 20px, false);
     margin: 0 80px 0 0;
 
     @include transform-style("linear");
     @include transition-property("margin-right");
     @include transition-duration(300ms);
 
-    font:normal 13px "Helvetica",Arial;
-    color:#858585;
-    text-align: left;
-    @include box-shadow(rgba(0, 0, 0, 0.2) 0 0 4px 2px);
-    @include border-radius(4px);
-    border: 1px solid #999999;
-    background: white;
-    z-index: 5;
-
-    ul {
-
-      li {
-        position:relative;
-        font-size: 10px;
-        color: #666666;
-        font-weight:bold;
-        font-family: "Helvetica", Arial;
-        text-transform: uppercase;
-        padding: 0 0 0 10px;
-        margin: 0 0 5px 0;
-        line-height: normal;
-
-        &:last-child { margin: 0; }
-
-        &:before {
-          content: '';
-          position:absolute;
-          top: 2px; left: -5px;
-          width: 3px; height: 3px;
-          @include border-radius(50%);
-          padding: 2px;
-          background:#fff;
-          border: 1px solid rgba(#000000, .2);
-        }
-
-      }
-    }
   }
 
   // Zoom info

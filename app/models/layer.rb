@@ -132,7 +132,7 @@ class Layer < Sequel::Model
   def rename_in(target, anchor, substitution)
     return if target.nil? || target.empty?
     regex = /(\A|\W+)(#{anchor})(\W+|\z)/
-    target.gsub!(regex) { |match| match.gsub(anchor, substitution) }
+    target.gsub(regex) { |match| match.gsub(anchor, substitution) }
   end #rename_in
 
   def delete_table_dependencies

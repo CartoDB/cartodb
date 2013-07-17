@@ -4,6 +4,14 @@ class Superadmin::UsersController < Superadmin::SuperadminController
   ssl_required :create, :update, :destroy, :show if Rails.env.production? || Rails.env.staging?
   before_filter :get_user, :only => [:update, :destroy, :show]
 
+  layout 'application'
+
+  def index
+    @user = User.new
+    @user.table_quota = nil
+    @user.private_tables_enabled = true
+  end
+
   def create
     # BEWARE. don't get clever. This is all explicit because of mass assignment limitations
     @user = User.new
@@ -32,7 +40,12 @@ class Superadmin::UsersController < Superadmin::SuperadminController
     end
 
     @user.save
-    respond_with(:superadmin, @user)
+    respond_to do |format|
+      format.json { with(:superadmin, @user) }
+      format.html { 
+        redirect_to superadmin_root_path, flash: { success: (@user.valid? ? "OK" : "FAIL #{@user.errors.full_messages}") }
+      }
+    end
   end
 
   def update

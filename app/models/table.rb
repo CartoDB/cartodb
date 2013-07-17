@@ -330,6 +330,10 @@ class Table < Sequel::Model(:user_tables)
     self.handle_creation_error(e)
   end
 
+  def before_save
+    self.updated_at = table_visualization.updated_at if table_visualization
+  end #before_save
+
   def after_save
     super
     manage_tags

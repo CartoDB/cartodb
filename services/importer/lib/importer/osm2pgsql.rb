@@ -28,6 +28,7 @@ module CartoDB
         stdout, stderr, status  = Open3.capture3(command)
         self.command_output     = stdout + stderr
         self.exit_code          = status.to_i
+
         wait_for_table_present("#{table_name}_line")
         self
       end #run
@@ -39,6 +40,14 @@ module CartoDB
       attr_writer   :exit_code, :command_output
       attr_accessor :filepath, :pg_options, :options, :table_name
 
+      def data_in?(table_name)
+        db[%Q(
+          SELECT count(*)
+          AS count
+          FROM #{table_name}
+        )].first.fetch(:count) > 0
+      end #data_in?
+
       def style_option
         style = options.fetch(:style, nil)
         return "--style #{style}" if style
@@ -49,7 +58,6 @@ module CartoDB
         %Q(-H #{pg_options.fetch(:host)} )      +
         %Q(-P #{pg_options.fetch(:port)} )      +
         %Q(-U #{pg_options.fetch(:user)} )      +
-        #%Q(-W #{pg_options.fetch(:password)} )  +
         %Q(-d #{pg_options.fetch(:database)}) 
       end #postgres_options
 
@@ -59,11 +67,8 @@ module CartoDB
 
       def wait_for_table_present(table_name, started_at=Time.now)
         sleep 1
-
-        db[%Q{
-          SELECT count(*) AS count
-          FROM #{table_name}
-        }].first.fetch(:count)
+        data_in?(table_name)
+        self
       rescue => exception
         raise if timeout?(started_at)
         retry

@@ -233,6 +233,25 @@ describe Layer do
       options.fetch('table_name') .should      =~ /#{new_table_name}/
       options.fetch('table_name') .should_not  =~ /#{table_name}/
     end
+
+    it "won't touch the query if it doesn't match" do
+      table_name      = 'table_name'
+      new_table_name  = 'changed_name'
+
+      tile_style      = "##{table_name} { color:red; }"
+      query           = "SELECT * FROM foo"
+      options         = {
+                          table_name: table_name,
+                          tile_style: tile_style,
+                          query:      query
+                        }
+      layer           = Layer.create(kind: 'carto', options: options)
+      layer.rename_table(table_name, new_table_name)
+      layer.save
+      layer.reload
+
+      layer.options.fetch('query').should == options.fetch(:query)
+    end
   end #rename_table
 
   describe '#before_destroy' do

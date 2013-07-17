@@ -1,6 +1,5 @@
 # encoding: utf-8
 require_relative './stats'
-require_relative '../table'
 require_relative '../overlay/collection'
 
 module CartoDB

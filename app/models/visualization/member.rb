@@ -44,7 +44,7 @@ module CartoDB
       def store
         raise CartoDB::InvalidMember unless self.valid?
 
-        invalidate_varnish_cache if name_changed || privacy_changed
+        invalidate_varnish_cache if name_changed || privacy_changed || description_changed
         set_timestamps
         repository.store(id, attributes.to_hash)
         propagate_privacy_and_name_to(table) if table
@@ -94,6 +94,11 @@ module CartoDB
         self.name_changed = true if name != @name && !@name.nil?
         super(name)
       end #name=
+
+      def description=(description)
+        self.description_changed = true if description != @description && !@description.nil?
+        super(description)
+      end #description=
 
       def privacy=(privacy)
         privacy = privacy.downcase if privacy
@@ -151,7 +156,7 @@ module CartoDB
       private
 
       attr_reader   :repository, :name_checker, :validator
-      attr_accessor :privacy_changed, :name_changed
+      attr_accessor :privacy_changed, :name_changed, :description_changed
 
       def propagate_privacy_and_name_to(table)
         return self unless table

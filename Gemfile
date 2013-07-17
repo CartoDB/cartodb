@@ -31,7 +31,7 @@ gem "addressable",             "2.2.8", :require => "addressable/uri"
 #gem "newrelic_rpm",            "~> 3.5.5"
 
 gem "ejs",                     "~> 1.1.1"
-gem "turbo-sprockets-rails3",  "0.1.16"
+#gem "turbo-sprockets-rails3",  "0.1.16"
 group :assets do
   gem 'sass-rails',            "~> 3.2.3"
   gem 'uglifier',              "~> 1.3.0"

@@ -59,8 +59,16 @@
     var url = search_embed_script_url();
 
     var string_fn = function(v) { return v; }
-    var bool_fn = function(v) { return v == 'true' }
-    var logo_fn = function(v) { return ( ACCOUNT_TYPE != "coronelli" || IS_CUSTOM_INSTALL) ? true : v == 'true' };
+    var bool_fn   = function(v) { return v == 'true' }
+    var logo_fn   = function(v) { return ( ACCOUNT_TYPE != "coronelli" || IS_CUSTOM_INSTALL) ? true : v == 'true' };
+    var layer_fn  = function(v) {
+      var rt = [];
+      var layers = v.split("|");
+      for(var i = 0; i < layers.length; ++i) {
+        rt.push({ visible: parseInt(layers[i], 10) });
+      }
+      return rt;
+    };
 
     var opt = get_url_params(url, {
       'search': bool_fn,
@@ -70,6 +78,7 @@
       'cartodb_logo': bool_fn,
       'scrollwheel': bool_fn,
       'layer_selector': bool_fn,
+      'sublayer_options':  layer_fn,
       'debug': bool_fn,
       'version': string_fn
     });

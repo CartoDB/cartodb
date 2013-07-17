@@ -106,13 +106,6 @@ describe User do
     @user2.tables.all.should == [Table.first(:user_id => @user2.id)]
   end
 
-  it "should correctly count real tables" do
-    @user.in_database.run('create table ghost_table (test integer)')
-    @user.real_tables.map { |c| c[:relname] }.should =~ ["ghost_table", "import_csv_1", "twitters"]
-    @user.real_tables.size.should == 3
-    @user.tables.count.should == 2
-  end
-
   it "should generate a data report" do
     @user2.data(extended: true).should == {
       id: @user2.id,
@@ -464,6 +457,59 @@ describe User do
     Timecop.freeze(Date.parse("2013-03-15")) do
       user.stubs(:period_end_date).returns(Date.parse("2012-12-02"))
       user.last_billing_cycle.should == Date.parse("2013-03-02")
+    end
+  end
+
+  describe '#link_ghost_tables' do
+    it "should correctly count real tables" do
+    reload_user_data(@user) && @user.reload
+      @user.in_database.run('create table ghost_table (test integer)')
+      @user.real_tables.map { |c| c[:relname] }.should =~ ["ghost_table", "import_csv_1", "twitters"]
+      @user.real_tables.size.should == 3
+      @user.tables.count.should == 2
+    end
+
+    it "should link a table with null table_id" do
+      reload_user_data(@user) && @user.reload
+      table = create_table :user_id => @user.id, :name => 'My table'
+      initial_count = @user.tables.count
+      table_id = table.table_id
+      table.this.update table_id: nil
+      @user.link_ghost_tables
+      table.reload
+      table.table_id.should == table_id
+      @user.tables.count.should == initial_count
+    end
+
+    it "should link a table with wrong table_id" do
+      reload_user_data(@user) && @user.reload
+      table = create_table :user_id => @user.id, :name => 'My table 2'
+      initial_count = @user.tables.count
+      table_id = table.table_id
+      table.this.update table_id: 1
+      @user.link_ghost_tables
+      table.reload
+      table.table_id.should == table_id
+      @user.tables.count.should == initial_count
+    end
+
+    it "should remove a table that does not exist on the user database" do
+      reload_user_data(@user) && @user.reload
+      initial_count = @user.tables.count
+      table = create_table :user_id => @user.id, :name => 'My table 3'
+      @user.in_database.drop_table(table.name)
+      @user.tables.where(name: table.name).first.should_not be_nil
+      @user.link_ghost_tables
+      @user.tables.where(name: table.name).first.should be_nil
+      @user.tables.count.should == initial_count
+    end
+
+    it "should not do anything when real tables is blank" do
+      reload_user_data(@user) && @user.reload
+      @user.stubs(:real_tables).returns([])
+      @user.tables.count.should_not == 0
+      @user.link_ghost_tables
+      @user.tables.count.should_not == 0
     end
   end
 

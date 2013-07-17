@@ -482,6 +482,7 @@ describe Table do
     end
 
     it 'raises QuotaExceeded when trying to create a table while over quota' do
+      pending "Deactivated until table creation paths are unified - Issue 2974"
       quota_in_bytes  = 524288000
       table_quota     = 5
       new_user        = new_user

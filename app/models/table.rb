@@ -287,7 +287,7 @@ class Table < Sequel::Model(:user_tables)
 
   def before_create
     super
-    raise CartoDB::QuotaExceeded if owner.over_table_quota?
+    #raise CartoDB::QuotaExceeded if owner.over_table_quota?
     update_updated_at
     self.database_name = owner.database_name
 

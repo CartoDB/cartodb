@@ -1,6 +1,6 @@
-// cartodb.js version: 3.0.02
+// cartodb.js version: 3.0.03
 // uncompressed version: cartodb.uncompressed.js
-// sha: 373b53771bee9fa26a1d1a3bf2e3682d21f4c90f
+// sha: 62a9b1e91b6260d570c553e2ad797d5e096b3774
 (function() {
   var root = this;
 
@@ -19869,6 +19869,7 @@ this.LZMA = LZMA;
   root.Mustache = Mustache;
   (function() {
     var $ = root.$;
+    var jQuery = root.jQuery;
     var L = root.L;
     var Mustache = root.Mustache;
     var Backbone = root.Backbone;
@@ -19882,7 +19883,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.0.02';
+    cdb.VERSION = '3.0.03';
 
     cdb.CARTOCSS_VERSIONS = {
       '2.0.0': '',
@@ -22900,8 +22901,6 @@ cdb.geo.ui.LayerView = cdb.core.View.extend({
 
   initialize: function() {
 
-    console.log(this.model.attributes);
-
     if (!this.model.has('visible')) this.model.set('visible', false);
 
     this.model.bind("change:visible", this._onSwitchSelected, this);
@@ -22969,7 +22968,6 @@ cdb.geo.ui.LayerViewFromLayerGroup = cdb.geo.ui.LayerView.extend({
     cdb.geo.ui.LayerView.prototype._onSwitchSelected.call(this);
     var sublayer = this.options.layerView.getSubLayer(this.options.layerIndex)
     var visible = this.model.get('visible');
-console.log(visible);
 
     if (visible) {
       sublayer.show();
@@ -27596,7 +27594,9 @@ var Vis = cdb.core.View.extend({
 
     // activate interactivity for layers with infowindows
     for(var i = 0; i < layerView.getLayerCount(); ++i) {
-      if(layerView.getInfowindowData(i)) {
+      var interactivity = layerView.getSubLayer(i).get('interactivity');
+      // if interactivity is not enabled we can't enable it
+      if(layerView.getInfowindowData(i) && interactivity && interactivity.indexOf('cartodb_id') !== -1) {
         if(!infowindow) {
           infowindow = Overlay.create('infowindow', this, layerView.getInfowindowData(i), true);
           mapView.addInfowindow(infowindow);

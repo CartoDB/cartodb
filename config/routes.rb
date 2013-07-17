@@ -68,8 +68,6 @@ CartoDB::Application.routes.draw do
 
   namespace :superadmin do
     root to: 'users#index'
-    get '/' => 'users#index', :as => :users
-    post '/' => 'users#create', :as => :users
     resources :users
   end
 

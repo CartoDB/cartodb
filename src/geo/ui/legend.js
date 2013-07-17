@@ -165,6 +165,34 @@ cdb.geo.ui.CustomLegend = cdb.core.View.extend({
 
 });
 
+/*
+ *    var legendA = new cdb.geo.ui.Legend({
+ *      type: "custom",
+ *      data: [
+ *        { name: "Category 1", value: "#FFC926" },
+ *        { name: "Category 2", value: "#76EC00" },
+ *        { name: "Category 3", value: "#00BAF8" },
+ *        { name: "Category 4", value: "#D04CFD" }
+ *      ]
+ *    });
+ *
+ *    var legendB = new cdb.geo.ui.Legend({
+ *      type: "bubble",
+ *      data: [
+ *        { name: "21,585",     value: "#FFC926" },
+ *        { name: "91,585",     value: "#D04CFD" }
+ *      ]
+ *    });
+ *
+ *    var stackedLegend = new cdb.geo.ui.StackedLegend({
+ *      legends: [legendA, legendB, …]
+ *    });
+ *
+ *    $("#overlay").append(stackedLegend.render().$el);
+ *
+ *
+ * */
+
 cdb.geo.ui.StackedLegend = cdb.core.View.extend({
 
   className: "cartodb-legend-stack",

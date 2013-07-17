@@ -435,7 +435,9 @@ var Vis = cdb.core.View.extend({
 
     // activate interactivity for layers with infowindows
     for(var i = 0; i < layerView.getLayerCount(); ++i) {
-      if(layerView.getInfowindowData(i)) {
+      var interactivity = layerView.getSubLayer(i).get('interactivity');
+      // if interactivity is not enabled we can't enable it
+      if(layerView.getInfowindowData(i) && interactivity && interactivity.indexOf('cartodb_id') !== -1) {
         if(!infowindow) {
           infowindow = Overlay.create('infowindow', this, layerView.getInfowindowData(i), true);
           mapView.addInfowindow(infowindow);

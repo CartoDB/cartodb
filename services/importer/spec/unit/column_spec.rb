@@ -209,7 +209,39 @@ describe Column do
       @column.rename_to('bogus_name')
       @dataset.first.keys.must_include :bogus_name
     end
+
+    it 'does nothing if the new name is the same as the current one' do
+      @dataset.insert(random_hexewkb_record)
+      @column.rename_to('the_geom')
+      @dataset.first.keys.must_include @column_name.to_sym
+    end
   end #rename_to
+
+  describe '#sanitized_name' do
+    it 'returns a sanitized version of the column name' do
+      Column.new(@db, @table_name, '+++sanitized+++').sanitized_name
+        .must_equal 'sanitized'
+    end
+
+    it 'returns the same name if no sanitization needed' do
+      Column.new(@db, @table_name, 'sanitized').sanitized_name
+        .must_equal 'sanitized'
+    end
+  end #sanitized_name
+
+  describe '#reserved?' do
+    it 'returns true if name is a reserved keyword' do
+      @column.reserved?('select').must_equal true
+      @column.reserved?('bogus').must_equal false
+    end
+  end #reserved?
+
+  describe '#unsupported?' do
+    it 'returns true if name is not supported by Postgres' do
+      @column.unsupported?('9name').must_equal true
+      @column.unsupported?('name9').must_equal false
+    end
+  end #unsupported?
 
   def create_table(db, options={})
     table_name = options.fetch(:table_name, "importer_#{rand(99999)}")

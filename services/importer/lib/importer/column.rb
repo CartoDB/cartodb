@@ -1,13 +1,28 @@
 # encoding: utf-8
+require_relative './string_sanitizer'
+
 module CartoDB
   module Importer2
     class Column
-      DEFAULT_SRID  = 4326
-      WKB_RE        = /^\d{2}/
-      GEOJSON_RE    = /coordinates/
-      WKT_RE        = /POINT|LINESTRING|POLYGON/
-      KML_MULTI_RE  = /<Line|<Polygon/
-      KML_POINT_RE  = /<Point>/
+      DEFAULT_SRID    = 4326
+      WKB_RE          = /^\d{2}/
+      GEOJSON_RE      = /coordinates/
+      WKT_RE          = /POINT|LINESTRING|POLYGON/
+      KML_MULTI_RE    = /<Line|<Polygon/
+      KML_POINT_RE    = /<Point>/
+      RESERVED_WORDS  = %w{ ALL ANALYSE ANALYZE AND ANY ARRAY AS ASC ASYMMETRIC
+                            AUTHORIZATION BETWEEN BINARY BOTH CASE CAST CHECK
+                            COLLATE COLUMN CONSTRAINT CREATE CROSS CURRENT_DATE 
+                            CURRENT_ROLE CURRENT_TIME CURRENT_TIMESTAMP
+                            CURRENT_USER DEFAULT DEFERRABLE DESC DISTINCT DO 
+                            ELSE END EXCEPT FALSE FOR FOREIGN FREEZE FROM FULL
+                            GRANT GROUP HAVING ILIKE IN INITIALLY INNER INTERSECT
+                            INTO IS ISNULL JOIN LEADING LEFT LIKE LIMIT LOCALTIME
+                            LOCALTIMESTAMP NATURAL NEW NOT NOTNULL NULL OFF
+                            OFFSET OLD ON ONLY OR ORDER OUTER OVERLAPS PLACING
+                            PRIMARY REFERENCES RIGHT SELECT SESSION_USER SIMILAR
+                            SOME SYMMETRIC TABLE THEN TO TRAILING TRUE UNION
+                            UNIQUE USER USING VERBOSE WHEN WHERE XMIN XMAX }
 
       def initialize(db, table_name, column_name)
         @db           = db
@@ -113,6 +128,8 @@ module CartoDB
       end #records_with_data
 
       def rename_to(new_name)
+        return self if new_name.to_s == column_name.to_s
+
         db.run(%Q{
           ALTER TABLE "#{schema}"."#{table_name}"
           RENAME COLUMN #{column_name} TO #{new_name}
@@ -137,6 +154,24 @@ module CartoDB
           DROP COLUMN #{column_name}
         })
       end #drop
+
+      def sanitize
+        rename_to(sanitized_name)
+      end #sanitize
+
+      def sanitized_name
+        name = StringSanitizer.new.sanitize(column_name.to_s)
+        return name unless reserved?(name) || unsupported?(name)
+        return "_#{name}"
+      end #sanitized_name
+
+      def reserved?(name)
+        RESERVED_WORDS.include?(name.upcase)
+      end #reserved?
+
+      def unsupported?(name)
+        name !~ /^[a-zA-Z_]/
+      end #unsupported?
 
       private
 

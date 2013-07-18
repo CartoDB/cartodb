@@ -1,3 +1,7 @@
+3.0.03 (18//11//2013)
+-----
+- fixed IE8 cors checking
+
 3.0.03 (17//11//2013)
 -----
 - fixed collision with older jQuery version

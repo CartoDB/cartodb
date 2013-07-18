@@ -18,8 +18,6 @@ describe 'geojson regression tests' do
     downloader  = Downloader.new(filepath)
     runner      = Runner.new(@pg_options, downloader)
     runner.run
-
-    puts geometry_type_for(runner)
   end
 
   def path_to(filepath)

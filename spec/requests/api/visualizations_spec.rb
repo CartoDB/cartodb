@@ -137,8 +137,7 @@ describe Api::Json::VisualizationsController do
       visualization.fetch('privacy').should == 'PRIVATE'
     end
 
-    it 'creates a private visualization if any table in the list is private',
-    now: true do
+    it 'creates a private visualization if any table in the list is private' do
       table3 = table_factory(privacy: 0)
 
       payload = {

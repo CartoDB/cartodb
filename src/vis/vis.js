@@ -459,6 +459,11 @@ var Vis = cdb.core.View.extend({
         var cartodb_id = data.cartodb_id
         var infowindowFields = layerView.getInfowindowData(layer)
         var fields = infowindowFields.fields;
+
+        infowindow.model.set({
+          'template': infowindowFields.template,
+          'template_type': infowindowFields.template_type
+        });
         // Send request
         sql.execute("select {{{fields}}} from ({{{sql}}}) as _cartodbjs_alias where cartodb_id = {{{ cartodb_id }}}", {
           fields: _.pluck(fields, 'name').join(','),
@@ -495,6 +500,7 @@ var Vis = cdb.core.View.extend({
             content = render_fields;
           }
 
+
           infowindow.model.set({
             content:  {
               fields: content,
@@ -507,7 +513,6 @@ var Vis = cdb.core.View.extend({
           infowindow.setError();
         })
 
-        infowindow.model.set('template', infowindowFields.template);
 
         // Show infowindow with loading state
         infowindow

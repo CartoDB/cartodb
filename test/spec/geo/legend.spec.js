@@ -2,7 +2,7 @@ describe("common.geo.ui.Legend", function() {
 
   describe("Legend", function() {
 
-    var data, legend;
+    var data, legend, map;
 
     afterEach(function() {
       legend.clean();
@@ -10,7 +10,7 @@ describe("common.geo.ui.Legend", function() {
 
     beforeEach(function() {
 
-      var map = new cdb.geo.Map();
+      map = new cdb.geo.Map();
 
       data = [
         { name: "Category 1", value: "#f1f1f1" },
@@ -20,7 +20,6 @@ describe("common.geo.ui.Legend", function() {
       ];
 
       legend = new cdb.geo.ui.Legend({
-        template: _.template("<ul></ul>"),
         data: data,
         map: map
       });
@@ -31,6 +30,30 @@ describe("common.geo.ui.Legend", function() {
 
     it("should have a 'custom' type set by default", function() {
       expect(legend.model.get("type")).toEqual('custom');
+    });
+
+    it("should use the provided model", function() {
+
+      var legend = new cdb.geo.ui.Legend({
+        data: data,
+        map: map
+      });
+
+      expect(legend.model).toBeDefined();
+      expect(legend.model.get("type")).toEqual('custom');
+
+    });
+    it("should generate a model if no model is provided", function() {
+
+      var legend = new cdb.geo.ui.Legend({
+        model: new cdb.geo.ui.LegendModel({ type: "bubble" }),
+        data: data,
+        map: map
+      });
+
+      expect(legend.model).toBeDefined();
+      expect(legend.model.get("type")).toEqual('bubble');
+
     });
 
     it("should allow to change type", function() {
@@ -110,12 +133,10 @@ describe("common.geo.ui.Legend", function() {
       ];
 
       legendA = new cdb.geo.ui.Legend({
-        template: _.template("<ul></ul>"),
         data: data
       });
 
       legendB = new cdb.geo.ui.Legend({
-        template: _.template("<ul></ul>"),
         data: data
       });
 
@@ -129,11 +150,11 @@ describe("common.geo.ui.Legend", function() {
 
     });
 
-    it("should have a 'custom' type set by default", function() {
+    xit("should have a collection of items", function() {
       expect(stackedLegend.items instanceof cdb.geo.ui.StackedLegendItems).toEqual(true);
     });
 
-    it("should populate the collection", function() {
+    xit("should populate the collection", function() {
       expect(stackedLegend.items.length).toEqual(2);
 
       //for (var i = 0; i < legends.length; i++) {

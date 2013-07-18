@@ -9,9 +9,6 @@ function main() {
     loaderControl: false //dont show tiles loader
   };
 
-
-
-
   cartodb.createVis('map', 'http://saleiva.cartodb.com/api/v1/viz/thehobbit_filmingloc/viz.json', options)
     .done(function(vis, layers) {
 
@@ -47,7 +44,7 @@ function main() {
       });
 
       var legendB = new cdb.geo.ui.Legend({
-        type: "custom",
+        type: "bubble",
         data: [
           { name: "21,585",     value: "#FFC926" },
           { name: "Category 2", value: "#76EC00" },
@@ -57,7 +54,6 @@ function main() {
       });
 
       var legendC = new cdb.geo.ui.Legend({
-        type: "custom",
         data: [
           { name: "21,585",     value: "#FFC926" },
           { name: "Category 2", value: "#76EC00" },

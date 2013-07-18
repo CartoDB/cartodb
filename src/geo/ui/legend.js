@@ -222,38 +222,23 @@ cdb.geo.ui.StackedLegend = cdb.core.View.extend({
 
 });
 
+cdb.geo.ui.LegendModel = cdb.core.Model.extend({
+
+  defaults: {
+    type: "custom"
+  }
+
+});
+
+
+/*
+ * Legend
+ *
+ */
+
 cdb.geo.ui.Legend = cdb.core.View.extend({
 
   className: "cartodb-legend",
-
-  default_options: {
-
-  },
-
-  _updateLegendType: function() {
-    var self = this;
-
-    var legend_name = this._capitalize(this.model.get("type")) + "Legend";
-
-    if (!cdb.geo.ui[legend_name]) {
-      // set the previous type
-      this.model.set({ type: this.model.previous("type") }, { silent: true });
-      return;
-    }
-
-    if (this.view) this.view.clean();
-
-    this.view = new cdb.geo.ui[legend_name] ({
-      items: self.items
-    });
-
-    // Sets the type as the element class for styling
-    this.$el.removeClass(this.model.previous("type"));
-    this.$el.addClass(this.model.get("type"));
-
-    this.render();
-
-  },
 
   initialize: function() {
 
@@ -272,13 +257,47 @@ cdb.geo.ui.Legend = cdb.core.View.extend({
 
   _setupModel: function() {
 
-    this.model = new cdb.core.Model({
-      type: this.options.type || "custom"
-    });
+    if (!this.model) {
+      this.model = new cdb.geo.ui.LegendModel({
+        type: this.options.type || cdb.geo.ui.LegendModel.prototype.defaults.type
+      });
+    }
 
     this.add_related_model(this.model);
-
     this.model.bind("change:type", this._updateLegendType, this);
+
+  },
+
+  _updateLegendType: function() {
+
+    this.legend_name = this._capitalize(this.model.get("type")) + "Legend";
+
+    if (!cdb.geo.ui[this.legend_name]) {
+      // set the previous type
+      this.legend_name = null;
+      this.model.set({ type: this.model.previous("type") }, { silent: true });
+      return;
+    }
+
+    this._refresh();
+
+  },
+
+  _refresh: function() {
+
+    var self = this;
+
+    if (this.view) this.view.clean();
+
+    this.view = new cdb.geo.ui[this.legend_name] ({
+      items: self.items
+    });
+
+    // Set the type as the element class for styling
+    this.$el.removeClass(this.model.previous("type"));
+    this.$el.addClass(this.model.get("type"));
+
+    this.render();
 
   },
 

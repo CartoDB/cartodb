@@ -177,6 +177,26 @@ describe "Imports API" do
     import_table.should have_required_indexes_and_triggers
   end
 
+  it 'duplicates a table without geometries' do
+    post v1_imports_url,
+      params.merge(:filename => upload_file('spec/support/data/csv_with_number_columns.csv', 'application/octet-stream'))
+
+    @table_from_import = Table.all.last
+
+    post v1_imports_url(params.merge(:table_name => 'wadus_copy__copy',
+                                     :table_copy => @table_from_import.name))
+
+    response.code.should be == '200'
+    response_json = JSON.parse(response.body)
+
+    last_import = DataImport[response_json['item_queue_id']]
+    last_import.state.should be == 'complete'
+
+    import_table = Table.all.last
+    import_table.rows_counted.should be == @table_from_import.rows_counted
+    import_table.should have_required_indexes_and_triggers
+  end
+
   it 'gets a list of failed imports'
   it 'gets a list of succeeded imports'
   it 'kills pending imports'

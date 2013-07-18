@@ -338,6 +338,23 @@ describe Api::Json::VisualizationsController do
       response.fetch('tags').should == []
     end
 
+    it 'updates the table in a table visualization' do
+      table_attributes = table_factory
+      id = table_attributes.fetch('table_visualization').fetch('id')
+
+      sleep(0.5)
+      put "/api/v1/viz/#{id}?api_key=#{@api_key}",
+        { name: 'changed name' }.to_json, @headers
+      last_response.status.should == 200
+      response = JSON.parse(last_response.body)
+
+      response.fetch('table').fetch('updated_at')
+        .should_not == table_attributes.fetch('updated_at')
+
+      puts table_attributes.fetch('updated_at')
+      puts response.fetch('table').fetch('updated_at')
+    end
+
     it 'allows setting the active layer' do
       payload   = factory
       post "/api/v1/viz?api_key=#{@api_key}",

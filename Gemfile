@@ -21,7 +21,7 @@ gem "rgeo-geojson",            "0.2.1", :require => "rgeo/geo_json"
 gem "redis",                   "2.2.2"
 gem "resque",                  "1.23.0"
 gem "yajl-ruby",               "1.1.0", :require => "yajl"
-gem "rollbar"
+gem "rollbar",                 "0.9.6"
 gem "nokogiri",                "1.5.3"
 gem "statsd-client",           "0.0.7", :require => "statsd"
 gem "aws-sdk",                 "1.8.5"
@@ -31,7 +31,7 @@ gem "addressable",             "2.2.8", :require => "addressable/uri"
 #gem "newrelic_rpm",            "~> 3.5.5"
 
 gem "ejs",                     "~> 1.1.1"
-gem "turbo-sprockets-rails3",  "0.1.16"
+#gem "turbo-sprockets-rails3",  "0.1.16"
 group :assets do
   gem 'sass-rails',            "~> 3.2.3"
   gem 'uglifier',              "~> 1.3.0"
@@ -56,8 +56,8 @@ gem "typhoeus",                "0.6.3"
 
 # Service components (/services)
 gem "virtus",                  git: "https://github.com/solnic/virtus.git"
-gem "aequitas"
-gem "uuidtools"
+gem "aequitas",                 "0.0.2"
+gem "uuidtools",                "2.1.3"
 gem "rubyzip",                  "0.9.9"
 gem "sinatra",                  "1.3.4", require: 'sinatra/base'
 
@@ -67,6 +67,8 @@ gem "bartt-ssl_requirement",   "~>1.4.0", :require => "ssl_requirement"
 
 gem "simplecov",               "0.7.1", :require => false, :group => :test
 gem "spin",                    "0.5.3", :require => false, :group => :test
+
+gem "mixpanel",                "4.0.2"
 
 group :development, :test do
   gem "webrick",               "1.3.1"
@@ -87,7 +89,7 @@ group :development, :test do
   gem "email_spec",            "1.2.1"
   gem "rack",                  "1.4.1"
   gem "rack-reverse-proxy",    "0.4.4", :require => 'rack/reverse_proxy'
-  gem "rack-test"
+  gem "rack-test",             "0.6.2", :require => 'rack/test'
   gem "foreman",               "0.46.0"
   gem "factory_girl_rails",    "~> 4.0.0"
   gem "bogus",                 "0.0.3"

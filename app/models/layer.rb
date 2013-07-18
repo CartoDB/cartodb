@@ -132,7 +132,7 @@ class Layer < Sequel::Model
   def rename_in(target, anchor, substitution)
     return if target.nil? || target.empty?
     regex = /(\A|\W+)(#{anchor})(\W+|\z)/
-    target.gsub!(regex) { |match| match.gsub(anchor, substitution) }
+    target.gsub(regex) { |match| match.gsub(anchor, substitution) }
   end #rename_in
 
   def delete_table_dependencies
@@ -146,6 +146,8 @@ class Layer < Sequel::Model
   def tables_from_query_option
     return [] unless query.present?
     tables_from(affected_table_names)
+  rescue => exception
+    []
   end
 
   def tables_from_table_name_option

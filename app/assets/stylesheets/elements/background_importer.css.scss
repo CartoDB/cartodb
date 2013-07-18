@@ -72,10 +72,10 @@
       background-image:-ms-linear-gradient( -45deg, rgba(85, 128, 197, 1) 25%, transparent 25%, transparent 50%, rgba(85, 128, 197, 1) 50%, rgba(85, 128, 197, 1) 75%, transparent 75%, transparent);
       background-image:linear-gradient( -45de rgba(85, 128, 197, 1) 25%, transparent 25%, transparent 50%, rgba(85, 128, 197, 1) 50%, rgba(85, 128, 197, 1) 75%, transparent 75%, transparent);
 
-      -webkit-animation:move .7s linear infinite;
-      -moz-animation:move .7s linear infinite;
-      -ms-animation:move .7s linear infinite;
-      animation:move .7s linear infinite;
+      -webkit-animation:move 1s linear infinite;
+      -moz-animation:move 1s linear infinite;
+      -ms-animation:move 1s linear infinite;
+      animation:move 1s linear infinite;
       overflow: hidden;
     }
   }

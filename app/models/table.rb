@@ -287,7 +287,7 @@ class Table < Sequel::Model(:user_tables)
 
   def before_create
     super
-    raise CartoDB::QuotaExceeded if owner.over_table_quota?
+    #raise CartoDB::QuotaExceeded if owner.over_table_quota?
     update_updated_at
     self.database_name = owner.database_name
 
@@ -329,6 +329,10 @@ class Table < Sequel::Model(:user_tables)
   rescue => e
     self.handle_creation_error(e)
   end
+
+  def before_save
+    self.updated_at = table_visualization.updated_at if table_visualization
+  end #before_save
 
   def after_save
     super
@@ -1318,6 +1322,20 @@ TRIGGER
     @relator ||= CartoDB::Table::Relator.new(Rails::Sequel.connection, self)
   end #relator
 
+  def set_table_id
+    self.table_id = self.get_table_id
+  end # set_table_id
+
+  def get_table_id
+    record = owner.in_database.select(:pg_class__oid)
+      .from(:pg_class)
+      .join_table(:inner, :pg_namespace, :oid => :relnamespace)
+      .where(:relkind => 'r', :nspname => 'public', :relname => name).first
+    record.nil? ? nil : record[:oid]
+  end # get_table_id
+
+
+
   private
 
   def update_updated_at
@@ -1383,6 +1401,8 @@ TRIGGER
         if self.schema.select{ |k| k[0] == THE_GEOM }.first[1] == "geometry"
           if row = owner.in_database["select GeometryType(#{THE_GEOM}) FROM #{self.name} where #{THE_GEOM} is not null limit 1"].first
             type = row[:geometrytype]
+          else
+            type = DEFAULT_THE_GEOM_TYPE
           end
         else
           owner.in_database.rename_column(self.name, THE_GEOM, :the_geom_str)
@@ -1438,13 +1458,14 @@ TRIGGER
 
       # Ensure we add triggers and indexes when required
       if user_database.schema(name, :reload => true).flatten.include?(THE_GEOM_WEBMERCATOR)
-        updates = true unless self.has_trigger?("update_the_geom_webmercator_trigger")
         unless self.has_index? "#{self.name}_the_geom_webmercator_idx"
+          updates = true
           user_database.run(%Q{CREATE INDEX ON "#{self.name}" USING GIST(#{THE_GEOM_WEBMERCATOR})})
         end
       end
       if user_database.schema(name, :reload => true).flatten.include?(THE_GEOM)
         unless self.has_index? "#{self.name}_the_geom_idx"
+          updates = true
           user_database.run(%Q{CREATE INDEX ON "#{self.name}" USING GIST(the_geom)})
         end
       end
@@ -1489,14 +1510,6 @@ SQL
         )
       end
     end
-  end
-
-  def set_table_id
-    self.table_id = owner.in_database.select(:pg_class__oid)
-                                     .from(:pg_class)
-                                     .join_table(:inner, :pg_namespace, :oid => :relnamespace)
-                                     .where(:relkind => 'r', :nspname => 'public', :relname => name)
-                                     .first[:oid]
   end
 
   def update_the_geom!(attributes, primary_key)
@@ -1546,6 +1559,11 @@ SQL
       $tables_metadata.rename(Table.key(database_name,@name_changed_from), key)
       owner.in_database.rename_table(@name_changed_from, name)
       propagate_name_change_to_table_visualization
+
+      CartoDB::notify_exception(
+        CartoDB::GenericImportError.new("Attempt to rename table without layers #{self.name}"), 
+        user: owner
+      ) if layers.blank?
 
       layers.each do |layer| 
         layer.rename_table(@name_changed_from, name).save

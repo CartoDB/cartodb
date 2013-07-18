@@ -108,6 +108,12 @@
 
   .input {
 
+    p {
+      width:480px;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
     input {
       width:484px;
       padding: 0;

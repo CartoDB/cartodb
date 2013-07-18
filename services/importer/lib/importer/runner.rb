@@ -3,6 +3,7 @@ require_relative './loader'
 require_relative './shp_loader'
 require_relative './indexer'
 require_relative './unp'
+require_relative './column'
 
 module CartoDB
   module Importer2
@@ -11,8 +12,10 @@ module CartoDB
         csv:      Loader,
         txt:      Loader,
         xls:      Loader,
+        xlsx:     Loader,
         json:     Loader,
         geojson:  Loader,
+        kml:      Loader,
         shp:      ShpLoader
       }
 
@@ -42,6 +45,7 @@ module CartoDB
         loader.run
         job.log "Loader exit code: #{loader.exit_code}"
 
+        columns_in(job.table_name).each(&:sanitize)
         Indexer.new(job.db).add(job.table_name)
         self.results.push(result_for(job, source_file))
       end #import
@@ -57,6 +61,12 @@ module CartoDB
       def loader_for(source_file)
         LOADERS.fetch(source_file.extension.delete('.').to_sym)
       end #loader_for
+
+      def columns_in(table_name)
+        db.schema(table_name, schema: 'importer')
+          .map { |s| s[0] }
+          .map { |column_name| Column.new(db, table_name, column_name) }
+      end #columns_in
 
       attr_reader :results
 

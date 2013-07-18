@@ -419,13 +419,20 @@ class DataImport < Sequel::Model
       self.success = true
       self.log << "SUCCESS!\n"
       save
+      if Cartodb.config[:mixpanel].present?
+        mixpanel = Mixpanel::Tracker.new Cartodb.config[:mixpanel]['token']
+        mixpanel.track "Import successful", {distinct_id: current_user.username}.merge(basic_information)
+      end
     end
 
     after_transition any => :failure do
       # Increment failed imports on CartoDB stats
       CartodbStats.increment_failed_imports()
       Rollbar.report_message("Failed import", "error", error_info: basic_information)
-
+      if Cartodb.config[:mixpanel].present?
+        mixpanel = Mixpanel::Tracker.new Cartodb.config[:mixpanel]['token']
+        mixpanel.track "Import failed", {distinct_id: current_user.username}.merge(basic_information)
+      end
       # Copy any uploaded resources to secret failed imports vault(tm)
         
       if uploaded_file

@@ -23,7 +23,7 @@ describe 'csv regression tests' do
   end
 
   it 'imports XLS files' do
-    filepath    = '/home/lorenzo/Downloads/wim9excel.xls'
+    pending
     downloader  = Downloader.new(filepath)
     runner      = Runner.new(@job, downloader)
     runner.run
@@ -31,8 +31,7 @@ describe 'csv regression tests' do
     puts runner.report
     runner.exit_code.must_equal 0
 
-    sample_for(@job).wont_be_empty
-    #puts geometry_type_for(@job)
+    geometry_type_for(runner).wont_be_empty
   end
 
   it 'imports files exported from the SQL API' do

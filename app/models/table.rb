@@ -1401,6 +1401,8 @@ TRIGGER
         if self.schema.select{ |k| k[0] == THE_GEOM }.first[1] == "geometry"
           if row = owner.in_database["select GeometryType(#{THE_GEOM}) FROM #{self.name} where #{THE_GEOM} is not null limit 1"].first
             type = row[:geometrytype]
+          else
+            type = DEFAULT_THE_GEOM_TYPE
           end
         else
           owner.in_database.rename_column(self.name, THE_GEOM, :the_geom_str)
@@ -1456,13 +1458,14 @@ TRIGGER
 
       # Ensure we add triggers and indexes when required
       if user_database.schema(name, :reload => true).flatten.include?(THE_GEOM_WEBMERCATOR)
-        updates = true unless self.has_trigger?("update_the_geom_webmercator_trigger")
         unless self.has_index? "#{self.name}_the_geom_webmercator_idx"
+          updates = true
           user_database.run(%Q{CREATE INDEX ON "#{self.name}" USING GIST(#{THE_GEOM_WEBMERCATOR})})
         end
       end
       if user_database.schema(name, :reload => true).flatten.include?(THE_GEOM)
         unless self.has_index? "#{self.name}_the_geom_idx"
+          updates = true
           user_database.run(%Q{CREATE INDEX ON "#{self.name}" USING GIST(the_geom)})
         end
       end

@@ -5,7 +5,7 @@ require_relative '../../models/visualization/locator'
 class Admin::VisualizationsController < ApplicationController
   ssl_required :index, :show
   before_filter :login_required, only: [:index]
-  skip_before_filter :browser_is_html5_compliant?, only: [:embed_map]
+  skip_before_filter :browser_is_html5_compliant?, only: [:embed_map, :track_embed]
 
   def index
     @tables_count  = current_user.tables.count

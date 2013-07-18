@@ -1,6 +1,6 @@
-// cartodb.js version: 3.0.03
+// cartodb.js version: 3.0.04
 // uncompressed version: cartodb.uncompressed.js
-// sha: 62a9b1e91b6260d570c553e2ad797d5e096b3774
+// sha: 48b5937451fd942112011747e8e5e72518cca1e6
 (function() {
   var root = this;
 
@@ -19883,7 +19883,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.0.03';
+    cdb.VERSION = '3.0.04';
 
     cdb.CARTOCSS_VERSIONS = {
       '2.0.0': '',
@@ -23198,7 +23198,7 @@ LayerDefinition.prototype = {
    * TODO: extract these two functions to some core module
    */
   isCORSSupported: function() {
-    return 'withCredentials' in new XMLHttpRequest() || typeof XDomainRequest !== "undefined";
+    return 'withCredentials' in new XMLHttpRequest();// || (typeof XDomainRequest !== "undefined";
   },
 
   isBtoaSupported: function() {
@@ -23355,9 +23355,7 @@ LayerDefinition.prototype = {
   _requestGET: function(params, callback) {
     var self = this;
     var ajax = this.options.ajax;
-    var json = '{ "config": "' +
-      JSON.stringify(this.toJSON()).replace(/"/g, '\\"').replace(/\\n/g, '') +
-    '"}';
+    var json = JSON.stringify({ config: JSON.stringify(this.toJSON()) });
     LZMA.compress(json, 3, function(encoded) {
       encoded = self._array2hex(encoded);
       params.push("lzma=" + encodeURIComponent(encoded));

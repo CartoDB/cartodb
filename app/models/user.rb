@@ -309,8 +309,28 @@ class User < Sequel::Model
     date_to.downto(date_from) do |date|
       calls << $users_metadata.ZSCORE("user:#{username}:mapviews:global", date.strftime("%Y%m%d")).to_i
     end
+    calls = calls.zip(get_old_api_calls["per_day"].to_a.reverse).map {|pair| pair.reduce(&:+) } unless get_old_api_calls["per_day"].blank?
     return calls
   end
+
+  # Legacy stats fetching
+
+    def get_old_api_calls
+      JSON.parse($users_metadata.HMGET(key, 'api_calls').first) rescue {}
+    end
+    
+    def set_old_api_calls(options = {})
+      # Ensure we update only once every 3 hours
+      if options[:force_update] || get_old_api_calls["updated_at"].to_i < 3.hours.ago.to_i
+        api_calls = JSON.parse(
+          open("#{Cartodb.config[:api_requests_service_url]}?username=#{self.username}").read
+        ) rescue {}
+
+        # Manually set updated_at
+        api_calls["updated_at"] = Time.now.to_i
+        $users_metadata.HMSET key, 'api_calls', api_calls.to_json
+      end
+    end
 
   def last_billing_cycle
     day = period_end_date.day rescue 29.days.ago.day
@@ -376,32 +396,29 @@ class User < Sequel::Model
   end
 
   def real_tables
-    @real_tables ||= begin
-      self.in_database(:as => :superuser)
-      .select(:pg_class__oid, :pg_class__relname)
-      .from(:pg_class)
-      .join_table(:inner, :pg_namespace, :oid => :relnamespace)
-      .where(:relkind => 'r', :nspname => 'public')
-      .exclude(:relname => SYSTEM_TABLE_NAMES)
-      .all
-   end
+    self.in_database(:as => :superuser)
+    .select(:pg_class__oid, :pg_class__relname)
+    .from(:pg_class)
+    .join_table(:inner, :pg_namespace, :oid => :relnamespace)
+    .where(:relkind => 'r', :nspname => 'public')
+    .exclude(:relname => SYSTEM_TABLE_NAMES)
+    .all
   end
 
   # Looks for tables created on the user database
   # but not linked to the Rails app database. Creates/Updates/Deletes
   # required records to sync them
   def link_ghost_tables
+    return true if self.real_tables.blank?
     link_outdated_tables
-
-    metadata_tables_ids = self.tables.select(:table_id).map(&:table_id)
-
-    # link_created_tables(metadata_tables_ids)
-    # link_renamed_tables(metadata_tables_ids)
-    link_deleted_tables(metadata_tables_ids)
+    # link_created_tables
+    # link_renamed_tables
+    link_deleted_tables
   end
 
   def link_outdated_tables
-    metadata_tables_without_id = self.tables.filter(table_id: nil).map(&:name)
+    # Link tables without oid
+    metadata_tables_without_id = self.tables.where(table_id: nil).map(&:name)
     outdated_tables = real_tables.select{|t| metadata_tables_without_id.include?(t[:relname])}
     outdated_tables.each do |t|
       table = self.tables.where(name: t[:relname]).first
@@ -411,9 +428,17 @@ class User < Sequel::Model
         raise unless e.message =~ /must be owner of relation/
       end
     end
+
+    # Link tables which oid has changed
+    self.tables.where(
+      "table_id not in ?", self.real_tables.map {|t| t[:oid]}
+    ).each do |table|
+      real_table_id = table.get_table_id
+      table.this.update(table_id: real_table_id) unless real_table_id.blank?
+    end
   end
 
-  def link_created_tables(metadata_tables_ids)
+  def link_created_tables
     created_tables = real_tables.reject{|t| metadata_tables_ids.include?(t[:oid])}
     created_tables.each do |t|
       table = Table.new
@@ -429,7 +454,7 @@ class User < Sequel::Model
     end
   end
 
-  def link_renamed_tables(metadata_tables_ids)
+  def link_renamed_tables
     metadata_table_names = self.tables.select(:name).map(&:name)
     renamed_tables       = real_tables.reject{|t| metadata_table_names.include?(t[:relname])}.select{|t| metadata_tables_ids.include?(t[:oid])}
     renamed_tables.each do |t|
@@ -442,7 +467,8 @@ class User < Sequel::Model
     end
   end
 
-  def link_deleted_tables(metadata_tables_ids)
+  def link_deleted_tables
+    metadata_tables_ids = self.tables.select(:table_id).map(&:table_id)
     dropped_tables = metadata_tables_ids - real_tables.map{|t| t[:oid]}
 
     # Remove tables with oids that don't exist on the db
@@ -454,7 +480,7 @@ class User < Sequel::Model
     # Remove tables with null oids unless the table name
     # exists on the db
     self.tables.filter(table_id: nil).all.each do |t|
-      t.keep_user_database_table
+      t.keep_user_database_table = true
       t.destroy unless self.real_tables.map { |t| t[:relname] }.include?(t.name)
     end if dropped_tables.present? && dropped_tables.include?(nil)
   end

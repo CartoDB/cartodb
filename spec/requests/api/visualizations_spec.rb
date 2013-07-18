@@ -125,6 +125,28 @@ describe Api::Json::VisualizationsController do
       last_response.status.should == 200
     end
 
+    it 'creates a private visualization if any table in the list is private' do
+      table1 = table_factory
+      table2 = table_factory
+      table3 = table_factory(privacy: 0)
+
+      payload = {
+        name: 'new visualization',
+        tables: [
+          table1.fetch('name'),
+          table2.fetch('name'),
+          table3.fetch('name')
+        ],
+        privacy: 'public'
+      }
+
+      post "/api/v1/viz?api_key=#{@api_key}", payload.to_json, @headers
+      last_response.status.should == 200
+
+      visualization = JSON.parse(last_response.body)
+      visualization.fetch('privacy').should == 'PRIVATE'
+    end
+
     it 'assigns a generated name if name taken' do
       table               = table_factory
       visualization       = table.fetch('table_visualization')
@@ -246,6 +268,17 @@ describe Api::Json::VisualizationsController do
       collection  = response.fetch('visualizations')
       collection.size.should == 2
     end
+
+    it 'does not get table data if passed table_data=false' do
+      table = table_factory
+
+      get "/api/v1/viz?api_key=#{@api_key}&type=table",
+        {}, @headers
+      last_response.status.should == 200
+      response        = JSON.parse(last_response.body)
+      visualizations  = response.fetch('visualizations')
+      visualizations.first.keys.should_not include :table_data
+    end
   end # GET /api/v1/viz
 
   describe 'GET /api/v1/viz/:id' do
@@ -303,6 +336,23 @@ describe Api::Json::VisualizationsController do
       response = JSON.parse(last_response.body)
       response.fetch('name').should == 'changed'
       response.fetch('tags').should == []
+    end
+
+    it 'updates the table in a table visualization' do
+      table_attributes = table_factory
+      id = table_attributes.fetch('table_visualization').fetch('id')
+
+      sleep(0.5)
+      put "/api/v1/viz/#{id}?api_key=#{@api_key}",
+        { name: 'changed name' }.to_json, @headers
+      last_response.status.should == 200
+      response = JSON.parse(last_response.body)
+
+      response.fetch('table').fetch('updated_at')
+        .should_not == table_attributes.fetch('updated_at')
+
+      puts table_attributes.fetch('updated_at')
+      puts response.fetch('table').fetch('updated_at')
     end
 
     it 'allows setting the active layer' do
@@ -555,7 +605,9 @@ describe Api::Json::VisualizationsController do
     }
   end #factory
 
-  def table_factory
+  def table_factory(options={})
+    privacy = options.fetch(:privacy, 1)
+
     payload = { name: "table #{rand(9999)}" }
     post "/api/v1/tables?api_key=#{@api_key}",
       payload.to_json, @headers
@@ -565,7 +617,7 @@ describe Api::Json::VisualizationsController do
     table_name        = table_attributes.fetch('name')
 
     put "/api/v1/tables/#{table_id}?api_key=#{@api_key}",
-      { privacy: 1 }.to_json, @headers
+      { privacy: privacy }.to_json, @headers
 
     sql = URI.escape(%Q{
       INSERT INTO #{table_name} (description)

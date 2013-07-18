@@ -1,6 +1,5 @@
 # encoding: utf-8
 require_relative './stats'
-require_relative '../table'
 require_relative '../overlay/collection'
 
 module CartoDB
@@ -50,7 +49,7 @@ module CartoDB
       end #stats
 
       def single_data_layer?
-        layers(:cartodb).flat_map(&:affected_tables).uniq.length == 1
+        layers(:cartodb).to_a.length == 1 || related_tables.length == 1
       end #single_data_layer?
 
       attr_reader :id, :map_id

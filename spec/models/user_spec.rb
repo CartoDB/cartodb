@@ -86,21 +86,24 @@ describe User do
   end
 
   it "should read api calls from external service" do
-    @user.get_api_calls.should == (1..30).map { 0 }
+    @user.stubs(:get_old_api_calls).returns({
+      "per_day" => [0, 0, 0, 0, 24, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 17, 0, 0, 0, 0, 0], 
+      "total"=>49, 
+      "updated_at"=>1370362756
+    })
+    @user.get_api_calls.should == [0, 0, 0, 0, 0, 17, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 24, 0, 0, 0, 0]
+    @user.get_api_calls(
+      from: (Date.today - 6.days), 
+      to: Date.today
+    ).should == [0, 0, 0, 0, 0, 17, 0]
   end
+
 
   it "should have many tables" do
     @user2.tables.should be_empty
     create_table :user_id => @user2.id, :name => 'My first table', :privacy => Table::PUBLIC
     @user2.reload
     @user2.tables.all.should == [Table.first(:user_id => @user2.id)]
-  end
-
-  it "should correctly count real tables" do
-    @user.in_database.run('create table ghost_table (test integer)')
-    @user.real_tables.map { |c| c[:relname] }.should =~ ["ghost_table", "import_csv_1", "twitters"]
-    @user.real_tables.size.should == 3
-    @user.tables.count.should == 2
   end
 
   it "should generate a data report" do
@@ -425,6 +428,59 @@ describe User do
     Timecop.freeze(Date.parse("2013-03-15")) do
       user.stubs(:period_end_date).returns(Date.parse("2012-12-02"))
       user.last_billing_cycle.should == Date.parse("2013-03-02")
+    end
+  end
+
+  describe '#link_ghost_tables' do
+    it "should correctly count real tables" do
+    reload_user_data(@user) && @user.reload
+      @user.in_database.run('create table ghost_table (test integer)')
+      @user.real_tables.map { |c| c[:relname] }.should =~ ["ghost_table", "import_csv_1", "twitters"]
+      @user.real_tables.size.should == 3
+      @user.tables.count.should == 2
+    end
+
+    it "should link a table with null table_id" do
+      reload_user_data(@user) && @user.reload
+      table = create_table :user_id => @user.id, :name => 'My table'
+      initial_count = @user.tables.count
+      table_id = table.table_id
+      table.this.update table_id: nil
+      @user.link_ghost_tables
+      table.reload
+      table.table_id.should == table_id
+      @user.tables.count.should == initial_count
+    end
+
+    it "should link a table with wrong table_id" do
+      reload_user_data(@user) && @user.reload
+      table = create_table :user_id => @user.id, :name => 'My table 2'
+      initial_count = @user.tables.count
+      table_id = table.table_id
+      table.this.update table_id: 1
+      @user.link_ghost_tables
+      table.reload
+      table.table_id.should == table_id
+      @user.tables.count.should == initial_count
+    end
+
+    it "should remove a table that does not exist on the user database" do
+      reload_user_data(@user) && @user.reload
+      initial_count = @user.tables.count
+      table = create_table :user_id => @user.id, :name => 'My table 3'
+      @user.in_database.drop_table(table.name)
+      @user.tables.where(name: table.name).first.should_not be_nil
+      @user.link_ghost_tables
+      @user.tables.where(name: table.name).first.should be_nil
+      @user.tables.count.should == initial_count
+    end
+
+    it "should not do anything when real tables is blank" do
+      reload_user_data(@user) && @user.reload
+      @user.stubs(:real_tables).returns([])
+      @user.tables.count.should_not == 0
+      @user.link_ghost_tables
+      @user.tables.count.should_not == 0
     end
   end
 

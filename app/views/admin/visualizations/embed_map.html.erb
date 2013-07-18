@@ -77,7 +77,14 @@
 
         var bool_fn = function(v) { return v == 'true' }
         , is_custom_install = <%= Cartodb.config[:cartodb_com_hosted].present? %>
-        , logo_fn = function(v) { return ("<%= @visualization.user.account_type.downcase %>" != "coronelli" || is_custom_install) ? true : v == 'true' };
+        , logo_fn  = function(v) { return ("<%= @visualization.user.account_type.downcase %>" != "coronelli" || is_custom_install) ? true : v == 'true' }
+        , layer_fn = function(v) {
+
+          return _.map(v.split("|"), function(v) {
+            return { visible: parseInt(v, 10) }
+          });
+
+        };
 
         var opt = get_url_params({
           'search':       bool_fn,
@@ -86,10 +93,11 @@
           'shareable':    bool_fn,
           'cartodb_logo': logo_fn,
           'scrollwheel':  bool_fn,
+          'sublayer_options':  layer_fn,
           'layer_selector': bool_fn
         });
 
-        <% if Rails.env.development? %>
+        <% if Rails.env.development? || Cartodb.config[:no_cdn] == true %>
         opt.no_cdn = true;
         <% end %>
 

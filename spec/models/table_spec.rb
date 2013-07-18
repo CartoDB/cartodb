@@ -67,6 +67,17 @@ describe Table do
       table.errors.fetch(:name).first.should =~ /reserved keyword/
     end
 
+    it "should set a table_id value" do
+      table = create_table(name: 'this_is_a_table', user_id: @user.id)
+      table.table_id.should be_a(Integer)
+    end
+
+    it "should return nil on get_table_id when the physical table doesn't exist" do
+      table = create_table(name: 'this_is_a_table', user_id: @user.id)
+      @user.in_database.drop_table table.name
+      table.get_table_id.should be_nil
+    end
+
     it "should not allow to create tables using system names" do
       table = create_table(name: "cdb_tablemetadata", user_id: @user.id)
       table.name.should == "cdb_tablemetadata_1"
@@ -471,6 +482,7 @@ describe Table do
     end
 
     it 'raises QuotaExceeded when trying to create a table while over quota' do
+      pending "Deactivated until table creation paths are unified - Issue 2974"
       quota_in_bytes  = 524288000
       table_quota     = 5
       new_user        = new_user
@@ -522,8 +534,11 @@ describe Table do
       @user.save
       table = create_table(user_id: @user.id, name: "varnish_privacy", privacy: Table::PRIVATE)
       
-      key = table.table_visualization.varnish_key
-      CartoDB::Varnish.any_instance.expects(:purge).times(2).with("obj.http.X-Cache-Channel ~ #{key}:vizjson").returns(true)
+      id = table.table_visualization.id
+      CartoDB::Varnish.any_instance.expects(:purge)
+        .times(2)
+        .with("obj.http.X-Cache-Channel ~ .*#{id}:vizjson")
+        .returns(true)
 
       CartoDB::Table::PrivacyManager.any_instance
         .expects(:propagate_to_redis_and_varnish)

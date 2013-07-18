@@ -18,12 +18,29 @@ namespace :cartodb do
       end
     end
 
+    desc "Rebuild user tables/layers join table"
+    task :register_table_dependencies => :environment do
+      count = Map.count
+
+      Map.all.each_with_index do |map, i|
+        begin
+          map.data_layers.each do |layer| 
+            layer.register_table_dependencies
+            printf "OK (%-#{4}s/%-#{4}s)\n", i, count
+          end
+        rescue => e
+          printf "FAIL (%-#{4}s/%-#{4}s) #{e}\n", i, count
+        end
+      end
+    end
+
 
     ########################
     # LOAD CARTODB FUNCTIONS
     ########################
     desc "Install/upgrade CARTODB SQL functions"
     task :load_functions => :environment do
+      printf "Starting cartodb:db:load_functions task\n"
       functions_list = ENV['FUNCTIONS'].blank? ? [] : ENV['FUNCTIONS'].split(',')
       count = User.count
       User.all.each_with_index do |user, i|

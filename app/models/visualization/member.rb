@@ -44,7 +44,7 @@ module CartoDB
       def store
         raise CartoDB::InvalidMember unless self.valid?
 
-        invalidate_varnish_cache if name_changed || privacy_changed
+        invalidate_varnish_cache if name_changed || privacy_changed || description_changed
         set_timestamps
         repository.store(id, attributes.to_hash)
         propagate_privacy_and_name_to(table) if table
@@ -95,6 +95,11 @@ module CartoDB
         super(name)
       end #name=
 
+      def description=(description)
+        self.description_changed = true if description != @description && !@description.nil?
+        super(description)
+      end #description=
+
       def privacy=(privacy)
         privacy = privacy.downcase if privacy
         self.privacy_changed = true if privacy != @privacy && !@privacy.nil?
@@ -144,15 +149,14 @@ module CartoDB
         derived? && !single_data_layer?
       end #non_dependent?
 
+      def invalidate_varnish_cache
+        CartoDB::Varnish.new.purge("obj.http.X-Cache-Channel ~ .*#{id}:vizjson")
+      end #invalidate_varnish_cache
+
       private
 
       attr_reader   :repository, :name_checker, :validator
-      attr_accessor :privacy_changed, :name_changed
-
-      def invalidate_varnish_cache
-        CartoDB::Varnish.new
-          .purge("obj.http.X-Cache-Channel ~ #{varnish_key}:vizjson")
-      end #invalidate_varnish_cache
+      attr_accessor :privacy_changed, :name_changed, :description_changed
 
       def propagate_privacy_and_name_to(table)
         return self unless table

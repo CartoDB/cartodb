@@ -10,4 +10,4 @@ RETURNS SETOF TEXT AS $$
      ) i
    ) j
    WHERE stmt <> '';
-$$ language sql;
+$$ language sql IMMUTABLE STRICT;

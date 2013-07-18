@@ -1,4 +1,8 @@
-3.0.03 (18//11//2013)
+3.0.05 (18//11//2013)
+-----
+- infowindow templates can be functions
+
+3.0.04 (18//11//2013)
 -----
 - fixed IE8 cors checking
 

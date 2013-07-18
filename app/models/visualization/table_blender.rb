@@ -8,12 +8,12 @@ module CartoDB
       end #initialize
 
       def blend
-        origin_map  = tables.first.map
-        copier      = CartoDB::Map::Copier.new(origin_map)
-        new_map     = copier.copy
+        maps            = tables.map(&:map)
+        copier          = CartoDB::Map::Copier.new
+        destination_map = copier.new_map_from(maps.first).save
 
-        tables[1..-1].each { |table| copier.copy_data_layers(table.map, new_map) }
-        new_map
+        maps.each { |map| copier.copy_data_layers(map, destination_map) }
+        destination_map
       end #blend
 
       def blended_privacy

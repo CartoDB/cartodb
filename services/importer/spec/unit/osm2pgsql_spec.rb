@@ -12,7 +12,7 @@ describe Osm2Pgsql do
     fixture_path      = '../fixtures/map2.osm'
     @filepath         = File.expand_path(fixture_path, File.dirname(__FILE__))
     @pg_options       = Factories::PGConnection.new.pg_options
-    @table_name       = "importer_#{rand(999)}"
+    @table_name       = "importer_#{rand(99999)}"
     @db               = Factories::PGConnection.new.connection
     @dataset          = @db[@table_name.to_sym]
     @full_table_name  = "importer.#{@table_name}"

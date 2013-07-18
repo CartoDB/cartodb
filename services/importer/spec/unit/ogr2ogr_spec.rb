@@ -15,7 +15,7 @@ describe Ogr2ogr do
     @csv              = Factories::CSV.new.write
     @filepath         = @csv.filepath
     @pg_options       = Factories::PGConnection.new.pg_options
-    @table_name       = "importer_#{rand(999)}"
+    @table_name       = "importer_#{rand(99999)}"
     @db               = Factories::PGConnection.new.connection
     @dataset          = @db[@table_name.to_sym]
     @full_table_name  = "importer.#{@table_name}"

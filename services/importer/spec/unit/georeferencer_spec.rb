@@ -160,7 +160,7 @@ describe Importer2::Georeferencer do
   end #find_column_in
 
   def create_table(db, options={})
-    table_name        = options.fetch(:table_name, "importer_#{rand(999)}")
+    table_name        = options.fetch(:table_name, "importer_#{rand(99999)}")
     latitude_column   = options.fetch(:latitude_column, :lat)
     longitude_column  = options.fetch(:longitude_column, :lon)
 

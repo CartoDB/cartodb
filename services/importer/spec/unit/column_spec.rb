@@ -212,7 +212,7 @@ describe Column do
   end #rename_to
 
   def create_table(db, options={})
-    table_name = options.fetch(:table_name, "importer_#{rand(999)}")
+    table_name = options.fetch(:table_name, "importer_#{rand(99999)}")
     db.drop_table?(table_name)
     db.create_table?(table_name) do
       String  :name

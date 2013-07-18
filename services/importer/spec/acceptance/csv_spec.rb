@@ -22,6 +22,19 @@ describe 'csv regression tests' do
     geometry_type_for(runner).must_equal 'POINT'
   end
 
+  it 'imports XLS files' do
+    filepath    = '/home/lorenzo/Downloads/wim9excel.xls'
+    downloader  = Downloader.new(filepath)
+    runner      = Runner.new(@job, downloader)
+    runner.run
+
+    puts runner.report
+    runner.exit_code.must_equal 0
+
+    sample_for(@job).wont_be_empty
+    #puts geometry_type_for(@job)
+  end
+
   it 'imports files exported from the SQL API' do
     filepath    = path_to('ne_10m_populated_places_simple.csv')
     downloader  = Downloader.new(filepath)
@@ -63,5 +76,12 @@ describe 'csv regression tests' do
       FROM #{qualified_table_name}
     }].first.fetch(:geometrytype)
   end #geometry_type_for
+
+  def sample_for(job)
+    job.db[%Q{
+      SELECT *
+      FROM #{job.qualified_table_name}
+    }].first
+  end #sample_for
 end # csv regression tests
 

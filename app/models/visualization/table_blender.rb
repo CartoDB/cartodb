@@ -8,11 +8,11 @@ module CartoDB
       end #initialize
 
       def blend
-        origin_map  = tables.shift.map
+        origin_map  = tables.first.map
         copier      = CartoDB::Map::Copier.new(origin_map)
         new_map     = copier.copy
 
-        tables.each { |table| copier.copy_data_layers(table.map, new_map) }
+        tables[1..-1].each { |table| copier.copy_data_layers(table.map, new_map) }
         new_map
       end #blend
 

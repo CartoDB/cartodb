@@ -250,11 +250,11 @@ sudo apt-get install libmapnik-dev python-mapnik mapnik-utils
 ```
 
 ## Install CartoDB SQL API ##
-The [CartoDB SQL API](https://github.com/Vizzuality/CartoDB-SQL-API) 
+The [CartoDB SQL API](https://github.com/CartoDB/CartoDB-SQL-API) 
 component powers the SQL queries over HTTP. To install it:
 
 ```bash
-git clone git://github.com/Vizzuality/CartoDB-SQL-API.git
+git clone git://github.com/CartoDB/CartoDB-SQL-API.git
 cd CartoDB-SQL-API
 git checkout master
 npm install
@@ -267,11 +267,11 @@ node app.js development
 ```
 
 ## Install Windshaft-cartodb ##
-The [Windshaft-cartodb](https://github.com/Vizzuality/Windshaft-cartodb)
+The [Windshaft-cartodb](https://github.com/CartoDB/Windshaft-cartodb)
 component powers the CartoDB Maps API. To install it:
 
 ```bash
-git clone git://github.com/Vizzuality/Windshaft-cartodb.git
+git clone git://github.com/CartoDB/Windshaft-cartodb.git
 cd Windshaft-cartodb
 git checkout master
 npm install

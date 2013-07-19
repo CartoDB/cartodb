@@ -4,17 +4,16 @@ require_relative '../map'
 module CartoDB
   module Map
     class Copier
-      def initialize(map)
-        @map  = map
-      end #initialize
-
-      def copy
-        attributes  = map.to_hash.select { |k, v| k != :id }
-        new_map     = ::Map.new(attributes).save
+      def copy(map)
+        new_map = new_map_from(map).save
         copy_layers(map, new_map)
 
         new_map
       end #copy
+
+      def new_map_from(map)
+        @new_map ||= ::Map.new(map.to_hash.select { |k, v| k != :id })
+      end #new_map
 
       def copy_layers(origin_map, destination_map)
         layer_copies_from(origin_map).map do |layer|

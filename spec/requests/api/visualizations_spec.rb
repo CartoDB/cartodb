@@ -125,6 +125,33 @@ describe Api::Json::VisualizationsController do
       last_response.status.should == 200
     end
 
+    it 'creates a private visualization from a private table' do
+      table1 = table_factory(privacy: 0)
+      source_visualization_id = table1.fetch('table_visualization').fetch('id')
+      payload = { source_visualization_id: source_visualization_id }
+
+      post "/api/v1/viz?api_key=#{@api_key}", payload.to_json, @headers
+      last_response.status.should == 200
+
+      visualization = JSON.parse(last_response.body)
+      visualization.fetch('privacy').should == 'PRIVATE'
+    end
+
+    it 'creates a private visualization if any table in the list is private' do
+      table3 = table_factory(privacy: 0)
+
+      payload = {
+        name: 'new visualization',
+        tables: [table3.fetch('name')]
+      }
+
+      post "/api/v1/viz?api_key=#{@api_key}", payload.to_json, @headers
+      last_response.status.should == 200
+
+      visualization = JSON.parse(last_response.body)
+      visualization.fetch('privacy').should == 'PRIVATE'
+    end
+
     it 'creates a private visualization if any table in the list is private' do
       table1 = table_factory
       table2 = table_factory
@@ -336,6 +363,20 @@ describe Api::Json::VisualizationsController do
       response = JSON.parse(last_response.body)
       response.fetch('name').should == 'changed'
       response.fetch('tags').should == []
+    end
+
+    it 'updates the table in a table visualization' do
+      table_attributes = table_factory
+      id = table_attributes.fetch('table_visualization').fetch('id')
+
+      sleep(0.5)
+      put "/api/v1/viz/#{id}?api_key=#{@api_key}",
+        { name: 'changed name' }.to_json, @headers
+      last_response.status.should == 200
+      response = JSON.parse(last_response.body)
+
+      response.fetch('table').fetch('updated_at')
+        .should_not == table_attributes.fetch('updated_at')
     end
 
     it 'allows setting the active layer' do

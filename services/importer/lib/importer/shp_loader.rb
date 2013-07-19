@@ -28,6 +28,10 @@ module CartoDB
         self
       end #run
 
+      def valid_table_names
+        [job.table_name]
+      end #valid_table_names
+
       def shp2pgsql
         @shp2pgsql ||= Shp2pgsql.new(job.qualified_table_name, fullpath, pg_options)
       end #shp2pgsql

@@ -17,6 +17,8 @@ module CartoDB
         json:     Loader,
         geojson:  Loader,
         kml:      Loader,
+        tab:      Loader,
+        gpx:      Loader,
         shp:      ShpLoader,
         osm:      OsmLoader
       }

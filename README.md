@@ -352,6 +352,15 @@ You should now be able to access
 **`http://<mysubdomain>.localhost.lan:3000`**
 in your browser and login with the password specified above.
 
+# How do I upgrade CartoDB? #
+
+There's no standard procedure to migrate from one version to another of
+the rails application, so version specific procedures are documented
+in the NEWS.md file.
+
+For upgrade of Windshaft-CartoDB and CartoDB-SQL-API see the relative
+documentation.
+
 # Handy tasks #
 
 For a full list of CartoDB utility tests:

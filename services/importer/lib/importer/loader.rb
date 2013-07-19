@@ -36,6 +36,10 @@ module CartoDB
         @georeferencer ||= Georeferencer.new(job.db, job.table_name)
       end #georeferencer
 
+      def valid_table_names
+        [job.table_name]
+      end #valid_table_names
+
       private
 
       attr_writer     :ogr2ogr, :georeferencer

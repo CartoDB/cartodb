@@ -29,7 +29,7 @@ module CartoDB
 
       attr_reader :db, :schema
 
-      def the_geom_in?
+      def the_geom_in?(table_name)
         Georeferencer.new(db, table_name).column_exists_in?(table_name, :the_geom)
       end #the_geom_in?
     end # Indexer

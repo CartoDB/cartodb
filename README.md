@@ -250,11 +250,11 @@ sudo apt-get install libmapnik-dev python-mapnik mapnik-utils
 ```
 
 ## Install CartoDB SQL API ##
-The [CartoDB SQL API](https://github.com/Vizzuality/CartoDB-SQL-API) 
+The [CartoDB SQL API](https://github.com/CartoDB/CartoDB-SQL-API) 
 component powers the SQL queries over HTTP. To install it:
 
 ```bash
-git clone git://github.com/Vizzuality/CartoDB-SQL-API.git
+git clone git://github.com/CartoDB/CartoDB-SQL-API.git
 cd CartoDB-SQL-API
 git checkout master
 npm install
@@ -267,11 +267,11 @@ node app.js development
 ```
 
 ## Install Windshaft-cartodb ##
-The [Windshaft-cartodb](https://github.com/Vizzuality/Windshaft-cartodb)
+The [Windshaft-cartodb](https://github.com/CartoDB/Windshaft-cartodb)
 component powers the CartoDB Maps API. To install it:
 
 ```bash
-git clone git://github.com/Vizzuality/Windshaft-cartodb.git
+git clone git://github.com/CartoDB/Windshaft-cartodb.git
 cd Windshaft-cartodb
 git checkout master
 npm install
@@ -352,6 +352,15 @@ You should now be able to access
 **`http://<mysubdomain>.localhost.lan:3000`**
 in your browser and login with the password specified above.
 
+# How do I upgrade CartoDB? #
+
+There's no standard procedure to migrate from one version to another of
+the rails application, so version specific procedures are documented
+in the NEWS.md file.
+
+For upgrade of Windshaft-CartoDB and CartoDB-SQL-API see the relative
+documentation.
+
 # Handy tasks #
 
 For a full list of CartoDB utility tests:
@@ -395,7 +404,7 @@ CartoDB is a large app. We reccomend you use the [spin gem](https://github.com/j
   - Sergio Alvarez Leiva (@saleiva)
   - Javier de la Torre (@jatorre)
   - Andrew W Hill (@andrewxhill)
-  - Guyis (@javisantana)
+  - Javi Santana (@javisantana)
   - Javier Arce (@javierarce)
   - Aaron Steele (@eightysteele)
   - Luis Bosque (@luisico)
@@ -403,3 +412,4 @@ CartoDB is a large app. We reccomend you use the [spin gem](https://github.com/j
   - David Arango (@demimismo)
   - Xabel Álvarez (@johnhackworth)
   - Lorenzo Planas (@lorenzoplanas)
+  - Alejandro Martínez (@iamzenitram)

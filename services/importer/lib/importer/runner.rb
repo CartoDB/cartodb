@@ -1,6 +1,7 @@
 # encoding: utf-8
 require_relative './loader'
 require_relative './shp_loader'
+require_relative './osm_loader'
 require_relative './indexer'
 require_relative './unp'
 require_relative './column'
@@ -16,7 +17,8 @@ module CartoDB
         json:     Loader,
         geojson:  Loader,
         kml:      Loader,
-        shp:      ShpLoader
+        shp:      ShpLoader,
+        osm:      OsmLoader
       }
 
       def initialize(pg_options, downloader, log=TrackRecord::Log.new)
@@ -45,9 +47,11 @@ module CartoDB
         loader.run
         job.log "Loader exit code: #{loader.exit_code}"
 
-        columns_in(job.table_name).each(&:sanitize)
-        Indexer.new(job.db).add(job.table_name)
-        self.results.push(result_for(job, source_file))
+        loader.valid_table_names.each do |table_name|
+          columns_in(table_name, source_file.target_schema).each(&:sanitize)
+          Indexer.new(job.db, source_file.target_schema).add(table_name)
+        end
+        self.results.push(result_for(job, source_file, loader.valid_table_names))
       end #import
 
       def report
@@ -62,10 +66,10 @@ module CartoDB
         LOADERS.fetch(source_file.extension.delete('.').to_sym)
       end #loader_for
 
-      def columns_in(table_name)
-        db.schema(table_name, schema: 'importer')
+      def columns_in(table_name, schema='importer')
+        db.schema(table_name, schema: schema)
           .map { |s| s[0] }
-          .map { |column_name| Column.new(db, table_name, column_name) }
+          .map { |column_name| Column.new(db, table_name, column_name, schema) }
       end #columns_in
 
       attr_reader :results
@@ -75,12 +79,12 @@ module CartoDB
       attr_accessor :downloader, :log, :pg_options
       attr_writer   :results
 
-      def result_for(job, source_file)
+      def result_for(job, source_file, table_names)
         { 
-          name:                 source_file.name,
-          table_name:           job.table_name,
-          qualified_table_name: job.qualified_table_name
-        } 
+          name:     source_file.name,
+          schema:   source_file.target_schema,
+          tables:   table_names
+        }
       end #results
     end # Runner
   end # Importer2

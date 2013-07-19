@@ -8,13 +8,13 @@ require_relative '../factories/pg_connection'
 
 include CartoDB::Importer2
 
-describe 'KML regression tests' do
+describe 'OSM regression tests' do
   before do
     @pg_options  = Factories::PGConnection.new.pg_options
   end
 
-  it 'imports KML files' do
-    filepath    = path_to('counties_ny_export.kml')
+  it 'imports OSM files' do
+    filepath    = path_to('map2.osm')
     downloader  = Downloader.new(filepath)
     runner      = Runner.new(@pg_options, downloader)
     runner.run
@@ -38,5 +38,5 @@ describe 'KML regression tests' do
       FROM "#{schema}"."#{table_name}"
     }].first.fetch(:geometrytype)
   end #geometry_type_for
-end # KML regression tests
+end # OSM regression tests
  

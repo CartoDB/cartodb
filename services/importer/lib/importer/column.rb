@@ -10,6 +10,7 @@ module CartoDB
       WKT_RE          = /POINT|LINESTRING|POLYGON/
       KML_MULTI_RE    = /<Line|<Polygon/
       KML_POINT_RE    = /<Point>/
+      DEFAULT_SCHEMA  = 'importer'
       RESERVED_WORDS  = %w{ ALL ANALYSE ANALYZE AND ANY ARRAY AS ASC ASYMMETRIC
                             AUTHORIZATION BETWEEN BINARY BOTH CASE CAST CHECK
                             COLLATE COLUMN CONSTRAINT CREATE CROSS CURRENT_DATE 
@@ -24,15 +25,15 @@ module CartoDB
                             SOME SYMMETRIC TABLE THEN TO TRAILING TRUE UNION
                             UNIQUE USER USING VERBOSE WHEN WHERE XMIN XMAX }
 
-      def initialize(db, table_name, column_name)
+      def initialize(db, table_name, column_name, schema=DEFAULT_SCHEMA)
         @db           = db
         @table_name   = table_name.to_sym
-        @schema       = 'importer'
         @column_name  = column_name.to_sym
+        @schema       = schema
       end #initialize
 
       def type
-        db.schema(table_name, reload: true, schema: @schema)
+        db.schema(table_name, reload: true, schema: schema)
           .select { |column_details|
             column_details.first == column_name
           }.last.last.fetch(:db_type)
@@ -132,7 +133,7 @@ module CartoDB
 
         db.run(%Q{
           ALTER TABLE "#{schema}"."#{table_name}"
-          RENAME COLUMN #{column_name} TO #{new_name}
+          RENAME COLUMN "#{column_name}" TO "#{new_name}"
         })
         @column_name = new_name
       end #rename_to
@@ -141,7 +142,7 @@ module CartoDB
         sample = db[%Q{
           SELECT public.GeometryType(ST_Force_2D(#{column_name})) 
           AS type
-          FROM importer.#{table_name}
+          FROM #{schema}.#{table_name}
           WHERE #{column_name} IS NOT NULL
           LIMIT 1
         }].first

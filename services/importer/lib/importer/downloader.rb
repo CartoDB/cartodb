@@ -2,6 +2,8 @@
 require 'typhoeus'
 require_relative './source_file'
 require_relative '../../../data-repository/filesystem/local'
+require_relative './url_translator/osm'
+require_relative './url_translator/fusion_tables'
 
 module CartoDB
   module Importer2
@@ -10,6 +12,7 @@ module CartoDB
       DEFAULT_FILENAME        = 'importer'
       CONTENT_DISPOSITION_RE  = %r{attachment; filename=\"(.*)\"}
       URL_RE                  = %r{://}
+      URL_TRANSLATORS         = [UrlTranslator::OSM, UrlTranslator::FusionTables]
 
       def initialize(url, seed=nil, repository=nil)
         self.url          = url
@@ -23,7 +26,7 @@ module CartoDB
           return self
         end
 
-        response          = Typhoeus.get(url, followlocation: true)
+        response          = Typhoeus.get(translate(url), followlocation: true)
         name              = name_from(response.headers, url)
         self.source_file  = SourceFile.new(filepath, name)
 
@@ -42,6 +45,16 @@ module CartoDB
       
       attr_accessor :repository, :seed
       attr_writer   :url, :source_file
+
+      def translators
+        URL_TRANSLATORS.map(&:new)
+      end #translators
+
+      def translate(url)
+        translator = translators.find { |translator| translator.supported?(url) }
+        return url unless translator
+        translator.translate(url)
+      end #translated_url
 
       def filename
         [DEFAULT_FILENAME, seed].compact.join('_')

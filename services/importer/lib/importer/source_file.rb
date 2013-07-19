@@ -26,6 +26,11 @@ module CartoDB
         File.basename(fullpath)
       end #path
 
+      def target_schema
+        return 'public' if extension == '.osm'
+        return 'importer'
+      end #target_schema
+
       attr_reader :filename
       
       private

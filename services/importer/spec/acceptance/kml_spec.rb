@@ -22,6 +22,17 @@ describe 'KML regression tests' do
     geometry_type_for(runner).wont_be_nil
   end
 
+  it 'imports KML files from url' do
+    filepath    = "https://maps.google.com/maps/ms?hl=en&ie=UTF8&t=m" +
+                  "&source=embed&authuser=0&msa=0&output=kml"         + 
+                  "&msid=214357343079009794152.0004d0322cc2768ca065e"
+    downloader  = Downloader.new(filepath)
+    runner      = Runner.new(@pg_options, downloader)
+    runner.run
+
+    geometry_type_for(runner).wont_be_nil
+  end
+
   def path_to(filepath)
     File.expand_path(
       File.join(File.dirname(__FILE__), "../fixtures/#{filepath}")

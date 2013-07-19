@@ -19,6 +19,7 @@ describe Column do
 
   after do
     @db.drop_table?(@table_name.to_sym)
+    @db.disconnect
   end
 
   describe '#type' do

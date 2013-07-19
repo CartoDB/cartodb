@@ -27,6 +27,7 @@ describe Ogr2ogr do
   after do
     @csv.delete
     @db.drop_table? @full_table_name
+    @db.disconnect
   end
 
   describe '#initialize' do

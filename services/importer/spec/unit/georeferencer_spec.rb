@@ -16,6 +16,7 @@ describe Importer2::Georeferencer do
 
   after do
     @db.drop_table? @table_name
+    @db.disconnect
   end
 
   describe '#initialize' do

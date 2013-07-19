@@ -22,6 +22,7 @@ describe Shp2pgsql do
 
   after do
     @db.drop_table? @full_table_name
+    @db.disconnect
   end
 
   describe '#prj?' do

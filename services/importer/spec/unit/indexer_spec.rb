@@ -18,6 +18,7 @@ describe Indexer do
 
   after do
     @db.run(%Q(DROP TABLE IF EXISTS "importer".#{@table_name}))
+    @db.disconnect
   end
 
   describe '#add' do

@@ -24,6 +24,7 @@ describe Osm2Pgsql do
   after do
     %w{ ways nodes rels point line polygon roads}.each do |suffix|
       @db.drop_table? "#{@table_name}_#{suffix}"
+      @db.disconnect
     end
   end
 

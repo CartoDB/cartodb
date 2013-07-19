@@ -88,6 +88,13 @@ describe Downloader do
       downloader = Downloader.new(@file_url)
       downloader.name_from(headers, @file_url).must_equal 'foo.png'
     end
+
+    it 'discards url query params' do
+      headers = {}
+      downloader = Downloader.new(@file_url)
+      downloader.name_from(headers, "#{@file_url}?foo=bar&woo=wee")
+        .must_equal 'foo.png'
+    end
   end #name_from
 end # Downloader
 

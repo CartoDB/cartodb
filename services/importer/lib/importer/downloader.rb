@@ -57,7 +57,7 @@ module CartoDB
       end #name_from_http
 
       def name_in(url)
-        url.split('/').last
+        url.split('/').last.split('?').first
       end #name_in
     end # Downloader
   end # Importer2

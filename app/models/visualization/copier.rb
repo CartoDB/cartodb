@@ -28,7 +28,7 @@ module CartoDB
       attr_reader :visualization, :user, :name
 
       def map_copy
-        @map_copy ||= Map::Copier.new(visualization.map).copy
+        @map_copy ||= Map::Copier.new.copy(visualization.map)
       end #map
 
       def new_name

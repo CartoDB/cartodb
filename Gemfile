@@ -69,6 +69,8 @@ gem "bartt-ssl_requirement",   "~>1.4.0", :require => "ssl_requirement"
 gem "simplecov",               "0.7.1", :require => false, :group => :test
 gem "spin",                    "0.5.3", :require => false, :group => :test
 
+gem "mixpanel",                "4.0.2"
+
 group :development, :test do
   gem "webrick",               "1.3.1"
   gem "sqlite3",               "1.3.7"

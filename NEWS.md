@@ -9,11 +9,12 @@ $ bundle exec rake cartodb:db:load_functions
 $ bundle exec rake cartodb:db:migrate_to[2.1]
 ```
 
+* Updated the dashboard with a visualizations page
+* Changed the way the maps can be shared
 * Added visualization with multilayer support
 * New color wizard
 * Layer selector widget
 * Map view stats per visualization
-
 
 2.0.15
 ------

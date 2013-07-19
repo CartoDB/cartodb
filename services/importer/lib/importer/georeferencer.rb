@@ -9,11 +9,12 @@ module CartoDB
       LONGITUDE_POSSIBLE_NAMES  = %w{ longitude lon lng 
         longitudedecimal longitud long decimallongitude decimallong }
       GEOMETRY_POSSIBLE_NAMES   = %w{ geometry the_geom wkb_geometry }
+      DEFAULT_SCHEMA            = 'importer'
 
-      def initialize(db, table_name)
+      def initialize(db, table_name, schema=DEFAULT_SCHEMA)
         @db         = db
         @table_name = table_name
-        @schema     = 'importer'
+        @schema     = schema
       end #initialize
 
       def run
@@ -74,7 +75,7 @@ module CartoDB
       end #column_exists_in?
 
       def columns_in(table_name)
-        db.schema(table_name, reload: true, schema: 'importer').map(&:first)
+        db.schema(table_name, reload: true, schema: schema).map(&:first)
       end #columns_in
 
       def latitude_column_name_in(qualified_table_name)

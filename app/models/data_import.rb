@@ -44,12 +44,12 @@ class DataImport < Sequel::Model
     finished! if success
     failed!   unless success
     self
-  rescue => exception
-    puts "Exception!!!1 ==== #{exception.inspect}"
-    reload
-    failed!
-    self.log << ("Exception while running import: " + exception.inspect)
-    self
+  #rescue => exception
+  #  puts "Exception!!!1 ==== #{exception.inspect}"
+  #  reload
+  #  failed!
+  #  self.log << ("Exception while running import: " + exception.inspect)
+  #  self
   end
 
   def log_update(update_msg)
@@ -329,33 +329,40 @@ class DataImport < Sequel::Model
     runner      = CartoDB::Importer2::Runner.new(pg_options, downloader)
     runner.run
 
+    results     = runner.results
 
     runner.results.each do |result|
-      current_user.in_database.execute(%Q{
-        ALTER TABLE importer.#{result.fetch(:table_name)}
-        SET SCHEMA public
-      })
+      name        = result.fetch(:name)
+      schema      = result.fetch(:schema)
+      table_names = result.fetch(:tables)
 
-      name = Table.get_valid_table_name(
-        result.fetch(:name),
-        name_candidates: table_owner.tables.map(&:name)
-      )
+      table_names.each do |table_name|
+        current_user.in_database.execute(%Q{
+          ALTER TABLE "#{schema}"."#{table_name}"
+          SET SCHEMA public
+        })
 
-      current_user.in_database.execute(%Q{
-        ALTER TABLE "public"."#{result.fetch(:table_name)}"
-        RENAME TO #{name}
-      })
+        name = Table.get_valid_table_name(
+          name,
+          name_candidates: table_owner.tables.map(&:name)
+        )
 
-      table                         = Table.new
-      table.user_id                 = table_owner.id
-      table.name                    = name
-      table.migrate_existing_table  = name
-      table.save
+        current_user.in_database.execute(%Q{
+          ALTER TABLE "public"."#{table_name}"
+          RENAME TO #{name}
+        })
 
-      self.table_id   = table.id
-      self.table_name = table.name
-      save
-      self
+        table                         = Table.new
+        table.user_id                 = table_owner.id
+        table.name                    = name
+        table.migrate_existing_table  = name
+        table.save
+
+        self.table_id   = table.id
+        self.table_name = table.name
+        save
+        self
+      end
     end
     
     self.download
@@ -364,7 +371,8 @@ class DataImport < Sequel::Model
       self.imported
       self.formatted
     end
-    self.success = (runner.exit_code == 0)
+
+    self.success = !results.empty?
   end #new_importer
 
   def get_valid_name(name)

@@ -1,0 +1,14 @@
+<% content_for(:page_title) do %>
+  <%= page_title %> |
+<% end %>
+<%= content_for(:js) do %>
+  <%= javascript_include_tag :application, :cdb %>
+  <script type="text/javascript">
+    var username = "<%= current_user.username %>"
+      , type = "key"
+      , config = <%=raw frontend_config.html_safe %>;
+  </script>
+<% end %>
+<%= content_for(:css) do %>
+  <%= stylesheet_link_tag :common, :keys, :media => 'all' %>
+<% end %>

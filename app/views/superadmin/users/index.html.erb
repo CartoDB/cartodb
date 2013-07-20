@@ -1,46 +1,19 @@
-<% content_for(:page_title) do %>
-  Manage your account |
-<% end %>
-<%= content_for(:js) do %>
-  <%= javascript_include_tag :application, :cdb %>
-  <script type="text/javascript">
-    var username = "<%= current_user.username %>"
-      , type = "key"
-      , config = <%=raw frontend_config.html_safe %>;
-  </script>
-<% end %>
-<%= content_for(:css) do %>
-  <%= stylesheet_link_tag :common, :keys, :media => 'all' %>
-<% end %>
+<%= render 'header', page_title: 'Manage your account' %>
 
-<article class="licenses">
-  <div class="inner">
-    <section class="left block long">
-      <div class="head">
-        <h3>Everyone in your account</h3>
-      </div>
-      <div class="content">
-        <ul>
-          <%= render partial: 'shared/flash_message' %>
-          <li>
-            <div class="copy">
+<h3>Everyone in your account</h3>
+<%= render partial: 'shared/flash_message' %>
 
-            <h4>Existing users</h4>
-            
-            <div class="list">
-            <% User.all.each do |u| %>
-              <p><strong><%= u.username %></strong>: <%= number_to_human_size u.quota_in_bytes %></p>
-            <% end %>
-          </div>
-            
-            <h4>Add new user</h4>
-            <%= render partial: 'superadmin/users/form' %>
+<ul>
+<% User.all.each do |u| %>
+  <li>
+    <strong><%= link_to u.username, edit_superadmin_user_path(u) %></strong>
+    <%= "OWNER" if u.admin %>
+    <%= number_to_human_size(u.db_size_in_bytes) %> / 
+    <%= number_to_human_size(u.quota_in_bytes) %>
+    </li>
+<% end %>
+</ul>
 
-            </div>
-          </li>
-        </ul>
-      </div>
-    </section>
-    <%= content_from_plugins_for(:user_admin) %>
-  </div>
-</article>
+<p><%= link_to "Create new account", new_superadmin_user_path %></p>
+
+<%= content_from_plugins_for(:user_admin) %>

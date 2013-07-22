@@ -52,6 +52,7 @@ module CartoDB
         loader.run
 
         loader.valid_table_names.each do |table_name|
+          job.log "Sanitizing column names in #{table_name}"
           columns_in(table_name, source_file.target_schema).each(&:sanitize)
           Indexer.new(job.db, source_file.target_schema, job).add(table_name)
         end

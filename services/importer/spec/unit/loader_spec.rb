@@ -32,9 +32,9 @@ describe Loader do
       loader   = Loader.new(@job, @source_file, ogr2ogr, @georeferencer)
 
       def ogr2ogr.commnad_output; end
-      ogr2ogr.expect :run, Object.new
       ogr2ogr.expect :command_output, ''
       ogr2ogr.expect :exit_code, 0
+      ogr2ogr.expect :run, Object.new
       loader.run
       ogr2ogr.verify
     end

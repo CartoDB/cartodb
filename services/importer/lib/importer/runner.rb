@@ -83,11 +83,17 @@ module CartoDB
 
       def result_for(job, source_file, table_names)
         { 
-          name:     source_file.name,
-          schema:   source_file.target_schema,
-          tables:   table_names
+          name:       source_file.name,
+          schema:     source_file.target_schema,
+          extension:  source_file.extension,
+          tables:     table_names,
+          success:    success_status
         }
       end #results
+
+      def success_status
+        loader.exit_code == 0
+      end #success_status
     end # Runner
   end # Importer2
 end # CartoDB

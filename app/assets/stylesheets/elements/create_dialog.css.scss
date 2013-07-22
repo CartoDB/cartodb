@@ -64,11 +64,62 @@
       ul {
         margin:0;
 
+        &.dialog-tabs {
+          display: block;
+          height: 38px;
+          margin: 15px 0 0 15px;
+          padding-left: 5px;
+          border-bottom: 1px solid #ccc;
+        }
+
         li {
           position:relative;
           margin:0;
           margin-bottom:25px;
           border-bottom:0;
+
+          &.dialog-tab {
+            float: left;
+            position: relative;
+            margin: 0 0 0 -1px;
+
+            a {
+              display: block;
+              line-height: 37px;
+              padding: 0 15px;
+              border: 1px solid #ccc;
+              border-bottom: 1px solid #ccc;
+              background: #fff;
+              @include border-top-radius(5px);
+
+              &.selected {
+                border-bottom-color: #fff;
+                color: #333;
+
+                &:hover {
+                  text-decoration: none;
+                  cursor: default;
+                }
+              }
+
+              i {
+                position: relative;
+                top: -3px;
+                @include inline-block();
+                height: 15px;
+                width: 15px;
+                margin-right: 5px;
+              }
+
+              &.gdrive i {
+                @include icons-sprite(gdrive);
+              }
+
+              &.dropbox i {
+                @include icons-sprite(dropbox);
+              }
+            }
+          }
 
           &.upload {
             &.error.active { margin-bottom: 26px; }
@@ -98,7 +149,7 @@
             div.upload {
               position:relative;
               display:block;
-              margin:10px 0 0 20px;
+              margin:20px 0 0 20px;
               padding:10px;
               border:1px solid #CCCCCC;
               @include border-radius(4px);

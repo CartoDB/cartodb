@@ -53,5 +53,47 @@ describe Runner do
       runner.report.must_match /#{@filepath}/
     end
   end #run
+
+  describe '#import' do
+    it 'creates a sucessful result if all import steps completed' do
+      source_file = SourceFile.new(@filepath)
+      runner      = Runner.new(@pg_options, Object.new)
+      job         = Job.new(
+                      logger:     runner.log,
+                      pg_options: @pg_options
+                    )
+
+      fake_loader = self.fake_loader_for(job, source_file)
+      def fake_loader.run; end
+
+      runner.import(source_file, job, fake_loader)
+      result = runner.results.first
+      result.fetch(:success).must_equal true
+    end
+
+    it 'creates a failed result if an exception raised during import' do
+      source_file = SourceFile.new(@filepath)
+      runner      = Runner.new(@pg_options, Object.new)
+      job         = Job.new(
+                      logger:     runner.log,
+                      pg_options: @pg_options
+                    )
+
+      fake_loader = self.fake_loader_for(job, source_file)
+      def fake_loader.run; raise 'Unleash the Kraken!!!!'; end
+
+      runner.import(source_file, job, fake_loader)
+      result = runner.results.first
+      result.fetch(:success).must_equal false
+    end
+  end
+
+  def fake_loader_for(job, source_file)
+    OpenStruct.new(
+      job:                job, 
+      source_file:        source_file,
+      valid_table_names:  []
+    )
+  end #fake_loader
 end # Runner
 

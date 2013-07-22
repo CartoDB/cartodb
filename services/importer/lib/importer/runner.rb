@@ -53,6 +53,11 @@ module CartoDB
           columns_in(table_name, source_file.target_schema).each(&:sanitize)
           Indexer.new(job.db, source_file.target_schema).add(table_name)
         end
+        job.success_status = true
+        self.results.push(result_for(job, source_file, loader.valid_table_names))
+
+      rescue => exception
+        job.success_status = false
         self.results.push(result_for(job, source_file, loader.valid_table_names))
       end #import
 
@@ -74,12 +79,12 @@ module CartoDB
           .map { |column_name| Column.new(db, table_name, column_name, schema) }
       end #columns_in
 
-      attr_reader :results
+      attr_reader :results, :log
 
       private
 
-      attr_accessor :downloader, :log, :pg_options
-      attr_writer   :results
+      attr_accessor :downloader, :pg_options
+      attr_writer   :results, :log
 
       def result_for(job, source_file, table_names)
         { 
@@ -87,13 +92,9 @@ module CartoDB
           schema:     source_file.target_schema,
           extension:  source_file.extension,
           tables:     table_names,
-          success:    success_status
+          success:    job.success_status
         }
       end #results
-
-      def success_status
-        loader.exit_code == 0
-      end #success_status
     end # Runner
   end # Importer2
 end # CartoDB

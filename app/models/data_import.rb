@@ -371,8 +371,11 @@ class DataImport < Sequel::Model
       self.imported
       self.formatted
     end
-
-    self.success = !results.empty?
+    
+    success_status = runner.results.inject(true) { |memo, result|
+      result.fetch(:success) && memo
+    }
+    success_status
   end #new_importer
 
   def get_valid_name(name)

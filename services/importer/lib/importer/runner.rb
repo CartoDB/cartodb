@@ -30,7 +30,9 @@ module CartoDB
         self.results      = []
       end #initialize
 
-      def run
+      def run(&tracker)
+        tracker ||= lambda { |state| }
+        tracker.call('downloading')
         log.append "Getting file from #{downloader.url}"
         downloader.run
 

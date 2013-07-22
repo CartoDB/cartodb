@@ -54,6 +54,18 @@ describe Runner do
     end
   end #run
 
+  describe '#tracker' do
+    it 'returns the block passed at initialization' do
+      data_import = OpenStruct.new
+      downloader  = Downloader.new(@filepath)
+      runner      = Runner.new(@pg_options, downloader)
+      def runner.import(*args); end
+
+      runner.run { |state| data_import.state = 'bogus_state' }
+      data_import.state.must_equal 'bogus_state'
+    end
+  end #tracker
+
   describe '#import' do
     it 'creates a sucessful result if all import steps completed' do
       source_file = SourceFile.new(@filepath)

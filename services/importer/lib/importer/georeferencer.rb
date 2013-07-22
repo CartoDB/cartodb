@@ -18,7 +18,9 @@ module CartoDB
       end #initialize
 
       def run
-        create_the_geom_from_geometry_column || create_the_geom_from_latlon 
+        create_the_geom_from_geometry_column  || 
+        create_the_geom_from_latlon           ||
+        create_the_geom_in(table_name)
         self
       end #run
 
@@ -35,13 +37,16 @@ module CartoDB
       end #create_the_geom_from_latlon
 
       def create_the_geom_from_geometry_column
-        column = Column.new(db, table_name, geometry_column_in(table_name))
+        geometry_column_name = geometry_column_in(table_name)
+        return false unless geometry_column_name
+        column = Column.new(db, table_name, geometry_column_name)
         column.geometrify
         unless column_exists_in?(table_name, :the_geom)
           column.rename_to(:the_geom) 
         end
         self
       rescue => exception
+        column.rename_to(:invalid_the_geom) if column
         false
       end #create_the_geom_from_geometry_column
 

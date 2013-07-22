@@ -17,6 +17,7 @@ module CartoDB
           id:         layer.id,
           type:       'CartoDB',
           infowindow: infowindow_data,
+          legend:     layer.legend,
           order:      layer.order,
           options:    options_data_v2
         }

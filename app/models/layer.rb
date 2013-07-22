@@ -127,6 +127,10 @@ class Layer < Sequel::Model
     !(affected_tables.select(&:private?).empty?)
   end #uses_private_tables?
 
+  def legend
+    options['legend']
+  end #legend
+
   private
 
   def rename_in(target, anchor, substitution)

@@ -6,6 +6,7 @@ require 'uuidtools'
 require_relative './user'
 require_relative './table'
 require_relative '../../lib/cartodb/errors'
+require_relative '../../lib/cartodb/metrics'
 require_relative '../../lib/cartodb_stats'
 require_relative '../../lib/cartodb/mini_sequel'
 require_relative '../../lib/importer/lib/cartodb-importer'
@@ -375,6 +376,11 @@ class DataImport < Sequel::Model
     success_status = runner.results.inject(true) { |memo, result|
       result.fetch(:success) && memo
     }
+
+    runner.results.each { |result| 
+        CartoDB::Metrics.event "Import file failed", {name: result.name, extension: result.extension} unless result.success?
+    }
+
     success_status
   end #new_importer
 
@@ -430,20 +436,14 @@ class DataImport < Sequel::Model
       self.success = true
       self.log << "SUCCESS!\n"
       save
-      if Cartodb.config[:mixpanel].present?
-        mixpanel = Mixpanel::Tracker.new Cartodb.config[:mixpanel]['token']
-        mixpanel.track "Import successful", {distinct_id: current_user.username}.merge(basic_information)
-      end
+      CartoDB::Metrics.event "Import successful", {distinct_id: current_user.username}.merge(basic_information)
     end
 
     after_transition any => :failure do
       # Increment failed imports on CartoDB stats
       CartodbStats.increment_failed_imports()
       Rollbar.report_message("Failed import", "error", error_info: basic_information)
-      if Cartodb.config[:mixpanel].present?
-        mixpanel = Mixpanel::Tracker.new Cartodb.config[:mixpanel]['token']
-        mixpanel.track "Import failed", {distinct_id: current_user.username}.merge(basic_information)
-      end
+      CartoDB::Metrics.event "Import failed", {distinct_id: current_user.username}.merge(basic_information)
       # Copy any uploaded resources to secret failed imports vault(tm)
         
       if uploaded_file

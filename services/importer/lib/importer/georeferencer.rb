@@ -32,7 +32,7 @@ module CartoDB
 
         return false unless latitude_column_name && longitude_column_name
 
-        job.log 'Creating the_geom from latituded / longitude'
+        job.log 'Creating the_geom from latitude / longitude'
         create_the_geom_in(table_name)
         populate_the_geom_from_latlon(
           qualified_table_name, latitude_column_name, longitude_column_name

@@ -31,6 +31,7 @@ module CartoDB
       end #qualified_table_name
 
       attr_reader :id, :logger, :pg_options, :schema
+      attr_accessor :success_status
 
       private
     end # Job

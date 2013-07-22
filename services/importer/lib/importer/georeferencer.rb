@@ -1,5 +1,6 @@
 # encoding: utf-8
 require_relative './column'
+require_relative './job'
 
 module CartoDB
   module Importer2
@@ -11,8 +12,9 @@ module CartoDB
       GEOMETRY_POSSIBLE_NAMES   = %w{ geometry the_geom wkb_geometry }
       DEFAULT_SCHEMA            = 'importer'
 
-      def initialize(db, table_name, schema=DEFAULT_SCHEMA)
+      def initialize(db, table_name, schema=DEFAULT_SCHEMA, job=nil)
         @db         = db
+        @job        = job || Job.new
         @table_name = table_name
         @schema     = schema
       end #initialize
@@ -30,6 +32,7 @@ module CartoDB
 
         return false unless latitude_column_name && longitude_column_name
 
+        job.log 'Creating the_geom from latituded / longitude'
         create_the_geom_in(table_name)
         populate_the_geom_from_latlon(
           qualified_table_name, latitude_column_name, longitude_column_name
@@ -39,11 +42,13 @@ module CartoDB
       def create_the_geom_from_geometry_column
         geometry_column_name = geometry_column_in(table_name)
         return false unless geometry_column_name
-        column = Column.new(db, table_name, geometry_column_name)
+        column = Column.new(db, table_name, geometry_column_name, schema, job)
         column.geometrify
         unless column_exists_in?(table_name, :the_geom)
           column.rename_to(:the_geom) 
         end
+
+        job.log "Creating the_geom from #{geometry_column_name} column"
         self
       rescue => exception
         column.rename_to(:invalid_the_geom) if column
@@ -52,6 +57,7 @@ module CartoDB
 
       def populate_the_geom_from_latlon(qualified_table_name, 
       latitude_column_name, longitude_column_name)
+        job.log 'Populating the_geom from latitude / longitude'
         db.run(%Q{
           UPDATE #{qualified_table_name} 
           SET the_geom = public.ST_GeomFromText(
@@ -66,6 +72,7 @@ module CartoDB
       end #populate_the_geom_from_latlon
 
       def create_the_geom_in(table_name)
+        'Creating the_geom column'
         return false if column_exists_in?(table_name, 'the_geom')
 
         db.run(%Q{
@@ -85,12 +92,16 @@ module CartoDB
 
       def latitude_column_name_in(qualified_table_name)
         names = LATITUDE_POSSIBLE_NAMES.map { |name| "'#{name}'" }.join(',')
-        find_column_in(table_name, names)
+        name  = find_column_in(table_name, names)
+        job.log "Identified #{name} as latitude column"
+        name
       end #latitude_column_name_in
 
       def longitude_column_name_in(qualified_table_name)
         names = LONGITUDE_POSSIBLE_NAMES.map { |name| "'#{name}'" }.join(',')
-        find_column_in(table_name, names)
+        name = find_column_in(table_name, names)
+        job.log "Identified #{name} as longitude column"
+        name
       end #longitude_column_name_in
 
       def geometry_column_in(qualified_table_name)
@@ -113,7 +124,7 @@ module CartoDB
 
       private
 
-      attr_reader :db, :table_name, :schema
+      attr_reader :db, :table_name, :schema, :job
 
       def qualified_table_name
         "#{schema}.#{table_name}"

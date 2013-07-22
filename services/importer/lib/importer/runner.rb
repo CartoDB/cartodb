@@ -34,6 +34,9 @@ module CartoDB
         log.append "Getting file from #{downloader.url}"
         downloader.run
 
+        log.append "Starting import for #{downloader.source_file.fullpath}"
+        log.append "Unpacking #{downloader.source_file.fullpath}"
+
         unpacker = Unp.new
         unpacker.run(downloader.source_file.fullpath)
         unpacker.source_files.each { |source_file| import(source_file) }
@@ -47,11 +50,10 @@ module CartoDB
 
         job.log "Importing data from #{source_file.fullpath}"
         loader.run
-        job.log "Loader exit code: #{loader.exit_code}"
 
         loader.valid_table_names.each do |table_name|
           columns_in(table_name, source_file.target_schema).each(&:sanitize)
-          Indexer.new(job.db, source_file.target_schema).add(table_name)
+          Indexer.new(job.db, source_file.target_schema, job).add(table_name)
         end
         job.success_status = true
         self.results.push(result_for(job, source_file, loader.valid_table_names))

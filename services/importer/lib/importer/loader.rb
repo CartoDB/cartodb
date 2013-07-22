@@ -8,7 +8,8 @@ module CartoDB
     class Loader
       extend Forwardable
 
-      TABLE_PREFIX = 'importer'
+      SCHEMA        = 'importer'
+      TABLE_PREFIX  = 'importer'
 
       def initialize(job, source_file, ogr2ogr=nil, georeferencer=nil)
         self.job            = job
@@ -33,7 +34,8 @@ module CartoDB
       end #ogr2ogr
 
       def georeferencer
-        @georeferencer ||= Georeferencer.new(job.db, job.table_name)
+        @georeferencer ||= 
+          Georeferencer.new(job.db, job.table_name, SCHEMA, job)
       end #georeferencer
 
       def valid_table_names

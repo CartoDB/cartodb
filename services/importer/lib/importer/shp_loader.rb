@@ -38,6 +38,7 @@ module CartoDB
 
       def reproject
         raise InvalidShpError unless the_geom?
+        job.log "Reprojecting the_geom in #{job.table_name}"
         reprojector.reproject(job.table_name, 'the_geom')
       end #reproject
 

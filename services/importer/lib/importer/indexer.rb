@@ -1,18 +1,21 @@
 # encoding: utf-8
 require_relative './georeferencer'
+require_relative './job'
 
 module CartoDB
   module Importer2
     class Indexer
       DEFAULT_SCHEMA = 'importer'
 
-      def initialize(db, schema=DEFAULT_SCHEMA)
+      def initialize(db, schema=DEFAULT_SCHEMA, job=nil)
         @db     = db
         @schema = schema
+        @job    = job || Job.new
       end #initialize
 
       def add(table_name, index_name=nil)
         return self unless the_geom_in?(table_name)
+        job.log "Indexing the_geom in #{table_name}"
         index_name ||= table_name
         db.run(%Q{
           CREATE INDEX "#{index_name}_the_geom_gist"
@@ -27,7 +30,7 @@ module CartoDB
 
       private
 
-      attr_reader :db, :schema
+      attr_reader :db, :schema, :job
 
       def the_geom_in?(table_name)
         Georeferencer.new(db, table_name, schema)

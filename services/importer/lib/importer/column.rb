@@ -1,5 +1,6 @@
 # encoding: utf-8
 require_relative './string_sanitizer'
+require_relative './job'
 
 module CartoDB
   module Importer2
@@ -25,7 +26,9 @@ module CartoDB
                             SOME SYMMETRIC TABLE THEN TO TRAILING TRUE UNION
                             UNIQUE USER USING VERBOSE WHEN WHERE XMIN XMAX }
 
-      def initialize(db, table_name, column_name, schema=DEFAULT_SCHEMA)
+      def initialize(db, table_name, column_name, schema=DEFAULT_SCHEMA,
+      job=nil)
+        @job          = job || Job.new
         @db           = db
         @table_name   = table_name.to_sym
         @column_name  = column_name.to_sym
@@ -50,6 +53,7 @@ module CartoDB
       end #geometrify
 
       def convert_from_wkt
+        job.log 'Converting geometry from WKT to WKB'
         db.run(%Q{
           UPDATE #{qualified_table_name}
           SET #{column_name} = 
@@ -59,6 +63,7 @@ module CartoDB
       end #convert_from_wkt
 
       def convert_from_geojson
+        job.log 'Converting geometry from GeoJSON to WKB'
         db.run(%Q{
           UPDATE #{qualified_table_name}
           SET #{column_name} = public.ST_GeomFromGeoJSON(#{column_name})
@@ -67,6 +72,7 @@ module CartoDB
       end #convert_from_geojson
 
       def convert_from_kml_point
+        job.log 'Converting geometry from KML point to WKB'
         db.run(%Q{
           UPDATE #{qualified_table_name}
           SET #{column_name} = public.ST_GeomFromKML(#{column_name})
@@ -74,6 +80,7 @@ module CartoDB
       end #convert_from_kml_point
 
       def convert_from_kml_multi
+        job.log 'Converting geometry from KML multi to WKB'
         db.run(%Q{
           UPDATE #{qualified_table_name}
           SET #{column_name} = 
@@ -176,7 +183,7 @@ module CartoDB
 
       private
 
-      attr_reader :db, :table_name, :column_name, :schema
+      attr_reader :job, :db, :table_name, :column_name, :schema
 
       def qualified_table_name
         "#{schema}.#{table_name}"

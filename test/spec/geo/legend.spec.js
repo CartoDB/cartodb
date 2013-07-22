@@ -96,6 +96,25 @@ describe("common.geo.ui.Legend", function() {
       expect(legend.$el.hasClass("custom")).toEqual(true);
     });
 
+    it("should update the legend when the name of an item is changed", function() {
+      legend.render();
+      legend.model.set({ type: "bubble" });
+      expect(legend.$el.find("li:first-child").text()).toEqual('Category 1');
+
+      legend.items.at(0).set("name", "New Category 1")
+      expect(legend.$el.find("li:first-child").text()).toEqual('New Category 1');
+    });
+
+    it("should update the legend when the value of an item is changed", function() {
+      legend.render();
+      legend.model.set({ type: "custom" });
+      expect(legend.$el.find("li:first-child .bullet").css("background-color")).toEqual('rgb(241, 241, 241)');
+
+      legend.items.at(0).set("value", "red")
+      expect(legend.$el.find("li:first-child .bullet").css("background-color")).toEqual('rgb(255, 0, 0)');
+    });
+
+
     it("should show the legend", function() {
       legend.show();
       expect(legend.$el.css('display')).toEqual('block');

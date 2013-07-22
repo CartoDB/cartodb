@@ -22,6 +22,16 @@ describe Downloader do
     FileUtils.rm_rf @repository_dir
   end
 
+  #response = Typhoeus::Response.new(code: 200, body: "{'name' : 'paul'}")
+  #Typhoeus.stub('www.example.com').and_return(response)
+  #Typhoeus.get("www.example.com") == response
+  #=> true
+  #The queued request will hit the stub. You can also specify a regex to match
+  #urls.
+  #response = Typhoeus::Response.new(code: 200, body: "{'name' : 'paul'}")
+  #Typhoeus.stub(/example/).and_return(response)
+  #Typhoeus.get("www.example.com") == response
+
   describe '#run' do
     it 'downloads a file from a url' do
       downloader = Downloader.new(@file_url, nil, @repository)

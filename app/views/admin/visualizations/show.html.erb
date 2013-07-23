@@ -12,6 +12,7 @@
       , user_data = <%=raw current_user.data.to_json.html_safe %>
       , config = <%=raw frontend_config.html_safe %>
       , map_data = <%=raw @visualization.map.public_values.to_json %>
+      , mixpanel_token = "<%= Cartodb.config[:mixpanel]['token'] if Cartodb.config[:mixpanel].present? %>"
   </script>
 
   <% content_for(:js) do %>

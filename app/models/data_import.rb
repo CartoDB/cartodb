@@ -373,16 +373,24 @@ class DataImport < Sequel::Model
       self.formatted
     end
     
+    runner.results
+      .select { |result| !result.fetch(:success) }
+      .each   { |result| register_failed_import_event_for(result) }
+
     success_status = runner.results.inject(true) { |memo, result|
       result.fetch(:success) && memo
     }
 
-    runner.results.each { |result| 
-        CartoDB::Metrics.event "Import file failed", {name: result.name, extension: result.extension} unless result.success?
-    }
-
     success_status
   end #new_importer
+
+  def register_failed_import_event_for(result)
+    payload = {
+      name:       result.fetch(:name),
+      extension:  result.fetch(:extension)
+    }
+    CartoDB::Metrics.event("Import failed", payload)
+  end #register_failed_import_event_for
 
   def get_valid_name(name)
     Table.get_valid_table_name(name, 
@@ -396,10 +404,6 @@ class DataImport < Sequel::Model
   def current_user
     @current_user ||= User[user_id]
   end
-
-  #def table_name?
-  #  !table_name.nil? && !table_name.empty?
-  #end
 
   def file?
     data_type == 'file'
@@ -423,38 +427,45 @@ class DataImport < Sequel::Model
     migrate_existing(new_table_name)
   end
 
+  def handle_success
+    CartodbStats.increment_imports
+    self.success = true
+    self.log << "SUCCESS!\n"
+    save
+    CartoDB::Metrics.event("Import successful", metric_payload)
+  end #handle_success
+
+  def handle_failure
+    CartodbStats.increment_failed_imports
+    Rollbar.report_message("Failed import", "error", error_info: basic_information)
+    CartoDB::Metrics.event("Import failed", metric_payload)
+    keep_problematic_file if uploaded_file
+
+    self.success = false
+    self.log << "ERROR!\n"
+    self.save
+  end #handle_failure
+
+  def keep_problematic_file
+    uploads_path  = Rails.root.join('public', 'uploads')
+    file_path     = File.join(uploads_path, uploaded_file[1])
+    vault_path    = File.join(uploads_path, failed_imports)
+
+    return unless Dir.exists?(file_path)
+    FileUtils.cp_r(file_path, vault_path)
+  end #keep_problematic_file
+
+  def metric_payload
+    { distinct_id: current_user.username }.merge(basic_information)
+  end #metric_payload
+
   state_machine :initial => :preprocessing do
     before_transition :updated_now
-    before_transition do
-      self.save
-    end
+    before_transition do self.save end
 
     after_transition :log_state_change
-
-    after_transition any => :complete do
-      CartodbStats.increment_imports()
-      self.success = true
-      self.log << "SUCCESS!\n"
-      save
-      CartoDB::Metrics.event "Import successful", {distinct_id: current_user.username}.merge(basic_information)
-    end
-
-    after_transition any => :failure do
-      # Increment failed imports on CartoDB stats
-      CartodbStats.increment_failed_imports()
-      Rollbar.report_message("Failed import", "error", error_info: basic_information)
-      CartoDB::Metrics.event "Import failed", {distinct_id: current_user.username}.merge(basic_information)
-      # Copy any uploaded resources to secret failed imports vault(tm)
-        
-      if uploaded_file
-        path = Rails.root.join("public", "uploads", uploaded_file[1])
-        FileUtils.cp_r(path, Rails.root.join('public', 'uploads', 'failed_imports')) if Dir.exists?(path)
-      end
-
-      self.success = false
-      self.log << "ERROR!\n"
-      self.save
-    end
+    after_transition(any => :complete) { handle_success }
+    after_transition(any => :failure)  { handle_failure }
 
     event :upload do |event|
       #the import is ready to start handling file upload

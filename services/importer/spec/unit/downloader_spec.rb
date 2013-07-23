@@ -115,7 +115,6 @@ describe Downloader do
   end #stub_download
 
   def response_for(filepath)
-      puts headers_for(filepath).inspect
      Typhoeus::Response.new(
         headers:  headers_for(filepath),
         code:     200,

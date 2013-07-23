@@ -1,4 +1,5 @@
 # encoding: utf-8
+require_relative './job'
 
 module CartoDB
   module Importer2

@@ -130,9 +130,10 @@
             display:none;
 
             label {
-              position:absolute;
-              top:4px;
-              right:0;
+              font-size: 12px;
+              position: absolute;
+              bottom: -20px;
+              left: 20px;
 
               &.light { color: #CCC; }
             }
@@ -142,14 +143,13 @@
               right: 0;
               margin: 9px 0 0 0;
               color: #999;
-              font-size: 15px;
+              font-size: 13px;
               a { text-decoration:underline; }
             }
 
             div.upload {
               position:relative;
               display:block;
-              margin:20px 0 0 20px;
               padding:10px;
               border:1px solid #CCCCCC;
               @include border-radius(4px);
@@ -275,6 +275,41 @@
           // Position
           &:last-child {
             margin-bottom:0;
+          }
+        }
+
+        .import-pane {
+          margin: 20px 0 0 20px;
+
+          &.import-pane-gdrive,
+          &.import-pane-dropbox {
+            padding: 11px 10px 10px;
+            background: #f2f2f2;
+            @include border-radius(3px);
+          }
+
+          &.import-pane-gdrive .common_data { margin-top: 18px; }
+        }
+
+        .gdrive-chooser {
+          display: block;
+          line-height: 23px;
+          width: 109px;
+          border: 1px solid #999;
+          @include border-radius(3px);
+          @include background(linear-gradient(#fff, #f2f2f2));
+          font-size: 13px;
+          font-weight: bold;
+          text-align: center;
+          color: #333;
+
+          &:hover {
+            text-decoration: none;
+            border-color: darken(#999, 5%);
+          }
+
+          &:active {
+            @include box-shadow(0 1px 2px 0 rgba(#000, .2) inset);
           }
         }
       }

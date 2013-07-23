@@ -20,6 +20,23 @@ describe 'geojson regression tests' do
     runner.run
   end
 
+  it 'imports a file with boolean values' do
+    skip
+    filepath    = path_to('boolean_values.geojson')
+    downloader  = Downloader.new(filepath)
+    runner      = Runner.new(@pg_options, downloader)
+    runner.run
+
+    result      = runner.results.first
+    table_name  = result.fetch(:tables).first
+    schema      = result.fetch(:schema)
+
+    runner.db.schema(table_name, schema: 'importer')
+      .find { |element| element.first == :boolean }.last
+      .fetch(:type)
+      .must_equal :boolean
+  end
+
   def path_to(filepath)
     File.expand_path(
       File.join(File.dirname(__FILE__), "../fixtures/#{filepath}")

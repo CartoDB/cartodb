@@ -26,12 +26,11 @@ cdb.geo.ui.LegendItem = cdb.core.View.extend({
   render: function() {
 
     this.$el.html(this.template(this.model.toJSON()));
-
     return this.$el;
+
   }
 
 });
-
 
 /*
  * ChoroplethLegend
@@ -82,7 +81,6 @@ cdb.geo.ui.ChoroplethLegend = cdb.core.View.extend({
 
 });
 
-
 /*
  * BubbleLegend
  *
@@ -95,19 +93,23 @@ cdb.geo.ui.BubbleLegend = cdb.core.View.extend({
 
     this.items = this.options.items;
     this.template = _.template('<li><%= min %></li><li class="graph"></li><li><%= max %></li>');
-    this.model = new cdb.core.Model();
+    this.model    = new cdb.core.Model();
+
+    this.add_related_model(this.model);
+
   },
 
   _renderGraph: function() {
-
+    this.$el.find(".graph").css("background", this.items.at(0).get("value"));
+    // TODO
   },
 
   render: function() {
 
-    var min = this.items.at(0);
+    var min = this.items.at(1);
     var max = this.items.at(this.items.length - 1);
 
-    this.model.set({ min: min.get("name"), max: max.get("name") });
+    this.model.set({ min: min.get("value"), max: max.get("value") });
     this.$el.html(this.template(this.model.toJSON()));
 
     this._renderGraph();
@@ -118,6 +120,51 @@ cdb.geo.ui.BubbleLegend = cdb.core.View.extend({
 
 });
 
+/*
+ * ColorLegend
+ *
+ * */
+cdb.geo.ui.ColorLegend = cdb.core.View.extend({
+
+  tagName: "ul",
+
+  initialize: function() {
+
+    this.items = this.options.items;
+    this.template = _.template("");
+    this.model = new cdb.core.Model({
+      type: "custom"
+    });
+
+  },
+
+  _renderItems: function() {
+
+    var self = this;
+
+    this.items.each(function(item) {
+
+      view = new cdb.geo.ui.LegendItem({
+        model: item,
+        template: '<div class="bullet" style="background:<%= value %>"></div><%= name || "null" %>'
+      });
+
+      self.$el.append(view.render());
+
+    });
+
+  },
+
+  render: function() {
+
+    this.$el.html(this.template(this.model.toJSON()));
+    this._renderItems();
+
+    return this;
+
+  }
+
+});
 /*
  * CustomLegend
  *
@@ -151,12 +198,14 @@ cdb.geo.ui.CustomLegend = cdb.core.View.extend({
 
     });
 
+    //if (this.items.length == 0) this.hide();
+    //else this.show();
+
   },
 
   render: function() {
 
     this.$el.html(this.template(this.model.toJSON()));
-
     this._renderItems();
 
     return this;
@@ -199,22 +248,51 @@ cdb.geo.ui.StackedLegend = cdb.core.View.extend({
 
   initialize: function() {
 
+    _.each(this.options.legends, this._setupBinding, this);
+
+  },
+
+  _setupBinding: function(legend) {
+
+    legend.model.bind("change:type", this._checkVisibility, this);
+    this.add_related_model(legend.model);
+
+  },
+
+  _checkVisibility: function() {
+
+    var visible = _.some(this.options.legends, function(legend) {
+      return legend.model.get("type")
+    }, this);
+
+    if (visible) {
+      this.show();
+    } else {
+      this.hide();
+    }
+
   },
 
   _renderItems: function() {
 
-    var self = this;
-
-
     _.each(this.options.legends, function(item) {
-      self.$el.append(item.render().$el);
-    });
+      this.$el.append(item.render().$el);
+    }, this);
 
+  },
+
+  show: function() {
+    this.$el.show();
+  },
+
+  hide: function() {
+    this.$el.hide();
   },
 
   render: function() {
 
     this._renderItems();
+    this._checkVisibility();
 
     return this;
 
@@ -225,11 +303,24 @@ cdb.geo.ui.StackedLegend = cdb.core.View.extend({
 cdb.geo.ui.LegendModel = cdb.core.Model.extend({
 
   defaults: {
-    type: "custom"
+    type: null
+  },
+
+  initialize: function() {
+
+    this.items = new cdb.geo.ui.LegendItems(this.get("items"));
+
+    this.items.bind("add remove reset change", function() {
+      this.set("items", this.items.toJSON());
+    }, this);
+
+    this.bind("change:items", function() {
+      this.items.reset(this.get("items"));
+    }, this);
+
   }
 
 });
-
 
 /*
  * Legend
@@ -270,13 +361,22 @@ cdb.geo.ui.Legend = cdb.core.View.extend({
 
   _updateLegendType: function() {
 
-    this.legend_name = this._capitalize(this.model.get("type")) + "Legend";
+    var type = this.model.get("type");
 
-    if (!cdb.geo.ui[this.legend_name]) {
+    this.legend_name = this._capitalize(type) + "Legend";
+
+    if (type == 'none') {
+
+      this.legend_name = null;
+      this.model.set({ type: null}, { silent: true });
+
+    } else if (!cdb.geo.ui[this.legend_name]) {
+
       // set the previous type
       this.legend_name = null;
       this.model.set({ type: this.model.previous("type") }, { silent: true });
       return;
+
     }
 
     this._refresh();
@@ -289,13 +389,27 @@ cdb.geo.ui.Legend = cdb.core.View.extend({
 
     if (this.view) this.view.clean();
 
-    this.view = new cdb.geo.ui[this.legend_name] ({
-      items: self.items
-    });
+    var type = this.model.get("type");
 
-    // Set the type as the element class for styling
-    this.$el.removeClass(this.model.previous("type"));
-    this.$el.addClass(this.model.get("type"));
+    if (type) {
+      this.view = new cdb.geo.ui[this.legend_name] ({
+        items: self.items
+      });
+
+      // Set the type as the element class for styling
+      this.$el.removeClass();
+      this.$el.addClass(this.className + " " + this.model.get("type"));
+
+      this.show();
+
+    } else {
+
+      this.hide(function() {
+        self.$el.removeClass();
+        self.$el.addClass(this.className + " none");
+      });
+
+    }
 
     this.render();
 
@@ -305,29 +419,42 @@ cdb.geo.ui.Legend = cdb.core.View.extend({
 
     var self = this;
 
-    this.items = new cdb.geo.ui.LegendItems();
+    this.items = this.model.items;
 
-    _.each(this.options.data, function(item) {
-      self.items.add(item);
+    this.items.bind("add remove change:value change:name", this.render, this);
+
+  },
+
+  show: function(callback) {
+    this.$el.fadeIn(250, function() {
+      callback && callback();
+    });
+  },
+
+  hide: function(callback) {
+
+    this.$el.fadeOut(250, function() {
+      callback && callback();
     });
 
   },
 
-  show: function() {
-    this.$el.fadeIn(250);
-  },
-
-  hide: function() {
-    this.$el.fadeOut(250);
-  },
-
   _capitalize: function(string) {
-    return string.charAt(0).toUpperCase() + string.slice(1);
+    if (string) {
+      return string.charAt(0).toUpperCase() + string.slice(1);
+    }
   },
 
   render: function() {
 
-    this.$el.append(this.view.render().$el);
+    if (this.view) {
+      this.$el.append(this.view.render().$el);
+    }
+
+    console.log(this.model.get("type"));
+
+    //if (this.model.get("type")) this.show();
+    //else this.hide();
 
     return this;
   }

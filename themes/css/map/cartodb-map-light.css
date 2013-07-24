@@ -175,7 +175,8 @@
 
   /* Custom legend */
 
-  div.cartodb-legend.custom ul li {
+  div.cartodb-legend.custom ul li,
+  div.cartodb-legend.color ul li {
     position:relative;
     margin: 0 0 5px 0;
     font-size: 10px;
@@ -187,8 +188,11 @@
     text-align: left;
   }
 
-  div.cartodb-legend.custom ul li:last-child { margin: 0; }
-  div.cartodb-legend.custom ul li .bullet {
+  div.cartodb-legend.custom ul li:last-child,
+  div.cartodb-legend.color ul li:last-child { margin: 0; }
+
+  div.cartodb-legend.custom ul li .bullet,
+  div.cartodb-legend.color ul li .bullet {
     position:relative;
     top: 2px;
     float:left;

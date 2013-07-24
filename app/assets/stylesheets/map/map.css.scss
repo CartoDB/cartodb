@@ -328,6 +328,24 @@ div.map {
     }
   }
 
+  div.cartodb-legend-stack {
+    @include position(false, 0, 20px, false);
+    margin: 0 80px 0 0;
+
+    @include transform-style("linear");
+    @include transition-property("margin-right");
+    @include transition-duration(300ms);
+
+    div.cartodb-legend {
+      display:none;
+      @include position(false, 0, 0, false);
+      position:relative;
+      margin: 0;
+
+      &.custom, &.bubble, &.color, &.intensity, &.density { display: block; }
+    }
+  }
+
   div.cartodb-legend {
     @include position(false, 0, 20px, false);
     margin: 0 80px 0 0;
@@ -486,6 +504,15 @@ div.map {
       margin-right:612px;
     }
 
+    div.cartodb-legend-stack {
+      margin-right:612px;
+
+      div.cartodb-legend {
+        margin: 0;
+      }
+
+    }
+
     &.narrow {
       div.sqlview p {
         text-indent:-450px;
@@ -501,6 +528,14 @@ div.map {
 
       div.cartodb-legend {
         margin-right:462px;
+      }
+
+      div.cartodb-legend-stack {
+        margin-right:462px;
+
+        div.cartodb-legend {
+          margin: 0;
+        }
       }
 
     }

@@ -7,6 +7,7 @@
   @import "compass";
   @import "../common/mixins";
   @import "../common/sprites";
+  @import "../common/forms";
   @import "../common/vars";
 
   $corner_radius: 6px;
@@ -629,9 +630,12 @@
 
         .value {
           position:relative;
+          top:5px;
           color: #666666;
           font-size:15px;
           z-index: 100;
+
+          &.empty { font-style: italic; }
         }
 
         input {
@@ -642,7 +646,7 @@
 
         .bg {
           position:absolute;
-          top: -2px; left:0;
+          top: 3px; left:0;
           padding: 0 5px;
 
           width: 100%;
@@ -668,13 +672,32 @@
             top:42px;
             padding: 0 30px 16px 30px;
 
+            .footer {
+              margin: 8px 0 0 0;
+              text-align:center;
+
+              .add { font-size: 24px; }
+
+            }
+
+            .custom {
+              ul li .input { top: 13px; }
+            }
+
             ul li {
               color: #CCCCCC;
               font-size: 15px;
+              position:relative;
 
               .input {
-                position:relative;
-                float:right;
+                @include position(8px, 0, false, false);
+                @include default-input();
+
+                input {
+                  font-size: 13px;
+                  padding:4px 7px;
+                  width:150px;
+                }
 
               }
 
@@ -683,7 +706,7 @@
 
           ul {
             width:100%;
-            margin:15px 0 0 0;
+            margin:6px 0 0 0;
           }
 
           ul li {

@@ -417,6 +417,7 @@ cdb.geo.ui.Legend = cdb.core.View.extend({
     var self = this;
 
     this.items = this.model.items;
+    this.items.reset(this.options.items);
 
     this.items.bind("add remove change:value change:name", this.render, this);
 

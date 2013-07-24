@@ -7,6 +7,7 @@ require_relative './user'
 require_relative './table'
 require_relative '../../lib/cartodb/errors'
 require_relative '../../lib/cartodb/metrics'
+require_relative '../../lib/cartodb/github_reporter'
 require_relative '../../lib/cartodb_stats'
 require_relative '../../lib/cartodb/mini_sequel'
 require_relative '../../lib/importer/lib/cartodb-importer'
@@ -436,9 +437,11 @@ class DataImport < Sequel::Model
   end #handle_success
 
   def handle_failure
+    gh_reporter = CartoDB::GitHubReporter.new
     CartodbStats.increment_failed_imports
     Rollbar.report_message("Failed import", "error", error_info: basic_information)
     CartoDB::Metrics.event("Import failed", metric_payload)
+    gh_reporter.report_failed_import(metric_payload)
     keep_problematic_file if uploaded_file
 
     self.success = false

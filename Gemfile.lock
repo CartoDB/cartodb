@@ -129,6 +129,13 @@ GEM
       thor (>= 0.13.6)
     formatador (0.2.4)
     fssm (0.2.10)
+    github_api (0.10.1)
+      addressable
+      faraday (~> 0.8.1)
+      hashie (>= 1.2)
+      multi_json (~> 1.4)
+      nokogiri (~> 1.5.2)
+      oauth2
     google-spreadsheet-ruby (0.1.8)
       nokogiri (>= 1.4.3.1)
       oauth (>= 0.3.6)
@@ -141,6 +148,7 @@ GEM
       thor (>= 0.14.6)
     guard-minitest (0.5.0)
       guard (>= 0.4)
+    hashie (2.0.5)
     hike (1.2.1)
     htmlentities (4.3.1)
     http_parser.rb (0.5.3)
@@ -352,6 +360,7 @@ DEPENDENCIES
   email_spec (= 1.2.1)
   factory_girl_rails (~> 4.0.0)
   foreman (= 0.46.0)
+  github_api (~> 0.10.1)
   google-spreadsheet-ruby (= 0.1.8)
   guard
   guard-minitest

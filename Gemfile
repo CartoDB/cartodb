@@ -30,6 +30,8 @@ gem "addressable",             "2.2.8", :require => "addressable/uri"
 
 #gem "newrelic_rpm",            "~> 3.5.5"
 
+gem "github_api",              "~> 0.10.1"
+
 gem "ejs",                     "~> 1.1.1"
 #gem "turbo-sprockets-rails3",  "0.1.16"
 group :assets do

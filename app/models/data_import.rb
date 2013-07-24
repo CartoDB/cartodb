@@ -19,11 +19,11 @@ class DataImport < Sequel::Model
   attr_reader   :log
 
   PUBLIC_ATTRIBUTES = %W{ id user_id table_id data_type table_name state
-    success error_code queue_id get_error_text tables_created_count }
+    error_code queue_id get_error_text tables_created_count }
 
   def after_initialize
     instantiate_log
-    self.state ||= 'starting'
+    self.state    ||= 'uploading' #starting'
   end #after_initialize
 
   def before_save
@@ -32,8 +32,10 @@ class DataImport < Sequel::Model
   end
 
   def public_values
-    Hash[PUBLIC_ATTRIBUTES.map{ |attribute| [attribute, send(attribute)] }]
-      .merge("queue_id" => id)
+    values = Hash[PUBLIC_ATTRIBUTES.map{ |attribute| [attribute, send(attribute)] }]
+    values.merge!("queue_id" => id)
+    values.merge!(success: success) if (state == 'complete' || state == 'failure')
+    values
   end
 
   def run_import!
@@ -251,27 +253,6 @@ class DataImport < Sequel::Model
     success_status_from(runner.results)
   end
 
-  def import_to_cartodb(method, import_source)
-    download if method == 'url'
-    hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).symbolize_keys.merge(
-      :database         => current_user.database_name,
-      :logger           => ::Rails.logger,
-      :username         => current_user.database_username,
-      :password         => current_user.database_password,
-      :import_from_file => import_source,
-      :debug            => (Rails.env.development?),
-      :remaining_quota  => current_user.remaining_quota,
-      :remaining_tables => current_user.remaining_table_quota,
-      :data_import_id   => id,
-      :osm2pgsql_port   => Cartodb.config[:importer]["osm2pgsql_port"]
-    )
-    importer = CartoDB::Importer.new hash_in
-    importer, errors = importer.import!
-    reload
-    imported
-    return importer, errors
-  end
-
   def import_from_query(name, query)
     self.data_type    = 'query'
     self.data_source  = query
@@ -402,7 +383,7 @@ class DataImport < Sequel::Model
   def keep_problematic_file
     uploads_path  = Rails.root.join('public', 'uploads')
     file_path     = File.join(uploads_path, uploaded_file[1])
-    vault_path    = File.join(uploads_path, failed_imports)
+    vault_path    = File.join(uploads_path, 'failed_imports')
 
     return unless Dir.exists?(file_path)
     FileUtils.cp_r(file_path, vault_path)

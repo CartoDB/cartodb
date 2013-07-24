@@ -680,8 +680,16 @@
 
             }
 
+            .color {
+              ul li label {
+                /*@include position(8px, 0, false, false);*/
+              }
+            }
+
             .custom {
               ul li .input { top: 13px; }
+              ul li:hover .remove { @include opacity(1); }
+              ul li .remove { position:relative; top: 3px; @include opacity(0); }
             }
 
             ul li {

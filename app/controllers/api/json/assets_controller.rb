@@ -12,7 +12,7 @@ class Api::Json::AssetsController < Api::ApplicationController
   def create
     @asset = Asset.new
     @asset.user_id = current_user.id
-    @asset.asset_file = params[:file]
+    @asset.asset_file = params[:filename]
 
     if @asset.save
       render_jsonp(@asset.public_values)

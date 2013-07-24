@@ -51,6 +51,7 @@ module CartoDB
         job.log "Creating the_geom from #{geometry_column_name} column"
         self
       rescue => exception
+        job.log "Renaming #{geometry_column_name} to invalid_the_geom"
         column.rename_to(:invalid_the_geom) if column
         false
       end #create_the_geom_from_geometry_column

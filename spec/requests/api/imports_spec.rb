@@ -7,13 +7,6 @@ describe "Imports API" do
   before(:all) do
     @user = create_user(:username => 'test', :email => "client@example.com", :password => "clientex")
     @user.set_map_key
-    @user.in_database.execute('CREATE SCHEMA importer')
-    @user.in_database(as: :superuser).execute(%Q{
-      GRANT ALL PRIVILEGES
-      ON ALL TABLES
-      IN SCHEMA importer
-      TO #{@user.database_username};
-    })
   end
 
   before(:each) do

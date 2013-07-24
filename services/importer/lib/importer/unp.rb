@@ -26,9 +26,8 @@ module CartoDB
 
       def run(path)
         return without_unpacking(path) unless compressed?(path)
-        extract(path)
+        extract(normalize(path))
         crawl(temporary_directory).each { |path| process(path) }
-
         self
       rescue => exception
         raise ExtractionError
@@ -92,6 +91,8 @@ module CartoDB
       def underscore(filename)
         Iconv.new('UTF-8//IGNORE', 'UTF-8').iconv(filename)
           .gsub(' ', '_')
+          .gsub(/\(/, '')
+          .gsub(/\)/, '')
           .downcase
       end #underscore
 

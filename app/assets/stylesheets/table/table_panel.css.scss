@@ -666,6 +666,8 @@
         width:100%;
         overflow:hidden;
 
+        .panel_content .wrapper .content .fields li span { cursor: default; }
+
         div.forms {
 
           &.panel_content {
@@ -696,6 +698,8 @@
               color: #CCCCCC;
               font-size: 15px;
               position:relative;
+
+              label.empty { font-style: italic; }
 
               .input {
                 @include position(8px, 0, false, false);

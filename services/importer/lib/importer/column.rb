@@ -161,7 +161,7 @@ module CartoDB
       def drop
         db.run(%Q{
           ALTER TABLE #{qualified_table_name} 
-          DROP COLUMN #{column_name}
+          DROP COLUMN IF EXISTS #{column_name} 
         })
       end #drop
 

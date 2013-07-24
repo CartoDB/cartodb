@@ -53,7 +53,7 @@
       input[type="text"] {
         @include inline-block();
         vertical-align:middle;
-        width:360px;
+        width:355px;
         border:none;
         font:normal 15px $text-fonts2;
         color:#999999;
@@ -75,5 +75,43 @@
 
         &:focus {outline:none;}
       }
+    }
+
+    .dialog-tabs {
+      display: block;
+      height: 37px;
+      padding-left: 5px;
+      border-bottom: 1px solid #ccc !important;
+    }
+
+    .dialog-tab {
+      float: left;
+      position: relative;
+      margin: 0 0 0 -1px;
+      border-bottom: 0 !important;
+
+      a {
+        display: block;
+        line-height: 36px;
+        padding: 0 15px;
+        border: 1px solid #ccc;
+        border-bottom: 1px solid #ccc;
+        background: #fff;
+        @include border-top-radius(5px);
+
+        &.selected {
+          border-bottom-color: #fff;
+          color: #333;
+
+          &:hover {
+            text-decoration: none;
+            cursor: default;
+          }
+        }
+      }
+    }
+
+    .basemap-chooser-panes {
+      margin: 30px 0 0 5px;
     }
   }

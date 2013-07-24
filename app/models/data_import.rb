@@ -1,6 +1,5 @@
 # encoding: UTF-8'
 require 'sequel'
-require 'active_model'
 require 'fileutils'
 require 'uuidtools'
 require_relative './user'
@@ -9,16 +8,11 @@ require_relative '../../lib/cartodb/errors'
 require_relative '../../lib/cartodb/metrics'
 require_relative '../../lib/cartodb/github_reporter'
 require_relative '../../lib/cartodb_stats'
-require_relative '../../lib/cartodb/mini_sequel'
-require_relative '../../lib/importer/lib/cartodb-importer'
 require_relative '../../services/track_record/track_record/log'
 require_relative '../../config/initializers/redis'
 require_relative '../../services/importer/lib/importer'
 
 class DataImport < Sequel::Model
-  include CartoDB::MiniSequel
-  include ActiveModel::Validations
-
   REDIS_LOG_KEY_PREFIX          = 'importer'
   REDIS_LOG_EXPIRATION_IN_SECS  = 3600 * 24 * 2 # 2 days
 
@@ -29,29 +23,60 @@ class DataImport < Sequel::Model
 
   def after_initialize
     instantiate_log
+    self.state ||= 'starting'
   end #after_initialize
 
   def before_save
     self.logger = self.log.id unless self.logger.present?
-    updated_now
+    self.updated_at = Time.now
   end
 
   def public_values
     Hash[PUBLIC_ATTRIBUTES.map{ |attribute| [attribute, send(attribute)] }]
-      .merge("success" => success_value, "queue_id" => id)
+      .merge("queue_id" => id)
   end
 
   def run_import!
     success = !!dispatch
-    finished! if success
-    failed!   unless success
+    success ? handle_success : handle_failure
     self
-  #rescue => exception
-  #  puts "Exception!!!1 ==== #{exception.inspect}"
-  #  reload
-  #  failed!
-  #  self.log << ("Exception while running import: " + exception.inspect)
-  #  self
+  rescue => exception
+    puts "Exception!!! ==== #{exception.inspect}"
+    puts exception.backtrace
+    reload
+    handle_failure
+    self.log << ("Exception while running import: " + exception.inspect)
+    self
+  end
+
+  def set_error_code(code)
+    self.error_code = code
+    self.save
+  end
+
+  def get_error_text
+    return CartoDB::IMPORTER_ERROR_CODES[99999] if self.error_code.blank? 
+    return CartoDB::IMPORTER_ERROR_CODES[self.error_code]
+  end
+
+  def raise_error_if_over_quota(number_of_tables)
+    if !current_user.remaining_table_quota.nil? && 
+    current_user.remaining_table_quota.to_i < number_of_tables
+      self.set_error_code(8002)
+      self.log_error("Over account table limit, please upgrade")
+      raise CartoDB::QuotaExceeded, "More tables required"
+    end
+  end
+
+  def mark_as_failed_if_stuck!    
+    return false unless stuck?
+
+    self.failed!
+    CartoDB::notify_exception(
+      CartoDB::GenericImportError.new("Import timed out"), 
+      user: current_user
+    )
+    return true
   end
 
   def log_update(update_msg)
@@ -70,45 +95,15 @@ class DataImport < Sequel::Model
     self.save
   end
 
-  def log_state_change(transition)
-    event, from, to = transition.event, transition.from_name, transition.to_name
-    if !self.logger
-      self.log << "BEGIN \n"
-      self.error_code = nil
-    end
-    self.log << "TRANSITION: #{from} => #{to}"
-  end
-
-  def set_error_code(code)
-    self.error_code = code
-    self.save
-  end
-
-  def get_error_text
-    return CartoDB::IMPORTER_ERROR_CODES[99999] if self.error_code.blank? 
-    return CartoDB::IMPORTER_ERROR_CODES[self.error_code]
-  end
-
   def log_json
     return jsonize(self.log.to_s) if valid_uuid?(self.logger)
     return jsonize(self.logger.to_s)
   end #log_json
 
-  def raise_error_if_over_quota(number_of_tables)
-    if !current_user.remaining_table_quota.nil? && 
-    current_user.remaining_table_quota.to_i < number_of_tables
-      self.set_error_code(8002)
-      self.log_error("Over account table limit, please upgrade")
-      raise CartoDB::QuotaExceeded, "More tables required"
-    end
-  end
-
-  def remove_uploaded_resources
-    return nil unless uploaded_file
-
-    path = Rails.root.join("public", "uploads", uploaded_file[1])
-    FileUtils.rm_rf(path) if Dir.exists?(path)
-  end
+  def jsonize(text)
+    return text.split("\n") if text.present?
+    return ["empty"]
+  end #jsonize
 
   def data_source=(data_source)
     if File.exist?(Rails.root.join("public#{data_source}"))
@@ -120,26 +115,47 @@ class DataImport < Sequel::Model
     end
   end
 
-  def mark_as_failed_if_stuck!    
-    return false unless stuck?
+  def remove_uploaded_resources
+    return nil unless uploaded_file
 
-    self.failed!
-    CartoDB::notify_exception(
-      CartoDB::GenericImportError.new("Import timed out"), 
-      user: current_user
-    )
-    return true
-  end
+    path = Rails.root.join("public", "uploads", uploaded_file[1])
+    FileUtils.rm_rf(path) if Dir.exists?(path)
+  end #remove_uploaded_resources
+
+  def handle_success
+    puts "============ handle_success ==== #{table_name }"
+    CartodbStats.increment_imports
+    self.success  = true
+    self.state    = 'complete'
+    self.log << "SUCCESS!\n"
+    save
+    CartoDB::Metrics.event("Import successful", metric_payload)
+  end #handle_success
+
+  def handle_failure
+    puts '============ handle_failure'
+    CartodbStats.increment_failed_imports
+    Rollbar.report_message("Failed import", "error", error_info: basic_information)
+    CartoDB::Metrics.event("Import failed", metric_payload)
+    keep_problematic_file if uploaded_file
+
+    self.success  = false
+    self.state    = 'failure'
+    self.log << "ERROR!\n"
+    self.save
+  end #handle_failure
+
+  attr_accessor :results
 
   private
 
-  attr_writer :log
+  attr_writer   :log
 
   def dispatch
     return append_to_existing if append.present?
     return migrate_existing   if migrate_table.present?
     return from_table         if table_copy.present? || from_query.present?
-    return new_importer       if %w(url file).include?(data_type)
+    return new_importer       
   end #dispatch
 
   def running_import_ids
@@ -148,12 +164,6 @@ class DataImport < Sequel::Model
       worker.job["payload"]["args"].first["job_id"] rescue nil 
     end.compact
   end
-
-  def success_value
-    return false  if state == 'failure'
-    return true   if state == 'complete'
-    nil
-  end #success_value
 
   def basic_information
     {
@@ -171,11 +181,6 @@ class DataImport < Sequel::Model
     "https://#{current_user.username}.cartodb.com/#{uploaded_file[0]}"
   end
 
-  def jsonize(text)
-    return text.split("\n") if text.present?
-    return ["empty"]
-  end #jsonize
-
   def valid_uuid?(text)
     !!UUIDTools::UUID.parse(text)
   rescue TypeError => exception
@@ -186,10 +191,6 @@ class DataImport < Sequel::Model
 
   def before_destroy
     self.remove_uploaded_resources
-  end
-
-  def updated_now(transition=nil)
-    self.updated_at = Time.now
   end
 
   def instantiate_log
@@ -224,19 +225,20 @@ class DataImport < Sequel::Model
   end
 
   def append_to_existing
-    imports, errors = import_to_cartodb(data_type, data_source)
+    new_importer(data_source)
     # table_names is null, since we're just appending data to
     # an existing table, not creating a new one
-    self.update :table_names => nil
+    self.update(table_names: nil)
 
-    @table = Table.filter(:user_id => current_user.id, :id => table_id).first
-    (imports || []).each do |import|
-      migrate_existing(import.name, table_name)
-      @new_table = Table.filter(:name => import.name).first
-      @table.append_to_table(:from_table => @new_table)
-      @table.save
-      # append_to_table doesn't automatically destroy the table
-      @new_table.destroy
+    self.results.each do |result|
+      result.fetch(:tables).each do |new_table_name|
+        #register(new_table_name, result.fetch(:name), result.fetch(:schema))
+        #new_table = Table.where(name: new_table_name, user_id: current_user.id).first
+        schema = result.fetch(:schema)
+        table.append_from_importer(new_table_name, schema)
+        table.save
+        #new_table.destroy
+      end
     end
   end
 
@@ -262,14 +264,15 @@ class DataImport < Sequel::Model
   end
 
   def import_from_query(name, query)
-    self.data_type = 'query'
-    self.data_source = query
+    self.data_type    = 'query'
+    self.data_source  = query
     self.save
-    # ensure unique name
-    uniname = get_valid_name(name)
-    # create a table based on the query
-    table_owner.in_database.run("CREATE TABLE #{uniname} AS #{query}")
-    return uniname
+
+    candidates =  table_owner.tables.select_map(:name)
+    table_name = Table.get_valid_table_name(name, name_candidates: candidates)
+    table_owner.in_database.run(%Q{CREATE TABLE #{table_name} AS #{query}})
+
+    table_name
   end
 
   def migrate_existing(imported_name=migrate_table, name=nil)
@@ -301,77 +304,29 @@ class DataImport < Sequel::Model
     end
   end
 
-  def proper_import
-    success_status  = false
-    imports, errors = import_to_cartodb(data_type, data_source)
+  def pg_options
+    Rails.configuration.database_configuration[Rails.env].symbolize_keys
+      .merge(
+        user:     table_owner.database_username,
+        password: table_owner.database_password,
+        database: table_owner.database_name
+      )
+  end #pg_options
 
-    if imports.present?
-      imports.each do | import |
-        self.log << "Linking #{import.name} to CartoDB UI"
-        unless migrate_existing(import.name, table_name)
-          current_user.in_database.drop_table(import.name) rescue ""
-        else
-          success_status = true
-        end
-      end
-    end
-
-    success_status
-  end
-
-  def new_importer
-    pg_options  = Rails.configuration.database_configuration[Rails.env]
-                    .symbolize_keys
-    pg_options.store(:user,     table_owner.database_username)
-    pg_options.store(:username, table_owner.database_username)
-    pg_options.store(:password, table_owner.database_password)
-    pg_options.store(:database, table_owner.database_name)
-
+  def new_importer(data_source=nil)
+    data_source ||= self.data_source
     downloader  = CartoDB::Importer2::Downloader.new(data_source)
     runner      = CartoDB::Importer2::Runner.new(pg_options, downloader)
     runner.run
 
-    results     = runner.results
+    self.results = runner.results
 
     runner.results.each do |result|
       name        = result.fetch(:name)
       schema      = result.fetch(:schema)
       table_names = result.fetch(:tables)
 
-      table_names.each do |table_name|
-        current_user.in_database.execute(%Q{
-          ALTER TABLE "#{schema}"."#{table_name}"
-          SET SCHEMA public
-        })
-
-        name = Table.get_valid_table_name(
-          name,
-          name_candidates: table_owner.tables.map(&:name)
-        )
-
-        current_user.in_database.execute(%Q{
-          ALTER TABLE "public"."#{table_name}"
-          RENAME TO #{name}
-        })
-
-        table                         = Table.new
-        table.user_id                 = table_owner.id
-        table.name                    = name
-        table.migrate_existing_table  = name
-        table.save
-
-        self.table_id   = table.id
-        self.table_name = table.name
-        save
-        self
-      end
-    end
-    
-    self.download
-    self.file_ready
-    unless complete?
-      self.imported
-      self.formatted
+      table_names.each { |table_name| register(table_name, name, schema) }
     end
     
     runner.results
@@ -381,9 +336,37 @@ class DataImport < Sequel::Model
     success_status = runner.results.inject(true) { |memo, result|
       result.fetch(:success) && memo
     }
-
+    puts runner.report
     success_status
   end #new_importer
+
+  def register(table_name, name, schema='importer')
+    current_user.in_database.execute(%Q{
+      ALTER TABLE "#{schema}"."#{table_name}"
+      SET SCHEMA public
+    })
+
+    name = Table.get_valid_table_name(
+      name,
+      name_candidates: table_owner.tables.map(&:name)
+    )
+
+    current_user.in_database.execute(%Q{
+      ALTER TABLE "public"."#{table_name}"
+      RENAME TO #{name}
+    })
+
+    table                         = Table.new
+    table.user_id                 = table_owner.id
+    table.name                    = name
+    table.migrate_existing_table  = name
+    table.save
+
+    self.table_id   = table.id
+    self.table_name = table.name
+    save
+    self
+  end #register
 
   def register_failed_import_event_for(result)
     payload = {
@@ -393,29 +376,8 @@ class DataImport < Sequel::Model
     CartoDB::Metrics.event("Import failed", payload)
   end #register_failed_import_event_for
 
-  def get_valid_name(name)
-    Table.get_valid_table_name(name, 
-      name_candidates: table_owner.tables.select_map(:name))
-  end
-
   def table_owner
     table_owner ||= User.select(:id,:database_name,:crypted_password,:quota_in_bytes,:username, :private_tables_enabled, :table_quota).filter(:id => current_user.id).first
-  end
-
-  def current_user
-    @current_user ||= User[user_id]
-  end
-
-  def file?
-    data_type == 'file'
-  end
-
-  def url?
-    data_type == 'url'
-  end
-
-  def table_copy?
-    table_copy.present?
   end
 
   def from_table
@@ -462,53 +424,27 @@ class DataImport < Sequel::Model
     { distinct_id: current_user.username }.merge(basic_information)
   end #metric_payload
 
-  state_machine :initial => :preprocessing do
-    before_transition :updated_now
-    before_transition do self.save end
-
-    after_transition :log_state_change
-    after_transition(any => :complete) { handle_success }
-    after_transition(any => :failure)  { handle_failure }
-
-    event :upload do |event|
-      #the import is ready to start handling file upload
-      transition :preprocessing => :uploading
-    end
-    event :download do |event|
-      #the import is ready to start handling file download (url)
-      transition :preprocessing => :downloading
-    end
-    event :migrate do |event|
-      #the import is ready to start migration (query, table, other)
-      transition :preprocessing => :migrating
-    end
-
-    event :file_ready do |event|
-      transition [:uploading, :downloading] => :importing
-    end
-
-    #events for data import
-    event :imported do
-      transition :importing => :formatting
-    end
-
-    #events for data migration
-    event :migrated do
-      transition :migrating => :formatting
-    end
-
-    event :formatted do
-      transition :formatting => :finishing
-    end
-    event :finished do
-      transition :finishing => :complete
-    end
-    event :retry do
-      transition any => same
-    end
-    event :failed do
-      transition any => :failure
-    end
+  def current_user
+    @current_user ||= User[user_id]
   end
 
+  def table
+    Table.where(id: table_id, user_id: user_id).first
+  end #table
+
+  #def log_state_change(transition)
+  #  event, from, to = transition.event, transition.from_name, transition.to_name
+  #  if !self.logger
+  #    self.log << "BEGIN \n"
+  #    self.error_code = nil
+  #  end
+  #  self.log << "TRANSITION: #{from} => #{to}"
+  #end
+
+  #def success_value
+  #  return false  if state == 'failure'
+  #  return true   if state == 'complete'
+  #  nil
+  #end #success_value
 end
+

@@ -129,6 +129,64 @@ class Table < Sequel::Model(:user_tables)
     super
   end
 
+  def append_from_importer(new_table_name, new_schema_name)
+    puts "++++++++ #{new_schema_name}"
+    puts "++++++++ #{new_table_name}"
+    new_schema            = owner.in_database.schema(
+                              new_table_name,
+                              reload: true,
+                              schema: new_schema_name
+                            )
+    new_schema_hash       = Hash[new_schema]
+    self.database_name    = owner.database_name
+    append_to_table       = self
+    new_schema_names      = new_schema.map(&:first)
+    existing_schema_hash  = Hash[append_to_table.schema(reload: true)]
+
+    # fun schema check here
+    drop_names = %W{ cartodb_id created_at updated_at ogc_fid}
+
+    new_schema_hash.keys.each do |column_name|
+      if RESERVED_COLUMN_NAMES.include?(column_name.to_s) or drop_names.include?column_name.to_s
+        new_schema_names.delete(column_name)
+      elsif column_name.to_s != 'the_geom'
+        if existing_schema_hash.keys.include?(column_name)
+          # column name exists in new and old table
+          if existing_schema_hash[column_name] != new_schema_hash[column_name]
+            #the new column type does not match the existing, force change to existing
+            self.modify_column!(
+              ::Rails::Sequel.configuration.environment_for(Rails.env)
+              .merge(
+                type: existing_schema_hash[column_name],
+                name: column_name
+              ).symbolize_keys
+            )
+          end
+        else
+          # add column and type to old table
+          append_to_table.add_column!(
+            ::Rails::Sequel.configuration.environment_for(Rails.env)
+            .merge(
+              type: new_schema_hash[column_name],
+              name: column_name
+            ).symbolize_keys
+          )
+        end
+      end
+    end
+
+    # append table 2 to table 1
+    owner.in_database.run(%Q{
+      INSERT INTO "#{append_to_table.name}" (
+        #{new_schema_names.join(',')}
+      )
+      ( 
+        SELECT #{new_schema_names.join(',')}
+        FROM "#{new_schema}"."#{new_table_name}"
+      )
+    })
+  end #append_from_importer
+
   def append_to_table(options)
     from_table = options[:from_table]
     self.database_name = owner.database_name
@@ -182,7 +240,7 @@ class Table < Sequel::Model(:user_tables)
     if migrate_existing_table.present?
       @data_import.data_type = 'external_table'
       @data_import.data_source = migrate_existing_table
-      @data_import.migrate
+      #@data_import.migrate
       @data_import.save
 
       # ensure unique name, also ensures self.name can override any imported table name
@@ -204,7 +262,7 @@ class Table < Sequel::Model(:user_tables)
       importer = CartoDB::Migrator.new hash_in
       importer = importer.migrate!
       @data_import.reload
-      @data_import.migrated
+      #@data_import.migrated
       @data_import.save
       return importer.name
     end
@@ -315,7 +373,7 @@ class Table < Sequel::Model(:user_tables)
       import_cleanup
       set_the_geom_column!
       set_table_id
-      @data_import.formatted
+      #@data_import.formatted
       @data_import.save
     else
       create_table_in_database!

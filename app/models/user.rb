@@ -544,7 +544,7 @@ class User < Sequel::Model
     running_import_ids = Resque::Worker.all.map { |worker| worker.job["payload"]["args"].first["job_id"] rescue nil }.compact
     imports.map do |import|
       if import.created_at < Time.now - 5.minutes && !running_import_ids.include?(import.id)
-        import.failed!
+        import.handle_failure
         nil
       else
         import

@@ -130,8 +130,6 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def append_from_importer(new_table_name, new_schema_name)
-    puts "++++++++ #{new_schema_name}"
-    puts "++++++++ #{new_table_name}"
     new_schema            = owner.in_database.schema(
                               new_table_name,
                               reload: true,
@@ -142,35 +140,32 @@ class Table < Sequel::Model(:user_tables)
     append_to_table       = self
     new_schema_names      = new_schema.map(&:first)
     existing_schema_hash  = Hash[append_to_table.schema(reload: true)]
+    drop_names    = %W{ cartodb_id created_at updated_at ogc_fid}
+    configuration = ::Rails::Sequel.configuration.environment_for(Rails.env)
 
     # fun schema check here
-    drop_names = %W{ cartodb_id created_at updated_at ogc_fid}
-
     new_schema_hash.keys.each do |column_name|
-      if RESERVED_COLUMN_NAMES.include?(column_name.to_s) or drop_names.include?column_name.to_s
+      if (RESERVED_COLUMN_NAMES.include?(column_name.to_s) ||
+      drop_names.include?(column_name.to_s))
         new_schema_names.delete(column_name)
       elsif column_name.to_s != 'the_geom'
         if existing_schema_hash.keys.include?(column_name)
           # column name exists in new and old table
           if existing_schema_hash[column_name] != new_schema_hash[column_name]
             #the new column type does not match the existing, force change to existing
-            self.modify_column!(
-              ::Rails::Sequel.configuration.environment_for(Rails.env)
-              .merge(
-                type: existing_schema_hash[column_name],
-                name: column_name
-              ).symbolize_keys
-            )
+            column_data = configuration.merge(
+              type: existing_schema_hash[column_name][:type].to_s,
+              name: column_name
+            ).symbolize_keys
+            self.modify_column!(column_data)
           end
         else
           # add column and type to old table
-          append_to_table.add_column!(
-            ::Rails::Sequel.configuration.environment_for(Rails.env)
-            .merge(
-              type: new_schema_hash[column_name],
-              name: column_name
-            ).symbolize_keys
-          )
+          column_data =  configuration.merge(
+            type: new_schema_hash[column_name][:type].to_s,
+            name: column_name
+          ).symbolize_keys
+          append_to_table.add_column!(column_data)
         end
       end
     end
@@ -182,7 +177,7 @@ class Table < Sequel::Model(:user_tables)
       )
       ( 
         SELECT #{new_schema_names.join(',')}
-        FROM "#{new_schema}"."#{new_table_name}"
+        FROM "#{new_schema_name}"."#{new_table_name}"
       )
     })
   end #append_from_importer

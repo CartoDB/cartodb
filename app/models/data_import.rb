@@ -41,8 +41,6 @@ class DataImport < Sequel::Model
     success ? handle_success : handle_failure
     self
   rescue => exception
-    puts "Exception!!! ==== #{exception.inspect}"
-    puts exception.backtrace
     reload
     handle_failure
     self.log << ("Exception while running import: " + exception.inspect)
@@ -123,7 +121,6 @@ class DataImport < Sequel::Model
   end #remove_uploaded_resources
 
   def handle_success
-    puts "============ handle_success ==== #{table_name }"
     CartodbStats.increment_imports
     self.success  = true
     self.state    = 'complete'
@@ -133,7 +130,6 @@ class DataImport < Sequel::Model
   end #handle_success
 
   def handle_failure
-    puts '============ handle_failure'
     CartodbStats.increment_failed_imports
     Rollbar.report_message("Failed import", "error", error_info: basic_information)
     CartoDB::Metrics.event("Import failed", metric_payload)
@@ -145,11 +141,15 @@ class DataImport < Sequel::Model
     self.save
   end #handle_failure
 
-  attr_accessor :results
+  attr_reader :results
+
+  def table
+    Table.where(id: table_id, user_id: user_id).first
+  end #table
 
   private
 
-  attr_writer   :log
+  attr_writer :results, :log
 
   def dispatch
     return append_to_existing if append.present?
@@ -225,12 +225,17 @@ class DataImport < Sequel::Model
   end
 
   def append_to_existing
-    new_importer(data_source)
+    data_source ||= self.data_source
+    downloader  = CartoDB::Importer2::Downloader.new(data_source)
+    runner      = CartoDB::Importer2::Runner.new(pg_options, downloader)
+    runner.run
+    self.results = runner.results
+
     # table_names is null, since we're just appending data to
     # an existing table, not creating a new one
     self.update(table_names: nil)
 
-    self.results.each do |result|
+    runner.results.each do |result|
       result.fetch(:tables).each do |new_table_name|
         #register(new_table_name, result.fetch(:name), result.fetch(:schema))
         #new_table = Table.where(name: new_table_name, user_id: current_user.id).first
@@ -240,6 +245,9 @@ class DataImport < Sequel::Model
         #new_table.destroy
       end
     end
+
+    notify_failures(runner.results)
+    success_status_from(runner.results)
   end
 
   def import_to_cartodb(method, import_source)
@@ -318,7 +326,6 @@ class DataImport < Sequel::Model
     downloader  = CartoDB::Importer2::Downloader.new(data_source)
     runner      = CartoDB::Importer2::Runner.new(pg_options, downloader)
     runner.run
-
     self.results = runner.results
 
     runner.results.each do |result|
@@ -328,17 +335,19 @@ class DataImport < Sequel::Model
 
       table_names.each { |table_name| register(table_name, name, schema) }
     end
-    
-    runner.results
-      .select { |result| !result.fetch(:success) }
-      .each   { |result| register_failed_import_event_for(result) }
-
-    success_status = runner.results.inject(true) { |memo, result|
-      result.fetch(:success) && memo
-    }
-    puts runner.report
-    success_status
+   
+    notify_failures(runner.results)
+    success_status_from(runner.results)
   end #new_importer
+
+  def notify_failures(results)
+    results.select { |result| !result.fetch(:success) }
+           .each   { |result| register_failed_import_event_for(result) }
+  end #notify_failures
+
+  def success_status_from(results)
+    results.inject(true) { |memo, result| result.fetch(:success) && memo }
+  end #success_status_from
 
   def register(table_name, name, schema='importer')
     current_user.in_database.execute(%Q{
@@ -346,10 +355,8 @@ class DataImport < Sequel::Model
       SET SCHEMA public
     })
 
-    name = Table.get_valid_table_name(
-      name,
-      name_candidates: table_owner.tables.map(&:name)
-    )
+    candidates  = table_owner.tables.map(&:name)
+    name        = Table.get_valid_table_name(name, name_candidates: candidates)
 
     current_user.in_database.execute(%Q{
       ALTER TABLE "public"."#{table_name}"
@@ -365,6 +372,7 @@ class DataImport < Sequel::Model
     self.table_id   = table.id
     self.table_name = table.name
     save
+    table.optimize
     self
   end #register
 
@@ -427,24 +435,5 @@ class DataImport < Sequel::Model
   def current_user
     @current_user ||= User[user_id]
   end
-
-  def table
-    Table.where(id: table_id, user_id: user_id).first
-  end #table
-
-  #def log_state_change(transition)
-  #  event, from, to = transition.event, transition.from_name, transition.to_name
-  #  if !self.logger
-  #    self.log << "BEGIN \n"
-  #    self.error_code = nil
-  #  end
-  #  self.log << "TRANSITION: #{from} => #{to}"
-  #end
-
-  #def success_value
-  #  return false  if state == 'failure'
-  #  return true   if state == 'complete'
-  #  nil
-  #end #success_value
 end
 

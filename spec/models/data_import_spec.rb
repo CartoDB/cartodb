@@ -9,18 +9,16 @@ describe DataImport do
     @table = create_table :user_id => @user.id
   end
 
-  it 'should allow to append data to an existing table', now: true do
-    data_import = DataImport.create(
+  it 'should allow to append data to an existing table' do
+    fixture = '/../db/fake_data/column_string_to_boolean.csv'
+    expect do
+      DataImport.create(
         :user_id       => @user.id,
         :table_id      => @table.id,
-        :data_source   => '/../db/fake_data/column_string_to_boolean.csv',
+        :data_source   => fixture,
         :updated_at    => Time.now,
         :append        => true
-    ).run_import!
-
-    puts data_import.results
-
-    expect do data_import
+      ).run_import!
     end.to change{@table.reload.records[:total_rows]}.by(11)
   end
 
@@ -61,7 +59,6 @@ describe DataImport do
       :updated_at    => Time.now
     ).run_import!
 
-    puts data_import.results
     table = Table[data_import.table_id]
     table.should_not be_nil
     table.name.should be == 'clubbing'
@@ -75,7 +72,6 @@ describe DataImport do
       :updated_at    => Time.now
     ).run_import!
 
-    puts data_import.results
     table = Table[data_import.table_id]
     table.should_not be_nil
   end
@@ -137,11 +133,13 @@ describe DataImport do
     table.records.count.should be == 4
   end
 
-  it "don't touch created_at/updated_at fields if already present in the imported file" do
+  it "don't touch created_at/updated_at fields if already present in the
+  imported file", now: true do
     DataImport.create(
       :user_id       => @user.id,
       :data_source   => '/../db/fake_data/created_at_update_at_fields_present.csv',
-      :updated_at    => Time.now ).run_import!
+      :updated_at    => Time.now 
+    ).run_import!
 
     table = Table.all.last
 

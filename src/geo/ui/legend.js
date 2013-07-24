@@ -191,15 +191,12 @@ cdb.geo.ui.CustomLegend = cdb.core.View.extend({
 
       view = new cdb.geo.ui.LegendItem({
         model: item,
-        template: '<div class="bullet" style="background:<%= value %>"></div><%= name %>'
+        template: '<div class="bullet" style="background:<%= value %>"></div><%= name || "null" %>'
       });
 
       self.$el.append(view.render());
 
     });
-
-    //if (this.items.length == 0) this.hide();
-    //else this.show();
 
   },
 
@@ -450,8 +447,6 @@ cdb.geo.ui.Legend = cdb.core.View.extend({
     if (this.view) {
       this.$el.append(this.view.render().$el);
     }
-
-    console.log(this.model.get("type"));
 
     //if (this.model.get("type")) this.show();
     //else this.hide();

@@ -97,7 +97,7 @@ module CartoDB
 
       def rename(origin, destination)
         return self if origin == destination
-        FileUtils.mv(origin, destination)
+        File.rename(origin, destination)
         self
       end #rename
 

@@ -1,6 +1,7 @@
 # encoding: utf-8
-require_relative './string_sanitizer'
 require_relative './job'
+require_relative './string_sanitizer'
+require_relative './exceptions'
 
 module CartoDB
   module Importer2
@@ -43,11 +44,12 @@ module CartoDB
       end #type
 
       def geometrify
-        return self             if empty?
-        convert_from_wkt        if wkt?
-        convert_from_kml_multi  if kml_multi?
-        convert_from_kml_point  if kml_point?
-        convert_from_geojson    if geojson?
+        raise EmptyGeometryColumn if empty?
+        handle_empty              if empty?
+        convert_from_wkt          if wkt?
+        convert_from_kml_multi    if kml_multi?
+        convert_from_kml_point    if kml_point?
+        convert_from_geojson      if geojson?
         cast_to('geometry')
         self
       end #geometrify

@@ -133,6 +133,7 @@ class DataImport < Sequel::Model
     CartodbStats.increment_failed_imports
     Rollbar.report_message("Failed import", "error", error_info: basic_information)
     CartoDB::Metrics.event("Import failed", metric_payload)
+    CartoDB::GitHubReporter.new.report_failed_import(metric_payload)
     keep_problematic_file if uploaded_file
 
     self.success  = false
@@ -397,27 +398,6 @@ class DataImport < Sequel::Model
     self.update(table_names: new_table_name)
     migrate_existing(new_table_name)
   end
-
-  def handle_success
-    CartodbStats.increment_imports
-    self.success = true
-    self.log << "SUCCESS!\n"
-    save
-    CartoDB::Metrics.event("Import successful", metric_payload)
-  end #handle_success
-
-  def handle_failure
-    gh_reporter = CartoDB::GitHubReporter.new
-    CartodbStats.increment_failed_imports
-    Rollbar.report_message("Failed import", "error", error_info: basic_information)
-    CartoDB::Metrics.event("Import failed", metric_payload)
-    gh_reporter.report_failed_import(metric_payload)
-    keep_problematic_file if uploaded_file
-
-    self.success = false
-    self.log << "ERROR!\n"
-    self.save
-  end #handle_failure
 
   def keep_problematic_file
     uploads_path  = Rails.root.join('public', 'uploads')

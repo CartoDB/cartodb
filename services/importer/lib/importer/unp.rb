@@ -26,7 +26,7 @@ module CartoDB
 
       def run(path)
         return without_unpacking(path) unless compressed?(path)
-        extract(normalize(path))
+        extract(path)
         crawl(temporary_directory).each { |path| process(path) }
         self
       rescue => exception
@@ -59,14 +59,20 @@ module CartoDB
       end #crawl
 
       def extract(path)
-        generate_temporary_directory
-        current_directory   = Dir.pwd
+        raise ExtractionError unless File.exists?(path)
 
+        generate_temporary_directory
+        local_path = "#{temporary_directory}/#{File.basename(path)}"
+        FileUtils.cp(path, local_path)
+
+        path = normalize(local_path)
+        current_directory = Dir.pwd
         Dir.chdir(temporary_directory)
         stdout, stderr, status  = Open3.capture3(command_for(path))
         Dir.chdir(current_directory)
 
         raise ExtractionError if unp_failure?(stdout + stderr, status)
+        FileUtils.rm_rf(path)
         self
       end #extract
 

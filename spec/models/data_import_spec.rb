@@ -134,7 +134,7 @@ describe DataImport do
   end
 
   it "don't touch created_at/updated_at fields if already present in the
-  imported file", now: true do
+  imported file" do
     DataImport.create(
       :user_id       => @user.id,
       :data_source   => '/../db/fake_data/created_at_update_at_fields_present.csv',

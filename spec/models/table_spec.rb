@@ -1177,11 +1177,9 @@ describe Table do
     end
 
     it "should assign table_id" do
-      data_import = DataImport.create( :user_id       => @user.id,
-                                       :data_source   => '/../db/fake_data/SHP1.zip' )
-      data_import.run_import!
-      table = Table[data_import.table_id]
-      table.table_id.should_not be_nil
+      fixture     =  "#{Rails.root}/db/fake_data/SHP1.zip"
+      data_import = create_import(@user, fixture)
+      data_import.table.table_id.should_not be_nil
     end
 
     it "should add a the_geom column after importing a CSV" do
@@ -1244,7 +1242,7 @@ describe Table do
     end
 
     it "should add a cartodb_id serial column as primary key when importing a
-    file without a column with name cartodb_id", now: true do
+    file without a column with name cartodb_id" do
       fixture       = "#{Rails.root}/db/fake_data/gadm4_export.csv"
       data_import   = create_import(@user, fixture)
       table         = data_import.table
@@ -1629,41 +1627,22 @@ describe Table do
   context "imports" do
     it "file twitters.csv" do
       delete_user_data @user
-      data_import = DataImport.create( :user_id       => @user.id,
-                                       :data_source   => '/../db/fake_data/twitters.csv' )
-      data_import.run_import!
-      table = Table[data_import.table_id]
 
-      table.name.should match(/^twitters/)
-      table.rows_counted.should == 7
+      fixture     =  "#{Rails.root}/db/fake_data/twitters.csv"
+      data_import = create_import(@user, fixture)
+
+      data_import.table.name.should match(/^twitters/)
+      data_import.table.rows_counted.should == 7
     end
 
     it "file SHP1.zip" do
-      data_import = DataImport.create( :user_id       => @user.id,
-                                       :data_source   => '/../db/fake_data/SHP1.zip' )
-      data_import.run_import!
-      table = Table[data_import.table_id]
-      table.name.should == "esp_adm1"
-      table.rows_counted.should == 18
-    end
+      delete_user_data @user
 
-    it "file SHP1.zip as kml" do
-      data_import = DataImport.create( :user_id       => @user.id,
-                                       :data_source   => '/../db/fake_data/SHP1.zip' )
-      data_import.run_import!
-      table = Table[data_import.table_id]
-      table.name.should == "esp_adm1_1"
-      table.rows_counted.should == 18
-    end
+      fixture     = "#{Rails.root}/db/fake_data/SHP1.zip"
+      data_import = create_import(@user, fixture)
 
-    it "file SHP1.zip as sql" do
-      data_import = DataImport.create( :user_id       => @user.id,
-                                       :table_name    => 'esp_adm1',
-                                       :data_source   => '/../db/fake_data/SHP1.zip' )
-      data_import.run_import!
-      table = Table[data_import.table_id]
-      table.name.should == "esp_adm1_2"
-      table.rows_counted.should == 18
+      data_import.table.name.should == "esp_adm1"
+      data_import.table.rows_counted.should == 18
     end
   end
 

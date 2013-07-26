@@ -87,11 +87,12 @@ namespace :cartodb do
     ############################
     desc "Run CARTODB SQL functions tests"
     task :test_functions => :environment do
+      raise "Test functions are not meant to be run on production" if Rails.env.production?
       User.all.each do |user|
         next if !user.respond_to?('database_name') || user.database_name.blank?
         
         user.test_cartodb_functions
-        sleep(1.0/4.0)
+        sleep(1.0/4.0) # We think this is not necessary anymore 
       end
     end
         

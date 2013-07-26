@@ -1,5 +1,4 @@
 # encoding: utf-8
-require 'minitest/autorun'
 require 'ostruct'
 require_relative '../../../app/models/overlay/presenter'
 

@@ -1,5 +1,4 @@
 # encoding: utf-8
-require 'minitest/autorun'
 require_relative '../../../app/models/overlay/member'
 require_relative '../../../services/data-repository/repository'
 

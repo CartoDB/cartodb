@@ -143,11 +143,6 @@ GEM
       lumberjack (>= 1.0.2)
       pry (>= 0.9.10)
       thor (>= 0.14.6)
-    guard-minitest (0.5.0)
-      guard (>= 0.4)
-    guard-minitest (1.0.1)
-      guard (>= 1.8)
-      minitest (>= 2.1)
     hashie (2.0.5)
     hike (1.2.1)
     htmlentities (4.3.1)
@@ -174,7 +169,6 @@ GEM
     metaclass (0.0.1)
     method_source (0.8.1)
     mime-types (1.22)
-    minitest (5.0.6)
     mixpanel (4.0.2)
       escape
       json
@@ -367,10 +361,8 @@ DEPENDENCIES
   github_api (~> 0.10.1)
   google-spreadsheet-ruby (= 0.1.8)
   guard (= 1.8.1)
-  guard-minitest (= 1.0.1)
   htmlentities (= 4.3.1)
   launchy (= 2.1.0)
-  minitest (= 5.0.6)
   mixpanel (= 4.0.2)
   mocha (= 0.10.5)
   mustache-trimmer!

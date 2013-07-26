@@ -28,8 +28,8 @@ describe("common.geo.ui.Legend", function() {
 
     });
 
-    it("should have a 'custom' type set by default", function() {
-      expect(legend.model.get("type")).toEqual('custom');
+    it("should have a 'null' type set by default", function() {
+      expect(legend.model.get("type")).toEqual(null);
     });
 
     it("should use the provided model", function() {
@@ -40,19 +40,14 @@ describe("common.geo.ui.Legend", function() {
       });
 
       expect(legend.model).toBeDefined();
-      expect(legend.model.get("type")).toEqual('custom');
+      expect(legend.model.get("type")).toEqual(null);
 
     });
+
     it("should generate a model if no model is provided", function() {
 
-      var legend = new cdb.geo.ui.Legend({
-        model: new cdb.geo.ui.LegendModel({ type: "bubble" }),
-        data: data,
-        map: map
-      });
-
       expect(legend.model).toBeDefined();
-      expect(legend.model.get("type")).toEqual('bubble');
+      expect(legend.model.get("type")).toEqual(null);
 
     });
 
@@ -66,10 +61,11 @@ describe("common.geo.ui.Legend", function() {
     });
 
     it("should populate the collection", function() {
-      expect(legend.items.length).toEqual(4);
+      legend.model.set("type", "custom");
+      expect(legend.model.items.length).toEqual(4);
 
       for (var i = 0; i < data.length; i++) {
-        expect(legend.items.at(i).get("name")).toEqual(data[i].name);
+        expect(legend.model.items.at(i).get("name")).toEqual(data[i].name);
       }
 
     });

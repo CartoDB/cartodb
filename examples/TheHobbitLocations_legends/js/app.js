@@ -34,7 +34,7 @@ function main() {
       });
 
       var legendA = new cdb.geo.ui.Legend({
-        type: "choropleth",
+        type: "custom",
         data: [
           { name: "21,585",     value: "#FFC926" },
           { name: "Category 2", value: "#76EC00" },
@@ -43,34 +43,35 @@ function main() {
         ]
       });
 
-      var legendB = new cdb.geo.ui.Legend({
-        type: "bubble",
-        data: [
-          { name: "21,585",     value: "#FFC926" },
-          { name: "Category 2", value: "#76EC00" },
-          { name: "Category 3", value: "#00BAF8" },
-          { name: "91,585",     value: "#D04CFD" }
-        ]
-      });
+      $("#overlay").append(legendA.render().$el);
+      window.legend = legendA;
 
-      var legendC = new cdb.geo.ui.Legend({
-        data: [
-          { name: "21,585",     value: "#FFC926" },
-          { name: "Category 2", value: "#76EC00" },
-          { name: "Category 3", value: "#00BAF8" },
-          { name: "91,585",     value: "#D04CFD" }
-        ]
-      });
+      //var legendB = new cdb.geo.ui.Legend({
+        //type: "bubble",
+        //data: [
+          //{ name: "21,585",     value: "#FFC926" },
+          //{ name: "Category 2", value: "#76EC00" },
+          //{ name: "Category 3", value: "#00BAF8" },
+          //{ name: "91,585",     value: "#D04CFD" }
+        //]
+      //});
 
-      var stackedLegend = new cdb.geo.ui.StackedLegend({
-        legends: [legendA, legendB, legendC]
-      });
+      //var legendC = new cdb.geo.ui.Legend({
+        //data: [
+          //{ name: "21,585",     value: "#FFC926" },
+          //{ name: "Category 2", value: "#76EC00" },
+          //{ name: "Category 3", value: "#00BAF8" },
+          //{ name: "91,585",     value: "#D04CFD" }
+        //]
+      //});
+
+      //var stackedLegend = new cdb.geo.ui.StackedLegend({
+        //legends: [legendA, legendB, legendC]
+      //});
 
       //window.legend = legend;
-      window.stackedLegend = stackedLegend;
-
-      $("#overlay").append(stackedLegend.render().$el);
-
+      //window.stackedLegend = stackedLegend;
+      //$("#overlay").append(stackedLegend.render().$el);
 
     });
 

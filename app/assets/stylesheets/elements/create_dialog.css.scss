@@ -72,6 +72,9 @@
         border-bottom:none;
       }
 
+      .dialog-tabs .dialog-pane {display:none}
+      .dialog-tab.active .dialog-pane {display:block}
+
       .dialog-upload-pane {
         margin-bottom:50px;
       }

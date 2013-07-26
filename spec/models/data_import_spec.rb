@@ -1,5 +1,6 @@
 # encoding: utf-8
 require_relative '../spec_helper'
+require 'ruby-debug'
 
 describe DataImport do
   before(:each) do
@@ -9,13 +10,15 @@ describe DataImport do
   end
 
   it 'should allow to append data to an existing table' do
+    fixture = '/../db/fake_data/column_string_to_boolean.csv'
     expect do
       DataImport.create(
         :user_id       => @user.id,
         :table_id      => @table.id,
-        :data_source   => '/../db/fake_data/column_string_to_boolean.csv',
+        :data_source   => fixture,
         :updated_at    => Time.now,
-        :append        => true ).run_import!
+        :append        => true
+      ).run_import!
     end.to change{@table.reload.records[:total_rows]}.by(11)
   end
 
@@ -47,6 +50,30 @@ describe DataImport do
     duplicated_table.should_not be_nil
     duplicated_table.name.should be == 'from_query'
     duplicated_table.records[:rows].should have(5).items
+  end
+
+  it 'imports a simple file' do
+    data_import = DataImport.create(
+      :user_id       => @user.id,
+      :data_source   => '/../db/fake_data/clubbing.csv',
+      :updated_at    => Time.now
+    ).run_import!
+
+    table = Table[data_import.table_id]
+    table.should_not be_nil
+    table.name.should be == 'clubbing'
+    table.records[:rows].should have(10).items
+  end
+
+  it 'imports a simple file with latlon' do
+    data_import = DataImport.create(
+      :user_id       => @user.id,
+      :data_source   => '/../services/importer/spec/fixtures/csv_with_geojson.csv',
+      :updated_at    => Time.now
+    ).run_import!
+
+    table = Table[data_import.table_id]
+    table.should_not be_nil
   end
 
   it 'should allow to create a table from a url' do
@@ -106,11 +133,13 @@ describe DataImport do
     table.records.count.should be == 4
   end
 
-  it "don't touch created_at/updated_at fields if already present in the imported file" do
+  it "don't touch created_at/updated_at fields if already present in the
+  imported file" do
     DataImport.create(
       :user_id       => @user.id,
       :data_source   => '/../db/fake_data/created_at_update_at_fields_present.csv',
-      :updated_at    => Time.now ).run_import!
+      :updated_at    => Time.now 
+    ).run_import!
 
     table = Table.all.last
 

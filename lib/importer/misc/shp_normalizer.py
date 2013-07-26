@@ -117,7 +117,7 @@ try:
     if encoding=="KOI8-R":
         encoding="LATIN1"
 except Exception as err:
-    encoding="UTF8" # why not UTF8 here ?
+    encoding="None" # why not UTF8 here ?
     #sys.stderr.write(repr(err)+'\n')
     #sys.exit(1)
 

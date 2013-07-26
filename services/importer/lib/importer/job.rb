@@ -5,12 +5,13 @@ require 'uuidtools'
 require_relative '../../../track_record/track_record'
 
 module CartoDB
-  module Importer
+  module Importer2
     class Job
       def initialize(attributes={})
         @id         = attributes.fetch(:id, UUIDTools::UUID.timestamp_create.to_s)
         @logger     = attributes.fetch(:logger, TrackRecord::Log.new)
         @pg_options = attributes.fetch(:pg_options, {})
+        @schema     = 'importer'
       end #initalize
 
       def log(message)
@@ -18,15 +19,22 @@ module CartoDB
       end #log
 
       def table_name
-        "importer_#{id.gsub(/-/, '')}"
+        %Q(importer_#{id.gsub(/-/, '')})
       end #table_name
 
-      def dataset
-        Sequel.postgres(pg_options)[table_name.to_sym]
-      end #datset
+      def db
+        @db ||= Sequel.postgres(pg_options)
+      end #db
 
-      attr_reader :id, :logger, :pg_options
+      def qualified_table_name
+        "#{schema}.#{table_name}"
+      end #qualified_table_name
+
+      attr_reader :id, :logger, :pg_options, :schema
+      attr_accessor :success_status
+
+      private
     end # Job
-  end # Importer
+  end # Importer2
 end # CartoDB
 

@@ -102,10 +102,6 @@ class String
   def sanitize_sql
     self.gsub(/\\/, '\&\&').gsub(/'/, "''")
   end
-
-  def host
-    self.split('/')[2]
-  end
   
   def sanitize_column_name
     temporal_name = self.sanitize

@@ -40,7 +40,7 @@ The information stored per request is a string which contains the IP, the contro
 
   85.223.1.123#queries#run
 
-### threshold ###
+### threshold (deprecated, not reliable) ###
 
 `threshold` database stores a list of counters related to the number of queries performed by a user in his database. There are different types of counters:
 
@@ -70,18 +70,20 @@ The values of the hash are:
   - `user_id`: the identifier of the user which is associated to the token
   - `time`: the time which the token was created
 
-### node_details ###
-
-`node_details` database holds information relating to the correct running of the cartoDB tileserver. In addition to storing primary key indeces and user specified map styles, it may eventually be used as a tile cache. The following keys are used:
-
-	node:pkey - pk store
-  node:style:<style_id> - style data store
-  node:user:<user_id>:styles - set of style keys belonging to user
-  node:style:<style_id>:users" - set of user keys belonging to a style
-  node:user:<user_id>:layer:<layer_id>:style - Default style key per user/layer combo. used if user specifies a style.
-
 ### users_metadata ###
 
 `users_metadata` Holds records of the username/subdomain to id and name of database so that we can easily go from their subdomain to their user database. The following keys are used:
 
-  rails:users:<username/subdomain> - hash of: id, database_name
+  rails:users:<username/subdomain> 
+
+The values of the hash are:
+
+  - `id`: user id on the metadata database
+  - `database_name`: name of the user database
+  - `map_key`: api key
+  - `mapviews`: hash with this values:
+    - `global`: sorted set of map views, the key for this sorted set is `%Y%m%d`
+    - `stat_tag:<visualization_id>`: sorted set of map views for a given visualization
+  - `api_calls`: array of aggregated map views for the last 30 days
+  - `last_active_time`: last time the user loaded his dashboard
+

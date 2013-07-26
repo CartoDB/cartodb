@@ -1,5 +1,4 @@
 # encoding: utf-8
-require 'bogus/rspec' 
 require_relative '../../spec_helper'
 require_relative '../../../app/models/table/relator'
 

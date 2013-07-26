@@ -237,12 +237,12 @@ class DataImport < Sequel::Model
 
     runner.results.each do |result|
       result.fetch(:tables).each do |new_table_name|
-        #register(new_table_name, result.fetch(:name), result.fetch(:schema))
-        #new_table = Table.where(name: new_table_name, user_id: current_user.id).first
+        register(new_table_name, result.fetch(:name), result.fetch(:schema))
+        new_table = Table.where(name: new_table_name, user_id: current_user.id).first
         schema = result.fetch(:schema)
         table.append_from_importer(new_table_name, schema)
         table.save
-        #new_table.destroy
+        new_table.destroy
       end
     end
 

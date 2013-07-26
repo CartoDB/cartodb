@@ -128,14 +128,11 @@ class DataImport < Sequel::Model
     self.state    = 'complete'
     self.log << "SUCCESS!\n"
     save
-    CartoDB::Metrics.event("Import successful", metric_payload)
+    CartoDB::Metrics.mixpanel_event("Import successful", metric_payload)
   end #handle_success
 
   def handle_failure
-    CartodbStats.increment_failed_imports
     Rollbar.report_message("Failed import", "error", error_info: basic_information)
-    CartoDB::Metrics.event("Import failed", metric_payload)
-    CartoDB::GitHubReporter.new.report_failed_import(metric_payload)
     keep_problematic_file if uploaded_file
 
     self.success  = false
@@ -362,8 +359,8 @@ class DataImport < Sequel::Model
     payload = {
       name:       result.fetch(:name),
       extension:  result.fetch(:extension)
-    }
-    CartoDB::Metrics.event("Import failed", payload)
+    }.merge(metric_payload)
+    CartoDB::Metrics.report_failed_import(payload)
   end #register_failed_import_event_for
 
   def table_owner

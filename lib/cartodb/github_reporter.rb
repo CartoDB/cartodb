@@ -7,10 +7,10 @@ module CartoDB
 
     def github
       Github.new({
-          user: Cartodb.config[:github][:org], 
-          basic_auth: Cartodb.config[:github][:auth], 
-          repo: Cartodb.config[:github][:repo], 
-          org: Cartodb.config[:github][:org]
+          user: Cartodb.config[:github]['org'], 
+          basic_auth: Cartodb.config[:github]['auth'], 
+          repo: Cartodb.config[:github]['repo'], 
+          org: Cartodb.config[:github]['org']
       })
     end #github
 
@@ -22,9 +22,9 @@ module CartoDB
 
     def failed_import_body(result)
       {
-        "title" => "[Importer] [Autoreport] #{result[:file_url]}",
+        "title" => "[Importer] [Autoreport] #{result[:file]} failed",
         "body" => "File importing failed:" +
-        "\n#{JSON.pretty_generate(result)}"
+        "\n\`\`\`#{::JSON::pretty_generate(result)}\`\`\`"
       }
     end #failed_import_body
   end

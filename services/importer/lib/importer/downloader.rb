@@ -16,6 +16,7 @@ module CartoDB
 
       def initialize(url, seed=nil, repository=nil)
         self.url          = url
+        raise 'No file to import!!!' if url.nil?
         self.seed         = seed
         self.repository   = repository || DataRepository::Filesystem::Local.new
       end #initialize

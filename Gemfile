@@ -76,7 +76,7 @@ group :development, :test do
   gem "webrick",               "1.3.1"
   gem "sqlite3",               "1.3.7"
   gem "poltergeist",           ">= 1.0.0"
-  gem "minitest",              "2.0.2", :require => 'minitest/unit'
+  gem "minitest",              "5.0.6", :require => 'minitest/unit'
   gem "selenium-webdriver",    ">= 2.5.0"
 
   gem "mocha",                 "0.10.5"
@@ -94,14 +94,13 @@ group :development, :test do
   gem "rack-test",             "0.6.2", :require => 'rack/test'
   gem "foreman",               "0.46.0"
   gem "factory_girl_rails",    "~> 4.0.0"
-  gem "bogus",                 "0.0.3"
 
   # Guard
-  gem 'rb-inotify', '~> 0.8.8', :require => false
+  gem 'rb-inotify',             "0.9.0", :require => false
   gem "rb-fsevent", :require => false
   gem "rb-fchange", :require => false
-  gem "guard"
-  gem "guard-minitest"
+  gem "guard",                  "1.8.1"
+  gem "guard-minitest",         "1.0.1"
 
   # Server
   gem 'thin'

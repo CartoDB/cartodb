@@ -354,6 +354,13 @@ div.map {
     @include transition-property("margin-right");
     @include transition-duration(300ms);
 
+    .warning {
+      text-transform: none;
+      font-style:italic;
+      font-size: 13px;
+      font-weight: normal;
+    }
+
   }
 
   // Zoom info

@@ -102,9 +102,14 @@ module CartoDB
       end #normalizer_command
 
       def shp2pgsql_command
-        %Q(#{shp2pgsql_path} -s #{detected_projection} -D -i ) +
-        %Q(-g the_geom -W #{detected_encoding} "#{filepath}" #{table_name};)
+        %Q(#{pg_copy_option} #{shp2pgsql_path} -s #{detected_projection} )  +
+        %Q(-D -i -g the_geom -W #{detected_encoding} "#{filepath}" )        +
+        %Q(#{table_name};)
       end #shp2pgsql_command
+
+      def pg_copy_option
+        "PG_USE_COPY=YES"
+      end #pg_copy_option
 
       def psql_command
         host      = pg_options.fetch(:host)

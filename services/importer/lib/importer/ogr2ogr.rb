@@ -15,9 +15,9 @@ module CartoDB
       end #initialize
 
       def command
-        "#{encoding_option} #{executable_path} "        +
-        "#{cartodb_id_option} "                         +
-        "#{output_format_option} #{postgres_options} "  +
+        "#{pg_copy_option} #{encoding_option} #{executable_path} "  +
+        "#{cartodb_id_option} "                                     +
+        "#{output_format_option} #{postgres_options} "              +
         "#{filepath} #{layer_name_option}"
       end #command
 
@@ -52,6 +52,10 @@ module CartoDB
       def output_format_option
         "-f PostgreSQL"
       end #output_format_option
+
+      def pg_copy_option
+        "PG_USE_COPY=YES"
+      end #pg_copy_option
 
       def encoding_option
        "PGCLIENTENCODING=#{ENCODING}"

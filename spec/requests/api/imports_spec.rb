@@ -290,29 +290,5 @@ describe "Imports API" do
   end
 
 
-  it 'returns info for each created table' do
-    @user.update table_quota: 10
-    serve_file(Rails.root.join('spec/support/data/ESP_adm.zip')) do |url|
-      post v1_imports_url, params.merge(:url        => url,
-                                        :table_name => "wadus")
-    end
-
-    response.code.should be == '200'
-    response_json = JSON.parse(response.body)
-
-    last_import = DataImport[response_json['item_queue_id']]
-    last_import.state.should be == 'complete'
-    last_import.tables_created_count.should be == 10
-
-    item_queue_id = response_json['item_queue_id']
-
-    get v1_import_url(:id => item_queue_id), :api_key => @user.get_map_key
-
-    response.code.should be == '200'
-
-    import = JSON.parse(response.body)
-    import['state'].should be == 'complete'
-    import['tables_created_count'].should be == 10
-  end
-
+  it 'returns info for each created table'
 end

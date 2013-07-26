@@ -24,6 +24,13 @@ GIT
       coercible (~> 0.2)
       descendants_tracker (~> 0.0.1)
 
+GIT
+  remote: https://github.com/zenitraM/ducksboard.git
+  revision: 77cb563b79f9d5cb0305e5b9104ecad67433766b
+  specs:
+    ducksboard (0.1.5)
+      httparty (~> 0.8, >= 0.8.1)
+
 GEM
   remote: http://rubygems.org/
   specs:
@@ -126,12 +133,12 @@ GEM
       thor (>= 0.13.6)
     formatador (0.2.4)
     fssm (0.2.10)
-    github_api (0.10.1)
+    github_api (0.10.2)
       addressable
-      faraday (~> 0.8.1)
+      faraday (~> 0.8.7)
       hashie (>= 1.2)
       multi_json (~> 1.4)
-      nokogiri (~> 1.5.2)
+      nokogiri (~> 1.6.0)
       oauth2
     google-spreadsheet-ruby (0.1.8)
       nokogiri (>= 1.4.3.1)
@@ -147,6 +154,9 @@ GEM
     hike (1.2.1)
     htmlentities (4.3.1)
     http_parser.rb (0.5.3)
+    httparty (0.11.0)
+      multi_json (~> 1.0)
+      multi_xml (>= 0.5.2)
     httpauth (0.2.0)
     i18n (0.6.4)
     ice_nine (0.7.0)
@@ -169,17 +179,20 @@ GEM
     metaclass (0.0.1)
     method_source (0.8.1)
     mime-types (1.22)
+    mini_portile (0.5.1)
+    minitest (2.0.2)
     mixpanel (4.0.2)
       escape
       json
       rack
     mocha (0.10.5)
       metaclass (~> 0.0.1)
-    multi_json (1.7.2)
-    multi_xml (0.5.3)
+    multi_json (1.7.7)
+    multi_xml (0.5.4)
     multipart-post (1.2.0)
     mustache (0.99.4)
-    nokogiri (1.5.3)
+    nokogiri (1.6.0)
+      mini_portile (~> 0.5.0)
     oauth (0.4.5)
     oauth-plugin (0.4.0.pre4)
       oauth (>= 0.4.4)
@@ -354,11 +367,12 @@ DEPENDENCIES
   compass (~> 0.12.1)
   compass-rails (~> 1.0.1)
   debugger (= 1.3.0)
+  ducksboard!
   ejs (~> 1.1.1)
   email_spec (= 1.2.1)
   factory_girl_rails (~> 4.0.0)
   foreman (= 0.46.0)
-  github_api (~> 0.10.1)
+  github_api (~> 0.10.2)
   google-spreadsheet-ruby (= 0.1.8)
   guard (= 1.8.1)
   htmlentities (= 4.3.1)
@@ -366,7 +380,7 @@ DEPENDENCIES
   mixpanel (= 4.0.2)
   mocha (= 0.10.5)
   mustache-trimmer!
-  nokogiri (= 1.5.3)
+  nokogiri (= 1.6.0)
   oauth (= 0.4.5)
   oauth-plugin (= 0.4.0.pre4)
   oily_png (~> 1.0.2)

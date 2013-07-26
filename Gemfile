@@ -22,7 +22,7 @@ gem "redis",                   "2.2.2"
 gem "resque",                  "1.23.0"
 gem "yajl-ruby",               "1.1.0", :require => "yajl"
 gem "rollbar",                 "0.9.6"
-gem "nokogiri",                "1.5.3"
+gem "nokogiri",                "1.6.0"
 gem "statsd-client",           "0.0.7", :require => "statsd"
 gem "aws-sdk",                 "1.8.5"
 
@@ -30,8 +30,8 @@ gem "addressable",             "2.2.8", :require => "addressable/uri"
 
 #gem "newrelic_rpm",            "~> 3.5.5"
 
-gem "github_api",              "~> 0.10.1"
-
+gem "github_api",              "~> 0.10.2"
+gem "ducksboard",              :git => "https://github.com/zenitraM/ducksboard.git"
 gem "ejs",                     "~> 1.1.1"
 #gem "turbo-sprockets-rails3",  "0.1.16"
 group :assets do
@@ -57,7 +57,7 @@ gem "state_machine",           "1.1.2"
 gem "typhoeus",                "0.6.3"
 
 # Service components (/services)
-gem "virtus",                  git: "https://github.com/solnic/virtus.git"
+gem "virtus",                  :git => "https://github.com/solnic/virtus.git"
 gem "aequitas",                 "0.0.2"
 gem "uuidtools",                "2.1.3"
 gem "rubyzip",                  "0.9.9"

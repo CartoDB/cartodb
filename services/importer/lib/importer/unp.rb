@@ -1,7 +1,6 @@
 # encoding: utf-8
 require 'tempfile'
 require 'fileutils'
-require 'iconv'
 require 'open3'
 require_relative '../importer'
 require_relative './exceptions'
@@ -94,7 +93,9 @@ module CartoDB
       end #normalize
 
       def underscore(filename)
-        Iconv.new('UTF-8//IGNORE', 'UTF-8').iconv(filename)
+        filename.encode('UTF-8')
+          .encode('UTF-16')
+          .encode('UTF-8')
           .gsub(' ', '_')
           .gsub(/\(/, '')
           .gsub(/\)/, '')

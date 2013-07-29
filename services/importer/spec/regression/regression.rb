@@ -13,7 +13,7 @@ describe 'Importer regression test' do
     @pg_options  = Factories::PGConnection.new.pg_options
   end
 
-  folder = ENV['TEST_FILES'] || File.join(File.dirname(__FILE__), 'files/')
+  folder = ENV['TEST_FILES'] || File.join(File.dirname(__FILE__), 'failing/')
   Dir[File.join(folder, '/*')].each do |file|
     it "correctly imports file #{file}" do
       filepath    = file

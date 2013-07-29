@@ -110,6 +110,46 @@ cdb.geo.ui.IntensityLegend = cdb.core.View.extend({
 
   },
 
+  _hexToRGB: function(hex) {
+
+    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+
+    return result ? {
+      r: parseInt(result[1], 16),
+      g: parseInt(result[2], 16),
+      b: parseInt(result[3], 16)
+    } : null;
+
+  },
+
+  _rgbToHex: function(r, g, b) {
+
+    function componentToHex(c) {
+      var hex = c.toString(16);
+      return hex.length == 1 ? "0" + hex : hex;
+    }
+
+    return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+  },
+
+  _calculateMultiply: function(color, steps) {
+
+    var colorHex = this._hexToRGB(color);
+
+    var r = colorHex.r;
+    var g = colorHex.g;
+    var b = colorHex.b;
+
+    for (var i = 0; i <= steps; i++) {
+      r = Math.round(r * colorHex.r/255);
+      g = Math.round(g * colorHex.g/255);
+      b = Math.round(b * colorHex.b/255);
+    }
+
+    return this._rgbToHex(r,g,b);
+
+  },
+
   _renderGraph: function() {
 
     var s = "";
@@ -125,9 +165,10 @@ cdb.geo.ui.IntensityLegend = cdb.core.View.extend({
 
     var backgroundStyle = _.template(s);
 
-    var color  = this.color.get("value");
+    var baseColor       = this.color.get("value");
+    var multipliedColor = this._calculateMultiply(baseColor, 2);
 
-    this.$el.find(".graph").attr("style", backgroundStyle({ color: color, right: "#fff" }));
+    this.$el.find(".graph").attr("style", backgroundStyle({ color: baseColor, right: multipliedColor }));
 
   },
 
@@ -155,10 +196,8 @@ cdb.geo.ui.IntensityLegend = cdb.core.View.extend({
 
 });
 
-
 cdb.geo.ui.DebugLegend = cdb.core.View.extend({
 });
-
 
 /*
  * BubbleLegend

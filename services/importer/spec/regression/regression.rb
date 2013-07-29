@@ -13,8 +13,8 @@ describe 'Importer regression test' do
     @pg_options  = Factories::PGConnection.new.pg_options
   end
 
-
-  Dir[File.join(File.dirname(__FILE__), 'files/*')].each do |file|
+  folder = ENV['TEST_FILES'] || File.join(File.dirname(__FILE__), 'files/')
+  Dir[File.join(folder, '/*')].each do |file|
     it "correctly imports file #{file}" do
       filepath    = file
       downloader  = Downloader.new(File.expand_path filepath)
@@ -25,14 +25,8 @@ describe 'Importer regression test' do
         result[:success].must_equal true
         puts runner.report unless result[:success]
       end
-
+    
       runner.db.disconnect
     end
   end
-
-
-  def path_to(filepath)
-    File.join(File.dirname(__FILE__), "../fixtures/#{filepath}")
-  end #path_to
-
 end 

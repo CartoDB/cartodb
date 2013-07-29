@@ -11,7 +11,6 @@ module CartoDB
     class Runner
       LOADERS = {
         csv:      Loader,
-        txt:      Loader,
         xls:      Loader,
         xlsx:     Loader,
         json:     Loader,

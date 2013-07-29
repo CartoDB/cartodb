@@ -8,7 +8,7 @@ module CartoDB
     class Column
       DEFAULT_SRID    = 4326
       WKB_RE          = /^\d{2}/
-      GEOJSON_RE      = /coordinates/
+      GEOJSON_RE      = /{\s+\"type\.*coordinates.*"/
       WKT_RE          = /POINT|LINESTRING|POLYGON/
       KML_MULTI_RE    = /<Line|<Polygon/
       KML_POINT_RE    = /<Point>/

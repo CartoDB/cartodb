@@ -14,7 +14,7 @@ module CartoDB
       COMPRESSED_EXTENSIONS = %w{ .zip .gz .tgz .tar.gz .bz2 .tar .kmz }
       SUPPORTED_FORMATS       = %w{
         .csv .shp .ods .xls .xlsx .tif .tiff .kml .kmz
-        .txt .js .json .tar .gz .tgz .osm .bz2 .geojson 
+        .js .json .tar .gz .tgz .osm .bz2 .geojson 
         .gpx .sql .tab
       }
 

@@ -38,6 +38,7 @@ module CartoDB
       end #complex?
 
       def converted_filepath
+        return filepath if complex?(parse(filepath))
         File.join(
           File.dirname(filepath),
           File.basename(filepath, File.extname(filepath))

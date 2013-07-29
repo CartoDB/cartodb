@@ -18,7 +18,7 @@ module CartoDB
         .gpx .sql .tab
       }
 
-      attr_reader :source_files, :temporary_directory
+      attr_reader :source_files
 
       def initialize
         @source_files = []
@@ -34,7 +34,9 @@ module CartoDB
       end #run
 
       def without_unpacking(path)
-        self.source_files.push(source_file_for(normalize(path)))
+        local_path = "#{temporary_directory}/#{File.basename(path)}"
+        FileUtils.cp(path, local_path)
+        self.source_files.push(source_file_for(normalize(local_path)))
         self
       end #without_unpacking
 
@@ -61,7 +63,6 @@ module CartoDB
       def extract(path)
         raise ExtractionError unless File.exists?(path)
 
-        generate_temporary_directory
         local_path = "#{temporary_directory}/#{File.basename(path)}"
         FileUtils.cp(path, local_path)
 
@@ -70,9 +71,7 @@ module CartoDB
         Dir.chdir(temporary_directory)
         stdout, stderr, status  = Open3.capture3(command_for(path))
         Dir.chdir(current_directory)
-
         raise ExtractionError if unp_failure?(stdout + stderr, status)
-        FileUtils.rm_rf(path)
         self
       end #extract
 
@@ -108,6 +107,10 @@ module CartoDB
         self
       end #rename
 
+      def clean_up
+        FileUtils.rm_rf temporary_directory
+      end #clean_up
+
       def generate_temporary_directory
         tempfile                  = Tempfile.new("")
         self.temporary_directory  = tempfile.path
@@ -124,6 +127,11 @@ module CartoDB
       def unp_failure?(output, exit_code)
         !!(output =~ UNP_READ_ERROR_REGEX) || (exit_code != 0)
       end #unp_failure?
+
+      def temporary_directory
+        generate_temporary_directory unless @temporary_directory
+        @temporary_directory
+      end #temporary_directory
 
       private
 

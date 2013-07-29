@@ -23,11 +23,12 @@ module CartoDB
         osm:      OsmLoader
       }
 
-      def initialize(pg_options, downloader, log=TrackRecord::Log.new)
+      def initialize(pg_options, downloader, log=nil, unpacker=nil)
         self.pg_options   = pg_options
         self.downloader   = downloader
-        self.log          = log
+        self.log          = log || TrackRecord::Log.new
         self.results      = []
+        self.unpacker     = unpacker || Unp.new
       end #initialize
 
       def run(&tracker)
@@ -39,10 +40,9 @@ module CartoDB
         log.append "Starting import for #{downloader.source_file.fullpath}"
         log.append "Unpacking #{downloader.source_file.fullpath}"
 
-        unpacker = Unp.new
         unpacker.run(downloader.source_file.fullpath)
         unpacker.source_files.each { |source_file| import(source_file) }
-
+        unpacker.clean_up
         self
       end #run
       
@@ -88,7 +88,7 @@ module CartoDB
 
       private
 
-      attr_accessor :downloader, :pg_options
+      attr_accessor :downloader, :pg_options, :unpacker
       attr_writer   :results, :log
 
       def result_for(job, source_file, table_names)

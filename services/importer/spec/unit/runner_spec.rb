@@ -28,7 +28,7 @@ describe Runner do
   describe '#run' do
     it 'calls import for each file to process' do
       downloader  = Downloader.new(@filepath)
-      runner      = Runner.new(@pg_options, downloader)
+      runner      = Runner.new(@pg_options, downloader, nil, fake_unpacker)
       runner.instance_variable_set(:@import_called, 0)
 
       def runner.import(*args)
@@ -42,7 +42,7 @@ describe Runner do
 
     it 'logs the file path to be imported' do
       downloader  = Downloader.new(@filepath)
-      runner      = Runner.new(@pg_options, downloader)
+      runner      = Runner.new(@pg_options, downloader, nil, fake_unpacker)
       runner.instance_variable_set(:@import_called, 0)
 
       def runner.import(*args)
@@ -58,7 +58,8 @@ describe Runner do
     it 'returns the block passed at initialization' do
       data_import = OpenStruct.new
       downloader  = Downloader.new(@filepath)
-      runner      = Runner.new(@pg_options, downloader)
+      runner      = Runner.new(@pg_options, downloader, nil, fake_unpacker)
+
       def runner.import(*args); end
 
       runner.run { |state| data_import.state = 'bogus_state' }
@@ -107,5 +108,13 @@ describe Runner do
       valid_table_names:  []
     )
   end #fake_loader
+
+  def fake_unpacker
+    Class.new { 
+      def run(*args); end
+      def source_files; [@filepath]; end
+      def clean_up; end
+    }.new
+  end #fake_unpacker
 end # Runner
 

@@ -28,12 +28,11 @@ describe Unp do
 
     it 'populates a single source file for the passed path
     if not compressed' do
-      file      = '/var/tmp/bogus.csv'
       unp       = Unp.new
-      
+
       unp.source_files.must_be_empty
-      unp.run(file)
-      unp.source_files.length.must_equal 1
+      unp.run(zipfile_factory)
+      unp.source_files.length.must_equal 2
     end
   end #run
 
@@ -42,7 +41,7 @@ describe Unp do
       unp       = Unp.new
 
       unp.source_files.must_be_empty
-      unp.without_unpacking('bogus.csv')
+      unp.without_unpacking(zipfile_factory)
       unp.source_files.size.must_equal 1
     end
   end #withount_unpacking
@@ -209,7 +208,7 @@ describe Unp do
     it 'sets the temporary_directory instance variable' do
       unp = Unp.new
 
-      unp.temporary_directory.must_be_nil
+      unp.instance_variable_get(:@temporary_directory).must_be_nil
       unp.generate_temporary_directory
       unp.temporary_directory.wont_be_nil
     end

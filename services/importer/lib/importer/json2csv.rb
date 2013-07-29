@@ -46,6 +46,7 @@ module CartoDB
       end #converted_filepath
 
       def parse(filepath)
+        return {} unless File.exists?(filepath)
         file  = File.open(filepath)
         data  = ::JSON.parse(file.read.force_encoding('UTF-8'))
         file.close

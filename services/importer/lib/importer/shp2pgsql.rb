@@ -65,7 +65,7 @@ module CartoDB
       def detected_encoding
         encoding = normalizer_output.fetch(:encoding)
         return 'LATIN1' if encoding == 'None' 
-        return 'LATIN1' if probably_wrongly_detected_codepage?(encoding)
+        return codepage_for(encoding) if windows?(encoding)
         encoding
       end #detected_encoding
 
@@ -120,9 +120,15 @@ module CartoDB
         %Q(#{psql_path} -h #{host} -p #{port} -U #{user} -w -d #{database})
       end #psql_command
 
+      def codepage_for(encoding)
+        encoding.gsub(/windows-/, 'CP')
+      end #codepage_for
+
       def probably_wrongly_detected_codepage?(encoding)
         !!(encoding =~ /windows/)
-      end #probably_wrongly_detected_legacy?
+      end #probably_wrongly_detected_codepage?
+
+      alias_method :windows?, :probably_wrongly_detected_codepage?
     end # Shp2pgsql
   end # Importer2
 end # CartoDB

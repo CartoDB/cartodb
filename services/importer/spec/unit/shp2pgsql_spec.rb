@@ -107,6 +107,7 @@ describe Shp2pgsql do
     end
 
     it 'returns LATIN1 if detected windows codepage' do
+      skip
       fake_normalizer_output = {
         projection:   'bogus',
         encoding:     'windows',

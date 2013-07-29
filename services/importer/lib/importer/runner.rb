@@ -18,6 +18,7 @@ module CartoDB
         kml:      Loader,
         tab:      Loader,
         gpx:      Loader,
+        gml:      Loader,
         shp:      ShpLoader,
         osm:      OsmLoader
       }

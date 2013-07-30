@@ -310,7 +310,13 @@ class User < Sequel::Model
     date_to.downto(date_from) do |date|
       calls << $users_metadata.ZSCORE("user:#{username}:mapviews:global", date.strftime("%Y%m%d")).to_i
     end
-    calls = calls.zip(get_old_api_calls["per_day"].to_a.reverse).map {|pair| pair.reduce(&:+) } unless get_old_api_calls["per_day"].blank?
+
+    # Add old api calls
+    old_calls = get_old_api_calls["per_day"].to_a.reverse rescue []
+    calls = calls.zip(old_calls).map { |pair|
+      pair[0].to_i + pair[1].to_i
+    } unless old_calls.blank?
+
     return calls
   end
 

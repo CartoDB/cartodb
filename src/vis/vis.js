@@ -209,7 +209,9 @@ var Vis = cdb.core.View.extend({
       this.loadLayer(layerData);
     }
 
-    this.addLegends(data.layers);
+    if(options.legends) {
+      this.addLegends(data.layers);
+    }
 
     // set layer options
     if(options.sublayer_options) {
@@ -247,7 +249,7 @@ var Vis = cdb.core.View.extend({
             legends.push(new cdb.geo.ui.Legend(layer.legend));
           }
         }
-        if(layer.options.layer_definition) {
+        if(layer.options && layer.options.layer_definition) {
           legends = legends.concat(createLegendView(layer.options.layer_definition.layers));
         }
       }
@@ -307,7 +309,8 @@ var Vis = cdb.core.View.extend({
       loaderControl: true,
       layer_selector: false,
       searchControl: false,
-      infowindow: true
+      infowindow: true,
+      legends: true
     });
     vizjson.overlays = vizjson.overlays || [];
     vizjson.layers = vizjson.layers || [];

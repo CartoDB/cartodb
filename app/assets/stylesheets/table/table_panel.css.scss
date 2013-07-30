@@ -707,12 +707,14 @@ a.info {
             @include default-input();
 
             &.edit_in_place {
-              @include position(8px, 5px, false, false);
+              @include position(8px, 0, false, false);
             }
+
+            .value { margin-right: 5px; }
 
             input {
               font-size: 13px;
-              padding:4px 7px;
+              padding: 4px 7px;
               width:150px;
             }
 

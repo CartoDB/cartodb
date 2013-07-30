@@ -26,6 +26,7 @@ cdb.geo.ui.LegendItem = cdb.core.View.extend({
   render: function() {
 
     this.$el.html(this.template(this.model.toJSON()));
+
     return this.$el;
 
   }
@@ -210,7 +211,7 @@ cdb.geo.ui.BubbleLegend = cdb.core.View.extend({
   initialize: function() {
 
     this.items = this.options.items;
-    this.template = _.template('<li><%= min %></li><li class="graph"></li><li><%= max %></li>');
+    this.template = _.template('<li><%= min %></li><li class="graph"><div class="bubbles"></div></li><li><%= max %></li>');
     this.model    = new cdb.core.Model();
 
     this.add_related_model(this.model);

@@ -230,10 +230,15 @@
 
   div.cartodb-legend.bubble ul li.graph { 
     top: 0;
-    width: 110px;
+    width: 120px;
     height: 40px;
     margin: 0 10px;
     background: #f1f1f1;
+  }
+
+  div.cartodb-legend.bubble ul li.graph .bubbles {
+    background:url('../img/bubbles.png') no-repeat 0 0;
+    width:120px; height:40px;
   }
 
   /* Density legend */

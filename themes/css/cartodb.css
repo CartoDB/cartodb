@@ -933,12 +933,26 @@ div.cartodb-popup.header.yellow a.cartodb-popup-close-button:hover {
     margin: 0 0 5px 0;
   }
 
+  div.cartodb-legend.density li.graph div {
+    float:left;
+    width: 10px;
+    height: 22px;
+  }
+
+  div.cartodb-legend.density li.graph.count_7 div {
+    width: 30px;
+  }
+
+  div.cartodb-legend.density li.graph.count_5 div {
+    width: 42px;
+  }
+
   div.cartodb-legend.density li.graph {
     clear:both;
+    overflow:hidden;
 
-    width: 209px;
+    width: 210px;
     height: 22px;
-    background:#f1f1f1;
 
     -webkit-border-radius: 3px;
     -moz-border-radius: 3px;
@@ -950,6 +964,7 @@ div.cartodb-popup.header.yellow a.cartodb-popup-close-button:hover {
     -webkit-background-clip: padding;  
     background-clip: padding;      
     
+    /*box-shadow: inset 0px 0px 0px 1px rgba(0, 0, 0, 0.2);*/
     border: 1px solid #b3b3b3;
   }
 

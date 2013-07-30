@@ -43,7 +43,7 @@ cdb.geo.ui.DensityLegend = cdb.core.View.extend({
   initialize: function() {
 
     this.items    = this.options.items;
-    this.template = _.template('<li class="min"><%= leftLabel %></li><li class="max"><%= rightLabel %></li><li class="graph"></li>');
+    this.template = _.template('<li class="min"><%= leftLabel %></li><li class="max"><%= rightLabel %></li><li class="graph count_<%= buckets_count %>"><%= colors %></li>');
     this.model    = new cdb.core.Model();
 
   },
@@ -52,38 +52,42 @@ cdb.geo.ui.DensityLegend = cdb.core.View.extend({
 
     var s = "";
 
-    s+= "background: <%= left %>;";
-    s+= "background: -moz-linear-gradient(left, <%= left %> 0%, <%= right %> 100%);";
-    s+= "background: -webkit-gradient(linear, left top, right top, color-stop(0%,<%= left %>), color-stop(100%,<%= right %>));";
-    s+= "background: -webkit-linear-gradient(left, <%= left %> 0%,<%= right %> 100%);";
-    s+= "background: -o-linear-gradient(left, <%= left %> 0%,<%= right %> 100%);";
-    s+= "background: -ms-linear-gradient(left, <%= left %> 0%,<%= right %> 100%)";
-    s+= "background: linear-gradient(to right, <%= left %> 0%,<%= right %> 100%);";
-    s+= "filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='<%= left %>', endColorstr='<%= right %>',GradientType=1 );";
+    //s+= "background: <%= left %>;";
+    //s+= "background: -moz-linear-gradient(left, <%= left %> 0%, <%= right %> 100%);";
+    //s+= "background: -webkit-gradient(linear, left top, right top, color-stop(0%,<%= left %>), color-stop(100%,<%= right %>));";
+    //s+= "background: -webkit-linear-gradient(left, <%= left %> 0%,<%= right %> 100%);";
+    //s+= "background: -o-linear-gradient(left, <%= left %> 0%,<%= right %> 100%);";
+    //s+= "background: -ms-linear-gradient(left, <%= left %> 0%,<%= right %> 100%)";
+    //s+= "background: linear-gradient(to right, <%= left %> 0%,<%= right %> 100%);";
+    //s+= "filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='<%= left %>', endColorstr='<%= right %>',GradientType=1 );";
 
-    var backgroundStyle = _.template(s);
+    //var backgroundStyle = _.template(s);
 
-    var leftColor  = this.leftColor.get("value");
-    var rightColor = this.rightColor.get("value");
+    //var leftColor  = this.leftColor.get("value");
+    //var rightColor = this.rightColor.get("value");
 
-    this.$el.find(".graph").attr("style", backgroundStyle({ left: leftColor, right: rightColor }));
+    //this.$el.find(".graph").attr("style", backgroundStyle({ colors: colors }));
 
   },
 
   render: function() {
 
-    if (this.items.length >= 4) {
+    if (this.items.length >= 2) {
 
-      this.leftColor  = this.items.at(0);
-      this.leftLabel  = this.items.at(1);
-
-      this.rightColor = this.items.at(2);
-      this.rightLabel = this.items.at(3);
+      this.leftLabel  = this.items.at(0);
+      this.rightLabel = this.items.at(1);
 
       var leftLabel   = this.leftLabel.get("value");
       var rightLabel  = this.rightLabel.get("value");
 
-      this.model.set({ leftLabel: leftLabel, rightLabel: rightLabel });
+      var colors = "";
+
+      for (var i = 2; i < this.items.length; i++) {
+        var color = this.items.at(i).get("value");
+        colors += "<div class='quartile' style='background-color:"+color+"'></div>";
+      }
+
+      this.model.set({ leftLabel: leftLabel, rightLabel: rightLabel, colors: colors, buckets_count: this.items.length - 2 });
 
       this.$el.html(this.template(this.model.toJSON()));
 
@@ -137,17 +141,23 @@ cdb.geo.ui.IntensityLegend = cdb.core.View.extend({
 
     var colorHex = this._hexToRGB(color);
 
-    var r = colorHex.r;
-    var g = colorHex.g;
-    var b = colorHex.b;
+    if (colorHex) {
 
-    for (var i = 0; i <= steps; i++) {
-      r = Math.round(r * colorHex.r/255);
-      g = Math.round(g * colorHex.g/255);
-      b = Math.round(b * colorHex.b/255);
+      var r = colorHex.r;
+      var g = colorHex.g;
+      var b = colorHex.b;
+
+      for (var i = 0; i <= steps; i++) {
+        r = Math.round(r * colorHex.r/255);
+        g = Math.round(g * colorHex.g/255);
+        b = Math.round(b * colorHex.b/255);
+      }
+
+      return this._rgbToHex(r,g,b);
+
     }
 
-    return this._rgbToHex(r,g,b);
+    return "#ffffff";
 
   },
 

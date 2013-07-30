@@ -48,28 +48,6 @@ cdb.geo.ui.DensityLegend = cdb.core.View.extend({
 
   },
 
-  _renderGraph: function() {
-
-    var s = "";
-
-    //s+= "background: <%= left %>;";
-    //s+= "background: -moz-linear-gradient(left, <%= left %> 0%, <%= right %> 100%);";
-    //s+= "background: -webkit-gradient(linear, left top, right top, color-stop(0%,<%= left %>), color-stop(100%,<%= right %>));";
-    //s+= "background: -webkit-linear-gradient(left, <%= left %> 0%,<%= right %> 100%);";
-    //s+= "background: -o-linear-gradient(left, <%= left %> 0%,<%= right %> 100%);";
-    //s+= "background: -ms-linear-gradient(left, <%= left %> 0%,<%= right %> 100%)";
-    //s+= "background: linear-gradient(to right, <%= left %> 0%,<%= right %> 100%);";
-    //s+= "filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='<%= left %>', endColorstr='<%= right %>',GradientType=1 );";
-
-    //var backgroundStyle = _.template(s);
-
-    //var leftColor  = this.leftColor.get("value");
-    //var rightColor = this.rightColor.get("value");
-
-    //this.$el.find(".graph").attr("style", backgroundStyle({ colors: colors }));
-
-  },
-
   render: function() {
 
     if (this.items.length >= 2) {
@@ -84,14 +62,12 @@ cdb.geo.ui.DensityLegend = cdb.core.View.extend({
 
       for (var i = 2; i < this.items.length; i++) {
         var color = this.items.at(i).get("value");
-        colors += "<div class='quartile' style='background-color:"+color+"'></div>";
+        colors += '<div class="quartile" style="background-color:'+color+'"></div>';
       }
 
       this.model.set({ leftLabel: leftLabel, rightLabel: rightLabel, colors: colors, buckets_count: this.items.length - 2 });
 
       this.$el.html(this.template(this.model.toJSON()));
-
-      this._renderGraph();
     }
 
     return this;

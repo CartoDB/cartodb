@@ -471,16 +471,6 @@
 
   /* CartoDB layer selector box */
 
-  div.cartodb-legends-box {
-    position: relative;
-    display:block;
-    float:right;
-    margin: 20px 20px 0 0;
-    width: 142px;
-    height:29px;
-    background:red;
-  }
-
   div.cartodb-layer-selector-box {
     position: relative;
     display:block;

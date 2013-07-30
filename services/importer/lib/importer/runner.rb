@@ -5,6 +5,7 @@ require_relative './osm_loader'
 require_relative './indexer'
 require_relative './unp'
 require_relative './column'
+require_relative './exceptions'
 
 module CartoDB
   module Importer2
@@ -63,7 +64,9 @@ module CartoDB
 
       rescue => exception
         job.success_status = false
-        self.results.push(result_for(job, source_file, loader.valid_table_names))
+        self.results.push(
+          result_for(job, source_file, loader.valid_table_names, exception.class)
+        )
       end #import
 
       def report
@@ -91,15 +94,21 @@ module CartoDB
       attr_accessor :downloader, :pg_options, :unpacker
       attr_writer   :results, :log
 
-      def result_for(job, source_file, table_names)
+      def result_for(job, source_file, table_names, exception_klass=nil)
         { 
           name:       source_file.name,
           schema:     source_file.target_schema,
           extension:  source_file.extension,
           tables:     table_names,
-          success:    job.success_status
+          success:    job.success_status,
+          error:      error_for(exception_klass)
         }
       end #results
+
+      def error_for(exception_klass=nil)
+        return nil unless exception_klass
+        ERRORS_MAP.fetch(exception_klass, UnknownError)
+      end #error_for
     end # Runner
   end # Importer2
 end # CartoDB

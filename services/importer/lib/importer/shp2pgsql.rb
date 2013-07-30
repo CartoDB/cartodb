@@ -16,14 +16,14 @@ module CartoDB
       end #initialize
 
       def run
-        raise NoPrjAvailableError unless prj?
+        raise MissingProjectionError unless prj?
 
         normalize
         stdout, stderr, status  = Open3.capture3(command)
         self.command_output     = stdout + stderr
         self.exit_code          = status.to_i
 
-        raise InvalidSridError        if command_output =~ /invalid SRID/
+        raise UnknownSridError        if command_output =~ /invalid SRID/
         raise ShpToSqlConversionError if exit_code != 0
         raise ShpToSqlConversionError if command_output =~ /failure/
         self

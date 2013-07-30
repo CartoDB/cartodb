@@ -35,7 +35,7 @@ describe Shp2pgsql do
     it 'raises if no prj available' do
       wrapper = Shp2pgsql.new(@full_table_name, 'bogus.shp', @pg_options)
       wrapper.prj?.must_equal false
-      lambda { wrapper.run }.must_raise NoPrjAvailableError
+      lambda { wrapper.run }.must_raise MissingProjectionError
     end
 
     it 'raises if the SHP has an invalid SRID' do

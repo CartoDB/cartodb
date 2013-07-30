@@ -105,6 +105,9 @@
         @include border-left-radius(3px);
         border:1px solid rgba(0,0,0,0.2);
       }
+      &.image-color {
+        @include icons-sprite(image_color);
+      }
     }
 
     a.picker {

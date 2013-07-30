@@ -1,6 +1,8 @@
 # encoding: utf-8
 gem 'minitest'
 require 'minitest/autorun'
+require 'minitest/ci' if ENV['JOB_NAME']
+
 require_relative '../../lib/importer/runner'
 require_relative '../../lib/importer/job'
 require_relative '../../lib/importer/downloader'

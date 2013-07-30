@@ -180,7 +180,9 @@ GEM
     method_source (0.8.1)
     mime-types (1.22)
     mini_portile (0.5.1)
-    minitest (2.0.2)
+    minitest (5.0.6)
+    minitest-ci (3.0.1)
+      minitest (~> 5.0, >= 5.0.6)
     mixpanel (4.0.2)
       escape
       json
@@ -377,6 +379,7 @@ DEPENDENCIES
   guard (= 1.8.1)
   htmlentities (= 4.3.1)
   launchy (= 2.1.0)
+  minitest-ci (~> 3.0.1)
   mixpanel (= 4.0.2)
   mocha (= 0.10.5)
   mustache-trimmer!

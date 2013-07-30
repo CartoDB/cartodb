@@ -13,21 +13,15 @@ def check_schema(table, expected_schema, options={})
   schema_differences = (expected_schema - table_schema) + (table_schema - expected_schema)
   schema_differences.should be_empty, "difference: #{schema_differences.inspect}"
 end
-def create_import user, file_name, name=nil
-  @data_import  = DataImport.new(:user_id => user.id)
-  @data_import.save
-  hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-    "database" => user.database_name,
-    :logger => ::Rails.logger,
-    "username" => user.database_username,
-    "password" => user.database_password,
-    :import_from_file => file_name,
-    :debug => (Rails.env.development?),
-    :data_import_id => @data_import.id,
-    :remaining_quota => user.remaining_quota
-  ).symbolize_keys
-  importer = CartoDB::Importer.new hash_in
-  return importer.import!
+
+def create_import(user, file_name, name=nil)
+  @data_import  = DataImport.create(
+    user_id:      @user.id,
+    data_source:  file_name,
+    table_name:   name
+  )
+  @data_import.send(:new_importer, file_name)
+  @data_import
 end
 
 describe Table do
@@ -1176,21 +1170,16 @@ describe Table do
   end
 
   context "post import processing tests" do
-
     it "should run vacuum full" do
-      data_import = DataImport.create( :user_id       => @user.id,
-                                       :data_source   => '/../db/fake_data/SHP1.zip' )
-      data_import.run_import!
-      table = Table[data_import.table_id]
-      table.table_size.should == 2351104
+      fixture     = "#{Rails.root}/db/fake_data/SHP1.zip"
+      data_import = create_import(@user, fixture)
+      data_import.table.table_size.should == 2351104
     end
 
     it "should assign table_id" do
-      data_import = DataImport.create( :user_id       => @user.id,
-                                       :data_source   => '/../db/fake_data/SHP1.zip' )
-      data_import.run_import!
-      table = Table[data_import.table_id]
-      table.table_id.should_not be_nil
+      fixture     =  "#{Rails.root}/db/fake_data/SHP1.zip"
+      data_import = create_import(@user, fixture)
+      data_import.table.table_id.should_not be_nil
     end
 
     it "should add a the_geom column after importing a CSV" do
@@ -1211,7 +1200,8 @@ describe Table do
       table.save.reload
       table.name.should == 'empty_file'
 
-      importer, errors = create_import @user, "#{Rails.root}/db/fake_data/empty_file.csv"
+      fixture     = "#{Rails.root}/db/fake_data/empty_file.csv"
+      data_import = create_import(@user, fixture, table.name)
 
       @user.in_database do |user_database|
         user_database.table_exists?(table.name.to_sym).should be_true
@@ -1251,13 +1241,12 @@ describe Table do
       }.should raise_error(CartoDB::InvalidColumnName)
     end
 
-    it "should add a cartodb_id serial column as primary key when importing a file without a column with name cartodb_id" do
-      data_import = DataImport.create( :user_id       => @user.id,
-                                       :data_source   => '/../db/fake_data/gadm4_export.csv' )
-      data_import.run_import!
-
-      table = Table[data_import.table_id]
-      table_schema = @user.in_database.schema(table.name)
+    it "should add a cartodb_id serial column as primary key when importing a
+    file without a column with name cartodb_id" do
+      fixture       = "#{Rails.root}/db/fake_data/gadm4_export.csv"
+      data_import   = create_import(@user, fixture)
+      table         = data_import.table
+      table_schema  = @user.in_database.schema(table.name)
 
       cartodb_id_schema = table_schema.detect {|s| s[0].to_s == "cartodb_id"}
       cartodb_id_schema.should be_present
@@ -1352,12 +1341,9 @@ describe Table do
     end
 
     it "should normalize strings if there is a non-convertible entry when converting string to number" do
-      table = new_table :user_id => @user.id
-      table.name = "clubbing"
-      importer, errors = create_import @user, "#{Rails.root}/db/fake_data/short_clubbing.csv"
-      table.migrate_existing_table = importer[0].name
-      table.save.reload
-
+      fixture     = "#{Rails.root}/db/fake_data/short_clubbing.csv"
+      data_import = create_import(@user, fixture)
+      table       = data_import.table
       table.modify_column! :name=> "club_id", :type=>"number"
 
       table.sequel.where(:cartodb_id => '1').first[:club_id].should == 709
@@ -1368,12 +1354,9 @@ describe Table do
     end
 
     it "should normalize string if there is a non-convertible entry when converting string to boolean" do
-      table = new_table :user_id => @user.id
-      table.name = "my_precious"
-      importer, errors = create_import @user, "#{Rails.root}/db/fake_data/column_string_to_boolean.csv"
-
-      table.migrate_existing_table = importer[0].name
-      table.save.reload
+      fixture     = "#{Rails.root}/db/fake_data/column_string_to_boolean.csv"
+      data_import = create_import(@user, fixture)
+      table       = data_import.table
 
       # configure nil column
       table.sequel.where(:test_id => '4').update(:f1 => '0')
@@ -1403,13 +1386,9 @@ describe Table do
     end
 
     it "should normalize boolean if there is a non-convertible entry when converting boolean to string" do
-      table = new_table :user_id => @user.id
-      table.name = "my_precious"
-      importer, errors = create_import @user, "#{Rails.root}/db/fake_data/column_string_to_boolean.csv"
-
-      table.migrate_existing_table = importer[0].name
-      table.save.reload
-
+      fixture     = "#{Rails.root}/db/fake_data/column_string_to_boolean.csv"
+      data_import = create_import(@user, fixture)
+      table       = data_import.table
       table.modify_column! :name=>"f1", :type=>"boolean"
       table.modify_column! :name=>"f1", :type=>"string"
 
@@ -1418,13 +1397,9 @@ describe Table do
     end
 
     it "should normalize boolean if there is a non-convertible entry when converting boolean to number" do
-      table = new_table :user_id => @user.id
-      table.name = "my_precious"
-      importer, errors = create_import @user, "#{Rails.root}/db/fake_data/column_string_to_boolean.csv"
-
-      table.migrate_existing_table = importer[0].name
-      table.save.reload
-
+      fixture     = "#{Rails.root}/db/fake_data/column_string_to_boolean.csv"
+      data_import = create_import(@user, fixture)
+      table       = data_import.table
       table.modify_column! :name=>"f1", :type=>"boolean"
       table.modify_column! :name=>"f1", :type=>"number"
 
@@ -1432,13 +1407,11 @@ describe Table do
       table.sequel.select(:f1).where(:test_id => '8').first[:f1].should == 0
     end
 
-    it "should normalize number if there is a non-convertible entry when converting number to boolean" do
-      table = new_table :user_id => @user.id
-      table.name = "my_precious"
-      importer, errors = create_import @user, "#{Rails.root}/db/fake_data/column_number_to_boolean.csv"
-
-      table.migrate_existing_table = importer[0].name
-      table.save.reload
+    it "should normalize number if there is a non-convertible entry when
+    converting number to boolean" do
+      fixture     = "#{Rails.root}/db/fake_data/column_number_to_boolean.csv"
+      data_import = create_import(@user, fixture)
+      table       = data_import.table
 
       table.modify_column! :name=>"f1", :type=>"number"
       table.modify_column! :name=>"f1", :type=>"boolean"
@@ -1625,16 +1598,18 @@ describe Table do
     it "should merge two twitters.csv" do
       # load a table to treat as our 'existing' table
       table = new_table :user_id => @user.id
-      table.name = 'twitters'
-      importer, errors = create_import @user, "#{Rails.root}/db/fake_data/twitters.csv"
-
-      table.migrate_existing_table = importer[0].name
-      table.save.reload
+      table.name  = 'twitters'
+      fixture     = "#{Rails.root}/db/fake_data/twitters.csv"
+      data_import = create_import(@user, fixture)
+      table       = data_import.table
 
       #create a second table from a file to treat as the data we want to append
-      append_this = new_table :user_id => @user.id
-      importer, errors = create_import @user, "#{Rails.root}/db/fake_data/clubbing.csv"
-      append_this.migrate_existing_table = importer[0].name
+      #append_this = new_table :user_id => @user.id
+      data_import = create_import(@user,
+      "#{Rails.root}/db/fake_data/clubbing.csv")
+
+      append_this = data_import.table
+      append_this.migrate_existing_table = data_import.table.name
       append_this.save.reload
 
       # envoke the append_to_table method
@@ -1652,41 +1627,22 @@ describe Table do
   context "imports" do
     it "file twitters.csv" do
       delete_user_data @user
-      data_import = DataImport.create( :user_id       => @user.id,
-                                       :data_source   => '/../db/fake_data/twitters.csv' )
-      data_import.run_import!
-      table = Table[data_import.table_id]
 
-      table.name.should match(/^twitters/)
-      table.rows_counted.should == 7
+      fixture     =  "#{Rails.root}/db/fake_data/twitters.csv"
+      data_import = create_import(@user, fixture)
+
+      data_import.table.name.should match(/^twitters/)
+      data_import.table.rows_counted.should == 7
     end
 
     it "file SHP1.zip" do
-      data_import = DataImport.create( :user_id       => @user.id,
-                                       :data_source   => '/../db/fake_data/SHP1.zip' )
-      data_import.run_import!
-      table = Table[data_import.table_id]
-      table.name.should == "esp_adm1"
-      table.rows_counted.should == 18
-    end
+      delete_user_data @user
 
-    it "file SHP1.zip as kml" do
-      data_import = DataImport.create( :user_id       => @user.id,
-                                       :data_source   => '/../db/fake_data/SHP1.zip' )
-      data_import.run_import!
-      table = Table[data_import.table_id]
-      table.name.should == "esp_adm1_1"
-      table.rows_counted.should == 18
-    end
+      fixture     = "#{Rails.root}/db/fake_data/SHP1.zip"
+      data_import = create_import(@user, fixture)
 
-    it "file SHP1.zip as sql" do
-      data_import = DataImport.create( :user_id       => @user.id,
-                                       :table_name    => 'esp_adm1',
-                                       :data_source   => '/../db/fake_data/SHP1.zip' )
-      data_import.run_import!
-      table = Table[data_import.table_id]
-      table.name.should == "esp_adm1_2"
-      table.rows_counted.should == 18
+      data_import.table.name.should == "esp_adm1"
+      data_import.table.rows_counted.should == 18
     end
   end
 

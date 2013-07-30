@@ -4,7 +4,7 @@ require 'sequel'
 require 'json'
 
 module CartoDB
-  module Importer
+  module Importer2
     module Factories
       class PGConnection
         def initialize
@@ -31,6 +31,6 @@ module CartoDB
         end #configuration_file
       end # PGConnection
     end # Factories
-  end # Importer
+  end # Importer2
 end # CartoDB
 

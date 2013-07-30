@@ -19,13 +19,13 @@ describe "Assets API" do
 
   it "creates a new asset" do
     post_json v1_user_assets_url(@user, params.merge(
-      :file => Rack::Test::UploadedFile.new(Rails.root.join('db/fake_data/column_number_to_boolean.csv'), 'text/csv'))
+      :file => Rack::Test::UploadedFile.new(Rails.root.join('spec/support/data/cartofante_blue.png'), 'image/png').path)
     ) do |response|
       response.status.should be_success
       @user.reload
       @user.assets.count.should == 1
       asset = @user.assets.first
-      asset.public_url.should == "https://s3.amazonaws.com/tile_assets_devel/user/#{@user.id}/assets/column_number_to_boolean.csv"
+      asset.public_url.should include("test/test/assets/cartofante_blue")
     end
   end
 

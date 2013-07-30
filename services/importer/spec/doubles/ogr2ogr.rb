@@ -1,7 +1,7 @@
 # encoding: utf-8
 
 module CartoDB
-  module Importer
+  module Importer2
     module Doubles
       class Ogr2ogr
         def run; Object.new; end
@@ -9,6 +9,6 @@ module CartoDB
         def command_output; String.new; end
       end # Ogr2ogr
     end # Doubles
-  end # Importer
+  end # Importer2
 end # CartoDB
 

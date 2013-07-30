@@ -579,7 +579,9 @@ describe Api::Json::VisualizationsController do
       get "/api/v1/viz/#{table_id}/viz?api_key=#{@api_key}",
         {}, @headers
       last_response.status.should == 200
-      Yajl::Parser.new.parse(last_response.body).keys.length.should > 1
+      response = Yajl::Parser.new.parse(last_response.body)
+      response.keys.length.should > 1
+      response.fetch('description').should_not be_empty
     end
   end # GET /api/v1/viz/:id/viz
 
@@ -632,7 +634,11 @@ describe Api::Json::VisualizationsController do
   def table_factory(options={})
     privacy = options.fetch(:privacy, 1)
 
-    payload = { name: "table #{rand(9999)}" }
+    seed    = rand(9999)
+    payload = { 
+      name:         "table #{seed}",
+      description:  "table #{seed} description"
+    }
     post "/api/v1/tables?api_key=#{@api_key}",
       payload.to_json, @headers
 

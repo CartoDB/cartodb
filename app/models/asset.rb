@@ -13,7 +13,6 @@ class Asset < Sequel::Model
     super
 
     errors.add(:user_id, "can't be blank") if user_id.blank?
-
     begin
       file = (asset_file.is_a?(String) ? File.open(asset_file) : File.open(asset_file.path))
     rescue Errno::ENOENT
@@ -77,7 +76,7 @@ class Asset < Sequel::Model
   # Path to the file, relative to the storage system
   #
   def asset_path
-    "user/#{self.user_id}/assets/"
+    "#{Rails.env}/#{self.user.username}/assets/"
   end
 
 

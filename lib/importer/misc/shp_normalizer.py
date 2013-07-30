@@ -76,8 +76,10 @@ if os.path.isfile(prj_file):
           'error' : True,
           'mode' : 'wkt',
           'terms' : prj_string})
-      webres = urlopen('http://prj2epsg.cloudfoundry.com/search.json', query)
-      jres = json.loads(webres.read())
+      #'http://prj2epsg.cloudfoundry.com/search.json'
+      url     = 'http://prj2epsg.org/search.json'
+      webres  = urlopen(url, query)
+      jres    = json.loads(webres.read())
       if 'errors' in jres and 0<length(jres['errors']):
         srid = None
       if jres['codes']:
@@ -117,7 +119,7 @@ try:
     if encoding=="KOI8-R":
         encoding="LATIN1"
 except Exception as err:
-    encoding="UTF8" # why not UTF8 here ?
+    encoding="None" # why not UTF8 here ?
     #sys.stderr.write(repr(err)+'\n')
     #sys.exit(1)
 

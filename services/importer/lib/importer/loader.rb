@@ -20,7 +20,7 @@ module CartoDB
       end #initialize
 
       def run
-        job.log "Using database connection #{job.pg_options}"
+        job.log "Using database connection with #{job.concealed_pg_options}"
 
         if source_file.extension == '.json'
           json2csv = Json2Csv.new(source_file.fullpath, job)

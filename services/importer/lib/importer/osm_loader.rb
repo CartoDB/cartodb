@@ -23,7 +23,7 @@ module CartoDB
       end #initialize
 
       def run
-        job.log "Using database connection #{job.pg_options}"
+        job.log "Using database connection #{job.concealed_pg_options}"
 
         osm2pgsql.run
         job.log "osm2pgsql output:    #{osm2pgsql.command_output}"

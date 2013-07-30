@@ -30,6 +30,10 @@ module CartoDB
         "#{schema}.#{table_name}"
       end #qualified_table_name
 
+      def concealed_pg_options
+        pg_options.reject { |key, value| key.to_s == 'password' }
+      end #concealed_pg_options
+
       attr_reader :id, :logger, :pg_options, :schema
       attr_accessor :success_status
 

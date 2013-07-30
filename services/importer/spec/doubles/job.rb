@@ -21,6 +21,8 @@ module CartoDB
             database: '' 
           }
         end #pg_options
+
+        alias_method :concealed_pg_options, :pg_options
       end # Job
     end # Doubles
   end # Importer2

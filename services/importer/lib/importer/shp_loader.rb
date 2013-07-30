@@ -18,7 +18,7 @@ module CartoDB
       end #initialize
 
       def run
-        job.log "Using database connection #{job.pg_options}"
+        job.log "Using database connection #{job.concealed_pg_options}"
 
         shp2pgsql.run
         job.log "shp2pgsql output:    #{shp2pgsql.command_output}"

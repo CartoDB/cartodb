@@ -30,7 +30,8 @@ module CartoDB
       end #csv_rows_from
 
       def transform(row)
-        row.values.map { |value| value.gsub(/"/, "\"") }.join(',')
+        row.values.map { |value| value.to_s.gsub(/,/, '').gsub(/"/, "\"") }
+          .join(',')
       end #transform
 
       def complex?(data)

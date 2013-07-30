@@ -6,6 +6,7 @@
 //= require ../../../lib/assets/javascripts/cartodb/common/dropdown_menu
 //= require ../../../lib/assets/javascripts/cartodb/common/dropdown_basemap
 //= require ../../../lib/assets/javascripts/cartodb/common/forms/string_field
+//= require ../../../lib/assets/javascripts/cartodb/common/import_pane.js
 //= require_tree ../../../lib/assets/javascripts/cartodb/common
 //= require_tree ../../../lib/assets/javascripts/cartodb/common_data
 //= require ../../../lib/assets/javascripts/cartodb/common_data/common_data

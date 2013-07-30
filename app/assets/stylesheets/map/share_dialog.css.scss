@@ -56,6 +56,28 @@
 
     div.cartodb-searchbox {display:none;}
     div.cartodb-zoom {top:0;}
+
+    div.cartodb-legend-stack {
+
+      /*
+      .white-gradient-shadow {
+      pointer-events: none;
+      &.bottom { @include opacity(0); @include position(false, false, 0, 0); @extend .white-gradient-shadow-bottom; z-index: 10; }
+      @include size(100%, 30px);
+      }*/
+
+      max-height: 100px;
+      overflow:hidden;
+
+      div.cartodb-legend.bubble li.graph { border:none; }
+      div.cartodb-legend.intensity li.graph { border:none; }
+
+      li {
+        border:none;
+        &.graph { border: 1px solid #b3b3b3; }
+      }
+    }
+
   }
 
   // Sharing options

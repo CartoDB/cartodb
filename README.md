@@ -363,7 +363,7 @@ documentation.
 
 # Handy tasks #
 
-For a full list of CartoDB utility tests:
+For a full list of CartoDB utility tasks:
 
 ```
 bundle exec rake -T

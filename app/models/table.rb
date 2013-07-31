@@ -1212,8 +1212,19 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def set_triggers
+
     set_trigger_update_updated_at
-    set_trigger_cache_checkpoint
+
+    # NOTE: We're dropping the cache_checkpoint here
+    #       as a poor man's migration path from 2.1.
+    #       Once an official 2.2 is out and a proper
+    #       migration script is written this line can
+    #       be removed. For the record, the actual cache
+    #       (varnish) management is now triggered indirectly
+    #       by the "track_updates" trigger.
+    #
+    drop_trigger_cache_checkpoint
+
     set_trigger_track_updates
     set_trigger_check_quota
   end
@@ -1254,6 +1265,15 @@ class Table < Sequel::Model(:user_tables)
       CREATE TRIGGER update_updated_at_trigger
       BEFORE UPDATE ON "#{self.name}"
         FOR EACH ROW EXECUTE PROCEDURE update_updated_at();
+TRIGGER
+    )
+  end
+
+  # Drop "cache_checkpoint", if it exists
+  # NOTE: this is for migrating from 2.1
+  def drop_trigger_cache_checkpoint
+    owner.in_database(:as => :superuser).run(<<-TRIGGER
+    DROP TRIGGER IF EXISTS cache_checkpoint ON "#{self.name}";
 TRIGGER
     )
   end

@@ -18,7 +18,8 @@ module CartoDB
         self.url          = url
         raise 'No file to import!!!' if url.nil?
         self.seed         = seed
-        self.repository   = repository || DataRepository::Filesystem::Local.new
+        self.repository   = repository || 
+                            DataRepository::Filesystem::Local.new(temporary_directory)
       end #initialize
 
       def run
@@ -73,6 +74,16 @@ module CartoDB
       def name_in(url)
         url.split('/').last.split('?').first
       end #name_in
+
+      def temporary_directory
+        return @temporary_directory if @temporary_directory
+        tempfile              = Tempfile.new("")
+        @temporary_directory  = tempfile.path
+
+        tempfile.close!
+        Dir.mkdir(temporary_directory)
+        @temporary_directory
+      end #temporary_directory
     end # Downloader
   end # Importer2
 end # CartoDB

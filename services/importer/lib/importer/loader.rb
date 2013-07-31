@@ -9,7 +9,7 @@ module CartoDB
     class Loader
       extend Forwardable
 
-      SCHEMA        = 'importer'
+      SCHEMA        = 'cdb_importer'
       TABLE_PREFIX  = 'importer'
 
       def initialize(job, source_file, ogr2ogr=nil, georeferencer=nil)

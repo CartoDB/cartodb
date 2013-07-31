@@ -12,7 +12,7 @@ module CartoDB
       WKT_RE          = /POINT|LINESTRING|POLYGON/
       KML_MULTI_RE    = /<Line|<Polygon/
       KML_POINT_RE    = /<Point>/
-      DEFAULT_SCHEMA  = 'importer'
+      DEFAULT_SCHEMA  = 'cdb_importer'
       RESERVED_WORDS  = %w{ ALL ANALYSE ANALYZE AND ANY ARRAY AS ASC ASYMMETRIC
                             AUTHORIZATION BETWEEN BINARY BOTH CASE CAST CHECK
                             COLLATE COLUMN CONSTRAINT CREATE CROSS CURRENT_DATE 

@@ -12,12 +12,12 @@ describe Indexer do
     @indexer    = Indexer.new(@db)
     @table_name = "test_#{Time.now.to_i}"
 
-    @db.run(%Q(DROP TABLE IF EXISTS "importer".#{@table_name}))
-    @db.run(%Q{CREATE TABLE "importer".#{@table_name} ( the_geom geometry )})
+    @db.run(%Q(DROP TABLE IF EXISTS "cdb_importer".#{@table_name}))
+    @db.run(%Q{CREATE TABLE "cdb_importer".#{@table_name} ( the_geom geometry )})
   end
 
   after do
-    @db.run(%Q(DROP TABLE IF EXISTS "importer".#{@table_name}))
+    @db.run(%Q(DROP TABLE IF EXISTS "cdb_importer".#{@table_name}))
     @db.disconnect
   end
 

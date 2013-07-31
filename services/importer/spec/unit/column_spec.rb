@@ -9,7 +9,7 @@ include CartoDB::Importer2
 describe Column do
   before do
     @db           = Factories::PGConnection.new.connection
-    @db.execute('SET search_path TO importer,public')
+    @db.execute('SET search_path TO cdb_importer,public')
 
     @table_name   = create_table(@db)
     @column_name  = 'the_geom'
@@ -255,7 +255,7 @@ describe Column do
 
     table_name
   rescue
-    db.run(%Q{DROP TABLE "importer"."#{table_name}"})
+    db.run(%Q{DROP TABLE "cdb_importer"."#{table_name}"})
     table_name
   end #create_table
 

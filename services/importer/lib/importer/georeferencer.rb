@@ -10,7 +10,7 @@ module CartoDB
       LONGITUDE_POSSIBLE_NAMES  = %w{ longitude lon lng 
         longitudedecimal longitud long decimallongitude decimallong }
       GEOMETRY_POSSIBLE_NAMES   = %w{ geometry the_geom wkb_geometry geom }
-      DEFAULT_SCHEMA            = 'importer'
+      DEFAULT_SCHEMA            = 'cdb_importer'
       THE_GEOM_WEBMERCATOR     = 'the_geom_webmercator'
 
       def initialize(db, table_name, schema=DEFAULT_SCHEMA, job=nil)

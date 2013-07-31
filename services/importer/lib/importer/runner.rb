@@ -74,7 +74,7 @@ module CartoDB
         LOADERS.fetch(source_file.extension.delete('.').to_sym)
       end #loader_for
 
-      def columns_in(table_name, schema='importer')
+      def columns_in(table_name, schema='cdb_importer')
         db.schema(table_name, schema: schema)
           .map { |s| s[0] }
           .map { |column_name| Column.new(db, table_name, column_name, schema) }

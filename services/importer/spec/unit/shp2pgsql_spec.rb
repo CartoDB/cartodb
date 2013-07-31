@@ -14,10 +14,10 @@ describe Shp2pgsql do
     @table_name       = "importer_#{rand(99999)}"
     @db               = Factories::PGConnection.new.connection
     @dataset          = @db[@table_name.to_sym]
-    @full_table_name  = "importer.#{@table_name}"
+    @full_table_name  = "cdb_importer.#{@table_name}"
     @wrapper          = Shp2pgsql.new(@full_table_name, @filepath, @pg_options)
 
-    @db.execute('SET search_path TO importer,public')
+    @db.execute('SET search_path TO cdb_importer,public')
   end
 
   after do

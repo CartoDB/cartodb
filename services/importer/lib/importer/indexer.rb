@@ -5,7 +5,7 @@ require_relative './job'
 module CartoDB
   module Importer2
     class Indexer
-      DEFAULT_SCHEMA = 'importer'
+      DEFAULT_SCHEMA = 'cdb_importer'
 
       def initialize(db, schema=DEFAULT_SCHEMA, job=nil)
         @db     = db

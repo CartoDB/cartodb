@@ -5,7 +5,7 @@ module CartoDB
   module Importer2
     class Ogr2ogr
       ENCODING  = 'UTF-8'
-      SCHEMA    = 'importer'
+      SCHEMA    = 'cdb_importer'
 
       def initialize(table_name, filepath, pg_options, options={})
         self.filepath   = filepath

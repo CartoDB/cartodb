@@ -8,7 +8,7 @@ module CartoDB
 
       def initialize(db)
         @db     = db
-        @schema =  'importer'
+        @schema = 'cdb_importer'
       end #initialize
 
       def reproject(table_name, column_name)
@@ -27,7 +27,7 @@ module CartoDB
       def add_geometry_column(table_name, column_name, type='POINT')
         db.run(%Q{
           SELECT public.AddGeometryColumn(
-            'importer', '#{table_name}','#{column_name}',#{DEFAULT_SRID},'#{type}',2
+            '#{schema}', '#{table_name}','#{column_name}',#{DEFAULT_SRID},'#{type}',2
           )
         })
       end #add_geometry_column

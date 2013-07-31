@@ -11,7 +11,7 @@ module CartoDB
         @id         = attributes.fetch(:id, UUIDTools::UUID.timestamp_create.to_s)
         @logger     = attributes.fetch(:logger, TrackRecord::Log.new)
         @pg_options = attributes.fetch(:pg_options, {})
-        @schema     = 'importer'
+        @schema     = 'cdb_importer'
       end #initalize
 
       def log(message)

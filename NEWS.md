@@ -1,3 +1,9 @@
+2.1.x
+---
+- Added lengeds 
+- Dropbox file import 
+- Icon and images management. Icons and patterns can be set from the wizards
+
 2.1
 ---
 After updating to 2.1 you'll need to upgrade your system:

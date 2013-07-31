@@ -93,8 +93,9 @@
           'shareable':    bool_fn,
           'cartodb_logo': logo_fn,
           'scrollwheel':  bool_fn,
-          'sublayer_options':  layer_fn,
-          'layer_selector': bool_fn
+          'sublayer_options': layer_fn,
+          'layer_selector': bool_fn,
+          'legends': bool_fn
         });
 
         <% if Rails.env.development? || Cartodb.config[:no_cdn] == true %>

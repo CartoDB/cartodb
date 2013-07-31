@@ -77,9 +77,6 @@ describe("common.geo.ui.Legend", function() {
     });
 
     it("should create the specific legend based on the type", function() {
-      expect(legend.view instanceof cdb.geo.ui.CustomLegend).toEqual(true);
-      expect(legend.$el.hasClass("custom")).toEqual(true);
-
       legend.model.set({ type: "bubble" });
       expect(legend.view instanceof cdb.geo.ui.BubbleLegend).toEqual(true);
       expect(legend.$el.hasClass("bubble")).toEqual(true);
@@ -88,13 +85,13 @@ describe("common.geo.ui.Legend", function() {
 
     it("shouldn't create the legend if the type is unknown", function() {
       legend.model.set({ type: "the_legend_of_santana" });
-      expect(legend.view instanceof cdb.geo.ui.CustomLegend).toEqual(true);
-      expect(legend.$el.hasClass("custom")).toEqual(true);
+      expect(legend.view instanceof cdb.geo.ui.CustomLegend).toEqual(false);
+      expect(legend.$el.hasClass("custom")).toEqual(false);
     });
 
     it("should update the legend when the name of an item is changed", function() {
       legend.render();
-      legend.model.set({ type: "bubble" });
+      legend.model.set({ type: "custom" });
       expect(legend.$el.find("li:first-child").text()).toEqual('Category 1');
 
       legend.items.at(0).set("name", "New Category 1")

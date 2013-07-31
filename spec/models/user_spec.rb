@@ -106,30 +106,7 @@ describe User do
     @user2.tables.all.should == [Table.first(:user_id => @user2.id)]
   end
 
-  it "should generate a data report" do
-    @user2.data(extended: true).should == {
-      id: @user2.id,
-      email: "user@example.com",
-      username: "user",
-      account_type: "FREE",
-      table_quota: 5,
-      table_count: 0,
-      byte_quota: 104857600, 
-      remaining_table_quota: 5,
-      remaining_byte_quota: 104857600.0,
-      api_calls: (0..29).map { 0 },
-      api_calls_quota: 10000,
-      api_key: @user2.get_map_key,
-      actions: { private_tables: true, dedicated_support: false, import_quota: 1, remove_logo: false },
-      layers: [],
-      billing_period: Date.today,
-      last_active_time: nil,
-      db_size_in_bytes: 0,
-      real_table_count: 0
-    }
-
-    @user2.data.keys.should =~ [:id, :email, :username, :account_type, :actions, :table_quota, :table_count, :byte_quota, :remaining_table_quota, :remaining_byte_quota, :api_calls, :api_key, :layers, :billing_period, :api_calls_quota]
-  end
+  it "should generate a data report"
 
   it "should update remaining quotas when adding or removing tables" do
     initial_quota = @user2.remaining_quota
@@ -158,14 +135,14 @@ describe User do
   it 'creates an importer schema in the user database' do
     @user.in_database[%Q(SELECT * FROM pg_namespace)]
       .map { |record| record.fetch(:nspname) }
-      .should include 'importer'
+      .should include 'cdb_importer'
   end
 
   it 'allows access to the importer schema by the owner' do
     @user.in_database.run(%Q{
-      CREATE TABLE importer.bogus ( bogus varchar(40) )
+      CREATE TABLE cdb_importer.bogus ( bogus varchar(40) )
     })
-    query = %Q(SELECT * FROM importer.bogus)
+    query = %Q(SELECT * FROM cdb_importer.bogus)
 
     expect { @user.in_database(as: :public_user)[query].to_a }
       .to raise_error(Sequel::DatabaseError)

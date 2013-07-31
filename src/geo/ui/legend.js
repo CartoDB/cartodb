@@ -153,7 +153,7 @@ cdb.geo.ui.IntensityLegend = cdb.core.View.extend({
     var backgroundStyle = _.template(s);
 
     var baseColor       = this.color.get("value");
-    var multipliedColor = this._calculateMultiply(baseColor, 2);
+    var multipliedColor = this._calculateMultiply(baseColor, 4);
 
     this.$el.find(".graph").attr("style", backgroundStyle({ color: baseColor, right: multipliedColor }));
 
@@ -584,9 +584,6 @@ cdb.geo.ui.Legend = cdb.core.View.extend({
     if (this.view) {
       this.$el.append(this.view.render().$el);
     }
-
-    //if (this.model.get("type")) this.show();
-    //else this.hide();
 
     return this;
   }

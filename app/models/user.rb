@@ -773,10 +773,10 @@ TRIGGER
         schema = 'cdb_importer'
 
         # grant core permissions to database user
-        #user_database.run("GRANT ALL ON SCHEMA #{schema} TO #{database_username}")
-        #user_database.run("GRANT ALL ON ALL SEQUENCES IN SCHEMA #{schema} TO #{database_username}")
-        #user_database.run("GRANT ALL ON ALL FUNCTIONS IN SCHEMA #{schema} TO #{database_username}")
-        #user_database.run("GRANT ALL ON ALL TABLES IN SCHEMA #{schema} TO #{database_username}")
+        user_database.run("GRANT ALL ON SCHEMA #{schema} TO #{database_username}")
+        user_database.run("GRANT ALL ON ALL SEQUENCES IN SCHEMA #{schema} TO #{database_username}")
+        user_database.run("GRANT ALL ON ALL FUNCTIONS IN SCHEMA #{schema} TO #{database_username}")
+        user_database.run("GRANT ALL ON ALL TABLES IN SCHEMA #{schema} TO #{database_username}")
 
         yield(user_database) if block_given?
       end

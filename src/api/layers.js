@@ -118,7 +118,8 @@
       options = options || {};
       options = _.defaults(options, {
         infowindow: true,
-        https: false
+        https: false,
+        legends: true
       })
 
       // check map type
@@ -152,6 +153,9 @@
       layerView = viz.createLayer(layerData, { no_base_layer: true });
       if(options.infowindow) {
         viz.addInfowindow(layerView);
+      }
+      if(options.legends) {
+        viz.addLegends([layerData]);
       }
       callback && callback(layerView);
       promise.trigger('done', layerView);

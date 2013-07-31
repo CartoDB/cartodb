@@ -209,6 +209,10 @@ var Vis = cdb.core.View.extend({
       this.loadLayer(layerData);
     }
 
+    if(options.legends) {
+      this.addLegends(data.layers);
+    }
+
     // set layer options
     if(options.sublayer_options) {
 
@@ -231,6 +235,33 @@ var Vis = cdb.core.View.extend({
     })
 
     return this;
+  },
+
+  addLegends: function(layers) {
+    function createLegendView(layers) {
+      var legends = [];
+      for(var i = 0; i < layers.length; ++i) {
+        var layer = layers[i];
+        if(layer.legend) {
+          layer.legend.data = layer.legend.items;
+          var legend = layer.legend;
+          if(legend.items && legend.items.length) {
+            legends.push(new cdb.geo.ui.Legend(layer.legend));
+          }
+        }
+        if(layer.options && layer.options.layer_definition) {
+          legends = legends.concat(createLegendView(layer.options.layer_definition.layers));
+        }
+      }
+      return legends;
+    }
+
+    legends = createLegendView(layers);
+    var stackedLegend = new cdb.geo.ui.StackedLegend({
+       legends: legends
+    });
+
+    this.mapView.addOverlay(stackedLegend);
   },
 
   addOverlay: function(overlay) {
@@ -278,7 +309,8 @@ var Vis = cdb.core.View.extend({
       loaderControl: true,
       layer_selector: false,
       searchControl: false,
-      infowindow: true
+      infowindow: true,
+      legends: true
     });
     vizjson.overlays = vizjson.overlays || [];
     vizjson.layers = vizjson.layers || [];

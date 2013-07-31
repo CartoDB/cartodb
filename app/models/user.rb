@@ -772,27 +772,11 @@ TRIGGER
       user_database.transaction do
         schema = 'cdb_importer'
 
-        # remove all public and tile user permissions
-        user_database.run("REVOKE ALL ON SCHEMA #{schema} FROM PUBLIC")
-        user_database.run("REVOKE ALL ON ALL SEQUENCES IN SCHEMA #{schema} FROM PUBLIC")
-        user_database.run("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA #{schema} FROM PUBLIC")
-        user_database.run("REVOKE ALL ON ALL TABLES IN SCHEMA #{schema} FROM PUBLIC")
-
-        user_database.run("REVOKE ALL ON SCHEMA #{schema} FROM #{CartoDB::PUBLIC_DB_USER}")
-        user_database.run("REVOKE ALL ON ALL SEQUENCES IN SCHEMA #{schema} FROM #{CartoDB::PUBLIC_DB_USER}")
-        user_database.run("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA #{schema} FROM #{CartoDB::PUBLIC_DB_USER}")
-        user_database.run("REVOKE ALL ON ALL TABLES IN SCHEMA #{schema} FROM #{CartoDB::PUBLIC_DB_USER}")
-
-        user_database.run("REVOKE ALL ON SCHEMA #{schema} FROM #{CartoDB::TILE_DB_USER}")
-        user_database.run("REVOKE ALL ON ALL SEQUENCES IN SCHEMA #{schema} FROM #{CartoDB::TILE_DB_USER}")
-        user_database.run("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA #{schema} FROM #{CartoDB::TILE_DB_USER}")
-        user_database.run("REVOKE ALL ON ALL TABLES IN SCHEMA #{schema} FROM #{CartoDB::TILE_DB_USER}")
-
         # grant core permissions to database user
-        user_database.run("GRANT ALL ON SCHEMA #{schema} TO #{database_username}")
-        user_database.run("GRANT ALL ON ALL SEQUENCES IN SCHEMA #{schema} TO #{database_username}")
-        user_database.run("GRANT ALL ON ALL FUNCTIONS IN SCHEMA #{schema} TO #{database_username}")
-        user_database.run("GRANT ALL ON ALL TABLES IN SCHEMA #{schema} TO #{database_username}")
+        #user_database.run("GRANT ALL ON SCHEMA #{schema} TO #{database_username}")
+        #user_database.run("GRANT ALL ON ALL SEQUENCES IN SCHEMA #{schema} TO #{database_username}")
+        #user_database.run("GRANT ALL ON ALL FUNCTIONS IN SCHEMA #{schema} TO #{database_username}")
+        #user_database.run("GRANT ALL ON ALL TABLES IN SCHEMA #{schema} TO #{database_username}")
 
         yield(user_database) if block_given?
       end

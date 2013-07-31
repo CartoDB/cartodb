@@ -329,7 +329,7 @@ class DataImport < Sequel::Model
   end #success_status_from
 
   def register(table_name, name, schema='importer')
-    current_user.in_database.execute(%Q{
+    current_user.in_database(as: :superuser).execute(%Q{
       ALTER TABLE "#{schema}"."#{table_name}"
       SET SCHEMA public
     }) unless schema == 'public'

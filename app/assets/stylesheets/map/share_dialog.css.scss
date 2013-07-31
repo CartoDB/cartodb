@@ -57,27 +57,23 @@
     div.cartodb-searchbox {display:none;}
     div.cartodb-zoom {top:0;}
 
-    div.cartodb-legend-stack {
+    div.cartodb-legends {
+      position:absolute;
+      bottom: 20px;
+      right: 20px;
 
-      /*
-      .white-gradient-shadow {
-      pointer-events: none;
-      &.bottom { @include opacity(0); @include position(false, false, 0, 0); @extend .white-gradient-shadow-bottom; z-index: 10; }
-      @include size(100%, 30px);
-      }*/
+      @include box-shadow(rgba(0, 0, 0, 0.2) 0 0 4px 2px);
+      @include border-radius(4px);
 
-      max-height: 100px;
-      overflow:hidden;
+      border: 1px solid #999999;
+      background: white;
+      z-index: 5;
 
-      div.cartodb-legend.bubble li.graph { border:none; }
-      div.cartodb-legend.intensity li.graph { border:none; }
+      padding: 6px 8px;
 
-      li {
-        border:none;
-        &.graph { border: 1px solid #b3b3b3; }
-      }
+      font:normal 13px "Helvetica",Arial;
+      color:#858585;
     }
-
   }
 
   // Sharing options

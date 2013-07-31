@@ -74,12 +74,6 @@ describe Ogr2ogr do
       records.first.keys  .must_include :header_2
     end
 
-    it 'adds a cartodb_id column to imported records' do
-      @wrapper.run
-      record    = @dataset.first
-      record.keys.must_include :cartodb_id
-    end
-
     it 'keeps an existing cartodb_id column in imported records' do
       skip
       header    = ["cartodb_id", "header_2"]

@@ -9,8 +9,9 @@ module CartoDB
         latitud lati decimallatitude decimallat }
       LONGITUDE_POSSIBLE_NAMES  = %w{ longitude lon lng 
         longitudedecimal longitud long decimallongitude decimallong }
-      GEOMETRY_POSSIBLE_NAMES   = %w{ geometry the_geom wkb_geometry }
+      GEOMETRY_POSSIBLE_NAMES   = %w{ geometry the_geom wkb_geometry geom }
       DEFAULT_SCHEMA            = 'importer'
+      THE_GEOM_WEBMERCATOR     = 'the_geom_webmercator'
 
       def initialize(db, table_name, schema=DEFAULT_SCHEMA, job=nil)
         @db         = db
@@ -20,6 +21,8 @@ module CartoDB
       end #initialize
 
       def run
+        drop_the_geom_webmercator
+
         create_the_geom_from_geometry_column  || 
         create_the_geom_from_latlon           ||
         create_the_geom_in(table_name)
@@ -94,14 +97,14 @@ module CartoDB
       def latitude_column_name_in(qualified_table_name)
         names = LATITUDE_POSSIBLE_NAMES.map { |name| "'#{name}'" }.join(',')
         name  = find_column_in(table_name, names)
-        job.log "Identified #{name} as latitude column"
+        job.log "Identified #{name} as latitude column" if name
         name
       end #latitude_column_name_in
 
       def longitude_column_name_in(qualified_table_name)
         names = LONGITUDE_POSSIBLE_NAMES.map { |name| "'#{name}'" }.join(',')
         name = find_column_in(table_name, names)
-        job.log "Identified #{name} as longitude column"
+        job.log "Identified #{name} as longitude column" if name
         name
       end #longitude_column_name_in
 
@@ -109,6 +112,14 @@ module CartoDB
         names = GEOMETRY_POSSIBLE_NAMES.map { |name| "'#{name}'" }.join(',')
         find_column_in(table_name, names)
       end #geometry_column_in
+
+      def drop_the_geom_webmercator
+        return self unless column_exists_in?(table_name, THE_GEOM_WEBMERCATOR)
+
+        job.log 'Dropping the_geom_webmercator column'
+        column = Column.new(db, table_name, THE_GEOM_WEBMERCATOR, schema, job)
+        column.drop
+      end #drop_the_geom_webmercator
 
       def find_column_in(table_name, possible_names)
         sample = db[%Q{

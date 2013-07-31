@@ -24,6 +24,7 @@ module CartoDB
         job.log "shp2pgsql output:    #{shp2pgsql.command_output}"
         job.log "shp2pgsql exit code: #{shp2pgsql.exit_code}"
 
+        drop_the_geom_webmercator
         reproject
         self
       end #run
@@ -53,6 +54,10 @@ module CartoDB
       def the_geom?
         georeferencer.column_exists_in?(job.table_name, 'the_geom')
       end #the_geom?
+
+      def drop_the_geom_webmercator
+        georeferencer.drop_the_geom_webmercator
+      end #drop_the_geom_webmercator
         
       private
 

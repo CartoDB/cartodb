@@ -332,7 +332,7 @@ class DataImport < Sequel::Model
     current_user.in_database.execute(%Q{
       ALTER TABLE "#{schema}"."#{table_name}"
       SET SCHEMA public
-    })
+    }) unless schema == 'public'
 
     candidates  = table_owner.tables.map(&:name)
     name        = Table.get_valid_table_name(name, name_candidates: candidates)

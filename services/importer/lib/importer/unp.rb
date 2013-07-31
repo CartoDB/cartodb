@@ -70,7 +70,9 @@ module CartoDB
         Dir.chdir(temporary_directory)
         stdout, stderr, status  = Open3.capture3(command_for(path))
         Dir.chdir(current_directory)
+
         raise ExtractionError if unp_failure?(stdout + stderr, status)
+        FileUtils.rm(path)
         self
       end #extract
 

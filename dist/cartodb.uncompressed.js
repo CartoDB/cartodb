@@ -1,6 +1,6 @@
-// cartodb.js version: 3.0.04
+// cartodb.js version: 3.0.05
 // uncompressed version: cartodb.uncompressed.js
-// sha: 48b5937451fd942112011747e8e5e72518cca1e6
+// sha: 5e85bee6d7a67ac87eb2e50ac4a96e31eadd6f6d
 (function() {
   var root = this;
 
@@ -19842,15 +19842,6 @@ var LZMA = (function () {
 		}
 	}());
 	
-	/// Create the global onmessage function.
-	onmessage = function (e) {
-		if (e.data.action === action_compress) {
-			LZMA.compress(e.data.data, e.data.mode, e.data.callback_num);
-		} else {
-			LZMA.decompress(e.data.data, e.data.callback_num);
-		}
-	}
-		
 	return {
 		compress:   compress,
 		decompress: decompress
@@ -19883,7 +19874,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.0.04';
+    cdb.VERSION = '3.0.05';
 
     cdb.CARTOCSS_VERSIONS = {
       '2.0.0': '',

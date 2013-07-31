@@ -1,0 +1,8 @@
+After upgrading the rails code to <version>,
+you must upgrade existing databases using these commands:
+
+$ bundle exec rake db:migrate
+$ bundle exec rake cartodb:db:load_functions
+$ bundle exec rake cartodb:db:load_triggers
+$ bundle exec rake cartodb:db:migrate_to[<version>]
+

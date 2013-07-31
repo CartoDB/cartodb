@@ -64,8 +64,10 @@ namespace :cartodb do
         begin
           user.tables.all.each do |table|
             begin
-              # set triggers
-              table.set_triggers
+              table.add_python
+              table.set_trigger_check_quota
+              table.set_trigger_update_updated_at
+              table.set_trigger_cache_timestamp
             rescue => e
               puts e
               next
@@ -114,7 +116,10 @@ namespace :cartodb do
           end
           
           # reset triggers
-          table.set_triggers
+          table.add_python
+          table.set_trigger_update_updated_at
+          table.set_trigger_cache_timestamp
+          table.set_trigger_check_quota
         end  
       end
     end

@@ -9,7 +9,7 @@ module CartoDB
         latitud lati decimallatitude decimallat }
       LONGITUDE_POSSIBLE_NAMES  = %w{ longitude lon lng 
         longitudedecimal longitud long decimallongitude decimallong }
-      GEOMETRY_POSSIBLE_NAMES   = %w{ geometry the_geom wkb_geometry }
+      GEOMETRY_POSSIBLE_NAMES   = %w{ geometry the_geom wkb_geometry geom }
       DEFAULT_SCHEMA            = 'importer'
 
       def initialize(db, table_name, schema=DEFAULT_SCHEMA, job=nil)

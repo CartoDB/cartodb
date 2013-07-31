@@ -76,17 +76,32 @@ div.left p a:visited{
 	color:#000;
 }
 
-div.left div#legendBox{
-	background: url(../img/legendBullets.png) 0 0 no-repeat;
-	margin: 30px 0 0 10px;
+div.left div.cartodb-legend {
+  position:absolute;
+  bottom: auto; right: auto;
+  left: 0;
+  margin: 17px 0 0 0;
+  width: 200px;
+  background:none;
+  border:none;
+  box-shadow:none;
 }
 
-div.left div#legendBox ul li{
-	list-style: none;
-	font-family: "robotoregular", Helvetica, Arial, Sans-serif;
-	font-size: 15px;
-	margin: 7px 0 0 22px;
-	opacity: .5;
+div.left div.cartodb-legend ul li {
+  margin: 0 0 2px 0;
+  color: #4E6565;
+  text-transform: none; 
+  list-style: none;
+  font-family: "robotoregular", Helvetica, Arial, Sans-serif;
+  font-size: 15px;
+  font-weight:normal;
+}
+
+div.left div.cartodb-legend ul li .bullet {
+  top:4px;
+  width: 5px; height: 5px;
+  margin: 0 7px 0 0;
+  border: 2px solid #fff;
 }
 
 div.cartodb_tooltip {

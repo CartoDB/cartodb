@@ -621,11 +621,17 @@ class User < Sequel::Model
     )
   end
 
-  # Create a "cdb_invalidate_varnish()" trigger function to invalidate Varnish
-  # This is currently invoked by the "cache_checkpoint" trigger attached
-  # to tables
+  # Create a "cdb_invalidate_varnish()" function to invalidate Varnish
   #
-  # TODO: drop this and replace with a trigger on CDB_TableMetadata
+  # The function can only be used by the superuser, we expect
+  # security-definer triggers OR triggers on superuser-owned tables
+  # to call it with controlled set of parameters.
+  #
+  # The function is written in python because it needs to reach out
+  # to a Varnish server.
+  #
+  # Being unable to communicate with Varnish may or may not be critical
+  # depending on CartoDB configuration at time of function definition.
   #
   def create_function_invalidate_varnish
 
@@ -702,8 +708,8 @@ TRIGGER
 
   # Cartodb functions
   def load_cartodb_functions(files = [])
-    create_trigger_function_update_timestamp
     create_function_invalidate_varnish
+    create_trigger_function_update_timestamp
     in_database(:as => :superuser) do |user_database|
       user_database.transaction do
         if files.empty?
@@ -766,27 +772,11 @@ TRIGGER
       user_database.transaction do
         schema = 'cdb_importer'
 
-        # remove all public and tile user permissions
-        user_database.run("REVOKE ALL ON SCHEMA #{schema} FROM PUBLIC")
-        user_database.run("REVOKE ALL ON ALL SEQUENCES IN SCHEMA #{schema} FROM PUBLIC")
-        user_database.run("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA #{schema} FROM PUBLIC")
-        user_database.run("REVOKE ALL ON ALL TABLES IN SCHEMA #{schema} FROM PUBLIC")
-
-        user_database.run("REVOKE ALL ON SCHEMA #{schema} FROM #{CartoDB::PUBLIC_DB_USER}")
-        user_database.run("REVOKE ALL ON ALL SEQUENCES IN SCHEMA #{schema} FROM #{CartoDB::PUBLIC_DB_USER}")
-        user_database.run("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA #{schema} FROM #{CartoDB::PUBLIC_DB_USER}")
-        user_database.run("REVOKE ALL ON ALL TABLES IN SCHEMA #{schema} FROM #{CartoDB::PUBLIC_DB_USER}")
-
-        user_database.run("REVOKE ALL ON SCHEMA #{schema} FROM #{CartoDB::TILE_DB_USER}")
-        user_database.run("REVOKE ALL ON ALL SEQUENCES IN SCHEMA #{schema} FROM #{CartoDB::TILE_DB_USER}")
-        user_database.run("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA #{schema} FROM #{CartoDB::TILE_DB_USER}")
-        user_database.run("REVOKE ALL ON ALL TABLES IN SCHEMA #{schema} FROM #{CartoDB::TILE_DB_USER}")
-
         # grant core permissions to database user
-        user_database.run("GRANT ALL ON SCHEMA #{schema} TO #{database_username}")
-        user_database.run("GRANT ALL ON ALL SEQUENCES IN SCHEMA #{schema} TO #{database_username}")
-        user_database.run("GRANT ALL ON ALL FUNCTIONS IN SCHEMA #{schema} TO #{database_username}")
-        user_database.run("GRANT ALL ON ALL TABLES IN SCHEMA #{schema} TO #{database_username}")
+        #user_database.run("GRANT ALL ON SCHEMA #{schema} TO #{database_username}")
+        #user_database.run("GRANT ALL ON ALL SEQUENCES IN SCHEMA #{schema} TO #{database_username}")
+        #user_database.run("GRANT ALL ON ALL FUNCTIONS IN SCHEMA #{schema} TO #{database_username}")
+        #user_database.run("GRANT ALL ON ALL TABLES IN SCHEMA #{schema} TO #{database_username}")
 
         yield(user_database) if block_given?
       end

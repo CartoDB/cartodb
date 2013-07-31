@@ -23,7 +23,8 @@ class DataImport < Sequel::Model
 
   def after_initialize
     instantiate_log
-    self.state    ||= 'uploading' #starting'
+    self.results  = []
+    self.state    ||= 'uploading'
   end #after_initialize
 
   def before_save
@@ -135,6 +136,7 @@ class DataImport < Sequel::Model
     Rollbar.report_message("Failed import", "error", error_info: basic_information)
     keep_problematic_file if uploaded_file
 
+    set_error_code = errors_from(results).first
     self.success  = false
     self.state    = 'failure'
     self.log << "ERROR!\n"
@@ -327,6 +329,10 @@ class DataImport < Sequel::Model
   def success_status_from(results)
     results.inject(true) { |memo, result| result.fetch(:success) && memo }
   end #success_status_from
+
+  def errors_from(results)
+    results.map { |result| result.fetch(:error, nil) }.compact
+  end #errors_from
 
   def register(table_name, name, schema='importer')
     current_user.in_database(as: :superuser).execute(%Q{

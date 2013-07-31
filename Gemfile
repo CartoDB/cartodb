@@ -101,7 +101,7 @@ group :development, :test do
   gem "rb-fchange", :require => false
   gem "guard",                  "1.8.1"
   #gem "guard-minitest",         "1.0.1"
-  gem "minitest-ci",            "~> 3.0.1", :require => false
+  #gem "minitest-ci",            "~> 3.0.1", :require => false
   # Server
   gem 'thin'
 end

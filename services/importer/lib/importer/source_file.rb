@@ -28,7 +28,7 @@ module CartoDB
 
       def target_schema
         return 'public' if extension == '.osm'
-        return 'importer'
+        return 'cdb_importer'
       end #target_schema
 
       attr_reader :filename

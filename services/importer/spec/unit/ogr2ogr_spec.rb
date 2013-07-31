@@ -18,10 +18,10 @@ describe Ogr2ogr do
     @table_name       = "importer_#{rand(99999)}"
     @db               = Factories::PGConnection.new.connection
     @dataset          = @db[@table_name.to_sym]
-    @full_table_name  = "importer.#{@table_name}"
+    @full_table_name  = "cdb_importer.#{@table_name}"
     @wrapper          = Ogr2ogr.new(@full_table_name, @filepath, @pg_options)
 
-    @db.execute('SET search_path TO importer,public')
+    @db.execute('SET search_path TO cdb_importer,public')
   end
 
   after do
@@ -72,12 +72,6 @@ describe Ogr2ogr do
       records.length      .must_equal 10
       records.first.keys  .must_include :header_1
       records.first.keys  .must_include :header_2
-    end
-
-    it 'adds a cartodb_id column to imported records' do
-      @wrapper.run
-      record    = @dataset.first
-      record.keys.must_include :cartodb_id
     end
 
     it 'keeps an existing cartodb_id column in imported records' do

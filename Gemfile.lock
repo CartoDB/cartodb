@@ -24,13 +24,6 @@ GIT
       coercible (~> 0.2)
       descendants_tracker (~> 0.0.1)
 
-GIT
-  remote: https://github.com/zenitraM/ducksboard.git
-  revision: 77cb563b79f9d5cb0305e5b9104ecad67433766b
-  specs:
-    ducksboard (0.1.5)
-      httparty (~> 0.8, >= 0.8.1)
-
 GEM
   remote: http://rubygems.org/
   specs:
@@ -154,9 +147,6 @@ GEM
     hike (1.2.1)
     htmlentities (4.3.1)
     http_parser.rb (0.5.3)
-    httparty (0.11.0)
-      multi_json (~> 1.0)
-      multi_xml (>= 0.5.2)
     httpauth (0.2.0)
     i18n (0.6.4)
     ice_nine (0.7.0)
@@ -180,9 +170,6 @@ GEM
     method_source (0.8.1)
     mime-types (1.22)
     mini_portile (0.5.1)
-    minitest (5.0.6)
-    minitest-ci (3.0.1)
-      minitest (~> 5.0, >= 5.0.6)
     mixpanel (4.0.2)
       escape
       json
@@ -369,7 +356,6 @@ DEPENDENCIES
   compass (~> 0.12.1)
   compass-rails (~> 1.0.1)
   debugger (= 1.3.0)
-  ducksboard!
   ejs (~> 1.1.1)
   email_spec (= 1.2.1)
   factory_girl_rails (~> 4.0.0)
@@ -379,7 +365,6 @@ DEPENDENCIES
   guard (= 1.8.1)
   htmlentities (= 4.3.1)
   launchy (= 2.1.0)
-  minitest-ci (~> 3.0.1)
   mixpanel (= 4.0.2)
   mocha (= 0.10.5)
   mustache-trimmer!

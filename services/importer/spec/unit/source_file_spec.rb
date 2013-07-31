@@ -80,10 +80,10 @@ describe SourceFile do
 
     it "returns 'importer' otherwise" do
       source_file = SourceFile.new('/var/tmp/foo.txt')
-      source_file.target_schema.must_equal 'importer'
+      source_file.target_schema.must_equal 'cdb_importer'
 
       source_file = SourceFile.new('/var/tmp/foo')
-      source_file.target_schema.must_equal 'importer'
+      source_file.target_schema.must_equal 'cdb_importer'
     end
   end #target_schema
 end # SourceFile

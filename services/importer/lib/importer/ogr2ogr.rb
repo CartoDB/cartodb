@@ -5,7 +5,7 @@ module CartoDB
   module Importer2
     class Ogr2ogr
       ENCODING  = 'UTF-8'
-      SCHEMA    = 'importer'
+      SCHEMA    = 'cdb_importer'
 
       def initialize(table_name, filepath, pg_options, options={})
         self.filepath   = filepath
@@ -16,7 +16,6 @@ module CartoDB
 
       def command
         "#{pg_copy_option} #{encoding_option} #{executable_path} "  +
-        "#{cartodb_id_option} "                                     +
         "#{output_format_option} #{postgres_options} "              +
         "#{filepath} #{layer_name_option}"
       end #command

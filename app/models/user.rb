@@ -37,7 +37,7 @@ class User < Sequel::Model
   }
 
   SYSTEM_TABLE_NAMES = %w( spatial_ref_sys geography_columns geometry_columns raster_columns raster_overviews cdb_tablemetadata )
-  SCHEMAS = %w( public importer )
+  SCHEMAS = %w( public cdb_importer )
 
   self.raise_on_typecast_failure = false
   self.raise_on_save_failure = false
@@ -602,18 +602,108 @@ class User < Sequel::Model
 
       create_importer_schema
       set_database_permissions
+      set_database_permissions_in_importer_schema
       load_cartodb_functions
     end
   end
 
   def create_importer_schema
     in_database(as: :superuser) do |database|
-      database.run(%Q{CREATE SCHEMA importer})
+      database.run(%Q{CREATE SCHEMA cdb_importer})
     end
   end #create_importer_schema
 
+  # Add plpythonu pl handler
+  def add_python
+    in_database(:as => :superuser).run(<<-SQL
+      CREATE OR REPLACE PROCEDURAL LANGUAGE 'plpythonu' HANDLER plpython_call_handler;
+    SQL
+    )
+  end
+
+  # Create a "cdb_invalidate_varnish()" trigger function to invalidate Varnish
+  # This is currently invoked by the "cache_checkpoint" trigger attached
+  # to tables
+  #
+  # TODO: drop this and replace with a trigger on CDB_TableMetadata
+  #
+  def create_function_invalidate_varnish
+
+    add_python
+
+    varnish_host = Cartodb.config[:varnish_management].try(:[],'host') || '127.0.0.1'
+    varnish_port = Cartodb.config[:varnish_management].try(:[],'port') || 6082
+    varnish_timeout = Cartodb.config[:varnish_management].try(:[],'timeout') || 5
+    varnish_critical = Cartodb.config[:varnish_management].try(:[],'critical') == true ? 1 : 0
+    varnish_retry = Cartodb.config[:varnish_management].try(:[],'retry') || 5
+    purge_command = Cartodb::config[:varnish_management]["purge_command"]
+
+    in_database(:as => :superuser).run(<<-TRIGGER
+    BEGIN;
+    CREATE OR REPLACE FUNCTION cdb_invalidate_varnish(table_name text) RETURNS void AS
+    $$
+        critical = #{varnish_critical}
+        timeout = #{varnish_timeout}
+        retry = #{varnish_retry}
+
+        client = GD.get('varnish', None)
+
+        while True:
+
+          if not client:
+              try:
+                import varnish
+                client = GD['varnish'] = varnish.VarnishHandler(('#{varnish_host}', #{varnish_port}, timeout))
+              except Exception as err:
+                plpy.warning('Varnish connection error: ' +  str(err))
+                # NOTE: we won't retry on connection error
+                if critical:
+                  plpy.error('Varnish connection error: ' +  str(err))
+                break
+
+          try:
+            client.fetch('#{purge_command} obj.http.X-Cache-Channel ~ "^#{self.database_name}:(.*%s.*)|(table)$"' % table_name)
+            break
+          except Exception as err:
+            plpy.warning('Varnish fetch error: ' + str(err))
+            client = GD['varnish'] = None # force reconnect
+            if not retry:
+              if critical:
+                plpy.error('Varnish fetch error: ' +  str(err))
+              break
+            retry -= 1 # try reconnecting
+    $$
+    LANGUAGE 'plpythonu' VOLATILE;
+    REVOKE ALL ON FUNCTION cdb_invalidate_varnish(TEXT) FROM PUBLIC;
+    COMMIT;
+TRIGGER
+    )
+  end
+
+  # Create an "update_timestamp()" trigger function to invalidate Varnish
+  # This is currently invoked by the "cache_checkpoint" trigger attached
+  # to tables
+  #
+  # TODO: drop this and replace with a trigger on CDB_TableMetadata
+  #
+  def create_trigger_function_update_timestamp
+    in_database(:as => :superuser).run(<<-TRIGGER
+    CREATE OR REPLACE FUNCTION update_timestamp() RETURNS trigger AS
+    $$
+        table_name = TD["table_name"]
+        plan = plpy.prepare("SELECT cdb_invalidate_varnish($1)", ["text"])
+        plpy.execute(plan, [table_name])
+    $$
+    LANGUAGE 'plpythonu' VOLATILE SECURITY DEFINER;
+TRIGGER
+    )
+  end
+
+
   # Cartodb functions
   def load_cartodb_functions(files = [])
+    create_trigger_function_update_timestamp
+    create_function_invalidate_varnish
     in_database(:as => :superuser) do |user_database|
       user_database.transaction do
         if files.empty?
@@ -670,36 +760,69 @@ class User < Sequel::Model
   end
 
   # Whitelist Permissions
+
+  def set_database_permissions_in_importer_schema
+    in_database(:as => :superuser) do |user_database|
+      user_database.transaction do
+        schema = 'cdb_importer'
+
+        # remove all public and tile user permissions
+        user_database.run("REVOKE ALL ON SCHEMA #{schema} FROM PUBLIC")
+        user_database.run("REVOKE ALL ON ALL SEQUENCES IN SCHEMA #{schema} FROM PUBLIC")
+        user_database.run("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA #{schema} FROM PUBLIC")
+        user_database.run("REVOKE ALL ON ALL TABLES IN SCHEMA #{schema} FROM PUBLIC")
+
+        user_database.run("REVOKE ALL ON SCHEMA #{schema} FROM #{CartoDB::PUBLIC_DB_USER}")
+        user_database.run("REVOKE ALL ON ALL SEQUENCES IN SCHEMA #{schema} FROM #{CartoDB::PUBLIC_DB_USER}")
+        user_database.run("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA #{schema} FROM #{CartoDB::PUBLIC_DB_USER}")
+        user_database.run("REVOKE ALL ON ALL TABLES IN SCHEMA #{schema} FROM #{CartoDB::PUBLIC_DB_USER}")
+
+        user_database.run("REVOKE ALL ON SCHEMA #{schema} FROM #{CartoDB::TILE_DB_USER}")
+        user_database.run("REVOKE ALL ON ALL SEQUENCES IN SCHEMA #{schema} FROM #{CartoDB::TILE_DB_USER}")
+        user_database.run("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA #{schema} FROM #{CartoDB::TILE_DB_USER}")
+        user_database.run("REVOKE ALL ON ALL TABLES IN SCHEMA #{schema} FROM #{CartoDB::TILE_DB_USER}")
+
+        # grant core permissions to database user
+        user_database.run("GRANT ALL ON SCHEMA #{schema} TO #{database_username}")
+        user_database.run("GRANT ALL ON ALL SEQUENCES IN SCHEMA #{schema} TO #{database_username}")
+        user_database.run("GRANT ALL ON ALL FUNCTIONS IN SCHEMA #{schema} TO #{database_username}")
+        user_database.run("GRANT ALL ON ALL TABLES IN SCHEMA #{schema} TO #{database_username}")
+
+        yield(user_database) if block_given?
+      end
+    end
+  end #set_database_permissions_in_importer_schema
+
   def set_database_permissions
     in_database(:as => :superuser) do |user_database|
       user_database.transaction do
-        SCHEMAS.each do |schema|
-          # remove all public and tile user permissions
-          user_database.run("REVOKE ALL ON DATABASE #{database_name} FROM PUBLIC")
-          user_database.run("REVOKE ALL ON SCHEMA #{schema} FROM PUBLIC")
-          user_database.run("REVOKE ALL ON ALL SEQUENCES IN SCHEMA #{schema} FROM PUBLIC")
-          user_database.run("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA #{schema} FROM PUBLIC")
-          user_database.run("REVOKE ALL ON ALL TABLES IN SCHEMA #{schema} FROM PUBLIC")
+        schema = 'public'
 
-          user_database.run("REVOKE ALL ON DATABASE #{database_name} FROM #{CartoDB::PUBLIC_DB_USER}")
-          user_database.run("REVOKE ALL ON SCHEMA #{schema} FROM #{CartoDB::PUBLIC_DB_USER}")
-          user_database.run("REVOKE ALL ON ALL SEQUENCES IN SCHEMA #{schema} FROM #{CartoDB::PUBLIC_DB_USER}")
-          user_database.run("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA #{schema} FROM #{CartoDB::PUBLIC_DB_USER}")
-          user_database.run("REVOKE ALL ON ALL TABLES IN SCHEMA #{schema} FROM #{CartoDB::PUBLIC_DB_USER}")
+        # remove all public and tile user permissions
+        user_database.run("REVOKE ALL ON DATABASE #{database_name} FROM PUBLIC")
+        user_database.run("REVOKE ALL ON SCHEMA #{schema} FROM PUBLIC")
+        user_database.run("REVOKE ALL ON ALL SEQUENCES IN SCHEMA #{schema} FROM PUBLIC")
+        user_database.run("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA #{schema} FROM PUBLIC")
+        user_database.run("REVOKE ALL ON ALL TABLES IN SCHEMA #{schema} FROM PUBLIC")
 
-          user_database.run("REVOKE ALL ON DATABASE #{database_name} FROM #{CartoDB::TILE_DB_USER}")
-          user_database.run("REVOKE ALL ON SCHEMA #{schema} FROM #{CartoDB::TILE_DB_USER}")
-          user_database.run("REVOKE ALL ON ALL SEQUENCES IN SCHEMA #{schema} FROM #{CartoDB::TILE_DB_USER}")
-          user_database.run("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA #{schema} FROM #{CartoDB::TILE_DB_USER}")
-          user_database.run("REVOKE ALL ON ALL TABLES IN SCHEMA #{schema} FROM #{CartoDB::TILE_DB_USER}")
+        user_database.run("REVOKE ALL ON DATABASE #{database_name} FROM #{CartoDB::PUBLIC_DB_USER}")
+        user_database.run("REVOKE ALL ON SCHEMA #{schema} FROM #{CartoDB::PUBLIC_DB_USER}")
+        user_database.run("REVOKE ALL ON ALL SEQUENCES IN SCHEMA #{schema} FROM #{CartoDB::PUBLIC_DB_USER}")
+        user_database.run("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA #{schema} FROM #{CartoDB::PUBLIC_DB_USER}")
+        user_database.run("REVOKE ALL ON ALL TABLES IN SCHEMA #{schema} FROM #{CartoDB::PUBLIC_DB_USER}")
 
-          # grant core permissions to database user
-          user_database.run("GRANT ALL ON DATABASE #{database_name} TO #{database_username}")
-          user_database.run("GRANT ALL ON SCHEMA #{schema} TO #{database_username}")
-          user_database.run("GRANT ALL ON ALL SEQUENCES IN SCHEMA #{schema} TO #{database_username}")
-          user_database.run("GRANT ALL ON ALL FUNCTIONS IN SCHEMA #{schema} TO #{database_username}")
-          user_database.run("GRANT ALL ON ALL TABLES IN SCHEMA #{schema} TO #{database_username}")
-        end
+        user_database.run("REVOKE ALL ON DATABASE #{database_name} FROM #{CartoDB::TILE_DB_USER}")
+        user_database.run("REVOKE ALL ON SCHEMA #{schema} FROM #{CartoDB::TILE_DB_USER}")
+        user_database.run("REVOKE ALL ON ALL SEQUENCES IN SCHEMA #{schema} FROM #{CartoDB::TILE_DB_USER}")
+        user_database.run("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA #{schema} FROM #{CartoDB::TILE_DB_USER}")
+        user_database.run("REVOKE ALL ON ALL TABLES IN SCHEMA #{schema} FROM #{CartoDB::TILE_DB_USER}")
+
+        # grant core permissions to database user
+        user_database.run("GRANT ALL ON DATABASE #{database_name} TO #{database_username}")
+        user_database.run("GRANT ALL ON SCHEMA #{schema} TO #{database_username}")
+        user_database.run("GRANT ALL ON ALL SEQUENCES IN SCHEMA #{schema} TO #{database_username}")
+        user_database.run("GRANT ALL ON ALL FUNCTIONS IN SCHEMA #{schema} TO #{database_username}")
+        user_database.run("GRANT ALL ON ALL TABLES IN SCHEMA #{schema} TO #{database_username}")
 
         # grant select permissions to public user (for SQL API)
         user_database.run("GRANT CONNECT ON DATABASE #{database_name} TO #{CartoDB::PUBLIC_DB_USER}")

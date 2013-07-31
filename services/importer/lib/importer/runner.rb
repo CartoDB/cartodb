@@ -2,7 +2,6 @@
 require_relative './loader'
 require_relative './shp_loader'
 require_relative './osm_loader'
-require_relative './indexer'
 require_relative './unp'
 require_relative './column'
 require_relative './exceptions'
@@ -54,14 +53,8 @@ module CartoDB
         job.log "Importing data from #{source_file.fullpath}"
         loader.run
 
-        loader.valid_table_names.each do |table_name|
-          job.log "Sanitizing column names in #{table_name}"
-          columns_in(table_name, source_file.target_schema).each(&:sanitize)
-          Indexer.new(job.db, source_file.target_schema, job).add(table_name)
-        end
         job.success_status = true
         self.results.push(result_for(job, source_file, loader.valid_table_names))
-
       rescue => exception
         job.success_status = false
         self.results.push(
@@ -81,7 +74,7 @@ module CartoDB
         LOADERS.fetch(source_file.extension.delete('.').to_sym)
       end #loader_for
 
-      def columns_in(table_name, schema='importer')
+      def columns_in(table_name, schema='cdb_importer')
         db.schema(table_name, schema: schema)
           .map { |s| s[0] }
           .map { |column_name| Column.new(db, table_name, column_name, schema) }

@@ -5,7 +5,7 @@ require_relative './exceptions'
 module CartoDB
   module Importer2
     class Shp2pgsql
-      SCHEMA = 'importer'
+      SCHEMA = 'cdb_importer'
       NORMALIZER_RELATIVE_PATH = 
         "../../../../../lib/importer/misc/shp_normalizer.py"
 

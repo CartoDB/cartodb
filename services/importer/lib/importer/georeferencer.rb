@@ -97,14 +97,14 @@ module CartoDB
       def latitude_column_name_in(qualified_table_name)
         names = LATITUDE_POSSIBLE_NAMES.map { |name| "'#{name}'" }.join(',')
         name  = find_column_in(table_name, names)
-        job.log "Identified #{name} as latitude column"
+        job.log "Identified #{name} as latitude column" if name
         name
       end #latitude_column_name_in
 
       def longitude_column_name_in(qualified_table_name)
         names = LONGITUDE_POSSIBLE_NAMES.map { |name| "'#{name}'" }.join(',')
         name = find_column_in(table_name, names)
-        job.log "Identified #{name} as longitude column"
+        job.log "Identified #{name} as longitude column" if name
         name
       end #longitude_column_name_in
 

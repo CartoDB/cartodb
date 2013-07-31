@@ -654,8 +654,103 @@ class User < Sequel::Model
     end
   end #create_importer_schema
 
+  # Add plpythonu pl handler
+  def add_python
+    in_database(:as => :superuser).run(<<-SQL
+      CREATE OR REPLACE PROCEDURAL LANGUAGE 'plpythonu' HANDLER plpython_call_handler;
+    SQL
+    )
+  end
+
+  # Create a "cdb_invalidate_varnish()" function to invalidate Varnish
+  #
+  # The function can only be used by the superuser, we expect
+  # security-definer triggers OR triggers on superuser-owned tables
+  # to call it with controlled set of parameters.
+  #
+  # The function is written in python because it needs to reach out
+  # to a Varnish server.
+  #
+  # Being unable to communicate with Varnish may or may not be critical
+  # depending on CartoDB configuration at time of function definition.
+  #
+  def create_function_invalidate_varnish
+
+    add_python
+
+    varnish_host = Cartodb.config[:varnish_management].try(:[],'host') || '127.0.0.1'
+    varnish_port = Cartodb.config[:varnish_management].try(:[],'port') || 6082
+    varnish_timeout = Cartodb.config[:varnish_management].try(:[],'timeout') || 5
+    varnish_critical = Cartodb.config[:varnish_management].try(:[],'critical') == true ? 1 : 0
+    varnish_retry = Cartodb.config[:varnish_management].try(:[],'retry') || 5
+    purge_command = Cartodb::config[:varnish_management]["purge_command"]
+
+    in_database(:as => :superuser).run(<<-TRIGGER
+    BEGIN;
+    CREATE OR REPLACE FUNCTION cdb_invalidate_varnish(table_name text) RETURNS void AS
+    $$
+        critical = #{varnish_critical}
+        timeout = #{varnish_timeout}
+        retry = #{varnish_retry}
+
+        client = GD.get('varnish', None)
+
+        while True:
+
+          if not client:
+              try:
+                import varnish
+                client = GD['varnish'] = varnish.VarnishHandler(('#{varnish_host}', #{varnish_port}, timeout))
+              except Exception as err:
+                plpy.warning('Varnish connection error: ' +  str(err))
+                # NOTE: we won't retry on connection error
+                if critical:
+                  plpy.error('Varnish connection error: ' +  str(err))
+                break
+
+          try:
+            client.fetch('#{purge_command} obj.http.X-Cache-Channel ~ "^#{self.database_name}:(.*%s.*)|(table)$"' % table_name)
+            break
+          except Exception as err:
+            plpy.warning('Varnish fetch error: ' + str(err))
+            client = GD['varnish'] = None # force reconnect
+            if not retry:
+              if critical:
+                plpy.error('Varnish fetch error: ' +  str(err))
+              break
+            retry -= 1 # try reconnecting
+    $$
+    LANGUAGE 'plpythonu' VOLATILE;
+    REVOKE ALL ON FUNCTION cdb_invalidate_varnish(TEXT) FROM PUBLIC;
+    COMMIT;
+TRIGGER
+    )
+  end
+
+  # Create an "update_timestamp()" trigger function to invalidate Varnish
+  # This is currently invoked by the "cache_checkpoint" trigger attached
+  # to tables
+  #
+  # TODO: drop this and replace with a trigger on CDB_TableMetadata
+  #
+  def create_trigger_function_update_timestamp
+    in_database(:as => :superuser).run(<<-TRIGGER
+    CREATE OR REPLACE FUNCTION update_timestamp() RETURNS trigger AS
+    $$
+        table_name = TD["table_name"]
+        plan = plpy.prepare("SELECT cdb_invalidate_varnish($1)", ["text"])
+        plpy.execute(plan, [table_name])
+    $$
+    LANGUAGE 'plpythonu' VOLATILE SECURITY DEFINER;
+TRIGGER
+    )
+  end
+
+
   # Cartodb functions
   def load_cartodb_functions(files = [])
+    create_function_invalidate_varnish
+    create_trigger_function_update_timestamp
     in_database(:as => :superuser) do |user_database|
       user_database.transaction do
         if files.empty?

@@ -220,7 +220,7 @@ div.subheader {
     @include transition-duration(500ms);
 
     .dark { color: #666666; }
-    p.migrated, p.upgraded { display:none; }
+    p.upgraded { display:none; }
 
     a.close {
       position:absolute;
@@ -237,14 +237,8 @@ div.subheader {
 
     &.upgraded {
       background:rgba(#8DB73F,0.15);
-      p.limit, p.migrated {display:none;}
+      p.limit {display:none;}
       p.upgraded {display:block;}
-    }
-
-    &.migrated {
-      background:rgba(#FFE599, .35);
-      p.limit, p.upgrated {display:none;}
-      p.migrated {display:block;}
     }
 
     &.visible {

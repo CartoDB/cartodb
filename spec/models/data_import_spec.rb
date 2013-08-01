@@ -52,7 +52,7 @@ describe DataImport do
     duplicated_table.records[:rows].should have(5).items
   end
 
-  it 'imports a simple file' do
+  it 'imports a simple file', now: true do
     data_import = DataImport.create(
       :user_id       => @user.id,
       :data_source   => '/../db/fake_data/clubbing.csv',
@@ -134,7 +134,7 @@ describe DataImport do
   end
 
   it "don't touch created_at/updated_at fields if already present in the
-  imported file", now: true do
+  imported file" do
     fixture = "#{Rails.root}/db/fake_data/created_at_update_at_fields_present.csv"
     data_import = DataImport.create(
       user_id:      @user.id,

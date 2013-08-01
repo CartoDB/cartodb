@@ -9,6 +9,7 @@ require_relative './exceptions'
 module CartoDB
   module Importer2
     class Runner
+      QUOTA_MAGIC_NUMBER = 0.3
       LOADERS = {
         csv:      Loader,
         xls:      Loader,
@@ -31,16 +32,19 @@ module CartoDB
         self.unpacker     = unpacker || Unp.new
       end #initialize
 
-      def run(&tracker)
-        tracker ||= lambda { |state| }
-        tracker.call('downloading')
+      def run(&tracker_block)
+        self.tracker = tracker_block
+        tracker.call('uploading')
         log.append "Getting file from #{downloader.url}"
         downloader.run
 
         log.append "Starting import for #{downloader.source_file.fullpath}"
         log.append "Unpacking #{downloader.source_file.fullpath}"
 
+        #raise_if_over_storage_quota
+
         unpacker.run(downloader.source_file.fullpath)
+        tracker.call('unpacking')
         unpacker.source_files.each { |source_file| import(source_file) }
         unpacker.clean_up
         self
@@ -50,6 +54,7 @@ module CartoDB
         job     ||= Job.new(logger: log, pg_options: pg_options)
         loader  ||= loader_for(source_file).new(job, source_file)
 
+        self.tracker.call('importing')
         job.log "Importing data from #{source_file.fullpath}"
         loader.run
 
@@ -80,12 +85,16 @@ module CartoDB
           .map { |column_name| Column.new(db, table_name, column_name, schema) }
       end #columns_in
 
+      def tracker
+        @tracker || lambda { |state| }
+      end #tracker
+
       attr_reader :results, :log
 
       private
 
       attr_accessor :downloader, :pg_options, :unpacker
-      attr_writer   :results, :log
+      attr_writer   :results, :log, :tracker
 
       def result_for(job, source_file, table_names, exception_klass=nil)
         { 
@@ -102,6 +111,14 @@ module CartoDB
         return nil unless exception_klass
         ERRORS_MAP.fetch(exception_klass, UnknownError)
       end #error_for
+
+      def raise_if_over_storage_quota
+        file_size   = File.size(downloader.source_file.fullpath)
+        over_quota  = available_quota < QUOTA_MAGIC_NUMBER * file_size
+
+        raise StorageQuotaExceededError if over_quota
+        self
+      end #raise_if_over_storage_quota
     end # Runner
   end # Importer2
 end # CartoDB

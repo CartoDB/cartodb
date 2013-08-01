@@ -44,6 +44,9 @@ class DataImport < Sequel::Model
     success ? handle_success : handle_failure
     self
   rescue => exception
+    Rollbar.report_message(
+      "DataImport Error", "error", error_info: exception.to_s + exception.backtrace
+    )
     reload
     handle_failure
     self.log << ("Exception while running import: " + exception.inspect)

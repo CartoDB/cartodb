@@ -96,8 +96,6 @@ module CartoDB
 
       def underscore(filename)
         filename.encode('UTF-8')
-          .encode('UTF-16')
-          .encode('UTF-8')
           .gsub(' ', '_')
           .gsub(/\(/, '')
           .gsub(/\)/, '')

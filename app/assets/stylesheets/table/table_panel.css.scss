@@ -630,7 +630,7 @@ a.info {
 
     .value {
       position:relative;
-      top:5px;
+      top:4px;
       padding: 0 5px 3px 5px;
       color: #666666;
       font-size:15px;
@@ -640,7 +640,7 @@ a.info {
       background: rgba(#FFDC73, .3);
 
       &:hover {
-      background: rgba(#FFDC73, .5);
+        background: rgba(#FFDC73, .5);
       }
 
       span {
@@ -688,9 +688,6 @@ a.info {
         }
 
         .color {
-          ul li label {
-            /*@include position(8px, 0, false, false);*/
-          }
           .no_content { display: none; }
         }
 

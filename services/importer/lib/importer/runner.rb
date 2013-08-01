@@ -46,8 +46,8 @@ module CartoDB
 
         raise_if_over_storage_quota
 
-        unpacker.run(downloader.source_file.fullpath)
         tracker.call('unpacking')
+        unpacker.run(downloader.source_file.fullpath)
         unpacker.source_files.each { |source_file| import(source_file) }
         unpacker.clean_up
         self
@@ -64,6 +64,8 @@ module CartoDB
         job.success_status = true
         self.results.push(result_for(job, source_file, loader.valid_table_names))
       rescue => exception
+        job.log exception.to_s
+        job.log exception.backtrace
         job.success_status = false
         self.results.push(
           result_for(job, source_file, loader.valid_table_names, exception.class)

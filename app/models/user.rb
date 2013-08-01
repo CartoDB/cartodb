@@ -600,14 +600,13 @@ class User < Sequel::Model
         end
       end.join
 
+      create_importer_schema
       set_database_permissions
       set_database_permissions_in_importer_schema
       load_cartodb_functions
     end
   end
 
-<<<<<<< HEAD
-=======
   def create_importer_schema
     in_database(as: :superuser) do |database|
       database.run(%Q{CREATE SCHEMA cdb_importer})
@@ -700,8 +699,6 @@ TRIGGER
     )
   end
 
-
->>>>>>> 833d7f3... [importer] Assign cdb_importer schema using User#set_database_permissions_in_importer_schema
   # Cartodb functions
   def load_cartodb_functions(files = [])
     in_database(:as => :superuser) do |user_database|

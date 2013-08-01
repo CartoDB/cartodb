@@ -227,11 +227,16 @@
   }
   
   /* Bubble legend */
-  div.cartodb-legend.bubble { }
+  div.cartodb-legend.bubble {
+    text-align:center;
+  }
 
   div.cartodb-legend.bubble ul {
     clear:both;
     overflow: hidden;
+
+    display: -moz-inline-stack;
+    display: inline-block;
   }
 
   div.cartodb-legend.bubble ul li { 

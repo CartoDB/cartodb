@@ -669,9 +669,19 @@ a.info {
   div.legends_panel {
     display:block;
     width:100%;
-    overflow:hidden;
+    overflow: auto;
+
+    .panel_content {
+      overflow: auto;
+    }
 
     .panel_content .wrapper .content .fields li span { cursor: default; }
+    .panel_content .wrapper .content .fields {
+      position:relative;
+      background:#fff;
+      z-index: 100;
+
+    }
 
     div.forms {
 

@@ -147,24 +147,6 @@ feature "API 1.0 records management" do
     end
     @table.rows_counted.should == 1
   end
-
-  scenario "Get the value from a column in a given record" do
-    pk = @table.insert_row!({:name => "Blat", :description => String.random(50), :the_geom => %Q{\{"type":"Point","coordinates":[#{Float.random_longitude},#{Float.random_latitude}]\}}})
-
-    get_json api_table_record_column_url(@table.name,pk,:name) do |response|
-      response.status.should be_success
-      response.body[:name].should == "Blat"
-    end
-  end
-
-  scenario "Update the value from a column in a given record" do
-    pk = @table.insert_row!({:name => "Blat", :description => String.random(50), :the_geom => %Q{\{"type":"Point","coordinates":[#{Float.random_longitude},#{Float.random_latitude}]\}}})
-
-    put_json api_table_record_column_url(@table.name,pk,:name), {:value => "Fernando Blat"} do |response|
-      response.status.should be_success
-      response.body[:name].should == "Fernando Blat"
-    end
-  end
   
   scenario "Create a new row of type number and insert float values" do
     table_id = nil

@@ -1,6 +1,6 @@
 # coding: UTF-8
 class Api::Json::RecordsController < Api::ApplicationController
-  ssl_required :index, :create, :show, :update, :destroy, :show_column, :update_column, :pending_addresses
+  ssl_required :index, :create, :show, :update, :destroy
 
   REJECT_PARAMS = %W{ format controller action id row_id requestId column_id api_key table_id oauth_token oauth_token_secret }
 
@@ -50,20 +50,6 @@ class Api::Json::RecordsController < Api::ApplicationController
     head :no_content
   rescue => e
     render_jsonp({ errors: ["row identified with #{params[:id]} not found"] }, 404)
-  end
-
-  def show_column
-    render_jsonp(current_user.run_query("select #{params[:id].sanitize_sql} from #{@table.name} where cartodb_id = #{params[:record_id].sanitize_sql}")[:rows].first)
-  end
-
-  def update_column
-    @table.update_row!(params[:record_id], {params[:id].to_sym => params[:value]})
-    render_jsonp({ params[:id] => params[:value] })
-  end
-
-  def pending_addresses
-    records = @table.get_records_with_pending_addresses(:page => params[:page], :rows_per_page => params[:rows_per_page])
-    render_jsonp(records)
   end
 
   protected

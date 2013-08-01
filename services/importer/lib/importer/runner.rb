@@ -46,8 +46,8 @@ module CartoDB
 
         raise_if_over_storage_quota
 
-        unpacker.run(downloader.source_file.fullpath)
         tracker.call('unpacking')
+        unpacker.run(downloader.source_file.fullpath)
         unpacker.source_files.each { |source_file| import(source_file) }
         unpacker.clean_up
         self

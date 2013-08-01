@@ -270,28 +270,26 @@
   }
 
   div.cartodb-legend.choropleth li.graph div {
-    float:left;
     width: 10px;
     height: 22px;
   }
 
-  div.cartodb-legend.choropleth li.graph.count_7 div {
-    width: 30px;
-  }
+  div.cartodb-legend.choropleth li.graph .quartile { display: table-cell; }
+  div.cartodb-legend.choropleth li.graph.count_7 .quartile { width: 30px; }
+  div.cartodb-legend.choropleth li.graph.count_5 .quartile { width: 42px; }
+  div.cartodb-legend.choropleth li.graph.count_3 .quartile { width: 70px; }
 
-  div.cartodb-legend.choropleth li.graph.count_5 div {
-    width: 42px;
-  }
-
-  div.cartodb-legend.choropleth li.graph.count_3 div {
-    width: 70px;
+  div.cartodb-legend.choropleth li.graph .colors {
+    display: table-row;
   }
 
   div.cartodb-legend.choropleth li.graph {
     clear:both;
     overflow:hidden;
 
-    width: 210px;
+    display: table;
+
+    width: 100%;
     height: 22px;
 
     -webkit-border-radius: 3px;
@@ -300,9 +298,9 @@
     -o-border-radius: 3px;
     border-radius: 3px;
 
-    -moz-background-clip: padding;    
-    -webkit-background-clip: padding;  
-    background-clip: padding;      
+    -moz-background-clip: padding;
+    -webkit-background-clip: padding;
+    background-clip: padding;
     
     /*box-shadow: inset 0px 0px 0px 1px rgba(0, 0, 0, 0.2);*/
     border: 1px solid #b3b3b3;
@@ -326,24 +324,21 @@
   }
 
   div.cartodb-legend.density li.graph div {
-    float:left;
     width: 10px;
     height: 22px;
   }
 
-  div.cartodb-legend.density li.graph.count_7 div {
-    width: 30px;
-  }
-
-  div.cartodb-legend.density li.graph.count_5 div {
-    width: 42px;
-  }
+  div.cartodb-legend.choropleth li.graph .quartile { display: table-cell; }
+  div.cartodb-legend.choropleth li.graph.count_7 .quartile { width: 30px; }
+  div.cartodb-legend.choropleth li.graph.count_5 .quartile { width: 42px; }
+  div.cartodb-legend.choropleth li.graph.count_3 .quartile { width: 70px; }
 
   div.cartodb-legend.density li.graph {
     clear:both;
     overflow:hidden;
 
-    width: 210px;
+    display: table;
+    width: 100%;
     height: 22px;
 
     -webkit-border-radius: 3px;
@@ -352,10 +347,10 @@
     -o-border-radius: 3px;
     border-radius: 3px;
 
-    -moz-background-clip: padding;    
-    -webkit-background-clip: padding;  
-    background-clip: padding;      
-    
+    -moz-background-clip: padding;
+    -webkit-background-clip: padding;
+    background-clip: padding;
+
     /*box-shadow: inset 0px 0px 0px 1px rgba(0, 0, 0, 0.2);*/
     border: 1px solid #b3b3b3;
   }
@@ -379,7 +374,7 @@
   div.cartodb-legend.intensity li.graph {
     clear:both;
 
-    width: 209px;
+    width: 100%;
     height: 22px;
     background:#f1f1f1;
 

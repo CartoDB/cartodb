@@ -43,7 +43,7 @@ cdb.geo.ui.ChoroplethLegend = cdb.core.View.extend({
   initialize: function() {
 
     this.items    = this.options.items;
-    this.template = _.template('<li class="min"><%= leftLabel %></li><li class="max"><%= rightLabel %></li><li class="graph count_<%= buckets_count %>"><%= colors %></li>');
+    this.template = _.template('<li class="min"><%= leftLabel %></li><li class="max"><%= rightLabel %></li><li class="graph count_<%= buckets_count %>"><div class="colors"><%= colors %></div></li>');
     this.model    = new cdb.core.Model();
 
   },
@@ -86,7 +86,7 @@ cdb.geo.ui.DensityLegend = cdb.core.View.extend({
   initialize: function() {
 
     this.items    = this.options.items;
-    this.template = _.template('<li class="min"><%= leftLabel %></li><li class="max"><%= rightLabel %></li><li class="graph count_<%= buckets_count %>"><%= colors %></li>');
+    this.template = _.template('<li class="min"><%= leftLabel %></li><li class="max"><%= rightLabel %></li><li class="graph count_<%= buckets_count %>"><div class="colors"><%= colors %></div></li>');
     this.model    = new cdb.core.Model();
 
   },

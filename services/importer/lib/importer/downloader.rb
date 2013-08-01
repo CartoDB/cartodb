@@ -1,5 +1,6 @@
 # encoding: utf-8
 require 'typhoeus'
+require_relative './exceptions'
 require_relative './source_file'
 require_relative '../../../data-repository/filesystem/local'
 require_relative './url_translator/osm'
@@ -16,7 +17,7 @@ module CartoDB
 
       def initialize(url, seed=nil, repository=nil)
         self.url          = url
-        raise 'No file to import!!!' if url.nil?
+        raise UploadError if url.nil?
         self.seed         = seed
         self.repository   = repository || 
                             DataRepository::Filesystem::Local.new(temporary_directory)

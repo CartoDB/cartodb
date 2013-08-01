@@ -718,6 +718,14 @@ a.info {
 
           label.empty { font-style: italic; }
 
+          label {
+            @include inline-block();
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 260px;
+          }
+
           .input {
             @include position(8px, 0, false, false);
             @include default-input();

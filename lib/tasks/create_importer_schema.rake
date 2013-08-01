@@ -11,12 +11,19 @@ namespace :cartodb do
         false
       end #needs_importer_schema?
 
+      count = User.count
       User.all
         .select { |user| needs_importer_schema?(user) }
-        .each { |user|
-          puts "Creating cdb_importer schema for #{user.inspect}"
-          user.create_importer_schema
-          user.set_database_permissions_in_importer_schema
+        .each_with_index { |user, index|
+          begin
+            puts "Creating cdb_importer schema for #{user.username}"
+            user.create_importer_schema
+            user.set_database_permissions_in_importer_schema
+            printf "OK %-#{20}s (%-#{4}s/%-#{4}s)\n", user.username, index, count
+          rescue => exception
+            printf "FAIL %-#{20}s (%-#{4}s/%-#{4}s) #{exception.message}\n", user.username, index, count
+          end
+          sleep(1.0/5.0)
         }
     end
   end

@@ -20,6 +20,14 @@ describe 'geojson regression tests' do
     runner.run
   end
 
+  it 'imports a file from a url with params' do
+    filepath    = 'https://raw.github.com/benbalter/dc-wifi-social/master' +
+                  '/bars.geojson?foo=bar'
+    downloader  = Downloader.new(filepath)
+    runner      = Runner.new(@pg_options, downloader)
+    runner.run
+  end
+
   it 'imports a file with boolean values' do
     skip
     filepath    = path_to('boolean_values.geojson')

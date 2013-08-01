@@ -639,15 +639,19 @@ a.info {
       @include transform(skew(-25deg));
       background: rgba(#FFDC73, .3);
 
+      &:hover {
+      background: rgba(#FFDC73, .5);
+      }
+
       span {
         @include inline-block();
-        @include transform(skew(25deg));
+        padding:1px;
 
+        @include transform(skew(25deg));
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
         max-width: 160px;
-
       }
 
       &.empty { font-style: italic; }

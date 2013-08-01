@@ -65,10 +65,6 @@ module NavigationHelpers
     api_req "#{api_url_prefix}/tables/#{table_identifier}/records/#{row_identifier}/columns/#{column_name}"
   end
   
-  def api_table_records_pending_addresses_url(table_identifier)
-    "#{api_url_prefix}/tables/#{table_identifier}/records/pending_addresses"
-  end
-
   def api_user_url (user_id)
     api_req "#{api_url_prefix}/users/#{user_id}"
   end

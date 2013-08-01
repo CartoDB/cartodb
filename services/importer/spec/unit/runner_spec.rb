@@ -15,6 +15,7 @@ include CartoDB::Importer2
 describe Runner do
   before do
     @filepath       = '/var/tmp/foo.txt'
+    FileUtils.touch(@filepath)
     @pg_options      = Factories::PGConnection.new.pg_options
   end
 
@@ -28,7 +29,7 @@ describe Runner do
   describe '#run' do
     it 'calls import for each file to process' do
       downloader  = Downloader.new(@filepath)
-      runner      = Runner.new(@pg_options, downloader, nil, fake_unpacker)
+      runner      = Runner.new(@pg_options, downloader, nil, nil, fake_unpacker)
       runner.instance_variable_set(:@import_called, 0)
 
       def runner.import(*args)
@@ -42,7 +43,7 @@ describe Runner do
 
     it 'logs the file path to be imported' do
       downloader  = Downloader.new(@filepath)
-      runner      = Runner.new(@pg_options, downloader, nil, fake_unpacker)
+      runner      = Runner.new(@pg_options, downloader, nil, nil, fake_unpacker)
       runner.instance_variable_set(:@import_called, 0)
 
       def runner.import(*args)
@@ -58,7 +59,7 @@ describe Runner do
     it 'returns the block passed at initialization' do
       data_import = OpenStruct.new
       downloader  = Downloader.new(@filepath)
-      runner      = Runner.new(@pg_options, downloader, nil, fake_unpacker)
+      runner      = Runner.new(@pg_options, downloader, nil, nil, fake_unpacker)
 
       def runner.import(*args); end
 

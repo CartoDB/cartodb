@@ -9,7 +9,8 @@ require_relative './exceptions'
 module CartoDB
   module Importer2
     class Runner
-      QUOTA_MAGIC_NUMBER = 0.3
+      QUOTA_MAGIC_NUMBER      = 0.3
+      DEFAULT_AVAILABLE_QUOTA = 2 ** 30
       LOADERS = {
         csv:      Loader,
         xls:      Loader,
@@ -24,12 +25,14 @@ module CartoDB
         osm:      OsmLoader
       }
 
-      def initialize(pg_options, downloader, log=nil, unpacker=nil)
-        self.pg_options   = pg_options
-        self.downloader   = downloader
-        self.log          = log || TrackRecord::Log.new
-        self.results      = []
-        self.unpacker     = unpacker || Unp.new
+      def initialize(pg_options, downloader, log=nil, available_quota=nil,
+      unpacker=nil)
+        self.pg_options       = pg_options
+        self.downloader       = downloader
+        self.log              = log || TrackRecord::Log.new
+        self.results          = []
+        self.unpacker         = unpacker || Unp.new
+        self.available_quota  = available_quota || DEFAULT_AVAILABLE_QUOTA
       end #initialize
 
       def run(&tracker_block)
@@ -41,7 +44,7 @@ module CartoDB
         log.append "Starting import for #{downloader.source_file.fullpath}"
         log.append "Unpacking #{downloader.source_file.fullpath}"
 
-        #raise_if_over_storage_quota
+        raise_if_over_storage_quota
 
         unpacker.run(downloader.source_file.fullpath)
         tracker.call('unpacking')
@@ -89,7 +92,8 @@ module CartoDB
         @tracker || lambda { |state| }
       end #tracker
 
-      attr_reader :results, :log
+      attr_reader   :results, :log
+      attr_accessor :available_quota
 
       private
 

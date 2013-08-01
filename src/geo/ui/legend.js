@@ -34,6 +34,49 @@ cdb.geo.ui.LegendItem = cdb.core.View.extend({
 });
 
 /*
+ * ChoroplethLegend
+ *
+ * */
+cdb.geo.ui.ChoroplethLegend = cdb.core.View.extend({
+
+  tagName: "ul",
+  initialize: function() {
+
+    this.items    = this.options.items;
+    this.template = _.template('<li class="min"><%= leftLabel %></li><li class="max"><%= rightLabel %></li><li class="graph count_<%= buckets_count %>"><%= colors %></li>');
+    this.model    = new cdb.core.Model();
+
+  },
+
+  render: function() {
+
+    if (this.items.length >= 2) {
+
+      this.leftLabel  = this.items.at(0);
+      this.rightLabel = this.items.at(1);
+
+      var leftLabel   = this.leftLabel.get("value");
+      var rightLabel  = this.rightLabel.get("value");
+
+      var colors = "";
+
+      for (var i = 2; i < this.items.length; i++) {
+        var color = this.items.at(i).get("value");
+        colors += '<div class="quartile" style="background-color:'+color+'"></div>';
+      }
+
+      this.model.set({ leftLabel: leftLabel, rightLabel: rightLabel, colors: colors, buckets_count: this.items.length - 2 });
+
+      this.$el.html(this.template(this.model.toJSON()));
+    }
+
+    return this;
+
+  }
+
+});
+
+/*
  * DensityLegend
  *
  * */

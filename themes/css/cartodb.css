@@ -930,6 +930,63 @@ div.cartodb-popup.header.yellow a.cartodb-popup-close-button:hover {
     width:120px; height:40px;
   }
 
+
+  /* Choropleth legend */
+  div.cartodb-legend.choropleth {
+    padding: 13px 15px 15px 15px;
+  }
+
+  div.cartodb-legend.choropleth li.min {
+    float: left;
+    margin: 0 0 5px 0;
+  }
+
+  div.cartodb-legend.choropleth li.max {
+    float: right;
+    margin: 0 0 5px 0;
+  }
+
+  div.cartodb-legend.choropleth li.graph div {
+    float:left;
+    width: 10px;
+    height: 22px;
+  }
+
+  div.cartodb-legend.choropleth li.graph.count_7 div {
+    width: 30px;
+  }
+
+  div.cartodb-legend.choropleth li.graph.count_5 div {
+    width: 42px;
+  }
+
+  div.cartodb-legend.choropleth li.graph.count_3 div {
+    width: 70px;
+  }
+
+  div.cartodb-legend.choropleth li.graph {
+    clear:both;
+    overflow:hidden;
+
+    width: 210px;
+    height: 22px;
+
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    -ms-border-radius: 3px;
+    -o-border-radius: 3px;
+    border-radius: 3px;
+
+    -moz-background-clip: padding;    
+    -webkit-background-clip: padding;  
+    background-clip: padding;      
+    
+    /*box-shadow: inset 0px 0px 0px 1px rgba(0, 0, 0, 0.2);*/
+    border: 1px solid #b3b3b3;
+  }
+
+
+
   /* Density legend */
   div.cartodb-legend.density {
     padding: 13px 15px 15px 15px;

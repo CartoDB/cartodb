@@ -31,7 +31,7 @@ module CartoDB
 
         response          = Typhoeus.get(translate(url), followlocation: true)
         name              = name_from(response.headers, url)
-        self.source_file  = SourceFile.new(filepath, name)
+        self.source_file  = SourceFile.new(filepath(name), name)
 
         repository.store(source_file.path, StringIO.new(response.response_body))
         self
@@ -63,13 +63,13 @@ module CartoDB
         [DEFAULT_FILENAME, seed].compact.join('_')
       end #filename
 
-      def filepath
-        repository.fullpath_for(filename)
+      def filepath(name=nil)
+        repository.fullpath_for(name || filename)
       end #filepath
 
       def name_from_http(headers)
         disposition = headers.fetch('Content-Disposition', nil)
-        disposition && disposition.match(CONTENT_DISPOSITION_RE)[1]
+        disposition && disposition.match(CONTENT_DISPOSITION_RE).to_a[1]
       end #name_from_http
 
       def name_in(url)

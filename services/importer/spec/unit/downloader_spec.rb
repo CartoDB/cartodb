@@ -78,11 +78,9 @@ describe Downloader do
     end
 
     it 'returns a local filepath' do
-      seed  = Time.now.to_i
-
-      downloader = Downloader.new(@file_url, seed)
+      downloader = Downloader.new(@file_url)
       downloader.run
-      downloader.source_file.fullpath.must_match /#{seed}/
+      downloader.source_file.fullpath.must_match /#{@file_url.split('/').last}/
     end
   end #source_file
 

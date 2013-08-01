@@ -93,10 +93,6 @@ CartoDB::Application.routes.draw do
 
         resources :records, :only => [:index, :create, :show, :update, :destroy] do
           get '/pending_addresses' => 'records#pending_addresses'
-          resources :columns do
-            get '/:id' => 'records#show_column'
-            put '/:id' => 'records#update_column'
-          end
         end
         resources :columns, :only => [:index, :create, :show, :update, :destroy]
       end

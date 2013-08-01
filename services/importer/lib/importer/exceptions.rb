@@ -2,7 +2,7 @@
 
 module CartoDB
   module Importer2
-    class UploadIOError                         < StandardError; end
+    class UploadError                           < StandardError; end
     class UnsupportedFormatError                < StandardError; end
     class ExtractionError                       < StandardError; end
     class EncodingError                         < StandardError; end
@@ -35,7 +35,7 @@ module CartoDB
 
 
     ERRORS_MAP = {
-      UploadIOError                         => 1000,
+      UploadError                           => 1000,
       UnsupportedFormatError                => 1002,
       ExtractionError                       => 1003,
       EncodingError                         => 1004,

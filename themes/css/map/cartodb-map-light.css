@@ -264,6 +264,10 @@
     padding: 13px 15px 15px 15px;
   }
 
+  div.cartodb-legend.choropleth ul {
+    min-width: 210px;
+  }
+
   div.cartodb-legend.choropleth li.min {
     float: left;
     margin: 0 0 5px 0;
@@ -318,6 +322,10 @@
     padding: 13px 15px 15px 15px;
   }
 
+  div.cartodb-legend.density ul {
+    min-width: 210px;
+  }
+
   div.cartodb-legend.density li.min {
     float: left;
     margin: 0 0 5px 0;
@@ -368,6 +376,10 @@
 
   div.cartodb-legend.intensity {
     padding: 13px 15px 15px 15px;
+  }
+
+  div.cartodb-legend.intensity ul {
+    min-width: 210px;
   }
 
   div.cartodb-legend.intensity li.min {

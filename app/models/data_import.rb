@@ -229,8 +229,9 @@ class DataImport < Sequel::Model
   def append_to_existing
     data_source ||= self.data_source
     downloader  = CartoDB::Importer2::Downloader.new(data_source)
+    tracker     = lambda { |state| self.state = state; save }
     runner      = CartoDB::Importer2::Runner.new(pg_options, downloader, log)
-    runner.run
+    runner.run(&tracker)
     self.results = runner.results
 
     # table_names is null, since we're just appending data to
@@ -305,8 +306,10 @@ class DataImport < Sequel::Model
   def new_importer(data_source=nil)
     data_source ||= self.data_source
     downloader  = CartoDB::Importer2::Downloader.new(data_source)
-    runner      = CartoDB::Importer2::Runner.new(pg_options, downloader, log)
-    runner.run
+    tracker     = lambda { |state| self.state = state; save }
+    runner      = CartoDB::Importer2::Runner
+                    .new(pg_options, downloader, log, current_user.remaining_quota)
+    runner.run(&tracker)
     self.results = runner.results
 
     runner.results.each do |result|

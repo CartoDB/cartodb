@@ -3,6 +3,12 @@
 - Added lengeds 
 - Dropbox file import 
 - Icon and images management. Icons and patterns can be set from the wizards
+- The importer component now uses a separate database schema ('cdb_importer') 
+  for all imports, with the exception of OSM files. To create the schema in
+  existing installations, run:
+  ```
+  $ bundle exec rake cartodb:db:create_importer_schema
+  ```
 
 2.1
 ---

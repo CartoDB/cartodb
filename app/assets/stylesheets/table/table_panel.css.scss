@@ -642,6 +642,12 @@ a.info {
       span {
         @include inline-block();
         @include transform(skew(25deg));
+
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 160px;
+
       }
 
       &.empty { font-style: italic; }

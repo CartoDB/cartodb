@@ -1084,7 +1084,6 @@ div.cartodb-popup.header.yellow a.cartodb-popup-close-button:hover {
 
     -moz-background-clip: padding;
     -webkit-background-clip: padding;
-    -webkit-background-clip: padding;
     background-clip: padding;
     
     /*border: 1px solid #b3b3b3;*/
@@ -1093,6 +1092,7 @@ div.cartodb-popup.header.yellow a.cartodb-popup-close-button:hover {
     -moz-box-shadow: inset 0px 0px 0px 1px rgba(0, 0, 0, 0.2);
     -ms-box-shadow: inset 0px 0px 0px 1px rgba(0, 0, 0, 0.2);
     box-shadow: inset 0px 0px 0px 1px rgba(0, 0, 0, 0.2);
+
   }
   
   /* CartoDB Zoom styles */

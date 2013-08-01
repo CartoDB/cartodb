@@ -192,6 +192,8 @@ cdb.geo.ui.IntensityLegend = cdb.core.View.extend({
     s+= "background: -ms-linear-gradient(left, <%= color %> 0%,<%= right %> 100%)";
     s+= "background: linear-gradient(to right, <%= color %> 0%,<%= right %> 100%);";
     s+= "filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='<%= color %>', endColorstr='<%= right %>',GradientType=1 );";
+    s+= "background-image: -ms-linear-gradient(left, <%= color %> 0%,<%= right %> 100%)";
+
 
     var backgroundStyle = _.template(s);
 

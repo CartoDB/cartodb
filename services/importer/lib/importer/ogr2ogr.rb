@@ -61,7 +61,7 @@ module CartoDB
       end #encoding_option
 
       def layer_name_option
-        "-nln #{table_name}"
+        "-nln #{SCHEMA}.#{table_name}"
       end #layer_name_option
 
       def postgres_options

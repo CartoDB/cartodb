@@ -6,6 +6,7 @@ module CartoDB
     class RDBMS
       def initialize(connection)
         @connection = connection
+        @connection.extension :pg_array
       end #initialize
 
       def rename_user(existing_username, new_username)
@@ -261,9 +262,18 @@ module CartoDB
         records.each do |record|
           old_map_id = record.fetch('map_id').to_s
           record.store('map_id', maps_map.fetch(old_map_id))
-          connection[:visualizations].insert(record)
+          connection[:visualizations].insert(serialize_for_postgres(record))
         end
       end #insert_visualizations_for
+
+      def serialize_for_postgres(record)
+        Hash[
+          record.map { |key, value|
+            value = value.pg_array if value.is_a?(Array) && !value.empty? 
+            [key, value]
+          }
+        ]
+      end #serialize_for_postgres
 
       def insert_overlays_for(arguments)
         arguments.fetch(:records).each do |record|

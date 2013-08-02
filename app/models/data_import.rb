@@ -2,6 +2,7 @@
 require 'sequel'
 require 'fileutils'
 require 'uuidtools'
+require 'rollbar'
 require_relative './user'
 require_relative './table'
 require_relative '../../lib/cartodb/errors'
@@ -44,12 +45,9 @@ class DataImport < Sequel::Model
     success ? handle_success : handle_failure
     self
   rescue => exception
-    Rollbar.report_message(
-      "DataImport Error", "error", error_info: exception.to_s + exception.backtrace
-    )
-    reload
+    log.append "Exception: #{exception.to_s}"
+    log.append exception.backtrace
     handle_failure
-    self.log << ("Exception while running import: " + exception.inspect)
     self
   end
 
@@ -136,14 +134,14 @@ class DataImport < Sequel::Model
   end #handle_success
 
   def handle_failure
-    Rollbar.report_message("Failed import", "error", error_info: basic_information)
-    keep_problematic_file if uploaded_file
-
-    set_error_code = errors_from(results).first
-    self.success  = false
-    self.state    = 'failure'
+    set_error_code  = errors_from(results).first
+    self.success    = false
+    self.state      = 'failure'
     self.log << "ERROR!\n"
     self.save
+    keep_problematic_file if uploaded_file
+    Rollbar.report_message("Failed import", "error", error_info: basic_information)
+    self
   end #handle_failure
 
   attr_reader :results

@@ -85,6 +85,27 @@ describe User do
     user.valid?.should be_true
   end
 
+  it "should set default statement timeout values" do
+    @user.in_database["show statement_timeout"].first[:statement_timeout].should == "5min"
+    @user.in_database(as: :public_user)["show statement_timeout"].first[:statement_timeout].should == "5min"
+  end
+
+  it "should keep in sync user statement_timeout" do
+    @user.user_timeout = 1000000
+    @user.database_timeout = 300000
+    @user.save
+    @user.in_database["show statement_timeout"].first[:statement_timeout].should == "1000s"
+    @user.in_database(as: :public_user)["show statement_timeout"].first[:statement_timeout].should == "5min"
+  end
+
+  it "should keep in sync database statement_timeout" do
+    @user.user_timeout = 300000
+    @user.database_timeout = 1000000
+    @user.save
+    @user.in_database["show statement_timeout"].first[:statement_timeout].should == "5min"
+    @user.in_database(as: :public_user)["show statement_timeout"].first[:statement_timeout].should == "1000s"
+  end
+
   it "should read api calls from external service" do
     @user.stubs(:get_old_api_calls).returns({
       "per_day" => [0, 0, 0, 0, 24, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 17, 0, 0, 0, 0, 0], 

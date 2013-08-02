@@ -1,5 +1,5 @@
-2.1.x
----
+2.1.2
+-----
 - Added legends.
 - Dropbox file import.
 - Icon and images management. Icons and patterns can be set from the wizards

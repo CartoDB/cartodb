@@ -27,7 +27,7 @@ module CartoDB
 
       def load(visualization_stats={})
         transform(visualization_stats).each do |key, data| 
-          data.each { |tuple| redis.zadd(key, *tuple.reverse) }
+          data.each_slice(2) { |tuple| redis.zadd(key, *tuple.reverse) }
         end
       end #load
 

@@ -106,10 +106,12 @@ feature "Superadmin's users API" do
 
   scenario "update user account details" do
     user = create_user
-    @update_atts = {:quota_in_bytes => 2000,
-                    :table_quota    => 20,
-                    :max_layers     => 10,
-                    :account_type   => 'Juliet',
+    @update_atts = {:quota_in_bytes   => 2000,
+                    :table_quota      => 20,
+                    :max_layers       => 10,
+                    :user_timeout     => 100000,
+                    :database_timeout => 200000,
+                    :account_type     => 'Juliet',
                     :private_tables_enabled => true}
 
     # test to true
@@ -122,6 +124,8 @@ feature "Superadmin's users API" do
     user.account_type.should == 'Juliet'
     user.private_tables_enabled.should == true
     user.max_layers.should == 10
+    user.database_timeout = 200000
+    user.user_timeout = 100000
 
     # then test back to false
     put_json superadmin_user_path(user), { :user => {:private_tables_enabled => false} }, default_headers do |response|

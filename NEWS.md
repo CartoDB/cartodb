@@ -1,3 +1,7 @@
+2.1.y
+---
+- Wizards, infowindows and legends change depending on the sql query schema
+
 2.1.x
 ---
 - Added legends.

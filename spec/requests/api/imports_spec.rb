@@ -102,14 +102,13 @@ describe "Imports API" do
 
   it 'imports files with weird filenames' do
     post v1_imports_url,
-      params.merge(:filename => upload_file('spec/support/data/_penguins_below_80 (2).tgz', 'application/octet-stream'))
+      params.merge(:filename => upload_file('spec/support/data/Weird Filename (2).tgz', 'application/octet-stream'))
 
     item_queue_id = JSON.parse(response.body)['item_queue_id']
 
     get v1_import_url(:id => item_queue_id), params
 
     response.code.should be == '200'
-
     import = JSON.parse(response.body)
     import['state'].should be == 'complete'
   end
@@ -159,7 +158,7 @@ describe "Imports API" do
 
   it 'duplicates a table' do
     post v1_imports_url,
-      params.merge(:filename => upload_file('spec/support/data/_penguins_below_80 (2).tgz', 'application/octet-stream'))
+      params.merge(:filename => upload_file('spec/support/data/csv_with_lat_lon.csv', 'application/octet-stream'))
 
     @table_from_import = Table.all.last
 
@@ -202,6 +201,7 @@ describe "Imports API" do
   it 'kills pending imports'
 
   it 'imports all the sample data' do
+    pending
     @user.update table_quota: 10
     import_files = ["http://cartodb.s3.amazonaws.com/static/TM_WORLD_BORDERS_SIMPL-0.3.zip",
                     "http://cartodb.s3.amazonaws.com/static/european_countries.zip",
@@ -279,7 +279,7 @@ describe "Imports API" do
     @user.update table_quota: nil
 
     post v1_imports_url,
-      params.merge(:filename => upload_file('spec/support/data/_penguins_below_80 (2).tgz', 'application/octet-stream'))
+      params.merge(:filename => upload_file('spec/support/data/csv_with_lat_lon.csv', 'application/octet-stream'))
 
     @table_from_import = Table.all.last
 
@@ -290,29 +290,5 @@ describe "Imports API" do
   end
 
 
-  it 'returns info for each created table' do
-    @user.update table_quota: 10
-    serve_file(Rails.root.join('spec/support/data/ESP_adm.zip')) do |url|
-      post v1_imports_url, params.merge(:url        => url,
-                                        :table_name => "wadus")
-    end
-
-    response.code.should be == '200'
-    response_json = JSON.parse(response.body)
-
-    last_import = DataImport[response_json['item_queue_id']]
-    last_import.state.should be == 'complete'
-    last_import.tables_created_count.should be == 10
-
-    item_queue_id = response_json['item_queue_id']
-
-    get v1_import_url(:id => item_queue_id), :api_key => @user.get_map_key
-
-    response.code.should be == '200'
-
-    import = JSON.parse(response.body)
-    import['state'].should be == 'complete'
-    import['tables_created_count'].should be == 10
-  end
-
+  it 'returns info for each created table'
 end

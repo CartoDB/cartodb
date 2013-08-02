@@ -106,30 +106,7 @@ describe User do
     @user2.tables.all.should == [Table.first(:user_id => @user2.id)]
   end
 
-  it "should generate a data report" do
-    @user2.data(extended: true).should == {
-      id: @user2.id,
-      email: "user@example.com",
-      username: "user",
-      account_type: "FREE",
-      table_quota: 5,
-      table_count: 0,
-      byte_quota: 104857600, 
-      remaining_table_quota: 5,
-      remaining_byte_quota: 104857600.0,
-      api_calls: (0..29).map { 0 },
-      api_calls_quota: 10000,
-      api_key: @user2.get_map_key,
-      actions: { private_tables: true, dedicated_support: false, import_quota: 1, remove_logo: false },
-      layers: [],
-      billing_period: Date.today,
-      last_active_time: nil,
-      db_size_in_bytes: 0,
-      real_table_count: 0
-    }
-
-    @user2.data.keys.should =~ [:id, :email, :username, :account_type, :actions, :table_quota, :table_count, :byte_quota, :remaining_table_quota, :remaining_byte_quota, :api_calls, :api_key, :layers, :billing_period, :api_calls_quota]
-  end
+  it "should generate a data report"
 
   it "should update remaining quotas when adding or removing tables" do
     initial_quota = @user2.remaining_quota
@@ -153,6 +130,24 @@ describe User do
     @user.database_name.should == "cartodb_test_user_#{@user.id}_db"
     @user.database_username.should == "test_cartodb_user_#{@user.id}"
     @user.in_database.test_connection.should == true
+  end
+
+  it 'creates an importer schema in the user database' do
+    @user.in_database[%Q(SELECT * FROM pg_namespace)]
+      .map { |record| record.fetch(:nspname) }
+      .should include 'cdb_importer'
+  end
+
+  it 'allows access to the importer schema by the owner' do
+    @user.in_database.run(%Q{
+      CREATE TABLE cdb_importer.bogus ( bogus varchar(40) )
+    })
+    query = %Q(SELECT * FROM cdb_importer.bogus)
+
+    expect { @user.in_database(as: :public_user)[query].to_a }
+      .to raise_error(Sequel::DatabaseError)
+      
+    @user.in_database[query].to_a
   end
 
   it "should create a dabase user that only can read it's own database" do
@@ -397,11 +392,22 @@ describe User do
 
   it "should remove its user tables, layers and data imports after deletion" do
     doomed_user = create_user :email => 'doomed2@example.com', :username => 'doomed2', :password => 'doomed123'
-    DataImport.create(:user_id     => doomed_user.id,
-                      :data_source => '/../db/fake_data/SHP1.zip').run_import!
+    data_import = DataImport.create(:user_id     => doomed_user.id,
+                      :data_source => '/../db/fake_data/clubbing.csv').run_import!
     doomed_user.add_layer Layer.create(:kind => 'carto')
+    table_id  = data_import.table_id
+    uuid      = Table.where(id: table_id).first.table_visualization.id
     
-    #CartoDB::Varnish.any_instance.expects(:purge).with("obj.http.X-Cache-Channel ~ #{doomed_user.database_name}.*").returns(true)
+    CartoDB::Varnish.any_instance.expects(:purge)
+      .with("obj.http.X-Cache-Channel ~ #{doomed_user.database_name}.*")
+      .returns(true)
+    CartoDB::Varnish.any_instance.expects(:purge)
+      .with("obj.http.X-Cache-Channel ~ ^#{doomed_user.database_name}:(.*clubbing.*)|(table)$")
+      .returns(true)
+    CartoDB::Varnish.any_instance.expects(:purge)
+      .with("obj.http.X-Cache-Channel ~ .*#{uuid}:vizjson")
+      .times(2)
+      .returns(true)
     Table.any_instance.expects(:delete_tile_style).returns(true)
     
     doomed_user.destroy

@@ -63,7 +63,8 @@ module ApplicationHelper
       sql_api_endpoint:   Cartodb.config[:sql_api_endpoint],
       sql_api_port:       Cartodb.config[:sql_api_port],
       cartodb_com_hosted: Cartodb.config[:cartodb_com_hosted],
-      account_host:       Cartodb.config[:account_host]
+      account_host:       Cartodb.config[:account_host],
+      dropbox_api_key:    Cartodb.config[:dropbox_api_key]
     }
     if Cartodb.config[:cdn_url].present?
       config[:cdn_url] = {

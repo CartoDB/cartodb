@@ -11,17 +11,13 @@ class Api::Json::AssetsController < Api::ApplicationController
 
   def create
     @asset = Asset.new
+    @asset.raise_on_save_failure = true
     @asset.user_id = current_user.id
-    @asset.asset_file = params[:file]
-
-    if @asset.save
-      render_jsonp(@asset.public_values)
-    else
-      CartoDB::Logger.info "Error on assets#create", @layer.errors.full_messages
-      render_jsonp( { :description => @layer.errors.full_messages,
-                      :stack => @layer.errors.full_messages
-                    }, 400)
-    end
+    @asset.asset_file = params[:filename]
+    @asset.save
+    render_jsonp(@asset.public_values)
+  rescue => e
+    render_jsonp( { description: e.message }, 400)
   end
 
   def destroy

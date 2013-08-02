@@ -22,13 +22,15 @@ gem "redis",                   "2.2.2"
 gem "resque",                  "1.23.0"
 gem "yajl-ruby",               "1.1.0", :require => "yajl"
 gem "rollbar",                 "0.9.6"
-gem "nokogiri",                "1.5.3"
+gem "nokogiri",                "1.6.0"
 gem "statsd-client",           "0.0.7", :require => "statsd"
 gem "aws-sdk",                 "1.8.5"
 
 gem "addressable",             "2.2.8", :require => "addressable/uri"
 
 #gem "newrelic_rpm",            "~> 3.5.5"
+
+gem "github_api",              "~> 0.10.2"
 
 gem "ejs",                     "~> 1.1.1"
 #gem "turbo-sprockets-rails3",  "0.1.16"
@@ -55,7 +57,7 @@ gem "state_machine",           "1.1.2"
 gem "typhoeus",                "0.6.3"
 
 # Service components (/services)
-gem "virtus",                  git: "https://github.com/solnic/virtus.git"
+gem "virtus",                  :git => "https://github.com/solnic/virtus.git"
 gem "aequitas",                 "0.0.2"
 gem "uuidtools",                "2.1.3"
 gem "rubyzip",                  "0.9.9"
@@ -74,7 +76,7 @@ group :development, :test do
   gem "webrick",               "1.3.1"
   gem "sqlite3",               "1.3.7"
   gem "poltergeist",           ">= 1.0.0"
-  gem "minitest",              "2.0.2", :require => 'minitest/unit'
+  #gem "minitest",              "5.0.6", require: false
   gem "selenium-webdriver",    ">= 2.5.0"
 
   gem "mocha",                 "0.10.5"
@@ -92,15 +94,14 @@ group :development, :test do
   gem "rack-test",             "0.6.2", :require => 'rack/test'
   gem "foreman",               "0.46.0"
   gem "factory_girl_rails",    "~> 4.0.0"
-  gem "bogus",                 "0.0.3"
 
   # Guard
-  gem 'rb-inotify', '~> 0.8.8', :require => false
+  gem 'rb-inotify',             "0.9.0", :require => false
   gem "rb-fsevent", :require => false
   gem "rb-fchange", :require => false
-  gem "guard"
-  gem "guard-minitest"
-
+  gem "guard",                  "1.8.1"
+  #gem "guard-minitest",         "1.0.1"
+  #gem "minitest-ci",            "~> 3.0.1", :require => false
   # Server
   gem 'thin'
 end

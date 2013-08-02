@@ -20,6 +20,7 @@
 //= require models
 //= require ../../../lib/assets/javascripts/cartodb/common/dropdown_menu
 //= require ../../../lib/assets/javascripts/cartodb/common/forms/string_field
+//= require ../../../lib/assets/javascripts/cartodb/common/import_pane.js
 //= require_tree ../../../lib/assets/javascripts/cartodb/common
 //= require ../../../lib/assets/javascripts/cartodb/table/right_menu
 //= require_tree ../../../lib/assets/javascripts/cartodb/table

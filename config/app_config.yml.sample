@@ -34,10 +34,14 @@ defaults: &defaults
   redis:
     host: '127.0.0.1'
     port: 6379
-  mixpanel:
-    api_key: xxx
-    api_secret: xxx
-    token: xxx
+#  mixpanel:
+#    api_key: xxx
+#    api_secret: xxx
+#    token: xxx
+#  github:
+#    repo: xxx
+#    org: xxx
+#    auth: xxx:xxx
   superadmin:
     username: "superadmin"
     password: "monkey"
@@ -117,6 +121,7 @@ defaults: &defaults
   assets:
     s3_bucket_name: "tests"
     max_file_size: 10485760 # 10.megabytes
+  dropbox_api_key: ""
 
 development:
   <<: *defaults

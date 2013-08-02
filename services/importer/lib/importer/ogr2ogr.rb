@@ -2,9 +2,10 @@
 require 'open3'
 
 module CartoDB
-  module Importer
+  module Importer2
     class Ogr2ogr
-      ENCODING = 'UTF-8'
+      ENCODING  = 'UTF-8'
+      SCHEMA    = 'cdb_importer'
 
       def initialize(table_name, filepath, pg_options, options={})
         self.filepath   = filepath
@@ -14,9 +15,8 @@ module CartoDB
       end #initialize
 
       def command
-        "#{encoding_option} #{executable_path} "        +
-        "#{cartodb_id_option} "                         +
-        "#{output_format_option} #{postgres_options} "  +
+        "#{pg_copy_option} #{encoding_option} #{executable_path} "  +
+        "#{output_format_option} #{postgres_options} "              +
         "#{filepath} #{layer_name_option}"
       end #command
 
@@ -41,32 +41,38 @@ module CartoDB
         self
       end #run
 
-      attr_reader   :exit_code, :command_output, :table_name
+      attr_reader   :exit_code, :command_output
 
       private
 
-      attr_writer   :exit_code, :command_output, :table_name
-      attr_accessor :filepath, :pg_options, :options
+      attr_writer   :exit_code, :command_output
+      attr_accessor :filepath, :pg_options, :options, :table_name
 
       def output_format_option
         "-f PostgreSQL"
       end #output_format_option
+
+      def pg_copy_option
+        "PG_USE_COPY=YES"
+      end #pg_copy_option
 
       def encoding_option
        "PGCLIENTENCODING=#{ENCODING}"
       end #encoding_option
 
       def layer_name_option
-        "-nln #{table_name}"
+        "-nln #{SCHEMA}.#{table_name}"
       end #layer_name_option
 
       def postgres_options
-        %Q{PG:"host=#{pg_options.fetch(:host)} }    +
-        %Q{port=#{pg_options.fetch(:port)} }        +
-        %Q{user=#{pg_options.fetch(:user)} }    +
-        %Q{dbname=#{pg_options.fetch(:database)}" }
+        %Q{PG:"host=#{pg_options.fetch(:host)} }      +
+        %Q{port=#{pg_options.fetch(:port)} }          +
+        %Q{user=#{pg_options.fetch(:user)} }          +
+        %Q{dbname=#{pg_options.fetch(:database)} }    +
+        %Q{password=#{pg_options.fetch(:password)} }  +
+        %Q{active_schema=#{SCHEMA}"}
       end #postgres_options
     end # Ogr2ogr
-  end # Importer
+  end # Importer2
 end # CartoDB
 

@@ -18,14 +18,14 @@ describe "Columns API" do
   let(:params) { { :api_key => @user.get_map_key } }
 
   it "gets the columns from a table" do    
-    get_json v1_table_columns_url(@table.name, param) do |response|
+    get_json v1_table_columns_url(@table.name, params) do |response|
       response.status.should be_success
-      (response.body -  default_schema).should be_empty
+      (response.body - default_schema).should be_empty
     end
   end
 
   it "adds a new column to a table" do
-    post_json api_table_columns_url(@table.name), { :type => "Number", :name => "postal code" } do |response|
+    post_json v1_table_columns_url(@table.name, params), { :type => "Number", :name => "postal code" } do |response|
       response.status.should be_success
       response.body.should == {
         :name => "postal_code",
@@ -36,26 +36,26 @@ describe "Columns API" do
   end
 
   it "Try to add a new column of an invalid type" do
-    post_json api_table_columns_url(@table.name), { :type => "integerrr", :name => "postal code" } do |response|
+    post_json v1_table_columns_url(@table.name, params), { :type => "integerrr", :name => "postal code" } do |response|
       response.status.should == 400
     end
   end
 
   it "Get the type of a column" do
-    get_json api_table_column_url(@table.name, "name") do |response|
+    get_json v1_table_column_url(@table.name, "name") do |response|
       response.status.should be_success
       response.body[:type].should == "string"
     end
   end
 
   it "Get the type of a column that doesn't exist" do
-    get_json api_table_column_url(@table.name, "namiz") do |response|
+    get_json v1_table_column_url(@table.name, "namiz") do |response|
       response.status.should == 404
     end
   end
 
   it "Update the type of a given column" do
-    put_json api_table_column_url(@table.name, "name"), {:type => "number"} do |response|
+    put_json v1_table_column_url(@table.name, "name"), {:type => "number"} do |response|
       response.status.should be_success
       response.body.should == {
         :name => "name",
@@ -66,7 +66,7 @@ describe "Columns API" do
   end
 
   it "Update the type of a given column with an invalid type" do
-    put_json api_table_column_url(@table.name, "name"), {:type => "integerr"} do |response|
+    put_json v1_table_column_url(@table.name, "name"), {:type => "integerr"} do |response|
       response.status.should == 400
     end
   end
@@ -75,7 +75,7 @@ describe "Columns API" do
     delete_user_data @user
     @table = create_table :user_id => @user.id
 
-    put_json api_table_column_url(@table.name, "name"), {:new_name => "nombresito"} do |response|
+    put_json v1_table_column_url(@table.name, "name"), {:new_name => "nombresito"} do |response|
       response.status.should be_success
       response.body.should == {
         :name => "nombresito",
@@ -89,7 +89,7 @@ describe "Columns API" do
     delete_user_data @user
     @table = create_table :user_id => @user.id    
     
-    delete_json api_table_column_url(@table.name, "name") do |response|                
+    delete_json v1_table_column_url(@table.name, "name") do |response|                
       response.status.should eql(204)
     end
   end

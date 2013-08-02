@@ -105,6 +105,9 @@
         @include border-left-radius(3px);
         border:1px solid rgba(0,0,0,0.2);
       }
+      &.image-color {
+        @include icons-sprite(image_color);
+      }
     }
 
     a.picker {
@@ -268,6 +271,28 @@
     }
   }
 
+  .image_picker a {
+    width: 65px;
+    height: 13px;
+    padding: 3px;
+    @include inline-block();
+    @include border-radius(3px);
+    border: 1px solid #9e9e9e;
+    @include background(image-gradient(#fff, #f2f2f2));
+    font-size: 11px;
+    line-height: 13px;
+    color: #333;
+    text-decoration: none;
+    text-align: center;
+
+    i {
+      @include inline-block();
+      height: 11px;
+      width: 10px;
+      margin-right: 5px;
+      @include icons-sprite(image_fill);
+    }
+  }
 
 
 

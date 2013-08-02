@@ -17,7 +17,7 @@ module CartoDB
         {
           version:        "0.1.0",
           title:          table.name,
-          description:    table.description,
+          description:    table.table_visualization.description,
           url:            options.delete(:url),
           map_provider:   map.provider,
           bounds:         bounds_from(map),

@@ -1,3 +1,15 @@
+2.1.x
+---
+- Added legends.
+- Dropbox file import.
+- Icon and images management. Icons and patterns can be set from the wizards
+- The importer component now uses a separate database schema ('cdb_importer') 
+  for all imports, with the exception of OSM files. To create the schema in
+  existing installations, run:
+  ```
+  $ bundle exec rake cartodb:db:create_importer_schema
+  ```
+
 2.1
 ---
 After updating to 2.1 you'll need to upgrade your system:
@@ -8,6 +20,13 @@ $ bundle exec rake db:migrate
 $ bundle exec rake cartodb:db:load_functions
 $ bundle exec rake cartodb:db:migrate_to[2.1]
 ```
+
+* Updated the dashboard with a visualizations page
+* Changed the way the maps can be shared
+* Added visualization with multilayer support
+* New color wizard
+* Layer selector widget
+* Map view stats per visualization
 
 2.0.15
 ------

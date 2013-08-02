@@ -1,35 +1,40 @@
+require 'open-uri'
+
 class Asset < Sequel::Model
 
   many_to_one :user
   PUBLIC_ATTRIBUTES = %W{ id public_url user_id }
 
-  attr_accessor :asset_file, :file
+  attr_accessor :asset_file, :url
 
   def public_values
     Hash[PUBLIC_ATTRIBUTES.map{ |a| [a, self.send(a)] }]
+  end
+
+  ##
+  # Tries to open the specified file object or full path
+  #
+  def open_file(file_handle)
+    file_handle = (file_handle.respond_to?(:path) ? file_handle.path : file_handle.to_s)
+    File.open(file_handle)
+  rescue Errno::ENOENT
+    nil
   end
 
   def validate
     super
 
     errors.add(:user_id, "can't be blank") if user_id.blank?
-    begin
-      file = (asset_file.is_a?(String) ? File.open(asset_file) : File.open(asset_file.path))
-    rescue Errno::ENOENT
-      errors.add(:asset_file, "is invalid")
+    if asset_file.present?
+      begin
+        @file = open_file(asset_file)
+        errors.add(:file, "is invalid") unless @file.is_a?(File) && File.readable?(@file)
+        errors.add(:file, "is too big, 10Mb max") if @file.is_a?(File) && @file.size > Cartodb::config[:assets]["max_file_size"]
+        store! if errors.blank?
+      rescue => e
+        errors.add(:file, "error uploading #{e.message}")
+      end
     end
-
-    if file.is_a?(File)
-      errors.add(:asset_file, "is invalid") unless File.readable?(file)
-      errors.add(:asset_file, "is too big, 10Mb max") unless file.size <= Cartodb::config[:assets]["max_file_size"]
-      file.close
-    end
-  end
-
-  def after_save
-    super
-
-    store!(asset_file) unless asset_file.blank?
   end
 
   def after_destroy
@@ -46,15 +51,12 @@ class Asset < Sequel::Model
   #
   # [file_path (String)] full path of the file to upload
   #
-  def store!(file)
-    file_path = file.is_a?(String) ? file : file.path
-    basename  = file.is_a?(String) ? File.basename(file) : file.original_filename
-
+  def store!
     # Upload the file
-    o = s3_bucket.objects["#{asset_path}#{basename}"]
-    o.write(Pathname.new(file_path), {
+    o = s3_bucket.objects["#{asset_path}#{File.basename(@file)}"]
+    o.write(Pathname.new(@file.path), {
       acl: :public_read,
-      content_type: MIME::Types.type_for(file_path).first.to_s
+      content_type: MIME::Types.type_for(@file.path).first.to_s
     })
 
     # Set the public_url attribute

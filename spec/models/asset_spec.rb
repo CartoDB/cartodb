@@ -11,7 +11,7 @@ describe Asset do
   it 'should upload the asset_file to s3 passing a full path' do
     asset = Asset.create user_id: @user.id, asset_file: (Rails.root + 'db/fake_data/simple.json').to_s
     
-    asset.public_url.should == "https://s3.amazonaws.com/com.cartodb.users-assets.dev/test/#{@user.username}/assets/simple.json"
+    asset.public_url.should =~ /.*test\/#{@user.username}\/assets\/simple\.json.*/
     path = "#{asset.asset_path}simple.json"
     bucket = asset.s3_bucket
     bucket.objects[path].exists?.should == true
@@ -20,10 +20,19 @@ describe Asset do
   it 'should upload the asset_file to s3 passing an uploaded file' do
     asset = Asset.create user_id: @user.id, asset_file: Rack::Test::UploadedFile.new(Rails.root.join('db/fake_data/column_number_to_boolean.csv'), 'text/csv')
     
-    asset.public_url.should == "https://s3.amazonaws.com/com.cartodb.users-assets.dev/test/#{@user.username}/assets/column_number_to_boolean.csv"
+    asset.public_url.should =~ /.*test\/#{@user.username}\/assets\/column_number_to_boolean.csv.*/
     path = "#{asset.asset_path}column_number_to_boolean.csv"
     bucket = asset.s3_bucket
     bucket.objects[path].exists?.should == true
+  end
+
+  it 'should save the url when specified' do
+    file = Rails.root.join('spec/support/data/cartofante_blue.png')
+    serve_file file do |url|
+      asset = Asset.create(user_id: @user.id, public_url: url)
+      
+      asset.public_url.should == url
+    end
   end
 
   it 'should remove attachments from s3 after deletion' do
@@ -38,9 +47,9 @@ describe Asset do
 
   it 'should validate asset_file before saving' do
     asset = Asset.new user_id: @user.id, asset_file: (Rails.root + 'db/fake_data/i_dont_exist.json').to_s
-    
+
     expect { asset.save }.to raise_error(Sequel::ValidationFailed)
-    asset.errors.full_messages.should == ["asset_file is invalid"]
+    asset.errors.full_messages.should == ["file is invalid"]
   end
 
   it 'should correctly return public values' do
@@ -53,6 +62,6 @@ describe Asset do
     asset = Asset.new user_id: @user.id, asset_file: (Rails.root + 'spec/support/data/GLOBAL_ELEVATION_SIMPLE.zip').to_s
 
     expect { asset.save }.to raise_error(Sequel::ValidationFailed)
-    asset.errors.full_messages.should == ["asset_file is too big, 10Mb max"]
+    asset.errors.full_messages.should == ["file is too big, 10Mb max"]
   end
 end

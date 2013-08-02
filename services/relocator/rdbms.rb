@@ -6,6 +6,7 @@ module CartoDB
     class RDBMS
       def initialize(connection)
         @connection = connection
+        @connection.extension :pg_array
       end #initialize
 
       def rename_user(existing_username, new_username)
@@ -211,14 +212,14 @@ module CartoDB
       def insert_user_tables_for(arguments)
         records           = arguments.fetch(:records)
         maps_map          = arguments.fetch(:maps_map)
-        data_imports_map  = arguments.fetch(:data_imports_map)
+        #data_imports_map  = arguments.fetch(:data_imports_map)
         user              = arguments.fetch(:user)
         database_name     = arguments.fetch(:database_name)
         map               = {}
 
         records.each do |record|
           old_map_id          = record.fetch('map_id').to_s
-          old_data_import_id  = record.fetch('data_import_id').to_s
+          #old_data_import_id  = record.fetch('data_import_id').to_s
           table_id            = table_id_for(user, record.fetch('name'))
 
           old_id = record.delete('id')
@@ -228,12 +229,12 @@ module CartoDB
           record.store('database_name', database_name)
           record.store('privacy', record.fetch('privacy').to_i)
 
-          if old_data_import_id
-            record.store('data_import_id', data_imports_map.fetch(old_data_import_id))
-          end
+          #if old_data_import_id
+          #  record.store('data_import_id', data_imports_map.fetch(old_data_import_id))
+          #end
           new_id = connection[:user_tables].insert(record)
-          connection[:data_imports].filter(id: record.fetch('data_import_id'))
-            .update(table_id: new_id)
+          #connection[:data_imports].filter(id: record.fetch('data_import_id'))
+          #  .update(table_id: new_id)
             
           map.store(old_id.to_s, new_id.to_s)
         end
@@ -261,9 +262,18 @@ module CartoDB
         records.each do |record|
           old_map_id = record.fetch('map_id').to_s
           record.store('map_id', maps_map.fetch(old_map_id))
-          connection[:visualizations].insert(record)
+          connection[:visualizations].insert(serialize_for_postgres(record))
         end
       end #insert_visualizations_for
+
+      def serialize_for_postgres(record)
+        Hash[
+          record.map { |key, value|
+            value = value.pg_array if value.is_a?(Array) && !value.empty? 
+            [key, value]
+          }
+        ]
+      end #serialize_for_postgres
 
       def insert_overlays_for(arguments)
         arguments.fetch(:records).each do |record|

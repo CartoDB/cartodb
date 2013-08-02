@@ -35,11 +35,11 @@ module CartoDB
       def run
         to_stdout("Continuing relocation with ID: #{relocation.id}")
         to_stdout("Downloading data bundle from remote storage")
-        #relocation.download
+        relocation.download
         to_stdout("Data bundle downloaded from remote storage")
 
         to_stdout('Unzipping data bundle')
-        #relocation.unzip
+        relocation.unzip
 
         to_stdout("Creating user with downloaded attributes")
         create_user
@@ -51,7 +51,7 @@ module CartoDB
         #rdbms.create_user(relocation.token, user.database_password)
        
         to_stdout("Replacing original user and db name in dump")
-        #gsub_dump()
+        gsub_dump()
         
         to_stdout("Creating database user")
         rdbms.create_user(environment.database_username, user.database_password)

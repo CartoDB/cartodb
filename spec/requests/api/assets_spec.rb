@@ -30,12 +30,12 @@ describe "Assets API" do
   end
 
   it "returns some error message when the asset creation fails" do
-    Asset.any_instance.stubs(:s3_bucket).raises("Some AWS error")
+    Asset.any_instance.stubs(:s3_bucket).raises("OMG AWS exception")
     post_json v1_user_assets_url(@user, params.merge(
       :filename => Rack::Test::UploadedFile.new(Rails.root.join('spec/support/data/cartofante_blue.png'), 'image/png').path)
     ) do |response|
       response.status.should == 400
-      response.body[:description].should == "Some AWS error"
+      response.body[:description].should == "file error uploading OMG AWS exception"
     end
   end
 

@@ -62,6 +62,10 @@ describe 'csv regression tests' do
     geometry_type_for(runner).must_equal 'MULTIPOLYGON'
   end
 
+  it 'imports files with spaces as delimiters' do
+    filepath    = path_to('fsq_places_uniq.csv')
+  end
+
   def path_to(filepath)
     File.join(File.dirname(__FILE__), "../fixtures/#{filepath}")
   end #path_to

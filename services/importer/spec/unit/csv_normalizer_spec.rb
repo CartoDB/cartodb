@@ -2,7 +2,7 @@
 gem 'minitest'
 require 'minitest/autorun'
 require 'fileutils'
-require_relative '../../lib/importer/csv'
+require_relative '../../lib/importer/csv_normalizer'
 
 include CartoDB::Importer2
 

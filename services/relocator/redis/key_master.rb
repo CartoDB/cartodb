@@ -27,6 +27,10 @@ module CartoDB
           "*map_style|*_user_#{user_id}_db|*"
         end #map_style_metadata
 
+        def map_view_metadata(username)
+          "user:#{username}:mapviews:global"
+        end #map_view_metdata
+
         def visualization_stats(username)
           "user:#{username}:mapviews:stat_tag:"
         end #visualization_stats

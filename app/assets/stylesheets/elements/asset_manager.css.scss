@@ -32,20 +32,28 @@
         position:relative;
         @include inline-block();
         width:42px;
-        height:42px;
+        height:41px;
         margin-right:3px;
         border:1px solid #C0C0C0!important;
         @include border-radius(3px);
+        overflow: hidden;
 
         a.image {
           display:block;
           width:42px;
           height:42px;
-          background-repeat:no-repeat;
-          background-size:  cover;
-          background-origin: content-box;
-          background-position: 50% 50%;
           @include border-radius(3px);
+          text-align: center;
+          line-height: 42px;
+
+          img {
+            position: relative;
+            top: -2px;
+            max-width: 100%;
+            max-height: 100%;
+            @include inline-block();
+            vertical-align: middle;
+          }
         }
 
         a.delete {
@@ -95,8 +103,18 @@
         // item states
         &.selected {
           width:40px;
-          height:40px;
+          height:39px;
           border:2px solid #0F0F0F!important;
+
+          a.image img {
+            top: -3px;
+            left: -1px;
+          }
+
+          a.delete {
+            right: -1px;
+            bottom: -1px;
+          }
         }
 
         &.destroying {

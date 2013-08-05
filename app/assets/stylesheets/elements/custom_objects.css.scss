@@ -285,11 +285,16 @@
     text-decoration: none;
     text-align: center;
 
+    &:hover {
+      border: 1px solid #888;
+    }
+
     i {
       @include inline-block();
       height: 11px;
       width: 10px;
       margin-right: 5px;
+      margin-top: -2px;
       @include icons-sprite(image_fill);
     }
   }

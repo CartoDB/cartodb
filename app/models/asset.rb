@@ -3,7 +3,7 @@ require 'open-uri'
 class Asset < Sequel::Model
 
   many_to_one :user
-  PUBLIC_ATTRIBUTES = %W{ id public_url user_id }
+  PUBLIC_ATTRIBUTES = %W{ id public_url user_id kind }
 
   attr_accessor :asset_file, :url
 

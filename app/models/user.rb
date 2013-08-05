@@ -69,7 +69,7 @@ class User < Sequel::Model
 
   def after_save
     super
-    changes = self.previous_changes.keys
+    changes = (self.previous_changes.present? ? self.previous_changes.keys : [])
     set_statement_timeouts if changes.include?(:user_timeout) || changes.include?(:database_timeout)
   end
 

@@ -119,6 +119,15 @@ describe User do
     ).should == [0, 0, 0, 0, 0, 17, 0]
   end
 
+  describe '#overquota' do
+    it "should return users over their map views quota" do
+      User.overquota.should be_empty
+      User.any_instance.stubs(:get_api_calls).returns (0..30).to_a
+      User.any_instance.stubs(:map_view_quota).returns 10
+      User.overquota.should include(@user)
+      User.overquota.size.should == User.count
+    end
+  end
 
   it "should have many tables" do
     @user2.tables.should be_empty

@@ -3,6 +3,7 @@ require 'json'
 require_relative './relocator'
 require_relative './rdbms'
 require_relative './redis/map_style_metadata'
+require_relative './redis/map_view_metadata'
 require_relative './redis/user_metadata'
 require_relative './redis/threshold_metadata'
 require_relative './redis/table_metadata'
@@ -93,6 +94,8 @@ module CartoDB
           .load(records_for('redis/api_credentials_metadata'))
         MapStyleMetadata.new(user.id)
           .load(records_for('redis/map_styles_metadata')) 
+        MapViewMetadata.new(user.username)
+          .load(records_for('redis/map_views_metadata')) 
         TableMetadata.new(user.id)
           .load(records_for('redis/tables_metadata' ))
         UserMetadata.new(user)

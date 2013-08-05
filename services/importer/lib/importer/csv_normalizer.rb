@@ -18,7 +18,7 @@ module CartoDB
       def normalize
         return self unless File.exists?(filepath)
         return self unless filepath =~ /\.csv/ && needs_normalization?
-        temporary_csv = CSV.open(temporary_filepath, 'w', col_sep: ',')
+        temporary_csv = ::CSV.open(temporary_filepath, 'w', col_sep: ',')
         csv_options   = { external_encoding: encoding, col_sep: delimiter }
         stream.rewind
         ::CSV.new(stream, csv_options).each { |row| temporary_csv << (row) }

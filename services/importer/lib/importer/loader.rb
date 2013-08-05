@@ -1,6 +1,7 @@
 # encoding: utf-8
 require 'forwardable'
 require_relative './ogr2ogr'
+require_relative './csv_normalizer'
 require_relative './json2csv'
 require_relative './georeferencer'
 
@@ -22,6 +23,7 @@ module CartoDB
       def run
         job.log "Using database connection with #{job.concealed_pg_options}"
 
+        CsvNormalizer.new(source_file.fullpath).normalize
         if source_file.extension == '.json'
           json2csv = Json2Csv.new(source_file.fullpath, job)
           json2csv.run

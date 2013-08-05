@@ -9,7 +9,7 @@ module CartoDB
     class CsvNormalizer
       COMMON_DELIMITERS = [',', "\t", ' ']
       DEFAULT_DELIMITER = ','
-      DEFAULT_ENCODING  = "UTF-8"
+      ACCEPTABLE_ENCODINGS = %w{ ISO-8859-1 ISO-8859-2 UTF-8 }
 
       def initialize(filepath)
         @filepath = filepath
@@ -20,6 +20,8 @@ module CartoDB
         return self unless filepath =~ /\.csv/ && needs_normalization?
         temporary_csv = ::CSV.open(temporary_filepath, 'w', col_sep: ',')
         csv_options   = { external_encoding: encoding, col_sep: delimiter }
+
+        csv_options.merge!(quote_char: '|')
         stream.rewind
         ::CSV.new(stream, csv_options).each { |row| temporary_csv << (row) }
 
@@ -36,7 +38,8 @@ module CartoDB
       end #temporary_path
 
       def needs_normalization?
-        (encoding != DEFAULT_ENCODING) || (separator != DEFAULT_DELIMITER)
+        (!ACCEPTABLE_ENCODINGS.include?(encoding)) || 
+          (delimiter != DEFAULT_DELIMITER)
       end #needs_normalization?
 
       def temporary_directory

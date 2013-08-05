@@ -96,6 +96,14 @@
       padding: 11px 10px 10px;
       background: #f2f2f2;
       @include border-radius(3px);
+
+      input {
+        display:block;
+        border:none;
+        width: 38px; height: 16px;  margin: 4px 0 3px 0;
+        background: image-url("layout/loader_transparent.gif") no-repeat 0 0;
+      }
+
     }
   }
 
@@ -244,7 +252,7 @@
     }
   }
 
-  
+
   // Progress bar
   div.upload-progress {
     position:absolute;

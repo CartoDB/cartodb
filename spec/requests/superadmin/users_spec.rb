@@ -170,6 +170,30 @@ feature "Superadmin's users API" do
     end
   end
 
+  describe "GET /superadmin/users" do
+    before do
+      @user  = create_user
+      @user2 = create_user
+    end
+
+    it "gets all users" do
+      get_json superadmin_users_path, {}, default_headers do |response|
+        response.status.should == 200
+        response.body[0]["username"].should == @user.username
+        response.body.length.should == 2
+      end
+    end
+
+    it "gets overquota users" do
+      User.stubs(:overquota).returns [@user]
+      get_json superadmin_users_path, { overquota: true }, default_headers do |response|
+        response.status.should == 200
+        response.body[0]["username"].should == @user.username
+        response.body.length.should == 1
+      end
+    end
+  end
+
   private
 
   def default_headers(user = Cartodb.config[:superadmin]["username"], password = Cartodb.config[:superadmin]["password"])

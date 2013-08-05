@@ -112,6 +112,16 @@ class User < Sequel::Model
   attr_reader :password
   attr_accessor :password_confirmation
 
+  ##
+  # SLOW! Checks map views for every user
+  #
+  def self.overquota
+    User.all.select do |u|
+        u.set_old_api_calls # updates map views stats older than 3 hours
+        u.get_api_calls.sum > u.map_view_quota.to_i
+    end
+  end
+
   def self.password_digest(password, salt)
     digest = AUTH_DIGEST
     10.times do

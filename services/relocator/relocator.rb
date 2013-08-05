@@ -22,6 +22,7 @@ module CartoDB
                             threshold:            2,
                             api_credentials:      3,
                             users_metadata:       5,
+                            map_views:            5,
                             visualization_stats:  5
                           }
       TMP_DIR           = File.join(File.dirname(__FILE__), '..', '..',

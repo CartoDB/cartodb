@@ -15,6 +15,8 @@ class Api::Json::AssetsController < Api::ApplicationController
     @asset.user_id = current_user.id
     @asset.asset_file = params[:filename]
     @asset.public_url = params[:url]
+    @asset.kind = params[:kind]
+
     @asset.save
     render_jsonp(@asset.public_values)
   rescue => e

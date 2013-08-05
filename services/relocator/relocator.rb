@@ -14,7 +14,8 @@ module CartoDB
       COMPLEX_TABLES    = %w{ layers layers_maps users layers_user_tables }
       REDIS_DATA        = %w{ thresholds_metadata api_credentials_metadata
                               tables_metadata users_metadata
-                              map_styles_metadata visualization_stats }
+                              map_styles_metadata visualization_stats 
+                              map_views_metadata }
       TABLES            = SIMPLE_TABLES + COMPLEX_TABLES
       REDIS_DATABASES   = {
                             tables_metadata:      0,

@@ -7,7 +7,7 @@ module CartoDB
   module Relocator
     class MapViewMetadata
       def initialize(username, redis=nil, key_master=nil)
-        @user_id    = username
+        @username    = username
         @key_master = key_master || Redis::KeyMaster.new
 
         db          = REDIS_DATABASES.fetch(:map_views)
@@ -21,13 +21,13 @@ module CartoDB
         end
       end #dump
 
-      def keys_for(user_id)
-        redis.keys(key_master.map_view_metadata(user_id) + '*')
+      def keys_for(username)
+        redis.keys(key_master.map_view_metadata(username) + '*')
       end #keys_for
 
-      def load
+      def load(map_views)
         transform(map_views).each do |key, data| 
-          data.each_slice(2) { |tuple| redis.zadd(key, *tuple.reverse) }
+          data.each_slice(2) { |tuple| redis.zadd(key, *tuple) }
         end
       end #load
 

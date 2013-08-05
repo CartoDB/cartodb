@@ -35,7 +35,7 @@ describe Asset do
     end
   end
 
-  it 'should remove attachments from s3 after deletion' do
+  pending 'should remove attachments from s3 after deletion' do
     asset = Asset.create user_id: @user.id, asset_file: (Rails.root + 'db/fake_data/simple.json').to_s
     path = "#{asset.asset_path}simple.json"
     bucket = asset.s3_bucket
@@ -55,7 +55,7 @@ describe Asset do
   it 'should correctly return public values' do
     asset = Asset.new user_id: @user.id, asset_file: (Rails.root + 'db/fake_data/simple.json').to_s
 
-    asset.public_values.should == { "public_url" => nil, "user_id" => @user.id, "id" => nil }
+    asset.public_values.should == { "public_url" => nil, "user_id" => @user.id, "id" => nil, "kind" => nil }
   end
 
   it 'should not allow a user to upload files bigger than 10Mb' do

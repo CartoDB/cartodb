@@ -3,6 +3,7 @@ require 'forwardable'
 require_relative './ogr2ogr'
 require_relative './csv_normalizer'
 require_relative './json2csv'
+require_relative './xlsx2csv'
 require_relative './georeferencer'
 
 module CartoDB
@@ -24,6 +25,13 @@ module CartoDB
         job.log "Using database connection with #{job.concealed_pg_options}"
 
         CsvNormalizer.new(source_file.fullpath).normalize
+
+        if source_file.extension == '.xlsx'
+          xlsx2csv = Xlsx2Csv.new(source_file.fullpath, job)
+          xlsx2csv.run
+          self.source_file = SourceFile.new(json2csv.converted_filepath)
+        end
+
         if source_file.extension == '.json'
           json2csv = Json2Csv.new(source_file.fullpath, job)
           json2csv.run

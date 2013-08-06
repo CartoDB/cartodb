@@ -358,6 +358,7 @@ class DataImport < Sequel::Model
     table.migrate_existing_table  = name
     table.save
 
+    table.map.recalculate_bounds!
     self.table_id   = table.id
     self.table_name = table.name
     save

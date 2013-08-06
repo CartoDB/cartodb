@@ -29,7 +29,7 @@ module CartoDB
         if source_file.extension == '.xlsx'
           xlsx2csv = Xlsx2Csv.new(source_file.fullpath, job)
           xlsx2csv.run
-          self.source_file = SourceFile.new(json2csv.converted_filepath)
+          self.source_file = SourceFile.new(xlsx2csv.converted_filepath)
         end
 
         if source_file.extension == '.json'

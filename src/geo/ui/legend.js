@@ -208,9 +208,9 @@ cdb.geo.ui.IntensityLegend = cdb.core.View.extend({
 
     if (this.items.length >= 3) {
 
-      this.color      = this.items.at(0);
-      this.leftLabel  = this.items.at(1);
-      this.rightLabel = this.items.at(2);
+      this.leftLabel  = this.items.at(0);
+      this.rightLabel = this.items.at(1);
+      this.color      = this.items.at(2);
 
       var leftLabel   = this.leftLabel.get("value");
       var rightLabel  = this.rightLabel.get("value");
@@ -250,17 +250,17 @@ cdb.geo.ui.BubbleLegend = cdb.core.View.extend({
   },
 
   _renderGraph: function() {
-    if (this.items.length > 2) {
-      this.$el.find(".graph").css("background", this.items.at(0).get("value"));
+    if (this.items.length > 3) {
+      this.$el.find(".graph").css("background", this.items.at(2).get("value"));
     }
   },
 
   render: function() {
 
-    if (this.items.length >= 2) {
+    if (this.items.length >= 3) {
 
-      var min = this.items.at(1);
-      var max = this.items.at(this.items.length - 1);
+      var min = this.items.at(0);
+      var max = this.items.at(1);
 
       this.model.set({ min: min.get("value"), max: max.get("value") });
       this.$el.html(this.template(this.model.toJSON()));

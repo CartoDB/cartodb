@@ -91,7 +91,7 @@ class Layer < Sequel::Model
 
   def copy
     attributes = public_values.select { |k, v| k != 'id' }
-    Layer.new(attributes)
+    ::Layer.new(attributes)
   end #copy
 
   def data_layer?

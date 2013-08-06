@@ -52,6 +52,19 @@ describe DataImport do
     duplicated_table.records[:rows].should have(5).items
   end
 
+  it 'imports a SHP in Cyrillic encoding' do
+    data_import = DataImport.create(
+      :user_id       => @user.id,
+      :data_source   => '/../services/importer/spec/fixtures/TestShape.zip',
+      :updated_at    => Time.now
+    ).run_import!
+
+    table = Table[data_import.table_id]
+    table.should_not be_nil
+    table.name.should be == 'bryansk_stores_for_test_point'
+    table.records[:rows].should have(10).items
+  end
+
   it 'imports a simple file', now: true do
     data_import = DataImport.create(
       :user_id       => @user.id,

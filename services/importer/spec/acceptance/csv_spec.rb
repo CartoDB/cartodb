@@ -66,6 +66,17 @@ describe 'csv regression tests' do
     filepath    = path_to('fsq_places_uniq.csv')
   end
 
+  it 'imports files with & in the name' do
+    filepath    = path_to('ne_10m_populated_places_&simple.csv')
+    downloader  = Downloader.new(filepath)
+    runner      = Runner.new(@pg_options, downloader)
+    runner.run
+
+    puts runner.report
+
+    geometry_type_for(runner).must_equal 'POINT'
+  end
+
   def path_to(filepath)
     File.join(File.dirname(__FILE__), "../fixtures/#{filepath}")
   end #path_to

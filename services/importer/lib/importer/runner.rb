@@ -81,7 +81,7 @@ module CartoDB
       end #db
 
       def loader_for(source_file)
-        LOADERS.fetch(source_file.extension.delete('.').to_sym)
+        LOADERS.fetch(source_file.extension.delete('.').to_sym, Loader)
       end #loader_for
 
       def columns_in(table_name, schema='cdb_importer')

@@ -250,7 +250,7 @@ cdb.geo.ui.BubbleLegend = cdb.core.View.extend({
   },
 
   _renderGraph: function() {
-    if (this.items.length > 3) {
+    if (this.items.length >= 3) {
       this.$el.find(".graph").css("background", this.items.at(2).get("value"));
     }
   },

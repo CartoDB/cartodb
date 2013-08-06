@@ -12,6 +12,7 @@
   ```
   $ bundle exec rake cartodb:db:create_importer_schema
   ```
+- Added support for MapInfo files (.tab) in the importer
 
 2.1
 ---

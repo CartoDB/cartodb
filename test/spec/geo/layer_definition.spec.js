@@ -170,16 +170,14 @@ describe("LayerDefinition", function() {
 
     runs(function() {
       var json = layerDefinition.toJSON();
-      json = '{ "config": "' + 
-        JSON.stringify(json).replace(/"/g, '\\"') + 
-      '"}';
+      json = JSON.stringify({ config: JSON.stringify(json) });
       LZMA.compress(json, 3, function(encoded) {
         lzma = layerDefinition._array2hex(encoded);
         layerDefinition.getLayerToken(function() {
         });
       });
     });
-    waits(100);
+    waits(200);
     runs(function() {
       expect(params.url).toEqual(layerDefinition._tilerHost() + '/tiles/layergroup?map_key=test&lzma=' + encodeURIComponent(lzma));
     });

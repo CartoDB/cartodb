@@ -74,6 +74,9 @@ cdb.geo.ui.LayerSelector = cdb.core.View.extend({
           m.set('type', 'layergroup');
 
           m.set('visible', !layerGroupView.getSubLayer(i).get('hidden'));
+          m.bind('change:visible', function(model) {
+            this.trigger("change:visible", model.get('visible'), model.get('order'));
+          }, self);
 
           if(self.options.layer_names) {
             m.set('layer_name', self.options.layer_names[i]);

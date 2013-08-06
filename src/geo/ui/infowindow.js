@@ -224,13 +224,13 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
       // Sanitized them
       var sanitized_fields = this._fieldsToString(fields, template_name);
       var data = this.model.get('content') ? this.model.get('content').data : {}
-      this.$el.html($(this.template({ 
+      this.$el.html(this.template({ 
           content: {
             fields: sanitized_fields,
             data: data 
           }
         })
-      ));
+      );
 
       // Hello jscrollpane hacks!
       // It needs some time to initialize, if not it doesn't render properly the fields
@@ -267,10 +267,15 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
    *  Compile template of the infowindow
    */
   _compileTemplate: function() {
-    this.template = new cdb.core.Template({
-       template: this.model.get('template'),
-       type: this.model.get('template_type') || 'mustache'
-    }).asFunction()
+    var template = this.model.get('template');
+    if(typeof(template) !== 'function') {
+      this.template = new cdb.core.Template({
+         template: template,
+         type: this.model.get('template_type') || 'mustache'
+      }).asFunction()
+    } else {
+      this.template = template
+    }
 
     this.render();
   },

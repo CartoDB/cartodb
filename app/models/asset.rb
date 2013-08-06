@@ -22,12 +22,11 @@ class Asset < Sequel::Model
 
   def validate
     super
-
     errors.add(:user_id, "can't be blank") if user_id.blank?
     if asset_file.present?
       begin
         @file = open_file(asset_file)
-        errors.add(:file, "is invalid") unless @file && File.readable?(@file)
+        errors.add(:file, "is invalid") unless @file && File.readable?(@file.path)
         errors.add(:file, "is too big, 10Mb max") if @file && @file.size > Cartodb::config[:assets]["max_file_size"]
         store! if errors.blank?
       rescue => e

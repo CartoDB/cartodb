@@ -248,7 +248,7 @@ var Vis = cdb.core.View.extend({
   addLegends: function(layers) {
     function createLegendView(layers) {
       var legends = [];
-      for(var i = 0; i < layers.length; ++i) {
+      for(var i = layers.length - 1; i>= 0; --i) {
         var layer = layers[i];
         if(layer.legend) {
           layer.legend.data = layer.legend.items;

@@ -1,6 +1,6 @@
-// cartodb.js version: 3.1.00
+// cartodb.js version: 3.1.01
 // uncompressed version: cartodb.uncompressed.js
-// sha: 928ab8744c15e092bc055ef68a056d4dbc9a6c5c
+// sha: 2faf21f0b2309c375a35eb3aa4d6ff6f4bd05aac
 (function() {
   var root = this;
 
@@ -19874,7 +19874,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.1.00';
+    cdb.VERSION = '3.1.01';
 
     cdb.CARTOCSS_VERSIONS = {
       '2.0.0': '',
@@ -27964,7 +27964,7 @@ var Vis = cdb.core.View.extend({
   addLegends: function(layers) {
     function createLegendView(layers) {
       var legends = [];
-      for(var i = 0; i < layers.length; ++i) {
+      for(var i = layers.length - 1; i>= 0; --i) {
         var layer = layers[i];
         if(layer.legend) {
           layer.legend.data = layer.legend.items;

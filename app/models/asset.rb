@@ -23,9 +23,17 @@ class Asset < Sequel::Model
   def validate
     super
     errors.add(:user_id, "can't be blank") if user_id.blank?
-    if asset_file.present?
+
+    if url.present?
+      dir = Dir.mktmpdir
+      `wget -nv -P #{dir} -E #{url} 2>&1`
+      @asset_file = Dir[File.join(dir, '*')][0]
+      errors.add(:url, "is invalid") unless $?.exitstatus == 0
+    end
+
+    if @asset_file.present?
       begin
-        @file = open_file(asset_file)
+        @file = open_file(@asset_file)
         errors.add(:file, "is invalid") unless @file && File.readable?(@file.path)
         errors.add(:file, "is too big, 10Mb max") if @file && @file.size > Cartodb::config[:assets]["max_file_size"]
         store! if errors.blank?
@@ -51,7 +59,8 @@ class Asset < Sequel::Model
   #
   def store!
     # Upload the file
-    fname = (@file.respond_to?(:original_filename) ? @file.original_filename : File.basename(@file))
+    prefix = "#{Time.now.strftime("%Y%m%d%H%M%S")}"
+    fname = prefix+(@file.respond_to?(:original_filename) ? @file.original_filename : File.basename(@file))
     o = s3_bucket.objects["#{asset_path}#{fname}"]
     o.write(Pathname.new(@file.path), {
       acl: :public_read,

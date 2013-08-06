@@ -221,6 +221,14 @@ var Vis = cdb.core.View.extend({
       for(i = 0; i < options.sublayer_options.length; ++i) {
         var o = options.sublayer_options[i];
         var subLayer = dataLayer.getSubLayer(i);
+        if(this.legends) {
+          var legend = this.legends && this.legends.options.legends[i];
+
+          if(legend) {
+            o.visible ? legend.show(): legend.hide();
+          }
+
+        }
         o.visible ? subLayer.show(): subLayer.hide();
       }
     }
@@ -260,6 +268,7 @@ var Vis = cdb.core.View.extend({
     var stackedLegend = new cdb.geo.ui.StackedLegend({
        legends: legends
     });
+    this.legends = stackedLegend;
 
     this.mapView.addOverlay(stackedLegend);
   },

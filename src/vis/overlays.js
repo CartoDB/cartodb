@@ -126,8 +126,19 @@ cdb.vis.Overlay.register('layer_selector', function(data, vis) {
     mapView: vis.mapView,
     template: template,
     dropdown_template: dropdown_template,
-    layer_names: data.layer_names
+    layer_names: data.layer_names,
   });
+
+  if(vis.legends) {
+    layerSelector.bind('change:visible', function(visible, order) {
+      var legend = vis.legends && vis.legends.options.legends[order];
+
+      if(legend) {
+        legend[visible ? 'show': 'hide']();
+      }
+
+    });
+  }
 
 
   return layerSelector.render();

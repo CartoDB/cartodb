@@ -89,6 +89,10 @@ describe Downloader do
       headers = { "Content-Disposition" => %{attachment; filename="bar.csv"} }
       downloader = Downloader.new(@file_url)
       downloader.name_from(headers, @file_url).must_equal 'bar.csv'
+
+      headers = { "Content-Disposition" => %{attachment; filename=bar.csv} }
+      downloader = Downloader.new(@file_url)
+      downloader.name_from(headers, @file_url).must_equal 'bar.csv'
     end
 
     it 'gets the file name from the URL if no Content-Disposition header' do

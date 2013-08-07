@@ -28,7 +28,6 @@ describe 'csv regression tests' do
     runner      = Runner.new(@job, downloader)
     runner.run
 
-    puts runner.report
     runner.exit_code.must_equal 0
 
     geometry_type_for(runner).wont_be_empty
@@ -71,8 +70,6 @@ describe 'csv regression tests' do
     downloader  = Downloader.new(filepath)
     runner      = Runner.new(@pg_options, downloader)
     runner.run
-
-    puts runner.report
 
     geometry_type_for(runner).must_equal 'POINT'
   end

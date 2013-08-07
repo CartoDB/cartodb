@@ -14,6 +14,11 @@ module CartoDB
       SCHEMA        = 'cdb_importer'
       TABLE_PREFIX  = 'importer'
 
+      def self.supported?(extension)
+        return true unless extension == '.shp' || extension == '.osm'
+        return false
+      end #self.supported?
+
       def initialize(job, source_file, ogr2ogr=nil, georeferencer=nil)
         self.job            = job
         self.source_file    = source_file

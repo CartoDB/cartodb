@@ -21,6 +21,12 @@ module CartoDB
         end
       end #copy_layers
 
+      def copy_base_layer(origin_map, destination_map)
+        origin_map.user_layers.map do |layer| 
+          link(destination_map, layer.copy)
+        end
+      end #copy_base_layer
+
       def copy_data_layers(origin_map, destination_map)
         data_layer_copies_from(origin_map).map do |layer|
           link(destination_map, layer)

@@ -56,6 +56,7 @@ gem "builder",                 "3.0.0"
 gem "state_machine",           "1.1.2"
 gem "typhoeus",                "0.6.3"
 gem "charlock_holmes",         "0.6.9.4"
+gem "simple_xlsx_reader",      "0.9.7"  
 
 # Service components (/services)
 gem "virtus",                  :git => "https://github.com/solnic/virtus.git"

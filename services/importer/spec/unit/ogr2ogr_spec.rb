@@ -17,8 +17,8 @@ describe Ogr2ogr do
     @pg_options       = Factories::PGConnection.new.pg_options
     @table_name       = "importer_#{rand(99999)}"
     @db               = Factories::PGConnection.new.connection
-    @dataset          = @db[@table_name.to_sym]
     @full_table_name  = "cdb_importer.#{@table_name}"
+    @dataset          = @db[@full_table_name.to_sym]
     @wrapper          = Ogr2ogr.new(@full_table_name, @filepath, @pg_options)
 
     @db.execute('SET search_path TO cdb_importer,public')
@@ -75,7 +75,6 @@ describe Ogr2ogr do
     end
 
     it 'keeps an existing cartodb_id column in imported records' do
-      skip
       header    = ["cartodb_id", "header_2"]
       data      = ["5", "cell_#{rand(999)}"]
       csv       = Factories::CSV.new.write(header, data)
@@ -86,7 +85,7 @@ describe Ogr2ogr do
       @wrapper.run
 
       record    = @dataset.first
-      record.fetch(:cartodb_id).must_equal 5
+      record.fetch(:cartodb_id).must_equal '5'
     end
   end #run
 

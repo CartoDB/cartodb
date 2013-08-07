@@ -11,10 +11,15 @@ module CartoDB
       CartoDB::GitHubReporter.new.report_failed_import(metric_payload)
     end #self.report_failed_import
 
+    def self.report_success_import(metric_payload)
+      CartoDB::Metrics.mixpanel_event("Import successful", metric_payload)
+      CartoDB::Metrics.ducksboard_report_done(metric_payload[:extension])
+    end #self.report_success_import
+
     def self.mixpanel_event(*args)
       return self unless Cartodb.config[:mixpanel].present?
       token = Cartodb.config[:mixpanel]['token']
-      Mixpanel::Tracker.new(token).send(:track, args)
+      Mixpanel::Tracker.new(token).send(:track, *args)
     rescue => exception
       p exception
       Rollbar.report_message(
@@ -26,6 +31,7 @@ module CartoDB
     end #self.event
 
     def self.ducksboard_report_failed(type)
+      type.gsub!(".","")
       if Cartodb.config[:ducksboard]["formats"][type.downcase].present?
         ducksboard_increment Cartodb.config[:ducksboard]["formats"][type.downcase]["failed"], 1
         ducksboard_increment Cartodb.config[:ducksboard]["formats"][type.downcase]["total"], 1
@@ -33,6 +39,7 @@ module CartoDB
     end #self.import_failed
 
     def self.ducksboard_report_done(type)
+      type.gsub!(".","")
     	if Cartodb.config[:ducksboard]["formats"][type.downcase].present?
         ducksboard_increment Cartodb.config[:ducksboard]["formats"][type.downcase]["total"], 1
       end

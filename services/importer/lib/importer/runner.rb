@@ -11,19 +11,8 @@ module CartoDB
     class Runner
       QUOTA_MAGIC_NUMBER      = 0.3
       DEFAULT_AVAILABLE_QUOTA = 2 ** 30
-      LOADERS = {
-        csv:      Loader,
-        xls:      Loader,
-        xlsx:     Loader,
-        json:     Loader,
-        geojson:  Loader,
-        kml:      Loader,
-        tab:      Loader,
-        gpx:      Loader,
-        gml:      Loader,
-        shp:      ShpLoader,
-        osm:      OsmLoader
-      }
+      LOADERS                 = [Loader, ShpLoader, OsmLoader]
+      DEFAULT_LOADER          = Loader
 
       def initialize(pg_options, downloader, log=nil, available_quota=nil,
       unpacker=nil)
@@ -81,7 +70,9 @@ module CartoDB
       end #db
 
       def loader_for(source_file)
-        LOADERS.fetch(source_file.extension.delete('.').to_sym)
+        LOADERS.find(DEFAULT_LOADER) { |loader_klass| 
+          loader_klass.supported?(source_file.extension)
+        }
       end #loader_for
 
       def columns_in(table_name, schema='cdb_importer')

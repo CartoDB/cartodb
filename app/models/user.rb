@@ -118,7 +118,7 @@ class User < Sequel::Model
   def self.overquota
     User.all.select do |u|
         u.set_old_api_calls # updates map views stats older than 3 hours
-        u.get_api_calls.sum > u.map_view_quota.to_i
+        u.get_api_calls(from: u.last_billing_cycle, to: Date.today).sum > u.map_view_quota.to_i
     end
   end
 

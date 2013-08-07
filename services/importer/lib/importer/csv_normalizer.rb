@@ -3,25 +3,32 @@ require 'csv'
 require 'charlock_holmes'
 require 'tempfile'
 require 'fileutils'
+require_relative './job'
 
 module CartoDB
   module Importer2
     class CsvNormalizer
       COMMON_DELIMITERS = [',', "\t", ' ']
       DEFAULT_DELIMITER = ','
-      DEFAULT_ENCODING  = "UTF-8"
+      ACCEPTABLE_ENCODINGS = %w{ ISO-8859-1 ISO-8859-2 UTF-8 }
 
-      def initialize(filepath)
+      def self.supported?(extension)
+        extension == '.csv'
+      end #self.supported?
+
+      def initialize(filepath, job=nil)
         @filepath = filepath
+        @job      = job || Job.new
       end #initialize
 
-      def normalize
-        return self unless File.exists?(filepath)
-        return self unless filepath =~ /\.csv/ && needs_normalization?
+      def run
+        return self unless File.exists?(filepath) && needs_normalization?
         temporary_csv = ::CSV.open(temporary_filepath, 'w', col_sep: ',')
-        csv_options   = { external_encoding: encoding, col_sep: delimiter }
+
         stream.rewind
-        ::CSV.new(stream, csv_options).each { |row| temporary_csv << (row) }
+        ::CSV.new(stream, csv_options).each { |row| 
+          temporary_csv << multiple_column(row)
+        }
 
         temporary_csv.close
         release
@@ -29,15 +36,34 @@ module CartoDB
         FileUtils.rm_rf(temporary_directory)
         self.temporary_directory = nil
         self
-      end #normalize
+      end #run
 
       def temporary_filepath
         File.join(temporary_directory, File.basename(filepath))
       end #temporary_path
 
+      def csv_options
+        { 
+          external_encoding:  encoding,
+          col_sep:            delimiter,
+          quote_char:         '|'
+        }
+      end #csv_options
+
       def needs_normalization?
-        (encoding != DEFAULT_ENCODING) || (separator != DEFAULT_DELIMITER)
+        (!ACCEPTABLE_ENCODINGS.include?(encoding))  || 
+        (delimiter != DEFAULT_DELIMITER)            ||
+        single_column?
       end #needs_normalization?
+
+      def single_column?
+        ::CSV.parse(first_line, csv_options).first.length < 2
+      end #single_column?
+
+      def multiple_column(row)
+        return row if row.length > 1
+        row << nil
+      end #multiple_column
 
       def temporary_directory
         generate_temporary_directory unless @temporary_directory
@@ -92,7 +118,8 @@ module CartoDB
         ::CSV.parse(first_line, col_sep: delimiter).first
       end #column_count
 
-      attr_reader :filepath
+      attr_reader   :filepath
+      alias_method  :converted_filepath, :filepath
 
       private
 

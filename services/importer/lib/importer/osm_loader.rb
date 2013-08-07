@@ -16,6 +16,10 @@ module CartoDB
         "points"    => "POINT"
       }
 
+      def self.supported?(extension)
+        extension == '.osm'
+      end #self.supported?
+
       def initialize(job, source_file, osm2pgsql=nil)
         self.job            = job
         self.source_file    = source_file

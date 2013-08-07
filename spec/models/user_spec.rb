@@ -467,6 +467,15 @@ describe User do
     end
   end
 
+  it "should calculate the trial end date" do
+    @user.stubs(:upgraded_at).returns(Time.now - 5.days)
+    @user.trial_ends_at.should_not be_nil
+    @user.stubs(:upgraded_at).returns(nil)
+    @user.trial_ends_at.should be_nil
+    @user.stubs(:upgraded_at).returns(Time.now - 15.days)
+    @user.trial_ends_at.should_not be_nil
+  end
+
   describe '#link_ghost_tables' do
     it "should correctly count real tables" do
     reload_user_data(@user) && @user.reload

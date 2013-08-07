@@ -12,10 +12,13 @@ namespace :cartodb do
       end #needs_importer_schema?
 
       count = User.count
-      User.all
-        .select { |user| needs_importer_schema?(user) }
-        .each_with_index { |user, index|
+      User.all.each_with_index { |user, index|
           begin
+            unless needs_importer_schema?(user)
+              printf "OK %-#{20}s (%-#{4}s/%-#{4}s)\n", user.username, index, count
+              next
+            end
+
             puts "Creating cdb_importer schema for #{user.username}"
             user.create_importer_schema
             user.set_database_permissions_in_importer_schema

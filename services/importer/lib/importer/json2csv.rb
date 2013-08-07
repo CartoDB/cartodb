@@ -4,6 +4,10 @@ require_relative './job'
 module CartoDB
   module Importer2
     class Json2Csv
+      def self.supported?(extension)
+        extension == '.json'
+      end #self.supported?
+
       def initialize(filepath, job=nil)
         @filepath = filepath
         @job      = job || Job.new

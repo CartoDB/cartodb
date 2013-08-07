@@ -3,7 +3,7 @@ gem 'minitest'
 require 'minitest/autorun'
 require_relative '../../lib/importer/source_file'
 
-include CartoDB::Importer
+include CartoDB::Importer2
 
 describe SourceFile do
   describe '#basename' do
@@ -71,5 +71,20 @@ describe SourceFile do
       source_file.path.must_equal "#{time}"
     end
   end #path 
+
+  describe '#target_schema' do
+    it "returns 'public' if OSM" do
+      source_file = SourceFile.new('/var/tmp/foo.osm')
+      source_file.target_schema.must_equal 'public'
+    end
+
+    it "returns 'importer' otherwise" do
+      source_file = SourceFile.new('/var/tmp/foo.txt')
+      source_file.target_schema.must_equal 'cdb_importer'
+
+      source_file = SourceFile.new('/var/tmp/foo')
+      source_file.target_schema.must_equal 'cdb_importer'
+    end
+  end #target_schema
 end # SourceFile
 

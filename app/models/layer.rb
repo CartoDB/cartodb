@@ -91,7 +91,7 @@ class Layer < Sequel::Model
 
   def copy
     attributes = public_values.select { |k, v| k != 'id' }
-    Layer.new(attributes)
+    ::Layer.new(attributes)
   end #copy
 
   def data_layer?
@@ -126,6 +126,10 @@ class Layer < Sequel::Model
   def uses_private_tables?
     !(affected_tables.select(&:private?).empty?)
   end #uses_private_tables?
+
+  def legend
+    options['legend']
+  end #legend
 
   private
 

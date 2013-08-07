@@ -1,3 +1,16 @@
+2.1.2
+-----
+- Added legends.
+- Dropbox file import.
+- Icon and images management. Icons and patterns can be set from the wizards
+- The importer component now uses a separate database schema ('cdb_importer') 
+  for all imports, with the exception of OSM files. To create the schema in
+  existing installations, run:
+  ```
+  $ bundle exec rake cartodb:db:create_importer_schema
+  ```
+- Added support for MapInfo files (.tab) in the importer
+
 2.1
 ---
 After updating to 2.1 you'll need to upgrade your system:

@@ -2,7 +2,7 @@
 require 'csv'
 
 module CartoDB
-  module Importer
+  module Importer2
     module Factories
       class CSV
         def initialize(name=nil)
@@ -30,6 +30,6 @@ module CartoDB
         attr_reader :name, :filepath
       end # CSV
     end # Factories
-  end # Importer
+  end # Importer2
 end # CartoDB
 

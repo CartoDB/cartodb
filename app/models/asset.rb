@@ -1,36 +1,46 @@
+require 'open-uri'
+
 class Asset < Sequel::Model
 
   many_to_one :user
-  PUBLIC_ATTRIBUTES = %W{ id public_url user_id }
+  PUBLIC_ATTRIBUTES = %W{ id public_url user_id kind }
 
-  attr_accessor :asset_file, :file
+  attr_accessor :asset_file, :url
 
   def public_values
     Hash[PUBLIC_ATTRIBUTES.map{ |a| [a, self.send(a)] }]
   end
 
-  def validate
-    super
-
-    errors.add(:user_id, "can't be blank") if user_id.blank?
-
-    begin
-      file = (asset_file.is_a?(String) ? File.open(asset_file) : File.open(asset_file.path))
-    rescue Errno::ENOENT
-      errors.add(:asset_file, "is invalid")
-    end
-
-    if file.is_a?(File)
-      errors.add(:asset_file, "is invalid") unless File.readable?(file)
-      errors.add(:asset_file, "is too big, 10Mb max") unless file.size <= Cartodb::config[:assets]["max_file_size"]
-      file.close
-    end
+  ##
+  # Tries to open the specified file object or full path
+  #
+  def open_file(handle)
+    (handle.respond_to?(:path) ? handle : File.open(handle.to_s))
+  rescue Errno::ENOENT
+    nil
   end
 
-  def after_save
+  def validate
     super
+    errors.add(:user_id, "can't be blank") if user_id.blank?
 
-    store!(asset_file) unless asset_file.blank?
+    if url.present?
+      dir = Dir.mktmpdir
+      system('wget', '-nv', '-P', dir, '-E', url)
+      @asset_file = Dir[File.join(dir, '*')][0]
+      errors.add(:url, "is invalid") unless $?.exitstatus == 0
+    end
+
+    if @asset_file.present?
+      begin
+        @file = open_file(@asset_file)
+        errors.add(:file, "is invalid") unless @file && File.readable?(@file.path)
+        errors.add(:file, "is too big, 5Mb max") if @file && @file.size > Cartodb::config[:assets]["max_file_size"]
+        store! if errors.blank?
+      rescue => e
+        errors.add(:file, "error uploading #{e.message}")
+      end
+    end
   end
 
   def after_destroy
@@ -47,15 +57,14 @@ class Asset < Sequel::Model
   #
   # [file_path (String)] full path of the file to upload
   #
-  def store!(file)
-    file_path = file.is_a?(String) ? file : file.path
-    basename  = file.is_a?(String) ? File.basename(file) : file.original_filename
-
+  def store!
     # Upload the file
-    o = s3_bucket.objects["#{asset_path}#{basename}"]
-    o.write(Pathname.new(file_path), {
+    prefix = "#{Time.now.strftime("%Y%m%d%H%M%S")}"
+    fname = prefix+(@file.respond_to?(:original_filename) ? @file.original_filename : File.basename(@file))
+    o = s3_bucket.objects["#{asset_path}#{fname}"]
+    o.write(Pathname.new(@file.path), {
       acl: :public_read,
-      content_type: MIME::Types.type_for(file_path).first.to_s
+      content_type: MIME::Types.type_for(@file.path).first.to_s
     })
 
     # Set the public_url attribute
@@ -77,7 +86,7 @@ class Asset < Sequel::Model
   # Path to the file, relative to the storage system
   #
   def asset_path
-    "user/#{self.user_id}/assets/"
+    "#{Rails.env}/#{self.user.username}/assets/"
   end
 
 

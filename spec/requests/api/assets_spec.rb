@@ -19,13 +19,27 @@ describe "Assets API" do
 
   it "creates a new asset" do
     post_json v1_user_assets_url(@user, params.merge(
-      :file => Rack::Test::UploadedFile.new(Rails.root.join('db/fake_data/column_number_to_boolean.csv'), 'text/csv'))
+      kind: 'wadus',
+      filename: Rack::Test::UploadedFile.new(Rails.root.join('spec/support/data/cartofante_blue.png'), 'image/png').path)
     ) do |response|
       response.status.should be_success
+      response.body[:public_url].should =~ /\/test\/test\/assets\/\d+cartofante_blue/
+      response.body[:kind].should == 'wadus'
       @user.reload
       @user.assets.count.should == 1
       asset = @user.assets.first
-      asset.public_url.should == "https://s3.amazonaws.com/tile_assets_devel/user/#{@user.id}/assets/column_number_to_boolean.csv"
+      asset.public_url.should =~ /\/test\/test\/assets\/\d+cartofante_blue/
+      asset.kind.should == 'wadus'
+    end
+  end
+
+  it "returns some error message when the asset creation fails" do
+    Asset.any_instance.stubs(:s3_bucket).raises("OMG AWS exception")
+    post_json v1_user_assets_url(@user, params.merge(
+      :filename => Rack::Test::UploadedFile.new(Rails.root.join('spec/support/data/cartofante_blue.png'), 'image/png').path)
+    ) do |response|
+      response.status.should == 400
+      response.body[:description].should == "file error uploading OMG AWS exception"
     end
   end
 

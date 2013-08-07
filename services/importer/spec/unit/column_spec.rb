@@ -4,11 +4,13 @@ require 'minitest/autorun'
 require_relative '../../lib/importer/column'
 require_relative '../factories/pg_connection'
 
-include CartoDB::Importer
+include CartoDB::Importer2
 
 describe Column do
   before do
     @db           = Factories::PGConnection.new.connection
+    @db.execute('SET search_path TO cdb_importer,public')
+
     @table_name   = create_table(@db)
     @column_name  = 'the_geom'
     @column       = Column.new(@db, @table_name, @column_name)
@@ -16,7 +18,8 @@ describe Column do
   end
 
   after do
-    @db.drop_table?(@table_name)
+    @db.drop_table?(@table_name.to_sym)
+    @db.disconnect
   end
 
   describe '#type' do
@@ -34,9 +37,9 @@ describe Column do
       @column.geometrify
     end
 
-    it 'handles empty geometry columns' do
+    it 'raises if empty geometry column' do
       5.times { @dataset.insert(name: '', description:'', the_geom: '') }
-      @column.geometrify
+      lambda { @column.geometrify }.must_raise EmptyGeometryColumn
     end
 
     it "guarantees the geometry column ends up with a geometry type" do
@@ -201,14 +204,58 @@ describe Column do
     end
   end #empty?
 
+  describe '#rename_to' do
+    it 'renames the column' do
+      @dataset.insert(random_hexewkb_record)
+      @column.rename_to('bogus_name')
+      @dataset.first.keys.must_include :bogus_name
+    end
+
+    it 'does nothing if the new name is the same as the current one' do
+      @dataset.insert(random_hexewkb_record)
+      @column.rename_to('the_geom')
+      @dataset.first.keys.must_include @column_name.to_sym
+    end
+  end #rename_to
+
+  describe '#sanitized_name' do
+    it 'returns a sanitized version of the column name' do
+      Column.new(@db, @table_name, '+++sanitized+++').sanitized_name
+        .must_equal 'sanitized'
+    end
+
+    it 'returns the same name if no sanitization needed' do
+      Column.new(@db, @table_name, 'sanitized').sanitized_name
+        .must_equal 'sanitized'
+    end
+  end #sanitized_name
+
+  describe '#reserved?' do
+    it 'returns true if name is a reserved keyword' do
+      @column.reserved?('select').must_equal true
+      @column.reserved?('bogus').must_equal false
+    end
+  end #reserved?
+
+  describe '#unsupported?' do
+    it 'returns true if name is not supported by Postgres' do
+      @column.unsupported?('9name').must_equal true
+      @column.unsupported?('name9').must_equal false
+    end
+  end #unsupported?
+
   def create_table(db, options={})
-    table_name = options.fetch(:table_name, "importer_#{rand(999)}")
-    db.create_table? table_name do
+    table_name = options.fetch(:table_name, "importer_#{rand(99999)}")
+    db.drop_table?(table_name)
+    db.create_table?(table_name) do
       String  :name
       String  :description
       String  :the_geom
     end
 
+    table_name
+  rescue
+    db.run(%Q{DROP TABLE "cdb_importer"."#{table_name}"})
     table_name
   end #create_table
 

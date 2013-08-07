@@ -141,6 +141,10 @@
       width:164px!important;
     }
 
+    &.tiny {
+      width:105px!important;
+    }
+
     ul {
       position:relative;
       @include inline-block();

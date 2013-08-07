@@ -1,6 +1,6 @@
 # coding: UTF-8
 class Api::Json::RecordsController < Api::ApplicationController
-  ssl_required :index, :create, :show, :update, :destroy, :show_column, :update_column, :pending_addresses
+  ssl_required :index, :create, :show, :update, :destroy
 
   REJECT_PARAMS = %W{ format controller action id row_id requestId column_id api_key table_id oauth_token oauth_token_secret }
 
@@ -45,34 +45,11 @@ class Api::Json::RecordsController < Api::ApplicationController
   end
 
   def destroy
-    if params[:id]
-      current_user.in_database do |user_database|
-        if params[:id] =~ /^\d+$/
-          user_database.run("delete from #{@table.name} where cartodb_id = #{params[:id].sanitize_sql}")
-        else
-          params[:id].split(',').each do |raw_id|
-            user_database.run("delete from #{@table.name} where cartodb_id = #{raw_id.sanitize_sql}")
-          end
-        end
-      end
-      head :no_content
-    else
-      render_jsonp({ :errors => ["row identified with #{params[:id]} not found"] }, 404) and return
-    end
-  end
-
-  def show_column
-    render_jsonp(current_user.run_query("select #{params[:id].sanitize_sql} from #{@table.name} where cartodb_id = #{params[:record_id].sanitize_sql}")[:rows].first)
-  end
-
-  def update_column
-    @table.update_row!(params[:record_id], {params[:id].to_sym => params[:value]})
-    render_jsonp({ params[:id] => params[:value] })
-  end
-
-  def pending_addresses
-    records = @table.get_records_with_pending_addresses(:page => params[:page], :rows_per_page => params[:rows_per_page])
-    render_jsonp(records)
+    id = (params[:id] =~ /^\d+$/ ? params[:id] : params[:id].to_s.split(','))
+    current_user.in_database.select.from(@table.name).where(cartodb_id: id).delete
+    head :no_content
+  rescue => e
+    render_jsonp({ errors: ["row identified with #{params[:id]} not found"] }, 404)
   end
 
   protected

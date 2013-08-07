@@ -7,15 +7,15 @@ require_relative '../../lib/importer/csv_normalizer'
 include CartoDB::Importer2
 
 describe CsvNormalizer do
-  describe '#normalize' do
+  describe '#run' do
     it 'transforms the file using a proper comma delimiter' do
       fixture = tab_delimiter_factory
       csv     = CsvNormalizer.new(fixture)
       csv.delimiter.must_equal "\t"
-      csv.normalize
+      csv.run
       csv.delimiter.must_equal ','
     end
-  end #normalize
+  end #run
 
   describe '#temporary_directory' do
     it 'generates a temporary directory' do

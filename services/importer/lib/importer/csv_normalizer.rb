@@ -7,7 +7,7 @@ require 'fileutils'
 module CartoDB
   module Importer2
     class CsvNormalizer
-      COMMON_DELIMITERS = [',', "\t", ' ']
+      COMMON_DELIMITERS = [',', "\t", ' ', ';']
       DEFAULT_DELIMITER = ','
       ACCEPTABLE_ENCODINGS = %w{ ISO-8859-1 ISO-8859-2 UTF-8 }
 

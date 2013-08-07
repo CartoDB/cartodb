@@ -6,6 +6,10 @@ require_relative './job'
 module CartoDB
   module Importer2
     class Xlsx2Csv
+      def self.supported?(extension)
+        extension == '.xlsx'
+      end #self.supported?
+
       def initialize(filepath, job=nil)
         @filepath = filepath
         @job      = job || Job.new

@@ -353,6 +353,7 @@ class DataImport < Sequel::Model
 
     table                         = Table.new
     table.user_id                 = table_owner.id
+    table.data_import_id          = self.id
     table.name                    = name
     table.migrate_existing_table  = name
     table.save

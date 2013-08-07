@@ -3,6 +3,7 @@ require 'csv'
 require 'charlock_holmes'
 require 'tempfile'
 require 'fileutils'
+require_relative './job'
 
 module CartoDB
   module Importer2
@@ -11,11 +12,16 @@ module CartoDB
       DEFAULT_DELIMITER = ','
       ACCEPTABLE_ENCODINGS = %w{ ISO-8859-1 ISO-8859-2 UTF-8 }
 
-      def initialize(filepath)
+      def self.supported?(extension)
+        extension == '.csv'
+      end #self.supported?
+
+      def initialize(filepath, job=nil)
         @filepath = filepath
+        @job      = job || Job.new
       end #initialize
 
-      def normalize
+      def run
         return self unless File.exists?(filepath)
         return self unless filepath =~ /\.csv/ && needs_normalization?
         temporary_csv = ::CSV.open(temporary_filepath, 'w', col_sep: ',')
@@ -31,7 +37,7 @@ module CartoDB
         FileUtils.rm_rf(temporary_directory)
         self.temporary_directory = nil
         self
-      end #normalize
+      end #run
 
       def temporary_filepath
         File.join(temporary_directory, File.basename(filepath))
@@ -95,7 +101,8 @@ module CartoDB
         ::CSV.parse(first_line, col_sep: delimiter).first
       end #column_count
 
-      attr_reader :filepath
+      attr_reader   :filepath
+      alias_method  :converted_filepath, :filepath
 
       private
 

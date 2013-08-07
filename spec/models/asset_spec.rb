@@ -74,10 +74,10 @@ describe Asset do
     asset.public_values.should == { "public_url" => nil, "user_id" => @user.id, "id" => nil, "kind" => nil }
   end
 
-  it 'should not allow a user to upload files bigger than 10Mb' do
+  it 'should not allow a user to upload files bigger than 5Mb' do
     asset = Asset.new user_id: @user.id, asset_file: (Rails.root + 'spec/support/data/GLOBAL_ELEVATION_SIMPLE.zip').to_s
 
     expect { asset.save }.to raise_error(Sequel::ValidationFailed)
-    asset.errors.full_messages.should == ["file is too big, 10Mb max"]
+    asset.errors.full_messages.should == ["file is too big, 5Mb max"]
   end
 end

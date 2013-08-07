@@ -35,7 +35,7 @@ class Asset < Sequel::Model
       begin
         @file = open_file(@asset_file)
         errors.add(:file, "is invalid") unless @file && File.readable?(@file.path)
-        errors.add(:file, "is too big, 10Mb max") if @file && @file.size > Cartodb::config[:assets]["max_file_size"]
+        errors.add(:file, "is too big, 5Mb max") if @file && @file.size > Cartodb::config[:assets]["max_file_size"]
         store! if errors.blank?
       rescue => e
         errors.add(:file, "error uploading #{e.message}")

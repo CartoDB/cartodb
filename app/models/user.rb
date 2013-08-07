@@ -292,7 +292,7 @@ class User < Sequel::Model
   end
 
   def trial_ends_at
-    if upgraded_at && upgraded_at + 15.days > Date.today
+    if account_type.to_s.downcase == 'magellan' && upgraded_at && upgraded_at + 15.days > Date.today
       upgraded_at + 15.days
     else
       nil

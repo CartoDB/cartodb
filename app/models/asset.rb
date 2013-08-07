@@ -26,7 +26,7 @@ class Asset < Sequel::Model
 
     if url.present?
       dir = Dir.mktmpdir
-      `wget -nv -P #{dir} -E #{url} 2>&1`
+      system('wget', '-nv', '-P', dir, '-E', url)
       @asset_file = Dir[File.join(dir, '*')][0]
       errors.add(:url, "is invalid") unless $?.exitstatus == 0
     end

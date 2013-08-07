@@ -227,6 +227,12 @@ div.subheader {
 
       .inner { position:relative; }
 
+      &.upgraded {
+        background:rgba(#8DB73F,0.15);
+      }
+
+      .dark { color: #666666; }
+
       a.close {
         right: 0px;
         @include absolute-portrait-center(13px);
@@ -236,28 +242,10 @@ div.subheader {
 
         &:hover {@include icons-sprite(close_grey, $offset-y: -13px);}
         &:active {@include icons-sprite(close_grey, $offset-y: -26px);}
+
       }
 
     }
 
-    &.hidden {
-      display:none;
-      z-index:-1;
-    }
-
-    .dark { color: #666666; }
-
-    p.upgraded { display:none; }
-
-    &.upgraded {
-      background:rgba(#8DB73F,0.15);
-      p.limit {display:none;}
-      p.upgraded {display:block;}
-    }
-
-    &.visible {
-      margin:0;
-      z-index:0;
-    }
   }
 }

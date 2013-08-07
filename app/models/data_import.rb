@@ -131,7 +131,6 @@ class DataImport < Sequel::Model
     self.log << "SUCCESS!\n"
     save
 
-    CartoDB::Metrics.report_success_import(metric_payload)
   end #handle_success
 
   def handle_failure
@@ -322,7 +321,6 @@ class DataImport < Sequel::Model
 
       table_names.each { |table_name| register(table_name, name, schema) }
     end
-   
     success_status_from(runner.results)
   end #new_importer
 
@@ -373,6 +371,14 @@ class DataImport < Sequel::Model
       extension:  result.fetch(:extension)
     }.merge(metric_payload)
     CartoDB::Metrics.report_failed_import(payload)
+  end #register_failed_import_event_for
+
+  def register_success_import_event_for(result)
+    payload = {
+      name:       result.fetch(:name),
+      extension:  result.fetch(:extension)
+    }.merge(metric_payload)
+    CartoDB::Metrics.report_success_import(payload)
   end #register_failed_import_event_for
 
   def table_owner

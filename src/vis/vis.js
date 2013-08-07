@@ -221,10 +221,13 @@ var Vis = cdb.core.View.extend({
       for(i = 0; i < options.sublayer_options.length; ++i) {
         var o = options.sublayer_options[i];
         var subLayer = dataLayer.getSubLayer(i);
-        if(this.legends) {
-          var legend = this.legends && this.legends.options.legends[i];
 
-          if(legend) {
+        if (this.legends) {
+
+          var j = options.sublayer_options.length - i - 1;
+          var legend = this.legends && this.legends.options.legends[j];
+
+          if (legend) {
             o.visible ? legend.show(): legend.hide();
           }
 

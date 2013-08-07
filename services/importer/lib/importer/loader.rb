@@ -12,6 +12,11 @@ module CartoDB
       TABLE_PREFIX  = 'importer'
       NORMALIZERS   = [CsvNormalizer, Xlsx2Csv, Json2Csv]
 
+      def self.supported?(extension)
+        return true unless extension == '.shp' || extension == '.osm'
+        return false
+      end #self.supported?
+
       def initialize(job, source_file, ogr2ogr=nil, georeferencer=nil)
         self.job            = job
         self.source_file    = source_file

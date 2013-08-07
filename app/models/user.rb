@@ -293,6 +293,14 @@ class User < Sequel::Model
     end
   end
 
+  def trial_ends_at
+    if upgraded_at && upgraded_at + 15.days > Date.today
+      upgraded_at + 15.days
+    else
+      nil
+    end
+  end
+
   def dedicated_support?
     [/FREE/i, /MAGELLAN/i].select { |rx| self.account_type =~ rx }.empty?
   end

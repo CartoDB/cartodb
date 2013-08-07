@@ -59,12 +59,8 @@ class Asset < Sequel::Model
   #
   def store!
     # Upload the file
-<<<<<<< HEAD
-    fname = (@file.respond_to?(:original_filename) ? @file.original_filename : File.basename(@file))
-=======
     prefix = "#{Time.now.strftime("%Y%m%d%H%M%S")}"
     fname = prefix+(@file.respond_to?(:original_filename) ? @file.original_filename : File.basename(@file))
->>>>>>> release/staging
     o = s3_bucket.objects["#{asset_path}#{fname}"]
     o.write(Pathname.new(@file.path), {
       acl: :public_read,

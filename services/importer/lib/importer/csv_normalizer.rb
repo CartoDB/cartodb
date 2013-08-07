@@ -19,7 +19,7 @@ module CartoDB
         return self unless File.exists?(filepath)
         return self unless filepath =~ /\.csv/ && needs_normalization?
         temporary_csv = ::CSV.open(temporary_filepath, 'w', col_sep: ',')
-        csv_options   = { external_encoding: encoding, col_sep: delimiter }
+        csv_options   = { col_sep: delimiter }
 
         csv_options.merge!(quote_char: '|')
         stream.rewind
@@ -88,7 +88,7 @@ module CartoDB
       end #release
 
       def stream
-        @stream ||= File.open(filepath, 'rb', external_encoding: encoding)
+        @stream ||= File.open(filepath, 'rb')
       end #stream
 
       def column_count

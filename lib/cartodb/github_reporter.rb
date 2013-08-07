@@ -22,7 +22,7 @@ module CartoDB
 
     def failed_import_body(result)
       {
-        "title" => "[Importer] [Autoreport] #{result[:file]} failed",
+        "title" => "[Importer] [Autoreport] #{result[:name]}.#{result[:extension]} failed",
         "body" => "File importing failed:" +
         "\n\`\`\`#{::JSON::pretty_generate(result)}\`\`\`"
       }

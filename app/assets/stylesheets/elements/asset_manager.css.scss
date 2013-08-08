@@ -37,23 +37,18 @@
         border:1px solid #C0C0C0!important;
         @include border-radius(3px);
         overflow: hidden;
+        background: image-url('layout/loader.gif') no-repeat center;
 
         a.image {
           display:block;
+          position: absolute;
           width:42px;
           height:42px;
           @include border-radius(3px);
           text-align: center;
           line-height: 42px;
-
-          img {
-            position: relative;
-            top: -2px;
-            max-width: 100%;
-            max-height: 100%;
-            @include inline-block();
-            vertical-align: middle;
-          }
+          background-repeat: no-repeat;
+          background-position: center;
         }
 
         a.delete {
@@ -82,17 +77,6 @@
           }
         }
 
-        div.loader {
-          position: absolute;
-          display: none;
-          top: 0;
-          left: 0;
-          width: 42px;
-          height: 42px;
-          padding:0;
-          background-position: center center;
-        }
-
         &:hover {
           a.delete {
             display:block;
@@ -106,8 +90,8 @@
           height:39px;
           border:2px solid #0F0F0F!important;
 
-          a.image img {
-            top: -3px;
+          a.image {
+            top: -1px;
             left: -1px;
           }
 

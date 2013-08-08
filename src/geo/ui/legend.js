@@ -611,11 +611,11 @@ cdb.geo.ui.Legend = cdb.core.View.extend({
   },
 
   show: function(callback) {
-    if (this.options && this.options.type) this.$el.show();
+    if (this.model.get("type")) this.$el.show();
   },
 
   hide: function(callback) {
-    if (this.options && this.options.type) this.$el.hide();
+    if (this.model.get("type")) this.$el.hide();
   },
 
   _capitalize: function(string) {

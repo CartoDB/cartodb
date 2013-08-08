@@ -1,0 +1,24 @@
+
+/**
+ *  CartoDB2.0 blue header popup styles
+ */
+
+div.cartodb-popup.header.blue div.cartodb-popup-header {
+  background:url('../img/headers.png') no-repeat 0 -40px;
+}
+
+div.cartodb-popup.header.blue div.cartodb-popup-header h4 {
+  color:#1F4C7F;
+}
+
+div.cartodb-popup.header.blue div.cartodb-popup-header span.separator {
+  background:#225386;
+}
+
+div.cartodb-popup.header.blue a.cartodb-popup-close-button {
+  background:url('../img/headers.png') no-repeat -226px -40px;
+}
+
+div.cartodb-popup.header.blue a.cartodb-popup-close-button:hover {
+  background-position:-226px -66px;
+}

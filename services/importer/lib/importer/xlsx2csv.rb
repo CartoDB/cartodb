@@ -1,30 +1,26 @@
 # encoding: utf-8
 require 'csv'
-require 'simple_xlsx_reader'
+require 'roo'
 require_relative './job'
 
 module CartoDB
   module Importer2
     class Xlsx2Csv
+      def self.supported?(extension)
+        extension == '.xlsx'
+      end #self.supported?
+
       def initialize(filepath, job=nil)
         @filepath = filepath
         @job      = job || Job.new
       end #initialize
 
       def run
-        ::CSV.open(converted_filepath, 'w') do |csv|
-          xlsx.sheets.each { |sheet| 
-            sheet.rows.each { |row| csv << row }
-          }
-        end
-
         job.log 'Converting XSLX to CSV'
+        spreadsheet = Roo::Excelx.new(filepath, nil, :ignore)
+        spreadsheet.to_csv(converted_filepath)
         self
       end #run
-
-      def xlsx
-        @xlsx ||= SimpleXlsxReader.open(filepath)
-      end #xlsx
 
       def converted_filepath
         File.join(

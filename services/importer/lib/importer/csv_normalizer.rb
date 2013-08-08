@@ -8,7 +8,7 @@ require_relative './job'
 module CartoDB
   module Importer2
     class CsvNormalizer
-      COMMON_DELIMITERS = [',', "\t", ' ']
+      COMMON_DELIMITERS = [',', "\t", ' ', ';']
       DEFAULT_DELIMITER = ','
       ACCEPTABLE_ENCODINGS = %w{ ISO-8859-1 ISO-8859-2 UTF-8 }
 
@@ -25,8 +25,9 @@ module CartoDB
         return self unless File.exists?(filepath) && needs_normalization?
         temporary_csv = ::CSV.open(temporary_filepath, 'w', col_sep: ',')
 
-        stream.rewind
-        ::CSV.new(stream, csv_options).each { |row| 
+        File.open(filepath, 'rb', external_encoding: encoding)
+        .each_line(line_delimiter) { |line| 
+          row = ::CSV.parse_line(line.chomp.encode('UTF-8'), csv_options)
           temporary_csv << multiple_column(row)
         }
 
@@ -43,17 +44,27 @@ module CartoDB
       end #temporary_path
 
       def csv_options
-        { 
-          external_encoding:  encoding,
+        {
           col_sep:            delimiter,
           quote_char:         '|'
         }
       end #csv_options
 
+      def line_delimiter
+        return "\r" if windows_eol?
+        return $/ 
+      end #line_delimiter
+
+      def windows_eol?
+        return false if first_line =~ /\n/
+        !!(first_line =~ %r{})
+      end #windows_eol?
+
       def needs_normalization?
         (!ACCEPTABLE_ENCODINGS.include?(encoding))  || 
         (delimiter != DEFAULT_DELIMITER)            ||
-        single_column?
+        single_column?                              ||
+        windows_eol?
       end #needs_normalization?
 
       def single_column?
@@ -111,7 +122,7 @@ module CartoDB
       end #release
 
       def stream
-        @stream ||= File.open(filepath, 'rb', external_encoding: encoding)
+        @stream ||= File.open(filepath, 'rb')
       end #stream
 
       def column_count

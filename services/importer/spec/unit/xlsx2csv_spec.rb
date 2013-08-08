@@ -10,6 +10,7 @@ include CartoDB::Importer2
 describe Xlsx2Csv do
   describe '#run' do
     it 'converts a XLSSX file to CSV' do
+      skip
       fixture   = path_to('ngos.xlsx')
       xlsx2csv  = Xlsx2Csv.new(fixture)
 

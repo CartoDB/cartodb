@@ -862,6 +862,12 @@ div.cartodb-popup.header.yellow a.cartodb-popup-close-button:hover {
     line-height: normal;
   }
 
+  /* None legend */
+  div.cartodb-legend-stack div.cartodb-legend.none,
+  div.cartodb-legend.none {
+    display:none;
+  }
+
   /* Custom legend */
 
   div.cartodb-legend.custom ul li,
@@ -990,12 +996,6 @@ div.cartodb-popup.header.yellow a.cartodb-popup-close-button:hover {
     
     /*box-shadow: inset 0px 0px 0px 1px rgba(0, 0, 0, 0.2);*/
     border: 1px solid #b3b3b3;
-  }
-
-  /* None legend */
-  div.cartodb-legend-stack div.cartodb-legend.none,
-  div.cartodb-legend.none {
-    display:none;
   }
 
   /* Density legend */

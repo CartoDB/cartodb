@@ -1,0 +1,59 @@
+
+  /**
+   *  CartoDB infowindow dark styles
+   */
+
+  div.cartodb-popup.dark .jspContainer:after {
+    background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, rgba(0,0,0,0)), color-stop(100%, rgba(0,0,0,1)));
+    background: -webkit-linear-gradient(top, rgba(0,0,0,0), rgba(0,0,0,1));
+    background: -moz-linear-gradient(top, rgba(0,0,0,0), rgba(0,0,0,1));
+    background: -o-linear-gradient(top, rgba(0,0,0,0), rgba(0,0,0,1));
+    background: linear-gradient(top, rgba(0,0,0,0), rgba(0,0,0,1));
+  }
+
+  div.cartodb-popup.dark .jspContainer:before {
+    background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, rgba(0,0,0,1)), color-stop(100%, rgba(0,0,0,0)));
+    background: -webkit-linear-gradient(top, rgba(0,0,0,1), rgba(0,0,0,0));
+    background: -moz-linear-gradient(top, rgba(0,0,0,1), rgba(0,0,0,0));
+    background: -o-linear-gradient(top, rgba(0,0,0,1), rgba(0,0,0,0));
+    background: linear-gradient(top, rgba(0,0,0,1), rgba(0,0,0,0));
+  }
+
+  div.cartodb-popup.dark {
+    background:url('../img/dark.png') no-repeat -226px 0;
+  }
+
+  div.cartodb-popup.dark div.cartodb-popup-content-wrapper {
+    background:url('../img/dark.png') repeat-y -452px 0;
+  }
+
+  div.cartodb-popup.dark div.cartodb-popup-tip-container {
+    background:url('../img/dark.png') no-repeat 0 0;
+  }
+
+  div.cartodb-popup.dark a.cartodb-popup-close-button {
+    background:url('../img/dark.png') no-repeat 0 -23px;
+  }
+
+  div.cartodb-popup.dark h4 {
+    color:#666666;
+  }
+
+  div.cartodb-popup.dark p {
+    color:#FFFFFF;
+  }
+
+  div.cartodb-popup.dark p.empty {
+    font-style:italic;
+    color:#AAA;
+  }
+
+  div.cartodb-popup.dark .jspDrag {
+    background: #AAAAAA;
+    background: rgba(255,255,255,0.5);
+  }
+
+  div.cartodb-popup.dark .jspDrag:hover {
+    background: #DEDEDE;
+    background: rgba(255,255,255,0.8);
+  }

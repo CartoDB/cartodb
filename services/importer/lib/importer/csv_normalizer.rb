@@ -57,7 +57,8 @@ module CartoDB
 
       def windows_eol?
         return false if first_line =~ /\n/
-        !!(first_line =~ %r{})
+        !!(first_line =~ %r{
+})
       end #windows_eol?
 
       def needs_normalization?

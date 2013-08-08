@@ -30,17 +30,17 @@ module CartoDB
       self
     end #self.event
 
-    def self.ducksboard_report_failed(type)
+    def self.ducksboard_report_failed(type="")
       type.gsub!(".","")
-      if Cartodb.config[:ducksboard]["formats"][type.downcase].present?
+      if Cartodb.config.fetch(:ducksboard, []).fetch("formats", [])[type.downcase].present?
         ducksboard_increment Cartodb.config[:ducksboard]["formats"][type.downcase]["failed"], 1
         ducksboard_increment Cartodb.config[:ducksboard]["formats"][type.downcase]["total"], 1
       end
     end #self.import_failed
 
-    def self.ducksboard_report_done(type)
+    def self.ducksboard_report_done(type="")
       type.gsub!(".","")
-    	if Cartodb.config[:ducksboard]["formats"][type.downcase].present?
+    	if Cartodb.config.fetch(:ducksboard, []).fetch("formats", [])[type.downcase].present?
         ducksboard_increment Cartodb.config[:ducksboard]["formats"][type.downcase]["total"], 1
       end
     end #self.import_success

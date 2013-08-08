@@ -15,7 +15,7 @@ module CartoDB
 
       def run
         data = parse(filepath)
-        return false if complex?(data)
+        return self if complex?(data)
         File.open(converted_filepath, 'w') { |file| file.write csv_from(data) }
         job.log 'Converting JSON to CSV'
         self

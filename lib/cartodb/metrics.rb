@@ -7,8 +7,8 @@ module CartoDB
 
     def self.report_failed_import(metric_payload)
       CartoDB::Metrics.mixpanel_event("Import failed", metric_payload)
-      CartoDB::Metrics.ducksboard_report_failed(metric_payload[:extension])
       CartoDB::GitHubReporter.new.report_failed_import(metric_payload)
+      CartoDB::Metrics.ducksboard_report_failed(metric_payload[:extension])
     end #self.report_failed_import
 
     def self.report_success_import(metric_payload)

@@ -14,7 +14,7 @@ namespace :cartodb do
         rescue => e
           printf "FAIL %-#{20}s (%-#{4}s/%-#{4}s) #{e.message}\n", user.username, i, count
         end
-        sleep(1.0/5.0)
+        #sleep(1.0/5.0)
       end
     end
 
@@ -50,7 +50,7 @@ namespace :cartodb do
         rescue => e
           printf "FAIL %-#{20}s (%-#{4}s/%-#{4}s) #{e.message}\n", user.username, i, count
         end
-        sleep(1.0/5.0)
+        #sleep(1.0/5.0)
       end
     end
 
@@ -77,7 +77,7 @@ namespace :cartodb do
         rescue => e
           printf "FAIL %-#{20}s (%-#{4}s/%-#{4}s) #{e.message}\n", user.username, i, count
         end
-        sleep(1.0/5.0)
+        #sleep(1.0/5.0)
       end
     end
 
@@ -92,7 +92,7 @@ namespace :cartodb do
         next if !user.respond_to?('database_name') || user.database_name.blank?
         
         user.test_cartodb_functions
-        sleep(1.0/4.0) # We think this is not necessary anymore 
+        #sleep(1.0/4.0) # We think this is not necessary anymore 
       end
     end
         

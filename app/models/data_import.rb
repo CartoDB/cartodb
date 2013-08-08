@@ -322,11 +322,15 @@ class DataImport < Sequel::Model
       table_names.each { |table_name| register(table_name, name, schema) }
     end
     success_status_from(runner.results)
+    notify_failures(runner.results)
   end #new_importer
 
   def notify_failures(results)
-    results.select { |result| !result.fetch(:success) }
-           .each   { |result| register_failed_import_event_for(result) }
+    results.each do |result|
+      result.fetch(:success) ?
+        register_success_import_event_for(result) : 
+        register_failed_import_event_for(result)
+    end
   end #notify_failures
 
   def success_status_from(results)
@@ -367,11 +371,27 @@ class DataImport < Sequel::Model
   end #register
 
   def register_failed_import_event_for(result)
-    payload = {
-      name:       result.fetch(:name),
-      extension:  result.fetch(:extension)
-    }.merge(metric_payload)
-    CartoDB::Metrics.report_failed_import(payload)
+    begin
+      payload = {
+        name:       result.fetch(:name),
+        extension:  result.fetch(:extension)
+      }.merge(metric_payload)
+      CartoDB::Metrics.report_failed_import(payload)
+    rescue
+      true
+    end
+  end #register_failed_import_event_for
+
+  def register_success_import_event_for(result)
+    begin
+      payload = {
+        name:       result.fetch(:name),
+        extension:  result.fetch(:extension)
+      }.merge(metric_payload)
+      CartoDB::Metrics.report_success_import(payload)
+    rescue
+      true
+    end
   end #register_failed_import_event_for
 
   def register_success_import_event_for(result)

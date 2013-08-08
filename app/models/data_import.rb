@@ -391,14 +391,6 @@ class DataImport < Sequel::Model
     self
   end #register_success_import_event_for
 
-  def register_success_import_event_for(result)
-    payload = {
-      name:       result.fetch(:name),
-      extension:  result.fetch(:extension)
-    }.merge(metric_payload)
-    CartoDB::Metrics.report_success_import(payload)
-  end #register_failed_import_event_for
-
   def table_owner
     table_owner ||= User.select(:id,:database_name,:crypted_password,:quota_in_bytes,:username, :private_tables_enabled, :table_quota).filter(:id => current_user.id).first
   end

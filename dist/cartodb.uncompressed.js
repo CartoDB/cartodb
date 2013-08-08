@@ -1,6 +1,6 @@
-// cartodb.js version: 3.1.02
+// cartodb.js version: 3.1.03
 // uncompressed version: cartodb.uncompressed.js
-// sha: 23bcf39c63080591779bf70b7180f5773f99d45b
+// sha: 48d09f3b257a741b85f5691d7fc6d79988a4039b
 (function() {
   var root = this;
 
@@ -19874,7 +19874,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.1.02';
+    cdb.VERSION = '3.1.03';
 
     cdb.CARTOCSS_VERSIONS = {
       '2.0.0': '',
@@ -22278,7 +22278,7 @@ cdb.geo.ui.Legend = cdb.core.View.extend({
 
     this.legend_name = this._capitalize(type) + "Legend";
 
-    if (type == 'none') {
+    if (type == 'none' || type == null) {
 
       this.legend_name = null;
       this.model.set({ type: null}, { silent: true });
@@ -22344,11 +22344,11 @@ cdb.geo.ui.Legend = cdb.core.View.extend({
   },
 
   show: function(callback) {
-    this.$el.show();
+    if (this.model.get("type")) this.$el.show();
   },
 
   hide: function(callback) {
-    this.$el.hide();
+    if (this.model.get("type")) this.$el.hide();
   },
 
   _capitalize: function(string) {

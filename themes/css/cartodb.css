@@ -993,6 +993,11 @@ div.cartodb-popup.header.yellow a.cartodb-popup-close-button:hover {
   }
 
 
+  /* None legend */
+  div.cartodb-legend-stack div.cartodb-legend.none,
+  div.cartodb-legend.none {
+    display:none;
+  }
 
   /* Density legend */
   div.cartodb-legend.density {

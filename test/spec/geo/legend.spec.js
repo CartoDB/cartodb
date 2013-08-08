@@ -115,6 +115,8 @@ describe("common.geo.ui.Legend", function() {
 
     it("should hide the legend", function() {
 
+      legend.model.set({ type: "bubble" });
+
       legend.show();
       legend.hide();
 

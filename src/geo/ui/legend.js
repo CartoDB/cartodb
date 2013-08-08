@@ -545,7 +545,7 @@ cdb.geo.ui.Legend = cdb.core.View.extend({
 
     this.legend_name = this._capitalize(type) + "Legend";
 
-    if (type == 'none') {
+    if (type == 'none' || type == null) {
 
       this.legend_name = null;
       this.model.set({ type: null}, { silent: true });
@@ -611,11 +611,11 @@ cdb.geo.ui.Legend = cdb.core.View.extend({
   },
 
   show: function(callback) {
-    this.$el.show();
+    if (this.model.get("type")) this.$el.show();
   },
 
   hide: function(callback) {
-    this.$el.hide();
+    if (this.model.get("type")) this.$el.hide();
   },
 
   _capitalize: function(string) {

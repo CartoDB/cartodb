@@ -51,7 +51,6 @@ module CartoDB
       end #csv_options
 
       def line_delimiter
-        
         return "\r" if windows_eol?
         return $/ 
       end #line_delimiter

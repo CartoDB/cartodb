@@ -106,19 +106,16 @@ module CartoDB
 
       def encoding
         data    = File.open(filepath, 'r')
-        sample  = (1..LINE_LIMIT).inject([]) { |memo, character| 
-                    memo << data.getc 
-                  }.compact.join
+        sample  = data.gets(LINE_LIMIT)
         data.close
 
         CharlockHolmes::EncodingDetector.detect(sample).fetch(:encoding)
       end #encoding
 
       def first_line
+        return @first_line if @first_line
         stream.rewind
-        (1..LINE_LIMIT).inject([]) { |memo, character| 
-          memo << stream.getc
-        }.compact.join.encode('UTF-8', encoding)
+        @first_line ||= stream.gets(LINE_LIMIT)
       end #first_line
 
       def release

@@ -1,7 +1,7 @@
 
-  /**
-   * Georeference dialog
-   */
+/**
+ * Georeference dialog
+ */
 
 @import "compass";
 @import "../common/sprites";
@@ -347,20 +347,20 @@
 
 }
 
-  @-webkit-keyframes progress{
-    0% {background-position: 0 0;}
-    100% {background-position: 30px 30px;}
-  }
-  @-moz-keyframes progress{
-    0% {background-position: 0 0;}
-    100% {background-position: 30px 30px;}
-  }
-  @-ms-keyframes progress{
-    0% {background-position: 0 0;}
-    100% {background-position: 30px 30px;}
-  }
-  @keyframes progress{
-    0% {background-position: 0 0;}
-    100% {background-position: 30px 30px;}
-  }
+@-webkit-keyframes progress{
+  0% {background-position: 0 0;}
+  100% {background-position: 30px 30px;}
+}
+@-moz-keyframes progress{
+  0% {background-position: 0 0;}
+  100% {background-position: 30px 30px;}
+}
+@-ms-keyframes progress{
+  0% {background-position: 0 0;}
+  100% {background-position: 30px 30px;}
+}
+@keyframes progress{
+  0% {background-position: 0 0;}
+  100% {background-position: 30px 30px;}
+}
 

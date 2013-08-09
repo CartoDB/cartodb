@@ -105,7 +105,7 @@ module CartoDB
 
       def encoding
         data      = File.open(filepath, 'r')
-        encoding  = CharlockHolmes::EncodingDetector.detect(data.first)
+        encoding  = CharlockHolmes::EncodingDetector.detect(data.gets(1000))
                       .fetch(:encoding)
         data.close
         encoding
@@ -113,7 +113,7 @@ module CartoDB
 
       def first_line
         stream.rewind
-        stream.first.encode('UTF-8', encoding)
+        stream.gets(1000).encode('UTF-8', encoding)
       end #first_line
 
       def release

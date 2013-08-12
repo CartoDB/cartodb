@@ -57,7 +57,8 @@ module CartoDB
       end #pg_copy_option
 
       def encoding_option
-       "PGCLIENTENCODING=#{ENCODING}"
+        encoding = options.fetch(:encoding, ENCODING)
+        "PGCLIENTENCODING=#{encoding}"
       end #encoding_option
 
       def layer_name_option

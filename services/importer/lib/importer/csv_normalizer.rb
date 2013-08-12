@@ -8,7 +8,7 @@ require_relative './job'
 module CartoDB
   module Importer2
     class CsvNormalizer
-      LINE_LIMIT        = 400
+      LINE_LIMIT        = 1000
       COMMON_DELIMITERS = [',', "\t", ' ', ';']
       DEFAULT_DELIMITER = ','
       ACCEPTABLE_ENCODINGS = %w{ ISO-8859-1 ISO-8859-2 UTF-8 }
@@ -65,8 +65,7 @@ module CartoDB
       def needs_normalization?
         (!ACCEPTABLE_ENCODINGS.include?(encoding))  || 
         (delimiter != DEFAULT_DELIMITER)            ||
-        single_column?                              ||
-        windows_eol?
+        single_column?                              
       end #needs_normalization?
 
       def single_column?
@@ -105,21 +104,23 @@ module CartoDB
       end #delimiter_in
 
       def encoding
-        data      = File.open(filepath, 'r')
-        sample    = data.gets(LINE_LIMIT)
+        data    = File.open(filepath, 'r')
+        sample  = data.gets(LINE_LIMIT)
         data.close
 
         CharlockHolmes::EncodingDetector.detect(sample).fetch(:encoding)
       end #encoding
 
       def first_line
+        return @first_line if @first_line
         stream.rewind
-        stream.gets(LINE_LIMIT).encode('UTF-8', encoding)
+        @first_line ||= stream.gets(LINE_LIMIT)
       end #first_line
 
       def release
         @stream.close
         @stream = nil
+        @first_line = nil
         self
       end #release
 

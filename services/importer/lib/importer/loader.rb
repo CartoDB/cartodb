@@ -46,9 +46,15 @@ module CartoDB
       end #normalize
 
       def ogr2ogr
-        @ogr2ogr ||= 
-          Ogr2ogr.new(job.table_name, source_file.fullpath, job.pg_options)
+        @ogr2ogr ||= Ogr2ogr.new(
+          job.table_name, source_file.fullpath, job.pg_options,
+          encoding: encoding
+        )
       end #ogr2ogr
+
+      def encoding
+        CsvNormalizer.new(source_file.fullpath, job).encoding
+      end #encoding
 
       def georeferencer
         @georeferencer ||= 

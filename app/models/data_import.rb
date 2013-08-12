@@ -73,7 +73,10 @@ class DataImport < Sequel::Model
   def mark_as_failed_if_stuck!    
     return false unless stuck?
 
-    self.failed!
+    self.success  = false
+    self.state    = 'failure'
+    save
+
     CartoDB::notify_exception(
       CartoDB::GenericImportError.new("Import timed out"), 
       user: current_user

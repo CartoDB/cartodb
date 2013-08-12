@@ -651,7 +651,7 @@ a.info {
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        max-width: 160px;
+        max-width: 150px;
       }
 
       &.empty { font-style: italic; }
@@ -723,7 +723,8 @@ a.info {
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            max-width: 260px;
+            max-width: 150px;
+            line-height: 1.2;
           }
 
           .input {

@@ -40,6 +40,10 @@ module CartoDB
         unpacker.source_files.each { |source_file| import(source_file) }
         unpacker.clean_up
         self
+      rescue => exception
+        log.append exception.to_s
+        log.append exception.backtrace
+        self.results.push(error: error_for(exception.class))
       end #run
       
       def import(source_file, job=nil, loader=nil)

@@ -65,6 +65,8 @@ class User < Sequel::Model
     setup_user
     save_metadata
     monitor_user_notification
+    sleep 3
+    set_statement_timeouts
   end
 
   def after_save
@@ -624,7 +626,6 @@ class User < Sequel::Model
       set_database_permissions
       set_database_permissions_in_importer_schema
       load_cartodb_functions
-      set_statement_timeouts
     end
   end
 

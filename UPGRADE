@@ -1,9 +1,16 @@
-After upgrading the rails code to <version>,
-you must upgrade existing databases using these commands:
+There's no standard procedure to migrate from one version to another of
+the rails application, so version specific procedures are documented
+in the NEWS.md file.
+
+In absence of specific instructions, after upgrading the rails code to
+<version>, you must upgrade existing databases using these commands:
 
 $ bundle exec rake db:migrate
 $ bundle exec rake cartodb:db:load_functions
 $ bundle exec rake cartodb:db:load_triggers
 $ bundle exec rake cartodb:db:create_importer_schema
 $ bundle exec rake cartodb:db:migrate_to[<version>]
+
+NOTE: rails must be restarted after an upgrade
+
 

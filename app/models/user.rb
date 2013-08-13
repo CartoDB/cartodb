@@ -19,9 +19,11 @@ class User < Sequel::Model
   # Sequel setup & plugins
   set_allowed_columns :email, :map_enabled, :password_confirmation, 
     :quota_in_bytes, :table_quota, :account_type, :private_tables_enabled, 
-    :period_end_date, :map_view_quota, :max_layers
+    :period_end_date, :map_view_quota, :max_layers, :database_timeout, 
+    :user_timeout
   plugin :validation_helpers
   plugin :json_serializer
+  plugin :dirty
 
 
   # Restrict to_json attributes
@@ -63,6 +65,14 @@ class User < Sequel::Model
     setup_user
     save_metadata
     monitor_user_notification
+    sleep 3
+    set_statement_timeouts
+  end
+
+  def after_save
+    super
+    changes = (self.previous_changes.present? ? self.previous_changes.keys : [])
+    set_statement_timeouts if changes.include?(:user_timeout) || changes.include?(:database_timeout)
   end
 
   def before_destroy
@@ -103,6 +113,16 @@ class User < Sequel::Model
   # allow extra vars for auth
   attr_reader :password
   attr_accessor :password_confirmation
+
+  ##
+  # SLOW! Checks map views for every user
+  #
+  def self.overquota
+    User.all.select do |u|
+        u.set_old_api_calls # updates map views stats older than 3 hours
+        u.get_api_calls(from: u.last_billing_cycle, to: Date.today).sum > u.map_view_quota.to_i
+    end
+  end
 
   def self.password_digest(password, salt)
     digest = AUTH_DIGEST
@@ -151,24 +171,7 @@ class User < Sequel::Model
   end
 
   def in_database(options = {}, &block)
-    logger = (Rails.env.development? || Rails.env.test? ? ::Rails.logger : nil)
-    configuration = if options[:as]
-      if options[:as] == :superuser
-        ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-          'database' => self.database_name, :logger => logger
-        )
-      elsif options[:as] == :public_user
-        ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-          'database' => self.database_name, :logger => logger,
-          'username' => CartoDB::PUBLIC_DB_USER, 'password' => ''
-        )
-      end
-    else
-      ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-        'database' => self.database_name, :logger => logger,
-        'username' => database_username, 'password' => database_password
-      )
-    end
+    configuration = get_db_configuration_for(options[:as])
     connection = $pool.fetch(configuration) do
       ::Sequel.connect(configuration)
     end
@@ -177,6 +180,25 @@ class User < Sequel::Model
       yield(connection)
     else
       connection
+    end
+  end
+
+  def get_db_configuration_for(user = nil)
+    logger = (Rails.env.development? || Rails.env.test? ? ::Rails.logger : nil)
+    if user == :superuser
+      ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+        'database' => self.database_name, :logger => logger
+      )
+    elsif user == :public_user
+      ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+        'database' => self.database_name, :logger => logger,
+        'username' => CartoDB::PUBLIC_DB_USER, 'password' => ''
+      )
+    else
+      ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+        'database' => self.database_name, :logger => logger,
+        'username' => database_username, 'password' => database_password
+      )
     end
   end
 
@@ -668,6 +690,18 @@ class User < Sequel::Model
         # yield(something) if block_given?
       end
     end
+  end
+
+  def set_statement_timeouts
+    in_database(as: :superuser) do |user_database|
+      user_database["ALTER ROLE ? SET statement_timeout to ?", database_username.lit, user_timeout].all
+      user_database["ALTER DATABASE ? SET statement_timeout to ?", database_name.lit, database_timeout].all
+    end
+    in_database.disconnect
+    in_database.connect(get_db_configuration_for)
+    in_database(as: :public_user).disconnect
+    in_database(as: :public_user).connect(get_db_configuration_for(:public_user))
+  rescue Sequel::DatabaseConnectionError => e
   end
 
   # Whitelist Permissions

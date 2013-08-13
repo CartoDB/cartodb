@@ -4,6 +4,11 @@ require_relative '../../acceptance_helper'
 feature "Superadmin's users API" do
   background do
     Capybara.current_driver = :rack_test
+    User.any_instance.stubs(:load_cartodb_functions).returns(true)
+    User.any_instance.stubs(:set_database_permissions).returns(true)
+    User.any_instance.stubs(:set_database_permissions_in_importer_schema).returns(true)
+    User.any_instance.stubs(:create_importer_schema).returns(true)
+    User.any_instance.stubs(:remaining_quota).returns(10)
     @new_user = new_user(:password => "this_is_a_password")
     @user_atts = @new_user.values
   end
@@ -106,11 +111,15 @@ feature "Superadmin's users API" do
 
   scenario "update user account details" do
     user = create_user
-    @update_atts = {:quota_in_bytes => 2000,
-                    :table_quota    => 20,
-                    :max_layers     => 10,
-                    :account_type   => 'Juliet',
-                    :private_tables_enabled => true}
+    t = Time.now
+    @update_atts = {:quota_in_bytes   => 2000,
+                    :table_quota      => 20,
+                    :max_layers       => 10,
+                    :user_timeout     => 100000,
+                    :database_timeout => 200000,
+                    :account_type     => 'Juliet',
+                    :private_tables_enabled => true,
+                    :upgraded_at      => t }
 
     # test to true
     put_json superadmin_user_path(user), { :user => @update_atts }, default_headers do |response|
@@ -122,6 +131,9 @@ feature "Superadmin's users API" do
     user.account_type.should == 'Juliet'
     user.private_tables_enabled.should == true
     user.max_layers.should == 10
+    user.database_timeout.should == 200000
+    user.user_timeout.should == 100000
+    user.upgraded_at.should.to_s == t.to_s
 
     # then test back to false
     put_json superadmin_user_path(user), { :user => {:private_tables_enabled => false} }, default_headers do |response|
@@ -163,6 +175,30 @@ feature "Superadmin's users API" do
     get_json superadmin_user_path(user), {}, default_headers do |response|
       response.status.should == 200
       response.body[:id].should == user.id
+    end
+  end
+
+  describe "GET /superadmin/users" do
+    before do
+      @user  = create_user
+      @user2 = create_user
+    end
+
+    it "gets all users" do
+      get_json superadmin_users_path, {}, default_headers do |response|
+        response.status.should == 200
+        response.body.map { |u| u["username"] }.should include(@user.username, @user2.username)
+        response.body.length.should >= 2
+      end
+    end
+
+    it "gets overquota users" do
+      User.stubs(:overquota).returns [@user]
+      get_json superadmin_users_path, { overquota: true }, default_headers do |response|
+        response.status.should == 200
+        response.body[0]["username"].should == @user.username
+        response.body.length.should == 1
+      end
     end
   end
 

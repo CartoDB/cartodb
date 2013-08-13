@@ -11,6 +11,7 @@ module CartoDB
       LINE_LIMIT        = 1000
       COMMON_DELIMITERS = [',', "\t", ' ', ';']
       DEFAULT_DELIMITER = ','
+      DEFAULT_ENCODING  = 'UTF-8'
       ACCEPTABLE_ENCODINGS = %w{ ISO-8859-1 ISO-8859-2 UTF-8 }
 
       def self.supported?(extension)
@@ -52,14 +53,14 @@ module CartoDB
       end #csv_options
 
       def line_delimiter
-        
         return "\r" if windows_eol?
         return $/ 
       end #line_delimiter
 
       def windows_eol?
         return false if first_line =~ /\n/
-        !!(first_line =~ %r{})
+        !!(first_line =~ %r{
+})
       end #windows_eol?
 
       def needs_normalization?
@@ -108,7 +109,8 @@ module CartoDB
         sample  = data.gets(LINE_LIMIT)
         data.close
 
-        CharlockHolmes::EncodingDetector.detect(sample).fetch(:encoding)
+        CharlockHolmes::EncodingDetector.detect(sample)
+          .fetch(:encoding, DEFAULT_ENCODING)
       end #encoding
 
       def first_line

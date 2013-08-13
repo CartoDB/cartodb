@@ -136,7 +136,7 @@ class DataImport < Sequel::Model
   end #handle_success
 
   def handle_failure
-    set_error_code  = errors_from(results).first
+    self.error_code = errors_from(results).first
     self.success    = false
     self.state      = 'failure'
     self.log << "ERROR!\n"

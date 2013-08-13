@@ -33,6 +33,15 @@ describe 'KML regression tests' do
     geometry_type_for(runner).wont_be_nil
   end
 
+  it 'imports KMZ in a 3D projection' do
+    filepath    = path_to('usdm130806.kmz')
+    downloader  = Downloader.new(filepath)
+    runner      = Runner.new(@pg_options, downloader)
+    runner.run
+
+    geometry_type_for(runner).wont_be_nil
+  end
+
   def path_to(filepath)
     File.expand_path(
       File.join(File.dirname(__FILE__), "../fixtures/#{filepath}")

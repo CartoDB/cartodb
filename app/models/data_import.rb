@@ -53,6 +53,7 @@ class DataImport < Sequel::Model
       return self
     end
     success ? handle_success : handle_failure
+    Rails.logger.debug log.to_s
     self
   rescue => exception
     log.append "Exception: #{exception.to_s}"
@@ -143,6 +144,7 @@ class DataImport < Sequel::Model
     self.state    = 'complete'
     self.log << "SUCCESS!\n"
     save
+    self
   end #handle_success
 
   def handle_failure

@@ -65,6 +65,7 @@ class User < Sequel::Model
     setup_user
     save_metadata
     monitor_user_notification
+    sleep 3
     set_statement_timeouts
   end
 

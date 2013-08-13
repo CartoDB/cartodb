@@ -80,7 +80,11 @@
     @include transition-property("margin,opacity");
     @include transition-duration(400ms);
 
-    p {font-style:italic; font-size:13px;}
+    p {
+      font-style:italic;
+      font-size:13px;
+      word-wrap:break-word;
+    }
 
     &.error {background:#FEEAEB}
     &.active {

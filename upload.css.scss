@@ -68,7 +68,7 @@
   // Common import panes style
   .import-pane {
     position:relative;
-    margin:20px 0 20px 0;
+    margin:20px 0 20px 5px;
 
     label {
       position:absolute;
@@ -80,6 +80,8 @@
       width: 60%;
 
       &.light { color: #CCC; }
+
+      a { text-decoration: underline; }
     }
 
     // Common

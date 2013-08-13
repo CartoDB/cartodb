@@ -40,8 +40,18 @@ class DataImport < Sequel::Model
     values
   end
 
+  def set_unsupported_file_error
+    self.error_code = 1002
+    self.state      = 'failure'
+    save
+  end #set_unsupported_file_error
+
   def run_import!
     success = !!dispatch
+    if self.results.empty?
+      set_unsupported_file_error
+      return self
+    end
     success ? handle_success : handle_failure
     self
   rescue => exception
@@ -406,6 +416,7 @@ class DataImport < Sequel::Model
     new_table_name = import_from_query(table_name, query)
     self.update(table_names: new_table_name)
     migrate_existing(new_table_name)
+    self.results = [{ success: true, error: nil }]
   end
 
   def keep_problematic_file

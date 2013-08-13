@@ -79,7 +79,7 @@ module CartoDB
         return false unless disposition
         filename = disposition.match(CONTENT_DISPOSITION_RE).to_a[1]
         return false unless filename
-        filename.delete("'").delete('"').delete(';')
+        filename.delete("'").delete('"').split(';').first
       end #name_from_http
 
       def name_in(url)

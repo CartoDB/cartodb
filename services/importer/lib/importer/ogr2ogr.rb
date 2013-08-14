@@ -17,8 +17,8 @@ module CartoDB
       def command
         "#{pg_copy_option} #{encoding_option} #{executable_path} "  +
         "#{output_format_option} #{postgres_options} "              +
-        "#{filepath} #{layer_name_option} #{projection_option} "    + 
-        layer_creation_options
+        "#{projection_option} #{layer_creation_options} "           + 
+        "#{filepath} #{track_points_option} #{layer_name_option} "         
       end #command
 
       def cartodb_id_option
@@ -78,6 +78,10 @@ module CartoDB
       def layer_creation_options
         "-lco '#{dimension_option} #{precision_option} #{the_geom_name_option}'"
       end #layer_creatiopn_options
+
+      def track_points_option
+        return "track_points" if filepath =~ /\.gpx/
+      end #track_points_option
 
       def projection_option
         return nil if filepath =~ /\.csv/

@@ -33,7 +33,7 @@
         @include inline-block();
         width:42px;
         height:41px;
-        margin-right:3px;
+        margin:0 3px 3px 0;
         border:1px solid #C0C0C0!important;
         @include border-radius(3px);
         overflow: hidden;

@@ -81,7 +81,12 @@
 
       &.light { color: #CCC; }
 
-      a { text-decoration: underline; }
+      a {
+        color: #CCC;
+        text-decoration: underline;
+
+        &:hover { color: #aaa; }
+      }
     }
 
     // Common

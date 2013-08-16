@@ -32,6 +32,7 @@ module CartoDB
     class UnknownError                          < StandardError; end
     class ShpNormalizationError                 < StandardError; end
     class EmptyGeometryColumn                   < StandardError; end
+    class TiffToSqlConversionError              < StandardError; end
 
 
     ERRORS_MAP = {

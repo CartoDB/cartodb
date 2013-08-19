@@ -48,11 +48,13 @@ module CartoDB
         return false unless geometry_column_name
         column = Column.new(db, table_name, geometry_column_name, schema, job)
         column.geometrify
+        
         unless column_exists_in?(table_name, :the_geom)
           column.rename_to(:the_geom) 
         end
 
         job.log "Creating the_geom from #{geometry_column_name} column"
+        handle_multipoint(column) if multipoint?
         self
       rescue => exception
         job.log "Renaming #{geometry_column_name} to invalid_the_geom"
@@ -134,6 +136,21 @@ module CartoDB
 
         !!sample && sample.fetch(:column_name, false)
       end #find_column_in
+
+      def handle_multipoint(column)
+        job.log "Renaming the_geom to the_geom_raw"
+        column.rename_to(:the_geom_raw)
+      end #handle_multipoint
+
+      def multipoint?
+        db[%Q{
+          SELECT public.GeometryType(the_geom)
+          FROM #{qualified_table_name}
+          AS geometrytype
+        }].first.fetch(:geometrytype) == 'MULTIPOINT'
+      rescue
+        false
+      end #multipoint?
 
       private
 

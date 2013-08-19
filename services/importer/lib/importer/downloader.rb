@@ -7,6 +7,7 @@ require_relative './url_translator/osm'
 require_relative './url_translator/fusion_tables'
 require_relative './url_translator/github'
 require_relative './url_translator/google_maps'
+require_relative './url_translator/google_docs'
 
 module CartoDB
   module Importer2
@@ -19,7 +20,8 @@ module CartoDB
                                   UrlTranslator::OSM,
                                   UrlTranslator::FusionTables,
                                   UrlTranslator::GitHub,
-                                  UrlTranslator::GoogleMaps
+                                  UrlTranslator::GoogleMaps,
+                                  UrlTranslator::GoogleDocs
                                 ]
 
       def initialize(url, seed=nil, repository=nil)

@@ -74,7 +74,7 @@ describe CsvNormalizer do
   def utf16le_factory
     filepath = "/var/tmp/#{Time.now.to_f}-#{rand(999)}.csv"
 
-    ::CSV.open(filepath, 'wb', encoding: 'ISO-8859-1', col_sep: "\t") do |csv|
+    ::CSV.open(filepath, 'wb', col_sep: "\t") do |csv|
       csv << (["name", "description", "wadus"].map  { |s| s.encode('ISO-8859-1') })
       csv << (["bogus_1", "bogus_2", "bogus_3"].map { |s| s.encode('ISO-8859-1') })
     end

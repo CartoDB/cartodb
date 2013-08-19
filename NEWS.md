@@ -1,5 +1,32 @@
-2.1.3
------
+2.1.3.2
+-------
+* Fixed bugs
+  * Color map wizard behaves different than the others
+  * Add marker-width to the color wizard
+  * Importer is not reporting specific errors, just the generic one
+  * Fix Xlsx2Csv
+  * Add support for ';' as CSV separator
+  * Support CSV files with ^M EOLs (Windows)
+  * Support SHP / KMZ from US Drought Monitor Data
+  * Fix missing method to mark an import as failed when stuck
+
+* Improvements
+  * Upgrade "Color map wizard" to "Category map"
+  * Please, advise in this text for color map wizard
+  * URL translator for Google Maps URLs
+
+2.1.3.1
+-------
+* Fixed bugs
+  * Add a loader to the thumbnails on the asset window
+  * Fix padding in legend editor items
+  * There is no way to add an icon for a marker using a URL
+  * Not all expected keys save the state of my Legend text
+  * Geolocation styles are broken
+
+
+* Improvements
+  * Change to "generating...." state everytime the URL on the share textinput is being generated
 
 2.1.2
 -----

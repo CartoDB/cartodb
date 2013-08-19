@@ -201,7 +201,8 @@ module CartoDB
     },
     99999 => {
       title: 'Unknown',
-      what_about: "Sorry, something went wrong and we're not sure what. Try uploading your file again. If not, read through the log here and see if there are some clues. Finally, <a href='mailto:support@cartodb.com?subject=Unknown error'>contact us</a> and we'll try to help you quickly."
+      what_about: "Sorry, something went wrong and we're not sure what. Try
+      uploading your file again, or <a href='mailto:support@cartodb.com?subject=Unknown error'>contact us</a> and we'll try to help you quickly."
     }
   }
 end

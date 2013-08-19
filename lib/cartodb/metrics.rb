@@ -7,8 +7,8 @@ module CartoDB
 
     def self.report_failed_import(metric_payload)
       CartoDB::Metrics.mixpanel_event("Import failed", metric_payload)
-      CartoDB::Metrics.ducksboard_report_failed(metric_payload[:extension])
       CartoDB::GitHubReporter.new.report_failed_import(metric_payload)
+      CartoDB::Metrics.ducksboard_report_failed(metric_payload[:extension])
     end #self.report_failed_import
 
     def self.report_success_import(metric_payload)
@@ -30,19 +30,27 @@ module CartoDB
       self
     end #self.event
 
-    def self.ducksboard_report_failed(type)
-      type.gsub!(".","")
-      if Cartodb.config[:ducksboard]["formats"][type.downcase].present?
-        ducksboard_increment Cartodb.config[:ducksboard]["formats"][type.downcase]["failed"], 1
-        ducksboard_increment Cartodb.config[:ducksboard]["formats"][type.downcase]["total"], 1
+    def self.ducksboard_report_failed(type="")
+      if type
+        type.gsub!(".","")
+        if Cartodb.config.fetch(:ducksboard, {}).fetch("formats", {})[type.downcase].present?
+          ducksboard_increment Cartodb.config[:ducksboard]["formats"][type.downcase]["failed"], 1
+          ducksboard_increment Cartodb.config[:ducksboard]["formats"][type.downcase]["total"], 1
+        end
       end
+    rescue
+      self
     end #self.import_failed
 
-    def self.ducksboard_report_done(type)
-      type.gsub!(".","")
-    	if Cartodb.config[:ducksboard]["formats"][type.downcase].present?
-        ducksboard_increment Cartodb.config[:ducksboard]["formats"][type.downcase]["total"], 1
+    def self.ducksboard_report_done(type="")
+      if type
+        type.gsub!(".","")
+      	if Cartodb.config.fetch(:ducksboard, {}).fetch("formats", {})[type.downcase].present?
+          ducksboard_increment Cartodb.config[:ducksboard]["formats"][type.downcase]["total"], 1
+        end
       end
+    rescue
+      self
     end #self.import_success
 
     def self.ducksboard_set(id, num)

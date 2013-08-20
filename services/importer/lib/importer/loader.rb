@@ -31,6 +31,7 @@ module CartoDB
         job.log "ogr2ogr output:    #{ogr2ogr.command_output}"
         job.log "ogr2ogr exit code: #{ogr2ogr.exit_code}"
 
+        raise LoadError if ogr2ogr.exit_code != 0
         georeferencer.run
         self
       end #run

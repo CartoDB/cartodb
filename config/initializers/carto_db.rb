@@ -115,6 +115,11 @@ module CartoDB
       title: 'File conversion errors',
       what_about: "To process your file, we tried to convert it to a more common geospatial format and failed. Try converting it to a Shapefile or a CSV locally before you upload."
     },
+    2001 => {
+      title: 'Unable to load data',
+      what_about: "We couldn't load data from your file into the database.
+      Please <a href='mailto:support@cartodb.com?subject=Import load error'>contact us</a> and we will help you to load your data."
+    },
     3000 => {
       title: 'Geometry error',
       what_about: "There were problems processing the geometry data in your file. Check that it opens locally first, using QGIS or other first. It is always good to try other file formats if the first attempt fails."

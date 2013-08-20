@@ -33,6 +33,7 @@ module CartoDB
     class ShpNormalizationError                 < StandardError; end
     class EmptyGeometryColumn                   < StandardError; end
     class TiffToSqlConversionError              < StandardError; end
+    class LoadError                             < StandardError; end
 
 
     ERRORS_MAP = {
@@ -45,6 +46,7 @@ module CartoDB
       UnableToDownloadError                 => 1008,
       OsmLimitReachedError                  => 1009,
       FileConversionError                   => 2000,
+      LoadError                             => 2001,
       GeometryError                         => 3000,
       ShpToSqlConversionError               => 3005,
       CsvToSqlError                         => 3006,

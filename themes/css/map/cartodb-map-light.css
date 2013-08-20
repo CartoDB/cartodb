@@ -194,6 +194,7 @@
   /* Custom legend */
 
   div.cartodb-legend.custom ul li,
+  div.cartodb-legend.category ul li,
   div.cartodb-legend.color ul li {
     position:relative;
     margin: 0 0 7px 0;
@@ -212,8 +213,10 @@
 
   div.cartodb-legend.custom ul li:last-child,
   div.cartodb-legend.color ul li:last-child { margin: 0; }
+  div.cartodb-legend.category ul li:last-child { margin: 0; }
 
   div.cartodb-legend.custom ul li .bullet,
+  div.cartodb-legend.category ul li .bullet,
   div.cartodb-legend.color ul li .bullet {
     float:left;
     margin: 0 5px 0 0;

@@ -561,11 +561,33 @@ a.info {
 
   // INFOWINDOW PANEL
   .infowindow_panel {
+
+    .header {
+
+      clear:both;
+      overflow:hidden;
+      padding: 22px 30px 21px 30px;
+      border-bottom:1px solid rgba(#999999,0.25);
+
+      h3  {
+        float:left;
+        padding: 0;
+        border:0;
+        color: #CCCCCC;
+      }
+
+      .form_combo  {
+        float:right;
+      }
+
+    }
+
     .all {
       padding:15px 0;
       overflow:auto;
       span.label {margin-right:12px;}
     }
+
     .fields {
       li {
         padding:13px 0;

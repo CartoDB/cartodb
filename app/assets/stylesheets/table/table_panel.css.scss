@@ -51,7 +51,7 @@ $corner_radius: 6px;
   - .sidebar
   - .views
 
-*/
+   */
 .layer_panel {
   position:relative;
   width:100%;
@@ -535,7 +535,7 @@ a.info {
 
 
   // SQL PANEL
-  .sql_panel, .csseditor_panel {
+  .sql_panel, .csseditor_panel, .infowindow_editor_panel {
     &:after {
       position:absolute;
       content:' ';
@@ -562,22 +562,60 @@ a.info {
   // INFOWINDOW PANEL
   .infowindow_panel {
 
+    .panel_content .wrapper {
+      top: 42px;
+    }
+
     .header {
 
       clear:both;
       overflow:hidden;
+      /*border-bottom:1px solid rgba(#999999,0.25);*/
       padding: 22px 30px 21px 30px;
-      border-bottom:1px solid rgba(#999999,0.25);
 
       h3  {
         float:left;
         padding: 0;
         border:0;
-        color: #CCCCCC;
+        /*color: #CCCCCC;*/
       }
 
-      .form_combo  {
-        float:right;
+      .form_combo  { float:right; }
+
+    }
+
+    .menu {
+
+      position:relative;
+      background:#F6F6F6;
+      border-top: 1px solid rgba(#DDDDDD, .5);
+      border-bottom: 1px solid rgba(#DDDDDD, .5);
+      padding: 10px 30px;
+      z-index: 100;
+
+      ul {
+
+        clear:both;
+        overflow:hidden;
+
+        li {
+
+          @include inline-block();
+          margin: 0 15px 0 0;
+
+          a { display: block; }
+
+          &.editor       { float: left; }
+
+          &.title_editor,
+          &.html_editor  { float: right; }
+
+          &.editor       a { @include size(17px, 17px); @include icons-sprite(infowindow_editor); }
+          &.title_editor a { @include size(20px, 17px); @include icons-sprite(infowindow_title_editor); }
+          &.html_editor  a { @include size(17px, 17px);  @include icons-sprite(infowindow_html_editor); }
+
+        }
+
       }
 
     }
@@ -1722,3 +1760,4 @@ a.info {
   background:red!important;
 }
 }
+

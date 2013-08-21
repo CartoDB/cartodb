@@ -89,6 +89,16 @@ describe Downloader do
       headers = { "Content-Disposition" => %{attachment; filename="bar.csv"} }
       downloader = Downloader.new(@file_url)
       downloader.name_from(headers, @file_url).must_equal 'bar.csv'
+
+      headers = { "Content-Disposition" => %{attachment; filename=bar.csv} }
+      downloader = Downloader.new(@file_url)
+      downloader.name_from(headers, @file_url).must_equal 'bar.csv'
+
+      disposition = "attachment; filename=map_gaudi3d.geojson; " + 
+                    'modification-date="Tue, 06 Aug 2013 15:05:35 GMT'
+      headers = { "Content-Disposition" => disposition }
+      downloader = Downloader.new(@file_url)
+      downloader.name_from(headers, @file_url).must_equal 'map_gaudi3d.geojson'
     end
 
     it 'gets the file name from the URL if no Content-Disposition header' do

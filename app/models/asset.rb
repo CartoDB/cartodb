@@ -3,7 +3,7 @@ require 'open-uri'
 class Asset < Sequel::Model
 
   many_to_one :user
-  PUBLIC_ATTRIBUTES = %W{ id public_url user_id }
+  PUBLIC_ATTRIBUTES = %W{ id public_url user_id kind }
 
   attr_accessor :asset_file, :url
 
@@ -14,22 +14,28 @@ class Asset < Sequel::Model
   ##
   # Tries to open the specified file object or full path
   #
-  def open_file(file_handle)
-    file_handle = (file_handle.respond_to?(:path) ? file_handle.path : file_handle.to_s)
-    File.open(file_handle)
+  def open_file(handle)
+    (handle.respond_to?(:path) ? handle : File.open(handle.to_s))
   rescue Errno::ENOENT
     nil
   end
 
   def validate
     super
-
     errors.add(:user_id, "can't be blank") if user_id.blank?
-    if asset_file.present?
+
+    if url.present?
+      dir = Dir.mktmpdir
+      system('wget', '-nv', '-P', dir, '-E', url)
+      @asset_file = Dir[File.join(dir, '*')][0]
+      errors.add(:url, "is invalid") unless $?.exitstatus == 0
+    end
+
+    if @asset_file.present?
       begin
-        @file = open_file(asset_file)
-        errors.add(:file, "is invalid") unless @file.is_a?(File) && File.readable?(@file)
-        errors.add(:file, "is too big, 10Mb max") if @file.is_a?(File) && @file.size > Cartodb::config[:assets]["max_file_size"]
+        @file = open_file(@asset_file)
+        errors.add(:file, "is invalid") unless @file && File.readable?(@file.path)
+        errors.add(:file, "is too big, 5Mb max") if @file && @file.size > Cartodb::config[:assets]["max_file_size"]
         store! if errors.blank?
       rescue => e
         errors.add(:file, "error uploading #{e.message}")
@@ -53,7 +59,9 @@ class Asset < Sequel::Model
   #
   def store!
     # Upload the file
-    o = s3_bucket.objects["#{asset_path}#{File.basename(@file)}"]
+    prefix = "#{Time.now.strftime("%Y%m%d%H%M%S")}"
+    fname = prefix+(@file.respond_to?(:original_filename) ? @file.original_filename : File.basename(@file))
+    o = s3_bucket.objects["#{asset_path}#{fname}"]
     o.write(Pathname.new(@file.path), {
       acl: :public_read,
       content_type: MIME::Types.type_for(@file.path).first.to_s

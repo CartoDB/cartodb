@@ -6,18 +6,20 @@ require_relative '../../../data-repository/filesystem/local'
 require_relative './url_translator/osm'
 require_relative './url_translator/fusion_tables'
 require_relative './url_translator/github'
+require_relative './url_translator/google_maps'
 
 module CartoDB
   module Importer2
     class Downloader
 
       DEFAULT_FILENAME        = 'importer'
-      CONTENT_DISPOSITION_RE  = %r{attachment; filename=\"(.*)\"}
+      CONTENT_DISPOSITION_RE  = %r{attachment; filename=(.*;|.*)}
       URL_RE                  = %r{://}
       URL_TRANSLATORS         = [
                                   UrlTranslator::OSM,
                                   UrlTranslator::FusionTables,
-                                  UrlTranslator::GitHub
+                                  UrlTranslator::GitHub,
+                                  UrlTranslator::GoogleMaps
                                 ]
 
       def initialize(url, seed=nil, repository=nil)
@@ -74,7 +76,10 @@ module CartoDB
 
       def name_from_http(headers)
         disposition = headers.fetch('Content-Disposition', nil)
-        disposition && disposition.match(CONTENT_DISPOSITION_RE).to_a[1]
+        return false unless disposition
+        filename = disposition.match(CONTENT_DISPOSITION_RE).to_a[1]
+        return false unless filename
+        filename.delete("'").delete('"').split(';').first
       end #name_from_http
 
       def name_in(url)

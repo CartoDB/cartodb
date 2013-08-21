@@ -140,7 +140,10 @@
       border:none;
       outline:none;
 
-      &.loading { font-style: italic; color:#AAA; }
+      &.loading {
+        background: image-url('layout/loader_transparent.gif') no-repeat;
+      }
+
       &:focus { @include box-shadow(none); }
     }
 

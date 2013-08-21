@@ -19,13 +19,17 @@ describe "Assets API" do
 
   it "creates a new asset" do
     post_json v1_user_assets_url(@user, params.merge(
-      :filename => Rack::Test::UploadedFile.new(Rails.root.join('spec/support/data/cartofante_blue.png'), 'image/png').path)
+      kind: 'wadus',
+      filename: Rack::Test::UploadedFile.new(Rails.root.join('spec/support/data/cartofante_blue.png'), 'image/png').path)
     ) do |response|
       response.status.should be_success
+      response.body[:public_url].should =~ /\/test\/test\/assets\/\d+cartofante_blue/
+      response.body[:kind].should == 'wadus'
       @user.reload
       @user.assets.count.should == 1
       asset = @user.assets.first
-      asset.public_url.should include("test/test/assets/cartofante_blue")
+      asset.public_url.should =~ /\/test\/test\/assets\/\d+cartofante_blue/
+      asset.kind.should == 'wadus'
     end
   end
 

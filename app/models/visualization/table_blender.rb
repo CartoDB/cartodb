@@ -12,6 +12,7 @@ module CartoDB
         copier          = CartoDB::Map::Copier.new
         destination_map = copier.new_map_from(maps.first).save
 
+        copier.copy_base_layer(maps.first, destination_map)
         maps.each { |map| copier.copy_data_layers(map, destination_map) }
         destination_map
       end #blend

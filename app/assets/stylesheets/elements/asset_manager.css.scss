@@ -32,20 +32,23 @@
         position:relative;
         @include inline-block();
         width:42px;
-        height:42px;
-        margin-right:3px;
+        height:41px;
+        margin:0 3px 3px 0;
         border:1px solid #C0C0C0!important;
         @include border-radius(3px);
+        overflow: hidden;
+        background: image-url('layout/loader.gif') no-repeat center;
 
         a.image {
           display:block;
+          position: absolute;
           width:42px;
           height:42px;
-          background-repeat:no-repeat;
-          background-size:  cover;
-          background-origin: content-box;
-          background-position: 50% 50%;
           @include border-radius(3px);
+          text-align: center;
+          line-height: 42px;
+          background-repeat: no-repeat;
+          background-position: center;
         }
 
         a.delete {
@@ -74,17 +77,6 @@
           }
         }
 
-        div.loader {
-          position: absolute;
-          display: none;
-          top: 0;
-          left: 0;
-          width: 42px;
-          height: 42px;
-          padding:0;
-          background-position: center center;
-        }
-
         &:hover {
           a.delete {
             display:block;
@@ -95,8 +87,18 @@
         // item states
         &.selected {
           width:40px;
-          height:40px;
+          height:39px;
           border:2px solid #0F0F0F!important;
+
+          a.image {
+            top: -1px;
+            left: -1px;
+          }
+
+          a.delete {
+            right: -1px;
+            bottom: -1px;
+          }
         }
 
         &.destroying {

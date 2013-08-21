@@ -28,7 +28,6 @@ describe 'csv regression tests' do
     runner      = Runner.new(@job, downloader)
     runner.run
 
-    puts runner.report
     runner.exit_code.must_equal 0
 
     geometry_type_for(runner).wont_be_empty
@@ -60,6 +59,19 @@ describe 'csv regression tests' do
     runner.run
 
     geometry_type_for(runner).must_equal 'MULTIPOLYGON'
+  end
+
+  it 'imports files with spaces as delimiters' do
+    filepath    = path_to('fsq_places_uniq.csv')
+  end
+
+  it 'imports files with & in the name' do
+    filepath    = path_to('ne_10m_populated_places_&simple.csv')
+    downloader  = Downloader.new(filepath)
+    runner      = Runner.new(@pg_options, downloader)
+    runner.run
+
+    geometry_type_for(runner).must_equal 'POINT'
   end
 
   def path_to(filepath)

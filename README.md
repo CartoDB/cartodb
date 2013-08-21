@@ -304,7 +304,7 @@ cd cartodb20
 
 # Start redis, if you haven't done so yet
 # Redis must be running when starting either the
-# node apps or rails or runnin the ``create_dev_user script``
+# node apps or rails or running the ``create_dev_user script``
 # NOTE: the default server port is 6379, and the default
 #       configuration expects redis to be listening there
 redis-server
@@ -354,9 +354,7 @@ in your browser and login with the password specified above.
 
 # How do I upgrade CartoDB? #
 
-There's no standard procedure to migrate from one version to another of
-the rails application, so version specific procedures are documented
-in the NEWS.md file.
+See UPGRADE file for instructions about upgrading CartoDB.
 
 For upgrade of Windshaft-CartoDB and CartoDB-SQL-API see the relative
 documentation.

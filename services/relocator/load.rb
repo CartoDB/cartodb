@@ -64,7 +64,7 @@ module CartoDB
 
         to_stdout("Setting password for database user")
         rdbms.set_password(environment.database_username, user.database_password)
-        `#{PG_BOUNCER_UPDATER}` if ENV['RAILS_ENV'] == 'staging'
+        `#{PG_BOUNCER_UPDATER}` unless ENV['RAILS_ENV'] == 'development'
         to_stdout("Waiting for pg_bouncer authentication DB to be updated")
 	      #sleep 20
         to_stdout("Loading metadata")
@@ -107,7 +107,7 @@ module CartoDB
         database      = configuration[Rails.env]["database"]
         username      = configuration[Rails.env]["username"]
         password      = configuration[Rails.env]["password"]
-        command = "#{psql} -U #{username} #{user.database_name} -f #{dump}"
+        command = "#{psql} -p 5432 -U #{username} -d #{user.database_name} -f #{dump}"
 
         `#{command}`
         puts $?

@@ -17,7 +17,8 @@ module CartoDB
       def command
         "#{pg_copy_option} #{encoding_option} #{executable_path} "  +
         "#{output_format_option} #{postgres_options} "              +
-        "#{filepath} #{layer_name_option}"
+        "#{filepath} #{layer_name_option} #{projection_option} "    + 
+        layer_creation_options
       end #command
 
       def cartodb_id_option
@@ -57,7 +58,8 @@ module CartoDB
       end #pg_copy_option
 
       def encoding_option
-       "PGCLIENTENCODING=#{ENCODING}"
+        encoding = options.fetch(:encoding, ENCODING)
+        "PGCLIENTENCODING=#{encoding}"
       end #encoding_option
 
       def layer_name_option
@@ -72,6 +74,27 @@ module CartoDB
         %Q{password=#{pg_options.fetch(:password)} }  +
         %Q{active_schema=#{SCHEMA}"}
       end #postgres_options
+
+      def layer_creation_options
+        "-lco '#{dimension_option} #{precision_option} #{the_geom_name_option}'"
+      end #layer_creatiopn_options
+
+      def projection_option
+        return nil if filepath =~ /\.csv/
+        "-t_srs EPSG:4326 "
+      end #projection_option
+
+      def the_geom_name_option
+        "GEOMETRY_NAME=the_geom"
+      end #the_geom_name_option
+
+      def dimension_option
+        "DIM=2"
+      end #dimension_option
+
+      def precision_option
+        "PRECISION=NO"
+      end #precision_option
     end # Ogr2ogr
   end # Importer2
 end # CartoDB

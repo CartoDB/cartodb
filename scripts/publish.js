@@ -77,19 +77,22 @@ function put_file(local_path, remote_path, file, errors, done) {
       var size = fs.statSync(local).size;
 
       fs.readFile(local, function (err, data) {
-        // send file to S3
-        s3.client.putObject({
+        var opts = {
           Key: remote,
           Body: data,
           ACL:'public-read',
           ContentType: headers['Content-Type'],
-          ContentEncoding: headers['Content-Encoding'],
           ContentLength: size
-        }, function (err, data) {
-          console.log(data);
-          if(err) {
-            errors.push(file + ' Failed to upload file to Amazon S3');
-            //console.log('Failed to upload file to Amazon S3', err); 
+        };
+        if(headers['Content-Encoding']) {
+          opts.ContentEncoding = headers['Content-Encoding'];
+        }
+        // send file to S3
+        s3.client.putObject(opts, function (err, data) {
+          console.log("===>", file);
+          if(err || !data) {
+            errors.push(file + ' Failed to upload file to Amazon S3', err);
+            console.log('Failed to upload file to Amazon S3', err); 
           }
           console.log( local, ' => ', remote, size, "bytes");
           done && done();
@@ -98,7 +101,7 @@ function put_file(local_path, remote_path, file, errors, done) {
     }
 
     // compress depending on the extension
-    if(ext == 'js' || ext == 'css') {
+    if(ext === 'js' || ext === 'css') {
       _exec('gzip -c -9 ' + local_path + '/' + file + ' > ' + local_path + '/' + file + '.gz', function(err) {
         if(err) {
           console.log("there was an error compressing file");

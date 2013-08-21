@@ -610,9 +610,11 @@ a.info {
           &.title_editor,
           &.html_editor  { float: right; }
 
+          &.html_editor  { margin-right: 2px; }
+
           &.editor       a { @include size(17px, 17px); @include icons-sprite(infowindow_editor); }
           &.title_editor a { @include size(20px, 17px); @include icons-sprite(infowindow_title_editor); }
-          &.html_editor  a { @include size(17px, 17px);  @include icons-sprite(infowindow_html_editor); }
+          &.html_editor  a { @include size(17px, 17px); @include icons-sprite(infowindow_html_editor); }
 
         }
 

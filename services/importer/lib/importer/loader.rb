@@ -13,8 +13,7 @@ module CartoDB
       NORMALIZERS   = [CsvNormalizer, Xlsx2Csv, Json2Csv]
 
       def self.supported?(extension)
-        return true unless extension == '.shp' || extension == '.osm'
-        return false
+        !(%w{ .shp .osm .tif .tiff }.include?(extension))
       end #self.supported?
 
       def initialize(job, source_file, ogr2ogr=nil, georeferencer=nil)
@@ -32,6 +31,7 @@ module CartoDB
         job.log "ogr2ogr output:    #{ogr2ogr.command_output}"
         job.log "ogr2ogr exit code: #{ogr2ogr.exit_code}"
 
+        raise LoadError if ogr2ogr.exit_code != 0
         georeferencer.run
         self
       end #run

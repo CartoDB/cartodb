@@ -99,6 +99,8 @@ module CartoDB
           .gsub(' ', '_')
           .gsub(/\(/, '')
           .gsub(/\)/, '')
+          .gsub(/'/, '')
+          .gsub(/"/, '')
           .gsub(/&/, '')
           .downcase
       end #underscore

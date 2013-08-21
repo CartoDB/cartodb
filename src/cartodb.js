@@ -5,7 +5,7 @@
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.1.04';
+    cdb.VERSION = '3.1.05-dev';
 
     cdb.CARTOCSS_VERSIONS = {
       '2.0.0': '',

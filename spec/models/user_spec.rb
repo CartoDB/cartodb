@@ -468,7 +468,12 @@ describe User do
   end
 
   it "should calculate the trial end date" do
+    @user.stubs(:upgraded_at).returns(nil)
+    @user.trial_ends_at.should be_nil
     @user.stubs(:upgraded_at).returns(Time.now - 5.days)
+    @user.stubs(:account_type).returns('CORONELLI')
+    @user.trial_ends_at.should be_nil
+    @user.stubs(:account_type).returns('MAGELLAN')
     @user.trial_ends_at.should_not be_nil
     @user.stubs(:upgraded_at).returns(nil)
     @user.trial_ends_at.should be_nil

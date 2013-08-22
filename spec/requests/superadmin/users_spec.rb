@@ -133,7 +133,7 @@ feature "Superadmin's users API" do
     user.max_layers.should == 10
     user.database_timeout.should == 200000
     user.user_timeout.should == 100000
-    user.upgraded_at.should.to_s == t.to_s
+    user.upgraded_at.to_s.should == t.to_s
 
     # then test back to false
     put_json superadmin_user_path(user), { :user => {:private_tables_enabled => false} }, default_headers do |response|

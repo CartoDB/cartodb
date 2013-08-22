@@ -2,7 +2,6 @@
 require 'sequel'
 require 'fileutils'
 require 'uuidtools'
-require 'rollbar'
 require_relative './user'
 require_relative './table'
 require_relative '../../lib/cartodb/errors'
@@ -34,10 +33,9 @@ class DataImport < Sequel::Model
   end
 
   def public_values
-    values = Hash[PUBLIC_ATTRIBUTES.map{ |attribute| [attribute, send(attribute)] }]
-    values.merge!("queue_id" => id)
-    values.merge!(success: success) if (state == 'complete' || state == 'failure')
-    values
+    Hash[PUBLIC_ATTRIBUTES.map{ |attribute| [attribute, send(attribute)] }]
+      .merge!("queue_id" => id)
+      .merge!(success: success) if (state == 'complete' || state == 'failure')
   end
 
   def set_unsupported_file_error
@@ -154,8 +152,7 @@ class DataImport < Sequel::Model
     self.log << "ERROR!\n"
     self.save
     keep_problematic_file if uploaded_file
-    notify_failures(self.results)
-    Rollbar.report_message("Failed import", "error", error_info: basic_information)
+    notify_results(self.results)
     self
   rescue => exception
     self
@@ -183,17 +180,6 @@ class DataImport < Sequel::Model
       next unless worker.job["queue"] == "imports"
       worker.job["payload"]["args"].first["job_id"] rescue nil 
     end.compact
-  end
-
-  def basic_information
-    {
-      error:         get_error_text[:title],
-      username:      current_user.username,
-      file_url:      public_url,
-      account_type:  current_user.account_type,
-      database:      current_user.database_name,
-      email:         current_user.email
-    }
   end
 
   def public_url
@@ -267,7 +253,7 @@ class DataImport < Sequel::Model
       end
     end
 
-    notify_failures(runner.results)
+    notify_results(runner.results)
     success_status_from(runner.results)
   end
 
@@ -338,16 +324,8 @@ class DataImport < Sequel::Model
       table_names.each { |table_name| register(table_name, name, schema) }
     end
     success_status_from(runner.results)
-    notify_failures(runner.results)
+    notify_results(runner.results)
   end #new_importer
-
-  def notify_failures(results)
-    results.each do |result|
-      result.fetch(:success) ?
-        register_success_import_event_for(result) : 
-        register_failed_import_event_for(result)
-    end
-  end #notify_failures
 
   def success_status_from(results)
     results.inject(true) { |memo, result| result.fetch(:success) && memo }
@@ -386,25 +364,10 @@ class DataImport < Sequel::Model
     self
   end #register
 
-  def register_failed_import_event_for(result)
-    payload = {
-      name:       result.fetch(:name),
-      extension:  result.fetch(:extension)
-    }.merge(metric_payload)
-    CartoDB::Metrics.report_failed_import(payload)
-  rescue
-    self
-  end #register_failed_import_event_for
-
-  def register_success_import_event_for(result)
-    payload = {
-      name:       result.fetch(:name),
-      extension:  result.fetch(:extension)
-    }.merge(metric_payload)
-    CartoDB::Metrics.report_success_import(payload)
-  rescue
-    self
-  end #register_success_import_event_for
+  def notify_results(results)
+    puts '==== notifying results'
+    results.each { |result| CartoDB::Metrics.new.report(payload_for(result)) }
+  end #notify_results
 
   def table_owner
     table_owner ||= User.select(:id,:database_name,:crypted_password,:quota_in_bytes,:username, :private_tables_enabled, :table_quota).filter(:id => current_user.id).first
@@ -430,12 +393,28 @@ class DataImport < Sequel::Model
     FileUtils.cp_r(file_path, vault_path)
   end #keep_problematic_file
 
-  def metric_payload
-    { distinct_id: current_user.username }.merge(basic_information)
-  end #metric_payload
-
   def current_user
     @current_user ||= User[user_id]
+  end
+
+  def payload_for(result)
+    payload = {
+      name:           result.fetch(:name),
+      extension:      result.fetch(:extension),
+      success:        result.fetch(:success),
+      file_url:       public_url,
+      distinct_id:    current_user.username,
+      username:       current_user.username,
+      account_type:   current_user.account_type,
+      database:       current_user.database_name,
+      email:          current_user.email,
+      log:            log.to_s
+    }
+    payload.merge!(error_title: get_error_text) if result
+    payload
+  rescue => exception
+    puts exception
+    puts exception.backtrace
   end
 end
 

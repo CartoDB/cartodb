@@ -26,6 +26,7 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
     latlng: [0, 0],
     offset: [28, 0], // offset of the tip calculated from the bottom left corner
     autoPan: true,
+    custom_html: "",
     content: "",
     visibility: false,
     fields: null // contains the fields displayed in the infowindow
@@ -186,6 +187,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     this.model.bind('change:latlng',        this._update, this);
     this.model.bind('change:visibility',    this.toggle, this);
     this.model.bind('change:template',      this._compileTemplate, this);
+    this.model.bind('change:custom_html',   this._changeCustomHTML, this);
 
     this.mapView.map.bind('change',         this._updatePosition, this);
 
@@ -200,7 +202,9 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     // Set min height to show the scroll
     this.minHeightToScroll = 180;
 
-    this.render();
+    this.changeTemplate();
+    //this.render();
+
     this.$el.hide();
   },
 
@@ -208,6 +212,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
    *  Render infowindow content
    */
   render: function() {
+
     if(this.template) {
 
       // If there is content, destroy the jscrollpane first, then remove the content.
@@ -224,13 +229,31 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
       // Sanitized them
       var sanitized_fields = this._fieldsToString(fields, template_name);
       var data = this.model.get('content') ? this.model.get('content').data : {}
-      this.$el.html(this.template({ 
+
+      var html = this.template({
+        content: {
+          fields: sanitized_fields,
+          data: this.model.get('content').fields,
+        }
+      });
+
+      this.$el.html(html);
+
+      if (this.model.get("custom_html"))  {
+
+        var customTemplate   = this.model.get("custom_html");
+        var compiledTemplate = cdb.core.Template.compile(customTemplate, "mustache");
+
+        var customHTML = compiledTemplate({
           content: {
             fields: sanitized_fields,
-            data: data 
+            data: this.model.get('content').fields,
           }
-        })
-      );
+        });
+
+        // Replace the ifowindow's content with the custom content
+        this.$el.find(".cartodb-popup-content").html(customHTML);
+      }
 
       // Hello jscrollpane hacks!
       // It needs some time to initialize, if not it doesn't render properly the fields
@@ -259,8 +282,19 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
    *  Change template of the infowindow
    */
   changeTemplate: function(template_name) {
+
     this.template = cdb.templates.getTemplate(this.model.get("template_name"));
+
     this.render();
+  },
+
+  /**
+   *  Uses the HTML provided by the user
+   */
+  _changeCustomHTML: function() {
+
+    this.changeTemplate();
+
   },
 
   /**
@@ -270,8 +304,8 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     var template = this.model.get('template');
     if(typeof(template) !== 'function') {
       this.template = new cdb.core.Template({
-         template: template,
-         type: this.model.get('template_type') || 'mustache'
+        template: template,
+        type: this.model.get('template_type') || 'mustache'
       }).asFunction()
     } else {
       this.template = template
@@ -316,7 +350,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
    *  - Cut off title if it is very long (in header or image templates).
    *  - If the value is a valid url, let's make it a link.
    *  - More to come...
-   */                                                                                                                
+   */
   _sanitizeField: function(attr, template_name, pos) {
     // Check null or undefined :| and set both to empty == ''
     if (attr.value == null || attr.value == undefined) {

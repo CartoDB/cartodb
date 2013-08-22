@@ -563,7 +563,7 @@ a.info {
   .infowindow_panel {
 
     .panel_content .wrapper {
-      top: 42px;
+      top: 77px;
     }
 
     .header {
@@ -584,13 +584,74 @@ a.info {
 
     }
 
-    .menu {
+    &.editing_html .menu {
+      &:after { position:absolute; content:' '; top:0; left:34px; bottom:0; width:1px; height:100%; background:rgba($cGray4,0.50); }
+      &:before { position:absolute; content:' '; top:0; left:36px; bottom:0; width:1px; height:100%; background:rgba(#509DD7,0.25); }
+    }
 
-      position:relative;
+    .help {
+
+      .bkg_tip {
+        border-left: 5px solid transparent;
+        border-right: 5px solid transparent;
+        border-bottom: 5px solid rgba(#DDD, .5);
+        position:absolute;
+        top: -5px;
+        right: 34px;
+      }
+      .tip {
+        border-left: 5px solid transparent;
+        border-right: 5px solid transparent;
+        border-bottom: 5px solid #F5F8FF;
+        position:absolute;
+        top: -5px;
+        right: 34px;
+      }
+
+      p { padding: 0 25px; }
+
+        position: absolute;
+        background: #F5F8FF;
+        width: 100%;
+        bottom: -37px;
+        left: 0;
+        padding: 10px;
+        @include box-sizing(border-box);
+        font-size: 13px;
+        font-style: italic;
+        border-bottom: 1px solid rgba(#DDD, .5);
+        color: #999;
+
+        .close {
+          position: absolute;
+          right: 32px;
+          top: 12px;
+
+          display:block;
+          vertical-align:middle;
+          width:13px;
+          height:13px;
+
+          @include background(sprite($icons-sprites, close_grey, $offset-x:0, $offset-y:0) no-repeat);
+
+          &:hover {@include background(sprite($icons-sprites, close_grey, $offset-x:0, $offset-y:-13px) no-repeat);}
+          &:active {@include background(sprite($icons-sprites, close_grey, $offset-x:0, $offset-y:-26px) no-repeat);}
+
+        }
+
+      }
+
+    .menu {
+      position: absolute;
+      @include box-sizing(border-box);
+      top: 64px;
+      width: 100%;
+      padding: 10px 40px 10px 30px;
+
       background:#F6F6F6;
       border-top: 1px solid rgba(#DDDDDD, .5);
       border-bottom: 1px solid rgba(#DDDDDD, .5);
-      padding: 10px 30px;
+
       z-index: 100;
 
       ul {
@@ -657,6 +718,8 @@ a.info {
       span.label {margin-right:12px;}
     }
 
+    .titlePane .fields li { position:relative; }
+
     .fields {
       li {
         padding:13px 0;
@@ -682,6 +745,16 @@ a.info {
 
         .form_combo ~ span {
           margin-top:3px;
+        }
+
+        .edit_in_place.input {
+          @include position(9px, 0, false, false);
+          @include default-input();
+
+          input {
+            font-size: 13px;
+            padding: 6px;
+          }
         }
 
         .switches {
@@ -777,7 +850,7 @@ a.info {
     div.forms {
 
       &.panel_content {
-        top:42px;
+        top: 42px;
         padding: 0 30px 16px 30px;
 
         .footer {

@@ -665,7 +665,8 @@ var Vis = cdb.core.View.extend({
       templateType: 'mustache',
       triggerEvent: 'featureClick',
       templateName: 'light',
-      extraFields: []
+      extraFields: [],
+      cursorInteraction: true
     });
 
     if(!map) throw new Error('map is not valid');
@@ -723,10 +724,37 @@ var Vis = cdb.core.View.extend({
       layer.unbind(options.triggerEvent, null, infowindow);
     });
 
+    if(options.cursorInteraction) {
+      cdb.vis.Vis.addCursorInteraction(map, layer);
+    }
+
     return infowindow;
 
+  },
 
+  addCursorInteraction: function(map, layer) {
+
+    var hovers = [];
+    var mapView = map.viz.mapView;
+
+    layer.bind('featureOver', function(e, latlon, pxPos, data, layer) {
+      hovers[layer] = 1;
+      if(_.any(hovers))
+        mapView.setCursor('pointer');
+    }, mapView);
+
+    layer.bind('featureOut', function(m, layer) {
+      hovers[layer] = 0;
+      if(!_.any(hovers))
+        mapView.setCursor('auto');
+    }, mapView);
+  },
+
+  removeCursorInteraction: function(map, layer) {
+    var mapView = map.viz.mapView;
+    layer.unbind(null, null, mapView);
   }
+
 });
 
 cdb.vis.INFOWINDOW_TEMPLATE = {

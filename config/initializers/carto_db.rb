@@ -168,6 +168,10 @@ module CartoDB
       title: 'Geometry Collection not supported',
       what_about: "We are working to support more formats every day, but currently we cannot take mixed geometry types. Take a look at your data source and see if other formats are available, otherwise, look into tools like OGR to split this file into valid ESRI Shapefiles prior to importing. "
     },
+    3202 => {
+      title: 'Empty KML', 
+      what_about: "This KML doesn't include actual data, but a link to another KML with the data. Please extract the URL from this KML and try to import it"
+    },
     4000 => {
       title: 'Raster errors',
       what_about: "We don't officially support raster yet but hope to in the future. If you are having a hard time getting your file loaded, be sure that it is a valid GeoTiff and that it opens locally. Otherwise, please report this error to us so we can improve the service."

@@ -1,5 +1,6 @@
 # encoding: utf-8
 require_relative './ogr2ogr'
+require_relative './format_linter'
 require_relative './csv_normalizer'
 require_relative './json2csv'
 require_relative './xlsx2csv'
@@ -10,7 +11,7 @@ module CartoDB
     class Loader
       SCHEMA        = 'cdb_importer'
       TABLE_PREFIX  = 'importer'
-      NORMALIZERS   = [CsvNormalizer, Xlsx2Csv, Json2Csv]
+      NORMALIZERS   = [FormatLinter, CsvNormalizer, Xlsx2Csv, Json2Csv]
 
       def self.supported?(extension)
         !(%w{ .shp .osm .tif .tiff }.include?(extension))

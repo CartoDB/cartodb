@@ -55,17 +55,15 @@ describe Shp2pgsql do
 
     it 'raises if no projection detected' do
       wrapper = Shp2pgsql.new(@full_table_name, 'bogus.shp', @pg_options)
-      begin
-        wrapper.normalize
-      rescue
-        wrapper.detected_projection.must_be_nil
-      end
+      lambda { wrapper.normalize }.must_raise ShpNormalizationError
+      wrapper.detected_projection.must_be_nil
     end
   end #normalize
 
   describe '#normalized?' do
     it 'returns true if normalizer executed and detected a projection' do
-      skip
+      @wrapper.normalize
+      @wrapper.normalized?.must_equal true
     end
   end
 
@@ -106,17 +104,16 @@ describe Shp2pgsql do
       wrapper.detected_encoding.must_equal 'LATIN1'
     end
 
-    it 'returns LATIN1 if detected windows codepage' do
-      skip
+    it 'returns a codepage if detected a windows encoding' do
       fake_normalizer_output = {
         projection:   'bogus',
-        encoding:     'windows',
+        encoding:     'windows-850',
         source:       'bogus',
         destination:  'bogus'
       }
       wrapper = Shp2pgsql.new(@full_table_name, 'bogus.shp', @pg_options)
       wrapper.send :normalizer_output=, fake_normalizer_output
-      wrapper.detected_encoding.must_equal 'LATIN1'
+      wrapper.detected_encoding.must_equal 'CP850'
     end
   end #detected_encoding
 end # Shp2pgsql

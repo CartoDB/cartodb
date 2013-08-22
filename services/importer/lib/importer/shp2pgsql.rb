@@ -49,7 +49,7 @@ module CartoDB
       end #normalize
 
       def normalized?
-        normalizer_output && detected_projection
+        !!(normalizer_output && detected_projection)
       end #normalize?
 
       def prj?
@@ -58,7 +58,7 @@ module CartoDB
 
       def detected_projection
         projection = normalizer_output.fetch(:projection)
-        return nil if projection == 'None'
+        return nil if projection == 'None' || projection.nil?
         projection.to_i
       end #detected_projection
 
@@ -124,11 +124,9 @@ module CartoDB
         encoding.gsub(/windows-/, 'CP')
       end #codepage_for
 
-      def probably_wrongly_detected_codepage?(encoding)
+      def windows?(encoding)
         !!(encoding =~ /windows/)
-      end #probably_wrongly_detected_codepage?
-
-      alias_method :windows?, :probably_wrongly_detected_codepage?
+      end #windows?
     end # Shp2pgsql
   end # Importer2
 end # CartoDB

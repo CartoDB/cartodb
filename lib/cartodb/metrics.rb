@@ -6,7 +6,7 @@ require_relative 'github_reporter'
 module CartoDB
   class Metrics
     def report(payload)
-      if result.fetch(:success)
+      if payload.fetch(:success, false)
         report_success(payload) 
       else
         report_failure(payload)
@@ -23,7 +23,6 @@ module CartoDB
     end #report_failure
 
     def report_success(metric_payload)
-      puts '==== reporting success'
       mixpanel_event("Import successful", metric_payload)
       ducksboard_report_done(metric_payload[:extension])
     end #report_success

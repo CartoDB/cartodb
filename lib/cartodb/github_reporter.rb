@@ -4,6 +4,7 @@ require 'github_api'
 
 module CartoDB
   class GitHubReporter
+    REPORTABLE_ERRORS = %w{ 99999 2001 }
 
     def github
       Github.new({
@@ -15,6 +16,8 @@ module CartoDB
     end #github
 
     def report_failed_import(result)
+      return self unless REPORTABLE_ERRORS.include?(result.fetch(:error, 0))
+
       if Cartodb.config[:github].present?
         github.issues.create(failed_import_body(result))
       end

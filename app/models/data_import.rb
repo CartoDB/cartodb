@@ -365,7 +365,6 @@ class DataImport < Sequel::Model
   end #register
 
   def notify_results(results)
-    puts '==== notifying results'
     results.each { |result| CartoDB::Metrics.new.report(payload_for(result)) }
   end #notify_results
 
@@ -402,6 +401,7 @@ class DataImport < Sequel::Model
       name:           result.fetch(:name),
       extension:      result.fetch(:extension),
       success:        result.fetch(:success),
+      error:          result.fetch(:error, nil),
       file_url:       public_url,
       distinct_id:    current_user.username,
       username:       current_user.username,
@@ -410,11 +410,8 @@ class DataImport < Sequel::Model
       email:          current_user.email,
       log:            log.to_s
     }
-    payload.merge!(error_title: get_error_text) if result
+    payload.merge!(error_title: get_error_text) unless result.fetch(:success)
     payload
-  rescue => exception
-    puts exception
-    puts exception.backtrace
   end
 end
 

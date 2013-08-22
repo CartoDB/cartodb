@@ -650,7 +650,106 @@ var Vis = cdb.core.View.extend({
     });
   }
 
+}, {
+
+  /**
+   * adds an infowindow to the map controlled by layer events.
+   * it enables interaction and overrides the layer interacivity
+   * ``fields`` array of column names
+   * ``map`` native map object, leaflet of gmaps
+   * ``layer`` cartodb layer (or sublayer)
+   */
+  addInfowindow: function(map, layer, fields, opts) {
+    var options = _.defaults(opts || {}, {
+      infowindowTemplate: cdb.vis.INFOWINDOW_TEMPLATE.light,
+      templateType: 'mustache',
+      triggerEvent: 'featureClick',
+      templateName: 'light',
+      extraFields: []
+    });
+
+    if(!map) throw new Error('map is not valid');
+    if(!layer) throw new Error('layer is not valid');
+    if(!fields && fields.length === undefined ) throw new Error('fields should be a list of strings');
+
+    var f = [];
+    fields = fields.concat(options.extraFields);
+    for(var i = 0; i < fields.length; ++i) {
+      f.push({ name: fields, order: i});
+    }
+
+    var infowindowModel = new cdb.geo.ui.InfowindowModel({
+      fields: f,
+      template_name: options.templateName
+    });
+
+    var infowindow = new cdb.geo.ui.Infowindow({
+       model: infowindowModel,
+       mapView: map.viz.mapView,
+       template: new cdb.core.Template({
+         template: options.infowindowTemplate,
+         type: options.templateType
+       }).asFunction()
+    });
+
+    map.viz.mapView.addInfowindow(infowindow);
+    layer.setInteractivity(fields);
+    layer.setInteraction(true);
+
+    layer.bind(options.triggerEvent, function(e, latlng, pos, data, layer) {
+      var render_fields = [];
+      for(var k in data) {
+        render_fields.push({
+          title: k,
+          value: data[k],
+          index: 0
+        });
+      }
+      infowindow.model.set({
+        content:  {
+          fields: render_fields,
+          data: data
+        }
+      });
+
+      infowindow
+        .setLatLng(latlng)
+        .showInfowindow();
+      infowindow.adjustPan();
+    }, infowindow);
+
+    // remove the callback on clean
+    infowindow.bind('clean', function() {
+      layer.unbind(options.triggerEvent, null, infowindow);
+    });
+
+    return infowindow;
+
+
+  }
 });
+
+cdb.vis.INFOWINDOW_TEMPLATE = {
+  light: [
+    '<div class="cartodb-popup">',
+    '<a href="#close" class="cartodb-popup-close-button close">x</a>',
+    '<div class="cartodb-popup-content-wrapper">',
+      '<div class="cartodb-popup-content">',
+        '{{#content.fields}}',
+          '{{#title}}<h4>{{title}}</h4>{{/title}}',
+          '{{#value}}',
+            '<p {{#type}}class="{{ type }}"{{/type}}>{{{ value }}}</p>',
+          '{{/value}}',
+          '{{^value}}',
+            '<p class="empty">null</p>',
+          '{{/value}}',
+        '{{/content.fields}}',
+      '</div>',
+    '</div>',
+    '<div class="cartodb-popup-tip-container"></div>',
+  '</div>'
+  ].join('')
+};
 
 cdb.vis.Vis = Vis;
 

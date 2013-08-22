@@ -624,6 +624,12 @@ SubLayer.prototype = {
     });
   },
 
+  setInteractivity: function(fields) {
+    return this.set({
+      interactivity: fields
+    });
+  },
+
   getSQL: function() {
     return this.get('sql');
   },

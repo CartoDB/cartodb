@@ -12,7 +12,7 @@ module CartoDB
       TABLE_PREFIX = 'importer'
 
       def self.supported?(extension)
-        extension == '.shp'
+        %w{ .shp .tab }.include?(extension)
       end #self.supported?
 
       def initialize(job, source_file, shp2pgsql=nil)

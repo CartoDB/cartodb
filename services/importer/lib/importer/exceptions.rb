@@ -34,6 +34,7 @@ module CartoDB
     class EmptyGeometryColumn                   < StandardError; end
     class TiffToSqlConversionError              < StandardError; end
     class LoadError                             < StandardError; end
+    class KmlNetworkLinkError                   < StandardError; end
 
 
     ERRORS_MAP = {
@@ -52,12 +53,14 @@ module CartoDB
       CsvToSqlError                         => 3006,
       InvalidGeoJSONError                   => 3007,
       UnknownSridError                      => 3008,
+      ShpNormalizationError                 => 3009,
       ProjectionError                       => 3100,
       MissingProjectionError                => 3101,
       UnsupportedProjectionError            => 3102,
       UnableToForce2DGeometryError          => 3110,
       UnsupportedGeometryTypeError          => 3200,
       GeometryCollectionNotSupportedError   => 3201,
+      KmlNetworkLinkError                   => 3202,
       RasterError                           => 4000,
       EmptyTableError                       => 5001,
       ReservedColumnNameError               => 5002,

@@ -42,6 +42,15 @@ describe 'KML regression tests' do
     geometry_type_for(runner).wont_be_nil
   end
 
+  it 'raises if KML just contains a link to the actual KML url' do
+    filepath    = path_to('abandoned.kml')
+    downloader  = Downloader.new(filepath)
+    runner      = Runner.new(@pg_options, downloader)
+    runner.run
+
+    runner.results.first.fetch(:error).must_equal 3202
+  end
+
   def path_to(filepath)
     File.expand_path(
       File.join(File.dirname(__FILE__), "../fixtures/#{filepath}")

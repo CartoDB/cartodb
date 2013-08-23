@@ -16,7 +16,8 @@ module CartoDB
       end #initialize
 
       def run
-        raise MissingProjectionError unless prj?
+        raise InvalidShpError         unless dbf? && shx?
+        raise MissingProjectionError  unless prj?
 
         normalize
         stdout, stderr, status  = Open3.capture3(command)
@@ -49,16 +50,24 @@ module CartoDB
       end #normalize
 
       def normalized?
-        normalizer_output && detected_projection
+        !!(normalizer_output && detected_projection)
       end #normalize?
 
       def prj?
         File.exists?(filepath.gsub(%r{\.shp$}, '.prj'))
       end #prj?
 
+      def dbf?
+        File.exists?(filepath.gsub(%r{\.shp$}, '.dbf'))
+      end #dbf?
+
+      def shx?
+        File.exists?(filepath.gsub(%r{\.shp$}, '.shx'))
+      end #shx?
+
       def detected_projection
         projection = normalizer_output.fetch(:projection)
-        return nil if projection == 'None'
+        return nil if projection == 'None' || projection.nil?
         projection.to_i
       end #detected_projection
 
@@ -124,11 +133,9 @@ module CartoDB
         encoding.gsub(/windows-/, 'CP')
       end #codepage_for
 
-      def probably_wrongly_detected_codepage?(encoding)
+      def windows?(encoding)
         !!(encoding =~ /windows/)
-      end #probably_wrongly_detected_codepage?
-
-      alias_method :windows?, :probably_wrongly_detected_codepage?
+      end #windows?
     end # Shp2pgsql
   end # Importer2
 end # CartoDB

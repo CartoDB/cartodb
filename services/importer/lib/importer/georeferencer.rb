@@ -27,6 +27,8 @@ module CartoDB
         create_the_geom_from_geometry_column  || 
         create_the_geom_from_latlon           ||
         create_the_geom_in(table_name)
+
+        raise_if_geometry_collection
         self
       end #run
 
@@ -123,6 +125,12 @@ module CartoDB
         column = Column.new(db, table_name, THE_GEOM_WEBMERCATOR, schema, job)
         column.drop
       end #drop_the_geom_webmercator
+
+      def raise_if_geometry_collection
+        column = Column.new(db, table_name, :the_geom, schema, job)
+        return self unless column.geometry_type == 'GEOMETRYCOLLECTION'
+        raise GeometryCollectionNotSupportedError
+      end #raise_if_geometry_collection
 
       def find_column_in(table_name, possible_names)
         sample = db[%Q{

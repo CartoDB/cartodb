@@ -33,9 +33,10 @@ class DataImport < Sequel::Model
   end
 
   def public_values
-    Hash[PUBLIC_ATTRIBUTES.map{ |attribute| [attribute, send(attribute)] }]
-      .merge!("queue_id" => id)
-      .merge!(success: success) if (state == 'complete' || state == 'failure')
+    values = Hash[PUBLIC_ATTRIBUTES.map{ |attribute| [attribute, send(attribute)] }]
+    values.merge!("queue_id" => id)
+    values.merge!(success: success) if (state == 'complete' || state == 'failure')
+    values
   end
 
   def set_unsupported_file_error

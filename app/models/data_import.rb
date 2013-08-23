@@ -56,6 +56,8 @@ class DataImport < Sequel::Model
   rescue => exception
     log.append "Exception: #{exception.to_s}"
     log.append exception.backtrace
+    stacktrace = exception.to_s + exception.backtrace.join
+    Rollbar.report_message("Import error", "error", error_info: stacktrace)
     handle_failure
     self
   end

@@ -53,6 +53,7 @@ module CartoDB
       CsvToSqlError                         => 3006,
       InvalidGeoJSONError                   => 3007,
       UnknownSridError                      => 3008,
+      ShpNormalizationError                 => 3009,
       ProjectionError                       => 3100,
       MissingProjectionError                => 3101,
       UnsupportedProjectionError            => 3102,

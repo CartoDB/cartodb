@@ -16,7 +16,8 @@ module CartoDB
       end #initialize
 
       def run
-        raise MissingProjectionError unless prj?
+        raise InvalidShpError         unless dbf? && shx?
+        raise MissingProjectionError  unless prj?
 
         normalize
         stdout, stderr, status  = Open3.capture3(command)
@@ -55,6 +56,14 @@ module CartoDB
       def prj?
         File.exists?(filepath.gsub(%r{\.shp$}, '.prj'))
       end #prj?
+
+      def dbf?
+        File.exists?(filepath.gsub(%r{\.shp$}, '.dbf'))
+      end #dbf?
+
+      def shx?
+        File.exists?(filepath.gsub(%r{\.shp$}, '.shx'))
+      end #shx?
 
       def detected_projection
         projection = normalizer_output.fetch(:projection)

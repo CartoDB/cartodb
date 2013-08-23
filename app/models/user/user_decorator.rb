@@ -20,6 +20,7 @@ module CartoDB
         api_key: self.get_map_key,
         layers: self.layers.map(&:public_values),
         trial_ends_at: self.trial_ends_at,
+        upgraded_at: self.upgraded_at,
         actions: {
           private_tables: self.private_tables_enabled,
           dedicated_support: self.dedicated_support?,

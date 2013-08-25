@@ -7,6 +7,22 @@ describe("cdb.geo.ui.infowindow", function() {
       model = new cdb.geo.ui.InfowindowModel();
     });
 
+    it("should allow adding an alternative name", function() {
+
+      model.addField('the_name');
+      model.addField('the_description');
+
+      model.setAlternativeName('the_name', 'nombre');
+      model.setAlternativeName('the_description', 'descripción');
+
+      n = model.getAlternativeName('the_name');
+      d = model.getAlternativeName('the_description');
+
+      expect(n).toEqual("nombre");
+      expect(d).toEqual("descripción");
+
+    });
+
     it("should add a field", function() {
       expect(model.containsField('test')).toEqual(false);
       model.addField('test');

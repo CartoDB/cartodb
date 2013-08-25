@@ -1,22 +1,27 @@
 /** Usage:
-*
-* Add Infowindow model:
-*
-* var infowindowModel = new cdb.geo.ui.InfowindowModel({
-*   template_name: 'templates/map/infowindow',
-*   latlng: [72, -45],
-*   offset: [100, 10]
-* });
-*
-* var infowindow = new cdb.geo.ui.Infowindow({
-*   model: infowindowModel,
-*   mapView: mapView
-* });
-*
-* Show the infowindow:
-* infowindow.showInfowindow();
-*
-*/
+ *
+ * Add Infowindow model:
+ *
+ * var infowindowModel = new cdb.geo.ui.InfowindowModel({
+ *   template_name: 'templates/map/infowindow',
+ *   latlng: [72, -45],
+ *   offset: [100, 10]
+ * });
+ *
+ * var infowindow = new cdb.geo.ui.Infowindow({
+ *   model: infowindowModel,
+ *   mapView: mapView
+ * });
+ *
+ * Show the infowindow:
+ * infowindow.showInfowindow();
+ *
+ */
+
+//function InfowindowTemplateException(message) {
+   //this.message = message;
+   //this.name = "UserException";
+//}
 
 cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
   SYSTEM_COLUMNS: ['the_geom', 'the_geom_webmercator', 'created_at', 'updated_at', 'cartodb_id', 'cartodb_georef_status'],
@@ -29,6 +34,7 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
     custom_html: "",
     content: "",
     visibility: false,
+    alternative_names: { },
     fields: null // contains the fields displayed in the infowindow
   },
 
@@ -45,16 +51,16 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
   },
 
   restoreFields: function(whiteList) {
-     var fields = this.get('old_fields')
-     if(whiteList) {
-       fields = fields.filter(function(f) {
-          return _.contains(whiteList, f.name);
-       });
-     }
-     if(fields && fields.length) {
-       this._setFields(fields);
-     }
-     this.unset('old_fields');
+    var fields = this.get('old_fields')
+    if(whiteList) {
+      fields = fields.filter(function(f) {
+        return _.contains(whiteList, f.name);
+      });
+    }
+    if(fields && fields.length) {
+      this._setFields(fields);
+    }
+    this.unset('old_fields');
   },
 
   _cloneFields: function() {
@@ -78,10 +84,10 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
       var fields = this.get('fields');
       if(fields) {
         at = at === undefined ? fields.length: at;
-        fields.push({name: fieldName, title: true, position: at});
+        fields.push({ name: fieldName, title: true, position: at });
       } else {
         at = at === undefined ? 0 : at;
-        this.set('fields', [{name: fieldName, title: true, position: at}])
+        this.set('fields', [{ name: fieldName, title: true, position: at }])
       }
     }
     dfd.resolve();
@@ -117,12 +123,32 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
     return this;
   },
 
+  getAlternativeName: function(fieldName) {
+    return this.get("alternative_names")[fieldName];
+  },
+
+  setAlternativeName: function(fieldName, alternativeName) {
+
+    var alternativeNames = this.get("alternative_names");
+
+    console.log('cloned', alternativeNames);
+    alternativeNames[fieldName] = alternativeName;
+    console.log(alternativeNames);
+    this.set({ 'alternative_names': alternativeNames });
+    this.trigger('change:alternative_names');
+  },
+
   getFieldPos: function(fieldName) {
     var p = this.getFieldProperty(fieldName, 'position');
     if(p == undefined) {
       return Number.MAX_VALUE;
     }
     return p;
+  },
+
+  containsAlternativeName: function(fieldName) {
+    var names = this.get('alternative_names') || [];
+    return names[fieldName];
   },
 
   containsField: function(fieldName) {
@@ -182,12 +208,13 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
 
     this.add_related_model(this.model);
 
-    this.model.bind('change:content',       this.render, this);
-    this.model.bind('change:template_name', this.changeTemplate, this);
-    this.model.bind('change:latlng',        this._update, this);
-    this.model.bind('change:visibility',    this.toggle, this);
-    this.model.bind('change:template',      this._compileTemplate, this);
-    this.model.bind('change:custom_html',   this._changeCustomHTML, this);
+    this.model.bind('change:content',           this.render, this);
+    this.model.bind('change:template_name',     this.changeTemplate, this);
+    this.model.bind('change:latlng',            this._update, this);
+    this.model.bind('change:visibility',        this.toggle, this);
+    this.model.bind('change:template',          this._compileTemplate, this);
+    this.model.bind('change:custom_html',       this._changeCustomHTML, this);
+    this.model.bind('change:alternative_names', this.render, this);
 
     this.mapView.map.bind('change',         this._updatePosition, this);
 
@@ -225,7 +252,9 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
       var fields = _.map(this.model.attributes.content.fields, function(field){
         return _.clone(field);
       });
+
       var template_name = _.clone(this.model.attributes.template_name);
+
       // Sanitized them
       var sanitized_fields = this._fieldsToString(fields, template_name);
       var data = this.model.get('content') ? this.model.get('content').data : {}
@@ -244,15 +273,21 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
         var customTemplate   = this.model.get("custom_html");
         var compiledTemplate = cdb.core.Template.compile(customTemplate, "mustache");
 
-        var customHTML = compiledTemplate({
-          content: {
-            fields: sanitized_fields,
-            data: this.model.get('content').fields,
-          }
-        });
 
-        // Replace the ifowindow's content with the custom content
-        this.$el.find(".cartodb-popup-content").html(customHTML);
+        try {
+          var customHTML = compiledTemplate({
+            content: {
+              fields: sanitized_fields,
+              data: this.model.get('content').fields,
+            }
+          });
+
+          // Replace the ifowindow's content with the custom content
+          this.$el.find(".cartodb-popup-content").html(customHTML);
+        } catch (e) {
+          console.log('Errors detected when compiling the template.', e);
+        }
+
       }
 
       // Hello jscrollpane hacks!
@@ -284,8 +319,8 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
   changeTemplate: function(template_name) {
 
     this.template = cdb.templates.getTemplate(this.model.get("template_name"));
-
     this.render();
+
   },
 
   /**
@@ -356,6 +391,12 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     if (attr.value == null || attr.value == undefined) {
       attr.value = '';
     }
+
+    //Get the alternative title
+    var alternative_name = this.model.getAlternativeName(attr.title);
+
+    if (attr.title && alternative_name)
+      attr.title = alternative_name;
 
     // Cast all values to string due to problems with Mustache 0 number rendering
     var new_value = attr.value.toString();
@@ -554,6 +595,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
       content:  {
         fields: [{
           title: null,
+          alternative_name: null,
           value: 'Loading content...',
           index: null,
           type: "loading"
@@ -572,6 +614,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
       content:  {
         fields: [{
           title: null,
+          alternative_name: null,
           value: 'There has been an error...',
           index: null,
           type: 'error'

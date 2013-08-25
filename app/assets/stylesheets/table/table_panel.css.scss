@@ -564,6 +564,7 @@ a.info {
 
     .panel_content .wrapper {
       top: 77px;
+      top: 43px;
     }
 
     .header {
@@ -584,12 +585,24 @@ a.info {
 
     }
 
-    &.editing_html .menu {
-      &:after { position:absolute; content:' '; top:0; left:34px; bottom:0; width:1px; height:100%; background:rgba($cGray4,0.50); }
-      &:before { position:absolute; content:' '; top:0; left:36px; bottom:0; width:1px; height:100%; background:rgba(#509DD7,0.25); }
+
+    &.editing_html {
+
+      .header h3 {
+        margin-left: 23px;
+      }
+
+      .menu {
+
+        li:first-child { margin-left: 23px; }
+        &:after  { position:absolute; content:' '; top:0; left:34px; bottom:0; width:1px; height:100%; background:rgba($cGray4,0.50); }
+        &:before { position:absolute; content:' '; top:0; left:36px; bottom:0; width:1px; height:100%; background:rgba(#509DD7,0.25); }
+      }
     }
 
     .help {
+
+      display:none;
 
       .bkg_tip {
         border-left: 5px solid transparent;
@@ -599,6 +612,7 @@ a.info {
         top: -5px;
         right: 34px;
       }
+
       .tip {
         border-left: 5px solid transparent;
         border-right: 5px solid transparent;
@@ -654,12 +668,20 @@ a.info {
 
       z-index: 100;
 
+      .tip {
+        @include size(10px, 6px);
+        @include position(false, false, -1px, 33px);
+        @include background(sprite($icons-sprites, infowindow_panel_white_tip) no-repeat);
+        z-index: 10;
+      }
+
       ul {
 
         clear:both;
         overflow:hidden;
 
         li {
+          min-width: 20px;
 
           @include inline-block();
           margin: 0 15px 0 0;
@@ -718,7 +740,10 @@ a.info {
       span.label {margin-right:12px;}
     }
 
-    .titlePane .fields li { position:relative; }
+    .titlePane .fields li {
+      position:relative;
+      & > span:hover {cursor: default; }
+    }
 
     .fields {
       li {

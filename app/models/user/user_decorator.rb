@@ -20,6 +20,9 @@ module CartoDB
         api_key: self.get_map_key,
         layers: self.layers.map(&:public_values),
         trial_ends_at: self.trial_ends_at,
+        upgraded_at: self.upgraded_at,
+        show_trial_reminder: self.trial_ends_at.present?,
+        show_upgraded_message: (self.account_type.downcase != 'free' && self.upgraded_at && self.upgraded_at + 15.days > Date.today ? true : false),
         actions: {
           private_tables: self.private_tables_enabled,
           dedicated_support: self.dedicated_support?,

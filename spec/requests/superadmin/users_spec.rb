@@ -68,6 +68,8 @@ feature "Superadmin's users API" do
   scenario "user create default account settings" do
     @user_atts[:private_tables_enabled] = false
     @user_atts[:map_view_quota] = 80
+    t = Time.now
+    @user_atts[:upgraded_at] = t
     post_json superadmin_users_path, { :user => @user_atts }, default_headers do |response|
       response.status.should == 201
       response.body[:quota_in_bytes].should == 104857600
@@ -82,6 +84,7 @@ feature "Superadmin's users API" do
       user.table_quota.should == 5
       user.account_type.should == 'FREE'
       user.private_tables_enabled.should == false
+      user.upgraded_at.should.to_s == t.to_s
     end
   end
 

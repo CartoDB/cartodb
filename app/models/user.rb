@@ -616,7 +616,7 @@ class User < Sequel::Model
         else
           "cartodb_user_#{self.id}_db"
       end
-      save
+      self.this.update database_name: self.database_name
 
       Thread.new do
         conn = Rails::Sequel.connection

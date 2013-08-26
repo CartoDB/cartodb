@@ -22,8 +22,8 @@ describe User do
     @new_user.save
     @new_user.reload
     @new_user.should_not be_new
-    @new_user.in_database.test_connection.should == true
     @new_user.database_name.should_not be_nil
+    @new_user.in_database.test_connection.should == true
   end
 
   it "should have a crypted password" do

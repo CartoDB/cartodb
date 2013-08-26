@@ -388,6 +388,14 @@ class User < Sequel::Model
     $users_metadata.HMGET(key, 'last_active_time').first
   end
 
+  def set_last_ip_address(ip_address)
+    $users_metadata.HMSET key, 'last_ip_address',  ip_address
+  end
+
+  def get_last_ip_address
+    $users_metadata.HMGET(key, 'last_ip_address').first
+  end
+
   def reset_client_application!
     if client_application
       client_application.destroy

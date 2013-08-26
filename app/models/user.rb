@@ -294,7 +294,7 @@ class User < Sequel::Model
   end
 
   def trial_ends_at
-    if upgraded_at && upgraded_at + 15.days > Date.today
+    if account_type.to_s.downcase == 'magellan' && upgraded_at && upgraded_at + 15.days > Date.today
       upgraded_at + 15.days
     else
       nil
@@ -386,6 +386,14 @@ class User < Sequel::Model
 
   def get_last_active_time
     $users_metadata.HMGET(key, 'last_active_time').first
+  end
+
+  def set_last_ip_address(ip_address)
+    $users_metadata.HMSET key, 'last_ip_address',  ip_address
+  end
+
+  def get_last_ip_address
+    $users_metadata.HMGET(key, 'last_ip_address').first
   end
 
   def reset_client_application!

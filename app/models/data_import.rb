@@ -2,7 +2,6 @@
 require 'sequel'
 require 'fileutils'
 require 'uuidtools'
-require 'rollbar'
 require_relative './user'
 require_relative './table'
 require_relative '../../lib/cartodb/errors'
@@ -40,13 +39,26 @@ class DataImport < Sequel::Model
     values
   end
 
+  def set_unsupported_file_error
+    self.error_code = 1002
+    self.state      = 'failure'
+    save
+  end #set_unsupported_file_error
+
   def run_import!
     success = !!dispatch
+    if self.results.empty?
+      set_unsupported_file_error
+      return self
+    end
     success ? handle_success : handle_failure
+    Rails.logger.debug log.to_s
     self
   rescue => exception
     log.append "Exception: #{exception.to_s}"
     log.append exception.backtrace
+    stacktrace = exception.to_s + exception.backtrace.join
+    Rollbar.report_message("Import error", "error", error_info: stacktrace)
     handle_failure
     self
   end
@@ -133,6 +145,7 @@ class DataImport < Sequel::Model
     self.state    = 'complete'
     self.log << "SUCCESS!\n"
     save
+    self
   end #handle_success
 
   def handle_failure
@@ -142,8 +155,7 @@ class DataImport < Sequel::Model
     self.log << "ERROR!\n"
     self.save
     keep_problematic_file if uploaded_file
-    notify_failures(self.results)
-    Rollbar.report_message("Failed import", "error", error_info: basic_information)
+    notify_results(self.results)
     self
   rescue => exception
     self
@@ -171,17 +183,6 @@ class DataImport < Sequel::Model
       next unless worker.job["queue"] == "imports"
       worker.job["payload"]["args"].first["job_id"] rescue nil 
     end.compact
-  end
-
-  def basic_information
-    {
-      error:         get_error_text[:title],
-      username:      current_user.username,
-      file_url:      public_url,
-      account_type:  current_user.account_type,
-      database:      current_user.database_name,
-      email:         current_user.email
-    }
   end
 
   def public_url
@@ -255,7 +256,7 @@ class DataImport < Sequel::Model
       end
     end
 
-    notify_failures(runner.results)
+    notify_results(runner.results)
     success_status_from(runner.results)
   end
 
@@ -326,16 +327,8 @@ class DataImport < Sequel::Model
       table_names.each { |table_name| register(table_name, name, schema) }
     end
     success_status_from(runner.results)
-    notify_failures(runner.results)
+    notify_results(runner.results)
   end #new_importer
-
-  def notify_failures(results)
-    results.each do |result|
-      result.fetch(:success) ?
-        register_success_import_event_for(result) : 
-        register_failed_import_event_for(result)
-    end
-  end #notify_failures
 
   def success_status_from(results)
     results.inject(true) { |memo, result| result.fetch(:success) && memo }
@@ -374,25 +367,19 @@ class DataImport < Sequel::Model
     self
   end #register
 
-  def register_failed_import_event_for(result)
-    payload = {
-      name:       result.fetch(:name),
-      extension:  result.fetch(:extension)
-    }.merge(metric_payload)
-    CartoDB::Metrics.report_failed_import(payload)
-  rescue
-    self
-  end #register_failed_import_event_for
+  def notify_results(results)
+    results.each { |result| CartoDB::Metrics.new.report(payload_for(result)) }
+    report_unknown_error if results.empty?
+  end #notify_results
 
-  def register_success_import_event_for(result)
-    payload = {
-      name:       result.fetch(:name),
-      extension:  result.fetch(:extension)
-    }.merge(metric_payload)
-    CartoDB::Metrics.report_success_import(payload)
-  rescue
-    self
-  end #register_success_import_event_for
+  def report_unknown_error
+    CartoDB::Metrics.new.report(payload_for(
+      name:           data_source,
+      extension:      nil,
+      success:        false,
+      error:          99999
+    ))
+  end
 
   def table_owner
     table_owner ||= User.select(:id,:database_name,:crypted_password,:quota_in_bytes,:username, :private_tables_enabled, :table_quota).filter(:id => current_user.id).first
@@ -406,6 +393,7 @@ class DataImport < Sequel::Model
     new_table_name = import_from_query(table_name, query)
     self.update(table_names: new_table_name)
     migrate_existing(new_table_name)
+    self.results = [{ success: true, error: nil }]
   end
 
   def keep_problematic_file
@@ -417,12 +405,26 @@ class DataImport < Sequel::Model
     FileUtils.cp_r(file_path, vault_path)
   end #keep_problematic_file
 
-  def metric_payload
-    { distinct_id: current_user.username }.merge(basic_information)
-  end #metric_payload
-
   def current_user
     @current_user ||= User[user_id]
+  end
+
+  def payload_for(result)
+    payload = {
+      name:           result.fetch(:name),
+      extension:      result.fetch(:extension),
+      success:        result.fetch(:success),
+      error:          result.fetch(:error, nil),
+      file_url:       public_url,
+      distinct_id:    current_user.username,
+      username:       current_user.username,
+      account_type:   current_user.account_type,
+      database:       current_user.database_name,
+      email:          current_user.email,
+      log:            log.to_s
+    }
+    payload.merge!(error_title: get_error_text) unless result.fetch(:success)
+    payload
   end
 end
 

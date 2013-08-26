@@ -67,7 +67,9 @@ module CartoDB
         job.log 'Converting geometry from GeoJSON to WKB'
         db.run(%Q{
           UPDATE #{qualified_table_name}
-          SET #{column_name} = public.ST_GeomFromGeoJSON(#{column_name})
+          SET #{column_name} = public.ST_SetSRID(
+            public.ST_GeomFromGeoJSON(#{column_name}), #{DEFAULT_SRID}
+          )
         })
         self
       end #convert_from_geojson
@@ -76,7 +78,9 @@ module CartoDB
         job.log 'Converting geometry from KML point to WKB'
         db.run(%Q{
           UPDATE #{qualified_table_name}
-          SET #{column_name} = public.ST_GeomFromKML(#{column_name})
+          SET #{column_name} = public.ST_SetSRID(
+            public.ST_GeomFromKML(#{column_name}), #{DEFAULT_SRID}
+          )
         })
       end #convert_from_kml_point
 
@@ -84,8 +88,10 @@ module CartoDB
         job.log 'Converting geometry from KML multi to WKB'
         db.run(%Q{
           UPDATE #{qualified_table_name}
-          SET #{column_name} = 
-            public.ST_Multi(public.ST_GeomFromKML(#{column_name}))
+          SET #{column_name} = public.ST_SetSRID(
+            public.ST_Multi(public.ST_GeomFromKML(#{column_name})),
+            #{DEFAULT_SRID}
+          )
         })
       end #convert_from_kml_multi
 

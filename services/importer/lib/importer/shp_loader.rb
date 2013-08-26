@@ -12,7 +12,7 @@ module CartoDB
       TABLE_PREFIX = 'importer'
 
       def self.supported?(extension)
-        extension == '.shp'
+        %w{ .shp .tab }.include?(extension)
       end #self.supported?
 
       def initialize(job, source_file, shp2pgsql=nil)
@@ -28,6 +28,7 @@ module CartoDB
         job.log "shp2pgsql output:    #{shp2pgsql.command_output}"
         job.log "shp2pgsql exit code: #{shp2pgsql.exit_code}"
 
+        raise LoadError if shp2pgsql.exit_code != 0
         drop_the_geom_webmercator
         reproject
         self

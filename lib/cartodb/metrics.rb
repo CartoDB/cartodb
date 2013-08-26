@@ -12,18 +12,25 @@ module CartoDB
         report_failure(payload)
       end
     rescue => exception
+      puts exception
+      puts exception.backtrace
       self
     end #report
 
+    def mixpanel_payload(metric_payload)
+      #remove the log from the payload
+      metric_payload.select {|k,v| k != :log }
+    end
+
     def report_failure(metric_payload)
       GitHubReporter.new.report_failed_import(metric_payload)
-      mixpanel_event("Import failed", metric_payload)
+      mixpanel_event("Import failed", mixpanel_payload(metric_payload))
       ducksboard_report_failed(metric_payload[:extension])
       Rollbar.report_message("Failed import", "error", error_info: metric_payload)
     end #report_failure
 
     def report_success(metric_payload)
-      mixpanel_event("Import successful", metric_payload)
+      mixpanel_event("Import successful", mixpanel_payload(metric_payload))
       ducksboard_report_done(metric_payload[:extension])
     end #report_success
 
@@ -33,6 +40,7 @@ module CartoDB
       Mixpanel::Tracker.new(token).send(:track, *args)
     rescue => exception
       p exception
+      debugger
       Rollbar.report_message(
         "Failed to send metric to Mixpanel",
         "error",

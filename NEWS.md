@@ -1,3 +1,35 @@
+2.1.3.4
+-------
+* Fixed bugs
+  * Don't allow to select unsupported formats from Google Drive & Dropbox & filesystem
+  * GPX imports produce empty tables
+  * Import .tiff files
+  * After importing the vacuum full is not being made
+  * Importer should not report as failures those files with unsupported formats
+  * Importer should ignore unsupported files inside zip files
+  * Process multipoint geometries when importing
+  * CSVs with polygons don't import correctly
+  * Importer failures aren't being handled
+  * Import files with ' or " in the name
+  * Tune encoding detection in importer
+  * Link importer errors to online documentation
+  * Raise UnsupportedGeometryCollection error from importer, before cartodbfication
+  * CSV normalizer breaks with empty lines
+  * Give preference to comma when detecting row delimiter
+
+* Improvements
+  * CDB_CartodbfyTable() function
+  * Import Google Docs spreadsheets
+
+2.1.3.3
+-------
+* Fixed bugs
+  * Remove 'support address' behaviour from here
+  * Replace updated_at & trial_ends_at with the new flags
+
+* Improvements
+  * Save user IP on signup and login
+
 2.1.3.2
 -------
 * Fixed bugs

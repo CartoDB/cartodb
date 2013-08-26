@@ -30,6 +30,7 @@ module CartoDB
         File.open(filepath, 'rb', external_encoding: encoding)
         .each_line(line_delimiter) { |line| 
           row = ::CSV.parse_line(line.chomp.encode('UTF-8'), csv_options)
+          next unless row
           temporary_csv << multiple_column(row)
         }
 

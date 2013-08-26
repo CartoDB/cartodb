@@ -16,7 +16,6 @@ module CartoDB
     end #github
 
     def report_failed_import(result)
-      debugger
       return self unless REPORTABLE_ERRORS.include?(result.fetch(:error, 0))
 
       if Cartodb.config[:github].present?

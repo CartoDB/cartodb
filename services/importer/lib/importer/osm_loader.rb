@@ -33,6 +33,7 @@ module CartoDB
         job.log "osm2pgsql output:    #{osm2pgsql.command_output}"
         job.log "osm2pgsql exit code: #{osm2pgsql.exit_code}"
 
+        raise LoadError if osm2pgsql.exit_code != 0
         valid_table_names.each    { |table_name| process(table_name) }
         invalid_table_names.each  { |table_name| drop(table_name) }
         self

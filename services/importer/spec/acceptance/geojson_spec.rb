@@ -45,6 +45,15 @@ describe 'geojson regression tests' do
       .must_equal :boolean
   end
 
+  it "raises if GeoJSON isn't valid" do
+    filepath    = path_to('invalid.geojson')
+    downloader  = Downloader.new(filepath)
+    runner      = Runner.new(@pg_options, downloader)
+    runner.run
+
+    runner.results.first.fetch(:error).must_equal 3007
+  end
+
   def path_to(filepath)
     File.expand_path(
       File.join(File.dirname(__FILE__), "../fixtures/#{filepath}")

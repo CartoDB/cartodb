@@ -1,32 +1,64 @@
+2.1.3.4
+-------
+* Fixed bugs
+  * Don't allow to select unsupported formats from Google Drive & Dropbox & filesystem
+  * GPX imports produce empty tables
+  * Import .tiff files
+  * After importing the vacuum full is not being made
+  * Importer should not report as failures those files with unsupported formats
+  * Importer should ignore unsupported files inside zip files
+  * Process multipoint geometries when importing
+  * CSVs with polygons don't import correctly
+  * Importer failures aren't being handled
+  * Import files with ' or " in the name
+  * Tune encoding detection in importer
+  * Link importer errors to online documentation
+  * Raise UnsupportedGeometryCollection error from importer, before cartodbfication
+  * CSV normalizer breaks with empty lines
+  * Give preference to comma when detecting row delimiter
+
+* Improvements
+  * CDB_CartodbfyTable() function
+  * Import Google Docs spreadsheets
+
+2.1.3.3
+-------
+* Fixed bugs
+  * Remove 'support address' behaviour from here
+  * Replace updated_at & trial_ends_at with the new flags
+
+* Improvements
+  * Save user IP on signup and login
+
 2.1.3.2
 -------
-** Fixed bugs
-    * Color map wizard behaves different than the others
-    * Add marker-width to the color wizard
-    * Importer is not reporting specific errors, just the generic one
-    * Fix Xlsx2Csv
-    * Add support for ';' as CSV separator
-    * Support CSV files with ^M EOLs (Windows)
-    * Support SHP / KMZ from US Drought Monitor Data
-    * Fix missing method to mark an import as failed when stuck
+* Fixed bugs
+  * Color map wizard behaves different than the others
+  * Add marker-width to the color wizard
+  * Importer is not reporting specific errors, just the generic one
+  * Fix Xlsx2Csv
+  * Add support for ';' as CSV separator
+  * Support CSV files with ^M EOLs (Windows)
+  * Support SHP / KMZ from US Drought Monitor Data
+  * Fix missing method to mark an import as failed when stuck
 
-** Improvements
-    * Upgrade "Color map wizard" to "Category map"
-    * Please, advise in this text for color map wizard
-    * URL translator for Google Maps URLs
+* Improvements
+  * Upgrade "Color map wizard" to "Category map"
+  * Please, advise in this text for color map wizard
+  * URL translator for Google Maps URLs
 
 2.1.3.1
 -------
-** Fixed bugs
-    * Add a loader to the thumbnails on the asset window
-    * Fix padding in legend editor items
-    * There is no way to add an icon for a marker using a URL
-    * Not all expected keys save the state of my Legend text
-    * Geolocation styles are broken
+* Fixed bugs
+  * Add a loader to the thumbnails on the asset window
+  * Fix padding in legend editor items
+  * There is no way to add an icon for a marker using a URL
+  * Not all expected keys save the state of my Legend text
+  * Geolocation styles are broken
 
 
-** Improvements
-    * Change to "generating...." state everytime the URL on the share textinput is being generated
+* Improvements
+  * Change to "generating...." state everytime the URL on the share textinput is being generated
 
 2.1.2
 -----

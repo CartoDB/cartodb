@@ -94,6 +94,7 @@ class Admin::VisualizationsController < ApplicationController
   def update_user_last_activity
     return false unless current_user.present?
     current_user.set_last_active_time
+    current_user.set_last_ip_address request.remote_ip
   end
 
   def pretty_404

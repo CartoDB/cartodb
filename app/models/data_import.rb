@@ -372,7 +372,7 @@ class DataImport < Sequel::Model
     report_unknown_error if results.empty?
   end #notify_results
 
-  def report_unknown_error
+  def report_unkown_error
     CartoDB::Metrics.new.report(payload_for(
       name:           data_source,
       extension:      nil,

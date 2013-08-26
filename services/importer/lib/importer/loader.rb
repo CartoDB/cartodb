@@ -4,6 +4,7 @@ require_relative './format_linter'
 require_relative './csv_normalizer'
 require_relative './json2csv'
 require_relative './xlsx2csv'
+require_relative './xls2csv'
 require_relative './georeferencer'
 
 module CartoDB
@@ -11,7 +12,7 @@ module CartoDB
     class Loader
       SCHEMA        = 'cdb_importer'
       TABLE_PREFIX  = 'importer'
-      NORMALIZERS   = [FormatLinter, CsvNormalizer, Xlsx2Csv, Json2Csv]
+      NORMALIZERS   = [FormatLinter, CsvNormalizer, Xls2Csv, Xlsx2Csv, Json2Csv]
 
       def self.supported?(extension)
         !(%w{ .shp .tab .osm .tif .tiff }.include?(extension))

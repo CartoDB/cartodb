@@ -369,17 +369,7 @@ class DataImport < Sequel::Model
 
   def notify_results(results)
     results.each { |result| CartoDB::Metrics.new.report(payload_for(result)) }
-    report_unknown_error if results.empty?
   end #notify_results
-
-  def report_unkown_error
-    CartoDB::Metrics.new.report(payload_for(
-      name:           data_source,
-      extension:      nil,
-      success:        false,
-      error:          99999
-    ))
-  end
 
   def table_owner
     table_owner ||= User.select(:id,:database_name,:crypted_password,:quota_in_bytes,:username, :private_tables_enabled, :table_quota).filter(:id => current_user.id).first

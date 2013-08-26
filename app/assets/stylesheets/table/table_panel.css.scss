@@ -695,9 +695,13 @@ a.info {
 
           &.html_editor  { margin-right: 2px; }
 
-          &.editor       a { @include size(17px, 17px); @include icons-sprite(infowindow_editor); }
-          &.title_editor a { @include size(20px, 17px); @include icons-sprite(infowindow_title_editor); }
-          &.html_editor  a { @include size(17px, 17px); @include icons-sprite(infowindow_html_editor); }
+          &.editor       a { @include size(17px, 17px); @include icons-sprite(infowindow_panel_icons, $offset-x:0, $offset-y:-25px); }
+          &.title_editor a { @include size(20px, 17px); @include icons-sprite(infowindow_panel_icons, $offset-x:-40, $offset-y:-25px); }
+          &.html_editor  a { @include size(17px, 17px); @include icons-sprite(infowindow_panel_icons, $offset-x:-104, $offset-y:-25px); }
+
+          &.editor       a.selected { @include size(17px, 17px); @include icons-sprite(infowindow_panel_icons, $offset-x:0, $offset-y:0); }
+          &.title_editor a.selected { @include size(20px, 17px); @include icons-sprite(infowindow_panel_icons, $offset-x:-40, $offset-y:0); }
+          &.html_editor  a.selected { @include size(17px, 17px); @include icons-sprite(infowindow_panel_icons, $offset-x:-104, $offset-y:0); }
 
         }
 

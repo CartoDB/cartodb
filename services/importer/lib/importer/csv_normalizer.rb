@@ -92,16 +92,24 @@ module CartoDB
         self
       end #generate_temporary_directory
 
+      def magic_formula_to_detect_comma_separator(occurrences)
+        comma_score     = occurrences[',']
+        highest_score   = occurrences.first.last
+
+        comma_score >= highest_score / 2
+      end #magic_formula_to_detect_comma_separator
+
       def delimiter
+        return @delimiter if @delimiter
         return DEFAULT_DELIMITER unless first_line
         occurrences = Hash[
           COMMON_DELIMITERS.map { |delimiter| 
             [delimiter, first_line.squeeze(delimiter).count(delimiter)] 
-          }
-        ].sort {|a, b| b.last <=> a.last }
+          }.sort {|a, b| b.last <=> a.last }
+        ]
 
-        #delimiter = ' ' if delimiter == "\"\t\""
-        occurrences.first.first unless occurrences.empty?
+        @delimiter = ',' if magic_formula_to_detect_comma_separator(occurrences)
+        @delimiter ||= occurrences.first.first unless occurrences.empty?
       end #delimiter_in
 
       def encoding

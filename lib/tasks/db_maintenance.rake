@@ -80,28 +80,6 @@ namespace :cartodb do
         #sleep(1.0/5.0)
       end
     end
-
-    ############################
-    # RUN CARTODB FUNCTION TESTS
-    # cartodb:db:test_functions
-    ############################
-    desc "Run CARTODB SQL functions tests"
-    task :test_functions => :environment do
-      raise "Test functions are not meant to be run on production" if Rails.env.production?
-      count = User.count
-      printf "Starting cartodb:db:test_functions task for %d users\n", count
-      User.all.each_with_index do |user, i|
-        begin
-          #next if !user.respond_to?('database_name') || user.database_name.blank?
-          
-          user.test_cartodb_functions
-          printf "OK %-#{20}s (%-#{4}s/%-#{4}s)\n", user.username, i+1, count
-          #sleep(1.0/4.0) # We think this is not necessary anymore 
-        rescue => e
-          printf "FAIL %-#{20}s (%-#{4}s/%-#{4}s) #{e.message}\n", user.username, i+1, count
-        end
-      end
-    end
         
     ##############
     # SET DB PERMS

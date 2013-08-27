@@ -154,7 +154,6 @@ class DataImport < Sequel::Model
     self.state      = 'failure'
     self.log << "ERROR!\n"
     self.save
-    keep_problematic_file if uploaded_file
     notify_results(self.results)
     self
   rescue => exception
@@ -398,15 +397,6 @@ class DataImport < Sequel::Model
     migrate_existing(new_table_name)
     self.results = [{ success: true, error: nil }]
   end
-
-  def keep_problematic_file
-    uploads_path  = Rails.root.join('public', 'uploads')
-    file_path     = File.join(uploads_path, uploaded_file[1])
-    vault_path    = File.join(uploads_path, 'failed_imports')
-
-    return unless Dir.exists?(file_path)
-    FileUtils.cp_r(file_path, vault_path)
-  end #keep_problematic_file
 
   def current_user
     @current_user ||= User[user_id]

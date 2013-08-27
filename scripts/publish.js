@@ -154,8 +154,28 @@ function invalidate_files(files, remote_path) {
 
 
 
+/**
+ * invalidates faslty files.
+ * this function invalidates all the files, including
+ * previous or development versions but it shouldn't be a 
+ * big deal and it simplifies a lot the task
+ */
+function invalidate_fastly() {
+  var cmd = "curl -H 'Fastly-Key: " + secrets.FASTLY_API_KEY + "' -X POST 'https://api.fastly.com/service/" + service.FASTLY_API_KEY +"/purge_all";
+  _exec(cmd, function (error, stdout, stderr) {
+    if (!error) {
+      console.log(" *** faslty invalidated");
+    } else {
+      console.log(" *** faslty invalidated FAIL");
+    }
+  });
+}
+
 function invalidate_cdn() {
+  invalidate_fastly();
+  // invalidate cloudfront
   console.log(" *** flushing cdn cache")
+  #
   if(!only_current_version) {
     invalidate_files(JS_FILES,  'cartodb.js/' + version + '')
     invalidate_files(CSS_FILES, 'cartodb.js/' + version + '/themes/css')

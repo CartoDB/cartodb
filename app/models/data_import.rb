@@ -326,8 +326,9 @@ class DataImport < Sequel::Model
 
       table_names.each { |table_name| register(table_name, name, schema) }
     end
-    success_status_from(runner.results)
+    success = !!success_status_from(runner.results)
     notify_results(runner.results)
+    success
   end #new_importer
 
   def success_status_from(results)
@@ -379,6 +380,8 @@ class DataImport < Sequel::Model
       success:        false,
       error:          99999
     ))
+  rescue => exception
+    self
   end
 
   def table_owner

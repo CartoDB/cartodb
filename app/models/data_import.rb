@@ -326,8 +326,9 @@ class DataImport < Sequel::Model
 
       table_names.each { |table_name| register(table_name, name, schema) }
     end
-    success_status_from(runner.results)
+    success = !!success_status_from(runner.results)
     notify_results(runner.results)
+    success
   end #new_importer
 
   def success_status_from(results)
@@ -370,6 +371,17 @@ class DataImport < Sequel::Model
   def notify_results(results)
     results.each { |result| CartoDB::Metrics.new.report(payload_for(result)) }
   end #notify_results
+
+  def report_unknown_error
+    CartoDB::Metrics.new.report(payload_for(
+      name:           data_source,
+      extension:      nil,
+      success:        false,
+      error:          99999
+    ))
+  rescue => exception
+    self
+  end
 
   def table_owner
     table_owner ||= User.select(:id,:database_name,:crypted_password,:quota_in_bytes,:username, :private_tables_enabled, :table_quota).filter(:id => current_user.id).first
@@ -417,4 +429,3 @@ class DataImport < Sequel::Model
     payload
   end
 end
-

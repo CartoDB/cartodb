@@ -3,9 +3,17 @@
 
 describe('Geocoder', function() {
 
-  it('we should get a direction that exists using YAHOO', function() {
-    cdb.geo.geocoder.YAHOO.geocode('Madrid, Spain', function(data) {
-      expect(data.length).toEqual(1);
+  // commented because we don't have a valid api key
+  xit('we should get a direction that exists using YAHOO', function() {
+    var data;
+    runs(function() {
+      cdb.geo.geocoder.YAHOO.geocode('Madrid, Spain', function(d) {
+        data = d;
+      })
+    });
+    waits(1000);
+    runs(function() {
+      expect(data.length).toEqual(0);
       expect(data[0].lat).toEqual('40.4203');
       expect(data[0].lon).toEqual('-3.70577');
       expect(data[0].boundingbox).toBeTruthy();
@@ -13,14 +21,28 @@ describe('Geocoder', function() {
   });
 
   it('we should don\'t get a direction that doesn\'t exist using YAHOO', function() {
-    cdb.geo.geocoder.YAHOO.geocode('Wadusworld', function(data) {
-      expect(data.length).toEqual(0);
+    var data;
+    runs(function() {
+      cdb.geo.geocoder.YAHOO.geocode('Wadusworld', function(d) {
+        data = d;
+      });
+    });
+    waits(1000);
+    runs(function() {
+        expect(data.length).toEqual(0);
     });
   });
 
   it('we should get a direction that exists using NOKIA', function() {
-    cdb.geo.geocoder.NOKIA.geocode('Madrid, Spain', function(data) {
-      expect(data.length).toEqual(1);
+    var data;
+    runs(function() {
+      cdb.geo.geocoder.NOKIA.geocode('Madrid, Spain', function(d) {
+        data = d;
+      });
+    });
+    waits(2000);
+    runs(function() {
+      expect(data.length).toEqual(2);
       expect(data[0].lat).toEqual(40.420300);
       expect(data[0].lon).toEqual(-3.70577);
       expect(data[0].boundingbox).toBeTruthy();
@@ -28,7 +50,14 @@ describe('Geocoder', function() {
   });
 
   it('we should get a direction with # character using NOKIA', function() {
-    cdb.geo.geocoder.NOKIA.geocode('# Mexico', function(data) {
+    var data;
+    runs(function() {
+      cdb.geo.geocoder.NOKIA.geocode('# Mexico', function(d) {
+        data = d;
+      });
+    });
+    waits(1000);
+    runs(function() {
       expect(data.length).toEqual(1);
       expect(data[0].lat).toEqual(19.4321);
       expect(data[0].lon).toEqual(-99.1331);
@@ -36,7 +65,14 @@ describe('Geocoder', function() {
   });
 
   it('we should don\'t get a direction that doesn\'t exist using NOKIA', function() {
-    cdb.geo.geocoder.NOKIA.geocode('Wadusworld', function(data) {
+    var data;
+    runs(function() {
+      cdb.geo.geocoder.NOKIA.geocode('Wadusworld', function(d) {
+        data = d;
+      });
+    });
+    waits(1000);
+    runs(function() {
       expect(data.length).toEqual(0);
     });
   });

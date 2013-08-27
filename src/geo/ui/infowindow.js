@@ -235,6 +235,31 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     this.$el.hide();
   },
 
+  _renderCustomHTML: function(sanitized_fields) {
+
+    if (this.model.get("custom_html"))  {
+
+      var customTemplate   = this.model.get("custom_html");
+      var compiledTemplate = cdb.core.Template.compile(customTemplate, "mustache");
+
+      try {
+        var customHTML = compiledTemplate({
+          content: {
+            fields: sanitized_fields,
+            data: this.model.get('content').fields,
+          }
+        });
+
+        // Replace the ifowindow's content with the custom content
+        this.$el.find(".cartodb-popup-content").html(customHTML);
+      } catch (e) {
+        console.log('Errors detected when compiling the template.', e);
+      }
+
+    }
+
+  },
+
   /**
    *  Render infowindow content
    */
@@ -267,28 +292,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
       });
 
       this.$el.html(html);
-
-      if (this.model.get("custom_html"))  {
-
-        var customTemplate   = this.model.get("custom_html");
-        var compiledTemplate = cdb.core.Template.compile(customTemplate, "mustache");
-
-
-        try {
-          var customHTML = compiledTemplate({
-            content: {
-              fields: sanitized_fields,
-              data: this.model.get('content').fields,
-            }
-          });
-
-          // Replace the ifowindow's content with the custom content
-          this.$el.find(".cartodb-popup-content").html(customHTML);
-        } catch (e) {
-          console.log('Errors detected when compiling the template.', e);
-        }
-
-      }
+      this._renderCustomHTML(sanitized_fields);
 
       // Hello jscrollpane hacks!
       // It needs some time to initialize, if not it doesn't render properly the fields

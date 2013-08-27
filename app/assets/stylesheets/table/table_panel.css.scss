@@ -446,7 +446,9 @@ a.info {
       }
     }
 
-    h3 {padding-left:52px;}
+    h3 {
+      padding-left:52px;
+    }
 
     div.actions {
       position:absolute;
@@ -571,8 +573,7 @@ a.info {
 
       clear:both;
       overflow:hidden;
-      /*border-bottom:1px solid rgba(#999999,0.25);*/
-      padding: 22px 30px 21px 30px;
+      padding: 21px 30px 19px 30px;
 
       h3  {
         float:left;
@@ -658,9 +659,9 @@ a.info {
     .menu {
       position: absolute;
       @include box-sizing(border-box);
-      top: 64px;
+      top: 59px;
       width: 100%;
-      padding: 10px 40px 10px 30px;
+      padding: 9px 23px 3px 30px;
 
       background:#F6F6F6;
       border-top: 1px solid rgba(#DDDDDD, .5);
@@ -682,6 +683,9 @@ a.info {
 
         li {
           min-width: 20px;
+          text-align:center;
+
+          a { margin: auto; }
 
           @include inline-block();
           margin: 0 15px 0 0;
@@ -695,13 +699,16 @@ a.info {
 
           &.html_editor  { margin-right: 2px; }
 
+          /*&.html_editor:before { height: 16px; content: ''; position:absolute; left: -10px; top: -3px; border-left: 1px solid rgba(#ccc, .5); }*/
+          &.html_editor { position:relative; }
+
           &.editor       a { @include size(17px, 17px); @include icons-sprite(infowindow_panel_icons, $offset-x:0, $offset-y:-25px); }
           &.title_editor a { @include size(20px, 17px); @include icons-sprite(infowindow_panel_icons, $offset-x:-40, $offset-y:-25px); }
-          &.html_editor  a { @include size(17px, 17px); @include icons-sprite(infowindow_panel_icons, $offset-x:-104, $offset-y:-25px); }
+          &.html_editor  a { @include size(17px, 17px); @include icons-sprite(infowindow_panel_icons, $offset-x:-104, $offset-y:-24px); }
 
           &.editor       a.selected { @include size(17px, 17px); @include icons-sprite(infowindow_panel_icons, $offset-x:0, $offset-y:0); }
           &.title_editor a.selected { @include size(20px, 17px); @include icons-sprite(infowindow_panel_icons, $offset-x:-40, $offset-y:0); }
-          &.html_editor  a.selected { @include size(17px, 17px); @include icons-sprite(infowindow_panel_icons, $offset-x:-104, $offset-y:0); }
+          &.html_editor  a.selected { @include size(17px, 17px); @include icons-sprite(infowindow_panel_icons, $offset-x:-104, $offset-y:1px); }
 
         }
 

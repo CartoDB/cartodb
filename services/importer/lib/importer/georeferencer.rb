@@ -86,7 +86,7 @@ module CartoDB
 
         db.run(%Q{
           SELECT public.AddGeometryColumn(
-            '#{schema}','#{table_name}','the_geom',4326,'POINT',2
+            '#{schema}','#{table_name}','the_geom',4326,'geometry',2
           );
         })
       end #create_the_geom_in

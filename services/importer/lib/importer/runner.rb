@@ -51,6 +51,8 @@ module CartoDB
         job     ||= Job.new(logger: log, pg_options: pg_options)
         loader  ||= loader_for(source_file).new(job, source_file)
 
+        raise EmptyFileError if source_file.empty?
+
         self.tracker.call('importing')
         job.log "Importing data from #{source_file.fullpath}"
         loader.run

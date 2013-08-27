@@ -1,13 +1,15 @@
 
 
 function LayerDefinition(layerDefinition, options) {
-
+  var self = this;
   this.options = _.defaults(options, {
     ajax: window.$ ? window.$.ajax : reqwest.compat,
     pngParams: ['map_key', 'api_key', 'cache_policy', 'updated_at'],
     gridParams: ['map_key', 'api_key', 'cache_policy', 'updated_at'],
     cors: this.isCORSSupported(),
-    btoa: this.isBtoaSupported() ? this._encodeBase64Native : this._encodeBase64
+    btoa: this.isBtoaSupported() ? this._encodeBase64Native : this._encodeBase64,
+    MAX_GET_SIZE: 2033,
+    force_cors: false
   });
 
   this.setLayerDefinition(layerDefinition, { silent: true });
@@ -216,13 +218,37 @@ LayerDefinition.prototype = {
     });
   },
 
+  // returns the compressor depending on the size
+  // of the layer
+  _getCompressor: function(payload) {
+    var self = this;
+    if (this.options.compressor) {
+      return this.options.compressor;
+    }
+
+    payload = payload || JSON.stringify(this.toJSON());
+    if (!this.options.force_compress && payload.length < this.options.MAX_GET_SIZE) {
+      return function(data, level, callback) {
+        callback("config=" + encodeURIComponent(data));
+      };
+    }
+
+    return function(data, level, callback) {
+      data = JSON.stringify({ config: data });
+      LZMA.compress(data, level, function(encoded) {
+        callback("lzma=" + encodeURIComponent(self._array2hex(encoded)));
+      });
+    };
+
+  },
+
   _requestGET: function(params, callback) {
     var self = this;
     var ajax = this.options.ajax;
-    var json = JSON.stringify({ config: JSON.stringify(this.toJSON()) });
-    LZMA.compress(json, 3, function(encoded) {
-      encoded = self._array2hex(encoded);
-      params.push("lzma=" + encodeURIComponent(encoded));
+    var json = JSON.stringify(this.toJSON());
+    var compressor = this._getCompressor(json);
+    compressor(json, 3, function(encoded) {
+      params.push(encoded);
       ajax({
         dataType: 'jsonp',
         url: self._tilerHost() + '/tiles/layergroup?' + params.join('&'),
@@ -266,13 +292,27 @@ LayerDefinition.prototype = {
     // mark as the request is being done
     this._waiting = true;
     var req = null;
-    if(this.options.cors) {
+    if (this._usePOST()) {
       req = this._requestPOST;
     } else {
       req = this._requestGET;
     }
     req.call(this, params, callback);
     return this;
+  },
+
+  _usePOST: function() {
+    if (this.options.cors) {
+      if (this.options.force_cors) {
+        return true;
+      }
+      // check payload size
+      var payload = JSON.stringify(this.toJSON());
+      if (payload < this.options.MAX_GET_SIZE) {
+        return false;
+      }
+    }
+    return false;
   },
 
   removeLayer: function(layer) {

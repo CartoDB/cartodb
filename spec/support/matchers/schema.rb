@@ -41,3 +41,33 @@ RSpec::Matchers.define :have_required_indexes_and_triggers do
     "missing #{@diff.inspect} on #{actual.name}"
   end
 end
+
+
+RSpec::Matchers.define :pass_sql_tests do
+  match do |actual|
+    @diff = {}
+    actual.in_database(as: :superuser) do |user_database|
+      user_database.transaction do
+        config = ::Rails::Sequel.configuration.environment_for(Rails.env)
+        env  = " PGUSER=#{actual.database_username}"
+        env += " PGPORT=#{config['port']}"
+        env += " PGHOST=#{config['host']}"
+        env += " PGPASSWORD=#{actual.database_password}"
+        glob = Rails.root.join('lib/sql/test/*.sql')
+        Dir.glob(glob).each do |f|
+          testname = File.basename(f)
+          tname = File.basename(f, '.sql')
+          expfile = File.dirname(f) + '/' + tname + '_expect'
+          cmd = "#{env} psql -X -tA < #{f} #{actual.database_name} 2>&1 | diff -U2 #{expfile} - 2>&1"
+          result = `#{cmd}`
+          @diff[testname] = result.gsub(/^.*\@\@/, '') if $? != 0
+        end
+      end
+    end
+    @diff.keys.size.should == 0
+  end
+
+  failure_message_for_should do |actual|
+    @diff.map { |k, v| "\n#{k} failed:\n#{v}" }.join("\n")
+  end
+end

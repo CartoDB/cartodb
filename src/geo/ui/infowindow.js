@@ -131,9 +131,7 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
 
     var alternativeNames = this.get("alternative_names");
 
-    console.log('cloned', alternativeNames);
     alternativeNames[fieldName] = alternativeName;
-    console.log(alternativeNames);
     this.set({ 'alternative_names': alternativeNames });
     this.trigger('change:alternative_names');
   },
@@ -235,6 +233,22 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     this.$el.hide();
   },
 
+  _extractValues: function(fields) {
+
+    var values = {}
+
+    if (fields && fields.length > 0) {
+
+      _.each(fields, function(f) {
+        values[f.title] = f.value;
+      });
+
+    }
+
+    return values;
+
+  },
+
   _renderCustomHTML: function(sanitized_fields) {
 
     if (this.model.get("custom_html"))  {
@@ -242,13 +256,11 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
       var customTemplate   = this.model.get("custom_html");
       var compiledTemplate = cdb.core.Template.compile(customTemplate, "mustache");
 
+      var fields = this.model.get('content').fields;
+      var values = this._extractValues(fields);
+
       try {
-        var customHTML = compiledTemplate({
-          content: {
-            fields: sanitized_fields,
-            data: this.model.get('content').fields,
-          }
-        });
+        var customHTML = compiledTemplate(values);
 
         // Replace the ifowindow's content with the custom content
         this.$el.find(".cartodb-popup-content").html(customHTML);

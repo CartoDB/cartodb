@@ -1,6 +1,6 @@
-// cartodb.js version: 3.1.04
+// cartodb.js version: 3.1.05
 // uncompressed version: cartodb.uncompressed.js
-// sha: 20347298d95f1765c3c0c3d44ac8f9ab8cdc8007
+// sha: efed7ffb2eb14872dd1091ba17661d5d6b813d9c
 (function() {
   var root = this;
 
@@ -19874,7 +19874,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.1.04';
+    cdb.VERSION = '3.1.05';
 
     cdb.CARTOCSS_VERSIONS = {
       '2.0.0': '',
@@ -22009,6 +22009,57 @@ cdb.geo.ui.BubbleLegend = cdb.core.View.extend({
 });
 
 /*
+ * CategoryLegend
+ *
+ * */
+cdb.geo.ui.CategoryLegend = cdb.core.View.extend({
+
+  tagName: "ul",
+
+  initialize: function() {
+
+    this.items = this.options.items;
+    this.template = _.template("");
+    this.model = new cdb.core.Model({
+      type: "custom"
+    });
+
+  },
+
+  _renderItems: function() {
+
+    this.items.each(this._renderItem, this);
+
+  },
+
+  _renderItem: function(item) {
+
+    view = new cdb.geo.ui.LegendItem({
+      model: item,
+      template: '<div class="bullet" style="background:<%= value %>"></div><%= name || "null" %>'
+    });
+
+    this.$el.append(view.render());
+
+  },
+
+  render: function() {
+
+    this.$el.html(this.template(this.model.toJSON()));
+
+    if (this.items.length > 0) {
+      this._renderItems();
+    } else {
+      this.$el.html('<li class="warning">The category legend is empty</li>');
+    }
+
+    return this;
+
+  }
+
+});
+
+/*
  * ColorLegend
  *
  * */
@@ -22036,7 +22087,7 @@ cdb.geo.ui.ColorLegend = cdb.core.View.extend({
 
     view = new cdb.geo.ui.LegendItem({
       model: item,
-      template: '<div class="bullet" style="background:<%= value %>"></div><%= name || "null" %>'
+      template: '<div class="bullet" style="background:<%= value %>"></div><%= name || ((name === false) ? "false": "null") %>'
     });
 
     this.$el.append(view.render());
@@ -23689,6 +23740,7 @@ cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
 
   render: function(data) {
     this.$el.html( this.template(data) );
+    return this;
   }
 
 });
@@ -23696,13 +23748,15 @@ cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
 
 
 function LayerDefinition(layerDefinition, options) {
-
+  var self = this;
   this.options = _.defaults(options, {
     ajax: window.$ ? window.$.ajax : reqwest.compat,
     pngParams: ['map_key', 'api_key', 'cache_policy', 'updated_at'],
     gridParams: ['map_key', 'api_key', 'cache_policy', 'updated_at'],
     cors: this.isCORSSupported(),
-    btoa: this.isBtoaSupported() ? this._encodeBase64Native : this._encodeBase64
+    btoa: this.isBtoaSupported() ? this._encodeBase64Native : this._encodeBase64,
+    MAX_GET_SIZE: 2033,
+    force_cors: false
   });
 
   this.setLayerDefinition(layerDefinition, { silent: true });
@@ -23911,13 +23965,37 @@ LayerDefinition.prototype = {
     });
   },
 
+  // returns the compressor depending on the size
+  // of the layer
+  _getCompressor: function(payload) {
+    var self = this;
+    if (this.options.compressor) {
+      return this.options.compressor;
+    }
+
+    payload = payload || JSON.stringify(this.toJSON());
+    if (!this.options.force_compress && payload.length < this.options.MAX_GET_SIZE) {
+      return function(data, level, callback) {
+        callback("config=" + encodeURIComponent(data));
+      };
+    }
+
+    return function(data, level, callback) {
+      data = JSON.stringify({ config: data });
+      LZMA.compress(data, level, function(encoded) {
+        callback("lzma=" + encodeURIComponent(self._array2hex(encoded)));
+      });
+    };
+
+  },
+
   _requestGET: function(params, callback) {
     var self = this;
     var ajax = this.options.ajax;
-    var json = JSON.stringify({ config: JSON.stringify(this.toJSON()) });
-    LZMA.compress(json, 3, function(encoded) {
-      encoded = self._array2hex(encoded);
-      params.push("lzma=" + encodeURIComponent(encoded));
+    var json = JSON.stringify(this.toJSON());
+    var compressor = this._getCompressor(json);
+    compressor(json, 3, function(encoded) {
+      params.push(encoded);
       ajax({
         dataType: 'jsonp',
         url: self._tilerHost() + '/tiles/layergroup?' + params.join('&'),
@@ -23961,13 +24039,27 @@ LayerDefinition.prototype = {
     // mark as the request is being done
     this._waiting = true;
     var req = null;
-    if(this.options.cors) {
+    if (this._usePOST()) {
       req = this._requestPOST;
     } else {
       req = this._requestGET;
     }
     req.call(this, params, callback);
     return this;
+  },
+
+  _usePOST: function() {
+    if (this.options.cors) {
+      if (this.options.force_cors) {
+        return true;
+      }
+      // check payload size
+      var payload = JSON.stringify(this.toJSON());
+      if (payload < this.options.MAX_GET_SIZE) {
+        return false;
+      }
+    }
+    return false;
   },
 
   removeLayer: function(layer) {
@@ -24316,6 +24408,12 @@ SubLayer.prototype = {
   setCartoCSS: function(cartocss) {
     return this.set({
       cartocss: cartocss
+    });
+  },
+
+  setInteractivity: function(fields) {
+    return this.set({
+      interactivity: fields
     });
   },
 
@@ -28366,7 +28464,134 @@ var Vis = cdb.core.View.extend({
     });
   }
 
+}, {
+
+  /**
+   * adds an infowindow to the map controlled by layer events.
+   * it enables interaction and overrides the layer interacivity
+   * ``fields`` array of column names
+   * ``map`` native map object, leaflet of gmaps
+   * ``layer`` cartodb layer (or sublayer)
+   */
+  addInfowindow: function(map, layer, fields, opts) {
+    var options = _.defaults(opts || {}, {
+      infowindowTemplate: cdb.vis.INFOWINDOW_TEMPLATE.light,
+      templateType: 'mustache',
+      triggerEvent: 'featureClick',
+      templateName: 'light',
+      extraFields: [],
+      cursorInteraction: true
+    });
+
+    if(!map) throw new Error('map is not valid');
+    if(!layer) throw new Error('layer is not valid');
+    if(!fields && fields.length === undefined ) throw new Error('fields should be a list of strings');
+
+    var f = [];
+    fields = fields.concat(options.extraFields);
+    for(var i = 0; i < fields.length; ++i) {
+      f.push({ name: fields, order: i});
+    }
+
+    var infowindowModel = new cdb.geo.ui.InfowindowModel({
+      fields: f,
+      template_name: options.templateName
+    });
+
+    var infowindow = new cdb.geo.ui.Infowindow({
+       model: infowindowModel,
+       mapView: map.viz.mapView,
+       template: new cdb.core.Template({
+         template: options.infowindowTemplate,
+         type: options.templateType
+       }).asFunction()
+    });
+
+    map.viz.mapView.addInfowindow(infowindow);
+    layer.setInteractivity(fields);
+    layer.setInteraction(true);
+
+    layer.bind(options.triggerEvent, function(e, latlng, pos, data, layer) {
+      var render_fields = [];
+      for(var k in data) {
+        render_fields.push({
+          title: k,
+          value: data[k],
+          index: 0
+        });
+      }
+      infowindow.model.set({
+        content:  {
+          fields: render_fields,
+          data: data
+        }
+      });
+
+      infowindow
+        .setLatLng(latlng)
+        .showInfowindow();
+      infowindow.adjustPan();
+    }, infowindow);
+
+    // remove the callback on clean
+    infowindow.bind('clean', function() {
+      layer.unbind(options.triggerEvent, null, infowindow);
+    });
+
+    if(options.cursorInteraction) {
+      cdb.vis.Vis.addCursorInteraction(map, layer);
+    }
+
+    return infowindow;
+
+  },
+
+  addCursorInteraction: function(map, layer) {
+
+    var hovers = [];
+    var mapView = map.viz.mapView;
+
+    layer.bind('featureOver', function(e, latlon, pxPos, data, layer) {
+      hovers[layer] = 1;
+      if(_.any(hovers))
+        mapView.setCursor('pointer');
+    }, mapView);
+
+    layer.bind('featureOut', function(m, layer) {
+      hovers[layer] = 0;
+      if(!_.any(hovers))
+        mapView.setCursor('auto');
+    }, mapView);
+  },
+
+  removeCursorInteraction: function(map, layer) {
+    var mapView = map.viz.mapView;
+    layer.unbind(null, null, mapView);
+  }
+
 });
+
+cdb.vis.INFOWINDOW_TEMPLATE = {
+  light: [
+    '<div class="cartodb-popup">',
+    '<a href="#close" class="cartodb-popup-close-button close">x</a>',
+    '<div class="cartodb-popup-content-wrapper">',
+      '<div class="cartodb-popup-content">',
+        '{{#content.fields}}',
+          '{{#title}}<h4>{{title}}</h4>{{/title}}',
+          '{{#value}}',
+            '<p {{#type}}class="{{ type }}"{{/type}}>{{{ value }}}</p>',
+          '{{/value}}',
+          '{{^value}}',
+            '<p class="empty">null</p>',
+          '{{/value}}',
+        '{{/content.fields}}',
+      '</div>',
+    '</div>',
+    '<div class="cartodb-popup-tip-container"></div>',
+  '</div>'
+  ].join('')
+};
 
 cdb.vis.Vis = Vis;
 
@@ -28412,7 +28637,16 @@ cdb.vis.Overlay.register('header', function(data, vis) {
 
   var template = cdb.core.Template.compile(
     data.template || "\
-      {{#title}}<h1><a href='#' onmousedown=\"window.open('{{url}}')\">{{title}}</a></h1>{{/title}}\
+      {{#title}}\
+        <h1>\
+          {{#url}}\
+            <a href='#' onmousedown=\"window.open('{{url}}')\">{{title}}</a>\
+          {{/url}}\
+          {{^url}}\
+            {{title}}\
+          {{/url}}\
+        </h1>\
+      {{/title}}\
       {{#description}}<p>{{description}}</p>{{/description}}\
       {{#shareable}}\
         <div class='social'>\
@@ -28420,7 +28654,7 @@ cdb.vis.Overlay.register('header', function(data, vis) {
             href='http://www.facebook.com/sharer.php?u={{share_url}}&text=Map of {{title}}: {{description}}'>F</a>\
           <a class='twitter' href='https://twitter.com/share?url={{share_url}}&text=Map of {{title}}: {{descriptionShort}}... '\
            target='_blank'>T</a>\
-          </div>\
+        </div>\
       {{/shareable}}\
     ",
     data.templateType || 'mustache'

@@ -1,3 +1,8 @@
+3.1.05 (08//08/2013)
+-----
+- Adds addInfowindow and addCursorInteraction
+- changes layergroup request to use GET when is possible
+
 3.1.04 (08//08/2013)
 -----
 - Adds styles for NoneLegend

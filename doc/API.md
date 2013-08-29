@@ -119,10 +119,10 @@ Below, you have an example using a previously instatiated leaflet map.
 <div class="margin20"></div>
 <div class="code_title">Adding cartodb layers to an existing map</div>
   ``` javascript
-    <div id="map"></div>
+    <div id="map_canvas"></div>
 
     <script>
-      var map = new L.Map('map', {
+      var map = new L.Map('map_canvas', {
         center: [0,0],
         zoom: 2
       });

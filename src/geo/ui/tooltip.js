@@ -35,6 +35,7 @@ cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
 
   render: function(data) {
     this.$el.html( this.template(data) );
+    return this;
   }
 
 });

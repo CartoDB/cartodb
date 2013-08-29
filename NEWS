@@ -1,8 +1,37 @@
-3.0.03 (18//11//2013)
+3.1.05 (08//08/2013)
+-----
+- Adds addInfowindow and addCursorInteraction
+- changes layergroup request to use GET when is possible
+
+3.1.04 (08//08/2013)
+-----
+- Adds styles for NoneLegend
+
+3.1.03 (08//08/2013)
+-----
+- Prevents showing empty legends.
+
+3.1.02 (08//07/2013)
+-----
+- Flips the order of the legends.
+
+3.1.01 (08//06/2013)
+-----
+- Fixes the order of the legends.
+
+3.1.00 (08//06/2013)
+-----
+- added legends support
+
+3.0.05 (07//18//2013)
+-----
+- infowindow templates can be functions
+
+3.0.04 (07//18//2013)
 -----
 - fixed IE8 cors checking
 
-3.0.03 (17//11//2013)
+3.0.03 (07//17//2013)
 -----
 - fixed collision with older jQuery version
 - fixed infowindows when there is no interaction enabled when loading from viz.json

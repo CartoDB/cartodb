@@ -77,19 +77,22 @@ function put_file(local_path, remote_path, file, errors, done) {
       var size = fs.statSync(local).size;
 
       fs.readFile(local, function (err, data) {
-        // send file to S3
-        s3.client.putObject({
+        var opts = {
           Key: remote,
           Body: data,
           ACL:'public-read',
           ContentType: headers['Content-Type'],
-          ContentEncoding: headers['Content-Encoding'],
           ContentLength: size
-        }, function (err, data) {
-          console.log(data);
-          if(err) {
-            errors.push(file + ' Failed to upload file to Amazon S3');
-            //console.log('Failed to upload file to Amazon S3', err); 
+        };
+        if(headers['Content-Encoding']) {
+          opts.ContentEncoding = headers['Content-Encoding'];
+        }
+        // send file to S3
+        s3.client.putObject(opts, function (err, data) {
+          console.log("===>", file);
+          if(err || !data) {
+            errors.push(file + ' Failed to upload file to Amazon S3', err);
+            console.log('Failed to upload file to Amazon S3', err); 
           }
           console.log( local, ' => ', remote, size, "bytes");
           done && done();
@@ -98,7 +101,7 @@ function put_file(local_path, remote_path, file, errors, done) {
     }
 
     // compress depending on the extension
-    if(ext == 'js' || ext == 'css') {
+    if(ext === 'js' || ext === 'css') {
       _exec('gzip -c -9 ' + local_path + '/' + file + ' > ' + local_path + '/' + file + '.gz', function(err) {
         if(err) {
           console.log("there was an error compressing file");
@@ -151,7 +154,32 @@ function invalidate_files(files, remote_path) {
 
 
 
+/**
+ * invalidates faslty files.
+ * this function invalidates all the files, including
+ * previous or development versions but it shouldn't be a 
+ * big deal and it simplifies a lot the task
+ */
+function invalidate_fastly() {
+  var cmd = "curl -H 'Fastly-Key: " + secrets.FASTLY_API_KEY + "' -X POST 'https://api.fastly.com/service/" + secrets.FASTLY_CARTODB_SERVICE +"/purge_all'";
+  console.log(cmd);
+  _exec(cmd, function (error, stdout, stderr) {
+    var status = '';
+    try {
+      status = JSON.parse(stdout).status;
+    } catch(e) {
+    }
+    if (!error && status === 'ok') {
+      console.log(" *** faslty invalidated")
+    } else {
+      console.log(" *** faslty invalidated FAIL", error, stdout);
+    }
+  });
+}
+
 function invalidate_cdn() {
+  invalidate_fastly();
+  // invalidate cloudfront
   console.log(" *** flushing cdn cache")
   if(!only_current_version) {
     invalidate_files(JS_FILES,  'cartodb.js/' + version + '')

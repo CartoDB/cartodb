@@ -226,7 +226,9 @@ Creates a visualization inside the map_id DOM object.
     - **zoom**: initial zoom.
     - **cartodb_logo**: default to true, set to false if you want to remove the cartodb logo.
     - **infowindow**: set to false if you want to disable the infowindow (enabled by default).
+    - **legends**: if it's true legends are shown in the map.
     - **https**: if true forces tiles to be fetched using https. If false it uses the predefined method
+
 
 #### cartodb.Vis
 
@@ -307,6 +309,8 @@ With visualizations already created through the CartoDB console, you can simply 
   + **options**: 
     - **https**: force https
     - **refreshTime**: if is set, the layer is refreshed each refreshTime milliseconds.
+    - **infowindow**: set to false if you want to disable the infowindow (enabled by default).
+    - **legends**: if it's true legends are shown in the map.
 
   + **callback(layer)**: if a function is specified is called when the layer is created passing it as argument.
 

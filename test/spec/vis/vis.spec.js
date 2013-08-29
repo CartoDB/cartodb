@@ -24,6 +24,7 @@ describe("Vis", function() {
     this.mapConfig = {
       updated_at: 'cachebuster',
       title: "irrelevant",
+      url: "http://cartodb.com",
       center: [40.044, -101.95],
       bounding_box_sw: [20, -140],
       bounding_box_ne: [ 55, -50],
@@ -127,6 +128,16 @@ describe("Vis", function() {
       title: true
     });
     expect(this.vis.$('.cartodb-header').length).toEqual(1);
+  });
+
+  it("should add header without link in the title", function() {
+    var mapConfig = _.clone(this.mapConfig);
+    mapConfig.url = null;
+    this.vis.load(mapConfig, {
+      title: true
+    });
+    expect(this.vis.$('.cartodb-header').length).toEqual(1);
+    expect(this.vis.$('.cartodb-header h1 > a').length).toEqual(0);
   });
   
   it("should use zoom", function() {

@@ -1,7 +1,7 @@
 describe("LayerDefinition", function() {
   var layerDefinition;
   beforeEach(function(){
-    var  layer_definition = {
+    var layer_definition = {
       version: '1.0.0',
       stat_tag: 'vis_id',
       layers: [{
@@ -159,8 +159,22 @@ describe("LayerDefinition", function() {
     expect(layerDefinition._host('a')).toEqual('https://a.d3pu9mtm6f0hk5.cloudfront.net/rambo');
   });
 
-  it("it should use jsonp when cors is not available", function() {
-    var params, lzma;
+  it("it should use jsonp when request is less than 2kb", function() {
+    var params;
+    layerDefinition.options.ajax = function(p) { 
+      params = p;
+      p.success({ layergroupid: 'test' });
+    };
+    runs(function() {
+      layerDefinition._getLayerToken();
+    });
+    waits(100);
+    runs(function() {
+      expect(params.dataType).toEqual('jsonp');
+    })
+  });
+
+  it("should use not use compression for small layergroups", function() {
     layerDefinition.options.cors = false;
     layerDefinition.options.api_key = 'test';
     layerDefinition.options.ajax = function(p) { 
@@ -169,17 +183,34 @@ describe("LayerDefinition", function() {
     };
 
     runs(function() {
+      layerDefinition._getLayerToken();
+    });
+    waits(100);
+    runs(function() {
+      expect(params.url.indexOf('config') !== -1).toEqual(true);
+    });
+  });
+
+  it("it should use jsonp when cors is not available", function() {
+    var params, lzma;
+    layerDefinition.options.cors = false;
+    layerDefinition.options.api_key = 'test';
+    layerDefinition.options.force_compress = true;
+    layerDefinition.options.ajax = function(p) { 
+      params = p;
+      p.success({ layergroupid: 'test' });
+    };
+
+    runs(function() {
       var json = layerDefinition.toJSON();
-      json = '{ "config": "' + 
-        JSON.stringify(json).replace(/"/g, '\\"') + 
-      '"}';
+      json = JSON.stringify({ config: JSON.stringify(json) });
       LZMA.compress(json, 3, function(encoded) {
         lzma = layerDefinition._array2hex(encoded);
         layerDefinition.getLayerToken(function() {
         });
       });
     });
-    waits(100);
+    waits(300);
     runs(function() {
       expect(params.url).toEqual(layerDefinition._tilerHost() + '/tiles/layergroup?map_key=test&lzma=' + encodeURIComponent(lzma));
     });
@@ -188,6 +219,9 @@ describe("LayerDefinition", function() {
   it("should add api_key", function() {
     var url = null;
     layerDefinition.options.cors = true;
+    layerDefinition.options.compressor = function(data, level, call) {
+      call("config=" + data);
+    }
     layerDefinition.options.ajax = function(p) { 
       url = p.url;
       p.success({ layergroupid: 'test' });

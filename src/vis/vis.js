@@ -209,6 +209,10 @@ var Vis = cdb.core.View.extend({
       this.loadLayer(layerData);
     }
 
+    if(options.legends) {
+      this.addLegends(data.layers);
+    }
+
     // set layer options
     if(options.sublayer_options) {
 
@@ -217,6 +221,17 @@ var Vis = cdb.core.View.extend({
       for(i = 0; i < options.sublayer_options.length; ++i) {
         var o = options.sublayer_options[i];
         var subLayer = dataLayer.getSubLayer(i);
+
+        if (this.legends) {
+
+          var j = options.sublayer_options.length - i - 1;
+          var legend = this.legends && this.legends.options.legends[j];
+
+          if (legend) {
+            o.visible ? legend.show(): legend.hide();
+          }
+
+        }
         o.visible ? subLayer.show(): subLayer.hide();
       }
     }
@@ -231,6 +246,34 @@ var Vis = cdb.core.View.extend({
     })
 
     return this;
+  },
+
+  addLegends: function(layers) {
+    function createLegendView(layers) {
+      var legends = [];
+      for(var i = layers.length - 1; i>= 0; --i) {
+        var layer = layers[i];
+        if(layer.legend) {
+          layer.legend.data = layer.legend.items;
+          var legend = layer.legend;
+          if(legend.items && legend.items.length) {
+            legends.push(new cdb.geo.ui.Legend(layer.legend));
+          }
+        }
+        if(layer.options && layer.options.layer_definition) {
+          legends = legends.concat(createLegendView(layer.options.layer_definition.layers));
+        }
+      }
+      return legends;
+    }
+
+    legends = createLegendView(layers);
+    var stackedLegend = new cdb.geo.ui.StackedLegend({
+       legends: legends
+    });
+    this.legends = stackedLegend;
+
+    this.mapView.addOverlay(stackedLegend);
   },
 
   addOverlay: function(overlay) {
@@ -278,7 +321,8 @@ var Vis = cdb.core.View.extend({
       loaderControl: true,
       layer_selector: false,
       searchControl: false,
-      infowindow: true
+      infowindow: true,
+      legends: true
     });
     vizjson.overlays = vizjson.overlays || [];
     vizjson.layers = vizjson.layers || [];
@@ -459,6 +503,11 @@ var Vis = cdb.core.View.extend({
         var cartodb_id = data.cartodb_id
         var infowindowFields = layerView.getInfowindowData(layer)
         var fields = infowindowFields.fields;
+
+        infowindow.model.set({
+          'template': infowindowFields.template,
+          'template_type': infowindowFields.template_type
+        });
         // Send request
         sql.execute("select {{{fields}}} from ({{{sql}}}) as _cartodbjs_alias where cartodb_id = {{{ cartodb_id }}}", {
           fields: _.pluck(fields, 'name').join(','),
@@ -495,6 +544,7 @@ var Vis = cdb.core.View.extend({
             content = render_fields;
           }
 
+
           infowindow.model.set({
             content:  {
               fields: content,
@@ -507,7 +557,6 @@ var Vis = cdb.core.View.extend({
           infowindow.setError();
         })
 
-        infowindow.model.set('template', infowindowFields.template);
 
         // Show infowindow with loading state
         infowindow
@@ -601,7 +650,134 @@ var Vis = cdb.core.View.extend({
     });
   }
 
+}, {
+
+  /**
+   * adds an infowindow to the map controlled by layer events.
+   * it enables interaction and overrides the layer interacivity
+   * ``fields`` array of column names
+   * ``map`` native map object, leaflet of gmaps
+   * ``layer`` cartodb layer (or sublayer)
+   */
+  addInfowindow: function(map, layer, fields, opts) {
+    var options = _.defaults(opts || {}, {
+      infowindowTemplate: cdb.vis.INFOWINDOW_TEMPLATE.light,
+      templateType: 'mustache',
+      triggerEvent: 'featureClick',
+      templateName: 'light',
+      extraFields: [],
+      cursorInteraction: true
+    });
+
+    if(!map) throw new Error('map is not valid');
+    if(!layer) throw new Error('layer is not valid');
+    if(!fields && fields.length === undefined ) throw new Error('fields should be a list of strings');
+
+    var f = [];
+    fields = fields.concat(options.extraFields);
+    for(var i = 0; i < fields.length; ++i) {
+      f.push({ name: fields, order: i});
+    }
+
+    var infowindowModel = new cdb.geo.ui.InfowindowModel({
+      fields: f,
+      template_name: options.templateName
+    });
+
+    var infowindow = new cdb.geo.ui.Infowindow({
+       model: infowindowModel,
+       mapView: map.viz.mapView,
+       template: new cdb.core.Template({
+         template: options.infowindowTemplate,
+         type: options.templateType
+       }).asFunction()
+    });
+
+    map.viz.mapView.addInfowindow(infowindow);
+    layer.setInteractivity(fields);
+    layer.setInteraction(true);
+
+    layer.bind(options.triggerEvent, function(e, latlng, pos, data, layer) {
+      var render_fields = [];
+      for(var k in data) {
+        render_fields.push({
+          title: k,
+          value: data[k],
+          index: 0
+        });
+      }
+      infowindow.model.set({
+        content:  {
+          fields: render_fields,
+          data: data
+        }
+      });
+
+      infowindow
+        .setLatLng(latlng)
+        .showInfowindow();
+      infowindow.adjustPan();
+    }, infowindow);
+
+    // remove the callback on clean
+    infowindow.bind('clean', function() {
+      layer.unbind(options.triggerEvent, null, infowindow);
+    });
+
+    if(options.cursorInteraction) {
+      cdb.vis.Vis.addCursorInteraction(map, layer);
+    }
+
+    return infowindow;
+
+  },
+
+  addCursorInteraction: function(map, layer) {
+
+    var hovers = [];
+    var mapView = map.viz.mapView;
+
+    layer.bind('featureOver', function(e, latlon, pxPos, data, layer) {
+      hovers[layer] = 1;
+      if(_.any(hovers))
+        mapView.setCursor('pointer');
+    }, mapView);
+
+    layer.bind('featureOut', function(m, layer) {
+      hovers[layer] = 0;
+      if(!_.any(hovers))
+        mapView.setCursor('auto');
+    }, mapView);
+  },
+
+  removeCursorInteraction: function(map, layer) {
+    var mapView = map.viz.mapView;
+    layer.unbind(null, null, mapView);
+  }
+
 });
+
+cdb.vis.INFOWINDOW_TEMPLATE = {
+  light: [
+    '<div class="cartodb-popup">',
+    '<a href="#close" class="cartodb-popup-close-button close">x</a>',
+    '<div class="cartodb-popup-content-wrapper">',
+      '<div class="cartodb-popup-content">',
+        '{{#content.fields}}',
+          '{{#title}}<h4>{{title}}</h4>{{/title}}',
+          '{{#value}}',
+            '<p {{#type}}class="{{ type }}"{{/type}}>{{{ value }}}</p>',
+          '{{/value}}',
+          '{{^value}}',
+            '<p class="empty">null</p>',
+          '{{/value}}',
+        '{{/content.fields}}',
+      '</div>',
+    '</div>',
+    '<div class="cartodb-popup-tip-container"></div>',
+  '</div>'
+  ].join('')
+};
 
 cdb.vis.Vis = Vis;
 

@@ -10,6 +10,7 @@ module CartoDB
         "../../../../../lib/importer/misc/shp_normalizer.py"
 
       def initialize(table_name, filepath, pg_options)
+        puts table_name
         self.filepath   = filepath
         self.pg_options = pg_options
         self.table_name = table_name
@@ -20,9 +21,11 @@ module CartoDB
         raise MissingProjectionError  unless prj?
 
         normalize
-        stdout, stderr, status  = Open3.capture3(command)
-        self.command_output     = stdout + stderr
-        self.exit_code          = status.to_i
+        #stdout, stderr, status  = Open3.capture3(command)
+        puts command.command
+        command.run
+        self.command_output     = command.command_output
+        self.exit_code          = command.exit_code
 
         raise UnknownSridError        if command_output =~ /invalid SRID/
         raise ShpToSqlConversionError if exit_code != 0
@@ -31,7 +34,8 @@ module CartoDB
       end #run
 
       def command
-        %Q({ #{statement_timeout } #{shp2pgsql_command} } | #{psql_command})
+        #%Q({ #{statement_timeout } #{shp2pgsql_command} } | #{psql_command})
+        @command ||= Ogr2ogr.new(table_name, filepath, pg_options, encoding: detected_encoding)
       end #command
 
       def normalize

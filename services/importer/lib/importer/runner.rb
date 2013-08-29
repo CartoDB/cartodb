@@ -39,7 +39,7 @@ module CartoDB
         tracker.call('unpacking')
         unpacker.run(downloader.source_file.fullpath)
         unpacker.source_files.each { |source_file| import(source_file) }
-        unpacker.clean_up
+        #unpacker.clean_up
         self
       rescue => exception
         log.append exception.to_s

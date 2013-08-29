@@ -2,6 +2,7 @@
 require_relative './ogr2ogr'
 require_relative './format_linter'
 require_relative './csv_normalizer'
+require_relative './shp_normalizer'
 require_relative './json2csv'
 require_relative './xlsx2csv'
 require_relative './xls2csv'
@@ -15,7 +16,7 @@ module CartoDB
       NORMALIZERS   = [FormatLinter, CsvNormalizer, Xls2Csv, Xlsx2Csv, Json2Csv]
 
       def self.supported?(extension)
-        !(%w{ .shp .tab .osm .tif .tiff }.include?(extension))
+        !(%w{ .osm .tif .tiff }.include?(extension))
       end #self.supported?
 
       def initialize(job, source_file, ogr2ogr=nil, georeferencer=nil)
@@ -56,7 +57,9 @@ module CartoDB
       end #ogr2ogr
 
       def encoding
-        CsvNormalizer.new(source_file.fullpath, job).encoding
+        [ShpNormalizer, CsvNormalizer].find { |normalizer|
+          normalizer.supported?(source_file.extension)
+        }.new(source_file.fullpath, job).encoding
       end #encoding
 
       def georeferencer

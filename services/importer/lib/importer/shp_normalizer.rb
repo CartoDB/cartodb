@@ -21,7 +21,7 @@ module CartoDB
         normalize
         encoding = normalizer_output.fetch(:encoding)
         return 'LATIN1' if encoding == 'None' 
-        #return codepage_for(encoding) if windows?(encoding)
+        return codepage_for(encoding) if windows?(encoding)
         encoding
       end #encoding
 
@@ -69,7 +69,7 @@ module CartoDB
       end #normalizer_command
 
       def codepage_for(encoding)
-        encoding.gsub(/windows-/, 'CP')
+        encoding.gsub(/windows-/, 'WIN')
       end #codepage_for
 
       def windows?(encoding)

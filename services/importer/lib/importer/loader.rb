@@ -11,9 +11,11 @@ require_relative './georeferencer'
 module CartoDB
   module Importer2
     class Loader
-      SCHEMA        = 'cdb_importer'
-      TABLE_PREFIX  = 'importer'
-      NORMALIZERS   = [FormatLinter, CsvNormalizer, Xls2Csv, Xlsx2Csv, Json2Csv]
+      SCHEMA            = 'cdb_importer'
+      TABLE_PREFIX      = 'importer'
+      NORMALIZERS       = [FormatLinter, CsvNormalizer, Xls2Csv, Xlsx2Csv, 
+                          Json2Csv]
+      DEFAULT_ENCODING  = 'UTF-8'
 
       def self.supported?(extension)
         !(%w{ .osm .tif .tiff }.include?(extension))
@@ -57,9 +59,11 @@ module CartoDB
       end #ogr2ogr
 
       def encoding
-        [ShpNormalizer, CsvNormalizer].find { |normalizer|
+        normalizer = [ShpNormalizer, CsvNormalizer].find { |normalizer|
           normalizer.supported?(source_file.extension)
-        }.new(source_file.fullpath, job).encoding
+        }
+        return DEFAULT_ENCODING unless normalizer
+        normalizer.new(source_file.fullpath, job).encoding
       end #encoding
 
       def georeferencer

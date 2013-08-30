@@ -19,7 +19,7 @@ module CartoDB
         "#{output_format_option} #{postgres_options} "              +
         "#{projection_option} #{layer_creation_options} "           + 
         "#{filepath} #{track_points_option} #{layer_name_option} "  +
-        "#{multipolygon_option}"
+        "#{new_layer_type_option}"
       end #command
 
       def cartodb_id_option
@@ -101,10 +101,9 @@ module CartoDB
         "PRECISION=NO"
       end #precision_option
 
-      def multipolygon_option
-        return "" unless filepath =~ /.shp/ || filepath =~ /.tab/
-        "-nlt MULTIPOLYGON"
-      end
+      def new_layer_type_option
+        "-nlt geometry"
+      end #new_layer_type_option
     end # Ogr2ogr
   end # Importer2
 end # CartoDB

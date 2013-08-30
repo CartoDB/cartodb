@@ -60,7 +60,7 @@ module CartoDB
 
       def encoding_option
         encoding = options.fetch(:encoding, ENCODING)
-        "PGCLIENTENCODING=#{encoding}"
+        "PGCLIENTENCODING=#{encoding} SHAPE_ENCODING=#{encoding}"
       end #encoding_option
 
       def layer_name_option

@@ -26,6 +26,9 @@ module CartoDB
       end #encoding
 
       def normalize
+        raise InvalidShpError         unless dbf? && shx?
+        raise MissingProjectionError  unless prj?
+
         stdout, stderr, status  = Open3.capture3(normalizer_command)
         output                  = stdout.strip.split(/, */, 4)
         self.normalizer_output  = {

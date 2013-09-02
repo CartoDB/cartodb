@@ -45,7 +45,8 @@ div.subheader {
   position:relative;
   @include inline-block();
   width:100%;
-  margin-top:-240px;
+  margin-top: -134px;
+  margin-bottom: 15px;
   padding:0;
   @include transform-style("linear");
   @include transition-property("all");
@@ -55,6 +56,7 @@ div.subheader {
   // If there is NO tables, this section is active
   &.active {
     margin-top:0;
+    margin-bottom: 0px;
   }
 
   section.stats {

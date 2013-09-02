@@ -136,6 +136,9 @@ development:
 
 test:
   <<: *defaults
+  redis:
+    host: '127.0.0.1'
+    port: 6335
 
 staging:
   <<: *defaults

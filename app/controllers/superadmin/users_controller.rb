@@ -6,7 +6,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
 
   def index
     @users = (params[:overquota].present? ? User.overquota : User.all)
-    respond_with(:superadmin, @users)
+    respond_with(:superadmin, @users.map(&:data))
   end
 
   def create

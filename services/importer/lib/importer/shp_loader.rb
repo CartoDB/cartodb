@@ -39,14 +39,18 @@ module CartoDB
       end #valid_table_names
 
       def shp2pgsql
-        @shp2pgsql ||= Shp2pgsql.new(job.qualified_table_name, fullpath, pg_options)
+        @shp2pgsql ||= Shp2pgsql.new(job.table_name, fullpath, pg_options)
       end #shp2pgsql
 
       def reproject
         raise InvalidShpError unless the_geom?
         job.log "Reprojecting the_geom in #{job.table_name}"
-        reprojector.reproject(job.table_name, 'the_geom')
+        reprojector.reproject(job.table_name, geometry_column)
       end #reproject
+
+      def geometry_column
+        georeferencer.geometry_column_in(job.qualified_table_name)
+      end #geometry_column
 
       def georeferencer
         @georeferencer ||= Georeferencer.new(job.db, job.table_name)
@@ -57,7 +61,7 @@ module CartoDB
       end #reprojector
 
       def the_geom?
-        georeferencer.column_exists_in?(job.table_name, 'the_geom')
+        georeferencer.column_exists_in?(job.table_name, geometry_column)
       end #the_geom?
 
       def drop_the_geom_webmercator

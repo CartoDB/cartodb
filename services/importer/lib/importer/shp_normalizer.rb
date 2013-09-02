@@ -27,7 +27,9 @@ module CartoDB
       end #encoding
 
       def tab_encoding
-        return 'WindowsCyrillic' if File.read(filepath) =~ /WindowsCyrillic/
+        return 'WIN1251' if File.open(filepath, 'rb') { |file|
+          file.read =~ /WindowsCyrillic/
+        }
       rescue
         false
       end 

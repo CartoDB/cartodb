@@ -11,7 +11,7 @@ end
 
 
 # Redis interfaces definition:
-redis_conf = Cartodb.config[:redis].select { |k, v| [:host, :port].include?(k) }
+redis_conf = Cartodb.config[:redis].select { |k, v| ['host', 'port'].include?(k) }.symbolize_keys
 
 $tables_metadata      = Redis.new(redis_conf.merge(:db => 0))
 # TO ACTIVATE when decided how to do it more efficiently without filling the Redis

@@ -1,3 +1,7 @@
+3.1.06 (09//02/2013)
+-----
+- fixed #66 layer interactivity was wrong when a layer was hidden
+
 3.1.05 (08//08/2013)
 -----
 - Adds addInfowindow and addCursorInteraction

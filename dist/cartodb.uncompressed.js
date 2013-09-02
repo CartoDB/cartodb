@@ -1,6 +1,6 @@
-// cartodb.js version: 3.1.05
+// cartodb.js version: 3.1.06
 // uncompressed version: cartodb.uncompressed.js
-// sha: efed7ffb2eb14872dd1091ba17661d5d6b813d9c
+// sha: 57aaa8277c029aaad9cf4b475dcfbaefc921aa81
 (function() {
   var root = this;
 
@@ -19874,7 +19874,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.1.05';
+    cdb.VERSION = '3.1.06';
 
     cdb.CARTOCSS_VERSIONS = {
       '2.0.0': '',
@@ -23860,6 +23860,24 @@ LayerDefinition.prototype = {
     return btoa(input)
   },
 
+  /**
+   * return the layer number by index taking into
+   * account the hidden layers.
+   */
+  getLayerNumberByIndex: function(index) {
+    var layers = [];
+    for(var i in this.layers) {
+      var layer = this.layers[i];
+      if(!layer.options.hidden) {
+        layers.push(i);
+      }
+    }
+    if (index >= layers.length) {
+      return -1;
+    }
+    return +layers[index];
+  },
+
   // ie7 btoa,
   // from http://phpjs.org/functions/base64_encode/
   _encodeBase64: function (data) {
@@ -24604,11 +24622,13 @@ CartoDBLayerCommon.prototype = {
           .tilejson(tilejson)
           .on('on', function(o) {
             o.layer = layer || 0;
+            o.layer = self.getLayerNumberByIndex(o.layer);
             self._manageOnEvents(self.options.map, o);
           })
           .on('off', function(o) {
             o = o || {}
             o.layer = layer || 0;
+            o.layer = self.getLayerNumberByIndex(o.layer);
             self._manageOffEvents(self.options.map, o);
           });
       }

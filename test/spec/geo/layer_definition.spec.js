@@ -276,7 +276,18 @@ describe("LayerDefinition", function() {
     runs(function() {
       expect(layerDefinition.invalidate).toHaveBeenCalled();
     });
+
   });
+
+  it("should manage layer index with hidden layers", function() {
+    expect(layerDefinition.getLayerNumberByIndex(0)).toEqual(0);
+    expect(layerDefinition.getLayerNumberByIndex(1)).toEqual(1);
+
+    layerDefinition.getSubLayer(0).hide();
+    expect(layerDefinition.getLayerNumberByIndex(0)).toEqual(1);
+
+    expect(layerDefinition.getLayerNumberByIndex(1)).toEqual(-1);
+  }),
 
   describe("sublayers", function() {
 

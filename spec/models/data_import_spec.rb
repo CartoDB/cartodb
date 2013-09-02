@@ -10,6 +10,7 @@ describe DataImport do
   end
 
   it 'should allow to append data to an existing table' do
+    pending "not yet implemented"
     fixture = '/../db/fake_data/column_string_to_boolean.csv'
     expect do
       DataImport.create(
@@ -108,6 +109,7 @@ describe DataImport do
   end
 
   it 'should allow to reimport a previously exported as sql table' do
+    pending "not yet implemented"
     data_import = DataImport.create(
       :user_id       => @user.id,
       :data_source   => '/../db/fake_data/clubbing.csv',

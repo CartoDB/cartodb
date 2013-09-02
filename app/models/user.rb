@@ -294,7 +294,7 @@ class User < Sequel::Model
   end
 
   def trial_ends_at
-    if upgraded_at && upgraded_at + 15.days > Date.today
+    if account_type.to_s.downcase == 'magellan' && upgraded_at && upgraded_at + 15.days > Date.today
       upgraded_at + 15.days
     else
       nil
@@ -386,6 +386,14 @@ class User < Sequel::Model
 
   def get_last_active_time
     $users_metadata.HMGET(key, 'last_active_time').first
+  end
+
+  def set_last_ip_address(ip_address)
+    $users_metadata.HMSET key, 'last_ip_address',  ip_address
+  end
+
+  def get_last_ip_address
+    $users_metadata.HMGET(key, 'last_ip_address').first
   end
 
   def reset_client_application!
@@ -608,7 +616,7 @@ class User < Sequel::Model
         else
           "cartodb_user_#{self.id}_db"
       end
-      save
+      self.this.update database_name: self.database_name
 
       Thread.new do
         conn = Rails::Sequel.connection
@@ -663,39 +671,6 @@ class User < Sequel::Model
             CartoDB::Logger.info "SQL function #{File.basename(f)} doesn't exist in lib/sql/scripts-enabled directory. Not loading it."
           end
         end
-      end
-    end
-  end
-
-  # Test cartodb functions
-  def test_cartodb_functions
-    puts "Testing functions in db '#{database_name}' (#{username})"
-    in_database(:as => :superuser) do |user_database|
-      user_database.transaction do
-	config = ::Rails::Sequel.configuration.environment_for(Rails.env)
-        env  = " PGUSER=#{database_username}"
-        env += " PGPORT=#{config['port']}"
-        env += " PGHOST=#{config['host']}"
-        env += " PGPASSWORD=#{database_password}"
-        glob = Rails.root.join('lib/sql/test/*.sql')
-        #puts " Scanning #{glob}"
-        Dir.glob(glob).each do |f|
-          tname = File.basename(f, '.sql')
-          expfile = File.dirname(f) + '/' + tname + '_expect'
-          print "  #{tname} ... "
-          cmd = "#{env} psql -X -tA < #{f} #{database_name} 2>&1 | diff -U2 #{expfile} - 2>&1"
-          result = `#{cmd}`
-          if $? != 0
-            puts "fail"
-            puts "--------------------------------------------------------------------------------"
-            puts "#{result}"
-            puts "--------------------------------------------------------------------------------"
-          else
-            puts "ok"
-          end
-        end
-
-        # yield(something) if block_given?
       end
     end
   end

@@ -24,7 +24,7 @@ module CartoDB
         column.drop
       end 
 
-      def add_geometry_column(table_name, column_name, type='POINT')
+      def add_geometry_column(table_name, column_name, type='geometry')
         db.run(%Q{
           SELECT public.AddGeometryColumn(
             '#{schema}', '#{table_name}','#{column_name}',#{DEFAULT_SRID},'#{type}',2

@@ -1,6 +1,5 @@
 # encoding: utf-8
 require_relative './spec_helper'
-require "steak"
 require 'capybara/rails'
 require "capybara/dsl"
 require "selenium-webdriver"

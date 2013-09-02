@@ -2,7 +2,6 @@
 require 'sequel'
 require 'fileutils'
 require 'uuidtools'
-require 'rollbar'
 require_relative './user'
 require_relative './table'
 require_relative '../../lib/cartodb/errors'
@@ -40,20 +39,28 @@ class DataImport < Sequel::Model
     values
   end
 
+  def set_unsupported_file_error
+    self.error_code = 1002
+    self.state      = 'failure'
+    save
+  end #set_unsupported_file_error
+
   def run_import!
     success = !!dispatch
+    if self.results.empty?
+      set_unsupported_file_error
+      return self
+    end
     success ? handle_success : handle_failure
+    Rails.logger.debug log.to_s
     self
   rescue => exception
     log.append "Exception: #{exception.to_s}"
     log.append exception.backtrace
+    stacktrace = exception.to_s + exception.backtrace.join
+    Rollbar.report_message("Import error", "error", error_info: stacktrace)
     handle_failure
     self
-  end
-
-  def set_error_code(code)
-    self.error_code = code
-    self.save
   end
 
   def get_error_text
@@ -64,8 +71,9 @@ class DataImport < Sequel::Model
   def raise_error_if_over_quota(number_of_tables)
     if !current_user.remaining_table_quota.nil? && 
     current_user.remaining_table_quota.to_i < number_of_tables
-      self.set_error_code(8002)
-      self.log_error("Over account table limit, please upgrade")
+      self.error_code = 8002
+      save
+      log.append("Over account table limit, please upgrade")
       raise CartoDB::QuotaExceeded, "More tables required"
     end
   end
@@ -133,6 +141,7 @@ class DataImport < Sequel::Model
     self.state    = 'complete'
     self.log << "SUCCESS!\n"
     save
+    self
   end #handle_success
 
   def handle_failure
@@ -141,9 +150,7 @@ class DataImport < Sequel::Model
     self.state      = 'failure'
     self.log << "ERROR!\n"
     self.save
-    keep_problematic_file if uploaded_file
-    notify_failures(self.results)
-    Rollbar.report_message("Failed import", "error", error_info: basic_information)
+    notify_results(self.results)
     self
   rescue => exception
     self
@@ -171,17 +178,6 @@ class DataImport < Sequel::Model
       next unless worker.job["queue"] == "imports"
       worker.job["payload"]["args"].first["job_id"] rescue nil 
     end.compact
-  end
-
-  def basic_information
-    {
-      error:         get_error_text[:title],
-      username:      current_user.username,
-      file_url:      public_url,
-      account_type:  current_user.account_type,
-      database:      current_user.database_name,
-      email:         current_user.email
-    }
   end
 
   def public_url
@@ -255,7 +251,7 @@ class DataImport < Sequel::Model
       end
     end
 
-    notify_failures(runner.results)
+    notify_results(runner.results)
     success_status_from(runner.results)
   end
 
@@ -318,30 +314,38 @@ class DataImport < Sequel::Model
     runner.run(&tracker)
     self.results = runner.results
 
-    runner.results.each do |result|
+    successful_imports = results.select { |result|
+      result.fetch(:success, false)
+    }
+
+    if table_quota_exceeded?(successful_imports)
+      @table_quota_exceeded = true 
+      return(success = false)
+    end
+
+    successful_imports.each do |result|
       name        = result.fetch(:name)
       schema      = result.fetch(:schema)
       table_names = result.fetch(:tables)
 
-      table_names.each { |table_name| register(table_name, name, schema) }
+      if @table_quota_exceeded
+        table_names.each { |table_name| drop(schema, table_name) }
+      else
+        table_names.each { |table_name| register(table_name, name, schema) }
+      end
     end
-    success_status_from(runner.results)
-    notify_failures(runner.results)
-  end #new_importer
 
-  def notify_failures(results)
-    results.each do |result|
-      result.fetch(:success) ?
-        register_success_import_event_for(result) : 
-        register_failed_import_event_for(result)
-    end
-  end #notify_failures
+    success = !!success_status_from(runner.results)
+    notify_results(runner.results)
+    success
+  end #new_importer
 
   def success_status_from(results)
     results.inject(true) { |memo, result| result.fetch(:success) && memo }
   end #success_status_from
 
   def errors_from(results)
+    return [8002] if @table_quota_exceeded
     results.map { |result| result.fetch(:error, nil) }.compact
   end #errors_from
 
@@ -374,25 +378,21 @@ class DataImport < Sequel::Model
     self
   end #register
 
-  def register_failed_import_event_for(result)
-    payload = {
-      name:       result.fetch(:name),
-      extension:  result.fetch(:extension)
-    }.merge(metric_payload)
-    CartoDB::Metrics.report_failed_import(payload)
-  rescue
-    self
-  end #register_failed_import_event_for
+  def notify_results(results)
+    results.each { |result| CartoDB::Metrics.new.report(payload_for(result)) }
+    report_unknown_error if results.empty?
+  end #notify_results
 
-  def register_success_import_event_for(result)
-    payload = {
-      name:       result.fetch(:name),
-      extension:  result.fetch(:extension)
-    }.merge(metric_payload)
-    CartoDB::Metrics.report_success_import(payload)
-  rescue
+  def report_unknown_error
+    CartoDB::Metrics.new.report(payload_for(
+      name:           data_source,
+      extension:      nil,
+      success:        false,
+      error:          99999
+    ))
+  rescue => exception
     self
-  end #register_success_import_event_for
+  end
 
   def table_owner
     table_owner ||= User.select(:id,:database_name,:crypted_password,:quota_in_bytes,:username, :private_tables_enabled, :table_quota).filter(:id => current_user.id).first
@@ -406,23 +406,46 @@ class DataImport < Sequel::Model
     new_table_name = import_from_query(table_name, query)
     self.update(table_names: new_table_name)
     migrate_existing(new_table_name)
+    self.results = [{ success: true, error: nil }]
   end
-
-  def keep_problematic_file
-    uploads_path  = Rails.root.join('public', 'uploads')
-    file_path     = File.join(uploads_path, uploaded_file[1])
-    vault_path    = File.join(uploads_path, 'failed_imports')
-
-    return unless Dir.exists?(file_path)
-    FileUtils.cp_r(file_path, vault_path)
-  end #keep_problematic_file
-
-  def metric_payload
-    { distinct_id: current_user.username }.merge(basic_information)
-  end #metric_payload
 
   def current_user
     @current_user ||= User[user_id]
+  end
+
+  def payload_for(result)
+    payload = {
+      name:           result.fetch(:name),
+      extension:      result.fetch(:extension),
+      success:        result.fetch(:success),
+      error:          result.fetch(:error, nil),
+      file_url:       public_url,
+      distinct_id:    current_user.username,
+      username:       current_user.username,
+      account_type:   current_user.account_type,
+      database:       current_user.database_name,
+      email:          current_user.email,
+      log:            log.to_s
+    }
+    payload.merge!(error_title: get_error_text) unless result.fetch(:success)
+    payload
+  end
+
+  def table_quota_exceeded?(results=[])
+    return false if current_user.remaining_table_quota.nil?
+    results.length > current_user.remaining_table_quota.to_i
+  end
+
+  def set_table_quota_exceeded
+    self.error_code = 8002
+    self.state      = 'failure'
+    save
+  end
+
+  def drop(schema, table_name)
+    current_user.in_database.execute(%Q{DROP TABLE "#{schema}.#{table_name}"})
+  rescue
+    self
   end
 end
 

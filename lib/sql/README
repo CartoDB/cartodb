@@ -9,8 +9,4 @@ with the cartodb:db:load_function rake target:
 The test/ directory contains regression testing for the functions
 you can run against all user databases using:
 
-  rake cartodb:db:test_functions
-
-This is how you can upgrade & test functions in a single run:
-
-  rake cartodb:db:load_functions cartodb:db:test_functions
+  rspec spec/lib/sql_test_spec.rb

@@ -22,8 +22,8 @@ describe User do
     @new_user.save
     @new_user.reload
     @new_user.should_not be_new
-    @new_user.in_database.test_connection.should == true
     @new_user.database_name.should_not be_nil
+    @new_user.in_database.test_connection.should == true
   end
 
   it "should have a crypted password" do
@@ -468,7 +468,12 @@ describe User do
   end
 
   it "should calculate the trial end date" do
+    @user.stubs(:upgraded_at).returns(nil)
+    @user.trial_ends_at.should be_nil
     @user.stubs(:upgraded_at).returns(Time.now - 5.days)
+    @user.stubs(:account_type).returns('CORONELLI')
+    @user.trial_ends_at.should be_nil
+    @user.stubs(:account_type).returns('MAGELLAN')
     @user.trial_ends_at.should_not be_nil
     @user.stubs(:upgraded_at).returns(nil)
     @user.trial_ends_at.should be_nil

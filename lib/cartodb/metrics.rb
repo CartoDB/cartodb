@@ -1,69 +1,86 @@
 require 'mixpanel'
 require 'json'
+require 'rollbar'
 require_relative 'github_reporter'
 
 module CartoDB
   class Metrics
+    def report(payload)
+      if payload.fetch(:success, false)
+        report_success(payload) 
+      else
+        report_failure(payload)
+      end
+    rescue => exception
+      puts exception
+      puts exception.backtrace
+      self
+    end #report
 
-    def self.report_failed_import(metric_payload)
-      CartoDB::Metrics.mixpanel_event("Import failed", metric_payload)
-      CartoDB::GitHubReporter.new.report_failed_import(metric_payload)
-      CartoDB::Metrics.ducksboard_report_failed(metric_payload[:extension])
-    end #self.report_failed_import
+    def mixpanel_payload(metric_payload)
+      #remove the log from the payload
+      metric_payload.select {|k,v| k != :log }
+    end
 
-    def self.report_success_import(metric_payload)
-      CartoDB::Metrics.mixpanel_event("Import successful", metric_payload)
-      CartoDB::Metrics.ducksboard_report_done(metric_payload[:extension])
-    end #self.report_success_import
+    def report_failure(metric_payload)
+      GitHubReporter.new.report_failed_import(metric_payload)
+      mixpanel_event("Import failed", mixpanel_payload(metric_payload))
+      ducksboard_report_failed(metric_payload[:extension])
+      Rollbar.report_message("Failed import", "error", error_info: metric_payload)
+    end #report_failure
 
-    def self.mixpanel_event(*args)
+    def report_success(metric_payload)
+      mixpanel_event("Import successful", mixpanel_payload(metric_payload))
+      ducksboard_report_done(metric_payload[:extension])
+    end #report_success
+
+    def mixpanel_event(*args)
       return self unless Cartodb.config[:mixpanel].present?
       token = Cartodb.config[:mixpanel]['token']
       Mixpanel::Tracker.new(token).send(:track, *args)
     rescue => exception
       p exception
+      debugger
       Rollbar.report_message(
         "Failed to send metric to Mixpanel",
         "error",
         error_info: args.join('-')
       )
       self
-    end #self.event
+    end #mixpanel_event
 
-    def self.ducksboard_report_failed(type="")
-      if type
-        type.gsub!(".","")
-        if Cartodb.config.fetch(:ducksboard, {}).fetch("formats", {})[type.downcase].present?
-          ducksboard_increment Cartodb.config[:ducksboard]["formats"][type.downcase]["failed"], 1
-          ducksboard_increment Cartodb.config[:ducksboard]["formats"][type.downcase]["total"], 1
-        end
+    def ducksboard_report_failed(type="")
+      return self unless type
+      type.gsub!(".","")
+      if Cartodb.config.fetch(:ducksboard, {}).fetch("formats", {})[type.downcase].present?
+        ducksboard_increment Cartodb.config[:ducksboard]["formats"][type.downcase]["failed"], 1
+        ducksboard_increment Cartodb.config[:ducksboard]["formats"][type.downcase]["total"], 1
       end
     rescue
       self
-    end #self.import_failed
+    end #ducksboard_report_failed
 
-    def self.ducksboard_report_done(type="")
-      if type
-        type.gsub!(".","")
-      	if Cartodb.config.fetch(:ducksboard, {}).fetch("formats", {})[type.downcase].present?
-          ducksboard_increment Cartodb.config[:ducksboard]["formats"][type.downcase]["total"], 1
-        end
+    def ducksboard_report_done(type="")
+      return self unless type
+      type.gsub!(".","")
+      if Cartodb.config.fetch(:ducksboard, {}).fetch("formats", {})[type.downcase].present?
+        ducksboard_increment Cartodb.config[:ducksboard]["formats"][type.downcase]["total"], 1
       end
     rescue
       self
-    end #self.import_success
+    end #ducksboard_report_done
 
-    def self.ducksboard_set(id, num)
-    	ducksboard_post(id, {value: num})
+    def ducksboard_set(id, num)
+    	ducksboard_post(id, { value: num })
       self
-    end #self.ducksboard_post
+    end #ducksboard_set
 
-    def self.ducksboard_increment(id, num)
-    	ducksboard_post(id, {delta: num})
+    def ducksboard_increment(id, num)
+    	ducksboard_post(id, { delta: num })
       self
-    end #self.ducksboard_increment
+    end #ducksboard_increment
 
-    def self.ducksboard_post(id, body)
+    def ducksboard_post(id, body)
     	return self unless Cartodb.config[:ducksboard].present?
 	    url = URI.parse("https://push.ducksboard.com/v/#{id}")
 	    req = Net::HTTP::Post.new(url.path)
@@ -82,7 +99,7 @@ module CartoDB
         error_info: args.join('-')
       )
       self
-    end #self.ducksboard_post
+    end #ducksboard_post
   end
 end
 

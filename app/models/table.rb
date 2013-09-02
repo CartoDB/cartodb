@@ -339,8 +339,8 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def before_create
+    raise CartoDB::QuotaExceeded if owner.over_table_quota?
     super
-    #raise CartoDB::QuotaExceeded if owner.over_table_quota?
     update_updated_at
     self.database_name = owner.database_name
 
@@ -1072,92 +1072,6 @@ class Table < Sequel::Model(:user_tables)
     save
   end
 
-  def to_kml
-    owner.in_database do |user_database|
-      export_schema = self.schema.map{|c| c.first}
-      hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-        "database" => database_name,
-        :logger => ::Rails.logger,
-        "username" => owner.database_username,
-        "password" => owner.database_password,
-        :table_name => self.name,
-        :export_type => "kml",
-        :export_schema => export_schema,
-        :debug => (Rails.env.development?),
-        :remaining_quota => owner.remaining_quota
-      ).symbolize_keys
-
-      exporter = CartoDB::Exporter.new hash_in
-
-      return exporter.export!
-    end
-  end
-
-  def to_csv
-    owner.in_database do |user_database|
-      #table_name = "csv_export_temp_#{self.name}"
-      export_schema = self.schema.map{|c| c.first} - [THE_GEOM]
-      export_schema += ["ST_AsGeoJSON(the_geom, 8) as the_geom"] if self.schema.map{|c| c.first}.include?(THE_GEOM)
-      hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-        "database" => database_name,
-        :logger => ::Rails.logger,
-        "username" => owner.database_username,
-        "password" => owner.database_password,
-        :table_name => self.name,
-        :export_type => "csv",
-        :export_schema => export_schema,
-        :debug => (Rails.env.development?),
-        :remaining_quota => owner.remaining_quota
-      ).symbolize_keys
-
-      exporter = CartoDB::Exporter.new hash_in
-
-      return exporter.export!
-    end
-  end
-
-  def to_shp
-    owner.in_database do |user_database|
-      export_schema = self.schema.map{|c| c.first}
-      hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-        "database" => database_name,
-        :logger => ::Rails.logger,
-        "username" => owner.database_username,
-        "password" => owner.database_password,
-        :table_name => self.name,
-        :export_type => "shp",
-        :export_schema => export_schema,
-        :debug => (Rails.env.development?),
-        :remaining_quota => owner.remaining_quota
-      ).symbolize_keys
-
-      exporter = CartoDB::Exporter.new hash_in
-
-      return exporter.export!
-    end
-  end
-
-  def to_sql
-    owner.in_database do |user_database|
-      export_schema = self.schema.map{|c| c.first}
-      hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-        "database" => database_name,
-        :logger => ::Rails.logger,
-        "username" => owner.database_username,
-        "password" => owner.database_password,
-        :table_name => self.name,
-        :export_type => "sql",
-        :export_schema => export_schema,
-        :debug => (Rails.env.development?),
-        :remaining_quota => owner.remaining_quota
-      ).symbolize_keys
-
-      exporter = CartoDB::Exporter.new hash_in
-
-      return exporter.export!
-    end
-  end
-
   def self.find_all_by_user_id_and_tag(user_id, tag_name)
     fetch("select user_tables.*,
                     array_to_string(array(select tags.name from tags where tags.table_id = user_tables.id),',') as tags_names
@@ -1505,7 +1419,7 @@ TRIGGER
       end
       unless user_database.schema(name, :reload => true).flatten.include?(THE_GEOM_WEBMERCATOR)
         updates = true
-        user_database.run("SELECT AddGeometryColumn ('#{self.name}','#{THE_GEOM_WEBMERCATOR}',#{CartoDB::GOOGLE_SRID},'#{type}',2)")
+        user_database.run("SELECT AddGeometryColumn ('#{self.name}','#{THE_GEOM_WEBMERCATOR}',#{CartoDB::GOOGLE_SRID},'GEOMETRY',2)")
         user_database.run(%Q{SET statement_timeout TO 600000;UPDATE "#{self.name}" SET #{THE_GEOM_WEBMERCATOR}=CDB_TransformToWebmercator(#{THE_GEOM}) WHERE #{THE_GEOM} IS NOT NULL;SET statement_timeout TO DEFAULT})
       end
 

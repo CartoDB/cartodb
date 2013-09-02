@@ -31,6 +31,10 @@ module CartoDB
         return 'cdb_importer'
       end #target_schema
 
+      def empty?
+        File.size(fullpath) == 0
+      end #empty?
+
       attr_reader :filename
       
       private

@@ -113,6 +113,24 @@ LayerDefinition.prototype = {
     return btoa(input)
   },
 
+  /**
+   * return the layer number by index taking into
+   * account the hidden layers.
+   */
+  getLayerNumberByIndex: function(index) {
+    var layers = [];
+    for(var i in this.layers) {
+      var layer = this.layers[i];
+      if(!layer.options.hidden) {
+        layers.push(i);
+      }
+    }
+    if (index >= layers.length) {
+      return -1;
+    }
+    return +layers[index];
+  },
+
   // ie7 btoa,
   // from http://phpjs.org/functions/base64_encode/
   _encodeBase64: function (data) {

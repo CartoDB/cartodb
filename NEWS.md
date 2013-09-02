@@ -1,5 +1,11 @@
 2.1.3.4.1
 ---------
+* Improvements:
+  * Support for SHP imports in a wide range of projections and encodings
+  * Specific support for Cyrillic encoding in SHP and TAB files
+  * Improved encoding detection for file imports
+* Bugs:
+  * Removed POINT default constraint in tables created by an import
 
 2.1.3.4
 -------

@@ -10,7 +10,6 @@ module CartoDB
         "../../../../../lib/importer/misc/shp_normalizer.py"
 
       def initialize(table_name, filepath, pg_options)
-        puts table_name
         self.filepath   = filepath
         self.pg_options = pg_options
         self.table_name = table_name
@@ -22,7 +21,6 @@ module CartoDB
 
         normalize
         #stdout, stderr, status  = Open3.capture3(command)
-        puts command.command
         command.run
         self.command_output     = command.command_output
         self.exit_code          = command.exit_code

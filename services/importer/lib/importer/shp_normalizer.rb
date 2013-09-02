@@ -20,10 +20,17 @@ module CartoDB
       def encoding
         normalize
         encoding = normalizer_output.fetch(:encoding)
-        return 'LATIN1' if encoding == 'None' 
+        encoding = 'LATIN1' if encoding == 'None' 
         return codepage_for(encoding) if windows?(encoding)
+        return(tab_encoding || encoding) if tab?
         encoding
       end #encoding
+
+      def tab_encoding
+        return 'WindowsCyrillic' if File.read(filepath) =~ /WindowsCyrillic/
+      rescue
+        false
+      end 
 
       def normalize
         raise InvalidShpError         unless dbf? && shx?
@@ -46,6 +53,10 @@ module CartoDB
       def prj?
         File.exists?(filepath.gsub(%r{\.shp$}, '.prj'))
       end #prj?
+
+      def tab?
+        File.extname(filepath) == '.tab'
+      end
 
       def dbf?
         File.exists?(filepath.gsub(%r{\.shp$}, '.dbf'))

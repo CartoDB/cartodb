@@ -18,8 +18,6 @@ module CartoDB
         column = Column.new(db, table_name, column_name)
         column.rename_to(renamed_column_name)
 
-        puts column.inspect
-
         add_geometry_column(table_name, 'the_geom')
         transform(qualified_table_name, renamed_column_name, column_name)
 

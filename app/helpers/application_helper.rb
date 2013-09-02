@@ -64,7 +64,8 @@ module ApplicationHelper
       sql_api_port:       Cartodb.config[:sql_api_port],
       cartodb_com_hosted: Cartodb.config[:cartodb_com_hosted],
       account_host:       Cartodb.config[:account_host],
-      dropbox_api_key:    Cartodb.config[:dropbox_api_key]
+      dropbox_api_key:    Cartodb.config[:dropbox_api_key],
+      frontend_config:    Cartodb.config[:assets]["max_file_size"]
     }
     if Cartodb.config[:cdn_url].present?
       config[:cdn_url] = {

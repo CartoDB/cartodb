@@ -1,5 +1,5 @@
-// version: 3.1.05
-// sha: efed7ffb2eb14872dd1091ba17661d5d6b813d9c
+// version: 3.1.06
+// sha: 57aaa8277c029aaad9cf4b475dcfbaefc921aa81
 ;(function() {
   this.cartodb = {};
   var Backbone = {};
@@ -1141,7 +1141,7 @@ var Mustache;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.1.05';
+    cdb.VERSION = '3.1.06';
 
     cdb.CARTOCSS_VERSIONS = {
       '2.0.0': '',
@@ -1846,6 +1846,24 @@ LayerDefinition.prototype = {
 
   _encodeBase64Native: function (input) {
     return btoa(input)
+  },
+
+  /**
+   * return the layer number by index taking into
+   * account the hidden layers.
+   */
+  getLayerNumberByIndex: function(index) {
+    var layers = [];
+    for(var i in this.layers) {
+      var layer = this.layers[i];
+      if(!layer.options.hidden) {
+        layers.push(i);
+      }
+    }
+    if (index >= layers.length) {
+      return -1;
+    }
+    return +layers[index];
   },
 
   // ie7 btoa,

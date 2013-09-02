@@ -113,7 +113,7 @@ module CartoDB
 
       def error_for(exception_klass=nil)
         return nil unless exception_klass
-        ERRORS_MAP.fetch(exception_klass, 99999)
+        ERRORS_MAP.fetch(exception_klass, UnknownError)
       end #error_for
 
       def raise_if_over_storage_quota

@@ -18,7 +18,8 @@ module CartoDB
         "#{pg_copy_option} #{encoding_option} #{executable_path} "  +
         "#{output_format_option} #{postgres_options} "              +
         "#{projection_option} #{layer_creation_options} "           + 
-        "#{filepath} #{track_points_option} #{layer_name_option} "         
+        "#{filepath} #{track_points_option} #{layer_name_option} "  +
+        "#{new_layer_type_option}"
       end #command
 
       def cartodb_id_option
@@ -59,7 +60,7 @@ module CartoDB
 
       def encoding_option
         encoding = options.fetch(:encoding, ENCODING)
-        "PGCLIENTENCODING=#{encoding}"
+        "PGCLIENTENCODING=#{encoding} SHAPE_ENCODING=#{encoding}"
       end #encoding_option
 
       def layer_name_option
@@ -99,6 +100,10 @@ module CartoDB
       def precision_option
         "PRECISION=NO"
       end #precision_option
+
+      def new_layer_type_option
+        "-nlt geometry"
+      end #new_layer_type_option
     end # Ogr2ogr
   end # Importer2
 end # CartoDB

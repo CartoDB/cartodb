@@ -12,7 +12,17 @@ end
 # Redis interfaces definition:
 conf = Cartodb.config[:redis].symbolize_keys
 redis_conf = conf.select { |k, v| [:host, :port].include?(k) }
-conf[:databases].each do |k, v|
+
+default_databases = {
+  tables_metadata:     0,
+  api_credentials:     3,
+  users_metadata:      5,
+  redis_migrator_logs: 6
+}
+
+databases = conf[:databases] || default_databases
+
+databases.each do |k, v|
   begin
     eval("$#{k} = Redis.new(redis_conf.merge(db: #{v}))")
     eval("$#{k}.ping")

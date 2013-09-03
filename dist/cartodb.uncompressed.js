@@ -1,6 +1,6 @@
-// cartodb.js version: 3.1.06
+// cartodb.js version: 3.1.07
 // uncompressed version: cartodb.uncompressed.js
-// sha: 57aaa8277c029aaad9cf4b475dcfbaefc921aa81
+// sha: e8c030eadac03a97bc7d0125204d7673be882117
 (function() {
   var root = this;
 
@@ -10298,7 +10298,7 @@ L.Map.include({
 });
 
 
-}(this, document));/* wax - 7.0.0dev10 - v6.0.4-148-gcfdd624 */
+}(this, document));/* wax - 7.0.0dev10 - v6.0.4-149-ga1a6031 */
 
 
 !function (name, context, definition) {
@@ -12426,8 +12426,7 @@ var Mustache = (typeof module !== "undefined" && module.exports) || {};
       , match = url.match(cbreg)
       , script = doc.createElement('script')
       , loaded = 0
-      , isIE10 = navigator.userAgent.indexOf('MSIE 10.0') !== -1
-      , isIE9 = navigator.userAgent.indexOf('MSIE 9.0') !== -1;
+      , isIE10 = navigator.userAgent.indexOf('MSIE 10.0') !== -1;
 
     if (match) {
       if (match[3] === '?') {
@@ -12444,7 +12443,7 @@ var Mustache = (typeof module !== "undefined" && module.exports) || {};
     script.type = 'text/javascript'
     script.src = url
     script.async = true
-    if (typeof script.onreadystatechange !== 'undefined' && !isIE10 && !isIE9) {
+    if (typeof script.onreadystatechange !== 'undefined' && !isIE10) {
       // need this for IE due to out-of-order onreadystatechange(), binding script
       // execution to an event listener gives us control over when the script
       // is executed. See http://jaubourg.net/2010/07/loading-script-as-onclick-handler-of.html
@@ -19874,7 +19873,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.1.06';
+    cdb.VERSION = '3.1.07';
 
     cdb.CARTOCSS_VERSIONS = {
       '2.0.0': '',
@@ -28753,7 +28752,7 @@ cdb.vis.Overlay.register('layer_selector', function(data, vis) {
     mapView: vis.mapView,
     template: template,
     dropdown_template: dropdown_template,
-    layer_names: data.layer_names,
+    layer_names: data.layer_names
   });
 
   if(vis.legends) {

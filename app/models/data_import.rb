@@ -232,7 +232,8 @@ class DataImport < Sequel::Model
     data_source ||= self.data_source
     downloader  = CartoDB::Importer2::Downloader.new(data_source)
     tracker     = lambda { |state| self.state = state; save }
-    runner      = CartoDB::Importer2::Runner.new(pg_options, downloader, log)
+    runner      = CartoDB::Importer2::Runner.new(pg_options, downloader, log,
+                  current_user.remaining_quota)
     runner.run(&tracker)
     self.results = runner.results
 

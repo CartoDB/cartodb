@@ -29,7 +29,7 @@ module CartoDB
         self.tracker = tracker_block
         tracker.call('uploading')
         log.append "Getting file from #{downloader.url}"
-        downloader.run
+        downloader.run(available_quota)
 
         log.append "Starting import for #{downloader.source_file.fullpath}"
         log.append "Unpacking #{downloader.source_file.fullpath}"

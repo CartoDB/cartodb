@@ -1,0 +1,8 @@
+#!/bin/sh
+if [ -z "$2" ]; then
+  echo "Usage: script/import <username> <path to file>"
+  exit 1
+fi
+
+bundle exec rake cartodb:import[$1,$2]
+if test $? -ne 0; then exit 1; fi

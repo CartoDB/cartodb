@@ -135,7 +135,7 @@ cdb.vis.Overlay.register('layer_selector', function(data, vis) {
     mapView: vis.mapView,
     template: template,
     dropdown_template: dropdown_template,
-    layer_names: data.layer_names,
+    layer_names: data.layer_names
   });
 
   if(vis.legends) {

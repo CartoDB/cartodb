@@ -355,13 +355,20 @@ class DataImport < Sequel::Model
       SET SCHEMA public
     }) unless schema == 'public'
 
-    candidates  = table_owner.tables.map(&:name)
-    name        = Table.get_valid_table_name(name, name_candidates: candidates)
+    rename_attempts = 0
 
-    current_user.in_database.execute(%Q{
-      ALTER TABLE "public"."#{table_name}"
-      RENAME TO #{name}
-    })
+    begin
+      candidates  = table_owner.reload.tables.map(&:name)
+      name        = Table.get_valid_table_name(name, name_candidates: candidates)
+
+      rename_attempts = rename_attempts + 1
+      current_user.in_database.execute(%Q{
+        ALTER TABLE "public"."#{table_name}"
+        RENAME TO "#{name}"
+      })
+    rescue
+      retry unless rename_attempts > 1
+    end
 
     table                         = Table.new
     table.user_id                 = table_owner.id

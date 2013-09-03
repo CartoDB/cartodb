@@ -193,7 +193,7 @@ module CartoDB
       attr_reader :job, :db, :table_name, :column_name, :schema
 
       def qualified_table_name
-        "#{schema}.#{table_name}"
+        %Q("#{schema}"."#{table_name}")
       end #qualified_table_name
     end # Column
   end # Importer2

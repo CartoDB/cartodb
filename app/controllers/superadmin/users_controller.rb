@@ -5,7 +5,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
   before_filter :get_user, :only => [:update, :destroy, :show]
 
   def index
-    @users = (params[:overquota].present? ? User.overquota : User.all)
+    @users = (params[:overquota].present? ? User.overquota(0.20) : User.all)
     respond_with(:superadmin, @users.map(&:data))
   end
 

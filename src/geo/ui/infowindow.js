@@ -3,7 +3,7 @@
  * Add Infowindow model:
  *
  * var infowindowModel = new cdb.geo.ui.InfowindowModel({
- *   template_name: 'templates/map/infowindow',
+ *   template_name: 'infowindow_light',
  *   latlng: [72, -45],
  *   offset: [100, 10]
  * });
@@ -18,16 +18,14 @@
  *
  */
 
-//function InfowindowTemplateException(message) {
-   //this.message = message;
-   //this.name = "UserException";
-//}
-
 cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
+  
   SYSTEM_COLUMNS: ['the_geom', 'the_geom_webmercator', 'created_at', 'updated_at', 'cartodb_id', 'cartodb_georef_status'],
 
+  templateURL: '',
+
   defaults: {
-    template_name: 'geo/infowindow',
+    template_name: 'infowindow_light',
     latlng: [0, 0],
     offset: [28, 0], // offset of the tip calculated from the bottom left corner
     autoPan: true,
@@ -36,6 +34,12 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
     visibility: false,
     alternative_names: { },
     fields: null // contains the fields displayed in the infowindow
+  },
+
+  initialize: function(attrs, opts) {
+    if (opts && opts.template_url) {
+      this.templateURL = opts.template_url;
+    }
   },
 
   clearFields: function() {
@@ -202,7 +206,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
 
     this.mapView = this.options.mapView;
 
-    this.template = this.options.template ? this.options.template : cdb.templates.getTemplate(this.model.get("template_name"));
+    this.template = this.options.template ? this.options.template : cdb.templates.getTemplate(this._getTemplateURL());
 
     this.add_related_model(this.model);
 
@@ -228,7 +232,6 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     this.minHeightToScroll = 180;
 
     this.changeTemplate();
-    //this.render();
 
     this.$el.hide();
   },
@@ -329,14 +332,16 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     return this;
   },
 
+  _getTemplateURL: function() {
+    return this.model.templateURL + "/" + this.model.get("template_name")
+  },
+
   /**
    *  Change template of the infowindow
    */
   changeTemplate: function(template_name) {
-
-    this.template = cdb.templates.getTemplate(this.model.get("template_name"));
+    this.template = cdb.templates.getTemplate(this._getTemplateURL());
     this.render();
-
   },
 
   /**

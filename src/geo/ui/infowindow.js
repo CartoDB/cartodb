@@ -22,14 +22,14 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
   
   SYSTEM_COLUMNS: ['the_geom', 'the_geom_webmercator', 'created_at', 'updated_at', 'cartodb_id', 'cartodb_georef_status'],
 
-  templateURL: '',
+  TEMPLATE_URL: '',
 
   defaults: {
     template_name: 'infowindow_light',
     latlng: [0, 0],
     offset: [28, 0], // offset of the tip calculated from the bottom left corner
     autoPan: true,
-    custom_html: "",
+    template: "",
     content: "",
     visibility: false,
     alternative_names: { },
@@ -38,7 +38,7 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
 
   initialize: function(attrs, opts) {
     if (opts && opts.template_url) {
-      this.templateURL = opts.template_url;
+      this.TEMPLATE_URL = opts.template_url;
     }
   },
 
@@ -215,7 +215,6 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     this.model.bind('change:latlng',            this._update, this);
     this.model.bind('change:visibility',        this.toggle, this);
     this.model.bind('change:template',          this._compileTemplate, this);
-    this.model.bind('change:custom_html',       this._changeCustomHTML, this);
     this.model.bind('change:alternative_names', this.render, this);
 
     this.mapView.map.bind('change',         this._updatePosition, this);
@@ -236,44 +235,6 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     this.$el.hide();
   },
 
-  _extractValues: function(fields) {
-
-    var values = {}
-
-    if (fields && fields.length > 0) {
-
-      _.each(fields, function(f) {
-        values[f.title] = f.value;
-      });
-
-    }
-
-    return values;
-
-  },
-
-  _renderCustomHTML: function(sanitized_fields) {
-
-    if (this.model.get("custom_html"))  {
-
-      var customTemplate   = this.model.get("custom_html");
-      var compiledTemplate = cdb.core.Template.compile(customTemplate, "mustache");
-
-      var fields = this.model.get('content').fields;
-      var values = this._extractValues(fields);
-
-      try {
-        var customHTML = compiledTemplate(values);
-
-        // Replace the ifowindow's content with the custom content
-        this.$el.find(".cartodb-popup-content").html(customHTML);
-      } catch (e) {
-        console.log('Errors detected when compiling the template.', e);
-      }
-
-    }
-
-  },
 
   /**
    *  Render infowindow content
@@ -297,17 +258,21 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
 
       // Sanitized them
       var sanitized_fields = this._fieldsToString(fields, template_name);
-      var data = this.model.get('content') ? this.model.get('content').data : {}
 
-      var html = this.template({
-        content: {
-          fields: sanitized_fields,
-          data: this.model.get('content').fields,
-        }
-      });
+      // Join plan fields values with content to work with
+      // custom infowindows and CartoDB infowindows.
+      var values = {};
+      _.each(this.model.get('content').fields, function(pair) {
+        values[pair.title] = pair.value;
+      })
+      var obj = _.extend({
+          content: {
+            fields: sanitized_fields,
+            data: this.model.get('content').fields
+          }
+        },values);
 
-      this.$el.html(html);
-      this._renderCustomHTML(sanitized_fields);
+      this.$el.html(this.template(obj));
 
       // Hello jscrollpane hacks!
       // It needs some time to initialize, if not it doesn't render properly the fields
@@ -333,7 +298,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
   },
 
   _getTemplateURL: function() {
-    return this.model.templateURL + "/" + this.model.get("template_name")
+    return this.model.TEMPLATE_URL + "/" + this.model.get("template_name")
   },
 
   /**
@@ -345,19 +310,11 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
   },
 
   /**
-   *  Uses the HTML provided by the user
-   */
-  _changeCustomHTML: function() {
-
-    this.changeTemplate();
-
-  },
-
-  /**
    *  Compile template of the infowindow
    */
   _compileTemplate: function() {
-    var template = this.model.get('template');
+    var template = this.model.get('template') ? this.model.get('template') : cdb.templates.getTemplate(this._getTemplateURL());
+
     if(typeof(template) !== 'function') {
       this.template = new cdb.core.Template({
         template: template,

@@ -89,7 +89,7 @@ cdb.vis.Overlay.register('infowindow', function(data, vis) {
   }
 
   var infowindowModel = new cdb.geo.ui.InfowindowModel({
-    custom_html: data.custom_html,
+    template: data.template,
     alternative_names: data.alternative_names,
     fields: data.fields,
     template_name: data.template_name

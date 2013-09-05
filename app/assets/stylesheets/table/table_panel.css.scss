@@ -417,7 +417,7 @@ a.info {
   }
 
   // SQL PANEL & CARTO PANEL
-  .sql_panel, .wizards_panel, .csseditor_panel, .filters_panel, .legends_panel {
+  .sql_panel, .wizards_panel, .csseditor_panel, .filters_panel, .legends_panel, .infowindow_panel {
     @include inline-block();
     width:535px;
     height:100%;
@@ -562,7 +562,7 @@ a.info {
         /*color: #CCCCCC;*/
       }
 
-      .form_combo  { float:right; }
+      .form_combo  { position:absolute; right:18px; }
 
     }
 

@@ -5,9 +5,9 @@
       <div id="spinner"></div>
       <div class="image_not_found"> <i></i> <a href="#/map" class="help">Non-valid picture URL</a></div>
       {{#content.fields}}
-        {{#index}}
-          <h1 class="order{{index}}">{{=<% %>=}}{{<%={{ }}=%>{{{ name }}}{{=<% %>=}}}}<%={{ }}=%></h1>
-        {{/index}}
+        {{#position}}
+        <h1>{{=<% %>=}}{{<%={{ }}=%>{{{ name }}}{{=<% %>=}}}}<%={{ }}=%></h1>
+        {{/position}}
       {{/content.fields}}
       <div class="shadow"></div>
     </div>
@@ -16,10 +16,12 @@
   <div class="cartodb-popup-content-wrapper">
     <div class="cartodb-popup-content">
       {{#content.fields}}
-        <div class="order{{index}}">
-          <h4>{{name}}</h4>
-          <p>{{=<% %>=}}{{<%={{ }}=%>{{{ name }}}{{=<% %>=}}}}<%={{ }}=%></p>
-        </div>
+      {{^position}}
+      <div>
+        <h4>{{name}}</h4>
+        <p>{{=<% %>=}}{{<%={{ }}=%>{{{ name }}}{{=<% %>=}}}}<%={{ }}=%></p>
+      </div>
+      {{/position}}
       {{/content.fields}}
     </div>
   </div>

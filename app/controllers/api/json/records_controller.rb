@@ -2,7 +2,8 @@
 class Api::Json::RecordsController < Api::ApplicationController
   ssl_required :index, :create, :show, :update, :destroy
 
-  REJECT_PARAMS = %W{ format controller action id row_id requestId column_id api_key table_id oauth_token oauth_token_secret }
+  REJECT_PARAMS = %W{ format controller action row_id requestId column_id
+  api_key table_id oauth_token oauth_token_secret api_key }
 
   before_filter :load_table, :set_start_time
 

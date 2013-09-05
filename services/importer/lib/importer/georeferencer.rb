@@ -29,6 +29,7 @@ module CartoDB
         create_the_geom_in(table_name)
 
         raise_if_geometry_collection
+        drop_wkb_geometry
         self
       end #run
 
@@ -125,6 +126,15 @@ module CartoDB
         column = Column.new(db, table_name, THE_GEOM_WEBMERCATOR, schema, job)
         column.drop
       end #drop_the_geom_webmercator
+
+      def drop_wkb_geometry
+        return self unless column_exists_in?(table_name, 'wkb_geometry')
+
+        job.log 'Dropping wkb_geometry column'
+        column = Column.new(db, table_name, :wkb_geometry, schema, job)
+        column.drop
+      end #drop_wkb_geometry
+
 
       def raise_if_geometry_collection
         column = Column.new(db, table_name, :the_geom, schema, job)

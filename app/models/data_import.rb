@@ -72,6 +72,7 @@ class DataImport < Sequel::Model
     if !current_user.remaining_table_quota.nil? && 
     current_user.remaining_table_quota.to_i < number_of_tables
       self.error_code = 8002
+      self.state      = 'failure'
       save
       log.append("Over account table limit, please upgrade")
       raise CartoDB::QuotaExceeded, "More tables required"
@@ -283,8 +284,8 @@ class DataImport < Sequel::Model
       @new_table.map.recalculate_bounds!
       # check if the table fits into owner's remaining quota
       if table_owner.remaining_quota < 0
-        self.log_error("Over storage quota, removing table" )
-        self.set_error_code(8001)
+        self.log.append("Over storage quota, removing table" )
+        self.error_code = 8001
         @new_table.destroy
         return false
       end

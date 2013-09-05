@@ -257,6 +257,7 @@ var Vis = cdb.core.View.extend({
           layer.legend.data = layer.legend.items;
           var legend = layer.legend;
           if(legend.items && legend.items.length) {
+            layer.legend.index = i;
             legends.push(new cdb.geo.ui.Legend(layer.legend));
           }
         }

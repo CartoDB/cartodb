@@ -24,6 +24,7 @@ describe("Vis", function() {
     this.mapConfig = {
       updated_at: 'cachebuster',
       title: "irrelevant",
+      url: "http://cartodb.com",
       center: [40.044, -101.95],
       bounding_box_sw: [20, -140],
       bounding_box_ne: [ 55, -50],
@@ -128,6 +129,16 @@ describe("Vis", function() {
     });
     expect(this.vis.$('.cartodb-header').length).toEqual(1);
   });
+
+  it("should add header without link in the title", function() {
+    var mapConfig = _.clone(this.mapConfig);
+    mapConfig.url = null;
+    this.vis.load(mapConfig, {
+      title: true
+    });
+    expect(this.vis.$('.cartodb-header').length).toEqual(1);
+    expect(this.vis.$('.cartodb-header h1 > a').length).toEqual(0);
+  });
   
   it("should use zoom", function() {
     this.vis.load(this.mapConfig, {
@@ -135,18 +146,6 @@ describe("Vis", function() {
       bounds: [[24.206889622398023,-84.0234375],[76.9206135182968,169.1015625]]
     });
     expect(this.vis.map.getZoom()).toEqual(10);
-  });
-
-  it("cartodb layers should include the cache buster", function() {
-    this.mapConfig.layers = [{
-      kind: 'cartodb',
-      options: {
-        table_name: 'test'
-      }
-    }]
-    this.vis.load(this.mapConfig);
-    //expect(this.vis.map.layers.at(0).attributes.extra_params.updated_at).toEqual('cachebuster');
-    expect(this.vis.map.layers.at(0).attributes.extra_params.cache_buster).toEqual('cachebuster');
   });
 
 

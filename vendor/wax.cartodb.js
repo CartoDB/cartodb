@@ -1,10 +1,11 @@
-/* wax - 7.0.0dev10 - v6.0.4-132-g86c33ce */
+/* wax - 7.0.0dev10 - v6.0.4-149-ga1a6031 */
 
 
 !function (name, context, definition) {
-  if (typeof module !== 'undefined') module.exports = definition(name, context);
-  else if (typeof define === 'function' && typeof define.amd  === 'object') define(definition);
-  else context[name] = definition(name, context);
+  //if (typeof module !== 'undefined') module.exports = definition(name, context);
+  //else if (typeof define === 'function' && typeof define.amd  === 'object') define(definition);
+  //else context[name] = definition(name, context);
+  context[name] = definition(name, context);
 }('bean', this, function (name, context) {
   var win = window
     , old = context[name]
@@ -45,6 +46,8 @@
             'input invalid ' +                                                 // form elements
             'touchstart touchmove touchend touchcancel ' +                     // touch
             'gesturestart gesturechange gestureend ' +                         // gesture
+            'MSPointerUp MSPointerDown MSPointerCancel MSPointerMove ' +       // MS Pointer events
+            'MSPointerOver MSPointerOut ' +                                    // MS Pointer events
             'message readystatechange pageshow pagehide popstate ' +           // window
             'hashchange offline online ' +                                     // window
             'afterprint beforeprint ' +                                        // printing
@@ -2025,10 +2028,8 @@ var Mustache = (typeof module !== "undefined" && module.exports) || {};
   * https://github.com/ded/reqwest
   * license MIT
   */
-(function (name, context, definition) {
-  if (typeof module != 'undefined' && module.exports) module.exports = definition()
-  else if (typeof define == 'function' && define.amd) define(definition)
-  else context[name] = definition()
+;(function (name, context, definition) {
+  context[name] = definition()
 })('reqwest', this, function () {
 
   var win = window
@@ -2045,68 +2046,78 @@ var Mustache = (typeof module !== "undefined" && module.exports) || {};
     , xmlHttpRequest = 'XMLHttpRequest'
     , noop = function () {}
 
-  var isArray = typeof Array.isArray == 'function' ? Array.isArray : function (a) {
-    return a instanceof Array
-  }
-  var defaultHeaders = {
-      contentType: 'application/x-www-form-urlencoded'
-    , requestedWith: xmlHttpRequest
-    , accept: {
-        '*':  'text/javascript, text/html, application/xml, text/xml, */*'
-      , xml:  'application/xml, text/xml'
-      , html: 'text/html'
-      , text: 'text/plain'
-      , json: 'application/json, text/javascript'
-      , js:   'application/javascript, text/javascript'
-      }
-    }
-  var xhr = win[xmlHttpRequest] ?
-    function () {
-      return new XMLHttpRequest()
-    } :
-    function () {
-      return new ActiveXObject('Microsoft.XMLHTTP')
-    }
+    , isArray = typeof Array.isArray == 'function'
+        ? Array.isArray
+        : function (a) {
+            return a instanceof Array
+          }
 
-  function handleReadyState(o, success, error) {
+    , defaultHeaders = {
+          contentType: 'application/x-www-form-urlencoded'
+        , requestedWith: xmlHttpRequest
+        , accept: {
+              '*':  'text/javascript, text/html, application/xml, text/xml, */*'
+            , xml:  'application/xml, text/xml'
+            , html: 'text/html'
+            , text: 'text/plain'
+            , json: 'application/json, text/javascript'
+            , js:   'application/javascript, text/javascript'
+          }
+      }
+
+    , xhr = win[xmlHttpRequest]
+        ? function () {
+            return new XMLHttpRequest()
+          }
+        : function () {
+            return new ActiveXObject('Microsoft.XMLHTTP')
+          }
+
+  function handleReadyState (r, success, error) {
     return function () {
-      if (o && o[readyState] == 4) {
-        o.onreadystatechange = noop;
-        if (twoHundo.test(o.status)) {
-          success(o)
-        } else {
-          error(o)
-        }
+      // use _aborted to mitigate against IE err c00c023f
+      // (can't read props on aborted request objects)
+      if (r._aborted) return error(r.request)
+      if (r.request && r.request[readyState] == 4) {
+        r.request.onreadystatechange = noop
+        if (twoHundo.test(r.request.status))
+          success(r.request)
+        else
+          error(r.request)
       }
     }
   }
 
-  function setHeaders(http, o) {
-    var headers = o.headers || {}, h
-    headers.Accept = headers.Accept || defaultHeaders.accept[o.type] || defaultHeaders.accept['*']
+  function setHeaders (http, o) {
+    var headers = o.headers || {}
+      , h
+
+    headers.Accept = headers.Accept
+      || defaultHeaders.accept[o.type]
+      || defaultHeaders.accept['*']
+
     // breaks cross-origin requests with legacy browsers
     if (!o.crossOrigin && !headers[requestedWith]) headers[requestedWith] = defaultHeaders.requestedWith
     if (!headers[contentType]) headers[contentType] = o.contentType || defaultHeaders.contentType
-    for (h in headers) {
+    for (h in headers)
       headers.hasOwnProperty(h) && http.setRequestHeader(h, headers[h])
-    }
   }
 
-  function setCredentials(http, o) {
-    if (typeof o.withCredentials !== "undefined" && typeof http.withCredentials !== "undefined") {
+  function setCredentials (http, o) {
+    if (typeof o.withCredentials !== 'undefined' && typeof http.withCredentials !== 'undefined') {
       http.withCredentials = !!o.withCredentials
     }
   }
 
-  function generalCallback(data) {
+  function generalCallback (data) {
     lastValue = data
   }
 
-  function urlappend(url, s) {
+  function urlappend (url, s) {
     return url + (/\?/.test(url) ? '&' : '?') + s
   }
 
-  function handleJsonp(o, fn, err, url) {
+  function handleJsonp (o, fn, err, url) {
     var reqId = uniqid++
       , cbkey = o.jsonpCallback || 'callback' // the 'callback' key
       , cbval = o.jsonpCallbackName || reqwest.getcallbackPrefix(reqId)
@@ -2115,8 +2126,7 @@ var Mustache = (typeof module !== "undefined" && module.exports) || {};
       , match = url.match(cbreg)
       , script = doc.createElement('script')
       , loaded = 0
-      , isIE10 = navigator.userAgent.indexOf('MSIE 10.0') !== -1
-      , isIE9 = navigator.userAgent.indexOf('MSIE 9') !== -1
+      , isIE10 = navigator.userAgent.indexOf('MSIE 10.0') !== -1;
 
     if (match) {
       if (match[3] === '?') {
@@ -2133,7 +2143,7 @@ var Mustache = (typeof module !== "undefined" && module.exports) || {};
     script.type = 'text/javascript'
     script.src = url
     script.async = true
-    if (typeof script.onreadystatechange !== 'undefined' && !isIE10 && !isIE9) {
+    if (typeof script.onreadystatechange !== 'undefined' && !isIE10) {
       // need this for IE due to out-of-order onreadystatechange(), binding script
       // execution to an event listener gives us control over when the script
       // is executed. See http://jaubourg.net/2010/07/loading-script-as-onclick-handler-of.html
@@ -2158,10 +2168,22 @@ var Mustache = (typeof module !== "undefined" && module.exports) || {};
 
     // Add the script to the DOM head
     head.appendChild(script)
+
+    // Enable JSONP timeout
+    return {
+      abort: function () {
+        script.onload = script.onreadystatechange = null
+        o.error && o.error({}, 'Request is aborted: timeout', {})
+        lastValue = undefined
+        head.removeChild(script)
+        loaded = 1
+      }
+    }
   }
 
-  function getRequest(o, fn, err) {
-    var method = (o.method || 'GET').toUpperCase()
+  function getRequest (fn, err) {
+    var o = this.o
+      , method = (o.method || 'GET').toUpperCase()
       , url = typeof o === 'string' ? o : o.url
       // convert non-string objects to query-string form unless o.processData is false
       , data = (o.processData !== false && o.data && typeof o.data !== 'string')
@@ -2182,25 +2204,25 @@ var Mustache = (typeof module !== "undefined" && module.exports) || {};
     http.open(method, url, true)
     setHeaders(http, o)
     setCredentials(http, o)
-    http.onreadystatechange = handleReadyState(http, fn, err)
+    http.onreadystatechange = handleReadyState(this, fn, err)
     o.before && o.before(http)
     http.send(data)
     return http
   }
 
-  function Reqwest(o, fn) {
+  function Reqwest (o, fn) {
     this.o = o
     this.fn = fn
 
     init.apply(this, arguments)
   }
 
-  function setType(url) {
+  function setType (url) {
     var m = url.match(/\.(json|jsonp|html|xml)(\?|$)/)
     return m ? m[1] : 'js'
   }
 
-  function init(o, fn) {
+  function init (o, fn) {
 
     this.url = typeof o == 'string' ? o : o.url
     this.timeout = null
@@ -2246,7 +2268,7 @@ var Mustache = (typeof module !== "undefined" && module.exports) || {};
       })
     }
 
-    function complete(resp) {
+    function complete (resp) {
       o.timeout && clearTimeout(self.timeout)
       self.timeout = null
       while (self._completeHandlers.length > 0) {
@@ -2254,7 +2276,7 @@ var Mustache = (typeof module !== "undefined" && module.exports) || {};
       }
     }
 
-    function success(resp) {
+    function success (resp) {
       var r = resp.responseText
       if (r) {
         switch (type) {
@@ -2264,16 +2286,21 @@ var Mustache = (typeof module !== "undefined" && module.exports) || {};
           } catch (err) {
             return error(resp, 'Could not parse JSON in response', err)
           }
-          break;
+          break
         case 'js':
           resp = eval(r)
-          break;
+          break
         case 'html':
           resp = r
-          break;
+          break
         case 'xml':
-          resp = resp.responseXML;
-          break;
+          resp = resp.responseXML
+              && resp.responseXML.parseError // IE trololo
+              && resp.responseXML.parseError.errorCode
+              && resp.responseXML.parseError.reason
+            ? null
+            : resp.responseXML
+          break
         }
       }
 
@@ -2287,7 +2314,7 @@ var Mustache = (typeof module !== "undefined" && module.exports) || {};
       complete(resp)
     }
 
-    function error(resp, msg, t) {
+    function error (resp, msg, t) {
       self._responseArgs.resp = resp
       self._responseArgs.msg = msg
       self._responseArgs.t = t
@@ -2298,11 +2325,12 @@ var Mustache = (typeof module !== "undefined" && module.exports) || {};
       complete(resp)
     }
 
-    this.request = getRequest(o, success, error)
+    this.request = getRequest.call(this, success, error)
   }
 
   Reqwest.prototype = {
     abort: function () {
+      this._aborted = true
       this.request.abort()
     }
 
@@ -2355,16 +2383,16 @@ var Mustache = (typeof module !== "undefined" && module.exports) || {};
     }
   }
 
-  function reqwest(o, fn) {
+  function reqwest (o, fn) {
     return new Reqwest(o, fn)
   }
 
   // normalize newline variants according to spec -> CRLF
-  function normalize(s) {
+  function normalize (s) {
     return s ? s.replace(/\r?\n/g, '\r\n') : ''
   }
 
-  function serial(el, cb) {
+  function serial (el, cb) {
     var n = el.name
       , t = el.tagName.toLowerCase()
       , optCb = function (o) {
@@ -2373,47 +2401,49 @@ var Mustache = (typeof module !== "undefined" && module.exports) || {};
           if (o && !o.disabled)
             cb(n, normalize(o.attributes.value && o.attributes.value.specified ? o.value : o.text))
         }
+      , ch, ra, val, i
 
     // don't serialize elements that are disabled or without a name
-    if (el.disabled || !n) return;
+    if (el.disabled || !n) return
 
     switch (t) {
     case 'input':
       if (!/reset|button|image|file/i.test(el.type)) {
-        var ch = /checkbox/i.test(el.type)
-          , ra = /radio/i.test(el.type)
-          , val = el.value;
+        ch = /checkbox/i.test(el.type)
+        ra = /radio/i.test(el.type)
+        val = el.value
         // WebKit gives us "" instead of "on" if a checkbox has no value, so correct it here
-        (!(ch || ra) || el.checked) && cb(n, normalize(ch && val === '' ? 'on' : val))
+        ;(!(ch || ra) || el.checked) && cb(n, normalize(ch && val === '' ? 'on' : val))
       }
-      break;
+      break
     case 'textarea':
       cb(n, normalize(el.value))
-      break;
+      break
     case 'select':
       if (el.type.toLowerCase() === 'select-one') {
         optCb(el.selectedIndex >= 0 ? el.options[el.selectedIndex] : null)
       } else {
-        for (var i = 0; el.length && i < el.length; i++) {
+        for (i = 0; el.length && i < el.length; i++) {
           el.options[i].selected && optCb(el.options[i])
         }
       }
-      break;
+      break
     }
   }
 
   // collect up all form elements found from the passed argument elements all
   // the way down to child elements; pass a '<form>' or form fields.
   // called with 'this'=callback to use for serial() on each element
-  function eachFormElement() {
+  function eachFormElement () {
     var cb = this
-      , e, i, j
+      , e, i
       , serializeSubtags = function (e, tags) {
-        for (var i = 0; i < tags.length; i++) {
-          var fa = e[byTag](tags[i])
-          for (j = 0; j < fa.length; j++) serial(fa[j], cb)
+          var i, j, fa
+          for (i = 0; i < tags.length; i++) {
+            fa = e[byTag](tags[i])
+            for (j = 0; j < fa.length; j++) serial(fa[j], cb)
+          }
         }
-      }
 
     for (i = 0; i < arguments.length; i++) {
       e = arguments[i]
@@ -2423,12 +2453,12 @@ var Mustache = (typeof module !== "undefined" && module.exports) || {};
   }
 
   // standard query string style serialization
-  function serializeQueryString() {
+  function serializeQueryString () {
     return reqwest.toQueryString(reqwest.serializeArray.apply(null, arguments))
   }
 
   // { 'name': 'value', ... } style serialization
-  function serializeHash() {
+  function serializeHash () {
     var hash = {}
     eachFormElement.apply(function (name, value) {
       if (name in hash) {
@@ -2470,13 +2500,14 @@ var Mustache = (typeof module !== "undefined" && module.exports) || {};
       , push = function (k, v) {
           qs += enc(k) + '=' + enc(v) + '&'
         }
+      , k, v
 
     if (isArray(o)) {
       for (i = 0; o && i < o.length; i++) push(o[i].name, o[i].value)
     } else {
-      for (var k in o) {
-        if (!Object.hasOwnProperty.call(o, k)) continue;
-        var v = o[k]
+      for (k in o) {
+        if (!Object.hasOwnProperty.call(o, k)) continue
+        v = o[k]
         if (isArray(v)) {
           for (i = 0; i < v.length; i++) push(k, v[i])
         } else push(k, o[k])
@@ -2487,7 +2518,7 @@ var Mustache = (typeof module !== "undefined" && module.exports) || {};
     return qs.replace(/&$/, '').replace(/%20/g, '+')
   }
 
-  reqwest.getcallbackPrefix = function (reqId) {
+  reqwest.getcallbackPrefix = function () {
     return callbackPrefix
   }
 
@@ -2504,7 +2535,7 @@ var Mustache = (typeof module !== "undefined" && module.exports) || {};
   }
 
   return reqwest
-});
+})
 ;wax = wax || {};
 
 // Attribution
@@ -2939,6 +2970,12 @@ wax.interaction = function() {
         touchcancel: touchCancel
     };
 
+    var pointerEnds = {
+        MSPointerUp: onUp,
+        MSPointerMove: onUp,
+        MSPointerCancel: touchCancel
+    };
+
     // Abstract getTile method. Depends on a tilegrid with
     // grid[ [x, y, tile] ] structure.
     function getTile(e) {
@@ -2946,9 +2983,9 @@ wax.interaction = function() {
         var regExp = new RegExp(gm.tileRegexp());
         for (var i = 0; i < g.length; i++) {
             if (e) {
-                var isInside = ((g[i][0] < e.y) &&
+                var isInside = ((g[i][0] <= e.y) &&
                      ((g[i][0] + 256) > e.y) &&
-                      (g[i][1] < e.x) &&
+                      (g[i][1] <= e.x) &&
                      ((g[i][1] + 256) > e.x));
                 if(isInside && regExp.exec(g[i][2].src)) {
                     return g[i][2];
@@ -2975,7 +3012,8 @@ wax.interaction = function() {
         // to avoid performance hits.
         if (_downLock) return;
 
-        var pos = wax.u.eventoffset(e);
+        var _e = (e.type != "MSPointerMove" ? e : e.originalEvent);
+        var pos = wax.u.eventoffset(_e);
 
         interaction.screen_feature(pos, function(feature) {
             if (feature) {
@@ -3000,7 +3038,8 @@ wax.interaction = function() {
         // Store this event so that we can compare it to the
         // up event
         _downLock = true;
-        _d = wax.u.eventoffset(e);
+        var _e = (e.type != "MSPointerDown" ? e : e.originalEvent); 
+        _d = wax.u.eventoffset(_e);
         if (e.type === 'mousedown') {
             bean.add(document.body, 'click', onUp);
             // track mouse up to remove lockDown when the drags end
@@ -3013,7 +3052,13 @@ wax.interaction = function() {
             bean.fire(interaction, 'off');
             // Touch moves invalidate touches
             bean.add(parent(), touchEnds);
+        } else if (e.originalEvent.type === "MSPointerDown" && e.originalEvent.touches.length === 1) {
+          // Don't make the user click close if they hit another tooltip
+            bean.fire(interaction, 'off');
+            // Touch moves invalidate touches
+            bean.add(parent(), pointerEnds);
         }
+
     }
 
     function dragEnd() {
@@ -3022,27 +3067,38 @@ wax.interaction = function() {
 
     function touchCancel() {
         bean.remove(parent(), touchEnds);
+        bean.remove(parent(), pointerEnds);
         _downLock = false;
     }
 
     function onUp(e) {
         var evt = {},
-            pos = wax.u.eventoffset(e);
+            _e = (e.type != "MSPointerMove" && e.type != "MSPointerUp" ? e : e.originalEvent),
+            pos = wax.u.eventoffset(_e);
         _downLock = false;
 
-        // TODO: refine
-        for (var key in e) {
-          evt[key] = e[key];
+        for (var key in _e) {
+          evt[key] = _e[key];
         }
+
+        // for (var key in e) {
+        //   evt[key] = e[key];
+        // }
+
+
+        evt.changedTouches = [];
 
         bean.remove(document.body, 'mouseup', onUp);
         bean.remove(parent(), touchEnds);
+        bean.remove(parent(), pointerEnds);
 
         if (e.type === 'touchend') {
             // If this was a touch and it survived, there's no need to avoid a double-tap
             // but also wax.u.eventoffset will have failed, since this touch
             // event doesn't have coordinates
             interaction.click(e, _d);
+        } else if (evt.type === "MSPointerMove" || evt.type === "MSPointerUp") {
+            interaction.click(evt, pos);
         } else if (Math.round(pos.y / tol) === Math.round(_d.y / tol) &&
             Math.round(pos.x / tol) === Math.round(_d.x / tol)) {
             // Contain the event data in a closure.
@@ -3103,6 +3159,7 @@ wax.interaction = function() {
         if (attach) attach(map);
         bean.add(parent(), defaultEvents);
         bean.add(parent(), 'touchstart', onDown);
+        bean.add(parent(), 'MSPointerDown', onDown);
         return interaction;
     };
 
@@ -3376,6 +3433,12 @@ wax.u = {
         var posx = 0;
         var posy = 0;
         if (!e) { e = window.event; }
+        if (e.type == "MSPointerMove" || e.type == "MSPointerDown" || e.type == "MSPointerUp") {
+          return {
+            x: e.pageX + window.pageXOffset,
+            y: e.pageY + window.pageYOffset
+          }
+        }
         if (e.pageX || e.pageY) {
             // Good browsers
             return {

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Modest maps example | CartoDB.js</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <link rel="shortcut icon" href="http://cartodb.com/assets/favicon.ico" />
+    
+    <style>
+      html, body, #map {
+        height: 100%;
+        padding: 0;
+        margin: 0;
+      }
+    </style>
+
+  </head>
+    
+  <body>
+    <div id="map"></div>
+    
+    <script src="http://modestmaps.com/modestmaps.min.js"></script>
+    <!-- include cartodb.core.js library -->
+    <script src="http://libs.cartocdn.com/cartodb.js/v3/cartodb.core.js"></script>
+    <script>
+      
+      // create the map
+      var template = 'http://c.tiles.mapbox.com/v3/examples.map-szwdot65/{Z}/{X}/{Y}.png';
+      var provider = new MM.TemplatedLayer(template);
+      var map = new MM.Map('map', provider);
+      map.setZoom(2).setCenter({ lat: 51.55, lon: 0.1 });
+
+      // request cartodb layer
+      cartodb.Tiles.getTiles({
+        type: 'cartodb',
+        user_name: 'examples',
+        sublayers: [{
+         sql: 'select * from ne_10m_populated_p_2',
+         cartocss: '#ne_10m_populated_p_2{ marker-fill: #F11810; marker-opacity: 0.9; marker-allow-overlap: true; marker-placement: point; marker-type: ellipse; marker-width: 7.5; marker-line-width: 2; marker-line-color: #000; marker-line-opacity: 0.2; }'
+        }]
+      }, function(tileTemplate) {
+        // modestmaps use uppercase template variables, replace them
+        var template = tileTemplate.tiles[0]
+          .replace('{s}','{S}')
+          .replace('{z}','{Z}')
+          .replace('{x}','{X}')
+          .replace('{y}','{Y}')
+        // use 0,1,2,3 subdomains
+        var cartodbLayer = new MM.TemplatedLayer(template, '0123');
+        map.insertLayerAt(1, cartodbLayer);
+      });
+      
+
+    </script>
+
+  </body>
+
+</html>

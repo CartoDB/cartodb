@@ -21,12 +21,30 @@ var GMapsLayerView = function(layerModel, gmapsLayer, gmapsMap) {
 _.extend(GMapsLayerView.prototype, Backbone.Events);
 _.extend(GMapsLayerView.prototype, {
 
+  // hack function to search layer inside google maps layers
+  _searchLayerIndex: function() {
+    var self = this;
+    var index = -1;
+    this.gmapsMap.overlayMapTypes.forEach(
+      function(layer, i) {
+        if (layer == self) {
+          index = i;
+        }
+      }
+    );
+    return index;
+  },
+
   /**
    * remove layer from the map and unbind events
    */
   remove: function() {
     if(!this.isBase) {
-      this.gmapsMap.overlayMapTypes.removeAt(this.index);
+      var self = this;
+      var idx = this._searchLayerIndex();
+      if(idx > 0) {
+        this.gmapsMap.overlayMapTypes.removeAt(idx);
+      }
       this.model.unbind(null, null, this);
       this.unbind();
     }
@@ -41,14 +59,10 @@ _.extend(GMapsLayerView.prototype, {
       this.gmapsMap.mapTypes.set(a, this.gmapsLayer);
       this.gmapsMap.setMapTypeId(a);
     } else {
-      self.gmapsMap.overlayMapTypes.forEach(
-        function(layer, i) {
-          if (layer == self) {
-            self.gmapsMap.overlayMapTypes.setAt(i, self);
-            return;
-          }
-        }
-      );
+      var idx = this._searchLayerIndex();
+      if(idx >= 0) {
+        this.gmapsMap.overlayMapTypes.setAt(idx, this);
+      }
     }
   },
 

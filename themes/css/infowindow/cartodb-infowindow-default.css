@@ -38,6 +38,7 @@
     overflow-y: auto;
     overflow-x: hidden!important;
     outline: none;
+    text-align:left;
   }
 
   /* Custom gradients for scroll content */
@@ -251,6 +252,10 @@
     font:normal 13px "Helvetica",Arial;
     color:#333333;
     word-wrap: break-word;
+  }
+
+  div.cartodb-popup p.italic {
+    font-style: italic;
   }
 
   div.cartodb-popup p.loading {

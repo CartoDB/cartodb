@@ -1,6 +1,92 @@
+3.1.07 (09//06/2013)
+-----
+- fixed problem when the number of layers is different than the number of legends
+
+3.1.07 (09//03/2013)
+-----
+- fixed interactiviy in IE9 with more than one layer
+- removed extra comma in layer selector (IE fix)
+
+3.1.06 (09//02/2013)
+-----
+- fixed #66 layer interactivity was wrong when a layer was hidden
+
+3.1.05 (08//08/2013)
+-----
+- Adds addInfowindow and addCursorInteraction
+- changes layergroup request to use GET when is possible
+
+3.1.04 (08//08/2013)
+-----
+- Adds styles for NoneLegend
+
+3.1.03 (08//08/2013)
+-----
+- Prevents showing empty legends.
+
+3.1.02 (08//07/2013)
+-----
+- Flips the order of the legends.
+
+3.1.01 (08//06/2013)
+-----
+- Fixes the order of the legends.
+
+3.1.00 (08//06/2013)
+-----
+- added legends support
+
+3.0.05 (07//18//2013)
+-----
+- infowindow templates can be functions
+
+3.0.04 (07//18//2013)
+-----
+- fixed IE8 cors checking
+
+3.0.03 (07//17//2013)
+-----
+- fixed collision with older jQuery version
+- fixed infowindows when there is no interaction enabled when loading from viz.json
+
+3.0.02 (07//11//2013)
+-----
+- fixed sublayer_options
+
+3.0.01 (07//11//2013)
+-----
+- added sublayer_options
+- fixed compatibility with older viz.json
+
+3.0.00 (07//09//2013)
+-----
+- release v3 version
+- multilayer support
+- major refactor, backwards incompatible
+
+2.0.28 (04//17//2013)
+-----
+- Fixed infowindow position when a map is in a scroll page.
+- Added a new example (scroll_map).
+
+2.0.27 (04//15//2013)
+-----
+- Fixed infowindow content (#47).
+
+2.0.26 (04//15//2013)
+-----
+- Fixed interaction for IE10 browsers (#43).
+- Fixed https option in createLayer (#46).
+
+2.0.25 (03//22//2013)
+-----
+- Fixed #37 featureOut is called when the cursor moves between tiles.
+- Fixed #38 Infowindow isn't working using 'createVis' function without any parameter.
+- Fixed #27 IE styles included in main css file.
+
 2.0.24 (03//13//2013)
 -----
-- Added option to control map scrollwheel zoom
+- Added option to control map scrollwheel zoom.
 - Loading content in infowindow bug fixed.
 - New classes applied to CartoDB map components avoiding other css collisions.
 

@@ -19,7 +19,7 @@ var Overlay = {
   // raise an exception if the type does not exist
   create: function(type, vis, data) {
     var t = Overlay._types[type];
-    if(!t) {
+    if (!t) {
       cdb.log.error("Overlay: " + type + " does not exist");
     }
     var widget = t(data, vis);
@@ -40,7 +40,7 @@ var Layers = {
   },
 
   create: function(type, vis, data) {
-    if(!type) {
+    if (!type) {
       cdb.log.error("creating a layer without type");
       return null;
     }
@@ -64,14 +64,14 @@ var Loader = cdb.vis.Loader = {
   head: null,
 
   get: function(url, callback) {
-    if(!Loader._script) {
+    if (!Loader._script) {
       Loader.current = callback;
       var script = document.createElement('script');
       script.type = 'text/javascript';
       script.src = url + (~url.indexOf('?') ? '&' : '?') + 'callback=vizjson';
       script.async = true;
       Loader._script = script;
-      if(!Loader.head) {
+      if (!Loader.head) {
         Loader.head = document.getElementsByTagName('head')[0];
       }
       Loader.head.appendChild(script);
@@ -89,7 +89,7 @@ window.vizjson = function(data) {
   Loader._script = null;
   // next element
   var a = Loader.queue.shift();
-  if(a) {
+  if (a) {
     Loader.get(a[0], a[1]);
   }
 };
@@ -105,7 +105,7 @@ var Vis = cdb.core.View.extend({
     this.https = false;
     this.overlays = [];
 
-    if(this.options.mapView) {
+    if (this.options.mapView) {
       this.mapView = this.options.mapView;
       this.map = this.mapView.map;
     }
@@ -114,10 +114,10 @@ var Vis = cdb.core.View.extend({
 
   load: function(data, options) {
     var self = this;
-    if(typeof(data) === 'string') {
+    if (typeof(data) === 'string') {
       var url = data;
       cdb.vis.Loader.get(url, function(data) {
-        if(data) {
+        if (data) {
           self.load(data, options);
         } else {
           self.trigger('error', 'error fetching viz.json file');
@@ -127,21 +127,21 @@ var Vis = cdb.core.View.extend({
     }
 
     // configure the vis in http or https
-    if(window && window.location.protocol && window.location.protocol === 'https:') {
+    if (window && window.location.protocol && window.location.protocol === 'https:') {
       this.https = true;
     }
 
-    if(data.https) {
+    if (data.https) {
       this.https = data.https;
     }
 
     var scrollwheel = true;
 
-    if(options) {
-      this._applyOptions(data, options);
-      this.cartodb_logo = options.cartodb_logo;
-      scrollwheel       = options.scrollwheel;
-    }
+    options = options || {};
+
+    this._applyOptions(data, options);
+    this.cartodb_logo = options.cartodb_logo;
+    scrollwheel       = options.scrollwheel;
 
     // map
     data.maxZoom || (data.maxZoom = 20);
@@ -157,11 +157,11 @@ var Vis = cdb.core.View.extend({
     };
 
     // if the boundaries are defined, we add them to the map
-    if(data.bounding_box_sw && data.bounding_box_ne) {
+    if (data.bounding_box_sw && data.bounding_box_ne) {
       mapConfig.bounding_box_sw = data.bounding_box_sw;
       mapConfig.bounding_box_ne = data.bounding_box_ne;
     }
-    if(data.bounds) {
+    if (data.bounds) {
       mapConfig.view_bounds_sw = data.bounds[0];
       mapConfig.view_bounds_ne = data.bounds[1];
     } else {
@@ -209,6 +209,33 @@ var Vis = cdb.core.View.extend({
       this.loadLayer(layerData);
     }
 
+    if(options.legends) {
+      this.addLegends(data.layers);
+    }
+
+    // set layer options
+    if(options.sublayer_options) {
+
+      var dataLayer = this.getLayers()[1];
+
+      for(i = 0; i < options.sublayer_options.length; ++i) {
+        var o = options.sublayer_options[i];
+        var subLayer = dataLayer.getSubLayer(i);
+
+        if (this.legends) {
+
+          var j = options.sublayer_options.length - i - 1;
+          var legend = this.legends && this.legends.options.legends[j];
+
+          if (legend) {
+            o.visible ? legend.show(): legend.hide();
+          }
+
+        }
+        o.visible ? subLayer.show(): subLayer.hide();
+      }
+    }
+
     // Create the overlays
     for (var i in data.overlays) {
       this.addOverlay(data.overlays[i]);
@@ -219,6 +246,35 @@ var Vis = cdb.core.View.extend({
     })
 
     return this;
+  },
+
+  addLegends: function(layers) {
+    function createLegendView(layers) {
+      var legends = [];
+      for(var i = layers.length - 1; i>= 0; --i) {
+        var layer = layers[i];
+        if(layer.legend) {
+          layer.legend.data = layer.legend.items;
+          var legend = layer.legend;
+          if(legend.items && legend.items.length) {
+            layer.legend.index = i;
+            legends.push(new cdb.geo.ui.Legend(layer.legend));
+          }
+        }
+        if(layer.options && layer.options.layer_definition) {
+          legends = legends.concat(createLegendView(layer.options.layer_definition.layers));
+        }
+      }
+      return legends;
+    }
+
+    legends = createLegendView(layers);
+    var stackedLegend = new cdb.geo.ui.StackedLegend({
+       legends: legends
+    });
+    this.legends = stackedLegend;
+
+    this.mapView.addOverlay(stackedLegend);
   },
 
   addOverlay: function(overlay) {
@@ -238,7 +294,7 @@ var Vis = cdb.core.View.extend({
       v.bind('clean', function() {
         for(var i in this.overlays) {
           var o = this.overlays[i];
-          if(v.cid === o.cid) {
+          if (v.cid === o.cid) {
             this.overlays.splice(i, 1)
             return;
           }
@@ -264,25 +320,27 @@ var Vis = cdb.core.View.extend({
       tiles_loader: true,
       zoomControl: true,
       loaderControl: true,
+      layer_selector: false,
       searchControl: false,
-      infowindow: true
+      infowindow: true,
+      legends: true
     });
     vizjson.overlays = vizjson.overlays || [];
     vizjson.layers = vizjson.layers || [];
 
     function search_overlay(name) {
-      if(!vizjson.overlays) return null;
+      if (!vizjson.overlays) return null;
       for(var i = 0; i < vizjson.overlays.length; ++i) {
-        if(vizjson.overlays[i].type === name) {
+        if (vizjson.overlays[i].type === name) {
           return vizjson.overlays[i];
         }
       }
     }
 
     function remove_overlay(name) {
-      if(!vizjson.overlays) return;
+      if (!vizjson.overlays) return;
       for(var i = 0; i < vizjson.overlays.length; ++i) {
-        if(vizjson.overlays[i].type === name) {
+        if (vizjson.overlays[i].type === name) {
           vizjson.overlays.splice(i, 1);
           return;
         }
@@ -302,7 +360,7 @@ var Vis = cdb.core.View.extend({
       });
     }
 
-    if(opt.title  || opt.description || opt.shareable) {
+    if (opt.title  || opt.description || opt.shareable) {
       vizjson.overlays.unshift({
         type: "header",
         shareable: opt.shareable ? true: false,
@@ -310,54 +368,60 @@ var Vis = cdb.core.View.extend({
       });
     }
 
-    if(!opt.title) {
+    if (opt.layer_selector) {
+      vizjson.overlays.push({
+        type: "layer_selector"
+      });
+    }
+
+    if (!opt.title) {
       vizjson.title = null;
     }
 
-    if(!opt.description) {
+    if (!opt.description) {
       vizjson.description = null;
     }
 
-    if(!opt.tiles_loader) {
+    if (!opt.tiles_loader) {
       remove_overlay('loader');
     }
 
-    if(!opt.zoomControl) {
+    if (!opt.zoomControl) {
       remove_overlay('zoom');
     }
 
-    if(!opt.loaderControl) {
+    if (!opt.loaderControl) {
       remove_overlay('loader');
     }
 
     // if bounds are present zoom and center will not taken into account
-    if(opt.zoom !== undefined) {
+    if (opt.zoom !== undefined) {
       vizjson.zoom = parseFloat(opt.zoom);
       vizjson.bounds = null;
     }
 
-    if(opt.center_lat !== undefined) {
+    if (opt.center_lat !== undefined) {
       vizjson.center = [parseFloat(opt.center_lat), parseFloat(opt.center_lon)];
       vizjson.bounds = null;
     }
 
-    if(opt.center !== undefined) {
+    if (opt.center !== undefined) {
       vizjson.center = opt.center;
       vizjson.bounds = null;
     }
 
-    if(opt.sw_lat !== undefined) {
+    if (opt.sw_lat !== undefined) {
       vizjson.bounds = [
         [parseFloat(opt.sw_lat), parseFloat(opt.sw_lon)],
         [parseFloat(opt.ne_lat), parseFloat(opt.ne_lon)],
       ];
     }
 
-    if(vizjson.layers.length > 1) {
-      if(opt.sql) {
+    if (vizjson.layers.length > 1) {
+      if (opt.sql) {
         vizjson.layers[1].options.query = opt.sql;
       }
-      if(opt.style) {
+      if (opt.style) {
         vizjson.layers[1].options.tile_style = opt.style;
       }
 
@@ -382,72 +446,105 @@ var Vis = cdb.core.View.extend({
     return this.mapView.createLayer(layerModel);
   },
 
-  addInfowindow: function(layerView) {
-    var model = layerView.model;
-    var eventType = layerView.model.get('eventType') || 'featureClick';
-    var infowindow = Overlay.create('infowindow', this, model.get('infowindow'), true);
-    var mapView = this.mapView;
-    mapView.addInfowindow(infowindow);
-
-    var infowindowFields = layerView.model.get('infowindow');
-    // HACK: REMOVE
-    var port = model.get('sql_port');
-    var domain = model.get('sql_domain') + (port ? ':' + port: '')
-    var protocol = model.get('sql_protocol');
+  _getSqlApi: function(attrs) {
+    attrs = attrs || {};
+    var port = attrs.sql_api_port
+    var domain = attrs.sql_api_domain + (port ? ':' + port: '')
+    var protocol = attrs.sql_api_protocol;
     var version = 'v1';
-    if(domain.indexOf('cartodb.com') !== -1) {
+    if (domain.indexOf('cartodb.com') !== -1) {
       protocol = 'http';
       domain = "cartodb.com";
       version = 'v2';
     }
 
     var sql = new cartodb.SQL({
-      user: model.get('user_name'),
+      user: attrs.user_name,
       protocol: protocol,
       host: domain,
       version: version
     });
 
+    return sql;
+  },
+
+  addInfowindow: function(layerView) {
+
+    if(!layerView.containInfowindow || !layerView.containInfowindow()) {
+      return;
+    }
+
+    var mapView = this.mapView;
+    var eventType = 'featureClick';
+    var infowindow = null;
+
+    // activate interactivity for layers with infowindows
+    for(var i = 0; i < layerView.getLayerCount(); ++i) {
+      var interactivity = layerView.getSubLayer(i).get('interactivity');
+      // if interactivity is not enabled we can't enable it
+      if(layerView.getInfowindowData(i) && interactivity && interactivity.indexOf('cartodb_id') !== -1) {
+        if(!infowindow) {
+          infowindow = Overlay.create('infowindow', this, layerView.getInfowindowData(i), true);
+          mapView.addInfowindow(infowindow);
+        }
+        layerView.setInteraction(i, true);
+      }
+    }
+
+    if(!infowindow) {
+      return;
+    }
+
+    var sql = this._getSqlApi(layerView.options)
+
+
     // if the layer has no infowindow just pass the interaction
     // data to the infowindow
-    layerView.bind(eventType, function(e, latlng, pos, data) {
+    layerView.bind(eventType, function(e, latlng, pos, data, layer) {
         var cartodb_id = data.cartodb_id
+        var infowindowFields = layerView.getInfowindowData(layer)
         var fields = infowindowFields.fields;
 
-
+        infowindow.model.set({
+          'template': infowindowFields.template,
+          'template_type': infowindowFields.template_type
+        });
         // Send request
-        sql.execute("select {{fields}} from {{table_name}} where cartodb_id = {{cartodb_id }}", {
+        sql.execute("select {{{fields}}} from ({{{sql}}}) as _cartodbjs_alias where cartodb_id = {{{ cartodb_id }}}", {
           fields: _.pluck(fields, 'name').join(','),
           cartodb_id: cartodb_id,
-          table_name: model.get('table_name')
+          sql: layerView.getQuery(layer)
         })
         .done(function(interact_data) {
-          if(interact_data.rows.length == 0 ) return;
+          if (interact_data.rows.length == 0 ) return;
           interact_data = interact_data.rows[0];
-          if(infowindowFields) {
+          if (infowindowFields) {
             var render_fields = [];
             var fields = infowindowFields.fields;
             for(var j = 0; j < fields.length; ++j) {
               var f = fields[j];
-              if(interact_data[f.name] != undefined && interact_data[f.name] != "") {
+              var value = String(interact_data[f.name]);
+              if(interact_data[f.name] != undefined && value != "") {
                 render_fields.push({
-                  title: f.title ? f.name: null,
+                  title: f.title ? f.name : null,
                   value: interact_data[f.name],
-                  index: j ? j:null // mustache does not recognize 0 as false :(
+                  index: j ? j : null
                 });
               }
             }
+
             // manage when there is no data to render
-            if(render_fields.length === 0) {
+            if (render_fields.length === 0) {
               render_fields.push({
                 title: null,
                 value: 'No data available',
-                index: j ? j:null, // mustache does not recognize 0 as false :(
+                index: j ? j : null,
                 type: 'empty'
               });
             }
             content = render_fields;
           }
+
 
           infowindow.model.set({
             content:  {
@@ -461,6 +558,7 @@ var Vis = cdb.core.View.extend({
           infowindow.setError();
         })
 
+
         // Show infowindow with loading state
         infowindow
           .setLatLng(latlng)
@@ -468,11 +566,18 @@ var Vis = cdb.core.View.extend({
           .showInfowindow();
     });
 
-    layerView.bind('featureOver', function(e, latlon, pxPos, data) {
-      mapView.setCursor('pointer');
+    var hovers = [];
+
+    layerView.bind('featureOver', function(e, latlon, pxPos, data, layer) {
+      hovers[layer] = 1;
+      if(_.any(hovers))
+        mapView.setCursor('pointer');
     });
-    layerView.bind('featureOut', function() {
-      mapView.setCursor('auto');
+
+    layerView.bind('featureOut', function(m, layer) {
+      hovers[layer] = 0;
+      if(!_.any(hovers))
+        mapView.setCursor('auto');
     });
 
     layerView.infowindow = infowindow.model;
@@ -481,16 +586,13 @@ var Vis = cdb.core.View.extend({
   loadLayer: function(layerData, opts) {
     var map = this.map;
     var mapView = this.mapView;
-    layerData.type = layerData.kind;
+    //layerData.type = layerData.kind;
     var layer_cid = map.addLayer(Layers.create(layerData.type || layerData.kind, this, layerData), opts);
 
     var layerView = mapView.getLayerByCid(layer_cid);
 
     // add the associated overlays
-    if(layerData.infowindow &&
-      layerData.infowindow.fields &&
-      layerData.infowindow.fields.length > 0 &&
-      this.infowindow) {
+    if(layerView.containInfowindow && layerView.containInfowindow()) {
       this.addInfowindow(layerView);
     }
 
@@ -504,13 +606,13 @@ var Vis = cdb.core.View.extend({
   },
 
   loadingTiles: function() {
-    if(this.loader) {
+    if (this.loader) {
       this.loader.show()
     }
   },
 
   loadTiles: function() {
-    if(this.loader) {
+    if (this.loader) {
       this.loader.hide();
     }
   },
@@ -549,9 +651,134 @@ var Vis = cdb.core.View.extend({
     });
   }
 
+}, {
 
+  /**
+   * adds an infowindow to the map controlled by layer events.
+   * it enables interaction and overrides the layer interacivity
+   * ``fields`` array of column names
+   * ``map`` native map object, leaflet of gmaps
+   * ``layer`` cartodb layer (or sublayer)
+   */
+  addInfowindow: function(map, layer, fields, opts) {
+    var options = _.defaults(opts || {}, {
+      infowindowTemplate: cdb.vis.INFOWINDOW_TEMPLATE.light,
+      templateType: 'mustache',
+      triggerEvent: 'featureClick',
+      templateName: 'light',
+      extraFields: [],
+      cursorInteraction: true
+    });
+
+    if(!map) throw new Error('map is not valid');
+    if(!layer) throw new Error('layer is not valid');
+    if(!fields && fields.length === undefined ) throw new Error('fields should be a list of strings');
+
+    var f = [];
+    fields = fields.concat(options.extraFields);
+    for(var i = 0; i < fields.length; ++i) {
+      f.push({ name: fields, order: i});
+    }
+
+    var infowindowModel = new cdb.geo.ui.InfowindowModel({
+      fields: f,
+      template_name: options.templateName
+    });
+
+    var infowindow = new cdb.geo.ui.Infowindow({
+       model: infowindowModel,
+       mapView: map.viz.mapView,
+       template: new cdb.core.Template({
+         template: options.infowindowTemplate,
+         type: options.templateType
+       }).asFunction()
+    });
+
+    map.viz.mapView.addInfowindow(infowindow);
+    layer.setInteractivity(fields);
+    layer.setInteraction(true);
+
+    layer.bind(options.triggerEvent, function(e, latlng, pos, data, layer) {
+      var render_fields = [];
+      for(var k in data) {
+        render_fields.push({
+          title: k,
+          value: data[k],
+          index: 0
+        });
+      }
+      infowindow.model.set({
+        content:  {
+          fields: render_fields,
+          data: data
+        }
+      });
+
+      infowindow
+        .setLatLng(latlng)
+        .showInfowindow();
+      infowindow.adjustPan();
+    }, infowindow);
+
+    // remove the callback on clean
+    infowindow.bind('clean', function() {
+      layer.unbind(options.triggerEvent, null, infowindow);
+    });
+
+    if(options.cursorInteraction) {
+      cdb.vis.Vis.addCursorInteraction(map, layer);
+    }
+
+    return infowindow;
+
+  },
+
+  addCursorInteraction: function(map, layer) {
+
+    var hovers = [];
+    var mapView = map.viz.mapView;
+
+    layer.bind('featureOver', function(e, latlon, pxPos, data, layer) {
+      hovers[layer] = 1;
+      if(_.any(hovers))
+        mapView.setCursor('pointer');
+    }, mapView);
+
+    layer.bind('featureOut', function(m, layer) {
+      hovers[layer] = 0;
+      if(!_.any(hovers))
+        mapView.setCursor('auto');
+    }, mapView);
+  },
+
+  removeCursorInteraction: function(map, layer) {
+    var mapView = map.viz.mapView;
+    layer.unbind(null, null, mapView);
+  }
 
 });
+
+cdb.vis.INFOWINDOW_TEMPLATE = {
+  light: [
+    '<div class="cartodb-popup">',
+    '<a href="#close" class="cartodb-popup-close-button close">x</a>',
+    '<div class="cartodb-popup-content-wrapper">',
+      '<div class="cartodb-popup-content">',
+        '{{#content.fields}}',
+          '{{#title}}<h4>{{title}}</h4>{{/title}}',
+          '{{#value}}',
+            '<p {{#type}}class="{{ type }}"{{/type}}>{{{ value }}}</p>',
+          '{{/value}}',
+          '{{^value}}',
+            '<p class="empty">null</p>',
+          '{{/value}}',
+        '{{/content.fields}}',
+      '</div>',
+    '</div>',
+    '<div class="cartodb-popup-tip-container"></div>',
+  '</div>'
+  ].join('')
+};
 
 cdb.vis.Vis = Vis;
 

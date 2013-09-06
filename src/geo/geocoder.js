@@ -69,8 +69,8 @@ cdb.geo.geocoder.YAHOO = {
 cdb.geo.geocoder.NOKIA = {
 
   keys: {
-    app_id:   "qIWDkliFCtLntLma2e6O",
-    app_code: "61YWYROufLu_f8ylE0vn0Q"
+    app_id:   "KuYppsdXZznpffJsKT24",
+    app_code: "A7tBPacePg9Mj_zghvKt9Q"
   },
 
   geocode: function(address, callback) {

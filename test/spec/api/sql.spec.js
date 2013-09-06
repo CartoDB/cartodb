@@ -6,19 +6,13 @@ describe('SQL api client', function() {
   var ajaxParams;
   var throwError = false;
   var jquery_ajax;
+  var ajax;
   beforeEach(function() {
     ajaxParams = null;
-    sql = new cartodb.SQL({
-      user: USER,
-      protocol: 'https'
-    })
-
-    jquery_ajax = $.ajax;
-    $.ajax = function(params) {
-
+    ajax = function(params) {
       ajaxParams = params;
       _.defer(function() {
-        if(!throwError && params.success) params.success(TEST_DATA);
+        if(!throwError && params.success) params.success(TEST_DATA, 200);
         throwError && params.error && params.error({
           responseText: JSON.stringify({
             error: ['jaja']
@@ -26,6 +20,13 @@ describe('SQL api client', function() {
         });
       });
     }
+    sql = new cartodb.SQL({
+      user: USER,
+      protocol: 'https',
+      ajax: ajax
+    })
+
+    jquery_ajax = $.ajax;
   });
 
   afterEach(function() {
@@ -66,6 +67,29 @@ describe('SQL api client', function() {
     )
   });
 
+  it("should substitute mapnik tokens", function() {
+    sql.execute('select !pixel_width! as w, !pixel_height! as h, !bbox! as b from {{table}}', {
+      table: 't'
+    })
+
+    var earth_circumference = 40075017;
+    var tile_size = 256;
+    var srid = 3857;
+    var full_resolution = earth_circumference/tile_size;
+    var shift = earth_circumference / 2.0;
+
+    var pw = full_resolution; 
+    var ph = pw;
+    var bbox = 'ST_MakeEnvelope(' + (-shift) + ',' + (-shift) + ','
+                                  + shift + ',' + shift + ',' + srid + ')';
+
+    expect(ajaxParams.url).toEqual(
+      'https://' + USER + '.cartodb.com/api/v2/sql?q=' + encodeURIComponent(
+        'select ' + pw + ' as w, ' + ph + ' as h, '
+        + bbox + ' as b from t')
+    )
+  });
+
   it("should call promise", function() {
     var data;
     var data_callback;
@@ -100,7 +124,8 @@ describe('SQL api client', function() {
       format: 'geojson',
       protocol: 'http',
       host: 'charlies.com',
-      api_key: 'testkey'
+      api_key: 'testkey',
+      ajax: ajax
     })
     s.execute('select * from rambo', null, {
       dp: 2
@@ -114,7 +139,7 @@ describe('SQL api client', function() {
 
   it("should use jsonp if browser does not support cors", function() {
     $.support.cors = false;
-    s = new cartodb.SQL({ user: 'jaja' });
+    s = new cartodb.SQL({ user: 'jaja', ajax: ajax });
     expect(s.options.jsonp).toEqual(true);
     s.execute('select * from rambo', null, {
       dp: 2
@@ -131,13 +156,13 @@ describe('SQL api client', function() {
             '       ST_XMax(ST_Extent(the_geom)) as maxx,' +
             '       ST_YMax(ST_Extent(the_geom)) as maxy' +
             ' from (select * from rambo where id=2) as subq';
-    s = new cartodb.SQL({ user: 'jaja' });
+    s = new cartodb.SQL({ user: 'jaja', ajax: ajax });
     s.getBounds('select * from rambo where id={{id}}', {id: 2});
     expect(ajaxParams.url.indexOf(encodeURIComponent(sql))).not.toEqual(-1);
   });
 
   it("should get bounds for query with appostrophes", function() {
-    s = new cartodb.SQL({ user: 'jaja' });
+    s = new cartodb.SQL({ user: 'jaja', ajax: ajax });
     s.getBounds("select * from country where name={{ name }}", { name: "'Spain'"});
     expect(ajaxParams.url.indexOf("%26amp%3B%2339%3B")).toEqual(-1);
   });

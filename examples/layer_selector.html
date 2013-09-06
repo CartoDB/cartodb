@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <title>Layer selector example | CartoDB.js</title>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
     <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
-    
+    <link rel="shortcut icon" href="http://cartodb.com/assets/favicon.ico" />
     <style>
       html, body, #map {
         height: 100%;
@@ -17,37 +18,39 @@
         right: 20px;
         padding: 0;
       }
+
       #layer_selector ul {
         padding: 0; margin: 0;
         list-style-type: none;
       }
+
       #layer_selector li {
-        border-bottom: 1px solid #999999;
+        border-bottom: 1px solid #999;
         padding: 15px 30px;
-        font-family: "Helvetica",Arial;
+        font-family: "Helvetica", Arial;
         font-size: 13px;
         color: #444;
         cursor: auto;
       }
+
       #layer_selector li:hover {
         background-color: #F0F0F0;
         cursor: pointer;
       }
+
       #layer_selector li.selected {
         background-color: #EEE;
       }
     </style>
 
-    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/themes/css/cartodb.css" />
+    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.css" />
     <!--[if lte IE 8]>
-        <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/themes/css/cartodb.ie.css" />
+        <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.ie.css" />
     <![endif]-->
-
   </head>
-    
   <body>
     <div id="map"></div>
-    <div id="layer_selector" class="cartodb_infobox">
+    <div id="layer_selector" class="cartodb-infobox">
       <ul>
         <li data="all" class="selected">All countries</li>
         <li data="1000">area >1000 km<sup>2</sup></li>
@@ -56,60 +59,54 @@
         <li data="50000">area >50000 km<sup>2</sup></li>
       </ul>
     </div>
-  </body>
 
-  <!-- include cartodb.js library -->
-  <script src="http://libs.cartocdn.com/cartodb.js/v2/cartodb.js"></script>
+    <!-- include cartodb.js library -->
+    <script src="http://libs.cartocdn.com/cartodb.js/v3/cartodb.js"></script>
 
-  <script>
+    <script>
+      // create layer selector
+      function createSelector(layer) {
+        var sql = new cartodb.SQL({ user: 'documentation' });
 
-    // create layer selector
-    function createSelector(layer) {
-      var sql = new cartodb.SQL({ user: 'examples' });
+        var $options = $('#layer_selector li');
+        $options.click(function(e) {
+          // get the area of the selected layer
+          var $li = $(e.target);
+          var area = $li.attr('data');
 
-      var $options = $('#layer_selector li');
-      $options.click(function(e) {
+          // deselect all and select the clicked one
+          $options.removeClass('selected');
+          $li.addClass('selected');
 
-        // get the area of the selected layer
-        var $li = $(e.target);
-        var area = $li.attr('data');
+          // create query based on data from the layer
+          var query = "select * from european_countries_e";
 
-        // deselect all and select the clicked one
-        $options.removeClass('selected');
-        $li.addClass('selected');
+          if(area !== 'all') {
+            query = "select * from european_countries_e where area > " + area;
+          }
 
-        // create query based on data from the layer
-        var query = "select * from european_countries_e";
-        if(area !== 'all') {
-          query = "select * from european_countries_e where area > " + area;
-        }
+          // change the query in the layer to update the map
+          layer.setQuery(query);
+        });
+      }
 
-        // change the query in the layer to update the map
-        layer.setQuery(query);
-      });
-    }
-
-    function main() {
-      cartodb.createVis('map', 'http://examples.cartodb.com/api/v1/viz/european_countries_e/viz.json', {
+      function main() {
+        cartodb.createVis('map', 'http://documentation.cartodb.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json', {
           tiles_loader: true,
           center_lat: 50,
           center_lon: 20,
           zoom: 3
-      })
-      .done(function(vis, layers) {
-        // layer 0 is the base layer, layer 1 is cartodb layer
-        createSelector(layers[1])
-      })
-      .error(function(err) {
-        console.log(err);
-      });
+        })
+        .done(function(vis, layers) {
+          // layer 0 is the base layer, layer 1 is cartodb layer
+          createSelector(layers[1]);
+        })
+        .error(function(err) {
+          console.log(err);
+        });
+      }
 
-
-    }
-
-    window.onload = main;
-
-  </script>
-
-
+      window.onload = main;
+    </script>
+  </body>
 </html>

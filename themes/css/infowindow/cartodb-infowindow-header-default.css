@@ -35,11 +35,13 @@ div.cartodb-popup.header div.cartodb-popup-header h1 {
   color:#FFFFFF;
   line-height:23px;
   text-shadow: 0 1px rgba(0,0,0,0.5);
+  word-wrap:break-word;
 }
 
 div.cartodb-popup.header div.cartodb-popup-header h1 a {
   color:white;
   font-size:21px;
+  word-wrap:break-word;
 }
 
 div.cartodb-popup.header div.cartodb-popup-header h1 a:hover {

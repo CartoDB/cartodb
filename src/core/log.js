@@ -47,9 +47,11 @@
 
         error: function() {
             _console.error.apply(_console, arguments);
-            cdb.errors.create({
-                msg: Array.prototype.slice.call(arguments).join('')
-            });
+            if(cdb.config.ERROR_TRACK_ENABLED) {
+              cdb.errors.create({
+                  msg: Array.prototype.slice.call(arguments).join('')
+              });
+            }
         },
 
         log: function() {

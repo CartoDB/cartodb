@@ -33,7 +33,14 @@ cdb.ui.common.TabPane = cdb.core.View.extend({
     } else {
       this.tabs[name] = view.cid;
       this.addView(view);
-      this.$el.append(view.el);
+      if(options.after !== undefined) {
+        var e = this.$el.children()[options.after];
+        view.$el.insertAfter(e);
+      } else if(options.prepend) {
+        this.$el.prepend(view.el);
+      } else {
+        this.$el.append(view.el);
+      }
       this.trigger('tabAdded', name, view);
       if(options.active) {
         this.active(name);
@@ -72,10 +79,17 @@ cdb.ui.common.TabPane = cdb.core.View.extend({
     return this.activePane;
   },
 
+  size: function() {
+    return _.size(this.tabs);
+  },
+
+  clean: function() {
+    this.removeTabs();
+    cdb.core.View.prototype.clean.call(this)
+  },
+
   removeTab: function(name) {
-    if(this.tabs[name] === undefined) {
-      cdb.log.debug("trying to remove non existing pane " + name);
-    } else {
+    if (this.tabs[name] !== undefined) {
       var vid = this.tabs[name];
       this._subviews[vid].clean();
       delete this.tabs[name];
@@ -104,9 +118,7 @@ cdb.ui.common.TabPane = cdb.core.View.extend({
     self = this,
     vid  = this.tabs[name];
 
-    if (vid === undefined) {
-      cdb.log.debug("trying to switch to non existing pane " + name);
-    } else {
+    if (vid !== undefined) {
 
       if (this.activeTab !== name) {
 
@@ -127,12 +139,12 @@ cdb.ui.common.TabPane = cdb.core.View.extend({
         if(v.activated) {
           v.activated();
         }
-        self.trigger('tabEnabled', name, v);
-        self.trigger('tabEnabled:' + name,  v);
 
         this.activeTab = name;
         this.activePane = v;
 
+        self.trigger('tabEnabled', name, v);
+        self.trigger('tabEnabled:' + name,  v);
       }
 
       return this.activePane;

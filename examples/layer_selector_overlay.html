@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Layer selector overlay example | CartoDB.js</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <link rel="shortcut icon" href="http://cartodb.com/assets/favicon.ico" />
+    <style>
+      html, body, #map {
+        width:100%;
+        height: 100%;
+        padding: 0;
+        margin: 0;
+      }
+    </style>
+
+    <link rel="stylesheet" href="/themes/css/cartodb.css" />
+    <!--[if lte IE 8]>
+        <link rel="stylesheet" href="/themes/css/cartodb.ie.css" />
+    <![endif]-->
+  </head>
+    
+  <body>
+    <div id="map"></div>
+
+    <!-- include cartodb.js library -->
+    <script src="/dist/cartodb.js"></script>
+
+    <script>
+
+      function main() {
+        cartodb.createVis('map', 'http://development.localhost.lan:3000/api/v2/viz/1742e22e-cc67-11e2-8cdb-94942608096a/viz.json', {
+          shareable: true,
+          title: true,
+          description: true,
+          search: true,
+          tiles_loader: true,
+          layer_selector: true,
+          center_lat: 0,
+          center_lon: 0,
+          zoom: 2,
+          no_cdn: true
+        })
+        .error(function(err) {
+          console.log(err);
+        });
+
+
+      }
+
+      //window.onload = main;
+      var fn = function() { cartodb.load('../src/', main); }
+      window.onload = fn;
+      // $(document).ready(main);
+    </script>
+  </body>
+</html>

@@ -466,6 +466,18 @@ cdb.geo.ui.StackedLegend = cdb.core.View.extend({
 
   },
 
+  getLayerByIndex: function(index) {
+    if (!this._layerByIndex) {
+      this._layerByIndex = {};
+      var legends = this.options.legends;
+      for (var i = 0; i < legends.length; ++i) {
+        var legend = legends[i];
+        this._layerByIndex[legend.options.index] = legend;
+      }
+    }
+    return this._layerByIndex[index];
+  },
+
   _setupBinding: function(legend) {
 
     legend.model.bind("change:type", this._checkVisibility, this);

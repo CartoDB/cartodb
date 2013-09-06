@@ -1,3 +1,11 @@
+3.1.09 (09//06/2013)
+-----
+- fixed problem when the number of layers is different than the number of legends (refix)
+
+3.1.08 (09//06/2013)
+-----
+- fixed problem when the number of layers is different than the number of legends
+
 3.1.07 (09//03/2013)
 -----
 - fixed interactiviy in IE9 with more than one layer

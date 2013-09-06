@@ -1,6 +1,6 @@
-// cartodb.js version: 3.1.07
+// cartodb.js version: 3.1.09
 // uncompressed version: cartodb.uncompressed.js
-// sha: e8c030eadac03a97bc7d0125204d7673be882117
+// sha: 8ada7b59b94fa59058a31a842092deac2004a893
 (function() {
   var root = this;
 
@@ -19873,7 +19873,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.1.07';
+    cdb.VERSION = '3.1.09';
 
     cdb.CARTOCSS_VERSIONS = {
       '2.0.0': '',
@@ -22196,6 +22196,18 @@ cdb.geo.ui.StackedLegend = cdb.core.View.extend({
 
     _.each(this.options.legends, this._setupBinding, this);
 
+  },
+
+  getLayerByIndex: function(index) {
+    if (!this._layerByIndex) {
+      this._layerByIndex = {};
+      var legends = this.options.legends;
+      for (var i = 0; i < legends.length; ++i) {
+        var legend = legends[i];
+        this._layerByIndex[legend.options.index] = legend;
+      }
+    }
+    return this._layerByIndex[index];
   },
 
   _setupBinding: function(legend) {
@@ -28090,6 +28102,7 @@ var Vis = cdb.core.View.extend({
           layer.legend.data = layer.legend.items;
           var legend = layer.legend;
           if(legend.items && legend.items.length) {
+            layer.legend.index = i;
             legends.push(new cdb.geo.ui.Legend(layer.legend));
           }
         }
@@ -28757,8 +28770,8 @@ cdb.vis.Overlay.register('layer_selector', function(data, vis) {
 
   if(vis.legends) {
     layerSelector.bind('change:visible', function(visible, order) {
-      var o = vis.legends.options.legends.length - order - 1;
-      var legend = vis.legends && vis.legends.options.legends[o];
+      //var o = vis.legends.options.legends.length - order - 1;
+      var legend = vis.legends && vis.legends.getLayerByIndex(order);
 
       if(legend) {
         legend[visible ? 'show': 'hide']();

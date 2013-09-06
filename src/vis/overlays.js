@@ -140,8 +140,8 @@ cdb.vis.Overlay.register('layer_selector', function(data, vis) {
 
   if(vis.legends) {
     layerSelector.bind('change:visible', function(visible, order) {
-      var o = vis.legends.options.legends.length - order - 1;
-      var legend = vis.legends && vis.legends.options.legends[o];
+      //var o = vis.legends.options.legends.length - order - 1;
+      var legend = vis.legends && vis.legends.getLayerByIndex(order);
 
       if(legend) {
         legend[visible ? 'show': 'hide']();

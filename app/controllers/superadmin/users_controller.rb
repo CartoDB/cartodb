@@ -5,7 +5,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
   before_filter :get_user, :only => [:update, :destroy, :show]
 
   def index
-    @users = (params[:overquota].present? ? User.overquota : User.all)
+    @users = (params[:overquota].present? ? User.overquota(0.20) : User.all)
     respond_with(:superadmin, @users.map(&:data))
   end
 
@@ -24,6 +24,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
       @user.account_type            = attributes[:account_type]             if attributes.has_key?(:account_type)
       @user.private_tables_enabled  = attributes[:private_tables_enabled]   if attributes.has_key?(:private_tables_enabled)
       @user.map_view_quota          = attributes[:map_view_quota]           if attributes.has_key?(:map_view_quota)
+      @user.map_view_block_price    = attributes[:map_view_block_price]           if attributes.has_key?(:map_view_block_price)
       @user.period_end_date         = attributes[:period_end_date]          if attributes.has_key?(:period_end_date)
       @user.max_layers              = attributes[:max_layers]               if attributes.has_key?(:max_layers)
       @user.user_timeout            = attributes[:user_timeout]             if attributes.has_key?(:user_timeout)
@@ -56,6 +57,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
       @user.account_type            = attributes[:account_type]             if attributes.has_key?(:account_type)
       @user.private_tables_enabled  = attributes[:private_tables_enabled]   if attributes.has_key?(:private_tables_enabled)
       @user.map_view_quota          = attributes[:map_view_quota]           if attributes.has_key?(:map_view_quota)
+      @user.map_view_block_price    = attributes[:map_view_block_price]     if attributes.has_key?(:map_view_block_price)
       @user.period_end_date         = attributes[:period_end_date]          if attributes.has_key?(:period_end_date)
       @user.max_layers              = attributes[:max_layers]               if attributes.has_key?(:max_layers)
       @user.user_timeout            = attributes[:user_timeout]             if attributes.has_key?(:user_timeout)

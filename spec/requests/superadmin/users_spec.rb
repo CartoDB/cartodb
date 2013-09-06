@@ -94,6 +94,7 @@ feature "Superadmin's users API" do
     @user_atts[:table_quota]    = 20
     @user_atts[:account_type]   = 'Juliet'
     @user_atts[:private_tables_enabled] = true
+    @user_atts[:map_view_block_price] = 15
 
     post_json superadmin_users_path, { :user => @user_atts }, default_headers do |response|
       response.status.should == 201
@@ -101,6 +102,7 @@ feature "Superadmin's users API" do
       response.body[:table_quota].should == 20
       response.body[:account_type].should == 'Juliet'
       response.body[:private_tables_enabled].should == true
+      response.body[:map_view_block_price].should == 15
 
       # Double check that the user has been created properly
       user = User.filter(:email => @user_atts[:email]).first
@@ -108,6 +110,7 @@ feature "Superadmin's users API" do
       user.table_quota.should == 20
       user.account_type.should == 'Juliet'
       user.private_tables_enabled.should == true
+      user.map_view_block_price.should == 15
     end
   end
 
@@ -122,7 +125,8 @@ feature "Superadmin's users API" do
                     :database_timeout => 200000,
                     :account_type     => 'Juliet',
                     :private_tables_enabled => true,
-                    :upgraded_at      => t }
+                    :upgraded_at      => t,
+                    :map_view_block_price => 200 }
 
     # test to true
     put_json superadmin_user_path(user), { :user => @update_atts }, default_headers do |response|
@@ -137,6 +141,7 @@ feature "Superadmin's users API" do
     user.database_timeout.should == 200000
     user.user_timeout.should == 100000
     user.upgraded_at.to_s.should == t.to_s
+    user.map_view_block_price.should == 200
 
     # then test back to false
     put_json superadmin_user_path(user), { :user => {:private_tables_enabled => false} }, default_headers do |response|
@@ -144,6 +149,7 @@ feature "Superadmin's users API" do
     end
     user = User[user.id]
     user.private_tables_enabled.should == false
+    user.map_view_block_price.should == 200
   end
 
 

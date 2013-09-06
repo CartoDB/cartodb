@@ -115,11 +115,13 @@ CartoDBLayerCommon.prototype = {
           .tilejson(tilejson)
           .on('on', function(o) {
             o.layer = layer || 0;
+            o.layer = self.getLayerNumberByIndex(o.layer);
             self._manageOnEvents(self.options.map, o);
           })
           .on('off', function(o) {
             o = o || {}
             o.layer = layer || 0;
+            o.layer = self.getLayerNumberByIndex(o.layer);
             self._manageOffEvents(self.options.map, o);
           });
       }

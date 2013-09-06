@@ -184,4 +184,31 @@ describe("common.geo.ui.Legend", function() {
 
   });
 
+  describe("ColorLegend", function() {
+    var legend;
+    beforeEach(function() {
+      var data = [
+        { name: true, value: "red" },
+        { name: false, value: "red"  },
+        { name: "#f1f1f1", value: "red"  },
+        { name: null, value: "red"  },
+      ];
+
+      legend = new cdb.geo.ui.ColorLegend({
+        items: new Backbone.Collection(data)
+      });
+    });
+
+    it("should render boolean values and nulls", function() {
+      legend.render();
+      var bullets = legend.$('li');
+      expect(bullets.length).toEqual(4);
+      expect($(bullets[0]).text()).toEqual("true");
+      expect($(bullets[1]).text()).toEqual("false");
+      expect($(bullets[2]).text()).toEqual("#f1f1f1");
+      expect($(bullets[3]).text()).toEqual("null");
+    });
+  });
+
+
 });

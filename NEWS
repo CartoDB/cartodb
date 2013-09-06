@@ -1,3 +1,17 @@
+3.1.07 (09//03/2013)
+-----
+- fixed interactiviy in IE9 with more than one layer
+- removed extra comma in layer selector (IE fix)
+
+3.1.06 (09//02/2013)
+-----
+- fixed #66 layer interactivity was wrong when a layer was hidden
+
+3.1.05 (08//08/2013)
+-----
+- Adds addInfowindow and addCursorInteraction
+- changes layergroup request to use GET when is possible
+
 3.1.04 (08//08/2013)
 -----
 - Adds styles for NoneLegend

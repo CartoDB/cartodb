@@ -276,6 +276,57 @@ cdb.geo.ui.BubbleLegend = cdb.core.View.extend({
 });
 
 /*
+ * CategoryLegend
+ *
+ * */
+cdb.geo.ui.CategoryLegend = cdb.core.View.extend({
+
+  tagName: "ul",
+
+  initialize: function() {
+
+    this.items = this.options.items;
+    this.template = _.template("");
+    this.model = new cdb.core.Model({
+      type: "custom"
+    });
+
+  },
+
+  _renderItems: function() {
+
+    this.items.each(this._renderItem, this);
+
+  },
+
+  _renderItem: function(item) {
+
+    view = new cdb.geo.ui.LegendItem({
+      model: item,
+      template: '<div class="bullet" style="background:<%= value %>"></div><%= name || "null" %>'
+    });
+
+    this.$el.append(view.render());
+
+  },
+
+  render: function() {
+
+    this.$el.html(this.template(this.model.toJSON()));
+
+    if (this.items.length > 0) {
+      this._renderItems();
+    } else {
+      this.$el.html('<li class="warning">The category legend is empty</li>');
+    }
+
+    return this;
+
+  }
+
+});
+
+/*
  * ColorLegend
  *
  * */
@@ -303,7 +354,7 @@ cdb.geo.ui.ColorLegend = cdb.core.View.extend({
 
     view = new cdb.geo.ui.LegendItem({
       model: item,
-      template: '<div class="bullet" style="background:<%= value %>"></div><%= name || "null" %>'
+      template: '<div class="bullet" style="background:<%= value %>"></div><%= name || ((name === false) ? "false": "null") %>'
     });
 
     this.$el.append(view.render());

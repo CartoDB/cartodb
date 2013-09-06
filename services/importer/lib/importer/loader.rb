@@ -1,20 +1,24 @@
 # encoding: utf-8
 require_relative './ogr2ogr'
+require_relative './format_linter'
 require_relative './csv_normalizer'
+require_relative './shp_normalizer'
 require_relative './json2csv'
 require_relative './xlsx2csv'
+require_relative './xls2csv'
 require_relative './georeferencer'
 
 module CartoDB
   module Importer2
     class Loader
-      SCHEMA        = 'cdb_importer'
-      TABLE_PREFIX  = 'importer'
-      NORMALIZERS   = [CsvNormalizer, Xlsx2Csv, Json2Csv]
+      SCHEMA            = 'cdb_importer'
+      TABLE_PREFIX      = 'importer'
+      NORMALIZERS       = [FormatLinter, CsvNormalizer, Xls2Csv, Xlsx2Csv, 
+                          Json2Csv]
+      DEFAULT_ENCODING  = 'UTF-8'
 
       def self.supported?(extension)
-        return true unless extension == '.shp' || extension == '.osm'
-        return false
+        !(%w{ .osm .tif .tiff }.include?(extension))
       end #self.supported?
 
       def initialize(job, source_file, ogr2ogr=nil, georeferencer=nil)
@@ -32,6 +36,8 @@ module CartoDB
         job.log "ogr2ogr output:    #{ogr2ogr.command_output}"
         job.log "ogr2ogr exit code: #{ogr2ogr.exit_code}"
 
+        raise InvalidGeoJSONError if ogr2ogr.command_output =~ /nrecognized GeoJSON/
+        raise LoadError if ogr2ogr.exit_code != 0
         georeferencer.run
         self
       end #run
@@ -53,7 +59,11 @@ module CartoDB
       end #ogr2ogr
 
       def encoding
-        CsvNormalizer.new(source_file.fullpath, job).encoding
+        normalizer = [ShpNormalizer, CsvNormalizer].find { |normalizer|
+          normalizer.supported?(source_file.extension)
+        }
+        return DEFAULT_ENCODING unless normalizer
+        normalizer.new(source_file.fullpath, job).encoding
       end #encoding
 
       def georeferencer

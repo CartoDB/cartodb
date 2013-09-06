@@ -9,7 +9,8 @@ module CartoDB
         latitud lati decimallatitude decimallat }
       LONGITUDE_POSSIBLE_NAMES  = %w{ longitude lon lng 
         longitudedecimal longitud long decimallongitude decimallong }
-      GEOMETRY_POSSIBLE_NAMES   = %w{ geometry the_geom wkb_geometry geom }
+      GEOMETRY_POSSIBLE_NAMES   = %w{ geometry the_geom wkb_geometry geom
+                                      geojson wkt }
       DEFAULT_SCHEMA            = 'cdb_importer'
       THE_GEOM_WEBMERCATOR     = 'the_geom_webmercator'
 
@@ -26,6 +27,8 @@ module CartoDB
         create_the_geom_from_geometry_column  || 
         create_the_geom_from_latlon           ||
         create_the_geom_in(table_name)
+
+        raise_if_geometry_collection
         self
       end #run
 
@@ -47,11 +50,13 @@ module CartoDB
         return false unless geometry_column_name
         column = Column.new(db, table_name, geometry_column_name, schema, job)
         column.geometrify
+        
         unless column_exists_in?(table_name, :the_geom)
           column.rename_to(:the_geom) 
         end
 
         job.log "Creating the_geom from #{geometry_column_name} column"
+        handle_multipoint(column) if multipoint?
         self
       rescue => exception
         job.log "Renaming #{geometry_column_name} to invalid_the_geom"
@@ -81,7 +86,7 @@ module CartoDB
 
         db.run(%Q{
           SELECT public.AddGeometryColumn(
-            '#{schema}','#{table_name}','the_geom',4326,'POINT',2
+            '#{schema}','#{table_name}','the_geom',4326,'geometry',2
           );
         })
       end #create_the_geom_in
@@ -121,6 +126,12 @@ module CartoDB
         column.drop
       end #drop_the_geom_webmercator
 
+      def raise_if_geometry_collection
+        column = Column.new(db, table_name, :the_geom, schema, job)
+        return self unless column.geometry_type == 'GEOMETRYCOLLECTION'
+        raise GeometryCollectionNotSupportedError
+      end #raise_if_geometry_collection
+
       def find_column_in(table_name, possible_names)
         sample = db[%Q{
           SELECT  column_name 
@@ -133,6 +144,21 @@ module CartoDB
 
         !!sample && sample.fetch(:column_name, false)
       end #find_column_in
+
+      def handle_multipoint(column)
+        job.log "Renaming the_geom to the_geom_raw"
+        column.rename_to(:the_geom_raw)
+      end #handle_multipoint
+
+      def multipoint?
+        db[%Q{
+          SELECT public.GeometryType(the_geom)
+          FROM #{qualified_table_name}
+          AS geometrytype
+        }].first.fetch(:geometrytype) == 'MULTIPOINT'
+      rescue
+        false
+      end #multipoint?
 
       private
 

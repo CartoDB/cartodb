@@ -16,12 +16,14 @@ module CartoDB
       end #initialize
 
       def run
-        raise MissingProjectionError unless prj?
+        raise InvalidShpError         unless dbf? && shx?
+        raise MissingProjectionError  unless prj?
 
         normalize
-        stdout, stderr, status  = Open3.capture3(command)
-        self.command_output     = stdout + stderr
-        self.exit_code          = status.to_i
+        #stdout, stderr, status  = Open3.capture3(command)
+        command.run
+        self.command_output     = command.command_output
+        self.exit_code          = command.exit_code
 
         raise UnknownSridError        if command_output =~ /invalid SRID/
         raise ShpToSqlConversionError if exit_code != 0
@@ -30,7 +32,8 @@ module CartoDB
       end #run
 
       def command
-        %Q({ #{statement_timeout } #{shp2pgsql_command} } | #{psql_command})
+        #%Q({ #{statement_timeout } #{shp2pgsql_command} } | #{psql_command})
+        @command ||= Ogr2ogr.new(table_name, filepath, pg_options, encoding: detected_encoding)
       end #command
 
       def normalize
@@ -49,16 +52,24 @@ module CartoDB
       end #normalize
 
       def normalized?
-        normalizer_output && detected_projection
+        !!(normalizer_output && detected_projection)
       end #normalize?
 
       def prj?
         File.exists?(filepath.gsub(%r{\.shp$}, '.prj'))
       end #prj?
 
+      def dbf?
+        File.exists?(filepath.gsub(%r{\.shp$}, '.dbf'))
+      end #dbf?
+
+      def shx?
+        File.exists?(filepath.gsub(%r{\.shp$}, '.shx'))
+      end #shx?
+
       def detected_projection
         projection = normalizer_output.fetch(:projection)
-        return nil if projection == 'None'
+        return nil if projection == 'None' || projection.nil?
         projection.to_i
       end #detected_projection
 
@@ -124,11 +135,9 @@ module CartoDB
         encoding.gsub(/windows-/, 'CP')
       end #codepage_for
 
-      def probably_wrongly_detected_codepage?(encoding)
+      def windows?(encoding)
         !!(encoding =~ /windows/)
-      end #probably_wrongly_detected_codepage?
-
-      alias_method :windows?, :probably_wrongly_detected_codepage?
+      end #windows?
     end # Shp2pgsql
   end # Importer2
 end # CartoDB

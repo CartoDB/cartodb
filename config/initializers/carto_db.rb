@@ -115,6 +115,11 @@ module CartoDB
       title: 'File conversion errors',
       what_about: "To process your file, we tried to convert it to a more common geospatial format and failed. Try converting it to a Shapefile or a CSV locally before you upload."
     },
+    2001 => {
+      title: 'Unable to load data',
+      what_about: "We couldn't load data from your file into the database.
+      Please <a href='mailto:support@cartodb.com?subject=Import load error'>contact us</a> and we will help you to load your data."
+    },
     3000 => {
       title: 'Geometry error',
       what_about: "There were problems processing the geometry data in your file. Check that it opens locally first, using QGIS or other first. It is always good to try other file formats if the first attempt fails."
@@ -139,6 +144,10 @@ module CartoDB
       title: 'Unknown SRID',
       what_about: "The SRID of the provided file it's not in the spatial_ref_sys table. You can get rid of this error inserting the SRID specific data in the spatial_ref_sys table."
     },
+    3009 => {
+      title: 'SHP Normalization error', 
+      what_about: "We where unable to detect the encoding or projection of your Shapefile. Try converting the file to UTF-8 and a 4326 SRID"
+    },
     3100 => {
       title: 'Projection error',
       what_about: "Try converting your file to a common projection, such as EPSG:4326, prior to uploading. You can do that with OGR or QGIS."
@@ -162,6 +171,10 @@ module CartoDB
     3201 => {
       title: 'Geometry Collection not supported',
       what_about: "We are working to support more formats every day, but currently we cannot take mixed geometry types. Take a look at your data source and see if other formats are available, otherwise, look into tools like OGR to split this file into valid ESRI Shapefiles prior to importing. "
+    },
+    3202 => {
+      title: 'Empty KML', 
+      what_about: "This KML doesn't include actual data, but a link to another KML with the data. Please extract the URL from this KML and try to import it"
     },
     4000 => {
       title: 'Raster errors',

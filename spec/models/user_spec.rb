@@ -22,8 +22,8 @@ describe User do
     @new_user.save
     @new_user.reload
     @new_user.should_not be_new
-    @new_user.in_database.test_connection.should == true
     @new_user.database_name.should_not be_nil
+    @new_user.in_database.test_connection.should == true
   end
 
   it "should have a crypted password" do
@@ -465,6 +465,20 @@ describe User do
       user.stubs(:period_end_date).returns(Date.parse("2012-12-02"))
       user.last_billing_cycle.should == Date.parse("2013-03-02")
     end
+  end
+
+  it "should calculate the trial end date" do
+    @user.stubs(:upgraded_at).returns(nil)
+    @user.trial_ends_at.should be_nil
+    @user.stubs(:upgraded_at).returns(Time.now - 5.days)
+    @user.stubs(:account_type).returns('CORONELLI')
+    @user.trial_ends_at.should be_nil
+    @user.stubs(:account_type).returns('MAGELLAN')
+    @user.trial_ends_at.should_not be_nil
+    @user.stubs(:upgraded_at).returns(nil)
+    @user.trial_ends_at.should be_nil
+    @user.stubs(:upgraded_at).returns(Time.now - 15.days)
+    @user.trial_ends_at.should_not be_nil
   end
 
   describe '#link_ghost_tables' do

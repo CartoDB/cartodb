@@ -55,21 +55,22 @@ module ApplicationHelper
 
   def frontend_config
     config = {
-      tiler_protocol:     Cartodb.config[:tiler]["private"]["protocol"],
-      tiler_port:         Cartodb.config[:tiler]["private"]["port"],
-      tiler_domain:       Cartodb.config[:tiler]["private"]["domain"],
-      sql_api_protocol:   Cartodb.config[:sql_api_protocol],
-      sql_api_domain:     "#{request.subdomain}.#{Cartodb.config[:sql_api_domain]}",
-      sql_api_endpoint:   Cartodb.config[:sql_api_endpoint],
-      sql_api_port:       Cartodb.config[:sql_api_port],
-      cartodb_com_hosted: Cartodb.config[:cartodb_com_hosted],
-      account_host:       Cartodb.config[:account_host],
-      dropbox_api_key:    Cartodb.config[:dropbox_api_key]
+      tiler_protocol:      Cartodb.config[:tiler]["private"]["protocol"],
+      tiler_port:          Cartodb.config[:tiler]["private"]["port"],
+      tiler_domain:        Cartodb.config[:tiler]["private"]["domain"],
+      sql_api_protocol:    Cartodb.config[:sql_api_protocol],
+      sql_api_domain:      "#{request.subdomain}.#{Cartodb.config[:sql_api_domain]}",
+      sql_api_endpoint:    Cartodb.config[:sql_api_endpoint],
+      sql_api_port:        Cartodb.config[:sql_api_port],
+      cartodb_com_hosted:  Cartodb.config[:cartodb_com_hosted],
+      account_host:        Cartodb.config[:account_host],
+      dropbox_api_key:     Cartodb.config[:dropbox_api_key],
+      max_asset_file_size: Cartodb.config[:assets]["max_file_size"]
     }
     if Cartodb.config[:cdn_url].present?
       config[:cdn_url] = {
-        http:             Cartodb.config[:cdn_url].try("fetch", "http", nil),
-        https:            Cartodb.config[:cdn_url].try("fetch", "https", nil)
+        http:              Cartodb.config[:cdn_url].try("fetch", "http", nil),
+        https:             Cartodb.config[:cdn_url].try("fetch", "https", nil)
       }
     end
     config.to_json

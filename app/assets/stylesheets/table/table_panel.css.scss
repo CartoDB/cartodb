@@ -723,18 +723,36 @@ a.info {
     }
 
     .blocked {
+      position:absolute;
+      top:0;
+      right:0;
+      left:0;
+      bottom:0;
       display:none;
-      margin: 20px 0 0 0;
-      border: 1px solid #E6E6E6;
-      @include border-radius(4px);
-      padding: 20px;
-      color: #666666;
+      padding:20px 40px;
+      
       text-align:center;
       line-height: normal;
+      background:rgba(white,0.8);
+      z-index:10;
+
+      span.block-icon {
+        position:relative;
+        @include inline-block();
+        width:111px;
+        height:110px;
+        @include icons-sprite(block_icon);
+      }
 
       p {
-        margin: 0 0 3px 0;
+        margin: 30px 0 3px 0;
         line-height: normal;
+        color: #999999;
+      }
+
+      a {
+        @include inline-block();
+        margin:20px 0 0 0;
       }
 
     }
@@ -769,6 +787,7 @@ a.info {
         .edit_in_place.input {
           @include position(7px, 0, false, false);
           @include default-input();
+          z-index:2;
 
           input {
             font-size: 13px;

@@ -246,15 +246,15 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
         $jscrollpane.data().jsp && $jscrollpane.data().jsp.destroy();
       }
 
-      // Clone fields
+      // Clone fields and template name
       var fields = _.map(this.model.attributes.content.fields, function(field){
         return _.clone(field);
       });
+      var data = this.model.get('content') ? this.model.get('content').data : {};
 
       // If a custom template is not applied, let's sanitized
       // fields for the template rendering
       if (!this.model.get('template')) {
-        // Clone template name
         var template_name = _.clone(this.model.attributes.template_name);
 
         // Sanitized them
@@ -263,13 +263,17 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
 
       // Join plan fields values with content to work with
       // custom infowindows and CartoDB infowindows.
-      var data = this.model.get('content') ? this.model.get('content').data : {}
+      var values = {};
+      _.each(this.model.get('content').fields, function(pair) {
+        values[pair.title] = pair.value;
+      })
       var obj = _.extend({
           content: {
             fields: fields,
             data: data
           }
-        },data);
+        },values);
+
 
       this.$el.html(this.template(obj));
 

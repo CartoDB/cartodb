@@ -421,7 +421,10 @@ Adds a new data to the current layer. With this method data from multiple tables
   ```
 <div class="margin20"></div>
 
-sql and cartocss are mandatory, an exception is raised if any of them are not present. If the interactivity is not set, there is no interactivity enabled for that layer (better performance).
+sql and cartocss are mandatory, an exception is raised if any of them are not present. If the interactivity is not set, there is no interactivity enabled for that layer (better performance). SQL and CartoCSS syntax should be correct, see Postgres and CartoCSS reference. There are some restrictions in the SQL queries:
+
+- must not write. INSERT, DELETE, UPDATE, ALTER and so on are not allowed (the query will fail)
+- must not contain trialing semicolon
 
 ###### Returns
 
@@ -477,7 +480,7 @@ self object
 <div class="code_title">sublayer.set</div>
   ```
     sublayer.set({
-      query: "SELECT * FROM table_name WHERE cartodb_id < 100",
+      sql: "SELECT * FROM table_name WHERE cartodb_id < 100",
       cartocss: "#layer { marker-fill: red }",
       interactivity: "cartodb_id,the_geom,magnitude"
     });

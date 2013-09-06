@@ -5,7 +5,16 @@ class Layer < Sequel::Model
   
   ALLOWED_KINDS = %W{ carto tiled background gmapsbase }
   PUBLIC_ATTRIBUTES = %W{ options kind infowindow id order }
-
+  TEMPLATES_MAP = {
+    'table/views/infowindow_light' =>               'infowindow_light',
+    'table/views/infowindow_dark' =>                'infowindow_dark',
+    'table/views/infowindow_light_header_blue' =>   'infowindow_light_header_blue',
+    'table/views/infowindow_light_header_yellow' => 'infowindow_light_header_yellow',
+    'table/views/infowindow_light_header_orange' => 'infowindow_light_header_orange',
+    'table/views/infowindow_light_header_green' =>  'infowindow_light_header_green',
+    'table/views/infowindow_header_with_image' =>   'infowindow_header_with_image'
+  }
+  
   ##
   # Sets default order to the maximum order of the sibling layers + 1  
   #
@@ -66,7 +75,8 @@ class Layer < Sequel::Model
 
   def template_path
     if self.infowindow.present? && self.infowindow['template_name'].present?
-      Rails.root.join("lib/assets/javascripts/cartodb/#{self.infowindow['template_name']}.jst.mustache")
+      template_name = TEMPLATES_MAP.fetch(self.infowindow['template_name'], self.infowindow['template_name'])
+      Rails.root.join("lib/assets/javascripts/cartodb/table/views/infowindow/templates/#{template_name}.jst.mustache")
     else
       nil
     end

@@ -126,7 +126,7 @@ module CartoDB
         "fields"         => infowindow_fields
                               .each_with_index
                               .map { |column_name, i| { name: column_name, title: true, position: i+1 } },
-        "template_name"  => "table/views/infowindow_light"
+        "template_name"  => "infowindow_light"
       }
 
       data_layer.save

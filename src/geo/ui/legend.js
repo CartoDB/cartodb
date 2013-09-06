@@ -466,7 +466,7 @@ cdb.geo.ui.StackedLegend = cdb.core.View.extend({
 
   },
 
-  getLayerByIndex: function(i) {
+  getLayerByIndex: function(index) {
     if (!this._layerByIndex) {
       this._layerByIndex = {};
       var legends = this.options.legends;
@@ -475,7 +475,7 @@ cdb.geo.ui.StackedLegend = cdb.core.View.extend({
         this._layerByIndex[legend.options.index] = legend;
       }
     }
-    return this._layerByIndex[i];
+    return this._layerByIndex[index];
   },
 
   _setupBinding: function(legend) {

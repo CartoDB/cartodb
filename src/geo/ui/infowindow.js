@@ -22,8 +22,6 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
   
   SYSTEM_COLUMNS: ['the_geom', 'the_geom_webmercator', 'created_at', 'updated_at', 'cartodb_id', 'cartodb_georef_status'],
 
-  TEMPLATE_URL: '',
-
   defaults: {
     template_name: 'infowindow_light',
     latlng: [0, 0],
@@ -34,12 +32,6 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
     visibility: false,
     alternative_names: { },
     fields: null // contains the fields displayed in the infowindow
-  },
-
-  initialize: function(attrs, opts) {
-    if (opts && opts.template_url) {
-      this.TEMPLATE_URL = opts.template_url;
-    }
   },
 
   clearFields: function() {
@@ -206,9 +198,10 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
 
     this.mapView = this.options.mapView;
 
-    this.template = this.options.template ? this.options.template : cdb.templates.getTemplate(this._getTemplateURL());
+    // Set template if it is defined in options
+    if (this.options.template) this.model.set('template', this.options.template);
 
-    this.add_related_model(this.model);
+    this.template = this.model.get('template') ? this.model.get('template') : cdb.templates.getTemplate(this._getModelTemplate());
 
     this.model.bind('change:content',           this.render, this);
     this.model.bind('change:template_name',     this.changeTemplate, this);
@@ -227,11 +220,15 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
       self.show(true);
     });
 
+    this.add_related_model(this.mapView.map);
+
     // Set min height to show the scroll
     this.minHeightToScroll = 180;
 
-    this.changeTemplate();
+    // Compile the template if it is necessary
+    this._compileTemplate();
 
+    // Hide the element
     this.$el.hide();
   },
 
@@ -254,10 +251,14 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
         return _.clone(field);
       });
 
-      var template_name = _.clone(this.model.attributes.template_name);
+      // If a custom template is not applied, let's sanitized
+      // fields for the template rendering
+      if (!this.model.get('template')) {
+        var template_name = _.clone(this.model.attributes.template_name);
 
-      // Sanitized them
-      var sanitized_fields = this._fieldsToString(fields, template_name);
+        // Sanitized them
+        fields = this._fieldsToString(fields, template_name);
+      }
 
       // Join plan fields values with content to work with
       // custom infowindows and CartoDB infowindows.
@@ -267,12 +268,13 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
       })
       var obj = _.extend({
           content: {
-            fields: sanitized_fields,
+            fields: fields ,
             data: this.model.get('content').fields
           }
         },values);
 
       this.$el.html(this.template(obj));
+
 
       // Hello jscrollpane hacks!
       // It needs some time to initialize, if not it doesn't render properly the fields
@@ -297,15 +299,15 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     return this;
   },
 
-  _getTemplateURL: function() {
-    return this.model.TEMPLATE_URL + "/" + this.model.get("template_name")
+  _getModelTemplate: function() {
+    return this.model.get("template_name")
   },
 
   /**
    *  Change template of the infowindow
    */
   changeTemplate: function(template_name) {
-    this.template = cdb.templates.getTemplate(this._getTemplateURL());
+    this.template = cdb.templates.getTemplate(this._getModelTemplate());
     this.render();
   },
 
@@ -313,7 +315,9 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
    *  Compile template of the infowindow
    */
   _compileTemplate: function() {
-    var template = this.model.get('template') ? this.model.get('template') : cdb.templates.getTemplate(this._getTemplateURL());
+    var template = this.model.get('template') ?
+      this.model.get('template') :
+      cdb.templates.getTemplate(this._getModelTemplate());
 
     if(typeof(template) !== 'function') {
       this.template = new cdb.core.Template({

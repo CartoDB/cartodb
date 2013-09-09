@@ -676,7 +676,7 @@ var Vis = cdb.core.View.extend({
     setTimeout(function() {
       self.setMapPosition();
       if (self.center) self.mapView.map.set('center', self.center);
-    },10);
+    },101);
   }
 
 }, {

@@ -755,6 +755,7 @@ class Table < Sequel::Model(:user_tables)
     primary_key = nil
     owner.in_database do |user_database|
       schema = user_database.schema(name, :reload => true).map{|c| c.first}
+      raw_attributes.delete(:id) unless schema.include?(:id)
       attributes = raw_attributes.dup.select{ |k,v| schema.include?(k.to_sym) }
       if attributes.keys.size != raw_attributes.keys.size
         raise CartoDB::InvalidAttributes, "Invalid rows: #{(raw_attributes.keys - attributes.keys).join(',')}"
@@ -776,7 +777,9 @@ class Table < Sequel::Model(:user_tables)
           end
         end
 
-        if invalid_column.nil? || new_column_type != get_new_column_type(invalid_column)
+        new_column_type = get_new_column_type(invalid_column)
+          
+        if invalid_column.nil?
           raise e
         else
           user_database.set_column_type(self.name, invalid_column.to_sym, new_column_type)
@@ -792,6 +795,8 @@ class Table < Sequel::Model(:user_tables)
     rows_updated = 0
     owner.in_database do |user_database|
       schema = user_database.schema(name, :reload => true).map{|c| c.first}
+      raw_attributes.delete(:id) unless schema.include?(:id)
+      
       attributes = raw_attributes.dup.select{ |k,v| schema.include?(k.to_sym) }
       if attributes.keys.size != raw_attributes.keys.size
         raise CartoDB::InvalidAttributes, "Invalid rows: #{(raw_attributes.keys - attributes.keys).join(',')}"

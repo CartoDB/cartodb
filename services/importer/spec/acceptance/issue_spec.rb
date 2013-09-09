@@ -13,8 +13,8 @@ describe 'issue regression tests' do
     @pg_options  = Factories::PGConnection.new.pg_options
   end
 
-  it 'imports csv files' do
-    filepath    = path_to("tfl.csv")
+  it 'imports xlsx files' do
+    filepath    = path_to("fastfood.xlsx")
     downloader  = Downloader.new(filepath)
     runner      = Runner.new(@pg_options, downloader)
     runner.run

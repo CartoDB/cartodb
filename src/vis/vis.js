@@ -176,11 +176,16 @@ var Vis = cdb.core.View.extend({
     this.map = map;
     this.updated_at = data.updated_at || new Date().getTime();
 
-    // If a GMaps embed is hidden by default, and
-    // then it is shown it needs to re-center again.
+
+    // If a CartoDB embed map is hidden by default, its
+    // height is 0 and it will need to recalculate its size
+    // and re-center again.
     // We will wait until it is resized and then apply
-    // the center provided in the parameters.
-    if (data.map_provider === "googlemaps") {
+    // the center provided in the parameters and the
+    // correct size.
+    var map_h = this.$el.outerHeight();
+
+    if (map_h === 0) {
       this.center = this.map.get('center');
       $(window).bind('resize', this._onResize);
     }
@@ -666,13 +671,12 @@ var Vis = cdb.core.View.extend({
     $(window).unbind('resize', this._onResize);
     var self = this;
 
-    if (this.center) {
-      // This timeout is necessary due to GMaps needs time
-      // to load tiles and recalculate its bounds :S
-      setTimeout(function() {
-        self.mapView.map.set('center', self.center);
-      },10);
-    }
+    // This timeout is necessary due to GMaps needs time
+    // to load tiles and recalculate its bounds :S
+    setTimeout(function() {
+      self.setMapPosition();
+      if (self.center) self.mapView.map.set('center', self.center);
+    },10);
   }
 
 }, {

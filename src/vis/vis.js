@@ -176,8 +176,10 @@ var Vis = cdb.core.View.extend({
     this.map = map;
     this.updated_at = data.updated_at || new Date().getTime();
 
-    // if map_provider is gmaps, we should take care when
-    // map is resized because it can move the center of the map
+    // If a GMaps embed is hidden by default, and
+    // then it is shown it needs to re-center again.
+    // We will wait until it is resized and then apply
+    // the center provided in the parameters.
     if (data.map_provider === "googlemaps") {
       this.center = this.map.get('center');
       $(window).bind('resize', this._onResize);
@@ -438,11 +440,10 @@ var Vis = cdb.core.View.extend({
 
   // Set map top position taking into account header height
   setMapPosition: function() {
-    var header_h = this.$(".cartodb-header:not(.cartodb-popup)").outerHeight();
     var map_h = this.$el.outerHeight();
-    var self = this;
 
-    if (header_h < map_h) {
+    if (map_h !== 0) {
+      var header_h = this.$(".cartodb-header:not(.cartodb-popup)").outerHeight();
       this.$el
         .find("div.cartodb-map-wrapper")
         .css("top", header_h);

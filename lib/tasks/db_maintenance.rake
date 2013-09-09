@@ -362,5 +362,17 @@ namespace :cartodb do
 
       CartoDB::GenericMigrator.new(args[:version]).rollback!
     end
+
+    desc "Add new layer option"
+    task :add_layer_option => :environment do
+      Layer.where(kind: 'carto').all.each do |layer|
+        if !layer.options.keys.include?("tile_style_custom")
+          layer.options["tile_style_custom"] = true
+          layer.save
+        end
+      end
+    end
+
+
   end
 end

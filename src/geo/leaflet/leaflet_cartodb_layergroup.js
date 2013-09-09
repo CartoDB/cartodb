@@ -107,26 +107,16 @@ L.CartoDBGroupLayer = L.TileLayer.extend({
     this.options.map = map;
     this._addWadus({left:8, bottom:8}, 0, map._container);
     this.__update(function() {
-      // remove this hack when leaflet 0.6 was released
-      var add = function() {
-        map.off('zoomend', add);
-        // if while the layer was processed in the server is removed
-        // it should not be added to the map
-        var id = L.stamp(self);
-        if (!map._layers[id]) { 
-          return; 
-        }
+      // if while the layer was processed in the server is removed
+      // it should not be added to the map
+      var id = L.stamp(self);
+      if (!map._layers[id]) { 
+        return; 
+      }
 
-        L.TileLayer.prototype.onAdd.call(self, map);
-        self.fire('added');
-        self.options.added = true;
-      }
-      if(!map._animatingZoom) {
-        add();
-      } else {
-        // wait until zoom animation finishes
-        map.on('zoomend', add);
-      }
+      L.TileLayer.prototype.onAdd.call(self, map);
+      self.fire('added');
+      self.options.added = true;
     });
   },
 
@@ -157,25 +147,16 @@ L.CartoDBGroupLayer = L.TileLayer.extend({
     var map = this.options.map;
 
     this.getTiles(function(urls, err) {
-      var update = function() { 
-        map.off('zoomend', update);
-        if(urls) {
-          self.tilejson = urls;
-          self.setUrl(self.tilejson.tiles[0]);
-          // manage interaction
-          self._reloadInteraction();
-          self.ok && self.ok();
-          done && done();
-        } else {
-          self.error && self.error(err);
-          done && done();
-        }
-      };
-      if(!map._animatingZoom) {
-        update();
+      if(urls) {
+        self.tilejson = urls;
+        self.setUrl(self.tilejson.tiles[0]);
+        // manage interaction
+        self._reloadInteraction();
+        self.ok && self.ok();
+        done && done();
       } else {
-        // wait until zoom animation finishes
-        map.on('zoomend', update);
+        self.error && self.error(err);
+        done && done();
       }
     });
   },

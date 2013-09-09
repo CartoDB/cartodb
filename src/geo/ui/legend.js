@@ -39,11 +39,11 @@ cdb.geo.ui.LegendItem = cdb.core.View.extend({
  * */
 cdb.geo.ui.ChoroplethLegend = cdb.core.View.extend({
 
-  tagName: "ul",
   initialize: function() {
 
+    this.title    = this.options.title;
     this.items    = this.options.items;
-    this.template = _.template('<li class="min"><%= leftLabel %></li><li class="max"><%= rightLabel %></li><li class="graph count_<%= buckets_count %>"><div class="colors"><%= colors %></div></li>');
+    this.template = _.template('<% if (title) { %><div class="title"><%= title %></div><% } %><ul><li class="min"><%= leftLabel %></li><li class="max"><%= rightLabel %></li><li class="graph count_<%= buckets_count %>"><div class="colors"><%= colors %></div></li></ul>');
     this.model    = new cdb.core.Model();
 
   },
@@ -65,7 +65,7 @@ cdb.geo.ui.ChoroplethLegend = cdb.core.View.extend({
         colors += '<div class="quartile" style="background-color:'+color+'"></div>';
       }
 
-      this.model.set({ leftLabel: leftLabel, rightLabel: rightLabel, colors: colors, buckets_count: this.items.length - 2 });
+      this.model.set({ title: this.title, leftLabel: leftLabel, rightLabel: rightLabel, colors: colors, buckets_count: this.items.length - 2 });
 
       this.$el.html(this.template(this.model.toJSON()));
     }
@@ -82,11 +82,11 @@ cdb.geo.ui.ChoroplethLegend = cdb.core.View.extend({
  * */
 cdb.geo.ui.DensityLegend = cdb.core.View.extend({
 
-  tagName: "ul",
   initialize: function() {
 
+    this.title    = this.options.title;
     this.items    = this.options.items;
-    this.template = _.template('<li class="min"><%= leftLabel %></li><li class="max"><%= rightLabel %></li><li class="graph count_<%= buckets_count %>"><div class="colors"><%= colors %></div></li>');
+    this.template = _.template('<% if (title) { %><div class="title"><%= title %></div><% } %><ul><li class="min"><%= leftLabel %></li><li class="max"><%= rightLabel %></li><li class="graph count_<%= buckets_count %>"><div class="colors"><%= colors %></div></li></ul>');
     this.model    = new cdb.core.Model();
 
   },
@@ -108,7 +108,7 @@ cdb.geo.ui.DensityLegend = cdb.core.View.extend({
         colors += '<div class="quartile" style="background-color:'+color+'"></div>';
       }
 
-      this.model.set({ leftLabel: leftLabel, rightLabel: rightLabel, colors: colors, buckets_count: this.items.length - 2 });
+      this.model.set({ title: this.title, leftLabel: leftLabel, rightLabel: rightLabel, colors: colors, buckets_count: this.items.length - 2 });
 
       this.$el.html(this.template(this.model.toJSON()));
     }
@@ -125,11 +125,11 @@ cdb.geo.ui.DensityLegend = cdb.core.View.extend({
  * */
 cdb.geo.ui.IntensityLegend = cdb.core.View.extend({
 
-  tagName: "ul",
   initialize: function() {
 
+    this.title    = this.options.title;
     this.items    = this.options.items;
-    this.template = _.template('<li class="min"><%= leftLabel %></li><li class="max"><%= rightLabel %></li><li class="graph"></li>');
+    this.template = _.template('<% if (title) { %><div class="title"><%= title %></div><% } %><ul><li class="min"><%= leftLabel %></li><li class="max"><%= rightLabel %></li><li class="graph"></li></ul>');
     this.model    = new cdb.core.Model();
 
   },
@@ -215,7 +215,7 @@ cdb.geo.ui.IntensityLegend = cdb.core.View.extend({
       var leftLabel   = this.leftLabel.get("value");
       var rightLabel  = this.rightLabel.get("value");
 
-      this.model.set({ leftLabel: leftLabel, rightLabel: rightLabel });
+      this.model.set({ title: this.title, leftLabel: leftLabel, rightLabel: rightLabel });
 
       this.$el.html(this.template(this.model.toJSON()));
 
@@ -237,12 +237,12 @@ cdb.geo.ui.DebugLegend = cdb.core.View.extend({
  * */
 cdb.geo.ui.BubbleLegend = cdb.core.View.extend({
 
-  tagName: "ul",
-
   initialize: function() {
 
+    this.title = this.options.title;
     this.items = this.options.items;
-    this.template = _.template('<li><%= min %></li><li class="graph"><div class="bubbles"></div></li><li><%= max %></li>');
+
+    this.template = _.template('<% if (title) { %><div class="title"><%= title %></div><% } %><ul><li><%= min %></li><li class="graph"><div class="bubbles"></div></li><li><%= max %></li></ul>');
     this.model    = new cdb.core.Model();
 
     this.add_related_model(this.model);
@@ -262,7 +262,7 @@ cdb.geo.ui.BubbleLegend = cdb.core.View.extend({
       var min = this.items.at(0);
       var max = this.items.at(1);
 
-      this.model.set({ min: min.get("value"), max: max.get("value") });
+      this.model.set({ title: this.title, min: min.get("value"), max: max.get("value") });
       this.$el.html(this.template(this.model.toJSON()));
 
     }
@@ -281,14 +281,14 @@ cdb.geo.ui.BubbleLegend = cdb.core.View.extend({
  * */
 cdb.geo.ui.CategoryLegend = cdb.core.View.extend({
 
-  tagName: "ul",
-
   initialize: function() {
 
+    this.title = this.options.title;
     this.items = this.options.items;
-    this.template = _.template("");
+    this.template = _.template('<% if (title) { %><div class="title"><%= title %></div><% } %><ul></ul>');
     this.model = new cdb.core.Model({
-      type: "custom"
+      type: "custom",
+      title: this.title
     });
 
   },
@@ -306,7 +306,7 @@ cdb.geo.ui.CategoryLegend = cdb.core.View.extend({
       template: '<div class="bullet" style="background:<%= value %>"></div><%= name || "null" %>'
     });
 
-    this.$el.append(view.render());
+    this.$el.find("ul").append(view.render());
 
   },
 
@@ -332,14 +332,14 @@ cdb.geo.ui.CategoryLegend = cdb.core.View.extend({
  * */
 cdb.geo.ui.ColorLegend = cdb.core.View.extend({
 
-  tagName: "ul",
-
   initialize: function() {
 
+    this.title = this.options.title;
     this.items = this.options.items;
-    this.template = _.template("");
+    this.template = _.template('<% if (title) { %><div class="title"><%= title %></div><% } %><ul></ul>');
     this.model = new cdb.core.Model({
-      type: "custom"
+      type: "custom",
+      title: this.title
     });
 
   },
@@ -357,7 +357,7 @@ cdb.geo.ui.ColorLegend = cdb.core.View.extend({
       template: '<div class="bullet" style="background:<%= value %>"></div><%= name || ((name === false) ? "false": "null") %>'
     });
 
-    this.$el.append(view.render());
+    this.$el.find("ul").append(view.render());
 
   },
 
@@ -383,14 +383,14 @@ cdb.geo.ui.ColorLegend = cdb.core.View.extend({
  * */
 cdb.geo.ui.CustomLegend = cdb.core.View.extend({
 
-  tagName: "ul",
-
   initialize: function() {
 
+    this.title = this.options.title;
     this.items = this.options.items;
-    this.template = _.template("");
+    this.template = _.template('<% if (title) { %><div class="title"><%= title %></div><% } %><ul></ul>');
     this.model = new cdb.core.Model({
-      type: "custom"
+      type: "custom",
+      title: this.title
     });
 
   },
@@ -408,7 +408,7 @@ cdb.geo.ui.CustomLegend = cdb.core.View.extend({
       template: '<div class="bullet" style="background:<%= value %>"></div><%= name || "null" %>'
     });
 
-    this.$el.append(view.render());
+    this.$el.find("ul").append(view.render());
 
   },
 
@@ -540,7 +540,8 @@ cdb.geo.ui.StackedLegend = cdb.core.View.extend({
 cdb.geo.ui.LegendModel = cdb.core.Model.extend({
 
   defaults: {
-    type: null
+    type: null,
+    title: ""
   },
 
   initialize: function() {
@@ -552,7 +553,12 @@ cdb.geo.ui.LegendModel = cdb.core.Model.extend({
     }, this);
 
     this.bind("change:items", this._onUpdateItems, this);
+    this.bind("change:title", this._onUpdateTitle, this);
 
+  },
+
+  _onUpdateTitle: function() {
+    this.title = this.get("title");
   },
 
   _onUpdateItems: function() {
@@ -591,14 +597,15 @@ cdb.geo.ui.Legend = cdb.core.View.extend({
     if (!this.model) {
 
       this.model = new cdb.geo.ui.LegendModel({
-        type: this.options.type || cdb.geo.ui.LegendModel.prototype.defaults.type
+        type: this.options.type || cdb.geo.ui.LegendModel.prototype.defaults.type,
+        title: this.options.title || cdb.geo.ui.LegendModel.prototype.defaults.title
       });
 
     }
 
     this.add_related_model(this.model);
-    this.model.bind("change:type",  this._updateLegendType, this);
-    this.model.bind("change:items", this._updateLegendType, this);
+
+    this.model.bind("change:type change:items change:title",  this._updateLegendType, this);
 
   },
 
@@ -632,11 +639,13 @@ cdb.geo.ui.Legend = cdb.core.View.extend({
 
     if (this.view) this.view.clean();
 
-    var type = this.model.get("type");
+    var type  = this.model.get("type");
+    var title = this.model.get("title");
 
     if (type) {
 
       this.view = new cdb.geo.ui[this.legend_name] ({
+        title: title,
         items: self.items
       });
 

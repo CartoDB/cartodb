@@ -365,10 +365,19 @@ namespace :cartodb do
 
     desc "Add new layer option"
     task :add_layer_option => :environment do
-      Layer.where(kind: 'carto').all.each do |layer|
+      layers = Layer.where(kind: 'carto').all
+      layers.each_with_index do |layer, i|
+        print "- Layer #{i+1}/#{layers.size} "
         if !layer.options.keys.include?("tile_style_custom")
           layer.options["tile_style_custom"] = true
-          layer.save
+          begin
+            layer.save
+            print "OK\n"
+          rescue => e
+            print "ERROR #{e}\n"
+          end
+        else
+          print "NOTHING TO DO\n"
         end
       end
     end

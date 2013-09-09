@@ -29,7 +29,6 @@ module CartoDB
         create_the_geom_in(table_name)
 
         raise_if_geometry_collection
-        drop_wkb_geometry
         self
       end #run
 
@@ -60,8 +59,13 @@ module CartoDB
         handle_multipoint(column) if multipoint?
         self
       rescue => exception
-        job.log "Renaming #{geometry_column_name} to invalid_the_geom"
-        column.rename_to(:invalid_the_geom) if column
+        if column.empty?
+          job.log "Dropping empty #{geometry_column_name}"
+          column.drop 
+        else
+          job.log "Renaming #{geometry_column_name} to invalid_the_geom"
+          column.rename_to(:invalid_the_geom)
+        end
         false
       end #create_the_geom_from_geometry_column
 
@@ -126,15 +130,6 @@ module CartoDB
         column = Column.new(db, table_name, THE_GEOM_WEBMERCATOR, schema, job)
         column.drop
       end #drop_the_geom_webmercator
-
-      def drop_wkb_geometry
-        return self unless column_exists_in?(table_name, 'wkb_geometry')
-
-        job.log 'Dropping wkb_geometry column'
-        column = Column.new(db, table_name, :wkb_geometry, schema, job)
-        column.drop
-      end #drop_wkb_geometry
-
 
       def raise_if_geometry_collection
         column = Column.new(db, table_name, :the_geom, schema, job)

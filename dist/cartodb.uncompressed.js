@@ -1,6 +1,6 @@
-// cartodb.js version: 3.1.09
+// cartodb.js version: 3.1.10
 // uncompressed version: cartodb.uncompressed.js
-// sha: 8ada7b59b94fa59058a31a842092deac2004a893
+// sha: 0794c7b108a912ea77c9194fffd2233f40a69cfa
 (function() {
   var root = this;
 
@@ -19873,7 +19873,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.1.09';
+    cdb.VERSION = '3.1.10';
 
     cdb.CARTOCSS_VERSIONS = {
       '2.0.0': '',
@@ -28437,7 +28437,7 @@ var Vis = cdb.core.View.extend({
     var layerView = mapView.getLayerByCid(layer_cid);
 
     // add the associated overlays
-    if(layerView.containInfowindow && layerView.containInfowindow()) {
+    if(this.infowindow && layerView.containInfowindow && layerView.containInfowindow()) {
       this.addInfowindow(layerView);
     }
 

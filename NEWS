@@ -1,3 +1,7 @@
+3.1.10 (09//10/2013)
+-----
+- fixed problem with infowindow option in createVis (#69)
+
 3.1.09 (09//06/2013)
 -----
 - fixed problem when the number of layers is different than the number of legends (refix)

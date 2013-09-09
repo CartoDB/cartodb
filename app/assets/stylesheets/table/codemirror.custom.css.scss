@@ -9,10 +9,18 @@
 }
 
 .CodeMirror {
-  font-family: "Liberation Mono", monospace, "Courier New", "Arial";
+  position:absolute;
+  top:0;
+  bottom:80px;
+  left:0;
+  right:0;
+  height:auto;
+  display:block;
   padding: 8px 0;
   line-height: 1em;
+  font-family: "Liberation Mono", monospace, "Courier New", "Arial";
   background: none;
+  z-index:1;
 }
 
 .CodeMirror-linenumber {

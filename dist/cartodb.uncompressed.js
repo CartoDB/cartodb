@@ -1,6 +1,6 @@
-// cartodb.js version: 3.1.10
+// cartodb.js version: 3.1.11
 // uncompressed version: cartodb.uncompressed.js
-// sha: 0794c7b108a912ea77c9194fffd2233f40a69cfa
+// sha: 2207f28d2403a31a4a30832974db31ca10a70695
 (function() {
   var root = this;
 
@@ -19873,7 +19873,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.1.10';
+    cdb.VERSION = '3.1.11';
 
     cdb.CARTOCSS_VERSIONS = {
       '2.0.0': '',
@@ -27945,7 +27945,7 @@ window.vizjson = function(data) {
 var Vis = cdb.core.View.extend({
 
   initialize: function() {
-    _.bindAll(this, 'loadingTiles', 'loadTiles');
+    _.bindAll(this, 'loadingTiles', 'loadTiles', '_onResize');
 
     this.https = false;
     this.overlays = [];
@@ -27955,7 +27955,6 @@ var Vis = cdb.core.View.extend({
       this.map = this.mapView.map;
     }
   },
-
 
   load: function(data, options) {
     var self = this;
@@ -28021,6 +28020,20 @@ var Vis = cdb.core.View.extend({
     var map = new cdb.geo.Map(mapConfig);
     this.map = map;
     this.updated_at = data.updated_at || new Date().getTime();
+
+
+    // If a CartoDB embed map is hidden by default, its
+    // height is 0 and it will need to recalculate its size
+    // and re-center again.
+    // We will wait until it is resized and then apply
+    // the center provided in the parameters and the
+    // correct size.
+    var map_h = this.$el.outerHeight();
+
+    if (map_h === 0) {
+      this.center = this.map.get('center');
+      $(window).bind('resize', this._onResize);
+    }
 
     var div = $('<div>').css({
       position: 'relative',
@@ -28277,13 +28290,16 @@ var Vis = cdb.core.View.extend({
 
   // Set map top position taking into account header height
   setMapPosition: function() {
-    var header_h = this.$el.find(".cartodb-header:not(.cartodb-popup)").outerHeight();
+    var map_h = this.$el.outerHeight();
 
-    this.$el
-      .find("div.cartodb-map-wrapper")
-      .css("top", header_h);
+    if (map_h !== 0) {
+      var header_h = this.$(".cartodb-header:not(.cartodb-popup)").outerHeight();
+      this.$el
+        .find("div.cartodb-map-wrapper")
+        .css("top", header_h);
 
-    this.mapView.invalidateSize();
+      this.mapView.invalidateSize();
+    }
   },
 
   createLayer: function(layerData, opts) {
@@ -28494,6 +28510,18 @@ var Vis = cdb.core.View.extend({
     return _(this.overlays).find(function(v) {
       return v.type == type;
     });
+  },
+
+  _onResize: function() {
+    $(window).unbind('resize', this._onResize);
+    var self = this;
+
+    // This timeout is necessary due to GMaps needs time
+    // to load tiles and recalculate its bounds :S
+    setTimeout(function() {
+      self.setMapPosition();
+      if (self.center) self.mapView.map.set('center', self.center);
+    },101);
   }
 
 }, {

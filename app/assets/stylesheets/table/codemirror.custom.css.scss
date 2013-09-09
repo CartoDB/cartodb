@@ -1,4 +1,7 @@
 
+@import "compass";
+@import "../common/vars";
+
 /** customization of codemirror styles */
 .cm-s-default .cm-variable {color: #666666;}
 .cm-s-default .cm-keyword {color: #FF9900;}
@@ -54,5 +57,50 @@
 /** codemirror hints */
 
 .CodeMirror-hints {
-  z-index: 20;
+  position:absolute;
+  display:block;
+  width:108px;
+  top:-10px;
+  max-width:140px;
+  height:auto;
+  max-height:120px;
+  padding:0;
+  background:white;
+  z-index:1000!important;
+  @include border-radius(3px);
+  @include box-shadow(none);
+  border:1px solid #999999;
+  overflow-y: auto;
+  z-index:20;
+
+  .CodeMirror-hint {
+    display:block;
+    border-top:1px solid rgba(#CCCCCC,0.35);
+    display:block;
+    line-height:35px;
+    padding:0 10px;
+    margin:0;
+    font-size:13px;
+    text-overflow:ellipsis;
+    overflow:hidden;
+    white-space:nowrap;
+    font-family:$text-fonts;
+    color:#2483B4;
+
+    &:first-child {border-top:0; @include border-top-radius(3px)}
+    &:last-child {@include border-bottom-radius(3px)}
+
+    &:hover {
+      background:#F7F7F7;
+      color:#333333;
+      cursor:pointer;
+    }
+  }
+
+  .CodeMirror-hint-active {
+    color:#333333;
+    text-decoration:none;
+    background:none;
+  }
 }
+

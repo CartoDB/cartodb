@@ -1,6 +1,7 @@
 //= require codemirror
 //= require show-hint
 //= require anyword-hint
+//= require custom-list-hint
 //= require select2.min
 //= require jquery.faviconNotify
 //= require rgbcolor

@@ -120,7 +120,7 @@ class User < Sequel::Model
   #        example: 0.20 will get all users at 80% of their map view limit
   #
   def self.overquota(delta = 0)
-    User.all.select do |u|
+    User.where(enabled: true).all.select do |u|
         limit = u.map_view_quota.to_i - (u.map_view_quota.to_i * delta)
         u.get_api_calls(from: u.last_billing_cycle, to: Date.today).sum > limit
     end

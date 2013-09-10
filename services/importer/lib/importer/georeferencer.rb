@@ -136,7 +136,7 @@ module CartoDB
         sample = db[%Q{
           SELECT  column_name 
           FROM    information_schema.columns
-          WHERE   table_name ='#{table_name}'
+          WHERE   table_name = '#{table_name}'
           AND     table_schema = '#{schema}'
           AND     lower(column_name) in (#{possible_names})
           LIMIT   1
@@ -165,7 +165,7 @@ module CartoDB
       attr_reader :db, :table_name, :schema, :job
 
       def qualified_table_name
-        "#{schema}.#{table_name}"
+        %Q("#{schema}"."#{table_name}")
       end #qualified_table_name
     end # Georeferencer
   end # Importer2

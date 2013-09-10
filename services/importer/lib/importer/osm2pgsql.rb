@@ -44,7 +44,7 @@ module CartoDB
         db[%Q(
           SELECT count(*)
           AS count
-          FROM #{table_name}
+          FROM "#{table_name}"
         )].first.fetch(:count) > 0
       end #data_in?
 

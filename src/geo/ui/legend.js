@@ -39,6 +39,8 @@ cdb.geo.ui.LegendItem = cdb.core.View.extend({
  * */
 cdb.geo.ui.ChoroplethLegend = cdb.core.View.extend({
 
+  className: "choropleth-legend",
+
   initialize: function() {
 
     this.title        = this.options.title;
@@ -84,6 +86,8 @@ cdb.geo.ui.ChoroplethLegend = cdb.core.View.extend({
  * */
 cdb.geo.ui.DensityLegend = cdb.core.View.extend({
 
+  className: "density-legend",
+
   initialize: function() {
 
     this.title       = this.options.title;
@@ -128,6 +132,8 @@ cdb.geo.ui.DensityLegend = cdb.core.View.extend({
  *
  * */
 cdb.geo.ui.IntensityLegend = cdb.core.View.extend({
+
+  className: "intensity-legend",
 
   initialize: function() {
 
@@ -243,6 +249,8 @@ cdb.geo.ui.DebugLegend = cdb.core.View.extend({
  * */
 cdb.geo.ui.BubbleLegend = cdb.core.View.extend({
 
+  className: "bubble-legend",
+
   initialize: function() {
 
     this.title       = this.options.title;
@@ -288,6 +296,8 @@ cdb.geo.ui.BubbleLegend = cdb.core.View.extend({
  *
  * */
 cdb.geo.ui.CategoryLegend = cdb.core.View.extend({
+
+  className: "category-legend",
 
   initialize: function() {
 
@@ -343,6 +353,8 @@ cdb.geo.ui.CategoryLegend = cdb.core.View.extend({
  * */
 cdb.geo.ui.ColorLegend = cdb.core.View.extend({
 
+  className: "color-legend",
+
   initialize: function() {
 
     this.title       = this.options.title;
@@ -396,6 +408,8 @@ cdb.geo.ui.ColorLegend = cdb.core.View.extend({
  *
  * */
 cdb.geo.ui.CustomLegend = cdb.core.View.extend({
+
+  className: "custom-legend",
 
   initialize: function() {
 

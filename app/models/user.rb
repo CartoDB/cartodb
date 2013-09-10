@@ -122,7 +122,6 @@ class User < Sequel::Model
   def self.overquota(delta = 0)
     User.all.select do |u|
         limit = u.map_view_quota.to_i - (u.map_view_quota.to_i * delta)
-        u.set_old_api_calls # updates map views stats older than 3 hours
         u.get_api_calls(from: u.last_billing_cycle, to: Date.today).sum > limit
     end
   end

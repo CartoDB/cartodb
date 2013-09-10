@@ -668,14 +668,13 @@ a.info {
           /*&.html_editor:before { height: 16px; content: ''; position:absolute; left: -10px; top: -3px; border-left: 1px solid rgba(#ccc, .5); }*/
           &.html_editor { position:relative; }
 
-          &.editor       a { @include size(17px, 17px); @include icons-sprite(infowindow_panel_icons, $offset-x:0, $offset-y:-25px); }
-          &.title_editor a { @include size(20px, 17px); @include icons-sprite(infowindow_panel_icons, $offset-x:-40, $offset-y:-25px); }
-          &.html_editor  a { @include size(17px, 17px); @include icons-sprite(infowindow_panel_icons, $offset-x:-104, $offset-y:-24px); }
+          &.editor       a { @include size(17px, 17px); @include icons-sprite(infowindow_panel_icons, $offset-x:0, $offset-y:0); }
+          &.title_editor a { @include size(20px, 17px); @include icons-sprite(infowindow_panel_icons, $offset-x:-40, $offset-y:0); }
+          &.html_editor  a { @include size(17px, 17px); @include icons-sprite(infowindow_panel_icons, $offset-x:-104, $offset-y:1px); }
 
-          &.editor       a.selected { @include size(17px, 17px); @include icons-sprite(infowindow_panel_icons, $offset-x:0, $offset-y:0); }
-          &.title_editor a.selected { @include size(20px, 17px); @include icons-sprite(infowindow_panel_icons, $offset-x:-40, $offset-y:0); }
-          &.html_editor  a.selected { @include size(17px, 17px); @include icons-sprite(infowindow_panel_icons, $offset-x:-104, $offset-y:1px); }
-
+          &.editor       a.selected { @include size(17px, 17px); @include icons-sprite(infowindow_panel_icons, $offset-x:0, $offset-y:-25px); }
+          &.title_editor a.selected { @include size(20px, 17px); @include icons-sprite(infowindow_panel_icons, $offset-x:-40, $offset-y:-25px); }
+          &.html_editor  a.selected { @include size(17px, 17px); @include icons-sprite(infowindow_panel_icons, $offset-x:-104, $offset-y:-24px); }
         }
 
       }

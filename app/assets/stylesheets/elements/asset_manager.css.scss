@@ -37,7 +37,7 @@
         border:1px solid #C0C0C0!important;
         @include border-radius(3px);
         overflow: hidden;
-        background: image-url('layout/loader.gif') no-repeat center;
+        background: image-url("layout/loader_transparent_small.gif") no-repeat center;
 
         a.image {
           display:block;
@@ -103,7 +103,7 @@
 
         &.destroying {
           div.loader {display:block!important;}
-          
+
           &:hover {
             a.delete {display:none}
           }

@@ -267,13 +267,13 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
       _.each(this.model.get('content').fields, function(pair) {
         values[pair.title] = pair.value;
       })
+
       var obj = _.extend({
           content: {
             fields: fields,
             data: data
           }
         },values);
-
 
       this.$el.html(this.template(obj));
 

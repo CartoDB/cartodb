@@ -10,9 +10,9 @@ module CartoDB
           @filepath   = "/var/tmp/#{@name}.csv"
         end #initialize
 
-        def write(header=nil, data=nil)
-          header  ||= ["header_1", "header_2"]
-          data    ||= ["cell_#{rand(999)}", "cell_#{rand(999)}"]
+        def write(header=nil, data=nil, columns=2, rows=10)
+          header  ||= (1..columns).map { |index| "header_#{index}" }
+          data    ||= (1..rows).map { "cell_#{rand(999)}" }
 
           ::CSV.open(filepath, "wb") do |csv|
             csv << header

@@ -709,11 +709,12 @@ a.info {
         .right {
           position: absolute;
           top: 12px;
-          right: 5px;
+          right: 0;
 
           .checkbox { float: left; position:relative; top: 7px; margin: 0 5px 0 0; }
-          .checkbox span { margin: 0 5px 0 0; }
+          .checkbox span { margin: 0 7px 0 0; }
           .input { float: left; }
+
         }
 
         ul li {
@@ -884,6 +885,7 @@ a.info {
         &.right {
           @include icons-sprite(wizard-arrows, $offset-x:-43px);
           right:8px;
+
           &:hover {
             @include icons-sprite(wizard-arrows, $offset-x:-43px, $offset-y:-43px);
           }

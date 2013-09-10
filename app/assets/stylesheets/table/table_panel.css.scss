@@ -545,9 +545,9 @@ a.info {
   // INFOWINDOW PANEL
   .infowindow_panel {
 
-    .panel_content .wrapper {
-      top: 43px;
-    }
+    .panel_content .wrapper { top: 43px; }
+
+    .doc_info { right:26px!important; }
 
     .header {
       position:relative;
@@ -574,7 +574,6 @@ a.info {
       }
 
       .menu {
-
         li:first-child { margin-left: 23px; }
         &:after  { position:absolute; content:' '; top:0; left:34px; bottom:0; width:1px; height:100%; background:rgba($cGray4,0.50); }
         &:before { position:absolute; content:' '; top:0; left:36px; bottom:0; width:1px; height:100%; background:rgba(#509DD7,0.25); }
@@ -582,42 +581,47 @@ a.info {
     }
 
     .help {
-
+      position: absolute;
       display:none;
+      width: 100%;
+      top: 90px;
+      left: 0;
+      padding: 10px;
+      background: #F5F8FF;
+      z-index:10;
+
+      @include box-sizing(border-box);
+      font-size: 13px;
+      font-style: italic;
+      border-bottom: 1px solid rgba(#DDD, .5);
+      color: #999;
 
       p { padding: 0 25px 0 44px; }
 
+      .close {
         position: absolute;
-        background: #F5F8FF;
-        width: 100%;
-        bottom: -37px;
-        left: 0;
-        padding: 10px;
+        right: 27px;
+        top: 12px;
 
-        @include box-sizing(border-box);
-        font-size: 13px;
-        font-style: italic;
-        border-bottom: 1px solid rgba(#DDD, .5);
-        color: #999;
+        display:block;
+        vertical-align:middle;
+        width:13px;
+        height:13px;
 
-        .close {
-          position: absolute;
-          right: 32px;
-          top: 12px;
+        @include background(sprite($icons-sprites, close_grey, $offset-x:0, $offset-y:0) no-repeat);
 
-          display:block;
-          vertical-align:middle;
-          width:13px;
-          height:13px;
-
-          @include background(sprite($icons-sprites, close_grey, $offset-x:0, $offset-y:0) no-repeat);
-
-          &:hover  { @include background(sprite($icons-sprites, close_grey, $offset-x:0, $offset-y:-13px) no-repeat); }
-          &:active { @include background(sprite($icons-sprites, close_grey, $offset-x:0, $offset-y:-26px) no-repeat); }
-
-        }
-
+        &:hover  { @include background(sprite($icons-sprites, close_grey, $offset-x:0, $offset-y:-13px) no-repeat); }
+        &:active { @include background(sprite($icons-sprites, close_grey, $offset-x:0, $offset-y:-26px) no-repeat); }
       }
+
+      &:before {
+        content:'';
+        @include size(10px, 6px);
+        @include position(-6px, 29px, false, false);
+        @include background(sprite($icons-sprites, infowindow_panel_purple_tip) no-repeat);
+        z-index: 11;
+      }
+    }
 
     .menu {
       position: absolute;
@@ -625,21 +629,17 @@ a.info {
       top: 59px;
       width: 100%;
       padding: 9px 23px 3px 30px;
-
       background:#F6F6F6;
       border-top: 1px solid rgba(#DDDDDD, .5);
       border-bottom: 1px solid rgba(#DDDDDD, .5);
 
-      z-index: 100;
+      z-index: 9;
 
       .tip {
         @include size(10px, 6px);
         @include position(false, false, -1px, 33px);
         @include background(sprite($icons-sprites, infowindow_panel_white_tip) no-repeat);
         z-index: 10;
-
-        &._help { @include background(sprite($icons-sprites, infowindow_panel_purple_tip) no-repeat); }
-
       }
 
       ul {

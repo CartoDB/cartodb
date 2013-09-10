@@ -12,13 +12,12 @@
       <div class="shadow"></div>
     </div>
   </div>
-
   <div class="cartodb-popup-content-wrapper">
     <div class="cartodb-popup-content">
       {{#content.fields}}
       {{^position}}
       <div>
-        <h4>{{name}}</h4>
+        {{#title}}<h4>{{name}}</h4>{{/title}}
         <p>{{=<% %>=}}{{<%={{ }}=%>{{{ name }}}{{=<% %>=}}}}<%={{ }}=%></p>
       </div>
       {{/position}}

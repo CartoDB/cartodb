@@ -59,8 +59,13 @@ module CartoDB
         handle_multipoint(column) if multipoint?
         self
       rescue => exception
-        job.log "Renaming #{geometry_column_name} to invalid_the_geom"
-        column.rename_to(:invalid_the_geom) if column
+        if column.empty?
+          job.log "Dropping empty #{geometry_column_name}"
+          column.drop 
+        else
+          job.log "Renaming #{geometry_column_name} to invalid_the_geom"
+          column.rename_to(:invalid_the_geom)
+        end
         false
       end #create_the_geom_from_geometry_column
 

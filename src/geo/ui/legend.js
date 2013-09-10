@@ -47,7 +47,7 @@ cdb.geo.ui.ChoroplethLegend = cdb.core.View.extend({
     this.show_title   = this.options.show_title;
 
     this.items    = this.options.items;
-    this.template = _.template('<% if (title && show_title) { %><div class="title"><%= title %></div><% } %><ul><li class="min"><%= leftLabel %></li><li class="max"><%= rightLabel %></li><li class="graph count_<%= buckets_count %>"><div class="colors"><%= colors %></div></li></ul>');
+    this.template = _.template('<% if (title && show_title) { %><div class="legend-title"><%= title %></div><% } %><ul><li class="min"><%= leftLabel %></li><li class="max"><%= rightLabel %></li><li class="graph count_<%= buckets_count %>"><div class="colors"><%= colors %></div></li></ul>');
     this.model    = new cdb.core.Model();
 
   },
@@ -94,7 +94,7 @@ cdb.geo.ui.DensityLegend = cdb.core.View.extend({
     this.show_title  = this.options.show_title;
 
     this.items    = this.options.items;
-    this.template = _.template('<% if (title && show_title) { %><div class="title"><%= title %></div><% } %><ul><li class="min"><%= leftLabel %></li><li class="max"><%= rightLabel %></li><li class="graph count_<%= buckets_count %>"><div class="colors"><%= colors %></div></li></ul>');
+    this.template = _.template('<% if (title && show_title) { %><div class="legend-title"><%= title %></div><% } %><ul><li class="min"><%= leftLabel %></li><li class="max"><%= rightLabel %></li><li class="graph count_<%= buckets_count %>"><div class="colors"><%= colors %></div></li></ul>');
     this.model    = new cdb.core.Model();
 
   },
@@ -141,7 +141,7 @@ cdb.geo.ui.IntensityLegend = cdb.core.View.extend({
     this.show_title  = this.options.show_title;
 
     this.items    = this.options.items;
-    this.template = _.template('<% if (title && show_title) { %><div class="title"><%= title %></div><% } %><ul><li class="min"><%= leftLabel %></li><li class="max"><%= rightLabel %></li><li class="graph"></li></ul>');
+    this.template = _.template('<% if (title && show_title) { %><div class="legend-title"><%= title %></div><% } %><ul><li class="min"><%= leftLabel %></li><li class="max"><%= rightLabel %></li><li class="graph"></li></ul>');
     this.model    = new cdb.core.Model();
 
   },
@@ -258,7 +258,7 @@ cdb.geo.ui.BubbleLegend = cdb.core.View.extend({
 
     this.items = this.options.items;
 
-    this.template = _.template('<% if (title && show_title) { %><div class="title"><%= title %></div><% } %><ul><li><%= min %></li><li class="graph"><div class="bubbles"></div></li><li><%= max %></li></ul>');
+    this.template = _.template('<% if (title && show_title) { %><div class="legend-title"><%= title %></div><% } %><ul><li><%= min %></li><li class="graph"><div class="bubbles"></div></li><li><%= max %></li></ul>');
     this.model    = new cdb.core.Model();
 
     this.add_related_model(this.model);
@@ -305,7 +305,7 @@ cdb.geo.ui.CategoryLegend = cdb.core.View.extend({
     this.show_title  = this.options.show_title;
 
     this.items = this.options.items;
-    this.template = _.template('<% if (title && show_title) { %><div class="title"><%= title %></div><% } %><ul></ul>');
+    this.template = _.template('<% if (title && show_title) { %><div class="legend-title"><%= title %></div><% } %><ul></ul>');
     this.model = new cdb.core.Model({
       type: "custom",
       title: this.title,
@@ -361,7 +361,7 @@ cdb.geo.ui.ColorLegend = cdb.core.View.extend({
     this.show_title  = this.options.show_title;
 
     this.items = this.options.items;
-    this.template = _.template('<% if (title && show_title) { %><div class="title"><%= title %></div><% } %><ul></ul>');
+    this.template = _.template('<% if (title && show_title) { %><div class="legend-title"><%= title %></div><% } %><ul></ul>');
     this.model = new cdb.core.Model({
       type: "custom",
       title: this.title,
@@ -417,7 +417,7 @@ cdb.geo.ui.CustomLegend = cdb.core.View.extend({
     this.show_title  = this.options.show_title;
 
     this.items = this.options.items;
-    this.template = _.template('<% if (title && show_title) { %><div class="title"><%= title %></div><% } %><ul></ul>');
+    this.template = _.template('<% if (title && show_title) { %><div class="legend-title"><%= title %></div><% } %><ul></ul>');
     this.model = new cdb.core.Model({
       type: "custom",
       title: this.title,

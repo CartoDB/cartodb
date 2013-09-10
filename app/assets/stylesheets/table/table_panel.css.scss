@@ -860,6 +860,14 @@ a.info {
       &.empty { font-style: italic; }
     }
 
+    &.disabled .value {
+      color: #AAA;
+      background: rgba(gray, .1);
+      &:hover {
+        background: rgba(gray, .1);
+      }
+    }
+
     input {
       position:relative;
       z-index: 100;

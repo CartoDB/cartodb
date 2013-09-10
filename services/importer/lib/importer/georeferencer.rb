@@ -59,8 +59,13 @@ module CartoDB
         handle_multipoint(column) if multipoint?
         self
       rescue => exception
-        job.log "Renaming #{geometry_column_name} to invalid_the_geom"
-        column.rename_to(:invalid_the_geom) if column
+        if column.empty?
+          job.log "Dropping empty #{geometry_column_name}"
+          column.drop 
+        else
+          job.log "Renaming #{geometry_column_name} to invalid_the_geom"
+          column.rename_to(:invalid_the_geom)
+        end
         false
       end #create_the_geom_from_geometry_column
 
@@ -136,7 +141,7 @@ module CartoDB
         sample = db[%Q{
           SELECT  column_name 
           FROM    information_schema.columns
-          WHERE   table_name ='#{table_name}'
+          WHERE   table_name = '#{table_name}'
           AND     table_schema = '#{schema}'
           AND     lower(column_name) in (#{possible_names})
           LIMIT   1
@@ -165,7 +170,7 @@ module CartoDB
       attr_reader :db, :table_name, :schema, :job
 
       def qualified_table_name
-        "#{schema}.#{table_name}"
+        %Q("#{schema}"."#{table_name}")
       end #qualified_table_name
     end # Georeferencer
   end # Importer2

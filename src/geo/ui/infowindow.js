@@ -217,7 +217,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     this.model.bind('change:template',          this._compileTemplate, this);
     this.model.bind('change:alternative_names', this.render, this);
 
-    this.mapView.map.bind('change',         this._updatePosition, this);
+    this.mapView.map.bind('change',             this._updatePosition, this);
 
     this.mapView.bind('zoomstart', function(){
       self.hide(true);

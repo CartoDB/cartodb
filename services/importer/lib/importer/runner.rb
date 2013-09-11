@@ -1,6 +1,5 @@
 # encoding: utf-8
 require_relative './loader'
-require_relative './shp_loader'
 require_relative './osm_loader'
 require_relative './tiff_loader'
 require_relative './unp'
@@ -12,7 +11,7 @@ module CartoDB
     class Runner
       QUOTA_MAGIC_NUMBER      = 0.3
       DEFAULT_AVAILABLE_QUOTA = 2 ** 30
-      LOADERS                 = [Loader, ShpLoader, OsmLoader, TiffLoader]
+      LOADERS                 = [Loader, OsmLoader, TiffLoader]
       DEFAULT_LOADER          = Loader
 
       def initialize(pg_options, downloader, log=nil, available_quota=nil,

@@ -2,6 +2,7 @@
 require 'csv'
 require 'roo'
 require_relative './job'
+require_relative './csv_normalizer'
 
 module CartoDB
   module Importer2
@@ -17,8 +18,9 @@ module CartoDB
 
       def run
         job.log 'Converting XSLX to CSV'
-        spreadsheet = Roo::Excelx.new(filepath, nil, :ignore)
+        spreadsheet = Roo::Spreadsheet.open(filepath)
         spreadsheet.to_csv(converted_filepath)
+        CsvNormalizer.new(converted_filepath, job).run
         self
       end #run
 

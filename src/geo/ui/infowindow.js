@@ -194,17 +194,24 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
   initialize: function(){
     var self = this;
 
-    _.bindAll(this, "render", "setLatLng", "changeTemplate", "_updatePosition", "_update", "toggle", "show", "hide");
+    _.bindAll(this, "render", "setLatLng", "_setTemplate", "_updatePosition",
+      "_update", "toggle", "show", "hide");
 
     this.mapView = this.options.mapView;
 
     // Set template if it is defined in options
     if (this.options.template) this.model.set('template', this.options.template);
 
-    this.template = this.model.get('template') ? this.model.get('template') : cdb.templates.getTemplate(this._getModelTemplate());
-
+    // Set template view variable and
+    // compile it if it is necessary
+    if (this.model.get('template')) {
+      this._compileTemplate();
+    } else {
+      this._setTemplate();
+    }
+    
     this.model.bind('change:content',           this.render, this);
-    this.model.bind('change:template_name',     this.changeTemplate, this);
+    this.model.bind('change:template_name',     this._setTemplate, this);
     this.model.bind('change:latlng',            this._update, this);
     this.model.bind('change:visibility',        this.toggle, this);
     this.model.bind('change:template',          this._compileTemplate, this);
@@ -224,9 +231,6 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
 
     // Set min height to show the scroll
     this.minHeightToScroll = 180;
-
-    // Compile the template if it is necessary
-    this._compileTemplate();
 
     // Hide the element
     this.$el.hide();
@@ -308,7 +312,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
   /**
    *  Change template of the infowindow
    */
-  changeTemplate: function(template_name) {
+  _setTemplate: function() {
     this.template = cdb.templates.getTemplate(this._getModelTemplate());
     this.render();
   },

@@ -27,7 +27,6 @@
   * Give preference to comma when detecting row delimiter
 
 * Improvements
-  * CDB_CartodbfyTable() function
   * Import Google Docs spreadsheets
 
 2.1.3.3

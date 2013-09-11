@@ -252,6 +252,65 @@ describe("cdb.geo.ui.infowindow", function() {
   });
 
 
+  describe("custom template", function() {
+    var model, view;
+
+    beforeEach(function() {
+
+      var container = $('<div>').css('height', '200px');
+
+      map = new cdb.geo.Map();
+
+      mapView = new cdb.geo.MapView({
+        el: container,
+        map: map
+      });
+
+      model = new cdb.geo.ui.InfowindowModel({
+        template: '<div>{{ test1 }}</div>',
+        fields: [
+          { title: 'test1', position: 1, value: "x" },
+          { title: 'test2', position: 2, value: "b" }
+        ]
+      });
+
+      view = new cdb.geo.ui.Infowindow({
+        model: model,
+        mapView: mapView
+      });
+
+    });
+
+    it("should compile the template when changes", function() {
+      view.compile = function() {};
+      spyOn(view, 'compile');
+      view.model.bind('change:template', view.compile);
+      view.model.set('template', '<div>{{test1}}</div>');
+      expect(view.compile).toHaveBeenCalled();
+    });
+
+    it("should render properly when there is only a field without title", function() {
+      model.set({
+        fields: [
+          { name: 'test1', position: 0, title: false },
+        ],
+        content: {
+          fields: [
+            { title: 'test1', position: 0, value: 'jamon' },
+          ]
+        }
+      });
+
+      var new_view = new cdb.geo.ui.Infowindow({
+        model: model,
+        mapView: mapView
+      });
+
+      console.log(new_view.el);
+
+    });
+  });
+  
 
   describe("image template", function() {
     var model, view, container, fields, fieldsWithoutURL, url;

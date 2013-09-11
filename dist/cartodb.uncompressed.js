@@ -1,6 +1,6 @@
-// cartodb.js version: 3.1.11
+// cartodb.js version: 3.1.12
 // uncompressed version: cartodb.uncompressed.js
-// sha: 2207f28d2403a31a4a30832974db31ca10a70695
+// sha: 0a91a5448eb678a21e0f64643d709167ec7b4a72
 (function() {
   var root = this;
 
@@ -19873,7 +19873,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.1.11';
+    cdb.VERSION = '3.1.12';
 
     cdb.CARTOCSS_VERSIONS = {
       '2.0.0': '',
@@ -28031,7 +28031,7 @@ var Vis = cdb.core.View.extend({
     var map_h = this.$el.outerHeight();
 
     if (map_h === 0) {
-      this.center = this.map.get('center');
+      this.mapConfig = mapConfig;
       $(window).bind('resize', this._onResize);
     }
 
@@ -28515,13 +28515,25 @@ var Vis = cdb.core.View.extend({
   _onResize: function() {
     $(window).unbind('resize', this._onResize);
     var self = this;
+    self.mapView.invalidateSize();
 
     // This timeout is necessary due to GMaps needs time
     // to load tiles and recalculate its bounds :S
     setTimeout(function() {
       self.setMapPosition();
-      if (self.center) self.mapView.map.set('center', self.center);
-    },101);
+      var c = self.mapConfig;
+      if (c.view_bounds_sw) {
+        self.mapView.map.setBounds([
+          c.view_bounds_sw,
+          c.view_bounds_ne
+        ]);
+      } else {
+        self.mapView.map.set({
+          center: c.center,
+          zoom: c.zoom
+        });
+      }
+    }, 150);
   }
 
 }, {

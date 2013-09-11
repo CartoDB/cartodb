@@ -559,13 +559,13 @@ a.info {
         float:left;
         padding: 0;
         border:0;
-        /*color: #CCCCCC;*/
       }
 
       .form_combo  { position:absolute; right:18px; }
-
     }
 
+    // No content block
+    .no_content { display:none }
 
     &.editing_html {
 

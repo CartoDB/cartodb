@@ -694,7 +694,6 @@ a.info {
           text-align:center;
 
           .add { font-size: 24px; }
-
         }
 
         .color {
@@ -705,10 +704,17 @@ a.info {
           ul li .input { top: 13px; }
           ul li:hover .remove { @include opacity(1); }
           ul li .remove { position:relative; top: 3px; @include opacity(0); }
+        }
 
-          ul li .input.edit_in_place {
-            @include position(12px, 5px, false, false);
-          }
+        .right {
+          position: absolute;
+          top: 12px;
+          right: 0;
+
+          .checkbox { float: left; position:relative; top: 7px; margin: 0 5px 0 0; }
+          .checkbox.disabled { cursor: pointer; }
+          .checkbox span { margin: 0 7px 0 0; }
+          .input { float: left; }
 
         }
 
@@ -729,12 +735,7 @@ a.info {
           }
 
           .input {
-            @include position(8px, 0, false, false);
             @include default-input();
-
-            &.edit_in_place {
-              @include position(8px, 0, false, false);
-            }
 
             .value { margin-right: 5px; }
 
@@ -743,9 +744,7 @@ a.info {
               padding: 4px 7px;
               width:150px;
             }
-
           }
-
         }
       }
 
@@ -760,6 +759,10 @@ a.info {
         width:100%;
         padding:13px 0;
         border-bottom:1px solid rgba(#E5E5E5,0.5);
+        height: 50px;
+        @include box-sizing(border-box);
+
+        &.title span.field { position:relative; top: 3px; }
 
         & > span:first-child {
           float:left;
@@ -883,6 +886,7 @@ a.info {
         &.right {
           @include icons-sprite(wizard-arrows, $offset-x:-43px);
           right:8px;
+
           &:hover {
             @include icons-sprite(wizard-arrows, $offset-x:-43px, $offset-y:-43px);
           }

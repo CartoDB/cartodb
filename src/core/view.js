@@ -121,7 +121,7 @@
     * @method cleanTooltips
     */
     cleanTooltips: function() {
-      $('.tipsy').remove();
+      this.$('.tipsy').remove();
     }
 
 

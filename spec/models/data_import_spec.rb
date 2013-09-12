@@ -10,6 +10,7 @@ describe DataImport do
   end
 
   it 'should allow to append data to an existing table' do
+    pending "not yet implemented"
     fixture = '/../db/fake_data/column_string_to_boolean.csv'
     expect do
       DataImport.create(

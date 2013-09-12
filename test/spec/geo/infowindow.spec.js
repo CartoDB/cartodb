@@ -7,6 +7,22 @@ describe("cdb.geo.ui.infowindow", function() {
       model = new cdb.geo.ui.InfowindowModel();
     });
 
+    it("should allow adding an alternative name", function() {
+
+      model.addField('the_name');
+      model.addField('the_description');
+
+      model.setAlternativeName('the_name', 'nombre');
+      model.setAlternativeName('the_description', 'descripción');
+
+      n = model.getAlternativeName('the_name');
+      d = model.getAlternativeName('the_description');
+
+      expect(n).toEqual("nombre");
+      expect(d).toEqual("descripción");
+
+    });
+
     it("should add a field", function() {
       expect(model.containsField('test')).toEqual(false);
       model.addField('test');
@@ -236,6 +252,70 @@ describe("cdb.geo.ui.infowindow", function() {
   });
 
 
+  describe("custom template", function() {
+    var model, view;
+
+    beforeEach(function() {
+
+      var container = $('<div>').css('height', '200px');
+
+      map = new cdb.geo.Map();
+
+      mapView = new cdb.geo.MapView({
+        el: container,
+        map: map
+      });
+
+      model = new cdb.geo.ui.InfowindowModel({
+        template: '<div>{{ test1 }}</div>',
+        fields: [
+          { title: 'test1', position: 1, value: "x" },
+          { title: 'test2', position: 2, value: "b" }
+        ]
+      });
+
+      view = new cdb.geo.ui.Infowindow({
+        model: model,
+        mapView: mapView
+      });
+
+    });
+
+    it("should compile the template when changes", function() {
+      view.compile = function() {};
+      spyOn(view, 'compile');
+      view.model.bind('change:template', view.compile);
+      view.model.set('template', '<div>{{test1}}</div>');
+      expect(view.compile).toHaveBeenCalled();
+    });
+
+    it("should render properly when there is only a field without title", function() {
+      model.set({
+        fields: [
+          { name: 'test1', position: 0, title: false },
+        ],
+        content: {
+          fields: [
+            { title: 'test1', position: 0, value: 'jamon' },
+          ]
+        }
+      });
+
+      var new_view = new cdb.geo.ui.Infowindow({
+        model: model,
+        mapView: mapView
+      });
+
+      expect(new_view.render().$el.html()).toBe('<div>jamon</div>');
+    });
+
+    it("shouldn't sanitize the fields", function() {
+      spyOn(view, '_sanitizeField');
+      view.render();
+      expect(view._sanitizeField).not.toHaveBeenCalled();
+    });
+  });
+  
 
   describe("image template", function() {
     var model, view, container, fields, fieldsWithoutURL, url;

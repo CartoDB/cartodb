@@ -5,7 +5,7 @@ require_relative '../../../app/models/layer/presenter'
 
 include CartoDB
 
-describe Layer::Presenter do
+describe CartoDB::Layer::Presenter do
   describe '#to_poro' do
     it 'wraps the sql if query_wrapper available' do
       layer = OpenStruct.new(

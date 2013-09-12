@@ -16,7 +16,6 @@ module CartoDB
 
       def command
         "#{pg_copy_option} #{encoding_option} #{executable_path} "  +
-        "-skipfailures " + 
         "#{output_format_option} #{postgres_options} "              +
         "#{projection_option} #{layer_creation_options} "           + 
         "#{filepath} #{track_points_option} #{layer_name_option} "  +

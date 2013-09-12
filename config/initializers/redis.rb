@@ -9,16 +9,24 @@ Please, configure Redis in your config/app_config.yml file as this:
 MESSAGE
 end
 
-
 # Redis interfaces definition:
-redis_conf = Cartodb.config[:redis].select { |k, v| [:host, :port].include?(k) }
+conf = Cartodb.config[:redis].symbolize_keys
+redis_conf = conf.select { |k, v| [:host, :port].include?(k) }
 
-$tables_metadata      = Redis.new(redis_conf.merge(:db => 0))
-# TO ACTIVATE when decided how to do it more efficiently without filling the Redis
-#$queries_log         = Redis.new(Cartodb.config[:redis].merge(:db => 1))
-$threshold            = Redis.new(redis_conf.merge(:db => 2))
-$api_credentials      = Redis.new(redis_conf.merge(:db => 3))
-$users_metadata       = Redis.new(redis_conf.merge(:db => 5))
-$redis_migrator_logs  = Redis.new(redis_conf.merge(:db => 6))
-#$layers_metadata     = Redis.new(redis_conf.merge(:db => 7))
+default_databases = {
+  tables_metadata:     0,
+  api_credentials:     3,
+  users_metadata:      5,
+  redis_migrator_logs: 6
+}
 
+databases = conf[:databases] || default_databases
+
+databases.each do |k, v|
+  begin
+    eval("$#{k} = Redis.new(redis_conf.merge(db: #{v}))")
+    eval("$#{k}.ping")
+  rescue => e
+    raise "Error when setting up Redis database #{k}. #{e}"
+  end
+end

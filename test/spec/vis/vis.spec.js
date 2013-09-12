@@ -101,7 +101,7 @@ describe("Vis", function() {
     vis.load(this.mapConfig);
     $(window).trigger('resize');
     expect(vis._onResize).toHaveBeenCalled();
-    expect(vis.center).toBeDefined();
+    expect(vis.mapConfig).toBeDefined();
   });
 
   it("shouldn't bind resize changes when map height is greater than 0", function() {

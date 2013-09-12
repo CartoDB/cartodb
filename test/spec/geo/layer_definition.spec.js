@@ -159,6 +159,35 @@ describe("LayerDefinition", function() {
     expect(layerDefinition._host('a')).toEqual('https://a.d3pu9mtm6f0hk5.cloudfront.net/rambo');
   });
 
+  it("should return values for the latest query", function() {
+    tokens = [];
+    layerDefinition.options.ajax = function(p) { 
+      layerDefinition.getLayerToken(function(a) {
+        tokens.push(a);
+      });
+      layerDefinition.options.ajax = function(p) { 
+        p.success({ layergroupid: 'test2' });
+      }
+      p.success({ layergroupid: 'test' });
+    };
+    runs(function() {
+      layerDefinition.getLayerToken(function(a) {
+        tokens.push(a);
+      });
+      layerDefinition.getLayerToken(function(a) {
+        tokens.push(a);
+      });
+    });
+    waits(1000);
+    runs(function() {
+      expect(tokens.length).toEqual(3);
+      expect(tokens[0]).toEqual(tokens[1]);
+      expect(tokens[0]).toEqual(tokens[2]);
+      expect(tokens[0].layergroupid).toEqual('test2');
+    });
+  });
+
+
   it("it should use jsonp when request is less than 2kb", function() {
     var params;
     layerDefinition.options.ajax = function(p) { 
@@ -354,6 +383,7 @@ describe("LayerDefinition", function() {
       expect(a).toEqual(true);
 
     });
+
   });
 
   describe('layerDefFromSubLayers', function() {

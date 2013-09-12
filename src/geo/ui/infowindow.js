@@ -258,7 +258,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
 
       // If a custom template is not applied, let's sanitized
       // fields for the template rendering
-      if (!this.model.get('template')) {
+      if (this.model.get('template_name')) {
         var template_name = _.clone(this.model.attributes.template_name);
 
         // Sanitized them
@@ -313,8 +313,10 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
    *  Change template of the infowindow
    */
   _setTemplate: function() {
-    this.template = cdb.templates.getTemplate(this._getModelTemplate());
-    this.render();
+    if (this.model.get('template_name')) {
+      this.template = cdb.templates.getTemplate(this._getModelTemplate());
+      this.render();  
+    }
   },
 
   /**
@@ -383,15 +385,16 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     //Get the alternative title
     var alternative_name = this.model.getAlternativeName(attr.title);
 
-    if (attr.title && alternative_name)
+    if (attr.title && alternative_name) {
+      // Alternative title
       attr.title = alternative_name;
+    } else if (attr.title) {
+      // Remove '_' character from titles
+      attr.title = attr.title.replace(/_/g,' ');
+    }
 
     // Cast all values to string due to problems with Mustache 0 number rendering
     var new_value = attr.value.toString();
-
-    // Remove '_' character from titles
-    if (attr.title)
-      attr.title = attr.title.replace(/_/g,' ');
 
     // If it is index 0, not any field type, header template type and length bigger than 30... cut off the text!
     if (!attr.type && pos==0 && attr.value.length > 35 && template_name && template_name.search('_header_') != -1) {

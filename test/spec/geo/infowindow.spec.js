@@ -306,8 +306,13 @@ describe("cdb.geo.ui.infowindow", function() {
         mapView: mapView
       });
 
-      console.log(new_view.el);
+      expect(new_view.render().$el.html()).toBe('<div>jamon</div>');
+    });
 
+    it("shouldn't sanitize the fields", function() {
+      spyOn(view, '_sanitizeField');
+      view.render();
+      expect(view._sanitizeField).not.toHaveBeenCalled();
     });
   });
   

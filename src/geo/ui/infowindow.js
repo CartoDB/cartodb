@@ -120,12 +120,11 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
   },
 
   getAlternativeName: function(fieldName) {
-    return this.get("alternative_names")[fieldName];
+    return this.get("alternative_names") && this.get("alternative_names")[fieldName];
   },
 
   setAlternativeName: function(fieldName, alternativeName) {
-
-    var alternativeNames = this.get("alternative_names");
+    var alternativeNames = this.get("alternative_names") || [];
 
     alternativeNames[fieldName] = alternativeName;
     this.set({ 'alternative_names': alternativeNames });

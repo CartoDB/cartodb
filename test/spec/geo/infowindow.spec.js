@@ -104,6 +104,31 @@ describe("cdb.geo.ui.infowindow", function() {
       expect(view.render).toHaveBeenCalled()
     });
 
+    it("should render without alternative_name set", function() {
+      var template = '<div class="cartodb-popup">\
+        <a href="#close" class="cartodb-popup-close-button close">x</a>\
+         <div class="cartodb-popup-content-wrapper">\
+           <div class="cartodb-popup-content">\
+             <ul id="mylist"></ul>\
+           </div>\
+         </div>\
+         <div class="cartodb-popup-tip-container"></div>\
+      </div>';
+
+      model.unset('alternative_names');
+      model.set({
+        content: {
+          fields: [ { title:'test', value:true, position:0, index:0 } ]
+        },
+        template_name:'infowindow_light',
+        template: template
+      });
+
+      console.log(model.toJSON());
+      console.log(view.render().el);
+      expect(view.render().$el.html().length).not.toBe(0);
+    });
+
     it("should convert value to string when it is a number", function() {
       model.set({
         content: {

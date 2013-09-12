@@ -27,7 +27,7 @@ module CartoDB
       end #db
 
       def qualified_table_name
-        "#{schema}.#{table_name}"
+        %Q("#{schema}"."#{table_name}")
       end #qualified_table_name
 
       def concealed_pg_options

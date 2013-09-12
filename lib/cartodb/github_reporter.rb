@@ -4,7 +4,7 @@ require 'github_api'
 
 module CartoDB
   class GitHubReporter
-    REPORTABLE_ERRORS = [99999, 2001]
+    REPORTABLE_ERRORS = %w{ 99999 2001 }
 
     def github
       Github.new({
@@ -24,7 +24,6 @@ module CartoDB
     end #report_failed_import
 
     def failed_import_body(result)
-      result[:log] = result.fetch(:log, "")[0..1000]
       {
         "title" => "[Importer] [Autoreport] #{result[:name]}.#{result[:extension]} failed",
         "body" => "File importing failed:" +

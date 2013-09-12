@@ -3,6 +3,7 @@ require_relative './loader'
 require_relative './shp_loader'
 require_relative './osm_loader'
 require_relative './tiff_loader'
+require_relative './sql_loader'
 require_relative './unp'
 require_relative './column'
 require_relative './exceptions'
@@ -12,7 +13,8 @@ module CartoDB
     class Runner
       QUOTA_MAGIC_NUMBER      = 0.3
       DEFAULT_AVAILABLE_QUOTA = 2 ** 30
-      LOADERS                 = [Loader, ShpLoader, OsmLoader, TiffLoader]
+      LOADERS                 = [Loader, ShpLoader, OsmLoader, TiffLoader,
+                                SqlLoader]
       DEFAULT_LOADER          = Loader
 
       def initialize(pg_options, downloader, log=nil, available_quota=nil,
@@ -29,7 +31,7 @@ module CartoDB
         self.tracker = tracker_block
         tracker.call('uploading')
         log.append "Getting file from #{downloader.url}"
-        downloader.run
+        downloader.run(available_quota)
 
         log.append "Starting import for #{downloader.source_file.fullpath}"
         log.append "Unpacking #{downloader.source_file.fullpath}"
@@ -50,6 +52,8 @@ module CartoDB
       def import(source_file, job=nil, loader=nil)
         job     ||= Job.new(logger: log, pg_options: pg_options)
         loader  ||= loader_for(source_file).new(job, source_file)
+
+        raise EmptyFileError if source_file.empty?
 
         self.tracker.call('importing')
         job.log "Importing data from #{source_file.fullpath}"
@@ -111,7 +115,7 @@ module CartoDB
 
       def error_for(exception_klass=nil)
         return nil unless exception_klass
-        ERRORS_MAP.fetch(exception_klass, 99999)
+        ERRORS_MAP.fetch(exception_klass, UnknownError)
       end #error_for
 
       def raise_if_over_storage_quota

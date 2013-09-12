@@ -755,6 +755,7 @@ class Table < Sequel::Model(:user_tables)
     primary_key = nil
     owner.in_database do |user_database|
       schema = user_database.schema(name, :reload => true).map{|c| c.first}
+      raw_attributes.delete(:id) unless schema.include?(:id)
       attributes = raw_attributes.dup.select{ |k,v| schema.include?(k.to_sym) }
       if attributes.keys.size != raw_attributes.keys.size
         raise CartoDB::InvalidAttributes, "Invalid rows: #{(raw_attributes.keys - attributes.keys).join(',')}"
@@ -776,7 +777,9 @@ class Table < Sequel::Model(:user_tables)
           end
         end
 
-        if invalid_column.nil? || new_column_type != get_new_column_type(invalid_column)
+        new_column_type = get_new_column_type(invalid_column)
+          
+        if invalid_column.nil?
           raise e
         else
           user_database.set_column_type(self.name, invalid_column.to_sym, new_column_type)
@@ -792,6 +795,8 @@ class Table < Sequel::Model(:user_tables)
     rows_updated = 0
     owner.in_database do |user_database|
       schema = user_database.schema(name, :reload => true).map{|c| c.first}
+      raw_attributes.delete(:id) unless schema.include?(:id)
+      
       attributes = raw_attributes.dup.select{ |k,v| schema.include?(k.to_sym) }
       if attributes.keys.size != raw_attributes.keys.size
         raise CartoDB::InvalidAttributes, "Invalid rows: #{(raw_attributes.keys - attributes.keys).join(',')}"
@@ -1070,92 +1075,6 @@ class Table < Sequel::Model(:user_tables)
   def synchronize_name(name)
     self[:name] = name
     save
-  end
-
-  def to_kml
-    owner.in_database do |user_database|
-      export_schema = self.schema.map{|c| c.first}
-      hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-        "database" => database_name,
-        :logger => ::Rails.logger,
-        "username" => owner.database_username,
-        "password" => owner.database_password,
-        :table_name => self.name,
-        :export_type => "kml",
-        :export_schema => export_schema,
-        :debug => (Rails.env.development?),
-        :remaining_quota => owner.remaining_quota
-      ).symbolize_keys
-
-      exporter = CartoDB::Exporter.new hash_in
-
-      return exporter.export!
-    end
-  end
-
-  def to_csv
-    owner.in_database do |user_database|
-      #table_name = "csv_export_temp_#{self.name}"
-      export_schema = self.schema.map{|c| c.first} - [THE_GEOM]
-      export_schema += ["ST_AsGeoJSON(the_geom, 8) as the_geom"] if self.schema.map{|c| c.first}.include?(THE_GEOM)
-      hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-        "database" => database_name,
-        :logger => ::Rails.logger,
-        "username" => owner.database_username,
-        "password" => owner.database_password,
-        :table_name => self.name,
-        :export_type => "csv",
-        :export_schema => export_schema,
-        :debug => (Rails.env.development?),
-        :remaining_quota => owner.remaining_quota
-      ).symbolize_keys
-
-      exporter = CartoDB::Exporter.new hash_in
-
-      return exporter.export!
-    end
-  end
-
-  def to_shp
-    owner.in_database do |user_database|
-      export_schema = self.schema.map{|c| c.first}
-      hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-        "database" => database_name,
-        :logger => ::Rails.logger,
-        "username" => owner.database_username,
-        "password" => owner.database_password,
-        :table_name => self.name,
-        :export_type => "shp",
-        :export_schema => export_schema,
-        :debug => (Rails.env.development?),
-        :remaining_quota => owner.remaining_quota
-      ).symbolize_keys
-
-      exporter = CartoDB::Exporter.new hash_in
-
-      return exporter.export!
-    end
-  end
-
-  def to_sql
-    owner.in_database do |user_database|
-      export_schema = self.schema.map{|c| c.first}
-      hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-        "database" => database_name,
-        :logger => ::Rails.logger,
-        "username" => owner.database_username,
-        "password" => owner.database_password,
-        :table_name => self.name,
-        :export_type => "sql",
-        :export_schema => export_schema,
-        :debug => (Rails.env.development?),
-        :remaining_quota => owner.remaining_quota
-      ).symbolize_keys
-
-      exporter = CartoDB::Exporter.new hash_in
-
-      return exporter.export!
-    end
   end
 
   def self.find_all_by_user_id_and_tag(user_id, tag_name)

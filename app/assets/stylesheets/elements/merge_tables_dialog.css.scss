@@ -54,6 +54,10 @@
           word-spacing: 0;
           border-bottom:0;
 
+          &.disabled p {
+            @include opacity(.5);
+          }
+
           &:first-child {margin-right:41px;}
 
           a {

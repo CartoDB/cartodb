@@ -20,7 +20,7 @@ class User < Sequel::Model
   set_allowed_columns :email, :map_enabled, :password_confirmation, 
     :quota_in_bytes, :table_quota, :account_type, :private_tables_enabled, 
     :period_end_date, :map_view_quota, :max_layers, :database_timeout, 
-    :user_timeout
+    :user_timeout, :map_view_block_price
   plugin :validation_helpers
   plugin :json_serializer
   plugin :dirty
@@ -116,11 +116,13 @@ class User < Sequel::Model
 
   ##
   # SLOW! Checks map views for every user
+  # delta: get users who are also this percentage below their limit.
+  #        example: 0.20 will get all users at 80% of their map view limit
   #
-  def self.overquota
-    User.all.select do |u|
-        u.set_old_api_calls # updates map views stats older than 3 hours
-        u.get_api_calls(from: u.last_billing_cycle, to: Date.today).sum > u.map_view_quota.to_i
+  def self.overquota(delta = 0)
+    User.where(enabled: true).all.select do |u|
+        limit = u.map_view_quota.to_i - (u.map_view_quota.to_i * delta)
+        u.get_api_calls(from: u.last_billing_cycle, to: Date.today).sum > limit
     end
   end
 
@@ -671,39 +673,6 @@ class User < Sequel::Model
             CartoDB::Logger.info "SQL function #{File.basename(f)} doesn't exist in lib/sql/scripts-enabled directory. Not loading it."
           end
         end
-      end
-    end
-  end
-
-  # Test cartodb functions
-  def test_cartodb_functions
-    puts "Testing functions in db '#{database_name}' (#{username})"
-    in_database(:as => :superuser) do |user_database|
-      user_database.transaction do
-	config = ::Rails::Sequel.configuration.environment_for(Rails.env)
-        env  = " PGUSER=#{database_username}"
-        env += " PGPORT=#{config['port']}"
-        env += " PGHOST=#{config['host']}"
-        env += " PGPASSWORD=#{database_password}"
-        glob = Rails.root.join('lib/sql/test/*.sql')
-        #puts " Scanning #{glob}"
-        Dir.glob(glob).each do |f|
-          tname = File.basename(f, '.sql')
-          expfile = File.dirname(f) + '/' + tname + '_expect'
-          print "  #{tname} ... "
-          cmd = "#{env} psql -X -tA < #{f} #{database_name} 2>&1 | diff -U2 #{expfile} - 2>&1"
-          result = `#{cmd}`
-          if $? != 0
-            puts "fail"
-            puts "--------------------------------------------------------------------------------"
-            puts "#{result}"
-            puts "--------------------------------------------------------------------------------"
-          else
-            puts "ok"
-          end
-        end
-
-        # yield(something) if block_given?
       end
     end
   end

@@ -63,11 +63,6 @@ class DataImport < Sequel::Model
     self
   end
 
-  def set_error_code(code)
-    self.error_code = code
-    self.save
-  end
-
   def get_error_text
     return CartoDB::IMPORTER_ERROR_CODES[99999] if self.error_code.blank? 
     return CartoDB::IMPORTER_ERROR_CODES[self.error_code]
@@ -76,8 +71,10 @@ class DataImport < Sequel::Model
   def raise_error_if_over_quota(number_of_tables)
     if !current_user.remaining_table_quota.nil? && 
     current_user.remaining_table_quota.to_i < number_of_tables
-      self.set_error_code(8002)
-      self.log_error("Over account table limit, please upgrade")
+      self.error_code = 8002
+      self.state      = 'failure'
+      save
+      log.append("Over account table limit, please upgrade")
       raise CartoDB::QuotaExceeded, "More tables required"
     end
   end
@@ -236,7 +233,8 @@ class DataImport < Sequel::Model
     data_source ||= self.data_source
     downloader  = CartoDB::Importer2::Downloader.new(data_source)
     tracker     = lambda { |state| self.state = state; save }
-    runner      = CartoDB::Importer2::Runner.new(pg_options, downloader, log)
+    runner      = CartoDB::Importer2::Runner.new(pg_options, downloader, log,
+                  current_user.remaining_quota)
     runner.run(&tracker)
     self.results = runner.results
 
@@ -286,8 +284,8 @@ class DataImport < Sequel::Model
       @new_table.map.recalculate_bounds!
       # check if the table fits into owner's remaining quota
       if table_owner.remaining_quota < 0
-        self.log_error("Over storage quota, removing table" )
-        self.set_error_code(8001)
+        self.log.append("Over storage quota, removing table" )
+        self.error_code = 8001
         @new_table.destroy
         return false
       end
@@ -318,13 +316,27 @@ class DataImport < Sequel::Model
     runner.run(&tracker)
     self.results = runner.results
 
-    runner.results.each do |result|
+    successful_imports = results.select { |result|
+      result.fetch(:success, false)
+    }
+
+    if table_quota_exceeded?(successful_imports)
+      @table_quota_exceeded = true 
+      return(success = false)
+    end
+
+    successful_imports.each do |result|
       name        = result.fetch(:name)
       schema      = result.fetch(:schema)
       table_names = result.fetch(:tables)
 
-      table_names.each { |table_name| register(table_name, name, schema) }
+      if @table_quota_exceeded
+        table_names.each { |table_name| drop(schema, table_name) }
+      else
+        table_names.each { |table_name| register(table_name, name, schema) }
+      end
     end
+
     success = !!success_status_from(runner.results)
     notify_results(runner.results)
     success
@@ -335,6 +347,7 @@ class DataImport < Sequel::Model
   end #success_status_from
 
   def errors_from(results)
+    return [8002] if @table_quota_exceeded
     results.map { |result| result.fetch(:error, nil) }.compact
   end #errors_from
 
@@ -344,13 +357,20 @@ class DataImport < Sequel::Model
       SET SCHEMA public
     }) unless schema == 'public'
 
-    candidates  = table_owner.tables.map(&:name)
-    name        = Table.get_valid_table_name(name, name_candidates: candidates)
+    rename_attempts = 0
 
-    current_user.in_database.execute(%Q{
-      ALTER TABLE "public"."#{table_name}"
-      RENAME TO #{name}
-    })
+    begin
+      candidates  = table_owner.reload.tables.map(&:name)
+      name        = Table.get_valid_table_name(name, name_candidates: candidates)
+
+      rename_attempts = rename_attempts + 1
+      current_user.in_database.execute(%Q{
+        ALTER TABLE "public"."#{table_name}"
+        RENAME TO "#{name}"
+      })
+    rescue
+      retry unless rename_attempts > 1
+    end
 
     table                         = Table.new
     table.user_id                 = table_owner.id
@@ -369,7 +389,6 @@ class DataImport < Sequel::Model
 
   def notify_results(results)
     results.each { |result| CartoDB::Metrics.new.report(payload_for(result)) }
-    report_unknown_error if results.empty?
   end #notify_results
 
   def report_unknown_error
@@ -419,5 +438,21 @@ class DataImport < Sequel::Model
     payload.merge!(error_title: get_error_text) unless result.fetch(:success)
     payload
   end
-end
 
+  def table_quota_exceeded?(results=[])
+    return false if current_user.remaining_table_quota.nil?
+    results.length > current_user.remaining_table_quota.to_i
+  end
+
+  def set_table_quota_exceeded
+    self.error_code = 8002
+    self.state      = 'failure'
+    save
+  end
+
+  def drop(schema, table_name)
+    current_user.in_database.execute(%Q{DROP TABLE "#{schema}.#{table_name}"})
+  rescue
+    self
+  end
+end

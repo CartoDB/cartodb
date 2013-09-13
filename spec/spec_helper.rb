@@ -13,10 +13,9 @@ RSpec.configure do |config|
   config.include CartoDB::Factories
   config.include HelperMethods
 
-  # This is done by config/initializers/redis.db now
-  #config.before(:suite) do
-  #  CartoDB::RedisTest.up
-  #end
+  config.before(:suite) do
+    CartoDB::RedisTest.up
+  end
 
   config.before(:all) do
     $tables_metadata.flushdb

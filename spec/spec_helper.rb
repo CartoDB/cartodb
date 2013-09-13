@@ -13,9 +13,10 @@ RSpec.configure do |config|
   config.include CartoDB::Factories
   config.include HelperMethods
 
-  config.before(:suite) do
-    CartoDB::RedisTest.up
-  end
+  # This is done by config/initializers/redis.db now
+  #config.before(:suite) do
+  #  CartoDB::RedisTest.up
+  #end
 
   config.before(:all) do
     $tables_metadata.flushdb
@@ -38,6 +39,7 @@ RSpec.configure do |config|
     ].map{ |r| r.values.first }.each { |username| Rails::Sequel.connection.run("drop user #{username}") if username =~ /^test_cartodb_user_/ }
   end
 
+  # Still needed
   config.after(:suite) do
     CartoDB::RedisTest.down
   end

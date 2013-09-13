@@ -1,5 +1,5 @@
-if Rails.env.test
-  require 'spec/support/redis.rb'
+if Rails.env.test?
+  require_relative '../../spec/support/redis'
   CartoDB::RedisTest.up
 end
 

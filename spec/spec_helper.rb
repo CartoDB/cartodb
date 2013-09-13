@@ -38,7 +38,6 @@ RSpec.configure do |config|
     ].map{ |r| r.values.first }.each { |username| Rails::Sequel.connection.run("drop user #{username}") if username =~ /^test_cartodb_user_/ }
   end
 
-  # Still needed
   config.after(:suite) do
     CartoDB::RedisTest.down
   end

@@ -1,8 +1,3 @@
-if Rails.env.test?
-  require_relative '../../spec/support/redis'
-  CartoDB::RedisTest.up
-end
-
 if Cartodb.config[:redis].blank?
   raise <<-MESSAGE
 Please, configure Redis in your config/app_config.yml file like this:
@@ -12,6 +7,12 @@ Please, configure Redis in your config/app_config.yml file like this:
       host: '127.0.0.1'
       port: 6379
 MESSAGE
+end
+
+# Start testing redis server, if needed (in test environment)
+if Rails.env.test?
+  require_relative '../../spec/support/redis'
+  CartoDB::RedisTest.up
 end
 
 # Redis interfaces definition:

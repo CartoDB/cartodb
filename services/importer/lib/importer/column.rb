@@ -44,7 +44,7 @@ module CartoDB
       end #type
 
       def geometrify
-        raise EmptyGeometryColumn if empty?
+        raise                     if empty?
         convert_from_wkt          if wkt?
         convert_from_kml_multi    if kml_multi?
         convert_from_kml_point    if kml_point?

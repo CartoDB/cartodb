@@ -85,7 +85,7 @@ module CartoDB
       end #track_points_option
 
       def projection_option
-        return nil if filepath =~ /\.csv/
+        return nil if filepath =~ /\.csv/ || filepath =~ /\.ods/
         "-t_srs EPSG:4326 "
       end #projection_option
 

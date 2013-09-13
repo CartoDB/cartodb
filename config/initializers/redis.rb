@@ -1,3 +1,8 @@
+# We don't expect redis to be running at initialization
+# time when running tests. See
+# https://github.com/CartoDB/cartodb/issues/209#issuecomment-24400609
+exit if Rails.env.test
+
 if Cartodb.config[:redis].blank?
   raise <<-MESSAGE
 Please, configure Redis in your config/app_config.yml file like this:

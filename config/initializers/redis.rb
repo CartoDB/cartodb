@@ -33,5 +33,5 @@ begin
   $users_metadata.ping
   $redis_migrator_logs.ping
 rescue => e
-  raise "Error when setting up Redis databases. #{e}"
+  raise "Error when setting up Redis databases. #{e}" unless Rails.env.test?
 end

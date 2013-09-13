@@ -1,6 +1,6 @@
 if Cartodb.config[:redis].blank?
   raise <<-MESSAGE
-Please, configure Redis in your config/app_config.yml file as this:
+Please, configure Redis in your config/app_config.yml file like this:
   development:
     ...
     redis:
@@ -33,5 +33,5 @@ begin
   $users_metadata.ping
   $redis_migrator_logs.ping
 rescue => e
-  raise "Error when setting up Redis databases. #{e}" unless Rails.env.test?
+  raise "Error connecting to Redis databases: #{e}" 
 end

@@ -6,7 +6,7 @@ module CartoDB
     
     def self.down
       if File.file?(REDIS_PID)
-        puts "\n[redis] Shuting down test server..."
+        puts "\n[redis] Shutting down test server..."
         pid = File.read(REDIS_PID).to_i
         system("kill -9 #{pid}")
         File.delete(REDIS_PID)
@@ -16,9 +16,10 @@ module CartoDB
     
     def self.up
       down
-      puts "[redis] Running test server..."
+      port = Cartodb.config[:redis]["port"]
+      print "[redis] Starting test server on port #{port}... "
       redis_options = {
-        "port"          => Cartodb.config[:redis]["port"],
+        "port"          => port,
         "daemonize"     => 'yes',
         "pidfile"       => REDIS_PID,
         "timeout"       => 300,
@@ -27,9 +28,13 @@ module CartoDB
         "loglevel"      => "debug",
         "logfile"       => "stdout"
       }.map { |k, v| "#{k} #{v}" }.join("\n")
-      cmd = "printf '#{redis_options}' | redis-server -"
-      system(cmd)
-      sleep 2
+      output = `printf '#{redis_options}' | redis-server - 2>&1`
+      if $?.success?
+        puts('done') 
+        sleep 2
+      else
+        raise "Error starting test Redis server: #{output}"
+      end
     end
     
   end

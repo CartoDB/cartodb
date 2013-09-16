@@ -126,8 +126,16 @@ function PathView(geometryModel) {
 
   if(this.geom.getPaths) {
     var paths = this.geom.getPaths();
-    for(var i = 0; i < paths.length; ++i) {
-      bindPath(paths[i]);
+
+    if (paths && paths[0]) {
+      // More than one path
+      for(var i = 0; i < paths.length; ++i) {
+        bindPath(paths[i]);
+      }
+    } else {
+      // One path
+      bindPath(paths);
+      google.maps.event.addListener(this.geom, 'mouseup', this._updateModel);
     }
   } else {
     for(var i = 0; i < this.geom.length; ++i) {

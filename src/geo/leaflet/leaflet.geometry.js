@@ -179,12 +179,22 @@ function PathView(geometryModel) {
   
   this.geom = L.GeoJSON.geometryToLayer(geometryModel.get('geojson'));
 
-  _.each(this.geom._layers, function(g) {
-    g.setStyle(geometryModel.get('style'));
-    g.on('edit', function() {
+  if (this.geom._layers) {
+    // Feature group
+    _.each(this.geom._layers, function(g) {
+      g.setStyle(geometryModel.get('style'));
+      g.on('edit', function() {
+        geometryModel.set('geojson', L.GeoJSON.toGeoJSON(self.geom));
+      }, self);
+    });  
+  } else {
+    // One layer
+    this.geom.setStyle(geometryModel.get('style'));
+    this.geom.on('edit', function() {
       geometryModel.set('geojson', L.GeoJSON.toGeoJSON(self.geom));
     }, self);
-  });
+  }
+  
   /*for(var i = 0; i < events.length; ++i) {
     var e = events[i];
     this.geom.on(e, self._eventHandler(e));
@@ -196,10 +206,17 @@ PathView.prototype = new GeometryView();
 
 PathView.prototype.edit = function(enable) {
   var fn = enable ? 'enable': 'disable';
-  _.each(this.geom._layers, function(g) {
-    g.editing[fn]();
-    g.off('edit', null, self);
-  });
+  if (this.geom._layers) {
+    // Feature group
+    _.each(this.geom._layers, function(g) {
+      g.editing[fn]();
+      g.off('edit', null, self);
+    });
+  } else {
+    // One layer
+    this.geom.editing[fn]();
+    this.geom.off('edit', null, self);
+  }
 };
 
 cdb.geo.leaflet = cdb.geo.leaflet || {};

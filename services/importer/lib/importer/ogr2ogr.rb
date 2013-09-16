@@ -19,7 +19,7 @@ module CartoDB
         "#{output_format_option} #{postgres_options} "              +
         "#{projection_option} #{layer_creation_options} "           + 
         "#{filepath} #{track_points_option} #{layer_name_option} "  +
-        "#{new_layer_type_option}"
+        "#{new_layer_type_option} #{append_option}"
       end #command
 
       def cartodb_id_option
@@ -104,6 +104,10 @@ module CartoDB
       def new_layer_type_option
         "-nlt geometry"
       end #new_layer_type_option
+
+      def append_option
+        "-append"
+      end #append_option
     end # Ogr2ogr
   end # Importer2
 end # CartoDB

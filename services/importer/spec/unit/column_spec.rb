@@ -39,7 +39,7 @@ describe Column do
 
     it 'raises if empty geometry column' do
       5.times { @dataset.insert(name: '', description:'', the_geom: '') }
-      lambda { @column.geometrify }.must_raise EmptyGeometryColumn
+      lambda { @column.geometrify }.must_raise RuntimeError
     end
 
     it "guarantees the geometry column ends up with a geometry type" do

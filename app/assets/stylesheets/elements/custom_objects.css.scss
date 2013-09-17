@@ -546,6 +546,9 @@
     }
 
     &.disabled {
+
+      &.light:hover { color: #999; }
+
       span.check{
         &:before {
           display:none;

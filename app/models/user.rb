@@ -20,7 +20,7 @@ class User < Sequel::Model
   set_allowed_columns :email, :map_enabled, :password_confirmation, 
     :quota_in_bytes, :table_quota, :account_type, :private_tables_enabled, 
     :period_end_date, :map_view_quota, :max_layers, :database_timeout, 
-    :user_timeout, :map_view_block_price
+    :user_timeout, :map_view_block_price, :geocoding_quota
   plugin :validation_helpers
   plugin :json_serializer
   plugin :dirty

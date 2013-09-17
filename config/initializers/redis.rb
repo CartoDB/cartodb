@@ -22,11 +22,16 @@ default_databases = {
 
 databases = conf[:databases] || default_databases
 
-databases.each do |k, v|
-  begin
-    eval("$#{k} = Redis.new(redis_conf.merge(db: #{v}))")
-    eval("$#{k}.ping")
-  rescue => e
-    raise "Error when setting up Redis database #{k}. #{e}"
-  end
+$tables_metadata     = Redis.new(redis_conf.merge(db: databases[:tables_metadata]))
+$api_credentials     = Redis.new(redis_conf.merge(db: databases[:api_credentials]))
+$users_metadata      = Redis.new(redis_conf.merge(db: databases[:users_metadata]))
+$redis_migrator_logs = Redis.new(redis_conf.merge(db: databases[:redis_migrator_logs]))
+
+begin
+  $tables_metadata.ping
+  $api_credentials.ping
+  $users_metadata.ping
+  $redis_migrator_logs.ping
+rescue => e
+  raise "Error when setting up Redis databases. #{e}"
 end

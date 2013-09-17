@@ -721,6 +721,12 @@ a.info {
       & > span:hover {cursor: default; }
     }
 
+    // When custom html template is applied, blocked block should show up
+    // and overflow should be hidden
+    .titlePane.disabled .wrapper, .fieldPane.disabled .wrapper {
+      overflow:hidden;
+    }
+
     .blocked {
       position:absolute;
       top:0;

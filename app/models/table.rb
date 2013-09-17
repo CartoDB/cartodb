@@ -1487,7 +1487,7 @@ SQL
   def update_the_geom!(attributes, primary_key)
     return unless attributes[THE_GEOM].present? && attributes[THE_GEOM] != 'GeoJSON'
      begin
-       owner.in_database.run("UPDATE #{self.name} SET the_geom = ST_SetSRID(ST_GeomFromGeoJSON('#{attributes[THE_GEOM].sanitize_sql}'),#{CartoDB::SRID}) where cartodb_id = #{primary_key}")
+       owner.in_database.run("UPDATE #{self.name} SET the_geom = ST_SetSRID(ST_GeomFromGeoJSON('#{attributes[THE_GEOM].to_json}'),#{CartoDB::SRID}) where cartodb_id = #{primary_key}")
      rescue => exception
        raise CartoDB::InvalidGeoJSONFormat
      end

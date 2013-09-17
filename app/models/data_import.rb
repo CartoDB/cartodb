@@ -389,7 +389,6 @@ class DataImport < Sequel::Model
 
   def notify_results(results)
     results.each { |result| CartoDB::Metrics.new.report(payload_for(result)) }
-    report_unknown_error if results.empty?
   end #notify_results
 
   def report_unknown_error
@@ -457,4 +456,3 @@ class DataImport < Sequel::Model
     self
   end
 end
-

@@ -190,6 +190,9 @@ GEM
       rack (~> 1.2)
     oily_png (1.0.3)
       chunky_png (~> 1.2.1)
+    parallel (0.7.1)
+    parallel_tests (0.15.0)
+      parallel
     pg (0.11.0)
     poltergeist (1.0.2)
       capybara (~> 1.1)
@@ -359,6 +362,7 @@ DEPENDENCIES
   oauth (= 0.4.5)
   oauth-plugin (= 0.4.0.pre4)
   oily_png (~> 1.0.2)
+  parallel_tests
   pg (= 0.11)
   poltergeist (>= 1.0.0)
   rack (= 1.4.1)

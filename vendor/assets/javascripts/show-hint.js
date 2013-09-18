@@ -59,7 +59,7 @@
       CodeMirror.signal(data, "shown");
 
       var debounce = null, completion = this, finished;
-      var closeOn = this.options.closeCharacters || /[\s()\[\]{};:>,]/;
+      var closeOn = this.options.closeCharacters || /[\s()\[\]{};:>,-]/;
       var startPos = this.cm.getCursor(), startLen = this.cm.getLine(startPos.line).length;
 
       function done() {
@@ -215,14 +215,14 @@
       hints.style.left = (left + startScroll.left - curScroll.left) + "px";
     });
 
-    CodeMirror.on(hints, "dblclick", function(e) {
+    CodeMirror.on(hints, "click", function(e) {
       var t = e.target || e.srcElement;
       if (t.hintId != null) {widget.changeActive(t.hintId); widget.pick();}
     });
-    CodeMirror.on(hints, "click", function(e) {
-      var t = e.target || e.srcElement;
-      if (t.hintId != null) widget.changeActive(t.hintId);
-    });
+    // CodeMirror.on(hints, "click", function(e) {
+    //   var t = e.target || e.srcElement;
+    //   if (t.hintId != null) widget.changeActive(t.hintId);
+    // });
     CodeMirror.on(hints, "mousedown", function() {
       setTimeout(function(){cm.focus();}, 20);
     });

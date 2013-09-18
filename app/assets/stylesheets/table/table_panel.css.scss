@@ -1175,8 +1175,8 @@ a.info {
           // Wizard icons
           &.simple {
             background: image-url('layout/wizard-simple.png') no-repeat;
-            &.polygon { background: image-url('layout/wizard-simple-polygon.png') no-repeat;}
-            &.line { background: image-url('layout/wizard-simple-polyline.png') no-repeat;}
+            &.polygon, &.polygon-polygon { background: image-url('layout/wizard-simple-polygon.png') no-repeat;}
+            &.line, &.line-line { background: image-url('layout/wizard-simple-polyline.png') no-repeat;}
           }
 
           &.intensity {
@@ -1185,13 +1185,13 @@ a.info {
 
           &.choropleth {
             background: image-url('layout/wizard-choropleth.png') no-repeat;
-            &.line { background: image-url('layout/wizard-choropleth-polyline.png') no-repeat;}
+            &.line, &.line-line { background: image-url('layout/wizard-choropleth-polyline.png') no-repeat;}
           }
 
           &.color {
             background: image-url('layout/wizard-color.png') no-repeat;
-            &.polygon { background: image-url('layout/wizard-color-polygon.png') no-repeat;}
-            &.line { background: image-url('layout/wizard-color-polyline.png') no-repeat;}
+            &.polygon, &.polygon-polygon { background: image-url('layout/wizard-color-polygon.png') no-repeat;}
+            &.line, &.line-line { background: image-url('layout/wizard-color-polyline.png') no-repeat;}
           }
 
           &.bubble  { background: image-url('layout/wizard-bubble.png') no-repeat;}

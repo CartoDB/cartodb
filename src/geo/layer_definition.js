@@ -176,15 +176,17 @@ LayerDefinition.prototype = {
 
   getLayerToken: function(callback) {
     var self = this;
+    function _done(data, err) {
+      var fn;
+      while(fn = self._layerTokenQueue.pop()) {
+        fn(data, err);
+      }
+    }
     clearTimeout(this._timeout);
+    this._queue.push(_done);
     this._layerTokenQueue.push(callback);
     this._timeout = setTimeout(function() {
-      self._getLayerToken(function(data, err) {
-        var fn;
-        while(fn = self._layerTokenQueue.pop()) {
-          fn(data, err);
-        }
-      });
+      self._getLayerToken(_done);
     }, 4);
   },
 
@@ -201,7 +203,8 @@ LayerDefinition.prototype = {
 
     // check request queue
     if(this._queue.length) {
-      this._getLayerToken(this._queue.pop());
+      var last = this._queue[this._queue.length - 1];
+      this._getLayerToken(last);
     }
   },
 
@@ -297,9 +300,10 @@ LayerDefinition.prototype = {
 
     // if the previous request didn't finish, queue it
     if(this._waiting) {
-      this._queue.push(callback);
       return this;
     }
+
+    this._queue = [];
 
     // setup params
     var extra_params = this.options.extra_params || {};

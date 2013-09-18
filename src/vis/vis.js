@@ -100,7 +100,7 @@ window.vizjson = function(data) {
 var Vis = cdb.core.View.extend({
 
   initialize: function() {
-    _.bindAll(this, 'loadingTiles', 'loadTiles');
+    _.bindAll(this, 'loadingTiles', 'loadTiles', '_onResize');
 
     this.https = false;
     this.overlays = [];
@@ -110,7 +110,6 @@ var Vis = cdb.core.View.extend({
       this.map = this.mapView.map;
     }
   },
-
 
   load: function(data, options) {
     var self = this;
@@ -176,6 +175,20 @@ var Vis = cdb.core.View.extend({
     var map = new cdb.geo.Map(mapConfig);
     this.map = map;
     this.updated_at = data.updated_at || new Date().getTime();
+
+
+    // If a CartoDB embed map is hidden by default, its
+    // height is 0 and it will need to recalculate its size
+    // and re-center again.
+    // We will wait until it is resized and then apply
+    // the center provided in the parameters and the
+    // correct size.
+    var map_h = this.$el.outerHeight();
+
+    if (map_h === 0) {
+      this.mapConfig = mapConfig;
+      $(window).bind('resize', this._onResize);
+    }
 
     var div = $('<div>').css({
       position: 'relative',
@@ -432,13 +445,16 @@ var Vis = cdb.core.View.extend({
 
   // Set map top position taking into account header height
   setMapPosition: function() {
-    var header_h = this.$el.find(".cartodb-header:not(.cartodb-popup)").outerHeight();
+    var map_h = this.$el.outerHeight();
 
-    this.$el
-      .find("div.cartodb-map-wrapper")
-      .css("top", header_h);
+    if (map_h !== 0) {
+      var header_h = this.$(".cartodb-header:not(.cartodb-popup)").outerHeight();
+      this.$el
+        .find("div.cartodb-map-wrapper")
+        .css("top", header_h);
 
-    this.mapView.invalidateSize();
+      this.mapView.invalidateSize();
+    }
   },
 
   createLayer: function(layerData, opts) {
@@ -592,7 +608,7 @@ var Vis = cdb.core.View.extend({
     var layerView = mapView.getLayerByCid(layer_cid);
 
     // add the associated overlays
-    if(layerView.containInfowindow && layerView.containInfowindow()) {
+    if(this.infowindow && layerView.containInfowindow && layerView.containInfowindow()) {
       this.addInfowindow(layerView);
     }
 
@@ -649,6 +665,30 @@ var Vis = cdb.core.View.extend({
     return _(this.overlays).find(function(v) {
       return v.type == type;
     });
+  },
+
+  _onResize: function() {
+    $(window).unbind('resize', this._onResize);
+    var self = this;
+    self.mapView.invalidateSize();
+
+    // This timeout is necessary due to GMaps needs time
+    // to load tiles and recalculate its bounds :S
+    setTimeout(function() {
+      self.setMapPosition();
+      var c = self.mapConfig;
+      if (c.view_bounds_sw) {
+        self.mapView.map.setBounds([
+          c.view_bounds_sw,
+          c.view_bounds_ne
+        ]);
+      } else {
+        self.mapView.map.set({
+          center: c.center,
+          zoom: c.zoom
+        });
+      }
+    }, 150);
   }
 
 }, {

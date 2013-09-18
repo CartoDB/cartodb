@@ -98,6 +98,8 @@ cdb.vis.Overlay.register('infowindow', function(data, vis) {
   }
 
   var infowindowModel = new cdb.geo.ui.InfowindowModel({
+    template: data.template,
+    alternative_names: data.alternative_names,
     fields: data.fields,
     template_name: data.template_name
   });
@@ -140,7 +142,7 @@ cdb.vis.Overlay.register('layer_selector', function(data, vis) {
 
   if(vis.legends) {
     layerSelector.bind('change:visible', function(visible, order) {
-      var o = vis.legends.options.legends.length - order - 1;
+      //var o = vis.legends.options.legends.length - order - 1;
       var legend = vis.legends && vis.legends.getLayerByIndex(order);
 
       if(legend) {

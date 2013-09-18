@@ -5,23 +5,25 @@ describe CartoDB::Geocoder do
   let(:default_params) { {app_id: '', token: '', mailto: ''} }
 
   describe '#upload' do
-    it "returns rec_id on success" do
+    it 'returns rec_id on success' do
+      stub_api_request 200, 'response_example.xml'
       filepath = path_to 'without_country.csv'
-      response = File.open(path_to('response_example.xml')).read
-      Typhoeus.stub(/.*nokia.com/).and_return(
-        Typhoeus::Response.new(code: 200, body: response)
-      )
       rec_id = CartoDB::Geocoder.new(default_params.merge(input_file: filepath)).upload
       rec_id.should eq "K8DmCWzsZGh4gbawxOuMv2BUcZsIkt7v"
+    end
+
+    it 'raises error on failure' do
+      stub_api_request 400, 'response_failure.xml'
+      filepath = path_to 'without_country.csv'
+      expect { 
+        CartoDB::Geocoder.new(default_params.merge(input_file: filepath)).upload 
+      }.to raise_error('Input parameter validation failed. JobId: 9rFyj7kbGMmpF50ZUFAkRnroEiOpDOEZ Email Address is missing!')
     end
   end
 
   describe '#update_status' do
     before do
-      response = File.open(path_to('response_status.xml')).read
-      Typhoeus.stub(/.*nokia.com/).and_return(
-        Typhoeus::Response.new(code: 200, body: response)
-      )
+      stub_api_request(200, 'response_status.xml')
     end
     let(:geocoder) { CartoDB::Geocoder.new(default_params.merge(request_id: 'wadus')) }
 
@@ -58,7 +60,7 @@ describe CartoDB::Geocoder do
     end
 
     it 'returns specified element value' do
-      geocoder.extract_response_field(response, 'Status').should == 'submitted'
+      geocoder.extract_response_field(response, '//Response/Status').should == 'submitted'
     end
 
     it 'returns nil for missing elements' do
@@ -87,4 +89,11 @@ describe CartoDB::Geocoder do
       File.join(File.dirname(__FILE__), "../spec/fixtures/#{filepath}")
     )
   end #path_to
+
+  def stub_api_request(code, response_file)
+    response = File.open(path_to(response_file)).read
+    Typhoeus.stub(/.*nokia.com/).and_return(
+      Typhoeus::Response.new(code: code, body: response)
+    )
+  end
 end # CartoDB::Geocoder

@@ -34,15 +34,17 @@ module CartoDB
         body: File.open(input_file,"r").read,
         headers: { "Content-Type" => "text/plain" }
       )
+      handle_api_error(response)
       @request_id = extract_response_field(response.body)
     end # upload
 
     def update_status
       puts api_url(action: 'status')
       response = Typhoeus.get api_url(action: 'status')
-      @status         = extract_response_field(response.body, 'Status')
-      @processed_rows = extract_response_field(response.body, 'ProcessedCount')
-      @total_rows     = extract_response_field(response.body, 'TotalCount')
+      handle_api_error(response)
+      @status         = extract_response_field(response.body, '//Response/Status')
+      @processed_rows = extract_response_field(response.body, '//Response/ProcessedCount')
+      @total_rows     = extract_response_field(response.body, '//Response/TotalCount')
     end # update_status
 
     def result
@@ -61,11 +63,17 @@ module CartoDB
       components.join('/')
     end # api_url
 
-    def extract_response_field(response, query = 'MetaInfo/RequestId')
-      Nokogiri::XML(response).xpath("//Response/#{query}").first.content
+    def extract_response_field(response, query = '//Response/MetaInfo/RequestId')
+      Nokogiri::XML(response).xpath("#{query}").first.content
     rescue NoMethodError => e
       nil
     end # extract_response_field
+
+    def handle_api_error(response)
+      if response.code != 200
+        raise "#{extract_response_field(response.body, '//Details')}"
+      end
+    end # handle_api_errpr
 
   end # Geocoder
 end # CartoDB

@@ -1085,6 +1085,7 @@ a.info {
     div.wizard_arrows {
       a {
         position:absolute;
+        display:block;
         top:55px;
         width:43px;
         height:43px;
@@ -1108,7 +1109,9 @@ a.info {
         }
 
         &.disabled {
+          display:none;
           @include opacity(0);
+
           &.left:hover {
             @include icons-sprite(wizard-arrows);
           }

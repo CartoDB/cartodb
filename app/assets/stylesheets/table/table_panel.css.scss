@@ -927,11 +927,10 @@ a.info {
           top: 12px;
           right: 0;
 
-          .checkbox { float: left; position:relative; top: 7px; margin: 0 5px 0 0; }
+          .checkbox { float: left; position:relative; margin:8px 15px 0 0; }
           .checkbox.disabled { cursor: pointer; }
-          .checkbox span { margin: 0 7px 0 0; }
+          .checkbox span { margin:1px 5px 0 0; }
           .input { float: left; }
-
         }
 
         ul li {

@@ -19,7 +19,7 @@ module CartoDB
         "#{output_format_option} #{postgres_options} "              +
         "#{projection_option} #{layer_creation_options} "           + 
         "#{filepath} #{track_points_option} #{layer_name_option} "  +
-        "#{new_layer_type_option} #{append_option}"
+        "#{new_layer_type_option}"
       end #command
 
       def executable_path

@@ -1,21 +1,25 @@
 # encoding: utf-8
+require_relative '../../geocoder/lib/geocoder'
+
 module CartoDB
   class TableGeocoder
 
     attr_reader   :connection, :working_dir, :geocoder
 
-    attr_accessor :table_name, :formatter
+    attr_accessor :table_name, :formatter, :remote_id
 
     def initialize(arguments)
       @connection  = arguments.fetch(:connection)
       @working_dir = Dir.mktmpdir
       @table_name  = arguments[:table_name]
       @formatter   = arguments[:formatter]
+      @remote_id   = arguments[:remote_id]
       @geocoder    = CartoDB::Geocoder.new(
-        app_id: arguments[:app_id],
-        token:  arguments[:token],
-        mailto: arguments[:mailto],        
-        dir:    @working_dir
+        app_id:     arguments[:app_id],
+        token:      arguments[:token],
+        mailto:     arguments[:mailto],
+        dir:        @working_dir,
+        request_id: arguments[:remote_id]
       )
     end # initialize
 
@@ -39,6 +43,7 @@ module CartoDB
     def start_geocoding_job(csv_file)
       geocoder.input_file = csv_file
       geocoder.upload
+      remote_id = geocoder.request_id
     end
 
     def download_results

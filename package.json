@@ -1,6 +1,6 @@
 {
     "name": "cartodb.js",
-    "version": "3.1.13",
+    "version": "3.1.14-dev",
     "description": "CartoDB javascript library",
     "repository": {
         "type": "git",

@@ -51,7 +51,7 @@ $corner_radius: 6px;
   - .sidebar
   - .views
 
-*/
+   */
 .layer_panel {
   position:relative;
   width:100%;
@@ -417,9 +417,9 @@ a.info {
   }
 
   // SQL PANEL & CARTO PANEL
-  .sql_panel, .wizards_panel, .csseditor_panel, .filters_panel, .legends_panel {
+  .sql_panel, .wizards_panel, .csseditor_panel, .filters_panel, .legends_panel, .infowindow_panel {
     @include inline-block();
-    width:535px;
+    width:100%;
     height:100%;
 
     // Info icon
@@ -446,7 +446,9 @@ a.info {
       }
     }
 
-    h3 {padding-left:52px;}
+    h3 {
+      padding-left:52px;
+    }
 
     div.actions {
       position:absolute;
@@ -535,37 +537,232 @@ a.info {
 
 
   // SQL PANEL
-  .sql_panel, .csseditor_panel {
-    &:after {
-      position:absolute;
-      content:' ';
-      top:0;
-      left:34px;
-      bottom:0;
-      width:1px;
-      height:100%;
-      background:rgba($cGray4,0.50);
-    }
-    &:before {
-      position:absolute;
-      content:' ';
-      top:0;
-      left:36px;
-      bottom:0;
-      width:1px;
-      height:100%;
-      background:rgba(#509DD7,0.25);
-    }
+  .sql_panel, .csseditor_panel, .infowindow_panel.editing_html, .help.editing_html {
+    &:after  { position:absolute; content:' '; top:0; left:34px; bottom:0; width:1px; height:100%; background:rgba($cGray4,0.50); }
+    &:before { position:absolute; content:' '; top:0; left:36px; bottom:0; width:1px; height:100%; background:rgba(#509DD7,0.25); }
   }
-
 
   // INFOWINDOW PANEL
   .infowindow_panel {
+
+    .panel_content .wrapper { top: 43px; }
+
+    .doc_info { right:26px!important; }
+
+    .header {
+      position:relative;
+      clear:both;
+      overflow:hidden;
+      padding: 21px 30px 19px 30px;
+
+      h3  {
+        float:left;
+        padding: 0;
+        border:0;
+      }
+
+      .form_combo  { position:absolute; right:18px; }
+    }
+
+    // No content block
+    .no_content { display:none }
+
+    &.editing_html {
+
+      .header h3 {
+        margin-left: 23px;
+      }
+
+      .menu {
+        li:first-child { margin-left: 23px; }
+        &:after  { position:absolute; content:' '; top:0; left:34px; bottom:0; width:1px; height:100%; background:rgba($cGray4,0.50); }
+        &:before { position:absolute; content:' '; top:0; left:36px; bottom:0; width:1px; height:100%; background:rgba(#509DD7,0.25); }
+      }
+    }
+
+    .help {
+      position: absolute;
+      display:none;
+      width: 100%;
+      top: 90px;
+      left: 0;
+      padding: 10px;
+      background: #F5F8FF;
+      z-index:10;
+
+      @include box-sizing(border-box);
+      font-size: 13px;
+      font-style: italic;
+      border-bottom: 1px solid rgba(#DDD, .5);
+      color: #999;
+
+      p { padding: 0 25px 0 44px; }
+
+      .close {
+        position: absolute;
+        right: 27px;
+        top: 12px;
+
+        display:block;
+        vertical-align:middle;
+        width:13px;
+        height:13px;
+
+        @include background(sprite($icons-sprites, close_grey, $offset-x:0, $offset-y:0) no-repeat);
+
+        &:hover  { @include background(sprite($icons-sprites, close_grey, $offset-x:0, $offset-y:-13px) no-repeat); }
+        &:active { @include background(sprite($icons-sprites, close_grey, $offset-x:0, $offset-y:-26px) no-repeat); }
+      }
+
+      &:before {
+        content:'';
+        @include size(10px, 6px);
+        @include position(-6px, 29px, false, false);
+        @include background(sprite($icons-sprites, infowindow_panel_purple_tip) no-repeat);
+        z-index: 11;
+      }
+    }
+
+    .menu {
+      position: absolute;
+      @include box-sizing(border-box);
+      top: 59px;
+      width: 100%;
+      padding: 9px 23px 3px 30px;
+      background:#F6F6F6;
+      border-top: 1px solid rgba(#DDDDDD, .5);
+      border-bottom: 1px solid rgba(#DDDDDD, .5);
+
+      z-index: 9;
+
+      .tip {
+        @include size(10px, 6px);
+        @include position(false, false, -1px, 33px);
+        @include background(sprite($icons-sprites, infowindow_panel_white_tip) no-repeat);
+        z-index: 10;
+      }
+
+      ul {
+
+        clear:both;
+        overflow:hidden;
+
+        li {
+          min-width: 20px;
+          text-align:center;
+
+          a { margin: auto; }
+
+          @include inline-block();
+          margin: 0 15px 0 0;
+
+          a { display: block; }
+
+          &.editor       { float: left; }
+
+          &.title_editor,
+          &.html_editor  { float: right; }
+
+          &.html_editor  { margin-right: 2px; }
+
+          /*&.html_editor:before { height: 16px; content: ''; position:absolute; left: -10px; top: -3px; border-left: 1px solid rgba(#ccc, .5); }*/
+          &.html_editor { position:relative; }
+
+          &.editor       a { @include size(17px, 17px); @include icons-sprite(infowindow_panel_icons, $offset-x:0, $offset-y:0); }
+          &.title_editor a { @include size(20px, 17px); @include icons-sprite(infowindow_panel_icons, $offset-x:-40, $offset-y:0); }
+          &.html_editor  a { @include size(17px, 17px); @include icons-sprite(infowindow_panel_icons, $offset-x:-104, $offset-y:1px); }
+
+          &.editor       a.selected { @include size(17px, 17px); @include icons-sprite(infowindow_panel_icons, $offset-x:0, $offset-y:-25px); }
+          &.title_editor a.selected { @include size(20px, 17px); @include icons-sprite(infowindow_panel_icons, $offset-x:-40, $offset-y:-25px); }
+          &.html_editor  a.selected { @include size(17px, 17px); @include icons-sprite(infowindow_panel_icons, $offset-x:-104, $offset-y:-24px); }
+        }
+
+      }
+
+    }
+
+    div.actions {
+      position:absolute;
+      bottom:0;
+      left:0;
+      right:0;
+      padding:20px 20px 20px 56px;
+      display:block;
+      height:38px;
+      border-top:1px solid rgba(#999999,0.25);
+      z-index:1;
+
+      a.disabled {
+        opacity:0.6;
+
+        &.next, &.next:active, &.next:hover {
+          @include background(sprite($icons-sprites, unredo, $offset-x:-38, $offset-y:9) no-repeat #F9F9F9);//IE
+          @include background(sprite($icons-sprites, unredo, $offset-x:-38, $offset-y:9) no-repeat, linear-gradient(#F9F9F9,#EBEBEB));
+        }
+        &.back, &.back:active, &.back:hover {
+          @include background(sprite($icons-sprites, unredo, $offset-x:9, $offset-y:9) no-repeat #EBEBEB);//IE
+          @include background(sprite($icons-sprites, unredo, $offset-x:9, $offset-y:9) no-repeat, linear-gradient(#F9F9F9,#EBEBEB));
+        }
+      }
+
+      a.clearview {margin-right:18px;}
+
+      button {margin:0;}
+    }
+
     .all {
       padding:15px 0;
       overflow:auto;
       span.label {margin-right:12px;}
     }
+
+    .titlePane .fields li {
+      position:relative;
+      & > span:hover {cursor: default; }
+    }
+
+    // When custom html template is applied, blocked block should show up
+    // and overflow should be hidden
+    .titlePane.disabled .wrapper, .fieldPane.disabled .wrapper {
+      overflow:hidden;
+    }
+
+    .blocked {
+      position:absolute;
+      top:0;
+      right:0;
+      left:0;
+      bottom:0;
+      display:none;
+      padding:20px 40px;
+      @include border-top-left-radius(4px);
+      
+      text-align:center;
+      line-height: normal;
+      background:rgba(white,0.9);
+      z-index:10;
+
+      span.block-icon {
+        position:relative;
+        @include inline-block();
+        width:111px;
+        height:110px;
+        @include icons-sprite(block_icon);
+      }
+
+      p {
+        margin: 30px 0 3px 0;
+        line-height: normal;
+        color: #999999;
+      }
+
+      a {
+        @include inline-block();
+        margin:20px 0 0 0;
+      }
+
+    }
+
     .fields {
       li {
         padding:13px 0;
@@ -591,6 +788,17 @@ a.info {
 
         .form_combo ~ span {
           margin-top:3px;
+        }
+
+        .edit_in_place.input {
+          @include position(7px, 0, false, false);
+          @include default-input();
+          z-index:2;
+
+          input {
+            font-size: 13px;
+            padding: 6px;
+          }
         }
 
         .switches {
@@ -631,8 +839,8 @@ a.info {
 
     .value {
       position:relative;
-      top:4px;
       padding: 0 5px 3px 5px;
+      margin:4px 5px 0 0;
       color: #666666;
       font-size:15px;
       z-index: 100;
@@ -656,6 +864,14 @@ a.info {
       }
 
       &.empty { font-style: italic; }
+    }
+
+    &.disabled .value {
+      color: #AAA;
+      background: rgba(gray, .1);
+      &:hover {
+        background: rgba(gray, .1);
+      }
     }
 
     input {
@@ -686,7 +902,7 @@ a.info {
     div.forms {
 
       &.panel_content {
-        top:42px;
+        top: 42px;
         padding: 0 30px 16px 30px;
 
         .footer {
@@ -694,7 +910,6 @@ a.info {
           text-align:center;
 
           .add { font-size: 24px; }
-
         }
 
         .color {
@@ -705,11 +920,17 @@ a.info {
           ul li .input { top: 13px; }
           ul li:hover .remove { @include opacity(1); }
           ul li .remove { position:relative; top: 3px; @include opacity(0); }
+        }
 
-          ul li .input.edit_in_place {
-            @include position(12px, 5px, false, false);
-          }
+        .right {
+          position: absolute;
+          top: 12px;
+          right: 0;
 
+          .checkbox { float: left; position:relative; margin:8px 15px 0 0; }
+          .checkbox.disabled { cursor: pointer; }
+          .checkbox span { margin:1px 5px 0 0; }
+          .input { float: left; }
         }
 
         ul li {
@@ -729,12 +950,7 @@ a.info {
           }
 
           .input {
-            @include position(8px, 0, false, false);
             @include default-input();
-
-            &.edit_in_place {
-              @include position(8px, 0, false, false);
-            }
 
             .value { margin-right: 5px; }
 
@@ -743,9 +959,7 @@ a.info {
               padding: 4px 7px;
               width:150px;
             }
-
           }
-
         }
       }
 
@@ -760,6 +974,10 @@ a.info {
         width:100%;
         padding:13px 0;
         border-bottom:1px solid rgba(#E5E5E5,0.5);
+        height: 50px;
+        @include box-sizing(border-box);
+
+        &.title span.field { position:relative; top: 3px; }
 
         & > span:first-child {
           float:left;
@@ -867,6 +1085,7 @@ a.info {
     div.wizard_arrows {
       a {
         position:absolute;
+        display:block;
         top:55px;
         width:43px;
         height:43px;
@@ -883,13 +1102,16 @@ a.info {
         &.right {
           @include icons-sprite(wizard-arrows, $offset-x:-43px);
           right:8px;
+
           &:hover {
             @include icons-sprite(wizard-arrows, $offset-x:-43px, $offset-y:-43px);
           }
         }
 
         &.disabled {
+          display:none;
           @include opacity(0);
+
           &.left:hover {
             @include icons-sprite(wizard-arrows);
           }
@@ -955,8 +1177,8 @@ a.info {
           // Wizard icons
           &.simple {
             background: image-url('layout/wizard-simple.png') no-repeat;
-            &.polygon { background: image-url('layout/wizard-simple-polygon.png') no-repeat;}
-            &.line { background: image-url('layout/wizard-simple-polyline.png') no-repeat;}
+            &.polygon, &.polygon-polygon { background: image-url('layout/wizard-simple-polygon.png') no-repeat;}
+            &.line, &.line-line { background: image-url('layout/wizard-simple-polyline.png') no-repeat;}
           }
 
           &.intensity {
@@ -965,13 +1187,13 @@ a.info {
 
           &.choropleth {
             background: image-url('layout/wizard-choropleth.png') no-repeat;
-            &.line { background: image-url('layout/wizard-choropleth-polyline.png') no-repeat;}
+            &.line, &.line-line { background: image-url('layout/wizard-choropleth-polyline.png') no-repeat;}
           }
 
           &.color {
             background: image-url('layout/wizard-color.png') no-repeat;
-            &.polygon { background: image-url('layout/wizard-color-polygon.png') no-repeat;}
-            &.line { background: image-url('layout/wizard-color-polyline.png') no-repeat;}
+            &.polygon, &.polygon-polygon { background: image-url('layout/wizard-color-polygon.png') no-repeat;}
+            &.line, &.line-line { background: image-url('layout/wizard-color-polyline.png') no-repeat;}
           }
 
           &.bubble  { background: image-url('layout/wizard-bubble.png') no-repeat;}
@@ -1700,3 +1922,4 @@ a.info {
   background:red!important;
 }
 }
+

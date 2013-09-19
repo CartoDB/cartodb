@@ -637,6 +637,15 @@ div.cartodb-edit-buttons {
   }
 }
 
+// Default styles for infowindow
+div.cartodb-popup {
+  h2 { line-height:normal }
+
+  &.blue.header .cartodb-popup-header a {
+    color:white;
+  }
+}
+
 // Dark buttons
 div.cartodb-popup.dark  {
   div.cartodb-edit-buttons {

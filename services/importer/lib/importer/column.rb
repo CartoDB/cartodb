@@ -44,7 +44,7 @@ module CartoDB
       end #type
 
       def geometrify
-        raise EmptyGeometryColumn if empty?
+        raise                     if empty?
         convert_from_wkt          if wkt?
         convert_from_kml_multi    if kml_multi?
         convert_from_kml_point    if kml_point?
@@ -193,7 +193,7 @@ module CartoDB
       attr_reader :job, :db, :table_name, :column_name, :schema
 
       def qualified_table_name
-        "#{schema}.#{table_name}"
+        %Q("#{schema}"."#{table_name}")
       end #qualified_table_name
     end # Column
   end # Importer2

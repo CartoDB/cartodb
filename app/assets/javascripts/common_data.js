@@ -2,7 +2,7 @@
 //= require jquery.fileupload
 //= require jquery.fileupload-fp
 //= require jquery.fileupload-ui
-//= require_tree ../../../lib/assets/javascripts/cartodb/models
+//= require models
 //= require ../../../lib/assets/javascripts/cartodb/common/dropdown_menu
 //= require ../../../lib/assets/javascripts/cartodb/common/dropdown_basemap
 //= require ../../../lib/assets/javascripts/cartodb/common/forms/string_field

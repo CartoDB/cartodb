@@ -72,6 +72,7 @@ class DataImport < Sequel::Model
     if !current_user.remaining_table_quota.nil? && 
     current_user.remaining_table_quota.to_i < number_of_tables
       self.error_code = 8002
+      self.state      = 'failure'
       save
       log.append("Over account table limit, please upgrade")
       raise CartoDB::QuotaExceeded, "More tables required"
@@ -232,7 +233,8 @@ class DataImport < Sequel::Model
     data_source ||= self.data_source
     downloader  = CartoDB::Importer2::Downloader.new(data_source)
     tracker     = lambda { |state| self.state = state; save }
-    runner      = CartoDB::Importer2::Runner.new(pg_options, downloader, log)
+    runner      = CartoDB::Importer2::Runner.new(pg_options, downloader, log,
+                  current_user.remaining_quota)
     runner.run(&tracker)
     self.results = runner.results
 
@@ -282,8 +284,8 @@ class DataImport < Sequel::Model
       @new_table.map.recalculate_bounds!
       # check if the table fits into owner's remaining quota
       if table_owner.remaining_quota < 0
-        self.log_error("Over storage quota, removing table" )
-        self.set_error_code(8001)
+        self.log.append("Over storage quota, removing table" )
+        self.error_code = 8001
         @new_table.destroy
         return false
       end
@@ -355,13 +357,20 @@ class DataImport < Sequel::Model
       SET SCHEMA public
     }) unless schema == 'public'
 
-    candidates  = table_owner.tables.map(&:name)
-    name        = Table.get_valid_table_name(name, name_candidates: candidates)
+    rename_attempts = 0
 
-    current_user.in_database.execute(%Q{
-      ALTER TABLE "public"."#{table_name}"
-      RENAME TO #{name}
-    })
+    begin
+      candidates  = table_owner.reload.tables.map(&:name)
+      name        = Table.get_valid_table_name(name, name_candidates: candidates)
+
+      rename_attempts = rename_attempts + 1
+      current_user.in_database.execute(%Q{
+        ALTER TABLE "public"."#{table_name}"
+        RENAME TO "#{name}"
+      })
+    rescue
+      retry unless rename_attempts > 1
+    end
 
     table                         = Table.new
     table.user_id                 = table_owner.id
@@ -380,7 +389,6 @@ class DataImport < Sequel::Model
 
   def notify_results(results)
     results.each { |result| CartoDB::Metrics.new.report(payload_for(result)) }
-    report_unknown_error if results.empty?
   end #notify_results
 
   def report_unknown_error
@@ -448,4 +456,3 @@ class DataImport < Sequel::Model
     self
   end
 end
-

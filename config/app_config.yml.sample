@@ -34,6 +34,11 @@ defaults: &defaults
   redis:
     host: '127.0.0.1'
     port: 6379
+    databases:
+      tables_metadata:     0
+      api_credentials:     3
+      users_metadata:      5
+      redis_migrator_logs: 6
 #  mixpanel:
 #    api_key: xxx
 #    api_secret: xxx
@@ -136,6 +141,9 @@ development:
 
 test:
   <<: *defaults
+  redis:
+    host: '127.0.0.1'
+    port: 6335
 
 staging:
   <<: *defaults

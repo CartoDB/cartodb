@@ -24,7 +24,10 @@ module CartoDB
       if File.file?(pid_path)
         File.delete(pid_path)
       end
-      command = "`which redis-server` #{Rails.root}/spec/support/redis/redis.conf"
+      command = "`which redis-server` #{Rails.root}/spec/support/redis/redis.conf" +
+        ( Cartodb.config[:redis].fetch('port', false) ? 
+         " --port #{Cartodb.config[:redis]['port']}" : ""
+         )
       system(command)
       sleep 2
       puts "[redis] Running test server..."

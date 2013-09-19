@@ -67,7 +67,7 @@ module CartoDB
 
       def rename_column(table_name, column_name, new_name)
         job.db.run(%Q{
-          ALTER TABLE #{table_name}
+          ALTER TABLE "#{table_name}"
           RENAME COLUMN "#{column_name}"
           TO #{new_name}
         })
@@ -81,7 +81,7 @@ module CartoDB
       def normalize_the_geom_in(table_name, type)
         # Get all geoms to the same type instead of rebuilding the full column
         job.db.run(%Q{
-          UPDATE #{table_name}
+          UPDATE "#{table_name}"
           SET the_geom = ST_Multi(the_geom)
           WHERE geometrytype(the_geom) != '#{TYPE_CONVERSIONS.fetch(type)}'
         })
@@ -90,7 +90,7 @@ module CartoDB
       def revoke_all_privileges_from_public_in(table_name)
         job.db.run(%Q{
           REVOKE ALL PRIVILEGES
-          ON TABLE #{table_name}
+          ON TABLE "#{table_name}"
           FROM public
         })
       end #revoke_all_privileges_from_public_in

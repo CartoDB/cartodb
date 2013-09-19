@@ -20,7 +20,7 @@ class User < Sequel::Model
   set_allowed_columns :email, :map_enabled, :password_confirmation, 
     :quota_in_bytes, :table_quota, :account_type, :private_tables_enabled, 
     :period_end_date, :map_view_quota, :max_layers, :database_timeout, 
-    :user_timeout
+    :user_timeout, :map_view_block_price
   plugin :validation_helpers
   plugin :json_serializer
   plugin :dirty
@@ -116,11 +116,13 @@ class User < Sequel::Model
 
   ##
   # SLOW! Checks map views for every user
+  # delta: get users who are also this percentage below their limit.
+  #        example: 0.20 will get all users at 80% of their map view limit
   #
-  def self.overquota
-    User.all.select do |u|
-        u.set_old_api_calls # updates map views stats older than 3 hours
-        u.get_api_calls(from: u.last_billing_cycle, to: Date.today).sum > u.map_view_quota.to_i
+  def self.overquota(delta = 0)
+    User.where(enabled: true).all.select do |u|
+        limit = u.map_view_quota.to_i - (u.map_view_quota.to_i * delta)
+        u.get_api_calls(from: u.last_billing_cycle, to: Date.today).sum > limit
     end
   end
 

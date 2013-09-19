@@ -54,7 +54,7 @@
       this.remove();
       this.unbind();
       // remove this model binding
-      if (this.model) this.model.unbind(null, null, this); 
+      if (this.model && this.model.unbind) this.model.unbind(null, null, this); 
       // remove model binding
       _(this._models).each(function(m) {
         m.unbind(null, null, self);

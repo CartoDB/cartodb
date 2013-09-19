@@ -3,8 +3,7 @@ class Api::Json::GeocodingsController < Api::ApplicationController
   ssl_required :index, :show, :create
 
   def index
-    geocodings = current_user.geocoding_jobs
-    render json: { geocodings: geocodings.map(&:id), success: true }
+    render json: { geocodings: current_user.geocodings }
   end
 
   def show

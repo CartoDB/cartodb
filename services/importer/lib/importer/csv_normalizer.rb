@@ -97,7 +97,7 @@ module CartoDB
         comma_score     = occurrences[',']
         highest_score   = occurrences.first.last
 
-        comma_score >= highest_score / 2
+        comma_score >= highest_score / 4
       end #magic_formula_to_detect_comma_separator
 
       def delimiter

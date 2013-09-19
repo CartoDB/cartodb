@@ -119,7 +119,7 @@ module CartoDB
         data.close
 
         result = CharlockHolmes::EncodingDetector.detect(sample)
-        return DEFAULT_ENCODING if result.fetch(:confidence, 0) < 10
+        return DEFAULT_ENCODING if result.fetch(:confidence, 0) < 60
         result.fetch(:encoding, DEFAULT_ENCODING)
       rescue
         DEFAULT_ENCODING

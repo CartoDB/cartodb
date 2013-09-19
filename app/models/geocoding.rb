@@ -7,6 +7,12 @@ class Geocoding < Sequel::Model
 
   attr_reader :table_geocoder
 
+  def validate
+    super
+    validates_presence :formatter
+    validates_presence :table_name
+  end # validate
+
   def after_initialize
     super
     instantiate_table_geocoder
@@ -29,7 +35,7 @@ class Geocoding < Sequel::Model
   def run!
     table_geocoder.run
     self.update remote_id: table_geocoder.remote_id
-    until table_geocoder.geocoder.status == 'completed' do
+    begin
       table_geocoder.geocoder.update_status
       self.update(
         processed_rows: table_geocoder.geocoder.processed_rows,
@@ -37,11 +43,7 @@ class Geocoding < Sequel::Model
       )
       puts "#{processed_rows}/#{total_rows}"
       sleep(2)
-    end
-    table_geocoder.download_results
-    table_geocoder.deflate_results
-    table_geocoder.create_temp_table
-    table_geocoder.import_results_to_temp_table
-    table_geocoder.load_results_into_original_table
+    end until table_geocoder.geocoder.status == 'completed'
+    table_geocoder.process_results
   end # run_geocoding!
 end

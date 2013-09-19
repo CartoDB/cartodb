@@ -480,7 +480,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     var content = this.model.get("content");
 
     if (content && content.fields && content.fields.length > 0) {
-      return (content.fields[0].value).toString();
+      return (content.fields[0].value || '').toString();
     }
 
     return false;

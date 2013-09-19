@@ -45,6 +45,14 @@ module CartoDB
       remote_id = geocoder.request_id
     end
 
+    def process_results
+      table_geocoder.download_results
+      table_geocoder.deflate_results
+      table_geocoder.create_temp_table
+      table_geocoder.import_results_to_temp_table
+      table_geocoder.load_results_into_original_table
+    end
+
     def download_results
       @result = geocoder.result
     end

@@ -3,8 +3,13 @@
   <div class="cartodb-popup-content-wrapper">
     <div class="cartodb-popup-content">
       {{#content.fields}}
-      {{#title}}<h4>{{name}}</h4>{{/title}}
+      {{#title}}
+      <h4>{{name}}</h4>
       <p>{{=<% %>=}}{{<%={{ }}=%>{{{ name }}}{{=<% %>=}}}}<%={{ }}=%></p>
+      {{/title}}
+      {{^title}}
+      <p>{{=<% %>=}}{{<%={{ }}=%>{{{ name }}}{{=<% %>=}}}}<%={{ }}=%></p>
+      {{/title}}
       {{/content.fields}}
     </div>
   </div>

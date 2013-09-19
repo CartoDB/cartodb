@@ -11,6 +11,7 @@ class User < Sequel::Model
   one_to_many :maps
   one_to_many :assets
   one_to_many :data_imports
+  one_to_many :geocodings, order: :created_at.desc
 
   many_to_many :layers, :order => :order, :after_add => proc { |user, layer|
     layer.set_default_order(user)

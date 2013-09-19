@@ -267,6 +267,9 @@ class DataImport < Sequel::Model
     table_owner.in_database.run(%Q{CREATE TABLE #{table_name} AS #{query}})
 
     table_name
+  rescue => exception
+    @create_table_from_query_error = true
+    raise
   end
 
   def migrate_existing(imported_name=migrate_table, name=nil)
@@ -348,6 +351,7 @@ class DataImport < Sequel::Model
 
   def errors_from(results)
     return [8002] if @table_quota_exceeded
+    return [8003] if @create_table_from_query_error
     results.map { |result| result.fetch(:error, nil) }.compact
   end #errors_from
 

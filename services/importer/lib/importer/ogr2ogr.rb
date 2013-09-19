@@ -22,19 +22,9 @@ module CartoDB
         "#{new_layer_type_option}"
       end #command
 
-      def cartodb_id_option
-        option = "-lco FID=cartodb_id"
-        option.prepend('-preserve_fid ') if preserve_cartodb_id?
-        option
-      end #cartodb_id_option
-
       def executable_path
         `which ogr2ogr`.strip
       end #executable_path
-
-      def preserve_cartodb_id?
-        options.fetch(:preserve_cartodb_id, false)
-      end #preserve_cartodb_id?
 
       def run(*args)
         stdout, stderr, status  = Open3.capture3(command)
@@ -104,6 +94,10 @@ module CartoDB
       def new_layer_type_option
         "-nlt geometry"
       end #new_layer_type_option
+
+      def append_option
+        "-append"
+      end #append_option
     end # Ogr2ogr
   end # Importer2
 end # CartoDB

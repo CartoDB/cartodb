@@ -434,7 +434,7 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def optimize
-    owner.in_database(as: :superuser).run("VACUUM FULL #{name}")
+    owner.in_database(as: :superuser).run("VACUUM FULL public.#{name}")
   end
 
   def after_commit

@@ -39,7 +39,6 @@ module CartoDB
     end # upload
 
     def update_status
-      puts api_url(action: 'status')
       response = Typhoeus.get api_url(action: 'status')
       handle_api_error(response)
       @status         = extract_response_field(response.body, '//Response/Status')

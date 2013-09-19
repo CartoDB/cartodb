@@ -25,7 +25,6 @@ module CartoDB
 
     def run
       csv_file = generate_csv(table_name, formatter)
-      `open #{working_dir}`
       start_geocoding_job(csv_file)
     end
 

@@ -1,5 +1,4 @@
 #encoding: UTF-8
-
 require 'spec_helper'
 
 describe Geocoding do
@@ -25,36 +24,32 @@ describe Geocoding do
   end
 
   describe '#save' do
+    let(:geocoding) { FactoryGirl.build(:geocoding, user: @user) }
+
+    it 'validates table_name and formatter' do
+      expect { geocoding.save }.to raise_error(Sequel::ValidationFailed)
+    end
+
     it 'updates updated_at' do
-      geocoding = FactoryGirl.build(:geocoding, user: @user)
+      geocoding = FactoryGirl.build(:geocoding, user: @user, table_name: 'a', formatter: 'b')
       expect { geocoding.save }.to change(geocoding, :updated_at)
     end
   end
 
   describe '#run!' do
-    it 'geocodes tables' do
-      fixture     = "#{Rails.root}/db/fake_data/short_clubbing.csv"
-      data_import = create_import(@user, fixture)
-      table       = data_import.table
-      @user.in_database.fetch("select count(*) from #{table.name} where the_geom is not null").first[:count].should == 0
-      geocoding = Geocoding.create(
-        user: @user,
-        table_name: table.name,
-        formatter: 'direccion, poblacion, provincia, pais'
-      )
-      geocoding.run!
-      @user.in_database.fetch("select count(*) from #{table.name} where the_geom is not null").first[:count].should == 0
-    end
-  end
+    it 'updates total_rows and processed_rows' do
+      geocoding = Geocoding.create(user: @user, table_name: 'a', formatter: 'b')
+      geocoding.table_geocoder.stubs(:run).returns true
+      geocoding.table_geocoder.stubs(:process_results).returns true
+      CartoDB::Geocoder.any_instance.stubs(:status).returns 'completed'
+      CartoDB::Geocoder.any_instance.stubs(:update_status).returns true
+      CartoDB::Geocoder.any_instance.stubs(:total_rows).returns 20
+      CartoDB::Geocoder.any_instance.stubs(:processed_rows).returns 10
 
-  def create_import(user, file_name, name=nil)
-    @data_import  = DataImport.create(
-      user_id:      @user.id,
-      data_source:  file_name,
-      table_name:   name
-    )
-    @data_import.send(:new_importer, file_name)
-    @data_import
+      geocoding.run!
+      geocoding.total_rows.should eq 20
+      geocoding.processed_rows.should eq 10
+    end
   end
 
 end

@@ -1488,13 +1488,15 @@ SQL
     return unless attributes[THE_GEOM].present? && attributes[THE_GEOM] != 'GeoJSON'
     geojson = attributes[THE_GEOM]
     geojson = geojson.to_json if geojson.is_a? Hash
+
+    geojson = RGeo::GeoJSON.decode(geojson, :json_parser => :json)
+      .try(:as_text)
+
     begin
-      owner.in_database.run(%Q{
-        UPDATE #{self.name}
-        SET the_geom = 
-          ST_SetSRID(ST_GeomFromGeoJSON('#{geojson}'),#{CartoDB::SRID})
-        WHERE cartodb_id = #{primary_key}
-      })
+      owner.in_database.run(%Q{UPDATE "#{self.name}" SET the_geom =
+      ST_GeomFromText('#{geojson}',#{CartoDB::SRID}) where cartodb_id =
+      #{primary_key}})
+          
     rescue => exception
       raise CartoDB::InvalidGeoJSONFormat
     end

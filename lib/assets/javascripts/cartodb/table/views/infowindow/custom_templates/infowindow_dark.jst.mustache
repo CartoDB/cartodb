@@ -4,7 +4,12 @@
     <div class="cartodb-popup-content">
       {{#content.fields}}
       {{#title}}
+      {{#alternative_name}}
+      <h4>{{alternative_name}}</h4>
+      {{/alternative_name}}
+      {{^alternative_name}}
       <h4>{{name}}</h4>
+      {{/alternative_name}}
       <p>{{=<% %>=}}{{<%={{ }}=%>{{{ name }}}{{=<% %>=}}}}<%={{ }}=%></p>
       {{/title}}
       {{^title}}

@@ -4,13 +4,13 @@ require_relative '../../geocoder/lib/geocoder'
 module CartoDB
   class TableGeocoder
 
-    attr_reader   :connection, :working_dir, :geocoder
+    attr_reader   :connection, :working_dir, :geocoder, :result, :temp_table_name
 
     attr_accessor :table_name, :formatter, :remote_id
 
     def initialize(arguments)
       @connection  = arguments.fetch(:connection)
-      @working_dir = Dir.mktmpdir
+      @working_dir = arguments[:working_dir] || Dir.mktmpdir
       @table_name  = arguments[:table_name]
       @formatter   = arguments[:formatter]
       @remote_id   = arguments[:remote_id]
@@ -24,11 +24,11 @@ module CartoDB
     end # initialize
 
     def run
-      csv_file = generate_csv(table_name, formatter)
+      csv_file = generate_csv
       start_geocoding_job(csv_file)
     end
 
-    def generate_csv(table_name, formatter)
+    def generate_csv
       csv_file = File.join(working_dir, "wadus.csv")
       connection.run(%Q{
         COPY (
@@ -42,7 +42,7 @@ module CartoDB
     def start_geocoding_job(csv_file)
       geocoder.input_file = csv_file
       geocoder.upload
-      remote_id = geocoder.request_id
+      self.remote_id = geocoder.request_id
     end
 
     def process_results
@@ -60,14 +60,17 @@ module CartoDB
     def deflate_results
       current_directory = Dir.pwd
       Dir.chdir(working_dir)
-      `unp #{working_dir}/*.zip 2>&1`
-      `unp #{File.dirname(@result)}/*_out.zip 2>&1`
+      out = `unp *.zip 2>&1`
+      raise out unless $?.exitstatus == 0
+      out = `unp #{working_dir}/*_out.zip 2>&1`
+      raise out unless $?.exitstatus == 0
+    ensure
       Dir.chdir(current_directory)
     end
 
     def create_temp_table
       connection.run(%Q{
-        CREATE TEMP TABLE tmp_x (
+        CREATE TEMP TABLE #{temp_table_name} (
           recId int, 
           SeqNumber int, 
           seqLength int, 
@@ -79,7 +82,7 @@ module CartoDB
 
     def import_results_to_temp_table
       connection.run(%Q{
-        COPY tmp_x 
+        COPY geo_#{remote_id} 
         FROM '#{Dir[File.join(working_dir, '*_out.txt')][0]}' 
         DELIMITER ',' CSV
       })
@@ -92,8 +95,19 @@ module CartoDB
             'POINT(' || trim(orig.displayLatitude) || ' ' ||
               trim(orig.displayLongitude) || ')', 4326
             )
-        FROM tmp_x AS orig WHERE dest.cartodb_id = orig.recId
+        FROM geo_#{remote_id} AS orig WHERE dest.cartodb_id = orig.recId
       })
+    end
+
+    def temp_table_name
+      return nil unless remote_id
+      @temp_table_name = "geo_#{remote_id}"
+      count = 0
+      while connection.table_exists?(@temp_table_name) do
+        count = count + 1
+        @temp_table_name = @temp_table_name.sub(/(\_\d+)*$/, "_#{count}")
+      end
+      return @temp_table_name
     end
 
   end # Geocoder

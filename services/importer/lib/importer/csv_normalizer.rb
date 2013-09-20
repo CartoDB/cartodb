@@ -97,7 +97,7 @@ module CartoDB
         comma_score     = occurrences[',']
         highest_score   = occurrences.first.last
 
-        comma_score >= highest_score / 2
+        comma_score >= highest_score / 4
       end #magic_formula_to_detect_comma_separator
 
       def delimiter
@@ -119,7 +119,7 @@ module CartoDB
         data.close
 
         result = CharlockHolmes::EncodingDetector.detect(sample)
-        return DEFAULT_ENCODING if result.fetch(:confidence, 0) < 10
+        return DEFAULT_ENCODING if result.fetch(:confidence, 0) < 60
         result.fetch(:encoding, DEFAULT_ENCODING)
       rescue
         DEFAULT_ENCODING

@@ -57,13 +57,13 @@ module CartoDB
       column_names = @db_connection.schema(@current_name).map{ |s| s[0].to_s }
       need_sanitizing = column_names.each do |column_name|
         if column_name != column_name.sanitize_column_name
-          @db_connection.run("ALTER TABLE #{@current_name} RENAME COLUMN \"#{column_name}\" TO #{column_name.sanitize_column_name}")
+          @db_connection.run("ALTER TABLE public.#{@current_name} RENAME COLUMN \"#{column_name}\" TO #{column_name.sanitize_column_name}")
         end
       end
 
       # Rename our table
       if @current_name != @suggested_name
-        @db_connection.run("ALTER TABLE #{@current_name} RENAME TO #{@suggested_name}")
+        @db_connection.run("ALTER TABLE public.#{@current_name} RENAME TO public.#{@suggested_name}")
         @current_name = @suggested_name
       end
 
@@ -92,7 +92,7 @@ module CartoDB
         rescue => e
           @data_import.log_error("Failed to process the_geom renaming to invalid_the_geom. #{e.inspect}")
           # if no SRID or invalid the_geom, we need to remove it from the table
-          @db_connection.run("ALTER TABLE #{@suggested_name} RENAME COLUMN the_geom TO invalid_the_geom")
+          @db_connection.run("ALTER TABLE public.#{@suggested_name} RENAME COLUMN the_geom TO invalid_the_geom")
           column_names.delete("the_geom")
         end
       end
@@ -140,7 +140,7 @@ module CartoDB
 
       @table_created = true
       @data_import.log_update("table created")
-      rows_imported = @db_connection["SELECT count(*) as count from #{@suggested_name}"].first[:count]
+      rows_imported = @db_connection["SELECT count(*) as count from public.#{@suggested_name}"].first[:count]
 
       payload = OpenStruct.new({
                               :name => @suggested_name,

@@ -1,3 +1,87 @@
+2.1.4
+-----
+* Fixed Bugs
+  * Disabling a layer on a visualization causes interactivity to be obtained from wrong layer
+  * If you click over Select fields button in the infowindow when there isn't any field selected should open the right tab pane in infowindow panel
+  * Show the blue bar on every table independently until it gets closed by the user.
+  * Can't make a density map
+  * change wizards according to the geometry type returned by the query
+  * assert infowindow doesn't have fields which are not in the table before save
+  * When having a SQL applied and clearing it the applied wizard is set to default
+  * race condition when query switch from one geometry type to another
+  * Not possible to parse geometry type when first rows don't have any geometry
+  * When you try to filter by date (using created_at for example), it fails
+  * Fix the height of the blocking message in the infowindow editor
+  * If you click over Select fields button in the infowindow when there isn't any field selected should open the right tab pane in infowindow panel
+  * When the geometry is a polygon instead of a multipolygon, the geometry editor fails
+  * [INFOWINDOW] Column names in the title pane should be sorted like in the fields pane
+  * Wrong styles when appliying and removing a filter
+  * Trying to edit a feature in the map, fails saving the new geometry
+  * The cell editing box is not shown in front of the row in Firefox
+  * Scrolling down removes "Create table from query" string from the top of a table (in Firefox)
+  * A point cannot be edited on a map
+  * Wrong wizard thumbnails
+  * Autocomplete openning when it shouldn't open
+  * Adding a layer from a private table creates a public visualization instead of a private one
+  * Only allow to change the titles of the table fields that are active.
+  * [infowindow] name change pane should list the fields in the same order than field selector
+  * fix available fields when table schema changes on custom infowindows
+
+* Improvement
+  * Improve infowindows editor
+  * When you have a legend for a choropleth and customize the labels, they get replaced when changed
+  * Change title checkbox behaviour in CartoDB application
+
+2.1.3.6
+-------
+* Fixed Bugs
+  * Can't filter by tag when on page >1
+  * Export of CSV is failing on many tables
+  * On the list to "Add an existing table" the order of the tables there is wrongly sorted
+  * Float values on export [again?] 16.2 => 16.199999999999999
+  * Don't allow to export to SHP when not having geometries
+  * Error on over quota message
+  * Fix alignement of the support text with the rest of the dashboard.
+
+* Improvement
+  * Optimize commercial website resources (PageSpeed)
+  * Improve filter queries
+  * Suggestion: different green color for the dashboard message
+  * Improve loader indicator of the assets on the assets modal window
+
+2.1.3.5
+-------
+* Fixed Bugs
+  * Add good legend icon. The actual one is wrong
+  * Performance problems on map views checking task
+  * Problem with embed iframe when it is hidden
+  * assert infowindow doesn't have fields which are not in the table before save
+  * When having a SQL applied and clearing it the applied wizard is set to default
+  * Add the map views checking task to central cron
+  * race condition when query switch from one geometry type to another
+  * Not possible to parse geometry type when first rows don't have any geometry
+  * When you try to filter by date (using created_at for example), it fails
+  * If you edit the infowindow HTML and refreshes the page, the HTML doesn't appear again if you activate that pane
+  * Fix the color of the active/inactive tab buttons in the Infowindow editor
+  * When the "title?" checkbox of a field is modified, the HTML of the Infowindow should change accordingly
+  * When closing the blue bar realize of the space available
+  * Scroll is appearing when having a pretty small content on the infowindow
+  * When applying HTML template null values are not rendered as null (on the CartoDB editor)
+  * On the header template the first value is not rendered where it should be. In terms of HTML code
+  * Change labels in the intensity map legend
+
+* Improvements
+  * Updgrade codemirror
+  * Title support in legends
+  * Add autocomplete for column names on the HTML infowindow
+  * Implement 'blocked' state in the infowindow editor.
+  * Select all the used interactivity fields in the Custom HTML editor
+  * Generate the infowindow's HTML template based on the selected fields
+  * Make the infowindow html pane bigger
+  * Add selected infowindow template to HTML editor when is activated
+  * Add a div wrapper to all header infowindow templates.
+  * Increase the opacity of the white layer when showing the forbidden indicator
+
 2.1.3.4.1
 ---------
 * Improvements:
@@ -27,7 +111,6 @@
   * Give preference to comma when detecting row delimiter
 
 * Improvements
-  * CDB_CartodbfyTable() function
   * Import Google Docs spreadsheets
 
 2.1.3.3

@@ -18,7 +18,6 @@ RSpec.configure do |config|
   end
 
   config.before(:all) do
-    $threshold.flushdb
     $tables_metadata.flushdb
     $api_credentials.flushdb
     $users_metadata.flushdb

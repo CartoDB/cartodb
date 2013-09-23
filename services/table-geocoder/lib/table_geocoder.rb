@@ -11,6 +11,7 @@ module CartoDB
     def initialize(arguments)
       @connection  = arguments.fetch(:connection)
       @working_dir = arguments[:working_dir] || Dir.mktmpdir
+      `chmod 777 #{@working_dir}`
       @table_name  = arguments[:table_name]
       @formatter   = arguments[:formatter]
       @remote_id   = arguments[:remote_id]
@@ -46,11 +47,13 @@ module CartoDB
     end
 
     def process_results
-      table_geocoder.download_results
-      table_geocoder.deflate_results
-      table_geocoder.create_temp_table
-      table_geocoder.import_results_to_temp_table
-      table_geocoder.load_results_into_original_table
+      download_results
+      deflate_results
+      create_temp_table
+      import_results_to_temp_table
+      load_results_into_original_table
+    ensure
+      drop_temp_table
     end
 
     def download_results
@@ -70,19 +73,23 @@ module CartoDB
 
     def create_temp_table
       connection.run(%Q{
-        CREATE TEMP TABLE #{temp_table_name} (
+        CREATE TABLE #{temp_table_name} (
           recId int, 
           SeqNumber int, 
           seqLength int, 
-          displayLatitude text, 
-          displayLongitude text
+          displayLatitude float, 
+          displayLongitude float
         );}
       )
     end
 
+    def drop_temp_table
+      connection.run("DROP TABLE IF EXISTS #{temp_table_name}")
+    end
+
     def import_results_to_temp_table
       connection.run(%Q{
-        COPY geo_#{remote_id} 
+        COPY #{temp_table_name}
         FROM '#{Dir[File.join(working_dir, '*_out.txt')][0]}' 
         DELIMITER ',' CSV
       })
@@ -92,10 +99,10 @@ module CartoDB
       connection.run(%Q{
         UPDATE #{table_name} AS dest
         SET the_geom = ST_GeomFromText(
-            'POINT(' || trim(orig.displayLatitude) || ' ' ||
-              trim(orig.displayLongitude) || ')', 4326
+            'POINT(' || orig.displayLongitude || ' ' ||
+              orig.displayLatitude || ')', 4326
             )
-        FROM geo_#{remote_id} AS orig WHERE dest.cartodb_id = orig.recId
+        FROM #{temp_table_name} AS orig WHERE dest.cartodb_id = orig.recId
       })
     end
 

@@ -1,7 +1,7 @@
 # encoding: utf-8
 gem 'minitest'
 require 'minitest/autorun'
-require_relative '../../runner'
+require_relative '../../lib/synchronizer/runner'
 
 include Synchronizer
 

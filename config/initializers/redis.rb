@@ -20,7 +20,7 @@ default_databases = {
   redis_migrator_logs: 6
 }
 
-databases = conf[:databases] || default_databases
+databases = conf[:databases].symbolize_keys || default_databases
 
 $tables_metadata     = Redis.new(redis_conf.merge(db: databases[:tables_metadata]))
 $api_credentials     = Redis.new(redis_conf.merge(db: databases[:api_credentials]))

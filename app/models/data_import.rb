@@ -346,7 +346,7 @@ class DataImport < Sequel::Model
   end #new_importer
 
   def success_status_from(results)
-    results.inject(true) { |memo, result| result.fetch(:success) && memo }
+    results.inject(true) { |memo, result| result.fetch(:success, false) && memo }
   end #success_status_from
 
   def errors_from(results)
@@ -429,7 +429,7 @@ class DataImport < Sequel::Model
     payload = {
       name:           result.fetch(:name),
       extension:      result.fetch(:extension),
-      success:        result.fetch(:success),
+      success:        result.fetch(:success, nil),
       error:          result.fetch(:error, nil),
       file_url:       public_url,
       distinct_id:    current_user.username,
@@ -439,7 +439,8 @@ class DataImport < Sequel::Model
       email:          current_user.email,
       log:            log.to_s
     }
-    payload.merge!(error_title: get_error_text) unless result.fetch(:success)
+    payload.merge!(error_title: get_error_text) unless result.fetch(:success,
+    false)
     payload
   end
 

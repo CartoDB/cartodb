@@ -77,12 +77,13 @@ describe Runner do
                       pg_options: @pg_options
                     )
 
+      def job.success_status; true; end
       fake_loader = self.fake_loader_for(job, source_file)
       def fake_loader.run; end
 
       runner.import(source_file, job, fake_loader)
       result = runner.results.first
-      result.fetch(:success).must_equal true
+      result.successful?.must_equal true
     end
 
     it 'creates a failed result if an exception raised during import' do
@@ -98,7 +99,7 @@ describe Runner do
 
       runner.import(source_file, job, fake_loader)
       result = runner.results.first
-      result.fetch(:success).must_equal false
+      result.successful?.must_equal false
     end
   end
 

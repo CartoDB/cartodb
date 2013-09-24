@@ -32,8 +32,8 @@ describe 'Mapinfo regression tests' do
 
   def geometry_type_for(runner)
     result      = runner.results.first
-    table_name  = result.fetch(:tables).first
-    schema      = result.fetch(:schema)
+    table_name  = result.tables.first
+    schema      = result.schema
 
     runner.db[%Q{
       SELECT public.GeometryType(the_geom)

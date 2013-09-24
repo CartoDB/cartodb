@@ -48,7 +48,7 @@ describe 'KML regression tests' do
     runner      = Runner.new(@pg_options, downloader)
     runner.run
 
-    runner.results.first.fetch(:error).must_equal 3202
+    runner.results.first.error_code.must_equal 3202
   end
 
   def path_to(filepath)
@@ -59,8 +59,8 @@ describe 'KML regression tests' do
 
   def geometry_type_for(runner)
     result      = runner.results.first
-    table_name  = result.fetch(:tables).first
-    schema      = result.fetch(:schema)
+    table_name  = result.tables.first
+    schema      = result.schema
 
     runner.db[%Q{
       SELECT public.GeometryType(the_geom)

@@ -6,6 +6,7 @@ require_relative './sql_loader'
 require_relative './unp'
 require_relative './column'
 require_relative './exceptions'
+require_relative './result'
 
 module CartoDB
   module Importer2
@@ -44,7 +45,7 @@ module CartoDB
       rescue => exception
         log.append exception.to_s
         log.append exception.backtrace
-        self.results.push(error: error_for(exception.class))
+        self.results.push(Result.new(error: error_for(exception.class)))
       end #run
       
       def import(source_file, job=nil, loader=nil)
@@ -92,6 +93,14 @@ module CartoDB
         @tracker || lambda { |state| }
       end #tracker
 
+      def success?
+        results.select(&:success?).length > 0
+      end
+
+      def drop_all
+        results.each(&:drop)
+      end
+
       attr_reader   :results, :log
       attr_accessor :available_quota
 
@@ -101,14 +110,14 @@ module CartoDB
       attr_writer   :results, :log, :tracker
 
       def result_for(job, source_file, table_names, exception_klass=nil)
-        { 
+        Result.new(
           name:       source_file.name,
           schema:     source_file.target_schema,
           extension:  source_file.extension,
           tables:     table_names,
           success:    job.success_status,
-          error:      error_for(exception_klass)
-        }
+          error_code: error_for(exception_klass)
+        )
       end #results
 
       def error_for(exception_klass=nil)

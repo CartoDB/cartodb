@@ -1,3 +1,12 @@
+3.1.14 (09//24/2013)
+-----
+- fixed problem with IE9 when the map has only one layer
+
+3.1.13 (09//18/2013)
+-----
+- new custom infowindow html available for visualization.
+- problems editing polygon and linestring geojson.
+
 3.1.12 (09//11/2013)
 -----
 - fixed problem when an embed GMaps/Leaflet map is hidden (#70)

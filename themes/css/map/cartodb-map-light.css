@@ -168,6 +168,15 @@
     z-index: 5;
   }
 
+  div.cartodb-legend .legend-title {
+    margin: 0 0 10px 0;
+    text-align:left;
+    color:#666;
+    font-weight:bold;
+    font-size:11px;
+    text-transform: uppercase;
+  }
+
   div.cartodb-legend ul {
     padding: 0;
     margin: 0;

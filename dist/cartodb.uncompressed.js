@@ -1,6 +1,6 @@
-// cartodb.js version: 3.1.12
+// cartodb.js version: 3.1.14
 // uncompressed version: cartodb.uncompressed.js
-// sha: 0a91a5448eb678a21e0f64643d709167ec7b4a72
+// sha: a4a2e0b9af986850f0c1e0350e3c155500ecc654
 (function() {
   var root = this;
 
@@ -10298,7 +10298,7 @@ L.Map.include({
 });
 
 
-}(this, document));/* wax - 7.0.0dev10 - v6.0.4-149-ga1a6031 */
+}(this, document));/* wax - 7.0.0dev10 - v6.0.4-151-g87ab6b1 */
 
 
 !function (name, context, definition) {
@@ -12441,8 +12441,6 @@ var Mustache = (typeof module !== "undefined" && module.exports) || {};
     win[cbval] = generalCallback
 
     script.type = 'text/javascript'
-    script.src = url
-    script.async = true
     if (typeof script.onreadystatechange !== 'undefined' && !isIE10) {
       // need this for IE due to out-of-order onreadystatechange(), binding script
       // execution to an event listener gives us control over when the script
@@ -12465,6 +12463,9 @@ var Mustache = (typeof module !== "undefined" && module.exports) || {};
       head.removeChild(script)
       loaded = 1
     }
+
+    script.src = url
+    script.async = true
 
     // Add the script to the DOM head
     head.appendChild(script)
@@ -19873,7 +19874,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.1.12';
+    cdb.VERSION = '3.1.14';
 
     cdb.CARTOCSS_VERSIONS = {
       '2.0.0': '',
@@ -20675,6 +20676,8 @@ cdb._loadJST = function() {
       }
       this.remove();
       this.unbind();
+      // remove this model binding
+      if (this.model && this.model.unbind) this.model.unbind(null, null, this); 
       // remove model binding
       _(this._models).each(function(m) {
         m.unbind(null, null, self);
@@ -20741,7 +20744,7 @@ cdb._loadJST = function() {
     * @method cleanTooltips
     */
     cleanTooltips: function() {
-      $('.tipsy').remove();
+      this.$('.tipsy').remove();
     }
 
 
@@ -21771,11 +21774,15 @@ cdb.geo.ui.LegendItem = cdb.core.View.extend({
  * */
 cdb.geo.ui.ChoroplethLegend = cdb.core.View.extend({
 
-  tagName: "ul",
+  className: "choropleth-legend",
+
   initialize: function() {
 
+    this.title        = this.options.title;
+    this.show_title   = this.options.show_title;
+
     this.items    = this.options.items;
-    this.template = _.template('<li class="min"><%= leftLabel %></li><li class="max"><%= rightLabel %></li><li class="graph count_<%= buckets_count %>"><div class="colors"><%= colors %></div></li>');
+    this.template = _.template('<% if (title && show_title) { %><div class="legend-title"><%= title %></div><% } %><ul><li class="min"><%= leftLabel %></li><li class="max"><%= rightLabel %></li><li class="graph count_<%= buckets_count %>"><div class="colors"><%= colors %></div></li></ul>');
     this.model    = new cdb.core.Model();
 
   },
@@ -21797,7 +21804,7 @@ cdb.geo.ui.ChoroplethLegend = cdb.core.View.extend({
         colors += '<div class="quartile" style="background-color:'+color+'"></div>';
       }
 
-      this.model.set({ leftLabel: leftLabel, rightLabel: rightLabel, colors: colors, buckets_count: this.items.length - 2 });
+      this.model.set({ title: this.title, show_title: this.show_title, leftLabel: leftLabel, rightLabel: rightLabel, colors: colors, buckets_count: this.items.length - 2 });
 
       this.$el.html(this.template(this.model.toJSON()));
     }
@@ -21814,11 +21821,15 @@ cdb.geo.ui.ChoroplethLegend = cdb.core.View.extend({
  * */
 cdb.geo.ui.DensityLegend = cdb.core.View.extend({
 
-  tagName: "ul",
+  className: "density-legend",
+
   initialize: function() {
 
+    this.title       = this.options.title;
+    this.show_title  = this.options.show_title;
+
     this.items    = this.options.items;
-    this.template = _.template('<li class="min"><%= leftLabel %></li><li class="max"><%= rightLabel %></li><li class="graph count_<%= buckets_count %>"><div class="colors"><%= colors %></div></li>');
+    this.template = _.template('<% if (title && show_title) { %><div class="legend-title"><%= title %></div><% } %><ul><li class="min"><%= leftLabel %></li><li class="max"><%= rightLabel %></li><li class="graph count_<%= buckets_count %>"><div class="colors"><%= colors %></div></li></ul>');
     this.model    = new cdb.core.Model();
 
   },
@@ -21840,7 +21851,7 @@ cdb.geo.ui.DensityLegend = cdb.core.View.extend({
         colors += '<div class="quartile" style="background-color:'+color+'"></div>';
       }
 
-      this.model.set({ leftLabel: leftLabel, rightLabel: rightLabel, colors: colors, buckets_count: this.items.length - 2 });
+      this.model.set({ title: this.title, show_title: this.show_title, leftLabel: leftLabel, rightLabel: rightLabel, colors: colors, buckets_count: this.items.length - 2 });
 
       this.$el.html(this.template(this.model.toJSON()));
     }
@@ -21857,11 +21868,15 @@ cdb.geo.ui.DensityLegend = cdb.core.View.extend({
  * */
 cdb.geo.ui.IntensityLegend = cdb.core.View.extend({
 
-  tagName: "ul",
+  className: "intensity-legend",
+
   initialize: function() {
 
+    this.title       = this.options.title;
+    this.show_title  = this.options.show_title;
+
     this.items    = this.options.items;
-    this.template = _.template('<li class="min"><%= leftLabel %></li><li class="max"><%= rightLabel %></li><li class="graph"></li>');
+    this.template = _.template('<% if (title && show_title) { %><div class="legend-title"><%= title %></div><% } %><ul><li class="min"><%= leftLabel %></li><li class="max"><%= rightLabel %></li><li class="graph"></li></ul>');
     this.model    = new cdb.core.Model();
 
   },
@@ -21947,7 +21962,7 @@ cdb.geo.ui.IntensityLegend = cdb.core.View.extend({
       var leftLabel   = this.leftLabel.get("value");
       var rightLabel  = this.rightLabel.get("value");
 
-      this.model.set({ leftLabel: leftLabel, rightLabel: rightLabel });
+      this.model.set({ title: this.title, show_title: this.show_title, leftLabel: leftLabel, rightLabel: rightLabel });
 
       this.$el.html(this.template(this.model.toJSON()));
 
@@ -21969,12 +21984,16 @@ cdb.geo.ui.DebugLegend = cdb.core.View.extend({
  * */
 cdb.geo.ui.BubbleLegend = cdb.core.View.extend({
 
-  tagName: "ul",
+  className: "bubble-legend",
 
   initialize: function() {
 
+    this.title       = this.options.title;
+    this.show_title  = this.options.show_title;
+
     this.items = this.options.items;
-    this.template = _.template('<li><%= min %></li><li class="graph"><div class="bubbles"></div></li><li><%= max %></li>');
+
+    this.template = _.template('<% if (title && show_title) { %><div class="legend-title"><%= title %></div><% } %><ul><li><%= min %></li><li class="graph"><div class="bubbles"></div></li><li><%= max %></li></ul>');
     this.model    = new cdb.core.Model();
 
     this.add_related_model(this.model);
@@ -21994,7 +22013,7 @@ cdb.geo.ui.BubbleLegend = cdb.core.View.extend({
       var min = this.items.at(0);
       var max = this.items.at(1);
 
-      this.model.set({ min: min.get("value"), max: max.get("value") });
+      this.model.set({ title: this.title, show_title: this.show_title, min: min.get("value"), max: max.get("value") });
       this.$el.html(this.template(this.model.toJSON()));
 
     }
@@ -22013,14 +22032,19 @@ cdb.geo.ui.BubbleLegend = cdb.core.View.extend({
  * */
 cdb.geo.ui.CategoryLegend = cdb.core.View.extend({
 
-  tagName: "ul",
+  className: "category-legend",
 
   initialize: function() {
 
+    this.title       = this.options.title;
+    this.show_title  = this.options.show_title;
+
     this.items = this.options.items;
-    this.template = _.template("");
+    this.template = _.template('<% if (title && show_title) { %><div class="legend-title"><%= title %></div><% } %><ul></ul>');
     this.model = new cdb.core.Model({
-      type: "custom"
+      type: "custom",
+      title: this.title,
+      show_title: this.show_title
     });
 
   },
@@ -22038,7 +22062,7 @@ cdb.geo.ui.CategoryLegend = cdb.core.View.extend({
       template: '<div class="bullet" style="background:<%= value %>"></div><%= name || "null" %>'
     });
 
-    this.$el.append(view.render());
+    this.$el.find("ul").append(view.render());
 
   },
 
@@ -22049,7 +22073,7 @@ cdb.geo.ui.CategoryLegend = cdb.core.View.extend({
     if (this.items.length > 0) {
       this._renderItems();
     } else {
-      this.$el.html('<li class="warning">The category legend is empty</li>');
+      this.$el.html('<div class="warning">The category legend is empty</div>');
     }
 
     return this;
@@ -22064,14 +22088,19 @@ cdb.geo.ui.CategoryLegend = cdb.core.View.extend({
  * */
 cdb.geo.ui.ColorLegend = cdb.core.View.extend({
 
-  tagName: "ul",
+  className: "color-legend",
 
   initialize: function() {
 
+    this.title       = this.options.title;
+    this.show_title  = this.options.show_title;
+
     this.items = this.options.items;
-    this.template = _.template("");
+    this.template = _.template('<% if (title && show_title) { %><div class="legend-title"><%= title %></div><% } %><ul></ul>');
     this.model = new cdb.core.Model({
-      type: "custom"
+      type: "custom",
+      title: this.title,
+      show_title: this.show_title
     });
 
   },
@@ -22089,7 +22118,7 @@ cdb.geo.ui.ColorLegend = cdb.core.View.extend({
       template: '<div class="bullet" style="background:<%= value %>"></div><%= name || ((name === false) ? "false": "null") %>'
     });
 
-    this.$el.append(view.render());
+    this.$el.find("ul").append(view.render());
 
   },
 
@@ -22100,7 +22129,7 @@ cdb.geo.ui.ColorLegend = cdb.core.View.extend({
     if (this.items.length > 0) {
       this._renderItems();
     } else {
-      this.$el.html('<li class="warning">The color legend is empty</li>');
+      this.$el.html('<div class="warning">The color legend is empty</div>');
     }
 
     return this;
@@ -22115,14 +22144,19 @@ cdb.geo.ui.ColorLegend = cdb.core.View.extend({
  * */
 cdb.geo.ui.CustomLegend = cdb.core.View.extend({
 
-  tagName: "ul",
+  className: "custom-legend",
 
   initialize: function() {
 
+    this.title       = this.options.title;
+    this.show_title  = this.options.show_title;
+
     this.items = this.options.items;
-    this.template = _.template("");
+    this.template = _.template('<% if (title && show_title) { %><div class="legend-title"><%= title %></div><% } %><ul></ul>');
     this.model = new cdb.core.Model({
-      type: "custom"
+      type: "custom",
+      title: this.title,
+      show_title: this.show_title
     });
 
   },
@@ -22140,7 +22174,7 @@ cdb.geo.ui.CustomLegend = cdb.core.View.extend({
       template: '<div class="bullet" style="background:<%= value %>"></div><%= name || "null" %>'
     });
 
-    this.$el.append(view.render());
+    this.$el.find("ul").append(view.render());
 
   },
 
@@ -22151,7 +22185,7 @@ cdb.geo.ui.CustomLegend = cdb.core.View.extend({
     if (this.items.length > 0) {
       this._renderItems();
     } else {
-      this.$el.html('<li class="warning">The legend is empty</li>');
+      this.$el.html('<div class="warning">The legend is empty</div>');
     }
 
     return this;
@@ -22272,7 +22306,9 @@ cdb.geo.ui.StackedLegend = cdb.core.View.extend({
 cdb.geo.ui.LegendModel = cdb.core.Model.extend({
 
   defaults: {
-    type: null
+    type: null,
+    show_title: false,
+    title: ""
   },
 
   initialize: function() {
@@ -22284,7 +22320,13 @@ cdb.geo.ui.LegendModel = cdb.core.Model.extend({
     }, this);
 
     this.bind("change:items", this._onUpdateItems, this);
+    this.bind("change:title change:show_title", this._onUpdateTitle, this);
 
+  },
+
+  _onUpdateTitle: function() {
+    this.title = this.get("title");
+    this.show_title = this.get("show_title");
   },
 
   _onUpdateItems: function() {
@@ -22323,14 +22365,16 @@ cdb.geo.ui.Legend = cdb.core.View.extend({
     if (!this.model) {
 
       this.model = new cdb.geo.ui.LegendModel({
-        type: this.options.type || cdb.geo.ui.LegendModel.prototype.defaults.type
+        type: this.options.type || cdb.geo.ui.LegendModel.prototype.defaults.type,
+        title: this.options.title || cdb.geo.ui.LegendModel.prototype.defaults.title,
+        show_title: this.options.show_title || cdb.geo.ui.LegendModel.prototype.defaults.show_title
       });
 
     }
 
     this.add_related_model(this.model);
-    this.model.bind("change:type",  this._updateLegendType, this);
-    this.model.bind("change:items", this._updateLegendType, this);
+
+    this.model.bind("change:type change:items change:title change:show_title",  this._updateLegendType, this);
 
   },
 
@@ -22364,11 +22408,15 @@ cdb.geo.ui.Legend = cdb.core.View.extend({
 
     if (this.view) this.view.clean();
 
-    var type = this.model.get("type");
+    var type  = this.model.get("type");
+    var title = this.model.get("title");
+    var show_title = this.model.get("show_title");
 
     if (type) {
 
       this.view = new cdb.geo.ui[this.legend_name] ({
+        title: title,
+        show_title: show_title,
         items: self.items
       });
 
@@ -22545,35 +22593,38 @@ cdb.geo.ui.Switcher = cdb.core.View.extend({
 
 });
 /** Usage:
-*
-* Add Infowindow model:
-*
-* var infowindowModel = new cdb.geo.ui.InfowindowModel({
-*   template_name: 'templates/map/infowindow',
-*   latlng: [72, -45],
-*   offset: [100, 10]
-* });
-*
-* var infowindow = new cdb.geo.ui.Infowindow({
-*   model: infowindowModel,
-*   mapView: mapView
-* });
-*
-* Show the infowindow:
-* infowindow.showInfowindow();
-*
-*/
+ *
+ * Add Infowindow model:
+ *
+ * var infowindowModel = new cdb.geo.ui.InfowindowModel({
+ *   template_name: 'infowindow_light',
+ *   latlng: [72, -45],
+ *   offset: [100, 10]
+ * });
+ *
+ * var infowindow = new cdb.geo.ui.Infowindow({
+ *   model: infowindowModel,
+ *   mapView: mapView
+ * });
+ *
+ * Show the infowindow:
+ * infowindow.showInfowindow();
+ *
+ */
 
 cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
+  
   SYSTEM_COLUMNS: ['the_geom', 'the_geom_webmercator', 'created_at', 'updated_at', 'cartodb_id', 'cartodb_georef_status'],
 
   defaults: {
-    template_name: 'geo/infowindow',
+    template_name: 'infowindow_light',
     latlng: [0, 0],
     offset: [28, 0], // offset of the tip calculated from the bottom left corner
     autoPan: true,
+    template: "",
     content: "",
     visibility: false,
+    alternative_names: { },
     fields: null // contains the fields displayed in the infowindow
   },
 
@@ -22590,16 +22641,16 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
   },
 
   restoreFields: function(whiteList) {
-     var fields = this.get('old_fields')
-     if(whiteList) {
-       fields = fields.filter(function(f) {
-          return _.contains(whiteList, f.name);
-       });
-     }
-     if(fields && fields.length) {
-       this._setFields(fields);
-     }
-     this.unset('old_fields');
+    var fields = this.get('old_fields')
+    if(whiteList) {
+      fields = fields.filter(function(f) {
+        return _.contains(whiteList, f.name);
+      });
+    }
+    if(fields && fields.length) {
+      this._setFields(fields);
+    }
+    this.unset('old_fields');
   },
 
   _cloneFields: function() {
@@ -22623,10 +22674,10 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
       var fields = this.get('fields');
       if(fields) {
         at = at === undefined ? fields.length: at;
-        fields.push({name: fieldName, title: true, position: at});
+        fields.push({ name: fieldName, title: true, position: at });
       } else {
         at = at === undefined ? 0 : at;
-        this.set('fields', [{name: fieldName, title: true, position: at}])
+        this.set('fields', [{ name: fieldName, title: true, position: at }])
       }
     }
     dfd.resolve();
@@ -22662,12 +22713,29 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
     return this;
   },
 
+  getAlternativeName: function(fieldName) {
+    return this.get("alternative_names") && this.get("alternative_names")[fieldName];
+  },
+
+  setAlternativeName: function(fieldName, alternativeName) {
+    var alternativeNames = this.get("alternative_names") || [];
+
+    alternativeNames[fieldName] = alternativeName;
+    this.set({ 'alternative_names': alternativeNames });
+    this.trigger('change:alternative_names');
+  },
+
   getFieldPos: function(fieldName) {
     var p = this.getFieldProperty(fieldName, 'position');
     if(p == undefined) {
       return Number.MAX_VALUE;
     }
     return p;
+  },
+
+  containsAlternativeName: function(fieldName) {
+    var names = this.get('alternative_names') || [];
+    return names[fieldName];
   },
 
   containsField: function(fieldName) {
@@ -22719,21 +22787,30 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
   initialize: function(){
     var self = this;
 
-    _.bindAll(this, "render", "setLatLng", "changeTemplate", "_updatePosition", "_update", "toggle", "show", "hide");
+    _.bindAll(this, "render", "setLatLng", "_setTemplate", "_updatePosition",
+      "_update", "toggle", "show", "hide");
 
     this.mapView = this.options.mapView;
 
-    this.template = this.options.template ? this.options.template : cdb.templates.getTemplate(this.model.get("template_name"));
+    // Set template if it is defined in options
+    if (this.options.template) this.model.set('template', this.options.template);
 
-    this.add_related_model(this.model);
+    // Set template view variable and
+    // compile it if it is necessary
+    if (this.model.get('template')) {
+      this._compileTemplate();
+    } else {
+      this._setTemplate();
+    }
+    
+    this.model.bind('change:content',           this.render, this);
+    this.model.bind('change:template_name',     this._setTemplate, this);
+    this.model.bind('change:latlng',            this._update, this);
+    this.model.bind('change:visibility',        this.toggle, this);
+    this.model.bind('change:template',          this._compileTemplate, this);
+    this.model.bind('change:alternative_names', this.render, this);
 
-    this.model.bind('change:content',       this.render, this);
-    this.model.bind('change:template_name', this.changeTemplate, this);
-    this.model.bind('change:latlng',        this._update, this);
-    this.model.bind('change:visibility',    this.toggle, this);
-    this.model.bind('change:template',      this._compileTemplate, this);
-
-    this.mapView.map.bind('change',         this._updatePosition, this);
+    this.mapView.map.bind('change',             this._updatePosition, this);
 
     this.mapView.bind('zoomstart', function(){
       self.hide(true);
@@ -22743,17 +22820,21 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
       self.show(true);
     });
 
+    this.add_related_model(this.mapView.map);
+
     // Set min height to show the scroll
     this.minHeightToScroll = 180;
 
-    this.render();
+    // Hide the element
     this.$el.hide();
   },
+
 
   /**
    *  Render infowindow content
    */
   render: function() {
+
     if(this.template) {
 
       // If there is content, destroy the jscrollpane first, then remove the content.
@@ -22766,17 +22847,33 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
       var fields = _.map(this.model.attributes.content.fields, function(field){
         return _.clone(field);
       });
-      var template_name = _.clone(this.model.attributes.template_name);
-      // Sanitized them
-      var sanitized_fields = this._fieldsToString(fields, template_name);
-      var data = this.model.get('content') ? this.model.get('content').data : {}
-      this.$el.html(this.template({ 
+      var data = this.model.get('content') ? this.model.get('content').data : {};
+
+      // If a custom template is not applied, let's sanitized
+      // fields for the template rendering
+      if (this.model.get('template_name')) {
+        var template_name = _.clone(this.model.attributes.template_name);
+
+        // Sanitized them
+        fields = this._fieldsToString(fields, template_name);
+      }
+
+      // Join plan fields values with content to work with
+      // custom infowindows and CartoDB infowindows.
+      var values = {};
+      _.each(this.model.get('content').fields, function(pair) {
+        values[pair.title] = pair.value;
+      })
+
+      var obj = _.extend({
           content: {
-            fields: sanitized_fields,
-            data: data 
+            fields: fields,
+            data: data
           }
-        })
-      );
+        },values);
+
+      this.$el.html(this.template(obj));
+
 
       // Hello jscrollpane hacks!
       // It needs some time to initialize, if not it doesn't render properly the fields
@@ -22801,23 +22898,32 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     return this;
   },
 
+  _getModelTemplate: function() {
+    return this.model.get("template_name")
+  },
+
   /**
    *  Change template of the infowindow
    */
-  changeTemplate: function(template_name) {
-    this.template = cdb.templates.getTemplate(this.model.get("template_name"));
-    this.render();
+  _setTemplate: function() {
+    if (this.model.get('template_name')) {
+      this.template = cdb.templates.getTemplate(this._getModelTemplate());
+      this.render();  
+    }
   },
 
   /**
    *  Compile template of the infowindow
    */
   _compileTemplate: function() {
-    var template = this.model.get('template');
+    var template = this.model.get('template') ?
+      this.model.get('template') :
+      cdb.templates.getTemplate(this._getModelTemplate());
+
     if(typeof(template) !== 'function') {
       this.template = new cdb.core.Template({
-         template: template,
-         type: this.model.get('template_type') || 'mustache'
+        template: template,
+        type: this.model.get('template_type') || 'mustache'
       }).asFunction()
     } else {
       this.template = template
@@ -22862,19 +22968,26 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
    *  - Cut off title if it is very long (in header or image templates).
    *  - If the value is a valid url, let's make it a link.
    *  - More to come...
-   */                                                                                                                
+   */
   _sanitizeField: function(attr, template_name, pos) {
     // Check null or undefined :| and set both to empty == ''
     if (attr.value == null || attr.value == undefined) {
       attr.value = '';
     }
 
+    //Get the alternative title
+    var alternative_name = this.model.getAlternativeName(attr.title);
+
+    if (attr.title && alternative_name) {
+      // Alternative title
+      attr.title = alternative_name;
+    } else if (attr.title) {
+      // Remove '_' character from titles
+      attr.title = attr.title.replace(/_/g,' ');
+    }
+
     // Cast all values to string due to problems with Mustache 0 number rendering
     var new_value = attr.value.toString();
-
-    // Remove '_' character from titles
-    if (attr.title)
-      attr.title = attr.title.replace(/_/g,' ');
 
     // If it is index 0, not any field type, header template type and length bigger than 30... cut off the text!
     if (!attr.type && pos==0 && attr.value.length > 35 && template_name && template_name.search('_header_') != -1) {
@@ -22961,7 +23074,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     var content = this.model.get("content");
 
     if (content && content.fields && content.fields.length > 0) {
-      return (content.fields[0].value).toString();
+      return (content.fields[0].value || '').toString();
     }
 
     return false;
@@ -23066,6 +23179,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
       content:  {
         fields: [{
           title: null,
+          alternative_name: null,
           value: 'Loading content...',
           index: null,
           type: "loading"
@@ -23084,6 +23198,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
       content:  {
         fields: [{
           title: null,
+          alternative_name: null,
           value: 'There has been an error...',
           index: null,
           type: 'error'
@@ -23934,15 +24049,17 @@ LayerDefinition.prototype = {
 
   getLayerToken: function(callback) {
     var self = this;
+    function _done(data, err) {
+      var fn;
+      while(fn = self._layerTokenQueue.pop()) {
+        fn(data, err);
+      }
+    }
     clearTimeout(this._timeout);
+    this._queue.push(_done);
     this._layerTokenQueue.push(callback);
     this._timeout = setTimeout(function() {
-      self._getLayerToken(function(data, err) {
-        var fn;
-        while(fn = self._layerTokenQueue.pop()) {
-          fn(data, err);
-        }
-      });
+      self._getLayerToken(_done);
     }, 4);
   },
 
@@ -23959,7 +24076,8 @@ LayerDefinition.prototype = {
 
     // check request queue
     if(this._queue.length) {
-      this._getLayerToken(this._queue.pop());
+      var last = this._queue[this._queue.length - 1];
+      this._getLayerToken(last);
     }
   },
 
@@ -23983,6 +24101,9 @@ LayerDefinition.prototype = {
       },
       error: function(xhr) {
         var err = { errors: ['unknow error'] };
+        if (xhr.status === 0) {
+          err = { errors: ['connection error'] };
+        }
         try {
           err = JSON.parse(xhr.responseText);
         } catch(e) {}
@@ -24055,9 +24176,10 @@ LayerDefinition.prototype = {
 
     // if the previous request didn't finish, queue it
     if(this._waiting) {
-      this._queue.push(callback);
       return this;
     }
+
+    this._queue = [];
 
     // setup params
     var extra_params = this.options.extra_params || {};
@@ -24955,12 +25077,22 @@ function PathView(geometryModel) {
   
   this.geom = L.GeoJSON.geometryToLayer(geometryModel.get('geojson'));
 
-  _.each(this.geom._layers, function(g) {
-    g.setStyle(geometryModel.get('style'));
-    g.on('edit', function() {
+  if (this.geom._layers) {
+    // Feature group
+    _.each(this.geom._layers, function(g) {
+      g.setStyle(geometryModel.get('style'));
+      g.on('edit', function() {
+        geometryModel.set('geojson', L.GeoJSON.toGeoJSON(self.geom));
+      }, self);
+    });  
+  } else {
+    // One layer
+    this.geom.setStyle(geometryModel.get('style'));
+    this.geom.on('edit', function() {
       geometryModel.set('geojson', L.GeoJSON.toGeoJSON(self.geom));
     }, self);
-  });
+  }
+  
   /*for(var i = 0; i < events.length; ++i) {
     var e = events[i];
     this.geom.on(e, self._eventHandler(e));
@@ -24972,10 +25104,17 @@ PathView.prototype = new GeometryView();
 
 PathView.prototype.edit = function(enable) {
   var fn = enable ? 'enable': 'disable';
-  _.each(this.geom._layers, function(g) {
-    g.editing[fn]();
-    g.off('edit', null, self);
-  });
+  if (this.geom._layers) {
+    // Feature group
+    _.each(this.geom._layers, function(g) {
+      g.editing[fn]();
+      g.off('edit', null, self);
+    });
+  } else {
+    // One layer
+    this.geom.editing[fn]();
+    this.geom.off('edit', null, self);
+  }
 };
 
 cdb.geo.leaflet = cdb.geo.leaflet || {};
@@ -28768,6 +28907,8 @@ cdb.vis.Overlay.register('infowindow', function(data, vis) {
   }
 
   var infowindowModel = new cdb.geo.ui.InfowindowModel({
+    template: data.template,
+    alternative_names: data.alternative_names,
     fields: data.fields,
     template_name: data.template_name
   });

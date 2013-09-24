@@ -1,3 +1,7 @@
+3.1.14 (09//24/2013)
+-----
+- fixed problem with IE9 when the map has only one layer
+
 3.1.13 (09//18/2013)
 -----
 - new custom infowindow html available for visualization.

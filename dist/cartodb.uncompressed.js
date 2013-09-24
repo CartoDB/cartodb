@@ -1,6 +1,6 @@
-// cartodb.js version: 3.1.13
+// cartodb.js version: 3.1.14
 // uncompressed version: cartodb.uncompressed.js
-// sha: e04f669323704c29b2259eb53277912749d75ece
+// sha: a4a2e0b9af986850f0c1e0350e3c155500ecc654
 (function() {
   var root = this;
 
@@ -10298,7 +10298,7 @@ L.Map.include({
 });
 
 
-}(this, document));/* wax - 7.0.0dev10 - v6.0.4-149-ga1a6031 */
+}(this, document));/* wax - 7.0.0dev10 - v6.0.4-151-g87ab6b1 */
 
 
 !function (name, context, definition) {
@@ -12441,8 +12441,6 @@ var Mustache = (typeof module !== "undefined" && module.exports) || {};
     win[cbval] = generalCallback
 
     script.type = 'text/javascript'
-    script.src = url
-    script.async = true
     if (typeof script.onreadystatechange !== 'undefined' && !isIE10) {
       // need this for IE due to out-of-order onreadystatechange(), binding script
       // execution to an event listener gives us control over when the script
@@ -12465,6 +12463,9 @@ var Mustache = (typeof module !== "undefined" && module.exports) || {};
       head.removeChild(script)
       loaded = 1
     }
+
+    script.src = url
+    script.async = true
 
     // Add the script to the DOM head
     head.appendChild(script)
@@ -19873,7 +19874,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.1.13';
+    cdb.VERSION = '3.1.14';
 
     cdb.CARTOCSS_VERSIONS = {
       '2.0.0': '',
@@ -20676,7 +20677,7 @@ cdb._loadJST = function() {
       this.remove();
       this.unbind();
       // remove this model binding
-      if (this.model) this.model.unbind(null, null, this); 
+      if (this.model && this.model.unbind) this.model.unbind(null, null, this); 
       // remove model binding
       _(this._models).each(function(m) {
         m.unbind(null, null, self);
@@ -23073,7 +23074,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     var content = this.model.get("content");
 
     if (content && content.fields && content.fields.length > 0) {
-      return (content.fields[0].value).toString();
+      return (content.fields[0].value || '').toString();
     }
 
     return false;
@@ -24100,6 +24101,9 @@ LayerDefinition.prototype = {
       },
       error: function(xhr) {
         var err = { errors: ['unknow error'] };
+        if (xhr.status === 0) {
+          err = { errors: ['connection error'] };
+        }
         try {
           err = JSON.parse(xhr.responseText);
         } catch(e) {}

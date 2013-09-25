@@ -69,13 +69,6 @@ module CartoDB
         return layer.options if options[:full]
         sql = sql_from(layer.options)
         layer.options.select { |key, value| public_options.include?(key.to_s) }
-        #.merge(
-        #  sql:                sql,
-        #  query:              wrap(sql, layer.options),
-        #  cartocss:           layer.options.fetch('tile_style'),
-        #  cartocss_version:   CARTO_CSS_VERSION,
-        #  interactivity:      layer.options.fetch('interactivity')
-        #)
       end #options_data
 
       def sql_from(options)

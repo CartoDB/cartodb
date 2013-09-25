@@ -1,0 +1,12 @@
+The procedure to run cartodb tests is as follows:
+
+  # Prepare test database
+  bundle exec rake db:test:prepare
+
+  # Run all specs
+  # I don't really know, but this is one of them :)
+  rspec spec/lib/sql_test_spec.rb
+
+CartoDB is a large app.
+We reccomend you use the [spin gem](https://github.com/jstorimer/spin/)
+to load the main application into memory while you are testing.

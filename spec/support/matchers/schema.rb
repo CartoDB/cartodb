@@ -57,6 +57,7 @@ RSpec::Matchers.define :pass_sql_tests do
         Dir.glob(glob).each do |f|
           testname = File.basename(f)
           tname = File.basename(f, '.sql')
+          puts "Testing #{tname}"
           expfile = File.dirname(f) + '/' + tname + '_expect'
           cmd = "#{env} psql -X -tA < #{f} #{actual.database_name} 2>&1 | diff -U2 #{expfile} - 2>&1"
           result = `#{cmd}`

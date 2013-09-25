@@ -10,7 +10,6 @@ require_relative '../../lib/cartodb/github_reporter'
 require_relative '../../lib/cartodb_stats'
 require_relative '../../services/track_record/track_record/log'
 require_relative '../../config/initializers/redis'
-require_relative '../../services/importer/lib/importer'
 
 class DataImport < Sequel::Model
   REDIS_LOG_KEY_PREFIX          = 'importer'
@@ -39,18 +38,16 @@ class DataImport < Sequel::Model
     values
   end
 
-  def set_unsupported_file_error
-    self.error_code = 1002
-    self.state      = 'failure'
-    save
-  end #set_unsupported_file_error
-
   def run_import!
     success = !!dispatch
     if self.results.empty?
       set_unsupported_file_error
+      self.error_code = 1002
+      self.state      = 'failure'
+      save
       return self
     end
+
     success ? handle_success : handle_failure
     Rails.logger.debug log.to_s
     self
@@ -93,32 +90,6 @@ class DataImport < Sequel::Model
     return true
   end
 
-  def log_update(update_msg)
-    self.log << "UPDATE: #{update_msg}\n"
-    self.save
-  end
-
-  def log_error(error_msg)
-    self.log << "#{error_msg}\n"
-    self.error_code = 99999 if self.error_code.nil?
-    self.save
-  end
-
-  def log_warning(error_msg)
-    self.log << "WARNING: #{error_msg}\n"
-    self.save
-  end
-
-  def log_json
-    return jsonize(self.log.to_s) if valid_uuid?(self.logger)
-    return jsonize(self.logger.to_s)
-  end #log_json
-
-  def jsonize(text)
-    return text.split("\n") if text.present?
-    return ["empty"]
-  end #jsonize
-
   def data_source=(data_source)
     if File.exist?(Rails.root.join("public#{data_source}"))
       self.values[:data_type] = 'file'
@@ -142,16 +113,16 @@ class DataImport < Sequel::Model
     self.state    = 'complete'
     self.log << "SUCCESS!\n"
     save
+    notify(results)
     self
   end #handle_success
 
   def handle_failure
-    self.error_code = errors_from(results).first
     self.success    = false
     self.state      = 'failure'
     self.log << "ERROR!\n"
     self.save
-    notify_results(self.results)
+    notify(results)
     self
   rescue => exception
     self
@@ -168,10 +139,9 @@ class DataImport < Sequel::Model
   attr_writer :results, :log
 
   def dispatch
-    return append_to_existing if append.present?
     return migrate_existing   if migrate_table.present?
     return from_table         if table_copy.present? || from_query.present?
-    return new_importer       
+    new_importer       
   end #dispatch
 
   def running_import_ids
@@ -229,183 +199,6 @@ class DataImport < Sequel::Model
     !running_import_ids.include?(self.id)
   end
 
-  def append_to_existing
-    data_source ||= self.data_source
-    downloader  = CartoDB::Importer2::Downloader.new(data_source)
-    tracker     = lambda { |state| self.state = state; save }
-    runner      = CartoDB::Importer2::Runner.new(pg_options, downloader, log,
-                  current_user.remaining_quota)
-    runner.run(&tracker)
-    self.results = runner.results
-
-    # table_names is null, since we're just appending data to
-    # an existing table, not creating a new one
-    self.update(table_names: nil)
-
-    runner.results.each do |result|
-      result.fetch(:tables).each do |new_table_name|
-        register(new_table_name, result.fetch(:name), result.fetch(:schema))
-        new_table = Table.where(name: new_table_name, user_id: current_user.id).first
-        schema = result.fetch(:schema)
-        table.append_from_importer(new_table_name, schema)
-        table.save
-        new_table.destroy
-      end
-    end
-
-    notify_results(runner.results)
-    success_status_from(runner.results)
-  end
-
-  def import_from_query(name, query)
-    self.data_type    = 'query'
-    self.data_source  = query
-    self.save
-
-    candidates =  table_owner.tables.select_map(:name)
-    table_name = Table.get_valid_table_name(name, name_candidates: candidates)
-    table_owner.in_database.run(%Q{CREATE TABLE #{table_name} AS #{query}})
-
-    table_name
-  end
-
-  def migrate_existing(imported_name=migrate_table, name=nil)
-    new_name = imported_name || name
-
-    @new_table = Table.new
-    @new_table.user_id = user_id
-    @new_table.name = new_name
-    @new_table.data_import_id = id
-    @new_table.migrate_existing_table = imported_name
-
-    if @new_table.valid?
-      @new_table.save
-      @new_table.optimize
-      @new_table.map.recalculate_bounds!
-      # check if the table fits into owner's remaining quota
-      if table_owner.remaining_quota < 0
-        self.log.append("Over storage quota, removing table" )
-        self.error_code = 8001
-        @new_table.destroy
-        return false
-      end
-      refresh
-      return true
-    else
-      reload
-      self.log << ("Error linking #{imported_name} to UI: " + @new_table.errors.full_messages.join(" - "))
-      return false
-    end
-  end
-
-  def pg_options
-    Rails.configuration.database_configuration[Rails.env].symbolize_keys
-      .merge(
-        user:     table_owner.database_username,
-        password: table_owner.database_password,
-        database: table_owner.database_name
-      )
-  end #pg_options
-
-  def new_importer(data_source=nil)
-    data_source ||= self.data_source
-    downloader  = CartoDB::Importer2::Downloader.new(data_source)
-    tracker     = lambda { |state| self.state = state; save }
-    runner      = CartoDB::Importer2::Runner
-                    .new(pg_options, downloader, log, current_user.remaining_quota)
-    runner.run(&tracker)
-    self.results = runner.results
-
-    successful_imports = results.select { |result|
-      result.fetch(:success, false)
-    }
-
-    if table_quota_exceeded?(successful_imports)
-      @table_quota_exceeded = true 
-      return(success = false)
-    end
-
-    successful_imports.each do |result|
-      name        = result.fetch(:name)
-      schema      = result.fetch(:schema)
-      table_names = result.fetch(:tables)
-
-      if @table_quota_exceeded
-        table_names.each { |table_name| drop(schema, table_name) }
-      else
-        table_names.each { |table_name| register(table_name, name, schema) }
-      end
-    end
-
-    success = !!success_status_from(runner.results)
-    notify_results(runner.results)
-    success
-  end #new_importer
-
-  def success_status_from(results)
-    results.inject(true) { |memo, result| result.fetch(:success) && memo }
-  end #success_status_from
-
-  def errors_from(results)
-    return [8002] if @table_quota_exceeded
-    results.map { |result| result.fetch(:error, nil) }.compact
-  end #errors_from
-
-  def register(table_name, name, schema='importer')
-    current_user.in_database(as: :superuser).execute(%Q{
-      ALTER TABLE "#{schema}"."#{table_name}"
-      SET SCHEMA public
-    }) unless schema == 'public'
-
-    rename_attempts = 0
-
-    begin
-      candidates  = table_owner.reload.tables.map(&:name)
-      name        = Table.get_valid_table_name(name, name_candidates: candidates)
-
-      rename_attempts = rename_attempts + 1
-      current_user.in_database.execute(%Q{
-        ALTER TABLE "public"."#{table_name}"
-        RENAME TO "#{name}"
-      })
-    rescue
-      retry unless rename_attempts > 1
-    end
-
-    table                         = Table.new
-    table.user_id                 = table_owner.id
-    table.data_import_id          = self.id
-    table.name                    = name
-    table.migrate_existing_table  = name
-    table.save
-
-    self.table_id   = table.id
-    self.table_name = table.name
-    save
-    table.optimize
-    table.map.recalculate_bounds!
-    self
-  end #register
-
-  def notify_results(results)
-    results.each { |result| CartoDB::Metrics.new.report(payload_for(result)) }
-  end #notify_results
-
-  def report_unknown_error
-    CartoDB::Metrics.new.report(payload_for(
-      name:           data_source,
-      extension:      nil,
-      success:        false,
-      error:          99999
-    ))
-  rescue => exception
-    self
-  end
-
-  def table_owner
-    table_owner ||= User.select(:id,:database_name,:crypted_password,:quota_in_bytes,:username, :private_tables_enabled, :table_quota).filter(:id => current_user.id).first
-  end
-
   def from_table
     number_of_tables = 1
     raise_error_if_over_quota(number_of_tables)
@@ -414,45 +207,78 @@ class DataImport < Sequel::Model
     new_table_name = import_from_query(table_name, query)
     self.update(table_names: new_table_name)
     migrate_existing(new_table_name)
-    self.results = [{ success: true, error: nil }]
+    self.results.push CartoDB::Importer2::Result.new(success: true, error: nil)
+  end
+
+  def import_from_query(name, query)
+    self.data_type    = 'query'
+    self.data_source  = query
+    self.save
+
+    candidates =  current_user.tables.select_map(:name)
+    table_name = Table.get_valid_table_name(name, name_candidates: candidates)
+    current_user.in_database.run(%Q{CREATE TABLE #{table_name} AS #{query}})
+
+    table_name
+  end
+
+  def migrate_existing(imported_name=migrate_table, name=nil)
+    new_name = imported_name || name
+
+    table         = Table.new
+    table.user_id = user_id
+    table.name    = new_name
+    table.migrate_existing_table = imported_name
+
+    if table.valid?
+      table.save
+      table.optimize
+      table.map.recalculate_bounds!
+      if current_user.remaining_quota < 0
+        self.log.append("Over storage quota, removing table" )
+        self.error_code = 8001
+        table.destroy
+        return false
+      end
+      refresh
+      self.table_id = table.id
+      self.table_name = table.name
+      save
+      return true
+    else
+      reload
+      self.log << ("Error linking #{imported_name} to UI: " + table.errors.full_messages.join(" - "))
+      return false
+    end
+  end
+
+  def pg_options
+    Rails.configuration.database_configuration[Rails.env].symbolize_keys
+      .merge(
+        user:     current_user.database_username,
+        password: current_user.database_password,
+        database: current_user.database_name
+      )
+  end #pg_options
+
+  def new_importer
+    tracker   = lambda { |state| self.state = state; save }
+    importer  = CartoDB::Connector::Importer.new(
+      current_user, data_source, pg_options, log, Table
+    ).run(tracker)
+
+    self.results    = importer.results
+    self.error_code = importer.error_code
+    self.table_name = importer.table.name if importer.table
+    self.table_id   = importer.table.id if importer.table
+    importer.success?
   end
 
   def current_user
     @current_user ||= User[user_id]
   end
 
-  def payload_for(result)
-    payload = {
-      name:           result.fetch(:name),
-      extension:      result.fetch(:extension),
-      success:        result.fetch(:success),
-      error:          result.fetch(:error, nil),
-      file_url:       public_url,
-      distinct_id:    current_user.username,
-      username:       current_user.username,
-      account_type:   current_user.account_type,
-      database:       current_user.database_name,
-      email:          current_user.email,
-      log:            log.to_s
-    }
-    payload.merge!(error_title: get_error_text) unless result.fetch(:success)
-    payload
-  end
-
-  def table_quota_exceeded?(results=[])
-    return false if current_user.remaining_table_quota.nil?
-    results.length > current_user.remaining_table_quota.to_i
-  end
-
-  def set_table_quota_exceeded
-    self.error_code = 8002
-    self.state      = 'failure'
-    save
-  end
-
-  def drop(schema, table_name)
-    current_user.in_database.execute(%Q{DROP TABLE "#{schema}.#{table_name}"})
-  rescue
-    self
+  def notify(results)
+    results.each { |result| CartoDB::Metrics.new.report(result.payload) }
   end
 end

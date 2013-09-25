@@ -18,12 +18,12 @@ module CartoDB
 
       def initialize(pg_options, downloader, log=nil, available_quota=nil,
       unpacker=nil)
-        self.pg_options       = pg_options
-        self.downloader       = downloader
-        self.log              = log || TrackRecord::Log.new
-        self.results          = []
-        self.unpacker         = unpacker || Unp.new
-        self.available_quota  = available_quota || DEFAULT_AVAILABLE_QUOTA
+        @pg_options       = pg_options
+        @downloader       = downloader
+        @log              = log || TrackRecord::Log.new
+        @available_quota  = available_quota || DEFAULT_AVAILABLE_QUOTA
+        @unpacker         = unpacker || Unp.new
+        @results          = []
       end #initialize
 
       def run(&tracker_block)
@@ -31,6 +31,8 @@ module CartoDB
         tracker.call('uploading')
         log.append "Getting file from #{downloader.url}"
         downloader.run(available_quota)
+
+        return self unless modified?
 
         log.append "Starting import for #{downloader.source_file.fullpath}"
         log.append "Unpacking #{downloader.source_file.fullpath}"
@@ -83,11 +85,9 @@ module CartoDB
         }
       end #loader_for
 
-      def columns_in(table_name, schema='cdb_importer')
-        db.schema(table_name, schema: schema)
-          .map { |s| s[0] }
-          .map { |column_name| Column.new(db, table_name, column_name, schema) }
-      end #columns_in
+      def modified?
+        downloader.modified?
+      end
 
       def tracker
         @tracker || lambda { |state| }
@@ -97,22 +97,23 @@ module CartoDB
         results.select(&:success?).length > 0
       end
 
-      attr_reader   :results, :log
-      attr_accessor :available_quota
+      attr_reader   :results
 
       private
-
-      attr_accessor :downloader, :pg_options, :unpacker
-      attr_writer   :results, :log, :tracker
+ 
+      attr_reader :downloader, :pg_options, :unpacker, :available_quota, :log
+      attr_writer :results, :tracker
 
       def result_for(job, source_file, table_names, exception_klass=nil)
         Result.new(
-          name:       source_file.name,
-          schema:     source_file.target_schema,
-          extension:  source_file.extension,
-          tables:     table_names,
-          success:    job.success_status,
-          error_code: error_for(exception_klass)
+          name:           source_file.name,
+          schema:         source_file.target_schema,
+          extension:      source_file.extension,
+          etag:           source_file.etag,
+          last_modified:  source_file.last_modified,
+          tables:         table_names,
+          success:        job.success_status,
+          error_code:     error_for(exception_klass)
         )
       end #results
 

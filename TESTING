@@ -15,6 +15,20 @@ can specify them on the `rspec` command line, like:
 
   bundle exec spec/lib/sql_test_spec.rb
 
+Troubleshooting
+---------------
+
+Common system configuration issues are reported in this section.
+
+ - "No such user: test_cartodb_user_###" 
+
+   Make sure test.port in config/database.yml is not pointing to
+   pg_bouncer, as dynamically created database roles aren't easily
+   supported by it (you need to explicitly list allowed usernames).
+
+Speeding up test runs
+---------------------
+
 CartoDB is a large app.
 We recommend you use the [spin gem](https://github.com/jstorimer/spin/)
 to load the main application into memory while you are testing.

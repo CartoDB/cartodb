@@ -1,3 +1,36 @@
+2.1.5
+-----
+* Fixed Bugs
+  * Geometry editing can mess up interactivity layer
+  * layergroup should always return 200 when the call is jsonp
+  * When there are more layers than legends applied, the layer selector can break the legends
+  * Merge tables sets all values the same for every column
+  * styles could be overriden in tables created before version 2.1.3.4.2
+  * Problem with custom quotas in central
+  * Removing a visualization from the dashboard reload the list in a weird order
+  * Tables in the 'Create new visualization' window should be by updated_at
+  * Contradictory messages when changing a password
+  * Trying to create a table from a query fails
+  * Support files with Chinese data
+  * HTML template generated without the content of the title fields
+  * Hide opened infowindow when hiding a layer that has an infowindow opened.
+  * Fix enabled/disabled state for sync checkbox in legend editor
+  * When you deselect a title from the infowindow fields pane, and then go to the infowindow custom editor, appears the title line empty
+  * Problem with IE browsers in compatibility mode
+  * https viz.json url redirects to http and it should not
+  * if embed is https and uses google maps it is blocked by chrome
+  * When entering to this view it says there is a query applied (but not)
+  * After editing geometries, interactivity ceases to work
+  * when execute a query without the_geom_webmercator styles are not properly reset
+  * Error when trying to access the drobox uploader twice
+  * Image header template fails when first field selected is null
+
+* Improvements
+  * Developer page spelling mistake exited => 'excited'
+  * Add Dropbox and file-import tests
+  * Unify marker-width with marker fill row on the wizards
+  * Improve the way we detect the geometry column on the geojson files
+
 2.1.4
 -----
 * Fixed Bugs

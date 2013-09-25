@@ -28,7 +28,7 @@ describe Downloader do
     it 'downloads a file from a url' do
       stub_download(url: @file_url, filepath: @file_filepath) 
 
-      downloader = Downloader.new(@file_url, nil, @repository)
+      downloader = Downloader.new(@file_url, {}, nil, @repository)
       downloader.run
       File.exists?(downloader.source_file.fullpath).must_equal true
     end
@@ -42,8 +42,10 @@ describe Downloader do
     end
 
     it 'extracts the source_file name from Content-Disposition header' do
-      skip
-      stub_download(url: @fusion_tables_url, filepath: @fusion_tables_filepath)
+      stub_download(
+        url: @fusion_tables_url,
+        filepath: @fusion_tables_filepath
+      )
       downloader = Downloader.new(@fusion_tables_url)
 
       downloader.run
@@ -56,6 +58,19 @@ describe Downloader do
       downloader = Downloader.new(@ftp_url)
       downloader.run
       downloader.source_file.name.must_equal 'INDEX'
+    end
+
+    it "doesn't download the file if ETag hasn't changed" do
+      etag = 'bogus'
+      stub_download(
+        url:      @file_url,
+        filepath: @file_filepath,
+        headers:  { "ETag" => etag }
+      )
+
+      downloader = Downloader.new(@file_url, etag: etag)
+      downloader.run
+      downloader.modified?.must_equal false
     end
   end
 
@@ -118,23 +133,23 @@ describe Downloader do
   def stub_download(options)
     url       = options.fetch(:url)
     filepath  = options.fetch(:filepath)
+    headers   = options.fetch(:headers, {})
 
-    Typhoeus.stub(url).and_return(response_for(filepath))
+    Typhoeus.stub(url).and_return(response_for(filepath, headers))
   end #stub_download
 
-  def response_for(filepath)
-     Typhoeus::Response.new(
-        headers:  headers_for(filepath),
+  def response_for(filepath, headers={})
+     response = Typhoeus::Response.new(
         code:     200,
-        body:     File.new(filepath).read.to_s
+        body:     File.new(filepath).read.to_s,
+        headers:  headers.merge(headers_for(filepath))
      )
+     response
   end #response_for
 
   def headers_for(filepath)
     filename = filepath.split('/').last
-    [Typhoeus::Response::Header.new(
-        "Content-Disposition: attachment; filename=#{filename}"
-    )]
+    { "Content-Disposition" => "attachment; filename=#{filename}" }
   end #headers_for
 
   def path_to(filename)

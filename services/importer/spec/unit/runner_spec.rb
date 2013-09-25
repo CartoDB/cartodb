@@ -83,7 +83,7 @@ describe Runner do
 
       runner.import(source_file, job, fake_loader)
       result = runner.results.first
-      result.successful?.must_equal true
+      result.success?.must_equal true
     end
 
     it 'creates a failed result if an exception raised during import' do
@@ -99,7 +99,7 @@ describe Runner do
 
       runner.import(source_file, job, fake_loader)
       result = runner.results.first
-      result.successful?.must_equal false
+      result.success?.must_equal false
     end
   end
 

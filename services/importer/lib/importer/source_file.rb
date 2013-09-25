@@ -2,9 +2,11 @@
 module CartoDB
   module Importer2
     class SourceFile
-      def initialize(filepath, filename=nil)
-        self.filepath = filepath
-        self.filename = filename
+      def initialize(filepath, filename=nil, http_opts={})
+        @filepath       = filepath
+        @filename       = filename
+        @etag           = http_opts.fetch(:etag, nil)
+        @last_modified  = http_opts.fetch(:last_modified, nil)
       end #initialize
 
       def name
@@ -35,12 +37,11 @@ module CartoDB
         File.size(fullpath) == 0
       end #empty?
 
-      attr_reader :filename
+      attr_reader :filename, :etag, :last_modified
       
       private
 
-      attr_writer   :filename
-      attr_accessor :filepath
+      attr_reader :filepath
     end # SourceFile
   end # Importer2
 end # CartoDB

@@ -13,14 +13,12 @@ module CartoDB
         end
       end
 
-      def drop
-        db.execute(%Q{DROP TABLE "#{schema}.#{table_name}"})
-      rescue
-        self
-      end
-
       def success?
         success == true
+      end
+
+      def qualified_table_name
+        %Q("#{schema}"."#{table_name}")
       end
 
       def table_name

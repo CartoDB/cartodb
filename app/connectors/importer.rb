@@ -20,7 +20,7 @@ module CartoDB
         runner.run(&tracker)
 
         if table_quota_exceeded?
-          runner.drop_all 
+          drop(results)
         else
           results.select(&:success?).each { |result| register(result) }
         end
@@ -31,6 +31,17 @@ module CartoDB
       def success?
         return false if table_quota_exceeded?
         runner.success?
+      end
+
+      def drop_all(results)
+        results.each { |result| drop(result) }
+      end
+
+      def drop(result)
+        statement = %Q{DROP TABLE #{result.qualified_table_name}}
+        user.in_database.execute(statement)
+      rescue
+        self
       end
 
       def register(result)

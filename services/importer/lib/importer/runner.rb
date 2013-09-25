@@ -97,10 +97,6 @@ module CartoDB
         results.select(&:success?).length > 0
       end
 
-      def drop_all
-        results.each(&:drop)
-      end
-
       attr_reader   :results, :log
       attr_accessor :available_quota
 

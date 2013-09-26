@@ -47,6 +47,26 @@ describe("core.view", function() {
       expect(view._callbacks).toEqual(undefined);
   });
 
+  it("should unlink the view model", function() {
+      var called = false;
+      var new_view = new TestView({ el: $('<div>'), model: new Backbone.Model() });
+      
+      spyOn(new_view, 'test_method');
+      new_view.model.bind('change', new_view.test_method, new_view);
+      new_view.model.bind('change', function() { called= true;});
+
+      new_view.model.trigger('change');
+      expect(called).toEqual(true);
+      expect(new_view.test_method).toHaveBeenCalled();
+      expect(new_view.test_method.callCount).toEqual(1);
+      called = false;
+      new_view.clean();
+      //trigger again
+      new_view.model.trigger('change');
+      expect(called).toEqual(true);
+      expect(new_view.test_method.callCount).toEqual(1);
+  });
+
   it("should unlink linked models", function() {
       var called = false;
       var model = new Backbone.Model();

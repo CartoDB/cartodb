@@ -108,6 +108,15 @@ describe("common.geo.ui.Legend", function() {
     });
 
 
+    it("should have a title defined", function() {
+      expect(legend.model.get("title")).toBeDefined();
+    });
+
+    it("should have a show_title defined", function() {
+      legend.model.set({ type: "custom" });
+      expect(legend.model.get("show_title")).toBeDefined();
+    });
+
     it("should show the legend", function() {
       legend.show();
       expect(legend.$el.css('display')).toEqual('block');
@@ -127,6 +136,55 @@ describe("common.geo.ui.Legend", function() {
       });
 
     });
+
+    it("should render the title if title and show_title are set", function() {
+      var title = "Hi, I'm a title";
+      legend.model.set({ type: "custom", title: title, show_title: true });
+      expect(legend.$el.find('.legend-title').text()).toEqual(title);
+
+      legend.model.set({ type: "bubble", title: title, show_title: true });
+      expect(legend.$el.find('.legend-title').text()).toEqual(title);
+
+      legend.model.set({ type: "density", title: title, show_title: true });
+      expect(legend.$el.find('.legend-title').text()).toEqual(title);
+
+      legend.model.set({ type: "intensity", title: title, show_title: true });
+      expect(legend.$el.find('.legend-title').text()).toEqual(title);
+
+      legend.model.set({ type: "color", title: title, show_title: true });
+      expect(legend.$el.find('.legend-title').text()).toEqual(title);
+
+      legend.model.set({ type: "category", title: title, show_title: true });
+      expect(legend.$el.find('.legend-title').text()).toEqual(title);
+
+      legend.model.set({ type: "choropleth", title: title, show_title: true });
+      expect(legend.$el.find('.legend-title').text()).toEqual(title);
+    });
+
+    it("shouldn't render the title if show_title is not true", function() {
+      var title = "Hi, I'm a title";
+      legend.model.set({ type: "custom", title: title, show_title: false });
+      expect(legend.$el.find('.legend-title').text()).not.toEqual(title);
+
+      legend.model.set({ type: "bubble", title: title, show_title: false });
+      expect(legend.$el.find('.legend-title').text()).not.toEqual(title);
+
+      legend.model.set({ type: "density", title: title, show_title: false });
+      expect(legend.$el.find('.legend-title').text()).not.toEqual(title);
+
+      legend.model.set({ type: "intensity", title: title, show_title: false });
+      expect(legend.$el.find('.legend-title').text()).not.toEqual(title);
+
+      legend.model.set({ type: "color", title: title, show_title: false });
+      expect(legend.$el.find('.legend-title').text()).not.toEqual(title);
+
+      legend.model.set({ type: "category", title: title, show_title: false });
+      expect(legend.$el.find('.legend-title').text()).not.toEqual(title);
+
+      legend.model.set({ type: "choropleth", title: title, show_title: false });
+      expect(legend.$el.find('.legend-title').text()).not.toEqual(title);
+    });
+
   });
 
   describe("StackedLegend", function() {

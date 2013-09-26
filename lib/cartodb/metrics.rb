@@ -52,6 +52,9 @@ module CartoDB
     def ducksboard_report_failed(type="")
       return self unless type
       type.gsub!(".","")
+      if Cartodb.config.fetch(:ducksboard, {}).fetch("totals", {})["failed"].present?
+        ducksboard_increment Cartodb.config[:ducksboard]["totals"]["failed"], 1
+      end
       if Cartodb.config.fetch(:ducksboard, {}).fetch("formats", {})[type.downcase].present?
         ducksboard_increment Cartodb.config[:ducksboard]["formats"][type.downcase]["failed"], 1
         ducksboard_increment Cartodb.config[:ducksboard]["formats"][type.downcase]["total"], 1
@@ -63,6 +66,9 @@ module CartoDB
     def ducksboard_report_done(type="")
       return self unless type
       type.gsub!(".","")
+      if Cartodb.config.fetch(:ducksboard, {}).fetch("totals", {})["success"].present?
+        ducksboard_increment Cartodb.config[:ducksboard]["totals"]["success"], 1
+      end
       if Cartodb.config.fetch(:ducksboard, {}).fetch("formats", {})[type.downcase].present?
         ducksboard_increment Cartodb.config[:ducksboard]["formats"][type.downcase]["total"], 1
       end

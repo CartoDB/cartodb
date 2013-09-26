@@ -6,5 +6,2570 @@
 	http://leafletjs.com
 	https://github.com/jacobtoye
 */
-(function(t,e){L.drawVersion="0.2.0-dev",L.drawLocal={draw:{toolbar:{title:"Cancel drawing",text:"Cancel",polyline:"Draw a polyline",polygon:"Draw a polygon",rectangle:"Draw a rectangle",circle:"Draw a circle",marker:"Draw a marker"},circle:{tooltip:{start:"Click and drag to draw circle."}},marker:{tooltip:{start:"Click map to place marker."}},polygon:{tooltip:{start:"Click to start drawing shape.",cont:"Click to continue drawing shape.",end:"Click first point to close this shape."}},polyline:{error:"<strong>Error:</strong> shape edges cannot cross!",tooltip:{start:"Click to start drawing line.",cont:"Click to continue drawing line.",end:"Click last point to finish line."}},rectangle:{tooltip:{start:"Click and drag to draw rectangle."}},simpleshape:{tooltip:{end:"Release mouse to finish drawing."}}},edit:{toolbar:{edit:{title:"Edit layers",save:{title:"Save changes.",text:"Save"},cancel:{title:"Cancel editing, discards all changes.",text:"Cancel"}},remove:{title:"Delete layers",tooltip:"Click on a feature to remove"}},tooltip:{text:"Drag handles, or marker to edit feature.",subtext:"Click cancel to undo changes."}}},L.Draw={},L.Draw.Feature=L.Handler.extend({includes:L.Mixin.Events,initialize:function(t,e){this._map=t,this._container=t._container,this._overlayPane=t._panes.overlayPane,this._popupPane=t._panes.popupPane,e&&e.shapeOptions&&(e.shapeOptions=L.Util.extend({},this.options.shapeOptions,e.shapeOptions)),L.Util.extend(this.options,e)},enable:function(){this._enabled||(L.Handler.prototype.enable.call(this),this.fire("enabled",{handler:this.type}),this._map.fire("draw:drawstart",{layerType:this.type}))},disable:function(){this._enabled&&(L.Handler.prototype.disable.call(this),this.fire("disabled",{handler:this.type}),this._map.fire("draw:drawstop",{layerType:this.type}))},addHooks:function(){this._map&&(L.DomUtil.disableTextSelection(),this._tooltip=new L.Tooltip(this._map),L.DomEvent.addListener(this._container,"keyup",this._cancelDrawing,this))},removeHooks:function(){this._map&&(L.DomUtil.enableTextSelection(),this._tooltip.dispose(),this._tooltip=null,L.DomEvent.removeListener(this._container,"keyup",this._cancelDrawing))},setOptions:function(t){L.setOptions(this,t)},_fireCreatedEvent:function(t){this._map.fire("draw:created",{layer:t,layerType:this.type})},_cancelDrawing:function(t){27===t.keyCode&&this.disable()}}),L.Draw.Polyline=L.Draw.Feature.extend({statics:{TYPE:"polyline"},Poly:L.Polyline,options:{allowIntersection:!0,drawError:{color:"#b00b00",message:L.drawLocal.draw.polyline.error,timeout:2500},icon:new L.DivIcon({iconSize:new L.Point(8,8),className:"leaflet-div-icon leaflet-editing-icon"}),guidelineDistance:20,shapeOptions:{stroke:!0,color:"#f06eaa",weight:4,opacity:.5,fill:!1,clickable:!0},zIndexOffset:2e3},initialize:function(t,e){e&&e.drawError&&(e.drawError=L.Util.extend({},this.options.drawError,e.drawError)),this.type=L.Draw.Polyline.TYPE,L.Draw.Feature.prototype.initialize.call(this,t,e)},addHooks:function(){L.Draw.Feature.prototype.addHooks.call(this),this._map&&(this._markers=[],this._markerGroup=new L.LayerGroup,this._map.addLayer(this._markerGroup),this._poly=new L.Polyline([],this.options.shapeOptions),this._tooltip.updateContent(this._getTooltipText()),this._mouseMarker||(this._mouseMarker=L.marker(this._map.getCenter(),{icon:L.divIcon({className:"leaflet-mouse-marker",iconAnchor:[20,20],iconSize:[40,40]}),opacity:0,zIndexOffset:this.options.zIndexOffset})),this._mouseMarker.on("click",this._onClick,this).addTo(this._map),this._map.on("mousemove",this._onMouseMove,this).on("zoomend",this._onZoomEnd,this))},removeHooks:function(){L.Draw.Feature.prototype.removeHooks.call(this),this._clearHideErrorTimeout(),this._cleanUpShape(),this._map.removeLayer(this._markerGroup),delete this._markerGroup,delete this._markers,this._map.removeLayer(this._poly),delete this._poly,this._mouseMarker.off("click",this._onClick,this),this._map.removeLayer(this._mouseMarker),delete this._mouseMarker,this._clearGuides(),this._map.off("mousemove",this._onMouseMove,this).off("zoomend",this._onZoomEnd,this)},_finishShape:function(){var t=this._poly.newLatLngIntersects(this._poly.getLatLngs()[0],!0);return!this.options.allowIntersection&&t||!this._shapeIsValid()?(this._showErrorTooltip(),undefined):(this._fireCreatedEvent(),this.disable(),undefined)},_shapeIsValid:function(){return!0},_onZoomEnd:function(){this._updateGuide()},_onMouseMove:function(t){var e=t.layerPoint,i=t.latlng;this._currentLatLng=i,this._updateTooltip(i),this._updateGuide(e),this._mouseMarker.setLatLng(i),L.DomEvent.preventDefault(t.originalEvent)},_onClick:function(t){var e=t.target.getLatLng(),i=this._markers.length;return i>0&&!this.options.allowIntersection&&this._poly.newLatLngIntersects(e)?(this._showErrorTooltip(),undefined):(this._errorShown&&this._hideErrorTooltip(),this._markers.push(this._createMarker(e)),this._poly.addLatLng(e),2===this._poly.getLatLngs().length&&this._map.addLayer(this._poly),this._updateFinishHandler(),this._vertexAdded(e),this._clearGuides(),this._updateTooltip(),undefined)},_updateFinishHandler:function(){var t=this._markers.length;t>1&&this._markers[t-1].on("click",this._finishShape,this),t>2&&this._markers[t-2].off("click",this._finishShape,this)},_createMarker:function(t){var e=new L.Marker(t,{icon:this.options.icon,zIndexOffset:2*this.options.zIndexOffset});return this._markerGroup.addLayer(e),e},_updateGuide:function(t){t=t||this._map.latLngToLayerPoint(this._currentLatLng);var e=this._markers.length;e>0&&(this._clearGuides(),this._drawGuide(this._map.latLngToLayerPoint(this._markers[e-1].getLatLng()),t))},_updateTooltip:function(t){var e=this._getTooltipText();t&&this._tooltip.updatePosition(t),this._errorShown||this._tooltip.updateContent(e)},_drawGuide:function(t,e){var i,o,a,s,r=Math.floor(Math.sqrt(Math.pow(e.x-t.x,2)+Math.pow(e.y-t.y,2)));for(this._guidesContainer||(this._guidesContainer=L.DomUtil.create("div","leaflet-draw-guides",this._overlayPane)),i=this.options.guidelineDistance;r>i;i+=this.options.guidelineDistance)o=i/r,a={x:Math.floor(t.x*(1-o)+o*e.x),y:Math.floor(t.y*(1-o)+o*e.y)},s=L.DomUtil.create("div","leaflet-draw-guide-dash",this._guidesContainer),s.style.backgroundColor=this._errorShown?this.options.drawError.color:this.options.shapeOptions.color,L.DomUtil.setPosition(s,a)},_updateGuideColor:function(t){if(this._guidesContainer)for(var e=0,i=this._guidesContainer.childNodes.length;i>e;e++)this._guidesContainer.childNodes[e].style.backgroundColor=t},_clearGuides:function(){if(this._guidesContainer)for(;this._guidesContainer.firstChild;)this._guidesContainer.removeChild(this._guidesContainer.firstChild)},_getTooltipText:function(){var t,e,i;return 0===this._markers.length?t={text:L.drawLocal.draw.polyline.tooltip.start}:(e=this._measurementRunningTotal+this._currentLatLng.distanceTo(this._markers[this._markers.length-1].getLatLng()),i=e>1e3?(e/1e3).toFixed(2)+" km":Math.ceil(e)+" m",t=1===this._markers.length?{text:L.drawLocal.draw.polyline.tooltip.cont,subtext:i}:{text:L.drawLocal.draw.polyline.tooltip.end,subtext:i}),t},_showErrorTooltip:function(){this._errorShown=!0,this._tooltip.showAsError().updateContent({text:this.options.drawError.message}),this._updateGuideColor(this.options.drawError.color),this._poly.setStyle({color:this.options.drawError.color}),this._clearHideErrorTimeout(),this._hideErrorTimeout=setTimeout(L.Util.bind(this._hideErrorTooltip,this),this.options.drawError.timeout)},_hideErrorTooltip:function(){this._errorShown=!1,this._clearHideErrorTimeout(),this._tooltip.removeError().updateContent(this._getTooltipText()),this._updateGuideColor(this.options.shapeOptions.color),this._poly.setStyle({color:this.options.shapeOptions.color})},_clearHideErrorTimeout:function(){this._hideErrorTimeout&&(clearTimeout(this._hideErrorTimeout),this._hideErrorTimeout=null)},_vertexAdded:function(t){1===this._markers.length?this._measurementRunningTotal=0:this._measurementRunningTotal+=t.distanceTo(this._markers[this._markers.length-2].getLatLng())},_cleanUpShape:function(){this._markers.length>1&&this._markers[this._markers.length-1].off("click",this._finishShape,this)},_fireCreatedEvent:function(){var t=new this.Poly(this._poly.getLatLngs(),this.options.shapeOptions);L.Draw.Feature.prototype._fireCreatedEvent.call(this,t)}}),L.Draw.Polygon=L.Draw.Polyline.extend({statics:{TYPE:"polygon"},Poly:L.Polygon,options:{showArea:!1,shapeOptions:{stroke:!0,color:"#f06eaa",weight:4,opacity:.5,fill:!0,fillColor:null,fillOpacity:.2,clickable:!0}},initialize:function(t,e){L.Draw.Polyline.prototype.initialize.call(this,t,e),this.type=L.Draw.Polygon.TYPE},_updateFinishHandler:function(){var t=this._markers.length;1===t&&this._markers[0].on("click",this._finishShape,this),t>2&&(this._markers[t-1].on("dblclick",this._finishShape,this),t>3&&this._markers[t-2].off("dblclick",this._finishShape,this))},_getTooltipText:function(){var t,e;return 0===this._markers.length?t=L.drawLocal.draw.polygon.tooltip.start:3>this._markers.length?t=L.drawLocal.draw.polygon.tooltip.cont:(t=L.drawLocal.draw.polygon.tooltip.end,e=this._area),{text:t,subtext:e}},_shapeIsValid:function(){return this._markers.length>=3},_vertexAdded:function(){if(!this.options.allowIntersection&&this.options.showArea){var t=this._poly.getLatLngs(),e=L.PolygonUtil.geodesicArea(t);e=e>1e6?(1e-6*e).toFixed(2)+" km&sup2;":e>1e4?(1e-4*e).toFixed(2)+" ha":e.toFixed(2)+" m&sup2;",this._area=e}},_cleanUpShape:function(){var t=this._markers.length;t>0&&(this._markers[0].off("click",this._finishShape,this),t>2&&this._markers[t-1].off("dblclick",this._finishShape,this))}}),L.SimpleShape={},L.Draw.SimpleShape=L.Draw.Feature.extend({addHooks:function(){L.Draw.Feature.prototype.addHooks.call(this),this._map&&(this._map.dragging.disable(),this._container.style.cursor="crosshair",this._tooltip.updateContent({text:this._initialLabelText}),this._map.on("mousedown",this._onMouseDown,this).on("mousemove",this._onMouseMove,this))},removeHooks:function(){L.Draw.Feature.prototype.removeHooks.call(this),this._map&&(this._map.dragging.enable(),this._container.style.cursor="",this._map.off("mousedown",this._onMouseDown,this).off("mousemove",this._onMouseMove,this),L.DomEvent.off(e,"mouseup",this._onMouseUp),this._shape&&(this._map.removeLayer(this._shape),delete this._shape)),this._isDrawing=!1},_onMouseDown:function(t){this._isDrawing=!0,this._startLatLng=t.latlng,L.DomEvent.on(e,"mouseup",this._onMouseUp,this).preventDefault(t.originalEvent)},_onMouseMove:function(t){var e=t.latlng;this._tooltip.updatePosition(e),this._isDrawing&&(this._tooltip.updateContent({text:L.drawLocal.draw.simpleshape.tooltip.end}),this._drawShape(e))},_onMouseUp:function(){this._shape&&this._fireCreatedEvent(),this.disable()}}),L.Draw.Rectangle=L.Draw.SimpleShape.extend({statics:{TYPE:"rectangle"},options:{shapeOptions:{stroke:!0,color:"#f06eaa",weight:4,opacity:.5,fill:!0,fillColor:null,fillOpacity:.2,clickable:!0}},initialize:function(t,e){this.type=L.Draw.Rectangle.TYPE,L.Draw.SimpleShape.prototype.initialize.call(this,t,e)},_initialLabelText:L.drawLocal.draw.rectangle.tooltip.start,_drawShape:function(t){this._shape?this._shape.setBounds(new L.LatLngBounds(this._startLatLng,t)):(this._shape=new L.Rectangle(new L.LatLngBounds(this._startLatLng,t),this.options.shapeOptions),this._map.addLayer(this._shape))},_fireCreatedEvent:function(){var t=new L.Rectangle(this._shape.getBounds(),this.options.shapeOptions);L.Draw.SimpleShape.prototype._fireCreatedEvent.call(this,t)}}),L.Draw.Circle=L.Draw.SimpleShape.extend({statics:{TYPE:"circle"},options:{shapeOptions:{stroke:!0,color:"#f06eaa",weight:4,opacity:.5,fill:!0,fillColor:null,fillOpacity:.2,clickable:!0}},initialize:function(t,e){this.type=L.Draw.Circle.TYPE,L.Draw.SimpleShape.prototype.initialize.call(this,t,e)},_initialLabelText:L.drawLocal.draw.circle.tooltip.start,_drawShape:function(t){this._shape?this._shape.setRadius(this._startLatLng.distanceTo(t)):(this._shape=new L.Circle(this._startLatLng,this._startLatLng.distanceTo(t),this.options.shapeOptions),this._map.addLayer(this._shape))},_fireCreatedEvent:function(){var t=new L.Circle(this._startLatLng,this._shape.getRadius(),this.options.shapeOptions);L.Draw.SimpleShape.prototype._fireCreatedEvent.call(this,t)},_onMouseMove:function(t){var e,i=t.latlng;this._tooltip.updatePosition(i),this._isDrawing&&(this._drawShape(i),e=this._shape.getRadius().toFixed(1),this._tooltip.updateContent({text:"Release mouse to finish drawing.",subtext:"Radius: "+e+" m"}))}}),L.Draw.Marker=L.Draw.Feature.extend({statics:{TYPE:"marker"},options:{icon:new L.Icon.Default,zIndexOffset:2e3},initialize:function(t,e){this.type=L.Draw.Marker.TYPE,L.Draw.Feature.prototype.initialize.call(this,t,e)},addHooks:function(){L.Draw.Feature.prototype.addHooks.call(this),this._map&&(this._tooltip.updateContent({text:L.drawLocal.draw.marker.tooltip.start}),this._mouseMarker||(this._mouseMarker=L.marker(this._map.getCenter(),{icon:L.divIcon({className:"leaflet-mouse-marker",iconAnchor:[20,20],iconSize:[40,40]}),opacity:0,zIndexOffset:this.options.zIndexOffset})),this._mouseMarker.on("click",this._onClick,this).addTo(this._map),this._map.on("mousemove",this._onMouseMove,this))},removeHooks:function(){L.Draw.Feature.prototype.removeHooks.call(this),this._map&&(this._marker&&(this._marker.off("click",this._onClick,this),this._map.off("click",this._onClick,this).removeLayer(this._marker),delete this._marker),this._mouseMarker.off("click",this._onClick,this),this._map.removeLayer(this._mouseMarker),delete this._mouseMarker,this._map.off("mousemove",this._onMouseMove,this))},_onMouseMove:function(t){var e=t.latlng;this._tooltip.updatePosition(e),this._mouseMarker.setLatLng(e),this._marker?this._marker.setLatLng(e):(this._marker=new L.Marker(e,{icon:this.options.icon,zIndexOffset:this.options.zIndexOffset}),this._marker.on("click",this._onClick,this),this._map.on("click",this._onClick,this).addLayer(this._marker))},_onClick:function(){this._fireCreatedEvent(),this.disable()},_fireCreatedEvent:function(){var t=new L.Marker(this._marker.getLatLng(),{icon:this.options.icon});L.Draw.Feature.prototype._fireCreatedEvent.call(this,t)}}),L.Edit=L.Edit||{},L.Edit.Poly=L.Handler.extend({options:{icon:new L.DivIcon({iconSize:new L.Point(8,8),className:"leaflet-div-icon leaflet-editing-icon"})},initialize:function(t,e){this._poly=t,L.setOptions(this,e)},addHooks:function(){this._poly._map&&(this._markerGroup||this._initMarkers(),this._poly._map.addLayer(this._markerGroup))},removeHooks:function(){this._poly._map&&(this._poly._map.removeLayer(this._markerGroup),delete this._markerGroup,delete this._markers)},updateMarkers:function(){this._markerGroup.clearLayers(),this._initMarkers()},_initMarkers:function(){this._markerGroup||(this._markerGroup=new L.LayerGroup),this._markers=[];var t,e,i,o,a=this._poly._latlngs;for(t=0,i=a.length;i>t;t++)o=this._createMarker(a[t],t),o.on("click",this._onMarkerClick,this),this._markers.push(o);var s,r;for(t=0,e=i-1;i>t;e=t++)(0!==t||L.Polygon&&this._poly instanceof L.Polygon)&&(s=this._markers[e],r=this._markers[t],this._createMiddleMarker(s,r),this._updatePrevNext(s,r))},_createMarker:function(t,e){var i=new L.Marker(t,{draggable:!0,icon:this.options.icon});return i._origLatLng=t,i._index=e,i.on("drag",this._onMarkerDrag,this),i.on("dragend",this._fireEdit,this),this._markerGroup.addLayer(i),i},_removeMarker:function(t){var e=t._index;this._markerGroup.removeLayer(t),this._markers.splice(e,1),this._poly.spliceLatLngs(e,1),this._updateIndexes(e,-1),t.off("drag",this._onMarkerDrag,this).off("dragend",this._fireEdit,this).off("click",this._onMarkerClick,this)},_fireEdit:function(){this._poly.edited=!0,this._poly.fire("edit")},_onMarkerDrag:function(t){var e=t.target;L.extend(e._origLatLng,e._latlng),e._middleLeft&&e._middleLeft.setLatLng(this._getMiddleLatLng(e._prev,e)),e._middleRight&&e._middleRight.setLatLng(this._getMiddleLatLng(e,e._next)),this._poly.redraw()},_onMarkerClick:function(t){if(!(3>this._poly._latlngs.length)){var e=t.target;this._removeMarker(e),this._updatePrevNext(e._prev,e._next),e._middleLeft&&this._markerGroup.removeLayer(e._middleLeft),e._middleRight&&this._markerGroup.removeLayer(e._middleRight),e._prev&&e._next?this._createMiddleMarker(e._prev,e._next):e._prev?e._next||(e._prev._middleRight=null):e._next._middleLeft=null,this._fireEdit()}},_updateIndexes:function(t,e){this._markerGroup.eachLayer(function(i){i._index>t&&(i._index+=e)})},_createMiddleMarker:function(t,e){var i,o,a,s=this._getMiddleLatLng(t,e),r=this._createMarker(s);r.setOpacity(.6),t._middleRight=e._middleLeft=r,o=function(){var o=e._index;r._index=o,r.off("click",i,this).on("click",this._onMarkerClick,this),s.lat=r.getLatLng().lat,s.lng=r.getLatLng().lng,this._poly.spliceLatLngs(o,0,s),this._markers.splice(o,0,r),r.setOpacity(1),this._updateIndexes(o,1),e._index++,this._updatePrevNext(t,r),this._updatePrevNext(r,e)},a=function(){r.off("dragstart",o,this),r.off("dragend",a,this),this._createMiddleMarker(t,r),this._createMiddleMarker(r,e)},i=function(){o.call(this),a.call(this),this._fireEdit()},r.on("click",i,this).on("dragstart",o,this).on("dragend",a,this),this._markerGroup.addLayer(r)},_updatePrevNext:function(t,e){t&&(t._next=e),e&&(e._prev=t)},_getMiddleLatLng:function(t,e){var i=this._poly._map,o=i.latLngToLayerPoint(t.getLatLng()),a=i.latLngToLayerPoint(e.getLatLng());return i.layerPointToLatLng(o._add(a)._divideBy(2))}}),L.Polyline.addInitHook(function(){this.editing||(L.Edit.Poly&&(this.editing=new L.Edit.Poly(this),this.options.editable&&this.editing.enable()),this.on("add",function(){this.editing&&this.editing.enabled()&&this.editing.addHooks()}),this.on("remove",function(){this.editing&&this.editing.enabled()&&this.editing.removeHooks()}))}),L.Edit=L.Edit||{},L.Edit.SimpleShape=L.Handler.extend({options:{moveIcon:new L.DivIcon({iconSize:new L.Point(8,8),className:"leaflet-div-icon leaflet-editing-icon leaflet-edit-move"}),resizeIcon:new L.DivIcon({iconSize:new L.Point(8,8),className:"leaflet-div-icon leaflet-editing-icon leaflet-edit-resize"})},initialize:function(t,e){this._shape=t,L.Util.setOptions(this,e)},addHooks:function(){this._shape._map&&(this._map=this._shape._map,this._markerGroup||this._initMarkers(),this._map.addLayer(this._markerGroup))},removeHooks:function(){if(this._shape._map){this._unbindMarker(this._moveMarker);for(var t=0,e=this._resizeMarkers.length;e>t;t++)this._unbindMarker(this._resizeMarkers[t]);this._resizeMarkers=null,this._map.removeLayer(this._markerGroup),delete this._markerGroup}this._map=null},updateMarkers:function(){this._markerGroup.clearLayers(),this._initMarkers()},_initMarkers:function(){this._markerGroup||(this._markerGroup=new L.LayerGroup),this._createMoveMarker(),this._createResizeMarker()},_createMoveMarker:function(){},_createResizeMarker:function(){},_createMarker:function(t,e){var i=new L.Marker(t,{draggable:!0,icon:e,zIndexOffset:10});return this._bindMarker(i),this._markerGroup.addLayer(i),i},_bindMarker:function(t){t.on("dragstart",this._onMarkerDragStart,this).on("drag",this._onMarkerDrag,this).on("dragend",this._onMarkerDragEnd,this)},_unbindMarker:function(t){t.off("dragstart",this._onMarkerDragStart,this).off("drag",this._onMarkerDrag,this).off("dragend",this._onMarkerDragEnd,this)},_onMarkerDragStart:function(t){var e=t.target;e.setOpacity(0)},_fireEdit:function(){this._shape.edited=!0,this._shape.fire("edit")},_onMarkerDrag:function(t){var e=t.target,i=e.getLatLng();e===this._moveMarker?this._move(i):this._resize(i),this._shape.redraw()},_onMarkerDragEnd:function(t){var e=t.target;e.setOpacity(1),this._shape.fire("edit"),this._fireEdit()},_move:function(){},_resize:function(){}}),L.Edit=L.Edit||{},L.Edit.Rectangle=L.Edit.SimpleShape.extend({_createMoveMarker:function(){var t=this._shape.getBounds(),e=t.getCenter();this._moveMarker=this._createMarker(e,this.options.moveIcon)},_createResizeMarker:function(){var t=this._getCorners();this._resizeMarkers=[];for(var e=0,i=t.length;i>e;e++)this._resizeMarkers.push(this._createMarker(t[e],this.options.resizeIcon)),this._resizeMarkers[e]._cornerIndex=e},_onMarkerDragStart:function(t){L.Edit.SimpleShape.prototype._onMarkerDragStart.call(this,t);var e=this._getCorners(),i=t.target,o=i._cornerIndex;this._oppositeCorner=e[(o+2)%4],this._toggleCornerMarkers(0,o)},_onMarkerDragEnd:function(t){var e,i,o=t.target;o===this._moveMarker&&(e=this._shape.getBounds(),i=e.getCenter(),o.setLatLng(i)),this._toggleCornerMarkers(1),this._repositionCornerMarkers(),L.Edit.SimpleShape.prototype._onMarkerDragEnd.call(this,t)},_move:function(t){for(var e,i=this._shape.getLatLngs(),o=this._shape.getBounds(),a=o.getCenter(),s=[],r=0,n=i.length;n>r;r++)e=[i[r].lat-a.lat,i[r].lng-a.lng],s.push([t.lat+e[0],t.lng+e[1]]);this._shape.setLatLngs(s),this._repositionCornerMarkers()},_resize:function(t){var e;this._shape.setBounds(L.latLngBounds(t,this._oppositeCorner)),e=this._shape.getBounds(),this._moveMarker.setLatLng(e.getCenter())},_getCorners:function(){var t=this._shape.getBounds(),e=t.getNorthWest(),i=t.getNorthEast(),o=t.getSouthEast(),a=t.getSouthWest();return[e,i,o,a]},_toggleCornerMarkers:function(t){for(var e=0,i=this._resizeMarkers.length;i>e;e++)this._resizeMarkers[e].setOpacity(t)},_repositionCornerMarkers:function(){for(var t=this._getCorners(),e=0,i=this._resizeMarkers.length;i>e;e++)this._resizeMarkers[e].setLatLng(t[e])}}),L.Rectangle.addInitHook(function(){L.Edit.Rectangle&&(this.editing=new L.Edit.Rectangle(this),this.options.editable&&this.editing.enable())}),L.Edit=L.Edit||{},L.Edit.Circle=L.Edit.SimpleShape.extend({_createMoveMarker:function(){var t=this._shape.getLatLng();this._moveMarker=this._createMarker(t,this.options.moveIcon)},_createResizeMarker:function(){var t=this._shape.getLatLng(),e=this._getResizeMarkerPoint(t);this._resizeMarkers=[],this._resizeMarkers.push(this._createMarker(e,this.options.resizeIcon))},_getResizeMarkerPoint:function(t){var e=this._shape._radius*Math.cos(Math.PI/4),i=this._map.project(t);return this._map.unproject([i.x+e,i.y-e])},_move:function(t){var e=this._getResizeMarkerPoint(t);this._resizeMarkers[0].setLatLng(e),this._shape.setLatLng(t)},_resize:function(t){var e=this._moveMarker.getLatLng(),i=e.distanceTo(t);this._shape.setRadius(i)}}),L.Circle.addInitHook(function(){L.Edit.Circle&&(this.editing=new L.Edit.Circle(this),this.options.editable&&this.editing.enable()),this.on("add",function(){this.editing&&this.editing.enabled()&&this.editing.addHooks()}),this.on("remove",function(){this.editing&&this.editing.enabled()&&this.editing.removeHooks()})}),L.LatLngUtil={cloneLatLngs:function(t){for(var e=[],i=0,o=t.length;o>i;i++)e.push(this.cloneLatLng(t[i]));return e},cloneLatLng:function(t){return L.latLng(t.lat,t.lng)}},L.PolygonUtil={geodesicArea:function(t){var e,i,o=t.length,a=0,s=L.LatLng.DEG_TO_RAD;if(o>2){for(var r=0;o>r;r++)e=t[r],i=t[(r+1)%o],a+=(i.lng-e.lng)*s*(2+Math.sin(e.lat*s)+Math.sin(i.lat*s));a=6378137*6378137*a/2}return Math.abs(a)}},L.Util.extend(L.LineUtil,{segmentsIntersect:function(t,e,i,o){return this._checkCounterclockwise(t,i,o)!==this._checkCounterclockwise(e,i,o)&&this._checkCounterclockwise(t,e,i)!==this._checkCounterclockwise(t,e,o)},_checkCounterclockwise:function(t,e,i){return(i.y-t.y)*(e.x-t.x)>(e.y-t.y)*(i.x-t.x)}}),L.Polyline.include({intersects:function(){var t,e,i,o=this._originalPoints,a=o?o.length:0;if(this._tooFewPointsForIntersection())return!1;for(t=a-1;t>=3;t--)if(e=o[t-1],i=o[t],this._lineSegmentsIntersectsRange(e,i,t-2))return!0;return!1},newLatLngIntersects:function(t,e){return this._map?this.newPointIntersects(this._map.latLngToLayerPoint(t),e):!1},newPointIntersects:function(t,e){var i=this._originalPoints,o=i?i.length:0,a=i?i[o-1]:null,s=o-2;return this._tooFewPointsForIntersection(1)?!1:this._lineSegmentsIntersectsRange(a,t,s,e?1:0)},_tooFewPointsForIntersection:function(t){var e=this._originalPoints,i=e?e.length:0;return i+=t||0,!this._originalPoints||3>=i},_lineSegmentsIntersectsRange:function(t,e,i,o){var a,s,r=this._originalPoints;o=o||0;for(var n=i;n>o;n--)if(a=r[n-1],s=r[n],L.LineUtil.segmentsIntersect(t,e,a,s))return!0;return!1}}),L.Polygon.include({intersects:function(){var t,e,i,o,a,s=this._originalPoints;return this._tooFewPointsForIntersection()?!1:(t=L.Polyline.prototype.intersects.call(this))?!0:(e=s.length,i=s[0],o=s[e-1],a=e-2,this._lineSegmentsIntersectsRange(o,i,a,1))}}),L.Control.Draw=L.Control.extend({options:{position:"topleft",draw:{},edit:!1},initialize:function(t){if("0.5.1">=L.version)throw Error("Leaflet.draw 0.2.0+ requires Leaflet 0.6.0+. Download latest from https://github.com/Leaflet/Leaflet/");L.Control.prototype.initialize.call(this,t);var e,i;this._toolbars={},L.DrawToolbar&&this.options.draw&&(i=new L.DrawToolbar(this.options.draw),e=L.stamp(i),this._toolbars[e]=i,this._toolbars[e].on("enable",this._toolbarEnabled,this)),L.EditToolbar&&this.options.edit&&(i=new L.EditToolbar(this.options.edit),e=L.stamp(i),this._toolbars[e]=i,this._toolbars[e].on("enable",this._toolbarEnabled,this))},onAdd:function(t){var e,i=L.DomUtil.create("div","leaflet-draw"),o=!1,a="leaflet-draw-toolbar-top";for(var s in this._toolbars)this._toolbars.hasOwnProperty(s)&&(e=this._toolbars[s].addToolbar(t),o||(L.DomUtil.hasClass(e,a)||L.DomUtil.addClass(e.childNodes[0],a),o=!0),i.appendChild(e));return i},onRemove:function(){for(var t in this._toolbars)this._toolbars.hasOwnProperty(t)&&this._toolbars[t].removeToolbar()},setDrawingOptions:function(t){for(var e in this._toolbars)this._toolbars[e]instanceof L.DrawToolbar&&this._toolbars[e].setOptions(t)},_toolbarEnabled:function(t){var e=""+L.stamp(t.target);for(var i in this._toolbars)this._toolbars.hasOwnProperty(i)&&i!==e&&this._toolbars[i].disable()}}),L.Map.mergeOptions({drawControl:!1}),L.Map.addInitHook(function(){this.options.drawControl&&(this.drawControl=new L.Control.Draw,this.addControl(this.drawControl))}),L.Toolbar=L.Class.extend({includes:[L.Mixin.Events],initialize:function(t){L.setOptions(this,t),this._modes={},this._actionButtons=[],this._activeMode=null},enabled:function(){return null!==this._activeMode},disable:function(){this.enabled()&&this._activeMode.handler.disable()},removeToolbar:function(){for(var t in this._modes)this._modes.hasOwnProperty(t)&&(this._disposeButton(this._modes[t].button,this._modes[t].handler.enable),this._modes[t].handler.disable(),this._modes[t].handler.off("enabled",this._handlerActivated,this).off("disabled",this._handlerDeactivated,this));this._modes={};for(var e=0,i=this._actionButtons.length;i>e;e++)this._disposeButton(this._actionButtons[e].button,this._actionButtons[e].callback);this._actionButtons=[],this._actionsContainer=null},_initModeHandler:function(t,e,i,o){var a=t.type;this._modes[a]={},this._modes[a].handler=t,this._modes[a].button=this._createButton({title:this.options[a].title,className:o+"-"+a,container:e,callback:this._modes[a].handler.enable,context:this._modes[a].handler}),this._modes[a].buttonIndex=i,this._modes[a].handler.on("enabled",this._handlerActivated,this).on("disabled",this._handlerDeactivated,this)},_createButton:function(t){var e=L.DomUtil.create("a",t.className||"",t.container);return e.href="#",t.text&&(e.innerHTML=t.text),t.title&&(e.title=t.title),L.DomEvent.on(e,"click",L.DomEvent.stopPropagation).on(e,"mousedown",L.DomEvent.stopPropagation).on(e,"dblclick",L.DomEvent.stopPropagation).on(e,"click",L.DomEvent.preventDefault).on(e,"click",t.callback,t.context),e},_disposeButton:function(t,e){L.DomEvent.off(t,"click",L.DomEvent.stopPropagation).off(t,"mousedown",L.DomEvent.stopPropagation).off(t,"dblclick",L.DomEvent.stopPropagation).off(t,"click",L.DomEvent.preventDefault).off(t,"click",e)},_handlerActivated:function(t){this._activeMode&&this._activeMode.handler.enabled()&&this._activeMode.handler.disable(),this._activeMode=this._modes[t.handler],L.DomUtil.addClass(this._activeMode.button,"leaflet-draw-toolbar-button-enabled"),this._showActionsToolbar(),this.fire("enable")},_handlerDeactivated:function(){this._hideActionsToolbar(),L.DomUtil.removeClass(this._activeMode.button,"leaflet-draw-toolbar-button-enabled"),this._activeMode=null,this.fire("disable")},_createActions:function(t){for(var e,i,o=L.DomUtil.create("ul","leaflet-draw-actions"),a=50,s=t.length,r=s*a+(s-1),n=0;s>n;n++)e=L.DomUtil.create("li","",o),i=this._createButton({title:t[n].title,text:t[n].text,container:e,callback:t[n].callback,context:t[n].context}),this._actionButtons.push({button:i,callback:t[n].callback});return o.style.width=r+"px",o},_showActionsToolbar:function(){var t=this._activeMode.buttonIndex,e=this._lastButtonIndex,i=26,o=1,a=t*i+t*o-1;this._actionsContainer.style.top=a+"px",0===t&&(L.DomUtil.addClass(this._toolbarContainer,"leaflet-draw-toolbar-notop"),L.DomUtil.addClass(this._actionsContainer,"leaflet-draw-actions-top")),t===e&&(L.DomUtil.addClass(this._toolbarContainer,"leaflet-draw-toolbar-nobottom"),L.DomUtil.addClass(this._actionsContainer,"leaflet-draw-actions-bottom")),this._actionsContainer.style.display="block"},_hideActionsToolbar:function(){this._actionsContainer.style.display="none",L.DomUtil.removeClass(this._toolbarContainer,"leaflet-draw-toolbar-notop"),L.DomUtil.removeClass(this._toolbarContainer,"leaflet-draw-toolbar-nobottom"),L.DomUtil.removeClass(this._actionsContainer,"leaflet-draw-actions-top"),L.DomUtil.removeClass(this._actionsContainer,"leaflet-draw-actions-bottom")}}),L.Tooltip=L.Class.extend({initialize:function(t){this._map=t,this._popupPane=t._panes.popupPane,this._container=L.DomUtil.create("div","leaflet-draw-tooltip",this._popupPane),this._singleLineLabel=!1},dispose:function(){this._popupPane.removeChild(this._container),this._container=null},updateContent:function(t){return t.subtext=t.subtext||"",0!==t.subtext.length||this._singleLineLabel?t.subtext.length>0&&this._singleLineLabel&&(L.DomUtil.removeClass(this._container,"leaflet-draw-tooltip-single"),this._singleLineLabel=!1):(L.DomUtil.addClass(this._container,"leaflet-draw-tooltip-single"),this._singleLineLabel=!0),this._container.innerHTML=(t.subtext.length>0?'<span class="leaflet-draw-tooltip-subtext">'+t.subtext+"</span>"+"<br />":"")+"<span>"+t.text+"</span>",this},updatePosition:function(t){var e=this._map.latLngToLayerPoint(t);return L.DomUtil.setPosition(this._container,e),this},showAsError:function(){return L.DomUtil.addClass(this._container,"leaflet-error-draw-tooltip"),this},removeError:function(){return L.DomUtil.removeClass(this._container,"leaflet-error-draw-tooltip"),this}}),L.DrawToolbar=L.Toolbar.extend({options:{polyline:{title:L.drawLocal.draw.toolbar.polyline},polygon:{title:L.drawLocal.draw.toolbar.polygon},rectangle:{title:L.drawLocal.draw.toolbar.rectangle},circle:{title:L.drawLocal.draw.toolbar.circle},marker:{title:L.drawLocal.draw.toolbar.marker}},initialize:function(t){for(var e in this.options)this.options.hasOwnProperty(e)&&t[e]&&(t[e]=L.extend({},this.options[e],t[e]));L.Toolbar.prototype.initialize.call(this,t)},addToolbar:function(t){var e=L.DomUtil.create("div","leaflet-draw-section"),i=0,o="leaflet-draw-draw";return this._toolbarContainer=L.DomUtil.create("div","leaflet-draw-toolbar leaflet-bar"),this.options.polyline&&this._initModeHandler(new L.Draw.Polyline(t,this.options.polyline),this._toolbarContainer,i++,o),this.options.polygon&&this._initModeHandler(new L.Draw.Polygon(t,this.options.polygon),this._toolbarContainer,i++,o),this.options.rectangle&&this._initModeHandler(new L.Draw.Rectangle(t,this.options.rectangle),this._toolbarContainer,i++,o),this.options.circle&&this._initModeHandler(new L.Draw.Circle(t,this.options.circle),this._toolbarContainer,i++,o),this.options.marker&&this._initModeHandler(new L.Draw.Marker(t,this.options.marker),this._toolbarContainer,i++,o),this._lastButtonIndex=--i,this._actionsContainer=this._createActions([{title:L.drawLocal.draw.toolbar.title,text:L.drawLocal.draw.toolbar.text,callback:this.disable,context:this}]),e.appendChild(this._toolbarContainer),e.appendChild(this._actionsContainer),e
-},setOptions:function(t){L.setOptions(this,t);for(var e in this._modes)this._modes.hasOwnProperty(e)&&t.hasOwnProperty(e)&&this._modes[e].handler.setOptions(t[e])}}),L.EditToolbar=L.Toolbar.extend({options:{edit:{title:L.drawLocal.edit.toolbar.edit.title,selectedPathOptions:{color:"#fe57a1",opacity:.6,dashArray:"10, 10",fill:!0,fillColor:"#fe57a1",fillOpacity:.1}},remove:{title:L.drawLocal.edit.toolbar.remove.title},featureGroup:null},initialize:function(t){t.edit&&t.edit.selectedPathOptions===undefined&&(t.edit.selectedPathOptions=this.options.edit.selectedPathOptions),t.edit=L.extend({},this.options.edit,t.edit),t.remove=L.extend({},this.options.remove,t.remove),L.Toolbar.prototype.initialize.call(this,t),this._selectedFeatureCount=0},addToolbar:function(t){var e=L.DomUtil.create("div","leaflet-draw-section"),i=0,o="leaflet-draw-edit";return this._toolbarContainer=L.DomUtil.create("div","leaflet-draw-toolbar leaflet-bar"),this._map=t,this.options.edit&&this._initModeHandler(new L.EditToolbar.Edit(t,{featureGroup:this.options.featureGroup,selectedPathOptions:this.options.edit.selectedPathOptions}),this._toolbarContainer,i++,o),this.options.remove&&this._initModeHandler(new L.EditToolbar.Delete(t,{featureGroup:this.options.featureGroup}),this._toolbarContainer,i++,o),this._lastButtonIndex=--i,this._actionsContainer=this._createActions([{title:L.drawLocal.edit.toolbar.edit.save.title,text:L.drawLocal.edit.toolbar.edit.save.text,callback:this._save,context:this},{title:L.drawLocal.edit.toolbar.edit.cancel.title,text:L.drawLocal.edit.toolbar.edit.cancel.text,callback:this.disable,context:this}]),e.appendChild(this._toolbarContainer),e.appendChild(this._actionsContainer),e},disable:function(){this.enabled()&&(this._activeMode.handler.revertLayers(),L.Toolbar.prototype.disable.call(this))},_save:function(){this._activeMode.handler.save(),this._activeMode.handler.disable()}}),L.EditToolbar.Edit=L.Handler.extend({statics:{TYPE:"edit"},includes:L.Mixin.Events,initialize:function(t,e){if(L.Handler.prototype.initialize.call(this,t),this._selectedPathOptions=e.selectedPathOptions,this._featureGroup=e.featureGroup,!(this._featureGroup instanceof L.FeatureGroup))throw Error("options.featureGroup must be a L.FeatureGroup");this._uneditedLayerProps={},this.type=L.EditToolbar.Edit.TYPE},enable:function(){this._enabled||(L.Handler.prototype.enable.call(this),this._featureGroup.on("layeradd",this._enableLayerEdit,this).on("layerremove",this._disableLayerEdit,this),this.fire("enabled",{handler:this.type}))},disable:function(){this._enabled&&(this.fire("disabled",{handler:this.type}),this._featureGroup.off("layeradd",this._enableLayerEdit,this).off("layerremove",this._disableLayerEdit,this),L.Handler.prototype.disable.call(this))},addHooks:function(){this._map&&(this._featureGroup.eachLayer(this._enableLayerEdit,this),this._tooltip=new L.Tooltip(this._map),this._tooltip.updateContent({text:L.drawLocal.edit.tooltip.text,subtext:L.drawLocal.edit.tooltip.subtext}),this._map.on("mousemove",this._onMouseMove,this))},removeHooks:function(){this._map&&(this._featureGroup.eachLayer(this._disableLayerEdit,this),this._uneditedLayerProps={},this._tooltip.dispose(),this._tooltip=null,this._map.off("mousemove",this._onMouseMove,this))},revertLayers:function(){this._featureGroup.eachLayer(function(t){this._revertLayer(t)},this)},save:function(){var t=new L.LayerGroup;this._featureGroup.eachLayer(function(e){e.edited&&(t.addLayer(e),e.edited=!1)}),this._map.fire("draw:edited",{layers:t})},_backupLayer:function(t){var e=L.Util.stamp(t);this._uneditedLayerProps[e]||(this._uneditedLayerProps[e]=t instanceof L.Polyline||t instanceof L.Polygon||t instanceof L.Rectangle?{latlngs:L.LatLngUtil.cloneLatLngs(t.getLatLngs())}:t instanceof L.Circle?{latlng:L.LatLngUtil.cloneLatLng(t.getLatLng()),radius:t.getRadius()}:{latlng:L.LatLngUtil.cloneLatLng(t.getLatLng())})},_revertLayer:function(t){var e=L.Util.stamp(t);t.edited=!1,this._uneditedLayerProps.hasOwnProperty(e)&&(t instanceof L.Polyline||t instanceof L.Polygon||t instanceof L.Rectangle?t.setLatLngs(this._uneditedLayerProps[e].latlngs):t instanceof L.Circle?(t.setLatLng(this._uneditedLayerProps[e].latlng),t.setRadius(this._uneditedLayerProps[e].radius)):t.setLatLng(this._uneditedLayerProps[e].latlng))},_toggleMarkerHighlight:function(t){var e=t._icon;e.style.display="none",L.DomUtil.hasClass(e,"leaflet-edit-marker-selected")?(L.DomUtil.removeClass(e,"leaflet-edit-marker-selected"),this._offsetMarker(e,-4)):(L.DomUtil.addClass(e,"leaflet-edit-marker-selected"),this._offsetMarker(e,4)),e.style.display=""},_offsetMarker:function(t,e){var i=parseInt(t.style.marginTop,10)-e,o=parseInt(t.style.marginLeft,10)-e;t.style.marginTop=i+"px",t.style.marginLeft=o+"px"},_enableLayerEdit:function(t){var e,i=t.layer||t.target||t;this._backupLayer(i),this._selectedPathOptions&&(e=L.Util.extend({},this._selectedPathOptions),i instanceof L.Marker?this._toggleMarkerHighlight(i):(i.options.previousOptions=i.options,i instanceof L.Circle||i instanceof L.Polygon||i instanceof L.Rectangle||(e.fill=!1),i.setStyle(e))),i instanceof L.Marker?(i.dragging.enable(),i.on("dragend",this._onMarkerDragEnd)):i.editing.enable()},_disableLayerEdit:function(t){var e=t.layer||t.target||t;e.edited=!1,this._selectedPathOptions&&(e instanceof L.Marker?this._toggleMarkerHighlight(e):(e.setStyle(e.options.previousOptions),delete e.options.previousOptions)),e instanceof L.Marker?(e.dragging.disable(),e.off("dragend",this._onMarkerDragEnd,this)):e.editing.disable()},_onMarkerDragEnd:function(t){var e=t.target;e.edited=!0},_onMouseMove:function(t){this._tooltip.updatePosition(t.latlng)}}),L.EditToolbar.Delete=L.Handler.extend({statics:{TYPE:"remove"},includes:L.Mixin.Events,initialize:function(t,e){if(L.Handler.prototype.initialize.call(this,t),L.Util.setOptions(this,e),this._deletableLayers=this.options.featureGroup,!(this._deletableLayers instanceof L.FeatureGroup))throw Error("options.featureGroup must be a L.FeatureGroup");this.type=L.EditToolbar.Delete.TYPE},enable:function(){this._enabled||(L.Handler.prototype.enable.call(this),this._deletableLayers.on("layeradd",this._enableLayerDelete,this).on("layerremove",this._disableLayerDelete,this),this.fire("enabled",{handler:this.type}))},disable:function(){this._enabled&&(L.Handler.prototype.disable.call(this),this._deletableLayers.off("layeradd",this._enableLayerDelete,this).off("layerremove",this._disableLayerDelete,this),this.fire("disabled",{handler:this.type}))},addHooks:function(){this._map&&(this._deletableLayers.eachLayer(this._enableLayerDelete,this),this._deletedLayers=new L.layerGroup,this._tooltip=new L.Tooltip(this._map),this._tooltip.updateContent({text:L.drawLocal.edit.toolbar.remove.tooltip}),this._map.on("mousemove",this._onMouseMove,this))},removeHooks:function(){this._map&&(this._deletableLayers.eachLayer(this._disableLayerDelete,this),this._deletedLayers=null,this._tooltip.dispose(),this._tooltip=null,this._map.off("mousemove",this._onMouseMove,this))},revertLayers:function(){this._deletedLayers.eachLayer(function(t){this._deletableLayers.addLayer(t)},this)},save:function(){this._map.fire("draw:deleted",{layers:this._deletedLayers})},_enableLayerDelete:function(t){var e=t.layer||t.target||t;e.on("click",this._removeLayer,this)},_disableLayerDelete:function(t){var e=t.layer||t.target||t;e.off("click",this._removeLayer,this),this._deletedLayers.removeLayer(e)},_removeLayer:function(t){var e=t.layer||t.target||t;this._deletableLayers.removeLayer(e),this._deletedLayers.addLayer(e)},_onMouseMove:function(t){this._tooltip.updatePosition(t.latlng)}})})(this,document);
+(function (window, document, undefined) {
+/*
+ * Leaflet.draw assumes that you have already included the Leaflet library.
+ */
+
+L.drawVersion = '0.2.0-dev';
+
+L.drawLocal = {
+	draw: {
+		toolbar: {
+			title: 'Cancel drawing',
+			text: 'Cancel',
+			polyline: 'Draw a polyline',
+			polygon: 'Draw a polygon',
+			rectangle: 'Draw a rectangle',
+			circle: 'Draw a circle',
+			marker: 'Draw a marker'
+		},
+		circle: {
+			tooltip: {
+				start: 'Click and drag to draw circle.'
+			}
+		},
+		marker: {
+			tooltip: {
+				start: 'Click map to place marker.'
+			}
+		},
+		polygon: {
+			tooltip: {
+				start: 'Click to start drawing shape.',
+				cont: 'Click to continue drawing shape.',
+				end: 'Click first point to close this shape.'
+			}
+		},
+		polyline: {
+			error: '<strong>Error:</strong> shape edges cannot cross!',
+			tooltip: {
+				start: 'Click to start drawing line.',
+				cont: 'Click to continue drawing line.',
+				end: 'Click last point to finish line.'
+			}
+		},
+		rectangle: {
+			tooltip: {
+				start: 'Click and drag to draw rectangle.'
+			}
+		},
+		simpleshape: {
+			tooltip: {
+				end: 'Release mouse to finish drawing.'
+			}
+		}
+	},
+	edit: {
+		toolbar: {
+			edit: {
+				title: 'Edit layers',
+				save: {
+					title: 'Save changes.',
+					text: 'Save'
+				},
+				cancel: {
+					title: 'Cancel editing, discards all changes.',
+					text: 'Cancel'
+				}
+			},
+			remove: {
+				title: 'Delete layers',
+				tooltip: 'Click on a feature to remove'
+			}
+		},
+		tooltip: {
+			text: 'Drag handles, or marker to edit feature.',
+			subtext: 'Click cancel to undo changes.'
+		}
+	}
+};
+
+L.Draw = {};
+
+L.Draw.Feature = L.Handler.extend({
+	includes: L.Mixin.Events,
+
+	initialize: function (map, options) {
+		this._map = map;
+		this._container = map._container;
+		this._overlayPane = map._panes.overlayPane;
+		this._popupPane = map._panes.popupPane;
+
+		// Merge default shapeOptions options with custom shapeOptions
+		if (options && options.shapeOptions) {
+			options.shapeOptions = L.Util.extend({}, this.options.shapeOptions, options.shapeOptions);
+		}
+		L.Util.extend(this.options, options);
+	},
+
+	enable: function () {
+		if (this._enabled) { return; }
+
+		L.Handler.prototype.enable.call(this);
+
+		this.fire('enabled', { handler: this.type });
+
+		this._map.fire('draw:drawstart', { layerType: this.type });
+	},
+
+	disable: function () {
+		if (!this._enabled) { return; }
+
+		L.Handler.prototype.disable.call(this);
+
+		this.fire('disabled', { handler: this.type });
+
+		this._map.fire('draw:drawstop', { layerType: this.type });
+	},
+
+	addHooks: function () {
+		if (this._map) {
+			L.DomUtil.disableTextSelection();
+
+			this._tooltip = new L.Tooltip(this._map);
+
+			L.DomEvent.addListener(this._container, 'keyup', this._cancelDrawing, this);
+		}
+	},
+
+	removeHooks: function () {
+		if (this._map) {
+			L.DomUtil.enableTextSelection();
+
+			this._tooltip.dispose();
+			this._tooltip = null;
+
+			L.DomEvent.removeListener(this._container, 'keyup', this._cancelDrawing);
+		}
+	},
+
+	setOptions: function (options) {
+		L.setOptions(this, options);
+	},
+
+	_fireCreatedEvent: function (layer) {
+		this._map.fire('draw:created', { layer: layer, layerType: this.type });
+	},
+
+	// Cancel drawing when the escape key is pressed
+	_cancelDrawing: function (e) {
+		if (e.keyCode === 27) {
+			this.disable();
+		}
+	}
+});
+
+L.Draw.Polyline = L.Draw.Feature.extend({
+	statics: {
+		TYPE: 'polyline'
+	},
+
+	Poly: L.Polyline,
+
+	options: {
+		allowIntersection: true,
+		drawError: {
+			color: '#b00b00',
+			message: L.drawLocal.draw.polyline.error,
+			timeout: 2500
+		},
+		icon: new L.DivIcon({
+			iconSize: new L.Point(8, 8),
+			className: 'leaflet-div-icon leaflet-editing-icon'
+		}),
+		guidelineDistance: 20,
+		shapeOptions: {
+			stroke: true,
+			color: '#f06eaa',
+			weight: 4,
+			opacity: 0.5,
+			fill: false,
+			clickable: true
+		},
+		zIndexOffset: 2000 // This should be > than the highest z-index any map layers
+	},
+
+	initialize: function (map, options) {
+		// Merge default drawError options with custom options
+		if (options && options.drawError) {
+			options.drawError = L.Util.extend({}, this.options.drawError, options.drawError);
+		}
+
+		// Save the type so super can fire, need to do this as cannot do this.TYPE :(
+		this.type = L.Draw.Polyline.TYPE;
+
+		L.Draw.Feature.prototype.initialize.call(this, map, options);
+	},
+
+	addHooks: function () {
+		L.Draw.Feature.prototype.addHooks.call(this);
+		if (this._map) {
+			this._markers = [];
+
+			this._markerGroup = new L.LayerGroup();
+			this._map.addLayer(this._markerGroup);
+
+			this._poly = new L.Polyline([], this.options.shapeOptions);
+
+			this._tooltip.updateContent(this._getTooltipText());
+
+			// Make a transparent marker that will used to catch click events. These click
+			// events will create the vertices. We need to do this so we can ensure that
+			// we can create vertices over other map layers (markers, vector layers). We
+			// also do not want to trigger any click handlers of objects we are clicking on
+			// while drawing.
+			if (!this._mouseMarker) {
+				this._mouseMarker = L.marker(this._map.getCenter(), {
+					icon: L.divIcon({
+						className: 'leaflet-mouse-marker',
+						iconAnchor: [20, 20],
+						iconSize: [40, 40]
+					}),
+					opacity: 0,
+					zIndexOffset: this.options.zIndexOffset
+				});
+			}
+
+			this._mouseMarker
+				.on('click', this._onClick, this)
+				.addTo(this._map);
+
+			this._map
+				.on('mousemove', this._onMouseMove, this)
+				.on('zoomend', this._onZoomEnd, this);
+		}
+	},
+
+	removeHooks: function () {
+		L.Draw.Feature.prototype.removeHooks.call(this);
+
+		this._clearHideErrorTimeout();
+
+		this._cleanUpShape();
+
+		// remove markers from map
+		this._map.removeLayer(this._markerGroup);
+		delete this._markerGroup;
+		delete this._markers;
+
+		this._map.removeLayer(this._poly);
+		delete this._poly;
+
+		this._mouseMarker.off('click', this._onClick, this);
+		this._map.removeLayer(this._mouseMarker);
+		delete this._mouseMarker;
+
+		// clean up DOM
+		this._clearGuides();
+
+		this._map
+			.off('mousemove', this._onMouseMove, this)
+			.off('zoomend', this._onZoomEnd, this);
+	},
+
+	_finishShape: function () {
+		var intersects = this._poly.newLatLngIntersects(this._poly.getLatLngs()[0], true);
+
+		if ((!this.options.allowIntersection && intersects) || !this._shapeIsValid()) {
+			this._showErrorTooltip();
+			return;
+		}
+
+		this._fireCreatedEvent();
+		this.disable();
+	},
+
+	//Called to verify the shape is valid when the user tries to finish it
+	//Return false if the shape is not valid
+	_shapeIsValid: function () {
+		return true;
+	},
+
+	_onZoomEnd: function () {
+		this._updateGuide();
+	},
+
+	_onMouseMove: function (e) {
+		var newPos = e.layerPoint,
+			latlng = e.latlng;
+
+		// Save latlng
+		// should this be moved to _updateGuide() ?
+		this._currentLatLng = latlng;
+
+		this._updateTooltip(latlng);
+
+		// Update the guide line
+		this._updateGuide(newPos);
+
+		// Update the mouse marker position
+		this._mouseMarker.setLatLng(latlng);
+
+		L.DomEvent.preventDefault(e.originalEvent);
+	},
+
+	_onClick: function (e) {
+		var latlng = e.target.getLatLng(),
+			markerCount = this._markers.length;
+
+		if (markerCount > 0 && !this.options.allowIntersection && this._poly.newLatLngIntersects(latlng)) {
+			this._showErrorTooltip();
+			return;
+		}
+		else if (this._errorShown) {
+			this._hideErrorTooltip();
+		}
+
+		this._markers.push(this._createMarker(latlng));
+
+		this._poly.addLatLng(latlng);
+
+		if (this._poly.getLatLngs().length === 2) {
+			this._map.addLayer(this._poly);
+		}
+
+		this._updateFinishHandler();
+
+		this._vertexAdded(latlng);
+
+		this._clearGuides();
+
+		this._updateTooltip();
+	},
+
+	_updateFinishHandler: function () {
+		var markerCount = this._markers.length;
+		// The last marker should have a click handler to close the polyline
+		if (markerCount > 1) {
+			this._markers[markerCount - 1].on('click', this._finishShape, this);
+		}
+
+		// Remove the old marker click handler (as only the last point should close the polyline)
+		if (markerCount > 2) {
+			this._markers[markerCount - 2].off('click', this._finishShape, this);
+		}
+	},
+
+	_createMarker: function (latlng) {
+		var marker = new L.Marker(latlng, {
+			icon: this.options.icon,
+			zIndexOffset: this.options.zIndexOffset * 2
+		});
+
+		this._markerGroup.addLayer(marker);
+
+		return marker;
+	},
+
+	_updateGuide: function (newPos) {
+		newPos = newPos || this._map.latLngToLayerPoint(this._currentLatLng);
+
+		var markerCount = this._markers.length;
+
+		if (markerCount > 0) {
+			// draw the guide line
+			this._clearGuides();
+			this._drawGuide(
+				this._map.latLngToLayerPoint(this._markers[markerCount - 1].getLatLng()),
+				newPos
+			);
+		}
+	},
+
+	_updateTooltip: function (latLng) {
+		var text = this._getTooltipText();
+
+		if (latLng) {
+			this._tooltip.updatePosition(latLng);
+		}
+
+		if (!this._errorShown) {
+			this._tooltip.updateContent(text);
+		}
+	},
+
+	_drawGuide: function (pointA, pointB) {
+		var length = Math.floor(Math.sqrt(Math.pow((pointB.x - pointA.x), 2) + Math.pow((pointB.y - pointA.y), 2))),
+			i,
+			fraction,
+			dashPoint,
+			dash;
+
+		//create the guides container if we haven't yet
+		if (!this._guidesContainer) {
+			this._guidesContainer = L.DomUtil.create('div', 'leaflet-draw-guides', this._overlayPane);
+		}
+
+		//draw a dash every GuildeLineDistance
+		for (i = this.options.guidelineDistance; i < length; i += this.options.guidelineDistance) {
+			//work out fraction along line we are
+			fraction = i / length;
+
+			//calculate new x,y point
+			dashPoint = {
+				x: Math.floor((pointA.x * (1 - fraction)) + (fraction * pointB.x)),
+				y: Math.floor((pointA.y * (1 - fraction)) + (fraction * pointB.y))
+			};
+
+			//add guide dash to guide container
+			dash = L.DomUtil.create('div', 'leaflet-draw-guide-dash', this._guidesContainer);
+			dash.style.backgroundColor =
+				!this._errorShown ? this.options.shapeOptions.color : this.options.drawError.color;
+
+			L.DomUtil.setPosition(dash, dashPoint);
+		}
+	},
+
+	_updateGuideColor: function (color) {
+		if (this._guidesContainer) {
+			for (var i = 0, l = this._guidesContainer.childNodes.length; i < l; i++) {
+				this._guidesContainer.childNodes[i].style.backgroundColor = color;
+			}
+		}
+	},
+
+	// removes all child elements (guide dashes) from the guides container
+	_clearGuides: function () {
+		if (this._guidesContainer) {
+			while (this._guidesContainer.firstChild) {
+				this._guidesContainer.removeChild(this._guidesContainer.firstChild);
+			}
+		}
+	},
+
+	_getTooltipText: function () {
+		var labelText,
+			distance,
+			distanceStr;
+
+		if (this._markers.length === 0) {
+			labelText = {
+				text: L.drawLocal.draw.polyline.tooltip.start
+			};
+		} else {
+			// calculate the distance from the last fixed point to the mouse position
+			distance = this._measurementRunningTotal + this._currentLatLng.distanceTo(this._markers[this._markers.length - 1].getLatLng());
+			// show metres when distance is < 1km, then show km
+			distanceStr = distance  > 1000 ? (distance  / 1000).toFixed(2) + ' km' : Math.ceil(distance) + ' m';
+
+			if (this._markers.length === 1) {
+				labelText = {
+					text: L.drawLocal.draw.polyline.tooltip.cont,
+					subtext: distanceStr
+				};
+			} else {
+				labelText = {
+					text: L.drawLocal.draw.polyline.tooltip.end,
+					subtext: distanceStr
+				};
+			}
+		}
+		return labelText;
+	},
+
+	_showErrorTooltip: function () {
+		this._errorShown = true;
+
+		// Update tooltip
+		this._tooltip
+			.showAsError()
+			.updateContent({ text: this.options.drawError.message });
+
+		// Update shape
+		this._updateGuideColor(this.options.drawError.color);
+		this._poly.setStyle({ color: this.options.drawError.color });
+
+		// Hide the error after 2 seconds
+		this._clearHideErrorTimeout();
+		this._hideErrorTimeout = setTimeout(L.Util.bind(this._hideErrorTooltip, this), this.options.drawError.timeout);
+	},
+
+	_hideErrorTooltip: function () {
+		this._errorShown = false;
+
+		this._clearHideErrorTimeout();
+
+		// Revert tooltip
+		this._tooltip
+			.removeError()
+			.updateContent(this._getTooltipText());
+
+		// Revert shape
+		this._updateGuideColor(this.options.shapeOptions.color);
+		this._poly.setStyle({ color: this.options.shapeOptions.color });
+	},
+
+	_clearHideErrorTimeout: function () {
+		if (this._hideErrorTimeout) {
+			clearTimeout(this._hideErrorTimeout);
+			this._hideErrorTimeout = null;
+		}
+	},
+
+	_vertexAdded: function (latlng) {
+		if (this._markers.length === 1) {
+			this._measurementRunningTotal = 0;
+		}
+		else {
+			this._measurementRunningTotal +=
+				latlng.distanceTo(this._markers[this._markers.length - 2].getLatLng());
+		}
+	},
+
+	_cleanUpShape: function () {
+		if (this._markers.length > 1) {
+			this._markers[this._markers.length - 1].off('click', this._finishShape, this);
+		}
+	},
+
+	_fireCreatedEvent: function () {
+		var poly = new this.Poly(this._poly.getLatLngs(), this.options.shapeOptions);
+		L.Draw.Feature.prototype._fireCreatedEvent.call(this, poly);
+	}
+});
+
+L.Draw.Polygon = L.Draw.Polyline.extend({
+	statics: {
+		TYPE: 'polygon'
+	},
+
+	Poly: L.Polygon,
+
+	options: {
+		showArea: false,
+		shapeOptions: {
+			stroke: true,
+			color: '#f06eaa',
+			weight: 4,
+			opacity: 0.5,
+			fill: true,
+			fillColor: null, //same as color by default
+			fillOpacity: 0.2,
+			clickable: true
+		}
+	},
+
+	initialize: function (map, options) {
+		L.Draw.Polyline.prototype.initialize.call(this, map, options);
+
+		// Save the type so super can fire, need to do this as cannot do this.TYPE :(
+		this.type = L.Draw.Polygon.TYPE;
+	},
+
+	_updateFinishHandler: function () {
+		var markerCount = this._markers.length;
+
+		// The first marker shold have a click handler to close the polygon
+		if (markerCount === 1) {
+			this._markers[0].on('click', this._finishShape, this);
+		}
+
+		// Add and update the double click handler
+		if (markerCount > 2) {
+			this._markers[markerCount - 1].on('dblclick', this._finishShape, this);
+			// Only need to remove handler if has been added before
+			if (markerCount > 3) {
+				this._markers[markerCount - 2].off('dblclick', this._finishShape, this);
+			}
+		}
+	},
+
+	_getTooltipText: function () {
+		var text, subtext;
+
+		if (this._markers.length === 0) {
+			text = L.drawLocal.draw.polygon.tooltip.start;
+		} else if (this._markers.length < 3) {
+			text = L.drawLocal.draw.polygon.tooltip.cont;
+		} else {
+			text = L.drawLocal.draw.polygon.tooltip.end;
+			subtext = this._area;
+		}
+
+		return {
+			text: text,
+			subtext: subtext
+		};
+	},
+
+	_shapeIsValid: function () {
+		return this._markers.length >= 3;
+	},
+
+	_vertexAdded: function () {
+		// Check to see if we should show the area
+		if (this.options.allowIntersection || !this.options.showArea) {
+			return;
+		}
+
+		var latLngs = this._poly.getLatLngs(),
+			area = L.PolygonUtil.geodesicArea(latLngs);
+
+		// Convert to most appropriate units
+		if (area > 1000000) {
+			area = (area * 0.000001).toFixed(2) + ' km&sup2;';
+		} else if (area > 10000) {
+			area = (area * 0.0001).toFixed(2) + ' ha';
+		} else {
+			area = area.toFixed(2) + ' m&sup2;';
+		}
+
+		this._area = area;
+	},
+
+	_cleanUpShape: function () {
+		var markerCount = this._markers.length;
+
+		if (markerCount > 0) {
+			this._markers[0].off('click', this._finishShape, this);
+
+			if (markerCount > 2) {
+				this._markers[markerCount - 1].off('dblclick', this._finishShape, this);
+			}
+		}
+	}
+});
+
+
+L.SimpleShape = {};
+
+L.Draw.SimpleShape = L.Draw.Feature.extend({
+	addHooks: function () {
+		L.Draw.Feature.prototype.addHooks.call(this);
+		if (this._map) {
+			this._map.dragging.disable();
+			//TODO refactor: move cursor to styles
+			this._container.style.cursor = 'crosshair';
+
+			this._tooltip.updateContent({ text: this._initialLabelText });
+
+			this._map
+				.on('mousedown', this._onMouseDown, this)
+				.on('mousemove', this._onMouseMove, this);
+		}
+	},
+
+	removeHooks: function () {
+		L.Draw.Feature.prototype.removeHooks.call(this);
+		if (this._map) {
+			this._map.dragging.enable();
+			//TODO refactor: move cursor to styles
+			this._container.style.cursor = '';
+
+			this._map
+				.off('mousedown', this._onMouseDown, this)
+				.off('mousemove', this._onMouseMove, this);
+
+			L.DomEvent.off(document, 'mouseup', this._onMouseUp);
+
+			// If the box element doesn't exist they must not have moved the mouse, so don't need to destroy/return
+			if (this._shape) {
+				this._map.removeLayer(this._shape);
+				delete this._shape;
+			}
+		}
+		this._isDrawing = false;
+	},
+
+	_onMouseDown: function (e) {
+		this._isDrawing = true;
+		this._startLatLng = e.latlng;
+
+		L.DomEvent
+			.on(document, 'mouseup', this._onMouseUp, this)
+			.preventDefault(e.originalEvent);
+	},
+
+	_onMouseMove: function (e) {
+		var latlng = e.latlng;
+
+		this._tooltip.updatePosition(latlng);
+		if (this._isDrawing) {
+			this._tooltip.updateContent({ text: L.drawLocal.draw.simpleshape.tooltip.end });
+			this._drawShape(latlng);
+		}
+	},
+
+	_onMouseUp: function () {
+		if (this._shape) {
+			this._fireCreatedEvent();
+		}
+
+		this.disable();
+	}
+});
+
+L.Draw.Rectangle = L.Draw.SimpleShape.extend({
+	statics: {
+		TYPE: 'rectangle'
+	},
+
+	options: {
+		shapeOptions: {
+			stroke: true,
+			color: '#f06eaa',
+			weight: 4,
+			opacity: 0.5,
+			fill: true,
+			fillColor: null, //same as color by default
+			fillOpacity: 0.2,
+			clickable: true
+		}
+	},
+
+	initialize: function (map, options) {
+		// Save the type so super can fire, need to do this as cannot do this.TYPE :(
+		this.type = L.Draw.Rectangle.TYPE;
+
+		L.Draw.SimpleShape.prototype.initialize.call(this, map, options);
+	},
+	_initialLabelText: L.drawLocal.draw.rectangle.tooltip.start,
+
+	_drawShape: function (latlng) {
+		if (!this._shape) {
+			this._shape = new L.Rectangle(new L.LatLngBounds(this._startLatLng, latlng), this.options.shapeOptions);
+			this._map.addLayer(this._shape);
+		} else {
+			this._shape.setBounds(new L.LatLngBounds(this._startLatLng, latlng));
+		}
+	},
+
+	_fireCreatedEvent: function () {
+		var rectangle = new L.Rectangle(this._shape.getBounds(), this.options.shapeOptions);
+		L.Draw.SimpleShape.prototype._fireCreatedEvent.call(this, rectangle);
+	}
+});
+
+
+L.Draw.Circle = L.Draw.SimpleShape.extend({
+	statics: {
+		TYPE: 'circle'
+	},
+
+	options: {
+		shapeOptions: {
+			stroke: true,
+			color: '#f06eaa',
+			weight: 4,
+			opacity: 0.5,
+			fill: true,
+			fillColor: null, //same as color by default
+			fillOpacity: 0.2,
+			clickable: true
+		}
+	},
+
+	initialize: function (map, options) {
+		// Save the type so super can fire, need to do this as cannot do this.TYPE :(
+		this.type = L.Draw.Circle.TYPE;
+
+		L.Draw.SimpleShape.prototype.initialize.call(this, map, options);
+	},
+
+	_initialLabelText: L.drawLocal.draw.circle.tooltip.start,
+
+	_drawShape: function (latlng) {
+		if (!this._shape) {
+			this._shape = new L.Circle(this._startLatLng, this._startLatLng.distanceTo(latlng), this.options.shapeOptions);
+			this._map.addLayer(this._shape);
+		} else {
+			this._shape.setRadius(this._startLatLng.distanceTo(latlng));
+		}
+	},
+
+	_fireCreatedEvent: function () {
+		var circle = new L.Circle(this._startLatLng, this._shape.getRadius(), this.options.shapeOptions);
+		L.Draw.SimpleShape.prototype._fireCreatedEvent.call(this, circle);
+	},
+
+	_onMouseMove: function (e) {
+		var latlng = e.latlng,
+			radius;
+
+		this._tooltip.updatePosition(latlng);
+		if (this._isDrawing) {
+			this._drawShape(latlng);
+
+			// Get the new radius (rouded to 1 dp)
+			radius = this._shape.getRadius().toFixed(1);
+
+			this._tooltip.updateContent({
+				text: 'Release mouse to finish drawing.',
+				subtext: 'Radius: ' + radius + ' m'
+			});
+		}
+	}
+});
+
+L.Draw.Marker = L.Draw.Feature.extend({
+	statics: {
+		TYPE: 'marker'
+	},
+
+	options: {
+		icon: new L.Icon.Default(),
+		zIndexOffset: 2000 // This should be > than the highest z-index any markers
+	},
+
+	initialize: function (map, options) {
+		// Save the type so super can fire, need to do this as cannot do this.TYPE :(
+		this.type = L.Draw.Marker.TYPE;
+
+		L.Draw.Feature.prototype.initialize.call(this, map, options);
+	},
+
+	addHooks: function () {
+		L.Draw.Feature.prototype.addHooks.call(this);
+
+		if (this._map) {
+			this._tooltip.updateContent({ text: L.drawLocal.draw.marker.tooltip.start });
+
+			// Same mouseMarker as in Draw.Polyline
+			if (!this._mouseMarker) {
+				this._mouseMarker = L.marker(this._map.getCenter(), {
+					icon: L.divIcon({
+						className: 'leaflet-mouse-marker',
+						iconAnchor: [20, 20],
+						iconSize: [40, 40]
+					}),
+					opacity: 0,
+					zIndexOffset: this.options.zIndexOffset
+				});
+			}
+
+			this._mouseMarker
+				.on('click', this._onClick, this)
+				.addTo(this._map);
+
+			this._map.on('mousemove', this._onMouseMove, this);
+		}
+	},
+
+	removeHooks: function () {
+		L.Draw.Feature.prototype.removeHooks.call(this);
+
+		if (this._map) {
+			if (this._marker) {
+				this._marker.off('click', this._onClick, this);
+				this._map
+					.off('click', this._onClick, this)
+					.removeLayer(this._marker);
+				delete this._marker;
+			}
+
+			this._mouseMarker.off('click', this._onClick, this);
+			this._map.removeLayer(this._mouseMarker);
+			delete this._mouseMarker;
+
+			this._map.off('mousemove', this._onMouseMove, this);
+		}
+	},
+
+	_onMouseMove: function (e) {
+		var latlng = e.latlng;
+
+		this._tooltip.updatePosition(latlng);
+		this._mouseMarker.setLatLng(latlng);
+
+		if (!this._marker) {
+			this._marker = new L.Marker(latlng, {
+				icon: this.options.icon,
+				zIndexOffset: this.options.zIndexOffset
+			});
+			// Bind to both marker and map to make sure we get the click event.
+			this._marker.on('click', this._onClick, this);
+			this._map
+				.on('click', this._onClick, this)
+				.addLayer(this._marker);
+		}
+		else {
+			this._marker.setLatLng(latlng);
+		}
+	},
+
+	_onClick: function () {
+		this._fireCreatedEvent();
+
+		this.disable();
+	},
+
+	_fireCreatedEvent: function () {
+		var marker = new L.Marker(this._marker.getLatLng(), { icon: this.options.icon });
+		L.Draw.Feature.prototype._fireCreatedEvent.call(this, marker);
+	}
+});
+
+L.Edit = L.Edit || {};
+
+/*
+ * L.Edit.Poly is an editing handler for polylines and polygons.
+ */
+
+L.Edit.Poly = L.Handler.extend({
+	options: {
+		icon: new L.DivIcon({
+			iconSize: new L.Point(8, 8),
+			className: 'leaflet-div-icon leaflet-editing-icon'
+		})
+	},
+
+	initialize: function (poly, options) {
+		this._poly = poly;
+		L.setOptions(this, options);
+	},
+
+	addHooks: function () {
+		if (this._poly._map) {
+			if (!this._markerGroup) {
+				this._initMarkers();
+			}
+			this._poly._map.addLayer(this._markerGroup);
+		}
+	},
+
+	removeHooks: function () {
+		if (this._poly._map) {
+			this._poly._map.removeLayer(this._markerGroup);
+			delete this._markerGroup;
+			delete this._markers;
+		}
+	},
+
+	updateMarkers: function () {
+		this._markerGroup.clearLayers();
+		this._initMarkers();
+	},
+
+	_initMarkers: function () {
+		if (!this._markerGroup) {
+			this._markerGroup = new L.LayerGroup();
+		}
+		this._markers = [];
+
+		var latlngs = this._poly._latlngs,
+			i, j, len, marker;
+
+		// TODO refactor holes implementation in Polygon to support it here
+
+		for (i = 0, len = latlngs.length; i < len; i++) {
+
+			marker = this._createMarker(latlngs[i], i);
+			marker.on('click', this._onMarkerClick, this);
+			this._markers.push(marker);
+		}
+
+		var markerLeft, markerRight;
+
+		for (i = 0, j = len - 1; i < len; j = i++) {
+			if (i === 0 && !(L.Polygon && (this._poly instanceof L.Polygon))) {
+				continue;
+			}
+
+			markerLeft = this._markers[j];
+			markerRight = this._markers[i];
+
+			this._createMiddleMarker(markerLeft, markerRight);
+			this._updatePrevNext(markerLeft, markerRight);
+		}
+	},
+
+	_createMarker: function (latlng, index) {
+		var marker = new L.Marker(latlng, {
+			draggable: true,
+			icon: this.options.icon
+		});
+
+		marker._origLatLng = latlng;
+		marker._index = index;
+
+		marker.on('drag', this._onMarkerDrag, this);
+		marker.on('dragend', this._fireEdit, this);
+
+		this._markerGroup.addLayer(marker);
+
+		return marker;
+	},
+
+	_removeMarker: function (marker) {
+		var i = marker._index;
+
+		this._markerGroup.removeLayer(marker);
+		this._markers.splice(i, 1);
+		this._poly.spliceLatLngs(i, 1);
+		this._updateIndexes(i, -1);
+
+		marker
+			.off('drag', this._onMarkerDrag, this)
+			.off('dragend', this._fireEdit, this)
+			.off('click', this._onMarkerClick, this);
+	},
+
+	_fireEdit: function () {
+		this._poly.edited = true;
+		this._poly.fire('edit');
+	},
+
+	_onMarkerDrag: function (e) {
+		var marker = e.target;
+
+		L.extend(marker._origLatLng, marker._latlng);
+
+		if (marker._middleLeft) {
+			marker._middleLeft.setLatLng(this._getMiddleLatLng(marker._prev, marker));
+		}
+		if (marker._middleRight) {
+			marker._middleRight.setLatLng(this._getMiddleLatLng(marker, marker._next));
+		}
+
+		this._poly.redraw();
+	},
+
+	_onMarkerClick: function (e) {
+		// we want to remove the marker on click, but if latlng count < 3, polyline would be invalid
+		if (this._poly._latlngs.length < 3) { return; }
+
+		var marker = e.target;
+
+		// remove the marker
+		this._removeMarker(marker);
+
+		// update prev/next links of adjacent markers
+		this._updatePrevNext(marker._prev, marker._next);
+
+		// remove ghost markers near the removed marker
+		if (marker._middleLeft) {
+			this._markerGroup.removeLayer(marker._middleLeft);
+		}
+		if (marker._middleRight) {
+			this._markerGroup.removeLayer(marker._middleRight);
+		}
+
+		// create a ghost marker in place of the removed one
+		if (marker._prev && marker._next) {
+			this._createMiddleMarker(marker._prev, marker._next);
+
+		} else if (!marker._prev) {
+			marker._next._middleLeft = null;
+
+		} else if (!marker._next) {
+			marker._prev._middleRight = null;
+		}
+
+		this._fireEdit();
+	},
+
+	_updateIndexes: function (index, delta) {
+		this._markerGroup.eachLayer(function (marker) {
+			if (marker._index > index) {
+				marker._index += delta;
+			}
+		});
+	},
+
+	_createMiddleMarker: function (marker1, marker2) {
+		var latlng = this._getMiddleLatLng(marker1, marker2),
+		    marker = this._createMarker(latlng),
+		    onClick,
+		    onDragStart,
+		    onDragEnd;
+
+		marker.setOpacity(0.6);
+
+		marker1._middleRight = marker2._middleLeft = marker;
+
+		onDragStart = function () {
+			var i = marker2._index;
+
+			marker._index = i;
+
+			marker
+			    .off('click', onClick, this)
+			    .on('click', this._onMarkerClick, this);
+
+			latlng.lat = marker.getLatLng().lat;
+			latlng.lng = marker.getLatLng().lng;
+			this._poly.spliceLatLngs(i, 0, latlng);
+			this._markers.splice(i, 0, marker);
+
+			marker.setOpacity(1);
+
+			this._updateIndexes(i, 1);
+			marker2._index++;
+			this._updatePrevNext(marker1, marker);
+			this._updatePrevNext(marker, marker2);
+		};
+
+		onDragEnd = function () {
+			marker.off('dragstart', onDragStart, this);
+			marker.off('dragend', onDragEnd, this);
+
+			this._createMiddleMarker(marker1, marker);
+			this._createMiddleMarker(marker, marker2);
+		};
+
+		onClick = function () {
+			onDragStart.call(this);
+			onDragEnd.call(this);
+			this._fireEdit();
+		};
+
+		marker
+		    .on('click', onClick, this)
+		    .on('dragstart', onDragStart, this)
+		    .on('dragend', onDragEnd, this);
+
+		this._markerGroup.addLayer(marker);
+	},
+
+	_updatePrevNext: function (marker1, marker2) {
+		if (marker1) {
+			marker1._next = marker2;
+		}
+		if (marker2) {
+			marker2._prev = marker1;
+		}
+	},
+
+	_getMiddleLatLng: function (marker1, marker2) {
+		var map = this._poly._map,
+		    p1 = map.latLngToLayerPoint(marker1.getLatLng()),
+		    p2 = map.latLngToLayerPoint(marker2.getLatLng());
+
+		return map.layerPointToLatLng(p1._add(p2)._divideBy(2));
+	}
+});
+
+L.Polyline.addInitHook(function () {
+
+	// Check to see if handler has already been initialized. This is to support versions of Leaflet that still have L.Handler.PolyEdit
+	if (this.editing) {
+		return;
+	}
+
+	if (L.Edit.Poly) {
+		this.editing = new L.Edit.Poly(this);
+
+		if (this.options.editable) {
+			this.editing.enable();
+		}
+	}
+
+	this.on('add', function () {
+		if (this.editing && this.editing.enabled()) {
+			this.editing.addHooks();
+		}
+	});
+
+	this.on('remove', function () {
+		if (this.editing && this.editing.enabled()) {
+			this.editing.removeHooks();
+		}
+	});
+});
+
+
+L.Edit = L.Edit || {};
+
+L.Edit.SimpleShape = L.Handler.extend({
+	options: {
+		moveIcon: new L.DivIcon({
+			iconSize: new L.Point(8, 8),
+			className: 'leaflet-div-icon leaflet-editing-icon leaflet-edit-move'
+		}),
+		resizeIcon: new L.DivIcon({
+			iconSize: new L.Point(8, 8),
+			className: 'leaflet-div-icon leaflet-editing-icon leaflet-edit-resize'
+		})
+	},
+
+	initialize: function (shape, options) {
+		this._shape = shape;
+		L.Util.setOptions(this, options);
+	},
+
+	addHooks: function () {
+		if (this._shape._map) {
+			this._map = this._shape._map;
+
+			if (!this._markerGroup) {
+				this._initMarkers();
+			}
+			this._map.addLayer(this._markerGroup);
+		}
+	},
+
+	removeHooks: function () {
+		if (this._shape._map) {
+			this._unbindMarker(this._moveMarker);
+
+			for (var i = 0, l = this._resizeMarkers.length; i < l; i++) {
+				this._unbindMarker(this._resizeMarkers[i]);
+			}
+			this._resizeMarkers = null;
+
+			this._map.removeLayer(this._markerGroup);
+			delete this._markerGroup;
+		}
+
+		this._map = null;
+	},
+
+	updateMarkers: function () {
+		this._markerGroup.clearLayers();
+		this._initMarkers();
+	},
+
+	_initMarkers: function () {
+		if (!this._markerGroup) {
+			this._markerGroup = new L.LayerGroup();
+		}
+
+		// Create center marker
+		this._createMoveMarker();
+
+		// Create edge marker
+		this._createResizeMarker();
+	},
+
+	_createMoveMarker: function () {
+		// Children override
+	},
+
+	_createResizeMarker: function () {
+		// Children override
+	},
+
+	_createMarker: function (latlng, icon) {
+		var marker = new L.Marker(latlng, {
+			draggable: true,
+			icon: icon,
+			zIndexOffset: 10
+		});
+
+		this._bindMarker(marker);
+
+		this._markerGroup.addLayer(marker);
+
+		return marker;
+	},
+
+	_bindMarker: function (marker) {
+		marker
+			.on('dragstart', this._onMarkerDragStart, this)
+			.on('drag', this._onMarkerDrag, this)
+			.on('dragend', this._onMarkerDragEnd, this);
+	},
+
+	_unbindMarker: function (marker) {
+		marker
+			.off('dragstart', this._onMarkerDragStart, this)
+			.off('drag', this._onMarkerDrag, this)
+			.off('dragend', this._onMarkerDragEnd, this);
+	},
+
+	_onMarkerDragStart: function (e) {
+		var marker = e.target;
+		marker.setOpacity(0);
+	},
+
+	_fireEdit: function () {
+		this._shape.edited = true;
+		this._shape.fire('edit');
+	},
+
+	_onMarkerDrag: function (e) {
+		var marker = e.target,
+			latlng = marker.getLatLng();
+
+		if (marker === this._moveMarker) {
+			this._move(latlng);
+		} else {
+			this._resize(latlng);
+		}
+
+		this._shape.redraw();
+	},
+
+	_onMarkerDragEnd: function (e) {
+		var marker = e.target;
+		marker.setOpacity(1);
+
+		this._shape.fire('edit');
+		this._fireEdit();
+	},
+
+	_move: function () {
+		// Children override
+	},
+
+	_resize: function () {
+		// Children override
+	}
+});
+
+L.Edit = L.Edit || {};
+
+L.Edit.Rectangle = L.Edit.SimpleShape.extend({
+	_createMoveMarker: function () {
+		var bounds = this._shape.getBounds(),
+			center = bounds.getCenter();
+
+		this._moveMarker = this._createMarker(center, this.options.moveIcon);
+	},
+
+	_createResizeMarker: function () {
+		var corners = this._getCorners();
+
+		this._resizeMarkers = [];
+
+		for (var i = 0, l = corners.length; i < l; i++) {
+			this._resizeMarkers.push(this._createMarker(corners[i], this.options.resizeIcon));
+			// Monkey in the corner index as we will need to know this for dragging
+			this._resizeMarkers[i]._cornerIndex = i;
+		}
+	},
+
+	_onMarkerDragStart: function (e) {
+		L.Edit.SimpleShape.prototype._onMarkerDragStart.call(this, e);
+
+		// Save a reference to the opposite point
+		var corners = this._getCorners(),
+			marker = e.target,
+			currentCornerIndex = marker._cornerIndex;
+
+		this._oppositeCorner = corners[(currentCornerIndex + 2) % 4];
+
+		this._toggleCornerMarkers(0, currentCornerIndex);
+	},
+
+	_onMarkerDragEnd: function (e) {
+		var marker = e.target,
+			bounds, center;
+
+		// Reset move marker position to the center
+		if (marker === this._moveMarker) {
+			bounds = this._shape.getBounds();
+			center = bounds.getCenter();
+
+			marker.setLatLng(center);
+		}
+
+		this._toggleCornerMarkers(1);
+
+		this._repositionCornerMarkers();
+
+		L.Edit.SimpleShape.prototype._onMarkerDragEnd.call(this, e);
+	},
+
+	_move: function (newCenter) {
+		var latlngs = this._shape.getLatLngs(),
+			bounds = this._shape.getBounds(),
+			center = bounds.getCenter(),
+			offset, newLatLngs = [];
+
+		// Offset the latlngs to the new center
+		for (var i = 0, l = latlngs.length; i < l; i++) {
+			offset = [latlngs[i].lat - center.lat, latlngs[i].lng - center.lng];
+			newLatLngs.push([newCenter.lat + offset[0], newCenter.lng + offset[1]]);
+		}
+
+		this._shape.setLatLngs(newLatLngs);
+
+		// Respoition the resize markers
+		this._repositionCornerMarkers();
+	},
+
+	_resize: function (latlng) {
+		var bounds;
+
+		// Update the shape based on the current position of this corner and the opposite point
+		this._shape.setBounds(L.latLngBounds(latlng, this._oppositeCorner));
+
+		// Respoition the move marker
+		bounds = this._shape.getBounds();
+		this._moveMarker.setLatLng(bounds.getCenter());
+	},
+
+	_getCorners: function () {
+		var bounds = this._shape.getBounds(),
+			nw = bounds.getNorthWest(),
+			ne = bounds.getNorthEast(),
+			se = bounds.getSouthEast(),
+			sw = bounds.getSouthWest();
+
+		return [nw, ne, se, sw];
+	},
+
+	_toggleCornerMarkers: function (opacity) {
+		for (var i = 0, l = this._resizeMarkers.length; i < l; i++) {
+			this._resizeMarkers[i].setOpacity(opacity);
+		}
+	},
+
+	_repositionCornerMarkers: function () {
+		var corners = this._getCorners();
+
+		for (var i = 0, l = this._resizeMarkers.length; i < l; i++) {
+			this._resizeMarkers[i].setLatLng(corners[i]);
+		}
+	}
+});
+
+L.Rectangle.addInitHook(function () {
+	if (L.Edit.Rectangle) {
+		this.editing = new L.Edit.Rectangle(this);
+
+		if (this.options.editable) {
+			this.editing.enable();
+		}
+	}
+});
+
+L.Edit = L.Edit || {};
+
+L.Edit.Circle = L.Edit.SimpleShape.extend({
+	_createMoveMarker: function () {
+		var center = this._shape.getLatLng();
+
+		this._moveMarker = this._createMarker(center, this.options.moveIcon);
+	},
+
+	_createResizeMarker: function () {
+		var center = this._shape.getLatLng(),
+			resizemarkerPoint = this._getResizeMarkerPoint(center);
+
+		this._resizeMarkers = [];
+		this._resizeMarkers.push(this._createMarker(resizemarkerPoint, this.options.resizeIcon));
+	},
+
+	_getResizeMarkerPoint: function (latlng) {
+		// From L.shape.getBounds()
+		var delta = this._shape._radius * Math.cos(Math.PI / 4),
+			point = this._map.project(latlng);
+		return this._map.unproject([point.x + delta, point.y - delta]);
+	},
+
+	_move: function (latlng) {
+		var resizemarkerPoint = this._getResizeMarkerPoint(latlng);
+
+		// Move the resize marker
+		this._resizeMarkers[0].setLatLng(resizemarkerPoint);
+
+		// Move the circle
+		this._shape.setLatLng(latlng);
+	},
+
+	_resize: function (latlng) {
+		var moveLatLng = this._moveMarker.getLatLng(),
+			radius = moveLatLng.distanceTo(latlng);
+
+		this._shape.setRadius(radius);
+	}
+});
+
+L.Circle.addInitHook(function () {
+	if (L.Edit.Circle) {
+		this.editing = new L.Edit.Circle(this);
+
+		if (this.options.editable) {
+			this.editing.enable();
+		}
+	}
+
+	this.on('add', function () {
+		if (this.editing && this.editing.enabled()) {
+			this.editing.addHooks();
+		}
+	});
+
+	this.on('remove', function () {
+		if (this.editing && this.editing.enabled()) {
+			this.editing.removeHooks();
+		}
+	});
+});
+
+/*
+ * L.LatLngUtil contains different utility functions for LatLngs.
+ */
+
+L.LatLngUtil = {
+	// Clones a LatLngs[], returns [][]
+	cloneLatLngs: function (latlngs) {
+		var clone = [];
+		for (var i = 0, l = latlngs.length; i < l; i++) {
+			clone.push(this.cloneLatLng(latlngs[i]));
+		}
+		return clone;
+	},
+
+	cloneLatLng: function (latlng) {
+		return L.latLng(latlng.lat, latlng.lng);
+	}
+};
+
+/*
+ * L.PolygonUtil contains different utility functions for Polygons.
+ */
+
+L.PolygonUtil = {
+	// Ported from the OpenLayers implementation. See https://github.com/openlayers/openlayers/blob/master/lib/OpenLayers/Geometry/LinearRing.js#L270
+	geodesicArea: function (latLngs) {
+		var pointsCount = latLngs.length,
+			area = 0.0,
+			d2r = L.LatLng.DEG_TO_RAD,
+			p1, p2;
+
+		if (pointsCount > 2) {
+			for (var i = 0; i < pointsCount; i++) {
+				p1 = latLngs[i];
+				p2 = latLngs[(i + 1) % pointsCount];
+				area += ((p2.lng - p1.lng) * d2r) *
+						(2 + Math.sin(p1.lat * d2r) + Math.sin(p2.lat * d2r));
+			}
+			area = area * 6378137.0 * 6378137.0 / 2.0;
+		}
+
+		return Math.abs(area);
+	}
+};
+
+L.Util.extend(L.LineUtil, {
+	// Checks to see if two line segments intersect. Does not handle degenerate cases.
+	// http://compgeom.cs.uiuc.edu/~jeffe/teaching/373/notes/x06-sweepline.pdf
+	segmentsIntersect: function (/*Point*/ p, /*Point*/ p1, /*Point*/ p2, /*Point*/ p3) {
+		return	this._checkCounterclockwise(p, p2, p3) !==
+				this._checkCounterclockwise(p1, p2, p3) &&
+				this._checkCounterclockwise(p, p1, p2) !==
+				this._checkCounterclockwise(p, p1, p3);
+	},
+
+	// check to see if points are in counterclockwise order
+	_checkCounterclockwise: function (/*Point*/ p, /*Point*/ p1, /*Point*/ p2) {
+		return (p2.y - p.y) * (p1.x - p.x) > (p1.y - p.y) * (p2.x - p.x);
+	}
+});
+
+L.Polyline.include({
+	// Check to see if this polyline has any linesegments that intersect.
+	// NOTE: does not support detecting intersection for degenerate cases.
+	intersects: function () {
+		var points = this._originalPoints,
+			len = points ? points.length : 0,
+			i, p, p1;
+
+		if (this._tooFewPointsForIntersection()) {
+			return false;
+		}
+
+		for (i = len - 1; i >= 3; i--) {
+			p = points[i - 1];
+			p1 = points[i];
+
+
+			if (this._lineSegmentsIntersectsRange(p, p1, i - 2)) {
+				return true;
+			}
+		}
+
+		return false;
+	},
+
+	// Check for intersection if new latlng was added to this polyline.
+	// NOTE: does not support detecting intersection for degenerate cases.
+	newLatLngIntersects: function (latlng, skipFirst) {
+		// Cannot check a polyline for intersecting lats/lngs when not added to the map
+		if (!this._map) {
+			return false;
+		}
+
+		return this.newPointIntersects(this._map.latLngToLayerPoint(latlng), skipFirst);
+	},
+
+	// Check for intersection if new point was added to this polyline.
+	// newPoint must be a layer point.
+	// NOTE: does not support detecting intersection for degenerate cases.
+	newPointIntersects: function (newPoint, skipFirst) {
+		var points = this._originalPoints,
+			len = points ? points.length : 0,
+			lastPoint = points ? points[len - 1] : null,
+			// The previous previous line segment. Previous line segement doesn't need testing.
+			maxIndex = len - 2;
+
+		if (this._tooFewPointsForIntersection(1)) {
+			return false;
+		}
+
+		return this._lineSegmentsIntersectsRange(lastPoint, newPoint, maxIndex, skipFirst ? 1 : 0);
+	},
+
+	// Polylines with 2 sides can only intersect in cases where points are collinear (we don't support detecting these).
+	// Cannot have intersection when < 3 line segments (< 4 points)
+	_tooFewPointsForIntersection: function (extraPoints) {
+		var points = this._originalPoints,
+			len = points ? points.length : 0;
+		// Increment length by extraPoints if present
+		len += extraPoints || 0;
+
+		return !this._originalPoints || len <= 3;
+	},
+
+	// Checks a line segment intersections with any line segements before its predecessor.
+	// Don't need to check the predecessor as will never intersect.
+	_lineSegmentsIntersectsRange: function (p, p1, maxIndex, minIndex) {
+		var points = this._originalPoints,
+			p2, p3;
+
+		minIndex = minIndex || 0;
+
+		// Check all previous line segments (beside the immediately previous) for intersections
+		for (var j = maxIndex; j > minIndex; j--) {
+			p2 = points[j - 1];
+			p3 = points[j];
+
+			if (L.LineUtil.segmentsIntersect(p, p1, p2, p3)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+});
+
+L.Polygon.include({
+	// Checks a polygon for any intersecting line segments. Ignores holes.
+	intersects: function () {
+		var polylineIntersects,
+			points = this._originalPoints,
+			len, firstPoint, lastPoint, maxIndex;
+
+		if (this._tooFewPointsForIntersection()) {
+			return false;
+		}
+
+		polylineIntersects = L.Polyline.prototype.intersects.call(this);
+
+		// If already found an intersection don't need to check for any more.
+		if (polylineIntersects) {
+			return true;
+		}
+
+		len = points.length;
+		firstPoint = points[0];
+		lastPoint = points[len - 1];
+		maxIndex = len - 2;
+
+		// Check the line segment between last and first point. Don't need to check the first line segment (minIndex = 1)
+		return this._lineSegmentsIntersectsRange(lastPoint, firstPoint, maxIndex, 1);
+	}
+});
+
+L.Control.Draw = L.Control.extend({
+
+	options: {
+		position: 'topleft',
+		draw: {},
+		edit: false
+	},
+
+	initialize: function (options) {
+		if (L.version <= "0.5.1") {
+			throw new Error('Leaflet.draw 0.2.0+ requires Leaflet 0.6.0+. Download latest from https://github.com/Leaflet/Leaflet/');
+		}
+
+		L.Control.prototype.initialize.call(this, options);
+
+		var id, toolbar;
+
+		this._toolbars = {};
+
+		// Initialize toolbars
+		if (L.DrawToolbar && this.options.draw) {
+			toolbar = new L.DrawToolbar(this.options.draw);
+			id = L.stamp(toolbar);
+			this._toolbars[id] = toolbar;
+
+			// Listen for when toolbar is enabled
+			this._toolbars[id].on('enable', this._toolbarEnabled, this);
+		}
+
+		if (L.EditToolbar && this.options.edit) {
+			toolbar = new L.EditToolbar(this.options.edit);
+			id = L.stamp(toolbar);
+			this._toolbars[id] = toolbar;
+
+			// Listen for when toolbar is enabled
+			this._toolbars[id].on('enable', this._toolbarEnabled, this);
+		}
+	},
+
+	onAdd: function (map) {
+		var container = L.DomUtil.create('div', 'leaflet-draw'),
+			addedTopClass = false,
+			topClassName = 'leaflet-draw-toolbar-top',
+			toolbarContainer;
+
+		for (var toolbarId in this._toolbars) {
+			if (this._toolbars.hasOwnProperty(toolbarId)) {
+				toolbarContainer = this._toolbars[toolbarId].addToolbar(map);
+
+				// Add class to the first toolbar to remove the margin
+				if (!addedTopClass) {
+					if (!L.DomUtil.hasClass(toolbarContainer, topClassName)) {
+						L.DomUtil.addClass(toolbarContainer.childNodes[0], topClassName);
+					}
+					addedTopClass = true;
+				}
+
+				container.appendChild(toolbarContainer);
+			}
+		}
+
+		return container;
+	},
+
+	onRemove: function () {
+		for (var toolbarId in this._toolbars) {
+			if (this._toolbars.hasOwnProperty(toolbarId)) {
+				this._toolbars[toolbarId].removeToolbar();
+			}
+		}
+	},
+
+	setDrawingOptions: function (options) {
+		for (var toolbarId in this._toolbars) {
+			if (this._toolbars[toolbarId] instanceof L.DrawToolbar) {
+				this._toolbars[toolbarId].setOptions(options);
+			}
+		}
+	},
+
+	_toolbarEnabled: function (e) {
+		var id = '' + L.stamp(e.target);
+
+		for (var toolbarId in this._toolbars) {
+			if (this._toolbars.hasOwnProperty(toolbarId) && toolbarId !== id) {
+				this._toolbars[toolbarId].disable();
+			}
+		}
+	}
+});
+
+L.Map.mergeOptions({
+	drawControl: false
+});
+
+L.Map.addInitHook(function () {
+	if (this.options.drawControl) {
+		this.drawControl = new L.Control.Draw();
+		this.addControl(this.drawControl);
+	}
+});
+
+L.Toolbar = L.Class.extend({
+	includes: [L.Mixin.Events],
+
+	initialize: function (options) {
+		L.setOptions(this, options);
+
+		this._modes = {};
+		this._actionButtons = [];
+		this._activeMode = null;
+	},
+
+	enabled: function () {
+		return this._activeMode !== null;
+	},
+
+	disable: function () {
+		if (!this.enabled()) { return; }
+
+		this._activeMode.handler.disable();
+	},
+
+	removeToolbar: function () {
+		// Dispose each handler
+		for (var handlerId in this._modes) {
+			if (this._modes.hasOwnProperty(handlerId)) {
+				// Unbind handler button
+				this._disposeButton(this._modes[handlerId].button, this._modes[handlerId].handler.enable);
+
+				// Make sure is disabled
+				this._modes[handlerId].handler.disable();
+
+				// Unbind handler
+				this._modes[handlerId].handler
+					.off('enabled', this._handlerActivated, this)
+					.off('disabled', this._handlerDeactivated, this);
+			}
+		}
+		this._modes = {};
+
+		// Dispose the actions toolbar
+		for (var i = 0, l = this._actionButtons.length; i < l; i++) {
+			this._disposeButton(this._actionButtons[i].button, this._actionButtons[i].callback);
+		}
+		this._actionButtons = [];
+		this._actionsContainer = null;
+	},
+
+	_initModeHandler: function (handler, container, buttonIndex, classNamePredix) {
+		var type = handler.type;
+
+		this._modes[type] = {};
+
+		this._modes[type].handler = handler;
+
+		this._modes[type].button = this._createButton({
+			title: this.options[type].title,
+			className: classNamePredix + '-' + type,
+			container: container,
+			callback: this._modes[type].handler.enable,
+			context: this._modes[type].handler
+		});
+
+		this._modes[type].buttonIndex = buttonIndex;
+
+		this._modes[type].handler
+			.on('enabled', this._handlerActivated, this)
+			.on('disabled', this._handlerDeactivated, this);
+	},
+
+	_createButton: function (options) {
+		var link = L.DomUtil.create('a', options.className || '', options.container);
+		link.href = '#';
+
+		if (options.text) {
+			link.innerHTML = options.text;
+		}
+
+		if (options.title) {
+			link.title = options.title;
+		}
+
+		L.DomEvent
+			.on(link, 'click', L.DomEvent.stopPropagation)
+			.on(link, 'mousedown', L.DomEvent.stopPropagation)
+			.on(link, 'dblclick', L.DomEvent.stopPropagation)
+			.on(link, 'click', L.DomEvent.preventDefault)
+			.on(link, 'click', options.callback, options.context);
+
+		return link;
+	},
+
+	_disposeButton: function (button, callback) {
+		L.DomEvent
+			.off(button, 'click', L.DomEvent.stopPropagation)
+			.off(button, 'mousedown', L.DomEvent.stopPropagation)
+			.off(button, 'dblclick', L.DomEvent.stopPropagation)
+			.off(button, 'click', L.DomEvent.preventDefault)
+			.off(button, 'click', callback);
+	},
+
+	_handlerActivated: function (e) {
+		// Disable active mode (if present)
+		if (this._activeMode && this._activeMode.handler.enabled()) {
+			this._activeMode.handler.disable();
+		}
+
+		// Cache new active feature
+		this._activeMode = this._modes[e.handler];
+
+		L.DomUtil.addClass(this._activeMode.button, 'leaflet-draw-toolbar-button-enabled');
+
+		this._showActionsToolbar();
+
+		this.fire('enable');
+	},
+
+	_handlerDeactivated: function () {
+		this._hideActionsToolbar();
+
+		L.DomUtil.removeClass(this._activeMode.button, 'leaflet-draw-toolbar-button-enabled');
+
+		this._activeMode = null;
+
+		this.fire('disable');
+	},
+
+	_createActions: function (buttons) {
+		var container = L.DomUtil.create('ul', 'leaflet-draw-actions'),
+			buttonWidth = 50,
+			l = buttons.length,
+			containerWidth = (l * buttonWidth) + (l - 1), //l - 1 = the borders
+			li, button;
+
+		for (var i = 0; i < l; i++) {
+			li = L.DomUtil.create('li', '', container);
+
+			button = this._createButton({
+				title: buttons[i].title,
+				text: buttons[i].text,
+				container: li,
+				callback: buttons[i].callback,
+				context: buttons[i].context
+			});
+
+			this._actionButtons.push({
+				button: button,
+				callback: buttons[i].callback
+			});
+		}
+
+		container.style.width = containerWidth + 'px';
+
+		return container;
+	},
+
+	_showActionsToolbar: function () {
+		var buttonIndex = this._activeMode.buttonIndex,
+			lastButtonIndex = this._lastButtonIndex,
+			buttonHeight = 26, // TODO: this should be calculated
+			borderHeight = 1, // TODO: this should also be calculated
+			toolbarPosition = (buttonIndex * buttonHeight) + (buttonIndex * borderHeight) - 1;
+
+		// Correctly position the cancel button
+		this._actionsContainer.style.top = toolbarPosition + 'px';
+
+		if (buttonIndex === 0) {
+			L.DomUtil.addClass(this._toolbarContainer, 'leaflet-draw-toolbar-notop');
+			L.DomUtil.addClass(this._actionsContainer, 'leaflet-draw-actions-top');
+		}
+
+		if (buttonIndex === lastButtonIndex) {
+			L.DomUtil.addClass(this._toolbarContainer, 'leaflet-draw-toolbar-nobottom');
+			L.DomUtil.addClass(this._actionsContainer, 'leaflet-draw-actions-bottom');
+		}
+
+		this._actionsContainer.style.display = 'block';
+	},
+
+	_hideActionsToolbar: function () {
+		this._actionsContainer.style.display = 'none';
+
+		L.DomUtil.removeClass(this._toolbarContainer, 'leaflet-draw-toolbar-notop');
+		L.DomUtil.removeClass(this._toolbarContainer, 'leaflet-draw-toolbar-nobottom');
+		L.DomUtil.removeClass(this._actionsContainer, 'leaflet-draw-actions-top');
+		L.DomUtil.removeClass(this._actionsContainer, 'leaflet-draw-actions-bottom');
+	}
+});
+
+L.Tooltip = L.Class.extend({
+	initialize: function (map) {
+		this._map = map;
+		this._popupPane = map._panes.popupPane;
+
+		this._container = L.DomUtil.create('div', 'leaflet-draw-tooltip', this._popupPane);
+		this._singleLineLabel = false;
+	},
+
+	dispose: function () {
+		this._popupPane.removeChild(this._container);
+		this._container = null;
+	},
+
+	updateContent: function (labelText) {
+		labelText.subtext = labelText.subtext || '';
+
+		// update the vertical position (only if changed)
+		if (labelText.subtext.length === 0 && !this._singleLineLabel) {
+			L.DomUtil.addClass(this._container, 'leaflet-draw-tooltip-single');
+			this._singleLineLabel = true;
+		}
+		else if (labelText.subtext.length > 0 && this._singleLineLabel) {
+			L.DomUtil.removeClass(this._container, 'leaflet-draw-tooltip-single');
+			this._singleLineLabel = false;
+		}
+
+		this._container.innerHTML =
+			(labelText.subtext.length > 0 ? '<span class="leaflet-draw-tooltip-subtext">' + labelText.subtext + '</span>' + '<br />' : '') +
+			'<span>' + labelText.text + '</span>';
+
+		return this;
+	},
+
+	updatePosition: function (latlng) {
+		var pos = this._map.latLngToLayerPoint(latlng);
+
+		L.DomUtil.setPosition(this._container, pos);
+
+		return this;
+	},
+
+	showAsError: function () {
+		L.DomUtil.addClass(this._container, 'leaflet-error-draw-tooltip');
+		return this;
+	},
+
+	removeError: function () {
+		L.DomUtil.removeClass(this._container, 'leaflet-error-draw-tooltip');
+		return this;
+	}
+});
+
+L.DrawToolbar = L.Toolbar.extend({
+
+	options: {
+		polyline: {
+			title: L.drawLocal.draw.toolbar.polyline
+		},
+		polygon: {
+			title: L.drawLocal.draw.toolbar.polygon
+		},
+		rectangle: {
+			title: L.drawLocal.draw.toolbar.rectangle
+		},
+		circle: {
+			title: L.drawLocal.draw.toolbar.circle
+		},
+		marker: {
+			title: L.drawLocal.draw.toolbar.marker
+		}
+	},
+
+	initialize: function (options) {
+		// Ensure that the options are merged correctly since L.extend is only shallow
+		for (var type in this.options) {
+			if (this.options.hasOwnProperty(type)) {
+				if (options[type]) {
+					options[type] = L.extend({}, this.options[type], options[type]);
+				}
+			}
+		}
+
+		L.Toolbar.prototype.initialize.call(this, options);
+	},
+
+	addToolbar: function (map) {
+		var container = L.DomUtil.create('div', 'leaflet-draw-section'),
+			buttonIndex = 0,
+			buttonClassPrefix = 'leaflet-draw-draw';
+
+		this._toolbarContainer = L.DomUtil.create('div', 'leaflet-draw-toolbar leaflet-bar');
+
+
+		if (this.options.polyline) {
+			this._initModeHandler(
+				new L.Draw.Polyline(map, this.options.polyline),
+				this._toolbarContainer,
+				buttonIndex++,
+				buttonClassPrefix
+			);
+		}
+
+		if (this.options.polygon) {
+			this._initModeHandler(
+				new L.Draw.Polygon(map, this.options.polygon),
+				this._toolbarContainer,
+				buttonIndex++,
+				buttonClassPrefix
+			);
+		}
+
+		if (this.options.rectangle) {
+			this._initModeHandler(
+				new L.Draw.Rectangle(map, this.options.rectangle),
+				this._toolbarContainer,
+				buttonIndex++,
+				buttonClassPrefix
+			);
+		}
+
+		if (this.options.circle) {
+			this._initModeHandler(
+				new L.Draw.Circle(map, this.options.circle),
+				this._toolbarContainer,
+				buttonIndex++,
+				buttonClassPrefix
+			);
+		}
+
+		if (this.options.marker) {
+			this._initModeHandler(
+				new L.Draw.Marker(map, this.options.marker),
+				this._toolbarContainer,
+				buttonIndex++,
+				buttonClassPrefix
+			);
+		}
+
+		// Save button index of the last button, -1 as we would have ++ after the last button
+		this._lastButtonIndex = --buttonIndex;
+
+		// Create the actions part of the toolbar
+		this._actionsContainer = this._createActions([
+			{
+				title: L.drawLocal.draw.toolbar.title,
+				text: L.drawLocal.draw.toolbar.text,
+				callback: this.disable,
+				context: this
+			}
+		]);
+
+		// Add draw and cancel containers to the control container
+		container.appendChild(this._toolbarContainer);
+		container.appendChild(this._actionsContainer);
+
+		return container;
+	},
+
+	setOptions: function (options) {
+		L.setOptions(this, options);
+
+		for (var type in this._modes) {
+			if (this._modes.hasOwnProperty(type) && options.hasOwnProperty(type)) {
+				this._modes[type].handler.setOptions(options[type]);
+			}
+		}
+	}
+});
+
+/*L.Map.mergeOptions({
+	editControl: true
+});*/
+
+L.EditToolbar = L.Toolbar.extend({
+	options: {
+		edit: {
+			title: L.drawLocal.edit.toolbar.edit.title,
+			selectedPathOptions: {
+				color: '#fe57a1', /* Hot pink all the things! */
+				opacity: 0.6,
+				dashArray: '10, 10',
+
+				fill: true,
+				fillColor: '#fe57a1',
+				fillOpacity: 0.1
+			}
+		},
+		remove: {
+			title: L.drawLocal.edit.toolbar.remove.title
+		},
+		featureGroup: null /* REQUIRED! TODO: perhaps if not set then all layers on the map are selectable? */
+	},
+
+	initialize: function (options) {
+		// Need to set this manually since null is an acceptable value here
+		if (options.edit && typeof options.edit.selectedPathOptions === 'undefined') {
+			options.edit.selectedPathOptions = this.options.edit.selectedPathOptions;
+		}
+
+		options.edit = L.extend({}, this.options.edit, options.edit);
+		options.remove = L.extend({}, this.options.remove, options.remove);
+
+		L.Toolbar.prototype.initialize.call(this, options);
+
+		this._selectedFeatureCount = 0;
+	},
+
+	addToolbar: function (map) {
+		var container = L.DomUtil.create('div', 'leaflet-draw-section'),
+			buttonIndex = 0,
+			buttonClassPrefix = 'leaflet-draw-edit';
+
+		this._toolbarContainer = L.DomUtil.create('div', 'leaflet-draw-toolbar leaflet-bar');
+
+		this._map = map;
+
+		if (this.options.edit) {
+			this._initModeHandler(
+				new L.EditToolbar.Edit(map, {
+					featureGroup: this.options.featureGroup,
+					selectedPathOptions: this.options.edit.selectedPathOptions
+				}),
+				this._toolbarContainer,
+				buttonIndex++,
+				buttonClassPrefix
+			);
+		}
+
+		if (this.options.remove) {
+			this._initModeHandler(
+				new L.EditToolbar.Delete(map, {
+					featureGroup: this.options.featureGroup
+				}),
+				this._toolbarContainer,
+				buttonIndex++,
+				buttonClassPrefix
+			);
+		}
+
+		// Save button index of the last button, -1 as we would have ++ after the last button
+		this._lastButtonIndex = --buttonIndex;
+
+		// Create the actions part of the toolbar
+		this._actionsContainer = this._createActions([
+			{
+				title: L.drawLocal.edit.toolbar.edit.save.title,
+				text: L.drawLocal.edit.toolbar.edit.save.text,
+				callback: this._save,
+				context: this
+			},
+			{
+				title: L.drawLocal.edit.toolbar.edit.cancel.title,
+				text: L.drawLocal.edit.toolbar.edit.cancel.text,
+				callback: this.disable,
+				context: this
+			}
+		]);
+
+		// Add draw and cancel containers to the control container
+		container.appendChild(this._toolbarContainer);
+		container.appendChild(this._actionsContainer);
+
+		return container;
+	},
+
+	disable: function () {
+		if (!this.enabled()) { return; }
+
+		this._activeMode.handler.revertLayers();
+
+		L.Toolbar.prototype.disable.call(this);
+	},
+
+	_save: function () {
+		this._activeMode.handler.save();
+		this._activeMode.handler.disable();
+	}
+});
+
+L.EditToolbar.Edit = L.Handler.extend({
+	statics: {
+		TYPE: 'edit'
+	},
+
+	includes: L.Mixin.Events,
+
+	initialize: function (map, options) {
+		L.Handler.prototype.initialize.call(this, map);
+
+		// Set options to the default unless already set
+		this._selectedPathOptions = options.selectedPathOptions;
+
+		// Store the selectable layer group for ease of access
+		this._featureGroup = options.featureGroup;
+
+		if (!(this._featureGroup instanceof L.FeatureGroup)) {
+			throw new Error('options.featureGroup must be a L.FeatureGroup');
+		}
+
+		this._uneditedLayerProps = {};
+
+		// Save the type so super can fire, need to do this as cannot do this.TYPE :(
+		this.type = L.EditToolbar.Edit.TYPE;
+	},
+
+	enable: function () {
+		if (this._enabled) { return; }
+
+		L.Handler.prototype.enable.call(this);
+
+		this._featureGroup
+			.on('layeradd', this._enableLayerEdit, this)
+			.on('layerremove', this._disableLayerEdit, this);
+
+		this.fire('enabled', {handler: this.type});
+	},
+
+	disable: function () {
+		if (!this._enabled) { return; }
+
+		this.fire('disabled', {handler: this.type});
+
+		this._featureGroup
+			.off('layeradd', this._enableLayerEdit, this)
+			.off('layerremove', this._disableLayerEdit, this);
+
+		L.Handler.prototype.disable.call(this);
+	},
+
+	addHooks: function () {
+		if (this._map) {
+			this._featureGroup.eachLayer(this._enableLayerEdit, this);
+
+			this._tooltip = new L.Tooltip(this._map);
+			this._tooltip.updateContent({ text: L.drawLocal.edit.tooltip.text, subtext: L.drawLocal.edit.tooltip.subtext });
+
+			this._map.on('mousemove', this._onMouseMove, this);
+		}
+	},
+
+	removeHooks: function () {
+		if (this._map) {
+			// Clean up selected layers.
+			this._featureGroup.eachLayer(this._disableLayerEdit, this);
+
+			// Clear the backups of the original layers
+			this._uneditedLayerProps = {};
+
+			this._tooltip.dispose();
+			this._tooltip = null;
+
+			this._map.off('mousemove', this._onMouseMove, this);
+		}
+	},
+
+	revertLayers: function () {
+		this._featureGroup.eachLayer(function (layer) {
+			this._revertLayer(layer);
+		}, this);
+	},
+
+	save: function () {
+		var editedLayers = new L.LayerGroup();
+		this._featureGroup.eachLayer(function (layer) {
+			if (layer.edited) {
+				editedLayers.addLayer(layer);
+				layer.edited = false;
+			}
+		});
+		this._map.fire('draw:edited', {layers: editedLayers});
+	},
+
+	_backupLayer: function (layer) {
+		var id = L.Util.stamp(layer);
+
+		if (!this._uneditedLayerProps[id]) {
+			// Polyline, Polygon or Rectangle
+			if (layer instanceof L.Polyline || layer instanceof L.Polygon || layer instanceof L.Rectangle) {
+				this._uneditedLayerProps[id] = {
+					latlngs: L.LatLngUtil.cloneLatLngs(layer.getLatLngs())
+				};
+			} else if (layer instanceof L.Circle) {
+				this._uneditedLayerProps[id] = {
+					latlng: L.LatLngUtil.cloneLatLng(layer.getLatLng()),
+					radius: layer.getRadius()
+				};
+			} else { // Marker
+				this._uneditedLayerProps[id] = {
+					latlng: L.LatLngUtil.cloneLatLng(layer.getLatLng())
+				};
+			}
+		}
+	},
+
+	_revertLayer: function (layer) {
+		var id = L.Util.stamp(layer);
+		layer.edited = false;
+		if (this._uneditedLayerProps.hasOwnProperty(id)) {
+			// Polyline, Polygon or Rectangle
+			if (layer instanceof L.Polyline || layer instanceof L.Polygon || layer instanceof L.Rectangle) {
+				layer.setLatLngs(this._uneditedLayerProps[id].latlngs);
+			} else if (layer instanceof L.Circle) {
+				layer.setLatLng(this._uneditedLayerProps[id].latlng);
+				layer.setRadius(this._uneditedLayerProps[id].radius);
+			} else { // Marker
+				layer.setLatLng(this._uneditedLayerProps[id].latlng);
+			}
+		}
+	},
+
+	_toggleMarkerHighlight: function (marker) {
+		// This is quite naughty, but I don't see another way of doing it. (short of setting a new icon)
+		var icon = marker._icon;
+
+		icon.style.display = 'none';
+
+		if (L.DomUtil.hasClass(icon, 'leaflet-edit-marker-selected')) {
+			L.DomUtil.removeClass(icon, 'leaflet-edit-marker-selected');
+			// Offset as the border will make the icon move.
+			this._offsetMarker(icon, -4);
+
+		} else {
+			L.DomUtil.addClass(icon, 'leaflet-edit-marker-selected');
+			// Offset as the border will make the icon move.
+			this._offsetMarker(icon, 4);
+		}
+
+		icon.style.display = '';
+	},
+
+	_offsetMarker: function (icon, offset) {
+		var iconMarginTop = parseInt(icon.style.marginTop, 10) - offset,
+			iconMarginLeft = parseInt(icon.style.marginLeft, 10) - offset;
+
+		icon.style.marginTop = iconMarginTop + 'px';
+		icon.style.marginLeft = iconMarginLeft + 'px';
+	},
+
+	_enableLayerEdit: function (e) {
+		var layer = e.layer || e.target || e,
+			pathOptions;
+
+		// Back up this layer (if haven't before)
+		this._backupLayer(layer);
+
+		// Update layer style so appears editable
+		if (this._selectedPathOptions) {
+			pathOptions = L.Util.extend({}, this._selectedPathOptions);
+
+			if (layer instanceof L.Marker) {
+				this._toggleMarkerHighlight(layer);
+			} else {
+				layer.options.previousOptions = layer.options;
+
+				// Make sure that Polylines are not filled
+				if (!(layer instanceof L.Circle) && !(layer instanceof L.Polygon) && !(layer instanceof L.Rectangle)) {
+					pathOptions.fill = false;
+				}
+
+				layer.setStyle(pathOptions);
+			}
+		}
+
+		if (layer instanceof L.Marker) {
+			layer.dragging.enable();
+			layer.on('dragend', this._onMarkerDragEnd);
+		} else {
+			layer.editing.enable();
+		}
+	},
+
+	_disableLayerEdit: function (e) {
+		var layer = e.layer || e.target || e;
+		layer.edited = false;
+
+		// Reset layer styles to that of before select
+		if (this._selectedPathOptions) {
+			if (layer instanceof L.Marker) {
+				this._toggleMarkerHighlight(layer);
+			} else {
+				// reset the layer style to what is was before being selected
+				layer.setStyle(layer.options.previousOptions);
+				// remove the cached options for the layer object
+				delete layer.options.previousOptions;
+			}
+		}
+
+		if (layer instanceof L.Marker) {
+			layer.dragging.disable();
+			layer.off('dragend', this._onMarkerDragEnd, this);
+		} else {
+			layer.editing.disable();
+		}
+	},
+
+	_onMarkerDragEnd: function (e) {
+		var layer = e.target;
+		layer.edited = true;
+	},
+
+	_onMouseMove: function (e) {
+		this._tooltip.updatePosition(e.latlng);
+	}
+});
+
+L.EditToolbar.Delete = L.Handler.extend({
+	statics: {
+		TYPE: 'remove' // not delete as delete is reserved in js
+	},
+
+	includes: L.Mixin.Events,
+
+	initialize: function (map, options) {
+		L.Handler.prototype.initialize.call(this, map);
+
+		L.Util.setOptions(this, options);
+
+		// Store the selectable layer group for ease of access
+		this._deletableLayers = this.options.featureGroup;
+
+		if (!(this._deletableLayers instanceof L.FeatureGroup)) {
+			throw new Error('options.featureGroup must be a L.FeatureGroup');
+		}
+
+		// Save the type so super can fire, need to do this as cannot do this.TYPE :(
+		this.type = L.EditToolbar.Delete.TYPE;
+	},
+
+	enable: function () {
+		if (this._enabled) { return; }
+
+		L.Handler.prototype.enable.call(this);
+
+		this._deletableLayers
+			.on('layeradd', this._enableLayerDelete, this)
+			.on('layerremove', this._disableLayerDelete, this);
+
+		this.fire('enabled', { handler: this.type});
+	},
+
+	disable: function () {
+		if (!this._enabled) { return; }
+
+		L.Handler.prototype.disable.call(this);
+
+		this._deletableLayers
+			.off('layeradd', this._enableLayerDelete, this)
+			.off('layerremove', this._disableLayerDelete, this);
+
+		this.fire('disabled', { handler: this.type});
+	},
+
+	addHooks: function () {
+		if (this._map) {
+			this._deletableLayers.eachLayer(this._enableLayerDelete, this);
+			this._deletedLayers = new L.layerGroup();
+
+			this._tooltip = new L.Tooltip(this._map);
+			this._tooltip.updateContent({ text: L.drawLocal.edit.toolbar.remove.tooltip });
+
+			this._map.on('mousemove', this._onMouseMove, this);
+		}
+	},
+
+	removeHooks: function () {
+		if (this._map) {
+			this._deletableLayers.eachLayer(this._disableLayerDelete, this);
+			this._deletedLayers = null;
+
+			this._tooltip.dispose();
+			this._tooltip = null;
+
+			this._map.off('mousemove', this._onMouseMove, this);
+		}
+	},
+
+	revertLayers: function () {
+		// Iterate of the deleted layers and add them back into the featureGroup
+		this._deletedLayers.eachLayer(function (layer) {
+			this._deletableLayers.addLayer(layer);
+		}, this);
+	},
+
+	save: function () {
+		this._map.fire('draw:deleted', { layers: this._deletedLayers });
+	},
+
+	_enableLayerDelete: function (e) {
+		var layer = e.layer || e.target || e;
+
+		layer.on('click', this._removeLayer, this);
+	},
+
+	_disableLayerDelete: function (e) {
+		var layer = e.layer || e.target || e;
+
+		layer.off('click', this._removeLayer, this);
+
+		// Remove from the deleted layers so we can't accidently revert if the user presses cancel
+		this._deletedLayers.removeLayer(layer);
+	},
+
+	_removeLayer: function (e) {
+		var layer = e.layer || e.target || e;
+
+		this._deletableLayers.removeLayer(layer);
+
+		this._deletedLayers.addLayer(layer);
+	},
+
+	_onMouseMove: function (e) {
+		this._tooltip.updatePosition(e.latlng);
+	}
+});
+
+
+}(this, document));

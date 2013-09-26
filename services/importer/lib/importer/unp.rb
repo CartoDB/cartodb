@@ -81,7 +81,7 @@ module CartoDB
       end #source_file_for
 
       def command_for(path)
-        "`which unp` #{path}"
+        "`which unp` #{path} -- -o"
       end #command_for
 
      def supported?(filename)

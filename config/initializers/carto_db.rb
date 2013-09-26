@@ -136,6 +136,10 @@ module CartoDB
       title: 'Over account table limit, please upgrade',
       what_about: "To upgrade your account, go to your Dashboard and click Settings. Click 'Upgrade your server'. Follow the directions for choosing a larger size and setting up your payment information."
     },
+    8003 => {
+      title: 'Error creating table from SQL query',
+      what_about: "We couldn't create a table from your query. Please check it doesn't return duplicate column names. Please <a href='mailto:support@cartodb.com?subject=Unknown error'>contact us</a> if you need help editing your query."
+    },
     99999 => {
       title: 'Unknown',
       what_about: "Sorry, something went wrong and we're not sure what. Try

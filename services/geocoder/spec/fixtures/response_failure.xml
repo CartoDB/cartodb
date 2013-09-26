@@ -1,0 +1,1 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?><ns2:Error xmlns:ns2="http://www.navteq.com/lbsp/Errors/1" type="ApplicationError" subtype="InvalidInputData"><Details>Input parameter validation failed. JobId: 9rFyj7kbGMmpF50ZUFAkRnroEiOpDOEZ Email Address is missing!</Details><AdditionalData key="mailto"/></ns2:Error>

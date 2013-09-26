@@ -37,7 +37,7 @@ describe CsvNormalizer do
     it 'guesses the encoding' do
       fixture = utf16le_factory
       csv     = CsvNormalizer.new(fixture)
-      csv.encoding.must_equal 'UTF-8'
+      csv.encoding.must_equal 'ISO-8859-1'
 
       FileUtils.rm(fixture)
     end

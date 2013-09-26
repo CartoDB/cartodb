@@ -1,6 +1,6 @@
 if Cartodb.config[:redis].blank?
   raise <<-MESSAGE
-Please, configure Redis in your config/app_config.yml file as this:
+Please, configure Redis in your config/app_config.yml file like this:
   development:
     ...
     redis:
@@ -20,18 +20,27 @@ default_databases = {
   redis_migrator_logs: 6
 }
 
-databases = conf[:databases] || default_databases
+databases = if conf[:databases].blank?
+  default_databases
+else
+  conf[:databases].symbolize_keys
+end
 
 $tables_metadata     = Redis.new(redis_conf.merge(db: databases[:tables_metadata]))
 $api_credentials     = Redis.new(redis_conf.merge(db: databases[:api_credentials]))
 $users_metadata      = Redis.new(redis_conf.merge(db: databases[:users_metadata]))
 $redis_migrator_logs = Redis.new(redis_conf.merge(db: databases[:redis_migrator_logs]))
 
-begin
-  $tables_metadata.ping
-  $api_credentials.ping
-  $users_metadata.ping
-  $redis_migrator_logs.ping
-rescue => e
-  raise "Error when setting up Redis databases. #{e}"
+# When in the "test" environment we don't expect a Redis
+# server to be up and running at this point. Later code
+# will take care of starting one (see spec/spec_helper.rb)
+unless Rails.env.test?
+  begin
+    $tables_metadata.ping
+    $api_credentials.ping
+    $users_metadata.ping
+    $redis_migrator_logs.ping
+  rescue => e
+    raise "Error connecting to Redis databases: #{e}" 
+  end
 end

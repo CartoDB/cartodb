@@ -522,7 +522,7 @@
       background:white;
 
       &:before {
-        display:block;
+        display:none;
         content:' ';
         position:absolute;
         top:1px;
@@ -538,7 +538,7 @@
     }
 
     &.enabled {
-      span.radio{
+      span.check{
         &:before {
           display:block;
         }
@@ -546,6 +546,9 @@
     }
 
     &.disabled {
+
+      &.light:hover { color: #999; }
+
       span.check{
         &:before {
           display:none;

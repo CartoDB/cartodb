@@ -1,0 +1,44 @@
+<div class="cartodb-popup header green">
+  <a href="#close" class="cartodb-popup-close-button close">x</a>
+  <div class="cartodb-popup-header">
+    {{#content.fields}}
+    {{^position}}
+    {{#title}}
+    {{#alternative_name}}
+    <h4>{{alternative_name}}</h4>
+    {{/alternative_name}}
+    {{^alternative_name}}
+    <h4>{{name}}</h4>
+    {{/alternative_name}}
+    <h1>{{=<% %>=}}{{<%={{ }}=%>{{{ name }}}{{=<% %>=}}}}<%={{ }}=%></h1>
+    {{/title}}
+    {{^title}}
+    <h1>{{=<% %>=}}{{<%={{ }}=%>{{{ name }}}{{=<% %>=}}}}<%={{ }}=%></h1>
+    {{/title}}
+    <span class="separator"></span>
+    {{/position}}
+    {{/content.fields}}
+  </div>
+  <div class="cartodb-popup-content-wrapper">
+    <div class="cartodb-popup-content">
+      {{#content.fields}}
+      {{#position}}
+      {{#title}}
+      {{#alternative_name}}
+      <h4>{{alternative_name}}</h4>
+      {{/alternative_name}}
+      {{^alternative_name}}
+      <h4>{{name}}</h4>
+      {{/alternative_name}}
+      <p>{{=<% %>=}}{{<%={{ }}=%>{{{ name }}}{{=<% %>=}}}}<%={{ }}=%></p>
+      {{/title}}
+      {{^title}}
+      <p>{{=<% %>=}}{{<%={{ }}=%>{{{ name }}}{{=<% %>=}}}}<%={{ }}=%></p>
+      {{/title}}
+      {{/position}}
+      {{/content.fields}}
+    </div>
+  </div>
+  <div class="cartodb-popup-tip-container">
+  </div>
+</div>

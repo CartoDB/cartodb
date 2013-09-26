@@ -110,6 +110,9 @@ CartoDB::Application.routes.draw do
         resources :layers, :only                    => [:show, :index, :create, :update, :destroy]
       end
 
+      # Geocoder
+      resources :geocodings, :only                  => [:create, :show, :index]      
+
       get     'viz/tags' => 'tags#index', :as => 'list_tags'
       get     'viz'                                 => 'visualizations#index'
       post    'viz'                                 => 'visualizations#create'

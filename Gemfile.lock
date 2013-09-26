@@ -190,6 +190,9 @@ GEM
       rack (~> 1.2)
     oily_png (1.0.3)
       chunky_png (~> 1.2.1)
+    parallel (0.7.1)
+    parallel_tests (0.15.0)
+      parallel
     pg (0.11.0)
     poltergeist (1.0.2)
       capybara (~> 1.1)
@@ -254,7 +257,7 @@ GEM
       rgeo (>= 0.2.8)
     rollbar (0.9.6)
       multi_json (~> 1.5)
-    roo (1.11.2)
+    roo (1.12.1)
       nokogiri
       rubyzip
       spreadsheet (> 0.6.4)
@@ -359,6 +362,7 @@ DEPENDENCIES
   oauth (= 0.4.5)
   oauth-plugin (= 0.4.0.pre4)
   oily_png (~> 1.0.2)
+  parallel_tests
   pg (= 0.11)
   poltergeist (>= 1.0.0)
   rack (= 1.4.1)
@@ -376,7 +380,7 @@ DEPENDENCIES
   rgeo (= 0.3.2)
   rgeo-geojson (= 0.2.1)
   rollbar (= 0.9.6)
-  roo (= 1.11.2)
+  roo (= 1.12.1)
   rspec-rails (= 2.10.1)
   ruby-ole (= 1.2.11.3)
   rubyzip (= 0.9.9)

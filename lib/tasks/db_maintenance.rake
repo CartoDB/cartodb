@@ -362,5 +362,6 @@ namespace :cartodb do
 
       CartoDB::GenericMigrator.new(args[:version]).rollback!
     end
+
   end
 end

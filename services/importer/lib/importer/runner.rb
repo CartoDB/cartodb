@@ -1,8 +1,8 @@
 # encoding: utf-8
 require_relative './loader'
-require_relative './shp_loader'
 require_relative './osm_loader'
 require_relative './tiff_loader'
+require_relative './sql_loader'
 require_relative './unp'
 require_relative './column'
 require_relative './exceptions'
@@ -12,7 +12,7 @@ module CartoDB
     class Runner
       QUOTA_MAGIC_NUMBER      = 0.3
       DEFAULT_AVAILABLE_QUOTA = 2 ** 30
-      LOADERS                 = [Loader, ShpLoader, OsmLoader, TiffLoader]
+      LOADERS                 = [Loader, OsmLoader, TiffLoader]
       DEFAULT_LOADER          = Loader
 
       def initialize(pg_options, downloader, log=nil, available_quota=nil,
@@ -29,7 +29,7 @@ module CartoDB
         self.tracker = tracker_block
         tracker.call('uploading')
         log.append "Getting file from #{downloader.url}"
-        downloader.run
+        downloader.run(available_quota)
 
         log.append "Starting import for #{downloader.source_file.fullpath}"
         log.append "Unpacking #{downloader.source_file.fullpath}"
@@ -39,7 +39,7 @@ module CartoDB
         tracker.call('unpacking')
         unpacker.run(downloader.source_file.fullpath)
         unpacker.source_files.each { |source_file| import(source_file) }
-        #unpacker.clean_up
+        unpacker.clean_up
         self
       rescue => exception
         log.append exception.to_s

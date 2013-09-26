@@ -11,6 +11,7 @@ class User < Sequel::Model
   one_to_many :maps
   one_to_many :assets
   one_to_many :data_imports
+  one_to_many :geocodings, order: :created_at.desc
 
   many_to_many :layers, :order => :order, :after_add => proc { |user, layer|
     layer.set_default_order(user)
@@ -20,7 +21,7 @@ class User < Sequel::Model
   set_allowed_columns :email, :map_enabled, :password_confirmation, 
     :quota_in_bytes, :table_quota, :account_type, :private_tables_enabled, 
     :period_end_date, :map_view_quota, :max_layers, :database_timeout, 
-    :user_timeout, :map_view_block_price
+    :user_timeout, :map_view_block_price, :geocoding_quota
   plugin :validation_helpers
   plugin :json_serializer
   plugin :dirty
@@ -120,9 +121,8 @@ class User < Sequel::Model
   #        example: 0.20 will get all users at 80% of their map view limit
   #
   def self.overquota(delta = 0)
-    User.all.select do |u|
+    User.where(enabled: true).all.select do |u|
         limit = u.map_view_quota.to_i - (u.map_view_quota.to_i * delta)
-        u.set_old_api_calls # updates map views stats older than 3 hours
         u.get_api_calls(from: u.last_billing_cycle, to: Date.today).sum > limit
     end
   end

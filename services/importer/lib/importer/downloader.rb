@@ -32,10 +32,15 @@ module CartoDB
                             DataRepository::Filesystem::Local.new(temporary_directory)
       end #initialize
 
-      def run
+      def run(available_quota_in_bytes=nil)
         unless url =~ URL_RE
           self.source_file = SourceFile.new(url)
           return self
+        end
+
+        response          = Typhoeus.head(translate(url), followlocation: true)
+        if content_length_from(response) > available_quota_in_bytes.to_i
+          raise StorageQuotaExceededError if available_quota_in_bytes
         end
 
         response          = Typhoeus.get(translate(url), followlocation: true)
@@ -49,6 +54,10 @@ module CartoDB
       def name_from(headers, url)
         name_from_http(headers) || name_in(url)
       end #filename_from
+
+      def content_length_from(response)
+        response.headers.fetch('Content-Length', -1).to_i
+      end #content_length_from
 
       attr_reader :source_file
       attr_reader :url

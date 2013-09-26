@@ -1,6 +1,6 @@
 if Cartodb.config[:redis].blank?
   raise <<-MESSAGE
-Please, configure Redis in your config/app_config.yml file as this:
+Please, configure Redis in your config/app_config.yml file like this:
   development:
     ...
     redis:
@@ -9,16 +9,38 @@ Please, configure Redis in your config/app_config.yml file as this:
 MESSAGE
 end
 
-
 # Redis interfaces definition:
-redis_conf = Cartodb.config[:redis].select { |k, v| [:host, :port].include?(k) }
+conf = Cartodb.config[:redis].symbolize_keys
+redis_conf = conf.select { |k, v| [:host, :port].include?(k) }
 
-$tables_metadata      = Redis.new(redis_conf.merge(:db => 0))
-# TO ACTIVATE when decided how to do it more efficiently without filling the Redis
-#$queries_log         = Redis.new(Cartodb.config[:redis].merge(:db => 1))
-$threshold            = Redis.new(redis_conf.merge(:db => 2))
-$api_credentials      = Redis.new(redis_conf.merge(:db => 3))
-$users_metadata       = Redis.new(redis_conf.merge(:db => 5))
-$redis_migrator_logs  = Redis.new(redis_conf.merge(:db => 6))
-#$layers_metadata     = Redis.new(redis_conf.merge(:db => 7))
+default_databases = {
+  tables_metadata:     0,
+  api_credentials:     3,
+  users_metadata:      5,
+  redis_migrator_logs: 6
+}
 
+databases = if conf[:databases].blank?
+  default_databases
+else
+  conf[:databases].symbolize_keys
+end
+
+$tables_metadata     = Redis.new(redis_conf.merge(db: databases[:tables_metadata]))
+$api_credentials     = Redis.new(redis_conf.merge(db: databases[:api_credentials]))
+$users_metadata      = Redis.new(redis_conf.merge(db: databases[:users_metadata]))
+$redis_migrator_logs = Redis.new(redis_conf.merge(db: databases[:redis_migrator_logs]))
+
+# When in the "test" environment we don't expect a Redis
+# server to be up and running at this point. Later code
+# will take care of starting one (see spec/spec_helper.rb)
+unless Rails.env.test?
+  begin
+    $tables_metadata.ping
+    $api_credentials.ping
+    $users_metadata.ping
+    $redis_migrator_logs.ping
+  rescue => e
+    raise "Error connecting to Redis databases: #{e}" 
+  end
+end

@@ -43,7 +43,7 @@ end
 # Importer
 gem "ruby-ole",                "1.2.11.3"
 gem "rchardet19",              "1.3.5"
-gem "roo",                     "1.11.2"
+gem "roo",                     "1.12.1"
 gem "spreadsheet",             "0.6.5.9"
 gem "google-spreadsheet-ruby", "0.1.8"
 gem "rubyzip",                 "0.9.9"
@@ -97,4 +97,5 @@ group :development, :test do
   #gem "minitest-ci",            "~> 3.0.1", :require => false
   # Server
   gem 'thin',                           require: false
+  gem 'parallel_tests'
 end

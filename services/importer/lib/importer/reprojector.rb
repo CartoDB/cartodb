@@ -47,7 +47,7 @@ module CartoDB
       attr_reader :db, :schema
 
       def qualified_table_name_for(table_name)
-        "#{schema}.#{table_name}"
+        %Q("#{schema}"."#{table_name}")
       end #qualified_table_name
     end # Importer2
   end # Reprojector

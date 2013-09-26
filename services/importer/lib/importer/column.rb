@@ -44,12 +44,13 @@ module CartoDB
       end #type
 
       def geometrify
-        raise EmptyGeometryColumn if empty?
+        raise                     if empty?
         convert_from_wkt          if wkt?
         convert_from_kml_multi    if kml_multi?
         convert_from_kml_point    if kml_point?
         convert_from_geojson      if geojson?
         cast_to('geometry')
+        convert_to_2d
         self
       end #geometrify
 
@@ -79,7 +80,8 @@ module CartoDB
         db.run(%Q{
           UPDATE #{qualified_table_name}
           SET #{column_name} = public.ST_SetSRID(
-            public.ST_GeomFromKML(#{column_name}), #{DEFAULT_SRID}
+            public.ST_GeomFromKML(#{column_name}),
+            #{DEFAULT_SRID}
           )
         })
       end #convert_from_kml_point
@@ -94,6 +96,13 @@ module CartoDB
           )
         })
       end #convert_from_kml_multi
+
+      def convert_to_2d
+        db.run(%Q{
+          UPDATE #{qualified_table_name}
+          SET #{column_name} = public.ST_Force_2D(#{column_name})
+        })
+      end #convert_to_2d
 
       def wkb?
         !!(sample.to_s =~ WKB_RE)
@@ -193,7 +202,7 @@ module CartoDB
       attr_reader :job, :db, :table_name, :column_name, :schema
 
       def qualified_table_name
-        "#{schema}.#{table_name}"
+        %Q("#{schema}"."#{table_name}")
       end #qualified_table_name
     end # Column
   end # Importer2

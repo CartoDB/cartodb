@@ -10,6 +10,7 @@ describe DataImport do
   end
 
   it 'should allow to append data to an existing table' do
+    pending "not yet implemented"
     fixture = '/../db/fake_data/column_string_to_boolean.csv'
     expect do
       DataImport.create(
@@ -105,32 +106,6 @@ describe DataImport do
     table.should_not be_nil
     table.name.should be == 'clubbing'
     table.records[:rows].should have(10).items
-  end
-
-  it 'should allow to reimport a previously exported as sql table' do
-    data_import = DataImport.create(
-      :user_id       => @user.id,
-      :data_source   => '/../db/fake_data/clubbing.csv',
-      :updated_at    => Time.now ).run_import!
-
-    table = Table.filter(:name => 'clubbing').all.last
-    table.records.count.should be == 4
-
-    file = File.new(Rails.root.join('tmp/clubbing.sql.zip'), 'w+')
-    file.write table.to_sql
-    file.close
-
-    table.destroy
-
-    data_import = DataImport.create(
-      :user_id       => @user.id,
-      :data_source   => '/../tmp/clubbing.sql.zip',
-      :updated_at    => Time.now ).run_import!
-
-    File.delete(file.path)
-
-    table = Table.filter(:name => 'clubbing').all.last
-    table.records.count.should be == 4
   end
 
   it "don't touch created_at/updated_at fields if already present in the

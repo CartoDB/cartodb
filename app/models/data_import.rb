@@ -72,6 +72,7 @@ class DataImport < Sequel::Model
     if !current_user.remaining_table_quota.nil? && 
     current_user.remaining_table_quota.to_i < number_of_tables
       self.error_code = 8002
+      self.state      = 'failure'
       save
       log.append("Over account table limit, please upgrade")
       raise CartoDB::QuotaExceeded, "More tables required"
@@ -232,7 +233,8 @@ class DataImport < Sequel::Model
     data_source ||= self.data_source
     downloader  = CartoDB::Importer2::Downloader.new(data_source)
     tracker     = lambda { |state| self.state = state; save }
-    runner      = CartoDB::Importer2::Runner.new(pg_options, downloader, log)
+    runner      = CartoDB::Importer2::Runner.new(pg_options, downloader, log,
+                  current_user.remaining_quota)
     runner.run(&tracker)
     self.results = runner.results
 
@@ -265,6 +267,9 @@ class DataImport < Sequel::Model
     table_owner.in_database.run(%Q{CREATE TABLE #{table_name} AS #{query}})
 
     table_name
+  rescue => exception
+    @create_table_from_query_error = true
+    raise
   end
 
   def migrate_existing(imported_name=migrate_table, name=nil)
@@ -282,8 +287,8 @@ class DataImport < Sequel::Model
       @new_table.map.recalculate_bounds!
       # check if the table fits into owner's remaining quota
       if table_owner.remaining_quota < 0
-        self.log_error("Over storage quota, removing table" )
-        self.set_error_code(8001)
+        self.log.append("Over storage quota, removing table" )
+        self.error_code = 8001
         @new_table.destroy
         return false
       end
@@ -341,11 +346,12 @@ class DataImport < Sequel::Model
   end #new_importer
 
   def success_status_from(results)
-    results.inject(true) { |memo, result| result.fetch(:success) && memo }
+    results.inject(true) { |memo, result| result.fetch(:success, false) && memo }
   end #success_status_from
 
   def errors_from(results)
     return [8002] if @table_quota_exceeded
+    return [8003] if @create_table_from_query_error
     results.map { |result| result.fetch(:error, nil) }.compact
   end #errors_from
 
@@ -355,13 +361,20 @@ class DataImport < Sequel::Model
       SET SCHEMA public
     }) unless schema == 'public'
 
-    candidates  = table_owner.tables.map(&:name)
-    name        = Table.get_valid_table_name(name, name_candidates: candidates)
+    rename_attempts = 0
 
-    current_user.in_database.execute(%Q{
-      ALTER TABLE "public"."#{table_name}"
-      RENAME TO #{name}
-    })
+    begin
+      candidates  = table_owner.reload.tables.map(&:name)
+      name        = Table.get_valid_table_name(name, name_candidates: candidates)
+
+      rename_attempts = rename_attempts + 1
+      current_user.in_database.execute(%Q{
+        ALTER TABLE "public"."#{table_name}"
+        RENAME TO "#{name}"
+      })
+    rescue
+      retry unless rename_attempts > 1
+    end
 
     table                         = Table.new
     table.user_id                 = table_owner.id
@@ -416,7 +429,7 @@ class DataImport < Sequel::Model
     payload = {
       name:           result.fetch(:name),
       extension:      result.fetch(:extension),
-      success:        result.fetch(:success),
+      success:        result.fetch(:success, nil),
       error:          result.fetch(:error, nil),
       file_url:       public_url,
       distinct_id:    current_user.username,
@@ -426,7 +439,8 @@ class DataImport < Sequel::Model
       email:          current_user.email,
       log:            log.to_s
     }
-    payload.merge!(error_title: get_error_text) unless result.fetch(:success)
+    payload.merge!(error_title: get_error_text) unless result.fetch(:success,
+    false)
     payload
   end
 

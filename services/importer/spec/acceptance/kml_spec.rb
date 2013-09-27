@@ -42,6 +42,15 @@ describe 'KML regression tests' do
     geometry_type_for(runner).wont_be_nil
   end
 
+  it 'imports multi-layer KMLs' do
+    filepath    = path_to('multiple_layer.kml')
+    downloader  = Downloader.new(filepath)
+    runner      = Runner.new(@pg_options, downloader)
+    runner.run
+
+    geometry_type_for(runner).wont_be_nil
+  end
+
   it 'raises if KML just contains a link to the actual KML url' do
     filepath    = path_to('abandoned.kml')
     downloader  = Downloader.new(filepath)

@@ -1,10 +1,12 @@
 # encoding: utf-8
 require 'open3'
+require 'dbf'
 require_relative './exceptions'
 
 module CartoDB
   module Importer2
     class ShpNormalizer
+      DEFAULT_ENCODING = 'LATIN1'
       NORMALIZER_RELATIVE_PATH = 
         "../../../../../lib/importer/misc/shp_normalizer.py"
 
@@ -19,8 +21,10 @@ module CartoDB
 
       def encoding
         normalize
-        encoding = normalizer_output.fetch(:encoding)
-        encoding = 'LATIN1' if encoding == 'None' 
+        dbf       = filepath.gsub(%r{\.shp$}, '.dbf')
+        encoding  = DBF::Table.new(dbf).encoding || 
+                    normalizer_output.fetch(:encoding, nil) || 
+                    DEFAULT_ENCODING
         return codepage_for(encoding) if windows?(encoding)
         return(tab_encoding || encoding) if tab?
         encoding
@@ -85,11 +89,11 @@ module CartoDB
       end #normalizer_command
 
       def codepage_for(encoding)
-        encoding.gsub(/windows-/, 'WIN')
+        encoding.gsub(/windows-|cp/, 'WIN')
       end #codepage_for
 
       def windows?(encoding)
-        !!(encoding =~ /windows/)
+        !!(encoding =~ /(windows-|cp)\d+/)
       end #windows?
     end # ShpNormalizer
   end # Importer

@@ -38,16 +38,18 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
     this.set({fields: []});
   },
 
-  saveFields: function() {
-    this.set('old_fields', _.clone(this.get('fields')));
+  saveFields: function(where) {
+    where = where || 'old_fields';
+    this.set(where, _.clone(this.get('fields')));
   },
 
   fieldCount: function() {
     return this.get('fields').length
   },
 
-  restoreFields: function(whiteList) {
-    var fields = this.get('old_fields')
+  restoreFields: function(whiteList, from) {
+    from = from || 'old_fields';
+    var fields = this.get(from);
     if(whiteList) {
       fields = fields.filter(function(f) {
         return _.contains(whiteList, f.name);
@@ -56,7 +58,7 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
     if(fields && fields.length) {
       this._setFields(fields);
     }
-    this.unset('old_fields');
+    this.unset(from);
   },
 
   _cloneFields: function() {

@@ -1,3 +1,7 @@
+3.2.00 (09//30/2013)
+-----
+- ported to leaflet 0.6 #55
+
 3.1.14 (09//24/2013)
 -----
 - fixed problem with IE9 when the map has only one layer

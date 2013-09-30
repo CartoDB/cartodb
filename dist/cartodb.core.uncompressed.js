@@ -1,5 +1,5 @@
-// version: 3.1.14
-// sha: a4a2e0b9af986850f0c1e0350e3c155500ecc654
+// version: 3.2.00
+// sha: 7576826523c3f64eb3922457a0de052916f3537e
 ;(function() {
   this.cartodb = {};
   var Backbone = {};
@@ -1141,7 +1141,7 @@ var Mustache;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.1.14';
+    cdb.VERSION = '3.2.00';
 
     cdb.CARTOCSS_VERSIONS = {
       '2.0.0': '',
@@ -1531,7 +1531,7 @@ var Mustache;
       }
     }
 
-    var isGetRequest = options.type == 'get' || params.type == 'get';
+    var isGetRequest = options.type ? options.type == 'get' : params.type == 'get';
     // generate url depending on the http method
     params.url = this._host() ;
     if(isGetRequest) {

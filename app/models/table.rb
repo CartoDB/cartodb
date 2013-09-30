@@ -1490,16 +1490,20 @@ SQL
     geojson = geojson.to_json if geojson.is_a? Hash
 
     geojson = RGeo::GeoJSON.decode(geojson, :json_parser => :json)
-      .try(:as_text)
-
+    raise(CartoDB::InvalidGeoJSONFormat, "Invalid geometry") unless valid_geometry?(geojson)
+    
     begin
       owner.in_database.run(%Q{UPDATE "#{self.name}" SET the_geom =
-      ST_GeomFromText('#{geojson}',#{CartoDB::SRID}) where cartodb_id =
+      ST_GeomFromText('#{geojson.as_text}',#{CartoDB::SRID}) where cartodb_id =
       #{primary_key}})
           
     rescue => exception
-      raise CartoDB::InvalidGeoJSONFormat
+      raise CartoDB::InvalidGeoJSONFormat, "Invalid geometry"
     end
+  end
+
+  def valid_geometry?(feature)
+    !feature.nil? && !feature.is_empty?
   end
 
   def manage_tags

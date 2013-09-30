@@ -1,3 +1,11 @@
+2.2.0
+-----
+* Fixed Bugs
+  * Malformed polygons fail without warning
+
+* Improvements
+  * Ported cartodb to leaflet 0.6
+
 2.1.5
 -----
 * Fixed Bugs

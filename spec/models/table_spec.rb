@@ -1019,7 +1019,7 @@ describe Table do
 
       lat = -43.941
       lon = 3.429
-      the_geom = %Q{\{"type":"Point","coordinates":[#{lon},#{lat}]\}}
+      the_geom = %Q{{"type":"Point","coordinates":[#{lon},#{lat}]}}
       pk = table.insert_row!({:name => "First check_in", :the_geom => the_geom})
 
       query_result = @user.run_query("select ST_X(the_geom) as lon, ST_Y(the_geom) as lat from #{table.name} where cartodb_id = #{pk} limit 1")
@@ -1062,7 +1062,7 @@ describe Table do
       lon = 3.429
       pk = table.insert_row!({:name => "First check_in"})
 
-      the_geom = %Q{\{"type":"Point","coordinates":[#{lon},#{lat}]\}}
+      the_geom = %Q{{"type":"Point","coordinates":[#{lon},#{lat}]}}
       table.update_row!(pk, {:the_geom => the_geom})
 
       query_result = @user.run_query("select ST_X(the_geom) as lon, ST_Y(the_geom) as lat from #{table.name} where cartodb_id = #{pk} limit 1")
@@ -1441,7 +1441,7 @@ describe Table do
       lon = 3.429
       pk = table.insert_row!({:name => "First check_in"})
 
-      the_geom = %Q{\{"type":"Point","coordinates":[#{lon},#{lat}]\}}
+      the_geom = %Q{{"type":"Point","coordinates":[#{lon},#{lat}]}}
       table.update_row!(pk, {:the_geom => the_geom})
 
       query_result = @user.run_query("select ST_X(ST_TRANSFORM(the_geom_webmercator,4326)) as lon, ST_Y(ST_TRANSFORM(the_geom_webmercator,4326)) as lat from #{table.name} where cartodb_id = #{pk} limit 1")
@@ -1458,7 +1458,7 @@ describe Table do
       lon = 3.429
       pk = table.insert_row!({:name => "First check_in"})
 
-      the_geom = %Q{\{"type":"Point","coordinates":[#{lon},#{lat}]\}}
+      the_geom = %Q{{"type":"Point","coordinates":[#{lon},#{lat}]}}
       table.update_row!(pk, {:the_geom => the_geom})
 
       query_result = @user.run_query("select ST_X(ST_TRANSFORM(the_geom_webmercator,4326)) as lon, ST_Y(ST_TRANSFORM(the_geom_webmercator,4326)) as lat from #{table.name} where cartodb_id = #{pk} limit 1")
@@ -1525,7 +1525,7 @@ describe Table do
 
         lat = -43.941
         lon = 3.429
-        the_geom = %Q{\{"type":"Point","coordinates":[#{lon},#{lat}]\}}
+        the_geom = %Q{{"type":"Point","coordinates":[#{lon},#{lat}]}}
         pk = table.insert_row!({:name => "First check_in", :the_geom => the_geom})
 
         records = table.records(:page => 0, :rows_per_page => 1)
@@ -1541,7 +1541,7 @@ describe Table do
 
         lat = -43.941
         lon = 3.429
-        the_geom = %Q{\{"type":""""Point","coordinates":[#{lon},#{lat}]\}}
+        the_geom = %Q{{"type":""""Point","coordinates":[#{lon},#{lat}]I}}
         lambda {
           table.insert_row!({:name => "First check_in", :the_geom => the_geom})
         }.should raise_error(CartoDB::InvalidGeoJSONFormat)

@@ -32,7 +32,7 @@ module CartoDB
         log.append "Getting file from #{downloader.url}"
         downloader.run(available_quota)
 
-        return self unless modified?
+        return self unless remote_data_updated?
 
         log.append "Starting import for #{downloader.source_file.fullpath}"
         log.append "Unpacking #{downloader.source_file.fullpath}"
@@ -85,7 +85,7 @@ module CartoDB
         }
       end #loader_for
 
-      def modified?
+      def remote_data_updated?
         downloader.modified?
       end
 
@@ -94,6 +94,7 @@ module CartoDB
       end #tracker
 
       def success?
+        return true unless remote_data_updated?
         results.select(&:success?).length > 0
       end
 

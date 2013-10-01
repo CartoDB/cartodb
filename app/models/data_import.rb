@@ -10,6 +10,7 @@ require_relative '../../lib/cartodb/github_reporter'
 require_relative '../../lib/cartodb_stats'
 require_relative '../../services/track_record/track_record/log'
 require_relative '../../config/initializers/redis'
+require_relative '../../services/importer/lib/importer'
 
 class DataImport < Sequel::Model
   REDIS_LOG_KEY_PREFIX          = 'importer'
@@ -262,10 +263,19 @@ class DataImport < Sequel::Model
   end #pg_options
 
   def new_importer
-    tracker   = lambda { |state| self.state = state; save }
-    importer  = CartoDB::Connector::Importer.new(
-      current_user, data_source, pg_options, log, Table
-    ).run(tracker)
+    tracker       = lambda { |state| self.state = state; save }
+    downloader    = CartoDB::Importer2::Downloader.new(data_source)
+    runner        = CartoDB::Importer2::Runner.new(
+                      pg_options, downloader, log, current_user.remaining_quota
+                    )
+    registrar     = CartoDB::TableRegistrar.new(current_user, Table)
+    quota_checker = CartoDB::QuotaChecker.new(current_user)
+    importer      = CartoDB::Connector::Importer.new(
+                      runner, downloader, registrar, quota_checker, 
+                      current_user.in_database
+                    )
+    
+    importer.run(tracker)
 
     self.results    = importer.results
     self.error_code = importer.error_code

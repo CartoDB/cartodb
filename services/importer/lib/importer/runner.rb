@@ -63,6 +63,7 @@ module CartoDB
         job.success_status = true
         self.results.push(result_for(job, source_file, loader.valid_table_names))
       rescue => exception
+        job.log exception.class.to_s
         job.log exception.to_s
         job.log exception.backtrace
         job.success_status = false

@@ -4,6 +4,7 @@ require 'charlock_holmes'
 require 'tempfile'
 require 'fileutils'
 require_relative './job'
+require_relative './source_file'
 
 module CartoDB
   module Importer2
@@ -29,7 +30,10 @@ module CartoDB
 
         File.open(filepath, 'rb', external_encoding: encoding)
         .each_line(line_delimiter) { |line| 
-          row = ::CSV.parse_line(line.chomp.encode('UTF-8'), csv_options)
+          begin
+            row = ::CSV.parse_line(line.chomp.encode('UTF-8'), csv_options)
+          rescue
+          end
           next unless row
           temporary_csv << multiple_column(row)
         }
@@ -49,7 +53,7 @@ module CartoDB
       def csv_options
         {
           col_sep:            delimiter,
-          quote_char:         '|'
+          quote_char:         '"'
         }
       end #csv_options
 
@@ -60,8 +64,7 @@ module CartoDB
 
       def windows_eol?
         return false if first_line =~ /\n/
-        !!(first_line =~ %r{
-})
+        !!(first_line =~ %r{\r})
       end #windows_eol?
 
       def needs_normalization?
@@ -114,6 +117,9 @@ module CartoDB
       end #delimiter_in
 
       def encoding
+        source_file = SourceFile.new(filepath)
+        return source_file.encoding if source_file.encoding
+
         data    = File.open(filepath, 'r')
         sample  = data.gets(LINE_LIMIT)
         data.close

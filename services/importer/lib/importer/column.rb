@@ -145,7 +145,7 @@ module CartoDB
 
       def records_with_data
         @records_with_data ||= db[%Q{
-          SELECT * FROM "#{schema}"."#{table_name}"
+          SELECT #{column_name} FROM "#{schema}"."#{table_name}"
           WHERE #{column_name} IS NOT NULL 
           AND #{column_name} != ''
         }]

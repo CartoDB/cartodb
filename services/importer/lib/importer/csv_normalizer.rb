@@ -24,21 +24,30 @@ module CartoDB
         @job      = job || Job.new
       end #initialize
 
-      def run
-        return self unless File.exists?(filepath) && needs_normalization?
+      def normalize(temporary_filepath)
         temporary_csv = ::CSV.open(temporary_filepath, 'w', col_sep: ',')
 
         File.open(filepath, 'rb', external_encoding: encoding)
         .each_line(line_delimiter) { |line| 
-          begin
-            row = ::CSV.parse_line(line.chomp.encode('UTF-8'), csv_options)
-          rescue
-          end
+          row = parsed_line(line)
           next unless row
           temporary_csv << multiple_column(row)
         }
 
         temporary_csv.close
+      rescue ArgumentError
+        raise EncodingDetectionError
+      end
+
+      def parsed_line(line)
+        ::CSV.parse_line(line.chomp.encode('UTF-8'), csv_options)
+      rescue => exception
+        nil
+      end
+
+      def run
+        return self unless File.exists?(filepath) && needs_normalization?
+        normalize(temporary_filepath)
         release
         File.rename(temporary_filepath, filepath)
         FileUtils.rm_rf(temporary_directory)

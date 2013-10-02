@@ -19,6 +19,7 @@ module CartoDB
     class UnknownSridError                      < StandardError; end
     class UnsupportedFormatError                < StandardError; end
     class UploadError                           < StandardError; end
+    class EncodingDetectionError                < StandardError; end
 
     ERRORS_MAP = {
       EmptyFileError                        => 1005,
@@ -35,7 +36,8 @@ module CartoDB
       UnknownError                          => 99999,
       UnknownSridError                      => 3008,
       UnsupportedFormatError                => 1002,
-      UploadError                           => 1000
+      UploadError                           => 1000,
+      EncodingDetectionError                => 2002
     }
   end # Importer2
 end # CartoDB

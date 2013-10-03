@@ -27,7 +27,7 @@
       }
     }
 
-    .generating, .geospatial {
+    .generating, .error, .geospatial {
       width:100%;
       p {
         text-align:center;
@@ -38,6 +38,10 @@
         display: none;
       }
     }
+    .error p {
+      color: #EB2466;
+    }
+
     div.loader {
       display:block;
       width:100%;

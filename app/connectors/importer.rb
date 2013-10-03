@@ -7,9 +7,8 @@ module CartoDB
 
       attr_accessor :table
 
-      def initialize(runner, downloader, table_registrar, quota_checker, database)
+      def initialize(runner, table_registrar, quota_checker, database)
         @runner           = runner
-        @downloader       = downloader
         @table_registrar  = table_registrar
         @quota_checker    = quota_checker
         @database         = database
@@ -88,8 +87,7 @@ module CartoDB
 
       private
 
-      attr_reader :runner, :downloader, :table_registrar, :quota_checker,
-                  :database
+      attr_reader :runner, :table_registrar, :quota_checker, :database
     end # Importer
   end # Connector
 end # CartoDB

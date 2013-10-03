@@ -270,9 +270,9 @@ class DataImport < Sequel::Model
                     )
     registrar     = CartoDB::TableRegistrar.new(current_user, Table)
     quota_checker = CartoDB::QuotaChecker.new(current_user)
+    database      = current_user.in_database
     importer      = CartoDB::Connector::Importer.new(
-                      runner, downloader, registrar, quota_checker, 
-                      current_user.in_database
+                      runner, registrar, quota_checker, database
                     )
     
     importer.run(tracker)

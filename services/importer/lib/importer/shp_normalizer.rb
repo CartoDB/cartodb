@@ -23,8 +23,8 @@ module CartoDB
         normalize
         dbf       = filepath.gsub(%r{\.shp$}, '.dbf')
         encoding  = DBF::Table.new(dbf).encoding || 
-                    normalizer_output.fetch(:encoding, nil) || 
-                    DEFAULT_ENCODING
+                    normalizer_output.fetch(:encoding, nil)
+        encoding  = DEFAULT_ENCODING if encoding == 'None'
         return codepage_for(encoding) if windows?(encoding)
         return(tab_encoding || encoding) if tab?
         encoding

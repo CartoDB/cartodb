@@ -690,7 +690,7 @@ CartoDB offers a powerful SQL API for you to query and retreive data from your C
       })
       .error(function(errors) {
         // errors contains a list of errors
-        console.log("error:" + err);
+        console.log("errors:" + errors);
       })
   ```
 <div class="margin20"></div>

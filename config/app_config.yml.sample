@@ -7,7 +7,7 @@ defaults: &defaults
   account_path:       '/account'
   tiler:
     private:
-      protocol:      'https'
+      protocol:      'http'
       domain:        'localhost.lan'
       port:          '8181'
     public:

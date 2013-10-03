@@ -86,5 +86,26 @@ describe SourceFile do
       source_file.target_schema.must_equal 'cdb_importer'
     end
   end #target_schema
+
+  describe '#encoding' do
+    it 'returns the encoding if embedded in the filepath' do
+      filepath    = "/var/tmp/foo_encoding_UTF-8_encoding_.csv"
+      source_file = SourceFile.new(filepath)
+      source_file.encoding.must_equal 'UTF-8'
+
+      filepath    = "/var/tmp/foo_encoding_WIN1252_encoding_.csv"
+      source_file = SourceFile.new(filepath)
+      source_file.encoding.must_equal 'WIN1252'
+
+      filepath    = "/var/tmp/foo_encoding_LATIN1_encoding_.csv"
+      source_file = SourceFile.new(filepath)
+      source_file.encoding.must_equal 'LATIN1'
+    end
+
+    it 'returns nil if no encoding embedded in the filepath' do
+      source_file = SourceFile.new('/var/tmp/foo.csv')
+      source_file.encoding.must_be_nil
+    end
+  end
 end # SourceFile
 

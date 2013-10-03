@@ -72,33 +72,28 @@ describe Runner do
     it 'creates a sucessful result if all import steps completed' do
       source_file = SourceFile.new(@filepath)
       runner      = Runner.new(@pg_options, Object.new)
-      job         = Job.new(
-                      logger:     runner.log,
-                      pg_options: @pg_options
-                    )
+      job         = Job.new(pg_options: @pg_options)
 
+      def job.success_status; true; end
       fake_loader = self.fake_loader_for(job, source_file)
       def fake_loader.run; end
 
       runner.import(source_file, job, fake_loader)
       result = runner.results.first
-      result.fetch(:success).must_equal true
+      result.success?.must_equal true
     end
 
     it 'creates a failed result if an exception raised during import' do
       source_file = SourceFile.new(@filepath)
       runner      = Runner.new(@pg_options, Object.new)
-      job         = Job.new(
-                      logger:     runner.log,
-                      pg_options: @pg_options
-                    )
+      job         = Job.new(pg_options: @pg_options)
 
       fake_loader = self.fake_loader_for(job, source_file)
       def fake_loader.run; raise 'Unleash the Kraken!!!!'; end
 
       runner.import(source_file, job, fake_loader)
       result = runner.results.first
-      result.fetch(:success).must_equal false
+      result.success?.must_equal false
     end
   end
 

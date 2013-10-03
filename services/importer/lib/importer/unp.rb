@@ -4,6 +4,7 @@ require 'fileutils'
 require 'open3'
 require_relative '../importer'
 require_relative './exceptions'
+require_relative './kml_splitter'
 
 module CartoDB
   module Importer2
@@ -27,6 +28,7 @@ module CartoDB
         return without_unpacking(path) unless compressed?(path)
         extract(path)
         crawl(temporary_directory).each { |path| process(path) }
+        @source_files = split_kmls(source_files)
         self
       rescue => exception
         raise ExtractionError
@@ -36,6 +38,7 @@ module CartoDB
         local_path = "#{temporary_directory}/#{File.basename(path)}"
         FileUtils.cp(path, local_path)
         self.source_files.push(source_file_for(normalize(local_path)))
+        @source_files = split_kmls(source_files)
         self
       end #without_unpacking
 
@@ -137,6 +140,10 @@ module CartoDB
         @temporary_directory
       end #temporary_directory
 
+      def split_kmls(source_files)
+        KmlSplitter.new(source_files, temporary_directory).run.source_files
+      end
+      
       private
 
       attr_reader :job

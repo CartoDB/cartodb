@@ -6,6 +6,7 @@ require_relative './sql_loader'
 require_relative './unp'
 require_relative './column'
 require_relative './exceptions'
+require_relative './result'
 
 module CartoDB
   module Importer2
@@ -17,12 +18,12 @@ module CartoDB
 
       def initialize(pg_options, downloader, log=nil, available_quota=nil,
       unpacker=nil)
-        self.pg_options       = pg_options
-        self.downloader       = downloader
-        self.log              = log || TrackRecord::Log.new
-        self.results          = []
-        self.unpacker         = unpacker || Unp.new
-        self.available_quota  = available_quota || DEFAULT_AVAILABLE_QUOTA
+        @pg_options       = pg_options
+        @downloader       = downloader
+        @log              = log || TrackRecord::Log.new
+        @available_quota  = available_quota || DEFAULT_AVAILABLE_QUOTA
+        @unpacker         = unpacker || Unp.new
+        @results          = []
       end #initialize
 
       def run(&tracker_block)
@@ -30,6 +31,8 @@ module CartoDB
         tracker.call('uploading')
         log.append "Getting file from #{downloader.url}"
         downloader.run(available_quota)
+
+        return self unless remote_data_updated?
 
         log.append "Starting import for #{downloader.source_file.fullpath}"
         log.append "Unpacking #{downloader.source_file.fullpath}"
@@ -44,7 +47,7 @@ module CartoDB
       rescue => exception
         log.append exception.to_s
         log.append exception.backtrace
-        self.results.push(error: error_for(exception.class))
+        self.results.push(Result.new(error: error_for(exception.class)))
       end #run
       
       def import(source_file, job=nil, loader=nil)
@@ -60,6 +63,7 @@ module CartoDB
         job.success_status = true
         self.results.push(result_for(job, source_file, loader.valid_table_names))
       rescue => exception
+        job.log exception.class.to_s
         job.log exception.to_s
         job.log exception.backtrace
         job.success_status = false
@@ -82,33 +86,37 @@ module CartoDB
         }
       end #loader_for
 
-      def columns_in(table_name, schema='cdb_importer')
-        db.schema(table_name, schema: schema)
-          .map { |s| s[0] }
-          .map { |column_name| Column.new(db, table_name, column_name, schema) }
-      end #columns_in
+      def remote_data_updated?
+        downloader.modified?
+      end
 
       def tracker
         @tracker || lambda { |state| }
       end #tracker
 
-      attr_reader   :results, :log
-      attr_accessor :available_quota
+      def success?
+        return true unless remote_data_updated?
+        results.select(&:success?).length > 0
+      end
+
+      attr_reader   :results
 
       private
-
-      attr_accessor :downloader, :pg_options, :unpacker
-      attr_writer   :results, :log, :tracker
+ 
+      attr_reader :downloader, :pg_options, :unpacker, :available_quota, :log
+      attr_writer :results, :tracker
 
       def result_for(job, source_file, table_names, exception_klass=nil)
-        { 
-          name:       source_file.name,
-          schema:     source_file.target_schema,
-          extension:  source_file.extension,
-          tables:     table_names,
-          success:    job.success_status,
-          error:      error_for(exception_klass)
-        }
+        Result.new(
+          name:           source_file.name,
+          schema:         source_file.target_schema,
+          extension:      source_file.extension,
+          etag:           source_file.etag,
+          last_modified:  source_file.last_modified,
+          tables:         table_names,
+          success:        job.success_status,
+          error_code:     error_for(exception_klass)
+        )
       end #results
 
       def error_for(exception_klass=nil)

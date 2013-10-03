@@ -16,6 +16,7 @@ module CartoDB
       attribute :name,            String
       attribute :interval,        Integer
       attribute :state,           String
+      attribute :user_id,         Integer
       attribute :created_at,      Time
       attribute :updated_at,      Time
       attribute :run_at,          Time
@@ -47,6 +48,10 @@ module CartoDB
         repository.delete(id)
         self.attributes.keys.each { |key| self.send("#{key}=", nil) }
         self
+      end
+
+      def to_json
+        attributes.to_json
       end
 
       def valid?

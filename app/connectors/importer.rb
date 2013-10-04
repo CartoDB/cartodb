@@ -7,11 +7,13 @@ module CartoDB
 
       attr_accessor :table
 
-      def initialize(runner, table_registrar, quota_checker, database)
+      def initialize(runner, table_registrar, quota_checker, database,
+      data_import_id)
         @runner           = runner
         @table_registrar  = table_registrar
         @quota_checker    = quota_checker
         @database         = database
+        @data_import_id   = data_import_id
       end
 
       def run(tracker)
@@ -61,7 +63,7 @@ module CartoDB
           ALTER TABLE "public"."#{current_name}"
           RENAME TO "#{new_name}"
         })
-        persist_metadata(new_name)
+        persist_metadata(new_name, data_import_id)
       rescue => exception
         retry unless rename_attempts > 1
       end
@@ -70,8 +72,8 @@ module CartoDB
         quota_checker.over_table_quota?(results.length)
       end
 
-      def persist_metadata(name)
-        table_registrar.register(name)
+      def persist_metadata(name, data_import_id)
+        table_registrar.register(name, data_import_id)
         self.table = table_registrar.table
         self
       end
@@ -87,7 +89,8 @@ module CartoDB
 
       private
 
-      attr_reader :runner, :table_registrar, :quota_checker, :database
+      attr_reader :runner, :table_registrar, :quota_checker, :database,
+      :data_import_id
     end # Importer
   end # Connector
 end # CartoDB

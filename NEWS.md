@@ -1,3 +1,43 @@
+2.2.1
+-----
+* Fixed Bugs
+  * Refreshing a table view with a query applied on the visualization view it doesn't get the table correctly rendered
+  * Public table rendering nothing
+  * Table view rows missing columns
+  * Type being reported as an actual number in SQL API
+  * Exporting POINT table with many NULL geoms as a SHP file fails
+  * Single quotes aren't escaped on CartoCSS
+  * Missing .prj on shp files exported by CartoDB
+  * Investigate account provisioning issues
+  * When there is a value with " ' " in the table and you try the category wizard it fails
+  * Error adding polygon
+  * Duplicated layer added to a visualization
+  * Cannot export mixed geometry resultsets to shp
+  * Error when not selecting the cartodb_id column
+  * Green bar when applying a query is over the column submenu
+  * When a query is cleared to default infowindow fields should return to selected ones
+  * Spinners in color wizard are not working
+  * Particular error for KML files
+  * Issues on the public view
+  * When having a query applied with a wizard using a foreign column, if you clear the wizard the style should be set to default
+  * When not having results for a query, the clear view link is not being shown on the green bar
+  * wizard styles are not preserved when changing geometry
+  * Close submenu when clicking on the active column name
+  * Detect when a encoding error in order to show a different message than Unknown
+  * Error "cartodb_id column does not exist" when interaction is disabled
+  * Detect when a SHP has more than 256 columns
+  * Dashboard shows "Dedicated plan" after downgrade
+  * Fix regression: assume LATIN1 for Shapefiles we can't detect the encoding
+  * Fix regression: assume LATIN1 for Shapefiles we can't detect the encoding
+  * Imports from URLs get created twice
+  * Importing a table when you have one left raises a quota error
+
+* Improvements
+  * Use the requested string as identifier when geocoding
+  * Use DBF gem to detect encoding of Shapefiles
+  * Force encoding in file name
+  * Implement 'overwrite' mode in importer
+
 2.2.0
 -----
 * Fixed Bugs

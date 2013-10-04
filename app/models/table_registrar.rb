@@ -7,11 +7,12 @@ module CartoDB
       @table_klass  = table_klass
     end
 
-    def register(table_name)
+    def register(table_name, data_import_id)
       self.table                    = table_klass.new
       table.user_id                 = user.id
       table.name                    = table_name
       table.migrate_existing_table  = table_name
+      table.data_import_id          = data_import_id
       table.save
       table.optimize
       table.map.recalculate_bounds!

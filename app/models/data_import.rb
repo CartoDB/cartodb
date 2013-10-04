@@ -272,15 +272,15 @@ class DataImport < Sequel::Model
     quota_checker = CartoDB::QuotaChecker.new(current_user)
     database      = current_user.in_database
     importer      = CartoDB::Connector::Importer.new(
-                      runner, registrar, quota_checker, database
+                      runner, registrar, quota_checker, database, id
                     )
     
     importer.run(tracker)
 
     self.results    = importer.results
     self.error_code = importer.error_code
-    self.table_name = importer.table.name if importer.table
-    self.table_id   = importer.table.id if importer.table
+    self.table_name = importer.table.name if importer.success?
+    self.table_id   = importer.table.id if importer.success?
     importer.success?
   end
 

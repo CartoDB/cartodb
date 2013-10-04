@@ -76,6 +76,7 @@
     @include border-radius(4px);
     z-index:-1;
     background:#FFF7EA;
+    font-size:13px;
     @include transform-style("linear");
     @include transition-property("margin,opacity");
     @include transition-duration(400ms);
@@ -87,6 +88,7 @@
     }
 
     &.error {background:#FEEAEB}
+    &.sync {background:#F2F2F2}
     &.active {
       @include opacity(1);
       margin-top:-7px;

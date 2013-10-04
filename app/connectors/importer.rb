@@ -19,7 +19,7 @@ module CartoDB
       def run(tracker)
         runner.run(&tracker)
 
-        if table_quota_exceeded?
+        if quota_checker.will_be_over_table_quota?(results.length)
           drop(results)
         else
           results.select(&:success?).each { |result| register(result) }
@@ -34,7 +34,7 @@ module CartoDB
       end
 
       def success?
-        !table_quota_exceeded? && runner.success?
+        !quota_checker.over_table_quota? && runner.success?
       end
 
       def drop_all(results)
@@ -68,10 +68,6 @@ module CartoDB
         retry unless rename_attempts > 1
       end
 
-      def table_quota_exceeded?
-        quota_checker.over_table_quota?(results.length)
-      end
-
       def persist_metadata(name, data_import_id)
         table_registrar.register(name, data_import_id)
         self.table = table_registrar.table
@@ -83,7 +79,7 @@ module CartoDB
       end 
 
       def error_code
-        return 8002 if table_quota_exceeded?
+        return 8002 if quota_checker.over_table_quota?
         results.map(&:error_code).compact.first
       end #errors_from
 

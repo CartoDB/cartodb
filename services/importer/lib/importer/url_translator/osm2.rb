@@ -4,8 +4,8 @@ require 'rack'
 module CartoDB
   module Importer2
     module UrlTranslator
-      class OSM
-        URL_REGEX               = %r{openstreetmap.org.*lat.*}
+      class OSM2
+        URL_REGEX               = %r{openstreetmap.org/#map=}
         TRANSLATED_URL_REGEX    = /api.openstreetmap.org/
         URL_TEMPLATE  = "http://api.openstreetmap.org/api/0.6/map?bbox="
         DW = 1200.0/2.0
@@ -17,12 +17,9 @@ module CartoDB
         end #translate
 
         def bounding_box_for(url)
-          params = Rack::Utils.parse_query(url.split('?')[1])
-          #2h, 6w
-          lon   = params['lon'].to_f
-          lat   = params['lat'].to_f
-          zoom  = params['zoom'].to_i
-
+          lon   = url.split('/')[-1].to_f
+          lat   = url.split('/')[-2].to_f
+          zoom  = url.split('/')[-3].match(/#map=(\d+)/)[1].to_i
 
           res   = 180 / 256.0 / 2**zoom
           py    = (90 + lat) / res
@@ -47,7 +44,7 @@ module CartoDB
         def translated?(url)
           !!(url =~ TRANSLATED_URL_REGEX)
         end #translated?
-      end #OSM
+      end #OSM2
     end # UrlTranslator
   end # Importer2
 end # CartoDB

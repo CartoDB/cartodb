@@ -816,6 +816,8 @@ div.cartodb-popup.header.yellow a.cartodb-popup-close-button:hover {
     webkit-box-shadow: none;
     -moz-box-shadow: none;
     box-shadow: none;
+
+    cursor: text;
   }
 
   div.cartodb-legend-stack div.cartodb-legend:last-child {

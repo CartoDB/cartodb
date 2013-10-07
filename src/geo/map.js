@@ -105,6 +105,12 @@ cdb.geo.PlainLayer = cdb.geo.MapLayer.extend({
   }
 });
 
+cdb.geo.TorqueLayer = cdb.geo.MapLayer.extend({
+  defaults: {
+    type: 'torque'
+  }
+});
+
 // CartoDB layer
 cdb.geo.CartoDBLayer = cdb.geo.MapLayer.extend({
 
@@ -575,13 +581,6 @@ cdb.geo.MapView = cdb.core.View.extend({
 
   /** unbind model properties */
   _unbindModel: function() {
-    /*
-    this.map.unbind('change:zoom',   this._setZoom, this);
-    this.map.unbind('change:center', this._setCenter, this);
-    this.map.unbind('change:view_bounds_sw', this._changeBounds, this);
-    this.map.unbind('change:view_bounds_ne', this._changeBounds, this);
-    */
-
     this.map.unbind('change:view_bounds_sw',  null, this);
     this.map.unbind('change:view_bounds_ne',  null, this);
     this.map.unbind('change:zoom',            null, this);

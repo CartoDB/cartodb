@@ -65,6 +65,7 @@
       this.map.layers.bind('add', this._addLayer, this);
       this.map.layers.bind('remove', this._removeLayer, this);
       this.map.layers.bind('reset', this._addLayers, this);
+      this.map.layers.bind('change:type', this._swicthLayerView, this);
 
       this.map.geometries.bind('add', this._addGeometry, this);
       this.map.geometries.bind('remove', this._removeGeometry, this);
@@ -176,6 +177,11 @@
       return cdb.geo.LeafletMapView.createLayer(layer, this.map_leaflet);
     },
 
+    _swicthLayerView: function(layer, attr, opts) {
+      this._removeLayer(layer);
+      this._addLayer(layer, this.map.layers, opts);
+    },
+
     _addLayer: function(layer, layers, opts) {
       var self = this;
       var lyr, layer_view;
@@ -282,7 +288,8 @@
       "plain": cdb.geo.LeafLetPlainLayerView,
       // for google maps create a plain layer
       "gmapsbase": cdb.geo.LeafLetPlainLayerView,
-      "layergroup": cdb.geo.LeafLetCartoDBLayerGroupView
+      "layergroup": cdb.geo.LeafLetCartoDBLayerGroupView,
+      "torque": cdb.geo.LeafLetTorqueLayer
     },
 
     createLayer: function(layer, map) {

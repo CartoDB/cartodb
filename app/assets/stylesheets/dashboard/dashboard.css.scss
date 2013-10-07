@@ -768,7 +768,8 @@
                   letter-spacing:0;
                   padding: 3px 10px 0 0;
 
-                  &.size .separator {
+                  &.size .separator,
+                  &.feed .separator {
                     padding: 0 8px;
                     position:relative;
 
@@ -788,7 +789,24 @@
                   &.feed {
                     color: #E7BF5B;
                     position:relative;
-                    margin-right: 10px;
+                    margin-right: 15px;
+
+                    .msg {
+                      @include inline-block();
+                      color: #E7BF5B;
+                      height: 14px;
+                      text-transform:uppercase;
+                    }
+
+                    &.error .msg {
+                      color: #FF7272;
+                      text-decoration:none;
+
+                      &:hover {
+                        text-decoration:none;
+                        border-bottom: 1px dotted #FF7272;
+                      }
+                    }
 
                     &:before {
                       content:'\b7';
@@ -807,6 +825,11 @@
                       @include size(8px);
                       @include icons-sprite(feed);
                     }
+
+                    &.error i {
+                      @include icons-sprite(feed_error);
+                    }
+
 
                   }
 

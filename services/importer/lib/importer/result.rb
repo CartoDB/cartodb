@@ -24,25 +24,6 @@ module CartoDB
       def table_name
         tables.first
       end
-
-      def payload
-        return(Hash.new)
-        payload = {
-          name:           name,
-          extension:      extension,
-          success:        successful?,
-          error_code:     error_code,
-          file_url:       public_url,
-          distinct_id:    user.username,
-          username:       user.username,
-          account_type:   user.account_type,
-          database:       user.database_name,
-          email:          user.email,
-          log:            log.to_s
-        }
-        payload.merge!(error_title: get_error_text) unless result.fetch(:success)
-        payload
-      end
     end # Result
   end # Importer2
 end # CartoDB

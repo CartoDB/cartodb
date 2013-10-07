@@ -53,6 +53,8 @@ class DataImport < Sequel::Model
     Rails.logger.debug log.to_s
     self
   rescue => exception
+    puts exception.to_s
+    puts exception.backtrace
     log.append "Exception: #{exception.to_s}"
     log.append exception.backtrace
     stacktrace = exception.to_s + exception.backtrace.join
@@ -289,6 +291,26 @@ class DataImport < Sequel::Model
   end
 
   def notify(results)
-    results.each { |result| CartoDB::Metrics.new.report(result.payload) }
+    results.each { |result| CartoDB::Metrics.new.report(payload_for(result)) }
+  end
+
+  def payload_for(result=nil)
+    payload = {
+      file_url:       public_url,
+      distinct_id:    current_user.username,
+      username:       current_user.username,
+      account_type:   current_user.account_type,
+      database:       current_user.database_name,
+      email:          current_user.email,
+      log:            log.to_s
+    }
+    payload.merge(
+      name:           result.name,
+      extension:      result.extension,
+      success:        result.success,
+      error_code:     result.error_code,
+    ) if result
+    payload.merge!(error_title: get_error_text) if state == 'failure'
+    payload
   end
 end

@@ -60,6 +60,17 @@ describe User do
       @user.errors[:username].should be_blank
     end
   end
+  
+  it "should have a default dashboard_viewed? false" do
+    user = User.new
+    user.dashboard_viewed?.should be_false
+  end 
+
+  it "should reset dashboard_viewed when dashboard gets viewed" do
+    user = User.new
+    user.view_dashboard
+    user.dashboard_viewed?.should be_true
+  end
 
   it "should validate that password is present if record is new and crypted_password or salt are blank" do
     user = User.new

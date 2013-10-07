@@ -12,8 +12,6 @@ module CartoDB
         report_failure(payload)
       end
     rescue => exception
-      puts exception
-      puts exception.backtrace
       self
     end #report
 

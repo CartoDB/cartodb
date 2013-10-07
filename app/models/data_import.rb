@@ -53,8 +53,6 @@ class DataImport < Sequel::Model
     Rails.logger.debug log.to_s
     self
   rescue => exception
-    puts exception.to_s
-    puts exception.backtrace
     log.append "Exception: #{exception.to_s}"
     log.append exception.backtrace
     stacktrace = exception.to_s + exception.backtrace.join
@@ -304,7 +302,7 @@ class DataImport < Sequel::Model
       email:          current_user.email,
       log:            log.to_s
     }
-    payload.merge(
+    payload.merge!(
       name:           result.name,
       extension:      result.extension,
       success:        result.success,

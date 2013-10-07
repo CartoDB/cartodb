@@ -1120,11 +1120,23 @@ class Table < Sequel::Model(:user_tables)
     table
   end
 
-  def self.find_by_subdomain(subdomain, identifier)
+  def self.find_by_name_subdomain(subdomain, table_name)
     if user = User.find(:username => subdomain)
-      Table.find_by_identifier(user.id, identifier)
+      Table.where(:name => table_name, :user_id => user.id).first
     end
   end
+  
+  def self.find_by_id_subdomain(subdomain, table_id)
+    if user = User.find(:username => subdomain)
+      Table.where(:id => table_id, :user_id => user.id).first
+    end
+  end
+
+  #def self.find_by_subdomain(subdomain, identifier)
+  #  if user = User.find(:username => subdomain)
+  #    Table.find_by_identifier(user.id, identifier)
+  #  end
+  #end
 
   def oid
     @oid ||= owner.in_database["SELECT '#{self.name}'::regclass::oid"].first[:oid]

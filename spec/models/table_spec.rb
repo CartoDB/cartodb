@@ -1721,7 +1721,7 @@ describe Table do
                                        :data_source   => '/../db/fake_data/with_cartodb_id.csv' )
       data_import.run_import!
       table = Table[data_import.table_id]
-      new_table = Table.find_by_subdomain(@user.username, table.id)
+      new_table = Table.find_by_id_subdomain(@user.username, table.id)
 
       new_table.id.should == table.id
     end
@@ -1734,7 +1734,7 @@ describe Table do
       data_import.run_import!
       table = Table[data_import.table_id]
 
-      new_table = Table.find_by_subdomain(nil, table.id)
+      new_table = Table.find_by_id_subdomain(nil, table.id)
 
       new_table.should == nil
     end

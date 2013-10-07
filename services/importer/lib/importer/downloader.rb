@@ -4,6 +4,7 @@ require_relative './exceptions'
 require_relative './source_file'
 require_relative '../../../data-repository/filesystem/local'
 require_relative './url_translator/osm'
+require_relative './url_translator/osm2'
 require_relative './url_translator/fusion_tables'
 require_relative './url_translator/github'
 require_relative './url_translator/google_maps'
@@ -17,6 +18,7 @@ module CartoDB
       CONTENT_DISPOSITION_RE  = %r{attachment; filename=(.*;|.*)}
       URL_RE                  = %r{://}
       URL_TRANSLATORS         = [
+                                  UrlTranslator::OSM2,
                                   UrlTranslator::OSM,
                                   UrlTranslator::FusionTables,
                                   UrlTranslator::GitHub,

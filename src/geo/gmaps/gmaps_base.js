@@ -44,6 +44,8 @@ _.extend(GMapsLayerView.prototype, {
       var idx = this._searchLayerIndex();
       if(idx > 0) {
         this.gmapsMap.overlayMapTypes.removeAt(idx);
+      } else if (this.gmapsLayer.setMap){
+        this.gmapsLayer.setMap(null);
       }
       this.model.unbind(null, null, this);
       this.unbind();
@@ -65,17 +67,6 @@ _.extend(GMapsLayerView.prototype, {
       }
     }
   },
-
-  /*
-
-  show: function() {
-    this.gmapsLayer.show();
-  },
-
-  hide: function() {
-    this.gmapsLayer.hide();
-  },
-  */
 
   reload: function() { this.refreshView() ; },
   _update: function() { this.refreshView(); }

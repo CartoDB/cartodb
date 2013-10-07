@@ -14,7 +14,8 @@ if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
       "carto": cdb.geo.GMapsCartoDBLayerView,
       "plain": cdb.geo.GMapsPlainLayerView,
       "gmapsbase": cdb.geo.GMapsBaseLayerView,
-      "layergroup": cdb.geo.GMapsCartoDBLayerGroupView
+      "layergroup": cdb.geo.GMapsCartoDBLayerGroupView,
+      "torque": cdb.geo.GMapsTorqueLayerView
     },
 
     initialize: function() {
@@ -93,6 +94,7 @@ if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
       this.map.layers.bind('add', this._addLayer, this);
       this.map.layers.bind('remove', this._removeLayer, this);
       this.map.layers.bind('reset', this._addLayers, this);
+      this.map.layers.bind('change:type', this._swicthLayerView, this);
 
       this.projector = new cdb.geo.CartoDBLayerGroupGMaps.Projector(this.map_googlemaps);
 
@@ -151,7 +153,7 @@ if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
         // set base layer
         if(isBaseLayer && !opts.no_base_layer) {
           var m = layer_view.model;
-          if(m.get('type') == 'GMapsBase') {
+          if(m.get('type') === 'GMapsBase') {
             layer_view._update();
           } else {
             layer_view.isBase = true;
@@ -160,9 +162,13 @@ if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
         } else {
           idx -= 1;
           idx = Math.max(0, idx); // avoid -1
-          self.map_googlemaps.overlayMapTypes.setAt(idx, layer_view.gmapsLayer);
+          if (layer_view.getTile) {
+            self.map_googlemaps.overlayMapTypes.setAt(idx, layer_view.gmapsLayer);
+          } else {
+            layer_view.gmapsLayer.setMap(self.map_googlemaps);
+          }
         }
-        if(opts == undefined || !opts.silent) {
+        if(opts === undefined || !opts.silent) {
           this.trigger('newLayerView', layer_view, layer, this);
         }
       } else {

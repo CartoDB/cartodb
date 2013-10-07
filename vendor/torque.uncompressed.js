@@ -2510,8 +2510,6 @@ GMapsTorqueLayer.prototype = _.extend({},
     return this.stepToTime(this.key);
   },
 
-
-
   /**
    * set the cartocss for the current renderer
    */
@@ -2527,6 +2525,11 @@ GMapsTorqueLayer.prototype = _.extend({},
 
   redraw: function() {
     this.scheduleUpdate();
+  },
+
+  onRemove: function() {
+    CanvasLayer.prototype.onRemove.call(this);
+    this.animator.stop();
   }
 
 });

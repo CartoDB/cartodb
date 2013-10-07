@@ -50,6 +50,7 @@
 //= require cdb/src/geo/gmaps/gmaps_tiledlayer
 //= require cdb/src/geo/gmaps/gmaps_cartodb_layergroup
 //= require cdb/src/geo/gmaps/gmaps_cartodb_layer
+//= require cdb/src/geo/gmaps/torque
 //= require cdb/src/geo/gmaps/gmaps
 //
 //= require cdb/src/geo/ui/zoom

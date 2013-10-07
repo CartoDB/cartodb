@@ -542,12 +542,12 @@ cdb.geo.MapView = cdb.core.View.extend({
     throw "to be implemented";
   },
 
-  _removeLayers: function() {
+  /*_removeLayers: function() {
     for(var layer in this.layers) {
       this.layers[layer].remove();
     }
     this.layers = {}
-  },
+  },*/
 
   /**
   * set model property but unbind changes first in order to not create an infinite loop
@@ -627,6 +627,12 @@ cdb.geo.MapView = cdb.core.View.extend({
       delete this.layers[layer.cid];
     }
   },
+
+  _swicthLayerView: function(layer, attr, opts) {
+    this._removeLayer(layer);
+    this._addLayer(layer, this.map.layers, opts);
+  },
+
 
   _removeGeometry: function(geo) {
     var geo_view = this.geometries[geo.cid];

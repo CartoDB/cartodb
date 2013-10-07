@@ -177,11 +177,6 @@
       return cdb.geo.LeafletMapView.createLayer(layer, this.map_leaflet);
     },
 
-    _swicthLayerView: function(layer, attr, opts) {
-      this._removeLayer(layer);
-      this._addLayer(layer, this.map.layers, opts);
-    },
-
     _addLayer: function(layer, layers, opts) {
       var self = this;
       var lyr, layer_view;

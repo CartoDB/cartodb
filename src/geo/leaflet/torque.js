@@ -34,12 +34,18 @@ var LeafLetTorqueLayer = L.TorqueLayer.extend({
     this.setCartoCSS(layerModel.get('tile_style'));
     this.play();
 
+    this.bind('tilesLoaded', function() {
+      this.trigger('load');
+    }, this);
+
   },
 
   _modelUpdated: function() {
     //TODO: update here torque layer parameters
     this.setCartoCSS(this.model.get('tile_style'));
   },
+
+
 
 });
 

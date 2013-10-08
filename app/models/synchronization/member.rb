@@ -15,6 +15,7 @@ module CartoDB
       attribute :id,              String
       attribute :name,            String
       attribute :interval,        Integer
+      attribute :url,             String
       attribute :state,           String
       attribute :user_id,         Integer
       attribute :created_at,      Time
@@ -50,8 +51,12 @@ module CartoDB
         self
       end
 
-      def to_json
-        attributes.to_json
+      def to_hash
+        attributes.to_hash
+      end
+
+      def to_json(*args)
+        attributes.to_json(*args)
       end
 
       def valid?
@@ -76,9 +81,12 @@ module CartoDB
         self
       end
 
+      def authorize?(user)
+        user.id == user_id
+      end
+
       attr_reader :repository
     end # Member
   end # Synchronization
 end # CartoDB
-
 

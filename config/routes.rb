@@ -131,7 +131,7 @@ CartoDB::Application.routes.draw do
       resources :tags, :only                                    => [:index]
       # Synchronizations
       get     'synchronizations'      => 'synchronizations#index'
-      post    'synchronizations/:id'  => 'synchronizations#create'
+      post    'synchronizations'      => 'synchronizations#create'
       get     'synchronizations/:id'  => 'synchronizations#show'
       put     'synchronizations/:id'  => 'synchronizations#update'
       delete  'synchronizations/:id'  => 'synchronizations#destroy'

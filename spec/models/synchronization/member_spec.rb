@@ -2,7 +2,7 @@
 require_relative '../../../services/data-repository/backend/sequel'
 require_relative '../../../services/data-repository/repository'
 require_relative '../../../app/models/synchronization/member'
-#require_relative '../../../app/models/visualization/migrator'
+require_relative '../../../app/models/synchronization/migrator'
 
 include CartoDB
 

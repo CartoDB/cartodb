@@ -103,15 +103,48 @@
 
     &.import-pane-gdrive,
     &.import-pane-dropbox {
-      padding: 11px 10px 10px;
-      background: #f2f2f2;
-      @include border-radius(3px);
+      
+      div.upload {
+        position:relative;
+        height:22px;
+        padding:11px 10px;
+        border:1px solid #CCCCCC;
+        background:white;
+        @include border-radius(4px);
+        z-index:2;
 
-      input {
-        display:block;
-        border:none;
-        width: 38px; height: 16px;  margin: 4px 0 3px 0;
-        background: image-url("layout/loader_transparent.gif") no-repeat 0 0;
+        p.filename {
+          float:left;
+          @include inline-block();
+          width:285px;
+          margin:2px 0 0 4px;
+          font-size:15px;
+          font-style:italic;
+          color:#666;
+          @include text-overflow();
+        }
+
+        .dropbox-dropin-btn {float:right!important}
+
+        input {
+          float:right;
+          @include inline-block();
+          border:none;
+          width:38px;
+          height:16px;
+          padding:0;
+          margin:4px 0 3px 0;
+          background: image-url("layout/loader_transparent.gif") no-repeat 0 0;
+        }
+      }
+
+      div.infobox {
+        @include default-form-info();
+        z-index:2;
+        div.info {
+          position:relative;
+          z-index:1;
+        }
       }
 
     }
@@ -225,6 +258,7 @@
 
     @include default-form-info();
 
+    // Upload info
     div.info {
       position:relative;
       z-index: 1;

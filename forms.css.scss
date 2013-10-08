@@ -1,6 +1,7 @@
 
 @import "compass";
 @import "common/vars";
+@import "common/sprites";
 
 @mixin default-input {
   input {
@@ -61,12 +62,11 @@
 }
 
 
-@mixin default-upload {
-
-}
+@mixin default-upload {}
 
 @mixin default-form-info {
   div.info {
+    position:relative;
     display:block;
     min-height:15px;
     @include opacity(0);
@@ -85,10 +85,75 @@
       font-style:italic;
       font-size:13px;
       word-wrap:break-word;
+
+      a {
+        color:#666666;
+        text-decoration:underline;
+        &:hover {color:#333}
+      }
     }
 
-    &.error {background:#FEEAEB}
-    &.sync {background:#F2F2F2}
+    // Info types
+    &.error { background:#FEEAEB }
+
+    // Sync and no-sync info
+    &.sync, &.no-sync {
+      @include background(sprite($icons-sprites, wifi_icon, $offset-x:11px, $offset-y:5px) no-repeat #FFF7EA);
+    }
+
+    // SYNC
+    &.sync { 
+      padding:16px 13px 10px 34px;
+      background-color:#F2F2F2;
+      font-style:normal;
+
+      .select2-container .select2-choice span {
+        margin-right:10px;
+      }
+      
+      div.data {
+        @include inline-block();
+        width:auto;
+        padding:0 6px 0 10px;
+        border-left:1px solid #CCCCCC;
+
+        p {@include inline-block(); padding-right:5px; font-style:normal;}
+
+        div.period { @include inline-block(); }
+      }
+
+      div.custom {
+        @include inline-block();
+        width:auto;
+        padding-left:8px;
+        border-left:1px solid #CCCCCC;
+
+        p {@include inline-block(); padding-right:5px; font-style:normal;}
+
+        div.day {
+          @include inline-block();
+          width:40px;
+          margin-right:10px;
+        }
+        
+        @include default-input();
+        input {
+          width: 32px;
+          padding: 2px 3px;
+          border-color: #9E9E9E;
+          font-size: 13px;
+          vertical-align: bottom;
+        }
+      }
+
+    }
+
+    // NO SYNC
+    &.no-sync {
+      padding:20px 13px 13px 34px;
+      p { padding-left:10px; border-left:1px solid #CCCCCC; font-style:normal; }
+    }
+
     &.active {
       @include opacity(1);
       margin-top:-7px;

@@ -22,7 +22,8 @@ class Table < Sequel::Model(:user_tables)
     :table_size => :table_size, :map_id => :map_id, :description => :description,
     :geometry_types => :geometry_types, :table_visualization => :table_visualization,
     :dependent_visualizations     => :serialize_dependent_visualizations,
-    :non_dependent_visualizations => :serialize_non_dependent_visualizations
+    :non_dependent_visualizations => :serialize_non_dependent_visualizations,
+    :synchronization => :serialize_synchronization
   }
 
   DEFAULT_THE_GEOM_TYPE = "geometry"

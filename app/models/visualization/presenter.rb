@@ -21,6 +21,7 @@ module CartoDB
           description:      visualization.description,
           privacy:          visualization.privacy.upcase,
           table:            table_data_for(table),
+          synchronization:  visualization.synchronization.to_hash,
           stats:            visualization.stats(user),
           created_at:       visualization.created_at,
           updated_at:       visualization.updated_at

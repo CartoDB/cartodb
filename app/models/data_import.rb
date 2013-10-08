@@ -19,7 +19,8 @@ class DataImport < Sequel::Model
   attr_reader   :log
 
   PUBLIC_ATTRIBUTES = %W{ id user_id table_id data_type table_name state
-    error_code queue_id get_error_text tables_created_count }
+    error_code queue_id get_error_text tables_created_count 
+    synchronization_id }
 
   def after_initialize
     instantiate_log
@@ -281,6 +282,12 @@ class DataImport < Sequel::Model
     self.error_code = importer.error_code
     self.table_name = importer.table.name if importer.success?
     self.table_id   = importer.table.id if importer.success?
+    if synchronization_id
+      synchronization = 
+        CartoDB::Synchronization::Member.new(id: synchronization_id).first
+      synchronization.name = self.table_name
+      synchronization.store
+    end
     importer.success?
   end
 

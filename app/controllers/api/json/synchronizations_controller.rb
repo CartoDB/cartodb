@@ -29,9 +29,10 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
     collection.store
 
     options = { 
-      user_id:     current_user.id,
-      table_name:  params[:table_name].presence,
-      data_source: params[:url],
+      user_id:            current_user.id,
+      table_name:         params[:table_name].presence,
+      data_source:        params[:url],
+      synchronization_id: member.id
     }
       
     data_import = DataImport.create(options)

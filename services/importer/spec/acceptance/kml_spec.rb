@@ -42,13 +42,22 @@ describe 'KML regression tests' do
     geometry_type_for(runner).wont_be_nil
   end
 
+  it 'imports multi-layer KMLs' do
+    filepath    = path_to('multiple_layer.kml')
+    downloader  = Downloader.new(filepath)
+    runner      = Runner.new(@pg_options, downloader)
+    runner.run
+
+    geometry_type_for(runner).wont_be_nil
+  end
+
   it 'raises if KML just contains a link to the actual KML url' do
     filepath    = path_to('abandoned.kml')
     downloader  = Downloader.new(filepath)
     runner      = Runner.new(@pg_options, downloader)
     runner.run
 
-    runner.results.first.fetch(:error).must_equal 3202
+    runner.results.first.error_code.must_equal 3202
   end
 
   def path_to(filepath)
@@ -59,8 +68,8 @@ describe 'KML regression tests' do
 
   def geometry_type_for(runner)
     result      = runner.results.first
-    table_name  = result.fetch(:tables).first
-    schema      = result.fetch(:schema)
+    table_name  = result.tables.first
+    schema      = result.schema
 
     runner.db[%Q{
       SELECT public.GeometryType(the_geom)

@@ -4,6 +4,7 @@ require_relative './exceptions'
 require_relative './source_file'
 require_relative '../../../data-repository/filesystem/local'
 require_relative './url_translator/osm'
+require_relative './url_translator/osm2'
 require_relative './url_translator/fusion_tables'
 require_relative './url_translator/github'
 require_relative './url_translator/google_maps'
@@ -17,6 +18,7 @@ module CartoDB
       CONTENT_DISPOSITION_RE  = %r{attachment; filename=(.*;|.*)}
       URL_RE                  = %r{://}
       URL_TRANSLATORS         = [
+                                  UrlTranslator::OSM2,
                                   UrlTranslator::OSM,
                                   UrlTranslator::FusionTables,
                                   UrlTranslator::GitHub,
@@ -24,48 +26,101 @@ module CartoDB
                                   UrlTranslator::GoogleDocs
                                 ]
 
-      def initialize(url, seed=nil, repository=nil)
-        self.url          = url
+      def initialize(url, http_options={}, seed=nil, repository=nil)
+        @url          = url
         raise UploadError if url.nil?
-        self.seed         = seed
-        self.repository   = repository || 
-                            DataRepository::Filesystem::Local.new(temporary_directory)
+
+        @http_options = http_options
+        @seed         = seed
+        @repository   = repository || 
+                          DataRepository::Filesystem::Local.new(temporary_directory)
       end #initialize
 
       def run(available_quota_in_bytes=nil)
-        unless url =~ URL_RE
-          self.source_file = SourceFile.new(url)
-          return self
-        end
-
-        response          = Typhoeus.head(translate(url), followlocation: true)
-        if content_length_from(response) > available_quota_in_bytes.to_i
-          raise StorageQuotaExceededError if available_quota_in_bytes
-        end
-
-        response          = Typhoeus.get(translate(url), followlocation: true)
-        name              = name_from(response.headers, url)
-        self.source_file  = SourceFile.new(filepath(name), name)
-
-        repository.store(source_file.path, StringIO.new(response.response_body))
+        set_local_source_file ||
+        set_downloaded_source_file(available_quota_in_bytes)
         self
-      end #run
+      end
+
+      def set_local_source_file
+        return false if valid_url?
+        self.source_file = SourceFile.new(url)
+        self
+      end
+
+      def valid_url?
+        url =~ URL_RE
+      end
+
+      def set_downloaded_source_file(available_quota_in_bytes=nil)
+        raise_if_over_storage_quota(headers, available_quota_in_bytes)
+        return self unless modified?
+
+        response  = download
+        headers   = response.headers
+        data      = StringIO.new(response.response_body)
+        name      = name_from(headers, url)
+
+        self.source_file  = SourceFile.new(
+          filepath(name),
+          name,
+          etag: etag_from(headers),
+          last_modified: last_modified_from(headers)
+        )
+        repository.store(source_file.path, data)
+        self
+      end
+
+      def raise_if_over_storage_quota(headers, available_quota_in_bytes=nil)
+        return self unless available_quota_in_bytes
+        raise StorageQuotaExceededError if 
+          content_length_from(headers) > available_quota_in_bytes.to_i
+      end
+
+      def headers
+        @headers ||=
+          Typhoeus.head(translate(url), followlocation: true).headers
+      end
+
+      def download
+        Typhoeus.get(translate(url), followlocation: true)
+       end
 
       def name_from(headers, url)
         name_from_http(headers) || name_in(url)
       end #filename_from
 
-      def content_length_from(response)
-        response.headers.fetch('Content-Length', -1).to_i
+      def content_length_from(headers)
+        headers.fetch('Content-Length', -1).to_i
       end #content_length_from
 
-      attr_reader :source_file
-      attr_reader :url
+      def modified?
+        previous_etag           = http_options.fetch(:etag, false)
+        previous_last_modified  = http_options.fetch(:last_modified, false)
+        etag                    = etag_from(headers)
+        last_modified           = last_modified_from(headers)
+
+        return true unless (previous_etag || previous_last_modified) 
+        return true if previous_etag && etag && previous_etag != etag
+        return true if previous_last_modified && last_modified && 
+          previous_last_modified < last_modified
+        false
+      end
+
+      def etag_from(headers)
+        headers.fetch("ETag", nil)
+      end
+
+      def last_modified_from(headers)
+        headers.fetch("Last-Modified", nil)
+      end
+
+      attr_reader :source_file, :url
 
       private
       
-      attr_accessor :repository, :seed
-      attr_writer   :url, :source_file
+      attr_reader :http_options, :repository, :seed
+      attr_writer :source_file
 
       def translators
         URL_TRANSLATORS.map(&:new)

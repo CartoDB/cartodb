@@ -33,8 +33,9 @@ module CartoDB
       csv_file = File.join(working_dir, "wadus.csv")
       connection.run(%Q{
         COPY (
-          SELECT cartodb_id as recId, concat_ws(', ', #{formatter}) as searchText 
+          SELECT concat_ws(', ', #{formatter}) as recId, concat_ws(', ', #{formatter}) as searchText 
           FROM #{table_name}
+          GROUP BY recId
         ) TO '#{csv_file}' DELIMITER ',' CSV HEADER
       })
       return csv_file
@@ -74,7 +75,7 @@ module CartoDB
     def create_temp_table
       connection.run(%Q{
         CREATE TABLE #{temp_table_name} (
-          recId int, 
+          recId text, 
           SeqNumber int, 
           seqLength int, 
           displayLatitude float, 
@@ -102,7 +103,8 @@ module CartoDB
             'POINT(' || orig.displayLongitude || ' ' ||
               orig.displayLatitude || ')', 4326
             )
-        FROM #{temp_table_name} AS orig WHERE dest.cartodb_id = orig.recId
+        FROM #{temp_table_name} AS orig
+        WHERE concat_ws(', ', #{formatter}) = orig.recId
       })
     end
 

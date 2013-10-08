@@ -101,8 +101,11 @@ module CartoDB
     },
     2001 => {
       title: 'Unable to load data',
-      what_about: "We couldn't load data from your file into the database.
-      Please <a href='mailto:support@cartodb.com?subject=Import load error'>contact us</a> and we will help you to load your data."
+      what_about: "We couldn't load data from your file into the database.  Please <a href='mailto:support@cartodb.com?subject=Import load error'>contact us</a> and we will help you to load your data."
+    },
+    2002 => {
+      title: 'Encoding detection error',
+      what_about: "We couldn't detect the encoding of your file. Please <a href='mailto:support@cartodb?subject=Encoding error in import'>contact us</a> and we will help you to load your data."
     },
     3007 => {
       title: 'JSON may not be valid GeoJSON',

@@ -1,6 +1,6 @@
-// cartodb.js version: 3.2.00
+// cartodb.js version: 3.2.01
 // uncompressed version: cartodb.uncompressed.js
-// sha: 7576826523c3f64eb3922457a0de052916f3537e
+// sha: 905851ff6b52e6c748be0d58f3fffeb64d1ca3b8
 (function() {
   var root = this;
 
@@ -20429,7 +20429,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.2.00';
+    cdb.VERSION = '3.2.01';
 
     cdb.CARTOCSS_VERSIONS = {
       '2.0.0': '',
@@ -23168,7 +23168,7 @@ cdb.geo.ui.Switcher = cdb.core.View.extend({
  */
 
 cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
-  
+
   SYSTEM_COLUMNS: ['the_geom', 'the_geom_webmercator', 'created_at', 'updated_at', 'cartodb_id', 'cartodb_georef_status'],
 
   defaults: {
@@ -23359,7 +23359,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     } else {
       this._setTemplate();
     }
-    
+
     this.model.bind('change:content',           this.render, this);
     this.model.bind('change:template_name',     this._setTemplate, this);
     this.model.bind('change:latlng',            this._update, this);
@@ -23465,7 +23465,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
   _setTemplate: function() {
     if (this.model.get('template_name')) {
       this.template = cdb.templates.getTemplate(this._getModelTemplate());
-      this.render();  
+      this.render();
     }
   },
 
@@ -23707,7 +23707,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
    */
   _isValidURL: function(url) {
     if (url) {
-      var urlPattern = /^(http|ftp|https):\/\/[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:\/~+#-]*[\w@?^=%&amp;\/~+#-])?$/
+      var urlPattern = /^(http|ftp|https):\/\/[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:\/~+#-|]*[\w@?^=%&amp;\/~+#-])?$/
       return String(url).match(urlPattern) != null ? true : false;
     }
 

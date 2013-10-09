@@ -340,7 +340,7 @@ describe("cdb.geo.ui.infowindow", function() {
       expect(view._sanitizeField).not.toHaveBeenCalled();
     });
   });
-  
+
 
   describe("image template", function() {
     var model, view, container, fields, fieldsWithoutURL, url;
@@ -387,6 +387,11 @@ describe("cdb.geo.ui.infowindow", function() {
 
     it("should validate the cover url", function() {
       var url = view._getCoverURL();
+      expect(view._isValidURL(url)).toEqual(true);
+    });
+
+    it("should accept google chart URLS in the cover", function() {
+      var url = "http://chart.googleapis.com/chart?chxl=0:|1990%2F92|2001%2F03|2011%2F13&chxr=1,0,75&chxs=0,676767,11.5,0.5,lt,676767&chxt=x,y&chs=279x210&cht=lc&chco=FF0000&chds=0,69&chd=t:9.5,12.8,15.1,14.6,12.9,10.2,9.5,8.2,7.4,6.2,6,6.5,7.1,7.5,7.9,8,8.2,7.9,7.5,6.9,6.3,5.6&chg=-1,0,0,4&chls=1&chma=0,0,0,25&chm=B,EFEFEF,0,0,0&chtt=Malnourishment+in+&chts=676767,14";
       expect(view._isValidURL(url)).toEqual(true);
     });
 

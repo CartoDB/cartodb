@@ -40,8 +40,8 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
 
     response = {
       data_import: { 
-        endpoint: "/api/v1/imports",
-        id:       data_import.id
+        endpoint:       "/api/v1/imports",
+        item_queue_id:  data_import.id
       }
     }.merge(member.to_hash)
     render_jsonp(response)

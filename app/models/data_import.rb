@@ -11,6 +11,7 @@ require_relative '../../lib/cartodb_stats'
 require_relative '../../services/track_record/track_record/log'
 require_relative '../../config/initializers/redis'
 require_relative '../../services/importer/lib/importer'
+require_relative '../connectors/importer'
 
 class DataImport < Sequel::Model
   REDIS_LOG_KEY_PREFIX          = 'importer'

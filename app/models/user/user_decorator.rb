@@ -29,7 +29,8 @@ module CartoDB
           private_tables: self.private_tables_enabled,
           dedicated_support: self.dedicated_support?,
           import_quota: self.import_quota,
-          remove_logo: self.remove_logo?
+          remove_logo: self.remove_logo?,
+          sync_tables: self.sync_tables_enabled
         }
       }
 

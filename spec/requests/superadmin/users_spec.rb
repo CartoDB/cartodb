@@ -67,6 +67,7 @@ feature "Superadmin's users API" do
 
   scenario "user create default account settings" do
     @user_atts[:private_tables_enabled] = false
+    @user_atts[:sync_tables_enabled] = false
     @user_atts[:map_view_quota] = 80
     t = Time.now
     @user_atts[:upgraded_at] = t
@@ -76,6 +77,7 @@ feature "Superadmin's users API" do
       response.body[:table_quota].should == 5
       response.body[:account_type].should == 'FREE'
       response.body[:private_tables_enabled].should == false
+      response.body[:sync_tables_enabled].should == false
       response.body[:map_view_quota].should == 80
 
       # Double check that the user has been created properly
@@ -94,6 +96,7 @@ feature "Superadmin's users API" do
     @user_atts[:table_quota]    = 20
     @user_atts[:account_type]   = 'Juliet'
     @user_atts[:private_tables_enabled] = true
+    @user_atts[:sync_tables_enabled] = true
     @user_atts[:map_view_block_price] = 15
     @user_atts[:geocoding_quota] = 15
 
@@ -103,6 +106,8 @@ feature "Superadmin's users API" do
       response.body[:table_quota].should == 20
       response.body[:account_type].should == 'Juliet'
       response.body[:private_tables_enabled].should == true
+      response.body[:sync_tables_enabled].should == true
+      response.body[:sync_tables_enabled].should == true
       response.body[:map_view_block_price].should == 15
       response.body[:geocoding_quota].should == 15
 
@@ -112,6 +117,7 @@ feature "Superadmin's users API" do
       user.table_quota.should == 20
       user.account_type.should == 'Juliet'
       user.private_tables_enabled.should == true
+      user.sync_tables_enabled.should == true
       user.map_view_block_price.should == 15
       user.geocoding_quota.should == 15
     end
@@ -128,6 +134,7 @@ feature "Superadmin's users API" do
                     :database_timeout => 200000,
                     :account_type     => 'Juliet',
                     :private_tables_enabled => true,
+                    :sync_tables_enabled => true,
                     :upgraded_at      => t,
                     :map_view_block_price => 200,
                     :geocoding_quota => 230 }
@@ -141,6 +148,7 @@ feature "Superadmin's users API" do
     user.table_quota.should == 20
     user.account_type.should == 'Juliet'
     user.private_tables_enabled.should == true
+    user.sync_tables_enabled.should == true
     user.max_layers.should == 10
     user.database_timeout.should == 200000
     user.user_timeout.should == 100000

@@ -4,7 +4,7 @@
 
 <%= content_for(:js) do %>
   <%= javascript_include_tag :application, :cdb, :dashboard %>
-  <script src="https://www.google.com/jsapi?key=AIzaSyDzeK_h4JhsU9-wtNaR3j0ZeeYBLtaPcEA"></script>
+  <script src="https://www.google.com/jsapi?key=<%= Cartodb.config[:gdrive]['api_key'] %>"></script>
   <script type="text/javascript">
     google.load('picker', '1');
     var username = "<%= current_user.username %>"

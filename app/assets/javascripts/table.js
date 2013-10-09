@@ -17,6 +17,7 @@
 //= require jquery.fileupload-fp
 //= require jquery.fileupload-ui
 //= require leaflet.draw
+//= require moment
 //= require carto
 //= require ../../../lib/assets/javascripts/utils/postgres.codemirror
 //= require ../../../lib/assets/javascripts/utils/carto.codemirror

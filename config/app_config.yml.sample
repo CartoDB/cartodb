@@ -127,6 +127,9 @@ defaults: &defaults
     s3_bucket_name: "tests"
     max_file_size: 5242880 # 5.megabytes
   dropbox_api_key: ""
+  gdrive: 
+    api_key: ""
+    app_id: ""
 
 development:
   <<: *defaults

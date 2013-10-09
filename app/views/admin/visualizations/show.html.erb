@@ -7,7 +7,7 @@
     <%= stylesheet_link_tag :common, :table, :map, :media => 'all' %>
   <% end %>
 
-  <script src="https://www.google.com/jsapi?key=AIzaSyDzeK_h4JhsU9-wtNaR3j0ZeeYBLtaPcEA"></script>
+  <script src="https://www.google.com/jsapi?key=<%= Cartodb.config[:gdrive]['api_key'] %>"></script>
   <script>
     google.load('picker', '1');
     var vis_data = <%=raw @visualization.to_hash.to_json %>

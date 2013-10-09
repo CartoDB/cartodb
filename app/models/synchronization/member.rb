@@ -103,6 +103,15 @@ module CartoDB
         user.id == user_id
       end
 
+      def pg_options
+        Rails.configuration.database_configuration[Rails.env].symbolize_keys
+          .merge(
+            user:     current_user.database_username,
+            password: current_user.database_password,
+            database: current_user.database_name
+          )
+      end 
+
       attr_reader :repository
     end # Member
   end # Synchronization

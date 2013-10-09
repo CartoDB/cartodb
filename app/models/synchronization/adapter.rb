@@ -26,9 +26,9 @@ module CartoDB
         move_to_schema(result)
 
         database.transaction do
-          rename(table_name, 'to_be_deleted') if exists?(table_name)
+          rename(table_name, temporary_name) if exists?(table_name)
           rename(result.table_name, table_name)
-          drop('to_be_deleted') if exists?(table_name)
+          drop(temporary_) if exists?(temporary_name)
         end
       end
 
@@ -59,6 +59,7 @@ module CartoDB
       end
 
       def exists?(table_name)
+        database.exists?(table_name)
       end
 
       def results
@@ -69,6 +70,10 @@ module CartoDB
         return 8002 if table_quota_exceeded?
         results.map(&:error_code).compact.first
       end #errors_from
+
+      def temporary_name
+        'to_be_deleted'
+      end
 
       private
 

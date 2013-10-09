@@ -23,6 +23,9 @@ module CartoDB
       attribute :run_at,          Time     
       attribute :runned_at,       Time,     default: Time.now.utc
       attribute :retried_times,   Integer,  default: 0
+      attribute :error_code,      Integer
+      attribute :error_message,   String
+      attribute :log_id,          String
 
       def initialize(attributes={}, repository=Synchronization.repository)
         super(attributes)

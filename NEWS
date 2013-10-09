@@ -1,3 +1,8 @@
+3.2.01 (10//09/2013)
+-----
+- Fixed bug that prevented the use of Google charts URLs in the infowindow covers.
+- Fixed Geocoder specs
+
 3.2.00 (09//30/2013)
 -----
 - ported to leaflet 0.6 #55

@@ -39,7 +39,10 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
     ::Resque.enqueue(::Resque::ImporterJobs, job_id: data_import.id)
 
     response = {
-      links: { data_import: "/imports/#{data_import.id}" }
+      data_import: { 
+        endpoint: "/api/v1/imports",
+        id:       data_import.id
+      }
     }.merge(member.to_hash)
     render_jsonp(response)
   rescue CartoDB::InvalidMember => exception

@@ -2,6 +2,7 @@
 //= require jquery.fileupload
 //= require jquery.fileupload-fp
 //= require jquery.fileupload-ui
+//= require select2.min
 //= require models
 //= require ../../../lib/assets/javascripts/cartodb/common/dropdown_menu
 //= require ../../../lib/assets/javascripts/cartodb/common/dropdown_basemap

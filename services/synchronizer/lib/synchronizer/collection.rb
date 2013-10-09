@@ -30,6 +30,7 @@ module CartoDB
         query = db.query(%Q(
           SELECT * FROM #{relation}
           WHERE EXTRACT(EPOCH FROM run_at) < #{Time.now.utc.to_f}
+          AND state == 'success'
         ))
 
         query.errback   { |errors| error.call(errors) }

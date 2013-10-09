@@ -284,8 +284,10 @@ class DataImport < Sequel::Model
     self.table_id   = importer.table.id if importer.success?
     if synchronization_id
       synchronization = 
-        CartoDB::Synchronization::Member.new(id: synchronization_id).first
-      synchronization.name = self.table_name
+        CartoDB::Synchronization::Member.new(id: synchronization_id).fetch
+      synchronization.name  = self.table_name
+      synchronization.state = 'failure' unless importer.success?
+      synchronization.state = 'success'
       synchronization.store
     end
     importer.success?

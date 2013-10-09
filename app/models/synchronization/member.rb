@@ -14,21 +14,25 @@ module CartoDB
 
       attribute :id,              String
       attribute :name,            String
-      attribute :interval,        Integer
+      attribute :interval,        Integer,  default: 3600
       attribute :url,             String
-      attribute :state,           String
+      attribute :state,           String,   default: 'created'
       attribute :user_id,         Integer
       attribute :created_at,      Time
       attribute :updated_at,      Time
-      attribute :run_at,          Time
-      attribute :runned_at,       Time
-      attribute :retried_times,   Integer
+      attribute :run_at,          Time     
+      attribute :runned_at,       Time,     default: Time.now.utc
+      attribute :retried_times,   Integer,  default: 0
 
       def initialize(attributes={}, repository=Synchronization.repository)
         super(attributes)
         @repository = repository
-        self.id     ||= @repository.next_id
-        self.state  ||= 'enabled'
+        self.id             ||= @repository.next_id
+        self.state          ||= 'created'
+        self.runned_at      ||= Time.now.utc
+        self.interval       ||= 3600
+        self.run_at         ||= runned_at + interval
+        self.retried_times  ||= 0
       end
 
       def store

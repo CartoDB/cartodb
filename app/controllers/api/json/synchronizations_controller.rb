@@ -20,9 +20,11 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
 
   def create
     member = Synchronization::Member.new(
-      { name:     params[:table_name],
-        user_id:  current_user.id
-      }.merge(payload)
+      payload.merge(
+        name:       params[:table_name],
+        user_id:    current_user.id,
+        state:      'created'
+      )
     )
 
     options = { 

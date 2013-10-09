@@ -54,20 +54,10 @@ module CartoDB
         { id: object.id, name: object.name }
       end #preview_for
 
-      def synchronization_id
-        db[:synchronizations].with_sql(%Q{
-          SELECT id AS id
-          FROM synchronizations
-          WHERE synchronizations.user_id = #{table.user_id}
-          AND synchronizations.name = #{table.name}
-        }).fetch(:id, nil)
-      rescue
-        nil
-      end
-
       def synchronization
-        return {} unless synchronization_id
-        CartoDB::Synchronization::Member.new(id: synchronization_id).fetch
+        return {}
+        return nil unless synchronization_record && !synchronization_record.empty?
+        synchronization_record.first
       end
 
       def serialize_synchronization
@@ -87,6 +77,21 @@ module CartoDB
           AND     layers_maps.map_id = visualizations.map_id
         })
       end #affected_visualization_records
+
+      def synchronization_record
+        @syncronization_record ||= db[:synchronizations].with_sql(%Q{
+          SELECT *
+          FROM synchronizations
+          WHERE synchronizations.user_id = #{table.user_id}
+          AND synchronizations.name = '#{table.name}'
+          LIMIT 1
+        }).to_a
+      rescue => exception
+        puts exception.to_s
+        puts exception.backtrace
+        nil
+      end
+
     end # Relator
   end # Table
 end # CartoDB

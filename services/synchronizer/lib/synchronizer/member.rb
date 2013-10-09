@@ -8,8 +8,11 @@ module CartoDB
       end
 
       def run
+        puts "running"
         self
       end
+
+      attr_reader :attributes
     end # Member
   end # Synchronizer
 end # CartoDB

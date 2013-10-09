@@ -3,7 +3,7 @@ gem 'minitest'
 require 'minitest/autorun'
 require_relative '../../lib/synchronizer/runner'
 
-include Synchronizer
+include CartoDB::Synchronizer
 
 describe Runner do
   describe '#run' do
@@ -13,6 +13,7 @@ describe Runner do
       runner          = Runner.new(job_collection, runner_options)
 
       job_collection.expect(:fetch, job_collection)
+      job_collection.expect(:process, job_collection)
       runner.run
       job_collection.verify
     end
@@ -45,6 +46,7 @@ describe Runner do
   def fake_job_collection
     collection = Object.new
     def collection.fetch; self; end
+    def collection.process; self; end
     collection
   end
 end # Runner

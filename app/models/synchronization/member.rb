@@ -51,6 +51,24 @@ module CartoDB
         self
       end
 
+      def enqueue
+        puts "enqueing #{id}"
+        Resque.enqueue(Resque::SynchronizationJobs, job_id: id)
+      end
+
+      def run
+        puts "running #{id}"
+        tracker       = lambda { |state| self.state = state; save }
+        downloader    = CartoDB::Importer2::Downloader.new(url)
+        runner        = CartoDB::Importer2::Runner.new(
+                          pg_options, downloader, log, user.remaining_quota
+                        )
+        database      = user.in_database
+        
+        importer      = CartoDB::Synchronization::Adapter
+                          .new(name, runner, database).run
+      end
+
       def to_hash
         attributes.to_hash
       end
@@ -84,6 +102,15 @@ module CartoDB
       def authorize?(user)
         user.id == user_id
       end
+
+      def pg_options
+        Rails.configuration.database_configuration[Rails.env].symbolize_keys
+          .merge(
+            user:     current_user.database_username,
+            password: current_user.database_password,
+            database: current_user.database_name
+          )
+      end 
 
       attr_reader :repository
     end # Member

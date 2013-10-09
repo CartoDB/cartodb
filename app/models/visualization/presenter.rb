@@ -21,7 +21,7 @@ module CartoDB
           description:      visualization.description,
           privacy:          visualization.privacy.upcase,
           table:            table_data_for(table),
-          synchronization:  visualization.synchronization.to_hash,
+          synchronization:  synchronization_data_for(table),
           stats:            visualization.stats(user),
           created_at:       visualization.created_at,
           updated_at:       visualization.updated_at
@@ -54,6 +54,11 @@ module CartoDB
 
         table_data
       end #table_data_for
+
+      def synchronization_data_for(table=nil)
+        return nil unless table
+        table.synchronization
+      end
 
       def related_tables
         without_associated_table(visualization.related_tables)

@@ -4,7 +4,9 @@
 
 <%= content_for(:js) do %>
   <%= javascript_include_tag :application, :cdb, :dashboard %>
+  <script src="https://www.google.com/jsapi?key=AIzaSyDzeK_h4JhsU9-wtNaR3j0ZeeYBLtaPcEA"></script>
   <script type="text/javascript">
+    google.load('picker', '1');
     var username = "<%= current_user.username %>"
     , user_data = <%=raw current_user.data.to_json.html_safe %>
     , config = <%=raw frontend_config.html_safe %>

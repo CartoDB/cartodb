@@ -7,12 +7,14 @@
     <%= stylesheet_link_tag :common, :table, :map, :media => 'all' %>
   <% end %>
 
+  <script src="https://www.google.com/jsapi?key=AIzaSyDzeK_h4JhsU9-wtNaR3j0ZeeYBLtaPcEA"></script>
   <script>
-      var vis_data = <%=raw @visualization.to_hash.to_json %>
-      , user_data = <%=raw current_user.data.to_json.html_safe %>
-      , config = <%=raw frontend_config.html_safe %>
-      , map_data = <%=raw @visualization.map.public_values.to_json %>
-      , mixpanel_token = "<%= Cartodb.config[:mixpanel]['token'] if Cartodb.config[:mixpanel].present? %>"
+    google.load('picker', '1');
+    var vis_data = <%=raw @visualization.to_hash.to_json %>
+    , user_data = <%=raw current_user.data.to_json.html_safe %>
+    , config = <%=raw frontend_config.html_safe %>
+    , map_data = <%=raw @visualization.map.public_values.to_json %>
+    , mixpanel_token = "<%= Cartodb.config[:mixpanel]['token'] if Cartodb.config[:mixpanel].present? %>"
   </script>
 
   <% content_for(:js) do %>

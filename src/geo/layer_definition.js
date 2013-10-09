@@ -228,6 +228,9 @@ LayerDefinition.prototype = {
       },
       error: function(xhr) {
         var err = { errors: ['unknow error'] };
+        if (xhr.status === 0) {
+          err = { errors: ['connection error'] };
+        }
         try {
           err = JSON.parse(xhr.responseText);
         } catch(e) {}

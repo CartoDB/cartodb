@@ -10,7 +10,9 @@ module CartoDB
   module Synchronizer
     class Collection
       DEFAULT_RELATION      = 'synchronizations'
-      DATABASE_CONFIG_YAML  = File.join('../../config/database.yml')
+      DATABASE_CONFIG_YAML  = File.join(
+        File.dirname(__FILE__), '../../../../config/database.yml'
+      )
 
       def initialize(pg_options={}, relation=DEFAULT_RELATION)
         pg_options = default_pg_options.merge(pg_options) if pg_options.empty?

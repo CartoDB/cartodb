@@ -55,8 +55,7 @@ module CartoDB
       end #preview_for
 
       def synchronization
-        return {}
-        return nil unless synchronization_record && !synchronization_record.empty?
+        return {} unless synchronization_record && !synchronization_record.empty?
         synchronization_record.first
       end
 

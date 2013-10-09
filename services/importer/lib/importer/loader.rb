@@ -29,9 +29,10 @@ module CartoDB
       end #initialize
 
       def run
-        job.log "Using database connection with #{job.concealed_pg_options}"
         normalize
+        job.log "Detected encoding #{encoding}"
 
+        job.log "Using database connection with #{job.concealed_pg_options}"
         ogr2ogr.run
         job.log "ogr2ogr output:    #{ogr2ogr.command_output}"
         job.log "ogr2ogr exit code: #{ogr2ogr.exit_code}"

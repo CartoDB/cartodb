@@ -36,8 +36,8 @@ describe 'geojson regression tests' do
     runner.run
 
     result      = runner.results.first
-    table_name  = result.fetch(:tables).first
-    schema      = result.fetch(:schema)
+    table_name  = result.tables.first
+    schema      = result.schema
 
     runner.db.schema(table_name, schema: 'importer')
       .find { |element| element.first == :boolean }.last
@@ -51,7 +51,7 @@ describe 'geojson regression tests' do
     runner      = Runner.new(@pg_options, downloader)
     runner.run
 
-    runner.results.first.fetch(:error).must_equal 3007
+    runner.results.first.error_code.must_equal 3007
   end
 
   def path_to(filepath)
@@ -62,7 +62,7 @@ describe 'geojson regression tests' do
 
   def geometry_type_for(runner)
     result                = runner.results.first
-    qualified_table_name  = result.fetch(:qualified_table_name)
+    qualified_table_name  = result.qualified_table_name
 
     runner.db[%Q{
       SELECT public.GeometryType(the_geom)

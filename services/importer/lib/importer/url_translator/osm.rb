@@ -5,7 +5,7 @@ module CartoDB
   module Importer2
     module UrlTranslator
       class OSM
-        URL_REGEX               = /openstreetmap.org/
+        URL_REGEX               = %r{openstreetmap.org.*lat.*}
         TRANSLATED_URL_REGEX    = /api.openstreetmap.org/
         URL_TEMPLATE  = "http://api.openstreetmap.org/api/0.6/map?bbox="
         DW = 1200.0/2.0

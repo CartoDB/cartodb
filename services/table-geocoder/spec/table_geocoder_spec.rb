@@ -104,29 +104,24 @@ describe CartoDB::TableGeocoder do
   end
 
   it "wadus" do
-     t = CartoDB::TableGeocoder.new(
-       table_name: @table_name,
-       formatter:  "name, sov0name",
-       connection: @db,
-       app_id: 'KuYppsdXZznpffJsKT24',
-       token:  'A7tBPacePg9Mj_zghvKt9Q',
-       mailto: 'arango@gmail.com'
-     )
-     t.run
-     until t.geocoder.status == 'completed' do
-       t.geocoder.update_status
-       puts "#{t.geocoder.status} #{t.geocoder.processed_rows}/#{t.geocoder.total_rows}"
-       sleep(2)
-     end
-     `open #{t.working_dir}`
-     t.download_results
-     t.deflate_results
-     t.create_temp_table
-     t.import_results_to_temp_table
-     t.load_results_into_original_table
-     debugger
-     @tg.should == ''
-   end
+    t = CartoDB::TableGeocoder.new(
+      table_name: @table_name,
+      formatter:  "name, sov0name",
+      connection: @db,
+      app_id: 'KuYppsdXZznpffJsKT24',
+      token:  'A7tBPacePg9Mj_zghvKt9Q',
+      mailto: 'arango@gmail.com'
+    )
+    t.run
+    until t.geocoder.status == 'completed' do
+      t.geocoder.update_status
+      puts "#{t.geocoder.status} #{t.geocoder.processed_rows}/#{t.geocoder.total_rows}"
+      sleep(2)
+    end
+    `open #{t.working_dir}`
+    t.process_results
+    @tg.should == ''
+  end
 
 
   def path_to(filepath = '')

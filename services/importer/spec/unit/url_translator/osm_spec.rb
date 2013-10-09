@@ -41,7 +41,8 @@ describe UrlTranslator::OSM do
 
   describe '#supported?' do
     it 'returns true if URL is from OSM' do
-      UrlTranslator::OSM.new.supported?('http://www.openstreetmap.org')
+      url = "http://www.openstreetmap.org/?lat=40.01005&lon=-105.27517&zoom=15&layers=M"
+      UrlTranslator::OSM.new.supported?(url)
         .must_equal true
       UrlTranslator::OSM.new.supported?('http://bogus.com')
         .must_equal false

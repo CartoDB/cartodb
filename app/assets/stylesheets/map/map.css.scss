@@ -489,6 +489,10 @@ div.map {
       @include transition-property("text-indent");
       @include transition-duration(300ms);
       @include box-shadow(rgba(0, 0, 0, 0.055) 0 3px 1px 0);
+
+      &.warn {
+       background-color: rgba(#FFFFBF, 0.90);
+      }
     }
   } //div.sqlview
 

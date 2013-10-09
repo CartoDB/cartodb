@@ -11,7 +11,7 @@ module CartoDB
                       }
 
       INTERFACE     = %w{ overlays map user table related_tables layers stats
-                      single_data_layer? }
+                      single_data_layer? synchronization }
 
       def initialize(attributes={})
         @id     = attributes.fetch(:id)
@@ -19,7 +19,7 @@ module CartoDB
       end #initialize
 
       def overlays
-        @overlas ||= Overlay::Collection.new(visualization_id: id).fetch
+        @overlays ||= Overlay::Collection.new(visualization_id: id).fetch
       end #overlays
 
       def map
@@ -43,6 +43,11 @@ module CartoDB
         return [] unless map
         map.send(LAYER_SCOPES.fetch(kind))
       end #layers
+
+      def synchronization
+        return {} unless table
+        table.synchronization
+      end
 
       def stats(user=nil)
         @stats ||= Visualization::Stats.new(self, user).to_poro

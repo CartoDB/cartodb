@@ -2,9 +2,13 @@
 module CartoDB
   module Importer2
     class SourceFile
-      def initialize(filepath, filename=nil)
-        self.filepath = filepath
-        self.filename = filename
+      ENCODING_RE = /_encoding_([\w|-]+)_encoding_.*\./
+
+      def initialize(filepath, filename=nil, http_opts={})
+        @filepath       = filepath
+        @filename       = filename
+        @etag           = http_opts.fetch(:etag, nil)
+        @last_modified  = http_opts.fetch(:last_modified, nil)
       end #initialize
 
       def name
@@ -35,12 +39,16 @@ module CartoDB
         File.size(fullpath) == 0
       end #empty?
 
-      attr_reader :filename
+      def encoding
+        return nil unless filepath =~ ENCODING_RE
+        return filepath.match(ENCODING_RE)[1].upcase
+      end
+
+      attr_reader :filename, :etag, :last_modified
       
       private
 
-      attr_writer   :filename
-      attr_accessor :filepath
+      attr_reader :filepath
     end # SourceFile
   end # Importer2
 end # CartoDB

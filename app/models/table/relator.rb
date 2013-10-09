@@ -12,6 +12,8 @@ module CartoDB
         dependent_visualizations
         non_dependent_visualizations
         affected_visualizations
+        synchronization
+        serialize_synchronization
       }
 
       def initialize(db, table)
@@ -51,6 +53,26 @@ module CartoDB
       def preview_for(object)
         { id: object.id, name: object.name }
       end #preview_for
+
+      def synchronization_id
+        db[:synchronizations].with_sql(%Q{
+          SELECT id AS id
+          FROM synchronizations
+          WHERE synchronizations.user_id = #{table.user_id}
+          AND synchronizations.name = #{table.name}
+        }).fetch(:id, nil)
+      rescue
+        nil
+      end
+
+      def synchronization
+        return {} unless synchronization_id
+        CartoDB::Synchronization::Member.new(id: synchronization_id).fetch
+      end
+
+      def serialize_synchronization
+        synchronization.to_hash
+      end
 
       private
 

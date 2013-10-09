@@ -57,13 +57,13 @@ module CartoDB
       column_names = @db_connection.schema(@current_name).map{ |s| s[0].to_s }
       need_sanitizing = column_names.each do |column_name|
         if column_name != column_name.sanitize_column_name
-          @db_connection.run("ALTER TABLE public.#{@current_name} RENAME COLUMN \"#{column_name}\" TO #{column_name.sanitize_column_name}")
+          @db_connection.run("ALTER TABLE #{@current_name} RENAME COLUMN \"#{column_name}\" TO #{column_name.sanitize_column_name}")
         end
       end
 
       # Rename our table
       if @current_name != @suggested_name
-        @db_connection.run("ALTER TABLE public.#{@current_name} RENAME TO public.#{@suggested_name}")
+        @db_connection.run("ALTER TABLE #{@current_name} RENAME TO #{@suggested_name}")
         @current_name = @suggested_name
       end
 
@@ -79,20 +79,20 @@ module CartoDB
             srid = srid[:st_srid] if srid.is_a?(Hash)
             begin
               if srid.to_s != "4326"
-                @data_import.log_update("Transforming the_geom from #{srid} to 4326")
+                @data_import.log << ("Transforming the_geom from #{srid} to 4326")
                 # move original geometry column around
                 @db_connection.run("UPDATE #{@suggested_name} SET the_geom = ST_Transform(the_geom, 4326);")
                 @db_connection.run("CREATE INDEX #{@suggested_name}_the_geom_gist ON #{@suggested_name} USING GIST (the_geom)")
               end
             rescue => e
-              @data_import.log_error("Failed to transform the_geom from #{srid} to 4326 #{@suggested_name}. #{e.inspect}")
+              @data_import.log << ("Failed to transform the_geom from #{srid} to 4326 #{@suggested_name}. #{e.inspect}")
               @runlog.err << "Failed to transform the_geom from #{srid} to 4326 #{@suggested_name}. #{e.inspect}"
             end
           end
         rescue => e
-          @data_import.log_error("Failed to process the_geom renaming to invalid_the_geom. #{e.inspect}")
+          @data_import.log << ("Failed to process the_geom renaming to invalid_the_geom. #{e.inspect}")
           # if no SRID or invalid the_geom, we need to remove it from the table
-          @db_connection.run("ALTER TABLE public.#{@suggested_name} RENAME COLUMN the_geom TO invalid_the_geom")
+          @db_connection.run("ALTER TABLE #{@suggested_name} RENAME COLUMN the_geom TO invalid_the_geom")
           column_names.delete("the_geom")
         end
       end
@@ -118,7 +118,7 @@ module CartoDB
 
 
         if matching_latitude and matching_longitude
-            @data_import.log_update("converting #{matching_latitude}, #{matching_latitude} to the_geom")
+            @data_import.log << ("converting #{matching_latitude}, #{matching_latitude} to the_geom")
             #we know there is a latitude/longitude columns
             @db_connection.run("SELECT AddGeometryColumn('#{@suggested_name}','the_geom',4326, 'POINT', 2);")
 
@@ -139,8 +139,8 @@ module CartoDB
       end
 
       @table_created = true
-      @data_import.log_update("table created")
-      rows_imported = @db_connection["SELECT count(*) as count from public.#{@suggested_name}"].first[:count]
+      @data_import.log << ("table created")
+      rows_imported = @db_connection["SELECT count(*) as count from #{@suggested_name}"].first[:count]
 
       payload = OpenStruct.new({
                               :name => @suggested_name,

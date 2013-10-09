@@ -165,6 +165,8 @@ CREATE INDEX ne_10m_populated_places_simple_the_geom_idx ON ne_10m_populated_pla
 
 CREATE INDEX ne_10m_populated_places_simple_the_geom_webmercator_idx ON ne_10m_populated_places_simple USING gist (the_geom_webmercator);
 
+UPDATE ne_10m_populated_places_simple set the_geom = NULL;
+UPDATE ne_10m_populated_places_simple set the_geom_webmercator = NULL;
 
 --
 -- PostgreSQL database dump complete

@@ -124,7 +124,7 @@
           @include text-overflow();
         }
 
-        .dropbox-dropin-btn {float:right!important}
+        .gdrive-chooser, .dropbox-dropin-btn {float:right!important}
 
         input {
           float:right;
@@ -276,7 +276,7 @@
   // Google drive
   .gdrive-chooser {
     display: block;
-    line-height: 23px;
+    line-height: 21px;
     width: 109px;
     border: 1px solid #999;
     @include border-radius(3px);

@@ -2,7 +2,7 @@
 
 class AddSynchronizationIdToDataImport < Sequel::Migration
   def up
-    add_column :data_imports, :synchronization_id, :bigint
+    add_column :data_imports, :synchronization_id, String
   end
 
   def down

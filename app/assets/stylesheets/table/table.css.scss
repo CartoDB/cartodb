@@ -456,7 +456,15 @@
             }
           }
         } // tr
-      } // tbody
+      }
+
+      // Sync table
+      &.synced {
+        tbody tr td div.cell {
+          color:rgba(#666666,.5);
+        }
+      }
+      // tbody
 
       // Loaders
       tfoot {

@@ -11,6 +11,7 @@ require_relative '../../lib/cartodb_stats'
 require_relative '../../services/track_record/track_record/log'
 require_relative '../../config/initializers/redis'
 require_relative '../../services/importer/lib/importer'
+require_relative '../connectors/importer'
 
 class DataImport < Sequel::Model
   REDIS_LOG_KEY_PREFIX          = 'importer'
@@ -284,8 +285,19 @@ class DataImport < Sequel::Model
     self.table_id   = importer.table.id if importer.success?
     if synchronization_id
       synchronization = 
-        CartoDB::Synchronization::Member.new(id: synchronization_id).first
-      synchronization.name = self.table_name
+        CartoDB::Synchronization::Member.new(id: synchronization_id).fetch
+      synchronization.name    = self.table_name
+      synchronization.log_id  = log.id
+
+      if importer.success?
+        synchronization.state = 'success'
+        synchronization.error_code = nil
+        synchronization.error_message = nil
+      else
+        synchronization.state = 'failure'
+        synchronization.error_code = error_code
+        synchronization.error_message = get_error_text
+      end
       synchronization.store
     end
     importer.success?

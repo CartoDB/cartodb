@@ -3,7 +3,7 @@
 module CartoDB
   module Synchronization
     class Adapter
-      DEFAULT_SCHEMA = 'cdb_importer'
+      DESTINATION_SCHEMA = 'public'
 
       attr_accessor :table
 
@@ -16,6 +16,7 @@ module CartoDB
       def run(&tracker)
         runner.run(&tracker)
         result = results.select(&:success?).first
+        puts result.inspect
         overwrite(table_name, result)
         self
       end
@@ -28,7 +29,7 @@ module CartoDB
         database.transaction do
           rename(table_name, temporary_name) if exists?(table_name)
           rename(result.table_name, table_name)
-          drop(temporary_) if exists?(temporary_name)
+          drop(temporary_name) if exists?(temporary_name)
         end
       end
 
@@ -36,8 +37,10 @@ module CartoDB
         runner.success?
       end
 
-      def move_to_schema(result, schema=DEFAULT_SCHEMA)
+      def move_to_schema(result, schema=DESTINATION_SCHEMA)
         return self if schema == result.schema
+        puts 'moving to schema'
+        puts "#{result.schema}.#{result.table_name}"
         database.execute(%Q{
           ALTER TABLE "#{result.schema}"."#{result.table_name}"
           SET SCHEMA public
@@ -49,7 +52,6 @@ module CartoDB
           ALTER TABLE "public"."#{current_name}"
           RENAME TO "#{new_name}"
         })
-        persist_metadata(new_name)
       end
 
       def drop(table_name)
@@ -59,7 +61,7 @@ module CartoDB
       end
 
       def exists?(table_name)
-        database.exists?(table_name)
+        database.table_exists?(table_name)
       end
 
       def results
@@ -70,6 +72,10 @@ module CartoDB
         return 8002 if table_quota_exceeded?
         results.map(&:error_code).compact.first
       end #errors_from
+
+      def error_message
+        ''
+      end
 
       def temporary_name
         'to_be_deleted'

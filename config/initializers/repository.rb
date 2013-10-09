@@ -10,6 +10,6 @@ CartoDB::Visualization.repository ||=
 CartoDB::Overlay.repository ||= 
   DataRepository::Backend::Sequel
     .new(Rails::Sequel.connection, :overlays)
-CartoDB::Overlay.repository ||= 
+CartoDB::Synchronization.repository ||= 
   DataRepository::Backend::Sequel
     .new(Rails::Sequel.connection, :synchronizations)

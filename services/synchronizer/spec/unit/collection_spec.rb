@@ -12,26 +12,27 @@ include CartoDB::Synchronizer
 describe Collection do
   before do
     @stop       = lambda { |result| EventMachine.stop }
+    @run_call   = lambda { |records| records.process; EventMachine.stop }
     db          = Factories::PGConnection.new
     @connection = db.connection
     @options    = db.pg_options
   end
 
   describe '#fetch' do
-    it 'fetchs all pending jobs from the synctables relation' do
+    it 'fetchs all pending jobs from the synchronizations relation' do
       repository  = 
-        DataRepository::Backend::Sequel.new(@connection, :synctables)
+        DataRepository::Backend::Sequel.new(@connection, :synchronizations)
 
       ensure_table_created_in(@connection)
 
-      id = rand(999).to_s
-      repository.store(id, synctable)
+      id = repository.next_id.to_s
+      repository.store(id, synchronization(id))
 
       collection = Collection.new(@options)
-      EventMachine.run { collection.fetch(@stop, @stop) }
+      EventMachine.run { collection.fetch(@run_call, @stop) }
 
       collection.members.to_a.length.must_equal 1
-      collection.members.first.must_be_instance_of Member
+      collection.members.first.must_be_instance_of CartoDB::Synchronization::Member
     end
   end
 
@@ -40,20 +41,20 @@ describe Collection do
       member      = Minitest::Mock.new
       collection  = Collection.new(@options)
 
-      member.expect(:run, self)
+      member.expect(:enqueue, self)
       collection.process([member])
 
       member.verify
     end
   end
 
-  def synctable
+  def synchronization(id)
     {
-      id:         'foo',
-      source:     'foo',
+      id:         id,
+      url:        'foo',
       user_id:    1,
       interval:   3600,
-      run_at:     Time.now.utc,
+      run_at:     Time.now.utc - 2,
       created_at: Time.now.utc,
       updated_at: Time.now.utc
     }
@@ -71,3 +72,4 @@ describe Collection do
     Migrator.new(connection).migrate
   end
 end
+

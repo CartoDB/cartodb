@@ -5,7 +5,7 @@ require 'sequel'
 module CartoDB
   module Synchronizer
     class Migrator
-      RELATION_NAME = 'synctables'
+      RELATION_NAME = 'synchronizations'
 
       def initialize(db)
         @db = db
@@ -14,12 +14,16 @@ module CartoDB
       def migrate(relation=RELATION_NAME)
         @db.create_table(relation.to_sym) do
           String    :id, primary_key: true
-          String    :source, null: false
-          Integer   :user_id, null: false
-          Integer   :interval, null: false
-          DateTime  :run_at
+          String    :name
+          Integer   :interval
+          String    :url
+          String    :state
+          Integer   :user_id
           DateTime  :created_at, null: false
           DateTime  :updated_at, null: false
+          DateTime  :run_at
+          DateTime  :runned_at
+          Integer   :retried_times
         end
       end #migrate
 

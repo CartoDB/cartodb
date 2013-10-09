@@ -1,6 +1,5 @@
 # encoding: utf-8
 require 'sequel'
-require_relative '../../../services/data-repository/backend/sequel'
 
 # encoding: utf-8
 module CartoDB
@@ -24,11 +23,6 @@ module CartoDB
           DateTime  :runned_at
           Integer   :retried_times
         end
-
-        @db.run(%Q{
-          ALTER TABLE #{relation}
-          ADD COLUMN tags text[]
-        })
       end #migrate
 
       def drop(relation=:synchronizations)

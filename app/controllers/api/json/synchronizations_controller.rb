@@ -23,10 +23,7 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
       { name:     params[:table_name],
         user_id:  current_user.id
       }.merge(payload)
-    ).store
-    collection      = Synchronization::Collection.new.fetch
-    collection.add(member)
-    collection.store
+    )
 
     options = { 
       user_id:            current_user.id,
@@ -38,12 +35,18 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
     data_import = DataImport.create(options)
     ::Resque.enqueue(::Resque::ImporterJobs, job_id: data_import.id)
 
+    member.store
+    collection      = Synchronization::Collection.new.fetch
+    collection.add(member)
+    collection.store
+
     response = {
       data_import: { 
         endpoint:       "/api/v1/imports",
         item_queue_id:  data_import.id
       }
     }.merge(member.to_hash)
+
     render_jsonp(response)
   rescue CartoDB::InvalidMember => exception
     render_jsonp({ errors: member.full_errors }, 400)

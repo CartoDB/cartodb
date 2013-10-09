@@ -19,7 +19,7 @@
  */
 
 cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
-  
+
   SYSTEM_COLUMNS: ['the_geom', 'the_geom_webmercator', 'created_at', 'updated_at', 'cartodb_id', 'cartodb_georef_status'],
 
   defaults: {
@@ -210,7 +210,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     } else {
       this._setTemplate();
     }
-    
+
     this.model.bind('change:content',           this.render, this);
     this.model.bind('change:template_name',     this._setTemplate, this);
     this.model.bind('change:latlng',            this._update, this);
@@ -316,7 +316,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
   _setTemplate: function() {
     if (this.model.get('template_name')) {
       this.template = cdb.templates.getTemplate(this._getModelTemplate());
-      this.render();  
+      this.render();
     }
   },
 
@@ -558,7 +558,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
    */
   _isValidURL: function(url) {
     if (url) {
-      var urlPattern = /^(http|ftp|https):\/\/[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:\/~+#-]*[\w@?^=%&amp;\/~+#-])?$/
+      var urlPattern = /^(http|ftp|https):\/\/[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:\/~+#-|]*[\w@?^=%&amp;\/~+#-])?$/
       return String(url).match(urlPattern) != null ? true : false;
     }
 

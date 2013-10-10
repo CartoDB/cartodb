@@ -129,12 +129,29 @@ a.info {
   }
 
   .name {
-    width:80%;
+    max-width:80%;
+    width:auto;
     @include text-overflow();
     overflow:hidden;
     margin-left:27px;
     font:bold 17px $text-fonts;
     color:#A9A9A9;
+    line-height:20px;
+
+    &:hover {cursor:pointer}
+  }
+
+  .name_info {
+    position:absolute;
+    top:50px;
+    left:43px;
+    display:block;
+    overflow:hidden;
+    max-width:80%;
+    width:auto;
+    font:normal 11px $text-fonts;
+    color:#999;
+    @include text-overflow();
     line-height:20px;
   }
 

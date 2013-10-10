@@ -154,7 +154,7 @@ module CartoDB
       end
 
       def authorize?(user)
-        user.id == user_id
+        user.id == user_id && !!user.sync_tables_enabled
       end
 
       def pg_options

@@ -9,6 +9,7 @@
     , user_data = <%=raw current_user.data.to_json.html_safe %>
     , config = <%=raw frontend_config.html_safe %>
     , upgrade_url = "<%= upgrade_url %>"
+    , dashboard_first_time = <%= @first_time %>
     , mixpanel_token = "<%= Cartodb.config[:mixpanel]['token'] if Cartodb.config[:mixpanel].present? %>";
   </script>
 <% end %>

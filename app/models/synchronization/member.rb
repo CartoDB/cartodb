@@ -34,15 +34,14 @@ module CartoDB
 
       def initialize(attributes={}, repository=Synchronization.repository)
         super(attributes)
-        @repository = repository
+
+        @repository         = repository
         self.id             ||= @repository.next_id
         self.state          ||= 'created'
         self.runned_at      ||= Time.now.utc
         self.interval       ||= 3600
         self.run_at         ||= runned_at + interval
         self.retried_times  ||= 0
-
-        instantiate_log
       end
 
       def store
@@ -66,12 +65,12 @@ module CartoDB
       end
 
       def enqueue
-        puts "enqueing #{id}"
+        puts "#{Time.now} === enqueing #{id}"
         Resque.enqueue(Resque::SynchronizationJobs, job_id: id)
       end
 
       def run
-        puts "running #{id}"
+        puts "#{Time.now} === running #{id}"
         self.state      = 'syncing'
         self.runned_at  = Time.now.utc
         store
@@ -83,25 +82,42 @@ module CartoDB
         database        = user.in_database
         importer        = CartoDB::Synchronization::Adapter
                             .new(name, runner, database)
-                            .run
+        
+        importer.run
 
         if importer.success?
-          self.log            << "******** synchronization succeeded ********" 
-          self.state          = 'success'
-          self.error_code     = nil
-          self.error_message  = nil
-          self.retried_times  = 0
-          self.run_at         = Time.now.utc + interval
+          set_success_state_from(importer)
         else
-          self.log            << "******** synchronization failed ********" 
-          self.state          = 'failure'
-          self.error_code     = importer.error_code
-          self.error_message  = importer.error_message
-          self.retried_times  = self.retried_times + 1
+          set_failure_state_from(importer)
         end
 
         store
         self
+      rescue => exception
+        puts '================ rescuing'
+        puts exception.to_s
+        set_failure_state_from(importer)
+        store
+      end
+
+      def set_success_state_from(importer)
+        self.log            << "******** synchronization succeeded ********" 
+        self.state          = 'success'
+        self.error_code     = nil
+        self.error_message  = nil
+        self.retried_times  = 0
+        self.run_at         = Time.now.utc + interval
+      end
+
+      def set_failure_state_from(importer)
+        self.log            << "******** synchronization failed ********" 
+        self.state          = 'failure'
+        self.error_code     = importer.error_code
+        self.error_message  = importer.error_message
+        self.retried_times  = self.retried_times + 1
+      rescue => exception
+        puts exception.to_s
+        puts exception.backtrace
       end
 
       def to_hash
@@ -151,20 +167,20 @@ module CartoDB
           )
       end 
 
-      def instantiate_log
-        if valid_uuid?(log_id)
-          @log  = TrackRecord::Log.new(
-            id:         log_id, 
-            prefix:     REDIS_LOG_KEY_PREFIX,
-            expiration: REDIS_LOG_EXPIRATION_IN_SECS
-          ).fetch 
-        else
+      def log
+        #if valid_uuid?(log_id)
+        #  @log  = TrackRecord::Log.new(
+        #    id:         log_id, 
+        #    prefix:     REDIS_LOG_KEY_PREFIX,
+        #    expiration: REDIS_LOG_EXPIRATION_IN_SECS
+        #  ).fetch 
+        #else
           @log  = TrackRecord::Log.new(
             prefix:     REDIS_LOG_KEY_PREFIX,
             expiration: REDIS_LOG_EXPIRATION_IN_SECS
           )
           @log_id = @log.id
-        end
+        @log
       end
 
       def valid_uuid?(text)
@@ -175,7 +191,7 @@ module CartoDB
         false
       end
 
-      attr_reader :repository, :log
+      attr_reader :repository
     end # Member
   end # Synchronization
 end # CartoDB

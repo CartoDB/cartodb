@@ -16,7 +16,6 @@ module CartoDB
       def run(&tracker)
         runner.run(&tracker)
         result = results.select(&:success?).first
-        puts result.inspect
         overwrite(table_name, result)
         self
       end
@@ -24,6 +23,7 @@ module CartoDB
       def overwrite(table_name, result)
         return false unless runner.remote_data_updated?
 
+        temporary_name = temporary_name_for(result.table_name)
         move_to_schema(result)
 
         database.transaction do
@@ -39,8 +39,6 @@ module CartoDB
 
       def move_to_schema(result, schema=DESTINATION_SCHEMA)
         return self if schema == result.schema
-        puts 'moving to schema'
-        puts "#{result.schema}.#{result.table_name}"
         database.execute(%Q{
           ALTER TABLE "#{result.schema}"."#{result.table_name}"
           SET SCHEMA public
@@ -69,7 +67,6 @@ module CartoDB
       end 
 
       def error_code
-        return 8002 if table_quota_exceeded?
         results.map(&:error_code).compact.first
       end #errors_from
 
@@ -77,8 +74,8 @@ module CartoDB
         ''
       end
 
-      def temporary_name
-        'to_be_deleted'
+      def temporary_name_for(table_name)
+        "#{table_name}_to_be_deleted"
       end
 
       private

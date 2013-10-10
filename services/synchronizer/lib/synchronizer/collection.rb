@@ -28,15 +28,15 @@ module CartoDB
         process
       end
 
-      def fetch(success, error)
+      def fetch(success=nil, error=nil)
         query = db.query(%Q(
           SELECT * FROM #{relation}
           WHERE EXTRACT(EPOCH FROM run_at) < #{Time.now.utc.to_f}
-          AND state == 'success'
+          AND state = 'success'
         ))
 
-        query.errback   { |errors| error.call(errors) }
-        query.callback  { |records| self.members = hydrate(records); success.call(hydrate(records)) }
+        query.errback   { |errors| puts errors.inspect }
+        query.callback  { |records| hydrate(records).each(&:enqueue) }
         self
       end
 
@@ -53,7 +53,6 @@ module CartoDB
 
       def hydrate(records)
         @members = records.map { |record| CartoDB::Synchronization::Member.new(record) }
-        self
       end
 
       def default_pg_options

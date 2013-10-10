@@ -5,7 +5,7 @@ require_relative './collection'
 module CartoDB
   module Synchronizer
     class Runner
-      TICK_TIME_IN_SECS = 60
+      TICK_TIME_IN_SECS = 10
       RUN_FOREVER       = 0
 
       attr_reader :ticks
@@ -21,7 +21,8 @@ module CartoDB
         EventMachine.run do
           EventMachine::PeriodicTimer.new(tick_time_in_secs) do
             stop_if_max_ticks_reached
-            job_collection.fetch.process
+            puts 'fetching job_collection'
+            job_collection.fetch
           end
         end
       end

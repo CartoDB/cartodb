@@ -796,6 +796,8 @@ div.cartodb-popup.header.yellow a.cartodb-popup-close-button:hover {
     border: 1px solid #999999;
     background: white;
     z-index: 5;
+
+    cursor: text;
   }
 
   div.cartodb-legend-stack div.cartodb-legend {

@@ -27,10 +27,8 @@
       loop: true
     });
 
-    this.domainInv = torque.math.linear(this.options.animationDelay, this.options.animationDelay + this.options.animationDuration);
-    this.domain = this.domainInv.invert();
-    this.range = torque.math.linear(0, this.options.steps);
-    this.rangeInv = this.range.invert();
+    this.rescale();
+
   }
 
 
@@ -43,7 +41,13 @@
 
     stop: function() {
       this.pause();
-      this._time = 0;
+      this.time(0);
+    },
+
+    // real animation time
+    time: function(_) {
+      if (!arguments.length) return this._time;
+      this._time = _;
       var t = this.range(this.domain(this._time));
       this.callback(t);
     },
@@ -54,6 +58,24 @@
       } else {
         this.start()
       }
+    },
+
+    rescale: function() {
+      this.domainInv = torque.math.linear(this.options.animationDelay, this.options.animationDelay + this.options.animationDuration);
+      this.domain = this.domainInv.invert();
+      this.range = torque.math.linear(0, this.options.steps);
+      this.rangeInv = this.range.invert();
+      return this;
+    },
+
+    duration: function(_) {
+      if (!arguments.length)  return this.options.animationDuration;
+      this.options.animationDuration = _;
+      this.rescale();
+      if (this.time() > _) {
+        this.time(0);
+      }
+      return this;
     },
 
     step: function(s) {
@@ -74,9 +96,8 @@
       delta = Math.min(this.options.maxDelta, delta);
       this._t0 = t1;
       this._time += delta;
-      var t = this.range(this.domain(this._time));
-      this.callback(t);
-      if(t >= this.options.steps) {
+      this.time(this._time);
+      if(this.step() >= this.options.steps) {
         this._time = 0;
       }
       if(this.running) {
@@ -798,7 +819,7 @@ exports.Profiler = Profiler;
     url: function() {
       var opts = this.options;
       var port = opts.sql_api_port;
-      var domain = (opts.sql_api_domain || (this.options.user + 'cartodb.com')) + (port ? ':' + port: '');
+      var domain = (opts.sql_api_domain || (this.options.user + '.cartodb.com')) + (port ? ':' + port: '');
       var protocol = opts.sql_api_protocol || 'http';
       return this.options.url || protocol + '://' + domain + '/api/v2/sql';
     },
@@ -891,6 +912,13 @@ exports.Profiler = Profiler;
         step: this.options.step,
         steps: this.options.steps
       };
+    },
+
+    setSteps: function(steps) {
+      if (this.options.steps !== steps) {
+        this.options.steps = steps;
+        this.options.step = (this.options.end- this.options.start)/this.options.steps;
+      }
     },
 
     getBounds: function() {
@@ -1223,27 +1251,36 @@ exports.Profiler = Profiler;
   function renderPoint(ctx, st) {
     ctx.fillStyle = st.fillStyle;
     ctx.strokStyle = st.strokStyle;
-    var pixel_size = st['point-radius']
+    var pixel_size = st['point-radius'];
+
     // render a circle
+
+    // fill
     ctx.beginPath();
     ctx.arc(0, 0, pixel_size, 0, TAU, true, true);
     ctx.closePath();
-    if(st.fillStyle) {
-      if(st.fillOpacity) {
+    if (st.fillStyle) {
+      if (st.fillOpacity) {
         ctx.globalAlpha = st.fillOpacity;
       }
       ctx.fill();
     }
+
+    // stroke
     ctx.globalAlpha = 1.0;
-    if(st.strokeStyle) {
-      if(st.strokeOpacity) {
+    if (st.strokeStyle && st.lineWidth) {
+      if (st.strokeOpacity) {
         ctx.globalAlpha = st.strokeOpacity;
       }
-      if(st.lineWidth) {
+      if (st.lineWidth) {
         ctx.lineWidth = st.lineWidth;
       }
       ctx.strokeStyle = st.strokeStyle;
-      ctx.stroke();
+
+      // do not render for alpha = 0
+      if (ctx.globalAlpha > 0) {
+        ctx.stroke();
+      }
     }
   }
 
@@ -1255,7 +1292,7 @@ exports.Profiler = Profiler;
     ctx.drawImage(img, 0, 0, w, h);
   }
 
-  exports.torque.cartocss = exports.torque.cartocss|| {};
+  exports.torque.cartocss = exports.torque.cartocss || {};
   exports.torque.cartocss = {
     renderPoint: renderPoint,
     renderSprite: renderSprite
@@ -1324,17 +1361,19 @@ exports.Profiler = Profiler;
       }, shaderVars);
 
       var pointSize = st['point-radius'];
-      if(!pointSize) {
+      if (!pointSize) {
         throw new Error("marker-width property should be set");
       }
-      var canvasSize = pointSize*2;
+
+      // take into account the exterior ring to calculate the size
+      var canvasSize = (st.lineWidth || 0) + pointSize*2;
 
       var canvas = document.createElement('canvas');
       var ctx = canvas.getContext('2d');
-      ctx.width = canvas.width = canvasSize;
-      ctx.height = canvas.height = canvasSize;
-      ctx.translate(pointSize, pointSize);
-      if(st['point-file'] || st['marker-fil']) {
+      ctx.width = canvas.width = Math.ceil(canvasSize);
+      ctx.height = canvas.height = Math.ceil(canvasSize);
+      ctx.translate(canvasSize/2, canvasSize/2);
+      if(st['point-file'] || st['marker-file']) {
         torque.cartocss.renderSprite(ctx, st);
       } else {
         torque.cartocss.renderPoint(ctx, st);
@@ -1392,7 +1431,12 @@ exports.Profiler = Profiler;
         }
       }
       prof.end();
+    },
+
+    setBlendMode: function(b) {
+      this.options.blendmode = b;
     }
+
   };
 
 
@@ -1730,7 +1774,8 @@ CanvasLayer.prototype = new google.maps.OverlayView();
  * @const
  * @private
  */
-CanvasLayer.DEFAULT_PANE_NAME_ = 'overlayLayer';
+//CanvasLayer.DEFAULT_PANE_NAME_ = 'overlayLayer';
+CanvasLayer.DEFAULT_PANE_NAME_ = 'mapPane';
 
 /**
  * Transform CSS property name, with vendor prefix if required. If browser
@@ -2200,6 +2245,11 @@ GMapsTileLoader.prototype = {
       }
   },
 
+  _reloadTiles: function() {
+    this._removeTiles();
+    this._updateTiles();
+  },
+
   _updateTiles: function () {
 
       if (!this._map) { return; }
@@ -2381,6 +2431,8 @@ function GMapsTorqueLayer(options) {
   this.stop = this.animator.stop.bind(this.animator);
   this.pause = this.animator.pause.bind(this.animator);
   this.toggle = this.animator.toggle.bind(this.animator);
+  this.setDuration = this.animator.duration.bind(this.animator);
+
 
   CanvasLayer.call(this, {
     map: this.options.map,
@@ -2424,6 +2476,7 @@ GMapsTorqueLayer.prototype = _.extend({},
 
     this.provider = new this.providers[this.options.provider](this.options);
     this.renderer = new this.renderers[this.options.renderer](this.getCanvas(), this.options);
+    this.setBlendMode = this.renderer.setBlendMode.bind(this.renderer);
 
     this._initTileLoader(this.options.map, this.getProjection());
 
@@ -2431,6 +2484,11 @@ GMapsTorqueLayer.prototype = _.extend({},
       this.renderer.setCartoCSS(this.cartocss);
     }
 
+  },
+
+  setSteps: function(steps) {
+    this.provider.setSteps(steps);
+    this._reloadTiles();
   },
 
   getCanvas: function() {
@@ -2665,6 +2723,11 @@ L.Mixin.TileLoader = {
       for (var key in this._tiles) {
         this._removeTile(key);
       }
+  },
+
+  _reloadTiles: function() {
+    this._removeTiles();
+    this._updateTiles();
   },
 
   _removeOtherTiles: function (bounds) {
@@ -2908,6 +2971,8 @@ L.TorqueLayer = L.CanvasLayer.extend({
     this.stop = this.animator.stop.bind(this.animator);
     this.pause = this.animator.pause.bind(this.animator);
     this.toggle = this.animator.toggle.bind(this.animator);
+    this.setDuration = this.animator.duration.bind(this.animator);
+
 
     L.CanvasLayer.prototype.initialize.call(this, options);
 
@@ -2917,6 +2982,8 @@ L.TorqueLayer = L.CanvasLayer.extend({
     this.provider = new this.providers[this.options.provider](options);
     this.renderer = new this.renderers[this.options.renderer](this.getCanvas(), options);
 
+    this.setBlendMode = this.renderer.setBlendMode.bind(this.renderer);
+
     // for each tile shown on the map request the data
     this.on('tileAdded', function(t) {
       var tileData = this.provider.getTileData(t, t.zoom, function(tileData) {
@@ -2924,6 +2991,11 @@ L.TorqueLayer = L.CanvasLayer.extend({
         self.redraw();
       });
     }, this);
+  },
+
+  setSteps: function(steps) {
+    this.provider.setSteps(steps);
+    this._reloadTiles();
   },
 
   /**

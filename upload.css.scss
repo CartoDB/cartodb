@@ -68,7 +68,7 @@
   // Common import panes style
   .import-pane {
     position:relative;
-    margin:20px 0 20px 0;
+    margin:20px 0 20px 5px;
 
     label {
       position:absolute;
@@ -80,6 +80,14 @@
       width: 60%;
 
       &.light { color: #CCC; }
+
+      a {
+        color: #CCC;
+        text-decoration: underline;
+        margin-left: 5px;
+
+        &:hover { color: #aaa; }
+      }
     }
 
     // Common
@@ -95,15 +103,48 @@
 
     &.import-pane-gdrive,
     &.import-pane-dropbox {
-      padding: 11px 10px 10px;
-      background: #f2f2f2;
-      @include border-radius(3px);
+      
+      div.upload {
+        position:relative;
+        height:22px;
+        padding:11px 10px;
+        border:1px solid #CCCCCC;
+        background:white;
+        @include border-radius(4px);
+        z-index:2;
 
-      input {
-        display:block;
-        border:none;
-        width: 38px; height: 16px;  margin: 4px 0 3px 0;
-        background: image-url("layout/loader_transparent.gif") no-repeat 0 0;
+        p.filename {
+          float:left;
+          @include inline-block();
+          width:285px;
+          margin:2px 0 0 4px;
+          font-size:15px;
+          font-style:italic;
+          color:#666;
+          @include text-overflow();
+        }
+
+        .gdrive-chooser, .dropbox-dropin-btn {float:right!important}
+
+        input {
+          float:right;
+          @include inline-block();
+          border:none;
+          width:38px;
+          height:16px;
+          padding:0;
+          margin:4px 0 3px 0;
+          background: image-url("layout/loader_transparent.gif") no-repeat 0 0;
+        }
+      }
+
+      div.infobox {
+        @include default-form-info();
+        z-index:2;
+        div.info {
+          position:relative;
+          z-index:1;
+        }
       }
 
     }
@@ -217,6 +258,7 @@
 
     @include default-form-info();
 
+    // Upload info
     div.info {
       position:relative;
       z-index: 1;
@@ -234,7 +276,7 @@
   // Google drive
   .gdrive-chooser {
     display: block;
-    line-height: 23px;
+    line-height: 21px;
     width: 109px;
     border: 1px solid #999;
     @include border-radius(3px);

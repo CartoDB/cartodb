@@ -45,7 +45,8 @@ div.subheader {
   position:relative;
   @include inline-block();
   width:100%;
-  margin-top:-240px;
+  margin-top: -134px;
+  margin-bottom: 15px;
   padding:0;
   @include transform-style("linear");
   @include transition-property("all");
@@ -55,6 +56,7 @@ div.subheader {
   // If there is NO tables, this section is active
   &.active {
     margin-top:0;
+    margin-bottom: 0px;
   }
 
   section.stats {
@@ -209,41 +211,44 @@ div.subheader {
   section.welcome { display:none; }
 
   section.warning {
-    position:relative;
-    margin:-70px 0 0 0;
-    padding:25px 0;
+    margin: 0 0 0 0;
+    z-index:0;
+
     background:rgba(#FFE599, .35);
-    border-bottom:1px solid rgba(#CCCCCC,0.5);
-    z-index:-1;
+
     @include transform-style("linear");
     @include transition-property("all");
     @include transition-duration(500ms);
 
-    .dark { color: #666666; }
-    p.upgraded { display:none; }
+    ul li {
 
-    a.close {
-      position:absolute;
-      right:0;
-      top:3px;
-      width:13px;
-      height:13px;
-      @include icons-sprite(close_grey);
-      @include text-indent();
+      display:none;
 
-      &:hover {@include icons-sprite(close_grey, $offset-y: -13px);}
-      &:active {@include icons-sprite(close_grey, $offset-y: -26px);}
+      padding:25px 0;
+      border-bottom:1px solid rgba(#CCCCCC,0.5);
+      line-height: 18px;
+
+      .inner { position:relative; }
+
+      &.upgraded {
+        background: #DCF0C0;
+      }
+
+      .dark { color: #666666; }
+
+      a.close {
+        right: 0px;
+        @include absolute-portrait-center(13px);
+        @include size(13px);
+        @include icons-sprite(close_grey);
+        @include text-indent();
+
+        &:hover {@include icons-sprite(close_grey, $offset-y: -13px);}
+        &:active {@include icons-sprite(close_grey, $offset-y: -26px);}
+
+      }
+
     }
 
-    &.upgraded {
-      background:rgba(#8DB73F,0.15);
-      p.limit {display:none;}
-      p.upgraded {display:block;}
-    }
-
-    &.visible {
-      margin:0;
-      z-index:0;
-    }
   }
 }

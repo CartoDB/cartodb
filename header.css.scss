@@ -343,7 +343,7 @@ header { // general header
 
       // Tags block
       span.tags {
-        margin:3px 0 0 15px;
+        margin:3px 4px 0 15px;
 
         &:before {
           position:relative;
@@ -371,6 +371,46 @@ header { // general header
         margin:4px 0 0 10px;
         font:300 0.81em $text-fonts;
         color:white;
+      }
+
+      // Tags block
+      span.sync {
+        margin:3px 0 0 12px;
+
+        &:before {
+          position:relative;
+          content:'|';
+          font-weight:normal;
+          top:1px;
+          left:-5px;
+          font-size: 1.063em;
+          color:rgba(255,255,255, .3);
+        }
+
+        span.circle {
+          @include inline-block();
+          vertical-align:middle;
+          width:8px;
+          height:8px;
+          margin-right:4px;
+          @include border-radius(10px);
+          border:1px solid white;
+          @include background(linear-gradient(#FF4D4D,#FF0000));
+          @include box-shadow(rgba(white,0.5) 0 0 3px 3px);
+        }
+
+        p {
+          @include inline-block();
+          vertical-align:middle;
+          font:normal 0.688em $text-fonts;
+          text-transform: uppercase;
+          color:white;
+          text-shadow:0 1px $text-shadow-color;
+        }
+
+        &.failure p {
+          // color:rgba(red,0.6);
+        }
       }
 
       // Description

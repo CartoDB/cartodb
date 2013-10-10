@@ -119,6 +119,8 @@
     border: 1px solid #999999;
     background: white;
     z-index: 5;
+
+    cursor: text;
   }
 
   div.cartodb-legend-stack div.cartodb-legend {
@@ -139,6 +141,8 @@
     webkit-box-shadow: none;
     -moz-box-shadow: none;
     box-shadow: none;
+
+    cursor: text;
   }
 
   div.cartodb-legend-stack div.cartodb-legend:last-child {

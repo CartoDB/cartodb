@@ -1,6 +1,6 @@
-// cartodb.js version: 3.2.01
+// cartodb.js version: 3.2.02
 // uncompressed version: cartodb.uncompressed.js
-// sha: 905851ff6b52e6c748be0d58f3fffeb64d1ca3b8
+// sha: 772e8227adf84e96d96cfec8a440a756f626a508
 (function() {
   var root = this;
 
@@ -20429,7 +20429,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.2.01';
+    cdb.VERSION = '3.2.02';
 
     cdb.CARTOCSS_VERSIONS = {
       '2.0.0': '',
@@ -22779,11 +22779,31 @@ cdb.geo.ui.CustomLegend = cdb.core.View.extend({
 
 cdb.geo.ui.StackedLegend = cdb.core.View.extend({
 
+  events: {
+
+    "dragstart":            "_stopPropagation",
+    "mousedown":            "_stopPropagation",
+    "touchstart":           "_stopPropagation",
+    "MSPointerDown":        "_stopPropagation",
+    "dblclick":             "_stopPropagation",
+    "mousewheel":           "_stopPropagation",
+    "DOMMouseScroll":       "_stopPropagation",
+    "dbclick":              "_stopPropagation",
+    "click":                "_stopPropagation"
+
+  },
+
   className: "cartodb-legend-stack",
 
   initialize: function() {
 
     _.each(this.options.legends, this._setupBinding, this);
+
+  },
+
+  _stopPropagation: function(ev) {
+
+    ev.stopPropagation();
 
   },
 
@@ -22900,6 +22920,20 @@ cdb.geo.ui.Legend = cdb.core.View.extend({
 
   className: "cartodb-legend",
 
+  events: {
+
+    "dragstart":            "_stopPropagation",
+    "mousedown":            "_stopPropagation",
+    "touchstart":           "_stopPropagation",
+    "MSPointerDown":        "_stopPropagation",
+    "dblclick":             "_stopPropagation",
+    "mousewheel":           "_stopPropagation",
+    "DOMMouseScroll":       "_stopPropagation",
+    "dbclick":              "_stopPropagation",
+    "click":                "_stopPropagation"
+
+  },
+
   initialize: function() {
 
     _.bindAll(this, "render", "show", "hide");
@@ -22912,6 +22946,12 @@ cdb.geo.ui.Legend = cdb.core.View.extend({
     this._setupItems();
 
     this._updateLegendType();
+
+  },
+
+  _stopPropagation: function(ev) {
+
+    ev.stopPropagation();
 
   },
 

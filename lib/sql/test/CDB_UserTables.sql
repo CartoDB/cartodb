@@ -1,0 +1,11 @@
+create table pub(a int);
+create table prv(a int);
+GRANT SELECT ON TABLE pub TO publicuser;
+REVOKE SELECT ON TABLE prv FROM publicuser;
+SELECT CDB_UserTables();
+SELECT 'all',CDB_UserTables('all');
+SELECT 'public',CDB_UserTables('public');
+SELECT 'private',CDB_UserTables('private');
+SELECT '--unsupported--',CDB_UserTables('--unsupported--');
+drop table pub;
+drop table prv;

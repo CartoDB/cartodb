@@ -18,7 +18,7 @@
     @include inline-block();
     vertical-align:top;
     width:480px;
-    height: 300px;
+    height: 340px;
     border: 1px solid #CCC;
     margin:0;
     @include translateZ(10px);
@@ -29,7 +29,7 @@
     .cartodb-map {
       position:absolute;
       top:65px;
-      bottom:0;
+      bottom:32px;
       right:0;
       left:0;
       width: 100%;
@@ -59,7 +59,7 @@
 
     div.cartodb-legends {
       position:absolute;
-      bottom: 20px;
+      bottom: 60px;
       right: 20px;
 
       @include box-shadow(rgba(0, 0, 0, 0.2) 0 0 4px 2px);
@@ -73,6 +73,26 @@
 
       font:normal 13px "Helvetica",Arial;
       color:#858585;
+    }
+
+    .cartodb-text {
+      position:absolute;
+      bottom:0;
+      left:0;
+      right:0;
+      display:block;
+      margin:0;
+      padding:10px;
+      background:white;
+      font-size:11px;
+      color:#999999;
+      a {text-decoration: underline}
+    }
+
+    &.no-logo {
+      .cartodb-map {bottom:0}
+      .cartodb-text {display:none}
+      .cartodb-legends {bottom:30px}
     }
   }
 

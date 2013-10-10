@@ -20,7 +20,7 @@ module CartoDB
           DateTime  :created_at, null: false
           DateTime  :updated_at, null: false
           DateTime  :run_at
-          DateTime  :runned_at
+          DateTime  :ran_at
           Integer   :retried_times
         end
       end #migrate

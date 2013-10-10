@@ -26,7 +26,7 @@ module CartoDB
       attribute :created_at,      Time
       attribute :updated_at,      Time
       attribute :run_at,          Time     
-      attribute :runned_at,       Time,     default: Time.now.utc
+      attribute :ran_at,          Time,     default: Time.now.utc
       attribute :retried_times,   Integer,  default: 0
       attribute :error_code,      Integer
       attribute :error_message,   String
@@ -38,9 +38,9 @@ module CartoDB
         @repository         = repository
         self.id             ||= @repository.next_id
         self.state          ||= 'created'
-        self.runned_at      ||= Time.now.utc
+        self.ran_at         ||= Time.now.utc
         self.interval       ||= 3600
-        self.run_at         ||= runned_at + interval
+        self.run_at         ||= ran_at + interval
         self.retried_times  ||= 0
       end
 
@@ -72,7 +72,7 @@ module CartoDB
       def run
         puts "#{Time.now} === running #{id}"
         self.state      = 'syncing'
-        self.runned_at  = Time.now.utc
+        self.ran_at     = Time.now.utc
         store
 
         downloader      = CartoDB::Importer2::Downloader.new(url)

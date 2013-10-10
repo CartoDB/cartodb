@@ -18,7 +18,7 @@ var GMapsTorqueLayerView = function(layerModel, gmapsMap) {
       sql_api_domain: layerModel.get('sql_api_domain'),
       sql_api_protocol: layerModel.get('sql_api_protocol'),
       sql_api_port: layerModel.get('sql_api_port'),
-      animationDuration: 10,
+      animationDuration: layerModel.get('torque-duration'),
       map: gmapsMap
   });
 
@@ -34,8 +34,11 @@ _.extend(
   {
 
   _update: function() {
-    this.setCartoCSS(this.model.get('tile_style'));
-    this.setBlendMode(this.model.get('torque-blend-mode'));
+    var changed = this.model.changedAttributes();
+    changed.tile_style && this.setCartoCSS(this.model.get('tile_style'));
+    changed['torque-blend-mode'] && this.setBlendMode(this.model.get('torque-blend-mode'));
+    changed['torque-duration'] && this.setDuration(this.model.get('torque-duration'));
+    changed['torque-steps'] && this.setSteps(this.model.get('torque-steps'));
   },
 
   refreshView: function() {

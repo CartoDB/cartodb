@@ -10,6 +10,8 @@ CREATE OR REPLACE FUNCTION CDB_UserTables(perm text DEFAULT 'all')
 RETURNS SETOF information_schema.sql_identifier
 AS $$
   WITH usertables AS ( 
+    -- TODO: query CDB_TableMetadata for this ?
+    -- See http://github.com/CartoDB/cartodb/issues/254#issuecomment-26044777
     SELECT table_name as t
     FROM information_schema.tables
     WHERE

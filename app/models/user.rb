@@ -571,6 +571,14 @@ class User < Sequel::Model
     Table.filter({:user_id => self.id}).count
   end
 
+  def failed_import_count
+    DataImport.where(user_id: User.first.id, state: 'failure').count
+  end
+
+  def visualization_count
+    maps.count - table_count
+  end
+
   def rebuild_quota_trigger
     load_cartodb_functions
     puts "Rebuilding quota trigger in db '#{database_name}' (#{username})"

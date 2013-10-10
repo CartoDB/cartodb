@@ -225,3 +225,60 @@
       }
     }
   }
+
+    /*
+   *  Blue button
+   *  {@hover}
+   *  {@active}
+   *  {@focus}
+   *  {@disabled}
+   */
+  a.button.red,
+  button.red,
+  input[type="submit"].red {
+    padding:12px 23px;
+    font:bold 19px $text-fonts2;
+    line-height:normal;
+    color:white;
+    text-shadow:0 1px 0 #56271C;
+    background:#FA5D57; // IE
+    @include background(linear-gradient(#FF7373,#FA5D57));
+    @include border-radius(3px);
+    border:1px solid #953C33;
+    letter-spacing:-1px;
+    word-spacing:1px;
+    text-decoration: none;
+    @include transform-style("linear");
+    @include transition-property("box-shadow,border");
+    @include transition-duration(250ms);
+
+    // Hover
+    &:hover {
+      background:#FA4D45; // IE
+      @include background(linear-gradient(#FF7373,#FA4D45));
+      text-decoration:none;
+      cursor:pointer;
+    }
+    // Active
+    &:active {
+      background:#FA4D45; // IE
+      @include background(linear-gradient(#FF7373,#FA4D45));
+      @include box-shadow(rgba(255,255,255,0) 0 0 1px 0,rgba(0,0,0,0.35) 0 1px 4px 0 inset,#fff 0 1px 0 0);
+    }
+    // Focus = hover
+    &:focus {
+      outline:none;
+      background:#FA4D45; // IE
+      @include background(linear-gradient(#FF7373,#FA4D45));
+    }
+    // Disabled
+    &.disabled {
+      @include opacity(0.5);
+      &:hover, &:active, &:focus {
+        background:#FA4D45; // IE
+        color:white;
+        @include background(linear-gradient(#FF7373,#FA4D45));
+        cursor:default;
+      }
+    }
+  }

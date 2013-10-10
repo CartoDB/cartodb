@@ -42,6 +42,7 @@ module CartoDB
         self.interval       ||= 3600
         self.run_at         ||= ran_at + interval
         self.retried_times  ||= 0
+        self.log_id         ||= log.id
       end
 
       def store
@@ -65,23 +66,26 @@ module CartoDB
       end
 
       def enqueue
-        puts "#{Time.now} === enqueing #{id}"
         Resque.enqueue(Resque::SynchronizationJobs, job_id: id)
       end
 
       def run
-        puts "#{Time.now} === running #{id}"
-        self.state      = 'syncing'
-        self.ran_at     = Time.now.utc
+        self.state    = 'syncing'
+        self.ran_at   = Time.now.utc
+        log           = TrackRecord::Log.new(
+                          prefix:     REDIS_LOG_KEY_PREFIX,
+                          expiration: REDIS_LOG_EXPIRATION_IN_SECS
+                        )
+        self.log_id   = log.id
         store
 
-        downloader      = CartoDB::Importer2::Downloader.new(url)
-        runner          = CartoDB::Importer2::Runner.new(
-                            pg_options, downloader, log, user.remaining_quota
-                          )
-        database        = user.in_database
-        importer        = CartoDB::Synchronization::Adapter
-                            .new(name, runner, database)
+        downloader    = CartoDB::Importer2::Downloader.new(url)
+        runner        = CartoDB::Importer2::Runner.new(
+                          pg_options, downloader, log, user.remaining_quota
+                        )
+        database      = user.in_database
+        importer      = CartoDB::Synchronization::Adapter
+                          .new(name, runner, database)
         
         importer.run
 
@@ -94,8 +98,6 @@ module CartoDB
         store
         self
       rescue => exception
-        puts '================ rescuing'
-        puts exception.to_s
         set_failure_state_from(importer)
         store
       end
@@ -115,9 +117,6 @@ module CartoDB
         self.error_code     = importer.error_code
         self.error_message  = importer.error_message
         self.retried_times  = self.retried_times + 1
-      rescue => exception
-        puts exception.to_s
-        puts exception.backtrace
       end
 
       def to_hash
@@ -155,7 +154,7 @@ module CartoDB
       end
 
       def authorize?(user)
-        user.id == user_id
+        user.id == user_id && !!user.sync_tables_enabled
       end
 
       def pg_options
@@ -168,19 +167,12 @@ module CartoDB
       end 
 
       def log
-        #if valid_uuid?(log_id)
-        #  @log  = TrackRecord::Log.new(
-        #    id:         log_id, 
-        #    prefix:     REDIS_LOG_KEY_PREFIX,
-        #    expiration: REDIS_LOG_EXPIRATION_IN_SECS
-        #  ).fetch 
-        #else
-          @log  = TrackRecord::Log.new(
-            prefix:     REDIS_LOG_KEY_PREFIX,
-            expiration: REDIS_LOG_EXPIRATION_IN_SECS
-          )
-          @log_id = @log.id
-        @log
+        return @log if defined?(@log) && @log
+        @log  = TrackRecord::Log.new(
+          id:         log_id,
+          prefix:     REDIS_LOG_KEY_PREFIX,
+          expiration: REDIS_LOG_EXPIRATION_IN_SECS
+        ).fetch
       end
 
       def valid_uuid?(text)

@@ -3,7 +3,7 @@
 module CartoDB
   module Connector
     class Importer
-      DEFAULT_SCHEMA = 'cdb_importer'
+      DESTINATION_SCHEMA = 'public'
 
       attr_accessor :table
 
@@ -47,7 +47,7 @@ module CartoDB
         self
       end
 
-      def move_to_schema(result, schema=DEFAULT_SCHEMA)
+      def move_to_schema(result, schema=DESTINATION_SCHEMA)
         return self if schema == result.schema
         database.execute(%Q{
           ALTER TABLE "#{result.schema}"."#{result.table_name}"

@@ -3,6 +3,13 @@
 /*
 Version: 3.1 Timestamp: Tue Aug 14 09:05:17 PDT 2012
 */
+
+.combo-wrapper {
+  padding:12px;
+  background:#F2F2F2;
+  @include border-radius(6px);
+}
+
 .select2-container {
     position: relative;
     display: inline-block;
@@ -187,7 +194,7 @@ Version: 3.1 Timestamp: Tue Aug 14 09:05:17 PDT 2012
     background:-ms-linear-gradient(top, #ffffff 85%, #eeeeee 99%);
     background:linear-gradient(top, #ffffff 85%, #eeeeee 99%);
 
-    padding: 4px 20px 4px 5px;
+    padding: 4px 5px;
     outline: 0;
     border: 1px solid #aaa;
     font-family: sans-serif;

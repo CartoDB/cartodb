@@ -12,6 +12,8 @@ module CartoDB
         dependent_visualizations
         non_dependent_visualizations
         affected_visualizations
+        synchronization
+        serialize_synchronization
       }
 
       def initialize(db, table)
@@ -52,6 +54,15 @@ module CartoDB
         { id: object.id, name: object.name }
       end #preview_for
 
+      def synchronization
+        return {} unless synchronization_record && !synchronization_record.empty?
+        synchronization_record.first
+      end
+
+      def serialize_synchronization
+        synchronization.to_hash
+      end
+
       private
 
       attr_reader :db, :table
@@ -65,6 +76,21 @@ module CartoDB
           AND     layers_maps.map_id = visualizations.map_id
         })
       end #affected_visualization_records
+
+      def synchronization_record
+        @syncronization_record ||= db[:synchronizations].with_sql(%Q{
+          SELECT *
+          FROM synchronizations
+          WHERE synchronizations.user_id = #{table.user_id}
+          AND synchronizations.name = '#{table.name}'
+          LIMIT 1
+        }).to_a
+      rescue => exception
+        puts exception.to_s
+        puts exception.backtrace
+        nil
+      end
+
     end # Relator
   end # Table
 end # CartoDB

@@ -1,0 +1,25 @@
+
+  /**
+   *  Sync settings dialog styles
+   */
+
+  @import "compass";
+
+  .sync_settings {
+
+    .combo-wrapper {
+      margin:10px 0 0;
+
+      & > p, & > div.interval-combo {
+        @include inline-block();
+        vertical-align: middle;
+      }
+
+      p {
+        margin-right:7px;
+        line-height:21px;
+        font-size:13px;
+      }
+    }
+    
+  }

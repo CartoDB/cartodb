@@ -39,6 +39,7 @@ _.extend(
     changed['torque-blend-mode'] && this.setBlendMode(this.model.get('torque-blend-mode'));
     changed['torque-duration'] && this.setDuration(this.model.get('torque-duration'));
     changed['torque-steps'] && this.setSteps(this.model.get('torque-steps'));
+    changed['property'] && this.setColumn(this.model.get('property'));
   },
 
   refreshView: function() {

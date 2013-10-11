@@ -388,15 +388,30 @@ header { // general header
         }
 
         span.circle {
+          position:relative;
           @include inline-block();
           vertical-align:middle;
           width:8px;
           height:8px;
           margin-right:4px;
-          @include border-radius(10px);
-          border:1px solid white;
-          @include background(linear-gradient(#FF4D4D,#FF0000));
-          @include box-shadow(rgba(white,0.5) 0 0 3px 3px);
+          border:none;
+          @include border-radius(8px);
+          @include background(#FF4D4D);
+          text-shadow:none;
+
+          &:before {
+            content:'';
+            border: 3px solid #BBB;
+            @include border-radius(20px);
+            height: 8px;
+            width: 8px;
+            position: absolute;
+            left:-3px;
+            top:-3px;
+            @include animation(pulsate 1.5s ease-out infinite);
+            opacity: 0.0;
+            z-index:0;
+          }
         }
 
         p {
@@ -408,8 +423,9 @@ header { // general header
           text-shadow:0 1px $text-shadow-color;
         }
 
-        &.failure p {
-          // color:rgba(red,0.6);
+        &.failure span.circle:before {
+          display:none;
+          @include animation(pause);
         }
       }
 
@@ -514,4 +530,12 @@ header { // general header
       }
     }
   }
+}
+
+
+
+@include keyframes(pulsate) {
+  0% {@include transform(scale(0.1, 0.1)); opacity: 0.0;}
+  50% {opacity: 1.0;}
+  100% {@include transform(scale(1.2, 1.2)); opacity: 0.0;}
 }

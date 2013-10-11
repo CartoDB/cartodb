@@ -218,3 +218,29 @@
   background-image: -o-linear-gradient(top, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.95) 100%);
   background-image: linear-gradient(top, rgba(255,255,255,0.04) 0%,rgba(255,255,255,0.95) 100%);
 }
+
+
+// keyframes mixin
+@mixin keyframes($name) {
+  @-webkit-keyframes #{$name} {
+    @content; 
+  }
+  @-moz-keyframes #{$name} {
+    @content;
+  }
+  @-ms-keyframes #{$name} {
+    @content;
+  }
+  @keyframes #{$name} {
+    @content;
+  } 
+}
+
+// animation mixin
+@mixin animation($props) {
+  -webkit-animation: $props;
+  -moz-animation: $props;
+  -ms-animation: $props;
+  -o-animation: $props;
+  animation: $props;
+}

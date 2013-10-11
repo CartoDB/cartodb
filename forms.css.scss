@@ -74,7 +74,7 @@
     padding:20px 13px 13px;
     border:1px solid #CCCCCC;
     @include border-radius(4px);
-    z-index:-1;
+    z-index:0;
     background:#FFF7EA;
     font-size:13px;
     @include transform-style("linear");

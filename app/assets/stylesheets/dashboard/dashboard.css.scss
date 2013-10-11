@@ -768,20 +768,11 @@
                   letter-spacing:0;
                   padding: 3px 10px 0 0;
 
-                  &.size .separator,
-                  &.feed .separator {
-                    padding: 0 8px;
-                    position:relative;
 
-                    &:before {
-                      content:'\b7';
-                      position:absolute;
-                      top:-1px;
-                      width:4px;
-                      height:4px;
-                      left:6px;
-                      color:#999;
-                    }
+                  .dot-separator {
+                    padding: 0 8px;
+                    font-weight:bold;
+                    color:#999;
                   }
 
                   &:last-child, &.size { padding-right: 0; }
@@ -789,7 +780,8 @@
                   &.feed {
                     color: #E7BF5B;
                     position:relative;
-                    margin-right: 15px;
+                    vertical-align:top;
+                    margin:0 15px 0 0;
 
                     .msg {
                       @include inline-block();
@@ -798,35 +790,42 @@
                       text-transform:uppercase;
                     }
 
-                    &.failure .msg {
-                      color: #FF7272;
-                      text-decoration:none;
+                    .dot-separator {
+                      @include inline-block();
+                      vertical-align:top;
+                      padding:2px 8px 0 6px;
+                      line-height:100%;
+                    }
 
-                      &:hover {
+                    a {
+                      vertical-align:top;
+                      text-decoration:none;
+                      cursor:default;
+                      border-bottom:1px solid transparent;
+                    }
+
+                    &.failure {
+                      .msg {
+                        color: #FF7272;
                         text-decoration:none;
-                        border-bottom: 1px dotted #FF7272;
+
+                        &:hover {
+                          text-decoration:none;
+                          border-bottom: 1px dotted #FF7272;
+                        }
                       }
                     }
 
-                    &:before {
-                      content:'\b7';
-                      position:absolute;
-                      top:3px;
-                      width:4px;
-                      height:4px;
-                      left:-8px;
-                      color:#999;
-                    }
-
                     i {
-                      position:absolute;
-                      margin: 3px 0 0 5px;
                       @include inline-block();
+                      vertical-align:middle;
                       @include size(8px);
+                      margin-left:5px;
+                      line-height:14px;
                       @include icons-sprite(feed);
                     }
 
-                    &.error i {
+                    &.failure i {
                       @include icons-sprite(feed_error);
                     }
 

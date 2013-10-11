@@ -22,7 +22,7 @@
       
       /* Styles showing up new cartodb text */
       <% if @visualization.user.remove_logo? && !Cartodb.config[:cartodb_com_hosted].present? %>
-        <% if params['cartodb_logo'] == "true" %>
+        <% if !params['cartodb_logo'] || params['cartodb_logo'] == "true" %>
           .cartodb-map-wrapper {bottom:29px!important;}
           p.cartodb-text {display:block;}
         <% end %>

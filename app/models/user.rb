@@ -572,7 +572,7 @@ class User < Sequel::Model
   end
 
   def failed_import_count
-    DataImport.where(user_id: User.first.id, state: 'failure').count
+    DataImport.where(user_id: self.id, state: 'failure').count
   end
 
   def visualization_count

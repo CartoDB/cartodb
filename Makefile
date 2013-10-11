@@ -4,8 +4,10 @@ UGLIFYJS = ./node_modules/.bin/uglifyjs
 CSS_FILES = $(wildcard themes/css/infowindow/*.css themes/css/map/*.css)
 CSS_FILES_IE = $(wildcard themes/css/ie/*.css)
 
+TORQUE_FILES = vendor/mod/carto.js vendor/mod/torque.uncompressed.js scripts/mod.torque.footer.js
+
 #dist:  dist/cartodb.js dist/cartodb.full.js themes
-dist:  dist/cartodb.js dist/cartodb.css dist/cartodb.ie.css dist/cartodb.nojquery.js dist/cartodb.core.js
+dist:  dist/cartodb.js dist/cartodb.css dist/cartodb.ie.css dist/cartodb.nojquery.js dist/cartodb.core.js dist/cartodb.mod.torque.js
 
 
 dist_folder:
@@ -14,6 +16,7 @@ dist_folder:
 dist/cartodb.uncompressed.js: dist_folder
 	node scripts/compress.js
 	mv dist/_cartodb.js dist/cartodb.uncompressed.js
+
 
 dist/cartodb.js: dist/cartodb.uncompressed.js
 	$(UGLIFYJS) dist/cartodb.uncompressed.js > dist/cartodb.js
@@ -26,6 +29,12 @@ dist/cartodb.core.js:  vendor/mustache.js vendor/underscore-min.js vendor/mustac
 	cat vendor/mustache.js vendor/reqwest.min.js src/cartodb.js src/api/core_lib.js src/api/sql.js src/geo/layer_definition.js src/api/tiles.js >> dist/cartodb.core.uncompressed.js
 	cat scripts/core_footer.js >> dist/cartodb.core.uncompressed.js
 	$(UGLIFYJS) dist/cartodb.core.uncompressed.js > dist/cartodb.core.js
+
+dist/cartodb.mod.torque.uncompressed.js: dist_folder $(TORQUE_FILES)
+	cat $(TORQUE_FILES) > dist/cartodb.mod.torque.uncompressed.js
+
+dist/cartodb.mod.torque.js: dist/cartodb.mod.torque.uncompressed.js
+	$(UGLIFYJS) dist/cartodb.mod.torque.uncompressed.js > dist/cartodb.mod.torque.js
 
 
 dist/cartodb.nojquery.js: dist/cartodb.uncompressed.js

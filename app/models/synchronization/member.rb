@@ -26,7 +26,7 @@ module CartoDB
       attribute :created_at,      Time
       attribute :updated_at,      Time
       attribute :run_at,          Time     
-      attribute :ran_at,          Time,     default: Time.now.utc
+      attribute :ran_at,          Time
       attribute :retried_times,   Integer,  default: 0
       attribute :error_code,      Integer
       attribute :error_message,   String

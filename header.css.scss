@@ -387,7 +387,7 @@ header { // general header
           color:rgba(255,255,255, .3);
         }
 
-        span.circle {
+        div.circle {
           position:relative;
           @include inline-block();
           vertical-align:middle;
@@ -399,16 +399,15 @@ header { // general header
           @include background(#FF4D4D);
           text-shadow:none;
 
-          &:before {
-            content:'';
-            border: 3px solid #BBB;
-            @include border-radius(20px);
-            height: 8px;
-            width: 8px;
+          span.pulse {
             position: absolute;
             left:-3px;
             top:-3px;
+            height: 8px;
+            width: 8px;
             @include animation(pulsate 1.5s ease-out infinite);
+            border: 3px solid #BBB;
+            @include border-radius(20px);
             opacity: 0.0;
             z-index:0;
           }

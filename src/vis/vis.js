@@ -50,6 +50,20 @@ var Layers = {
     c.type = type;
     _.extend(c, data, data.options);
     return new t(vis, c);
+  },
+
+  moduleForLayer: function(type) {
+    if (type.toLowerCase() === 'torque') {
+      return 'torque';
+    }
+    return null;
+  },
+
+  modulesForLayers: function(layers) {
+    var modules = _(layers).map(function(layer) {
+      return Layers.moduleForLayer(layer.type || layer.kind);
+    });
+    return _.compact(_.uniq(modules));
   }
 
 };
@@ -63,23 +77,51 @@ var Loader = cdb.vis.Loader = {
   _script: null,
   head: null,
 
-  get: function(url, callback) {
-    if (!Loader._script) {
-      Loader.current = callback;
+  loadScript: function(src) {
       var script = document.createElement('script');
       script.type = 'text/javascript';
-      script.src = url + (~url.indexOf('?') ? '&' : '?') + 'callback=vizjson';
+      script.src = src;
       script.async = true;
-      Loader._script = script;
       if (!Loader.head) {
         Loader.head = document.getElementsByTagName('head')[0];
       }
       Loader.head.appendChild(script);
+      return script;
+  },
+
+  get: function(url, callback) {
+    if (!Loader._script) {
+      Loader.current = callback;
+      Loader._script = Loader.loadScript(url + (~url.indexOf('?') ? '&' : '?') + 'callback=vizjson');
     } else {
       Loader.queue.push([url, callback]);
     }
-  }
+  },
 
+  getPath: function(file) {
+    var scripts = document.getElementsByTagName('script'),
+        cartodbJsRe = /\/?cartodb[\-\._]?([\w\-\._]*)\.js\??/;
+    for (i = 0, len = scripts.length; i < len; i++) {
+      src = scripts[i].src;
+      matches = src.match(cartodbJsRe);
+
+      if (matches) {
+        var bits = src.split('/');
+        delete bits[bits.length - 1];
+        return bits.join('/') + file;
+      }
+    }
+    return null;
+  },
+
+  loadModule: function(modName) {
+    var file = "cartodb.mod." + modName + ".js";
+    var src = this.getPath(file);
+    if (!src) {
+      cartodb.log.error("can't find cartodb.js file");
+    }
+    Loader.loadScript(src);
+  }
 };
 
 window.vizjson = function(data) {
@@ -94,6 +136,13 @@ window.vizjson = function(data) {
   }
 };
 
+cartodb.moduleLoad = function(name, mod) {
+  cartodb[name] = mod;
+  cartodb.config.modules.add({
+    name: mod
+  });
+};
+
 /**
  * visulization creation
  */
@@ -104,11 +153,37 @@ var Vis = cdb.core.View.extend({
 
     this.https = false;
     this.overlays = [];
+    this.moduleChecked = false;
 
     if (this.options.mapView) {
       this.mapView = this.options.mapView;
       this.map = this.mapView.map;
     }
+  },
+
+  /**
+   * check if all the modules needed to create layers are loaded 
+   */
+  checkModules: function(layers) {
+    var mods = Layers.modulesForLayers(layers);
+    return _.every(_.map(mods, function(m) { return cartodb[m] !== undefined; }));
+  },
+
+  loadModules: function(layers, done) {
+    var self = this;
+    var mods = Layers.modulesForLayers(layers);
+    for(var i = 0; i < mods.length; ++i) {
+      Loader.loadModule(mods[i]);
+    }
+    function loaded () {
+      if (self.checkModules()) {
+        cdb.config.unbind('moduleLoaded', loaded);
+        done();
+      }
+    }
+    //TODO: add a timeout to raise error
+    cdb.config.bind('moduleLoaded', loaded);
+    loaded();
   },
 
   load: function(data, options) {
@@ -124,6 +199,21 @@ var Vis = cdb.core.View.extend({
       });
       return this;
     }
+
+    if(!this.checkModules(data.layers)) {
+      if(this.moduleChecked) {
+        cdb.log.error("modules not found");
+        self.trigger('error', "modules couldn't be loaded");
+        return this;
+      }
+      this.moduleChecked = true;
+      // load modules needed for layers
+      this.loadModules(data.layers, function() {
+        self.load(data, options);
+      });
+      return this;
+    }
+
 
     // configure the vis in http or https
     if (window && window.location.protocol && window.location.protocol === 'https:') {
@@ -215,6 +305,7 @@ var Vis = cdb.core.View.extend({
     // Create the map
     var mapView = new cdb.geo.MapView.create(div_hack, map);
     this.mapView = mapView;
+
 
     // Add layers
     for(var i in data.layers) {
@@ -438,7 +529,9 @@ var Vis = cdb.core.View.extend({
         vizjson.layers[1].options.tile_style = opt.style;
       }
 
-      vizjson.layers[1].options.no_cdn = opt.no_cdn;
+      for(var i = 1; i < vizjson.layers.length; ++i) {
+        vizjson.layers[i].options.no_cdn = opt.no_cdn;
+      }
     }
 
   },

@@ -10,14 +10,16 @@
 //= require cdb/vendor/GeoJSON
 //
 //= require cdb/vendor/mousewheel
+//= require cdb/vendor/lzma
 //= require cdb/vendor/mwheelIntent
 //= require cdb/vendor/jscrollpane
 //= require cdb/vendor/spin
 //
-//= require cdb/vendor/carto
-//= require cdb/vendor/torque.uncompressed
+//= require cdb/vendor/mod/carto
+//= require cdb/vendor/mod/torque.uncompressed
 //
 //= require cdb/src/cartodb
+//
 //
 //= require cdb/src/core/decorator
 //= require cdb/src/core/config
@@ -26,6 +28,8 @@
 //= require cdb/src/core/template
 //= require cdb/src/core/model
 //= require cdb/src/core/view
+//
+//= require cdb/vendor/mod/torque.cartodb
 //
 //= require cdb/src/geo/geocoder
 //= require cdb/src/geo/geometry

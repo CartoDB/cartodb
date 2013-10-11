@@ -202,4 +202,19 @@ describe("Vis", function() {
     expect(this.vis.getOverlays().length).toEqual(0);
   });
 
+  it ("should load modules", function() {
+    this.mapConfig.layers = [
+      {kind: 'torque', options: { tile_style: 'test', user_name: 'test', table_name: 'test'}}
+    ];
+    this.vis.load(this.mapConfig);
+    var scripts = document.getElementsByTagName('script'),
+        torqueRe = /\/cartodb\.mod\.torque\.js/;
+    var found = false;
+    for (i = 0, len = scripts.length; i < len && !found; i++) {
+      src = scripts[i].src;
+      found = !!src.match(torqueRe);
+    }
+    expect(found).toEqual(true);
+  });
+
 });

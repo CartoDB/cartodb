@@ -88,4 +88,8 @@ Layers.register('layergroup', function(vis, data) {
   return new cdb.geo.CartoDBGroupLayer(data);
 });
 
+Layers.register('torque', function(vis, data) {
+  return new cdb.geo.TorqueLayer(data);
+});
+
 })();

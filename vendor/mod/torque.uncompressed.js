@@ -914,6 +914,13 @@ exports.Profiler = Profiler;
       };
     },
 
+    setColumn: function(column, isTime) {
+      this.options.column = column;
+      this.options.is_time = isTime === undefined ? true: false;
+      this._ready = false;
+      this._fetchKeySpan();
+    },
+
     setSteps: function(steps) {
       if (this.options.steps !== steps) {
         this.options.steps = steps;
@@ -931,38 +938,43 @@ exports.Profiler = Profiler;
     // is not specified.
     //
     _fetchKeySpan: function() {
-      var max_col, min_col, max_tmpl, min_tmpl;
-
-      if (this.options.is_time){
-        max_tmpl = "date_part('epoch', max({column}))";
-        min_tmpl = "date_part('epoch', min({column}))";
-      } else {
-        max_tmpl = "max({column})";
-        min_tmpl = "min({column})";
-      }
-
-      max_col = format(max_tmpl, { column: this.options.column });
-      min_col = format(min_tmpl, { column: this.options.column });
-
-      var sql = format("SELECT st_xmax(st_envelope(st_collect(the_geom))) xmax,st_ymax(st_envelope(st_collect(the_geom))) ymax, st_xmin(st_envelope(st_collect(the_geom))) xmin, st_ymin(st_envelope(st_collect(the_geom))) ymin, {max_col} max, {min_col} min FROM {table}", {
-        max_col: max_col,
-        min_col: min_col,
-        table: this.options.table
-      });
-
       var self = this;
-      this.sql(sql, function(data) {
-        //TODO: manage bounds
-        data = data.rows[0];
-        self.options.start = data.min;
-        self.options.end = data.max;
-        self.options.step = (data.max - data.min)/self.options.steps;
-        self.options.bounds = [ 
-          [data.ymin, data.xmin],
-          [data.ymax, data.xmax] 
-        ];
-        self._setReady(true);
-      }, { parseJSON: true });
+      var max_col, min_col, max_tmpl, min_tmpl;
+      var query = format("select {column} from {table} limit 0", this.options);
+
+      this.sql(query, function (data) {
+        self.options.is_time = data.fields[self.options.column].type === 'date';
+
+        if (self.options.is_time){
+          max_tmpl = "date_part('epoch', max({column}))";
+          min_tmpl = "date_part('epoch', min({column}))";
+        } else {
+          max_tmpl = "max({column})";
+          min_tmpl = "min({column})";
+        }
+
+        max_col = format(max_tmpl, { column: self.options.column });
+        min_col = format(min_tmpl, { column: self.options.column });
+
+        var sql = format("SELECT st_xmax(st_envelope(st_collect(the_geom))) xmax,st_ymax(st_envelope(st_collect(the_geom))) ymax, st_xmin(st_envelope(st_collect(the_geom))) xmin, st_ymin(st_envelope(st_collect(the_geom))) ymin, {max_col} max, {min_col} min FROM {table}", {
+          max_col: max_col,
+          min_col: min_col,
+          table: self.options.table
+        });
+
+        self.sql(sql, function(data) {
+          //TODO: manage bounds
+          data = data.rows[0];
+          self.options.start = data.min;
+          self.options.end = data.max;
+          self.options.step = (data.max - data.min)/self.options.steps;
+          self.options.bounds = [ 
+            [data.ymin, data.xmin],
+            [data.ymax, data.xmax] 
+          ];
+          self._setReady(true);
+        }, { parseJSON: true });
+      }, { parseJSON: true })
     }
 
   };
@@ -1774,8 +1786,7 @@ CanvasLayer.prototype = new google.maps.OverlayView();
  * @const
  * @private
  */
-//CanvasLayer.DEFAULT_PANE_NAME_ = 'overlayLayer';
-CanvasLayer.DEFAULT_PANE_NAME_ = 'mapPane';
+CanvasLayer.DEFAULT_PANE_NAME_ = 'overlayLayer';
 
 /**
  * Transform CSS property name, with vendor prefix if required. If browser
@@ -2491,6 +2502,11 @@ GMapsTorqueLayer.prototype = _.extend({},
     this._reloadTiles();
   },
 
+  setColumn: function(column, isTime) {
+    this.provider.setColumn(column, isTime);
+    this._reloadTiles();
+  },
+
   getCanvas: function() {
     return this.canvas;
   },
@@ -2995,6 +3011,11 @@ L.TorqueLayer = L.CanvasLayer.extend({
 
   setSteps: function(steps) {
     this.provider.setSteps(steps);
+    this._reloadTiles();
+  },
+
+  setColumn: function(column, isTime) {
+    this.provider.setColumn(column, isTime);
     this._reloadTiles();
   },
 

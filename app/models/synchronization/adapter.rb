@@ -7,17 +7,22 @@ module CartoDB
 
       attr_accessor :table
 
-      def initialize(table_name, runner, database)
-        @table_name       = table_name
-        @runner           = runner
-        @database         = database
+      def initialize(table_name, runner, database, user)
+        @table_name   = table_name
+        @runner       = runner
+        @database     = database
+        @user         = user
       end
 
       def run(&tracker)
         runner.run(&tracker)
         result = results.select(&:success?).first
         overwrite(table_name, result)
+        cartodbfy(table_name)
         self
+      rescue => exception
+        puts exception.to_s
+        puts exception.backtrace
       end
 
       def overwrite(table_name, result)
@@ -31,6 +36,14 @@ module CartoDB
           rename(result.table_name, table_name)
           drop(temporary_name) if exists?(temporary_name)
         end
+      end
+
+      def cartodbfy(table_name)
+        table = ::Table.where(name: table_name, user_id: user.id).first
+        table.import_to_cartodb
+        table.import_cleanup
+        table.send(:set_the_geom_column!)
+        table.save
       end
 
       def success?
@@ -80,7 +93,7 @@ module CartoDB
 
       private
 
-      attr_reader :table_name, :runner, :database
+      attr_reader :table_name, :runner, :database, :user
     end # Synchronization
   end # Connector
 end # CartoDB

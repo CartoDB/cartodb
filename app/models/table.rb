@@ -528,9 +528,9 @@ class Table < Sequel::Model(:user_tables)
       visualization.unlink_from(self)
     end
     @table_visualization.delete if @table_visualization
-
     delete_tile_style
     remove_table_from_user_database unless keep_user_database_table
+    synchronization.delete if synchronization
   end
 
   def remove_table_from_user_database

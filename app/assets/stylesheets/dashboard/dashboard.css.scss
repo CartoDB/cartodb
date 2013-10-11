@@ -771,6 +771,8 @@
                   &.size .separator,
                   &.feed .separator {
                     padding: 0 8px;
+                    @include inline-block();
+                    vertical-align:top;
                     position:relative;
 
                     &:before {
@@ -789,7 +791,14 @@
                   &.feed {
                     color: #E7BF5B;
                     position:relative;
-                    margin-right: 15px;
+                    vertical-align:top;
+                    margin:0 15px 0 0;
+                    line-height:14px;
+
+                    .separator {
+                      padding: 0 5px;
+                      &:before { left:3px; top:1px; }
+                    }
 
                     .msg {
                       @include inline-block();
@@ -798,13 +807,22 @@
                       text-transform:uppercase;
                     }
 
-                    &.failure .msg {
-                      color: #FF7272;
+                    a {
+                      vertical-align:top;
                       text-decoration:none;
+                      cursor:default;
+                      border-bottom:1px solid transparent;
+                    }
 
-                      &:hover {
+                    &.failure {
+                      .msg {
+                        color: #FF7272;
                         text-decoration:none;
-                        border-bottom: 1px dotted #FF7272;
+
+                        &:hover {
+                          text-decoration:none;
+                          border-bottom: 1px dotted #FF7272;
+                        }
                       }
                     }
 
@@ -819,14 +837,14 @@
                     }
 
                     i {
-                      position:absolute;
-                      margin: 3px 0 0 5px;
+                      margin: 5px 0 0 5px;
                       @include inline-block();
+                      vertical-align:top;
                       @include size(8px);
                       @include icons-sprite(feed);
                     }
 
-                    &.error i {
+                    &.failure i {
                       @include icons-sprite(feed_error);
                     }
 

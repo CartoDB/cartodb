@@ -77,14 +77,25 @@ module CartoDB
           content_length_from(headers) > available_quota_in_bytes.to_i
       end
 
+      def typhoeus_options
+        {
+          cookiefile:     cookiejar,
+          cookiejar:      cookiejar,
+          followlocation: true
+        }
+      end 
+
       def headers
-        @headers ||=
-          Typhoeus.head(translate(url), followlocation: true).headers
+        @headers ||= Typhoeus.head(translate(url), typhoeus_options).headers
+      end
+
+      def cookiejar
+        repository.fullpath_for("#{seed}_cookiejar")
       end
 
       def download
-        Typhoeus.get(translate(url), followlocation: true)
-       end
+        Typhoeus.get(translate(url), typhoeus_options)
+      end
 
       def name_from(headers, url)
         name_from_http(headers) || name_in(url)

@@ -10,8 +10,8 @@ module CartoDB
 
         def translate(url)
           return url if !supported?(url) || translated?(url) 
-          return url.gsub(%r{#gid=\d+}, '') 
-            .gsub(%r{spreadsheet/ccc}, 'spreadsheet/pub') + "&output=csv"
+          return url.gsub(%r{#gid=\d+}, '') + "&output=csv"
+          # .gsub(%r{spreadsheet/ccc}, 'spreadsheet/pub') 
         end #translate
 
         def supported?(url)

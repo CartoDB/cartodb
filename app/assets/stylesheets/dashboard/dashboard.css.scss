@@ -768,22 +768,11 @@
                   letter-spacing:0;
                   padding: 3px 10px 0 0;
 
-                  &.size .separator,
-                  &.feed .separator {
-                    padding: 0 8px;
-                    @include inline-block();
-                    vertical-align:top;
-                    position:relative;
 
-                    &:before {
-                      content:'\b7';
-                      position:absolute;
-                      top:-1px;
-                      width:4px;
-                      height:4px;
-                      left:6px;
-                      color:#999;
-                    }
+                  .dot-separator {
+                    padding: 0 8px;
+                    font-weight:bold;
+                    color:#999;
                   }
 
                   &:last-child, &.size { padding-right: 0; }
@@ -793,18 +782,19 @@
                     position:relative;
                     vertical-align:top;
                     margin:0 15px 0 0;
-                    line-height:14px;
-
-                    .separator {
-                      padding: 0 5px;
-                      &:before { left:3px; top:1px; }
-                    }
 
                     .msg {
                       @include inline-block();
                       color: #E7BF5B;
                       height: 14px;
                       text-transform:uppercase;
+                    }
+
+                    .dot-separator {
+                      @include inline-block();
+                      vertical-align:top;
+                      padding:2px 8px 0 6px;
+                      line-height:100%;
                     }
 
                     a {
@@ -826,21 +816,12 @@
                       }
                     }
 
-                    &:before {
-                      content:'\b7';
-                      position:absolute;
-                      top:3px;
-                      width:4px;
-                      height:4px;
-                      left:-8px;
-                      color:#999;
-                    }
-
                     i {
-                      margin: 5px 0 0 5px;
                       @include inline-block();
-                      vertical-align:top;
+                      vertical-align:middle;
                       @include size(8px);
+                      margin-left:5px;
+                      line-height:14px;
                       @include icons-sprite(feed);
                     }
 

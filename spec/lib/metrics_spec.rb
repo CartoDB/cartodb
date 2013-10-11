@@ -8,10 +8,10 @@ describe CartoDB::Metrics do
       "totals" => {"failed" => 3, "success" => 4}
     }
   end
-  it "should prefix all hash keys with import_ except username for Mixpanel" do
+  it "should prefix all hash keys with import_ except username and account_Type for Mixpanel" do
     metrics = CartoDB::Metrics.new
-    metrics.mixpanel_payload({username: "asdf", error: 3, extension: 34})
-      .should == {username: "asdf", import_error: 3, import_extension: 34}
+    metrics.mixpanel_payload({username: "asdf", account_type: "Godzilla", error: 3, extension: 34})
+      .should == {username: "asdf", account_type: "Godzilla", import_error: 3, import_extension: 34}
 
   end
   it "should increase total and failed counters for a failed CSV file" do

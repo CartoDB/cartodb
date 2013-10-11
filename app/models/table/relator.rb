@@ -55,12 +55,12 @@ module CartoDB
       end #preview_for
 
       def synchronization
-        return {} unless synchronization_record && !synchronization_record.empty?
-        synchronization_record.first
+        return nil unless synchronization_record && !synchronization_record.empty?
+        CartoDB::Synchronization::Member.new(synchronization_record.first)
       end
 
       def serialize_synchronization
-        synchronization.to_hash
+        (synchronization || {}).to_hash
       end
 
       private

@@ -17,17 +17,17 @@
 
     <style type="text/css">
       html, body, #map {height: 100%; padding: 0; margin: 0;}
-      p.cartodb-text {position:absolute; display:none; bottom:0; left:0; right:0; margin:0; padding:10px; background:white; font:normal 11px "Helvetica",Arial; color:#999999;}
+      p.cartodb-text {position:absolute; display:none; bottom:0; left:0; right:0; margin:0; padding:0 10px; background:white; font:normal 11px "Helvetica",Arial; color:#999999; border-top:1px solid #CCC; line-height:29px;}
       p.cartodb-text a {color:#397DB8; text-decoration:underline;}
       
       /* Styles showing up new cartodb text */
       <% if @visualization.user.remove_logo? && !Cartodb.config[:cartodb_com_hosted].present? %>
         <% if params['cartodb_logo'] == "true" %>
-          .cartodb-map-wrapper {bottom:32px!important;}
+          .cartodb-map-wrapper {bottom:29px!important;}
           p.cartodb-text {display:block;}
         <% end %>
       <% else %>
-        .cartodb-map-wrapper {bottom:32px!important;}
+        .cartodb-map-wrapper {bottom:29px!important;}
         p.cartodb-text {display:block;}
       <% end %>
 

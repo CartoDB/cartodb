@@ -85,7 +85,7 @@ module CartoDB
                         )
         database      = user.in_database
         importer      = CartoDB::Synchronization::Adapter
-                          .new(name, runner, database)
+                          .new(name, runner, database, user)
         
         importer.run
 

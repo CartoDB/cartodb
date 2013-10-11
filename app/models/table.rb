@@ -269,7 +269,7 @@ class Table < Sequel::Model(:user_tables)
       # If we already have a cartodb_id column let's rename it to an auxiliary column
       aux_cartodb_id_column = nil
       if schema.present? && schema.flatten.include?(:cartodb_id)
-         @data_import.log << ('Renaming cartodb_id from import file')
+         #@data_import.log << ('Renaming cartodb_id from import file')
          aux_cartodb_id_column = "cartodb_id_aux_#{Time.now.to_i}"
          user_database.run(%Q{ALTER TABLE "#{self.name}" RENAME COLUMN cartodb_id TO #{aux_cartodb_id_column}})
          self.schema
@@ -283,7 +283,7 @@ class Table < Sequel::Model(:user_tables)
         if aux_cartodb_id_column.nil?
           aux_cartodb_id_column = "ogc_fid"
         else
-          @data_import.log << ('Removing ogc_fid from import file')
+          #@data_import.log << ('Removing ogc_fid from import file')
           user_database.run(%Q{ALTER TABLE "#{self.name}" DROP COLUMN ogc_fid})
         end
       end
@@ -291,7 +291,7 @@ class Table < Sequel::Model(:user_tables)
         if aux_cartodb_id_column.nil?
           aux_cartodb_id_column = "gid"
         else
-          @data_import.log << ('Removing gid from import file')
+          #@data_import.log << ('Removing gid from import file')
           user_database.run(%Q{ALTER TABLE "#{self.name}" DROP COLUMN gid})
         end
       end
@@ -307,7 +307,7 @@ class Table < Sequel::Model(:user_tables)
       # If there's an auxiliary column, copy and restart the sequence to the max(cartodb_id)+1
       # Do this before adding constraints cause otherwise we can have duplicate key errors
       if aux_cartodb_id_column.present?
-        @data_import.log << ('Cleaning supplied cartodb_id')
+        #@data_import.log << ('Cleaning supplied cartodb_id')
         user_database.run(%Q{UPDATE "#{self.name}" SET cartodb_id = CAST(#{aux_cartodb_id_column} AS INTEGER)})
         user_database.run(%Q{ALTER TABLE "#{self.name}" DROP COLUMN #{aux_cartodb_id_column}})
         cartodb_id_sequence_name = user_database["SELECT pg_get_serial_sequence('#{self.name}', 'cartodb_id')"].first[:pg_get_serial_sequence]
@@ -325,7 +325,7 @@ class Table < Sequel::Model(:user_tables)
       begin
         user_database.run(%Q{ALTER TABLE "#{self.name}" ADD PRIMARY KEY (cartodb_id)})
       rescue
-        @data_import.log << ("Renaming cartodb_id to invalid_cartodb_id") if @data_import
+        #@data_import.log << ("Renaming cartodb_id to invalid_cartodb_id") if @data_import
         user_database.run(%Q{ALTER TABLE "#{self.name}" ALTER COLUMN cartodb_id DROP DEFAULT})
         user_database.run(%Q{ALTER TABLE "#{self.name}" ALTER COLUMN cartodb_id DROP NOT NULL})
         user_database.run(%Q{DROP SEQUENCE IF EXISTS #{self.name}_cartodb_id_seq})

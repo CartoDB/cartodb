@@ -18,6 +18,7 @@
 //= require jquery.fileupload-ui
 //= require leaflet.draw
 //= require carto
+//= require moment
 //= require ../../../lib/assets/javascripts/utils/postgres.codemirror
 //= require ../../../lib/assets/javascripts/utils/carto.codemirror
 //= require models
@@ -30,3 +31,4 @@
 //= require ../../../lib/assets/javascripts/cartodb/table/table
 //= require_tree ../../../lib/assets/javascripts/cartodb/table/views
 //= require_tree ../../../lib/assets/javascripts/cartodb/dashboard/views
+//= require moment

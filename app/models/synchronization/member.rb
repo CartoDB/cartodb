@@ -38,7 +38,7 @@ module CartoDB
         @repository         = repository
         self.id             ||= @repository.next_id
         self.state          ||= 'created'
-        self.ran_at         ||= Time.now.utc
+        self.ran_at         ||= Time.now
         self.interval       ||= 3600
         self.run_at         ||= ran_at + interval
         self.retried_times  ||= 0
@@ -71,7 +71,7 @@ module CartoDB
 
       def run
         self.state    = 'syncing'
-        self.ran_at   = Time.now.utc
+        self.ran_at   = Time.now
         log           = TrackRecord::Log.new(
                           prefix:     REDIS_LOG_KEY_PREFIX,
                           expiration: REDIS_LOG_EXPIRATION_IN_SECS
@@ -108,7 +108,7 @@ module CartoDB
         self.error_code     = nil
         self.error_message  = nil
         self.retried_times  = 0
-        self.run_at         = Time.now.utc + interval
+        self.run_at         = Time.now + interval
       end
 
       def set_failure_state_from(importer)
@@ -144,8 +144,8 @@ module CartoDB
       end
       
       def set_timestamps
-        self.created_at ||= Time.now.utc
-        self.updated_at = Time.now.utc
+        self.created_at ||= Time.now
+        self.updated_at = Time.now
         self
       end
 

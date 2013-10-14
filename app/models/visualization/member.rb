@@ -179,8 +179,8 @@ module CartoDB
       end #propagate_name_to
 
       def set_timestamps
-        self.created_at ||= Time.now.utc
-        self.updated_at = Time.now.utc
+        self.created_at ||= Time.now
+        self.updated_at = Time.now
         self
       end #set_timestamps
 

@@ -15,7 +15,7 @@ module CartoDB
     class Downloader
 
       DEFAULT_FILENAME        = 'importer'
-      CONTENT_DISPOSITION_RE  = %r{attachment; filename=(.*;|.*)}
+      CONTENT_DISPOSITION_RE  = %r{; filename=(.*;|.*)}
       URL_RE                  = %r{://}
       URL_TRANSLATORS         = [
                                   UrlTranslator::OSM2,
@@ -152,7 +152,8 @@ module CartoDB
       end #filepath
 
       def name_from_http(headers)
-        disposition = headers.fetch('Content-Disposition', nil)
+        disposition =   headers.fetch('Content-Disposition', nil)
+        disposition ||= headers.fetch('Content-disposition', nil)
         return false unless disposition
         filename = disposition.match(CONTENT_DISPOSITION_RE).to_a[1]
         return false unless filename

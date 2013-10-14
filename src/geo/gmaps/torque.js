@@ -5,6 +5,8 @@ if(typeof(google) == "undefined" || typeof(google.maps) == "undefined")
   return;
 
 var GMapsTorqueLayerView = function(layerModel, gmapsMap) {
+
+  var extra = layerModel.get('extra_params');
   cdb.geo.GMapsLayerView.call(this, layerModel, this, gmapsMap);
   torque.GMapsTorqueLayer.call(this, {
       table: layerModel.get('table_name'),
@@ -13,12 +15,15 @@ var GMapsTorqueLayerView = function(layerModel, gmapsMap) {
       blendmode: layerModel.get('torque-blend-mode'),
       resolution: 1,
       //TODO: manage time columns
-      is_time: false, //layerModel.get('is_time'),
       countby: 'count(cartodb_id)',
       sql_api_domain: layerModel.get('sql_api_domain'),
       sql_api_protocol: layerModel.get('sql_api_protocol'),
       sql_api_port: layerModel.get('sql_api_port'),
       animationDuration: layerModel.get('torque-duration'),
+      steps: layerModel.get('torque-steps'),
+      extra_params: {
+        api_key: extra ? extra.map_key: ''
+      },
       map: gmapsMap
   });
 

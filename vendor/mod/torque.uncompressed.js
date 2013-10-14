@@ -39,6 +39,10 @@
       requestAnimationFrame(this._tick);
     },
 
+    isRunning: function() {
+      return this.running;
+    },
+
     stop: function() {
       this.pause();
       this.time(0);
@@ -823,11 +827,24 @@ exports.Profiler = Profiler;
       var protocol = opts.sql_api_protocol || 'http';
       return this.options.url || protocol + '://' + domain + '/api/v2/sql';
     },
+  
+    _extraParams: function() {
+      if (this.options.extra_params) {
+        var p = [];
+        for(var k in this.options.extra_params) {
+          var v = this.options.extra_params[k];
+          p.push(k + "=" + encodeURIComponent(v));
+        }
+        return p.join('&');
+      }
+      return null;
+    },
 
     // execute actual query
     sql: function(sql, callback, options) {
+      var extra = this._extraParams();
       options = options || {};
-      torque.net.get(this.url() + "?q=" + encodeURIComponent(sql), function (data) {
+      torque.net.get(this.url() + "?q=" + encodeURIComponent(sql) + (extra ? "&" + extra: ''), function (data) {
           if(options.parseJSON) {
             data = JSON.parse(data.responseText);
           }
@@ -1221,8 +1238,10 @@ exports.Profiler = Profiler;
   var torque = exports.torque = exports.torque || {};
   torque.net = torque.net || {};
 
+  var lastCall = null;
 
   function get(url, callback) {
+    lastCall = { url: url, callback: callback };
     var request = XMLHttpRequest;
     // from d3.js
     if (window.XDomainRequest
@@ -1251,7 +1270,8 @@ exports.Profiler = Profiler;
   }
 
   torque.net = {
-    get: get
+    get: get,
+    lastCall: function() { return lastCall; }
   };
 
 })(typeof exports === "undefined" ? this : exports);
@@ -2487,7 +2507,6 @@ GMapsTorqueLayer.prototype = _.extend({},
 
     this.provider = new this.providers[this.options.provider](this.options);
     this.renderer = new this.renderers[this.options.renderer](this.getCanvas(), this.options);
-    this.setBlendMode = this.renderer.setBlendMode.bind(this.renderer);
 
     this._initTileLoader(this.options.map, this.getProjection());
 
@@ -2495,6 +2514,11 @@ GMapsTorqueLayer.prototype = _.extend({},
       this.renderer.setCartoCSS(this.cartocss);
     }
 
+  },
+
+  setBlendMode: function(_) {
+    this.renderer.setBlendMode(_);
+    this.redraw();
   },
 
   setSteps: function(steps) {
@@ -2998,7 +3022,6 @@ L.TorqueLayer = L.CanvasLayer.extend({
     this.provider = new this.providers[this.options.provider](options);
     this.renderer = new this.renderers[this.options.renderer](this.getCanvas(), options);
 
-    this.setBlendMode = this.renderer.setBlendMode.bind(this.renderer);
 
     // for each tile shown on the map request the data
     this.on('tileAdded', function(t) {
@@ -3007,6 +3030,11 @@ L.TorqueLayer = L.CanvasLayer.extend({
         self.redraw();
       });
     }, this);
+  },
+
+  setBlendMode: function(_) {
+    this.renderer.setBlendMode(_);
+    this.redraw();
   },
 
   setSteps: function(steps) {

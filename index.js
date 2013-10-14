@@ -66,6 +66,8 @@
 //= require cdb/src/geo/ui/search
 //= require cdb/src/geo/ui/layer_selector
 //= require cdb/src/geo/ui/tiles_loader
+//= require cdb/src/geo/ui/infobox
+//= require cdb/src/geo/ui/torque_slider
 //
 //= require cdb/src/ui/common/tabpane
 //= require cdb/src/ui/common/dialog

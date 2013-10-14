@@ -10,6 +10,7 @@ if(typeof(L) === "undefined")
 var LeafLetTorqueLayer = L.TorqueLayer.extend({
 
   initialize: function(layerModel, leafletMap) {
+    var extra = layerModel.get('extra_params');
     // initialize the base layers
     L.TorqueLayer.prototype.initialize.call(this, {
       table: layerModel.get('table_name'),
@@ -18,12 +19,15 @@ var LeafLetTorqueLayer = L.TorqueLayer.extend({
       blendmode: layerModel.get('torque-blend-mode'),
       resolution: 1,
       //TODO: manage time columns
-      is_time: false, //layerModel.get('is_time'),
       countby: 'count(cartodb_id)',
       sql_api_domain: layerModel.get('sql_api_domain'),
       sql_api_protocol: layerModel.get('sql_api_protocol'),
       sql_api_port: layerModel.get('sql_api_port'),
-      animationDuration: layerModel.get('torque-duration')
+      animationDuration: layerModel.get('torque-duration'),
+      steps: layerModel.get('torque-steps'),
+      extra_params: {
+        api_key: extra ? extra.map_key: ''
+      }
     });
 
     cdb.geo.LeafLetLayerView.call(this, layerModel, this, leafletMap);

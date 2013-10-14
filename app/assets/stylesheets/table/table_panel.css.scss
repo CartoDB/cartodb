@@ -75,7 +75,7 @@ $corner_radius: 6px;
   position:relative;
   height:55px;
   margin-top:-15px;
-  line-height:50px;
+  line-height:35px;
   @include transform-style("linear");
   @include transition-property("height");
   @include transition-duration(250ms);
@@ -89,14 +89,30 @@ $corner_radius: 6px;
 .layer_info {
   position:absolute;
   top:0; right:0; bottom:auto; left:0;
-  line-height:67px;
+  line-height:50px;
+  height:67px;
   @include border-top-left-radius($corner_radius);
   border-bottom:1px solid rgba(#999999,0.25);
   z-index:0;
 
   div.left {width:82%;}
   div.right {width:45px; margin-right:20px;}
+
+  // Layer edition
+  @include default-input();
+  
+  input.alias {
+    @include default-input();
+    position:absolute;
+    display:none;
+    top:9px;
+    left:57px;
+    padding:6px 9px;
+    font:bold 17px $text-fonts;
+    color:#787878;
+  }
 }
+  
 
 // Layer info
 a.info {
@@ -143,14 +159,14 @@ a.info {
 
   .name_info {
     position:absolute;
-    top:42px;
+    top:33px;
     left:67px;
     display:block;
     overflow:hidden;
     max-width:80%;
     width:auto;
     font:normal 11px $text-fonts;
-    color:#999;
+    color:#AAA;
     @include text-overflow();
     line-height:20px;
   }
@@ -170,6 +186,7 @@ a.info {
     .add { @include background(sprite($icons-sprites, add_layer, $offset-x:0, $offset-y:-16px) no-repeat); }
   }
 }
+
 
 // LAYER ACTIONS
 
@@ -1889,15 +1906,10 @@ a.info {
       .brush .resize path { fill: #eee; stroke: #666; }
     }
   }
-
 } // end view!
 
 
 // ANIMATIONS FOR LAYER_PANEL
-
-// .layer_panel:hover {
-//   margin-top:-10px;
-// }
 
 // Active layer
 .layer_panel.active {
@@ -1906,7 +1918,11 @@ a.info {
 
   .layer_info a.info {
     .order {background:#666666;}
-    .name {color:#666;}
+    .name_info {color:#999;}
+    .name {
+      color:#666;
+      &:hover { color:#454545 }
+    }
   }
 
   &:hover {

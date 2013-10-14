@@ -116,6 +116,7 @@
         p.filename {
           float:left;
           @include inline-block();
+          display:none;
           width:285px;
           margin:2px 0 0 4px;
           font-size:15px;
@@ -124,7 +125,7 @@
           @include text-overflow();
         }
 
-        .gdrive-chooser, .dropbox-dropin-btn {float:right!important}
+        .gdrive-chooser, .dropbox-dropin-btn {float:left!important}
 
         input {
           float:right;
@@ -145,6 +146,15 @@
           position:relative;
           z-index:1;
         }
+      }
+
+      // When a value is selected, let's add
+      // this class and move buttons and filename
+      &.value-selected {
+        div.upload {
+          .gdrive-chooser, .dropbox-dropin-btn { float:right!important }
+          p.filename { display:block }
+        } 
       }
 
     }

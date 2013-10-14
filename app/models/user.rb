@@ -585,6 +585,10 @@ class User < Sequel::Model
     DataImport.where(user_id: self.id, state: 'failure').count
   end
 
+  def import_count
+    DataImport.where(user_id: self.id).count
+  end
+
   def visualization_count
     maps.count - table_count
   end

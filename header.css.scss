@@ -391,18 +391,29 @@ header { // general header
           position:relative;
           @include inline-block();
           vertical-align:middle;
-          width:8px;
-          height:8px;
+          width:10px;
+          height:10px;
           margin-right:4px;
-          border:none;
-          @include border-radius(8px);
-          @include background(#FF4D4D);
-          text-shadow:none;
+
+          span.point {
+            position:absolute;
+            top:0;
+            left:0;
+            width:8px;
+            height:8px;
+            margin:0;
+            padding:0;
+            border:1px solid rgba(black,.5);
+            @include border-radius(10px);
+            @include background(#FF4D4D);
+            text-shadow:none;
+            z-index:1;
+          }
 
           span.pulse {
             position: absolute;
-            left:-3px;
-            top:-3px;
+            left:-2px;
+            top:-2px;
             height: 8px;
             width: 8px;
             @include animation(pulsate 1.5s ease-out infinite);
@@ -422,9 +433,11 @@ header { // general header
           text-shadow:0 1px $text-shadow-color;
         }
 
-        &.failure span.circle:before {
-          display:none;
-          @include animation(pause);
+        &.failure {
+          div.circle span.point {
+            @include background(linear-gradient(#FFFF4D,#D18400));
+            border-color:rgba(black, .75);
+          }
         }
       }
 
@@ -536,5 +549,5 @@ header { // general header
 @include keyframes(pulsate) {
   0% {@include transform(scale(0.1, 0.1)); opacity: 0.0;}
   50% {opacity: 1.0;}
-  100% {@include transform(scale(1.2, 1.2)); opacity: 0.0;}
+  100% {@include transform(scale(1.4, 1.4)); opacity: 0.0;}
 }

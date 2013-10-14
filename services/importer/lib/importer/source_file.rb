@@ -44,6 +44,7 @@ module CartoDB
         return filepath.match(ENCODING_RE)[1].upcase
       end
 
+      attr_accessor :layer
       attr_reader :filename, :etag, :last_modified
       
       private

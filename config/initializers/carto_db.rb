@@ -36,18 +36,20 @@ module CartoDB
     Cartodb.config[:account_path]
   end
 
-  module Plugin
-    class << self
-      def register(plugin)
-        @registered_plugins ||= []
-        @registered_plugins << plugin
-      end
+  # TODO move to separated file and activate in order
+  # to enable CartoDB plugins
+  # module Plugin
+  #   class << self
+  #     def register(plugin)
+  #       @registered_plugins ||= []
+  #       @registered_plugins << plugin
+  #     end
       
-      def registered
-        @registered_plugins
-      end
-    end
-  end
+  #     def registered
+  #       @registered_plugins
+  #     end
+  #   end
+  # end
 
   module API
     VERSION_1 = "v1"

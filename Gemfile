@@ -107,9 +107,10 @@ group :development, :test do
 end
 
 # Load optional engines
-Dir["engines" + "/*/*.gemspec"].each do |gemspec_file|
-  dir_name = File.dirname(gemspec_file)
-  gem_name = File.basename(gemspec_file, File.extname(gemspec_file))
+# TODO activate when CartoDB plugins are finally included
+# Dir["engines" + "/*/*.gemspec"].each do |gemspec_file|
+#   dir_name = File.dirname(gemspec_file)
+#   gem_name = File.basename(gemspec_file, File.extname(gemspec_file))
 
-  gem gem_name, :path => dir_name, :require => false
-end
+#   gem gem_name, :path => dir_name, :require => false
+# end

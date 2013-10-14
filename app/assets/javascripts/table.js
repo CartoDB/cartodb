@@ -17,13 +17,16 @@
 //= require jquery.fileupload-fp
 //= require jquery.fileupload-ui
 //= require leaflet.draw
+//= require moment
 //= require carto
 //= require ../../../lib/assets/javascripts/utils/postgres.codemirror
 //= require ../../../lib/assets/javascripts/utils/carto.codemirror
 //= require models
 //= require ../../../lib/assets/javascripts/cartodb/common/dropdown_menu
 //= require ../../../lib/assets/javascripts/cartodb/common/forms/string_field
-//= require ../../../lib/assets/javascripts/cartodb/common/import_pane.js
+//= require ../../../lib/assets/javascripts/cartodb/common/forms/widgets
+//= require ../../../lib/assets/javascripts/cartodb/common/import/import_pane.js
+//= require ../../../lib/assets/javascripts/cartodb/common/import/import_info/import_info.js
 //= require_tree ../../../lib/assets/javascripts/cartodb/common
 //= require ../../../lib/assets/javascripts/cartodb/table/right_menu
 //= require_tree ../../../lib/assets/javascripts/cartodb/table

@@ -3,7 +3,7 @@ source 'http://rubygems.org'
 gem "rails",                   "3.2.2"
 
 gem "rake",                    "0.9.2.2"
-gem "pg",                      "0.11"
+gem "pg",                      "0.13.2"
 gem "sequel",                  "3.42.0"
 gem "sequel_pg",               "1.6.3", require: "sequel"
 
@@ -52,6 +52,10 @@ gem "state_machine",           "1.1.2"
 gem "typhoeus",                "0.6.3"
 gem "charlock_holmes",         "0.6.9.4"
 gem "dbf",                     "2.0.6"
+
+# Synchronizer
+gem "eventmachine",            "1.0.3"
+gem "em-pg-client",            "0.2.1"
 
 # Service components (/services)
 gem "virtus",                   git: "https://github.com/solnic/virtus.git"

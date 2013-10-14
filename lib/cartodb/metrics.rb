@@ -17,7 +17,12 @@ module CartoDB
 
     def mixpanel_payload(metric_payload)
       #remove the log from the payload
-      metric_payload.select {|k,v| k != :log }
+      payload = metric_payload.select {|k,v| k != :log }
+      Hash[payload.map{ |key,value| 
+        [(["username","account_type"].include?(key.to_s) ?
+            key.to_s : "import_"+key.to_s), 
+          value]
+        }].symbolize_keys
     end
 
     def report_failure(metric_payload)

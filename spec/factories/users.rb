@@ -23,6 +23,10 @@ FactoryGirl.define do
       private_tables_enabled true
     end
 
+    trait :sync_tables do
+      sync_tables_enabled true
+    end
+
     trait :enabled do
       enabled true
     end

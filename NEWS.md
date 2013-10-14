@@ -1,3 +1,71 @@
+2.3.0
+-----
+* Improvements
+  * Finished google drive integration on Create / add new layer modal window
+  * Big CSV fixture generator
+  * Prototype an EventMachine-based dispatcher to poll remote files
+  * Get synctables configuration (sources, intervals, next poll) from Postgres
+  * Optimize sync-tables download based on Last-Modified and ETag
+  * Work on Sync tables UI changes
+  * Implement synctables endpoint
+  * We need a flag to know if a user can create sync tables or not
+  * Configure long-running process for sync-tables
+  * Implemented sync indicator in dashboard tables.
+  * Implemented new 'sync table' option for new tables dialog
+  * Implemented necessary changes in table view when it is sync type
+  * Improve loader indicator of the assets on the assets modal window
+  * Add comma separators on the row count on the dashboard
+  * Add Create your own maps with CartoDB module to the embed maps
+  * Improved filter queries
+  * After upgrading set the plan property to the user
+  * Improved names of stuff sent to mixpanel
+  * Find a way to track the first time ever that people enter to their dashboard
+  * Extension is being set two times in the mixpanel event for importing (success and failed)
+  * Set some parameters to the user for tracking on mixpanel
+  * Remove account_type parameter from the user model on mixpanel
+  * Access tiler services via 'http' protocol by default.
+  * Make point-stroke opacity to 1 by default and with to 2
+  * when adding consequtive basemap layers the name of the custom basemap concatenates
+  * Users can set more basemaps than 'basemap dropdown' supports
+  * Add event for when an user visualizes the dashboard
+  * Add new config parameters for GDrive keys
+
+* Fixed Bugs
+  * Design all sync tables related stuff
+  * The red dot on the sync tables was supposed to be blinking
+  * Make the "Create your own custom maps with CartoDB" area less high and add the top-border (similar to the header)
+  * Input field errors don't appear
+  * Tiles from private tables can be seen without api_key
+  * Export of CSV is failing on many tables
+  * On the list to "Add an existing table" the order of the tables there is wrongly sorted
+  * Float values on export [again?] 16.2 => 16.199999999999999
+  * Weird scrolling issue
+  * Fix dashboard message animation
+  * Error on over quota message
+  * Fix alignement of the support text with the rest of the dashboard.
+  * Double click over the legend is propagated to the map and zoom it
+  * If a legend is customized and the query is changed it is overriden
+  * Sql editor does not show the_geom_webmercator in autcomplete options
+  * Scrub bar for radius / opacity / etc stays open in some cases
+  * Add tutorials to the menu on the dashboard
+  * Dashboard notification opens always
+  * Account upgraded event duplicated
+  * Upgraded to Windshaft-Cartodb 1.3.6
+  * Changing the api key doesn't invalidate requests with the old api key
+  * Looks like the import event is broken in mixpanel. No metadata
+  * Import events always reported as failure
+  * Dedicated badge doesn't appear in dedicated accounts
+  * Support new? OSM url format
+  * Add point separator on the dashboard table list (for number of rows)
+  * The_geom column is being shown as 'P'
+  * Add widget to ducksboard with the AVG time of response on supportbee
+  * Geometry rows in the table shows only first letter
+  * Review CSV export query
+  * Compare strings in lowercase when doing a merge
+  * A just importer csv (synced) shows "synced 18 hours ago"
+  * Map is now show on sync tables
+  * 'Basemap adder' dialog bugs and improvements
+
 2.2.1
 -----
 * Fixed Bugs

@@ -1,5 +1,5 @@
-// version: 3.2.02
-// sha: 772e8227adf84e96d96cfec8a440a756f626a508
+// version: 3.2.03
+// sha: 89af6776aff3e140c258b3807b3b0bec88c8fde3
 ;(function() {
   this.cartodb = {};
   var Backbone = {};
@@ -1141,7 +1141,7 @@ var Mustache;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.2.02';
+    cdb.VERSION = '3.2.03';
 
     cdb.CARTOCSS_VERSIONS = {
       '2.0.0': '',
@@ -1151,8 +1151,8 @@ var Mustache;
     cdb.CARTOCSS_DEFAULT_VERSION = '2.1.1';
 
     cdb.CDB_HOST = {
-      'http': 'tiles.cartocdn.com',
-      'https': 'd3pu9mtm6f0hk5.cloudfront.net'
+      'http': 'api.cartocdn.com',
+      'https': 'cartocdn.global.ssl.fastly.net'
     };
 
     root.cdb.config = {};

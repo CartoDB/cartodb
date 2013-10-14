@@ -559,7 +559,7 @@ a.info {
     &:before { position:absolute; content:' '; top:0; left:36px; bottom:0; width:1px; height:100%; background:rgba(#509DD7,0.25); }
   }
 
-  // INFOWINDOW PANEL
+  /* infowindow panel */
   .infowindow_panel {
 
     .panel_content .wrapper { top: 43px; }
@@ -899,7 +899,6 @@ a.info {
   }
 
   /* legends */
-
   div.legends_panel {
     display:block;
     width:100%;
@@ -1048,11 +1047,6 @@ a.info {
 
       }
     }
-
-
-
-
-
   }
 
   /* wizard */
@@ -1370,7 +1364,7 @@ a.info {
   }
 
 
-  // FILTERS MODULE
+  /* filters */
   div.filters_panel {
     width:100%;
     @include box-sizing(border-box);
@@ -1894,7 +1888,6 @@ a.info {
       .brush rect.extent { fill: #CCCCCC; fill-opacity: .2; }
       .brush .resize path { fill: #eee; stroke: #666; }
     }
-
   }
 
 } // end view!

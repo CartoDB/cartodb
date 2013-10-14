@@ -2,6 +2,7 @@ source 'http://rubygems.org'
 
 gem "rails",                   "3.2.2"
 
+
 gem "rake",                    "0.9.2.2"
 gem "pg",                      "0.13.2"
 gem "sequel",                  "3.42.0"
@@ -103,4 +104,12 @@ group :development, :test do
   # Server
   gem 'thin',                           require: false
   gem 'parallel_tests'
+end
+
+# Load optional engines
+Dir["engines" + "/*/*.gemspec"].each do |gemspec_file|
+  dir_name = File.dirname(gemspec_file)
+  gem_name = File.basename(gemspec_file, File.extname(gemspec_file))
+
+  gem gem_name, :path => dir_name, :require => false
 end

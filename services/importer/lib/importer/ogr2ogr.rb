@@ -7,10 +7,11 @@ module CartoDB
       ENCODING  = 'UTF-8'
       SCHEMA    = 'cdb_importer'
 
-      def initialize(table_name, filepath, pg_options, options={})
+      def initialize(table_name, filepath, pg_options, layer=nil, options={})
         self.filepath   = filepath
         self.pg_options = pg_options
         self.table_name = table_name
+        self.layer      = layer
         self.options    = options
       end #initialize
 
@@ -18,7 +19,7 @@ module CartoDB
         "#{pg_copy_option} #{encoding_option} #{executable_path} "  +
         "#{output_format_option} #{postgres_options} "              +
         "#{projection_option} #{layer_creation_options} "           + 
-        "#{filepath} #{track_points_option} #{layer_name_option} "  +
+        "#{filepath} #{layer} #{layer_name_option} "                +
         "#{new_layer_type_option}"
       end #command
 
@@ -38,7 +39,7 @@ module CartoDB
       private
 
       attr_writer   :exit_code, :command_output
-      attr_accessor :filepath, :pg_options, :options, :table_name
+      attr_accessor :filepath, :pg_options, :options, :table_name, :layer
 
       def output_format_option
         "-f PostgreSQL"
@@ -70,10 +71,6 @@ module CartoDB
         "-lco #{dimension_option} -lco #{precision_option}"
       end #layer_creatiopn_options
 
-      def track_points_option
-        return "track_points" if filepath =~ /\.gpx/
-      end #track_points_option
-
       def projection_option
         return nil if filepath =~ /\.csv/ || filepath =~ /\.ods/
         "-t_srs EPSG:4326 "
@@ -92,12 +89,8 @@ module CartoDB
       end #precision_option
 
       def new_layer_type_option
-        "-nlt geometry"
+        "-nlt GEOMETRY"
       end #new_layer_type_option
-
-      def append_option
-        "-append"
-      end #append_option
     end # Ogr2ogr
   end # Importer2
 end # CartoDB

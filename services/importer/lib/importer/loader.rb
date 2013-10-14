@@ -18,12 +18,13 @@ module CartoDB
       DEFAULT_ENCODING  = 'UTF-8'
 
       def self.supported?(extension)
-        !(%w{ .osm .tif .tiff .sql }.include?(extension))
+        !(%w{ .tif .tiff .sql }.include?(extension))
       end #self.supported?
 
-      def initialize(job, source_file, ogr2ogr=nil, georeferencer=nil)
+      def initialize(job, source_file, layer=nil, ogr2ogr=nil, georeferencer=nil)
         self.job            = job
         self.source_file    = source_file
+        self.layer          = 'track_points' if source_file.extension =~ /\.gpx/
         self.ogr2ogr        = ogr2ogr
         self.georeferencer  = georeferencer
       end #initialize
@@ -55,7 +56,7 @@ module CartoDB
       def ogr2ogr
         @ogr2ogr ||= Ogr2ogr.new(
           job.table_name, source_file.fullpath, job.pg_options,
-          encoding: encoding
+          layer, encoding: encoding
         )
       end #ogr2ogr
 
@@ -72,6 +73,10 @@ module CartoDB
           Georeferencer.new(job.db, job.table_name, SCHEMA, job)
       end #georeferencer
 
+      def osm_processor
+        @osm_processor ||= OsmProcessor.new(job, source_file)
+      end
+
       def valid_table_names
         [job.table_name]
       end #valid_table_names
@@ -80,10 +85,14 @@ module CartoDB
         NORMALIZERS.find_all { |klass| klass.supported?(extension) }
       end #normalizers_for
 
+      def osm?(source_file)
+        source_file.extension =~ /\.osm/
+      end
+
       private
 
       attr_writer     :ogr2ogr, :georeferencer
-      attr_accessor   :job, :source_file
+      attr_accessor   :job, :source_file, :layer
     end # Loader
   end # Importer2
 end # CartoDB

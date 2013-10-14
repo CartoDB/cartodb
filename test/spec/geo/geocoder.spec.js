@@ -42,7 +42,7 @@ describe('Geocoder', function() {
     });
     waits(2000);
     runs(function() {
-      expect(data.length).toEqual(2);
+      expect(data.length).toEqual(1);
       expect(data[0].lat).toEqual(40.420300);
       expect(data[0].lon).toEqual(-3.70577);
       expect(data[0].boundingbox).toBeTruthy();
@@ -67,7 +67,7 @@ describe('Geocoder', function() {
   it('we should don\'t get a direction that doesn\'t exist using NOKIA', function() {
     var data;
     runs(function() {
-      cdb.geo.geocoder.NOKIA.geocode('Wadusworld', function(d) {
+      cdb.geo.geocoder.NOKIA.geocode('InternationalWadusworldIncorporated', function(d) {
         data = d;
       });
     });

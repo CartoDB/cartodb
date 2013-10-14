@@ -1,3 +1,16 @@
+3.2.03 (14//10/2013)
+-----
+- changed CDN urls
+
+3.2.02 (10//10/2013)
+-----
+- fixed click propagation in legends.
+
+3.2.01 (10//09/2013)
+-----
+- fixed bug that prevented the use of google charts urls in the infowindow covers.
+- fixed geocoder specs
+
 3.2.00 (09//30/2013)
 -----
 - ported to leaflet 0.6 #55

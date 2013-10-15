@@ -89,11 +89,14 @@ $corner_radius: 6px;
 .layer_info {
   position:absolute;
   top:0; right:0; bottom:auto; left:0;
-  line-height:50px;
+  line-height:62px;
   height:67px;
   @include border-top-left-radius($corner_radius);
   border-bottom:1px solid rgba(#999999,0.25);
   z-index:0;
+  @include transform-style("linear");
+  @include transition-property("line-height");
+  @include transition-duration(450ms);
 
   div.left {width:82%;}
   div.right {width:45px; margin-right:20px;}
@@ -105,7 +108,7 @@ $corner_radius: 6px;
     @include default-input();
     position:absolute;
     display:none;
-    top:9px;
+    top:7px;
     left:57px;
     padding:6px 9px;
     font:bold 17px $text-fonts;
@@ -159,9 +162,9 @@ a.info {
 
   .name_info {
     position:absolute;
-    top:33px;
+    top:30px;
     left:67px;
-    display:block;
+    display:none;
     overflow:hidden;
     max-width:80%;
     width:auto;
@@ -1919,16 +1922,29 @@ a.info {
   .layer_info a.info {
     .order {background:#666666;}
     .name_info {color:#999;}
-    .name {
-      color:#666;
-      &:hover { color:#454545 }
-    }
+    .name { color:#666; }
   }
 
   &:hover {
     margin-bottom:20px;
     padding-bottom:0;
     margin-top:-25px;
+  }
+}
+
+// Active layer in visualization
+.layer_panel.active.vis {
+  .layer_info {
+
+    a.info .name:hover { color:#454545 }
+  }
+}
+
+// Active layer in visualization
+.layer_panel.active.vis.opened {
+  .layer_info {
+    line-height:48px;
+    .name_info {display:block}
   }
 }
 

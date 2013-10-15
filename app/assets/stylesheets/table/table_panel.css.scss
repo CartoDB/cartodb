@@ -94,9 +94,6 @@ $corner_radius: 6px;
   @include border-top-left-radius($corner_radius);
   border-bottom:1px solid rgba(#999999,0.25);
   z-index:0;
-  @include transform-style("linear");
-  @include transition-property("line-height");
-  @include transition-duration(450ms);
 
   div.left {width:82%;}
   div.right {width:45px; margin-right:20px;}
@@ -162,16 +159,15 @@ a.info {
 
   .name_info {
     position:absolute;
-    top:30px;
+    top:34px;
     left:67px;
-    display:none;
     overflow:hidden;
     max-width:80%;
     width:auto;
     font:normal 11px $text-fonts;
     color:#AAA;
     @include text-overflow();
-    line-height:20px;
+    line-height:15px;
   }
 
   .action {
@@ -1935,7 +1931,6 @@ a.info {
 // Active layer in visualization
 .layer_panel.active.vis {
   .layer_info {
-
     a.info .name:hover { color:#454545 }
   }
 }
@@ -1943,8 +1938,13 @@ a.info {
 // Active layer in visualization
 .layer_panel.active.vis.opened {
   .layer_info {
-    line-height:48px;
-    .name_info {display:block}
+    line-height:46px;
+  }
+}
+
+.layer_panel.vis.opened {
+  .layer_info {
+    line-height:46px;
   }
 }
 

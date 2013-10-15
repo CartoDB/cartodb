@@ -16,11 +16,10 @@ module CartoDB
       end #initialize
 
       def command
-        "#{pg_copy_option} #{encoding_option} #{executable_path} "  +
-        "#{output_format_option} #{postgres_options} "              +
-        "#{projection_option} #{layer_creation_options} "           + 
-        "#{filepath} #{layer} #{layer_name_option} "                +
-        "#{new_layer_type_option}"
+        "#{osm_indexing_option} #{pg_copy_option} #{encoding_option} "    +
+        "#{executable_path} #{output_format_option} #{postgres_options} " +
+        "#{projection_option} #{layer_creation_options} #{filepath} "     +
+        "#{layer} #{layer_name_option} #{new_layer_type_option}"
       end #command
 
       def executable_path
@@ -91,6 +90,10 @@ module CartoDB
       def new_layer_type_option
         "-nlt PROMOTE_TO_MULTI"
       end #new_layer_type_option
+
+      def osm_indexing_option
+        "OSM_USE_CUSTOM_INDEXING=NO"
+      end
     end # Ogr2ogr
   end # Importer2
 end # CartoDB

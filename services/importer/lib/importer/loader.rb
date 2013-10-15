@@ -33,7 +33,6 @@ module CartoDB
       def run
         normalize
         job.log "Detected encoding #{encoding}"
-
         job.log "Using database connection with #{job.concealed_pg_options}"
         ogr2ogr.run
         #osm_processor.run if source_file.extension == '.osm'
@@ -52,14 +51,16 @@ module CartoDB
           .inject(source_file.fullpath) { |filepath, normalizer_klass|
             normalizer_klass.new(filepath, job).run.converted_filepath
           }
-        self.source_file = SourceFile.new(converted_filepath)
+        layer = source_file.layer
+        @source_file = SourceFile.new(converted_filepath)
+        @source_file.layer = layer
         self
       end #normalize
 
       def ogr2ogr
         @ogr2ogr ||= Ogr2ogr.new(
-          job.table_name, source_file.fullpath, job.pg_options,
-          layer, encoding: encoding
+          job.table_name, @source_file.fullpath, job.pg_options,
+          @source_file.layer, encoding: encoding
         )
       end #ogr2ogr
 

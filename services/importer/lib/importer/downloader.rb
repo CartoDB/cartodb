@@ -60,6 +60,7 @@ module CartoDB
 
         response  = download
         headers   = response.headers
+        puts headers.inspect
         data      = StringIO.new(response.response_body)
         name      = name_from(headers, url)
 
@@ -164,7 +165,7 @@ module CartoDB
       end #filepath
 
       def name_from_http(headers)
-        disposition =   headers.fetch('Content-Disposition', nil)
+        disposition = headers.fetch('Content-Disposition', nil)
         disposition ||= headers.fetch('Content-disposition', nil)
         return false unless disposition
         filename = disposition.match(CONTENT_DISPOSITION_RE).to_a[1]

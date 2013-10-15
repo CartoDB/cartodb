@@ -7,6 +7,7 @@ require_relative './json2csv'
 require_relative './xlsx2csv'
 require_relative './xls2csv'
 require_relative './georeferencer'
+require_relative './osm_processor'
 
 module CartoDB
   module Importer2
@@ -35,6 +36,8 @@ module CartoDB
 
         job.log "Using database connection with #{job.concealed_pg_options}"
         ogr2ogr.run
+        #osm_processor.run if source_file.extension == '.osm'
+
         job.log "ogr2ogr output:    #{ogr2ogr.command_output}"
         job.log "ogr2ogr exit code: #{ogr2ogr.exit_code}"
 

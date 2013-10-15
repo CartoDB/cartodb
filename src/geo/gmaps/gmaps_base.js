@@ -42,7 +42,7 @@ _.extend(GMapsLayerView.prototype, {
     if(!this.isBase) {
       var self = this;
       var idx = this._searchLayerIndex();
-      if(idx > 0) {
+      if(idx >= 0) {
         this.gmapsMap.overlayMapTypes.removeAt(idx);
       } else if (this.gmapsLayer.setMap){
         this.gmapsLayer.setMap(null);

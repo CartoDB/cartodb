@@ -1,6 +1,6 @@
-// cartodb.js version: 3.2.03
+// cartodb.js version: 3.2.04
 // uncompressed version: cartodb.uncompressed.js
-// sha: 89af6776aff3e140c258b3807b3b0bec88c8fde3
+// sha: 765503bc8f5ed94aee921acf2bb53f45ebab406d
 (function() {
   var root = this;
 
@@ -20429,7 +20429,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.2.03';
+    cdb.VERSION = '3.2.04';
 
     cdb.CARTOCSS_VERSIONS = {
       '2.0.0': '',
@@ -21602,7 +21602,8 @@ cdb.geo.PlainLayer = cdb.geo.MapLayer.extend({
     type: 'Plain',
     base_type: "plain",
     className: "plain",
-    color: '#FFFFFF'
+    color: '#FFFFFF',
+    image: ''
   }
 });
 
@@ -25704,11 +25705,11 @@ cdb.geo.leaflet.PathView = PathView;
 
 (function() {
 
-if(typeof(L) == "undefined") 
+if(typeof(L) == "undefined")
   return;
 
 /**
- * this is a dummy layer class that modifies the leaflet DOM element background 
+ * this is a dummy layer class that modifies the leaflet DOM element background
  * instead of creating a layer with div
  */
 var LeafLetPlainLayerView = L.Class.extend({
@@ -25722,7 +25723,7 @@ var LeafLetPlainLayerView = L.Class.extend({
     this.redraw();
   },
 
-  onRemove: function() { 
+  onRemove: function() {
     var div = this.leafletMap.getContainer()
     div.style.background = 'none';
   },
@@ -25734,11 +25735,10 @@ var LeafLetPlainLayerView = L.Class.extend({
   redraw: function() {
     var div = this.leafletMap.getContainer()
     div.style.backgroundColor = this.model.get('color') || '#FFF';
-    if(this.model.get('image')) {
-      var st = 'url(' + this.model.get('image') + ') repeat center center';
-      if(this.model.get('color')) {
-        div.style.background = st + ' ' + this.model.get('color');
-      }
+
+    if (this.model.get('image')) {
+      var st = 'transparent url(' + this.model.get('image') + ') repeat center center';
+      div.style.background = st
     }
   }
 });

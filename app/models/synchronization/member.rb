@@ -98,6 +98,8 @@ module CartoDB
 
         if importer.success?
           set_success_state_from(importer)
+        elsif retried_times < 3
+          set_retry_state_from(importer)
         else
           set_failure_state_from(importer)
         end
@@ -122,6 +124,14 @@ module CartoDB
         self.modified_at    = importer.last_modified
       rescue
         self
+      end
+
+      def set_retry_state_from(importer)
+        self.log     << "******** synchronization failed, will retry ********" 
+        self.state          = 'success'
+        self.error_code     = importer.error_code
+        self.error_message  = importer.error_message
+        self.retried_times  = self.retried_times + 1
       end
 
       def set_failure_state_from(importer)

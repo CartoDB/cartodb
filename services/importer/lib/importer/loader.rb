@@ -24,6 +24,7 @@ module CartoDB
       def initialize(job, source_file, layer=nil, ogr2ogr=nil, georeferencer=nil)
         self.job            = job
         self.source_file    = source_file
+        self.layer          = 'track_points' if source_file.extension =~ /\.gpx/
         self.ogr2ogr        = ogr2ogr
         self.georeferencer  = georeferencer
       end #initialize
@@ -92,7 +93,7 @@ module CartoDB
       private
 
       attr_writer     :ogr2ogr, :georeferencer
-      attr_accessor   :job, :source_file
+      attr_accessor   :job, :source_file, :layer
     end # Loader
   end # Importer2
 end # CartoDB

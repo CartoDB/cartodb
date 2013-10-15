@@ -589,6 +589,11 @@ class User < Sequel::Model
     maps.count - table_count
   end
 
+  def last_visualization_created_at
+    vis = maps.flat_map(&:visualizations).uniq.sort_by(&:created_at).last
+    vis != nil ? vis.created_at : nil
+  end
+
   def rebuild_quota_trigger
     load_cartodb_functions
     puts "Rebuilding quota trigger in db '#{database_name}' (#{username})"

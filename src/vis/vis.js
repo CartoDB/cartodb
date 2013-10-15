@@ -316,27 +316,25 @@ var Vis = cdb.core.View.extend({
     if(options.legends) {
       this.addLegends(data.layers);
     }
+    this.addTimeSlider();
 
     // set layer options
-    if(options.sublayer_options) {
+    if (options.sublayer_options) {
 
       var dataLayer = this.getLayers()[1];
-
-      for(i = 0; i < options.sublayer_options.length; ++i) {
-        var o = options.sublayer_options[i];
-        var subLayer = dataLayer.getSubLayer(i);
-
-        if (this.legends) {
-
-          var j = options.sublayer_options.length - i - 1;
-          var legend = this.legends && this.legends.options.legends[j];
-
-          if (legend) {
-            o.visible ? legend.show(): legend.hide();
+      if (dataLayer.getSubLayer) {
+        for(i = 0; i < options.sublayer_options.length; ++i) {
+          var o = options.sublayer_options[i];
+          var subLayer = dataLayer.getSubLayer(i);
+          if (this.legends) {
+            var j = options.sublayer_options.length - i - 1;
+            var legend = this.legends && this.legends.options.legends[j];
+            if (legend) {
+              o.visible ? legend.show(): legend.hide();
+            }
           }
-
+          o.visible ? subLayer.show(): subLayer.hide();
         }
-        o.visible ? subLayer.show(): subLayer.hide();
       }
     }
 
@@ -350,6 +348,16 @@ var Vis = cdb.core.View.extend({
     })
 
     return this;
+  },
+
+  addTimeSlider: function() {
+    var torque = _(this.getLayers()).filter(function(layer) { return layer.model.get('type') === 'torque'; })
+    if (torque.length) {
+      this.addOverlay({
+        type: 'time_slider',
+        layer: torque[0]
+      });
+    }
   },
 
   addLegends: function(layers) {

@@ -3,7 +3,7 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
   DEFAULT_OFFSET_TOP: 30,
   defaultTemplate: 
     "<div>" +
-    "  <a href='#' class='playpause'>play</a>" +
+    "  <a href='#' class='playpause'>pause</a>" +
     "  <span class='date'>10/20</span>" +
     "  <div class='slider'></div>" +
     "</div>" 
@@ -24,8 +24,9 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
 
     // each time time changes, move the slider
     function updateTime(changes) {
-      if (self.torqueLayer.options.start !== undefined) {
-        var f = self.formaterForRange(self.torqueLayer.options.start, self.torqueLayer.options.end);
+      var tb = self.torqueLayer.getTimeBounds();
+      if (tb && tb.start !== undefined) {
+        var f = self.formaterForRange(tb.start, tb.end);
         self.$('.date').text(f(changes.time));
       }
     }
@@ -57,6 +58,7 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
   },
 
   _slide: function(e, ui) {
+    this.killEvent(e);
     var step = ui.value;
     this.torqueLayer.setStep(step);
   },
@@ -76,6 +78,7 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
   toggleTime: function(e) {
     this.killEvent(e);
     this.torqueLayer.toggle();
+    this.$('.playpause').html(this.torqueLayer.isRunning() ? 'pause': 'play');
   },
 
   enable: function() {},

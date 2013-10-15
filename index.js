@@ -30,6 +30,7 @@
 //= require cdb/src/core/view
 //
 //= require cdb/vendor/mod/torque.cartodb
+//= require cdb/vendor/mod/jquery-ui-slider
 //
 //= require cdb/src/geo/geocoder
 //= require cdb/src/geo/geometry

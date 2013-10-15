@@ -26,6 +26,12 @@ cdb.vis.Overlay.register('loader', function(data) {
   return tilesLoader.render();
 });
 
+cdb.vis.Overlay.register('time_slider', function(data, viz) {
+  var slider = new cdb.geo.ui.TimeSlider(data);
+  return slider.render();
+});
+
+
 // Header to show informtion (title and description)
 cdb.vis.Overlay.register('header', function(data, vis) {
   var MAX_SHORT_DESCRIPTION_LENGTH = 100;

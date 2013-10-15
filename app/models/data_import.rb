@@ -260,7 +260,8 @@ class DataImport < Sequel::Model
       .merge(
         user:     current_user.database_username,
         password: current_user.database_password,
-        database: current_user.database_name
+        database: current_user.database_name,
+        host:     current_user.database_host
       )
   end #pg_options
 

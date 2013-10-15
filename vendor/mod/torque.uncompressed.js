@@ -2259,15 +2259,20 @@ GMapsTileLoader.prototype = {
     this._tiles = {};
     this._tilesToLoad = 0;
     this._updateTiles = this._updateTiles.bind(this);
-    google.maps.event.addListener(this._map, 'dragend', this._updateTiles);
-    google.maps.event.addListener(this._map, 'zoom_changed', this._updateTiles);
+    this._listeners = [];
+    this._listeners.push(
+      google.maps.event.addListener(this._map, 'dragend', this._updateTiles),
+      google.maps.event.addListener(this._map, 'zoom_changed', this._updateTiles)
+    );
     this.tileSize = 256;
     this._updateTiles();
   },
 
   _removeTileLoader: function() {
-    //TODO: unbind events
-    //TODO: remove tiles
+    for(var i in this._listeners) {
+      google.maps.event.removeListener(this._listeners[i]);
+    }
+    this._removeTiles();
   },
 
   _removeTiles: function () {
@@ -2628,6 +2633,7 @@ GMapsTorqueLayer.prototype = _.extend({},
   onRemove: function() {
     CanvasLayer.prototype.onRemove.call(this);
     this.animator.stop();
+    this._removeTileLoader();
   }
 
 });
@@ -3030,6 +3036,10 @@ L.TorqueLayer = L.CanvasLayer.extend({
         self.redraw();
       });
     }, this);
+  },
+
+  onRemove: function() {
+    this._removeTileLoader();
   },
 
   setBlendMode: function(_) {

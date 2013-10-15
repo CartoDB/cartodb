@@ -228,6 +228,12 @@
       expect(geojson).toEqual(multipoly);
     });
 
+    it("should swicth layer", function() {
+      map.addLayer(layer);
+      layer.set('type', 'torque');
+      expect(mapView.layers[layer.cid] instanceof cdb.geo.GMapsTorqueLayerView).toEqual(true);
+    });
+
 /*
 
     it("should inser layer in specified order", function() {

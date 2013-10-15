@@ -50,6 +50,14 @@ module CartoDB
         runner.success?
       end
 
+      def etag
+        runner.etag
+      end
+
+      def last_modified
+        runner.last_modified
+      end
+
       def move_to_schema(result, schema=DESTINATION_SCHEMA)
         return self if schema == result.schema
         database.execute(%Q{

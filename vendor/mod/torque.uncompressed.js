@@ -494,7 +494,11 @@ exports.torque['torque-reference'] =  {
      for(var i = 0; c && i < c.length; ++i) {
        if(c[i] === callback) remove.push(i);
      }
-     while(i = remove.pop()) c.splice(i, 1);
+     while((i = remove.pop()) !== undefined) c.splice(i, 1);
+  };
+
+  Event.callbacks = function(evt) {
+    return (this._evt_callbacks && this._evt_callbacks[evt]) || [];
   };
 
   exports.torque.Event = Event;
@@ -846,9 +850,9 @@ exports.Profiler = Profiler;
       options = options || {};
       torque.net.get(this.url() + "?q=" + encodeURIComponent(sql) + (extra ? "&" + extra: ''), function (data) {
           if(options.parseJSON) {
-            data = JSON.parse(data.responseText);
+            data = JSON.parse(data && data.responseText);
           }
-          callback(data);
+          callback && callback(data);
       });
     },
 
@@ -960,6 +964,7 @@ exports.Profiler = Profiler;
       var query = format("select {column} from {table} limit 0", this.options);
 
       this.sql(query, function (data) {
+        if (!data) return;
         self.options.is_time = data.fields[self.options.column].type === 'date';
 
         if (self.options.is_time){
@@ -2602,7 +2607,7 @@ GMapsTorqueLayer.prototype = _.extend({},
     if (!this.provider) return 0;
     var times = this.provider.getKeySpan();
     var time = times.start + (times.end - times.start)*(step/this.options.steps);
-    return new Date(time*1000);
+    return new Date(time);
   },
 
   /**
@@ -3109,7 +3114,7 @@ L.TorqueLayer = L.CanvasLayer.extend({
   stepToTime: function(step) {
     var times = this.provider.getKeySpan();
     var time = times.start + (times.end - times.start)*(step/this.options.steps);
-    return new Date(time*1000);
+    return new Date(time);
   },
 
   /**

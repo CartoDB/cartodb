@@ -18,6 +18,7 @@ describe 'OSM regression tests' do
     downloader  = Downloader.new(filepath)
     runner      = Runner.new(@pg_options, downloader)
     runner.run
+    puts runner.report
 
     geometry_type_for(runner).wont_be_nil
   end

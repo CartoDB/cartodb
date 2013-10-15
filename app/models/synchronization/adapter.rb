@@ -44,6 +44,7 @@ module CartoDB
         table.import_cleanup
         table.send(:set_the_geom_column!)
         table.save
+        table.send(:invalidate_varnish_cache)
       end
 
       def success?

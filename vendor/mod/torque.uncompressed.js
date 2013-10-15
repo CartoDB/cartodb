@@ -2473,6 +2473,7 @@ function GMapsTorqueLayer(options) {
   this.pause = this.animator.pause.bind(this.animator);
   this.toggle = this.animator.toggle.bind(this.animator);
   this.setDuration = this.animator.duration.bind(this.animator);
+  this.isRunning = this.animator.isRunning.bind(this.animator);
 
 
   CanvasLayer.call(this, {
@@ -2539,6 +2540,10 @@ GMapsTorqueLayer.prototype = _.extend({},
   setColumn: function(column, isTime) {
     this.provider.setColumn(column, isTime);
     this._reloadTiles();
+  },
+
+  getTimeBounds: function() {
+    return this.provider && this.provider.getKeySpan();
   },
 
   getCanvas: function() {
@@ -2738,7 +2743,7 @@ L.Mixin.TileLoader = {
   },
 
   _removeTileLoader: function() {
-    map.off({
+    this._map.off({
         'moveend': this._updateTiles
     }, this);
     this._removeTiles();
@@ -3023,6 +3028,7 @@ L.TorqueLayer = L.CanvasLayer.extend({
     this.pause = this.animator.pause.bind(this.animator);
     this.toggle = this.animator.toggle.bind(this.animator);
     this.setDuration = this.animator.duration.bind(this.animator);
+    this.isRunning = this.animator.isRunning.bind(this.animator);
 
 
     L.CanvasLayer.prototype.initialize.call(this, options);
@@ -3061,6 +3067,11 @@ L.TorqueLayer = L.CanvasLayer.extend({
     this.provider.setColumn(column, isTime);
     this._reloadTiles();
   },
+
+  getTimeBounds: function() {
+    return this.provider && this.provider.getKeySpan();
+  },
+
 
   /**
    * render the selectef key

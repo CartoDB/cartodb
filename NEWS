@@ -1,3 +1,11 @@
+3.2.04 (15//10/2013)
+-----
+- enable image basemaps
+
+3.2.03 (14//10/2013)
+-----
+- changed CDN urls
+
 3.2.02 (10//10/2013)
 -----
 - fixed click propagation in legends.

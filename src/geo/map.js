@@ -100,7 +100,8 @@ cdb.geo.PlainLayer = cdb.geo.MapLayer.extend({
     type: 'Plain',
     base_type: "plain",
     className: "plain",
-    color: '#FFFFFF'
+    color: '#FFFFFF',
+    image: ''
   }
 });
 

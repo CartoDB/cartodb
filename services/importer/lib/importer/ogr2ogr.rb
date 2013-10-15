@@ -89,7 +89,7 @@ module CartoDB
       end #precision_option
 
       def new_layer_type_option
-        "-nlt GEOMETRY"
+        "-nlt PROMOTE_TO_MULTI"
       end #new_layer_type_option
     end # Ogr2ogr
   end # Importer2

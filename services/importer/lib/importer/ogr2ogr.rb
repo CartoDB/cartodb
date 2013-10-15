@@ -92,7 +92,7 @@ module CartoDB
       end #precision_option
 
       def new_layer_type_option
-        "-nlt geometry"
+        "-nlt PROMOTE_TO_MULTI"
       end #new_layer_type_option
 
       def append_option

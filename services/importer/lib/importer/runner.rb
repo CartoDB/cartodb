@@ -90,6 +90,14 @@ module CartoDB
         downloader.modified?
       end
 
+      def last_modified
+        downloader.last_modified
+      end
+
+      def etag
+        downloader.etag
+      end
+
       def tracker
         @tracker || lambda { |state| }
       end #tracker
@@ -99,7 +107,7 @@ module CartoDB
         results.select(&:success?).length > 0
       end
 
-      attr_reader   :results
+      attr_reader :results
 
       private
  

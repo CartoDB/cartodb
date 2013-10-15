@@ -7,7 +7,6 @@ require_relative './json2csv'
 require_relative './xlsx2csv'
 require_relative './xls2csv'
 require_relative './georeferencer'
-require_relative './osm_processor'
 
 module CartoDB
   module Importer2
@@ -35,7 +34,6 @@ module CartoDB
         job.log "Detected encoding #{encoding}"
         job.log "Using database connection with #{job.concealed_pg_options}"
         ogr2ogr.run
-        #osm_processor.run if source_file.extension == '.osm'
 
         job.log "ogr2ogr output:    #{ogr2ogr.command_output}"
         job.log "ogr2ogr exit code: #{ogr2ogr.exit_code}"
@@ -76,10 +74,6 @@ module CartoDB
         @georeferencer ||= 
           Georeferencer.new(job.db, job.table_name, SCHEMA, job)
       end #georeferencer
-
-      def osm_processor
-        @osm_processor ||= OsmProcessor.new(job, source_file)
-      end
 
       def valid_table_names
         [job.table_name]

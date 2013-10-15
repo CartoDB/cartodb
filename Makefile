@@ -50,7 +50,7 @@ dist/cartodb.ie.css: css
 clean: 
 	rm -rf dist/*
 
-css: $(CSS_FILES) 
+css: $(CSS_FILES) $(CSS_FILES_IE)
 	rm -rf themes/css/cartodb.css themes/css/cartodb.ie.css
 	cat $(CSS_FILES) > themes/css/cartodb.css
 	cat $(CSS_FILES_IE) > themes/css/cartodb.ie.css

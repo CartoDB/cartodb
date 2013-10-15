@@ -20,7 +20,10 @@ module CartoDB
 
       def source_files
         LAYER_NAMES.map { |layer_name|
-          file = SourceFile.new(source_file.send :filepath)
+          file = SourceFile.new(
+            source_file.send(:filepath),
+            "#{source_file.name}_#{layer_name}"
+          )
           file.layer = layer_name
           file
         }

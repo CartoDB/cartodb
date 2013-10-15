@@ -31,8 +31,7 @@ module CartoDB
       end #path
 
       def target_schema
-        return 'public' if extension == '.osm'
-        return 'cdb_importer'
+        'cdb_importer'
       end #target_schema
 
       def empty?

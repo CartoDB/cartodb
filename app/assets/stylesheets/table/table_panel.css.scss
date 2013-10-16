@@ -1225,6 +1225,7 @@ a.info {
 
           &.bubble  { background: image-url('layout/wizard-bubble.png') no-repeat;}
           &.density { background: image-url('layout/wizard-density-hex.png') no-repeat;}
+          &.torque { background: image-url('layout/wizard-torque.png') no-repeat;}
 
           &:hover {
             border-color:$cGray2;

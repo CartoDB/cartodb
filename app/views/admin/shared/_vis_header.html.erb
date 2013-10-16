@@ -11,10 +11,10 @@
       <div class="description">
         <p><a href="#/change-description"></a></p>
       </div>
-      <nav>
+      <!--nav>
         <%= link_to "Table",    "#/table", :class => "smaller strong tab selected" %>
         <%= link_to "Map view", "#/map",   :class => "smaller strong tab" %>
-      </nav>
+      </nav-->
     </div>
     <div class="right">
       <ul class="options">
@@ -22,7 +22,12 @@
         <li><%= link_to "visualize", "#/visualize", :class => "rounded share" %></li>
       </ul>
     </div>
-    <div class="shadow"></div>
+    <div class="table-navigation">
+      <nav>
+        <%= link_to "Table",    "#/table", :class => "smaller strong tab selected" %>
+        <%= link_to "Map view", "#/map",   :class => "smaller strong tab" %>
+      </nav>
+    </div>
   </div>
   <div class="globalerror"></div>
 </header>

@@ -5,7 +5,7 @@ CartoDB tests are based on [Ruby Spec](http://rspec.info/).
 The procedure to run them is as follows:
 
   # Prepare test database
-  bundle exec rake db:test:prepare
+  bundle exec rake cartodb:test:prepare
 
   # Run all specs
   bundle exec rspec

@@ -21,6 +21,7 @@ var GMapsTorqueLayerView = function(layerModel, gmapsMap) {
       sql_api_port: layerModel.get('sql_api_port'),
       animationDuration: layerModel.get('torque-duration'),
       steps: layerModel.get('torque-steps'),
+      sql: layerModel.get('query'),
       extra_params: {
         api_key: extra ? extra.map_key: ''
       },
@@ -45,6 +46,7 @@ _.extend(
     changed['torque-duration'] && this.setDuration(this.model.get('torque-duration'));
     changed['torque-steps'] && this.setSteps(this.model.get('torque-steps'));
     changed['property'] && this.setColumn(this.model.get('property'));
+    changed['query'] && this.setSQL(this.model.get('query'));
   },
 
   refreshView: function() {

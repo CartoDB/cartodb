@@ -901,7 +901,7 @@ exports.Profiler = Profiler;
         "  SELECT ST_SnapToGrid(i.the_geom_webmercator, p.res) g" +
         ", {countby} c" +
         ", floor(({column_conv} - {start})/{step}) d" +
-        "  FROM {table} i, par p " +
+        "  FROM ({_sql}) i, par p " +
         "  WHERE i.the_geom_webmercator && p.ext " +
         "  GROUP BY g, d" +
         ") " +
@@ -916,7 +916,8 @@ exports.Profiler = Profiler;
         zoom: zoom,
         x: coord.x,
         y: coord.y,
-        column_conv: column_conv
+        column_conv: column_conv,
+        _sql: this.getSQL()
       });
 
       var self = this;
@@ -942,6 +943,14 @@ exports.Profiler = Profiler;
       this._fetchKeySpan();
     },
 
+    setSQL: function(sql) {
+      if (this.options.sql != sql) {
+        this.options.sql = sql;
+        this._ready = false;
+        this._fetchKeySpan();
+      }
+    },
+
     setSteps: function(steps) {
       if (this.options.steps !== steps) {
         this.options.steps = steps;
@@ -953,6 +962,10 @@ exports.Profiler = Profiler;
       return this.options.bounds;
     },
 
+    getSQL: function() {
+      return this.options.sql || "select * from " + this.options.table;
+    },
+
     //
     // the data range could be set by the user though ``start``
     // option. It can be fecthed from the table when the start
@@ -961,7 +974,10 @@ exports.Profiler = Profiler;
     _fetchKeySpan: function() {
       var self = this;
       var max_col, min_col, max_tmpl, min_tmpl;
-      var query = format("select {column} from {table} limit 0", this.options);
+      var query = format("select {column} from ({sql}) __torque_wrap_sql limit 0", {
+        column: this.options.column,
+        sql: self.getSQL()
+      });
 
       this.sql(query, function (data) {
         if (!data) return;
@@ -978,10 +994,10 @@ exports.Profiler = Profiler;
         max_col = format(max_tmpl, { column: self.options.column });
         min_col = format(min_tmpl, { column: self.options.column });
 
-        var sql = format("SELECT st_xmax(st_envelope(st_collect(the_geom))) xmax,st_ymax(st_envelope(st_collect(the_geom))) ymax, st_xmin(st_envelope(st_collect(the_geom))) xmin, st_ymin(st_envelope(st_collect(the_geom))) ymin, {max_col} max, {min_col} min FROM {table}", {
+        var sql = format("SELECT st_xmax(st_envelope(st_collect(the_geom))) xmax,st_ymax(st_envelope(st_collect(the_geom))) ymax, st_xmin(st_envelope(st_collect(the_geom))) xmin, st_ymin(st_envelope(st_collect(the_geom))) ymin, {max_col} max, {min_col} min FROM ({sql}) __torque_wrap_sql", {
           max_col: max_col,
           min_col: min_col,
-          table: self.options.table
+          sql: self.getSQL()
         });
 
         self.sql(sql, function(data) {
@@ -2527,6 +2543,15 @@ GMapsTorqueLayer.prototype = _.extend({},
 
   },
 
+  setSQL: function(sql) {
+    if (!this.provider || !this.provider.setSQL) {
+      throw new Error("this provider does not support SQL");
+    }
+    this.provider.setSQL(sql);
+    this._reloadTiles();
+    return this;
+  },
+
   setBlendMode: function(_) {
     this.renderer.setBlendMode(_);
     this.redraw();
@@ -3051,6 +3076,15 @@ L.TorqueLayer = L.CanvasLayer.extend({
 
   onRemove: function() {
     this._removeTileLoader();
+  },
+
+  setSQL: function(sql) {
+    if (!this.provider || !this.provider.setSQL) {
+      throw new Error("this provider does not support SQL");
+    }
+    this.provider.setSQL(sql);
+    this._reloadTiles();
+    return this;
   },
 
   setBlendMode: function(_) {

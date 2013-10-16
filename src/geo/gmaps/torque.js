@@ -52,7 +52,8 @@ _.extend(
   },
 
   onTilesLoaded: function() {
-    this.trigger('load');
+    //this.trigger('load');
+    Backbone.Events.trigger.call(this, 'load');
   }
 
 });

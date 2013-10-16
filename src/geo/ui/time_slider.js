@@ -7,7 +7,7 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
     " <ul> " +
     "   <li><a href='#/stop' class='button stop'>pause</a></li>" +
     "   <li><p class='value'>10/20</p></li>" +
-    "   <li><div class='slider-wrapper'><div class='slider'></div></div></li>" +
+    "   <li class='last'><div class='slider-wrapper'><div class='slider'></div></div></li>" +
     " </ul> "
   ,
 
@@ -28,7 +28,7 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
       var tb = self.torqueLayer.getTimeBounds();
       if (tb && tb.start !== undefined) {
         var f = self.formaterForRange(tb.start, tb.end);
-        self.$('.date').text(f(changes.time));
+        self.$('.value').text(f(changes.time));
       }
     }
 

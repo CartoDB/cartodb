@@ -1035,21 +1035,26 @@
   div.cartodb-timeslider ul {
     display:block;
     height:40px;
+    margin:0;
+    padding:0;
     line-height:40px;
     list-style:none;
   }
 
   div.cartodb-timeslider ul li {
     display:inline-block;
-    display: -moz-inline-stack;
     zoom: 1;
     *display: inline;
-    vertical-align:middle;
+    vertical-align:top;
     height:40px;
     _height:40px;
     width:auto;
     line-height:40px;
     border-right:1px solid #E5E5E5;
+  }
+
+  div.cartodb-timeslider ul li.last {
+    border-right:none;
   }
 
   div.cartodb-timeslider a.button {
@@ -1077,7 +1082,8 @@
   div.cartodb-timeslider p {
     width:75px;
     height:40px;
-    padding-right:5px;
+    margin:0;
+    padding:0 5px 0 0;
     line-height:40px;
     font-size:13px;
     font-weight:bold;

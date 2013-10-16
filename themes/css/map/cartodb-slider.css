@@ -1,33 +1,24 @@
 
 div.cartodb-timeslider .slider-wrapper {
   display:inline-block;
+  zoom: 1;
+  *display: inline;
+  vertical-align:top;
   width:298px;
   height:4px;
+  _height:4px;
   padding:18px 15px;
 }
-
 
 div.cartodb-timeslider .slider {
   width:298px;
   height:4px;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-.ui-helper-hidden {
+div.cartodb-timeslider .ui-helper-hidden {
   display: none;
 }
-.ui-helper-hidden-accessible {
+div.cartodb-timeslider .ui-helper-hidden-accessible {
   border: 0;
   clip: rect(0 0 0 0);
   height: 1px;
@@ -37,7 +28,7 @@ div.cartodb-timeslider .slider {
   position: absolute;
   width: 1px;
 }
-.ui-helper-reset {
+div.cartodb-timeslider .ui-helper-reset {
   margin: 0;
   padding: 0;
   border: 0;
@@ -47,19 +38,19 @@ div.cartodb-timeslider .slider {
   font-size: 100%;
   list-style: none;
 }
-.ui-helper-clearfix:before,
-.ui-helper-clearfix:after {
+div.cartodb-timeslider .ui-helper-clearfix:before,
+div.cartodb-timeslider .ui-helper-clearfix:after {
   content: "";
   display: table;
   border-collapse: collapse;
 }
-.ui-helper-clearfix:after {
+div.cartodb-timeslider .ui-helper-clearfix:after {
   clear: both;
 }
-.ui-helper-clearfix {
+div.cartodb-timeslider .ui-helper-clearfix {
   min-height: 0;
 }
-.ui-helper-zfix {
+div.cartodb-timeslider .ui-helper-zfix {
   width: 100%;
   height: 100%;
   top: 0;
@@ -69,47 +60,58 @@ div.cartodb-timeslider .slider {
   filter:Alpha(Opacity=0);
 }
 
-.ui-front {
+div.cartodb-timeslider .ui-front {
   z-index: 100;
 }
 
-.ui-state-disabled {
+div.cartodb-timeslider .ui-state-disabled {
   cursor: default !important;
 }
 
-.ui-icon {
+div.cartodb-timeslider .ui-icon {
   display: block;
   text-indent: -99999px;
   overflow: hidden;
   background-repeat: no-repeat;
 }
 
-.ui-widget-overlay {
+div.cartodb-timeslider .ui-widget-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
 }
-.ui-slider {
+div.cartodb-timeslider .ui-slider {
   background-color: #E0E0E0;
   position: relative;
   text-align: left;
-}
-.ui-slider .ui-slider-handle {
-  position: absolute;
-  z-index: 2;
-  width: 10px;
-  height: 11px;
-  cursor: default;
-  background:url('../img/slider.png') no-repeat 0 0 white;
-  border:1px solid #555555;
   border-radius:2px;
   -webkit-border-radius:2px;
   -moz-border-radius:2px;
   -o-border-radius:2px;
 }
-.ui-slider .ui-slider-range {
+div.cartodb-timeslider .ui-slider .ui-slider-handle {
+  position: absolute;
+  z-index: 2;
+  width: 9px;
+  height: 10px;
+  cursor: default;
+  background:url('../img/slider.png') no-repeat -98px -18px white;
+  border:1px solid #555555;
+  border-radius:2px;
+  -webkit-border-radius:2px;
+  -moz-border-radius:2px;
+  -o-border-radius:2px;
+  outline:none;
+}
+
+div.cartodb-timeslider .ui-slider .ui-slider-handle:hover {
+  cursor:pointer;
+  background-position:-112px -18px;
+}
+
+div.cartodb-timeslider .ui-slider .ui-slider-range {
   position: absolute;
   z-index: 1;
   font-size: .7em;
@@ -117,47 +119,51 @@ div.cartodb-timeslider .slider {
   border: 0;
   background-position: 0 0;
   background-color:#397DBA;
+  border-radius:2px;
+  -webkit-border-radius:2px;
+  -moz-border-radius:2px;
+  -o-border-radius:2px;
 }
 
-.ui-slider.ui-state-disabled .ui-slider-handle,
-.ui-slider.ui-state-disabled .ui-slider-range {
+div.cartodb-timeslider .ui-slider.ui-state-disabled .ui-slider-handle,
+div.cartodb-timeslider .ui-slider.ui-state-disabled .ui-slider-range {
   filter: inherit;
 }
 
-.ui-slider-horizontal {
-  height: .8em;
+div.cartodb-timeslider .ui-slider-horizontal {
+  height: 4px;
 }
-.ui-slider-horizontal .ui-slider-handle {
-  top: -5px;
+div.cartodb-timeslider .ui-slider-horizontal .ui-slider-handle {
+  top: -4px;
   margin-left: -6px;
 }
-.ui-slider-horizontal .ui-slider-range {
+div.cartodb-timeslider .ui-slider-horizontal .ui-slider-range {
   top: 0;
   height: 100%;
 }
-.ui-slider-horizontal .ui-slider-range-min {
+div.cartodb-timeslider .ui-slider-horizontal .ui-slider-range-min {
   left: 0;
 }
-.ui-slider-horizontal .ui-slider-range-max {
+div.cartodb-timeslider .ui-slider-horizontal .ui-slider-range-max {
   right: 0;
 }
 
-.ui-slider-vertical {
+div.cartodb-timeslider .ui-slider-vertical {
   width: .8em;
   height: 100px;
 }
-.ui-slider-vertical .ui-slider-handle {
+div.cartodb-timeslider .ui-slider-vertical .ui-slider-handle {
   left: -.3em;
   margin-left: 0;
   margin-bottom: -.6em;
 }
-.ui-slider-vertical .ui-slider-range {
+div.cartodb-timeslider .ui-slider-vertical .ui-slider-range {
   left: 0;
   width: 100%;
 }
-.ui-slider-vertical .ui-slider-range-min {
+div.cartodb-timeslider .ui-slider-vertical .ui-slider-range-min {
   bottom: 0;
 }
-.ui-slider-vertical .ui-slider-range-max {
+div.cartodb-timeslider .ui-slider-vertical .ui-slider-range-max {
   top: 0;
 }

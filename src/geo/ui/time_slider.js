@@ -1,17 +1,18 @@
 cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
 
   DEFAULT_OFFSET_TOP: 30,
-  defaultTemplate: 
-    "<div>" +
-    "  <a href='#' class='playpause'>pause</a>" +
-    "  <span class='date'>10/20</span>" +
-    "  <div class='slider'></div>" +
-    "</div>" 
-  ,
   className: 'cartodb-timeslider',
+  
+  defaultTemplate: 
+    " <ul> " +
+    "   <li><a href='#/stop' class='button stop'>pause</a></li>" +
+    "   <li><p class='value'>10/20</p></li>" +
+    "   <li><div class='slider-wrapper'><div class='slider'></div></div></li>" +
+    " </ul> "
+  ,
 
   events: {
-    'click .playpause': 'toggleTime'
+    'click .button': 'toggleTime'
   },
 
   initialize: function() {
@@ -67,6 +68,7 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
     var torqueLayer = this.torqueLayer;
     var slider = this.$(".slider");
     slider.slider({
+      range: 'min',
       min: 0,
       max: this.torqueLayer.options.steps,
       value: 0,
@@ -78,7 +80,10 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
   toggleTime: function(e) {
     this.killEvent(e);
     this.torqueLayer.toggle();
-    this.$('.playpause').html(this.torqueLayer.isRunning() ? 'pause': 'play');
+    this.$('.button')
+      [(this.torqueLayer.isRunning() ? 'addClass': 'removeClass')]('stop')
+      .attr('href','#/' + (this.torqueLayer.isRunning() ? 'pause': 'play'))
+      .html(this.torqueLayer.isRunning() ? 'pause': 'play');
   },
 
   enable: function() {},

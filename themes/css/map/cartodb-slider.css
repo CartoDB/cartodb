@@ -1,7 +1,29 @@
-/*! jQuery UI - v1.10.3 - 2013-10-14
-* Includes: jquery.ui.core.css, jquery.ui.slider.css
-/* Layout helpers
-----------------------------------*/
+
+div.cartodb-timeslider .slider-wrapper {
+  display:inline-block;
+  width:298px;
+  height:4px;
+  padding:18px 15px;
+}
+
+
+div.cartodb-timeslider .slider {
+  width:298px;
+  height:4px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 .ui-helper-hidden {
   display: none;
 }
@@ -35,7 +57,7 @@
   clear: both;
 }
 .ui-helper-clearfix {
-  min-height: 0; /* support: IE7 */
+  min-height: 0;
 }
 .ui-helper-zfix {
   width: 100%;
@@ -51,18 +73,10 @@
   z-index: 100;
 }
 
-
-/* Interaction Cues
-----------------------------------*/
 .ui-state-disabled {
   cursor: default !important;
 }
 
-
-/* Icons
-----------------------------------*/
-
-/* states and images */
 .ui-icon {
   display: block;
   text-indent: -99999px;
@@ -70,11 +84,6 @@
   background-repeat: no-repeat;
 }
 
-
-/* Misc visuals
-----------------------------------*/
-
-/* Overlays */
 .ui-widget-overlay {
   position: fixed;
   top: 0;
@@ -83,17 +92,22 @@
   height: 100%;
 }
 .ui-slider {
-  background-color: #AAA;
+  background-color: #E0E0E0;
   position: relative;
   text-align: left;
 }
 .ui-slider .ui-slider-handle {
   position: absolute;
   z-index: 2;
-  width: 1.2em;
-  height: 1.2em;
+  width: 10px;
+  height: 11px;
   cursor: default;
-  background-color: black;
+  background:url('../img/slider.png') no-repeat 0 0 white;
+  border:1px solid #555555;
+  border-radius:2px;
+  -webkit-border-radius:2px;
+  -moz-border-radius:2px;
+  -o-border-radius:2px;
 }
 .ui-slider .ui-slider-range {
   position: absolute;
@@ -102,9 +116,9 @@
   display: block;
   border: 0;
   background-position: 0 0;
+  background-color:#397DBA;
 }
 
-/* For IE8 - See #6727 */
 .ui-slider.ui-state-disabled .ui-slider-handle,
 .ui-slider.ui-state-disabled .ui-slider-range {
   filter: inherit;
@@ -114,8 +128,8 @@
   height: .8em;
 }
 .ui-slider-horizontal .ui-slider-handle {
-  top: -.3em;
-  margin-left: -.6em;
+  top: -5px;
+  margin-left: -6px;
 }
 .ui-slider-horizontal .ui-slider-range {
   top: 0;

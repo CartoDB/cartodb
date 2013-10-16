@@ -82,6 +82,11 @@
       return this;
     },
 
+    steps: function(_) {
+      this.options.steps = _;
+      return this.rescale();
+    },
+
     step: function(s) {
       if(arguments.length === 0) return this.range(this.domain(this._time));
       this._time = this.domainInv(this.rangeInv(s));
@@ -2106,7 +2111,6 @@ CanvasLayer.prototype.repositionCanvas_ = function() {
   var projection = this.getProjection();
   var divTopLeft = projection.fromLatLngToDivPixel(this.topLeft_);
 
-  console.log(this.topLeft_.lng(), divTopLeft.x);
   // when the zoom level is low, more than one map can be shown in the screen
   // so the canvas should be attach to the map with more are in the screen
   var mapSize = (1 << this.getMap().getZoom())*256;
@@ -2559,6 +2563,7 @@ GMapsTorqueLayer.prototype = _.extend({},
 
   setSteps: function(steps) {
     this.provider.setSteps(steps);
+    this.animator.steps(steps);
     this._reloadTiles();
   },
 
@@ -3094,6 +3099,7 @@ L.TorqueLayer = L.CanvasLayer.extend({
 
   setSteps: function(steps) {
     this.provider.setSteps(steps);
+    this.animator.steps(steps);
     this._reloadTiles();
   },
 

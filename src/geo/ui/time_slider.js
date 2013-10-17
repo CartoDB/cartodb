@@ -50,12 +50,12 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
   formaterForRange: function(start, end) {
     start = start.getTime ? start.getTime(): start;
     end = end.getTime ? end.getTime(): end;
-    var span = (start - end)/1000;
+    var span = (end - start)/1000;
     var ONE_DAY = 3600*24;
     function pad(n) { return n < 10 ? '0' + n : n; };
     // lest than a day
     if (span < ONE_DAY) return function(t) { return pad(t.getUTCHours()) + ":" + pad(t.getUTCMinutes()); };
-    return function(t) { return pad(t.getUTCMonth() + 1) + ":" + pad(t.getUTCFullYear()); };
+    return function(t) { return pad(t.getUTCMonth() + 1) + "/" + pad(t.getUTCFullYear()); };
   },
 
   _slide: function(e, ui) {

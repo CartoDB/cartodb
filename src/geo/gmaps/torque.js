@@ -46,7 +46,7 @@ _.extend(
     changed['torque-duration'] && this.setDuration(this.model.get('torque-duration'));
     changed['torque-steps'] && this.setSteps(this.model.get('torque-steps'));
     changed['property'] && this.setColumn(this.model.get('property'));
-    changed['query'] && this.setSQL(this.model.get('query'));
+    'query' in changed && this.setSQL(this.model.get('query'));
   },
 
   refreshView: function() {

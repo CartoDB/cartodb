@@ -69,16 +69,17 @@
       this.domain = this.domainInv.invert();
       this.range = torque.math.linear(0, this.options.steps);
       this.rangeInv = this.range.invert();
+      this.time(this._time);
       return this;
     },
 
     duration: function(_) {
       if (!arguments.length)  return this.options.animationDuration;
       this.options.animationDuration = _;
-      this.rescale();
       if (this.time() > _) {
         this.time(0);
       }
+      this.rescale();
       return this;
     },
 
@@ -2534,6 +2535,8 @@ GMapsTorqueLayer.prototype = _.extend({},
       self.fire("change:bounds", {
         bounds: self.provider.getBounds()
       });
+      self.animator.rescale();
+      self.setKey(self.key);
     };
 
     this.provider = new this.providers[this.options.provider](this.options);
@@ -2557,7 +2560,7 @@ GMapsTorqueLayer.prototype = _.extend({},
   },
 
   setBlendMode: function(_) {
-    this.renderer.setBlendMode(_);
+    this.renderer && this.renderer.setBlendMode(_);
     this.redraw();
   },
 
@@ -3077,6 +3080,15 @@ L.TorqueLayer = L.CanvasLayer.extend({
         self.redraw();
       });
     }, this);
+
+    this.options.ready = function() {
+      self.fire("change:bounds", {
+        bounds: self.provider.getBounds()
+      });
+      self.animator.rescale();
+      self.setKey(self.key);
+    };
+
   },
 
   onRemove: function() {

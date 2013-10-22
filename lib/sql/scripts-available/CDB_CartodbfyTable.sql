@@ -48,7 +48,7 @@ BEGIN
     had_column := FALSE;
     BEGIN
       sql := 'ALTER TABLE ' || reloid::text || ' ADD cartodb_id SERIAL NOT NULL UNIQUE';
-      RAISE NOTICE 'Running %', sql;
+      RAISE DEBUG 'Running %', sql;
       EXECUTE sql;
       EXIT cartodb_id_setup;
     EXCEPTION
@@ -80,7 +80,7 @@ BEGIN
           sql := sql || ', ADD unique(cartodb_id)';
         END IF;
         BEGIN
-          RAISE NOTICE 'Running %', sql;
+          RAISE DEBUG 'Running %', sql;
           EXECUTE sql;
           EXIT cartodb_id_setup;
         EXCEPTION
@@ -99,7 +99,7 @@ BEGIN
         new_name := '_cartodb_id' || i;
         BEGIN
           sql := 'ALTER TABLE ' || reloid::text || ' RENAME COLUMN cartodb_id TO ' || new_name;
-          RAISE NOTICE 'Running %', sql;
+          RAISE DEBUG 'Running %', sql;
           EXECUTE sql;
         EXCEPTION
         WHEN duplicate_column THEN
@@ -123,7 +123,7 @@ BEGIN
       BEGIN
         sql := 'ALTER TABLE ' || reloid::text || ' ADD ' || rec.cname
           || ' TIMESTAMPTZ NOT NULL DEFAULT now()';
-        RAISE NOTICE 'Running %', sql;
+        RAISE DEBUG 'Running %', sql;
         EXECUTE sql;
         EXIT column_setup;
       EXCEPTION
@@ -147,7 +147,7 @@ BEGIN
           sql := 'ALTER TABLE ' || reloid::text || ' ALTER ' || rec.cname
             || ' SET NOT NULL, ALTER ' || rec.cname || ' SET DEFAULT now()';
           BEGIN
-            RAISE NOTICE 'Running %', sql;
+            RAISE DEBUG 'Running %', sql;
             EXECUTE sql;
             EXIT column_setup;
           EXCEPTION
@@ -165,7 +165,7 @@ BEGIN
           new_name := '_' || rec.cname || i;
           BEGIN
             sql := 'ALTER TABLE ' || reloid::text || ' RENAME COLUMN ' || rec.cname || ' TO ' || new_name;
-            RAISE NOTICE 'Running %', sql;
+            RAISE DEBUG 'Running %', sql;
             EXECUTE sql;
           EXCEPTION
           WHEN duplicate_column THEN
@@ -189,10 +189,10 @@ BEGIN
       BEGIN
         sql := 'ALTER TABLE ' || reloid::text || ' ADD ' || rec.cname
           || ' GEOMETRY(geometry,' || rec.csrid || ')';
-        RAISE NOTICE 'Running %', sql;
+        RAISE DEBUG 'Running %', sql;
         EXECUTE sql;
         sql := 'CREATE INDEX ON ' || reloid::text || ' USING GIST ( ' || rec.cname || ')';
-        RAISE NOTICE 'Running %', sql;
+        RAISE DEBUG 'Running %', sql;
         EXECUTE sql;
         exists_geom_cols := array_append(exists_geom_cols, false);
         EXIT column_setup;
@@ -226,7 +226,7 @@ BEGIN
               sql := 'ALTER TABLE ' || reloid::text || ' ALTER ' || rec.cname
                 || ' TYPE geometry(' || rec2.gtype || ',' || rec.csrid || ') USING ST_Transform('
                 || rec.cname || ',' || rec.csrid || ')';
-              RAISE NOTICE 'Running %', sql;
+              RAISE DEBUG 'Running %', sql;
               EXECUTE sql;
             EXCEPTION
             WHEN others THEN
@@ -249,7 +249,7 @@ BEGIN
         THEN -- {
           BEGIN
             sql := 'CREATE INDEX ON ' || reloid::text || ' USING GIST ( ' || rec.cname || ')';
-            RAISE NOTICE 'Running %', sql;
+            RAISE DEBUG 'Running %', sql;
             EXECUTE sql;
           EXCEPTION
           WHEN others THEN
@@ -269,7 +269,7 @@ BEGIN
         new_name := '_' || rec.cname || i;
         BEGIN
           sql := 'ALTER TABLE ' || reloid::text || ' RENAME COLUMN ' || rec.cname || ' TO ' || new_name;
-          RAISE NOTICE 'Running %', sql;
+          RAISE DEBUG 'Running %', sql;
           EXECUTE sql;
         EXCEPTION
         WHEN duplicate_column THEN

@@ -1,0 +1,82 @@
+
+  body, html, #map {
+    width:100%;
+    height:100%;
+    margin:0;
+    padding:0;
+  }
+
+  #toolbar {
+    position:absolute;
+    top:30px; right:30px;
+    width:160px;
+    z-index:10;
+    background:white;
+    border:1px solid #999999;
+    border-radius:3px;
+    -moz-border-radius:3px;
+    -webkit-border-radius:3px;
+    box-shadow:rgba(0, 0, 0, 0.2) 0 0 4px 2px;
+    font-size:13px;
+  }
+
+  #toolbar > a {
+    display:block;
+    padding:5px 22px 5px 10px;
+    font-style:italic;
+    color:#CCC;
+    text-decoration: none;
+    cursor:default;
+    text-overflow: ellipsis;
+    overflow:hidden;
+    white-space: nowrap;
+  }
+
+  #toolbar > a:after {
+    position:absolute;
+    content:'';
+    top:12px; right:10px;
+    border-left:3px solid transparent;
+    border-right:3px solid transparent;
+    border-top:3px solid #999;
+  }
+
+  #toolbar > a.selected {
+    font-style:normal;
+    color:#666;
+  }
+
+  #toolbar > nav {
+    display:none;
+    width:100%;
+    margin:5px 0 0;
+  }
+
+  #toolbar > nav a {
+    display:block;
+    padding:5px 10px;
+    color:#999;
+    text-overflow: ellipsis;
+    overflow:hidden;
+    white-space: nowrap;
+    border:none;
+    text-decoration: none;
+  }
+
+  #toolbar > nav a:hover {
+    color:#666;
+    text-decoration: underline;
+  }
+
+  #toolbar:hover > a {
+    border-bottom:1px solid #DEDEDE;
+  }
+
+  #toolbar:hover > a:after {
+    border-bottom:3px solid #999;
+    border-top:none;
+  }
+
+  #toolbar:hover nav {
+    display:block;
+  }

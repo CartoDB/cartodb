@@ -9,14 +9,12 @@
       },
 
       _initElements: function() {
-        this.toolbar = new Toolbar({ el: this.$('#toolbar') });
-        this.map = new Map({ el: this.$('#map'), toolbar: this.toolbar });
+        this.filters = new Filters({ el: this.$('#filters') });
+        this.map = new Map({ el: this.$('#map'), filters: this.filters });
       }
-    })
-
+    });
 
     window.template = new Template({ el: document.body });
-
   })
 
 
@@ -29,7 +27,7 @@
 
     initialize: function() {
       _.bindAll(this, '_initMap');
-      this.toolbar = this.options.toolbar;
+      this.filters = this.options.filters;
       this._getVizJson();
       this._bindEvents();
     },
@@ -54,7 +52,7 @@
     },
 
     _bindEvents: function() {
-      this.toolbar.bind('change', this._changeLayerGroup, this);
+      this.filters.bind('change', this._changeLayerGroup, this);
     },
 
     _changeLayerGroup: function(layers) {
@@ -74,10 +72,10 @@
 
 
   /**
-   *  Toolbar
+   *  Filters
    */
 
-  var Toolbar = cdb.core.View.extend({
+  var Filters = cdb.core.View.extend({
 
     initialize: function() {
       _.bindAll(this, 'render');
@@ -93,20 +91,27 @@
       var buttons = data.interactions;
 
       for (var i = 0, l = buttons.length; i < l; i++) {
-        var a = new ToolbarItem({ data: buttons[i] });
+        var a = new FiltersItem({ data: buttons[i] });
         a.bind('change', this._triggerChange, this)
         self.addView(a);
-        self.$('nav').append(a.render().el);
+        self.$('ul').append(a.render().el);
       }
 
       return this;
     },
 
     _triggerChange: function(d) {
-      this.$('> a')
-        .addClass('selected')
-        .text(d.text);
+      this._setSelectedFilter(d);
       this.trigger('change', d.layers, this);
+    },
+
+    _setSelectedFilter: function(d) {
+      this.$('ul li a').removeClass('selected');
+      this.$('ul li a').each(function(i,a) {
+        if ($(a).text() == d.text && $(a).attr('class') == d.className) {
+          $(a).addClass('selected')
+        }
+      })
     },
 
     _getActions: function() {
@@ -118,15 +123,14 @@
         }
       })
     }
-
   })
 
 
 
 
-  var ToolbarItem = cdb.core.View.extend({
+  var FiltersItem = cdb.core.View.extend({
 
-    tagName: 'a',
+    tagName: 'li',
 
     events: {
       'click': '_onClick'
@@ -138,10 +142,14 @@
     },
 
     render: function() {
-      this.$el
+      var $a = $('<a>');
+      $a
         .addClass(this.data.className)
         .text(this.data.text)
         .attr('href', '#/' + this.data.text.replace(/ /gi,'-'));
+
+      this.$el.append($a);
+
       return this;
     },
 

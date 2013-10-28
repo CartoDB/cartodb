@@ -31,6 +31,7 @@
 //= require_tree ../../../lib/assets/javascripts/cartodb/common
 //= require ../../../lib/assets/javascripts/cartodb/table/right_menu
 
+//= require ../../../lib/assets/javascripts/cartodb/table/menu_module
 //= require ../../../lib/assets/javascripts/cartodb/table/menu_modules/carto_editor
 //= require ../../../lib/assets/javascripts/cartodb/table/menu_modules/carto_wizard
 //= require ../../../lib/assets/javascripts/cartodb/table/menu_modules/wizards/color_wizard

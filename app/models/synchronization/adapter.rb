@@ -44,10 +44,19 @@ module CartoDB
         table.import_cleanup
         table.send(:set_the_geom_column!)
         table.save
+        table.send(:invalidate_varnish_cache)
       end
 
       def success?
         runner.success?
+      end
+
+      def etag
+        runner.etag
+      end
+
+      def last_modified
+        runner.last_modified
       end
 
       def move_to_schema(result, schema=DESTINATION_SCHEMA)

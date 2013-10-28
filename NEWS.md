@@ -1,3 +1,37 @@
+2.3.1
+-----
+* Improvements
+  * A way to change the name of the layers used in a visualization
+  * Update CDB_UserTables() to return name, permissions
+  * Possibility of adding a pattern image as map background.
+  * Load OSM files through ogr2ogr
+  * [importer] Use PROMOTE_TO_MULTI as geometry when loading files through ogr2ogr
+
+* Fixed Bugs
+  * More than one upgrade message on dashboard
+  * Can't see the trial reminder when having 0 tables
+  * Tiles from private tables can be seen without api_key
+  * Wrong error message when being over table or disk quota
+  * Changing the api key doesn't invalidate requests with the old api key
+  * Hook-up importer cache mechanisms with synchronizations
+  * Sync dialog is not shown when importing a csv from dropbox (private file)
+  * Labels on the intensity map legend shouldn't be synced never
+  * Replace 'sync' term in the legend editor with 'lock'
+  * Change side of the dropbox and gdrive buttons, they will be at right, and when any file is selected, move them to left
+  * Dashboard table's sync indicator is not aligned correctly.
+  * '...' is missing from the Sync tables item on the table options menu
+  * Change pulse animation for synced tables
+  * Timezone skew on sync tables display
+  * When sync table fails, error should be red or other color
+  * Change new CartoDB text border opacity from embed maps
+  * If the gdrive api_key is empty don't show the gdrive import tab
+  * [importer] Make Content-Disposition regex more permissive
+  * The "Error with sync" link in the dashboard should stop the propagation of the click
+  * Google Drive API key shouldn't be needed on Development
+  * Fix current front-end failed tests
+  * Table names within layer selector in embed view should be the table name alias if they are available
+  * Merging numeric columns throws an error
+
 2.3.0
 -----
 * Improvements

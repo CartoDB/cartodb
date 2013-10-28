@@ -1223,6 +1223,12 @@ a.info {
             &.line, &.line-line { background: image-url('layout/wizard-color-polyline.png') no-repeat;}
           }
 
+          &.category {
+            background: image-url('layout/wizard-category.png') no-repeat;
+            &.polygon { background: image-url('layout/wizard-category-polygon.png') no-repeat;}
+            &.line { background: image-url('layout/wizard-category-polyline.png') no-repeat;}
+          }
+
           &.bubble  { background: image-url('layout/wizard-bubble.png') no-repeat;}
           &.density { background: image-url('layout/wizard-density-hex.png') no-repeat;}
 

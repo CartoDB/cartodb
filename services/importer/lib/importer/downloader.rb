@@ -60,7 +60,6 @@ module CartoDB
 
         response  = download
         headers   = response.headers
-        puts headers.inspect
         data      = StringIO.new(response.response_body)
         name      = name_from(headers, url)
 
@@ -97,7 +96,11 @@ module CartoDB
       end
 
       def download
-        Typhoeus.get(translate(url), typhoeus_options)
+        response = Typhoeus.get(translate(url), typhoeus_options)
+        while response.headers['location']
+          response = Typhoeus.get(translate(url), typhoeus_options)
+        end
+        response
       end
 
       def name_from(headers, url)

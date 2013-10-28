@@ -801,8 +801,14 @@
                       vertical-align:top;
                       text-decoration:none;
                       cursor:default;
-                      border-bottom:1px solid transparent;
+
+                      &:hover {
+                        cursor:pointer;
+                        border-bottom:1px dotted #E7BF5B;
+                      }
                     }
+
+
 
                     &.failure {
                       .msg {

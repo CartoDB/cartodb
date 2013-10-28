@@ -16,7 +16,7 @@
 
 
   // TABLE NAVIGATION
-  div.table-navigation {
+  div.shadow {
     position:absolute;
     left:0;
     bottom:0;
@@ -26,6 +26,43 @@
     background:rgba(#000, .15);
     border-top: 1px solid rgba(#000, .12);
     z-index: 0;
+  }
+
+  div.table-navigation {
+    position:absolute;
+    left:27px;
+    bottom:0;
+    height:47px;
+    width:auto;
+    z-index: 0;
+
+    nav {
+      position:relative;
+      height:40px;
+      margin:0;
+
+      a.tab {
+        padding:8px 9px;
+        @include inline-block();
+        font-size:0.938em;
+        font-weight:500;
+        color:#fff;
+        @include border-radius(3px);
+
+        &:hover, &:focus, &:active {}
+
+        &.selected {
+          margin:0;
+          color: #326A98;
+          background:#fff;
+
+          &:hover {text-decoration:none; cursor:default;}
+          &:focus, &:active {}
+        }
+
+        &.disabled { &:hover, &:focus, &:active {} }
+      }
+    }
   }
 
 
@@ -94,6 +131,13 @@
         opacity: 0.0;
         z-index:0;
       }
+
+      &.failure {
+        span.point {
+          @include background(linear-gradient(#FFFF4D,#D18400));
+          border-color:rgba(black, .75);
+        }
+      }
     }
 
     p {
@@ -112,15 +156,7 @@
       color:rgba(white, .65);
     }
 
-    &.failure {
-      div.circle span.point {
-        @include background(linear-gradient(#FFFF4D,#D18400));
-        border-color:rgba(black, .75);
-      }
-    }
   } // END SYNC BLOCK
-
-
 
 
 

@@ -19,7 +19,7 @@ module CartoDB
       #remove the log from the payload
       payload = metric_payload.select {|k,v| k != :log }
       Hash[payload.map{ |key,value| 
-        [(["username","account_type"].include?(key.to_s) ?
+        [(["username","account_type", "distinct_id"].include?(key.to_s) ?
             key.to_s : "import_"+key.to_s), 
           value]
         }].symbolize_keys

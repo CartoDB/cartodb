@@ -85,7 +85,8 @@ module CartoDB
         downloader    = CartoDB::Importer2::Downloader.new(
                           url,
                           etag:           etag,
-                          last_modified:  modified_at
+                          last_modified:  modified_at,
+                          checksum:       checksum
                         )
         runner        = CartoDB::Importer2::Runner.new(
                           pg_options, downloader, log, user.remaining_quota
@@ -117,6 +118,7 @@ module CartoDB
         self.log            << "******** synchronization succeeded ********" 
         self.state          = 'success'
         self.etag           = importer.etag
+        self.checksum       = importer.checksum
         self.error_code     = nil
         self.error_message  = nil
         self.retried_times  = 0

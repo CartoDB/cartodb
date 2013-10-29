@@ -2553,14 +2553,18 @@ GMapsTorqueLayer.prototype = _.extend({},
   },
 
   hide: function() {
+    if(this.hidden) return this;
     this.pause();
     this.clear();
     this.hidden = true;
+    return this;
   },
 
   show: function() {
+    if(!this.hidden) return this;
     this.hidden = false;
     this.play();
+    return this;
   },
 
   setSQL: function(sql) {
@@ -3117,14 +3121,18 @@ L.TorqueLayer = L.CanvasLayer.extend({
   },
 
   hide: function() {
+    if(this.hidden) return this;
     this.pause();
     this.clear();
     this.hidden = true;
+    return this;
   },
 
   show: function() {
+    if(!this.hidden) return this;
     this.hidden = false;
     this.play();
+    return this;
   },
 
   setSQL: function(sql) {

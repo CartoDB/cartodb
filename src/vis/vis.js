@@ -321,6 +321,7 @@ var Vis = cdb.core.View.extend({
     // set layer options
     if (options.sublayer_options) {
 
+      //TODO: change this to search in all the layers
       var dataLayer = this.getLayers()[1];
       if (dataLayer.getSubLayer) {
         for(i = 0; i < options.sublayer_options.length; ++i) {
@@ -530,13 +531,6 @@ var Vis = cdb.core.View.extend({
     }
 
     if (vizjson.layers.length > 1) {
-      if (opt.sql) {
-        vizjson.layers[1].options.query = opt.sql;
-      }
-      if (opt.style) {
-        vizjson.layers[1].options.tile_style = opt.style;
-      }
-
       for(var i = 1; i < vizjson.layers.length; ++i) {
         vizjson.layers[i].options.no_cdn = opt.no_cdn;
       }

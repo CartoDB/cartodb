@@ -47,6 +47,7 @@ var LeafLetTorqueLayer = L.TorqueLayer.extend({
 
   _modelUpdated: function(model) {
     var changed = this.model.changedAttributes();
+    if(changed === false) return;
     changed.tile_style && this.setCartoCSS(this.model.get('tile_style'));
     changed['torque-blend-mode'] && this.setBlendMode(this.model.get('torque-blend-mode'));
     changed['torque-duration'] && this.setDuration(this.model.get('torque-duration'));

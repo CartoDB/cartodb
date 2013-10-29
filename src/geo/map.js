@@ -107,7 +107,8 @@ cdb.geo.PlainLayer = cdb.geo.MapLayer.extend({
 
 cdb.geo.TorqueLayer = cdb.geo.MapLayer.extend({
   defaults: {
-    type: 'torque'
+    type: 'torque',
+    visible: true
   }
 });
 

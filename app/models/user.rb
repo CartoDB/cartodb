@@ -659,18 +659,28 @@ class User < Sequel::Model
         end
       end.join
 
-      create_importer_schema
+      create_schemas_and_set_permissions
       set_database_permissions
-      set_database_permissions_in_importer_schema
       load_cartodb_functions
     end
   end
 
-  def create_importer_schema
+  def create_schemas_and_set_permissions
+    create_schema('cdb')
+    create_schema('cdb_importer')
+    set_database_permissions_in_schema('cdb')
+    set_database_permissions_in_schema('cdb_importer')
+  end
+
+  # Attempts to create a new database schema
+  # Does not raise exception if the schema already exists
+  def create_schema(schema)
     in_database(as: :superuser) do |database|
-      database.run(%Q{CREATE SCHEMA cdb_importer})
+      database.run(%Q{CREATE SCHEMA #{schema}})
     end
-  end #create_importer_schema
+  rescue Sequel::DatabaseError => e
+    raise unless e.message =~ /schema .* already exists/
+  end #create_schema
 
   # Cartodb functions
   def load_cartodb_functions(files = [])
@@ -709,11 +719,9 @@ class User < Sequel::Model
   end
 
   # Whitelist Permissions
-
-  def set_database_permissions_in_importer_schema
+  def set_database_permissions_in_schema(schema)
     in_database(:as => :superuser) do |user_database|
       user_database.transaction do
-        schema = 'cdb_importer'
 
         # grant core permissions to database user
         user_database.run("GRANT ALL ON SCHEMA #{schema} TO #{database_username}")
@@ -724,7 +732,7 @@ class User < Sequel::Model
         yield(user_database) if block_given?
       end
     end
-  end #set_database_permissions_in_importer_schema
+  end #set_database_permissions_in_schema
 
   def set_database_permissions
     in_database(:as => :superuser) do |user_database|

@@ -7,7 +7,8 @@ module CartoDB
     class Relator
       LAYER_SCOPES  = {
                         base:     :user_layers,
-                        cartodb:  :data_layers
+                        cartodb:  :data_layers,
+                        others:   :other_layers
                       }
 
       INTERFACE     = %w{ overlays map user table related_tables layers stats

@@ -17,7 +17,10 @@ class Map < Sequel::Model
                 conditions: { kind: "carto" }
 
   many_to_many  :user_layers, clone: :layers, right_key: :layer_id,
-                conditions: "kind NOT LIKE 'carto'"
+                conditions: "kind in ('tiled', 'background', 'gmapsbase')"
+
+  many_to_many  :other_layers, clone: :layers, right_key: :layer_id,
+                conditions: "kind not in ('carto', 'tiled', 'background', 'gmapsbase')"
 
   plugin :association_dependencies, :layers => :nullify
 

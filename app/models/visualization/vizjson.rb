@@ -45,7 +45,10 @@ module CartoDB
       end #bounds_from
 
       def layers_for(visualization)
-        [base_layers_for(visualization), layer_group_for(visualization)].flatten
+        [base_layers_for(visualization), 
+         layer_group_for(visualization),
+         other_layers_for(visualization)
+         ].flatten
       end #layers_for
 
       def base_layers_for(visualization)
@@ -59,6 +62,12 @@ module CartoDB
           visualization.layers(:cartodb), options, configuration
         ).to_poro
       end #layer_group_for
+
+      def other_layers_for(visualization)
+        visualization.layers(:others).map do |layer|
+          Layer::Presenter.new(layer, options, configuration).to_vizjson_v2
+        end
+      end #other_layers_for
 
       def overlays_for(map)
         ordered_overlays_for(visualization).map do |overlay| 

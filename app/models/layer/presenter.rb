@@ -5,6 +5,21 @@ require 'ejs'
 module CartoDB
   class Layer
     class Presenter
+
+      TORQUE_ATTRS = [
+        'table_name',
+        'user_name',
+        'property',
+        'blendmode',
+        'resolution',
+        'countby',
+        'torque-duration',
+        'torque-steps',
+        'torque-blend-mode',
+        'query',
+        'tile_style'
+      ]
+
       def initialize(layer, options={}, configuration={})
         @layer          = layer
         @options        = options
@@ -12,7 +27,11 @@ module CartoDB
       end #initialize
 
       def to_vizjson_v2
-        return with_kind_as_type(layer.public_values) if base?(layer)
+        if base?(layer)
+          return with_kind_as_type(layer.public_values) 
+        elsif torque?(layer)
+          return as_torque(layer)
+        end
         {
           id:         layer.id,
           type:       'CartoDB',
@@ -39,12 +58,30 @@ module CartoDB
       attr_reader :layer, :options, :configuration
 
       def base?(layer)
-        layer.kind != 'carto'
+        ['tiled', 'background', 'gmapsbase'].include? layer.kind
       end #base?
+
+      def torque?(layer)
+        layer.kind == 'torque'
+      end #torque?
 
       def with_kind_as_type(attributes)
         attributes.merge(type: attributes.delete('kind'))
       end #with_kind_as_type
+
+      def as_torque(attributes)
+        return {
+          id:         layer.id,
+          type:       'torque',
+          order:      layer.order,
+          options:    {
+            sql_api_protocol:   @configuration.fetch(:sql_api_protocol, nil),
+            sql_api_domain:     @configuration.fetch(:sql_api_domain, nil),
+            sql_api_endpoint:   @configuration.fetch(:sql_api_endpoint, nil),
+            sql_api_port:       @configuration.fetch(:sql_api_port, nil),
+          }.merge(layer.options.select { |k| TORQUE_ATTRS.include? k })
+        }
+      end #as_torque
 
       def infowindow_data
         template = layer.infowindow['template']

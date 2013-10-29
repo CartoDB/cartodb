@@ -188,11 +188,29 @@ describe User do
       .should include 'cdb_importer'
   end
 
+  it 'creates a cdb schema in the user database' do
+    @user.in_database[%Q(SELECT * FROM pg_namespace)]
+      .map { |record| record.fetch(:nspname) }
+      .should include 'cdb'
+  end
+
   it 'allows access to the importer schema by the owner' do
     @user.in_database.run(%Q{
       CREATE TABLE cdb_importer.bogus ( bogus varchar(40) )
     })
     query = %Q(SELECT * FROM cdb_importer.bogus)
+
+    expect { @user.in_database(as: :public_user)[query].to_a }
+      .to raise_error(Sequel::DatabaseError)
+      
+    @user.in_database[query].to_a
+  end
+
+  it 'allows access to the cdb schema by the owner' do
+    @user.in_database.run(%Q{
+      CREATE TABLE cdb.bogus ( bogus varchar(40) )
+    })
+    query = %Q(SELECT * FROM cdb.bogus)
 
     expect { @user.in_database(as: :public_user)[query].to_a }
       .to raise_error(Sequel::DatabaseError)

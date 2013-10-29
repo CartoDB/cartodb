@@ -154,6 +154,17 @@ div.map {
 
       &:hover { background: none; }
 
+      &.add_basemap > a {
+        small, &:hover small {
+          color: #397DB8;
+          @include opacity(.5);
+        }
+      }
+
+      &.map_background > a .name {
+          margin: 5px 0 0 5px;
+      }
+
       & > a {
         display:block;
         padding: 11px 10px 11px 0;
@@ -161,11 +172,17 @@ div.map {
         line-height: normal;
         @include clearfix();
 
+        small { display:block; margin: 0 0 0 29px; font-size: 9px; color: #AAAAAA; }
+
+        &:hover small {
+          color: #AAAAAA;
+        }
+
         .name {
           float:left;
           font-size:13px;
           width: 150px;
-          margin: 5px 0 0 5px;
+          margin: 0 0 0 5px;
 
           text-overflow:ellipsis;
           white-space: nowrap;

@@ -2479,7 +2479,8 @@ function GMapsTorqueLayer(options) {
     provider: 'sql_api',
     renderer: 'point',
     resolution: 2,
-    steps: 100
+    steps: 100,
+    visible: true
   });
 
   this.animator = new torque.Animator(function(time) {
@@ -2530,6 +2531,7 @@ GMapsTorqueLayer.prototype = _.extend({},
     var self = this;
 
     this.onTileAdded = this.onTileAdded.bind(this);
+    this.hidden = !this.options.visible;
 
     this.options.ready = function() {
       self.fire("change:bounds", {
@@ -2550,6 +2552,17 @@ GMapsTorqueLayer.prototype = _.extend({},
 
   },
 
+  hide: function() {
+    this.pause();
+    this.clear();
+    this.hidden = true;
+  },
+
+  show: function() {
+    this.hidden = false;
+    this.play();
+  },
+
   setSQL: function(sql) {
     if (!this.provider || !this.provider.setSQL) {
       throw new Error("this provider does not support SQL");
@@ -2565,13 +2578,13 @@ GMapsTorqueLayer.prototype = _.extend({},
   },
 
   setSteps: function(steps) {
-    this.provider.setSteps(steps);
-    this.animator.steps(steps);
+    this.provider && this.provider.setSteps(steps);
+    this.animator && this.animator.steps(steps);
     this._reloadTiles();
   },
 
   setColumn: function(column, isTime) {
-    this.provider.setColumn(column, isTime);
+    this.provider && this.provider.setColumn(column, isTime);
     this._reloadTiles();
   },
 
@@ -2592,12 +2605,18 @@ GMapsTorqueLayer.prototype = _.extend({},
     });
   },
 
+  clear: function() {
+    var canvas = this.canvas;
+    canvas.width = canvas.width;
+  },
+
   /**
    * render the selectef key
    * don't call this function directly, it's called by
    * requestAnimationFrame. Use redraw to refresh it
    */
   render: function() {
+    if(this.hidden) return;
     var t, tile, pos;
     var canvas = this.canvas;
     canvas.width = canvas.width;
@@ -3048,6 +3067,8 @@ L.TorqueLayer = L.CanvasLayer.extend({
 
     options.resolution = options.resolution || 2;
     options.steps = options.steps || 100;
+    options.visible = options.visible === undefined ? true: options.visible;
+    this.hidden = !options.visible;
 
     this.animator = new torque.Animator(function(time) {
       var k = time | 0;
@@ -3095,6 +3116,17 @@ L.TorqueLayer = L.CanvasLayer.extend({
     this._removeTileLoader();
   },
 
+  hide: function() {
+    this.pause();
+    this.clear();
+    this.hidden = true;
+  },
+
+  show: function() {
+    this.hidden = false;
+    this.play();
+  },
+
   setSQL: function(sql) {
     if (!this.provider || !this.provider.setSQL) {
       throw new Error("this provider does not support SQL");
@@ -3124,6 +3156,10 @@ L.TorqueLayer = L.CanvasLayer.extend({
     return this.provider && this.provider.getKeySpan();
   },
 
+  clear: function() {
+    var canvas = this.getCanvas();
+    canvas.width = canvas.width;
+  },
 
   /**
    * render the selectef key

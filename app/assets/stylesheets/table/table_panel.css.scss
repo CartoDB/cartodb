@@ -112,11 +112,12 @@ $corner_radius: 6px;
     color:#787878;
   }
 }
-  
 
 // Layer info
 a.info {
   display:block;
+  left:0!important;
+  top:0!important;
   padding-left:24px;
 
   * {@include inline-block(); vertical-align:middle; letter-spacing:0px;}

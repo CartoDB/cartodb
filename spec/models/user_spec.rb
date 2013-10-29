@@ -253,7 +253,6 @@ describe User do
   end
 
   it "should run valid queries against his database" do
-
     # initial select tests
     query_result = @user.run_query("select * from import_csv_1 where family='Polynoidae' limit 10")
     query_result[:time].should_not be_blank

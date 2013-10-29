@@ -26,6 +26,7 @@ var LeafLetTorqueLayer = L.TorqueLayer.extend({
       animationDuration: layerModel.get('torque-duration'),
       steps: layerModel.get('torque-steps'),
       sql: layerModel.get('query'),
+      visible: layerModel.get('visible'),
       extra_params: {
         api_key: extra ? extra.map_key: ''
       }
@@ -37,7 +38,9 @@ var LeafLetTorqueLayer = L.TorqueLayer.extend({
     this.fire = this.trigger;
 
     this.setCartoCSS(layerModel.get('tile_style'));
-    this.play();
+    if (layerModel.get('visible')) {
+      this.play();
+    }
 
     this.bind('tilesLoaded', function() {
       this.trigger('load');
@@ -54,6 +57,7 @@ var LeafLetTorqueLayer = L.TorqueLayer.extend({
     changed['torque-steps'] && this.setSteps(this.model.get('torque-steps'));
     changed['property'] && this.setColumn(this.model.get('property'));
     'query' in changed && this.setSQL(this.model.get('query'));
+    'visible' in changed && this.model.get('visible') ? this.show(): this.hide();
   },
 
 

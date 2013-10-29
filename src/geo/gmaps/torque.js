@@ -22,6 +22,7 @@ var GMapsTorqueLayerView = function(layerModel, gmapsMap) {
       animationDuration: layerModel.get('torque-duration'),
       steps: layerModel.get('torque-steps'),
       sql: layerModel.get('query'),
+      visible: layerModel.get('visible'),
       extra_params: {
         api_key: extra ? extra.map_key: ''
       },
@@ -29,7 +30,9 @@ var GMapsTorqueLayerView = function(layerModel, gmapsMap) {
   });
 
   this.setCartoCSS(this.model.get('tile_style'));
-  this.play();
+  if (layerModel.get('visible')) {
+    this.play();
+  }
 
 };
 
@@ -48,6 +51,7 @@ _.extend(
     changed['torque-steps'] && this.setSteps(this.model.get('torque-steps'));
     changed['property'] && this.setColumn(this.model.get('property'));
     'query' in changed && this.setSQL(this.model.get('query'));
+    'visible' in changed && this.model.get('visible') ? this.show(): this.hide();
   },
 
   refreshView: function() {

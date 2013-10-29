@@ -318,8 +318,8 @@ class User < Sequel::Model
   end
 
   def view_dashboard
-    set(:dashboard_viewed_at => Time.now)
-    save(:columns=>[:dashboard_viewed_at], :validate => false)
+    self.this.update dashboard_viewed_at: Time.now
+    set dashboard_viewed_at: Time.now
   end
 
   def dashboard_viewed?

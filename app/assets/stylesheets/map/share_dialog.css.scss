@@ -29,7 +29,7 @@
     .cartodb-map {
       position:absolute;
       top:65px;
-      bottom:29px;
+      bottom:30px;
       right:0;
       left:0;
       width: 100%;
@@ -87,7 +87,9 @@
       font-size:11px;
       color:#999999;
       border-top:1px solid #CCC;
+      border-top:1px solid rgba(0,0,0,0);
       line-height:29px;
+      @include box-shadow(rgba(0,0,0,0.6) 0 0 1px 0);
       a {text-decoration: underline}
     }
 

@@ -15,7 +15,7 @@ module CartoDB
     class Downloader
 
       DEFAULT_FILENAME        = 'importer'
-      CONTENT_DISPOSITION_RE  = %r{attachment; filename=(.*;|.*)}
+      CONTENT_DISPOSITION_RE  = %r{; filename=(.*;|.*)}
       URL_RE                  = %r{://}
       URL_TRANSLATORS         = [
                                   UrlTranslator::OSM2,
@@ -54,18 +54,21 @@ module CartoDB
 
       def set_downloaded_source_file(available_quota_in_bytes=nil)
         raise_if_over_storage_quota(headers, available_quota_in_bytes)
+        @etag           = etag_from(headers)
+        @last_modified  = last_modified_from(headers)
         return self unless modified?
 
         response  = download
         headers   = response.headers
+        puts headers.inspect
         data      = StringIO.new(response.response_body)
         name      = name_from(headers, url)
 
+        @etag           = etag_from(headers)
+        @last_modified  = last_modified_from(headers)
         self.source_file  = SourceFile.new(
           filepath(name),
-          name,
-          etag: etag_from(headers),
-          last_modified: last_modified_from(headers)
+          name
         )
         repository.store(source_file.path, data)
         self
@@ -114,19 +117,29 @@ module CartoDB
         return true unless (previous_etag || previous_last_modified) 
         return true if previous_etag && etag && previous_etag != etag
         return true if previous_last_modified && last_modified && 
-          previous_last_modified < last_modified
+          previous_last_modified.to_i < last_modified.to_i
+        false
+      rescue
         false
       end
 
       def etag_from(headers)
-        headers.fetch("ETag", nil)
+        etag  =   headers.fetch("ETag", nil)
+        etag  ||= headers.fetch("Etag", nil)
+        etag  ||= headers.fetch("etag", nil)
+        etag  = etag.delete('"').delete("'") if etag
+        etag
       end
 
       def last_modified_from(headers)
-        headers.fetch("Last-Modified", nil)
+        last_modified =   headers.fetch("Last-Modified", nil)
+        last_modified ||= headers.fetch("Last-modified", nil)
+        last_modified ||= headers.fetch("last-modified", nil)
+        last_modified = last_modified.delete('"').delete("'") if last_modified
+        last_modified
       end
 
-      attr_reader :source_file, :url
+      attr_reader :source_file, :url, :etag, :last_modified
 
       private
       
@@ -153,6 +166,7 @@ module CartoDB
 
       def name_from_http(headers)
         disposition = headers.fetch('Content-Disposition', nil)
+        disposition ||= headers.fetch('Content-disposition', nil)
         return false unless disposition
         filename = disposition.match(CONTENT_DISPOSITION_RE).to_a[1]
         return false unless filename

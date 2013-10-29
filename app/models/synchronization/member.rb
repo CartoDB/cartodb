@@ -27,10 +27,13 @@ module CartoDB
       attribute :updated_at,      Time
       attribute :run_at,          Time     
       attribute :ran_at,          Time
-      attribute :retried_times,   Integer,  default: 0
+      attribute :modified_at,     Time
+      attribute :etag,            String
+      attribute :checksum,        String
+      attribute :log_id,          String
       attribute :error_code,      Integer
       attribute :error_message,   String
-      attribute :log_id,          String
+      attribute :retried_times,   Integer,  default: 0
 
       def initialize(attributes={}, repository=Synchronization.repository)
         super(attributes)
@@ -38,7 +41,7 @@ module CartoDB
         @repository         = repository
         self.id             ||= @repository.next_id
         self.state          ||= 'created'
-        self.ran_at         ||= Time.now.utc
+        self.ran_at         ||= Time.now
         self.interval       ||= 3600
         self.run_at         ||= ran_at + interval
         self.retried_times  ||= 0
@@ -71,7 +74,7 @@ module CartoDB
 
       def run
         self.state    = 'syncing'
-        self.ran_at   = Time.now.utc
+        self.ran_at   = Time.now
         log           = TrackRecord::Log.new(
                           prefix:     REDIS_LOG_KEY_PREFIX,
                           expiration: REDIS_LOG_EXPIRATION_IN_SECS
@@ -79,7 +82,11 @@ module CartoDB
         self.log_id   = log.id
         store
 
-        downloader    = CartoDB::Importer2::Downloader.new(url)
+        downloader    = CartoDB::Importer2::Downloader.new(
+                          url,
+                          etag:           etag,
+                          last_modified:  modified_at
+                        )
         runner        = CartoDB::Importer2::Runner.new(
                           pg_options, downloader, log, user.remaining_quota
                         )
@@ -91,6 +98,8 @@ module CartoDB
 
         if importer.success?
           set_success_state_from(importer)
+        elsif retried_times < 3
+          set_retry_state_from(importer)
         else
           set_failure_state_from(importer)
         end
@@ -98,6 +107,8 @@ module CartoDB
         store
         self
       rescue => exception
+        puts exception.to_s
+        puts exception.backtrace
         set_failure_state_from(importer)
         store
       end
@@ -105,10 +116,22 @@ module CartoDB
       def set_success_state_from(importer)
         self.log            << "******** synchronization succeeded ********" 
         self.state          = 'success'
+        self.etag           = importer.etag
         self.error_code     = nil
         self.error_message  = nil
         self.retried_times  = 0
         self.run_at         = Time.now.utc + interval
+        self.modified_at    = importer.last_modified
+      rescue
+        self
+      end
+
+      def set_retry_state_from(importer)
+        self.log     << "******** synchronization failed, will retry ********" 
+        self.state          = 'success'
+        self.error_code     = importer.error_code
+        self.error_message  = importer.error_message
+        self.retried_times  = self.retried_times + 1
       end
 
       def set_failure_state_from(importer)
@@ -144,8 +167,8 @@ module CartoDB
       end
       
       def set_timestamps
-        self.created_at ||= Time.now.utc
-        self.updated_at = Time.now.utc
+        self.created_at ||= Time.now
+        self.updated_at = Time.now
         self
       end
 
@@ -168,11 +191,15 @@ module CartoDB
 
       def log
         return @log if defined?(@log) && @log
-        @log  = TrackRecord::Log.new(
-          id:         log_id,
+        log_attributes = {
           prefix:     REDIS_LOG_KEY_PREFIX,
           expiration: REDIS_LOG_EXPIRATION_IN_SECS
-        ).fetch
+        }
+        log_attributes.merge(id: log_id) if log_id
+        @log  = TrackRecord::Log.new(log_attributes)
+        @log.fetch if log_id
+        @log_id = @log.id
+        @log
       end
 
       def valid_uuid?(text)

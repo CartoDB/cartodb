@@ -58,7 +58,7 @@ module CartoDB
         sql = sql_from(layer.options)
         {
           sql:                wrap(sql, layer.options),
-          layer_name:         layer.options.fetch('table_name'),
+          layer_name:         name_for(layer),
           cartocss:           layer.options.fetch('tile_style'),
           cartocss_version:   layer.options.fetch('style_version'),
           interactivity:      layer.options.fetch('interactivity')
@@ -66,6 +66,14 @@ module CartoDB
       end #options_data_v2
 
       alias_method :to_poro, :to_vizjson_v1
+
+      def name_for(layer)
+        layer_alias = layer.options.fetch('table_name_alias', nil)
+        table_name  = layer.options.fetch('table_name') 
+
+        return table_name unless layer_alias && !layer_alias.empty?
+        layer_alias
+      end
 
       def options_data_v1
         return layer.options if options[:full]

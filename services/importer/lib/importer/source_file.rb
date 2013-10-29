@@ -31,8 +31,7 @@ module CartoDB
       end #path
 
       def target_schema
-        return 'public' if extension == '.osm'
-        return 'cdb_importer'
+        'cdb_importer'
       end #target_schema
 
       def empty?
@@ -44,6 +43,7 @@ module CartoDB
         return filepath.match(ENCODING_RE)[1].upcase
       end
 
+      attr_accessor :layer
       attr_reader :filename, :etag, :last_modified
       
       private

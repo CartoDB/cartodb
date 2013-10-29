@@ -6,21 +6,24 @@ require_relative './unp'
 module CartoDB
   module Importer2
     class KmlSplitter
-      def initialize(source_files, temporary_directory)
-        @source_files         = source_files
+      def self.support?(source_file)
+        source_file.extension == '.kml'
+      end
+
+      def initialize(source_file, temporary_directory)
+        @source_file          = source_file
         @temporary_directory  = temporary_directory
       end
 
       def run
-        self.source_files = 
-         source_files.flat_map { |source_file| split(source_file) }
+        return self unless multiple_layers?(source_file)
+        @source_files = source_files_for(source_file, layers_in(source_file))
         self
       end
 
-      def split(source_file)
-        return source_file unless kml?(source_file) && 
-                                  multiple_layers?(source_file)
-        source_files_for(source_file, layers_in(source_file))
+      def source_files
+        return [source_file] unless multiple_layers?(source_file)
+        @source_files
       end
 
       def source_files_for(source_file, layer_names=[])
@@ -32,10 +35,6 @@ module CartoDB
 
       def extract(extracted_file_path, source_file, layer_name)
         `ogr2ogr -f 'KML' #{extracted_file_path} #{source_file.fullpath} "#{layer_name}"`
-      end
-
-      def kml?(source_file)
-        source_file.extension == '.kml'
       end
 
       def multiple_layers?(source_file)
@@ -57,12 +56,12 @@ module CartoDB
         )
       end
 
-      attr_reader :source_files
+      attr_reader :source_file
 
       private
 
       attr_reader :temporary_directory
-      attr_writer :source_files
+      attr_writer :source_file
     end # KmlSplitter
   end # Importer2
 end # CartoDB

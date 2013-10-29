@@ -18,12 +18,13 @@ module CartoDB
       DEFAULT_ENCODING  = 'UTF-8'
 
       def self.supported?(extension)
-        !(%w{ .osm .tif .tiff .sql }.include?(extension))
+        !(%w{ .tif .tiff .sql }.include?(extension))
       end #self.supported?
 
-      def initialize(job, source_file, ogr2ogr=nil, georeferencer=nil)
+      def initialize(job, source_file, layer=nil, ogr2ogr=nil, georeferencer=nil)
         self.job            = job
         self.source_file    = source_file
+        self.layer          = 'track_points' if source_file.extension =~ /\.gpx/
         self.ogr2ogr        = ogr2ogr
         self.georeferencer  = georeferencer
       end #initialize
@@ -31,9 +32,9 @@ module CartoDB
       def run
         normalize
         job.log "Detected encoding #{encoding}"
-
         job.log "Using database connection with #{job.concealed_pg_options}"
         ogr2ogr.run
+
         job.log "ogr2ogr output:    #{ogr2ogr.command_output}"
         job.log "ogr2ogr exit code: #{ogr2ogr.exit_code}"
 
@@ -48,14 +49,16 @@ module CartoDB
           .inject(source_file.fullpath) { |filepath, normalizer_klass|
             normalizer_klass.new(filepath, job).run.converted_filepath
           }
-        self.source_file = SourceFile.new(converted_filepath)
+        layer = source_file.layer
+        @source_file = SourceFile.new(converted_filepath)
+        @source_file.layer = layer
         self
       end #normalize
 
       def ogr2ogr
         @ogr2ogr ||= Ogr2ogr.new(
-          job.table_name, source_file.fullpath, job.pg_options,
-          encoding: encoding
+          job.table_name, @source_file.fullpath, job.pg_options,
+          @source_file.layer, encoding: encoding
         )
       end #ogr2ogr
 
@@ -80,10 +83,14 @@ module CartoDB
         NORMALIZERS.find_all { |klass| klass.supported?(extension) }
       end #normalizers_for
 
+      def osm?(source_file)
+        source_file.extension =~ /\.osm/
+      end
+
       private
 
       attr_writer     :ogr2ogr, :georeferencer
-      attr_accessor   :job, :source_file
+      attr_accessor   :job, :source_file, :layer
     end # Loader
   end # Importer2
 end # CartoDB

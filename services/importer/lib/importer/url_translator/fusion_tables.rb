@@ -9,7 +9,7 @@ module CartoDB
         TRANSLATED_URL_REGEX    = %r{google.com/fusiontables/exporttable}
         URL_TEMPLATE            = "https://www.google.com/fusiontables" +
                                   "/exporttable?query=select+*+from+"
-        DOC_ID_REGEX            = %r{DataSource\?docid=([\w-]+)#.*}
+        DOC_ID_REGEX            = %r{\?docid=([\w-]+)#.*}
 
         def translate(url)
           return url if !supported?(url) || translated?(url) 
@@ -17,7 +17,7 @@ module CartoDB
         end #translate
 
         def supported?(url)
-          !!(url =~ URL_REGEX)
+          !!(url =~ URL_REGEX || url =~ URL_REGEX)
         end #supported?
 
         def translated?(url)

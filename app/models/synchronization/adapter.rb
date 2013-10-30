@@ -55,7 +55,8 @@ module CartoDB
         table.save
         table.send(:invalidate_varnish_cache)
         puts '======= after invalidating'
-        database.run("UPDATE #{table.name} SET updated_at = updated_at")
+        database.run("UPDATE #{table.name} SET updated_at = updated_at
+          WHERE cartodb_id = (SELECT max(cartodb_id) FROM #{table.name})")
       rescue => exception
         stacktrace = exception.to_s + exception.backtrace.join
         puts stacktrace

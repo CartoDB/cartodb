@@ -765,6 +765,7 @@ class Table < Sequel::Model(:user_tables)
         primary_key = user_database.from(name).insert(make_sequel_compatible(attributes))
       rescue Sequel::DatabaseError => e
         message = e.message.split("\n")[0]
+        raise message if message =~ /Quota exceeded by/
 
         # If the type don't match the schema of the table is modified for the next valid type
         invalid_value = (m = message.match(/"([^"]+)"$/)) ? m[1] : nil

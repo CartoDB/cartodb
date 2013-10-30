@@ -59,6 +59,10 @@ module CartoDB
         runner.last_modified
       end
 
+      def checksum
+        runner.checksum
+      end
+
       def move_to_schema(result, schema=DESTINATION_SCHEMA)
         return self if schema == result.schema
         database.execute(%Q{

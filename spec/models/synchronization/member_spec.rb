@@ -17,11 +17,6 @@ describe Synchronization::Member do
       member.should be_an_instance_of Synchronization::Member
       member.id.should_not be_nil
     end
-
-    it 'enables the synchronization by default' do
-      member = Synchronization::Member.new
-      member.enabled?.should be_true
-    end
   end #initialize
 
   describe '#store' do
@@ -59,17 +54,6 @@ describe Synchronization::Member do
 
       member.name.should be_nil
       lambda { member.fetch }.should raise_error KeyError
-    end
-  end
-
-  describe '#enabled?' do
-    it 'returns true if synchronization is enabled' do
-      member = Synchronization::Member.new(random_attributes).store
-      member.enabled?.should be_true
-      member.disable
-      member.enabled?.should be_false
-      member.enable
-      member.enabled?.should be_true
     end
   end
 

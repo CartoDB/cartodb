@@ -45,6 +45,11 @@ module CartoDB
         table.send(:set_the_geom_column!)
         table.save
         table.send(:invalidate_varnish_cache)
+      rescue => exception
+        stacktrace = exception.to_s + exception.backtrace.join
+        puts stacktrace
+        Rollbar.report_message("Sync cartodbfy error", "error", error_info: stacktrace)
+        table.send(:invalidate_varnish_cache)
       end
 
       def success?

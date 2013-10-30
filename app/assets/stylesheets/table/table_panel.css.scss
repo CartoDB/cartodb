@@ -1215,6 +1215,7 @@ a.info {
           &.choropleth {
             background: image-url('layout/wizard-choropleth.png') no-repeat;
             &.line, &.line-line { background: image-url('layout/wizard-choropleth-polyline.png') no-repeat;}
+            &.polygon, &.polygon-polygon { background: image-url('layout/wizard-choropleth-polygon.png') no-repeat;}
           }
 
           &.color {

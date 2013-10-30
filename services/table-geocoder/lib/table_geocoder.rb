@@ -33,7 +33,7 @@ module CartoDB
       csv_file = File.join(working_dir, "wadus.csv")
       connection.run(%Q{
         COPY (
-          SELECT concat_ws(', ', #{formatter}) as recId, concat_ws(', ', #{formatter}) as searchText 
+          SELECT concat(#{formatter}) as recId, concat(#{formatter}) as searchText 
           FROM #{table_name}
           GROUP BY recId
         ) TO '#{csv_file}' DELIMITER ',' CSV HEADER

@@ -26,7 +26,7 @@ describe CartoDB::TableGeocoder do
     before do
       @tg = CartoDB::TableGeocoder.new(default_params.merge({
         table_name: @table_name,
-        formatter:  "name, sov0name",
+        formatter:  "name, ', ', sov0name",
         connection: @db,
       }))
       @tg.geocoder.stubs(:upload).returns(true)
@@ -106,7 +106,7 @@ describe CartoDB::TableGeocoder do
   it "wadus" do
     t = CartoDB::TableGeocoder.new(
       table_name: @table_name,
-      formatter:  "name, sov0name",
+      formatter:  "name, ', ', sov0name",
       connection: @db,
       app_id: 'KuYppsdXZznpffJsKT24',
       token:  'A7tBPacePg9Mj_zghvKt9Q',

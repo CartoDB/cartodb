@@ -36,6 +36,25 @@ describe Geocoding do
     end
   end
 
+  describe '#translate_formatter' do
+    let(:geocoding) { FactoryGirl.build(:geocoding, user: @user) }
+
+    it 'translates a string with field names' do
+      geocoding.formatter = '{a}, {b}'
+      geocoding.translate_formatter.should == "a, ', ', b"
+    end
+
+    it 'translates a string with literals' do
+      geocoding.formatter = 'c'
+      geocoding.translate_formatter.should == "'c'"
+    end
+
+    it 'translates a string with mixed literals and field names' do
+      geocoding.formatter = '{a}, b, {c}'
+      geocoding.translate_formatter.should == "a, ', b, ', c"
+    end
+  end
+
   describe '#run!' do
     it 'updates total_rows and processed_rows' do
       geocoding = Geocoding.create(user: @user, table_name: 'a', formatter: 'b')

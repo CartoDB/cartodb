@@ -51,7 +51,8 @@ _.extend(
     changed['torque-steps'] && this.setSteps(this.model.get('torque-steps'));
     changed['property'] && this.setColumn(this.model.get('property'));
     'query' in changed && this.setSQL(this.model.get('query'));
-    'visible' in changed && this.model.get('visible') ? this.show(): this.hide();
+    if ('visible' in changed) 
+      this.model.get('visible') ? this.show(): this.hide();
   },
 
   refreshView: function() {

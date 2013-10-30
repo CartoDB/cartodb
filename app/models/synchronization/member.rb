@@ -13,7 +13,7 @@ module CartoDB
     class Member
       include Virtus
 
-      STATES = %w{ enabled disabled }
+      STATES                        = %w{ success failure syncing }
       REDIS_LOG_KEY_PREFIX          = 'synchronization'
       REDIS_LOG_EXPIRATION_IN_SECS  = 3600 * 24 * 2 # 2 days
 
@@ -156,18 +156,6 @@ module CartoDB
         true
       end
 
-      def enabled?
-        state == 'enabled'
-      end
-
-      def enable
-        self.state = 'enabled'
-      end
-
-      def disable
-        self.state = 'disabled'
-      end
-      
       def set_timestamps
         self.created_at ||= Time.now
         self.updated_at = Time.now

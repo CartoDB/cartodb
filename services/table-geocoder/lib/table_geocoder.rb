@@ -104,7 +104,7 @@ module CartoDB
               orig.displayLatitude || ')', 4326
             )
         FROM #{temp_table_name} AS orig
-        WHERE concat_ws(', ', #{formatter}) = orig.recId
+        WHERE concat(#{formatter}) = orig.recId
       })
     end
 

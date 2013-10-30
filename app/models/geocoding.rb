@@ -45,7 +45,7 @@ class Geocoding < Sequel::Model
       sleep(2)
     end until table_geocoder.geocoder.status == 'completed'
     table_geocoder.process_results
-  end # run_geocoding!
+  end # run!
 
   # {field}, SPAIN => field, ', SPAIN'
   def translate_formatter

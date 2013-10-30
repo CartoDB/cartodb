@@ -185,7 +185,14 @@ cdb.geo.Layers = Backbone.Collection.extend({
    * the index should be recalculated
    */
   _assignIndexes: function(model, col, options) {
-    var from = this.size() - 1;
+    var layerTypeWeight = {
+      'torque': 100
+    };
+    function layerWeight(layer) {
+      var t = layer.get('type');
+      return layerTypeWeight[t] || 0;
+    }
+    var from = 0;//this.size() - 1;
     if(options && options.at !== undefined) {
       from = options.at;
     }
@@ -194,8 +201,9 @@ cdb.geo.Layers = Backbone.Collection.extend({
       ++from;
     }
     for(var i = from; i < this.size(); ++i) {
-      var prev = this.models[i - 1].get('order');
-      this.models[i].set({ order: prev + 1 });
+      var prev = this.models[i - 1]
+      var prev_order = prev.get('order') - layerWeight(prev);
+      this.models[i].set({ order: layerWeight(this.models[i]) + prev_order + 1 });
     }
   }
 });

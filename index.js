@@ -14,6 +14,7 @@
 //= require cdb/vendor/mwheelIntent
 //= require cdb/vendor/jscrollpane
 //= require cdb/vendor/spin
+//= require cdb/vendor/lzma
 //
 //= require cdb/vendor/mod/carto
 //= require cdb/vendor/mod/torque.uncompressed

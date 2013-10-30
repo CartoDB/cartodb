@@ -25,7 +25,10 @@ cdb.geo.ui.LegendItem = cdb.core.View.extend({
 
   render: function() {
 
-    this.$el.html(this.template(this.model.toJSON()));
+    var options = this.model.toJSON();
+    options.value = options.color || options.file || options.value;
+
+    this.$el.html(this.template(options));
 
     return this.$el;
 
@@ -324,7 +327,8 @@ cdb.geo.ui.CategoryLegend = cdb.core.View.extend({
 
     view = new cdb.geo.ui.LegendItem({
       model: item,
-      template: '<div class="bullet" style="background:<%= value %>"></div><%= name || "null" %>'
+      className: item.get("file") ? "bkg" : "",
+      template: '<div class="bullet" style="background: <%= value %>"></div><%= name || ((name === false) ? "false": "null") %>'
     });
 
     this.$el.find("ul").append(view.render());

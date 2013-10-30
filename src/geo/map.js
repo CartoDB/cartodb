@@ -93,6 +93,21 @@ cdb.geo.GMapsBaseLayer = cdb.geo.MapLayer.extend({
 });
 
 /**
+ * WMS layer support
+ */
+cdb.geo.WMSLayer = cdb.geo.MapLayer.extend({
+  defaults: {
+    service: 'WMS',
+    request: 'GetMap',
+    version: '1.1.1',
+    layers: '',
+    styles: '',
+    format: 'image/jpeg',
+    transparent: false
+  }
+});
+
+/**
  * this layer allows to put a plain color or image as layer (instead of tiles)
  */
 cdb.geo.PlainLayer = cdb.geo.MapLayer.extend({

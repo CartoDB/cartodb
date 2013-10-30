@@ -42,20 +42,20 @@ module CartoDB
 
       def cartodbfy(table_name)
         table = ::Table.where(name: table_name, user_id: user.id).first
-        table.send :update_table_pg_stats
-
         # Set default triggers
-        table.send :add_python
-        table.send :set_trigger_update_updated_at
-        table.send :set_trigger_cache_timestamp
-        table.send :set_trigger_check_quota
-        table.save
         table.import_to_cartodb
         table.import_cleanup
+        table.save
         table.send(:set_the_geom_column!)
+        table.send :update_table_pg_stats
+        table.send :add_python
+        table.send :set_trigger_cache_timestamp
+        table.send :set_trigger_check_quota
+        table.send :set_trigger_update_updated_at
         table.save
         table.send(:invalidate_varnish_cache)
         puts '======= after invalidating'
+        database.run("UPDATE #{table.name} SET updated_at = updated_at")
       rescue => exception
         stacktrace = exception.to_s + exception.backtrace.join
         puts stacktrace

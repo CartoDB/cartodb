@@ -16,6 +16,9 @@
     bottom:0;
     left:0;
 
+    // When table/layer is synced
+    &.synced {top:177px}
+
     .emptyTableContainer {
       position:relative;
       display: inline-block;

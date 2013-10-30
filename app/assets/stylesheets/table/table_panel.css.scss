@@ -100,7 +100,7 @@ $corner_radius: 6px;
 
   // Layer edition
   @include default-input();
-  
+
   input.alias {
     @include default-input();
     position:absolute;
@@ -112,7 +112,7 @@ $corner_radius: 6px;
     color:#787878;
   }
 }
-  
+
 
 // Layer info
 a.info {
@@ -783,7 +783,7 @@ a.info {
       display:none;
       padding:20px 40px;
       @include border-top-left-radius(4px);
-      
+
       text-align:center;
       line-height: normal;
       background:rgba(white,0.9);
@@ -999,6 +999,7 @@ a.info {
             @include default-input();
 
             .value { margin-right: 5px; }
+            .value.empty { color: #ccc; }
 
             input {
               font-size: 13px;

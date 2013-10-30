@@ -18,7 +18,12 @@ module CartoDB
         api_calls: calls,
         api_calls_quota: self.map_view_quota,
         api_calls_block_price: self.map_view_block_price,
-        geocoding_quota: self.geocoding_quota,
+        geocoding: {
+          quota:       self.geocoding_quota,
+          block_price: 1.5,
+          monthly_use: 1000,
+          hard_limit:  false
+        },
         billing_period: self.last_billing_cycle,
         max_layers: self.max_layers,
         api_key: self.get_map_key,

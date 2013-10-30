@@ -17,8 +17,10 @@ module CartoDB
       def run(&tracker)
         runner.run(&tracker)
         result = results.select(&:success?).first
-        overwrite(table_name, result)
-        cartodbfy(table_name)
+        if runner.remote_data_updated?
+          overwrite(table_name, result)
+          cartodbfy(table_name)
+        end
         self
       rescue => exception
         puts exception.to_s
@@ -45,6 +47,7 @@ module CartoDB
         table.send(:set_the_geom_column!)
         table.save
         table.send(:invalidate_varnish_cache)
+        puts '======= after invalidating'
       rescue => exception
         stacktrace = exception.to_s + exception.backtrace.join
         puts stacktrace

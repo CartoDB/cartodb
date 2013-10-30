@@ -49,9 +49,9 @@ module CartoDB
       end
 
       def interval=(seconds=3600)
-        super(seconds)
-        self.run_at = Time.now + (seconds || 3600)
-        seconds
+        super(seconds.to_i)
+        self.run_at = Time.now + (seconds.to_i || 3600)
+        seconds.to_i
       end
 
       def store

@@ -11,6 +11,7 @@ class Admin::VisualizationsController < ApplicationController
   def index
     @tables_count  = current_user.tables.count
     @first_time    = !current_user.dashboard_viewed?
+    @just_logged_in = !!flash['logged']
     current_user.view_dashboard
     update_user_last_activity
   end #index

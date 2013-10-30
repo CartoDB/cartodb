@@ -1239,6 +1239,12 @@ a.info {
             &.line, &.line-line { background: image-url('layout/wizard-color-polyline.png') no-repeat;}
           }
 
+          &.category {
+            background: image-url('layout/wizard-category.png') no-repeat;
+            &.polygon, &.polygon-polygon { background: image-url('layout/wizard-category-polygon.png') no-repeat;}
+            &.line, &.line-line { background: image-url('layout/wizard-category-polyline.png') no-repeat;}
+          }
+
           &.bubble  { background: image-url('layout/wizard-bubble.png') no-repeat;}
           &.density { background: image-url('layout/wizard-density-hex.png') no-repeat;}
 
@@ -1346,7 +1352,7 @@ a.info {
       }
 
       // Color wizard styles
-      ul.custom_colors {
+      ul.custom_colors, ul.custom_categories {
         margin:0;
         border-top:1px solid rgba(#E5E5E5,0.5);
         li.custom_color_item {

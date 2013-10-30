@@ -48,6 +48,12 @@ module CartoDB
         self.log_id         ||= log.id
       end
 
+      def interval=(seconds=3600)
+        super(seconds)
+        self.run_at = Time.now + (seconds || 3600)
+        seconds
+      end
+
       def store
         raise CartoDB::InvalidMember unless self.valid?
         set_timestamps

@@ -15,6 +15,7 @@ module CartoDB
       @table_name  = arguments[:table_name]
       @formatter   = arguments[:formatter]
       @remote_id   = arguments[:remote_id]
+      @schema      = arguments[:schema] || 'cdb'
       @geocoder    = CartoDB::Geocoder.new(
         app_id:     arguments[:app_id],
         token:      arguments[:token],
@@ -110,7 +111,7 @@ module CartoDB
 
     def temp_table_name
       return nil unless remote_id
-      @temp_table_name = "geo_#{remote_id}"
+      @temp_table_name = "#{@schema}.geo_#{remote_id}"
       count = 0
       while connection.table_exists?(@temp_table_name) do
         count = count + 1

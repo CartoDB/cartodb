@@ -50,6 +50,10 @@ defaults: &defaults
   superadmin:
     username: "superadmin"
     password: "monkey"
+  geocoder:
+    app_id: ''
+    token:  ''
+    mailto: ''
   importer:
     # OSM imports require osm2pgsql and this tool doesn't
     # play well with pgbouncer.

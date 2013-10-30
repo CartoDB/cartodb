@@ -44,7 +44,7 @@ module CartoDB
       end
 
       attr_accessor :layer
-      attr_reader :filename, :etag, :last_modified
+      attr_reader :filename, :etag, :last_modified, :checksum
       
       private
 

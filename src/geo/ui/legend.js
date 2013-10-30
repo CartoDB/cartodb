@@ -25,7 +25,9 @@ cdb.geo.ui.LegendItem = cdb.core.View.extend({
 
   render: function() {
 
-    this.$el.html(this.template(this.model.toJSON()));
+    var options = this.model.toJSON();
+
+    this.$el.html(this.template(options));
 
     return this.$el;
 
@@ -324,7 +326,8 @@ cdb.geo.ui.CategoryLegend = cdb.core.View.extend({
 
     view = new cdb.geo.ui.LegendItem({
       model: item,
-      template: '<div class="bullet" style="background:<%= value %>"></div><%= name || "null" %>'
+      className: item.get("value").indexOf("http") >= 0 ? "bkg" : "",
+      template: '<div class="bullet" style="background: <%= value %>"></div><%= name || ((name === false) ? "false": "null") %>'
     });
 
     this.$el.find("ul").append(view.render());
@@ -378,11 +381,9 @@ cdb.geo.ui.ColorLegend = cdb.core.View.extend({
 
   _renderItem: function(item) {
 
-    var bkg = item.get("value");
-
     view = new cdb.geo.ui.LegendItem({
       model: item,
-      className: bkg.indexOf("http") >= 0 ? "bkg" : "",
+      className: item.get("value").indexOf("http") >= 0 ? "bkg" : "",
       template: '<div class="bullet" style="background: <%= value %>"></div><%= name || ((name === false) ? "false": "null") %>'
     });
 
@@ -437,11 +438,9 @@ cdb.geo.ui.CustomLegend = cdb.core.View.extend({
 
   _renderItem: function(item) {
 
-    var bkg = item.get("value");
-
     view = new cdb.geo.ui.LegendItem({
       model: item,
-      className: bkg.indexOf("http") >= 0 ? "bkg" : "",
+      className: item.get("value").indexOf("http") >= 0 ? "bkg" : "",
       template: '<div class="bullet" style="background:<%= value %>"></div><%= name || "null" %>'
     });
 
@@ -788,3 +787,4 @@ cdb.geo.ui.Legend = cdb.core.View.extend({
   }
 
 });
+

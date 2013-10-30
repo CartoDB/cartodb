@@ -154,7 +154,21 @@ a.info {
     color:#A9A9A9;
     line-height:20px;
 
-    &:hover {cursor:pointer}
+    i.synced {
+      @include inline-block();
+      vertical-align:top;
+      width:12px;
+      height:12px;
+      margin:5px 0 0 4px;
+      @include background(sprite($icons-sprites, sync_layer_icon, $offset-x:0, $offset-y:0) no-repeat);
+    }
+
+    &:hover {
+      cursor:pointer;
+      i.synced {
+        @include background(sprite($icons-sprites, sync_layer_icon, $offset-x:0, $offset-y:-12px) no-repeat);
+      }
+    }
   }
 
   .name_info {

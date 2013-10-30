@@ -194,6 +194,7 @@
     }
 
     &.visualizations aside .head { margin-top: 25px; }
+
     &.tables aside .head { margin-top: 55px; }
 
     &.tables.active {
@@ -346,6 +347,8 @@
         padding: 30px 0 56px 0;
         border-bottom:1px solid #E5E5E5;
 
+        h2 { word-spacing: 0; }
+
       }
 
       section.visualizations > .head {
@@ -355,6 +358,8 @@
         padding: 19px 7px 30px 0;
 
         @extend .clearfix;
+
+        h2 { word-spacing: 0; }
 
         h2 i {
           @include inline-block();

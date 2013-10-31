@@ -1,5 +1,6 @@
 # encoding: utf-8
 require 'typhoeus'
+require 'open3'
 require_relative './exceptions'
 require_relative './source_file'
 require_relative '../../../data-repository/filesystem/local'
@@ -58,19 +59,19 @@ module CartoDB
         @last_modified  = last_modified_from(headers)
         return self unless modified?
 
-        response  = download
-        headers   = response.headers
-        puts headers.inspect
-        data      = StringIO.new(response.response_body)
-        name      = name_from(headers, url)
+        response        = download
+        headers         = response.headers
+        data            = StringIO.new(response.response_body)
+        name            = name_from(headers, url)
 
         @etag           = etag_from(headers)
         @last_modified  = last_modified_from(headers)
-        self.source_file  = SourceFile.new(
-          filepath(name),
-          name
-        )
+
+        self.source_file  = SourceFile.new(filepath(name), name)
         repository.store(source_file.path, data)
+        @checksum = 
+          Open3.capture2e(md5_command_for(source_file.fullpath)).first
+        self.source_file  = nil unless modified?
         self
       end
 
@@ -97,7 +98,11 @@ module CartoDB
       end
 
       def download
-        Typhoeus.get(translate(url), typhoeus_options)
+        response = Typhoeus.get(translate(url), typhoeus_options)
+        while response.headers['location']
+          response = Typhoeus.get(translate(url), typhoeus_options)
+        end
+        response
       end
 
       def name_from(headers, url)
@@ -111,13 +116,17 @@ module CartoDB
       def modified?
         previous_etag           = http_options.fetch(:etag, false)
         previous_last_modified  = http_options.fetch(:last_modified, false)
+        previous_checksum       = http_options.fetch(:checksum, false)
         etag                    = etag_from(headers)
         last_modified           = last_modified_from(headers)
+        checksum                = @checksum if defined?(@checksum)
 
         return true unless (previous_etag || previous_last_modified) 
         return true if previous_etag && etag && previous_etag != etag
         return true if previous_last_modified && last_modified && 
           previous_last_modified.to_i < last_modified.to_i
+        return true if previous_checksum && checksum &&
+          previous_checksum != checksum
         false
       rescue
         false
@@ -186,6 +195,10 @@ module CartoDB
         Dir.mkdir(temporary_directory)
         @temporary_directory
       end #temporary_directory
+
+      def md5_command_for(name)
+        %Q(md5sum #{name} | cut -d' ' -f1)
+      end
     end # Downloader
   end # Importer2
 end # CartoDB

@@ -8,13 +8,20 @@ include CartoDB::Importer2
 describe UrlTranslator::FusionTables do
   describe '#translate' do
     it 'returns a translated Fusion Tables url' do
-      url = "https://www.google.com/fusiontables/DataSource?" +
-            "docid=1dimNIKKwROG1yTvJ6JlMm4-B4LxMs2YbncM4p9g#map:id=3"
+      url1  = "https://www.google.com/fusiontables/DataSource?" +
+              "docid=1dimNIKKwROG1yTvJ6JlMm4-B4LxMs2YbncM4p9g#map:id=3"
+      url2  = "https://www.google.com/fusiontables/data?" +
+              "docid=1G0S0PVX2lD39uY6VC4VwYy2dbGGh8uHNG9bPxng#map:id=3"
 
-      translated = UrlTranslator::FusionTables.new.translate(url)
+      translated = UrlTranslator::FusionTables.new.translate(url1)
       translated.must_equal "https://www.google.com/fusiontables/"  +
                             "exporttable?query=select+*+from+"      +
                             "1dimNIKKwROG1yTvJ6JlMm4-B4LxMs2YbncM4p9g"
+
+      translated = UrlTranslator::FusionTables.new.translate(url2)
+      translated.must_equal "https://www.google.com/fusiontables/"  +
+                            "exporttable?query=select+*+from+"      +
+                            "1G0S0PVX2lD39uY6VC4VwYy2dbGGh8uHNG9bPxng"
     end
 
     it 'returns the url if already translated' do

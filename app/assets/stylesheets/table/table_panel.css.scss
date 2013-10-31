@@ -100,7 +100,7 @@ $corner_radius: 6px;
 
   // Layer edition
   @include default-input();
-  
+
   input.alias {
     @include default-input();
     position:absolute;
@@ -155,7 +155,21 @@ a.info {
     color:#A9A9A9;
     line-height:20px;
 
-    &:hover {cursor:pointer}
+    i.synced {
+      @include inline-block();
+      vertical-align:top;
+      width:12px;
+      height:12px;
+      margin:5px 0 0 4px;
+      @include background(sprite($icons-sprites, sync_layer_icon, $offset-x:0, $offset-y:0) no-repeat);
+    }
+
+    &:hover {
+      cursor:pointer;
+      i.synced {
+        @include background(sprite($icons-sprites, sync_layer_icon, $offset-x:0, $offset-y:-12px) no-repeat);
+      }
+    }
   }
 
   .name_info {
@@ -770,7 +784,7 @@ a.info {
       display:none;
       padding:20px 40px;
       @include border-top-left-radius(4px);
-      
+
       text-align:center;
       line-height: normal;
       background:rgba(white,0.9);
@@ -986,6 +1000,7 @@ a.info {
             @include default-input();
 
             .value { margin-right: 5px; }
+            .value.empty { color: #ccc; }
 
             input {
               font-size: 13px;
@@ -1216,12 +1231,19 @@ a.info {
           &.choropleth {
             background: image-url('layout/wizard-choropleth.png') no-repeat;
             &.line, &.line-line { background: image-url('layout/wizard-choropleth-polyline.png') no-repeat;}
+            &.polygon, &.polygon-polygon { background: image-url('layout/wizard-choropleth-polygon.png') no-repeat;}
           }
 
           &.color {
             background: image-url('layout/wizard-color.png') no-repeat;
             &.polygon, &.polygon-polygon { background: image-url('layout/wizard-color-polygon.png') no-repeat;}
             &.line, &.line-line { background: image-url('layout/wizard-color-polyline.png') no-repeat;}
+          }
+
+          &.category {
+            background: image-url('layout/wizard-category.png') no-repeat;
+            &.polygon, &.polygon-polygon { background: image-url('layout/wizard-category-polygon.png') no-repeat;}
+            &.line, &.line-line { background: image-url('layout/wizard-category-polyline.png') no-repeat;}
           }
 
           &.bubble  { background: image-url('layout/wizard-bubble.png') no-repeat;}
@@ -1332,7 +1354,7 @@ a.info {
       }
 
       // Color wizard styles
-      ul.custom_colors {
+      ul.custom_colors, ul.custom_categories {
         margin:0;
         border-top:1px solid rgba(#E5E5E5,0.5);
         li.custom_color_item {

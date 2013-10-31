@@ -13,7 +13,7 @@ module CartoDB
     class Member
       include Virtus
 
-      STATES = %w{ enabled disabled }
+      STATES                        = %w{ success failure syncing }
       REDIS_LOG_KEY_PREFIX          = 'synchronization'
       REDIS_LOG_EXPIRATION_IN_SECS  = 3600 * 24 * 2 # 2 days
 
@@ -43,9 +43,17 @@ module CartoDB
         self.state          ||= 'created'
         self.ran_at         ||= Time.now
         self.interval       ||= 3600
-        self.run_at         ||= ran_at + interval
+        self.run_at         ||= Time.now + interval
         self.retried_times  ||= 0
         self.log_id         ||= log.id
+      end
+
+      def interval=(seconds=3600)
+        super(seconds.to_i)
+        if seconds
+          self.run_at = Time.now + (seconds.to_i || 3600)
+        end
+        @seconds
       end
 
       def store
@@ -75,6 +83,7 @@ module CartoDB
       def run
         self.state    = 'syncing'
         self.ran_at   = Time.now
+        self.run_at   = Time.now + interval
         log           = TrackRecord::Log.new(
                           prefix:     REDIS_LOG_KEY_PREFIX,
                           expiration: REDIS_LOG_EXPIRATION_IN_SECS
@@ -85,7 +94,8 @@ module CartoDB
         downloader    = CartoDB::Importer2::Downloader.new(
                           url,
                           etag:           etag,
-                          last_modified:  modified_at
+                          last_modified:  modified_at,
+                          checksum:       checksum
                         )
         runner        = CartoDB::Importer2::Runner.new(
                           pg_options, downloader, log, user.remaining_quota
@@ -117,10 +127,11 @@ module CartoDB
         self.log            << "******** synchronization succeeded ********" 
         self.state          = 'success'
         self.etag           = importer.etag
+        self.checksum       = importer.checksum
         self.error_code     = nil
         self.error_message  = nil
         self.retried_times  = 0
-        self.run_at         = Time.now.utc + interval
+        self.run_at         = Time.now + interval
         self.modified_at    = importer.last_modified
       rescue
         self
@@ -154,18 +165,6 @@ module CartoDB
         true
       end
 
-      def enabled?
-        state == 'enabled'
-      end
-
-      def enable
-        self.state = 'enabled'
-      end
-
-      def disable
-        self.state = 'disabled'
-      end
-      
       def set_timestamps
         self.created_at ||= Time.now
         self.updated_at = Time.now

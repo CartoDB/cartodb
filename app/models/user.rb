@@ -586,7 +586,7 @@ class User < Sequel::Model
   end
 
   def success_import_count
-    DataImport.where(user_id: self.id, state: 'success').count
+    DataImport.where(user_id: self.id, state: 'complete').count
   end
  
   def import_count

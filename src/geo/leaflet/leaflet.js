@@ -284,7 +284,9 @@
       // for google maps create a plain layer
       "gmapsbase": cdb.geo.LeafLetPlainLayerView,
       "layergroup": cdb.geo.LeafLetCartoDBLayerGroupView,
-      "torque": cdb.geo.LeafLetTorqueLayer
+      "torque": function(layer, map) {
+        return new cdb.geo.LeafLetTorqueLayer(layer, map);
+      }
     },
 
     createLayer: function(layer, map) {

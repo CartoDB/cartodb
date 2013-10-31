@@ -39,7 +39,8 @@ class Geocoding < Sequel::Model
       table_geocoder.geocoder.update_status
       self.update(
         processed_rows: table_geocoder.geocoder.processed_rows,
-        total_rows: table_geocoder.geocoder.total_rows
+        total_rows: table_geocoder.geocoder.total_rows,
+        state: table_geocoder.geocoder.status
       )
       puts "#{processed_rows}/#{total_rows}"
       sleep(2)

@@ -5,6 +5,9 @@
 
 (function( $, undefined ) {
 
+// if already exist don't overwrite
+if ($.ui) return;
+
 var uuid = 0,
 	runiqueId = /^ui-id-\d+$/;
 

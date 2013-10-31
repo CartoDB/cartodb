@@ -112,13 +112,13 @@ describe CartoDB::TableGeocoder do
       token:  'A7tBPacePg9Mj_zghvKt9Q',
       mailto: 'arango@gmail.com'
     )
+    `open #{t.working_dir}`
     t.run
     until t.geocoder.status == 'completed' do
       t.geocoder.update_status
       puts "#{t.geocoder.status} #{t.geocoder.processed_rows}/#{t.geocoder.total_rows}"
       sleep(2)
     end
-    `open #{t.working_dir}`
     t.process_results
     @tg.should == ''
   end

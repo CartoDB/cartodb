@@ -33,6 +33,7 @@ class Geocoding < Sequel::Model
   end # before_save
 
   def run!
+    self.update(state: 'started')
     table_geocoder.run
     self.update remote_id: table_geocoder.remote_id
     begin
@@ -46,6 +47,7 @@ class Geocoding < Sequel::Model
       sleep(2)
     end until table_geocoder.geocoder.status == 'completed'
     table_geocoder.process_results
+    self.update(state: 'finished')
   end # run!
 
   # {field}, SPAIN => field, ', SPAIN'

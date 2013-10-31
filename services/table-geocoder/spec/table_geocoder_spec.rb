@@ -90,7 +90,7 @@ describe CartoDB::TableGeocoder do
     end
 
     it 'returns an alternative name if the table exists' do
-      tg = CartoDB::TableGeocoder.new(table_name: 'a', connection: @db, remote_id: 'wadus')      
+      tg = CartoDB::TableGeocoder.new(table_name: 'a', connection: @db, remote_id: 'wadus')
       @db.run("drop table if exists geo_wadus; create table geo_wadus (id int)")
       @db.run("drop table if exists geo_wadus_1; create table geo_wadus_1 (id int)")
       tg.temp_table_name.should eq 'geo_wadus_2'
@@ -103,6 +103,27 @@ describe CartoDB::TableGeocoder do
   describe '#load_results_into_original_table' do
   end
 
+  describe '#add_georef_status_column' do
+    before do
+      @db.run("create table wwwwww (id integer)")
+      @tg = CartoDB::TableGeocoder.new(table_name: 'wwwwww', connection: @db, remote_id: 'wadus')
+    end
+
+    after do
+      @db.run("drop table wwwwww")
+    end
+
+    it 'adds a boolean cartodb_georef_status column' do
+      @tg.add_georef_status_column
+      @db.run("select cartodb_georef_status from wwwwww").should eq nil
+    end
+
+    it 'does nothing when the column already exists' do
+      @tg.add_georef_status_column
+      @tg.add_georef_status_column
+    end
+  end
+
   it "wadus" do
     t = CartoDB::TableGeocoder.new(
       table_name: @table_name,
@@ -112,13 +133,13 @@ describe CartoDB::TableGeocoder do
       token:  'A7tBPacePg9Mj_zghvKt9Q',
       mailto: 'arango@gmail.com'
     )
+    `open #{t.working_dir}`
     t.run
     until t.geocoder.status == 'completed' do
       t.geocoder.update_status
       puts "#{t.geocoder.status} #{t.geocoder.processed_rows}/#{t.geocoder.total_rows}"
       sleep(2)
     end
-    `open #{t.working_dir}`
     t.process_results
     @tg.should == ''
   end

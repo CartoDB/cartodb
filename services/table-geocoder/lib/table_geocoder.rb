@@ -25,6 +25,7 @@ module CartoDB
     end # initialize
 
     def run
+      add_georef_status_column
       csv_file = generate_csv
       start_geocoding_job(csv_file)
     end
@@ -35,6 +36,7 @@ module CartoDB
         COPY (
           SELECT concat(#{formatter}) as recId, concat(#{formatter}) as searchText 
           FROM #{table_name}
+          WHERE cartodb_georef_status IS FALSE OR cartodb_georef_status IS NULL
           GROUP BY recId
         ) TO '#{csv_file}' DELIMITER ',' CSV HEADER
       })
@@ -102,10 +104,20 @@ module CartoDB
         SET the_geom = ST_GeomFromText(
             'POINT(' || orig.displayLongitude || ' ' ||
               orig.displayLatitude || ')', 4326
-            )
+            ),
+            cartodb_georef_status = true
         FROM #{temp_table_name} AS orig
         WHERE concat(#{formatter}) = orig.recId
       })
+    end
+
+    def add_georef_status_column
+      connection.run(%Q{
+        ALTER TABLE #{table_name} 
+        ADD COLUMN cartodb_georef_status BOOLEAN DEFAULT FALSE
+      })
+    rescue Sequel::DatabaseError => e
+      raise unless e.message =~ /column .* of relation .* already exists/
     end
 
     def temp_table_name

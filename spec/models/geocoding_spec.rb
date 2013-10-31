@@ -68,7 +68,7 @@ describe Geocoding do
       geocoding.run!
       geocoding.total_rows.should eq 20
       geocoding.processed_rows.should eq 10
-      geocoding.state.should eq 'completed'
+      geocoding.state.should eq 'finished'
     end
   end
 

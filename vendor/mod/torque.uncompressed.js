@@ -830,14 +830,41 @@ exports.Profiler = Profiler;
       };
     },
 
-    url: function() {
+    _host: function() {
       var opts = this.options;
       var port = opts.sql_api_port;
       var domain = ((opts.user_name || opts.user) + '.' + (opts.sql_api_domain || 'cartodb.com')) + (port ? ':' + port: '');
       var protocol = opts.sql_api_protocol || 'http';
       return this.options.url || protocol + '://' + domain + '/api/v2/sql';
     },
-  
+
+    url: function(subhost) {
+      var opts = this.options;
+      var protocol = opts.sql_api_protocol || 'http';
+      if (!this.options.cdn_url) {
+        return this._host();
+      }
+      var h = protocol+ "://";
+      if (subhost) {
+        h += subhost + ".";
+      }
+      var cdn_host = opts.cdn_url;
+      if(!cdn_host.http && !cdn_host.https) {
+        throw new Error("cdn_host should contain http and/or https entries");
+      }
+      h += cdn_host[protocol] + "/" + (opts.user_name || opts.user);
+      return h;
+    },
+
+    _hash: function(str) {
+      var hash = 0;
+      if (!str || str.length == 0) return hash;
+      for (var i = 0, l = str.length; i < l; ++i) {
+          hash = (( (hash << 5 ) - hash ) + str.charCodeAt(i)) | 0;
+      }
+      return hash;
+    },
+
     _extraParams: function() {
       if (this.options.extra_params) {
         var p = [];
@@ -852,9 +879,11 @@ exports.Profiler = Profiler;
 
     // execute actual query
     sql: function(sql, callback, options) {
+      var subdomains = this.options.subdomains || '0123';
+      var url = this.url(subdomains[Math.abs(this._hash(sql))%subdomains.length]);
       var extra = this._extraParams();
       options = options || {};
-      torque.net.get(this.url() + "?q=" + encodeURIComponent(sql) + (extra ? "&" + extra: ''), function (data) {
+      torque.net.get( url + "?q=" + encodeURIComponent(sql) + (extra ? "&" + extra: ''), function (data) {
           if(options.parseJSON) {
             data = JSON.parse(data && data.responseText);
           }
@@ -980,13 +1009,16 @@ exports.Profiler = Profiler;
     _fetchKeySpan: function() {
       var self = this;
       var max_col, min_col, max_tmpl, min_tmpl;
-      var query = format("select {column} from ({sql}) __torque_wrap_sql limit 0", {
+      var query = format("with s as (select EXTRACT(EPOCH FROM max(updated_at)) as max FROM CDB_TableMetadata m WHERE m.tabname::name = any ( CDB_QueryTables('{sql}'))) select {column}, s.max as last_updated " + 
+                         "from s, ({sql}) __torque_wrap_sql limit 1", {
         column: this.options.column,
         sql: self.getSQL()
       });
 
       this.sql(query, function (data) {
         if (!data) return;
+        self.options.extra_params = self.options.extra_params || {};
+        self.options.extra_params.last_updated = data.rows[0].updated_at || 0;
         self.options.is_time = data.fields[self.options.column].type === 'date';
 
         if (self.options.is_time){

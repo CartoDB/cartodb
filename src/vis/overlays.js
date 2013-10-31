@@ -147,12 +147,17 @@ cdb.vis.Overlay.register('layer_selector', function(data, vis) {
   });
 
   if(vis.legends) {
-    layerSelector.bind('change:visible', function(visible, order) {
-      //var o = vis.legends.options.legends.length - order - 1;
-      var legend = vis.legends && vis.legends.getLayerByIndex(order);
-
-      if(legend) {
-        legend[visible ? 'show': 'hide']();
+    layerSelector.bind('change:visible', function(visible, order, layer) {
+      if (layer.get('type') === 'layergroup') {
+        var legend = vis.legends && vis.legends.getLayerByIndex(order);
+        if(legend) {
+          legend[visible ? 'show': 'hide']();
+        }
+      } else if (layer.get('type') === 'torque') {
+        var timeSlider = vis.getOverlay('time_slider');
+        if (timeSlider) {
+          timeSlider[visible ? 'show': 'hide']();
+        }
       }
 
     });

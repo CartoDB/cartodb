@@ -21,7 +21,7 @@ class Geocoding < Sequel::Model
   def instantiate_table_geocoder
     @table_geocoder = CartoDB::TableGeocoder.new(Cartodb.config[:geocoder].symbolize_keys.merge(
       table_name: table_name,
-      formatter:  formatter,
+      formatter:  translate_formatter,
       connection: (user.present? ? user.in_database(as: :superuser) : nil),
       remote_id:  remote_id
     ))
@@ -45,5 +45,16 @@ class Geocoding < Sequel::Model
       sleep(2)
     end until table_geocoder.geocoder.status == 'completed'
     table_geocoder.process_results
-  end # run_geocoding!
+  end # run!
+
+  # {field}, SPAIN => field, ', SPAIN'
+  def translate_formatter
+    translated = formatter.to_s.squish
+    translated.prepend("'") unless /^\{/.match(formatter)
+    translated << "'" unless /\}$/.match(formatter)
+    translated.gsub(/^\{/, '')
+              .gsub(/\}$/, '')
+              .gsub(/\}/, ", '")
+              .gsub(/\{/, "', ")
+  end # translate_formatter
 end

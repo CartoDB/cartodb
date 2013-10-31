@@ -56,7 +56,7 @@ describe Geocoding do
   end
 
   describe '#run!' do
-    it 'updates total_rows and processed_rows' do
+    it 'updates total_rows, processed_rows and state' do
       geocoding = Geocoding.create(user: @user, table_name: 'a', formatter: 'b')
       geocoding.table_geocoder.stubs(:run).returns true
       geocoding.table_geocoder.stubs(:process_results).returns true
@@ -68,6 +68,7 @@ describe Geocoding do
       geocoding.run!
       geocoding.total_rows.should eq 20
       geocoding.processed_rows.should eq 10
+      geocoding.state.should eq 'completed'
     end
   end
 

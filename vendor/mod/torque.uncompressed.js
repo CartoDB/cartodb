@@ -3175,6 +3175,7 @@ L.TorqueLayer = L.CanvasLayer.extend({
    * requestAnimationFrame. Use redraw to refresh it
    */
   render: function() {
+    if(this.hidden) return;
     var t, tile, pos;
     var canvas = this.getCanvas();
     canvas.width = canvas.width;

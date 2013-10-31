@@ -324,7 +324,7 @@ cdb.geo.ui.CategoryLegend = cdb.core.View.extend({
 
     view = new cdb.geo.ui.LegendItem({
       model: item,
-      template: '<div class="bullet" style="background:<%= value %>"></div><%= name || "null" %>'
+      template: '<div class="bullet" style="background:<%= value %>"></div><%= name || ((name === false) ? "false": "null") %>'
     });
 
     this.$el.find("ul").append(view.render());

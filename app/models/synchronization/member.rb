@@ -82,8 +82,6 @@ module CartoDB
 
       def run
         self.state    = 'syncing'
-        self.ran_at   = Time.now
-        self.run_at   = Time.now + interval
         log           = TrackRecord::Log.new(
                           prefix:     REDIS_LOG_KEY_PREFIX,
                           expiration: REDIS_LOG_EXPIRATION_IN_SECS
@@ -105,6 +103,8 @@ module CartoDB
                           .new(name, runner, database, user)
         
         importer.run
+        self.ran_at   = Time.now
+        self.run_at   = Time.now + interval
 
         if importer.success?
           set_success_state_from(importer)

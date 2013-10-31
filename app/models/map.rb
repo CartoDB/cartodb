@@ -19,6 +19,9 @@ class Map < Sequel::Model
   many_to_many  :user_layers, clone: :layers, right_key: :layer_id,
                 conditions: "kind in ('tiled', 'background', 'gmapsbase')"
 
+  many_to_many  :carto_and_torque_layers, clone: :layers, right_key: :layer_id,
+                conditions: "kind in ('carto', 'torque')"
+
   many_to_many  :other_layers, clone: :layers, right_key: :layer_id,
                 conditions: "kind not in ('carto', 'tiled', 'background', 'gmapsbase')"
 

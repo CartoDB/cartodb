@@ -12,6 +12,7 @@
     , config = <%=raw frontend_config.html_safe %>
     , upgrade_url = "<%= upgrade_url %>"
     , dashboard_first_time = <%= @first_time %>
+    , just_logged_in = <%= @just_logged_in ? 'true' : 'false' %>
     , mixpanel_token = "<%= Cartodb.config[:mixpanel]['token'] if Cartodb.config[:mixpanel].present? %>";
   </script>
 <% end %>

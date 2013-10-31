@@ -72,6 +72,9 @@ describe Downloader do
       downloader.run
       downloader.modified?.must_equal false
     end
+
+    it "doesn't generate a source file if checksum hasn't changed" do
+    end
   end
 
   describe '#source_file' do

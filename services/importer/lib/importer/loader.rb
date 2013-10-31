@@ -71,9 +71,14 @@ module CartoDB
       end #encoding
 
       def georeferencer
-        @georeferencer ||= 
-          Georeferencer.new(job.db, job.table_name, SCHEMA, job)
+        @georeferencer ||= Georeferencer.new(
+          job.db, job.table_name, SCHEMA, job, geometry_columns
+        )
       end #georeferencer
+
+      def geometry_columns
+        ['wkb_geometry'] if @source_file.extension == '.shp'
+      end
 
       def valid_table_names
         [job.table_name]

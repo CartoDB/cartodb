@@ -17,8 +17,10 @@ module CartoDB
       def run(&tracker)
         runner.run(&tracker)
         result = results.select(&:success?).first
-        overwrite(table_name, result)
-        cartodbfy(table_name)
+        if runner.remote_data_updated?
+          overwrite(table_name, result)
+          cartodbfy(table_name)
+        end
         self
       rescue => exception
         puts exception.to_s
@@ -40,10 +42,30 @@ module CartoDB
 
       def cartodbfy(table_name)
         table = ::Table.where(name: table_name, user_id: user.id).first
-        table.import_to_cartodb
+        #table.migrate_existing_table = table_name
+        table.force_schema = true
+        table.send :update_updated_at
+        table.import_to_cartodb(table_name)
+        table.schema(reload: true)
         table.import_cleanup
-        table.send(:set_the_geom_column!)
+        table.schema(reload: true)
+        table.reload
+        # Set default triggers
+        table.send :set_the_geom_column!
+        table.send :update_table_pg_stats
+        table.send :add_python
+        table.send :set_trigger_cache_timestamp
+        table.send :set_trigger_check_quota
+        table.send :set_trigger_update_updated_at
         table.save
+        table.send(:invalidate_varnish_cache)
+        puts '======= after invalidating'
+        database.run("UPDATE #{table.name} SET updated_at = updated_at")
+          #WHERE cartodb_id = (SELECT max(cartodb_id) FROM #{table.name})")
+      rescue => exception
+        stacktrace = exception.to_s + exception.backtrace.join
+        puts stacktrace
+        Rollbar.report_message("Sync cartodbfy error", "error", error_info: stacktrace)
         table.send(:invalidate_varnish_cache)
       end
 
@@ -57,6 +79,10 @@ module CartoDB
 
       def last_modified
         runner.last_modified
+      end
+
+      def checksum
+        runner.checksum
       end
 
       def move_to_schema(result, schema=DESTINATION_SCHEMA)

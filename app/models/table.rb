@@ -232,15 +232,19 @@ class Table < Sequel::Model(:user_tables)
     # => leaving both in tact while creating a new tthat contains both
   end
 
-  def import_to_cartodb
-    if migrate_existing_table.present?
+  def import_to_cartodb(uniname=nil)
+    puts "==== before migration existing table"
+    @data_import ||= DataImport.where(id: data_import_id).first
+    if migrate_existing_table.present? || uniname
+      puts "======= import_to_cartodb"
+      puts "======= import_to_cartodb"
       @data_import.data_type = 'external_table'
-      @data_import.data_source = migrate_existing_table
+      @data_import.data_source = migrate_existing_table || uniname
       #@data_import.migrate
       @data_import.save
 
       # ensure unique name, also ensures self.name can override any imported table name
-      uniname = self.name ? get_valid_name(self.name) : get_valid_name(migrate_existing_table)
+      uniname ||= self.name ? get_valid_name(self.name) : get_valid_name(migrate_existing_table)
 
       # with table #{uniname} table created now run migrator to CartoDBify
       hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
@@ -248,7 +252,7 @@ class Table < Sequel::Model(:user_tables)
         :logger => ::Rails.logger,
         "username" => owner.database_username,
         "password" => owner.database_password,
-        :current_name => migrate_existing_table,
+        :current_name => migrate_existing_table || uniname,
         :suggested_name => uniname,
         :debug => (Rails.env.development?),
         :remaining_quota => owner.remaining_quota,
@@ -765,6 +769,7 @@ class Table < Sequel::Model(:user_tables)
         primary_key = user_database.from(name).insert(make_sequel_compatible(attributes))
       rescue Sequel::DatabaseError => e
         message = e.message.split("\n")[0]
+        raise message if message =~ /Quota exceeded by/
 
         # If the type don't match the schema of the table is modified for the next valid type
         invalid_value = (m = message.match(/"([^"]+)"$/)) ? m[1] : nil

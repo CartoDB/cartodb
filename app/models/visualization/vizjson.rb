@@ -45,10 +45,11 @@ module CartoDB
       end #bounds_from
 
       def layers_for(visualization)
-        [base_layers_for(visualization), 
-         layer_group_for(visualization),
-         other_layers_for(visualization)
-         ].compact.flatten
+        [
+          base_layers_for(visualization), 
+          layer_group_for(visualization),
+          other_layers_for(visualization)
+        ].compact.flatten
       end #layers_for
 
       def base_layers_for(visualization)

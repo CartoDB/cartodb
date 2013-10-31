@@ -1,33 +1,29 @@
 2.3.2
 -----
-* Improvements
-  * Allow setting an image to each category, not only a color.
-  * If legend title is empty and you fill it, it should be enable by default.
-  * Color the 'empty' message in the legend title in a subtle gray.
-  * Chrolopleth for points.
-  * Hookup importer checksum mechanisms with synchronizations.
-  * Force follow redirects in importer.
-  * Update run_at when changing synchronization interval of a table
-
 * Fixed Bugs
-  * Generate the_geom only from wkb_geometry for SHPs.
-  * Create your first table button does not work.
-  * If a sync table is added to a visualization, we don't provide any information about this current layer (synced table).
-  * Timezone skew on sync tables display.
-  * Update Sync table table UI components.
-  * When deleting a table that is syncronized a message with a warning is displayed and is not neccesary.
-  * Support alternative formats for Google Fusion Tables urls.
-  * Show when a sync table will be synced again in the dashboard.
-  * Add privacy explanation on the create new table window.
-  * Fix visualizations list in Safari under Mavericks.
-  * Import successful stopped working.
-  * Trying to add a row after passed the quota limit returns a ugly error.
-  * Cannot deactivate the sync tables flag in Central.
-  * Enable sync-tables for all users.
-  * Decide about enable or disable sync-tables for everybody.
+  * Generate the_geom only from wkb_geometry for SHPs
+  * Create your first table button does not work
+  * If a sync table is added to a visualization, we don't provide any information about this current layer (synced table)
+  * Timezone skew on sync tables display
+  * Update Sync table table UI components
+  * When deleting a table that is syncronized a message with a warning is displayed and is not neccesary
+  * Support alternative formats for Google Fusion Tables urls
+  * Show when a sync table will be synced again in the dashboard
+  * Add privacy explanation on the create new table window
+  * Fix visualizations list in Safari under Mavericks
+  * Import successful stopped working
+  * Trying to add a row after passed the quota limit returns a ugly error
   * In a synced table, when the next sync is in a hour, the a letter appear as capital.
-  * Display 'Next sync will be in a few minutes' when run_at is in the past.
-  * Trivial typo (by @rfc2616).
+  * Display 'Next sync will be in a few minutes' when run_at is in the past
+  * If legend title is empty and you fill it, it should enable by default
+  * Trivial typo within table rename (by @rfc2616)
+
+* Improvements
+  * Color the 'empty' message in the legend title in a subtle gray
+  * chrolopleth for points
+  * Hookup importer checksum mechanisms with synchronizations
+  * Force follow redirects in importer
+  * Update run_at when changing synchronization interval of a table
 
 2.3.1
 -----

@@ -70,7 +70,7 @@ module CartoDB
       end #with_kind_as_type
 
       def as_torque(attributes)
-        return {
+        {
           id:         layer.id,
           type:       'torque',
           order:      layer.order,

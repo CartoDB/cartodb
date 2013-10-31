@@ -585,8 +585,21 @@ class User < Sequel::Model
     DataImport.where(user_id: self.id, state: 'failure').count
   end
 
+  def success_import_count
+    DataImport.where(user_id: self.id, state: 'success').count
+  end
+ 
+  def import_count
+    DataImport.where(user_id: self.id).count
+  end
+
   def visualization_count
     maps.count - table_count
+  end
+
+  def last_visualization_created_at
+    vis = maps.flat_map(&:visualizations).uniq.sort_by(&:created_at).last
+    vis != nil ? vis.created_at : nil
   end
 
   def rebuild_quota_trigger

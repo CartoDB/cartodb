@@ -14,11 +14,13 @@ module CartoDB
       DEFAULT_SCHEMA            = 'cdb_importer'
       THE_GEOM_WEBMERCATOR     = 'the_geom_webmercator'
 
-      def initialize(db, table_name, schema=DEFAULT_SCHEMA, job=nil)
+      def initialize(db, table_name, schema=DEFAULT_SCHEMA, job=nil,
+      geometry_columns=nil)
         @db         = db
         @job        = job || Job.new
         @table_name = table_name
         @schema     = schema
+        @geometry_columns = geometry_columns || GEOMETRY_POSSIBLE_NAMES
       end #initialize
 
       def run
@@ -119,7 +121,7 @@ module CartoDB
       end #longitude_column_name_in
 
       def geometry_column_in(qualified_table_name)
-        names = GEOMETRY_POSSIBLE_NAMES.map { |name| "'#{name}'" }.join(',')
+        names = geometry_columns.map { |name| "'#{name}'" }.join(',')
         find_column_in(table_name, names)
       end #geometry_column_in
 
@@ -167,7 +169,7 @@ module CartoDB
 
       private
 
-      attr_reader :db, :table_name, :schema, :job
+      attr_reader :db, :table_name, :schema, :job, :geometry_columns
 
       def qualified_table_name
         %Q("#{schema}"."#{table_name}")

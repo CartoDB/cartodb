@@ -98,6 +98,10 @@ module CartoDB
         downloader.etag
       end
 
+      def checksum
+        downloader.checksum
+      end
+
       def tracker
         @tracker || lambda { |state| }
       end #tracker
@@ -120,6 +124,7 @@ module CartoDB
           schema:         source_file.target_schema,
           extension:      source_file.extension,
           etag:           source_file.etag,
+          checksum:       source_file.checksum,
           last_modified:  source_file.last_modified,
           tables:         table_names,
           success:        job.success_status,

@@ -176,7 +176,7 @@ var Vis = cdb.core.View.extend({
       Loader.loadModule(mods[i]);
     }
     function loaded () {
-      if (self.checkModules()) {
+      if (self.checkModules(layers)) {
         cdb.config.unbind('moduleLoaded', loaded);
         done();
       }
@@ -703,7 +703,7 @@ var Vis = cdb.core.View.extend({
     var layerView = mapView.getLayerByCid(layer_cid);
 
     // add the associated overlays
-    if(this.infowindow && layerView.containInfowindow && layerView.containInfowindow()) {
+    if(layerView && this.infowindow && layerView.containInfowindow && layerView.containInfowindow()) {
       this.addInfowindow(layerView);
     }
 

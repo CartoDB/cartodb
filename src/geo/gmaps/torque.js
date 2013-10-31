@@ -26,7 +26,8 @@ var GMapsTorqueLayerView = function(layerModel, gmapsMap) {
       extra_params: {
         api_key: extra ? extra.map_key: ''
       },
-      map: gmapsMap
+      map: gmapsMap,
+      cdn_url: layerModel.get('no_cdn') ? null: (layerModel.get('cdn_url') || cdb.CDB_HOST)
   });
 
   this.setCartoCSS(this.model.get('tile_style'));

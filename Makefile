@@ -4,8 +4,7 @@ UGLIFYJS = ./node_modules/.bin/uglifyjs
 CSS_FILES = $(wildcard themes/css/infowindow/*.css themes/css/map/*.css)
 CSS_FILES_IE = $(wildcard themes/css/ie/*.css)
 
-TORQUE_FILES = vendor/mod/carto.js vendor/mod/torque.uncompressed.js scripts/mod.torque.footer.js vendor/mod/jquery-ui-slider.js
-
+TORQUE_FILES = vendor/mod/carto.js vendor/mod/torque.uncompressed.js src/geo/gmaps/torque.js src/geo/leaflet/torque.js src/geo/ui/time_slider.js vendor/mod/jquery-ui-slider.js scripts/mod.torque.footer.js
 #dist:  dist/cartodb.js dist/cartodb.full.js themes
 dist:  dist/cartodb.js dist/cartodb.css dist/cartodb.ie.css dist/cartodb.nojquery.js dist/cartodb.core.js dist/cartodb.mod.torque.js
 

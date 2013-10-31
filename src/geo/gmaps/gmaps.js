@@ -15,7 +15,9 @@ if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
       "plain": cdb.geo.GMapsPlainLayerView,
       "gmapsbase": cdb.geo.GMapsBaseLayerView,
       "layergroup": cdb.geo.GMapsCartoDBLayerGroupView,
-      "torque": cdb.geo.GMapsTorqueLayerView
+      "torque": function(layer, map) {
+        return new cdb.geo.GMapsTorqueLayerView(layer, map);
+      }
     },
 
     initialize: function() {

@@ -29,7 +29,8 @@ var LeafLetTorqueLayer = L.TorqueLayer.extend({
       visible: layerModel.get('visible'),
       extra_params: {
         api_key: extra ? extra.map_key: ''
-      }
+      },
+      cdn_url: layerModel.get('no_cdn') ? null: (layerModel.get('cdn_url') || cdb.CDB_HOST)
     });
 
     cdb.geo.LeafLetLayerView.call(this, layerModel, this, leafletMap);

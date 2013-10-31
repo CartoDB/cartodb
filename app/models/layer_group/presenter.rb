@@ -13,6 +13,11 @@ module CartoDB
       end #initialize
 
       def to_poro
+        layers = rendered_layers
+        # the map does not contains cartodb layers
+        if layers.size == 0
+          return nil
+        end
         { 
           type:               'layergroup',
           options:            {

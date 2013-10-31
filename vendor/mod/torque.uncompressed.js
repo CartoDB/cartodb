@@ -833,7 +833,7 @@ exports.Profiler = Profiler;
     url: function() {
       var opts = this.options;
       var port = opts.sql_api_port;
-      var domain = (opts.sql_api_domain || (this.options.user + '.cartodb.com')) + (port ? ':' + port: '');
+      var domain = ((opts.user_name || opts.user) + '.' + (opts.sql_api_domain || 'cartodb.com')) + (port ? ':' + port: '');
       var protocol = opts.sql_api_protocol || 'http';
       return this.options.url || protocol + '://' + domain + '/api/v2/sql';
     },

@@ -42,7 +42,7 @@ describe "Assets API" do
 
   describe 'GET /api/v1/geocodings' do
     it 'returns every geocoding belonging to current_user' do
-      FactoryGirl.create(:geocoding, table_name: 'a', formatter: 'b', user: @user)
+      FactoryGirl.create(:geocoding, table_name: 'a', formatter: 'b', user: @user, state: 'wadus')
       FactoryGirl.create(:geocoding, table_name: 'a', formatter: 'b', user_id: @user.id+1)
       get_json v1_geocodings_url(params) do |response|
         response.status.should be_success

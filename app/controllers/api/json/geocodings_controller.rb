@@ -3,7 +3,8 @@ class Api::Json::GeocodingsController < Api::ApplicationController
   ssl_required :index, :show, :create
 
   def index
-    render json: { geocodings: current_user.geocodings }
+    geocodings = Geocoding.where("user_id = ? AND (state NOT IN ?)", current_user.id, ['failed', 'finished', 'canceled'])
+    render json: { geocodings: geocodings }
   end
 
   def show

@@ -27,15 +27,6 @@ RSpec.configure do |config|
 
   config.after(:all) do
     $pool.close_connections!
-    Rails::Sequel.connection[
-      "SELECT datname FROM pg_database WHERE datistemplate IS FALSE AND datallowconn IS TRUE AND datname like 'cartodb_test_user_%'"
-    ].map(:datname).each { |user_database_name| 
-      Rails::Sequel.connection.run("SELECT pg_terminate_backend(procpid) FROM pg_stat_activity WHERE datname = '#{user_database_name}'")
-      Rails::Sequel.connection.run("drop database #{user_database_name}") 
-    }
-    Rails::Sequel.connection[
-      "SELECT u.usename FROM pg_catalog.pg_user u"
-    ].map{ |r| r.values.first }.each { |username| Rails::Sequel.connection.run("drop user #{username}") if username =~ /^test_cartodb_user_/ }
   end
 
   config.after(:suite) do

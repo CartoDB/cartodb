@@ -4,7 +4,8 @@ require_relative '../../geocoder/lib/geocoder'
 module CartoDB
   class TableGeocoder
 
-    attr_reader   :connection, :working_dir, :geocoder, :result, :temp_table_name
+    attr_reader   :connection, :working_dir, :geocoder, :result, 
+                  :temp_table_name, :max_rows
 
     attr_accessor :table_name, :formatter, :remote_id
 
@@ -15,6 +16,7 @@ module CartoDB
       @table_name  = arguments[:table_name]
       @formatter   = arguments[:formatter]
       @remote_id   = arguments[:remote_id]
+      @max_rows    = arguments[:max_rows] || 1000000
       @geocoder    = CartoDB::Geocoder.new(
         app_id:     arguments[:app_id],
         token:      arguments[:token],
@@ -38,6 +40,7 @@ module CartoDB
           FROM #{table_name}
           WHERE cartodb_georef_status IS FALSE OR cartodb_georef_status IS NULL
           GROUP BY recId
+          LIMIT #{max_rows}
         ) TO '#{csv_file}' DELIMITER ',' CSV HEADER
       })
       return csv_file

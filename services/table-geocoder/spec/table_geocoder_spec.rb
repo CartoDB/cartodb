@@ -27,7 +27,7 @@ describe CartoDB::TableGeocoder do
       @tg = CartoDB::TableGeocoder.new(default_params.merge({
         table_name: @table_name,
         formatter:  "name, ', ', sov0name",
-        connection: @db,
+        connection: @db
       }))
       @tg.geocoder.stubs(:upload).returns(true)
       @tg.geocoder.stubs(:request_id).returns('111')
@@ -40,6 +40,28 @@ describe CartoDB::TableGeocoder do
 
     it "assigns a remote_id" do
       @tg.remote_id.should == '111'
+    end
+  end
+
+  describe '#generate_csv' do
+    before do
+      @tg = CartoDB::TableGeocoder.new(default_params.merge({
+        table_name: @table_name,
+        formatter:  "name, ', ', sov0name",
+        connection: @db
+      }))
+      @tg.add_georef_status_column
+    end
+
+    it "generates a csv file with the correct format" do
+      @tg.generate_csv
+      File.open("#{@tg.working_dir}/wadus.csv").read.should == File.read(path_to('nokia_input.csv'))
+    end
+
+    it "honors max_rows" do
+      @tg.stubs(:max_rows).returns 10
+      @tg.generate_csv
+      `wc -l #{@tg.working_dir}/wadus.csv `.split.first.to_i.should eq 11
     end
   end
 
@@ -124,25 +146,25 @@ describe CartoDB::TableGeocoder do
     end
   end
 
-  it "wadus" do
-    t = CartoDB::TableGeocoder.new(
-      table_name: @table_name,
-      formatter:  "name, ', ', sov0name",
-      connection: @db,
-      app_id: 'KuYppsdXZznpffJsKT24',
-      token:  'A7tBPacePg9Mj_zghvKt9Q',
-      mailto: 'arango@gmail.com'
-    )
-    `open #{t.working_dir}`
-    t.run
-    until t.geocoder.status == 'completed' do
-      t.geocoder.update_status
-      puts "#{t.geocoder.status} #{t.geocoder.processed_rows}/#{t.geocoder.total_rows}"
-      sleep(2)
-    end
-    t.process_results
-    @tg.should == ''
-  end
+  # it "wadus" do
+  #   t = CartoDB::TableGeocoder.new(
+  #     table_name: @table_name,
+  #     formatter:  "name, ', ', sov0name",
+  #     connection: @db,
+  #     app_id: 'KuYppsdXZznpffJsKT24',
+  #     token:  'A7tBPacePg9Mj_zghvKt9Q',
+  #     mailto: 'arango@gmail.com'
+  #   )
+  #   `open #{t.working_dir}`
+  #   t.run
+  #   until t.geocoder.status == 'completed' do
+  #     t.geocoder.update_status
+  #     puts "#{t.geocoder.status} #{t.geocoder.processed_rows}/#{t.geocoder.total_rows}"
+  #     sleep(2)
+  #   end
+  #   t.process_results
+  #   @tg.should == ''
+  # end
 
 
   def path_to(filepath = '')

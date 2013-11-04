@@ -326,7 +326,7 @@ cdb.geo.ui.CategoryLegend = cdb.core.View.extend({
 
     view = new cdb.geo.ui.LegendItem({
       model: item,
-      className: item.get("value").indexOf("http") >= 0 ? "bkg" : "",
+      className: (item.get("value") && item.get("value").indexOf("http") >= 0) ? "bkg" : "",
       template: '<div class="bullet" style="background: <%= value %>"></div><%= name || ((name === false) ? "false": "null") %>'
     });
 
@@ -383,7 +383,7 @@ cdb.geo.ui.ColorLegend = cdb.core.View.extend({
 
     view = new cdb.geo.ui.LegendItem({
       model: item,
-      className: item.get("value").indexOf("http") >= 0 ? "bkg" : "",
+      className: (item.get("value") && item.get("value").indexOf("http") >= 0) ? "bkg" : "",
       template: '<div class="bullet" style="background: <%= value %>"></div><%= name || ((name === false) ? "false": "null") %>'
     });
 
@@ -440,7 +440,7 @@ cdb.geo.ui.CustomLegend = cdb.core.View.extend({
 
     view = new cdb.geo.ui.LegendItem({
       model: item,
-      className: item.get("value").indexOf("http") >= 0 ? "bkg" : "",
+      className: (item.get("value") && item.get("value").indexOf("http") >= 0) ? "bkg" : "",
       template: '<div class="bullet" style="background:<%= value %>"></div><%= name || "null" %>'
     });
 

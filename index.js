@@ -13,6 +13,7 @@
 //= require cdb/vendor/mwheelIntent
 //= require cdb/vendor/jscrollpane
 //= require cdb/vendor/spin
+//= require cdb/vendor/lzma
 //
 //= require cdb/src/cartodb
 //

@@ -165,6 +165,10 @@ describe User do
       @user.get_geocoding_calls(from: Time.now-5.days).should eq 3
       @user.get_geocoding_calls(from: Time.now-5.days, to: Time.now - 2.days).should eq 2
     end
+
+    it "should return 0 when no geocodings" do
+      @user.get_geocoding_calls(from: Time.now - 15.days, to: Time.now - 10.days).should eq 0
+    end
   end
 
   it "should have many tables" do

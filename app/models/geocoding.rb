@@ -23,7 +23,8 @@ class Geocoding < Sequel::Model
       table_name: table_name,
       formatter:  translate_formatter,
       connection: (user.present? ? user.in_database(as: :superuser) : nil),
-      remote_id:  remote_id
+      remote_id:  remote_id,
+      max_rows:   max_geocodable_rows
     ))
   end # instantiate_table_geocoder
 
@@ -60,4 +61,11 @@ class Geocoding < Sequel::Model
               .gsub(/\}/, ", '")
               .gsub(/\{/, "', ")
   end # translate_formatter
+
+  def max_geocodable_rows
+    return nil if user.blank? || user.account_type != 'FREE'
+    user.geocoding_quota - user.get_geocoding_calls
+  rescue
+    nil
+  end # max_geocodable_rows
 end

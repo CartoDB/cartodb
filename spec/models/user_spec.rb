@@ -149,6 +149,28 @@ describe User do
     end
   end
 
+  describe '#get_geocoding_calls' do
+    before do
+      delete_user_data @user
+      @user.stubs(:last_billing_cycle).returns(Date.today)
+      FactoryGirl.create(:geocoding, user: @user, created_at: Time.now, processed_rows: 1)
+      FactoryGirl.create(:geocoding, user: @user, created_at: Time.now - 5.days, processed_rows: 2)
+    end
+
+    it "should return the sum of geocoded rows for the current billing period" do
+      @user.get_geocoding_calls.should eq 1
+    end
+
+    it "should return the sum of geocoded rows for the specified period" do
+      @user.get_geocoding_calls(from: Time.now-5.days).should eq 3
+      @user.get_geocoding_calls(from: Time.now-5.days, to: Time.now - 2.days).should eq 2
+    end
+
+    it "should return 0 when no geocodings" do
+      @user.get_geocoding_calls(from: Time.now - 15.days, to: Time.now - 10.days).should eq 0
+    end
+  end
+
   it "should have many tables" do
     @user2.tables.should be_empty
     create_table :user_id => @user2.id, :name => 'My first table', :privacy => Table::PUBLIC

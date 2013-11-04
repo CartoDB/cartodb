@@ -426,6 +426,23 @@ describe Table do
       end
     end
 
+    it 'converts all names to downcase', now: true do
+      delete_user_data @user
+      @user.private_tables_enabled = false
+      @user.save
+
+      table = create_table({:name => 'Wadus table', :user_id => @user.id})
+      table.name.should == 'wadus_table'
+
+      Rails::Sequel.connection.table_exists?(table.name.to_sym).should be_false
+      @user.in_database do |user_database|
+        user_database.table_exists?(table.name.to_sym).should be_true
+      end
+
+      table.name = 'Wadus_table'
+      table.name.should == 'wadus_table'
+    end
+
     it "should remove varnish cache when the table is renamed" do
       delete_user_data @user
       @user.private_tables_enabled = false

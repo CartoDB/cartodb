@@ -91,6 +91,7 @@ module CartoDB
       end #unlink_from
 
       def name=(name)
+        name = name.downcase if name && table?
         self.name_changed = true if name != @name && !@name.nil?
         super(name)
       end #name=

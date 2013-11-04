@@ -26,11 +26,17 @@ RSpec.configure do |config|
   end
 
   config.after(:all) do
+    # TODO: avoid pool cleanup here and delegate
+    #       fine-tuned cleanup to each spec
+    #       See https://github.com/CartoDB/cartodb/issues/267
     $pool.close_connections!
     Rails::Sequel.connection[
       "SELECT datname FROM pg_database WHERE datistemplate IS FALSE AND datallowconn IS TRUE AND datname like 'cartodb_test_user_%'"
     ].map(:datname).each { |user_database_name| 
-      Rails::Sequel.connection.run("SELECT pg_terminate_backend(procpid) FROM pg_stat_activity WHERE datname = '#{user_database_name}'")
+      # If backend termination is needed there is a connection leak
+      # (see pool.close_connections call above)
+      # See https://github.com/CartoDB/cartodb/issues/267
+      #Rails::Sequel.connection.run("SELECT pg_terminate_backend(procpid) FROM pg_stat_activity WHERE datname = '#{user_database_name}'")
       Rails::Sequel.connection.run("drop database #{user_database_name}") 
     }
     Rails::Sequel.connection[

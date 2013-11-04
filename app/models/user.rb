@@ -368,7 +368,7 @@ class User < Sequel::Model
     date_from = (options[:from] ? options[:from].to_date : self.last_billing_cycle)
     Geocoding.where('user_id = ? AND created_at >= ? and created_at <= ?', self.id, date_from, date_to + 1.days)
       .sum(:processed_rows).to_i
-  end
+  end # get_geocoding_calls
 
   # Legacy stats fetching
 

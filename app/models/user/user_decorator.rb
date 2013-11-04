@@ -23,9 +23,9 @@ module CartoDB
         api_calls_block_price: self.map_view_block_price,
         geocoding: {
           quota:       self.geocoding_quota,
-          block_price: 1.5,
-          monthly_use: 1000,
-          hard_limit:  false
+          block_price: self.geocoding_block_price,
+          monthly_use: self.get_geocoding_calls,
+          hard_limit:  self.account_type == 'FREE'
         },
         billing_period: self.last_billing_cycle,
         max_layers: self.max_layers,

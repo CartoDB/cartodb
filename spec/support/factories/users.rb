@@ -30,6 +30,7 @@ module CartoDB
       user.period_end_date       = attributes[:period_end_date] if attributes.has_key?(:period_end_date)
       user.user_timeout          = attributes[:user_timeout] || 300000
       user.database_timeout      = attributes[:database_timeout] || 300000
+      user.geocoding_quota       = attributes[:geocoding_quota] || 1000
       user
     end
 

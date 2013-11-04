@@ -1,3 +1,8 @@
+3.2.05 (04//11/2013)
+-----
+- correctly shows false values in the category legend.
+- prepares the legends to support images
+
 3.2.04 (15//10/2013)
 -----
 - enable image basemaps

@@ -363,6 +363,12 @@ class User < Sequel::Model
     return calls
   end
 
+  def get_geocoding_calls(options = {})
+    date_to = (options[:to] ? options[:to].to_date : Date.today)
+    date_from = (options[:from] ? options[:from].to_date : self.last_billing_cycle)
+    Geocoding.where('user_id = ? AND created_at >= ? and created_at <= ?', self.id, date_from, date_to + 1.days).sum(:processed_rows)
+  end
+
   # Legacy stats fetching
 
     def get_old_api_calls

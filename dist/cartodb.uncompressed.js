@@ -1,6 +1,6 @@
-// cartodb.js version: 3.2.05
+// cartodb.js version: 3.2.06
 // uncompressed version: cartodb.uncompressed.js
-// sha: 1d004f2ce06d20a0c410caf9bab8ce6a93eba6bf
+// sha: 71950b3c702bebeeb7cdc736a1e4153523fa715e
 (function() {
   var root = this;
 
@@ -20429,7 +20429,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.2.05';
+    cdb.VERSION = '3.2.06';
 
     cdb.CARTOCSS_VERSIONS = {
       '2.0.0': '',
@@ -21799,18 +21799,23 @@ cdb.geo.Map = cdb.core.Model.extend({
   },
 
   _adjustZoomtoLayer: function(layer) {
-    //set zoom
-    //
-    /*
-    var z = layer.get('maxZoom');
-    if(_.isNumber(z)) {
-    this.set({ maxZoom: z });
+
+    var maxZoom = layer.get('maxZoom');
+
+    if (_.isNumber(maxZoom)) {
+      this.set({ maxZoom: maxZoom });
     }
-    z = layer.get('minZoom');
-    if(_.isNumber(z)) {
-    this.set({ minZoom: z });
+
+    var minZoom = layer.get('minZoom');
+
+    if (_.isNumber(minZoom)) {
+      this.set({ minZoom: minZoom });
     }
-    */
+
+    if (_.isNumber(maxZoom)) {
+      if ( this.get("zoom") > maxZoom ) this.set("zoom", maxZoom);
+    }
+
   },
 
   addLayer: function(layer, opts) {

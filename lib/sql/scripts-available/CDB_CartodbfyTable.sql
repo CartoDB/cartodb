@@ -288,9 +288,17 @@ BEGIN
 
   -- Initialize the_geom with values from the_geom_webmercator
   -- do this only if the_geom_webmercator was found (not created)
-  -- _and_ the_geom as NOT found.
+  -- _and_ the_geom was NOT found.
   IF exists_geom_cols[2] AND NOT exists_geom_cols[1] THEN
     sql := 'UPDATE ' || reloid::text || ' SET the_geom = ST_Transform(the_geom_webmercator, 4326) ';
+    EXECUTE sql;
+  END IF;
+
+  -- Initialize the_geom_webmercator with values from the_geom
+  -- do this only if the_geom was found (not created)
+  -- _and_ the_geom_webmercator was NOT found.
+  IF exists_geom_cols[1] AND NOT exists_geom_cols[2] THEN
+    sql := 'UPDATE ' || reloid::text || ' SET the_geom_webmercator = CDB_TransformToWebmercator(the_geom) ';
     EXECUTE sql;
   END IF;
 

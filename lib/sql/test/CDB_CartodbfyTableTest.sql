@@ -150,7 +150,7 @@ DROP TABLE t;
 -- table with wrong srid-constrained the_geom values
 CREATE TABLE t AS SELECT 'SRID=3857;LINESTRING(222638.981586547 222684.208505545, 111319.490793274 111325.142866385)'::geometry(geometry,3857) as the_geom;
 SELECT CDB_CartodbfyTableCheck('t', 'wrong srid-constrained the_geom');
-SELECT 'extent',ST_Extent(the_geom) FROM t;
+SELECT 'extent',ST_Extent(the_geom),ST_Extent(ST_SnapToGrid(the_geom_webmercator,1)) FROM t;
 DROP TABLE t;
 
 -- table with wrong srid-constrained the_geom_webmercator values (and no the_geom!)

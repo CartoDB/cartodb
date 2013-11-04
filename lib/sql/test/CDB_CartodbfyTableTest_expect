@@ -12,7 +12,7 @@ extent|BOX(-1 -1,0 0)
 DROP TABLE
 SELECT 1
 wrong srid-constrained the_geom cartodbfied fine
-extent|BOX(1 1,2 2)
+extent|BOX(1 1,2 2)|BOX(111319 111325,222639 222684)
 DROP TABLE
 SELECT 1
 wrong srid-constrained the_geom_webmercator cartodbfied fine

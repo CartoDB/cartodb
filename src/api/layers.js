@@ -124,8 +124,9 @@
       options = _.defaults(options, {
         infowindow: true,
         https: false,
-        legends: true
-      })
+        legends: true,
+        time_slider: true
+      });
 
       // check map type
       // TODO: improve checking
@@ -167,6 +168,10 @@
         if(options.legends) {
           viz.addLegends([layerData]);
         }
+        if(options.time_slider) {
+          viz.addTimeSlider(layerView);
+        }
+
         callback && callback(layerView);
         promise.trigger('done', layerView);
       }

@@ -961,8 +961,12 @@ exports.Profiler = Profiler;
 
       var self = this;
       this.sql(query, function (data) {
-        var rows = JSON.parse(data.responseText).rows;
-        callback(self.proccessTile(rows, coord, zoom));
+        if (data) {
+          var rows = JSON.parse(data.responseText).rows;
+          callback(self.proccessTile(rows, coord, zoom));
+        } else {
+          callback(null);
+        }
       });
     },
 
@@ -994,6 +998,7 @@ exports.Profiler = Profiler;
       if (this.options.steps !== steps) {
         this.options.steps = steps;
         this.options.step = (this.options.end- this.options.start)/this.options.steps;
+        this.options.step = this.options.step || 1;
       }
     },
 
@@ -1048,6 +1053,8 @@ exports.Profiler = Profiler;
           self.options.start = data.min;
           self.options.end = data.max;
           self.options.step = (data.max - data.min)/self.options.steps;
+          // step can't be 0
+          self.options.step = self.options.step || 1;
           self.options.bounds = [ 
             [data.ymin, data.xmin],
             [data.ymax, data.xmax] 
@@ -2624,6 +2631,9 @@ GMapsTorqueLayer.prototype = _.extend({},
     this.provider && this.provider.setSteps(steps);
     this.animator && this.animator.steps(steps);
     this._reloadTiles();
+    this.fire('change:steps', {
+      steps: steps
+    });
   },
 
   setColumn: function(column, isTime) {
@@ -3195,6 +3205,9 @@ L.TorqueLayer = L.CanvasLayer.extend({
     this.provider.setSteps(steps);
     this.animator.steps(steps);
     this._reloadTiles();
+    this.fire('change:steps', {
+      steps: steps
+    })
   },
 
   setColumn: function(column, isTime) {

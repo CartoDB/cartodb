@@ -44,15 +44,21 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
       self.$(".slider" ).slider({ value: changes.step });
     }
 
+    function updateSliderRange(changes) {
+      self.$(".slider" ).slider({ max: changes.steps });
+    }
+
     this.torqueLayer.on('change:time', updateSlider);
     this.torqueLayer.on('change:time', updateTime);
+    this.torqueLayer.on('change:steps', updateSliderRange);
 
     this.on('clean', function() {
       self.torqueLayer.off('change:time', updateSlider);
       self.torqueLayer.off('change:time', updateTime);
+      self.torqueLayer.off('change:steps', updateSliderRange);
     });
     cdb.geo.ui.InfoBox.prototype.initialize.call(this);
-      
+
   },
 
   formaterForRange: function(start, end) {

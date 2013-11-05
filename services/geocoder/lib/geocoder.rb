@@ -38,6 +38,14 @@ module CartoDB
       @request_id = extract_response_field(response.body)
     end # upload
 
+    def cancel
+      response = Typhoeus.put api_url(action: 'cancel')
+      handle_api_error(response)
+      @status         = extract_response_field(response.body, '//Response/Status')
+      @processed_rows = extract_response_field(response.body, '//Response/ProcessedCount')
+      @total_rows     = extract_response_field(response.body, '//Response/TotalCount')
+    end # cancel
+
     def update_status
       response = Typhoeus.get api_url(action: 'status')
       handle_api_error(response)

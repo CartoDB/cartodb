@@ -31,7 +31,12 @@ class Geocoding < Sequel::Model
   def before_save
     super
     self.updated_at = Time.now
+    cancel if state == 'cancelled'
   end # before_save
+
+  def cancel
+    table_geocoder.cancel
+  end
 
   def run!
     self.update(state: 'started')
@@ -46,7 +51,8 @@ class Geocoding < Sequel::Model
       )
       puts "#{processed_rows}/#{total_rows}"
       sleep(2)
-    end until table_geocoder.geocoder.status == 'completed'
+    end until ['completed', 'cancelled'].include? state
+    return false if state == 'cancelled'
     table_geocoder.process_results
     self.update(state: 'finished')
   end # run!

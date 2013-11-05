@@ -46,6 +46,10 @@ module CartoDB
       return csv_file
     end
 
+    def cancel
+      geocoder.cancel
+    end
+
     def start_geocoding_job(csv_file)
       geocoder.input_file = csv_file
       geocoder.upload

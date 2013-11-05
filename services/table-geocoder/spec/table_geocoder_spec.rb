@@ -163,7 +163,7 @@ describe CartoDB::TableGeocoder do
   #     sleep(2)
   #   end
   #   t.process_results
-  #   @tg.should == ''
+  #   t.geocoder.status.should eq 'completed'
   # end
 
 

@@ -22,9 +22,7 @@ describe CartoDB::Geocoder do
   end
 
   describe '#update_status' do
-    before do
-      stub_api_request(200, 'response_status.xml')
-    end
+    before { stub_api_request(200, 'response_status.xml') }
     let(:geocoder) { CartoDB::Geocoder.new(default_params.merge(request_id: 'wadus')) }
 
     it "updates status" do
@@ -48,6 +46,15 @@ describe CartoDB::Geocoder do
         sleep(1)
       end
       geocoder.result.should eq 'qqq'
+    end
+  end
+
+  describe '#cancel' do
+    before { stub_api_request(200, 'response_status.xml') }
+    let(:geocoder) { CartoDB::Geocoder.new(default_params.merge(request_id: 'wadus')) }
+
+    it "updates the status" do
+      expect { geocoder.cancel }.to change(geocoder, :status).from(nil).to('cancelled')
     end
   end
 

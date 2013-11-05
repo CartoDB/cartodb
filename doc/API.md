@@ -311,6 +311,10 @@ With visualizations already created through the CartoDB console, you can simply 
     - **refreshTime**: if is set, the layer is refreshed each refreshTime milliseconds.
     - **infowindow**: set to false if you want to disable the infowindow (enabled by default).
     - **legends**: if it's true legends are shown in the map.
+    - **layerIndex**: when the visualization contains more than one layer this index allow to select
+      what layer is created. Take into account that ``layerIndex == 0`` is the base layer and that
+      all the tiled layers (non animated ones) are merged into a single one. The default value for
+      this option is 1 (usually tiled layers).
 
   + **callback(layer)**: if a function is specified is called when the layer is created passing it as argument.
 

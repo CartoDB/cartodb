@@ -48,6 +48,8 @@ module CartoDB
           FROM "#{schema}"."#{table_name}"
           AS convertible
         )).empty?
+      rescue => exception
+        false
       end
 
       private

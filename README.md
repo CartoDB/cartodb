@@ -12,7 +12,7 @@ If you would like to see some live demos, check out our
 [videos](http://www.vimeo.com/channels/cartodb) on Vimeo.
 We hope you like it!
 
-<img src="http://dl.dropbox.com/u/538411/readmeCartodb/map.png" width="900px"/>
+<img src="http://dl.dropbox.com/u/538411/readmeCartodb/map.png?1" width="900px"/>
 
 
 # What can I do with CartoDB? #

@@ -60,7 +60,7 @@ var LeafLetTorqueLayer = L.TorqueLayer.extend({
     'query' in changed && this.setSQL(this.model.get('query'));
     if ('visible' in changed) 
       this.model.get('visible') ? this.show(): this.hide();
-  },
+  }
 
 
 

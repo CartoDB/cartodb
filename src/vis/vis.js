@@ -85,7 +85,11 @@ var Loader = cdb.vis.Loader = {
       if (!Loader.head) {
         Loader.head = document.getElementsByTagName('head')[0];
       }
-      Loader.head.appendChild(script);
+      // defer the loading because IE9 loads in the same frame the script
+      // so Loader._script is null
+      setTimeout(function() {
+        Loader.head.appendChild(script);
+      }, 0);
       return script;
   },
 
@@ -323,7 +327,7 @@ var Vis = cdb.core.View.extend({
 
       //TODO: change this to search in all the layers
       var dataLayer = this.getLayers()[1];
-      if (dataLayer.getSubLayer) {
+      if (dataLayer && dataLayer.getSubLayer) {
         for(i = 0; i < options.sublayer_options.length; ++i) {
           var o = options.sublayer_options[i];
           var subLayer = dataLayer.getSubLayer(i);
@@ -702,6 +706,11 @@ var Vis = cdb.core.View.extend({
 
     var layerView = mapView.getLayerByCid(layer_cid);
 
+    if (!layerView) {
+      this.trigger('error', "layer can't be created", map.layers.getByCid(layer_cid));
+      return;
+    }
+
     // add the associated overlays
     if(layerView && this.infowindow && layerView.containInfowindow && layerView.containInfowindow()) {
       this.addInfowindow(layerView);
@@ -747,9 +756,9 @@ var Vis = cdb.core.View.extend({
   // returns an array of layers
   getLayers: function() {
     var self = this;
-    return this.map.layers.map(function(layer) {
+    return _.compact(this.map.layers.map(function(layer) {
       return self.mapView.getLayerByCid(layer.cid);
-    });
+    }));
   },
 
   getOverlays: function() {

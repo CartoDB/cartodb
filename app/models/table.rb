@@ -639,6 +639,7 @@ class Table < Sequel::Model(:user_tables)
 
 
   def name=(value)
+    value = value.downcase if value
     return if value == self[:name] || value.blank?
     new_name = get_valid_name(value, current_name: self.name)
 
@@ -1336,7 +1337,7 @@ TRIGGER
   # See http://www.postgresql.org/docs/9.1/static/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS
   def self.get_valid_table_name(name, options = {})
     # Initial name cleaning
-    name = name.to_s.strip.downcase
+    name = name.to_s.strip #.downcase
     name = 'untitled_table' if name.blank?
 
     # Valid names start with a letter or an underscore

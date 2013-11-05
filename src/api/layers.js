@@ -168,7 +168,7 @@
         if(options.legends) {
           viz.addLegends([layerData]);
         }
-        if(options.time_slider) {
+        if(options.time_slider && layerView.model.get('type') === 'torque') {
           viz.addTimeSlider(layerView);
         }
 

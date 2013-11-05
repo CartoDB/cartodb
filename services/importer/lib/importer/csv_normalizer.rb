@@ -16,7 +16,7 @@ module CartoDB
       ACCEPTABLE_ENCODINGS = %w{ ISO-8859-1 ISO-8859-2 UTF-8 }
 
       def self.supported?(extension)
-        extension == '.csv'
+        %w(.csv .tsv .txt).include?(extension)
       end #self.supported?
 
       def initialize(filepath, job=nil)

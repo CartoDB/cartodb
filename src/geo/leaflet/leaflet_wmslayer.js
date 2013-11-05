@@ -7,10 +7,7 @@ if(typeof(L) == "undefined")
 var LeafLetWMSLayerView = L.TileLayer.WMS.extend({
   initialize: function(layerModel, leafletMap) {
 
-    console.log(layerModel.attributes);
-
     L.TileLayer.WMS.prototype.initialize.call(this, layerModel.get('urlTemplate'), {
-      //tms:          layerModel.get('tms'),
       attribution:  layerModel.get('attribution'),
       layers:       layerModel.get('layers'),
       format:       layerModel.get('format'),

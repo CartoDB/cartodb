@@ -4,8 +4,26 @@
    */
 
   @import "compass";
+  @import "../../common/sprites";
+  @import "../../common/mixins";
 
   .sync_settings {
+
+    .sync_url {
+      padding:22px 40px;
+      background:#F2F2F2;
+      border-bottom:1px solid #DFDFDF;
+
+      span {
+        display:block;
+        width:490px;
+        padding-left:20px;
+        font-size:13px;
+        color:#999999;
+        @include background(sprite($icons-sprites, wifi_icon, $offset-x:-3px, $offset-y:-16px) no-repeat);
+        @include text-overflow();
+      }
+    }
 
     .combo-wrapper {
       margin:10px 0 0;

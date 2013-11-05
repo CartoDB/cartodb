@@ -75,6 +75,17 @@ describe Downloader do
 
     it "doesn't generate a source file if checksum hasn't changed" do
     end
+
+    it "raises if remote URL doesn't respond with a 2XX code" do
+      stub_failed_download(
+        url:       @file_url,
+        filepath: @file_filepath,
+        headers:  {}
+      )
+      
+      downloader = Downloader.new(@file_url)
+      lambda { downloader.run }.must_raise DownloadError
+    end
   end
 
   describe '#source_file' do
@@ -141,6 +152,14 @@ describe Downloader do
     Typhoeus.stub(url).and_return(response_for(filepath, headers))
   end #stub_download
 
+  def stub_failed_download(options)
+    url       = options.fetch(:url)
+    filepath  = options.fetch(:filepath)
+    headers   = options.fetch(:headers, {})
+
+    Typhoeus.stub(url).and_return(failed_response_for(filepath, headers))
+  end
+
   def response_for(filepath, headers={})
      response = Typhoeus::Response.new(
         code:     200,
@@ -148,6 +167,10 @@ describe Downloader do
         headers:  headers.merge(headers_for(filepath))
      )
      response
+  end #response_for
+
+  def failed_response_for(filepath, headers={})
+     Typhoeus::Response.new(code: 404, body: nil, headers: {})
   end #response_for
 
   def headers_for(filepath)

@@ -75,6 +75,10 @@ module CartoDB
       title: 'File I/O error',
       what_about: "Something seems to be wrong with the file you uploaded. Check that it is loading fine locally and try uploading it again."
     },
+    1001 => {
+      title: 'Download error',
+      what_about: "The remote URL returned an error. Please verify your file is available at that URL."
+    },
     1002 => {
       title: 'Unsupported file type',
       what_about: "Should we support this filetype? Let us know in our <a href='mailto:support-suggestions@cartodb.com'>support email</a>!"

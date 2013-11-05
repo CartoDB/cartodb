@@ -60,6 +60,7 @@ module CartoDB
         return self unless modified?
 
         response        = download
+        raise DownloadError unless response.code.to_s =~ /\A[23]\d+/
         headers         = response.headers
         data            = StringIO.new(response.response_body)
         name            = name_from(headers, url)

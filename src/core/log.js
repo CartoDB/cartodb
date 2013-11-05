@@ -39,6 +39,11 @@
     //IE7 love
     if(typeof console !== "undefined") {
         _console = console;
+        try {
+          _console.error.apply(_console, ['test'])
+        } catch(e) {
+          _console = new _fake_console();
+        }
     } else {
         _console = new _fake_console();
     }

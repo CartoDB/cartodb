@@ -112,6 +112,8 @@ module CartoDB
           .gsub(/"/, '')
           .gsub(/&/, '')
           .downcase
+          .gsub(/\.txt/, '.csv')
+          .gsub(/\.tsv/, '.csv')
       end #underscore
 
       def rename(origin, destination)

@@ -49,7 +49,7 @@ module CartoDB
   TYPES = {
     "number"  => ["smallint", /numeric\(\d+,\d+\)/, "integer", "bigint", "decimal", "numeric", "double precision", "serial", "big serial", "real"],
     "string"  => ["varchar", "character varying", "text", /character\svarying\(\d+\)/, /char\s*\(\d+\)/, /character\s*\(\d+\)/],
-    "date"    => ["timestamp", "timestamp without time zone"],
+    "date"    => ["timestamptz", "timestamp with time zone"],
     "boolean" => ["boolean"]
   }
 

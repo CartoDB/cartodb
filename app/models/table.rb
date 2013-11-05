@@ -576,7 +576,7 @@ class Table < Sequel::Model(:user_tables)
     if schema.nil? || !schema.flatten.include?(column)
       database.run(%Q{
         ALTER TABLE "#{name}"
-        ADD COLUMN #{column} timestamp
+        ADD COLUMN #{column} timestamptz
         DEFAULT NOW()
       })
     end
@@ -593,7 +593,7 @@ class Table < Sequel::Model(:user_tables)
           ALTER COLUMN #{column}
           SET DEFAULT now()
         })
-      elsif column_type == 'date'
+      elsif column_type == 'date' || column_type == 'timestamptz'
         database.run(%Q{
           ALTER TABLE "#{name}"
           ALTER COLUMN #{column}
@@ -607,7 +607,7 @@ class Table < Sequel::Model(:user_tables)
     database.run(%Q{
       ALTER TABLE "#{table}"
       ALTER COLUMN #{column}
-      TYPE timestamp without time zone
+      TYPE timestamptz
       USING to_timestamp(#{column}::float / 1000)
     })
     true
@@ -619,7 +619,7 @@ class Table < Sequel::Model(:user_tables)
     database.run(%Q{
       ALTER TABLE "#{table}"
       ALTER COLUMN #{column}
-      TYPE timestamp without time zone
+      TYPE timestamptz
       USING to_timestamp(#{column}, 'YYYY-MM-DD HH24:MI:SS.MS.US')
     })
     true
@@ -1466,8 +1466,8 @@ TRIGGER
           column :cartodb_id, "SERIAL PRIMARY KEY"
           String :name
           String :description, :text => true
-          DateTime :created_at, :default => Sequel::CURRENT_TIMESTAMP
-          DateTime :updated_at, :default => Sequel::CURRENT_TIMESTAMP
+          column :created_at, 'timestamp with time zone', :default => Sequel::CURRENT_TIMESTAMP
+          column :updated_at, 'timestamp with time zone', :default => Sequel::CURRENT_TIMESTAMP
         end
       else
         sanitized_force_schema = force_schema.split(',').map do |column|
@@ -1479,8 +1479,9 @@ TRIGGER
           end
         end
         sanitized_force_schema.unshift("cartodb_id SERIAL PRIMARY KEY").
-                               unshift("created_at timestamp").
-                               unshift("updated_at timestamp")
+                               unshift("created_at timestamp with time zone").
+                               unshift("updated_at timestamp with time zone")
+        puts sanitized_force_schema.inspect
         user_database.run(<<-SQL
 CREATE TABLE "#{self.name}" (#{sanitized_force_schema.join(', ')});
 ALTER TABLE  "#{self.name}" ALTER COLUMN created_at SET DEFAULT now();

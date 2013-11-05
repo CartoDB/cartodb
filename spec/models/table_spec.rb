@@ -784,7 +784,7 @@ describe Table do
       table.force_schema = "code char(5) CONSTRAINT firstkey PRIMARY KEY, title  varchar(40) NOT NULL, did  integer NOT NULL, date_prod date, kind varchar(10)"
       table.save
       check_schema(table, [
-        [:updated_at, "timestamp without time zone"], [:created_at, "timestamp without time zone"], [:cartodb_id, "integer"],
+        [:updated_at, "timestamp with time zone"], [:created_at, "timestamp with time zone"], [:cartodb_id, "integer"],
         [:code, "character(5)"], [:title, "character varying(40)"], [:did, "integer"], [:date_prod, "date"],
         [:kind, "character varying(10)"]
       ])
@@ -796,7 +796,7 @@ describe Table do
       table.force_schema = "\"code wadus\" char(5) CONSTRAINT firstkey PRIMARY KEY, title  varchar(40) NOT NULL, did  integer NOT NULL, date_prod date, kind varchar(10)"
       table.save
       check_schema(table, [
-        [:updated_at, "timestamp without time zone"], [:created_at, "timestamp without time zone"], [:cartodb_id, "integer"],
+        [:updated_at, "timestamp with time zone"], [:created_at, "timestamp with time zone"], [:cartodb_id, "integer"],
         [:code_wadus, "character(5)"], [:title, "character varying(40)"], [:did, "integer"], [:date_prod, "date"],
         [:kind, "character varying(10)"]
       ])
@@ -1315,8 +1315,9 @@ describe Table do
       table = Table[data_import.table_id]
 
       check_schema(table, [
-        [:cartodb_id, "number"], [:name, "string"], [:the_geom, "geometry", "geometry", "point"],
-        [:invalid_the_geom, "string"], [:created_at, "date"], [:updated_at, "date"]
+        [:cartodb_id, "number"], [:name, "string"], [:the_geom, "geometry",
+        "geometry", "point"], [:invalid_the_geom, "string"], [:created_at, "date"],
+        [:updated_at, "date"]
       ], :cartodb_types => true)
 
       table_schema = @user.in_database.schema(table.name)
@@ -1503,7 +1504,8 @@ describe Table do
       # Check if the schema stored in memory is fresh and contains latitude and longitude still
       check_schema(table, [
         [:cartodb_id, "number"], [:name, "string"], [:address, "string"],
-        [:the_geom, "geometry", "geometry", "point"], [:created_at, "date"], [:updated_at, "date"],
+        [:the_geom, "geometry", "geometry", "point"], 
+        [:created_at, "date"], [:updated_at, "date"],
         [:latitude, "number"], [:longitude, "number"]
       ], :cartodb_types => true)
 
@@ -1529,7 +1531,8 @@ describe Table do
       # Check if the schema stored in memory is fresh and contains latitude and longitude still
       check_schema(table, [
         [:cartodb_id, "number"], [:name, "string"], [:address, "string"],
-        [:the_geom, "geometry", "geometry", "point"], [:created_at, "date"], [:updated_at, "date"],
+        [:the_geom, "geometry", "geometry", "point"], [:created_at, "date"], 
+        [:updated_at, "date"],
         [:latitude, "string"], [:longitude, "string"]
       ], :cartodb_types => true)
 
@@ -1611,7 +1614,7 @@ describe Table do
       table = Table[data_import.table_id]
       table.name.should == 'exttable'
       table.rows_counted.should == 2
-      check_schema(table, [[:cartodb_id, "integer"], [:bed, "text"], [:created_at, "timestamp without time zone"], [:updated_at, "timestamp without time zone"], [:the_geom, "geometry", "geometry", "point"]])
+      check_schema(table, [[:cartodb_id, "integer"], [:bed, "text"], [:created_at, "timestamp with time zone"], [:updated_at, "timestamp with time zone"], [:the_geom, "geometry", "geometry", "point"]])
     end
   end
 

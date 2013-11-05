@@ -20,7 +20,8 @@
       .cartodb-text {position:absolute; display:none; bottom:0; left:0; right:0; margin:0; padding:0 10px; background:white; font:normal 11px "Helvetica",Arial; color:#999999; border-top:1px solid #CCC; border-top:1px solid rgba(0,0,0,0); box-shadow:rgba(0,0,0,0.6) 0 0 1px 0; -webkit-box-shadow:rgba(0,0,0,0.6) 0 0 1px 0; -moz-box-shadow:rgba(0,0,0,0.6) 0 0 1px 0; -o-box-shadow:rgba(0,0,0,0.6) 0 0 1px 0; line-height:29px; z-index:2; }
       .cartodb-text a {color:#397DB8; text-decoration:underline;}
 
-      #not_supported_dialog { position: absolute; width: 388px; height: 245px; top: 50%; left: 50%; margin-top: -194px; margin-left: -122px; background-color:#FFF; text-align: center;}
+      #not_supported_dialog {position:absolute; width:388px; height:245px; top:50%; left:50%; margin-top:-194px; margin-left:-122px; background-color:#FFF; text-align: center;}
+      
       
       /* Styles showing up new cartodb text */
       <% if @visualization.user.remove_logo? && !Cartodb.config[:cartodb_com_hosted].present? %>

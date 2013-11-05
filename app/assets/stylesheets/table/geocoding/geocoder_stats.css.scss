@@ -19,15 +19,7 @@
 
     p,a {font-size:13px;}
 
-    a.need {
-      position:absolute;
-      top:26px; right:40px;
-      color:#999999;
-      font-style:italic;
-      text-decoration:underline;
-
-      &:hover {color:#666}
-    }
+    a {text-decoration:underline; font-weight:bold}
 
     div.progress {
       display:block;

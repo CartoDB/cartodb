@@ -8,18 +8,21 @@ module CartoDB
         'boolean'           => 'number_to_boolean',
         'date'              => 'number_to_datetime',
         'datetime'          => 'number_to_datetime',
-        'timestamp'         => 'number_to_datetime'
+        'timestamp'         => 'number_to_datetime',
+        'timestamptz'       => 'number_to_datetime'
       },
       'boolean' => {
         'double precision'  => 'boolean_to_number',
         'date'              => 'boolean_to_datetime',
         'datetime'          => 'boolean_to_datetime',
-        'timestamp'         => 'boolean_to_datetime'
+        'timestamp'         => 'boolean_to_datetime',
+        'timestamptz'       => 'boolean_to_datetime'
       },
       'string' => {
         'date'              => 'string_to_datetime',
         'datetime'          => 'string_to_datetime',
         'timestamp'         => 'string_to_datetime',
+        'timestamptz'       => 'string_to_datetime',
         'double precision'  => 'string_to_number',
         'boolean'           => 'string_to_boolean'
       },
@@ -96,7 +99,7 @@ module CartoDB
         CartoDB::NonConvertibleData, 'Timestamp format not supported'
       ) unless convertible_to_datetime?(table_name, column_name)
 
-      straight_cast("date", cast: "CDB_StringToDate(#{column_name})")
+      straight_cast("timestamptz", cast: "CDB_StringToDate(#{column_name})")
     end #string_to_datetime
 
     def convertible_to_datetime?(table_name, column_name)

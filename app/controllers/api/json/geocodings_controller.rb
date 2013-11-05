@@ -1,14 +1,24 @@
 #encoding: UTF-8
 class Api::Json::GeocodingsController < Api::ApplicationController
-  ssl_required :index, :show, :create
+  ssl_required :index, :show, :create, :update
 
   def index
-    render json: { geocodings: current_user.geocodings }
+    geocodings = Geocoding.where("user_id = ? AND (state NOT IN ?)", current_user.id, ['failed', 'finished', 'cancelled'])
+    render json: { geocodings: geocodings }
   end
 
   def show
     geocoding = Geocoding[params[:id]]
     render json: geocoding
+  end
+
+  def update
+    geocoding = Geocoding[params[:id]]
+    return head(401) unless geocoding && params[:state] == 'cancelled'
+    geocoding.update(state: 'cancelled')
+    render_jsonp(geocoding.reload)
+  rescue => e
+    render_jsonp({ errors: e.message }, 400)
   end
 
   def create

@@ -21,8 +21,8 @@ class User < Sequel::Model
   set_allowed_columns :email, :map_enabled, :password_confirmation, 
     :quota_in_bytes, :table_quota, :account_type, :private_tables_enabled, 
     :period_end_date, :map_view_quota, :max_layers, :database_timeout, 
-    :user_timeout, :map_view_block_price, :geocoding_quota, :dashboard_viewed_at
-    :sync_tables_enabled
+    :user_timeout, :map_view_block_price, :geocoding_quota, :dashboard_viewed_at,
+    :sync_tables_enabled, :geocoding_block_price
   plugin :validation_helpers
   plugin :json_serializer
   plugin :dirty
@@ -362,6 +362,13 @@ class User < Sequel::Model
 
     return calls
   end
+
+  def get_geocoding_calls(options = {})
+    date_to = (options[:to] ? options[:to].to_date : Date.today)
+    date_from = (options[:from] ? options[:from].to_date : self.last_billing_cycle)
+    Geocoding.where('user_id = ? AND created_at >= ? and created_at <= ?', self.id, date_from, date_to + 1.days)
+      .sum(:processed_rows).to_i
+  end # get_geocoding_calls
 
   # Legacy stats fetching
 

@@ -42,7 +42,7 @@ describe "Assets API" do
 
   describe 'GET /api/v1/geocodings' do
     it 'returns every geocoding belonging to current_user' do
-      FactoryGirl.create(:geocoding, table_name: 'a', formatter: 'b', user: @user)
+      FactoryGirl.create(:geocoding, table_name: 'a', formatter: 'b', user: @user, state: 'wadus')
       FactoryGirl.create(:geocoding, table_name: 'a', formatter: 'b', user_id: @user.id+1)
       get_json v1_geocodings_url(params) do |response|
         response.status.should be_success
@@ -59,6 +59,29 @@ describe "Assets API" do
       get_json v1_geocoding_url(params.merge(id: geocoding.id)) do |response|
         response.status.should be_success
         response.body[:id].should eq geocoding.id
+      end
+    end
+  end
+
+  describe 'PUT /api/v1/geocodings/:id' do
+    it 'cancels a geocoding job' do
+      geocoding = FactoryGirl.create(:geocoding, table_name: 'a', formatter: 'b', user: @user)
+      Geocoding.any_instance.stubs(:cancel).returns(true)
+
+      put_json v1_geocoding_url(params.merge(id: geocoding.id)), { state: 'cancelled' } do |response|
+        response.status.should be_success
+        geocoding.reload.state.should eq 'cancelled'
+        response.body[:state].should eq 'cancelled' 
+      end
+    end
+
+    it 'fails gracefully on job cancel failure' do
+      geocoding = FactoryGirl.create(:geocoding, table_name: 'a', formatter: 'b', user: @user)
+      Geocoding.any_instance.stubs(:cancel).raises('wadus')
+
+      put_json v1_geocoding_url(params.merge(id: geocoding.id)), { state: 'cancelled' } do |response|
+        response.status.should eq 400
+        response.body.should eq errors: "wadus"
       end
     end
   end

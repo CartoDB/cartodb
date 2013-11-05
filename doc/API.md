@@ -226,6 +226,7 @@ Creates a visualization inside the map_id DOM object.
     - **zoom**: initial zoom.
     - **cartodb_logo**: default to true, set to false if you want to remove the cartodb logo.
     - **infowindow**: set to false if you want to disable the infowindow (enabled by default).
+    - **time_slider**: show time slider with torque layers (enabled by default)
     - **legends**: if it's true legends are shown in the map.
     - **https**: if true forces tiles to be fetched using https. If false it uses the predefined method
 
@@ -311,6 +312,7 @@ With visualizations already created through the CartoDB console, you can simply 
     - **refreshTime**: if is set, the layer is refreshed each refreshTime milliseconds.
     - **infowindow**: set to false if you want to disable the infowindow (enabled by default).
     - **legends**: if it's true legends are shown in the map.
+    - **time_slider**: show time slider with torque layers (enabled by default)
     - **layerIndex**: when the visualization contains more than one layer this index allow to select
       what layer is created. Take into account that ``layerIndex == 0`` is the base layer and that
       all the tiled layers (non animated ones) are merged into a single one. The default value for

@@ -129,7 +129,11 @@ if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
       layerClass = this.layerTypeMap[layer.get('type').toLowerCase()];
 
       if (layerClass) {
-        layer_view = new layerClass(layer, this.map_googlemaps);
+        try {
+          layer_view = new layerClass(layer, this.map_googlemaps);
+        } catch(e) {
+          cdb.log.error("MAP: error creating layer" + layer.get('type') + " " + e);
+        }
       } else {
         cdb.log.error("MAP: " + layer.get('type') + " can't be created");
       }

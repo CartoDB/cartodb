@@ -26,7 +26,9 @@ module CartoDB
         db.schema(table_name, reload: true, schema: schema)
           .map(&:first)
           .select { |column_name|
-            column_name =~ /_at/ || column_name =~ /date/
+            column_name =~ /_at/  || 
+            column_name =~ /date/ ||
+            column_name =~ /time/
           }
       end
 

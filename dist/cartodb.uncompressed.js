@@ -1,6 +1,6 @@
-// cartodb.js version: 3.2.04
+// cartodb.js version: 3.2.06
 // uncompressed version: cartodb.uncompressed.js
-// sha: 765503bc8f5ed94aee921acf2bb53f45ebab406d
+// sha: 71950b3c702bebeeb7cdc736a1e4153523fa715e
 (function() {
   var root = this;
 
@@ -20429,7 +20429,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.2.04';
+    cdb.VERSION = '3.2.06';
 
     cdb.CARTOCSS_VERSIONS = {
       '2.0.0': '',
@@ -21799,18 +21799,23 @@ cdb.geo.Map = cdb.core.Model.extend({
   },
 
   _adjustZoomtoLayer: function(layer) {
-    //set zoom
-    //
-    /*
-    var z = layer.get('maxZoom');
-    if(_.isNumber(z)) {
-    this.set({ maxZoom: z });
+
+    var maxZoom = layer.get('maxZoom');
+
+    if (_.isNumber(maxZoom)) {
+      this.set({ maxZoom: maxZoom });
     }
-    z = layer.get('minZoom');
-    if(_.isNumber(z)) {
-    this.set({ minZoom: z });
+
+    var minZoom = layer.get('minZoom');
+
+    if (_.isNumber(minZoom)) {
+      this.set({ minZoom: minZoom });
     }
-    */
+
+    if (_.isNumber(maxZoom)) {
+      if ( this.get("zoom") > maxZoom ) this.set("zoom", maxZoom);
+    }
+
   },
 
   addLayer: function(layer, opts) {
@@ -22316,7 +22321,9 @@ cdb.geo.ui.LegendItem = cdb.core.View.extend({
 
   render: function() {
 
-    this.$el.html(this.template(this.model.toJSON()));
+    var options = this.model.toJSON();
+
+    this.$el.html(this.template(options));
 
     return this.$el;
 
@@ -22615,7 +22622,8 @@ cdb.geo.ui.CategoryLegend = cdb.core.View.extend({
 
     view = new cdb.geo.ui.LegendItem({
       model: item,
-      template: '<div class="bullet" style="background:<%= value %>"></div><%= name || "null" %>'
+      className: (item.get("value") && item.get("value").indexOf("http") >= 0) ? "bkg" : "",
+      template: '<div class="bullet" style="background: <%= value %>"></div><%= name || ((name === false) ? "false": "null") %>'
     });
 
     this.$el.find("ul").append(view.render());
@@ -22671,7 +22679,8 @@ cdb.geo.ui.ColorLegend = cdb.core.View.extend({
 
     view = new cdb.geo.ui.LegendItem({
       model: item,
-      template: '<div class="bullet" style="background:<%= value %>"></div><%= name || ((name === false) ? "false": "null") %>'
+      className: (item.get("value") && item.get("value").indexOf("http") >= 0) ? "bkg" : "",
+      template: '<div class="bullet" style="background: <%= value %>"></div><%= name || ((name === false) ? "false": "null") %>'
     });
 
     this.$el.find("ul").append(view.render());
@@ -22727,6 +22736,7 @@ cdb.geo.ui.CustomLegend = cdb.core.View.extend({
 
     view = new cdb.geo.ui.LegendItem({
       model: item,
+      className: (item.get("value") && item.get("value").indexOf("http") >= 0) ? "bkg" : "",
       template: '<div class="bullet" style="background:<%= value %>"></div><%= name || "null" %>'
     });
 
@@ -23073,6 +23083,7 @@ cdb.geo.ui.Legend = cdb.core.View.extend({
   }
 
 });
+
 cdb.geo.ui.SwitcherItemModel = Backbone.Model.extend({ });
 
 cdb.geo.ui.SwitcherItems = Backbone.Collection.extend({
@@ -26559,6 +26570,7 @@ cdb.geo.LeafLetLayerCartoDBView = LeafLetLayerCartoDBView;
 
     layerTypeMap: {
       "tiled": cdb.geo.LeafLetTiledLayerView,
+      "wms": cdb.geo.LeafLetWMSLayerView,
       "cartodb": cdb.geo.LeafLetLayerCartoDBView,
       "carto": cdb.geo.LeafLetLayerCartoDBView,
       "plain": cdb.geo.LeafLetPlainLayerView,

@@ -278,6 +278,7 @@
 
     layerTypeMap: {
       "tiled": cdb.geo.LeafLetTiledLayerView,
+      "wms": cdb.geo.LeafLetWMSLayerView,
       "cartodb": cdb.geo.LeafLetLayerCartoDBView,
       "carto": cdb.geo.LeafLetLayerCartoDBView,
       "plain": cdb.geo.LeafLetPlainLayerView,

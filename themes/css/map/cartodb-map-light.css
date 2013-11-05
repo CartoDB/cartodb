@@ -225,11 +225,40 @@
     height: 10px;
     line-height: 10px;
     vertical-align:middle;
-
   }
 
+
+  div.cartodb-legend.custom ul li.bkg,
+  div.cartodb-legend.category ul li.bkg,
+  div.cartodb-legend.color ul li.bkg {
+    height: 20px;
+    line-height: 24px;
+    margin: 0 0 15px 0;
+  }
+
+  div.cartodb-legend.custom ul li.bkg .bullet,
+  div.cartodb-legend.category ul li.bkg .bullet,
+  div.cartodb-legend.color ul li.bkg .bullet {
+    height: 20px; 
+    width: 20px; 
+    border: 1px solid rgba(0, 0, 0, .3);
+    border:none;
+    background-size: 26px 26px!important;
+    background-position: center center!important;
+    -webkit-border-radius: 0;
+    -moz-border-radius: 0;
+    -ms-border-radius: 0;
+    -o-border-radius: 0;
+    border-radius: 0;
+  }
+
+  div.cartodb-legend.custom ul li.bkg:last-child,
+  div.cartodb-legend.color ul li.bkg:last-child,
+  div.cartodb-legend.category ul li.bkg:last-child { margin: 0 0 5px 0; }
+
+
   div.cartodb-legend.custom ul li:last-child,
-  div.cartodb-legend.color ul li:last-child { margin: 0; }
+  div.cartodb-legend.color ul li:last-child,
   div.cartodb-legend.category ul li:last-child { margin: 0; }
 
   div.cartodb-legend.custom ul li .bullet,

@@ -312,18 +312,23 @@ cdb.geo.Map = cdb.core.Model.extend({
   },
 
   _adjustZoomtoLayer: function(layer) {
-    //set zoom
-    //
-    /*
-    var z = layer.get('maxZoom');
-    if(_.isNumber(z)) {
-    this.set({ maxZoom: z });
+
+    var maxZoom = layer.get('maxZoom');
+
+    if (_.isNumber(maxZoom)) {
+      this.set({ maxZoom: maxZoom });
     }
-    z = layer.get('minZoom');
-    if(_.isNumber(z)) {
-    this.set({ minZoom: z });
+
+    var minZoom = layer.get('minZoom');
+
+    if (_.isNumber(minZoom)) {
+      this.set({ minZoom: minZoom });
     }
-    */
+
+    if (_.isNumber(maxZoom)) {
+      if ( this.get("zoom") > maxZoom ) this.set("zoom", maxZoom);
+    }
+
   },
 
   addLayer: function(layer, opts) {

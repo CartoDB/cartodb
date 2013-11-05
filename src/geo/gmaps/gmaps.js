@@ -296,7 +296,11 @@ if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
       if (!layer) {
         cdb.log.error("gmaps layer can't be null");
       }
-      map.overlayMapTypes.setAt(pos, layer);
+      if (layer.getTile) {
+        map.overlayMapTypes.setAt(pos, layer);
+      } else {
+        layer.setMap(map);
+      }
     },
 
     /**

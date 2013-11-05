@@ -14,7 +14,8 @@ if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
       "carto": cdb.geo.GMapsCartoDBLayerView,
       "plain": cdb.geo.GMapsPlainLayerView,
       "gmapsbase": cdb.geo.GMapsBaseLayerView,
-      "layergroup": cdb.geo.GMapsCartoDBLayerGroupView
+      "layergroup": cdb.geo.GMapsCartoDBLayerGroupView,
+      "wms": cdb.geo.LeafLetWMSLayerView
     },
 
     initialize: function() {

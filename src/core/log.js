@@ -40,7 +40,7 @@
     if(typeof console !== "undefined") {
         _console = console;
         try {
-          _console.error.apply(_console, ['test'])
+          _console.log.apply(_console, ['cartodb.js ' + cartodb.VERSION])
         } catch(e) {
           _console = new _fake_console();
         }

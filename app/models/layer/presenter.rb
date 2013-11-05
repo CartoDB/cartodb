@@ -5,6 +5,20 @@ require 'ejs'
 module CartoDB
   class Layer
     class Presenter
+      TORQUE_ATTRS = %w(
+        table_name
+        user_name
+        property
+        blendmode
+        resolution
+        countby
+        torque-duration
+        torque-steps
+        torque-blend-mode
+        query
+        tile_style
+      )
+
       def initialize(layer, options={}, configuration={})
         @layer          = layer
         @options        = options
@@ -12,15 +26,20 @@ module CartoDB
       end #initialize
 
       def to_vizjson_v2
-        return with_kind_as_type(layer.public_values) if base?(layer)
-        {
-          id:         layer.id,
-          type:       'CartoDB',
-          infowindow: infowindow_data,
-          legend:     layer.legend,
-          order:      layer.order,
-          options:    options_data_v2
-        }
+        if base?(layer)
+          with_kind_as_type(layer.public_values) 
+        elsif torque?(layer)
+          as_torque(layer)
+        else
+          {
+            id:         layer.id,
+            type:       'CartoDB',
+            infowindow: infowindow_data,
+            legend:     layer.legend,
+            order:      layer.order,
+            options:    options_data_v2
+          }
+        end
       end #to_vizjson_v2
 
       def to_vizjson_v1
@@ -39,12 +58,30 @@ module CartoDB
       attr_reader :layer, :options, :configuration
 
       def base?(layer)
-        layer.kind != 'carto'
+        ['tiled', 'background', 'gmapsbase'].include? layer.kind
       end #base?
+
+      def torque?(layer)
+        layer.kind == 'torque'
+      end #torque?
 
       def with_kind_as_type(attributes)
         attributes.merge(type: attributes.delete('kind'))
       end #with_kind_as_type
+
+      def as_torque(attributes)
+        {
+          id:         layer.id,
+          type:       'torque',
+          order:      layer.order,
+          options:    {
+            sql_api_protocol:   configuration.fetch(:sql_api_protocol, nil),
+            sql_api_domain:     configuration.fetch(:sql_api_domain, nil),
+            sql_api_endpoint:   configuration.fetch(:sql_api_endpoint, nil),
+            sql_api_port:       configuration.fetch(:sql_api_port, nil),
+          }.merge(layer.options.select { |k| TORQUE_ATTRS.include? k })
+        }
+      end #as_torque
 
       def infowindow_data
         template = layer.infowindow['template']

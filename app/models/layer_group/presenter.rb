@@ -13,6 +13,7 @@ module CartoDB
       end #initialize
 
       def to_poro
+        return nil if cartodb_layers.empty?
         { 
           type:               'layergroup',
           options:            {
@@ -28,7 +29,7 @@ module CartoDB
             layer_definition:   {
               stat_tag:           options.fetch(:visualization_id),
               version:            LAYER_GROUP_VERSION,
-              layers:             rendered_layers
+              layers:             cartodb_layers
             }
           }
         }
@@ -38,8 +39,8 @@ module CartoDB
 
       attr_reader :layers, :configuration, :options
 
-      def rendered_layers
-        layers.map do |layer|
+      def cartodb_layers
+        @cartodb_layers ||= layers.map do |layer|
           Layer::Presenter.new(layer, options, configuration).to_vizjson_v2
         end
       end #layer_definition

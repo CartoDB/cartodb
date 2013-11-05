@@ -2631,6 +2631,9 @@ GMapsTorqueLayer.prototype = _.extend({},
     this.provider && this.provider.setSteps(steps);
     this.animator && this.animator.steps(steps);
     this._reloadTiles();
+    this.fire('change:steps', {
+      steps: steps
+    });
   },
 
   setColumn: function(column, isTime) {
@@ -3202,6 +3205,9 @@ L.TorqueLayer = L.CanvasLayer.extend({
     this.provider.setSteps(steps);
     this.animator.steps(steps);
     this._reloadTiles();
+    this.fire('change:steps', {
+      steps: steps
+    })
   },
 
   setColumn: function(column, isTime) {

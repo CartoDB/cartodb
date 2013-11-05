@@ -320,7 +320,14 @@ var Vis = cdb.core.View.extend({
     if(options.legends) {
       this.addLegends(data.layers);
     }
-    this.addTimeSlider();
+
+    if(options.time_slider) {
+      // add time slider
+      var torque = _(this.getLayers()).filter(function(layer) { return layer.model.get('type') === 'torque'; })
+      if (torque.length) {
+        this.addTimeSlider(torque[0]);
+      }
+    }
 
     // set layer options
     if (options.sublayer_options) {
@@ -355,12 +362,11 @@ var Vis = cdb.core.View.extend({
     return this;
   },
 
-  addTimeSlider: function() {
-    var torque = _(this.getLayers()).filter(function(layer) { return layer.model.get('type') === 'torque'; })
-    if (torque.length) {
+  addTimeSlider: function(torqueLayer) {
+    if (torqueLayer) {
       this.addOverlay({
         type: 'time_slider',
-        layer: torque[0]
+        layer: torqueLayer
       });
     }
   },
@@ -404,8 +410,12 @@ var Vis = cdb.core.View.extend({
         this.loader = v;
       }
 
-      this.addView(v);
-      this.container.append(v.el);
+      if (overlay.type == "header") {
+        this.addView(v);
+        this.container.append(v.el);
+      } else {
+        this.mapView.addOverlay(v);
+      }
       this.overlays.push(v);
 
       v.bind('clean', function() {
@@ -440,7 +450,8 @@ var Vis = cdb.core.View.extend({
       layer_selector: false,
       searchControl: false,
       infowindow: true,
-      legends: true
+      legends: true,
+      time_slider: true
     });
     vizjson.overlays = vizjson.overlays || [];
     vizjson.layers = vizjson.layers || [];

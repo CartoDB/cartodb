@@ -514,7 +514,11 @@ exports.torque['torque-reference'] =  {
   exports.torque.types = {
     Uint8Array: typeof(window['Uint8Array']) !== 'undefined' ? window.Uint8Array : Array,
     Uint32Array: typeof(window['Uint32Array']) !== 'undefined' ? window.Uint32Array : Array,
-    Int32Array: typeof(window['Int32Array']) !== 'undefined' ? window.Int32Array: Array,
+    Int32Array: typeof(window['Int32Array']) !== 'undefined' ? window.Int32Array: Array
+  };
+
+  exports.torque.isBrowserSupported = function() {
+    return !!document.createElement('canvas');
   };
 
 })(typeof exports === "undefined" ? this : exports);
@@ -1137,7 +1141,7 @@ exports.Profiler = Profiler;
           y: row.data[1] * self.options.resolution,
           valuesCount: row.data[2],
           times: [],
-          values: [],
+          values: []
         };
         for (var s = 0; s < o.valuesCount; ++s) {
            o.times.push(row.data[HEADER_SIZE + s]);
@@ -2503,6 +2507,9 @@ if(typeof(google) === 'undefined' || typeof(google.maps) === 'undefined') return
 
 function GMapsTorqueLayer(options) {
   var self = this;
+  if (!torque.isBrowserSupported()) {
+    throw new Error("browser is not supported by torque");
+  }
   this.key = 0;
   this.cartocss = null;
   this.ready = false;
@@ -3098,6 +3105,9 @@ L.TorqueLayer = L.CanvasLayer.extend({
 
   initialize: function(options) {
     var self = this;
+    if (!torque.isBrowserSupported()) {
+      throw new Error("browser is not supported by torque");
+    }
     options.tileLoader = true;
     this.key = 0;
 

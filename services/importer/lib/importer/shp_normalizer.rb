@@ -25,7 +25,7 @@ module CartoDB
         encoding  = DBF::Table.new(dbf).encoding || 
                     normalizer_output.fetch(:encoding, nil)
         encoding  = DEFAULT_ENCODING if encoding == 'None' 
-        encoding  = DEFAULT_ENCODING if windows?(encoding)
+        encoding  = codepage_for(encoding) if windows?(encoding)
         return(tab_encoding || encoding) if tab?
         encoding
       end #encoding
@@ -89,7 +89,9 @@ module CartoDB
       end #normalizer_command
 
       def codepage_for(encoding)
-        encoding.gsub(/windows-|cp/, 'WIN')
+        encoding = encoding.gsub(/windows-|cp/, 'WIN')
+        return DEFAULT_ENCODING unless encoding =~ /WIN\d{4}/
+        encoding
       end #codepage_for
 
       def windows?(encoding)

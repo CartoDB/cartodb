@@ -33,6 +33,9 @@
   * Dashboard pagination not switching page content.
   * Error while using the wizards.
   * Error on geocoder window when being over quota.
+  * Make CDB_UserTables test more stable by ordering multirecord results.
+  * Add "make check" rule.
+  * Features/cdb transform to webmercator improvement.
 
 2.3.2
 -----

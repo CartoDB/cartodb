@@ -27,6 +27,7 @@
       margin-top:9px;
       @include border-radius(8px);
       background:#E2E2E2;
+      overflow:hidden;
 
       span.used {
         display:block;

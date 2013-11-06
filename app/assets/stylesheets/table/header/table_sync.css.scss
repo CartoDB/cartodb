@@ -21,6 +21,11 @@
     background:rgba(black, .2);
     z-index:1;
 
+    &.failure {
+      background: url('/assets/layout/sync_error_bkg.png') repeat-x 0 0;
+      border-top:1px solid rgba(black, .2);
+    }
+
     ul {
       position:relative;
       top:0;

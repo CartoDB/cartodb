@@ -1,9 +1,16 @@
-2.3.3
+2.4.0
 -----
 * Improvements
   * Allow to set an image to each category, not only a color.
   * Display remote URL in synchronization options modal window.
   * Add new basemaps to the list.
+  * Implement geocoding API on CartoDB.
+  * Use different schema for temporal geocoding tables.
+  * Improve the way we detect the date columns.
+  * Implement interface to HERE geocoding API.
+  * Implement CartoDB bindings to HERE interface.
+  * Link the new geocoding API to the UI.
+  * Change timestamps by timestamptz.
 
 * Fixed Bugs
   * Allow image besides of color in the legends.
@@ -14,6 +21,18 @@
   * Remove marker-allow-overlap property from choropleth points wizard.
   * Fix header visualization frontend tests.
   * Add .tsv to supported import formats.
+  * Implement changes on the georeference window UI.
+  * Rename a table with capital letter fails.
+  * NAD83 Projection not working.
+  * When changing sync table freq you need to reload in order to get the correct "next sync time".
+  * Dropbox 401 gets imported on sync tables.
+  * Dashboard URL with parameters makes the page to fail partially.
+  * Add .txt .tsv to the list of supported extensions in the importer.
+  * HTML problem with geocoding limit copy.
+  * Each time you open sync "view options", the dropdown removes first option.
+  * Dashboard pagination not switching page content.
+  * Error while using the wizards.
+  * Error on geocoder window when being over quota.
 
 2.3.2
 -----

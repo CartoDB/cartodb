@@ -29,7 +29,9 @@ module CartoDB
       def run(path)
         return without_unpacking(path) unless compressed?(path)
         extract(path)
-        crawl(temporary_directory).each { |path| process(path) }
+        crawl(temporary_directory)
+          .select { |path| !(path =~ /.*readme.*\.txt/i) }
+          .each   { |path| process(path) }
         @source_files = split(source_files)
         self
       rescue => exception

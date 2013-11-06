@@ -1,5 +1,29 @@
+2.3.3
+-----
+* Improvements
+  * Allow to set an image to each category, not only a color.
+  * Display remote URL in synchronization options modal window.
+  * Add new basemaps to the list.
+
+* Fixed Bugs
+  * Allow image besides of color in the legends.
+  * False values in color wizard are interpreted as null in the legends.
+  * Add privacy explanation on the create new table window.
+  * Test category wizard, checking old color wizard applied.
+  * Layout error when searching tables.
+  * Remove marker-allow-overlap property from choropleth points wizard.
+  * Fix header visualization frontend tests.
+  * Add .tsv to supported import formats.
+
 2.3.2
 -----
+* Improvements
+  * Color the 'empty' message in the legend title in a subtle gray
+  * chrolopleth for points
+  * Hookup importer checksum mechanisms with synchronizations
+  * Force follow redirects in importer
+  * Update run_at when changing synchronization interval of a table
+
 * Fixed Bugs
   * Generate the_geom only from wkb_geometry for SHPs
   * Create your first table button does not work
@@ -17,13 +41,6 @@
   * Display 'Next sync will be in a few minutes' when run_at is in the past
   * If legend title is empty and you fill it, it should enable by default
   * Trivial typo within table rename (by @rfc2616)
-
-* Improvements
-  * Color the 'empty' message in the legend title in a subtle gray
-  * chrolopleth for points
-  * Hookup importer checksum mechanisms with synchronizations
-  * Force follow redirects in importer
-  * Update run_at when changing synchronization interval of a table
 
 2.3.1
 -----

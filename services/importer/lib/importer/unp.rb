@@ -16,7 +16,7 @@ module CartoDB
       SUPPORTED_FORMATS     = %w{
         .csv .shp .ods .xls .xlsx .tif .tiff .kml .kmz
         .js .json .tar .gz .tgz .osm .bz2 .geojson 
-        .gpx .sql .tab
+        .gpx .sql .tab .tsv .txt
       }
       SPLITTERS             = [KmlSplitter, OsmSplitter]
 
@@ -57,6 +57,7 @@ module CartoDB
       def crawl(path, files=[])
         Dir.foreach(path) do |subpath|
           next if hidden?(subpath)
+          next if subpath =~ /.*readme.*\.txt/i
 
           fullpath = normalize("#{path}/#{subpath}")
           (crawl(fullpath, files) and next) if File.directory?(fullpath)
@@ -112,6 +113,8 @@ module CartoDB
           .gsub(/"/, '')
           .gsub(/&/, '')
           .downcase
+          .gsub(/\.txt/, '.csv')
+          .gsub(/\.tsv/, '.csv')
       end #underscore
 
       def rename(origin, destination)

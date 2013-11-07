@@ -149,6 +149,28 @@ describe User do
     end
   end
 
+  describe '#get_geocoding_calls' do
+    before do
+      delete_user_data @user
+      @user.stubs(:last_billing_cycle).returns(Date.today)
+      FactoryGirl.create(:geocoding, user: @user, created_at: Time.now, processed_rows: 1)
+      FactoryGirl.create(:geocoding, user: @user, created_at: Time.now - 5.days, processed_rows: 2)
+    end
+
+    it "should return the sum of geocoded rows for the current billing period" do
+      @user.get_geocoding_calls.should eq 1
+    end
+
+    it "should return the sum of geocoded rows for the specified period" do
+      @user.get_geocoding_calls(from: Time.now-5.days).should eq 3
+      @user.get_geocoding_calls(from: Time.now-5.days, to: Time.now - 2.days).should eq 2
+    end
+
+    it "should return 0 when no geocodings" do
+      @user.get_geocoding_calls(from: Time.now - 15.days, to: Time.now - 10.days).should eq 0
+    end
+  end
+
   it "should have many tables" do
     @user2.tables.should be_empty
     create_table :user_id => @user2.id, :name => 'My first table', :privacy => Table::PUBLIC
@@ -188,11 +210,29 @@ describe User do
       .should include 'cdb_importer'
   end
 
+  it 'creates a cdb schema in the user database' do
+    @user.in_database[%Q(SELECT * FROM pg_namespace)]
+      .map { |record| record.fetch(:nspname) }
+      .should include 'cdb'
+  end
+
   it 'allows access to the importer schema by the owner' do
     @user.in_database.run(%Q{
       CREATE TABLE cdb_importer.bogus ( bogus varchar(40) )
     })
     query = %Q(SELECT * FROM cdb_importer.bogus)
+
+    expect { @user.in_database(as: :public_user)[query].to_a }
+      .to raise_error(Sequel::DatabaseError)
+      
+    @user.in_database[query].to_a
+  end
+
+  it 'allows access to the cdb schema by the owner' do
+    @user.in_database.run(%Q{
+      CREATE TABLE cdb.bogus ( bogus varchar(40) )
+    })
+    query = %Q(SELECT * FROM cdb.bogus)
 
     expect { @user.in_database(as: :public_user)[query].to_a }
       .to raise_error(Sequel::DatabaseError)
@@ -253,7 +293,6 @@ describe User do
   end
 
   it "should run valid queries against his database" do
-
     # initial select tests
     query_result = @user.run_query("select * from import_csv_1 where family='Polynoidae' limit 10")
     query_result[:time].should_not be_blank

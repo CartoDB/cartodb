@@ -17,6 +17,10 @@ DECLARE
   ret GEOMETRY;
 BEGIN
 
+  IF ST_Srid(geom) = 3857 THEN
+    RETURN geom;
+  END IF;
+
   -- This is the valid web mercator extent 
   --
   -- NOTE: some sources set the valid latitude range

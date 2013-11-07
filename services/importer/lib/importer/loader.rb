@@ -7,6 +7,7 @@ require_relative './json2csv'
 require_relative './xlsx2csv'
 require_relative './xls2csv'
 require_relative './georeferencer'
+require_relative './typecaster'
 
 module CartoDB
   module Importer2
@@ -41,6 +42,7 @@ module CartoDB
         raise InvalidGeoJSONError if ogr2ogr.command_output =~ /nrecognized GeoJSON/
         raise LoadError if ogr2ogr.exit_code != 0
         georeferencer.run
+        typecaster.run
         self
       end #run
 
@@ -75,6 +77,12 @@ module CartoDB
           job.db, job.table_name, SCHEMA, job, geometry_columns
         )
       end #georeferencer
+
+      def typecaster
+        @typecaster ||= Typecaster.new(
+          job.db, job.table_name, SCHEMA, job
+        )
+      end
 
       def geometry_columns
         ['wkb_geometry'] if @source_file.extension == '.shp'

@@ -994,11 +994,17 @@ exports.Profiler = Profiler;
       }
     },
 
+    getSteps: function() {
+      return Math.min(this.options.steps, this.options.data_steps);
+    },
+
     setSteps: function(steps) {
       if (this.options.steps !== steps) {
         this.options.steps = steps;
-        this.options.step = (this.options.end- this.options.start)/this.options.steps;
+        this.options.step = (this.options.end - this.options.start)/this.getSteps();
         this.options.step = this.options.step || 1;
+        this._ready = false;
+        this._fetchKeySpan();
       }
     },
 
@@ -1030,9 +1036,11 @@ exports.Profiler = Profiler;
         self.options.extra_params.last_updated = data.rows[0].updated_at || 0;
         self.options.is_time = data.fields[self.options.column].type === 'date';
 
+        var column_conv = self.options.column;
         if (self.options.is_time){
           max_tmpl = "date_part('epoch', max({column}))";
           min_tmpl = "date_part('epoch', min({column}))";
+          column_conv = format("date_part('epoch', {column})", self.options);
         } else {
           max_tmpl = "max({column})";
           min_tmpl = "min({column})";
@@ -1041,18 +1049,56 @@ exports.Profiler = Profiler;
         max_col = format(max_tmpl, { column: self.options.column });
         min_col = format(min_tmpl, { column: self.options.column });
 
-        var sql = format("SELECT st_xmax(st_envelope(st_collect(the_geom))) xmax,st_ymax(st_envelope(st_collect(the_geom))) ymax, st_xmin(st_envelope(st_collect(the_geom))) xmin, st_ymin(st_envelope(st_collect(the_geom))) ymin, {max_col} max, {min_col} min FROM ({sql}) __torque_wrap_sql", {
+        /*var sql_stats = "" +
+        "WITH summary_groups as ( " + 
+          "WITH summary as ( " + 
+           "select   (row_number() over (order by __time_col asc nulls last)+1)/2 as rownum, __time_col " + 
+            "from (select *, {column} as __time_col from ({sql}) __s) __torque_wrap_sql " + 
+            "order by __time_col asc " + 
+          ") " + 
+          "SELECT " + 
+          "max(__time_col) OVER(PARTITION BY rownum) -  " + 
+          "min(__time_col) OVER(PARTITION BY rownum) diff " + 
+          "FROM summary " + 
+        "), subq as ( " + 
+        " SELECT " +
+            "st_xmax(st_envelope(st_collect(the_geom))) xmax, " +
+            "st_ymax(st_envelope(st_collect(the_geom))) ymax, " +
+            "st_xmin(st_envelope(st_collect(the_geom))) xmin, " +
+            "st_ymin(st_envelope(st_collect(the_geom))) ymin, " +
+            "{max_col} max, " +
+            "{min_col} min FROM  ({sql}) __torque_wrap_sql " +
+        ")" +
+        "SELECT " + 
+        "xmax, xmin, ymax, ymin, a.max as max_date, a.min as min_date, " +
+        "avg(diff) as diffavg," + 
+        "(a.max - a.min)/avg(diff) as num_steps " + 
+        "FROM summary_groups, subq a  " + 
+        "WHERE diff > 0 group by xmax, xmin, ymax, ymin, max_date, min_date";
+        */
+        var sql_stats = " SELECT " +
+            "st_xmax(st_envelope(st_collect(the_geom))) xmax, " +
+            "st_ymax(st_envelope(st_collect(the_geom))) ymax, " +
+            "st_xmin(st_envelope(st_collect(the_geom))) xmin, " +
+            "st_ymin(st_envelope(st_collect(the_geom))) ymin, " +
+            "count(*) as num_steps, " +
+            "{max_col} max_date, " +
+            "{min_col} min_date FROM  ({sql}) __torque_wrap_sql ";
+
+        var sql = format(sql_stats, {
           max_col: max_col,
           min_col: min_col,
+          column: column_conv,
           sql: self.getSQL()
         });
 
         self.sql(sql, function(data) {
           //TODO: manage bounds
           data = data.rows[0];
-          self.options.start = data.min;
-          self.options.end = data.max;
-          self.options.step = (data.max - data.min)/self.options.steps;
+          self.options.start = data.min_date;
+          self.options.end = data.max_date;
+          self.options.step = (data.max_date - data.min_date)/Math.min(self.options.steps, data.num_steps>>0);
+          self.options.data_steps = data.num_steps >> 0;
           // step can't be 0
           self.options.step = self.options.step || 1;
           self.options.bounds = [ 
@@ -2584,6 +2630,9 @@ GMapsTorqueLayer.prototype = _.extend({},
         bounds: self.provider.getBounds()
       });
       self.animator.rescale();
+      self.fire('change:steps', {
+        steps: self.provider.getSteps()
+      });
       self.setKey(self.key);
     };
 
@@ -2631,9 +2680,6 @@ GMapsTorqueLayer.prototype = _.extend({},
     this.provider && this.provider.setSteps(steps);
     this.animator && this.animator.steps(steps);
     this._reloadTiles();
-    this.fire('change:steps', {
-      steps: steps
-    });
   },
 
   setColumn: function(column, isTime) {
@@ -2716,7 +2762,7 @@ GMapsTorqueLayer.prototype = _.extend({},
   stepToTime: function(step) {
     if (!this.provider) return 0;
     var times = this.provider.getKeySpan();
-    var time = times.start + (times.end - times.start)*(step/this.options.steps);
+    var time = times.start + (times.end - times.start)*(step/this.provider.getSteps());
     return new Date(time);
   },
 
@@ -3146,6 +3192,18 @@ L.TorqueLayer = L.CanvasLayer.extend({
     this.options.renderer = this.options.renderer || 'point';
     this.options.provider = this.options.provider || 'sql_api';
 
+    options.ready = function() {
+      self.fire("change:bounds", {
+        bounds: self.provider.getBounds()
+      });
+      self.animator.steps(self.provider.getSteps());
+      self.animator.rescale();
+      self.fire('change:steps', {
+        steps: self.provider.getSteps()
+      });
+      self.setKey(self.key);
+    };
+
     this.provider = new this.providers[this.options.provider](options);
     this.renderer = new this.renderers[this.options.renderer](this.getCanvas(), options);
 
@@ -3158,13 +3216,6 @@ L.TorqueLayer = L.CanvasLayer.extend({
       });
     }, this);
 
-    this.options.ready = function() {
-      self.fire("change:bounds", {
-        bounds: self.provider.getBounds()
-      });
-      self.animator.rescale();
-      self.setKey(self.key);
-    };
 
   },
 
@@ -3203,11 +3254,7 @@ L.TorqueLayer = L.CanvasLayer.extend({
 
   setSteps: function(steps) {
     this.provider.setSteps(steps);
-    this.animator.steps(steps);
     this._reloadTiles();
-    this.fire('change:steps', {
-      steps: steps
-    })
   },
 
   setColumn: function(column, isTime) {
@@ -3276,7 +3323,7 @@ L.TorqueLayer = L.CanvasLayer.extend({
    */
   stepToTime: function(step) {
     var times = this.provider.getKeySpan();
-    var time = times.start + (times.end - times.start)*(step/this.options.steps);
+    var time = times.start + (times.end - times.start)*(step/this.provider.getSteps());
     return new Date(time);
   },
 

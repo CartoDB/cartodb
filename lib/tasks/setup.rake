@@ -1,4 +1,14 @@
 namespace :cartodb do
+  namespace :test do
+    task :prepare do 
+      if (ENV['RAILS_ENV'] == "test")
+	Rake::Task['test:prepare'].invoke
+ 	Rake::Task['cartodb:db:create_publicuser'].invoke
+      else
+        system("rake cartodb:test:prepare RAILS_ENV=test")
+      end
+    end
+  end
   namespace :db do
     desc <<-DESC
 Setup cartodb database and creates a new user from environment variables:
@@ -29,12 +39,16 @@ DESC
     desc "make public and tile users"
     task :create_publicuser => :environment do
       begin
+	puts "Creating user #{CartoDB::PUBLIC_DB_USER}"
         ::Rails::Sequel.connection.run("CREATE USER #{CartoDB::PUBLIC_DB_USER}")
-      rescue
+      rescue => e
+        puts e.inspect
       end
       begin
+	puts "Creating user #{CartoDB::TILE_DB_USER}"
         ::Rails::Sequel.connection.run("CREATE USER #{CartoDB::TILE_DB_USER}")
-      rescue
+      rescue => e
+        puts e.inspect
       end
     end
 

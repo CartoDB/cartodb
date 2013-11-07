@@ -143,6 +143,7 @@ div.map {
       &.special {
         background:#F6F6F6;
         border-left: 1px solid #E7E7E7;
+        @include border-radius(0 2px 2px 0);
       }
     }
 

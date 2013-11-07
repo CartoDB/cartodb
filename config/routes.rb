@@ -111,7 +111,7 @@ CartoDB::Application.routes.draw do
       end
 
       # Geocoder
-      resources :geocodings, :only                  => [:create, :show, :index]      
+      resources :geocodings, :only                  => [:create, :show, :index, :update]
 
       get     'viz/tags' => 'tags#index', :as => 'list_tags'
       get     'viz'                                 => 'visualizations#index'

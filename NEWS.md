@@ -1,5 +1,51 @@
+2.4.0
+-----
+* Improvements
+  * Allow to set an image to each category, not only a color.
+  * Display remote URL in synchronization options modal window.
+  * Add new basemaps to the list.
+  * Implement geocoding API on CartoDB.
+  * Use different schema for temporal geocoding tables.
+  * Improve the way we detect the date columns.
+  * Implement interface to HERE geocoding API.
+  * Implement CartoDB bindings to HERE interface.
+  * Link the new geocoding API to the UI.
+  * Change timestamps by timestamptz.
+
+* Fixed Bugs
+  * Allow image besides of color in the legends.
+  * False values in color wizard are interpreted as null in the legends.
+  * Add privacy explanation on the create new table window.
+  * Test category wizard, checking old color wizard applied.
+  * Layout error when searching tables.
+  * Remove marker-allow-overlap property from choropleth points wizard.
+  * Fix header visualization frontend tests.
+  * Add .tsv to supported import formats.
+  * Implement changes on the georeference window UI.
+  * Rename a table with capital letter fails.
+  * NAD83 Projection not working.
+  * When changing sync table freq you need to reload in order to get the correct "next sync time".
+  * Dropbox 401 gets imported on sync tables.
+  * Dashboard URL with parameters makes the page to fail partially.
+  * Add .txt .tsv to the list of supported extensions in the importer.
+  * HTML problem with geocoding limit copy.
+  * Each time you open sync "view options", the dropdown removes first option.
+  * Dashboard pagination not switching page content.
+  * Error while using the wizards.
+  * Error on geocoder window when being over quota.
+  * Make CDB_UserTables test more stable by ordering multirecord results.
+  * Add "make check" rule.
+  * Features/cdb transform to webmercator improvement.
+
 2.3.2
 -----
+* Improvements
+  * Color the 'empty' message in the legend title in a subtle gray
+  * chrolopleth for points
+  * Hookup importer checksum mechanisms with synchronizations
+  * Force follow redirects in importer
+  * Update run_at when changing synchronization interval of a table
+
 * Fixed Bugs
   * Generate the_geom only from wkb_geometry for SHPs
   * Create your first table button does not work
@@ -17,13 +63,6 @@
   * Display 'Next sync will be in a few minutes' when run_at is in the past
   * If legend title is empty and you fill it, it should enable by default
   * Trivial typo within table rename (by @rfc2616)
-
-* Improvements
-  * Color the 'empty' message in the legend title in a subtle gray
-  * chrolopleth for points
-  * Hookup importer checksum mechanisms with synchronizations
-  * Force follow redirects in importer
-  * Update run_at when changing synchronization interval of a table
 
 2.3.1
 -----

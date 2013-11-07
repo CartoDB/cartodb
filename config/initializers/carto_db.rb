@@ -49,7 +49,7 @@ module CartoDB
   TYPES = {
     "number"  => ["smallint", /numeric\(\d+,\d+\)/, "integer", "bigint", "decimal", "numeric", "double precision", "serial", "big serial", "real"],
     "string"  => ["varchar", "character varying", "text", /character\svarying\(\d+\)/, /char\s*\(\d+\)/, /character\s*\(\d+\)/],
-    "date"    => ["timestamp", "timestamp without time zone"],
+    "date"    => ["timestamptz", "timestamp with time zone"],
     "boolean" => ["boolean"]
   }
 
@@ -74,6 +74,10 @@ module CartoDB
     1000 => {
       title: 'File I/O error',
       what_about: "Something seems to be wrong with the file you uploaded. Check that it is loading fine locally and try uploading it again."
+    },
+    1001 => {
+      title: 'Download error',
+      what_about: "The remote URL returned an error. Please verify your file is available at that URL."
     },
     1002 => {
       title: 'Unsupported file type',

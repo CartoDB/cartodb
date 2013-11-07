@@ -25,7 +25,7 @@ defaults: &defaults
     embeds:           ''
     domain:           ''
   varnish_management:
-    critical: true
+    critical: false
     host: '127.0.0.1'
     port: 6082
     purge_command: 'purge'
@@ -50,6 +50,10 @@ defaults: &defaults
   superadmin:
     username: "superadmin"
     password: "monkey"
+  geocoder:
+    app_id: ''
+    token:  ''
+    mailto: ''
   importer:
     # OSM imports require osm2pgsql and this tool doesn't
     # play well with pgbouncer.

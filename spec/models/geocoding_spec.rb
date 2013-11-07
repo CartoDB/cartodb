@@ -36,8 +36,27 @@ describe Geocoding do
     end
   end
 
+  describe '#translate_formatter' do
+    let(:geocoding) { FactoryGirl.build(:geocoding, user: @user) }
+
+    it 'translates a string with field names' do
+      geocoding.formatter = '{a}, {b}'
+      geocoding.translate_formatter.should == "a, ', ', b"
+    end
+
+    it 'translates a string with literals' do
+      geocoding.formatter = 'c'
+      geocoding.translate_formatter.should == "'c'"
+    end
+
+    it 'translates a string with mixed literals and field names' do
+      geocoding.formatter = '{a}, b, {c}'
+      geocoding.translate_formatter.should == "a, ', b, ', c"
+    end
+  end
+
   describe '#run!' do
-    it 'updates total_rows and processed_rows' do
+    it 'updates total_rows, processed_rows and state' do
       geocoding = Geocoding.create(user: @user, table_name: 'a', formatter: 'b')
       geocoding.table_geocoder.stubs(:run).returns true
       geocoding.table_geocoder.stubs(:process_results).returns true
@@ -49,6 +68,18 @@ describe Geocoding do
       geocoding.run!
       geocoding.total_rows.should eq 20
       geocoding.processed_rows.should eq 10
+      geocoding.state.should eq 'finished'
+    end
+  end
+
+  describe '#max_geocodable_rows' do
+    let(:geocoding) { FactoryGirl.build(:geocoding, user: @user) }
+
+    it 'returns the remaining geocoding quota for the current billing period' do
+      delete_user_data @user
+      geocoding.max_geocodable_rows.should eq 200
+      FactoryGirl.create(:geocoding, user: @user, processed_rows: 100)
+      geocoding.max_geocodable_rows.should eq 100
     end
   end
 

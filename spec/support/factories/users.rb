@@ -30,6 +30,7 @@ module CartoDB
       user.period_end_date       = attributes[:period_end_date] if attributes.has_key?(:period_end_date)
       user.user_timeout          = attributes[:user_timeout] || 300000
       user.database_timeout      = attributes[:database_timeout] || 300000
+      user.geocoding_quota       = attributes[:geocoding_quota] || 1000
       user
     end
 
@@ -50,20 +51,27 @@ module CartoDB
     def reload_user_data user    
       
       delete_user_data user      
-      
-      # Import basic csv file as table
-      import1 = DataImport.create(  :user_id       => user.id,
-                                    :table_name    => 'import_csv_1',
-                                    :data_source   => "/../db/fake_data/import_csv_1.csv" )
-      import1.run_import!
-      ::Table[import1.table_id]    
 
-      # Import tweets file as table
-      import2 = DataImport.create(  :user_id       => user.id,
-                                    :table_name    => 'twitters',
-                                    :data_source   => "/../db/fake_data/twitters.csv" )
-      import2.run_import!
-      ::Table[import2.table_id]    
+      fixture     = "#{Rails.root}/db/fake_data/import_csv_1.csv"
+      data_import = create_import(@user, fixture)
+      fixture     = "#{Rails.root}/db/fake_data/twitters.csv"
+      data_import = create_import(@user, fixture)
+    end
+
+    def create_import user, file_name, name=nil
+      data_import  = DataImport.create(
+        user_id:      user.id,
+        data_source:  file_name,
+        table_name:   name
+      )
+      def data_import.data_source=(filepath)
+        self.values[:data_type] = 'file'
+        self.values[:data_source] = filepath
+      end
+
+      data_import.data_source = file_name
+      data_import.send :new_importer
+      data_import
     end
 
     def delete_user_data user

@@ -124,7 +124,10 @@ class User < Sequel::Model
   def self.overquota(delta = 0)
     User.where(enabled: true).all.select do |u|
         limit = u.map_view_quota.to_i - (u.map_view_quota.to_i * delta)
-        u.get_api_calls(from: u.last_billing_cycle, to: Date.today).sum > limit
+        over_map_views = u.get_api_calls(from: u.last_billing_cycle, to: Date.today).sum > limit
+        limit = u.geocoding_quota.to_i - (u.geocoding_quota.to_i * delta)
+        over_geocodings = u.get_geocoding_calls > limit
+        over_map_views || over_geocodings
     end
   end
 

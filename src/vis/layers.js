@@ -89,6 +89,13 @@ Layers.register('layergroup', function(vis, data) {
 });
 
 Layers.register('torque', function(vis, data) {
+  // default is https
+  if(!vis.https) {
+    if(data.sql_api_domain && data.sql_api_domain.indexOf('cartodb.com') !== -1) {
+      data.sql_api_protocol = 'http';
+      data.sql_api_port = 80;
+    }
+  }
   return new cdb.geo.TorqueLayer(data);
 });
 

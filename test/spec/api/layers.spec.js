@@ -244,12 +244,12 @@ describe('api.layers', function() {
           });
         });
 
-        waits(300);
+        waits(500);
 
         runs(function() {
           expect(s.called).toEqual(true);
           // check it's a torque layer and not a cartodb one
-          expect(layer.play).not.toEqual(undefined);
+          expect(layer.model.get('type')).toEqual('torque');
         });
 
       });

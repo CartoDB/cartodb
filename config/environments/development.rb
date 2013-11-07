@@ -46,8 +46,10 @@ CartoDB::Application.configure do
   config.autoload_paths += ["#{config.root}/app/models/map"]
   config.autoload_paths += ["#{config.root}/app/models/table"]
   config.autoload_paths += ["#{config.root}/app/models/user"]
+  
+  config.assets.initialize_on_precompile = true
 
-  config.action_controller.asset_host = Proc.new { Cartodb.config[:app_assets] ? "//s3.amazonaws.com/" + Cartodb.config[:app_assets]['s3']['sync_directory'] : nil }
+  config.action_controller.asset_host = Proc.new { Cartodb.config[:app_assets] ? "//s3.amazonaws.com/" + Cartodb.config[:app_assets]['sync_directory'] : nil }
 
 end
 

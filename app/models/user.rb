@@ -333,7 +333,7 @@ class User < Sequel::Model
 
   # save users basic metadata to redis for node sql api to use
   def save_metadata
-    $users_metadata.HMSET key, 'id', id, 'database_name', database_name
+    $users_metadata.HMSET key, 'id', id, 'database_name', database_name, 'database_password', database_password
     self.set_map_key
   end
 

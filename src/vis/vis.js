@@ -635,9 +635,13 @@ var Vis = cdb.core.View.extend({
           'template': infowindowFields.template,
           'template_type': infowindowFields.template_type
         });
+
+        // Scaping column names with double quotes
+        var column_names = _.map(_.pluck(fields, 'name'), function(n) { return "\"" + n + "\"" }).join(',');
+
         // Send request
-        sql.execute("select {{{fields}}} from ({{{sql}}}) as _cartodbjs_alias where cartodb_id = {{{ cartodb_id }}}", {
-          fields: _.pluck(fields, 'name').join(','),
+        sql.execute('select {{{ fields }}} from ({{{ sql }}}) as _cartodbjs_alias where cartodb_id = {{{ cartodb_id }}}', {
+          fields: column_names,
           cartodb_id: cartodb_id,
           sql: layerView.getQuery(layer)
         })

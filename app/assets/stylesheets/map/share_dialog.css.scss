@@ -13,6 +13,15 @@
     padding:30px 40px!important;
   }
 
+  div.torque_warning {
+    display: none;
+    padding: 13px 40px;
+    background-color: #FCF3DB;
+    font-size: 13px;
+    color: $cGray2;
+    border-bottom: 1px solid #E5E5E5;
+  }
+
   .cartodb-map_wrapper {
     position: relative;
     @include inline-block();

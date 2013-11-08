@@ -6,8 +6,10 @@ module CartoDB
   module Visualization
     class Relator
       LAYER_SCOPES  = {
-                        base:     :user_layers,
-                        cartodb:  :data_layers
+                        base:             :user_layers,
+                        cartodb:          :data_layers,
+                        carto_and_torque: :carto_and_torque_layers,
+                        others:           :other_layers
                       }
 
       INTERFACE     = %w{ overlays map user table related_tables layers stats
@@ -36,7 +38,8 @@ module CartoDB
       end #table
 
       def related_tables
-        @related_tables ||= layers(:cartodb).flat_map(&:affected_tables).uniq
+        @related_tables ||= layers(:carto_and_torque)
+          .flat_map(&:affected_tables).uniq
       end #related_tables
 
       def layers(kind)

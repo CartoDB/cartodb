@@ -113,10 +113,11 @@ $corner_radius: 6px;
   }
 }
 
-
 // Layer info
 a.info {
   display:block;
+  left:0!important;
+  top:0!important;
   padding-left:24px;
 
   * {@include inline-block(); vertical-align:middle; letter-spacing:0px;}
@@ -1247,6 +1248,7 @@ a.info {
 
           &.bubble  { background: image-url('layout/wizard-bubble.png') no-repeat;}
           &.density { background: image-url('layout/wizard-density-hex.png') no-repeat;}
+          &.torque { background: image-url('layout/wizard-torque.png') no-repeat;}
 
           &:hover {
             border-color:$cGray2;

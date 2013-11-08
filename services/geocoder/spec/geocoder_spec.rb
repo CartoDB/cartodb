@@ -17,7 +17,7 @@ describe CartoDB::Geocoder do
       filepath = path_to 'without_country.csv'
       expect { 
         CartoDB::Geocoder.new(default_params.merge(input_file: filepath)).upload 
-      }.to raise_error('Input parameter validation failed. JobId: 9rFyj7kbGMmpF50ZUFAkRnroEiOpDOEZ Email Address is missing!')
+      }.to raise_error('Geocoding API communication failure: Input parameter validation failed. JobId: 9rFyj7kbGMmpF50ZUFAkRnroEiOpDOEZ Email Address is missing!')
     end
   end
 
@@ -50,7 +50,7 @@ describe CartoDB::Geocoder do
   end
 
   describe '#cancel' do
-    before { stub_api_request(200, 'response_status.xml') }
+    before { stub_api_request(200, 'response_cancel.xml') }
     let(:geocoder) { CartoDB::Geocoder.new(default_params.merge(request_id: 'wadus')) }
 
     it "updates the status" do

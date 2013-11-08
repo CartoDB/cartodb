@@ -36,6 +36,10 @@ class Geocoding < Sequel::Model
 
   def cancel
     table_geocoder.cancel
+  rescue => e
+    count ||= 1
+    retry unless (count = count.next) > 5
+    CartoDB::notify_exception(e, user: user)
   end
 
   def run!
@@ -55,6 +59,9 @@ class Geocoding < Sequel::Model
     return false if state == 'cancelled'
     table_geocoder.process_results
     self.update(state: 'finished')
+  rescue => e
+    CartoDB::notify_exception(e, user: user)
+    self.update(state: 'failed')
   end # run!
 
   # {field}, SPAIN => field, ', SPAIN'

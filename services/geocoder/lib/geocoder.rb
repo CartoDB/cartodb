@@ -77,9 +77,7 @@ module CartoDB
     end # extract_response_field
 
     def handle_api_error(response)
-      if response.code != 200
-        raise "#{extract_response_field(response.body, '//Details')}"
-      end
+      raise "Geocoding API communication failure: #{extract_response_field(response.body, '//Details')}" if response.code != 200
     end # handle_api_errpr
 
   end # Geocoder

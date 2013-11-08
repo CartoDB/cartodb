@@ -1042,10 +1042,10 @@ $.widget("ui.sortable", $.ui.mouse, {
 		if(!noPropagation) this._trigger("beforeStop", event, this._uiHash());
 
 		//$(this.placeholder[0]).remove(); would have been the jQuery way - unfortunately, it unbinds ALL events from the original node!
-		this.placeholder[0].parentNode || this.placeholder[0].parentNode.removeChild(this.placeholder[0]);
+		this.placeholder[0].parentNode && this.placeholder[0].parentNode.removeChild(this.placeholder[0]);
 
 
-		if(this.helper[0] != this.currentItem[0]) this.helper.remove(); this.helper = null;
+		if(this.helper && this.helper[0] != this.currentItem[0]) this.helper.remove(); this.helper = null;
 
 		if(!noPropagation) {
 			for (var i=0; i < delayedTriggers.length; i++) { delayedTriggers[i].call(this, event); }; //Trigger all delayed events

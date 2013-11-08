@@ -856,7 +856,7 @@ exports.Profiler = Profiler;
       if(!cdn_host.http && !cdn_host.https) {
         throw new Error("cdn_host should contain http and/or https entries");
       }
-      h += cdn_host[protocol] + "/" + (opts.user_name || opts.user) + '/api/v2/sql';
+      h += cdn_host[protocol] + "/" + (opts.user_name || opts.user);
       return h;
     },
 
@@ -883,15 +883,10 @@ exports.Profiler = Profiler;
 
     // execute actual query
     sql: function(sql, callback, options) {
-      options = options || {};
       var subdomains = this.options.subdomains || '0123';
-      var url;
-      if (options.no_cdn) {
-        url = this._host();
-      } else {
-        url = this.url(subdomains[Math.abs(this._hash(sql))%subdomains.length]);
-      }
+      var url = this.url(subdomains[Math.abs(this._hash(sql))%subdomains.length]);
       var extra = this._extraParams();
+      options = options || {};
       torque.net.get( url + "?q=" + encodeURIComponent(sql) + (extra ? "&" + extra: ''), function (data) {
           if(options.parseJSON) {
             data = JSON.parse(data && data.responseText);
@@ -977,8 +972,8 @@ exports.Profiler = Profiler;
 
     getKeySpan: function() {
       return {
-        start: this.options.start,
-        end: this.options.end,
+        start: this.options.start * 1000,
+        end: this.options.end * 1000,
         step: this.options.step,
         steps: this.options.steps
       };
@@ -1029,7 +1024,7 @@ exports.Profiler = Profiler;
     _fetchKeySpan: function() {
       var self = this;
       var max_col, min_col, max_tmpl, min_tmpl;
-      var query = format("with s as (select EXTRACT(EPOCH FROM max(updated_at)) as max FROM CDB_TableMetadata m WHERE m.tabname::name = any ( CDB_QueryTables('{sql}'))) select {column}, s.max as last_updated " + 
+      var query = format("with s as (select EXTRACT(EPOCH FROM max(updated_at)) as max FROM CDB_TableMetadata m WHERE m.tabname::name = any ( CDB_QueryTables('{sql}'))) select {column}, s.max as last_updated " +
                          "from s, ({sql}) __torque_wrap_sql limit 1", {
         column: this.options.column,
         sql: self.getSQL()
@@ -1055,17 +1050,17 @@ exports.Profiler = Profiler;
         min_col = format(min_tmpl, { column: self.options.column });
 
         /*var sql_stats = "" +
-        "WITH summary_groups as ( " + 
-          "WITH summary as ( " + 
-           "select   (row_number() over (order by __time_col asc nulls last)+1)/2 as rownum, __time_col " + 
-            "from (select *, {column} as __time_col from ({sql}) __s) __torque_wrap_sql " + 
-            "order by __time_col asc " + 
-          ") " + 
-          "SELECT " + 
-          "max(__time_col) OVER(PARTITION BY rownum) -  " + 
-          "min(__time_col) OVER(PARTITION BY rownum) diff " + 
-          "FROM summary " + 
-        "), subq as ( " + 
+        "WITH summary_groups as ( " +
+          "WITH summary as ( " +
+           "select   (row_number() over (order by __time_col asc nulls last)+1)/2 as rownum, __time_col " +
+            "from (select *, {column} as __time_col from ({sql}) __s) __torque_wrap_sql " +
+            "order by __time_col asc " +
+          ") " +
+          "SELECT " +
+          "max(__time_col) OVER(PARTITION BY rownum) -  " +
+          "min(__time_col) OVER(PARTITION BY rownum) diff " +
+          "FROM summary " +
+        "), subq as ( " +
         " SELECT " +
             "st_xmax(st_envelope(st_collect(the_geom))) xmax, " +
             "st_ymax(st_envelope(st_collect(the_geom))) ymax, " +
@@ -1074,11 +1069,11 @@ exports.Profiler = Profiler;
             "{max_col} max, " +
             "{min_col} min FROM  ({sql}) __torque_wrap_sql " +
         ")" +
-        "SELECT " + 
+        "SELECT " +
         "xmax, xmin, ymax, ymin, a.max as max_date, a.min as min_date, " +
-        "avg(diff) as diffavg," + 
-        "(a.max - a.min)/avg(diff) as num_steps " + 
-        "FROM summary_groups, subq a  " + 
+        "avg(diff) as diffavg," +
+        "(a.max - a.min)/avg(diff) as num_steps " +
+        "FROM summary_groups, subq a  " +
         "WHERE diff > 0 group by xmax, xmin, ymax, ymin, max_date, min_date";
         */
         var sql_stats = " SELECT " +
@@ -1106,13 +1101,13 @@ exports.Profiler = Profiler;
           self.options.data_steps = data.num_steps >> 0;
           // step can't be 0
           self.options.step = self.options.step || 1;
-          self.options.bounds = [ 
+          self.options.bounds = [
             [data.ymin, data.xmin],
-            [data.ymax, data.xmax] 
+            [data.ymax, data.xmax]
           ];
           self._setReady(true);
-        }, { parseJSON: true, no_cdn: true });
-      }, { parseJSON: true, no_cdn: true})
+        }, { parseJSON: true });
+      }, { parseJSON: true })
     }
 
   };

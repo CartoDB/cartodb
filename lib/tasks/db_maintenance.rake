@@ -362,6 +362,13 @@ namespace :cartodb do
 
       CartoDB::GenericMigrator.new(args[:version]).rollback!
     end
+    
+    desc "Save users metadata in redis"
+    task :save_users_metadata => :environment do
+      User.all.each do |u|
+        u.save_metadata
+      end
+    end
 
   end
 end

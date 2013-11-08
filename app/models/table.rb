@@ -248,6 +248,7 @@ class Table < Sequel::Model(:user_tables)
 
       # with table #{uniname} table created now run migrator to CartoDBify
       hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+        "host" => owner.database_host,
         "database" => database_name,
         :logger => ::Rails.logger,
         "username" => owner.database_username,
@@ -1590,13 +1591,12 @@ SQL
   end
 
   def tile_request(request_method, request_uri, form = {})
-    uri  = "#{owner.username}.#{Cartodb.config[:tiler_domain]}"
-    ip   = '127.0.0.1'
-    port = Cartodb.config[:tiler_port] || 80
-    http_req = Net::HTTP.new ip, port
-    http_req.use_ssl = Cartodb.config[:tiler_protocol] == 'https' ? true : false
+    uri  = "#{owner.username}.#{Cartodb.config[:tiler]['private']['domain']}"
+    port = Cartodb.config[:tiler]['private']['port'] || 443
+    http_req = Net::HTTP.new uri, port
+    http_req.use_ssl = Cartodb.config[:tiler]['private']['protocol'] == 'https' ? true : false
     http_req.verify_mode = OpenSSL::SSL::VERIFY_NONE
-    request_headers = {'Host' => "#{owner.username}.#{Cartodb.config[:tiler_domain]}"}
+    request_headers = {'Host' => uri}
     case request_method
       when 'GET'
         http_res = http_req.request_get(request_uri, request_headers)

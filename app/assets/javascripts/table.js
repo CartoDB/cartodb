@@ -6,8 +6,7 @@
 //= require jquery.faviconNotify
 //= require rgbcolor
 //= require crossfilter
-//= require jquery-ui.core.min
-//= require jquery-ui.autocomplete
+//= require_tree ../../../vendor/assets/javascripts/jquery-ui
 //= require jquery.caret
 //= require ZeroClipboard
 //= require tag-it

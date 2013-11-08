@@ -75,6 +75,7 @@ module CartoDB
           type:       'torque',
           order:      layer.order,
           options:    {
+            stat_tag:           options.fetch(:visualization_id),
             tiler_protocol:     (configuration[:tiler]["public"]["protocol"] rescue nil),
             tiler_domain:       (configuration[:tiler]["public"]["domain"] rescue nil),
             tiler_port:         (configuration[:tiler]["public"]["port"] rescue nil),

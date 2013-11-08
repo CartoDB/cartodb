@@ -1803,6 +1803,11 @@ and (max-device-width : 480px) {
   div.cartodb-timeslider {
     margin-bottom: 0px!Important;
   }
+
+  div.cartodb-timeslider .ui-slider .ui-slider-handle {
+    display:none!important;
+  }
+
 }
 
 /* iPhone portrait */
@@ -1844,6 +1849,10 @@ and (orientation : portrait) {
   div.cartodb-timeslider .slider {
     max-width: 100px;
   }
+
+  div.cartodb-timeslider .ui-slider .ui-slider-handle {
+    display:none!important;
+  }
 }
 
 /* Nexus landscape */
@@ -1858,6 +1867,10 @@ and (orientation : landscape) {
   div.cartodb-timeslider .slider-wrapper,
   div.cartodb-timeslider .slider {
     max-width: 300px;
+  }
+
+  div.cartodb-timeslider .ui-slider .ui-slider-handle {
+    display:none!important;
   }
 }
 

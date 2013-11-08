@@ -327,6 +327,10 @@ class DataImport < Sequel::Model
       success:        result.success,
       error_code:     result.error_code,
     ) if result
+    payload.merge!(
+      file_url_hostname: URI.parse(public_url).hostname
+    ) if public_url rescue nil
+    end
     payload.merge!(error_title: get_error_text) if state == 'failure'
     payload
   end

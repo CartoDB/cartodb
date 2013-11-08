@@ -856,7 +856,7 @@ exports.Profiler = Profiler;
       if(!cdn_host.http && !cdn_host.https) {
         throw new Error("cdn_host should contain http and/or https entries");
       }
-      h += cdn_host[protocol] + "/" + (opts.user_name || opts.user);
+      h += cdn_host[protocol] + "/" + (opts.user_name || opts.user) + '/api/v2/sql';
       return h;
     },
 
@@ -883,10 +883,15 @@ exports.Profiler = Profiler;
 
     // execute actual query
     sql: function(sql, callback, options) {
-      var subdomains = this.options.subdomains || '0123';
-      var url = this.url(subdomains[Math.abs(this._hash(sql))%subdomains.length]);
-      var extra = this._extraParams();
       options = options || {};
+      var subdomains = this.options.subdomains || '0123';
+      var url;
+      if (options.no_cdn) {
+        url = this._host();
+      } else {
+        url = this.url(subdomains[Math.abs(this._hash(sql))%subdomains.length]);
+      }
+      var extra = this._extraParams();
       torque.net.get( url + "?q=" + encodeURIComponent(sql) + (extra ? "&" + extra: ''), function (data) {
           if(options.parseJSON) {
             data = JSON.parse(data && data.responseText);
@@ -1106,8 +1111,8 @@ exports.Profiler = Profiler;
             [data.ymax, data.xmax] 
           ];
           self._setReady(true);
-        }, { parseJSON: true });
-      }, { parseJSON: true })
+        }, { parseJSON: true, no_cdn: true });
+      }, { parseJSON: true, no_cdn: true})
     }
 
   };

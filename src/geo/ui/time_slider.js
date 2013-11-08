@@ -2,8 +2,8 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
 
   DEFAULT_OFFSET_TOP: 30,
   className: 'cartodb-timeslider',
-  
-  defaultTemplate: 
+
+  defaultTemplate:
     " <ul> " +
     "   <li><a href='#/stop' class='button stop'>pause</a></li>" +
     "   <li><p class='value'>10/20</p></li>" +
@@ -15,7 +15,7 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
     "click .button":  "toggleTime",
     "dragstart":      "killEvent",
     "mousedown":      "killEvent",
-    "touchstart":     "killEvent",
+    "touchstart":     "_stopPropagation",
     "MSPointerDown":  "killEvent",
     "dblclick":       "killEvent",
     "mousewheel":     "killEvent",
@@ -75,9 +75,12 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
   _slide: function(e, ui) {
     this.killEvent(e);
     var step = ui.value;
+    if(this.torqueLayer.isRunning()) {
+      this.toggleTime();
+    }
     this.torqueLayer.setStep(step);
   },
-   
+
   _initSlider: function() {
     var torqueLayer = this.torqueLayer;
     var slider = this.$(".slider");
@@ -101,6 +104,10 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
   },
 
   enable: function() {},
+
+  _stopPropagation: function(ev) {
+    ev.stopPropagation();
+  },
 
   render: function() {
     cdb.geo.ui.InfoBox.prototype.render.apply(this, arguments);

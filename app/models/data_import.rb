@@ -221,6 +221,15 @@ class DataImport < Sequel::Model
     candidates =  current_user.tables.select_map(:name)
     table_name = Table.get_valid_table_name(name, name_candidates: candidates)
     current_user.in_database.run(%Q{CREATE TABLE #{table_name} AS #{query}})
+    if current_user.over_disk_quota?
+      log.append "Over storage quota"
+      log.append "Dropping table #{table_name}"
+      current_user.in_database.run(%Q{DROP TABLE #{table_name}})
+      self.error_code = 8001
+      self.state      = 'failure'
+      save
+      raise CartoDB::QuotaExceeded, "More storage required"
+    end
 
     table_name
   end
@@ -335,3 +344,4 @@ class DataImport < Sequel::Model
     payload
   end
 end
+

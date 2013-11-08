@@ -36,6 +36,7 @@
 //= require cdb/src/geo/leaflet/leaflet_base
 //= require cdb/src/geo/leaflet/leaflet_plainlayer
 //= require cdb/src/geo/leaflet/leaflet_tiledlayer
+//= require cdb/src/geo/leaflet/leaflet_wmslayer
 //= require cdb/src/geo/leaflet/leaflet_cartodb_layergroup
 //= require cdb/src/geo/leaflet/leaflet_cartodb_layer
 //= require cdb/src/geo/leaflet/leaflet

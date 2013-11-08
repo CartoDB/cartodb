@@ -4,17 +4,21 @@
 if(typeof(L) == "undefined")
   return;
 
-var LeafLetWMSLayerView = L.TileLayer.extend({
+var LeafLetWMSLayerView = L.TileLayer.WMS.extend({
   initialize: function(layerModel, leafletMap) {
-    L.TileLayer.prototype.initialize.call(this, layerModel.get('urlTemplate'), {
-      tms:          layerModel.get('tms'),
+
+    L.TileLayer.WMS.prototype.initialize.call(this, layerModel.get('urlTemplate'), {
       attribution:  layerModel.get('attribution'),
+      layers:       layerModel.get('layers'),
+      format:       layerModel.get('format'),
+      transparent:  layerModel.get('transparent'),
       minZoom:      layerModel.get('minZomm'),
       maxZoom:      layerModel.get('maxZoom'),
       subdomains:   layerModel.get('subdomains') || 'abc',
       errorTileUrl: layerModel.get('errorTileUrl'),
       opacity:      layerModel.get('opacity')
     });
+
     cdb.geo.LeafLetLayerView.call(this, layerModel, this, leafletMap);
   }
 

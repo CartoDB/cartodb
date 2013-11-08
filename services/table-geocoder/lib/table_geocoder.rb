@@ -37,7 +37,7 @@ module CartoDB
       csv_file = File.join(working_dir, "wadus.csv")
       connection.run(%Q{
         COPY (
-          SELECT concat(#{formatter}) as recId, concat(#{formatter}) as searchText 
+          SELECT #{clean_formatter} as recId, #{clean_formatter} as searchText 
           FROM #{table_name}
           WHERE cartodb_georef_status IS FALSE OR cartodb_georef_status IS NULL
           GROUP BY recId
@@ -45,6 +45,10 @@ module CartoDB
         ) TO '#{csv_file}' DELIMITER ',' CSV HEADER
       })
       return csv_file
+    end
+
+    def clean_formatter
+      "regexp_replace(concat(#{formatter}), E'[\\n\\r]+', ' ', 'g' )"
     end
 
     def cancel
@@ -101,7 +105,7 @@ module CartoDB
     def import_results_to_temp_table
       connection.run(%Q{
         COPY #{temp_table_name}
-        FROM '#{Dir[File.join(working_dir, '*_out.txt')][0]}' 
+        FROM '#{deflated_results_path}' 
         DELIMITER ',' CSV
       })
     end
@@ -115,7 +119,7 @@ module CartoDB
             ),
             cartodb_georef_status = true
         FROM #{temp_table_name} AS orig
-        WHERE concat(#{formatter}) = orig.recId
+        WHERE #{clean_formatter} = orig.recId
       })
     end
 
@@ -137,6 +141,10 @@ module CartoDB
         @temp_table_name = @temp_table_name.sub(/(\_\d+)*$/, "_#{count}")
       end
       return @temp_table_name
+    end
+
+    def deflated_results_path
+      Dir[File.join(working_dir, '*_out.txt')][0]
     end
 
   end # Geocoder

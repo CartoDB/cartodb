@@ -16,15 +16,15 @@ defaults: &defaults
       port:          '8181'
   sql_api:
     private:
-      sql_api_protocol:   'http'
-      sql_api_domain:     'localhost.lan'
-      sql_api_endpoint:   '/api/v1/sql'
-      sql_api_port:       8080
+      protocol:   'http'
+      domain:     'localhost.lan'
+      endpoint:   '/api/v1/sql'
+      port:       8080
     public:
-      sql_api_protocol:   'http'
-      sql_api_domain:     'localhost.lan'
-      sql_api_endpoint:   '/api/v1/sql'
-      sql_api_port:       8080
+      protocol:   'http'
+      domain:     'localhost.lan'
+      endpoint:   '/api/v1/sql'
+      port:       8080
   api_requests_service_url: ''
   developers_host:    'http://developers.localhost.lan:3000'
   google_analytics:

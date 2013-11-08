@@ -75,10 +75,13 @@ module CartoDB
           type:       'torque',
           order:      layer.order,
           options:    {
-            sql_api_protocol:   (configuration[:sql_api]["public"]["sql_api_protocol"] rescue nil),
-            sql_api_domain:     (configuration[:sql_api]["public"]["sql_api_domain"] rescue nil),
-            sql_api_endpoint:   (configuration[:sql_api]["public"]["sql_api_endpoint"] rescue nil),
-            sql_api_port:       (configuration[:sql_api]["public"]["sql_api_port"] rescue nil),
+            tiler_protocol:     (configuration[:tiler]["public"]["protocol"] rescue nil),
+            tiler_domain:       (configuration[:tiler]["public"]["domain"] rescue nil),
+            tiler_port:         (configuration[:tiler]["public"]["port"] rescue nil),
+            sql_api_protocol:   (configuration[:sql_api]["public"]["protocol"] rescue nil),
+            sql_api_domain:     (configuration[:sql_api]["public"]["domain"] rescue nil),
+            sql_api_endpoint:   (configuration[:sql_api]["public"]["endpoint"] rescue nil),
+            sql_api_port:       (configuration[:sql_api]["public"]["port"] rescue nil),
             cdn_url:            configuration.fetch(:cdn_url, nil)
           }.merge(layer.options.select { |k| TORQUE_ATTRS.include? k })
         }

@@ -1818,7 +1818,7 @@ and (orientation : portrait) {
 
   div.cartodb-timeslider .slider-wrapper,
   div.cartodb-timeslider .slider {
-    max-width: 110px;
+    max-width: 110px!important;
   }
 
 }
@@ -1831,7 +1831,7 @@ and (orientation : landscape) {
 
   div.cartodb-timeslider .slider-wrapper,
   div.cartodb-timeslider .slider {
-    max-width: 240px;
+    max-width: 240px!Important;
   }
 
 }

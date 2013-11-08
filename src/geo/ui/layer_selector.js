@@ -62,6 +62,7 @@ cdb.geo.ui.LayerSelector = cdb.core.View.extend({
 
   _getLayers: function() {
     var self = this;
+    this.layers = [];
 
     _.each(this.map.layers.models, function(layer) {
 

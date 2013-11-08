@@ -982,8 +982,8 @@ exports.Profiler = Profiler;
 
     getKeySpan: function() {
       return {
-        start: this.options.start,
-        end: this.options.end,
+        start: this.options.start * 1000,
+        end: this.options.end * 1000,
         step: this.options.step,
         steps: this.options.steps
       };
@@ -1091,17 +1091,17 @@ exports.Profiler = Profiler;
         min_col = format(min_tmpl, { column: self.options.column });
 
         /*var sql_stats = "" +
-        "WITH summary_groups as ( " + 
-          "WITH summary as ( " + 
-           "select   (row_number() over (order by __time_col asc nulls last)+1)/2 as rownum, __time_col " + 
-            "from (select *, {column} as __time_col from ({sql}) __s) __torque_wrap_sql " + 
-            "order by __time_col asc " + 
-          ") " + 
-          "SELECT " + 
-          "max(__time_col) OVER(PARTITION BY rownum) -  " + 
-          "min(__time_col) OVER(PARTITION BY rownum) diff " + 
-          "FROM summary " + 
-        "), subq as ( " + 
+        "WITH summary_groups as ( " +
+          "WITH summary as ( " +
+           "select   (row_number() over (order by __time_col asc nulls last)+1)/2 as rownum, __time_col " +
+            "from (select *, {column} as __time_col from ({sql}) __s) __torque_wrap_sql " +
+            "order by __time_col asc " +
+          ") " +
+          "SELECT " +
+          "max(__time_col) OVER(PARTITION BY rownum) -  " +
+          "min(__time_col) OVER(PARTITION BY rownum) diff " +
+          "FROM summary " +
+        "), subq as ( " +
         " SELECT " +
             "st_xmax(st_envelope(st_collect(the_geom))) xmax, " +
             "st_ymax(st_envelope(st_collect(the_geom))) ymax, " +
@@ -1110,11 +1110,11 @@ exports.Profiler = Profiler;
             "{max_col} max, " +
             "{min_col} min FROM  ({sql}) __torque_wrap_sql " +
         ")" +
-        "SELECT " + 
+        "SELECT " +
         "xmax, xmin, ymax, ymin, a.max as max_date, a.min as min_date, " +
-        "avg(diff) as diffavg," + 
-        "(a.max - a.min)/avg(diff) as num_steps " + 
-        "FROM summary_groups, subq a  " + 
+        "avg(diff) as diffavg," +
+        "(a.max - a.min)/avg(diff) as num_steps " +
+        "FROM summary_groups, subq a  " +
         "WHERE diff > 0 group by xmax, xmin, ymax, ymin, max_date, min_date";
         */
         var sql_stats = " SELECT " +
@@ -1142,9 +1142,9 @@ exports.Profiler = Profiler;
           self.options.data_steps = data.num_steps >> 0;
           // step can't be 0
           self.options.step = self.options.step || 1;
-          self.options.bounds = [ 
+          self.options.bounds = [
             [data.ymin, data.xmin],
-            [data.ymax, data.xmax] 
+            [data.ymax, data.xmax]
           ];
           self._setReady(true);
         }, { parseJSON: true, no_cdn: true });

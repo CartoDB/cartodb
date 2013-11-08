@@ -1439,8 +1439,9 @@ a.info {
           display:none;
 
           .clear {
+            width:234px;
             background: rgba(#FFEFBF, .5);
-            padding: 14px 20px;
+            padding: 14px;
             @include border-radius(5px);
 
             font-size: 15px;

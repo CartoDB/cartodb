@@ -123,6 +123,12 @@
       function manageError(err, layer) {
           if(layer && layer.get('type') === 'torque') {
               $('#not_supported_dialog').show();
+              // hide all the overlays
+              var overlays = vis.getOverlays()
+              for (var i = 0; i < overlays.length; ++i) {
+                  var o = overlays[i];
+                  o.hide && o.hide();
+              }
           }
       }
 

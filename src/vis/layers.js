@@ -38,6 +38,10 @@ Layers.register('tiled', function(vis, data) {
   return new cdb.geo.TileLayer(data);
 });
 
+Layers.register('wms', function(vis, data) {
+  return new cdb.geo.WMSLayer(data);
+});
+
 Layers.register('gmapsbase', function(vis, data) {
   return new cdb.geo.GMapsBaseLayer(data);
 });

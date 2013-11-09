@@ -16,6 +16,7 @@ var JS_FILES = [
   'cartodb.js',
   'cartodb.uncompressed.js',
   'cartodb.core.js',
+  'cartodb.core.uncompressed.js',
   'cartodb.nojquery.js'
 ]
 

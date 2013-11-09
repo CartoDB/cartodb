@@ -45,6 +45,19 @@ cdb.geo.MapLayer = cdb.core.Model.extend({
         } else {
           return false; // tiled and differente template
         }
+      } else if(myType === 'WMS') {
+
+        var myTemplate  = me.urlTemplate? me.urlTemplate : me.options.urlTemplate
+          , itsTemplate = other.urlTemplate? other.urlTemplate : other.options.urlTemplate;
+
+        var myLayer  = me.layers? me.layers : me.options.layers
+          , itsLayer = other.layers? other.layers : other.options.layers;
+
+        if(myTemplate === itsTemplate && myLayer === itsLayer) {
+          return true; // wms and same template
+        } else {
+          return false; // wms and differente template
+        }
       } else { // same type but not tiled
         var myBaseType = me.base_type? me.base_type : me.options.base_type;
         var itsBaseType = other.base_type? other.base_type : other.options.base_type;
@@ -89,6 +102,21 @@ cdb.geo.GMapsBaseLayer = cdb.geo.MapLayer.extend({
     type: 'GMapsBase',
     base_type: 'gray_roadmap',
     style: null
+  }
+});
+
+/**
+ * WMS layer support
+ */
+cdb.geo.WMSLayer = cdb.geo.MapLayer.extend({
+  defaults: {
+    service: 'WMS',
+    request: 'GetMap',
+    version: '1.1.1',
+    layers: '',
+    styles: '',
+    format: 'image/jpeg',
+    transparent: false
   }
 });
 

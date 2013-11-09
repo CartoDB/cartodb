@@ -17,7 +17,8 @@ if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
       "layergroup": cdb.geo.GMapsCartoDBLayerGroupView,
       "torque": function(layer, map) {
         return new cdb.geo.GMapsTorqueLayerView(layer, map);
-      }
+      },
+      "wms": cdb.geo.LeafLetWMSLayerView
     },
 
     initialize: function() {

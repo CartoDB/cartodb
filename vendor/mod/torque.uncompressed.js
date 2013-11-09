@@ -2807,7 +2807,9 @@ GMapsTorqueLayer.prototype = _.extend({},
     var self = this;
     this.provider.getTileData(t, t.zoom, function(tileData) {
       self._tileLoaded(t, tileData);
-      self.redraw();
+      if (tileData) {
+        self.redraw();
+      }
     });
   },
 
@@ -2831,9 +2833,11 @@ GMapsTorqueLayer.prototype = _.extend({},
     // renders only a "frame"
     for(t in this._tiles) {
       tile = this._tiles[t];
-      pos = this.getTilePos(tile.coord);
-      ctx.setTransform(1, 0, 0, 1, pos.x, pos.y);
-      this.renderer.renderTile(tile, this.key, pos.x, pos.y);
+      if (tile) {
+        pos = this.getTilePos(tile.coord);
+        ctx.setTransform(1, 0, 0, 1, pos.x, pos.y);
+        this.renderer.renderTile(tile, this.key, pos.x, pos.y);
+      }
     }
   },
 
@@ -3172,6 +3176,7 @@ L.CanvasLayer = L.Class.extend({
     }, this);
 
     map.on('move', this._render, this);//function(){ console.log("a"); }, this);
+    map.on('resize', this._reset, this);
 
     if(this.options.tileLoader) {
       this._initTileLoader();
@@ -3192,7 +3197,8 @@ L.CanvasLayer = L.Class.extend({
     map._container.removeChild(this._staticPane);
     map.off({
         'viewreset': this._reset,
-        'move': this._render
+        'move': this._render,
+        'resize': this._reset
     }, this);
   },
 
@@ -3319,7 +3325,9 @@ L.TorqueLayer = L.CanvasLayer.extend({
     this.on('tileAdded', function(t) {
       var tileData = this.provider.getTileData(t, t.zoom, function(tileData) {
         self._tileLoaded(t, tileData);
-        self.redraw();
+        if (tileData) {
+          self.redraw();
+        }
       });
     }, this);
 
@@ -3392,9 +3400,11 @@ L.TorqueLayer = L.CanvasLayer.extend({
 
     for(t in this._tiles) {
       tile = this._tiles[t];
-      pos = this.getTilePos(tile.coord);
-      ctx.setTransform(1, 0, 0, 1, pos.x, pos.y);
-      this.renderer.renderTile(tile, this.key, pos.x, pos.y);
+      if (tile) {
+        pos = this.getTilePos(tile.coord);
+        ctx.setTransform(1, 0, 0, 1, pos.x, pos.y);
+        this.renderer.renderTile(tile, this.key, pos.x, pos.y);
+      }
     }
 
   },

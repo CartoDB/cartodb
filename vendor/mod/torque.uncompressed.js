@@ -985,7 +985,8 @@ exports.Profiler = Profiler;
         start: this.options.start * 1000,
         end: this.options.end * 1000,
         step: this.options.step,
-        steps: this.options.steps
+        steps: this.options.steps,
+        columnType: this.options.is_time ? 'date': 'number'
       };
     },
 

@@ -1051,13 +1051,26 @@ exports.Profiler = Profiler;
       };
       var url = this._tilerHost() + "/tiles/layergroup";
       var extra = this._extraParams();
-      torque.net.post( url + (extra ? "?" + extra: ''), JSON.stringify(layergroup) , function (req) {
+
+      // tiler needs map_key instead of api_key
+      // so replace it
+      if (extra) {
+        extra = extra.replace('api_key=', 'map_key=');
+      }
+
+      url = url +
+        "?config=" + encodeURIComponent(JSON.stringify(layergroup)) +
+        "&callback=?" + (extra ? "&" + extra: '');
+
+      torque.net.jsonp(url, function (data) {
         var query = format("select * from ({sql}) __torque_wrap_sql limit 0", { sql: self.getSQL() });
         self.sql(query, function (queryData) {
-          callback({
-            updated_at: JSON.parse(req.response).last_updated,
-            fields: queryData.fields
-          });
+          if (data) {
+            callback({
+              updated_at: data.last_updated,
+              fields: queryData.fields
+            });
+          }
         }, { parseJSON: true });
       });
     },
@@ -1397,6 +1410,41 @@ exports.Profiler = Profiler;
 
   var lastCall = null;
 
+  function jsonp(url, callback, options) {
+     options = options || { timeout: 10000 };
+     var head = document.getElementsByTagName('head')[0];
+     var script = document.createElement('script');
+
+     // function name
+     var fnName = 'torque_' + Date.now();
+
+     function clean() {
+       head.removeChild(script);
+       clearTimeout(timeoutTimer);
+       delete window[fnName];
+     }
+
+     window[fnName] = function() {
+       clean();
+       callback.apply(window, arguments);
+     };
+
+     // timeout for errors
+     var timeoutTimer = setTimeout(function() { 
+       clean();
+       callback.call(window, null); 
+     }, options.timeout);
+
+     // setup url
+     url = url.replace('callback=\?', 'callback=' + fnName);
+     script.type = 'text/javascript';
+     script.src = url;
+     script.async = true;
+     // defer the loading because IE9 loads in the same frame the script
+     // so Loader._script is null
+     setTimeout(function() { head.appendChild(script); }, 0);
+  }
+
   function get(url, callback, options) {
     options = options || {
       method: 'GET',
@@ -1445,6 +1493,7 @@ exports.Profiler = Profiler;
   torque.net = {
     get: get,
     post: post,
+    jsonp: jsonp,
     lastCall: function() { return lastCall; }
   };
 

@@ -1819,7 +1819,7 @@ and (orientation : portrait) {
 
   div.cartodb-timeslider .slider-wrapper,
   div.cartodb-timeslider .slider {
-    max-width: 110px!important;
+    width: 110px!important;
   }
 
 }
@@ -1832,7 +1832,7 @@ and (orientation : landscape) {
 
   div.cartodb-timeslider .slider-wrapper,
   div.cartodb-timeslider .slider {
-    max-width: 240px!Important;
+    width: 362px!Important;
   }
 
 }
@@ -1848,7 +1848,7 @@ and (orientation : portrait) {
 
   div.cartodb-timeslider .slider-wrapper,
   div.cartodb-timeslider .slider {
-    max-width: 100px;
+    width: 100px;
   }
 
   div.cartodb-timeslider .ui-slider .ui-slider-handle {
@@ -1867,7 +1867,7 @@ and (orientation : landscape) {
 
   div.cartodb-timeslider .slider-wrapper,
   div.cartodb-timeslider .slider {
-    max-width: 300px;
+    width: 300px;
   }
 
   div.cartodb-timeslider .ui-slider .ui-slider-handle {

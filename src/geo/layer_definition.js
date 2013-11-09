@@ -92,7 +92,7 @@ LayerDefinition.prototype = {
       obj.stat_tag = this.stat_tag;
     }
     obj.layers = [];
-    for(var i in this.layers) {
+    for(var i = 0; i < this.layers.length; ++i) {
       var layer = this.layers[i];
       if(!layer.options.hidden) {
         obj.layers.push({

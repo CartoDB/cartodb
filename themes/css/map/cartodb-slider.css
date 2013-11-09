@@ -32,10 +32,25 @@ and (orientation : landscape) {
 
   div.cartodb-timeslider .slider-wrapper,
   div.cartodb-timeslider .slider {
-    width: 362px!Important;
+    width: 270px!Important;
   }
 
 }
+
+/* iPad portrait */
+@media only screen 
+and (min-device-width : 768px) 
+and (max-device-width : 1024px) 
+and (orientation : portrait) { 
+
+  div.cartodb-timeslider .slider-wrapper,
+  div.cartodb-timeslider .slider {
+    width: 550px!important;
+  }
+
+}
+
+
 
 /* Nexus portrait */
 @media only screen 

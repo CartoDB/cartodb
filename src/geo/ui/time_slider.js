@@ -13,14 +13,14 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
 
   events: {
     "click .button":  "toggleTime",
-    "dragstart":      "killEvent",
-    "mousedown":      "killEvent",
+    "dragstart":      "_stopPropagation",
+    "mousedown":      "_stopPropagation",
     "touchstart":     "_stopPropagation",
-    "MSPointerDown":  "killEvent",
-    "dblclick":       "killEvent",
-    "mousewheel":     "killEvent",
-    "DOMMouseScroll": "killEvent",
-    "click":          "killEvent"
+    "MSPointerDown":  "_stopPropagation",
+    "dblclick":       "_stopPropagation",
+    "mousewheel":     "_stopPropagation",
+    "DOMMouseScroll": "_stopPropagation",
+    "click":          "_stopPropagation"
   },
 
   initialize: function() {

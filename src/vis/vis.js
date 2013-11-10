@@ -119,7 +119,7 @@ var Loader = cdb.vis.Loader = {
   },
 
   loadModule: function(modName) {
-    var file = "cartodb.mod." + modName + ".js";
+    var file = "cartodb.mod." + modName + (cartodb.DEBUG ? ".uncompressed.js" : ".js");
     var src = this.getPath(file);
     if (!src) {
       cartodb.log.error("can't find cartodb.js file");

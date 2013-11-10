@@ -332,21 +332,31 @@ var Vis = cdb.core.View.extend({
     // set layer options
     if (options.sublayer_options) {
 
-      //TODO: change this to search in all the layers
-      var dataLayer = this.getLayers()[1];
-      if (dataLayer && dataLayer.getSubLayer) {
-        for(i = 0; i < options.sublayer_options.length; ++i) {
-          var o = options.sublayer_options[i];
-          var subLayer = dataLayer.getSubLayer(i);
-          if (this.legends) {
-            var j = options.sublayer_options.length - i - 1;
-            var legend = this.legends && this.legends.options.legends[j];
-            if (legend) {
-              o.visible ? legend.show(): legend.hide();
-            }
+      var layers = [];
+      // flatten layers (except baselayer)
+      var layers = _.map(this.getLayers().slice(1), function(layer) {
+          if (layer.getSubLayers) {
+            return layer.getSubLayers();
           }
-          o.visible ? subLayer.show(): subLayer.hide();
+          return layer;
+      });
+      layers = _.flatten(layers);
+
+      for(i = 0; i < Math.min(options.sublayer_options.length, layers.length); ++i) {
+        var o = options.sublayer_options[i];
+        var subLayer = layers[i];
+        var legend = this.legends && this.legends.getLayerByIndex(i);
+        if(legend) {
+          legend[o.visible ? 'show': 'hide']();
         }
+        /*if (this.legends) {
+          var j = options.sublayer_options.length - i - 1;
+          var legend = this.legends && this.legends.options.legends[j];
+          if (legend) {
+            o.visible ? legend.show(): legend.hide();
+          }
+        }*/
+        o.visible ? subLayer.show(): subLayer.hide();
       }
     }
 

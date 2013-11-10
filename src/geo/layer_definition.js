@@ -638,6 +638,14 @@ LayerDefinition.prototype = {
 
   getSubLayerCount: function() {
     return this.getLayerCount();
+  },
+
+  getSubLayers: function() {
+    var layers = []
+    for (var i = 0; i < this.getSubLayerCount(); ++i) {
+      layers.push(this.getSubLayer(i))
+    }
+    return layers;
   }
 
 

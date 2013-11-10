@@ -209,7 +209,7 @@ class User < Sequel::Model
       ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
         'database' => self.database_name,
         :logger => logger,
-        'username' => CartoDB::PUBLIC_DB_USER, 'password' => '',
+        'username' => CartoDB::PUBLIC_DB_USER, 'password' => CartoDB::PUBLIC_DB_USER_PASSWORD,
         'host' => self.database_host
       ) {|key, o, n| n.nil? ? o : n}
     else

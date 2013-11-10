@@ -22,6 +22,9 @@ class Map < Sequel::Model
   many_to_many  :carto_and_torque_layers, clone: :layers, right_key: :layer_id,
                 conditions: "kind in ('carto', 'torque')"
 
+  many_to_many  :torque_layers, clone: :layers, right_key: :layer_id,
+                conditions: { kind: "torque" }
+
   many_to_many  :other_layers, clone: :layers, right_key: :layer_id,
                 conditions: "kind not in ('carto', 'tiled', 'background', 'gmapsbase')"
 
@@ -97,6 +100,7 @@ class Map < Sequel::Model
   end #copy
 
   def admits_layer?(layer)
+    return admits_more_torque_layers? if layer.torque_layer?
     return admits_more_data_layers? if layer.data_layer?
     return admits_more_base_layers? if layer.base_layer?
   end #admits?
@@ -182,6 +186,11 @@ class Map < Sequel::Model
 
   def admits_more_data_layers?
     return false if data_layers.length >= 1 && is_table_visualization?
+    return true
+  end #admits_mode_data_layers?
+
+  def admits_more_torque_layers?
+    return false if torque_layers.length >= 1 && is_table_visualization?
     return true
   end #admits_mode_data_layers?
 

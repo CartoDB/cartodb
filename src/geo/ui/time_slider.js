@@ -83,9 +83,6 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
   _slide: function(e, ui) {
     this.killEvent(e);
     var step = ui.value;
-    if(this.torqueLayer.isRunning()) {
-      this.toggleTime();
-    }
     this.torqueLayer.setStep(step);
   },
 

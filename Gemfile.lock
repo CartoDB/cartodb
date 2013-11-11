@@ -318,7 +318,7 @@ GEM
       rack (>= 1.0.0)
     thor (0.14.6)
     tilt (1.4.1)
-    timecop (0.3.5)
+    timecop (0.6.3)
     treetop (1.4.12)
       polyglot
       polyglot (>= 0.3.1)
@@ -404,7 +404,7 @@ DEPENDENCIES
   statsd-client (= 0.0.7)
   therubyracer (~> 0.9.10)
   thin
-  timecop (= 0.3.5)
+  timecop (= 0.6.3)
   typhoeus (= 0.6.3)
   uglifier (~> 1.3.0)
   uuidtools (= 2.1.3)

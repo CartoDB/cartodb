@@ -70,6 +70,18 @@ describe Geocoding do
       geocoding.processed_rows.should eq 10
       geocoding.state.should eq 'finished'
     end
+
+    it 'raises a timeout error if geocoding takes more than 3 minutes to start' do
+      geocoding = Geocoding.create(user: @user, table_name: 'a', formatter: 'b')
+      geocoding.table_geocoder.stubs(:run).returns true
+      geocoding.table_geocoder.stubs(:process_results).returns true
+      CartoDB::Geocoder.any_instance.stubs(:status).returns 'submitted'
+      CartoDB::Geocoder.any_instance.stubs(:update_status).returns true
+      Timecop.scale(120)
+      expect { geocoding.run! }.to raise_error
+      geocoding.reload.state.should eq 'failed'
+    end
+
   end
 
   describe '#max_geocodable_rows' do

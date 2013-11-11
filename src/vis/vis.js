@@ -356,7 +356,7 @@ var Vis = cdb.core.View.extend({
             o.visible ? legend.show(): legend.hide();
           }
         }*/
-        o.visible ? subLayer.show(): subLayer.hide();
+        if (o.visible === false) subLayer.hide();
       }
     }
 

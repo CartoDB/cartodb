@@ -138,6 +138,9 @@
         , is_custom_install = <%= Cartodb.config[:cartodb_com_hosted].present? %>
         , logo_fn  = function(v) { return ( <%= !@visualization.user.remove_logo? %> || is_custom_install ) ? true : v == 'true' }
         , layer_fn = function(v) {
+          if(!v || !v.length) {
+              return null;
+          }
 
           return _.map(v.split("|"), function(v) {
             return { visible: parseInt(v, 10) }

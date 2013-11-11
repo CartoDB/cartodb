@@ -1108,6 +1108,7 @@ a.info {
         bottom:0px;
         left:0px;
         width:30px;
+        pointer-events: none;
         @include background(linear-gradient(left, rgba(#333, .7), rgba(#333,0)));
         z-index:1;
       }
@@ -1119,6 +1120,7 @@ a.info {
         bottom:0px;
         right:0px;
         width:30px;
+        pointer-events: none;
         @include background(linear-gradient(left, rgba(#333, 0), rgba(#333, .7)));
         z-index:1;
       }

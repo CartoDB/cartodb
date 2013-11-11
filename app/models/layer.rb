@@ -3,7 +3,7 @@
 class Layer < Sequel::Model
   plugin :serialization, :json, :options, :infowindow
   
-  ALLOWED_KINDS = %W{ carto tiled background gmapsbase }
+  ALLOWED_KINDS = %W{ carto tiled background gmapsbase torque }
   PUBLIC_ATTRIBUTES = %W{ options kind infowindow id order }
   TEMPLATES_MAP = {
     'table/views/infowindow_light' =>               'infowindow_light',
@@ -106,6 +106,10 @@ class Layer < Sequel::Model
 
   def data_layer?
     kind == 'carto'
+  end #data_layer?
+
+  def torque_layer?
+    kind == 'torque'
   end #data_layer?
 
   def base_layer?

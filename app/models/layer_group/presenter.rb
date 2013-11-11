@@ -13,6 +13,7 @@ module CartoDB
       end #initialize
 
       def to_poro
+        return nil if cartodb_layers.empty?
         { 
           type:               'layergroup',
           options:            {
@@ -20,15 +21,15 @@ module CartoDB
             tiler_protocol:     (configuration[:tiler]["public"]["protocol"] rescue nil),
             tiler_domain:       (configuration[:tiler]["public"]["domain"] rescue nil),
             tiler_port:         (configuration[:tiler]["public"]["port"] rescue nil),
-            sql_api_protocol:   configuration.fetch(:sql_api_protocol, nil),
-            sql_api_domain:     configuration.fetch(:sql_api_domain, nil),
-            sql_api_endpoint:   configuration.fetch(:sql_api_endpoint, nil),
-            sql_api_port:       configuration.fetch(:sql_api_port, nil),
+            sql_api_protocol:   (configuration[:sql_api]["public"]["protocol"] rescue nil),
+            sql_api_domain:     (configuration[:sql_api]["public"]["domain"] rescue nil),
+            sql_api_endpoint:   (configuration[:sql_api]["public"]["endpoint"] rescue nil),
+            sql_api_port:       (configuration[:sql_api]["public"]["port"] rescue nil),
             cdn_url:            configuration.fetch(:cdn_url, nil),
             layer_definition:   {
               stat_tag:           options.fetch(:visualization_id),
               version:            LAYER_GROUP_VERSION,
-              layers:             rendered_layers
+              layers:             cartodb_layers
             }
           }
         }
@@ -38,8 +39,8 @@ module CartoDB
 
       attr_reader :layers, :configuration, :options
 
-      def rendered_layers
-        layers.map do |layer|
+      def cartodb_layers
+        @cartodb_layers ||= layers.map do |layer|
           Layer::Presenter.new(layer, options, configuration).to_vizjson_v2
         end
       end #layer_definition

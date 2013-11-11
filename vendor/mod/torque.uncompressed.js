@@ -2737,6 +2737,7 @@ GMapsTorqueLayer.prototype = _.extend({},
       self.fire("change:bounds", {
         bounds: self.provider.getBounds()
       });
+      self.animator.steps(self.provider.getSteps());
       self.animator.rescale();
       self.fire('change:steps', {
         steps: self.provider.getSteps()

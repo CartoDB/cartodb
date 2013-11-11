@@ -1837,6 +1837,25 @@ and (orientation : landscape) {
 
 }
 
+/* iPhone 5 portrait */
+@media screen and (device-aspect-ratio: 40/71)
+and (orientation : portrait) { 
+  div.cartodb-timeslider .slider-wrapper,
+  div.cartodb-timeslider .slider {
+    width: 110px!important;
+  }
+}
+
+/* iPhone 5 landscape */
+@media screen and (device-aspect-ratio: 40/71)
+and (orientation : landscape) { 
+  div.cartodb-timeslider .slider-wrapper,
+  div.cartodb-timeslider .slider {
+    width: 360px!Important;
+  }
+
+}
+
 /* iPad portrait */
 @media only screen 
 and (min-device-width : 768px) 

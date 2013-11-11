@@ -1869,11 +1869,10 @@ and (orientation : portrait) {
 
 }
 
-
-
 /* Nexus portrait */
 @media only screen 
-and (max-device-width : 768px) 
+and (min-device-width : 340px) 
+and (max-device-width: 768px) 
 and (orientation : portrait) { 
 
   div.cartodb-timeslider {
@@ -1882,7 +1881,7 @@ and (orientation : portrait) {
 
   div.cartodb-timeslider .slider-wrapper,
   div.cartodb-timeslider .slider {
-    width: 100px;
+    width: 150px!important;
   }
 
   div.cartodb-timeslider .ui-slider .ui-slider-handle {
@@ -1901,7 +1900,7 @@ and (orientation : landscape) {
 
   div.cartodb-timeslider .slider-wrapper,
   div.cartodb-timeslider .slider {
-    width: 300px;
+    width: 390px;
   }
 
   div.cartodb-timeslider .ui-slider .ui-slider-handle {

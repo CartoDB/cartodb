@@ -2,7 +2,7 @@
 and (max-device-width : 320px) 
 and (max-device-width : 480px) {
   div.cartodb-timeslider {
-    margin-bottom: 0px!Important;
+    /*margin-bottom: 0px!Important;*/
   }
 
   div.cartodb-timeslider .ui-slider .ui-slider-handle {

@@ -5,7 +5,7 @@
 
   div.cartodb-infowindow {
     position: absolute;
-    z-index: 102;
+    z-index: 12;
   }
 
   div.cartodb-popup {
@@ -52,7 +52,7 @@
     display:block;
     height:10px;
     width:190px;
-    z-index: 105;
+    z-index: 5;
   }
 
   div.cartodb-popup .jspContainer:after {
@@ -95,7 +95,7 @@
     filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=1);
     filter: alpha(opacity=100);
     text-transform:uppercase;
-    z-index:103;
+    z-index:3;
   }
 
   /* When there are no fields in header popup themes */

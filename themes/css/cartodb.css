@@ -1864,7 +1864,7 @@ and (orientation : portrait) {
 
   div.cartodb-timeslider .slider-wrapper,
   div.cartodb-timeslider .slider {
-    width: 550px!important;
+    width: 560px!important;
   }
 
 }

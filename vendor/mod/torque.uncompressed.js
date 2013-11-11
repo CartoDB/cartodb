@@ -886,10 +886,19 @@ exports.Profiler = Profiler;
       return null;
     },
 
+    isHttps: function() {
+      return this.options.sql_api_protocol && this.options.sql_api_protocol === 'https';
+    },
+
     // execute actual query
     sql: function(sql, callback, options) {
       options = options || {};
       var subdomains = this.options.subdomains || '0123';
+      if(this.isHttps()) {
+        subdomains = [null]; // no subdomain
+      }
+
+
       var url;
       if (options.no_cdn) {
         url = this._host();

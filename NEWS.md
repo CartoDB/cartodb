@@ -5,60 +5,32 @@
   * Adapt torque timeline to the screen in mobile.
   * Created a migration to add timezone to timestamp models columns.
   * Added database_host attribute to user model.
+  * Replicate database_password to redis when creating a username.
   * viz.json includes https urls in embeds.
   * Improved privacy in torque visualizations.
   * Clean headers from tiler/varnish/nginx.
   * Created support dialog in embed page when torque layer is applied.
-  * Published window torque warning.
-  * Improved message when trying to add more than one torque layer to a vizz
   * Added cartodb:test:prepare rake task and document its usage for testing.
-  * Deployed new version of SQL-API (1.6.3).
 
-* Bugs
+* Fixed Bugs
   * Embed layer selector should show torque layers.
   * Trying to 'Duplicate' or 'Table from query' when tables over quota doesn't give back a reasonable error.
   * If you cancel a file upload the close button is not being shown anymore on the new table window.
   * Removed table api_keys from rails migration.
-  * Constraints for torque layers.
   * Revamp basemap selector.
   * Infowindows don't show any content when they contain a column name which is a reserved SQL word.
   * Reviewed table and map styles using new Safari under Mavericks system.
-  * Replicate database_password to redis when creating a username.
   * Clear filter on the filters panel layout is broken in safari + mavericks.
-  * In a empty table, if you add only a row (type point), and apply Torque visualization, an error appears in the console.
-  * Draging the time slider affects the map.
-  * Javascript error in torque embed.
   * Out of sync between steps and time slider.
   * Columns with an unique value does not render anything.
-  * Selecting a date column torque does not work.
-  * TypeError: n[r[e.kind]] is not a constructor.
   * Basemap selector dropdown lost the right border radius and has the wrong caption under the 'Add yours' button.
-  * Torque: embeds don't work due https.
-  * Torque bubbles truncated before end of map.
-  * Torque: when "time" column is a number, no time is shown.
-  * When there is only one torque layer the layer selector shows there are two layers (the number).
-  * Can't add Torque tableviz from Create New Visualization button.
-  * Torque time counter is not working.
-  * While draging the scrub bar the animation is still working.
-  * After trying to reorder a torque layer in vizzualization the lateral bar breaks.
-  * Cannot reorder layers correctly when having a Torque layer on top.
-  * When trying to drag a torque layer, the draging indicator must be the same than with static layers.
   * Scrubbar dissapears when going from map to table and then back to map.
   * Exporting doesn't include the subdomain.
   * Line breaks on geocoding strings cause geocoder to crash.
-  * Cancelling a geocoding job not working sometimes.
-  * Adding a geomtery with torque applied throws a javascript error.
-  * In a visualization created with only one torque layer, the layer-selector in the public embed says there are two layers.
-  * Torque visualizations under IE9 + Windows 7 are not showing canvas layer.
-  * IE10 & 9 time slider doesn't drag.
+  * Cancelling a geocoding job is not working sometimes.
   * Numeric type is not well mapped.
   * Sublayer_options make embed fails.
-  * In a torque visualization, seems like there is a problem with GMaps getting date range.
-  * Can't create viz from torque layer.
   * Prevent layergroup GETs to be cached.
-  * Torque anim stops just after starting.
-  * Torque constraints don't get updated properly.
-  * Inserting rows via SQL api does not reload TABLE view.
 
 2.4.0
 -----

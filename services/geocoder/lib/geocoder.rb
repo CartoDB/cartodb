@@ -20,7 +20,7 @@ module CartoDB
 
     def initialize(arguments)
       @input_file = arguments[:input_file]
-      @base_url   = "http://batch.geo.st.nlp.nokia.com/search-batch/6.2/jobs"
+      @base_url   = "http://batch.geo.nlp.nokia.com/search-batch/6.2/jobs"
       @request_id = arguments[:request_id]
       @app_id     = arguments.fetch(:app_id)
       @token      = arguments.fetch(:token)

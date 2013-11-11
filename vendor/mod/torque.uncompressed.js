@@ -3336,8 +3336,9 @@ L.TorqueLayer = L.CanvasLayer.extend({
 
   },
 
-  onRemove: function() {
+  onRemove: function(map) {
     this._removeTileLoader();
+    L.CanvasLayer.prototype.onRemove.call(this, map);
   },
 
   hide: function() {

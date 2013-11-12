@@ -24,11 +24,15 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
   },
 
   initialize: function() {
-    _.bindAll(this, '_slide');
+    _.bindAll(this, '_stop', '_start', '_slide');
     var self = this;
     this.options.template = this.options.template || this.defaultTemplate;
     this.options.position = 'bottom|left';
     this.options.width = null;
+
+    // Control variable to know if the layer was
+    // running before touching the slider
+    this.wasRunning = false;
     this.torqueLayer = this.options.layer;
 
     // each time time changes, move the slider
@@ -86,6 +90,21 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
     this.torqueLayer.setStep(step);
   },
 
+  _start: function(e, ui) {
+    if(this.torqueLayer.isRunning()) {
+      this.wasRunning = true;
+      this.toggleTime();
+    }
+  },
+
+  _stop: function(e, ui) {
+    if (this.wasRunning) {
+      this.toggleTime()
+    }
+
+    this.wasRunning = false;
+  },
+
   _initSlider: function() {
     var torqueLayer = this.torqueLayer;
     var slider = this.$(".slider");
@@ -95,6 +114,8 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
       max: this.torqueLayer.options.steps,
       value: 0,
       step: 1,
+      stop: this._stop,
+      start: this._start,
       slide: this._slide
     });
   },

@@ -5,7 +5,8 @@
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.2.03';
+    cdb.VERSION = '3.3.00';
+    cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
       '2.0.0': '',
@@ -80,6 +81,7 @@
         'geo/leaflet/leaflet_base.js',
         'geo/leaflet/leaflet_plainlayer.js',
         'geo/leaflet/leaflet_tiledlayer.js',
+        'geo/leaflet/leaflet_wmslayer.js',
         'geo/leaflet/leaflet_cartodb_layergroup.js',
         'geo/leaflet/leaflet_cartodb_layer.js',
         'geo/leaflet/leaflet.js',

@@ -1,5 +1,5 @@
-// version: 3.2.03
-// sha: 89af6776aff3e140c258b3807b3b0bec88c8fde3
+// version: 3.3.00
+// sha: d01b7f1c5af23202307a54534024596baa3a81bd
 ;(function() {
   this.cartodb = {};
   var Backbone = {};
@@ -1141,7 +1141,8 @@ var Mustache;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.2.03';
+    cdb.VERSION = '3.3.00';
+    cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
       '2.0.0': '',
@@ -1216,6 +1217,7 @@ var Mustache;
         'geo/leaflet/leaflet_base.js',
         'geo/leaflet/leaflet_plainlayer.js',
         'geo/leaflet/leaflet_tiledlayer.js',
+        'geo/leaflet/leaflet_wmslayer.js',
         'geo/leaflet/leaflet_cartodb_layergroup.js',
         'geo/leaflet/leaflet_cartodb_layer.js',
         'geo/leaflet/leaflet.js',
@@ -1783,7 +1785,7 @@ LayerDefinition.layerDefFromSubLayers = function(sublayers) {
     layers: []
   };
 
-  for (var i in sublayers) {
+  for (var i = 0; i < sublayers.length; ++i) {
     layer_definition.layers.push({
       type: 'cartodb',
       options: sublayers[i]
@@ -1827,7 +1829,7 @@ LayerDefinition.prototype = {
       obj.stat_tag = this.stat_tag;
     }
     obj.layers = [];
-    for(var i in this.layers) {
+    for(var i = 0; i < this.layers.length; ++i) {
       var layer = this.layers[i];
       if(!layer.options.hidden) {
         obj.layers.push({
@@ -1854,7 +1856,7 @@ LayerDefinition.prototype = {
    */
   getLayerNumberByIndex: function(index) {
     var layers = [];
-    for(var i in this.layers) {
+    for(var i = 0; i < this.layers.length; ++i) {
       var layer = this.layers[i];
       if(!layer.options.hidden) {
         layers.push(i);
@@ -2168,7 +2170,7 @@ LayerDefinition.prototype = {
       tiles.push(cartodb_url + tileTemplate + ".png?" + pngParams );
 
       var gridParams = this._encodeParams(params, this.options.gridParams);
-      for(var layer in this.layers) {
+      for(var layer = 0; layer < this.layers.length; ++layer) {
         grids[layer] = grids[layer] || [];
         grids[layer].push(cartodb_url + "/" + layer +  tileTemplate + ".grid.json?" + gridParams);
       }
@@ -2373,6 +2375,14 @@ LayerDefinition.prototype = {
 
   getSubLayerCount: function() {
     return this.getLayerCount();
+  },
+
+  getSubLayers: function() {
+    var layers = []
+    for (var i = 0; i < this.getSubLayerCount(); ++i) {
+      layers.push(this.getSubLayer(i))
+    }
+    return layers;
   }
 
 

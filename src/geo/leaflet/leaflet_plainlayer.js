@@ -1,11 +1,11 @@
 
 (function() {
 
-if(typeof(L) == "undefined") 
+if(typeof(L) == "undefined")
   return;
 
 /**
- * this is a dummy layer class that modifies the leaflet DOM element background 
+ * this is a dummy layer class that modifies the leaflet DOM element background
  * instead of creating a layer with div
  */
 var LeafLetPlainLayerView = L.Class.extend({
@@ -19,7 +19,7 @@ var LeafLetPlainLayerView = L.Class.extend({
     this.redraw();
   },
 
-  onRemove: function() { 
+  onRemove: function() {
     var div = this.leafletMap.getContainer()
     div.style.background = 'none';
   },
@@ -31,11 +31,10 @@ var LeafLetPlainLayerView = L.Class.extend({
   redraw: function() {
     var div = this.leafletMap.getContainer()
     div.style.backgroundColor = this.model.get('color') || '#FFF';
-    if(this.model.get('image')) {
-      var st = 'url(' + this.model.get('image') + ') repeat center center';
-      if(this.model.get('color')) {
-        div.style.background = st + ' ' + this.model.get('color');
-      }
+
+    if (this.model.get('image')) {
+      var st = 'transparent url(' + this.model.get('image') + ') repeat center center';
+      div.style.background = st
     }
   }
 });

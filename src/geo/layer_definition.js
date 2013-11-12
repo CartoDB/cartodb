@@ -48,7 +48,7 @@ LayerDefinition.layerDefFromSubLayers = function(sublayers) {
     layers: []
   };
 
-  for (var i in sublayers) {
+  for (var i = 0; i < sublayers.length; ++i) {
     layer_definition.layers.push({
       type: 'cartodb',
       options: sublayers[i]
@@ -92,7 +92,7 @@ LayerDefinition.prototype = {
       obj.stat_tag = this.stat_tag;
     }
     obj.layers = [];
-    for(var i in this.layers) {
+    for(var i = 0; i < this.layers.length; ++i) {
       var layer = this.layers[i];
       if(!layer.options.hidden) {
         obj.layers.push({
@@ -119,7 +119,7 @@ LayerDefinition.prototype = {
    */
   getLayerNumberByIndex: function(index) {
     var layers = [];
-    for(var i in this.layers) {
+    for(var i = 0; i < this.layers.length; ++i) {
       var layer = this.layers[i];
       if(!layer.options.hidden) {
         layers.push(i);
@@ -433,7 +433,7 @@ LayerDefinition.prototype = {
       tiles.push(cartodb_url + tileTemplate + ".png?" + pngParams );
 
       var gridParams = this._encodeParams(params, this.options.gridParams);
-      for(var layer in this.layers) {
+      for(var layer = 0; layer < this.layers.length; ++layer) {
         grids[layer] = grids[layer] || [];
         grids[layer].push(cartodb_url + "/" + layer +  tileTemplate + ".grid.json?" + gridParams);
       }
@@ -638,6 +638,14 @@ LayerDefinition.prototype = {
 
   getSubLayerCount: function() {
     return this.getLayerCount();
+  },
+
+  getSubLayers: function() {
+    var layers = []
+    for (var i = 0; i < this.getSubLayerCount(); ++i) {
+      layers.push(this.getSubLayer(i))
+    }
+    return layers;
   }
 
 

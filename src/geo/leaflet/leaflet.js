@@ -65,6 +65,7 @@
       this.map.layers.bind('add', this._addLayer, this);
       this.map.layers.bind('remove', this._removeLayer, this);
       this.map.layers.bind('reset', this._addLayers, this);
+      this.map.layers.bind('change:type', this._swicthLayerView, this);
 
       this.map.geometries.bind('add', this._addGeometry, this);
       this.map.geometries.bind('remove', this._removeGeometry, this);
@@ -277,12 +278,16 @@
 
     layerTypeMap: {
       "tiled": cdb.geo.LeafLetTiledLayerView,
+      "wms": cdb.geo.LeafLetWMSLayerView,
       "cartodb": cdb.geo.LeafLetLayerCartoDBView,
       "carto": cdb.geo.LeafLetLayerCartoDBView,
       "plain": cdb.geo.LeafLetPlainLayerView,
       // for google maps create a plain layer
       "gmapsbase": cdb.geo.LeafLetPlainLayerView,
-      "layergroup": cdb.geo.LeafLetCartoDBLayerGroupView
+      "layergroup": cdb.geo.LeafLetCartoDBLayerGroupView,
+      "torque": function(layer, map) {
+        return new cdb.geo.LeafLetTorqueLayer(layer, map);
+      }
     },
 
     createLayer: function(layer, map) {
@@ -290,7 +295,11 @@
       var layerClass = this.layerTypeMap[layer.get('type').toLowerCase()];
 
       if (layerClass) {
-        layer_view = new layerClass(layer, map);
+        try {
+          layer_view = new layerClass(layer, map);
+        } catch(e) {
+          cdb.log.error("MAP: error creating layer" + layer.get('type') + " " + e);
+        }
       } else {
         cdb.log.error("MAP: " + layer.get('type') + " can't be created");
       }
@@ -299,7 +308,7 @@
 
     addLayerToMap: function(layer_view, map, pos) {
       map.addLayer(layer_view.leafletLayer);
-      if(pos != undefined) {
+      if(pos !== undefined) {
         if(v.setZIndex) {
           v.setZIndex(pos);
         }

@@ -38,6 +38,10 @@ Layers.register('tiled', function(vis, data) {
   return new cdb.geo.TileLayer(data);
 });
 
+Layers.register('wms', function(vis, data) {
+  return new cdb.geo.WMSLayer(data);
+});
+
 Layers.register('gmapsbase', function(vis, data) {
   return new cdb.geo.GMapsBaseLayer(data);
 });
@@ -86,6 +90,19 @@ Layers.register('carto', cartoLayer);
 Layers.register('layergroup', function(vis, data) {
   normalizeOptions(vis, data);
   return new cdb.geo.CartoDBGroupLayer(data);
+});
+
+Layers.register('torque', function(vis, data) {
+  // default is https
+  if(vis.https) {
+    if(data.sql_api_domain && data.sql_api_domain.indexOf('cartodb.com') !== -1) {
+      data.sql_api_protocol = 'https';
+      data.sql_api_port = 443;
+      data.tiler_protocol = 'https';
+      data.tiler_port = 443;
+    }
+  }
+  return new cdb.geo.TorqueLayer(data);
 });
 
 })();

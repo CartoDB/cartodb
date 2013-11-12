@@ -45,6 +45,19 @@ cdb.geo.MapLayer = cdb.core.Model.extend({
         } else {
           return false; // tiled and differente template
         }
+      } else if(myType === 'WMS') {
+
+        var myTemplate  = me.urlTemplate? me.urlTemplate : me.options.urlTemplate
+          , itsTemplate = other.urlTemplate? other.urlTemplate : other.options.urlTemplate;
+
+        var myLayer  = me.layers? me.layers : me.options.layers
+          , itsLayer = other.layers? other.layers : other.options.layers;
+
+        if(myTemplate === itsTemplate && myLayer === itsLayer) {
+          return true; // wms and same template
+        } else {
+          return false; // wms and differente template
+        }
       } else { // same type but not tiled
         var myBaseType = me.base_type? me.base_type : me.options.base_type;
         var itsBaseType = other.base_type? other.base_type : other.options.base_type;
@@ -93,6 +106,21 @@ cdb.geo.GMapsBaseLayer = cdb.geo.MapLayer.extend({
 });
 
 /**
+ * WMS layer support
+ */
+cdb.geo.WMSLayer = cdb.geo.MapLayer.extend({
+  defaults: {
+    service: 'WMS',
+    request: 'GetMap',
+    version: '1.1.1',
+    layers: '',
+    styles: '',
+    format: 'image/jpeg',
+    transparent: false
+  }
+});
+
+/**
  * this layer allows to put a plain color or image as layer (instead of tiles)
  */
 cdb.geo.PlainLayer = cdb.geo.MapLayer.extend({
@@ -100,7 +128,15 @@ cdb.geo.PlainLayer = cdb.geo.MapLayer.extend({
     type: 'Plain',
     base_type: "plain",
     className: "plain",
-    color: '#FFFFFF'
+    color: '#FFFFFF',
+    image: ''
+  }
+});
+
+cdb.geo.TorqueLayer = cdb.geo.MapLayer.extend({
+  defaults: {
+    type: 'torque',
+    visible: true
   }
 });
 
@@ -177,7 +213,14 @@ cdb.geo.Layers = Backbone.Collection.extend({
    * the index should be recalculated
    */
   _assignIndexes: function(model, col, options) {
-    var from = this.size() - 1;
+    var layerTypeWeight = {
+      'torque': 100
+    };
+    function layerWeight(layer) {
+      var t = layer.get('type');
+      return layerTypeWeight[t] || 0;
+    }
+    var from = 0;//this.size() - 1;
     if(options && options.at !== undefined) {
       from = options.at;
     }
@@ -186,8 +229,9 @@ cdb.geo.Layers = Backbone.Collection.extend({
       ++from;
     }
     for(var i = from; i < this.size(); ++i) {
-      var prev = this.models[i - 1].get('order');
-      this.models[i].set({ order: prev + 1 });
+      var prev = this.models[i - 1]
+      var prev_order = prev.get('order') - layerWeight(prev);
+      this.models[i].set({ order: layerWeight(this.models[i]) + prev_order + 1 });
     }
   }
 });
@@ -296,18 +340,23 @@ cdb.geo.Map = cdb.core.Model.extend({
   },
 
   _adjustZoomtoLayer: function(layer) {
-    //set zoom
-    //
-    /*
-    var z = layer.get('maxZoom');
-    if(_.isNumber(z)) {
-    this.set({ maxZoom: z });
+
+    var maxZoom = layer.get('maxZoom');
+
+    if (_.isNumber(maxZoom)) {
+      this.set({ maxZoom: maxZoom });
     }
-    z = layer.get('minZoom');
-    if(_.isNumber(z)) {
-    this.set({ minZoom: z });
+
+    var minZoom = layer.get('minZoom');
+
+    if (_.isNumber(minZoom)) {
+      this.set({ minZoom: minZoom });
     }
-    */
+
+    if (_.isNumber(maxZoom)) {
+      if ( this.get("zoom") > maxZoom ) this.set("zoom", maxZoom);
+    }
+
   },
 
   addLayer: function(layer, opts) {
@@ -535,12 +584,12 @@ cdb.geo.MapView = cdb.core.View.extend({
     throw "to be implemented";
   },
 
-  _removeLayers: function() {
+  /*_removeLayers: function() {
     for(var layer in this.layers) {
       this.layers[layer].remove();
     }
     this.layers = {}
-  },
+  },*/
 
   /**
   * set model property but unbind changes first in order to not create an infinite loop
@@ -574,13 +623,6 @@ cdb.geo.MapView = cdb.core.View.extend({
 
   /** unbind model properties */
   _unbindModel: function() {
-    /*
-    this.map.unbind('change:zoom',   this._setZoom, this);
-    this.map.unbind('change:center', this._setCenter, this);
-    this.map.unbind('change:view_bounds_sw', this._changeBounds, this);
-    this.map.unbind('change:view_bounds_ne', this._changeBounds, this);
-    */
-
     this.map.unbind('change:view_bounds_sw',  null, this);
     this.map.unbind('change:view_bounds_ne',  null, this);
     this.map.unbind('change:zoom',            null, this);
@@ -627,6 +669,12 @@ cdb.geo.MapView = cdb.core.View.extend({
       delete this.layers[layer.cid];
     }
   },
+
+  _swicthLayerView: function(layer, attr, opts) {
+    this._removeLayer(layer);
+    this._addLayer(layer, this.map.layers, opts);
+  },
+
 
   _removeGeometry: function(geo) {
     var geo_view = this.geometries[geo.cid];

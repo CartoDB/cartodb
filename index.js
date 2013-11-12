@@ -10,11 +10,17 @@
 //= require cdb/vendor/GeoJSON
 //
 //= require cdb/vendor/mousewheel
+//= require cdb/vendor/lzma
 //= require cdb/vendor/mwheelIntent
 //= require cdb/vendor/jscrollpane
 //= require cdb/vendor/spin
+//= require cdb/vendor/lzma
+//
+//= require cdb/vendor/mod/carto
+//= require cdb/vendor/mod/torque.uncompressed
 //
 //= require cdb/src/cartodb
+//
 //
 //= require cdb/src/core/decorator
 //= require cdb/src/core/config
@@ -23,6 +29,12 @@
 //= require cdb/src/core/template
 //= require cdb/src/core/model
 //= require cdb/src/core/view
+//
+//= require cdb/vendor/mod/torque.cartodb
+//= require cdb/vendor/mod/jquery-ui/jquery.ui.core
+//= require cdb/vendor/mod/jquery-ui/jquery.ui.widget
+//= require cdb/vendor/mod/jquery-ui/jquery.ui.mouse
+//= require cdb/vendor/mod/jquery-ui/jquery.ui.slider
 //
 //= require cdb/src/geo/geocoder
 //= require cdb/src/geo/geometry
@@ -35,8 +47,10 @@
 //= require cdb/src/geo/leaflet/leaflet_base
 //= require cdb/src/geo/leaflet/leaflet_plainlayer
 //= require cdb/src/geo/leaflet/leaflet_tiledlayer
+//= require cdb/src/geo/leaflet/leaflet_wmslayer
 //= require cdb/src/geo/leaflet/leaflet_cartodb_layergroup
 //= require cdb/src/geo/leaflet/leaflet_cartodb_layer
+//= require cdb/src/geo/leaflet/torque
 //= require cdb/src/geo/leaflet/leaflet
 //
 //= require cdb/src/geo/gmaps/gmaps.geometry
@@ -46,6 +60,7 @@
 //= require cdb/src/geo/gmaps/gmaps_tiledlayer
 //= require cdb/src/geo/gmaps/gmaps_cartodb_layergroup
 //= require cdb/src/geo/gmaps/gmaps_cartodb_layer
+//= require cdb/src/geo/gmaps/torque
 //= require cdb/src/geo/gmaps/gmaps
 //
 //= require cdb/src/geo/ui/zoom
@@ -57,6 +72,8 @@
 //= require cdb/src/geo/ui/search
 //= require cdb/src/geo/ui/layer_selector
 //= require cdb/src/geo/ui/tiles_loader
+//= require cdb/src/geo/ui/infobox
+//= require cdb/src/geo/ui/time_slider
 //
 //= require cdb/src/ui/common/tabpane
 //= require cdb/src/ui/common/dialog

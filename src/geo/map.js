@@ -245,7 +245,7 @@ cdb.geo.Map = cdb.core.Model.extend({
     center: [0, 0],
     zoom: 3,
     minZoom: 0,
-    maxZoom: 28,
+    maxZoom: 40,
     scrollwheel: true,
     provider: 'leaflet'
   },
@@ -341,7 +341,7 @@ cdb.geo.Map = cdb.core.Model.extend({
 
   _adjustZoomtoLayer: function(layer) {
 
-    var maxZoom = layer.get('type') == 'GMapsBase' ? 40 : layer.get('maxZoom');
+    var maxZoom = layer.get('type') == 'GMapsBase' ? this.defaults.maxZoom : layer.get('maxZoom');
 
     if (_.isNumber(maxZoom)) {
       this.set({ maxZoom: maxZoom });

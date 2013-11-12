@@ -70,6 +70,15 @@ describe Geocoding do
       geocoding.processed_rows.should eq 10
       geocoding.state.should eq 'finished'
     end
+
+    it 'marks the geocoding as failed if the geocoding job fails' do
+      geocoding = FactoryGirl.build(:geocoding, user: @user, formatter: 'a', table_name: 'b')
+      geocoding.table_geocoder.stubs(:run).raises("Error")
+      CartoDB.expects(:notify_exception).times(1)
+
+      geocoding.run!
+      geocoding.state.should eq 'failed'
+    end
   end
 
   describe '#max_geocodable_rows' do
@@ -80,6 +89,21 @@ describe Geocoding do
       geocoding.max_geocodable_rows.should eq 200
       FactoryGirl.create(:geocoding, user: @user, processed_rows: 100)
       geocoding.max_geocodable_rows.should eq 100
+    end
+  end
+
+  describe '#cancel' do
+    let(:geocoding) { FactoryGirl.build(:geocoding, user: @user) }
+
+    it 'cancels the geocoding job' do
+      geocoding.table_geocoder.expects(:cancel).times(1).returns(true)
+      geocoding.cancel
+    end
+
+    it 'tries 5 times to cancel the geocoding job if that fails and after that sends an error report' do
+      CartoDB.expects(:notify_exception).times(1)
+      geocoding.table_geocoder.expects(:cancel).times(5).raises("error")
+      geocoding.cancel
     end
   end
 

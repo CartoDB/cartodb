@@ -1,3 +1,37 @@
+2.5.0
+-----
+* Improvements
+  * Time-animated visualization wizard (torque).
+  * Adapt torque timeline to the screen in mobile.
+  * Created a migration to add timezone to timestamp models columns.
+  * Added database_host attribute to user model.
+  * Replicate database_password to redis when creating a username.
+  * viz.json includes https urls in embeds.
+  * Improved privacy in torque visualizations.
+  * Clean headers from tiler/varnish/nginx.
+  * Created support dialog in embed page when torque layer is applied.
+  * Added cartodb:test:prepare rake task and document its usage for testing.
+
+* Fixed Bugs
+  * Embed layer selector should show torque layers.
+  * Trying to 'Duplicate' or 'Table from query' when tables over quota doesn't give back a reasonable error.
+  * If you cancel a file upload the close button is not being shown anymore on the new table window.
+  * Removed table api_keys from rails migration.
+  * Revamp basemap selector.
+  * Infowindows don't show any content when they contain a column name which is a reserved SQL word.
+  * Reviewed table and map styles using new Safari under Mavericks system.
+  * Clear filter on the filters panel layout is broken in safari + mavericks.
+  * Out of sync between steps and time slider.
+  * Columns with an unique value does not render anything.
+  * Basemap selector dropdown lost the right border radius and has the wrong caption under the 'Add yours' button.
+  * Scrubbar dissapears when going from map to table and then back to map.
+  * Exporting doesn't include the subdomain.
+  * Line breaks on geocoding strings cause geocoder to crash.
+  * Cancelling a geocoding job is not working sometimes.
+  * Numeric type is not well mapped.
+  * Sublayer_options make embed fails.
+  * Prevent layergroup GETs to be cached.
+
 2.4.0
 -----
 * Improvements

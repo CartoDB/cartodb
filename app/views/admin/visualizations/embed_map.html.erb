@@ -51,14 +51,14 @@
       <![endif]-->
     <% else %>
      <% if request.protocol == 'https://' %>
-        <link rel="stylesheet" href="https://d3voyrscnb0slx.cloudfront.net/cartodb.js/v3/themes/css/cartodb.css" />
+        <link rel="stylesheet" href="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/themes/css/cartodb.css" />
         <!--[if lte IE 8]>
-        <link rel="stylesheet" href="https://d3voyrscnb0slx.cloudfront.net/cartodb.js/v3/themes/css/cartodb.ie.css" />
+        <link rel="stylesheet" href="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/themes/css/cartodb.ie.css" />
         <![endif]-->
      <% else %>
-        <link rel="stylesheet" href="http://libs.cartodb.com/cartodb.js/v3/themes/css/cartodb.css" />
+        <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.css" />
         <!--[if lte IE 8]>
-        <link rel="stylesheet" href="http://libs.cartodb.com/cartodb.js/v3/themes/css/cartodb.ie.css" />
+        <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.ie.css" />
         <![endif]-->
      <% end %>
 
@@ -91,7 +91,7 @@
       <%= javascript_include_tag :jquery ,:cdb %>
     <% else %>
       <% if request.protocol == 'https://' %>
-        <script src="https://d3voyrscnb0slx.cloudfront.net/cartodb.js/v3/cartodb.js"></script>
+        <script src="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/cartodb.js"></script>
       <% else %>
         <script src="http://libs.cartocdn.com/cartodb.js/v3/cartodb.js"></script>
       <% end %>

@@ -19,6 +19,7 @@
         width:490px;
         padding-left:20px;
         font-size:13px;
+        line-height:14px;
         color:#999999;
         @include background(sprite($icons-sprites, wifi_icon, $offset-x:-3px, $offset-y:-16px) no-repeat);
         @include text-overflow();

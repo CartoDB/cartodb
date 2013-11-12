@@ -61,6 +61,11 @@ class User < Sequel::Model
     end
   end
 
+  def after_initialize
+    super
+    self.database_host ||= ::Rails::Sequel.configuration.environment_for(Rails.env)['host']
+  end
+
   ## Callbacks
   def after_create
     super
@@ -75,6 +80,7 @@ class User < Sequel::Model
     super
     changes = (self.previous_changes.present? ? self.previous_changes.keys : [])
     set_statement_timeouts if changes.include?(:user_timeout) || changes.include?(:database_timeout)
+    save_metadata
   end
 
   def before_destroy
@@ -194,18 +200,25 @@ class User < Sequel::Model
     logger = (Rails.env.development? || Rails.env.test? ? ::Rails.logger : nil)
     if user == :superuser
       ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-        'database' => self.database_name, :logger => logger
-      )
+        'database' => self.database_name,
+        :logger => logger,
+        'host' => self.database_host
+      ) {|key, o, n| n.nil? ? o : n}
     elsif user == :public_user
       ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-        'database' => self.database_name, :logger => logger,
-        'username' => CartoDB::PUBLIC_DB_USER, 'password' => ''
-      )
+        'database' => self.database_name,
+        :logger => logger,
+        'username' => CartoDB::PUBLIC_DB_USER, 'password' => '',
+        'host' => self.database_host
+      ) {|key, o, n| n.nil? ? o : n}
     else
       ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-        'database' => self.database_name, :logger => logger,
-        'username' => database_username, 'password' => database_password
-      )
+        'database' => self.database_name,
+        :logger => logger,
+        'username' => database_username, 
+        'password' => database_password,
+        'host' => self.database_host
+      ) {|key, o, n| n.nil? ? o : n}
     end
   end
 
@@ -336,7 +349,7 @@ class User < Sequel::Model
 
   # save users basic metadata to redis for node sql api to use
   def save_metadata
-    $users_metadata.HMSET key, 'id', id, 'database_name', database_name
+    $users_metadata.HMSET key, 'id', id, 'database_name', database_name, 'database_password', database_password, 'database_host', database_host
     self.set_map_key
   end
 
@@ -440,11 +453,13 @@ class User < Sequel::Model
   end
 
   def database_exists?
-    if in_database(:as => :superuser)[:pg_database].filter(:datname => database_name).all.any?
-      return true
-    else
-      return false
-    end
+    return false if database_name.blank?  
+    connection_params = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+      'host' => self.database_host,
+      'database' => 'postgres'
+    ) {|key, o, n| n.nil? ? o : n}
+    conn = ::Sequel.connect(connection_params)
+    conn[:pg_database].filter(:datname => database_name).all.any?
   end
   private :database_exists?
 
@@ -648,44 +663,50 @@ class User < Sequel::Model
   def setup_user
     return if disabled?
 
-    ClientApplication.create(:user_id => self.id)
-    unless database_exists?
-      self.database_name = case Rails.env
-        when 'development'
-          "cartodb_dev_user_#{self.id}_db"
-        when 'staging'
-          "cartodb_staging_user_#{self.id}_db"
-        when 'test'
-          "cartodb_test_user_#{self.id}_db"
-        else
-          "cartodb_user_#{self.id}_db"
-      end
-      self.this.update database_name: self.database_name
-
-      Thread.new do
-        conn = Rails::Sequel.connection
-        begin
-          conn.run("CREATE USER #{database_username} PASSWORD '#{database_password}'")
-        rescue => e
-          puts "#{Time.now} USER SETUP ERROR (#{database_username}): #{$!}"
-          raise e
-        end
-        begin
-          conn.run("CREATE DATABASE #{self.database_name}
-          WITH TEMPLATE = template_postgis
-          OWNER = #{::Rails::Sequel.configuration.environment_for(Rails.env)['username']}
-          ENCODING = 'UTF8'
-          CONNECTION LIMIT=-1")
-        rescue => e
-          puts "#{Time.now} USER SETUP ERROR WHEN CREATING DATABASE #{self.database_name}: #{$!}"
-          raise e
-        end
-      end.join
-
-      create_schemas_and_set_permissions
-      set_database_permissions
-      load_cartodb_functions
+    # Assign database_name
+    self.database_name = case Rails.env
+      when 'development'
+        "cartodb_dev_user_#{self.id}_db"
+      when 'staging'
+        "cartodb_staging_user_#{self.id}_db"
+      when 'test'
+        "cartodb_test_user_#{self.id}_db"
+      else
+        "cartodb_user_#{self.id}_db"
     end
+   
+    raise "Database #{database_name} already exists" if database_exists?
+
+    self.this.update database_name: self.database_name
+    ClientApplication.create(:user_id => self.id)
+
+    Thread.new do
+      connection_params = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+        'host' => self.database_host,
+        'database' => 'postgres'
+      ) {|key, o, n| n.nil? ? o : n}
+      conn = ::Sequel.connect(connection_params)
+      begin
+        conn.run("CREATE USER #{database_username} PASSWORD '#{database_password}'")
+      rescue => e
+        puts "#{Time.now} USER SETUP ERROR (#{database_username}): #{$!}"
+        raise e
+      end
+      begin
+        conn.run("CREATE DATABASE #{self.database_name}
+        WITH TEMPLATE = template_postgis
+        OWNER = #{::Rails::Sequel.configuration.environment_for(Rails.env)['username']}
+        ENCODING = 'UTF8'
+        CONNECTION LIMIT=-1")
+      rescue => e
+        puts "#{Time.now} USER SETUP ERROR WHEN CREATING DATABASE #{self.database_name}: #{$!}"
+        raise e
+      end
+    end.join
+
+    create_schemas_and_set_permissions
+    set_database_permissions
+    load_cartodb_functions
   end
 
   def create_schemas_and_set_permissions

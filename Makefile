@@ -9,7 +9,7 @@ all:
 
 prepare-test-db:
 	# TODO skip this if db already exists ?
-	bundle exec rake db:test:prepare
+	bundle exec rake cartodb:test:prepare
 
 check-prepared:
 	bundle exec rspec $(WORKING_SPECS)

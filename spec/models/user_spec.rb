@@ -452,6 +452,7 @@ describe User do
     @user.save_metadata.should be_true
     $users_metadata.HGET(@user.key, 'id').should == @user.id.to_s
     $users_metadata.HGET(@user.key, 'database_name').should == @user.database_name
+    $users_metadata.HGET(@user.key, 'database_password').should == @user.database_password
   end
 
   it "should store its metadata automatically after creation" do

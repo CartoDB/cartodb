@@ -20,7 +20,7 @@ module CartoDB
 
     def initialize(arguments)
       @input_file = arguments[:input_file]
-      @base_url   = "http://batch.geo.st.nlp.nokia.com/search-batch/6.2/jobs"
+      @base_url   = "http://batch.geo.nlp.nokia.com/search-batch/6.2/jobs"
       @request_id = arguments[:request_id]
       @app_id     = arguments.fetch(:app_id)
       @token      = arguments.fetch(:token)
@@ -77,9 +77,7 @@ module CartoDB
     end # extract_response_field
 
     def handle_api_error(response)
-      if response.code != 200
-        raise "#{extract_response_field(response.body, '//Details')}"
-      end
+      raise "Geocoding API communication failure: #{extract_response_field(response.body, '//Details')}" if response.code != 200
     end # handle_api_errpr
 
   end # Geocoder

@@ -221,6 +221,15 @@ class DataImport < Sequel::Model
     candidates =  current_user.tables.select_map(:name)
     table_name = Table.get_valid_table_name(name, name_candidates: candidates)
     current_user.in_database.run(%Q{CREATE TABLE #{table_name} AS #{query}})
+    if current_user.over_disk_quota?
+      log.append "Over storage quota"
+      log.append "Dropping table #{table_name}"
+      current_user.in_database.run(%Q{DROP TABLE #{table_name}})
+      self.error_code = 8001
+      self.state      = 'failure'
+      save
+      raise CartoDB::QuotaExceeded, "More storage required"
+    end
 
     table_name
   end
@@ -260,7 +269,8 @@ class DataImport < Sequel::Model
       .merge(
         user:     current_user.database_username,
         password: current_user.database_password,
-        database: current_user.database_name
+        database: current_user.database_name,
+        host:     current_user.database_host
       )
   end #pg_options
 
@@ -327,7 +337,11 @@ class DataImport < Sequel::Model
       success:        result.success,
       error_code:     result.error_code,
     ) if result
+    payload.merge!(
+      file_url_hostname: URI.parse(public_url).hostname
+    ) if public_url rescue nil
     payload.merge!(error_title: get_error_text) if state == 'failure'
     payload
   end
 end
+

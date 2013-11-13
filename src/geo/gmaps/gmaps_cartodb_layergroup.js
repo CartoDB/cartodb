@@ -60,8 +60,8 @@ var CartoDBLayerGroup = function(opts) {
   }
 
   // Add CartoDB logo
-  if (this.options.cartodb_logo)
-    cdb.geo.common.addWadus({ left: 74, bottom:8 }, 2000, this.options.map.getDiv());
+  if (this.options.cartodb_logo != false)
+    cdb.geo.common.CartoDBLogo.addWadus({ left: 74, bottom:8 }, 2000, this.options.map.getDiv());
 
   wax.g.connector.call(this, opts);
 

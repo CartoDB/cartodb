@@ -57,8 +57,8 @@ var LeafLetTorqueLayer = L.TorqueLayer.extend({
   onAdd: function(map) {
     L.TorqueLayer.prototype.onAdd.apply(this, [map]);
     // Add CartoDB logo
-    if (this.options.cartodb_logo)
-      cdb.geo.common.addWadus({ left:8, bottom:8 }, 0, map._container)
+    if (this.options.cartodb_logo != false)
+      cdb.geo.common.CartoDBLogo.addWadus({ left:8, bottom:8 }, 0, map._container)
   },
 
   _modelUpdated: function(model) {

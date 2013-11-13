@@ -66,10 +66,10 @@ _.extend(
   },
 
   onAdd: function() {
-    torque.GMapsTorqueLayer.prototype.onAdd.call(this);
+    torque.GMapsTorqueLayer.prototype.onAdd.apply(this);
     // Add CartoDB logo
-    if (this.options.cartodb_logo)
-      cdb.geo.common.addWadus({ left: 74, bottom:8 }, 2000, this.map.getDiv())
+    if (this.options.cartodb_logo != false)
+      cdb.geo.common.CartoDBLogo.addWadus({ left: 74, bottom:8 }, 2000, this.map.getDiv())
   },
 
   onTilesLoaded: function() {

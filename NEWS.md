@@ -1,3 +1,28 @@
+2.5.1
+-----
+* Improvements 
+  * Legend is disabled when "torque" wizard is applied.
+  * Dragging the time slider stops the animation, and when dragging ends the animation starts.
+
+* Fixed Bugs
+  * Can't open "New table dialog" when quota was full and one table was deleted.
+  * If you set an invalid value in a CartoCSS property, it is displayed in the wizard.
+  * Torque visualizations under IE9 + Windows 7 are not showing canvas layer.
+  * New category wizard may reset previous configurations.
+  * If two layers, one torque, and leaflet, data appears moved in the embed at certain zoom levels.
+  * In the category wizard if the column is changed the 'Getting colors' text appears twice.
+  * In a table made of points, if you apply a torque visualization and then create a visualization within that table, time slider stops working.
+  * 'select fields' button within infowindow doesn't work when a visualization is created from a table.
+  * In a points table, with torque wizard applied, if you want to add a new layer (not another torque table), it isn't converted to a visualization.
+  * Right module links in api keys or oauth pages are broken.
+  * Torque layer doesn't add CartoDB logo in the visualization.
+  * It's no longer possible to remove tags from a visualization or a table.
+  * Geocoding bar continues spinning after a geocoding failure.
+  * Fix typo in support browsers for torque layer.
+  * Add 120px more to the public iframe.
+  * Fixed CartoDB test suite.
+  * Map is not refreshed after editing a field on the map view.
+
 2.5.0
 -----
 * Improvements

@@ -80,7 +80,6 @@ class User < Sequel::Model
     super
     changes = (self.previous_changes.present? ? self.previous_changes.keys : [])
     set_statement_timeouts if changes.include?(:user_timeout) || changes.include?(:database_timeout)
-    save_metadata
   end
 
   def before_destroy

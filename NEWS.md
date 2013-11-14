@@ -7,7 +7,6 @@
 * Fixed Bugs
   * Can't open "New table dialog" when quota was full and one table was deleted.
   * If you set an invalid value in a CartoCSS property, it is displayed in the wizard.
-  * Torque visualizations under IE9 + Windows 7 are not showing canvas layer.
   * New category wizard may reset previous configurations.
   * If two layers, one torque, and leaflet, data appears moved in the embed at certain zoom levels.
   * In the category wizard if the column is changed the 'Getting colors' text appears twice.

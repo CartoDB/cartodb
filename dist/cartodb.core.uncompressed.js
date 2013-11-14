@@ -1,5 +1,5 @@
-// version: 3.1.13
-// sha: e04f669323704c29b2259eb53277912749d75ece
+// version: 3.3.01
+// sha: 00e6f67bb13643fa95d84eb7c0621722b84b88f1
 ;(function() {
   this.cartodb = {};
   var Backbone = {};
@@ -1141,7 +1141,8 @@ var Mustache;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.1.13';
+    cdb.VERSION = '3.3.01';
+    cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
       '2.0.0': '',
@@ -1151,8 +1152,8 @@ var Mustache;
     cdb.CARTOCSS_DEFAULT_VERSION = '2.1.1';
 
     cdb.CDB_HOST = {
-      'http': 'tiles.cartocdn.com',
-      'https': 'd3pu9mtm6f0hk5.cloudfront.net'
+      'http': 'api.cartocdn.com',
+      'https': 'cartocdn.global.ssl.fastly.net'
     };
 
     root.cdb.config = {};
@@ -1216,6 +1217,7 @@ var Mustache;
         'geo/leaflet/leaflet_base.js',
         'geo/leaflet/leaflet_plainlayer.js',
         'geo/leaflet/leaflet_tiledlayer.js',
+        'geo/leaflet/leaflet_wmslayer.js',
         'geo/leaflet/leaflet_cartodb_layergroup.js',
         'geo/leaflet/leaflet_cartodb_layer.js',
         'geo/leaflet/leaflet.js',
@@ -1531,7 +1533,7 @@ var Mustache;
       }
     }
 
-    var isGetRequest = options.type == 'get' || params.type == 'get';
+    var isGetRequest = options.type ? options.type == 'get' : params.type == 'get';
     // generate url depending on the http method
     params.url = this._host() ;
     if(isGetRequest) {
@@ -1783,7 +1785,7 @@ LayerDefinition.layerDefFromSubLayers = function(sublayers) {
     layers: []
   };
 
-  for (var i in sublayers) {
+  for (var i = 0; i < sublayers.length; ++i) {
     layer_definition.layers.push({
       type: 'cartodb',
       options: sublayers[i]
@@ -1827,7 +1829,7 @@ LayerDefinition.prototype = {
       obj.stat_tag = this.stat_tag;
     }
     obj.layers = [];
-    for(var i in this.layers) {
+    for(var i = 0; i < this.layers.length; ++i) {
       var layer = this.layers[i];
       if(!layer.options.hidden) {
         obj.layers.push({
@@ -1854,7 +1856,7 @@ LayerDefinition.prototype = {
    */
   getLayerNumberByIndex: function(index) {
     var layers = [];
-    for(var i in this.layers) {
+    for(var i = 0; i < this.layers.length; ++i) {
       var layer = this.layers[i];
       if(!layer.options.hidden) {
         layers.push(i);
@@ -1963,6 +1965,9 @@ LayerDefinition.prototype = {
       },
       error: function(xhr) {
         var err = { errors: ['unknow error'] };
+        if (xhr.status === 0) {
+          err = { errors: ['connection error'] };
+        }
         try {
           err = JSON.parse(xhr.responseText);
         } catch(e) {}
@@ -2165,7 +2170,7 @@ LayerDefinition.prototype = {
       tiles.push(cartodb_url + tileTemplate + ".png?" + pngParams );
 
       var gridParams = this._encodeParams(params, this.options.gridParams);
-      for(var layer in this.layers) {
+      for(var layer = 0; layer < this.layers.length; ++layer) {
         grids[layer] = grids[layer] || [];
         grids[layer].push(cartodb_url + "/" + layer +  tileTemplate + ".grid.json?" + gridParams);
       }
@@ -2370,6 +2375,14 @@ LayerDefinition.prototype = {
 
   getSubLayerCount: function() {
     return this.getLayerCount();
+  },
+
+  getSubLayers: function() {
+    var layers = []
+    for (var i = 0; i < this.getSubLayerCount(); ++i) {
+      layers.push(this.getSubLayer(i))
+    }
+    return layers;
   }
 
 

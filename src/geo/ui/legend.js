@@ -25,7 +25,9 @@ cdb.geo.ui.LegendItem = cdb.core.View.extend({
 
   render: function() {
 
-    this.$el.html(this.template(this.model.toJSON()));
+    var options = this.model.toJSON();
+
+    this.$el.html(this.template(options));
 
     return this.$el;
 
@@ -324,7 +326,8 @@ cdb.geo.ui.CategoryLegend = cdb.core.View.extend({
 
     view = new cdb.geo.ui.LegendItem({
       model: item,
-      template: '<div class="bullet" style="background:<%= value %>"></div><%= name || "null" %>'
+      className: (item.get("value") && item.get("value").indexOf("http") >= 0) ? "bkg" : "",
+      template: '<div class="bullet" style="background: <%= value %>"></div><%= name || ((name === false) ? "false": "null") %>'
     });
 
     this.$el.find("ul").append(view.render());
@@ -380,7 +383,8 @@ cdb.geo.ui.ColorLegend = cdb.core.View.extend({
 
     view = new cdb.geo.ui.LegendItem({
       model: item,
-      template: '<div class="bullet" style="background:<%= value %>"></div><%= name || ((name === false) ? "false": "null") %>'
+      className: (item.get("value") && item.get("value").indexOf("http") >= 0) ? "bkg" : "",
+      template: '<div class="bullet" style="background: <%= value %>"></div><%= name || ((name === false) ? "false": "null") %>'
     });
 
     this.$el.find("ul").append(view.render());
@@ -436,6 +440,7 @@ cdb.geo.ui.CustomLegend = cdb.core.View.extend({
 
     view = new cdb.geo.ui.LegendItem({
       model: item,
+      className: (item.get("value") && item.get("value").indexOf("http") >= 0) ? "bkg" : "",
       template: '<div class="bullet" style="background:<%= value %>"></div><%= name || "null" %>'
     });
 
@@ -489,11 +494,31 @@ cdb.geo.ui.CustomLegend = cdb.core.View.extend({
 
 cdb.geo.ui.StackedLegend = cdb.core.View.extend({
 
+  events: {
+
+    "dragstart":            "_stopPropagation",
+    "mousedown":            "_stopPropagation",
+    "touchstart":           "_stopPropagation",
+    "MSPointerDown":        "_stopPropagation",
+    "dblclick":             "_stopPropagation",
+    "mousewheel":           "_stopPropagation",
+    "DOMMouseScroll":       "_stopPropagation",
+    "dbclick":              "_stopPropagation",
+    "click":                "_stopPropagation"
+
+  },
+
   className: "cartodb-legend-stack",
 
   initialize: function() {
 
     _.each(this.options.legends, this._setupBinding, this);
+
+  },
+
+  _stopPropagation: function(ev) {
+
+    ev.stopPropagation();
 
   },
 
@@ -610,6 +635,20 @@ cdb.geo.ui.Legend = cdb.core.View.extend({
 
   className: "cartodb-legend",
 
+  events: {
+
+    "dragstart":            "_stopPropagation",
+    "mousedown":            "_stopPropagation",
+    "touchstart":           "_stopPropagation",
+    "MSPointerDown":        "_stopPropagation",
+    "dblclick":             "_stopPropagation",
+    "mousewheel":           "_stopPropagation",
+    "DOMMouseScroll":       "_stopPropagation",
+    "dbclick":              "_stopPropagation",
+    "click":                "_stopPropagation"
+
+  },
+
   initialize: function() {
 
     _.bindAll(this, "render", "show", "hide");
@@ -622,6 +661,12 @@ cdb.geo.ui.Legend = cdb.core.View.extend({
     this._setupItems();
 
     this._updateLegendType();
+
+  },
+
+  _stopPropagation: function(ev) {
+
+    ev.stopPropagation();
 
   },
 
@@ -742,3 +787,4 @@ cdb.geo.ui.Legend = cdb.core.View.extend({
   }
 
 });
+

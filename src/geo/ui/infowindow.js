@@ -19,7 +19,7 @@
  */
 
 cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
-  
+
   SYSTEM_COLUMNS: ['the_geom', 'the_geom_webmercator', 'created_at', 'updated_at', 'cartodb_id', 'cartodb_georef_status'],
 
   defaults: {
@@ -38,16 +38,18 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
     this.set({fields: []});
   },
 
-  saveFields: function() {
-    this.set('old_fields', _.clone(this.get('fields')));
+  saveFields: function(where) {
+    where = where || 'old_fields';
+    this.set(where, _.clone(this.get('fields')));
   },
 
   fieldCount: function() {
     return this.get('fields').length
   },
 
-  restoreFields: function(whiteList) {
-    var fields = this.get('old_fields')
+  restoreFields: function(whiteList, from) {
+    from = from || 'old_fields';
+    var fields = this.get(from);
     if(whiteList) {
       fields = fields.filter(function(f) {
         return _.contains(whiteList, f.name);
@@ -56,7 +58,7 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
     if(fields && fields.length) {
       this._setFields(fields);
     }
-    this.unset('old_fields');
+    this.unset(from);
   },
 
   _cloneFields: function() {
@@ -208,7 +210,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     } else {
       this._setTemplate();
     }
-    
+
     this.model.bind('change:content',           this.render, this);
     this.model.bind('change:template_name',     this._setTemplate, this);
     this.model.bind('change:latlng',            this._update, this);
@@ -314,7 +316,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
   _setTemplate: function() {
     if (this.model.get('template_name')) {
       this.template = cdb.templates.getTemplate(this._getModelTemplate());
-      this.render();  
+      this.render();
     }
   },
 
@@ -480,7 +482,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     var content = this.model.get("content");
 
     if (content && content.fields && content.fields.length > 0) {
-      return (content.fields[0].value).toString();
+      return (content.fields[0].value || '').toString();
     }
 
     return false;
@@ -556,7 +558,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
    */
   _isValidURL: function(url) {
     if (url) {
-      var urlPattern = /^(http|ftp|https):\/\/[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:\/~+#-]*[\w@?^=%&amp;\/~+#-])?$/
+      var urlPattern = /^(http|ftp|https):\/\/[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:\/~+#-|]*[\w@?^=%&amp;\/~+#-])?$/
       return String(url).match(urlPattern) != null ? true : false;
     }
 

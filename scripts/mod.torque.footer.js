@@ -1,0 +1,3 @@
+
+cartodb.moduleLoad('torque', torque);
+

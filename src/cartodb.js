@@ -5,7 +5,8 @@
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.1.13';
+    cdb.VERSION = '3.3.01';
+    cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
       '2.0.0': '',
@@ -15,8 +16,8 @@
     cdb.CARTOCSS_DEFAULT_VERSION = '2.1.1';
 
     cdb.CDB_HOST = {
-      'http': 'tiles.cartocdn.com',
-      'https': 'd3pu9mtm6f0hk5.cloudfront.net'
+      'http': 'api.cartocdn.com',
+      'https': 'cartocdn.global.ssl.fastly.net'
     };
 
     root.cdb.config = {};
@@ -80,6 +81,7 @@
         'geo/leaflet/leaflet_base.js',
         'geo/leaflet/leaflet_plainlayer.js',
         'geo/leaflet/leaflet_tiledlayer.js',
+        'geo/leaflet/leaflet_wmslayer.js',
         'geo/leaflet/leaflet_cartodb_layergroup.js',
         'geo/leaflet/leaflet_cartodb_layer.js',
         'geo/leaflet/leaflet.js',

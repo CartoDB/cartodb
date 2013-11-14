@@ -99,7 +99,7 @@
       }
     }
 
-    var isGetRequest = options.type == 'get' || params.type == 'get';
+    var isGetRequest = options.type ? options.type == 'get' : params.type == 'get';
     // generate url depending on the http method
     params.url = this._host() ;
     if(isGetRequest) {

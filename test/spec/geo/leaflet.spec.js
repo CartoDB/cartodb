@@ -298,5 +298,11 @@ describe('LeafletMapView', function() {
     expect(layerView1.options.zIndex > layerView2.options.zIndex).toEqual(true);
   });
 
+   it("should swicth layer", function() {
+      map.addLayer(layer);
+      layer.set('type', 'torque');
+      expect(mapView.layers[layer.cid] instanceof  L.TorqueLayer).toEqual(true);
+   });
+
 });
 

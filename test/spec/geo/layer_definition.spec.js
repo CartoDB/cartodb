@@ -129,10 +129,10 @@ describe("LayerDefinition", function() {
     layerDefinition.options.no_cdn = false;
     layerDefinition.options.subdomains = ['a', 'b', 'c', 'd'];
     var tiles = layerDefinition._layerGroupTiles('test_layer');
-    expect(tiles.tiles[0]).toEqual('http://a.tiles.cartocdn.com/rambo/tiles/layergroup/test_layer/{z}/{x}/{y}.png?');
-    expect(tiles.tiles[1]).toEqual('http://b.tiles.cartocdn.com/rambo/tiles/layergroup/test_layer/{z}/{x}/{y}.png?');
-    expect(tiles.grids[0][0]).toEqual('http://a.tiles.cartocdn.com/rambo/tiles/layergroup/test_layer/0/{z}/{x}/{y}.grid.json?');
-    expect(tiles.grids[0][1]).toEqual('http://b.tiles.cartocdn.com/rambo/tiles/layergroup/test_layer/0/{z}/{x}/{y}.grid.json?');
+    expect(tiles.tiles[0]).toEqual('http://a.api.cartocdn.com/rambo/tiles/layergroup/test_layer/{z}/{x}/{y}.png?');
+    expect(tiles.tiles[1]).toEqual('http://b.api.cartocdn.com/rambo/tiles/layergroup/test_layer/{z}/{x}/{y}.png?');
+    expect(tiles.grids[0][0]).toEqual('http://a.api.cartocdn.com/rambo/tiles/layergroup/test_layer/0/{z}/{x}/{y}.grid.json?');
+    expect(tiles.grids[0][1]).toEqual('http://b.api.cartocdn.com/rambo/tiles/layergroup/test_layer/0/{z}/{x}/{y}.grid.json?');
   });
 
   it("grid url should not include interactivity", function() {
@@ -152,11 +152,11 @@ describe("LayerDefinition", function() {
 
   it("should use cdn_url as default", function() {
     delete layerDefinition.options.no_cdn;
-    expect(layerDefinition._host()).toEqual('http://tiles.cartocdn.com/rambo');
-    expect(layerDefinition._host('0')).toEqual('http://0.tiles.cartocdn.com/rambo');
+    expect(layerDefinition._host()).toEqual('http://api.cartocdn.com/rambo');
+    expect(layerDefinition._host('0')).toEqual('http://0.api.cartocdn.com/rambo');
     layerDefinition.options.tiler_protocol = "https";
-    expect(layerDefinition._host()).toEqual('https://d3pu9mtm6f0hk5.cloudfront.net/rambo');
-    expect(layerDefinition._host('a')).toEqual('https://a.d3pu9mtm6f0hk5.cloudfront.net/rambo');
+    expect(layerDefinition._host()).toEqual('https://cartocdn.global.ssl.fastly.net/rambo');
+    expect(layerDefinition._host('a')).toEqual('https://a.cartocdn.global.ssl.fastly.net/rambo');
   });
 
   it("should return values for the latest query", function() {

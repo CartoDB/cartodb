@@ -6,6 +6,10 @@
 @import "../common/sprites";
 @import "../common/mixins";
 
+.tipsy.feed {
+  line-height: 120%;
+}
+
 .tipsy.stats.tipsy-s {
   line-height: 120%;
 }

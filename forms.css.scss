@@ -1,7 +1,7 @@
 
 @import "compass";
-@import "common/vars";
-@import "common/sprites";
+@import "vars";
+@import "sprites";
 
 @mixin default-input {
   input {
@@ -98,7 +98,7 @@
 
     // Sync and no-sync info
     &.sync, &.no-sync {
-      @include background(sprite($icons-sprites, wifi_icon, $offset-x:11px, $offset-y:5px) no-repeat #FFF7EA);
+      // @include background(sprite($icons-sprites, wifi_icon, $offset-x:11px, $offset-y:5px) no-repeat #FFF7EA);
     }
 
     // SYNC

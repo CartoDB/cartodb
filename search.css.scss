@@ -1,8 +1,8 @@
 @import "compass";
-@import "../common/mixins";
-@import "../common/fonts";
-@import "../common/sprites";
-@import "../common/vars";
+@import "mixins";
+@import "fonts";
+@import "sprites";
+@import "vars";
 
 div.search {
   position:absolute;

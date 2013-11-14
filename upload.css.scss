@@ -3,7 +3,7 @@
   /*
    *  Styles for upload forms
    */
-  @import "compass/css3";
+  @import "compass";
   @import "vars";
   @import "sprites";
   @import "mixins";
@@ -55,11 +55,11 @@
       }
 
       &.gdrive i {
-        @include icons-sprite(gdrive);
+        // @include icons-sprite(gdrive);
       }
 
       &.dropbox i {
-        @include icons-sprite(dropbox);
+        // @include icons-sprite(dropbox);
       }
     }
   }
@@ -205,7 +205,7 @@
         height:24px;
         margin:0 8px 0 0;
         border-right:1px solid #CCCCCC;
-        @include icons-sprite(file_type, $offset_y:4px, $offset_x:1px);
+        // @include icons-sprite(file_type, $offset_y:4px, $offset_x:1px);
       }
 
       div {
@@ -354,10 +354,10 @@
       height:14px;
       margin:0;
       padding:0;
-      @include icons-sprite(cancel_upload);
+      // @include icons-sprite(cancel_upload);
       @include text-indent();
       &:hover {
-        @include icons-sprite(cancel_upload, $offset-y:-16px);
+        // @include icons-sprite(cancel_upload, $offset-y:-16px);
       }
     }
 

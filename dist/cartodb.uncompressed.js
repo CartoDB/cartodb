@@ -1,6 +1,6 @@
-// cartodb.js version: 3.3.01
+// cartodb.js version: 3.3.02
 // uncompressed version: cartodb.uncompressed.js
-// sha: 00e6f67bb13643fa95d84eb7c0621722b84b88f1
+// sha: beebbf3dc2d83cfae923fb97bcc9c62d1c2252dd
 (function() {
   var root = this;
 
@@ -20429,7 +20429,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.3.01';
+    cdb.VERSION = '3.3.02';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -21619,6 +21619,17 @@ cdb.geo.GMapsBaseLayer = cdb.geo.MapLayer.extend({
     type: 'GMapsBase',
     base_type: 'gray_roadmap',
     style: null
+  },
+
+  set: function(key, value, options) {
+    if (key && _.isObject(key)) {
+      delete key.maxZoom
+    } else {
+      if (key === 'maxZoom') {
+        arguments[1] = undefined;
+      }
+    }
+    cdb.geo.MapLayer.prototype.set.apply(this, arguments);
   }
 });
 
@@ -21762,7 +21773,7 @@ cdb.geo.Map = cdb.core.Model.extend({
     center: [0, 0],
     zoom: 3,
     minZoom: 0,
-    maxZoom: 28,
+    maxZoom: 40,
     scrollwheel: true,
     provider: 'leaflet'
   },

@@ -125,7 +125,7 @@ div.map {
 
   div.dropdown.basemap {
 
-    width: 861px;
+    width: 646px;
     border: 1px solid #999999;
 
     .custom {
@@ -170,7 +170,7 @@ div.map {
         display:block;
         padding: 11px 10px 11px 0;
 
-        line-height: normal;
+        line-height: 13px;
         @include clearfix();
 
         small { display:block; margin: 0 0 0 29px; font-size: 9px; color: #AAAAAA; }

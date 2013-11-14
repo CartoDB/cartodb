@@ -1,3 +1,16 @@
+3.3.02 (14//11/2013)
+-----
+- we don't set maxZoom in GMaps layers anymore.
+- adds support for WMS layers.
+
+3.3.01 (14//11/2013)
+-----
+- added CartoDB logo in torque layers
+
+3.3.00 (11//11/2013)
+-----
+- torque support
+
 3.2.06 (04//11/2013)
 -----
 - adjusts the max and min zoom for each layer

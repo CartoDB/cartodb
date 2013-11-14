@@ -66,6 +66,7 @@
 
     var promise = new _Promise();
     var layerView, MapType;
+    options = options || {};
     if(map === undefined) {
       throw new TypeError("map should be provided");
     }
@@ -98,7 +99,12 @@
         if(visData.layers.length < 2) {
           promise.trigger('error', "visualization file does not contain layer info");
         }
-        layerData = visData.layers[1];
+        var idx = options.layerIndex === undefined ? 1: options.layerIndex;
+        if(visData.layers.length <= idx) {
+          promise.trigger('error', 'layerIndex out of bounds');
+          return;
+        }
+        layerData = visData.layers[idx];
       } else {
         layerData = visData;
       }
@@ -115,12 +121,12 @@
         _.extend(layerData.options, options);
       }
 
-      options = options || {};
       options = _.defaults(options, {
         infowindow: true,
         https: false,
-        legends: true
-      })
+        legends: true,
+        time_slider: true
+      });
 
       // check map type
       // TODO: improve checking
@@ -150,15 +156,35 @@
         viz.https = options.https;
       }
 
-      layerView = viz.createLayer(layerData, { no_base_layer: true });
-      if(options.infowindow) {
-        viz.addInfowindow(layerView);
+      function createLayer() {
+        layerView = viz.createLayer(layerData, { no_base_layer: true });
+        if(!layerView) {
+          promise.trigger('error', "layer not supported");
+          return promise;
+        }
+        if(options.infowindow) {
+          viz.addInfowindow(layerView);
+        }
+        if(options.legends) {
+          viz.addLegends([layerData]);
+        }
+        if(options.time_slider && layerView.model.get('type') === 'torque') {
+          viz.addTimeSlider(layerView);
+        }
+
+        callback && callback(layerView);
+        promise.trigger('done', layerView);
       }
-      if(options.legends) {
-        viz.addLegends([layerData]);
+
+      // load needed modules
+      if(!viz.checkModules([layerData])) {
+        viz.loadModules([layerData], function() {
+          createLayer();
+        });
+      } else {
+        createLayer();
       }
-      callback && callback(layerView);
-      promise.trigger('done', layerView);
+
     });
 
     return promise;

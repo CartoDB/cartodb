@@ -46,7 +46,7 @@ With a similar source code you can create a visualization like this one:
 
 CartoDB.js can be used when you want to embed and use a visualization you have designed using CartoDB user interface, or to create visualizations from scratch dynamically using your data. If you want to create new maps on your webpage, jump to “using CartoDB visualizations in your webpage”. If you already have maps on your webpage and want to add CartoDB visualizations to them, read “Add CartoDB layer to an existing map”.
 
-You can also use CartoDB APIs to create visualization without having to define them using the UI. This can be useful when the visualizations react to user interactions. To read more about it jump to, create [create visualizations at runtime](#runtime).
+You can also use CartoDB API to create visualization without having to define them using the UI. This can be useful when the visualizations react to user interactions. To read more about it jump to, create [create visualizations at runtime](#runtime).
 
 We’ve also made it easier than ever for you to build maps using the mapping library of your choice. Whether you are using Leaflet or Google Maps your CartoDB.js code remains the same. This makes our API documentation simple and straightforward. It also makes it easy for you to remember and keep consistent if you development or maintain multiple maps online.
 
@@ -143,7 +143,7 @@ Below, you have an example using a previously instatiated leaflet map.
 
 <h5 id="runtime">Creating visualizations at runtime</h5>
 
-All CartoDB services are available through the APIs, which basically means that you can create a new visualization without doing it before through the CartoDB UI. This is particularly useful when you are modifying the visualization depending on user interactions that change the SQL to get the data or CartoCSS to style it. This method, although needs more programming skills, provides all the flexibility you might need to create more dynamic visualizations.
+All CartoDB services are available through the API, which basically means that you can create a new visualization without doing it before through the CartoDB UI. This is particularly useful when you are modifying the visualization depending on user interactions that change the SQL to get the data or CartoCSS to style it. This method, although needs more programming skills, provides all the flexibility you might need to create more dynamic visualizations.
 
 When you create a visualization using the CartoDB website, you get automatically a viz.json URL defining it. When you want to create the visualization via JS, obviously you dont have it, so you will pass all the required parameters to the library so that it can create the visualization at runtime and display it on your map. It is pretty simple.
 
@@ -226,6 +226,7 @@ Creates a visualization inside the map_id DOM object.
     - **zoom**: initial zoom.
     - **cartodb_logo**: default to true, set to false if you want to remove the cartodb logo.
     - **infowindow**: set to false if you want to disable the infowindow (enabled by default).
+    - **time_slider**: show time slider with torque layers (enabled by default)
     - **legends**: if it's true legends are shown in the map.
     - **https**: if true forces tiles to be fetched using https. If false it uses the predefined method
 
@@ -311,6 +312,11 @@ With visualizations already created through the CartoDB console, you can simply 
     - **refreshTime**: if is set, the layer is refreshed each refreshTime milliseconds.
     - **infowindow**: set to false if you want to disable the infowindow (enabled by default).
     - **legends**: if it's true legends are shown in the map.
+    - **time_slider**: show time slider with torque layers (enabled by default)
+    - **layerIndex**: when the visualization contains more than one layer this index allow to select
+      what layer is created. Take into account that ``layerIndex == 0`` is the base layer and that
+      all the tiled layers (non animated ones) are merged into a single one. The default value for
+      this option is 1 (usually tiled layers).
 
   + **callback(layer)**: if a function is specified is called when the layer is created passing it as argument.
 

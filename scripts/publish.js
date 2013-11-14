@@ -16,7 +16,10 @@ var JS_FILES = [
   'cartodb.js',
   'cartodb.uncompressed.js',
   'cartodb.core.js',
-  'cartodb.nojquery.js'
+  'cartodb.core.uncompressed.js',
+  'cartodb.nojquery.js',
+  'cartodb.mod.torque.js',
+  'cartodb.mod.torque.uncompressed.js'
 ]
 
 var CSS_FILES = [

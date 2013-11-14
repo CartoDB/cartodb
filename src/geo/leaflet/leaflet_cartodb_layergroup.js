@@ -105,7 +105,11 @@ L.CartoDBGroupLayer = L.TileLayer.extend({
   onAdd: function(map) {
     var self = this;
     this.options.map = map;
-    this._addWadus({left:8, bottom:8}, 0, map._container);
+    
+    // Add cartodb logo
+    if (this.options.cartodb_logo != false)
+      cdb.geo.common.CartoDBLogo.addWadus({ left:8, bottom:8 }, 0, map._container);
+
     this.__update(function() {
       // if while the layer was processed in the server is removed
       // it should not be added to the map

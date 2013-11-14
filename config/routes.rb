@@ -138,6 +138,8 @@ CartoDB::Application.routes.draw do
     end
 
     get '/v2/viz/:id/viz'    => 'api/json/visualizations#vizjson2', as: :vizjson
+    get '/v2/wms'            => 'api/json/wms#proxy'
+    
   end
 end
 

@@ -1,6 +1,6 @@
-// cartodb.js version: 3.3.00
+// cartodb.js version: 3.3.01
 // uncompressed version: cartodb.uncompressed.js
-// sha: d01b7f1c5af23202307a54534024596baa3a81bd
+// sha: 00e6f67bb13643fa95d84eb7c0621722b84b88f1
 (function() {
   var root = this;
 
@@ -20429,7 +20429,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.3.00';
+    cdb.VERSION = '3.3.01';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -25342,50 +25342,6 @@ CartoDBLayerCommon.prototype = {
   },
 
   /**
-   * Check if CartoDB logo already exists
-   */
-  _isWadusAdded: function(container, className) {
-    // Check if any cartodb-logo exists within container
-    var a = [];
-    var re = new RegExp('\\b' + className + '\\b');
-    var els = container.getElementsByTagName("*");
-    for(var i=0,j=els.length; i<j; i++)
-      if(re.test(els[i].className))a.push(els[i]);
-
-    return a.length > 0;
-  },
-
-  /**
-   *  Check if browser supports retina images
-   */
-  _isRetinaBrowser: function() {
-    return  ('devicePixelRatio' in window && window.devicePixelRatio > 1) ||
-            ('matchMedia' in window && window.matchMedia('(min-resolution:144dpi)') &&
-            window.matchMedia('(min-resolution:144dpi)').matches);
-  },
-
-  /**
-   * Add Cartodb logo
-   * It needs a position, timeout if it is needed and the container where add it
-   */
-  _addWadus: function(position, timeout, container) {
-    var self = this;
-    setTimeout(function() {
-      if (self.options.cartodb_logo !== false && !self._isWadusAdded(container, 'cartodb-logo')) {
-        var cartodb_link = document.createElement("div");
-        var is_retina = self._isRetinaBrowser();
-        cartodb_link.setAttribute('class','cartodb-logo');
-        
-          cartodb_link.setAttribute('style',"position:absolute; bottom:0; left:0; display:block; border:none; z-index:1000000;");
-          var protocol = location.protocol.indexOf('https') === -1 ? 'http': 'https';
-          cartodb_link.innerHTML = "<a href='http://www.cartodb.com' target='_blank'><img width='71' height='29' src='" + protocol + "://cartodb.s3.amazonaws.com/static/new_logo" + (is_retina ? '@2x' : '') + ".png' style='position:absolute; bottom:" + 
-            ( position.bottom || 0 ) + "px; left:" + ( position.left || 0 ) + "px; display:block; width:71px!important; height:29px!important; border:none; outline:none;' alt='CartoDB' title='CartoDB' />";
-          container.appendChild(cartodb_link);
-      }
-    },( timeout || 0 ));
-  },
-
-  /**
    * Returns if the layer is visible or not
    */
   isVisible: function() {
@@ -25569,11 +25525,59 @@ CartoDBLayerCommon.prototype = {
     }, 30000);
 
   }
-
-
 };
 
-(function() {
+
+
+
+cdb.geo.common = {};
+
+cdb.geo.common.CartoDBLogo = {
+
+  /**
+   * Check if any class already exists
+   * in the provided container
+   */
+  isWadusAdded: function(container, className) {
+    // Check if any cartodb-logo exists within container
+    var a = [];
+    var re = new RegExp('\\b' + className + '\\b');
+    var els = container.getElementsByTagName("*");
+    for(var i=0,j=els.length; i<j; i++)
+      if(re.test(els[i].className))a.push(els[i]);
+
+    return a.length > 0;
+  },
+
+  /**
+   *  Check if browser supports retina images
+   */
+  isRetinaBrowser: function() {
+    return  ('devicePixelRatio' in window && window.devicePixelRatio > 1) ||
+            ('matchMedia' in window && window.matchMedia('(min-resolution:144dpi)') &&
+            window.matchMedia('(min-resolution:144dpi)').matches);
+  },
+
+  /**
+   * Add Cartodb logo
+   * It needs a position, timeout if it is needed and the container where to add it
+   */
+  addWadus: function(position, timeout, container) {
+    var self = this;
+    setTimeout(function() {
+      if (!self.isWadusAdded(container, 'cartodb-logo')) {
+        var cartodb_link = document.createElement("div");
+        var is_retina = self.isRetinaBrowser();
+        cartodb_link.setAttribute('class','cartodb-logo');
+        cartodb_link.setAttribute('style',"position:absolute; bottom:0; left:0; display:block; border:none; z-index:1000000;");
+        var protocol = location.protocol.indexOf('https') === -1 ? 'http': 'https';
+        cartodb_link.innerHTML = "<a href='http://www.cartodb.com' target='_blank'><img width='71' height='29' src='" + protocol + "://cartodb.s3.amazonaws.com/static/new_logo" + (is_retina ? '@2x' : '') + ".png' style='position:absolute; bottom:" + 
+          ( position.bottom || 0 ) + "px; left:" + ( position.left || 0 ) + "px; display:block; width:71px!important; height:29px!important; border:none; outline:none;' alt='CartoDB' title='CartoDB' />";
+        container.appendChild(cartodb_link);
+      }
+    },( timeout || 0 ));
+  }
+};(function() {
 
 /**
  * this module implements all the features related to overlay geometries
@@ -26006,7 +26010,11 @@ L.CartoDBGroupLayer = L.TileLayer.extend({
   onAdd: function(map) {
     var self = this;
     this.options.map = map;
-    this._addWadus({left:8, bottom:8}, 0, map._container);
+    
+    // Add cartodb logo
+    if (this.options.cartodb_logo != false)
+      cdb.geo.common.CartoDBLogo.addWadus({ left:8, bottom:8 }, 0, map._container);
+
     this.__update(function() {
       // if while the layer was processed in the server is removed
       // it should not be added to the map
@@ -26670,7 +26678,7 @@ cdb.geo.LeafLetLayerCartoDBView = LeafLetLayerCartoDBView;
     },
 
     invalidateSize: function() {
-      this.map_leaflet.invalidateSize();
+      this.map_leaflet.invalidateSize({ pan: false});
     }
 
   }, {
@@ -27015,7 +27023,8 @@ var CartoDBLayerGroup = function(opts) {
   }
 
   // Add CartoDB logo
-  this._addWadus({left: 74, bottom:8}, 2000, this.options.map.getDiv());
+  if (this.options.cartodb_logo != false)
+    cdb.geo.common.CartoDBLogo.addWadus({ left: 74, bottom:8 }, 2000, this.options.map.getDiv());
 
   wax.g.connector.call(this, opts);
 
@@ -29904,6 +29913,7 @@ Layers.register('torque', function(vis, data) {
       data.tiler_port = 443;
     }
   }
+  data.cartodb_logo = vis.cartodb_logo == undefined ? data.cartodb_logo : vis.cartodb_logo;
   return new cdb.geo.TorqueLayer(data);
 });
 

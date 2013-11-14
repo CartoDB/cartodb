@@ -180,6 +180,8 @@ describe CartoDB::TableGeocoder do
   #   end
   #   t.process_results
   #   t.geocoder.status.should eq 'completed'
+  #   @db.fetch("select count(*) from #{@table_name} where the_geom is null").first[:count].should eq 2
+  #   @db.fetch("select count(*) from #{@table_name} where cartodb_georef_status is false").first[:count].should eq 2
   # end
 
 

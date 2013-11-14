@@ -102,6 +102,17 @@ cdb.geo.GMapsBaseLayer = cdb.geo.MapLayer.extend({
     type: 'GMapsBase',
     base_type: 'gray_roadmap',
     style: null
+  },
+
+  set: function(key, value, options) {
+    if (key && _.isObject(key)) {
+      delete key.maxZoom
+    } else {
+      if (key === 'maxZoom') {
+        arguments[1] = undefined;
+      }
+    }
+    cdb.geo.MapLayer.prototype.set.apply(this, arguments);
   }
 });
 
@@ -341,7 +352,7 @@ cdb.geo.Map = cdb.core.Model.extend({
 
   _adjustZoomtoLayer: function(layer) {
 
-    var maxZoom = layer.get('type') == 'GMapsBase' ? this.defaults.maxZoom : layer.get('maxZoom');
+    var maxZoom = layer.get('maxZoom');
 
     if (_.isNumber(maxZoom)) {
       this.set({ maxZoom: maxZoom });

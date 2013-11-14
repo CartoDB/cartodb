@@ -149,9 +149,13 @@ div.map {
 
     ul li {
 
-      &.wms .thumb {
-        background-size:auto;
-        background: image-url("icons/wms.png") no-repeat center center;
+      &.wms {
+        .thumb {
+          background-size:auto;
+          background: image-url("icons/wms.png") no-repeat center center;
+        }
+
+        a { line-height: 24px; }
       }
 
       &.selected .name { color: #7B7B7B; }

@@ -35,6 +35,7 @@
   * Clean headers from tiler/varnish/nginx.
   * Created support dialog in embed page when torque layer is applied.
   * Added cartodb:test:prepare rake task and document its usage for testing.
+  * User configuration change: sql_api config names normalization.
 
 * Fixed Bugs
   * Embed layer selector should show torque layers.

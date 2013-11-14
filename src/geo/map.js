@@ -102,18 +102,19 @@ cdb.geo.GMapsBaseLayer = cdb.geo.MapLayer.extend({
     type: 'GMapsBase',
     base_type: 'gray_roadmap',
     style: null
-  },
-
-  set: function(key, value, options) {
-    if (key && _.isObject(key)) {
-      delete key.maxZoom
-    } else {
-      if (key === 'maxZoom') {
-        arguments[1] = undefined;
-      }
-    }
-    cdb.geo.MapLayer.prototype.set.apply(this, arguments);
   }
+
+  //set: function(key, value, options) {
+    //if (key && _.isObject(key)) {
+      //delete key.maxZoom
+    //} else {
+      //if (key === 'maxZoom') {
+        //value = undefined;
+      //}
+    //}
+    //cdb.geo.MapLayer.prototype.set.call(this, key, value, options);
+  //}
+
 });
 
 /**

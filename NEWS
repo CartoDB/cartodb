@@ -1,3 +1,7 @@
+3.3.03 (15//11/2013)
+-----
+- fixes a bug that prevented the triggering of callbacks after setting properties to cdb.geo.GMapsBaseLayer.
+
 3.3.02 (14//11/2013)
 -----
 - we don't set maxZoom in GMaps layers anymore.

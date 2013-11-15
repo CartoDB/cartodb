@@ -48,7 +48,7 @@ module CartoDB
     end
 
     def clean_formatter
-      "regexp_replace(concat(#{formatter}), E'[\\n\\r]+', ' ', 'g' )"
+      "translate(concat(#{formatter}), '\n\r\"', '  ')"
     end
 
     def cancel

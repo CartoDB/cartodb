@@ -17,7 +17,7 @@ class Map < Sequel::Model
                 conditions: { kind: "carto" }
 
   many_to_many  :user_layers, clone: :layers, right_key: :layer_id,
-                conditions: "kind in ('tiled', 'background', 'gmapsbase')"
+                conditions: "kind in ('tiled', 'background', 'gmapsbase', 'wms')"
 
   many_to_many  :carto_and_torque_layers, clone: :layers, right_key: :layer_id,
                 conditions: "kind in ('carto', 'torque')"
@@ -26,7 +26,7 @@ class Map < Sequel::Model
                 conditions: { kind: "torque" }
 
   many_to_many  :other_layers, clone: :layers, right_key: :layer_id,
-                conditions: "kind not in ('carto', 'tiled', 'background', 'gmapsbase')"
+                conditions: "kind not in ('carto', 'tiled', 'background', 'gmapsbase', 'wms')"
 
   plugin :association_dependencies, :layers => :nullify
 

@@ -125,7 +125,7 @@ div.map {
 
   div.dropdown.basemap {
 
-    width: 861px;
+    width: 646px;
     border: 1px solid #999999;
 
     .custom {
@@ -149,6 +149,17 @@ div.map {
 
     ul li {
 
+      &.wms {
+        .thumb {
+          background-size:auto;
+          background: image-url("icons/wms.png") no-repeat center center;
+        }
+
+        a {
+          line-height: 24px;
+        }
+      }
+
       &.selected .name { color: #7B7B7B; }
 
       &.hidden { display: none; }
@@ -169,8 +180,10 @@ div.map {
       & > a {
         display:block;
         padding: 11px 10px 11px 0;
+        height: 48px;
+        box-sizing: border-box;
 
-        line-height: normal;
+        line-height: 13px;
         @include clearfix();
 
         small { display:block; margin: 0 0 0 29px; font-size: 9px; color: #AAAAAA; }

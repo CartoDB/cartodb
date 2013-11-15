@@ -1,3 +1,20 @@
+2.5.2
+-----
+* Improvements
+  * WMS / TMS basemap import
+  * WMS Proxy Service implementation
+  * Better integration with MapBox basemaps
+
+* Fixed Bugs
+  * Basemap 404 should throw an error.
+  * CSS with exponents is not parsed correctly.
+  * Google maps layers should not have max/min zoom.
+  * Basemap distribution on the selector is wrong. It should have 3 columns in total.
+  * Geocoding error on tables with double-quoted strings.
+  * Fixed convert_to_cartodb_type spec.
+  * When the geocoder process fails, the progress bar is hidden but no error message is shown up. 
+  * Dialog to load a marker is the same than to import a file.
+
 2.5.1
 -----
 * Improvements 
@@ -35,6 +52,7 @@
   * Clean headers from tiler/varnish/nginx.
   * Created support dialog in embed page when torque layer is applied.
   * Added cartodb:test:prepare rake task and document its usage for testing.
+  * User configuration change: sql_api config names normalization.
 
 * Fixed Bugs
   * Embed layer selector should show torque layers.

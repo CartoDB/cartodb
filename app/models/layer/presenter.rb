@@ -58,7 +58,7 @@ module CartoDB
       attr_reader :layer, :options, :configuration
 
       def base?(layer)
-        ['tiled', 'background', 'gmapsbase'].include? layer.kind
+        ['tiled', 'background', 'gmapsbase', 'wms'].include? layer.kind
       end #base?
 
       def torque?(layer)

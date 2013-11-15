@@ -35,7 +35,7 @@ describe String do
       "character varying(20)".convert_to_cartodb_type.should == "string"
     end
     it "should convert timestamp to date" do
-      "timestamp".convert_to_cartodb_type.should == "date"
+      "timestamp".convert_to_cartodb_type.should == "timestamp"
     end
     it "should convert timestamp without time zone to date" do
       "timestamp without time zone".convert_to_cartodb_type.should == "date"
@@ -52,7 +52,7 @@ describe String do
       "string".convert_to_db_type.should == "text"
     end
     it "should convert date to timestamp" do
-      "date".convert_to_db_type.should == "timestamp"
+      "date".convert_to_db_type.should == "timestamptz"
     end
     it "should convert boolean to boolean" do
       "boolean".convert_to_db_type.should == "boolean"

@@ -26,11 +26,11 @@ describe("geo.map", function() {
     it("should unset maxzoom", function() {
       var layer = new cdb.geo.GMapsBaseLayer();
 
-      layer.set('maxZoom', 40)
-      expect(layer.get('maxZoom')).toEqual(undefined);
+      layer.set('maxZoom', 10)
+      expect(layer.get('maxZoom')).toEqual(40);
 
-      layer.set({'maxZoom': 40 })
-      expect(layer.get('maxZoom')).toEqual(undefined);
+      layer.set({'maxZoom': 10 })
+      expect(layer.get('maxZoom')).toEqual(40);
     });
 
   });

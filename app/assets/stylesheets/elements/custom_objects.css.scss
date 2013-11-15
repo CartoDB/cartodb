@@ -11,10 +11,10 @@
    */
 
   @import "compass";
-  @import "../common/sprites";
+  
   @import "../common/mixins";
   @import "../common/vars";
-
+  @import "../elements/elements-sprite";
 
   // HORIZONTAL SLIDER (SPINNER)
 
@@ -106,7 +106,7 @@
         border:1px solid rgba(0,0,0,0.2);
       }
       &.image-color {
-        @include icons-sprite(image_color);
+        @include elements-sprite(image_color);
       }
     }
 
@@ -295,7 +295,7 @@
       width: 10px;
       margin-right: 5px;
       margin-top: -2px;
-      @include icons-sprite(image_fill);
+      @include elements-sprite(image_fill);
     }
   }
 
@@ -529,7 +529,7 @@
         left:1px;
         width:9px;
         height:8px;
-        @include icons-sprite(checkbox);
+        @include elements-sprite(checkbox);
       }
     }
 

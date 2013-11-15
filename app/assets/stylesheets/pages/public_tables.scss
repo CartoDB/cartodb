@@ -1,7 +1,8 @@
 @import "compass";
 @import "../common/vars";
-@import "../common/sprites";
 @import "../common/mixins";
+@import "../common/common-sprite";
+@import "../dashboard/dashboard-sprite";
 
 .tipsy { font-size: 13px;}
 
@@ -16,7 +17,7 @@ article.public_tables {
   i {
     @include inline-block();
     @include size(23px, 17px);
-    @include icons-sprite(t);
+    @include dashboard-sprite(t);
 
     margin: 0 7px 5px 0;
   }
@@ -136,7 +137,7 @@ article.public_tables {
       margin: auto;
 
       @include size(35px);
-      @include icons-sprite(plus_big, $offset-x: 5px, $offset-y: 5px);
+      @include common-sprite(plus_big, $offset-x: 5px, $offset-y: 5px);
       @include text-indent();
 
       @include simple-transition(opacity);
@@ -158,7 +159,7 @@ article.public_tables {
     }
 
     a.copy {
-      @include icons-sprite(prohibited, $offset-x: 4px, $offset-y: 5px);
+      @include dashboard-sprite(prohibited, $offset-x: 4px, $offset-y: 5px);
       &:hover {cursor:default;}
     }
   }

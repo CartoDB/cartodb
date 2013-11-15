@@ -4,8 +4,8 @@
  */
 
 @import "compass";
-@import "common/sprites";
-@import "common/mixins";
+@import "../common/common-sprite";
+@import "../common/mixins";
 
 .new_visualization_dialog {
   width: 200px;
@@ -31,10 +31,10 @@
 
       .remove {
         float: right;
-        @include icons-sprite(remove_filter);
+        @include common-sprite(close_grey);
         @include size(12px);
 
-        &:hover { @include icons-sprite(remove_filter, $offset_y:-12px); }
+        &:hover { @include common-sprite(close_grey, $offset_y:-12px); }
       }
     }
   }

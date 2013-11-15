@@ -5,7 +5,7 @@
    */
 
   @import "compass";
-  @import "../common/sprites";
+  @import "../common/common-sprite";
   @import "../common/mixins";
 
   .flash {
@@ -20,10 +20,10 @@
       top:24px;
       width:13px;
       height:13px;
-      @include icons-sprite(close_grey);
+      @include common-sprite(close_grey);
       @include text-indent();
       
-      &:hover {@include icons-sprite(close_grey, $offset-y: -13px);}
-      &:active {@include icons-sprite(close_grey, $offset-y: -26px);}
+      &:hover {@include common-sprite(close_grey, $offset-y: -13px);}
+      &:active {@include common-sprite(close_grey, $offset-y: -26px);}
     }
   }

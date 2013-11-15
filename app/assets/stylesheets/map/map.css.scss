@@ -155,7 +155,9 @@ div.map {
           background: image-url("icons/wms.png") no-repeat center center;
         }
 
-        a { line-height: 24px; }
+        a {
+          line-height: 24px;
+        }
       }
 
       &.selected .name { color: #7B7B7B; }
@@ -178,6 +180,8 @@ div.map {
       & > a {
         display:block;
         padding: 11px 10px 11px 0;
+        height: 48px;
+        box-sizing: border-box;
 
         line-height: normal;
         @include clearfix();

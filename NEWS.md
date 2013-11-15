@@ -53,6 +53,11 @@
   * Created support dialog in embed page when torque layer is applied.
   * Added cartodb:test:prepare rake task and document its usage for testing.
   * User configuration change: sql_api config names normalization.
+    Change the following sql_api parameters in the config/app_config.yml file in current installations:
+    - sql_api_protocol -> protocol
+    - sql_api_domain -> domain
+    - sql_api_endpoint -> endpoint
+    - sql_api_port -> port
 
 * Fixed Bugs
   * Embed layer selector should show torque layers.

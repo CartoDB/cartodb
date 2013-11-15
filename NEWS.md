@@ -13,6 +13,7 @@
   * Geocoding error on tables with double-quoted strings.
   * Fixed convert_to_cartodb_type spec.
   * When the geocoder process fails, the progress bar is hidden but no error message is shown up. 
+  * Dialog to load a marker is the same than to import a file.
 
 2.5.1
 -----

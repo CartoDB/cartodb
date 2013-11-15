@@ -3,10 +3,11 @@
  * Header of CartoDB
  */
 
+
 @import "compass";
-@import "mixins";
-@import "sprites";
-@import "vars";
+@import "./mixins";
+@import "./common-sprite";
+@import "./vars";
 
 $text-shadow-color: rgba(black,0.25);
 
@@ -47,9 +48,9 @@ header { // general header
       @include inline-block();
       width:93px;
       height:18px;
-      @include icons-sprite(cartodb);
+      @include common-sprite(cartodb);
       @include text-indent();
-      &:focus,&:hover {outline:none; @include icons-sprite(cartodb,$offset-y:-19px)}
+      &:focus,&:hover {outline:none; @include common-sprite(cartodb,$offset-y:-19px)}
     }
   }
 
@@ -169,10 +170,10 @@ header { // general header
           width:15px;
           height:15px;
           border:none;
-          @include icons-sprite(lens);
+          @include common-sprite(lens);
           @include text-indent();
-          &:focus {outline:none; @include icons-sprite(lens, $offset-y:-15px);}
-          &:hover {cursor:pointer; @include icons-sprite(lens, $offset-y:-15px);}
+          &:focus {outline:none; @include common-sprite(lens, $offset-y:-15px);}
+          &:hover {cursor:pointer; @include common-sprite(lens, $offset-y:-15px);}
         }
       }
     }

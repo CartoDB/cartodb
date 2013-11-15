@@ -1,8 +1,8 @@
 @import "compass";
-@import "mixins";
-@import "fonts";
-@import "sprites";
-@import "vars";
+@import "./vars";
+@import "./mixins";
+@import "./fonts";
+@import "./common-sprite";
 
 div.search {
   position:absolute;
@@ -46,7 +46,7 @@ div.search {
     display:block;
     @include size(15px);
     @include inline-block();
-    @include icons-sprite(lens_blue);
+    @include common-sprite(lens_blue);
   }
 
   .filter {

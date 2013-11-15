@@ -1,5 +1,5 @@
 @import "compass";
 
 /*SegoUI*/
-// @include font-face("Segoe UI Bold", font-files("SEGOEUIB.ttf"), "SEGOEUIB.eot", bold, normal);
-// @include font-face("Segoe UI Bold Italic", font-files("SEGOEUIZ.ttf"), "SEGOEUIZ.eot", bold, italic);
+@include font-face("Segoe UI Bold", font-files("SEGOEUIB.ttf"), "SEGOEUIB.eot", bold, normal);
+@include font-face("Segoe UI Bold Italic", font-files("SEGOEUIZ.ttf"), "SEGOEUIZ.eot", bold, italic);

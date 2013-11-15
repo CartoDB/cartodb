@@ -1,6 +1,6 @@
-// cartodb.js version: 3.3.02
+// cartodb.js version: 3.3.03
 // uncompressed version: cartodb.uncompressed.js
-// sha: beebbf3dc2d83cfae923fb97bcc9c62d1c2252dd
+// sha: 6e7421e3ef8782f728a376aabc7b453ebdaa6325
 (function() {
   var root = this;
 
@@ -20429,7 +20429,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.3.02';
+    cdb.VERSION = '3.3.03';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -21621,16 +21621,19 @@ cdb.geo.GMapsBaseLayer = cdb.geo.MapLayer.extend({
     style: null
   },
 
+  // Overwrite the set method to unset maxZoom from the layer
   set: function(key, value, options) {
+
     if (key && _.isObject(key)) {
       delete key.maxZoom
-    } else {
-      if (key === 'maxZoom') {
-        arguments[1] = undefined;
-      }
+    } else if (key === 'maxZoom') {
+      value = undefined;
     }
-    cdb.geo.MapLayer.prototype.set.apply(this, arguments);
+
+    return cdb.geo.MapLayer.prototype.set.apply(this, arguments);
+
   }
+
 });
 
 /**

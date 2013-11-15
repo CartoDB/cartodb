@@ -1,6 +1,6 @@
-// cartodb.js version: 3.3.03
+// cartodb.js version: 3.3.04
 // uncompressed version: cartodb.uncompressed.js
-// sha: 6e7421e3ef8782f728a376aabc7b453ebdaa6325
+// sha: d437cf01f4c07f8a5d2c1215112b46c88c8c7c49
 (function() {
   var root = this;
 
@@ -20429,7 +20429,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.3.03';
+    cdb.VERSION = '3.3.04';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -21621,13 +21621,13 @@ cdb.geo.GMapsBaseLayer = cdb.geo.MapLayer.extend({
     style: null
   },
 
-  // Overwrite the set method to unset maxZoom from the layer
+  // Overwrites the set method to 'unset' the maxZoom
   set: function(key, value, options) {
 
     if (key && _.isObject(key)) {
-      delete key.maxZoom
+      key.maxZoom = 40;
     } else if (key === 'maxZoom') {
-      value = undefined;
+      value = 40;
     }
 
     return cdb.geo.MapLayer.prototype.set.apply(this, arguments);

@@ -104,6 +104,7 @@ cdb.geo.GMapsBaseLayer = cdb.geo.MapLayer.extend({
     style: null
   },
 
+  // Overwrite the set method to unset maxZoom from the layer
   set: function(key, value, options) {
 
     if (key && _.isObject(key)) {
@@ -112,7 +113,7 @@ cdb.geo.GMapsBaseLayer = cdb.geo.MapLayer.extend({
       value = undefined;
     }
 
-    cdb.geo.MapLayer.prototype.set.call(this, key, value, options);
+    return cdb.geo.MapLayer.prototype.set.apply(this, arguments);
 
   }
 

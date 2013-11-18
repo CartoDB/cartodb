@@ -104,7 +104,7 @@ feature 'Dashboard' do
 
     click_on 'Regenerate Api key'
 
-    page.should have_content @user.get_map_key
+    page.should have_content @user.api_key
 
     click_on 'OAUTH'
 

@@ -18,6 +18,14 @@ describe User do
     CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
   end
 
+  it "should set a default database_host" do
+    @user.database_host.should eq 'localhost'
+  end
+
+  it "should set a default api_key" do
+    @user.reload.api_key.should_not be_blank
+  end
+
   it "should set up a user after create" do
     @new_user.save
     @new_user.reload
@@ -448,16 +456,22 @@ describe User do
     @user.key.should == "rails:users:#{@user.username}"
   end
 
-  it "should be able to store the users id and database name in redis" do
+  it "replicates some user metadata in redis" do
     @user.save_metadata.should be_true
     $users_metadata.HGET(@user.key, 'id').should == @user.id.to_s
     $users_metadata.HGET(@user.key, 'database_name').should == @user.database_name
     $users_metadata.HGET(@user.key, 'database_password').should == @user.database_password
+    $users_metadata.HGET(@user.key, 'database_host').should == @user.database_host
+    $users_metadata.HGET(@user.key, 'map_key').should == @user.api_key
   end
 
   it "should store its metadata automatically after creation" do
-    $users_metadata.HGET(@user.key, 'id').should == @user.id.to_s
-    $users_metadata.HGET(@user.key, 'database_name').should == @user.database_name
+    user = FactoryGirl.create :user
+    $users_metadata.HGET(user.key, 'id').should == user.id.to_s
+    $users_metadata.HGET(user.key, 'database_name').should == user.database_name
+    $users_metadata.HGET(user.key, 'database_password').should == user.database_password
+    $users_metadata.HGET(user.key, 'database_host').should == user.database_host
+    $users_metadata.HGET(user.key, 'map_key').should == user.api_key
   end
 
   it "should remove its metadata from redis after deletion" do

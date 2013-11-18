@@ -456,10 +456,11 @@ describe User do
     @user.key.should == "rails:users:#{@user.username}"
   end
 
-  it "replicates some user metadata in redis" do
-    @user.save_metadata.should be_true
+  it "replicates some user metadata in redis after saving" do
+    @user.stubs(:database_name).returns('wadus')
+    @user.save
     $users_metadata.HGET(@user.key, 'id').should == @user.id.to_s
-    $users_metadata.HGET(@user.key, 'database_name').should == @user.database_name
+    $users_metadata.HGET(@user.key, 'database_name').should == 'wadus'
     $users_metadata.HGET(@user.key, 'database_password').should == @user.database_password
     $users_metadata.HGET(@user.key, 'database_host').should == @user.database_host
     $users_metadata.HGET(@user.key, 'map_key').should == @user.api_key
@@ -472,6 +473,10 @@ describe User do
     $users_metadata.HGET(user.key, 'database_password').should == user.database_password
     $users_metadata.HGET(user.key, 'database_host').should == user.database_host
     $users_metadata.HGET(user.key, 'map_key').should == user.api_key
+  end
+
+  it "should not regenerate the api_key after saving" do
+    expect { @user.save }.to_not change { @user.api_key }
   end
 
   it "should remove its metadata from redis after deletion" do

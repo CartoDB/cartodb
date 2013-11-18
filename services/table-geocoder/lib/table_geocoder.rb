@@ -130,6 +130,14 @@ module CartoDB
       })
     rescue Sequel::DatabaseError => e
       raise unless e.message =~ /column .* of relation .* already exists/
+      cast_georef_status_column
+    end
+
+    def cast_georef_status_column
+      connection.run(%Q{
+        ALTER TABLE #{table_name} ALTER COLUMN cartodb_georef_status 
+        TYPE boolean USING cast(cartodb_georef_status as boolean)
+      })
     end
 
     def temp_table_name

@@ -138,6 +138,8 @@ module CartoDB
         ALTER TABLE #{table_name} ALTER COLUMN cartodb_georef_status 
         TYPE boolean USING cast(cartodb_georef_status as boolean)
       })
+    rescue => e
+      raise "Error converting cartodb_georef_status to boolean, please, convert it manually or remove it."
     end
 
     def temp_table_name

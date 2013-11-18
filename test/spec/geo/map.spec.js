@@ -27,10 +27,10 @@ describe("geo.map", function() {
       var layer = new cdb.geo.GMapsBaseLayer();
 
       layer.set('maxZoom', 10)
-      expect(layer.get('maxZoom')).toEqual(undefined);
+      expect(layer.get('maxZoom')).toEqual(40);
 
       layer.set({'maxZoom': 10 })
-      expect(layer.get('maxZoom')).toEqual(undefined);
+      expect(layer.get('maxZoom')).toEqual(40);
     });
 
   });

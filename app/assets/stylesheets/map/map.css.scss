@@ -365,6 +365,7 @@ div.map {
     @include transform-style("linear");
     @include transition-property("margin-right");
     @include transition-duration(300ms);
+    z-index: 10001;
 
     div.cartodb-legend {
       display:none;
@@ -391,6 +392,7 @@ div.map {
       font-weight: normal;
     }
 
+    z-index: 10001;
   }
 
   // Zoom info

@@ -8,15 +8,22 @@
 // You can override them before you import this file.
 $common-sprite-base-class: ".common-sprite" !default;
 $common-sprite-dimensions: false !default;
-$common-position: 0% !default;
-$common-spacing: 0 !default;
-$common-repeat: no-repeat !default;
- 
+
 $common-sprites: sprite-map("sprites/common/*.png",
-  $position: $common-position,
-  $spacing: $common-spacing,
-  $repeat: $common-repeat,
-  $readonly-spacing: 0);
+  $position:                              0%,
+  $spacing:                               0,
+  $repeat:                                no-repeat,
+  $readonly-spacing:                      0,
+  $common-badge_default-spacing:          20px,
+  $common-badge_free_server-spacing:      20px,
+  $common-badge_magellan-spacing:         20px,
+  $common-badge_john_snow-spacing:        20px,
+  $common-badge_coronelli-spacing:        20px,
+  $common-badge_dedicated_server-spacing: 20px,
+  $common-badge_mercator-spacing:         20px,
+  $common-plus_big-spacing:               11px,
+  $common-file_type-spacing:              10px
+);
  
 // All sprites should extend this class
 // The common-sprite mixin will do so for you.

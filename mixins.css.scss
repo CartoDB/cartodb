@@ -3,7 +3,10 @@
  * Lovely help functions
  */
 
-@import "compass";
+@import "compass/css3/box-sizing";
+@import "compass/css3/border-radius";
+@import "compass/css3/box-shadow";
+@import "compass/css3/transition";
 
 @mixin text-indent() {
   text-indent:-9999px;
@@ -46,12 +49,6 @@
   -moz-box-shadow:0 0 $size $glow rgba(255, 255, 255, $opacity); /* Firefox v3.5+ */
   -webkit-box-shadow:0 0 $size $glow rgba(255, 255, 255, $opacity); /* Safari v3.0+ and by Chrome v0.2+ */
   box-shadow:0 0 $size $glow rgba(255, 255, 255, $opacity); /* Firefox v4.0+ , Safari v5.1+ , Chrome v10.0+  and by Opera v10.5+ */
-}
-
-@mixin ellipsis() {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 @mixin size($width, $height:$width) {

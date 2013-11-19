@@ -2,7 +2,9 @@
  * Subheader styles
  */
 
-@import "compass";
+@import "compass/css3/inline-block";
+@import "compass/css3/transform";
+@import "compass/css3/images";
 @import "./common-sprite";
 @import "./mixins";
 

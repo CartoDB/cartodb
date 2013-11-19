@@ -3,8 +3,10 @@
  * Header of CartoDB
  */
 
-
-@import "compass";
+@import "compass/css3/inline-block";
+@import "compass/css3/images";
+@import "compass/css3/transform";
+@import "compass/css3/text-shadow";
 @import "./mixins";
 @import "./common-sprite";
 @import "./vars";

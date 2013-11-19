@@ -4,7 +4,14 @@
    * - Green, grey and disabled
    */
 
-  @import "compass";
+  @import "compass/css3/box-shadow";
+  @import "compass/css3/border-radius";
+  @import "compass/css3/inline-block";
+  @import "compass/css3/images";
+  @import "compass/css3/transform";
+  @import "compass/css3/transition";
+  @import "compass/css3/opacity";
+  @import "compass/css3/box-sizing";
   @import "common/vars";
 
   /*

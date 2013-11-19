@@ -522,6 +522,8 @@ cdb.geo.ui.StackedLegend = cdb.core.View.extend({
 
   },
 
+  //TODO: change this method to
+  // getLegendByIndex
   getLayerByIndex: function(index) {
     if (!this._layerByIndex) {
       this._layerByIndex = {};

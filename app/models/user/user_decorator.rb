@@ -41,7 +41,8 @@ module CartoDB
           import_quota: self.import_quota,
           remove_logo: self.remove_logo?,
           sync_tables: self.sync_tables_enabled
-        }
+        },
+        notification: self.notification
       }
 
       if !options[:extended]

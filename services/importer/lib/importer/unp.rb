@@ -152,9 +152,12 @@ module CartoDB
       def split(source_files)
         source_files.flat_map { |source_file|
           splitter = splitter_for(source_file)
-          return [source_file] unless splitter
-          splitter.new(source_file, temporary_directory)
-            .run.source_files
+          if splitter
+            splitter.new(source_file, temporary_directory)
+              .run.source_files
+          else
+            source_file
+          end
         }
       end
 

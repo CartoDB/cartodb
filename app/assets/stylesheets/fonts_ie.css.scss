@@ -1,8 +1,4 @@
-/*
- *= require_self
-*/
-
-@import "compass";
+@import "compass/css3/font-face";
 
 /*SEGOE UI*/
 @include font-face("Segoe UI Bold", font-files("SEGOEUIB.woff", "SEGOEUIB.ttf"), "SEGOEUIB.eot", bold, normal);

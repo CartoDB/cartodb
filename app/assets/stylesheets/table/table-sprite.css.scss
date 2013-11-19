@@ -8,15 +8,18 @@
 // You can override them before you import this file.
 $table-sprite-base-class: ".table-sprite" !default;
 $table-sprite-dimensions: false !default;
-$table-position: 0% !default;
-$table-spacing: 0 !default;
-$table-repeat: no-repeat !default;
  
 $table-sprites: sprite-map("sprites/table/*.png",
-  $position: $table-position,
-  $spacing: $table-spacing,
-  $repeat: $table-repeat,
-  $readonly-spacing: 0);
+  $position:                              0%,
+  $spacing:                               0,
+  $repeat:                                no-repeat,
+  $readonly-spacing:                      0,
+  $table-infowindow_panel_icons-spacing:  20px,
+  $table-download_dark-spacing:           1px,
+  $table-download_blue-spacing:           1px,
+  $table-drag_points-spacing:             40px,
+  $table-unredo-spacing:                  15px
+);
  
 // All sprites should extend this class
 // The table-sprite mixin will do so for you.

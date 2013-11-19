@@ -10,8 +10,11 @@
    * - Rounded white button
    */
 
-  @import "compass";
-  
+
+  @import "compass/css3/inline-block";
+  @import "compass/css3/images";
+  @import "compass/css3/opacity";
+  @import "compass/css3/transform";
   @import "../common/mixins";
   @import "../common/vars";
   @import "../elements/elements-sprite";

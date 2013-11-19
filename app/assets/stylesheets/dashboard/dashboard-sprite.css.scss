@@ -8,15 +8,18 @@
 // You can override them before you import this file.
 $dashboard-sprite-base-class: ".dashboard-sprite" !default;
 $dashboard-sprite-dimensions: false !default;
-$dashboard-position: 0% !default;
-$dashboard-spacing: 0 !default;
-$dashboard-repeat: no-repeat !default;
  
 $dashboard-sprites: sprite-map("sprites/dashboard/*.png",
-  $position: $dashboard-position,
-  $spacing: $dashboard-spacing,
-  $repeat: $dashboard-repeat,
-  $readonly-spacing: 0);
+  $position:                                  0%,
+  $spacing:                                   0,
+  $repeat:                                    no-repeat,
+  $readonly-spacing:                          0,
+  $dashboard-paginator_arrows-spacing:        10px,
+  $dashboard-square-spacing:                  35px,
+  $dashboard-prohibited-spacing:              5px,
+  $dashboard-download_dataset-spacing:        40px,
+  $dashboard-download_dataset_people-spacing: 40px
+);
  
 // All sprites should extend this class
 // The dashboard-sprite mixin will do so for you.

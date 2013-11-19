@@ -4,9 +4,10 @@
  *  Styles for basemap chooser dialog
  */
 
-@import "compass";
+
 @import "../common/vars";
 @import "../common/forms";
+@import "../common/mixins";
 @import "../common/common-sprite";
 
 // Upload tabs
@@ -160,7 +161,7 @@
       margin: 5px 0 3px 0;
       width: 300px;
       line-height: normal;
-      @include ellipsis();
+      @include text-overflow();
     }
 
     p {

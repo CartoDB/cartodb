@@ -3,7 +3,13 @@
    * List of tables and visualizations for your dashboard or public tables
    */
 
-  @import "compass";
+  // @import "compass/css3/box-shadow";
+  // @import "compass/css3/border-radius";
+  // @import "compass/css3/inline-block";
+  // @import "compass/css3/box-sizing";
+  // @import "compass/css3/opacity";
+  // @import "compass/css3/transition";
+  @import "compass/css3/text-shadow";
   @import "../common/mixins";
   @import "../common/fonts";
   @import "../common/vars";
@@ -289,12 +295,12 @@
           }
 
           &:hover .plus {
-            @include common-sprite(plus_big, $offset-y:-24px);
+            @include common-sprite(plus_big, $offset-y:-30px);
           }
 
           &:active .plus {
             margin-top:-11px;
-            @include common-sprite(plus_big, $offset-y:-24px);
+            @include common-sprite(plus_big, $offset-y:-30px);
           }
         }
       }
@@ -492,7 +498,7 @@
               a {
 
                 @include inline-block();
-                @include ellipsis();
+                @include text-overflow();
                 width: 200px;
                 line-height: 110%;
 
@@ -727,7 +733,7 @@
               & > .right { width:420px; }
 
               & > .left  p {
-                @include ellipsis();
+                @include text-overflow();
               }
 
               hgroup {

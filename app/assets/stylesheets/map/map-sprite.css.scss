@@ -9,15 +9,16 @@
 // You can override them before you import this file.
 $map-sprite-base-class: ".map-sprite" !default;
 $map-sprite-dimensions: false !default;
-$map-position: 0% !default;
-$map-spacing: 0 !default;
-$map-repeat: no-repeat !default;
  
 $map-sprites: sprite-map("sprites/map/*.png",
-  $position: $map-position,
-  $spacing: $map-spacing,
-  $repeat: $map-repeat,
-  $readonly-spacing: 0);
+  $position:                        0%,
+  $spacing:                         0,
+  $repeat:                          no-repeat,
+  $readonly-spacing:                0,
+  $map-wms-spacing:                 5px,
+  $map-gmaps_gray_roadmap-spacing:  5px,
+  $map-plus-spacing:                11px
+);
  
 // All sprites should extend this class
 // The map-sprite mixin will do so for you.

@@ -1,4 +1,6 @@
-@import "compass";
+@import "compass/css3/inline-block";
+@import "compass/css3/transition";
+@import "compass/utilities/general/clearfix";
 @import "../common/vars";
 @import "../common/mixins";
 @import "../common/common-sprite";

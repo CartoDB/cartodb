@@ -46,16 +46,16 @@ and code.
 
 # What does CartoDB depend on? #
 
-  - Ubuntu 10.04
+  - Ubuntu 12.04
   - Postgres 9.1.x
-  - Redis 2.2+
-  - Ruby 1.9.2
-  - NodeJS 0.8.x
+  - Redis 2.6
+  - Ruby 1.9.3
+  - NodeJS 0.8.9
   - CartoDB-SQL-API
-  - GEOS 3.3.4
-  - GDAL 1.9.0
-  - PostGIS 2.0.x
-  - Mapnik 2.1.1
+  - GEOS 3.3.8
+  - GDAL 1.10.1
+  - PostGIS 2.1
+  - Mapnik 2.2
   - Windshaft-cartodb
   - Varnish 2.1+
 

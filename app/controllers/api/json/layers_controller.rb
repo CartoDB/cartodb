@@ -21,12 +21,7 @@ class Api::Json::LayersController < Api::ApplicationController
       format.tilejson do 
        render :text => "#{params[:callback]}( #{@layer.to_tilejson} )"
       end
-      format.json do 
-        render_jsonp(CartoDB::Layer::Presenter.new(
-            @layer, { full: false }, Cartodb.config
-          ).to_poro
-        )
-      end
+      format.json { render_jsonp(@layer.to_json) }
     end
   end
 

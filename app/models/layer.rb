@@ -49,6 +49,13 @@ class Layer < Sequel::Model
     self.updated_at = Time.now
   end
 
+  def to_json(*args)
+    public_values.merge(
+      infowindow: JSON.parse(self.values[:infowindow]),
+      options:    JSON.parse(self.values[:options])
+    ).to_json(*args)
+  end
+
   def after_save
     super
     maps.each(&:invalidate_vizjson_varnish_cache)

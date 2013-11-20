@@ -15,6 +15,7 @@ module CartoDB
       DEFAULT_AVAILABLE_QUOTA = 2 ** 30
       LOADERS                 = [Loader, OsmLoader, TiffLoader]
       DEFAULT_LOADER          = Loader
+      UNKNOWN_ERROR_CODE      = 99999
 
       def initialize(pg_options, downloader, log=nil, available_quota=nil,
       unpacker=nil)
@@ -47,7 +48,7 @@ module CartoDB
       rescue => exception
         log.append exception.to_s
         log.append exception.backtrace
-        self.results.push(Result.new(error: error_for(exception.class)))
+        self.results.push(Result.new(error_code: error_for(exception.class)))
       end #run
       
       def import(source_file, job=nil, loader=nil)
@@ -134,7 +135,7 @@ module CartoDB
 
       def error_for(exception_klass=nil)
         return nil unless exception_klass
-        ERRORS_MAP.fetch(exception_klass, UnknownError)
+        ERRORS_MAP.fetch(exception_klass, UNKNOWN_ERROR_CODE)
       end #error_for
 
       def raise_if_over_storage_quota

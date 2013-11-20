@@ -1,4 +1,3 @@
-
 visjson
 =======
 
@@ -120,7 +119,33 @@ this is the spec for visjson:
             template_name: '...',
             template: 'html template'
          }
-       }
+       },
+       {
+         type: 'torque',
+         order: XX,
+         options: {
+            stat_tag: "d4a5c7e4-4ad6-11e3-ab17-3085a9a9563c",
+            tiler_protocol: "http",
+            tiler_domain: "cartodb.com",
+            tiler_port: "80",
+            sql_api_protocol: "http",
+            sql_api_domain: "cartodb.com",
+            sql_api_endpoint: "/api/v1/sql",
+            sql_api_port: 80,
+            cdn_url: {
+              http: "api.cartocdn.com",
+              https: "cartocdn.global.ssl.fastly.net"
+            },
+            query: null,
+            table_name: "sensor_log_2013_10_27_12_01",
+            user_name: "javi", // cartodb username
+            tile_style: "valid cartocss",
+            property: "cartodb_id",
+            torque-duration: 41,
+            torque-steps: "2048",
+            torque-blend-mode: "lighter"
+         }
+       },
      ],
 
      overlays: [{

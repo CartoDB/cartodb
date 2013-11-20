@@ -49,12 +49,31 @@ this is the spec for visjson:
      // default: []
      // contains the layers
      "layers": [
-       {
-         type: 'tilejson',
-         order: 0,
-         options: {
-         }
+      // xyz tiled
+      {
+       type: "tiled"
+       order: 0,
+       options: {
+          name: "CartoDB Flat Blue",
+          urlTemplate: "http://{s}.api.cartocdn.com/base-flatblue/{z}/{x}/{y}.png",
+          maxZoom: 10,
+          attribution: "©2013 CartoDB <a href='http://cartodb.com' target='_blank'>Terms of use</a>",
+         },
        },
+       
+       // plain color layer
+       {
+        order: 0,
+        type: "background"
+        options: {
+          color: "#eeeeee",
+          image: "",
+          maxZoom: 28,
+          id: 59811,
+        },
+       },
+       
+       // cartodb layer (deprecated)
        {
          type: 'cartodb',
          order: 1,
@@ -94,8 +113,10 @@ this is the spec for visjson:
             template: 'html template'
          }
        },
+       
+       // layergroup
        {
-         type: 'cartodb_layergroup',
+         type: 'layergroup',
          order: 1,
          options: {
             type: "CartoDBLayerGroup",
@@ -120,6 +141,8 @@ this is the spec for visjson:
             template: 'html template'
          }
        },
+       
+       // torque
        {
          type: 'torque',
          order: XX,

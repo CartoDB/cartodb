@@ -1558,8 +1558,9 @@ a.info {
         .remove {
           margin: 0 0 0 7px;
           @include inline-block();
-          @include size(12px);
+          @include size(13px);
           @include common-sprite(close_grey);
+          &:hover {@include common-sprite(close_grey, $offset-y:-13px);}
         }
 
         .form_combo {
@@ -1618,10 +1619,12 @@ a.info {
           display:block;
           @include opacity(0);
 
-          @include size(12px);
+          @include size(13px);
           @include position(21px, 30px, false, false);
           @include simple-transition(opacity, 150ms);
           @include common-sprite(close_grey);
+          
+          &:hover {@include common-sprite(close_grey, $offset-y:-13px);}
         }
       }
     }

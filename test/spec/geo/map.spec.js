@@ -17,6 +17,24 @@ describe("geo.map", function() {
 
   });
 
+  describe('GMapsBaseLayer', function() {
+    it("should be type GMapsBase", function() {
+      var layer = new cdb.geo.GMapsBaseLayer();
+      expect(layer.get('type')).toEqual("GMapsBase");
+    });
+
+    it("should unset maxzoom", function() {
+      var layer = new cdb.geo.GMapsBaseLayer();
+
+      layer.set('maxZoom', 10)
+      expect(layer.get('maxZoom')).toEqual(40);
+
+      layer.set({'maxZoom': 10 })
+      expect(layer.get('maxZoom')).toEqual(40);
+    });
+
+  });
+
   describe('TileLayer', function() {
     it("should be type tiled", function() {
       var layer = new cdb.geo.TileLayer();
@@ -49,7 +67,7 @@ describe("geo.map", function() {
       var layer2 = new cdb.geo.PlainLayer({});
       var layer3 = new cdb.geo.PlainLayer({});
       var layer4 = new cdb.geo.PlainLayer({});
-      
+
       expect(layer3.isEqual(layer4)).toBeTruthy();
       expect(layer1.isEqual(layer2)).not.toBeTruthy();
 

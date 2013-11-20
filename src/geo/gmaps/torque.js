@@ -31,6 +31,7 @@ var GMapsTorqueLayerView = function(layerModel, gmapsMap) {
         api_key: extra ? extra.map_key: ''
       },
       map: gmapsMap,
+      cartodb_logo: layerModel.get('cartodb_logo'),
       cdn_url: layerModel.get('no_cdn') ? null: (layerModel.get('cdn_url') || cdb.CDB_HOST)
   });
 
@@ -62,6 +63,13 @@ _.extend(
 
   refreshView: function() {
     //TODO: update screen
+  },
+
+  onAdd: function() {
+    torque.GMapsTorqueLayer.prototype.onAdd.apply(this);
+    // Add CartoDB logo
+    if (this.options.cartodb_logo != false)
+      cdb.geo.common.CartoDBLogo.addWadus({ left: 74, bottom:8 }, 2000, this.map.getDiv())
   },
 
   onTilesLoaded: function() {

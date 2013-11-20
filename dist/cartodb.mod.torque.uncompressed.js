@@ -6265,7 +6265,7 @@ exports.Profiler = Profiler;
               fields: queryData.fields
             });
           }
-        }, { parseJSON: true });
+        }, { parseJSON: true, no_cdn: true });
       });
     },
 
@@ -8785,6 +8785,7 @@ var GMapsTorqueLayerView = function(layerModel, gmapsMap) {
         api_key: extra ? extra.map_key: ''
       },
       map: gmapsMap,
+      cartodb_logo: layerModel.get('cartodb_logo'),
       cdn_url: layerModel.get('no_cdn') ? null: (layerModel.get('cdn_url') || cdb.CDB_HOST)
   });
 
@@ -8816,6 +8817,13 @@ _.extend(
 
   refreshView: function() {
     //TODO: update screen
+  },
+
+  onAdd: function() {
+    torque.GMapsTorqueLayer.prototype.onAdd.apply(this);
+    // Add CartoDB logo
+    if (this.options.cartodb_logo != false)
+      cdb.geo.common.CartoDBLogo.addWadus({ left: 74, bottom:8 }, 2000, this.map.getDiv())
   },
 
   onTilesLoaded: function() {
@@ -8866,6 +8874,7 @@ var LeafLetTorqueLayer = L.TorqueLayer.extend({
       extra_params: {
         api_key: extra ? extra.map_key: ''
       },
+      cartodb_logo: layerModel.get('cartodb_logo'),
       cdn_url: layerModel.get('no_cdn') ? null: (layerModel.get('cdn_url') || cdb.CDB_HOST)
     });
 
@@ -8883,6 +8892,13 @@ var LeafLetTorqueLayer = L.TorqueLayer.extend({
       this.trigger('load');
     }, this);
 
+  },
+
+  onAdd: function(map) {
+    L.TorqueLayer.prototype.onAdd.apply(this, [map]);
+    // Add CartoDB logo
+    if (this.options.cartodb_logo != false)
+      cdb.geo.common.CartoDBLogo.addWadus({ left:8, bottom:8 }, 0, map._container)
   },
 
   _modelUpdated: function(model) {
@@ -8933,11 +8949,15 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
   },
 
   initialize: function() {
-    _.bindAll(this, '_slide');
+    _.bindAll(this, '_stop', '_start', '_slide');
     var self = this;
     this.options.template = this.options.template || this.defaultTemplate;
     this.options.position = 'bottom|left';
     this.options.width = null;
+
+    // Control variable to know if the layer was
+    // running before touching the slider
+    this.wasRunning = false;
     this.torqueLayer = this.options.layer;
 
     // each time time changes, move the slider
@@ -8995,6 +9015,21 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
     this.torqueLayer.setStep(step);
   },
 
+  _start: function(e, ui) {
+    if(this.torqueLayer.isRunning()) {
+      this.wasRunning = true;
+      this.toggleTime();
+    }
+  },
+
+  _stop: function(e, ui) {
+    if (this.wasRunning) {
+      this.toggleTime()
+    }
+
+    this.wasRunning = false;
+  },
+
   _initSlider: function() {
     var torqueLayer = this.torqueLayer;
     var slider = this.$(".slider");
@@ -9004,6 +9039,8 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
       max: this.torqueLayer.options.steps,
       value: 0,
       step: 1,
+      stop: this._stop,
+      start: this._start,
       slide: this._slide
     });
   },

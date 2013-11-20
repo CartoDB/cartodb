@@ -271,7 +271,7 @@
     },
 
     invalidateSize: function() {
-      this.map_leaflet.invalidateSize();
+      this.map_leaflet.invalidateSize({ pan: false});
     }
 
   }, {

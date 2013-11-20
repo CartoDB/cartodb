@@ -86,6 +86,7 @@ examples
  - [Load a vector layer with Google Maps](http://cartodb.github.com/cartodb.js/examples/gmaps_vector.html)
  - [Load a vector layer with Leaflet](http://cartodb.github.com/cartodb.js/examples/leaflet_vector.html)
  - [Load a vector layer to Leaflet with hover effect](http://cartodb.github.com/cartodb.js/examples/leaflet_vector_hover.html)
+ - [Add cursor interaction without a visualization](http://cartodb.github.com/cartodb.js/examples/cursor_interaction.html)
 
 
 next steps

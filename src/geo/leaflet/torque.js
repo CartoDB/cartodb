@@ -34,6 +34,7 @@ var LeafLetTorqueLayer = L.TorqueLayer.extend({
       extra_params: {
         api_key: extra ? extra.map_key: ''
       },
+      cartodb_logo: layerModel.get('cartodb_logo'),
       cdn_url: layerModel.get('no_cdn') ? null: (layerModel.get('cdn_url') || cdb.CDB_HOST)
     });
 
@@ -51,6 +52,13 @@ var LeafLetTorqueLayer = L.TorqueLayer.extend({
       this.trigger('load');
     }, this);
 
+  },
+
+  onAdd: function(map) {
+    L.TorqueLayer.prototype.onAdd.apply(this, [map]);
+    // Add CartoDB logo
+    if (this.options.cartodb_logo != false)
+      cdb.geo.common.CartoDBLogo.addWadus({ left:8, bottom:8 }, 0, map._container)
   },
 
   _modelUpdated: function(model) {

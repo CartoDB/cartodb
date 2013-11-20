@@ -102,6 +102,7 @@ Layers.register('torque', function(vis, data) {
       data.tiler_port = 443;
     }
   }
+  data.cartodb_logo = vis.cartodb_logo == undefined ? data.cartodb_logo : vis.cartodb_logo;
   return new cdb.geo.TorqueLayer(data);
 });
 

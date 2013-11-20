@@ -102,7 +102,21 @@ cdb.geo.GMapsBaseLayer = cdb.geo.MapLayer.extend({
     type: 'GMapsBase',
     base_type: 'gray_roadmap',
     style: null
+  },
+
+  // Overwrites the set method to 'unset' the maxZoom
+  set: function(key, value, options) {
+
+    if (key && _.isObject(key)) {
+      key.maxZoom = 40;
+    } else if (key === 'maxZoom') {
+      value = 40;
+    }
+
+    return cdb.geo.MapLayer.prototype.set.apply(this, arguments);
+
   }
+
 });
 
 /**
@@ -245,7 +259,7 @@ cdb.geo.Map = cdb.core.Model.extend({
     center: [0, 0],
     zoom: 3,
     minZoom: 0,
-    maxZoom: 28,
+    maxZoom: 40,
     scrollwheel: true,
     provider: 'leaflet'
   },

@@ -1,3 +1,20 @@
+3.3.05 (15//11/2013)
+-----
+- fixed torque problems with cached sql requests #81
+
+3.3.03 (15//11/2013)
+-----
+- fixes a bug that prevented the triggering of callbacks after setting properties to cdb.geo.GMapsBaseLayer.
+
+3.3.02 (14//11/2013)
+-----
+- we don't set maxZoom in GMaps layers anymore.
+- adds support for WMS layers.
+
+3.3.01 (14//11/2013)
+-----
+- added CartoDB logo in torque layers
+
 3.3.00 (11//11/2013)
 -----
 - torque support

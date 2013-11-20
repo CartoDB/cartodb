@@ -1,10 +1,12 @@
 /*
- * Subheader for the CartoDB dashboard
+ * Subheader styles
  */
 
-@import "compass";
-@import "../common/sprites";
-@import "../common/mixins";
+@import "compass/css3/inline-block";
+@import "compass/css3/transform";
+@import "compass/css3/images";
+@import "./common-sprite";
+@import "./mixins";
 
 .tipsy.feed {
   line-height: 120%;
@@ -102,14 +104,14 @@ div.subheader {
             display: block;
             margin: 4px 0 0 0;
             @include size(93px, 74px);
-            @include icons-sprite(badge_default);
+            @include common-sprite(badge_default);
 
-            &.free      { @include icons-sprite(badge_free_server); }
-            &.magellan  { @include icons-sprite(badge_magellan); }
-            &.john_snow { @include icons-sprite(badge_john_snow); }
-            &.mercator  { @include icons-sprite(badge_mercator); }
-            &.coronelli { @include icons-sprite(badge_coronelli); }
-            &.dedicated { @include icons-sprite(badge_dedicated_server); }
+            &.free      { @include common-sprite(badge_free_server); }
+            &.magellan  { @include common-sprite(badge_magellan); }
+            &.john_snow { @include common-sprite(badge_john_snow); }
+            &.mercator  { @include common-sprite(badge_mercator); }
+            &.coronelli { @include common-sprite(badge_coronelli); }
+            &.dedicated { @include common-sprite(badge_dedicated_server); }
 
             &.coronelli, &.dedicated { top: -15px; }
           }
@@ -244,11 +246,11 @@ div.subheader {
         right: 0px;
         @include absolute-portrait-center(13px);
         @include size(13px);
-        @include icons-sprite(close_grey);
+        @include common-sprite(close_grey);
         @include text-indent();
 
-        &:hover {@include icons-sprite(close_grey, $offset-y: -13px);}
-        &:active {@include icons-sprite(close_grey, $offset-y: -26px);}
+        &:hover {@include common-sprite(close_grey, $offset-y: -13px);}
+        &:active {@include common-sprite(close_grey, $offset-y: -26px);}
 
       }
 

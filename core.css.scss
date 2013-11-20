@@ -4,9 +4,10 @@
    * - Section, aside, ..
    */
 
-  @import "compass";
+  @import "compass/css3/box-shadow";
+  @import "compass/css3/border-radius";
+  @import "compass/css3/opacity";
   @import "compass/reset";
-  @import "common/sprites";
   @import "common/vars";
 
 

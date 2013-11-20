@@ -1,7 +1,13 @@
 
-@import "compass";
-@import "common/vars";
-@import "common/sprites";
+@import "compass/css3/box-shadow";
+@import "compass/css3/border-radius";
+@import "compass/css3/inline-block";
+@import "compass/css3/images";
+@import "compass/css3/transform";
+@import "compass/css3/transition";
+@import "compass/css3/opacity";
+@import "./vars";
+@import "./common-sprite";
 
 @mixin default-input {
   input {
@@ -98,7 +104,7 @@
 
     // Sync and no-sync info
     &.sync, &.no-sync {
-      @include background(sprite($icons-sprites, wifi_icon, $offset-x:11px, $offset-y:5px) no-repeat #FFF7EA);
+      @include background(sprite($common-sprites, wifi_icon, $offset-x:11px, $offset-y:5px) no-repeat #FFF7EA);
     }
 
     // SYNC

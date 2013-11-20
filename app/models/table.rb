@@ -33,6 +33,7 @@ class Table < Sequel::Model(:user_tables)
                 join_table: :layers_user_tables,
                 left_key: :user_table_id, right_key: :layer_id,
                 reciprocal: :user_tables
+  one_to_one :automatic_geocoding
   plugin :association_dependencies, :map => :destroy, layers: :nullify
   plugin :dirty
 

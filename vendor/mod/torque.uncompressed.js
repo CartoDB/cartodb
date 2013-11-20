@@ -150,6 +150,52 @@ var _torque_reference_latest = {
             ]
         }
     },
+    "layer" : {
+        "buffer-size": {
+            "default-value": "0",
+            "type":"float",
+            "default-meaning": "No buffer will be used",
+            "doc": "Extra tolerance around the Layer extent (in pixels) used to when querying and (potentially) clipping the layer data during rendering"
+        },
+        "-torque-steps": {
+            "default-value": "128",
+            "type":"number",
+            "default-meaning": "the data is broken into 512 bins",
+            "doc": "Number of steps used in the animation. If the data contains a fewere number of total steps, the lesser value will be used."
+        },
+        "-torque-resolution": {
+            "default-value": "2",
+            "type":"number",
+            "default-meaning": "",
+            "doc": "Spatial resolution in pixels. A resolution of 1 means no spatial aggregation of the data. Any other resolution of N results in spatial aggregation into cells of NxN pixels. The value N must be power of 2"
+        },
+        "-torque-animation-duration": {
+            "default-value": "30",
+            "type":"number",
+            "default-meaning": "the animation lasts 30 seconds",
+            "doc": "Animation duration in seconds",
+        },
+        "-torque-aggregation-function": {
+            "default-value": "count(cartodb_id)",
+            "type": "string",
+            "default-meaning": "the value for each cell is the count of points in that cell",
+            "doc": "A function used to calculate a value from the aggregate data for each cell. See -torque-resolution",
+        },
+        "-torque-time-attribute": {
+            "default-value": "time",
+            "type": "string",
+            "default-meaning": "the data column in your table that is of a time based type",
+            "doc": "The table column that contains the time information used create the animation",
+        },
+        "-torque-data-aggregation": {
+            "default-value": "linear",
+            "type": [
+              "cumulative"
+            ],
+            "default-meaning": "previous values are discarded",
+            "doc": "A linear animation will discard previous values while a cumulative animation will accumulate them until it restarts",
+        }
+    },
     "symbolizers" : {
         "*": {
             "comp-op": {
@@ -470,6 +516,49 @@ exports.torque['torque-reference'] =  {
 }
 
 })(typeof exports === "undefined" ? this : exports);
+//
+// common functionallity for torque layers
+//
+
+(function(exports) {
+
+function TorqueLayer() {}
+
+TorqueLayer.prototype = {
+};
+
+TorqueLayer.optionsFromLayer = function(mapConfig) {
+  var opts = {};
+  if (!mapConfig) return opts;
+  var attrs = {
+    'buffer-size': 'buffer-size',
+    '-torque-steps': 'steps',
+    '-torque-resolution': 'resolution',
+    '-torque-animation-duration': 'animationDuration',
+    '-torque-aggregation-function': 'countby',
+    '-torque-time-attribute': 'column',
+    '-torque-data-aggregation': 'data_aggregation'
+  };
+  for (var i in attrs) {
+    var v = mapConfig.eval(i);
+    if (v !== undefined) {
+      var a = attrs[i];
+      opts[a] = v;
+    }
+  }
+  return opts;
+};
+
+TorqueLayer.optionsFromCartoCSS = function(cartocss) {
+  var shader = new carto.RendererJS().render(cartocss);
+  var mapConfig = shader.findLayer({ name: 'Map' });
+  return L.TorqueLayer.optionsFromLayer(mapConfig);
+};
+
+exports.torque.common = torque.common || {};
+exports.torque.common.TorqueLayer = TorqueLayer;
+
+})(typeof exports === "undefined" ? this : exports);
 (function(exports) {
 
   exports.torque = exports.torque || {};
@@ -599,7 +688,7 @@ Profiler.metrics = {};
 Profiler.get = function(name) {
   return Profiler.metrics[name] || {
     max: 0,
-    min: 10000000,
+    min: Number.MAX_VALUE,
     avg: 0,
     total: 0,
     count: 0,
@@ -762,21 +851,23 @@ exports.Profiler = Profiler;
       var x = new Uint8Array(rows.length);
       var y = new Uint8Array(rows.length);
 
+      var prof_mem = Profiler.metric('ProviderJSON:mem');
+      var prof_point_count = Profiler.metric('ProviderJSON:point_count');
+      var prof_process_time = Profiler.metric('ProviderJSON:process_time').start()
 
       // count number of dates
       var dates = 0;
-      var maxDateSlots = 0;
+      var maxDateSlots = -1;
       for (r = 0; r < rows.length; ++r) {
         var row = rows[r];
-        if(this.options.cumulative) {
-          for (var s = 1; s < row.vals__uint8.length; ++s) {
-           row.vals__uint8[s] += row.vals__uint8[s - 1];
-          }
-        }
         dates += row.dates__uint16.length;
         for(var d = 0; d < row.dates__uint16.length; ++d) {
           maxDateSlots = Math.max(maxDateSlots, row.dates__uint16[d]);
         }
+      }
+
+      if(this.options.cumulative) {
+        dates = maxDateSlots * rows.length;
       }
 
       // reserve memory for all the dates
@@ -785,20 +876,50 @@ exports.Profiler = Profiler;
       var renderData = new (this.options.valueDataType || Uint8Array)(dates);
       var renderDataPos = new Uint32Array(dates);
 
+      prof_mem.inc(
+        4 * maxDateSlots + // timeIndex
+        4 * maxDateSlots + // timeCount
+        dates + //renderData
+        dates * 4
+      ); //renderDataPos
+
+      prof_point_count.inc(rows.length);
+
       var rowsPerSlot = {};
 
       // precache pixel positions
       for (var r = 0; r < rows.length; ++r) {
         var row = rows[r];
         x[r] = row.x__uint8 * this.options.resolution;
-        y[r] = row.y__uint8 * this.options.resolution;
+        // fix value when it's in the tile EDGE
+        // TODO: this should be fixed in SQL query
+        if (row.y__uint8 === -1) {
+          y[r] = 0;
+        } else {
+          y[r] = row.y__uint8 * this.options.resolution;
+        }
 
         var dates = row.dates__uint16;
         var vals = row.vals__uint8;
+        var prev_val = 0;
         for (var j = 0, len = dates.length; j < len; ++j) {
             var rr = rowsPerSlot[dates[j]] || (rowsPerSlot[dates[j]] = []);
+            if(this.options.cumulative) {
+                vals[j] += prev_val;
+            }
+            prev_val = vals[j];
             rr.push([r, vals[j]]);
         }
+
+        // extend the latest to the end
+        if(this.options.cumulative) {
+          var lastDateSlot = dates[dates.length - 1];
+          for (var j = lastDateSlot; j < maxDateSlots; ++j) {
+            var rr = rowsPerSlot[j] || (rowsPerSlot[j] = []);
+            rr.push([r, prev_val]);
+          }
+        }
+
       }
 
       // for each timeslot search active buckets
@@ -822,6 +943,8 @@ exports.Profiler = Profiler;
         timeSlotIndex += c;
       }
 
+      prof_process_time.end();
+
       return {
         x: x,
         y: y,
@@ -833,7 +956,8 @@ exports.Profiler = Profiler;
         timeCount: timeCount,
         timeIndex: timeIndex,
         renderDataPos: renderDataPos,
-        renderData: renderData
+        renderData: renderData,
+        maxDate: maxDateSlots
       };
     },
 
@@ -940,6 +1064,7 @@ exports.Profiler = Profiler;
      * `zoom` quadtree zoom level
      */
     _getTileData: function(coord, zoom, callback) {
+      var prof_fetch_time = Profiler.metric('ProviderJSON:tile_fetch_time').start()
       this.table = this.options.table;
       var numTiles = 1 << zoom;
 
@@ -953,6 +1078,7 @@ exports.Profiler = Profiler;
         "WITH " +
         "par AS (" +
         "  SELECT CDB_XYZ_Resolution({zoom})*{resolution} as res" +
+        ",  256/{resolution} as tile_size" +
         ", CDB_XYZ_Extent({x}, {y}, {zoom}) as ext "  +
         ")," +
         "cte AS ( "+
@@ -964,11 +1090,14 @@ exports.Profiler = Profiler;
         "  GROUP BY g, d" +
         ") " +
         "" +
-        "SELECT least((st_x(g)-st_xmin(p.ext))/p.res, 255) x__uint8, " +
-        "       least((st_y(g)-st_ymin(p.ext))/p.res, 255) y__uint8," +
+        "SELECT (st_x(g)-st_xmin(p.ext))/p.res x__uint8, " +
+        "       (st_y(g)-st_ymin(p.ext))/p.res y__uint8," +
         " array_agg(c) vals__uint8," +
         " array_agg(d) dates__uint16" +
-        " FROM cte, par p GROUP BY x__uint8, y__uint8";
+        // the tile_size where are needed because the overlaps query in cte subquery includes the points
+        // in the left and bottom borders of the tile
+        " FROM cte, par p where (st_y(g)-st_ymin(p.ext))/p.res < tile_size and (st_x(g)-st_xmin(p.ext))/p.res < tile_size GROUP BY x__uint8, y__uint8";
+
 
       var query = format(sql, this.options, {
         zoom: zoom,
@@ -986,6 +1115,7 @@ exports.Profiler = Profiler;
         } else {
           callback(null);
         }
+        prof_fetch_time.end();
       });
     },
 
@@ -1002,6 +1132,38 @@ exports.Profiler = Profiler;
     setColumn: function(column, isTime) {
       this.options.column = column;
       this.options.is_time = isTime === undefined ? true: false;
+      this.reload();
+    },
+
+    setResolution: function(res) {
+      this.options.resolution = res;
+    },
+
+    // return true if tiles has been changed
+    setOptions: function(opt) {
+      var refresh = false;
+
+      if(opt.resolution !== undefined && opt.resolution !== this.options.resolution) {
+        this.options.resolution = opt.resolution;
+        refresh = true;
+      }
+
+      if(opt.steps !== undefined && opt.steps !== this.options.steps) {
+        this.setSteps(opt.steps, { silent: true });
+        refresh = true;
+      }
+
+      if(opt.column !== undefined && opt.column !== this.options.column) {
+        this.options.column = opt.column;
+        refresh = true;
+      }
+
+      if (refresh) this.reload();
+      return refresh;
+
+    },
+
+    reload: function() {
       this._ready = false;
       this._fetchKeySpan();
     },
@@ -1009,8 +1171,7 @@ exports.Profiler = Profiler;
     setSQL: function(sql) {
       if (this.options.sql != sql) {
         this.options.sql = sql;
-        this._ready = false;
-        this._fetchKeySpan();
+        this.reload();
       }
     },
 
@@ -1018,13 +1179,13 @@ exports.Profiler = Profiler;
       return Math.min(this.options.steps, this.options.data_steps);
     },
 
-    setSteps: function(steps) {
+    setSteps: function(steps, opt) {
+      opt = opt || {};
       if (this.options.steps !== steps) {
         this.options.steps = steps;
         this.options.step = (this.options.end - this.options.start)/this.getSteps();
         this.options.step = this.options.step || 1;
-        this._ready = false;
-        this._fetchKeySpan();
+        if (!opt.silent) this.reload();
       }
     },
 
@@ -1081,7 +1242,7 @@ exports.Profiler = Profiler;
               fields: queryData.fields
             });
           }
-        }, { parseJSON: true, no_cdn: true });
+        }, { parseJSON: true });
       });
     },
 
@@ -1595,7 +1756,6 @@ exports.Profiler = Profiler;
     this._ctx = canvas.getContext('2d');
     this._sprites = []; // sprites per layer
     this._shader = null;
-    this._trailsShader = null;
     //carto.tree.Reference.set(torque['torque-reference']);
     this.setCartoCSS(this.options.cartocss || DEFAULT_CARTOCSS);
   }
@@ -1612,8 +1772,13 @@ exports.Profiler = Profiler;
     //
     setCartoCSS: function(cartocss) {
       // clean sprites
+      this.setShader(new carto.RendererJS().render(cartocss));
+    },
+
+    setShader: function(shader) {
+      // clean sprites
       this._sprites = [];
-      this._cartoCssStyle = new carto.RendererJS().render(cartocss);
+      this._shader = shader;
     },
 
     //
@@ -1651,15 +1816,17 @@ exports.Profiler = Profiler;
     // renders all the layers (and frames for each layer) from cartocss
     //
     renderTile: function(tile, key) {
-      var layers = this._cartoCssStyle.getLayers();
+      var layers = this._shader.getLayers();
       for(var i = 0, n = layers.length; i < n; ++i ) {
         var layer = layers[i];
-        var sprites = this._sprites[i] || (this._sprites[i] = {});
-        // frames for each layer
-        for(var fr = 0; fr < layer.frames().length; ++fr) {
-          var frame = layer.frames()[fr];
-          var fr_sprites = sprites[frame] || (sprites[frame] = []);
-          this._renderTile(tile, key - frame, frame, fr_sprites, layer);
+        if (layer.name() !== "Map") {
+          var sprites = this._sprites[i] || (this._sprites[i] = {});
+          // frames for each layer
+          for(var fr = 0; fr < layer.frames().length; ++fr) {
+            var frame = layer.frames()[fr];
+            var fr_sprites = sprites[frame] || (sprites[frame] = []);
+            this._renderTile(tile, key - frame, frame, fr_sprites, layer);
+          }
         }
       }
     },
@@ -1670,13 +1837,19 @@ exports.Profiler = Profiler;
     //
     _renderTile: function(tile, key, frame_offset, sprites, shader, shaderVars) {
       if(!this._canvas) return;
+
       var prof = Profiler.metric('PointRenderer:renderTile').start();
       var ctx = this._ctx;
-      //var res = 1;//this.options.resolution;
-      var activePixels = tile.timeCount[key];
+
       if(this.options.blendmode) {
         ctx.globalCompositeOperation = this.options.blendmode;
       }
+      if (this.options.cumulative && key > tile.maxDate) {
+        //TODO: precache because this tile is not going to change
+        key = tile.maxDate - 1;
+      }
+      var tileMax = this.options.resolution * (256/this.options.resolution - 1)
+      var activePixels = tile.timeCount[key];
       if(activePixels) {
         var pixelIndex = tile.timeIndex[key];
         for(var p = 0; p < activePixels; ++p) {
@@ -1690,8 +1863,8 @@ exports.Profiler = Profiler;
            //var x = tile.x[posIdx]*res - (sp.width >> 1);
            //var y = (256 - res - res*tile.y[posIdx]) - (sp.height >> 1);
            var x = tile.x[posIdx]- (sp.width >> 1);
-           var y = (256 - 1 - tile.y[posIdx]) - (sp.height >> 1);
-           ctx.drawImage(sp, x, y);
+           var y = tileMax - tile.y[posIdx]; // flip mercator
+           ctx.drawImage(sp, x, y - (sp.height >> 1));
           }
         }
       }
@@ -2681,7 +2854,7 @@ function GMapsTorqueLayer(options) {
     throw new Error("browser is not supported by torque");
   }
   this.key = 0;
-  this.cartocss = null;
+  this.shader = null;
   this.ready = false;
   this.options = _.extend({}, options);
   _.defaults(this.options, {
@@ -2691,6 +2864,10 @@ function GMapsTorqueLayer(options) {
     steps: 100,
     visible: true
   });
+  if (options.cartocss) {
+    _.extend(this.options, 
+        torque.common.TorqueLayer.optionsFromCartoCSS(options.cartocss));
+  }
 
   this.animator = new torque.Animator(function(time) {
     var k = time | 0;
@@ -2759,8 +2936,8 @@ GMapsTorqueLayer.prototype = _.extend({},
 
     this._initTileLoader(this.options.map, this.getProjection());
 
-    if (this.cartocss) {
-      this.renderer.setCartoCSS(this.cartocss);
+    if (this.shader) {
+      this.renderer.setShader(this.shader);
     }
 
   },
@@ -2900,11 +3077,24 @@ GMapsTorqueLayer.prototype = _.extend({},
    * set the cartocss for the current renderer
    */
   setCartoCSS: function(cartocss) {
-    if (!this.renderer) {
-      this.cartocss = cartocss;
-      return this;
+    var shader = new carto.RendererJS().render(cartocss);
+    this.shader = shader;
+    if (this.renderer) {
+      this.renderer.setShader(shader);
     }
-    this.renderer.setCartoCSS(cartocss);
+
+    // provider options
+    var options = torque.common.TorqueLayer.optionsFromLayer(shader.findLayer({ name: 'Map' }));
+    if(this.provider && this.provider.setOptions(options)) {
+      this._reloadTiles();
+    }
+    _.extend(this.options, options);
+
+    // animator options
+    if (options.animationDuration) {
+      this.animator.duration(options.animationDuration);
+    }
+
     this.redraw();
     return this;
   },
@@ -3290,6 +3480,9 @@ L.TorqueLayer = L.CanvasLayer.extend({
     }
     options.tileLoader = true;
     this.key = 0;
+    if (options.cartocss) {
+      _.extend(options, torque.common.TorqueLayer.optionsFromCartoCSS(options.cartocss));
+    }
 
     options.resolution = options.resolution || 2;
     options.steps = options.steps || 100;
@@ -3344,6 +3537,7 @@ L.TorqueLayer = L.CanvasLayer.extend({
 
 
   },
+
 
   onRemove: function(map) {
     this._removeTileLoader();
@@ -3476,14 +3670,26 @@ L.TorqueLayer = L.CanvasLayer.extend({
    */
   setCartoCSS: function(cartocss) {
     if (!this.renderer) throw new Error('renderer is not valid');
-    this.renderer.setCartoCSS(cartocss);
+    var shader = new carto.RendererJS().render(cartocss);
+    this.renderer.setShader(shader);
+
+    // provider options
+    var options = torque.common.TorqueLayer.optionsFromLayer(shader.findLayer({ name: 'Map' }));
+    if(this.provider.setOptions(options)) {
+      this._reloadTiles();
+    }
+    _.extend(this.options, options);
+
+    // animator options
+    if (options.animationDuration) {
+      this.animator.duration(options.animationDuration);
+    }
+
     this.redraw();
     return this;
   }
 
 });
-
-//_.extend(L.TorqueLayer.prototype, torque.Event);
 
 
 L.TiledTorqueLayer = L.TileLayer.Canvas.extend({

@@ -156,8 +156,16 @@ describe CartoDB::TableGeocoder do
     end
 
     it 'does nothing when the column already exists' do
+      @tg.expects(:cast_georef_status_column).once
       @tg.add_georef_status_column
       @tg.add_georef_status_column
+    end
+
+    it 'casts cartodb_georef_status to boolean if needed' do
+      @db.run('alter table wwwwww add column cartodb_georef_status text')
+      @tg.add_georef_status_column
+      @db.fetch("select data_type from information_schema.columns where table_name = 'wwwwww'")
+        .first[:data_type].should eq 'boolean'
     end
   end
 

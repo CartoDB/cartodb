@@ -15,7 +15,7 @@ describe "Assets API" do
     host! 'test.localhost.lan'
   end
 
-  let(:params) { { :api_key => @user.get_map_key } }
+  let(:params) { { :api_key => @user.api_key } }
 
   it "creates a new asset" do
     post_json v1_user_assets_url(@user, params.merge(

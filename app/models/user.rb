@@ -22,7 +22,7 @@ class User < Sequel::Model
     :quota_in_bytes, :table_quota, :account_type, :private_tables_enabled, 
     :period_end_date, :map_view_quota, :max_layers, :database_timeout, 
     :user_timeout, :map_view_block_price, :geocoding_quota, :dashboard_viewed_at,
-    :sync_tables_enabled, :geocoding_block_price
+    :sync_tables_enabled, :geocoding_block_price, :api_key
   plugin :validation_helpers
   plugin :json_serializer
   plugin :dirty
@@ -61,12 +61,13 @@ class User < Sequel::Model
     end
   end
 
-  def after_initialize
+  ## Callbacks
+  def before_create
     super
     self.database_host ||= ::Rails::Sequel.configuration.environment_for(Rails.env)['host']
+    self.api_key ||= self.class.make_token
   end
 
-  ## Callbacks
   def after_create
     super
     setup_user
@@ -78,6 +79,7 @@ class User < Sequel::Model
 
   def after_save
     super
+    save_metadata
     changes = (self.previous_changes.present? ? self.previous_changes.keys : [])
     set_statement_timeouts if changes.include?(:user_timeout) || changes.include?(:database_timeout)
   end
@@ -348,17 +350,12 @@ class User < Sequel::Model
 
   # save users basic metadata to redis for node sql api to use
   def save_metadata
-    $users_metadata.HMSET key, 'id', id, 'database_name', database_name, 'database_password', database_password, 'database_host', database_host
-    self.set_map_key
-  end
-
-  def set_map_key
-    token = self.class.make_token
-    $users_metadata.HMSET key, 'map_key',  token
-  end
-
-  def get_map_key
-    $users_metadata.HMGET(key, 'map_key').first
+    $users_metadata.HMSET key, 
+      'id', id, 
+      'database_name', database_name, 
+      'database_password', database_password, 
+      'database_host', database_host,
+      'map_key', api_key
   end
 
   def get_api_calls(options = {})

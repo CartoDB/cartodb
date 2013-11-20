@@ -1,3 +1,7 @@
+3.3.05 (15//11/2013)
+-----
+- fixed torque problems with cached sql requests #81
+
 3.3.03 (15//11/2013)
 -----
 - fixes a bug that prevented the triggering of callbacks after setting properties to cdb.geo.GMapsBaseLayer.

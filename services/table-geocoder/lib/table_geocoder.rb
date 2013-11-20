@@ -48,7 +48,7 @@ module CartoDB
     end
 
     def clean_formatter
-      "regexp_replace(regexp_replace(concat(#{formatter}), E'[\\n\\r]+', ' ', 'g'), E'\"', '', 'g')"
+      "trim(both from regexp_replace(regexp_replace(concat(#{formatter}), E'[\\n\\r]+', ' ', 'g'), E'\"', '', 'g'))"
     end
 
     def cancel

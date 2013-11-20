@@ -552,7 +552,7 @@ TorqueLayer.optionsFromLayer = function(mapConfig) {
 TorqueLayer.optionsFromCartoCSS = function(cartocss) {
   var shader = new carto.RendererJS().render(cartocss);
   var mapConfig = shader.findLayer({ name: 'Map' });
-  return L.TorqueLayer.optionsFromLayer(mapConfig);
+  return TorqueLayer.optionsFromLayer(mapConfig);
 };
 
 exports.torque.common = torque.common || {};
@@ -825,6 +825,10 @@ exports.Profiler = Profiler;
     this.options.tiler_domain = options.tiler_domain || 'cartodb.com';
     this.options.tiler_port = options.tiler_port || 80;
 
+    if (this.options.data_aggregation) {
+      this.options.cumulative = this.options.data_aggregation === 'cumulative';
+    }
+
     // check options
     if (options.resolution === undefined ) throw new Error("resolution should be provided");
     if (options.steps === undefined ) throw new Error("steps should be provided");
@@ -867,7 +871,7 @@ exports.Profiler = Profiler;
       }
 
       if(this.options.cumulative) {
-        dates = maxDateSlots * rows.length;
+        dates = (1 + maxDateSlots) * rows.length;
       }
 
       // reserve memory for all the dates
@@ -914,7 +918,7 @@ exports.Profiler = Profiler;
         // extend the latest to the end
         if(this.options.cumulative) {
           var lastDateSlot = dates[dates.length - 1];
-          for (var j = lastDateSlot; j < maxDateSlots; ++j) {
+          for (var j = lastDateSlot; j <= maxDateSlots; ++j) {
             var rr = rowsPerSlot[j] || (rowsPerSlot[j] = []);
             rr.push([r, prev_val]);
           }
@@ -1156,6 +1160,14 @@ exports.Profiler = Profiler;
       if(opt.column !== undefined && opt.column !== this.options.column) {
         this.options.column = opt.column;
         refresh = true;
+      }
+
+      if(opt.data_aggregation !== undefined) {
+        var c = opt.data_aggregation === 'cumulative';
+        if (this.options.cumulative !== c) {
+          this.options.cumulative = c;
+          refresh = true;
+        }
       }
 
       if (refresh) this.reload();
@@ -1756,7 +1768,6 @@ exports.Profiler = Profiler;
     this._ctx = canvas.getContext('2d');
     this._sprites = []; // sprites per layer
     this._shader = null;
-    //carto.tree.Reference.set(torque['torque-reference']);
     this.setCartoCSS(this.options.cartocss || DEFAULT_CARTOCSS);
   }
 
@@ -1840,13 +1851,13 @@ exports.Profiler = Profiler;
 
       var prof = Profiler.metric('PointRenderer:renderTile').start();
       var ctx = this._ctx;
-
-      if(this.options.blendmode) {
-        ctx.globalCompositeOperation = this.options.blendmode;
+      var blendMode = shader.eval('comp-op') || this.options.blendmode;
+      if(blendMode) {
+        ctx.globalCompositeOperation = blendMode;
       }
       if (this.options.cumulative && key > tile.maxDate) {
         //TODO: precache because this tile is not going to change
-        key = tile.maxDate - 1;
+        key = tile.maxDate;
       }
       var tileMax = this.options.resolution * (256/this.options.resolution - 1)
       var activePixels = tile.timeCount[key];

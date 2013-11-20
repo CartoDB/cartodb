@@ -4,7 +4,10 @@
    *  Table column selector plugin
    */
 
-  @import "compass";
+  @import "compass/css3/inline-block";
+  @import "compass/css3/transform";
+  @import "compass/css3/images";
+  @import "compass/css3/opacity";
 	@import "../common/mixins";
 
   .table_preview {

@@ -4,11 +4,20 @@
  * - SQL, facets, ...
  */
 
-@import "compass";
+// @import "compass/css3/box-shadow";
+// @import "compass/css3/border-radius";
+// @import "compass/css3/inline-block";
+// @import "compass/css3/images";
+// @import "compass/css3/transform";
+// @import "compass/css3/transition";
+// @import "compass/css3/opacity";
+// @import "compass/css3/box-sizing";
+
 @import "../common/mixins";
-@import "../common/sprites";
 @import "../common/forms";
 @import "../common/vars";
+@import "../common/common-sprite";
+@import "../table/table-sprite";
 
 $corner_radius: 6px;
 
@@ -142,7 +151,7 @@ a.info {
     background:#A9A9A9;
     @include text-indent();
     @include border-radius(2px);
-    @include background(sprite($icons-sprites, add_layer, $offset-x:0, $offset-y:0) no-repeat);
+    @include background(sprite($table-sprites, add_layer, $offset-x:0, $offset-y:0) no-repeat);
   }
 
   .name {
@@ -161,13 +170,13 @@ a.info {
       width:12px;
       height:12px;
       margin:5px 0 0 4px;
-      @include background(sprite($icons-sprites, sync_layer_icon, $offset-x:0, $offset-y:0) no-repeat);
+      @include background(sprite($table-sprites, sync_layer_icon, $offset-x:0, $offset-y:0) no-repeat);
     }
 
     &:hover {
       cursor:pointer;
       i.synced {
-        @include background(sprite($icons-sprites, sync_layer_icon, $offset-x:0, $offset-y:-12px) no-repeat);
+        @include background(sprite($table-sprites, sync_layer_icon, $offset-x:0, $offset-y:-12px) no-repeat);
       }
     }
   }
@@ -197,7 +206,7 @@ a.info {
     .name {color:#666;}
     .action {color: #3A77A6;}
     .order {background:#666;}
-    .add { @include background(sprite($icons-sprites, add_layer, $offset-x:0, $offset-y:-16px) no-repeat); }
+    .add { @include background(sprite($table-sprites, add_layer, $offset-x:0, $offset-y:-16px) no-repeat); }
   }
 }
 
@@ -215,9 +224,9 @@ a.info {
   width:13px;
   height:13px;
   margin-left:5px;
-  @include background(sprite($icons-sprites, close_grey, $offset-x:0, $offset-y:0) no-repeat);
-  &:hover {@include background(sprite($icons-sprites, close_grey, $offset-x:0, $offset-y:-13px) no-repeat);}
-  &:active {@include background(sprite($icons-sprites, close_grey, $offset-x:0, $offset-y:-26px) no-repeat);}
+  @include background(sprite($common-sprites, close_grey, $offset-x:0, $offset-y:0) no-repeat);
+  &:hover {@include background(sprite($common-sprites, close_grey, $offset-x:0, $offset-y:-13px) no-repeat);}
+  &:active {@include background(sprite($common-sprites, close_grey, $offset-x:0, $offset-y:-26px) no-repeat);}
 }
 
 // Sorting
@@ -341,26 +350,26 @@ a.info {
       z-index:0;
       @include opacity(0.75);
 
-      &.sql_mod        { @include icons-sprite(table_icons, $offset-x:20px, $offset-y:-3px);}
-      &.filters_mod    { @include icons-sprite(table_icons, $offset-x:21px, $offset-y:-62px);}
-      &.cartocss_mod   { @include icons-sprite(table_icons, $offset-x:21px, $offset-y:-549px);}
-      &.infowindow_mod { @include icons-sprite(table_icons, $offset-x:20px, $offset-y:-430px);}
-      &.legends_mod    { @include icons-sprite(table_icons, $offset-x:20px, $offset-y:-663px);}
+      &.sql_mod        { @include table-sprite(table_icons, $offset-x:20px, $offset-y:-3px);}
+      &.filters_mod    { @include table-sprite(table_icons, $offset-x:21px, $offset-y:-62px);}
+      &.cartocss_mod   { @include table-sprite(table_icons, $offset-x:21px, $offset-y:-549px);}
+      &.infowindow_mod { @include table-sprite(table_icons, $offset-x:20px, $offset-y:-430px);}
+      &.legends_mod    { @include table-sprite(table_icons, $offset-x:20px, $offset-y:-663px);}
 
       &.wizards_mod    {
-        @include icons-sprite(table_icons, $offset-x:21px, $offset-y:-370px);
+        @include table-sprite(table_icons, $offset-x:21px, $offset-y:-370px);
         &.selected:before, &.selected:after { border-right-color: #575757; }
         &.selected:after {right:-1px;}
       }
 
       // tool buttons
-      &.add_row {@include icons-sprite(table_icons, $offset-x:22px, $offset-y:-307px);}
-      &.add_column {@include icons-sprite(table_icons, $offset-x:22px, $offset-y:-247px);}
-      &.merge_tables {@include icons-sprite(table_icons, $offset-x:21px, $offset-y:-186px);}
+      &.add_row {@include table-sprite(table_icons, $offset-x:22px, $offset-y:-307px);}
+      &.add_column {@include table-sprite(table_icons, $offset-x:22px, $offset-y:-247px);}
+      &.merge_tables {@include table-sprite(table_icons, $offset-x:21px, $offset-y:-186px);}
 
       &.add_feature {
         border-top:1px solid rgba(#999999,0.25);
-        @include icons-sprite(table_icons, $offset-x:19px, $offset-y:-489px);
+        @include table-sprite(table_icons, $offset-x:19px, $offset-y:-489px);
       }
 
       &:hover {
@@ -520,25 +529,25 @@ a.info {
       a.next {
         @include border-left-radius(0);
         @include text-indent();
-        @include background(sprite($icons-sprites, unredo, $offset-x:-38, $offset-y:9) no-repeat #F9F9F9);//IE
-        @include background(sprite($icons-sprites, unredo, $offset-x:-38, $offset-y:9) no-repeat, linear-gradient(#F9F9F9,#EBEBEB));
+        @include background(sprite($table-sprites, unredo, $offset-x:-38, $offset-y:9) no-repeat #F9F9F9);//IE
+        @include background(sprite($table-sprites, unredo, $offset-x:-38, $offset-y:9) no-repeat, linear-gradient(#F9F9F9,#EBEBEB));
         border-left:0;
 
         &:hover, &:active {
-          @include background(sprite($icons-sprites, unredo, $offset-x:-38, $offset-y:9) no-repeat #DEDEDE);//IE
-          @include background(sprite($icons-sprites, unredo, $offset-x:-38, $offset-y:9) no-repeat, linear-gradient(#F9F9F9,#DEDEDE));
+          @include background(sprite($table-sprites, unredo, $offset-x:-38, $offset-y:9) no-repeat #DEDEDE);//IE
+          @include background(sprite($table-sprites, unredo, $offset-x:-38, $offset-y:9) no-repeat, linear-gradient(#F9F9F9,#DEDEDE));
         }
       }
 
       a.back {
         @include border-right-radius(0);
         @include text-indent();
-        @include background(sprite($icons-sprites, unredo, $offset-x:9, $offset-y:9) no-repeat #EBEBEB); //IE
-        @include background(sprite($icons-sprites, unredo, $offset-x:9, $offset-y:9) no-repeat, linear-gradient(#F9F9F9,#EBEBEB));
+        @include background(sprite($table-sprites, unredo, $offset-x:9, $offset-y:9) no-repeat #EBEBEB); //IE
+        @include background(sprite($table-sprites, unredo, $offset-x:9, $offset-y:9) no-repeat, linear-gradient(#F9F9F9,#EBEBEB));
 
         &:hover, &:active {
-          @include background(sprite($icons-sprites, unredo, $offset-x:9, $offset-y:9) no-repeat #DEDEDE);//IE
-          @include background(sprite($icons-sprites, unredo, $offset-x:9, $offset-y:9) no-repeat, linear-gradient(#F9F9F9,#DEDEDE));
+          @include background(sprite($table-sprites, unredo, $offset-x:9, $offset-y:9) no-repeat #DEDEDE);//IE
+          @include background(sprite($table-sprites, unredo, $offset-x:9, $offset-y:9) no-repeat, linear-gradient(#F9F9F9,#DEDEDE));
         }
       }
 
@@ -546,12 +555,12 @@ a.info {
         opacity:0.6;
 
         &.next, &.next:active, &.next:hover {
-          @include background(sprite($icons-sprites, unredo, $offset-x:-38, $offset-y:9) no-repeat #F9F9F9);//IE
-          @include background(sprite($icons-sprites, unredo, $offset-x:-38, $offset-y:9) no-repeat, linear-gradient(#F9F9F9,#EBEBEB));
+          @include background(sprite($table-sprites, unredo, $offset-x:-38, $offset-y:9) no-repeat #F9F9F9);//IE
+          @include background(sprite($table-sprites, unredo, $offset-x:-38, $offset-y:9) no-repeat, linear-gradient(#F9F9F9,#EBEBEB));
         }
         &.back, &.back:active, &.back:hover {
-          @include background(sprite($icons-sprites, unredo, $offset-x:9, $offset-y:9) no-repeat #EBEBEB);//IE
-          @include background(sprite($icons-sprites, unredo, $offset-x:9, $offset-y:9) no-repeat, linear-gradient(#F9F9F9,#EBEBEB));
+          @include background(sprite($table-sprites, unredo, $offset-x:9, $offset-y:9) no-repeat #EBEBEB);//IE
+          @include background(sprite($table-sprites, unredo, $offset-x:9, $offset-y:9) no-repeat, linear-gradient(#F9F9F9,#EBEBEB));
         }
       }
 
@@ -656,17 +665,17 @@ a.info {
         width:13px;
         height:13px;
 
-        @include background(sprite($icons-sprites, close_grey, $offset-x:0, $offset-y:0) no-repeat);
+        @include background(sprite($common-sprites, close_grey, $offset-x:0, $offset-y:0) no-repeat);
 
-        &:hover  { @include background(sprite($icons-sprites, close_grey, $offset-x:0, $offset-y:-13px) no-repeat); }
-        &:active { @include background(sprite($icons-sprites, close_grey, $offset-x:0, $offset-y:-26px) no-repeat); }
+        &:hover  { @include background(sprite($common-sprites, close_grey, $offset-x:0, $offset-y:-13px) no-repeat); }
+        &:active { @include background(sprite($common-sprites, close_grey, $offset-x:0, $offset-y:-26px) no-repeat); }
       }
 
       &:before {
         content:'';
         @include size(10px, 6px);
         @include position(-6px, 29px, false, false);
-        @include background(sprite($icons-sprites, infowindow_panel_purple_tip) no-repeat);
+        @include background(sprite($table-sprites, infowindow_panel_purple_tip) no-repeat);
         z-index: 11;
       }
     }
@@ -686,7 +695,7 @@ a.info {
       .tip {
         @include size(10px, 6px);
         @include position(false, false, -1px, 33px);
-        @include background(sprite($icons-sprites, infowindow_panel_white_tip) no-repeat);
+        @include background(sprite($table-sprites, infowindow_panel_white_tip) no-repeat);
         z-index: 10;
       }
 
@@ -716,13 +725,13 @@ a.info {
           /*&.html_editor:before { height: 16px; content: ''; position:absolute; left: -10px; top: -3px; border-left: 1px solid rgba(#ccc, .5); }*/
           &.html_editor { position:relative; }
 
-          &.editor       a { @include size(17px, 17px); @include icons-sprite(infowindow_panel_icons, $offset-x:0, $offset-y:0); }
-          &.title_editor a { @include size(20px, 17px); @include icons-sprite(infowindow_panel_icons, $offset-x:-40, $offset-y:0); }
-          &.html_editor  a { @include size(17px, 17px); @include icons-sprite(infowindow_panel_icons, $offset-x:-104, $offset-y:1px); }
+          &.editor       a { @include size(17px, 17px); @include table-sprite(infowindow_panel_icons, $offset-x:0, $offset-y:0); }
+          &.title_editor a { @include size(20px, 17px); @include table-sprite(infowindow_panel_icons, $offset-x:-40, $offset-y:0); }
+          &.html_editor  a { @include size(17px, 17px); @include table-sprite(infowindow_panel_icons, $offset-x:-104, $offset-y:1px); }
 
-          &.editor       a.selected { @include size(17px, 17px); @include icons-sprite(infowindow_panel_icons, $offset-x:0, $offset-y:-25px); }
-          &.title_editor a.selected { @include size(20px, 17px); @include icons-sprite(infowindow_panel_icons, $offset-x:-40, $offset-y:-25px); }
-          &.html_editor  a.selected { @include size(17px, 17px); @include icons-sprite(infowindow_panel_icons, $offset-x:-104, $offset-y:-24px); }
+          &.editor       a.selected { @include size(17px, 17px); @include table-sprite(infowindow_panel_icons, $offset-x:0, $offset-y:-25px); }
+          &.title_editor a.selected { @include size(20px, 17px); @include table-sprite(infowindow_panel_icons, $offset-x:-40, $offset-y:-25px); }
+          &.html_editor  a.selected { @include size(17px, 17px); @include table-sprite(infowindow_panel_icons, $offset-x:-104, $offset-y:-24px); }
         }
 
       }
@@ -744,12 +753,12 @@ a.info {
         opacity:0.6;
 
         &.next, &.next:active, &.next:hover {
-          @include background(sprite($icons-sprites, unredo, $offset-x:-38, $offset-y:9) no-repeat #F9F9F9);//IE
-          @include background(sprite($icons-sprites, unredo, $offset-x:-38, $offset-y:9) no-repeat, linear-gradient(#F9F9F9,#EBEBEB));
+          @include background(sprite($table-sprites, unredo, $offset-x:-38, $offset-y:9) no-repeat #F9F9F9);//IE
+          @include background(sprite($table-sprites, unredo, $offset-x:-38, $offset-y:9) no-repeat, linear-gradient(#F9F9F9,#EBEBEB));
         }
         &.back, &.back:active, &.back:hover {
-          @include background(sprite($icons-sprites, unredo, $offset-x:9, $offset-y:9) no-repeat #EBEBEB);//IE
-          @include background(sprite($icons-sprites, unredo, $offset-x:9, $offset-y:9) no-repeat, linear-gradient(#F9F9F9,#EBEBEB));
+          @include background(sprite($table-sprites, unredo, $offset-x:9, $offset-y:9) no-repeat #EBEBEB);//IE
+          @include background(sprite($table-sprites, unredo, $offset-x:9, $offset-y:9) no-repeat, linear-gradient(#F9F9F9,#EBEBEB));
         }
       }
 
@@ -795,7 +804,7 @@ a.info {
         @include inline-block();
         width:111px;
         height:110px;
-        @include icons-sprite(block_icon);
+        @include table-sprite(block_icon);
       }
 
       p {
@@ -859,7 +868,7 @@ a.info {
 
         &.drag_field {
           padding: 15px 0 15px 10px;
-          @include icons-sprite(drag_points, $offset-y:23px);
+          @include table-sprite(drag_points, $offset-y:23px);
         }
 
         &.ui-sortable-helper {
@@ -867,7 +876,7 @@ a.info {
           margin-left:-15px!important;
           @include box-shadow(rgba(0,0,0,0.1) 0 0 5px 2px);
           border:1px solid #999999;
-          @include icons-sprite(drag_points, $offset-y:23px, $offset-x:10px);
+          @include table-sprite(drag_points, $offset-y:23px, $offset-x:10px);
           background-color:white;
           @include border-radius(3px);
           cursor:all-scroll;
@@ -1135,21 +1144,21 @@ a.info {
         width:43px;
         height:43px;
         z-index:10;
-        @include icons-sprite(wizard-arrows);
+        @include table-sprite(wizard-arrows);
 
         &.left {
           left:8px;
           &:hover {
-            @include icons-sprite(wizard-arrows, $offset-y:-43px);
+            @include table-sprite(wizard-arrows, $offset-y:-43px);
           }
         }
 
         &.right {
-          @include icons-sprite(wizard-arrows, $offset-x:-43px);
+          @include table-sprite(wizard-arrows, $offset-x:-43px);
           right:8px;
 
           &:hover {
-            @include icons-sprite(wizard-arrows, $offset-x:-43px, $offset-y:-43px);
+            @include table-sprite(wizard-arrows, $offset-x:-43px, $offset-y:-43px);
           }
         }
 
@@ -1158,11 +1167,11 @@ a.info {
           @include opacity(0);
 
           &.left:hover {
-            @include icons-sprite(wizard-arrows);
+            @include table-sprite(wizard-arrows);
           }
 
           &.right:hover {
-            @include icons-sprite(wizard-arrows, $offset-x:-43px);
+            @include table-sprite(wizard-arrows, $offset-x:-43px);
           }
         }
       }
@@ -1550,7 +1559,7 @@ a.info {
           margin: 0 0 0 7px;
           @include inline-block();
           @include size(12px);
-          background: image-url('icons/remove_filter.png') no-repeat;
+          @include common-sprite(close_grey);
         }
 
         .form_combo {
@@ -1612,8 +1621,7 @@ a.info {
           @include size(12px);
           @include position(21px, 30px, false, false);
           @include simple-transition(opacity, 150ms);
-
-          background: image-url('icons/remove_filter.png') no-repeat;
+          @include common-sprite(close_grey);
         }
       }
     }
@@ -1828,13 +1836,13 @@ a.info {
 
           &.up   {
             @include border-radius($radius 0 0 $radius);
-            background: #f1f1f1 image-url('icons/filters_scroll_up.png') no-repeat 50% 9px;
+            background: #f1f1f1 image-url('sprites/table/filters_scroll_up.png') no-repeat 50% 9px;
             &:active { background-position: 50% 10px;  }
           }
 
           &.down {
             @include border-radius(0 $radius $radius 0);
-            background: #f1f1f1 image-url('icons/filters_scroll_down.png') no-repeat 50% 9px;
+            background: #f1f1f1 image-url('sprites/table/filters_scroll_down.png') no-repeat 50% 9px;
             &:active { background-position: 50% 10px;  }
           }
         }
@@ -1980,7 +1988,7 @@ a.info {
 &.ui-sortable .layer_panel.active .layer_info a.info:hover {
   cursor:move;
   .order {
-    @include icons-sprite(layer_move_icon);
+    @include table-sprite(layer_move_icon);
     background-color:none;
     text-indent:-9999px;
   }

@@ -22,7 +22,7 @@ class User < Sequel::Model
     :quota_in_bytes, :table_quota, :account_type, :private_tables_enabled, 
     :period_end_date, :map_view_quota, :max_layers, :database_timeout, 
     :user_timeout, :map_view_block_price, :geocoding_quota, :dashboard_viewed_at,
-    :sync_tables_enabled, :geocoding_block_price, :api_key
+    :sync_tables_enabled, :geocoding_block_price, :api_key, :notification
   plugin :validation_helpers
   plugin :json_serializer
   plugin :dirty

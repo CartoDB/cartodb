@@ -58,9 +58,17 @@ module CartoDB
       def ogr2ogr
         @ogr2ogr ||= Ogr2ogr.new(
           job.table_name, @source_file.fullpath, job.pg_options,
-          @source_file.layer, encoding: encoding
+          @source_file.layer, ogr2ogr_options
         )
       end #ogr2ogr
+
+      def ogr2ogr_options
+        options = { encoding: encoding }
+        if source_file.extension == '.shp'
+          options.merge!(shape_encoding: shape_encoding) 
+        end
+        options
+      end
 
       def encoding
         normalizer = [ShpNormalizer, CsvNormalizer].find { |normalizer|
@@ -69,6 +77,14 @@ module CartoDB
         return DEFAULT_ENCODING unless normalizer
         normalizer.new(source_file.fullpath, job).encoding
       end #encoding
+
+      def shape_encoding
+        normalizer = [ShpNormalizer].find { |normalizer|
+          normalizer.supported?(source_file.extension)
+        }
+        return nil unless normalizer
+        normalizer.new(source_file.fullpath, job).shape_encoding
+      end
 
       def georeferencer
         @georeferencer ||= Georeferencer.new(

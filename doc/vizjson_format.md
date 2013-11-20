@@ -2,7 +2,7 @@ visjson
 =======
 
 this is the spec for visjson:
-
+```
   {
      // required
      // follows the http://semver.org/ style version number
@@ -158,4 +158,4 @@ this is the spec for visjson:
      }],
    
   }
-
+```

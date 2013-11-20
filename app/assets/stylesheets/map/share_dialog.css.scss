@@ -65,9 +65,10 @@
 
     div.cartodb-searchbox {display:none;}
     div.cartodb-zoom {top:0;}
-
+    div.cartodb-layer-selector-box {display:none}
     div.cartodb-legends {
       position:absolute;
+      display:none;
       bottom: 60px;
       right: 20px;
 

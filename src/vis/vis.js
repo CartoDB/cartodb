@@ -401,7 +401,7 @@ var Vis = cdb.core.View.extend({
       return legends;
     }
 
-    legends = createLegendView(layers);
+    var legends = createLegendView(layers);
     var stackedLegend = new cdb.geo.ui.StackedLegend({
        legends: legends
     });

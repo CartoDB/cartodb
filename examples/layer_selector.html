@@ -86,7 +86,7 @@
           }
 
           // change the query in the layer to update the map
-          layer.setQuery(query);
+          layer.setSQL(query);
         });
       }
 
@@ -99,7 +99,8 @@
         })
         .done(function(vis, layers) {
           // layer 0 is the base layer, layer 1 is cartodb layer
-          createSelector(layers[1]);
+          var subLayer = layers[1].getSubLayer(0);
+          createSelector(subLayer);
         })
         .error(function(err) {
           console.log(err);

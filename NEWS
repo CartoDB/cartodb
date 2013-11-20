@@ -1,3 +1,7 @@
+3.3.05 (20//11/2013)
+-----
+- fixed torque problems with cached sql requests #81
+
 3.3.04 (15//11/2013)
 -----
 - sets maxZoom of GMaps layers to a high value to use the one defined by Google

@@ -1081,7 +1081,7 @@ exports.Profiler = Profiler;
               fields: queryData.fields
             });
           }
-        }, { parseJSON: true });
+        }, { parseJSON: true, no_cdn: true });
       });
     },
 

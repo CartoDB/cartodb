@@ -918,7 +918,7 @@ exports.Profiler = Profiler;
         // extend the latest to the end
         if(this.options.cumulative) {
           var lastDateSlot = dates[dates.length - 1];
-          for (var j = lastDateSlot; j <= maxDateSlots; ++j) {
+          for (var j = lastDateSlot + 1; j <= maxDateSlots; ++j) {
             var rr = rowsPerSlot[j] || (rowsPerSlot[j] = []);
             rr.push([r, prev_val]);
           }

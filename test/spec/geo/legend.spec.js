@@ -230,14 +230,14 @@ describe("common.geo.ui.Legend", function() {
       expect(stackedLegend.items.length).toEqual(2);
 
       //for (var i = 0; i < legends.length; i++) {
-        //expect(stackedLegend.items.at(i).toJSON()).toEqual(legends[i]);
+      //expect(stackedLegend.items.at(i).toJSON()).toEqual(legends[i]);
       //}
 
     });
 
     //it("should generate one element", function() {
-      //stackedLegend.render();
-      //expec(stackedLegend.$el);
+    //stackedLegend.render();
+    //expec(stackedLegend.$el);
     //});
 
   });
@@ -335,102 +335,133 @@ describe("common.geo.ui.Legend", function() {
 
     });
 
-    it("should generate a custom legend", function() {
 
-      var legend = new cdb.geo.ui.Legend.Custom({
-        title: "Custom title",
-        data: custom_data
+    describe("Custom Legend", function() {
+
+      it("should generate a custom legend", function() {
+
+        var legend = new cdb.geo.ui.Legend.Custom({
+          title: "Custom title",
+          data: custom_data
+        });
+
+        expect(legend.model.get("type")).toEqual("custom");
+        expect(legend.model.get("title")).toEqual("Custom title");
+        expect(legend.items.length).toEqual(5);
+
+        expect(legend.items.at(0).get("name")).toEqual(custom_data[0].name);
+        expect(legend.items.at(0).get("value")).toEqual(custom_data[0].value);
+
       });
 
-      expect(legend.model.get("type")).toEqual("custom");
-      expect(legend.model.get("title")).toEqual("Custom title");
-      expect(legend.items.length).toEqual(5);
+    });
 
-      expect(legend.items.at(0).get("name")).toEqual(custom_data[0].name);
-      expect(legend.items.at(0).get("value")).toEqual(custom_data[0].value);
+    describe("Bubble Legend", function() {
+
+      var properties, legend;
+
+      beforeEach(function() {
+
+        properties = { title: "Bubble legend", type: "bubble", color: "#FF0000", min: 1, max: 120 };
+        legend = new cdb.geo.ui.Legend.Bubble( properties );
+
+        legend.render();
+
+      });
+
+      it("should generate a bubble legend", function() {
+
+        expect(legend.model.get("type")).toEqual(properties.type);
+        expect(legend.model.get("title")).toEqual(properties.title);
+
+        expect(legend.model.get("min")).toEqual(properties.min);
+        expect(legend.model.get("max")).toEqual(properties.max);
+
+        expect(legend.$el.find(".graph").css("background-color")).toEqual("rgb(255, 0, 0)");
+
+      });
+
+      it("should allow to show the title", function() {
+        legend.hideTitle();
+        legend.showTitle();
+        expect(legend.$el.find(".legend-title").html()).toEqual(properties.title);
+      });
+
+      it("should allow to hide the title", function() {
+        legend.hideTitle();
+        expect(legend.$el.find(".legend-title").html()).toEqual(null);
+      });
+
+      it("should allow to change the color", function() {
+        legend.setColor("#CCC");
+        expect(legend.$el.find(".graph").css("background-color")).toEqual("rgb(204, 204, 204)");
+      });
+
+      it("should allow to change the min value", function() {
+        legend.setMinValue("3")
+        expect(legend.model.get("min")).toEqual("3");
+        expect(legend.$el.find("ul li:first-child").text()).toEqual("3");
+      });
+
+      it("should allow to change the max value", function() {
+        legend.setMaxValue("10000")
+        expect(legend.model.get("max")).toEqual("10000");
+        expect(legend.$el.find("ul li:last-child").text()).toEqual("10000");
+      });
 
     });
 
-    it("should generate a bubble legend", function() {
+    describe("Density Legend", function() {
 
-      var properties = { title: "Bubble legend", type: "bubble", color: "#FF0000", min: 1, max: 120 };
+      var properties, legend;
 
-      var legend = new cdb.geo.ui.Legend.Bubble( properties );
+      beforeEach(function() {
 
-      legend.render();
+        properties = { title: "Density title", type: "density", colors: ["#DDD", "#FF000", "#F1F1F1"], left: "Left value", right: "Right value" };
+        legend = new cdb.geo.ui.Legend.Density(properties);
+        legend.render();
 
-      expect(legend.model.get("type")).toEqual(properties.type);
-      expect(legend.model.get("title")).toEqual(properties.title);
+      });
 
-      expect(legend.model.get("min")).toEqual(properties.min);
-      expect(legend.model.get("max")).toEqual(properties.max);
+      it("should allow to generate a density legend", function() {
+        expect(legend.model.get("type")).toEqual(properties.type);
+        expect(legend.model.get("title")).toEqual(properties.title);
 
-      expect(legend.$el.find(".graph").css("background-color")).toEqual("rgb(255, 0, 0)");
+        expect(legend.model.get("leftLabel")).toEqual(properties.left);
+        expect(legend.model.get("rightLabel")).toEqual(properties.right);
 
-    });
+        expect(legend.model.get("colors").length).toEqual(properties.colors.length);
+        expect(legend.$el.find(".quartile").length).toEqual(properties.colors.length);
+      });
 
-    it("should allow to change properties from the bubble legend", function() {
+      it("should allow to hide the title", function() {
+        legend.hideTitle();
+        expect(legend.$el.find(".legend-title").html()).toEqual(null);
+      });
 
-      var properties = { title: "Bubble legend", type: "bubble", color: "#FF000", min: 1, max: 120 };
+      it("should allow to show the title", function() {
+        legend.hideTitle();
+        legend.showTitle();
+        expect(legend.$el.find(".legend-title").html()).toEqual(properties.title);
+      });
 
-      var legend = new cdb.geo.ui.Legend.Bubble(properties);
+      it("should allow change colors", function() {
+        var newColors = ["red", "white", "blue"];
 
-      legend.render();
+        legend.setColors(newColors);
+        expect(legend.model.get("colors").length).toEqual(newColors.length);
+        expect(legend.$el.find(".quartile").length).toEqual(newColors.length);
+      });
 
-      legend.hideTitle();
-      expect(legend.$el.find(".legend-title").html()).toEqual(null);
+      it("should allow change the left label", function() {
+        legend.setLeftLabel("Hello!")
+        expect(legend.model.get("leftLabel")).toEqual("Hello!");
+      });
 
-      legend.showTitle();
-      expect(legend.$el.find(".legend-title").html()).toEqual(properties.title);
-
-      legend.setColor("#CCC");
-      expect(legend.$el.find(".graph").css("background-color")).toEqual("rgb(204, 204, 204)");
-
-      legend.setMinValue("3")
-      expect(legend.model.get("min")).toEqual("3");
-      expect(legend.$el.find("ul li:first-child").text()).toEqual("3");
-
-      legend.setMaxValue("10000")
-      expect(legend.model.get("max")).toEqual("10000");
-      expect(legend.$el.find("ul li:last-child").text()).toEqual("10000");
-
-    });
-
-    it("should allow to generate a density legend", function() {
-
-      var properties = { title: "Density title", type: "density", colors: ["#DDD", "#FF000", "#F1F1F1"], left: "Left value", right: "Right value" };
-
-      var legend = new cdb.geo.ui.Legend.Density(properties);
-
-      legend.render();
-
-      expect(legend.model.get("type")).toEqual(properties.type);
-      expect(legend.model.get("title")).toEqual(properties.title);
-
-      legend.hideTitle();
-      expect(legend.$el.find(".legend-title").html()).toEqual(null);
-
-      legend.showTitle();
-      expect(legend.$el.find(".legend-title").html()).toEqual(properties.title);
-
-      expect(legend.model.get("leftLabel")).toEqual(properties.left);
-      expect(legend.model.get("rightLabel")).toEqual(properties.right);
-
-      expect(legend.model.get("colors").length).toEqual(properties.colors.length);
-      expect(legend.$el.find(".quartile").length).toEqual(properties.colors.length);
-
-
-      var newColors = ["red", "white", "blue"];
-
-      legend.setColors(newColors);
-      expect(legend.model.get("colors").length).toEqual(newColors.length);
-      expect(legend.$el.find(".quartile").length).toEqual(newColors.length);
-
-      legend.setLeftLabel("Hello!")
-      expect(legend.model.get("leftLabel")).toEqual("Hello!");
-
-      legend.setRightLabel("Hi!")
-      expect(legend.model.get("rightLabel")).toEqual("Hi!");
+      it("should allow change the right label", function() {
+        legend.setRightLabel("Hi!")
+        expect(legend.model.get("rightLabel")).toEqual("Hi!");
+      });
 
     });
 

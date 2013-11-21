@@ -7,9 +7,9 @@
 @import "compass/css3/images";
 @import "compass/css3/transform";
 @import "compass/css3/text-shadow";
-@import "./mixins";
-@import "./common-sprite";
-@import "./vars";
+@import "common/mixins";
+@import "common/common-sprite";
+@import "common/vars";
 
 $text-shadow-color: rgba(black,0.25);
 

@@ -34,7 +34,9 @@ class Table < Sequel::Model(:user_tables)
                 left_key: :user_table_id, right_key: :layer_id,
                 reciprocal: :user_tables
   one_to_one :automatic_geocoding
-  plugin :association_dependencies, :map => :destroy, layers: :nullify
+  plugin :association_dependencies, map:                  :destroy, 
+                                    layers:               :nullify, 
+                                    automatic_geocodings: :destroy
   plugin :dirty
 
   def_delegators :relator, *CartoDB::Table::Relator::INTERFACE

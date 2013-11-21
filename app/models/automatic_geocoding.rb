@@ -1,7 +1,8 @@
 # encoding: UTF-8'
-class AutomaticGeocoder < Sequel::Model
+class AutomaticGeocoding < Sequel::Model
 
-  one_to_one :table  
+  one_to_one :table
+  many_to_one :original_geocoding, class: :Geocoding
 
   def before_save
     super
@@ -10,8 +11,7 @@ class AutomaticGeocoder < Sequel::Model
 
   def validate
     super
-    validates_presence :formatter
-    validates_presence :table_name
+    validates_presence :table_id
   end # validate
 
   def enqueue
@@ -20,7 +20,13 @@ class AutomaticGeocoder < Sequel::Model
 
   def run
     self.state = 'running'
-    # Run geocoding
+    options = { 
+      user_id:     table.owner.id,
+      table_name:  table.name,
+      formatter:   formatter
+    }
+      
+    Geocoding.create(options).run!
     self.run_at   = Time.now + interval
   end # run
 end

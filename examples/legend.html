@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>CartoDB Workshop</title>
+
+    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.css" /> 
+    <!--[if lte IE 8]>
+    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.ie.css" /> 
+    <![endif]-->
+
+    <script src="../src/cartodb.js"></script>
+    <script>
+      window.onload = function() {
+        cdb.load('../src/', function() {
+
+          var map_viz_url = 'http://development.localhost.lan:3000/api/v2/viz/cca9e28e-5286-11e3-8cbe-003ee1fffe8b/viz.json';
+
+          var onVisDone = function(vis, layers) {
+
+            /*
+             var legend = new cdb.geo.ui.Legend({
+               type: "custom",
+               data: [
+                 { name: "Natural Parks",  value: "#58A062" },
+                 { name: "Villages",       value: "#F07971" },
+                 { name: "Rivers",         value: "#54BFDE" },
+                 { name: "Fields",         value: "#9BC562" },
+                 { name: "Caves",          value: "#FABB5C" }
+               ]
+             });
+
+             var legend = new cdb.geo.ui.Legend.Custom({
+               title: "This is a title",
+               data: [
+                 { name: "Natural Parks",  value: "#58A062" },
+                 { name: "Villages",       value: "#F07971" },
+                 { name: "Rivers",         value: "#54BFDE" },
+                 { name: "Fields",         value: "#9BC562" },
+                 { name: "Caves",          value: "#FABB5C" }
+               ]
+             });
+            
+             var legend = new cdb.geo.ui.Legend.Bubble({
+               title: "Jajaja",
+               min: 21,
+               max: 20,
+               color: "red"
+             });
+
+
+            var legend = new cdb.geo.ui.Legend({ 
+              type: "density",
+              data: [
+                { color: "Natural Parks",  value: "#58A062" },
+                { color: "Villages",       value: "#F07971" },
+                { color: "Rivers",         value: "#54BFDE" },
+                { color: "Fields",         value: "#9BC562" },
+                { color: "Caves",          value: "#FABB5C" }
+              ]
+            });
+
+            window.legend = legend = new cdb.geo.ui.Legend.Density({
+              title: "Jajaja",
+              left: "hola", right: "test",
+              colors: [ "#58A062", "#F07971", "#54BFDE", "#9BC562", "#FABB5C" ]
+            });
+
+            var legend = new cdb.geo.ui.Legend.Intensity({
+              left: "hola", 
+              right: "test",
+              color: "#f1f1f1"
+            });
+
+            */
+
+            var legendA = new cdb.geo.ui.Legend.Color({
+              title: "Test",
+              data: [
+                { name: "Villages",       value: "#F07971" },
+                { name: "Natural Parks",  value: "https://pbs.twimg.com/profile_images/378800000760233170/134c58f6cca0c0179cf0ed5cb831cb75_normal.png" },
+                { name: "Rivers",         value: "#54BFDE" },
+                { name: "Fields",         value: "#9BC562" },
+                { name: "Caves",          value: "#FABB5C" }
+              ]
+            });
+
+            var legendB = new cdb.geo.ui.Legend.Intensity({
+              left: "hola", 
+              right: "test",
+              color: "#f1f1f1"
+            });
+
+            var stackedLegend = new cdb.geo.ui.StackedLegend({
+              legends: [legendA, legendB]
+            });
+
+            // $("#map").append(stackedLegend.render().$el);
+
+             var legend = new cdb.geo.ui.Legend.Custom({
+               title: "This is a title",
+               data: [
+                 { name: "Natural Parks",  value: "#58A062" },
+                 { name: "Villages",       value: "#F07971" },
+                 { name: "Rivers",         value: "#54BFDE" },
+                 { name: "Fields",         value: "#9BC562" },
+                 { name: "Caves",          value: "#FABB5C" }
+               ]
+             });
+
+             $("#map").append(legend.render().$el);
+
+            layers[1].setInteraction(true);
+
+            layers[1].on('featureOver', function(e, latlng, pos, data, layerNumber) {
+              cartodb.log.log(e, latlng, pos, data, layerNumber);
+            });
+
+          };
+
+          cartodb.createVis('map', map_viz_url, {
+            no_cdn: true
+          }).done(onVisDone);
+
+        });
+
+      }
+
+    </script>
+
+    <style type="text/css">
+      html, body, #map {
+        height: 100%;
+        padding: 0;
+        margin: 0;
+      }
+    </style>
+
+  </head>
+  <body>
+    <div id="map"></div>
+  </body>
+</html>

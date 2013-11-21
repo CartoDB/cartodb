@@ -354,10 +354,71 @@ describe("common.geo.ui.Legend", function() {
       });
 
       it("should show the items", function() {
-        expect(legend.items.length).toEqual(5);
+        expect(legend.items.length).toEqual(custom_data.length);
         expect(legend.items.at(0).get("name")).toEqual(custom_data[0].name);
         expect(legend.items.at(0).get("value")).toEqual(custom_data[0].value);
 
+        expect(legend.$el.find("li:first-child").text()).toEqual(custom_data[0].name);
+        expect(legend.$el.find("li:first-child .bullet").css("background")).toEqual("rgb(88, 160, 98)");
+      });
+
+      it("should show a title", function() {
+        expect(legend.model.get("title")).toEqual(properties.title);
+        expect(legend.$el.find(".legend-title").text()).toEqual(properties.title);
+      });
+
+      it("should allow to change the title", function() {
+        legend.setTitle("New title");
+        expect(legend.model.get("show_title")).toEqual(true);
+        expect(legend.$el.find(".legend-title").text()).toEqual("New title");
+      });
+
+      it("should allow to change the items", function() {
+
+        var new_data = [
+          { name: "One", value: "#F1F1F1" },
+          { name: "Too", value: "#FF00FF" }
+        ];
+
+        legend.setData(new_data);
+
+        expect(legend.items.length).toEqual(new_data.length);
+        expect(legend.items.at(0).get("name")).toEqual(new_data[0].name);
+        expect(legend.items.at(0).get("value")).toEqual(new_data[0].value);
+
+        expect(legend.$el.find("li:first-child").text()).toEqual(new_data[0].name);
+        expect(legend.$el.find("li:first-child .bullet").css("background")).toEqual("rgb(241, 241, 241)");
+
+        expect(legend.$el.find("li:last-child").text()).toEqual(new_data[1].name);
+        expect(legend.$el.find("li:last-child .bullet").css("background")).toEqual("rgb(255, 0, 255)");
+      });
+
+    });
+
+    describe("Category Legend", function() {
+
+      var properties, legend;
+
+      beforeEach(function() {
+
+        properties = { title: "Category title", data: custom_data };
+        legend     = new cdb.geo.ui.Legend.Category( properties );
+
+        legend.render();
+
+      });
+
+      it("should generate the legend", function() {
+        expect(legend.model.get("type")).toEqual("category");
+      });
+
+      it("should show the items", function() {
+        expect(legend.items.length).toEqual(custom_data.length);
+        expect(legend.items.at(0).get("name")).toEqual(custom_data[0].name);
+        expect(legend.items.at(0).get("value")).toEqual(custom_data[0].value);
+
+        expect(legend.$el.find("li:first-child").text()).toEqual(custom_data[0].name);
+        expect(legend.$el.find("li:first-child .bullet").css("background")).toEqual("rgb(88, 160, 98)");
       });
 
       it("should show a title", function() {
@@ -386,7 +447,7 @@ describe("common.geo.ui.Legend", function() {
 
       });
 
-      it("should generate a bubble legend", function() {
+      it("should generate the legend", function() {
         expect(legend.model.get("type")).toEqual(properties.type);
       });
 
@@ -494,6 +555,73 @@ describe("common.geo.ui.Legend", function() {
         legend.setColors(newColors);
         expect(legend.model.get("colors").length).toEqual(newColors.length);
         expect(legend.$el.find(".quartile").length).toEqual(newColors.length);
+      });
+
+      it("should allow change the left label", function() {
+        legend.setLeftLabel("Hello!")
+        expect(legend.model.get("leftLabel")).toEqual("Hello!");
+      });
+
+      it("should allow change the right label", function() {
+        legend.setRightLabel("Hi!")
+        expect(legend.model.get("rightLabel")).toEqual("Hi!");
+      });
+
+    });
+
+    describe("Intensity Legend", function() {
+
+      var properties, legend;
+
+      beforeEach(function() {
+
+        properties = { title: "Intensity legend", type: "intensity", color: "#FF0000", min: 1, max: 120 };
+        legend = new cdb.geo.ui.Legend.Intensity( properties );
+
+        legend.render();
+
+      });
+
+      it("should generate the legend", function() {
+        expect(legend.model.get("type")).toEqual(properties.type);
+      });
+
+      it("should show a graph with the right color", function() {
+        var gradient = "-webkit-linear-gradient(left, rgb(255, 0, 0) 0%, rgb(255, 0, 0) 100%)";
+        expect(legend.$el.find(".graph").css("background")).toEqual(gradient);
+      });
+
+      it("should show left and right values", function() {
+        expect(legend.model.get("leftLabel")).toEqual(properties.left);
+        expect(legend.model.get("rightLabel")).toEqual(properties.right);
+      });
+
+      it("should show a title", function() {
+        expect(legend.model.get("title")).toEqual(properties.title);
+        expect(legend.$el.find(".legend-title").text()).toEqual(properties.title);
+      });
+
+      it("should allow to change the title", function() {
+        legend.setTitle("New title");
+        expect(legend.model.get("show_title")).toEqual(true);
+        expect(legend.$el.find(".legend-title").text()).toEqual("New title");
+      });
+
+      it("should allow to show the title", function() {
+        legend.hideTitle();
+        legend.showTitle();
+        expect(legend.$el.find(".legend-title").html()).toEqual(properties.title);
+      });
+
+      it("should allow to hide the title", function() {
+        legend.hideTitle();
+        expect(legend.$el.find(".legend-title").html()).toEqual(null);
+      });
+
+      it("should allow to change the color", function() {
+        legend.setColor("#CCC");
+        var gradient = "-webkit-linear-gradient(left, rgb(204, 204, 204) 0%, rgb(255, 255, 255) 100%)";
+        expect(legend.$el.find(".graph").css("background")).toEqual(gradient);
       });
 
       it("should allow change the left label", function() {

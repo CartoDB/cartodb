@@ -269,4 +269,171 @@ describe("common.geo.ui.Legend", function() {
   });
 
 
+  describe("Legend (public interface)", function() {
+
+    var custom_data;
+
+    beforeEach(function() {
+
+      custom_data = [
+        { name: "Natural Parks",  value: "#58A062" },
+        { name: "Villages",       value: "#F07971" },
+        { name: "Rivers",         value: "#54BFDE" },
+        { name: "Fields",         value: "#9BC562" },
+        { name: "Caves",          value: "#FABB5C" }
+      ];
+
+    });
+
+    it("should allow to show/hide the title", function() {
+
+      var title = "Custom title";
+
+      var legend = new cdb.geo.ui.Legend.Custom({
+        title: title,
+        data: custom_data
+      });
+
+      legend.render();
+      legend.model.set("show_title", false);
+
+      expect(legend.$el.find(".legend-title").html()).toEqual(null);
+
+      legend.model.set("show_title", true);
+      expect(legend.$el.find(".legend-title").html()).toEqual(title);
+
+      legend.hideTitle();
+      expect(legend.$el.find(".legend-title").html()).toEqual(null);
+
+      legend.showTitle();
+      expect(legend.$el.find(".legend-title").html()).toEqual(title);
+
+    });
+
+    it("should render the title", function() {
+
+      var legend = new cdb.geo.ui.Legend.Custom({
+        title: "Custom title",
+        data: custom_data
+      });
+
+      legend.render();
+
+      expect(legend.$el.find(".legend-title").html()).toEqual("Custom title");
+
+    });
+
+    it("shouldn't render the title if it's not provided", function() {
+
+      var legend = new cdb.geo.ui.Legend.Custom({
+        data: custom_data
+      });
+
+      legend.render();
+
+      expect(legend.$el.find(".legend-title").html()).toEqual(null);
+
+    });
+
+    it("should generate a custom legend", function() {
+
+      var legend = new cdb.geo.ui.Legend.Custom({
+        title: "Custom title",
+        data: custom_data
+      });
+
+      expect(legend.model.get("type")).toEqual("custom");
+      expect(legend.model.get("title")).toEqual("Custom title");
+      expect(legend.items.length).toEqual(5);
+
+      expect(legend.items.at(0).get("name")).toEqual(custom_data[0].name);
+      expect(legend.items.at(0).get("value")).toEqual(custom_data[0].value);
+
+    });
+
+    it("should generate a bubble legend", function() {
+
+      var properties = { title: "Bubble legend", type: "bubble", color: "#FF0000", min: 1, max: 120 };
+
+      var legend = new cdb.geo.ui.Legend.Bubble( properties );
+
+      legend.render();
+
+      expect(legend.model.get("type")).toEqual(properties.type);
+      expect(legend.model.get("title")).toEqual(properties.title);
+
+      expect(legend.model.get("min")).toEqual(properties.min);
+      expect(legend.model.get("max")).toEqual(properties.max);
+
+      expect(legend.$el.find(".graph").css("background-color")).toEqual("rgb(255, 0, 0)");
+
+    });
+
+    it("should allow to change properties from the bubble legend", function() {
+
+      var properties = { title: "Bubble legend", type: "bubble", color: "#FF000", min: 1, max: 120 };
+
+      var legend = new cdb.geo.ui.Legend.Bubble(properties);
+
+      legend.render();
+
+      legend.hideTitle();
+      expect(legend.$el.find(".legend-title").html()).toEqual(null);
+
+      legend.showTitle();
+      expect(legend.$el.find(".legend-title").html()).toEqual(properties.title);
+
+      legend.setColor("#CCC");
+      expect(legend.$el.find(".graph").css("background-color")).toEqual("rgb(204, 204, 204)");
+
+      legend.setMinValue("3")
+      expect(legend.model.get("min")).toEqual("3");
+      expect(legend.$el.find("ul li:first-child").text()).toEqual("3");
+
+      legend.setMaxValue("10000")
+      expect(legend.model.get("max")).toEqual("10000");
+      expect(legend.$el.find("ul li:last-child").text()).toEqual("10000");
+
+    });
+
+    it("should allow to generate a density legend", function() {
+
+      var properties = { title: "Density title", type: "density", colors: ["#DDD", "#FF000", "#F1F1F1"], left: "Left value", right: "Right value" };
+
+      var legend = new cdb.geo.ui.Legend.Density(properties);
+
+      legend.render();
+
+      expect(legend.model.get("type")).toEqual(properties.type);
+      expect(legend.model.get("title")).toEqual(properties.title);
+
+      legend.hideTitle();
+      expect(legend.$el.find(".legend-title").html()).toEqual(null);
+
+      legend.showTitle();
+      expect(legend.$el.find(".legend-title").html()).toEqual(properties.title);
+
+      expect(legend.model.get("leftLabel")).toEqual(properties.left);
+      expect(legend.model.get("rightLabel")).toEqual(properties.right);
+
+      expect(legend.model.get("colors").length).toEqual(properties.colors.length);
+      expect(legend.$el.find(".quartile").length).toEqual(properties.colors.length);
+
+
+      var newColors = ["red", "white", "blue"];
+
+      legend.setColors(newColors);
+      expect(legend.model.get("colors").length).toEqual(newColors.length);
+      expect(legend.$el.find(".quartile").length).toEqual(newColors.length);
+
+      legend.setLeftLabel("Hello!")
+      expect(legend.model.get("leftLabel")).toEqual("Hello!");
+
+      legend.setRightLabel("Hi!")
+      expect(legend.model.get("rightLabel")).toEqual("Hi!");
+
+    });
+
+  });
+
 });

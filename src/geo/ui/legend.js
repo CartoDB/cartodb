@@ -1,3 +1,26 @@
+/*
+ * BaseLegend: common methods for all the legends
+ *
+ * */
+
+cdb.geo.ui.BaseLegend = cdb.core.View.extend({
+
+  _bindModel: function() {
+
+    this.model.bind("change:show_title", this.render, this);
+
+  },
+
+  showTitle: function() {
+    this.model.set("show_title", true);
+  },
+
+  hideTitle: function() {
+    this.model.set("show_title", false);
+  }
+
+});
+
 cdb.geo.ui.LegendItemModel = cdb.core.Model.extend({
 
   defaults: {
@@ -86,7 +109,7 @@ cdb.geo.ui.ChoroplethLegend = cdb.core.View.extend({
  * DensityLegend
  *
  * */
-cdb.geo.ui.DensityLegend = cdb.core.View.extend({
+cdb.geo.ui.DensityLegend = cdb.geo.ui.BaseLegend.extend({
 
   className: "density-legend",
 
@@ -99,6 +122,34 @@ cdb.geo.ui.DensityLegend = cdb.core.View.extend({
 
     this.items    = this.options.items;
     this.model    = new cdb.core.Model();
+
+    this._bindModel();
+
+  },
+
+  _bindModel: function() {
+
+    this.model.bind("change:show_title", this.render, this);
+    this.model.bind("change:colors", this.render, this);
+    this.model.bind("change:leftLabel change:rightLabel", this.render, this);
+
+  },
+
+  setLeftLabel: function(text) {
+
+    this.model.set("leftLabel", text);
+
+  },
+
+  setRightLabel: function(text) {
+
+    this.model.set("rightLabel", text);
+
+  },
+
+  setColors: function(colors) {
+
+    this.model.set("colors", colors);
 
   },
 
@@ -249,7 +300,7 @@ cdb.geo.ui.DebugLegend = cdb.core.View.extend({
  * BubbleLegend
  *
  * */
-cdb.geo.ui.BubbleLegend = cdb.core.View.extend({
+cdb.geo.ui.BubbleLegend = cdb.geo.ui.BaseLegend.extend({
 
   className: "bubble-legend",
 
@@ -257,19 +308,38 @@ cdb.geo.ui.BubbleLegend = cdb.core.View.extend({
 
   initialize: function() {
 
-    this.title       = this.options.title;
-    this.show_title  = this.options.show_title;
-
     this.items = this.options.items;
 
-    this.model    = new cdb.core.Model();
+    this.model = new cdb.core.Model();
 
     this.add_related_model(this.model);
 
+    this._bindModel();
+
+  },
+
+  _bindModel: function() {
+
+    this.model.bind("change:show_title", this.render, this);
+    this.model.bind("change:color", this.render, this);
+    this.model.bind("change:min change:max", this.render, this);
+
+  },
+
+  setColor: function(color) {
+    this.model.set("color", color);
+  },
+
+  setMinValue: function(value) {
+    this.model.set("min", value);
+  },
+
+  setMaxValue: function(value) {
+    this.model.set("max", value);
   },
 
   _renderGraph: function(color) {
-      this.$el.find(".graph").css("background", color);
+    this.$el.find(".graph").css("background", color);
   },
 
   render: function() {
@@ -281,7 +351,8 @@ cdb.geo.ui.BubbleLegend = cdb.core.View.extend({
       var min = this.items.at(0);
       var max = this.items.at(1);
 
-      this.model.set({ title: this.title, show_title: this.show_title, min: min.get("value"), max: max.get("value") });
+      this.model.set({ title: this.options.title, show_title: this.options.show_title, min: min.get("value"), max: max.get("value") });
+
       this.$el.html(this.template(this.model.toJSON()));
 
     }
@@ -302,13 +373,14 @@ cdb.geo.ui.CategoryLegend = cdb.core.View.extend({
 
   className: "category-legend",
 
+  template: _.template('<% if (title && show_title) { %><div class="legend-title"><%= title %></div><% } %><ul></ul>'),
+
   initialize: function() {
 
     this.title       = this.options.title;
     this.show_title  = this.options.show_title;
 
     this.items = this.options.items;
-    this.template = _.template('<% if (title && show_title) { %><div class="legend-title"><%= title %></div><% } %><ul></ul>');
     this.model = new cdb.core.Model({
       type: "custom",
       title: this.title,
@@ -408,37 +480,38 @@ cdb.geo.ui.ColorLegend = cdb.core.View.extend({
 
 });
 
-            //var legend = new cdb.geo.ui.Custom({
-              //data: [
-                //{ name: "Natural Parks",  value: "#58A062" },
-                //{ name: "Villages",       value: "#F07971" },
-                //{ name: "Rivers",         value: "#54BFDE" },
-                //{ name: "Fields",         value: "#9BC562" },
-                //{ name: "Caves",          value: "#FABB5C" }
-              //]
-            //});
-
+//var legend = new cdb.geo.ui.Custom({
+//data: [
+//{ name: "Natural Parks",  value: "#58A062" },
+//{ name: "Villages",       value: "#F07971" },
+//{ name: "Rivers",         value: "#54BFDE" },
+//{ name: "Fields",         value: "#9BC562" },
+//{ name: "Caves",          value: "#FABB5C" }
+//]
+//});
 
 /*
  * CustomLegend
  *
  * */
-cdb.geo.ui.CustomLegend = cdb.core.View.extend({
+cdb.geo.ui.CustomLegend = cdb.geo.ui.BaseLegend.extend({
 
   className: "custom-legend",
+
+  template: _.template('<% if (title && show_title) { %><div class="legend-title"><%= title %></div><% } %><ul></ul>'),
 
   initialize: function() {
 
     this.title       = this.options.title;
-    this.show_title  = this.options.show_title;
 
     this.items = this.options.items;
-    this.template = _.template('<% if (title && show_title) { %><div class="legend-title"><%= title %></div><% } %><ul></ul>');
     this.model = new cdb.core.Model({
       type: "custom",
       title: this.title,
-      show_title: this.show_title
+      show_title: this.options.show_title
     });
+
+    this._bindModel();
 
   },
 
@@ -810,18 +883,15 @@ cdb.geo.ui.Legend.Custom = cdb.geo.ui.CustomLegend.extend({
 
   initialize: function() {
 
-    this.title       = this.options.title;
-    this.show_title  = this.options.show_title;
-
     this.items = new cdb.geo.ui.LegendItems(this.options.data);
-
-    this.template = _.template('<% if (title && show_title) { %><div class="legend-title"><%= title %></div><% } %><ul></ul>');
 
     this.model = new cdb.core.Model({
       type: "custom",
-      title: this.title,
-      show_title: this.title ? true : false
+      title: this.options.title,
+      show_title: this.options.title ? true : false
     });
+
+    this._bindModel();
 
   }
 
@@ -831,15 +901,20 @@ cdb.geo.ui.Legend.Bubble = cdb.geo.ui.BubbleLegend.extend({
 
   className: "cartodb-legend bubble",
 
+  type: "bubble",
+
   initialize: function() {
 
     this.model = new cdb.core.Model({
-      type: "custom",
+      type:  this.type,
       title: this.options.title,
-      min: this.options.min,
-      max: this.options.max,
+      min:   this.options.min,
+      max:   this.options.max,
+      color: this.options.color,
       show_title: this.title ? true : false
     });
+
+    this._bindModel();
 
   },
 
@@ -847,7 +922,7 @@ cdb.geo.ui.Legend.Bubble = cdb.geo.ui.BubbleLegend.extend({
 
     this.$el.html(this.template(this.model.toJSON()));
 
-    this._renderGraph(this.options.color);
+    this._renderGraph(this.model.get("color"));
 
     return this;
 
@@ -857,40 +932,42 @@ cdb.geo.ui.Legend.Bubble = cdb.geo.ui.BubbleLegend.extend({
 
 cdb.geo.ui.Legend.Density = cdb.geo.ui.DensityLegend.extend({
 
+  type: "density",
+
   className: "cartodb-legend density",
 
   initialize: function() {
 
-    this.title       = this.options.title;
-    this.show_title  = this.options.show_title;
-
     this.items    = this.options.items;
-    this.model    = new cdb.core.Model();
+
+    this.model = new cdb.core.Model({
+      type:          this.type,
+      title:         this.options.title,
+      show_title:    this.options.title ? true : false,
+      leftLabel:     this.options.left,
+      rightLabel:    this.options.right,
+      colors:        this.options.colors,
+      buckets_count: this.options.colors.length
+    });
+
+    this.add_related_model(this.model);
+    this._bindModel();
+
+  },
+
+  _generateColorList: function() {
+
+    return _.map(this.model.get("colors"), function(color) {
+      return '<div class="quartile" style="background-color:' + color + '"></div>';
+    }).join("");
 
   },
 
   render: function() {
 
-    var leftLabel  = this.options.left;
-    var rightLabel = this.options.right;
+    var options = _.extend(this.model.toJSON(), { colors: this._generateColorList() });
 
-    var colors = "";
-
-    for (var i = 0; i < this.options.colors.length; i++) {
-      var color = this.options.colors[i];
-      colors += '<div class="quartile" style="background-color:'+color+'"></div>';
-    }
-
-    this.model.set({
-      title:         this.title,
-      show_title:    this.title ? true : false,
-      leftLabel:     leftLabel,
-      rightLabel:    rightLabel,
-      colors:        colors,
-      buckets_count: this.options.colors.length
-    });
-
-    this.$el.html(this.template(this.model.toJSON()));
+    this.$el.html(this.template(options));
 
     return this;
 
@@ -929,3 +1006,43 @@ cdb.geo.ui.Legend.Intensity = cdb.geo.ui.IntensityLegend.extend({
   }
 
 });
+
+/*
+ *
+ * Public interface for the Category Legend
+ *
+ * */
+cdb.geo.ui.Legend.Category = cdb.geo.ui.CategoryLegend.extend({
+
+  className: "cartodb-legend category",
+
+  initialize: function() {
+
+    this.items = new cdb.geo.ui.LegendItems(this.options.data);
+
+    this.model = new cdb.core.Model({
+      type: "category",
+      title: this.options.title,
+      show_title: this.options.title ? true : false
+    });
+
+  },
+
+  render: function() {
+
+    this.$el.html(this.template(this.model.toJSON()));
+
+    this._renderItems();
+
+    return this;
+
+  }
+
+});
+
+/*
+ *
+ * Public interface for the Color Legend
+ *
+ * */
+cdb.geo.ui.Legend.Color = cdb.geo.ui.Legend.Category.extend({ });

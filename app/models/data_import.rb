@@ -16,6 +16,7 @@ require_relative '../connectors/importer'
 class DataImport < Sequel::Model
   REDIS_LOG_KEY_PREFIX          = 'importer'
   REDIS_LOG_EXPIRATION_IN_SECS  = 3600 * 24 * 2 # 2 days
+  MERGE_WITH_UNMATCHING_COLUMN_TYPES_RE = /No .*matches.*argument type.*/
 
   attr_reader   :log
 
@@ -211,6 +212,11 @@ class DataImport < Sequel::Model
     self.update(table_names: new_table_name)
     migrate_existing(new_table_name)
     self.results.push CartoDB::Importer2::Result.new(success: true, error: nil)
+  rescue Sequel::DatabaseError => exception
+    if exception.to_s =~ MERGE_WITH_UNMATCHING_COLUMN_TYPES_RE
+      set_merge_type_mismatch 
+    end
+    false
   end
 
   def import_from_query(name, query)
@@ -344,5 +350,13 @@ class DataImport < Sequel::Model
     payload.merge!(error_title: get_error_text) if state == 'failure'
     payload
   end
+
+  def set_merge_type_mismatch
+    self.results =
+      [CartoDB::Importer2::Result.new(success: false, error_code: 8004)]
+    self.error_code = 8004
+    self.state = 'failure'
+  end 
+
 end
 

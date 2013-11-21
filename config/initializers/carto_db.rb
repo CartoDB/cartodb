@@ -151,6 +151,10 @@ module CartoDB
       title: 'Error creating table from SQL query',
       what_about: "We couldn't create a table from your query. Please check it doesn't return duplicate column names. Please <a href='mailto:support@cartodb.com?subject=Unknown error'>contact us</a> if you need help editing your query."
     },
+    8004 => {
+      title: 'Merge with unmatching column types',
+      what_about: "The columns you have chosen don't have the same column type in both tables. Please change the types so the columns will have the same type and try again."
+    },
     99999 => {
       title: 'Unknown',
       what_about: "Sorry, something went wrong and we're not sure what. Try

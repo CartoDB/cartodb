@@ -511,7 +511,8 @@ cdb.geo.ui.StackedLegend = cdb.core.View.extend({
   className: "cartodb-legend-stack",
 
   initialize: function() {
-
+    // deprecated
+    this.getLayerByIndex = this.getLegendByIndex;
     _.each(this.options.legends, this._setupBinding, this);
 
   },
@@ -522,9 +523,7 @@ cdb.geo.ui.StackedLegend = cdb.core.View.extend({
 
   },
 
-  //TODO: change this method to
-  // getLegendByIndex
-  getLayerByIndex: function(index) {
+  getLegendByIndex: function(index) {
     if (!this._layerByIndex) {
       this._layerByIndex = {};
       var legends = this.options.legends;

@@ -3,6 +3,10 @@
 * Improvements
   * Start storing the api_key in the database.
   * Created a rake task that copies the api_key from redis to PSQL.
+    * Existing installations, please run:
+    ```
+    $ bundle exec rake cartodb:db:copy_api_keys_from_red
+    ```
   * Improved sprite compilation time + CSS rendering
   * Created a notification model.
   * Re-enable save_metadata during user after_save.

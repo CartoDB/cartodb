@@ -5,7 +5,7 @@
   * Created a rake task that copies the api_key from redis to PSQL.
     * Existing installations, please run:
     ```
-    $ bundle exec rake cartodb:db:copy_api_keys_from_red
+    $ bundle exec rake cartodb:db:copy_api_keys_from_redis
     ```
   * Improved sprite compilation time + CSS rendering
   * Created a notification model.

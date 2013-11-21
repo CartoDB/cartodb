@@ -4,7 +4,13 @@ var assert = {
     message = message || '';
     if(!value) throw new Error("assertion failed", message);
   }
+};
+
+if (navigator.userAgent.indexOf('MSIE 8.0') !== -1 || navigator.userAgent.indexOf('MSIE 7.0') !== -1) {
+  Object.defineProperty = function(o, p, fn) { o[p] = fn.value; };
 }
+
+
 
 var carto_initialize = function(carto, uri, callback) {
   callback();
@@ -1875,7 +1881,6 @@ function require(arg) {
     }
     return mod;
 }
-var carto, tree, _;
 
 if (typeof(exports) !== 'undefined') {
     carto = exports;
@@ -1885,6 +1890,7 @@ if (typeof(exports) !== 'undefined') {
     if (typeof(window.carto) === 'undefined') { window.carto = {}; }
     carto = window.carto;
     tree = window.carto.tree = {};
+    _ = window._;
 }
 
 // carto.js - parser
@@ -2501,7 +2507,7 @@ carto.Parser = function Parser(env) {
                 var e, elements = [];
                 var f, filters = new tree.Filterset();
                 var z, zoom = tree.Zoom.all;
-                var fo, frame_offset = tree.FrameOffset.null;
+                var fo, frame_offset = tree.FrameOffset.none;
                 var segments = 0, conditions = 0;
 
                 while (
@@ -3656,7 +3662,7 @@ tree.FrameOffset = function(op, value, index) {
 };
 
 tree.FrameOffset.max = 32;
-tree.FrameOffset.null = 0;
+tree.FrameOffset.none = 0;
 
 (function(tree) {
 //
@@ -4805,7 +4811,7 @@ tree.Value.prototype.toJS = function() {
   //var v = this.value[0].value[0];
   var val = this.eval()
   var v = val.toString();
-  if(val.is === "color" || val.is === 'uri') {
+  if(val.is === "color" || val.is === 'uri' || val.is === 'string') {
     v = "'" + v + "'";
   } else if (val.is === 'field') {
     // replace [varuable] by ctx['variable']
@@ -4990,6 +4996,11 @@ CartoCSS.Layer.prototype = {
     return this.fullName().split('::')[1];
   },
 
+  eval: function(prop) {
+    var p = this.shader[prop];
+    if (!p) return;
+    return p({}, { zoom: 0, 'frame-offset': 0 });
+  },
 
   /*
    * `target`: style, 'svg', 'canvas-2d'...
@@ -5176,3 +5187,5542 @@ if(typeof(module) !== 'undefined') {
 
 
 })(require('../carto'));
+(function(exports) {
+
+  exports.torque = exports.torque || {};
+
+  var requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame || function(c) { setTimeout(c, 16); }
+
+  var cancelAnimationFrame = window.requestAnimationFrame || window.mozCancelAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame || function(c) { };
+
+  /**
+   * options:
+   *    animationDuration in seconds
+   *    animationDelay in seconds
+   */
+  function Animator(callback, options) {
+    if(!options.steps) {
+      throw new Error("steps option missing")
+    }
+    this.options = options;
+    this.running = false;
+    this._tick = this._tick.bind(this);
+    this._t0 = +new Date();
+    this.callback = callback;
+    this._time = 0.0;
+    _.defaults(this.options, {
+      animationDelay: 0,
+      maxDelta: 0.2,
+      loop: true
+    });
+
+    this.rescale();
+
+  }
+
+
+  Animator.prototype = {
+
+    start: function() {
+      this.running = true;
+      requestAnimationFrame(this._tick);
+    },
+
+    isRunning: function() {
+      return this.running;
+    },
+
+    stop: function() {
+      this.pause();
+      this.time(0);
+    },
+
+    // real animation time
+    time: function(_) {
+      if (!arguments.length) return this._time;
+      this._time = _;
+      var t = this.range(this.domain(this._time));
+      this.callback(t);
+    },
+
+    toggle: function() {
+      if (this.running) {
+        this.pause()
+      } else {
+        this.start()
+      }
+    },
+
+    rescale: function() {
+      this.domainInv = torque.math.linear(this.options.animationDelay, this.options.animationDelay + this.options.animationDuration);
+      this.domain = this.domainInv.invert();
+      this.range = torque.math.linear(0, this.options.steps);
+      this.rangeInv = this.range.invert();
+      this.time(this._time);
+      return this;
+    },
+
+    duration: function(_) {
+      if (!arguments.length)  return this.options.animationDuration;
+      this.options.animationDuration = _;
+      if (this.time() > _) {
+        this.time(0);
+      }
+      this.rescale();
+      return this;
+    },
+
+    steps: function(_) {
+      this.options.steps = _;
+      return this.rescale();
+    },
+
+    step: function(s) {
+      if(arguments.length === 0) return this.range(this.domain(this._time));
+      this._time = this.domainInv(this.rangeInv(s));
+    },
+
+    pause: function() {
+      this.running = false;
+      cancelAnimationFrame(this._tick);
+    },
+
+    _tick: function() {
+      var t1 = +new Date();
+      var delta = (t1 - this._t0)*0.001;
+      // if delta is really big means the tab lost the focus
+      // at some point, so limit delta change
+      delta = Math.min(this.options.maxDelta, delta);
+      this._t0 = t1;
+      this._time += delta;
+      this.time(this._time);
+      if(this.step() >= this.options.steps) {
+        this._time = 0;
+      }
+      if(this.running) {
+        requestAnimationFrame(this._tick);
+      }
+    }
+
+  };
+
+  exports.torque.Animator = Animator;
+
+
+
+})(typeof exports === "undefined" ? this : exports);
+(function(exports) {
+
+exports.torque = exports.torque || {};
+
+var _torque_reference_latest = {
+    "version": "1.0.0",
+    "style": {
+        "comp-op": {
+            "css": "comp-op",
+            "default-value": "src-over",
+            "default-meaning": "add the current layer on top of other layers",
+            "doc": "Composite operation. This defines how this layer should behave relative to layers atop or below it.",
+            "type": [
+                "src", //
+                "src-over", //
+                "dst-over", //
+                "src-in", //
+                "dst-in", //
+                "src-out", //
+                "dst-out", //
+                "src-atop", //
+                "dst-atop", //
+                "xor", //
+                "darken", //
+                "lighten" //
+            ]
+        }
+    },
+    "layer" : {
+        "buffer-size": {
+            "default-value": "0",
+            "type":"float",
+            "default-meaning": "No buffer will be used",
+            "doc": "Extra tolerance around the Layer extent (in pixels) used to when querying and (potentially) clipping the layer data during rendering"
+        },
+        "-torque-steps": {
+            "default-value": "128",
+            "type":"number",
+            "default-meaning": "the data is broken into 512 bins",
+            "doc": "Number of steps used in the animation. If the data contains a fewere number of total steps, the lesser value will be used."
+        },
+        "-torque-resolution": {
+            "default-value": "2",
+            "type":"number",
+            "default-meaning": "",
+            "doc": "Spatial resolution in pixels. A resolution of 1 means no spatial aggregation of the data. Any other resolution of N results in spatial aggregation into cells of NxN pixels. The value N must be power of 2"
+        },
+        "-torque-animation-duration": {
+            "default-value": "30",
+            "type":"number",
+            "default-meaning": "the animation lasts 30 seconds",
+            "doc": "Animation duration in seconds",
+        },
+        "-torque-aggregation-function": {
+            "default-value": "count(cartodb_id)",
+            "type": "string",
+            "default-meaning": "the value for each cell is the count of points in that cell",
+            "doc": "A function used to calculate a value from the aggregate data for each cell. See -torque-resolution",
+        },
+        "-torque-time-attribute": {
+            "default-value": "time",
+            "type": "string",
+            "default-meaning": "the data column in your table that is of a time based type",
+            "doc": "The table column that contains the time information used create the animation",
+        },
+        "-torque-data-aggregation": {
+            "default-value": "linear",
+            "type": [
+              "cumulative"
+            ],
+            "default-meaning": "previous values are discarded",
+            "doc": "A linear animation will discard previous values while a cumulative animation will accumulate them until it restarts",
+        }
+    },
+    "symbolizers" : {
+        "*": {
+            "comp-op": {
+                "css": "comp-op",
+                "default-value": "src-over",
+                "default-meaning": "add the current layer on top of other layers",
+                "doc": "Composite operation. This defines how this layer should behave relative to layers atop or below it.",
+                "type": [
+                  "src", //
+                  "src-over", //
+                  "dst-over", //
+                  "src-in", //
+                  "dst-in", //
+                  "src-out", //
+                  "dst-out", //
+                  "src-atop", //
+                  "dst-atop", //
+                  "xor", //
+                  "darken", //
+                  "lighten" //
+                ]
+            },
+            "opacity": {
+                "css": "opacity",
+                "type": "float",
+                "doc": "An alpha value for the style (which means an alpha applied to all features in separate buffer and then composited back to main buffer)",
+                "default-value": 1,
+                "default-meaning": "no separate buffer will be used and no alpha will be applied to the style after rendering"
+            }
+        },
+        "trail": {
+          "steps": {
+            "css": "trail-steps",
+            "type": "float",
+            "default-value": 1,
+            "default-meaning": "no trail steps",
+            "doc": "How many steps of trails are going to be rendered"
+          }
+        },
+        "polygon": {
+            "fill": {
+                "css": "polygon-fill",
+                "type": "color",
+                "default-value": "rgba(128,128,128,1)",
+                "default-meaning": "gray and fully opaque (alpha = 1), same as rgb(128,128,128)",
+                "doc": "Fill color to assign to a polygon"
+            },
+            "fill-opacity": {
+                "css": "polygon-opacity",
+                "type": "float",
+                "doc": "The opacity of the polygon",
+                "default-value": 1,
+                "default-meaning": "opaque"
+            }
+        },
+        "line": {
+            "stroke": {
+                "css": "line-color",
+                "default-value": "rgba(0,0,0,1)",
+                "type": "color",
+                "default-meaning": "black and fully opaque (alpha = 1), same as rgb(0,0,0)",
+                "doc": "The color of a drawn line"
+            },
+            "stroke-width": {
+                "css": "line-width",
+                "default-value": 1,
+                "type": "float",
+                "doc": "The width of a line in pixels"
+            },
+            "stroke-opacity": {
+                "css": "line-opacity",
+                "default-value": 1,
+                "type": "float",
+                "default-meaning": "opaque",
+                "doc": "The opacity of a line"
+            },
+            "stroke-linejoin": {
+                "css": "line-join",
+                "default-value": "miter",
+                "type": [
+                    "miter",
+                    "round",
+                    "bevel"
+                ],
+                "doc": "The behavior of lines when joining"
+            },
+            "stroke-linecap": {
+                "css": "line-cap",
+                "default-value": "butt",
+                "type": [
+                    "butt",
+                    "round",
+                    "square"
+                ],
+                "doc": "The display of line endings"
+            }
+        },
+        "markers": {
+            "file": {
+                "css": "marker-file",
+                "doc": "An SVG file that this marker shows at each placement. If no file is given, the marker will show an ellipse.",
+                "default-value": "",
+                "default-meaning": "An ellipse or circle, if width equals height",
+                "type": "uri"
+            },
+            "opacity": {
+                "css": "marker-opacity",
+                "doc": "The overall opacity of the marker, if set, overrides both the opacity of both the fill and stroke",
+                "default-value": 1,
+                "default-meaning": "The stroke-opacity and fill-opacity will be used",
+                "type": "float"
+            },
+            "fill-opacity": {
+                "css": "marker-fill-opacity",
+                "doc": "The fill opacity of the marker",
+                "default-value": 1,
+                "default-meaning": "opaque",
+                "type": "float"
+            },
+            "stroke": {
+                "css": "marker-line-color",
+                "doc": "The color of the stroke around a marker shape.",
+                "default-value": "black",
+                "type": "color"
+            },
+            "stroke-width": {
+                "css": "marker-line-width",
+                "doc": "The width of the stroke around a marker shape, in pixels. This is positioned on the boundary, so high values can cover the area itself.",
+                "type": "float"
+            },
+            "stroke-opacity": {
+                "css": "marker-line-opacity",
+                "default-value": 1,
+                "default-meaning": "opaque",
+                "doc": "The opacity of a line",
+                "type": "float"
+            },
+            "fill": {
+                "css": "marker-fill",
+                "default-value": "blue",
+                "doc": "The color of the area of the marker.",
+                "type": "color"
+            }
+        },
+        "point": {
+            "file": {
+                "css": "point-file",
+                "type": "uri",
+                "required": false,
+                "default-value": "none",
+                "doc": "Image file to represent a point"
+            },
+            "opacity": {
+                "css": "point-opacity",
+                "type": "float",
+                "default-value": 1.0,
+                "default-meaning": "Fully opaque",
+                "doc": "A value from 0 to 1 to control the opacity of the point"
+            }
+        }
+    },
+    "colors": {
+        "aliceblue":  [240, 248, 255],
+        "antiquewhite":  [250, 235, 215],
+        "aqua":  [0, 255, 255],
+        "aquamarine":  [127, 255, 212],
+        "azure":  [240, 255, 255],
+        "beige":  [245, 245, 220],
+        "bisque":  [255, 228, 196],
+        "black":  [0, 0, 0],
+        "blanchedalmond":  [255,235,205],
+        "blue":  [0, 0, 255],
+        "blueviolet":  [138, 43, 226],
+        "brown":  [165, 42, 42],
+        "burlywood":  [222, 184, 135],
+        "cadetblue":  [95, 158, 160],
+        "chartreuse":  [127, 255, 0],
+        "chocolate":  [210, 105, 30],
+        "coral":  [255, 127, 80],
+        "cornflowerblue":  [100, 149, 237],
+        "cornsilk":  [255, 248, 220],
+        "crimson":  [220, 20, 60],
+        "cyan":  [0, 255, 255],
+        "darkblue":  [0, 0, 139],
+        "darkcyan":  [0, 139, 139],
+        "darkgoldenrod":  [184, 134, 11],
+        "darkgray":  [169, 169, 169],
+        "darkgreen":  [0, 100, 0],
+        "darkgrey":  [169, 169, 169],
+        "darkkhaki":  [189, 183, 107],
+        "darkmagenta":  [139, 0, 139],
+        "darkolivegreen":  [85, 107, 47],
+        "darkorange":  [255, 140, 0],
+        "darkorchid":  [153, 50, 204],
+        "darkred":  [139, 0, 0],
+        "darksalmon":  [233, 150, 122],
+        "darkseagreen":  [143, 188, 143],
+        "darkslateblue":  [72, 61, 139],
+        "darkslategrey":  [47, 79, 79],
+        "darkturquoise":  [0, 206, 209],
+        "darkviolet":  [148, 0, 211],
+        "deeppink":  [255, 20, 147],
+        "deepskyblue":  [0, 191, 255],
+        "dimgray":  [105, 105, 105],
+        "dimgrey":  [105, 105, 105],
+        "dodgerblue":  [30, 144, 255],
+        "firebrick":  [178, 34, 34],
+        "floralwhite":  [255, 250, 240],
+        "forestgreen":  [34, 139, 34],
+        "fuchsia":  [255, 0, 255],
+        "gainsboro":  [220, 220, 220],
+        "ghostwhite":  [248, 248, 255],
+        "gold":  [255, 215, 0],
+        "goldenrod":  [218, 165, 32],
+        "gray":  [128, 128, 128],
+        "grey":  [128, 128, 128],
+        "green":  [0, 128, 0],
+        "greenyellow":  [173, 255, 47],
+        "honeydew":  [240, 255, 240],
+        "hotpink":  [255, 105, 180],
+        "indianred":  [205, 92, 92],
+        "indigo":  [75, 0, 130],
+        "ivory":  [255, 255, 240],
+        "khaki":  [240, 230, 140],
+        "lavender":  [230, 230, 250],
+        "lavenderblush":  [255, 240, 245],
+        "lawngreen":  [124, 252, 0],
+        "lemonchiffon":  [255, 250, 205],
+        "lightblue":  [173, 216, 230],
+        "lightcoral":  [240, 128, 128],
+        "lightcyan":  [224, 255, 255],
+        "lightgoldenrodyellow":  [250, 250, 210],
+        "lightgray":  [211, 211, 211],
+        "lightgreen":  [144, 238, 144],
+        "lightgrey":  [211, 211, 211],
+        "lightpink":  [255, 182, 193],
+        "lightsalmon":  [255, 160, 122],
+        "lightseagreen":  [32, 178, 170],
+        "lightskyblue":  [135, 206, 250],
+        "lightslategray":  [119, 136, 153],
+        "lightslategrey":  [119, 136, 153],
+        "lightsteelblue":  [176, 196, 222],
+        "lightyellow":  [255, 255, 224],
+        "lime":  [0, 255, 0],
+        "limegreen":  [50, 205, 50],
+        "linen":  [250, 240, 230],
+        "magenta":  [255, 0, 255],
+        "maroon":  [128, 0, 0],
+        "mediumaquamarine":  [102, 205, 170],
+        "mediumblue":  [0, 0, 205],
+        "mediumorchid":  [186, 85, 211],
+        "mediumpurple":  [147, 112, 219],
+        "mediumseagreen":  [60, 179, 113],
+        "mediumslateblue":  [123, 104, 238],
+        "mediumspringgreen":  [0, 250, 154],
+        "mediumturquoise":  [72, 209, 204],
+        "mediumvioletred":  [199, 21, 133],
+        "midnightblue":  [25, 25, 112],
+        "mintcream":  [245, 255, 250],
+        "mistyrose":  [255, 228, 225],
+        "moccasin":  [255, 228, 181],
+        "navajowhite":  [255, 222, 173],
+        "navy":  [0, 0, 128],
+        "oldlace":  [253, 245, 230],
+        "olive":  [128, 128, 0],
+        "olivedrab":  [107, 142, 35],
+        "orange":  [255, 165, 0],
+        "orangered":  [255, 69, 0],
+        "orchid":  [218, 112, 214],
+        "palegoldenrod":  [238, 232, 170],
+        "palegreen":  [152, 251, 152],
+        "paleturquoise":  [175, 238, 238],
+        "palevioletred":  [219, 112, 147],
+        "papayawhip":  [255, 239, 213],
+        "peachpuff":  [255, 218, 185],
+        "peru":  [205, 133, 63],
+        "pink":  [255, 192, 203],
+        "plum":  [221, 160, 221],
+        "powderblue":  [176, 224, 230],
+        "purple":  [128, 0, 128],
+        "red":  [255, 0, 0],
+        "rosybrown":  [188, 143, 143],
+        "royalblue":  [65, 105, 225],
+        "saddlebrown":  [139, 69, 19],
+        "salmon":  [250, 128, 114],
+        "sandybrown":  [244, 164, 96],
+        "seagreen":  [46, 139, 87],
+        "seashell":  [255, 245, 238],
+        "sienna":  [160, 82, 45],
+        "silver":  [192, 192, 192],
+        "skyblue":  [135, 206, 235],
+        "slateblue":  [106, 90, 205],
+        "slategray":  [112, 128, 144],
+        "slategrey":  [112, 128, 144],
+        "snow":  [255, 250, 250],
+        "springgreen":  [0, 255, 127],
+        "steelblue":  [70, 130, 180],
+        "tan":  [210, 180, 140],
+        "teal":  [0, 128, 128],
+        "thistle":  [216, 191, 216],
+        "tomato":  [255, 99, 71],
+        "turquoise":  [64, 224, 208],
+        "violet":  [238, 130, 238],
+        "wheat":  [245, 222, 179],
+        "white":  [255, 255, 255],
+        "whitesmoke":  [245, 245, 245],
+        "yellow":  [255, 255, 0],
+        "yellowgreen":  [154, 205, 50],
+        "transparent":  [0, 0, 0, 0]
+    }
+};
+
+exports.torque['torque-reference'] =  {
+  version: {
+    latest: _torque_reference_latest,
+    '1.0.0': _torque_reference_latest
+  }
+}
+
+})(typeof exports === "undefined" ? this : exports);
+//
+// common functionallity for torque layers
+//
+
+(function(exports) {
+
+function TorqueLayer() {}
+
+TorqueLayer.prototype = {
+};
+
+TorqueLayer.optionsFromLayer = function(mapConfig) {
+  var opts = {};
+  if (!mapConfig) return opts;
+  var attrs = {
+    'buffer-size': 'buffer-size',
+    '-torque-steps': 'steps',
+    '-torque-resolution': 'resolution',
+    '-torque-animation-duration': 'animationDuration',
+    '-torque-aggregation-function': 'countby',
+    '-torque-time-attribute': 'column',
+    '-torque-data-aggregation': 'data_aggregation'
+  };
+  for (var i in attrs) {
+    var v = mapConfig.eval(i);
+    if (v !== undefined) {
+      var a = attrs[i];
+      opts[a] = v;
+    }
+  }
+  return opts;
+};
+
+TorqueLayer.optionsFromCartoCSS = function(cartocss) {
+  var shader = new carto.RendererJS().render(cartocss);
+  var mapConfig = shader.findLayer({ name: 'Map' });
+  return TorqueLayer.optionsFromLayer(mapConfig);
+};
+
+exports.torque.common = torque.common || {};
+exports.torque.common.TorqueLayer = TorqueLayer;
+
+})(typeof exports === "undefined" ? this : exports);
+(function(exports) {
+
+  exports.torque = exports.torque || {};
+
+  var Event = {};
+  Event.on = function(evt, callback) {
+      var cb = this._evt_callbacks = this._evt_callbacks || {};
+      var l = cb[evt] || (cb[evt] = []);
+      l.push(callback);
+  };
+
+  Event.trigger = function(evt) {
+      var c = this._evt_callbacks && this._evt_callbacks[evt];
+      for(var i = 0; c && i < c.length; ++i) {
+          c[i].apply(this, Array.prototype.slice.call(arguments, 1));
+      }
+  };
+
+  Event.fire = Event.trigger;
+
+  Event.off = function (evt, callback) {
+      var c = this._evt_callbacks && this._evt_callbacks[evt];
+      if (c && !callback) {
+        delete this._evt_callbacks[evt];
+        return this;
+     }
+     var remove = [];
+     for(var i = 0; c && i < c.length; ++i) {
+       if(c[i] === callback) remove.push(i);
+     }
+     while((i = remove.pop()) !== undefined) c.splice(i, 1);
+  };
+
+  Event.callbacks = function(evt) {
+    return (this._evt_callbacks && this._evt_callbacks[evt]) || [];
+  };
+
+  exports.torque.Event = Event;
+
+
+  // types
+  exports.torque.types = {
+    Uint8Array: typeof(window['Uint8Array']) !== 'undefined' ? window.Uint8Array : Array,
+    Uint32Array: typeof(window['Uint32Array']) !== 'undefined' ? window.Uint32Array : Array,
+    Int32Array: typeof(window['Int32Array']) !== 'undefined' ? window.Int32Array: Array
+  };
+
+  exports.torque.isBrowserSupported = function() {
+    return !!document.createElement('canvas');
+  };
+
+})(typeof exports === "undefined" ? this : exports);
+(function(exports) {
+
+  exports.torque = exports.torque || {};
+
+  function clamp(a, b) {
+    return function(t) {
+      return Math.max(Math.min(t, b), a);
+    };
+  }
+
+  function invLinear(a, b) {
+    var c = clamp(0, 1.0);
+    return function(t) {
+      return c((t - a)/(b - a));
+    };
+  }
+
+  function linear(a, b) {
+    var c = clamp(a, b);
+    function _linear(t) {
+      return c(a*(1.0 - t) + t*b);
+    }
+
+    _linear.invert = function() {
+      return invLinear(a, b);
+    };
+
+    return _linear;
+  }
+
+  exports.torque.math = {
+    clamp: clamp,
+    linear: linear,
+    invLinear: invLinear
+  };
+
+})(typeof exports === "undefined" ? this : exports);
+
+/*
+# metrics profiler
+
+## timing
+
+```
+ var timer = Profiler.metric('resource:load')
+ time.start();
+ ...
+ time.end();
+```
+
+## counters
+
+```
+ var counter = Profiler.metric('requests')
+ counter.inc();   // 1
+ counter.inc(10); // 11
+ counter.dec()    // 10
+ counter.dec(10)  // 0
+```
+
+## Calls per second
+```
+  var fps = Profiler.metric('fps')
+  function render() {
+    fps.mark();
+  }
+```
+*/
+(function(exports) {
+
+var MAX_HISTORY = 1024;
+function Profiler() {}
+Profiler.metrics = {};
+
+Profiler.get = function(name) {
+  return Profiler.metrics[name] || {
+    max: 0,
+    min: Number.MAX_VALUE,
+    avg: 0,
+    total: 0,
+    count: 0,
+    history: typeof(Float32Array) !== 'undefined' ? new Float32Array(MAX_HISTORY) : []
+  };
+};
+
+Profiler.new_value = function (name, value) {
+  var t = Profiler.metrics[name] = Profiler.get(name);
+
+  t.max = Math.max(t.max, value);
+  t.min = Math.min(t.min, value);
+  t.total += value;
+  ++t.count;
+  t.avg = t.total / t.count;
+  t.history[t.count%MAX_HISTORY] = value;
+};
+
+Profiler.print_stats = function () {
+  for (k in Profiler.metrics) {
+    var t = Profiler.metrics[k];
+    console.log(" === " + k + " === ");
+    console.log(" max: " + t.max);
+    console.log(" min: " + t.min);
+    console.log(" avg: " + t.avg);
+    console.log(" count: " + t.count);
+    console.log(" total: " + t.total);
+  }
+};
+
+function Metric(name) {
+  this.t0 = null;
+  this.name = name;
+  this.count = 0;
+}
+
+Metric.prototype = {
+
+  //
+  // start a time measurement
+  //
+  start: function() {
+    this.t0 = +new Date();
+    return this;
+  },
+
+  // elapsed time since start was called
+  _elapsed: function() {
+    return +new Date() - this.t0;
+  },
+
+  //
+  // finish a time measurement and register it
+  // ``start`` should be called first, if not this 
+  // function does not take effect
+  //
+  end: function() {
+    if (this.t0 !== null) {
+      Profiler.new_value(this.name, this._elapsed());
+      this.t0 = null;
+    }
+  },
+
+  //
+  // increments the value 
+  // qty: how many, default = 1
+  //
+  inc: function(qty) {
+    qty = qty === undefined ? 1: qty;
+    Profiler.new_value(this.name, Profiler.get(this.name).count + (qty ? qty: 0));
+  },
+
+  //
+  // decrements the value 
+  // qty: how many, default = 1
+  //
+  dec: function(qty) {
+    qty = qty === undefined ? 1: qty;
+    this.inc(-qty);
+  },
+
+  //
+  // measures how many times per second this function is called
+  //
+  mark: function() {
+    ++this.count;
+    if(this.t0 === null) {
+      this.start();
+      return;
+    }
+    var elapsed = this._elapsed();
+    if(elapsed > 1) {
+      Profiler.new_value(this.name, this.count);
+      this.count = 0;
+      this.start();
+    }
+  }
+};
+
+Profiler.metric = function(name) {
+  return new Metric(name);
+};
+
+exports.Profiler = Profiler;
+
+})(typeof exports === "undefined" ? this : exports);
+(function(exports) {
+
+  var torque = exports.torque = exports.torque || {};
+  var providers = exports.torque.providers = exports.torque.providers || {};
+
+  var Uint8Array = torque.types.Uint8Array;
+  var Int32Array = torque.types.Int32Array;
+  var Uint32Array = torque.types.Uint32Array;
+
+  // format('hello, {0}', 'rambo') -> "hello, rambo"
+  function format(str) {
+    for(var i = 1; i < arguments.length; ++i) {
+      var attrs = arguments[i];
+      for(var attr in attrs) {
+        str = str.replace(RegExp('\\{' + attr + '\\}', 'g'), attrs[attr]);
+      }
+    }
+    return str;
+  }
+
+  var json = function (options) {
+    this._ready = false;
+    this._tileQueue = [];
+    this.options = options;
+
+    this.options.is_time = this.options.is_time === undefined ? true: this.options.is_time;
+    this.options.tiler_protocol = options.tiler_protocol || 'http';
+    this.options.tiler_domain = options.tiler_domain || 'cartodb.com';
+    this.options.tiler_port = options.tiler_port || 80;
+
+    if (this.options.data_aggregation) {
+      this.options.cumulative = this.options.data_aggregation === 'cumulative';
+    }
+
+    // check options
+    if (options.resolution === undefined ) throw new Error("resolution should be provided");
+    if (options.steps === undefined ) throw new Error("steps should be provided");
+    if(options.start === undefined) {
+      this._fetchKeySpan();
+    } else {
+      this._setReady(true);
+    }
+  };
+
+  json.prototype = {
+
+    /**
+     * return the torque tile encoded in an efficient javascript
+     * structure:
+     * {
+     *   x:Uint8Array x coordinates in tile reference system, normally from 0-255
+     *   y:Uint8Array y coordinates in tile reference system
+     *   Index: Array index to the properties
+     * }
+     */
+    proccessTile: function(rows, coord, zoom) {
+      var r;
+      var x = new Uint8Array(rows.length);
+      var y = new Uint8Array(rows.length);
+
+      var prof_mem = Profiler.metric('ProviderJSON:mem');
+      var prof_point_count = Profiler.metric('ProviderJSON:point_count');
+      var prof_process_time = Profiler.metric('ProviderJSON:process_time').start()
+
+      // count number of dates
+      var dates = 0;
+      var maxDateSlots = -1;
+      for (r = 0; r < rows.length; ++r) {
+        var row = rows[r];
+        dates += row.dates__uint16.length;
+        for(var d = 0; d < row.dates__uint16.length; ++d) {
+          maxDateSlots = Math.max(maxDateSlots, row.dates__uint16[d]);
+        }
+      }
+
+      if(this.options.cumulative) {
+        dates = (1 + maxDateSlots) * rows.length;
+      }
+
+      // reserve memory for all the dates
+      var timeIndex = new Int32Array(maxDateSlots + 1); //index-size
+      var timeCount = new Int32Array(maxDateSlots + 1);
+      var renderData = new (this.options.valueDataType || Uint8Array)(dates);
+      var renderDataPos = new Uint32Array(dates);
+
+      prof_mem.inc(
+        4 * maxDateSlots + // timeIndex
+        4 * maxDateSlots + // timeCount
+        dates + //renderData
+        dates * 4
+      ); //renderDataPos
+
+      prof_point_count.inc(rows.length);
+
+      var rowsPerSlot = {};
+
+      // precache pixel positions
+      for (var r = 0; r < rows.length; ++r) {
+        var row = rows[r];
+        x[r] = row.x__uint8 * this.options.resolution;
+        // fix value when it's in the tile EDGE
+        // TODO: this should be fixed in SQL query
+        if (row.y__uint8 === -1) {
+          y[r] = 0;
+        } else {
+          y[r] = row.y__uint8 * this.options.resolution;
+        }
+
+        var dates = row.dates__uint16;
+        var vals = row.vals__uint8;
+        var prev_val = 0;
+        for (var j = 0, len = dates.length; j < len; ++j) {
+            var rr = rowsPerSlot[dates[j]] || (rowsPerSlot[dates[j]] = []);
+            if(this.options.cumulative) {
+                vals[j] += prev_val;
+            }
+            prev_val = vals[j];
+            rr.push([r, vals[j]]);
+        }
+
+        // extend the latest to the end
+        if(this.options.cumulative) {
+          var lastDateSlot = dates[dates.length - 1];
+          for (var j = lastDateSlot + 1; j <= maxDateSlots; ++j) {
+            var rr = rowsPerSlot[j] || (rowsPerSlot[j] = []);
+            rr.push([r, prev_val]);
+          }
+        }
+
+      }
+
+      // for each timeslot search active buckets
+      var renderDataIndex = 0;
+      var timeSlotIndex = 0;
+      var i = 0;
+      for(var i = 0; i <= maxDateSlots; ++i) {
+        var c = 0;
+        var slotRows = rowsPerSlot[i]
+        if(slotRows) {
+          for (var r = 0; r < slotRows.length; ++r) {
+            var rr = slotRows[r];
+            ++c;
+            renderDataPos[renderDataIndex] = rr[0]
+            renderData[renderDataIndex] = rr[1];
+            ++renderDataIndex;
+          }
+        }
+        timeIndex[i] = timeSlotIndex;
+        timeCount[i] = c;
+        timeSlotIndex += c;
+      }
+
+      prof_process_time.end();
+
+      return {
+        x: x,
+        y: y,
+        coord: {
+          x: coord.x,
+          y: coord.y,
+          z: zoom
+        },
+        timeCount: timeCount,
+        timeIndex: timeIndex,
+        renderDataPos: renderDataPos,
+        renderData: renderData,
+        maxDate: maxDateSlots
+      };
+    },
+
+    _host: function() {
+      var opts = this.options;
+      var port = opts.sql_api_port;
+      var domain = ((opts.user_name || opts.user) + '.' + (opts.sql_api_domain || 'cartodb.com')) + (port ? ':' + port: '');
+      var protocol = opts.sql_api_protocol || 'http';
+      return this.options.url || protocol + '://' + domain + '/api/v2/sql';
+    },
+
+    url: function(subhost) {
+      var opts = this.options;
+      var protocol = opts.sql_api_protocol || 'http';
+      if (!this.options.cdn_url) {
+        return this._host();
+      }
+      var h = protocol+ "://";
+      if (subhost) {
+        h += subhost + ".";
+      }
+      var cdn_host = opts.cdn_url;
+      if(!cdn_host.http && !cdn_host.https) {
+        throw new Error("cdn_host should contain http and/or https entries");
+      }
+      h += cdn_host[protocol] + "/" + (opts.user_name || opts.user) + '/api/v2/sql';
+      return h;
+    },
+
+    _hash: function(str) {
+      var hash = 0;
+      if (!str || str.length == 0) return hash;
+      for (var i = 0, l = str.length; i < l; ++i) {
+          hash = (( (hash << 5 ) - hash ) + str.charCodeAt(i)) | 0;
+      }
+      return hash;
+    },
+
+    _extraParams: function() {
+      if (this.options.extra_params) {
+        var p = [];
+        for(var k in this.options.extra_params) {
+          var v = this.options.extra_params[k];
+          if (v) {
+            p.push(k + "=" + encodeURIComponent(v));
+          }
+        }
+        return p.join('&');
+      }
+      return null;
+    },
+
+    isHttps: function() {
+      return this.options.sql_api_protocol && this.options.sql_api_protocol === 'https';
+    },
+
+    // execute actual query
+    sql: function(sql, callback, options) {
+      options = options || {};
+      var subdomains = this.options.subdomains || '0123';
+      if(this.isHttps()) {
+        subdomains = [null]; // no subdomain
+      }
+
+
+      var url;
+      if (options.no_cdn) {
+        url = this._host();
+      } else {
+        url = this.url(subdomains[Math.abs(this._hash(sql))%subdomains.length]);
+      }
+      var extra = this._extraParams();
+      torque.net.get( url + "?q=" + encodeURIComponent(sql) + (extra ? "&" + extra: ''), function (data) {
+          if(options.parseJSON) {
+            data = JSON.parse(data && data.responseText);
+          }
+          callback && callback(data);
+      });
+    },
+
+    getTileData: function(coord, zoom, callback) {
+      if(!this._ready) {
+        this._tileQueue.push([coord, zoom, callback]);
+      } else {
+        this._getTileData(coord, zoom, callback);
+      }
+    },
+
+    _setReady: function(ready) {
+      this._ready = true;
+      this._processQueue();
+      this.options.ready && this.options.ready();
+    },
+
+    _processQueue: function() {
+      var item;
+      while (item = this._tileQueue.pop()) {
+        this._getTileData.apply(this, item);
+      }
+    },
+
+    /**
+     * `coord` object like {x : tilex, y: tiley }
+     * `zoom` quadtree zoom level
+     */
+    _getTileData: function(coord, zoom, callback) {
+      var prof_fetch_time = Profiler.metric('ProviderJSON:tile_fetch_time').start()
+      this.table = this.options.table;
+      var numTiles = 1 << zoom;
+
+      var column_conv = this.options.column;
+
+      if(this.options.is_time) {
+        column_conv = format("date_part('epoch', {column})", this.options);
+      }
+
+      var sql = "" +
+        "WITH " +
+        "par AS (" +
+        "  SELECT CDB_XYZ_Resolution({zoom})*{resolution} as res" +
+        ",  256/{resolution} as tile_size" +
+        ", CDB_XYZ_Extent({x}, {y}, {zoom}) as ext "  +
+        ")," +
+        "cte AS ( "+
+        "  SELECT ST_SnapToGrid(i.the_geom_webmercator, p.res) g" +
+        ", {countby} c" +
+        ", floor(({column_conv} - {start})/{step}) d" +
+        "  FROM ({_sql}) i, par p " +
+        "  WHERE i.the_geom_webmercator && p.ext " +
+        "  GROUP BY g, d" +
+        ") " +
+        "" +
+        "SELECT (st_x(g)-st_xmin(p.ext))/p.res x__uint8, " +
+        "       (st_y(g)-st_ymin(p.ext))/p.res y__uint8," +
+        " array_agg(c) vals__uint8," +
+        " array_agg(d) dates__uint16" +
+        // the tile_size where are needed because the overlaps query in cte subquery includes the points
+        // in the left and bottom borders of the tile
+        " FROM cte, par p where (st_y(g)-st_ymin(p.ext))/p.res < tile_size and (st_x(g)-st_xmin(p.ext))/p.res < tile_size GROUP BY x__uint8, y__uint8";
+
+
+      var query = format(sql, this.options, {
+        zoom: zoom,
+        x: coord.x,
+        y: coord.y,
+        column_conv: column_conv,
+        _sql: this.getSQL()
+      });
+
+      var self = this;
+      this.sql(query, function (data) {
+        if (data) {
+          var rows = JSON.parse(data.responseText).rows;
+          callback(self.proccessTile(rows, coord, zoom));
+        } else {
+          callback(null);
+        }
+        prof_fetch_time.end();
+      });
+    },
+
+    getKeySpan: function() {
+      return {
+        start: this.options.start * 1000,
+        end: this.options.end * 1000,
+        step: this.options.step,
+        steps: this.options.steps,
+        columnType: this.options.is_time ? 'date': 'number'
+      };
+    },
+
+    setColumn: function(column, isTime) {
+      this.options.column = column;
+      this.options.is_time = isTime === undefined ? true: false;
+      this.reload();
+    },
+
+    setResolution: function(res) {
+      this.options.resolution = res;
+    },
+
+    // return true if tiles has been changed
+    setOptions: function(opt) {
+      var refresh = false;
+
+      if(opt.resolution !== undefined && opt.resolution !== this.options.resolution) {
+        this.options.resolution = opt.resolution;
+        refresh = true;
+      }
+
+      if(opt.steps !== undefined && opt.steps !== this.options.steps) {
+        this.setSteps(opt.steps, { silent: true });
+        refresh = true;
+      }
+
+      if(opt.column !== undefined && opt.column !== this.options.column) {
+        this.options.column = opt.column;
+        refresh = true;
+      }
+
+      if(opt.data_aggregation !== undefined) {
+        var c = opt.data_aggregation === 'cumulative';
+        if (this.options.cumulative !== c) {
+          this.options.cumulative = c;
+          refresh = true;
+        }
+      }
+
+      if (refresh) this.reload();
+      return refresh;
+
+    },
+
+    reload: function() {
+      this._ready = false;
+      this._fetchKeySpan();
+    },
+
+    setSQL: function(sql) {
+      if (this.options.sql != sql) {
+        this.options.sql = sql;
+        this.reload();
+      }
+    },
+
+    getSteps: function() {
+      return Math.min(this.options.steps, this.options.data_steps);
+    },
+
+    setSteps: function(steps, opt) {
+      opt = opt || {};
+      if (this.options.steps !== steps) {
+        this.options.steps = steps;
+        this.options.step = (this.options.end - this.options.start)/this.getSteps();
+        this.options.step = this.options.step || 1;
+        if (!opt.silent) this.reload();
+      }
+    },
+
+    getBounds: function() {
+      return this.options.bounds;
+    },
+
+    getSQL: function() {
+      return this.options.sql || "select * from " + this.options.table;
+    },
+
+    _tilerHost: function() {
+      var opts = this.options;
+      var user = (opts.user_name || opts.user);
+      return opts.tiler_protocol +
+           "://" + (user ? user + "." : "")  +
+           opts.tiler_domain +
+           ((opts.tiler_port != "") ? (":" + opts.tiler_port) : "");
+    },
+
+    _fetchUpdateAt: function(callback) {
+      var self = this;
+      var layergroup = {
+        "version": "1.0.1",
+        "stat_tag": this.options.stat_tag || 'torque',
+        "layers": [{
+          "type": "cartodb",
+          "options": {
+            "cartocss_version": "2.1.1", 
+            "cartocss": "#layer {}",
+            "sql": this.getSQL()
+          }
+        }]
+      };
+      var url = this._tilerHost() + "/tiles/layergroup";
+      var extra = this._extraParams();
+
+      // tiler needs map_key instead of api_key
+      // so replace it
+      if (extra) {
+        extra = extra.replace('api_key=', 'map_key=');
+      }
+
+      url = url +
+        "?config=" + encodeURIComponent(JSON.stringify(layergroup)) +
+        "&callback=?" + (extra ? "&" + extra: '');
+
+      torque.net.jsonp(url, function (data) {
+        var query = format("select * from ({sql}) __torque_wrap_sql limit 0", { sql: self.getSQL() });
+        self.sql(query, function (queryData) {
+          if (data) {
+            callback({
+              updated_at: data.last_updated,
+              fields: queryData.fields
+            });
+          }
+        }, { parseJSON: true });
+      });
+    },
+
+    //
+    // the data range could be set by the user though ``start``
+    // option. It can be fecthed from the table when the start
+    // is not specified.
+    //
+    _fetchKeySpan: function() {
+      var self = this;
+      var max_col, min_col, max_tmpl, min_tmpl;
+
+      this._fetchUpdateAt(function(data) {
+        if (!data) return;
+        self.options.extra_params = self.options.extra_params || {};
+        self.options.extra_params.last_updated = data.updated_at || 0;
+        self.options.is_time = data.fields[self.options.column].type === 'date';
+
+        var column_conv = self.options.column;
+        if (self.options.is_time){
+          max_tmpl = "date_part('epoch', max({column}))";
+          min_tmpl = "date_part('epoch', min({column}))";
+          column_conv = format("date_part('epoch', {column})", self.options);
+        } else {
+          max_tmpl = "max({column})";
+          min_tmpl = "min({column})";
+        }
+
+        max_col = format(max_tmpl, { column: self.options.column });
+        min_col = format(min_tmpl, { column: self.options.column });
+
+        /*var sql_stats = "" +
+        "WITH summary_groups as ( " +
+          "WITH summary as ( " +
+           "select   (row_number() over (order by __time_col asc nulls last)+1)/2 as rownum, __time_col " +
+            "from (select *, {column} as __time_col from ({sql}) __s) __torque_wrap_sql " +
+            "order by __time_col asc " +
+          ") " +
+          "SELECT " +
+          "max(__time_col) OVER(PARTITION BY rownum) -  " +
+          "min(__time_col) OVER(PARTITION BY rownum) diff " +
+          "FROM summary " +
+        "), subq as ( " +
+        " SELECT " +
+            "st_xmax(st_envelope(st_collect(the_geom))) xmax, " +
+            "st_ymax(st_envelope(st_collect(the_geom))) ymax, " +
+            "st_xmin(st_envelope(st_collect(the_geom))) xmin, " +
+            "st_ymin(st_envelope(st_collect(the_geom))) ymin, " +
+            "{max_col} max, " +
+            "{min_col} min FROM  ({sql}) __torque_wrap_sql " +
+        ")" +
+        "SELECT " +
+        "xmax, xmin, ymax, ymin, a.max as max_date, a.min as min_date, " +
+        "avg(diff) as diffavg," +
+        "(a.max - a.min)/avg(diff) as num_steps " +
+        "FROM summary_groups, subq a  " +
+        "WHERE diff > 0 group by xmax, xmin, ymax, ymin, max_date, min_date";
+        */
+        var sql_stats = " SELECT " +
+            "st_xmax(st_envelope(st_collect(the_geom))) xmax, " +
+            "st_ymax(st_envelope(st_collect(the_geom))) ymax, " +
+            "st_xmin(st_envelope(st_collect(the_geom))) xmin, " +
+            "st_ymin(st_envelope(st_collect(the_geom))) ymin, " +
+            "count(*) as num_steps, " +
+            "{max_col} max_date, " +
+            "{min_col} min_date FROM  ({sql}) __torque_wrap_sql ";
+
+        var sql = format(sql_stats, {
+          max_col: max_col,
+          min_col: min_col,
+          column: column_conv,
+          sql: self.getSQL()
+        });
+
+        self.sql(sql, function(data) {
+          //TODO: manage bounds
+          data = data.rows[0];
+          self.options.start = data.min_date;
+          self.options.end = data.max_date;
+          self.options.step = (data.max_date - data.min_date)/Math.min(self.options.steps, data.num_steps>>0);
+          self.options.data_steps = data.num_steps >> 0;
+          // step can't be 0
+          self.options.step = self.options.step || 1;
+          self.options.bounds = [
+            [data.ymin, data.xmin],
+            [data.ymax, data.xmax]
+          ];
+          self._setReady(true);
+        }, { parseJSON: true, no_cdn: true });
+      }, { parseJSON: true, no_cdn: true})
+    }
+
+  };
+
+  torque.providers.json = json;
+
+
+})(typeof exports === "undefined" ? this : exports);
+(function(exports) {
+
+
+  var torque = exports.torque = exports.torque || {};
+  var providers = exports.torque.providers = exports.torque.providers || {};
+
+  var Uint8Array = torque.types.Uint8Array;
+  var Int32Array = torque.types.Int32Array;
+  var Uint32Array = torque.types.Uint32Array;
+
+  // format('hello, {0}', 'rambo') -> "hello, rambo"
+  function format(str, attrs) {
+    for(var i = 1; i < arguments.length; ++i) {
+      var attrs = arguments[i];
+      for(var attr in attrs) {
+        str = str.replace(RegExp('\\{' + attr + '\\}', 'g'), attrs[attr]);
+      }
+    }
+    return str;
+  }
+
+  var json = function (options) {
+    // check options
+    this.options = options;
+  };
+
+
+  json.prototype = {
+
+    //
+    // return the data aggregated by key:
+    // {
+    //  key0: 12,
+    //  key1: 32
+    //  key2: 25
+    // }
+    //
+    aggregateByKey: function(rows) {
+      function getKeys(row) {
+        var HEADER_SIZE = 3;
+        var valuesCount = row.data[2];
+        var keys = {};
+        for (var s = 0; s < valuesCount; ++s) {
+          keys[row.data[HEADER_SIZE + s]] = row.data[HEADER_SIZE + valuesCount + s];
+        }
+        return keys;
+      }
+      var keys = {};
+      for (r = 0; r < rows.length; ++r) {
+        var rowKeys = getKeys(rows[r]);
+        for(var k in rowKeys) {
+          keys[k] = keys[k] || 0;
+          keys[k] += rowKeys[k];
+        }
+      }
+      return keys;
+    },
+    
+
+
+
+    /**
+     *
+     */
+    proccessTile: function(rows, coord, zoom) {
+      var r;
+      var x = new Uint8Array(rows.length);
+      var y = new Uint8Array(rows.length);
+      var self = this;
+
+      // decode into a javascript strcuture the array
+      function decode_row(row) {
+        var HEADER_SIZE = 3;
+        var o = {
+          x: row.data[0] * self.options.resolution,
+          y: row.data[1] * self.options.resolution,
+          valuesCount: row.data[2],
+          times: [],
+          values: []
+        };
+        for (var s = 0; s < o.valuesCount; ++s) {
+           o.times.push(row.data[HEADER_SIZE + s]);
+           o.values.push(row.data[HEADER_SIZE + o.valuesCount + s]);
+        }
+        if(self.options.cumulative) {
+          for (var s = 1; s < o.valuesCount; ++s) {
+           o.values[s] += o.values[s - 1];
+          }
+        }
+        return o
+      }
+
+      // decode all the rows
+      for (r = 0; r < rows.length; ++r) {
+        rows[r] = decode_row(rows[r]);
+      }
+
+      // count number of dates
+      var dates = 0;
+      var maxDateSlots = 0;
+      for (r = 0; r < rows.length; ++r) {
+        var row = rows[r];
+        dates += row.times.length;
+        for(var d = 0; d < row.times.length; ++d) {
+          maxDateSlots = Math.max(maxDateSlots, row.times[d]);
+        }
+      }
+
+      // reserve memory for all the dates
+      var timeIndex = new Int32Array(maxDateSlots + 1); //index-size
+      var timeCount = new Int32Array(maxDateSlots + 1);
+      var renderData = new (this.options.valueDataType || Uint8Array)(dates);
+      var renderDataPos = new Uint32Array(dates);
+
+      var rowsPerSlot = {};
+
+      // precache pixel positions
+      for (var r = 0; r < rows.length; ++r) {
+        var row = rows[r];
+        x[r] = row.x;
+        y[r] = row.y;
+
+        var dates = row.times;
+        var vals = row.values;
+        for (var j = 0, len = dates.length; j < len; ++j) {
+            var rr = rowsPerSlot[dates[j]] || (rowsPerSlot[dates[j]] = []);
+            rr.push([r, vals[j]]);
+        }
+      }
+
+      // for each timeslot search active buckets
+      var renderDataIndex = 0;
+      var timeSlotIndex = 0;
+      var i = 0;
+      for(var i = 0; i <= maxDateSlots; ++i) {
+        var c = 0;
+        var slotRows = rowsPerSlot[i]
+        if(slotRows) {
+          for (var r = 0; r < slotRows.length; ++r) {
+            var rr = slotRows[r];
+            ++c;
+            renderDataPos[renderDataIndex] = rr[0]
+            renderData[renderDataIndex] = rr[1];
+            ++renderDataIndex;
+          }
+        }
+        timeIndex[i] = timeSlotIndex;
+        timeCount[i] = c;
+        timeSlotIndex += c;
+      }
+
+      return {
+        x: x,
+        y: y,
+        coord: {
+          x: coord.x,
+          y: coord.y,
+          z: zoom
+        },
+        timeCount: timeCount,
+        timeIndex: timeIndex,
+        renderDataPos: renderDataPos,
+        renderData: renderData
+      };
+    },
+
+    url: function() {
+      return this.options.url;
+    },
+
+
+    tileUrl: function(coord, zoom) {
+      var template = this.url();
+      var s = (this.options.subdomains || 'abcd')[(coord.x + coord.y + zoom) % 4];
+      return template
+        .replace('{x}', coord.x)
+        .replace('{y}', coord.y)
+        .replace('{z}', zoom)
+        .replace('{s}', s);
+    },
+
+    getTile: function(coord, zoom, callback) {
+      var template = this.tileUrl(coord, zoom);
+
+      var self = this;
+      var fetchTime = Profiler.metric('jsonarray:fetch time');
+      fetchTime.start();
+      torque.net.get(template, function (data) {
+        fetchTime.end();
+        if(data) {
+          data = JSON.parse(data.responseText);
+        }
+        callback(data);
+      });
+    },
+
+    /**
+     * `coord` object like {x : tilex, y: tiley } 
+     * `zoom` quadtree zoom level
+     */
+    getTileData: function(coord, zoom, callback) {
+      var template = this.tileUrl(coord, zoom);
+
+      var self = this;
+      var fetchTime = Profiler.metric('jsonarray:fetch time');
+      fetchTime.start();
+      torque.net.get(template, function (data) {
+        fetchTime.end();
+        var processed = null;
+        
+        var processingTime = Profiler.metric('jsonarray:processing time');
+        var parsingTime = Profiler.metric('jsonarray:parsing time');
+        try {
+          processingTime.start();
+          parsingTime.start();
+          var rows = JSON.parse(data.responseText || data.response).rows;
+          parsingTime.end();
+          processed = self.proccessTile(rows, coord, zoom);
+          processingTime.end();
+        } catch(e) {
+          console.error("problem parsing JSON on ", coord, zoom);
+        }
+
+        callback(processed);
+
+      });
+    }
+
+  };
+
+  torque.providers.JsonArray = json
+
+
+})(typeof exports === "undefined" ? this : exports);
+(function(exports) {
+  var torque = exports.torque = exports.torque || {};
+  torque.net = torque.net || {};
+
+  var lastCall = null;
+
+  function jsonp(url, callback, options) {
+     options = options || { timeout: 10000 };
+     var head = document.getElementsByTagName('head')[0];
+     var script = document.createElement('script');
+
+     // function name
+     var fnName = 'torque_' + Date.now();
+
+     function clean() {
+       head.removeChild(script);
+       clearTimeout(timeoutTimer);
+       delete window[fnName];
+     }
+
+     window[fnName] = function() {
+       clean();
+       callback.apply(window, arguments);
+     };
+
+     // timeout for errors
+     var timeoutTimer = setTimeout(function() { 
+       clean();
+       callback.call(window, null); 
+     }, options.timeout);
+
+     // setup url
+     url = url.replace('callback=\?', 'callback=' + fnName);
+     script.type = 'text/javascript';
+     script.src = url;
+     script.async = true;
+     // defer the loading because IE9 loads in the same frame the script
+     // so Loader._script is null
+     setTimeout(function() { head.appendChild(script); }, 0);
+  }
+
+  function get(url, callback, options) {
+    options = options || {
+      method: 'GET',
+      data: null
+    };
+    lastCall = { url: url, callback: callback };
+    var request = XMLHttpRequest;
+    // from d3.js
+    if (window.XDomainRequest
+        && !("withCredentials" in request)
+        && /^(http(s)?:)?\/\//.test(url)) request = XDomainRequest;
+    var req = new request();
+
+
+    function respond() {
+      var status = req.status, result;
+      if (!status && req.responseText || status >= 200 && status < 300 || status === 304) {
+        callback(req);
+      } else {
+        callback(null);
+      }
+    }
+
+    "onload" in req
+      ? req.onload = req.onerror = respond
+      : req.onreadystatechange = function() { req.readyState > 3 && respond(); };
+
+    req.open(options.method, url, true);
+    //req.responseType = 'arraybuffer';
+    if (options.data) {
+      req.setRequestHeader("Content-type", "application/json");
+      //req.setRequestHeader("Content-type", "application/x-www-form-urlencoded")
+      req.setRequestHeader("Accept", "*");
+    }
+    req.send(options.data);
+    return req;
+  }
+
+  function post(url, data, callback) {
+    return get(url, callback, {
+      data: data,
+      method: "POST"
+    });
+  }
+
+  torque.net = {
+    get: get,
+    post: post,
+    jsonp: jsonp,
+    lastCall: function() { return lastCall; }
+  };
+
+})(typeof exports === "undefined" ? this : exports);
+(function(exports) {
+
+  exports.torque = exports.torque || {};
+
+  var TAU = Math.PI*2;
+  function renderPoint(ctx, st) {
+    ctx.fillStyle = st.fillStyle;
+    ctx.strokStyle = st.strokStyle;
+    var pixel_size = st['point-radius'];
+
+    // render a circle
+
+    // fill
+    ctx.beginPath();
+    ctx.arc(0, 0, pixel_size, 0, TAU, true, true);
+    ctx.closePath();
+    if (st.fillStyle) {
+      if (st.fillOpacity) {
+        ctx.globalAlpha = st.fillOpacity;
+      }
+      ctx.fill();
+    }
+
+    // stroke
+    ctx.globalAlpha = 1.0;
+    if (st.strokeStyle && st.lineWidth) {
+      if (st.strokeOpacity) {
+        ctx.globalAlpha = st.strokeOpacity;
+      }
+      if (st.lineWidth) {
+        ctx.lineWidth = st.lineWidth;
+      }
+      ctx.strokeStyle = st.strokeStyle;
+
+      // do not render for alpha = 0
+      if (ctx.globalAlpha > 0) {
+        ctx.stroke();
+      }
+    }
+  }
+
+  function renderSprite(ctx, st) {
+    var img = st['point-file'] || st['marker-file'];
+    var ratio = img.height/img.width;
+    var w = st['point-radius'] || img.width;
+    var h = st['point-radius'] || st['marker-height'] || w*ratio;
+    ctx.drawImage(img, 0, 0, w, h);
+  }
+
+  exports.torque.cartocss = exports.torque.cartocss || {};
+  exports.torque.cartocss = {
+    renderPoint: renderPoint,
+    renderSprite: renderSprite
+  };
+
+})(typeof exports === "undefined" ? this : exports);
+(function(exports) {
+  exports.torque = exports.torque || {};
+  exports.torque.renderer = exports.torque.renderer || {};
+
+  var TAU = Math.PI * 2;
+  var DEFAULT_CARTOCSS = [
+    '#layer {',
+    '  marker-fill: #662506;',
+    '  marker-width: 4;',
+    '  [value > 1] { marker-fill: #FEE391; }',
+    '  [value > 2] { marker-fill: #FEC44F; }',
+    '  [value > 3] { marker-fill: #FE9929; }',
+    '  [value > 4] { marker-fill: #EC7014; }',
+    '  [value > 5] { marker-fill: #CC4C02; }',
+    '  [value > 6] { marker-fill: #993404; }',
+    '  [value > 7] { marker-fill: #662506; }',
+    '}'
+  ].join('\n');
+
+  //
+  // this renderer just render points depending of the value
+  //
+  function PointRenderer(canvas, options) {
+    if (!canvas) {
+      throw new Error("canvas can't be undefined");
+    }
+    this.options = options;
+    this._canvas = canvas;
+    this._ctx = canvas.getContext('2d');
+    this._sprites = []; // sprites per layer
+    this._shader = null;
+    this.setCartoCSS(this.options.cartocss || DEFAULT_CARTOCSS);
+  }
+
+  PointRenderer.prototype = {
+
+    setCanvas: function(canvas) {
+      this._canvas = canvas;
+      this._ctx = canvas.getContext('2d');
+    },
+
+    //
+    // sets the cartocss style to render stuff
+    //
+    setCartoCSS: function(cartocss) {
+      // clean sprites
+      this.setShader(new carto.RendererJS().render(cartocss));
+    },
+
+    setShader: function(shader) {
+      // clean sprites
+      this._sprites = [];
+      this._shader = shader;
+    },
+
+    //
+    // generate sprite based on cartocss style
+    //
+    generateSprite: function(shader, value, shaderVars) {
+      var prof = Profiler.metric('PointRenderer:generateSprite').start();
+      var st = shader.getStyle('canvas-2d', {
+        value: value
+      }, shaderVars);
+
+      var pointSize = st['point-radius'];
+      if (!pointSize) {
+        throw new Error("marker-width property should be set");
+      }
+
+      // take into account the exterior ring to calculate the size
+      var canvasSize = (st.lineWidth || 0) + pointSize*2;
+
+      var canvas = document.createElement('canvas');
+      var ctx = canvas.getContext('2d');
+      ctx.width = canvas.width = Math.ceil(canvasSize);
+      ctx.height = canvas.height = Math.ceil(canvasSize);
+      ctx.translate(canvasSize/2, canvasSize/2);
+      if(st['point-file'] || st['marker-file']) {
+        torque.cartocss.renderSprite(ctx, st);
+      } else {
+        torque.cartocss.renderPoint(ctx, st);
+      }
+      prof.end();
+      return canvas;
+    },
+
+    //
+    // renders all the layers (and frames for each layer) from cartocss
+    //
+    renderTile: function(tile, key) {
+      var layers = this._shader.getLayers();
+      for(var i = 0, n = layers.length; i < n; ++i ) {
+        var layer = layers[i];
+        if (layer.name() !== "Map") {
+          var sprites = this._sprites[i] || (this._sprites[i] = {});
+          // frames for each layer
+          for(var fr = 0; fr < layer.frames().length; ++fr) {
+            var frame = layer.frames()[fr];
+            var fr_sprites = sprites[frame] || (sprites[frame] = []);
+            this._renderTile(tile, key - frame, frame, fr_sprites, layer);
+          }
+        }
+      }
+    },
+
+    //
+    // renders a tile in the canvas for key defined in 
+    // the torque tile
+    //
+    _renderTile: function(tile, key, frame_offset, sprites, shader, shaderVars) {
+      if(!this._canvas) return;
+
+      var prof = Profiler.metric('PointRenderer:renderTile').start();
+      var ctx = this._ctx;
+      var blendMode = shader.eval('comp-op') || this.options.blendmode;
+      if(blendMode) {
+        ctx.globalCompositeOperation = blendMode;
+      }
+      if (this.options.cumulative && key > tile.maxDate) {
+        //TODO: precache because this tile is not going to change
+        key = tile.maxDate;
+      }
+      var tileMax = this.options.resolution * (256/this.options.resolution - 1)
+      var activePixels = tile.timeCount[key];
+      if(activePixels) {
+        var pixelIndex = tile.timeIndex[key];
+        for(var p = 0; p < activePixels; ++p) {
+          var posIdx = tile.renderDataPos[pixelIndex + p];
+          var c = tile.renderData[pixelIndex + p];
+          if(c) {
+           var sp = sprites[c];
+           if(!sp) {
+             sp = sprites[c] = this.generateSprite(shader, c, _.extend({ zoom: tile.zoom, 'frame-offset': frame_offset }, shaderVars));
+           }
+           //var x = tile.x[posIdx]*res - (sp.width >> 1);
+           //var y = (256 - res - res*tile.y[posIdx]) - (sp.height >> 1);
+           var x = tile.x[posIdx]- (sp.width >> 1);
+           var y = tileMax - tile.y[posIdx]; // flip mercator
+           ctx.drawImage(sp, x, y - (sp.height >> 1));
+          }
+        }
+      }
+      prof.end();
+    },
+
+    setBlendMode: function(b) {
+      this.options.blendmode = b;
+    }
+
+  };
+
+
+  // exports public api
+  exports.torque.renderer.Point = PointRenderer;
+
+})(typeof exports === "undefined" ? this : exports);
+(function(exports) {
+  exports.torque = exports.torque || {};
+  exports.torque.renderer = exports.torque.renderer || {};
+
+  var DEFAULT_CARTOCSS = [
+    '#layer {',
+    '  polygon-fill: #FFFF00;',
+    '  [value > 10] { polygon-fill: #FFFF00; }',
+    '  [value > 100] { polygon-fill: #FFCC00; }',
+    '  [value > 1000] { polygon-fill: #FE9929; }',
+    '  [value > 10000] { polygon-fill: #FF6600; }',
+    '  [value > 100000] { polygon-fill: #FF3300; }',
+    '}'
+  ].join('\n');
+
+  var TAU = Math.PI * 2;
+
+  //
+  // this renderer just render points depending of the value
+  // 
+  function RectanbleRenderer(canvas, options) {
+    this.options = options;
+    carto.tree.Reference.set(torque['torque-reference']);
+    this.setCanvas(canvas);
+    this.setCartoCSS(this.options.cartocss || DEFAULT_CARTOCSS);
+  }
+
+  RectanbleRenderer.prototype = {
+
+    //
+    // sets the cartocss style to render stuff
+    //
+    setCartoCSS: function(cartocss) {
+      this._cartoCssStyle = new carto.RendererJS().render(cartocss);
+      if(this._cartoCssStyle.getLayers().length > 1) {
+        throw new Error("only one CartoCSS layer is supported");
+      }
+      this._shader = this._cartoCssStyle.getLayers()[0].shader;
+    },
+
+    setCanvas: function(canvas) {
+      if(!canvas) return;
+      this._canvas = canvas;
+      this._ctx = canvas.getContext('2d');
+    },
+
+    accumulate: function(tile, keys) {
+      var prof = Profiler.metric('RectangleRender:accumulate').start();
+      var x, y, posIdx, p, k, key, activePixels, pixelIndex;
+      var res = this.options.resolution;
+      var s = 256/res;
+      var accum = new Float32Array(s*s);
+
+      if(typeof(keys) !== 'object') {
+        keys = [keys];
+      }
+
+      for(k = 0; k < keys.length; ++k) {
+        key = keys[k];
+        activePixels = tile.timeCount[key];
+        if(activePixels) {
+          pixelIndex = tile.timeIndex[key];
+          for(p = 0; p < activePixels; ++p) {
+            posIdx = tile.renderDataPos[pixelIndex + p];
+            x = tile.x[posIdx]/res;
+            y = tile.y[posIdx]/res;
+            accum[x*s + y] += tile.renderData[pixelIndex + p];
+          }
+        }
+      }
+
+      prof.end();
+      return accum;
+    },
+
+    renderTileAccum: function(accum, px, py) {
+      var prof = Profiler.metric('RectangleRender:renderTileAccum').start();
+      var color, x, y, alpha;
+      var res = this.options.resolution;
+      var ctx = this._ctx;
+      var s = (256/res) | 0;
+      var s2 = s*s;
+      var colors = this._colors;
+      if(this.options.blendmode) {
+        ctx.globalCompositeOperation = this.options.blendmode;
+      }
+      var polygon_alpha = this._shader['polygon-opacity'] || function() { return 1.0; };
+      for(var i = 0; i < s2; ++i) {
+        var xy = i;
+        var value = accum[i];
+        if(value) {
+          x = (xy/s) | 0;
+          y = xy % s;
+          // by-pass the style generation for improving performance
+          color = this._shader['polygon-fill']({ value: value }, { zoom: 0 });
+          ctx.fillStyle = color;
+          //TODO: each function should have a default value for each 
+          //property defined in the cartocss
+          alpha = polygon_alpha({ value: value }, { zoom: 0 });
+          if(alpha === null) {
+            alpha = 1.0;
+          }
+          ctx.globalAlpha = alpha;
+          ctx.fillRect(x * res, 256 - res - y * res, res, res);
+        }
+      }
+      prof.end();
+    },
+
+    //
+    // renders a tile in the canvas for key defined in 
+    // the torque tile
+    //
+    renderTile: function(tile, key, px, py) {
+      if(!this._canvas) return;
+
+      var res = this.options.resolution;
+
+      //var prof = Profiler.get('render').start();
+      var ctx = this._ctx;
+      var colors = this._colors;
+      var activepixels = tile.timeCount[key];
+      if(activepixels) {
+        var w = this._canvas.width;
+        var h = this._canvas.height;
+        //var imageData = ctx.getImageData(0, 0, w, h);
+        //var pixels = imageData.data;
+        var pixelIndex = tile.timeIndex[key];
+        for(var p = 0; p < activePixels; ++p) {
+          var posIdx = tile.renderDataPos[pixelIndex + p];
+          var c = tile.renderData[pixelIndex + p];
+          if(c) {
+           var color = colors[Math.min(c, colors.length - 1)];
+           var x = tile.x[posIdx];// + px;
+           var y = tile.y[posIdx]; //+ py;
+
+           ctx.fillStyle = color;
+           ctx.fillRect(x, y, res, res);
+           /*
+
+           for(var xx = 0; xx < res; ++xx) {
+            for(var yy = 0; yy < res; ++yy) {
+              var idx = 4*((x+xx) + w*(y + yy));
+              pixels[idx + 0] = color[0];
+              pixels[idx + 1] = color[1];
+              pixels[idx + 2] = color[2];
+              pixels[idx + 3] = color[3];
+            }
+           }
+           */
+          }
+        }
+        //ctx.putImageData(imageData, 0, 0);
+      }
+      //prof.end();
+    }
+  };
+
+
+  // exports public api
+  exports.torque.renderer.Rectangle = RectanbleRenderer;
+
+})(typeof exports === "undefined" ? this : exports);
+/**
+ * @license
+ * Copyright 2013 Google Inc. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * @fileoverview Extends OverlayView to provide a canvas "Layer".
+ * @author Brendan Kenny
+ */
+
+/**
+ * A map layer that provides a canvas over the slippy map and a callback
+ * system for efficient animation. Requires canvas and CSS 2D transform
+ * support.
+ * @constructor
+ * @extends google.maps.OverlayView
+ * @param {CanvasLayerOptions=} opt_options Options to set in this CanvasLayer.
+ */
+
+if(typeof(google) !== 'undefined' && typeof(google.maps) !== 'undefined') {
+function CanvasLayer(opt_options) {
+  /**
+   * If true, canvas is in a map pane and the OverlayView is fully functional.
+   * See google.maps.OverlayView.onAdd for more information.
+   * @type {boolean}
+   * @private
+   */
+  this.isAdded_ = false;
+
+  /**
+   * If true, each update will immediately schedule the next.
+   * @type {boolean}
+   * @private
+   */
+  this.isAnimated_ = false;
+
+  /**
+   * The name of the MapPane in which this layer will be displayed.
+   * @type {string}
+   * @private
+   */
+  this.paneName_ = CanvasLayer.DEFAULT_PANE_NAME_;
+
+  /**
+   * A user-supplied function called whenever an update is required. Null or
+   * undefined if a callback is not provided.
+   * @type {?function=}
+   * @private
+   */
+  this.updateHandler_ = null;
+
+  /**
+   * A user-supplied function called whenever an update is required and the
+   * map has been resized since the last update. Null or undefined if a
+   * callback is not provided.
+   * @type {?function}
+   * @private
+   */
+  this.resizeHandler_ = null;
+
+  /**
+   * The LatLng coordinate of the top left of the current view of the map. Will
+   * be null when this.isAdded_ is false.
+   * @type {google.maps.LatLng}
+   * @private
+   */
+  this.topLeft_ = null;
+
+  /**
+   * The map-pan event listener. Will be null when this.isAdded_ is false. Will
+   * be null when this.isAdded_ is false.
+   * @type {?function}
+   * @private
+   */
+  this.centerListener_ = null;
+
+  /**
+   * The map-resize event listener. Will be null when this.isAdded_ is false.
+   * @type {?function}
+   * @private
+   */
+  this.resizeListener_ = null;
+
+  /**
+   * If true, the map size has changed and this.resizeHandler_ must be called
+   * on the next update.
+   * @type {boolean}
+   * @private
+   */
+  this.needsResize_ = true;
+
+  /**
+   * A browser-defined id for the currently requested callback. Null when no
+   * callback is queued.
+   * @type {?number}
+   * @private
+   */
+  this.requestAnimationFrameId_ = null;
+
+  var canvas = document.createElement('canvas');
+  canvas.style.position = 'absolute';
+  canvas.style.top = 0;
+  canvas.style.left = 0;
+  canvas.style.pointerEvents = 'none';
+
+  /**
+   * The canvas element.
+   * @type {!HTMLCanvasElement}
+   */
+  this.canvas = canvas;
+
+  /**
+   * Simple bind for functions with no args for bind-less browsers (Safari).
+   * @param {Object} thisArg The this value used for the target function.
+   * @param {function} func The function to be bound.
+   */
+  function simpleBindShim(thisArg, func) {
+    return function() { func.apply(thisArg); };
+  }
+
+  /**
+   * A reference to this.repositionCanvas_ with this bound as its this value.
+   * @type {function}
+   * @private
+   */
+  this.repositionFunction_ = simpleBindShim(this, this.repositionCanvas_);
+
+  /**
+   * A reference to this.resize_ with this bound as its this value.
+   * @type {function}
+   * @private
+   */
+  this.resizeFunction_ = simpleBindShim(this, this.resize_);
+
+  /**
+   * A reference to this.update_ with this bound as its this value.
+   * @type {function}
+   * @private
+   */
+  this.requestUpdateFunction_ = simpleBindShim(this, this.update_);
+
+  // set provided options, if any
+  if (opt_options) {
+    this.setOptions(opt_options);
+  }
+}
+
+CanvasLayer.prototype = new google.maps.OverlayView();
+
+/**
+ * The default MapPane to contain the canvas.
+ * @type {string}
+ * @const
+ * @private
+ */
+CanvasLayer.DEFAULT_PANE_NAME_ = 'overlayLayer';
+
+/**
+ * Transform CSS property name, with vendor prefix if required. If browser
+ * does not support transforms, property will be ignored.
+ * @type {string}
+ * @const
+ * @private
+ */
+CanvasLayer.CSS_TRANSFORM_ = (function() {
+  var div = document.createElement('div');
+  var transformProps = [
+    'transform',
+    'WebkitTransform',
+    'MozTransform',
+    'OTransform',
+    'msTransform'
+  ];
+  for (var i = 0; i < transformProps.length; i++) {
+    var prop = transformProps[i];
+    if (div.style[prop] !== undefined) {
+      return prop;
+    }
+  }
+
+  // return unprefixed version by default
+  return transformProps[0];
+})();
+
+/**
+ * The requestAnimationFrame function, with vendor-prefixed or setTimeout-based
+ * fallbacks. MUST be called with window as thisArg.
+ * @type {function}
+ * @param {function} callback The function to add to the frame request queue.
+ * @return {number} The browser-defined id for the requested callback.
+ * @private
+ */
+CanvasLayer.prototype.requestAnimFrame_ =
+    window.requestAnimationFrame ||
+    window.webkitRequestAnimationFrame ||
+    window.mozRequestAnimationFrame ||
+    window.oRequestAnimationFrame ||
+    window.msRequestAnimationFrame ||
+    function(callback) {
+      return window.setTimeout(callback, 1000 / 60);
+    };
+
+/**
+ * The cancelAnimationFrame function, with vendor-prefixed fallback. Does not
+ * fall back to clearTimeout as some platforms implement requestAnimationFrame
+ * but not cancelAnimationFrame, and the cost is an extra frame on onRemove.
+ * MUST be called with window as thisArg.
+ * @type {function}
+ * @param {number=} requestId The id of the frame request to cancel.
+ * @private
+ */
+CanvasLayer.prototype.cancelAnimFrame_ =
+    window.cancelAnimationFrame ||
+    window.webkitCancelAnimationFrame ||
+    window.mozCancelAnimationFrame ||
+    window.oCancelAnimationFrame ||
+    window.msCancelAnimationFrame ||
+    function(requestId) {};
+
+/**
+ * Sets any options provided. See CanvasLayerOptions for more information.
+ * @param {CanvasLayerOptions} options The options to set.
+ */
+CanvasLayer.prototype.setOptions = function(options) {
+  if (options.animate !== undefined) {
+    this.setAnimate(options.animate);
+  }
+
+  if (options.paneName !== undefined) {
+    this.setPane(options.paneName);
+  }
+
+  if (options.updateHandler !== undefined) {
+    this.setUpdateHandler(options.updateHandler);
+  }
+
+  if (options.resizeHandler !== undefined) {
+    this.setResizeHandler(options.resizeHandler);
+  }
+
+  if(options.readyHandler) {
+    this.readyHandler = options.readyHandler;
+  }
+
+};
+
+/**
+ * Set the animated state of the layer. If true, updateHandler will be called
+ * repeatedly, once per frame. If false, updateHandler will only be called when
+ * a map property changes that could require the canvas content to be redrawn.
+ * @param {boolean} animate Whether the canvas is animated.
+ */
+CanvasLayer.prototype.setAnimate = function(animate) {
+  this.isAnimated_ = !!animate;
+
+  if (this.isAnimated_) {
+    this.scheduleUpdate();
+  }
+};
+
+/**
+ * @return {boolean} Whether the canvas is animated.
+ */
+CanvasLayer.prototype.isAnimated = function() {
+  return this.isAnimated_;
+};
+
+/**
+ * Set the MapPane in which this layer will be displayed, by name. See
+ * {@code google.maps.MapPanes} for the panes available.
+ * @param {string} paneName The name of the desired MapPane.
+ */
+CanvasLayer.prototype.setPaneName = function(paneName) {
+  this.paneName_ = paneName;
+
+  this.setPane_();
+};
+
+/**
+ * @return {string} The name of the current container pane.
+ */
+CanvasLayer.prototype.getPaneName = function() {
+  return this.paneName_;
+};
+
+/**
+ * Adds the canvas to the specified container pane. Since this is guaranteed to
+ * execute only after onAdd is called, this is when paneName's existence is
+ * checked (and an error is thrown if it doesn't exist).
+ * @private
+ */
+CanvasLayer.prototype.setPane_ = function() {
+  if (!this.isAdded_) {
+    return;
+  }
+
+  // onAdd has been called, so panes can be used
+  var panes = this.getPanes();
+  if (!panes[this.paneName_]) {
+    throw new Error('"' + this.paneName_ + '" is not a valid MapPane name.');
+  }
+
+  panes[this.paneName_].appendChild(this.canvas);
+};
+
+/**
+ * Set a function that will be called whenever the parent map and the overlay's
+ * canvas have been resized. If opt_resizeHandler is null or unspecified, any
+ * existing callback is removed.
+ * @param {?function=} opt_resizeHandler The resize callback function.
+ */
+CanvasLayer.prototype.setResizeHandler = function(opt_resizeHandler) {
+  this.resizeHandler_ = opt_resizeHandler;
+};
+
+/**
+ * Set a function that will be called when a repaint of the canvas is required.
+ * If opt_updateHandler is null or unspecified, any existing callback is
+ * removed.
+ * @param {?function=} opt_updateHandler The update callback function.
+ */
+CanvasLayer.prototype.setUpdateHandler = function(opt_updateHandler) {
+  this.updateHandler_ = opt_updateHandler;
+};
+
+/**
+ * @inheritDoc
+ */
+CanvasLayer.prototype.onAdd = function() {
+  if (this.isAdded_) {
+    return;
+  }
+
+  this.isAdded_ = true;
+  this.setPane_();
+
+  this.resizeListener_ = google.maps.event.addListener(this.getMap(),
+      'resize', this.resizeFunction_);
+  this.centerListener_ = google.maps.event.addListener(this.getMap(),
+      'center_changed', this.repositionFunction_);
+
+  this.resize_();
+  this.repositionCanvas_();
+  this.readyHandler && this.readyHandler();
+};
+
+/**
+ * @inheritDoc
+ */
+CanvasLayer.prototype.onRemove = function() {
+  if (!this.isAdded_) {
+    return;
+  }
+
+  this.isAdded_ = false;
+  this.topLeft_ = null;
+
+  // remove canvas and listeners for pan and resize from map
+  this.canvas.parentElement.removeChild(this.canvas);
+  if (this.centerListener_) {
+    google.maps.event.removeListener(this.centerListener_);
+    this.centerListener_ = null;
+  }
+  if (this.resizeListener_) {
+    google.maps.event.removeListener(this.resizeListener_);
+    this.resizeListener_ = null;
+  }
+
+  // cease canvas update callbacks
+  if (this.requestAnimationFrameId_) {
+    this.cancelAnimFrame_.call(window, this.requestAnimationFrameId_);
+    this.requestAnimationFrameId_ = null;
+  }
+};
+
+/**
+ * The internal callback for resize events that resizes the canvas to keep the
+ * map properly covered.
+ * @private
+ */
+CanvasLayer.prototype.resize_ = function() {
+  // TODO(bckenny): it's common to use a smaller canvas but use CSS to scale
+  // what is drawn by the browser to save on fill rate. Add an option to do
+  // this.
+
+  if (!this.isAdded_) {
+    return;
+  }
+
+  var map = this.getMap();
+  var width = map.getDiv().offsetWidth;
+  var height = map.getDiv().offsetHeight;
+  var oldWidth = this.canvas.width;
+  var oldHeight = this.canvas.height;
+
+  // resizing may allocate a new back buffer, so do so conservatively
+  if (oldWidth !== width || oldHeight !== height) {
+    this.canvas.width = width;
+    this.canvas.height = height;
+    this.canvas.style.width = width + 'px';
+    this.canvas.style.height = height + 'px';
+
+    this.needsResize_ = true;
+    this.scheduleUpdate();
+  }
+};
+
+/**
+ * @inheritDoc
+ */
+CanvasLayer.prototype.draw = function() {
+  this.repositionCanvas_();
+};
+
+/**
+ * Internal callback for map view changes. Since the Maps API moves the overlay
+ * along with the map, this function calculates the opposite translation to
+ * keep the canvas in place.
+ * @private
+ */
+CanvasLayer.prototype.repositionCanvas_ = function() {
+  // TODO(bckenny): *should* only be executed on RAF, but in current browsers
+  //     this causes noticeable hitches in map and overlay relative
+  //     positioning.
+
+  var bounds = this.getMap().getBounds();
+  this.topLeft_ = new google.maps.LatLng(bounds.getNorthEast().lat(),
+      bounds.getSouthWest().lng());
+
+  // canvas position relative to draggable map's conatainer depends on
+  // overlayView's projection, not the map's
+  var projection = this.getProjection();
+  var divTopLeft = projection.fromLatLngToDivPixel(this.topLeft_);
+
+  // when the zoom level is low, more than one map can be shown in the screen
+  // so the canvas should be attach to the map with more are in the screen
+  var mapSize = (1 << this.getMap().getZoom())*256;
+  if (Math.abs(divTopLeft.x) > mapSize) {
+    divTopLeft.x -= mapSize;
+  }
+  this.canvas.style[CanvasLayer.CSS_TRANSFORM_] = 'translate(' +
+      Math.round(divTopLeft.x) + 'px,' + Math.round(divTopLeft.y) + 'px)';
+
+  this.scheduleUpdate();
+};
+
+/**
+ * Internal callback that serves as main animation scheduler via
+ * requestAnimationFrame. Calls resize and update callbacks if set, and
+ * schedules the next frame if overlay is animated.
+ * @private
+ */
+CanvasLayer.prototype.update_ = function() {
+  this.requestAnimationFrameId_ = null;
+
+  if (!this.isAdded_) {
+    return;
+  }
+
+  if (this.isAnimated_) {
+    this.scheduleUpdate();
+  }
+
+  if (this.needsResize_ && this.resizeHandler_) {
+    this.needsResize_ = false;
+    this.resizeHandler_();
+  }
+
+  if (this.updateHandler_) {
+    this.updateHandler_();
+  }
+};
+
+/**
+ * A convenience method to get the current LatLng coordinate of the top left of
+ * the current view of the map.
+ * @return {google.maps.LatLng} The top left coordinate.
+ */
+CanvasLayer.prototype.getTopLeft = function() {
+  return this.topLeft_;
+};
+
+/**
+ * Schedule a requestAnimationFrame callback to updateHandler. If one is
+ * already scheduled, there is no effect.
+ */
+CanvasLayer.prototype.scheduleUpdate = function() {
+  if (this.isAdded_ && !this.requestAnimationFrameId_) {
+    this.requestAnimationFrameId_ =
+        this.requestAnimFrame_.call(window, this.requestUpdateFunction_);
+  }
+};
+}
+/*
+ ====================
+ canvas setup for drawing tiles
+ ====================
+ */
+
+if(typeof(google) !== 'undefined' && typeof(google.maps) !== 'undefined') {
+
+function CanvasTileLayer(canvas_setup, render) {
+  this.tileSize = new google.maps.Size(256, 256);
+  this.maxZoom = 19;
+  this.name = "Tile #s";
+  this.alt = "Canvas tile layer";
+  this.tiles = {};
+  this.canvas_setup = canvas_setup;
+  this.render = render;
+  if (!render) {
+      this.render = canvas_setup;
+  }
+}
+
+
+// create a tile with a canvas element
+CanvasTileLayer.prototype.create_tile_canvas = function (coord, zoom, ownerDocument) {
+
+  // create canvas and reset style
+  var canvas = ownerDocument.createElement('canvas');
+  var hit_canvas = ownerDocument.createElement('canvas');
+  canvas.style.border = hit_canvas.style.border = "none";
+  canvas.style.margin = hit_canvas.style.margin = "0";
+  canvas.style.padding = hit_canvas.style.padding = "0";
+
+  // prepare canvas and context sizes
+  var ctx = canvas.getContext('2d');
+  ctx.width = canvas.width = this.tileSize.width;
+  ctx.height = canvas.height = this.tileSize.height;
+
+  var hit_ctx = hit_canvas.getContext('2d');
+  hit_canvas.width = hit_ctx.width = this.tileSize.width;
+  hit_canvas.height = hit_ctx.height = this.tileSize.height;
+
+  //set unique id
+  var tile_id = coord.x + '_' + coord.y + '_' + zoom;
+
+  canvas.setAttribute('id', tile_id);
+  hit_canvas.setAttribute('id', tile_id);
+
+  if (tile_id in this.tiles)
+      delete this.tiles[tile_id];
+
+  this.tiles[tile_id] = {canvas:canvas, ctx:ctx, hit_canvas:hit_canvas, hit_ctx:hit_ctx, coord:coord, zoom:zoom, primitives:null};
+
+  // custom setup
+  //if (tile_id == '19295_24654_16'){
+  if (this.canvas_setup)
+      this.canvas_setup(this.tiles[tile_id], coord, zoom);
+  //}
+  return canvas;
+
+}
+
+
+CanvasTileLayer.prototype.each = function (callback) {
+  for (var t in this.tiles) {
+      var tile = this.tiles[t];
+      callback(tile);
+  }
+}
+
+CanvasTileLayer.prototype.recreate = function () {
+  for (var t in this.tiles) {
+      var tile = this.tiles[t];
+      this.canvas_setup(tile, tile.coord, tile.zoom);
+  }
+};
+
+CanvasTileLayer.prototype.redraw_tile = function (tile) {
+  this.render(tile, tile.coord, tile.zoom);
+};
+
+CanvasTileLayer.prototype.redraw = function () {
+  for (var t in this.tiles) {
+      var tile = this.tiles[t];
+      this.render(tile, tile.coord, tile.zoom);
+  }
+};
+
+// could be called directly...
+CanvasTileLayer.prototype.getTile = function (coord, zoom, ownerDocument) {
+  return this.create_tile_canvas(coord, zoom, ownerDocument);
+};
+
+CanvasTileLayer.prototype.releaseTile = function (tile) {
+  var id = tile.getAttribute('id');
+  delete this.tiles[id];
+};
+
+}
+(function(exports) {
+
+if(typeof(google) === 'undefined' || typeof(google.maps) === 'undefined') return;
+
+function GMapsTileLoader() {
+}
+
+
+GMapsTileLoader.prototype = {
+
+  _initTileLoader: function(map, projection) {
+    this._map = map;
+    this._projection = projection;
+    this._tiles = {};
+    this._tilesToLoad = 0;
+    this._updateTiles = this._updateTiles.bind(this);
+    this._listeners = [];
+    this._listeners.push(
+      google.maps.event.addListener(this._map, 'dragend', this._updateTiles),
+      google.maps.event.addListener(this._map, 'zoom_changed', this._updateTiles)
+    );
+    this.tileSize = 256;
+    this._updateTiles();
+  },
+
+  _removeTileLoader: function() {
+    for(var i in this._listeners) {
+      google.maps.event.removeListener(this._listeners[i]);
+    }
+    this._removeTiles();
+  },
+
+  _removeTiles: function () {
+      for (var key in this._tiles) {
+        this._removeTile(key);
+      }
+  },
+
+  _reloadTiles: function() {
+    this._removeTiles();
+    this._updateTiles();
+  },
+
+  _updateTiles: function () {
+
+      if (!this._map) { return; }
+
+      var bounds = this._map.getBounds();
+      var zoom = this._map.getZoom();
+      var tileSize = this.tileSize;
+      var mzoom = (1 << zoom);
+
+      var topLeft = new google.maps.LatLng(
+        bounds.getNorthEast().lat(),
+        bounds.getSouthWest().lng()
+      );
+
+      var bottomRigth = new google.maps.LatLng(
+        bounds.getSouthWest().lat(),
+        bounds.getNorthEast().lng()
+      );
+
+
+      this._projection = this._map.getProjection();
+      var divTopLeft = this._projection.fromLatLngToPoint(topLeft);
+      var divBottomRight = this._projection.fromLatLngToPoint(bottomRigth);
+
+
+      var nwTilePoint = new google.maps.Point(
+              Math.floor(divTopLeft.x*mzoom / tileSize),
+              Math.floor(divTopLeft.y*mzoom / tileSize)),
+          seTilePoint = new google.maps.Point(
+              Math.floor(divBottomRight.x*mzoom / tileSize),
+              Math.floor(divBottomRight.y*mzoom / tileSize));
+
+
+      this._addTilesFromCenterOut(nwTilePoint, seTilePoint);
+      this._removeOtherTiles(nwTilePoint, seTilePoint);
+  },
+
+  _removeOtherTiles: function (nwTilePoint, seTilePoint) {
+      var kArr, x, y, key;
+
+      var zoom = this._map.getZoom();
+      for (key in this._tiles) {
+          if (this._tiles.hasOwnProperty(key)) {
+              kArr = key.split(':');
+              x = parseInt(kArr[0], 10);
+              y = parseInt(kArr[1], 10);
+              z = parseInt(kArr[2], 10);
+
+              // remove tile if it's out of bounds
+              if (z !== zoom || x < nwTilePoint.x || x > seTilePoint.x || y < nwTilePoint.y || y > seTilePoint.y) {
+                  this._removeTile(key);
+              }
+          }
+      }
+  },
+
+  _removeTile: function (key) {
+      this.onTileRemoved && this.onTileRemoved(this._tiles[key]); 
+      delete this._tiles[key];
+  },
+
+  _tileShouldBeLoaded: function (tilePoint) {
+      return !((tilePoint.x + ':' + tilePoint.y + ':' + tilePoint.zoom) in this._tiles);
+  },
+
+  _tileLoaded: function(tilePoint, tileData) {
+    this._tilesToLoad--;
+    this._tiles[tilePoint.x + ':' + tilePoint.y + ':' + tilePoint.zoom] = tileData;
+    if(this._tilesToLoad === 0) {
+      this.onTilesLoaded && this.onTilesLoaded();
+    }
+  },
+
+  getTilePos: function (tilePoint) {
+    var limit = (1 << this._map.getZoom());
+    // wrap tile
+    tilePoint = {
+      x: ((tilePoint.x % limit) + limit) % limit,
+      y: tilePoint.y
+    };
+
+    tilePoint = new google.maps.Point(
+      tilePoint.x * this.tileSize, 
+      tilePoint.y * this.tileSize
+    );
+
+    var bounds = this._map.getBounds();
+    var topLeft = new google.maps.LatLng(
+      bounds.getNorthEast().lat(),
+      bounds.getSouthWest().lng()
+    );
+
+    var divTopLeft = this._map.getProjection().fromLatLngToPoint(topLeft);
+    zoom = (1 << this._map.getZoom());
+    divTopLeft.x = divTopLeft.x * zoom;
+    divTopLeft.y = divTopLeft.y * zoom;
+
+    return new google.maps.Point(
+      tilePoint.x - divTopLeft.x,
+      tilePoint.y - divTopLeft.y
+    );
+  },
+
+  _addTilesFromCenterOut: function (nwTilePoint, seTilePoint) {
+      var queue = [],
+          center = new google.maps.Point(
+            (nwTilePoint.x + seTilePoint.x) * 0.5,
+            (nwTilePoint.y + seTilePoint.y) * 0.5
+          ),
+          zoom = this._map.getZoom();
+
+      var j, i, point;
+
+      for (j = nwTilePoint.y; j <= seTilePoint.y; j++) {
+          for (i = nwTilePoint.x; i <= seTilePoint.x; i++) {
+              point = new google.maps.Point (i, j);
+              point.zoom = zoom;
+
+              if (this._tileShouldBeLoaded(point)) {
+                  queue.push(point);
+              }
+          }
+      }
+
+      var tilesToLoad = queue.length;
+
+      if (tilesToLoad === 0) { return; }
+
+      function distanceToCenterSq(point) {
+        var dx = point.x - center.x;
+        var dy = point.y - center.y;
+        return dx * dx + dy * dy;
+      }
+
+      // load tiles in order of their distance to center
+      queue.sort(function (a, b) {
+          return distanceToCenterSq(a) - distanceToCenterSq(b);
+      });
+
+      this._tilesToLoad += tilesToLoad;
+
+      if (this.onTileAdded) {
+        for (i = 0; i < tilesToLoad; i++) {
+          this.onTileAdded(queue[i]);
+        }
+      }
+  }
+
+}
+
+torque.GMapsTileLoader = GMapsTileLoader;
+
+})(typeof exports === "undefined" ? this : exports);
+(function(exports) {
+
+if(typeof(google) === 'undefined' || typeof(google.maps) === 'undefined') return;
+
+function GMapsTorqueLayer(options) {
+  var self = this;
+  if (!torque.isBrowserSupported()) {
+    throw new Error("browser is not supported by torque");
+  }
+  this.key = 0;
+  this.shader = null;
+  this.ready = false;
+  this.options = _.extend({}, options);
+  _.defaults(this.options, {
+    provider: 'sql_api',
+    renderer: 'point',
+    resolution: 2,
+    steps: 100,
+    visible: true
+  });
+  if (options.cartocss) {
+    _.extend(this.options, 
+        torque.common.TorqueLayer.optionsFromCartoCSS(options.cartocss));
+  }
+
+  this.animator = new torque.Animator(function(time) {
+    var k = time | 0;
+    if(self.key !== k) {
+      self.setKey(k);
+    }
+  }, this.options);
+
+  this.play = this.animator.start.bind(this.animator);
+  this.stop = this.animator.stop.bind(this.animator);
+  this.pause = this.animator.pause.bind(this.animator);
+  this.toggle = this.animator.toggle.bind(this.animator);
+  this.setDuration = this.animator.duration.bind(this.animator);
+  this.isRunning = this.animator.isRunning.bind(this.animator);
+
+
+  CanvasLayer.call(this, {
+    map: this.options.map,
+    //resizeHandler: this.redraw,
+    animate: false,
+    updateHandler: this.render,
+    readyHandler: this.initialize
+  });
+
+}
+
+/**
+ * torque layer
+ */
+GMapsTorqueLayer.prototype = _.extend({}, 
+  CanvasLayer.prototype,
+  torque.GMapsTileLoader.prototype,
+  torque.Event,
+  {
+
+  providers: {
+    'sql_api': torque.providers.json,
+    'url_template': torque.providers.jsonarray
+  },
+
+  renderers: {
+    'point': torque.renderer.Point,
+    'pixel': torque.renderer.Rectangle
+  },
+
+  initialize: function() {
+    var self = this;
+
+    this.onTileAdded = this.onTileAdded.bind(this);
+    this.hidden = !this.options.visible;
+
+    this.options.ready = function() {
+      self.fire("change:bounds", {
+        bounds: self.provider.getBounds()
+      });
+      self.animator.steps(self.provider.getSteps());
+      self.animator.rescale();
+      self.fire('change:steps', {
+        steps: self.provider.getSteps()
+      });
+      self.setKey(self.key);
+    };
+
+    this.provider = new this.providers[this.options.provider](this.options);
+    this.renderer = new this.renderers[this.options.renderer](this.getCanvas(), this.options);
+
+    this._initTileLoader(this.options.map, this.getProjection());
+
+    if (this.shader) {
+      this.renderer.setShader(this.shader);
+    }
+
+  },
+
+  hide: function() {
+    if(this.hidden) return this;
+    this.pause();
+    this.clear();
+    this.hidden = true;
+    return this;
+  },
+
+  show: function() {
+    if(!this.hidden) return this;
+    this.hidden = false;
+    this.play();
+    return this;
+  },
+
+  setSQL: function(sql) {
+    if (!this.provider || !this.provider.setSQL) {
+      throw new Error("this provider does not support SQL");
+    }
+    this.provider.setSQL(sql);
+    this._reloadTiles();
+    return this;
+  },
+
+  setBlendMode: function(_) {
+    this.renderer && this.renderer.setBlendMode(_);
+    this.redraw();
+  },
+
+  setSteps: function(steps) {
+    this.provider && this.provider.setSteps(steps);
+    this.animator && this.animator.steps(steps);
+    this._reloadTiles();
+  },
+
+  setColumn: function(column, isTime) {
+    this.provider && this.provider.setColumn(column, isTime);
+    this._reloadTiles();
+  },
+
+  getTimeBounds: function() {
+    return this.provider && this.provider.getKeySpan();
+  },
+
+  getCanvas: function() {
+    return this.canvas;
+  },
+
+    // for each tile shown on the map request the data
+  onTileAdded: function(t) {
+    var self = this;
+    this.provider.getTileData(t, t.zoom, function(tileData) {
+      self._tileLoaded(t, tileData);
+      if (tileData) {
+        self.redraw();
+      }
+    });
+  },
+
+  clear: function() {
+    var canvas = this.canvas;
+    canvas.width = canvas.width;
+  },
+
+  /**
+   * render the selectef key
+   * don't call this function directly, it's called by
+   * requestAnimationFrame. Use redraw to refresh it
+   */
+  render: function() {
+    if(this.hidden) return;
+    var t, tile, pos;
+    var canvas = this.canvas;
+    canvas.width = canvas.width;
+    var ctx = canvas.getContext('2d');
+
+    // renders only a "frame"
+    for(t in this._tiles) {
+      tile = this._tiles[t];
+      if (tile) {
+        pos = this.getTilePos(tile.coord);
+        ctx.setTransform(1, 0, 0, 1, pos.x, pos.y);
+        this.renderer.renderTile(tile, this.key, pos.x, pos.y);
+      }
+    }
+  },
+
+  /**
+   * set key to be shown. If it's a single value
+   * it renders directly, if it's an array it renders
+   * accumulated
+   */
+  setKey: function(key) {
+    this.key = key;
+    this.animator.step(key);
+    this.redraw();
+    this.fire('change:time', { time: this.getTime(), step: this.key });
+  },
+
+  /**
+   * helper function, does the same than ``setKey`` but only 
+   * accepts scalars.
+   */
+  setStep: function(time) {
+    if(time === undefined || time.length !== undefined) {
+      throw new Error("setTime only accept scalars");
+    }
+    this.setKey(time);
+  },
+
+  /**
+   * transform from animation step to Date object 
+   * that contains the animation time
+   *
+   * ``step`` should be between 0 and ``steps - 1`` 
+   */
+  stepToTime: function(step) {
+    if (!this.provider) return 0;
+    var times = this.provider.getKeySpan();
+    var time = times.start + (times.end - times.start)*(step/this.provider.getSteps());
+    return new Date(time);
+  },
+
+  /**
+   * returns the animation time defined by the data
+   * in the defined column. Date object
+   */
+  getTime: function() {
+    return this.stepToTime(this.key);
+  },
+
+  /**
+   * set the cartocss for the current renderer
+   */
+  setCartoCSS: function(cartocss) {
+    var shader = new carto.RendererJS().render(cartocss);
+    this.shader = shader;
+    if (this.renderer) {
+      this.renderer.setShader(shader);
+    }
+
+    // provider options
+    var options = torque.common.TorqueLayer.optionsFromLayer(shader.findLayer({ name: 'Map' }));
+    if(this.provider && this.provider.setOptions(options)) {
+      this._reloadTiles();
+    }
+    _.extend(this.options, options);
+
+    // animator options
+    if (options.animationDuration) {
+      this.animator.duration(options.animationDuration);
+    }
+
+    this.redraw();
+    return this;
+  },
+
+  redraw: function() {
+    this.scheduleUpdate();
+  },
+
+  onRemove: function() {
+    CanvasLayer.prototype.onRemove.call(this);
+    this.animator.stop();
+    this._removeTileLoader();
+  }
+
+});
+
+
+
+function GMapsTiledTorqueLayer(options) {
+  this.options = _.extend({}, options);
+  CanvasTileLayer.call(this, this._loadTile.bind(this), this.drawTile.bind(this));
+  this.initialize(options);
+}
+
+GMapsTiledTorqueLayer.prototype = _.extend({}, CanvasTileLayer.prototype, {
+
+  providers: {
+    'sql_api': torque.providers.json,
+    'url_template': torque.providers.JsonArray
+  },
+
+  renderers: {
+    'point': torque.renderer.Point,
+    'pixel': torque.renderer.Rectangle
+  },
+
+  initialize: function(options) {
+    var self = this;
+    this.key = 0;
+
+    this.options.renderer = this.options.renderer || 'pixel';
+    this.options.provider = this.options.provider || 'sql_api';
+
+    this.provider = new this.providers[this.options.provider](options);
+    this.renderer = new this.renderers[this.options.renderer](null, options);
+
+  },
+
+  _tileLoaded: function(tile, tileData) {
+    tile.data = tileData;
+    this.drawTile(tile);
+  },
+
+  _loadTile: function(tile, coord, zoom) {
+    var self = this;
+    var limit = 1 << zoom;
+    // wrap tile
+    var wrappedCoord = {
+      x: ((coord.x % limit) + limit) % limit,
+      y: coord.y
+    };
+
+    this.provider.getTileData(wrappedCoord, zoom, function(tileData) {
+      self._tileLoaded(tile, tileData);
+    });
+  },
+
+  drawTile: function (tile) {
+    var canvas = tile.canvas;
+    if(!tile.data) return;
+    canvas.width = canvas.width;
+
+    this.renderer.setCanvas(canvas);
+
+    var accum = this.renderer.accumulate(tile.data, this.key);
+    this.renderer.renderTileAccum(accum, 0, 0);
+  },
+
+  setKey: function(key) {
+    this.key = key;
+    this.redraw();
+  },
+
+  /**
+   * set the cartocss for the current renderer
+   */
+  setCartoCSS: function(cartocss) {
+    if (!this.renderer) throw new Error('renderer is not valid');
+    return this.renderer.setCartoCSS(cartocss);
+  }
+
+});
+
+exports.torque.GMapsTiledTorqueLayer = GMapsTiledTorqueLayer;
+exports.torque.GMapsTorqueLayer = GMapsTorqueLayer;
+
+})(typeof exports === "undefined" ? this : exports);
+if(typeof(L) !== 'undefined') {
+
+L.Mixin.TileLoader = {
+
+  _initTileLoader: function() {
+    this._tiles = {}
+    this._tilesToLoad = 0;
+    this._map.on({
+        'moveend': this._updateTiles
+    }, this);
+    this._updateTiles();
+  },
+
+  _removeTileLoader: function() {
+    this._map.off({
+        'moveend': this._updateTiles
+    }, this);
+    this._removeTiles();
+  },
+
+  _updateTiles: function () {
+
+      if (!this._map) { return; }
+
+      var bounds = this._map.getPixelBounds(),
+          zoom = this._map.getZoom(),
+          tileSize = this.options.tileSize;
+
+      if (zoom > this.options.maxZoom || zoom < this.options.minZoom) {
+          return;
+      }
+
+      var nwTilePoint = new L.Point(
+              Math.floor(bounds.min.x / tileSize),
+              Math.floor(bounds.min.y / tileSize)),
+
+          seTilePoint = new L.Point(
+              Math.floor(bounds.max.x / tileSize),
+              Math.floor(bounds.max.y / tileSize)),
+
+          tileBounds = new L.Bounds(nwTilePoint, seTilePoint);
+
+      this._addTilesFromCenterOut(tileBounds);
+      this._removeOtherTiles(tileBounds);
+  },
+
+  _removeTiles: function (bounds) {
+      for (var key in this._tiles) {
+        this._removeTile(key);
+      }
+  },
+
+  _reloadTiles: function() {
+    this._removeTiles();
+    this._updateTiles();
+  },
+
+  _removeOtherTiles: function (bounds) {
+      var kArr, x, y, z, key;
+      var zoom = this._map.getZoom();
+
+      for (key in this._tiles) {
+          if (this._tiles.hasOwnProperty(key)) {
+              kArr = key.split(':');
+              x = parseInt(kArr[0], 10);
+              y = parseInt(kArr[1], 10);
+              z = parseInt(kArr[2], 10);
+
+              // remove tile if it's out of bounds
+              if (zoom !== z || x < bounds.min.x || x > bounds.max.x || y < bounds.min.y || y > bounds.max.y) {
+                  this._removeTile(key);
+              }
+          }
+      }
+  },
+
+  _removeTile: function (key) {
+      this.fire('tileRemoved', this._tiles[key]);
+      delete this._tiles[key];
+  },
+
+  _tileShouldBeLoaded: function (tilePoint) {
+      return !((tilePoint.x + ':' + tilePoint.y + ':' + tilePoint.zoom) in this._tiles);
+  },
+
+  _tileLoaded: function(tilePoint, tileData) {
+    this._tilesToLoad--;
+    this._tiles[tilePoint.x + ':' + tilePoint.y + ':' + tilePoint.zoom] = tileData;
+    if(this._tilesToLoad === 0) {
+      this.fire("tilesLoaded");
+    }
+  },
+
+  getTilePos: function (tilePoint) {
+    tilePoint = new L.Point(tilePoint.x, tilePoint.y);
+    var origin = this._map._getNewTopLeftPoint(this._map.getCenter()),
+        tileSize = this.options.tileSize;
+
+    return tilePoint.multiplyBy(tileSize).subtract(origin);
+  },
+
+  _addTilesFromCenterOut: function (bounds) {
+      var queue = [],
+          center = bounds.getCenter(),
+          zoom = this._map.getZoom();
+
+      var j, i, point;
+
+      for (j = bounds.min.y; j <= bounds.max.y; j++) {
+          for (i = bounds.min.x; i <= bounds.max.x; i++) {
+              point = new L.Point(i, j);
+              point.zoom =  zoom;
+
+              if (this._tileShouldBeLoaded(point)) {
+                  queue.push(point);
+              }
+          }
+      }
+
+      var tilesToLoad = queue.length;
+
+      if (tilesToLoad === 0) { return; }
+
+      // load tiles in order of their distance to center
+      queue.sort(function (a, b) {
+          return a.distanceTo(center) - b.distanceTo(center);
+      });
+
+      this._tilesToLoad += tilesToLoad;
+
+      for (i = 0; i < tilesToLoad; i++) {
+        this.fire('tileAdded', queue[i]);
+      }
+
+  }
+}
+
+} //L defined
+if(typeof(L) !== 'undefined') {
+/**
+ * full canvas layer implementation for Leaflet
+ */
+
+L.CanvasLayer = L.Class.extend({
+
+  includes: [L.Mixin.Events, L.Mixin.TileLoader],
+
+  options: {
+      minZoom: 0,
+      maxZoom: 28,
+      tileSize: 256,
+      subdomains: 'abc',
+      errorTileUrl: '',
+      attribution: '',
+      zoomOffset: 0,
+      opacity: 1,
+      unloadInvisibleTiles: L.Browser.mobile,
+      updateWhenIdle: L.Browser.mobile,
+      tileLoader: false // installs tile loading events
+  },
+
+  initialize: function (options) { 
+    var self = this;
+    //this.project = this._project.bind(this);
+    this.render = this.render.bind(this);
+    L.Util.setOptions(this, options);
+    this._canvas = document.createElement('canvas');
+    this._ctx = this._canvas.getContext('2d');
+    var requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
+                                window.webkitRequestAnimationFrame || window.msRequestAnimationFrame || function(callback) {
+                                    return window.setTimeout(callback, 1000 / 60);
+                                };
+    this.requestAnimationFrame = requestAnimationFrame;
+  },
+
+  onAdd: function (map) {
+    this._map = map;
+
+    this._staticPane = map._createPane('leaflet-tile-pane', map._container);
+    this._staticPane.appendChild(this._canvas);
+
+    map.on({
+      'viewreset': this._reset
+      //'move': this._render
+    }, this);
+
+    map.on('move', this._render, this);//function(){ console.log("a"); }, this);
+    map.on('resize', this._reset, this);
+
+    if(this.options.tileLoader) {
+      this._initTileLoader();
+    }
+
+    this._reset();
+  },
+
+  getCanvas: function() {
+    return this._canvas;
+  },
+
+  draw: function() {
+    return this._reset();
+  },
+
+  onRemove: function (map) {
+    map._container.removeChild(this._staticPane);
+    map.off({
+        'viewreset': this._reset,
+        'move': this._render,
+        'resize': this._reset
+    }, this);
+  },
+
+  addTo: function (map) {
+    map.addLayer(this);
+    return this;
+  },
+
+  setOpacity: function (opacity) {
+    this.options.opacity = opacity;
+    this._updateOpacity();
+    return this;
+  },
+
+  bringToFront: function () {
+    return this;
+  },
+
+  bringToBack: function () {
+    return this;
+  },
+
+  _reset: function () {
+    var size = this._map.getSize();
+    this._canvas.width = size.x;
+    this._canvas.height = size.y;
+    this.onResize();
+    this._render();
+  },
+
+  /*
+  _project: function(x) {
+    var point = this._map.latLngToLayerPoint(new L.LatLng(x[1], x[0]));
+    return [point.x, point.y];
+  },
+  */
+
+  _updateOpacity: function () { },
+
+  _render: function() {
+    this.requestAnimationFrame.call(window, this.render);
+  },
+
+  redraw: function() {
+    this._render();
+  },
+
+  onResize: function() {
+  },
+
+  render: function() {
+    throw new Error('render function should be implemented');
+  }
+
+});
+
+} //L defined
+if(typeof(L) !== 'undefined') {
+/**
+ * torque layer
+ */
+L.TorqueLayer = L.CanvasLayer.extend({
+
+  providers: {
+    'sql_api': torque.providers.json,
+    'url_template': torque.providers.jsonarray
+  },
+
+  renderers: {
+    'point': torque.renderer.Point,
+    'pixel': torque.renderer.Rectangle
+  },
+
+  initialize: function(options) {
+    var self = this;
+    if (!torque.isBrowserSupported()) {
+      throw new Error("browser is not supported by torque");
+    }
+    options.tileLoader = true;
+    this.key = 0;
+    if (options.cartocss) {
+      _.extend(options, torque.common.TorqueLayer.optionsFromCartoCSS(options.cartocss));
+    }
+
+    options.resolution = options.resolution || 2;
+    options.steps = options.steps || 100;
+    options.visible = options.visible === undefined ? true: options.visible;
+    this.hidden = !options.visible;
+
+    this.animator = new torque.Animator(function(time) {
+      var k = time | 0;
+      if(self.key !== k) {
+        self.setKey(k);
+      }
+    }, options);
+
+    this.play = this.animator.start.bind(this.animator);
+    this.stop = this.animator.stop.bind(this.animator);
+    this.pause = this.animator.pause.bind(this.animator);
+    this.toggle = this.animator.toggle.bind(this.animator);
+    this.setDuration = this.animator.duration.bind(this.animator);
+    this.isRunning = this.animator.isRunning.bind(this.animator);
+
+
+    L.CanvasLayer.prototype.initialize.call(this, options);
+
+    this.options.renderer = this.options.renderer || 'point';
+    this.options.provider = this.options.provider || 'sql_api';
+
+    options.ready = function() {
+      self.fire("change:bounds", {
+        bounds: self.provider.getBounds()
+      });
+      self.animator.steps(self.provider.getSteps());
+      self.animator.rescale();
+      self.fire('change:steps', {
+        steps: self.provider.getSteps()
+      });
+      self.setKey(self.key);
+    };
+
+    this.provider = new this.providers[this.options.provider](options);
+    this.renderer = new this.renderers[this.options.renderer](this.getCanvas(), options);
+
+
+    // for each tile shown on the map request the data
+    this.on('tileAdded', function(t) {
+      var tileData = this.provider.getTileData(t, t.zoom, function(tileData) {
+        self._tileLoaded(t, tileData);
+        if (tileData) {
+          self.redraw();
+        }
+      });
+    }, this);
+
+
+  },
+
+
+  onRemove: function(map) {
+    this._removeTileLoader();
+    L.CanvasLayer.prototype.onRemove.call(this, map);
+  },
+
+  hide: function() {
+    if(this.hidden) return this;
+    this.pause();
+    this.clear();
+    this.hidden = true;
+    return this;
+  },
+
+  show: function() {
+    if(!this.hidden) return this;
+    this.hidden = false;
+    this.play();
+    return this;
+  },
+
+  setSQL: function(sql) {
+    if (!this.provider || !this.provider.setSQL) {
+      throw new Error("this provider does not support SQL");
+    }
+    this.provider.setSQL(sql);
+    this._reloadTiles();
+    return this;
+  },
+
+  setBlendMode: function(_) {
+    this.renderer.setBlendMode(_);
+    this.redraw();
+  },
+
+  setSteps: function(steps) {
+    this.provider.setSteps(steps);
+    this._reloadTiles();
+  },
+
+  setColumn: function(column, isTime) {
+    this.provider.setColumn(column, isTime);
+    this._reloadTiles();
+  },
+
+  getTimeBounds: function() {
+    return this.provider && this.provider.getKeySpan();
+  },
+
+  clear: function() {
+    var canvas = this.getCanvas();
+    canvas.width = canvas.width;
+  },
+
+  /**
+   * render the selectef key
+   * don't call this function directly, it's called by
+   * requestAnimationFrame. Use redraw to refresh it
+   */
+  render: function() {
+    if(this.hidden) return;
+    var t, tile, pos;
+    var canvas = this.getCanvas();
+    canvas.width = canvas.width;
+    var ctx = canvas.getContext('2d');
+
+    for(t in this._tiles) {
+      tile = this._tiles[t];
+      if (tile) {
+        pos = this.getTilePos(tile.coord);
+        ctx.setTransform(1, 0, 0, 1, pos.x, pos.y);
+        this.renderer.renderTile(tile, this.key, pos.x, pos.y);
+      }
+    }
+
+  },
+
+  /**
+   * set key to be shown. If it's a single value
+   * it renders directly, if it's an array it renders
+   * accumulated
+   */
+  setKey: function(key) {
+    this.key = key;
+    this.animator.step(key);
+    this.redraw();
+    this.fire('change:time', { time: this.getTime(), step: this.key });
+  },
+
+  /**
+   * helper function, does the same than ``setKey`` but only 
+   * accepts scalars.
+   */
+  setStep: function(time) {
+    if(time === undefined || time.length !== undefined) {
+      throw new Error("setTime only accept scalars");
+    }
+    this.setKey(time);
+  },
+
+  /**
+   * transform from animation step to Date object 
+   * that contains the animation time
+   *
+   * ``step`` should be between 0 and ``steps - 1`` 
+   */
+  stepToTime: function(step) {
+    var times = this.provider.getKeySpan();
+    var time = times.start + (times.end - times.start)*(step/this.provider.getSteps());
+    return new Date(time);
+  },
+
+  /**
+   * returns the animation time defined by the data
+   * in the defined column. Date object
+   */
+  getTime: function() {
+    return this.stepToTime(this.key);
+  },
+
+  /**
+   * returns an object with the start and end times
+   */
+  getTimeSpan: function() {
+    var times = this.provider.getKeySpan();
+  },
+
+  /**
+   * set the cartocss for the current renderer
+   */
+  setCartoCSS: function(cartocss) {
+    if (!this.renderer) throw new Error('renderer is not valid');
+    var shader = new carto.RendererJS().render(cartocss);
+    this.renderer.setShader(shader);
+
+    // provider options
+    var options = torque.common.TorqueLayer.optionsFromLayer(shader.findLayer({ name: 'Map' }));
+    if(this.provider.setOptions(options)) {
+      this._reloadTiles();
+    }
+    _.extend(this.options, options);
+
+    // animator options
+    if (options.animationDuration) {
+      this.animator.duration(options.animationDuration);
+    }
+
+    this.redraw();
+    return this;
+  }
+
+});
+
+
+L.TiledTorqueLayer = L.TileLayer.Canvas.extend({
+
+  providers: {
+    'sql_api': torque.providers.json,
+    'url_template': torque.providers.JsonArray
+  },
+
+  renderers: {
+    'point': torque.renderer.Point,
+    'pixel': torque.renderer.Rectangle
+  },
+
+  initialize: function(options) {
+    var self = this;
+    this.key = 0;
+
+    options.async = true;
+    L.TileLayer.Canvas.prototype.initialize.call(this, options);
+
+
+    this.options.renderer = this.options.renderer || 'pixel';
+    this.options.provider = this.options.provider || 'sql_api';
+
+    this.provider = new this.providers[this.options.provider](options);
+    this.renderer = new this.renderers[this.options.renderer](null, options);
+
+  },
+
+  _tileLoaded: function(tile, tilePoint, tileData) {
+    if(this._tiles[tilePoint.x + ':' + tilePoint.y] !== undefined) {
+      this._tiles[tilePoint.x + ':' + tilePoint.y].data = tileData;
+      this.drawTile(tile);
+    }
+    L.TileLayer.Canvas.prototype._tileLoaded.call(this);
+  },
+
+  redraw: function() {
+    for (var i in this._tiles) {
+        this._redrawTile(this._tiles[i]);
+    }
+  },
+
+  _loadTile: function(tile, tilePoint) {
+    var self = this;
+    L.TileLayer.Canvas.prototype._loadTile.apply(this, arguments);
+
+    // get the data from adjusted point but render in the right canvas
+    var adjusted = tilePoint.clone()
+    this._adjustTilePoint(adjusted);
+    this.provider.getTileData(adjusted, this._map.getZoom(), function(tileData) {
+      self._tileLoaded(tile, tilePoint, tileData);
+      L.DomUtil.addClass(tile, 'leaflet-tile-loaded');
+    });
+  },
+
+  drawTile: function (tile) {
+    var canvas = tile;
+    if(!tile.data) return;
+    canvas.width = canvas.width;
+
+    this.renderer.setCanvas(canvas);
+
+    var accum = this.renderer.accumulate(tile.data, this.key);
+    this.renderer.renderTileAccum(accum, 0, 0);
+  },
+
+  setKey: function(key) {
+    this.key = key;
+    this.redraw();
+  },
+
+  /**
+   * set the cartocss for the current renderer
+   */
+  setCartoCSS: function(cartocss) {
+    if (!this.renderer) throw new Error('renderer is not valid');
+    return this.renderer.setCartoCSS(cartocss);
+  }
+
+});
+
+} //L defined
+
+(function() {
+
+if(typeof(google) == "undefined" || typeof(google.maps) == "undefined")
+  return;
+
+var GMapsTorqueLayerView = function(layerModel, gmapsMap) {
+
+  var extra = layerModel.get('extra_params');
+  cdb.geo.GMapsLayerView.call(this, layerModel, this, gmapsMap);
+  torque.GMapsTorqueLayer.call(this, {
+      table: layerModel.get('table_name'),
+      user: layerModel.get('user_name'),
+      column: layerModel.get('property'),
+      blendmode: layerModel.get('torque-blend-mode'),
+      resolution: 1,
+      //TODO: manage time columns
+      countby: 'count(cartodb_id)',
+      sql_api_domain: layerModel.get('sql_api_domain'),
+      sql_api_protocol: layerModel.get('sql_api_protocol'),
+      sql_api_port: layerModel.get('sql_api_port'),
+      tiler_protocol: layerModel.get('tiler_protocol'),
+      tiler_domain: layerModel.get('tiler_domain'),
+      tiler_port: layerModel.get('tiler_port'),
+      stat_tag: layerModel.get('stat_tag'),
+      animationDuration: layerModel.get('torque-duration'),
+      steps: layerModel.get('torque-steps'),
+      sql: layerModel.get('query'),
+      visible: layerModel.get('visible'),
+      extra_params: {
+        api_key: extra ? extra.map_key: ''
+      },
+      map: gmapsMap,
+      cartodb_logo: layerModel.get('cartodb_logo'),
+      cdn_url: layerModel.get('no_cdn') ? null: (layerModel.get('cdn_url') || cdb.CDB_HOST)
+  });
+
+  this.setCartoCSS(this.model.get('tile_style'));
+  if (layerModel.get('visible')) {
+    this.play();
+  }
+
+};
+
+_.extend(
+  GMapsTorqueLayerView.prototype,
+  cdb.geo.GMapsLayerView.prototype,
+  torque.GMapsTorqueLayer.prototype,
+  {
+
+  _update: function() {
+    var changed = this.model.changedAttributes();
+    if(changed === false) return;
+    changed.tile_style && this.setCartoCSS(this.model.get('tile_style'));
+    'query' in changed && this.setSQL(this.model.get('query'));
+    if ('visible' in changed) 
+      this.model.get('visible') ? this.show(): this.hide();
+  },
+
+  refreshView: function() {
+    //TODO: update screen
+  },
+
+  onAdd: function() {
+    torque.GMapsTorqueLayer.prototype.onAdd.apply(this);
+    // Add CartoDB logo
+    if (this.options.cartodb_logo != false)
+      cdb.geo.common.CartoDBLogo.addWadus({ left: 74, bottom:8 }, 2000, this.map.getDiv())
+  },
+
+  onTilesLoaded: function() {
+    //this.trigger('load');
+    Backbone.Events.trigger.call(this, 'load');
+  }
+
+});
+
+
+cdb.geo.GMapsTorqueLayerView = GMapsTorqueLayerView;
+
+
+})();
+
+(function() {
+
+if(typeof(L) === "undefined") 
+  return;
+
+/**
+ * leaflet torque layer
+ */
+var LeafLetTorqueLayer = L.TorqueLayer.extend({
+
+  initialize: function(layerModel, leafletMap) {
+    var extra = layerModel.get('extra_params');
+    // initialize the base layers
+    L.TorqueLayer.prototype.initialize.call(this, {
+      table: layerModel.get('table_name'),
+      user: layerModel.get('user_name'),
+      column: layerModel.get('property'),
+      blendmode: layerModel.get('torque-blend-mode'),
+      resolution: 1,
+      //TODO: manage time columns
+      countby: 'count(cartodb_id)',
+      sql_api_domain: layerModel.get('sql_api_domain'),
+      sql_api_protocol: layerModel.get('sql_api_protocol'),
+      sql_api_port: layerModel.get('sql_api_port'),
+      tiler_protocol: layerModel.get('tiler_protocol'),
+      tiler_domain: layerModel.get('tiler_domain'),
+      tiler_port: layerModel.get('tiler_port'),
+      stat_tag: layerModel.get('stat_tag'),
+      animationDuration: layerModel.get('torque-duration'),
+      steps: layerModel.get('torque-steps'),
+      sql: layerModel.get('query'),
+      visible: layerModel.get('visible'),
+      extra_params: {
+        api_key: extra ? extra.map_key: ''
+      },
+      cartodb_logo: layerModel.get('cartodb_logo'),
+      cdn_url: layerModel.get('no_cdn') ? null: (layerModel.get('cdn_url') || cdb.CDB_HOST)
+    });
+
+    cdb.geo.LeafLetLayerView.call(this, layerModel, this, leafletMap);
+
+    // match leaflet events with backbone events
+    this.fire = this.trigger;
+
+    this.setCartoCSS(layerModel.get('tile_style'));
+    if (layerModel.get('visible')) {
+      this.play();
+    }
+
+    this.bind('tilesLoaded', function() {
+      this.trigger('load');
+    }, this);
+
+  },
+
+  onAdd: function(map) {
+    L.TorqueLayer.prototype.onAdd.apply(this, [map]);
+    // Add CartoDB logo
+    if (this.options.cartodb_logo != false)
+      cdb.geo.common.CartoDBLogo.addWadus({ left:8, bottom:8 }, 0, map._container)
+  },
+
+  _modelUpdated: function(model) {
+    var changed = this.model.changedAttributes();
+    if(changed === false) return;
+    changed.tile_style && this.setCartoCSS(this.model.get('tile_style'));
+    'query' in changed && this.setSQL(this.model.get('query'));
+
+    if ('visible' in changed) 
+      this.model.get('visible') ? this.show(): this.hide();
+
+  }
+
+
+
+});
+
+_.extend(LeafLetTorqueLayer.prototype, cdb.geo.LeafLetLayerView.prototype);
+
+cdb.geo.LeafLetTorqueLayer = LeafLetTorqueLayer;
+
+})();
+cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
+
+  DEFAULT_OFFSET_TOP: 30,
+  className: 'cartodb-timeslider',
+
+  defaultTemplate:
+    " <ul> " +
+    "   <li><a href='#/stop' class='button stop'>pause</a></li>" +
+    "   <li><p class='value'></p></li>" +
+    "   <li class='last'><div class='slider-wrapper'><div class='slider'></div></div></li>" +
+    " </ul> "
+  ,
+
+  events: {
+    "click .button":  "toggleTime",
+    "dragstart":      "_stopPropagation",
+    "mousedown":      "_stopPropagation",
+    "touchstart":     "_stopPropagation",
+    "MSPointerDown":  "_stopPropagation",
+    "dblclick":       "_stopPropagation",
+    "mousewheel":     "_stopPropagation",
+    "DOMMouseScroll": "_stopPropagation",
+    "click":          "_stopPropagation"
+  },
+
+  initialize: function() {
+    _.bindAll(this, '_stop', '_start', '_slide');
+    var self = this;
+    this.options.template = this.options.template || this.defaultTemplate;
+    this.options.position = 'bottom|left';
+    this.options.width = null;
+
+    // Control variable to know if the layer was
+    // running before touching the slider
+    this.wasRunning = false;
+    this.torqueLayer = this.options.layer;
+
+    // each time time changes, move the slider
+    function updateTime(changes) {
+      var tb = self.torqueLayer.getTimeBounds();
+      if (!tb) return;
+      if (tb.columnType === 'date' || this.options.force_format_date) {
+        if (tb && tb.start !== undefined) {
+          var f = self.formaterForRange(tb.start, tb.end);
+          // avoid showing invalid dates
+          if (!_.isNaN(changes.time.getYear())) {
+            self.$('.value').text(f(changes.time));
+          }
+        }
+      } else {
+          self.$('.value').text(changes.step);
+      }
+    }
+
+    function updateSlider(changes) {
+      self.$(".slider" ).slider({ value: changes.step });
+    }
+
+    function updateSliderRange(changes) {
+      self.$(".slider" ).slider({ max: changes.steps });
+    }
+
+    this.torqueLayer.on('change:time', updateSlider);
+    this.torqueLayer.on('change:time', updateTime);
+    this.torqueLayer.on('change:steps', updateSliderRange);
+
+    this.on('clean', function() {
+      self.torqueLayer.off('change:time', updateSlider);
+      self.torqueLayer.off('change:time', updateTime);
+      self.torqueLayer.off('change:steps', updateSliderRange);
+    });
+    cdb.geo.ui.InfoBox.prototype.initialize.call(this);
+
+  },
+
+  formaterForRange: function(start, end) {
+    start = start.getTime ? start.getTime(): start;
+    end = end.getTime ? end.getTime(): end;
+    var span = (end - start)/1000;
+    var ONE_DAY = 3600*24;
+    var ONE_YEAR = ONE_DAY * 31 * 12;
+    function pad(n) { return n < 10 ? '0' + n : n; };
+    // lest than a day
+    if (span < ONE_DAY)   return function(t) { return pad(t.getUTCHours()) + ":" + pad(t.getUTCMinutes()); };
+    if (span < ONE_YEAR) return function(t) { return pad(t.getUTCMonth() + 1) + "/" + pad(t.getUTCDate()) + "/" + pad(t.getUTCFullYear()); };
+    return function(t) { return pad(t.getUTCMonth() + 1) + "/" + pad(t.getUTCFullYear()); };
+  },
+
+  _slide: function(e, ui) {
+    this.killEvent(e);
+    var step = ui.value;
+    this.torqueLayer.setStep(step);
+  },
+
+  _start: function(e, ui) {
+    if(this.torqueLayer.isRunning()) {
+      this.wasRunning = true;
+      this.toggleTime();
+    }
+  },
+
+  _stop: function(e, ui) {
+    if (this.wasRunning) {
+      this.toggleTime()
+    }
+
+    this.wasRunning = false;
+  },
+
+  _initSlider: function() {
+    var torqueLayer = this.torqueLayer;
+    var slider = this.$(".slider");
+    slider.slider({
+      range: 'min',
+      min: 0,
+      max: this.torqueLayer.options.steps,
+      value: 0,
+      step: 1,
+      stop: this._stop,
+      start: this._start,
+      slide: this._slide
+    });
+  },
+
+  toggleTime: function(e) {
+    this.killEvent(e);
+    this.torqueLayer.toggle();
+    this.$('.button')
+      [(this.torqueLayer.isRunning() ? 'addClass': 'removeClass')]('stop')
+      .attr('href','#/' + (this.torqueLayer.isRunning() ? 'pause': 'play'))
+      .html(this.torqueLayer.isRunning() ? 'pause': 'play');
+  },
+
+  enable: function() {},
+
+  _stopPropagation: function(ev) {
+    ev.stopPropagation();
+  },
+
+  render: function() {
+    cdb.geo.ui.InfoBox.prototype.render.apply(this, arguments);
+    this._initSlider();
+    return this;
+  }
+
+});
+
+/*!
+ * jQuery UI 1.8.23
+ *
+ * Copyright 2012, AUTHORS.txt (http://jqueryui.com/about)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
+ *
+ * http://docs.jquery.com/UI
+ */
+(function( $, undefined ) {
+
+// prevent duplicate loading
+// this is only a problem because we proxy existing functions
+// and we don't want to double proxy them
+$.ui = $.ui || {};
+if ( $.ui.version ) {
+	return;
+}
+
+$.extend( $.ui, {
+	version: "1.8.23",
+
+	keyCode: {
+		ALT: 18,
+		BACKSPACE: 8,
+		CAPS_LOCK: 20,
+		COMMA: 188,
+		COMMAND: 91,
+		COMMAND_LEFT: 91, // COMMAND
+		COMMAND_RIGHT: 93,
+		CONTROL: 17,
+		DELETE: 46,
+		DOWN: 40,
+		END: 35,
+		ENTER: 13,
+		ESCAPE: 27,
+		HOME: 36,
+		INSERT: 45,
+		LEFT: 37,
+		MENU: 93, // COMMAND_RIGHT
+		NUMPAD_ADD: 107,
+		NUMPAD_DECIMAL: 110,
+		NUMPAD_DIVIDE: 111,
+		NUMPAD_ENTER: 108,
+		NUMPAD_MULTIPLY: 106,
+		NUMPAD_SUBTRACT: 109,
+		PAGE_DOWN: 34,
+		PAGE_UP: 33,
+		PERIOD: 190,
+		RIGHT: 39,
+		SHIFT: 16,
+		SPACE: 32,
+		TAB: 9,
+		UP: 38,
+		WINDOWS: 91 // COMMAND
+	}
+});
+
+// plugins
+$.fn.extend({
+	propAttr: $.fn.prop || $.fn.attr,
+
+	_focus: $.fn.focus,
+	focus: function( delay, fn ) {
+		return typeof delay === "number" ?
+			this.each(function() {
+				var elem = this;
+				setTimeout(function() {
+					$( elem ).focus();
+					if ( fn ) {
+						fn.call( elem );
+					}
+				}, delay );
+			}) :
+			this._focus.apply( this, arguments );
+	},
+
+	scrollParent: function() {
+		var scrollParent;
+		if (($.browser.msie && (/(static|relative)/).test(this.css('position'))) || (/absolute/).test(this.css('position'))) {
+			scrollParent = this.parents().filter(function() {
+				return (/(relative|absolute|fixed)/).test($.curCSS(this,'position',1)) && (/(auto|scroll)/).test($.curCSS(this,'overflow',1)+$.curCSS(this,'overflow-y',1)+$.curCSS(this,'overflow-x',1));
+			}).eq(0);
+		} else {
+			scrollParent = this.parents().filter(function() {
+				return (/(auto|scroll)/).test($.curCSS(this,'overflow',1)+$.curCSS(this,'overflow-y',1)+$.curCSS(this,'overflow-x',1));
+			}).eq(0);
+		}
+
+		return (/fixed/).test(this.css('position')) || !scrollParent.length ? $(document) : scrollParent;
+	},
+
+	zIndex: function( zIndex ) {
+		if ( zIndex !== undefined ) {
+			return this.css( "zIndex", zIndex );
+		}
+
+		if ( this.length ) {
+			var elem = $( this[ 0 ] ), position, value;
+			while ( elem.length && elem[ 0 ] !== document ) {
+				// Ignore z-index if position is set to a value where z-index is ignored by the browser
+				// This makes behavior of this function consistent across browsers
+				// WebKit always returns auto if the element is positioned
+				position = elem.css( "position" );
+				if ( position === "absolute" || position === "relative" || position === "fixed" ) {
+					// IE returns 0 when zIndex is not specified
+					// other browsers return a string
+					// we ignore the case of nested elements with an explicit value of 0
+					// <div style="z-index: -10;"><div style="z-index: 0;"></div></div>
+					value = parseInt( elem.css( "zIndex" ), 10 );
+					if ( !isNaN( value ) && value !== 0 ) {
+						return value;
+					}
+				}
+				elem = elem.parent();
+			}
+		}
+
+		return 0;
+	},
+
+	disableSelection: function() {
+		return this.bind( ( $.support.selectstart ? "selectstart" : "mousedown" ) +
+			".ui-disableSelection", function( event ) {
+				event.preventDefault();
+			});
+	},
+
+	enableSelection: function() {
+		return this.unbind( ".ui-disableSelection" );
+	}
+});
+
+// support: jQuery <1.8
+if ( !$( "<a>" ).outerWidth( 1 ).jquery ) {
+	$.each( [ "Width", "Height" ], function( i, name ) {
+		var side = name === "Width" ? [ "Left", "Right" ] : [ "Top", "Bottom" ],
+			type = name.toLowerCase(),
+			orig = {
+				innerWidth: $.fn.innerWidth,
+				innerHeight: $.fn.innerHeight,
+				outerWidth: $.fn.outerWidth,
+				outerHeight: $.fn.outerHeight
+			};
+
+		function reduce( elem, size, border, margin ) {
+			$.each( side, function() {
+				size -= parseFloat( $.curCSS( elem, "padding" + this, true) ) || 0;
+				if ( border ) {
+					size -= parseFloat( $.curCSS( elem, "border" + this + "Width", true) ) || 0;
+				}
+				if ( margin ) {
+					size -= parseFloat( $.curCSS( elem, "margin" + this, true) ) || 0;
+				}
+			});
+			return size;
+		}
+
+		$.fn[ "inner" + name ] = function( size ) {
+			if ( size === undefined ) {
+				return orig[ "inner" + name ].call( this );
+			}
+
+			return this.each(function() {
+				$( this ).css( type, reduce( this, size ) + "px" );
+			});
+		};
+
+		$.fn[ "outer" + name] = function( size, margin ) {
+			if ( typeof size !== "number" ) {
+				return orig[ "outer" + name ].call( this, size );
+			}
+
+			return this.each(function() {
+				$( this).css( type, reduce( this, size, true, margin ) + "px" );
+			});
+		};
+	});
+}
+
+// selectors
+function focusable( element, isTabIndexNotNaN ) {
+	var nodeName = element.nodeName.toLowerCase();
+	if ( "area" === nodeName ) {
+		var map = element.parentNode,
+			mapName = map.name,
+			img;
+		if ( !element.href || !mapName || map.nodeName.toLowerCase() !== "map" ) {
+			return false;
+		}
+		img = $( "img[usemap=#" + mapName + "]" )[0];
+		return !!img && visible( img );
+	}
+	return ( /input|select|textarea|button|object/.test( nodeName )
+		? !element.disabled
+		: "a" == nodeName
+			? element.href || isTabIndexNotNaN
+			: isTabIndexNotNaN)
+		// the element and all of its ancestors must be visible
+		&& visible( element );
+}
+
+function visible( element ) {
+	return !$( element ).parents().andSelf().filter(function() {
+		return $.curCSS( this, "visibility" ) === "hidden" ||
+			$.expr.filters.hidden( this );
+	}).length;
+}
+
+$.extend( $.expr[ ":" ], {
+	data: $.expr.createPseudo ?
+		$.expr.createPseudo(function( dataName ) {
+			return function( elem ) {
+				return !!$.data( elem, dataName );
+			};
+		}) :
+		// support: jQuery <1.8
+		function( elem, i, match ) {
+			return !!$.data( elem, match[ 3 ] );
+		},
+
+	focusable: function( element ) {
+		return focusable( element, !isNaN( $.attr( element, "tabindex" ) ) );
+	},
+
+	tabbable: function( element ) {
+		var tabIndex = $.attr( element, "tabindex" ),
+			isTabIndexNaN = isNaN( tabIndex );
+		return ( isTabIndexNaN || tabIndex >= 0 ) && focusable( element, !isTabIndexNaN );
+	}
+});
+
+// support
+$(function() {
+	var body = document.body,
+		div = body.appendChild( div = document.createElement( "div" ) );
+
+	// access offsetHeight before setting the style to prevent a layout bug
+	// in IE 9 which causes the elemnt to continue to take up space even
+	// after it is removed from the DOM (#8026)
+	div.offsetHeight;
+
+	$.extend( div.style, {
+		minHeight: "100px",
+		height: "auto",
+		padding: 0,
+		borderWidth: 0
+	});
+
+	$.support.minHeight = div.offsetHeight === 100;
+	$.support.selectstart = "onselectstart" in div;
+
+	// set display to none to avoid a layout bug in IE
+	// http://dev.jquery.com/ticket/4014
+	body.removeChild( div ).style.display = "none";
+});
+
+// jQuery <1.4.3 uses curCSS, in 1.4.3 - 1.7.2 curCSS = css, 1.8+ only has css
+if ( !$.curCSS ) {
+	$.curCSS = $.css;
+}
+
+
+
+
+
+// deprecated
+$.extend( $.ui, {
+	// $.ui.plugin is deprecated.  Use the proxy pattern instead.
+	plugin: {
+		add: function( module, option, set ) {
+			var proto = $.ui[ module ].prototype;
+			for ( var i in set ) {
+				proto.plugins[ i ] = proto.plugins[ i ] || [];
+				proto.plugins[ i ].push( [ option, set[ i ] ] );
+			}
+		},
+		call: function( instance, name, args ) {
+			var set = instance.plugins[ name ];
+			if ( !set || !instance.element[ 0 ].parentNode ) {
+				return;
+			}
+	
+			for ( var i = 0; i < set.length; i++ ) {
+				if ( instance.options[ set[ i ][ 0 ] ] ) {
+					set[ i ][ 1 ].apply( instance.element, args );
+				}
+			}
+		}
+	},
+	
+	// will be deprecated when we switch to jQuery 1.4 - use jQuery.contains()
+	contains: function( a, b ) {
+		return document.compareDocumentPosition ?
+			a.compareDocumentPosition( b ) & 16 :
+			a !== b && a.contains( b );
+	},
+	
+	// only used by resizable
+	hasScroll: function( el, a ) {
+	
+		//If overflow is hidden, the element might have extra content, but the user wants to hide it
+		if ( $( el ).css( "overflow" ) === "hidden") {
+			return false;
+		}
+	
+		var scroll = ( a && a === "left" ) ? "scrollLeft" : "scrollTop",
+			has = false;
+	
+		if ( el[ scroll ] > 0 ) {
+			return true;
+		}
+	
+		// TODO: determine which cases actually cause this to happen
+		// if the element doesn't have the scroll set, see if it's possible to
+		// set the scroll
+		el[ scroll ] = 1;
+		has = ( el[ scroll ] > 0 );
+		el[ scroll ] = 0;
+		return has;
+	},
+	
+	// these are odd functions, fix the API or move into individual plugins
+	isOverAxis: function( x, reference, size ) {
+		//Determines when x coordinate is over "b" element axis
+		return ( x > reference ) && ( x < ( reference + size ) );
+	},
+	isOver: function( y, x, top, left, height, width ) {
+		//Determines when x, y coordinates is over "b" element
+		return $.ui.isOverAxis( y, top, height ) && $.ui.isOverAxis( x, left, width );
+	}
+});
+
+})( jQuery );
+/*!
+ * jQuery UI Widget 1.8.23
+ *
+ * Copyright 2012, AUTHORS.txt (http://jqueryui.com/about)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
+ *
+ * http://docs.jquery.com/UI/Widget
+ */
+(function( $, undefined ) {
+
+// jQuery 1.4+
+if ( $.cleanData ) {
+	var _cleanData = $.cleanData;
+	$.cleanData = function( elems ) {
+		for ( var i = 0, elem; (elem = elems[i]) != null; i++ ) {
+			try {
+				$( elem ).triggerHandler( "remove" );
+			// http://bugs.jquery.com/ticket/8235
+			} catch( e ) {}
+		}
+		_cleanData( elems );
+	};
+} else {
+	var _remove = $.fn.remove;
+	$.fn.remove = function( selector, keepData ) {
+		return this.each(function() {
+			if ( !keepData ) {
+				if ( !selector || $.filter( selector, [ this ] ).length ) {
+					$( "*", this ).add( [ this ] ).each(function() {
+						try {
+							$( this ).triggerHandler( "remove" );
+						// http://bugs.jquery.com/ticket/8235
+						} catch( e ) {}
+					});
+				}
+			}
+			return _remove.call( $(this), selector, keepData );
+		});
+	};
+}
+
+$.widget = function( name, base, prototype ) {
+	var namespace = name.split( "." )[ 0 ],
+		fullName;
+	name = name.split( "." )[ 1 ];
+	fullName = namespace + "-" + name;
+
+	if ( !prototype ) {
+		prototype = base;
+		base = $.Widget;
+	}
+
+	// create selector for plugin
+	$.expr[ ":" ][ fullName ] = function( elem ) {
+		return !!$.data( elem, name );
+	};
+
+	$[ namespace ] = $[ namespace ] || {};
+	$[ namespace ][ name ] = function( options, element ) {
+		// allow instantiation without initializing for simple inheritance
+		if ( arguments.length ) {
+			this._createWidget( options, element );
+		}
+	};
+
+	var basePrototype = new base();
+	// we need to make the options hash a property directly on the new instance
+	// otherwise we'll modify the options hash on the prototype that we're
+	// inheriting from
+//	$.each( basePrototype, function( key, val ) {
+//		if ( $.isPlainObject(val) ) {
+//			basePrototype[ key ] = $.extend( {}, val );
+//		}
+//	});
+	basePrototype.options = $.extend( true, {}, basePrototype.options );
+	$[ namespace ][ name ].prototype = $.extend( true, basePrototype, {
+		namespace: namespace,
+		widgetName: name,
+		widgetEventPrefix: $[ namespace ][ name ].prototype.widgetEventPrefix || name,
+		widgetBaseClass: fullName
+	}, prototype );
+
+	$.widget.bridge( name, $[ namespace ][ name ] );
+};
+
+$.widget.bridge = function( name, object ) {
+	$.fn[ name ] = function( options ) {
+		var isMethodCall = typeof options === "string",
+			args = Array.prototype.slice.call( arguments, 1 ),
+			returnValue = this;
+
+		// allow multiple hashes to be passed on init
+		options = !isMethodCall && args.length ?
+			$.extend.apply( null, [ true, options ].concat(args) ) :
+			options;
+
+		// prevent calls to internal methods
+		if ( isMethodCall && options.charAt( 0 ) === "_" ) {
+			return returnValue;
+		}
+
+		if ( isMethodCall ) {
+			this.each(function() {
+				var instance = $.data( this, name ),
+					methodValue = instance && $.isFunction( instance[options] ) ?
+						instance[ options ].apply( instance, args ) :
+						instance;
+				// TODO: add this back in 1.9 and use $.error() (see #5972)
+//				if ( !instance ) {
+//					throw "cannot call methods on " + name + " prior to initialization; " +
+//						"attempted to call method '" + options + "'";
+//				}
+//				if ( !$.isFunction( instance[options] ) ) {
+//					throw "no such method '" + options + "' for " + name + " widget instance";
+//				}
+//				var methodValue = instance[ options ].apply( instance, args );
+				if ( methodValue !== instance && methodValue !== undefined ) {
+					returnValue = methodValue;
+					return false;
+				}
+			});
+		} else {
+			this.each(function() {
+				var instance = $.data( this, name );
+				if ( instance ) {
+					instance.option( options || {} )._init();
+				} else {
+					$.data( this, name, new object( options, this ) );
+				}
+			});
+		}
+
+		return returnValue;
+	};
+};
+
+$.Widget = function( options, element ) {
+	// allow instantiation without initializing for simple inheritance
+	if ( arguments.length ) {
+		this._createWidget( options, element );
+	}
+};
+
+$.Widget.prototype = {
+	widgetName: "widget",
+	widgetEventPrefix: "",
+	options: {
+		disabled: false
+	},
+	_createWidget: function( options, element ) {
+		// $.widget.bridge stores the plugin instance, but we do it anyway
+		// so that it's stored even before the _create function runs
+		$.data( element, this.widgetName, this );
+		this.element = $( element );
+		this.options = $.extend( true, {},
+			this.options,
+			this._getCreateOptions(),
+			options );
+
+		var self = this;
+		this.element.bind( "remove." + this.widgetName, function() {
+			self.destroy();
+		});
+
+		this._create();
+		this._trigger( "create" );
+		this._init();
+	},
+	_getCreateOptions: function() {
+		return $.metadata && $.metadata.get( this.element[0] )[ this.widgetName ];
+	},
+	_create: function() {},
+	_init: function() {},
+
+	destroy: function() {
+		this.element
+			.unbind( "." + this.widgetName )
+			.removeData( this.widgetName );
+		this.widget()
+			.unbind( "." + this.widgetName )
+			.removeAttr( "aria-disabled" )
+			.removeClass(
+				this.widgetBaseClass + "-disabled " +
+				"ui-state-disabled" );
+	},
+
+	widget: function() {
+		return this.element;
+	},
+
+	option: function( key, value ) {
+		var options = key;
+
+		if ( arguments.length === 0 ) {
+			// don't return a reference to the internal hash
+			return $.extend( {}, this.options );
+		}
+
+		if  (typeof key === "string" ) {
+			if ( value === undefined ) {
+				return this.options[ key ];
+			}
+			options = {};
+			options[ key ] = value;
+		}
+
+		this._setOptions( options );
+
+		return this;
+	},
+	_setOptions: function( options ) {
+		var self = this;
+		$.each( options, function( key, value ) {
+			self._setOption( key, value );
+		});
+
+		return this;
+	},
+	_setOption: function( key, value ) {
+		this.options[ key ] = value;
+
+		if ( key === "disabled" ) {
+			this.widget()
+				[ value ? "addClass" : "removeClass"](
+					this.widgetBaseClass + "-disabled" + " " +
+					"ui-state-disabled" )
+				.attr( "aria-disabled", value );
+		}
+
+		return this;
+	},
+
+	enable: function() {
+		return this._setOption( "disabled", false );
+	},
+	disable: function() {
+		return this._setOption( "disabled", true );
+	},
+
+	_trigger: function( type, event, data ) {
+		var prop, orig,
+			callback = this.options[ type ];
+
+		data = data || {};
+		event = $.Event( event );
+		event.type = ( type === this.widgetEventPrefix ?
+			type :
+			this.widgetEventPrefix + type ).toLowerCase();
+		// the original event may come from any element
+		// so we need to reset the target on the new event
+		event.target = this.element[ 0 ];
+
+		// copy original event properties over to the new event
+		orig = event.originalEvent;
+		if ( orig ) {
+			for ( prop in orig ) {
+				if ( !( prop in event ) ) {
+					event[ prop ] = orig[ prop ];
+				}
+			}
+		}
+
+		this.element.trigger( event, data );
+
+		return !( $.isFunction(callback) &&
+			callback.call( this.element[0], event, data ) === false ||
+			event.isDefaultPrevented() );
+	}
+};
+
+})( jQuery );
+/*!
+ * jQuery UI Mouse 1.8.23
+ *
+ * Copyright 2012, AUTHORS.txt (http://jqueryui.com/about)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
+ *
+ * http://docs.jquery.com/UI/Mouse
+ *
+ * Depends:
+ *	jquery.ui.widget.js
+ */
+(function( $, undefined ) {
+
+var mouseHandled = false;
+$( document ).mouseup( function( e ) {
+	mouseHandled = false;
+});
+
+$.widget("ui.mouse", {
+	options: {
+		cancel: ':input,option',
+		distance: 1,
+		delay: 0
+	},
+	_mouseInit: function() {
+		var self = this;
+
+		this.element
+			.bind('mousedown.'+this.widgetName, function(event) {
+				return self._mouseDown(event);
+			})
+			.bind('click.'+this.widgetName, function(event) {
+				if (true === $.data(event.target, self.widgetName + '.preventClickEvent')) {
+				    $.removeData(event.target, self.widgetName + '.preventClickEvent');
+					event.stopImmediatePropagation();
+					return false;
+				}
+			});
+
+		this.started = false;
+	},
+
+	// TODO: make sure destroying one instance of mouse doesn't mess with
+	// other instances of mouse
+	_mouseDestroy: function() {
+		this.element.unbind('.'+this.widgetName);
+		if ( this._mouseMoveDelegate ) {
+			$(document)
+				.unbind('mousemove.'+this.widgetName, this._mouseMoveDelegate)
+				.unbind('mouseup.'+this.widgetName, this._mouseUpDelegate);
+		}
+	},
+
+	_mouseDown: function(event) {
+		// don't let more than one widget handle mouseStart
+		if( mouseHandled ) { return };
+
+		// we may have missed mouseup (out of window)
+		(this._mouseStarted && this._mouseUp(event));
+
+		this._mouseDownEvent = event;
+
+		var self = this,
+			btnIsLeft = (event.which == 1),
+			// event.target.nodeName works around a bug in IE 8 with
+			// disabled inputs (#7620)
+			elIsCancel = (typeof this.options.cancel == "string" && event.target.nodeName ? $(event.target).closest(this.options.cancel).length : false);
+		if (!btnIsLeft || elIsCancel || !this._mouseCapture(event)) {
+			return true;
+		}
+
+		this.mouseDelayMet = !this.options.delay;
+		if (!this.mouseDelayMet) {
+			this._mouseDelayTimer = setTimeout(function() {
+				self.mouseDelayMet = true;
+			}, this.options.delay);
+		}
+
+		if (this._mouseDistanceMet(event) && this._mouseDelayMet(event)) {
+			this._mouseStarted = (this._mouseStart(event) !== false);
+			if (!this._mouseStarted) {
+				event.preventDefault();
+				return true;
+			}
+		}
+
+		// Click event may never have fired (Gecko & Opera)
+		if (true === $.data(event.target, this.widgetName + '.preventClickEvent')) {
+			$.removeData(event.target, this.widgetName + '.preventClickEvent');
+		}
+
+		// these delegates are required to keep context
+		this._mouseMoveDelegate = function(event) {
+			return self._mouseMove(event);
+		};
+		this._mouseUpDelegate = function(event) {
+			return self._mouseUp(event);
+		};
+		$(document)
+			.bind('mousemove.'+this.widgetName, this._mouseMoveDelegate)
+			.bind('mouseup.'+this.widgetName, this._mouseUpDelegate);
+
+		event.preventDefault();
+		
+		mouseHandled = true;
+		return true;
+	},
+
+	_mouseMove: function(event) {
+		// IE mouseup check - mouseup happened when mouse was out of window
+		if ($.browser.msie && !(document.documentMode >= 9) && !event.button) {
+			return this._mouseUp(event);
+		}
+
+		if (this._mouseStarted) {
+			this._mouseDrag(event);
+			return event.preventDefault();
+		}
+
+		if (this._mouseDistanceMet(event) && this._mouseDelayMet(event)) {
+			this._mouseStarted =
+				(this._mouseStart(this._mouseDownEvent, event) !== false);
+			(this._mouseStarted ? this._mouseDrag(event) : this._mouseUp(event));
+		}
+
+		return !this._mouseStarted;
+	},
+
+	_mouseUp: function(event) {
+		$(document)
+			.unbind('mousemove.'+this.widgetName, this._mouseMoveDelegate)
+			.unbind('mouseup.'+this.widgetName, this._mouseUpDelegate);
+
+		if (this._mouseStarted) {
+			this._mouseStarted = false;
+
+			if (event.target == this._mouseDownEvent.target) {
+			    $.data(event.target, this.widgetName + '.preventClickEvent', true);
+			}
+
+			this._mouseStop(event);
+		}
+
+		return false;
+	},
+
+	_mouseDistanceMet: function(event) {
+		return (Math.max(
+				Math.abs(this._mouseDownEvent.pageX - event.pageX),
+				Math.abs(this._mouseDownEvent.pageY - event.pageY)
+			) >= this.options.distance
+		);
+	},
+
+	_mouseDelayMet: function(event) {
+		return this.mouseDelayMet;
+	},
+
+	// These are placeholder methods, to be overriden by extending plugin
+	_mouseStart: function(event) {},
+	_mouseDrag: function(event) {},
+	_mouseStop: function(event) {},
+	_mouseCapture: function(event) { return true; }
+});
+
+})(jQuery);
+/*!
+ * jQuery UI Slider 1.8.23
+ *
+ * Copyright 2012, AUTHORS.txt (http://jqueryui.com/about)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
+ *
+ * http://docs.jquery.com/UI/Slider
+ *
+ * Depends:
+ *	jquery.ui.core.js
+ *	jquery.ui.mouse.js
+ *	jquery.ui.widget.js
+ */
+(function( $, undefined ) {
+
+// number of pages in a slider
+// (how many times can you page up/down to go through the whole range)
+var numPages = 5;
+
+$.widget( "ui.slider", $.ui.mouse, {
+
+	widgetEventPrefix: "slide",
+
+	options: {
+		animate: false,
+		distance: 0,
+		max: 100,
+		min: 0,
+		orientation: "horizontal",
+		range: false,
+		step: 1,
+		value: 0,
+		values: null
+	},
+
+	_create: function() {
+		var self = this,
+			o = this.options,
+			existingHandles = this.element.find( ".ui-slider-handle" ).addClass( "ui-state-default ui-corner-all" ),
+			handle = "<a class='ui-slider-handle ui-state-default ui-corner-all' href='#'></a>",
+			handleCount = ( o.values && o.values.length ) || 1,
+			handles = [];
+
+		this._keySliding = false;
+		this._mouseSliding = false;
+		this._animateOff = true;
+		this._handleIndex = null;
+		this._detectOrientation();
+		this._mouseInit();
+
+		this.element
+			.addClass( "ui-slider" +
+				" ui-slider-" + this.orientation +
+				" ui-widget" +
+				" ui-widget-content" +
+				" ui-corner-all" +
+				( o.disabled ? " ui-slider-disabled ui-disabled" : "" ) );
+
+		this.range = $([]);
+
+		if ( o.range ) {
+			if ( o.range === true ) {
+				if ( !o.values ) {
+					o.values = [ this._valueMin(), this._valueMin() ];
+				}
+				if ( o.values.length && o.values.length !== 2 ) {
+					o.values = [ o.values[0], o.values[0] ];
+				}
+			}
+
+			this.range = $( "<div></div>" )
+				.appendTo( this.element )
+				.addClass( "ui-slider-range" +
+				// note: this isn't the most fittingly semantic framework class for this element,
+				// but worked best visually with a variety of themes
+				" ui-widget-header" + 
+				( ( o.range === "min" || o.range === "max" ) ? " ui-slider-range-" + o.range : "" ) );
+		}
+
+		for ( var i = existingHandles.length; i < handleCount; i += 1 ) {
+			handles.push( handle );
+		}
+
+		this.handles = existingHandles.add( $( handles.join( "" ) ).appendTo( self.element ) );
+
+		this.handle = this.handles.eq( 0 );
+
+		this.handles.add( this.range ).filter( "a" )
+			.click(function( event ) {
+				event.preventDefault();
+			})
+			.hover(function() {
+				if ( !o.disabled ) {
+					$( this ).addClass( "ui-state-hover" );
+				}
+			}, function() {
+				$( this ).removeClass( "ui-state-hover" );
+			})
+			.focus(function() {
+				if ( !o.disabled ) {
+					$( ".ui-slider .ui-state-focus" ).removeClass( "ui-state-focus" );
+					$( this ).addClass( "ui-state-focus" );
+				} else {
+					$( this ).blur();
+				}
+			})
+			.blur(function() {
+				$( this ).removeClass( "ui-state-focus" );
+			});
+
+		this.handles.each(function( i ) {
+			$( this ).data( "index.ui-slider-handle", i );
+		});
+
+		this.handles
+			.keydown(function( event ) {
+				var index = $( this ).data( "index.ui-slider-handle" ),
+					allowed,
+					curVal,
+					newVal,
+					step;
+	
+				if ( self.options.disabled ) {
+					return;
+				}
+	
+				switch ( event.keyCode ) {
+					case $.ui.keyCode.HOME:
+					case $.ui.keyCode.END:
+					case $.ui.keyCode.PAGE_UP:
+					case $.ui.keyCode.PAGE_DOWN:
+					case $.ui.keyCode.UP:
+					case $.ui.keyCode.RIGHT:
+					case $.ui.keyCode.DOWN:
+					case $.ui.keyCode.LEFT:
+						event.preventDefault();
+						if ( !self._keySliding ) {
+							self._keySliding = true;
+							$( this ).addClass( "ui-state-active" );
+							allowed = self._start( event, index );
+							if ( allowed === false ) {
+								return;
+							}
+						}
+						break;
+				}
+	
+				step = self.options.step;
+				if ( self.options.values && self.options.values.length ) {
+					curVal = newVal = self.values( index );
+				} else {
+					curVal = newVal = self.value();
+				}
+	
+				switch ( event.keyCode ) {
+					case $.ui.keyCode.HOME:
+						newVal = self._valueMin();
+						break;
+					case $.ui.keyCode.END:
+						newVal = self._valueMax();
+						break;
+					case $.ui.keyCode.PAGE_UP:
+						newVal = self._trimAlignValue( curVal + ( (self._valueMax() - self._valueMin()) / numPages ) );
+						break;
+					case $.ui.keyCode.PAGE_DOWN:
+						newVal = self._trimAlignValue( curVal - ( (self._valueMax() - self._valueMin()) / numPages ) );
+						break;
+					case $.ui.keyCode.UP:
+					case $.ui.keyCode.RIGHT:
+						if ( curVal === self._valueMax() ) {
+							return;
+						}
+						newVal = self._trimAlignValue( curVal + step );
+						break;
+					case $.ui.keyCode.DOWN:
+					case $.ui.keyCode.LEFT:
+						if ( curVal === self._valueMin() ) {
+							return;
+						}
+						newVal = self._trimAlignValue( curVal - step );
+						break;
+				}
+	
+				self._slide( event, index, newVal );
+			})
+			.keyup(function( event ) {
+				var index = $( this ).data( "index.ui-slider-handle" );
+	
+				if ( self._keySliding ) {
+					self._keySliding = false;
+					self._stop( event, index );
+					self._change( event, index );
+					$( this ).removeClass( "ui-state-active" );
+				}
+	
+			});
+
+		this._refreshValue();
+
+		this._animateOff = false;
+	},
+
+	destroy: function() {
+		this.handles.remove();
+		this.range.remove();
+
+		this.element
+			.removeClass( "ui-slider" +
+				" ui-slider-horizontal" +
+				" ui-slider-vertical" +
+				" ui-slider-disabled" +
+				" ui-widget" +
+				" ui-widget-content" +
+				" ui-corner-all" )
+			.removeData( "slider" )
+			.unbind( ".slider" );
+
+		this._mouseDestroy();
+
+		return this;
+	},
+
+	_mouseCapture: function( event ) {
+		var o = this.options,
+			position,
+			normValue,
+			distance,
+			closestHandle,
+			self,
+			index,
+			allowed,
+			offset,
+			mouseOverHandle;
+
+		if ( o.disabled ) {
+			return false;
+		}
+
+		this.elementSize = {
+			width: this.element.outerWidth(),
+			height: this.element.outerHeight()
+		};
+		this.elementOffset = this.element.offset();
+
+		position = { x: event.pageX, y: event.pageY };
+		normValue = this._normValueFromMouse( position );
+		distance = this._valueMax() - this._valueMin() + 1;
+		self = this;
+		this.handles.each(function( i ) {
+			var thisDistance = Math.abs( normValue - self.values(i) );
+			if ( distance > thisDistance ) {
+				distance = thisDistance;
+				closestHandle = $( this );
+				index = i;
+			}
+		});
+
+		// workaround for bug #3736 (if both handles of a range are at 0,
+		// the first is always used as the one with least distance,
+		// and moving it is obviously prevented by preventing negative ranges)
+		if( o.range === true && this.values(1) === o.min ) {
+			index += 1;
+			closestHandle = $( this.handles[index] );
+		}
+
+		allowed = this._start( event, index );
+		if ( allowed === false ) {
+			return false;
+		}
+		this._mouseSliding = true;
+
+		self._handleIndex = index;
+
+		closestHandle
+			.addClass( "ui-state-active" )
+			.focus();
+		
+		offset = closestHandle.offset();
+		mouseOverHandle = !$( event.target ).parents().andSelf().is( ".ui-slider-handle" );
+		this._clickOffset = mouseOverHandle ? { left: 0, top: 0 } : {
+			left: event.pageX - offset.left - ( closestHandle.width() / 2 ),
+			top: event.pageY - offset.top -
+				( closestHandle.height() / 2 ) -
+				( parseInt( closestHandle.css("borderTopWidth"), 10 ) || 0 ) -
+				( parseInt( closestHandle.css("borderBottomWidth"), 10 ) || 0) +
+				( parseInt( closestHandle.css("marginTop"), 10 ) || 0)
+		};
+
+		if ( !this.handles.hasClass( "ui-state-hover" ) ) {
+			this._slide( event, index, normValue );
+		}
+		this._animateOff = true;
+		return true;
+	},
+
+	_mouseStart: function( event ) {
+		return true;
+	},
+
+	_mouseDrag: function( event ) {
+		var position = { x: event.pageX, y: event.pageY },
+			normValue = this._normValueFromMouse( position );
+		
+		this._slide( event, this._handleIndex, normValue );
+
+		return false;
+	},
+
+	_mouseStop: function( event ) {
+		this.handles.removeClass( "ui-state-active" );
+		this._mouseSliding = false;
+
+		this._stop( event, this._handleIndex );
+		this._change( event, this._handleIndex );
+
+		this._handleIndex = null;
+		this._clickOffset = null;
+		this._animateOff = false;
+
+		return false;
+	},
+	
+	_detectOrientation: function() {
+		this.orientation = ( this.options.orientation === "vertical" ) ? "vertical" : "horizontal";
+	},
+
+	_normValueFromMouse: function( position ) {
+		var pixelTotal,
+			pixelMouse,
+			percentMouse,
+			valueTotal,
+			valueMouse;
+
+		if ( this.orientation === "horizontal" ) {
+			pixelTotal = this.elementSize.width;
+			pixelMouse = position.x - this.elementOffset.left - ( this._clickOffset ? this._clickOffset.left : 0 );
+		} else {
+			pixelTotal = this.elementSize.height;
+			pixelMouse = position.y - this.elementOffset.top - ( this._clickOffset ? this._clickOffset.top : 0 );
+		}
+
+		percentMouse = ( pixelMouse / pixelTotal );
+		if ( percentMouse > 1 ) {
+			percentMouse = 1;
+		}
+		if ( percentMouse < 0 ) {
+			percentMouse = 0;
+		}
+		if ( this.orientation === "vertical" ) {
+			percentMouse = 1 - percentMouse;
+		}
+
+		valueTotal = this._valueMax() - this._valueMin();
+		valueMouse = this._valueMin() + percentMouse * valueTotal;
+
+		return this._trimAlignValue( valueMouse );
+	},
+
+	_start: function( event, index ) {
+		var uiHash = {
+			handle: this.handles[ index ],
+			value: this.value()
+		};
+		if ( this.options.values && this.options.values.length ) {
+			uiHash.value = this.values( index );
+			uiHash.values = this.values();
+		}
+		return this._trigger( "start", event, uiHash );
+	},
+
+	_slide: function( event, index, newVal ) {
+		var otherVal,
+			newValues,
+			allowed;
+
+		if ( this.options.values && this.options.values.length ) {
+			otherVal = this.values( index ? 0 : 1 );
+
+			if ( ( this.options.values.length === 2 && this.options.range === true ) && 
+					( ( index === 0 && newVal > otherVal) || ( index === 1 && newVal < otherVal ) )
+				) {
+				newVal = otherVal;
+			}
+
+			if ( newVal !== this.values( index ) ) {
+				newValues = this.values();
+				newValues[ index ] = newVal;
+				// A slide can be canceled by returning false from the slide callback
+				allowed = this._trigger( "slide", event, {
+					handle: this.handles[ index ],
+					value: newVal,
+					values: newValues
+				} );
+				otherVal = this.values( index ? 0 : 1 );
+				if ( allowed !== false ) {
+					this.values( index, newVal, true );
+				}
+			}
+		} else {
+			if ( newVal !== this.value() ) {
+				// A slide can be canceled by returning false from the slide callback
+				allowed = this._trigger( "slide", event, {
+					handle: this.handles[ index ],
+					value: newVal
+				} );
+				if ( allowed !== false ) {
+					this.value( newVal );
+				}
+			}
+		}
+	},
+
+	_stop: function( event, index ) {
+		var uiHash = {
+			handle: this.handles[ index ],
+			value: this.value()
+		};
+		if ( this.options.values && this.options.values.length ) {
+			uiHash.value = this.values( index );
+			uiHash.values = this.values();
+		}
+
+		this._trigger( "stop", event, uiHash );
+	},
+
+	_change: function( event, index ) {
+		if ( !this._keySliding && !this._mouseSliding ) {
+			var uiHash = {
+				handle: this.handles[ index ],
+				value: this.value()
+			};
+			if ( this.options.values && this.options.values.length ) {
+				uiHash.value = this.values( index );
+				uiHash.values = this.values();
+			}
+
+			this._trigger( "change", event, uiHash );
+		}
+	},
+
+	value: function( newValue ) {
+		if ( arguments.length ) {
+			this.options.value = this._trimAlignValue( newValue );
+			this._refreshValue();
+			this._change( null, 0 );
+			return;
+		}
+
+		return this._value();
+	},
+
+	values: function( index, newValue ) {
+		var vals,
+			newValues,
+			i;
+
+		if ( arguments.length > 1 ) {
+			this.options.values[ index ] = this._trimAlignValue( newValue );
+			this._refreshValue();
+			this._change( null, index );
+			return;
+		}
+
+		if ( arguments.length ) {
+			if ( $.isArray( arguments[ 0 ] ) ) {
+				vals = this.options.values;
+				newValues = arguments[ 0 ];
+				for ( i = 0; i < vals.length; i += 1 ) {
+					vals[ i ] = this._trimAlignValue( newValues[ i ] );
+					this._change( null, i );
+				}
+				this._refreshValue();
+			} else {
+				if ( this.options.values && this.options.values.length ) {
+					return this._values( index );
+				} else {
+					return this.value();
+				}
+			}
+		} else {
+			return this._values();
+		}
+	},
+
+	_setOption: function( key, value ) {
+		var i,
+			valsLength = 0;
+
+		if ( $.isArray( this.options.values ) ) {
+			valsLength = this.options.values.length;
+		}
+
+		$.Widget.prototype._setOption.apply( this, arguments );
+
+		switch ( key ) {
+			case "disabled":
+				if ( value ) {
+					this.handles.filter( ".ui-state-focus" ).blur();
+					this.handles.removeClass( "ui-state-hover" );
+					this.handles.propAttr( "disabled", true );
+					this.element.addClass( "ui-disabled" );
+				} else {
+					this.handles.propAttr( "disabled", false );
+					this.element.removeClass( "ui-disabled" );
+				}
+				break;
+			case "orientation":
+				this._detectOrientation();
+				this.element
+					.removeClass( "ui-slider-horizontal ui-slider-vertical" )
+					.addClass( "ui-slider-" + this.orientation );
+				this._refreshValue();
+				break;
+			case "value":
+				this._animateOff = true;
+				this._refreshValue();
+				this._change( null, 0 );
+				this._animateOff = false;
+				break;
+			case "values":
+				this._animateOff = true;
+				this._refreshValue();
+				for ( i = 0; i < valsLength; i += 1 ) {
+					this._change( null, i );
+				}
+				this._animateOff = false;
+				break;
+		}
+	},
+
+	//internal value getter
+	// _value() returns value trimmed by min and max, aligned by step
+	_value: function() {
+		var val = this.options.value;
+		val = this._trimAlignValue( val );
+
+		return val;
+	},
+
+	//internal values getter
+	// _values() returns array of values trimmed by min and max, aligned by step
+	// _values( index ) returns single value trimmed by min and max, aligned by step
+	_values: function( index ) {
+		var val,
+			vals,
+			i;
+
+		if ( arguments.length ) {
+			val = this.options.values[ index ];
+			val = this._trimAlignValue( val );
+
+			return val;
+		} else {
+			// .slice() creates a copy of the array
+			// this copy gets trimmed by min and max and then returned
+			vals = this.options.values.slice();
+			for ( i = 0; i < vals.length; i+= 1) {
+				vals[ i ] = this._trimAlignValue( vals[ i ] );
+			}
+
+			return vals;
+		}
+	},
+	
+	// returns the step-aligned value that val is closest to, between (inclusive) min and max
+	_trimAlignValue: function( val ) {
+		if ( val <= this._valueMin() ) {
+			return this._valueMin();
+		}
+		if ( val >= this._valueMax() ) {
+			return this._valueMax();
+		}
+		var step = ( this.options.step > 0 ) ? this.options.step : 1,
+			valModStep = (val - this._valueMin()) % step,
+			alignValue = val - valModStep;
+
+		if ( Math.abs(valModStep) * 2 >= step ) {
+			alignValue += ( valModStep > 0 ) ? step : ( -step );
+		}
+
+		// Since JavaScript has problems with large floats, round
+		// the final value to 5 digits after the decimal point (see #4124)
+		return parseFloat( alignValue.toFixed(5) );
+	},
+
+	_valueMin: function() {
+		return this.options.min;
+	},
+
+	_valueMax: function() {
+		return this.options.max;
+	},
+	
+	_refreshValue: function() {
+		var oRange = this.options.range,
+			o = this.options,
+			self = this,
+			animate = ( !this._animateOff ) ? o.animate : false,
+			valPercent,
+			_set = {},
+			lastValPercent,
+			value,
+			valueMin,
+			valueMax;
+
+		if ( this.options.values && this.options.values.length ) {
+			this.handles.each(function( i, j ) {
+				valPercent = ( self.values(i) - self._valueMin() ) / ( self._valueMax() - self._valueMin() ) * 100;
+				_set[ self.orientation === "horizontal" ? "left" : "bottom" ] = valPercent + "%";
+				$( this ).stop( 1, 1 )[ animate ? "animate" : "css" ]( _set, o.animate );
+				if ( self.options.range === true ) {
+					if ( self.orientation === "horizontal" ) {
+						if ( i === 0 ) {
+							self.range.stop( 1, 1 )[ animate ? "animate" : "css" ]( { left: valPercent + "%" }, o.animate );
+						}
+						if ( i === 1 ) {
+							self.range[ animate ? "animate" : "css" ]( { width: ( valPercent - lastValPercent ) + "%" }, { queue: false, duration: o.animate } );
+						}
+					} else {
+						if ( i === 0 ) {
+							self.range.stop( 1, 1 )[ animate ? "animate" : "css" ]( { bottom: ( valPercent ) + "%" }, o.animate );
+						}
+						if ( i === 1 ) {
+							self.range[ animate ? "animate" : "css" ]( { height: ( valPercent - lastValPercent ) + "%" }, { queue: false, duration: o.animate } );
+						}
+					}
+				}
+				lastValPercent = valPercent;
+			});
+		} else {
+			value = this.value();
+			valueMin = this._valueMin();
+			valueMax = this._valueMax();
+			valPercent = ( valueMax !== valueMin ) ?
+					( value - valueMin ) / ( valueMax - valueMin ) * 100 :
+					0;
+			_set[ self.orientation === "horizontal" ? "left" : "bottom" ] = valPercent + "%";
+			this.handle.stop( 1, 1 )[ animate ? "animate" : "css" ]( _set, o.animate );
+
+			if ( oRange === "min" && this.orientation === "horizontal" ) {
+				this.range.stop( 1, 1 )[ animate ? "animate" : "css" ]( { width: valPercent + "%" }, o.animate );
+			}
+			if ( oRange === "max" && this.orientation === "horizontal" ) {
+				this.range[ animate ? "animate" : "css" ]( { width: ( 100 - valPercent ) + "%" }, { queue: false, duration: o.animate } );
+			}
+			if ( oRange === "min" && this.orientation === "vertical" ) {
+				this.range.stop( 1, 1 )[ animate ? "animate" : "css" ]( { height: valPercent + "%" }, o.animate );
+			}
+			if ( oRange === "max" && this.orientation === "vertical" ) {
+				this.range[ animate ? "animate" : "css" ]( { height: ( 100 - valPercent ) + "%" }, { queue: false, duration: o.animate } );
+			}
+		}
+	}
+
+});
+
+$.extend( $.ui.slider, {
+	version: "1.8.23"
+});
+
+}(jQuery));
+
+cartodb.moduleLoad('torque', torque);
+

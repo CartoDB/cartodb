@@ -31,13 +31,14 @@ gem "github_api",              "~> 0.10.2"
 gem "ejs",                     "~> 1.1.1"
 group :assets do
   gem 'asset_sync',            "~> 1.0.0"
-  gem 'sass-rails',            "~> 3.2.3"
+  gem 'fog',                   "1.15.0"
+  gem 'sass-rails',            "~> 3.2.6"
   gem 'uglifier',              "~> 1.3.0"
   gem 'therubyracer',          "~> 0.9.10"
-  gem 'compass',               "~> 0.12.1"
-  gem 'compass-rails',         "~> 1.0.1"
-  gem 'chunky_png',            "~> 1.2.6"
-  gem 'oily_png',              "~> 1.0.2"
+  # gem 'compass',               "0.12.2"
+  gem 'compass-rails',         "~> 1.0.3"
+  gem 'chunky_png',            "~> 1.2.9"
+  gem 'oily_png',              "~> 1.1.0"
   gem 'mustache-trimmer',      git: 'https://github.com/josh/mustache-trimmer.git'
 end
 

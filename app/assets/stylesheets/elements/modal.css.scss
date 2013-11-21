@@ -4,8 +4,9 @@
    * - Normal window, confimation window,...
    */
 
-  @import "compass";
-  @import "../common/sprites";
+  @import "compass/css3/border-radius";
+  @import "compass/css3/box-shadow";
+  @import "../elements/elements-sprite";
 
   .mamufas {
     position:fixed;
@@ -65,10 +66,10 @@
             letter-spacing:0;
             padding-left:30px;
             &.exclamation {
-              @include icons-sprite(background_loader_error, $offset-y:2px);
+              @include elements-sprite(background_loader_error, $offset-y:2px);
             }
             &.question {
-              @include icons-sprite(question, $offset-y:2px);
+              @include elements-sprite(question, $offset-y:2px);
             }
           }
           p {padding-left:30px}

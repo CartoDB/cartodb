@@ -21,7 +21,7 @@ describe "Tables API" do
     }
   end
 
-  let(:params) { { :api_key => @user.get_map_key } }
+  let(:params) { { :api_key => @user.api_key } }
 
   describe 'GET /api/v1/tables' do
     it 'returns ordered results based on query params' do
@@ -30,7 +30,7 @@ describe "Tables API" do
       order_params = Addressable::URI.new
       order_params.query_values = { o: { name: 'asc' } }
 
-      get "/api/v1/tables?api_key=#{@user.get_map_key}&#{order_params.query}",
+      get "/api/v1/tables?api_key=#{@user.api_key}&#{order_params.query}",
         {}, @headers
 
       last_response.status.should == 200
@@ -47,7 +47,7 @@ describe "Tables API" do
         description:  'Testing is awesome'
       )
 
-      get "/api/v1/tables/#{table.id}?api_key=#{@user.get_map_key}",
+      get "/api/v1/tables/#{table.id}?api_key=#{@user.api_key}",
         {}, @headers
 
       last_response.status.should == 200

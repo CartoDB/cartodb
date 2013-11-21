@@ -4,8 +4,8 @@
    *  Styles for the information about docs, carto, posgres,... dialog
    */
 
-   @import "compass";
-   @import "../common/sprites";
+
+   @import "../elements/elements-sprite";
 
    $border-color: rgba(#BBBBBB,0.7);
 
@@ -27,7 +27,7 @@
         width:55px;
         height:32px;
         margin:0 0 0 -27px;
-        @include icons-sprite(paper_plane);
+        @include elements-sprite(paper_plane);
         z-index:1;
       }
 

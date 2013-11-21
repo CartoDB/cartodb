@@ -1,9 +1,11 @@
 /**
  * share map dialog
  */
-@import "compass";
+@import "compass/css3/box-shadow";
+@import "compass/css3/border-radius";
+@import "compass/css3/inline-block";
+@import "compass/css3/transform";
 @import "../common/vars";
-@import "../common/sprites";
 @import "../common/mixins";
 
 // Map preview
@@ -65,9 +67,10 @@
 
     div.cartodb-searchbox {display:none;}
     div.cartodb-zoom {top:0;}
-
+    div.cartodb-layer-selector-box {display:none}
     div.cartodb-legends {
       position:absolute;
+      display:none;
       bottom: 60px;
       right: 20px;
 

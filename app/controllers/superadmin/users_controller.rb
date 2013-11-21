@@ -33,6 +33,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
       @user.user_timeout            = attributes[:user_timeout]             if attributes.has_key?(:user_timeout)
       @user.database_timeout        = attributes[:database_timeout]         if attributes.has_key?(:database_timeout)
       @user.upgraded_at             = attributes[:upgraded_at]              if attributes.has_key?(:upgraded_at)
+      @user.notification            = attributes[:notification]             if attributes.has_key?(:notification)
 
       if attributes[:password].present?
         @user.password              = attributes[:password]
@@ -69,6 +70,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
       @user.user_timeout            = attributes[:user_timeout]             if attributes.has_key?(:user_timeout)
       @user.database_timeout        = attributes[:database_timeout]         if attributes.has_key?(:database_timeout)
       @user.upgraded_at             = attributes[:upgraded_at]              if attributes.has_key?(:upgraded_at)
+      @user.notification            = attributes[:notification]             if attributes.has_key?(:notification)
 
       if attributes[:password].present?
         @user.password = attributes[:password]

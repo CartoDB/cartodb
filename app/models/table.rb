@@ -507,7 +507,7 @@ class Table < Sequel::Model(:user_tables)
   #
   def send_tile_style_request(data_layer=nil)
     data_layer ||= self.map.data_layers.first
-    tile_request('POST', "/tiles/#{self.name}/style?map_key=#{owner.get_map_key}", {
+    tile_request('POST', "/tiles/#{self.name}/style?map_key=#{owner.api_key}", {
       'style_version' => data_layer.options["style_version"],
       'style'         => data_layer.options["tile_style"]
     })
@@ -1561,7 +1561,7 @@ SQL
       # update tile styles
       begin
         # get old tile style
-        #old_style = tile_request('GET', "/tiles/#{@name_changed_from}/style?map_key=#{owner.get_map_key}").try(:body)
+        #old_style = tile_request('GET', "/tiles/#{@name_changed_from}/style?map_key=#{owner.api_key}").try(:body)
 
         # parse old CartoCSS style out
         #old_style = JSON.parse(old_style).with_indifferent_access[:style]
@@ -1570,7 +1570,7 @@ SQL
         #old_style.gsub!(@name_changed_from, self.name)
 
         # post new style
-        #tile_request('POST', "/tiles/#{self.name}/style?map_key=#{owner.get_map_key}", {"style" => old_style})
+        #tile_request('POST', "/tiles/#{self.name}/style?map_key=#{owner.api_key}", {"style" => old_style})
       rescue => e
         CartoDB::Logger.info "tilestyle#rename error for", "#{e.inspect}"
       end
@@ -1579,13 +1579,13 @@ SQL
   end
 
   def delete_tile_style
-    tile_request('DELETE', "/tiles/#{self.name}/style?map_key=#{owner.get_map_key}")
+    tile_request('DELETE', "/tiles/#{self.name}/style?map_key=#{owner.api_key}")
   rescue => exception
     CartoDB::Logger.info "tilestyle#delete error", "#{exception.inspect}"
   end
 
   def flush_cache
-    tile_request('DELETE', "/tiles/#{self.name}/flush_cache?map_key=#{owner.get_map_key}")
+    tile_request('DELETE', "/tiles/#{self.name}/flush_cache?map_key=#{owner.api_key}")
   rescue => exception
     CartoDB::Logger.info "cache#flush error", "#{exception.inspect}"
   end

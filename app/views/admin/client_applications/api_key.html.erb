@@ -30,18 +30,18 @@
           <li>
             <div class="copy">
               <label class="uppercase smaller strong lighter">YOUR API KEY</label>
-              <input class="margin5" type="text" value="<%= current_user.get_map_key || "No api key" %>" />
+              <input class="margin5" type="text" value="<%= current_user.api_key || "No api key" %>" />
               <a class="tooltip copy" href="#copy" title="Copy this">copy</a>
             </div>
           </li>
           <li class="dark">
             <div class="list">
               <label class="dark strong small">Example write:</label>
-              <p class="small margin5">http://<%= current_user.username %>.cartodb.com/api/v2/sql?q=INSERT INTO table_name (the_geom, observation) VALUES (ST_GeomFromText(’POINT(-71.2 42.5)’, 4326),'rare bird spotted')&api_key=<%= current_user.get_map_key %></p>
+              <p class="small margin5">http://<%= current_user.username %>.cartodb.com/api/v2/sql?q=INSERT INTO table_name (the_geom, observation) VALUES (ST_GeomFromText(’POINT(-71.2 42.5)’, 4326),'rare bird spotted')&api_key=<%= current_user.api_key %></p>
             </div>
             <div class="list margin15">
               <label class="dark strong small">Example private table read:</label>
-              <p class="small margin5">http://<%= current_user.username %>.cartodb.com/api/v2/sql?q=SELECT * FROM private_table&api_key=<%= current_user.get_map_key %></p>
+              <p class="small margin5">http://<%= current_user.username %>.cartodb.com/api/v2/sql?q=SELECT * FROM private_table&api_key=<%= current_user.api_key %></p>
             </div>
           </li>
         </ul>

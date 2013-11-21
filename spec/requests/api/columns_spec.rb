@@ -15,7 +15,7 @@ describe "Columns API" do
     host! 'test.localhost.lan'
   end
 
-  let(:params) { { :api_key => @user.get_map_key } }
+  let(:params) { { :api_key => @user.api_key } }
 
   it "gets the columns from a table" do    
     get_json v1_table_columns_url(@table.name, params) do |response|

@@ -22,6 +22,39 @@ describe DataImport do
     end.to change{@table.reload.records[:total_rows]}.by(11)
   end
 
+  it 'raises a meaningful error if over storage quota' do
+    previous_quota_in_bytes = @user.quota_in_bytes
+    @user.quota_in_bytes = 0
+    @user.save
+
+    data_import = DataImport.create(
+      :user_id       => @user.id,
+      :data_source   => '/../db/fake_data/clubbing.csv',
+      :updated_at    => Time.now
+    ).run_import!
+
+    @user.quota_in_bytes = previous_quota_in_bytes
+    @user.save
+    data_import.error_code.should == 8001
+  end
+
+  it 'raises a meaningful error if over table quota' do
+    previous_table_quota = @user.table_quota
+    @user.table_quota = 0
+    @user.save
+    
+    data_import = DataImport.create(
+      :user_id       => @user.id,
+      :data_source   => '/../db/fake_data/clubbing.csv',
+      :updated_at    => Time.now
+    ).run_import!
+
+    @user.table_quota = previous_table_quota
+    @user.save
+
+    data_import.error_code.should == 8002
+  end
+
   it 'should allow to duplicate an existing table' do
     data_import = DataImport.create(
       :user_id       => @user.id,

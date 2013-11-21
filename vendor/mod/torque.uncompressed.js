@@ -3372,7 +3372,9 @@ L.CanvasLayer = L.Class.extend({
     this._canvas = document.createElement('canvas');
     this._ctx = this._canvas.getContext('2d');
     var requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
-                                window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
+                                window.webkitRequestAnimationFrame || window.msRequestAnimationFrame || function(callback) {
+                                    return window.setTimeout(callback, 1000 / 60);
+                                };
     this.requestAnimationFrame = requestAnimationFrame;
   },
 

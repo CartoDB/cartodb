@@ -338,20 +338,37 @@ describe("common.geo.ui.Legend", function() {
 
     describe("Custom Legend", function() {
 
+      var properties, legend;
+
+      beforeEach(function() {
+
+        properties = { title: "Custom title", data: custom_data };
+        legend     = new cdb.geo.ui.Legend.Custom( properties );
+
+        legend.render();
+
+      });
+
       it("should generate a custom legend", function() {
-
-        var legend = new cdb.geo.ui.Legend.Custom({
-          title: "Custom title",
-          data: custom_data
-        });
-
         expect(legend.model.get("type")).toEqual("custom");
-        expect(legend.model.get("title")).toEqual("Custom title");
-        expect(legend.items.length).toEqual(5);
+      });
 
+      it("should show the items", function() {
+        expect(legend.items.length).toEqual(5);
         expect(legend.items.at(0).get("name")).toEqual(custom_data[0].name);
         expect(legend.items.at(0).get("value")).toEqual(custom_data[0].value);
 
+      });
+
+      it("should show a title", function() {
+        expect(legend.model.get("title")).toEqual(properties.title);
+        expect(legend.$el.find(".legend-title").text()).toEqual(properties.title);
+      });
+
+      it("should allow to change the title", function() {
+        legend.setTitle("New title");
+        expect(legend.model.get("show_title")).toEqual(true);
+        expect(legend.$el.find(".legend-title").text()).toEqual("New title");
       });
 
     });
@@ -370,15 +387,27 @@ describe("common.geo.ui.Legend", function() {
       });
 
       it("should generate a bubble legend", function() {
-
         expect(legend.model.get("type")).toEqual(properties.type);
-        expect(legend.model.get("title")).toEqual(properties.title);
+      });
 
+      it("should show a graph with the right color", function() {
+        expect(legend.$el.find(".graph").css("background-color")).toEqual("rgb(255, 0, 0)");
+      });
+
+      it("should show min and max values", function() {
         expect(legend.model.get("min")).toEqual(properties.min);
         expect(legend.model.get("max")).toEqual(properties.max);
+      });
 
-        expect(legend.$el.find(".graph").css("background-color")).toEqual("rgb(255, 0, 0)");
+      it("should show a title", function() {
+        expect(legend.model.get("title")).toEqual(properties.title);
+        expect(legend.$el.find(".legend-title").text()).toEqual(properties.title);
+      });
 
+      it("should allow to change the title", function() {
+        legend.setTitle("New title");
+        expect(legend.model.get("show_title")).toEqual(true);
+        expect(legend.$el.find(".legend-title").text()).toEqual("New title");
       });
 
       it("should allow to show the title", function() {
@@ -423,15 +452,29 @@ describe("common.geo.ui.Legend", function() {
 
       });
 
-      it("should allow to generate a density legend", function() {
+      it("should generate a density legend", function() {
         expect(legend.model.get("type")).toEqual(properties.type);
-        expect(legend.model.get("title")).toEqual(properties.title);
+      });
 
+      it("should show left and right values", function() {
         expect(legend.model.get("leftLabel")).toEqual(properties.left);
         expect(legend.model.get("rightLabel")).toEqual(properties.right);
+      });
 
+      it("should show colors", function() {
         expect(legend.model.get("colors").length).toEqual(properties.colors.length);
         expect(legend.$el.find(".quartile").length).toEqual(properties.colors.length);
+      });
+
+      it("should show a title", function() {
+        expect(legend.model.get("title")).toEqual(properties.title);
+        expect(legend.$el.find(".legend-title").text()).toEqual(properties.title);
+      });
+
+      it("should allow to change the title", function() {
+        legend.setTitle("New title");
+        expect(legend.model.get("show_title")).toEqual(true);
+        expect(legend.$el.find(".legend-title").text()).toEqual("New title");
       });
 
       it("should allow to hide the title", function() {

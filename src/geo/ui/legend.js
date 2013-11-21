@@ -7,8 +7,12 @@ cdb.geo.ui.BaseLegend = cdb.core.View.extend({
 
   _bindModel: function() {
 
-    this.model.bind("change:show_title", this.render, this);
+    this.model.bind("change:title change:show_title", this.render, this);
 
+  },
+
+  setTitle: function(title) {
+    this.model.set("title", title);
   },
 
   showTitle: function() {
@@ -129,7 +133,7 @@ cdb.geo.ui.DensityLegend = cdb.geo.ui.BaseLegend.extend({
 
   _bindModel: function() {
 
-    this.model.bind("change:show_title", this.render, this);
+    this.model.bind("change:title change:show_title", this.render, this);
     this.model.bind("change:colors", this.render, this);
     this.model.bind("change:leftLabel change:rightLabel", this.render, this);
 
@@ -320,9 +324,7 @@ cdb.geo.ui.BubbleLegend = cdb.geo.ui.BaseLegend.extend({
 
   _bindModel: function() {
 
-    this.model.bind("change:show_title", this.render, this);
-    this.model.bind("change:color", this.render, this);
-    this.model.bind("change:min change:max", this.render, this);
+    this.model.bind("change:title change:show_title change:color change:min change:max", this.render, this);
 
   },
 
@@ -911,8 +913,10 @@ cdb.geo.ui.Legend.Bubble = cdb.geo.ui.BubbleLegend.extend({
       min:   this.options.min,
       max:   this.options.max,
       color: this.options.color,
-      show_title: this.title ? true : false
+      show_title: this.options.title ? true : false
     });
+
+    this.add_related_model(this.model);
 
     this._bindModel();
 

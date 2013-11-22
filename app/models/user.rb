@@ -240,7 +240,7 @@ class User < Sequel::Model
       :rows => rows.map{ |row| row.delete("the_geom"); row }
     }
   rescue => e
-    if e.message =~ /^PGError/
+    if e.message =~ /^PGError/ or e.message =~ /^PG::Error/
       if e.message.include?("does not exist")
         if e.message.include?("column")
           raise CartoDB::ColumnNotExists, e.message

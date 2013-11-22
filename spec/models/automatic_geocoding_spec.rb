@@ -25,11 +25,30 @@ describe AutomaticGeocoding do
 
   describe '#run' do
     let(:automatic_geocoding) { FactoryGirl.create(:automatic_geocoding, table: @table) }
-    let(:geocoding) { FactoryGirl.create(:automatic_geocoding, table: @table, formatter: 'wadus', user: @user, automatic_geocoding: automatic_geocoding) }
 
     it 'creates a new geocoding' do
+      FactoryGirl.create(:geocoding, table: @table, formatter: 'wadus', user: @user, automatic_geocoding_id: automatic_geocoding.id)
       Geocoding.any_instance.expects('run!').once.returns(true)
-      expect { automatic_geocoding.run }.to increase { Geocoding.count }.by(1)
+      expect { automatic_geocoding.run }.to change { Geocoding.count }.by(1)
+    end
+
+    it 'updates ran_at' do
+      FactoryGirl.create(:geocoding, table: @table, formatter: 'wadus', user: @user, automatic_geocoding_id: automatic_geocoding.id)
+      Geocoding.any_instance.expects('run!').once.returns(true)
+      expect { automatic_geocoding.run }.to change { automatic_geocoding.ran_at }
+    end
+
+    it 'updates the state' do
+      FactoryGirl.create(:geocoding, table: @table, formatter: 'wadus', user: @user, automatic_geocoding_id: automatic_geocoding.id)
+      Geocoding.any_instance.expects('run!').once.returns(true)
+      expect { automatic_geocoding.run }.to change { automatic_geocoding.state }.to('idle')
+    end
+
+    it 'marks the geocoding as failed after some retries' do
+      FactoryGirl.create(:geocoding, table: @table, formatter: 'wadus', user: @user, automatic_geocoding_id: automatic_geocoding.id)
+      Geocoding.any_instance.stubs('run!').raises("error")
+      expect { 5.times { automatic_geocoding.run } }.to change { automatic_geocoding.retried_times.to_i }.by(5)
+      expect { automatic_geocoding.run }.to raise_error(Exception)
     end
   end
 end

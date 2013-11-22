@@ -5,6 +5,7 @@ class Geocoding < Sequel::Model
 
   many_to_one :user
   many_to_one :table
+  many_to_one :automatic_geocoding
 
   attr_reader :table_geocoder
 

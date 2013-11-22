@@ -66,9 +66,11 @@ cdb.geo.ui.LegendItem = cdb.core.View.extend({
  * ChoroplethLegend
  *
  * */
-cdb.geo.ui.ChoroplethLegend = cdb.core.View.extend({
+cdb.geo.ui.ChoroplethLegend = cdb.geo.ui.BaseLegend.extend({
 
   className: "choropleth-legend",
+
+  template: _.template('<% if (title && show_title) { %><div class="legend-title"><%= title %></div><% } %><ul><li class="min"><%= leftLabel %></li><li class="max"><%= rightLabel %></li><li class="graph count_<%= buckets_count %>"><div class="colors"><%= colors %></div></li></ul>'),
 
   initialize: function() {
 
@@ -76,8 +78,33 @@ cdb.geo.ui.ChoroplethLegend = cdb.core.View.extend({
     this.show_title   = this.options.show_title;
 
     this.items    = this.options.items;
-    this.template = _.template('<% if (title && show_title) { %><div class="legend-title"><%= title %></div><% } %><ul><li class="min"><%= leftLabel %></li><li class="max"><%= rightLabel %></li><li class="graph count_<%= buckets_count %>"><div class="colors"><%= colors %></div></li></ul>');
     this.model    = new cdb.core.Model();
+
+  },
+
+  _bindModel: function() {
+
+    this.model.bind("change:title change:show_title", this.render, this);
+    this.model.bind("change:colors", this.render, this);
+    this.model.bind("change:leftLabel change:rightLabel", this.render, this);
+
+  },
+
+  setLeftLabel: function(text) {
+
+    this.model.set("leftLabel", text);
+
+  },
+
+  setRightLabel: function(text) {
+
+    this.model.set("rightLabel", text);
+
+  },
+
+  setColors: function(colors) {
+
+    this.model.set("colors", colors);
 
   },
 
@@ -951,6 +978,51 @@ cdb.geo.ui.Legend.Bubble = cdb.geo.ui.BubbleLegend.extend({
     this.$el.html(this.template(this.model.toJSON()));
 
     this._renderGraph(this.model.get("color"));
+
+    return this;
+
+  }
+
+});
+
+cdb.geo.ui.Legend.Choropleth = cdb.geo.ui.ChoroplethLegend.extend({
+
+  type: "choropleth",
+
+  className: "cartodb-legend choropleth",
+
+  initialize: function() {
+
+    this.items    = this.options.items;
+
+    this.model = new cdb.core.Model({
+      type:          this.type,
+      title:         this.options.title,
+      show_title:    this.options.title ? true : false,
+      leftLabel:     this.options.left,
+      rightLabel:    this.options.right,
+      colors:        this.options.colors,
+      buckets_count: this.options.colors.length
+    });
+
+    this.add_related_model(this.model);
+    this._bindModel();
+
+  },
+
+  _generateColorList: function() {
+
+    return _.map(this.model.get("colors"), function(color) {
+      return '<div class="quartile" style="background-color:' + color + '"></div>';
+    }).join("");
+
+  },
+
+  render: function() {
+
+    var options = _.extend(this.model.toJSON(), { colors: this._generateColorList() });
+
+    this.$el.html(this.template(options));
 
     return this;
 

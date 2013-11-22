@@ -349,7 +349,7 @@ describe("common.geo.ui.Legend", function() {
 
       });
 
-      it("should generate a custom legend", function() {
+      it("should generate a legend", function() {
         expect(legend.model.get("type")).toEqual("custom");
       });
 
@@ -501,6 +501,73 @@ describe("common.geo.ui.Legend", function() {
 
     });
 
+    describe("Choropleth Legend", function() {
+
+      var properties, legend;
+
+      beforeEach(function() {
+
+        properties = { title: "Choropleth title", type: "choropleth", colors: ["#DDD", "#FF000", "#F1F1F1"], left: "Left value", right: "Right value" };
+        legend = new cdb.geo.ui.Legend.Choropleth(properties);
+        legend.render();
+
+      });
+
+      it("should generate a legend", function() {
+        expect(legend.model.get("type")).toEqual(properties.type);
+      });
+
+      it("should show left and right values", function() {
+        expect(legend.model.get("leftLabel")).toEqual(properties.left);
+        expect(legend.model.get("rightLabel")).toEqual(properties.right);
+      });
+
+      it("should show colors", function() {
+        expect(legend.model.get("colors").length).toEqual(properties.colors.length);
+        expect(legend.$el.find(".quartile").length).toEqual(properties.colors.length);
+      });
+
+      it("should show a title", function() {
+        expect(legend.model.get("title")).toEqual(properties.title);
+        expect(legend.$el.find(".legend-title").text()).toEqual(properties.title);
+      });
+
+      it("should allow to change the title", function() {
+        legend.setTitle("New title");
+        expect(legend.model.get("show_title")).toEqual(true);
+        expect(legend.$el.find(".legend-title").text()).toEqual("New title");
+      });
+
+      it("should allow to hide the title", function() {
+        legend.hideTitle();
+        expect(legend.$el.find(".legend-title").html()).toEqual(null);
+      });
+
+      it("should allow to show the title", function() {
+        legend.hideTitle();
+        legend.showTitle();
+        expect(legend.$el.find(".legend-title").html()).toEqual(properties.title);
+      });
+
+      it("should allow change colors", function() {
+        var newColors = ["red", "white", "blue"];
+
+        legend.setColors(newColors);
+        expect(legend.model.get("colors").length).toEqual(newColors.length);
+        expect(legend.$el.find(".quartile").length).toEqual(newColors.length);
+      });
+
+      it("should allow change the left label", function() {
+        legend.setLeftLabel("Hello!")
+        expect(legend.model.get("leftLabel")).toEqual("Hello!");
+      });
+
+      it("should allow change the right label", function() {
+        legend.setRightLabel("Hi!")
+        expect(legend.model.get("rightLabel")).toEqual("Hi!");
+      });
+
+    });
     describe("Density Legend", function() {
 
       var properties, legend;
@@ -513,7 +580,7 @@ describe("common.geo.ui.Legend", function() {
 
       });
 
-      it("should generate a density legend", function() {
+      it("should generate a legend", function() {
         expect(legend.model.get("type")).toEqual(properties.type);
       });
 

@@ -22,7 +22,7 @@ module CartoDB
           EventMachine::PeriodicTimer.new(tick_time_in_secs) do
             stop_if_max_ticks_reached
             puts 'fetching job_collection'
-            job_collection.all.map &:enqueue
+            job_collection.map &:enqueue
           end
         end
       end

@@ -31,7 +31,7 @@ class AutomaticGeocoding < Sequel::Model
   end # validate
 
   def enqueue
-    Resque.enqueue(Resque::SynchronizationJobs, job_id: id)
+    Resque.enqueue(Resque::AutomaticGeocoderJobs, job_id: id)
   end # enqueue
 
   def run

@@ -2,7 +2,7 @@
 class AutomaticGeocoding < Sequel::Model
 
   one_to_one :table
-  many_to_one :original_geocoding, class: :Geocoding
+  many_to_one :original_geocoding, class: :Geocoding, key: :original_geocoding_id
 
   def before_save
     super
@@ -23,7 +23,7 @@ class AutomaticGeocoding < Sequel::Model
     options = { 
       user_id:     table.owner.id,
       table_name:  table.name,
-      formatter:   formatter
+      formatter:   original_geocoding.formatter
     }
       
     Geocoding.create(options).run!

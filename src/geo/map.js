@@ -356,19 +356,22 @@ cdb.geo.Map = cdb.core.Model.extend({
   _adjustZoomtoLayer: function(layer) {
 
     var maxZoom = layer.get('maxZoom');
-
-    if (_.isNumber(maxZoom)) {
-      this.set({ maxZoom: maxZoom });
-    }
-
     var minZoom = layer.get('minZoom');
 
-    if (_.isNumber(minZoom)) {
-      this.set({ minZoom: minZoom });
+    if (_.isNumber(maxZoom)) {
+
+      this.set({ maxZoom: maxZoom });
+
+      if ( this.get("zoom") > maxZoom ) this.setZoom(maxZoom);
+
     }
 
-    if (_.isNumber(maxZoom)) {
-      if ( this.get("zoom") > maxZoom ) this.set("zoom", maxZoom);
+    if (_.isNumber(minZoom)) {
+
+      this.set({ minZoom: minZoom });
+
+      if ( this.get("zoom") < minZoom ) this.setZoom(minZoom);
+
     }
 
   },

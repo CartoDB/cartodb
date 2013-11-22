@@ -42,7 +42,7 @@ class AutomaticGeocoding < Sequel::Model
       formatter:              geocodings.first.formatter,
       automatic_geocoding_id: self.id
     }
-      
+
     Geocoding.create(options).run!
     self.update(state: 'idle', ran_at: Time.now, retried_times: 0)
   rescue => e

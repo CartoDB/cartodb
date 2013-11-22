@@ -67,11 +67,17 @@ class Geocoding < Sequel::Model
     end until ['completed', 'cancelled', 'failed'].include? state
     return false if state == 'cancelled'
     table_geocoder.process_results
+    create_automatic_geocoding if automatic_geocoding_id.blank?
     self.update(state: 'finished')
   rescue => e
     CartoDB::notify_exception(e, user: user)
     self.update(state: 'failed')
   end # run!
+
+  def create_automatic_geocoding
+    geocoder = AutomaticGeocoding.create(table: table)
+    self.update(automatic_geocoding_id: geocoder.id)
+  end # create_automatic_geocoder
 
   # {field}, SPAIN => field, ', SPAIN'
   def translate_formatter

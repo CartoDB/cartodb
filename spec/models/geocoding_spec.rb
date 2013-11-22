@@ -92,6 +92,14 @@ describe Geocoding do
       geocoding.reload.state.should eq 'failed'
     end
 
+    it 'creates an automatic geocoder' do
+      geocoding = Geocoding.create(user: @user, table: @table, formatter: 'b')
+      CartoDB::TableGeocoder.any_instance.stubs(:run).returns true
+      CartoDB::TableGeocoder.any_instance.stubs(:process_results).returns true
+      CartoDB::Geocoder.any_instance.stubs(:status).returns 'submitted'
+      CartoDB::Geocoder.any_instance.stubs(:update_status).returns true
+      expect { geocoding.run! }.to change { AutomaticGeocoding.count }.by(1)
+    end
   end
 
   describe '#max_geocodable_rows' do

@@ -45,7 +45,7 @@ class AutomaticGeocoding < Sequel::Model
     Geocoding.create(options).run!
     self.update(state: 'idle', ran_at: Time.now)
   rescue => e
-    self.update(state: 'failed') and raise if retried_times > MAX_RETRIES
-    self.update(retried_times: retried_times.to_i + 1, state: 'idle', run_at)
+    self.update(state: 'failed') and raise(e) if retried_times > MAX_RETRIES
+    self.update(retried_times: retried_times.to_i + 1, state: 'idle')
   end # run
 end # AutomaticGeocoding

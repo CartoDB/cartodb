@@ -1658,6 +1658,7 @@ exports.Profiler = Profiler;
         && /^(http(s)?:)?\/\//.test(url)) request = XDomainRequest;
 
     var req = new request();
+    req.open(options.method, url, true);
 
 
     function respond() {
@@ -1675,7 +1676,6 @@ exports.Profiler = Profiler;
 
     req.onprogress = function() {};
 
-    req.open(options.method, url, true);
     //req.responseType = 'arraybuffer';
     if (options.data) {
       req.setRequestHeader("Content-type", "application/json");

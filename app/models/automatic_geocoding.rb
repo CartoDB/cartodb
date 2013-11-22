@@ -6,9 +6,10 @@ class AutomaticGeocoding < Sequel::Model
   many_to_one :table
   one_to_many :geocodings, order: :created_at
 
-  def active
-    AutomaticGeocoding.where("state IN ?", ['created', 'idle']).select do |ag|
-      ag.table.data_last_modified > ag.ran_at
+  def self.active
+    AutomaticGeocoding.where("state IN ?", ['created', 'idle']).all.select do |ag|
+      last_modified = ag.table.data_last_modified || 1.year.ago
+      last_modified > ag.ran_at
     end
   end # active
 

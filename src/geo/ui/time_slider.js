@@ -78,9 +78,11 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
     end = end.getTime ? end.getTime(): end;
     var span = (end - start)/1000;
     var ONE_DAY = 3600*24;
+    var ONE_YEAR = ONE_DAY * 31 * 12;
     function pad(n) { return n < 10 ? '0' + n : n; };
     // lest than a day
-    if (span < ONE_DAY) return function(t) { return pad(t.getUTCHours()) + ":" + pad(t.getUTCMinutes()); };
+    if (span < ONE_DAY)   return function(t) { return pad(t.getUTCHours()) + ":" + pad(t.getUTCMinutes()); };
+    if (span < ONE_YEAR) return function(t) { return pad(t.getUTCMonth() + 1) + "/" + pad(t.getUTCDate()) + "/" + pad(t.getUTCFullYear()); };
     return function(t) { return pad(t.getUTCMonth() + 1) + "/" + pad(t.getUTCFullYear()); };
   },
 

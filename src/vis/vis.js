@@ -345,7 +345,7 @@ var Vis = cdb.core.View.extend({
       for(i = 0; i < Math.min(options.sublayer_options.length, layers.length); ++i) {
         var o = options.sublayer_options[i];
         var subLayer = layers[i];
-        var legend = this.legends && this.legends.getLayerByIndex(i);
+        var legend = this.legends && this.legends.getLegendByIndex(i);
         if(legend) {
           legend[o.visible ? 'show': 'hide']();
         }

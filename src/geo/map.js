@@ -102,19 +102,6 @@ cdb.geo.GMapsBaseLayer = cdb.geo.MapLayer.extend({
     type: 'GMapsBase',
     base_type: 'gray_roadmap',
     style: null
-  },
-
-  // Overwrites the set method to 'unset' the maxZoom
-  set: function(key, value, options) {
-
-    if (key && _.isObject(key)) {
-      key.maxZoom = 40;
-    } else if (key === 'maxZoom') {
-      value = 40;
-    }
-
-    return cdb.geo.MapLayer.prototype.set.apply(this, arguments);
-
   }
 
 });
@@ -360,17 +347,15 @@ cdb.geo.Map = cdb.core.Model.extend({
 
     if (_.isNumber(maxZoom)) {
 
-      this.set({ maxZoom: maxZoom });
-
-      if ( this.get("zoom") > maxZoom ) this.setZoom(maxZoom);
+      if ( this.get("zoom") > maxZoom ) this.set({ zoom: maxZoom, maxZoom: maxZoom });
+      else this.set("maxZoom", maxZoom);
 
     }
 
     if (_.isNumber(minZoom)) {
 
-      this.set({ minZoom: minZoom });
-
-      if ( this.get("zoom") < minZoom ) this.setZoom(minZoom);
+      if ( this.get("zoom") < minZoom ) this.set({ minZoom: minZoom, zoom: minZoom });
+      else this.set("minZoom", minZoom);
 
     }
 

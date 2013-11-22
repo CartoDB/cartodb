@@ -41,8 +41,8 @@ if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
         this.map_googlemaps = new google.maps.Map(this.el, {
           center: new google.maps.LatLng(center[0], center[1]),
           zoom: this.map.get('zoom'),
-          minZoom: this.map.get('minZoom'),
-          maxZoom: this.map.get('maxZoom'),
+          //minZoom: this.map.get('minZoom'),
+          //maxZoom: this.map.get('maxZoom'),
           disableDefaultUI: true,
           scrollwheel: this.map.get("scrollwheel"),
           mapTypeControl:false,
@@ -50,6 +50,16 @@ if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
           backgroundColor: 'white',
           tilt: 0
         });
+
+        // Note: if you enable minZoom and maxZoom, bind the change of zoom
+        //
+        // this.map.bind('change:maxZoom', function() {
+        //   self.map_googlemaps.setOptions({ maxZoom: self.map.get('maxZoom') });
+        // }, this);
+
+        // this.map.bind('change:minZoom', function() {
+        //   self.map_googlemaps.setOptions({ minZoom: self.map.get('minZoom') });
+        // }, this);
 
       } else {
 

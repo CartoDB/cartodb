@@ -289,10 +289,11 @@ class DataImport < Sequel::Model
     
     importer.run(tracker)
 
+    raise_error_if_over_quota(importer.results.select(&:success?).length)
     self.results    = importer.results
     self.error_code = importer.error_code
-    self.table_name = importer.table.name if importer.success?
-    self.table_id   = importer.table.id if importer.success?
+    self.table_name = importer.table.name if importer.success? && importer.table
+    self.table_id   = importer.table.id if importer.success? && importer.table
     if synchronization_id
       synchronization = 
         CartoDB::Synchronization::Member.new(id: synchronization_id).fetch

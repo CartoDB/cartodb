@@ -73,12 +73,7 @@ describe SourceFile do
   end #path 
 
   describe '#target_schema' do
-    it "returns 'public' if OSM" do
-      source_file = SourceFile.new('/var/tmp/foo.osm')
-      source_file.target_schema.must_equal 'public'
-    end
-
-    it "returns 'importer' otherwise" do
+    it "returns 'cdb_importer'" do
       source_file = SourceFile.new('/var/tmp/foo.txt')
       source_file.target_schema.must_equal 'cdb_importer'
 

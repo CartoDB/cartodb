@@ -1,3 +1,35 @@
+2.5.3
+-----
+* Improvements
+  * Start storing the api_key in the database.
+  * Created a rake task that copies the api_key from redis to PSQL.
+    * Existing installations, please run:
+    ```
+    $ bundle exec rake cartodb:db:copy_api_keys_from_redis
+    ```
+  * Improved sprite compilation time + CSS rendering
+  * Created a notification model.
+  * Re-enable save_metadata during user after_save.
+
+* Fixed Bugs
+  * GMaps attribution is above Legend when it is applied.
+  * Date filters depend on the system timezone.
+  * Query box: field suggestion menu goes out of the canvas.
+  * Deactivate by default layer-selector when visualization has only one layer.
+  * Deactivate by default legend when none of the layers has a legend applied.
+  * Drop type guess based on column names.
+  * When trying to import a file and being overquota it reports an unknown error.
+  * Geocoding error on tables with cartodb_georef_status column.
+  * Infowindow variables are changed after renaming the table.
+  * HTTP is not added on basemap wms.
+  * Error saving a cell that contains a date.
+  * Views: dashboard: vizs: long description overflows.
+  * Change text in filters' tooltip.
+  * Pass encoding and shape_encoding as separate options to ogr2ogr.
+  * Provide a missing 'down' step for some migrations.
+  * Problem applying a polygon-patter-file from simple wizard and changing any value inside CartoCSS editor.
+  * [regression] All importable files in a zip file should be imported.
+
 2.5.2
 -----
 * Improvements

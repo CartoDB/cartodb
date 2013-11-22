@@ -18,6 +18,20 @@ namespace :cartodb do
       end
     end
 
+    desc "Copy user api_keys from redis to postgres"
+    task :copy_api_keys_from_redis => :environment do
+      count = User.count
+      User.all.each_with_index do |user, i|
+        begin
+          user.this.update api_key: $users_metadata.HGET(user.key, 'map_key')
+          raise "No API key!!" if user.reload.api_key.blank?
+          puts "(#{i+1} / #{count}) OK   #{user.username}"
+        rescue => e
+          puts "(#{i+1} / #{count}) FAIL #{user.username} #{e.message}"
+        end
+      end
+    end # copy_api_keys_from_redis
+
     desc "Rebuild user tables/layers join table"
     task :register_table_dependencies => :environment do
       count = Map.count

@@ -7,10 +7,14 @@
    *    (description, title, tags, options, ...)
    */
 
-  @import "compass";
+  @import "compass/css3/inline-block";
+  @import "compass/css3/border-radius";
+  @import "compass/css3/images";
+  @import "compass/css3/opacity";
   @import "../../common/mixins";
   @import "../../common/vars";
-  @import "../../common/sprites";
+  @import "../../common/common-sprite";
+  @import "../../table/table-sprite";
 
   $text-shadow-color: rgba(black,0.25);
 
@@ -37,7 +41,7 @@
         width:14px;
         height:13px;
         margin:0;
-        @include icons-sprite(back);
+        @include table-sprite(back);
         @include text-indent();
         @include opacity(.5);
 
@@ -55,8 +59,8 @@
         height:18px;
         margin:2px 0 0 12px;
         text-indent:-9999px;
-        &.table { @include icons-sprite(vis_type, $offset-y:0); }
-        &.derived { @include icons-sprite(vis_type, $offset-y:-18) }
+        &.table { @include table-sprite(vis_type, $offset-y:0); }
+        &.derived { @include table-sprite(vis_type, $offset-y:-18) }
       }
 
       // Visualization title

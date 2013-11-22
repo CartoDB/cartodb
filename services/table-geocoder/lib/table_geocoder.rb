@@ -48,7 +48,7 @@ module CartoDB
     end
 
     def clean_formatter
-      "translate(concat(#{formatter}), '\n\r\"', '  ')"
+      "trim(both from regexp_replace(regexp_replace(concat(#{formatter}), E'[\\n\\r]+', ' ', 'g'), E'\"', '', 'g'))"
     end
 
     def cancel
@@ -130,6 +130,16 @@ module CartoDB
       })
     rescue Sequel::DatabaseError => e
       raise unless e.message =~ /column .* of relation .* already exists/
+      cast_georef_status_column
+    end
+
+    def cast_georef_status_column
+      connection.run(%Q{
+        ALTER TABLE #{table_name} ALTER COLUMN cartodb_georef_status 
+        TYPE boolean USING cast(cartodb_georef_status as boolean)
+      })
+    rescue => e
+      raise "Error converting cartodb_georef_status to boolean, please, convert it manually or remove it."
     end
 
     def temp_table_name

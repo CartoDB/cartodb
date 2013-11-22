@@ -3,10 +3,10 @@
    * Create modal dialog styles!
    */
 
-  @import "compass";
-  @import "../common/sprites";
+
   @import "../common/mixins";
   @import "../common/forms";
+  @import "../elements/elements-sprite";
 
 
   // Big mamufas css
@@ -27,7 +27,7 @@
       width:160px;
       height:160px;
       margin:-160px 0 0 -80px;
-      @include icons-sprite(droparea);
+      @include elements-sprite(droparea);
     }
 
     p {

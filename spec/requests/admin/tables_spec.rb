@@ -20,7 +20,7 @@ describe Admin::TablesController do
       password: 'test'
     )
     @user.set_map_key
-    @api_key = @user.get_map_key
+    @api_key = @user.api_key
   end
 
   before(:each) do

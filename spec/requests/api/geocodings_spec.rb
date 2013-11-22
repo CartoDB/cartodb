@@ -13,7 +13,7 @@ describe "Assets API" do
     host! 'test.localhost.lan'
   end
 
-  let(:params) { { :api_key => @user.get_map_key } }
+  let(:params) { { :api_key => @user.api_key } }
 
   describe 'POST /api/v1/geocodings' do
     it 'creates a new geocoding' do

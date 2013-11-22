@@ -338,6 +338,15 @@ var _torque_reference_latest = {
                 "default-value": "blue",
                 "doc": "The color of the area of the marker.",
                 "type": "color"
+            },
+            "marker-type": {
+                "css": "marker-type",
+                "type": [
+                    "rectangle",
+                    "ellipse"
+                ],
+                "default-value": "ellipse",
+                "doc": "The default marker-type. If a SVG file is not given as the marker-file parameter, the renderer provides either an rectangle or an ellipse (a circle if height is equal to width)"
             }
         },
         "point": {
@@ -1742,6 +1751,35 @@ exports.Profiler = Profiler;
     }
   }
 
+  function renderRectangle(ctx, st) {
+    ctx.fillStyle = st.fillStyle;
+    ctx.strokStyle = st.strokStyle;
+    var pixel_size = st['point-radius'];
+
+    // fill
+    if (st.fillStyle && st.fillOpacity) {
+      ctx.globalAlpha = st.fillOpacity;
+    }
+    ctx.fillRect(0, 0, pixel_size, pixel_size)
+
+    // stroke
+    ctx.globalAlpha = 1.0;
+    if (st.strokeStyle && st.lineWidth) {
+      if (st.strokeOpacity) {
+        ctx.globalAlpha = st.strokeOpacity;
+      }
+      if (st.lineWidth) {
+        ctx.lineWidth = st.lineWidth;
+      }
+      ctx.strokeStyle = st.strokeStyle;
+
+      // do not render for alpha = 0
+      if (ctx.globalAlpha > 0) {
+        ctx.strokeRect(0, 0, pixel_size, pixel_size);
+      }
+    }
+  }
+
   function renderSprite(ctx, st) {
     var img = st['point-file'] || st['marker-file'];
     var ratio = img.height/img.width;
@@ -1753,7 +1791,8 @@ exports.Profiler = Profiler;
   exports.torque.cartocss = exports.torque.cartocss || {};
   exports.torque.cartocss = {
     renderPoint: renderPoint,
-    renderSprite: renderSprite
+    renderSprite: renderSprite,
+    renderRectangle: renderRectangle
   };
 
 })(typeof exports === "undefined" ? this : exports);
@@ -1837,7 +1876,12 @@ exports.Profiler = Profiler;
       if(st['point-file'] || st['marker-file']) {
         torque.cartocss.renderSprite(ctx, st);
       } else {
-        torque.cartocss.renderPoint(ctx, st);
+        var mt = st['marker-type'];
+        if (mt && mt === 'rectangle') {
+          torque.cartocss.renderRectangle(ctx, st);
+        } else {
+          torque.cartocss.renderPoint(ctx, st);
+        }
       }
       prof.end();
       return canvas;

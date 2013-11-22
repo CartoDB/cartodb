@@ -16,6 +16,10 @@ module CartoDB
       user.tables.count > user.table_quota.to_i
     end
 
+    def over_storage_quota?
+      user.over_disk_quota?
+    end
+
     private
 
     attr_reader :user

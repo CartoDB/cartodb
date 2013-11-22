@@ -8,8 +8,7 @@ describe DataImport do
     @table = create_table :user_id => @user.id
   end
 
-  it 'should allow to append data to an existing table' do
-    pending "not yet implemented"
+  it 'can append data to an existing table' do
     fixture = '/../db/fake_data/column_string_to_boolean.csv'
     expect do
       DataImport.create(

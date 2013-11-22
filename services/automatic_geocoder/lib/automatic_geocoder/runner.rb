@@ -1,5 +1,6 @@
 # encoding: utf-8
 require 'eventmachine'
+require File.expand_path('../../../../../config/environment.rb',  __FILE__)
 
 module CartoDB
   module AutomaticGeocoder

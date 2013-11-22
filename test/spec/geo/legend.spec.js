@@ -488,15 +488,19 @@ describe("common.geo.ui.Legend", function() {
       });
 
       it("should allow to change the min value", function() {
-        legend.setMinValue("3")
-        expect(legend.model.get("min")).toEqual("3");
-        expect(legend.$el.find("ul li:first-child").text()).toEqual("3");
+        var value = "3";
+
+        legend.setMinValue(value)
+        expect(legend.model.get("min")).toEqual(value);
+        expect(legend.$el.find("ul li:nth-child(1)").text()).toEqual(value);
       });
 
       it("should allow to change the max value", function() {
-        legend.setMaxValue("10000")
-        expect(legend.model.get("max")).toEqual("10000");
-        expect(legend.$el.find("ul li:last-child").text()).toEqual("10000");
+        var value = "10000";
+
+        legend.setMaxValue(value)
+        expect(legend.model.get("max")).toEqual(value);
+        expect(legend.$el.find("ul li:nth-child(3)").text()).toEqual(value);
       });
 
     });
@@ -558,14 +562,21 @@ describe("common.geo.ui.Legend", function() {
       });
 
       it("should allow change the left label", function() {
-        legend.setLeftLabel("Hello!")
-        expect(legend.model.get("leftLabel")).toEqual("Hello!");
+        var label = "New left label";
+
+        legend.setLeftLabel(label)
+        expect(legend.model.get("leftLabel")).toEqual(label);
+        expect(legend.$el.find("li:nth-child(1)").text()).toEqual(label);
       });
 
       it("should allow change the right label", function() {
-        legend.setRightLabel("Hi!")
-        expect(legend.model.get("rightLabel")).toEqual("Hi!");
+        var label = "New right label";
+
+        legend.setRightLabel(label)
+        expect(legend.model.get("rightLabel")).toEqual(label);
+        expect(legend.$el.find("li:nth-child(2)").text()).toEqual(label);
       });
+
 
     });
     describe("Density Legend", function() {
@@ -627,11 +638,13 @@ describe("common.geo.ui.Legend", function() {
       it("should allow change the left label", function() {
         legend.setLeftLabel("Hello!")
         expect(legend.model.get("leftLabel")).toEqual("Hello!");
+        expect(legend.$el.find("li:nth-child(1)").text()).toEqual("Hello!");
       });
 
       it("should allow change the right label", function() {
         legend.setRightLabel("Hi!")
         expect(legend.model.get("rightLabel")).toEqual("Hi!");
+        expect(legend.$el.find("li:nth-child(2)").text()).toEqual("Hi!");
       });
 
     });
@@ -692,13 +705,19 @@ describe("common.geo.ui.Legend", function() {
       });
 
       it("should allow change the left label", function() {
-        legend.setLeftLabel("Hello!")
-        expect(legend.model.get("leftLabel")).toEqual("Hello!");
+        var label = "New left label";
+
+        legend.setLeftLabel(label)
+        expect(legend.model.get("leftLabel")).toEqual(label);
+        expect(legend.$el.find("li:nth-child(1)").text()).toEqual(label);
       });
 
       it("should allow change the right label", function() {
-        legend.setRightLabel("Hi!")
-        expect(legend.model.get("rightLabel")).toEqual("Hi!");
+        var label = "New right label";
+
+        legend.setRightLabel(label)
+        expect(legend.model.get("rightLabel")).toEqual(label);
+        expect(legend.$el.find("li:nth-child(2)").text()).toEqual(label);
       });
 
     });

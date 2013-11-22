@@ -11,17 +11,15 @@ module CartoDB
       attr_reader :ticks
 
       def initialize(options = {})
-        @job_collection     = AutomaticGeocoding.active
         @max_ticks          = options.fetch(:max_ticks, RUN_FOREVER)
-        @tick_time_in_secs  = options.fetch(:tick_time_in_secs, TICK_TIME_IN_SECS)
         @ticks              = 0
       end
 
       def run
         EventMachine.run do
-          EventMachine::PeriodicTimer.new(@tick_time_in_secs) do
+          EventMachine::PeriodicTimer.new(10) do
             puts 'fetching job_collection'
-            job_collection.map &:enqueue
+            AutomaticGeocoding.active.map &:enqueue
           end
         end
       end

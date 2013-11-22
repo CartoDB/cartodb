@@ -4,13 +4,14 @@ require_relative '../../services/table-geocoder/lib/table_geocoder'
 class Geocoding < Sequel::Model
 
   many_to_one :user
+  many_to_one :table
 
   attr_reader :table_geocoder
 
   def validate
     super
     validates_presence :formatter
-    validates_presence :table_name
+    validates_presence :table_id
   end # validate
 
   def after_initialize
@@ -18,21 +19,26 @@ class Geocoding < Sequel::Model
     instantiate_table_geocoder
   end #after_initialize
 
-  def instantiate_table_geocoder
-    @table_geocoder = CartoDB::TableGeocoder.new(Cartodb.config[:geocoder].symbolize_keys.merge(
-      table_name: table_name,
-      formatter:  translate_formatter,
-      connection: (user.present? ? user.in_database(as: :superuser) : nil),
-      remote_id:  remote_id,
-      max_rows:   max_geocodable_rows
-    ))
-  end # instantiate_table_geocoder
+  def after_create
+    super
+    instantiate_table_geocoder
+  end # after_create
 
   def before_save
     super
     self.updated_at = Time.now
     cancel if state == 'cancelled'
   end # before_save
+
+  def instantiate_table_geocoder
+    @table_geocoder = CartoDB::TableGeocoder.new(Cartodb.config[:geocoder].symbolize_keys.merge(
+      table_name: table.try(:name),
+      formatter:  translate_formatter,
+      connection: (user.present? ? user.in_database(as: :superuser) : nil),
+      remote_id:  remote_id,
+      max_rows:   max_geocodable_rows
+    ))
+  end # instantiate_table_geocoder
 
   def cancel
     table_geocoder.cancel

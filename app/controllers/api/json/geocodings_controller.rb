@@ -24,7 +24,7 @@ class Api::Json::GeocodingsController < Api::ApplicationController
   def create
     options = { 
       user_id:     current_user.id,
-      table_name:  params[:table_name].presence,
+      table_id:    current_user.tables.where(name: params[:table_name]).first.try(:id),
       formatter:   params[:formatter].presence
     }
       

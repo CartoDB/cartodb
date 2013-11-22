@@ -38,7 +38,7 @@ class Table < Sequel::Model(:user_tables)
   one_to_many  :geocodings
 
   plugin :association_dependencies, map:                  :destroy, 
-                                    layers:               :nullify, 
+                                    layers:               :nullify,
                                     automatic_geocoding:  :destroy
   plugin :dirty
 

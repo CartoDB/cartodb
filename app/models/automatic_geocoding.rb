@@ -1,8 +1,23 @@
 # encoding: UTF-8'
 class AutomaticGeocoding < Sequel::Model
 
-  one_to_one :table
-  many_to_one :original_geocoding, class: :Geocoding, key: :original_geocoding_id
+  MAX_RETRIES = 5
+
+  many_to_one :table
+  one_to_many :geocodings, order: :created_at
+
+  def active
+    AutomaticGeocoding.where("state IN ?", ['created', 'idle']).select do |ag|
+      ag.table.data_last_modified > ag.ran_at
+    end
+  end # active
+
+  def before_create
+    super
+    self.created_at ||= Time.now
+    self.ran_at     ||= Time.now
+    self.state      ||= 'created'
+  end # before_create
 
   def before_save
     super
@@ -19,14 +34,18 @@ class AutomaticGeocoding < Sequel::Model
   end # enqueue
 
   def run
-    self.state = 'running'
+    self.update(state: 'running')
     options = { 
-      user_id:     table.owner.id,
-      table_name:  table.name,
-      formatter:   original_geocoding.formatter
+      user_id:                table.owner.id,
+      table_name:             table.name,
+      formatter:              geocodings.first.formatter,
+      automatic_geocoding_id: self.id
     }
       
     Geocoding.create(options).run!
-    self.run_at   = Time.now + interval
+    self.update(state: 'idle', ran_at: Time.now)
+  rescue => e
+    self.update(state: 'failed') and raise if retried_times > MAX_RETRIES
+    self.update(retried_times: retried_times.to_i + 1, state: 'idle', run_at)
   end # run
-end
+end # AutomaticGeocoding

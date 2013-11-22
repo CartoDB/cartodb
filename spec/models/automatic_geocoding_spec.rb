@@ -21,7 +21,7 @@ describe AutomaticGeocoding do
       geocoding.table.should eq @table
       @table.automatic_geocoding.should eq geocoding
     end
-  end
+  end # setup
 
   describe '#run' do
     let(:automatic_geocoding) { FactoryGirl.create(:automatic_geocoding, table: @table) }
@@ -49,6 +49,16 @@ describe AutomaticGeocoding do
       Geocoding.any_instance.stubs('run!').raises("error")
       expect { 5.times { automatic_geocoding.run } }.to change { automatic_geocoding.retried_times.to_i }.by(5)
       expect { automatic_geocoding.run }.to raise_error(Exception)
+    end
+  end # run
+
+  describe '#active' do
+    it 'returns automatic geocodings whose tables have changed' do
+      g = FactoryGirl.create(:automatic_geocoding, table: @table)
+      Table.any_instance.stubs(:data_last_modified).returns 1.month.from_now
+      AutomaticGeocoding.active.count.should eq 0
+      g.update state: 'idle'
+      AutomaticGeocoding.active.count.should eq 1
     end
   end
 end

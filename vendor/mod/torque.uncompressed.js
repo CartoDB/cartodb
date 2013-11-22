@@ -4,7 +4,7 @@
 
   var requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame || function(c) { setTimeout(c, 16); }
 
-  var cancelAnimationFrame = window.requestAnimationFrame || window.mozCancelAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame || function(c) { cancelTimeout(c); };
+  var cancelAnimationFrame = window.requestAnimationFrame || window.mozCancelAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame || function(c) { };
 
   /**
    * options:
@@ -173,19 +173,19 @@ var _torque_reference_latest = {
             "default-value": "30",
             "type":"number",
             "default-meaning": "the animation lasts 30 seconds",
-            "doc": "Animation duration in seconds",
+            "doc": "Animation duration in seconds"
         },
         "-torque-aggregation-function": {
             "default-value": "count(cartodb_id)",
             "type": "string",
             "default-meaning": "the value for each cell is the count of points in that cell",
-            "doc": "A function used to calculate a value from the aggregate data for each cell. See -torque-resolution",
+            "doc": "A function used to calculate a value from the aggregate data for each cell. See -torque-resolution"
         },
         "-torque-time-attribute": {
             "default-value": "time",
             "type": "string",
             "default-meaning": "the data column in your table that is of a time based type",
-            "doc": "The table column that contains the time information used create the animation",
+            "doc": "The table column that contains the time information used create the animation"
         },
         "-torque-data-aggregation": {
             "default-value": "linear",
@@ -193,7 +193,7 @@ var _torque_reference_latest = {
               "cumulative"
             ],
             "default-meaning": "previous values are discarded",
-            "doc": "A linear animation will discard previous values while a cumulative animation will accumulate them until it restarts",
+            "doc": "A linear animation will discard previous values while a cumulative animation will accumulate them until it restarts"
         }
     },
     "symbolizers" : {
@@ -874,10 +874,12 @@ exports.Profiler = Profiler;
         dates = (1 + maxDateSlots) * rows.length;
       }
 
+      var type = this.options.cumulative ? Uint32Array: Uint8Array;
+
       // reserve memory for all the dates
       var timeIndex = new Int32Array(maxDateSlots + 1); //index-size
       var timeCount = new Int32Array(maxDateSlots + 1);
-      var renderData = new (this.options.valueDataType || Uint8Array)(dates);
+      var renderData = new (this.options.valueDataType || type)(dates);
       var renderDataPos = new Uint32Array(dates);
 
       prof_mem.inc(
@@ -905,23 +907,38 @@ exports.Profiler = Profiler;
 
         var dates = row.dates__uint16;
         var vals = row.vals__uint8;
-        var prev_val = 0;
-        for (var j = 0, len = dates.length; j < len; ++j) {
-            var rr = rowsPerSlot[dates[j]] || (rowsPerSlot[dates[j]] = []);
-            if(this.options.cumulative) {
-                vals[j] += prev_val;
-            }
-            prev_val = vals[j];
-            rr.push([r, vals[j]]);
-        }
+        if (!this.options.cumulative) {
+          for (var j = 0, len = dates.length; j < len; ++j) {
+              var rr = rowsPerSlot[dates[j]] || (rowsPerSlot[dates[j]] = []);
+              if(this.options.cumulative) {
+                  vals[j] += prev_val;
+              }
+              prev_val = vals[j];
+              rr.push([r, vals[j]]);
+          }
+        } else {
+          var valByDate = {}
+          for (var j = 0, len = dates.length; j < len; ++j) {
+            valByDate[dates[j]] = vals[j];
+          }
+          var accum = 0;
 
-        // extend the latest to the end
-        if(this.options.cumulative) {
-          var lastDateSlot = dates[dates.length - 1];
+          // extend the latest to the end
+          for (var j = dates[0]; j <= maxDateSlots; ++j) {
+              var rr = rowsPerSlot[j] || (rowsPerSlot[j] = []);
+              var v = valByDate[j];
+              if (v) {
+                accum += v;
+              }
+              rr.push([r, accum]);
+          }
+
+          /*var lastDateSlot = dates[dates.length - 1];
           for (var j = lastDateSlot + 1; j <= maxDateSlots; ++j) {
             var rr = rowsPerSlot[j] || (rowsPerSlot[j] = []);
             rr.push([r, prev_val]);
           }
+          */
         }
 
       }
@@ -1639,6 +1656,7 @@ exports.Profiler = Profiler;
     if (window.XDomainRequest
         && !("withCredentials" in request)
         && /^(http(s)?:)?\/\//.test(url)) request = XDomainRequest;
+
     var req = new request();
 
 
@@ -1654,6 +1672,8 @@ exports.Profiler = Profiler;
     "onload" in req
       ? req.onload = req.onerror = respond
       : req.onreadystatechange = function() { req.readyState > 3 && respond(); };
+
+    req.onprogress = function() {};
 
     req.open(options.method, url, true);
     //req.responseType = 'arraybuffer';

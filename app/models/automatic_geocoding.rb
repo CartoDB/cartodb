@@ -31,6 +31,7 @@ class AutomaticGeocoding < Sequel::Model
   end # validate
 
   def enqueue
+    self.update(state: 'on_queue')
     Resque.enqueue(Resque::AutomaticGeocoderJobs, job_id: id)
   end # enqueue
 

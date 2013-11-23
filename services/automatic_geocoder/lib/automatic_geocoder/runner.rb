@@ -17,7 +17,7 @@ module CartoDB
 
       def run
         EventMachine.run do
-          EventMachine::PeriodicTimer.new(10) do
+          EventMachine::PeriodicTimer.new(5) do
             puts 'fetching job_collection'
             AutomaticGeocoding.active.map &:enqueue
           end

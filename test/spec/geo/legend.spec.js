@@ -788,8 +788,8 @@ describe("common.geo.ui.Legend", function() {
 
         var legend = stacked.legends[0];
 
-        expect(legend.model.get("title")).toEqual("Intensity title");
-        expect(legend.$el.find(".legend-title").html()).toEqual("Intensity title");
+        expect(legend.model.get("title")).toEqual("Intensity legend");
+        expect(legend.$el.find(".legend-title").html()).toEqual("Intensity legend");
 
       });
 

@@ -722,6 +722,65 @@ describe("common.geo.ui.Legend", function() {
 
     });
 
+    describe("Stacked Legend", function() {
+
+      var stacked, properties, legendA, legendB, custom_data;
+
+      var custom_data = [
+        { name: "Natural Parks",  value: "#58A062" },
+        { name: "Villages",       value: "#F07971" },
+        { name: "Rivers",         value: "#54BFDE" },
+        { name: "Fields",         value: "#9BC562" },
+        { name: "Caves",          value: "#FABB5C" }
+      ];
+
+      beforeEach(function() {
+
+        var legendA = { title: "Intensity legend", type: "intensity", color: "#FF0000", min: 1, max: 120 };
+        var legendB = { title: "Custom title", type:"custom", data: custom_data };
+
+        stacked = new cdb.geo.ui.Legend.Stacked({ legends: [legendA, legendB] });
+
+        stacked.render();
+
+      });
+
+      it("should render", function() {
+        expect(stacked.legends.length).toEqual(2);
+        expect(stacked.$el.find(".cartodb-legend").length).toEqual(2);
+        expect(stacked.$el.find(".cartodb-legend.intensity").length).toEqual(1);
+        expect(stacked.$el.find(".cartodb-legend.custom").length).toEqual(1);
+      });
+
+      it("should allow to add a legend", function() {
+
+        var properties = { title: "Density title", type: "density", colors: ["#DDD", "#FF000", "#F1F1F1"], left: "Left value", right: "Right value" };
+
+        stacked.addLegend(properties);
+
+        expect(stacked.legends.length).toEqual(3);
+
+        expect(stacked.$el.find(".cartodb-legend").length).toEqual(3);
+        expect(stacked.$el.find(".cartodb-legend.intensity").length).toEqual(1);
+        expect(stacked.$el.find(".cartodb-legend.custom").length).toEqual(1);
+        expect(stacked.$el.find(".cartodb-legend.density").length).toEqual(1);
+
+      });
+
+      it("should allow to remove a legend", function() {
+
+        stacked.removeLegendAt(0);
+
+        expect(stacked.legends.length).toEqual(1);
+
+        expect(stacked.$el.find(".cartodb-legend").length).toEqual(1);
+        expect(stacked.$el.find(".cartodb-legend.intensity").length).toEqual(0);
+        expect(stacked.$el.find(".cartodb-legend.custom").length).toEqual(1);
+
+      });
+
+    });
+
   });
 
 });

@@ -394,14 +394,14 @@ cdb.geo.ui.Legend.Density = cdb.geo.ui.DensityLegend.extend({
 
     this.items    = this.options.items;
 
-    this.model = new cdb.core.Model({
+    this.model = new cdb.geo.ui.LegendModel({
       type:          this.type,
       title:         this.options.title,
       show_title:    this.options.title ? true : false,
       leftLabel:     this.options.left,
       rightLabel:    this.options.right,
       colors:        this.options.colors,
-      buckets_count: this.options.colors.length
+      buckets_count: this.options.colors ? this.options.colors.length : 0
     });
 
     this.add_related_model(this.model);
@@ -615,7 +615,7 @@ cdb.geo.ui.Legend.Category = cdb.geo.ui.CategoryLegend.extend({
 
     this.items = new cdb.geo.ui.LegendItems(this.options.data);
 
-    this.model = new cdb.core.Model({
+    this.model = new cdb.geo.ui.LegendModel({
       type: this.type,
       title: this.options.title,
       show_title: this.options.title ? true : false
@@ -813,6 +813,63 @@ cdb.geo.ui.StackedLegend = cdb.core.View.extend({
 
 });
 
+cdb.geo.ui.Legends = Backbone.Collection.extend({
+  model: cdb.geo.ui.LegendModel
+});
+
+cdb.geo.ui.Legend.Stacked = cdb.geo.ui.StackedLegend.extend({
+
+  initialize: function() {
+
+    var legendModels = _.map(this.options.legends, function(legend) {
+      return new cdb.geo.ui.LegendModel(legend);
+    });
+
+    this.legends = new cdb.geo.ui.Legends(legendModels);
+
+    this.legends.bind("add remove change", this.render, this);
+
+  },
+
+  render: function() {
+
+    this.$el.empty();
+
+    this.legends.each(function(model) {
+
+      var type = model.get("type");
+
+      if (!type) type = "custom";
+
+      type = type.charAt(0).toUpperCase() + type.slice(1);
+
+      var view = new cdb.geo.ui.Legend[type](model.attributes);
+
+      this.$el.append(view.render().$el);
+
+    }, this);
+
+    return this;
+
+  },
+
+  addLegend: function(options) {
+
+    var legend = new cdb.geo.ui.LegendModel(options);
+    this.legends.push(legend);
+
+  },
+
+  removeLegendAt: function(n) {
+
+    var legend = this.legends.at(n);
+    this.legends.remove(legend);
+
+  }
+
+});
+
+
 /*
  * Legend Model
  *
@@ -948,7 +1005,8 @@ cdb.geo.ui.Legend.Custom = cdb.geo.ui.CustomLegend.extend({
 
     this.items = new cdb.geo.ui.LegendItems(this.options.data);
 
-    this.model = new cdb.core.Model({
+
+    this.model = new cdb.geo.ui.LegendModel({
       type: this.type,
       title: this.options.title,
       show_title: this.options.title ? true : false
@@ -1040,7 +1098,7 @@ cdb.geo.ui.Legend.Bubble = cdb.geo.ui.BubbleLegend.extend({
 
   initialize: function() {
 
-    this.model = new cdb.core.Model({
+    this.model = new cdb.geo.ui.LegendModel({
       type:  this.type,
       title: this.options.title,
       min:   this.options.min,
@@ -1081,14 +1139,14 @@ cdb.geo.ui.Legend.Choropleth = cdb.geo.ui.ChoroplethLegend.extend({
 
     this.items    = this.options.items;
 
-    this.model = new cdb.core.Model({
+    this.model = new cdb.geo.ui.LegendModel({
       type:          this.type,
       title:         this.options.title,
       show_title:    this.options.title ? true : false,
       leftLabel:     this.options.left,
       rightLabel:    this.options.right,
       colors:        this.options.colors,
-      buckets_count: this.options.colors.length
+      buckets_count: this.options.colors ? this.options.colors.length : 0
     });
 
     this.add_related_model(this.model);
@@ -1129,7 +1187,15 @@ cdb.geo.ui.Legend.Intensity = cdb.geo.ui.IntensityLegend.extend({
   initialize: function() {
 
     this.items = this.options.items;
-    this.model = new cdb.core.Model({ type: this.type, title: this.options.title, show_title: this.options.title ? true : false, color: this.options.color, leftLabel: this.options.left, rightLabel: this.options.right });
+
+    this.model = new cdb.geo.ui.LegendModel({
+      type: this.type,
+      title: this.options.title,
+      show_title: this.options.title ? true : false,
+      color: this.options.color,
+      leftLabel: this.options.left,
+      rightLabel: this.options.right
+    });
 
     this.add_related_model(this.model);
     this._bindModel();

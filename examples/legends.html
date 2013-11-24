@@ -66,6 +66,7 @@
 
           var customLegend = new cdb.geo.ui.Legend.Custom({
             title: "Custom Legend",
+            type: "custom",
             data: [
               { name: "Natural Parks",  value: "#58A062" },
               { name: "Villages",       value: "#F07971" },
@@ -92,6 +93,7 @@
           });
 
           var densityLegend = new cdb.geo.ui.Legend.Density({
+            type: "density",
             title: "Density Legend",
             left: "0", right: "10", colors: [ "#58A062", "#F07971", "#54BFDE", "#9BC562", "#FABB5C" ]
           });
@@ -109,7 +111,20 @@
             intensity: { legend: intensityLegend, title: "Intensity Legend" }
           };
 
-          legendsArray = _.map(legends, function(legend) { return legend.legend.model.attributes; });
+          legendsArray = [{
+            title: "Category Legend",
+            data: [
+              { name: "Natural Parks",  value: "#58A062" },
+              { name: "Villages",       value: "#F07971" },
+              { name: "Rivers",         value: "#54BFDE" },
+              { name: "Fields",         value: "#9BC562" },
+              { name: "Caves",          value: "#FABB5C" }
+            ]
+          }, {
+            type: "bubble",
+            title: "Bubble Legend",
+            min: 21, max: 20, color: "red"
+          }];
 
           renderLegendList();
 

@@ -817,6 +817,10 @@ cdb.geo.ui.Legends = Backbone.Collection.extend({
   model: cdb.geo.ui.LegendModel
 });
 
+/*
+ * Stacked Legend public interface
+ *
+ * */
 cdb.geo.ui.Legend.Stacked = cdb.geo.ui.StackedLegend.extend({
 
   initialize: function() {
@@ -825,9 +829,9 @@ cdb.geo.ui.Legend.Stacked = cdb.geo.ui.StackedLegend.extend({
       return new cdb.geo.ui.LegendModel(legend);
     });
 
-    this.legends = new cdb.geo.ui.Legends(legendModels);
+    this.legendItems = new cdb.geo.ui.Legends(legendModels);
 
-    this.legends.bind("add remove change", this.render, this);
+    this.legendItems.bind("add remove change", this.render, this);
 
   },
 
@@ -835,7 +839,9 @@ cdb.geo.ui.Legend.Stacked = cdb.geo.ui.StackedLegend.extend({
 
     this.$el.empty();
 
-    this.legends.each(function(model) {
+    this.legends = [];
+
+    this.legendItems.each(function(model) {
 
       var type = model.get("type");
 
@@ -844,6 +850,7 @@ cdb.geo.ui.Legend.Stacked = cdb.geo.ui.StackedLegend.extend({
       type = type.charAt(0).toUpperCase() + type.slice(1);
 
       var view = new cdb.geo.ui.Legend[type](model.attributes);
+      this.legends.push(view);
 
       this.$el.append(view.render().$el);
 
@@ -853,17 +860,23 @@ cdb.geo.ui.Legend.Stacked = cdb.geo.ui.StackedLegend.extend({
 
   },
 
-  addLegend: function(options) {
+  getLegendAt: function(n) {
 
-    var legend = new cdb.geo.ui.LegendModel(options);
-    this.legends.push(legend);
+    return this.legends[n];
+
+  },
+
+  addLegend: function(attributes) {
+
+    var legend = new cdb.geo.ui.LegendModel(attributes);
+    this.legendItems.push(legend);
 
   },
 
   removeLegendAt: function(n) {
 
-    var legend = this.legends.at(n);
-    this.legends.remove(legend);
+    var legend = this.legendItems.at(n);
+    this.legendItems.remove(legend);
 
   }
 
@@ -1004,7 +1017,6 @@ cdb.geo.ui.Legend.Custom = cdb.geo.ui.CustomLegend.extend({
   initialize: function() {
 
     this.items = new cdb.geo.ui.LegendItems(this.options.data);
-
 
     this.model = new cdb.geo.ui.LegendModel({
       type: this.type,

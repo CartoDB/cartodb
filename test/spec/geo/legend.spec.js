@@ -779,6 +779,20 @@ describe("common.geo.ui.Legend", function() {
 
       });
 
+      it("should allow to get a legend", function() {
+
+        var legend = stacked.getLegendAt(1);
+
+        expect(legend.model.get("title")).toEqual("Custom title");
+        expect(legend.$el.find(".legend-title").html()).toEqual("Custom title");
+
+        var legend = stacked.legends[0];
+
+        expect(legend.model.get("title")).toEqual("Intensity title");
+        expect(legend.$el.find(".legend-title").html()).toEqual("Intensity title");
+
+      });
+
     });
 
   });

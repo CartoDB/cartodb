@@ -1,3 +1,8 @@
+/*
+ * Model for the legend item
+ *
+ * */
+
 cdb.geo.ui.LegendItemModel = cdb.core.Model.extend({
 
   defaults: {
@@ -7,9 +12,19 @@ cdb.geo.ui.LegendItemModel = cdb.core.Model.extend({
 
 });
 
+/*
+ * Collection of items for a legend
+ *
+ * */
+
 cdb.geo.ui.LegendItems = Backbone.Collection.extend({
   model: cdb.geo.ui.LegendItemModel
 });
+
+/*
+ * Legend item
+ *
+ * */
 
 cdb.geo.ui.LegendItem = cdb.core.View.extend({
 
@@ -196,8 +211,6 @@ cdb.geo.ui.Legend = cdb.core.View.extend({
   }
 
 });
-
-
 
 
 /*

@@ -18,19 +18,10 @@ describe("geo.map", function() {
   });
 
   describe('GMapsBaseLayer', function() {
+
     it("should be type GMapsBase", function() {
       var layer = new cdb.geo.GMapsBaseLayer();
       expect(layer.get('type')).toEqual("GMapsBase");
-    });
-
-    it("should unset maxzoom", function() {
-      var layer = new cdb.geo.GMapsBaseLayer();
-
-      layer.set('maxZoom', 10)
-      expect(layer.get('maxZoom')).toEqual(40);
-
-      layer.set({'maxZoom': 10 })
-      expect(layer.get('maxZoom')).toEqual(40);
     });
 
   });

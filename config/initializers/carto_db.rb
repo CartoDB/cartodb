@@ -129,7 +129,7 @@ module CartoDB
     },
     3101 => {
       title: 'Missing projection (.prj) file',
-      what_about: "CartoDB needs a PRJ file for all Shapefile archives uploaded. Contact your data provider to see about aquiring one if it was missing. Otherwise see spatialreference.org to locate the right one if you know it. Remember, the file name for you .prj must be the same as you .shp."
+      what_about: "CartoDB needs a PRJ file for all Shapefile archives uploaded. Contact your data provider to see about aquiring one if it was missing. Otherwise see spatialreference.org to locate the right one if you know it. Remember, the file name for your .prj must be the same as your .shp."
     },
     3201 => {
       title: 'Geometry Collection not supported',

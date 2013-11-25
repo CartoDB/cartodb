@@ -74,6 +74,20 @@ describe 'csv regression tests' do
     geometry_type_for(runner).must_equal 'POINT'
   end
 
+  it 'imports records with in cell line breaks' do
+    filepath    = path_to('in_cell_line_breaks.csv')
+    downloader  = Downloader.new(filepath)
+    runner      = Runner.new(@pg_options, downloader)
+    runner.run
+
+    result = runner.results.first
+    runner.db[%Q{
+      SELECT count(*)
+      FROM #{result.schema}.#{result.table_name}
+      AS count
+    }].first.fetch(:count).must_equal 7
+  end
+
   def path_to(filepath)
     File.join(File.dirname(__FILE__), "../fixtures/#{filepath}")
   end #path_to

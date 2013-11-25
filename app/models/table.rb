@@ -28,12 +28,18 @@ class Table < Sequel::Model(:user_tables)
 
   DEFAULT_THE_GEOM_TYPE = "geometry"
 
-  many_to_one :map
-  many_to_many :layers,
-                join_table: :layers_user_tables,
-                left_key: :user_table_id, right_key: :layer_id,
-                reciprocal: :user_tables
-  plugin :association_dependencies, :map => :destroy, layers: :nullify
+  # Associations
+  many_to_one  :map
+  many_to_many :layers, join_table: :layers_user_tables,
+                        left_key:   :user_table_id, 
+                        right_key:  :layer_id,
+                        reciprocal: :user_tables
+  one_to_one   :automatic_geocoding
+  one_to_many  :geocodings
+
+  plugin :association_dependencies, map:                  :destroy, 
+                                    layers:               :nullify,
+                                    automatic_geocoding:  :destroy
   plugin :dirty
 
   def_delegators :relator, *CartoDB::Table::Relator::INTERFACE

@@ -978,6 +978,7 @@ exports.Profiler = Profiler;
       return {
         x: x,
         y: y,
+        z: zoom,
         coord: {
           x: coord.x,
           y: coord.y,
@@ -1933,7 +1934,7 @@ exports.Profiler = Profiler;
           if(c) {
            var sp = sprites[c];
            if(!sp) {
-             sp = sprites[c] = this.generateSprite(shader, c, _.extend({ zoom: tile.zoom, 'frame-offset': frame_offset }, shaderVars));
+             sp = sprites[c] = this.generateSprite(shader, c, _.extend({ zoom: tile.z, 'frame-offset': frame_offset }, shaderVars));
            }
            //var x = tile.x[posIdx]*res - (sp.width >> 1);
            //var y = (256 - res - res*tile.y[posIdx]) - (sp.height >> 1);

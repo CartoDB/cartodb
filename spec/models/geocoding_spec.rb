@@ -87,7 +87,7 @@ describe Geocoding do
       CartoDB::TableGeocoder.any_instance.stubs(:process_results).returns true
       CartoDB::Geocoder.any_instance.stubs(:status).returns 'submitted'
       CartoDB::Geocoder.any_instance.stubs(:update_status).returns true
-      Timecop.scale(120)
+      Timecop.scale(3600)
       expect { geocoding.run! }.to raise_error
       geocoding.reload.state.should eq 'failed'
     end
@@ -96,9 +96,10 @@ describe Geocoding do
       geocoding = Geocoding.create(user: @user, table: @table, formatter: 'b')
       CartoDB::TableGeocoder.any_instance.stubs(:run).returns true
       CartoDB::TableGeocoder.any_instance.stubs(:process_results).returns true
-      CartoDB::Geocoder.any_instance.stubs(:status).returns 'submitted'
+      CartoDB::Geocoder.any_instance.stubs(:status).returns 'completed'
       CartoDB::Geocoder.any_instance.stubs(:update_status).returns true
       expect { geocoding.run! }.to change { AutomaticGeocoding.count }.by(1)
+      geocoding.automatic_geocoding_id.should_not be_nil
     end
   end
 

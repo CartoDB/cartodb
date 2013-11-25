@@ -518,7 +518,9 @@ class User < Sequel::Model
   end
 
   def link_created_tables
+    metadata_tables_ids = self.tables.select(:table_id).map(&:table_id)
     created_tables = real_tables.reject{|t| metadata_tables_ids.include?(t[:oid])}
+    puts created_tables.inspect
     created_tables.each do |t|
       table = Table.new
       table.user_id  = self.id
@@ -624,11 +626,17 @@ class User < Sequel::Model
   end
 
   def rebuild_quota_trigger
-    load_cartodb_functions
     puts "Rebuilding quota trigger in db '#{database_name}' (#{username})"
+    self.in_database(:as => :superuser).run(<<-TRIGGER
+      DROP FUNCTION IF EXISTS public._CDB_UserQuotaInBytes();
+      CREATE OR REPLACE FUNCTION public._CDB_UserQuotaInBytes() RETURNS int8 AS $$
+        SELECT #{self.quota_in_bytes}::int8
+      $$ LANGUAGE 'sql' IMMUTABLE;
+    TRIGGER
+    )
+    #load_cartodb_functions
     tables.all.each do |table|
       begin
-        table.add_python
         table.set_trigger_check_quota
       rescue Sequel::DatabaseError => e
         next if e.message =~ /.*does not exist\s*/
@@ -710,6 +718,8 @@ class User < Sequel::Model
     create_schema('cdb_importer')
     set_database_permissions_in_schema('cdb')
     set_database_permissions_in_schema('cdb_importer')
+    #rebuild_quota_trigger
+    #load_cartodb_functions
   end
 
   # Attempts to create a new database schema

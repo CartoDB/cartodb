@@ -38,6 +38,7 @@ describe Table do
     @table_quota    = 500
     @new_user = new_user
     @user     = create_user(:quota_in_bytes => @quota_in_bytes, :table_quota => @table_quota)
+    @user.rebuild_quota_trigger
     puts "[rspec][table_spec] Running..."
   end
   before(:each) do

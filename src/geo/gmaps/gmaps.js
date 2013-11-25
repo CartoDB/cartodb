@@ -51,6 +51,14 @@ if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
           tilt: 0
         });
 
+        this.map.bind('change:maxZoom', function() {
+          self.map_googlemaps.setOptions({ maxZoom: self.map.get('maxZoom') });
+        }, this);
+
+        this.map.bind('change:minZoom', function() {
+          self.map_googlemaps.setOptions({ minZoom: self.map.get('minZoom') });
+        }, this);
+
       } else {
 
         this.map_googlemaps = this.options.map_object;

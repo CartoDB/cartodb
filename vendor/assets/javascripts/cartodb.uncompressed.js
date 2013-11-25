@@ -1,6 +1,6 @@
 // cartodb.js version: 3.3.06-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: ed2de89503b1e9903322957a14fdcbc6f038d019
+// sha: d20343abefbe9d38b5ae94a1e2acd4e95ac0f96f
 (function() {
   var root = this;
 
@@ -22316,12 +22316,19 @@ cdb.geo.ui.Zoom = cdb.core.View.extend({
     _.defaults(this.options, this.default_options);
 
     this.template = this.options.template ? this.options.template : cdb.templates.getTemplate('geo/zoom');
-    //TODO: bind zoom change to disable zoom+/zoom-
+    this.map.bind('change:zoom change:minZoom change:maxZoom', this._checkZoom, this);
   },
 
   render: function() {
     this.$el.html(this.template(this.options));
+    this._checkZoom();
     return this;
+  },
+
+  _checkZoom: function() {
+    var zoom = this.map.get('zoom');
+    this.$('.zoom_in')[ zoom < this.map.get('maxZoom') ? 'removeClass' : 'addClass' ]('disabled')
+    this.$('.zoom_out')[ zoom > this.map.get('minZoom') ? 'removeClass' : 'addClass' ]('disabled')
   },
 
   zoom_in: function(ev) {

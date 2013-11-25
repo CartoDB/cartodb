@@ -79,9 +79,7 @@ describe Ogr2ogr do
       data      = ["5", "cell_#{rand(999)}"]
       csv       = Factories::CSV.new.write(header, data)
 
-      @wrapper  = Ogr2ogr.new(
-        @full_table_name, csv.filepath, @pg_options, preserve_cartodb_id: true
-      )
+      @wrapper  = Ogr2ogr.new(@full_table_name, csv.filepath, @pg_options)
       @wrapper.run
 
       record    = @dataset.first

@@ -309,7 +309,7 @@ cdb.geo.ui.CategoryLegend = cdb.core.View.extend({
     this.items = this.options.items;
     this.template = _.template('<% if (title && show_title) { %><div class="legend-title"><%= title %></div><% } %><ul></ul>');
     this.model = new cdb.core.Model({
-      type: "custom",
+      type: "category",
       title: this.title,
       show_title: this.show_title
     });
@@ -366,7 +366,7 @@ cdb.geo.ui.ColorLegend = cdb.core.View.extend({
     this.items = this.options.items;
     this.template = _.template('<% if (title && show_title) { %><div class="legend-title"><%= title %></div><% } %><ul></ul>');
     this.model = new cdb.core.Model({
-      type: "custom",
+      type: "color",
       title: this.title,
       show_title: this.show_title
     });

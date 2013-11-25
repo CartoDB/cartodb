@@ -972,10 +972,14 @@ a.info {
           .no_content { display: none; }
         }
 
-        .custom {
+        .custom, .choropleth {
           ul li .input { top: 13px; }
           ul li:hover .remove { @include opacity(1); }
           ul li .remove { position:relative; top: 3px; @include opacity(0); }
+        }
+
+        .choropleth {
+          .right { top: 18px; }
         }
 
         .right {
@@ -1623,7 +1627,7 @@ a.info {
           @include position(21px, 30px, false, false);
           @include simple-transition(opacity, 150ms);
           @include common-sprite(close_grey);
-          
+
           &:hover {@include common-sprite(close_grey, $offset-y:-13px);}
         }
       }

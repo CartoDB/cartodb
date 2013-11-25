@@ -619,8 +619,10 @@ class User < Sequel::Model
   end
 
   def last_visualization_created_at
-    vis = maps.flat_map(&:visualizations).uniq.sort_by(&:created_at).last
-    vis != nil ? vis.created_at : nil
+    Rails::Sequel.connection.fetch("SELECT created_at FROM visualizations WHERE " +
+      "map_id IN (select id FROM maps WHERE user_id=?) ORDER BY created_at DESC " +
+      "LIMIT 1;", id)
+      .to_a.fetch(0, {}).fetch(:created_at, nil)
   end
 
   def rebuild_quota_trigger

@@ -233,11 +233,8 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def import_to_cartodb(uniname=nil)
-    puts "==== before migration existing table"
     @data_import ||= DataImport.where(id: data_import_id).first
     if migrate_existing_table.present? || uniname
-      puts "======= import_to_cartodb"
-      puts "======= import_to_cartodb"
       @data_import.data_type = 'external_table'
       @data_import.data_source = migrate_existing_table || uniname
       #@data_import.migrate

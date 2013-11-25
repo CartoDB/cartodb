@@ -157,11 +157,11 @@ var _torque_reference_latest = {
             "default-meaning": "No buffer will be used",
             "doc": "Extra tolerance around the Layer extent (in pixels) used to when querying and (potentially) clipping the layer data during rendering"
         },
-        "-torque-steps": {
+        "-torque-frame-count": {
             "default-value": "128",
             "type":"number",
-            "default-meaning": "the data is broken into 512 bins",
-            "doc": "Number of steps used in the animation. If the data contains a fewere number of total steps, the lesser value will be used."
+            "default-meaning": "the data is broken into 128 time frames",
+            "doc": "Number of animation steps/frames used in the animation. If the data contains a fewere number of total frames, the lesser value will be used."
         },
         "-torque-resolution": {
             "default-value": "2",
@@ -541,7 +541,7 @@ TorqueLayer.optionsFromLayer = function(mapConfig) {
   if (!mapConfig) return opts;
   var attrs = {
     'buffer-size': 'buffer-size',
-    '-torque-steps': 'steps',
+    '-torque-frame-count': 'steps',
     '-torque-resolution': 'resolution',
     '-torque-animation-duration': 'animationDuration',
     '-torque-aggregation-function': 'countby',

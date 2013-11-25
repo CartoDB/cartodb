@@ -25,7 +25,6 @@ describe Api::Json::VisualizationsController do
       email:    'client@example.com',
       password: 'clientex'
     )
-    @user.set_map_key
     @api_key = @user.api_key
   end
 

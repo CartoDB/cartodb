@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-describe "Assets API" do
+describe "Geocodings API" do
 
   before(:all) do
     @user = create_user(username: 'test')

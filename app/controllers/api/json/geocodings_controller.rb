@@ -25,7 +25,7 @@ class Api::Json::GeocodingsController < Api::ApplicationController
     table = current_user.tables.where(name: params[:table_name]).first
     options = { 
       user_id:     current_user.id,
-      table_id:    table.id,
+      table_id:    table.try(:id),
       formatter:   params[:formatter].presence
     }
       

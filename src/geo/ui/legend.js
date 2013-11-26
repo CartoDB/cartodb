@@ -309,7 +309,7 @@ cdb.geo.ui.CategoryLegend = cdb.core.View.extend({
     this.items = this.options.items;
     this.template = _.template('<% if (title && show_title) { %><div class="legend-title"><%= title %></div><% } %><ul></ul>');
     this.model = new cdb.core.Model({
-      type: "custom",
+      type: "category",
       title: this.title,
       show_title: this.show_title
     });
@@ -366,7 +366,7 @@ cdb.geo.ui.ColorLegend = cdb.core.View.extend({
     this.items = this.options.items;
     this.template = _.template('<% if (title && show_title) { %><div class="legend-title"><%= title %></div><% } %><ul></ul>');
     this.model = new cdb.core.Model({
-      type: "custom",
+      type: "color",
       title: this.title,
       show_title: this.show_title
     });
@@ -511,7 +511,8 @@ cdb.geo.ui.StackedLegend = cdb.core.View.extend({
   className: "cartodb-legend-stack",
 
   initialize: function() {
-
+    // deprecated
+    this.getLayerByIndex = this.getLegendByIndex;
     _.each(this.options.legends, this._setupBinding, this);
 
   },
@@ -522,7 +523,7 @@ cdb.geo.ui.StackedLegend = cdb.core.View.extend({
 
   },
 
-  getLayerByIndex: function(index) {
+  getLegendByIndex: function(index) {
     if (!this._layerByIndex) {
       this._layerByIndex = {};
       var legends = this.options.legends;

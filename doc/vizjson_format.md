@@ -1,9 +1,8 @@
-
 visjson
 =======
 
 this is the spec for visjson:
-
+```
   {
      // required
      // follows the http://semver.org/ style version number
@@ -50,12 +49,31 @@ this is the spec for visjson:
      // default: []
      // contains the layers
      "layers": [
-       {
-         type: 'tilejson',
-         order: 0,
-         options: {
-         }
+      // xyz tiled
+      {
+       type: "tiled"
+       order: 0,
+       options: {
+          name: "CartoDB Flat Blue",
+          urlTemplate: "http://{s}.api.cartocdn.com/base-flatblue/{z}/{x}/{y}.png",
+          maxZoom: 10,
+          attribution: "©2013 CartoDB <a href='http://cartodb.com' target='_blank'>Terms of use</a>",
+         },
        },
+       
+       // plain color layer
+       {
+        order: 0,
+        type: "background"
+        options: {
+          color: "#eeeeee",
+          image: "",
+          maxZoom: 28,
+          id: 59811,
+        },
+       },
+       
+       // cartodb layer (deprecated)
        {
          type: 'cartodb',
          order: 1,
@@ -95,8 +113,10 @@ this is the spec for visjson:
             template: 'html template'
          }
        },
+       
+       // layergroup
        {
-         type: 'cartodb_layergroup',
+         type: 'layergroup',
          order: 1,
          options: {
             type: "CartoDBLayerGroup",
@@ -120,7 +140,35 @@ this is the spec for visjson:
             template_name: '...',
             template: 'html template'
          }
-       }
+       },
+       
+       // torque
+       {
+         type: 'torque',
+         order: XX,
+         options: {
+            stat_tag: "d4a5c7e4-4ad6-11e3-ab17-3085a9a9563c",
+            tiler_protocol: "http",
+            tiler_domain: "cartodb.com",
+            tiler_port: "80",
+            sql_api_protocol: "http",
+            sql_api_domain: "cartodb.com",
+            sql_api_endpoint: "/api/v1/sql",
+            sql_api_port: 80,
+            cdn_url: {
+              http: "api.cartocdn.com",
+              https: "cartocdn.global.ssl.fastly.net"
+            },
+            query: null,
+            table_name: "sensor_log_2013_10_27_12_01",
+            user_name: "javi", // cartodb username
+            tile_style: "valid cartocss",
+            property: "cartodb_id",
+            torque-duration: 41,
+            torque-steps: "2048",
+            torque-blend-mode: "lighter"
+         }
+       },
      ],
 
      overlays: [{
@@ -133,4 +181,4 @@ this is the spec for visjson:
      }],
    
   }
-
+```

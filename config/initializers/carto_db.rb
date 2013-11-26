@@ -107,6 +107,10 @@ module CartoDB
       title: 'OpenStreetMaps API limit reached',
       what_about: "You requested too many nodes (limit is 50000). Either request a smaller area, or use planet.osm"
     },
+    1010 => {
+      title: 'Private Google Spreadsheet',
+      what_about: "This spreadsheet seems to be private. Please check in Goolge Spreadsheet sharing options that the file is public or accessible for those who know the link"
+    },
     2001 => {
       title: 'Unable to load data',
       what_about: "We couldn't load data from your file into the database.  Please <a href='mailto:support@cartodb.com?subject=Import load error'>contact us</a> and we will help you to load your data."

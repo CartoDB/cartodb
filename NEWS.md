@@ -20,7 +20,7 @@
   * When moving from CategoryLegend to CustomLegend, copy the items.
   * Removed the persist param on calls to tiles at cartodb.js
   * Deactivate zoom when not having more levels available.
-  * Unix timestamp not being correctly converted to date.
+  * Unix timestamp not being correctly converted to date (#290).
   * Changed ZXY url to XYZ.
   * Selecting an Intensity Wizard disables the associated legend.
   * User can't add a Mapbox basemap.

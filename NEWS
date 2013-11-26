@@ -1,3 +1,8 @@
+3.3.06 (26//11/2013)
+-----
+- enables max and min zoom for google
+- fixed URL of one asset in the examples
+
 3.3.05 (20//11/2013)
 -----
 - fixed torque problems with cached sql requests #81

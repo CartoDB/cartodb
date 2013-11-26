@@ -1,3 +1,7 @@
+3.4.01 (26//11/2013)
+-----
+- fixed parsing keyword arguments in cartocss for torque
+
 3.4.00 (26//11/2013)
 -----
 - release of Torque Cumulative.

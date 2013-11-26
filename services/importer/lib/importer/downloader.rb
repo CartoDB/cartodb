@@ -63,7 +63,7 @@ module CartoDB
         headers         = response.headers
 
         raise DownloadError unless response.code.to_s =~ /\A[23]\d+/
-        raise DownloadError if gdrive_deny_in?(headers)
+        raise GDriveNotPublicError if gdrive_deny_in?(headers)
 
         data            = StringIO.new(response.response_body)
         name            = name_from(headers, url)

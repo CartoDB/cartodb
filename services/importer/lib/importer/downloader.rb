@@ -60,8 +60,11 @@ module CartoDB
         return self unless modified?
 
         response        = download
-        raise DownloadError unless response.code.to_s =~ /\A[23]\d+/
         headers         = response.headers
+
+        raise DownloadError unless response.code.to_s =~ /\A[23]\d+/
+        raise DownloadError if gdrive_deny_in?(headers)
+
         data            = StringIO.new(response.response_body)
         name            = name_from(headers, url)
 
@@ -196,6 +199,10 @@ module CartoDB
         Dir.mkdir(temporary_directory)
         @temporary_directory
       end #temporary_directory
+
+      def gdrive_deny_in?(headers)
+        headers.fetch("X-Frame-Options", nil) == 'DENY'
+      end
 
       def md5_command_for(name)
         %Q(md5sum #{name} | cut -d' ' -f1)

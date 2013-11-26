@@ -1,6 +1,6 @@
-// cartodb.js version: 3.3.05
+// cartodb.js version: 3.4.00
 // uncompressed version: cartodb.uncompressed.js
-// sha: 2ba9b04f4bf92564c1859db12b8a91904bb6d066
+// sha: be63a47f1d70c7b3d21db513a12b4dff3a9f4d79
 (function() {
   var root = this;
 
@@ -20429,7 +20429,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.3.05';
+    cdb.VERSION = '3.4.00';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -21619,19 +21619,6 @@ cdb.geo.GMapsBaseLayer = cdb.geo.MapLayer.extend({
     type: 'GMapsBase',
     base_type: 'gray_roadmap',
     style: null
-  },
-
-  // Overwrites the set method to 'unset' the maxZoom
-  set: function(key, value, options) {
-
-    if (key && _.isObject(key)) {
-      key.maxZoom = 40;
-    } else if (key === 'maxZoom') {
-      value = 40;
-    }
-
-    return cdb.geo.MapLayer.prototype.set.apply(this, arguments);
-
   }
 
 });
@@ -21873,19 +21860,20 @@ cdb.geo.Map = cdb.core.Model.extend({
   _adjustZoomtoLayer: function(layer) {
 
     var maxZoom = layer.get('maxZoom');
-
-    if (_.isNumber(maxZoom)) {
-      this.set({ maxZoom: maxZoom });
-    }
-
     var minZoom = layer.get('minZoom');
 
-    if (_.isNumber(minZoom)) {
-      this.set({ minZoom: minZoom });
+    if (_.isNumber(maxZoom)) {
+
+      if ( this.get("zoom") > maxZoom ) this.set({ zoom: maxZoom, maxZoom: maxZoom });
+      else this.set("maxZoom", maxZoom);
+
     }
 
-    if (_.isNumber(maxZoom)) {
-      if ( this.get("zoom") > maxZoom ) this.set("zoom", maxZoom);
+    if (_.isNumber(minZoom)) {
+
+      if ( this.get("zoom") < minZoom ) this.set({ minZoom: minZoom, zoom: minZoom });
+      else this.set("minZoom", minZoom);
+
     }
 
   },
@@ -22316,12 +22304,19 @@ cdb.geo.ui.Zoom = cdb.core.View.extend({
     _.defaults(this.options, this.default_options);
 
     this.template = this.options.template ? this.options.template : cdb.templates.getTemplate('geo/zoom');
-    //TODO: bind zoom change to disable zoom+/zoom-
+    this.map.bind('change:zoom change:minZoom change:maxZoom', this._checkZoom, this);
   },
 
   render: function() {
     this.$el.html(this.template(this.options));
+    this._checkZoom();
     return this;
+  },
+
+  _checkZoom: function() {
+    var zoom = this.map.get('zoom');
+    this.$('.zoom_in')[ zoom < this.map.get('maxZoom') ? 'removeClass' : 'addClass' ]('disabled')
+    this.$('.zoom_out')[ zoom > this.map.get('minZoom') ? 'removeClass' : 'addClass' ]('disabled')
   },
 
   zoom_in: function(ev) {
@@ -22676,7 +22671,7 @@ cdb.geo.ui.CategoryLegend = cdb.core.View.extend({
     this.items = this.options.items;
     this.template = _.template('<% if (title && show_title) { %><div class="legend-title"><%= title %></div><% } %><ul></ul>');
     this.model = new cdb.core.Model({
-      type: "custom",
+      type: "category",
       title: this.title,
       show_title: this.show_title
     });
@@ -22733,7 +22728,7 @@ cdb.geo.ui.ColorLegend = cdb.core.View.extend({
     this.items = this.options.items;
     this.template = _.template('<% if (title && show_title) { %><div class="legend-title"><%= title %></div><% } %><ul></ul>');
     this.model = new cdb.core.Model({
-      type: "custom",
+      type: "color",
       title: this.title,
       show_title: this.show_title
     });
@@ -22878,7 +22873,8 @@ cdb.geo.ui.StackedLegend = cdb.core.View.extend({
   className: "cartodb-legend-stack",
 
   initialize: function() {
-
+    // deprecated
+    this.getLayerByIndex = this.getLegendByIndex;
     _.each(this.options.legends, this._setupBinding, this);
 
   },
@@ -22889,7 +22885,7 @@ cdb.geo.ui.StackedLegend = cdb.core.View.extend({
 
   },
 
-  getLayerByIndex: function(index) {
+  getLegendByIndex: function(index) {
     if (!this._layerByIndex) {
       this._layerByIndex = {};
       var legends = this.options.legends;
@@ -24986,12 +24982,12 @@ LayerDefinition.prototype = {
     for(var i = 0; i < subdomains.length; ++i) {
       var s = subdomains[i]
       var cartodb_url = this._host(s) + '/tiles/layergroup/' + layerGroupId
-      tiles.push(cartodb_url + tileTemplate + ".png?" + pngParams );
+      tiles.push(cartodb_url + tileTemplate + ".png" + (pngParams ? "?" + pngParams: '') );
 
       var gridParams = this._encodeParams(params, this.options.gridParams);
       for(var layer = 0; layer < this.layers.length; ++layer) {
         grids[layer] = grids[layer] || [];
-        grids[layer].push(cartodb_url + "/" + layer +  tileTemplate + ".grid.json?" + gridParams);
+        grids[layer].push(cartodb_url + "/" + layer +  tileTemplate + ".grid.json" + (gridParams ? "?" + gridParams: ''));
       }
     }
 
@@ -25946,7 +25942,6 @@ L.CartoDBGroupLayer = L.TileLayer.extend({
     sql_api_port:       "80",
     sql_api_protocol:   "http",
     extra_params:   {
-      cache_policy: 'persist'
     },
     cdn_url:        null,
     subdomains:     null
@@ -27016,7 +27011,6 @@ var CartoDBLayerGroup = function(opts) {
     sql_api_port:       "80",
     sql_api_protocol:   "http",
     extra_params:   {
-      cache_policy: 'persist'
     },
     cdn_url:        null,
     subdomains:     null
@@ -27547,6 +27541,14 @@ if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
           backgroundColor: 'white',
           tilt: 0
         });
+
+        this.map.bind('change:maxZoom', function() {
+          self.map_googlemaps.setOptions({ maxZoom: self.map.get('maxZoom') });
+        }, this);
+
+        this.map.bind('change:minZoom', function() {
+          self.map_googlemaps.setOptions({ minZoom: self.map.get('minZoom') });
+        }, this);
 
       } else {
 
@@ -28999,7 +29001,7 @@ var Vis = cdb.core.View.extend({
       for(i = 0; i < Math.min(options.sublayer_options.length, layers.length); ++i) {
         var o = options.sublayer_options[i];
         var subLayer = layers[i];
-        var legend = this.legends && this.legends.getLayerByIndex(i);
+        var legend = this.legends && this.legends.getLegendByIndex(i);
         if(legend) {
           legend[o.visible ? 'show': 'hide']();
         }
@@ -29055,7 +29057,7 @@ var Vis = cdb.core.View.extend({
       return legends;
     }
 
-    legends = createLegendView(layers);
+    var legends = createLegendView(layers);
     var stackedLegend = new cdb.geo.ui.StackedLegend({
        legends: legends
     });
@@ -29757,7 +29759,7 @@ cdb.vis.Overlay.register('layer_selector', function(data, vis) {
   if(vis.legends) {
     layerSelector.bind('change:visible', function(visible, order, layer) {
       if (layer.get('type') === 'layergroup') {
-        var legend = vis.legends && vis.legends.getLayerByIndex(order);
+        var legend = vis.legends && vis.legends.getLegendByIndex(order);
         if(legend) {
           legend[visible ? 'show': 'hide']();
         }

@@ -1,3 +1,8 @@
+2.5.5
+-----
+* Improvements
+  * Move varnish triggers from user tables to CDB_TableMetadata
+
 2.5.4
 -----
 * Improvements

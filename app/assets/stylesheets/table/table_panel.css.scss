@@ -594,7 +594,7 @@ a.info {
 
 
   // SQL PANEL
-  .sql_panel, .csseditor_panel, .infowindow_panel.editing_html, .help.editing_html {
+  .sql_panel, .csseditor_panel, .infowindow_panel.editing_html, .legends_panel.editing_html, .help.editing_html {
     &:after  { position:absolute; content:' '; top:0; left:34px; bottom:0; width:1px; height:100%; background:rgba($cGray4,0.50); }
     &:before { position:absolute; content:' '; top:0; left:36px; bottom:0; width:1px; height:100%; background:rgba(#509DD7,0.25); }
   }
@@ -955,6 +955,110 @@ a.info {
       z-index: 1000;
     }
 
+    .panel_content .wrapper { top: 43px; }
+
+    .doc_info { right:26px!important; }
+
+    .header {
+      position:relative;
+      clear:both;
+      overflow:hidden;
+      padding: 21px 30px 19px 30px;
+
+      h3  {
+        float:left;
+        padding: 0;
+        border:0;
+      }
+
+      .form_combo  { position:absolute; right:18px; }
+    }
+
+    // No content block
+    .no_content { display:none }
+
+    &.editing_html {
+
+      .header h3 {
+        margin-left: 23px;
+      }
+
+      .menu {
+        li:first-child { margin-left: 23px; }
+        &:after  { position:absolute; content:' '; top:0; left:34px; bottom:0; width:1px; height:100%; background:rgba($cGray4,0.50); }
+        &:before { position:absolute; content:' '; top:0; left:36px; bottom:0; width:1px; height:100%; background:rgba(#509DD7,0.25); }
+      }
+    }
+    &.editing_html {
+
+      .header h3 {
+        margin-left: 23px;
+      }
+
+      .menu {
+        li:first-child { margin-left: 23px; }
+        &:after  { position:absolute; content:' '; top:0; left:34px; bottom:0; width:1px; height:100%; background:rgba($cGray4,0.50); }
+        &:before { position:absolute; content:' '; top:0; left:36px; bottom:0; width:1px; height:100%; background:rgba(#509DD7,0.25); }
+      }
+    }
+
+    .menu {
+      position: absolute;
+      @include box-sizing(border-box);
+      top: 59px;
+      width: 100%;
+      padding: 9px 23px 3px 30px;
+      background:#F6F6F6;
+      border-top: 1px solid rgba(#DDDDDD, .5);
+      border-bottom: 1px solid rgba(#DDDDDD, .5);
+
+      z-index: 9;
+
+      .tip {
+        @include size(10px, 6px);
+        @include position(false, false, -1px, 33px);
+        @include background(sprite($table-sprites, infowindow_panel_white_tip) no-repeat);
+        z-index: 10;
+      }
+
+      ul {
+
+        clear:both;
+        overflow:hidden;
+
+        li {
+          min-width: 20px;
+          text-align:center;
+
+          a { margin: auto; }
+
+          @include inline-block();
+          margin: 0 15px 0 0;
+
+          a { display: block; }
+
+          &.editor       { float: left; }
+
+          &.title_editor,
+          &.html_editor  { float: right; }
+
+          &.html_editor  { margin-right: 2px; }
+
+          /*&.html_editor:before { height: 16px; content: ''; position:absolute; left: -10px; top: -3px; border-left: 1px solid rgba(#ccc, .5); }*/
+          &.html_editor { position:relative; }
+
+          &.editor       a { @include size(17px, 17px); @include table-sprite(infowindow_panel_icons, $offset-x:0, $offset-y:0); }
+          &.title_editor a { @include size(20px, 17px); @include table-sprite(infowindow_panel_icons, $offset-x:-40, $offset-y:0); }
+          &.html_editor  a { @include size(17px, 17px); @include table-sprite(infowindow_panel_icons, $offset-x:-104, $offset-y:1px); }
+
+          &.editor       a.selected { @include size(17px, 17px); @include table-sprite(infowindow_panel_icons, $offset-x:0, $offset-y:-25px); }
+          &.title_editor a.selected { @include size(20px, 17px); @include table-sprite(infowindow_panel_icons, $offset-x:-40, $offset-y:-25px); }
+          &.html_editor  a.selected { @include size(17px, 17px); @include table-sprite(infowindow_panel_icons, $offset-x:-104, $offset-y:-24px); }
+        }
+
+      }
+
+    }
     div.forms {
 
       &.panel_content {
@@ -1623,7 +1727,7 @@ a.info {
           @include position(21px, 30px, false, false);
           @include simple-transition(opacity, 150ms);
           @include common-sprite(close_grey);
-          
+
           &:hover {@include common-sprite(close_grey, $offset-y:-13px);}
         }
       }

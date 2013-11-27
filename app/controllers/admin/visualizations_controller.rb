@@ -9,9 +9,6 @@ class Admin::VisualizationsController < ApplicationController
   skip_before_filter :browser_is_html5_compliant?, only: [:embed_map, :track_embed]
 
   def index
-    5.times do puts "***************" end
-    current_user.link_created_tables
-    5.times do puts "***************" end
     @tables_count  = current_user.tables.count
     @first_time    = !current_user.dashboard_viewed?
     @just_logged_in = !!flash['logged']

@@ -375,20 +375,20 @@ class Table < Sequel::Model(:user_tables)
       schema = self.schema(:reload => true)
 
       import_cleanup
+      set_the_geom_column!
       cartodbfy
-      #set_the_geom_column!
       set_table_id
       #@data_import.formatted
       @data_import.save
     else
       create_table_in_database!
-      cartodbfy
       set_table_id
       if !self.temporal_the_geom_type.blank?
         self.the_geom_type = self.temporal_the_geom_type
         self.temporal_the_geom_type = nil
       end
       set_the_geom_column!(self.the_geom_type)
+      cartodbfy
     end
   rescue => e
     self.handle_creation_error(e)

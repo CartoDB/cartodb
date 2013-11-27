@@ -16,15 +16,24 @@ module CartoDB
 
       def run(&tracker)
         runner.run(&tracker)
+        return self unless runner.remote_data_updated?
+
         result = results.select(&:success?).first
-        if runner.remote_data_updated?
-          overwrite(table_name, result)
-          cartodbfy(table_name)
-        end
+
+        cartodbfy(result)
+        grant_access_to(CartoDB::TILE_DB_USER, result)
+        overwrite(table_name, result)
+
+        table = ::Table.where(name: table_name, user_id: user.id).first
+        table.send :update_table_pg_stats
+        table.send :set_trigger_cache_timestamp
+        table.send :invalidate_varnish_cache
+        #table.send :set_trigger_check_quota
+        #table.send :set_trigger_update_updated_at
         self
       rescue => exception
-        puts exception.to_s
-        puts exception.backtrace
+        puts exception.to_s + exception.backtrace.join
+        raise
       end
 
       def overwrite(table_name, result)
@@ -40,33 +49,11 @@ module CartoDB
         end
       end
 
-      def cartodbfy(table_name)
-        table = ::Table.where(name: table_name, user_id: user.id).first
-        #table.migrate_existing_table = table_name
-        table.force_schema = true
-        table.send :update_updated_at
-        table.import_to_cartodb(table_name)
-        table.schema(reload: true)
-        table.import_cleanup
-        table.schema(reload: true)
-        table.reload
-        # Set default triggers
-        table.send :set_the_geom_column!
-        table.send :update_table_pg_stats
-        table.send :add_python
-        table.send :set_trigger_cache_timestamp
-        table.send :set_trigger_check_quota
-        table.send :set_trigger_update_updated_at
-        table.save
-        table.send(:invalidate_varnish_cache)
-        puts '======= after invalidating'
-        database.run("UPDATE #{table.name} SET updated_at = updated_at")
-          #WHERE cartodb_id = (SELECT max(cartodb_id) FROM #{table.name})")
+      def cartodbfy(result)
+        database.run(%Q(SELECT CDB_CartodbfyTable('#{oid_from(result)}')))
       rescue => exception
-        stacktrace = exception.to_s + exception.backtrace.join
-        puts stacktrace
         Rollbar.report_message("Sync cartodbfy error", "error", error_info: stacktrace)
-        table.send(:invalidate_varnish_cache)
+        raise
       end
 
       def success?
@@ -125,6 +112,21 @@ module CartoDB
       def temporary_name_for(table_name)
         "#{table_name}_to_be_deleted"
       end
+
+      def oid_from(result)
+        database[%Q(
+          SELECT '#{result.schema}.#{result.table_name}'::regclass::oid
+          AS oid
+        )].first.fetch(:oid)
+      end
+
+      def grant_access_to(db_user, result)
+        user.in_database(:as => :superuser).run(%Q{
+          GRANT SELECT ON "#{result.schema}"."#{result.table_name}"
+          TO #{db_user}
+        })
+      end
+
 
       private
 

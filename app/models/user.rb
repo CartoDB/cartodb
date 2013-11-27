@@ -636,7 +636,7 @@ class User < Sequel::Model
       $$ LANGUAGE 'sql' IMMUTABLE;
     TRIGGER
     )
-    #load_cartodb_functions
+    load_cartodb_functions
     tables.all.each do |table|
       begin
         table.set_trigger_check_quota
@@ -720,8 +720,8 @@ class User < Sequel::Model
     create_schema('cdb_importer')
     set_database_permissions_in_schema('cdb')
     set_database_permissions_in_schema('cdb_importer')
-    #rebuild_quota_trigger
-    #load_cartodb_functions
+    rebuild_quota_trigger
+    load_cartodb_functions
   end
 
   # Attempts to create a new database schema

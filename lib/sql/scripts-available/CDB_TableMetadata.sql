@@ -71,7 +71,9 @@ BEGIN
   END IF;
 
   -- Notify table data update
-  PERFORM pg_notify('cdb_tabledata_update', tabname);
+  -- This needs a little bit more of research regarding security issues
+  -- see https://github.com/CartoDB/cartodb/pull/241
+  -- PERFORM pg_notify('cdb_tabledata_update', tabname);
 
   --RAISE NOTICE 'Table % was updated', tabname;
 

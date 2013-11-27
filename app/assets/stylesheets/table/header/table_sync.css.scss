@@ -5,7 +5,11 @@
    *  - Only sync header table/vis styles.
    */
 
-  @import "compass";
+  @import "compass/css3/inline-block";
+  @import "compass/css3/border-radius";
+  @import "compass/css3/images";
+  @import "compass/css3/transition";
+  @import "compass/css3/transform";
   @import "../../common/mixins";
   @import "../../common/vars";
 
@@ -20,6 +24,11 @@
     height:29px;
     background:rgba(black, .2);
     z-index:1;
+
+    &.failure {
+      background: url('/assets/layout/sync_error_bkg.png') repeat-x 0 0;
+      border-top:1px solid rgba(black, .2);
+    }
 
     ul {
       position:relative;

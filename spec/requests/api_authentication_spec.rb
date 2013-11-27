@@ -83,7 +83,7 @@ describe "API Authentication" do
     end
 
     it "should grant access using a valid api_key param" do
-      get v1_tables_path, {:api_key => @user.get_map_key}, {'HTTP_HOST' => "#{@user.username}.testhost.lan"}
+      get v1_tables_path, {:api_key => @user.api_key}, {'HTTP_HOST' => "#{@user.username}.testhost.lan"}
       status.should == 200
     end
 
@@ -98,16 +98,16 @@ describe "API Authentication" do
     end
 
     it "should not grant access after regenerating the api_key and keep using the old one" do
-      get v1_tables_path, {:api_key => @user.get_map_key}, {'HTTP_HOST' => "#{@user.username}.testhost.lan"}
+      get v1_tables_path, {:api_key => @user.api_key}, {'HTTP_HOST' => "#{@user.username}.testhost.lan"}
       status.should == 200
 
-      old_api_key = @user.get_map_key
+      old_api_key = @user.api_key
       @user.set_map_key
 
       get v1_tables_path, {:api_key => old_api_key}, {'HTTP_HOST' => "#{@user.username}.testhost.lan"}
       status.should == 401
 
-      get v1_tables_path, {:api_key => @user.get_map_key}, {'HTTP_HOST' => "#{@user.username}.testhost.lan"}
+      get v1_tables_path, {:api_key => @user.api_key}, {'HTTP_HOST' => "#{@user.username}.testhost.lan"}
       status.should == 200
     end
   end

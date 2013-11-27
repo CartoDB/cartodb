@@ -9,11 +9,12 @@ require_relative './source_file'
 module CartoDB
   module Importer2
     class CsvNormalizer
-      LINE_LIMIT        = 1000
-      COMMON_DELIMITERS = [',', "\t", ' ', ';']
-      DEFAULT_DELIMITER = ','
-      DEFAULT_ENCODING  = 'UTF-8'
-      ACCEPTABLE_ENCODINGS = %w{ ISO-8859-1 ISO-8859-2 UTF-8 }
+      LINE_LIMIT            = 1000
+      COMMON_DELIMITERS     = [',', "\t", ' ', ';']
+      DEFAULT_DELIMITER     = ','
+      DEFAULT_ENCODING      = 'UTF-8'
+      ENCODING_CONFIDENCE   = 30 
+      ACCEPTABLE_ENCODINGS  = %w{ ISO-8859-1 ISO-8859-2 UTF-8 }
 
       def self.supported?(extension)
         %w(.csv .tsv .txt).include?(extension)
@@ -134,7 +135,9 @@ module CartoDB
         data.close
 
         result = CharlockHolmes::EncodingDetector.detect(sample)
-        return DEFAULT_ENCODING if result.fetch(:confidence, 0) < 65
+        if result.fetch(:confidence, 0) < ENCODING_CONFIDENCE
+          return DEFAULT_ENCODING
+        end
         result.fetch(:encoding, DEFAULT_ENCODING)
       rescue
         DEFAULT_ENCODING

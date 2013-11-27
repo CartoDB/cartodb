@@ -98,7 +98,8 @@ module CartoDB
       raise(
         CartoDB::NonConvertibleData, 'Timestamp format not supported'
       ) unless convertible_to_datetime?(table_name, column_name)
-
+      straight_cast("timestamptz", cast: "to_timestamp(#{column_name}::bigint)")
+    rescue => exception
       straight_cast("timestamptz", cast: "CDB_StringToDate(#{column_name})")
     end #string_to_datetime
 

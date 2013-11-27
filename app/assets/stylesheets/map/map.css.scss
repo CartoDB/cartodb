@@ -2,10 +2,15 @@
  * Map panel for table view
  */
 
-@import "compass";
+@import "compass/css3/box-shadow";
+@import "compass/css3/border-radius";
+@import "compass/css3/inline-block";
+@import "compass/css3/images";
+@import "compass/css3/opacity";
+@import "compass/css3/transform";
 @import "../common/vars";
 @import "../common/mixins";
-@import "../common/sprites";
+@import "../map/map-sprite";
 
 
 div.map {
@@ -37,7 +42,7 @@ div.map {
     & > li.dropdown {
 
       &.full_screen .thumb {
-        @include icons-sprite(full_screen);
+        @include map-sprite(full_screen);
 
         border: none;
         @include border-radius(0px);
@@ -125,7 +130,7 @@ div.map {
 
   div.dropdown.basemap {
 
-    width: 861px;
+    width: 646px;
     border: 1px solid #999999;
 
     .custom {
@@ -143,10 +148,22 @@ div.map {
       &.special {
         background:#F6F6F6;
         border-left: 1px solid #E7E7E7;
+        @include border-radius(0 2px 2px 0);
       }
     }
 
     ul li {
+
+      &.wms {
+        .thumb {
+          background-size:auto;
+          @include map-sprite(wms);
+        }
+
+        a {
+          line-height: 24px;
+        }
+      }
 
       &.selected .name { color: #7B7B7B; }
 
@@ -168,8 +185,10 @@ div.map {
       & > a {
         display:block;
         padding: 11px 10px 11px 0;
+        height: 48px;
+        box-sizing: border-box;
 
-        line-height: normal;
+        line-height: 13px;
         @include clearfix();
 
         small { display:block; margin: 0 0 0 29px; font-size: 9px; color: #AAAAAA; }
@@ -251,37 +270,37 @@ div.map {
 
         &.dark_roadmap .thumb {
           background-size:auto;
-          @include icons-sprite(gmaps_dark_roadmap);
+          @include map-sprite(gmaps_dark_roadmap);
         }
 
         &.gray_roadmap .thumb {
           background-size:auto;
-          @include icons-sprite(gmaps_gray_roadmap);
+          @include map-sprite(gmaps_gray_roadmap);
         }
 
         &.roadmap .thumb{
           background-size:auto;
-          @include icons-sprite(gmaps_roadmap);
+          @include map-sprite(gmaps_roadmap);
         }
 
         &.terrain .thumb{
           background-size:auto;
-          @include icons-sprite(gmaps_terrain);
+          @include map-sprite(gmaps_terrain);
         }
 
         &.satellite .thumb {
           background-size:auto;
-          @include icons-sprite(gmaps_satellite);
+          @include map-sprite(gmaps_satellite);
         }
 
         &.hybrid .thumb {
           background-size:auto;
-          @include icons-sprite(gmaps_hybrid);
+          @include map-sprite(gmaps_hybrid);
         }
 
         &.add .thumb {
           background-size:auto;
-          @include icons-sprite(plus);
+          @include map-sprite(plus);
         }
 
         span.color {
@@ -351,6 +370,7 @@ div.map {
     @include transform-style("linear");
     @include transition-property("margin-right");
     @include transition-duration(300ms);
+    z-index: 10001;
 
     div.cartodb-legend {
       display:none;
@@ -377,6 +397,7 @@ div.map {
       font-weight: normal;
     }
 
+    z-index: 10001;
   }
 
   // Zoom info
@@ -604,12 +625,12 @@ section.block.noGeoRef {
 /* FOOTER EDIT BUTTONS  for infowindow */
 
 @mixin edit-bottom-states($x,$y,$c1,$c2,$c3,$c4) {
-  @include background(sprite($icons-sprites, infowindow-edit-tools, $offset-x: $x, $offset-y: $y) no-repeat, $c1); // IE
-  @include background(sprite($icons-sprites, infowindow-edit-tools, $offset-x: $x, $offset-y: $y) no-repeat, linear-gradient($c1,$c2));
+  @include background(sprite($map-sprites, infowindow-edit-tools, $offset-x: $x, $offset-y: $y) no-repeat, $c1); // IE
+  @include background(sprite($map-sprites, infowindow-edit-tools, $offset-x: $x, $offset-y: $y) no-repeat, linear-gradient($c1,$c2));
 
   &:hover, &:active, &:focus {
-    @include background(sprite($icons-sprites, infowindow-edit-tools, $offset-x: $x, $offset-y: $y) no-repeat, $c3); // IE
-    @include background(sprite($icons-sprites, infowindow-edit-tools, $offset-x: $x, $offset-y: $y) no-repeat, linear-gradient($c1,$c4));
+    @include background(sprite($map-sprites, infowindow-edit-tools, $offset-x: $x, $offset-y: $y) no-repeat, $c3); // IE
+    @include background(sprite($map-sprites, infowindow-edit-tools, $offset-x: $x, $offset-y: $y) no-repeat, linear-gradient($c1,$c4));
   }
 }
 

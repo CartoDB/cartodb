@@ -16,10 +16,10 @@ module CartoDB
       end #initialize
 
       def command
-        "#{osm_indexing_option} #{pg_copy_option} #{encoding_option} "    +
-        "#{executable_path} #{output_format_option} #{postgres_options} " +
-        "#{projection_option} #{layer_creation_options} #{filepath} "     +
-        "#{layer} #{layer_name_option} #{new_layer_type_option}"
+        "#{osm_indexing_option} #{pg_copy_option} #{client_encoding_option} " +
+        "#{shape_encoding_option} #{executable_path} #{output_format_option} " +
+        "#{postgres_options} #{projection_option} #{layer_creation_options} " +
+        "#{filepath} #{layer} #{layer_name_option} #{new_layer_type_option}"
       end #command
 
       def executable_path
@@ -48,10 +48,15 @@ module CartoDB
         "PG_USE_COPY=YES"
       end #pg_copy_option
 
-      def encoding_option
-        encoding = options.fetch(:encoding, ENCODING)
-        "PGCLIENTENCODING=#{encoding} SHAPE_ENCODING=#{encoding}"
+      def client_encoding_option
+        "PGCLIENTENCODING=#{options.fetch(:encoding, ENCODING)}"
       end #encoding_option
+
+      def shape_encoding_option
+        encoding = options.fetch(:shape_encoding, nil)
+        return unless encoding
+        "SHAPE_ENCODING=#{encoding}"
+      end
 
       def layer_name_option
         "-nln #{SCHEMA}.#{table_name}"

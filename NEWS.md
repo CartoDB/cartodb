@@ -1,3 +1,150 @@
+2.5.4
+-----
+* Improvements
+  * Implemented Torque accumulative visualization.
+  * Faster CDB_TransformToWebmercator when input is already mercator.
+  * Added the type of the columns shown on the column selector for the filters.
+  * Added autocomplete in legends.
+  * Way to Activate/deactivate automatic geocoder.
+  * Running the testsuite is easier now.
+  * Disabled geocoder on sync tables.
+  * Enabled default max/min zoom for google basemaps.
+  * Deprecated the getLayerByIndex method and added a more descriptive one.
+
+* Fixed Bugs
+  * Torque visualization doesn't work as expected for a multiday GPS track.
+  * Table rename errors aren't shown in the UI.
+  * Torque visualizations under IE9 + Windows 7 are not showing canvas layer.
+  * Density legend is not showing the min,max values. It's showing left and right value.
+  * Sanitize in-cell line breaks (<8d> unicode character) when processing CSV and Excel files.
+  * When moving from CategoryLegend to CustomLegend, copy the items.
+  * Removed the persist param on calls to tiles at cartodb.js
+  * Deactivate zoom when not having more levels available.
+  * Unix timestamp not being correctly converted to date (#290).
+  * Changed ZXY url to XYZ.
+  * Selecting an Intensity Wizard disables the associated legend.
+  * User can't add a Mapbox basemap.
+  * Clean up Importer2::Ogr2ogr spec.
+  * last_visualization_created_at is causing a ton of queries.
+  * Layers visibility is not working in embed map.
+  * Explain that a user needs to publicly share a file in GDrive before importing.
+  * Label allow-overlap changed to toggle on the Wizards.
+  * Fixed broken acceptance specs.
+  * Fixed typo in carto_db.rb (by @robinkraft #301).
+
+2.5.3
+-----
+* Improvements
+  * Start storing the api_key in the database.
+  * Created a rake task that copies the api_key from redis to PSQL.
+    * Existing installations, please run:
+    ```
+    $ bundle exec rake cartodb:db:copy_api_keys_from_redis
+    ```
+  * Improved sprite compilation time + CSS rendering
+  * Created a notification model.
+  * Re-enable save_metadata during user after_save.
+
+* Fixed Bugs
+  * GMaps attribution is above Legend when it is applied.
+  * Date filters depend on the system timezone.
+  * Query box: field suggestion menu goes out of the canvas.
+  * Deactivate by default layer-selector when visualization has only one layer.
+  * Deactivate by default legend when none of the layers has a legend applied.
+  * Drop type guess based on column names.
+  * When trying to import a file and being overquota it reports an unknown error.
+  * Geocoding error on tables with cartodb_georef_status column.
+  * Infowindow variables are changed after renaming the table.
+  * HTTP is not added on basemap wms.
+  * Error saving a cell that contains a date.
+  * Views: dashboard: vizs: long description overflows.
+  * Change text in filters' tooltip.
+  * Pass encoding and shape_encoding as separate options to ogr2ogr.
+  * Provide a missing 'down' step for some migrations.
+  * Problem applying a polygon-patter-file from simple wizard and changing any value inside CartoCSS editor.
+  * [regression] All importable files in a zip file should be imported.
+
+2.5.2
+-----
+* Improvements
+  * WMS / TMS basemap import
+  * WMS Proxy Service implementation
+  * Better integration with MapBox basemaps
+
+* Fixed Bugs
+  * Basemap 404 should throw an error.
+  * CSS with exponents is not parsed correctly.
+  * Google maps layers should not have max/min zoom.
+  * Basemap distribution on the selector is wrong. It should have 3 columns in total.
+  * Geocoding error on tables with double-quoted strings.
+  * Fixed convert_to_cartodb_type spec.
+  * When the geocoder process fails, the progress bar is hidden but no error message is shown up. 
+  * Dialog to load a marker is the same than to import a file.
+
+2.5.1
+-----
+* Improvements 
+  * Legend is disabled when "torque" wizard is applied.
+  * Dragging the time slider stops the animation, and when dragging ends the animation starts.
+
+* Fixed Bugs
+  * Can't open "New table dialog" when quota was full and one table was deleted.
+  * If you set an invalid value in a CartoCSS property, it is displayed in the wizard.
+  * New category wizard may reset previous configurations.
+  * If two layers, one torque, and leaflet, data appears moved in the embed at certain zoom levels.
+  * In the category wizard if the column is changed the 'Getting colors' text appears twice.
+  * In a table made of points, if you apply a torque visualization and then create a visualization within that table, time slider stops working.
+  * 'select fields' button within infowindow doesn't work when a visualization is created from a table.
+  * In a points table, with torque wizard applied, if you want to add a new layer (not another torque table), it isn't converted to a visualization.
+  * Right module links in api keys or oauth pages are broken.
+  * Torque layer doesn't add CartoDB logo in the visualization.
+  * It's no longer possible to remove tags from a visualization or a table.
+  * Geocoding bar continues spinning after a geocoding failure.
+  * Fix typo in support browsers for torque layer.
+  * Add 120px more to the public iframe.
+  * Fixed CartoDB test suite.
+  * Map is not refreshed after editing a field on the map view.
+
+2.5.0
+-----
+* Improvements
+  * Time-animated visualization wizard (torque).
+  * Adapt torque timeline to the screen in mobile.
+  * Created a migration to add timezone to timestamp models columns.
+  * Added database_host attribute to user model.
+  * Replicate database_password to redis when creating a username.
+  * viz.json includes https urls in embeds.
+  * Improved privacy in torque visualizations.
+  * Clean headers from tiler/varnish/nginx.
+  * Created support dialog in embed page when torque layer is applied.
+  * Added cartodb:test:prepare rake task and document its usage for testing.
+  * User configuration change: sql_api config names normalization.
+    Change the following sql_api parameters in the config/app_config.yml file in current installations:
+    - sql_api_protocol -> protocol
+    - sql_api_domain -> domain
+    - sql_api_endpoint -> endpoint
+    - sql_api_port -> port
+
+* Fixed Bugs
+  * Embed layer selector should show torque layers.
+  * Trying to 'Duplicate' or 'Table from query' when tables over quota doesn't give back a reasonable error.
+  * If you cancel a file upload the close button is not being shown anymore on the new table window.
+  * Removed table api_keys from rails migration.
+  * Revamp basemap selector.
+  * Infowindows don't show any content when they contain a column name which is a reserved SQL word.
+  * Reviewed table and map styles using new Safari under Mavericks system.
+  * Clear filter on the filters panel layout is broken in safari + mavericks.
+  * Out of sync between steps and time slider.
+  * Columns with an unique value does not render anything.
+  * Basemap selector dropdown lost the right border radius and has the wrong caption under the 'Add yours' button.
+  * Scrubbar dissapears when going from map to table and then back to map.
+  * Exporting doesn't include the subdomain.
+  * Line breaks on geocoding strings cause geocoder to crash.
+  * Cancelling a geocoding job is not working sometimes.
+  * Numeric type is not well mapped.
+  * Sublayer_options make embed fails.
+  * Prevent layergroup GETs to be cached.
+
 2.4.0
 -----
 * Improvements

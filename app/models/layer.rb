@@ -3,7 +3,8 @@
 class Layer < Sequel::Model
   plugin :serialization, :json, :options, :infowindow
   
-  ALLOWED_KINDS = %W{ carto tiled background gmapsbase }
+  ALLOWED_KINDS = %W{ carto tiled background gmapsbase torque wms }
+  BASE_LAYER_KINDS  = %w(tiled background gmapsbase wms)
   PUBLIC_ATTRIBUTES = %W{ options kind infowindow id order }
   TEMPLATES_MAP = {
     'table/views/infowindow_light' =>               'infowindow_light',
@@ -46,6 +47,13 @@ class Layer < Sequel::Model
   def before_save
     super  
     self.updated_at = Time.now
+  end
+
+  def to_json(*args)
+    public_values.merge(
+      infowindow: JSON.parse(self.values[:infowindow]),
+      options:    JSON.parse(self.values[:options])
+    ).to_json(*args)
   end
 
   def after_save
@@ -108,8 +116,12 @@ class Layer < Sequel::Model
     kind == 'carto'
   end #data_layer?
 
+  def torque_layer?
+    kind == 'torque'
+  end #data_layer?
+
   def base_layer?
-    !data_layer?
+    BASE_LAYER_KINDS.include?(kind) # TODO: ask Lorenzo
   end #base_layer?
 
   def register_table_dependencies(db=Rails::Sequel.connection)

@@ -194,8 +194,8 @@ describe Layer do
   end
 
   describe '#base_layer?' do
-    it 'returns true if its kind is different from carto' do
-      layer = Layer.new(kind: 'bogus')
+    it 'returns true if its kind is a base layer' do
+      layer = Layer.new(kind: 'tiled')
       layer.base_layer?.should == true
     end 
   end #base_layer?

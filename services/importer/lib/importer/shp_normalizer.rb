@@ -20,6 +20,11 @@ module CartoDB
       end #initialize
 
       def encoding
+        return 'UTF-8' if ['LATIN1', 'ISO-8859-1'].include?(shape_encoding)
+        shape_encoding
+      end #encoding
+
+      def shape_encoding
         normalize
         dbf       = filepath.gsub(%r{\.shp$}, '.dbf')
         encoding  = DBF::Table.new(dbf).encoding || 
@@ -28,7 +33,7 @@ module CartoDB
         encoding  = codepage_for(encoding) if windows?(encoding)
         return(tab_encoding || encoding) if tab?
         encoding
-      end #encoding
+      end
 
       def tab_encoding
         return 'WIN1251' if File.open(filepath, 'rb') { |file|

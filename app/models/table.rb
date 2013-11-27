@@ -28,12 +28,18 @@ class Table < Sequel::Model(:user_tables)
 
   DEFAULT_THE_GEOM_TYPE = "geometry"
 
-  many_to_one :map
-  many_to_many :layers,
-                join_table: :layers_user_tables,
-                left_key: :user_table_id, right_key: :layer_id,
-                reciprocal: :user_tables
-  plugin :association_dependencies, :map => :destroy, layers: :nullify
+  # Associations
+  many_to_one  :map
+  many_to_many :layers, join_table: :layers_user_tables,
+                        left_key:   :user_table_id, 
+                        right_key:  :layer_id,
+                        reciprocal: :user_tables
+  one_to_one   :automatic_geocoding
+  one_to_many  :geocodings
+
+  plugin :association_dependencies, map:                  :destroy, 
+                                    layers:               :nullify,
+                                    automatic_geocoding:  :destroy
   plugin :dirty
 
   def_delegators :relator, *CartoDB::Table::Relator::INTERFACE
@@ -233,11 +239,8 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def import_to_cartodb(uniname=nil)
-    puts "==== before migration existing table"
     @data_import ||= DataImport.where(id: data_import_id).first
     if migrate_existing_table.present? || uniname
-      puts "======= import_to_cartodb"
-      puts "======= import_to_cartodb"
       @data_import.data_type = 'external_table'
       @data_import.data_source = migrate_existing_table || uniname
       #@data_import.migrate
@@ -248,6 +251,7 @@ class Table < Sequel::Model(:user_tables)
 
       # with table #{uniname} table created now run migrator to CartoDBify
       hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+        "host" => owner.database_host,
         "database" => database_name,
         :logger => ::Rails.logger,
         "username" => owner.database_username,
@@ -506,7 +510,7 @@ class Table < Sequel::Model(:user_tables)
   #
   def send_tile_style_request(data_layer=nil)
     data_layer ||= self.map.data_layers.first
-    tile_request('POST', "/tiles/#{self.name}/style?map_key=#{owner.get_map_key}", {
+    tile_request('POST', "/tiles/#{self.name}/style?map_key=#{owner.api_key}", {
       'style_version' => data_layer.options["style_version"],
       'style'         => data_layer.options["tile_style"]
     })
@@ -888,7 +892,7 @@ class Table < Sequel::Model(:user_tables)
     }.first[1]
   end #column_type_for
 
-  def column_names_for(db, table_name)
+  def self.column_names_for(db, table_name)
     db.schema(table_name, :reload => true).map{ |s| s[0].to_s }
   end #column_names
 
@@ -901,7 +905,7 @@ class Table < Sequel::Model(:user_tables)
     end
 
     owner.in_database do |user_database|
-      if column_names_for(user_database, name).include?(new_name)
+      if Table.column_names_for(user_database, name).include?(new_name)
         raise 'Column already exists' 
       end
       user_database.rename_column(name, old_name.to_sym, new_name.to_sym)
@@ -1560,7 +1564,7 @@ SQL
       # update tile styles
       begin
         # get old tile style
-        #old_style = tile_request('GET', "/tiles/#{@name_changed_from}/style?map_key=#{owner.get_map_key}").try(:body)
+        #old_style = tile_request('GET', "/tiles/#{@name_changed_from}/style?map_key=#{owner.api_key}").try(:body)
 
         # parse old CartoCSS style out
         #old_style = JSON.parse(old_style).with_indifferent_access[:style]
@@ -1569,7 +1573,7 @@ SQL
         #old_style.gsub!(@name_changed_from, self.name)
 
         # post new style
-        #tile_request('POST', "/tiles/#{self.name}/style?map_key=#{owner.get_map_key}", {"style" => old_style})
+        #tile_request('POST', "/tiles/#{self.name}/style?map_key=#{owner.api_key}", {"style" => old_style})
       rescue => e
         CartoDB::Logger.info "tilestyle#rename error for", "#{e.inspect}"
       end
@@ -1578,25 +1582,24 @@ SQL
   end
 
   def delete_tile_style
-    tile_request('DELETE', "/tiles/#{self.name}/style?map_key=#{owner.get_map_key}")
+    tile_request('DELETE', "/tiles/#{self.name}/style?map_key=#{owner.api_key}")
   rescue => exception
     CartoDB::Logger.info "tilestyle#delete error", "#{exception.inspect}"
   end
 
   def flush_cache
-    tile_request('DELETE', "/tiles/#{self.name}/flush_cache?map_key=#{owner.get_map_key}")
+    tile_request('DELETE', "/tiles/#{self.name}/flush_cache?map_key=#{owner.api_key}")
   rescue => exception
     CartoDB::Logger.info "cache#flush error", "#{exception.inspect}"
   end
 
   def tile_request(request_method, request_uri, form = {})
-    uri  = "#{owner.username}.#{Cartodb.config[:tiler_domain]}"
-    ip   = '127.0.0.1'
-    port = Cartodb.config[:tiler_port] || 80
-    http_req = Net::HTTP.new ip, port
-    http_req.use_ssl = Cartodb.config[:tiler_protocol] == 'https' ? true : false
+    uri  = "#{owner.username}.#{Cartodb.config[:tiler]['private']['domain']}"
+    port = Cartodb.config[:tiler]['private']['port'] || 443
+    http_req = Net::HTTP.new uri, port
+    http_req.use_ssl = Cartodb.config[:tiler]['private']['protocol'] == 'https' ? true : false
     http_req.verify_mode = OpenSSL::SSL::VERIFY_NONE
-    request_headers = {'Host' => "#{owner.username}.#{Cartodb.config[:tiler_domain]}"}
+    request_headers = {'Host' => uri}
     case request_method
       when 'GET'
         http_res = http_req.request_get(request_uri, request_headers)

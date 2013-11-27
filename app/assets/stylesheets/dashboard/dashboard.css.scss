@@ -3,12 +3,19 @@
    * List of tables and visualizations for your dashboard or public tables
    */
 
-  @import "compass";
+  // @import "compass/css3/box-shadow";
+  // @import "compass/css3/border-radius";
+  // @import "compass/css3/inline-block";
+  // @import "compass/css3/box-sizing";
+  // @import "compass/css3/opacity";
+  // @import "compass/css3/transition";
+  @import "compass/css3/text-shadow";
   @import "../common/mixins";
   @import "../common/fonts";
-  @import "../common/sprites";
   @import "../common/vars";
   @import "../common/forms";
+  @import "../common/common-sprite";
+  @import "../dashboard/dashboard-sprite";
 
   .main_loader {
     position:relative;
@@ -128,7 +135,7 @@
             @include position(7px, false, false, 7px);
             @include size(7px);
             display:block;
-            background:image-url("icons/x.png") no-repeat 0 0;
+            @include dashboard-sprite(x);
           }
 
           &:focus, &:hover {
@@ -157,7 +164,7 @@
             ul {
 
               li {
-                @include icons-sprite(square, $offset-y: 7px);
+                @include dashboard-sprite(square, $offset-y: 7px);
                 margin: 0 0 6px -10px;
                 padding-left: 10px;
                 font-family:"Helvetica Neue", "Helvetica", Arial;
@@ -238,11 +245,11 @@
 
         height: 8px;
         margin: 18px 0 0 18px;
-        @include icons-sprite(burguer);
+        @include dashboard-sprite(burguer);
         border:none;
 
         &.active {
-          @include icons-sprite(burguer_line);
+          @include dashboard-sprite(burguer_line);
         }
 
       }
@@ -284,16 +291,16 @@
 
           .plus {
             @include absolute-center(25px, 24px);
-            @include icons-sprite(plus_big);
+            @include common-sprite(plus_big);
           }
 
           &:hover .plus {
-            @include icons-sprite(plus_big_selected);
+            @include common-sprite(plus_big, $offset-y:-30px);
           }
 
           &:active .plus {
             margin-top:-11px;
-            @include icons-sprite(plus_big_selected);
+            @include common-sprite(plus_big, $offset-y:-30px);
           }
         }
       }
@@ -360,12 +367,15 @@
         margin: 0 0 27px 0;
         padding: 19px 7px 30px 0;
 
+        // TODO: review because precompile is
+        // throwing a warning message with this
+        // extend.
         @extend .clearfix;
 
         h2 i {
           @include inline-block();
           @include size(23px, 17px);
-          @include icons-sprite(v);
+          @include dashboard-sprite(v);
           margin: 0 2px 5px 0;
         }
 
@@ -413,7 +423,7 @@
               display:block;
               @include size(34px, 10px);
               @include absolute-center(34px, 10px);
-              @include icons-sprite(static_loader);
+              @include dashboard-sprite(static_loader);
             }
           }
 
@@ -488,7 +498,7 @@
               a {
 
                 @include inline-block();
-                @include ellipsis();
+                @include text-overflow();
                 width: 200px;
                 line-height: 110%;
 
@@ -504,7 +514,7 @@
                 @include size(13px, 14px);
                 @include simple-transition(opacity, 250ms);
 
-                @include icons-sprite(trash);
+                @include dashboard-sprite(trash);
                 @include opacity(0);
               }
 
@@ -514,6 +524,7 @@
               margin: 0 0 9px 0;
               font-size: 15px;
               color: #999999;
+              word-wrap: break-word;
             }
           }
         } // li
@@ -557,7 +568,7 @@
               display:block;
               padding:10px 0 0 55px;
               line-height:18px;
-              @include icons-sprite(download_dataset);
+              @include dashboard-sprite(download_dataset);
             }
 
             &:first-child {width:350px;}
@@ -580,7 +591,7 @@
           i {
             @include inline-block();
             @include size(23px, 17px);
-            @include icons-sprite(t);
+            @include dashboard-sprite(t);
             margin: 0 2px 5px 0;
           }
 
@@ -723,7 +734,7 @@
               & > .right { width:420px; }
 
               & > .left  p {
-                @include ellipsis();
+                @include text-overflow();
               }
 
               hgroup {
@@ -834,11 +845,11 @@
                       @include size(8px);
                       margin-left:5px;
                       line-height:14px;
-                      @include icons-sprite(feed);
+                      @include dashboard-sprite(feed);
                     }
 
                     &.failure i {
-                      @include icons-sprite(feed_error);
+                      @include dashboard-sprite(feed_error);
                     }
 
 
@@ -864,7 +875,7 @@
 
                 a.delete {
                   @include inline-block();
-                  @include icons-sprite(trash);
+                  @include dashboard-sprite(trash);
                   @include text-indent();
                   vertical-align:middle;
                   position:relative;
@@ -992,9 +1003,9 @@
 
               &.popular {
                 padding:0 0 0 18px;
-                @include icons-sprite(star,$offset-y:-2px);
+                @include dashboard-sprite(star,$offset-y:-2px);
                 &:hover {
-                  @include icons-sprite(star,$offset-y:-20px);
+                  @include dashboard-sprite(star,$offset-y:-20px);
                 }
               }
             }
@@ -1131,12 +1142,12 @@
 
               &.prev {
                 margin: 0 5px 0 0;
-                i { @include icons-sprite(paginator_arrows, $offset-x: 12px, $offset-y:7px); }
+                i { @include dashboard-sprite(paginator_arrows, $offset-x: 12px, $offset-y:7px); }
               }
 
               &.next {
                 margin: 0;
-                i { @include icons-sprite(paginator_arrows, $offset-x: 13px, $offset-y:-11px); }
+                i { @include dashboard-sprite(paginator_arrows, $offset-x: 13px, $offset-y:-11px); }
               }
 
             }
@@ -1181,7 +1192,7 @@
           @include size(23px, 17px);
           margin: 2px 2px 0 0;
           text-indent:-9999px;
-          @include icons-sprite(t_plus, $offset-y:0);
+          @include dashboard-sprite(t_plus, $offset-y:0);
         }
 
       }
@@ -1217,7 +1228,7 @@
             padding:10px 0 0 55px;
             line-height:18px;
             letter-spacing:0;
-            @include icons-sprite(download_dataset_people);
+            @include dashboard-sprite(download_dataset_people);
           }
 
         }

@@ -16,6 +16,7 @@ require_relative '../connectors/importer'
 class DataImport < Sequel::Model
   REDIS_LOG_KEY_PREFIX          = 'importer'
   REDIS_LOG_EXPIRATION_IN_SECS  = 3600 * 24 * 2 # 2 days
+  MERGE_WITH_UNMATCHING_COLUMN_TYPES_RE = /No .*matches.*argument type.*/
 
   attr_reader   :log
 
@@ -211,6 +212,11 @@ class DataImport < Sequel::Model
     self.update(table_names: new_table_name)
     migrate_existing(new_table_name)
     self.results.push CartoDB::Importer2::Result.new(success: true, error: nil)
+  rescue Sequel::DatabaseError => exception
+    if exception.to_s =~ MERGE_WITH_UNMATCHING_COLUMN_TYPES_RE
+      set_merge_type_mismatch 
+    end
+    false
   end
 
   def import_from_query(name, query)
@@ -221,6 +227,15 @@ class DataImport < Sequel::Model
     candidates =  current_user.tables.select_map(:name)
     table_name = Table.get_valid_table_name(name, name_candidates: candidates)
     current_user.in_database.run(%Q{CREATE TABLE #{table_name} AS #{query}})
+    if current_user.over_disk_quota?
+      log.append "Over storage quota"
+      log.append "Dropping table #{table_name}"
+      current_user.in_database.run(%Q{DROP TABLE #{table_name}})
+      self.error_code = 8001
+      self.state      = 'failure'
+      save
+      raise CartoDB::QuotaExceeded, "More storage required"
+    end
 
     table_name
   end
@@ -260,7 +275,8 @@ class DataImport < Sequel::Model
       .merge(
         user:     current_user.database_username,
         password: current_user.database_password,
-        database: current_user.database_name
+        database: current_user.database_name,
+        host:     current_user.database_host
       )
   end #pg_options
 
@@ -279,10 +295,11 @@ class DataImport < Sequel::Model
     
     importer.run(tracker)
 
+    raise_error_if_over_quota(importer.results.select(&:success?).length)
     self.results    = importer.results
     self.error_code = importer.error_code
-    self.table_name = importer.table.name if importer.success?
-    self.table_id   = importer.table.id if importer.success?
+    self.table_name = importer.table.name if importer.success? && importer.table
+    self.table_id   = importer.table.id if importer.success? && importer.table
     if synchronization_id
       synchronization = 
         CartoDB::Synchronization::Member.new(id: synchronization_id).fetch
@@ -327,7 +344,19 @@ class DataImport < Sequel::Model
       success:        result.success,
       error_code:     result.error_code,
     ) if result
+    payload.merge!(
+      file_url_hostname: URI.parse(public_url).hostname
+    ) if public_url rescue nil
     payload.merge!(error_title: get_error_text) if state == 'failure'
     payload
   end
+
+  def set_merge_type_mismatch
+    self.results =
+      [CartoDB::Importer2::Result.new(success: false, error_code: 8004)]
+    self.error_code = 8004
+    self.state = 'failure'
+  end 
+
 end
+

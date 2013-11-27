@@ -3,9 +3,10 @@
    *  Sync settings dialog styles
    */
 
-  @import "compass";
-  @import "../../common/sprites";
-  @import "../../common/mixins";
+  @import "compass/css3/inline-block";
+  @import "compass/css3/images";
+  @import "../common/mixins";
+  @import "../common/common-sprite";
 
   .sync_settings {
 
@@ -19,8 +20,9 @@
         width:490px;
         padding-left:20px;
         font-size:13px;
+        line-height:14px;
         color:#999999;
-        @include background(sprite($icons-sprites, wifi_icon, $offset-x:-3px, $offset-y:-16px) no-repeat);
+        @include background(sprite($common-sprites, wifi_icon, $offset-x:-3px, $offset-y:-16px) no-repeat);
         @include text-overflow();
       }
     }

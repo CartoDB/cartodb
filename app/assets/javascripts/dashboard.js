@@ -1,6 +1,6 @@
 //= require d3.v2
 //= require select2.min
-//= require jquery-ui.core.min
+//= require_tree ../../../vendor/assets/javascripts/jquery-ui
 //= require jquery.fileupload
 //= require jquery.fileupload-fp
 //= require jquery.fileupload-ui

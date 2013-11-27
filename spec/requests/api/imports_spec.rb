@@ -14,7 +14,7 @@ describe "Imports API" do
     host! 'test.localhost.lan'
   end
 
-  let(:params) { { :api_key => @user.get_map_key } }
+  let(:params) { { :api_key => @user.api_key } }
 
   it 'performs asynchronous imports' do
     f = upload_file('db/fake_data/column_number_to_boolean.csv', 'text/csv')
@@ -85,7 +85,7 @@ describe "Imports API" do
   end
 
   it 'gets the detail of an import' do
-    post v1_imports_url(:api_key => @user.get_map_key,
+    post v1_imports_url(:api_key => @user.api_key,
                         :table_name => 'wadus',
                         :filename   => File.basename('wadus.csv')),
       upload_file('db/fake_data/column_number_to_boolean.csv', 'text/csv')
@@ -139,7 +139,7 @@ describe "Imports API" do
 
     @table_from_import = Table.all.last
 
-    post v1_imports_url(:api_key    => @user.get_map_key,
+    post v1_imports_url(:api_key    => @user.api_key,
                         :table_name => 'wadus_2',
                         :sql        => "SELECT * FROM #{@table_from_import.name}")
 

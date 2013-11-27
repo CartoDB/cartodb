@@ -3,7 +3,7 @@
   <% end %>
 
   <%= content_for(:js) do %>
-    <%= javascript_include_tag :application, :cdb, :common_data %>
+    <%= javascript_include_tag :cdb, :application, :common_data %>
     <script type="text/javascript">
       var username = "<%= current_user.username %>"
       , user_data = <%=raw current_user.data.to_json.html_safe %>

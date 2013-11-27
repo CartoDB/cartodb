@@ -100,6 +100,7 @@ describe CartoDB::TableGeocoder do
 
     it 'creates a temporary table' do
       tg = CartoDB::TableGeocoder.new(table_name: 'a', connection: @db, remote_id: 'geo_HvyxzttLyFhaQ7JKmnrZxdCVySd8N0Ua', schema: 'public')
+      tg.drop_temp_table
       tg.create_temp_table
       @db.fetch("select * from #{tg.temp_table_name}").all.should eq []
     end
@@ -120,6 +121,20 @@ describe CartoDB::TableGeocoder do
   end
 
   describe '#import_results_to_temp_table' do
+    after do
+      @db.drop_table('geo_temp_table')
+    end
+    
+    it 'loads the Nokia output format to an existing temp table' do
+      tg = CartoDB::TableGeocoder.new(table_name: 'a', connection: @db, remote_id: 'temp_table', schema: 'public')      
+      tg.create_temp_table
+      tg.stubs(:deflated_results_path).returns(path_to('nokia_output.txt'))
+      tg.import_results_to_temp_table
+      @db.fetch(%Q{
+        SELECT count(*) FROM #{tg.temp_table_name} 
+        WHERE displayLatitude IS NOT NULL AND displayLongitude IS NOT NULL
+      }).first[:count].should eq 44
+    end
   end
 
   describe '#load_results_into_original_table' do
@@ -141,8 +156,16 @@ describe CartoDB::TableGeocoder do
     end
 
     it 'does nothing when the column already exists' do
+      @tg.expects(:cast_georef_status_column).once
       @tg.add_georef_status_column
       @tg.add_georef_status_column
+    end
+
+    it 'casts cartodb_georef_status to boolean if needed' do
+      @db.run('alter table wwwwww add column cartodb_georef_status text')
+      @tg.add_georef_status_column
+      @db.fetch("select data_type from information_schema.columns where table_name = 'wwwwww'")
+        .first[:data_type].should eq 'boolean'
     end
   end
 
@@ -153,10 +176,11 @@ describe CartoDB::TableGeocoder do
   #     connection: @db,
   #     app_id: 'KuYppsdXZznpffJsKT24',
   #     token:  'A7tBPacePg9Mj_zghvKt9Q',
-  #     mailto: 'arango@gmail.com'
+  #     mailto: 'arango@gmail.com',
+  #     schema: 'public'
   #   )
-  #   `open #{t.working_dir}`
   #   t.run
+  #   `open #{t.working_dir}`
   #   until t.geocoder.status == 'completed' do
   #     t.geocoder.update_status
   #     puts "#{t.geocoder.status} #{t.geocoder.processed_rows}/#{t.geocoder.total_rows}"
@@ -164,6 +188,8 @@ describe CartoDB::TableGeocoder do
   #   end
   #   t.process_results
   #   t.geocoder.status.should eq 'completed'
+  #   @db.fetch("select count(*) from #{@table_name} where the_geom is null").first[:count].should eq 2
+  #   @db.fetch("select count(*) from #{@table_name} where cartodb_georef_status is false").first[:count].should eq 2
   # end
 
 

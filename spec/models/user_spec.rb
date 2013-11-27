@@ -18,6 +18,14 @@ describe User do
     CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
   end
 
+  it "should set a default database_host" do
+    @user.database_host.should eq 'localhost'
+  end
+
+  it "should set a default api_key" do
+    @user.reload.api_key.should_not be_blank
+  end
+
   it "should set up a user after create" do
     @new_user.save
     @new_user.reload
@@ -140,13 +148,25 @@ describe User do
     end
 
     it "should return users near their map view quota" do
-      User.any_instance.stubs(:get_api_calls).returns([51, 50])
-      User.any_instance.stubs(:map_view_quota).returns(120)
+      User.any_instance.stubs(:get_api_calls).returns([81])
+      User.any_instance.stubs(:map_view_quota).returns(100)
       User.overquota.should be_empty
       User.overquota(0.20).should include(@user)
       User.overquota(0.20).size.should == User.count
       User.overquota(0.10).should be_empty
     end
+    
+    it "should return users near their geocoding quota" do
+      User.any_instance.stubs(:get_api_calls).returns([0])
+      User.any_instance.stubs(:map_view_quota).returns(120)
+      User.any_instance.stubs(:get_geocoding_calls).returns(81)
+      User.any_instance.stubs(:geocoding_quota).returns(100)
+      User.overquota.should be_empty
+      User.overquota(0.20).should include(@user)
+      User.overquota(0.20).size.should == User.count
+      User.overquota(0.10).should be_empty
+    end
+  
   end
 
   describe '#get_geocoding_calls' do
@@ -436,15 +456,27 @@ describe User do
     @user.key.should == "rails:users:#{@user.username}"
   end
 
-  it "should be able to store the users id and database name in redis" do
-    @user.save_metadata.should be_true
+  it "replicates some user metadata in redis after saving" do
+    @user.stubs(:database_name).returns('wadus')
+    @user.save
     $users_metadata.HGET(@user.key, 'id').should == @user.id.to_s
-    $users_metadata.HGET(@user.key, 'database_name').should == @user.database_name
+    $users_metadata.HGET(@user.key, 'database_name').should == 'wadus'
+    $users_metadata.HGET(@user.key, 'database_password').should == @user.database_password
+    $users_metadata.HGET(@user.key, 'database_host').should == @user.database_host
+    $users_metadata.HGET(@user.key, 'map_key').should == @user.api_key
   end
 
   it "should store its metadata automatically after creation" do
-    $users_metadata.HGET(@user.key, 'id').should == @user.id.to_s
-    $users_metadata.HGET(@user.key, 'database_name').should == @user.database_name
+    user = FactoryGirl.create :user
+    $users_metadata.HGET(user.key, 'id').should == user.id.to_s
+    $users_metadata.HGET(user.key, 'database_name').should == user.database_name
+    $users_metadata.HGET(user.key, 'database_password').should == user.database_password
+    $users_metadata.HGET(user.key, 'database_host').should == user.database_host
+    $users_metadata.HGET(user.key, 'map_key').should == user.api_key
+  end
+
+  it "should not regenerate the api_key after saving" do
+    expect { @user.save }.to_not change { @user.api_key }
   end
 
   it "should remove its metadata from redis after deletion" do

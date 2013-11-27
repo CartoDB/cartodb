@@ -22,13 +22,15 @@ class Api::Json::GeocodingsController < Api::ApplicationController
   end
 
   def create
+    table = current_user.tables.where(name: params[:table_name]).first
     options = { 
       user_id:     current_user.id,
-      table_name:  params[:table_name].presence,
+      table_id:    table.try(:id),
       formatter:   params[:formatter].presence
     }
       
     geocoding = Geocoding.create(options)
+    table.automatic_geocoding.destroy if table.automatic_geocoding.present?
     Resque.enqueue(Resque::GeocoderJobs, job_id: geocoding.id)
 
     render_jsonp(geocoding.to_json)

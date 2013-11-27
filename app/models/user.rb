@@ -630,7 +630,6 @@ class User < Sequel::Model
     puts "Rebuilding quota trigger in db '#{database_name}' (#{username})"
     tables.all.each do |table|
       begin
-        table.add_python
         table.set_trigger_check_quota
       rescue Sequel::DatabaseError => e
         next if e.message =~ /.*does not exist\s*/

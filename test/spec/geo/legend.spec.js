@@ -28,8 +28,8 @@ describe("common.geo.ui.Legend", function() {
 
     });
 
-    it("should have a 'null' type set by default", function() {
-      expect(legend.model.get("type")).toEqual(null);
+    it("should have a 'none' type set by default", function() {
+      expect(legend.model.get("type")).toEqual("none");
     });
 
     it("should use the provided model", function() {
@@ -40,14 +40,14 @@ describe("common.geo.ui.Legend", function() {
       });
 
       expect(legend.model).toBeDefined();
-      expect(legend.model.get("type")).toEqual(null);
+      expect(legend.model.get("type")).toEqual("none");
 
     });
 
     it("should generate a model if no model is provided", function() {
 
       expect(legend.model).toBeDefined();
-      expect(legend.model.get("type")).toEqual(null);
+      expect(legend.model.get("type")).toEqual("none");
 
     });
 
@@ -277,7 +277,7 @@ describe("common.geo.ui.Legend", function() {
 
       custom_data = [
         { name: "Natural Parks",  value: "#58A062" },
-        { name: "Villages",       value: "#F07971" },
+        { name: "Villages",       value: "http://cartodb.com/assets/logos/logos_full_cartodb_light.png", type: "image" },
         { name: "Rivers",         value: "#54BFDE" },
         { name: "Fields",         value: "#9BC562" },
         { name: "Caves",          value: "#FABB5C" }
@@ -403,7 +403,6 @@ describe("common.geo.ui.Legend", function() {
 
         properties = { title: "Category title", data: custom_data };
         legend     = new cdb.geo.ui.Legend.Category( properties );
-
         legend.render();
 
       });
@@ -419,6 +418,9 @@ describe("common.geo.ui.Legend", function() {
 
         expect(legend.$el.find("li:first-child").text()).toEqual(custom_data[0].name);
         expect(legend.$el.find("li:first-child .bullet").css("background")).toEqual("rgb(88, 160, 98)");
+
+        expect(legend.$el.find("li:nth-child(2)").text()).toEqual(custom_data[1].name);
+        expect(legend.$el.find("li:nth-child(2) .bullet").css("background")).toEqual("url(http://cartodb.com/assets/logos/logos_full_cartodb_light.png)");
       });
 
       it("should show a title", function() {
@@ -577,8 +579,8 @@ describe("common.geo.ui.Legend", function() {
         expect(legend.$el.find("li:nth-child(2)").text()).toEqual(label);
       });
 
-
     });
+
     describe("Density Legend", function() {
 
       var properties, legend;

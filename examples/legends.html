@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.ie.css" /> 
     <![endif]-->
 
-    <script src="../src/cartodb.js"></script>
+    <script src="../../src/cartodb.js"></script>
     <script>
 
       currentLegend = null;
@@ -62,7 +62,7 @@
 
       window.onload = function() {
 
-        cdb.load('../src/', function() {
+        cdb.load('../../src/', function() {
 
           var customLegend = new cdb.geo.ui.Legend.Custom({
             title: "Custom Legend",
@@ -79,11 +79,11 @@
           var categoryLegend = new cdb.geo.ui.Legend.Category({
             title: "Category Legend",
             data: [
-              { name: "Natural Parks",  value: "#58A062" },
-              { name: "Villages",       value: "#F07971" },
-              { name: "Rivers",         value: "#54BFDE" },
-              { name: "Fields",         value: "#9BC562" },
-              { name: "Caves",          value: "#FABB5C" }
+              { name: "Natural Parks", value: "heart-24.png", type: "image" },
+              { name: "Villages",      value: "heart-24.png", type: "image" },
+              { name: "Rivers",        value: "heart-24.png", type: "image" },
+              { name: "Fields",        value: "heart-24.png", type: "image" },
+              { name: "Caves",         value: "heart-24.png", type: "image" },
             ]
           });
 

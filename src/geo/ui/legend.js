@@ -40,7 +40,15 @@ cdb.geo.ui.LegendItem = cdb.core.View.extend({
 
   render: function() {
 
-    var options = this.model.toJSON();
+    var value;
+
+    if (this.model.get("type") == 'image' && this.model.get("value")) {
+      value = "url( " + this.model.get("value") + ")";
+    } else {
+      value = this.model.get("value");
+    }
+
+    var options = _.extend( this.model.toJSON(), { value: value });
 
     this.$el.html(this.template(options));
 
@@ -121,7 +129,7 @@ cdb.geo.ui.Legend = cdb.core.View.extend({
     if (type == 'none' || type == null) {
 
       this.legend_name = null;
-      this.model.set({ type: null}, { silent: true });
+      this.model.set({ type: "none" }, { silent: true });
 
     } else if (!cdb.geo.ui[this.legend_name]) {
 
@@ -146,7 +154,7 @@ cdb.geo.ui.Legend = cdb.core.View.extend({
     var title = this.model.get("title");
     var show_title = this.model.get("show_title");
 
-    if (type) {
+    if (type && this.legend_name) {
 
       this.view = new cdb.geo.ui[this.legend_name] ({
         title: title,
@@ -590,7 +598,7 @@ cdb.geo.ui.CategoryLegend = cdb.geo.ui.BaseLegend.extend({
 
     view = new cdb.geo.ui.LegendItem({
       model: item,
-      className: (item.get("value") && item.get("value").indexOf("http") >= 0) ? "bkg" : "",
+      className: (item.get("value") && item.get("value").indexOf("http") >= 0 || item.get("type") && item.get("type") == 'image') ? "bkg" : "",
       template: '<div class="bullet" style="background: <%= value %>"></div><%= name || ((name === false) ? "false": "null") %>'
     });
 
@@ -788,7 +796,9 @@ cdb.geo.ui.StackedLegend = cdb.core.View.extend({
 
     _.each(this.options.legends, function(item) {
 
-      if (item.model.get("type")) {
+      var type = item.model.get("type");
+
+      if (type != "none") {
         item.show();
       } else {
         item.hide();
@@ -913,7 +923,7 @@ cdb.geo.ui.LegendModel = cdb.core.Model.extend({
     this.items = new cdb.geo.ui.LegendItems(this.get("items"));
 
     this.items.bind("add remove reset change", function() {
-      this.set("items", this.items.toJSON(), { silent: true });
+      this.set({ items: this.items.toJSON() }, { silent: true });
     }, this);
 
     this.bind("change:items", this._onUpdateItems, this);

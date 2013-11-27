@@ -1,7 +1,8 @@
 2.5.5
 -----
 * Improvements
-  * Move varnish triggers from user tables to CDB_TableMetadata
+  * Move varnish triggers from user tables to CDB_TableMetadata (#241)
+  * Changed empty dashboard page
 
 2.5.4
 -----

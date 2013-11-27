@@ -1,3 +1,37 @@
+2.5.4
+-----
+* Improvements
+  * Implemented Torque accumulative visualization.
+  * Faster CDB_TransformToWebmercator when input is already mercator.
+  * Added the type of the columns shown on the column selector for the filters.
+  * Added autocomplete in legends.
+  * Way to Activate/deactivate automatic geocoder.
+  * Running the testsuite is easier now.
+  * Disabled geocoder on sync tables.
+  * Enabled default max/min zoom for google basemaps.
+  * Deprecated the getLayerByIndex method and added a more descriptive one.
+
+* Fixed Bugs
+  * Torque visualization doesn't work as expected for a multiday GPS track.
+  * Table rename errors aren't shown in the UI.
+  * Torque visualizations under IE9 + Windows 7 are not showing canvas layer.
+  * Density legend is not showing the min,max values. It's showing left and right value.
+  * Sanitize in-cell line breaks (<8d> unicode character) when processing CSV and Excel files.
+  * When moving from CategoryLegend to CustomLegend, copy the items.
+  * Removed the persist param on calls to tiles at cartodb.js
+  * Deactivate zoom when not having more levels available.
+  * Unix timestamp not being correctly converted to date (#290).
+  * Changed ZXY url to XYZ.
+  * Selecting an Intensity Wizard disables the associated legend.
+  * User can't add a Mapbox basemap.
+  * Clean up Importer2::Ogr2ogr spec.
+  * last_visualization_created_at is causing a ton of queries.
+  * Layers visibility is not working in embed map.
+  * Explain that a user needs to publicly share a file in GDrive before importing.
+  * Label allow-overlap changed to toggle on the Wizards.
+  * Fixed broken acceptance specs.
+  * Fixed typo in carto_db.rb (by @robinkraft #301).
+
 2.5.3
 -----
 * Improvements

@@ -2,7 +2,7 @@
   Api key |
 <% end %>
 <%= content_for(:js) do %>
-  <%= javascript_include_tag :application, :cdb, :keys %>
+  <%= javascript_include_tag :cdb, :application, :keys %>
   <script type="text/javascript">
     var username = "<%= current_user.username %>"
       , type = "key"

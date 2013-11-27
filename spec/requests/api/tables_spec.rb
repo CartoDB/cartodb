@@ -7,7 +7,6 @@ describe "Tables API" do
   before(:all) do
     CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
     @user = create_user(:username => 'test', :email => "client@example.com", :password => "clientex")
-    @user.set_map_key
     @another_user = create_user
   end
 

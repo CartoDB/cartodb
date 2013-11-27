@@ -1,5 +1,7 @@
 @import "compass/css3/box-shadow";
 @import "compass/css3/border-radius";
+@import "compass/css3/inline-block";
+@import "../common/mixins";
 
 /*
 Version: 3.1 Timestamp: Tue Aug 14 09:05:17 PDT 2012
@@ -527,8 +529,6 @@ disabled look for already selected choices in the results dropdown
 
 
 
-
-
 // COLOR RAMPS
 .color_ramp .select2-choice {
   padding: 0 10px 0 8px;
@@ -583,6 +583,40 @@ disabled look for already selected choices in the results dropdown
     }
   }
 }
+
+
+/////////////////
+// Column type //
+/////////////////
+
+.column-type .select2-result-label {
+  position:relative;
+  overflow:visible;
+  padding:3px 7px 1px;
+
+  span.type {
+    position:absolute;
+    top:4px; right:0px;
+    width:20px;
+    background:#CCCCCC;
+    @include border-radius(2px);
+    font-size:11px;
+    font-weight:bold;
+    color:white;
+    text-transform:uppercase;
+    text-align:center;
+    line-height:19px;
+    z-index:1;
+  }
+
+  span.value {
+    @include inline-block();
+    width:85%;
+    @include text-overflow();
+    line-height:22px;
+  }
+}
+
 
 
 @-moz-document url-prefix(){

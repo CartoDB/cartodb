@@ -567,8 +567,13 @@ describe Table do
   context "when removing the table" do
     before(:all) do
       CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
-      @doomed_table = create_table(:user_id => @user.id)
+      @doomed_table = create_table(user_id: @user.id)
+      @automatic_geocoding = FactoryGirl.create(:automatic_geocoding, table: @doomed_table)
       @doomed_table.destroy
+    end
+
+    it "should remove the automatic_geocoding" do
+      expect { @automatic_geocoding.reload }.to raise_error
     end
     
     it "should remove the table from the user database" do
@@ -1766,4 +1771,3 @@ describe Table do
     end
   end #name=
 end
-

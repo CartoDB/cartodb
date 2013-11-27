@@ -453,10 +453,10 @@ class Table < Sequel::Model(:user_tables)
         update_table_pg_stats
 
         # Set default triggers
-        add_python
-        set_trigger_update_updated_at
-        set_trigger_cache_timestamp
-        set_trigger_check_quota
+        #owner.add_python
+        #owner.create_function_invalidate_varnish
+        #owner.create_trigger_function_update_timestamp
+        set_triggers
       rescue => e
         self.handle_creation_error(e)
       end
@@ -1123,13 +1123,6 @@ class Table < Sequel::Model(:user_tables)
   end
 
   # DB Triggers and things
-  # TODO: move to user (is db-wide, not table-wide)
-  def add_python
-    owner.in_database(:as => :superuser).run(<<-SQL
-      CREATE OR REPLACE PROCEDURAL LANGUAGE 'plpythonu' HANDLER plpython_call_handler;
-    SQL
-    )
-  end
 
   def has_trigger? trigger_name
     owner.in_database(:as => :superuser).select('trigger_name').from(:information_schema__triggers)
@@ -1146,6 +1139,24 @@ class Table < Sequel::Model(:user_tables)
     owner.in_database(:as => :superuser).select(:indexname)
       .from(:pg_indexes).where(:tablename => self.name)
       .all.map { |t| t[:indexname] }
+  end
+
+  def set_triggers
+
+    set_trigger_update_updated_at
+
+    # NOTE: We're dropping the cache_checkpoint here
+    #       as a poor man's migration path from 2.1.
+    #       Once an official 2.2 is out and a proper
+    #       migration script is written this line can
+    #       be removed. For the record, the actual cache
+    #       (varnish) management is now triggered indirectly
+    #       by the "track_updates" trigger.
+    #
+    drop_trigger_cache_checkpoint
+
+    set_trigger_track_updates
+    set_trigger_check_quota
   end
 
   def set_trigger_the_geom_webmercator
@@ -1188,62 +1199,38 @@ TRIGGER
     )
   end
 
-  # move to C
-  def set_trigger_cache_timestamp
-
-    varnish_host = Cartodb.config[:varnish_management].try(:[],'host') || '127.0.0.1'
-    varnish_port = Cartodb.config[:varnish_management].try(:[],'port') || 6082
-    varnish_timeout = Cartodb.config[:varnish_management].try(:[],'timeout') || 5
-    varnish_critical = Cartodb.config[:varnish_management].try(:[],'critical') == true ? 1 : 0
-    varnish_retry = Cartodb.config[:varnish_management].try(:[],'retry') || 5
-    purge_command = Cartodb::config[:varnish_management]["purge_command"]
-
+  # Drop "cache_checkpoint", if it exists
+  # NOTE: this is for migrating from 2.1
+  def drop_trigger_cache_checkpoint
     owner.in_database(:as => :superuser).run(<<-TRIGGER
-    CREATE OR REPLACE FUNCTION update_timestamp() RETURNS trigger AS
-    $$
-        critical = #{varnish_critical}
-        timeout = #{varnish_timeout}
-        retry = #{varnish_retry}
+    DROP TRIGGER IF EXISTS cache_checkpoint ON "#{self.name}";
+TRIGGER
+    )
+  end
 
-        client = GD.get('varnish', None)
-
-        while True:
-
-          if not client:
-              try:
-                import varnish
-                client = GD['varnish'] = varnish.VarnishHandler(('#{varnish_host}', #{varnish_port}, timeout))
-              except Exception as err:
-                plpy.warning('Varnish connection error: ' +  str(err))
-                # NOTE: we won't retry on connection error
-                if critical:
-                  plpy.error('Varnish connection error: ' +  str(err))
-                break
-
-          try:
-            table_name = TD["table_name"]
-            client.fetch('#{purge_command} obj.http.X-Cache-Channel ~ "^#{self.database_name}:(.*%s.*)|(table)$"' % table_name)
-            break
-          except Exception as err:
-            plpy.warning('Varnish fetch error: ' + str(err))
-            client = GD['varnish'] = None # force reconnect
-            if not retry:
-              if critical:
-                plpy.error('Varnish fetch error: ' +  str(err))
-              break
-            retry -= 1 # try reconnecting
-    $$
-    LANGUAGE 'plpythonu' VOLATILE;
-
+  # Set a "cache_checkpoint" trigger to invalidate varnish
+  # TODO: drop this trigger, delegate to a trigger on CDB_TableMetadata
+  def set_trigger_cache_checkpoint
+    owner.in_database(:as => :superuser).run(<<-TRIGGER
+    BEGIN;
     DROP TRIGGER IF EXISTS cache_checkpoint ON "#{self.name}";
     CREATE TRIGGER cache_checkpoint BEFORE UPDATE OR INSERT OR DELETE OR TRUNCATE ON "#{self.name}" EXECUTE PROCEDURE update_timestamp();
+    COMMIT;
+TRIGGER
+    )
+  end
 
+  # Set a "track_updates" trigger to keep CDB_TableMetadata updated
+  def set_trigger_track_updates
+
+    owner.in_database(:as => :superuser).run(<<-TRIGGER
+    BEGIN;
     DROP TRIGGER IF EXISTS track_updates ON "#{self.name}";
     CREATE trigger track_updates
       AFTER INSERT OR UPDATE OR DELETE OR TRUNCATE ON "#{self.name}"
       FOR EACH STATEMENT
       EXECUTE PROCEDURE cdb_tablemetadata_trigger();
-
+    COMMIT;
 TRIGGER
     )
   end
@@ -1259,6 +1246,7 @@ TRIGGER
     # (it'll always run before each statement)
     check_probability_factor = 0.001 # TODO: base on database usage ?
     owner.in_database(:as => :superuser).run(<<-TRIGGER
+    BEGIN;
     DROP TRIGGER IF EXISTS test_quota ON "#{self.name}";
     CREATE TRIGGER test_quota BEFORE UPDATE OR INSERT ON "#{self.name}"
       EXECUTE PROCEDURE CDB_CheckQuota(1, #{self.owner.quota_in_bytes});
@@ -1267,6 +1255,7 @@ TRIGGER
       FOR EACH ROW
       EXECUTE PROCEDURE CDB_CheckQuota( #{check_probability_factor},
                                         #{self.owner.quota_in_bytes} );
+    COMMIT;
   TRIGGER
   )
   end

@@ -1,6 +1,11 @@
 #encoding: UTF-8
+require_relative '../../../../services/data-repository/filesystem/s3'
 class Api::Json::ImportsController < Api::ApplicationController
   ssl_required :index, :show, :create
+
+  S3_CONFIGURATION_KEYS = [
+    :access_key_id, :secret_access_key, :bucket_name
+  ]
 
   def index
     imports = current_user.importing_jobs
@@ -52,13 +57,28 @@ class Api::Json::ImportsController < Api::ApplicationController
 
     random_token = Digest::SHA2.hexdigest("#{Time.now.utc}--#{filename.object_id.to_s}").first(20)
 
-    FileUtils.mkdir_p(Rails.root.join('public/uploads').join(random_token))
+    s3_config = Cartodb.config[:importer]['s3'].symbolize_keys
 
-    file = File.new(Rails.root.join('public/uploads').join(random_token).join(File.basename(filename)), 'w')
-    file.write filedata
-    file.close
+    if valid_s3_config?(s3_config)
+      url_ttl = s3_config.fetch(:url_ttl, nil)
+      path    = "#{random_token}/#{filename}"
 
-    return file.path[/(\/uploads\/.*)/, 1]
+      s3 = DataRepository::Filesystem::S3::Backend.new(s3_config)
+      s3_public_url = s3.store(path, filedata)
+      return s3.presigned_url_for(s3_public_url, url_ttl).to_s
+    else
+      FileUtils.mkdir_p(Rails.root.join('public/uploads').join(random_token))
+
+      file = File.new(Rails.root.join('public/uploads').join(random_token).join(File.basename(filename)), 'w')
+      file.write filedata
+      file.close
+      return file.path[/(\/uploads\/.*)/, 1]
+    end
   end
 
+  def valid_s3_config?(config)
+    S3_CONFIGURATION_KEYS.inject(true) { |memo, key|
+      memo && (!config[key].nil? && !config[key].empty?)
+    }
+  end
 end

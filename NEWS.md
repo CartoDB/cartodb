@@ -6,7 +6,6 @@
 * Fixed Bugs
   * Make infowindow keep state for a SQL query.
   * Custom infowindow with image is not adding correctly <img> tag.
-  * When applying a filter on an already styled map, the style gets reset and goes back to default.
   * Fixed redis configuration in sync tables.
 
 2.5.5

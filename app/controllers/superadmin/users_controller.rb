@@ -32,6 +32,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
       @user.max_layers              = attributes[:max_layers]               if attributes.has_key?(:max_layers)
       @user.user_timeout            = attributes[:user_timeout]             if attributes.has_key?(:user_timeout)
       @user.database_timeout        = attributes[:database_timeout]         if attributes.has_key?(:database_timeout)
+      @user.database_host           = attributes[:database_host]            if attributes.has_key?(:database_host)
       @user.upgraded_at             = attributes[:upgraded_at]              if attributes.has_key?(:upgraded_at)
       @user.notification            = attributes[:notification]             if attributes.has_key?(:notification)
 
@@ -69,6 +70,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
       @user.max_layers              = attributes[:max_layers]               if attributes.has_key?(:max_layers)
       @user.user_timeout            = attributes[:user_timeout]             if attributes.has_key?(:user_timeout)
       @user.database_timeout        = attributes[:database_timeout]         if attributes.has_key?(:database_timeout)
+      @user.database_host           = attributes[:database_host]            if attributes.has_key?(:database_host)
       @user.upgraded_at             = attributes[:upgraded_at]              if attributes.has_key?(:upgraded_at)
       @user.notification            = attributes[:notification]             if attributes.has_key?(:notification)
 

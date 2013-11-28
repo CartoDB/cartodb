@@ -78,7 +78,9 @@ cdb_ui_files = [
   './src/ui/common/tabpane.js',
   './src/ui/common/dialog.js',
   './src/ui/common/notification.js',
-  './src/ui/common/table.js'
+  './src/ui/common/table.js',
+  './src/geo/leaflet/leaflet.geometry.js',
+  './src/geo/gmaps/gmaps.geometry.js',
 ];
 
 create_dist_file(vendor_files, cdb_files, [], "dist/_cartodb.js");

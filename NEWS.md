@@ -1,7 +1,7 @@
 2.5.6
 -----
 * Improvement
-  * Allow to customize the colors and its number on the choropleth lege.
+  * Allow to customize the colors and its number on the choropleth legend.
 
 * Fixed Bugs
   * Make infowindow keep state for a SQL query.

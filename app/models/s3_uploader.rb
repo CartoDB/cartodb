@@ -34,7 +34,7 @@ class S3Uploader
 
   def presigned_url_for(url)
     expiration_in_seconds = s3_configuration.fetch(:url_ttl, DEFAULT_EXPIRATION)
-    s3.presigned_url_for(url, expiration_in_seconds).to_s
+    s3.presigned_url_for(url, expiration_in_seconds)
   end
 
   def valid_s3_configuration?(configuration)

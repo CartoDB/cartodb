@@ -30,8 +30,12 @@ module DataRepository
           object_from(bucket, object_name)
         end #fetch
 
+        def delete(file_url)
+          fetch(file_url).delete
+        end
+
         def presigned_url_for(public_url, url_ttl=DEFAULT_URL_TTL)
-          fetch(public_url).url_for(:get, expires: url_ttl)
+          fetch(public_url).url_for(:get, expires: url_ttl).to_s
         end
 
         private

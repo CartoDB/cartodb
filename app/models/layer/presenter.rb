@@ -5,6 +5,20 @@ require 'ejs'
 module CartoDB
   class Layer
     class Presenter
+      TORQUE_ATTRS = %w(
+        table_name
+        user_name
+        property
+        blendmode
+        resolution
+        countby
+        torque-duration
+        torque-steps
+        torque-blend-mode
+        query
+        tile_style
+      )
+
       def initialize(layer, options={}, configuration={})
         @layer          = layer
         @options        = options
@@ -12,15 +26,20 @@ module CartoDB
       end #initialize
 
       def to_vizjson_v2
-        return with_kind_as_type(layer.public_values) if base?(layer)
-        {
-          id:         layer.id,
-          type:       'CartoDB',
-          infowindow: infowindow_data,
-          legend:     layer.legend,
-          order:      layer.order,
-          options:    options_data_v2
-        }
+        if base?(layer)
+          with_kind_as_type(layer.public_values) 
+        elsif torque?(layer)
+          as_torque(layer)
+        else
+          {
+            id:         layer.id,
+            type:       'CartoDB',
+            infowindow: infowindow_data,
+            legend:     layer.legend,
+            order:      layer.order,
+            options:    options_data_v2
+          }
+        end
       end #to_vizjson_v2
 
       def to_vizjson_v1
@@ -39,12 +58,35 @@ module CartoDB
       attr_reader :layer, :options, :configuration
 
       def base?(layer)
-        layer.kind != 'carto'
+        ['tiled', 'background', 'gmapsbase', 'wms'].include? layer.kind
       end #base?
+
+      def torque?(layer)
+        layer.kind == 'torque'
+      end #torque?
 
       def with_kind_as_type(attributes)
         attributes.merge(type: attributes.delete('kind'))
       end #with_kind_as_type
+
+      def as_torque(attributes)
+        {
+          id:         layer.id,
+          type:       'torque',
+          order:      layer.order,
+          options:    {
+            stat_tag:           options.fetch(:visualization_id),
+            tiler_protocol:     (configuration[:tiler]["public"]["protocol"] rescue nil),
+            tiler_domain:       (configuration[:tiler]["public"]["domain"] rescue nil),
+            tiler_port:         (configuration[:tiler]["public"]["port"] rescue nil),
+            sql_api_protocol:   (configuration[:sql_api]["public"]["protocol"] rescue nil),
+            sql_api_domain:     (configuration[:sql_api]["public"]["domain"] rescue nil),
+            sql_api_endpoint:   (configuration[:sql_api]["public"]["endpoint"] rescue nil),
+            sql_api_port:       (configuration[:sql_api]["public"]["port"] rescue nil),
+            cdn_url:            configuration.fetch(:cdn_url, nil)
+          }.merge(layer.options.select { |k| TORQUE_ATTRS.include? k })
+        }
+      end #as_torque
 
       def infowindow_data
         template = layer.infowindow['template']
@@ -58,7 +100,7 @@ module CartoDB
         sql = sql_from(layer.options)
         {
           sql:                wrap(sql, layer.options),
-          layer_name:         layer.options.fetch('table_name'),
+          layer_name:         name_for(layer),
           cartocss:           layer.options.fetch('tile_style'),
           cartocss_version:   layer.options.fetch('style_version'),
           interactivity:      layer.options.fetch('interactivity')
@@ -66,6 +108,14 @@ module CartoDB
       end #options_data_v2
 
       alias_method :to_poro, :to_vizjson_v1
+
+      def name_for(layer)
+        layer_alias = layer.options.fetch('table_name_alias', nil)
+        table_name  = layer.options.fetch('table_name') 
+
+        return table_name unless layer_alias && !layer_alias.empty?
+        layer_alias
+      end
 
       def options_data_v1
         return layer.options if options[:full]

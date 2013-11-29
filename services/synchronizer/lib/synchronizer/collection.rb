@@ -6,6 +6,11 @@ require 'resque'
 require_relative '../../../../app/models/synchronization/member'
 require_relative '../../../../lib/resque/synchronization_jobs'
 
+unless defined? Cartodb
+  config = YAML.load_file(File.join(File.dirname(__FILE__), '../../../../config/app_config.yml'))[ENV['RAILS_ENV']]
+  Resque.redis = "#{config['redis']['host']}:#{config['redis']['port']}"
+end
+
 module CartoDB
   module Synchronizer
     class Collection

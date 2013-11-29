@@ -99,6 +99,8 @@ feature "Superadmin's users API" do
     @user_atts[:sync_tables_enabled] = true
     @user_atts[:map_view_block_price] = 15
     @user_atts[:geocoding_quota] = 15
+    @user_atts[:geocoding_block_price] = 2
+    @user_atts[:notification] = 'Test'
 
     post_json superadmin_users_path, { :user => @user_atts }, default_headers do |response|
       response.status.should == 201
@@ -110,6 +112,8 @@ feature "Superadmin's users API" do
       response.body[:sync_tables_enabled].should == true
       response.body[:map_view_block_price].should == 15
       response.body[:geocoding_quota].should == 15
+      response.body[:geocoding_block_price].should == 2
+      response.body[:notification].should == 'Test'
 
       # Double check that the user has been created properly
       user = User.filter(:email => @user_atts[:email]).first
@@ -120,6 +124,8 @@ feature "Superadmin's users API" do
       user.sync_tables_enabled.should == true
       user.map_view_block_price.should == 15
       user.geocoding_quota.should == 15
+      user.geocoding_block_price.should == 2
+      user.notification.should == 'Test'
     end
   end
 
@@ -137,7 +143,9 @@ feature "Superadmin's users API" do
                     :sync_tables_enabled => true,
                     :upgraded_at      => t,
                     :map_view_block_price => 200,
-                    :geocoding_quota => 230 }
+                    :geocoding_quota => 230,
+                    :geocoding_block_price => 5,
+                    :notification => 'Test' }
 
     # test to true
     put_json superadmin_user_path(user), { :user => @update_atts }, default_headers do |response|
@@ -155,6 +163,8 @@ feature "Superadmin's users API" do
     user.upgraded_at.to_s.should == t.to_s
     user.map_view_block_price.should == 200
     user.geocoding_quota.should == 230
+    user.geocoding_block_price.should == 5
+    user.notification.should == 'Test'
 
     # then test back to false
     put_json superadmin_user_path(user), { :user => {:private_tables_enabled => false} }, default_headers do |response|
@@ -164,6 +174,8 @@ feature "Superadmin's users API" do
     user.private_tables_enabled.should == false
     user.map_view_block_price.should == 200
     user.geocoding_quota.should == 230
+    user.geocoding_block_price.should == 5
+    user.notification.should == 'Test'
   end
 
 

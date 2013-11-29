@@ -7,19 +7,19 @@ module CartoDB
       ENCODING  = 'UTF-8'
       SCHEMA    = 'cdb_importer'
 
-      def initialize(table_name, filepath, pg_options, options={})
+      def initialize(table_name, filepath, pg_options, layer=nil, options={})
         self.filepath   = filepath
         self.pg_options = pg_options
         self.table_name = table_name
+        self.layer      = layer
         self.options    = options
       end #initialize
 
       def command
-        "#{pg_copy_option} #{encoding_option} #{executable_path} "  +
-        "#{output_format_option} #{postgres_options} "              +
-        "#{projection_option} #{layer_creation_options} "           + 
-        "#{filepath} #{track_points_option} #{layer_name_option} "  +
-        "#{new_layer_type_option}"
+        "#{osm_indexing_option} #{pg_copy_option} #{client_encoding_option} " +
+        "#{shape_encoding_option} #{executable_path} #{output_format_option} " +
+        "#{postgres_options} #{projection_option} #{layer_creation_options} " +
+        "#{filepath} #{layer} #{layer_name_option} #{new_layer_type_option}"
       end #command
 
       def executable_path
@@ -38,7 +38,7 @@ module CartoDB
       private
 
       attr_writer   :exit_code, :command_output
-      attr_accessor :filepath, :pg_options, :options, :table_name
+      attr_accessor :filepath, :pg_options, :options, :table_name, :layer
 
       def output_format_option
         "-f PostgreSQL"
@@ -48,10 +48,15 @@ module CartoDB
         "PG_USE_COPY=YES"
       end #pg_copy_option
 
-      def encoding_option
-        encoding = options.fetch(:encoding, ENCODING)
-        "PGCLIENTENCODING=#{encoding} SHAPE_ENCODING=#{encoding}"
+      def client_encoding_option
+        "PGCLIENTENCODING=#{options.fetch(:encoding, ENCODING)}"
       end #encoding_option
+
+      def shape_encoding_option
+        encoding = options.fetch(:shape_encoding, nil)
+        return unless encoding
+        "SHAPE_ENCODING=#{encoding}"
+      end
 
       def layer_name_option
         "-nln #{SCHEMA}.#{table_name}"
@@ -69,10 +74,6 @@ module CartoDB
       def layer_creation_options
         "-lco #{dimension_option} -lco #{precision_option}"
       end #layer_creatiopn_options
-
-      def track_points_option
-        return "track_points" if filepath =~ /\.gpx/
-      end #track_points_option
 
       def projection_option
         return nil if filepath =~ /\.csv/ || filepath =~ /\.ods/
@@ -92,12 +93,12 @@ module CartoDB
       end #precision_option
 
       def new_layer_type_option
-        "-nlt geometry"
+        "-nlt PROMOTE_TO_MULTI"
       end #new_layer_type_option
 
-      def append_option
-        "-append"
-      end #append_option
+      def osm_indexing_option
+        "OSM_USE_CUSTOM_INDEXING=NO"
+      end
     end # Ogr2ogr
   end # Importer2
 end # CartoDB

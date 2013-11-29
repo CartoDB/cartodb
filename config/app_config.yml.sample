@@ -1,6 +1,6 @@
 defaults: &defaults
   debug_assets: true
-  mandatory_keys:     [layer_opts, sql_api_domain, sql_api_endpoint, sql_api_port, varnish_management, redis, session_domain]
+  mandatory_keys:     [layer_opts, sql_api, varnish_management, redis, session_domain]
   session_domain:     '.localhost.lan'
   secret_token:       '71c2b25921b84a1cb21c71503ab8fb23'
   account_host:       'localhost:3000'
@@ -14,10 +14,17 @@ defaults: &defaults
       protocol:      'http'
       domain:        'localhost.lan'
       port:          '8181'
-  sql_api_protocol:   'http'
-  sql_api_domain:     'localhost.lan'
-  sql_api_endpoint:   '/api/v1/sql'
-  sql_api_port:       8080
+  sql_api:
+    private:
+      protocol:   'http'
+      domain:     'localhost.lan'
+      endpoint:   '/api/v1/sql'
+      port:       8080
+    public:
+      protocol:   'http'
+      domain:     'localhost.lan'
+      endpoint:   '/api/v1/sql'
+      port:       8080
   api_requests_service_url: ''
   developers_host:    'http://developers.localhost.lan:3000'
   google_analytics:
@@ -25,7 +32,7 @@ defaults: &defaults
     embeds:           ''
     domain:           ''
   varnish_management:
-    critical: true
+    critical: false
     host: '127.0.0.1'
     port: 6082
     purge_command: 'purge'
@@ -50,11 +57,16 @@ defaults: &defaults
   superadmin:
     username: "superadmin"
     password: "monkey"
+  geocoder:
+    app_id: ''
+    token:  ''
+    mailto: ''
   importer:
-    # OSM imports require osm2pgsql and this tool doesn't
-    # play well with pgbouncer.
-    osm2pgsql_port: 5432
-
+    s3:
+      access_key_id:
+      secret_access_key:
+      bucket_name:
+      url_ttl:
 
 
 

@@ -1,0 +1,121 @@
+
+  /**
+   *  Table header sync block
+   *
+   *  - Only sync header table/vis styles.
+   */
+
+  @import "compass/css3/inline-block";
+  @import "compass/css3/border-radius";
+  @import "compass/css3/images";
+  @import "compass/css3/transition";
+  @import "compass/css3/transform";
+  @import "../../common/mixins";
+  @import "../../common/vars";
+
+
+  div.sync_info {
+    position:absolute;
+    display:block;
+    bottom:48px;
+    left:0;
+    right:0;
+    padding:0 0 0 43px;
+    height:29px;
+    background:rgba(black, .2);
+    z-index:1;
+
+    &.failure {
+      background: url('/assets/layout/sync_error_bkg.png') repeat-x 0 0;
+      border-top:1px solid rgba(black, .2);
+    }
+
+    ul {
+      position:relative;
+      top:0;
+      @include inline-block();
+      height:29px;
+
+      li {
+        margin:0;
+        padding:0 7px 0 0;
+        line-height:29px;
+
+        &.separator {
+          padding:0 7px;
+          border-left:1px solid rgba(black, .20);
+        }
+      }
+    }
+
+    div.circle {
+      position:relative;
+      @include inline-block();
+      vertical-align:top;
+      width:10px;
+      height:10px;
+      margin-top:10px;
+
+      span.point {
+        position:absolute;
+        top:0;
+        left:0;
+        width:8px;
+        height:8px;
+        margin:0;
+        padding:0;
+        border:1px solid rgba(black,.5);
+        @include border-radius(10px);
+        @include background(linear-gradient(#C9FF26,#41B200));
+        text-shadow:none;
+        z-index:1;
+      }
+
+      span.pulse {
+        position: absolute;
+        left:-2px;
+        top:-2px;
+        height: 8px;
+        width: 8px;
+        @include animation(pulsate 1.5s ease-out infinite);
+        border: 3px solid #BBB;
+        @include border-radius(20px);
+        opacity: 0.0;
+        z-index:0;
+      }
+
+      &.failure {
+        span.point {
+          @include background(linear-gradient(#FFFF4D,#D18400));
+          border-color:rgba(black, .75);
+        }
+      }
+    }
+
+    p {
+      @include inline-block();
+      vertical-align:middle;
+      font-size:13px;
+      font-family:$text-fonts;
+      color:rgba(white,.65);
+      line-height:28px;
+
+      &.light {color:rgba(white, .35)}
+    }
+
+    a {
+      font-size:13px;
+      color:rgba(white, .65);
+    }
+
+  }
+
+
+
+
+  // Animation function
+  @include keyframes(pulsate) {
+    0% {@include transform(scale(0.1, 0.1)); opacity: 0.0;}
+    50% {opacity: 1.0;}
+    100% {@include transform(scale(1.4, 1.4)); opacity: 0.0;}
+  }

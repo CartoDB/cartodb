@@ -28,12 +28,18 @@ class Table < Sequel::Model(:user_tables)
 
   DEFAULT_THE_GEOM_TYPE = "geometry"
 
-  many_to_one :map
-  many_to_many :layers,
-                join_table: :layers_user_tables,
-                left_key: :user_table_id, right_key: :layer_id,
-                reciprocal: :user_tables
-  plugin :association_dependencies, :map => :destroy, layers: :nullify
+  # Associations
+  many_to_one  :map
+  many_to_many :layers, join_table: :layers_user_tables,
+                        left_key:   :user_table_id, 
+                        right_key:  :layer_id,
+                        reciprocal: :user_tables
+  one_to_one   :automatic_geocoding
+  one_to_many  :geocodings
+
+  plugin :association_dependencies, map:                  :destroy, 
+                                    layers:               :nullify,
+                                    automatic_geocoding:  :destroy
   plugin :dirty
 
   def_delegators :relator, *CartoDB::Table::Relator::INTERFACE
@@ -232,23 +238,25 @@ class Table < Sequel::Model(:user_tables)
     # => leaving both in tact while creating a new tthat contains both
   end
 
-  def import_to_cartodb
-    if migrate_existing_table.present?
+  def import_to_cartodb(uniname=nil)
+    @data_import ||= DataImport.where(id: data_import_id).first
+    if migrate_existing_table.present? || uniname
       @data_import.data_type = 'external_table'
-      @data_import.data_source = migrate_existing_table
+      @data_import.data_source = migrate_existing_table || uniname
       #@data_import.migrate
       @data_import.save
 
       # ensure unique name, also ensures self.name can override any imported table name
-      uniname = self.name ? get_valid_name(self.name) : get_valid_name(migrate_existing_table)
+      uniname ||= self.name ? get_valid_name(self.name) : get_valid_name(migrate_existing_table)
 
       # with table #{uniname} table created now run migrator to CartoDBify
       hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+        "host" => owner.database_host,
         "database" => database_name,
         :logger => ::Rails.logger,
         "username" => owner.database_username,
         "password" => owner.database_password,
-        :current_name => migrate_existing_table,
+        :current_name => migrate_existing_table || uniname,
         :suggested_name => uniname,
         :debug => (Rails.env.development?),
         :remaining_quota => owner.remaining_quota,
@@ -445,10 +453,10 @@ class Table < Sequel::Model(:user_tables)
         update_table_pg_stats
 
         # Set default triggers
-        add_python
-        set_trigger_update_updated_at
-        set_trigger_cache_timestamp
-        set_trigger_check_quota
+        #owner.add_python
+        #owner.create_function_invalidate_varnish
+        #owner.create_trigger_function_update_timestamp
+        set_triggers
       rescue => e
         self.handle_creation_error(e)
       end
@@ -502,7 +510,7 @@ class Table < Sequel::Model(:user_tables)
   #
   def send_tile_style_request(data_layer=nil)
     data_layer ||= self.map.data_layers.first
-    tile_request('POST', "/tiles/#{self.name}/style?map_key=#{owner.get_map_key}", {
+    tile_request('POST', "/tiles/#{self.name}/style?map_key=#{owner.api_key}", {
       'style_version' => data_layer.options["style_version"],
       'style'         => data_layer.options["tile_style"]
     })
@@ -572,7 +580,7 @@ class Table < Sequel::Model(:user_tables)
     if schema.nil? || !schema.flatten.include?(column)
       database.run(%Q{
         ALTER TABLE "#{name}"
-        ADD COLUMN #{column} timestamp
+        ADD COLUMN #{column} timestamptz
         DEFAULT NOW()
       })
     end
@@ -589,7 +597,7 @@ class Table < Sequel::Model(:user_tables)
           ALTER COLUMN #{column}
           SET DEFAULT now()
         })
-      elsif column_type == 'date'
+      elsif column_type == 'date' || column_type == 'timestamptz'
         database.run(%Q{
           ALTER TABLE "#{name}"
           ALTER COLUMN #{column}
@@ -603,7 +611,7 @@ class Table < Sequel::Model(:user_tables)
     database.run(%Q{
       ALTER TABLE "#{table}"
       ALTER COLUMN #{column}
-      TYPE timestamp without time zone
+      TYPE timestamptz
       USING to_timestamp(#{column}::float / 1000)
     })
     true
@@ -615,7 +623,7 @@ class Table < Sequel::Model(:user_tables)
     database.run(%Q{
       ALTER TABLE "#{table}"
       ALTER COLUMN #{column}
-      TYPE timestamp without time zone
+      TYPE timestamptz
       USING to_timestamp(#{column}, 'YYYY-MM-DD HH24:MI:SS.MS.US')
     })
     true
@@ -635,6 +643,7 @@ class Table < Sequel::Model(:user_tables)
 
 
   def name=(value)
+    value = value.downcase if value
     return if value == self[:name] || value.blank?
     new_name = get_valid_name(value, current_name: self.name)
 
@@ -765,6 +774,7 @@ class Table < Sequel::Model(:user_tables)
         primary_key = user_database.from(name).insert(make_sequel_compatible(attributes))
       rescue Sequel::DatabaseError => e
         message = e.message.split("\n")[0]
+        raise message if message =~ /Quota exceeded by/
 
         # If the type don't match the schema of the table is modified for the next valid type
         invalid_value = (m = message.match(/"([^"]+)"$/)) ? m[1] : nil
@@ -882,7 +892,7 @@ class Table < Sequel::Model(:user_tables)
     }.first[1]
   end #column_type_for
 
-  def column_names_for(db, table_name)
+  def self.column_names_for(db, table_name)
     db.schema(table_name, :reload => true).map{ |s| s[0].to_s }
   end #column_names
 
@@ -895,7 +905,7 @@ class Table < Sequel::Model(:user_tables)
     end
 
     owner.in_database do |user_database|
-      if column_names_for(user_database, name).include?(new_name)
+      if Table.column_names_for(user_database, name).include?(new_name)
         raise 'Column already exists' 
       end
       user_database.rename_column(name, old_name.to_sym, new_name.to_sym)
@@ -1113,13 +1123,6 @@ class Table < Sequel::Model(:user_tables)
   end
 
   # DB Triggers and things
-  # TODO: move to user (is db-wide, not table-wide)
-  def add_python
-    owner.in_database(:as => :superuser).run(<<-SQL
-      CREATE OR REPLACE PROCEDURAL LANGUAGE 'plpythonu' HANDLER plpython_call_handler;
-    SQL
-    )
-  end
 
   def has_trigger? trigger_name
     owner.in_database(:as => :superuser).select('trigger_name').from(:information_schema__triggers)
@@ -1136,6 +1139,24 @@ class Table < Sequel::Model(:user_tables)
     owner.in_database(:as => :superuser).select(:indexname)
       .from(:pg_indexes).where(:tablename => self.name)
       .all.map { |t| t[:indexname] }
+  end
+
+  def set_triggers
+
+    set_trigger_update_updated_at
+
+    # NOTE: We're dropping the cache_checkpoint here
+    #       as a poor man's migration path from 2.1.
+    #       Once an official 2.2 is out and a proper
+    #       migration script is written this line can
+    #       be removed. For the record, the actual cache
+    #       (varnish) management is now triggered indirectly
+    #       by the "track_updates" trigger.
+    #
+    drop_trigger_cache_checkpoint
+
+    set_trigger_track_updates
+    set_trigger_check_quota
   end
 
   def set_trigger_the_geom_webmercator
@@ -1178,62 +1199,38 @@ TRIGGER
     )
   end
 
-  # move to C
-  def set_trigger_cache_timestamp
-
-    varnish_host = Cartodb.config[:varnish_management].try(:[],'host') || '127.0.0.1'
-    varnish_port = Cartodb.config[:varnish_management].try(:[],'port') || 6082
-    varnish_timeout = Cartodb.config[:varnish_management].try(:[],'timeout') || 5
-    varnish_critical = Cartodb.config[:varnish_management].try(:[],'critical') == true ? 1 : 0
-    varnish_retry = Cartodb.config[:varnish_management].try(:[],'retry') || 5
-    purge_command = Cartodb::config[:varnish_management]["purge_command"]
-
+  # Drop "cache_checkpoint", if it exists
+  # NOTE: this is for migrating from 2.1
+  def drop_trigger_cache_checkpoint
     owner.in_database(:as => :superuser).run(<<-TRIGGER
-    CREATE OR REPLACE FUNCTION update_timestamp() RETURNS trigger AS
-    $$
-        critical = #{varnish_critical}
-        timeout = #{varnish_timeout}
-        retry = #{varnish_retry}
+    DROP TRIGGER IF EXISTS cache_checkpoint ON "#{self.name}";
+TRIGGER
+    )
+  end
 
-        client = GD.get('varnish', None)
-
-        while True:
-
-          if not client:
-              try:
-                import varnish
-                client = GD['varnish'] = varnish.VarnishHandler(('#{varnish_host}', #{varnish_port}, timeout))
-              except Exception as err:
-                plpy.warning('Varnish connection error: ' +  str(err))
-                # NOTE: we won't retry on connection error
-                if critical:
-                  plpy.error('Varnish connection error: ' +  str(err))
-                break
-
-          try:
-            table_name = TD["table_name"]
-            client.fetch('#{purge_command} obj.http.X-Cache-Channel ~ "^#{self.database_name}:(.*%s.*)|(table)$"' % table_name)
-            break
-          except Exception as err:
-            plpy.warning('Varnish fetch error: ' + str(err))
-            client = GD['varnish'] = None # force reconnect
-            if not retry:
-              if critical:
-                plpy.error('Varnish fetch error: ' +  str(err))
-              break
-            retry -= 1 # try reconnecting
-    $$
-    LANGUAGE 'plpythonu' VOLATILE;
-
+  # Set a "cache_checkpoint" trigger to invalidate varnish
+  # TODO: drop this trigger, delegate to a trigger on CDB_TableMetadata
+  def set_trigger_cache_checkpoint
+    owner.in_database(:as => :superuser).run(<<-TRIGGER
+    BEGIN;
     DROP TRIGGER IF EXISTS cache_checkpoint ON "#{self.name}";
     CREATE TRIGGER cache_checkpoint BEFORE UPDATE OR INSERT OR DELETE OR TRUNCATE ON "#{self.name}" EXECUTE PROCEDURE update_timestamp();
+    COMMIT;
+TRIGGER
+    )
+  end
 
+  # Set a "track_updates" trigger to keep CDB_TableMetadata updated
+  def set_trigger_track_updates
+
+    owner.in_database(:as => :superuser).run(<<-TRIGGER
+    BEGIN;
     DROP TRIGGER IF EXISTS track_updates ON "#{self.name}";
     CREATE trigger track_updates
       AFTER INSERT OR UPDATE OR DELETE OR TRUNCATE ON "#{self.name}"
       FOR EACH STATEMENT
       EXECUTE PROCEDURE cdb_tablemetadata_trigger();
-
+    COMMIT;
 TRIGGER
     )
   end
@@ -1249,6 +1246,7 @@ TRIGGER
     # (it'll always run before each statement)
     check_probability_factor = 0.001 # TODO: base on database usage ?
     owner.in_database(:as => :superuser).run(<<-TRIGGER
+    BEGIN;
     DROP TRIGGER IF EXISTS test_quota ON "#{self.name}";
     CREATE TRIGGER test_quota BEFORE UPDATE OR INSERT ON "#{self.name}"
       EXECUTE PROCEDURE CDB_CheckQuota(1, #{self.owner.quota_in_bytes});
@@ -1257,6 +1255,7 @@ TRIGGER
       FOR EACH ROW
       EXECUTE PROCEDURE CDB_CheckQuota( #{check_probability_factor},
                                         #{self.owner.quota_in_bytes} );
+    COMMIT;
   TRIGGER
   )
   end
@@ -1331,7 +1330,7 @@ TRIGGER
   # See http://www.postgresql.org/docs/9.1/static/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS
   def self.get_valid_table_name(name, options = {})
     # Initial name cleaning
-    name = name.to_s.strip.downcase
+    name = name.to_s.strip #.downcase
     name = 'untitled_table' if name.blank?
 
     # Valid names start with a letter or an underscore
@@ -1460,8 +1459,8 @@ TRIGGER
           column :cartodb_id, "SERIAL PRIMARY KEY"
           String :name
           String :description, :text => true
-          DateTime :created_at, :default => Sequel::CURRENT_TIMESTAMP
-          DateTime :updated_at, :default => Sequel::CURRENT_TIMESTAMP
+          column :created_at, 'timestamp with time zone', :default => Sequel::CURRENT_TIMESTAMP
+          column :updated_at, 'timestamp with time zone', :default => Sequel::CURRENT_TIMESTAMP
         end
       else
         sanitized_force_schema = force_schema.split(',').map do |column|
@@ -1473,8 +1472,9 @@ TRIGGER
           end
         end
         sanitized_force_schema.unshift("cartodb_id SERIAL PRIMARY KEY").
-                               unshift("created_at timestamp").
-                               unshift("updated_at timestamp")
+                               unshift("created_at timestamp with time zone").
+                               unshift("updated_at timestamp with time zone")
+        puts sanitized_force_schema.inspect
         user_database.run(<<-SQL
 CREATE TABLE "#{self.name}" (#{sanitized_force_schema.join(', ')});
 ALTER TABLE  "#{self.name}" ALTER COLUMN created_at SET DEFAULT now();
@@ -1553,7 +1553,7 @@ SQL
       # update tile styles
       begin
         # get old tile style
-        #old_style = tile_request('GET', "/tiles/#{@name_changed_from}/style?map_key=#{owner.get_map_key}").try(:body)
+        #old_style = tile_request('GET', "/tiles/#{@name_changed_from}/style?map_key=#{owner.api_key}").try(:body)
 
         # parse old CartoCSS style out
         #old_style = JSON.parse(old_style).with_indifferent_access[:style]
@@ -1562,7 +1562,7 @@ SQL
         #old_style.gsub!(@name_changed_from, self.name)
 
         # post new style
-        #tile_request('POST', "/tiles/#{self.name}/style?map_key=#{owner.get_map_key}", {"style" => old_style})
+        #tile_request('POST', "/tiles/#{self.name}/style?map_key=#{owner.api_key}", {"style" => old_style})
       rescue => e
         CartoDB::Logger.info "tilestyle#rename error for", "#{e.inspect}"
       end
@@ -1571,25 +1571,24 @@ SQL
   end
 
   def delete_tile_style
-    tile_request('DELETE', "/tiles/#{self.name}/style?map_key=#{owner.get_map_key}")
+    tile_request('DELETE', "/tiles/#{self.name}/style?map_key=#{owner.api_key}")
   rescue => exception
     CartoDB::Logger.info "tilestyle#delete error", "#{exception.inspect}"
   end
 
   def flush_cache
-    tile_request('DELETE', "/tiles/#{self.name}/flush_cache?map_key=#{owner.get_map_key}")
+    tile_request('DELETE', "/tiles/#{self.name}/flush_cache?map_key=#{owner.api_key}")
   rescue => exception
     CartoDB::Logger.info "cache#flush error", "#{exception.inspect}"
   end
 
   def tile_request(request_method, request_uri, form = {})
-    uri  = "#{owner.username}.#{Cartodb.config[:tiler_domain]}"
-    ip   = '127.0.0.1'
-    port = Cartodb.config[:tiler_port] || 80
-    http_req = Net::HTTP.new ip, port
-    http_req.use_ssl = Cartodb.config[:tiler_protocol] == 'https' ? true : false
+    uri  = "#{owner.username}.#{Cartodb.config[:tiler]['private']['domain']}"
+    port = Cartodb.config[:tiler]['private']['port'] || 443
+    http_req = Net::HTTP.new uri, port
+    http_req.use_ssl = Cartodb.config[:tiler]['private']['protocol'] == 'https' ? true : false
     http_req.verify_mode = OpenSSL::SSL::VERIFY_NONE
-    request_headers = {'Host' => "#{owner.username}.#{Cartodb.config[:tiler_domain]}"}
+    request_headers = {'Host' => uri}
     case request_method
       when 'GET'
         http_res = http_req.request_get(request_uri, request_headers)

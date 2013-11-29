@@ -186,6 +186,18 @@ describe Visualization::Member do
       it 'must be available for the user (uniqueness)' do
         pending
       end
+
+      it 'downcases names for table_visualizations' do
+        visualization = Visualization::Member.new(type: 'table')
+        visualization.name = 'visualization_1'
+        visualization.name.should == 'visualization_1'
+        visualization.name = 'Visualization_1'
+        visualization.name.should == 'visualization_1'
+
+        visualization = Visualization::Member.new(type: 'derived')
+        visualization.name = 'Visualization 1'
+        visualization.name.should == 'Visualization 1'
+      end
     end #name
 
     describe '#full_errors' do

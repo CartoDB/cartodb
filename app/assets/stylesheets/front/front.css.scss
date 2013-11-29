@@ -5,10 +5,16 @@
    */
 
 
-  @import "compass"; 
+  @import "compass/css3/box-shadow";
+  @import "compass/css3/border-radius";
+  @import "compass/css3/inline-block";
+  @import "compass/css3/text-shadow";
+  @import "compass/css3/images";
   @import "../common/mixins";
   @import "../common/fonts";
   @import "../common/buttons";
+  @import "../common/common-sprite";
+  @import "../front/front-sprite";
 
 
   // Styles for static pages like 404, 500, HTML5,...
@@ -211,7 +217,7 @@
             font-size:0;
             text-transform:uppercase;
             text-indent:-9999px;
-            @include icons-sprite(error);
+            @include front-sprite(error);
           }
 
           p {
@@ -285,7 +291,7 @@
         padding:0;
         background:none;
         border:none;
-        a.cartodb {display:block; width:124px; height:42px; @include text-indent(); @include icons-sprite(cartodb_opacity);}
+        a.cartodb {display:block; width:124px; height:42px; @include text-indent(); @include front-sprite(cartodb_opacity);}
       }
     }
 
@@ -329,7 +335,7 @@
 
         h1 {
           margin:0;
-          a {display:block; width:124px; height:42px; @include text-indent(); @include icons-sprite(cartodb_dark);}
+          a {display:block; width:124px; height:42px; @include text-indent(); @include front-sprite(cartodb_dark);}
         } 
       }
 

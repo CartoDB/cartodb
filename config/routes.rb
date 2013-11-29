@@ -109,7 +109,7 @@ CartoDB::Application.routes.draw do
       end
 
       # Geocoder
-      resources :geocodings, :only                  => [:create, :show, :index]      
+      resources :geocodings, :only                  => [:create, :show, :index, :update]
 
       get     'viz/tags' => 'tags#index', :as => 'list_tags'
       get     'viz'                                 => 'visualizations#index'
@@ -136,6 +136,8 @@ CartoDB::Application.routes.draw do
     end
 
     get '/v2/viz/:id/viz'    => 'api/json/visualizations#vizjson2', as: :vizjson
+    get '/v2/wms'            => 'api/json/wms#proxy'
+    
   end
 end
 

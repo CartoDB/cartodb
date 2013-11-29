@@ -8,7 +8,7 @@ In absence of specific instructions, after upgrading the rails code to
  $ bundle exec rake db:migrate
  $ bundle exec rake cartodb:db:load_functions
  $ bundle exec rake cartodb:db:load_triggers
- $ bundle exec rake cartodb:db:create_importer_schema
+ $ bundle exec rake cartodb:db:create_schemas
  $ bundle exec rake cartodb:db:migrate_to[<version>]
 
 NOTE: redis server must be listening on the configured 

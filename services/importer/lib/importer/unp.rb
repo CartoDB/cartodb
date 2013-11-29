@@ -5,6 +5,7 @@ require 'open3'
 require_relative '../importer'
 require_relative './exceptions'
 require_relative './kml_splitter'
+require_relative './osm_splitter'
 
 module CartoDB
   module Importer2
@@ -12,11 +13,12 @@ module CartoDB
       HIDDEN_FILE_REGEX     = /^(\.|\_{2})/
       UNP_READ_ERROR_REGEX  = /.*Cannot read.*/
       COMPRESSED_EXTENSIONS = %w{ .zip .gz .tgz .tar.gz .bz2 .tar .kmz }
-      SUPPORTED_FORMATS       = %w{
+      SUPPORTED_FORMATS     = %w{
         .csv .shp .ods .xls .xlsx .tif .tiff .kml .kmz
         .js .json .tar .gz .tgz .osm .bz2 .geojson 
-        .gpx .sql .tab
+        .gpx .sql .tab .tsv .txt
       }
+      SPLITTERS             = [KmlSplitter, OsmSplitter]
 
       attr_reader :source_files
 
@@ -28,9 +30,11 @@ module CartoDB
         return without_unpacking(path) unless compressed?(path)
         extract(path)
         crawl(temporary_directory).each { |path| process(path) }
-        @source_files = split_kmls(source_files)
+        @source_files = split(source_files)
         self
       rescue => exception
+        puts exception.to_s
+        puts exception.backtrace
         raise ExtractionError
       end #run
 
@@ -38,7 +42,7 @@ module CartoDB
         local_path = "#{temporary_directory}/#{File.basename(path)}"
         FileUtils.cp(path, local_path)
         self.source_files.push(source_file_for(normalize(local_path)))
-        @source_files = split_kmls(source_files)
+        @source_files = split(source_files)
         self
       end #without_unpacking
 
@@ -53,6 +57,7 @@ module CartoDB
       def crawl(path, files=[])
         Dir.foreach(path) do |subpath|
           next if hidden?(subpath)
+          next if subpath =~ /.*readme.*\.txt/i
 
           fullpath = normalize("#{path}/#{subpath}")
           (crawl(fullpath, files) and next) if File.directory?(fullpath)
@@ -80,7 +85,9 @@ module CartoDB
       end #extract
 
       def source_file_for(path)
-        SourceFile.new(path)
+        source_file = SourceFile.new(path)
+        source_file.layer = 'track_points' if source_file.extension =~ /\.gpx/
+        source_file
       end #source_file_for
 
       def command_for(path)
@@ -106,6 +113,8 @@ module CartoDB
           .gsub(/"/, '')
           .gsub(/&/, '')
           .downcase
+          .gsub(/\.txt/, '.csv')
+          .gsub(/\.tsv/, '.csv')
       end #underscore
 
       def rename(origin, destination)
@@ -140,8 +149,21 @@ module CartoDB
         @temporary_directory
       end #temporary_directory
 
-      def split_kmls(source_files)
-        KmlSplitter.new(source_files, temporary_directory).run.source_files
+      def split(source_files)
+        source_files.flat_map { |source_file|
+          splitter = splitter_for(source_file)
+          if splitter
+            splitter.new(source_file, temporary_directory)
+              .run.source_files
+          else
+            source_file
+          end
+        }
+      end
+
+      def splitter_for(source_file)
+        SPLITTERS.select { |splitter| splitter.support?(source_file) }
+          .first
       end
       
       private

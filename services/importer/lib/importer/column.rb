@@ -73,6 +73,10 @@ module CartoDB
           )
         })
         self
+      rescue => exception
+        job.log exception.to_s
+        job.log exception.backtrace
+        self
       end #convert_from_geojson
 
       def convert_from_kml_point

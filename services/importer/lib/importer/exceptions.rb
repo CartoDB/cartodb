@@ -19,6 +19,8 @@ module CartoDB
     class UnknownSridError                      < StandardError; end
     class UnsupportedFormatError                < StandardError; end
     class UploadError                           < StandardError; end
+    class DownloadError                         < StandardError; end
+    class GDriveNotPublicError                  < StandardError; end
     class EncodingDetectionError                < StandardError; end
 
     ERRORS_MAP = {
@@ -37,6 +39,8 @@ module CartoDB
       UnknownSridError                      => 3008,
       UnsupportedFormatError                => 1002,
       UploadError                           => 1000,
+      DownloadError                         => 1001,
+      GDriveNotPublicError                  => 1010,
       EncodingDetectionError                => 2002
     }
   end # Importer2

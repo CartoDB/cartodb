@@ -4,7 +4,8 @@ require_relative '../../geocoder/lib/geocoder'
 module CartoDB
   class TableGeocoder
 
-    attr_reader   :connection, :working_dir, :geocoder, :result, :temp_table_name
+    attr_reader   :connection, :working_dir, :geocoder, :result, 
+                  :temp_table_name, :max_rows
 
     attr_accessor :table_name, :formatter, :remote_id
 
@@ -15,6 +16,8 @@ module CartoDB
       @table_name  = arguments[:table_name]
       @formatter   = arguments[:formatter]
       @remote_id   = arguments[:remote_id]
+      @schema      = arguments[:schema] || 'cdb'
+      @max_rows    = arguments[:max_rows] || 1000000
       @geocoder    = CartoDB::Geocoder.new(
         app_id:     arguments[:app_id],
         token:      arguments[:token],
@@ -25,6 +28,7 @@ module CartoDB
     end # initialize
 
     def run
+      add_georef_status_column
       csv_file = generate_csv
       start_geocoding_job(csv_file)
     end
@@ -33,12 +37,22 @@ module CartoDB
       csv_file = File.join(working_dir, "wadus.csv")
       connection.run(%Q{
         COPY (
-          SELECT concat_ws(', ', #{formatter}) as recId, concat_ws(', ', #{formatter}) as searchText 
+          SELECT #{clean_formatter} as recId, #{clean_formatter} as searchText 
           FROM #{table_name}
+          WHERE cartodb_georef_status IS FALSE OR cartodb_georef_status IS NULL
           GROUP BY recId
+          LIMIT #{max_rows}
         ) TO '#{csv_file}' DELIMITER ',' CSV HEADER
       })
       return csv_file
+    end
+
+    def clean_formatter
+      "trim(both from regexp_replace(regexp_replace(concat(#{formatter}), E'[\\n\\r]+', ' ', 'g'), E'\"', '', 'g'))"
+    end
+
+    def cancel
+      geocoder.cancel
     end
 
     def start_geocoding_job(csv_file)
@@ -91,7 +105,7 @@ module CartoDB
     def import_results_to_temp_table
       connection.run(%Q{
         COPY #{temp_table_name}
-        FROM '#{Dir[File.join(working_dir, '*_out.txt')][0]}' 
+        FROM '#{deflated_results_path}' 
         DELIMITER ',' CSV
       })
     end
@@ -102,21 +116,45 @@ module CartoDB
         SET the_geom = ST_GeomFromText(
             'POINT(' || orig.displayLongitude || ' ' ||
               orig.displayLatitude || ')', 4326
-            )
+            ),
+            cartodb_georef_status = true
         FROM #{temp_table_name} AS orig
-        WHERE concat_ws(', ', #{formatter}) = orig.recId
+        WHERE #{clean_formatter} = orig.recId
       })
+    end
+
+    def add_georef_status_column
+      connection.run(%Q{
+        ALTER TABLE #{table_name} 
+        ADD COLUMN cartodb_georef_status BOOLEAN DEFAULT FALSE
+      })
+    rescue Sequel::DatabaseError => e
+      raise unless e.message =~ /column .* of relation .* already exists/
+      cast_georef_status_column
+    end
+
+    def cast_georef_status_column
+      connection.run(%Q{
+        ALTER TABLE #{table_name} ALTER COLUMN cartodb_georef_status 
+        TYPE boolean USING cast(cartodb_georef_status as boolean)
+      })
+    rescue => e
+      raise "Error converting cartodb_georef_status to boolean, please, convert it manually or remove it."
     end
 
     def temp_table_name
       return nil unless remote_id
-      @temp_table_name = "geo_#{remote_id}"
+      @temp_table_name = "#{@schema}.geo_#{remote_id}"
       count = 0
       while connection.table_exists?(@temp_table_name) do
         count = count + 1
         @temp_table_name = @temp_table_name.sub(/(\_\d+)*$/, "_#{count}")
       end
       return @temp_table_name
+    end
+
+    def deflated_results_path
+      Dir[File.join(working_dir, '*_out.txt')][0]
     end
 
   end # Geocoder

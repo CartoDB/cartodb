@@ -38,7 +38,7 @@ module CartoDB
       attr_reader :map
 
       def data_layer_copies_from(map)
-        map.data_layers.map { |layer| layer.copy }
+        map.carto_and_torque_layers.map { |layer| layer.copy }
       end #data_layer_copies_from
 
       def layer_copies_from(map)

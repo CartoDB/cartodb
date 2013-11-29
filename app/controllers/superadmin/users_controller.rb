@@ -42,11 +42,14 @@ class Superadmin::UsersController < Superadmin::SuperadminController
       @user.map_view_quota          = attributes[:map_view_quota]           if attributes.has_key?(:map_view_quota)
       @user.map_view_block_price    = attributes[:map_view_block_price]     if attributes.has_key?(:map_view_block_price)
       @user.geocoding_quota         = attributes[:geocoding_quota]          if attributes.has_key?(:geocoding_quota)
+      @user.geocoding_block_price   = attributes[:geocoding_block_price]    if attributes.has_key?(:geocoding_block_price)
       @user.period_end_date         = attributes[:period_end_date]          if attributes.has_key?(:period_end_date)
       @user.max_layers              = attributes[:max_layers]               if attributes.has_key?(:max_layers)
       @user.user_timeout            = attributes[:user_timeout]             if attributes.has_key?(:user_timeout)
       @user.database_timeout        = attributes[:database_timeout]         if attributes.has_key?(:database_timeout)
+      @user.database_host           = attributes[:database_host]            if attributes.has_key?(:database_host)
       @user.upgraded_at             = attributes[:upgraded_at]              if attributes.has_key?(:upgraded_at)
+      @user.notification            = attributes[:notification]             if attributes.has_key?(:notification)
 
       if attributes[:password].present?
         @user.password              = attributes[:password]
@@ -82,11 +85,14 @@ class Superadmin::UsersController < Superadmin::SuperadminController
       @user.map_view_quota          = attributes[:map_view_quota]           if attributes.has_key?(:map_view_quota)
       @user.map_view_block_price    = attributes[:map_view_block_price]     if attributes.has_key?(:map_view_block_price)
       @user.geocoding_quota         = attributes[:geocoding_quota]          if attributes.has_key?(:geocoding_quota)
+      @user.geocoding_block_price   = attributes[:geocoding_block_price]    if attributes.has_key?(:geocoding_block_price)
       @user.period_end_date         = attributes[:period_end_date]          if attributes.has_key?(:period_end_date)
       @user.max_layers              = attributes[:max_layers]               if attributes.has_key?(:max_layers)
       @user.user_timeout            = attributes[:user_timeout]             if attributes.has_key?(:user_timeout)
       @user.database_timeout        = attributes[:database_timeout]         if attributes.has_key?(:database_timeout)
+      @user.database_host           = attributes[:database_host]            if attributes.has_key?(:database_host)
       @user.upgraded_at             = attributes[:upgraded_at]              if attributes.has_key?(:upgraded_at)
+      @user.notification            = attributes[:notification]             if attributes.has_key?(:notification)
 
       if attributes[:password].present?
         @user.password = attributes[:password]

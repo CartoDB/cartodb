@@ -7,10 +7,10 @@
  *		a.copy
  */
 
-@import "compass";
-@import "../common/sprites";
+
 @import "../common/mixins";
 @import "../common/forms";
+@import "../elements/elements-sprite";
 
 div.copy {
   position:relative;
@@ -45,11 +45,11 @@ div.copy {
     width:26px;
     height:27px;
     @include text-indent();
-    @include icons-sprite(copy_button);
+    @include elements-sprite(copy_button);
     z-index:3;
-    &.hover {@include icons-sprite(copy_button, $offset-y:-27px);}
-    &.focus {@include icons-sprite(copy_button,$offset-y:-27px);}
-    &.active {@include icons-sprite(copy_button,$offset-y:-54px);}
+    &.hover {@include elements-sprite(copy_button, $offset-y:-27px);}
+    &.focus {@include elements-sprite(copy_button,$offset-y:-27px);}
+    &.active {@include elements-sprite(copy_button,$offset-y:-54px);}
   }
 
 }

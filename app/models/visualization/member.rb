@@ -91,6 +91,7 @@ module CartoDB
       end #unlink_from
 
       def name=(name)
+        name = name.downcase if name && table?
         self.name_changed = true if name != @name && !@name.nil?
         super(name)
       end #name=
@@ -179,8 +180,8 @@ module CartoDB
       end #propagate_name_to
 
       def set_timestamps
-        self.created_at ||= Time.now.utc
-        self.updated_at = Time.now.utc
+        self.created_at ||= Time.now
+        self.updated_at = Time.now
         self
       end #set_timestamps
 

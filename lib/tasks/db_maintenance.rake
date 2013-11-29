@@ -18,6 +18,20 @@ namespace :cartodb do
       end
     end
 
+    desc "Copy user api_keys from redis to postgres"
+    task :copy_api_keys_from_redis => :environment do
+      count = User.count
+      User.all.each_with_index do |user, i|
+        begin
+          user.this.update api_key: $users_metadata.HGET(user.key, 'map_key')
+          raise "No API key!!" if user.reload.api_key.blank?
+          puts "(#{i+1} / #{count}) OK   #{user.username}"
+        rescue => e
+          puts "(#{i+1} / #{count}) FAIL #{user.username} #{e.message}"
+        end
+      end
+    end # copy_api_keys_from_redis
+
     desc "Rebuild user tables/layers join table"
     task :register_table_dependencies => :environment do
       count = Map.count
@@ -64,10 +78,8 @@ namespace :cartodb do
         begin
           user.tables.all.each do |table|
             begin
-              table.add_python
-              table.set_trigger_check_quota
-              table.set_trigger_update_updated_at
-              table.set_trigger_cache_timestamp
+              # set triggers
+              table.set_triggers
             rescue => e
               puts e
               next
@@ -101,10 +113,7 @@ namespace :cartodb do
           end
           
           # reset triggers
-          table.add_python
-          table.set_trigger_update_updated_at
-          table.set_trigger_cache_timestamp
-          table.set_trigger_check_quota
+          table.set_triggers
         end  
       end
     end
@@ -361,6 +370,13 @@ namespace :cartodb do
       require Rails.root.join("lib/cartodb/generic_migrator.rb")
 
       CartoDB::GenericMigrator.new(args[:version]).rollback!
+    end
+    
+    desc "Save users metadata in redis"
+    task :save_users_metadata => :environment do
+      User.all.each do |u|
+        u.save_metadata
+      end
     end
 
   end

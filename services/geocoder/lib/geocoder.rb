@@ -20,7 +20,7 @@ module CartoDB
 
     def initialize(arguments)
       @input_file = arguments[:input_file]
-      @base_url   = "http://batch.geo.st.nlp.nokia.com/search-batch/6.2/jobs"
+      @base_url   = "http://batch.geo.nlp.nokia.com/search-batch/6.2/jobs"
       @request_id = arguments[:request_id]
       @app_id     = arguments.fetch(:app_id)
       @token      = arguments.fetch(:token)
@@ -37,6 +37,14 @@ module CartoDB
       handle_api_error(response)
       @request_id = extract_response_field(response.body)
     end # upload
+
+    def cancel
+      response = Typhoeus.put api_url(action: 'cancel')
+      handle_api_error(response)
+      @status         = extract_response_field(response.body, '//Response/Status')
+      @processed_rows = extract_response_field(response.body, '//Response/ProcessedCount')
+      @total_rows     = extract_response_field(response.body, '//Response/TotalCount')
+    end # cancel
 
     def update_status
       response = Typhoeus.get api_url(action: 'status')
@@ -69,9 +77,7 @@ module CartoDB
     end # extract_response_field
 
     def handle_api_error(response)
-      if response.code != 200
-        raise "#{extract_response_field(response.body, '//Details')}"
-      end
+      raise "Geocoding API communication failure: #{extract_response_field(response.body, '//Details')}" if response.code != 200
     end # handle_api_errpr
 
   end # Geocoder

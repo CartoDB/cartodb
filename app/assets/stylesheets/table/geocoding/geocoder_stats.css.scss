@@ -1,0 +1,44 @@
+
+
+  /** 
+   *  Geocoder user stats styles
+   *
+   *  For the moment only used in geocoding dialog.
+   */
+
+  @import "compass/css3/border-radius";
+  @import "compass/css3/images";
+
+  div.geocoder_stats {
+    position:relative;
+    display:block;
+    padding:25px 40px;
+    background:#F2F2F2;
+    border-top:1px solid #DFDFDF;
+    border-bottom:1px solid #DFDFDF;
+
+    p,a {font-size:13px;}
+
+    a {text-decoration:underline; font-weight:bold}
+
+    div.progress {
+      display:block;
+      height:8px;
+      margin-top:9px;
+      @include border-radius(8px);
+      background:#E2E2E2;
+      overflow:hidden;
+
+      span.used {
+        display:block;
+        height:8px;
+        min-width:3%;
+        margin:0;
+        @include background(linear-gradient(#85acdc, #5990ce));
+        @include border-radius(8px);
+
+        &.warning {@include background(linear-gradient(#E7B100, #FF9326));}
+        &.danger {@include background(linear-gradient(#FF7373, #FF4D4D));}
+      }
+    }
+  }

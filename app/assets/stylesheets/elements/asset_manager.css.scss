@@ -3,7 +3,9 @@
    *  Asset manager loader
    */
 
-  @import "compass";
+  @import "compass/css3/inline-block";
+  @import "compass/css3/opacity";
+  @import "compass/css3/images";
   @import "../common/mixins";
 
   .asset_manager {

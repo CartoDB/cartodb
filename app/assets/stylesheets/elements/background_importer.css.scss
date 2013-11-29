@@ -2,8 +2,8 @@
  * Awesomico loader after uploading a table
  */
 
-@import "compass";
-@import "../common/sprites";
+@import "compass/css3/background-size";
+@import "../elements/elements-sprite";
 @import "../common/mixins";
 
 .background_importer{
@@ -31,13 +31,13 @@
 
     &.ok{
       padding: 0 0 0 22px;
-      @include icons-sprite(background_loader_ok);
+      @include elements-sprite(background_loader_ok);
       margin:0;
     }
 
     &.error{
       padding: 0 0 0 22px;
-      @include icons-sprite(background_loader_error);
+      @include elements-sprite(background_loader_error);
       margin:0;
       color:#EB2466;
 

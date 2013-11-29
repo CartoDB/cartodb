@@ -3,11 +3,18 @@
    * Styles for the CartoDB table
    */
 
+  // @import "compass/css3/box-shadow";
+  // @import "compass/css3/border-radius";
+  // @import "compass/css3/transform";
+  // @import "compass/css3/transition";
+  // @import "compass/css3/inline-block";
+  // @import "compass/css3/images";
+  // @import "compass/css3/opacity";
+  // @import "compass/css3/box-sizing";
 
-  @import "compass";
   @import "../common/vars";
-  @import "../common/sprites";
   @import "../common/forms";
+  @import "../table/table-sprite";
 
   div.panes {
     position:absolute;
@@ -15,6 +22,9 @@
     right:0;
     bottom:0;
     left:0;
+
+    // When table/layer is synced
+    &.synced {top:177px}
 
     .emptyTableContainer {
       position:relative;
@@ -674,11 +684,11 @@
       width: 13px;
       margin:0 0 1px;
       padding:0;
-      @include icons-sprite(download_blue);
+      @include table-sprite(download_blue);
     }
 
     &:hover span.icon {
-      @include icons-sprite(download_dark);
+      @include table-sprite(download_dark);
     }
   }
 

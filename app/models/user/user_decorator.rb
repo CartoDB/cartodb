@@ -12,16 +12,24 @@ module CartoDB
         table_count: self.table_count,
         visualization_count: self.visualization_count,
         failed_import_count: self.failed_import_count,
+        success_import_count: self.success_import_count,
+        import_count: self.import_count,
+        last_visualization_created_at: self.last_visualization_created_at,
         byte_quota: self.quota_in_bytes,
         remaining_table_quota: self.remaining_table_quota,
         remaining_byte_quota: self.remaining_quota.to_f,
         api_calls: calls,
         api_calls_quota: self.map_view_quota,
         api_calls_block_price: self.map_view_block_price,
-        geocoding_quota: self.geocoding_quota,
+        geocoding: {
+          quota:       self.geocoding_quota,
+          block_price: self.geocoding_block_price,
+          monthly_use: self.get_geocoding_calls,
+          hard_limit:  self.account_type == 'FREE'
+        },
         billing_period: self.last_billing_cycle,
         max_layers: self.max_layers,
-        api_key: self.get_map_key,
+        api_key: self.api_key,
         layers: self.layers.map(&:public_values),
         trial_ends_at: self.trial_ends_at,
         upgraded_at: self.upgraded_at,
@@ -33,7 +41,8 @@ module CartoDB
           import_quota: self.import_quota,
           remove_logo: self.remove_logo?,
           sync_tables: self.sync_tables_enabled
-        }
+        },
+        notification: self.notification
       }
 
       if !options[:extended]

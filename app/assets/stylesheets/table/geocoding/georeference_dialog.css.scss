@@ -1,0 +1,108 @@
+
+/**
+ * Georeference dialog
+ */
+
+@import "compass/css3/inline-block";
+@import "../../common/vars";
+@import "../../common/forms";
+@import "../../common/mixins";
+
+
+.georeference_dialog {
+
+  // option container
+  .cont {
+    display:none;
+    width:100%;
+    margin-left:20px;
+  }
+
+  // Dialog styles
+  div.content {
+    padding:40px 40px 30px!important;
+
+    ul li {
+      margin-bottom:25px;
+      border-bottom:none!important;
+
+      &:last-child {margin-bottom:0}
+      &.active {
+        div.cont {display:block}
+      }
+    }
+  }
+
+
+  // Address option
+  .address {
+    div.info {
+      margin-left:0!important;
+      margin-right:20px!important;
+    }
+
+    // Default input
+    @include default-input;
+    @include default-form-info();
+
+    input {
+      margin-top:15px;
+      width: 448px;
+    }
+
+    div.hint {
+      position:relative;
+      width:472px;
+      margin-top:15px;
+      background:image-url('layout/hint_line_bkg.png') repeat 0 -3px;
+
+      p {
+        @include inline-block();
+        vertical-align:top;
+        width:415px;
+        line-height:18px;
+      }
+
+      span {
+        @include inline-block();
+        vertical-align:top;
+        margin:4px 10px 0 14px;
+        font:bold 11px $text-fonts2;
+        color:#333333;
+      }
+    }
+  }
+
+
+  // Column selector
+  .column_selector {
+    @include inline-block();
+    background: #F2F2F2;
+    margin:20px 10px 0 0;
+    width: 207px;
+    padding: 11px;
+    @include border-radius(3px);
+
+    &:last-child {margin-right:0;}
+
+    & > span {
+      @include inline-block();
+      vertical-align: middle;
+      width:40px;
+      font: 15px;
+      color: #CCCCCC;
+    }
+
+    div.form_combo {
+      @include inline-block();
+      vertical-align: middle;
+    }
+  }
+
+  div.foot {
+    border:none!important;
+    margin-top:0;
+    a.cancel {margin-top:15px;}
+  }
+}
+

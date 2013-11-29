@@ -1,0 +1,40 @@
+
+
+  /**
+   * Table header styles
+   */
+
+  @import "compass/css3/box-shadow";
+  @import "../../common/mixins";
+  @import "../../common/vars";
+
+  
+  header.vis {
+    position:fixed;
+    left:0;
+    top:0;
+    min-width:960px;
+    height:128px;
+    padding:20px 0 0;
+    overflow:visible;
+    border-bottom: 1px solid rgba(#333333, 0.8);
+    @include box-shadow(rgba(0,0,0,0.09) 0 -5px 3px 0 inset);
+    z-index:2;
+
+    .inner {
+      width:auto;
+      height: 128px;
+    }
+
+
+    /* TABLE HEADER TYPES */
+    
+    // Synced visualization
+    &.synced {
+      height:158px;
+      .inner {height:158px}
+    }
+
+    // Public visualization
+
+  }

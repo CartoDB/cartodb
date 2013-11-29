@@ -26,8 +26,8 @@ describe CartoDB::TableGeocoder do
     before do
       @tg = CartoDB::TableGeocoder.new(default_params.merge({
         table_name: @table_name,
-        formatter:  "name, sov0name",
-        connection: @db,
+        formatter:  "name, ', ', sov0name",
+        connection: @db
       }))
       @tg.geocoder.stubs(:upload).returns(true)
       @tg.geocoder.stubs(:request_id).returns('111')
@@ -40,6 +40,28 @@ describe CartoDB::TableGeocoder do
 
     it "assigns a remote_id" do
       @tg.remote_id.should == '111'
+    end
+  end
+
+  describe '#generate_csv' do
+    before do
+      @tg = CartoDB::TableGeocoder.new(default_params.merge({
+        table_name: @table_name,
+        formatter:  "name, ', ', sov0name",
+        connection: @db
+      }))
+      @tg.add_georef_status_column
+    end
+
+    it "generates a csv file with the correct format" do
+      @tg.generate_csv
+      File.open("#{@tg.working_dir}/wadus.csv").read.should == File.read(path_to('nokia_input.csv'))
+    end
+
+    it "honors max_rows" do
+      @tg.stubs(:max_rows).returns 10
+      @tg.generate_csv
+      `wc -l #{@tg.working_dir}/wadus.csv `.split.first.to_i.should eq 11
     end
   end
 
@@ -77,7 +99,8 @@ describe CartoDB::TableGeocoder do
     end
 
     it 'creates a temporary table' do
-      tg = CartoDB::TableGeocoder.new(table_name: 'a', connection: @db, remote_id: 'geo_HvyxzttLyFhaQ7JKmnrZxdCVySd8N0Ua')
+      tg = CartoDB::TableGeocoder.new(table_name: 'a', connection: @db, remote_id: 'geo_HvyxzttLyFhaQ7JKmnrZxdCVySd8N0Ua', schema: 'public')
+      tg.drop_temp_table
       tg.create_temp_table
       @db.fetch("select * from #{tg.temp_table_name}").all.should eq []
     end
@@ -86,42 +109,88 @@ describe CartoDB::TableGeocoder do
   describe '#temp_table_name' do
     it 'returns geo_remote_id if available' do
       tg = CartoDB::TableGeocoder.new(table_name: 'a', connection: @db, remote_id: 'doesnotexist')
-      tg.temp_table_name.should eq 'geo_doesnotexist'
+      tg.temp_table_name.should eq 'cdb.geo_doesnotexist'
     end
 
     it 'returns an alternative name if the table exists' do
-      tg = CartoDB::TableGeocoder.new(table_name: 'a', connection: @db, remote_id: 'wadus')      
+      tg = CartoDB::TableGeocoder.new(table_name: 'a', connection: @db, remote_id: 'wadus', schema: 'public')      
       @db.run("drop table if exists geo_wadus; create table geo_wadus (id int)")
       @db.run("drop table if exists geo_wadus_1; create table geo_wadus_1 (id int)")
-      tg.temp_table_name.should eq 'geo_wadus_2'
+      tg.temp_table_name.should eq 'public.geo_wadus'
     end
   end
 
   describe '#import_results_to_temp_table' do
+    after do
+      @db.drop_table('geo_temp_table')
+    end
+    
+    it 'loads the Nokia output format to an existing temp table' do
+      tg = CartoDB::TableGeocoder.new(table_name: 'a', connection: @db, remote_id: 'temp_table', schema: 'public')      
+      tg.create_temp_table
+      tg.stubs(:deflated_results_path).returns(path_to('nokia_output.txt'))
+      tg.import_results_to_temp_table
+      @db.fetch(%Q{
+        SELECT count(*) FROM #{tg.temp_table_name} 
+        WHERE displayLatitude IS NOT NULL AND displayLongitude IS NOT NULL
+      }).first[:count].should eq 44
+    end
   end
 
   describe '#load_results_into_original_table' do
   end
 
-  it "wadus" do
-    t = CartoDB::TableGeocoder.new(
-      table_name: @table_name,
-      formatter:  "name, sov0name",
-      connection: @db,
-      app_id: 'KuYppsdXZznpffJsKT24',
-      token:  'A7tBPacePg9Mj_zghvKt9Q',
-      mailto: 'arango@gmail.com'
-    )
-    t.run
-    until t.geocoder.status == 'completed' do
-      t.geocoder.update_status
-      puts "#{t.geocoder.status} #{t.geocoder.processed_rows}/#{t.geocoder.total_rows}"
-      sleep(2)
+  describe '#add_georef_status_column' do
+    before do
+      @db.run("create table wwwwww (id integer)")
+      @tg = CartoDB::TableGeocoder.new(table_name: 'wwwwww', connection: @db, remote_id: 'wadus')
     end
-    `open #{t.working_dir}`
-    t.process_results
-    @tg.should == ''
+
+    after do
+      @db.run("drop table wwwwww")
+    end
+
+    it 'adds a boolean cartodb_georef_status column' do
+      @tg.add_georef_status_column
+      @db.run("select cartodb_georef_status from wwwwww").should eq nil
+    end
+
+    it 'does nothing when the column already exists' do
+      @tg.expects(:cast_georef_status_column).once
+      @tg.add_georef_status_column
+      @tg.add_georef_status_column
+    end
+
+    it 'casts cartodb_georef_status to boolean if needed' do
+      @db.run('alter table wwwwww add column cartodb_georef_status text')
+      @tg.add_georef_status_column
+      @db.fetch("select data_type from information_schema.columns where table_name = 'wwwwww'")
+        .first[:data_type].should eq 'boolean'
+    end
   end
+
+  # it "wadus" do
+  #   t = CartoDB::TableGeocoder.new(
+  #     table_name: @table_name,
+  #     formatter:  "name, ', ', sov0name",
+  #     connection: @db,
+  #     app_id: 'KuYppsdXZznpffJsKT24',
+  #     token:  'A7tBPacePg9Mj_zghvKt9Q',
+  #     mailto: 'arango@gmail.com',
+  #     schema: 'public'
+  #   )
+  #   t.run
+  #   `open #{t.working_dir}`
+  #   until t.geocoder.status == 'completed' do
+  #     t.geocoder.update_status
+  #     puts "#{t.geocoder.status} #{t.geocoder.processed_rows}/#{t.geocoder.total_rows}"
+  #     sleep(2)
+  #   end
+  #   t.process_results
+  #   t.geocoder.status.should eq 'completed'
+  #   @db.fetch("select count(*) from #{@table_name} where the_geom is null").first[:count].should eq 2
+  #   @db.fetch("select count(*) from #{@table_name} where cartodb_georef_status is false").first[:count].should eq 2
+  # end
 
 
   def path_to(filepath = '')

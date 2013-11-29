@@ -21,8 +21,8 @@ class User < Sequel::Model
   set_allowed_columns :email, :map_enabled, :password_confirmation, 
     :quota_in_bytes, :table_quota, :account_type, :private_tables_enabled, 
     :period_end_date, :map_view_quota, :max_layers, :database_timeout, 
-    :user_timeout, :map_view_block_price, :geocoding_quota, :dashboard_viewed_at
-    :sync_tables_enabled
+    :user_timeout, :map_view_block_price, :geocoding_quota, :dashboard_viewed_at,
+    :sync_tables_enabled, :geocoding_block_price, :api_key, :notification
   plugin :validation_helpers
   plugin :json_serializer
   plugin :dirty
@@ -62,6 +62,12 @@ class User < Sequel::Model
   end
 
   ## Callbacks
+  def before_create
+    super
+    self.database_host ||= ::Rails::Sequel.configuration.environment_for(Rails.env)['host']
+    self.api_key ||= self.class.make_token
+  end
+
   def after_create
     super
     setup_user
@@ -73,6 +79,7 @@ class User < Sequel::Model
 
   def after_save
     super
+    save_metadata
     changes = (self.previous_changes.present? ? self.previous_changes.keys : [])
     set_statement_timeouts if changes.include?(:user_timeout) || changes.include?(:database_timeout)
   end
@@ -124,7 +131,10 @@ class User < Sequel::Model
   def self.overquota(delta = 0)
     User.where(enabled: true).all.select do |u|
         limit = u.map_view_quota.to_i - (u.map_view_quota.to_i * delta)
-        u.get_api_calls(from: u.last_billing_cycle, to: Date.today).sum > limit
+        over_map_views = u.get_api_calls(from: u.last_billing_cycle, to: Date.today).sum > limit
+        limit = u.geocoding_quota.to_i - (u.geocoding_quota.to_i * delta)
+        over_geocodings = u.get_geocoding_calls > limit
+        over_map_views || over_geocodings
     end
   end
 
@@ -191,18 +201,25 @@ class User < Sequel::Model
     logger = (Rails.env.development? || Rails.env.test? ? ::Rails.logger : nil)
     if user == :superuser
       ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-        'database' => self.database_name, :logger => logger
-      )
+        'database' => self.database_name,
+        :logger => logger,
+        'host' => self.database_host
+      ) {|key, o, n| n.nil? ? o : n}
     elsif user == :public_user
       ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-        'database' => self.database_name, :logger => logger,
-        'username' => CartoDB::PUBLIC_DB_USER, 'password' => ''
-      )
+        'database' => self.database_name,
+        :logger => logger,
+        'username' => CartoDB::PUBLIC_DB_USER, 'password' => '',
+        'host' => self.database_host
+      ) {|key, o, n| n.nil? ? o : n}
     else
       ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-        'database' => self.database_name, :logger => logger,
-        'username' => database_username, 'password' => database_password
-      )
+        'database' => self.database_name,
+        :logger => logger,
+        'username' => database_username, 
+        'password' => database_password,
+        'host' => self.database_host
+      ) {|key, o, n| n.nil? ? o : n}
     end
   end
 
@@ -318,8 +335,8 @@ class User < Sequel::Model
   end
 
   def view_dashboard
-    set(:dashboard_viewed_at => Time.now)
-    save(:columns=>[:dashboard_viewed_at], :validate => false)
+    self.this.update dashboard_viewed_at: Time.now
+    set dashboard_viewed_at: Time.now
   end
 
   def dashboard_viewed?
@@ -333,17 +350,12 @@ class User < Sequel::Model
 
   # save users basic metadata to redis for node sql api to use
   def save_metadata
-    $users_metadata.HMSET key, 'id', id, 'database_name', database_name
-    self.set_map_key
-  end
-
-  def set_map_key
-    token = self.class.make_token
-    $users_metadata.HMSET key, 'map_key',  token
-  end
-
-  def get_map_key
-    $users_metadata.HMGET(key, 'map_key').first
+    $users_metadata.HMSET key, 
+      'id', id, 
+      'database_name', database_name, 
+      'database_password', database_password, 
+      'database_host', database_host,
+      'map_key', api_key
   end
 
   def get_api_calls(options = {})
@@ -362,6 +374,13 @@ class User < Sequel::Model
 
     return calls
   end
+
+  def get_geocoding_calls(options = {})
+    date_to = (options[:to] ? options[:to].to_date : Date.today)
+    date_from = (options[:from] ? options[:from].to_date : self.last_billing_cycle)
+    Geocoding.where('user_id = ? AND created_at >= ? and created_at <= ?', self.id, date_from, date_to + 1.days)
+      .sum(:processed_rows).to_i
+  end # get_geocoding_calls
 
   # Legacy stats fetching
 
@@ -430,11 +449,13 @@ class User < Sequel::Model
   end
 
   def database_exists?
-    if in_database(:as => :superuser)[:pg_database].filter(:datname => database_name).all.any?
-      return true
-    else
-      return false
-    end
+    return false if database_name.blank?  
+    connection_params = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+      'host' => self.database_host,
+      'database' => 'postgres'
+    ) {|key, o, n| n.nil? ? o : n}
+    conn = ::Sequel.connect(connection_params)
+    conn[:pg_database].filter(:datname => database_name).all.any?
   end
   private :database_exists?
 
@@ -585,8 +606,23 @@ class User < Sequel::Model
     DataImport.where(user_id: self.id, state: 'failure').count
   end
 
+  def success_import_count
+    DataImport.where(user_id: self.id, state: 'complete').count
+  end
+ 
+  def import_count
+    DataImport.where(user_id: self.id).count
+  end
+
   def visualization_count
     maps.count - table_count
+  end
+
+  def last_visualization_created_at
+    Rails::Sequel.connection.fetch("SELECT created_at FROM visualizations WHERE " +
+      "map_id IN (select id FROM maps WHERE user_id=?) ORDER BY created_at DESC " +
+      "LIMIT 1;", id)
+      .to_a.fetch(0, {}).fetch(:created_at, nil)
   end
 
   def rebuild_quota_trigger
@@ -594,7 +630,6 @@ class User < Sequel::Model
     puts "Rebuilding quota trigger in db '#{database_name}' (#{username})"
     tables.all.each do |table|
       begin
-        table.add_python
         table.set_trigger_check_quota
       rescue Sequel::DatabaseError => e
         next if e.message =~ /.*does not exist\s*/
@@ -625,55 +660,166 @@ class User < Sequel::Model
   def setup_user
     return if disabled?
 
-    ClientApplication.create(:user_id => self.id)
-    unless database_exists?
-      self.database_name = case Rails.env
-        when 'development'
-          "cartodb_dev_user_#{self.id}_db"
-        when 'staging'
-          "cartodb_staging_user_#{self.id}_db"
-        when 'test'
-          "cartodb_test_user_#{self.id}_db"
-        else
-          "cartodb_user_#{self.id}_db"
-      end
-      self.this.update database_name: self.database_name
-
-      Thread.new do
-        conn = Rails::Sequel.connection
-        begin
-          conn.run("CREATE USER #{database_username} PASSWORD '#{database_password}'")
-        rescue => e
-          puts "#{Time.now} USER SETUP ERROR (#{database_username}): #{$!}"
-          raise e
-        end
-        begin
-          conn.run("CREATE DATABASE #{self.database_name}
-          WITH TEMPLATE = template_postgis
-          OWNER = #{::Rails::Sequel.configuration.environment_for(Rails.env)['username']}
-          ENCODING = 'UTF8'
-          CONNECTION LIMIT=-1")
-        rescue => e
-          puts "#{Time.now} USER SETUP ERROR WHEN CREATING DATABASE #{self.database_name}: #{$!}"
-          raise e
-        end
-      end.join
-
-      create_importer_schema
-      set_database_permissions
-      set_database_permissions_in_importer_schema
-      load_cartodb_functions
+    # Assign database_name
+    self.database_name = case Rails.env
+      when 'development'
+        "cartodb_dev_user_#{self.id}_db"
+      when 'staging'
+        "cartodb_staging_user_#{self.id}_db"
+      when 'test'
+        "cartodb_test_user_#{self.id}_db"
+      else
+        "cartodb_user_#{self.id}_db"
     end
+   
+    raise "Database #{database_name} already exists" if database_exists?
+
+    self.this.update database_name: self.database_name
+    ClientApplication.create(:user_id => self.id)
+
+    Thread.new do
+      connection_params = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+        'host' => self.database_host,
+        'database' => 'postgres'
+      ) {|key, o, n| n.nil? ? o : n}
+      conn = ::Sequel.connect(connection_params)
+      begin
+        conn.run("CREATE USER #{database_username} PASSWORD '#{database_password}'")
+      rescue => e
+        puts "#{Time.now} USER SETUP ERROR (#{database_username}): #{$!}"
+        raise e
+      end
+      begin
+        conn.run("CREATE DATABASE #{self.database_name}
+        WITH TEMPLATE = template_postgis
+        OWNER = #{::Rails::Sequel.configuration.environment_for(Rails.env)['username']}
+        ENCODING = 'UTF8'
+        CONNECTION LIMIT=-1")
+      rescue => e
+        puts "#{Time.now} USER SETUP ERROR WHEN CREATING DATABASE #{self.database_name}: #{$!}"
+        raise e
+      end
+    end.join
+
+    create_schemas_and_set_permissions
+    set_database_permissions
+    load_cartodb_functions
   end
 
-  def create_importer_schema
+  def create_schemas_and_set_permissions
+    create_schema('cdb')
+    create_schema('cdb_importer')
+    set_database_permissions_in_schema('cdb')
+    set_database_permissions_in_schema('cdb_importer')
+  end
+
+  # Attempts to create a new database schema
+  # Does not raise exception if the schema already exists
+  def create_schema(schema)
     in_database(as: :superuser) do |database|
-      database.run(%Q{CREATE SCHEMA cdb_importer})
+      database.run(%Q{CREATE SCHEMA #{schema}})
     end
-  end #create_importer_schema
+  rescue Sequel::DatabaseError => e
+    raise unless e.message =~ /schema .* already exists/
+  end #create_schema
+
+  # Add plpythonu pl handler
+  def add_python
+    in_database(:as => :superuser).run(<<-SQL
+      CREATE OR REPLACE PROCEDURAL LANGUAGE 'plpythonu' HANDLER plpython_call_handler;
+    SQL
+    )
+  end
+
+  # Create a "cdb_invalidate_varnish()" function to invalidate Varnish
+  #
+  # The function can only be used by the superuser, we expect
+  # security-definer triggers OR triggers on superuser-owned tables
+  # to call it with controlled set of parameters.
+  #
+  # The function is written in python because it needs to reach out
+  # to a Varnish server.
+  #
+  # Being unable to communicate with Varnish may or may not be critical
+  # depending on CartoDB configuration at time of function definition.
+  #
+  def create_function_invalidate_varnish
+
+    add_python
+
+    varnish_host = Cartodb.config[:varnish_management].try(:[],'host') || '127.0.0.1'
+    varnish_port = Cartodb.config[:varnish_management].try(:[],'port') || 6082
+    varnish_timeout = Cartodb.config[:varnish_management].try(:[],'timeout') || 5
+    varnish_critical = Cartodb.config[:varnish_management].try(:[],'critical') == true ? 1 : 0
+    varnish_retry = Cartodb.config[:varnish_management].try(:[],'retry') || 5
+    purge_command = Cartodb::config[:varnish_management]["purge_command"]
+
+    in_database(:as => :superuser).run(<<-TRIGGER
+    BEGIN;
+    CREATE OR REPLACE FUNCTION cdb_invalidate_varnish(table_name text) RETURNS void AS
+    $$
+        critical = #{varnish_critical}
+        timeout = #{varnish_timeout}
+        retry = #{varnish_retry}
+
+        client = GD.get('varnish', None)
+
+        while True:
+
+          if not client:
+              try:
+                import varnish
+                client = GD['varnish'] = varnish.VarnishHandler(('#{varnish_host}', #{varnish_port}, timeout))
+              except Exception as err:
+                plpy.warning('Varnish connection error: ' +  str(err))
+                # NOTE: we won't retry on connection error
+                if critical:
+                  plpy.error('Varnish connection error: ' +  str(err))
+                break
+
+          try:
+            client.fetch('#{purge_command} obj.http.X-Cache-Channel ~ "^#{self.database_name}:(.*%s.*)|(table)$"' % table_name)
+            break
+          except Exception as err:
+            plpy.warning('Varnish fetch error: ' + str(err))
+            client = GD['varnish'] = None # force reconnect
+            if not retry:
+              if critical:
+                plpy.error('Varnish fetch error: ' +  str(err))
+              break
+            retry -= 1 # try reconnecting
+    $$
+    LANGUAGE 'plpythonu' VOLATILE;
+    REVOKE ALL ON FUNCTION cdb_invalidate_varnish(TEXT) FROM PUBLIC;
+    COMMIT;
+TRIGGER
+    )
+  end
+
+  # Create an "update_timestamp()" trigger function to invalidate Varnish
+  # This is currently invoked by the "cache_checkpoint" trigger attached
+  # to tables
+  #
+  # TODO: drop this and replace with a trigger on CDB_TableMetadata
+  #
+  def create_trigger_function_update_timestamp
+    in_database(:as => :superuser).run(<<-TRIGGER
+    CREATE OR REPLACE FUNCTION update_timestamp() RETURNS trigger AS
+    $$
+        table_name = TD["table_name"]
+        plan = plpy.prepare("SELECT cdb_invalidate_varnish($1)", ["text"])
+        plpy.execute(plan, [table_name])
+    $$
+    LANGUAGE 'plpythonu' VOLATILE SECURITY DEFINER;
+TRIGGER
+    )
+  end
+
 
   # Cartodb functions
   def load_cartodb_functions(files = [])
+    create_function_invalidate_varnish
+    create_trigger_function_update_timestamp
     in_database(:as => :superuser) do |user_database|
       user_database.transaction do
         if files.empty?
@@ -709,11 +855,9 @@ class User < Sequel::Model
   end
 
   # Whitelist Permissions
-
-  def set_database_permissions_in_importer_schema
+  def set_database_permissions_in_schema(schema)
     in_database(:as => :superuser) do |user_database|
       user_database.transaction do
-        schema = 'cdb_importer'
 
         # grant core permissions to database user
         user_database.run("GRANT ALL ON SCHEMA #{schema} TO #{database_username}")
@@ -724,7 +868,7 @@ class User < Sequel::Model
         yield(user_database) if block_given?
       end
     end
-  end #set_database_permissions_in_importer_schema
+  end #set_database_permissions_in_schema
 
   def set_database_permissions
     in_database(:as => :superuser) do |user_database|

@@ -11,7 +11,7 @@ describe "API 1.0 tags management" do
   before do
     @user     = create_user(username: 'test')
     @user.set_map_key
-    @api_key  = @user.get_map_key
+    @api_key  = @user.api_key
     @headers  = { 
       'CONTENT_TYPE'  => 'application/json',
       'HTTP_HOST'     => 'test.localhost.lan'

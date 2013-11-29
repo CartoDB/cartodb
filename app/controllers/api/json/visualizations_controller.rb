@@ -18,18 +18,20 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   before_filter :link_ghost_tables, only: [:index, :show]
 
   def index
-    collection      = Visualization::Collection.new.fetch(
-                        params.dup.merge(scope_for(current_user))
-                      )
-    map_ids         = collection.map(&:map_id).to_a
-    tables          = tables_by_map_id(map_ids)
+    collection       = Visualization::Collection.new.fetch(
+                         params.dup.merge(scope_for(current_user))
+                       )
+    map_ids          = collection.map(&:map_id).to_a
+    tables           = tables_by_map_id(map_ids)
+    synchronizations = synchronizations_by_table_name(tables.values.map { |t| t.name })
 
     representation  = collection.map { |member|
       member.to_hash(
         related:    false,
         table_data: !(params[:table_data] =~ /false/),
         user:       current_user,
-        table:      tables[member.map_id]
+        table:      tables[member.map_id],
+        synchronization: synchronizations[member.name]
       )
     }
 
@@ -189,6 +191,16 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   def tables_by_map_id(map_ids)
     Hash[
       ::Table.where(map_id: map_ids).map { |table| [table.map_id, table] }
+    ]
+  end
+
+  def synchronizations_by_table_name(table_names)
+    Hash[
+      ::Table.db.fetch(
+        "SELECT * FROM synchronizations WHERE user_id = ? AND name IN ?", 
+        current_user.id,
+        table_names
+      ).all.map { |s| [s[:name], s] }
     ]
   end
 end # Api::Json::VisualizationsController

@@ -1,3 +1,4 @@
+
 CREATE TABLE IF NOT EXISTS
   public.CDB_TableMetadata (
     tabname regclass not null primary key,
@@ -47,10 +48,49 @@ BEGIN
   FROM nv LEFT JOIN updated USING(tabname)
   WHERE updated.tabname IS NULL;
 
+  RETURN NULL;
+END;
+$$
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER;
+
+--
+-- Trigger invalidating varnish whenever CDB_TableMetadata
+-- record change.
+--
+CREATE OR REPLACE FUNCTION _CDB_TableMetadata_Updated()
+RETURNS trigger AS
+$$
+DECLARE
+  tabname TEXT;
+BEGIN
+
+  IF TG_OP = 'UPDATE' or TG_OP = 'INSERT' THEN
+    tabname = NEW.tabname;
+  ELSE
+    tabname = OLD.tabname;
+  END IF;
+
   -- Notify table data update
-  PERFORM pg_notify('cdb_tabledata_update', TG_TABLE_NAME);
+  -- This needs a little bit more of research regarding security issues
+  -- see https://github.com/CartoDB/cartodb/pull/241
+  -- PERFORM pg_notify('cdb_tabledata_update', tabname);
+
+  --RAISE NOTICE 'Table % was updated', tabname;
+
+  -- This will be needed until we'll have someone listening
+  -- on the event we just broadcasted:
+  --
+  --  LISTEN cdb_tabledata_update;
+  --
+  PERFORM cdb_invalidate_varnish(tabname);
 
   RETURN NULL;
 END;
 $$
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER;
+
+DROP TRIGGER IF EXISTS table_modified ON CDB_TableMetadata;
+CREATE TRIGGER table_modified AFTER INSERT OR UPDATE OR DELETE
+ON CDB_TableMetadata FOR EACH ROW EXECUTE PROCEDURE
+ _CDB_TableMetadata_Updated();
+

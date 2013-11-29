@@ -6,6 +6,8 @@ module DataRepository
   module Filesystem
     module S3
       class Backend
+        DEFAULT_URL_TTL = 600
+
         def initialize(config={}, bucket=nil)
           AWSConfigurator.new(config).configure
           @connection = AWS::S3.new
@@ -28,11 +30,14 @@ module DataRepository
           object_from(bucket, object_name)
         end #fetch
 
+        def presigned_url_for(public_url, url_ttl=DEFAULT_URL_TTL)
+          fetch(public_url).url_for(:get, expires: url_ttl)
+        end
+
         private
 
         attr_reader :connection, :bucket
-
-        def default_bucket
+def default_bucket
           @default_bucket ||= connection.buckets[ENV.fetch('S3_BUCKET')]
         end #default_bucket
 

@@ -125,4 +125,13 @@ module ApplicationHelper
   def v2_vizjson_url(visualization)
     "/api/v2/viz/#{visualization.id}/viz"
   end #v2_vizjon_url
+
+  # TODO reactivate in order to allow CartoDB plugins
+  # to inject content into the CartoDB admin UI 
+  # def content_from_plugins_for(hook)
+  #   ::CartoDB::Plugin.registered.map do |plugin| 
+  #     hook_name = "#{plugin.name.underscore}_#{hook}_hook"
+  #     send(hook_name) if defined?(hook_name)
+  #   end.join('').html_safe
+  # end
 end

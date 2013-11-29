@@ -2,7 +2,22 @@ class Superadmin::UsersController < Superadmin::SuperadminController
   respond_to :json
 
   ssl_required :create, :update, :destroy, :show, :index if Rails.env.production? || Rails.env.staging?
-  before_filter :get_user, :only => [:update, :destroy, :show]
+
+  before_filter :get_user, :only => [:update, :destroy, :show, :edit]
+
+  layout 'application'
+
+  def index
+  end
+
+  def new
+    @user = User.new
+    @user.table_quota = nil
+    @user.private_tables_enabled = true
+  end
+
+  def edit
+  end
 
   def index
     @users = (params[:overquota].present? ? User.overquota(0.20) : User.all)
@@ -46,7 +61,12 @@ class Superadmin::UsersController < Superadmin::SuperadminController
     end
 
     @user.save
-    respond_with(:superadmin, @user)
+    respond_to do |format|
+      format.json { with(:superadmin, @user) }
+      format.html { 
+        redirect_to superadmin_root_path, flash: { success: (@user.valid? ? "OK" : "FAIL #{@user.errors.full_messages}") }
+      }
+    end
   end
 
   def update

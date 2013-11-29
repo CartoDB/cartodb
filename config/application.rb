@@ -10,6 +10,13 @@ if defined?(Bundler)
   Bundler.require(:default, :assets, Rails.env)
 end
 
+# Require optional rails engines
+# TODO reactivate in order to enable CartoDB plugins
+# Dir["engines" + "/*/*.gemspec"].each do |gemspec_file|
+#   gem_name = File.basename(gemspec_file, File.extname(gemspec_file))
+#   puts "** Loading engine #{gem_name}"
+#   require gem_name
+# end
 
 module CartoDB
   class Application < Rails::Application

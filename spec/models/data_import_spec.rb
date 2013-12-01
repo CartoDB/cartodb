@@ -8,6 +8,34 @@ describe DataImport do
     @table = create_table :user_id => @user.id
   end
 
+  it 'raises an 8004 error when merging tables
+  through columns with different types' do
+    table1 = create_table(user_id: @user.id)
+    table2 = create_table(user_id: @user.id)
+
+    table1.modify_column!(name: 'name', type: 'double precision')
+    table1.insert_row!(name: 1.0)
+    table2.insert_row!(name: '1')
+
+    merge_query = %Q(
+      SELECT #{table2.name}.the_geom,
+              #{table2.name}.description,
+              #{table2.name}.name,
+              #{table1.name}.the_geom AS #{table1.name}_the_geom,
+              #{table1.name}.description AS #{table1.name}_description,
+              #{table1.name}.name AS #{table1.name}_name
+      FROM #{table2.name} FULL OUTER JOIN #{table1.name}
+      ON #{table2.name}.name = #{table1.name}.name
+    )
+    data_import = DataImport.create(
+      user_id:  @user.id,
+      table_name: "merged_table",
+      from_query: merge_query
+    )
+    data_import.run_import!
+    data_import.error_code.should == 8004
+  end
+
   it 'should allow to append data to an existing table' do
     pending "not yet implemented"
     fixture = '/../db/fake_data/column_string_to_boolean.csv'

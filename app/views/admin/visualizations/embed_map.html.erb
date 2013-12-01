@@ -88,7 +88,7 @@
     <% end %>
 
     <% if !Rails.env.production? %>
-      <%= javascript_include_tag :jquery ,:cdb %>
+      <%= javascript_include_tag :cdb %>
     <% else %>
       <% if request.protocol == 'https://' %>
         <script src="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/cartodb.js"></script>
@@ -143,7 +143,7 @@
           }
 
           return _.map(v.split("|"), function(v) {
-            return { visible: parseInt(v, 10) }
+            return { visible: !!parseInt(v, 10) }
           });
 
         };

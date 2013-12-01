@@ -3,11 +3,12 @@ require 'spec_helper'
 
 describe Geocoding do
   before(:all) do
-    @user = create_user(geocoding_quota: 200)
+    @user  = create_user(geocoding_quota: 200)
+    @table = FactoryGirl.create(:table, user_id: @user.id)
   end
 
   describe '#setup' do
-    let(:geocoding) { FactoryGirl.create(:geocoding, user: @user) }
+    let(:geocoding) { FactoryGirl.create(:geocoding, user: @user, table: @table) }
 
     it 'sets default timestamps value' do
       geocoding.created_at.should_not be_nil
@@ -24,20 +25,20 @@ describe Geocoding do
   end
 
   describe '#save' do
-    let(:geocoding) { FactoryGirl.build(:geocoding, user: @user) }
+    let(:geocoding) { FactoryGirl.build(:geocoding, user: @user, table: @table) }
 
     it 'validates table_name and formatter' do
       expect { geocoding.save }.to raise_error(Sequel::ValidationFailed)
     end
 
     it 'updates updated_at' do
-      geocoding = FactoryGirl.build(:geocoding, user: @user, table_name: 'a', formatter: 'b')
+      geocoding = FactoryGirl.build(:geocoding, user: @user, table: @table, formatter: 'b')
       expect { geocoding.save }.to change(geocoding, :updated_at)
     end
   end
 
   describe '#translate_formatter' do
-    let(:geocoding) { FactoryGirl.build(:geocoding, user: @user) }
+    let(:geocoding) { FactoryGirl.build(:geocoding, user: @user, table: @table) }
 
     it 'translates a string with field names' do
       geocoding.formatter = '{a}, {b}'
@@ -57,7 +58,7 @@ describe Geocoding do
 
   describe '#run!' do
     it 'updates total_rows, processed_rows and state' do
-      geocoding = Geocoding.create(user: @user, table_name: 'a', formatter: 'b')
+      geocoding = Geocoding.create(user: @user, table: @table, formatter: 'b')
       geocoding.table_geocoder.stubs(:run).returns true
       geocoding.table_geocoder.stubs(:process_results).returns true
       CartoDB::Geocoder.any_instance.stubs(:status).returns 'completed'
@@ -72,8 +73,8 @@ describe Geocoding do
     end
 
     it 'marks the geocoding as failed if the geocoding job fails' do
-      geocoding = FactoryGirl.build(:geocoding, user: @user, formatter: 'a', table_name: 'b')
-      geocoding.table_geocoder.stubs(:run).raises("Error")
+      geocoding = FactoryGirl.build(:geocoding, user: @user, formatter: 'a', table: @table)
+      CartoDB::TableGeocoder.any_instance.stubs(:run).raises("Error")
       CartoDB.expects(:notify_exception).times(1)
 
       geocoding.run!
@@ -81,16 +82,25 @@ describe Geocoding do
     end
 
     it 'raises a timeout error if geocoding takes more than 3 minutes to start' do
-      geocoding = Geocoding.create(user: @user, table_name: 'a', formatter: 'b')
-      geocoding.table_geocoder.stubs(:run).returns true
-      geocoding.table_geocoder.stubs(:process_results).returns true
+      geocoding = Geocoding.create(user: @user, table: @table, formatter: 'b')
+      CartoDB::TableGeocoder.any_instance.stubs(:run).returns true
+      CartoDB::TableGeocoder.any_instance.stubs(:process_results).returns true
       CartoDB::Geocoder.any_instance.stubs(:status).returns 'submitted'
       CartoDB::Geocoder.any_instance.stubs(:update_status).returns true
-      Timecop.scale(120)
+      Timecop.scale(3600)
       expect { geocoding.run! }.to raise_error
       geocoding.reload.state.should eq 'failed'
     end
 
+    it 'creates an automatic geocoder' do
+      geocoding = Geocoding.create(user: @user, table: @table, formatter: 'b')
+      CartoDB::TableGeocoder.any_instance.stubs(:run).returns true
+      CartoDB::TableGeocoder.any_instance.stubs(:process_results).returns true
+      CartoDB::Geocoder.any_instance.stubs(:status).returns 'completed'
+      CartoDB::Geocoder.any_instance.stubs(:update_status).returns true
+      expect { geocoding.run! }.to change { AutomaticGeocoding.count }.by(1)
+      geocoding.automatic_geocoding_id.should_not be_nil
+    end
   end
 
   describe '#max_geocodable_rows' do

@@ -1076,10 +1076,14 @@ a.info {
           .no_content { display: none; }
         }
 
-        .custom {
+        .custom, .choropleth {
           ul li .input { top: 13px; }
           ul li:hover .remove { @include opacity(1); }
           ul li .remove { position:relative; top: 3px; @include opacity(0); }
+        }
+
+        .choropleth {
+          .right { top: 18px; }
         }
 
         .right {
@@ -1428,7 +1432,7 @@ a.info {
           & > span:first-child {
             float:left;
             margin-top:2px;
-            color:$cGray4;
+            color:#AAA;
           }
 
           & > span:last-child {

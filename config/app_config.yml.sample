@@ -62,10 +62,11 @@ defaults: &defaults
     token:  ''
     mailto: ''
   importer:
-    # OSM imports require osm2pgsql and this tool doesn't
-    # play well with pgbouncer.
-    osm2pgsql_port: 5432
-
+    s3:
+      access_key_id:
+      secret_access_key:
+      bucket_name:
+      url_ttl:
 
 
 

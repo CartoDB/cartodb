@@ -107,6 +107,10 @@ module CartoDB
       title: 'OpenStreetMaps API limit reached',
       what_about: "You requested too many nodes (limit is 50000). Either request a smaller area, or use planet.osm"
     },
+    1010 => {
+      title: 'Private Google Spreadsheet',
+      what_about: "This spreadsheet seems to be private. Please check in Goolge Spreadsheet sharing options that the file is public or accessible for those who know the link"
+    },
     2001 => {
       title: 'Unable to load data',
       what_about: "We couldn't load data from your file into the database.  Please <a href='mailto:support@cartodb.com?subject=Import load error'>contact us</a> and we will help you to load your data."
@@ -129,7 +133,7 @@ module CartoDB
     },
     3101 => {
       title: 'Missing projection (.prj) file',
-      what_about: "CartoDB needs a PRJ file for all Shapefile archives uploaded. Contact your data provider to see about aquiring one if it was missing. Otherwise see spatialreference.org to locate the right one if you know it. Remember, the file name for you .prj must be the same as you .shp."
+      what_about: "CartoDB needs a PRJ file for all Shapefile archives uploaded. Contact your data provider to see about aquiring one if it was missing. Otherwise see spatialreference.org to locate the right one if you know it. Remember, the file name for your .prj must be the same as your .shp."
     },
     3201 => {
       title: 'Geometry Collection not supported',
@@ -150,6 +154,10 @@ module CartoDB
     8003 => {
       title: 'Error creating table from SQL query',
       what_about: "We couldn't create a table from your query. Please check it doesn't return duplicate column names. Please <a href='mailto:support@cartodb.com?subject=Unknown error'>contact us</a> if you need help editing your query."
+    },
+    8004 => {
+      title: 'Merge with unmatching column types',
+      what_about: "The columns you have chosen don't have the same column type in both tables. Please change the types so the columns will have the same type and try again."
     },
     99999 => {
       title: 'Unknown',

@@ -1,8 +1,62 @@
+2.5.6
+-----
+* Improvement
+  * Allow to customize the colors and its number on the choropleth legend.
+
+* Fixed Bugs
+  * Make infowindow keep state for a SQL query.
+  * Custom infowindow with image is not adding correctly <img> tag.
+  * Fixed redis configuration in sync tables.
+
+2.5.5
+-----
+* Improvements
+  * Move varnish triggers from user tables to CDB_TableMetadata (#241)
+  * Changed empty dashboard page
+
+2.5.4
+-----
+* Improvements
+  * Implemented Torque accumulative visualization.
+  * Faster CDB_TransformToWebmercator when input is already mercator.
+  * Added the type of the columns shown on the column selector for the filters.
+  * Added autocomplete in legends.
+  * Way to Activate/deactivate automatic geocoder.
+  * Running the testsuite is easier now.
+  * Disabled geocoder on sync tables.
+  * Enabled default max/min zoom for google basemaps.
+  * Deprecated the getLayerByIndex method and added a more descriptive one.
+
+* Fixed Bugs
+  * Torque visualization doesn't work as expected for a multiday GPS track.
+  * Table rename errors aren't shown in the UI.
+  * Torque visualizations under IE9 + Windows 7 are not showing canvas layer.
+  * Density legend is not showing the min,max values. It's showing left and right value.
+  * Sanitize in-cell line breaks (<8d> unicode character) when processing CSV and Excel files.
+  * When moving from CategoryLegend to CustomLegend, copy the items.
+  * Removed the persist param on calls to tiles at cartodb.js
+  * Deactivate zoom when not having more levels available.
+  * Unix timestamp not being correctly converted to date (#290).
+  * Changed ZXY url to XYZ.
+  * Selecting an Intensity Wizard disables the associated legend.
+  * User can't add a Mapbox basemap.
+  * Clean up Importer2::Ogr2ogr spec.
+  * last_visualization_created_at is causing a ton of queries.
+  * Layers visibility is not working in embed map.
+  * Explain that a user needs to publicly share a file in GDrive before importing.
+  * Label allow-overlap changed to toggle on the Wizards.
+  * Fixed broken acceptance specs.
+  * Fixed typo in carto_db.rb (by @robinkraft #301).
+
 2.5.3
 -----
 * Improvements
   * Start storing the api_key in the database.
   * Created a rake task that copies the api_key from redis to PSQL.
+    * Existing installations, please run:
+    ```
+    $ bundle exec rake cartodb:db:copy_api_keys_from_redis
+    ```
   * Improved sprite compilation time + CSS rendering
   * Created a notification model.
   * Re-enable save_metadata during user after_save.

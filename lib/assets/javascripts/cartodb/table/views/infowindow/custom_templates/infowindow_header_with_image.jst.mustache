@@ -6,10 +6,14 @@
       <div class="image_not_found"> <i></i> <a href="#/map" class="help">Non-valid picture URL</a></div>
       {{#content.fields}}
       {{^position}}
-      <h1>{{=<% %>=}}{{<%={{ }}=%>{{{ name }}}{{=<% %>=}}}}<%={{ }}=%></h1>
+      <span class="separator"></span>
+      {{#content.fields.1 }}
+      <h1 class="order1">{{=<% %>=}}{{<%={{ }}=%>{{{ content.fields.1.name }}}{{=<% %>=}}}}<%={{ }}=%></h1>
+      {{/content.fields.1 }}
+      <div class="shadow"></div>
+      <img src="{{=<% %>=}}{{<%={{ }}=%>{{{ name }}}{{=<% %>=}}}}<%={{ }}=%>" style="height:135px;display:inline" />
       {{/position}}
       {{/content.fields}}
-      <div class="shadow"></div>
     </div>
   </div>
   <div class="cartodb-popup-content-wrapper">

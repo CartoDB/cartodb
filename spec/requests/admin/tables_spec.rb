@@ -19,7 +19,6 @@ describe Admin::TablesController do
       email:    'test@test.com',
       password: 'test'
     )
-    @user.set_map_key
     @api_key = @user.api_key
   end
 

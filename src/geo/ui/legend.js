@@ -923,7 +923,7 @@ cdb.geo.ui.LegendModel = cdb.core.Model.extend({
     this.items = new cdb.geo.ui.LegendItems(this.get("items"));
 
     this.items.bind("add remove reset change", function() {
-      this.set({ items: this.items.toJSON() }, { silent: true });
+      this.set({ items: this.items.toJSON() });
     }, this);
 
     this.bind("change:items", this._onUpdateItems, this);

@@ -143,7 +143,7 @@
 
           };
 
-          cartodb.createVis('map', map_viz_url, {
+          cartodb.createVis('map', map_viz_url, { legends: false }, {
             no_cdn: true
           }).done(onVisDone);
 

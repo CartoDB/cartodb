@@ -22575,9 +22575,12 @@ cdb.geo.ui.Legend = cdb.core.View.extend({
   },
 
   render: function() {
-
-    if (this.view) {
-      this.$el.append(this.view.render().$el);
+    if (this.model.get("template")) {
+      this.$el.html(this.view.render().$el.html());
+      this.$el.removeClass(this.model.get("type"))
+      this.$el.addClass("wrapper");
+    } else {
+      this.$el.html(this.view.render().$el.html());
     }
 
     return this;
@@ -22709,7 +22712,7 @@ cdb.geo.ui.DensityLegend = cdb.geo.ui.BaseLegend.extend({
 
   className: "density-legend",
 
-  template: _.template('<% if (title && show_title) { %><div class="legend-title"><%= title %></div><% } %><ul><li class="min"><%= leftLabel %></li><li class="max"><%= rightLabel %></li><li class="graph count_<%= buckets_count %>"><div class="colors"><%= colors %></div></li></ul>'),
+  template: _.template('<% if (title && show_title) { %><div class="legend-title"><%= title %></div><% } %>\n<ul>\n<li class="min"><%= leftLabel %></li>\n<li class="max"><%= rightLabel %></li>\n<li class="graph count_<%= buckets_count %>">\n<div class="colors"><%= colors %></div>\n</li>\n</ul>'),
 
   initialize: function() {
 
@@ -22717,7 +22720,9 @@ cdb.geo.ui.DensityLegend = cdb.geo.ui.BaseLegend.extend({
     this.show_title  = this.options.show_title;
 
     this.items    = this.options.items;
-    this.model    = new cdb.core.Model();
+    this.model    = new cdb.core.Model({
+      template: this.options.template
+    });
 
     this._bindModel();
 
@@ -22725,7 +22730,7 @@ cdb.geo.ui.DensityLegend = cdb.geo.ui.BaseLegend.extend({
 
   _bindModel: function() {
 
-    this.model.bind("change:title change:show_title change:colors change:leftLabel change:rightLabel", this.render, this);
+    this.model.bind("change:template change:title change:show_title change:colors change:leftLabel change:rightLabel", this.render, this);
     this.model.bind("change:colors", this.render, this);
     this.model.bind("change:leftLabel change:rightLabel", this.render, this);
 
@@ -22751,24 +22756,32 @@ cdb.geo.ui.DensityLegend = cdb.geo.ui.BaseLegend.extend({
 
   render: function() {
 
-    if (this.items.length >= 2) {
+    if (this.model.get("template")) {
 
-      this.leftLabel  = this.items.at(0);
-      this.rightLabel = this.items.at(1);
+      var template = _.template(this.model.get("template"));
+      this.$el.html(template(this.model.toJSON()));
 
-      var leftLabel   = this.leftLabel.get("value");
-      var rightLabel  = this.rightLabel.get("value");
+    } else {
 
-      var colors = "";
+      if (this.items.length >= 2) {
 
-      for (var i = 2; i < this.items.length; i++) {
-        var color = this.items.at(i).get("value");
-        colors += '<div class="quartile" style="background-color:'+color+'"></div>';
+        this.leftLabel  = this.items.at(0);
+        this.rightLabel = this.items.at(1);
+
+        var leftLabel   = this.leftLabel.get("value");
+        var rightLabel  = this.rightLabel.get("value");
+
+        var colors = "";
+
+        for (var i = 2; i < this.items.length; i++) {
+          var color = this.items.at(i).get("value");
+          colors += '<div class="quartile" style="background-color:'+color+'"></div>';
+        }
+
+        this.model.set({ title: this.title, show_title: this.show_title, leftLabel: leftLabel, rightLabel: rightLabel, colors: colors, buckets_count: this.items.length - 2 });
+
+        this.$el.html(this.template(this.model.toJSON()));
       }
-
-      this.model.set({ title: this.title, show_title: this.show_title, leftLabel: leftLabel, rightLabel: rightLabel, colors: colors, buckets_count: this.items.length - 2 });
-
-      this.$el.html(this.template(this.model.toJSON()));
     }
 
     return this;
@@ -22837,14 +22850,24 @@ cdb.geo.ui.IntensityLegend = cdb.geo.ui.BaseLegend.extend({
 
   className: "intensity-legend",
 
-  template: _.template('<% if (title && show_title) { %><div class="legend-title"><%= title %></div><% } %><ul><li class="min"><%= leftLabel %></li><li class="max"><%= rightLabel %></li><li class="graph"></li></ul>'),
+  template: _.template('<% if (title && show_title) { %><div class="legend-title">\n<%= title %></div><% } %>\n<ul>\n<li class="min"><%= leftLabel %></li>\n<li class="max"><%= rightLabel %></li>\n<li class="graph"></li>\n</ul>\n'),
 
   initialize: function() {
 
     this.title       = this.options.title;
     this.show_title  = this.options.show_title;
     this.items       = this.options.items;
-    this.model       = new cdb.core.Model();
+    this.model       = new cdb.core.Model({
+      template: this.options.template
+    });
+
+    this._bindModel();
+
+  },
+
+  _bindModel: function() {
+
+    this.model.bind("change:template", this.render, this);
 
   },
 
@@ -22918,20 +22941,29 @@ cdb.geo.ui.IntensityLegend = cdb.geo.ui.BaseLegend.extend({
 
   render: function() {
 
-    if (this.items.length >= 3) {
+    if (this.model.get("template")) {
 
-      this.leftLabel  = this.items.at(0);
-      this.rightLabel = this.items.at(1);
-      this.color      = this.items.at(2);
+      var template = _.template(this.model.get("template"));
+      this.$el.html(template(this.model.toJSON()));
 
-      var leftLabel   = this.leftLabel.get("value");
-      var rightLabel  = this.rightLabel.get("value");
+    } else {
 
-      this.model.set({ title: this.title, show_title: this.show_title, leftLabel: leftLabel, rightLabel: rightLabel });
+      if (this.items.length >= 3) {
 
-      this.$el.html(this.template(this.model.toJSON()));
+        this.leftLabel  = this.items.at(0);
+        this.rightLabel = this.items.at(1);
+        this.color      = this.items.at(2);
 
-      this._renderGraph(this.color.get("value"));
+        var leftLabel   = this.leftLabel.get("value");
+        var rightLabel  = this.rightLabel.get("value");
+
+        this.model.set({ title: this.title, show_title: this.show_title, leftLabel: leftLabel, rightLabel: rightLabel });
+
+        this.$el.html(this.template(this.model.toJSON()));
+
+        this._renderGraph(this.color.get("value"));
+      }
+
     }
 
     return this;
@@ -22948,7 +22980,7 @@ cdb.geo.ui.CategoryLegend = cdb.geo.ui.BaseLegend.extend({
 
   className: "category-legend",
 
-  template: _.template('<% if (title && show_title) { %><div class="legend-title"><%= title %></div><% } %><ul></ul>'),
+  template: _.template('<% if (title && show_title) { %><div class="legend-title"><%= title %></div><% } %>\n<ul></ul>\n'),
 
   initialize: function() {
 
@@ -23156,7 +23188,7 @@ cdb.geo.ui.StackedLegend = cdb.core.View.extend({
 
   //TODO: change this method to
   // getLegendByIndex
-  getLayerByIndex: function(index) {
+  getLegendByIndex: function(index) {
     if (!this._layerByIndex) {
       this._layerByIndex = {};
       var legends = this.options.legends;
@@ -23474,7 +23506,9 @@ cdb.geo.ui.BubbleLegend = cdb.geo.ui.BaseLegend.extend({
 
     this.items = this.options.items;
 
-    this.model = new cdb.core.Model();
+    this.model = new cdb.core.Model({
+      template: this.options.template
+    });
 
     this.add_related_model(this.model);
 
@@ -23484,7 +23518,7 @@ cdb.geo.ui.BubbleLegend = cdb.geo.ui.BaseLegend.extend({
 
   _bindModel: function() {
 
-    this.model.bind("change:title change:show_title change:color change:min change:max", this.render, this);
+    this.model.bind("change:template change:title change:show_title change:color change:min change:max", this.render, this);
 
   },
 
@@ -23506,20 +23540,30 @@ cdb.geo.ui.BubbleLegend = cdb.geo.ui.BaseLegend.extend({
 
   render: function() {
 
-    var color = this.items.length >= 3 ? this.items.at(2).get("value") : "";
+    if (this.model.get("template")) {
 
-    if (this.items.length >= 3) {
+      var template = _.template(this.model.get("template"));
+      this.$el.html(template(this.model.toJSON()));
 
-      var min = this.items.at(0);
-      var max = this.items.at(1);
+      this.$el.removeClass("bubble-legend");
 
-      this.model.set({ title: this.options.title, show_title: this.options.show_title, min: min.get("value"), max: max.get("value") });
+    } else {
 
-      this.$el.html(this.template(this.model.toJSON()));
+      var color = this.items.length >= 3 ? this.items.at(2).get("value") : "";
 
+      if (this.items.length >= 3) {
+
+        var min = this.items.at(0);
+        var max = this.items.at(1);
+
+        this.model.set({ title: this.options.title, show_title: this.options.show_title, min: min.get("value"), max: max.get("value") });
+
+        this.$el.html(this.template(this.model.toJSON()));
+
+      }
+
+      this._renderGraph(color);
     }
-
-    this._renderGraph(color);
 
     return this;
 

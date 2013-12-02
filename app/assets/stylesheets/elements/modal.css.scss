@@ -25,6 +25,24 @@
       @include border-radius(4px);
       @include box-shadow(rgba(black,0.15) 0 0 0 4px);
 
+      // Options panes
+      div.dialog-panes {
+        position:relative;
+        display:block;
+      }
+
+      .dialog-tabs li {
+        margin-bottom:25px;
+        border-bottom:none;
+      }
+
+      .dialog-pane {display:none; margin-left:20px;}
+      .dialog-tab.active .dialog-pane {display:block}
+
+      .dialog-upload-pane {
+        margin-bottom:50px;
+      }
+
       a.close {
         position:absolute;
         top:-15px;

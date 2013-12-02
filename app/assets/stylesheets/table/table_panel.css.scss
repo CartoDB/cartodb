@@ -933,7 +933,7 @@ a.info {
 
     input {
       position:relative;
-      z-index: 100;
+      z-index: 9;
       display:none;
     }
   }
@@ -949,10 +949,11 @@ a.info {
     }
 
     .panel_content .wrapper .content .fields li span { cursor: default; }
+
     .panel_content .wrapper .content .fields {
       position:relative;
       background:#fff;
-      z-index: 1000;
+      z-index: 9;
     }
 
     .panel_content .wrapper { top: 43px; }
@@ -972,6 +973,59 @@ a.info {
       }
 
       .form_combo  { position:absolute; right:18px; }
+    }
+
+    .all {
+      padding:15px 0;
+      overflow:auto;
+      span.label {margin-right:12px;}
+    }
+
+    .titlePane .fields li {
+      position:relative;
+      & > span:hover {cursor: default; }
+    }
+
+    // When custom html template is applied, blocked block should show up
+    // and overflow should be hidden
+    .titlePane.disabled .wrapper, .fieldPane.disabled .wrapper {
+      overflow:hidden;
+    }
+
+    .blocked {
+      position:absolute;
+      top:0;
+      right:0;
+      left:0;
+      bottom:0;
+      display:none;
+      padding:20px 40px;
+      @include border-top-left-radius(4px);
+
+      text-align:center;
+      line-height: normal;
+      background:rgba(white,0.9);
+      z-index:10;
+
+      span.block-icon {
+        position:relative;
+        @include inline-block();
+        width:111px;
+        height:110px;
+        @include table-sprite(block_icon);
+      }
+
+      p {
+        margin: 30px 0 3px 0;
+        line-height: normal;
+        color: #999999;
+      }
+
+      a {
+        @include inline-block();
+        margin:20px 0 0 0;
+      }
+
     }
 
     // No content block
@@ -1064,6 +1118,7 @@ a.info {
       &.panel_content {
         top: 42px;
         padding: 0 30px 16px 30px;
+        z-index: 9;
 
         .footer {
           margin: 14px 0 0 0;

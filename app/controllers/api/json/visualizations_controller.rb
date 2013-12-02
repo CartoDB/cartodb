@@ -23,7 +23,9 @@ class Api::Json::VisualizationsController < Api::ApplicationController
                        )
     map_ids          = collection.map(&:map_id).to_a
     tables           = tables_by_map_id(map_ids)
-    synchronizations = synchronizations_by_table_name(tables.values.map { |t| t.name })
+    table_names      = tables.values.map { |t| t.name }
+    synchronizations = synchronizations_by_table_name(table_names)
+    rows_and_sizes   = rows_and_sizes_for(table_names)
 
     representation  = collection.map { |member|
       member.to_hash(
@@ -31,7 +33,8 @@ class Api::Json::VisualizationsController < Api::ApplicationController
         table_data: !(params[:table_data] =~ /false/),
         user:       current_user,
         table:      tables[member.map_id],
-        synchronization: synchronizations[member.name]
+        synchronization: synchronizations[member.name],
+        rows_and_sizes: rows_and_sizes
       )
     }
 
@@ -201,6 +204,24 @@ class Api::Json::VisualizationsController < Api::ApplicationController
         current_user.id,
         table_names
       ).all.map { |s| [s[:name], s] }
+    ]
+  end
+
+  def rows_and_sizes_for(table_names)
+    Hash[
+      current_user.in_database.fetch(%Q{
+        SELECT 
+          relname AS table_name,
+          pg_total_relation_size(relname::regclass) AS total_relation_size,
+          reltuples::integer AS reltuples 
+        FROM pg_class
+        WHERE relname IN ?}, table_names
+      ).all.map { |r| 
+        [r[:table_name], {
+          size: r[:total_relation_size],
+          rows: r[:reltuples]
+        }]
+      }
     ]
   end
 end # Api::Json::VisualizationsController

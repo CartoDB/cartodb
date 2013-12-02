@@ -91,7 +91,7 @@ describe DataImport do
       :table_copy    => @table.name ).run_import!
     duplicated_table = Table[data_import.table_id]
     duplicated_table.should_not be_nil
-    duplicated_table.name.should be == 'duplicated_table'
+    duplicated_table.name.should be == 'duplicated_table_1'
   end
 
   it 'should allow to create a table from a query' do
@@ -109,7 +109,7 @@ describe DataImport do
 
     duplicated_table = Table[data_import.table_id]
     duplicated_table.should_not be_nil
-    duplicated_table.name.should be == 'from_query'
+    duplicated_table.name.should be == 'from_query_1'
     duplicated_table.records[:rows].should have(5).items
   end
 
@@ -122,7 +122,7 @@ describe DataImport do
 
     table = Table[data_import.table_id]
     table.should_not be_nil
-    table.name.should be == 'clubbing'
+    table.name.should be == 'clubbing_1'
     table.records[:rows].should have(10).items
   end
 
@@ -148,7 +148,7 @@ describe DataImport do
 
     table = Table[data_import.table_id]
     table.should_not be_nil
-    table.name.should be == 'clubbing'
+    table.name.should be == 'clubbing_1'
     table.records[:rows].should have(10).items
   end
 
@@ -164,7 +164,7 @@ describe DataImport do
 
     table = Table[data_import.table_id]
     table.should_not be_nil
-    table.name.should be == 'clubbing'
+    table.name.should be == 'clubbing_1'
     table.records[:rows].should have(10).items
   end
 
@@ -204,7 +204,7 @@ describe DataImport do
 
     duplicated_table = Table[data_import.table_id]
     duplicated_table.should_not be_nil
-    duplicated_table.name.should be == 'from_query'
+    duplicated_table.name.should be == 'from_query_1'
     duplicated_table.records[:rows].should have(5).items
   end
 

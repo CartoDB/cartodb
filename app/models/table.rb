@@ -1319,9 +1319,17 @@ TRIGGER
   end
 
   def get_valid_name(name, options={})
+    query = %Q(
+      SELECT table_name FROM information_schema.tables 
+      WHERE table_schema = 'public'
+      AND table_type = 'BASE TABLE'
+      AND table_name NOT IN ('cdb_tablemetadata', 'spatial_ref_sys');
+    )
     name_candidates = [] 
-    name_candidates = self.owner.tables.select_map(:name) if owner
+    #name_candidates = self.owner.tables.select_map(:name) if owner
+    name_candidates = owner.in_database[query].map(:table_name) if owner
 
+    puts name_candidates.inspect
     options.merge!(name_candidates: name_candidates)
     Table.get_valid_table_name(name, options)
   end
@@ -1329,6 +1337,13 @@ TRIGGER
   # Gets a valid postgresql table name for a given database
   # See http://www.postgresql.org/docs/9.1/static/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS
   def self.get_valid_table_name(name, options = {})
+    query = %Q(
+      SELECT table_name FROM information_schema.tables 
+      WHERE table_schema = 'public'
+      AND table_type = 'BASE TABLE'
+      AND table_name NOT IN ('cdb_tablemetadata', 'spatial_ref_sys');
+    )
+
     # Initial name cleaning
     name = name.to_s.strip #.downcase
     name = 'untitled_table' if name.blank?
@@ -1344,7 +1359,10 @@ TRIGGER
 
     return name if name == options[:current_name]
     # We don't want to use an existing table name
-    existing_names = options[:name_candidates] || options[:connection]["select relname from pg_stat_user_tables WHERE schemaname='public'"].map(:relname)
+    #existing_names = options[:name_candidates] || options[:connection]["select relname from pg_stat_user_tables WHERE schemaname='public'"].map(:relname)
+
+    existing_names = options[:name_candidates] ||
+      options[:connection][query].map(:table_name)
     existing_names = existing_names + User::SYSTEM_TABLE_NAMES
     rx = /_(\d+)$/
     count = name[rx][1].to_i rescue 0

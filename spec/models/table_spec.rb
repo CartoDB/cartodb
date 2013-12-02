@@ -112,12 +112,12 @@ describe Table do
       table = create_table(name: 'bogus_name', user_id: @user.id)
       table.table_visualization.name.should == table.name
 
-      table.table_visualization.name = 'bogus_name_2'
+      table.table_visualization.name = 'bogus_name_1'
       table.table_visualization.store
 
       table.reload
-      table.table_visualization.name.should == 'bogus_name_2'
-      table.name.should == 'bogus_name_2'
+      table.table_visualization.name.should == 'bogus_name_1'
+      table.name.should == 'bogus_name_1'
       table.name.should == table.table_visualization.name
 
       visualization_id = table.table_visualization.id
@@ -1245,7 +1245,7 @@ describe Table do
       data_import.run_import!
 
       table2 = Table[data_import.table_id]
-      table2.name.should == 'csv_no_quotes'
+      table2.name.should == 'csv_no_quotes_1'
 
       @user.in_database do |user_database|
         user_database.table_exists?(table.name.to_sym).should be_true
@@ -1278,7 +1278,7 @@ describe Table do
       cartodb_id_schema.should be_present
       cartodb_id_schema = cartodb_id_schema[1]
       cartodb_id_schema[:db_type].should == "integer"
-      cartodb_id_schema[:default].should == "nextval('#{table.name}_cartodb_id_seq1'::regclass)"
+      cartodb_id_schema[:default].should == "nextval('#{table.name}_cartodb_id_seq'::regclass)"
       cartodb_id_schema[:primary_key].should == true
       cartodb_id_schema[:allow_null].should == false
     end
@@ -1588,7 +1588,7 @@ describe Table do
       @user.run_pg_query("INSERT INTO exttable (go, ttoo, bed) VALUES ( 'c', 1, 'p');
                           INSERT INTO exttable (go, ttoo, bed) VALUES ( 'c', 2, 'p')")
       table.save
-      table.name.should == 'exttable'
+      table.name.should == 'exttable_1'
       table.rows_counted.should == 2
     end
 
@@ -1601,7 +1601,7 @@ describe Table do
       @user.run_pg_query("INSERT INTO exttable (the_geom, cartodb_id, bed) VALUES ( 'c', 1, 'p');
                          INSERT INTO exttable (the_geom, cartodb_id, bed) VALUES ( 'c', 2, 'p')")
       table.save
-      table.name.should == 'exttable'
+      table.name.should == 'exttable_1'
       table.rows_counted.should == 2
     end
 
@@ -1617,7 +1617,7 @@ describe Table do
       data_import.run_import!
 
       table = Table[data_import.table_id]
-      table.name.should == 'exttable'
+      table.name.should == 'exttable_1'
       table.rows_counted.should == 2
       check_schema(table, [[:cartodb_id, "integer"], [:bed, "text"], [:created_at, "timestamp with time zone"], [:updated_at, "timestamp with time zone"], [:the_geom, "geometry", "geometry", "point"]])
     end
@@ -1670,7 +1670,7 @@ describe Table do
       fixture     = "#{Rails.root}/db/fake_data/SHP1.zip"
       data_import = create_import(@user, fixture)
 
-      data_import.table.name.should == "esp_adm1"
+      data_import.table.name.should == "esp_adm1_1"
       data_import.table.rows_counted.should == 18
     end
   end

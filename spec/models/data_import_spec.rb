@@ -36,8 +36,7 @@ describe DataImport do
     data_import.error_code.should == 8004
   end
 
-  it 'should allow to append data to an existing table' do
-    pending "not yet implemented"
+  it 'can append data to an existing table' do
     fixture = '/../db/fake_data/column_string_to_boolean.csv'
     expect do
       DataImport.create(

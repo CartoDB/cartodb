@@ -22471,14 +22471,15 @@ cdb.geo.ui.Legend = cdb.core.View.extend({
       this.model = new cdb.geo.ui.LegendModel({
         type: this.options.type || cdb.geo.ui.LegendModel.prototype.defaults.type,
         title: this.options.title || cdb.geo.ui.LegendModel.prototype.defaults.title,
-        show_title: this.options.show_title || cdb.geo.ui.LegendModel.prototype.defaults.show_title
+        show_title: this.options.show_title || cdb.geo.ui.LegendModel.prototype.defaults.show_title,
+        template: this.options.template || cdb.geo.ui.LegendModel.prototype.defaults.template
       });
 
     }
 
     this.add_related_model(this.model);
 
-    this.model.bind("change:type change:items change:title change:show_title",  this._updateLegendType, this);
+    this.model.bind("change:template change:type change:items change:title change:show_title",  this._updateLegendType, this);
 
   },
 
@@ -22515,13 +22516,15 @@ cdb.geo.ui.Legend = cdb.core.View.extend({
     var type  = this.model.get("type");
     var title = this.model.get("title");
     var show_title = this.model.get("show_title");
+    var template = this.model.get("template");
 
     if (type && this.legend_name) {
 
       this.view = new cdb.geo.ui[this.legend_name] ({
         title: title,
         show_title: show_title,
-        items: self.items
+        items: self.items,
+        template: template
       });
 
       // Set the type as the element class for styling
@@ -22597,7 +22600,7 @@ cdb.geo.ui.BaseLegend = cdb.core.View.extend({
 
   _bindModel: function() {
 
-    this.model.bind("change:title change:show_title", this.render, this);
+    this.model.bind("change:template change:title change:show_title", this.render, this);
 
   },
 
@@ -22631,13 +22634,15 @@ cdb.geo.ui.ChoroplethLegend = cdb.geo.ui.BaseLegend.extend({
     this.show_title   = this.options.show_title;
 
     this.items    = this.options.items;
-    this.model    = new cdb.core.Model();
+    this.model    = new cdb.core.Model({
+      template: this.options.template
+    });
 
   },
 
   _bindModel: function() {
 
-    this.model.bind("change:title change:show_title change:colors change:leftLabel change:rightLabel", this.render, this);
+    this.model.bind("change:template change:title change:show_title change:colors change:leftLabel change:rightLabel", this.render, this);
 
   },
 
@@ -22661,24 +22666,33 @@ cdb.geo.ui.ChoroplethLegend = cdb.geo.ui.BaseLegend.extend({
 
   render: function() {
 
-    if (this.items.length >= 2) {
+    if (this.model.get("template")) {
 
-      this.leftLabel  = this.items.at(0);
-      this.rightLabel = this.items.at(1);
+      var template = _.template(this.model.get("template"));
+      this.$el.html(template(this.model.toJSON()));
 
-      var leftLabel   = this.leftLabel.get("value");
-      var rightLabel  = this.rightLabel.get("value");
+    } else {
 
-      var colors = "";
 
-      for (var i = 2; i < this.items.length; i++) {
-        var color = this.items.at(i).get("value");
-        colors += '<div class="quartile" style="background-color:'+color+'"></div>';
+      if (this.items.length >= 2) {
+
+        this.leftLabel  = this.items.at(0);
+        this.rightLabel = this.items.at(1);
+
+        var leftLabel   = this.leftLabel.get("value");
+        var rightLabel  = this.rightLabel.get("value");
+
+        var colors = "";
+
+        for (var i = 2; i < this.items.length; i++) {
+          var color = this.items.at(i).get("value");
+          colors += '<div class="quartile" style="background-color:'+color+'"></div>';
+        }
+
+        this.model.set({ title: this.title, show_title: this.show_title, leftLabel: leftLabel, rightLabel: rightLabel, colors: colors, buckets_count: this.items.length - 2 });
+
+        this.$el.html(this.template(this.model.toJSON()));
       }
-
-      this.model.set({ title: this.title, show_title: this.show_title, leftLabel: leftLabel, rightLabel: rightLabel, colors: colors, buckets_count: this.items.length - 2 });
-
-      this.$el.html(this.template(this.model.toJSON()));
     }
 
     return this;
@@ -22945,8 +22959,17 @@ cdb.geo.ui.CategoryLegend = cdb.geo.ui.BaseLegend.extend({
     this.model = new cdb.core.Model({
       type: "custom",
       title: this.title,
-      show_title: this.show_title
+      show_title: this.show_title,
+      template: this.options.template
     });
+
+    this._bindModel();
+
+  },
+
+  _bindModel: function() {
+
+    this.model.bind("change:template", this.render, this);
 
   },
 
@@ -22970,12 +22993,20 @@ cdb.geo.ui.CategoryLegend = cdb.geo.ui.BaseLegend.extend({
 
   render: function() {
 
-    this.$el.html(this.template(this.model.toJSON()));
+    if (this.model.get("template")) {
 
-    if (this.items.length > 0) {
-      this._renderItems();
+      var template = _.template(this.model.get("template"));
+      this.$el.html(template(this.model.toJSON()));
+
     } else {
-      this.$el.html('<div class="warning">The category legend is empty</div>');
+
+      this.$el.html(this.template(this.model.toJSON()));
+
+      if (this.items.length > 0) {
+        this._renderItems();
+      } else {
+        this.$el.html('<div class="warning">The category legend is empty</div>');
+      }
     }
 
     return this;
@@ -23277,7 +23308,8 @@ cdb.geo.ui.LegendModel = cdb.core.Model.extend({
   defaults: {
     type: null,
     show_title: false,
-    title: ""
+    title: "",
+    template: ""
   },
 
   initialize: function() {
@@ -23290,7 +23322,12 @@ cdb.geo.ui.LegendModel = cdb.core.Model.extend({
 
     this.bind("change:items", this._onUpdateItems, this);
     this.bind("change:title change:show_title", this._onUpdateTitle, this);
+    this.bind("change:template", this._onUpdateTemplate, this);
 
+  },
+
+  _onUpdateTemplate: function() {
+    this.template = this.get("template");
   },
 
   _onUpdateTitle: function() {
@@ -23328,7 +23365,8 @@ cdb.geo.ui.CustomLegend = cdb.geo.ui.BaseLegend.extend({
     this.model = new cdb.core.Model({
       type:  this.type,
       title: this.options.title,
-      show_title: this.options.show_title
+      show_title: this.options.show_title,
+      template: this.options.template
     });
 
     this._bindModel();
@@ -23337,7 +23375,7 @@ cdb.geo.ui.CustomLegend = cdb.geo.ui.BaseLegend.extend({
 
   _bindModel: function() {
 
-    this.model.bind("change:title change:show_title", this.render, this);
+    this.model.bind("change:template change:title change:show_title", this.render, this);
     this.model.bind("change:data", this._updateData, this);
 
   },
@@ -23375,12 +23413,19 @@ cdb.geo.ui.CustomLegend = cdb.geo.ui.BaseLegend.extend({
 
   render: function() {
 
-    this.$el.html(this.template(this.model.toJSON()));
+    if (this.model.get("template")) {
 
-    if (this.items.length > 0) {
-      this._renderItems();
+      var template = _.template(this.model.get("template"));
+      this.$el.html(template(this.model.toJSON()));
+
     } else {
-      this.$el.html('<div class="warning">The legend is empty</div>');
+      this.$el.html(this.template(this.model.toJSON()));
+
+      if (this.items.length > 0) {
+        this._renderItems();
+      } else {
+        this.$el.html('<div class="warning">The legend is empty</div>');
+      }
     }
 
     return this;

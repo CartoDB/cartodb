@@ -168,6 +168,46 @@ cdb.vis.Overlay.register('layer_selector', function(data, vis) {
 });
 
 // search content
+cdb.vis.Overlay.register('share', function(data, vis) {
+
+  var template = cdb.core.Template.compile(
+    data.template || '\
+      <div class="mamufas">\
+        <section class="block modal <%= modal_type %>">\
+          <a href="#close" class="close">x</a>\
+          <div class="head">\
+            <h3><%= title %></h3>\
+          </div>\
+          <div class="content">\
+            <div class="buttons">\
+              <h4>Social</h4>\
+              <ul>\
+                <li><a class="facebook">Facebook</a></li>\
+                <li><a class="twitter">Twitter</a></li>\
+              </ul>\
+            </div> \
+           <div class="embed_code">\
+             <h4>Embed this map</h4>\
+             <textarea id="" name="" cols="30" rows="10"><iframe src="//player.vimeo.com/video/43595116?title=0&amp;byline=0&amp;portrait=0&amp;color=ffffff” width="500"></iframe></textarea>\
+           </div>\
+          </div>\
+        </div>\
+      </div>\
+    ',
+    data.templateType || 'mustache'
+  );
+
+  var dialog = new cdb.ui.common.ShareDialog({
+    title: 'Share this map',
+    template: template,
+    width: 500
+  });
+
+  return dialog.render();
+
+});
+
+// search content
 cdb.vis.Overlay.register('search', function(data, vis) {
 
   var template = cdb.core.Template.compile(

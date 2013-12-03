@@ -1,6 +1,6 @@
 // cartodb.js version: 3.4.02-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: 7a380000047bf06163f5ab51f8c53e612c85fec8
+// sha: b17a9123b4a9cba9fd9c0fb51ebee8573305bcb3
 (function() {
   var root = this;
 
@@ -28553,7 +28553,7 @@ cdb.ui.common.ShareDialog = cdb.ui.common.Dialog.extend({
     // After removing the dialog, cleaning other bindings
     this.bind("clean", this._reClean);
 
-    this.template_base = this.options.template_base ? _.template(this.options.template_base) : cdb.templates.getTemplate(this.options.template_name);
+    this.template_base = this.options.template;
   }
 
 });
@@ -29398,7 +29398,7 @@ var Vis = cdb.core.View.extend({
   },
 
   /**
-   * check if all the modules needed to create layers are loaded 
+   * check if all the modules needed to create layers are loaded
    */
   checkModules: function(layers) {
     var mods = Layers.modulesForLayers(layers);
@@ -29736,6 +29736,11 @@ var Vis = cdb.core.View.extend({
         shareable: opt.shareable ? true: false,
         url: vizjson.url
       });
+
+      this.addOverlay({
+        type: 'share'
+      });
+
     }
 
     if (opt.layer_selector) {
@@ -30351,6 +30356,46 @@ cdb.vis.Overlay.register('layer_selector', function(data, vis) {
 
 
   return layerSelector.render();
+});
+
+// search content
+cdb.vis.Overlay.register('share', function(data, vis) {
+
+  var template = cdb.core.Template.compile(
+    data.template || '\
+      <div class="mamufas">\
+        <section class="block modal <%= modal_type %>">\
+          <a href="#close" class="close">x</a>\
+          <div class="head">\
+            <h3><%= title %></h3>\
+          </div>\
+          <div class="content">\
+            <div class="buttons">\
+              <h4>Social</h4>\
+              <ul>\
+                <li><a class="facebook">Facebook</a></li>\
+                <li><a class="twitter">Twitter</a></li>\
+              </ul>\
+            </div> \
+           <div class="embed_code">\
+             <h4>Embed this map</h4>\
+             <textarea id="" name="" cols="30" rows="10"><iframe src="//player.vimeo.com/video/43595116?title=0&amp;byline=0&amp;portrait=0&amp;color=ffffff” width="500"></iframe></textarea>\
+           </div>\
+          </div>\
+        </div>\
+      </div>\
+    ',
+    data.templateType || 'mustache'
+  );
+
+  var dialog = new cdb.ui.common.ShareDialog({
+    title: 'Share this map',
+    template: template,
+    width: 500
+  });
+
+  return dialog.render();
+
 });
 
 // search content

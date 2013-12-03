@@ -166,7 +166,7 @@ var Vis = cdb.core.View.extend({
   },
 
   /**
-   * check if all the modules needed to create layers are loaded 
+   * check if all the modules needed to create layers are loaded
    */
   checkModules: function(layers) {
     var mods = Layers.modulesForLayers(layers);
@@ -504,6 +504,11 @@ var Vis = cdb.core.View.extend({
         shareable: opt.shareable ? true: false,
         url: vizjson.url
       });
+
+      this.addOverlay({
+        type: 'share'
+      });
+
     }
 
     if (opt.layer_selector) {

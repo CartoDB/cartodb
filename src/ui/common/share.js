@@ -38,7 +38,7 @@ cdb.ui.common.ShareDialog = cdb.ui.common.Dialog.extend({
     // After removing the dialog, cleaning other bindings
     this.bind("clean", this._reClean);
 
-    this.template_base = this.options.template_base ? _.template(this.options.template_base) : cdb.templates.getTemplate(this.options.template_name);
+    this.template_base = this.options.template;
   }
 
 });

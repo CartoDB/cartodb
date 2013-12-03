@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <title>Mi primer mapa con cartodb.js | Taller de CartoDB</title>
+
+    <link rel="stylesheet" href="../themes/css/cartodb.css" />
+    <script src="../src/cartodb.js"></script>
+    <script type="text/javascript">
+      function main() {
+
+        cdb.load('../src/', function() {
+        var vizjson_url = "http://development.localhost.lan:3000/api/v2/viz/8aa45daa-5be2-11e3-99f4-003ee1fffe8b/viz.json";
+
+        cartodb.createVis("map", vizjson_url).done(function(vis, layers) {
+
+          var MyDialog = cdb.ui.common.ShareDialog.extend({
+            render_content: function() {
+              return "my content";
+            },
+          })
+          var dialog = new MyDialog({
+            title: 'test',
+            description: 'long description here',
+            template_base: $('#base_template').html(),
+            width: 500
+          });
+
+          $('body').append(dialog.render().el);
+          dialog.open();
+
+        });
+        });
+
+
+      }
+      
+    </script>
+    <style type="text/css">
+      html, body, #map {
+        height: 100%;
+        padding: 0;
+        margin: 0;
+      }
+    </style>
+
+  </head>
+  <body onload="main();">
+    <div id="map"></div>
+
+    <script id="base_template" type="text/template">
+      <div class="mamufas">
+        <section class="block modal <%= modal_type %>">
+          <a href="#close" class="close">x</a>
+          <div class="head">
+            <h3><%= title %></h3>
+            <% if (description) { %>
+            <p class="margin5"><%= description %></p>
+            <% } %>
+          </div>
+          <div class="content">
+          </div>
+          <% if(include_footer) { %>
+          <div class="foot">
+            <a href="#cancel" class="left cancel <%= cancel_button_classes %>"><%= cancel_title %></a>
+            <a href="#go" class="right ok <%= ok_button_classes %>"><%= ok_title %></a>
+          </div>
+          <% } %>
+        </div>
+      </div>
+
+
+
+    </script>
+  </body>
+</html>

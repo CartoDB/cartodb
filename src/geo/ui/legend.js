@@ -159,14 +159,8 @@ cdb.geo.ui.Legend = cdb.core.View.extend({
 
     if (type && this.legend_name) {
 
-      //debugger;
-
       this.view = new cdb.geo.ui[this.legend_name]({
-        model: this.model,
-        //title: "a",
-        //show_title: true,
-        //items: self.items,
-        //template: template
+        model: this.model
       });
 
       // Set the type as the element class for styling
@@ -233,7 +227,6 @@ cdb.geo.ui.Legend = cdb.core.View.extend({
 
 });
 
-
 /*
  * DebugLegend
  *
@@ -278,29 +271,7 @@ cdb.geo.ui.ChoroplethLegend = cdb.geo.ui.BaseLegend.extend({
 
   initialize: function() {
 
-    //this.title        = this.options.title;
-    //this.show_title   = this.options.show_title;
-
     this.items    = this.model.items;
-
-    //var colors = [];
-    //for (var i = 2; i < this.items.length; i++) {
-      //var color = this.items.at(i).get("value");
-      //colors.push(color);
-    //}
-
-    //debugger;
-    //this.model.set({ colors: colors}, { silent: true });
-
-    //this.model    = new cdb.core.Model({
-      //template: this.options.template
-    //});
-
-  },
-
-  _bindModel: function() {
-
-    //this.model.bind("change:template change:title change:show_title change:colors change:leftLabel change:rightLabel", this.render, this);
 
   },
 
@@ -359,7 +330,6 @@ cdb.geo.ui.ChoroplethLegend = cdb.geo.ui.BaseLegend.extend({
 
         var leftLabel   = this.model.get("leftLabel")  || this.leftLabel.get("value");
         var rightLabel  = this.model.get("rightLabel") || this.rightLabel.get("value");
-        debugger;
 
         var colors = this._generateColorList();
 
@@ -388,14 +358,8 @@ cdb.geo.ui.DensityLegend = cdb.geo.ui.BaseLegend.extend({
   initialize: function() {
 
     this.items    = this.model.items;
-    //this.model    = new cdb.core.Model({
-      //template: this.options.template
-    //});
-
-    //this._bindModel();
 
   },
-
 
   setLeftLabel: function(text) {
 
@@ -524,9 +488,6 @@ cdb.geo.ui.Legend.Density = cdb.geo.ui.DensityLegend.extend({
 
 });
 
-
-
-
 /*
  * IntensityLegend
  *
@@ -539,14 +500,7 @@ cdb.geo.ui.IntensityLegend = cdb.geo.ui.BaseLegend.extend({
 
   initialize: function() {
 
-    //this.title       = this.options.title;
-    //this.show_title  = this.options.show_title;
     this.items       = this.model.items;
-    //this.model       = new cdb.core.Model({
-      //template: this.options.template
-    //});
-
-    //this._bindModel();
 
   },
 
@@ -687,18 +641,7 @@ cdb.geo.ui.CategoryLegend = cdb.geo.ui.BaseLegend.extend({
 
   initialize: function() {
 
-    //this.title       = this.options.title;
-    //this.show_title  = this.options.show_title;
-
     this.items = this.model.items;
-    //this.model = new cdb.core.Model({
-      //type: "custom",
-      //title: this.title,
-      //show_title: this.show_title,
-      //template: this.options.template
-    //});
-
-    //this._bindModel();
 
   },
 
@@ -786,8 +729,6 @@ cdb.geo.ui.Legend.Category = cdb.geo.ui.CategoryLegend.extend({
 
 });
 
-
-
 /*
  * ColorLegend
  *
@@ -802,16 +743,7 @@ cdb.geo.ui.ColorLegend = cdb.geo.ui.BaseLegend.extend({
 
   initialize: function() {
 
-    //this.title       = this.options.title;
-    //this.show_title  = this.options.show_title;
-
     this.items = this.model.items;
-
-    //this.model = new cdb.core.Model({
-      //type: this.type,
-      //title: this.title,
-      //show_title: this.show_title
-    //});
 
   },
 
@@ -1077,11 +1009,6 @@ cdb.geo.ui.LegendModel = cdb.core.Model.extend({
 
 });
 
-
-
-
-
-
 /*
  * CustomLegend
  *
@@ -1094,38 +1021,16 @@ cdb.geo.ui.CustomLegend = cdb.geo.ui.BaseLegend.extend({
   template: _.template('<% if (title && show_title) { %><div class="legend-title"><%= title %></div><% } %>\n<ul></ul>'),
 
   initialize: function() {
-    //debugger;
 
     this.items = this.model.items;
-
-    //this.model = new cdb.core.Model({
-      //type:  this.type,
-      //title: this.options.title,
-      //show_title: this.options.show_title,
-      //template: this.options.template
-    //});
-
-    //this._bindModel();
-
-  },
-
-  _bindModel: function() {
-
-    this.model.bind("change:template change:title change:show_title", this.render, this);
-    this.model.bind("change:data", this._updateData, this);
-
-  },
-
-  _updateData: function() {
-
-    this.items = new cdb.geo.ui.LegendItems(this.model.get("data"));
-    this.render();
 
   },
 
   setData: function(data) {
 
-    this.model.set("data", data);
+    this.items = new cdb.geo.ui.LegendItems(data);
+    this.model.items = this.items;
+    this.model.set("items", data);
 
   },
 
@@ -1155,6 +1060,7 @@ cdb.geo.ui.CustomLegend = cdb.geo.ui.BaseLegend.extend({
       this.$el.html(template(this.model.toJSON()));
 
     } else {
+
       this.$el.html(this.template(this.model.toJSON()));
 
       if (this.items.length > 0) {
@@ -1192,7 +1098,14 @@ cdb.geo.ui.Legend.Custom = cdb.geo.ui.CustomLegend.extend({
 
     this._bindModel();
 
-  }
+  },
+
+  _bindModel: function() {
+
+    this.model.bind("change:items change:template change:title change:show_title", this.render, this);
+    //this.items.bind("change", this.render, this);
+
+  },
 
 });
 
@@ -1209,14 +1122,6 @@ cdb.geo.ui.BubbleLegend = cdb.geo.ui.BaseLegend.extend({
   initialize: function() {
 
     this.items = this.model.items;
-
-    //this.model = new cdb.core.Model({
-      //template: this.options.template
-    //});
-
-    //this.add_related_model(this.model);
-
-    //this._bindModel();
 
   },
 
@@ -1253,14 +1158,14 @@ cdb.geo.ui.BubbleLegend = cdb.geo.ui.BaseLegend.extend({
 
     } else {
 
-      var color = this.items.length >= 3 ? this.items.at(2).get("value") : "";
+      var color = this.model.get("color") || (this.items.length >= 3 ? this.items.at(2).get("value") : "");
 
       if (this.items.length >= 3) {
 
-        var min = this.items.at(0);
-        var max = this.items.at(1);
+        var min = this.model.get("min") || this.items.at(0).get("value");
+        var max = this.model.get("max") || this.items.at(1).get("value");
 
-        var options = _.extend(this.model.toJSON(), { min: min.get("value"), max: max.get("value") });
+        var options = _.extend(this.model.toJSON(), { min: min, max: max });
 
         this.$el.html(this.template(options));
 

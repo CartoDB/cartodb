@@ -390,6 +390,7 @@ describe("common.geo.ui.Legend", function() {
         legend.setData(new_data);
 
         expect(legend.items.length).toEqual(new_data.length);
+
         expect(legend.items.at(0).get("name")).toEqual(new_data[0].name);
         expect(legend.items.at(0).get("value")).toEqual(new_data[0].value);
 

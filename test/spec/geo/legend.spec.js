@@ -252,8 +252,15 @@ describe("common.geo.ui.Legend", function() {
         { name: null, value: "red"  },
       ];
 
+      var model = new cdb.core.Model({
+        type: "color",
+        title: "title",
+        show_title: false,
+      });
+      model.items = new Backbone.Collection(data)
+
       legend = new cdb.geo.ui.ColorLegend({
-        items: new Backbone.Collection(data)
+        model: model
       });
     });
 

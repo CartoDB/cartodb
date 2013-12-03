@@ -44,8 +44,7 @@ class DataImport < Sequel::Model
 
   def run_import!
     success = !!dispatch
-    if self.results.empty?
-      set_unsupported_file_error
+    if self.results.empty? && self.error_code.nil?
       self.error_code = 1002
       self.state      = 'failure'
       save
@@ -224,7 +223,7 @@ class DataImport < Sequel::Model
     self.data_source  = query
     self.save
 
-    candidates =  current_user.tables.select_map(:name)
+    candidates = current_user.tables.map(&:name)
     table_name = Table.get_valid_table_name(name, name_candidates: candidates)
     current_user.in_database.run(%Q{CREATE TABLE #{table_name} AS #{query}})
     if current_user.over_disk_quota?

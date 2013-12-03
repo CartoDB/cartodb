@@ -85,7 +85,7 @@ DESC
       end
     end
 
-    desc "Set the password of the user in the USERNAME environment variable to the value of the USER_PASSWORD environment variable"
+    desc "Set the password of the user in the USER_NAME environment variable to the value of the USER_PASSWORD environment variable"
     task :change_user_password => :environment do
       raise "Set USER_NAME environment variable" if ENV['USER_NAME'].blank?
       raise "Set USER_PASSWORD environment variable" if ENV['USER_PASSWORD'].blank?

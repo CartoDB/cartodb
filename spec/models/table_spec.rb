@@ -57,13 +57,13 @@ describe Table do
       table2.name.should == "untitled_table_1"
     end
 
-    it 'is invalid with a "layergroup" name' do
+    it "won't allow a 'layergroup' name" do
       table         = Table.new
       table.user_id = @user.id
       table.name    = 'layergroup'
 
-      table.valid?.should == false
-      table.errors.fetch(:name).first.should =~ /reserved keyword/
+      table.save
+      table.name.should == 'layergroup_1'
     end
 
     it "should set a table_id value" do
@@ -112,12 +112,12 @@ describe Table do
       table = create_table(name: 'bogus_name', user_id: @user.id)
       table.table_visualization.name.should == table.name
 
-      table.table_visualization.name = 'bogus_name_1'
+      table.table_visualization.name = 'bogus_name'
       table.table_visualization.store
 
       table.reload
-      table.table_visualization.name.should == 'bogus_name_1'
-      table.name.should == 'bogus_name_1'
+      table.table_visualization.name.should == 'bogus_name'
+      table.name.should == 'bogus_name'
       table.name.should == table.table_visualization.name
 
       visualization_id = table.table_visualization.id
@@ -125,14 +125,11 @@ describe Table do
         .fetch
       visualization.name = 'bogus name 3'
       visualization.store 
-      table.reload
-      table.name.should == 'bogus_name_3'
 
       visualization = CartoDB::Visualization::Member.new(id: visualization.id)
         .fetch
       visualization.name.should == 'bogus_name_3'
-      table.reload
-      table.name.should == 'bogus_name_3'
+      visualization.table.name.should == 'bogus_name_3'
     end
     
     it 'propagates name changes to affected layers' do
@@ -426,7 +423,7 @@ describe Table do
       end
     end
 
-    it 'converts all names to downcase', now: true do
+    it 'converts all names to downcase' do
       delete_user_data @user
       @user.private_tables_enabled = false
       @user.save
@@ -478,12 +475,16 @@ describe Table do
       }.should_not raise_error
     end
 
-    it "can create a table called using a reserved postgresql word as its name" do
+    it "can create a table called using a reserved postgresql word as its name", now: true do
       delete_user_data @user
       @user.private_tables_enabled = false
       @user.save
 
-      table = create_table({:name => 'as', :user_id => @user.id})
+      #table = create_table({:name => 'as', :user_id => @user.id})a
+      table = Table.new
+      table.name = 'as'
+      table.user_id = @user.id
+      table.save
 
       @user.in_database do |user_database|
         user_database.table_exists?(table.name.to_sym).should be_true
@@ -491,7 +492,8 @@ describe Table do
 
       table.name = 'where'
       table.save
-      table.reload
+      #table.reload
+
       @user.in_database do |user_database|
         user_database.table_exists?('where'.to_sym).should be_true
       end
@@ -528,8 +530,8 @@ describe Table do
       table.reload
 
       table.key.should == "rails:#{table.database_name}:#{table.name}"
-      $tables_metadata.exists(table.key).should be_true
       $tables_metadata.exists(original_name).should be_false
+      $tables_metadata.exists(table.key).should be_true
       $tables_metadata.hget(table.key, "privacy").should be_present
       $tables_metadata.hget(table.key, "user_id").should be_present
       $tables_metadata.hget(table.key,"the_geom_type").should == original_the_geom_type
@@ -1245,7 +1247,7 @@ describe Table do
       data_import.run_import!
 
       table2 = Table[data_import.table_id]
-      table2.name.should == 'csv_no_quotes_1'
+      table2.name.should == 'csv_no_quotes'
 
       @user.in_database do |user_database|
         user_database.table_exists?(table.name.to_sym).should be_true
@@ -1302,7 +1304,7 @@ describe Table do
       invalid_cartodb_id_schema.should be_present
     end
 
-    it "should return geometry types", now: true do
+    it "should return geometry types" do
       data_import = DataImport.create( :user_id       => @user.id,
                                        :data_source   => '/../db/fake_data/gadm4_export.csv' )
       data_import.run_import!
@@ -1581,6 +1583,7 @@ describe Table do
 
   context "migrate existing postgresql tables into cartodb" do
     it "create table via SQL statement and then migrate table into CartoDB" do
+      delete_user_data(@user)
       table = new_table :name => nil, :user_id => @user.id
       table.migrate_existing_table = "exttable"
 
@@ -1588,20 +1591,20 @@ describe Table do
       @user.run_pg_query("INSERT INTO exttable (go, ttoo, bed) VALUES ( 'c', 1, 'p');
                           INSERT INTO exttable (go, ttoo, bed) VALUES ( 'c', 2, 'p')")
       table.save
-      table.name.should == 'exttable_1'
+      table.name.should == 'exttable'
       table.rows_counted.should == 2
     end
 
     it "create and migrate a table containing a the_geom and cartodb_id" do
-      delete_user_data @user
+      delete_user_data(@user)
       table = new_table :name => nil, :user_id => @user.id
-      table.migrate_existing_table = "exttable"
+      table.migrate_existing_table = "exttable1"
 
-      @user.run_pg_query("CREATE TABLE exttable (the_geom VARCHAR, cartodb_id INT, bed VARCHAR)")
-      @user.run_pg_query("INSERT INTO exttable (the_geom, cartodb_id, bed) VALUES ( 'c', 1, 'p');
-                         INSERT INTO exttable (the_geom, cartodb_id, bed) VALUES ( 'c', 2, 'p')")
+      @user.run_pg_query("CREATE TABLE exttable1 (the_geom VARCHAR, cartodb_id INT, bed VARCHAR)")
+      @user.run_pg_query("INSERT INTO exttable1 (the_geom, cartodb_id, bed) VALUES ( 'c', 1, 'p');
+                         INSERT INTO exttable1 (the_geom, cartodb_id, bed) VALUES ( 'c', 2, 'p')")
       table.save
-      table.name.should == 'exttable_1'
+      table.name.should == 'exttable1'
       table.rows_counted.should == 2
     end
 
@@ -1617,7 +1620,7 @@ describe Table do
       data_import.run_import!
 
       table = Table[data_import.table_id]
-      table.name.should == 'exttable_1'
+      table.name.should == 'exttable'
       table.rows_counted.should == 2
       check_schema(table, [[:cartodb_id, "integer"], [:bed, "text"], [:created_at, "timestamp with time zone"], [:updated_at, "timestamp with time zone"], [:the_geom, "geometry", "geometry", "point"]])
     end
@@ -1670,14 +1673,14 @@ describe Table do
       fixture     = "#{Rails.root}/db/fake_data/SHP1.zip"
       data_import = create_import(@user, fixture)
 
-      data_import.table.name.should == "esp_adm1_1"
+      data_import.table.name.should == "esp_adm1"
       data_import.table.rows_counted.should == 18
     end
   end
 
   context "search" do
 
-    it "should find tables by description" do
+    it "should find tables by description", now: true do
       table = Table.new
       table.user_id = @user.id
       table.name = "clubbing_spain_1_copy"
@@ -1693,10 +1696,10 @@ describe Table do
       tables.should be_empty
     end
 
-    it "should find tables by name" do
+    it "should find tables by name", now: true do
       table = Table.new
       table.user_id = @user.id
-      table.name = "european_countries_1"
+      table.name = "european_countries"
       table.description = "A world borders shapefile suitable for thematic mapping applications. Contains polygon borders in two resolutions as well as longitude/latitude values and various country codes"
       table.save.reload
 
@@ -1707,7 +1710,7 @@ describe Table do
   end
 
   describe 'Table.multiple_order' do
-    it 'returns sorted records' do
+    it 'returns sorted records', now: true do
       table_1 = create_table(name: "bogus_table_1", user_id: @user.id)
       table_2 = create_table(name: "bogus_table_2", user_id: @user.id)
 

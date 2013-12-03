@@ -167,10 +167,10 @@ module CartoDB
 
     private
 
-    def get_valid_name(name)
-      Table.get_valid_table_name(name, 
-        name_candidates: @db_connection.tables.map(&:to_s))
-    end
+    #def get_valid_name(name)
+    #  Table.get_valid_table_name(name, 
+    #    name_candidates: @db_connection.tables.map(&:to_s))
+    #end
 
     def log(str)
       if @@debug

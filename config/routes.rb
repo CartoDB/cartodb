@@ -15,7 +15,7 @@ CartoDB::Application.routes.draw do
     get '/dashboard/'                         => 'visualizations#index', :as => :dashboard
 
     resource :organization, only: [:show] do
-      resources :users, only: [:show, :update]
+      resources :users, only: [:show, :update, :create, :destroy]
     end
 
     # Tables

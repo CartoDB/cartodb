@@ -105,7 +105,11 @@ class User < Sequel::Model
     Thread.new do
       conn = Rails::Sequel.connection
         conn.run("UPDATE pg_database SET datallowconn = 'false' WHERE datname = '#{database_name}'")
-        conn.run("SELECT pg_terminate_backend(procpid) FROM pg_stat_activity WHERE datname = '#{database_name}'")
+        begin
+          conn.run("SELECT pg_terminate_backend(procpid) FROM pg_stat_activity WHERE datname = '#{database_name}'")
+        rescue Sequel::DatabaseError => e
+          conn.run("SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '#{database_name}'")
+        end
         conn.run("DROP DATABASE #{database_name}")
         conn.run("DROP USER #{database_username}")
     end.join

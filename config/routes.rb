@@ -14,6 +14,10 @@ CartoDB::Application.routes.draw do
   scope :module => "admin" do
     get '/dashboard/'                         => 'visualizations#index', :as => :dashboard
 
+    resource :organization, only: [:show] do
+      resources :users, only: [:show, :update]
+    end
+
     # Tables
     get '/dashboard/tables'                         => 'visualizations#index'
     get '/dashboard/tables/:page'                   => 'visualizations#index'
@@ -65,6 +69,7 @@ CartoDB::Application.routes.draw do
     post  '/your_apps/api_key/regenerate' => 'client_applications#regenerate_api_key', :as => :regenerate_api_key
 
   end
+
 
   namespace :superadmin do
     resources :users

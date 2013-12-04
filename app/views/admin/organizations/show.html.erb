@@ -1,0 +1,42 @@
+<% content_for(:page_title) do %>
+  Your organization |
+<% end %>
+<%= content_for(:js) do %>
+  <%= javascript_include_tag :cdb, :application, :keys %>
+  <script type="text/javascript">
+    var username = "<%= current_user.username %>"
+      , type = "oauth"
+      , config = <%=raw frontend_config.html_safe %>;
+  </script>
+<% end %>
+<%= content_for(:css) do %>
+  <%= stylesheet_link_tag :common, :keys, :media => 'all' %>
+<% end %>
+
+
+<article>
+  <div class="inner">
+    <section class="left block long">
+      <div class="head">
+        <h2>Everyone in your account</h2>
+      </div>
+      <div class="content">
+        <ul>
+          <%= render :partial => 'shared/flash_message' %>
+          <li>
+            <div class="copy">
+              <% @users.each do |user| -%>
+              <p><%= link_to user.username, organization_user_path(user) %></p>
+              <% end -%>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div class="foot">
+      </div>
+    </section>
+    <aside class="right">
+      <%= render :partial => 'aside' %>
+    </aside>
+  </div>
+</article>

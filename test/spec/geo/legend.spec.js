@@ -280,6 +280,10 @@ describe("common.geo.ui.Legend", function() {
 
     var custom_data;
 
+    afterEach(function() {
+      $(".legend_playground").remove();
+    });
+
     beforeEach(function() {
 
       custom_data = [
@@ -315,6 +319,19 @@ describe("common.geo.ui.Legend", function() {
       legend.showTitle();
       expect(legend.$el.find(".legend-title").html()).toEqual(title);
 
+    });
+
+    it("should have a method to render the legend", function() {
+
+      $("body").append("<div class='legend_playground' />");
+
+      var legend = new cdb.geo.ui.Legend.Custom({
+        title: "Custom title",
+        data: custom_data
+      });
+
+      legend.addTo(".legend_playground");
+      expect($(".legend_playground .cartodb-legend").length).toEqual(1);
     });
 
     it("should render the title", function() {
@@ -734,6 +751,10 @@ describe("common.geo.ui.Legend", function() {
 
     describe("Stacked Legend (using data)", function() {
 
+      afterEach(function() {
+        $(".legend_playground").remove();
+      });
+
       var stacked, properties, legendA, legendB, custom_data;
 
       var custom_data = [
@@ -753,6 +774,19 @@ describe("common.geo.ui.Legend", function() {
 
         stacked.render();
 
+      });
+
+      it("should have a method to render the stacked legend", function() {
+
+        $("body").append("<div class='legend_playground' />");
+
+        var legendA = { title: "Intensity legend", type: "intensity", color: "#FF0000", min: 1, max: 120 };
+        var legendB = { title: "Custom title", type:"custom", data: custom_data };
+
+        var stacked = new cdb.geo.ui.Legend.Stacked({ data: [legendA, legendB] });
+
+        stacked.addTo(".legend_playground");
+        expect($(".legend_playground .cartodb-legend-stack").length).toEqual(1);
       });
 
       it("should render", function() {

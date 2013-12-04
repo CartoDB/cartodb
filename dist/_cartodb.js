@@ -1,6 +1,6 @@
 // cartodb.js version: 3.4.02-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: c9f18427c33856071fbf3806712384e25d75cb6d
+// sha: d375524550eff173c49e5347d1ed53d12990deed
 (function() {
   var root = this;
 

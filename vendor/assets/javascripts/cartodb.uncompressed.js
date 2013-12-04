@@ -1,6 +1,6 @@
-// cartodb.js version: 3.4.02-dev
+// cartodb.js version: 3.3.06-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: d375524550eff173c49e5347d1ed53d12990deed
+// sha: 46cf687956b3cd2c2c67028207a15de7c26bbf76
 (function() {
   var root = this;
 
@@ -20429,7 +20429,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.4.02-dev';
+    cdb.VERSION = '3.3.06-dev';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -20501,6 +20501,7 @@ this.LZMA = LZMA;
         'geo/layer_definition.js',
         'geo/common.js',
 
+        'geo/leaflet/leaflet.geometry.js',
         'geo/leaflet/leaflet_base.js',
         'geo/leaflet/leaflet_plainlayer.js',
         'geo/leaflet/leaflet_tiledlayer.js',
@@ -22359,11 +22360,6 @@ cdb.geo.ui.ZoomInfo = cdb.core.View.extend({
     return this;
   }
 });
-/*
- * Model for the legend item
- *
- * */
-
 cdb.geo.ui.LegendItemModel = cdb.core.Model.extend({
 
   defaults: {
@@ -22373,19 +22369,9 @@ cdb.geo.ui.LegendItemModel = cdb.core.Model.extend({
 
 });
 
-/*
- * Collection of items for a legend
- *
- * */
-
 cdb.geo.ui.LegendItems = Backbone.Collection.extend({
   model: cdb.geo.ui.LegendItemModel
 });
-
-/*
- * Legend item
- *
- * */
 
 cdb.geo.ui.LegendItem = cdb.core.View.extend({
 
@@ -22401,15 +22387,7 @@ cdb.geo.ui.LegendItem = cdb.core.View.extend({
 
   render: function() {
 
-    var value;
-
-    if (this.model.get("type") == 'image' && this.model.get("value")) {
-      value = "url( " + this.model.get("value") + ")";
-    } else {
-      value = this.model.get("value");
-    }
-
-    var options = _.extend( this.model.toJSON(), { value: value });
+    var options = this.model.toJSON();
 
     this.$el.html(this.template(options));
 
@@ -22420,288 +22398,44 @@ cdb.geo.ui.LegendItem = cdb.core.View.extend({
 });
 
 /*
- * Legend View: wrapper for the different types of lengeds
- *
- * */
-
-cdb.geo.ui.Legend = cdb.core.View.extend({
-
-  className: "cartodb-legend",
-
-  events: {
-
-    "dragstart":            "_stopPropagation",
-    "mousedown":            "_stopPropagation",
-    "touchstart":           "_stopPropagation",
-    "MSPointerDown":        "_stopPropagation",
-    "dblclick":             "_stopPropagation",
-    "mousewheel":           "_stopPropagation",
-    "DOMMouseScroll":       "_stopPropagation",
-    "dbclick":              "_stopPropagation",
-    "click":                "_stopPropagation"
-
-  },
-
-  initialize: function() {
-
-    _.bindAll(this, "render", "show", "hide");
-
-    _.defaults(this.options, this.default_options);
-
-    this.map = this.options.map;
-
-    this._setupModel();
-    this._setupItems();
-
-    this._updateLegendType();
-
-  },
-
-  _stopPropagation: function(ev) {
-
-    ev.stopPropagation();
-
-  },
-
-  _setupModel: function() {
-
-    if (!this.model) {
-
-      this.model = new cdb.geo.ui.LegendModel({
-        type: this.options.type || cdb.geo.ui.LegendModel.prototype.defaults.type,
-        title: this.options.title || cdb.geo.ui.LegendModel.prototype.defaults.title,
-        show_title: this.options.show_title || cdb.geo.ui.LegendModel.prototype.defaults.show_title,
-        template: this.options.template || cdb.geo.ui.LegendModel.prototype.defaults.template
-      });
-
-    }
-
-    this.add_related_model(this.model);
-
-    //this.model.bind("change:template change:type change:items change:title change:show_title",  this._updateLegendType, this);
-    this.model.bind("change",  this._updateLegendType, this);
-
-  },
-
-  _updateLegendType: function() {
-
-    var type = this.model.get("type");
-
-    this.legend_name = this._capitalize(type) + "Legend";
-
-    if (type == 'none' || type == null) {
-
-      this.legend_name = null;
-      this.model.set({ type: "none" }, { silent: true });
-
-    } else if (!cdb.geo.ui[this.legend_name]) {
-
-      // set the previous type
-      this.legend_name = null;
-      this.model.set({ type: this.model.previous("type") }, { silent: true });
-      return;
-
-    }
-
-    this._refresh();
-
-  },
-
-  _refresh: function() {
-
-    var self = this;
-
-    if (this.view) this.view.clean();
-
-    var type  = this.model.get("type");
-    var title = this.model.get("title");
-    var show_title = this.model.get("show_title");
-    var template = this.model.get("template");
-
-    if (type && this.legend_name) {
-
-      this.view = new cdb.geo.ui[this.legend_name]({
-        model: this.model
-      });
-
-      // Set the type as the element class for styling
-      this.$el.removeClass();
-      this.$el.addClass(this.className + " " + this.model.get("type"));
-
-      this.show();
-
-    } else {
-
-      this.hide();
-
-      this.$el.removeClass();
-      this.$el.addClass(this.className + " none");
-
-    }
-
-    this.render();
-
-  },
-
-  _setupItems: function() {
-
-    var self = this;
-
-    this.items = this.model.items;
-
-    if (this.options.data) {
-      this.items.reset(this.options.data);
-    }
-
-    this.items.bind("add remove change:value change:name", this.render, this);
-
-  },
-
-  show: function(callback) {
-    if (this.model.get("type")) this.$el.show();
-  },
-
-  hide: function(callback) {
-    if (this.model.get("type")) this.$el.hide();
-  },
-
-  _capitalize: function(string) {
-    if (string && _.isString(string)) {
-      return string.charAt(0).toUpperCase() + string.slice(1);
-    }
-  },
-
-  render: function() {
-    if (this.view) {
-
-      if (this.model.get("template")) {
-        this.$el.html(this.view.render().$el.html());
-        this.$el.removeClass(this.model.get("type"))
-        this.$el.addClass("wrapper");
-      } else {
-        this.$el.html(this.view.render().$el.html());
-      }
-    }
-
-    return this;
-  }
-
-});
-
-/*
- * DebugLegend
- *
- * */
-cdb.geo.ui.DebugLegend = cdb.core.View.extend({ });
-
-/*
- * BaseLegend: common methods for all the legends
- *
- * */
-cdb.geo.ui.BaseLegend = cdb.core.View.extend({
-
-  _bindModel: function() {
-
-    this.model.bind("change:template change:title change:show_title", this.render, this);
-
-  },
-
-  addTo: function(element) {
-    $(element).html(this.render().$el);
-  },
-
-  setTitle: function(title) {
-    this.model.set("title", title);
-  },
-
-  showTitle: function() {
-    this.model.set("show_title", true);
-  },
-
-  hideTitle: function() {
-    this.model.set("show_title", false);
-  }
-
-});
-
-/*
  * ChoroplethLegend
  *
  * */
-cdb.geo.ui.ChoroplethLegend = cdb.geo.ui.BaseLegend.extend({
+cdb.geo.ui.ChoroplethLegend = cdb.core.View.extend({
 
   className: "choropleth-legend",
 
-  template: _.template('<% if (title && show_title) { %><div class="legend-title"><%= title %></div><% } %><ul><li class="min"><%= leftLabel %></li><li class="max"><%= rightLabel %></li><li class="graph count_<%= buckets_count %>"><div class="colors"><%= colors %></div></li></ul>'),
-
   initialize: function() {
 
-    this.items    = this.model.items;
+    this.title        = this.options.title;
+    this.show_title   = this.options.show_title;
+
+    this.items    = this.options.items;
+    this.template = _.template('<% if (title && show_title) { %><div class="legend-title"><%= title %></div><% } %><ul><li class="min"><%= leftLabel %></li><li class="max"><%= rightLabel %></li><li class="graph count_<%= buckets_count %>"><div class="colors"><%= colors %></div></li></ul>');
+    this.model    = new cdb.core.Model();
 
   },
 
-  _generateColorList: function() {
+  render: function() {
 
-    var colors = "";
+    if (this.items.length >= 2) {
 
-    if (this.model.get("colors")) {
-      return _.map(this.model.get("colors"), function(color) {
-        return '<div class="quartile" style="background-color:' + color + '"></div>';
-      }).join("");
-    } else {
+      this.leftLabel  = this.items.at(0);
+      this.rightLabel = this.items.at(1);
+
+      var leftLabel   = this.leftLabel.get("value");
+      var rightLabel  = this.rightLabel.get("value");
+
+      var colors = "";
 
       for (var i = 2; i < this.items.length; i++) {
         var color = this.items.at(i).get("value");
         colors += '<div class="quartile" style="background-color:'+color+'"></div>';
       }
-    }
 
-    return colors;
+      this.model.set({ title: this.title, show_title: this.show_title, leftLabel: leftLabel, rightLabel: rightLabel, colors: colors, buckets_count: this.items.length - 2 });
 
-  },
-
-  setLeftLabel: function(text) {
-
-    this.model.set("leftLabel", text);
-
-  },
-
-  setRightLabel: function(text) {
-
-    this.model.set("rightLabel", text);
-
-  },
-
-  setColors: function(colors) {
-
-    this.model.set("colors", colors);
-
-  },
-
-  render: function() {
-
-    if (this.model.get("template")) {
-
-      var template = _.template(this.model.get("template"));
-      this.$el.html(template(this.model.toJSON()));
-
-    } else {
-
-
-      if (this.items.length >= 2) {
-
-        this.leftLabel  = this.items.at(0);
-        this.rightLabel = this.items.at(1);
-
-        var leftLabel   = this.model.get("leftLabel")  || this.leftLabel.get("value");
-        var rightLabel  = this.model.get("rightLabel") || this.rightLabel.get("value");
-
-        var colors = this._generateColorList();
-
-        var options = _.extend( this.model.toJSON(), { leftLabel: leftLabel, rightLabel: rightLabel, colors: colors, buckets_count: colors.length });
-
-        this.$el.html(this.template(options));
-      }
+      this.$el.html(this.template(this.model.toJSON()));
     }
 
     return this;
@@ -22714,138 +22448,42 @@ cdb.geo.ui.ChoroplethLegend = cdb.geo.ui.BaseLegend.extend({
  * DensityLegend
  *
  * */
-cdb.geo.ui.DensityLegend = cdb.geo.ui.BaseLegend.extend({
+cdb.geo.ui.DensityLegend = cdb.core.View.extend({
 
   className: "density-legend",
 
-  template: _.template('<% if (title && show_title) { %><div class="legend-title"><%= title %></div><% } %>\n<ul>\n<li class="min"><%= leftLabel %></li>\n<li class="max"><%= rightLabel %></li>\n<li class="graph count_<%= buckets_count %>">\n<div class="colors"><%= colors %></div>\n</li>\n</ul>'),
-
   initialize: function() {
 
-    this.items    = this.model.items;
+    this.title       = this.options.title;
+    this.show_title  = this.options.show_title;
+
+    this.items    = this.options.items;
+    this.template = _.template('<% if (title && show_title) { %><div class="legend-title"><%= title %></div><% } %><ul><li class="min"><%= leftLabel %></li><li class="max"><%= rightLabel %></li><li class="graph count_<%= buckets_count %>"><div class="colors"><%= colors %></div></li></ul>');
+    this.model    = new cdb.core.Model();
 
   },
 
-  setLeftLabel: function(text) {
+  render: function() {
 
-    this.model.set("leftLabel", text);
+    if (this.items.length >= 2) {
 
-  },
+      this.leftLabel  = this.items.at(0);
+      this.rightLabel = this.items.at(1);
 
-  setRightLabel: function(text) {
+      var leftLabel   = this.leftLabel.get("value");
+      var rightLabel  = this.rightLabel.get("value");
 
-    this.model.set("rightLabel", text);
-
-  },
-
-  setColors: function(colors) {
-
-    this.model.set("colors", colors);
-
-  },
-
-  _generateColorList: function() {
-
-    var colors = "";
-
-    if (this.model.get("colors")) {
-
-      return _.map(this.model.get("colors"), function(color) {
-        return '<div class="quartile" style="background-color:' + color + '"></div>';
-      }).join("");
-
-    } else {
+      var colors = "";
 
       for (var i = 2; i < this.items.length; i++) {
         var color = this.items.at(i).get("value");
         colors += '<div class="quartile" style="background-color:'+color+'"></div>';
       }
+
+      this.model.set({ title: this.title, show_title: this.show_title, leftLabel: leftLabel, rightLabel: rightLabel, colors: colors, buckets_count: this.items.length - 2 });
+
+      this.$el.html(this.template(this.model.toJSON()));
     }
-
-    return colors;
-
-  },
-
-
-  render: function() {
-
-    if (this.model.get("template")) {
-
-      var template = _.template(this.model.get("template"));
-      this.$el.html(template(this.model.toJSON()));
-
-    } else {
-
-      if (this.items.length >= 2) {
-
-        this.leftLabel  = this.items.at(0);
-        this.rightLabel = this.items.at(1);
-
-        var leftLabel  = this.model.get("leftLabel")  || this.leftLabel.get("value");
-        var rightLabel = this.model.get("rightLabel") || this.rightLabel.get("value");
-
-        var colors = this._generateColorList();
-
-        var options = _.extend( this.model.toJSON(), { leftLabel: leftLabel, rightLabel: rightLabel, colors: colors, buckets_count: colors.length });
-
-        this.$el.html(this.template(options));
-      }
-    }
-
-    return this;
-
-  }
-
-});
-
-/*
- * Density Legend public interface
- *
- * */
-cdb.geo.ui.Legend.Density = cdb.geo.ui.DensityLegend.extend({
-
-  type: "density",
-
-  className: "cartodb-legend density",
-
-  initialize: function() {
-
-    this.items    = this.options.items;
-
-    this.model = new cdb.geo.ui.LegendModel({
-      type:          this.type,
-      title:         this.options.title,
-      show_title:    this.options.title ? true : false,
-      leftLabel:     this.options.left || this.options.leftLabel,
-      rightLabel:    this.options.right || this.options.rightLabel,
-      colors:        this.options.colors,
-      buckets_count: this.options.colors ? this.options.colors.length : 0,
-      items:        this.options.items
-    });
-
-    this._bindModel();
-
-  },
-
-  _bindModel: function() {
-
-    this.model.bind("change:colors change:template change:title change:show_title change:colors change:leftLabel change:rightLabel", this.render, this);
-
-  },
-
-  _generateColorList: function() {
-
-    return _.map(this.model.get("colors"), function(color) {
-      return '<div class="quartile" style="background-color:' + color + '"></div>';
-    }).join("");
-
-  },
-
-  render: function() {
-
-    var options = _.extend(this.model.toJSON(), { colors: this._generateColorList() });
-
-    this.$el.html(this.template(options));
 
     return this;
 
@@ -22857,39 +22495,18 @@ cdb.geo.ui.Legend.Density = cdb.geo.ui.DensityLegend.extend({
  * IntensityLegend
  *
  * */
-cdb.geo.ui.IntensityLegend = cdb.geo.ui.BaseLegend.extend({
+cdb.geo.ui.IntensityLegend = cdb.core.View.extend({
 
   className: "intensity-legend",
 
-  template: _.template('<% if (title && show_title) { %><div class="legend-title"><%= title %></div><% } %>\n<ul>\n<li class="min"><%= leftLabel %></li>\n<li class="max"><%= rightLabel %></li>\n<li class="graph"></li>\n</ul>\n'),
-
   initialize: function() {
 
-    this.items       = this.model.items;
+    this.title       = this.options.title;
+    this.show_title  = this.options.show_title;
 
-  },
-
-  _bindModel: function() {
-
-    this.model.bind("change:template", this.render, this);
-
-  },
-
-  setColor: function(color) {
-
-    this.model.set("color", color);
-
-  },
-
-  setLeftLabel: function(text) {
-
-    this.model.set("leftLabel", text);
-
-  },
-
-  setRightLabel: function(text) {
-
-    this.model.set("rightLabel", text);
+    this.items    = this.options.items;
+    this.template = _.template('<% if (title && show_title) { %><div class="legend-title"><%= title %></div><% } %><ul><li class="min"><%= leftLabel %></li><li class="max"><%= rightLabel %></li><li class="graph"></li></ul>');
+    this.model    = new cdb.core.Model();
 
   },
 
@@ -22939,7 +22556,7 @@ cdb.geo.ui.IntensityLegend = cdb.geo.ui.BaseLegend.extend({
 
   },
 
-  _renderGraph: function(baseColor) {
+  _renderGraph: function() {
 
     var s = "";
 
@@ -22953,8 +22570,10 @@ cdb.geo.ui.IntensityLegend = cdb.geo.ui.BaseLegend.extend({
     s+= "filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='<%= color %>', endColorstr='<%= right %>',GradientType=1 );";
     s+= "background-image: -ms-linear-gradient(left, <%= color %> 0%,<%= right %> 100%)";
 
+
     var backgroundStyle = _.template(s);
 
+    var baseColor       = this.color.get("value");
     var multipliedColor = this._calculateMultiply(baseColor, 4);
 
     this.$el.find(".graph").attr("style", backgroundStyle({ color: baseColor, right: multipliedColor }));
@@ -22963,30 +22582,72 @@ cdb.geo.ui.IntensityLegend = cdb.geo.ui.BaseLegend.extend({
 
   render: function() {
 
-    if (this.model.get("template")) {
+    if (this.items.length >= 3) {
 
-      var template = _.template(this.model.get("template"));
-      this.$el.html(template(this.model.toJSON()));
+      this.leftLabel  = this.items.at(0);
+      this.rightLabel = this.items.at(1);
+      this.color      = this.items.at(2);
 
-    } else {
+      var leftLabel   = this.leftLabel.get("value");
+      var rightLabel  = this.rightLabel.get("value");
 
-      if (this.items.length >= 3) {
+      this.model.set({ title: this.title, show_title: this.show_title, leftLabel: leftLabel, rightLabel: rightLabel });
 
-        this.leftLabel  = this.items.at(0);
-        this.rightLabel = this.items.at(1);
-        var color       = this.model.get("color") || this.items.at(2).get("value");
+      this.$el.html(this.template(this.model.toJSON()));
 
-        var leftLabel   = this.model.get("leftLabel")  || this.leftLabel.get("value");
-        var rightLabel  = this.model.get("rightLabel") || this.rightLabel.get("value");
+      this._renderGraph();
+    }
 
-        var options = _.extend( this.model.toJSON(), { color: color, leftLabel: leftLabel, rightLabel: rightLabel });
+    return this;
 
-        this.$el.html(this.template(options));
+  }
 
-        this._renderGraph(color);
-      }
+});
+
+cdb.geo.ui.DebugLegend = cdb.core.View.extend({
+});
+
+/*
+ * BubbleLegend
+ *
+ * */
+cdb.geo.ui.BubbleLegend = cdb.core.View.extend({
+
+  className: "bubble-legend",
+
+  initialize: function() {
+
+    this.title       = this.options.title;
+    this.show_title  = this.options.show_title;
+
+    this.items = this.options.items;
+
+    this.template = _.template('<% if (title && show_title) { %><div class="legend-title"><%= title %></div><% } %><ul><li><%= min %></li><li class="graph"><div class="bubbles"></div></li><li><%= max %></li></ul>');
+    this.model    = new cdb.core.Model();
+
+    this.add_related_model(this.model);
+
+  },
+
+  _renderGraph: function() {
+    if (this.items.length >= 3) {
+      this.$el.find(".graph").css("background", this.items.at(2).get("value"));
+    }
+  },
+
+  render: function() {
+
+    if (this.items.length >= 3) {
+
+      var min = this.items.at(0);
+      var max = this.items.at(1);
+
+      this.model.set({ title: this.title, show_title: this.show_title, min: min.get("value"), max: max.get("value") });
+      this.$el.html(this.template(this.model.toJSON()));
 
     }
+
+    this._renderGraph();
 
     return this;
 
@@ -22998,21 +22659,22 @@ cdb.geo.ui.IntensityLegend = cdb.geo.ui.BaseLegend.extend({
  * CategoryLegend
  *
  * */
-cdb.geo.ui.CategoryLegend = cdb.geo.ui.BaseLegend.extend({
+cdb.geo.ui.CategoryLegend = cdb.core.View.extend({
 
   className: "category-legend",
 
-  template: _.template('<% if (title && show_title) { %><div class="legend-title"><%= title %></div><% } %>\n<ul></ul>\n'),
-
   initialize: function() {
 
-    this.items = this.model.items;
+    this.title       = this.options.title;
+    this.show_title  = this.options.show_title;
 
-  },
-
-  _bindModel: function() {
-
-    this.model.bind("change:title change:show_title change:template", this.render, this);
+    this.items = this.options.items;
+    this.template = _.template('<% if (title && show_title) { %><div class="legend-title"><%= title %></div><% } %><ul></ul>');
+    this.model = new cdb.core.Model({
+      type: "category",
+      title: this.title,
+      show_title: this.show_title
+    });
 
   },
 
@@ -23026,7 +22688,7 @@ cdb.geo.ui.CategoryLegend = cdb.geo.ui.BaseLegend.extend({
 
     view = new cdb.geo.ui.LegendItem({
       model: item,
-      className: (item.get("value") && item.get("value").indexOf("http") >= 0 || item.get("type") && item.get("type") == 'image') ? "bkg" : "",
+      className: (item.get("value") && item.get("value").indexOf("http") >= 0) ? "bkg" : "",
       template: '<div class="bullet" style="background: <%= value %>"></div><%= name || ((name === false) ? "false": "null") %>'
     });
 
@@ -23036,57 +22698,13 @@ cdb.geo.ui.CategoryLegend = cdb.geo.ui.BaseLegend.extend({
 
   render: function() {
 
-    if (this.model.get("template")) {
-
-      var template = _.template(this.model.get("template"));
-      this.$el.html(template(this.model.toJSON()));
-
-    } else {
-
-      this.$el.html(this.template(this.model.toJSON()));
-
-      if (this.items.length > 0) {
-        this._renderItems();
-      } else {
-        this.$el.html('<div class="warning">The category legend is empty</div>');
-      }
-    }
-
-    return this;
-
-  }
-
-});
-
-/*
- * Category Legend public interface
- *
- * */
-cdb.geo.ui.Legend.Category = cdb.geo.ui.CategoryLegend.extend({
-
-  className: "cartodb-legend category",
-
-  type: "category",
-
-  initialize: function() {
-
-    this.items = new cdb.geo.ui.LegendItems(this.options.data);
-
-    this.model = new cdb.geo.ui.LegendModel({
-      type: this.type,
-      title: this.options.title,
-      show_title: this.options.title ? true : false
-    });
-
-    this._bindModel();
-
-  },
-
-  render: function() {
-
     this.$el.html(this.template(this.model.toJSON()));
 
-    this._renderItems();
+    if (this.items.length > 0) {
+      this._renderItems();
+    } else {
+      this.$el.html('<div class="warning">The category legend is empty</div>');
+    }
 
     return this;
 
@@ -23098,17 +22716,22 @@ cdb.geo.ui.Legend.Category = cdb.geo.ui.CategoryLegend.extend({
  * ColorLegend
  *
  * */
-cdb.geo.ui.ColorLegend = cdb.geo.ui.BaseLegend.extend({
+cdb.geo.ui.ColorLegend = cdb.core.View.extend({
 
   className: "color-legend",
 
-  type: "color",
-
-  template: _.template('<% if (title && show_title) { %><div class="legend-title"><%= title %></div><% } %><ul></ul>'),
-
   initialize: function() {
 
-    this.items = this.model.items;
+    this.title       = this.options.title;
+    this.show_title  = this.options.show_title;
+
+    this.items = this.options.items;
+    this.template = _.template('<% if (title && show_title) { %><div class="legend-title"><%= title %></div><% } %><ul></ul>');
+    this.model = new cdb.core.Model({
+      type: "color",
+      title: this.title,
+      show_title: this.show_title
+    });
 
   },
 
@@ -23147,15 +22770,90 @@ cdb.geo.ui.ColorLegend = cdb.geo.ui.BaseLegend.extend({
 });
 
 /*
- * Color Legend public interface
+ * CustomLegend
  *
  * */
-cdb.geo.ui.Legend.Color = cdb.geo.ui.Legend.Category.extend({ });
+cdb.geo.ui.CustomLegend = cdb.core.View.extend({
+
+  className: "custom-legend",
+
+  initialize: function() {
+
+    this.title       = this.options.title;
+    this.show_title  = this.options.show_title;
+
+    this.items = this.options.items;
+    this.template = _.template('<% if (title && show_title) { %><div class="legend-title"><%= title %></div><% } %><ul></ul>');
+    this.model = new cdb.core.Model({
+      type: "custom",
+      title: this.title,
+      show_title: this.show_title
+    });
+
+  },
+
+  _renderItems: function() {
+
+    this.items.each(this._renderItem, this);
+
+  },
+
+  _renderItem: function(item) {
+
+    view = new cdb.geo.ui.LegendItem({
+      model: item,
+      className: (item.get("value") && item.get("value").indexOf("http") >= 0) ? "bkg" : "",
+      template: '<div class="bullet" style="background:<%= value %>"></div><%= name || "null" %>'
+    });
+
+    this.$el.find("ul").append(view.render());
+
+  },
+
+  render: function() {
+
+    this.$el.html(this.template(this.model.toJSON()));
+
+    if (this.items.length > 0) {
+      this._renderItems();
+    } else {
+      this.$el.html('<div class="warning">The legend is empty</div>');
+    }
+
+    return this;
+
+  }
+
+});
 
 /*
- * StackedLegend
+ *    var legendA = new cdb.geo.ui.Legend({
+ *      type: "custom",
+ *      data: [
+ *        { name: "Category 1", value: "#FFC926" },
+ *        { name: "Category 2", value: "#76EC00" },
+ *        { name: "Category 3", value: "#00BAF8" },
+ *        { name: "Category 4", value: "#D04CFD" }
+ *      ]
+ *    });
+ *
+ *    var legendB = new cdb.geo.ui.Legend({
+ *      type: "bubble",
+ *      data: [
+ *        { name: "21,585",     value: "#FFC926" },
+ *        { name: "91,585",     value: "#D04CFD" }
+ *      ]
+ *    });
+ *
+ *    var stackedLegend = new cdb.geo.ui.StackedLegend({
+ *      legends: [legendA, legendB, …]
+ *    });
+ *
+ *    $("#overlay").append(stackedLegend.render().$el);
+ *
  *
  * */
+
 cdb.geo.ui.StackedLegend = cdb.core.View.extend({
 
   events: {
@@ -23175,7 +22873,8 @@ cdb.geo.ui.StackedLegend = cdb.core.View.extend({
   className: "cartodb-legend-stack",
 
   initialize: function() {
-
+    // deprecated
+    this.getLayerByIndex = this.getLegendByIndex;
     _.each(this.options.legends, this._setupBinding, this);
 
   },
@@ -23186,8 +22885,6 @@ cdb.geo.ui.StackedLegend = cdb.core.View.extend({
 
   },
 
-  //TODO: change this method to
-  // getLegendByIndex
   getLegendByIndex: function(index) {
     if (!this._layerByIndex) {
       this._layerByIndex = {};
@@ -23221,9 +22918,7 @@ cdb.geo.ui.StackedLegend = cdb.core.View.extend({
 
     _.each(this.options.legends, function(item) {
 
-      var type = item.model.get("type");
-
-      if (type != "none") {
+      if (item.model.get("type")) {
         item.show();
       } else {
         item.hide();
@@ -23250,10 +22945,6 @@ cdb.geo.ui.StackedLegend = cdb.core.View.extend({
     this.$el.hide();
   },
 
-  addTo: function(element) {
-    $(element).html(this.render().$el);
-  },
-
   render: function() {
 
     this._renderItems();
@@ -23265,105 +22956,12 @@ cdb.geo.ui.StackedLegend = cdb.core.View.extend({
 
 });
 
-cdb.geo.ui.Legends = Backbone.Collection.extend({
-  model: cdb.geo.ui.LegendModel
-});
-
-/*
- * Stacked Legend public interface
- *
- * */
-cdb.geo.ui.Legend.Stacked = cdb.geo.ui.StackedLegend.extend({
-
-  initialize: function() {
-
-    if (this.options.legends) {
-
-      var legendModels = _.map(this.options.legends, function(legend) {
-        return legend.model;
-      });
-
-      this.legendItems = new cdb.geo.ui.Legends(legendModels);
-
-      this.legendItems.bind("add remove change", this.render, this);
-
-    } else if (this.options.data) {
-
-      var legendModels = _.map(this.options.data, function(legend) {
-        return new cdb.geo.ui.LegendModel(legend);
-      });
-
-      this.legendItems = new cdb.geo.ui.Legends(legendModels);
-
-      this.legendItems.bind("add remove change", this.render, this);
-
-    }
-
-  _capitalize: function(string) {
-    if (string && _.isString(string)) {
-      return string.charAt(0).toUpperCase() + string.slice(1);
-    }
-  },
-
-  render: function() {
-
-    this.$el.empty();
-
-    this.legends = [];
-
-    this.legendItems.each(function(model) {
-
-      var type = model.get("type");
-
-      if (!type) type = "custom";
-
-      type = this._capitalize(type);
-
-      var view = new cdb.geo.ui.Legend[type](model.attributes);
-      this.legends.push(view);
-
-      this.$el.append(view.render().$el);
-
-    }, this);
-
-    return this;
-
-  },
-
-  getLegendAt: function(n) {
-
-    return this.legends[n];
-
-  },
-
-  addLegend: function(attributes) {
-
-    var legend = new cdb.geo.ui.LegendModel(attributes);
-    this.legendItems.push(legend);
-
-  },
-
-  removeLegendAt: function(n) {
-
-    var legend = this.legendItems.at(n);
-    this.legendItems.remove(legend);
-
-  }
-
-});
-
-
-/*
- * Legend Model
- *
- * */
 cdb.geo.ui.LegendModel = cdb.core.Model.extend({
 
   defaults: {
     type: null,
     show_title: false,
-    title: "",
-    template: ""
+    title: ""
   },
 
   initialize: function() {
@@ -23371,17 +22969,12 @@ cdb.geo.ui.LegendModel = cdb.core.Model.extend({
     this.items = new cdb.geo.ui.LegendItems(this.get("items"));
 
     this.items.bind("add remove reset change", function() {
-      this.set({ items: this.items.toJSON() });
+      this.set("items", this.items.toJSON());
     }, this);
 
     this.bind("change:items", this._onUpdateItems, this);
     this.bind("change:title change:show_title", this._onUpdateTitle, this);
-    this.bind("change:template", this._onUpdateTemplate, this);
 
-  },
-
-  _onUpdateTemplate: function() {
-    this.template = this.get("template");
   },
 
   _onUpdateTitle: function() {
@@ -23397,316 +22990,167 @@ cdb.geo.ui.LegendModel = cdb.core.Model.extend({
 });
 
 /*
- * CustomLegend
+ * Legend
  *
- * */
-cdb.geo.ui.CustomLegend = cdb.geo.ui.BaseLegend.extend({
+ */
 
-  className: "custom-legend",
-  type: "custom",
+cdb.geo.ui.Legend = cdb.core.View.extend({
 
-  template: _.template('<% if (title && show_title) { %><div class="legend-title"><%= title %></div><% } %>\n<ul></ul>'),
+  className: "cartodb-legend",
+
+  events: {
+
+    "dragstart":            "_stopPropagation",
+    "mousedown":            "_stopPropagation",
+    "touchstart":           "_stopPropagation",
+    "MSPointerDown":        "_stopPropagation",
+    "dblclick":             "_stopPropagation",
+    "mousewheel":           "_stopPropagation",
+    "DOMMouseScroll":       "_stopPropagation",
+    "dbclick":              "_stopPropagation",
+    "click":                "_stopPropagation"
+
+  },
 
   initialize: function() {
 
-    this.items = this.model.items;
+    _.bindAll(this, "render", "show", "hide");
+
+    _.defaults(this.options, this.default_options);
+
+    this.map = this.options.map;
+
+    this._setupModel();
+    this._setupItems();
+
+    this._updateLegendType();
 
   },
 
-  setData: function(data) {
+  _stopPropagation: function(ev) {
 
-    this.items = new cdb.geo.ui.LegendItems(data);
-    this.model.items = this.items;
-    this.model.set("items", data);
+    ev.stopPropagation();
 
   },
 
-  _renderItems: function() {
+  _setupModel: function() {
 
-    this.items.each(this._renderItem, this);
+    if (!this.model) {
+
+      this.model = new cdb.geo.ui.LegendModel({
+        type: this.options.type || cdb.geo.ui.LegendModel.prototype.defaults.type,
+        title: this.options.title || cdb.geo.ui.LegendModel.prototype.defaults.title,
+        show_title: this.options.show_title || cdb.geo.ui.LegendModel.prototype.defaults.show_title
+      });
+
+    }
+
+    this.add_related_model(this.model);
+
+    this.model.bind("change:type change:items change:title change:show_title",  this._updateLegendType, this);
 
   },
 
-  _renderItem: function(item) {
+  _updateLegendType: function() {
 
-    view = new cdb.geo.ui.LegendItem({
-      model: item,
-      className: (item.get("value") && item.get("value").indexOf("http") >= 0) ? "bkg" : "",
-      template: '<div class="bullet" style="background:<%= value %>"></div><%= name || "null" %>'
-    });
+    var type = this.model.get("type");
 
-    this.$el.find("ul").append(view.render());
+    this.legend_name = this._capitalize(type) + "Legend";
+
+    if (type == 'none' || type == null) {
+
+      this.legend_name = null;
+      this.model.set({ type: null}, { silent: true });
+
+    } else if (!cdb.geo.ui[this.legend_name]) {
+
+      // set the previous type
+      this.legend_name = null;
+      this.model.set({ type: this.model.previous("type") }, { silent: true });
+      return;
+
+    }
+
+    this._refresh();
 
   },
 
-  render: function() {
+  _refresh: function() {
 
-    if (this.model.get("template")) {
+    var self = this;
 
-      var template = _.template(this.model.get("template"));
-      this.$el.html(template(this.model.toJSON()));
+    if (this.view) this.view.clean();
+
+    var type  = this.model.get("type");
+    var title = this.model.get("title");
+    var show_title = this.model.get("show_title");
+
+    if (type) {
+
+      this.view = new cdb.geo.ui[this.legend_name] ({
+        title: title,
+        show_title: show_title,
+        items: self.items
+      });
+
+      // Set the type as the element class for styling
+      this.$el.removeClass();
+      this.$el.addClass(this.className + " " + this.model.get("type"));
+
+      this.show();
 
     } else {
 
-      this.$el.html(this.template(this.model.toJSON()));
+      this.hide();
 
-      if (this.items.length > 0) {
-        this._renderItems();
-      } else {
-        this.$el.html('<div class="warning">The legend is empty</div>');
-      }
+      this.$el.removeClass();
+      this.$el.addClass(this.className + " none");
+
     }
 
-    return this;
-
-  }
-
-});
-
-/*
- * Custom Legend public interface
- *
- * */
-cdb.geo.ui.Legend.Custom = cdb.geo.ui.CustomLegend.extend({
-
-  className: "cartodb-legend custom",
-
-  type: "custom",
-
-  initialize: function() {
-
-    this.items = new cdb.geo.ui.LegendItems(this.options.data || this.options.items);
-
-    this.model = new cdb.geo.ui.LegendModel({
-      type: this.type,
-      title: this.options.title,
-      show_title: this.options.title ? true : false,
-      items: this.items.models
-    });
-
-    this._bindModel();
+    this.render();
 
   },
 
-  _bindModel: function() {
+  _setupItems: function() {
 
-    this.model.bind("change:items change:template change:title change:show_title", this.render, this);
-
-  },
-
-});
-
-/*
- * BubbleLegend
- *
- * */
-cdb.geo.ui.BubbleLegend = cdb.geo.ui.BaseLegend.extend({
-
-  className: "bubble-legend",
-
-  template: _.template('<% if (title && show_title) { %><div class="legend-title"><%= title %></div><% } %><ul><li><%= min %></li><li class="graph"><div class="bubbles"></div></li><li><%= max %></li></ul>'),
-
-  initialize: function() {
+    var self = this;
 
     this.items = this.model.items;
 
+    if (this.options.data) {
+      this.items.reset(this.options.data);
+    }
+
+    this.items.bind("add remove change:value change:name", this.render, this);
+
   },
 
-  _bindModel: function() {
-
-    this.model.bind("change:template change:title change:show_title change:color change:min change:max", this.render, this);
-
+  show: function(callback) {
+    if (this.model.get("type")) this.$el.show();
   },
 
-  setColor: function(color) {
-    this.model.set("color", color);
+  hide: function(callback) {
+    if (this.model.get("type")) this.$el.hide();
   },
 
-  setMinValue: function(value) {
-    this.model.set("min", value);
-  },
-
-  setMaxValue: function(value) {
-    this.model.set("max", value);
-  },
-
-  _renderGraph: function(color) {
-    this.$el.find(".graph").css("background", color);
+  _capitalize: function(string) {
+    if (string) {
+      return string.charAt(0).toUpperCase() + string.slice(1);
+    }
   },
 
   render: function() {
 
-    if (this.model.get("template")) {
-
-      var template = _.template(this.model.get("template"));
-      this.$el.html(template(this.model.toJSON()));
-
-      this.$el.removeClass("bubble-legend");
-
-    } else {
-
-      var color = this.model.get("color") || (this.items.length >= 3 ? this.items.at(2).get("value") : "");
-
-      if (this.items.length >= 3) {
-
-        var min = this.model.get("min") || this.items.at(0).get("value");
-        var max = this.model.get("max") || this.items.at(1).get("value");
-
-        var options = _.extend(this.model.toJSON(), { min: min, max: max });
-
-        this.$el.html(this.template(options));
-
-      }
-
-      this._renderGraph(color);
+    if (this.view) {
+      this.$el.append(this.view.render().$el);
     }
 
     return this;
-
   }
 
 });
 
-
-/*
- * Bubble Legend public interface
- *
- * */
-cdb.geo.ui.Legend.Bubble = cdb.geo.ui.BubbleLegend.extend({
-
-  className: "cartodb-legend bubble",
-
-  type: "bubble",
-
-  initialize: function() {
-
-    this.model = new cdb.geo.ui.LegendModel({
-      type:  this.type,
-      title: this.options.title,
-      min:   this.options.min,
-      max:   this.options.max,
-      color: this.options.color,
-      show_title: this.options.title ? true : false
-    });
-
-    this.add_related_model(this.model);
-
-    this._bindModel();
-
-  },
-
-  render: function() {
-
-    this.$el.html(this.template(this.model.toJSON()));
-
-    this._renderGraph(this.model.get("color"));
-
-    return this;
-
-  }
-
-});
-
-/*
- * Choropleth Legend public interface
- *
- * */
-cdb.geo.ui.Legend.Choropleth = cdb.geo.ui.ChoroplethLegend.extend({
-
-  type: "choropleth",
-
-  className: "cartodb-legend choropleth",
-
-  initialize: function() {
-
-    this.items    = this.options.items;
-
-    this.model = new cdb.geo.ui.LegendModel({
-      type:          this.type,
-      title:         this.options.title,
-      show_title:    this.options.title ? true : false,
-      leftLabel:     this.options.left  || this.options.leftLabel,
-      rightLabel:    this.options.right || this.options.rightLabel,
-      colors:        this.options.colors,
-      buckets_count: this.options.colors ? this.options.colors.length : 0
-    });
-
-    this.add_related_model(this.model);
-    this._bindModel();
-
-  },
-
-  _bindModel: function() {
-
-    this.model.bind("change:template change:title change:show_title change:colors change:leftLabel change:rightLabel", this.render, this);
-
-  },
-
-  _generateColorList: function() {
-
-    return _.map(this.model.get("colors"), function(color) {
-      return '<div class="quartile" style="background-color:' + color + '"></div>';
-    }).join("");
-
-  },
-
-  render: function() {
-
-    var options = _.extend(this.model.toJSON(), { colors: this._generateColorList() });
-
-    this.$el.html(this.template(options));
-
-    return this;
-
-  }
-
-});
-
-
-/*
- * Intensity Legend public interface
- *
- * */
-cdb.geo.ui.Legend.Intensity = cdb.geo.ui.IntensityLegend.extend({
-
-  className: "cartodb-legend intensity",
-  type: "intensity",
-
-  initialize: function() {
-
-    this.items = this.options.items;
-
-    this.model = new cdb.geo.ui.LegendModel({
-      type: this.type,
-      title: this.options.title,
-      show_title: this.options.title ? true : false,
-      color: this.options.color,
-      leftLabel: this.options.left || this.options.leftLabel,
-      rightLabel: this.options.right || this.options.rightLabel
-    });
-
-    this.add_related_model(this.model);
-    this._bindModel();
-
-  },
-
-  _bindModel: function() {
-
-    this.model.bind("change:title change:show_title change:color change:leftLabel change:rightLabel", this.render, this);
-
-  },
-
-  render: function() {
-
-    this.$el.html(this.template(this.model.toJSON()));
-
-    this._renderGraph(this.model.get("color"));
-
-    return this;
-
-  }
-
-});
 cdb.geo.ui.SwitcherItemModel = Backbone.Model.extend({ });
 
 cdb.geo.ui.SwitcherItems = Backbone.Collection.extend({
@@ -26143,7 +25587,164 @@ cdb.geo.common.CartoDBLogo = {
       }
     },( timeout || 0 ));
   }
+};(function() {
+
+/**
+ * this module implements all the features related to overlay geometries
+ * in leaflet: markers, polygons, lines and so on
+ */
+
+
+/**
+ * view for markers
+ */
+function PointView(geometryModel) {
+  var self = this;
+  // events to link
+  var events = [
+    'click',
+    'dblclick',
+    'mousedown',
+    'mouseover',
+    'mouseout',
+    'dragstart',
+    'drag',
+    'dragend'
+  ];
+
+  this._eventHandlers = {};
+  this.model = geometryModel;
+  this.points = [];
+
+  this.geom = L.GeoJSON.geometryToLayer(geometryModel.get('geojson'), function(geojson, latLng) {
+      //TODO: create marker depending on the visualizacion options
+      var p = L.marker(latLng,{
+        icon: L.icon({
+          iconUrl: '/assets/icons/default_marker.png',
+          iconAnchor: [11, 11]
+        })
+      });
+
+      var i;
+      for(i = 0; i < events.length; ++i) {
+        var e = events[i];
+        p.on(e, self._eventHandler(e));
+      }
+      return p;
+  });
+
+  this.bind('dragend', function(e, pos) { 
+    geometryModel.set({
+      geojson: {
+        type: 'Point',
+        //geojson is lng,lat
+        coordinates: [pos[1], pos[0]]
+      }
+    });
+  });
+}
+
+PointView.prototype = new GeometryView();
+
+PointView.prototype.edit = function() {
+  this.geom.dragging.enable();
 };
+
+/**
+ * returns a function to handle events fot evtType
+ */
+PointView.prototype._eventHandler = function(evtType) {
+  var self = this;
+  var h = this._eventHandlers[evtType];
+  if(!h) {
+    h = function(e) {
+      var latlng = e.target.getLatLng();
+      var s = [latlng.lat, latlng.lng];
+      self.trigger(evtType, e.originalEvent, s);
+    };
+    this._eventHandlers[evtType] = h;
+  }
+  return h;
+};
+
+/**
+ * view for other geometries (polygons/lines)
+ */
+function PathView(geometryModel) {
+  var self = this;
+  // events to link
+  var events = [
+    'click',
+    'dblclick',
+    'mousedown',
+    'mouseover',
+    'mouseout',
+  ];
+
+  this._eventHandlers = {};
+  this.model = geometryModel;
+  this.points = [];
+
+  
+  this.geom = L.GeoJSON.geometryToLayer(geometryModel.get('geojson'));
+  this.geom.setStyle(geometryModel.get('style'));
+
+  
+  /*for(var i = 0; i < events.length; ++i) {
+    var e = events[i];
+    this.geom.on(e, self._eventHandler(e));
+  }*/
+
+}
+
+PathView.prototype = new GeometryView();
+
+PathView.prototype._leafletLayers = function() {
+  // check if this is a multi-feature or single-feature
+  if (this.geom.getLayers) {
+    return this.geom.getLayers();
+  }
+  return [this.geom];
+};
+
+
+PathView.prototype.enableEdit = function() {
+  var self = this;
+  var layers = this._leafletLayers();
+  _.each(layers, function(g) {
+    g.setStyle(self.model.get('style'));
+    g.on('edit', function() {
+      self.model.set('geojson', self.geom.toGeoJSON().geometry);
+    }, self);
+  });
+};
+
+PathView.prototype.disableEdit = function() {
+  var self = this;
+  var layers = this._leafletLayers();
+  _.each(layers, function(g) {
+    g.off('edit', null, self);
+  });
+};
+
+PathView.prototype.edit = function(enable) {
+  var self = this;
+  var fn = enable ? 'enable': 'disable';
+  var layers = this._leafletLayers();
+  _.each(layers, function(g) {
+    g.editing[fn]();
+    enable ? self.enableEdit(): self.disableEdit();
+  });
+};
+
+cdb.geo.leaflet = cdb.geo.leaflet || {};
+
+cdb.geo.leaflet.PointView = PointView;
+cdb.geo.leaflet.PathView = PathView;
+
+
+})();
+
 (function() {
   /**
   * base layer for all leaflet layers
@@ -27086,14 +26687,7 @@ cdb.geo.LeafLetLayerCartoDBView = LeafLetLayerCartoDBView;
     },
 
     invalidateSize: function() {
-      // there is a race condition in leaflet. If size is invalidated
-      // and at the same time the center is set the final center is displaced
-      // so set pan to false so the map is not moved and then force the map
-      // to be at the place it should be
-      this.map_leaflet.invalidateSize({ pan: false })//, animate: false });
-      this.map_leaflet.setView(this.map.get("center"), this.map.get("zoom") || 0, {
-        animate: false
-      });
+      this.map_leaflet.invalidateSize({ pan: false});
     }
 
   }, {
@@ -31733,419 +31327,6 @@ cdb.ui.common.Table = cdb.core.View.extend({
 
 
 });
-(function() {
-
-/**
- * this module implements all the features related to overlay geometries
- * in leaflet: markers, polygons, lines and so on
- */
-
-
-/**
- * view for markers
- */
-function PointView(geometryModel) {
-  var self = this;
-  // events to link
-  var events = [
-    'click',
-    'dblclick',
-    'mousedown',
-    'mouseover',
-    'mouseout',
-    'dragstart',
-    'drag',
-    'dragend'
-  ];
-
-  this._eventHandlers = {};
-  this.model = geometryModel;
-  this.points = [];
-
-  this.geom = L.GeoJSON.geometryToLayer(geometryModel.get('geojson'), function(geojson, latLng) {
-      //TODO: create marker depending on the visualizacion options
-      var p = L.marker(latLng,{
-        icon: L.icon({
-          iconUrl: '/assets/icons/default_marker.png',
-          iconAnchor: [11, 11]
-        })
-      });
-
-      var i;
-      for(i = 0; i < events.length; ++i) {
-        var e = events[i];
-        p.on(e, self._eventHandler(e));
-      }
-      return p;
-  });
-
-  this.bind('dragend', function(e, pos) { 
-    geometryModel.set({
-      geojson: {
-        type: 'Point',
-        //geojson is lng,lat
-        coordinates: [pos[1], pos[0]]
-      }
-    });
-  });
-}
-
-PointView.prototype = new GeometryView();
-
-PointView.prototype.edit = function() {
-  this.geom.dragging.enable();
-};
-
-/**
- * returns a function to handle events fot evtType
- */
-PointView.prototype._eventHandler = function(evtType) {
-  var self = this;
-  var h = this._eventHandlers[evtType];
-  if(!h) {
-    h = function(e) {
-      var latlng = e.target.getLatLng();
-      var s = [latlng.lat, latlng.lng];
-      self.trigger(evtType, e.originalEvent, s);
-    };
-    this._eventHandlers[evtType] = h;
-  }
-  return h;
-};
-
-/**
- * view for other geometries (polygons/lines)
- */
-function PathView(geometryModel) {
-  var self = this;
-  // events to link
-  var events = [
-    'click',
-    'dblclick',
-    'mousedown',
-    'mouseover',
-    'mouseout',
-  ];
-
-  this._eventHandlers = {};
-  this.model = geometryModel;
-  this.points = [];
-
-  
-  this.geom = L.GeoJSON.geometryToLayer(geometryModel.get('geojson'));
-  this.geom.setStyle(geometryModel.get('style'));
-
-  
-  /*for(var i = 0; i < events.length; ++i) {
-    var e = events[i];
-    this.geom.on(e, self._eventHandler(e));
-  }*/
-
-}
-
-PathView.prototype = new GeometryView();
-
-PathView.prototype._leafletLayers = function() {
-  // check if this is a multi-feature or single-feature
-  if (this.geom.getLayers) {
-    return this.geom.getLayers();
-  }
-  return [this.geom];
-};
-
-
-PathView.prototype.enableEdit = function() {
-  var self = this;
-  var layers = this._leafletLayers();
-  _.each(layers, function(g) {
-    g.setStyle(self.model.get('style'));
-    g.on('edit', function() {
-      self.model.set('geojson', self.geom.toGeoJSON().geometry);
-    }, self);
-  });
-};
-
-PathView.prototype.disableEdit = function() {
-  var self = this;
-  var layers = this._leafletLayers();
-  _.each(layers, function(g) {
-    g.off('edit', null, self);
-  });
-};
-
-PathView.prototype.edit = function(enable) {
-  var self = this;
-  var fn = enable ? 'enable': 'disable';
-  var layers = this._leafletLayers();
-  _.each(layers, function(g) {
-    g.editing[fn]();
-    enable ? self.enableEdit(): self.disableEdit();
-  });
-};
-
-cdb.geo.leaflet = cdb.geo.leaflet || {};
-
-cdb.geo.leaflet.PointView = PointView;
-cdb.geo.leaflet.PathView = PathView;
-
-
-})();
-(function() {
-/**
- * view for markers
- */
-function PointView(geometryModel) {
-  var self = this;
-  // events to link
-  var events = [
-    'click',
-    'dblclick',
-    'mousedown',
-    'mouseover',
-    'mouseout',
-    'dragstart',
-    'drag',
-    'dragend'
-  ];
-
-  this._eventHandlers = {};
-  this.model = geometryModel;
-  this.points = [];
-
-  var style = _.clone(geometryModel.get('style')) || {};
-  //style.path = google.maps.SymbolPath.CIRCLE;
-  //style.scale = style.weight;
-  //style.strokeColor = "ff0000";
-  //style.strokeOpacity = 1;
-  //style.strokeWeight = 1;
-  //style.fillColor = '00000';
-  //style.fillOpacity = 0.5;
-
-  this.geom = new GeoJSON (
-    geometryModel.get('geojson'),
-    {
-      icon: {
-          url: '/assets/icons/default_marker.png',
-          anchor: {x: 10, y: 10}
-      }
-    }
-  );
-
-  // bind events
-  var i;
-  for(i = 0; i < events.length; ++i) {
-    var e = events[i];
-    google.maps.event.addListener(this.geom, e, self._eventHandler(e));
-  }
-
-  // link dragging
-  this.bind('dragend', function(e, pos) {
-    geometryModel.set({
-      geojson: {
-        type: 'Point',
-        // geojson is lng,lat
-        coordinates: [pos[1], pos[0]]
-      }
-    });
-  });
-}
-
-PointView.prototype = new GeometryView();
-
-PointView.prototype._eventHandler = function(evtType) {
-  var self = this;
-  var h = this._eventHandlers[evtType];
-  if(!h) {
-    h = function(e) {
-      var latlng = e.latLng;
-      var s = [latlng.lat(), latlng.lng()];
-      self.trigger(evtType, e, s);
-    };
-    this._eventHandlers[evtType] = h;
-  }
-  return h;
-};
-
-PointView.prototype.edit = function(enable) {
-  this.geom.setDraggable(enable);
-};
-
-/**
- * view for other geometries (polygons/lines)
- */
-function PathView(geometryModel) {
-  var self = this;
-  // events to link
-  var events = [
-    'click',
-    'dblclick',
-    'mousedown',
-    'mouseover',
-    'mouseout',
-  ];
-
-  this._eventHandlers = {};
-  this.model = geometryModel;
-  this.points = [];
-
-  
-
-  var style = _.clone(geometryModel.get('style')) || {};
-
-  this.geom = new GeoJSON (
-    geometryModel.get('geojson'),
-    style
-  );
-
-  /*_.each(this.geom._layers, function(g) {
-    g.setStyle(geometryModel.get('style'));
-    g.on('edit', function() {
-      geometryModel.set('geojson', L.GeoJSON.toGeoJSON(self.geom));
-    }, self);
-  });
-  */
-
-  _.bindAll(this, '_updateModel');
-  var self = this;
-
-  function bindPath(p) {
-    google.maps.event.addListener(p, 'insert_at', self._updateModel);
-    /*
-    google.maps.event.addListener(p, 'remove_at', this._updateModel);
-    google.maps.event.addListener(p, 'set_at', this._updateModel);
-    */
-  }
-
-  // TODO: check this conditions
-
-  if(this.geom.getPaths) {
-    var paths = this.geom.getPaths();
-
-    if (paths && paths[0]) {
-      // More than one path
-      for(var i = 0; i < paths.length; ++i) {
-        bindPath(paths[i]);
-      }
-    } else {
-      // One path
-      bindPath(paths);
-      google.maps.event.addListener(this.geom, 'mouseup', this._updateModel);
-    }
-  } else {
-    // More than one path
-    if (this.geom.length) {
-      for(var i = 0; i < this.geom.length; ++i) {
-        bindPath(this.geom[i].getPath());
-        google.maps.event.addListener(this.geom[i], 'mouseup', this._updateModel);
-      }
-    } else {
-      // One path
-      bindPath(this.geom.getPath());
-      google.maps.event.addListener(this.geom, 'mouseup', this._updateModel);
-    }
-  }
-
-  /*for(var i = 0; i < events.length; ++i) {
-    var e = events[i];
-    this.geom.on(e, self._eventHandler(e));
-  }*/
-
-}
-
-PathView.prototype = new GeometryView();
-
-PathView.getGeoJSON = function(geom, gType) {
-
-  var coordFn = {
-    'Polygon': 'getPath',
-    'MultiPolygon': 'getPath',
-    'LineString': 'getPath',
-    'MultiLineString': 'getPath',
-    'Point': 'getPosition',
-    'MultiPoint': 'getPosition'
-  };
-
-  function _coord(latlng) {
-    return [latlng.lng(), latlng.lat()];
-  }
-
-  function _coords(latlngs) {
-    var c = [];
-    for(var i = 0; i < latlngs.length; ++i) {
-      c.push(_coord(latlngs.getAt(i)));
-    }
-    return c;
-  }
-
-  // single
-  if(!geom.length || geom.length == 1) {
-    var g = geom.length ? geom[0]: geom;
-    var coords;
-    if(gType == 'Point') {
-      coords = _coord(g.getPosition());
-    } else if(gType == 'MultiPoint') {
-      coords = [_coord(g.getPosition())]
-    } else if(gType == 'Polygon') {
-      coords = [_coords(g.getPath())];
-      coords[0].push(_coord(g.getPath().getAt(0)));
-    } else if(gType == 'MultiPolygon') {
-      coords = [];
-      for(var p = 0; p < g.getPaths().length; ++p) {
-        var c = _coords(g.getPaths().getAt(p));
-        c.push(_coord(g.getPaths().getAt(p).getAt(0)));
-        coords.push(c);
-      }
-      coords = [coords]
-    } else if(gType == 'LineString') {
-      coords = _coords(g.getPath());
-    } else if(gType == 'MultiLineString') {
-      //TODO: redo
-      coords = [_coords(g.getPath())];
-    }
-    return {
-      type: gType,
-      coordinates: coords
-    }
-  } else {
-    // poly
-    var c = [];
-    for(var i = 0; i < geom.length; ++i) {
-      c.push(PathView.getGeoJSON(geom[i], gType).coordinates[0]);
-    }
-    return  {
-      type: gType,
-      coordinates: c
-    }
-  }
-}
-
-PathView.prototype._updateModel = function(e) {
-  var self = this;
-  setTimeout(function() {
-  self.model.set('geojson', PathView.getGeoJSON(self.geom, self.model.get('geojson').type ));
-  }, 100)
-}
-
-PathView.prototype.edit = function(enable) {
-
-  var fn = enable ? 'enable': 'disable';
-  var g = this.geom.length ? this.geom: [this.geom];
-  for(var i = 0; i < g.length; ++i) {
-    g[i].setEditable(enable);
-  }
-  if(!enable) {
-    this.model.set('geojson', PathView.getGeoJSON(this.geom, this.model.get('geojson').type));
-  }
-};
-
-cdb.geo.gmaps = cdb.geo.gmaps || {};
-
-cdb.geo.gmaps.PointView = PointView;
-cdb.geo.gmaps.PathView = PathView;
-
-
-
-})();
 
 
     cdb.$ = $;

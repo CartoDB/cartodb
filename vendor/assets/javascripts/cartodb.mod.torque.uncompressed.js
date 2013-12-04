@@ -4811,11 +4811,11 @@ tree.Value.prototype.toJS = function() {
   //var v = this.value[0].value[0];
   var val = this.eval()
   var v = val.toString();
-  if(val.is === "color" || val.is === 'uri' || val.is === 'string' || val.is === 'keyword') {
+  if(val.is === "color" || val.is === 'uri' || val.is === 'string') {
     v = "'" + v + "'";
   } else if (val.is === 'field') {
     // replace [varuable] by ctx['variable']
-    v = v.replace(/\[(.*)\]/g, "data['\$1']")
+    v = v.replace(/\[(.*)\]/g, "ctx['\$1']")
   }
   return "_value = " + v + ";";
 };

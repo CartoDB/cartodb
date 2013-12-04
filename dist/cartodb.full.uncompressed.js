@@ -1,6 +1,6 @@
 // cartodb.js version: 3.4.02-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: b17a9123b4a9cba9fd9c0fb51ebee8573305bcb3
+// sha: ebd29f4cc81b547566c6d9854d9e0c1997b4fdd7
 (function() {
   var root = this;
 
@@ -11813,7 +11813,7 @@ var html = (function (html4) {
     quot : '"',
     apos : '\''
   };
-
+  
   // Schemes on which to defer to uripolicy. Urls with other schemes are denied
   var WHITELISTED_SCHEMES = /^(?:https?|mailto|data)$/i;
 
@@ -13894,7 +13894,7 @@ wax.interaction = function() {
         // Store this event so that we can compare it to the
         // up event
         _downLock = true;
-        var _e = (e.type != "MSPointerDown" ? e : e.originalEvent);
+        var _e = (e.type != "MSPointerDown" ? e : e.originalEvent); 
         _d = wax.u.eventoffset(_e);
         if (e.type === 'mousedown') {
             bean.add(document.body, 'click', onUp);
@@ -14962,7 +14962,7 @@ type: "Error",
 // This plugin is tested on the browsers below and has been found to work reliably on them. If you run
 // into a problem on one of the supported browsers then please visit the support section on the jScrollPane
 // website (http://jscrollpane.kelvinluck.com/) for more information on getting support. You are also
-// welcome to fork the project on GitHub if you can contribute a fix for a given issue.
+// welcome to fork the project on GitHub if you can contribute a fix for a given issue. 
 //
 // jQuery Versions - tested in 1.4.2+ - reported to work in 1.3.x
 // Browsers Tested - Firefox 3.6.8, Safari 5, Opera 10.6, Chrome 5.0, IE 6, 7, 8
@@ -15033,7 +15033,7 @@ type: "Error",
           paneHeight = elem.innerHeight();
 
           elem.width(paneWidth);
-
+          
           pane = $('<div class="jspPane" />').css('padding', originalPadding).append(elem.children());
           container = $('<div class="jspContainer" />')
             .css({
@@ -15044,7 +15044,7 @@ type: "Error",
 
           /*
           // Move any margins from the first and last children up to the container so they can still
-          // collapse with neighbouring elements as they would before jScrollPane
+          // collapse with neighbouring elements as they would before jScrollPane 
           firstChild = pane.find(':first-child');
           lastChild = pane.find(':last-child');
           elem.css(
@@ -15079,7 +15079,7 @@ type: "Error",
             return;
           }
           previousContentWidth = contentWidth;
-
+          
           pane.css('width', '');
           elem.width(paneWidth);
 
@@ -15134,14 +15134,14 @@ type: "Error",
           initFocusHandler();
           initMousewheel();
           initTouch();
-
+          
           if (settings.enableKeyboardNavigation) {
             initKeyboardNav();
           }
           if (settings.clickOnTrack) {
             initClickOnTrack();
           }
-
+          
           observeHash();
           if (settings.hijackInternalLinks) {
             hijackInternalLinks();
@@ -15402,7 +15402,7 @@ type: "Error",
       function appendArrows(ele, p, a1, a2)
       {
         var p1 = "before", p2 = "after", aTemp;
-
+        
         // Sniff for mac... Is there a better way to determine whether the arrows would naturally appear
         // at the top or the bottom of the bar?
         if (p == "os") {
@@ -15517,7 +15517,7 @@ type: "Error",
             }
           );
         }
-
+        
         if (isScrollableH) {
           horizontalTrack.bind(
             'mousedown.jsp',
@@ -15634,7 +15634,7 @@ type: "Error",
           wasAtBottom = isAtBottom;
           elem.trigger('jsp-arrow-change', [wasAtTop, wasAtBottom, wasAtLeft, wasAtRight]);
         }
-
+        
         updateVerticalArrows(isAtTop, isAtBottom);
         pane.css('top', destTop);
         elem.trigger('jsp-scroll-y', [-destTop, isAtTop, isAtBottom]).trigger('scroll');
@@ -15681,7 +15681,7 @@ type: "Error",
           wasAtRight = isAtRight;
           elem.trigger('jsp-arrow-change', [wasAtTop, wasAtBottom, wasAtLeft, wasAtRight]);
         }
-
+        
         updateHorizontalArrows(isAtLeft, isAtRight);
         pane.css('left', destLeft);
         elem.trigger('jsp-scroll-x', [-destLeft, isAtLeft, isAtRight]).trigger('scroll');
@@ -15731,7 +15731,7 @@ type: "Error",
 
         container.scrollTop(0);
         container.scrollLeft(0);
-
+        
         // loop through parents adding the offset top of any elements that are relatively positioned between
         // the focused element and the jspPane so we can get the true distance from the top
         // of the focused element to the top of the scrollpane...
@@ -15755,7 +15755,7 @@ type: "Error",
         if (destY) {
           scrollToY(destY, animate);
         }
-
+        
         viewportLeft = contentPositionX();
               maxVisibleEleLeft = viewportLeft + paneWidth;
               if (eleLeft < viewportLeft || stickToTop) { // element is to the left of viewport
@@ -15829,13 +15829,13 @@ type: "Error",
       {
         pane.find(':input,a').unbind('focus.jsp');
       }
-
+      
       function initKeyboardNav()
       {
         var keyDown, elementHasScrolled, validParents = [];
         isScrollableH && validParents.push(horizontalBar[0]);
         isScrollableV && validParents.push(verticalBar[0]);
-
+        
         // IE also focuses elements that don't have tabindex set.
         pane.focus(
           function()
@@ -15843,7 +15843,7 @@ type: "Error",
             elem.focus();
           }
         );
-
+        
         elem.attr('tabindex', 0)
           .unbind('keydown.jsp keypress.jsp')
           .bind(
@@ -15888,7 +15888,7 @@ type: "Error",
               return !elementHasScrolled;
             }
           );
-
+        
         if (settings.hideFocus) {
           elem.css('outline', 'none');
           if ('hideFocus' in container[0]){
@@ -15900,7 +15900,7 @@ type: "Error",
             elem.attr('hideFocus', false);
           }
         }
-
+        
         function keyDownHandler()
         {
           var dX = horizontalDragPosition, dY = verticalDragPosition;
@@ -15930,7 +15930,7 @@ type: "Error",
           return elementHasScrolled;
         }
       }
-
+      
       function removeKeyboardNav()
       {
         elem.attr('tabindex', '-1')
@@ -16042,7 +16042,7 @@ type: "Error",
           event.preventDefault();
         });
       }
-
+      
       // Init touch on iPad, iPhone, iPod, Android
       function initTouch()
       {
@@ -16052,7 +16052,7 @@ type: "Error",
           touchStartY,
           moved,
           moving = false;
-
+  
         container.unbind('touchstart.jsp touchmove.jsp touchend.jsp click.jsp-touchclick').bind(
           'touchstart.jsp',
           function(e)
@@ -16072,14 +16072,14 @@ type: "Error",
             if(!moving) {
               return;
             }
-
+            
             var touchPos = ev.originalEvent.touches[0],
               dX = horizontalDragPosition, dY = verticalDragPosition;
-
+            
             jsp.scrollTo(startX + touchStartX - touchPos.pageX, startY + touchStartY - touchPos.pageY);
-
+            
             moved = moved || Math.abs(touchStartX - touchPos.pageX) > 5 || Math.abs(touchStartY - touchPos.pageY) > 5;
-
+            
             // return true if there was no movement so rest of screen can scroll
             return dX == horizontalDragPosition && dY == verticalDragPosition;
           }
@@ -16103,7 +16103,7 @@ type: "Error",
           }
         );
       }
-
+      
       function destroy(){
         var currentY = contentPositionY(),
           currentX = contentPositionX();
@@ -16300,13 +16300,13 @@ type: "Error",
           }
         }
       );
-
+      
       initialise(s);
     }
 
     // Pluginifying code...
     settings = $.extend({}, $.fn.jScrollPane.defaults, settings);
-
+    
     // Apply default speed
     $.each(['mouseWheelSpeed', 'arrowButtonSpeed', 'trackClickSpeed', 'keyboardSpeed'], function() {
       settings[this] = settings[this] || settings.speed;
@@ -16371,7 +16371,7 @@ type: "Error",
  * Thanks to: Seamus Leahy for adding deltaX and deltaY
  *
  * Version: 3.0.6
- *
+ * 
  * Requires: 1.2.2+
  */
 
@@ -16395,7 +16395,7 @@ $.event.special.mousewheel = {
             this.onmousewheel = handler;
         }
     },
-
+    
     teardown: function() {
         if ( this.removeEventListener ) {
             for ( var i=types.length; i; ) {
@@ -16411,7 +16411,7 @@ $.fn.extend({
     mousewheel: function(fn) {
         return fn ? this.bind("mousewheel", fn) : this.trigger("mousewheel");
     },
-
+    
     unmousewheel: function(fn) {
         return this.unbind("mousewheel", fn);
     }
@@ -16422,27 +16422,27 @@ function handler(event) {
     var orgEvent = event || window.event, args = [].slice.call( arguments, 1 ), delta = 0, returnValue = true, deltaX = 0, deltaY = 0;
     event = $.event.fix(orgEvent);
     event.type = "mousewheel";
-
+    
     // Old school scrollwheel delta
     if ( orgEvent.wheelDelta ) { delta = orgEvent.wheelDelta/120; }
     if ( orgEvent.detail     ) { delta = -orgEvent.detail/3; }
-
+    
     // New school multidimensional scroll (touchpads) deltas
     deltaY = delta;
-
+    
     // Gecko
     if ( orgEvent.axis !== undefined && orgEvent.axis === orgEvent.HORIZONTAL_AXIS ) {
         deltaY = 0;
         deltaX = -1*delta;
     }
-
+    
     // Webkit
     if ( orgEvent.wheelDeltaY !== undefined ) { deltaY = orgEvent.wheelDeltaY/120; }
     if ( orgEvent.wheelDeltaX !== undefined ) { deltaX = -1*orgEvent.wheelDeltaX/120; }
-
+    
     // Add event and delta to the front of the arguments
     args.unshift(event, delta, deltaX, deltaY);
-
+    
     return ($.event.dispatch || $.event.handle).apply(this, args);
 }
 
@@ -16492,7 +16492,7 @@ $.event.special.mwheelIntent = {
             mwheelI.elem = this;
       mwheelI.pos = pos;
       minDif = 250;
-
+      
       clearTimeout(shortDelay);
       shortDelay = setTimeout(function(){
         minDif = 10;
@@ -16510,7 +16510,7 @@ $.fn.extend({
   mwheelIntent: function(fn) {
     return fn ? this.bind("mwheelIntent", fn) : this.trigger("mwheelIntent");
   },
-
+  
   unmwheelIntent: function(fn) {
     return this.unbind("mwheelIntent", fn);
   }
@@ -16527,7 +16527,7 @@ var LZMA = (function () {
 	var action_compress   = 1,
 		action_decompress = 2,
 		action_update	  = 3;
-
+	
 	function update_progress(percent, callback_num) {
 		///TODO: Calculate ETA.
 		postMessage({
@@ -16536,9 +16536,9 @@ var LZMA = (function () {
 			result: percent
 		});
 	}
-
+	
 	var $moduleName, $moduleBase;
-
+	
 	var _,
 		N8000000000000000_longLit = [0, -9223372036854775808],
 		N1_longLit = [4294967295, -4294967296],
@@ -16555,10 +16555,10 @@ var LZMA = (function () {
 	function getClass_18() {
 		return Ljava_lang_Object_2_classLit;
 	}
-
+	
 	function Object_0() {
 	}
-
+	
 	_ = Object_0.prototype = {};
 	_.getClass$ = getClass_18;
 	_.typeMarker$ = nullMethod;
@@ -16566,10 +16566,10 @@ var LZMA = (function () {
 	function getClass_22() {
 		return Ljava_lang_Throwable_2_classLit;
 	}
-
+	
 	function Throwable() {
 	}
-
+	
 	_ = Throwable.prototype = new Object_0();
 	_.getClass$ = getClass_22;
 	_.typeId$ = 3;
@@ -16577,10 +16577,10 @@ var LZMA = (function () {
 	function getClass_13() {
 		return Ljava_lang_Exception_2_classLit;
 	}
-
+	
 	function Exception() {
 	}
-
+	
 	_ = Exception.prototype = new Throwable();
 	_.getClass$ = getClass_13;
 	_.typeId$ = 4;
@@ -16588,46 +16588,46 @@ var LZMA = (function () {
 		this$static.detailMessage = message;
 		return this$static;
 	}
-
+	
 	function getClass_19() {
 		return Ljava_lang_RuntimeException_2_classLit;
 	}
-
+	
 	function RuntimeException() {
 	}
-
+	
 	_ = RuntimeException.prototype = new Exception();
 	_.getClass$ = getClass_19;
 	_.typeId$ = 5;
 	function $JavaScriptException(this$static, e) {
 		return this$static;
 	}
-
+	
 	function getClass_0() {
 		return Lcom_google_gwt_core_client_JavaScriptException_2_classLit;
 	}
-
+	
 	function JavaScriptException() {
 	}
-
+	
 	_ = JavaScriptException.prototype = new RuntimeException();
 	_.getClass$ = getClass_0;
 	_.typeId$ = 6;
 	function $append(a, x) {
 		a[a.explicitLength++] = x;
 	}
-
+	
 	function $appendNonNull(a, x) {
 		a[a.explicitLength++] = x;
 	}
-
+	
 	function $toString(a) {
 		var s_0, s;
 		s_0 = (s = a.join('') , a.length = a.explicitLength = 0 , s);
 		a[a.explicitLength++] = s_0;
 		return s_0;
 	}
-
+	
 	function createFromSeed(seedType, length_0) {
 		var array = new Array(length_0);
 		if (seedType > 0) {
@@ -16638,11 +16638,11 @@ var LZMA = (function () {
 		}
 		return array;
 	}
-
+	
 	function getClass_2() {
 		return this.arrayClass$;
 	}
-
+	
 	function initDim(arrayClass, typeId, queryId, length_0, seedType) {
 		var result;
 		result = createFromSeed(seedType, length_0);
@@ -16653,7 +16653,7 @@ var LZMA = (function () {
 		result.queryId$ = queryId;
 		return result;
 	}
-
+	
 	function initValues(arrayClass, typeId, queryId, array) {
 		$clinit_4();
 		wrapArray(array, expandoNames_0, expandoValues_0);
@@ -16662,7 +16662,7 @@ var LZMA = (function () {
 		array.queryId$ = queryId;
 		return array;
 	}
-
+	
 	function setCheck(array, index, value) {
 		if (value != null) {
 			if (array.queryId$ > 0 && !canCastUnsafe(value.typeId$, array.queryId$)) {
@@ -16674,10 +16674,10 @@ var LZMA = (function () {
 		}
 		return array[index] = value;
 	}
-
+	
 	function Array_0() {
 	}
-
+	
 	_ = Array_0.prototype = new Object_0();
 	_.getClass$ = getClass_2;
 	_.typeId$ = 0;
@@ -16690,7 +16690,7 @@ var LZMA = (function () {
 		expandoValues_0 = [];
 		initExpandos(new Array_0(), expandoNames_0, expandoValues_0);
 	}
-
+	
 	function initExpandos(protoType, expandoNames, expandoValues) {
 		var i = 0, value;
 		for (var name_0 in protoType) {
@@ -16701,38 +16701,38 @@ var LZMA = (function () {
 			}
 		}
 	}
-
+	
 	function wrapArray(array, expandoNames, expandoValues) {
 		$clinit_4();
 		for (var i = 0, c = expandoNames.length; i < c; ++i) {
 			array[expandoNames[i]] = expandoValues[i];
 		}
 	}
-
+	
 	var expandoNames_0, expandoValues_0;
 	function canCast(srcId, dstId) {
 		return srcId && !!typeIdArray[srcId][dstId];
 	}
-
+	
 	function canCastUnsafe(srcId, dstId) {
 		return srcId && typeIdArray[srcId][dstId];
 	}
-
+	
 	function dynamicCast(src, dstId) {
 		if (src != null && !canCastUnsafe(src.typeId$, dstId)) {
 			throw new ClassCastException();
 		}
 		return src;
 	}
-
+	
 	function instanceOf(src, dstId) {
 		return src != null && canCast(src.typeId$, dstId);
 	}
-
+	
 	function round_int(x) {
 		return ~~Math.max(Math.min(x, 2147483647), -2147483648);
 	}
-
+	
 	var typeIdArray = [
 			{},
 			{},
@@ -16765,14 +16765,14 @@ var LZMA = (function () {
 		}
 		return $JavaScriptException(new JavaScriptException(), e);
 	}
-
+	
 	function add(a, b) {
 		var newHigh, newLow;
 		newHigh = a[1] + b[1];
 		newLow = a[0] + b[0];
 		return create(newLow, newHigh);
 	}
-
+	
 	function addTimes(accum, a, b) {
 		if (a == 0) {
 			return accum;
@@ -16782,11 +16782,11 @@ var LZMA = (function () {
 		}
 		return add(accum, create(a * b, 0));
 	}
-
+	
 	function and(a, b) {
 		return makeFromBits(~~Math.max(Math.min(a[1] / 4294967296, 2147483647), -2147483648) & ~~Math.max(Math.min(b[1] / 4294967296, 2147483647), -2147483648), lowBits_0(a) & lowBits_0(b));
 	}
-
+	
 	function compare(a, b) {
 		var nega, negb;
 		if (a[0] == b[0] && a[1] == b[1]) {
@@ -16807,7 +16807,7 @@ var LZMA = (function () {
 			return 1;
 		}
 	}
-
+	
 	function create(valueLow, valueHigh) {
 		var diffHigh, diffLow;
 		valueHigh %= 1.8446744073709552E19;
@@ -16833,7 +16833,7 @@ var LZMA = (function () {
 		}
 		return [valueLow, valueHigh];
 	}
-
+	
 	function div(a, b) {
 		var approx, deltaRem, deltaResult, halfa, rem, result;
 		if (b[0] == 0 && b[1] == 0) {
@@ -16877,11 +16877,11 @@ var LZMA = (function () {
 		}
 		return result;
 	}
-
+	
 	function eq(a, b) {
 		return a[0] == b[0] && a[1] == b[1];
 	}
-
+	
 	function fromDouble(value) {
 		if (isNaN(value)) {
 			return $clinit_10() , ZERO;
@@ -16898,7 +16898,7 @@ var LZMA = (function () {
 			return create(Math.ceil(value), 0);
 		}
 	}
-
+	
 	function fromInt(value) {
 		var rebase, result;
 		if (value > -129 && value < 128) {
@@ -16911,7 +16911,7 @@ var LZMA = (function () {
 		}
 		return internalFromInt(value);
 	}
-
+	
 	function internalFromInt(value) {
 		if (value >= 0) {
 			return [value, 0];
@@ -16919,7 +16919,7 @@ var LZMA = (function () {
 			return [value + 4294967296, -4294967296];
 		}
 	}
-
+	
 	function lowBits_0(a) {
 		if (a[0] >= 2147483648) {
 			return ~~Math.max(Math.min(a[0] - 4294967296, 2147483647), -2147483648);
@@ -16927,7 +16927,7 @@ var LZMA = (function () {
 			return ~~Math.max(Math.min(a[0], 2147483647), -2147483648);
 		}
 	}
-
+	
 	function makeFromBits(highBits, lowBits) {
 		var high, low;
 		high = highBits * 4294967296;
@@ -16937,7 +16937,7 @@ var LZMA = (function () {
 		}
 		return [low, high];
 	}
-
+	
 	function mul(a, b) {
 		var a1, a2, a3, a4, b1, b2, b3, b4, res;
 		if (a[0] == 0 && a[1] == 0) {
@@ -16986,7 +16986,7 @@ var LZMA = (function () {
 		res = addTimes(res, a1, b1);
 		return res;
 	}
-
+	
 	function multByMinValue(a) {
 		if ((lowBits_0(a) & 1) == 1) {
 			return $clinit_10() , MIN_VALUE;
@@ -16994,7 +16994,7 @@ var LZMA = (function () {
 			return $clinit_10() , ZERO;
 		}
 	}
-
+	
 	function neg(a) {
 		var newHigh, newLow;
 		if (eq(a, ($clinit_10() , MIN_VALUE))) {
@@ -17012,7 +17012,7 @@ var LZMA = (function () {
 		}
 		return [newLow, newHigh];
 	}
-
+	
 	function pwrAsDouble(n) {
 		if (n <= 30) {
 			return 1 << n;
@@ -17020,7 +17020,7 @@ var LZMA = (function () {
 			return pwrAsDouble(30) * pwrAsDouble(n - 30);
 		}
 	}
-
+	
 	function shl(a, n) {
 		var diff, newHigh, newLow, twoToN;
 		n &= 63;
@@ -17045,7 +17045,7 @@ var LZMA = (function () {
 		}
 		return [newLow, newHigh];
 	}
-
+	
 	function shr(a, n) {
 		var newHigh, newLow, shiftFact;
 		n &= 63;
@@ -17054,7 +17054,7 @@ var LZMA = (function () {
 		newLow = Math.floor(a[0] / shiftFact);
 		return create(newLow, newHigh);
 	}
-
+	
 	function shru(a, n) {
 		var sr;
 		n &= 63;
@@ -17064,14 +17064,14 @@ var LZMA = (function () {
 		}
 		return sr;
 	}
-
+	
 	function sub(a, b) {
 		var newHigh, newLow;
 		newHigh = a[1] - b[1];
 		newLow = a[0] - b[0];
 		return create(newLow, newHigh);
 	}
-
+	
 	function toDoubleRoundDown(a) {
 		var diff, magnitute, toSubtract;
 		magnitute = round_int(Math.log(a[1]) / ($clinit_10() , LN_2));
@@ -17083,7 +17083,7 @@ var LZMA = (function () {
 			return a[1] + (a[0] - toSubtract);
 		}
 	}
-
+	
 	function toDoubleRoundUp(a) {
 		var diff, magnitute, toAdd;
 		magnitute = round_int(Math.log(a[1]) / ($clinit_10() , LN_2));
@@ -17095,7 +17095,7 @@ var LZMA = (function () {
 			return a[1] + (a[0] + toAdd);
 		}
 	}
-
+	
 	function toString_0(a) {
 		var digits, rem, remDivTenPower, res, tenPowerLong, zeroesNeeded;
 		if (a[0] == 0 && a[1] == 0) {
@@ -17124,12 +17124,12 @@ var LZMA = (function () {
 		}
 		return res;
 	}
-
+	
 	function $clinit_9() {
 		$clinit_9 = nullMethod;
 		boxedValues = initDim(_3_3D_classLit, 0, 9, 256, 0);
 	}
-
+	
 	var boxedValues;
 	function $clinit_10() {
 		$clinit_10 = nullMethod;
@@ -17142,15 +17142,15 @@ var LZMA = (function () {
 		TWO_PWR_24 = P1000000_longLit;
 		ZERO = fromInt(0);
 	}
-
+	
 	var LN_2, MAX_VALUE, MIN_VALUE, NEG_ONE, ONE, TWO, TWO_PWR_24, ZERO;
 	function getClass_6() {
 		return Ljava_io_InputStream_2_classLit;
 	}
-
+	
 	function InputStream() {
 	}
-
+	
 	_ = InputStream.prototype = new Object_0();
 	_.getClass$ = getClass_6;
 	_.typeId$ = 0;
@@ -17158,7 +17158,7 @@ var LZMA = (function () {
 		$ByteArrayInputStream_0(this$static, buf, 0, buf.length);
 		return this$static;
 	}
-
+	
 	function $ByteArrayInputStream_0(this$static, buf, off, len) {
 		this$static.buf = buf;
 		this$static.pos = off;
@@ -17167,13 +17167,13 @@ var LZMA = (function () {
 			this$static.count = buf.length;
 		return this$static;
 	}
-
+	
 	function $read(this$static) {
 		if (this$static.pos >= this$static.count)
 			return -1;
 		return this$static.buf[this$static.pos++] & 255;
 	}
-
+	
 	function $read_0(this$static, buf, off, len) {
 		if (this$static.pos >= this$static.count)
 			return -1;
@@ -17182,14 +17182,14 @@ var LZMA = (function () {
 		this$static.pos += len;
 		return len;
 	}
-
+	
 	function getClass_3() {
 		return Ljava_io_ByteArrayInputStream_2_classLit;
 	}
-
+	
 	function ByteArrayInputStream() {
 	}
-
+	
 	_ = ByteArrayInputStream.prototype = new InputStream();
 	_.getClass$ = getClass_3;
 	_.typeId$ = 0;
@@ -17199,10 +17199,10 @@ var LZMA = (function () {
 	function getClass_7() {
 		return Ljava_io_OutputStream_2_classLit;
 	}
-
+	
 	function OutputStream() {
 	}
-
+	
 	_ = OutputStream.prototype = new Object_0();
 	_.getClass$ = getClass_7;
 	_.typeId$ = 0;
@@ -17210,7 +17210,7 @@ var LZMA = (function () {
 		this$static.buf = initDim(_3B_classLit, 0, -1, 32, 1);
 		return this$static;
 	}
-
+	
 	function $ensureCapacity(this$static, len) {
 		var newbuf;
 		if (len <= this$static.buf.length)
@@ -17220,32 +17220,32 @@ var LZMA = (function () {
 		arraycopy(this$static.buf, 0, newbuf, 0, this$static.buf.length);
 		this$static.buf = newbuf;
 	}
-
+	
 	function $toByteArray(this$static) {
 		var data;
 		data = initDim(_3B_classLit, 0, -1, this$static.count, 1);
 		arraycopy(this$static.buf, 0, data, 0, this$static.count);
 		return data;
 	}
-
+	
 	function $write(this$static, b) {
 		$ensureCapacity(this$static, this$static.count + 1);
 		this$static.buf[this$static.count++] = b << 24 >> 24;
 	}
-
+	
 	function $write_0(this$static, buf, off, len) {
 		$ensureCapacity(this$static, this$static.count + len);
 		arraycopy(buf, off, this$static.buf, this$static.count, len);
 		this$static.count += len;
 	}
-
+	
 	function getClass_4() {
 		return Ljava_io_ByteArrayOutputStream_2_classLit;
 	}
-
+	
 	function ByteArrayOutputStream() {
 	}
-
+	
 	_ = ByteArrayOutputStream.prototype = new OutputStream();
 	_.getClass$ = getClass_4;
 	_.typeId$ = 0;
@@ -17255,14 +17255,14 @@ var LZMA = (function () {
 		this$static.detailMessage = message;
 		return this$static;
 	}
-
+	
 	function getClass_5() {
 		return Ljava_io_IOException_2_classLit;
 	}
-
+	
 	function IOException() {
 	}
-
+	
 	_ = IOException.prototype = new Exception();
 	_.getClass$ = getClass_5;
 	_.typeId$ = 7;
@@ -17270,14 +17270,14 @@ var LZMA = (function () {
 		this$static.detailMessage = explanation;
 		return this$static;
 	}
-
+	
 	function getClass_8() {
 		return Ljava_lang_ArithmeticException_2_classLit;
 	}
-
+	
 	function ArithmeticException() {
 	}
-
+	
 	_ = ArithmeticException.prototype = new RuntimeException();
 	_.getClass$ = getClass_8;
 	_.typeId$ = 8;
@@ -17285,14 +17285,14 @@ var LZMA = (function () {
 		this$static.detailMessage = message;
 		return this$static;
 	}
-
+	
 	function getClass_9() {
 		return Ljava_lang_ArrayStoreException_2_classLit;
 	}
-
+	
 	function ArrayStoreException() {
 	}
-
+	
 	_ = ArrayStoreException.prototype = new RuntimeException();
 	_.getClass$ = getClass_9;
 	_.typeId$ = 9;
@@ -17302,28 +17302,28 @@ var LZMA = (function () {
 		clazz.typeName = packageName + className;
 		return clazz;
 	}
-
+	
 	function createForClass(packageName, className) {
 		var clazz;
 		clazz = new Class();
 		clazz.typeName = packageName + className;
 		return clazz;
 	}
-
+	
 	function createForEnum(packageName, className) {
 		var clazz;
 		clazz = new Class();
 		clazz.typeName = packageName + className;
 		return clazz;
 	}
-
+	
 	function getClass_11() {
 		return Ljava_lang_Class_2_classLit;
 	}
-
+	
 	function Class() {
 	}
-
+	
 	_ = Class.prototype = new Object_0();
 	_.getClass$ = getClass_11;
 	_.typeId$ = 0;
@@ -17331,20 +17331,20 @@ var LZMA = (function () {
 	function getClass_10() {
 		return Ljava_lang_ClassCastException_2_classLit;
 	}
-
+	
 	function ClassCastException() {
 	}
-
+	
 	_ = ClassCastException.prototype = new RuntimeException();
 	_.getClass$ = getClass_10;
 	_.typeId$ = 12;
 	function getClass_12() {
 		return Ljava_lang_Enum_2_classLit;
 	}
-
+	
 	function Enum() {
 	}
-
+	
 	_ = Enum.prototype = new Object_0();
 	_.getClass$ = getClass_12;
 	_.typeId$ = 0;
@@ -17352,52 +17352,52 @@ var LZMA = (function () {
 		this$static.detailMessage = message;
 		return this$static;
 	}
-
+	
 	function getClass_14() {
 		return Ljava_lang_IllegalArgumentException_2_classLit;
 	}
-
+	
 	function IllegalArgumentException() {
 	}
-
+	
 	_ = IllegalArgumentException.prototype = new RuntimeException();
 	_.getClass$ = getClass_14;
 	_.typeId$ = 13;
 	function getClass_15() {
 		return Ljava_lang_IllegalStateException_2_classLit;
 	}
-
+	
 	function IllegalStateException() {
 	}
-
+	
 	_ = IllegalStateException.prototype = new RuntimeException();
 	_.getClass$ = getClass_15;
 	_.typeId$ = 14;
 	function getClass_16() {
 		return Ljava_lang_IndexOutOfBoundsException_2_classLit;
 	}
-
+	
 	function IndexOutOfBoundsException() {
 	}
-
+	
 	_ = IndexOutOfBoundsException.prototype = new RuntimeException();
 	_.getClass$ = getClass_16;
 	_.typeId$ = 15;
 	function max(x, y) {
 		return x > y?x:y;
 	}
-
+	
 	function min(x, y) {
 		return x < y?x:y;
 	}
-
+	
 	function getClass_17() {
 		return Ljava_lang_NullPointerException_2_classLit;
 	}
-
+	
 	function NullPointerException() {
 	}
-
+	
 	_ = NullPointerException.prototype = new RuntimeException();
 	_.getClass$ = getClass_17;
 	_.typeId$ = 16;
@@ -17407,18 +17407,18 @@ var LZMA = (function () {
 		}
 		return String(this$static) == other;
 	}
-
+	
 	function $getChars(this$static, srcBegin, srcEnd, dst, dstBegin) {
 		var srcIdx;
 		for (srcIdx = srcBegin; srcIdx < srcEnd; ++srcIdx) {
 			dst[dstBegin++] = this$static.charCodeAt(srcIdx);
 		}
 	}
-
+	
 	function getClass_21() {
 		return Ljava_lang_String_2_classLit;
 	}
-
+	
 	_ = String.prototype;
 	_.getClass$ = getClass_21;
 	_.typeId$ = 2;
@@ -17427,34 +17427,34 @@ var LZMA = (function () {
 		this$static.data = (array = [] , array.explicitLength = 0 , array);
 		return this$static;
 	}
-
+	
 	function getClass_20() {
 		return Ljava_lang_StringBuilder_2_classLit;
 	}
-
+	
 	function StringBuilder() {
 	}
-
+	
 	_ = StringBuilder.prototype = new Object_0();
 	_.getClass$ = getClass_20;
 	_.typeId$ = 0;
 	function arraycopy(src, srcOfs, dest, destOfs, len) {
 		var destArray, destEnd, destTypeName, destlen, i, srcArray, srcTypeName, srclen;
-
+		
 		if (src == null || dest == null) {
 			throw new NullPointerException();
 		}
-
+		
 		srcTypeName  = (src.typeMarker$  == nullMethod || src.typeId$  == 2 ? src.getClass$()  : Lcom_google_gwt_core_client_JavaScriptObject_2_classLit).typeName;
 		destTypeName = (dest.typeMarker$ == nullMethod || dest.typeId$ == 2 ? dest.getClass$() : Lcom_google_gwt_core_client_JavaScriptObject_2_classLit).typeName;
-
+		
 		if (srcTypeName.charCodeAt(0) != 91 || destTypeName.charCodeAt(0) != 91) {
 			throw $ArrayStoreException(new ArrayStoreException(), 'Must be array types');
 		}
 		if (srcTypeName.charCodeAt(1) != destTypeName.charCodeAt(1)) {
 			throw $ArrayStoreException(new ArrayStoreException(), 'Array types must match');
 		}
-
+		
 		srclen  = src.length;
 		destlen = dest.length;
 		if (srcOfs < 0 || destOfs < 0 || len < 0 || srcOfs + len > srclen || destOfs + len > destlen) {
@@ -17479,8 +17479,8 @@ var LZMA = (function () {
 			}
 		}
 	}
-
-
+	
+	
 	function $configure(this$static, encoder) {
 	if (!$SetDictionarySize_0(encoder, 1 << this$static.dictionarySize))
 		throw $RuntimeException(new RuntimeException(), 'unexpected failure');
@@ -17491,14 +17491,14 @@ var LZMA = (function () {
 	if (!$SetLcLpPb_0(encoder, this$static.lc, this$static.lp, this$static.pb))
 		throw $RuntimeException(new RuntimeException(), 'unexpected failure');
 	}
-
+	
 	function getClass_23() {
 		return Lorg_dellroad_lzma_client_CompressionMode_2_classLit;
 	}
-
+	
 	function CompressionMode() {
 	}
-
+	
 	_ = CompressionMode.prototype = new Enum();
 	_.getClass$ = getClass_23;
 	_.typeId$ = 0;
@@ -17508,7 +17508,7 @@ var LZMA = (function () {
 	_.lp = 0;
 	_.matchFinder = 0;
 	_.pb = 0;
-
+	
 	function $execute(this$static) {
 		var $e0;
 		try {
@@ -17523,7 +17523,7 @@ var LZMA = (function () {
 			}
 		}
 	}
-
+	
 	function $init(this$static, input, output, length_0, mode) {
 		var encoder, i;
 		if (!mode)
@@ -17539,19 +17539,19 @@ var LZMA = (function () {
 			$write(output, lowBits_0(shr(length_0, i)) & 255);
 		this$static.chunker = (encoder._needReleaseMFStream = false , (encoder._inStream = input , encoder._finished = false , $Create_2(encoder) , encoder._rangeEncoder.Stream = output , $Init_4(encoder) , $FillDistancesPrices(encoder) , $FillAlignPrices(encoder) , encoder._lenEncoder._tableSize = encoder._numFastBytes + 1 - 2 , $UpdateTables(encoder._lenEncoder, 1 << encoder._posStateBits) , encoder._repMatchLenEncoder._tableSize = encoder._numFastBytes + 1 - 2 , $UpdateTables(encoder._repMatchLenEncoder, 1 << encoder._posStateBits) , encoder.nowPos64 = P0_longLit , undefined) , $Chunker_0(new Chunker(), encoder));
 	}
-
+	
 	function getClass_26() {
 		return Lorg_dellroad_lzma_client_LZMACompressor_2_classLit;
 	}
-
+	
 	function LZMACompressor() {
 	}
-
+	
 	_ = LZMACompressor.prototype = new Object_0();
 	_.getClass$ = getClass_26;
 	_.typeId$ = 0;
 	_.chunker = null;
-
+	
 	function $LZMAByteArrayCompressor(this$static, data, mode) {
 		var $e0;
 		this$static.output = $ByteArrayOutputStream(new ByteArrayOutputStream());
@@ -17567,14 +17567,14 @@ var LZMA = (function () {
 		}
 		return this$static;
 	}
-
+	
 	function getClass_24() {
 		return Lorg_dellroad_lzma_client_LZMAByteArrayCompressor_2_classLit;
 	}
-
+	
 	function LZMAByteArrayCompressor() {
 	}
-
+	
 	_ = LZMAByteArrayCompressor.prototype = new LZMACompressor();
 	_.getClass$ = getClass_24;
 	_.typeId$ = 0;
@@ -17595,7 +17595,7 @@ var LZMA = (function () {
 			}
 		}
 	}
-
+	
 	function $init_0(this$static, input, output) {
 		var decoder,
 			hex_length = "",
@@ -17603,7 +17603,7 @@ var LZMA = (function () {
 			properties,
 			r,
 			tmp_length;
-
+		
 		properties = initDim(_3B_classLit, 0, -1, 5, 1);
 		for (i = 0; i < properties.length; ++i) {
 			r = $read(input);
@@ -17614,7 +17614,7 @@ var LZMA = (function () {
 		decoder = $Decoder(new Decoder());
 		if (!$SetDecoderProperties(decoder, properties))
 			throw $IOException(new IOException(), 'corrupted input');
-
+		
 		for (i = 0; i < 64; i += 8) {
 			r = $read(input);
 			if (r == -1)
@@ -17623,7 +17623,7 @@ var LZMA = (function () {
 			if (r.length == 1) r = "0" + r;
 			hex_length = r + "" + hex_length;
 		}
-
+		
 		/// Was the length set in the header (if it was compressed from a stream, the length is all f's).
 		if (hex_length.toLowerCase() == "ffffffffffffffffff" || hex_length == 0) {
 			/// The length is unknown, so set to -1.
@@ -17638,17 +17638,17 @@ var LZMA = (function () {
 				this$static.length_0 = fromDouble(tmp_length);
 			}
 		}
-
+		
 		this$static.chunker = $CodeInChunks(decoder, input, output, this$static.length_0);
 	}
-
+	
 	function getClass_27() {
 		return Lorg_dellroad_lzma_client_LZMADecompressor_2_classLit;
 	}
-
+	
 	function LZMADecompressor() {
 	}
-
+	
 	_ = LZMADecompressor.prototype = new Object_0();
 	_.getClass$ = getClass_27;
 	_.typeId$ = 0;
@@ -17660,14 +17660,14 @@ var LZMA = (function () {
 		$init_0(this$static, $ByteArrayInputStream(new ByteArrayInputStream(), data), this$static.output);
 		return this$static;
 	}
-
+	
 	function getClass_25() {
 		return Lorg_dellroad_lzma_client_LZMAByteArrayDecompressor_2_classLit;
 	}
-
+	
 	function LZMAByteArrayDecompressor() {
 	}
-
+	
 	_ = LZMAByteArrayDecompressor.prototype = new LZMADecompressor();
 	_.getClass$ = getClass_25;
 	_.typeId$ = 0;
@@ -17684,11 +17684,11 @@ var LZMA = (function () {
 		}
 		this$static._pointerToLastSafePosition = this$static._blockSize - keepSizeAfter;
 	}
-
+	
 	function $GetIndexByte(this$static, index) {
 		return this$static._bufferBase[this$static._bufferOffset + this$static._pos + index];
 	}
-
+	
 	function $GetMatchLen(this$static, index, distance, limit) {
 		var i, pby;
 		if (this$static._streamEndWasReached) {
@@ -17702,11 +17702,11 @@ var LZMA = (function () {
 		}
 		return i;
 	}
-
+	
 	function $GetNumAvailableBytes(this$static) {
 		return this$static._streamPos - this$static._pos;
 	}
-
+	
 	function $MoveBlock(this$static) {
 		var i, numBytes, offset;
 		offset = this$static._bufferOffset + this$static._pos - this$static._keepSizeBefore;
@@ -17719,7 +17719,7 @@ var LZMA = (function () {
 		}
 		this$static._bufferOffset -= offset;
 	}
-
+	
 	function $MovePos_1(this$static) {
 		var pointerToPostion;
 		++this$static._pos;
@@ -17731,7 +17731,7 @@ var LZMA = (function () {
 			$ReadBlock(this$static);
 		}
 	}
-
+	
 	function $ReadBlock(this$static) {
 		var numReadBytes, pointerToPostion, size;
 		if (this$static._streamEndWasReached)
@@ -17756,21 +17756,21 @@ var LZMA = (function () {
 			}
 		}
 	}
-
+	
 	function $ReduceOffsets(this$static, subValue) {
 		this$static._bufferOffset += subValue;
 		this$static._posLimit -= subValue;
 		this$static._pos -= subValue;
 		this$static._streamPos -= subValue;
 	}
-
+	
 	function getClass_40() {
 		return Lorg_dellroad_lzma_client_SevenZip_Compression_LZ_InWindow_2_classLit;
 	}
-
+	
 	function InWindow() {
 	}
-
+	
 	_ = InWindow.prototype = new Object_0();
 	_.getClass$ = getClass_40;
 	_.typeId$ = 0;
@@ -17800,7 +17800,7 @@ var LZMA = (function () {
 			CrcTable[i] = r;
 		}
 	}
-
+	
 	function $Create_3(this$static, historySize, keepAddBufferBefore, matchMaxLen, keepAddBufferAfter) {
 		var cyclicBufferSize, hs, windowReservSize;
 		if (historySize > 1073741567) {
@@ -17837,7 +17837,7 @@ var LZMA = (function () {
 		}
 		return true;
 	}
-
+	
 	function $GetMatches(this$static, distances) {
 		var count, cur, curMatch, curMatch2, curMatch3, cyclicPos, delta, hash2Value, hash3Value, hashValue, len, len0, len1, lenLimit, matchMinPos, maxLen, offset, pby1, ptr0, ptr1, temp;
 		if (this$static._pos + this$static._matchMaxLen <= this$static._streamPos) {
@@ -17945,7 +17945,7 @@ var LZMA = (function () {
 		$MovePos_0(this$static);
 		return offset;
 	}
-
+	
 	function $Init_5(this$static) {
 		var i;
 		this$static._bufferOffset = 0;
@@ -17959,7 +17959,7 @@ var LZMA = (function () {
 		this$static._cyclicBufferPos = 0;
 		$ReduceOffsets(this$static, -1);
 	}
-
+	
 	function $MovePos_0(this$static) {
 		var subValue;
 		if (++this$static._cyclicBufferPos >= this$static._cyclicBufferSize) {
@@ -17973,7 +17973,7 @@ var LZMA = (function () {
 			$ReduceOffsets(this$static, subValue);
 		}
 	}
-
+	
 	function $NormalizeLinks(items, numItems, subValue) {
 		var i, value;
 		for (i = 0; i < numItems; ++i) {
@@ -17986,7 +17986,7 @@ var LZMA = (function () {
 			items[i] = value;
 		}
 	}
-
+	
 	function $SetType(this$static, numHashBytes) {
 		this$static.HASH_ARRAY = numHashBytes > 2;
 		if (this$static.HASH_ARRAY) {
@@ -17999,7 +17999,7 @@ var LZMA = (function () {
 			this$static.kFixHashSize = 0;
 		}
 	}
-
+	
 	function $Skip(this$static, num) {
 		var count, cur, curMatch, cyclicPos, delta, hash2Value, hash3Value, hashValue, len, len0, len1, lenLimit, matchMinPos, pby1, ptr0, ptr1, temp;
 		do {
@@ -18068,14 +18068,14 @@ var LZMA = (function () {
 		}
 		while (--num != 0);
 	}
-
+	
 	function getClass_39() {
 		return Lorg_dellroad_lzma_client_SevenZip_Compression_LZ_BinTree_2_classLit;
 	}
-
+	
 	function BinTree() {
 	}
-
+	
 	_ = BinTree.prototype = new InWindow();
 	_.getClass$ = getClass_39;
 	_.typeId$ = 0;
@@ -18108,7 +18108,7 @@ var LZMA = (function () {
 			}
 		}
 	}
-
+	
 	function $Create_5(this$static, windowSize) {
 		if (this$static._buffer == null || this$static._windowSize != windowSize) {
 			this$static._buffer = initDim(_3B_classLit, 0, -1, windowSize, 1);
@@ -18117,7 +18117,7 @@ var LZMA = (function () {
 		this$static._pos = 0;
 		this$static._streamPos = 0;
 	}
-
+	
 	function $Flush_0(this$static) {
 		var size;
 		size = this$static._pos - this$static._streamPos;
@@ -18130,7 +18130,7 @@ var LZMA = (function () {
 		}
 		this$static._streamPos = this$static._pos;
 	}
-
+	
 	function $GetByte(this$static, distance) {
 		var pos;
 		pos = this$static._pos - distance - 1;
@@ -18139,39 +18139,39 @@ var LZMA = (function () {
 		}
 		return this$static._buffer[pos];
 	}
-
+	
 	function $Init_7(this$static, solid) {
 		if (!solid) {
 			this$static._streamPos = 0;
 			this$static._pos = 0;
 		}
 	}
-
+	
 	function $PutByte(this$static, b) {
 		this$static._buffer[this$static._pos++] = b;
 		if (this$static._pos >= this$static._windowSize) {
 			$Flush_0(this$static);
 		}
 	}
-
+	
 	function $ReleaseStream(this$static) {
 		$Flush_0(this$static);
 		this$static._stream = null;
 	}
-
+	
 	function $SetStream_0(this$static, stream) {
 		$Flush_0(this$static);
 		this$static._stream = null;
 		this$static._stream = stream;
 	}
-
+	
 	function getClass_41() {
 		return Lorg_dellroad_lzma_client_SevenZip_Compression_LZ_OutWindow_2_classLit;
 	}
-
+	
 	function OutWindow() {
 	}
-
+	
 	_ = OutWindow.prototype = new Object_0();
 	_.getClass$ = getClass_41;
 	_.typeId$ = 0;
@@ -18187,7 +18187,7 @@ var LZMA = (function () {
 		}
 		return 3;
 	}
-
+	
 	function StateUpdateChar(index) {
 		if (index < 4) {
 			return 0;
@@ -18197,21 +18197,21 @@ var LZMA = (function () {
 		}
 		return index - 6;
 	}
-
+	
 	function $Chunker_0(this$static, encoder) {
 		this$static.encoder = encoder;
 		this$static.decoder = null;
 		this$static.alive = true;
 		return this$static;
 	}
-
+	
 	function $Chunker(this$static, decoder) {
 		this$static.decoder = decoder;
 		this$static.encoder = null;
 		this$static.alive = true;
 		return this$static;
 	}
-
+	
 	function $processChunk(this$static) {
 		var exception;
 		if (!this$static.alive) {
@@ -18232,7 +18232,7 @@ var LZMA = (function () {
 			}
 		}
 	}
-
+	
 	function $processDecoderChunk(this$static) {
 		var result;
 		result = $CodeOneChunk(this$static.decoder);
@@ -18246,7 +18246,7 @@ var LZMA = (function () {
 			this$static.alive = false;
 		}
 	}
-
+	
 	function $processEncoderChunk(this$static) {
 		$CodeOneBlock(this$static.encoder, this$static.encoder.processedInSize, this$static.encoder.processedOutSize, this$static.encoder.finished);
 		this$static.inBytesProcessed = this$static.encoder.processedInSize[0];
@@ -18255,14 +18255,14 @@ var LZMA = (function () {
 			this$static.alive = false;
 		}
 	}
-
+	
 	function getClass_28() {
 		return Lorg_dellroad_lzma_client_SevenZip_Compression_LZMA_Chunker_2_classLit;
 	}
-
+	
 	function Chunker() {
 	}
-
+	
 	_ = Chunker.prototype = new Object_0();
 	_.getClass$ = getClass_28;
 	_.typeId$ = 0;
@@ -18274,7 +18274,7 @@ var LZMA = (function () {
 		$ReleaseStream(this$static.m_OutWindow);
 		this$static.m_RangeDecoder.Stream = null;
 	}
-
+	
 	function $CodeInChunks(this$static, inStream, outStream, outSize) {
 		this$static.m_RangeDecoder.Stream = inStream;
 		$SetStream_0(this$static.m_OutWindow, outStream);
@@ -18289,7 +18289,7 @@ var LZMA = (function () {
 		this$static.prevByte = 0;
 		return $Chunker(new Chunker(), this$static);
 	}
-
+	
 	function $CodeOneChunk(this$static) {
 	var decoder2, distance, len, numDirectBits, posSlot, posState;
 	posState = lowBits_0(this$static.nowPos64) & this$static.m_PosStateMask;
@@ -18353,7 +18353,7 @@ var LZMA = (function () {
 						return -1;
 					}
 				}
-			} else
+			} else 
 				this$static.rep0 = posSlot;
 			}
 			if (compare(fromInt(this$static.rep0), this$static.nowPos64) >= 0 || this$static.rep0 >= this$static.m_DictionarySizeCheck) {
@@ -18365,7 +18365,7 @@ var LZMA = (function () {
 		}
 		return 0;
 	}
-
+	
 	function $Decoder(this$static) {
 		var i;
 		this$static.m_OutWindow = new OutWindow();
@@ -18387,7 +18387,7 @@ var LZMA = (function () {
 		}
 		return this$static;
 	}
-
+	
 	function $Init_1(this$static) {
 		var i;
 		$Init_7(this$static.m_OutWindow, false);
@@ -18407,7 +18407,7 @@ var LZMA = (function () {
 		InitBitModels(this$static.m_PosAlignDecoder.Models);
 		$Init_8(this$static.m_RangeDecoder);
 	}
-
+	
 	function $SetDecoderProperties(this$static, properties) {
 		var dictionarySize, i, lc, lp, pb, remainder, val;
 		if (properties.length < 5)
@@ -18426,7 +18426,7 @@ var LZMA = (function () {
 		}
 		return $SetDictionarySize(this$static, dictionarySize);
 	}
-
+	
 	function $SetDictionarySize(this$static, dictionarySize) {
 		if (dictionarySize < 0) {
 			return false;
@@ -18438,7 +18438,7 @@ var LZMA = (function () {
 		}
 		return true;
 	}
-
+	
 	function $SetLcLpPb(this$static, lc, lp, pb) {
 		var numPosStates;
 		if (lc > 8 || lp > 4 || pb > 4) {
@@ -18451,14 +18451,14 @@ var LZMA = (function () {
 		this$static.m_PosStateMask = numPosStates - 1;
 		return true;
 	}
-
+	
 	function getClass_32() {
 		return Lorg_dellroad_lzma_client_SevenZip_Compression_LZMA_Decoder_2_classLit;
 	}
-
+	
 	function Decoder() {
 	}
-
+	
 	_ = Decoder.prototype = new Object_0();
 	_.getClass$ = getClass_32;
 	_.typeId$ = 0;
@@ -18479,7 +18479,7 @@ var LZMA = (function () {
 			this$static.m_MidCoder[this$static.m_NumPosStates] = $BitTreeDecoder(new BitTreeDecoder(), 3);
 		}
 	}
-
+	
 	function $Decode(this$static, rangeDecoder, posState) {
 		var symbol;
 		if ($DecodeBit(rangeDecoder, this$static.m_Choice, 0) == 0) {
@@ -18493,7 +18493,7 @@ var LZMA = (function () {
 		}
 		return symbol;
 	}
-
+	
 	function $Decoder$LenDecoder(this$static) {
 		this$static.m_Choice = initDim(_3S_classLit, 0, -1, 2, 1);
 		this$static.m_LowCoder = initDim(_3Lorg_dellroad_lzma_client_SevenZip_Compression_RangeCoder_BitTreeDecoder_2_classLit, 0, 7, 16, 0);
@@ -18501,7 +18501,7 @@ var LZMA = (function () {
 		this$static.m_HighCoder = $BitTreeDecoder(new BitTreeDecoder(), 8);
 		return this$static;
 	}
-
+	
 	function $Init(this$static) {
 		var posState;
 		InitBitModels(this$static.m_Choice);
@@ -18511,14 +18511,14 @@ var LZMA = (function () {
 		}
 		InitBitModels(this$static.m_HighCoder.Models);
 	}
-
+	
 	function getClass_29() {
 		return Lorg_dellroad_lzma_client_SevenZip_Compression_LZMA_Decoder$LenDecoder_2_classLit;
 	}
-
+	
 	function Decoder$LenDecoder() {
 	}
-
+	
 	_ = Decoder$LenDecoder.prototype = new Object_0();
 	_.getClass$ = getClass_29;
 	_.typeId$ = 0;
@@ -18535,11 +18535,11 @@ var LZMA = (function () {
 	for (i = 0; i < numStates; ++i)
 		this$static.m_Coders[i] = $Decoder$LiteralDecoder$Decoder2(new Decoder$LiteralDecoder$Decoder2());
 	}
-
+	
 	function $GetDecoder(this$static, pos, prevByte) {
 		return this$static.m_Coders[((pos & this$static.m_PosMask) << this$static.m_NumPrevBits) + ((prevByte & 255) >>> 8 - this$static.m_NumPrevBits)];
 	}
-
+	
 	function $Init_0(this$static) {
 		var i, numStates;
 		numStates = 1 << this$static.m_NumPrevBits + this$static.m_NumPosBits;
@@ -18547,14 +18547,14 @@ var LZMA = (function () {
 			InitBitModels(this$static.m_Coders[i].m_Decoders);
 		}
 	}
-
+	
 	function getClass_31() {
 		return Lorg_dellroad_lzma_client_SevenZip_Compression_LZMA_Decoder$LiteralDecoder_2_classLit;
 	}
-
+	
 	function Decoder$LiteralDecoder() {
 	}
-
+	
 	_ = Decoder$LiteralDecoder.prototype = new Object_0();
 	_.getClass$ = getClass_31;
 	_.typeId$ = 0;
@@ -18570,7 +18570,7 @@ var LZMA = (function () {
 		} while (symbol < 256);
 		return symbol << 24 >> 24;
 	}
-
+	
 	function $DecodeWithMatchByte(this$static, rangeDecoder, matchByte) {
 		var bit, matchBit, symbol;
 		symbol = 1;
@@ -18588,19 +18588,19 @@ var LZMA = (function () {
 		} while (symbol < 256);
 		return symbol << 24 >> 24;
 	}
-
+	
 	function $Decoder$LiteralDecoder$Decoder2(this$static) {
 		this$static.m_Decoders = initDim(_3S_classLit, 0, -1, 768, 1);
 		return this$static;
 	}
-
+	
 	function getClass_30() {
 		return Lorg_dellroad_lzma_client_SevenZip_Compression_LZMA_Decoder$LiteralDecoder$Decoder2_2_classLit;
 	}
-
+	
 	function Decoder$LiteralDecoder$Decoder2() {
 	}
-
+	
 	_ = Decoder$LiteralDecoder$Decoder2.prototype = new Object_0();
 	_.getClass$ = getClass_30;
 	_.typeId$ = 17;
@@ -18617,7 +18617,7 @@ var LZMA = (function () {
 			g_FastPos[c] = slotFast << 24 >> 24;
 		}
 	}
-
+	
 	function $Backward(this$static, cur) {
 		var backCur, backMem, posMem, posPrev;
 		this$static._optimumEndIndex = cur;
@@ -18645,7 +18645,7 @@ var LZMA = (function () {
 		this$static._optimumCurrentIndex = this$static._optimum[0].PosPrev;
 		return this$static._optimumCurrentIndex;
 	}
-
+	
 	function $BaseInit(this$static) {
 		var i;
 		this$static._state = 0;
@@ -18654,7 +18654,7 @@ var LZMA = (function () {
 			this$static._repDistances[i] = 0;
 		}
 	}
-
+	
 	function $CodeOneBlock(this$static, inSize, outSize, finished) {
 		var baseVal, complexState, curByte, distance, footerBits, i, len, lenToPosState, matchByte, pos, posReduced, posSlot, posState, progressPosValuePrev, subCoder;
 		inSize[0] = P0_longLit;
@@ -18792,7 +18792,7 @@ var LZMA = (function () {
 			}
 		}
 	}
-
+	
 	function $Create_2(this$static) {
 		var bt, numHashBytes;
 		if (!this$static._matchFinder) {
@@ -18812,7 +18812,7 @@ var LZMA = (function () {
 		this$static._dictionarySizePrev = this$static._dictionarySize;
 		this$static._numFastBytesPrev = this$static._numFastBytes;
 	}
-
+	
 	function $Encoder(this$static) {
 		var i;
 		$clinit_59();
@@ -18850,7 +18850,7 @@ var LZMA = (function () {
 		}
 		return this$static;
 	}
-
+	
 	function $FillAlignPrices(this$static) {
 		var i;
 		for (i = 0; i < 16; ++i) {
@@ -18858,7 +18858,7 @@ var LZMA = (function () {
 		}
 		this$static._alignPriceCount = 0;
 	}
-
+	
 	function $FillDistancesPrices(this$static) {
 		var baseVal, encoder, footerBits, i, lenToPosState, posSlot, st, st2;
 		for (i = 4; i < 128; ++i) {
@@ -18886,13 +18886,13 @@ var LZMA = (function () {
 		}
 		this$static._matchPriceCount = 0;
 	}
-
+	
 	function $Flush(this$static, nowPos) {
 		$ReleaseMFStream(this$static);
 		$WriteEndMarker(this$static, nowPos & this$static._posStateMask);
 		$FlushData(this$static._rangeEncoder);
 	}
-
+	
 	function $GetOptimum(this$static, position) {
 		var cur, curAnd1Price, curAndLenCharPrice, curAndLenPrice, curBack, curPrice, currentByte, distance, i, len, lenEnd, lenMain, lenRes, lenTest, lenTest2, lenTestTemp, matchByte, matchPrice, newLen, nextIsChar, nextMatchPrice, nextOptimum, nextRepMatchPrice, normalMatchPrice, numAvailableBytes, numAvailableBytesFull, numDistancePairs, offs, offset, opt, optimum, pos, posPrev, posState, posStateNext, price_4, repIndex, repLen, repMatchPrice, repMaxIndex, shortRepPrice, startLen, state, state2, t, price, price_0, price_1, price_2, price_3;
 		if (this$static._optimumEndIndex != this$static._optimumCurrentIndex) {
@@ -19269,7 +19269,7 @@ var LZMA = (function () {
 			}
 		}
 	}
-
+	
 	function $GetPosLenPrice(this$static, pos, len, posState) {
 		var lenToPosState, price;
 		lenToPosState = GetLenToPosState(len);
@@ -19280,7 +19280,7 @@ var LZMA = (function () {
 		}
 		return price + $GetPrice(this$static._lenEncoder, len - 2, posState);
 	}
-
+	
 	function $GetPureRepPrice(this$static, repIndex, state, posState) {
 		var price;
 		if (repIndex == 0) {
@@ -19297,11 +19297,11 @@ var LZMA = (function () {
 		}
 		return price;
 	}
-
+	
 	function $GetRepLen1Price(this$static, state, posState) {
 		return ($clinit_66() , ProbPrices[this$static._isRepG0[state] >>> 2]) + ProbPrices[this$static._isRep0Long[(state << 4) + posState] >>> 2];
 	}
-
+	
 	function $Init_4(this$static) {
 		var i;
 		$BaseInit(this$static);
@@ -19325,14 +19325,14 @@ var LZMA = (function () {
 		this$static._optimumCurrentIndex = 0;
 		this$static._additionalOffset = 0;
 	}
-
+	
 	function $MovePos(this$static, num) {
 		if (num > 0) {
 			$Skip(this$static._matchFinder, num);
 			this$static._additionalOffset += num;
 		}
 	}
-
+	
 	function $ReadMatchDistances(this$static) {
 		var lenRes;
 		lenRes = 0;
@@ -19345,19 +19345,19 @@ var LZMA = (function () {
 		++this$static._additionalOffset;
 		return lenRes;
 	}
-
+	
 	function $ReleaseMFStream(this$static) {
 		if (!!this$static._matchFinder && this$static._needReleaseMFStream) {
 			this$static._matchFinder._stream = null;
 			this$static._needReleaseMFStream = false;
 		}
 	}
-
+	
 	function $ReleaseStreams(this$static) {
 		$ReleaseMFStream(this$static);
 		this$static._rangeEncoder.Stream = null;
 	}
-
+	
 	function $SetDictionarySize_0(this$static, dictionarySize) {
 		var dicLogSize;
 		if (dictionarySize < 1 || dictionarySize > 536870912) {
@@ -19369,7 +19369,7 @@ var LZMA = (function () {
 		this$static._distTableSize = dicLogSize * 2;
 		return true;
 	}
-
+	
 	function $SetLcLpPb_0(this$static, lc, lp, pb) {
 		if (lp < 0 || lp > 4 || lc < 0 || lc > 8 || pb < 0 || pb > 4) {
 			return false;
@@ -19380,7 +19380,7 @@ var LZMA = (function () {
 		this$static._posStateMask = (1 << this$static._posStateBits) - 1;
 		return true;
 	}
-
+	
 	function $SetMatchFinder(this$static, matchFinderIndex) {
 		var matchFinderIndexPrev;
 		if (matchFinderIndex < 0 || matchFinderIndex > 2) {
@@ -19394,7 +19394,7 @@ var LZMA = (function () {
 		}
 		return true;
 	}
-
+	
 	function $SetNumFastBytes(this$static, numFastBytes) {
 		if (numFastBytes < 5 || numFastBytes > 273) {
 			return false;
@@ -19402,7 +19402,7 @@ var LZMA = (function () {
 		this$static._numFastBytes = numFastBytes;
 		return true;
 	}
-
+	
 	function $WriteCoderProperties(this$static, outStream) {
 		var i;
 		this$static.properties[0] = (this$static._posStateBits * 5 + this$static._numLiteralPosStateBits) * 9 + this$static._numLiteralContextBits << 24 >> 24;
@@ -19411,7 +19411,7 @@ var LZMA = (function () {
 		}
 		$write_0(outStream, this$static.properties, 0, 5);
 	}
-
+	
 	function $WriteEndMarker(this$static, posState) {
 		var lenToPosState;
 		if (!this$static._writeEndMark) {
@@ -19426,7 +19426,7 @@ var LZMA = (function () {
 		$EncodeDirectBits(this$static._rangeEncoder, 67108863, 26);
 		$ReverseEncode(this$static._posAlignEncoder, this$static._rangeEncoder, 15);
 	}
-
+	
 	function GetPosSlot(pos) {
 		if (pos < 2048) {
 			return g_FastPos[pos];
@@ -19436,7 +19436,7 @@ var LZMA = (function () {
 		}
 		return g_FastPos[pos >> 20] + 40;
 	}
-
+	
 	function GetPosSlot2(pos) {
 		if (pos < 131072) {
 			return g_FastPos[pos >> 6] + 12;
@@ -19446,14 +19446,14 @@ var LZMA = (function () {
 		}
 		return g_FastPos[pos >> 26] + 52;
 	}
-
+	
 	function getClass_38() {
 		return Lorg_dellroad_lzma_client_SevenZip_Compression_LZMA_Encoder_2_classLit;
 	}
-
+	
 	function Encoder() {
 	}
-
+	
 	_ = Encoder.prototype = new Object_0();
 	_.getClass$ = getClass_38;
 	_.typeId$ = 0;
@@ -19501,7 +19501,7 @@ var LZMA = (function () {
 			}
 		}
 	}
-
+	
 	function $Encoder$LenEncoder(this$static) {
 		var posState;
 		this$static._choice = initDim(_3S_classLit, 0, -1, 2, 1);
@@ -19514,7 +19514,7 @@ var LZMA = (function () {
 		}
 		return this$static;
 	}
-
+	
 	function $Init_2(this$static, numPosStates) {
 		var posState;
 		InitBitModels_0(this$static._choice);
@@ -19524,7 +19524,7 @@ var LZMA = (function () {
 		}
 		InitBitModels(this$static._highCoder.Models);
 	}
-
+	
 	function $SetPrices(this$static, posState, numSymbols, prices, st) {
 		var a0, a1, b0, b1, i;
 		a0 = ($clinit_66() , ProbPrices[this$static._choice[0] >>> 2]);
@@ -19546,14 +19546,14 @@ var LZMA = (function () {
 			prices[st + i] = b1 + $GetPrice_1(this$static._highCoder, i - 8 - 8);
 		}
 	}
-
+		
 	function getClass_33() {
 		return Lorg_dellroad_lzma_client_SevenZip_Compression_LZMA_Encoder$LenEncoder_2_classLit;
 	}
-
+	
 	function Encoder$LenEncoder() {
 	}
-
+	
 	_ = Encoder$LenEncoder.prototype = new Object_0();
 	_.getClass$ = getClass_33;
 	_.typeId$ = 0;
@@ -19564,18 +19564,18 @@ var LZMA = (function () {
 			this$static._counters[posState] = this$static._tableSize;
 		}
 	}
-
+	
 	function $Encoder$LenPriceTableEncoder(this$static) {
 		$Encoder$LenEncoder(this$static);
 		this$static._prices = initDim(_3I_classLit, 0, -1, 4352, 1);
 		this$static._counters = initDim(_3I_classLit, 0, -1, 16, 1);
 		return this$static;
 	}
-
+	
 	function $GetPrice(this$static, symbol, posState) {
 		return this$static._prices[posState * 272 + symbol];
 	}
-
+	
 	function $UpdateTables(this$static, numPosStates) {
 		var posState;
 		for (posState = 0; posState < numPosStates; ++posState) {
@@ -19583,14 +19583,14 @@ var LZMA = (function () {
 			this$static._counters[posState] = this$static._tableSize;
 		}
 	}
-
+	
 	function getClass_34() {
 		return Lorg_dellroad_lzma_client_SevenZip_Compression_LZMA_Encoder$LenPriceTableEncoder_2_classLit;
 	}
-
+	
 	function Encoder$LenPriceTableEncoder() {
 	}
-
+	
 	_ = Encoder$LenPriceTableEncoder.prototype = new Encoder$LenEncoder();
 	_.getClass$ = getClass_34;
 	_.typeId$ = 0;
@@ -19609,11 +19609,11 @@ var LZMA = (function () {
 			this$static.m_Coders[i] = $Encoder$LiteralEncoder$Encoder2(new Encoder$LiteralEncoder$Encoder2());
 		}
 	}
-
+	
 	function $GetSubCoder(this$static, pos, prevByte) {
 		return this$static.m_Coders[((pos & this$static.m_PosMask) << this$static.m_NumPrevBits) + ((prevByte & 255) >>> 8 - this$static.m_NumPrevBits)];
 	}
-
+	
 	function $Init_3(this$static) {
 		var i, numStates;
 		numStates = 1 << this$static.m_NumPrevBits + this$static.m_NumPosBits;
@@ -19621,14 +19621,14 @@ var LZMA = (function () {
 			InitBitModels_0(this$static.m_Coders[i].m_Encoders);
 		}
 	}
-
+	
 	function getClass_36() {
 		return Lorg_dellroad_lzma_client_SevenZip_Compression_LZMA_Encoder$LiteralEncoder_2_classLit;
 	}
-
+	
 	function Encoder$LiteralEncoder() {
 	}
-
+	
 	_ = Encoder$LiteralEncoder.prototype = new Object_0();
 	_.getClass$ = getClass_36;
 	_.typeId$ = 0;
@@ -19645,7 +19645,7 @@ var LZMA = (function () {
 			context = context << 1 | bit;
 		}
 	}
-
+	
 	function $EncodeMatched(this$static, rangeEncoder, matchByte, symbol) {
 		var bit, context, i, matchBit, same, state;
 		context = 1;
@@ -19662,12 +19662,12 @@ var LZMA = (function () {
 			context = context << 1 | bit;
 		}
 	}
-
+	
 	function $Encoder$LiteralEncoder$Encoder2(this$static) {
 		this$static.m_Encoders = initDim(_3S_classLit, 0, -1, 768, 1);
 		return this$static;
 	}
-
+	
 	function $GetPrice_0(this$static, matchMode, matchByte, symbol) {
 		var bit, context, i, matchBit, price;
 		price = 0;
@@ -19692,14 +19692,14 @@ var LZMA = (function () {
 		}
 		return price;
 	}
-
+	
 	function getClass_35() {
 		return Lorg_dellroad_lzma_client_SevenZip_Compression_LZMA_Encoder$LiteralEncoder$Encoder2_2_classLit;
 	}
-
+	
 	function Encoder$LiteralEncoder$Encoder2() {
 	}
-
+	
 	_ = Encoder$LiteralEncoder$Encoder2.prototype = new Object_0();
 	_.getClass$ = getClass_35;
 	_.typeId$ = 18;
@@ -19707,19 +19707,19 @@ var LZMA = (function () {
 		this$static.BackPrev = -1;
 		this$static.Prev1IsChar = false;
 	}
-
+	
 	function $MakeAsShortRep(this$static) {
 		this$static.BackPrev = 0;
 		this$static.Prev1IsChar = false;
 	}
-
+	
 	function getClass_37() {
 		return Lorg_dellroad_lzma_client_SevenZip_Compression_LZMA_Encoder$Optimal_2_classLit;
 	}
-
+	
 	function Encoder$Optimal() {
 	}
-
+	
 	_ = Encoder$Optimal.prototype = new Object_0();
 	_.getClass$ = getClass_37;
 	_.typeId$ = 19;
@@ -19740,7 +19740,7 @@ var LZMA = (function () {
 		this$static.Models = initDim(_3S_classLit, 0, -1, 1 << numBitLevels, 1);
 		return this$static;
 	}
-
+	
 	function $Decode_0(this$static, rangeDecoder) {
 		var bitIndex, m;
 		m = 1;
@@ -19749,7 +19749,7 @@ var LZMA = (function () {
 		}
 		return m - (1 << this$static.NumBitLevels);
 	}
-
+	
 	function $ReverseDecode(this$static, rangeDecoder) {
 		var bit, bitIndex, m, symbol;
 		m = 1;
@@ -19762,7 +19762,7 @@ var LZMA = (function () {
 		}
 		return symbol;
 	}
-
+	
 	function ReverseDecode(Models, startIndex, rangeDecoder, NumBitLevels) {
 		var bit, bitIndex, m, symbol;
 		m = 1;
@@ -19775,14 +19775,14 @@ var LZMA = (function () {
 		}
 		return symbol;
 	}
-
+	
 	function getClass_42() {
 		return Lorg_dellroad_lzma_client_SevenZip_Compression_RangeCoder_BitTreeDecoder_2_classLit;
 	}
-
+	
 	function BitTreeDecoder() {
 	}
-
+	
 	_ = BitTreeDecoder.prototype = new Object_0();
 	_.getClass$ = getClass_42;
 	_.typeId$ = 20;
@@ -19793,7 +19793,7 @@ var LZMA = (function () {
 		this$static.Models = initDim(_3S_classLit, 0, -1, 1 << numBitLevels, 1);
 		return this$static;
 	}
-
+	
 	function $Encode_2(this$static, rangeEncoder, symbol) {
 		var bit, bitIndex, m;
 		m = 1;
@@ -19804,7 +19804,7 @@ var LZMA = (function () {
 			m = m << 1 | bit;
 		}
 	}
-
+	
 	function $GetPrice_1(this$static, symbol) {
 		var bit, bitIndex, m, price;
 		price = 0;
@@ -19817,7 +19817,7 @@ var LZMA = (function () {
 		}
 		return price;
 	}
-
+	
 	function $ReverseEncode(this$static, rangeEncoder, symbol) {
 		var bit, i, m;
 		m = 1;
@@ -19828,7 +19828,7 @@ var LZMA = (function () {
 			symbol >>= 1;
 		}
 	}
-
+	
 	function $ReverseGetPrice(this$static, symbol) {
 		var bit, i, m, price;
 		price = 0;
@@ -19841,7 +19841,7 @@ var LZMA = (function () {
 		}
 		return price;
 	}
-
+	
 	function ReverseEncode(Models, startIndex, rangeEncoder, NumBitLevels, symbol) {
 		var bit, i, m;
 		m = 1;
@@ -19852,7 +19852,7 @@ var LZMA = (function () {
 			symbol >>= 1;
 		}
 	}
-
+	
 	function ReverseGetPrice(Models, startIndex, NumBitLevels, symbol) {
 		var bit, i, m, price;
 		price = 0;
@@ -19865,14 +19865,14 @@ var LZMA = (function () {
 		}
 		return price;
 	}
-
+	
 	function getClass_43() {
 		return Lorg_dellroad_lzma_client_SevenZip_Compression_RangeCoder_BitTreeEncoder_2_classLit;
 	}
-
+	
 	function BitTreeEncoder() {
 	}
-
+	
 	_ = BitTreeEncoder.prototype = new Object_0();
 	_.getClass$ = getClass_43;
 	_.typeId$ = 21;
@@ -19901,7 +19901,7 @@ var LZMA = (function () {
 			return 1;
 		}
 	}
-
+	
 	function $DecodeDirectBits(this$static, numTotalBits) {
 		var i, result, t;
 		result = 0;
@@ -19917,7 +19917,7 @@ var LZMA = (function () {
 		}
 		return result;
 	}
-
+	
 	function $Init_8(this$static) {
 		var i;
 		this$static.Code = 0;
@@ -19926,21 +19926,21 @@ var LZMA = (function () {
 			this$static.Code = this$static.Code << 8 | $read(this$static.Stream);
 		}
 	}
-
+	
 	function InitBitModels(probs) {
 		var i;
 		for (i = 0; i < probs.length; ++i) {
 			probs[i] = 1024;
 		}
 	}
-
+	
 	function getClass_44() {
 		return Lorg_dellroad_lzma_client_SevenZip_Compression_RangeCoder_Decoder_2_classLit;
 	}
-
+	
 	function Decoder_0() {
 	}
-
+	
 	_ = Decoder_0.prototype = new Object_0();
 	_.getClass$ = getClass_44;
 	_.typeId$ = 0;
@@ -19959,7 +19959,7 @@ var LZMA = (function () {
 			}
 		}
 	}
-
+	
 	function $Encode_3(this$static, probs, index, symbol) {
 		var newBound, prob;
 		prob = probs[index];
@@ -19977,7 +19977,7 @@ var LZMA = (function () {
 			$ShiftLow(this$static);
 		}
 	}
-
+	
 	function $EncodeDirectBits(this$static, v, numTotalBits) {
 		var i;
 		for (i = numTotalBits - 1; i >= 0; --i) {
@@ -19991,18 +19991,18 @@ var LZMA = (function () {
 			}
 		}
 	}
-
+	
 	function $FlushData(this$static) {
 		var i;
 		for (i = 0; i < 5; ++i) {
 			$ShiftLow(this$static);
 		}
 	}
-
+	
 	function $GetProcessedSizeAdd(this$static) {
 		return add(add(fromInt(this$static._cacheSize), this$static._position), P4_longLit);
 	}
-
+	
 	function $Init_9(this$static) {
 		this$static._position = P0_longLit;
 		this$static.Low = P0_longLit;
@@ -20010,7 +20010,7 @@ var LZMA = (function () {
 		this$static._cacheSize = 1;
 		this$static._cache = 0;
 	}
-
+	
 	function $ShiftLow(this$static) {
 		var LowHi, temp;
 		LowHi = lowBits_0(shru(this$static.Low, 32));
@@ -20026,12 +20026,12 @@ var LZMA = (function () {
 		++this$static._cacheSize;
 		this$static.Low = shl(and(this$static.Low, Pffffff_longLit), 8);
 	}
-
+	
 	function GetPrice(Prob, symbol) {
 		$clinit_66();
 		return ProbPrices[((Prob - symbol ^ -symbol) & 2047) >>> 2];
 	}
-
+	
 	function InitBitModels_0(probs) {
 		$clinit_66();
 		var i;
@@ -20039,14 +20039,14 @@ var LZMA = (function () {
 			probs[i] = 1024;
 		}
 	}
-
+	
 	function getClass_45() {
 		return Lorg_dellroad_lzma_client_SevenZip_Compression_RangeCoder_Encoder_2_classLit;
 	}
-
+	
 	function Encoder_0() {
 	}
-
+	
 	_ = Encoder_0.prototype = new Object_0();
 	_.getClass$ = getClass_45;
 	_.typeId$ = 0;
@@ -20095,7 +20095,7 @@ var LZMA = (function () {
 		}
 		return $toString(buf.data);
 	}
-
+	
 	function encode(s) {
 		var ch, chars, data, elen, i, charArr, n;
 		chars = (n = s.length , charArr = initDim(_3C_classLit, 0, -1, n, 1) , $getChars(s, 0, n, charArr, 0) , charArr);
@@ -20127,14 +20127,14 @@ var LZMA = (function () {
 		}
 		return data;
 	}
-
+	
 	function $LZMADemo(this$static) {
 		return this$static;
 	}
 	function toDouble(a) {
 		return a[1] + a[0];
 	}
-
+	
 	function compress() {
 		var this$static = $LZMADemo(new LZMADemo()),
 			percent,
@@ -20145,7 +20145,7 @@ var LZMA = (function () {
 			callback_num,
 			on_finish,
 			on_progress;
-
+		
 		if (typeof arguments[2] === "function") {
 			on_finish = arguments[2];
 			if (typeof arguments[3] === "function") {
@@ -20154,17 +20154,17 @@ var LZMA = (function () {
 		} else {
 			callback_num = arguments[2];
 		}
-
+		
 		this$static.mode = get_mode_obj(mode);
-
+		
 		this$static.c = $LZMAByteArrayCompressor(new LZMAByteArrayCompressor(), encode(str), this$static.mode);
-
+		
 		if (on_progress) {
 			on_progress(0);
 		} else if (typeof callback_num !== "undefined") {
 			update_progress(0, callback_num);
 		}
-
+		
 		function do_action() {
 			var res;
 			start = (new Date).getTime();
@@ -20181,17 +20181,17 @@ var LZMA = (function () {
 					return false;
 				}
 			}
-
+			
 			if (on_progress) {
 				on_progress(1);
 			} else if (typeof callback_num !== "undefined") {
 				update_progress(1, callback_num);
 			}
-
+			
 			/// .slice(0) is required for Firefox 4.0 (because I think arrays are now passed by reference, which is not allowed when sending messages to or from web workers).
 			/// .slice(0) simply returns the entire array by value.
 			res = $toByteArray(this$static.c.output).slice(0);
-
+			
 			if (on_finish) {
 				on_finish(res);
 			} else if (typeof callback_num !== "undefined") {
@@ -20202,10 +20202,10 @@ var LZMA = (function () {
 				});
 			}
 		}
-
+		
 		setTimeout(do_action, 1);
 	}
-
+	
 	function decompress() {
 		var this$static = $LZMADemo(new LZMADemo()),
 			percent,
@@ -20217,7 +20217,7 @@ var LZMA = (function () {
 			callback_num,
 			on_finish,
 			on_progress;
-
+		
 		if (typeof arguments[1] === "function") {
 			on_finish = arguments[1];
 			if (typeof arguments[2] === "function") {
@@ -20226,17 +20226,17 @@ var LZMA = (function () {
 		} else {
 			callback_num = arguments[1];
 		}
-
+		
 		data = initValues(_3B_classLit, 0, -1, byte_arr);
-
+		
 		this$static.d = $LZMAByteArrayDecompressor(new LZMAByteArrayDecompressor(), data);
-
+		
 		if (on_progress) {
 			on_progress(0);
 		} else if (typeof callback_num !== "undefined") {
 			update_progress(0, callback_num);
 		}
-
+		
 		function do_action() {
 			var res;
 			start = (new Date).getTime();
@@ -20253,15 +20253,15 @@ var LZMA = (function () {
 					return false;
 				}
 			}
-
+			
 			if (on_progress) {
 				on_progress(1);
 			} else if (typeof callback_num !== "undefined") {
 				update_progress(1, callback_num);
 			}
-
+			
 			res = decode($toByteArray(this$static.d.output));
-
+			
 			if (on_finish) {
 				on_finish(res);
 			} else if (typeof callback_num !== "undefined") {
@@ -20272,21 +20272,21 @@ var LZMA = (function () {
 				});
 			}
 		}
-
+		
 		setTimeout(do_action, 0);
 	}
-
+	
 	function $onModuleLoad(this$static) {
 		compress(this$static);
 		decompress(this$static);
 	}
-
+	
 	function getClass_46() {
 		return Lorg_dellroad_lzma_demo_client_LZMADemo_2_classLit;
 	}
-
+	
 	function LZMADemo () {}
-
+	
 	_ = LZMADemo.prototype = new Object_0();
 	_.getClass$ = getClass_46;
 	_.typeId$ = 0;
@@ -20296,7 +20296,7 @@ var LZMA = (function () {
 	function init() {
 		!!$stats && $stats({moduleName:$moduleName, subSystem:'startup', evtGroup:'moduleStartup', millis:(new Date()).getTime(), type:'onModuleLoadStart', className:'org.dellroad.lzma.demo.client.LZMADemo'});
 	}
-
+	
 	function gwtOnLoad(errFn, modName, modBase) {
 		$moduleName = modName;
 		$moduleBase = modBase;
@@ -20311,10 +20311,10 @@ var LZMA = (function () {
 			init();
 		}
 	}
-
+	
 	function nullMethod() {
 	}
-
+	
 	var Ljava_lang_Object_2_classLit = createForClass('java.lang.', 'Object'),
 		Ljava_lang_Throwable_2_classLit = createForClass('java.lang.', 'Throwable'),
 		Ljava_lang_Exception_2_classLit = createForClass('java.lang.', 'Exception'),
@@ -20361,10 +20361,10 @@ var LZMA = (function () {
 		Lorg_dellroad_lzma_client_LZMADecompressor_2_classLit = createForClass('org.dellroad.lzma.client.', 'LZMADecompressor'),
 		Lorg_dellroad_lzma_client_LZMAByteArrayDecompressor_2_classLit = createForClass('org.dellroad.lzma.client.', 'LZMAByteArrayDecompressor'),
 		Lorg_dellroad_lzma_demo_client_LZMADemo_2_classLit = createForClass('org.dellroad.lzma.demo.client.', 'LZMADemo');
-
+	
 	gwtOnLoad(function() {},'lzma_demo','');
-
-
+	
+	
 	var get_mode_obj = (function () {
 		var modes = [
 						{dictionarySize: 16, fb: 64,  matchFinder: 0, lc: 3, lp: 0, pb: 2},
@@ -20377,7 +20377,7 @@ var LZMA = (function () {
 						{dictionarySize: 24, fb: 255, matchFinder: 1, lc: 3, lp: 0, pb: 2},
 						{dictionarySize: 25, fb: 255, matchFinder: 1, lc: 3, lp: 0, pb: 2}
 					];
-
+		
 		function isNumber(n) {
 			return !isNaN(parseFloat(n)) && isFinite(n);
 		}
@@ -20392,11 +20392,11 @@ var LZMA = (function () {
 					mode = 9;
 				}
 			}
-
+			
 			return modes[mode - 1];
 		}
 	}());
-
+	
 	return {
 		compress:   compress,
 		decompress: decompress
@@ -20855,7 +20855,7 @@ cdb.log = new cdb.core.Log({tag: 'cdb'});
       $el.html = function(h) { $el.el.innerHTML = h; return this; }
       return $el;
   }
-
+  
   function CanvasGraph(w, h) {
       this.el = document.createElement('canvas');
       this.el.width = w;
@@ -21248,7 +21248,7 @@ cdb._loadJST = function() {
       this.remove();
       this.unbind();
       // remove this model binding
-      if (this.model && this.model.unbind) this.model.unbind(null, null, this);
+      if (this.model && this.model.unbind) this.model.unbind(null, null, this); 
       // remove model binding
       _(this._models).each(function(m) {
         m.unbind(null, null, self);
@@ -21451,7 +21451,7 @@ cdb.geo.geocoder.NOKIA = {
       if(location.protocol.indexOf('http') === -1) {
         protocol = 'http:';
       }
-
+      
       $.getJSON(protocol + '//places.nlp.nokia.com/places/v1/discover/search/?q=' + encodeURIComponent(address) + '&app_id=' + this.keys.app_id + '&app_code=' + this.keys.app_code + '&Accept-Language=en-US&at=0,0&callback=?', function(data) {
 
          var coordinates = [];
@@ -21473,7 +21473,7 @@ cdb.geo.geocoder.NOKIA = {
                 north: r.bbox[3],
                 south: r.bbox[1],
                 east: r.bbox[2],
-                west: r.bbox[0]
+                west: r.bbox[0] 
               }
             }
 
@@ -24648,11 +24648,11 @@ cdb.geo.ui.Search = cdb.core.View.extend({
 
     // Show geocoder loader
     this._showLoader();
-
+     
     cdb.geo.geocoder.NOKIA.geocode(address, function(coords) {
       if (coords.length>0) {
         var validBBox = true;
-
+        
         // check bounding box is valid
         if(!coords[0].boundingbox || coords[0].boundingbox.south == coords[0].boundingbox.north ||
           coords[0].boundingbox.east == coords[0].boundingbox.west) {
@@ -26113,7 +26113,7 @@ cdb.geo.common.CartoDBLogo = {
         cartodb_link.setAttribute('class','cartodb-logo');
         cartodb_link.setAttribute('style',"position:absolute; bottom:0; left:0; display:block; border:none; z-index:1000000;");
         var protocol = location.protocol.indexOf('https') === -1 ? 'http': 'https';
-        cartodb_link.innerHTML = "<a href='http://www.cartodb.com' target='_blank'><img width='71' height='29' src='" + protocol + "://cartodb.s3.amazonaws.com/static/new_logo" + (is_retina ? '@2x' : '') + ".png' style='position:absolute; bottom:" +
+        cartodb_link.innerHTML = "<a href='http://www.cartodb.com' target='_blank'><img width='71' height='29' src='" + protocol + "://cartodb.s3.amazonaws.com/static/new_logo" + (is_retina ? '@2x' : '') + ".png' style='position:absolute; bottom:" + 
           ( position.bottom || 0 ) + "px; left:" + ( position.left || 0 ) + "px; display:block; width:71px!important; height:29px!important; border:none; outline:none;' alt='CartoDB' title='CartoDB' />";
         container.appendChild(cartodb_link);
       }
@@ -26165,7 +26165,7 @@ function PointView(geometryModel) {
       return p;
   });
 
-  this.bind('dragend', function(e, pos) {
+  this.bind('dragend', function(e, pos) { 
     geometryModel.set({
       geojson: {
         type: 'Point',
@@ -26217,11 +26217,11 @@ function PathView(geometryModel) {
   this.model = geometryModel;
   this.points = [];
 
-
+  
   this.geom = L.GeoJSON.geometryToLayer(geometryModel.get('geojson'));
   this.geom.setStyle(geometryModel.get('style'));
 
-
+  
   /*for(var i = 0; i < events.length; ++i) {
     var e = events[i];
     this.geom.on(e, self._eventHandler(e));
@@ -26376,7 +26376,7 @@ cdb.geo.LeafLetPlainLayerView = LeafLetPlainLayerView;
 
 (function() {
 
-if(typeof(L) == "undefined")
+if(typeof(L) == "undefined") 
   return;
 
 var LeafLetTiledLayerView = L.TileLayer.extend({
@@ -26551,7 +26551,7 @@ L.CartoDBGroupLayer = L.TileLayer.extend({
   onAdd: function(map) {
     var self = this;
     this.options.map = map;
-
+    
     // Add cartodb logo
     if (this.options.cartodb_logo != false)
       cdb.geo.common.CartoDBLogo.addWadus({ left:8, bottom:8 }, 0, map._container);
@@ -26560,8 +26560,8 @@ L.CartoDBGroupLayer = L.TileLayer.extend({
       // if while the layer was processed in the server is removed
       // it should not be added to the map
       var id = L.stamp(self);
-      if (!map._layers[id]) {
-        return;
+      if (!map._layers[id]) { 
+        return; 
       }
 
       L.TileLayer.prototype.onAdd.call(self, map);
@@ -27299,7 +27299,7 @@ cdb.geo.LeafLetLayerCartoDBView = LeafLetLayerCartoDBView;
 
 (function() {
 
-if(typeof(google) == "undefined" || typeof(google.maps) == "undefined")
+if(typeof(google) == "undefined" || typeof(google.maps) == "undefined") 
   return;
 
 /**
@@ -27419,7 +27419,7 @@ cdb.geo.GMapsBaseLayerView = GMapsBaseLayerView;
 
 (function() {
 
-if(typeof(google) == "undefined" || typeof(google.maps) == "undefined")
+if(typeof(google) == "undefined" || typeof(google.maps) == "undefined") 
   return;
 
 var GMapsPlainLayerView = function(layerModel, gmapsMap) {
@@ -27457,7 +27457,7 @@ cdb.geo.GMapsPlainLayerView = GMapsPlainLayerView;
 
 (function() {
 
-if(typeof(google) == "undefined" || typeof(google.maps) == "undefined")
+if(typeof(google) == "undefined" || typeof(google.maps) == "undefined") 
   return;
 
 // TILED LAYER
@@ -27773,7 +27773,7 @@ var GMapsCartoDBLayerGroupView = function(layerModel, gmapsMap) {
     self.featureClick  && self.featureClick.apply(opts, arguments);
   };
 
-
+  
   CartoDBLayerGroup.call(this, opts);
   cdb.geo.GMapsLayerView.call(this, layerModel, this, gmapsMap);
 };
@@ -28521,7 +28521,10 @@ cdb.ui.common.ShareDialog = cdb.ui.common.Dialog.extend({
   events: {
     'click .ok': '_ok',
     'click .cancel': '_cancel',
-    'click .close': '_cancel'
+    'click .close': '_cancel',
+    "click":                      '_stopPropagation',
+    "dblclick":                   '_stopPropagation',
+    "mousedown":                  '_stopPropagation'
   },
 
   default_options: {
@@ -28553,8 +28556,36 @@ cdb.ui.common.ShareDialog = cdb.ui.common.Dialog.extend({
     // After removing the dialog, cleaning other bindings
     this.bind("clean", this._reClean);
 
-    this.template_base = this.options.template;
-  }
+  },
+
+  _stopPropagation: function(ev) {
+    ev.stopPropagation();
+  },
+
+  render: function() {
+    var $el = this.$el;
+
+    $el.html(this.options.template(this.options));
+
+    $el.find(".modal").css({
+      width: this.options.width
+      //height: this.options.height
+      //'margin-left': -this.options.width>>1,
+      //'margin-top': -this.options.height>>1
+    });
+
+    if(this.render_content) {
+
+      this.$('.content').append(this.render_content());
+    }
+
+    if(this.options.modal_class) {
+      this.$el.addClass(this.options.modal_class);
+    }
+
+    return this;
+  },
+
 
 });
 /**
@@ -29737,8 +29768,9 @@ var Vis = cdb.core.View.extend({
         url: vizjson.url
       });
 
-      this.addOverlay({
-        type: 'share'
+      vizjson.overlays.push({
+        type: "share",
+        url: vizjson.url
       });
 
     }
@@ -30361,39 +30393,49 @@ cdb.vis.Overlay.register('layer_selector', function(data, vis) {
 // search content
 cdb.vis.Overlay.register('share', function(data, vis) {
 
+  // Add the complete url for facebook and twitter
+  if (location.href) {
+    data.share_url = encodeURIComponent(location.href);
+  } else {
+    data.share_url = data.url;
+  }
+
   var template = cdb.core.Template.compile(
-    data.template || "\
+    data.template || '\
       <div class="mamufas">\
-        <section class="block modal <%= modal_type %>">\
+        <section class="block modal {{modal_type}}">\
           <a href="#close" class="close">x</a>\
           <div class="head">\
-            <h3><%= title %></h3>\
+            <h3>{{ title }}</h3>\
           </div>\
           <div class="content">\
             <div class="buttons">\
               <h4>Social</h4>\
               <ul>\
-          <li><a class='facebook' target='_blank'\
-            href='http://www.facebook.com/sharer.php?u={{share_url}}&text=Map of {{title}}: {{description}}'>F</a></li>\
-          <a class='twitter' href='https://twitter.com/share?url={{share_url}}&text=Map of {{title}}: {{descriptionShort}}... '\
-           target='_blank'>T</a></li>\
+                <li><a class="facebook" target="_blank" href="http://www.facebook.com/sharer.php?u={{share_url}}&text=Map of {{title}}: {{description}}">Share on Facebook</a></li>\
+                <li><a class="twitter" href="https://twitter.com/share?url={{share_url}}&text=Map of {{title}}: {{descriptionShort}}... " target="_blank">Share on Twitter</a></li>\
               </ul>\
-            </div> \
-           <div class='embed_code'>\
+            </div><div class="embed_code">\
              <h4>Embed this map</h4>\
-             <textarea id="" name="" cols="30" rows="10"><iframe src="//player.vimeo.com/video/43595116?title=0&amp;byline=0&amp;portrait=0&amp;color=ffffff” width="500"></iframe></textarea>\
+             <textarea id="" name="" cols="30" rows="10">{{ code }}</textarea>\
            </div>\
           </div>\
         </div>\
       </div>\
-    ",
+    ',
     data.templateType || 'mustache'
   );
 
+  var code = "<iframe width='100%' height='520' frameborder='0' src='" + data.share_url + "'></iframe>";
+
   var dialog = new cdb.ui.common.ShareDialog({
     title: 'Share this map',
+    model: vis.map,
+    code: code,
+    url: data.url,
+    share_url: data.share_url,
     template: template,
-    width: 500
+    width: 430
   });
 
   return dialog.render();
@@ -30827,7 +30869,7 @@ Layers.register('torque', function(vis, data) {
     }
 
     if(options.cache) {
-      params.cache = options.cache;
+      params.cache = options.cache; 
     }
 
     // Substitute mapnik tokens

@@ -177,11 +177,48 @@
 
   }
 
+  section.block .buttons ul {
+    margin: 0;
+    padding: 0 24px 0 0;
+    border-right: 1px solid #E5E5E5;
+  }
+
+  section.block .buttons li {
+    list-style:none;
+    margin: 0 0 5px 0;
+    padding: 0;
+  }
+
+  section.block .buttons li a {
+    display:block;
+    padding: 13px;
+    width: 138px;
+    font-size: 13px;
+    font-weight:bold;
+    color:#fff;
+    background:#3D8FCA;
+
+    text-decoration:none;
+
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    -ms-border-radius: 3px;
+    -o-border-radius: 3px;
+    border-radius: 3px;
+  }
+
+  section.block .buttons li a.twitter {
+    background:#3D8FCA;
+  }
+  section.block .buttons li a.facebook {
+    background: #3B5998;
+  }
+
   section.block h3, section.block p, section.block a, section.block label {letter-spacing:0;}
 
   section.block div.head {
     position:relative;
-    padding: 6px 26px; 
+    padding: 5px 26px; 
     border-bottom:1px solid #E5E5E5;
   }
 
@@ -191,7 +228,7 @@
     font-size: bold;
     color: #666666;
     padding: 0; margin: 0;
-    margin: 0 0 12px 0;
+    margin: 0 0 9px 0;
   }
 
   section.block .content .buttons,
@@ -200,8 +237,7 @@
   }
 
   section.block .content .buttons {
-    padding-right: 24px;
-    border-right: 1px solid #C3C3C3;
+    /*padding-right: 24px;*/
   }
   section.block .content .embed_code {
     padding-left: 24px;
@@ -209,7 +245,7 @@
   section.block .content .embed_code textarea {
     resize: none;
     padding: 5px;
-    width: 100%;
+    width: 153px;
     height: 76px;
     border: 1px solid #C3C3C3;
     background: #F5F5F5;
@@ -224,7 +260,7 @@
   }
 
   section.block .content {
-    padding: 20px 26px; 
+    padding: 20px 26px 30px 26px; 
   }
 
   /* CartoDB Legend styles */

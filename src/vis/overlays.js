@@ -83,8 +83,6 @@ cdb.vis.Overlay.register('header', function(data, vis) {
     descriptionShort = descriptionShort.join(' ');
   }
 
-  debugger;
-
   var header = new cdb.geo.ui.Header({
     title: data.map.get('title'),
     description: description,
@@ -191,13 +189,10 @@ cdb.vis.Overlay.register('share', function(data, vis) {
             <div class="buttons">\
               <h4>Social</h4>\
               <ul>\
-                <li><a class="facebook" target="_blank"\
-                  href="http://www.facebook.com/sharer.php?u={{share_url}}&text=Map of {{title}}: {{description}}">F</a></li>\
-                <li><a class="twitter" href="https://twitter.com/share?url={{share_url}}&text=Map of {{title}}: {{descriptionShort}}... "\
-                 target="_blank">T</a></li>\
+                <li><a class="facebook" target="_blank" href="http://www.facebook.com/sharer.php?u={{share_url}}&text=Map of {{title}}: {{description}}">Share on Facebook</a></li>\
+                <li><a class="twitter" href="https://twitter.com/share?url={{share_url}}&text=Map of {{title}}: {{descriptionShort}}... " target="_blank">Share on Twitter</a></li>\
               </ul>\
-            </div> \
-           <div class="embed_code">\
+            </div><div class="embed_code">\
              <h4>Embed this map</h4>\
              <textarea id="" name="" cols="30" rows="10">{{ code }}</textarea>\
            </div>\
@@ -208,16 +203,16 @@ cdb.vis.Overlay.register('share', function(data, vis) {
     data.templateType || 'mustache'
   );
 
-  debugger;
+  var code = "<iframe width='100%' height='520' frameborder='0' src='" + data.share_url + "'></iframe>";
 
   var dialog = new cdb.ui.common.ShareDialog({
     title: 'Share this map',
     model: vis.map,
-    code: '',
+    code: code,
     url: data.url,
     share_url: data.share_url,
     template: template,
-    width: 500
+    width: 430
   });
 
   return dialog.render();

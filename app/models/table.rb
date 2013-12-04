@@ -1474,7 +1474,6 @@ TRIGGER
         sanitized_force_schema.unshift("cartodb_id SERIAL PRIMARY KEY").
                                unshift("created_at timestamp with time zone").
                                unshift("updated_at timestamp with time zone")
-        puts sanitized_force_schema.inspect
         user_database.run(<<-SQL
 CREATE TABLE "#{self.name}" (#{sanitized_force_schema.join(', ')});
 ALTER TABLE  "#{self.name}" ALTER COLUMN created_at SET DEFAULT now();

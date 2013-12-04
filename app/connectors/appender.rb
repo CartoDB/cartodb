@@ -29,6 +29,9 @@ module CartoDB
         end
 
         self
+      rescue => exception
+        drop(results)
+        raise CartoDB::AppendError
       end
 
       def append(result)

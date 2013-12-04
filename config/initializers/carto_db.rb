@@ -159,6 +159,10 @@ module CartoDB
       title: 'Merge with unmatching column types',
       what_about: "The columns you have chosen don't have the same column type in both tables. Please change the types so the columns will have the same type and try again."
     },
+    8005 => {
+      title: 'Append error',
+      what_about: "An error was raised while appending your data. Please ensure the fields in your file match the columns in the existing table"
+    },
     99999 => {
       title: 'Unknown',
       what_about: "Sorry, something went wrong and we're not sure what. Try

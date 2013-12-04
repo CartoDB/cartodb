@@ -303,6 +303,10 @@ class DataImport < Sequel::Model
     self.results    = appender.results
     self.error_code = appender.error_code
     appender.success?
+  rescue => exception
+    self.state = 'failure'
+    self.error_code = 8005
+    false
   end
 
   def new_importer

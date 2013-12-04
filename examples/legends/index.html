@@ -30,7 +30,7 @@
         $(".legend-selector a").addClass("selected");
 
           var stackedLegend = new cdb.geo.ui.Legend.Stacked({
-            legends: legendsArray
+            data: legendsArray
           });
 
           currentLegend = stackedLegend;
@@ -42,7 +42,10 @@
 
           currentLegend = legends[type].legend;
         }
-          $("#map .legends").html(currentLegend.render().$el);
+
+        currentLegend.addTo(".legends");
+
+        // $("#map .legends").html(currentLegend.render().$el);
 
       }
 
@@ -141,9 +144,7 @@
 
           };
 
-          cartodb.createVis('map', map_viz_url, { legends: false }, {
-            no_cdn: true
-          }).done(onVisDone);
+          cartodb.createVis('map', map_viz_url, { legends: false, no_cdn: true }).done(onVisDone);
 
         });
 

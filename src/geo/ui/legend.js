@@ -245,6 +245,10 @@ cdb.geo.ui.BaseLegend = cdb.core.View.extend({
 
   },
 
+  addTo: function(element) {
+    $(element).html(this.render().$el);
+  },
+
   setTitle: function(title) {
     this.model.set("title", title);
   },
@@ -883,6 +887,10 @@ cdb.geo.ui.StackedLegend = cdb.core.View.extend({
 
   hide: function() {
     this.$el.hide();
+  },
+
+  addTo: function(element) {
+    $(element).html(this.render().$el);
   },
 
   render: function() {

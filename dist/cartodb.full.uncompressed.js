@@ -1,6 +1,6 @@
 // cartodb.js version: 3.4.02-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: d375524550eff173c49e5347d1ed53d12990deed
+// sha: 7c01e88de9bf5543c61b612fe6e5d054a2f43e79
 (function() {
   var root = this;
 
@@ -22607,6 +22607,10 @@ cdb.geo.ui.BaseLegend = cdb.core.View.extend({
 
   },
 
+  addTo: function(element) {
+    $(element).html(this.render().$el);
+  },
+
   setTitle: function(title) {
     this.model.set("title", title);
   },
@@ -23245,6 +23249,10 @@ cdb.geo.ui.StackedLegend = cdb.core.View.extend({
 
   hide: function() {
     this.$el.hide();
+  },
+
+  addTo: function(element) {
+    $(element).html(this.render().$el);
   },
 
   render: function() {

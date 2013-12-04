@@ -58,7 +58,7 @@ module CartoDB
         cartodbfy(existing_table_name)
         existing_table.send :invalidate_varnish_cache
         update_cdb_tablemetadata(existing_table.name)
-        drop(new_table_name)
+        drop([result])
         self
       rescue => exception
         puts exception.to_s + exception.backtrace.join("\n")
@@ -131,10 +131,15 @@ module CartoDB
         })
       end
 
-      def drop(table_name)
-        database.execute(%Q(DROP TABLE #{table_name}))
-      rescue
-        self
+      def drop(results)
+        results.each do |result|
+          puts "Drop ===== #{result.qualified_table_name}"
+          database.execute(%Q(
+            DROP TABLE #{result.qualified_table_name}
+          ))
+        end
+      rescue => exception
+        puts exception.to_s + exception.backtrace.join("\n")
       end
 
       def success?
@@ -162,7 +167,7 @@ module CartoDB
 
       def oid_from(table_name)
         database[%Q(
-          SELECT public.#{table_name}'::regclass::oid
+          SELECT 'public.#{table_name}'::regclass::oid
           AS oid
         )].first.fetch(:oid)
       end

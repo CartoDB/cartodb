@@ -26,10 +26,13 @@ module CartoDB
 
         table = ::Table.where(name: table_name, user_id: user.id).first
         table.send :update_table_pg_stats
-        table.send :set_trigger_cache_timestamp
+        table.send :set_trigger_update_updated_at
+        table.send :set_trigger_track_updates
+        table.send :set_trigger_check_quota
         table.send :invalidate_varnish_cache
-        #table.send :set_trigger_check_quota
-        #table.send :set_trigger_update_updated_at
+        update_cdb_tablemetadata(table.name)
+        database.run("UPDATE #{table.name} SET updated_at = updated_at")
+          #WHERE cartodb_id = (SELECT max(cartodb_id) FROM #{table.name})")
         self
       rescue => exception
         puts exception.to_s + exception.backtrace.join
@@ -49,12 +52,44 @@ module CartoDB
         end
       end
 
+      #def cartodbfy(table_name)
+      #  table = ::Table.where(name: table_name, user_id: user.id).first
+      #  #table.migrate_existing_table = table_name
+      #  table.force_schema = true
+      #  table.send :update_updated_at
+      #  table.import_to_cartodb(table_name)
+      #  table.schema(reload: true)
+      #  table.import_cleanup
+      #  table.schema(reload: true)
+      #  table.reload
+        # Set default triggers
+      #  table.send :set_the_geom_column!
+      #  table.send :update_table_pg_stats
+      #  table.send :set_trigger_update_updated_at
+      #  table.send :set_trigger_track_updates
+      #  table.send :set_trigger_check_quota
+      #  table.save
+
+      #  table.send(:invalidate_varnish_cache)
+      #  puts '======= after invalidating'
+      #  database.run("UPDATE #{table.name} SET updated_at = updated_at")
+          #WHERE cartodb_id = (SELECT max(cartodb_id) FROM #{table.name})")
+      #  update_cdb_tablemetadata(table.name)
+      #end
+
       def cartodbfy(result)
         database.run(%Q(SELECT CDB_CartodbfyTable('#{oid_from(result)}')))
       rescue => exception
         stacktrace = exception.to_s + exception.backtrace.join("\n")
         Rollbar.report_message("Sync cartodbfy error", "error", error_info: stacktrace)
         raise
+      end
+
+      def update_cdb_tablemetadata(name)
+        user.in_database(as: :superuser)[:cdb_tablemetadata]
+          .where(tabname: name)
+          .update(updated_at: Time.now)
+      rescue => exception
       end
 
       def success?

@@ -51,7 +51,7 @@ module CartoDB
       end #owner
 
       def set_database_permissions(query)
-        owner.in_database(as: :superuser).run(query)
+        owner.in_database.run(query)
       end #set_database_permissions
 
       def revoke_query

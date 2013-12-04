@@ -594,7 +594,7 @@ a.info {
 
 
   // SQL PANEL
-  .sql_panel, .csseditor_panel, .infowindow_panel.editing_html, .help.editing_html {
+  .sql_panel, .csseditor_panel, .infowindow_panel.editing_html, .legends_panel.editing_html, .help.editing_html {
     &:after  { position:absolute; content:' '; top:0; left:34px; bottom:0; width:1px; height:100%; background:rgba($cGray4,0.50); }
     &:before { position:absolute; content:' '; top:0; left:36px; bottom:0; width:1px; height:100%; background:rgba(#509DD7,0.25); }
   }
@@ -933,7 +933,7 @@ a.info {
 
     input {
       position:relative;
-      z-index: 100;
+      z-index: 9;
       display:none;
     }
   }
@@ -949,17 +949,176 @@ a.info {
     }
 
     .panel_content .wrapper .content .fields li span { cursor: default; }
+
     .panel_content .wrapper .content .fields {
       position:relative;
       background:#fff;
-      z-index: 1000;
+      z-index: 10;
     }
 
+    .panel_content .wrapper { top: 43px; }
+
+    .doc_info { right:26px!important; }
+
+    .header {
+      position:relative;
+      clear:both;
+      overflow:hidden;
+      padding: 21px 30px 19px 30px;
+
+      h3  {
+        float:left;
+        padding: 0;
+        border:0;
+      }
+
+      .form_combo  { position:absolute; right:18px; }
+    }
+
+    .all {
+      padding:15px 0;
+      overflow:auto;
+      span.label {margin-right:12px;}
+    }
+
+    .titlePane .fields li {
+      position:relative;
+      & > span:hover {cursor: default; }
+    }
+
+    // When custom html template is applied, blocked block should show up
+    // and overflow should be hidden
+    .titlePane.disabled .wrapper, .fieldPane.disabled .wrapper {
+      overflow:hidden;
+    }
+
+    .blocked {
+      position:absolute;
+      top:0;
+      right:0;
+      left:0;
+      bottom:0;
+      display:none;
+      padding:20px 40px;
+      @include border-top-left-radius(4px);
+
+      text-align:center;
+      line-height: normal;
+      background:rgba(white,0.9);
+      z-index:10;
+
+      span.block-icon {
+        position:relative;
+        @include inline-block();
+        width:111px;
+        height:110px;
+        @include table-sprite(block_icon);
+      }
+
+      p {
+        margin: 30px 0 3px 0;
+        line-height: normal;
+        color: #999999;
+      }
+
+      a {
+        @include inline-block();
+        margin:20px 0 0 0;
+      }
+
+    }
+
+    // No content block
+    .no_content { display:none }
+
+    &.editing_html {
+
+      .header h3 {
+        margin-left: 23px;
+      }
+
+      .menu {
+        li:first-child { margin-left: 23px; }
+        &:after  { position:absolute; content:' '; top:0; left:34px; bottom:0; width:1px; height:100%; background:rgba($cGray4,0.50); }
+        &:before { position:absolute; content:' '; top:0; left:36px; bottom:0; width:1px; height:100%; background:rgba(#509DD7,0.25); }
+      }
+    }
+    &.editing_html {
+
+      .header h3 {
+        margin-left: 23px;
+      }
+
+      .menu {
+        li:first-child { margin-left: 23px; }
+        &:after  { position:absolute; content:' '; top:0; left:34px; bottom:0; width:1px; height:100%; background:rgba($cGray4,0.50); }
+        &:before { position:absolute; content:' '; top:0; left:36px; bottom:0; width:1px; height:100%; background:rgba(#509DD7,0.25); }
+      }
+    }
+
+    .menu {
+      position: absolute;
+      @include box-sizing(border-box);
+      top: 59px;
+      width: 100%;
+      padding: 9px 23px 3px 30px;
+      background:#F6F6F6;
+      border-top: 1px solid rgba(#DDDDDD, .5);
+      border-bottom: 1px solid rgba(#DDDDDD, .5);
+
+      z-index: 9;
+
+      .tip {
+        @include size(10px, 6px);
+        @include position(false, false, -1px, 33px);
+        @include background(sprite($table-sprites, infowindow_panel_white_tip) no-repeat);
+        z-index: 10;
+      }
+
+      ul {
+
+        clear:both;
+        overflow:hidden;
+
+        li {
+          min-width: 20px;
+          text-align:center;
+
+          a { margin: auto; }
+
+          @include inline-block();
+          margin: 0 15px 0 0;
+
+          a { display: block; }
+
+          &.editor       { float: left; }
+
+          &.title_editor,
+          &.html_editor  { float: right; }
+
+          &.html_editor  { margin-right: 2px; }
+
+          /*&.html_editor:before { height: 16px; content: ''; position:absolute; left: -10px; top: -3px; border-left: 1px solid rgba(#ccc, .5); }*/
+          &.html_editor { position:relative; }
+
+          &.editor       a { @include size(17px, 17px); @include table-sprite(infowindow_panel_icons, $offset-x:0, $offset-y:0); }
+          &.title_editor a { @include size(20px, 17px); @include table-sprite(infowindow_panel_icons, $offset-x:-40, $offset-y:0); }
+          &.html_editor  a { @include size(17px, 17px); @include table-sprite(infowindow_panel_icons, $offset-x:-104, $offset-y:1px); }
+
+          &.editor       a.selected { @include size(17px, 17px); @include table-sprite(infowindow_panel_icons, $offset-x:0, $offset-y:-25px); }
+          &.title_editor a.selected { @include size(20px, 17px); @include table-sprite(infowindow_panel_icons, $offset-x:-40, $offset-y:-25px); }
+          &.html_editor  a.selected { @include size(17px, 17px); @include table-sprite(infowindow_panel_icons, $offset-x:-104, $offset-y:-24px); }
+        }
+
+      }
+
+    }
     div.forms {
 
       &.panel_content {
         top: 42px;
         padding: 0 30px 16px 30px;
+        z-index: 9;
 
         .footer {
           margin: 14px 0 0 0;

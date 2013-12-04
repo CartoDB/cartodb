@@ -10,23 +10,12 @@
       function main() {
 
         cdb.load('../src/', function() {
-        var vizjson_url = "http://development.localhost.lan:3000/api/v2/viz/8aa45daa-5be2-11e3-99f4-003ee1fffe8b/viz.json";
+          var vizjson_url = "http://development.localhost.lan:3000/api/v2/viz/fdc76b62-5cb7-11e3-928e-003ee1fffe8b/viz.json";
 
-        cartodb.createVis("map", vizjson_url, { share: true, title: true, description: true, search: true }).done(function(vis, layers) {
+          cartodb.createVis("map", vizjson_url, { share: true, title: true, description: true, search: true }).done(function(vis, layers) {
 
-//          var dialog = new cdb.ui.common.ShareDialog({
-//            title: 'Share this map',
-//            template_base: $('#base_template').html(),
-//            width: 500
-//          });
-//
-//          $('body').append(dialog.render().el);
-//          dialog.open();
-
+          });
         });
-        });
-
-
       }
       
     </script>

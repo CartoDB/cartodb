@@ -6,7 +6,10 @@ cdb.ui.common.ShareDialog = cdb.ui.common.Dialog.extend({
   events: {
     'click .ok': '_ok',
     'click .cancel': '_cancel',
-    'click .close': '_cancel'
+    'click .close': '_cancel',
+    "click":                      '_stopPropagation',
+    "dblclick":                   '_stopPropagation',
+    "mousedown":                  '_stopPropagation'
   },
 
   default_options: {
@@ -38,7 +41,35 @@ cdb.ui.common.ShareDialog = cdb.ui.common.Dialog.extend({
     // After removing the dialog, cleaning other bindings
     this.bind("clean", this._reClean);
 
-    this.template_base = this.options.template;
-  }
+  },
+
+  _stopPropagation: function(ev) {
+    ev.stopPropagation();
+  },
+
+  render: function() {
+    var $el = this.$el;
+
+    $el.html(this.options.template(this.options));
+
+    $el.find(".modal").css({
+      width: this.options.width
+      //height: this.options.height
+      //'margin-left': -this.options.width>>1,
+      //'margin-top': -this.options.height>>1
+    });
+
+    if(this.render_content) {
+
+      this.$('.content').append(this.render_content());
+    }
+
+    if(this.options.modal_class) {
+      this.$el.addClass(this.options.modal_class);
+    }
+
+    return this;
+  },
+
 
 });

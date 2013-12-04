@@ -1,6 +1,6 @@
 // cartodb.js version: 3.4.02-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: b17a9123b4a9cba9fd9c0fb51ebee8573305bcb3
+// sha: 67be1aace7d8f70a9ec91302961c9618dbd81a4d
 (function() {
   var root = this;
 
@@ -28521,7 +28521,10 @@ cdb.ui.common.ShareDialog = cdb.ui.common.Dialog.extend({
   events: {
     'click .ok': '_ok',
     'click .cancel': '_cancel',
-    'click .close': '_cancel'
+    'click .close': '_cancel',
+    "click":                      '_stopPropagation',
+    "dblclick":                   '_stopPropagation',
+    "mousedown":                  '_stopPropagation'
   },
 
   default_options: {
@@ -28553,8 +28556,36 @@ cdb.ui.common.ShareDialog = cdb.ui.common.Dialog.extend({
     // After removing the dialog, cleaning other bindings
     this.bind("clean", this._reClean);
 
-    this.template_base = this.options.template;
-  }
+  },
+
+  _stopPropagation: function(ev) {
+    ev.stopPropagation();
+  },
+
+  render: function() {
+    var $el = this.$el;
+
+    $el.html(this.options.template(this.options));
+
+    $el.find(".modal").css({
+      width: this.options.width
+      //height: this.options.height
+      //'margin-left': -this.options.width>>1,
+      //'margin-top': -this.options.height>>1
+    });
+
+    if(this.render_content) {
+
+      this.$('.content').append(this.render_content());
+    }
+
+    if(this.options.modal_class) {
+      this.$el.addClass(this.options.modal_class);
+    }
+
+    return this;
+  },
+
 
 });
 /**
@@ -29737,8 +29768,9 @@ var Vis = cdb.core.View.extend({
         url: vizjson.url
       });
 
-      this.addOverlay({
-        type: 'share'
+      vizjson.overlays.push({
+        type: "share",
+        url: vizjson.url
       });
 
     }
@@ -30274,6 +30306,8 @@ cdb.vis.Overlay.register('header', function(data, vis) {
     descriptionShort = descriptionShort.join(' ');
   }
 
+  debugger;
+
   var header = new cdb.geo.ui.Header({
     title: data.map.get('title'),
     description: description,
@@ -30361,25 +30395,34 @@ cdb.vis.Overlay.register('layer_selector', function(data, vis) {
 // search content
 cdb.vis.Overlay.register('share', function(data, vis) {
 
+  // Add the complete url for facebook and twitter
+  if (location.href) {
+    data.share_url = encodeURIComponent(location.href);
+  } else {
+    data.share_url = data.url;
+  }
+
   var template = cdb.core.Template.compile(
     data.template || '\
       <div class="mamufas">\
-        <section class="block modal <%= modal_type %>">\
+        <section class="block modal {{modal_type}}">\
           <a href="#close" class="close">x</a>\
           <div class="head">\
-            <h3><%= title %></h3>\
+            <h3>{{ title }}</h3>\
           </div>\
           <div class="content">\
             <div class="buttons">\
               <h4>Social</h4>\
               <ul>\
-                <li><a class="facebook">Facebook</a></li>\
-                <li><a class="twitter">Twitter</a></li>\
+                <li><a class="facebook" target="_blank"\
+                  href="http://www.facebook.com/sharer.php?u={{share_url}}&text=Map of {{title}}: {{description}}">F</a></li>\
+                <li><a class="twitter" href="https://twitter.com/share?url={{share_url}}&text=Map of {{title}}: {{descriptionShort}}... "\
+                 target="_blank">T</a></li>\
               </ul>\
             </div> \
            <div class="embed_code">\
              <h4>Embed this map</h4>\
-             <textarea id="" name="" cols="30" rows="10"><iframe src="//player.vimeo.com/video/43595116?title=0&amp;byline=0&amp;portrait=0&amp;color=ffffff” width="500"></iframe></textarea>\
+             <textarea id="" name="" cols="30" rows="10">{{ code }}</textarea>\
            </div>\
           </div>\
         </div>\
@@ -30388,8 +30431,14 @@ cdb.vis.Overlay.register('share', function(data, vis) {
     data.templateType || 'mustache'
   );
 
+  debugger;
+
   var dialog = new cdb.ui.common.ShareDialog({
     title: 'Share this map',
+    model: vis.map,
+    code: '',
+    url: data.url,
+    share_url: data.share_url,
     template: template,
     width: 500
   });

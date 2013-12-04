@@ -505,8 +505,9 @@ var Vis = cdb.core.View.extend({
         url: vizjson.url
       });
 
-      this.addOverlay({
-        type: 'share'
+      vizjson.overlays.push({
+        type: "share",
+        url: vizjson.url
       });
 
     }

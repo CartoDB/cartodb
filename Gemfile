@@ -8,7 +8,7 @@ gem "pg",                      "0.13.2"
 gem "sequel",                  "3.42.0"
 gem "sequel_pg",               "1.6.3", require: "sequel"
 
-gem "vizzuality-sequel-rails", "0.3.6", git: 'https://github.com/Vizzuality/sequel-rails.git'
+gem "vizzuality-sequel-rails", "0.3.7", git: 'https://github.com/Vizzuality/sequel-rails.git'
 
 gem "rails_warden",            "0.5.2" # Auth via the Warden Rack framework
 gem "oauth",                   "0.4.5"

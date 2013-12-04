@@ -283,6 +283,10 @@ class DataImport < Sequel::Model
   end #pg_options
 
   def appender
+    unless table_id
+      self.table_id = Table.find_by_identifier(current_user.id, table_name).id
+    end
+
     tracker       = lambda { |state| self.state = state; save }
     downloader    = CartoDB::Importer2::Downloader.new(data_source)
     runner        = CartoDB::Importer2::Runner.new(
@@ -298,6 +302,7 @@ class DataImport < Sequel::Model
     appender.run(tracker)
     self.results    = appender.results
     self.error_code = appender.error_code
+    self.table_id   = nil
     appender.success?
   end
 

@@ -26,11 +26,18 @@ module CartoDB
       end
     end
     
-    def close_connections!
-      @pool.each do |connection_id, conn|
-        conn[:connection].disconnect
+    def close_connections!(db=nil)
+      newpool = {}
+      @pool.each do |id, conn|
+        if ! db || ( id.start_with? "#{db}:" )
+          Rails.logger.debug "[pool] Dropping connection #{id}"
+          conn[:connection].disconnect
+        else
+          Rails.logger.debug "[pool] Not dropping connection #{id}"
+          newpool[id] = conn
+        end
       end
-      @pool = {}
+      @pool = newpool
     end
     
     def close_oldest_connection!

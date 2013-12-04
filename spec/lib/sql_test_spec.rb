@@ -13,4 +13,8 @@ describe User do
   it "should pass all the sql tests" do
     @user.should pass_sql_tests
   end
+
+  after(:all) do
+    @user.destroy
+  end
 end

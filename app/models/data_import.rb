@@ -302,7 +302,6 @@ class DataImport < Sequel::Model
     appender.run(tracker)
     self.results    = appender.results
     self.error_code = appender.error_code
-    self.table_id   = nil
     appender.success?
   end
 

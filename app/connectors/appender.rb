@@ -4,8 +4,7 @@ module CartoDB
   module Connector
     class Appender
       DESTINATION_SCHEMA    = 'public'
-      DROP_NAMES            = %W{ cartodb_id created_at updated_at ogc_fid
-      the_geom the_geom_webmercator }
+      DROP_NAMES            = %W{ cartodb_id created_at updated_at ogc_fid }
 
       attr_accessor :table
 
@@ -36,9 +35,8 @@ module CartoDB
         existing_table_name     = existing_table.name
         new_table_name          = result.table_name
         
-        new_table_schema        = schema_for(new_table_name, result.schema)
+        @new_table_schema       = schema_for(new_table_name, result.schema)
         @existing_table_schema  = schema_for(existing_table_name)
-        #new_table_column_names  = new_table_schema.map(&:first)
 
         sanitized_columns       = sanitized_columns_from(new_table_schema)
         unmatching_columns      = unmatching_columns_from(sanitized_columns)
@@ -46,28 +44,46 @@ module CartoDB
         different_type_columns  = different_type_columns_from(matching_columns) 
 
         different_type_columns.each { |column_name, metadata|
-          cast(
-            new_table_name,
-            column_name,
-            existing_table_schema.fetch(column_type)
-          )
+          column_type = cartodb_type_for(metadata.fetch(:db_type))
+          cast(new_table_name, column_name, column_type)
         }
 
         unmatching_columns.each { |column_name, metadata|
-          column_type = metadata.fetch(:db_type)
+          column_type = cartodb_type_for(metadata.fetch(:db_type))
           existing_table.add_column!(name: column_name, type: column_type)
         }
 
         insert(existing_table_name, new_table_name, sanitized_columns.keys)
 
-        existing_table.invalidate_varnish_cache
+        cartodbfy(existing_table_name)
+        existing_table.send :invalidate_varnish_cache
+        update_cdb_tablemetadata(existing_table.name)
+        drop(new_table_name)
+        self
+      rescue => exception
+        puts exception.to_s + exception.backtrace.join("\n")
       end
 
-      def cast(column_name, type)
+      def cartodbfy(table_name)
+        database.run(%Q(SELECT CDB_CartodbfyTable('#{oid_from(table_name)}')))
+      rescue => exception
+        stacktrace = exception.to_s + exception.backtrace.join("\n")
+        Rollbar.report_message("Sync cartodbfy error", "error", error_info: stacktrace)
+        raise
+      end
+
+      def update_cdb_tablemetadata(name)
+        user.in_database(as: :superuser)[:cdb_tablemetadata]
+          .where(tabname: name)
+          .update(updated_at: Time.now)
+      rescue => exception
+      end
+
+      def cast(table_name, column_name, type)
         CartoDB::ColumnTypecaster.new(
           user_database:  database,
           schema:         'cdb_importer',
-          table_name:     @new_table_name,
+          table_name:     table_name,
           column_name:    column_name,
           new_type:       type
         ).run
@@ -93,7 +109,7 @@ module CartoDB
 
       def matching_type?(column_name)
         existing_table_schema.fetch(column_name) ==
-        new_table_schema.fetch(column_name)
+          new_table_schema.fetch(column_name)
       end
       
       def reserved_or_existing?(column_name)
@@ -133,6 +149,23 @@ module CartoDB
         return 8001 if quota_checker.over_storage_quota?
         results.map(&:error_code).compact.first
       end #errors_from
+
+      def cartodb_type_for(database_type)
+        CartoDB::TYPES.keys.find { |key|
+          CartoDB::TYPES.fetch(key).include?(database_type)
+        }
+      end
+
+      def user
+        existing_table.owner
+      end
+
+      def oid_from(table_name)
+        database[%Q(
+          SELECT public.#{table_name}'::regclass::oid
+          AS oid
+        )].first.fetch(:oid)
+      end
 
       private
 

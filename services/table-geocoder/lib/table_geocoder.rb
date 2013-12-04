@@ -81,7 +81,7 @@ module CartoDB
       out = `unp *.zip 2>&1`
       raise out unless $?.exitstatus == 0
       out = `unp #{working_dir}/*_out.zip 2>&1`
-      raise out unless $?.exitstatus == 0
+      #raise out unless $?.exitstatus == 0
     ensure
       Dir.chdir(current_directory)
     end

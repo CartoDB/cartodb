@@ -105,7 +105,11 @@ class User < Sequel::Model
     Thread.new do
       conn = Rails::Sequel.connection
         conn.run("UPDATE pg_database SET datallowconn = 'false' WHERE datname = '#{database_name}'")
-        conn.run("SELECT pg_terminate_backend(procpid) FROM pg_stat_activity WHERE datname = '#{database_name}'")
+        begin
+          conn.run("SELECT pg_terminate_backend(procpid) FROM pg_stat_activity WHERE datname = '#{database_name}'")
+        rescue Sequel::DatabaseError => e
+          conn.run("SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '#{database_name}'")
+        end
         conn.run("DROP DATABASE #{database_name}")
         conn.run("DROP USER #{database_username}")
     end.join
@@ -518,6 +522,7 @@ class User < Sequel::Model
   end
 
   def link_created_tables
+    metadata_tables_ids = self.tables.select(:table_id).map(&:table_id)
     created_tables = real_tables.reject{|t| metadata_tables_ids.include?(t[:oid])}
     created_tables.each do |t|
       table = Table.new
@@ -626,8 +631,15 @@ class User < Sequel::Model
   end
 
   def rebuild_quota_trigger
-    load_cartodb_functions
     puts "Rebuilding quota trigger in db '#{database_name}' (#{username})"
+    self.in_database(:as => :superuser).run(<<-TRIGGER
+      DROP FUNCTION IF EXISTS public._CDB_UserQuotaInBytes();
+      CREATE OR REPLACE FUNCTION public._CDB_UserQuotaInBytes() RETURNS int8 AS $$
+        SELECT #{self.quota_in_bytes}::int8
+      $$ LANGUAGE 'sql' IMMUTABLE;
+    TRIGGER
+    )
+    load_cartodb_functions
     tables.all.each do |table|
       begin
         table.set_trigger_check_quota
@@ -711,6 +723,8 @@ class User < Sequel::Model
     create_schema('cdb_importer')
     set_database_permissions_in_schema('cdb')
     set_database_permissions_in_schema('cdb_importer')
+    rebuild_quota_trigger
+    load_cartodb_functions
   end
 
   # Attempts to create a new database schema

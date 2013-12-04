@@ -364,7 +364,7 @@ describe Api::Json::VisualizationsController do
       response.fetch('tags').should == []
     end
 
-    it 'updates the table in a table visualization' do
+    it 'updates the table in a table visualization', now: true do
       table_attributes = table_factory
       id = table_attributes.fetch('table_visualization').fetch('id')
 

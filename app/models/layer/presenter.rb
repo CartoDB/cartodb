@@ -19,6 +19,10 @@ module CartoDB
         tile_style
       )
 
+      INFOWINDOW_KEYS = %w(
+        fields template_name template alternative_names
+      )
+
       def initialize(layer, options={}, configuration={})
         @layer          = layer
         @options        = options
@@ -34,7 +38,7 @@ module CartoDB
           {
             id:         layer.id,
             type:       'CartoDB',
-            infowindow: infowindow_data,
+            infowindow: infowindow_data_v2,
             legend:     layer.legend,
             order:      layer.order,
             options:    options_data_v2
@@ -47,7 +51,7 @@ module CartoDB
         {
           id:         layer.id,
           kind:       'CartoDB',
-          infowindow: infowindow_data,
+          infowindow: infowindow_data_v1,
           order:      layer.order,
           options:    options_data_v1
         }
@@ -88,12 +92,21 @@ module CartoDB
         }
       end #as_torque
 
-      def infowindow_data
-        template = layer.infowindow['template']
-        return layer.infowindow unless template.nil? || template.empty?
-        layer.infowindow.merge(template: File.read(layer.template_path))
+      def infowindow_data_v1
+        with_template(layer.infowindow)
       rescue => exception
-      end #infowindow_data
+      end
+
+      def infowindow_data_v2
+        whitelisted_infowindow(with_template(layer.infowindow)) 
+      rescue => exception
+      end
+
+      def with_template(infowindow)
+        template = infowindow['template']
+        template = File.read(layer.template_path) if template.nil? || template.empty?
+        infowindow.merge(template: template)
+      end
 
       def options_data_v2
         return layer.options if options[:full]
@@ -143,6 +156,10 @@ module CartoDB
         return configuration if configuration.empty?
         configuration.fetch(:layer_opts).fetch("public_opts")
       end #public_options
+
+      def whitelisted_infowindow(infowindow)
+        infowindow.select { |key, value| INFOWINDOW_KEYS.include?(key) }
+      end
     end # Presenter
   end # Layer
 end # CartoDB

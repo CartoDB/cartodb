@@ -62,12 +62,38 @@
     }
 
     div.cartodb-header {
-      div.social {display:none; letter-spacing:-4px;}
+      div.share {
+        display:none;
+        letter-spacing:-4px;
+        position: absolute;
+        top: 21px;
+        right: 10px;
+
+        a {
+          padding: 6px 7px;
+          color: #397DB8;
+          font-size:10px;
+          font-weight:bold;
+          border-color: #C3C3C3;
+          background-color: #F5F5F5;
+          background: #F5F5F5;
+          @include border-radius(3px);
+          text-transform: uppercase;
+          text-shadow: none;
+
+          line-height: 150%;
+
+          &:hover {
+            background: #E6E6E6;
+          }
+
+        }
+      }
     }
 
     div.cartodb-searchbox {display:none;}
     div.cartodb-zoom {top:0;}
-    div.cartodb-layer-selector-box {display:none}
+    div.cartodb-layer-selector-box { display:none; font-weight: normal; }
     div.cartodb-legends {
       position:absolute;
       display:none;

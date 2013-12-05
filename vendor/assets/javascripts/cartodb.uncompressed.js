@@ -1,6 +1,6 @@
 // cartodb.js version: 3.4.02-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: f6a38eef13ae797952d772c0153ee4ad4106fd10
+// sha: e39724dfbb701e1477a4022df2fffdb4fdb6eb3f
 (function() {
   var root = this;
 
@@ -20519,6 +20519,7 @@ this.LZMA = LZMA;
         'geo/gmaps/gmaps.js',
 
         'ui/common/dialog.js',
+        'ui/common/share.js',
         'ui/common/notification.js',
         'ui/common/table.js',
         'ui/common/dropdown.js',
@@ -28512,6 +28513,93 @@ cdb.ui.common.Dialog = cdb.core.View.extend({
   }
 
 });
+cdb.ui.common.ShareDialog = cdb.ui.common.Dialog.extend({
+
+  tagName: 'div',
+  className: 'cartodb-share-dialog',
+
+  events: {
+    'click .ok': '_ok',
+    'click .cancel': '_cancel',
+    'click .close': '_cancel',
+    "click":                      '_stopPropagation',
+    "dblclick":                   '_stopPropagation',
+    "mousedown":                  '_stopPropagation'
+  },
+
+  default_options: {
+    title: 'title',
+    description: '',
+    ok_title: 'Ok',
+    cancel_title: 'Cancel',
+    width: 300,
+    height: 200,
+    clean_on_hide: false,
+    enter_to_confirm: false,
+    template_name: 'common/views/dialog_base',
+    ok_button_classes: 'button green',
+    cancel_button_classes: '',
+    modal_type: '',
+    modal_class: '',
+    include_footer: true,
+    additionalButtons: []
+  },
+
+  initialize: function() {
+
+    _.defaults(this.options, this.default_options);
+
+    _.bindAll(this, 'render', '_keydown');
+
+    var self = this;
+
+    if (this.options.target) {
+      this.options.target.on("click", function() {
+        self.open();
+      })
+    }
+
+    // Keydown bindings for the dialog
+    $(document).bind('keydown', this._keydown);
+
+    // After removing the dialog, cleaning other bindings
+    this.bind("clean", this._reClean);
+
+  },
+
+  _stopPropagation: function(ev) {
+    ev.stopPropagation();
+  },
+
+  render: function() {
+    var $el = this.$el;
+
+    $el.html(this.options.template(this.options));
+
+    $el.find(".modal").css({
+      width: this.options.width
+    });
+
+    if(this.render_content) {
+
+      this.$('.content').append(this.render_content());
+    }
+
+    if(this.options.modal_class) {
+      this.$el.addClass(this.options.modal_class);
+    }
+
+    var self = this;
+    this.cancel = function(){
+      self.options.model.set("scrollwheel", true);
+
+    }
+
+    this.options.model.set("scrollwheel", false);
+    return this;
+  }
+
+});
 /**
  * generic embbed notification, like twitter "new notifications"
  *
@@ -29353,7 +29441,7 @@ var Vis = cdb.core.View.extend({
   },
 
   /**
-   * check if all the modules needed to create layers are loaded 
+   * check if all the modules needed to create layers are loaded
    */
   checkModules: function(layers) {
     var mods = Layers.modulesForLayers(layers);
@@ -29691,6 +29779,12 @@ var Vis = cdb.core.View.extend({
         shareable: opt.shareable ? true: false,
         url: vizjson.url
       });
+
+      vizjson.overlays.push({
+        type: "share",
+        url: vizjson.url
+      });
+
     }
 
     if (opt.layer_selector) {
@@ -30198,12 +30292,7 @@ cdb.vis.Overlay.register('header', function(data, vis) {
       {{/title}}\
       {{#description}}<p>{{description}}</p>{{/description}}\
       {{#shareable}}\
-        <div class='social'>\
-          <a class='facebook' target='_blank'\
-            href='http://www.facebook.com/sharer.php?u={{share_url}}&text=Map of {{title}}: {{description}}'>F</a>\
-          <a class='twitter' href='https://twitter.com/share?url={{share_url}}&text=Map of {{title}}: {{descriptionShort}}... '\
-           target='_blank'>T</a>\
-        </div>\
+        <a href='#' class='share'>Share</a>\
       {{/shareable}}\
     ",
     data.templateType || 'mustache'
@@ -30306,6 +30395,59 @@ cdb.vis.Overlay.register('layer_selector', function(data, vis) {
 
 
   return layerSelector.render();
+});
+
+// search content
+cdb.vis.Overlay.register('share', function(data, vis) {
+
+  // Add the complete url for facebook and twitter
+  if (location.href) {
+    data.share_url = encodeURIComponent(location.href);
+  } else {
+    data.share_url = data.url;
+  }
+
+  var template = cdb.core.Template.compile(
+    data.template || '\
+      <div class="mamufas">\
+        <section class="block modal {{modal_type}}">\
+          <a href="#close" class="close">x</a>\
+          <div class="head">\
+            <h3>{{ title }}</h3>\
+          </div>\
+          <div class="content">\
+            <div class="buttons">\
+              <h4>Social</h4>\
+              <ul>\
+                <li><a class="facebook" target="_blank" href="http://www.facebook.com/sharer.php?u={{share_url}}&text=Map of {{title}}: {{description}}">Share on Facebook</a></li>\
+                <li><a class="twitter" href="https://twitter.com/share?url={{share_url}}&text=Map of {{title}}: {{descriptionShort}}... " target="_blank">Share on Twitter</a></li>\
+              </ul>\
+            </div><div class="embed_code">\
+             <h4>Embed this map</h4>\
+             <textarea id="" name="" cols="30" rows="10">{{ code }}</textarea>\
+           </div>\
+          </div>\
+        </div>\
+      </div>\
+    ',
+    data.templateType || 'mustache'
+  );
+
+  var code = "<iframe width='100%' height='520' frameborder='0' src='" + location.href + "'></iframe>";
+
+  var dialog = new cdb.ui.common.ShareDialog({
+    title: 'Share this map',
+    model: vis.map,
+    code: code,
+    url: data.url,
+    share_url: data.share_url,
+    template: template,
+    target: $(".cartodb-header .share"),
+    width: 430
+  });
+
+  return dialog.render();
+
 });
 
 // search content

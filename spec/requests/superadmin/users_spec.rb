@@ -6,8 +6,7 @@ feature "Superadmin's users API" do
     Capybara.current_driver = :rack_test
     User.any_instance.stubs(:load_cartodb_functions).returns(true)
     User.any_instance.stubs(:set_database_permissions).returns(true)
-    User.any_instance.stubs(:set_database_permissions_in_importer_schema).returns(true)
-    User.any_instance.stubs(:create_importer_schema).returns(true)
+    User.any_instance.stubs(:create_schemas_and_set_permissions).returns(true)
     User.any_instance.stubs(:remaining_quota).returns(10)
     @new_user = new_user(:password => "this_is_a_password")
     @user_atts = @new_user.values

@@ -11,7 +11,7 @@
         of 
         <%= number_to_human_size current_user.organization.quota_in_bytes %> 
         used in your account 
-        <%= number_to_human_size(current_user.organization.quota_in_bytes - current_user.organization.db_size_in_bytes) %>
+        <%= number_to_human_size(current_user.organization.unassigned_quota) %>
         unassigned.</p>
       </li>
       <li class="margin35">

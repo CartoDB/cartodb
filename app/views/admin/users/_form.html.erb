@@ -1,0 +1,18 @@
+<%= form_for @user, url: (@user.new? ? organization_users_path(@organization) : organization_user_path(@user.username)) do |form| %>
+
+  <%= form.hidden_field :private_tables_enabled %>
+
+  <div class="field">
+    <%= form.label :email %>
+    <%= form.text_field :email, :class => @user.errors[:email].present? ? 'error' : nil %>
+  </div>
+  <div class="field">
+    <%= label_tag 'user[password]', 'Password' %>
+    <%= password_field_tag 'user[password]', nil, :class => @user.errors[:password].present? ? 'error' : nil %>
+  </div>
+  <div class="field">
+    <label>Quota in bytes</label>
+    <%= form.text_field :quota_in_bytes, :class => @user.errors[:quota_in_bytes].present? ? 'error' : nil %>
+  </div>
+  <%= form.submit nil, :class => "green button new small" %>
+<% end %>

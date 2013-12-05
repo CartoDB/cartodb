@@ -3,27 +3,37 @@ class Admin::UsersController < ApplicationController
   ssl_required :oauth, :api_key, :regenerate_api_key
 
   before_filter :login_required, :check_permissions
-  before_filter :get_user, only: [:show, :update, :destroy]
+  before_filter :get_user, only: [:edit, :update, :destroy]
 
-  def show
+  def new
+    @user = User.new
+    @user.set_only(
+      organization: current_user.organization,
+      private_tables_enabled: true
+    )
   end
+
+  def edit; end
 
   def create
     @user = User.new
-    @user.set_fields(params[:user], [:username, :email, :password])
+    @user.set_fields(params[:user], [:username, :email, :password, :private_tables_enabled])
     @user.organization = current_user.organization
-    @user.save
+    @user.save(raise_on_failure: true)
     respond_with @user
+  rescue ValidationFailed => e
+    render action: new
   end
 
   def update
-    @user.set_fields(params[:user], [:quota_in_bytes, :email])
-    if attributes[:password].present?
-      @user.password              = attributes[:password]
-    end
+    attributes = params[:user]
+    @user.set_fields(attributes, [:quota_in_bytes, :email])
+    @user.password = attributes[:password] if attributes[:password].present?
 
-    @user.save
-    respond_with @user
+    @user.save(raise_on_failure: true)
+    redirect_to edit_organization_user_path(@user.username)
+  rescue Sequel::ValidationFailed => e
+    render action: :edit
   end
 
   def destroy
@@ -38,6 +48,6 @@ class Admin::UsersController < ApplicationController
   end
 
   def check_permissions
-    not_authorized unless current_user.organization.present? && current_user.organization_owner
+    raise RecordNotFound unless current_user.organization.present? && current_user.organization_owner
   end
 end

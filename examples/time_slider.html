@@ -45,7 +45,7 @@
     <script>
 
       function changeLegend(start, end) {
-          $('#legend').html(new Date(start).getFullYear() + " - " + new Date(end).getFullYear())
+          $('#legend').html("US post offices built " + new Date(start).getFullYear() + " - " + new Date(end).getFullYear())
       }
       function addTimeSlider(sublayer) {
          var sql = cartodb.SQL({ user: 'documentation' })
@@ -60,7 +60,7 @@
               min: min,
               max: max,
               values: [ min , (min + max)/2 ],
-              change: function(event, ui) {
+              slide: function(event, ui) {
                 // give feedback to the user on slide change
                 changeLegend(ui.values[0], ui.values[1]);
               },

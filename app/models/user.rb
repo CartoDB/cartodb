@@ -52,9 +52,8 @@ class User < Sequel::Model
     validates_unique   :email, :message => 'is already taken'
     validates_format EmailAddressValidator::Regexp::ADDR_SPEC, :email, :message => 'is not a valid address'
     validates_presence :password if new? && (crypted_password.blank? || salt.blank?)
-
-    if password.present? && ( password_confirmation.blank? || password != password_confirmation )
-      errors.add(:password, "doesn't match confirmation")
+    if new? && organization.present? && organization.seats == organization.users.count
+      errors.add(:organization, "maximum number of seats")
     end
   end
 

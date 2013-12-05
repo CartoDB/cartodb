@@ -55,13 +55,10 @@ module CartoDB
         table.send :update_table_pg_stats
         table.send :set_trigger_check_quota
         table.send :set_trigger_update_updated_at
+        table.send :set_trigger_track_updates
         table.save
         table.send(:invalidate_varnish_cache)
-        begin
-          database.run("INSERT INTO cdb_tablemetadata (tabname, updated_at) VALUES ('#{table_name}'::regclass, NOW())")
-        rescue Sequel::DatabaseError => e
-          database.run("UPDATE cdb_tablemetadata SET updated_at = NOW() where tabname = '#{table_name}'::regclass")
-        end
+        database.run("UPDATE #{table_name} SET updated_at = NOW() WHERE cartodb_id IN (SELECT MAX(cartodb_id) from #{table_name})")
       rescue => exception
         stacktrace = exception.to_s + exception.backtrace.join
         puts stacktrace

@@ -57,12 +57,7 @@ cdb.vis.Overlay.register('header', function(data, vis) {
       {{/title}}\
       {{#description}}<p>{{description}}</p>{{/description}}\
       {{#shareable}}\
-        <div class='social'>\
-          <a class='facebook' target='_blank'\
-            href='http://www.facebook.com/sharer.php?u={{share_url}}&text=Map of {{title}}: {{description}}'>F</a>\
-          <a class='twitter' href='https://twitter.com/share?url={{share_url}}&text=Map of {{title}}: {{descriptionShort}}... '\
-           target='_blank'>T</a>\
-        </div>\
+        <a href='#' class='share'>Share</a>\
       {{/shareable}}\
     ",
     data.templateType || 'mustache'
@@ -203,7 +198,7 @@ cdb.vis.Overlay.register('share', function(data, vis) {
     data.templateType || 'mustache'
   );
 
-  var code = "<iframe width='100%' height='520' frameborder='0' src='" + data.share_url + "'></iframe>";
+  var code = "<iframe width='100%' height='520' frameborder='0' src='" + location.href + "'></iframe>";
 
   var dialog = new cdb.ui.common.ShareDialog({
     title: 'Share this map',
@@ -212,6 +207,7 @@ cdb.vis.Overlay.register('share', function(data, vis) {
     url: data.url,
     share_url: data.share_url,
     template: template,
+    target: $(".cartodb-header .share"),
     width: 430
   });
 

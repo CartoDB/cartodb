@@ -1,7 +1,7 @@
 cdb.ui.common.ShareDialog = cdb.ui.common.Dialog.extend({
 
   tagName: 'div',
-  className: 'dialog',
+  className: 'cartodb-share-dialog',
 
   events: {
     'click .ok': '_ok',
@@ -31,9 +31,18 @@ cdb.ui.common.ShareDialog = cdb.ui.common.Dialog.extend({
   },
 
   initialize: function() {
+
     _.defaults(this.options, this.default_options);
 
     _.bindAll(this, 'render', '_keydown');
+
+    var self = this;
+
+    if (this.options.target) {
+      this.options.target.on("click", function() {
+        self.open();
+      })
+    }
 
     // Keydown bindings for the dialog
     $(document).bind('keydown', this._keydown);
@@ -54,9 +63,6 @@ cdb.ui.common.ShareDialog = cdb.ui.common.Dialog.extend({
 
     $el.find(".modal").css({
       width: this.options.width
-      //height: this.options.height
-      //'margin-left': -this.options.width>>1,
-      //'margin-top': -this.options.height>>1
     });
 
     if(this.render_content) {
@@ -68,8 +74,14 @@ cdb.ui.common.ShareDialog = cdb.ui.common.Dialog.extend({
       this.$el.addClass(this.options.modal_class);
     }
 
-    return this;
-  },
+    var self = this;
+    this.cancel = function(){
+      self.options.model.set("scrollwheel", true);
 
+    }
+
+    this.options.model.set("scrollwheel", false);
+    return this;
+  }
 
 });

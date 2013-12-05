@@ -776,26 +776,82 @@ div.cartodb-popup.header.yellow a.cartodb-popup-close-button:hover {
     background:url('../img/other.png') no-repeat 0 0;
   }
 
-  div.cartodb-header div.social a.twitter {
-    margin-left:3px;
-    background:url('../img/other.png') no-repeat -26px 0;
+  div.cartodb-header a.share:hover {
+    background: #E6E6E6;
   }
 
-  .mamufas {
+  div.cartodb-header a.share {
+    position: absolute;
+    top: 11px;
+    right: 10px;
+
+    padding: 6px 7px;
+    font: bold 10px "Helvetica", Arial;
+    color: #397DB8;
+    background: #F5F5F5;
+    border: 1px solid #999999;
+    line-height: 150%;
+
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    -ms-border-radius: 3px;
+    -o-border-radius: 3px;
+    border-radius: 3px;
+
+    text-transform: uppercase;
+
+
+    -webkit-transform-style: "linear";
+    -moz-transform-style: "linear";
+    -ms-transform-style: "linear";
+    -o-transform-style: "linear";
+    transform-style: "linear";
+
+    -webkit-transition-property: box-shadow,border;
+    -moz-transition-property: box-shadow,border;
+    -o-transition-property: box-shadow,border;
+    transition-property: box-shadow,border;
+    -webkit-transition-duration: 250ms;
+    -moz-transition-duration: 250ms;
+    -o-transition-duration: 250ms;
+    transition-duration: 250ms;
+
+    border-color: #C3C3C3;
+    background-color: #F5F5F5;
+
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    -ms-border-radius: 4px;
+    -o-border-radius: 4px;
+    border-radius: 4px;
+
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  /* CartoDB Share Dialog styles */
+
+  .cartodb-share-dialog {
+    display:none;
+  }
+
+  .cartodb-share-dialog .mamufas {
     position:fixed;
     top:0;
     left:0;
     right:0;
     bottom:0;
     background:rgba(0,0,0, 0.5);
-    z-index:10;
+    cursor: default;
+    z-index:1000001;
   }
 
-  section.modal {
+  .cartodb-share-dialog section.modal {
     position:relative;
     width:600px;
     margin: 200px auto 0 auto;
     background:white;
+    background:red;
 
     webkit-box-shadow: rgba(0, 0, 0, 0.15) 0 0 0 4px;
     -moz-box-shadow: rgba(0, 0, 0, 0.15) 0 0 0 4px;
@@ -815,7 +871,7 @@ div.cartodb-popup.header.yellow a.cartodb-popup-close-button:hover {
     line-height: normal;
   }
 
-  section.modal a.close {
+  .cartodb-share-dialog section.modal a.close {
     position:absolute;
     top:-15px;
     right:-15px;
@@ -841,7 +897,7 @@ div.cartodb-popup.header.yellow a.cartodb-popup-close-button:hover {
     z-index:5;
   }
 
-  section.block {
+  .cartodb-share-dialog section.block {
     background:white;
     -webkit-border-radius: 4px;
     -moz-border-radius: 4px;
@@ -855,22 +911,22 @@ div.cartodb-popup.header.yellow a.cartodb-popup-close-button:hover {
 
   }
 
-  section.block .buttons ul {
+  .cartodb-share-dialog section.block .buttons ul {
     margin: 0;
     padding: 0 24px 0 0;
     border-right: 1px solid #E5E5E5;
   }
 
-  section.block .buttons li {
+  .cartodb-share-dialog section.block .buttons li {
     list-style:none;
-    margin: 0 0 5px 0;
+    margin: 0 0 4px 0;
     padding: 0;
   }
 
-  section.block .buttons li a {
+  .cartodb-share-dialog section.block .buttons li a {
     display:block;
-    padding: 13px;
-    width: 138px;
+    padding: 10px 13px 11px 30px;
+    width: 121px;
     font-size: 13px;
     font-weight:bold;
     color:#fff;
@@ -885,23 +941,26 @@ div.cartodb-popup.header.yellow a.cartodb-popup-close-button:hover {
     border-radius: 3px;
   }
 
-  section.block .buttons li a.twitter {
-    background:#3D8FCA;
+  .cartodb-share-dialog section.block .buttons li a.twitter { 
+    background:#3D8FCA url('../img/twitter.png') no-repeat 10px 50%;
   }
-  section.block .buttons li a.facebook {
-    background: #3B5998;
+  .cartodb-share-dialog section.block .buttons li a.twitter:hover { background-color:#3272A0; }
+
+  .cartodb-share-dialog section.block .buttons li a.facebook { 
+    background:#3B5998 url('../img/facebook.png') no-repeat 10px 50%;
   }
+  .cartodb-share-dialog section.block .buttons li a.facebook:hover { background-color: #283C65; }
 
-  section.block h3, section.block p, section.block a, section.block label {letter-spacing:0;}
+  .cartodb-share-dialog section.block h3, .cartodb-share-dialog section.block p, .cartodb-share-dialog section.block a, .cartodb-share-dialog section.block label {letter-spacing:0;}
 
-  section.block div.head {
+  .cartodb-share-dialog section.block div.head {
     position:relative;
     padding: 5px 26px; 
     border-bottom:1px solid #E5E5E5;
   }
 
-  section.block h3 { font-size: 15px; font-size: bold; }
-  section.block h4 { 
+  .cartodb-share-dialog section.block h3 { font-size: 15px; font-size: bold; }
+  .cartodb-share-dialog section.block h4 { 
     font-size: 13px;
     font-size: bold;
     color: #666666;
@@ -909,22 +968,22 @@ div.cartodb-popup.header.yellow a.cartodb-popup-close-button:hover {
     margin: 0 0 9px 0;
   }
 
-  section.block .content .buttons,
-  section.block .content .embed_code {
+  .cartodb-share-dialog section.block .content .buttons,
+  .cartodb-share-dialog section.block .content .embed_code {
     display:inline-block; zoom: 1; *display: inline; vertical-align:top;
   }
 
-  section.block .content .buttons {
+  .cartodb-share-dialog section.block .content .buttons {
     /*padding-right: 24px;*/
   }
-  section.block .content .embed_code {
+  .cartodb-share-dialog section.block .content .embed_code {
     padding-left: 24px;
   }
-  section.block .content .embed_code textarea {
+  .cartodb-share-dialog section.block .content .embed_code textarea {
     resize: none;
     padding: 5px;
     width: 153px;
-    height: 76px;
+    height: 66px;
     border: 1px solid #C3C3C3;
     background: #F5F5F5;
     font-size: 11px;
@@ -937,7 +996,7 @@ div.cartodb-popup.header.yellow a.cartodb-popup-close-button:hover {
 
   }
 
-  section.block .content {
+  .cartodb-share-dialog section.block .content {
     padding: 20px 26px 30px 26px; 
   }
 

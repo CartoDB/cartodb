@@ -1,6 +1,6 @@
 // cartodb.js version: 3.4.02-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: ebd29f4cc81b547566c6d9854d9e0c1997b4fdd7
+// sha: e39724dfbb701e1477a4022df2fffdb4fdb6eb3f
 (function() {
   var root = this;
 
@@ -28516,7 +28516,7 @@ cdb.ui.common.Dialog = cdb.core.View.extend({
 cdb.ui.common.ShareDialog = cdb.ui.common.Dialog.extend({
 
   tagName: 'div',
-  className: 'dialog',
+  className: 'cartodb-share-dialog',
 
   events: {
     'click .ok': '_ok',
@@ -28546,9 +28546,18 @@ cdb.ui.common.ShareDialog = cdb.ui.common.Dialog.extend({
   },
 
   initialize: function() {
+
     _.defaults(this.options, this.default_options);
 
     _.bindAll(this, 'render', '_keydown');
+
+    var self = this;
+
+    if (this.options.target) {
+      this.options.target.on("click", function() {
+        self.open();
+      })
+    }
 
     // Keydown bindings for the dialog
     $(document).bind('keydown', this._keydown);
@@ -28569,9 +28578,6 @@ cdb.ui.common.ShareDialog = cdb.ui.common.Dialog.extend({
 
     $el.find(".modal").css({
       width: this.options.width
-      //height: this.options.height
-      //'margin-left': -this.options.width>>1,
-      //'margin-top': -this.options.height>>1
     });
 
     if(this.render_content) {
@@ -28583,9 +28589,15 @@ cdb.ui.common.ShareDialog = cdb.ui.common.Dialog.extend({
       this.$el.addClass(this.options.modal_class);
     }
 
-    return this;
-  },
+    var self = this;
+    this.cancel = function(){
+      self.options.model.set("scrollwheel", true);
 
+    }
+
+    this.options.model.set("scrollwheel", false);
+    return this;
+  }
 
 });
 /**
@@ -30280,12 +30292,7 @@ cdb.vis.Overlay.register('header', function(data, vis) {
       {{/title}}\
       {{#description}}<p>{{description}}</p>{{/description}}\
       {{#shareable}}\
-        <div class='social'>\
-          <a class='facebook' target='_blank'\
-            href='http://www.facebook.com/sharer.php?u={{share_url}}&text=Map of {{title}}: {{description}}'>F</a>\
-          <a class='twitter' href='https://twitter.com/share?url={{share_url}}&text=Map of {{title}}: {{descriptionShort}}... '\
-           target='_blank'>T</a>\
-        </div>\
+        <a href='#' class='share'>Share</a>\
       {{/shareable}}\
     ",
     data.templateType || 'mustache'
@@ -30426,7 +30433,7 @@ cdb.vis.Overlay.register('share', function(data, vis) {
     data.templateType || 'mustache'
   );
 
-  var code = "<iframe width='100%' height='520' frameborder='0' src='" + data.share_url + "'></iframe>";
+  var code = "<iframe width='100%' height='520' frameborder='0' src='" + location.href + "'></iframe>";
 
   var dialog = new cdb.ui.common.ShareDialog({
     title: 'Share this map',
@@ -30435,6 +30442,7 @@ cdb.vis.Overlay.register('share', function(data, vis) {
     url: data.url,
     share_url: data.share_url,
     template: template,
+    target: $(".cartodb-header .share"),
     width: 430
   });
 

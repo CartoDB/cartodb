@@ -4,7 +4,8 @@ class Admin::OrganizationsController < ApplicationController
   before_filter :login_required
 
   def show
-    not_authorized unless current_user.organization.present? && current_user.organization_owner
+    @organization = current_user.organization
+    raise RecordNotFound unless @organization.present? && current_user.organization_owner
     @users = current_user.organization.users
   end
 end

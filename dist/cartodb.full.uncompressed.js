@@ -1,6 +1,6 @@
 // cartodb.js version: 3.4.02-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: 7c01e88de9bf5543c61b612fe6e5d054a2f43e79
+// sha: 2ad5303029b86f65af35b176550bddb7c968fbbc
 (function() {
   var root = this;
 
@@ -20501,7 +20501,6 @@ this.LZMA = LZMA;
         'geo/layer_definition.js',
         'geo/common.js',
 
-        'geo/leaflet/leaflet.geometry.js',
         'geo/leaflet/leaflet_base.js',
         'geo/leaflet/leaflet_plainlayer.js',
         'geo/leaflet/leaflet_tiledlayer.js',
@@ -22559,7 +22558,8 @@ cdb.geo.ui.Legend = cdb.core.View.extend({
   },
 
   show: function(callback) {
-    if (this.model.get("type")) this.$el.show();
+    var type = this.model.get("type");
+    if (type && type != "none") this.$el.show();
   },
 
   hide: function(callback) {
@@ -22573,6 +22573,7 @@ cdb.geo.ui.Legend = cdb.core.View.extend({
   },
 
   render: function() {
+
     if (this.view) {
 
       if (this.model.get("template")) {
@@ -23211,7 +23212,7 @@ cdb.geo.ui.StackedLegend = cdb.core.View.extend({
   _checkVisibility: function() {
 
     var visible = _.some(this.options.legends, function(legend) {
-      return legend.model.get("type")
+      return legend.model.get("type") && legend.model.get("type") != "none"
     }, this);
 
     if (visible) {
@@ -23224,7 +23225,7 @@ cdb.geo.ui.StackedLegend = cdb.core.View.extend({
 
       var type = item.model.get("type");
 
-      if (type != "none") {
+      if (type && type != "none") {
         item.show();
       } else {
         item.hide();
@@ -24865,7 +24866,7 @@ cdb.geo.ui.LayerView = cdb.core.View.extend({
 
   defaults: {
     template: '\
-      <a class="layer" href="#/change-layer"><%= table_name %></a>\
+      <a class="layer" href="#/change-layer"><%= layer_name %></a>\
       <a href="#switch" class="right <%= visible ? "enabled" : "disabled" %> switch"><span class="handle"></span></a>\
     '
   },
@@ -24889,7 +24890,9 @@ cdb.geo.ui.LayerView = cdb.core.View.extend({
   },
 
   render: function() {
-    this.$el.append(this.template(this.model.attributes));
+    var attrs = _.clone(this.model.attributes);
+    attrs.layer_name = attrs.layer_name || attrs.table_name;
+    this.$el.append(this.template(attrs));
     return this;
   },
 
@@ -24930,13 +24933,6 @@ cdb.geo.ui.LayerView = cdb.core.View.extend({
  */
 
 cdb.geo.ui.LayerViewFromLayerGroup = cdb.geo.ui.LayerView.extend({
-
-  defaults: {
-    template: '\
-      <a class="layer" href="#/change-layer"><%= layer_name %></a>\
-      <a href="#switch" class="right <%= visible ? "enabled" : "disabled" %> switch"><span class="handle"></span></a>\
-    '
-  },
 
   _onSwitchSelected: function() {
 
@@ -26147,164 +26143,7 @@ cdb.geo.common.CartoDBLogo = {
       }
     },( timeout || 0 ));
   }
-};(function() {
-
-/**
- * this module implements all the features related to overlay geometries
- * in leaflet: markers, polygons, lines and so on
- */
-
-
-/**
- * view for markers
- */
-function PointView(geometryModel) {
-  var self = this;
-  // events to link
-  var events = [
-    'click',
-    'dblclick',
-    'mousedown',
-    'mouseover',
-    'mouseout',
-    'dragstart',
-    'drag',
-    'dragend'
-  ];
-
-  this._eventHandlers = {};
-  this.model = geometryModel;
-  this.points = [];
-
-  this.geom = L.GeoJSON.geometryToLayer(geometryModel.get('geojson'), function(geojson, latLng) {
-      //TODO: create marker depending on the visualizacion options
-      var p = L.marker(latLng,{
-        icon: L.icon({
-          iconUrl: '/assets/icons/default_marker.png',
-          iconAnchor: [11, 11]
-        })
-      });
-
-      var i;
-      for(i = 0; i < events.length; ++i) {
-        var e = events[i];
-        p.on(e, self._eventHandler(e));
-      }
-      return p;
-  });
-
-  this.bind('dragend', function(e, pos) { 
-    geometryModel.set({
-      geojson: {
-        type: 'Point',
-        //geojson is lng,lat
-        coordinates: [pos[1], pos[0]]
-      }
-    });
-  });
-}
-
-PointView.prototype = new GeometryView();
-
-PointView.prototype.edit = function() {
-  this.geom.dragging.enable();
 };
-
-/**
- * returns a function to handle events fot evtType
- */
-PointView.prototype._eventHandler = function(evtType) {
-  var self = this;
-  var h = this._eventHandlers[evtType];
-  if(!h) {
-    h = function(e) {
-      var latlng = e.target.getLatLng();
-      var s = [latlng.lat, latlng.lng];
-      self.trigger(evtType, e.originalEvent, s);
-    };
-    this._eventHandlers[evtType] = h;
-  }
-  return h;
-};
-
-/**
- * view for other geometries (polygons/lines)
- */
-function PathView(geometryModel) {
-  var self = this;
-  // events to link
-  var events = [
-    'click',
-    'dblclick',
-    'mousedown',
-    'mouseover',
-    'mouseout',
-  ];
-
-  this._eventHandlers = {};
-  this.model = geometryModel;
-  this.points = [];
-
-  
-  this.geom = L.GeoJSON.geometryToLayer(geometryModel.get('geojson'));
-  this.geom.setStyle(geometryModel.get('style'));
-
-  
-  /*for(var i = 0; i < events.length; ++i) {
-    var e = events[i];
-    this.geom.on(e, self._eventHandler(e));
-  }*/
-
-}
-
-PathView.prototype = new GeometryView();
-
-PathView.prototype._leafletLayers = function() {
-  // check if this is a multi-feature or single-feature
-  if (this.geom.getLayers) {
-    return this.geom.getLayers();
-  }
-  return [this.geom];
-};
-
-
-PathView.prototype.enableEdit = function() {
-  var self = this;
-  var layers = this._leafletLayers();
-  _.each(layers, function(g) {
-    g.setStyle(self.model.get('style'));
-    g.on('edit', function() {
-      self.model.set('geojson', self.geom.toGeoJSON().geometry);
-    }, self);
-  });
-};
-
-PathView.prototype.disableEdit = function() {
-  var self = this;
-  var layers = this._leafletLayers();
-  _.each(layers, function(g) {
-    g.off('edit', null, self);
-  });
-};
-
-PathView.prototype.edit = function(enable) {
-  var self = this;
-  var fn = enable ? 'enable': 'disable';
-  var layers = this._leafletLayers();
-  _.each(layers, function(g) {
-    g.editing[fn]();
-    enable ? self.enableEdit(): self.disableEdit();
-  });
-};
-
-cdb.geo.leaflet = cdb.geo.leaflet || {};
-
-cdb.geo.leaflet.PointView = PointView;
-cdb.geo.leaflet.PathView = PathView;
-
-
-})();
-
 (function() {
   /**
   * base layer for all leaflet layers
@@ -27247,7 +27086,14 @@ cdb.geo.LeafLetLayerCartoDBView = LeafLetLayerCartoDBView;
     },
 
     invalidateSize: function() {
-      this.map_leaflet.invalidateSize({ pan: false});
+      // there is a race condition in leaflet. If size is invalidated
+      // and at the same time the center is set the final center is displaced
+      // so set pan to false so the map is not moved and then force the map
+      // to be at the place it should be
+      this.map_leaflet.invalidateSize({ pan: false })//, animate: false });
+      this.map_leaflet.setView(this.map.get("center"), this.map.get("zoom") || 0, {
+        animate: false
+      });
     }
 
   }, {
@@ -29565,14 +29411,18 @@ var Vis = cdb.core.View.extend({
         if(legend) {
           legend[o.visible ? 'show': 'hide']();
         }
-        /*if (this.legends) {
-          var j = options.sublayer_options.length - i - 1;
-          var legend = this.legends && this.legends.options.legends[j];
-          if (legend) {
-            o.visible ? legend.show(): legend.hide();
+        // HACK
+        if(subLayer.model && subLayer.model.get('type') === 'torque') {
+          if (o.visible === false) {
+            subLayer.model.set('visible', false);
+            var timeSlider = this.getOverlay('time_slider');
+            if (timeSlider) {
+              timeSlider.hide();
+            }
           }
-        }*/
-        if (o.visible === false) subLayer.hide();
+        } else {
+          if (o.visible === false) subLayer.hide();
+        }
       }
     }
 
@@ -31887,6 +31737,419 @@ cdb.ui.common.Table = cdb.core.View.extend({
 
 
 });
+(function() {
+
+/**
+ * this module implements all the features related to overlay geometries
+ * in leaflet: markers, polygons, lines and so on
+ */
+
+
+/**
+ * view for markers
+ */
+function PointView(geometryModel) {
+  var self = this;
+  // events to link
+  var events = [
+    'click',
+    'dblclick',
+    'mousedown',
+    'mouseover',
+    'mouseout',
+    'dragstart',
+    'drag',
+    'dragend'
+  ];
+
+  this._eventHandlers = {};
+  this.model = geometryModel;
+  this.points = [];
+
+  this.geom = L.GeoJSON.geometryToLayer(geometryModel.get('geojson'), function(geojson, latLng) {
+      //TODO: create marker depending on the visualizacion options
+      var p = L.marker(latLng,{
+        icon: L.icon({
+          iconUrl: '/assets/icons/default_marker.png',
+          iconAnchor: [11, 11]
+        })
+      });
+
+      var i;
+      for(i = 0; i < events.length; ++i) {
+        var e = events[i];
+        p.on(e, self._eventHandler(e));
+      }
+      return p;
+  });
+
+  this.bind('dragend', function(e, pos) { 
+    geometryModel.set({
+      geojson: {
+        type: 'Point',
+        //geojson is lng,lat
+        coordinates: [pos[1], pos[0]]
+      }
+    });
+  });
+}
+
+PointView.prototype = new GeometryView();
+
+PointView.prototype.edit = function() {
+  this.geom.dragging.enable();
+};
+
+/**
+ * returns a function to handle events fot evtType
+ */
+PointView.prototype._eventHandler = function(evtType) {
+  var self = this;
+  var h = this._eventHandlers[evtType];
+  if(!h) {
+    h = function(e) {
+      var latlng = e.target.getLatLng();
+      var s = [latlng.lat, latlng.lng];
+      self.trigger(evtType, e.originalEvent, s);
+    };
+    this._eventHandlers[evtType] = h;
+  }
+  return h;
+};
+
+/**
+ * view for other geometries (polygons/lines)
+ */
+function PathView(geometryModel) {
+  var self = this;
+  // events to link
+  var events = [
+    'click',
+    'dblclick',
+    'mousedown',
+    'mouseover',
+    'mouseout',
+  ];
+
+  this._eventHandlers = {};
+  this.model = geometryModel;
+  this.points = [];
+
+  
+  this.geom = L.GeoJSON.geometryToLayer(geometryModel.get('geojson'));
+  this.geom.setStyle(geometryModel.get('style'));
+
+  
+  /*for(var i = 0; i < events.length; ++i) {
+    var e = events[i];
+    this.geom.on(e, self._eventHandler(e));
+  }*/
+
+}
+
+PathView.prototype = new GeometryView();
+
+PathView.prototype._leafletLayers = function() {
+  // check if this is a multi-feature or single-feature
+  if (this.geom.getLayers) {
+    return this.geom.getLayers();
+  }
+  return [this.geom];
+};
+
+
+PathView.prototype.enableEdit = function() {
+  var self = this;
+  var layers = this._leafletLayers();
+  _.each(layers, function(g) {
+    g.setStyle(self.model.get('style'));
+    g.on('edit', function() {
+      self.model.set('geojson', self.geom.toGeoJSON().geometry);
+    }, self);
+  });
+};
+
+PathView.prototype.disableEdit = function() {
+  var self = this;
+  var layers = this._leafletLayers();
+  _.each(layers, function(g) {
+    g.off('edit', null, self);
+  });
+};
+
+PathView.prototype.edit = function(enable) {
+  var self = this;
+  var fn = enable ? 'enable': 'disable';
+  var layers = this._leafletLayers();
+  _.each(layers, function(g) {
+    g.editing[fn]();
+    enable ? self.enableEdit(): self.disableEdit();
+  });
+};
+
+cdb.geo.leaflet = cdb.geo.leaflet || {};
+
+cdb.geo.leaflet.PointView = PointView;
+cdb.geo.leaflet.PathView = PathView;
+
+
+})();
+(function() {
+/**
+ * view for markers
+ */
+function PointView(geometryModel) {
+  var self = this;
+  // events to link
+  var events = [
+    'click',
+    'dblclick',
+    'mousedown',
+    'mouseover',
+    'mouseout',
+    'dragstart',
+    'drag',
+    'dragend'
+  ];
+
+  this._eventHandlers = {};
+  this.model = geometryModel;
+  this.points = [];
+
+  var style = _.clone(geometryModel.get('style')) || {};
+  //style.path = google.maps.SymbolPath.CIRCLE;
+  //style.scale = style.weight;
+  //style.strokeColor = "ff0000";
+  //style.strokeOpacity = 1;
+  //style.strokeWeight = 1;
+  //style.fillColor = '00000';
+  //style.fillOpacity = 0.5;
+
+  this.geom = new GeoJSON (
+    geometryModel.get('geojson'),
+    {
+      icon: {
+          url: '/assets/icons/default_marker.png',
+          anchor: {x: 10, y: 10}
+      }
+    }
+  );
+
+  // bind events
+  var i;
+  for(i = 0; i < events.length; ++i) {
+    var e = events[i];
+    google.maps.event.addListener(this.geom, e, self._eventHandler(e));
+  }
+
+  // link dragging
+  this.bind('dragend', function(e, pos) {
+    geometryModel.set({
+      geojson: {
+        type: 'Point',
+        // geojson is lng,lat
+        coordinates: [pos[1], pos[0]]
+      }
+    });
+  });
+}
+
+PointView.prototype = new GeometryView();
+
+PointView.prototype._eventHandler = function(evtType) {
+  var self = this;
+  var h = this._eventHandlers[evtType];
+  if(!h) {
+    h = function(e) {
+      var latlng = e.latLng;
+      var s = [latlng.lat(), latlng.lng()];
+      self.trigger(evtType, e, s);
+    };
+    this._eventHandlers[evtType] = h;
+  }
+  return h;
+};
+
+PointView.prototype.edit = function(enable) {
+  this.geom.setDraggable(enable);
+};
+
+/**
+ * view for other geometries (polygons/lines)
+ */
+function PathView(geometryModel) {
+  var self = this;
+  // events to link
+  var events = [
+    'click',
+    'dblclick',
+    'mousedown',
+    'mouseover',
+    'mouseout',
+  ];
+
+  this._eventHandlers = {};
+  this.model = geometryModel;
+  this.points = [];
+
+  
+
+  var style = _.clone(geometryModel.get('style')) || {};
+
+  this.geom = new GeoJSON (
+    geometryModel.get('geojson'),
+    style
+  );
+
+  /*_.each(this.geom._layers, function(g) {
+    g.setStyle(geometryModel.get('style'));
+    g.on('edit', function() {
+      geometryModel.set('geojson', L.GeoJSON.toGeoJSON(self.geom));
+    }, self);
+  });
+  */
+
+  _.bindAll(this, '_updateModel');
+  var self = this;
+
+  function bindPath(p) {
+    google.maps.event.addListener(p, 'insert_at', self._updateModel);
+    /*
+    google.maps.event.addListener(p, 'remove_at', this._updateModel);
+    google.maps.event.addListener(p, 'set_at', this._updateModel);
+    */
+  }
+
+  // TODO: check this conditions
+
+  if(this.geom.getPaths) {
+    var paths = this.geom.getPaths();
+
+    if (paths && paths[0]) {
+      // More than one path
+      for(var i = 0; i < paths.length; ++i) {
+        bindPath(paths[i]);
+      }
+    } else {
+      // One path
+      bindPath(paths);
+      google.maps.event.addListener(this.geom, 'mouseup', this._updateModel);
+    }
+  } else {
+    // More than one path
+    if (this.geom.length) {
+      for(var i = 0; i < this.geom.length; ++i) {
+        bindPath(this.geom[i].getPath());
+        google.maps.event.addListener(this.geom[i], 'mouseup', this._updateModel);
+      }
+    } else {
+      // One path
+      bindPath(this.geom.getPath());
+      google.maps.event.addListener(this.geom, 'mouseup', this._updateModel);
+    }
+  }
+
+  /*for(var i = 0; i < events.length; ++i) {
+    var e = events[i];
+    this.geom.on(e, self._eventHandler(e));
+  }*/
+
+}
+
+PathView.prototype = new GeometryView();
+
+PathView.getGeoJSON = function(geom, gType) {
+
+  var coordFn = {
+    'Polygon': 'getPath',
+    'MultiPolygon': 'getPath',
+    'LineString': 'getPath',
+    'MultiLineString': 'getPath',
+    'Point': 'getPosition',
+    'MultiPoint': 'getPosition'
+  };
+
+  function _coord(latlng) {
+    return [latlng.lng(), latlng.lat()];
+  }
+
+  function _coords(latlngs) {
+    var c = [];
+    for(var i = 0; i < latlngs.length; ++i) {
+      c.push(_coord(latlngs.getAt(i)));
+    }
+    return c;
+  }
+
+  // single
+  if(!geom.length || geom.length == 1) {
+    var g = geom.length ? geom[0]: geom;
+    var coords;
+    if(gType == 'Point') {
+      coords = _coord(g.getPosition());
+    } else if(gType == 'MultiPoint') {
+      coords = [_coord(g.getPosition())]
+    } else if(gType == 'Polygon') {
+      coords = [_coords(g.getPath())];
+      coords[0].push(_coord(g.getPath().getAt(0)));
+    } else if(gType == 'MultiPolygon') {
+      coords = [];
+      for(var p = 0; p < g.getPaths().length; ++p) {
+        var c = _coords(g.getPaths().getAt(p));
+        c.push(_coord(g.getPaths().getAt(p).getAt(0)));
+        coords.push(c);
+      }
+      coords = [coords]
+    } else if(gType == 'LineString') {
+      coords = _coords(g.getPath());
+    } else if(gType == 'MultiLineString') {
+      //TODO: redo
+      coords = [_coords(g.getPath())];
+    }
+    return {
+      type: gType,
+      coordinates: coords
+    }
+  } else {
+    // poly
+    var c = [];
+    for(var i = 0; i < geom.length; ++i) {
+      c.push(PathView.getGeoJSON(geom[i], gType).coordinates[0]);
+    }
+    return  {
+      type: gType,
+      coordinates: c
+    }
+  }
+}
+
+PathView.prototype._updateModel = function(e) {
+  var self = this;
+  setTimeout(function() {
+  self.model.set('geojson', PathView.getGeoJSON(self.geom, self.model.get('geojson').type ));
+  }, 100)
+}
+
+PathView.prototype.edit = function(enable) {
+
+  var fn = enable ? 'enable': 'disable';
+  var g = this.geom.length ? this.geom: [this.geom];
+  for(var i = 0; i < g.length; ++i) {
+    g[i].setEditable(enable);
+  }
+  if(!enable) {
+    this.model.set('geojson', PathView.getGeoJSON(this.geom, this.model.get('geojson').type));
+  }
+};
+
+cdb.geo.gmaps = cdb.geo.gmaps || {};
+
+cdb.geo.gmaps.PointView = PointView;
+cdb.geo.gmaps.PathView = PathView;
+
+
+
+})();
 
 
     cdb.$ = $;

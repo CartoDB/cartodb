@@ -118,8 +118,13 @@ describe("common.geo.ui.Legend", function() {
     });
 
     it("should show the legend", function() {
+      legend.model.set({ type: "custom" });
       legend.show();
       expect(legend.$el.css('display')).toEqual('block');
+    });
+    it("shouldn't show the 'none' legend", function() {
+      legend.show();
+      expect(legend.$el.css('display')).toEqual('none');
     });
 
     it("should hide the legend", function() {

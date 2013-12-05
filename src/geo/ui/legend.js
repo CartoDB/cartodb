@@ -197,7 +197,8 @@ cdb.geo.ui.Legend = cdb.core.View.extend({
   },
 
   show: function(callback) {
-    if (this.model.get("type")) this.$el.show();
+    var type = this.model.get("type");
+    if (type && type != "none") this.$el.show();
   },
 
   hide: function(callback) {
@@ -211,6 +212,7 @@ cdb.geo.ui.Legend = cdb.core.View.extend({
   },
 
   render: function() {
+
     if (this.view) {
 
       if (this.model.get("template")) {
@@ -849,7 +851,7 @@ cdb.geo.ui.StackedLegend = cdb.core.View.extend({
   _checkVisibility: function() {
 
     var visible = _.some(this.options.legends, function(legend) {
-      return legend.model.get("type")
+      return legend.model.get("type") && legend.model.get("type") != "none"
     }, this);
 
     if (visible) {
@@ -862,7 +864,7 @@ cdb.geo.ui.StackedLegend = cdb.core.View.extend({
 
       var type = item.model.get("type");
 
-      if (type != "none") {
+      if (type && type != "none") {
         item.show();
       } else {
         item.hide();

@@ -4,6 +4,7 @@ require_relative './user/user_decorator'
 class User < Sequel::Model
   include CartoDB::MiniSequel
   include CartoDB::UserDecorator
+  self.strict_param_setting = false
 
   one_to_one :client_application
   plugin :association_dependencies, :client_application => :destroy
@@ -19,11 +20,6 @@ class User < Sequel::Model
   }
 
   # Sequel setup & plugins
-  set_allowed_columns :email, :map_enabled, :password_confirmation, 
-    :quota_in_bytes, :table_quota, :account_type, :private_tables_enabled, 
-    :period_end_date, :map_view_quota, :max_layers, :database_timeout, 
-    :user_timeout, :map_view_block_price, :geocoding_quota, :dashboard_viewed_at,
-    :sync_tables_enabled, :geocoding_block_price, :api_key, :notification
   plugin :validation_helpers
   plugin :json_serializer
   plugin :dirty

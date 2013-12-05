@@ -68,6 +68,14 @@ describe User do
       @user.errors[:username].should be_blank
     end
   end
+
+  it "should not be valid if his organization doesn't have more seats" do
+    organization = FactoryGirl.create(:organization, seats: 1)
+    debugger
+    user = FactoryGirl.create(:user, organization: organization)
+    user = FactoryGirl.create(:user, organization: organization)
+    user.valid?.should be_false
+  end
   
   it "should have a default dashboard_viewed? false" do
     user = User.new
@@ -100,7 +108,6 @@ describe User do
     user_check.salt.should == another_user.salt
 
     user.password = nil
-    user.password_confirmation = nil
     user.valid?.should be_true
   end
 

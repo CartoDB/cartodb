@@ -1,6 +1,6 @@
 // cartodb.js version: 3.4.02-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: 5a4d382a9fffbb64e7259d39f4a50a68e84c3d98
+// sha: 1e9bb920087409edab62b9244cf83d8e7e2e72d5
 (function() {
   var root = this;
 
@@ -22558,7 +22558,8 @@ cdb.geo.ui.Legend = cdb.core.View.extend({
   },
 
   show: function(callback) {
-    if (this.model.get("type")) this.$el.show();
+    var type = this.model.get("type");
+    if (type && type != "none") this.$el.show();
   },
 
   hide: function(callback) {
@@ -22572,6 +22573,7 @@ cdb.geo.ui.Legend = cdb.core.View.extend({
   },
 
   render: function() {
+
     if (this.view) {
 
       if (this.model.get("template")) {
@@ -23210,7 +23212,7 @@ cdb.geo.ui.StackedLegend = cdb.core.View.extend({
   _checkVisibility: function() {
 
     var visible = _.some(this.options.legends, function(legend) {
-      return legend.model.get("type")
+      return legend.model.get("type") && legend.model.get("type") != "none"
     }, this);
 
     if (visible) {
@@ -23223,7 +23225,7 @@ cdb.geo.ui.StackedLegend = cdb.core.View.extend({
 
       var type = item.model.get("type");
 
-      if (type != "none") {
+      if (type && type != "none") {
         item.show();
       } else {
         item.hide();
@@ -24864,7 +24866,7 @@ cdb.geo.ui.LayerView = cdb.core.View.extend({
 
   defaults: {
     template: '\
-      <a class="layer" href="#/change-layer"><%= table_name %></a>\
+      <a class="layer" href="#/change-layer"><%= layer_name %></a>\
       <a href="#switch" class="right <%= visible ? "enabled" : "disabled" %> switch"><span class="handle"></span></a>\
     '
   },
@@ -24888,7 +24890,9 @@ cdb.geo.ui.LayerView = cdb.core.View.extend({
   },
 
   render: function() {
-    this.$el.append(this.template(this.model.attributes));
+    var attrs = _.clone(this.model.attributes);
+    attrs.layer_name = attrs.layer_name || attrs.table_name;
+    this.$el.append(this.template(attrs));
     return this;
   },
 
@@ -24929,13 +24933,6 @@ cdb.geo.ui.LayerView = cdb.core.View.extend({
  */
 
 cdb.geo.ui.LayerViewFromLayerGroup = cdb.geo.ui.LayerView.extend({
-
-  defaults: {
-    template: '\
-      <a class="layer" href="#/change-layer"><%= layer_name %></a>\
-      <a href="#switch" class="right <%= visible ? "enabled" : "disabled" %> switch"><span class="handle"></span></a>\
-    '
-  },
 
   _onSwitchSelected: function() {
 
@@ -29414,14 +29411,18 @@ var Vis = cdb.core.View.extend({
         if(legend) {
           legend[o.visible ? 'show': 'hide']();
         }
-        /*if (this.legends) {
-          var j = options.sublayer_options.length - i - 1;
-          var legend = this.legends && this.legends.options.legends[j];
-          if (legend) {
-            o.visible ? legend.show(): legend.hide();
+        // HACK
+        if(subLayer.model && subLayer.model.get('type') === 'torque') {
+          if (o.visible === false) {
+            subLayer.model.set('visible', false);
+            var timeSlider = this.getOverlay('time_slider');
+            if (timeSlider) {
+              timeSlider.hide();
+            }
           }
-        }*/
-        if (o.visible === false) subLayer.hide();
+        } else {
+          if (o.visible === false) subLayer.hide();
+        }
       }
     }
 

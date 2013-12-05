@@ -8134,6 +8134,8 @@ function GMapsTorqueLayer(options) {
         torque.common.TorqueLayer.optionsFromCartoCSS(options.cartocss));
   }
 
+  this.hidden = !this.options.visible;
+
   this.animator = new torque.Animator(function(time) {
     var k = time | 0;
     if(self.key !== k) {
@@ -8182,7 +8184,6 @@ GMapsTorqueLayer.prototype = _.extend({},
     var self = this;
 
     this.onTileAdded = this.onTileAdded.bind(this);
-    this.hidden = !this.options.visible;
 
     this.options.ready = function() {
       self.fire("change:bounds", {

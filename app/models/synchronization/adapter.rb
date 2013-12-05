@@ -57,9 +57,11 @@ module CartoDB
         table.send :set_trigger_update_updated_at
         table.save
         table.send(:invalidate_varnish_cache)
-        puts '======= after invalidating'
-        database.run("UPDATE #{table.name} SET updated_at = updated_at")
-          #WHERE cartodb_id = (SELECT max(cartodb_id) FROM #{table.name})")
+        begin
+          database.run("INSERT INTO cdb_tablemetadata (tabname, updated_at) VALUES ('#{table_name}'::regclass, NOW())")
+        rescue Sequel::DatabaseError => e
+          database.run("UPDATE cdb_tablemetadata SET updated_at = NOW() where tabname = '#{table_name}'::regclass")
+        end
       rescue => exception
         stacktrace = exception.to_s + exception.backtrace.join
         puts stacktrace

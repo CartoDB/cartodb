@@ -11,8 +11,8 @@
 // Map preview
 .share_dialog {
 
-  div.head {
-    padding:30px 40px!important;
+  & > div.head {
+    padding:30px 40px;
   }
 
   div.torque_warning {
@@ -61,7 +61,30 @@
       overflow:hidden;
     }
 
+
+    .cartodb-share-dialog {
+
+      section.block.modal {
+        position:absolute;
+        top: 50%;
+        left: 50%;
+        margin-left: -216px;
+        margin-top: -107px;
+
+        @include translateZ(20px);
+
+        .head { padding: 18px 25px; }
+        .head h3  {
+          font: bold 15px "Helvetica", Arial;
+          letter-spacing: 0;
+        }
+
+      }
+
+    }
+
     div.cartodb-header {
+
       div.share {
         display:none;
         letter-spacing:-4px;

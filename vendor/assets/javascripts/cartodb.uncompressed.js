@@ -1,6 +1,6 @@
 // cartodb.js version: 3.4.02-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: e39724dfbb701e1477a4022df2fffdb4fdb6eb3f
+// sha: 658f9879c9e331e61f7ee159f65d0984adb672f2
 (function() {
   var root = this;
 
@@ -28551,6 +28551,8 @@ cdb.ui.common.ShareDialog = cdb.ui.common.Dialog.extend({
 
     _.bindAll(this, 'render', '_keydown');
 
+    this.isOpen = false;
+
     var self = this;
 
     if (this.options.target) {
@@ -28568,20 +28570,75 @@ cdb.ui.common.ShareDialog = cdb.ui.common.Dialog.extend({
   },
 
   _stopPropagation: function(ev) {
+
     ev.stopPropagation();
+
+  },
+
+  open: function() {
+
+    var self = this;
+
+    this.$el.show(0, function(){
+      self.isOpen = true;
+    });
+
+  },
+
+  hide: function() {
+
+    var self = this;
+
+    this.$el.hide(0, function(){
+      self.isOpen = false;
+    });
+
+    if (this.options.clean_on_hide) {
+      this.clean();
+    }
+
+  },
+
+  toggle: function() {
+
+    if (this.isOpen) {
+      this.hide();
+    } else {
+      this.open();
+    }
+
   },
 
   render: function() {
+
     var $el = this.$el;
 
-    $el.html(this.options.template(this.options));
+    var title       = this.options.title;
+    var description = this.options.description;
+    var share_url   = this.options.share_url;
+    var facebook_url, twitter_url;
+
+    if (this.options.facebook_url) {
+      facebook_url = this.options.facebook_url;
+    } else {
+      facebook_url = "http://www.facebook.com/sharer.php?u=" + share_url + "&text=Map of " + title + ": " + description;
+    }
+
+    if (this.options.twitter_url) {
+      twitter_url = this.options.twitter_url;
+    } else {
+      twitter_url = "https://twitter.com/share?url=" + share_url + "&text=Map of " + title + ": " + description + "... ";
+    }
+
+    var options = _.extend(this.options, { facebook_url: facebook_url, twitter_url: twitter_url });
+
+    $el.html(this.options.template(options));
 
     $el.find(".modal").css({
       width: this.options.width
     });
 
-    if(this.render_content) {
-
+    if (this.render_content) {
       this.$('.content').append(this.render_content());
     }
 
@@ -28590,9 +28647,13 @@ cdb.ui.common.ShareDialog = cdb.ui.common.Dialog.extend({
     }
 
     var self = this;
+
     this.cancel = function(){
       self.options.model.set("scrollwheel", true);
+    }
 
+    if (this.options.disableLinks) {
+      this.$el.find("a").attr("target", "");
     }
 
     this.options.model.set("scrollwheel", false);
@@ -30419,8 +30480,8 @@ cdb.vis.Overlay.register('share', function(data, vis) {
             <div class="buttons">\
               <h4>Social</h4>\
               <ul>\
-                <li><a class="facebook" target="_blank" href="http://www.facebook.com/sharer.php?u={{share_url}}&text=Map of {{title}}: {{description}}">Share on Facebook</a></li>\
-                <li><a class="twitter" href="https://twitter.com/share?url={{share_url}}&text=Map of {{title}}: {{descriptionShort}}... " target="_blank">Share on Twitter</a></li>\
+                <li><a class="facebook" target="_blank" href="{{ facebook_url }}">Share on Facebook</a></li>\
+                <li><a class="twitter" href="{{ twitter_url }}" target="_blank">Share on Twitter</a></li>\
               </ul>\
             </div><div class="embed_code">\
              <h4>Embed this map</h4>\

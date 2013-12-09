@@ -87,6 +87,16 @@
         width:100%;
         height:60px;
 
+        div.shadow {
+          position:fixed;
+          top:215px;
+          left:0;
+          width:100%;
+          height:10px;
+          background:red;
+          pointer-events:none;
+        }
+
         div.sqlview {
           position: absolute;
           top: 55px;
@@ -143,7 +153,7 @@
                 height:41px;
                 margin:0;
                 padding:10px 0 15px;
-                background: -ms-linear-gradient(top, #FDFDFD 0%, #F2F2F2 100%);
+                background:-ms-linear-gradient(top, #FDFDFD 0%, #F2F2F2 100%);
                 @include background(linear-gradient(top,#FDFDFD,#F2F2F2));
                 border-bottom:1px solid #CCCCCC;
                 z-index:1;
@@ -158,7 +168,7 @@
                   background:rgba(#D9D9D9,0.5);
                   content:' ';
                 }
-                @include box-shadow(rgba(0,0,0,0.015) 0 3px 1px 0);
+                
               }
 
               label {

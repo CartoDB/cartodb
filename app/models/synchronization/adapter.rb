@@ -53,18 +53,25 @@ module CartoDB
         # Set default triggers
         table.send :set_the_geom_column!
         table.send :update_table_pg_stats
-        table.send :set_trigger_check_quota
         table.send :set_trigger_update_updated_at
+        table.send :set_trigger_check_quota
+        table.send :set_trigger_track_updates
         table.save
         table.send(:invalidate_varnish_cache)
-        puts '======= after invalidating'
-        database.run("UPDATE #{table.name} SET updated_at = updated_at")
-          #WHERE cartodb_id = (SELECT max(cartodb_id) FROM #{table.name})")
+        update_cdb_tablemetadata(table.name)
+        database.run("UPDATE #{table_name} SET updated_at = NOW() WHERE cartodb_id IN (SELECT MAX(cartodb_id) from #{table_name})")
       rescue => exception
         stacktrace = exception.to_s + exception.backtrace.join
         puts stacktrace
         Rollbar.report_message("Sync cartodbfy error", "error", error_info: stacktrace)
         table.send(:invalidate_varnish_cache)
+      end
+
+      def update_cdb_tablemetadata(name)
+        user.in_database(as: :superuser)[:cdb_tablemetadata]
+          .where(tabname: name)
+          .update(updated_at: Time.now)
+      rescue => exception
       end
 
       def success?

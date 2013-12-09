@@ -55,11 +55,8 @@ module CartoDB
 
       # Sanitize column names where needed
       column_names = @db_connection.schema(@current_name).map{ |s| s[0].to_s }
-      need_sanitizing = column_names.each do |column_name|
-        if column_name != column_name.sanitize_column_name
-          @db_connection.run("ALTER TABLE #{@current_name} RENAME COLUMN \"#{column_name}\" TO #{column_name.sanitize_column_name}")
-        end
-      end
+
+      sanitize(column_names)
 
       # Rename our table
       if @current_name != @suggested_name
@@ -175,6 +172,36 @@ module CartoDB
     def log(str)
       if @@debug
         puts str
+      end
+    end
+
+    def sanitize(column_names)
+      columns_to_sanitize = column_names.select do |column_name|
+        column_name != column_name.sanitize_column_name
+      end
+
+      correct_columns = column_names - columns_to_sanitize
+
+      sanitization_map = Hash[
+        columns_to_sanitize.map { |column_name|
+          [column_name, column_name.sanitize_column_name]
+        }
+      ]
+
+      sanitization_map = sanitization_map.inject({}) { |memo, pair|
+        if memo.values.include?(pair.last) || correct_columns.include?(pair.last)
+          memo.merge(pair.first => "#{pair.last}_1")
+        else
+          memo.merge(pair.first => pair.last)
+        end
+      }
+
+      sanitization_map.each do |unsanitized, sanitized|
+        @db_connection.run(%Q{
+          ALTER TABLE #{@current_name}
+          RENAME COLUMN "#{unsanitized}"
+          TO "#{sanitized}"
+        })
       end
     end
   end

@@ -847,11 +847,11 @@ div.cartodb-popup.header.yellow a.cartodb-popup-close-button:hover {
   }
 
   .cartodb-share-dialog section.modal {
-    position:relative;
-    width:600px;
-    margin: 200px auto 0 auto;
-    background:white;
-    background:red;
+    position:absolute;
+    top: 50%;
+    left: 50%;
+    margin-left: -216px;
+    margin-top: -107px;
 
     webkit-box-shadow: rgba(0, 0, 0, 0.15) 0 0 0 4px;
     -moz-box-shadow: rgba(0, 0, 0, 0.15) 0 0 0 4px;

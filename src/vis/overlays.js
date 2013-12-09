@@ -184,8 +184,8 @@ cdb.vis.Overlay.register('share', function(data, vis) {
             <div class="buttons">\
               <h4>Social</h4>\
               <ul>\
-                <li><a class="facebook" target="_blank" href="http://www.facebook.com/sharer.php?u={{share_url}}&text=Map of {{title}}: {{description}}">Share on Facebook</a></li>\
-                <li><a class="twitter" href="https://twitter.com/share?url={{share_url}}&text=Map of {{title}}: {{descriptionShort}}... " target="_blank">Share on Twitter</a></li>\
+                <li><a class="facebook" target="_blank" href="{{ facebook_url }}">Share on Facebook</a></li>\
+                <li><a class="twitter" href="{{ twitter_url }}" target="_blank">Share on Twitter</a></li>\
               </ul>\
             </div><div class="embed_code">\
              <h4>Embed this map</h4>\

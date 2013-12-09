@@ -104,8 +104,8 @@ module CartoDB
 
       def with_template(infowindow)
         template = infowindow['template']
-        template = File.read(layer.template_path) if template.nil? || template.empty?
-        infowindow.merge(template: template)
+        return infowindow unless template.nil? || template.empty?
+        infowindow.merge(template: File.read(layer.template_path))
       end
 
       def options_data_v2

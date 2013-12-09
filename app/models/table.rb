@@ -66,21 +66,6 @@ class Table < Sequel::Model(:user_tables)
     ].all.map {|r| r[:st_geometrytype] }
   end
 
-  def_dataset_method(:search) do |query|
-    conditions = %Q{
-      WITH name AS (
-        SELECT relname FROM pg_class WHERE relname IN (
-          SELECT table_name FROM information_schema.tables 
-          WHERE table_schema = 'public'
-          AND table_type = 'BASE TABLE'
-          AND table_name NOT IN ('cdb_tablemetadata', 'spatial_ref_sys')
-        )
-      )
-      SELECT to_tsvector('english', coalesce(name, '') || ' ' || coalesce(description, '')) @@ plainto_tsquery('english', ?) OR name ILIKE ?
-    } 
-    where(conditions, query, "%#{query}%")
-  end
-
   def_dataset_method(:multiple_order) do |criteria|
     return order(:id) if criteria.nil? || criteria.empty?
     order_params = criteria.map do |key, order|

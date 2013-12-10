@@ -4811,11 +4811,11 @@ tree.Value.prototype.toJS = function() {
   //var v = this.value[0].value[0];
   var val = this.eval()
   var v = val.toString();
-  if(val.is === "color" || val.is === 'uri' || val.is === 'string') {
+  if(val.is === "color" || val.is === 'uri' || val.is === 'string' || val.is === 'keyword') {
     v = "'" + v + "'";
   } else if (val.is === 'field') {
     // replace [varuable] by ctx['variable']
-    v = v.replace(/\[(.*)\]/g, "ctx['\$1']")
+    v = v.replace(/\[(.*)\]/g, "data['\$1']")
   }
   return "_value = " + v + ";";
 };
@@ -8134,6 +8134,8 @@ function GMapsTorqueLayer(options) {
         torque.common.TorqueLayer.optionsFromCartoCSS(options.cartocss));
   }
 
+  this.hidden = !this.options.visible;
+
   this.animator = new torque.Animator(function(time) {
     var k = time | 0;
     if(self.key !== k) {
@@ -8182,7 +8184,6 @@ GMapsTorqueLayer.prototype = _.extend({},
     var self = this;
 
     this.onTileAdded = this.onTileAdded.bind(this);
-    this.hidden = !this.options.visible;
 
     this.options.ready = function() {
       self.fire("change:bounds", {
@@ -9249,7 +9250,7 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
       if (!tb) return;
       if (tb.columnType === 'date' || this.options.force_format_date) {
         if (tb && tb.start !== undefined) {
-          var f = self.formaterForRange(tb.start, tb.end);
+          var f = self.options.formatter || self.formaterForRange(tb.start, tb.end);
           // avoid showing invalid dates
           if (!_.isNaN(changes.time.getYear())) {
             self.$('.value').text(f(changes.time));
@@ -9279,6 +9280,10 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
     });
     cdb.geo.ui.InfoBox.prototype.initialize.call(this);
 
+  },
+
+  formatter: function(_) {
+    this.options.formatter = _;
   },
 
   formaterForRange: function(start, end) {

@@ -349,14 +349,18 @@ var Vis = cdb.core.View.extend({
         if(legend) {
           legend[o.visible ? 'show': 'hide']();
         }
-        /*if (this.legends) {
-          var j = options.sublayer_options.length - i - 1;
-          var legend = this.legends && this.legends.options.legends[j];
-          if (legend) {
-            o.visible ? legend.show(): legend.hide();
+        // HACK
+        if(subLayer.model && subLayer.model.get('type') === 'torque') {
+          if (o.visible === false) {
+            subLayer.model.set('visible', false);
+            var timeSlider = this.getOverlay('time_slider');
+            if (timeSlider) {
+              timeSlider.hide();
+            }
           }
-        }*/
-        if (o.visible === false) subLayer.hide();
+        } else {
+          if (o.visible === false) subLayer.hide();
+        }
       }
     }
 

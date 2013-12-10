@@ -154,7 +154,7 @@ cdb.geo.ui.LayerView = cdb.core.View.extend({
 
   defaults: {
     template: '\
-      <a class="layer" href="#/change-layer"><%= table_name %></a>\
+      <a class="layer" href="#/change-layer"><%= layer_name %></a>\
       <a href="#switch" class="right <%= visible ? "enabled" : "disabled" %> switch"><span class="handle"></span></a>\
     '
   },
@@ -178,7 +178,9 @@ cdb.geo.ui.LayerView = cdb.core.View.extend({
   },
 
   render: function() {
-    this.$el.append(this.template(this.model.attributes));
+    var attrs = _.clone(this.model.attributes);
+    attrs.layer_name = attrs.layer_name || attrs.table_name;
+    this.$el.append(this.template(attrs));
     return this;
   },
 
@@ -219,13 +221,6 @@ cdb.geo.ui.LayerView = cdb.core.View.extend({
  */
 
 cdb.geo.ui.LayerViewFromLayerGroup = cdb.geo.ui.LayerView.extend({
-
-  defaults: {
-    template: '\
-      <a class="layer" href="#/change-layer"><%= layer_name %></a>\
-      <a href="#switch" class="right <%= visible ? "enabled" : "disabled" %> switch"><span class="handle"></span></a>\
-    '
-  },
 
   _onSwitchSelected: function() {
 

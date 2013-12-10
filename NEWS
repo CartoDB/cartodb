@@ -1,3 +1,14 @@
+3.4.02 (10//12/2013)
+-----
+- adds new API for legends (documentation coming soon)
+- fixes a bug that incorrectly rendered an empty legend
+- fixes a bug that prevented showing the layer alias in torque layers
+- adds a new time_slider example
+
+3.4.01 (26//11/2013)
+-----
+- fixed parsing keyword arguments in cartocss for torque
+
 3.4.00 (26//11/2013)
 -----
 - release of Torque Cumulative.

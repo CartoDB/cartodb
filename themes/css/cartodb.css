@@ -886,6 +886,16 @@ div.cartodb-popup.header.yellow a.cartodb-popup-close-button:hover {
     display:none;
   }
 
+  div.map div.cartodb-legend-stack div.cartodb-legend.wrapper .cartodb-legend {
+    padding: 0;
+    display:block;
+  }
+
+  div.cartodb-legend.wrapper .cartodb-legend {
+    display:block;
+    padding: 0;
+  }
+
   /* Custom legend */
 
   div.cartodb-legend.custom ul li,

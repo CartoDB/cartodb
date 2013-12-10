@@ -1,3 +1,44 @@
+2.6.0
+-----
+* Improvements
+  * Enabled HTML editor for the legends.
+  * cartodb.js: improved legends API.
+  * Created a function that returns the indexes created for a specific table.
+  * Added the possibility to upload an import file to S3.
+  * Eager load synchronizations when rendering table visualizations (dashboard).
+  * Eager load row count and table size when rendering table visualizations.
+  * Implemented "cancel geocoding" feature.
+
+* Fixed Bugs
+  * Several legends are rendered and they are not cleaned when it's necessary.
+  * Label placement: line should be an option in the wizards (for lines).
+  * Text placement from Wizard on Lines should default to *line* not *point*.
+  * In the legend editor show only colors being used on CartoCSS.
+  * If edits a feature from layer[1] and you changes to layer[2], the geometry editor disappear but the editing feature is still present in the map.
+  * old_fields and old_template_name infowindow attributes should be removed from viz.json.
+  * Missing button in the upgrade notification.
+  * Individual visualization map views not incremented.
+  * Filter by a word that contains a single quote (') doesn't return the expected results.
+  * Duplicated 's' in the visualization title.
+  * Column name sanitizer fails with duplicated column names.
+  * Fix some privileges problems when granting or creating triggers.
+  * In dashboard, if you filter with a tag called "DON'T TOUCH", url is not correct.
+  * In dashboard visualizations, if you filter by tag that doesn't exist, 'Create first visualization' block appears.
+  * Rails app should use the same time zone than the DB.
+  * Old endpoint tiler is not working for some tables.
+  * Nokia basemap maxZoom is 40, and it should be 21.
+  * When applying a filter on an already styled map, the style gets reset and goes back to default.
+  * Fix problems with users deletion.
+  * Fix filters failing spec.
+  * Geometry edition over GMaps is not working.
+  * Do not use removed Table#set_trigger_cache_timestamp when syncing tables.
+  * Sync tables may not invalidating the cache.
+  * Ensure varnish caches depending on CDB_TableMetadata get cleaned up on table change.
+  * HERE batch geocoding API changes.
+  * Layer alias does not work on torque layers.
+  * Customize infowindow empty throws error.
+  * Purge varnish items with "cdb_tablemetadata" channel on table update (#308)
+ 
 2.5.6
 -----
 * Improvement

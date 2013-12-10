@@ -470,6 +470,7 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def create_default_map_and_layers
+    puts "******* creating default map"
     map = Map.create(Map::DEFAULT_OPTIONS.merge(table_id: self.id, user_id: self.user_id))
     self.map_id = map.id
     base_layer = Layer.new(Cartodb.config[:layer_opts]["base"])
@@ -482,6 +483,8 @@ class Table < Sequel::Model(:user_tables)
     data_layer.infowindow ||= {}
     data_layer.infowindow['fields'] = []
     map.add_layer(data_layer)
+
+    puts map.layers
   end
 
   def create_default_visualization

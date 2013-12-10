@@ -33,8 +33,7 @@ module CartoDB
 
     def get_valid_table_name(table_name)
       table_klass.get_valid_table_name(
-        table_name, 
-        name_candidates: user.reload.tables.map(&:name)
+        table_name, name_candidates: user.reload.taken_table_names
       )
     end
 

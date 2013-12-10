@@ -76,6 +76,9 @@ module CartoDB
 
     def delete_user_data user
       user.tables.destroy
+      user.taken_table_names.each { |table_name| 
+        user.in_database.run(%Q{DROP TABLE "#{table_name}" })
+      }
       user.maps_dataset.destroy
       user.layers_dataset.destroy
       user.assets_dataset.destroy

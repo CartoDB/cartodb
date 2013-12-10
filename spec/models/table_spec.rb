@@ -132,8 +132,10 @@ describe Table do
       visualization.table.name.should == 'bogus_name_3'
     end
     
-    it 'propagates name changes to affected layers' do
+    it 'propagates name changes to affected layers', now: true do
       table = create_table(name: 'bogus_name', user_id: @user.id)
+      table.reload
+      puts table.layers.inspect
       layer = table.layers.first
 
       table.name = 'bogus_name_1' 
@@ -1222,7 +1224,7 @@ describe Table do
       table.schema.should include([:the_geom, "geometry", "geometry", "geometry"])
     end
 
-    it "should not drop a table that exists when upload fails" do
+    it "should not drop a table that exists when upload fails", now: true do
       delete_user_data @user
       table = new_table :name => 'empty_file', :user_id => @user.id
       table.save.reload
@@ -1236,11 +1238,15 @@ describe Table do
       end
     end
 
-    it "should not drop a table that exists when upload does not fail" do
+    it "should not drop a table that exists when upload does not fail", now: true do
       delete_user_data @user
       table = new_table :name => 'empty_file', :user_id => @user.id
       table.save.reload
       table.name.should == 'empty_file'
+
+      table = new_table :name => 'empty_file', :user_id => @user.id
+      table.save.reload
+      table.name.should == 'empty_file_1'
 
       data_import = DataImport.create( :user_id       => @user.id,
                                        :data_source   => '/../db/fake_data/csv_no_quotes.csv' )
@@ -1679,7 +1685,7 @@ describe Table do
   end
 
   describe 'Table.multiple_order' do
-    it 'returns sorted records', now: true do
+    it 'returns sorted records' do
       delete_user_data @user
 
       table_1 = create_table(

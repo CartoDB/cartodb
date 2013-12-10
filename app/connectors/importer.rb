@@ -3,7 +3,8 @@
 module CartoDB
   module Connector
     class Importer
-      DESTINATION_SCHEMA = 'public'
+      ORIGIN_SCHEMA       = 'cdb_importer'
+      DESTINATION_SCHEMA  = 'public'
 
       attr_accessor :table
 
@@ -29,8 +30,9 @@ module CartoDB
       end
 
       def register(result)
-        move_to_schema(result, 'public')
-        rename(result.table_name, result.name)
+        name = rename(result.table_name, result.name)
+        move_to_schema(name, result.schema, DESTINATION_SCHEMA)
+        persist_metadata(name, data_import_id)
       end
 
       def success?
@@ -47,24 +49,28 @@ module CartoDB
         self
       end
 
-      def move_to_schema(result, schema=DESTINATION_SCHEMA)
-        return self if schema == result.schema
+      def move_to_schema(name, origin_schema,
+      destination_schema=DESTINATION_SCHEMA)
+        return self if origin_schema == destination_schema
         database.execute(%Q{
-          ALTER TABLE "#{result.schema}"."#{result.table_name}"
-          SET SCHEMA public
+          ALTER TABLE "#{origin_schema}"."#{name}"
+          SET SCHEMA "#{DESTINATION_SCHEMA}"
         })
       end
 
-      def rename(current_name, new_name, rename_attempts=0)
+      def rename(current_name, new_name, schema=ORIGIN_SCHEMA, rename_attempts=0)
+        puts "============== in rename === #{new_name}"
         rename_attempts = rename_attempts + 1
         new_name        = table_registrar.get_valid_table_name(new_name)
-
+      
+        puts "============== after_valid_name === #{new_name}"
         database.execute(%Q{
-          ALTER TABLE "public"."#{current_name}"
+          ALTER TABLE "#{schema}"."#{current_name}"
           RENAME TO "#{new_name}"
         })
-        persist_metadata(new_name, data_import_id)
+        new_name
       rescue => exception
+        puts exception.to_s + exception.backtrace.join("\n")
         retry unless rename_attempts > 1
       end
 

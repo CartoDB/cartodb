@@ -7,10 +7,6 @@ class Admin::UsersController < ApplicationController
 
   def new
     @user = User.new
-    @user.set_only(
-      organization: current_user.organization,
-      private_tables_enabled: true
-    )
   end
 
   def edit; end
@@ -20,9 +16,9 @@ class Admin::UsersController < ApplicationController
     @user.set_fields(params[:user], [:username, :email, :password, :private_tables_enabled])
     @user.organization = current_user.organization
     @user.save(raise_on_failure: true)
-    respond_with @user
-  rescue ValidationFailed => e
-    render action: new
+    redirect_to organization_path(current_user.organization)
+  rescue Sequel::ValidationFailed => e
+    render action: :new
   end
 
   def update

@@ -1,0 +1,7 @@
+<h2>Other users</h2>
+
+<ul>
+<% current_user.organization.users.each do |user| -%>
+  <li><%= link_to user.username, edit_organization_user_path(user.username) %></li>
+<% end -%>
+</ul>

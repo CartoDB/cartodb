@@ -1,5 +1,5 @@
 <% content_for(:page_title) do %>
-  Edit user information |
+  Add a new user |
 <% end %>
 <%= content_for(:js) do %>
   <%= javascript_include_tag :cdb, :application, :keys %>
@@ -17,7 +17,7 @@
   <div class="inner">
     <section class="left block long">
       <div class="head">
-        <h2><%= "#{@user.username} account data" %></h2>
+        <h2>Create new user</h2>
       </div>
       <div class="content">
         <ul>

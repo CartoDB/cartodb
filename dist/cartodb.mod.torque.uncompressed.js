@@ -9250,7 +9250,7 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
       if (!tb) return;
       if (tb.columnType === 'date' || this.options.force_format_date) {
         if (tb && tb.start !== undefined) {
-          var f = self.formaterForRange(tb.start, tb.end);
+          var f = self.options.formatter || self.formaterForRange(tb.start, tb.end);
           // avoid showing invalid dates
           if (!_.isNaN(changes.time.getYear())) {
             self.$('.value').text(f(changes.time));
@@ -9280,6 +9280,10 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
     });
     cdb.geo.ui.InfoBox.prototype.initialize.call(this);
 
+  },
+
+  formatter: function(_) {
+    this.options.formatter = _;
   },
 
   formaterForRange: function(start, end) {

@@ -8134,6 +8134,8 @@ function GMapsTorqueLayer(options) {
         torque.common.TorqueLayer.optionsFromCartoCSS(options.cartocss));
   }
 
+  this.hidden = !this.options.visible;
+
   this.animator = new torque.Animator(function(time) {
     var k = time | 0;
     if(self.key !== k) {
@@ -8182,7 +8184,6 @@ GMapsTorqueLayer.prototype = _.extend({},
     var self = this;
 
     this.onTileAdded = this.onTileAdded.bind(this);
-    this.hidden = !this.options.visible;
 
     this.options.ready = function() {
       self.fire("change:bounds", {
@@ -9234,9 +9235,10 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
   initialize: function() {
     _.bindAll(this, '_stop', '_start', '_slide');
     var self = this;
+
     this.options.template = this.options.template || this.defaultTemplate;
-    this.options.position = 'bottom|left';
-    this.options.width = null;
+    this.options.position = this.options.position || 'bottom|left';
+    this.options.width    = this.options.width || null;
 
     // Control variable to know if the layer was
     // running before touching the slider
@@ -9249,7 +9251,7 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
       if (!tb) return;
       if (tb.columnType === 'date' || this.options.force_format_date) {
         if (tb && tb.start !== undefined) {
-          var f = self.formaterForRange(tb.start, tb.end);
+          var f = self.options.formatter || self.formaterForRange(tb.start, tb.end);
           // avoid showing invalid dates
           if (!_.isNaN(changes.time.getYear())) {
             self.$('.value').text(f(changes.time));
@@ -9279,6 +9281,10 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
     });
     cdb.geo.ui.InfoBox.prototype.initialize.call(this);
 
+  },
+
+  formatter: function(_) {
+    this.options.formatter = _;
   },
 
   formaterForRange: function(start, end) {

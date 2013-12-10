@@ -2,6 +2,13 @@
 
   <%= form.hidden_field :private_tables_enabled %>
 
+  <% if @user.new? -%>
+  <div class="field">
+    <%= form.label :username %>
+    <%= form.text_field :username, :class => @user.errors[:username].present? ? 'error' : nil %>
+  </div>
+  <% end -%>
+
   <div class="field">
     <%= form.label :email %>
     <%= form.text_field :email, :class => @user.errors[:email].present? ? 'error' : nil %>

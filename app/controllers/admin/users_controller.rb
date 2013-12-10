@@ -13,8 +13,9 @@ class Admin::UsersController < ApplicationController
 
   def create
     @user = User.new
-    @user.set_fields(params[:user], [:username, :email, :password, :private_tables_enabled])
+    @user.set_fields(params[:user], [:username, :email, :password, :quota_in_bytes])
     @user.organization = current_user.organization
+    copy_account_features(current_user, @user)
     @user.save(raise_on_failure: true)
     redirect_to organization_path(current_user.organization)
   rescue Sequel::ValidationFailed => e
@@ -45,5 +46,11 @@ class Admin::UsersController < ApplicationController
 
   def check_permissions
     raise RecordNotFound unless current_user.organization.present? && current_user.organization_owner
+  end
+
+  def copy_account_features(from, to)
+    to.private_tables_enabled = from.private_tables_enabled
+    to.map_view_quota = from.map_view_quota
+    to.table_quota    = from.table_quota
   end
 end

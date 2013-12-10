@@ -52,15 +52,25 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
     var width = $(document).width() - 40;
     this.$el.css( { width: width })
 
-    var slider = new cdb.geo.ui.TimeSlider({type: "time_slider", layer: this.options.torqueLayer, map: this.options.map, pos_margin: 0, position: "none" , width: "auto" });
-    this.$el.find(".slider").append(slider.render().$el);
+    if (this.options.torqueLayer) {
 
-    var stackedLegend = new cdb.geo.ui.StackedLegend({
-       legends: this.options.legends
-    });
+      var slider = new cdb.geo.ui.TimeSlider({type: "time_slider", layer: this.options.torqueLayer, map: this.options.map, pos_margin: 0, position: "none" , width: "auto" });
 
-    //this.legends = stackedLegend;
-    this.$el.find(".legends").append(stackedLegend.render().$el);
+      this.$el.find(".slider").append(slider.render().$el);
+      this.$el.addClass("torque");
+
+    }
+
+    if (this.options.legends) {
+
+      var stackedLegend = new cdb.geo.ui.StackedLegend({
+        legends: this.options.legends
+      });
+
+      this.$el.find(".legends").append(stackedLegend.render().$el);
+      this.$el.addClass("legends");
+
+    }
 
     return this;
   }

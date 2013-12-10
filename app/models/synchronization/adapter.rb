@@ -38,6 +38,8 @@ module CartoDB
           rename(result.table_name, table_name)
           drop(temporary_name) if exists?(temporary_name)
         end
+      rescue => exception
+        drop(result.table_name) if exists?(result.table_name)
       end
 
       def cartodbfy(table_name)

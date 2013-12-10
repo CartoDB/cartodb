@@ -53,8 +53,8 @@ class User < Sequel::Model
     validates_format EmailAddressValidator::Regexp::ADDR_SPEC, :email, :message => 'is not a valid address'
     validates_presence :password if new? && (crypted_password.blank? || salt.blank?)
     if organization.present?
-      errors.add(:organization, "maximum number of seats") if new? && organization.seats == organization.users.count
-      errors.add(:quota_in_bytes, "is over your organization quota") if quota_in_bytes + organization.assigned_quota > organization.quota_in_bytes
+      errors.add(:organization, "not enough seats") if new? && organization.users.count >= organization.seats
+      errors.add(:quota_in_bytes, "not enough disk quota") if quota_in_bytes.to_i + organization.assigned_quota > organization.quota_in_bytes
     end
   end
 

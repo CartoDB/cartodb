@@ -69,14 +69,45 @@ describe User do
     end
   end
 
-  it "should not be valid if his organization doesn't have more seats" do
-    organization = FactoryGirl.create(:organization, seats: 1)
-    debugger
-    user = FactoryGirl.create(:user, organization: organization)
-    user = FactoryGirl.create(:user, organization: organization)
-    user.valid?.should be_false
+  describe "organization checks" do
+    it "should not be valid if his organization doesn't have more seats" do
+      organization = FactoryGirl.create(:organization, seats: 1)
+      FactoryGirl.create(:user, organization: organization)
+      user = User.new
+      user.organization = organization
+      user.valid?.should be_false
+      user.errors.keys.should include(:organization)
+    end
+
+    it "should be valid if his organization has enough seats" do
+      organization = FactoryGirl.create(:organization, seats: 1)
+      user = User.new
+      user.organization = organization
+      user.valid?
+      user.errors.keys.should_not include(:organization)
+    end
+    
+    it "should not be valid if his organization doesn't have enough disk space" do
+      organization = FactoryGirl.create(:organization, quota_in_bytes: 10.megabytes)
+      organization.stubs(:assigned_quota).returns(10.megabytes)
+      user = User.new
+      user.organization = organization
+      user.quota_in_bytes = 1.megabyte
+      user.valid?.should be_false
+      user.errors.keys.should include(:quota_in_bytes)
+    end
+
+    it "should be valid if his organization has enough disk space" do
+      organization = FactoryGirl.create(:organization, quota_in_bytes: 10.megabytes)
+      organization.stubs(:assigned_quota).returns(9.megabytes)
+      user = User.new
+      user.organization = organization
+      user.quota_in_bytes = 1.megabyte
+      user.valid?
+      user.errors.keys.should_not include(:quota_in_bytes)
+    end
   end
-  
+
   it "should have a default dashboard_viewed? false" do
     user = User.new
     user.dashboard_viewed?.should be_false

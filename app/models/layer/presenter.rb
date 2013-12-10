@@ -106,7 +106,9 @@ module CartoDB
       def with_template(infowindow)
         template = infowindow['template']
         return infowindow unless template.nil? || template.empty?
-        infowindow.merge(template: File.read(layer.template_path))
+
+        infowindow.merge!(template: File.read(layer.template_path))
+        infowindow
       end
 
       def options_data_v2
@@ -159,7 +161,10 @@ module CartoDB
       end #public_options
 
       def whitelisted_infowindow(infowindow)
-        infowindow.select { |key, value| INFOWINDOW_KEYS.include?(key) }
+        infowindow.select { |key, value| 
+          INFOWINDOW_KEYS.include?(key) ||
+          INFOWINDOW_KEYS.include?(key.to_s)
+        }
       end
     end # Presenter
   end # Layer

@@ -169,7 +169,7 @@ describe CartoDB::TableGeocoder do
     end
   end
 
-  # it "wadus" do
+  # it "Geocodes a table" do
   #   t = CartoDB::TableGeocoder.new(
   #     table_name: @table_name,
   #     formatter:  "name, ', ', sov0name",
@@ -179,6 +179,7 @@ describe CartoDB::TableGeocoder do
   #     mailto: 'arango@gmail.com',
   #     schema: 'public'
   #   )
+  #   @db.fetch("select count(*) from #{@table_name} where the_geom is null").first[:count].should eq 37
   #   t.run
   #   `open #{t.working_dir}`
   #   until t.geocoder.status == 'completed' do
@@ -188,8 +189,8 @@ describe CartoDB::TableGeocoder do
   #   end
   #   t.process_results
   #   t.geocoder.status.should eq 'completed'
-  #   @db.fetch("select count(*) from #{@table_name} where the_geom is null").first[:count].should eq 2
-  #   @db.fetch("select count(*) from #{@table_name} where cartodb_georef_status is false").first[:count].should eq 2
+  #   @db.fetch("select count(*) from #{@table_name} where the_geom is null").first[:count].should eq 4
+  #   @db.fetch("select count(*) from #{@table_name} where cartodb_georef_status is false").first[:count].should eq 4
   # end
 
 

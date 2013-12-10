@@ -101,9 +101,7 @@
         text-decoration:none;
         cursor:pointer;
         .name {color:#666;}
-        .action {color: #3A77A6;}
         .order {background:#666;}
-        .add { @include background(sprite($table-sprites, add_layer, $offset-x:0, $offset-y:-16px) no-repeat); }
       }
     }
 

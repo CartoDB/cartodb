@@ -32,7 +32,7 @@
 
       h3  {
         float:left;
-        padding: 0;
+        padding: 0!important;
         border:0;
       }
 
@@ -153,35 +153,6 @@
         }
 
       }
-    }
-
-    div.actions {
-      position:absolute;
-      bottom:0;
-      left:0;
-      right:0;
-      padding:20px 20px 20px 56px;
-      display:block;
-      height:38px;
-      border-top:1px solid rgba(#999999,0.25);
-      z-index:1;
-
-      a.disabled {
-        opacity:0.6;
-
-        &.next, &.next:active, &.next:hover {
-          @include background(sprite($table-sprites, unredo, $offset-x:-38, $offset-y:9) no-repeat #F9F9F9);//IE
-          @include background(sprite($table-sprites, unredo, $offset-x:-38, $offset-y:9) no-repeat, linear-gradient(#F9F9F9,#EBEBEB));
-        }
-        &.back, &.back:active, &.back:hover {
-          @include background(sprite($table-sprites, unredo, $offset-x:9, $offset-y:9) no-repeat #EBEBEB);//IE
-          @include background(sprite($table-sprites, unredo, $offset-x:9, $offset-y:9) no-repeat, linear-gradient(#F9F9F9,#EBEBEB));
-        }
-      }
-
-      a.clearview {margin-right:18px;}
-
-      button {margin:0;}
     }
 
     .all {

@@ -34,9 +34,7 @@
       z-index: 10;
     }
 
-    .panel_content .wrapper { top: 43px; }
-
-    .doc_info { right:26px!important; }
+    .panel_content .wrapper { top: 29px; }
 
     .header {
       position:relative;
@@ -46,7 +44,7 @@
 
       h3  {
         float:left;
-        padding: 0;
+        padding: 0!important;
         border:0;
       }
 
@@ -202,10 +200,6 @@
           ul li .input { top: 13px; }
           ul li:hover .remove { @include opacity(1); }
           ul li .remove { position:relative; top: 3px; @include opacity(0); }
-        }
-
-        .choropleth {
-          .right { top: 18px; }
         }
 
         .right {

@@ -1,3 +1,29 @@
+@media
+only screen and (-webkit-min-device-pixel-ratio: 2),
+only screen and (   min--moz-device-pixel-ratio: 2),
+only screen and (     -o-min-device-pixel-ratio: 2/1),
+only screen and (        min-device-pixel-ratio: 2),
+only screen and (                min-resolution: 192dpi),
+only screen and (                min-resolution: 2dppx) { 
+  
+
+  div.cartodb-mobile .toggle {
+    float:right;
+
+    display:block;
+    width: 40px;
+    height: 30px;
+    margin: auto;
+
+    padding: 5px 0;
+
+    background: url('../img/burguer@2x.png') no-repeat center center white;
+    background-size: 18px 11px;
+  }
+
+}
+
+
 @media only screen 
 and (max-device-width : 320px) 
 and (max-device-width : 480px) {

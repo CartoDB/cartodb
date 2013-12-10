@@ -26,9 +26,10 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
   initialize: function() {
     _.bindAll(this, '_stop', '_start', '_slide');
     var self = this;
+
     this.options.template = this.options.template || this.defaultTemplate;
-    this.options.position = 'bottom|left';
-    this.options.width = null;
+    this.options.position = this.options.position || 'bottom|left';
+    this.options.width    = this.options.width || null;
 
     // Control variable to know if the layer was
     // running before touching the slider

@@ -1,6 +1,28 @@
 
 (function() {
 
+// map mobile control
+cdb.vis.Overlay.register('mobile', function(data, vis) {
+
+  var template = cdb.core.Template.compile(
+    data.template || '\
+      <a class="toggle" href="#"></a>\
+      <div class="slider"></div>\
+      <div class="legends"></div>\
+    ',
+    data.templateType || 'mustache'
+  );
+
+  var mobile = new cdb.geo.ui.Mobile({
+    template: template,
+    torqueLayer: data.torqueLayer,
+    legends: data.legends,
+    map: data.map
+  });
+
+  return mobile.render();
+});
+
 // map zoom control
 cdb.vis.Overlay.register('zoom', function(data, vis) {
 
@@ -8,6 +30,7 @@ cdb.vis.Overlay.register('zoom', function(data, vis) {
     vis.trigger('error', 'zoom template is empty')
     return;
   }
+
   var zoom = new cdb.geo.ui.Zoom({
     model: data.map,
     template: cdb.core.Template.compile(data.template)

@@ -103,6 +103,147 @@
     background:url('../img/other.png') no-repeat -26px 0;
   }
 
+  div.cartodb-mobile.open {
+
+    background:#fff;
+    border: 1px solid #999999;
+
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    -ms-border-radius: 4px;
+    -o-border-radius: 4px;
+    border-radius: 4px;
+
+    webkit-box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
+    -moz-box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
+    box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
+
+  }
+
+  div.cartodb-mobile .legends .cartodb-legend-stack {
+    bottom: auto; right: auto;
+    left: auto; top: auto;
+
+  }
+
+  div.cartodb-mobile.open .legends {
+    display:block;
+    height: 90px;
+    margin-top:40px;
+    -webkit-border-radius: 0px;
+    -moz-border-radius: 0px;
+    -ms-border-radius: 0px;
+    -o-border-radius: 0px;
+    border-radius: 0px;
+    border-top: 1px solid #999;
+
+    position:relative;
+    clear:both;
+    overflow-x:hidden;
+    overflow-y:scroll;
+  }
+
+  div.cartodb-mobile.open .slider {
+    display:block;
+  }
+
+  div.cartodb-mobile.open .toggle {
+
+    background-color: transparent;
+    webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+
+    -webkit-border-radius: 0px;
+    -moz-border-radius: 0px;
+    -ms-border-radius: 0px;
+    -o-border-radius: 0px;
+    border-radius: 0px;
+
+    border: none;
+  }
+
+
+  div.cartodb-mobile .slider {
+    height: 40px;
+    width: 240px;
+    position:absolute;
+    background:none;
+
+    -webkit-border-radius: 0px;
+    -moz-border-radius: 0px;
+    -ms-border-radius: 0px;
+    -o-border-radius: 0px;
+    border-radius: 0px;
+
+    webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+    border: none;
+  }
+
+  div.cartodb-mobile .slider, 
+  div.cartodb-mobile .legends {
+    display:none;
+  }
+
+  div.cartodb-mobile .cartodb-timeslider ul {
+    height: 40px;
+  }
+  div.cartodb-mobile .cartodb-timeslider p.value {
+    width: 30px;
+  }
+
+
+  div.cartodb-mobile .cartodb-legend-stack,
+  div.cartodb-mobile .cartodb-timeslider {
+    bottom: 0; left: 0;
+    margin: 0;
+    width: 100%;
+    background:none;
+    box-shadow:none;
+    border:none;
+  }
+
+  div.cartodb-mobile .toggle {
+
+    background:#fff;
+    webkit-box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
+    -moz-box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
+    box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
+
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    -ms-border-radius: 4px;
+    -o-border-radius: 4px;
+    border-radius: 4px;
+
+    border: 1px solid #999999;
+    float:right;
+
+    display:block;
+    width: 40px;
+    height: 30px;
+    margin: auto;
+
+    padding: 5px 0;
+
+    background: url('../img/burguer.png') no-repeat center center white;
+  }
+
+  div.cartodb-mobile .torque {
+    float:left;
+  }
+
+  div.cartodb-mobile {
+
+    position:absolute;
+    bottom: 35px;
+    right: 20px;
+    z-index: 5;
+
+  }
+
   /* CartoDB Legend styles */
 
   div.cartodb-legend-stack {

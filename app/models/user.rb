@@ -47,7 +47,8 @@ class User < Sequel::Model
   def validate
     super
     validates_presence :username
-    validates_format /^[a-z0-9\-]+$/, :username, :message => "must only contain lowercase letters, numbers & hyphens"
+    validates_unique   :username
+    validates_format /^[a-z0-9\-\.]+$/, :username, :message => "must only contain lowercase letters, numbers, dots & hyphens"
     validates_presence :email
     validates_unique   :email, :message => 'is already taken'
     validates_format EmailAddressValidator::Regexp::ADDR_SPEC, :email, :message => 'is not a valid address'

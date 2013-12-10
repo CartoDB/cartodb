@@ -53,7 +53,7 @@ describe User do
   end
 
   it "should only allow legal usernames" do
-    illegal_usernames = %w(si$mon 'sergio estella' j@vi sergio£££ simon_tokumine simon.tokumine SIMON Simon)
+    illegal_usernames = %w(si$mon 'sergio estella' j@vi sergio£££ simon_tokumine SIMON Simon)
     legal_usernames   = %w(simon javier-de-la-torre sergio-leiva sergio99)
 
     illegal_usernames.each do |name|

@@ -1,0 +1,171 @@
+
+  /**
+   *  Legends panel styles.
+   *
+   *  - Legend items block (sorting, draggable, etc).
+   *  - Legend HTML editor block.
+   *
+   */
+
+  @import "compass/css3/box-sizing";
+  @import "compass/css3/images";
+  @import "compass/css3/inline-block";
+  @import "compass/css3/opacity";
+  @import "../../../common/forms";
+
+
+  /* legends */
+  div.legends_panel {
+    display:block;
+    width:100%;
+    overflow: auto;
+
+    .panel_content {
+      overflow: auto;
+    }
+
+    .panel_content .wrapper .content .fields li span { cursor: default; }
+    .panel_content .wrapper .content .fields {
+      position:relative;
+      background:#fff;
+      z-index: 1000;
+    }
+
+    div.forms {
+
+      &.panel_content {
+        top: 42px;
+        padding: 0 30px 16px 30px;
+
+        .footer {
+          margin: 14px 0 0 0;
+          text-align:center;
+
+          .add { font-size: 24px; }
+        }
+
+        .color {
+          .no_content { display: none; }
+        }
+
+        .custom, .choropleth {
+          ul li .input { top: 13px; }
+          ul li:hover .remove { @include opacity(1); }
+          ul li .remove { position:relative; top: 3px; @include opacity(0); }
+        }
+
+        .choropleth {
+          .right { top: 18px; }
+        }
+
+        .right {
+          position: absolute;
+          top: 12px;
+          right: 0;
+
+          .checkbox { float: left; position:relative; margin:8px 15px 0 0; }
+          .checkbox.disabled { cursor: pointer; }
+          .checkbox span { margin:1px 5px 0 0; }
+          .input { float: left; }
+        }
+
+        ul li {
+          color: #CCCCCC;
+          font-size: 15px;
+          position:relative;
+
+          label.empty { font-style: italic; }
+
+          label {
+            @include inline-block();
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 150px;
+            line-height: 1.2;
+          }
+
+          .input {
+            @include default-input();
+
+            .value { margin-right: 5px; }
+            .value.empty { color: #ccc; }
+
+            input {
+              font-size: 13px;
+              padding: 4px 7px;
+              width:150px;
+            }
+          }
+        }
+      }
+
+      ul {
+        width:100%;
+        margin:6px 0 0 0;
+      }
+
+      ul li {
+        overflow:hidden;
+        display:block;
+        width:100%;
+        padding:13px 0;
+        border-bottom:1px solid rgba(#E5E5E5,0.5);
+        height: 50px;
+        @include box-sizing(border-box);
+
+        &.title span.field { position:relative; top: 3px; }
+
+        & > span:first-child {
+          float:left;
+          margin-top:2px;
+          color:$cGray4;
+        }
+
+        & > span:last-child {
+          float:right;
+        }
+
+        .form_combo {
+          @include inline-block();
+        }
+
+      }
+    }
+
+
+    h3 {
+      padding-left: 30px;
+    }
+
+    .fields {
+
+      li {
+        padding:13px 0;
+        font-size: 15px;
+        color: $cGray4;
+        border-bottom:1px solid rgba(#999999,0.25);
+        overflow:hidden;
+
+        & > span {
+          @include inline-block();
+          vertical-align:middle;
+          max-width:50%;
+          line-height:16px;
+          &:hover {cursor:all-scroll;}
+        }
+
+        .form_combo {
+          float:right;
+          width:auto;
+
+          .select2-container {width:143px;}
+        }
+
+        .form_combo ~ span {
+          margin-top:3px;
+        }
+
+      }
+    }
+  }

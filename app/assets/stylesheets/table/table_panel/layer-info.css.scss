@@ -1,0 +1,137 @@
+
+  /**
+   *  Layer info styles
+   *
+   *  Styles for layer info elements, like name,
+   *  position, remove and visibility buttons, etc.
+   *
+   */
+
+  
+  @import "compass/css3/border-radius";
+  @import "../../table/table-sprite";
+  @import "../../common/mixins";
+  @import "../../common/forms";
+
+
+  // LOCAL VARS
+  $corner_radius: 6px;
+
+
+  // Layer info, as name, order, ... etc
+  .layer-info {
+    position:absolute;
+    top:0; right:0; bottom:auto; left:0;
+    line-height:62px;
+    height:67px;
+    @include border-top-left-radius($corner_radius);
+    border-bottom:1px solid rgba(#999999,0.25);
+    z-index:0;
+
+
+    div.left {width:82%;}
+    div.right {width:45px; margin-right:20px;}
+
+    
+    // Layer info block
+    a.info {
+      display:block;
+      left:0!important;
+      top:0!important;
+      padding-left:24px;
+
+      * {@include inline-block(); vertical-align:middle; letter-spacing:0px;}
+
+      // Order element
+      .order {
+        width:16px;
+        padding:1px 0;
+        line-height:16px;
+        text-align:center;
+        font:bold 11px $text-fonts;
+        color:#ECECEC;
+        background:#A9A9A9;
+        @include border-radius(2px);
+      }
+
+      // Layer name
+      .name {
+        max-width:80%;
+        width:auto;
+        @include text-overflow();
+        overflow:hidden;
+        margin-left:27px;
+        font:bold 17px $text-fonts;
+        color:#A9A9A9;
+        line-height:20px;
+
+        i.synced {
+          @include inline-block();
+          vertical-align:top;
+          width:12px;
+          height:12px;
+          margin:5px 0 0 4px;
+          @include background(sprite($table-sprites, sync_layer_icon, $offset-x:0, $offset-y:0) no-repeat);
+        }
+
+        &:hover {
+          cursor:pointer;
+          i.synced {
+            @include background(sprite($table-sprites, sync_layer_icon, $offset-x:0, $offset-y:-12px) no-repeat);
+          }
+        }
+      }
+
+      // Layer info (second name?)
+      .name_info {
+        position:absolute;
+        top:34px;
+        left:67px;
+        overflow:hidden;
+        max-width:80%;
+        width:auto;
+        font:normal 11px $text-fonts;
+        color:#AAA;
+        @include text-overflow();
+        line-height:15px;
+      }
+
+
+      &:hover {
+        text-decoration:none;
+        cursor:pointer;
+        .name {color:#666;}
+        .action {color: #3A77A6;}
+        .order {background:#666;}
+        .add { @include background(sprite($table-sprites, add_layer, $offset-x:0, $offset-y:-16px) no-repeat); }
+      }
+    }
+
+
+    // Layer name edition
+    @include default-input();
+    input.alias {
+      @include default-input();
+      position:absolute;
+      display:none;
+      top:7px;
+      left:57px;
+      padding:6px 9px;
+      font:bold 17px $text-fonts;
+      color:#787878;
+    }
+
+
+    // Remove button
+    .remove {
+      @include inline-block();
+      vertical-align:middle;
+      letter-spacing:0px;
+      width:13px;
+      height:13px;
+      margin-left:5px;
+      @include background(sprite($common-sprites, close_grey, $offset-x:0, $offset-y:0) no-repeat);
+      &:hover {@include background(sprite($common-sprites, close_grey, $offset-x:0, $offset-y:-13px) no-repeat);}
+      &:active {@include background(sprite($common-sprites, close_grey, $offset-x:0, $offset-y:-26px) no-repeat);}
+    }
+  }

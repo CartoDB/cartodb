@@ -166,7 +166,7 @@ var Vis = cdb.core.View.extend({
   },
 
   /**
-   * check if all the modules needed to create layers are loaded 
+   * check if all the modules needed to create layers are loaded
    */
   checkModules: function(layers) {
     var mods = Layers.modulesForLayers(layers);
@@ -393,7 +393,8 @@ var Vis = cdb.core.View.extend({
         if(layer.legend) {
           layer.legend.data = layer.legend.items;
           var legend = layer.legend;
-          if(legend.items && legend.items.length) {
+
+          if((legend.items && legend.items.length) || legend.template) {
             layer.legend.index = i;
             legends.push(new cdb.geo.ui.Legend(layer.legend));
           }

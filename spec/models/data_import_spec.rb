@@ -10,7 +10,7 @@ describe DataImport do
   end
 
   it 'raises an 8004 error when merging tables
-  through columns with different types' do
+  through columns with different types', now: true do
     table1 = create_table(user_id: @user.id)
     table2 = create_table(user_id: @user.id)
 
@@ -127,7 +127,7 @@ describe DataImport do
     duplicated_table.records[:rows].should have(5).items
   end
 
-  it 'imports a simple file' do
+  it 'imports a simple file', now: true do
     data_import = DataImport.create(
       :user_id       => @user.id,
       :data_source   => '/../db/fake_data/clubbing.csv',

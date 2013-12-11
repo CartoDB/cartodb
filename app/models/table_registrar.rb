@@ -10,17 +10,26 @@ module CartoDB
     def register(table_name, data_import_id)
       self.table                    = table_klass.new
       table.user_id                 = user.id
-      table.name                    = table_name
+      table.table_id                = oid_from(table_name)
       table.migrate_existing_table  = table_name
       table.data_import_id          = data_import_id
       table.save
       table.optimize
       table.map.recalculate_bounds!
+    rescue => exception
+      puts exception.to_s
+      puts exception.backtrace.join("\n")
     end
 
     def exists?(user, table_name)
-      !table_klass.where(user_id: user.id, name: table_name).empty?
+      user.tables.map(&:name).include?(table_name)
     end 
+
+    def oid_from(table_name)
+      user.in_database[
+        "SELECT '#{table_name}'::regclass::oid"
+      ].first.fetch(:oid)
+    end
 
     def get_valid_table_name(table_name)
       table_klass.get_valid_table_name(

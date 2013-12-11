@@ -40,7 +40,8 @@ class User < Sequel::Model
     :naked => true # avoid adding json_class to result
   }
 
-  SYSTEM_TABLE_NAMES = %w( spatial_ref_sys geography_columns geometry_columns raster_columns raster_overviews cdb_tablemetadata )
+  SYSTEM_TABLE_NAMES = %w( spatial_ref_sys geography_columns geometry_columns
+    raster_columns raster_overviews cdb_tablemetadata layergroup )
   SCHEMAS = %w( public cdb_importer )
 
   self.raise_on_typecast_failure = false
@@ -244,7 +245,7 @@ class User < Sequel::Model
       :rows => rows.map{ |row| row.delete("the_geom"); row }
     }
   rescue => e
-    if e.message =~ /^PGError/
+    if e.message =~ /^PG::Error/
       if e.message.include?("does not exist")
         if e.message.include?("column")
           raise CartoDB::ColumnNotExists, e.message
@@ -296,8 +297,17 @@ class User < Sequel::Model
   end
 
 
-  def tables
-    Table.filter(:user_id => self.id).order(:id).reverse
+  def tables(table_ids=nil)
+    query = %Q(
+      SELECT oid FROM pg_class WHERE relname IN (
+        SELECT table_name FROM information_schema.tables 
+        WHERE table_schema = 'public'
+        AND table_type = 'BASE TABLE'
+        AND table_name NOT IN ('cdb_tablemetadata', 'spatial_ref_sys')
+      )
+    )
+    table_ids ||= in_database[query].map(:oid)
+    Table.where(user_id: id, table_id: table_ids).order(:id).reverse
   end
 
   # Retrive list of user tables from database catalogue

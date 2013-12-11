@@ -15,6 +15,7 @@ describe Map do
   before(:each) do
     @table = Table.new
     @table.user_id = @user.id
+    @table.name = 'foo'
     @table.save
   end
 

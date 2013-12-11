@@ -312,6 +312,12 @@ class User < Sequel::Model
     table_ids - Table.where(user_id: id).map(&:table_id)
   end
 
+  def orphaned_table_objects
+    Table.where(user_id: id).reject { |table|
+      table_ids.include?(table.table_id)
+    }
+  end
+
   def register_new_tables_in_database
     Hash[real_tables.map { |record| [record[:oid], record[:relname]] }]
       .select { |oid, name| unregistered_oids.include?(oid) }
@@ -320,23 +326,28 @@ class User < Sequel::Model
 
 
   def register_table(oid, name)
-    puts "=== OID: #{oid} == NAME: #{name}"
-    t = Table.new
-    t.user_id = id
-    t.name = name
-    t.migrate_existing_table = name
-    t.save
+    puts "======= registering #{oid} #{name}"
+    table = Table.new
+    table.user_id = id
+    table.name = name
+    table.migrate_existing_table = name
+    table.table_id = oid
+    table.save
+    table.optimize
+    table.map.recalculate_bounds!
   rescue => exception
     puts exception.to_s + exception.backtrace.join("\n")
   end
 
   def unregister_orphaned_metadata_records
+    orphaned_table_objects.each(&:destroy)
   end
 
   def sync_tables_metadata
-    #register_new_tables_in_database
-    #unregister_orphaned_metadata_records
+    register_new_tables_in_database
+    unregister_orphaned_metadata_records
   rescue => exception
+    puts exception.to_s + exception.backtrace.join("\n")
   end
 
   def taken_table_names
@@ -346,7 +357,6 @@ class User < Sequel::Model
   end
 
   def tables(table_ids=nil)
-    sync_tables_metadata
     table_ids ||= self.table_ids
     Table.where(user_id: id, table_id: table_ids).order(:id).reverse
   end

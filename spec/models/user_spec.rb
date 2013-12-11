@@ -575,10 +575,17 @@ describe User do
   end
 
   describe '#sync_tables_metadata' do
-    it 'syncs', now: true do
+    it 'registers tables without a metadata record' do
       @user3.reload
+
       @user3.in_database.run('create table ghost_table (test integer)')
+      Table.where(user_id: @user3.id).to_a.length.should == 0
+      @user3.tables.to_a.length.should == 0
+
       @user3.sync_tables_metadata
+
+      Table.where(user_id: @user3.id).to_a.length.should == 1
+      @user3.tables.to_a.length.should == 1
     end
   end
 

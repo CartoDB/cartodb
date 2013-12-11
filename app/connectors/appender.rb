@@ -8,10 +8,8 @@ module CartoDB
 
       attr_accessor :table
 
-      def initialize(runner, table_registrar, quota_checker, database,
-      data_import_id, table_id)
+      def initialize(runner, quota_checker, database, data_import_id, table_id)
         @runner           = runner
-        @table_registrar  = table_registrar
         @quota_checker    = quota_checker
         @database         = database
         @data_import_id   = data_import_id
@@ -60,7 +58,7 @@ module CartoDB
 
         cartodbfy(existing_table_name)
         existing_table.send :invalidate_varnish_cache
-        update_cdb_tablemetadata(existing_table.name)
+        update_cdb_tablemetadata(existing_table.table_id)
         drop([result])
         self
       rescue => exception
@@ -75,11 +73,17 @@ module CartoDB
         raise
       end
 
-      def update_cdb_tablemetadata(name)
-        user.in_database(as: :superuser)[:cdb_tablemetadata]
-          .where(tabname: name)
-          .update(updated_at: Time.now)
-      rescue => exception
+      def update_cdb_tablemetadata(table_id)
+        user.in_database(as: :superuser).run(%Q{
+          INSERT INTO cdb_tablemetadata (tabname, updated_at)
+          VALUES (#{table_id}, NOW())
+        })
+      rescue Sequel::DatabaseError => exception
+        user.in_database(as: :superuser).run(%Q{
+          UPDATE cdb_tablemetadata
+          SET updated_at = NOW()
+          WHERE tabname = #{table_id}
+        })
       end
 
       def cast(table_name, column_name, type)
@@ -177,7 +181,7 @@ module CartoDB
 
       private
 
-      attr_reader :runner, :table_registrar, :quota_checker, :database,
+      attr_reader :runner, :quota_checker, :database,
       :data_import_id, :existing_table, :existing_table_schema,
       :new_table_schema
 

@@ -8,13 +8,12 @@ module CartoDB
 
       attr_accessor :table
 
-      def initialize(runner, table_registrar, quota_checker, database,
-      data_import_id)
+      def initialize(runner, quota_checker, database, data_import_id, user)
         @runner           = runner
-        @table_registrar  = table_registrar
         @quota_checker    = quota_checker
         @database         = database
         @data_import_id   = data_import_id
+        @user             = user
       end
 
       def run(tracker)
@@ -32,7 +31,7 @@ module CartoDB
       def register(result)
         name = rename(result.table_name, result.name)
         move_to_schema(name, result.schema, DESTINATION_SCHEMA)
-        persist_metadata(name, data_import_id)
+        #persist_metadata(name, data_import_id)
       end
 
       def success?
@@ -59,11 +58,11 @@ module CartoDB
       end
 
       def rename(current_name, new_name, schema=ORIGIN_SCHEMA, rename_attempts=0)
-        puts "============== in rename === #{new_name}"
         rename_attempts = rename_attempts + 1
-        new_name        = table_registrar.get_valid_table_name(new_name)
+        new_name = ::Table.get_valid_table_name(
+          new_name, name_candidates: user.taken_table_names
+        )
       
-        puts "============== after_valid_name === #{new_name}"
         database.execute(%Q{
           ALTER TABLE "#{schema}"."#{current_name}"
           RENAME TO "#{new_name}"
@@ -92,7 +91,7 @@ module CartoDB
       private
 
       attr_reader :runner, :table_registrar, :quota_checker, :database,
-      :data_import_id
+      :data_import_id, :user
     end # Importer
   end # Connector
 end # CartoDB

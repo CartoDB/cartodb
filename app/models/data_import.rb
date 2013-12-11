@@ -56,6 +56,7 @@ class DataImport < Sequel::Model
     Rails.logger.debug log.to_s
     self
   rescue => exception
+    puts exception.to_s + exception.backtrace.join("\n")
     log.append "Exception: #{exception.to_s}"
     log.append exception.backtrace
     stacktrace = exception.to_s + exception.backtrace.join
@@ -146,7 +147,7 @@ class DataImport < Sequel::Model
     return appender           if append
     return migrate_existing   if migrate_table.present?
     return from_table         if table_copy.present? || from_query.present?
-    new_importer       
+    importer       
   end #dispatch
 
   def running_import_ids
@@ -226,7 +227,7 @@ class DataImport < Sequel::Model
     self.save
 
     candidates = current_user.tables.map(&:name)
-    table_name = Table.get_valid_table_name(name, name_candidates: candidates)
+    table_name = ::Table.get_valid_table_name(name, name_candidates: candidates)
     current_user.in_database.run(%Q{CREATE TABLE #{table_name} AS #{query}})
     if current_user.over_disk_quota?
       log.append "Over storage quota"
@@ -242,33 +243,20 @@ class DataImport < Sequel::Model
   end
 
   def migrate_existing(imported_name=migrate_table, name=nil)
-    new_name = imported_name || name
+    register_tables(
+      [OpenStruct.new(success: true, name: imported_name)]
+    )
 
-    table         = Table.new
-    table.user_id = user_id
-    table.name    = new_name
-    table.migrate_existing_table = imported_name
-
-    if table.valid?
-      table.save
-      table.optimize
-      table.map.recalculate_bounds!
-      if current_user.remaining_quota < 0
-        self.log.append("Over storage quota, removing table" )
-        self.error_code = 8001
-        table.destroy
-        return false
-      end
-      refresh
-      self.table_id = table.id
-      self.table_name = table.name
-      save
-      return true
-    else
-      reload
-      self.log << ("Error linking #{imported_name} to UI: " + table.errors.full_messages.join(" - "))
+    if current_user.remaining_quota < 0
+      self.log.append("Over storage quota, removing table" )
+      self.error_code = 8001
+      table.destroy
       return false
     end
+  rescue => exception
+    reload
+    self.log << ("Error linking #{imported_name} to UI: ")
+    return false
   end
 
   def pg_options
@@ -283,7 +271,7 @@ class DataImport < Sequel::Model
 
   def appender
     unless table_id
-      self.table_id = Table.find_by_identifier(current_user.id, table_name).id
+      self.table_id = ::Table.find_by_identifier(current_user.id, table_name).id
     end
 
     tracker       = lambda { |state| self.state = state; save }
@@ -291,16 +279,16 @@ class DataImport < Sequel::Model
     runner        = CartoDB::Importer2::Runner.new(
                       pg_options, downloader, log, current_user.remaining_quota
                     )
-    registrar     = CartoDB::TableRegistrar.new(current_user, Table)
     quota_checker = CartoDB::QuotaChecker.new(current_user)
     database      = current_user.in_database
     appender      = CartoDB::Connector::Appender.new(
-                      runner, registrar, quota_checker, database, id,
-                      table_id
+                      runner, quota_checker, database, id, table_id
                     )
     appender.run(tracker)
     self.results    = appender.results
     self.error_code = appender.error_code
+
+    current_user.sync_tables_metadata
     appender.success?
   rescue => exception
     self.state = 'failure'
@@ -308,26 +296,26 @@ class DataImport < Sequel::Model
     false
   end
 
-  def new_importer
+  def importer
     tracker       = lambda { |state| self.state = state; save }
     downloader    = CartoDB::Importer2::Downloader.new(data_source)
     runner        = CartoDB::Importer2::Runner.new(
                       pg_options, downloader, log, current_user.remaining_quota
                     )
-    registrar     = CartoDB::TableRegistrar.new(current_user, Table)
     quota_checker = CartoDB::QuotaChecker.new(current_user)
     database      = current_user.in_database
     importer      = CartoDB::Connector::Importer.new(
-                      runner, registrar, quota_checker, database, id
+                      runner, quota_checker, database, id, current_user
                     )
     
     importer.run(tracker)
 
     raise_error_if_over_quota(importer.results.select(&:success?).length)
+
     self.results    = importer.results
     self.error_code = importer.error_code
-    self.table_name = importer.table.name if importer.success? && importer.table
-    self.table_id   = importer.table.id if importer.success? && importer.table
+    register_tables(importer.results)
+
     if synchronization_id
       synchronization = 
         CartoDB::Synchronization::Member.new(id: synchronization_id).fetch
@@ -346,6 +334,9 @@ class DataImport < Sequel::Model
       synchronization.store
     end
     importer.success?
+  rescue => exception
+    puts exception.to_s + exception.backtrace.join("\n")
+    raise
   end
 
   def current_user
@@ -386,5 +377,17 @@ class DataImport < Sequel::Model
     self.state = 'failure'
   end 
 
+  def register_tables(results)
+    self.table_name = results.select(&:success).first.name
+
+    current_user.sync_tables_metadata
+    oid = current_user.in_database.fetch(
+      %Q{SELECT ?::regclass::oid}, table_name
+    ).to_a.first.fetch(:oid)
+
+    self.table_id   = Table.where(table_id: oid).first.id
+
+    save
+  end
 end
 

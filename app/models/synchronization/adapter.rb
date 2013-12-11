@@ -30,7 +30,7 @@ module CartoDB
         table.send :set_trigger_track_updates
         table.send :set_trigger_check_quota
         table.send :invalidate_varnish_cache
-        update_cdb_tablemetadata(table.name)
+        update_cdb_tablemetadata(table.table_id)
         database.run("UPDATE #{table.name} SET updated_at = updated_at")
           #WHERE cartodb_id = (SELECT max(cartodb_id) FROM #{table.name})")
         self
@@ -54,37 +54,23 @@ module CartoDB
 
       def cartodbfy(result)
         database.run(%Q(SELECT CDB_CartodbfyTable('#{oid_from(result)}')))
-        table.send :set_the_geom_column!
-        table.send :update_table_pg_stats
-        table.send :set_trigger_update_updated_at
-        table.send :set_trigger_check_quota
-        table.send :set_trigger_track_updates
-        table.save
-        table.send(:invalidate_varnish_cache)
-        update_cdb_tablemetadata(table.name)
-        database.run(%Q{
-          UPDATE #{table.name} SET updated_at = NOW()
-          WHERE cartodb_id IN (
-            SELECT MAX(cartodb_id) from #{table.name}
-          )
-        })
       rescue => exception
         stacktrace = exception.to_s + exception.backtrace.join("\n")
         Rollbar.report_message("Sync cartodbfy error", "error", error_info: stacktrace)
         raise
       end
 
-      def update_cdb_tablemetadata(name)
-        user.in_database(as: superuser).run(%Q{
+      def update_cdb_tablemetadata(table_id)
+        user.in_database(as: :superuser).run(%Q{
           INSERT INTO cdb_tablemetadata (tabname, updated_at)
-          VALUES ('?'::regclass, NOW())
-        }, name)
+          VALUES (#{table_id}, NOW())
+        })
       rescue Sequel::DatabaseError => exception
-        user.in_database(as: superuser).run(%Q{
+        user.in_database(as: :superuser).run(%Q{
           UPDATE cdb_tablemetadata
           SET updated_at = NOW()
-          WHERE tabname = '?'
-        }, name)
+          WHERE tabname = #{table_id}
+        })
       end
 
       def success?

@@ -476,7 +476,7 @@ describe Table do
       }.should_not raise_error
     end
 
-    it "can create a table called using a reserved postgresql word as its name", now: true do
+    it "can create a table called using a reserved postgresql word as its name" do
       delete_user_data @user
       @user.private_tables_enabled = false
       @user.save
@@ -1679,45 +1679,28 @@ describe Table do
     end
   end
 
-  context "search" do
-
-    it "should find tables by description", now: true do
-      table = Table.new
-      table.user_id = @user.id
-      table.name = "clubbing_spain_1_copy"
-      table.description = "A world borders shapefile suitable for thematic mapping applications. Contains polygon borders in two resolutions as well as longitude/latitude values and various country codes. Camión"
-      table.save.reload
-
-      ['borders', 'polygons', 'spain', 'countries'].each do |query|
-        tables = Table.search(query)
-        tables.should_not be_empty
-        tables.first.id.should == table.id
-      end
-      tables = Table.search("wadus")
-      tables.should be_empty
-    end
-
-    it "should find tables by name", now: true do
-      table = Table.new
-      table.user_id = @user.id
-      table.name = "european_countries"
-      table.description = "A world borders shapefile suitable for thematic mapping applications. Contains polygon borders in two resolutions as well as longitude/latitude values and various country codes"
-      table.save.reload
-
-      tables = Table.search("eur")
-      tables.should_not be_empty
-      tables.first.id.should == table.id
-    end
-  end
-
   describe 'Table.multiple_order' do
     it 'returns sorted records', now: true do
-      table_1 = create_table(name: "bogus_table_1", user_id: @user.id)
-      table_2 = create_table(name: "bogus_table_2", user_id: @user.id)
+      delete_user_data @user
 
-      Table.search('bogus').multiple_order(name: 'asc')
+      table_1 = create_table(
+        user_id: @user.id,
+        name: "bogus_table_1",
+        description: "bogus_table_1"
+      )
+      
+      table_2 = create_table(
+        user_id: @user.id,
+        name: "bogus_table_2",
+        description: "bogus_table_2"
+      )
+
+      puts Table.to_a.map(&:name)
+      Table.where(Sequel.ilike(:description, '%bogus%'))
+        .multiple_order(description: 'asc')
         .to_a.first.name.should == 'bogus_table_1'
-      Table.search('bogus').multiple_order(name: 'desc')
+      Table.where(Sequel.ilike(:description, '%bogus%'))
+        .multiple_order(description: 'desc')
         .to_a.first.name.should == 'bogus_table_2'
     end
   end # Table.multiple_order

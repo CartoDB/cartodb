@@ -334,8 +334,8 @@ class User < Sequel::Model
   end
 
   def sync_tables_metadata
-    register_new_tables_in_database
-    unregister_orphaned_metadata_records
+    #register_new_tables_in_database
+    #unregister_orphaned_metadata_records
   rescue => exception
   end
 
@@ -347,6 +347,7 @@ class User < Sequel::Model
 
   def tables(table_ids=nil)
     sync_tables_metadata
+    table_ids ||= self.table_ids
     Table.where(user_id: id, table_id: table_ids).order(:id).reverse
   end
 

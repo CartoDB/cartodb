@@ -133,7 +133,7 @@ describe Table do
       visualization.table.name.should == 'bogus_name_3'
     end
     
-    it 'propagates name changes to affected layers', now: true do
+    it 'propagates name changes to affected layers' do
       table = create_table(name: 'bogus_name', user_id: @user.id)
       table.reload
       puts table.layers.inspect
@@ -1225,7 +1225,7 @@ describe Table do
       table.schema.should include([:the_geom, "geometry", "geometry", "geometry"])
     end
 
-    it "should not drop a table that exists when upload fails", now: true do
+    it "should not drop a table that exists when upload fails" do
       delete_user_data @user
       table = new_table :name => 'empty_file', :user_id => @user.id
       table.save.reload
@@ -1239,7 +1239,7 @@ describe Table do
       end
     end
 
-    it "should not drop a table that exists when upload does not fail", now: true do
+    it "should not drop a table that exists when upload does not fail" do
       delete_user_data @user
       table = new_table :name => 'empty_file', :user_id => @user.id
       table.save.reload
@@ -1701,7 +1701,6 @@ describe Table do
         description: "bogus_table_2"
       )
 
-      puts Table.to_a.map(&:name)
       Table.where(Sequel.ilike(:description, '%bogus%'))
         .multiple_order(description: 'asc')
         .to_a.first.name.should == 'bogus_table_1'

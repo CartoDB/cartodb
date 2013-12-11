@@ -37,7 +37,7 @@ describe DataImport do
     data_import.error_code.should == 8004
   end
 
-  it 'can append data to an existing table', now: true do
+  it 'can append data to an existing table' do
     fixture = '/../db/fake_data/column_string_to_boolean.csv'
     expect do
       DataImport.create(
@@ -127,7 +127,7 @@ describe DataImport do
     duplicated_table.records[:rows].should have(5).items
   end
 
-  it 'imports a simple file', now: true do
+  it 'imports a simple file' do
     data_import = DataImport.create(
       :user_id       => @user.id,
       :data_source   => '/../db/fake_data/clubbing.csv',

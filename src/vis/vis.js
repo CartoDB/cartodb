@@ -325,6 +325,10 @@ var Vis = cdb.core.View.extend({
       this.addLegends(data.layers);
     } else {
       legends = this.createLegendView(data.layers);
+
+      this.legends = new cdb.geo.ui.StackedLegend({
+        legends: legends
+      });
     }
 
     if (options.time_slider) {
@@ -339,7 +343,7 @@ var Vis = cdb.core.View.extend({
 
     }
 
-    if (device) this.addMobile(torqueLayer, legends);
+    if (device) this.addMobile(torqueLayer);
 
     // set layer options
     if (options.sublayer_options) {
@@ -359,7 +363,8 @@ var Vis = cdb.core.View.extend({
         var subLayer = layers[i];
         var legend = this.legends && this.legends.getLegendByIndex(i);
         if(legend) {
-          legend[o.visible ? 'show': 'hide']();
+          o.visible ? legend.show() : legend.hide();
+          //legend[o.visible ? 'show': 'hide']();
         }
         // HACK
         if(subLayer.model && subLayer.model.get('type') === 'torque') {
@@ -388,12 +393,12 @@ var Vis = cdb.core.View.extend({
     return this;
   },
 
-  addMobile: function(torqueLayer, legends) {
+  addMobile: function(torqueLayer) {
 
     this.addOverlay({
       type: 'mobile',
       torqueLayer: torqueLayer,
-      legends: legends
+      legends: this.legends
     });
 
   },
@@ -444,12 +449,11 @@ var Vis = cdb.core.View.extend({
 
     var legends = this.createLegendView(layers);
 
-    var stackedLegend = new cdb.geo.ui.StackedLegend({
+    this.legends = new cdb.geo.ui.StackedLegend({
        legends: legends
     });
 
-    this.legends = stackedLegend;
-    this.mapView.addOverlay(stackedLegend);
+    this.mapView.addOverlay(this.legends);
 
   },
 

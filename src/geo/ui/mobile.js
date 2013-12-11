@@ -4,7 +4,15 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
   className: "cartodb-mobile",
 
   events: {
-    'click .toggle': '_toggle'
+    'click .toggle': '_toggle',
+    "dragstart":      "_stopPropagation",
+    "mousedown":      "_stopPropagation",
+    "touchstart":     "_stopPropagation",
+    "MSPointerDown":  "_stopPropagation",
+    "dblclick":       "_stopPropagation",
+    "mousewheel":     "_stopPropagation",
+    "DOMMouseScroll": "_stopPropagation",
+    "click":          "_stopPropagation"
   },
 
   default_options: {
@@ -82,16 +90,20 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
     if (this.options.legends) {
 
-      var stackedLegend = new cdb.geo.ui.StackedLegend({
-        legends: this.options.legends
-      });
-
-      this.$el.find(".legends").append(stackedLegend.render().$el);
+      this.$el.find(".legends").append(this.options.legends.render().$el);
       this.$el.addClass("legends");
+      debugger;
 
+      //this.options.legends.legendItems.unbind("change", this.test);
+      //this.options.legends.legendItems.bind("change", this.test);
     }
 
     return this;
+  },
+
+  test: function() {
+    console.log('a');
   }
+
 
 });

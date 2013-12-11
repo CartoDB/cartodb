@@ -869,7 +869,6 @@ describe("common.geo.ui.Legend", function() {
       beforeEach(function() {
 
         stacked = new cdb.geo.ui.Legend.Stacked({ legends: [ customLegend, intensityLegend ] });
-
         stacked.render();
 
       });

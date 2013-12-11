@@ -296,8 +296,7 @@ class User < Sequel::Model
     end
   end
 
-
-  def tables(table_ids=nil)
+  def table_ids
     query = %Q(
       SELECT oid FROM pg_class WHERE relname IN (
         SELECT table_name FROM information_schema.tables 
@@ -306,7 +305,48 @@ class User < Sequel::Model
         AND table_name NOT IN ('cdb_tablemetadata', 'spatial_ref_sys')
       )
     )
-    table_ids ||= in_database[query].map(:oid)
+    in_database[query].map(:oid)
+  end
+
+  def unregistered_oids
+    table_ids - Table.where(user_id: id).map(&:table_id)
+  end
+
+  def register_new_tables_in_database
+    Hash[real_tables.map { |record| [record[:oid], record[:relname]] }]
+      .select { |oid, name| unregistered_oids.include?(oid) }
+      .each { |oid, name| register_table(oid, name) }
+  end
+
+
+  def register_table(oid, name)
+    puts "=== OID: #{oid} == NAME: #{name}"
+    t = Table.new
+    t.user_id = id
+    t.name = name
+    t.migrate_existing_table = name
+    t.save
+  rescue => exception
+    puts exception.to_s + exception.backtrace.join("\n")
+  end
+
+  def unregister_orphaned_metadata_records
+  end
+
+  def sync_tables_metadata
+    register_new_tables_in_database
+    unregister_orphaned_metadata_records
+  rescue => exception
+  end
+
+  def taken_table_names
+    Hash[
+      real_tables.map { |record| [record[:oid], record[:relname]] }
+    ].values
+  end
+
+  def tables(table_ids=nil)
+    sync_tables_metadata
     Table.where(user_id: id, table_id: table_ids).order(:id).reverse
   end
 

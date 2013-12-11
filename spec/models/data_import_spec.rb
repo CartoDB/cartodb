@@ -10,7 +10,7 @@ describe DataImport do
   end
 
   it 'raises an 8004 error when merging tables
-  through columns with different types', now: true do
+  through columns with different types' do
     table1 = create_table(user_id: @user.id)
     table2 = create_table(user_id: @user.id)
 

@@ -2,7 +2,7 @@
   Add a new user |
 <% end %>
 <%= content_for(:js) do %>
-  <%= javascript_include_tag :cdb, :application, :keys %>
+  <%= javascript_include_tag :cdb, :application %>
   <script type="text/javascript">
     var username = "<%= current_user.username %>"
       , type = "oauth"
@@ -10,7 +10,7 @@
   </script>
 <% end %>
 <%= content_for(:css) do %>
-  <%= stylesheet_link_tag :common, :keys, :media => 'all' %>
+  <%= stylesheet_link_tag :common, :organization, :media => 'all' %>
 <% end %>
 
 <article>
@@ -20,6 +20,7 @@
         <h2>Create new user</h2>
       </div>
       <div class="content">
+        <%= @user.errors.inspect %>
         <ul>
           <%= render partial: 'shared/flash_message' %>
           <li>

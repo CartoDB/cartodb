@@ -1,0 +1,55 @@
+
+  /**
+   *  Organization styles
+   */
+
+  @import "compass/css3/inline-block";
+  @import "compass/css3/text-shadow";
+
+
+  article {
+    @include inline-block();
+    width:100%;
+    padding:40px 0 50px 0;
+    background: image-url('layout/bkg.jpg') repeat 0 0;
+  }
+
+  section {
+
+    // head
+    div.head {
+      h2 { font-size:27px }
+    }
+
+    // content
+    div.content {
+      padding:0;
+
+      li {
+
+        &.flash {
+          padding:22px 40px;
+        }
+
+        &.success {
+          background: rgba(green,0.1);
+        }
+      }
+    }
+
+    // footer
+    div.foot {
+
+      a.red {
+        color: #FF4C4C;
+        &:hover {color:#C84C46;}
+      }
+      
+      .button.grey {
+        font-size:17px;
+        @include text-shadow(none);
+        letter-spacing:-0.5px;
+      }
+    }
+
+  }

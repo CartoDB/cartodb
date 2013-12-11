@@ -1,0 +1,38 @@
+
+  /**
+   *  Right module styles (aside)
+   */
+
+  @import "compass/css3/inline-block";  
+  @import "progress";
+
+
+  aside {
+
+    div.content {
+      padding:0;
+      @include progress(36px, 3px, true);
+
+      ul {
+        li {
+          padding:24px 0;
+          border-bottom:1px solid #E1E1E1;
+          // 
+          &:last-child { border:none }
+        }
+      }
+    }
+
+    .button.green {
+      @include inline-block();
+      margin-top:6px;
+      font-weight:400;
+      font-size:17px;
+    }
+
+    // Aside for organization index
+    &.organization_quota {
+      div.head { border:none }
+      ul li:first-child { padding-top:0 }
+    }
+  }

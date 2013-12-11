@@ -1,3 +1,7 @@
+3.4.03 (11//12/2013)
+-----
+- fixes a bug that prevented showing a legend with custom HTML
+
 3.4.02 (10//12/2013)
 -----
 - adds new API for legends (documentation coming soon)

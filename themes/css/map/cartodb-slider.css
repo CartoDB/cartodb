@@ -32,7 +32,7 @@ and (max-device-width : 480px) {
   }
 
   div.cartodb-timeslider .ui-slider .ui-slider-handle {
-    display:none!important;
+    /*display:none!important;*/
   }
 
 }

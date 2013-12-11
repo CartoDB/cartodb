@@ -6,11 +6,11 @@ cdb.vis.Overlay.register('mobile', function(data, vis) {
 
   var template = cdb.core.Template.compile(
     data.template || '\
-      <a class="toggle" href="#"></a>\
-      <div class="slider"></div>\
-      <div class="top-shadow"></div>\
-      <div class="bottom-shadow"></div>\
-      <div class="legends"></div>\
+    <div class="torque"></div>\
+    <div class="top-shadow"></div>\
+    <div class="bottom-shadow"></div>\
+    <div class="legends"></div>\
+    <a class="toggle" href="#"></a>\
     ',
     data.templateType || 'mustache'
   );

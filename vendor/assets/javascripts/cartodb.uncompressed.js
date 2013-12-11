@@ -1,6 +1,6 @@
 // cartodb.js version: 3.4.02-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: a37c2897240ac04464e86dc719ada87e55a85dcd
+// sha: e5f18595276b7a276ddd7886339f29df93125aa7
 (function() {
   var root = this;
 
@@ -22366,12 +22366,38 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
   className: "cartodb-mobile",
 
   events: {
-    'click .toggle': '_toggle'
+    'click .toggle': '_toggle',
+    "dragstart":      "_stopPropagation",
+    "mousedown":      "_stopPropagation",
+    "touchstart":     "_stopPropagation",
+    "MSPointerDown":  "_stopPropagation",
+    "dblclick":       "_stopPropagation",
+    "mousewheel":     "_stopPropagation",
+    "DOMMouseScroll": "_stopPropagation",
+    "click":          "_stopPropagation"
   },
 
   default_options: {
     timeout: 0,
     msg: ''
+  },
+
+  _stopPropagation: function(ev) {
+    ev.stopPropagation();
+  },
+
+  /**
+   *  Check event origin
+   */
+  _checkOrigin: function(ev) {
+    // If the mouse down come from jspVerticalBar
+    // dont stop the propagation, but if the event
+    // is a touchstart, stop the propagation
+    var come_from_scroll = (($(ev.target).closest(".slider").length > 0) && (ev.type != "touchstart"));
+
+    if (!come_from_scroll) {
+      ev.stopPropagation();
+    }
   },
 
   initialize: function() {
@@ -22380,6 +22406,7 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
     _.defaults(this.options, this.default_options);
 
     this.template = this.options.template ? this.options.template : cdb.templates.getTemplate('geo/zoom');
+
   },
 
   _toggle: function(e) {
@@ -22414,15 +22441,25 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
     var width = $(document).width() - 40;
     this.$el.css( { width: width })
 
-    var slider = new cdb.geo.ui.TimeSlider({type: "time_slider", layer: this.options.torqueLayer, map: this.options.map, pos_margin: 0, position: "none" , width: "auto" });
-    this.$el.find(".slider").append(slider.render().$el);
+    if (this.options.torqueLayer) {
 
-    var stackedLegend = new cdb.geo.ui.StackedLegend({
-       legends: this.options.legends
-    });
+      var slider = new cdb.geo.ui.TimeSlider({type: "time_slider", layer: this.options.torqueLayer, map: this.options.map, pos_margin: 0, position: "none" , width: "auto" });
 
-    //this.legends = stackedLegend;
-    this.$el.find(".legends").append(stackedLegend.render().$el);
+      this.$el.find(".torque").append(slider.render().$el);
+      this.$el.addClass("torque");
+
+    }
+
+    if (this.options.legends) {
+
+      this.$el.find(".legends").append(this.options.legends.render().$el);
+      this.$el.addClass("legends");
+
+      this.options.legends.legendItems.on("change", function() {
+        console.log('a');
+      }, this);
+
+    }
 
     return this;
   }
@@ -22694,6 +22731,13 @@ cdb.geo.ui.BaseLegend = cdb.core.View.extend({
   }
 
 });
+
+/*
+ * NoneLegend
+ *
+ * */
+cdb.geo.ui.NoneLegend  = cdb.geo.ui.BaseLegend.extend({ });
+cdb.geo.ui.Legend.None = cdb.core.View.extend({ });
 
 /*
  * ChoroplethLegend
@@ -29456,6 +29500,10 @@ var Vis = cdb.core.View.extend({
       this.addLegends(data.layers);
     } else {
       legends = this.createLegendView(data.layers);
+
+      this.legends = new cdb.geo.ui.Legend.Stacked({
+        legends: legends
+      });
     }
 
     if (options.time_slider) {
@@ -29470,7 +29518,7 @@ var Vis = cdb.core.View.extend({
 
     }
 
-    if (device) this.addMobile(torqueLayer, legends);
+    if (device) this.addMobile(torqueLayer);
 
     // set layer options
     if (options.sublayer_options) {
@@ -29488,7 +29536,7 @@ var Vis = cdb.core.View.extend({
       for(i = 0; i < Math.min(options.sublayer_options.length, layers.length); ++i) {
         var o = options.sublayer_options[i];
         var subLayer = layers[i];
-        var legend = this.legends && this.legends.getLegendByIndex(i);
+        var legend = this.legends && this.legends.getLegendAt(i);
         if(legend) {
           legend[o.visible ? 'show': 'hide']();
         }
@@ -29519,12 +29567,12 @@ var Vis = cdb.core.View.extend({
     return this;
   },
 
-  addMobile: function(torqueLayer, legends) {
+  addMobile: function(torqueLayer) {
 
     this.addOverlay({
       type: 'mobile',
       torqueLayer: torqueLayer,
-      legends: legends
+      legends: this.legends
     });
 
   },
@@ -29575,12 +29623,11 @@ var Vis = cdb.core.View.extend({
 
     var legends = this.createLegendView(layers);
 
-    var stackedLegend = new cdb.geo.ui.StackedLegend({
+    this.legends = new cdb.geo.ui.Legend.Stacked({
        legends: legends
     });
 
-    this.legends = stackedLegend;
-    this.mapView.addOverlay(stackedLegend);
+    this.mapView.addOverlay(this.legends);
 
   },
 
@@ -30134,9 +30181,11 @@ cdb.vis.Overlay.register('mobile', function(data, vis) {
 
   var template = cdb.core.Template.compile(
     data.template || '\
-      <a class="toggle" href="#"></a>\
-      <div class="slider"></div>\
-      <div class="legends"></div>\
+    <div class="torque"></div>\
+    <div class="top-shadow"></div>\
+    <div class="bottom-shadow"></div>\
+    <div class="legends"></div>\
+    <a class="toggle" href="#"></a>\
     ',
     data.templateType || 'mustache'
   );

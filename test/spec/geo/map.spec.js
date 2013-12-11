@@ -106,6 +106,13 @@ describe("geo.map", function() {
       expect(c).toEqual(0);
     });
 
+    it("should not change bounds when map size is 0", function() {
+      map.set('zoom', 10);
+      var bounds = [[43.100982876188546, 35.419921875], [60.23981116999893, 69.345703125]]
+      map.fitBounds(bounds, {x: 0, y: 0});
+      expect(map.get('zoom')).toEqual(10);
+    });
+
 
   });
 

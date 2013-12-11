@@ -62,7 +62,7 @@ class Geocoding < Sequel::Model
         state: table_geocoder.geocoder.status
       )
       puts "#{processed_rows}/#{total_rows}"
-      raise "Geocoding timeout" if Time.now - started > 3.minutes and ['started', 'submitted'].include? state
+      raise "Geocoding timeout" if Time.now - started > 3.minutes and ['started', 'submitted', 'accepted'].include? state
       sleep(2)
     end until ['completed', 'cancelled', 'failed'].include? state
     return false if state == 'cancelled'

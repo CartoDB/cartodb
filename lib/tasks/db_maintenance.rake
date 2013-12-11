@@ -68,6 +68,22 @@ namespace :cartodb do
       end
     end
 
+    desc "Load varnish invalidation function"
+    task :load_varnish_invalidation_function => :environment do
+      count = User.count
+      printf "Starting cartodb:db:load_varnish_invalidation_function task for %d users\n", count
+      User.all.each_with_index do |user, i|
+        begin
+          user.create_function_invalidate_varnish
+          printf "OK %-#{20}s (%-#{4}s/%-#{4}s)\n", user.username, i+1, count
+        rescue => e
+          printf "FAIL %-#{20}s (%-#{4}s/%-#{4}s) #{e.message}\n", user.username, i+1, count
+        end
+        #sleep(1.0/5.0)
+      end
+    end
+
+
     ########################
     # LOAD CARTODB TRIGGERS
     ########################

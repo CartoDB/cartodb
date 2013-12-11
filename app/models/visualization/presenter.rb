@@ -4,10 +4,12 @@ module CartoDB
   module Visualization
     class Presenter
       def initialize(visualization, options={})
-        @visualization  = visualization
-        @options        = options
-        @user           = options.fetch(:user, nil)
-        @table          = options[:table] || visualization.table
+        @visualization   = visualization
+        @options         = options
+        @user            = options.fetch(:user, nil)
+        @table           = options[:table] || visualization.table
+        @synchronization = options[:synchronization]
+        @rows_and_sizes  = options[:rows_and_sizes] || {}
       end #initialize
 
       def to_poro
@@ -20,19 +22,20 @@ module CartoDB
           tags:             visualization.tags,
           description:      visualization.description,
           privacy:          visualization.privacy.upcase,
-          table:            table_data_for(table),
-          synchronization:  synchronization_data_for(table),
           stats:            visualization.stats(user),
           created_at:       visualization.created_at,
           updated_at:       visualization.updated_at
         }
+        poro.merge!(table: table_data_for(table))
+        poro.merge!(synchronization: synchronization)
         poro.merge!(related) if options.fetch(:related, true)
         poro
       end #to_poro
 
       private
 
-      attr_reader :visualization, :options, :user, :table
+      attr_reader :visualization, :options, :user, :table, :synchronization,
+                  :rows_and_sizes
 
       def related
         { related_tables:   related_tables }
@@ -47,11 +50,13 @@ module CartoDB
 
         table_data.merge!(
           privacy:      table.privacy_text,
-          size:         table.table_size(user),
-          row_count:    table.rows_estimated(user),
           updated_at:   table.updated_at
-        ) if options.fetch(:table_data, true)
+        ) #if options.fetch(:table_data, true)
 
+        table_data.merge!(
+          size:         rows_and_sizes[table.name][:size],
+          row_count:    rows_and_sizes[table.name][:rows]
+        ) unless rows_and_sizes.nil? || rows_and_sizes.empty?
         table_data
       end #table_data_for
 

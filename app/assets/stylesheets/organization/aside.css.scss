@@ -11,7 +11,7 @@
 
     div.content {
       padding:0;
-      @include progress(36px, 3px, true);
+      @include progress(36px, 3px, true, 5px);
 
       ul {
         li {

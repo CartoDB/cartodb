@@ -72,7 +72,8 @@
       }
 
       // User used/available storage
-      @include progress(6px, 6px, false);
+      @include progress(6px, 6px, false, 5px);
+      div.progress { margin-top:10px }
 
       // Header
       &.list-head {

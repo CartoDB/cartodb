@@ -87,7 +87,8 @@ module CartoDB
             sql_api_domain:     (configuration[:sql_api]["public"]["domain"] rescue nil),
             sql_api_endpoint:   (configuration[:sql_api]["public"]["endpoint"] rescue nil),
             sql_api_port:       (configuration[:sql_api]["public"]["port"] rescue nil),
-            cdn_url:            configuration.fetch(:cdn_url, nil)
+            cdn_url:            configuration.fetch(:cdn_url, nil),
+            layer_name:         name_for(layer)
           }.merge(layer.options.select { |k| TORQUE_ATTRS.include? k })
         }
       end #as_torque
@@ -104,8 +105,10 @@ module CartoDB
 
       def with_template(infowindow)
         template = infowindow['template']
-        template = File.read(layer.template_path) if template.nil? || template.empty?
-        infowindow.merge(template: template)
+        return infowindow unless template.nil? || template.empty?
+
+        infowindow.merge!(template: File.read(layer.template_path))
+        infowindow
       end
 
       def options_data_v2
@@ -158,7 +161,10 @@ module CartoDB
       end #public_options
 
       def whitelisted_infowindow(infowindow)
-        infowindow.select { |key, value| INFOWINDOW_KEYS.include?(key) }
+        infowindow.select { |key, value| 
+          INFOWINDOW_KEYS.include?(key) ||
+          INFOWINDOW_KEYS.include?(key.to_s)
+        }
       end
     end # Presenter
   end # Layer

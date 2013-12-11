@@ -534,6 +534,7 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def remove_table_from_user_database
+    return self if name.to_s == oid.to_s
     owner.in_database(:as => :superuser) do |user_database|
       begin
         user_database.run("DROP SEQUENCE IF EXISTS cartodb_id_#{oid}_seq")
@@ -1130,9 +1131,9 @@ class Table < Sequel::Model(:user_tables)
     end
   end
 
-  #def oid
-  #  @oid ||= owner.in_database["SELECT '#{self.name}'::regclass::oid"].first[:oid]
-  #end
+  def oid
+    @oid ||= owner.in_database["SELECT '#{self.name}'::regclass::oid"].first[:oid]
+  end
 
   # DB Triggers and things
 

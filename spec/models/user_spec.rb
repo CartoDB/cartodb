@@ -575,10 +575,10 @@ describe User do
   end
 
   describe '#sync_tables_metadata' do
-    it 'registers tables without a metadata record' do
+    it 'registers tables without a metadata record', now: true do
       @user3.reload
 
-      @user3.in_database.run('create table ghost_table (test integer)')
+      @user3.in_database.run('CREATE TABLE ghost_table (test integer)')
       Table.where(user_id: @user3.id).to_a.length.should == 0
       @user3.tables.to_a.length.should == 0
 
@@ -586,6 +586,29 @@ describe User do
 
       Table.where(user_id: @user3.id).to_a.length.should == 1
       @user3.tables.to_a.length.should == 1
+      @user3.tables.first.destroy
+    end
+
+    it 'removes orphaned metadata records', now: true do
+      @user3.reload
+
+      @user3.in_database.run('CREATE TABLE ghost_table (test integer)')
+      Table.where(user_id: @user3.id).to_a.length.should == 0
+      @user3.tables.to_a.length.should == 0
+
+      @user3.sync_tables_metadata
+
+      Table.where(user_id: @user3.id).to_a.length.should == 1
+      @user3.tables.to_a.length.should == 1
+
+      @user3.in_database.run('DROP TABLE ghost_table')
+      @user3.taken_table_names.length.should == 0
+      Table.where(user_id: @user3.id).to_a.length.should == 1
+
+      @user3.sync_tables_metadata
+
+      @user3.taken_table_names.length.should == 0
+      Table.where(user_id: @user3.id).to_a.length.should == 0
     end
   end
 

@@ -13,6 +13,12 @@
   <%= stylesheet_link_tag :common, :keys, :media => 'all' %>
 <% end %>
 
+<%= @users.map { |u| {
+  id: u.id,
+  username: u.username, 
+  quota_in_bytes: u.quota_in_bytes, 
+  remaining_quota: u.remaining_quota 
+}}.to_json -%>
 
 <article>
   <div class="inner">

@@ -1,6 +1,6 @@
-// cartodb.js version: 3.4.03-dev
+// cartodb.js version: 3.4.03
 // uncompressed version: cartodb.uncompressed.js
-// sha: 8b5bcb01fb513f727a73efaf7115d5b42b08609c
+// sha: cd4abbff95545667f7805b7092123257970f06e3
 (function() {
   var root = this;
 
@@ -20429,7 +20429,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.4.03-dev';
+    cdb.VERSION = '3.4.03';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -23212,7 +23212,7 @@ cdb.geo.ui.StackedLegend = cdb.core.View.extend({
   _checkVisibility: function() {
 
     var visible = _.some(this.options.legends, function(legend) {
-      return legend.model.get("type") && legend.model.get("type") != "none"
+      return legend.model.get("type") && (legend.model.get("type") != "none"  || legend.model.get("template"))
     }, this);
 
     if (visible) {
@@ -29228,7 +29228,7 @@ var Vis = cdb.core.View.extend({
   },
 
   /**
-   * check if all the modules needed to create layers are loaded 
+   * check if all the modules needed to create layers are loaded
    */
   checkModules: function(layers) {
     var mods = Layers.modulesForLayers(layers);
@@ -29455,7 +29455,8 @@ var Vis = cdb.core.View.extend({
         if(layer.legend) {
           layer.legend.data = layer.legend.items;
           var legend = layer.legend;
-          if(legend.items && legend.items.length) {
+
+          if((legend.items && legend.items.length) || legend.template) {
             layer.legend.index = i;
             legends.push(new cdb.geo.ui.Legend(layer.legend));
           }

@@ -1189,6 +1189,11 @@ exports.Profiler = Profiler;
         refresh = true;
       }
 
+      if(opt.countby !== undefined && opt.countby !== this.options.countby) {
+        this.options.countby = opt.countby;
+        refresh = true;
+      }
+
       if(opt.data_aggregation !== undefined) {
         var c = opt.data_aggregation === 'cumulative';
         if (this.options.cumulative !== c) {
@@ -3142,6 +3147,10 @@ GMapsTorqueLayer.prototype = _.extend({},
     return new Date(time);
   },
 
+  getStep: function() {
+    return this.key;
+  },
+
   /**
    * returns the animation time defined by the data
    * in the defined column. Date object
@@ -3727,6 +3736,10 @@ L.TorqueLayer = L.CanvasLayer.extend({
     var times = this.provider.getKeySpan();
     var time = times.start + (times.end - times.start)*(step/this.provider.getSteps());
     return new Date(time);
+  },
+
+  getStep: function() {
+    return this.key;
   },
 
   /**

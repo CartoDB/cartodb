@@ -904,6 +904,7 @@ div.cartodb-popup.header.yellow a.cartodb-popup-close-button:hover {
     border-radius: 0px;
 
     border: none;
+    z-index: 110;
 
   }
 
@@ -934,16 +935,32 @@ div.cartodb-popup.header.yellow a.cartodb-popup-close-button:hover {
     border:none;
   }
 
+  div.cartodb-mobile .cartodb-legend-stack .cartodb-legend.density ul,
+  div.cartodb-mobile .cartodb-legend-stack .cartodb-legend.intensity ul,
   div.cartodb-mobile .cartodb-legend-stack .cartodb-legend.choropleth ul {
     width: 230px;
   }
 
+  div.cartodb-mobile .cartodb-legend-stack .cartodb-legend div.legend-title {
+    width: 230px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
   div.cartodb-mobile {
+    display:none;
     position:absolute;
     bottom: 35px;
     right: 20px;
     z-index: 5;
     height: 40px;
+    max-width: 280px;
+  }
+
+  div.cartodb-mobile.legends,
+  div.cartodb-mobile.torque {
+    display:block;
   }
 
   div.cartodb-mobile.open.legends.torque {

@@ -26,24 +26,30 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
   doOnOrientationChange: function() {
 
-    function recalc() {
-
-      var width = $(document).width();
-      $(".cartodb-mobile.open").css("width", width - 40)
-
-      var w = $(".cartodb-mobile.open").width() - $(".cartodb-mobile.open .toggle").width() - $(".cartodb-mobile.open .time").width();
-      $("div.cartodb-timeslider .slider-wrapper").css("width", w - 10)
-
-    }
-
     switch(window.orientation)
     {
       case -90:
-      case 90: recalc();
+      case 90: this.recalc("landscape");
         break;
-      default: recalc();
+      default: this.recalc("portrait");
         break;
     }
+  },
+
+  recalc: function(orientation) {
+
+    var width = $(document).width();
+    $(".cartodb-mobile.open").css("width", width - 40)
+
+    var w = $(".cartodb-mobile.open").width() - $(".cartodb-mobile.open .toggle").width() - $(".cartodb-mobile.open .time").width();
+    $("div.cartodb-timeslider .slider-wrapper").css("width", w - 10)
+
+
+    var height = $(".legends > div.cartodb-legend-stack").height();
+
+    if (height < 100 && !this.$el.hasClass("torque")) this.$el.css("height", height + 2);
+    else if (height < 100 && this.$el.hasClass("legends") && this.$el.hasClass("torque")) this.$el.css("height", height + $(".legends > div.torque").height() );
+
   },
 
   initialize: function() {
@@ -53,10 +59,9 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
     this.template = this.options.template ? this.options.template : cdb.templates.getTemplate('geo/zoom');
 
-    window.addEventListener('orientationchange', this.doOnOrientationChange);
+    window.addEventListener('orientationchange', _.bind(this.doOnOrientationChange, this));
 
   },
-
 
   _toggle: function(e) {
 
@@ -73,13 +78,9 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
     this.$el.addClass("open");
     this.isOpen = true;
+    this.$el.css("height", "110");
 
-    var width = $(document).width();
-    $(".cartodb-mobile.open").css("width", width - 40)
-
-    var w = $(".cartodb-mobile.open").width() - $(".cartodb-mobile.open .toggle").width() - $(".cartodb-mobile.open .time").width();
-    $("div.cartodb-timeslider .slider-wrapper").css("width", w - 10)
-
+    this.recalc();
   },
 
   close: function() {
@@ -89,9 +90,12 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
     this.$el.removeClass("open");
     this.isOpen = false;
 
+    this.$el.css("height", "40");
+
   },
 
   render: function() {
+
     this.$el.html(this.template(this.options));
     var width = $(document).width() - 40;
     this.$el.css( { width: width })

@@ -15,7 +15,7 @@
 
       ul {
         li {
-          padding:24px 0;
+          padding:15px 0;
           border-bottom:1px solid #E1E1E1;
           // 
           &:last-child { border:none }
@@ -33,6 +33,9 @@
     // Aside for organization index
     &.organization_quota {
       div.head { border:none }
-      ul li:first-child { padding-top:0 }
+      ul li {
+        padding:24px 0;
+        &:first-child { padding-top:0 }
+      }
     }
   }

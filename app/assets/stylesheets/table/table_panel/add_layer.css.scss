@@ -1,0 +1,60 @@
+
+  /**
+   *  Trick 'add layer' panel styles
+   */
+
+  @import "compass/css3/inline-block";
+  @import "compass/css3/transform";
+  @import "compass/css3/transition";
+  @import "compass/css3/images";
+  @import "../../table/table-sprite";
+  @import "../../common/vars";
+  @import "../../common/mixins";
+
+
+  .add_layer {
+    position:relative;
+    height:55px;
+    margin-top:-15px;
+    line-height:35px;
+    @include transform-style("linear");
+    @include transition-property("height");
+    @include transition-duration(250ms);
+
+    a.info {
+      text-decoration: none;
+    }
+
+    // Add layer
+    // (Add layer button)
+    .add {
+      @include inline-block();
+      width:16px;
+      height:16px;
+      margin:0 0 0 23px;
+      line-height:16px;
+      text-align:center;
+      color:#ECECEC;
+      background:#A9A9A9;
+      @include text-indent();
+      @include border-radius(2px);
+      @include background(sprite($table-sprites, add_layer, $offset-x:0, $offset-y:0) no-repeat);
+    }
+
+    // (Add layer text)
+    .action {
+      @include inline-block();
+      margin:0 0 0 27px;
+      font:500 17px $text-fonts;
+      line-height:20px;
+      letter-spacing:0;
+    }
+
+    &:hover {
+      height:70px;
+      cursor:pointer;
+
+      .add { @include background(sprite($table-sprites, add_layer, $offset-x:0, $offset-y:-16px) no-repeat); }
+      .action { color: #3A77A6; }
+    }
+  }

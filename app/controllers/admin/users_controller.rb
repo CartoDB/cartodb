@@ -7,6 +7,7 @@ class Admin::UsersController < ApplicationController
 
   def new
     @user = User.new
+    @user.quota_in_bytes = (current_user.organization.unassigned_quota < 100.megabytes ? current_user.organization.unassigned_quota : 100.megabytes)
   end
 
   def edit; end

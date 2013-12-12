@@ -164,6 +164,11 @@
         opt.no_cdn = true;
         <% end %>
 
+        cartodb.config.set({
+          cartodb_attributions: "CartoDB <a href='http://cartodb.com/attributions?utm_source=Footer_Link&utm_medium=referral&utm_campaign=Embed_v1&utm_content=Attributions&utm_term=<%= @visualization.user.username %>' target='_blank'>attribution</a>",
+          cartodb_logo_link: "http://www.cartodb.com?utm_source=Footer_Link&utm_medium=referral&utm_campaign=Embed_v1&utm_content=Logo",
+        })
+
         cartodb.createVis('map', '<%= v2_vizjson_url(@visualization) %>', opt, function(vis) {
           // add here your code
           window.vis = vis;

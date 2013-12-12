@@ -3,8 +3,17 @@
 </div>
 <div class="content">
   <ul>
-    <% current_user.organization.users.each do |user| -%>
-      <li><%= link_to user.username, edit_organization_user_path(user.username) %></li>
-    <% end -%>
+    <% if current_user.organization.users.count > 1 %>
+      <% current_user.organization.users.each do |user| -%>
+        <% if user.username != @user.username  %>
+          <li><%= link_to user.username, edit_organization_user_path(user.username) %></li>
+        <% end  %>
+      <% end -%>
+    <% else %>
+      <li>
+        <p class="light italic margin10">Unfortunately there is no users in your organization.</p>
+        <p class="margin20"><%= link_to "Create a new user", "", :class => "button green" %></p>
+      </li>
+    <% end %>
   </ul>
 </div>

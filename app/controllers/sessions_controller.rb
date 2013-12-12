@@ -7,19 +7,19 @@ class SessionsController < ApplicationController
   before_filter :api_authorization_required, :only => :show
 
   def new
-    if logged_in?(request.subdomain)
+    if logged_in?(CartoDB.extract_subdomain(request))
       redirect_to dashboard_path(:trailing_slash => true) and return
     end
   end
 
   def create
-    authenticate!(:password, :scope => request.subdomain)
+    authenticate!(:password, :scope => CartoDB.extract_subdomain(request))
     CartodbStats.increment_login_counter(params[:email])
     redirect_to(session[:return_to] || dashboard_url(:trailing_slash => true))
   end
 
   def destroy
-    logout(request.subdomain)
+    logout(CartoDB.extract_subdomain(request))
     redirect_to Cartodb.config[:account_host].blank? ? "http://www.cartodb.com" : "http://#{Cartodb.config[:account_host]}"
   end
 

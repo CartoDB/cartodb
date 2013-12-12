@@ -3,7 +3,7 @@
 module ApplicationHelper
 
   def current_user
-    super(request.subdomain)
+    super(CartoDB.extract_subdomain(request))
   end
 
   def show_footer?
@@ -62,7 +62,7 @@ module ApplicationHelper
       sql_api_domain:      Cartodb.config[:sql_api]["private"]["domain"],
       sql_api_endpoint:    Cartodb.config[:sql_api]["private"]["endpoint"],
       sql_api_port:        Cartodb.config[:sql_api]["private"]["port"],
-      user_name:           request.subdomain,
+      user_name:           CartoDB.extract_subdomain(request),
       cartodb_com_hosted:  Cartodb.config[:cartodb_com_hosted],
       account_host:        Cartodb.config[:account_host],
       dropbox_api_key:     Cartodb.config[:dropbox_api_key],

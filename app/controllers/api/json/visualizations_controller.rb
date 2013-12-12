@@ -55,7 +55,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
                   ).copy
     elsif params[:tables]
       tables    = params[:tables].map do |table_name| 
-                    ::Table.find_by_subdomain(request.subdomain, table_name)
+                    ::Table.find_by_subdomain(CartoDB.extract_subdomain(request), table_name)
                   end
       blender   = Visualization::TableBlender.new(current_user, tables)
       map       = blender.blend
@@ -122,7 +122,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   end #stats
 
   def vizjson1
-    visualization, table = locator.get(params.fetch(:id), request.subdomain)
+    visualization, table = locator.get(params.fetch(:id), CartoDB.extract_subdomain(request))
     return(head 404) unless visualization
     return(head 403) unless allow_vizjson_v1_for?(visualization.table)
     set_vizjson_response_headers_for(visualization)
@@ -135,7 +135,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   end #vizjson1
 
   def vizjson2
-    visualization, table = locator.get(params.fetch(:id), request.subdomain)
+    visualization, table = locator.get(params.fetch(:id), CartoDB.extract_subdomain(request))
     return(head 404) unless visualization
     return(head 403) unless allow_vizjson_v2_for?(visualization)
     set_vizjson_response_headers_for(visualization)

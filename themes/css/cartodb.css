@@ -806,9 +806,8 @@ div.cartodb-popup.header.yellow a.cartodb-popup-close-button:hover {
     display:none;
     height: 20px;
     width: 100%;
-
     position:absolute;
-    left; 0;
+    left: 0;
     z-index: 100;
     pointer-events:none;
   }

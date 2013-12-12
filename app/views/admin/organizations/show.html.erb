@@ -7,14 +7,17 @@
     var username = "<%= current_user.username %>"
       , type = "oauth"
       , config = <%=raw frontend_config.html_safe %>
-      , organization_quota = { seats: <%= current_user.organization.seats %>, quota_in_bytes: <%= current_user.organization.quota_in_bytes %> }
+      , organization_quota = {
+          seats: <%= current_user.organization.seats %>,
+          quota_in_bytes: <%= current_user.organization.quota_in_bytes %>
+        }
       , organization_users = <%= raw @users.map { |u| {
-        id: u.id,
-        username: u.username, 
-        quota_in_bytes: u.quota_in_bytes, 
-        remaining_quota: u.remaining_quota,
-        organization_owner: u.organization_owner
-      }}.to_json -%>
+          id: u.id,
+          username: u.username, 
+          quota_in_bytes: u.quota_in_bytes, 
+          remaining_quota: u.remaining_quota,
+          organization_owner: u.organization_owner
+        }}.to_json -%>
   </script>
 <% end %>
 <%= content_for(:css) do %>
@@ -43,14 +46,14 @@
               <% end %>
             </div>
             <div class="storage">
-              <div class="progress"></div>
+              <div class="progress-bar"></div>
             </div>
           </li>
           <% end -%>
         </ul>
       </div>
       <div class="foot">
-        <p><%= link_to "Add new user", new_organization_user_path, :class => 'right button grey' %></p>
+        <%= link_to "Add new user", new_organization_user_path, :class => 'right button grey' %>
       </div>
     </section>
     <aside class="right organization_quota">

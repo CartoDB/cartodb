@@ -8,8 +8,7 @@
   @import "compass/css3/transition";
   @import "../../common/vars";
   @import "../../common/mixins";
-
-  @import "progress";
+  @import "../../elements/progress-bar";
 
 
   // Local variables
@@ -72,7 +71,7 @@
       }
 
       // User used/available storage
-      @include progress(6px, 6px, false, 5px);
+      @include progress-bar(6px, 6px, false, 5px);
       div.progress { margin-top:10px }
 
       // Header

@@ -5,15 +5,13 @@
   <ul>
     <li>
       <div class="seats margin5">
-        <%# seats_used = (current_user.organization.users.count*100)/current_user.organization.seats %>
-
-        <div class="progress">
+        <div class="progress-bar">
           <span class="bar-2 used"></span>
         </div>
         <p class="margin10"><strong><%= "#{current_user.organization.users.count} of #{current_user.organization.seats}" %></strong> users in your account.</p>
       </div>
       <div class="space margin30">
-        <div class="progress">
+        <div class="progress-bar">
           <span class="bar-2 used"></span>
           <span class="bar-1 available"></span>
           <span class="bar-0 unassigned" style="width:100%"></span>

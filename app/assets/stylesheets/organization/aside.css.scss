@@ -4,14 +4,14 @@
    */
 
   @import "compass/css3/inline-block";  
-  @import "progress";
+  @import "../../elements/progress-bar";
 
 
   aside {
 
     div.content {
       padding:0;
-      @include progress(36px, 3px, true, 5px);
+      @include progress-bar(36px, 3px, true, 5px);
 
       ul {
         li {

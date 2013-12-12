@@ -15,9 +15,9 @@
   @import "../../common/mixins";
 
 
-  @mixin progress($h, $r, $grad, $min) {
+  @mixin progress-bar($h, $r, $grad, $min) {
 
-    div.progress {
+    div.progress-bar {
       position:relative;
       display:block;
       width:100%;

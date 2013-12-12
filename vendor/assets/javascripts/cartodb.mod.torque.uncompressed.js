@@ -9313,10 +9313,6 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
     this.options.formatter = _;
   },
 
-  formatter: function(_) {
-    this.options.formatter = _;
-  },
-
   formaterForRange: function(start, end) {
     start = start.getTime ? start.getTime(): start;
     end = end.getTime ? end.getTime(): end;

@@ -20429,11 +20429,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-<<<<<<< HEAD
-    cdb.VERSION = '3.4.04-dev';
-=======
     cdb.VERSION = '3.4.03';
->>>>>>> origin/fix/CDB-1075
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -20522,7 +20518,6 @@ this.LZMA = LZMA;
         'geo/gmaps/gmaps.js',
 
         'ui/common/dialog.js',
-        'ui/common/share.js',
         'ui/common/notification.js',
         'ui/common/table.js',
         'ui/common/dropdown.js',
@@ -22465,7 +22460,6 @@ cdb.geo.ui.Legend = cdb.core.View.extend({
     this._setupItems();
 
     this._updateLegendType();
-<<<<<<< HEAD
 
   },
 
@@ -22555,97 +22549,6 @@ cdb.geo.ui.Legend = cdb.core.View.extend({
 
   },
 
-=======
-
-  },
-
-  _stopPropagation: function(ev) {
-
-    ev.stopPropagation();
-
-  },
-
-  _setupModel: function() {
-
-    if (!this.model) {
-
-      this.model = new cdb.geo.ui.LegendModel({
-        type: this.options.type || cdb.geo.ui.LegendModel.prototype.defaults.type,
-        title: this.options.title || cdb.geo.ui.LegendModel.prototype.defaults.title,
-        show_title: this.options.show_title || cdb.geo.ui.LegendModel.prototype.defaults.show_title,
-        template: this.options.template || cdb.geo.ui.LegendModel.prototype.defaults.template
-      });
-
-    }
-
-    this.add_related_model(this.model);
-
-    //this.model.bind("change:template change:type change:items change:title change:show_title",  this._updateLegendType, this);
-    this.model.bind("change",  this._updateLegendType, this);
-
-  },
-
-  _updateLegendType: function() {
-
-    var type = this.model.get("type");
-
-    this.legend_name = this._capitalize(type) + "Legend";
-
-    if (type == 'none' || type == null) {
-
-      this.legend_name = null;
-      this.model.set({ type: "none" }, { silent: true });
-
-    } else if (!cdb.geo.ui[this.legend_name]) {
-
-      // set the previous type
-      this.legend_name = null;
-      this.model.set({ type: this.model.previous("type") }, { silent: true });
-      return;
-
-    }
-
-    this._refresh();
-
-  },
-
-  _refresh: function() {
-
-    var self = this;
-
-    if (this.view) this.view.clean();
-
-    var type  = this.model.get("type");
-    var title = this.model.get("title");
-    var show_title = this.model.get("show_title");
-    var template = this.model.get("template");
-
-    if (type && this.legend_name) {
-
-      this.view = new cdb.geo.ui[this.legend_name]({
-        model: this.model
-      });
-
-      // Set the type as the element class for styling
-      this.$el.removeClass();
-      this.$el.addClass(this.className + " " + this.model.get("type"));
-
-      this.show();
-
-    } else {
-
-      this.hide();
-
-      this.$el.removeClass();
-      this.$el.addClass(this.className + " none");
-
-    }
-
-    this.render();
-
-  },
-
->>>>>>> origin/fix/CDB-1075
   _setupItems: function() {
 
     var self = this;
@@ -22704,7 +22607,6 @@ cdb.geo.ui.DebugLegend = cdb.core.View.extend({ });
  *
  * */
 cdb.geo.ui.BaseLegend = cdb.core.View.extend({
-<<<<<<< HEAD
 
   _bindModel: function() {
 
@@ -22746,49 +22648,6 @@ cdb.geo.ui.ChoroplethLegend = cdb.geo.ui.BaseLegend.extend({
 
   },
 
-=======
-
-  _bindModel: function() {
-
-    this.model.bind("change:template change:title change:show_title", this.render, this);
-
-  },
-
-  addTo: function(element) {
-    $(element).html(this.render().$el);
-  },
-
-  setTitle: function(title) {
-    this.model.set("title", title);
-  },
-
-  showTitle: function() {
-    this.model.set("show_title", true);
-  },
-
-  hideTitle: function() {
-    this.model.set("show_title", false);
-  }
-
-});
-
-/*
- * ChoroplethLegend
- *
- * */
-cdb.geo.ui.ChoroplethLegend = cdb.geo.ui.BaseLegend.extend({
-
-  className: "choropleth-legend",
-
-  template: _.template('<% if (title && show_title) { %><div class="legend-title"><%= title %></div><% } %><ul><li class="min"><%= leftLabel %></li><li class="max"><%= rightLabel %></li><li class="graph count_<%= buckets_count %>"><div class="colors"><%= colors %></div></li></ul>'),
-
-  initialize: function() {
-
-    this.items    = this.model.items;
-
-  },
-
->>>>>>> origin/fix/CDB-1075
   _generateColorList: function() {
 
     var colors = "";
@@ -22890,15 +22749,9 @@ cdb.geo.ui.DensityLegend = cdb.geo.ui.BaseLegend.extend({
   setColors: function(colors) {
 
     this.model.set("colors", colors);
-<<<<<<< HEAD
 
   },
 
-=======
-
-  },
-
->>>>>>> origin/fix/CDB-1075
   _generateColorList: function() {
 
     var colors = "";
@@ -23499,105 +23352,6 @@ cdb.geo.ui.Legend.Stacked = cdb.geo.ui.StackedLegend.extend({
     var legend = new cdb.geo.ui.LegendModel(attributes);
     this.legendItems.push(legend);
 
-<<<<<<< HEAD
-  addTo: function(element) {
-    $(element).html(this.render().$el);
-  },
-
-  render: function() {
-=======
-  },
->>>>>>> origin/fix/CDB-1075
-
-  removeLegendAt: function(n) {
-
-    var legend = this.legendItems.at(n);
-    this.legendItems.remove(legend);
-
-  }
-
-});
-
-<<<<<<< HEAD
-cdb.geo.ui.Legends = Backbone.Collection.extend({
-  model: cdb.geo.ui.LegendModel
-});
-
-/*
- * Stacked Legend public interface
- *
- * */
-cdb.geo.ui.Legend.Stacked = cdb.geo.ui.StackedLegend.extend({
-
-  initialize: function() {
-
-    if (this.options.legends) {
-
-      var legendModels = _.map(this.options.legends, function(legend) {
-        return legend.model;
-      });
-
-      this.legendItems = new cdb.geo.ui.Legends(legendModels);
-
-      this.legendItems.bind("add remove change", this.render, this);
-
-    } else if (this.options.data) {
-
-      var legendModels = _.map(this.options.data, function(legend) {
-        return new cdb.geo.ui.LegendModel(legend);
-      });
-
-      this.legendItems = new cdb.geo.ui.Legends(legendModels);
-
-      this.legendItems.bind("add remove change", this.render, this);
-
-    }
-
-
-  },
-
-  _capitalize: function(string) {
-    if (string && _.isString(string)) {
-      return string.charAt(0).toUpperCase() + string.slice(1);
-    }
-  },
-
-  render: function() {
-
-    this.$el.empty();
-
-    this.legends = [];
-
-    this.legendItems.each(function(model) {
-
-      var type = model.get("type");
-
-      if (!type) type = "custom";
-
-      type = this._capitalize(type);
-
-      var view = new cdb.geo.ui.Legend[type](model.attributes);
-      this.legends.push(view);
-
-      this.$el.append(view.render().$el);
-
-    }, this);
-
-    return this;
-
-  },
-
-  getLegendAt: function(n) {
-
-    return this.legends[n];
-
-  },
-
-  addLegend: function(attributes) {
-
-    var legend = new cdb.geo.ui.LegendModel(attributes);
-    this.legendItems.push(legend);
-
   },
 
   removeLegendAt: function(n) {
@@ -23609,8 +23363,6 @@ cdb.geo.ui.Legend.Stacked = cdb.geo.ui.StackedLegend.extend({
 
 });
 
-=======
->>>>>>> origin/fix/CDB-1075
 
 /*
  * Legend Model
@@ -23669,7 +23421,6 @@ cdb.geo.ui.CustomLegend = cdb.geo.ui.BaseLegend.extend({
   initialize: function() {
 
     this.items = this.model.items;
-<<<<<<< HEAD
 
   },
 
@@ -23848,291 +23599,13 @@ cdb.geo.ui.Legend.Bubble = cdb.geo.ui.BubbleLegend.extend({
       color: this.options.color,
       show_title: this.options.title ? true : false
     });
-=======
 
-  },
-
-  setData: function(data) {
-
-    this.items = new cdb.geo.ui.LegendItems(data);
-    this.model.items = this.items;
-    this.model.set("items", data);
-
-  },
-
-  _renderItems: function() {
-
-    this.items.each(this._renderItem, this);
-
-  },
-
-  _renderItem: function(item) {
-
-    view = new cdb.geo.ui.LegendItem({
-      model: item,
-      className: (item.get("value") && item.get("value").indexOf("http") >= 0) ? "bkg" : "",
-      template: '<div class="bullet" style="background:<%= value %>"></div><%= name || "null" %>'
-    });
-
-    this.$el.find("ul").append(view.render());
-
-  },
-
-  render: function() {
-
-    if (this.model.get("template")) {
-
-      var template = _.template(this.model.get("template"));
-      this.$el.html(template(this.model.toJSON()));
-
-    } else {
-
-      this.$el.html(this.template(this.model.toJSON()));
-
-      if (this.items.length > 0) {
-        this._renderItems();
-      } else {
-        this.$el.html('<div class="warning">The legend is empty</div>');
-      }
-    }
->>>>>>> origin/fix/CDB-1075
-
-    return this;
-
-  }
-
-});
-
-/*
- * Custom Legend public interface
- *
- * */
-cdb.geo.ui.Legend.Custom = cdb.geo.ui.CustomLegend.extend({
-
-  className: "cartodb-legend custom",
-
-  type: "custom",
-
-  initialize: function() {
-
-    this.items = new cdb.geo.ui.LegendItems(this.options.data || this.options.items);
-
-    this.model = new cdb.geo.ui.LegendModel({
-      type: this.type,
-      title: this.options.title,
-      show_title: this.options.title ? true : false,
-      items: this.items.models
-    });
+    this.add_related_model(this.model);
 
     this._bindModel();
 
   },
 
-<<<<<<< HEAD
-  render: function() {
-
-    this.$el.html(this.template(this.model.toJSON()));
-
-    this._renderGraph(this.model.get("color"));
-
-    return this;
-
-  }
-
-});
-
-/*
- * Choropleth Legend public interface
- *
- * */
-cdb.geo.ui.Legend.Choropleth = cdb.geo.ui.ChoroplethLegend.extend({
-
-  type: "choropleth",
-
-  className: "cartodb-legend choropleth",
-
-  initialize: function() {
-
-    this.items    = this.options.items;
-
-    this.model = new cdb.geo.ui.LegendModel({
-      type:          this.type,
-      title:         this.options.title,
-      show_title:    this.options.title ? true : false,
-      leftLabel:     this.options.left  || this.options.leftLabel,
-      rightLabel:    this.options.right || this.options.rightLabel,
-      colors:        this.options.colors,
-      buckets_count: this.options.colors ? this.options.colors.length : 0
-    });
-
-    this.add_related_model(this.model);
-    this._bindModel();
-=======
-  _bindModel: function() {
-
-    this.model.bind("change:items change:template change:title change:show_title", this.render, this);
-
-  },
-
-});
-
-/*
- * BubbleLegend
- *
- * */
-cdb.geo.ui.BubbleLegend = cdb.geo.ui.BaseLegend.extend({
-
-  className: "bubble-legend",
-
-  template: _.template('<% if (title && show_title) { %><div class="legend-title"><%= title %></div><% } %><ul><li><%= min %></li><li class="graph"><div class="bubbles"></div></li><li><%= max %></li></ul>'),
-
-  initialize: function() {
-
-    this.items = this.model.items;
->>>>>>> origin/fix/CDB-1075
-
-  },
-
-  _bindModel: function() {
-
-<<<<<<< HEAD
-    this.model.bind("change:template change:title change:show_title change:colors change:leftLabel change:rightLabel", this.render, this);
-
-  },
-
-  _generateColorList: function() {
-
-    return _.map(this.model.get("colors"), function(color) {
-      return '<div class="quartile" style="background-color:' + color + '"></div>';
-    }).join("");
-
-  },
-
-  render: function() {
-
-    var options = _.extend(this.model.toJSON(), { colors: this._generateColorList() });
-=======
-    this.model.bind("change:template change:title change:show_title change:color change:min change:max", this.render, this);
-
-  },
-
-  setColor: function(color) {
-    this.model.set("color", color);
-  },
-
-  setMinValue: function(value) {
-    this.model.set("min", value);
-  },
-
-  setMaxValue: function(value) {
-    this.model.set("max", value);
-  },
-
-  _renderGraph: function(color) {
-    this.$el.find(".graph").css("background", color);
-  },
-
-  render: function() {
-
-    if (this.model.get("template")) {
-
-      var template = _.template(this.model.get("template"));
-      this.$el.html(template(this.model.toJSON()));
-
-      this.$el.removeClass("bubble-legend");
->>>>>>> origin/fix/CDB-1075
-
-    this.$el.html(this.template(options));
-
-<<<<<<< HEAD
-    return this;
-
-  }
-
-});
-
-
-/*
- * Intensity Legend public interface
- *
- * */
-cdb.geo.ui.Legend.Intensity = cdb.geo.ui.IntensityLegend.extend({
-
-  className: "cartodb-legend intensity",
-  type: "intensity",
-
-  initialize: function() {
-
-    this.items = this.options.items;
-
-    this.model = new cdb.geo.ui.LegendModel({
-      type: this.type,
-      title: this.options.title,
-      show_title: this.options.title ? true : false,
-      color: this.options.color,
-      leftLabel: this.options.left || this.options.leftLabel,
-      rightLabel: this.options.right || this.options.rightLabel
-    });
-
-    this.add_related_model(this.model);
-=======
-      var color = this.model.get("color") || (this.items.length >= 3 ? this.items.at(2).get("value") : "");
-
-      if (this.items.length >= 3) {
-
-        var min = this.model.get("min") || this.items.at(0).get("value");
-        var max = this.model.get("max") || this.items.at(1).get("value");
-
-        var options = _.extend(this.model.toJSON(), { min: min, max: max });
-
-        this.$el.html(this.template(options));
-
-      }
-
-      this._renderGraph(color);
-    }
-
-    return this;
-
-  }
-
-});
-
-
-/*
- * Bubble Legend public interface
- *
- * */
-cdb.geo.ui.Legend.Bubble = cdb.geo.ui.BubbleLegend.extend({
-
-  className: "cartodb-legend bubble",
-
-  type: "bubble",
-
-  initialize: function() {
-
-    this.model = new cdb.geo.ui.LegendModel({
-      type:  this.type,
-      title: this.options.title,
-      min:   this.options.min,
-      max:   this.options.max,
-      color: this.options.color,
-      show_title: this.options.title ? true : false
-    });
-
-    this.add_related_model(this.model);
-
->>>>>>> origin/fix/CDB-1075
-    this._bindModel();
-
-  },
-
-<<<<<<< HEAD
-  _bindModel: function() {
-
-    this.model.bind("change:title change:show_title change:color change:leftLabel change:rightLabel", this.render, this);
-
-=======
   render: function() {
 
     this.$el.html(this.template(this.model.toJSON()));
@@ -24186,28 +23659,19 @@ cdb.geo.ui.Legend.Choropleth = cdb.geo.ui.ChoroplethLegend.extend({
       return '<div class="quartile" style="background-color:' + color + '"></div>';
     }).join("");
 
->>>>>>> origin/fix/CDB-1075
   },
 
   render: function() {
 
-<<<<<<< HEAD
-    this.$el.html(this.template(this.model.toJSON()));
-
-    this._renderGraph(this.model.get("color"));
-=======
     var options = _.extend(this.model.toJSON(), { colors: this._generateColorList() });
 
     this.$el.html(this.template(options));
->>>>>>> origin/fix/CDB-1075
 
     return this;
 
   }
 
 });
-<<<<<<< HEAD
-=======
 
 
 /*
@@ -24254,7 +23718,6 @@ cdb.geo.ui.Legend.Intensity = cdb.geo.ui.IntensityLegend.extend({
   }
 
 });
->>>>>>> origin/fix/CDB-1075
 cdb.geo.ui.SwitcherItemModel = Backbone.Model.extend({ });
 
 cdb.geo.ui.SwitcherItems = Backbone.Collection.extend({
@@ -28932,156 +28395,6 @@ cdb.ui.common.Dialog = cdb.core.View.extend({
   }
 
 });
-cdb.ui.common.ShareDialog = cdb.ui.common.Dialog.extend({
-
-  tagName: 'div',
-  className: 'cartodb-share-dialog',
-
-  events: {
-    'click .ok': '_ok',
-    'click .cancel': '_cancel',
-    'click .close': '_cancel',
-    "click":                      '_stopPropagation',
-    "dblclick":                   '_stopPropagation',
-    "mousedown":                  '_stopPropagation'
-  },
-
-  default_options: {
-    title: 'title',
-    description: '',
-    ok_title: 'Ok',
-    cancel_title: 'Cancel',
-    width: 300,
-    height: 200,
-    clean_on_hide: false,
-    enter_to_confirm: false,
-    template_name: 'common/views/dialog_base',
-    ok_button_classes: 'button green',
-    cancel_button_classes: '',
-    modal_type: '',
-    modal_class: '',
-    include_footer: true,
-    additionalButtons: []
-  },
-
-  initialize: function() {
-
-    _.defaults(this.options, this.default_options);
-
-    _.bindAll(this, 'render', '_keydown');
-
-    this.isOpen = false;
-
-    var self = this;
-
-    if (this.options.target) {
-      this.options.target.on("click", function() {
-        self.open();
-      })
-    }
-
-    // Keydown bindings for the dialog
-    $(document).bind('keydown', this._keydown);
-
-    // After removing the dialog, cleaning other bindings
-    this.bind("clean", this._reClean);
-
-  },
-
-  _stopPropagation: function(ev) {
-
-    ev.stopPropagation();
-
-  },
-
-  open: function() {
-
-    var self = this;
-
-    this.$el.show(0, function(){
-      self.isOpen = true;
-    });
-
-  },
-
-  hide: function() {
-
-    var self = this;
-
-    this.$el.hide(0, function(){
-      self.isOpen = false;
-    });
-
-    if (this.options.clean_on_hide) {
-      this.clean();
-    }
-
-  },
-
-  toggle: function() {
-
-    if (this.isOpen) {
-      this.hide();
-    } else {
-      this.open();
-    }
-
-  },
-
-  render: function() {
-
-    var $el = this.$el;
-
-    var title       = this.options.title;
-    var description = this.options.description;
-    var share_url   = this.options.share_url;
-    var facebook_url, twitter_url;
-
-    this.$el.addClass(this.options.size);
-
-    if (this.options.facebook_url) {
-      facebook_url = this.options.facebook_url;
-    } else {
-      facebook_url = "http://www.facebook.com/sharer.php?u=" + share_url + "&text=Map of " + title + ": " + description;
-    }
-
-    if (this.options.twitter_url) {
-      twitter_url = this.options.twitter_url;
-    } else {
-      twitter_url = "https://twitter.com/share?url=" + share_url + "&text=Map of " + title + ": " + description + "... ";
-    }
-
-    var options = _.extend(this.options, { facebook_url: facebook_url, twitter_url: twitter_url });
-
-    $el.html(this.options.template(options));
-
-    $el.find(".modal").css({
-      width: this.options.width
-    });
-
-    if (this.render_content) {
-      this.$('.content').append(this.render_content());
-    }
-
-    if(this.options.modal_class) {
-      this.$el.addClass(this.options.modal_class);
-    }
-
-    var self = this;
-
-    this.cancel = function(){
-      self.options.model.set("scrollwheel", true);
-    }
-
-    if (this.options.disableLinks) {
-      this.$el.find("a").attr("target", "");
-    }
-
-    this.options.model.set("scrollwheel", false);
-    return this;
-  }
-
-});
 /**
  * generic embbed notification, like twitter "new notifications"
  *
@@ -30266,12 +29579,6 @@ var Vis = cdb.core.View.extend({
         shareable: opt.shareable ? true: false,
         url: vizjson.url
       });
-
-      vizjson.overlays.push({
-        type: "share",
-        url: vizjson.url
-      });
-
     }
 
     if (opt.layer_selector) {
@@ -30779,7 +30086,12 @@ cdb.vis.Overlay.register('header', function(data, vis) {
       {{/title}}\
       {{#description}}<p>{{description}}</p>{{/description}}\
       {{#shareable}}\
-        <a href='#' class='share'>Share</a>\
+        <div class='social'>\
+          <a class='facebook' target='_blank'\
+            href='http://www.facebook.com/sharer.php?u={{share_url}}&text=Map of {{title}}: {{description}}'>F</a>\
+          <a class='twitter' href='https://twitter.com/share?url={{share_url}}&text=Map of {{title}}: {{descriptionShort}}... '\
+           target='_blank'>T</a>\
+        </div>\
       {{/shareable}}\
     ",
     data.templateType || 'mustache'
@@ -30882,60 +30194,6 @@ cdb.vis.Overlay.register('layer_selector', function(data, vis) {
 
 
   return layerSelector.render();
-});
-
-// search content
-cdb.vis.Overlay.register('share', function(data, vis) {
-
-  // Add the complete url for facebook and twitter
-  if (location.href) {
-    data.share_url = encodeURIComponent(location.href);
-  } else {
-    data.share_url = data.url;
-  }
-
-  var template = cdb.core.Template.compile(
-    data.template || '\
-      <div class="mamufas">\
-        <section class="block modal {{modal_type}}">\
-          <a href="#close" class="close">x</a>\
-          <div class="head">\
-            <h3>{{ title }}</h3>\
-          </div>\
-          <div class="content">\
-            <div class="buttons">\
-              <h4>Social</h4>\
-              <ul>\
-                <li><a class="facebook" target="_blank" href="{{ facebook_url }}">Share on Facebook</a></li>\
-                <li><a class="twitter" href="{{ twitter_url }}" target="_blank">Share on Twitter</a></li>\
-              </ul>\
-            </div><div class="embed_code">\
-             <h4>Embed this map</h4>\
-             <textarea id="" name="" cols="30" rows="10">{{ code }}</textarea>\
-           </div>\
-          </div>\
-        </div>\
-      </div>\
-    ',
-    data.templateType || 'mustache'
-  );
-
-  var code = "<iframe width='100%' height='520' frameborder='0' src='" + location.href + "'></iframe>";
-
-  var dialog = new cdb.ui.common.ShareDialog({
-    title: 'Share this map',
-    model: vis.map,
-    code: code,
-    url: data.url,
-    share_url: data.share_url,
-    template: template,
-    target: $(".cartodb-header .share"),
-    size: $(document).width() > 400 ? "" : "small",
-    width: $(document).width() > 400 ? 430 : 216
-  });
-
-  return dialog.render();
-
 });
 
 // search content

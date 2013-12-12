@@ -118,6 +118,11 @@ module ApplicationHelper
     end if Rails.env.development?
   end
 
+  def form_error_for(attribute, errors)
+    error_messages = errors[attribute].map{|e| e.humanize }.join('. ')
+    content_tag :div, error_messages, :class => 'error' if error_messages.present?
+  end
+
   def v1_vizjson_url(visualization)
     "/api/v1/viz/#{visualization.id}/viz"
   end #v1_vizjson_url

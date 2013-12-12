@@ -547,6 +547,12 @@ var Vis = cdb.core.View.extend({
         shareable: opt.shareable ? true: false,
         url: vizjson.url
       });
+
+      vizjson.overlays.push({
+        type: "share",
+        url: vizjson.url
+      });
+
     }
 
     var device = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);

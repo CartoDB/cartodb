@@ -95,6 +95,7 @@
         'geo/gmaps/gmaps.js',
 
         'ui/common/dialog.js',
+        'ui/common/share.js',
         'ui/common/notification.js',
         'ui/common/table.js',
         'ui/common/dropdown.js',

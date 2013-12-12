@@ -82,12 +82,7 @@ cdb.vis.Overlay.register('header', function(data, vis) {
       {{/title}}\
       {{#description}}<p>{{description}}</p>{{/description}}\
       {{#shareable}}\
-        <div class='social'>\
-          <a class='facebook' target='_blank'\
-            href='http://www.facebook.com/sharer.php?u={{share_url}}&text=Map of {{title}}: {{description}}'>F</a>\
-          <a class='twitter' href='https://twitter.com/share?url={{share_url}}&text=Map of {{title}}: {{descriptionShort}}... '\
-           target='_blank'>T</a>\
-        </div>\
+        <a href='#' class='share'>Share</a>\
       {{/shareable}}\
     ",
     data.templateType || 'mustache'
@@ -190,6 +185,60 @@ cdb.vis.Overlay.register('layer_selector', function(data, vis) {
 
 
   return layerSelector.render();
+});
+
+// search content
+cdb.vis.Overlay.register('share', function(data, vis) {
+
+  // Add the complete url for facebook and twitter
+  if (location.href) {
+    data.share_url = encodeURIComponent(location.href);
+  } else {
+    data.share_url = data.url;
+  }
+
+  var template = cdb.core.Template.compile(
+    data.template || '\
+      <div class="mamufas">\
+        <section class="block modal {{modal_type}}">\
+          <a href="#close" class="close">x</a>\
+          <div class="head">\
+            <h3>{{ title }}</h3>\
+          </div>\
+          <div class="content">\
+            <div class="buttons">\
+              <h4>Social</h4>\
+              <ul>\
+                <li><a class="facebook" target="_blank" href="{{ facebook_url }}">Share on Facebook</a></li>\
+                <li><a class="twitter" href="{{ twitter_url }}" target="_blank">Share on Twitter</a></li>\
+              </ul>\
+            </div><div class="embed_code">\
+             <h4>Embed this map</h4>\
+             <textarea id="" name="" cols="30" rows="10">{{ code }}</textarea>\
+           </div>\
+          </div>\
+        </div>\
+      </div>\
+    ',
+    data.templateType || 'mustache'
+  );
+
+  var code = "<iframe width='100%' height='520' frameborder='0' src='" + location.href + "'></iframe>";
+
+  var dialog = new cdb.ui.common.ShareDialog({
+    title: 'Share this map',
+    model: vis.map,
+    code: code,
+    url: data.url,
+    share_url: data.share_url,
+    template: template,
+    target: $(".cartodb-header .share"),
+    size: $(document).width() > 400 ? "" : "small",
+    width: $(document).width() > 400 ? 430 : 216
+  });
+
+  return dialog.render();
+
 });
 
 // search content

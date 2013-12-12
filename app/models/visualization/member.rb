@@ -173,9 +173,7 @@ module CartoDB
       end #propagate_privacy_to
 
       def propagate_name_to(table)
-        table.name = self.name
-        table.update(name: self.name)
-        table.send(:update_name_changes)
+        table.rename_to(name)
         self
       end #propagate_name_to
 

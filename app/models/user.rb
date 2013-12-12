@@ -40,7 +40,8 @@ class User < Sequel::Model
     :naked => true # avoid adding json_class to result
   }
 
-  SYSTEM_TABLE_NAMES = %w( spatial_ref_sys geography_columns geometry_columns raster_columns raster_overviews cdb_tablemetadata )
+  SYSTEM_TABLE_NAMES = %w( spatial_ref_sys geography_columns geometry_columns
+    raster_columns raster_overviews cdb_tablemetadata layergroup )
   SCHEMAS = %w( public cdb_importer )
 
   self.raise_on_typecast_failure = false
@@ -244,7 +245,7 @@ class User < Sequel::Model
       :rows => rows.map{ |row| row.delete("the_geom"); row }
     }
   rescue => e
-    if e.message =~ /^PGError/
+    if e.message =~ /^PG::Error/
       if e.message.include?("does not exist")
         if e.message.include?("column")
           raise CartoDB::ColumnNotExists, e.message
@@ -295,9 +296,69 @@ class User < Sequel::Model
     end
   end
 
+  def table_ids
+    query = %Q(
+      SELECT oid FROM pg_class WHERE relname IN (
+        SELECT table_name FROM information_schema.tables 
+        WHERE table_schema = 'public'
+        AND table_type = 'BASE TABLE'
+        AND table_name NOT IN ('cdb_tablemetadata', 'spatial_ref_sys')
+      )
+    )
+    in_database[query].map(:oid)
+  end
 
-  def tables
-    Table.filter(:user_id => self.id).order(:id).reverse
+  def unregistered_oids
+    table_ids - Table.where(user_id: id).map(&:table_id)
+  end
+
+  def orphaned_table_objects
+    Table.where(user_id: id).reject { |table|
+      table_ids.include?(table.table_id)
+    }
+  end
+
+  def register_new_tables_in_database
+    Hash[real_tables.map { |record| [record[:oid], record[:relname]] }]
+      .select { |oid, name| unregistered_oids.include?(oid) }
+      .each { |oid, name| register_table(oid, name) }
+  end
+
+
+  def register_table(oid, name)
+    puts "======= registering #{oid} #{name}"
+    table = Table.new
+    table.user_id = id
+    table.name = name
+    table.migrate_existing_table = name
+    table.table_id = oid
+    table.save
+    table.optimize
+    table.map.recalculate_bounds!
+  rescue => exception
+    puts exception.to_s + exception.backtrace.join("\n")
+  end
+
+  def unregister_orphaned_metadata_records
+    orphaned_table_objects.each(&:destroy)
+  end
+
+  def sync_tables_metadata
+    register_new_tables_in_database
+    unregister_orphaned_metadata_records
+  rescue => exception
+    puts exception.to_s + exception.backtrace.join("\n")
+  end
+
+  def taken_table_names
+    Hash[
+      real_tables.map { |record| [record[:oid], record[:relname]] }
+    ].values
+  end
+
+  def tables(table_ids=nil)
+    table_ids ||= self.table_ids
+    Table.where(user_id: id, table_id: table_ids).order(:id).reverse
   end
 
   # Retrive list of user tables from database catalogue
@@ -522,6 +583,7 @@ class User < Sequel::Model
   end
 
   def link_created_tables
+    metadata_tables_ids = self.tables.select(:table_id).map(&:table_id)
     created_tables = real_tables.reject{|t| metadata_tables_ids.include?(t[:oid])}
     created_tables.each do |t|
       table = Table.new
@@ -630,8 +692,15 @@ class User < Sequel::Model
   end
 
   def rebuild_quota_trigger
-    load_cartodb_functions
     puts "Rebuilding quota trigger in db '#{database_name}' (#{username})"
+    self.in_database(:as => :superuser).run(<<-TRIGGER
+      DROP FUNCTION IF EXISTS public._CDB_UserQuotaInBytes();
+      CREATE OR REPLACE FUNCTION public._CDB_UserQuotaInBytes() RETURNS int8 AS $$
+        SELECT #{self.quota_in_bytes}::int8
+      $$ LANGUAGE 'sql' IMMUTABLE;
+    TRIGGER
+    )
+    load_cartodb_functions
     tables.all.each do |table|
       begin
         table.set_trigger_check_quota
@@ -715,6 +784,8 @@ class User < Sequel::Model
     create_schema('cdb_importer')
     set_database_permissions_in_schema('cdb')
     set_database_permissions_in_schema('cdb_importer')
+    rebuild_quota_trigger
+    load_cartodb_functions
   end
 
   # Attempts to create a new database schema

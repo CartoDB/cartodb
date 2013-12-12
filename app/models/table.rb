@@ -28,6 +28,7 @@ class Table < Sequel::Model(:user_tables)
 
   DEFAULT_THE_GEOM_TYPE = "geometry"
 
+
   # Associations
   many_to_one  :map
   many_to_many :layers, join_table: :layers_user_tables,
@@ -65,13 +66,6 @@ class Table < Sequel::Model(:user_tables)
     ].all.map {|r| r[:st_geometrytype] }
   end
 
-  def_dataset_method(:search) do |query|
-    conditions = <<-EOS
-      to_tsvector('english', coalesce(name, '') || ' ' || coalesce(description, '')) @@ plainto_tsquery('english', ?) OR name ILIKE ?
-      EOS
-    where(conditions, query, "%#{query}%")
-  end
-
   def_dataset_method(:multiple_order) do |criteria|
     return order(:id) if criteria.nil? || criteria.empty?
     order_params = criteria.map do |key, order|
@@ -101,14 +95,11 @@ class Table < Sequel::Model(:user_tables)
     ## SANITY CHECKS
 
     # userid and table name tuple must be unique
-    validates_unique [:name, :user_id], :message => 'is already taken'
+    #validates_unique [:name, :user_id], :message => 'is already taken'
 
     # tables must have a user
     errors.add(:user_id, "can't be blank") if user_id.blank?
 
-    errors.add(
-      :name, "is a reserved keyword, please choose a different one"
-    ) if self.name == 'layergroup'
 
     # privacy setting must be a sane value
     errors.add(:privacy, 'has an invalid value') if privacy != PRIVATE && privacy != PUBLIC
@@ -256,8 +247,8 @@ class Table < Sequel::Model(:user_tables)
         :logger => ::Rails.logger,
         "username" => owner.database_username,
         "password" => owner.database_password,
-        :current_name => migrate_existing_table || uniname,
-        :suggested_name => uniname,
+        :current_name => migrate_existing_table,
+        :suggested_name => uniname || migrate_existing_table,
         :debug => (Rails.env.development?),
         :remaining_quota => owner.remaining_quota,
         :remaining_tables => owner.remaining_table_quota,
@@ -265,6 +256,7 @@ class Table < Sequel::Model(:user_tables)
       ).symbolize_keys
       importer = CartoDB::Migrator.new hash_in
       importer = importer.migrate!
+      self.name = uniname
       @data_import.reload
       #@data_import.migrated
       @data_import.save
@@ -357,29 +349,28 @@ class Table < Sequel::Model(:user_tables)
     if migrate_existing_table.present?
       #init state machine
       if self.data_import_id.nil? #needed for non ui-created tables
-        @data_import  = DataImport.new(:user_id => self.user_id)
+        @data_import = DataImport.new(:user_id => self.user_id)
         @data_import.updated_at = Time.now
         @data_import.save
       else
-        @data_import  = DataImport.find(:id=>self.data_import_id)
+        @data_import = DataImport.find(:id=>self.data_import_id)
       end
 
-      importer_result_name = import_to_cartodb
-
+      importer_result_name = import_to_cartodb(migrate_existing_table)
       @data_import.reload
       @data_import.table_name = importer_result_name
       @data_import.save
 
-      self[:name] = importer_result_name
-
-      schema = self.schema(:reload => true)
+      @name   = importer_result_name
+      schema  = self.schema(:reload => true)
 
       import_cleanup
       set_the_geom_column!
+      cartodbfy
       set_table_id
-      #@data_import.formatted
       @data_import.save
     else
+      @name = get_valid_name unless defined?(@name) && !@name.nil?
       create_table_in_database!
       set_table_id
       if !self.temporal_the_geom_type.blank?
@@ -387,6 +378,7 @@ class Table < Sequel::Model(:user_tables)
         self.temporal_the_geom_type = nil
       end
       set_the_geom_column!(self.the_geom_type)
+      cartodbfy
     end
   rescue => e
     self.handle_creation_error(e)
@@ -480,10 +472,10 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def create_default_map_and_layers
-    m = Map.create(Map::DEFAULT_OPTIONS.merge(table_id: self.id, user_id: self.user_id))
-    self.map_id = m.id
+    map = Map.create(Map::DEFAULT_OPTIONS.merge(table_id: self.id, user_id: self.user_id))
+    self.map_id = map.id
     base_layer = Layer.new(Cartodb.config[:layer_opts]["base"])
-    m.add_layer(base_layer)
+    map.add_layer(base_layer)
 
     data_layer = Layer.new(Cartodb.config[:layer_opts]["data"])
     data_layer.options["table_name"] = self.name
@@ -491,7 +483,7 @@ class Table < Sequel::Model(:user_tables)
     data_layer.options["tile_style"] = "##{self.name} #{Cartodb.config[:layer_opts]["default_tile_styles"][self.the_geom_type]}"
     data_layer.infowindow ||= {}
     data_layer.infowindow['fields'] = []
-    m.add_layer(data_layer)
+    map.add_layer(data_layer)
   end
 
   def create_default_visualization
@@ -542,13 +534,14 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def remove_table_from_user_database
+    return self if name.to_s == oid.to_s
     owner.in_database(:as => :superuser) do |user_database|
       begin
         user_database.run("DROP SEQUENCE IF EXISTS cartodb_id_#{oid}_seq")
       rescue => e
         CartoDB::Logger.info "Table#after_destroy error", "maybe table #{self.name} doesn't exist: #{e.inspect}"
       end
-      user_database.run(%Q{DROP TABLE IF EXISTS "#{self.name}"})
+      user_database.run(%Q{DROP TABLE IF EXISTS #{self.name}})
     end
   end
   ## End of Callbacks
@@ -641,16 +634,30 @@ class Table < Sequel::Model(:user_tables)
     end
   end
 
+  def name
+    return @name if defined?(@name) && !@name.nil?
+    return nil unless table_id
+    @name ||= owner.in_database
+                .fetch(%Q( SELECT '?'::regclass), table_id)
+                .to_a.first.fetch(:regclass)
+  end
+
+  def rename_to(name)
+    @name_changed_from = self.name
+    self.name = name
+    update_name_changes
+  end
 
   def name=(value)
+    return if value.nil? || value.empty?
     value = value.downcase if value
-    return if value == self[:name] || value.blank?
-    new_name = get_valid_name(value, current_name: self.name)
+    new_name = get_valid_name(value, current_name: @name)
+    return if new_name == @name
 
     # Do not keep track of name changes until table has been saved
-    @name_changed_from = self.name if !new? && self.name.present?
+    @name_changed_from = name if !new? && name.present?
     self.invalidate_varnish_cache if self.database_name
-    self[:name] = new_name
+    @name = new_name
   end
 
   def tags=(value)
@@ -681,7 +688,7 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def privacy_changed?
-    previous_changes.keys.include?(:privacy)
+    !previous_changes.nil? && previous_changes.keys.include?(:privacy)
   end #privacy_changed?
 
   def key
@@ -1100,6 +1107,12 @@ class Table < Sequel::Model(:user_tables)
 
   def self.find_by_identifier(user_id, identifier)
     col = (identifier =~ /\A\d+\Z/ || identifier.is_a?(Fixnum)) ? 'id' : 'name'
+    if col == 'name'
+      col = 'table_id'
+      identifier = User[user_id].in_database
+        .fetch(%Q( SELECT ?::regclass::oid), identifier)
+        .to_a.first.fetch(:oid)
+    end
 
     table = fetch(%Q{
       SELECT *
@@ -1160,43 +1173,19 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def set_trigger_the_geom_webmercator
-    return true unless self.schema(:reload => true).flatten.include?(THE_GEOM)
-    owner.in_database(:as => :superuser) do |user_database|
-      user_database.run(<<-TRIGGER
-        DROP TRIGGER IF EXISTS update_the_geom_webmercator_trigger ON "#{self.name}";
-        CREATE OR REPLACE FUNCTION update_the_geom_webmercator() RETURNS trigger AS $update_the_geom_webmercator_trigger$
-          BEGIN
-                NEW.#{THE_GEOM_WEBMERCATOR} := CDB_TransformToWebmercator(NEW.the_geom);
-                RETURN NEW;
-          END;
-        $update_the_geom_webmercator_trigger$ LANGUAGE plpgsql VOLATILE COST 100;
-
-        #{create_the_geom_if_not_exists(self.name)}
-
-        CREATE TRIGGER update_the_geom_webmercator_trigger
-        BEFORE INSERT OR UPDATE OF the_geom ON "#{self.name}"
-           FOR EACH ROW EXECUTE PROCEDURE update_the_geom_webmercator();
-  TRIGGER
-        )
-    end
+    self.cartodbfy
+    # this would really belong in a migration
+    owner.in_database(:as => :superuser).run(%Q(
+      DROP TRIGGER IF EXISTS update_the_geom_webmercator_trigger ON "#{self.name}";
+    ))
   end
 
   def set_trigger_update_updated_at
-    owner.in_database(:as => :superuser).run(<<-TRIGGER
+    self.cartodbfy
+    # this would really belong in a migration
+    owner.in_database(:as => :superuser).run(%Q(
       DROP TRIGGER IF EXISTS update_updated_at_trigger ON "#{self.name}";
-
-      CREATE OR REPLACE FUNCTION update_updated_at() RETURNS TRIGGER AS $update_updated_at_trigger$
-        BEGIN
-               NEW.updated_at := now();
-               RETURN NEW;
-        END;
-      $update_updated_at_trigger$ LANGUAGE plpgsql;
-
-      CREATE TRIGGER update_updated_at_trigger
-      BEFORE UPDATE ON "#{self.name}"
-        FOR EACH ROW EXECUTE PROCEDURE update_updated_at();
-TRIGGER
-    )
+    ))
   end
 
   # Drop "cache_checkpoint", if it exists
@@ -1240,24 +1229,13 @@ TRIGGER
     owner.in_database[%Q{ANALYZE "#{self.name}";}]
   end
 
+  def cartodbfy
+    owner.in_database(:as => :superuser).run("SELECT CDB_CartodbfyTable('#{self.name}')")
+  end
+
   # Set quota checking trigger for this table
   def set_trigger_check_quota
-    # probability factor of running the check for each row
-    # (it'll always run before each statement)
-    check_probability_factor = 0.001 # TODO: base on database usage ?
-    owner.in_database(:as => :superuser).run(<<-TRIGGER
-    BEGIN;
-    DROP TRIGGER IF EXISTS test_quota ON "#{self.name}";
-    CREATE TRIGGER test_quota BEFORE UPDATE OR INSERT ON "#{self.name}"
-      EXECUTE PROCEDURE CDB_CheckQuota(1, #{self.owner.quota_in_bytes});
-    DROP TRIGGER IF EXISTS test_quota_per_row ON "#{self.name}";
-    CREATE TRIGGER test_quota_per_row BEFORE UPDATE OR INSERT ON "#{self.name}"
-      FOR EACH ROW
-      EXECUTE PROCEDURE CDB_CheckQuota( #{check_probability_factor},
-                                        #{self.owner.quota_in_bytes} );
-    COMMIT;
-  TRIGGER
-  )
+    self.cartodbfy
   end
 
   def owner
@@ -1306,7 +1284,10 @@ TRIGGER
     record.nil? ? nil : record[:oid]
   end # get_table_id
 
-
+  def reload
+    @name = nil
+    super
+  end
 
   private
 
@@ -1318,9 +1299,16 @@ TRIGGER
     update_updated_at && save_changes
   end
 
-  def get_valid_name(name, options={})
+  def get_valid_name(name=nil, options={})
+    query = %Q(
+      SELECT table_name FROM information_schema.tables 
+      WHERE table_schema = 'public'
+      AND table_type = 'BASE TABLE'
+      AND table_name NOT IN ('cdb_tablemetadata', 'spatial_ref_sys');
+    )
     name_candidates = [] 
-    name_candidates = self.owner.tables.select_map(:name) if owner
+    #name_candidates = self.owner.tables.select_map(:name) if owner
+    name_candidates = owner.in_database[query].map(:table_name) if owner
 
     options.merge!(name_candidates: name_candidates)
     Table.get_valid_table_name(name, options)
@@ -1329,6 +1317,13 @@ TRIGGER
   # Gets a valid postgresql table name for a given database
   # See http://www.postgresql.org/docs/9.1/static/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS
   def self.get_valid_table_name(name, options = {})
+    query = %Q(
+      SELECT table_name FROM information_schema.tables 
+      WHERE table_schema = 'public'
+      AND table_type = 'BASE TABLE'
+      AND table_name NOT IN ('cdb_tablemetadata', 'spatial_ref_sys');
+    )
+
     # Initial name cleaning
     name = name.to_s.strip #.downcase
     name = 'untitled_table' if name.blank?
@@ -1344,7 +1339,10 @@ TRIGGER
 
     return name if name == options[:current_name]
     # We don't want to use an existing table name
-    existing_names = options[:name_candidates] || options[:connection]["select relname from pg_stat_user_tables WHERE schemaname='public'"].map(:relname)
+    #existing_names = options[:name_candidates] || options[:connection]["select relname from pg_stat_user_tables WHERE schemaname='public'"].map(:relname)
+
+    existing_names = options[:name_candidates] ||
+      options[:connection][query].map(:table_name)
     existing_names = existing_names + User::SYSTEM_TABLE_NAMES
     rx = /_(\d+)$/
     count = name[rx][1].to_i rescue 0
@@ -1535,9 +1533,10 @@ SQL
   def update_name_changes
     if @name_changed_from.present? && @name_changed_from != name
       # update metadata records
-      reload
-      $tables_metadata.rename(Table.key(database_name,@name_changed_from), key)
       owner.in_database.rename_table(@name_changed_from, name)
+      @name = nil
+      previous_key = Table.key(database_name, @name_changed_from)
+      $tables_metadata.rename(previous_key, key)
       propagate_name_change_to_table_visualization
 
       CartoDB::notify_exception(

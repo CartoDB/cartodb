@@ -7,6 +7,8 @@ describe User do
     @new_user = new_user
     @user     = create_user :email => 'admin@example.com', :username => 'admin', :password => 'admin123'
     @user2    = create_user :email => 'user@example.com',  :username => 'user',  :password => 'user123'
+    @user3    = create_user email: 'user3@example.com', username: 'user3',
+                  password: 'user3'
 
     puts "[rspec][user_spec] Loading user data..."
     reload_user_data(@user) && @user.reload
@@ -572,9 +574,48 @@ describe User do
     @user.trial_ends_at.should_not be_nil
   end
 
+  describe '#sync_tables_metadata' do
+    it 'registers tables without a metadata record', now: true do
+      @user3.reload
+
+      @user3.in_database.run('CREATE TABLE ghost_table (test integer)')
+      Table.where(user_id: @user3.id).to_a.length.should == 0
+      @user3.tables.to_a.length.should == 0
+
+      @user3.sync_tables_metadata
+
+      Table.where(user_id: @user3.id).to_a.length.should == 1
+      @user3.tables.to_a.length.should == 1
+      @user3.tables.first.destroy
+    end
+
+    it 'removes orphaned metadata records', now: true do
+      @user3.reload
+
+      @user3.in_database.run('CREATE TABLE ghost_table (test integer)')
+      Table.where(user_id: @user3.id).to_a.length.should == 0
+      @user3.tables.to_a.length.should == 0
+
+      @user3.sync_tables_metadata
+
+      Table.where(user_id: @user3.id).to_a.length.should == 1
+      @user3.tables.to_a.length.should == 1
+
+      @user3.in_database.run('DROP TABLE ghost_table')
+      @user3.taken_table_names.length.should == 0
+      Table.where(user_id: @user3.id).to_a.length.should == 1
+
+      @user3.sync_tables_metadata
+
+      @user3.taken_table_names.length.should == 0
+      Table.where(user_id: @user3.id).to_a.length.should == 0
+    end
+  end
+
   describe '#link_ghost_tables' do
     it "should correctly count real tables" do
-    reload_user_data(@user) && @user.reload
+      pending
+      reload_user_data(@user) && @user.reload
       @user.in_database.run('create table ghost_table (test integer)')
       @user.real_tables.map { |c| c[:relname] }.should =~ ["ghost_table", "import_csv_1", "twitters"]
       @user.real_tables.size.should == 3
@@ -582,6 +623,7 @@ describe User do
     end
 
     it "should link a table with null table_id" do
+      pending
       reload_user_data(@user) && @user.reload
       table = create_table :user_id => @user.id, :name => 'My table'
       initial_count = @user.tables.count
@@ -594,6 +636,7 @@ describe User do
     end
 
     it "should link a table with wrong table_id" do
+      pending
       reload_user_data(@user) && @user.reload
       table = create_table :user_id => @user.id, :name => 'My table 2'
       initial_count = @user.tables.count
@@ -606,6 +649,7 @@ describe User do
     end
 
     it "should remove a table that does not exist on the user database" do
+      pending
       reload_user_data(@user) && @user.reload
       initial_count = @user.tables.count
       table = create_table :user_id => @user.id, :name => 'My table 3'
@@ -617,6 +661,7 @@ describe User do
     end
 
     it "should not do anything when real tables is blank" do
+      pending
       reload_user_data(@user) && @user.reload
       @user.stubs(:real_tables).returns([])
       @user.tables.count.should_not == 0

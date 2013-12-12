@@ -9,6 +9,7 @@ module CartoDB
   class InvalidSRID < StandardError; end
   class InvalidGeoJSONFormat < StandardError; end
   class QueryNotAllowed < StandardError; end
+  class AppendError < StandardError; end
   
   class InvalidMember < StandardError; end
   

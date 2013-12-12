@@ -5,6 +5,7 @@ describe DataImport do
   before(:each) do
     User.all.each(&:destroy)
     @user = create_user(:username => 'test', :email => "client@example.com", :password => "clientex")
+    #@user.rebuild_quota_trigger
     @table = create_table :user_id => @user.id
   end
 
@@ -36,8 +37,7 @@ describe DataImport do
     data_import.error_code.should == 8004
   end
 
-  it 'should allow to append data to an existing table' do
-    pending "not yet implemented"
+  it 'can append data to an existing table' do
     fixture = '/../db/fake_data/column_string_to_boolean.csv'
     expect do
       DataImport.create(
@@ -48,6 +48,20 @@ describe DataImport do
         :append        => true
       ).run_import!
     end.to change{@table.reload.records[:total_rows]}.by(11)
+
+    expect {
+      2.times do
+        data_import = DataImport.create(
+          :user_id       => @user.id,
+          :table_id      => @table.id,
+          :data_source   => fixture,
+          :updated_at    => Time.now,
+          :append        => true
+        )
+        data_import.run_import!
+        puts data_import.log
+      end
+    }.to change { @table.reload.records[:total_rows] }.by(22)
   end
 
   it 'raises a meaningful error if over storage quota' do

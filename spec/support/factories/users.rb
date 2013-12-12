@@ -70,12 +70,15 @@ module CartoDB
       end
 
       data_import.data_source = file_name
-      data_import.send :new_importer
+      data_import.send :importer
       data_import
     end
 
     def delete_user_data user
       user.tables.destroy
+      user.taken_table_names.each { |table_name| 
+        user.in_database.run(%Q{DROP TABLE "#{table_name}" })
+      }
       user.maps_dataset.destroy
       user.layers_dataset.destroy
       user.assets_dataset.destroy

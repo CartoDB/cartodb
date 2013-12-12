@@ -1,0 +1,21 @@
+SET
+CREATE FUNCTION
+SELECT 1
+single non-geometrical column cartodbfied fine
+DROP TABLE
+SELECT 1
+srid-unconstrained the_geom cartodbfied fine
+DROP TABLE
+SELECT 2
+mixed-srid the_geom cartodbfied fine
+extent|BOX(-1 -1,0 0)
+DROP TABLE
+SELECT 1
+wrong srid-constrained the_geom cartodbfied fine
+extent|BOX(1 1,2 2)|BOX(111319 111325,222639 222684)
+DROP TABLE
+SELECT 1
+wrong srid-constrained the_geom_webmercator cartodbfied fine
+extent|BOX(1 1,2 2)
+DROP TABLE
+DROP FUNCTION

@@ -181,7 +181,16 @@ class Layer < Sequel::Model
   end #tables_from_table_name_option
 
   def tables_from(names)
-    Table.where(user_id: user.id, name: names).all
+    query = %Q(
+      SELECT oid FROM pg_class WHERE relname IN (
+        SELECT table_name FROM information_schema.tables 
+        WHERE table_schema = 'public'
+        AND table_type = 'BASE TABLE'
+        AND table_name IN ?
+      )
+    )
+    table_ids = user.in_database.fetch(query, names).map(:oid)
+    user.tables(table_ids).all
   end #tables_from
 
   def affected_table_names

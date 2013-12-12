@@ -51,25 +51,7 @@
     }
 
     div.hint {
-      position:relative;
-      width:472px;
-      margin-top:15px;
-      background:image-url('layout/hint_line_bkg.png') repeat 0 -3px;
-
-      p {
-        @include inline-block();
-        vertical-align:top;
-        width:415px;
-        line-height:18px;
-      }
-
-      span {
-        @include inline-block();
-        vertical-align:top;
-        margin:4px 10px 0 14px;
-        font:bold 11px $text-fonts2;
-        color:#333333;
-      }
+      width:470px;
     }
   }
 

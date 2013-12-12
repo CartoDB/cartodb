@@ -6,7 +6,9 @@
 
   @import "compass/css3/border-radius";
   @import "compass/css3/box-shadow";
+  @import "compass/css3/inline-block";
   @import "../elements/elements-sprite";
+  @import "../common/vars";
 
   .mamufas {
     position:fixed;
@@ -24,6 +26,24 @@
       background:white;
       @include border-radius(4px);
       @include box-shadow(rgba(black,0.15) 0 0 0 4px);
+
+      // Options panes
+      div.dialog-panes {
+        position:relative;
+        display:block;
+      }
+
+      .dialog-tabs li {
+        margin-bottom:25px;
+        border-bottom:none;
+      }
+
+      .dialog-pane {display:none; margin-left:20px;}
+      .dialog-tab.active .dialog-pane {display:block}
+
+      .dialog-upload-pane {
+        margin-bottom:50px;
+      }
 
       a.close {
         position:absolute;
@@ -106,6 +126,28 @@
           padding-top:0;
           border:none;
           a.cancel {display:none}
+        }
+      }
+
+      // Hint block
+      div.hint {
+        position:relative;
+        display:block;
+        background:image-url('layout/hint_line_bkg.png') repeat 0 -3px;
+
+        p {
+          @include inline-block();
+          vertical-align:top;
+          width:88%;
+          line-height:18px;
+        }
+
+        span {
+          @include inline-block();
+          vertical-align:top;
+          margin:4px 10px 0 14px;
+          font:bold 11px $text-fonts2;
+          color:#333333;
         }
       }
     }

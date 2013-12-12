@@ -30,5 +30,9 @@
     });
 
     cdb.config = new Config();
+    cdb.config.set({
+      cartodb_attributions: "CartoDB <a href='http://cartodb.com/attributions' target='_blank'>attribution</a>",
+      cartodb_logo_link: "http://www.cartodb.com",
+    });
 
 })();

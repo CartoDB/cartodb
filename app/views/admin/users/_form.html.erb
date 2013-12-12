@@ -45,7 +45,9 @@
   </div>
 
   <div class="foot">
-    <%= link_to "delete this user", "#/delete-user", :class => "left delete red margin15" %>
+    <% if !@user.new? -%>
+      <%= link_to "delete this user", organization_user_path(@user.username), :class => "left delete red margin15", method: :delete, data: { confirm: 'Are you sure?' } %>
+    <% end %>
     <%= form.submit 'Save changes', :class => "right grey button new" %>
   </div>
 

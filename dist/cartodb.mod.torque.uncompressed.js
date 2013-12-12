@@ -9214,8 +9214,8 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
 
   defaultTemplate:
     " <ul> " +
-    "   <li><a href='#/stop' class='button stop'>pause</a></li>" +
-    "   <li><p class='value'></p></li>" +
+    "   <li class='controls'><a href='#/stop' class='button stop'>pause</a></li>" +
+    "   <li class='time'><p class='value'></p></li>" +
     "   <li class='last'><div class='slider-wrapper'><div class='slider'></div></div></li>" +
     " </ul> "
   ,
@@ -9229,15 +9229,17 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
     "dblclick":       "_stopPropagation",
     "mousewheel":     "_stopPropagation",
     "DOMMouseScroll": "_stopPropagation",
+    "click .time":    "_onClickTime",
     "click":          "_stopPropagation"
   },
 
   initialize: function() {
     _.bindAll(this, '_stop', '_start', '_slide');
     var self = this;
+
     this.options.template = this.options.template || this.defaultTemplate;
-    this.options.position = 'bottom|left';
-    this.options.width = null;
+    this.options.position = this.options.position || 'bottom|left';
+    this.options.width    = this.options.width || null;
 
     // Control variable to know if the layer was
     // running before touching the slider
@@ -9250,11 +9252,11 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
       if (!tb) return;
       if (tb.columnType === 'date' || this.options.force_format_date) {
         if (tb && tb.start !== undefined) {
-          var f = self.formaterForRange(tb.start, tb.end);
+          var f = self.options.formatter || self.formaterForRange(tb.start, tb.end);
           // avoid showing invalid dates
           if (!_.isNaN(changes.time.getYear())) {
             self.$('.value').text(f(changes.time));
-          }
+          } else self.$('.value').text("Error");
         }
       } else {
           self.$('.value').text(changes.step);
@@ -9280,6 +9282,10 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
     });
     cdb.geo.ui.InfoBox.prototype.initialize.call(this);
 
+  },
+
+  formatter: function(_) {
+    this.options.formatter = _;
   },
 
   formaterForRange: function(start, end) {
@@ -9344,6 +9350,10 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
 
   _stopPropagation: function(ev) {
     ev.stopPropagation();
+  },
+
+  _onClickTime: function() {
+    this.trigger("time_clicked", this);
   },
 
   render: function() {

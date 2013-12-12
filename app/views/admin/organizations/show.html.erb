@@ -31,12 +31,12 @@
       <div class="head">
         <h2>Everyone in your account</h2>
       </div>
-      <div class="content user_list">
+      <ul><%= render :partial => 'shared/flash_message' %></ul>
+      <div class="list-head">
+        <label>username</label>
+      </div>
+      <div class="content users_list">
         <ul>
-          <%= render :partial => 'shared/flash_message' %>
-          <li class="list-head">
-            <label>username</label>
-          </li>
           <% @users.each do |user| -%>
           <li>
             <div class="info">

@@ -24,24 +24,29 @@
     // content
     div.content {
       padding:0;
+    }
 
-      li {
+    // List head
+    div.list-head {
+      padding:15px 40px;
+      margin:0;
+      background:#F6F6F6;
+      border-bottom:1px solid #E1E1E1;
 
-        &.flash {
-          padding:22px 40px;
-        }
-
-        &.success {
-          background: rgba(green,0.1);
-        }
+      label {
+        color:#C7C7C7;
+        font-size:11px;
+        font-weight:bold;
+        text-transform:uppercase;
       }
     }
 
     // footer
     div.foot {
 
-      a.red {
+      .red {
         color: #FF4C4C;
+        text-decoration: underline;
         &:hover {color:#C84C46;}
       }
       

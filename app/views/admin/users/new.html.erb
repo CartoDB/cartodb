@@ -16,22 +16,7 @@
 <article>
   <div class="inner">
     <section class="left block long">
-      <div class="head">
-        <h2>Create new user</h2>
-      </div>
-      <div class="content">
-        <%= @user.errors.inspect %>
-        <ul>
-          <%= render partial: 'shared/flash_message' %>
-          <li>
-            <div class="copy">
-              <%= render partial: 'form' %>
-            </div>
-          </li>
-        </ul>
-      </div>
-      <div class="foot">
-      </div>
+      <%= render partial: 'form' %>
     </section>
     <aside class="right">
       <%= render partial: 'other_users' %>

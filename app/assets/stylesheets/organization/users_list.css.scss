@@ -15,7 +15,7 @@
   $rad: 6px;
 
 
-  div.content.user_list {
+  div.content.users_list {
     padding:0!important;
 
     ul { padding:0; }
@@ -72,14 +72,7 @@
 
       // User used/available storage
       @include progress-bar(6px, 6px, false, 5px);
-      div.progress { margin-top:10px }
-
-      // Header
-      &.list-head {
-        padding:15px 40px;
-        margin:0;
-        background:#F6F6F6;
-      }
+      div.progress-bar { margin-top:10px }
     }
     
   }

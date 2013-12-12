@@ -2,24 +2,51 @@
 
   <%= form.hidden_field :private_tables_enabled %>
 
-  <% if @user.new? -%>
-  <div class="field">
-    <%= form.label :username %>
-    <%= form.text_field :username, :class => @user.errors[:username].present? ? 'error' : nil %>
+  <div class="head">
+    <h2>
+      <% if @user.new? -%>
+        Create new user
+      <% else %>
+        <%= "#{@user.username} account data" %>
+      <% end %>
+    </h2>
   </div>
-  <% end -%>
+  <ul><%= render partial: 'shared/flash_message' %></ul>
+  
+  <div class="content">
+    <div class="org-user-form">
+      <% if @user.new? -%>
+        <div class="row">
+          <div class="field field-2">
+            <%= form.label :username %>
+            <%= form.text_field :username, :class => @user.errors[:username].present? ? 'error' : nil %>
+          </div>
+        </div>
+      <% end -%>
 
-  <div class="field">
-    <%= form.label :email %>
-    <%= form.text_field :email, :class => @user.errors[:email].present? ? 'error' : nil %>
+      <div class="row">
+        <div class="field field-2">
+          <%= form.label :email %>
+          <%= form.text_field :email, :class => @user.errors[:email].present? ? 'error' : nil %>
+        </div>
+        <div class="field field-2">
+          <%= label_tag 'user[password]', 'Password' %>
+          <%= password_field_tag 'user[password]', nil, :class => @user.errors[:password].present? ? 'error' : nil %>
+        </div>
+      </div>
+      
+      <div class="row">
+        <label>Quota in bytes</label>
+        <%= form.text_field :quota_in_bytes, :class => @user.errors[:quota_in_bytes].present? ? 'error' : nil %>
+      </div>
+
+      <%= @user.errors.inspect %>
+    </div>
   </div>
-  <div class="field">
-    <%= label_tag 'user[password]', 'Password' %>
-    <%= password_field_tag 'user[password]', nil, :class => @user.errors[:password].present? ? 'error' : nil %>
+
+  <div class="foot">
+    <%= link_to "delete this user", "#/delete-user", :class => "left delete red margin15" %>
+    <%= form.submit 'Save changes', :class => "right grey button new" %>
   </div>
-  <div class="field">
-    <label>Quota in bytes</label>
-    <%= form.text_field :quota_in_bytes, :class => @user.errors[:quota_in_bytes].present? ? 'error' : nil %>
-  </div>
-  <%= form.submit nil, :class => "green button new small" %>
+
 <% end %>

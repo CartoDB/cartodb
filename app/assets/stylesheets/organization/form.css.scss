@@ -1,0 +1,110 @@
+
+  /**
+   *  Form styles within content
+   */
+
+  @import "compass/css3/inline-block";
+  @import "compass/css3/border-radius";
+  @import "compass/css3/box-shadow";
+  @import "common/vars";
+  @import "common/mixins";
+  @import "common/forms";
+  @import "common/common-sprite";
+
+
+  form {
+
+    // Content structure
+    .left-column, .right-column { @include inline-block(); }
+    .left-column {
+      width:425px;
+      padding-right:34px;
+      vertical-align: top;
+      border-right:1px solid #E5E5E5;
+      &.no-border { border:none }
+    }
+    .right-column {
+      width:175px;
+      padding-left:34px;
+      vertical-align: top;
+    }
+
+
+    //////////
+    // Form //
+    //////////
+
+    .row {
+      display:block;
+      height:67px;
+      margin-top:20px;
+
+      p {
+        padding-top:24px;
+        font-size:13px;
+        font-style:italic;
+        color:#CCCCCC;
+      }
+
+      label {
+        display:block;
+        padding:0 0 10px 0;
+        color:#CCCCCC;
+        font-weight:bold;
+        font-size:11px;
+        text-transform:uppercase;
+      }
+
+      @include default-input();
+
+      &:first-child { margin-top:0; }
+    }
+
+
+    // Field types (1, 2, 3, ...)
+
+    .field {
+      @include inline-block();
+      margin-right:20px;
+      vertical-align:top;
+      
+      &:last-child { margin-right:0; }
+    }
+
+    .field-1 {
+      width:100%;
+      input { width:399px; }
+    }
+
+    .field-2 {
+      width:202px;
+      margin-right:20px;
+      
+      input {width:177px;}
+    }
+
+    .field-3 {
+      width:128px;
+      margin-right:20px;
+      
+      input {width:102px;}
+    }
+
+
+    // Input types //
+    
+    input[disabled], input[readonly] {
+      background:#F5F5F5;
+      color:#CCCCCC;
+    }
+
+    .input-link {
+      display:block;
+      padding:12px;
+      height:17px;
+      background:#F2F2F2;
+      @include border-radius(3px);
+      text-decoration:underline;
+    }
+
+  }

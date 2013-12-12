@@ -1,6 +1,6 @@
-// cartodb.js version: 3.4.04-dev
+// cartodb.js version: 3.4.03
 // uncompressed version: cartodb.uncompressed.js
-// sha: c5269642bbae594018997c56af046e67ca9781f5
+// sha: 84b1af06c017d42975cc0945bf32c797f304e078
 (function() {
   var root = this;
 
@@ -20429,7 +20429,11 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
+<<<<<<< HEAD
     cdb.VERSION = '3.4.04-dev';
+=======
+    cdb.VERSION = '3.4.03';
+>>>>>>> origin/fix/CDB-1075
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -20695,6 +20699,10 @@ if(!window.JSON) {
     });
 
     cdb.config = new Config();
+    cdb.config.set({
+      cartodb_attributions: "CartoDB <a href='http://cartodb.com/attributions' target='_blank'>attribution</a>",
+      cartodb_logo_link: "http://www.cartodb.com",
+    });
 
 })();
 /**
@@ -21982,7 +21990,7 @@ cdb.geo.Map = cdb.core.Model.extend({
   // set center and zoom according to fit bounds
   fitBounds: function(bounds, mapSize) {
     var z = this.getBoundsZoom(bounds, mapSize);
-    if(z == null) {
+    if(z === null) {
       return;
     }
     // project -> calculate center -> unproject
@@ -22001,6 +22009,8 @@ cdb.geo.Map = cdb.core.Model.extend({
 
   // adapted from leaflat src
   getBoundsZoom: function(boundsSWNE, mapSize) {
+    // sometimes the map reports size = 0 so return null
+    if(mapSize.x === 0 || mapSize.y === 0) return null;
     var size = [mapSize.x, mapSize.y],
     zoom = this.get('minZoom') || 0,
     maxZoom = this.get('maxZoom') || 24,
@@ -22455,6 +22465,7 @@ cdb.geo.ui.Legend = cdb.core.View.extend({
     this._setupItems();
 
     this._updateLegendType();
+<<<<<<< HEAD
 
   },
 
@@ -22544,6 +22555,97 @@ cdb.geo.ui.Legend = cdb.core.View.extend({
 
   },
 
+=======
+
+  },
+
+  _stopPropagation: function(ev) {
+
+    ev.stopPropagation();
+
+  },
+
+  _setupModel: function() {
+
+    if (!this.model) {
+
+      this.model = new cdb.geo.ui.LegendModel({
+        type: this.options.type || cdb.geo.ui.LegendModel.prototype.defaults.type,
+        title: this.options.title || cdb.geo.ui.LegendModel.prototype.defaults.title,
+        show_title: this.options.show_title || cdb.geo.ui.LegendModel.prototype.defaults.show_title,
+        template: this.options.template || cdb.geo.ui.LegendModel.prototype.defaults.template
+      });
+
+    }
+
+    this.add_related_model(this.model);
+
+    //this.model.bind("change:template change:type change:items change:title change:show_title",  this._updateLegendType, this);
+    this.model.bind("change",  this._updateLegendType, this);
+
+  },
+
+  _updateLegendType: function() {
+
+    var type = this.model.get("type");
+
+    this.legend_name = this._capitalize(type) + "Legend";
+
+    if (type == 'none' || type == null) {
+
+      this.legend_name = null;
+      this.model.set({ type: "none" }, { silent: true });
+
+    } else if (!cdb.geo.ui[this.legend_name]) {
+
+      // set the previous type
+      this.legend_name = null;
+      this.model.set({ type: this.model.previous("type") }, { silent: true });
+      return;
+
+    }
+
+    this._refresh();
+
+  },
+
+  _refresh: function() {
+
+    var self = this;
+
+    if (this.view) this.view.clean();
+
+    var type  = this.model.get("type");
+    var title = this.model.get("title");
+    var show_title = this.model.get("show_title");
+    var template = this.model.get("template");
+
+    if (type && this.legend_name) {
+
+      this.view = new cdb.geo.ui[this.legend_name]({
+        model: this.model
+      });
+
+      // Set the type as the element class for styling
+      this.$el.removeClass();
+      this.$el.addClass(this.className + " " + this.model.get("type"));
+
+      this.show();
+
+    } else {
+
+      this.hide();
+
+      this.$el.removeClass();
+      this.$el.addClass(this.className + " none");
+
+    }
+
+    this.render();
+
+  },
+
+>>>>>>> origin/fix/CDB-1075
   _setupItems: function() {
 
     var self = this;
@@ -22602,6 +22704,7 @@ cdb.geo.ui.DebugLegend = cdb.core.View.extend({ });
  *
  * */
 cdb.geo.ui.BaseLegend = cdb.core.View.extend({
+<<<<<<< HEAD
 
   _bindModel: function() {
 
@@ -22643,6 +22746,49 @@ cdb.geo.ui.ChoroplethLegend = cdb.geo.ui.BaseLegend.extend({
 
   },
 
+=======
+
+  _bindModel: function() {
+
+    this.model.bind("change:template change:title change:show_title", this.render, this);
+
+  },
+
+  addTo: function(element) {
+    $(element).html(this.render().$el);
+  },
+
+  setTitle: function(title) {
+    this.model.set("title", title);
+  },
+
+  showTitle: function() {
+    this.model.set("show_title", true);
+  },
+
+  hideTitle: function() {
+    this.model.set("show_title", false);
+  }
+
+});
+
+/*
+ * ChoroplethLegend
+ *
+ * */
+cdb.geo.ui.ChoroplethLegend = cdb.geo.ui.BaseLegend.extend({
+
+  className: "choropleth-legend",
+
+  template: _.template('<% if (title && show_title) { %><div class="legend-title"><%= title %></div><% } %><ul><li class="min"><%= leftLabel %></li><li class="max"><%= rightLabel %></li><li class="graph count_<%= buckets_count %>"><div class="colors"><%= colors %></div></li></ul>'),
+
+  initialize: function() {
+
+    this.items    = this.model.items;
+
+  },
+
+>>>>>>> origin/fix/CDB-1075
   _generateColorList: function() {
 
     var colors = "";
@@ -22744,9 +22890,15 @@ cdb.geo.ui.DensityLegend = cdb.geo.ui.BaseLegend.extend({
   setColors: function(colors) {
 
     this.model.set("colors", colors);
+<<<<<<< HEAD
 
   },
 
+=======
+
+  },
+
+>>>>>>> origin/fix/CDB-1075
   _generateColorList: function() {
 
     var colors = "";
@@ -23347,6 +23499,105 @@ cdb.geo.ui.Legend.Stacked = cdb.geo.ui.StackedLegend.extend({
     var legend = new cdb.geo.ui.LegendModel(attributes);
     this.legendItems.push(legend);
 
+<<<<<<< HEAD
+  addTo: function(element) {
+    $(element).html(this.render().$el);
+  },
+
+  render: function() {
+=======
+  },
+>>>>>>> origin/fix/CDB-1075
+
+  removeLegendAt: function(n) {
+
+    var legend = this.legendItems.at(n);
+    this.legendItems.remove(legend);
+
+  }
+
+});
+
+<<<<<<< HEAD
+cdb.geo.ui.Legends = Backbone.Collection.extend({
+  model: cdb.geo.ui.LegendModel
+});
+
+/*
+ * Stacked Legend public interface
+ *
+ * */
+cdb.geo.ui.Legend.Stacked = cdb.geo.ui.StackedLegend.extend({
+
+  initialize: function() {
+
+    if (this.options.legends) {
+
+      var legendModels = _.map(this.options.legends, function(legend) {
+        return legend.model;
+      });
+
+      this.legendItems = new cdb.geo.ui.Legends(legendModels);
+
+      this.legendItems.bind("add remove change", this.render, this);
+
+    } else if (this.options.data) {
+
+      var legendModels = _.map(this.options.data, function(legend) {
+        return new cdb.geo.ui.LegendModel(legend);
+      });
+
+      this.legendItems = new cdb.geo.ui.Legends(legendModels);
+
+      this.legendItems.bind("add remove change", this.render, this);
+
+    }
+
+
+  },
+
+  _capitalize: function(string) {
+    if (string && _.isString(string)) {
+      return string.charAt(0).toUpperCase() + string.slice(1);
+    }
+  },
+
+  render: function() {
+
+    this.$el.empty();
+
+    this.legends = [];
+
+    this.legendItems.each(function(model) {
+
+      var type = model.get("type");
+
+      if (!type) type = "custom";
+
+      type = this._capitalize(type);
+
+      var view = new cdb.geo.ui.Legend[type](model.attributes);
+      this.legends.push(view);
+
+      this.$el.append(view.render().$el);
+
+    }, this);
+
+    return this;
+
+  },
+
+  getLegendAt: function(n) {
+
+    return this.legends[n];
+
+  },
+
+  addLegend: function(attributes) {
+
+    var legend = new cdb.geo.ui.LegendModel(attributes);
+    this.legendItems.push(legend);
+
   },
 
   removeLegendAt: function(n) {
@@ -23358,6 +23609,8 @@ cdb.geo.ui.Legend.Stacked = cdb.geo.ui.StackedLegend.extend({
 
 });
 
+=======
+>>>>>>> origin/fix/CDB-1075
 
 /*
  * Legend Model
@@ -23416,6 +23669,7 @@ cdb.geo.ui.CustomLegend = cdb.geo.ui.BaseLegend.extend({
   initialize: function() {
 
     this.items = this.model.items;
+<<<<<<< HEAD
 
   },
 
@@ -23594,13 +23848,291 @@ cdb.geo.ui.Legend.Bubble = cdb.geo.ui.BubbleLegend.extend({
       color: this.options.color,
       show_title: this.options.title ? true : false
     });
+=======
 
-    this.add_related_model(this.model);
+  },
+
+  setData: function(data) {
+
+    this.items = new cdb.geo.ui.LegendItems(data);
+    this.model.items = this.items;
+    this.model.set("items", data);
+
+  },
+
+  _renderItems: function() {
+
+    this.items.each(this._renderItem, this);
+
+  },
+
+  _renderItem: function(item) {
+
+    view = new cdb.geo.ui.LegendItem({
+      model: item,
+      className: (item.get("value") && item.get("value").indexOf("http") >= 0) ? "bkg" : "",
+      template: '<div class="bullet" style="background:<%= value %>"></div><%= name || "null" %>'
+    });
+
+    this.$el.find("ul").append(view.render());
+
+  },
+
+  render: function() {
+
+    if (this.model.get("template")) {
+
+      var template = _.template(this.model.get("template"));
+      this.$el.html(template(this.model.toJSON()));
+
+    } else {
+
+      this.$el.html(this.template(this.model.toJSON()));
+
+      if (this.items.length > 0) {
+        this._renderItems();
+      } else {
+        this.$el.html('<div class="warning">The legend is empty</div>');
+      }
+    }
+>>>>>>> origin/fix/CDB-1075
+
+    return this;
+
+  }
+
+});
+
+/*
+ * Custom Legend public interface
+ *
+ * */
+cdb.geo.ui.Legend.Custom = cdb.geo.ui.CustomLegend.extend({
+
+  className: "cartodb-legend custom",
+
+  type: "custom",
+
+  initialize: function() {
+
+    this.items = new cdb.geo.ui.LegendItems(this.options.data || this.options.items);
+
+    this.model = new cdb.geo.ui.LegendModel({
+      type: this.type,
+      title: this.options.title,
+      show_title: this.options.title ? true : false,
+      items: this.items.models
+    });
 
     this._bindModel();
 
   },
 
+<<<<<<< HEAD
+  render: function() {
+
+    this.$el.html(this.template(this.model.toJSON()));
+
+    this._renderGraph(this.model.get("color"));
+
+    return this;
+
+  }
+
+});
+
+/*
+ * Choropleth Legend public interface
+ *
+ * */
+cdb.geo.ui.Legend.Choropleth = cdb.geo.ui.ChoroplethLegend.extend({
+
+  type: "choropleth",
+
+  className: "cartodb-legend choropleth",
+
+  initialize: function() {
+
+    this.items    = this.options.items;
+
+    this.model = new cdb.geo.ui.LegendModel({
+      type:          this.type,
+      title:         this.options.title,
+      show_title:    this.options.title ? true : false,
+      leftLabel:     this.options.left  || this.options.leftLabel,
+      rightLabel:    this.options.right || this.options.rightLabel,
+      colors:        this.options.colors,
+      buckets_count: this.options.colors ? this.options.colors.length : 0
+    });
+
+    this.add_related_model(this.model);
+    this._bindModel();
+=======
+  _bindModel: function() {
+
+    this.model.bind("change:items change:template change:title change:show_title", this.render, this);
+
+  },
+
+});
+
+/*
+ * BubbleLegend
+ *
+ * */
+cdb.geo.ui.BubbleLegend = cdb.geo.ui.BaseLegend.extend({
+
+  className: "bubble-legend",
+
+  template: _.template('<% if (title && show_title) { %><div class="legend-title"><%= title %></div><% } %><ul><li><%= min %></li><li class="graph"><div class="bubbles"></div></li><li><%= max %></li></ul>'),
+
+  initialize: function() {
+
+    this.items = this.model.items;
+>>>>>>> origin/fix/CDB-1075
+
+  },
+
+  _bindModel: function() {
+
+<<<<<<< HEAD
+    this.model.bind("change:template change:title change:show_title change:colors change:leftLabel change:rightLabel", this.render, this);
+
+  },
+
+  _generateColorList: function() {
+
+    return _.map(this.model.get("colors"), function(color) {
+      return '<div class="quartile" style="background-color:' + color + '"></div>';
+    }).join("");
+
+  },
+
+  render: function() {
+
+    var options = _.extend(this.model.toJSON(), { colors: this._generateColorList() });
+=======
+    this.model.bind("change:template change:title change:show_title change:color change:min change:max", this.render, this);
+
+  },
+
+  setColor: function(color) {
+    this.model.set("color", color);
+  },
+
+  setMinValue: function(value) {
+    this.model.set("min", value);
+  },
+
+  setMaxValue: function(value) {
+    this.model.set("max", value);
+  },
+
+  _renderGraph: function(color) {
+    this.$el.find(".graph").css("background", color);
+  },
+
+  render: function() {
+
+    if (this.model.get("template")) {
+
+      var template = _.template(this.model.get("template"));
+      this.$el.html(template(this.model.toJSON()));
+
+      this.$el.removeClass("bubble-legend");
+>>>>>>> origin/fix/CDB-1075
+
+    this.$el.html(this.template(options));
+
+<<<<<<< HEAD
+    return this;
+
+  }
+
+});
+
+
+/*
+ * Intensity Legend public interface
+ *
+ * */
+cdb.geo.ui.Legend.Intensity = cdb.geo.ui.IntensityLegend.extend({
+
+  className: "cartodb-legend intensity",
+  type: "intensity",
+
+  initialize: function() {
+
+    this.items = this.options.items;
+
+    this.model = new cdb.geo.ui.LegendModel({
+      type: this.type,
+      title: this.options.title,
+      show_title: this.options.title ? true : false,
+      color: this.options.color,
+      leftLabel: this.options.left || this.options.leftLabel,
+      rightLabel: this.options.right || this.options.rightLabel
+    });
+
+    this.add_related_model(this.model);
+=======
+      var color = this.model.get("color") || (this.items.length >= 3 ? this.items.at(2).get("value") : "");
+
+      if (this.items.length >= 3) {
+
+        var min = this.model.get("min") || this.items.at(0).get("value");
+        var max = this.model.get("max") || this.items.at(1).get("value");
+
+        var options = _.extend(this.model.toJSON(), { min: min, max: max });
+
+        this.$el.html(this.template(options));
+
+      }
+
+      this._renderGraph(color);
+    }
+
+    return this;
+
+  }
+
+});
+
+
+/*
+ * Bubble Legend public interface
+ *
+ * */
+cdb.geo.ui.Legend.Bubble = cdb.geo.ui.BubbleLegend.extend({
+
+  className: "cartodb-legend bubble",
+
+  type: "bubble",
+
+  initialize: function() {
+
+    this.model = new cdb.geo.ui.LegendModel({
+      type:  this.type,
+      title: this.options.title,
+      min:   this.options.min,
+      max:   this.options.max,
+      color: this.options.color,
+      show_title: this.options.title ? true : false
+    });
+
+    this.add_related_model(this.model);
+
+>>>>>>> origin/fix/CDB-1075
+    this._bindModel();
+
+  },
+
+<<<<<<< HEAD
+  _bindModel: function() {
+
+    this.model.bind("change:title change:show_title change:color change:leftLabel change:rightLabel", this.render, this);
+
+=======
   render: function() {
 
     this.$el.html(this.template(this.model.toJSON()));
@@ -23654,19 +24186,28 @@ cdb.geo.ui.Legend.Choropleth = cdb.geo.ui.ChoroplethLegend.extend({
       return '<div class="quartile" style="background-color:' + color + '"></div>';
     }).join("");
 
+>>>>>>> origin/fix/CDB-1075
   },
 
   render: function() {
 
+<<<<<<< HEAD
+    this.$el.html(this.template(this.model.toJSON()));
+
+    this._renderGraph(this.model.get("color"));
+=======
     var options = _.extend(this.model.toJSON(), { colors: this._generateColorList() });
 
     this.$el.html(this.template(options));
+>>>>>>> origin/fix/CDB-1075
 
     return this;
 
   }
 
 });
+<<<<<<< HEAD
+=======
 
 
 /*
@@ -23713,6 +24254,7 @@ cdb.geo.ui.Legend.Intensity = cdb.geo.ui.IntensityLegend.extend({
   }
 
 });
+>>>>>>> origin/fix/CDB-1075
 cdb.geo.ui.SwitcherItemModel = Backbone.Model.extend({ });
 
 cdb.geo.ui.SwitcherItems = Backbone.Collection.extend({
@@ -26138,13 +26680,15 @@ cdb.geo.common.CartoDBLogo = {
         cartodb_link.setAttribute('class','cartodb-logo');
         cartodb_link.setAttribute('style',"position:absolute; bottom:0; left:0; display:block; border:none; z-index:1000000;");
         var protocol = location.protocol.indexOf('https') === -1 ? 'http': 'https';
-        cartodb_link.innerHTML = "<a href='http://www.cartodb.com' target='_blank'><img width='71' height='29' src='" + protocol + "://cartodb.s3.amazonaws.com/static/new_logo" + (is_retina ? '@2x' : '') + ".png' style='position:absolute; bottom:" + 
+        var link = cdb.config.get('cartodb_logo_link');
+        cartodb_link.innerHTML = "<a href='" + link + "' target='_blank'><img width='71' height='29' src='" + protocol + "://cartodb.s3.amazonaws.com/static/new_logo" + (is_retina ? '@2x' : '') + ".png' style='position:absolute; bottom:" + 
           ( position.bottom || 0 ) + "px; left:" + ( position.left || 0 ) + "px; display:block; width:71px!important; height:29px!important; border:none; outline:none;' alt='CartoDB' title='CartoDB' />";
         container.appendChild(cartodb_link);
       }
     },( timeout || 0 ));
   }
 };
+
 (function() {
   /**
   * base layer for all leaflet layers
@@ -26590,7 +27134,7 @@ cdb.geo.LeafLetCartoDBLayerGroupView = L.CartoDBGroupLayer.extend({
 
     // CartoDB new attribution,
     // also we have the logo
-    layerModel.attributes.attribution = "CartoDB <a href='http://cartodb.com/attributions' target='_blank'>attribution</a>";
+    layerModel.attributes.attribution = cdb.config.get('cartodb_attributions');
 
     var opts = _.clone(layerModel.attributes);
 
@@ -26727,7 +27271,7 @@ var LeafLetLayerCartoDBView = L.CartoDBLayer.extend({
 
     // CartoDB new attribution,
     // also we have the logo
-    layerModel.attributes.attribution = "CartoDB <a href='http://cartodb.com/attributions' target='_blank'>attribution</a>";
+    layerModel.attributes.attribution = cdb.config.get('cartodb_attributions');
 
     var opts = _.clone(layerModel.attributes);
 
@@ -27622,7 +28166,7 @@ var GMapsCartoDBLayerGroupView = function(layerModel, gmapsMap) {
 
   // CartoDB new attribution,
   // also we have the logo
-  layerModel.attributes.attribution = "CartoDB <a href='http://cartodb.com/attributions' target='_blank'>attribution</a>";
+  layerModel.attributes.attribution = cdb.config.get('cartodb_attributions');
 
   var opts = _.clone(layerModel.attributes);
 
@@ -27806,7 +28350,7 @@ var GMapsCartoDBLayerView = function(layerModel, gmapsMap) {
 
   // CartoDB new attribution,
   // also we have the logo
-  layerModel.attributes.attribution = "CartoDB <a href='http://cartodb.com/attributions' target='_blank'>attribution</a>";
+  layerModel.attributes.attribution = cdb.config.get('cartodb_attributions');
 
   var opts = _.clone(layerModel.attributes);
 

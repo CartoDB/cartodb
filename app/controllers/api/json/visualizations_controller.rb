@@ -28,15 +28,19 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     rows_and_sizes   = rows_and_sizes_for(table_names)
 
     representation  = collection.map { |member|
-      member.to_hash(
-        related:    false,
-        table_data: !(params[:table_data] =~ /false/),
-        user:       current_user,
-        table:      tables[member.map_id],
-        synchronization: synchronizations[member.name],
-        rows_and_sizes: rows_and_sizes
-      )
-    }
+      begin
+        member.to_hash(
+          related:    false,
+          table_data: !(params[:table_data] =~ /false/),
+          user:       current_user,
+          table:      tables[member.map_id],
+          synchronization: synchronizations[member.name],
+          rows_and_sizes: rows_and_sizes
+        )
+      rescue => exception
+        puts exception.to_s + exception.backtrace.join("\n")
+      end
+    }.compact
 
     response        = {
       visualizations: representation,

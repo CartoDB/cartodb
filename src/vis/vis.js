@@ -317,9 +317,9 @@ var Vis = cdb.core.View.extend({
       this.loadLayer(layerData);
     }
 
-    var device = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-
     var legends, torqueLayer;
+
+    var device = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
     if (!device && options.legends) {
       this.addLegends(data.layers);
@@ -553,7 +553,9 @@ var Vis = cdb.core.View.extend({
       });
     }
 
-    if (opt.layer_selector) {
+    var device = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+    if (!device && opt.layer_selector) {
       vizjson.overlays.push({
         type: "layer_selector"
       });

@@ -24,17 +24,25 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
     ev.stopPropagation();
   },
 
-  /**
-   *  Check event origin
-   */
-  _checkOrigin: function(ev) {
-    // If the mouse down come from jspVerticalBar
-    // dont stop the propagation, but if the event
-    // is a touchstart, stop the propagation
-    var come_from_scroll = (($(ev.target).closest(".slider").length > 0) && (ev.type != "touchstart"));
+  doOnOrientationChange: function() {
 
-    if (!come_from_scroll) {
-      ev.stopPropagation();
+    function recalc() {
+
+      var width = $(document).width();
+      $(".cartodb-mobile.open").css("width", width - 40)
+
+      var w = $(".cartodb-mobile.open").width() - $(".cartodb-mobile.open .toggle").width() - $(".cartodb-mobile.open .time").width();
+      $("div.cartodb-timeslider .slider-wrapper").css("width", w - 10)
+
+    }
+
+    switch(window.orientation)
+    {
+      case -90:
+      case 90: recalc();
+        break;
+      default: recalc();
+        break;
     }
   },
 
@@ -45,7 +53,10 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
     this.template = this.options.template ? this.options.template : cdb.templates.getTemplate('geo/zoom');
 
+    window.addEventListener('orientationchange', this.doOnOrientationChange);
+
   },
+
 
   _toggle: function(e) {
 
@@ -62,6 +73,12 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
     this.$el.addClass("open");
     this.isOpen = true;
+
+    var width = $(document).width();
+    $(".cartodb-mobile.open").css("width", width - 40)
+
+    var w = $(".cartodb-mobile.open").width() - $(".cartodb-mobile.open .toggle").width() - $(".cartodb-mobile.open .time").width();
+    $("div.cartodb-timeslider .slider-wrapper").css("width", w - 10)
 
   },
 
@@ -81,9 +98,13 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
     if (this.options.torqueLayer) {
 
-      var slider = new cdb.geo.ui.TimeSlider({type: "time_slider", layer: this.options.torqueLayer, map: this.options.map, pos_margin: 0, position: "none" , width: "auto" });
+      this.slider = new cdb.geo.ui.TimeSlider({type: "time_slider", layer: this.options.torqueLayer, map: this.options.map, pos_margin: 0, position: "none" , width: "auto" });
 
-      this.$el.find(".torque").append(slider.render().$el);
+      this.slider.bind("time_clicked", function() {
+        this.slider.toggleTime();
+      }, this);
+
+      this.$el.find(".torque").append(this.slider.render().$el);
       this.$el.addClass("torque");
 
     }
@@ -91,11 +112,13 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
     if (this.options.legends) {
 
       this.$el.find(".legends").append(this.options.legends.render().$el);
-      this.$el.addClass("legends");
-      debugger;
 
-      //this.options.legends.legendItems.unbind("change", this.test);
-      //this.options.legends.legendItems.bind("change", this.test);
+      var visible = _.some(this.options.legends._models, function(model) {
+        return model.get("template") || (model.get("type") != 'none' && model.get("items").length > 0)
+      });
+
+      if (visible) this.$el.addClass("legends");
+
     }
 
     return this;

@@ -21,6 +21,7 @@ module CartoDB
         runner.run(&tracker)
 
         if quota_checker.will_be_over_table_quota?(results.length)
+          self.aborted = true
           drop(results)
         else
           results.select(&:success?).each { |result| register(result) }
@@ -37,7 +38,7 @@ module CartoDB
       end
 
       def success?
-        !quota_checker.over_table_quota? && runner.success?
+        !over_table_quota? && runner.success?
       end
 
       def drop_all(results)
@@ -81,15 +82,20 @@ module CartoDB
         runner.results
       end 
 
+      def over_table_quota?
+        aborted || quota_checker.over_table_quota?
+      end
+
       def error_code
-        return 8002 if quota_checker.over_table_quota?
+        return 8002 if over_table_quota?
         results.map(&:error_code).compact.first
-      end #errors_from
+      end
 
       private
 
       attr_reader :runner, :table_registrar, :quota_checker, :database,
       :data_import_id
+      attr_accessor :aborted
     end # Importer
   end # Connector
 end # CartoDB

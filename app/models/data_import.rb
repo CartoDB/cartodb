@@ -69,15 +69,12 @@ class DataImport < Sequel::Model
     return CartoDB::IMPORTER_ERROR_CODES[self.error_code]
   end
 
-  def raise_error_if_over_quota(number_of_tables)
-    if !current_user.remaining_table_quota.nil? && 
-    current_user.remaining_table_quota.to_i < number_of_tables
-      self.error_code = 8002
-      self.state      = 'failure'
-      save
-      log.append("Over account table limit, please upgrade")
-      raise CartoDB::QuotaExceeded, "More tables required"
-    end
+  def raise_over_table_quota_error
+    self.error_code = 8002
+    self.state      = 'failure'
+    save
+    log.append("Over account table limit, please upgrade")
+    raise CartoDB::QuotaExceeded, "More tables required"
   end
 
   def mark_as_failed_if_stuck!    
@@ -146,6 +143,9 @@ class DataImport < Sequel::Model
     return migrate_existing   if migrate_table.present?
     return from_table         if table_copy.present? || from_query.present?
     new_importer       
+  rescue => exception
+    puts exception.to_s + exception.backtrace.join("\n")
+    raise
   end #dispatch
 
   def running_import_ids
@@ -205,7 +205,10 @@ class DataImport < Sequel::Model
 
   def from_table
     number_of_tables = 1
-    raise_error_if_over_quota(number_of_tables)
+    quota_checker = CartoDB::QuotaChecker.new(current_user)
+    if quota_checker.will_be_over_table_quota?(number_of_tables)
+      raise_over_table_quota_error 
+    end
 
     query = table_copy ? "SELECT * FROM #{table_copy}" : from_query
     new_table_name = import_from_query(table_name, query)
@@ -295,7 +298,6 @@ class DataImport < Sequel::Model
     
     importer.run(tracker)
 
-    raise_error_if_over_quota(importer.results.select(&:success?).length)
     self.results    = importer.results
     self.error_code = importer.error_code
     self.table_name = importer.table.name if importer.success? && importer.table

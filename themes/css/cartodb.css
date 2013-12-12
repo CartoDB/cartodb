@@ -710,13 +710,13 @@ div.cartodb-popup.header.yellow a.cartodb-popup-close-button:hover {
     -webkit-box-shadow: rgba(0, 0, 0, 0.1) 0 6px 4px -2px;
     -moz-box-shadow: rgba(0, 0, 0, 0.1) 0 6px 4px -2px;
     box-shadow: rgba(0, 0, 0, 0.1) 0 6px 4px -2px;
-    -webkit-transform: translateZ(10px);
-    -moz-transform: translateZ(10px);
-    -ms-transform: translateZ(10px);
-    -o-transform: translateZ(10px);
-    transform: translateZ(10px);
-    z-index: 3;
+    /*-webkit-transform: translateZ(10px);*/
+    /*-moz-transform: translateZ(10px);*/
+    /*-ms-transform: translateZ(10px);*/
+    /*-o-transform: translateZ(10px);*/
+    /*transform: translateZ(10px);*/
     font-family: 'Helvetica Neue', Helvetica, sans-serif;
+    z-index: 0;
   }
 
   div.cartodb-header h1 {
@@ -869,6 +869,22 @@ div.cartodb-popup.header.yellow a.cartodb-popup-close-button:hover {
     font-family: "Segoe UI Bold", "Helvetica Bold", "Helvetica", Arial;
     color: #333;
     line-height: normal;
+  }
+
+  .cartodb-share-dialog.small section.modal {
+    margin-left: -108px;
+    margin-top: -165px;
+  }
+  .cartodb-share-dialog.small section.block .buttons {
+    margin: 0 0 10px 0;
+  }
+  .cartodb-share-dialog.small section.block .buttons ul {
+    border:none;
+    padding: 0;
+  }
+
+  .cartodb-share-dialog.small section.block .content .embed_code {
+    padding: 0;
   }
 
   .cartodb-share-dialog section.modal a.close {

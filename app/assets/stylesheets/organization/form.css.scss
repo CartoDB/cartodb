@@ -65,16 +65,28 @@
     // Field types (1, 2, 3, ...)
 
     .field {
+      position:relative;
       @include inline-block();
       margin-right:20px;
       vertical-align:top;
       
+      &.field_with_errors {
+        input {
+          color: #E95850;
+          border-color: #F08A84;
+          padding-right:51px;
+        }
+      }
       &:last-child { margin-right:0; }
     }
 
     .field-1 {
       width:100%;
       input { width:534px; }
+
+      &.field_with_errors input {
+        width:494px;
+      }
     }
 
     .field-2 {
@@ -82,6 +94,10 @@
       margin-right:13px;
       
       input {width:246px;}
+
+      &.field_with_errors input {
+        width:206px;
+      }
     }
 
     .field-3 {
@@ -89,6 +105,10 @@
       margin-right:13px;
       
       input {width:150px;}
+
+      &.field_with_errors input {
+        width:110px;
+      }
     }
 
 
@@ -108,4 +128,23 @@
       text-decoration:underline;
     }
 
+
+    // Errors //
+    div.error {
+      position:absolute;
+      right:7px;
+      bottom:7px;
+      width:26px;
+      height:27px;
+      @include text-indent();
+      @include common-sprite(field_error);
+      z-index:5;
+      &:hover {cursor:pointer}
+    }
+
+  }
+
+  // Tipsy for field error
+  .error_tooltip {
+    font-size:13px!important;
   }

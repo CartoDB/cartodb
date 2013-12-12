@@ -9227,14 +9227,15 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
 
   defaultTemplate:
     " <ul> " +
-    "   <li><a href='#/stop' class='button stop'>pause</a></li>" +
-    "   <li><p class='value'></p></li>" +
+    "   <li class='controls'><a href='#/stop' class='button stop'>pause</a></li>" +
+    "   <li class='time'><p class='value'></p></li>" +
     "   <li class='last'><div class='slider-wrapper'><div class='slider'></div></div></li>" +
     " </ul> "
   ,
 
   events: {
     "click .button":  "toggleTime",
+    "click .time":    "_onClickTime",
     "dragstart":      "_stopPropagation",
     "mousedown":      "_stopPropagation",
     "touchstart":     "_stopPropagation",
@@ -9376,6 +9377,10 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
 
   _stopPropagation: function(ev) {
     ev.stopPropagation();
+  },
+
+   _onClickTime: function() {
+    this.trigger("time_clicked", this);
   },
 
   render: function() {

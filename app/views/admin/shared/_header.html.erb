@@ -6,7 +6,7 @@
       <li><%= link_to 'tables', "/dashboard/tables", :class => :tables %></a></li>
       <li><%= link_to 'visualizations', "/dashboard/visualizations", :class => :visualizations %></a></li>
       <% if current_user.organization_owner %>
-        <li><%= link_to 'organization', "/organization", :class => :organization %></a></li>
+        <li><%= link_to 'organization', "/organization", :class => selected_if(current_path == organization_path) %></a></li>
       <% end %>
       <li><%= link_to 'common data', dashboard_common_data_path, :class => selected_if(current_path == dashboard_common_data_path) %></a></li>
       <% if !current_user.organization_owner %>

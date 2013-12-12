@@ -1,6 +1,6 @@
-// cartodb.js version: 3.4.02-dev
+// cartodb.js version: 3.4.04-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: dac5e1523c25a1a19c795a6be75f9ca71398b343
+// sha: e119567fe9d315017fe28aeb7bc740d6036e7519
 (function() {
   var root = this;
 
@@ -20429,7 +20429,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.4.02-dev';
+    cdb.VERSION = '3.4.04-dev';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -20695,6 +20695,10 @@ if(!window.JSON) {
     });
 
     cdb.config = new Config();
+    cdb.config.set({
+      cartodb_attributions: "CartoDB <a href='http://cartodb.com/attributions' target='_blank'>attribution</a>",
+      cartodb_logo_link: "http://www.cartodb.com",
+    });
 
 })();
 /**
@@ -21982,7 +21986,7 @@ cdb.geo.Map = cdb.core.Model.extend({
   // set center and zoom according to fit bounds
   fitBounds: function(bounds, mapSize) {
     var z = this.getBoundsZoom(bounds, mapSize);
-    if(z == null) {
+    if(z === null) {
       return;
     }
     // project -> calculate center -> unproject
@@ -22001,6 +22005,8 @@ cdb.geo.Map = cdb.core.Model.extend({
 
   // adapted from leaflat src
   getBoundsZoom: function(boundsSWNE, mapSize) {
+    // sometimes the map reports size = 0 so return null
+    if(mapSize.x === 0 || mapSize.y === 0) return null;
     var size = [mapSize.x, mapSize.y],
     zoom = this.get('minZoom') || 0,
     maxZoom = this.get('maxZoom') || 24,
@@ -23353,7 +23359,7 @@ cdb.geo.ui.StackedLegend = cdb.core.View.extend({
   _checkVisibility: function() {
 
     var visible = _.some(this.options.legends, function(legend) {
-      return legend.model.get("type") && legend.model.get("type") != "none"
+      return legend.model.get("type") && (legend.model.get("type") != "none"  || legend.model.get("template"))
     }, this);
 
     if (visible) {
@@ -26284,13 +26290,15 @@ cdb.geo.common.CartoDBLogo = {
         cartodb_link.setAttribute('class','cartodb-logo');
         cartodb_link.setAttribute('style',"position:absolute; bottom:0; left:0; display:block; border:none; z-index:1000000;");
         var protocol = location.protocol.indexOf('https') === -1 ? 'http': 'https';
-        cartodb_link.innerHTML = "<a href='http://www.cartodb.com' target='_blank'><img width='71' height='29' src='" + protocol + "://cartodb.s3.amazonaws.com/static/new_logo" + (is_retina ? '@2x' : '') + ".png' style='position:absolute; bottom:" + 
+        var link = cdb.config.get('cartodb_logo_link');
+        cartodb_link.innerHTML = "<a href='" + link + "' target='_blank'><img width='71' height='29' src='" + protocol + "://cartodb.s3.amazonaws.com/static/new_logo" + (is_retina ? '@2x' : '') + ".png' style='position:absolute; bottom:" + 
           ( position.bottom || 0 ) + "px; left:" + ( position.left || 0 ) + "px; display:block; width:71px!important; height:29px!important; border:none; outline:none;' alt='CartoDB' title='CartoDB' />";
         container.appendChild(cartodb_link);
       }
     },( timeout || 0 ));
   }
 };
+
 (function() {
   /**
   * base layer for all leaflet layers
@@ -26736,7 +26744,7 @@ cdb.geo.LeafLetCartoDBLayerGroupView = L.CartoDBGroupLayer.extend({
 
     // CartoDB new attribution,
     // also we have the logo
-    layerModel.attributes.attribution = "CartoDB <a href='http://cartodb.com/attributions' target='_blank'>attribution</a>";
+    layerModel.attributes.attribution = cdb.config.get('cartodb_attributions');
 
     var opts = _.clone(layerModel.attributes);
 
@@ -26873,7 +26881,7 @@ var LeafLetLayerCartoDBView = L.CartoDBLayer.extend({
 
     // CartoDB new attribution,
     // also we have the logo
-    layerModel.attributes.attribution = "CartoDB <a href='http://cartodb.com/attributions' target='_blank'>attribution</a>";
+    layerModel.attributes.attribution = cdb.config.get('cartodb_attributions');
 
     var opts = _.clone(layerModel.attributes);
 
@@ -27768,7 +27776,7 @@ var GMapsCartoDBLayerGroupView = function(layerModel, gmapsMap) {
 
   // CartoDB new attribution,
   // also we have the logo
-  layerModel.attributes.attribution = "CartoDB <a href='http://cartodb.com/attributions' target='_blank'>attribution</a>";
+  layerModel.attributes.attribution = cdb.config.get('cartodb_attributions');
 
   var opts = _.clone(layerModel.attributes);
 
@@ -27952,7 +27960,7 @@ var GMapsCartoDBLayerView = function(layerModel, gmapsMap) {
 
   // CartoDB new attribution,
   // also we have the logo
-  layerModel.attributes.attribution = "CartoDB <a href='http://cartodb.com/attributions' target='_blank'>attribution</a>";
+  layerModel.attributes.attribution = cdb.config.get('cartodb_attributions');
 
   var opts = _.clone(layerModel.attributes);
 
@@ -29527,7 +29535,6 @@ var Vis = cdb.core.View.extend({
     }
 
     var legends, torqueLayer;
-
     var device = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
     if (!device && options.legends) {
@@ -29540,16 +29547,17 @@ var Vis = cdb.core.View.extend({
       });
     }
 
-    if (options.time_slider) {
+    if(options.time_slider) {
       // add time slider
       var torque = _(this.getLayers()).filter(function(layer) { return layer.model.get('type') === 'torque'; })
+      if (torque.length) {
+        torqueLayer = torque[0];
 
-      torqueLayer = torque[0];
+        if (!device && torque.length) {
+          this.addTimeSlider(torqueLayer);
+        }
 
-      if (!device && torque.length) {
-        this.addTimeSlider(torqueLayer);
       }
-
     }
 
     if (device) this.addMobile(torqueLayer);
@@ -29572,8 +29580,7 @@ var Vis = cdb.core.View.extend({
         var subLayer = layers[i];
         var legend = this.legends && this.legends.getLegendByIndex(i);
         if(legend) {
-          o.visible ? legend.show() : legend.hide();
-          //legend[o.visible ? 'show': 'hide']();
+          legend[o.visible ? 'show': 'hide']();
         }
         // HACK
         if(subLayer.model && subLayer.model.get('type') === 'torque') {
@@ -29621,39 +29628,6 @@ var Vis = cdb.core.View.extend({
     }
   },
 
-  createLegendView: function(layers) {
-
-    if (!layers || layers.length === 0) return;
-
-    var legends = [];
-
-    for(var i = layers.length - 1; i>= 0; --i) {
-
-      var layer = layers[i];
-
-      if (layer.legend) {
-
-        layer.legend.data = layer.legend.items;
-
-        var legend = layer.legend;
-
-        if (legend.items && legend.items.length) {
-          layer.legend.index = i;
-          legends.push(new cdb.geo.ui.Legend(layer.legend));
-        }
-
-      }
-
-      if (layer.options && layer.options.layer_definition) {
-        legends = legends.concat(this.createLegendView(layer.options.layer_definition.layers));
-      }
-
-    }
-
-    return legends;
-
-  },
-
   addLegends: function(layers) {
 
     var legends = this.createLegendView(layers);
@@ -29664,6 +29638,36 @@ var Vis = cdb.core.View.extend({
 
     this.mapView.addOverlay(this.legends);
 
+  },
+
+     createLegendView: function(layers) {
+      var legends = [];
+      for(var i = layers.length - 1; i>= 0; --i) {
+        var layer = layers[i];
+        if(layer.legend) {
+          layer.legend.data = layer.legend.items;
+          var legend = layer.legend;
+
+          if((legend.items && legend.items.length) || legend.template) {
+            layer.legend.index = i;
+            legends.push(new cdb.geo.ui.Legend(layer.legend));
+          }
+        }
+        if(layer.options && layer.options.layer_definition) {
+          legends = legends.concat(this.createLegendView(layer.options.layer_definition.layers));
+        }
+      }
+      return legends;
+    },
+
+  addLegends: function(layers) {
+
+    var legends = this.createLegendView(layers);
+    this.legends = new cdb.geo.ui.StackedLegend({
+       legends: legends
+    });
+
+    this.mapView.addOverlay(this.legends);
   },
 
   addOverlay: function(overlay) {

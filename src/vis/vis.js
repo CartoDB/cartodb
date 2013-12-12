@@ -318,7 +318,6 @@ var Vis = cdb.core.View.extend({
     }
 
     var legends, torqueLayer;
-
     var device = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
     if (!device && options.legends) {
@@ -331,16 +330,17 @@ var Vis = cdb.core.View.extend({
       });
     }
 
-    if (options.time_slider) {
+    if(options.time_slider) {
       // add time slider
       var torque = _(this.getLayers()).filter(function(layer) { return layer.model.get('type') === 'torque'; })
+      if (torque.length) {
+        torqueLayer = torque[0];
 
-      torqueLayer = torque[0];
+        if (!device && torque.length) {
+          this.addTimeSlider(torqueLayer);
+        }
 
-      if (!device && torque.length) {
-        this.addTimeSlider(torqueLayer);
       }
-
     }
 
     if (device) this.addMobile(torqueLayer);
@@ -363,8 +363,7 @@ var Vis = cdb.core.View.extend({
         var subLayer = layers[i];
         var legend = this.legends && this.legends.getLegendByIndex(i);
         if(legend) {
-          o.visible ? legend.show() : legend.hide();
-          //legend[o.visible ? 'show': 'hide']();
+          legend[o.visible ? 'show': 'hide']();
         }
         // HACK
         if(subLayer.model && subLayer.model.get('type') === 'torque') {
@@ -412,39 +411,6 @@ var Vis = cdb.core.View.extend({
     }
   },
 
-  createLegendView: function(layers) {
-
-    if (!layers || layers.length === 0) return;
-
-    var legends = [];
-
-    for(var i = layers.length - 1; i>= 0; --i) {
-
-      var layer = layers[i];
-
-      if (layer.legend) {
-
-        layer.legend.data = layer.legend.items;
-
-        var legend = layer.legend;
-
-        if (legend.items && legend.items.length) {
-          layer.legend.index = i;
-          legends.push(new cdb.geo.ui.Legend(layer.legend));
-        }
-
-      }
-
-      if (layer.options && layer.options.layer_definition) {
-        legends = legends.concat(this.createLegendView(layer.options.layer_definition.layers));
-      }
-
-    }
-
-    return legends;
-
-  },
-
   addLegends: function(layers) {
 
     var legends = this.createLegendView(layers);
@@ -455,6 +421,36 @@ var Vis = cdb.core.View.extend({
 
     this.mapView.addOverlay(this.legends);
 
+  },
+
+     createLegendView: function(layers) {
+      var legends = [];
+      for(var i = layers.length - 1; i>= 0; --i) {
+        var layer = layers[i];
+        if(layer.legend) {
+          layer.legend.data = layer.legend.items;
+          var legend = layer.legend;
+
+          if((legend.items && legend.items.length) || legend.template) {
+            layer.legend.index = i;
+            legends.push(new cdb.geo.ui.Legend(layer.legend));
+          }
+        }
+        if(layer.options && layer.options.layer_definition) {
+          legends = legends.concat(this.createLegendView(layer.options.layer_definition.layers));
+        }
+      }
+      return legends;
+    },
+
+  addLegends: function(layers) {
+
+    var legends = this.createLegendView(layers);
+    this.legends = new cdb.geo.ui.StackedLegend({
+       legends: legends
+    });
+
+    this.mapView.addOverlay(this.legends);
   },
 
   addOverlay: function(overlay) {

@@ -859,7 +859,7 @@ cdb.geo.ui.StackedLegend = cdb.core.View.extend({
   _checkVisibility: function() {
 
     var visible = _.some(this.options.legends, function(legend) {
-      return legend.model.get("type") && legend.model.get("type") != "none"
+      return legend.model.get("type") && (legend.model.get("type") != "none"  || legend.model.get("template"))
     }, this);
 
     if (visible) {

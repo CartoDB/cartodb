@@ -17,7 +17,7 @@ class Admin::UsersController < ApplicationController
     @user.organization = current_user.organization
     copy_account_features(current_user, @user)
     @user.save(raise_on_failure: true)
-    redirect_to organization_path(current_user.organization)
+    redirect_to organization_path
   rescue Sequel::ValidationFailed => e
     render action: :new
   end
@@ -35,7 +35,7 @@ class Admin::UsersController < ApplicationController
 
   def destroy
     @user.destroy
-    redirect_to organization_path(current_user.organization)
+    redirect_to organization_path
   end
 
   private

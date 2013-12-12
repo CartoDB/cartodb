@@ -1,6 +1,6 @@
 // cartodb.js version: 3.4.02-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: 658f9879c9e331e61f7ee159f65d0984adb672f2
+// sha: c5269642bbae594018997c56af046e67ca9781f5
 (function() {
   var root = this;
 
@@ -28618,6 +28618,8 @@ cdb.ui.common.ShareDialog = cdb.ui.common.Dialog.extend({
     var share_url   = this.options.share_url;
     var facebook_url, twitter_url;
 
+    this.$el.addClass(this.options.size);
+
     if (this.options.facebook_url) {
       facebook_url = this.options.facebook_url;
     } else {
@@ -30504,7 +30506,8 @@ cdb.vis.Overlay.register('share', function(data, vis) {
     share_url: data.share_url,
     template: template,
     target: $(".cartodb-header .share"),
-    width: 430
+    size: $(document).width() > 400 ? "" : "small",
+    width: $(document).width() > 400 ? 430 : 216
   });
 
   return dialog.render();

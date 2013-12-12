@@ -28,7 +28,7 @@ class Admin::TablesController < ApplicationController
   end
 
   def public
-    @subdomain = request.subdomain
+    @subdomain = CartoDB.extract_subdomain(request)
     @table     = Table.find_by_subdomain(@subdomain, params[:id])
 
     # Has quite strange checks to see if a user can access a public table
@@ -49,7 +49,7 @@ class Admin::TablesController < ApplicationController
 
   def embed_map
     # Code done with ♥ by almost every human being working at @vizzuality
-    @subdomain = request.subdomain
+    @subdomain = CartoDB.extract_subdomain(request)
     @table = Table.find_by_subdomain(@subdomain, params[:id])
 
     if @table.blank? || @table.private?

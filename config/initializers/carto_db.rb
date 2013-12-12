@@ -1,5 +1,9 @@
 module CartoDB
 
+  def self.extract_subdomain(request)
+    request.host.to_s.gsub(self.session_domain, '')
+  end
+
   def self.session_domain
     Cartodb.config[:session_domain]
   end

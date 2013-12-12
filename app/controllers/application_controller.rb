@@ -66,11 +66,11 @@ class ApplicationController < ActionController::Base
   end
 
   def login_required
-    authenticated?(request.subdomain) || not_authorized
+    authenticated?(CartoDB.extract_subdomain(request)) || not_authorized
   end
 
   def api_authorization_required
-    authenticate!(:api_key, :api_authentication, :scope => request.subdomain)
+    authenticate!(:api_key, :api_authentication, :scope => CartoDB.extract_subdomain(request))
   end
 
   def not_authorized
@@ -143,7 +143,7 @@ class ApplicationController < ActionController::Base
   end
 
   def current_user
-    super(request.subdomain)
+    super(CartoDB.extract_subdomain(request))
   end
 
   protected :current_user

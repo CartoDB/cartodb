@@ -53,6 +53,7 @@
         font-weight:bold;
         font-size:11px;
         text-transform:uppercase;
+        strong {color:#666}
       }
 
       @include default-input();
@@ -73,21 +74,21 @@
 
     .field-1 {
       width:100%;
-      input { width:399px; }
+      input { width:534px; }
     }
 
     .field-2 {
-      width:202px;
-      margin-right:20px;
+      width:270px;
+      margin-right:13px;
       
-      input {width:177px;}
+      input {width:246px;}
     }
 
     .field-3 {
-      width:128px;
-      margin-right:20px;
+      width:174px;
+      margin-right:13px;
       
-      input {width:102px;}
+      input {width:150px;}
     }
 
 

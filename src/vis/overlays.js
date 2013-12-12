@@ -208,7 +208,8 @@ cdb.vis.Overlay.register('share', function(data, vis) {
     share_url: data.share_url,
     template: template,
     target: $(".cartodb-header .share"),
-    width: 430
+    size: $(document).width() > 400 ? "" : "small",
+    width: $(document).width() > 400 ? 430 : 216
   });
 
   return dialog.render();

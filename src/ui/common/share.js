@@ -103,6 +103,8 @@ cdb.ui.common.ShareDialog = cdb.ui.common.Dialog.extend({
     var share_url   = this.options.share_url;
     var facebook_url, twitter_url;
 
+    this.$el.addClass(this.options.size);
+
     if (this.options.facebook_url) {
       facebook_url = this.options.facebook_url;
     } else {

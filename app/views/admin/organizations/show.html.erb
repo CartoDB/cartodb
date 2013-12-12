@@ -17,8 +17,7 @@
           quota_in_bytes: u.quota_in_bytes, 
           remaining_quota: u.remaining_quota,
           organization_owner: u.organization_owner
-        }}.to_json -%>
-      , current_username = "";
+        }}.to_json -%>;
   </script>
 <% end %>
 <%= content_for(:css) do %>

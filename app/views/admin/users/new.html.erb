@@ -10,8 +10,7 @@
       , organization_quota = {
           seats: <%= current_user.organization.seats %>,
           quota_in_bytes: <%= current_user.organization.quota_in_bytes %>
-        }
-      , organization_users = [];
+        };
   </script>
 <% end %>
 <%= content_for(:css) do %>

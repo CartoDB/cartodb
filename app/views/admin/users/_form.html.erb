@@ -23,6 +23,7 @@
           <div class="field field-2">
             <%= form.label :username %>
             <%= form.text_field :username, :class => @user.errors[:username].present? ? 'error' : nil %>
+            <%= form_error_for :username, @user.errors %>
           </div>
         </div>
       <% end -%>
@@ -31,10 +32,12 @@
         <div class="field field-2">
           <%= form.label :email %>
           <%= form.text_field :email, :class => @user.errors[:email].present? ? 'error' : nil %>
+          <%= form_error_for :email, @user.errors %>
         </div>
         <div class="field field-2">
           <%= label_tag 'user[password]', 'Password' %>
           <%= password_field_tag 'user[password]', nil, :class => @user.errors[:password].present? ? 'error' : nil %>
+          <%= form_error_for :password, @user.errors %>
         </div>
       </div>
       
@@ -50,6 +53,7 @@
         </label>
         <div class="progress-bar"></div>
         <%= form.hidden_field :quota_in_bytes, :class => @user.errors[:quota_in_bytes].present? ? 'error' : nil %>
+        <%= form_error_for :quota_in_bytes, @user.errors %>
       </div>
     </div>
   </div>

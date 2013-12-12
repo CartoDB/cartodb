@@ -18,6 +18,7 @@
           remaining_quota: u.remaining_quota,
           organization_owner: u.organization_owner
         }}.to_json -%>
+      , current_username = "";
   </script>
 <% end %>
 <%= content_for(:css) do %>

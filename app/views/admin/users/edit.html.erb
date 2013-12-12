@@ -2,11 +2,16 @@
   Edit user information |
 <% end %>
 <%= content_for(:js) do %>
-  <%= javascript_include_tag :cdb, :application %>
+  <%= javascript_include_tag :cdb, :application, :organization %>
   <script type="text/javascript">
     var username = "<%= current_user.username %>"
       , type = "oauth"
-      , config = <%=raw frontend_config.html_safe %>;
+      , config = <%=raw frontend_config.html_safe %>
+      , organization_quota = {
+          seats: <%= current_user.organization.seats %>,
+          quota_in_bytes: <%= current_user.organization.quota_in_bytes %>
+        }
+      , organization_users = [];
   </script>
 <% end %>
 <%= content_for(:css) do %>

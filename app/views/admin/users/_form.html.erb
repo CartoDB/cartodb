@@ -11,6 +11,7 @@
       <% end %>
     </h2>
   </div>
+
   <ul><%= render partial: 'shared/flash_message' %></ul>
   
   <div class="content">
@@ -55,7 +56,7 @@
 
   <div class="foot">
     <% if !@user.new? -%>
-      <%= link_to "delete this user", organization_user_path(@user.username), :class => "left delete red margin15", method: :delete, data: { confirm: 'Are you sure?' } %>
+      <%= link_to "delete this user", organization_user_path(@user.username), :class => "left delete red margin15" %>
     <% end %>
     <%= form.submit 'Save changes', :class => "right grey button new" %>
   </div>

@@ -12,7 +12,7 @@
     <% else %>
       <li>
         <p class="light italic margin10">Unfortunately there is no users in your organization.</p>
-        <p class="margin20"><%= link_to "Create a new user", "", :class => "button green" %></p>
+        <p class="margin20"><%= link_to "Create a new user", new_organization_user_path, :class => "button green" %></p>
       </li>
     <% end %>
   </ul>

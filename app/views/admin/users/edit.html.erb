@@ -30,6 +30,7 @@
         </ul>
       </div>
       <div class="foot">
+        <%= link_to "Delete this user", organization_user_path(@user.username), method: :delete, data: { confirm: 'Are you sure?' } %>
       </div>
     </section>
     <aside class="right">

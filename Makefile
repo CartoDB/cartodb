@@ -24,6 +24,12 @@ update_cdb:
 	cd $(CDB_PATH); make cartodb
 	cp $(CDB_PATH)/dist/cartodb.full.uncompressed.js vendor/assets/javascripts/cartodb.uncompressed.js
 	cp $(CDB_PATH)/dist/cartodb.mod.torque.uncompressed.js vendor/assets/javascripts
+	cp $(CDB_PATH)/dist/cartodb.css vendor/assets/stylesheets/cartodb.css
+
+develop_cdb:
+	while true; do make update_cdb 1>/dev/null; sleep 2; done
+
+.PHONY: develop_cdb
 
 
 

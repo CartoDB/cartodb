@@ -1,6 +1,6 @@
 // cartodb.js version: 3.4.04-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: c9b60debd44c0f591e08605cddd5a030c87acb66
+// sha: fb192a1d394de6572aa78156ae1462377fd2a314
 (function() {
   var root = this;
 
@@ -22412,11 +22412,18 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
     var w = $(".cartodb-mobile.open").width() - $(".cartodb-mobile.open .toggle").width() - $(".cartodb-mobile.open .time").width();
     $("div.cartodb-timeslider .slider-wrapper").css("width", w - 10)
 
-
     var height = $(".legends > div.cartodb-legend-stack").height();
 
-    if (height < 100 && !this.$el.hasClass("torque")) this.$el.css("height", height + 2);
-    else if (height < 100 && this.$el.hasClass("legends") && this.$el.hasClass("torque")) this.$el.css("height", height + $(".legends > div.torque").height() );
+    if (height < 100 && !this.$el.hasClass("torque")) {
+      this.$el.css("height", height + 2);
+      this.$el.find(".top-shadow").hide();
+      this.$el.find(".bottom-shadow").hide();
+    }
+    else if (height < 100 && this.$el.hasClass("legends") && this.$el.hasClass("torque")) {
+      this.$el.css("height", height + $(".legends > div.torque").height() );
+      this.$el.find(".top-shadow").hide();
+      this.$el.find(".bottom-shadow").hide();
+    }
 
   },
 
@@ -22494,10 +22501,6 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
     }
 
     return this;
-  },
-
-  test: function() {
-    console.log('a');
   }
 
 

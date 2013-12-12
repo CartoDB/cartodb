@@ -62,10 +62,10 @@
             <%= @user.username %> has
           <% end %>
           <strong><%= number_to_human_size(@user.quota_in_bytes) %> assigned</strong> -
-          <a href="#/change-quota">change</a>
+          <a href="#/change-quota" class="change_quota">change</a>
         </label>
         <div class="progress-bar"></div>
-        <%= form.hidden_field :quota_in_bytes, :class => @user.errors[:quota_in_bytes].present? ? 'error' : nil %>
+        <%= form.hidden_field :quota_in_bytes, :class => @user.errors[:quota_in_bytes].present? ? 'error' : nil, :id => "user_quota" %>
         <%= form_error_for :quota_in_bytes, @user.errors %>
       </div>
     </div>
@@ -74,8 +74,10 @@
   <div class="foot">
     <% if !@user.new? -%>
       <%= link_to "delete this user", organization_user_path(@user.username), :class => "left delete red margin15" %>
+      <%= form.submit 'Save changes', :class => "right grey button new" %>
+    <% else %>
+      <%= form.submit 'Create user', :class => "right grey button new" %>
     <% end %>
-    <%= form.submit 'Save changes', :class => "right grey button new" %>
   </div>
 
 <% end %>

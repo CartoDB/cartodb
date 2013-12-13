@@ -51,6 +51,36 @@ describe Admin::VisualizationsController do
       get "/viz", {}, @headers
       last_response.status.should == 302
     end
+
+    it 'registers any tables not in metadata', now: true do
+      login_as(@user, scope: 'test')
+      @user.tables.each(&:destroy)
+
+      @user.in_database.run('CREATE TABLE ghost_table (test integer)')
+      Table.where(user_id: @user.id).count.should == 0
+      get "/dashboard", {}, @headers
+      last_response.status.should == 200
+      Table.where(user_id: @user.id).count.should == 1
+    end
+
+    it 'deletes orphaned metadata records', now: true do
+      login_as(@user, scope: 'test')
+      @user.tables.each(&:destroy)
+
+      @user.in_database.run('CREATE TABLE ghost_table (test integer)')
+      Table.where(user_id: @user.id).count.should == 0
+      get "/dashboard", {}, @headers
+      last_response.status.should == 200
+      Table.where(user_id: @user.id).count.should == 1
+
+      @user.in_database.run('DROP TABLE ghost_table')
+      Table.where(user_id: @user.id).count.should == 1
+
+      login_as(@user, scope: 'test')
+      get "/dashboard", {}, @headers
+      last_response.status.should == 200
+      Table.where(user_id: @user.id).count.should == 0
+    end
   end # GET /viz
 
   describe 'GET /viz:id' do

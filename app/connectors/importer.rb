@@ -31,7 +31,6 @@ module CartoDB
       def register(result)
         name = rename(result.table_name, result.name)
         move_to_schema(name, result.schema, DESTINATION_SCHEMA)
-        #persist_metadata(name, data_import_id)
       end
 
       def success?
@@ -67,16 +66,9 @@ module CartoDB
           ALTER TABLE "#{schema}"."#{current_name}"
           RENAME TO "#{new_name}"
         })
-        new_name
+        self.table_name = new_name
       rescue => exception
-        puts exception.to_s + exception.backtrace.join("\n")
         retry unless rename_attempts > 1
-      end
-
-      def persist_metadata(name, data_import_id)
-        table_registrar.register(name, data_import_id)
-        self.table = table_registrar.table
-        self
       end
 
       def results
@@ -88,10 +80,13 @@ module CartoDB
         results.map(&:error_code).compact.first
       end #errors_from
 
+      attr_reader :table_name
+
       private
 
-      attr_reader :runner, :table_registrar, :quota_checker, :database,
+      attr_reader :runner, :quota_checker, :database,
       :data_import_id, :user
+      attr_writer :table_name
     end # Importer
   end # Connector
 end # CartoDB

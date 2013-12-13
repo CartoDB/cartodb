@@ -14,6 +14,13 @@ class Admin::VisualizationsController < ApplicationController
     @just_logged_in = !!flash['logged']
     current_user.view_dashboard
     update_user_last_activity
+    puts "*********** registering ghost tables"
+    current_user.sync_tables_metadata
+    puts "*********** registering ghost tables"
+  rescue => exception
+    puts exception.to_s + exception.backtrace.join("\n")
+    Rails.logger.info "DB <-> Metadata synchronization failed"
+    raise
   end #index
 
   def show

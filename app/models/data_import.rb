@@ -56,7 +56,6 @@ class DataImport < Sequel::Model
     Rails.logger.debug log.to_s
     self
   rescue => exception
-    puts exception.to_s + exception.backtrace.join("\n")
     log.append "Exception: #{exception.to_s}"
     log.append exception.backtrace
     stacktrace = exception.to_s + exception.backtrace.join
@@ -219,6 +218,8 @@ class DataImport < Sequel::Model
       set_merge_type_mismatch 
     end
     false
+  rescue => exception
+    puts exception.to_s + exception.backtrace.join("\n")
   end
 
   def import_from_query(name, query)
@@ -243,9 +244,9 @@ class DataImport < Sequel::Model
   end
 
   def migrate_existing(imported_name=migrate_table, name=nil)
-    register_tables(
-      [OpenStruct.new(success: true, name: imported_name)]
-    )
+    current_user.sync_tables_metadata
+    self.table_id = table_id_from(imported_name)
+    save
 
     if current_user.remaining_quota < 0
       self.log.append("Over storage quota, removing table" )
@@ -314,7 +315,10 @@ class DataImport < Sequel::Model
 
     self.results    = importer.results
     self.error_code = importer.error_code
-    register_tables(importer.results)
+
+    current_user.sync_tables_metadata
+    self.table_id   = table_id_from(importer.table_name)
+    self.table_name = table.name
 
     if synchronization_id
       synchronization = 
@@ -377,17 +381,11 @@ class DataImport < Sequel::Model
     self.state = 'failure'
   end 
 
-  def register_tables(results)
-    self.table_name = results.select(&:success).first.name
-
-    current_user.sync_tables_metadata
+  def table_id_from(table_name)
     oid = current_user.in_database.fetch(
       %Q{SELECT ?::regclass::oid}, table_name
     ).to_a.first.fetch(:oid)
-
-    self.table_id   = Table.where(table_id: oid).first.id
-
-    save
+    Table.where(table_id: oid).first.id
   end
 end
 

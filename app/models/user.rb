@@ -341,6 +341,8 @@ class User < Sequel::Model
 
   def unregister_orphaned_metadata_records
     orphaned_table_objects.each(&:destroy)
+  rescue => exception
+    puts exception.to_s + exception.backtrace.join("\n")
   end
 
   def sync_tables_metadata

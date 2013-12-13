@@ -39,10 +39,10 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
   recalc: function(orientation) {
 
     var width = $(document).width();
-    $(".cartodb-mobile.open").css("width", width - 40)
+    //$(".cartodb-mobile.open").css("width", width - 40)
 
-    var w = $(".cartodb-mobile.open").width() - $(".cartodb-mobile.open .toggle").width() - $(".cartodb-mobile.open .time").width();
-    $("div.cartodb-timeslider .slider-wrapper").css("width", w - 10)
+    //var w = $(".cartodb-mobile.open").width() - $(".cartodb-mobile.open .toggle").width() - $(".cartodb-mobile.open .time").width();
+    //$("div.cartodb-timeslider .slider-wrapper").css("width", w )
 
     var height = $(".legends > div.cartodb-legend-stack").height();
 

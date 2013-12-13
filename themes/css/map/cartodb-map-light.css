@@ -326,7 +326,7 @@
   }
 
   div.cartodb-mobile.open.torque .torque ul li .slider-wrapper{
-    box-sizing: border-box;
+    /*box-sizing: border-box;*/
   }
 
   div.cartodb-timeslider .slider-wrapper .slider {

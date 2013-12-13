@@ -978,6 +978,10 @@ div.cartodb-popup.header.yellow a.cartodb-popup-close-button:hover {
     border-bottom:1px solid #E5E5E5;
   }
 
+  div.cartodb-mobile.torque .toggle {
+    border-left:1px solid #E5E5E5!Important;
+  }
+
   div.cartodb-mobile.open.torque .top-shadow {
     top: 41px;
 

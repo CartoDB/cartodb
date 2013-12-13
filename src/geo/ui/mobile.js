@@ -46,11 +46,11 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
     var height = $(".legends > div.cartodb-legend-stack").height();
 
-    if (height < 100 && !this.$el.hasClass("torque")) {
+    if (this.$el.hasClass("open") && height < 100 && !this.$el.hasClass("torque")) {
       this.$el.css("height", 72 + 2);
       this.$el.find(".top-shadow").hide();
       this.$el.find(".bottom-shadow").hide();
-    } else if (height < 100 && this.$el.hasClass("legends") && this.$el.hasClass("torque")) {
+    } else if (this.$el.hasClass("open") && height < 100 && this.$el.hasClass("legends") && this.$el.hasClass("torque")) {
       this.$el.css("height", 72 + $(".legends > div.torque").height() );
       this.$el.find(".top-shadow").hide();
       this.$el.find(".bottom-shadow").hide();
@@ -108,7 +108,7 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
     setTimeout(function() {
       var w = self.$el.width() - self.$el.find(".toggle").width() - self.$el.find(".time").width();
-      if (self.hasLegends) w -= 20;
+      if (self.hasLegends) w -= 40;
       if (!self.hasLegends) w -= self.$el.find(".controls").width();
       self.$el.find(".slider-wrapper").css("width", w)
 

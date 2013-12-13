@@ -343,6 +343,10 @@
     padding: 20px 26px 30px 26px; 
   }
 
+  div.cartodb-mobile div.cartodb-timeslider .ui-slider .ui-slider-handle {
+    display:none!important;
+  }
+
   div.cartodb-mobile.open {
 
     background:#fff;

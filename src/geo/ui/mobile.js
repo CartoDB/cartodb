@@ -41,11 +41,11 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
     var height = $(".legends > div.cartodb-legend-stack").height();
 
     if (this.$el.hasClass("open") && height < 100 && !this.$el.hasClass("torque")) {
-      this.$el.css("height", 72 + 2);
+      this.$el.css("height", height);
       this.$el.find(".top-shadow").hide();
       this.$el.find(".bottom-shadow").hide();
     } else if (this.$el.hasClass("open") && height < 100 && this.$el.hasClass("legends") && this.$el.hasClass("torque")) {
-      this.$el.css("height", 72 + $(".legends > div.torque").height() );
+      this.$el.css("height", height + $(".legends > div.torque").height() );
       this.$el.find(".top-shadow").hide();
       this.$el.find(".bottom-shadow").hide();
     }

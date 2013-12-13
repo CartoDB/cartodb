@@ -64,9 +64,14 @@
       // Grey light
       .bar-1 {
         background:#E5E5E5;
-        border-right:1px solid white;
         z-index:1;
         &:after { display:none }
+        &:before {
+          position:absolute;
+          content: '';
+          @include position(0,0,0,auto);
+          border-right:1px solid white;
+        }
       }
 
       // image pattern

@@ -47,12 +47,11 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
     var height = $(".legends > div.cartodb-legend-stack").height();
 
     if (height < 100 && !this.$el.hasClass("torque")) {
-      this.$el.css("height", height + 2);
+      this.$el.css("height", 72 + 2);
       this.$el.find(".top-shadow").hide();
       this.$el.find(".bottom-shadow").hide();
-    }
-    else if (height < 100 && this.$el.hasClass("legends") && this.$el.hasClass("torque")) {
-      this.$el.css("height", height + $(".legends > div.torque").height() );
+    } else if (height < 100 && this.$el.hasClass("legends") && this.$el.hasClass("torque")) {
+      this.$el.css("height", 72 + $(".legends > div.torque").height() );
       this.$el.find(".top-shadow").hide();
       this.$el.find(".bottom-shadow").hide();
     }
@@ -99,6 +98,22 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
     this.$el.css("height", "40");
 
+    this._fixTorque();
+
+  },
+
+  _fixTorque: function() {
+
+    var self = this;
+
+    setTimeout(function() {
+      var w = self.$el.width() - self.$el.find(".toggle").width() - self.$el.find(".time").width();
+      if (self.hasLegends) w -= 20;
+      if (!self.hasLegends) w -= self.$el.find(".controls").width();
+      self.$el.find(".slider-wrapper").css("width", w)
+
+    }, 50);
+
   },
 
   render: function() {
@@ -108,6 +123,8 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
     this.$el.css( { width: width })
 
     if (this.options.torqueLayer) {
+
+      this.hasTorque = true;
 
       this.slider = new cdb.geo.ui.TimeSlider({type: "time_slider", layer: this.options.torqueLayer, map: this.options.map, pos_margin: 0, position: "none" , width: "auto" });
 
@@ -128,9 +145,19 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
         return model.get("template") || (model.get("type") != 'none' && model.get("items").length > 0)
       });
 
-      if (visible) this.$el.addClass("legends");
+      if (visible) {
+        this.$el.addClass("legends");
+        this.hasLegends = true;
+        this.$el.find(".controls").hide();
+      }
 
     }
+
+    if (this.hasTorque && !this.hasLegends) {
+      this.$el.find(".toggle").hide();
+    }
+
+    if (this.hasTorque) this._fixTorque();
 
     return this;
   }

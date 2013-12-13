@@ -1,6 +1,6 @@
 // cartodb.js version: 3.4.04-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: 5d5ff502d05b49ec321b36bf5429a655e14ca27c
+// sha: c53df8f31c01e6101cd1ec01fbe250ec35f7a4db
 (function() {
   var root = this;
 
@@ -22406,12 +22406,6 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
   recalc: function(orientation) {
 
-    var width = $(document).width();
-    //$(".cartodb-mobile.open").css("width", width - 40)
-
-    //var w = $(".cartodb-mobile.open").width() - $(".cartodb-mobile.open .toggle").width() - $(".cartodb-mobile.open .time").width();
-    //$("div.cartodb-timeslider .slider-wrapper").css("width", w )
-
     var height = $(".legends > div.cartodb-legend-stack").height();
 
     if (this.$el.hasClass("open") && height < 100 && !this.$el.hasClass("torque")) {
@@ -22479,6 +22473,7 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
       if (self.hasLegends) w -= 40;
       if (!self.hasLegends) w -= self.$el.find(".controls").width();
       self.$el.find(".slider-wrapper").css("width", w)
+      self.$el.find(".slider-wrapper").show();
 
     }, 50);
 
@@ -22502,6 +22497,7 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
       this.$el.find(".torque").append(this.slider.render().$el);
       this.$el.addClass("torque");
+      this.$el.find(".slider-wrapper").hide();
 
     }
 

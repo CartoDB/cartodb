@@ -1,6 +1,6 @@
 // cartodb.js version: 3.4.04-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: f02cb5c58cfef94abaa84884b68a7e7751e88d5e
+// sha: a245dd76f63b1b4aa2f7f701b0aeceff659394cb
 (function() {
   var root = this;
 
@@ -22407,21 +22407,14 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
   recalc: function(orientation) {
 
-    var width = $(document).width();
-    $(".cartodb-mobile.open").css("width", width - 40)
-
-    var w = $(".cartodb-mobile.open").width() - $(".cartodb-mobile.open .toggle").width() - $(".cartodb-mobile.open .time").width();
-    $("div.cartodb-timeslider .slider-wrapper").css("width", w - 10)
-
     var height = $(".legends > div.cartodb-legend-stack").height();
 
-    if (height < 100 && !this.$el.hasClass("torque")) {
-      this.$el.css("height", height + 2);
+    if (this.$el.hasClass("open") && height < 100 && !this.$el.hasClass("torque")) {
+      this.$el.css("height", 72 + 2);
       this.$el.find(".top-shadow").hide();
       this.$el.find(".bottom-shadow").hide();
-    }
-    else if (height < 100 && this.$el.hasClass("legends") && this.$el.hasClass("torque")) {
-      this.$el.css("height", height + $(".legends > div.torque").height() );
+    } else if (this.$el.hasClass("open") && height < 100 && this.$el.hasClass("legends") && this.$el.hasClass("torque")) {
+      this.$el.css("height", 72 + $(".legends > div.torque").height() );
       this.$el.find(".top-shadow").hide();
       this.$el.find(".bottom-shadow").hide();
     }
@@ -22468,6 +22461,23 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
     this.$el.css("height", "40");
 
+    this._fixTorque();
+
+  },
+
+  _fixTorque: function() {
+
+    var self = this;
+
+    setTimeout(function() {
+      var w = self.$el.width() - self.$el.find(".toggle").width() - self.$el.find(".time").width();
+      if (self.hasLegends) w -= 40;
+      if (!self.hasLegends) w -= self.$el.find(".controls").width();
+      self.$el.find(".slider-wrapper").css("width", w)
+      self.$el.find(".slider-wrapper").show();
+
+    }, 50);
+
   },
 
   render: function() {
@@ -22478,6 +22488,8 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
     if (this.options.torqueLayer) {
 
+      this.hasTorque = true;
+
       this.slider = new cdb.geo.ui.TimeSlider({type: "time_slider", layer: this.options.torqueLayer, map: this.options.map, pos_margin: 0, position: "none" , width: "auto" });
 
       this.slider.bind("time_clicked", function() {
@@ -22486,6 +22498,7 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
 
       this.$el.find(".torque").append(this.slider.render().$el);
       this.$el.addClass("torque");
+      this.$el.find(".slider-wrapper").hide();
 
     }
 
@@ -22497,9 +22510,19 @@ cdb.geo.ui.Mobile = cdb.core.View.extend({
         return model.get("template") || (model.get("type") != 'none' && model.get("items").length > 0)
       });
 
-      if (visible) this.$el.addClass("legends");
+      if (visible) {
+        this.$el.addClass("legends");
+        this.hasLegends = true;
+        this.$el.find(".controls").hide();
+      }
 
     }
+
+    if (this.hasTorque && !this.hasLegends) {
+      this.$el.find(".toggle").hide();
+    }
+
+    if (this.hasTorque) this._fixTorque();
 
     return this;
   }
@@ -30461,6 +30484,14 @@ cdb.vis.Overlay.register('header', function(data, vis) {
         </h1>\
       {{/title}}\
       {{#description}}<p>{{description}}</p>{{/description}}\
+      {{#mobile_shareable}}\
+        <div class='social'>\
+          <a class='facebook' target='_blank'\
+            href='http://www.facebook.com/sharer.php?u={{share_url}}&text=Map of {{title}}: {{description}}'>F</a>\
+          <a class='twitter' href='https://twitter.com/share?url={{share_url}}&text=Map of {{title}}: {{descriptionShort}}... '\
+           target='_blank'>T</a>\
+        </div>\
+      {{/mobile_shareable}}\
       {{#shareable}}\
         <a href='#' class='share'>Share</a>\
       {{/shareable}}\
@@ -30483,13 +30514,18 @@ cdb.vis.Overlay.register('header', function(data, vis) {
     descriptionShort = descriptionShort.join(' ');
   }
 
+  var shareable = (data.shareable == "false" || !data.shareable) ? null : data.shareable;
+  var mobile_shareable = shareable;
+  mobile_shareable = mobile_shareable && (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent));
+
   var header = new cdb.geo.ui.Header({
     title: data.map.get('title'),
     description: description,
     descriptionShort: descriptionShort,
     url: data.url,
     share_url: data.share_url,
-    shareable: (data.shareable == "false" || !data.shareable) ? null : data.shareable,
+    mobile_shareable: mobile_shareable,
+    shareable: shareable && !mobile_shareable,
     template: template
   });
 

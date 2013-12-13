@@ -1003,10 +1003,6 @@ div.cartodb-popup.header.yellow a.cartodb-popup-close-button:hover {
     width: 100%;
   }
 
-  div.cartodb-mobile.open.torque .torque ul li .slider-wrapper{
-    /*box-sizing: border-box;*/
-  }
-
   div.cartodb-timeslider .slider-wrapper .slider {
     width: 100%;
   }

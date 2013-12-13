@@ -36,7 +36,7 @@ class Admin::UsersController < ApplicationController
 
   def destroy
     @user.destroy
-    redirect_to organization_path
+    head :no_content
   end
 
   private

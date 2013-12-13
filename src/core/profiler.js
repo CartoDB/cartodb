@@ -107,7 +107,7 @@ Metric.prototype = {
   //
   inc: function(qty) {
     qty = qty === undefined ? 1: qty;
-    Profiler.new_value(this.name, Profiler.get(this.name).count + (qty ? qty: 0));
+    Profiler.new_value(this.name, qty);
   },
 
   //

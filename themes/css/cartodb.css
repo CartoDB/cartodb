@@ -776,6 +776,11 @@ div.cartodb-popup.header.yellow a.cartodb-popup-close-button:hover {
     background:url('../img/other.png') no-repeat 0 0;
   }
 
+  div.cartodb-header div.social a.twitter {
+    margin-left:3px;
+    background:url('../img/other.png') no-repeat -26px 0;
+  }
+
   div.cartodb-header a.share:hover {
     background: #E6E6E6;
   }
@@ -1016,6 +1021,10 @@ div.cartodb-popup.header.yellow a.cartodb-popup-close-button:hover {
     padding: 20px 26px 30px 26px; 
   }
 
+  div.cartodb-mobile div.cartodb-timeslider .ui-slider .ui-slider-handle {
+    display:none!important;
+  }
+
   div.cartodb-mobile.open {
 
     background:#fff;
@@ -1148,7 +1157,8 @@ div.cartodb-popup.header.yellow a.cartodb-popup-close-button:hover {
   }
 
   div.cartodb-mobile .cartodb-timeslider li.controls {
-    display:none;
+    /*display:none;*/
+    /*width: 48px;*/
   }
 
   div.cartodb-mobile .cartodb-timeslider li.time {
@@ -1212,6 +1222,10 @@ div.cartodb-popup.header.yellow a.cartodb-popup-close-button:hover {
     border-bottom:1px solid #E5E5E5;
   }
 
+  div.cartodb-mobile.torque .toggle {
+    border-left:1px solid #E5E5E5!Important;
+  }
+
   div.cartodb-mobile.open.torque .top-shadow {
     top: 41px;
 
@@ -1228,45 +1242,13 @@ div.cartodb-popup.header.yellow a.cartodb-popup-close-button:hover {
     height: 70px;
   }
 
-  div.cartodb-mobile.open.torque .torque {
+  div.cartodb-mobile.torque .torque {
     display:block;
     width: 100%;
-  }
-
-  div.cartodb-mobile.open.torque .torque ul li .slider-wrapper{
-    box-sizing: border-box;
   }
 
   div.cartodb-timeslider .slider-wrapper .slider {
     width: 100%;
-  }
-
-  div.cartodb-mobile .toggle {
-
-    position:absolute;
-    right: 0; top: 0;
-    background:#fff;
-    webkit-box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
-    -moz-box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
-    box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
-
-    -webkit-border-radius: 4px;
-    -moz-border-radius: 4px;
-    -ms-border-radius: 4px;
-    -o-border-radius: 4px;
-    border-radius: 4px;
-
-    border: 1px solid #999999;
-
-    display:block;
-    width: 40px;
-    height: 30px;
-    margin: auto;
-
-    padding: 5px 0;
-
-    background: url('../img/burguer.png') no-repeat center center white;
-    z-index: 10;
   }
 
   div.cartodb-mobile .torque {
@@ -1299,6 +1281,81 @@ div.cartodb-popup.header.yellow a.cartodb-popup-close-button:hover {
     display:none;
     background:transparent;
   }
+
+
+  div.cartodb-mobile.torque {
+    webkit-box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
+    -moz-box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
+    box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
+
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    -ms-border-radius: 4px;
+    -o-border-radius: 4px;
+    border-radius: 4px;
+
+    border: 1px solid #999999;
+    background:#fff;
+  }
+
+  div.cartodb-mobile.torque .torque {
+    background:none;
+    border:none;
+  }
+
+  div.cartodb-mobile.open.torque.legends .torque {
+    border-bottom: 2px solid #E5E5E5;
+  }
+
+  div.cartodb-mobile.torque .toggle {
+    border:none;
+
+    background-color:transparent;
+
+    webkit-box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
+    -moz-box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
+    box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
+
+    -webkit-border-radius: 0px;
+    -moz-border-radius: 0px;
+    -ms-border-radius: 0px;
+    -o-border-radius: 0px;
+    border-radius: 0px;
+
+    webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+  }
+
+  div.cartodb-mobile .toggle {
+
+    position:absolute;
+    right: 0; top: 0;
+    background:#fff;
+
+    webkit-box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
+    -moz-box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
+    box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
+
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    -ms-border-radius: 4px;
+    -o-border-radius: 4px;
+    border-radius: 4px;
+
+    border: 1px solid #999999;
+
+    display:block;
+    width: 40px;
+    height: 30px;
+    margin: auto;
+
+    padding: 5px 0;
+
+    background: url('../img/burguer.png') no-repeat center center white;
+    z-index: 10;
+  }
+
 
   /* CartoDB Legend styles */
 
@@ -2354,13 +2411,6 @@ only screen and (                min-resolution: 2dppx) {
 @media only screen 
 and (max-device-width : 320px) 
 and (max-device-width : 480px) {
-  div.cartodb-timeslider {
-    /*margin-bottom: 0px!Important;*/
-  }
-
-  div.cartodb-timeslider .ui-slider .ui-slider-handle {
-    /*display:none!important;*/
-  }
 
 }
 
@@ -2370,11 +2420,12 @@ and (min-device-width : 320px)
 and (max-device-width : 480px) 
 and (orientation : portrait) { 
 
-  div.cartodb-timeslider .slider-wrapper,
-  div.cartodb-timeslider .slider {
-    /*width: 110px!important;*/
-  }
+  .cartodb-text {display:none}
+  .cartodb-map-wrapper { bottom: 0!Important;}
 
+  div.cartodb-timeslider .ui-slider .ui-slider-handle {
+    display:none!important;
+  }
 }
 
 /* iPhone landscape */
@@ -2383,30 +2434,23 @@ and (min-device-width : 320px)
 and (max-device-width : 480px) 
 and (orientation : landscape) { 
 
-  div.cartodb-timeslider .slider-wrapper,
-  div.cartodb-timeslider .slider {
-    /*width: 270px!Important;*/
-  }
+  .cartodb-text {display:none}
+  .cartodb-map-wrapper { bottom: 0!Important;}
 
 }
 
 /* iPhone 5 portrait */
 @media screen and (device-aspect-ratio: 40/71)
 and (orientation : portrait) { 
-  div.cartodb-timeslider .slider-wrapper,
-  div.cartodb-timeslider .slider {
-    /*width: 110px!important;*/
-  }
+  .cartodb-text {display:none}
+  .cartodb-map-wrapper { bottom: 0!Important;}
 }
 
 /* iPhone 5 landscape */
 @media screen and (device-aspect-ratio: 40/71)
 and (orientation : landscape) { 
-  div.cartodb-timeslider .slider-wrapper,
-  div.cartodb-timeslider .slider {
-    /*width: 360px!Important;*/
-  }
-
+  .cartodb-text {display:none}
+  .cartodb-map-wrapper { bottom: 0!Important;}
 }
 
 /* iPad portrait */
@@ -2415,10 +2459,10 @@ and (min-device-width : 768px)
 and (max-device-width : 1024px) 
 and (orientation : portrait) { 
 
-  div.cartodb-timeslider .slider-wrapper,
-  div.cartodb-timeslider .slider {
-    width: 560px!important;
-  }
+  /*div.cartodb-timeslider .slider-wrapper,*/
+  /*div.cartodb-timeslider .slider {*/
+    /*width: 560px!important;*/
+  /*}*/
 
 }
 
@@ -2428,18 +2472,8 @@ and (min-device-width : 340px)
 and (max-device-width: 768px) 
 and (orientation : portrait) { 
 
-  div.cartodb-timeslider {
-    margin-bottom: 0!important;
-  }
-
-  div.cartodb-timeslider .slider-wrapper,
-  div.cartodb-timeslider .slider {
-    width: 150px!important;
-  }
-
-  div.cartodb-timeslider .ui-slider .ui-slider-handle {
-    /*display:none!important;*/
-  }
+  .cartodb-text {display:none}
+  .cartodb-map-wrapper { bottom: 0!Important;}
 }
 
 /* Nexus landscape */
@@ -2447,18 +2481,9 @@ and (orientation : portrait) {
 and (max-device-width : 768px) 
 and (orientation : landscape) { 
 
-  div.cartodb-timeslider {
-    margin-bottom: 0!important;
-  }
+  .cartodb-text {display:none}
+  .cartodb-map-wrapper { bottom: 0!Important;}
 
-  div.cartodb-timeslider .slider-wrapper,
-  div.cartodb-timeslider .slider {
-    width: 390px;
-  }
-
-  div.cartodb-timeslider .ui-slider .ui-slider-handle {
-    /*display:none!important;*/
-  }
 }
 
 div.cartodb-timeslider .slider-wrapper {

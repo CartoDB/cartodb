@@ -776,6 +776,11 @@ div.cartodb-popup.header.yellow a.cartodb-popup-close-button:hover {
     background:url('../img/other.png') no-repeat 0 0;
   }
 
+  div.cartodb-header div.social a.twitter {
+    margin-left:3px;
+    background:url('../img/other.png') no-repeat -26px 0;
+  }
+
   div.cartodb-header a.share:hover {
     background: #E6E6E6;
   }

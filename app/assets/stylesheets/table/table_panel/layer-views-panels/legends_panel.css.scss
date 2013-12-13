@@ -198,7 +198,19 @@
         .custom, .choropleth {
           ul li .input { top: 13px; }
           ul li:hover .remove { @include opacity(1); }
-          ul li .remove { position:relative; top: 3px; @include opacity(0); }
+          ul li .remove {
+            position:relative;
+            top: 3px;
+            @include opacity(0);
+            @include inline-block();
+            vertical-align:middle;
+            @include size(13px,13px);
+            margin-left:5px;
+            letter-spacing:0px;
+            @include background(sprite($common-sprites, close_grey, $offset-x:0, $offset-y:0) no-repeat);
+            &:hover {@include background(sprite($common-sprites, close_grey, $offset-x:0, $offset-y:-13px) no-repeat);}
+            &:active {@include background(sprite($common-sprites, close_grey, $offset-x:0, $offset-y:-26px) no-repeat);}
+          }
         }
 
         .right {

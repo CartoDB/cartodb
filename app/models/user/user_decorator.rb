@@ -45,6 +45,11 @@ module CartoDB
         notification: self.notification
       }
 
+      data[:organization] = {
+        name:  self.organization.name,
+        owner: self.organization_owner
+      } if self.organization.present?
+
       if !options[:extended]
         data
       else

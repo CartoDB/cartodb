@@ -132,7 +132,7 @@ module CartoDB
         "#{table_name}_to_be_deleted"
       end
 
-      def copy_privileges(origin_table_name, destionation_table_name)
+      def copy_privileges(origin_table_name, destination_table_name)
         database.execute(%Q(
           UPDATE pg_class
           SET relacl=(

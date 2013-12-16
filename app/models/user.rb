@@ -99,18 +99,43 @@ class User < Sequel::Model
     self.invalidate_varnish_cache
   end
 
+  def self.terminate_database_connections(database_name)
+      Rails::Sequel.connection.run("
+DO language plpgsql $$
+DECLARE
+    ver INT[];
+    sql TEXT;
+BEGIN
+    SELECT INTO ver regexp_split_to_array(
+      regexp_replace(version(), '^PostgreSQL ([^ ]*) .*', '\\1'),
+      '\\.'
+    );
+    sql := 'SELECT pg_terminate_backend(';
+    IF ver[1] > 9 OR ( ver[1] = 9 AND ver[2] > 1 ) THEN
+      sql := sql || 'pid';
+    ELSE
+      sql := sql || 'procpid';
+    END IF;
+
+    sql := sql || ') FROM pg_stat_activity WHERE datname = '
+      || quote_literal('#{database_name}');
+  
+    RAISE NOTICE '%', sql;
+
+    EXECUTE sql;
+END
+$$
+      ")
+  end
+
   def after_destroy_commit
     # Remove database
     Thread.new do
       conn = Rails::Sequel.connection
-        conn.run("UPDATE pg_database SET datallowconn = 'false' WHERE datname = '#{database_name}'")
-        begin
-          conn.run("SELECT pg_terminate_backend(procpid) FROM pg_stat_activity WHERE datname = '#{database_name}'")
-        rescue Sequel::DatabaseError => e
-          conn.run("SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '#{database_name}'")
-        end
-        conn.run("DROP DATABASE #{database_name}")
-        conn.run("DROP USER #{database_username}")
+      conn.run("UPDATE pg_database SET datallowconn = 'false' WHERE datname = '#{database_name}'")
+      User.terminate_database_connections(database_name)
+      conn.run("DROP DATABASE #{database_name}")
+      conn.run("DROP USER #{database_username}")
     end.join
     monitor_user_notification
   end

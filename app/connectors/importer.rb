@@ -67,9 +67,19 @@ module CartoDB
           ALTER TABLE "#{ORIGIN_SCHEMA}"."#{current_name}"
           RENAME TO "#{new_name}"
         })
+
+        rename_the_geom_index_if_exists(current_name, new_name)
         new_name
       rescue => exception
         retry unless rename_attempts > 1
+      end
+
+      def rename_the_geom_index_if_exists(current_name, new_name)
+        database.execute(%Q{
+          ALTER INDEX "#{ORIGIN_SCHEMA}"."#{current_name}_geom_idx"
+          RENAME TO "#{new_name}_the_geom_idx"
+        })
+      rescue => exception
       end
 
       def persist_metadata(name, data_import_id)

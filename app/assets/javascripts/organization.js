@@ -1,5 +1,6 @@
+//= require models
 //= require ../../../lib/assets/javascripts/cartodb/common/dropdown_menu
-//= require ../../../lib/assets/javascripts/cartodb/common/dropdown_basemap
+//= require ../../../lib/assets/javascripts/cartodb/common/user_settings_dropdown
 //= require ../../../lib/assets/javascripts/cartodb/common/base_dialog
 //= require ../../../lib/assets/javascripts/cartodb/common/utils
 //= require ../../../lib/assets/javascripts/cartodb/common/global_click

@@ -7,7 +7,7 @@
       organization_owner: u.organization_owner
     }}.to_json -%>;
     <% if !@user.new? %>
-    var user_data = <%= raw @user.to_json -%>;
+    var organization_user_data = <%= raw @user.data.to_json.html_safe -%>;
     <% end %>
   </script>
 

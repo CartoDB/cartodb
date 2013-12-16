@@ -91,6 +91,9 @@
 
     // request params
     var reqParams = ['format', 'dp', 'api_key'];
+    if (options.extra_params) {
+      reqParams = reqParams.concat(options.extra_params);
+    }
     for(var i in reqParams) {
       var r = reqParams[i];
       var v = options[r];

@@ -275,7 +275,7 @@ cdb.geo.LeafLetCartoDBLayerGroupView = L.CartoDBGroupLayer.extend({
 
     // CartoDB new attribution,
     // also we have the logo
-    layerModel.attributes.attribution = "CartoDB <a href='http://cartodb.com/attributions' target='_blank'>attribution</a>";
+    layerModel.attributes.attribution = cdb.config.get('cartodb_attributions');
 
     var opts = _.clone(layerModel.attributes);
 

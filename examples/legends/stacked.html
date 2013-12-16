@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.ie.css" /> 
     <![endif]-->
 
-    <script src="../../dist/cartodb.js"></script>
+    <script src="../../dist/_cartodb.js"></script>
     <script>
 
       window.onload = function() {
@@ -77,6 +77,24 @@
 
             //var legendsDataArray = [ customLegendData, densityLegendData ];
             var legendsArray = [ choroplethLegend, intensityLegend, customLegend, densityLegend, bubbleLegend ];
+
+            var legendsDataArray = [ 
+              {
+              type: "choropleth",
+              title: "Choropleth Legend",
+              left: "10",
+              right: "20", 
+              colors: [ "#58A062", "#F07971", "#54BFDE", "#9BC562", "#FABB5C" ]
+            },
+              {
+              type: "choropleth",
+              title: "Choropleth Legend",
+              left: "10",
+              right: "20", 
+              colors: [ "#58A062", "#F07971", "#54BFDE", "#9BC562", "#FABB5C" ]
+            }
+            
+            ];
 
             var stackedLegend = new cdb.geo.ui.Legend.Stacked({
               // data: legendsDataArray,

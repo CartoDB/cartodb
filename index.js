@@ -63,8 +63,10 @@
 //= require cdb/src/geo/gmaps/torque
 //= require cdb/src/geo/gmaps/gmaps
 //
+//= require cdb/src/geo/ui/share
 //= require cdb/src/geo/ui/zoom
 //= require cdb/src/geo/ui/zoom_info
+//= require cdb/src/geo/ui/mobile
 //= require cdb/src/geo/ui/legend
 //= require cdb/src/geo/ui/switcher
 //= require cdb/src/geo/ui/infowindow

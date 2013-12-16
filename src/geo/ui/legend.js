@@ -7,6 +7,7 @@ cdb.geo.ui.LegendItemModel = cdb.core.Model.extend({
 
   defaults: {
     name: "Untitled",
+    visible:true,
     value: ""
   }
 
@@ -264,6 +265,13 @@ cdb.geo.ui.BaseLegend = cdb.core.View.extend({
   }
 
 });
+
+/*
+ * NoneLegend
+ *
+ * */
+cdb.geo.ui.NoneLegend  = cdb.geo.ui.BaseLegend.extend({ });
+cdb.geo.ui.Legend.None = cdb.core.View.extend({ });
 
 /*
  * ChoroplethLegend
@@ -940,7 +948,6 @@ cdb.geo.ui.Legend.Stacked = cdb.geo.ui.StackedLegend.extend({
 
     }
 
-
   },
 
   _capitalize: function(string) {
@@ -955,22 +962,29 @@ cdb.geo.ui.Legend.Stacked = cdb.geo.ui.StackedLegend.extend({
 
     this.legends = [];
 
-    this.legendItems.each(function(model) {
+    if (this.legendItems && this.legendItems.length > 0) {
 
-      var type = model.get("type");
+      this.legendItems.each(this._renderLegend, this);
 
-      if (!type) type = "custom";
-
-      type = this._capitalize(type);
-
-      var view = new cdb.geo.ui.Legend[type](model.attributes);
-      this.legends.push(view);
-
-      this.$el.append(view.render().$el);
-
-    }, this);
+    }
 
     return this;
+
+  },
+
+  _renderLegend: function(model) {
+
+    var type = model.get("type");
+
+    if (!type) type = "custom";
+
+    type = this._capitalize(type);
+
+    var view = new cdb.geo.ui.Legend[type](model.attributes);
+
+    this.legends.push(view);
+
+    if (model.get("visible") !== false) this.$el.append(view.render().$el);
 
   },
 

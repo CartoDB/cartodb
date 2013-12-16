@@ -9,6 +9,10 @@
 
   aside {
 
+    div.head {
+      h2 { font-size:27px }
+    }
+
     div.content {
       padding:0;
       @include progress-bar(36px, 3px, true, 5px);

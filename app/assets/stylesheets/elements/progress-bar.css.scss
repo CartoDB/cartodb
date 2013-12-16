@@ -80,5 +80,13 @@
         z-index:0;
         &:after { display:none }
       }
+
+      // Danger and caution background
+      .danger {
+        @include background(linear-gradient(#FF5255,#CB2828))
+      }
+      .caution {
+        @include background(linear-gradient(#F8B85C,#F49000))
+      }
     }
   }

@@ -1,3 +1,9 @@
+3.5.00 (16//12/2013)
+-----
+- improves legends and torque player UI in mobile displays.
+- allows passing extra params in the calls to the SQL API.
+- changed profiler API.
+
 3.4.03 (11//12/2013)
 -----
 - fixes a bug that prevented showing a legend with custom HTML

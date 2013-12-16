@@ -75,7 +75,7 @@
 
   <div class="foot">
     <% if !@user.new? -%>
-      <%= link_to "delete this user", organization_user_path(@user.username), :class => "left delete red margin15" %>
+      <%= link_to("delete this user", organization_user_path(@user.username), :class => "left delete red margin15") if current_user.organization_owner %>
       <%= form.submit 'Save changes', :class => "right grey button new" %>
     <% else %>
       <%= form.submit 'Create user', :class => "right grey button new" %>

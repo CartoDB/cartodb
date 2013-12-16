@@ -54,6 +54,7 @@
         </div>
       </div>
       
+      <% if current_user.organization_owner -%>
       <div class="row">
         <label>
           <% if @user.new? -%>
@@ -68,12 +69,13 @@
         <%= form.hidden_field :quota_in_bytes, :class => @user.errors[:quota_in_bytes].present? ? 'error' : nil, :id => "user_quota" %>
         <%= form_error_for :quota_in_bytes, @user.errors %>
       </div>
+      <% end -%>
     </div>
   </div>
 
   <div class="foot">
     <% if !@user.new? -%>
-      <%= link_to "delete this user", organization_user_path(@user.username), :class => "left delete red margin15" %>
+      <%= link_to("delete this user", organization_user_path(@user.username), :class => "left delete red margin15") if current_user.organization_owner %>
       <%= form.submit 'Save changes', :class => "right grey button new" %>
     <% else %>
       <%= form.submit 'Create user', :class => "right grey button new" %>

@@ -53,7 +53,8 @@
         font-weight:bold;
         font-size:11px;
         text-transform:uppercase;
-        strong {color:#666}
+        strong { color:#666 }
+        a { text-decoration:underline }
       }
 
       @include default-input();

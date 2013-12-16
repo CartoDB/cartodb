@@ -38,6 +38,8 @@ module CartoDB
           rename(result.table_name, table_name)
           drop(temporary_name) if exists?(temporary_name)
         end
+      rescue => exception
+        drop(result.table_name) if exists?(result.table_name)
       end
 
       def cartodbfy(table_name)
@@ -68,10 +70,15 @@ module CartoDB
       end
 
       def update_cdb_tablemetadata(name)
-        user.in_database(as: :superuser)[:cdb_tablemetadata]
-          .where(tabname: name)
-          .update(updated_at: Time.now)
-      rescue => exception
+        user.in_database(as: :superuser).run(%Q{
+          INSERT INTO cdb_tablemetadata (tabname,
+          updated_at) VALUES ('#{name}'::regclass::oid, NOW())
+        })
+      rescue Sequel::DatabaseError => exception
+        user.in_database(as: :superuser).run(%Q{
+           UPDATE cdb_tablemetadata SET updated_at =
+           NOW() where tabname = '#{name}'::regclass")
+        })
       end
 
       def success?

@@ -54,9 +54,9 @@ class Admin::UsersController < ApplicationController
   end
 
   def copy_account_features(from, to)
-    to.private_tables_enabled = from.private_tables_enabled
-    to.map_view_quota = from.map_view_quota
-    to.table_quota    = from.table_quota
-    to.database_host  = from.database_host
+    to.set_fields(from, [
+      :private_tables_enabled, :sync_tables_enabled, :max_layers, :user_timeout,
+      :database_timeout, :geocoding_quota, :map_view_quota, :table_quota, :database_host
+    ])
   end
 end

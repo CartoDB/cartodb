@@ -1,21 +1,34 @@
 <% if current_user.organization_owner -%>
-<div class="head">
-  <h2>Other users</h2>
-</div>
-<div class="content">
-  <ul>
-    <% if current_user.organization.users.count > 1 %>
-      <% current_user.organization.users.each do |user| -%>
-        <% if user.username != @user.username  %>
-          <li><%= link_to user.username, edit_organization_user_path(user.username) %></li>
-        <% end  %>
-      <% end -%>
-    <% else %>
+  <div class="head">
+    <h2>Other users</h2>
+  </div>
+  <div class="content">
+    <ul>
+      <% if current_user.organization.users.count > 1 %>
+        <% current_user.organization.users.each do |user| -%>
+          <% if user.username != @user.username  %>
+            <li><%= link_to user.username, edit_organization_user_path(user.username) %></li>
+          <% end  %>
+        <% end -%>
+      <% else %>
+        <li>
+          <p class="light italic margin10">Unfortunately there is no users in your organization.</p>
+          <p class="margin20"><%= link_to "Create a new user", new_organization_user_path, :class => "button green" %></p>
+        </li>
+      <% end %>
+    </ul>
+  </div>
+<% else %>
+  <% owner = current_user.organization.users_dataset.where(organization_owner: true).first -%>
+  <div class="head">
+    <h2>Not enough quota?</h2>
+  </div>
+  <div class="content">
+    <ul>
       <li>
-        <p class="light italic margin10">Unfortunately there is no users in your organization.</p>
-        <p class="margin20"><%= link_to "Create a new user", new_organization_user_path, :class => "button green" %></p>
+        <p class="light italic margin10">If you don't have enough resources, please contact your administrator.</p>
+        <p class="margin20"><%= link_to "Contact admin", "mailto:#{owner.email}", :class => "button green" %></p>
       </li>
-    <% end %>
-  </ul>
-</div>
+    </ul>
+  </div>
 <% end -%>

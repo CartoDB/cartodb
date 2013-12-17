@@ -1,6 +1,6 @@
-// cartodb.js version: 3.5.01
+// cartodb.js version: 3.5.02
 // uncompressed version: cartodb.uncompressed.js
-// sha: 6c9f1ecdc55d734330915eaddbaacde304ff7c9b
+// sha: eda95a7df282e897b22522614af59c10054b8a1f
 (function() {
   var root = this;
 
@@ -20429,7 +20429,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.5.01';
+    cdb.VERSION = '3.5.02';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -28535,7 +28535,7 @@ cdb.ui.common.ShareDialog = cdb.ui.common.Dialog.extend({
   },
 
   default_options: {
-    title: 'title',
+    title: '',
     description: '',
     ok_title: 'Ok',
     cancel_title: 'Cancel',
@@ -28616,6 +28616,12 @@ cdb.ui.common.ShareDialog = cdb.ui.common.Dialog.extend({
 
   },
 
+  _truncateTitle: function(s, length) {
+
+    return s.substr(0, length-1) + (s.length > length ? '…' : '');
+
+  },
+
   render: function() {
 
     var $el = this.$el;
@@ -28623,20 +28629,34 @@ cdb.ui.common.ShareDialog = cdb.ui.common.Dialog.extend({
     var title       = this.options.title;
     var description = this.options.description;
     var share_url   = this.options.share_url;
+
     var facebook_url, twitter_url;
 
     this.$el.addClass(this.options.size);
 
+    var full_title    = title + ": " + description;
+    var twitter_title;
+
+    if (title && description) {
+      twitter_title = this._truncateTitle(title + ": " + description, 112) + " %23map "
+    } else if (title) {
+      twitter_title = this._truncateTitle(title, 112) + " %23map"
+    } else if (description){
+      twitter_title = this._truncateTitle(description, 112) + " %23map"
+    } else {
+      twitter_title = "%23map"
+    }
+
     if (this.options.facebook_url) {
       facebook_url = this.options.facebook_url;
     } else {
-      facebook_url = "http://www.facebook.com/sharer.php?u=" + share_url + "&text=Map of " + title + ": " + description;
+      facebook_url = "http://www.facebook.com/sharer.php?u=" + share_url + "&text=" + full_title;
     }
 
     if (this.options.twitter_url) {
       twitter_url = this.options.twitter_url;
     } else {
-      twitter_url = "https://twitter.com/share?url=" + share_url + "&text=Map of " + title + ": " + description + "... ";
+      twitter_url = "https://twitter.com/share?url=" + share_url + "&text=" + twitter_title;
     }
 
     var options = _.extend(this.options, { facebook_url: facebook_url, twitter_url: twitter_url });
@@ -30446,7 +30466,7 @@ cdb.vis.Overlay.register('header', function(data, vis) {
   var description = data.map.get('description');
   var descriptionShort = description;
 
-  if(descLength > maxDescriptionLength) {
+  if(description && descLength > maxDescriptionLength) {
     var descriptionShort = description.substr(0, maxDescriptionLength);
     // @todo (@johnhackworth): Improvement; Not sure if there's someway of doing thins with a regexp
     descriptionShort = descriptionShort.split(' ');
@@ -30582,7 +30602,8 @@ cdb.vis.Overlay.register('share', function(data, vis) {
   var code = "<iframe width='100%' height='520' frameborder='0' src='" + location.href + "'></iframe>";
 
   var dialog = new cdb.ui.common.ShareDialog({
-    title: 'Share this map',
+    title: data.map.get("title"),
+    description: data.map.get("description"),
     model: vis.map,
     code: code,
     url: data.url,

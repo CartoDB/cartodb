@@ -133,17 +133,10 @@ cdb.ui.common.ShareDialog = cdb.ui.common.Dialog.extend({
       this.$el.addClass(this.options.modal_class);
     }
 
-    var self = this;
-
-    this.cancel = function(){
-      self.options.model.set("scrollwheel", true);
-    }
-
     if (this.options.disableLinks) {
       this.$el.find("a").attr("target", "");
     }
 
-    this.options.model.set("scrollwheel", false);
     return this;
   }
 

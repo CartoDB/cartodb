@@ -4,7 +4,7 @@
    */
 
   @import "../common/mixins";
-  @import "../common/forms";
+  @import "../common/form-elements";
 
   .name_visualization {
     @include default-form-info();

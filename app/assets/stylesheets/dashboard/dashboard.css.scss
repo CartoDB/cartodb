@@ -8,7 +8,7 @@
   @import "../common/mixins";
   @import "../common/fonts";
   @import "../common/vars";
-  @import "../common/forms";
+  @import "common/form-elements";
   @import "../common/common-sprite";
   @import "../dashboard/dashboard-sprite";
 
@@ -1322,10 +1322,4 @@
         }
       }
     }
-  }
-
-
-  // Carto product text align
-  footer p {
-    text-align:right;
   }

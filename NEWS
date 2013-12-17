@@ -1,3 +1,7 @@
+3.5.01 (17//12/2013)
+-----
+- fixes a bug that prevented using the scrolling wheel to zoom in and out
+
 3.5.00 (16//12/2013)
 -----
 - improves legends and torque player UI in mobile displays.

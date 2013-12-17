@@ -1259,6 +1259,22 @@ TRIGGER
 
   # Set quota checking trigger for this table
   def set_trigger_check_quota
+    # probability factor of running the check for each row
+    # (it'll always run before each statement)
+    check_probability_factor = 0.001 # TODO: base on database usage ?
+    owner.in_database(:as => :superuser).run(<<-TRIGGER
+    BEGIN;
+    DROP TRIGGER IF EXISTS test_quota ON "#{self.name}";
+    CREATE TRIGGER test_quota BEFORE UPDATE OR INSERT ON "#{self.name}"
+      EXECUTE PROCEDURE CDB_CheckQuota(1, #{self.owner.quota_in_bytes});
+    DROP TRIGGER IF EXISTS test_quota_per_row ON "#{self.name}";
+    CREATE TRIGGER test_quota_per_row BEFORE UPDATE OR INSERT ON "#{self.name}"
+      FOR EACH ROW
+      EXECUTE PROCEDURE CDB_CheckQuota( #{check_probability_factor},
+                                        #{self.owner.quota_in_bytes} );
+    COMMIT;
+  TRIGGER
+  )
   end
 
   def owner

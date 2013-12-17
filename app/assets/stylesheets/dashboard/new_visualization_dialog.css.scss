@@ -36,9 +36,9 @@
       .remove {
         float: right;
         @include common-sprite(close_grey);
-        @include size(12px);
+        @include size(13px);
 
-        &:hover { @include common-sprite(close_grey, $offset_y:-12px); }
+        &:hover { @include common-sprite(close_grey, $offset_y:-13px); }
       }
     }
   }

@@ -1,0 +1,141 @@
+
+
+  /**
+   *  Default styles for layer panels.
+   *
+   *  - Info doc icon.
+   *  - Actions block (apply, redo, undo, ...).
+   *  - Info about the actions applied (errors, warnings, ...).
+   *
+   */
+
+  @import "compass/css3/border-radius";
+  @import "compass/css3/images";
+  @import "../../../table/table-sprite";
+  @import "../../../common/mixins";
+
+  
+  
+  .layer-views {
+
+    // Info doc icon
+    a.doc_info {
+      position:absolute;
+      top:22px;
+      right:18px;
+      width:16px;
+      height:16px;
+      padding:0!important;
+      line-height:16px;
+      font-size:12px;
+      color:white;
+      text-align:center;
+      @include border-radius(20px);
+      background:#E5E5E5;
+      border:none;
+      &:hover {
+        text-decoration:none;
+        background:#AAA;
+      }
+      &:active {
+        background:#898989;
+      }
+    }
+
+
+    // Actions block for each layer
+    // - Undo
+    // - Redo
+    // - Apply
+    // - ...etc
+    div.actions {
+      position:absolute;
+      bottom:0;
+      left:0;
+      right:0;
+      padding:20px 20px 20px 56px;
+      display:block;
+      height:38px;
+      border-top:1px solid rgba(#999999,0.25);
+      z-index:1;
+
+      a.next, a.back {
+        margin: 4px 0 0 0;
+        @include text-indent();
+        padding:0;
+        height:25px;
+        width:30px;
+      }
+
+      a.next {
+        @include border-left-radius(0);
+        @include text-indent();
+        @include background(sprite($table-sprites, unredo, $offset-x:-38, $offset-y:9) no-repeat #F9F9F9);//IE
+        @include background(sprite($table-sprites, unredo, $offset-x:-38, $offset-y:9) no-repeat, linear-gradient(#F9F9F9,#EBEBEB));
+        border-left:0;
+
+        &:hover, &:active {
+          @include background(sprite($table-sprites, unredo, $offset-x:-38, $offset-y:9) no-repeat #DEDEDE);//IE
+          @include background(sprite($table-sprites, unredo, $offset-x:-38, $offset-y:9) no-repeat, linear-gradient(#F9F9F9,#DEDEDE));
+        }
+      }
+
+      a.back {
+        @include border-right-radius(0);
+        @include text-indent();
+        @include background(sprite($table-sprites, unredo, $offset-x:9, $offset-y:9) no-repeat #EBEBEB); //IE
+        @include background(sprite($table-sprites, unredo, $offset-x:9, $offset-y:9) no-repeat, linear-gradient(#F9F9F9,#EBEBEB));
+
+        &:hover, &:active {
+          @include background(sprite($table-sprites, unredo, $offset-x:9, $offset-y:9) no-repeat #DEDEDE);//IE
+          @include background(sprite($table-sprites, unredo, $offset-x:9, $offset-y:9) no-repeat, linear-gradient(#F9F9F9,#DEDEDE));
+        }
+      }
+
+      a.disabled {
+        opacity:0.6;
+
+        &.next, &.next:active, &.next:hover {
+          @include background(sprite($table-sprites, unredo, $offset-x:-38, $offset-y:9) no-repeat #F9F9F9);//IE
+          @include background(sprite($table-sprites, unredo, $offset-x:-38, $offset-y:9) no-repeat, linear-gradient(#F9F9F9,#EBEBEB));
+        }
+        &.back, &.back:active, &.back:hover {
+          @include background(sprite($table-sprites, unredo, $offset-x:9, $offset-y:9) no-repeat #EBEBEB);//IE
+          @include background(sprite($table-sprites, unredo, $offset-x:9, $offset-y:9) no-repeat, linear-gradient(#F9F9F9,#EBEBEB));
+        }
+      }
+
+      a.clearview {margin-right:18px;}
+
+      button {margin:0;}
+    }
+
+
+    // Info block when action is done
+    // - Error
+    // - Success
+    // - Warning
+    // - ...etc
+    div.info {
+      display:none;
+      position:absolute;
+      bottom:78px;
+      right:0;
+      left:0;
+      max-height:30%;
+      padding:17px 17px 17px 52px;
+      background:rgba(yellow,0.3);
+      color:#888;
+      z-index:2;
+      font-size:13px;
+      border-top:1px solid #EBDCE0;
+
+      p {line-height:17px; word-wrap: break-word}
+
+      &.error {
+        background:rgba(#FFD7E3,0.5);
+        p {color:#EB2466;}
+      }
+    }
+ 
+  }

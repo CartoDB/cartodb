@@ -22,7 +22,7 @@ class Api::Json::GeocodingsController < Api::ApplicationController
   end
 
   def create
-    table = current_user.tables.where(name: params[:table_name]).first
+    table = Table.find_by_identifier(current_user.id, params[:table_name])
     options = { 
       user_id:     current_user.id,
       table_id:    table.try(:id),

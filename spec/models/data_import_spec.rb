@@ -127,7 +127,7 @@ describe DataImport do
     duplicated_table.records[:rows].should have(5).items
   end
 
-  it 'imports a simple file' do
+  it 'imports a simple file', now: true do
     data_import = DataImport.create(
       :user_id       => @user.id,
       :data_source   => '/../db/fake_data/clubbing.csv',

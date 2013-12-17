@@ -1,3 +1,34 @@
+2.6.1
+-----
+* Improvements
+  * Optimized map frame for mobile.
+  * New sharing options on embeded maps.
+  * Tag footer link in Embeds.
+
+* Fixed Bugs
+  * Clicking on a visualization should open map instead of table view.
+  * Dashboard: visualizations: change viz name.
+  * When browser window is resized in map tab zoom is set to 0.
+  * Wrong SQL when requesting infowindow through the admin.
+  * Importer leaves temporary tables in the public schema in some error conditions.
+  * Funny error on points choropleth.
+  * When you create a visualization from a table (within a table), search and legends aren't moved when right panel is opened and closed.
+  * Changed button text when selecting file from gdrive.
+  * Importing a sync table when having just one table left raises an error, but the table gets imported and not synchronised.
+  * If you disable a legend and then apply another choropleth, it doesn't reenable it.
+  * After changing the CartoCSS, the wizards cannot calculate the colors anymore.
+  * sublayer_options does not work with torque layers.
+  * When adding a new layer in a table view, it moves to a new visualization, and name + label appears stuck.
+  * Fixed Dropbox picker.
+  * Customize infowindow and then empty it throws an error.
+  * When viewing a torque layer and adding another layer, the scrubbar stops working.
+  * Clean up temporary tables when a synchronization fails.
+  * Incorrect layout on the basemap modal.
+  * Infowindows are using v1 queries for the SQL API in the admin.
+  * Fixed jasmine tests.
+  * Custom HTML legends that come from a legend with no items aren't shown.
+  * Ensure the dashboard is rendered even if there are exceptions raised when rendering a specific 'table record'.
+
 2.6.0
 -----
 * Improvements

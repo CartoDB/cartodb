@@ -1,13 +1,13 @@
 Sequel.migration do
   up do
     alter_table :user_tables do
-      drop_column :name
+      rename_column :name, :name_legacy
     end
   end
   
   down do
     alter_table :user_tables do
-      add_column :name, :text
+      rename_column :name_legacy, :name
     end
   end
 end

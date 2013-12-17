@@ -5,6 +5,8 @@
 
   @import "compass/css3/inline-block";
   @import "compass/css3/text-shadow";
+  @import "common/common-sprite";
+  @import "common/mixins";
 
 
   article {
@@ -15,6 +17,21 @@
   }
 
   section {
+
+    // back button
+    a.back {
+      position:absolute;
+      top:-23px;
+      right:-25px;
+      width:46px;
+      height:46px;
+      z-index:10;
+      @include text-indent();
+      @include common-sprite(back);
+      &:hover {
+        @include common-sprite(back,$offset-y:-46px);
+      }
+    }
 
     // head
     div.head {

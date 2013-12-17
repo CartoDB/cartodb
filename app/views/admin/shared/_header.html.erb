@@ -1,8 +1,7 @@
 <header>
   <div class="inner">
     <h1 class="left"><%= link_to "CartoDB", root_path %></h1>
-    <ul class="right">
-      
+    <ul class="right">      
       <li><%= link_to 'tables', "/dashboard/tables", :class => :tables %></a></li>
       <li><%= link_to 'visualizations', "/dashboard/visualizations", :class => :visualizations %></a></li>
       <li><%= link_to 'common data', dashboard_common_data_path, :class => selected_if(current_path == dashboard_common_data_path) %></a></li>
@@ -13,3 +12,5 @@
     </ul>
   </div>
 </header>
+
+<%= yield :account_settings %>

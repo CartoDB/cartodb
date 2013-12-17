@@ -18,9 +18,14 @@
   <%= stylesheet_link_tag :common, :organization, :media => 'all' %>
 <% end %>
 
+<%= content_for(:account_settings) do %>
+  <%= render partial: "admin/organizations/settings_account" %>
+<% end %>
+
 <article>
   <div class="inner">
     <section class="block">
+      <%= link_to "back", organization_url, :class => "back" %>
       <%= render partial: 'form' %>
     </section>
   </div>

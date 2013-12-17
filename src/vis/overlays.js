@@ -103,7 +103,7 @@ cdb.vis.Overlay.register('header', function(data, vis) {
   var description = data.map.get('description');
   var descriptionShort = description;
 
-  if(descLength > maxDescriptionLength) {
+  if(description && descLength > maxDescriptionLength) {
     var descriptionShort = description.substr(0, maxDescriptionLength);
     // @todo (@johnhackworth): Improvement; Not sure if there's someway of doing thins with a regexp
     descriptionShort = descriptionShort.split(' ');

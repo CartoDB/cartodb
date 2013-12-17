@@ -1,6 +1,6 @@
 // cartodb.js version: 3.5.02-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: 61eedb3268003a629ee17b1d6ca2a31c31fd89be
+// sha: f49f11584c94f1ce80d86658e8923f810929f689
 (function() {
   var root = this;
 
@@ -28634,9 +28634,14 @@ cdb.ui.common.ShareDialog = cdb.ui.common.Dialog.extend({
 
     this.$el.addClass(this.options.size);
 
-    var full_title = "Map of " + title + ": " + description;
+    var full_title    = title + ": " + description;
+    var twitter_title;
 
-    var short_title = this._truncateTitle(full_title, 100);
+    if (description) {
+      twitter_title = this._truncateTitle(title + ": " + description, 110) + " %23map "
+    } else {
+      twitter_title = this._truncateTitle(title, 110) + " %23map"
+    }
 
     if (this.options.facebook_url) {
       facebook_url = this.options.facebook_url;
@@ -28647,7 +28652,7 @@ cdb.ui.common.ShareDialog = cdb.ui.common.Dialog.extend({
     if (this.options.twitter_url) {
       twitter_url = this.options.twitter_url;
     } else {
-      twitter_url = "https://twitter.com/share?url=" + share_url + "&text=" + short_title;
+      twitter_url = "https://twitter.com/share?url=" + share_url + "&text=" + twitter_title;
     }
 
     var options = _.extend(this.options, { facebook_url: facebook_url, twitter_url: twitter_url });
@@ -30457,7 +30462,7 @@ cdb.vis.Overlay.register('header', function(data, vis) {
   var description = data.map.get('description');
   var descriptionShort = description;
 
-  if(descLength > maxDescriptionLength) {
+  if(description && descLength > maxDescriptionLength) {
     var descriptionShort = description.substr(0, maxDescriptionLength);
     // @todo (@johnhackworth): Improvement; Not sure if there's someway of doing thins with a regexp
     descriptionShort = descriptionShort.split(' ');

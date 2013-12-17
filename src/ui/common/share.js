@@ -112,9 +112,14 @@ cdb.ui.common.ShareDialog = cdb.ui.common.Dialog.extend({
 
     this.$el.addClass(this.options.size);
 
-    var full_title = "Map of " + title + ": " + description;
+    var full_title    = title + ": " + description;
+    var twitter_title;
 
-    var short_title = this._truncateTitle(full_title, 100);
+    if (description) {
+      twitter_title = this._truncateTitle(title + ": " + description, 110) + " %23map "
+    } else {
+      twitter_title = this._truncateTitle(title, 110) + " %23map"
+    }
 
     if (this.options.facebook_url) {
       facebook_url = this.options.facebook_url;
@@ -125,7 +130,7 @@ cdb.ui.common.ShareDialog = cdb.ui.common.Dialog.extend({
     if (this.options.twitter_url) {
       twitter_url = this.options.twitter_url;
     } else {
-      twitter_url = "https://twitter.com/share?url=" + share_url + "&text=" + short_title;
+      twitter_url = "https://twitter.com/share?url=" + share_url + "&text=" + twitter_title;
     }
 
     var options = _.extend(this.options, { facebook_url: facebook_url, twitter_url: twitter_url });

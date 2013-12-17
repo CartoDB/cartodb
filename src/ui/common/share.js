@@ -13,7 +13,7 @@ cdb.ui.common.ShareDialog = cdb.ui.common.Dialog.extend({
   },
 
   default_options: {
-    title: 'title',
+    title: '',
     description: '',
     ok_title: 'Ok',
     cancel_title: 'Cancel',
@@ -115,10 +115,14 @@ cdb.ui.common.ShareDialog = cdb.ui.common.Dialog.extend({
     var full_title    = title + ": " + description;
     var twitter_title;
 
-    if (description) {
-      twitter_title = this._truncateTitle(title + ": " + description, 110) + " %23map "
+    if (title && description) {
+      twitter_title = this._truncateTitle(title + ": " + description, 112) + " %23map "
+    } else if (title) {
+      twitter_title = this._truncateTitle(title, 112) + " %23map"
+    } else if (description){
+      twitter_title = this._truncateTitle(description, 112) + " %23map"
     } else {
-      twitter_title = this._truncateTitle(title, 110) + " %23map"
+      twitter_title = "%23map"
     }
 
     if (this.options.facebook_url) {

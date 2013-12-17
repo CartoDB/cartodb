@@ -1,6 +1,6 @@
-// cartodb.js version: 3.5.02-dev
+// cartodb.js version: 3.5.02
 // uncompressed version: cartodb.uncompressed.js
-// sha: f49f11584c94f1ce80d86658e8923f810929f689
+// sha: eda95a7df282e897b22522614af59c10054b8a1f
 (function() {
   var root = this;
 
@@ -20429,7 +20429,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.5.02-dev';
+    cdb.VERSION = '3.5.02';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -28535,7 +28535,7 @@ cdb.ui.common.ShareDialog = cdb.ui.common.Dialog.extend({
   },
 
   default_options: {
-    title: 'title',
+    title: '',
     description: '',
     ok_title: 'Ok',
     cancel_title: 'Cancel',
@@ -28637,10 +28637,14 @@ cdb.ui.common.ShareDialog = cdb.ui.common.Dialog.extend({
     var full_title    = title + ": " + description;
     var twitter_title;
 
-    if (description) {
-      twitter_title = this._truncateTitle(title + ": " + description, 110) + " %23map "
+    if (title && description) {
+      twitter_title = this._truncateTitle(title + ": " + description, 112) + " %23map "
+    } else if (title) {
+      twitter_title = this._truncateTitle(title, 112) + " %23map"
+    } else if (description){
+      twitter_title = this._truncateTitle(description, 112) + " %23map"
     } else {
-      twitter_title = this._truncateTitle(title, 110) + " %23map"
+      twitter_title = "%23map"
     }
 
     if (this.options.facebook_url) {

@@ -94,6 +94,12 @@ cdb.ui.common.ShareDialog = cdb.ui.common.Dialog.extend({
 
   },
 
+  _truncateTitle: function(s, length) {
+
+    return s.substr(0, length-1) + (s.length > length ? '…' : '');
+
+  },
+
   render: function() {
 
     var $el = this.$el;
@@ -101,20 +107,25 @@ cdb.ui.common.ShareDialog = cdb.ui.common.Dialog.extend({
     var title       = this.options.title;
     var description = this.options.description;
     var share_url   = this.options.share_url;
+
     var facebook_url, twitter_url;
 
     this.$el.addClass(this.options.size);
 
+    var full_title = "Map of " + title + ": " + description;
+
+    var short_title = this._truncateTitle(full_title, 100);
+
     if (this.options.facebook_url) {
       facebook_url = this.options.facebook_url;
     } else {
-      facebook_url = "http://www.facebook.com/sharer.php?u=" + share_url + "&text=Map of " + title + ": " + description;
+      facebook_url = "http://www.facebook.com/sharer.php?u=" + share_url + "&text=" + full_title;
     }
 
     if (this.options.twitter_url) {
       twitter_url = this.options.twitter_url;
     } else {
-      twitter_url = "https://twitter.com/share?url=" + share_url + "&text=Map of " + title + ": " + description + "... ";
+      twitter_url = "https://twitter.com/share?url=" + share_url + "&text=" + short_title;
     }
 
     var options = _.extend(this.options, { facebook_url: facebook_url, twitter_url: twitter_url });

@@ -239,7 +239,8 @@ cdb.vis.Overlay.register('share', function(data, vis) {
   var code = "<iframe width='100%' height='520' frameborder='0' src='" + location.href + "'></iframe>";
 
   var dialog = new cdb.ui.common.ShareDialog({
-    title: 'Share this map',
+    title: data.map.get("title"),
+    description: data.map.get("description"),
     model: vis.map,
     code: code,
     url: data.url,

@@ -1,6 +1,6 @@
-// cartodb.js version: 3.5.01
+// cartodb.js version: 3.5.02-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: 6c9f1ecdc55d734330915eaddbaacde304ff7c9b
+// sha: 61eedb3268003a629ee17b1d6ca2a31c31fd89be
 (function() {
   var root = this;
 
@@ -20429,7 +20429,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.5.01';
+    cdb.VERSION = '3.5.02-dev';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -28616,6 +28616,12 @@ cdb.ui.common.ShareDialog = cdb.ui.common.Dialog.extend({
 
   },
 
+  _truncateTitle: function(s, length) {
+
+    return s.substr(0, length-1) + (s.length > length ? '…' : '');
+
+  },
+
   render: function() {
 
     var $el = this.$el;
@@ -28623,20 +28629,25 @@ cdb.ui.common.ShareDialog = cdb.ui.common.Dialog.extend({
     var title       = this.options.title;
     var description = this.options.description;
     var share_url   = this.options.share_url;
+
     var facebook_url, twitter_url;
 
     this.$el.addClass(this.options.size);
 
+    var full_title = "Map of " + title + ": " + description;
+
+    var short_title = this._truncateTitle(full_title, 100);
+
     if (this.options.facebook_url) {
       facebook_url = this.options.facebook_url;
     } else {
-      facebook_url = "http://www.facebook.com/sharer.php?u=" + share_url + "&text=Map of " + title + ": " + description;
+      facebook_url = "http://www.facebook.com/sharer.php?u=" + share_url + "&text=" + full_title;
     }
 
     if (this.options.twitter_url) {
       twitter_url = this.options.twitter_url;
     } else {
-      twitter_url = "https://twitter.com/share?url=" + share_url + "&text=Map of " + title + ": " + description + "... ";
+      twitter_url = "https://twitter.com/share?url=" + share_url + "&text=" + short_title;
     }
 
     var options = _.extend(this.options, { facebook_url: facebook_url, twitter_url: twitter_url });
@@ -30582,7 +30593,8 @@ cdb.vis.Overlay.register('share', function(data, vis) {
   var code = "<iframe width='100%' height='520' frameborder='0' src='" + location.href + "'></iframe>";
 
   var dialog = new cdb.ui.common.ShareDialog({
-    title: 'Share this map',
+    title: data.map.get("title"),
+    description: data.map.get("description"),
     model: vis.map,
     code: code,
     url: data.url,

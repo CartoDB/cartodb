@@ -1,6 +1,6 @@
-// cartodb.js version: 3.5.01-dev
+// cartodb.js version: 3.5.02-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: c35115a011872b20b5c66e867f0b62c8529cb8ff
+// sha: 61eedb3268003a629ee17b1d6ca2a31c31fd89be
 (function() {
   var root = this;
 
@@ -20429,7 +20429,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.5.01-dev';
+    cdb.VERSION = '3.5.02-dev';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -28666,17 +28666,10 @@ cdb.ui.common.ShareDialog = cdb.ui.common.Dialog.extend({
       this.$el.addClass(this.options.modal_class);
     }
 
-    var self = this;
-
-    this.cancel = function(){
-      self.options.model.set("scrollwheel", true);
-    }
-
     if (this.options.disableLinks) {
       this.$el.find("a").attr("target", "");
     }
 
-    this.options.model.set("scrollwheel", false);
     return this;
   }
 

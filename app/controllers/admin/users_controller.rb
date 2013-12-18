@@ -58,5 +58,6 @@ class Admin::UsersController < ApplicationController
       :private_tables_enabled, :sync_tables_enabled, :max_layers, :user_timeout,
       :database_timeout, :geocoding_quota, :map_view_quota, :table_quota, :database_host
     ])
+    to.invite_token = User.make_token
   end
 end

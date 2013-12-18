@@ -103,7 +103,7 @@ cdb.vis.Overlay.register('header', function(data, vis) {
   var description = data.map.get('description');
   var descriptionShort = description;
 
-  if(descLength > maxDescriptionLength) {
+  if(description && descLength > maxDescriptionLength) {
     var descriptionShort = description.substr(0, maxDescriptionLength);
     // @todo (@johnhackworth): Improvement; Not sure if there's someway of doing thins with a regexp
     descriptionShort = descriptionShort.split(' ');
@@ -239,7 +239,8 @@ cdb.vis.Overlay.register('share', function(data, vis) {
   var code = "<iframe width='100%' height='520' frameborder='0' src='" + location.href + "'></iframe>";
 
   var dialog = new cdb.ui.common.ShareDialog({
-    title: 'Share this map',
+    title: data.map.get("title"),
+    description: data.map.get("description"),
     model: vis.map,
     code: code,
     url: data.url,

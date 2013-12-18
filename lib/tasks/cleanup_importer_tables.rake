@@ -15,6 +15,9 @@ namespace :cartodb do
           )).map { |record| 
             @table_name = record.fetch(:table_name)
             user.in_database.run(%Q{
+              DROP TABLE IF EXISTS "cdb_importer"."#{@table_name}"
+            })
+            user.in_database.run(%Q{
               ALTER TABLE "public"."#{@table_name}"
               SET SCHEMA "cdb_importer"
             })

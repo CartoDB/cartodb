@@ -15,7 +15,9 @@ namespace :cartodb do
             AS table_name
             WHERE table_schema = 'public'
             AND table_type = 'BASE TABLE'
-            AND table_name NOT IN ('cdb_tablemetadata', 'spatial_ref_sys')
+            AND table_name NOT IN (
+              'cdb_tablemetadata', 'spatial_ref_sys', 'cdb_functionmetadata'
+            )
           )).map { |record| record.fetch(:table_name) }
 
           table_names_in_metadata = user.tables.map(&:name)

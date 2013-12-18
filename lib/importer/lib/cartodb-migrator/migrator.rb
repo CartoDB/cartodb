@@ -89,8 +89,11 @@ module CartoDB
         rescue => e
           #@data_import.log << ("Failed to process the_geom renaming to invalid_the_geom. #{e.inspect}")
           # if no SRID or invalid the_geom, we need to remove it from the table
-          @db_connection.run("ALTER TABLE #{@suggested_name} RENAME COLUMN the_geom TO invalid_the_geom")
-          column_names.delete("the_geom")
+          begin
+            @db_connection.run("ALTER TABLE #{@suggested_name} RENAME COLUMN the_geom TO invalid_the_geom")
+            column_names.delete("the_geom")
+          rescue => exception
+          end
         end
       end
 

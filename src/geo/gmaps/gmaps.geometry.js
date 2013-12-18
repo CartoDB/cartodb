@@ -33,7 +33,7 @@ function PointView(geometryModel) {
     geometryModel.get('geojson'),
     {
       icon: {
-          url: '/assets/icons/default_marker.png',
+          url: '/assets/layout/default_marker.png',
           anchor: {x: 10, y: 10}
       }
     }

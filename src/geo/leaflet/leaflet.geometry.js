@@ -31,7 +31,7 @@ function PointView(geometryModel) {
       //TODO: create marker depending on the visualizacion options
       var p = L.marker(latLng,{
         icon: L.icon({
-          iconUrl: '/assets/icons/default_marker.png',
+          iconUrl: '/assets/layout/default_marker.png',
           iconAnchor: [11, 11]
         })
       });

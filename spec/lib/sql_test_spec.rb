@@ -6,6 +6,10 @@ describe User do
     @user = create_user :email => 'admin@example.com', :username => 'admin', :password => 'admin123'
   end
 
+  after(:all) do
+    @user.destroy
+  end
+
   before(:each) do
     CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
   end

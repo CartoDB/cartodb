@@ -8,6 +8,10 @@ describe Layer do
     @user = create_user(:quota_in_bytes => @quota_in_bytes, :table_quota => @table_quota)
   end
 
+  before(:all) do
+    @user.destroy
+  end
+
   before(:each) do
     delete_user_data @user
     @table = Table.new

@@ -8,7 +8,7 @@ describe Layer do
     @user = create_user(:quota_in_bytes => @quota_in_bytes, :table_quota => @table_quota)
   end
 
-  before(:all) do
+  after(:all) do
     @user.destroy
   end
 

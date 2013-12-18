@@ -3478,6 +3478,10 @@ L.CanvasLayer = L.Class.extend({
     return this._canvas;
   },
 
+  getAttribution: function() {
+    return this.options.attribution;
+  },
+
   draw: function() {
     return this._reset();
   },

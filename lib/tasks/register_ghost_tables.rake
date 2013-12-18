@@ -8,18 +8,19 @@ namespace :cartodb do
 
       count = User.count
       User.all.each_with_index do |user, index|
-        puts "Cleaning up importer tables for #{user.username}"
+        puts "Registering ghost tables for #{user.username}"
         begin
           table_names_in_database = user.in_database.fetch(%Q(
             SELECT table_name FROM information_schema.tables
             AS table_name
             WHERE table_schema = 'public'
+            AND table_type = 'BASE TABLE'
+            AND table_name NOT IN ('cdb_tablemetadata', 'spatial_ref_sys')
           )).map { |record| record.fetch(:table_name) }
 
           table_names_in_metadata = user.tables.map(&:name)
 
-          ghost_tables = table_names_in_metadata - table_names_in_database
-
+          ghost_tables = table_names_in_database - table_names_in_metadata
 
           ghost_tables.map { |name|
             @table_name = name

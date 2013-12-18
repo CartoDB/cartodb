@@ -85,7 +85,7 @@ cdb.vis.Overlay.register('header', function(data, vis) {
         <div class='social'>\
           <a class='facebook' target='_blank'\
             href='http://www.facebook.com/sharer.php?u={{share_url}}&text=Map of {{title}}: {{description}}'>F</a>\
-          <a class='twitter' href='https://twitter.com/share?url={{share_url}}&text=Map of {{title}}: {{descriptionShort}}... '\
+          <a class='twitter' href='https://twitter.com/share?url={{share_url}}&text={{twitter_title}}'\
            target='_blank'>T</a>\
         </div>\
       {{/mobile_shareable}}\
@@ -96,29 +96,36 @@ cdb.vis.Overlay.register('header', function(data, vis) {
     data.templateType || 'mustache'
   );
 
-  var titleLength = data.map.get('title') ? data.map.get('title').length : 0;
-  var descLength = data.map.get('description') ? data.map.get('description').length : 0;
+  function truncate(s, length) {
+    return s.substr(0, length-1) + (s.length > length ? '…' : '');
+  }
 
-  var maxDescriptionLength = MAX_SHORT_DESCRIPTION_LENGTH - titleLength;
+  var title       = data.map.get('title');
   var description = data.map.get('description');
-  var descriptionShort = description;
 
-  if(description && descLength > maxDescriptionLength) {
-    var descriptionShort = description.substr(0, maxDescriptionLength);
-    // @todo (@johnhackworth): Improvement; Not sure if there's someway of doing thins with a regexp
-    descriptionShort = descriptionShort.split(' ');
-    descriptionShort.pop();
-    descriptionShort = descriptionShort.join(' ');
+  var facebook_title = title + ": " + description;
+  var twitter_title;
+
+  if (title && description) {
+    twitter_title = truncate(title + ": " + description, 112) + " %23map "
+  } else if (title) {
+    twitter_title = truncate(title, 112) + " %23map"
+  } else if (description){
+    twitter_title = truncate(description, 112) + " %23map"
+  } else {
+    twitter_title = "%23map"
   }
 
   var shareable = (data.shareable == "false" || !data.shareable) ? null : data.shareable;
   var mobile_shareable = shareable;
+
   mobile_shareable = mobile_shareable && (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent));
 
   var header = new cdb.geo.ui.Header({
-    title: data.map.get('title'),
+    title: title,
     description: description,
-    descriptionShort: descriptionShort,
+    facebook_title: facebook_title,
+    twitter_title: twitter_title,
     url: data.url,
     share_url: data.share_url,
     mobile_shareable: mobile_shareable,

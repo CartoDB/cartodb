@@ -344,7 +344,7 @@
   }
 
   div.cartodb-mobile div.cartodb-timeslider .ui-slider .ui-slider-handle {
-    display:none!important;
+    /*display:none!important;*/
   }
 
   div.cartodb-mobile.open {

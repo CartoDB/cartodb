@@ -1,6 +1,6 @@
-// cartodb.js version: 3.5.03
+// cartodb.js version: 3.5.04-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: 57bfea1cc691fa900e68885ae249416716219440
+// sha: d2dccae346f220b946fe088688f2096fc2ec644f
 (function() {
   var root = this;
 
@@ -20429,7 +20429,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.5.03';
+    cdb.VERSION = '3.5.04-dev';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -25843,7 +25843,11 @@ LayerDefinition.prototype = {
   },
 
   getInfowindowData: function(layer) {
-    var infowindow = this.layers[layer].infowindow || this.options.layer_definition.layers[layer].infowindow;
+    var lyr;
+    var infowindow = this.layers[layer].infowindow 
+    if (!infowindow && (lyr = this.options.layer_definition.layers[layer])) {
+      infowindow = lyr.infowindow;
+    }
     if (infowindow && infowindow.fields && infowindow.fields.length > 0) {
       return infowindow;
     }
@@ -30048,6 +30052,7 @@ var Vis = cdb.core.View.extend({
     layerView.bind(eventType, function(e, latlng, pos, data, layer) {
         var cartodb_id = data.cartodb_id
         var infowindowFields = layerView.getInfowindowData(layer)
+        if (!infowindowFields) return;
         var fields = infowindowFields.fields;
 
         infowindow.model.set({
@@ -32211,7 +32216,7 @@ function PointView(geometryModel) {
       //TODO: create marker depending on the visualizacion options
       var p = L.marker(latLng,{
         icon: L.icon({
-          iconUrl: '/assets/icons/default_marker.png',
+          iconUrl: '/assets/layout/default_marker.png',
           iconAnchor: [11, 11]
         })
       });
@@ -32370,7 +32375,7 @@ function PointView(geometryModel) {
     geometryModel.get('geojson'),
     {
       icon: {
-          url: '/assets/icons/default_marker.png',
+          url: '/assets/layout/default_marker.png',
           anchor: {x: 10, y: 10}
       }
     }

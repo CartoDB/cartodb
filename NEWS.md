@@ -1,7 +1,7 @@
 2.6.2 (YYYY-MM-DD)
 ------------------
 * Fixed Bugs
-  * Do not leak users during testsuite run (#244)
+  * Do not leak users during testsuite run (#244, #323)
 
 2.6.1
 -----

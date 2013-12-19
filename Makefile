@@ -1,6 +1,5 @@
 PENDING_SPECS = \
   spec/lib/varnish_spec.rb (#321) \
-  spec/models/map_spec.rb (#325) \
   $(NULL)
 
 WORKING_SPECS = \
@@ -11,6 +10,7 @@ WORKING_SPECS = \
   spec/lib/metrics_spec.rb \
   spec/models/layer_spec.rb \
   spec/models/tag_spec.rb \
+  spec/models/map_spec.rb \
   $(NULL)
 
 CDB_PATH=lib/assets/javascripts/cdb

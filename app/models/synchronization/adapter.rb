@@ -18,6 +18,7 @@ module CartoDB
         runner.run(&tracker)
         result = results.select(&:success?).first
         if runner.remote_data_updated?
+          copy_privileges("public.#{table_name}", result.qualified_table_name)
           overwrite(table_name, result)
           cartodbfy(table_name)
         end
@@ -136,6 +137,17 @@ module CartoDB
 
       def temporary_name_for(table_name)
         "#{table_name}_to_be_deleted"
+      end
+
+      def copy_privileges(origin_table_name, destination_table_name)
+        database.execute(%Q(
+          UPDATE pg_class
+          SET relacl=(
+            SELECT relacl FROM pg_class
+            WHERE relname='#{origin_table_name}'
+          )
+          WHERE relname='#{destination_table_name}'
+        ))
       end
 
       private

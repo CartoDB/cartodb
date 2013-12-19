@@ -32,9 +32,9 @@ module CartoDB
         return false unless runner.remote_data_updated?
 
         temporary_name = temporary_name_for(result.table_name)
-        move_to_schema(result)
 
         database.transaction do
+          move_to_schema(result)
           rename(table_name, temporary_name) if exists?(table_name)
           rename(result.table_name, table_name)
           drop(temporary_name) if exists?(temporary_name)

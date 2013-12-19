@@ -40,7 +40,7 @@ and (orientation : portrait) {
   .cartodb-map-wrapper { bottom: 0!Important;}
 
   div.cartodb-timeslider .ui-slider .ui-slider-handle {
-    display:none!important;
+    /*display:none!important;*/
   }
 }
 

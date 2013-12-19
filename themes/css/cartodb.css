@@ -1022,7 +1022,7 @@ div.cartodb-popup.header.yellow a.cartodb-popup-close-button:hover {
   }
 
   div.cartodb-mobile div.cartodb-timeslider .ui-slider .ui-slider-handle {
-    display:none!important;
+    /*display:none!important;*/
   }
 
   div.cartodb-mobile.open {
@@ -2424,7 +2424,7 @@ and (orientation : portrait) {
   .cartodb-map-wrapper { bottom: 0!Important;}
 
   div.cartodb-timeslider .ui-slider .ui-slider-handle {
-    display:none!important;
+    /*display:none!important;*/
   }
 }
 

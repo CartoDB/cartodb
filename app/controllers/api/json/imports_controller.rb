@@ -55,6 +55,9 @@ class Api::Json::ImportsController < Api::ApplicationController
     s3_uploader = S3Uploader.new(Cartodb.config)
 
     if s3_uploader.configured?
+      Rails.logger.info("Importer AWS configuration: ======== " +
+                        s3_uploader.s3_configuration.to_s)
+
       path = "#{random_token}/#{File.basename(filename)}"
       s3_public_url = s3_uploader.upload(path, filedata)
       s3_uploader.presigned_url_for(s3_public_url)

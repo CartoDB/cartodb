@@ -142,7 +142,7 @@ module CartoDB
 
       def copy_indexes(origin_table_name, destination_table_name)
         origin_schema, origin_table_name = origin_table_name.split('.')
-        database[%Q(
+        user.in_database(as: :superuser)[%Q(
           SELECT indexdef AS indexdef
           FROM pg_indexes
           WHERE schemaname = '#{origin_schema}'

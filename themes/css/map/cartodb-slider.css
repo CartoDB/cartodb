@@ -6,6 +6,13 @@ only screen and (        min-device-pixel-ratio: 2),
 only screen and (                min-resolution: 192dpi),
 only screen and (                min-resolution: 2dppx) { 
   
+  div.cartodb-timeslider .ui-slider .ui-slider-handle {
+    top: -12px!Important;
+    padding: 9px 3px;
+    background:transparent url('../img/handle@2x.png') center center no-repeat!Important;
+    border:none!Important;
+    background-size: 11px 12px!Important;
+  }
 
   div.cartodb-mobile .toggle {
     float:right;
@@ -28,6 +35,13 @@ only screen and (                min-resolution: 2dppx) {
 and (max-device-width : 320px) 
 and (max-device-width : 480px) {
 
+  div.cartodb-timeslider .ui-slider .ui-slider-handle {
+    top: -12px!Important;
+    padding: 9px 3px;
+    background:transparent url('../img/handle.png') center center no-repeat;
+    border:none!Important;
+  }
+
 }
 
 /* iPhone portrait */
@@ -39,9 +53,12 @@ and (orientation : portrait) {
   .cartodb-text {display:none}
   .cartodb-map-wrapper { bottom: 0!Important;}
 
-  div.cartodb-timeslider .ui-slider .ui-slider-handle {
-    /*display:none!important;*/
-  }
+  /*div.cartodb-timeslider .ui-slider .ui-slider-handle {*/
+    /*top: -12px!Important;*/
+    /*padding: 9px 3px;*/
+    /*background:transparent url('../img/handle.png') center center no-repeat!Important;*/
+    /*border:none!Important;*/
+  /*}*/
 }
 
 /* iPhone landscape */

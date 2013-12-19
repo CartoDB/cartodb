@@ -1,6 +1,6 @@
-// cartodb.js version: 3.5.01-dev
+// cartodb.js version: 3.5.04-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: c1b79152afc48f49cade1436559b740a0e43ee20
+// sha: 13c59eba69d617852eb8362582a16490ba5f49cf
 (function() {
   var root = this;
 
@@ -20429,7 +20429,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.5.01-dev';
+    cdb.VERSION = '3.5.04-dev';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -25843,7 +25843,11 @@ LayerDefinition.prototype = {
   },
 
   getInfowindowData: function(layer) {
-    var infowindow = this.layers[layer].infowindow || this.options.layer_definition.layers[layer].infowindow;
+    var lyr;
+    var infowindow = this.layers[layer].infowindow 
+    if (!infowindow && (lyr = this.options.layer_definition.layers[layer])) {
+      infowindow = lyr.infowindow;
+    }
     if (infowindow && infowindow.fields && infowindow.fields.length > 0) {
       return infowindow;
     }
@@ -28535,7 +28539,7 @@ cdb.ui.common.ShareDialog = cdb.ui.common.Dialog.extend({
   },
 
   default_options: {
-    title: 'title',
+    title: '',
     description: '',
     ok_title: 'Ok',
     cancel_title: 'Cancel',
@@ -28616,6 +28620,12 @@ cdb.ui.common.ShareDialog = cdb.ui.common.Dialog.extend({
 
   },
 
+  _truncateTitle: function(s, length) {
+
+    return s.substr(0, length-1) + (s.length > length ? '…' : '');
+
+  },
+
   render: function() {
 
     var $el = this.$el;
@@ -28623,20 +28633,34 @@ cdb.ui.common.ShareDialog = cdb.ui.common.Dialog.extend({
     var title       = this.options.title;
     var description = this.options.description;
     var share_url   = this.options.share_url;
+
     var facebook_url, twitter_url;
 
     this.$el.addClass(this.options.size);
 
+    var full_title    = title + ": " + description;
+    var twitter_title;
+
+    if (title && description) {
+      twitter_title = this._truncateTitle(title + ": " + description, 112) + " %23map "
+    } else if (title) {
+      twitter_title = this._truncateTitle(title, 112) + " %23map"
+    } else if (description){
+      twitter_title = this._truncateTitle(description, 112) + " %23map"
+    } else {
+      twitter_title = "%23map"
+    }
+
     if (this.options.facebook_url) {
       facebook_url = this.options.facebook_url;
     } else {
-      facebook_url = "http://www.facebook.com/sharer.php?u=" + share_url + "&text=Map of " + title + ": " + description;
+      facebook_url = "http://www.facebook.com/sharer.php?u=" + share_url + "&text=" + full_title;
     }
 
     if (this.options.twitter_url) {
       twitter_url = this.options.twitter_url;
     } else {
-      twitter_url = "https://twitter.com/share?url=" + share_url + "&text=Map of " + title + ": " + description + "... ";
+      twitter_url = "https://twitter.com/share?url=" + share_url + "&text=" + twitter_title;
     }
 
     var options = _.extend(this.options, { facebook_url: facebook_url, twitter_url: twitter_url });
@@ -30028,6 +30052,7 @@ var Vis = cdb.core.View.extend({
     layerView.bind(eventType, function(e, latlng, pos, data, layer) {
         var cartodb_id = data.cartodb_id
         var infowindowFields = layerView.getInfowindowData(layer)
+        if (!infowindowFields) return;
         var fields = infowindowFields.fields;
 
         infowindow.model.set({
@@ -30428,7 +30453,7 @@ cdb.vis.Overlay.register('header', function(data, vis) {
         <div class='social'>\
           <a class='facebook' target='_blank'\
             href='http://www.facebook.com/sharer.php?u={{share_url}}&text=Map of {{title}}: {{description}}'>F</a>\
-          <a class='twitter' href='https://twitter.com/share?url={{share_url}}&text=Map of {{title}}: {{descriptionShort}}... '\
+          <a class='twitter' href='https://twitter.com/share?url={{share_url}}&text={{twitter_title}}'\
            target='_blank'>T</a>\
         </div>\
       {{/mobile_shareable}}\
@@ -30439,29 +30464,36 @@ cdb.vis.Overlay.register('header', function(data, vis) {
     data.templateType || 'mustache'
   );
 
-  var titleLength = data.map.get('title') ? data.map.get('title').length : 0;
-  var descLength = data.map.get('description') ? data.map.get('description').length : 0;
+  function truncate(s, length) {
+    return s.substr(0, length-1) + (s.length > length ? '…' : '');
+  }
 
-  var maxDescriptionLength = MAX_SHORT_DESCRIPTION_LENGTH - titleLength;
+  var title       = data.map.get('title');
   var description = data.map.get('description');
-  var descriptionShort = description;
 
-  if(descLength > maxDescriptionLength) {
-    var descriptionShort = description.substr(0, maxDescriptionLength);
-    // @todo (@johnhackworth): Improvement; Not sure if there's someway of doing thins with a regexp
-    descriptionShort = descriptionShort.split(' ');
-    descriptionShort.pop();
-    descriptionShort = descriptionShort.join(' ');
+  var facebook_title = title + ": " + description;
+  var twitter_title;
+
+  if (title && description) {
+    twitter_title = truncate(title + ": " + description, 112) + " %23map "
+  } else if (title) {
+    twitter_title = truncate(title, 112) + " %23map"
+  } else if (description){
+    twitter_title = truncate(description, 112) + " %23map"
+  } else {
+    twitter_title = "%23map"
   }
 
   var shareable = (data.shareable == "false" || !data.shareable) ? null : data.shareable;
   var mobile_shareable = shareable;
+
   mobile_shareable = mobile_shareable && (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent));
 
   var header = new cdb.geo.ui.Header({
-    title: data.map.get('title'),
+    title: title,
     description: description,
-    descriptionShort: descriptionShort,
+    facebook_title: facebook_title,
+    twitter_title: twitter_title,
     url: data.url,
     share_url: data.share_url,
     mobile_shareable: mobile_shareable,
@@ -30582,7 +30614,8 @@ cdb.vis.Overlay.register('share', function(data, vis) {
   var code = "<iframe width='100%' height='520' frameborder='0' src='" + location.href + "'></iframe>";
 
   var dialog = new cdb.ui.common.ShareDialog({
-    title: 'Share this map',
+    title: data.map.get("title"),
+    description: data.map.get("description"),
     model: vis.map,
     code: code,
     url: data.url,
@@ -32183,7 +32216,7 @@ function PointView(geometryModel) {
       //TODO: create marker depending on the visualizacion options
       var p = L.marker(latLng,{
         icon: L.icon({
-          iconUrl: '/assets/icons/default_marker.png',
+          iconUrl: '/assets/layout/default_marker.png',
           iconAnchor: [11, 11]
         })
       });
@@ -32342,7 +32375,7 @@ function PointView(geometryModel) {
     geometryModel.get('geojson'),
     {
       icon: {
-          url: '/assets/icons/default_marker.png',
+          url: '/assets/layout/default_marker.png',
           anchor: {x: 10, y: 10}
       }
     }

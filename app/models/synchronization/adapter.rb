@@ -133,7 +133,7 @@ module CartoDB
       end
 
       def copy_privileges(origin_table_name, destination_table_name)
-        database.execute(%Q(
+        user.in_database(as: :superuser).execute(%Q(
           UPDATE pg_class
           SET relacl=(
             SELECT relacl FROM pg_class

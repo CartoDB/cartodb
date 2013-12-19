@@ -319,6 +319,7 @@ class User < Sequel::Model
   end
 
   def register_new_tables_in_database
+    return self if over_table_quota?
     Hash[real_tables.map { |record| [record[:oid], record[:relname]] }]
       .select { |oid, name| unregistered_oids.include?(oid) }
       .each { |oid, name| register_table(oid, name) }
@@ -326,6 +327,7 @@ class User < Sequel::Model
 
 
   def register_table(oid, name)
+    return self if over_table_quota?
     puts "======= registering #{oid} #{name}"
     table = Table.new
     table.user_id = id
@@ -335,6 +337,7 @@ class User < Sequel::Model
     table.save
     table.optimize
     table.map.recalculate_bounds!
+    self
   rescue => exception
     puts exception.to_s + exception.backtrace.join("\n")
   end
@@ -346,8 +349,8 @@ class User < Sequel::Model
   end
 
   def sync_tables_metadata
-    register_new_tables_in_database
     unregister_orphaned_metadata_records
+    register_new_tables_in_database
   rescue => exception
     puts exception.to_s + exception.backtrace.join("\n")
   end

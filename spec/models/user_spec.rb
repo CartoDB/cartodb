@@ -575,7 +575,7 @@ describe User do
   end
 
   describe '#sync_tables_metadata' do
-    it 'registers tables without a metadata record', now: true do
+    it 'registers tables without a metadata record' do
       @user3.reload
 
       @user3.in_database.run('CREATE TABLE ghost_table (test integer)')
@@ -589,7 +589,7 @@ describe User do
       @user3.tables.first.destroy
     end
 
-    it 'removes orphaned metadata records', now: true do
+    it 'removes orphaned metadata records' do
       @user3.reload
 
       @user3.in_database.run('CREATE TABLE ghost_table (test integer)')
@@ -609,6 +609,17 @@ describe User do
 
       @user3.taken_table_names.length.should == 0
       Table.where(user_id: @user3.id).to_a.length.should == 0
+    end
+
+    it "won't register ghost tables when over table quota" do
+      @user3.reload
+      10.times do |t|
+        @user3.in_database.run("CREATE TABLE ghost_table_#{t} (test integer)")
+      end
+      @user3.sync_tables_metadata
+      @user3.tables.count.should == @user3.table_quota
+      @user3.sync_tables_metadata
+      @user3.tables.count.should == @user3.table_quota
     end
   end
 

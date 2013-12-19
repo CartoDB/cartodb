@@ -280,6 +280,7 @@ describe Layer do
       derived.layers(:cartodb).first.uses_private_tables?.should be_true
       @table.privacy = 1
       @table.save
+      @user.reload
 
       derived.layers(:cartodb).first.uses_private_tables?.should be_false
     end

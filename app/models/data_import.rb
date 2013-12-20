@@ -282,7 +282,7 @@ class DataImport < Sequel::Model
         password: current_user.database_password,
         database: current_user.database_name,
         host:     current_user.database_host
-      ) {|key, o, n| n.nil? ? o : n}
+      ) {|key, o, n| n.nil? || n.empty? ? o : n}
   end #pg_options
 
   def new_importer

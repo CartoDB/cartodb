@@ -1,7 +1,34 @@
-2.6.2 (YYYY-MM-DD)
-------------------
+2.6.2
+-----
+* Improvements
+  * Prepare a task to register current ghost tables in metadata
+  * Put back time_slider handle for mobiles
+  * Make the the_geom switch exclusive on the column join modal
+  * Create a task to clean up temporary tables from failed imports and move them to the cdb_importer schema
+
 * Fixed Bugs
   * Do not leak users during testsuite run (#244, #323)
+  * SQL editor does not autocomplete table name
+  * Error message for free accounts over map view quota
+  * geocoder raises an exception
+  * Update cdb_tablemetadata when table privacy changes
+  * When syncing a table, create triggers and indexes based on those in the existing one
+  * Privileges in sync tables are being dropped
+  * Dashboard rendering requests /api/v1/tags twice
+  * Duplicated the_geom index in new tables
+  * Customize infowindow empty throws error
+  * CartoDB attribution doesn't appear when there is only a torque layer in the visualization
+  * Indentation doesn't work properly in codemirror
+  * "Unknown" error creating table from query
+  * A console.log is showed from dashboard_messages.js, remove it.
+  * Row options menu doesn't appear properly in Firefox
+  * Fix problem with the table header shadow
+  * Twitter share text is wrong
+  * Fix several jasmine failed tests
+  * Fix cartodb.js test suite
+  * Don't break task when adding timezones to date columns
+  * Change support google mail url to exchange url
+  * Imports get broken when database_host was empty
 
 2.6.1
 -----

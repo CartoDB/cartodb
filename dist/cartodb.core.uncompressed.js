@@ -1,5 +1,5 @@
-// version: 3.5.03
-// sha: 57bfea1cc691fa900e68885ae249416716219440
+// version: 3.5.04
+// sha: 07542bf8e56c7d14f9a37f8f1dbb4a8562b11170
 ;(function() {
   this.cartodb = {};
   var Backbone = {};
@@ -1141,7 +1141,7 @@ var Mustache;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.5.03';
+    cdb.VERSION = '3.5.04';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -2345,7 +2345,11 @@ LayerDefinition.prototype = {
   },
 
   getInfowindowData: function(layer) {
-    var infowindow = this.layers[layer].infowindow || this.options.layer_definition.layers[layer].infowindow;
+    var lyr;
+    var infowindow = this.layers[layer].infowindow 
+    if (!infowindow && (lyr = this.options.layer_definition.layers[layer])) {
+      infowindow = lyr.infowindow;
+    }
     if (infowindow && infowindow.fields && infowindow.fields.length > 0) {
       return infowindow;
     }

@@ -6492,6 +6492,7 @@ exports.Profiler = Profiler;
         if (!data) return;
         self.options.extra_params = self.options.extra_params || {};
         self.options.extra_params.last_updated = data.updated_at || 0;
+        self.options.extra_params.cache_policy = 'persist';
         self.options.is_time = data.fields[self.options.column].type === 'date';
 
         var column_conv = self.options.column;

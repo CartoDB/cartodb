@@ -1,6 +1,6 @@
-// cartodb.js version: 3.5.04-dev
+// cartodb.js version: 3.5.04
 // uncompressed version: cartodb.uncompressed.js
-// sha: d2dccae346f220b946fe088688f2096fc2ec644f
+// sha: 07542bf8e56c7d14f9a37f8f1dbb4a8562b11170
 (function() {
   var root = this;
 
@@ -20429,7 +20429,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.5.04-dev';
+    cdb.VERSION = '3.5.04';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {

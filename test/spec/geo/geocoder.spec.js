@@ -42,8 +42,8 @@ describe('Geocoder', function() {
     });
     waits(2000);
     runs(function() {
-      expect(data.length).toEqual(1);
-      expect(data[0].lat).toEqual(40.420300);
+      expect(data.length).toEqual(2);
+      expect(data[0].lat).toEqual(40.42028);
       expect(data[0].lon).toEqual(-3.70577);
       expect(data[0].boundingbox).toBeTruthy();
     });
@@ -58,9 +58,9 @@ describe('Geocoder', function() {
     });
     waits(1000);
     runs(function() {
-      expect(data.length).toEqual(1);
-      expect(data[0].lat).toEqual(19.4321);
-      expect(data[0].lon).toEqual(-99.1331);
+      expect(data.length).toEqual(4);
+      expect(data[0].lat).toEqual(19.43195);
+      expect(data[0].lon).toEqual(-99.13313);
     });
   });
 

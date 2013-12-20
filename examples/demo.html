@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <title>Mi primer mapa con cartodb.js | Taller de CartoDB</title>
+
+    <link rel="stylesheet" href="../themes/css/cartodb.css" />
+    <script src="../src/cartodb.js"></script>
+    <script type="text/javascript">
+      function main() {
+
+        cdb.load('../src/', function() {
+          var vizjson_url = "http://development.localhost.lan:3000/api/v2/viz/fdc76b62-5cb7-11e3-928e-003ee1fffe8b/viz.json";
+
+          cartodb.createVis("map", vizjson_url, { share: true, title: true, description: true, search: true }).done(function(vis, layers) {
+
+          });
+        });
+      }
+      
+    </script>
+    <style type="text/css">
+      html, body, #map {
+        height: 100%;
+        padding: 0;
+        margin: 0;
+      }
+    </style>
+
+  </head>
+  <body onload="main();">
+    <div id="map"></div>
+
+    <script id="base_template" type="text/template">
+      <div class="mamufas">
+        <section class="block modal <%= modal_type %>">
+          <a href="#close" class="close">x</a>
+          <div class="head">
+            <h3><%= title %></h3>
+          </div>
+          <div class="content">
+            <div class="buttons">
+              <h4>Social</h4>
+              <ul>
+                <li><a class="facebook">Facebook</a></li>
+                <li><a class="twitter">Twitter</a></li>
+              </ul>
+            </div> 
+           <div class="embed_code">
+             <h4>Embed this map</h4>
+             <textarea id="" name="" cols="30" rows="10"><iframe src="//player.vimeo.com/video/43595116?title=0&amp;byline=0&amp;portrait=0&amp;color=ffffff” width="500"></iframe></textarea>
+           </div>
+          </div>
+        </div>
+      </div>
+
+
+
+    </script>
+  </body>
+</html>

@@ -16,6 +16,9 @@ dist/cartodb.uncompressed.js: dist_folder
 	node scripts/compress.js
 	mv dist/_cartodb.js dist/cartodb.uncompressed.js
 
+dist/cartodb.full.uncompressed.js: dist_folder
+	node scripts/compress.js
+
 
 dist/cartodb.js: dist/cartodb.uncompressed.js
 	$(UGLIFYJS) dist/cartodb.uncompressed.js > dist/cartodb.js
@@ -68,6 +71,9 @@ invalidate:
 publish_develop: release
 	#./scripts/publish.sh
 	node scripts/publish.js --current_version
+
+cartodb: dist/cartodb.full.uncompressed.js dist/cartodb.mod.torque.uncompressed.js
+
 
 
 PHONY: clean themes dist

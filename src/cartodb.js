@@ -5,7 +5,7 @@
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.3.01';
+    cdb.VERSION = '3.5.04';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -64,6 +64,7 @@
         'geo/map.js',
         'geo/ui/zoom.js',
         'geo/ui/zoom_info.js',
+        'geo/ui/mobile.js',
         'geo/ui/legend.js',
         'geo/ui/switcher.js',
         'geo/ui/infowindow.js',
@@ -77,7 +78,6 @@
         'geo/layer_definition.js',
         'geo/common.js',
 
-        'geo/leaflet/leaflet.geometry.js',
         'geo/leaflet/leaflet_base.js',
         'geo/leaflet/leaflet_plainlayer.js',
         'geo/leaflet/leaflet_tiledlayer.js',
@@ -95,6 +95,7 @@
         'geo/gmaps/gmaps.js',
 
         'ui/common/dialog.js',
+        'ui/common/share.js',
         'ui/common/notification.js',
         'ui/common/table.js',
         'ui/common/dropdown.js',

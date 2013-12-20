@@ -166,7 +166,7 @@ var Vis = cdb.core.View.extend({
   },
 
   /**
-   * check if all the modules needed to create layers are loaded 
+   * check if all the modules needed to create layers are loaded
    */
   checkModules: function(layers) {
     var mods = Layers.modulesForLayers(layers);
@@ -317,17 +317,33 @@ var Vis = cdb.core.View.extend({
       this.loadLayer(layerData);
     }
 
-    if(options.legends) {
+    var legends, torqueLayer;
+    var device = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+    if (!device && options.legends) {
       this.addLegends(data.layers);
+    } else {
+      legends = this.createLegendView(data.layers);
+
+      this.legends = new cdb.geo.ui.StackedLegend({
+        legends: legends
+      });
     }
 
     if(options.time_slider) {
       // add time slider
       var torque = _(this.getLayers()).filter(function(layer) { return layer.model.get('type') === 'torque'; })
       if (torque.length) {
-        this.addTimeSlider(torque[0]);
+        torqueLayer = torque[0];
+
+        if (!device && torque.length) {
+          this.addTimeSlider(torqueLayer);
+        }
+
       }
     }
+
+    if (device) this.addMobile(torqueLayer);
 
     // set layer options
     if (options.sublayer_options) {
@@ -345,18 +361,22 @@ var Vis = cdb.core.View.extend({
       for(i = 0; i < Math.min(options.sublayer_options.length, layers.length); ++i) {
         var o = options.sublayer_options[i];
         var subLayer = layers[i];
-        var legend = this.legends && this.legends.getLayerByIndex(i);
+        var legend = this.legends && this.legends.getLegendByIndex(i);
         if(legend) {
           legend[o.visible ? 'show': 'hide']();
         }
-        /*if (this.legends) {
-          var j = options.sublayer_options.length - i - 1;
-          var legend = this.legends && this.legends.options.legends[j];
-          if (legend) {
-            o.visible ? legend.show(): legend.hide();
+        // HACK
+        if(subLayer.model && subLayer.model.get('type') === 'torque') {
+          if (o.visible === false) {
+            subLayer.model.set('visible', false);
+            var timeSlider = this.getOverlay('time_slider');
+            if (timeSlider) {
+              timeSlider.hide();
+            }
           }
-        }*/
-        if (o.visible === false) subLayer.hide();
+        } else {
+          if (o.visible === false) subLayer.hide();
+        }
       }
     }
 
@@ -372,6 +392,16 @@ var Vis = cdb.core.View.extend({
     return this;
   },
 
+  addMobile: function(torqueLayer) {
+
+    this.addOverlay({
+      type: 'mobile',
+      torqueLayer: torqueLayer,
+      legends: this.legends
+    });
+
+  },
+
   addTimeSlider: function(torqueLayer) {
     if (torqueLayer) {
       this.addOverlay({
@@ -382,32 +412,45 @@ var Vis = cdb.core.View.extend({
   },
 
   addLegends: function(layers) {
-    function createLegendView(layers) {
+
+    var legends = this.createLegendView(layers);
+
+    this.legends = new cdb.geo.ui.StackedLegend({
+       legends: legends
+    });
+
+    this.mapView.addOverlay(this.legends);
+
+  },
+
+     createLegendView: function(layers) {
       var legends = [];
       for(var i = layers.length - 1; i>= 0; --i) {
         var layer = layers[i];
         if(layer.legend) {
           layer.legend.data = layer.legend.items;
           var legend = layer.legend;
-          if(legend.items && legend.items.length) {
+
+          if((legend.items && legend.items.length) || legend.template) {
             layer.legend.index = i;
             legends.push(new cdb.geo.ui.Legend(layer.legend));
           }
         }
         if(layer.options && layer.options.layer_definition) {
-          legends = legends.concat(createLegendView(layer.options.layer_definition.layers));
+          legends = legends.concat(this.createLegendView(layer.options.layer_definition.layers));
         }
       }
       return legends;
-    }
+    },
 
-    legends = createLegendView(layers);
-    var stackedLegend = new cdb.geo.ui.StackedLegend({
+  addLegends: function(layers) {
+
+    var legends = this.createLegendView(layers);
+    this.legends = new cdb.geo.ui.StackedLegend({
        legends: legends
     });
-    this.legends = stackedLegend;
 
-    this.mapView.addOverlay(stackedLegend);
+    this.mapView.addOverlay(this.legends);
   },
 
   addOverlay: function(overlay) {
@@ -504,9 +547,17 @@ var Vis = cdb.core.View.extend({
         shareable: opt.shareable ? true: false,
         url: vizjson.url
       });
+
+      vizjson.overlays.push({
+        type: "share",
+        url: vizjson.url
+      });
+
     }
 
-    if (opt.layer_selector) {
+    var device = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+    if (!device && opt.layer_selector) {
       vizjson.overlays.push({
         type: "layer_selector"
       });
@@ -639,6 +690,7 @@ var Vis = cdb.core.View.extend({
     layerView.bind(eventType, function(e, latlng, pos, data, layer) {
         var cartodb_id = data.cartodb_id
         var infowindowFields = layerView.getInfowindowData(layer)
+        if (!infowindowFields) return;
         var fields = infowindowFields.fields;
 
         infowindow.model.set({

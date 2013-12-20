@@ -1,5 +1,5 @@
-// version: 3.3.01
-// sha: 00e6f67bb13643fa95d84eb7c0621722b84b88f1
+// version: 3.5.04
+// sha: 07542bf8e56c7d14f9a37f8f1dbb4a8562b11170
 ;(function() {
   this.cartodb = {};
   var Backbone = {};
@@ -1141,7 +1141,7 @@ var Mustache;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.3.01';
+    cdb.VERSION = '3.5.04';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -1200,6 +1200,7 @@ var Mustache;
         'geo/map.js',
         'geo/ui/zoom.js',
         'geo/ui/zoom_info.js',
+        'geo/ui/mobile.js',
         'geo/ui/legend.js',
         'geo/ui/switcher.js',
         'geo/ui/infowindow.js',
@@ -1213,7 +1214,6 @@ var Mustache;
         'geo/layer_definition.js',
         'geo/common.js',
 
-        'geo/leaflet/leaflet.geometry.js',
         'geo/leaflet/leaflet_base.js',
         'geo/leaflet/leaflet_plainlayer.js',
         'geo/leaflet/leaflet_tiledlayer.js',
@@ -1231,6 +1231,7 @@ var Mustache;
         'geo/gmaps/gmaps.js',
 
         'ui/common/dialog.js',
+        'ui/common/share.js',
         'ui/common/notification.js',
         'ui/common/table.js',
         'ui/common/dropdown.js',
@@ -1525,6 +1526,9 @@ var Mustache;
 
     // request params
     var reqParams = ['format', 'dp', 'api_key'];
+    if (options.extra_params) {
+      reqParams = reqParams.concat(options.extra_params);
+    }
     for(var i in reqParams) {
       var r = reqParams[i];
       var v = options[r];
@@ -2167,12 +2171,12 @@ LayerDefinition.prototype = {
     for(var i = 0; i < subdomains.length; ++i) {
       var s = subdomains[i]
       var cartodb_url = this._host(s) + '/tiles/layergroup/' + layerGroupId
-      tiles.push(cartodb_url + tileTemplate + ".png?" + pngParams );
+      tiles.push(cartodb_url + tileTemplate + ".png" + (pngParams ? "?" + pngParams: '') );
 
       var gridParams = this._encodeParams(params, this.options.gridParams);
       for(var layer = 0; layer < this.layers.length; ++layer) {
         grids[layer] = grids[layer] || [];
-        grids[layer].push(cartodb_url + "/" + layer +  tileTemplate + ".grid.json?" + gridParams);
+        grids[layer].push(cartodb_url + "/" + layer +  tileTemplate + ".grid.json" + (gridParams ? "?" + gridParams: ''));
       }
     }
 
@@ -2341,7 +2345,11 @@ LayerDefinition.prototype = {
   },
 
   getInfowindowData: function(layer) {
-    var infowindow = this.layers[layer].infowindow || this.options.layer_definition.layers[layer].infowindow;
+    var lyr;
+    var infowindow = this.layers[layer].infowindow 
+    if (!infowindow && (lyr = this.options.layer_definition.layers[layer])) {
+      infowindow = lyr.infowindow;
+    }
     if (infowindow && infowindow.fields && infowindow.fields.length > 0) {
       return infowindow;
     }

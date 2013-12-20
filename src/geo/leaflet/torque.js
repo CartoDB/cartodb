@@ -11,6 +11,7 @@ var LeafLetTorqueLayer = L.TorqueLayer.extend({
 
   initialize: function(layerModel, leafletMap) {
     var extra = layerModel.get('extra_params');
+    layerModel.attributes.attribution = cdb.config.get('cartodb_attributions');
     // initialize the base layers
     L.TorqueLayer.prototype.initialize.call(this, {
       table: layerModel.get('table_name'),
@@ -35,6 +36,7 @@ var LeafLetTorqueLayer = L.TorqueLayer.extend({
         api_key: extra ? extra.map_key: ''
       },
       cartodb_logo: layerModel.get('cartodb_logo'),
+      attribution: layerModel.get('attribution'),
       cdn_url: layerModel.get('no_cdn') ? null: (layerModel.get('cdn_url') || cdb.CDB_HOST)
     });
 
@@ -65,13 +67,11 @@ var LeafLetTorqueLayer = L.TorqueLayer.extend({
     var changed = this.model.changedAttributes();
     if(changed === false) return;
     changed.tile_style && this.setCartoCSS(this.model.get('tile_style'));
-    changed['torque-blend-mode'] && this.setBlendMode(this.model.get('torque-blend-mode'));
-    changed['torque-duration'] && this.setDuration(this.model.get('torque-duration'));
-    changed['torque-steps'] && this.setSteps(this.model.get('torque-steps'));
-    changed['property'] && this.setColumn(this.model.get('property'));
     'query' in changed && this.setSQL(this.model.get('query'));
+
     if ('visible' in changed) 
       this.model.get('visible') ? this.show(): this.hide();
+
   }
 
 

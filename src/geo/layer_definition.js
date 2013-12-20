@@ -430,12 +430,12 @@ LayerDefinition.prototype = {
     for(var i = 0; i < subdomains.length; ++i) {
       var s = subdomains[i]
       var cartodb_url = this._host(s) + '/tiles/layergroup/' + layerGroupId
-      tiles.push(cartodb_url + tileTemplate + ".png?" + pngParams );
+      tiles.push(cartodb_url + tileTemplate + ".png" + (pngParams ? "?" + pngParams: '') );
 
       var gridParams = this._encodeParams(params, this.options.gridParams);
       for(var layer = 0; layer < this.layers.length; ++layer) {
         grids[layer] = grids[layer] || [];
-        grids[layer].push(cartodb_url + "/" + layer +  tileTemplate + ".grid.json?" + gridParams);
+        grids[layer].push(cartodb_url + "/" + layer +  tileTemplate + ".grid.json" + (gridParams ? "?" + gridParams: ''));
       }
     }
 
@@ -604,7 +604,11 @@ LayerDefinition.prototype = {
   },
 
   getInfowindowData: function(layer) {
-    var infowindow = this.layers[layer].infowindow || this.options.layer_definition.layers[layer].infowindow;
+    var lyr;
+    var infowindow = this.layers[layer].infowindow 
+    if (!infowindow && (lyr = this.options.layer_definition.layers[layer])) {
+      infowindow = lyr.infowindow;
+    }
     if (infowindow && infowindow.fields && infowindow.fields.length > 0) {
       return infowindow;
     }

@@ -1,3 +1,64 @@
+3.5.04 (20//12//2013)
+-----
+- Added attribution for torque layers.
+
+3.5.03 (18//12/2013)
+-----
+- updates twitter share message for mobile devices
+
+3.5.02 (17//12/2013)
+-----
+- improves twitter share message
+
+3.5.01 (17//12/2013)
+-----
+- fixes a bug that prevented using the scrolling wheel to zoom in and out
+
+3.5.00 (16//12/2013)
+-----
+- improves legends and torque player UI in mobile displays.
+- allows passing extra params in the calls to the SQL API.
+- changed profiler API.
+
+3.4.03 (11//12/2013)
+-----
+- fixes a bug that prevented showing a legend with custom HTML
+
+3.4.02 (10//12/2013)
+-----
+- adds new API for legends (documentation coming soon)
+- fixes a bug that incorrectly rendered an empty legend
+- fixes a bug that prevented showing the layer alias in torque layers
+- adds a new time_slider example
+
+3.4.01 (26//11/2013)
+-----
+- fixed parsing keyword arguments in cartocss for torque
+
+3.4.00 (26//11/2013)
+-----
+- release of Torque Cumulative.
+- enables max and min zoom for Google Maps.
+- fixed URL of one asset in the examples directory.
+
+3.3.05 (20//11/2013)
+-----
+- fixed torque problems with cached sql requests #81
+
+3.3.04 (15//11/2013)
+-----
+- sets maxZoom of GMaps layers to a high value to use the one defined by Google
+- update GMaps layers specs
+
+3.3.03 (15//11/2013)
+-----
+- fixes a bug that prevented the triggering of callbacks after setting properties to cdb.geo.GMapsBaseLayer.
+
+3.3.02 (14//11/2013)
+-----
+- we don't set maxZoom in GMaps layers anymore.
+- adds support for WMS layers.
+
 3.3.01 (14//11/2013)
 -----
 - added CartoDB logo in torque layers

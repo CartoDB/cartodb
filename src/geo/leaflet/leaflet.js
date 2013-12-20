@@ -271,7 +271,14 @@
     },
 
     invalidateSize: function() {
-      this.map_leaflet.invalidateSize({ pan: false});
+      // there is a race condition in leaflet. If size is invalidated
+      // and at the same time the center is set the final center is displaced
+      // so set pan to false so the map is not moved and then force the map
+      // to be at the place it should be
+      this.map_leaflet.invalidateSize({ pan: false })//, animate: false });
+      this.map_leaflet.setView(this.map.get("center"), this.map.get("zoom") || 0, {
+        animate: false
+      });
     }
 
   }, {

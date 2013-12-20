@@ -35,7 +35,9 @@ function PointView(geometryModel) {
       icon: {
           url: '/assets/layout/default_marker.png',
           anchor: {x: 10, y: 10}
-      }
+      },
+      raiseOnDrag: false,
+      crossOnDrag: false
     }
   );
 

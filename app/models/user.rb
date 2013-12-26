@@ -469,7 +469,9 @@ class User < Sequel::Model
   def db_size_in_bytes(use_total = false)
     attempts = 0
     begin
-      in_database(:as => :superuser).fetch("SELECT CDB_UserDataSize()").first[:cdb_userdatasize]
+      result = in_database(:as => :superuser).fetch("SELECT CDB_UserDataSize()").first[:cdb_userdatasize]
+      update_gauge("db_size", result)
+      result
     rescue
       attempts += 1
       in_database(:as => :superuser).fetch("ANALYZE")
@@ -628,6 +630,23 @@ class User < Sequel::Model
       .to_a.fetch(0, {}).fetch(:created_at, nil)
   end
 
+  def metric_key
+    "cartodb.#{Rails.env.production? ? "user" : Rails.env + "-user"}.#{self.username}"
+  end
+
+  def update_gauge(gauge, value)
+    begin
+      Statsd.gauge("#{metric_key}.#{gauge}", value)
+    rescue nil
+    end
+  end
+
+  def update_visualization_metrics
+    update_gauge("visualizations.total", maps.count)
+    update_gauge("visualizations.table", table_count)
+    update_gauge("visualizations.derived", visualization_count)
+  end
+  
   def rebuild_quota_trigger
     load_cartodb_functions
     puts "Rebuilding quota trigger in db '#{database_name}' (#{username})"

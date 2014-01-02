@@ -235,10 +235,10 @@ $ pip install -r python_requirements.txt
 ## Install Varnish
 [Varnish](https://www.varnish-cache.org) is a web application
 accelerator. Components like Windshaft use it to speed up serving tiles
-via the Maps API. 
+via the Maps API.
 
 ```bash
-sudo pip install -e git+https://github.com/RealGeeks/python-varnish.git@0971d6024fbb2614350853a5e0f8736ba3fb1f0d#egg=python-varnish
+sudo apt-get install varnish
 ```
 
 ## Install Mapnik ##

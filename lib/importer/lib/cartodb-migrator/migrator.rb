@@ -79,7 +79,7 @@ module CartoDB
                 #@data_import.log << ("Transforming the_geom from #{srid} to 4326")
                 # move original geometry column around
                 @db_connection.run("UPDATE #{@suggested_name} SET the_geom = ST_Transform(the_geom, 4326);")
-                @db_connection.run("CREATE INDEX #{@suggested_name}_the_geom_gist ON #{@suggested_name} USING GIST (the_geom)")
+                #@db_connection.run("CREATE INDEX #{@suggested_name}_the_geom_gist ON #{@suggested_name} USING GIST (the_geom)")
               end
             rescue => e
               #@data_import.log << ("Failed to transform the_geom from #{srid} to 4326 #{@suggested_name}. #{e.inspect}")
@@ -89,8 +89,11 @@ module CartoDB
         rescue => e
           #@data_import.log << ("Failed to process the_geom renaming to invalid_the_geom. #{e.inspect}")
           # if no SRID or invalid the_geom, we need to remove it from the table
-          @db_connection.run("ALTER TABLE #{@suggested_name} RENAME COLUMN the_geom TO invalid_the_geom")
-          column_names.delete("the_geom")
+          begin
+            @db_connection.run("ALTER TABLE #{@suggested_name} RENAME COLUMN the_geom TO invalid_the_geom")
+            column_names.delete("the_geom")
+          rescue => exception
+          end
         end
       end
 
@@ -131,7 +134,7 @@ module CartoDB
             trim(CAST(\"#{matching_latitude}\" AS text))  ~ '^(([-+]?(([0-9]|[1-8][0-9])(\.[0-9]+)?))|[-+]?90)$'
             GEOREF
             )
-            @db_connection.run("CREATE INDEX \"#{@suggested_name}_the_geom_gist\" ON \"#{@suggested_name}\" USING GIST (the_geom)")
+            #@db_connection.run("CREATE INDEX \"#{@suggested_name}_the_geom_gist\" ON \"#{@suggested_name}\" USING GIST (the_geom)")
         end
       end
 

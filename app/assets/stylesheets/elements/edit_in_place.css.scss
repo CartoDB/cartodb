@@ -1,0 +1,66 @@
+
+  /*
+   *  Edit in place element styles.
+   * 
+   *  - Edit value 
+   */
+
+  @import "compass/css3/inline-block";
+  @import "compass/css3/transform";
+
+
+  /*
+    <div class="input edit_in_place">
+      <input type="text" value="" />
+      <div class="value  empty">
+        <span style="max-width: 120px;">empty</span>
+      </div>
+    </div>
+  */
+
+
+  .edit_in_place {
+
+    .value {
+      position:relative;
+      padding: 0 5px 3px 5px;
+      margin:4px 5px 0 0;
+      color: #666666;
+      font-size:15px;
+      z-index: 100;
+
+      @include transform(skew(-25deg));
+      background: rgba(#FFDC73, .3);
+
+      &:hover {
+        background: rgba(#FFDC73, .5);
+      }
+
+      span {
+        @include inline-block();
+        padding:1px;
+
+        @include transform(skew(25deg));
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 150px;
+      }
+
+      &.empty { font-style: italic; }
+    }
+
+    &.disabled .value {
+      color: #AAA;
+      background: rgba(gray, .1);
+      &:hover {
+        background: rgba(gray, .1);
+      }
+    }
+
+    input {
+      position:relative;
+      z-index: 100;
+      display:none;
+    }
+  }

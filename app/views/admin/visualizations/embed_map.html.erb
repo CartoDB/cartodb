@@ -77,7 +77,7 @@
           <li class="last"><a href="http://www.mozilla.org/en-US/firefox/all/‎" class="firefox">Firefox</a></li>
         </ul>
       </div>
-      <div class="cartodb-text">Create your own custom maps with <a href="http://cartodb.com" target="_blank">CartoDB</a></div>
+      <div class="cartodb-text">Create your own custom maps with <a href="http://cartodb.com?utm_source=Footer_Link&utm_medium=referral&utm_campaign=Embed_v1&utm_content=CartoDB&utm_term=<%= @visualization.user.username %>" target="_blank">CartoDB</a></div>
     <% end %>
 
     <% if @visualization.map.provider == 'googlemaps' %>
@@ -163,6 +163,11 @@
         <% if Rails.env.development? || Cartodb.config[:no_cdn] == true %>
         opt.no_cdn = true;
         <% end %>
+
+        cartodb.config.set({
+          cartodb_attributions: "CartoDB <a href='http://cartodb.com/attributions?utm_source=Footer_Link&utm_medium=referral&utm_campaign=Embed_v1&utm_content=Attributions&utm_term=<%= @visualization.user.username %>' target='_blank'>attribution</a>",
+          cartodb_logo_link: "http://www.cartodb.com?utm_source=Footer_Link&utm_medium=referral&utm_campaign=Embed_v1&utm_content=Logo",
+        })
 
         cartodb.createVis('map', '<%= v2_vizjson_url(@visualization) %>', opt, function(vis) {
           // add here your code

@@ -3,7 +3,8 @@
 module CartoDB
   module Connector
     class Importer
-      DESTINATION_SCHEMA = 'public'
+      ORIGIN_SCHEMA       = 'cdb_importer'
+      DESTINATION_SCHEMA  = 'public'
 
       attr_accessor :table
 
@@ -20,6 +21,7 @@ module CartoDB
         runner.run(&tracker)
 
         if quota_checker.will_be_over_table_quota?(results.length)
+          self.aborted = true
           drop(results)
         else
           results.select(&:success?).each { |result| register(result) }
@@ -29,12 +31,14 @@ module CartoDB
       end
 
       def register(result)
-        move_to_schema(result, 'public')
-        rename(result.table_name, result.name)
+        name = rename(result.table_name, result.name)
+        move_to_schema(name, ORIGIN_SCHEMA, DESTINATION_SCHEMA)
+        persist_metadata(name, data_import_id)
+      rescue => exception
       end
 
       def success?
-        !quota_checker.over_table_quota? && runner.success?
+        !over_table_quota? && runner.success?
       end
 
       def drop_all(results)
@@ -47,11 +51,11 @@ module CartoDB
         self
       end
 
-      def move_to_schema(result, schema=DESTINATION_SCHEMA)
-        return self if schema == result.schema
+      def move_to_schema(table_name, origin_schema, destination_schema)
+        return self if origin_schema == destination_schema
         database.execute(%Q{
-          ALTER TABLE "#{result.schema}"."#{result.table_name}"
-          SET SCHEMA public
+          ALTER TABLE "#{origin_schema}"."#{table_name}"
+          SET SCHEMA #{destination_schema}
         })
       end
 
@@ -60,12 +64,22 @@ module CartoDB
         new_name        = table_registrar.get_valid_table_name(new_name)
 
         database.execute(%Q{
-          ALTER TABLE "public"."#{current_name}"
+          ALTER TABLE "#{ORIGIN_SCHEMA}"."#{current_name}"
           RENAME TO "#{new_name}"
         })
-        persist_metadata(new_name, data_import_id)
+
+        rename_the_geom_index_if_exists(current_name, new_name)
+        new_name
       rescue => exception
         retry unless rename_attempts > 1
+      end
+
+      def rename_the_geom_index_if_exists(current_name, new_name)
+        database.execute(%Q{
+          ALTER INDEX "#{ORIGIN_SCHEMA}"."#{current_name}_geom_idx"
+          RENAME TO "#{new_name}_the_geom_idx"
+        })
+      rescue => exception
       end
 
       def persist_metadata(name, data_import_id)
@@ -78,15 +92,20 @@ module CartoDB
         runner.results
       end 
 
+      def over_table_quota?
+        aborted || quota_checker.over_table_quota?
+      end
+
       def error_code
-        return 8002 if quota_checker.over_table_quota?
+        return 8002 if over_table_quota?
         results.map(&:error_code).compact.first
-      end #errors_from
+      end
 
       private
 
       attr_reader :runner, :table_registrar, :quota_checker, :database,
       :data_import_id
+      attr_accessor :aborted
     end # Importer
   end # Connector
 end # CartoDB

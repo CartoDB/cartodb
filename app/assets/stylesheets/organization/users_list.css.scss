@@ -35,7 +35,6 @@
         width:260px;
       }
 
-
       label {
         color:#C7C7C7;
         font-size:11px;
@@ -68,6 +67,23 @@
         line-height:normal;
         background:rgba(146,188,65,0.5);
         color:white;
+      }
+
+      p {
+        font-size:15px;
+
+        a {
+          font-family: $text-fonts2;
+          font-weight:normal;
+          font-size:15px;
+          text-decoration: underline;
+          letter-spacing:0;
+        }
+      }
+
+      // Alone block
+      &.alone {
+        padding:100px 0;
       }
 
       // User used/available storage

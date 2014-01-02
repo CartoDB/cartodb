@@ -18,6 +18,8 @@ module CartoDB
         runner.run(&tracker)
         result = results.select(&:success?).first
         if runner.remote_data_updated?
+          copy_privileges("public.#{table_name}", result.qualified_table_name)
+          copy_indexes("public.#{table_name}", result.qualified_table_name)
           overwrite(table_name, result)
           cartodbfy(table_name)
         end
@@ -71,13 +73,14 @@ module CartoDB
 
       def update_cdb_tablemetadata(name)
         user.in_database(as: :superuser).run(%Q{
-          INSERT INTO cdb_tablemetadata (tabname,
-          updated_at) VALUES ('#{name}'::regclass::oid, NOW())
+          INSERT INTO cdb_tablemetadata (tabname, updated_at)
+          VALUES ('#{name}'::regclass::oid, NOW())
         })
       rescue Sequel::DatabaseError => exception
         user.in_database(as: :superuser).run(%Q{
-           UPDATE cdb_tablemetadata SET updated_at =
-           NOW() where tabname = '#{name}'::regclass")
+           UPDATE cdb_tablemetadata
+           SET updated_at = NOW()
+           WHERE tabname = '#{name}'::regclass
         })
       end
 
@@ -136,6 +139,39 @@ module CartoDB
 
       def temporary_name_for(table_name)
         "#{table_name}_to_be_deleted"
+      end
+
+      def copy_privileges(origin_table_name, destination_table_name)
+        user.in_database(as: :superuser).execute(%Q(
+          UPDATE pg_class
+          SET relacl=(
+            SELECT relacl FROM pg_class
+            WHERE relname='#{origin_table_name}'
+          )
+          WHERE relname='#{destination_table_name}'
+        ))
+      end
+
+      def copy_indexes(origin_table_name, destination_table_name)
+        origin_schema, origin_table_name = origin_table_name.split('.')
+        user.in_database(as: :superuser)[%Q(
+          SELECT indexdef AS indexdef
+          FROM pg_indexes
+          WHERE schemaname = '#{origin_schema}'
+          AND tablename = '#{origin_table_name}'
+        )].each do |record|
+          puts record.inspect
+          begin
+              statement = record.fetch(:indexdef).gsub(
+                /ON #{origin_table_name}/,
+                "ON #{destination_table_name}"
+              )
+              puts statement.inspect
+            database.run(statement)
+          rescue => exception
+            puts exception.to_s + exception.backtrace.join("\n")
+          end
+        end
       end
 
       private

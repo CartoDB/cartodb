@@ -5,7 +5,7 @@ namespace :cartodb do
 	Rake::Task['test:prepare'].invoke
  	Rake::Task['cartodb:db:create_publicuser'].invoke
       else
-        system("rake cartodb:test:prepare RAILS_ENV=test")
+        system("rake cartodb:test:prepare RAILS_ENV=test") || raise("Something went wrong")
       end
     end
   end

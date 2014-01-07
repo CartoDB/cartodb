@@ -21,27 +21,46 @@
       <% if @user.new? -%>
         Create new user
       <% else %>
-        <%= "#{@user.username} account data" %>
+        <%= "#{@user.username} details" %>
       <% end %>
     </h2>
   </div>
 
   <ul><%= render partial: 'shared/flash_message' %></ul>
   
+  <% if !@user.new? && current_user.organization_owner -%>
+  <div class="content user-details">
+    <ul>
+      <li>17 tables created</li>
+      <li>21 visualizations created</li>
+      <li>56.233 georeferenced rows</li>
+
+      <%#
+        It needs to know the limits:
+          · quota used < 75% -> ok
+          · quota used => 75% && quota used < 95% -> danger
+          · quota used => 95% -> boom
+      -%>
+      <% user_type = "danger" %> 
+
+      <li><strong class="<%= user_type %>">76%</strong> of user quota used</li>
+      <li>45.921 map views this month</li>
+      <li>Last access: 21 days ago</li>
+    </ul>
+  </div>
+  <% end %>
+
   <div class="content">
     <div class="org-user-form">
 
       <div class="left-column">
-
-        <% if @user.new? -%>
-          <div class="row">
-            <div class="field field-2">
-              <%= form.label :username %>
-              <%= form.text_field :username, :class => @user.errors[:username].present? ? 'error' : nil %>
-              <%= form_error_for :username, @user.errors %>
-            </div>
+        <div class="row">
+          <div class="field field-2">
+            <%= form.label :username %>
+            <%= form.text_field :username, :class => @user.errors[:username].present? ? 'error' : nil, :disabled => !@user.new? %>
+            <%= form_error_for :username, @user.errors %>
           </div>
-        <% end -%>
+        </div>
 
         <div class="row">
           <div class="field field-2">
@@ -49,10 +68,18 @@
             <%= form.text_field :email, :class => @user.errors[:email].present? ? 'error' : nil %>
             <%= form_error_for :email, @user.errors %>
           </div>
+        </div>
+
+        <div class="row">
           <div class="field field-2">
-            <%= label_tag 'user[password]', 'Password' %>
+            <%= label_tag 'user[password]', 'New password' %>
             <%= password_field_tag 'user[password]', nil, :class => @user.errors[:password].present? ? 'error' : nil %>
             <%= form_error_for :password, @user.errors %>
+          </div>
+          <div class="field field-2">
+            <%= label_tag 'user[confirm_password]', 'Confirm password' %>
+            <%= password_field_tag 'user[confirm_password]', nil, :class => @user.errors[:password].present? ? 'error' : nil %>
+            <%= form_error_for :confirm_password, @user.errors %>
           </div>
         </div>
         
@@ -73,8 +100,52 @@
               <%= form_error_for :quota_in_bytes, @user.errors %>
             </div>
           </div>
+
+          <!-- USER EXTRAS -->
+          <div class="extras margin20">
+            <div class="row">
+              <div class="field field-1">
+                <label class="bottom-border">EXTRAS</label>
+                <div class="extra margin15">
+                  <div class="left">
+                    <span class="light">Allow geocoding</span>
+                  </div>
+                  <div class="right">
+                    <input type="checkbox" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
         <% end -%>
       </div>
+
+      <div class="right-column">
+        <div class="row">
+          <p>Subdomain cannot be changed</p>
+        </div>
+        <div class="row">
+          <p>
+            <% if current_user.organization_owner -%>
+              This user
+              <%= @user.new? ? "will enter" : "enters" %>
+            <% else %>
+              You enter
+            <% end %>
+            through <%= current_user.organization.name %>.cartodb.com</p>
+        </div>
+
+        <% if current_user.organization_owner -%>
+          <div class="row">
+            <p>Or <a href="#/generate-pass" class="pass-generator">generate</a> a random password for this user</p>
+          </div>
+          <div class="row">
+            <p>Do you need more quota? <%= link_to 'Upgrade your account', upgrade_url %></p>
+          </div>
+        <% end %>
+      </div>
+
     </div>
   </div>
 

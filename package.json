@@ -25,5 +25,7 @@
       "aws-sdk": "",
       "git-rev": "",
       "underscore": ""
-    }
+    },
+    "files": ["dist"],
+    "main": "cartodb.js"
 }

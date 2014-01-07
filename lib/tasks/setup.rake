@@ -2,9 +2,10 @@ namespace :cartodb do
   namespace :test do
     task :prepare do 
       if (ENV['RAILS_ENV'] == "test")
-	Rake::Task['test:prepare'].invoke
- 	Rake::Task['cartodb:db:create_publicuser'].invoke
+        Rake::Task['test:prepare'].invoke
+        Rake::Task['cartodb:db:create_publicuser'].invoke
       else
+        Rake::Task['db:migrate'].invoke
         system("rake cartodb:test:prepare RAILS_ENV=test") || raise("Something went wrong")
       end
     end

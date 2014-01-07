@@ -9,12 +9,6 @@ describe("geo.map", function() {
       layer.sync = function() {return true};
     });
 
-    it("should update the style when a new table name is set", function() {
-      layer.set({tile_style: '#table_name {}'});
-      layer.updateCartoCss('table_name', 'map_of_name');
-      expect(layer.get('tile_style')).toEqual('#map_of_name {}');
-    });
-
   });
 
   describe('GMapsBaseLayer', function() {

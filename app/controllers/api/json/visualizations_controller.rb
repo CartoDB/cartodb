@@ -222,7 +222,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
         WHERE relname IN ?}, table_names
       ).all.map { |r| 
         [r[:table_name], {
-          size: r[:total_relation_size],
+          size: r[:total_relation_size].to_i / 2,
           rows: r[:reltuples]
         }]
       }

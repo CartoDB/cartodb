@@ -53,7 +53,7 @@ and code.
   - NodeJS 0.8.x
   - CartoDB-SQL-API
   - GEOS 3.3.4
-  - GDAL 1.9.0
+  - GDAL 1.10.x (Starting with CartoDB 2.2.0)
   - PostGIS 2.0.x
   - Mapnik 2.1.1
   - Windshaft-cartodb

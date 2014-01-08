@@ -102,21 +102,23 @@
           </div>
 
           <!-- USER EXTRAS -->
-          <div class="extras margin20">
-            <div class="row">
-              <div class="field field-1">
-                <label class="bottom-border">EXTRAS</label>
-                <div class="extra margin15">
-                  <div class="left">
-                    <span class="light">Allow geocoding</span>
-                  </div>
-                  <div class="right">
-                    <input type="checkbox" />
+          <% if false %>
+            <div class="extras margin20">
+              <div class="row">
+                <div class="field field-1">
+                  <label class="bottom-border">EXTRAS</label>
+                  <div class="extra margin15">
+                    <div class="left">
+                      <span class="light">Allow geocoding</span>
+                    </div>
+                    <div class="right">
+                      <input type="checkbox" />
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
+          <% end %>
 
         <% end -%>
       </div>
@@ -138,7 +140,7 @@
 
         <% if current_user.organization_owner -%>
           <div class="row">
-            <p>Or <a href="#/generate-pass" class="pass-generator">generate</a> a random password for this user</p>
+            <% if false %><p>Or <a href="#/generate-pass" class="pass-generator">generate</a> a random password for this user</p><% end %>
           </div>
           <div class="row">
             <p>Do you need more quota? <%= link_to 'Upgrade your account', upgrade_url %></p>

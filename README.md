@@ -57,7 +57,7 @@ and code.
   - PostGIS 2.0.x
   - Mapnik 2.1.1
   - Windshaft-cartodb
-  - Varnish 2.1+
+  - Varnish 2.1+ (WARNING: must be < 3.0!)
 
 # How do I install CartoDB? #
 

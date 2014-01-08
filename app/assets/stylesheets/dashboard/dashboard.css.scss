@@ -741,11 +741,14 @@
                 margin: 0 0 9px 0;
                 display:block;
                 width:100%;
+                position:relative;
+                z-index: 1;
 
                 &.options {
                   @include position(26px, 0, false, false);
                   display:block;
                   width:auto;
+                  z-index: 0;
                 }
 
                 h3 {
@@ -768,7 +771,7 @@
                     letter-spacing:-1px;
                     @include transform-style("linear");
                     @include transition-property("color");
-                    @include transition-duration(500ms);
+                    @include transition-duration(250ms);
                   }
 
                 } // h3

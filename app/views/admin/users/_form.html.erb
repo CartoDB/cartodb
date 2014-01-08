@@ -31,9 +31,9 @@
   <% if !@user.new? && current_user.organization_owner -%>
   <div class="content user-details">
     <ul>
-      <li>17 tables created</li>
-      <li>21 visualizations created</li>
-      <li>56.233 georeferenced rows</li>
+      <li><%= @user.tables.count %> tables created</li>
+      <li><%= @user.visualization_count %> visualizations created</li>
+      <li><%= @user.get_geocoding_calls %> georeferenced rows</li>
 
       <%#
         It needs to know the limits:
@@ -41,11 +41,19 @@
           · quota used => 75% && quota used < 95% -> danger
           · quota used => 95% -> boom
       -%>
-      <% user_type = "danger" %> 
+      <% used_percentage = @user.db_size_in_bytes / @user.quota_in_bytes.to_f -%>
+      <% user_type = case used_percentage
+      when 0..0.7
+        'ok'
+      when 0.7..0.9
+        'danger'
+      else
+        'boom'
+      end -%> 
 
-      <li><strong class="<%= user_type %>">76%</strong> of user quota used</li>
-      <li>45.921 map views this month</li>
-      <li>Last access: 21 days ago</li>
+      <li><strong class="<%= user_type %>"><%= number_to_percentage used_percentage, precision: 2 %></strong> of user quota used</li>
+      <li><%= @user.get_api_calls(from: @user.last_billing_cycle, to: Date.today).sum %> map views this month</li>
+      <li>Last access: <%= "#{distance_of_time_in_words_to_now(@user.get_last_active_time)} ago" rescue "--" %></li>
     </ul>
   </div>
   <% end %>

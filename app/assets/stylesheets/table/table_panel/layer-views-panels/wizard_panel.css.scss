@@ -273,6 +273,9 @@
               margin:0;
               display:none;
             }
+
+            // Removed left space for first combo
+            &:first-child { margin-left:0!important }
           }
 
           // Text between fields like " - to - "

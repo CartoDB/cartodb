@@ -1,6 +1,6 @@
-// cartodb.js version: 3.5.04-dev
+// cartodb.js version: 3.5.05-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: 13c59eba69d617852eb8362582a16490ba5f49cf
+// sha: 7f70fadf4f27c3e422a89919fe012eb3c94635cb
 (function() {
   var root = this;
 
@@ -20429,7 +20429,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.5.04-dev';
+    cdb.VERSION = '3.5.05-dev';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -32377,7 +32377,9 @@ function PointView(geometryModel) {
       icon: {
           url: '/assets/layout/default_marker.png',
           anchor: {x: 10, y: 10}
-      }
+      },
+      raiseOnDrag: false,
+      crossOnDrag: false
     }
   );
 

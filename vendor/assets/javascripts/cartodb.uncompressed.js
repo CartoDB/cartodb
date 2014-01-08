@@ -1,6 +1,6 @@
 // cartodb.js version: 3.5.05-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: 7f70fadf4f27c3e422a89919fe012eb3c94635cb
+// sha: 39353bcbe7945a70ea1a6eaeaf08790919f438b4
 (function() {
   var root = this;
 
@@ -21545,17 +21545,6 @@ cdb.geo.MapLayer = cdb.core.Model.extend({
     return false; // different type
   },
 
-  /**
-   * Updates the style chaging the table name for a new one
-   * @param  {String} previousName
-   * @param  {String} newName
-   */
-  updateCartoCss: function(previousName, newName) {
-    var tileStyle = this.get('tile_style');
-    var replaceRegexp = new RegExp('#'+previousName, 'g');
-    tileStyle = tileStyle.replace(replaceRegexp, '#'+newName);
-    this.save({'tile_style': tileStyle});
-  }
 
 });
 

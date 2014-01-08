@@ -57,7 +57,8 @@ and code.
   - PostGIS 2.0.x
   - Mapnik 2.1.1
   - Windshaft-cartodb
-  - Varnish 2.1+
+  - Varnish 2.1+ (WARNING: must be < 3.0!)
+  - ImageMagick 6.6.9+ (for the testsuite)
 
 # How do I install CartoDB? #
 
@@ -80,7 +81,7 @@ Group](https://groups.google.com/forum/#!forum/cartodb)
 If you want to give it a try, download CartoDB by cloning this repository:
 
 ```bash
-$ git clone --recursive https://github.com/CartoDB/cartodb20.git
+$ git clone --recursive https://github.com/CartoDB/cartodb.git
 ```
 
 Or you can just [download the CartoDB zip
@@ -205,9 +206,14 @@ psql -d template_postgis -c "GRANT ALL ON spatial_ref_sys TO PUBLIC;"
 
 ## Install Ruby ##
 We implemented CartoDB in the [Ruby](http://ruby-lang.org) programming language,
-so you'll need to install Ruby 1.9.2.
+so you'll need to install Ruby 1.9.2. You can use rvm:
 
-    
+```bash
+\curl -L https://get.rvm.io | bash
+source /etc/profile.d/rvm.sh
+rvm install 1.9.2
+```
+
 ## Install Node.js ##
 The tiler API and the SQL API are both [Node.js](http://nodejs.org) apps.
 
@@ -242,8 +248,8 @@ sudo apt-get install varnish
 ```
 
 ## Install Mapnik ##
-[Mapnik](http://mapnik.org) is an API for creating beautiful maps. CartoDB uses Mapnik 2.0
-for creating and styling map tiles.
+[Mapnik](http://mapnik.org) is an API for creating beautiful maps.
+CartoDB uses Mapnik for creating and styling map tiles. 
 
 ```bash
 sudo apt-get install libmapnik-dev python-mapnik mapnik-utils
@@ -280,6 +286,12 @@ To run Windshaft-cartodb in development mode, simply type:
 
 ```bash
 node app.js development
+```
+
+## Install ImageMagick ##
+
+```bash
+sudo apt-get install imagemagick
 ```
 
 ## Install local instance of cold beer ##

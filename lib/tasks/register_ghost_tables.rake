@@ -25,13 +25,21 @@ namespace :cartodb do
           ghost_tables = table_names_in_database - table_names_in_metadata
 
           ghost_tables.map { |name|
-            @table_name = name
-            table = Table.new
-            table.user_id = user.id
-            table.migrate_existing_table = @table_name
-            table.save
-            puts "------ #{table.name} registered for user #{user.username}"
+            puts "***** Registering #{name}"
+            @errors = 0
+            begin
+              @table_name = name
+              table = Table.new
+              table.user_id = user.id
+              table.migrate_existing_table = @table_name
+              table.save
+              puts "------ #{table.name} registered for user #{user.username}"
+            rescue
+              puts "------ Error registering #{table.name} for user #{user.username}"
+              @errors = @errors + 1
+            end
           }
+          raise "------ Couldn't register #{@errors} tables" if @errors > 0
           printf "OK %-#{20}s (%-#{4}s/%-#{4}s)\n", user.username, index, count
         rescue => exception
           printf "FAIL %-#{20}s (%-#{4}s/%-#{4}s) #{exception.message}\n", user.username, index, count

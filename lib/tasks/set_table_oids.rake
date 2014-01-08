@@ -12,11 +12,10 @@ namespace :cartodb do
               SELECT table_name AS name, table_name::regclass::oid AS oid
               FROM information_schema.tables
               WHERE table_type  = 'BASE TABLE'
-              AND table_catalog = 'cartodb_dev_user_1_db'
+              AND table_catalog = 'cartodb_#{ENV['RAILS_ENV']}_user_#{user.id}_db'
               AND table_schema  = 'public';
             )).all.map { |row| [row.fetch(:name), row.fetch(:oid)] }
           ]
-          puts entries_in_database.inspect
           entries_in_metadata = Hash[
             Table.fetch(%Q(
               SELECT name, table_id
@@ -24,7 +23,6 @@ namespace :cartodb do
               WHERE user_id = #{user.id}
             )).map { |table| [table.name, table.table_id] }
           ]
-          puts entries_in_metadata.inspect
           entries_in_metadata
             .select { |name, oid| entries_in_database[name] != oid }
             .each { |name_in_metadata, oid_in_metadata|

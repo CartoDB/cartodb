@@ -287,11 +287,18 @@ cdb.vis.Overlay.register('search', function(data, vis) {
 // tooltip
 cdb.vis.Overlay.register('tooltip', function(data, vis) {
   var layer;
-  var layers = vis.getLayers();
-  if(layers.length > 1) {
-    layer = layers[1];
+  if (!data.layer) {
+    var layers = vis.getLayers();
+    if(layers.length > 1) {
+      layer = layers[1];
+    }
+    data.layer = layer;
   }
-  data.layer = layer;
+
+  if(!data.layer) {
+    throw new Error("layer is null");
+  }
+  data.layer.setInteraction(true);
   var tooltip = new cdb.geo.ui.Tooltip(data);
   return tooltip;
 
@@ -300,10 +307,16 @@ cdb.vis.Overlay.register('tooltip', function(data, vis) {
 cdb.vis.Overlay.register('infobox', function(data, vis) {
   var layer;
   var layers = vis.getLayers();
-  if(layers.length > 1) {
-    layer = layers[1];
+  if (!data.layer) {
+    if(layers.length > 1) {
+      layer = layers[1];
+    }
+    data.layer = layer;
   }
-  data.layer = layer;
+  if(!data.layer) {
+    throw new Error("layer is null");
+  }
+  data.layer.setInteraction(true);
   var infobox = new cdb.geo.ui.InfoBox(data);
   return infobox;
 

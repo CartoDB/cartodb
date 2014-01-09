@@ -26,7 +26,7 @@ module CartoDB
           created_at:       visualization.created_at,
           updated_at:       visualization.updated_at
         }
-        poro.merge!(table: table_data_for(table))
+        poro.merge!(table: table_data_for(table, visualization))
         poro.merge!(synchronization: synchronization)
         poro.merge!(related) if options.fetch(:related, true)
         poro
@@ -41,11 +41,11 @@ module CartoDB
         { related_tables:   related_tables }
       end #related
 
-      def table_data_for(table=nil)
+      def table_data_for(table=nil, visualization)
         return {} unless table
         table_data = {
           id:           table.id,
-          name:         table.name
+          name:         visualization.name
         }
 
         table_data.merge!(

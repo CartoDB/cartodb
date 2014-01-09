@@ -685,7 +685,7 @@
             padding: 0 30px;
 
             @include opacity(1);
-            @include simple-transition(background, 80ms);
+            @include simple-transition(background, 10ms);
 
             &.disabled {
               @include simple-transition(opacity, 100ms);
@@ -695,6 +695,17 @@
               &:hover {
                 background-color: #e1e1e1;
                 opacity:0.4;
+
+                .table_info hgroup.shadow:after {
+                  background: -moz-linear-gradient(left, rgba(225,225,225,1) 0%, rgba(225,225,225,1) 45%, rgba(225,225,225,0.05) 95%, rgba(225,225,225,0.02) 98%, rgba(225,225,225,0.01) 99%, rgba(225,225,225,0) 100%); // [> FF3.6+ <]
+                  background: -webkit-gradient(linear, left top, right top, color-stop(0%,rgba(225,225,225,1)), color-stop(45%,rgba(225,225,225,1)), color-stop(95%,rgba(225,225,225,0.05)), color-stop(98%,rgba(225,225,225,0.02)), color-stop(99%,rgba(225,225,225,0.01)), color-stop(100%,rgba(225,225,225,0))); // [> Chrome,Safari4+ <]
+                  background: -webkit-linear-gradient(left, rgba(225,225,225,1) 0%,rgba(225,225,225,1) 45%,rgba(225,225,225,0.05) 95%,rgba(225,225,225,0.02) 98%,rgba(225,225,225,0.01) 99%,rgba(225,225,225,0) 100%); // [> Chrome10+,Safari5.1+ <]
+                  background: -o-linear-gradient(left, rgba(225,225,225,1) 0%,rgba(225,225,225,1) 45%,rgba(225,225,225,0.05) 95%,rgba(225,225,225,0.02) 98%,rgba(225,225,225,0.01) 99%,rgba(225,225,225,0) 100%); // [> Opera 11.10+ <]
+                  background: -ms-linear-gradient(left, rgba(225,225,225,1) 0%,rgba(225,225,225,1) 45%,rgba(225,225,225,0.05) 95%,rgba(225,225,225,0.02) 98%,rgba(225,225,225,0.01) 99%,rgba(225,225,225,0) 100%); // [> IE10+ <]
+                  background: linear-gradient(to right, rgba(225,225,225,1) 0%,rgba(225,225,225,1) 45%,rgba(225,225,225,0.05) 95%,rgba(225,225,225,0.02) 98%,rgba(225,225,225,0.01) 99%,rgba(225,225,225,0) 100%); // [> W3C <]
+                }
+
+
               }
             } // li.disabled
 
@@ -741,11 +752,33 @@
                 margin: 0 0 9px 0;
                 display:block;
                 width:100%;
+                position:relative;
+                z-index: 1;
+                @include inline-block();
+                width: auto;
+
+                  &.shadow:after {
+                    content: "";
+                    position:absolute;
+                    top: 0;
+                    right:-100px;
+                    width: 200px;
+                    height: 25px;
+                    z-index: -5;
+
+                    background: -moz-linear-gradient(left, rgba(255,255,255,1) 0%, rgba(255,255,255,1) 45%, rgba(255,255,255,0.05) 95%, rgba(255,255,255,0.02) 98%, rgba(255,255,255,0.01) 99%, rgba(255,255,255,0) 100%); // [> FF3.6+ <]
+                    background: -webkit-gradient(linear, left top, right top, color-stop(0%,rgba(255,255,255,1)), color-stop(45%,rgba(255,255,255,1)), color-stop(95%,rgba(255,255,255,0.05)), color-stop(98%,rgba(255,255,255,0.02)), color-stop(99%,rgba(255,255,255,0.01)), color-stop(100%,rgba(255,255,255,0))); // [> Chrome,Safari4+ <]
+                    background: -webkit-linear-gradient(left, rgba(255,255,255,1) 0%,rgba(255,255,255,1) 45%,rgba(255,255,255,0.05) 95%,rgba(255,255,255,0.02) 98%,rgba(255,255,255,0.01) 99%,rgba(255,255,255,0) 100%); // [> Chrome10+,Safari5.1+ <]
+                    background: -o-linear-gradient(left, rgba(255,255,255,1) 0%,rgba(255,255,255,1) 45%,rgba(255,255,255,0.05) 95%,rgba(255,255,255,0.02) 98%,rgba(255,255,255,0.01) 99%,rgba(255,255,255,0) 100%); // [> Opera 11.10+ <]
+                    background: -ms-linear-gradient(left, rgba(255,255,255,1) 0%,rgba(255,255,255,1) 45%,rgba(255,255,255,0.05) 95%,rgba(255,255,255,0.02) 98%,rgba(255,255,255,0.01) 99%,rgba(255,255,255,0) 100%); // [> IE10+ <]
+                    background: linear-gradient(to right, rgba(255,255,255,1) 0%,rgba(255,255,255,1) 45%,rgba(255,255,255,0.05) 95%,rgba(255,255,255,0.02) 98%,rgba(255,255,255,0.01) 99%,rgba(255,255,255,0) 100%); // [> W3C <]
+                  }
 
                 &.options {
-                  @include position(26px, 0, false, false);
+                  @include position(24px, 0, false, false);
                   display:block;
                   width:auto;
+                  z-index: 0;
                 }
 
                 h3 {
@@ -768,7 +801,7 @@
                     letter-spacing:-1px;
                     @include transform-style("linear");
                     @include transition-property("color");
-                    @include transition-duration(500ms);
+                    @include transition-duration(250ms);
                   }
 
                 } // h3

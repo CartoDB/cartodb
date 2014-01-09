@@ -313,6 +313,7 @@ class User < Sequel::Model
   end
 
   def orphaned_table_objects
+    table_ids = self.table_ids
     Table.where(user_id: id).reject { |table|
       table_ids.include?(table.table_id)
     }

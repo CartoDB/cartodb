@@ -67,7 +67,7 @@ module CartoDB
 
       def related_tables
         without_associated_table(visualization.related_tables)
-          .map { |table| table_data_for(table) }
+          .map { |table| table_data_for(table, visualization) }
       end #related_tables
 
       def without_associated_table(tables)

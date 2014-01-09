@@ -23,7 +23,8 @@ class Api::Json::VisualizationsController < Api::ApplicationController
                        )
     map_ids          = collection.map(&:map_id).to_a
     tables           = tables_by_map_id(map_ids)
-    table_names      = tables.values.map { |t| t.name }
+    table_oids       = tables.values.map(&:table_id)
+    table_names      = table_names_from_oids(oids)
     synchronizations = synchronizations_by_table_name(table_names)
     rows_and_sizes   = rows_and_sizes_for(table_names)
 
@@ -227,6 +228,11 @@ class Api::Json::VisualizationsController < Api::ApplicationController
         }]
       }
     ]
+  end
+
+  def table_names_from_oids(oids)
+    query = %Q(SELECT relname FROM pg_class WHERE oid IN)
+    in_database.fetch(query, oids).map(:oid)
   end
 end # Api::Json::VisualizationsController
 

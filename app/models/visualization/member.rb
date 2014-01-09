@@ -154,6 +154,10 @@ module CartoDB
         CartoDB::Varnish.new.purge("obj.http.X-Cache-Channel ~ .*#{id}:vizjson")
       end #invalidate_varnish_cache
 
+      def privacy_text
+        self.private? ? 'PRIVATE' : 'PUBLIC'
+      end
+
       private
 
       attr_reader   :repository, :name_checker, :validator

@@ -9,7 +9,6 @@ class Api::Json::TablesController < Api::ApplicationController
 
   before_filter :load_table, except: [:index, :create, :vizzjson]
   before_filter :set_start_time
-  before_filter :link_ghost_tables, only: [:index, :show]
 
   def index
     @tables = Table.where(:user_id => current_user.id).order(:id.desc)

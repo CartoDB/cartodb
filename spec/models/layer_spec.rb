@@ -8,6 +8,10 @@ describe Layer do
     @user = create_user(:quota_in_bytes => @quota_in_bytes, :table_quota => @table_quota)
   end
 
+  after(:all) do
+    @user.destroy
+  end
+
   before(:each) do
     delete_user_data @user
     @table = Table.new
@@ -276,6 +280,7 @@ describe Layer do
       derived.layers(:cartodb).first.uses_private_tables?.should be_true
       @table.privacy = 1
       @table.save
+      @user.reload
 
       derived.layers(:cartodb).first.uses_private_tables?.should be_false
     end

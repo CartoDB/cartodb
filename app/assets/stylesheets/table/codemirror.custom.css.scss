@@ -61,9 +61,9 @@
 .CodeMirror-hints {
   position:absolute;
   display:block;
-  width:108px;
+  width:150px;
   top:-10px;
-  max-width:140px;
+  max-width:180px;
   height:auto;
   max-height:120px;
   padding:0;
@@ -76,33 +76,51 @@
   z-index:20;
 
   .CodeMirror-hint {
+    position:relative;
     display:block;
     border-top:1px solid rgba(#CCCCCC,0.35);
     display:block;
     line-height:35px;
     padding:0 10px;
-    margin:0;
-    font-size:13px;
-    text-overflow:ellipsis;
-    overflow:hidden;
-    white-space:nowrap;
     font-family:$text-fonts;
     color:#2483B4;
+    margin:0;
 
-    &:first-child {border-top:0; @include border-top-radius(3px)}
-    &:last-child {@include border-bottom-radius(3px)}
+    &:first-child {border-top:0; @include border-top-radius(2px)}
+    &:last-child {@include border-bottom-radius(2px)}
 
-    &:hover {
-      background:#F7F7F7;
-      color:#333333;
-      cursor:pointer;
+    span.value, span.text {
+      display:block;
+      font-size:13px;
+      text-overflow:ellipsis;
+      overflow:hidden;
+      white-space:nowrap;
+    }
+
+    span.value {
+      width:85%;
+    }
+
+    span.type {
+      position:absolute;
+      top:8px; right:8px;
+      width:20px;
+      background:#CCCCCC;
+      @include border-radius(2px);
+      font-size:11px;
+      font-weight:bold;
+      color:white;
+      text-transform:uppercase;
+      text-align:center;
+      line-height:19px;
+      z-index:1;
     }
   }
 
   .CodeMirror-hint-active {
-    color:#333333;
+    color:#fff;
     text-decoration:none;
-    background:none;
+    background:#397DBA;
   }
 }
 

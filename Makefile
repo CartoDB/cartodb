@@ -1,7 +1,16 @@
+PENDING_SPECS = \
+  spec/lib/varnish_spec.rb (#321) \
+  $(NULL)
+
 WORKING_SPECS = \
-  spec/lib \
+  spec/lib/failed_imports_spec.rb \
+  spec/lib/sql_parser_spec.rb \
+  spec/lib/sql_test_spec.rb \
+  spec/lib/string_spec.rb \
+  spec/lib/metrics_spec.rb \
   spec/models/layer_spec.rb \
   spec/models/tag_spec.rb \
+  spec/models/map_spec.rb \
   $(NULL)
 
 CDB_PATH=lib/assets/javascripts/cdb

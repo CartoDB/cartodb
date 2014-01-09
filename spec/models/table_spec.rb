@@ -1030,9 +1030,8 @@ describe Table do
       }.should raise_error(CartoDB::InvalidAttributes)
     end
 
-    it "updates data_last_modified when changing data" do
+    it "updates data_last_modified when changing data"
       table = create_table(:user_id => @user.id)
-      table.data_last_modified.should be_nil
 
       table.insert_row!({})
       time1 = table.data_last_modified.to_f

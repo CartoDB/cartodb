@@ -21,4 +21,11 @@
     @include inline-block();
     width:100%;
     height:100%;
+
+    // Position of the help tip
+    .help-tip {
+      top: auto;
+      a.close {right:22px}
+      &:before {display:none}
+    }
   }

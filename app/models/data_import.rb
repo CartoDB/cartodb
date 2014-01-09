@@ -218,7 +218,9 @@ class DataImport < Sequel::Model
     self.results.push CartoDB::Importer2::Result.new(success: true, error: nil)
   rescue Sequel::DatabaseError => exception
     if exception.to_s =~ MERGE_WITH_UNMATCHING_COLUMN_TYPES_RE
-      set_merge_type_mismatch 
+      set_merge_error(8004)
+    else
+      set_merge_error(8003)
     end
     false
   rescue => exception
@@ -270,7 +272,7 @@ class DataImport < Sequel::Model
         password: current_user.database_password,
         database: current_user.database_name,
         host:     current_user.database_host
-      )
+      ) {|key, o, n| n.nil? || n.empty? ? o : n}
   end #pg_options
 
   def appender
@@ -375,10 +377,11 @@ class DataImport < Sequel::Model
     payload
   end
 
-  def set_merge_type_mismatch
-    self.results =
-      [CartoDB::Importer2::Result.new(success: false, error_code: 8004)]
-    self.error_code = 8004
+  def set_merge_error(error_code)
+    self.results = [CartoDB::Importer2::Result.new(
+      success: false, error_code: error_code
+    )]
+    self.error_code = error_code
     self.state = 'failure'
   end 
 

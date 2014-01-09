@@ -18,9 +18,9 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   before_filter :link_ghost_tables, only: [:index, :show]
 
   def index
-    collection       = Visualization::Collection.new.fetch(
-                         params.dup.merge(scope_for(current_user))
-                       )
+    filter = { 'per_page' => 20}
+      .merge(params.dup.merge(scope_for(current_user)))
+    collection       = Visualization::Collection.new.fetch(filter)
     map_ids          = collection.map(&:map_id).to_a
     tables           = tables_by_map_id(map_ids)
     table_oids       = tables.values.map(&:table_id)

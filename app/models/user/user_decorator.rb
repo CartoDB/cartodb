@@ -30,7 +30,7 @@ module CartoDB
         billing_period: self.last_billing_cycle,
         max_layers: self.max_layers,
         api_key: self.api_key,
-        layers: self.layers.map(&:public_values),
+        #layers: self.layers.map(&:public_values),
         trial_ends_at: self.trial_ends_at,
         upgraded_at: self.upgraded_at,
         show_trial_reminder: self.trial_ends_at.present?,

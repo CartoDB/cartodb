@@ -57,8 +57,6 @@ module CartoDB
         insert(existing_table_name, new_table_name, sanitized_columns.keys)
 
         cartodbfy(existing_table_name)
-        existing_table.send :invalidate_varnish_cache
-        update_cdb_tablemetadata(existing_table.table_id)
         drop([result])
         self
       rescue => exception
@@ -66,17 +64,38 @@ module CartoDB
       end
 
       def cartodbfy(table_name)
-        database.run(%Q(SELECT CDB_CartodbfyTable('#{oid_from(table_name)}')))
+        puts existing_table.inspect
+        table = existing_table
+        table.table_id = oid_from(table_name)
+        table.migrate_existing_table = table_name
+        table.save
+        table.force_schema = true
+        table.send :update_updated_at
+        table.schema(reload: true)
+        table.import_cleanup
+        table.schema(reload: true)
+        table.reload
+        # Set default triggers
+        table.send :set_the_geom_column!
+        table.send :update_table_pg_stats
+        table.send :set_trigger_update_updated_at
+        table.send :set_trigger_check_quota
+        table.send :set_trigger_track_updates
+        table.save
+        table.send(:invalidate_varnish_cache)
+        update_cdb_tablemetadata(table.table_id)
+        database.run("UPDATE #{table_name} SET updated_at = NOW() WHERE cartodb_id IN (SELECT MAX(cartodb_id) from #{table_name})")
       rescue => exception
-        stacktrace = exception.to_s + exception.backtrace.join("\n")
+        stacktrace = exception.to_s + exception.backtrace.join
+        puts stacktrace
         Rollbar.report_message("Sync cartodbfy error", "error", error_info: stacktrace)
-        raise
+        table.send(:invalidate_varnish_cache)
       end
 
       def update_cdb_tablemetadata(table_id)
         user.in_database(as: :superuser).run(%Q{
           INSERT INTO cdb_tablemetadata (tabname, updated_at)
-          VALUES (#{table_id}, NOW())
+          VALUES ('#{table_id}', NOW())
         })
       rescue Sequel::DatabaseError => exception
         user.in_database(as: :superuser).run(%Q{

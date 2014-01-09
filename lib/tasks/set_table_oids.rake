@@ -7,15 +7,29 @@ namespace :cartodb do
       User.all.each_with_index do |user, index|
         puts "Setting table oids for #{user.username}"
         begin
-          entries_in_database = Hash[
-            user.in_database.fetch(%Q(
-              SELECT table_name AS name, table_name::regclass::oid AS oid
-              FROM information_schema.tables
-              WHERE table_type  = 'BASE TABLE'
-              AND table_catalog = 'cartodb_#{ENV['RAILS_ENV']}_user_#{user.id}_db'
-              AND table_schema  = 'public';
-            )).all.map { |row| [row.fetch(:name), row.fetch(:oid)] }
-          ]
+          if %w(development staging).include?(ENV['RAILS_ENV'])
+            entries_in_database = Hash[
+              user.in_database.fetch(%Q(
+                SELECT table_name AS name, table_name::regclass::oid AS oid
+                FROM information_schema.tables
+                WHERE table_type  = 'BASE TABLE'
+                AND table_catalog = 'cartodb_#{ENV['RAILS_ENV']}_user_#{user.id}_db'
+                AND table_schema  = 'public';
+              )).all.map { |row| [row.fetch(:name), row.fetch(:oid)] }
+            ]
+          else
+            entries_in_database = Hash[
+              user.in_database.fetch(%Q(
+                SELECT table_name AS name, table_name::regclass::oid AS oid
+                FROM information_schema.tables
+                WHERE table_type  = 'BASE TABLE'
+                AND table_catalog = 'cartodb_user_#{user.id}_db'
+                AND table_schema  = 'public';
+              )).all.map { |row| [row.fetch(:name), row.fetch(:oid)] }
+            ]
+          end
+
+          raise "No tables found!!!!" if entries_in_database.empty?
           entries_in_metadata = Hash[
             Table.fetch(%Q(
               SELECT name, table_id

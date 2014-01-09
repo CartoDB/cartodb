@@ -1,11 +1,10 @@
 <% content_for(:page_title) do %>
-  Api key |
+  Your apps |
 <% end %>
 <%= content_for(:js) do %>
   <%= javascript_include_tag :cdb, :application, :keys %>
   <script type="text/javascript">
     var username = "<%= current_user.username %>"
-      , type = "key"
       , config = <%=raw frontend_config.html_safe %>
       , user_data = <%= raw current_user.data.to_json.html_safe %>;
   </script>
@@ -14,47 +13,123 @@
   <%= stylesheet_link_tag :common, :keys, :media => 'all' %>
 <% end %>
 
-
 <article>
   <div class="inner">
-    <section class="left block long">
+    <section class="block">
       <div class="head">
         <h3>Your Api key</h3>
-        <nav>
-          <%= link_to "API KEY", "/your_apps/api_key", :class => "strong smaller uppercase selected" %>
-          <%= link_to "OAUTH", "/your_apps/oauth", :class => "strong smaller uppercase" %>
-        </nav>
+        <p class="margin10 light">This offers the simplest way to access you private data or perform writes and updates to your account.</p>
       </div>
+      <ul><%= render :partial => 'shared/flash_message' %></ul>
       <div class="content">
         <ul>
-          <%= render :partial => 'shared/flash_message' %>
           <li>
-            <div class="copy">
-              <label class="uppercase smaller strong lighter">YOUR API KEY</label>
-              <input class="margin5" type="text" value="<%= current_user.api_key || "No api key" %>" />
-              <a class="tooltip copy" href="#copy" title="Copy this">copy</a>
-            </div>
-          </li>
-          <li class="dark">
-            <div class="list">
-              <label class="dark strong small">Example write:</label>
-              <p class="small margin5">http://<%= current_user.username %>.cartodb.com/api/v2/sql?q=INSERT INTO table_name (the_geom, observation) VALUES (ST_GeomFromText(’POINT(-71.2 42.5)’, 4326),'rare bird spotted')&api_key=<%= current_user.api_key %></p>
-            </div>
-            <div class="list margin15">
-              <label class="dark strong small">Example private table read:</label>
-              <p class="small margin5">http://<%= current_user.username %>.cartodb.com/api/v2/sql?q=SELECT * FROM private_table&api_key=<%= current_user.api_key %></p>
-            </div>
+            <form>
+              <div class="column left-column">
+                
+                <div class="row">
+                  <div class="field copy field-1">
+                    <label>YOUR API KEY</label>
+                    <input type="text" readonly value="<%= current_user.api_key || "No api key" %>" />
+                    <a class="tooltip copy" href="#/copy" title="Copy this">copy</a>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="field field-1">
+                    <label><strong>Example write:</strong></label>
+                    <p class="small italic">http://<%= current_user.username %>.cartodb.com/api/v2/sql?q=INSERT INTO table_name (the_geom, observation) VALUES (ST_GeomFromText(’POINT(-71.2 42.5)’, 4326),'rare bird spotted')&api_key=<%= current_user.api_key %></p>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="field field-1">
+                    <label><strong>Example private table read:</strong></label>
+                    <p class="small italic">http://<%= current_user.username %>.cartodb.com/api/v2/sql?q=SELECT * FROM private_table&api_key=<%= current_user.api_key %></p>
+                  </div>
+                </div>
+
+              </div>
+              <div class="coloumn right-column">
+                <div class="row">
+                  <p>Learn more about <%= link_to "using your simple app key", Cartodb.config[:developers_host] + "/documentation/apis-overview.html" %> in CartoDB</p>
+                </div>
+              </div>
+            </form>    
           </li>
         </ul>
       </div>
       <div class="foot">
         <%= form_tag(regenerate_api_key_url, :method => "POST", :id => 'regenerate_api_key') do %>
-          <%= link_to "Request a new key", "#request_new_key", :class => "right underline red regenerate" %>
+          <%= link_to "Request a new api key", "#/request-api-key", :class => "right underline red regenerate", :data => { :type => "keys" } %>
         <% end %>
       </div>
     </section>
-    <aside class="right">
-      <%= render :partial => 'create_first' %>
-    </aside>
+  </div>
+</article>
+
+<article>
+  <div class="inner">
+    <section class="block">
+      <div class="head">
+        <h3>Your OAuth credentials</h3>
+        <p class="margin10 light">OAuth is an authentication protocol that allows users to approve application to act on their behalf without sharing their password.</p>
+      </div>
+      <div class="content">
+        <ul>
+          <li>
+            <form>
+              <div class="column left-column">
+                
+                <div class="row">
+                  <div class="field copy field-1 copy">
+                    <label>CONSUMER KEY</label>
+                    <input type="text" value="<%= current_user.client_application.key %>" readonly />
+                    <a class="tooltip copy" href="#/copy" title="Copy this">copy</a>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="field field-1 copy">
+                    <label class="uppercase smaller strong lighter">CONSUMER SECRET</label>
+                    <input type="text" value="<%= current_user.client_application.secret %>" readonly />
+                    <a class="copy tooltip" href="#/copy" title="Copy this">copy</a>
+                  </div>
+                </div>
+
+                <span class="separate"></span>
+
+                <div class="row">
+                  <div class="field field-1 copy">
+                    <label>REQUEST TOKEN URL</label>
+                    <input type="text" value="https://<%= current_user.username %>.cartodb.com/oauth/request_token" readonly />
+                    <a class="copy tooltip" href="#/copy" title="Copy this">copy</a>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="field field-1 copy">
+                    <label>ACCESS TOKEN URLL</label>
+                    <input type="text" value="https://<%= current_user.username %>.cartodb.com/oauth/access_token" readonly />
+                    <a class="copy tooltip" href="#/copy" title="Copy this">copy</a>
+                  </div>
+                </div>
+
+              </div>
+              <div class="coloumn right-column">
+                <div class="row">
+                  <p>Learn more about <%= link_to "using oauth in CartoDB", Cartodb.config[:developers_host] + "/documentation/sql-api.html#authentication" %> in CartoDB</p>
+                </div>
+              </div>
+            </form>
+          </li>
+        </ul>
+      </div>
+      <div class="foot">
+        <%= form_tag(oauth_credentials_url, :method => "DELETE", :id => 'regenerate_oauth_keys') do %>
+          <%= link_to "Request new oauth keys", "#/request-new-keys", :class => "right underline red regenerate", :data => { :type => "oauth" } %>
+        <% end %>
+      </div>
+    </section>
   </div>
 </article>

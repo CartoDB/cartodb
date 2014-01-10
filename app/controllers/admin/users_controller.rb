@@ -57,7 +57,7 @@ class Admin::UsersController < ApplicationController
   def copy_account_features(from, to)
     to.set_fields(from, [
       :private_tables_enabled, :sync_tables_enabled, :max_layers, :user_timeout,
-      :database_timeout, :geocoding_quota, :map_view_quota, :table_quota, :database_host
+      :database_timeout, :geocoding_quota, :map_view_quota, :table_quota, :database_host,
       :period_end_date, :map_view_block_price, :geocoding_block_price, :account_type
     ])
     to.invite_token = User.make_token

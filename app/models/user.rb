@@ -635,10 +635,8 @@ class User < Sequel::Model
   end
 
   def update_gauge(gauge, value)
-    begin
-      Statsd.gauge("#{metric_key}.#{gauge}", value)
-    rescue nil
-    end
+    Statsd.gauge("#{metric_key}.#{gauge}", value)
+  rescue
   end
 
   def update_visualization_metrics

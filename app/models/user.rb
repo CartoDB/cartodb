@@ -305,7 +305,11 @@ class User < Sequel::Model
         AND table_name NOT IN ('cdb_tablemetadata', 'spatial_ref_sys')
       )
     )
-    in_database[query].map(:oid)
+    @foo = in_database[query].map(:oid)
+    raise "FOOBAR\n"
+  rescue => exception
+    puts exception.to_s + exception.backtrace.join("\n")
+    @foo
   end
 
   def unregistered_oids
@@ -355,6 +359,7 @@ class User < Sequel::Model
     unregister_orphaned_metadata_records(table_ids)
     register_new_tables_in_database(table_ids)
   rescue => exception
+    Rails.logger.info(exception.to_s + exception.backtrace.join("\n")
     puts exception.to_s + exception.backtrace.join("\n")
   end
 

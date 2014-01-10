@@ -137,13 +137,15 @@
         </div>
         <div class="row">
           <p>
-            <% if current_user.organization_owner -%>
-              This user
-              <%= @user.new? ? "will enter" : "enters" %>
-            <% else %>
-              You enter
-            <% end %>
-            through <%= current_user.organization.name %>.cartodb.com</p>
+            <% unless @user.new? -%>
+              <% if current_user.organization_owner -%>
+                This user
+                <%= @user.new? ? "will enter" : "enters" %>
+              <% else %>
+                You enter
+              <% end %>
+              through <%= link_to "#{@user.username}#{Cartodb.config[:session_domain]}", "http://#{@user.username}#{Cartodb.config[:session_domain]}" %></p>
+            <% end -%>
         </div>
 
         <% if current_user.organization_owner -%>

@@ -9,8 +9,8 @@ class Admin::VisualizationsController < ApplicationController
   skip_before_filter :browser_is_html5_compliant?, only: [:embed_map, :track_embed]
 
   def index
-    @tables_count  = current_user.tables.count
-    @first_time    = !current_user.dashboard_viewed?
+    @tables_count   = Table.where(user_id: current_user.id).count
+    @first_time     = !current_user.dashboard_viewed?
     @just_logged_in = !!flash['logged']
     current_user.view_dashboard
     update_user_last_activity

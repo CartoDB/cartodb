@@ -958,19 +958,6 @@ L.Edit.Poly = L.Handler.extend({
 			marker.on('click', this._onMarkerClick, this);
 			this._markers.push(marker);
 		}
-        
-        var holes = this._poly._holes;
-        for(j = 0; j < holes.length; ++j) {
-          latlngs = holes[j];
-          for (i = 0, len = latlngs.length; i < len; i++) {
-              marker = this._createMarker(latlngs[i], i);
-              //marker.on('click', this._onMarkerClick, this);
-              this._markers.push(marker);
-          }
-        }
-
-        // update len with 
-        len = this._markers.length;
 
 		var markerLeft, markerRight;
 

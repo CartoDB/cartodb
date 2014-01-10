@@ -17,8 +17,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   skip_before_filter :api_authorization_required, only: [:vizjson1, :vizjson2]
 
   def index
-    filter = { 'per_page' => 20}
-      .merge(params.dup.merge(scope_for(current_user)))
+    filter           = params.dup.merge(scope_for(current_user))
     collection       = Visualization::Collection.new.fetch(filter)
     map_ids          = collection.map(&:map_id).to_a
     tables           = tables_by_map_id(map_ids)

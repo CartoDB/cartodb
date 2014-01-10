@@ -328,7 +328,7 @@ class User < Sequel::Model
   def register_new_tables_in_database(table_ids=nil)
     return self if over_table_quota?
     table_ids ||= self.table_ids
-    to_be_registerd = Hash[real_tables.map { |record| [record[:oid], record[:relname]] }]
+    to_be_registered = Hash[real_tables.map { |record| [record[:oid], record[:relname]] }]
       .select { |oid, name| unregistered_oids(table_ids).include?(oid) }
     Rails.logger.info(to_be_registered.inspect)
     to_be_registered.each { |oid, name| register_table(oid, name) }

@@ -313,7 +313,8 @@ class User < Sequel::Model
     @foo
   end
 
-  def unregistered_oids
+  def unregistered_oids(table_ids=nil)
+    table_ids ||= self.table_ids
     table_ids - Table.where(user_id: id).map(&:table_id)
   end
 
@@ -328,7 +329,7 @@ class User < Sequel::Model
     return self if over_table_quota?
     table_ids ||= self.table_ids
     Hash[real_tables.map { |record| [record[:oid], record[:relname]] }]
-      .select { |oid, name| unregistered_oids.include?(oid) }
+      .select { |oid, name| unregistered_oids(table_ids).include?(oid) }
       .each { |oid, name| register_table(oid, name) }
   end
 

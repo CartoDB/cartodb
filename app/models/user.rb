@@ -358,8 +358,8 @@ class User < Sequel::Model
 
   def sync_tables_metadata
     table_ids = self.table_ids 
-    unregister_orphaned_metadata_records(table_ids)
-    register_new_tables_in_database(table_ids)
+    #unregister_orphaned_metadata_records(table_ids)
+    #register_new_tables_in_database(table_ids)
   rescue => exception
     puts exception.to_s + exception.backtrace.join("\n")
   end

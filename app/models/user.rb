@@ -330,7 +330,7 @@ class User < Sequel::Model
     table_ids ||= self.table_ids
     to_be_registerd = Hash[real_tables.map { |record| [record[:oid], record[:relname]] }]
       .select { |oid, name| unregistered_oids(table_ids).include?(oid) }
-    Rails.logger.info(to_registered.inspect)
+    Rails.logger.info(to_be_registered.inspect)
     to_be_registered.each { |oid, name| register_table(oid, name) }
   end
 
@@ -348,7 +348,7 @@ class User < Sequel::Model
     table.map.recalculate_bounds!
     self
   rescue => exception
-    Rails.logger.info(exception.to_s + " -- " + table.name + "\n")
+    Rails.logger.info(exception.to_s + " -- " + table.inspect + "\n")
     puts exception.to_s + exception.backtrace.join("\n")
   end
 

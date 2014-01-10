@@ -16,6 +16,7 @@ class Admin::UsersController < ApplicationController
     @user = User.new
     @user.set_fields(params[:user], [:username, :email, :password, :quota_in_bytes])
     @user.organization = current_user.organization
+    @user.username = "#{@user.username}.#{current_user.organization.name}" unless @user.username =~ /\.#{current_user.organization.username}/
     copy_account_features(current_user, @user)
     @user.save(raise_on_failure: true)
     redirect_to organization_path, flash: { success: "New user created successfully" }
@@ -57,6 +58,7 @@ class Admin::UsersController < ApplicationController
     to.set_fields(from, [
       :private_tables_enabled, :sync_tables_enabled, :max_layers, :user_timeout,
       :database_timeout, :geocoding_quota, :map_view_quota, :table_quota, :database_host
+      :period_end_date, :map_view_block_price, :geocoding_block_price, :account_type
     ])
     to.invite_token = User.make_token
   end

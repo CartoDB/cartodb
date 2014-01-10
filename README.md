@@ -1,5 +1,8 @@
 # What is CartoDB? #
 
+[![Build Status](http://travis-ci.org/CartoDB/cartodb.png)]
+(http://travis-ci.org/CartoDB/cartodb)
+
 CartoDB is an open source tool that allows for the storage and
 visualization of geospatial data on the web.
 

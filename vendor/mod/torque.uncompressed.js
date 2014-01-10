@@ -3510,7 +3510,7 @@ L.CanvasLayer = L.Class.extend({
   },
 
   onRemove: function (map) {
-    map._container.removeChild(this._staticPane);
+    this._staticPane.removeChild(this._canvas);
     map.off({
         'viewreset': this._reset,
         'move': this._render,

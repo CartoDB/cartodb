@@ -741,7 +741,7 @@
               padding: 22px 0 33px 0;
               border-top:1px solid #EDEDED;
 
-              & > .left  { width:400px; }
+              & > .left  { clear:both; width:400px; }
               & > .right { width:420px; }
 
               & > .left  p {
@@ -756,6 +756,7 @@
                 z-index: 1;
                 @include inline-block();
                 width: auto;
+                float:left;
 
                   &.shadow:after {
                     content: "";

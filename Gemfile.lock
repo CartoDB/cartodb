@@ -1,8 +1,8 @@
 GIT
   remote: https://github.com/Vizzuality/sequel-rails.git
-  revision: 09ad75f865bfd488da5712ffacc62ba4503530ab
+  revision: f61f914b55ff1c3f31a47516f6ffb1fb9409d067
   specs:
-    vizzuality-sequel-rails (0.3.6)
+    vizzuality-sequel-rails (0.3.7)
       railties (~> 3.2.0)
       sequel (~> 3.28)
 
@@ -428,6 +428,6 @@ DEPENDENCIES
   uglifier (~> 1.3.0)
   uuidtools (= 2.1.3)
   virtus!
-  vizzuality-sequel-rails (= 0.3.6)!
+  vizzuality-sequel-rails (= 0.3.7)!
   webrick (= 1.3.1)
   yajl-ruby (= 1.1.0)

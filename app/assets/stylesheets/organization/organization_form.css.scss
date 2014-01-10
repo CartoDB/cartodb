@@ -1,0 +1,19 @@
+
+  /**
+   *  Styles for organization form
+   *
+   */
+
+  @import "../../elements/progress-bar";
+
+  .org-user-form {
+
+    @include progress-bar(41px, 3px, true, 5px);
+    div.progress-bar { margin-top:0px }
+
+    .bar-1:hover {
+      background:#C3D1DD!important;
+      cursor:pointer;
+    }
+
+  }

@@ -4,6 +4,7 @@ require_relative './user/user_decorator'
 class User < Sequel::Model
   include CartoDB::MiniSequel
   include CartoDB::UserDecorator
+  self.strict_param_setting = false
 
   one_to_one :client_application
   plugin :association_dependencies, :client_application => :destroy
@@ -12,17 +13,13 @@ class User < Sequel::Model
   one_to_many :assets
   one_to_many :data_imports
   one_to_many :geocodings, order: :created_at.desc
+  many_to_one :organization
 
   many_to_many :layers, :order => :order, :after_add => proc { |user, layer|
     layer.set_default_order(user)
   }
 
   # Sequel setup & plugins
-  set_allowed_columns :email, :map_enabled, :password_confirmation, 
-    :quota_in_bytes, :table_quota, :account_type, :private_tables_enabled, 
-    :period_end_date, :map_view_quota, :max_layers, :database_timeout, 
-    :user_timeout, :map_view_block_price, :geocoding_quota, :dashboard_viewed_at,
-    :sync_tables_enabled, :geocoding_block_price, :api_key, :notification
   plugin :validation_helpers
   plugin :json_serializer
   plugin :dirty
@@ -50,14 +47,15 @@ class User < Sequel::Model
   def validate
     super
     validates_presence :username
-    validates_format /^[a-z0-9\-]+$/, :username, :message => "must only contain lowercase letters, numbers & hyphens"
+    validates_unique   :username
+    validates_format /^[a-z0-9\-\.]+$/, :username, :message => "must only contain lowercase letters, numbers, dots & hyphens"
     validates_presence :email
     validates_unique   :email, :message => 'is already taken'
     validates_format EmailAddressValidator::Regexp::ADDR_SPEC, :email, :message => 'is not a valid address'
     validates_presence :password if new? && (crypted_password.blank? || salt.blank?)
-
-    if password.present? && ( password_confirmation.blank? || password != password_confirmation )
-      errors.add(:password, "doesn't match confirmation")
+    if organization.present?
+      errors.add(:organization, "not enough seats") if new? && organization.users.count >= organization.seats
+      errors.add(:quota_in_bytes, "not enough disk quota") if quota_in_bytes.to_i + organization.assigned_quota > organization.quota_in_bytes
     end
   end
 
@@ -82,6 +80,7 @@ class User < Sequel::Model
     save_metadata
     changes = (self.previous_changes.present? ? self.previous_changes.keys : [])
     set_statement_timeouts if changes.include?(:user_timeout) || changes.include?(:database_timeout)
+    rebuild_quota_trigger if changed_columns.include?(:quota_in_bytes)
   end
 
   def before_destroy

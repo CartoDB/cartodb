@@ -1,5 +1,9 @@
 module CartoDB
 
+  def self.extract_subdomain(request)
+    request.host.to_s.gsub(self.session_domain, '')
+  end
+
   def self.session_domain
     Cartodb.config[:session_domain]
   end
@@ -35,6 +39,21 @@ module CartoDB
   def self.account_path
     Cartodb.config[:account_path]
   end
+
+  # TODO move to separated file and activate in order
+  # to enable CartoDB plugins
+  # module Plugin
+  #   class << self
+  #     def register(plugin)
+  #       @registered_plugins ||= []
+  #       @registered_plugins << plugin
+  #     end
+      
+  #     def registered
+  #       @registered_plugins
+  #     end
+  #   end
+  # end
 
   module API
     VERSION_1 = "v1"

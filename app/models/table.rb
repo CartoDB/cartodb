@@ -1553,8 +1553,15 @@ SQL
     if @name_changed_from.present? && @name_changed_from != name
       # update metadata records
       reload
-      $tables_metadata.rename(Table.key(database_name,@name_changed_from), key)
-      owner.in_database.rename_table(@name_changed_from, name)
+      begin
+        $tables_metadata.rename(Table.key(database_name,@name_changed_from), key)
+      rescue
+      end
+      begin
+        owner.in_database.rename_table(@name_changed_from, name)
+      rescue
+        puts "Error attempting to rename table in DB: #{@name_changed_from} doesn't exist"
+      end
       propagate_name_change_to_table_visualization
 
       CartoDB::notify_exception(

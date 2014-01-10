@@ -16,7 +16,7 @@ class Admin::UsersController < ApplicationController
     @user = User.new
     @user.set_fields(params[:user], [:username, :email, :password, :quota_in_bytes])
     @user.organization = current_user.organization
-    @user.username = "#{@user.username}.#{current_user.organization.name}" unless @user.username =~ /\.#{current_user.organization.username}/
+    @user.username = "#{@user.username}.#{current_user.organization.name}" unless @user.username =~ /\.#{current_user.organization.name}/
     copy_account_features(current_user, @user)
     @user.save(raise_on_failure: true)
     redirect_to organization_path, flash: { success: "New user created successfully" }

@@ -11,7 +11,7 @@ before_install:
   - sudo apt-get install postgresql-9.3-postgis-2.1 postgresql-plpython-9.3 
   - sudo apt-get install postgis
   - sudo apt-get install -q unp zip ruby1.9.3 ruby1.9.1-dev python-pip ruby-rspec libicu-dev 
-  #- sudo su postgres -c "pg_createcluster 9.3 main --start"
+  - sudo apt-get install postgresql-contrib-9.3
   - echo -e "local\tall\tall\ttrust\nhost\tall\tall\t127.0.0.1/32\ttrust\nhost\tall\tall\t::1/128\ttrust" |sudo tee /etc/postgresql/9.3/main/pg_hba.conf
   - sudo service postgresql restart
   - sudo su postgres -c "createdb template_postgis"

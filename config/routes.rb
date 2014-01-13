@@ -43,6 +43,7 @@ CartoDB::Application.routes.draw do
 
     get '/tables/track_embed'       => 'visualizations#track_embed'
     get '/tables/embed_forbidden'   => 'visualizations#embed_forbidden'
+    get '/tables/embed_protected'   => 'visualizations#embed_protected'
     get '/tables/:id'               => 'visualizations#show'
     get '/tables/:id/map'           => 'visualizations#show'
     get '/tables/:id/table'         => 'visualizations#show'

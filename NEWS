@@ -1,6 +1,9 @@
-3.5.05 (XX//XX//XXXX)
+3.5.05 (14//01//2014)
 -----
 - Removed animation while dragging a marker under GMaps.
+- Added retina icons
+- Enable interactivity when tooltip is added fixed #92 #64
+- Fixed torque styles when zoom was used in cartocss
 
 3.5.04 (20//12//2013)
 -----

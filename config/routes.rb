@@ -14,6 +14,10 @@ CartoDB::Application.routes.draw do
   scope :module => "admin" do
     get '/dashboard/'                         => 'visualizations#index', :as => :dashboard
 
+    resource :organization, only: [:show] do
+      resources :users, only: [:edit, :update, :create, :destroy, :new], constraints: { id: /[0-z\.\-]+/ }
+    end
+
     # Tables
     get '/dashboard/tables'                         => 'visualizations#index'
     get '/dashboard/tables/:page'                   => 'visualizations#index'
@@ -60,15 +64,14 @@ CartoDB::Application.routes.draw do
     get '/viz/:id/public'           => 'visualizations#public'
     get '/viz/:id/embed_map'        => 'visualizations#embed_map'
 
-    match '/your_apps/oauth'   => 'client_applications#oauth',   :as => :oauth_credentials
-    match '/your_apps/api_key' => 'client_applications#api_key', :as => :api_key_credentials
+    match '/your_apps' => 'client_applications#api_key', :as => :api_key_credentials
     post  '/your_apps/api_key/regenerate' => 'client_applications#regenerate_api_key', :as => :regenerate_api_key
+    delete  '/your_apps/oauth'   => 'client_applications#oauth',   :as => :oauth_credentials
 
   end
 
+
   namespace :superadmin do
-    get '/' => 'users#index', :as => :users
-    post '/' => 'users#create', :as => :users
     resources :users
   end
 

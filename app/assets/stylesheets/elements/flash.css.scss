@@ -14,6 +14,10 @@
     background:rgba(#FA9494,0.15);
     border-bottom:1px solid rgba(#CCCCCC,0.5);
 
+    &.success {
+      background: rgba(green,0.1);
+    }
+
     a.close {
       position:absolute;
       right:40px;

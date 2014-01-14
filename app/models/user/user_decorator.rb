@@ -15,7 +15,7 @@ module CartoDB
         success_import_count: self.success_import_count,
         import_count: self.import_count,
         last_visualization_created_at: self.last_visualization_created_at,
-        byte_quota: self.quota_in_bytes,
+        quota_in_bytes: self.quota_in_bytes,
         remaining_table_quota: self.remaining_table_quota,
         remaining_byte_quota: self.remaining_quota.to_f,
         api_calls: calls,
@@ -44,6 +44,11 @@ module CartoDB
         },
         notification: self.notification
       }
+
+      data[:organization] = {
+        name:  self.organization.name,
+        owner: self.organization_owner
+      } if self.organization.present?
 
       if !options[:extended]
         data

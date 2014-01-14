@@ -9,7 +9,7 @@
 
 
 @import "../common/mixins";
-@import "../common/forms";
+@import "../common/form-elements";
 @import "../elements/elements-sprite";
 
 div.copy {
@@ -22,8 +22,8 @@ div.copy {
 
   input {
     display:block;
-    margin-top:5px;
-    padding:14px 50px 14px 14px;
+    padding-top:14px;
+    padding-bottom:14px;
     @include border-radius(3px);
     line-height:normal;
     border:1px solid #CCCCCC;

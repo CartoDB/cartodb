@@ -7,7 +7,6 @@ FactoryGirl.define do
     username               { String.random(5).downcase }
     email                  { String.random(5).downcase + '@' + String.random(5).downcase + '.com' }
     password               { email.split('@').first }
-    password_confirmation  { password }
     table_quota            5
     quota_in_bytes         5000000
 

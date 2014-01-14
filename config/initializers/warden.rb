@@ -17,7 +17,7 @@ end
 Warden::Strategies.add(:password) do
   def authenticate!
     if params[:email] && params[:password]
-      if (user = User.authenticate(params[:email], params[:password])) && user.username == request.subdomain && user.enabled?
+      if (user = User.authenticate(params[:email], params[:password])) && user.username == CartoDB.extract_subdomain(request) && user.enabled?
         success!(user, :message => "Success")
         request.flash['logged'] = true
       else
@@ -59,7 +59,7 @@ Warden::Strategies.add(:api_key) do
   def authenticate!
     begin
       if (api_key = params[:api_key]) && api_key.present?
-        user_name = request.subdomain
+        user_name = CartoDB.extract_subdomain(request)
         if $users_metadata.HMGET("rails:users:#{user_name}", "map_key").first == api_key
           user_id = $users_metadata.HGET "rails:users:#{user_name}", 'id'
           return fail! if user_id.blank?

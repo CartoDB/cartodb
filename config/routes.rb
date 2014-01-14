@@ -82,8 +82,6 @@ CartoDB::Application.routes.draw do
   scope "/api" do
     namespace CartoDB::API::VERSION_1, :format => :json, :module => "api/json" do
       get    '/column_types'                                    => 'meta#column_types'
-      get    '/queries'                                         => 'queries#run'
-      put    '/queries'                                         => 'queries#run'
 
 
       resources :tables, :only => [:index, :create, :show, :update, :destroy] do

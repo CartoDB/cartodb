@@ -108,8 +108,8 @@ DECLARE
     sql TEXT;
 BEGIN
     SELECT INTO ver regexp_split_to_array(
-      regexp_replace(version(), '^PostgreSQL ([^ ]*) .*', '\1'),
-      '\.'
+      regexp_replace(version(), '^PostgreSQL ([^ ]*) .*', '\\1'),
+      '\\.'
     );
     sql := 'SELECT pg_terminate_backend(';
     IF ver[1] > 9 OR ( ver[1] = 9 AND ver[2] > 1 ) THEN
@@ -134,7 +134,7 @@ $$
     Thread.new do
       conn = Rails::Sequel.connection
       conn.run("UPDATE pg_database SET datallowconn = 'false' WHERE datname = '#{database_name}'")
-      self.terminate_database_connections(database_name)
+      User.terminate_database_connections(database_name)
       conn.run("DROP DATABASE #{database_name}")
       conn.run("DROP USER #{database_username}")
     end.join

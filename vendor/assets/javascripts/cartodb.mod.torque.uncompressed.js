@@ -6378,6 +6378,11 @@ exports.Profiler = Profiler;
         refresh = true;
       }
 
+      if(opt.countby !== undefined && opt.countby !== this.options.countby) {
+        this.options.countby = opt.countby;
+        refresh = true;
+      }
+
       if(opt.data_aggregation !== undefined) {
         var c = opt.data_aggregation === 'cumulative';
         if (this.options.cumulative !== c) {
@@ -6487,6 +6492,7 @@ exports.Profiler = Profiler;
         if (!data) return;
         self.options.extra_params = self.options.extra_params || {};
         self.options.extra_params.last_updated = data.updated_at || 0;
+        self.options.extra_params.cache_policy = 'persist';
         self.options.is_time = data.fields[self.options.column].type === 'date';
 
         var column_conv = self.options.column;
@@ -8331,6 +8337,10 @@ GMapsTorqueLayer.prototype = _.extend({},
     return new Date(time);
   },
 
+  getStep: function() {
+    return this.key;
+  },
+
   /**
    * returns the animation time defined by the data
    * in the defined column. Date object
@@ -8658,6 +8668,10 @@ L.CanvasLayer = L.Class.extend({
     return this._canvas;
   },
 
+  getAttribution: function() {
+    return this.options.attribution;
+  },
+
   draw: function() {
     return this._reset();
   },
@@ -8918,6 +8932,10 @@ L.TorqueLayer = L.CanvasLayer.extend({
     return new Date(time);
   },
 
+  getStep: function() {
+    return this.key;
+  },
+
   /**
    * returns the animation time defined by the data
    * in the defined column. Date object
@@ -9051,6 +9069,7 @@ if(typeof(google) == "undefined" || typeof(google.maps) == "undefined")
 var GMapsTorqueLayerView = function(layerModel, gmapsMap) {
 
   var extra = layerModel.get('extra_params');
+  layerModel.attributes.attribution = cdb.config.get('cartodb_attributions');
   cdb.geo.GMapsLayerView.call(this, layerModel, this, gmapsMap);
   torque.GMapsTorqueLayer.call(this, {
       table: layerModel.get('table_name'),
@@ -9076,6 +9095,7 @@ var GMapsTorqueLayerView = function(layerModel, gmapsMap) {
       },
       map: gmapsMap,
       cartodb_logo: layerModel.get('cartodb_logo'),
+      attribution: layerModel.get('attribution'),
       cdn_url: layerModel.get('no_cdn') ? null: (layerModel.get('cdn_url') || cdb.CDB_HOST)
   });
 
@@ -9137,6 +9157,7 @@ var LeafLetTorqueLayer = L.TorqueLayer.extend({
 
   initialize: function(layerModel, leafletMap) {
     var extra = layerModel.get('extra_params');
+    layerModel.attributes.attribution = cdb.config.get('cartodb_attributions');
     // initialize the base layers
     L.TorqueLayer.prototype.initialize.call(this, {
       table: layerModel.get('table_name'),
@@ -9161,6 +9182,7 @@ var LeafLetTorqueLayer = L.TorqueLayer.extend({
         api_key: extra ? extra.map_key: ''
       },
       cartodb_logo: layerModel.get('cartodb_logo'),
+      attribution: layerModel.get('attribution'),
       cdn_url: layerModel.get('no_cdn') ? null: (layerModel.get('cdn_url') || cdb.CDB_HOST)
     });
 
@@ -9214,14 +9236,15 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
 
   defaultTemplate:
     " <ul> " +
-    "   <li><a href='#/stop' class='button stop'>pause</a></li>" +
-    "   <li><p class='value'></p></li>" +
+    "   <li class='controls'><a href='#/stop' class='button stop'>pause</a></li>" +
+    "   <li class='time'><p class='value'></p></li>" +
     "   <li class='last'><div class='slider-wrapper'><div class='slider'></div></div></li>" +
     " </ul> "
   ,
 
   events: {
     "click .button":  "toggleTime",
+    "click .time":    "_onClickTime",
     "dragstart":      "_stopPropagation",
     "mousedown":      "_stopPropagation",
     "touchstart":     "_stopPropagation",
@@ -9233,7 +9256,7 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
   },
 
   initialize: function() {
-    _.bindAll(this, '_stop', '_start', '_slide');
+    _.bindAll(this, '_stop', '_start', '_slide', '_bindLayer', '_unbindLayer', 'updateSliderRange', 'updateSlider', 'updateTime');
     var self = this;
     this.options.template = this.options.template || this.defaultTemplate;
     this.options.position = 'bottom|left';
@@ -9242,44 +9265,58 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
     // Control variable to know if the layer was
     // running before touching the slider
     this.wasRunning = false;
-    this.torqueLayer = this.options.layer;
 
-    // each time time changes, move the slider
-    function updateTime(changes) {
-      var tb = self.torqueLayer.getTimeBounds();
-      if (!tb) return;
-      if (tb.columnType === 'date' || this.options.force_format_date) {
-        if (tb && tb.start !== undefined) {
-          var f = self.options.formatter || self.formaterForRange(tb.start, tb.end);
-          // avoid showing invalid dates
-          if (!_.isNaN(changes.time.getYear())) {
-            self.$('.value').text(f(changes.time));
-          }
-        }
-      } else {
-          self.$('.value').text(changes.step);
-      }
-    }
-
-    function updateSlider(changes) {
-      self.$(".slider" ).slider({ value: changes.step });
-    }
-
-    function updateSliderRange(changes) {
-      self.$(".slider" ).slider({ max: changes.steps });
-    }
-
-    this.torqueLayer.on('change:time', updateSlider);
-    this.torqueLayer.on('change:time', updateTime);
-    this.torqueLayer.on('change:steps', updateSliderRange);
-
-    this.on('clean', function() {
-      self.torqueLayer.off('change:time', updateSlider);
-      self.torqueLayer.off('change:time', updateTime);
-      self.torqueLayer.off('change:steps', updateSliderRange);
-    });
+    this._bindLayer(this.options.layer);
+    this.on('clean', this._unbindLayer);
     cdb.geo.ui.InfoBox.prototype.initialize.call(this);
 
+  },
+
+  setLayer: function(layer) {
+    this._unbindLayer();
+    this._bindLayer(layer);
+    this._initSlider();
+  },
+
+  _bindLayer: function(layer) {
+    this.torqueLayer = layer;
+    this.torqueLayer.on('change:time', this.updateSlider);
+    this.torqueLayer.on('change:time', this.updateTime);
+    this.torqueLayer.on('change:steps', this.updateSliderRange);
+    return this;
+  },
+
+  _unbindLayer: function() {
+    this.torqueLayer.off('change:time', this.updateSlider);
+    this.torqueLayer.off('change:time', this.updateTime);
+    this.torqueLayer.off('change:steps', this.updateSliderRange);
+    return this;
+  },
+
+  updateSlider: function(changes) {
+    this.$(".slider" ).slider({ value: changes.step });
+  },
+
+  updateSliderRange: function(changes) {
+    this.$(".slider" ).slider({ max: changes.steps });
+  },
+
+  // each time time changes, move the slider
+  updateTime: function(changes) {
+    var self = this;
+    var tb = self.torqueLayer.getTimeBounds();
+    if (!tb) return;
+    if (tb.columnType === 'date' || this.options.force_format_date) {
+      if (tb && tb.start !== undefined) {
+        var f = self.options.formatter || self.formaterForRange(tb.start, tb.end);
+        // avoid showing invalid dates
+        if (!_.isNaN(changes.time.getYear())) {
+          self.$('.value').text(f(changes.time));
+        }
+      }
+    } else {
+        self.$('.value').text(changes.step);
+    }
   },
 
   formatter: function(_) {
@@ -9328,7 +9365,8 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
       min: 0,
       max: this.torqueLayer.options.steps,
       value: 0,
-      step: 1,
+      step: 1, //
+      value: this.torqueLayer.getStep(),
       stop: this._stop,
       start: this._start,
       slide: this._slide
@@ -9348,6 +9386,10 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
 
   _stopPropagation: function(ev) {
     ev.stopPropagation();
+  },
+
+   _onClickTime: function() {
+    this.trigger("time_clicked", this);
   },
 
   render: function() {
@@ -10131,6 +10173,18 @@ $.widget("ui.mouse", {
 });
 
 })(jQuery);
+/*
+ * jQuery UI Touch Punch 0.2.2
+ *
+ * Copyright 2011, Dave Furfero
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ *
+ * Depends:
+ *  jquery.ui.widget.js
+ *  jquery.ui.mouse.js
+ */
+(function(b){b.support.touch="ontouchend" in document;if(!b.support.touch){return;}var c=b.ui.mouse.prototype,e=c._mouseInit,a;function d(g,h){if(g.originalEvent.touches.length>1){return;}g.preventDefault();var i=g.originalEvent.changedTouches[0],f=document.createEvent("MouseEvents");f.initMouseEvent(h,true,true,window,1,i.screenX,i.screenY,i.clientX,i.clientY,false,false,false,false,0,null);g.target.dispatchEvent(f);}c._touchStart=function(g){var f=this;if(a||!f._mouseCapture(g.originalEvent.changedTouches[0])){return;}a=true;f._touchMoved=false;d(g,"mouseover");d(g,"mousemove");d(g,"mousedown");};c._touchMove=function(f){if(!a){return;}this._touchMoved=true;d(f,"mousemove");};c._touchEnd=function(f){if(!a){return;}d(f,"mouseup");d(f,"mouseout");if(!this._touchMoved){d(f,"click");}a=false;};c._mouseInit=function(){var f=this;f.element.bind("touchstart",b.proxy(f,"_touchStart")).bind("touchmove",b.proxy(f,"_touchMove")).bind("touchend",b.proxy(f,"_touchEnd"));e.call(f);};})(jQuery);
+
 /*!
  * jQuery UI Slider 1.8.23
  *
@@ -10207,7 +10261,7 @@ $.widget( "ui.slider", $.ui.mouse, {
 				.addClass( "ui-slider-range" +
 				// note: this isn't the most fittingly semantic framework class for this element,
 				// but worked best visually with a variety of themes
-				" ui-widget-header" + 
+				" ui-widget-header" +
 				( ( o.range === "min" || o.range === "max" ) ? " ui-slider-range-" + o.range : "" ) );
 		}
 
@@ -10253,11 +10307,11 @@ $.widget( "ui.slider", $.ui.mouse, {
 					curVal,
 					newVal,
 					step;
-	
+
 				if ( self.options.disabled ) {
 					return;
 				}
-	
+
 				switch ( event.keyCode ) {
 					case $.ui.keyCode.HOME:
 					case $.ui.keyCode.END:
@@ -10278,14 +10332,14 @@ $.widget( "ui.slider", $.ui.mouse, {
 						}
 						break;
 				}
-	
+
 				step = self.options.step;
 				if ( self.options.values && self.options.values.length ) {
 					curVal = newVal = self.values( index );
 				} else {
 					curVal = newVal = self.value();
 				}
-	
+
 				switch ( event.keyCode ) {
 					case $.ui.keyCode.HOME:
 						newVal = self._valueMin();
@@ -10314,19 +10368,19 @@ $.widget( "ui.slider", $.ui.mouse, {
 						newVal = self._trimAlignValue( curVal - step );
 						break;
 				}
-	
+
 				self._slide( event, index, newVal );
 			})
 			.keyup(function( event ) {
 				var index = $( this ).data( "index.ui-slider-handle" );
-	
+
 				if ( self._keySliding ) {
 					self._keySliding = false;
 					self._stop( event, index );
 					self._change( event, index );
 					$( this ).removeClass( "ui-state-active" );
 				}
-	
+
 			});
 
 		this._refreshValue();
@@ -10408,7 +10462,7 @@ $.widget( "ui.slider", $.ui.mouse, {
 		closestHandle
 			.addClass( "ui-state-active" )
 			.focus();
-		
+
 		offset = closestHandle.offset();
 		mouseOverHandle = !$( event.target ).parents().andSelf().is( ".ui-slider-handle" );
 		this._clickOffset = mouseOverHandle ? { left: 0, top: 0 } : {
@@ -10434,7 +10488,7 @@ $.widget( "ui.slider", $.ui.mouse, {
 	_mouseDrag: function( event ) {
 		var position = { x: event.pageX, y: event.pageY },
 			normValue = this._normValueFromMouse( position );
-		
+
 		this._slide( event, this._handleIndex, normValue );
 
 		return false;
@@ -10453,7 +10507,7 @@ $.widget( "ui.slider", $.ui.mouse, {
 
 		return false;
 	},
-	
+
 	_detectOrientation: function() {
 		this.orientation = ( this.options.orientation === "vertical" ) ? "vertical" : "horizontal";
 	},
@@ -10510,7 +10564,7 @@ $.widget( "ui.slider", $.ui.mouse, {
 		if ( this.options.values && this.options.values.length ) {
 			otherVal = this.values( index ? 0 : 1 );
 
-			if ( ( this.options.values.length === 2 && this.options.range === true ) && 
+			if ( ( this.options.values.length === 2 && this.options.range === true ) &&
 					( ( index === 0 && newVal > otherVal) || ( index === 1 && newVal < otherVal ) )
 				) {
 				newVal = otherVal;
@@ -10695,7 +10749,7 @@ $.widget( "ui.slider", $.ui.mouse, {
 			return vals;
 		}
 	},
-	
+
 	// returns the step-aligned value that val is closest to, between (inclusive) min and max
 	_trimAlignValue: function( val ) {
 		if ( val <= this._valueMin() ) {
@@ -10724,7 +10778,7 @@ $.widget( "ui.slider", $.ui.mouse, {
 	_valueMax: function() {
 		return this.options.max;
 	},
-	
+
 	_refreshValue: function() {
 		var oRange = this.options.range,
 			o = this.options,

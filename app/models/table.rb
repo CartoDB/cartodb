@@ -239,7 +239,8 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def import_to_cartodb(uniname=nil)
-    @data_import ||= DataImport.where(id: data_import_id).first
+    @data_import ||= DataImport.where(id: data_import_id).first || 
+                      DataImport.new(user_id: owner.id)
     if migrate_existing_table.present? || uniname
       @data_import.data_type = 'external_table'
       @data_import.data_source = migrate_existing_table || uniname
@@ -406,7 +407,10 @@ class Table < Sequel::Model(:user_tables)
     manager.set_private if privacy == PRIVATE
     manager.set_public  if privacy == PUBLIC
     manager.propagate_to(table_visualization)
-    manager.propagate_to_redis_and_varnish if privacy_changed?
+    if privacy_changed?
+      manager.propagate_to_redis_and_varnish 
+      update_cdb_tablemetadata
+    end
     affected_visualizations.each { |visualization|
       manager.propagate_to(visualization)
     } if privacy == PRIVATE
@@ -1307,8 +1311,21 @@ TRIGGER
   end # get_table_id
 
 
-
   private
+
+  def update_cdb_tablemetadata
+    owner.in_database(as: :superuser).run(%Q{
+      INSERT INTO cdb_tablemetadata (tabname, updated_at)
+      VALUES ('#{table_id}', NOW())
+    })
+    #updated_at) VALUES ('#{name}'::regclass::oid, NOW())
+  rescue Sequel::DatabaseError => exception
+    owner.in_database(as: :superuser).run(%Q{
+      UPDATE cdb_tablemetadata
+      SET updated_at = NOW()
+      WHERE tabname = '#{table_id}'
+    })
+  end
 
   def update_updated_at
     self.updated_at = Time.now
@@ -1536,8 +1553,15 @@ SQL
     if @name_changed_from.present? && @name_changed_from != name
       # update metadata records
       reload
-      $tables_metadata.rename(Table.key(database_name,@name_changed_from), key)
-      owner.in_database.rename_table(@name_changed_from, name)
+      begin
+        $tables_metadata.rename(Table.key(database_name,@name_changed_from), key)
+      rescue
+      end
+      begin
+        owner.in_database.rename_table(@name_changed_from, name)
+      rescue
+        puts "Error attempting to rename table in DB: #{@name_changed_from} doesn't exist"
+      end
       propagate_name_change_to_table_visualization
 
       CartoDB::notify_exception(

@@ -426,7 +426,7 @@ describe Table do
       end
     end
 
-    it 'converts all names to downcase', now: true do
+    it 'converts all names to downcase' do
       delete_user_data @user
       @user.private_tables_enabled = false
       @user.save
@@ -1025,9 +1025,8 @@ describe Table do
       }.should raise_error(CartoDB::InvalidAttributes)
     end
 
-    it "updates data_last_modified when changing data" do
+    it "updates data_last_modified when changing data"
       table = create_table(:user_id => @user.id)
-      table.data_last_modified.should be_nil
 
       table.insert_row!({})
       time1 = table.data_last_modified.to_f
@@ -1302,7 +1301,7 @@ describe Table do
       invalid_cartodb_id_schema.should be_present
     end
 
-    it "should return geometry types", now: true do
+    it "should return geometry types" do
       data_import = DataImport.create( :user_id       => @user.id,
                                        :data_source   => '/../db/fake_data/gadm4_export.csv' )
       data_import.run_import!

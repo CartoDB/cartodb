@@ -1,0 +1,47 @@
+
+before_install:
+  - lsb_release -a
+  - sudo mv /etc/apt/sources.list.d/pgdg-source.list* /tmp
+  - sudo apt-get -qq purge postgis* postgresql*
+  - sudo rm -Rf /var/lib/postgresql /etc/postgresql
+  - sudo apt-add-repository --yes ppa:cartodb/postgresql-9.3
+  - sudo apt-add-repository --yes ppa:cartodb/gis
+  - sudo apt-get update 
+  - sudo apt-get install gdal-bin libgdal1-dev python-gdal
+  - sudo apt-get install postgresql-9.3-postgis-2.1 postgresql-plpython-9.3 
+  - sudo apt-get install postgis
+  - sudo apt-get install -q unp zip ruby1.9.3 ruby1.9.1-dev python-pip ruby-rspec libicu-dev 
+  #- sudo su postgres -c "pg_createcluster 9.3 main --start"
+  - echo -e "local\tall\tall\ttrust\nhost\tall\tall\t127.0.0.1/32\ttrust\nhost\tall\tall\t::1/128\ttrust" |sudo tee /etc/postgresql/9.3/main/pg_hba.conf
+  - sudo service postgresql restart
+  - sudo su postgres -c "createdb template_postgis"
+  - echo "SELECT VERSION();" | sudo su postgres -c "psql template_postgis"
+  - sudo su postgres -c "psql -f /usr/share/postgresql/9.3/contrib/postgis-2.1/postgis.sql template_postgis"
+  - sudo su postgres -c "psql -f /usr/share/postgresql/9.3/contrib/postgis-2.1/spatial_ref_sys.sql template_postgis"
+  - sudo su postgres -c "echo 'SELECT POSTGIS_FULL_VERSION();' | psql template_postgis"
+
+install:
+  - gdal-config --version
+  - ruby --version
+  - sudo gem install bundler
+  # http://stackoverflow.com/questions/10916784/error-installing-debugger-linecache-in-ruby-1-9-3
+  - gem install debugger-linecache -v '1.1.2' -- --with-ruby-include=$rvm_path/src/ruby-1.9.3-p484/
+  - bundle install
+  - cp config/app_config.yml.sample config/app_config.yml
+  - cp config/database.yml.sample config/database.yml
+  - cat python_requirements.txt | grep -v gdal | sudo pip install -r /dev/stdin
+
+script:
+  - make prepare-test-db
+  - make check-prepared
+  # check list of database names
+  - sudo su postgres -c "echo 'select datname from pg_database;' | psql template_postgis"
+  - make check-prepared # running twice catches status leaks (db, users..)
+
+env:
+
+notifications:
+  irc:
+    channels:
+      - "irc.freenode.org#cartodb"
+    use_notice: true

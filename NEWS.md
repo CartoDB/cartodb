@@ -1,3 +1,66 @@
+2.6.2
+-----
+* Improvements
+  * Prepare a task to register current ghost tables in metadata
+  * Put back time_slider handle for mobiles
+  * Make the the_geom switch exclusive on the column join modal
+  * Create a task to clean up temporary tables from failed imports and move them to the cdb_importer schema
+
+* Fixed Bugs
+  * Do not leak users during testsuite run (#244, #323)
+  * SQL editor does not autocomplete table name
+  * Error message for free accounts over map view quota
+  * geocoder raises an exception
+  * Update cdb_tablemetadata when table privacy changes
+  * When syncing a table, create triggers and indexes based on those in the existing one
+  * Privileges in sync tables are being dropped
+  * Dashboard rendering requests /api/v1/tags twice
+  * Duplicated the_geom index in new tables
+  * Customize infowindow empty throws error
+  * CartoDB attribution doesn't appear when there is only a torque layer in the visualization
+  * Indentation doesn't work properly in codemirror
+  * "Unknown" error creating table from query
+  * A console.log is showed from dashboard_messages.js, remove it.
+  * Row options menu doesn't appear properly in Firefox
+  * Fix problem with the table header shadow
+  * Twitter share text is wrong
+  * Fix several jasmine failed tests
+  * Fix cartodb.js test suite
+  * Don't break task when adding timezones to date columns
+  * Change support google mail url to exchange url
+  * Imports get broken when database_host was empty
+
+2.6.1
+-----
+* Improvements
+  * Optimized map frame for mobile.
+  * New sharing options on embeded maps.
+  * Tag footer link in Embeds.
+
+* Fixed Bugs
+  * Clicking on a visualization should open map instead of table view.
+  * Dashboard: visualizations: change viz name.
+  * When browser window is resized in map tab zoom is set to 0.
+  * Wrong SQL when requesting infowindow through the admin.
+  * Importer leaves temporary tables in the public schema in some error conditions.
+  * Funny error on points choropleth.
+  * When you create a visualization from a table (within a table), search and legends aren't moved when right panel is opened and closed.
+  * Changed button text when selecting file from gdrive.
+  * Importing a sync table when having just one table left raises an error, but the table gets imported and not synchronised.
+  * If you disable a legend and then apply another choropleth, it doesn't reenable it.
+  * After changing the CartoCSS, the wizards cannot calculate the colors anymore.
+  * sublayer_options does not work with torque layers.
+  * When adding a new layer in a table view, it moves to a new visualization, and name + label appears stuck.
+  * Fixed Dropbox picker.
+  * Customize infowindow and then empty it throws an error.
+  * When viewing a torque layer and adding another layer, the scrubbar stops working.
+  * Clean up temporary tables when a synchronization fails.
+  * Incorrect layout on the basemap modal.
+  * Infowindows are using v1 queries for the SQL API in the admin.
+  * Fixed jasmine tests.
+  * Custom HTML legends that come from a legend with no items aren't shown.
+  * Ensure the dashboard is rendered even if there are exceptions raised when rendering a specific 'table record'.
+
 2.6.0
 -----
 * Improvements

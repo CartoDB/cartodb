@@ -12,6 +12,10 @@ describe Map do
                       )
   end
 
+  after(:all) do
+    @user.destroy
+  end
+
   before(:each) do
     @table = Table.new
     @table.user_id = @user.id
@@ -195,6 +199,7 @@ describe Map do
       layer.add_map(derived.map)
       layer.save
       layer.reload
+      @user.reload
 
       layer.uses_private_tables?.should be_true
 

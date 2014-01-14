@@ -86,7 +86,7 @@ CartoDB::Application.routes.draw do
       put    '/queries'                                         => 'queries#run'
 
 
-      resources :tables, :only => [:index, :create, :show, :update, :destroy] do
+      resources :tables, :only => [:create, :show, :update] do
         collection do
           get '/tags/:tag_name' => 'tables#index', :as => 'show_tag'
         end

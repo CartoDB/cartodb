@@ -64,6 +64,9 @@ publish: release
 	#./scripts/publish.sh
 	node scripts/publish.js
 
+publish_npm: release
+	npm publish
+
 invalidate: 
 	#./scripts/publish.sh
 	node scripts/publish.js --invalidate

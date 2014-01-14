@@ -11,6 +11,7 @@ var LeafLetTorqueLayer = L.TorqueLayer.extend({
 
   initialize: function(layerModel, leafletMap) {
     var extra = layerModel.get('extra_params');
+    layerModel.attributes.attribution = cdb.config.get('cartodb_attributions');
     // initialize the base layers
     L.TorqueLayer.prototype.initialize.call(this, {
       table: layerModel.get('table_name'),
@@ -35,6 +36,7 @@ var LeafLetTorqueLayer = L.TorqueLayer.extend({
         api_key: extra ? extra.map_key: ''
       },
       cartodb_logo: layerModel.get('cartodb_logo'),
+      attribution: layerModel.get('attribution'),
       cdn_url: layerModel.get('no_cdn') ? null: (layerModel.get('cdn_url') || cdb.CDB_HOST)
     });
 

@@ -1,3 +1,43 @@
+3.5.05 (14//01//2014)
+-----
+- Removed animation while dragging a marker under GMaps.
+- Added retina icons
+- Enable interactivity when tooltip is added fixed #92 #64
+- Fixed torque styles when zoom was used in cartocss
+
+3.5.04 (20//12//2013)
+-----
+- Added attribution for torque layers.
+
+3.5.03 (18//12/2013)
+-----
+- updates twitter share message for mobile devices
+
+3.5.02 (17//12/2013)
+-----
+- improves twitter share message
+
+3.5.01 (17//12/2013)
+-----
+- fixes a bug that prevented using the scrolling wheel to zoom in and out
+
+3.5.00 (16//12/2013)
+-----
+- improves legends and torque player UI in mobile displays.
+- allows passing extra params in the calls to the SQL API.
+- changed profiler API.
+
+3.4.03 (11//12/2013)
+-----
+- fixes a bug that prevented showing a legend with custom HTML
+
+3.4.02 (10//12/2013)
+-----
+- adds new API for legends (documentation coming soon)
+- fixes a bug that incorrectly rendered an empty legend
+- fixes a bug that prevented showing the layer alias in torque layers
+- adds a new time_slider example
+
 3.4.01 (26//11/2013)
 -----
 - fixed parsing keyword arguments in cartocss for torque

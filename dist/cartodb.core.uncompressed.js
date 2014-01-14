@@ -1,5 +1,5 @@
-// version: 3.4.01
-// sha: 50655ad11e9d98b37d479557ba3162260bc60c5d
+// version: 3.5.05
+// sha: e49e40fe6729b06c7b9ffe3264df610f8b07c679
 ;(function() {
   this.cartodb = {};
   var Backbone = {};
@@ -1141,7 +1141,7 @@ var Mustache;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.4.01';
+    cdb.VERSION = '3.5.05';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -1200,6 +1200,7 @@ var Mustache;
         'geo/map.js',
         'geo/ui/zoom.js',
         'geo/ui/zoom_info.js',
+        'geo/ui/mobile.js',
         'geo/ui/legend.js',
         'geo/ui/switcher.js',
         'geo/ui/infowindow.js',
@@ -1213,7 +1214,6 @@ var Mustache;
         'geo/layer_definition.js',
         'geo/common.js',
 
-        'geo/leaflet/leaflet.geometry.js',
         'geo/leaflet/leaflet_base.js',
         'geo/leaflet/leaflet_plainlayer.js',
         'geo/leaflet/leaflet_tiledlayer.js',
@@ -1231,6 +1231,7 @@ var Mustache;
         'geo/gmaps/gmaps.js',
 
         'ui/common/dialog.js',
+        'ui/common/share.js',
         'ui/common/notification.js',
         'ui/common/table.js',
         'ui/common/dropdown.js',
@@ -1525,6 +1526,9 @@ var Mustache;
 
     // request params
     var reqParams = ['format', 'dp', 'api_key'];
+    if (options.extra_params) {
+      reqParams = reqParams.concat(options.extra_params);
+    }
     for(var i in reqParams) {
       var r = reqParams[i];
       var v = options[r];
@@ -2341,7 +2345,11 @@ LayerDefinition.prototype = {
   },
 
   getInfowindowData: function(layer) {
-    var infowindow = this.layers[layer].infowindow || this.options.layer_definition.layers[layer].infowindow;
+    var lyr;
+    var infowindow = this.layers[layer].infowindow 
+    if (!infowindow && (lyr = this.options.layer_definition.layers[layer])) {
+      infowindow = lyr.infowindow;
+    }
     if (infowindow && infowindow.fields && infowindow.fields.length > 0) {
       return infowindow;
     }

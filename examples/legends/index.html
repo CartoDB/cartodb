@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Legends | CartoDB.js</title>
+
+    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.css" /> 
+    <!--[if lte IE 8]>
+    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.ie.css" /> 
+    <![endif]-->
+
+    <script src="../../dist/cartodb.js"></script>
+    <script>
+
+      currentLegend = null;
+      legends       = {};
+      legendsArray  = [];
+
+      function selectLegend(e){
+
+        e.stopPropagation();
+        e.preventDefault();
+
+        var target = e.target;
+        var $link = $(e.target);
+        var type = $link.attr("data-legend");
+
+        if (type === 'stacked') {
+
+        $(".legend-selector a").addClass("selected");
+
+          var stackedLegend = new cdb.geo.ui.Legend.Stacked({
+            data: legendsArray
+          });
+
+          currentLegend = stackedLegend;
+
+        } else { 
+
+          $(".legend-selector a.selected").removeClass("selected");
+          $link.addClass("selected");
+
+          currentLegend = legends[type].legend;
+        }
+
+        currentLegend.addTo(".legends");
+
+        // $("#map .legends").html(currentLegend.render().$el);
+
+      }
+
+      function renderLegendList() {
+
+        _.each(legends, function(legend, type) {
+
+          var li = '<li><a href="#" data-legend="' + type + '">' + legend.title + '</a></li>';
+          $(".legend-selector").append(li);
+
+        });
+
+        var li = '<li><a href="#" data-legend="stacked">Stacked</a></li>';
+        $(".legend-selector").append(li);
+
+      }
+
+      window.onload = function() {
+
+        cdb.load('../../src/', function() {
+
+          var customLegend = new cdb.geo.ui.Legend.Custom({
+            title: "Custom Legend",
+            data: [
+              { name: "Natural Parks",  value: "#58A062" },
+              { name: "Villages",       value: "#F07971" },
+              { name: "Rivers",         value: "#54BFDE" },
+              { name: "Fields",         value: "#9BC562" },
+              { name: "Caves",          value: "#FABB5C" }
+            ]
+          });
+
+          var categoryLegend = new cdb.geo.ui.Legend.Category({
+            title: "Category Legend",
+            data: [
+              { name: "Airport Parks", value: "img/airport-24@2x.png",   type: "image" },
+              { name: "Heart",         value: "img/heart-24@2x.png",     type: "image" },
+              { name: "Zoom",          value: "img/zoo-24@2x.png",       type: "image" },
+              { name: "Fields",        value: "img/tennis-24@2x.png",    type: "image" },
+              { name: "Caves",         value: "img/town-hall-24@2x.png", type: "image" },
+            ]
+          });
+
+          var bubbleLegend = new cdb.geo.ui.Legend.Bubble({
+            title: "Bubble Legend",
+            min: 21, max: 20, color: "red"
+          });
+
+          var densityLegend = new cdb.geo.ui.Legend.Density({
+            title: "Density Legend",
+            left: "0", right: "10", colors: [ "#58A062", "#F07971", "#54BFDE", "#9BC562", "#FABB5C" ]
+          });
+
+          var intensityLegend = new cdb.geo.ui.Legend.Intensity({
+            title: "Intensity Legend",
+            left: "10", right: "20", color: "#f1f1f1"
+          });
+
+          legends = {
+            custom:    { legend: customLegend,    title: "Custom Legend" },
+            bubble:    { legend: bubbleLegend,    title: "Bubble Legend" },
+            density:   { legend: densityLegend,   title: "Density Legend" },
+            category:  { legend: categoryLegend,  title: "Category Legend" },
+            intensity: { legend: intensityLegend, title: "Intensity Legend" }
+          };
+
+          legendsArray = [{
+            title: "Category Legend",
+            data: [
+              { name: "Natural Parks",  value: "#58A062" },
+              { name: "Villages",       value: "#F07971" },
+              { name: "Rivers",         value: "#54BFDE" },
+              { name: "Fields",         value: "#9BC562" },
+              { name: "Caves",          value: "#FABB5C" }
+            ]
+          }, {
+            type: "bubble",
+            title: "Bubble Legend",
+            min: 21, max: 20, color: "red"
+          }];
+
+          renderLegendList();
+
+
+          $(".legend-selector a").click(selectLegend);
+
+          var map_viz_url = 'http://documentation.cartodb.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json';
+
+          var onVisDone = function(vis, layers) {
+
+            layers[1].setInteraction(true);
+
+            layers[1].on('featureOver', function(e, latlng, pos, data, layerNumber) {
+              cartodb.log.log(e, latlng, pos, data, layerNumber);
+            });
+
+          };
+
+          cartodb.createVis('map', map_viz_url, { legends: false, no_cdn: true }).done(onVisDone);
+
+        });
+
+      }
+
+    </script>
+
+    <style type="text/css">
+      html, body {
+        position:relative;
+      }
+      html, body, #map {
+        height: 100%;
+        padding: 0;
+        margin: 0;
+      }
+
+      .legend-selector {
+        position:absolute;
+        top: 20px; right: 20px;
+        margin: 0; padding: 0;
+        z-index: 100;
+      }
+
+      .legend-selector li {
+        display:inline-block;
+        margin: 0 0 0 10px; padding: 0;
+        list-style:none;
+      }
+
+      .legend-selector li a {
+        display:block;
+        text-decoration:none;
+        text-align:center;
+        font: normal 13px "Helvetica",Arial;
+        color: #858585;
+        webkit-box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
+        -moz-box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
+        box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
+        -webkit-border-radius: 4px;
+        -moz-border-radius: 4px;
+        -ms-border-radius: 4px;
+        -o-border-radius: 4px;
+        border-radius: 4px;
+        border: 1px solid #999;
+        background: #FFF;
+        z-index: 5;
+        padding: 10px;
+      }
+
+      .legend-selector li a.selected {
+        background:#f1f1f1;
+      }
+
+    </style>
+
+  </head>
+  <body>
+    <ul class="legend-selector"> </ul>
+    <div id="map">
+      <div class="legends"></div>
+    </div>
+  </body>
+</html>

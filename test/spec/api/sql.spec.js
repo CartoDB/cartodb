@@ -125,6 +125,7 @@ describe('SQL api client', function() {
       protocol: 'http',
       host: 'charlies.com',
       api_key: 'testkey',
+      rambo: 'test',
       ajax: ajax
     })
     s.execute('select * from rambo', null, {
@@ -135,7 +136,37 @@ describe('SQL api client', function() {
     expect(ajaxParams.url.indexOf('&format=geojson')).not.toEqual(-1);
     expect(ajaxParams.url.indexOf('&api_key=testkey')).not.toEqual(-1);
     expect(ajaxParams.url.indexOf('&dp=2')).not.toEqual(-1);
+    expect(ajaxParams.url.indexOf('&rambo')).toEqual(-1);
   });
+
+  it("should include extra url params", function() {
+    s = new cartodb.SQL({
+      user: 'rambo',
+      format: 'geojson',
+      protocol: 'http',
+      host: 'charlies.com',
+      api_key: 'testkey',
+      rambo: 'test',
+      ajax: ajax,
+      extra_params: ['rambo']
+    })
+    s.execute('select * from rambo', null, {
+      dp: 2
+    })
+    expect(ajaxParams.url.indexOf('http://')).not.toEqual(-1);
+    expect(ajaxParams.url.indexOf('rambo.charlies.com')).not.toEqual(-1);
+    expect(ajaxParams.url.indexOf('&format=geojson')).not.toEqual(-1);
+    expect(ajaxParams.url.indexOf('&api_key=testkey')).not.toEqual(-1);
+    expect(ajaxParams.url.indexOf('&dp=2')).not.toEqual(-1);
+    expect(ajaxParams.url.indexOf('&rambo=test')).not.toEqual(-1);
+
+    s.execute('select * from rambo', null, {
+      dp: 2,
+      rambo: 'test2'
+    })
+    expect(ajaxParams.url.indexOf('&rambo=test2')).not.toEqual(-1);
+  });
+
 
   it("should use jsonp if browser does not support cors", function() {
     $.support.cors = false;

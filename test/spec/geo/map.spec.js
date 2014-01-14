@@ -9,12 +9,6 @@ describe("geo.map", function() {
       layer.sync = function() {return true};
     });
 
-    it("should update the style when a new table name is set", function() {
-      layer.set({tile_style: '#table_name {}'});
-      layer.updateCartoCss('table_name', 'map_of_name');
-      expect(layer.get('tile_style')).toEqual('#map_of_name {}');
-    });
-
   });
 
   describe('GMapsBaseLayer', function() {
@@ -104,6 +98,13 @@ describe("geo.map", function() {
       });
       map.setBounds([[1,2],[1,2]]);
       expect(c).toEqual(0);
+    });
+
+    it("should not change bounds when map size is 0", function() {
+      map.set('zoom', 10);
+      var bounds = [[43.100982876188546, 35.419921875], [60.23981116999893, 69.345703125]]
+      map.fitBounds(bounds, {x: 0, y: 0});
+      expect(map.get('zoom')).toEqual(10);
     });
 
 

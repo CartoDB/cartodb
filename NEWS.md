@@ -1,3 +1,31 @@
+2.8.0
+-----
+* Improvements
+  * New organization model on CartoDB (multi-user).
+  * Added new Open Sans fonts.
+
+* Bugs Fixed
+  * When hovering a table row in the dashboard, expand the title if needed.
+  * User message off screen: "Start by adding rows to your table".
+  * Long field type names fall off the cell border (#251).
+  * If user selects an Intensity wizard, apply a determined SQL and then clear the query, the wizard previously selected is removed but the legend is ok.
+  * Added total map views per visualization in the user dashboard.
+  * Layout error with label text on the wizards.
+  * Filters: apply filter to already filtered columns stack.
+  * Updating certain properties from a wizard, shouldn't update the legend.
+  * Adapted API keys and OAuth pages to the new layout (760px).
+  * Points are shown when switching from chrolopleth to point wizard with line query.
+  * Creating a visualization changes the current panel to wizards with wrong width.
+  * Fixed space quota stat.
+  * CartoDB logo flicks a lot when opening a publish dialog and moving the map.
+  * Removed the edit point animation under GMaps basemap.
+  * Created a table from scratch and adding coords manually shows the "Georeference" popup.
+  * Null geometries are shown as "Point" on the table view.
+  * the_geom_webmercator error is not always reported.
+  * When pasting a URL in the 'append' window, it shouldn't offer to set it as a sync table.
+  * Error changing polygon fill.
+  * Fixed line edit.
+
 2.6.2
 -----
 * Improvements

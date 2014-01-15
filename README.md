@@ -117,6 +117,11 @@ Add CartoDB PostgreSQL PPA
 sudo add-apt-repository  ppa:cartodb/postgresql
 ```
 
+Restart PostgreSQL
+```bash
+sudo apt-get update
+```
+
 ## Some dependencies ##
 
 unp is required for archive file upload support
@@ -173,7 +178,7 @@ sudo apt-get install postgresql-plpython-9.1
 ```
 
 
-For local development, all connections must be performed using method "trust" inside config file `pg_hba.conf`.
+Currently there is an error with credential-based connections for development, and all connections must be performed using method "trust" inside config file `pg_hba.conf`.
 
 ```bash
 /etc/postgresql/9.1/main$ sudo vim pg_hba.conf
@@ -203,7 +208,7 @@ make install
 ```
 
 Finally, CartoDB depends on a geospatial database template named
-`template_postgis`. In the example script below, make sure that the
+`template_postgis`. In the example script below (can be saved for examples as `template_postgis.sh`), make sure that the
 path to each SQL file is correct:
 
 ```bash
@@ -220,6 +225,12 @@ psql -d template_postgis -f $POSTGIS_SQL_PATH/rtpostgis.sql
 psql -d template_postgis -f $POSTGIS_SQL_PATH/topology.sql
 psql -d template_postgis -c "GRANT ALL ON geometry_columns TO PUBLIC;"
 psql -d template_postgis -c "GRANT ALL ON spatial_ref_sys TO PUBLIC;"
+```
+
+Before executing the script, change to the postgres user:
+```bash
+sudo su - postgres
+./template_postgis.sh
 ```
 
 ## Install Ruby ##
@@ -239,7 +250,7 @@ The tiler API and the SQL API are both [Node.js](http://nodejs.org) apps.
 sudo apt-get install nodejs npm
 ```
 
-We currently run our node apps against version 0.8.9. You can install NVM 
+We currently run our node apps against version 0.8.x. You can install NVM 
 to handle multiple versions in the same system:
 
 Using npm:
@@ -267,14 +278,34 @@ sudo apt-get install redis-server
 ```
 
 ## Install Python dependencies ##
-This need to be done from the cartodb20 local copy.
+This needs to be done from the cartodb20 local copy.
 To install the Python modules that CartoDB depends on, you can use
-`easy_install`:
+`easy_install`.
+
+You need to have some dependencies installed before using pip:
+
+```bash
+sudo apt-get install python2.7-dev
+sudo apt-get install build-essential
+```
 
 ```bash
 $ easy_install pip
 $ pip install -r python_requirements.txt
 ```
+
+If pip fails with an error like `pip's wheel support requires setuptools >= 0.8`, a workaround is to comment that check. On a Python 2.7 install was:
+
+```bash
+vim /usr/local/lib/python2.7/dist-packages/pip-1.5-py2.7.egg/pip/index.py +89
+# Comment the following check:
+@use_wheel.setter
+    def use_wheel(self, value):
+        self._use_wheel = value
+        ##if self._use_wheel and not wheel_setuptools_support():
+            ##raise InstallationError("pip's wheel support requires setuptools >= 0.8 for dist-info support.")
+```
+
 
 ## Install Varnish
 [Varnish](https://www.varnish-cache.org) is a web application

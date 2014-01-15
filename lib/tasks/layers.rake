@@ -29,8 +29,8 @@ namespace :cartodb do
         begin
           v = l.maps.first.visualizations.first
           owner = l.maps.first.user
-          affected_visualizations << "#{v.id} | #{v.name} | updated: #{v.updated_at} | user: #{owner.username}"
-          puts "id: #{l.id} | visualization: #{v.id} | updated_at: #{l.updated_at} | user: #{owner.username}"
+          affected_visualizations << "#{v.id} | #{v.name} | updated: #{v.updated_at} | user: #{owner.username} | type: #{v.type}"
+          puts "id: #{l.id} | visualization: #{v.id} | vis_type: #{v.type} | updated_at: #{l.updated_at} | user: #{owner.username}"
         rescue
           puts "Ignoring orphan layer #{l.id}"
         end

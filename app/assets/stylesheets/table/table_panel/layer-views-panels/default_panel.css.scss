@@ -71,12 +71,12 @@
         @include border-left-radius(0);
         @include text-indent();
         @include background(sprite($table-sprites, unredo, $offset-x:-38, $offset-y:9) no-repeat #F9F9F9);//IE
-        @include background(sprite($table-sprites, unredo, $offset-x:-38, $offset-y:9) no-repeat, linear-gradient(#F9F9F9,#EBEBEB));
+        @include background(sprite($table-sprites, unredo, $offset-x:-38, $offset-y:9) no-repeat, linear-gradient(#F9F9F9,#EBEBEB) 0 0);
         border-left:0;
 
         &:hover, &:active {
           @include background(sprite($table-sprites, unredo, $offset-x:-38, $offset-y:9) no-repeat #DEDEDE);//IE
-          @include background(sprite($table-sprites, unredo, $offset-x:-38, $offset-y:9) no-repeat, linear-gradient(#F9F9F9,#DEDEDE));
+          @include background(sprite($table-sprites, unredo, $offset-x:-38, $offset-y:9) no-repeat, linear-gradient(#F9F9F9,#DEDEDE) 0 0);
         }
       }
 
@@ -84,11 +84,11 @@
         @include border-right-radius(0);
         @include text-indent();
         @include background(sprite($table-sprites, unredo, $offset-x:9, $offset-y:9) no-repeat #EBEBEB); //IE
-        @include background(sprite($table-sprites, unredo, $offset-x:9, $offset-y:9) no-repeat, linear-gradient(#F9F9F9,#EBEBEB));
+        @include background(sprite($table-sprites, unredo, $offset-x:9, $offset-y:9) no-repeat, linear-gradient(#F9F9F9,#EBEBEB) 0 0);
 
         &:hover, &:active {
           @include background(sprite($table-sprites, unredo, $offset-x:9, $offset-y:9) no-repeat #DEDEDE);//IE
-          @include background(sprite($table-sprites, unredo, $offset-x:9, $offset-y:9) no-repeat, linear-gradient(#F9F9F9,#DEDEDE));
+          @include background(sprite($table-sprites, unredo, $offset-x:9, $offset-y:9) no-repeat, linear-gradient(#F9F9F9,#DEDEDE) 0 0);
         }
       }
 
@@ -97,11 +97,11 @@
 
         &.next, &.next:active, &.next:hover {
           @include background(sprite($table-sprites, unredo, $offset-x:-38, $offset-y:9) no-repeat #F9F9F9);//IE
-          @include background(sprite($table-sprites, unredo, $offset-x:-38, $offset-y:9) no-repeat, linear-gradient(#F9F9F9,#EBEBEB));
+          @include background(sprite($table-sprites, unredo, $offset-x:-38, $offset-y:9) no-repeat, linear-gradient(#F9F9F9,#EBEBEB) 0 0);
         }
         &.back, &.back:active, &.back:hover {
           @include background(sprite($table-sprites, unredo, $offset-x:9, $offset-y:9) no-repeat #EBEBEB);//IE
-          @include background(sprite($table-sprites, unredo, $offset-x:9, $offset-y:9) no-repeat, linear-gradient(#F9F9F9,#EBEBEB));
+          @include background(sprite($table-sprites, unredo, $offset-x:9, $offset-y:9) no-repeat, linear-gradient(#F9F9F9,#EBEBEB) 0 0);
         }
       }
 

@@ -91,9 +91,6 @@ module ApplicationHelper
       user_name:           CartoDB.extract_subdomain(request),
       cartodb_com_hosted:  Cartodb.config[:cartodb_com_hosted],
       account_host:        Cartodb.config[:account_host],
-      dropbox_api_key:     Cartodb.config[:dropbox_api_key],
-      gdrive_api_key:      Cartodb.config[:gdrive]['api_key'],
-      gdrive_app_id:       Cartodb.config[:gdrive]['app_id'],
       max_asset_file_size: Cartodb.config[:assets]["max_file_size"]
     }
     if Cartodb.config[:cdn_url].present?

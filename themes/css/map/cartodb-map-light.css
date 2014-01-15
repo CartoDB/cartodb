@@ -17,6 +17,7 @@
   div.cartodb-header {
     position: relative;
     display: block;
+    min-height:11px;
     background: #FFF;
     border: none;
     border-bottom: 1px solid #808080; /*IE*/

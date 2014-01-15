@@ -49,7 +49,7 @@ and code.
 
 # What does CartoDB depend on? #
 
-  - Ubuntu 10.04
+  - Ubuntu 10.04 / 12.04
   - Postgres 9.1.x
   - Redis 2.2+
   - Ruby 1.9.2
@@ -65,9 +65,9 @@ and code.
 
 # How do I install CartoDB? #
 
-This is README is intended for Ubuntu 10.04. This doesn't mean that it can't 
+This is README is intended for Ubuntu 10.04 / 12.04. This doesn't mean that it can't 
 be installed in other Linux versions or OSX systems, but that it's guaranteed 
-to work only in Ubuntu 10.04.
+to work only in Ubuntu 10.04 and 12.04.
 If anyone wants to share with us the installation process for any other system 
 we will be more than happy to point it from this README.
 That said, there are also many successful installations on Amazon EC2, Linode,
@@ -253,12 +253,6 @@ sudo apt-get install nodejs npm
 We currently run our node apps against version 0.8.x. You can install NVM 
 to handle multiple versions in the same system:
 
-Using npm:
-```bash
-npm install -g nvm
-```
-
-Or directly:
 ```bash
 curl https://raw.github.com/creationix/nvm/master/install.sh | sh
 ```
@@ -291,10 +285,12 @@ sudo apt-get install build-essential
 
 ```bash
 $ easy_install pip
+export CPLUS_INCLUDE_PATH=/usr/include/gdal
+export C_INCLUDE_PATH=/usr/include/gdal
 $ pip install -r python_requirements.txt
 ```
 
-If pip fails with an error like `pip's wheel support requires setuptools >= 0.8`, a workaround is to comment that check. On a Python 2.7 install was:
+Note: If pip fails with an error like `pip's wheel support requires setuptools >= 0.8`, a workaround is to comment that check. On a Python 2.7 install was:
 
 ```bash
 vim /usr/local/lib/python2.7/dist-packages/pip-1.5-py2.7.egg/pip/index.py +89

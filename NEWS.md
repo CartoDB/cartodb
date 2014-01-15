@@ -26,6 +26,10 @@
   * Error changing polygon fill.
   * Fixed line edit.
 
+2.7.0
+-----
+* This version is empty because a feature moved to a future release.
+
 2.6.2
 -----
 * Improvements

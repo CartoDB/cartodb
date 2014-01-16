@@ -1,3 +1,12 @@
+2.8.1 (2014-01-16)
+------------------
+* Bugs Fixed
+  * Some map styles are changed after wizard refactoring.
+  * Fixed duplicated notifications in the dashboard.
+  * A warning message is not shown when no columns are available for applying a category wizard. It shows the wizard with the column selector empty instead.
+  * Category wizard doesn't render "null" color element when there is only that value.
+  * Created task to get modified layers and visualizations within a period.
+
 2.8.0 (2014-01-14)
 ------------------
 * Improvements

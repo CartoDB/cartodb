@@ -466,3 +466,6 @@ See TESTING
   - Xabel Álvarez (@johnhackworth)
   - Lorenzo Planas (@lorenzoplanas)
   - Alejandro Martínez (@iamzenitram)
+  - Carlos Matallín (@matallo)
+  - Rafa Casado (@rafacas)
+  - Diego Muñoz (@kartones)

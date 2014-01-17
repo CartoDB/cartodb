@@ -393,7 +393,7 @@ sh script/create_dev_user ${SUBDOMAIN}
 Start the resque daemon (needed for import jobs):
 
 ```bash
-$ QUEUE=* bundle exec rake resque:work
+$ bundle exec script/resque
 ```
 
 Finally, start the CartoDB development server on port 3000:

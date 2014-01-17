@@ -19,28 +19,24 @@ Setup cartodb database and creates a new user from environment variables:
   - ENV['SUBDOMAIN']: user subdomain
 DESC
     task :setup => ["rake:db:create", "rake:db:migrate", "cartodb:db:create_publicuser"] do
-      begin
-        raise "You should provide a valid e-mail"    if ENV['EMAIL'].blank?
-        raise "You should provide a valid password"  if ENV['PASSWORD'].blank?
-        raise "You should provide a valid subdomain" if ENV['SUBDOMAIN'].blank?
+      raise "You should provide a valid e-mail"    if ENV['EMAIL'].blank?
+      raise "You should provide a valid password"  if ENV['PASSWORD'].blank?
+      raise "You should provide a valid subdomain" if ENV['SUBDOMAIN'].blank?
 
-        u = User.new
-        u.email = ENV['EMAIL']
-        u.password = ENV['PASSWORD']
-        u.password_confirmation = ENV['PASSWORD']
-        u.username = ENV['SUBDOMAIN']
-        if ENV['DATABASE_HOST'].blank?
-          u.database_host = ::Rails::Sequel.configuration.environment_for(Rails.env)['host']
-        else
-          u.database_host = ENV['DATABASE_HOST']
-        end
-        u.save
-        if u.new?
-          raise u.errors.inspect
-        end
-      rescue => e
-        puts e.inspect
-      end
+      # Reload User model schema to avoid errors
+      # when running this task along with db:migrate
+      User.set_dataset :users
+      
+      u = User.new
+      u.email = ENV['EMAIL']
+      u.password = ENV['PASSWORD']
+      u.password_confirmation = ENV['PASSWORD']
+      u.username = ENV['SUBDOMAIN']
+      u.database_host = ENV['DATABASE_HOST'] || ::Rails::Sequel.configuration.environment_for(Rails.env)['host']
+      u.save
+
+      raise u.errors.inspect if u.new?
+      puts "User #{u.username} created successfully"
     end
 
     desc "make public and tile users"

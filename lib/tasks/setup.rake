@@ -41,17 +41,18 @@ DESC
 
     desc "make public and tile users"
     task :create_publicuser => :environment do
-      begin
-        puts "Creating user #{CartoDB::PUBLIC_DB_USER}"
-        ::Rails::Sequel.connection.run("CREATE USER #{CartoDB::PUBLIC_DB_USER}")
-      rescue => e
-        puts e.inspect
-      end
-      begin
-        puts "Creating user #{CartoDB::TILE_DB_USER}"
-        ::Rails::Sequel.connection.run("CREATE USER #{CartoDB::TILE_DB_USER}")
-      rescue => e
-        puts e.inspect
+      [CartoDB::PUBLIC_DB_USER, CartoDB::TILE_DB_USER].each do |u|
+        puts "Creating user #{u}"
+        ::Rails::Sequel.connection.run("DO $$
+        BEGIN
+          IF NOT EXISTS ( SELECT * FROM pg_user WHERE usename = '#{u}') THEN 
+            CREATE USER #{u}; -- TODO: with password '...'
+          ELSE
+            RAISE NOTICE 'User #{u} already exists';
+          END IF;
+          RETURN;
+        END;
+        $$ LANGUAGE 'plpgsql';")
       end
     end
 

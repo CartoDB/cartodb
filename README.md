@@ -116,6 +116,10 @@ Add CartoDB PostgreSQL PPA
 ```bash
 sudo add-apt-repository  ppa:cartodb/postgresql
 ```
+Add CartoDB Varnish PPA
+```bash
+sudo add-apt-repository  ppa:cartodb/varnish
+```
 
 ## Some dependencies ##
 

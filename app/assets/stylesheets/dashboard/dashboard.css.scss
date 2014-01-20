@@ -3,19 +3,20 @@
    * List of tables and visualizations for your dashboard or public tables
    */
 
-  // @import "compass/css3/box-shadow";
-  // @import "compass/css3/border-radius";
-  // @import "compass/css3/inline-block";
-  // @import "compass/css3/box-sizing";
-  // @import "compass/css3/opacity";
-  // @import "compass/css3/transition";
+
   @import "compass/css3/text-shadow";
   @import "../common/mixins";
   @import "../common/fonts";
   @import "../common/vars";
-  @import "../common/forms";
+  @import "common/form-elements";
   @import "../common/common-sprite";
   @import "../dashboard/dashboard-sprite";
+
+
+  // !IMPORTANT
+  // Dashboard blocks has to be 1026px
+  // Default layout is now 960px (Defined in vars stylesheet)
+  .inner { width:1026px; }
 
   .main_loader {
     position:relative;
@@ -27,8 +28,8 @@
       @include absolute-center(38px, 16px);
       background:image-url("layout/loader_gray.gif") no-repeat 0 0;
     }
-
   }
+
 
   .tipsy.privacy_info {
     font-size: 13px;
@@ -41,14 +42,13 @@
     a { display:block; text-decoration:underline; margin: 7px 0 0 0; color: #fff; }
   }
 
+
   header {
-
     ul li > .disabled:hover { color:white; }
-
   }
 
-  article {
 
+  article {
     @include inline-block();
     width:100%;
     background: image-url('layout/bkg.jpg') repeat 0 0;
@@ -685,7 +685,7 @@
             padding: 0 30px;
 
             @include opacity(1);
-            @include simple-transition(background, 80ms);
+            @include simple-transition(background, 10ms);
 
             &.disabled {
               @include simple-transition(opacity, 100ms);
@@ -695,6 +695,17 @@
               &:hover {
                 background-color: #e1e1e1;
                 opacity:0.4;
+
+                .table_info hgroup.shadow:after {
+                  background: -moz-linear-gradient(left, rgba(225,225,225,1) 0%, rgba(225,225,225,1) 45%, rgba(225,225,225,0.05) 95%, rgba(225,225,225,0.02) 98%, rgba(225,225,225,0.01) 99%, rgba(225,225,225,0) 100%); // [> FF3.6+ <]
+                  background: -webkit-gradient(linear, left top, right top, color-stop(0%,rgba(225,225,225,1)), color-stop(45%,rgba(225,225,225,1)), color-stop(95%,rgba(225,225,225,0.05)), color-stop(98%,rgba(225,225,225,0.02)), color-stop(99%,rgba(225,225,225,0.01)), color-stop(100%,rgba(225,225,225,0))); // [> Chrome,Safari4+ <]
+                  background: -webkit-linear-gradient(left, rgba(225,225,225,1) 0%,rgba(225,225,225,1) 45%,rgba(225,225,225,0.05) 95%,rgba(225,225,225,0.02) 98%,rgba(225,225,225,0.01) 99%,rgba(225,225,225,0) 100%); // [> Chrome10+,Safari5.1+ <]
+                  background: -o-linear-gradient(left, rgba(225,225,225,1) 0%,rgba(225,225,225,1) 45%,rgba(225,225,225,0.05) 95%,rgba(225,225,225,0.02) 98%,rgba(225,225,225,0.01) 99%,rgba(225,225,225,0) 100%); // [> Opera 11.10+ <]
+                  background: -ms-linear-gradient(left, rgba(225,225,225,1) 0%,rgba(225,225,225,1) 45%,rgba(225,225,225,0.05) 95%,rgba(225,225,225,0.02) 98%,rgba(225,225,225,0.01) 99%,rgba(225,225,225,0) 100%); // [> IE10+ <]
+                  background: linear-gradient(to right, rgba(225,225,225,1) 0%,rgba(225,225,225,1) 45%,rgba(225,225,225,0.05) 95%,rgba(225,225,225,0.02) 98%,rgba(225,225,225,0.01) 99%,rgba(225,225,225,0) 100%); // [> W3C <]
+                }
+
+
               }
             } // li.disabled
 
@@ -730,7 +741,7 @@
               padding: 22px 0 33px 0;
               border-top:1px solid #EDEDED;
 
-              & > .left  { width:400px; }
+              & > .left  { clear:both; width:400px; }
               & > .right { width:420px; }
 
               & > .left  p {
@@ -741,11 +752,34 @@
                 margin: 0 0 9px 0;
                 display:block;
                 width:100%;
+                position:relative;
+                z-index: 1;
+                @include inline-block();
+                width: auto;
+                float:left;
+
+                  &.shadow:after {
+                    content: "";
+                    position:absolute;
+                    top: 0;
+                    right:-100px;
+                    width: 200px;
+                    height: 25px;
+                    z-index: -5;
+
+                    background: -moz-linear-gradient(left, rgba(255,255,255,1) 0%, rgba(255,255,255,1) 45%, rgba(255,255,255,0.05) 95%, rgba(255,255,255,0.02) 98%, rgba(255,255,255,0.01) 99%, rgba(255,255,255,0) 100%); // [> FF3.6+ <]
+                    background: -webkit-gradient(linear, left top, right top, color-stop(0%,rgba(255,255,255,1)), color-stop(45%,rgba(255,255,255,1)), color-stop(95%,rgba(255,255,255,0.05)), color-stop(98%,rgba(255,255,255,0.02)), color-stop(99%,rgba(255,255,255,0.01)), color-stop(100%,rgba(255,255,255,0))); // [> Chrome,Safari4+ <]
+                    background: -webkit-linear-gradient(left, rgba(255,255,255,1) 0%,rgba(255,255,255,1) 45%,rgba(255,255,255,0.05) 95%,rgba(255,255,255,0.02) 98%,rgba(255,255,255,0.01) 99%,rgba(255,255,255,0) 100%); // [> Chrome10+,Safari5.1+ <]
+                    background: -o-linear-gradient(left, rgba(255,255,255,1) 0%,rgba(255,255,255,1) 45%,rgba(255,255,255,0.05) 95%,rgba(255,255,255,0.02) 98%,rgba(255,255,255,0.01) 99%,rgba(255,255,255,0) 100%); // [> Opera 11.10+ <]
+                    background: -ms-linear-gradient(left, rgba(255,255,255,1) 0%,rgba(255,255,255,1) 45%,rgba(255,255,255,0.05) 95%,rgba(255,255,255,0.02) 98%,rgba(255,255,255,0.01) 99%,rgba(255,255,255,0) 100%); // [> IE10+ <]
+                    background: linear-gradient(to right, rgba(255,255,255,1) 0%,rgba(255,255,255,1) 45%,rgba(255,255,255,0.05) 95%,rgba(255,255,255,0.02) 98%,rgba(255,255,255,0.01) 99%,rgba(255,255,255,0) 100%); // [> W3C <]
+                  }
 
                 &.options {
-                  @include position(26px, 0, false, false);
+                  @include position(24px, 0, false, false);
                   display:block;
                   width:auto;
+                  z-index: 0;
                 }
 
                 h3 {
@@ -768,7 +802,7 @@
                     letter-spacing:-1px;
                     @include transform-style("linear");
                     @include transition-property("color");
-                    @include transition-duration(500ms);
+                    @include transition-duration(250ms);
                   }
 
                 } // h3

@@ -6,8 +6,7 @@ feature "Superadmin's users API" do
     Capybara.current_driver = :rack_test
     User.any_instance.stubs(:load_cartodb_functions).returns(true)
     User.any_instance.stubs(:set_database_permissions).returns(true)
-    User.any_instance.stubs(:set_database_permissions_in_importer_schema).returns(true)
-    User.any_instance.stubs(:create_importer_schema).returns(true)
+    User.any_instance.stubs(:create_schemas_and_set_permissions).returns(true)
     User.any_instance.stubs(:remaining_quota).returns(10)
     @new_user = new_user(:password => "this_is_a_password")
     @user_atts = @new_user.values
@@ -178,7 +177,6 @@ feature "Superadmin's users API" do
     user.notification.should == 'Test'
   end
 
-
   scenario "user update fail" do
     user = create_user
 
@@ -195,6 +193,36 @@ feature "Superadmin's users API" do
     user = User[user.id]
     user.email.should == "newmail@test.com"
     user.map_view_quota.should == 80
+  end
+
+  scenario "update success with new organization" do
+    user = create_user
+    @update_atts = { 
+      quota_in_bytes: 2000, 
+      organization_attributes: { name: 'wadus', seats: 25, quota_in_bytes: 40000 }
+    }
+
+    put_json superadmin_user_path(user), { user: @update_atts }, default_headers do |response|
+      response.status.should eq 204
+    end
+    user = User[user.id]
+    user.quota_in_bytes.should eq 2000
+    user.organization.name.should eq 'wadus'
+    user.organization.seats.should eq 25
+    user.organization.quota_in_bytes.should eq 40000
+
+    @update_atts = { 
+      quota_in_bytes: 2001, 
+      organization_attributes: { name: 'wadus', seats: 26 }
+    }
+    put_json superadmin_user_path(user), { user: @update_atts }, default_headers do |response|
+      response.status.should eq 204
+    end
+    user = User[user.id]
+    user.quota_in_bytes.should eq 2001
+    user.organization.name.should eq 'wadus'
+    user.organization.seats.should eq 26
+    user.organization.quota_in_bytes.should eq 40000
   end
 
   scenario "user delete success" do

@@ -19,7 +19,7 @@ class Admin::VisualizationsController < ApplicationController
   def show
     id = params.fetch(:id)
     return(redirect_to public_url_for(id)) unless current_user.present?
-    @visualization, @table = locator.get(id, request.subdomain)
+    @visualization, @table = locator.get(id, CartoDB.extract_subdomain(request))
     return(pretty_404) unless @visualization
     respond_to { |format| format.html }
 
@@ -28,7 +28,7 @@ class Admin::VisualizationsController < ApplicationController
 
   def public
     id = params.fetch(:id)
-    @visualization, @table = locator.get(id, request.subdomain)
+    @visualization, @table = locator.get(id, CartoDB.extract_subdomain(request))
 
     id = params.fetch(:id)
     return(pretty_404) if @visualization.nil? || @visualization.private?
@@ -43,7 +43,7 @@ class Admin::VisualizationsController < ApplicationController
 
   def embed_map
     id = params.fetch(:id)
-    @visualization, @table = locator.get(id, request.subdomain)
+    @visualization, @table = locator.get(id, CartoDB.extract_subdomain(request))
     
     return(pretty_404) unless @visualization
     return(embed_forbidden) if @visualization.private?

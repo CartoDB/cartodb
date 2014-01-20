@@ -4,6 +4,7 @@ require_relative './user/user_decorator'
 class User < Sequel::Model
   include CartoDB::MiniSequel
   include CartoDB::UserDecorator
+  self.strict_param_setting = false
 
   one_to_one :client_application
   plugin :association_dependencies, :client_application => :destroy
@@ -12,17 +13,13 @@ class User < Sequel::Model
   one_to_many :assets
   one_to_many :data_imports
   one_to_many :geocodings, order: :created_at.desc
+  many_to_one :organization
 
   many_to_many :layers, :order => :order, :after_add => proc { |user, layer|
     layer.set_default_order(user)
   }
 
   # Sequel setup & plugins
-  set_allowed_columns :email, :map_enabled, :password_confirmation, 
-    :quota_in_bytes, :table_quota, :account_type, :private_tables_enabled, 
-    :period_end_date, :map_view_quota, :max_layers, :database_timeout, 
-    :user_timeout, :map_view_block_price, :geocoding_quota, :dashboard_viewed_at,
-    :sync_tables_enabled, :geocoding_block_price, :api_key, :notification
   plugin :validation_helpers
   plugin :json_serializer
   plugin :dirty
@@ -50,14 +47,15 @@ class User < Sequel::Model
   def validate
     super
     validates_presence :username
-    validates_format /^[a-z0-9\-]+$/, :username, :message => "must only contain lowercase letters, numbers & hyphens"
+    validates_unique   :username
+    validates_format /^[a-z0-9\-\.]+$/, :username, :message => "must only contain lowercase letters, numbers, dots & hyphens"
     validates_presence :email
     validates_unique   :email, :message => 'is already taken'
     validates_format EmailAddressValidator::Regexp::ADDR_SPEC, :email, :message => 'is not a valid address'
     validates_presence :password if new? && (crypted_password.blank? || salt.blank?)
-
-    if password.present? && ( password_confirmation.blank? || password != password_confirmation )
-      errors.add(:password, "doesn't match confirmation")
+    if organization.present?
+      errors.add(:organization, "not enough seats") if new? && organization.users.count >= organization.seats
+      errors.add(:quota_in_bytes, "not enough disk quota") if quota_in_bytes.to_i + organization.assigned_quota > organization.quota_in_bytes
     end
   end
 
@@ -82,6 +80,7 @@ class User < Sequel::Model
     save_metadata
     changes = (self.previous_changes.present? ? self.previous_changes.keys : [])
     set_statement_timeouts if changes.include?(:user_timeout) || changes.include?(:database_timeout)
+    rebuild_quota_trigger if changed_columns.include?(:quota_in_bytes)
   end
 
   def before_destroy
@@ -100,18 +99,43 @@ class User < Sequel::Model
     self.invalidate_varnish_cache
   end
 
+  def self.terminate_database_connections(database_name)
+      Rails::Sequel.connection.run("
+DO language plpgsql $$
+DECLARE
+    ver INT[];
+    sql TEXT;
+BEGIN
+    SELECT INTO ver regexp_split_to_array(
+      regexp_replace(version(), '^PostgreSQL ([^ ]*) .*', '\\1'),
+      '\\.'
+    );
+    sql := 'SELECT pg_terminate_backend(';
+    IF ver[1] > 9 OR ( ver[1] = 9 AND ver[2] > 1 ) THEN
+      sql := sql || 'pid';
+    ELSE
+      sql := sql || 'procpid';
+    END IF;
+
+    sql := sql || ') FROM pg_stat_activity WHERE datname = '
+      || quote_literal('#{database_name}');
+  
+    RAISE NOTICE '%', sql;
+
+    EXECUTE sql;
+END
+$$
+      ")
+  end
+
   def after_destroy_commit
     # Remove database
     Thread.new do
       conn = Rails::Sequel.connection
-        conn.run("UPDATE pg_database SET datallowconn = 'false' WHERE datname = '#{database_name}'")
-        begin
-          conn.run("SELECT pg_terminate_backend(procpid) FROM pg_stat_activity WHERE datname = '#{database_name}'")
-        rescue Sequel::DatabaseError => e
-          conn.run("SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '#{database_name}'")
-        end
-        conn.run("DROP DATABASE #{database_name}")
-        conn.run("DROP USER #{database_username}")
+      conn.run("UPDATE pg_database SET datallowconn = 'false' WHERE datname = '#{database_name}'")
+      User.terminate_database_connections(database_name)
+      conn.run("DROP DATABASE #{database_name}")
+      conn.run("DROP USER #{database_username}")
     end.join
     monitor_user_notification
   end
@@ -470,7 +494,9 @@ class User < Sequel::Model
   def db_size_in_bytes(use_total = false)
     attempts = 0
     begin
-      in_database(:as => :superuser).fetch("SELECT CDB_UserDataSize()").first[:cdb_userdatasize]
+      result = in_database(:as => :superuser).fetch("SELECT CDB_UserDataSize()").first[:cdb_userdatasize]
+      update_gauge("db_size", result)
+      result
     rescue
       attempts += 1
       in_database(:as => :superuser).fetch("ANALYZE")
@@ -629,6 +655,21 @@ class User < Sequel::Model
       .to_a.fetch(0, {}).fetch(:created_at, nil)
   end
 
+  def metric_key
+    "cartodb.#{Rails.env.production? ? "user" : Rails.env + "-user"}.#{self.username}"
+  end
+
+  def update_gauge(gauge, value)
+    Statsd.gauge("#{metric_key}.#{gauge}", value)
+  rescue
+  end
+
+  def update_visualization_metrics
+    update_gauge("visualizations.total", maps.count)
+    update_gauge("visualizations.table", table_count)
+    update_gauge("visualizations.derived", visualization_count)
+  end
+  
   def rebuild_quota_trigger
     load_cartodb_functions
     puts "Rebuilding quota trigger in db '#{database_name}' (#{username})"

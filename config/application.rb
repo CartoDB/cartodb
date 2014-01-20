@@ -10,6 +10,13 @@ if defined?(Bundler)
   Bundler.require(:default, :assets, Rails.env)
 end
 
+# Require optional rails engines
+# TODO reactivate in order to enable CartoDB plugins
+# Dir["engines" + "/*/*.gemspec"].each do |gemspec_file|
+#   gem_name = File.basename(gemspec_file, File.extname(gemspec_file))
+#   puts "** Loading engine #{gem_name}"
+#   require gem_name
+# end
 
 module CartoDB
   class Application < Rails::Application
@@ -49,8 +56,8 @@ module CartoDB
     config.assets.enabled = true
 
     # Default setting is [/\w+\.(?!js|css).+/, /application.(css|js)$/]
-    config.assets.precompile = %w( application.js cdb.js keys.js dashboard.js common_data.js table.js table_public.js login.js specs.js common.js )
-    config.assets.precompile += %w( common.css keys.css leaflet.css tables.css pages.css map.css table.css front.css cdb/themes/css/cartodb.css cdb/themes/css/cartodb.ie.css specs.css map/leaflet.ie.css plugins/tipsy.css fonts_ie.css dashboard.css)
+    config.assets.precompile = %w( application.js cdb.js organization.js keys.js dashboard.js common_data.js table.js table_public.js login.js specs.js common.js )
+    config.assets.precompile += %w( common.css organization.css keys.css leaflet.css tables.css pages.css map.css table.css front.css cdb/themes/css/cartodb.css cdb/themes/css/cartodb.ie.css specs.css map/leaflet.ie.css plugins/tipsy.css fonts_ie.css dashboard.css)
     config.assets.precompile += %w( *.jpg *.ico *.gif *.png *.eot *.otf *.svg *.woff *.ttf *.swf )
 
     # Version of your assets, change this if you want to expire all your assets

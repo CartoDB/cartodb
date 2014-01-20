@@ -1,0 +1,28 @@
+<% active = ['admin/organizations', 'admin/users'].include?(params[:controller]) -%>
+<% if false && current_user.organization.present? && current_user.organization_owner %>
+  <nav class="account-settings">
+    <div class="inner">
+      <a href="<%= organization_url %>" class="<%= 'selected' if active %>">
+        <span class="icon organization"></span>
+        <span class="info">
+          <p class="strong">Manage your seats</p>
+          <p><%= current_user.organization.users.count %> of <%= current_user.organization.seats %> in use</p>  
+        </span>
+      </a>
+      <a href="<%= account_url %>">
+        <span class="icon settings"></span>
+        <span class="info">
+          <p class="strong">Account settings</p>
+          <p>Invoicing, access,...</p>
+        </span>
+      </a>
+      <a class="disabled">
+        <span class="icon stats"></span>
+        <span class="info">
+          <p class="strong">Public page</p>
+          <p>Share your data</p>
+        </span>
+      </a>
+    </div>
+  </nav>
+<% end %>

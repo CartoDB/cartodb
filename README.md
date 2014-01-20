@@ -116,6 +116,10 @@ Add CartoDB PostgreSQL PPA
 ```bash
 sudo add-apt-repository  ppa:cartodb/postgresql
 ```
+Add CartoDB Varnish PPA
+```bash
+sudo add-apt-repository  ppa:cartodb/varnish
+```
 
 ## Some dependencies ##
 
@@ -172,6 +176,21 @@ plpython is required for Python support
 sudo apt-get install postgresql-plpython-9.1
 ```
 
+
+For local development, all connections must be performed using method "trust" inside config file `pg_hba.conf`.
+
+```bash
+/etc/postgresql/9.1/main$ sudo vim pg_hba.conf
+```
+
+And change inside all local connections from peer/md5/... to trust.
+
+Then restart postgres and you're done.
+```bash
+sudo /etc/init.d/postgresql restart
+```
+
+
 ## Install PostGIS ##
 [PostGIS](http://postgis.refractions.net) is
 the geospatial extension that allows PostgreSQL to support geospatial
@@ -223,6 +242,26 @@ The tiler API and the SQL API are both [Node.js](http://nodejs.org) apps.
 ```bash
 sudo apt-get install nodejs npm
 ```
+
+We currently run our node apps against version 0.8.x. You can install NVM 
+to handle multiple versions in the same system:
+
+Using npm:
+```bash
+npm install -g nvm
+```
+
+Or directly:
+```bash
+curl https://raw.github.com/creationix/nvm/master/install.sh | sh
+```
+
+Then you can install and use any version, for example:
+```bash
+nvm install v0.8.9
+nvm use 0.8.9
+```
+
 
 ## Install Redis ##
 Components of CartoDB, like Windshaft or the SQL API depend on [Redis](http://redis.io).
@@ -354,7 +393,7 @@ sh script/create_dev_user ${SUBDOMAIN}
 Start the resque daemon (needed for import jobs):
 
 ```bash
-$ QUEUE=* bundle exec rake resque:work
+$ bundle exec script/resque
 ```
 
 Finally, start the CartoDB development server on port 3000:
@@ -427,3 +466,6 @@ See TESTING
   - Xabel Álvarez (@johnhackworth)
   - Lorenzo Planas (@lorenzoplanas)
   - Alejandro Martínez (@iamzenitram)
+  - Carlos Matallín (@matallo)
+  - Rafa Casado (@rafacas)
+  - Diego Muñoz (@kartones)

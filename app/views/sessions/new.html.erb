@@ -11,10 +11,10 @@
         <% if @error %>
           <div class="field_with_errors">
         <% end %>          
-        <%= text_field_tag :email, '', :title => "Email or username", :'data-label' => "Email or username", :class => (flash[:alert] || @error ? 'error' : nil) %>
+        <%= text_field_tag :email, CartoDB.extract_subdomain(request), :title => "Email or username", :'data-label' => "Email or username", :class => (flash[:alert] || @error ? 'error' : nil) %>
         <% if @error %>  
           </div>
-          <div class="error"><%= @error %></div>
+          <div class="field_error"><%= @error %></div>
         <% end %>
       </div>
       <div class="field margin20">
@@ -24,7 +24,7 @@
         <%= password_field_tag :password, '', :title => "Password", :'data-label' => "Password", :class => (flash[:alert] || @error ? 'error' : nil) %>
         <% if @error %>  
           </div>
-          <div class="error"><%= @error %></div>
+          <div class="field_error"><%= @error %></div>
         <% end %>
       </div>
       <div class="field margin25">

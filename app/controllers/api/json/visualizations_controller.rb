@@ -46,6 +46,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
       visualizations: representation,
       total_entries:  collection.total_entries
     }
+    current_user.update_visualization_metrics
     render_jsonp(response)
   end #index
 
@@ -59,7 +60,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
                   ).copy
     elsif params[:tables]
       tables    = params[:tables].map do |table_name| 
-                    ::Table.find_by_subdomain(request.subdomain, table_name)
+                    ::Table.find_by_subdomain(CartoDB.extract_subdomain(request), table_name)
                   end
       blender   = Visualization::TableBlender.new(current_user, tables)
       map       = blender.blend
@@ -81,6 +82,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     collection  = Visualization::Collection.new.fetch
     collection.add(member)
     collection.store
+    current_user.update_visualization_metrics
     render_jsonp(member)
   rescue CartoDB::InvalidMember => exception
     render_jsonp({ errors: member.full_errors }, 400)
@@ -110,8 +112,8 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   def destroy
     member = Visualization::Member.new(id: params.fetch('id')).fetch
     return(head 401) unless member.authorize?(current_user)
-
     member.delete
+    current_user.update_visualization_metrics
     return head 204
   rescue KeyError
     head(404)
@@ -126,7 +128,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   end #stats
 
   def vizjson1
-    visualization, table = locator.get(params.fetch(:id), request.subdomain)
+    visualization, table = locator.get(params.fetch(:id), CartoDB.extract_subdomain(request))
     return(head 404) unless visualization
     return(head 403) unless allow_vizjson_v1_for?(visualization.table)
     set_vizjson_response_headers_for(visualization)
@@ -139,7 +141,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   end #vizjson1
 
   def vizjson2
-    visualization, table = locator.get(params.fetch(:id), request.subdomain)
+    visualization, table = locator.get(params.fetch(:id), CartoDB.extract_subdomain(request))
     return(head 404) unless visualization
     return(head 403) unless allow_vizjson_v2_for?(visualization)
     set_vizjson_response_headers_for(visualization)
@@ -222,7 +224,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
         WHERE relname IN ?}, table_names
       ).all.map { |r| 
         [r[:table_name], {
-          size: r[:total_relation_size],
+          size: r[:total_relation_size].to_i / 2,
           rows: r[:reltuples]
         }]
       }

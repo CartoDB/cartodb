@@ -290,21 +290,8 @@ sudo apt-get install build-essential
 easy_install pip
 export CPLUS_INCLUDE_PATH=/usr/include/gdal
 export C_INCLUDE_PATH=/usr/include/gdal
-pip install -r python_requirements.txt
+pip install --no-use-wheel -r python_requirements.txt
 ```
-
-Note: If pip fails with an error like `pip's wheel support requires setuptools >= 0.8`, 
-a workaround is to comment that check. On a Python 2.7 install it is:
-
-```bash
-vim /usr/local/lib/python2.7/dist-packages/pip-1.5-py2.7.egg/pip/index.py +89
-# Comment the following check:
-@use_wheel.setter
-  def use_wheel(self, value):
-    self._use_wheel = value
-    ##if self._use_wheel and not wheel_setuptools_support():
-      ##raise InstallationError("pip's wheel support requires setuptools >= 0.8 for dist-info support.")
-```      
 
 ## Install Varnish
 [Varnish](https://www.varnish-cache.org) is a web application

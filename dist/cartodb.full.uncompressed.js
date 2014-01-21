@@ -1,6 +1,6 @@
-// cartodb.js version: 3.5.05
+// cartodb.js version: 3.5.06-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: e49e40fe6729b06c7b9ffe3264df610f8b07c679
+// sha: 4cfe2bf7c5182297d428653e4d7892f2be5d2f57
 (function() {
   var root = this;
 
@@ -20429,7 +20429,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.5.05';
+    cdb.VERSION = '3.5.06-dev';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -20498,6 +20498,7 @@ this.LZMA = LZMA;
         'geo/ui/tiles_loader.js',
         'geo/ui/infobox.js',
         'geo/ui/tooltip.js',
+        'geo/ui/fullscreen.js',
 
         'geo/layer_definition.js',
         'geo/common.js',
@@ -25226,6 +25227,71 @@ cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
 
 });
 
+/**
+ *  FullScreen widget:
+ *
+ *  var widget = new cdb.ui.common.FullScreen({
+ *    doc: ".container", // optional; if not specified, we do the fullscreen of the whole window
+ *    template: this.getTemplate("table/views/fullscreen")
+ *  });
+ *
+ */
+
+cdb.ui.common.FullScreen = cdb.core.View.extend({
+
+  tagName: 'div',
+  className: 'cartodb-fullscreen',
+
+  events: {
+
+    "click a": "_toggleFullScreen"
+
+  },
+
+  initialize: function() {
+
+    _.bindAll(this, 'render');
+    _.defaults(this.options, this.default_options);
+
+  },
+
+  _toggleFullScreen: function(ev) {
+
+    ev.stopPropagation();
+
+    var doc   = window.document;
+    var docEl = doc.documentElement;
+
+    if (this.options.doc) { // we use a custom element
+      docEl = $(this.options.doc)[0];
+    }
+
+    var requestFullScreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen;
+    var cancelFullScreen = doc.exitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen;
+
+    if(!doc.fullscreenElement && !doc.mozFullScreenElement && !doc.webkitFullscreenElement) {
+
+      requestFullScreen.call(docEl);
+
+    } else {
+
+      cancelFullScreen.call(doc);
+
+    }
+  },
+
+  render: function() {
+
+    var $el = this.$el;
+
+    var options = _.extend(this.options);
+
+    $el.html(this.options.template(options));
+
+    return this;
+  }
+
+});
 
 
 function LayerDefinition(layerDefinition, options) {
@@ -28513,6 +28579,7 @@ cdb.ui.common.Dialog = cdb.core.View.extend({
   }
 
 });
+
 cdb.ui.common.ShareDialog = cdb.ui.common.Dialog.extend({
 
   tagName: 'div',
@@ -29694,6 +29761,8 @@ var Vis = cdb.core.View.extend({
       }
     }
 
+    if (options.fullscreen) this.addFullScreen();
+
     if (device) this.addMobile(torqueLayer);
 
     // set layer options
@@ -29741,6 +29810,14 @@ var Vis = cdb.core.View.extend({
     })
 
     return this;
+  },
+
+  addFullScreen: function() {
+
+    this.addOverlay({
+      type: 'fullscreen'
+    });
+
   },
 
   addMobile: function(torqueLayer) {
@@ -30562,6 +30639,22 @@ cdb.vis.Overlay.register('layer_selector', function(data, vis) {
 
 
   return layerSelector.render();
+});
+
+// fullscreen
+cdb.vis.Overlay.register('fullscreen', function(data, vis) {
+
+  var template = cdb.core.Template.compile(
+    data.template || '<a href="#"></a>',
+    data.templateType || 'mustache'
+  );
+
+  var fullscreen = new cdb.ui.common.FullScreen({
+    template: template
+  });
+
+  return fullscreen.render();
+
 });
 
 // search content

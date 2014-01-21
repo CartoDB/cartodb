@@ -1,6 +1,6 @@
 // cartodb.js version: 3.5.06-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: a4a65ea9ba7504a6312dc462bde181461ca556ca
+// sha: d9706c372c292359b6cd7d7694c56ff4496b8f23
 (function() {
   var root = this;
 
@@ -28513,6 +28513,7 @@ cdb.ui.common.Dialog = cdb.core.View.extend({
   }
 
 });
+
 cdb.ui.common.ShareDialog = cdb.ui.common.Dialog.extend({
 
   tagName: 'div',
@@ -29694,6 +29695,8 @@ var Vis = cdb.core.View.extend({
       }
     }
 
+    if (options.fullscreen) this.addFullScreen();
+
     if (device) this.addMobile(torqueLayer);
 
     // set layer options
@@ -29741,6 +29744,14 @@ var Vis = cdb.core.View.extend({
     })
 
     return this;
+  },
+
+  addFullScreen: function() {
+
+    this.addOverlay({
+      type: 'fullscreen'
+    });
+
   },
 
   addMobile: function(torqueLayer) {
@@ -30562,6 +30573,22 @@ cdb.vis.Overlay.register('layer_selector', function(data, vis) {
 
 
   return layerSelector.render();
+});
+
+// fullscreen
+cdb.vis.Overlay.register('fullscreen', function(data, vis) {
+
+  var template = cdb.core.Template.compile(
+    data.template || '<a href="#"></a>',
+    data.templateType || 'mustache'
+  );
+
+  var fullscreen = new cdb.ui.common.FullScreen({
+    template: template
+  });
+
+  return fullscreen.render();
+
 });
 
 // search content

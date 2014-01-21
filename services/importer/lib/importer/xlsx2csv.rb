@@ -19,6 +19,7 @@ module CartoDB
       def run
         job.log 'Converting XSLX to CSV'
         spreadsheet = Roo::Spreadsheet.open(filepath)
+        job.log "Orig file: #{filepath}\nTemp destination: #{converted_filepath}"
         spreadsheet.to_csv(converted_filepath)
         CsvNormalizer.new(converted_filepath, job).run
         self

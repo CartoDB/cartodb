@@ -95,6 +95,21 @@ describe CsvNormalizer do
     filepath
   end #utf8_factory
 
+  def spaces_and_commas_factory
+    filepath = "/var/tmp/#{Time.now.to_f}-#{rand(999)}.csv"
+
+      ::CSV.open(filepath, 'wb', col_sep: ",") do |csv|
+          csv << ["name", "description", "field_3"]
+          csv << ["normal 1 1", "normal 1 2", "normal 1 3"]
+          csv << ["normal 2 1", "normal 2 2", "normal 2 3"]
+          csv << ["normal 3 1 .", "normal 3 2 .", "normal 3 3 ."]
+          csv << ["normal 4 1", "normal 4 2", "normal 4 3"]
+          csv << ["normal 5 1 . . ", "normal 5 2 . . ", "normal 5 3 . . "]
+      end
+
+      filepath
+  end #spaces_and_commas_factory
+
   def utf16le_factory
     filepath = "/var/tmp/#{Time.now.to_f}-#{rand(999)}.csv"
 

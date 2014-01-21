@@ -141,16 +141,7 @@ namespace :cartodb do
     task :reset_trigger_check_quota => :environment do
       count = User.count
       User.all.each_with_index do |user, i|
-        # rebuild quota trigger
-        user.add_python
-        user.tables.all.each do |table|
-          begin
-            table.set_trigger_check_quota
-            puts "OK #{user.username} => #{table.name}"
-          rescue => e
-            puts "FAIL #{user.username} => #{table.name} #{e.message}"
-          end
-        end
+        user.set_trigger_check_quota
       end
     end
 
@@ -163,14 +154,8 @@ namespace :cartodb do
       quota = args[:quota_in_mb].to_i * 1024 * 1024
       user.update(:quota_in_bytes => quota)
       
-      user.add_python
-              
       # rebuild quota trigger
-      user.tables.all.each do |table|
-      
-        # reset quota trigger
-        table.set_trigger_check_quota
-      end  
+      user.rebuild_quota_trigger
       
       puts "User: #{user.username} quota updated to: #{args[:quota_in_mb]}MB. #{user.tables.count} tables updated."
     end

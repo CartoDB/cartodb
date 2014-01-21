@@ -670,9 +670,9 @@ $$
     update_gauge("visualizations.derived", visualization_count)
   end
   
-  def rebuild_quota_trigger
-    load_cartodb_functions
-    puts "Rebuilding quota trigger in db '#{database_name}' (#{username})"
+  def set_trigger_check_quota
+    self.rebuild_quota_trigger
+    #load_cartodb_functions
     tables.all.each do |table|
       begin
         table.set_trigger_check_quota
@@ -680,6 +680,17 @@ $$
         next if e.message =~ /.*does not exist\s*/
       end
     end
+  end
+
+  def rebuild_quota_trigger
+    puts "Rebuilding quota trigger in db '#{database_name}' (#{username})"
+    self.in_database(:as => :superuser).run(<<-TRIGGER
+      DROP FUNCTION IF EXISTS public._CDB_UserQuotaInBytes();
+      CREATE OR REPLACE FUNCTION public._CDB_UserQuotaInBytes() RETURNS int8 AS $$
+        SELECT #{self.quota_in_bytes}::int8
+      $$ LANGUAGE 'sql' IMMUTABLE;
+    TRIGGER
+    )
   end
 
   def importing_jobs
@@ -749,6 +760,7 @@ $$
     create_schemas_and_set_permissions
     set_database_permissions
     load_cartodb_functions
+    rebuild_quota_trigger
   end
 
   def create_schemas_and_set_permissions

@@ -479,8 +479,14 @@
         div.shadow {
           top:244px;
         }
-
       }
+      // Visualization table
+      &.vis {
+        div.shadow {
+          top:215px;
+        } 
+      }
+
       // tbody
 
       // Loaders

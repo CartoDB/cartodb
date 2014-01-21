@@ -114,9 +114,16 @@
       }
     }
 
-    div.cartodb-searchbox {display:none;}
-    div.cartodb-zoom {top:0;}
-    div.cartodb-layer-selector-box { display:none; font-weight: normal; }
+    div.cartodb-fullscreen {
+      display:none;
+      position:relative;
+      float:right;
+      z-index: 5;
+    }
+
+    div.cartodb-searchbox { display:none; margin-right: 10px; }
+    div.cartodb-zoom { top:0; }
+    div.cartodb-layer-selector-box { display:none; font-weight: normal; margin-right: 10px; }
     div.cartodb-legends {
       position:absolute;
       display:none;

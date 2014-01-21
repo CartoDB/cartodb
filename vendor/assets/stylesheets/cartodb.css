@@ -834,11 +834,8 @@ div.cartodb-popup.header.yellow a.cartodb-popup-close-button:hover {
     cursor: pointer;
   }
 
-  .cartodb-fullscreen { 
-  }
-
   .cartodb-fullscreen a:active { 
-    background-position: 5px 5px;
+    background-position: 5px 5px!important;
   }
   .cartodb-fullscreen a:hover { 
     background-position: -25px 5px;

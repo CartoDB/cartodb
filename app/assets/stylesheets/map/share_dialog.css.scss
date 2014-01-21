@@ -24,6 +24,18 @@
     border-bottom: 1px solid #E5E5E5;
   }
 
+    .cartodb-map_wrapper:-webkit-full-screen {
+      width: 100% !important;
+      height:100%!important;;
+      display:block!important;
+    }
+    .cartodb-map_wrapper:-moz-full-screen {
+      width: 100% !important;
+      height:100%!important;;
+      display:block!important;
+    }
+
+
   .cartodb-map_wrapper {
     position: relative;
     @include inline-block();

@@ -1,6 +1,6 @@
 // cartodb.js version: 3.5.06-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: 9476d659629026afb3d82afd1180ed2f7a97d2c7
+// sha: 4cfe2bf7c5182297d428653e4d7892f2be5d2f57
 (function() {
   var root = this;
 
@@ -25233,65 +25233,43 @@ cdb.ui.common.FullScreen = cdb.core.View.extend({
   className: 'cartodb-fullscreen',
 
   events: {
+
     "click a": "_toggleFullScreen"
+
   },
 
   initialize: function() {
 
-    _.defaults(this.options, this.default_options);
-
     _.bindAll(this, 'render');
-
-    var self = this;
+    _.defaults(this.options, this.default_options);
 
   },
 
-  _stopPropagation: function(ev) {
+  _toggleFullScreen: function(ev) {
 
     ev.stopPropagation();
 
-  },
+    if (this.options.disabled) return;
 
-  open: function() {
-
-    var self = this;
-
-    this.$el.show(0, function(){
-      self.isOpen = true;
-    });
-
-  },
-
-  hide: function() {
-
-    var self = this;
-
-    this.$el.hide(0);
-
-  },
-
-  toggle: function() {
-
-    if (this.isOpen) {
-      this.hide();
+    if (this.options.doc) {
+      var docEl = $(this.options.doc)[0];
+      var doc   = window.document;
     } else {
-      this.open();
+      var doc   = window.document;
+      var docEl = doc.documentElement;
     }
-
-  },
-
-  _toggleFullScreen: function() {
-    var doc = window.document;
-    var docEl = doc.documentElement;
 
     var requestFullScreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen;
     var cancelFullScreen = doc.exitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen;
 
     if(!doc.fullscreenElement && !doc.mozFullScreenElement && !doc.webkitFullscreenElement) {
+
       requestFullScreen.call(docEl);
-    }
-    else {
+
+    } else {
+
       cancelFullScreen.call(doc);
+
     }
   },
 

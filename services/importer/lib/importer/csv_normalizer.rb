@@ -9,11 +9,12 @@ require_relative './source_file'
 module CartoDB
   module Importer2
     class CsvNormalizer
-      LINES_FOR_DETECTION   = 25        # How many lines to read?
+      LINES_FOR_DETECTION   = 100       # How many lines to read?
       SAMPLE_READ_LIMIT     = 500000   # Read big enough sample bytes for the encoding sampling
       COMMON_DELIMITERS     = [',', "\t", ' ', ';']
       DEFAULT_DELIMITER     = ','
       DEFAULT_ENCODING      = 'UTF-8'
+      DEFAULT_QUOTE         = '"'
       OUTPUT_DELIMITER      = ','       # Normalized CSVs will use this delimiter
       ENCODING_CONFIDENCE   = 30 
       ACCEPTABLE_ENCODINGS  = %w{ ISO-8859-1 ISO-8859-2 UTF-8 }
@@ -107,7 +108,7 @@ module CartoDB
       def csv_options
         {
           col_sep:            delimiter,
-          quote_char:         '"'
+          quote_char:         DEFAULT_QUOTE
         }
       end #csv_options
 

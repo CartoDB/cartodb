@@ -9,23 +9,20 @@ describe CsvNormalizer do
     it 'transforms the file using a proper comma delimiter' do
       fixture = tab_delimiter_factory
       csv     = CsvNormalizer.new(fixture)
+
+      csv.detect_delimiter
+
       csv.delimiter.should eq "\t"
       csv.run
       csv.delimiter.should eq ','
     end
   end #run
 
-  describe '#temporary_directory' do
-    it 'generates a temporary directory' do
-      pending
-    end 
-  end #temporary_directory
-
-  describe '#delimiter' do
-    it 'guesses the delimiter' do
+  describe '#detect_delimiter' do
+    it 'detects the delimiter' do
       fixture = tab_delimiter_factory
       csv     = CsvNormalizer.new(fixture)
-      csv.delimiter.should eq "\t"
+      csv.detect_delimiter.should eq "\t"
 
       FileUtils.rm(fixture)
     end
@@ -55,10 +52,14 @@ describe CsvNormalizer do
     it 'returns true if CSV header has only one column' do
       fixture = single_column_factory
       csv     = CsvNormalizer.new(fixture)
+      csv.detect_delimiter
+
       csv.single_column?.should eq true
 
       fixture = tab_delimiter_factory
       csv     = CsvNormalizer.new(fixture)
+      csv.detect_delimiter
+
       csv.single_column?.should eq false
     end
   end #single_column?

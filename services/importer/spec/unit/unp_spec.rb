@@ -133,7 +133,7 @@ describe Unp do
       Open3.expects('capture3').with('which unp').returns [0, 0, 1]
       unp = Unp.new
 
-      expect { unp.command_for('wadus') }.to raise_error ExtractionError
+      expect { unp.command_for('wadus') }.to raise_error InstallError
     end
   end #command_for
 

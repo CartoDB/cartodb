@@ -116,6 +116,10 @@ Add CartoDB PostgreSQL PPA
 ```bash
 sudo add-apt-repository  ppa:cartodb/postgresql
 ```
+Add CartoDB Varnish PPA
+```bash
+sudo add-apt-repository  ppa:cartodb/varnish
+```
 
 ## Some dependencies ##
 
@@ -389,7 +393,7 @@ sh script/create_dev_user ${SUBDOMAIN}
 Start the resque daemon (needed for import jobs):
 
 ```bash
-$ QUEUE=* bundle exec rake resque:work
+$ bundle exec script/resque
 ```
 
 Finally, start the CartoDB development server on port 3000:
@@ -462,3 +466,6 @@ See TESTING
   - Xabel Álvarez (@johnhackworth)
   - Lorenzo Planas (@lorenzoplanas)
   - Alejandro Martínez (@iamzenitram)
+  - Carlos Matallín (@matallo)
+  - Rafa Casado (@rafacas)
+  - Diego Muñoz (@kartones)

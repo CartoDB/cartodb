@@ -46,6 +46,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
       visualizations: representation,
       total_entries:  collection.total_entries
     }
+    current_user.update_visualization_metrics
     render_jsonp(response)
   end #index
 
@@ -81,6 +82,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     collection  = Visualization::Collection.new.fetch
     collection.add(member)
     collection.store
+    current_user.update_visualization_metrics
     render_jsonp(member)
   rescue CartoDB::InvalidMember => exception
     render_jsonp({ errors: member.full_errors }, 400)
@@ -110,8 +112,8 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   def destroy
     member = Visualization::Member.new(id: params.fetch('id')).fetch
     return(head 401) unless member.authorize?(current_user)
-
     member.delete
+    current_user.update_visualization_metrics
     return head 204
   rescue KeyError
     head(404)

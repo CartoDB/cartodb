@@ -841,16 +841,20 @@ div.cartodb-popup.header.yellow a.cartodb-popup-close-button:hover {
     background-position: -25px 5px;
   }
 
-  .cartodb-fullscreen a { 
+  .cartodb-fullscreen { 
     position: relative;
-    display:block; width: 20px; height: 20px;
-    background: #ffffff url('../img/fullscreen.png') no-repeat 5px 5px;
+    margin: 20px 20px 0 0;
+    float:right;
+  }
+
+  .cartodb-fullscreen a { 
+    display:block; 
+    width: 20px; 
+    height: 20px;
     padding: 5px;
 
-    float:right;
-    margin: 20px 20px 0 0;
-    color: #CCCCCC;
-    font-size:13px;
+    background: #ffffff url('../img/fullscreen.png') no-repeat 5px 5px;
+
     -webkit-box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
     -moz-box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
     box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;

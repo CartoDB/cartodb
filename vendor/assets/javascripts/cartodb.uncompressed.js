@@ -25227,6 +25227,16 @@ cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
 
 });
 
+/**
+ *  FullScreen widget:
+ *
+ *  var widget = new cdb.ui.common.FullScreen({
+ *    doc: ".container", // optional; if not specified, we do the fullscreen of the whole window
+ *    template: this.getTemplate("table/views/fullscreen")
+ *  });
+ *
+ */
+
 cdb.ui.common.FullScreen = cdb.core.View.extend({
 
   tagName: 'div',
@@ -25249,14 +25259,11 @@ cdb.ui.common.FullScreen = cdb.core.View.extend({
 
     ev.stopPropagation();
 
-    if (this.options.disabled) return;
+    var doc   = window.document;
+    var docEl = doc.documentElement;
 
-    if (this.options.doc) {
-      var docEl = $(this.options.doc)[0];
-      var doc   = window.document;
-    } else {
-      var doc   = window.document;
-      var docEl = doc.documentElement;
+    if (this.options.doc) { // we use a custom element
+      docEl = $(this.options.doc)[0];
     }
 
     var requestFullScreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen;

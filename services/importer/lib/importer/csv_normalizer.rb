@@ -12,6 +12,7 @@ module CartoDB
       LINES_FOR_DETECTION   = 100       # How many lines to read?
       SAMPLE_READ_LIMIT     = 500000   # Read big enough sample bytes for the encoding sampling
       COMMON_DELIMITERS     = [',', "\t", ' ', ';']
+      DELIMITER_WEIGHTS     = {','=>2, "\t"=>2, ' '=>1, ';'=>2}
       DEFAULT_DELIMITER     = ','
       DEFAULT_ENCODING      = 'UTF-8'
       DEFAULT_QUOTE         = '"'
@@ -62,14 +63,28 @@ module CartoDB
         ]
 
         variances = Hash.new
+        @delimiter = DEFAULT_DELIMITER
+        
+        use_variance = true
         occurrences.each { |key, values| 
-          variances[key] = sample_variance(values) unless values.first == 0
+          if values.length > 1
+            variances[key] = sample_variance(values) unless values.first == 0
+          elsif values.length == 1
+            # If only detected a single line of data, cannot use variance
+            variances[key] = values.first * DELIMITER_WEIGHTS[key]
+            use_variance = false
+          else
+            use_variance = false
+          end
         }
+
         if variances.length > 0
-          @delimiter = variances.sort {|a, b| a.last <=> b.last }.first.first
-        else
-          # Could not guess the delimiter, or maybe has a single column
-          @delimiter = DEFAULT_DELIMITER
+          if use_variance
+            @delimiter = variances.sort {|a, b| a.last <=> b.last }.first.first
+          else
+            # Use whatever delimiter appears more and hope for the best
+            @delimiter = variances.sort {|a, b| b.last <=> a.last }.first.first
+          end
         end
 
       end #detect_delimiter

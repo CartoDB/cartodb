@@ -533,9 +533,21 @@ Map.prototype = {
 };
 
 NamedMap.prototype = _.extend({}, Map.prototype, {
+
   toJSON: function() {
     return {};
-  }
+  },
+
+  containInfowindow: function() {
+      var layers = this.options.layers || [];
+      for(var i = 0; i < layers.length; ++i) {
+        var infowindow = layers[i].infowindow;
+        if (infowindow && infowindow.fields && infowindow.fields.length > 0) {
+          return true;
+        }
+      }
+      return false;
+    }
 });
 
 LayerDefinition.prototype = _.extend({}, Map.prototype, {

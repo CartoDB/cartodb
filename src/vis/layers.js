@@ -92,6 +92,11 @@ Layers.register('layergroup', function(vis, data) {
   return new cdb.geo.CartoDBGroupLayer(data);
 });
 
+Layers.register('namedmap', function(vis, data) {
+  normalizeOptions(vis, data);
+  return new cdb.geo.CartoDBNamedMapLayer(data);
+});
+
 Layers.register('torque', function(vis, data) {
   // default is https
   if(vis.https) {

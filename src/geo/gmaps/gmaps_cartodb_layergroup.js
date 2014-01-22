@@ -24,25 +24,54 @@ Projector.prototype.pixelToLatLng = function(point) {
   //return this.map.getProjection().fromPointToLatLng(point);
 };
 
-var CartoDBLayerGroup = function(opts) {
+var default_options = {
+  opacity:        0.99,
+  attribution:    "CartoDB",
+  debug:          false,
+  visible:        true,
+  added:          false,
+  tiler_domain:   "cartodb.com",
+  tiler_port:     "80",
+  tiler_protocol: "http",
+  sql_api_domain:     "cartodb.com",
+  sql_api_port:       "80",
+  sql_api_protocol:   "http",
+  extra_params:   {
+  },
+  cdn_url:        null,
+  subdomains:     null
+};
 
-  var default_options = {
-    opacity:        0.99,
-    attribution:    "CartoDB",
-    debug:          false,
-    visible:        true,
-    added:          false,
-    tiler_domain:   "cartodb.com",
-    tiler_port:     "80",
-    tiler_protocol: "http",
-    sql_api_domain:     "cartodb.com",
-    sql_api_port:       "80",
-    sql_api_protocol:   "http",
-    extra_params:   {
-    },
-    cdn_url:        null,
-    subdomains:     null
-  };
+
+var CartoDBNamedMap = function(opts) {
+
+  this.options = _.defaults(opts, default_options);
+  this.tiles = 0;
+  this.tilejson = null;
+  this.interaction = [];
+
+  if (!opts.named_map && !opts.sublayers) {
+      throw new Error('cartodb-gmaps needs at least the named_map');
+  }
+
+  // Add CartoDB logo
+  if (this.options.cartodb_logo != false)
+    cdb.geo.common.CartoDBLogo.addWadus({ left: 74, bottom:8 }, 2000, this.options.map.getDiv());
+
+  wax.g.connector.call(this, opts);
+
+  // lovely wax connector overwrites options so set them again
+  // TODO: remove wax.connector here
+   _.extend(this.options, opts);
+  this.projector = new Projector(opts.map);
+  NamedMap.call(this, this.options.named_map, this.options);
+  CartoDBLayerCommon.call(this);
+  // precache
+  this.update();
+};
+
+
+var CartoDBLayerGroup = function(opts) {
 
   this.options = _.defaults(opts, default_options);
   this.tiles = 0;
@@ -74,14 +103,9 @@ var CartoDBLayerGroup = function(opts) {
   this.update();
 };
 
-CartoDBLayerGroup.Projector = Projector;
+function CartoDBLayerGroupBase() {}
 
-CartoDBLayerGroup.prototype = new wax.g.connector();
-_.extend(CartoDBLayerGroup.prototype, CartoDBLayerCommon.prototype, LayerDefinition.prototype);
-
-CartoDBLayerGroup.prototype.interactionClass = wax.g.interaction;
-
-CartoDBLayerGroup.prototype.setOpacity = function(opacity) {
+CartoDBLayerGroupBase.prototype.setOpacity = function(opacity) {
   if (isNaN(opacity) || opacity > 1 || opacity < 0) {
     throw new Error(opacity + ' is not a valid value, should be in [0, 1] range');
   }
@@ -95,9 +119,9 @@ CartoDBLayerGroup.prototype.setOpacity = function(opacity) {
 
 };
 
-CartoDBLayerGroup.prototype.setAttribution = function() {};
+CartoDBLayerGroupBase.prototype.setAttribution = function() {};
 
-CartoDBLayerGroup.prototype.getTile = function(coord, zoom, ownerDocument) {
+CartoDBLayerGroupBase.prototype.getTile = function(coord, zoom, ownerDocument) {
   var EMPTY_GIF = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
 
   var self = this;
@@ -131,16 +155,16 @@ CartoDBLayerGroup.prototype.getTile = function(coord, zoom, ownerDocument) {
   return im;
 };
 
-CartoDBLayerGroup.prototype.onAdd = function () {
+CartoDBLayerGroupBase.prototype.onAdd = function () {
   //this.update();
 };
 
-CartoDBLayerGroup.prototype.clear = function () {
+CartoDBLayerGroupBase.prototype.clear = function () {
   this._clearInteraction();
   self.finishLoading && self.finishLoading();
 };
 
-CartoDBLayerGroup.prototype.update = function (done) {
+CartoDBLayerGroupBase.prototype.update = function (done) {
   var self = this;
   this.loading && this.loading();
   this.getTiles(function(urls, err) {
@@ -160,7 +184,7 @@ CartoDBLayerGroup.prototype.update = function (done) {
 };
 
 
-CartoDBLayerGroup.prototype.refreshView = function() {
+CartoDBLayerGroupBase.prototype.refreshView = function() {
   var self = this;
   var map = this.options.map;
   map.overlayMapTypes.forEach(
@@ -172,17 +196,17 @@ CartoDBLayerGroup.prototype.refreshView = function() {
     }
   );
 }
-CartoDBLayerGroup.prototype.onLayerDefinitionUpdated = function() {
+CartoDBLayerGroupBase.prototype.onLayerDefinitionUpdated = function() {
     this.update();
 }
 
-CartoDBLayerGroup.prototype._checkLayer = function() {
+CartoDBLayerGroupBase.prototype._checkLayer = function() {
   if (!this.options.added) {
     throw new Error('the layer is not still added to the map');
   }
 }
 
-CartoDBLayerGroup.prototype._findPos = function (map,o) {
+CartoDBLayerGroupBase.prototype._findPos = function (map,o) {
   var curleft, cartop;
   curleft = curtop = 0;
   var obj = map.getDiv();
@@ -196,14 +220,14 @@ CartoDBLayerGroup.prototype._findPos = function (map,o) {
   );
 };
 
-CartoDBLayerGroup.prototype._manageOffEvents = function(map, o){
+CartoDBLayerGroupBase.prototype._manageOffEvents = function(map, o){
   if (this.options.featureOut) {
     return this.options.featureOut && this.options.featureOut(o.e, o.layer);
   }
 };
 
 
-CartoDBLayerGroup.prototype._manageOnEvents = function(map,o) {
+CartoDBLayerGroupBase.prototype._manageOnEvents = function(map,o) {
   var point  = this._findPos(map, o);
   var latlng = this.projector.pixelToLatLng(point);
   var event_type = o.e.type.toLowerCase();
@@ -228,7 +252,21 @@ CartoDBLayerGroup.prototype._manageOnEvents = function(map,o) {
   }
 }
 
+// CartoDBLayerGroup type
+CartoDBLayerGroup.Projector = Projector;
+CartoDBLayerGroup.prototype = new wax.g.connector();
+_.extend(CartoDBLayerGroup.prototype, CartoDBLayerGroupBase.prototype, CartoDBLayerCommon.prototype, LayerDefinition.prototype);
+CartoDBLayerGroup.prototype.interactionClass = wax.g.interaction;
+
+
+// CartoDBNamedMap
+CartoDBNamedMap.prototype = new wax.g.connector();
+_.extend(CartoDBNamedMap.prototype, CartoDBLayerGroupBase.prototype, CartoDBLayerCommon.prototype, NamedMap.prototype);
+
+
+// export
 cdb.geo.CartoDBLayerGroupGMaps = CartoDBLayerGroup;
+cdb.geo.CartoDBNamedMapGMaps = CartoDBNamedMap;
 
 /*
  *

@@ -4,7 +4,8 @@
 if(typeof(L) == "undefined")
   return;
 
-L.CartoDBGroupLayer = L.TileLayer.extend({
+
+L.CartoDBGroupLayerBase = L.TileLayer.extend({
 
   interactionClass: wax.leaf.interaction,
 
@@ -261,6 +262,12 @@ L.CartoDBGroupLayer = L.TileLayer.extend({
 
 });
 
+L.CartoDBGroupLayer = L.CartoDBGroupLayerBase.extend({
+  includes: [
+    LayerDefinition.prototype,
+  ]
+});
+
 cdb.geo.LeafLetCartoDBLayerGroupView = L.CartoDBGroupLayer.extend({
 
   includes: [
@@ -329,6 +336,37 @@ cdb.geo.LeafLetCartoDBLayerGroupView = L.CartoDBGroupLayer.extend({
     this.model.trigger('tileOk');
   }
 
+});
+
+L.NamedMap = L.CartoDBGroupLayerBase.extend({
+  includes: [
+    cdb.geo.LeafLetLayerView.prototype,
+    NamedMap.prototype,
+    CartoDBLayerCommon.prototype
+  ],
+
+  initialize: function (options) {
+    options = options || {};
+    // Set options
+    L.Util.setOptions(this, options);
+
+    // Some checks
+    if (!options.named_map && !options.sublayers) {
+        throw new Error('cartodb-leaflet needs at least the named_map');
+    }
+
+    /*if(!options.layer_definition) {
+      this.options.layer_definition = LayerDefinition.layerDefFromSubLayers(options.sublayers);
+    }*/
+
+    NamedMap.call(this, this.options.named_map, this.options);
+
+    this.fire = this.trigger;
+
+    CartoDBLayerCommon.call(this);
+    L.TileLayer.prototype.initialize.call(this);
+    this.interaction = [];
+  }
 });
 
 })();

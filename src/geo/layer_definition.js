@@ -1,6 +1,5 @@
 
-
-function LayerDefinition(layerDefinition, options) {
+function Map(options) {
   var self = this;
   this.options = _.defaults(options, {
     ajax: window.$ ? window.$.ajax : reqwest.compat,
@@ -12,7 +11,6 @@ function LayerDefinition(layerDefinition, options) {
     force_cors: false
   });
 
-  this.setLayerDefinition(layerDefinition, { silent: true });
   this.layerToken = null;
   this.urls = null;
   this.silent = false;
@@ -23,6 +21,20 @@ function LayerDefinition(layerDefinition, options) {
   this._waiting = false;
   this.lastTimeUpdated = null;
   this._refreshTimer = -1;
+}
+
+function NamedMap(named_map, options) {
+  var self = this;
+  Map.call(this, options);
+  this.endPoint = '/tiles/template/' + named_map.name;
+  this.layers = _.clone(named_map.layers) || [];
+}
+
+function LayerDefinition(layerDefinition, options) {
+  var self = this;
+  Map.call(this, options);
+  this.endPoint = '/tiles/layergroup';
+  this.setLayerDefinition(layerDefinition, { silent: true });
 }
 
 /**
@@ -58,7 +70,7 @@ LayerDefinition.layerDefFromSubLayers = function(sublayers) {
   return layer_definition;
 };
 
-LayerDefinition.prototype = {
+Map.prototype = {
 
   /*
    * TODO: extract these two functions to some core module
@@ -75,40 +87,6 @@ LayerDefinition.prototype = {
     return this.layers.length;
   },
 
-  setLayerDefinition: function(layerDefinition, options) {
-    options = options || {};
-    this.version = layerDefinition.version || '1.0.0';
-    this.stat_tag = layerDefinition.stat_tag;
-    this.layers = _.clone(layerDefinition.layers);
-    if(!options.silent) {
-      this._definitionUpdated();
-    }
-  },
-
-  toJSON: function() {
-    var obj = {};
-    obj.version = this.version;
-    if(this.stat_tag) {
-      obj.stat_tag = this.stat_tag;
-    }
-    obj.layers = [];
-    for(var i = 0; i < this.layers.length; ++i) {
-      var layer = this.layers[i];
-      if(!layer.options.hidden) {
-        obj.layers.push({
-          type: 'cartodb',
-          options: {
-            sql: layer.options.sql,
-            cartocss: layer.options.cartocss,
-            cartocss_version: layer.options.cartocss_version || '2.1.0',
-            interactivity: this._cleanInteractivity(layer.options.interactivity)
-          }
-        });
-      }
-    }
-    return obj;
-  },
-
   _encodeBase64Native: function (input) {
     return btoa(input)
   },
@@ -121,7 +99,7 @@ LayerDefinition.prototype = {
     var layers = [];
     for(var i = 0; i < this.layers.length; ++i) {
       var layer = this.layers[i];
-      if(!layer.options.hidden) {
+      if(layer.options && !layer.options.hidden) {
         layers.push(i);
       }
     }
@@ -217,7 +195,7 @@ LayerDefinition.prototype = {
       method: 'POST',
       dataType: 'json',
       contentType: 'application/json',
-      url: this._tilerHost() + '/tiles/layergroup' + (params.length ? "?" + params.join('&'): ''),
+      url: this._tilerHost() + this.endPoint + (params.length ? "?" + params.join('&'): ''),
       data: JSON.stringify(this.toJSON()),
       success: function(data) {
         // discard previous calls when there is another call waiting
@@ -275,7 +253,7 @@ LayerDefinition.prototype = {
       params.push(encoded);
       ajax({
         dataType: 'jsonp',
-        url: self._tilerHost() + '/tiles/layergroup?' + params.join('&'),
+        url: self._tilerHost() + self.endPoint + '?' + params.join('&'),
         success: function(data) {
           if(0 === self._queue.length) {
             callback(data);
@@ -340,24 +318,6 @@ LayerDefinition.prototype = {
     return false;
   },
 
-  removeLayer: function(layer) {
-    if(layer < this.getLayerCount() && layer >= 0) {
-      this.layers.splice(layer, 1);
-      this.interactionEnabled.splice(layer, 1);
-      this._reorderSubLayers();
-      this.invalidate();
-    }
-    return this;
-  },
-
-  _reorderSubLayers: function() {
-    for(var i = 0; i < this.layers.length; ++i) {
-      var layer = this.layers[i];
-      if(layer.sub) {
-        layer.sub._setPosition(i);
-      }
-    }
-  },
 
   getLayer: function(index) {
     return _.clone(this.layers[index]);
@@ -377,21 +337,6 @@ LayerDefinition.prototype = {
     return this;
   },
 
-  addLayer: function(def, layer) {
-    layer = layer === undefined ? this.getLayerCount(): layer;
-    if(layer <= this.getLayerCount() && layer >= 0) {
-      if(!def.sql || !def.cartocss) {
-        throw new Error("layer definition should contain at least a sql and a cartocss");
-        return this;
-      }
-      this.layers.splice(layer, 0, {
-        type: 'cartodb',
-        options: def
-      });
-      this._definitionUpdated();
-    }
-    return this;
-  },
 
   getTiles: function(callback) {
     var self = this;
@@ -459,33 +404,6 @@ LayerDefinition.prototype = {
     return attributes;
   },
 
-  /**
-   * set interactivity attributes for a layer.
-   * if attributes are passed as first param layer 0 is
-   * set
-   */
-  setInteractivity: function(layer, attributes) {
-    if(attributes === undefined) {
-      attributes = layer;
-      layer = 0;
-    }
-
-    if(layer >= this.getLayerCount() && layer < 0) {
-      throw new Error("layer does not exist");
-    }
-
-    if(typeof(attributes) == 'string') {
-      attributes = attributes.split(',');
-    }
-
-    for(var i = 0; i < attributes.length; ++i) {
-      attributes[i] = attributes[i].replace(/ /g, '');
-    }
-
-    this.layers[layer].options.interactivity = attributes;
-    this._definitionUpdated();
-    return this;
-  },
 
   onLayerDefinitionUpdated: function() {},
 
@@ -528,38 +446,6 @@ LayerDefinition.prototype = {
    * Change query of the tiles
    * @params {str} New sql for the tiles
    */
-  setQuery: function(layer, sql) {
-    if(sql === undefined) {
-      sql = layer;
-      layer = 0;
-    }
-    this.layers[layer].options.sql = sql
-    this._definitionUpdated();
-  },
-
-  getQuery: function(layer) {
-    layer = layer || 0;
-    return this.layers[layer].options.sql
-  },
-
-  /**
-   * Change style of the tiles
-   * @params {style} New carto for the tiles
-   */
-  setCartoCSS: function(layer, style, version) {
-    if(version === undefined) {
-      version = style;
-      style = layer;
-      layer = 0;
-    }
-
-    version = version || cartodb.CARTOCSS_DEFAULT_VERSION;
-
-    this.layers[layer].options.cartocss = style;
-    this.layers[layer].options.cartocss_version = version;
-    this._definitionUpdated();
-
-  },
 
   _encodeParams: function(params, included) {
     if(!params) return '';
@@ -626,14 +512,6 @@ LayerDefinition.prototype = {
     return false;
   },
 
-  /**
-   * adds a new sublayer to the layer with the sql and cartocss params
-   */
-  createSubLayer: function(attrs, options) {
-    this.addLayer(attrs);
-    return this.getSubLayer(this.getLayerCount() - 1);
-  },
-
   getSubLayer: function(index) {
     var layer = this.layers[index];
     layer.sub = layer.sub || new SubLayer(this, index);
@@ -652,8 +530,157 @@ LayerDefinition.prototype = {
     return layers;
   }
 
-
 };
+
+NamedMap.prototype = _.extend({}, Map.prototype, {
+  toJSON: function() {
+    return {};
+  }
+});
+
+LayerDefinition.prototype = _.extend({}, Map.prototype, {
+
+  setLayerDefinition: function(layerDefinition, options) {
+    options = options || {};
+    this.version = layerDefinition.version || '1.0.0';
+    this.stat_tag = layerDefinition.stat_tag;
+    this.layers = _.clone(layerDefinition.layers);
+    if(!options.silent) {
+      this._definitionUpdated();
+    }
+  },
+
+  toJSON: function() {
+    var obj = {};
+    obj.version = this.version;
+    if(this.stat_tag) {
+      obj.stat_tag = this.stat_tag;
+    }
+    obj.layers = [];
+    for(var i = 0; i < this.layers.length; ++i) {
+      var layer = this.layers[i];
+      if(!layer.options.hidden) {
+        obj.layers.push({
+          type: 'cartodb',
+          options: {
+            sql: layer.options.sql,
+            cartocss: layer.options.cartocss,
+            cartocss_version: layer.options.cartocss_version || '2.1.0',
+            interactivity: this._cleanInteractivity(layer.options.interactivity)
+          }
+        });
+      }
+    }
+    return obj;
+  },
+
+  removeLayer: function(layer) {
+    if(layer < this.getLayerCount() && layer >= 0) {
+      this.layers.splice(layer, 1);
+      this.interactionEnabled.splice(layer, 1);
+      this._reorderSubLayers();
+      this.invalidate();
+    }
+    return this;
+  },
+
+  _reorderSubLayers: function() {
+    for(var i = 0; i < this.layers.length; ++i) {
+      var layer = this.layers[i];
+      if(layer.sub) {
+        layer.sub._setPosition(i);
+      }
+    }
+  },
+
+  addLayer: function(def, layer) {
+    layer = layer === undefined ? this.getLayerCount(): layer;
+    if(layer <= this.getLayerCount() && layer >= 0) {
+      if(!def.sql || !def.cartocss) {
+        throw new Error("layer definition should contain at least a sql and a cartocss");
+        return this;
+      }
+      this.layers.splice(layer, 0, {
+        type: 'cartodb',
+        options: def
+      });
+      this._definitionUpdated();
+    }
+    return this;
+  },
+
+  /**
+   * set interactivity attributes for a layer.
+   * if attributes are passed as first param layer 0 is
+   * set
+   */
+  setInteractivity: function(layer, attributes) {
+    if(attributes === undefined) {
+      attributes = layer;
+      layer = 0;
+    }
+
+    if(layer >= this.getLayerCount() && layer < 0) {
+      throw new Error("layer does not exist");
+    }
+
+    if(typeof(attributes) == 'string') {
+      attributes = attributes.split(',');
+    }
+
+    for(var i = 0; i < attributes.length; ++i) {
+      attributes[i] = attributes[i].replace(/ /g, '');
+    }
+
+    this.layers[layer].options.interactivity = attributes;
+    this._definitionUpdated();
+    return this;
+  },
+
+  setQuery: function(layer, sql) {
+    if(sql === undefined) {
+      sql = layer;
+      layer = 0;
+    }
+    this.layers[layer].options.sql = sql
+    this._definitionUpdated();
+  },
+
+  getQuery: function(layer) {
+    layer = layer || 0;
+    return this.layers[layer].options.sql
+  },
+
+  /**
+   * Change style of the tiles
+   * @params {style} New carto for the tiles
+   */
+  setCartoCSS: function(layer, style, version) {
+    if(version === undefined) {
+      version = style;
+      style = layer;
+      layer = 0;
+    }
+
+    version = version || cartodb.CARTOCSS_DEFAULT_VERSION;
+
+    this.layers[layer].options.cartocss = style;
+    this.layers[layer].options.cartocss_version = version;
+    this._definitionUpdated();
+
+  },
+
+  /**
+   * adds a new sublayer to the layer with the sql and cartocss params
+   */
+  createSubLayer: function(attrs, options) {
+    this.addLayer(attrs);
+    return this.getSubLayer(this.getLayerCount() - 1);
+  },
+
+
+});
+
 
 function SubLayer(_parent, position) {
   this._parent = _parent;

@@ -10,7 +10,7 @@ module CartoDB
   module Importer2
     class CsvNormalizer
       LINE_LIMIT            = 1000      # Max line size
-      SAMPLE_READ_LIMIT     = 2000000   # Read big enough sample bytes for the encoding sampling
+      SAMPLE_READ_LIMIT     = 500000   # Read big enough sample bytes for the encoding sampling
       COMMON_DELIMITERS     = [',', "\t", ' ', ';']
       DEFAULT_DELIMITER     = ','
       DEFAULT_ENCODING      = 'UTF-8'

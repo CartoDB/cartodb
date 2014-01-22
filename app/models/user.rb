@@ -66,6 +66,11 @@ class User < Sequel::Model
     self.api_key ||= self.class.make_token
   end
 
+  def before_save
+    super
+    self.updated_at = Time.now
+  end #before_save
+
   def after_create
     super
     setup_user

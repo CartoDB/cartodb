@@ -10,17 +10,17 @@ module CartoDB
 			DEFINITION_LAYERGROUPID_FIELD = :layergroupid
 
 			def initialize(map_definition, url)
-				raise MissingMapInstanceDataError if url.nil? or url.length == 0
+				raise MapInstanceDataError if url.nil? or url.length == 0
 				@url = url
 
-				raise MissingMapInstanceDataError if map_definition.nil? or 
+				raise MapInstanceDataError if map_definition.nil? or 
 																						!map_definition.is_a?(Hash) or
 																						!map_definition.has_key?(DEFINITION_LAYERGROUPID_FIELD)
 				@definition = map_definition
 			end #initialize
 
 			def tile_url(z, x, y)
-					tile = [
+					[ 
 						@url,
 						'tiles',
 						'layergroup',
@@ -28,9 +28,7 @@ module CartoDB
 						z,
 						x,
 						y.to_s + '.png'
-					]
-
-					tile.map{ |x| x.to_s }.join('/')
+					].map{ |x| x.to_s }.join('/')
 			end #tile_url
 
 			def tile(z, x, y)

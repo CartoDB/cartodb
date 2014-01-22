@@ -12,11 +12,11 @@ describe MapInstance do
 
       expect {
         MapInstance.new('not a hash', '')
-      }.to raise_error(MissingMapInstanceDataError)
+      }.to raise_error(MapInstanceDataError)
 
       expect {
         MapInstance.new( { 'somefield' => 'somevalue' }, '')
-      }.to raise_error(MissingMapInstanceDataError)
+      }.to raise_error(MapInstanceDataError)
     end
   end #correct_data
 
@@ -47,7 +47,7 @@ describe MapInstance do
       map_instance = MapInstance.new({ :layergroupid => lgid }, url)
 
       Typhoeus.stub(map_instance.tile_url(z, x, y))
-              .and_return(stubbed_response_200(expected_response_body, headers = {}))
+              .and_return(stubbed_response_200(expected_response_body))
 
       tile_output = map_instance.tile(z, x, y)
 
@@ -62,7 +62,7 @@ describe MapInstance do
       map_instance = MapInstance.new({ :layergroupid => "" }, url)
 
       Typhoeus.stub(map_instance.tile_url(1, 2, 3))
-              .and_return(stubbed_response_404(headers = {}))
+              .and_return(stubbed_response_404())
 
       expect {
         map_instance.tile(1, 2, 3)

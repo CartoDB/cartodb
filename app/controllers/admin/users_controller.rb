@@ -14,7 +14,7 @@ class Admin::UsersController < ApplicationController
 
   def create
     @user = User.new
-    @user.set_fields(params[:user], [:username, :email, :password, :quota_in_bytes])
+    @user.set_fields(params[:user], [:username, :email, :password, :quota_in_bytes, :password_confirmation])
     @user.organization = current_user.organization
     @user.username = "#{@user.username}.#{current_user.organization.name}" unless @user.username =~ /\.#{current_user.organization.name}/
     copy_account_features(current_user, @user)
@@ -29,6 +29,7 @@ class Admin::UsersController < ApplicationController
     @user.set_fields(attributes, [:email])
     @user.set_fields(attributes, [:quota_in_bytes]) if current_user.organization_owner
     @user.password = attributes[:password] if attributes[:password].present?
+    @user.password_confirmation = attributes[:password_confirmation] if attributes[:password_confirmation].present?
 
     @user.save(raise_on_failure: true)
     redirect_to edit_organization_user_path(@user.username), flash: { success: "Updated successfully" }

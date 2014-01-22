@@ -31,7 +31,7 @@ to a file.
 
 In other words, with CartoDB you can make awesome maps and build
 powerful geospatial applications! Definitely check out the [CartoDB
-Maps](http://cartodb.com/maps) gallery for interactive examples
+Develop](http://cartodb.com/develop) for interactive examples
 and code.
 
 <img src="http://cartodb.s3.amazonaws.com/github/mapWizard.png" width="900px"/>

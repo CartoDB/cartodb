@@ -147,31 +147,25 @@ this is the spec for visjson:
          type: 'named-map',
          order: 1,
          options: {
-            type: "CartoDBLayerGroup",
+            type: "named-map",
             tiler_domain: "cartodb.com",
             tiler_port: "443",
             tiler_protocol: "https",
             user_name: "javi",
+            require_password: true/false,
             named_map: {
                 name: 'test',
-                require_password: true/false,
                 params: {
                     //template params
                     color: '#FFF',
                     other_var: 1
-                }
-            }
-         },
-         infowindow: {
-            fields: [{
-                name: "fips",
-                title: true,
-                position: 2
+                },
+                layers: [
+                    // infowindow...
+                    // legend...
+
+                ]
             },
-            ...
-            ],
-            template_name: '...',
-            template: 'html template'
          }
        },
        

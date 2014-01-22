@@ -18,7 +18,7 @@
     &.synced {top:177px}
 
     .emptyTableContainer {
-      position:relative;
+      position:fixed;
       display: inline-block;
       width:100%;
       text-align: center;
@@ -77,6 +77,16 @@
       thead {
         width:100%;
         height:60px;
+
+        div.shadow {
+          position:fixed;
+          top:215px;
+          left:0;
+          width:100%;
+          height:10px;
+          background:red;
+          pointer-events:none;
+        }
 
         div.sqlview {
           position: absolute;

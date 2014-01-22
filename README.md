@@ -116,6 +116,15 @@ Add CartoDB PostgreSQL PPA
 ```bash
 sudo add-apt-repository  ppa:cartodb/postgresql
 ```
+Add CartoDB Varnish PPA
+```bash
+sudo add-apt-repository  ppa:cartodb/varnish
+```
+
+Resfresh repositories to use the PPAs
+```bash
+sudo apt-get update
+```
 
 ## Some dependencies ##
 
@@ -172,6 +181,21 @@ plpython is required for Python support
 sudo apt-get install postgresql-plpython-9.1
 ```
 
+
+Currently there is an error with credential-based connections for development, and all connections must be performed using method "trust" inside config file `pg_hba.conf`.
+
+```bash
+/etc/postgresql/9.1/main$ sudo vim pg_hba.conf
+```
+
+And change inside all local connections from peer/md5/... to trust.
+
+Then restart postgres and you're done.
+```bash
+sudo /etc/init.d/postgresql restart
+```
+
+
 ## Install PostGIS ##
 [PostGIS](http://postgis.refractions.net) is
 the geospatial extension that allows PostgreSQL to support geospatial
@@ -188,7 +212,7 @@ make install
 ```
 
 Finally, CartoDB depends on a geospatial database template named
-`template_postgis`. In the example script below, make sure that the
+`template_postgis`. In the example script below (can be saved for examples as `template_postgis.sh`), make sure that the
 path to each SQL file is correct:
 
 ```bash
@@ -205,6 +229,12 @@ psql -d template_postgis -f $POSTGIS_SQL_PATH/rtpostgis.sql
 psql -d template_postgis -f $POSTGIS_SQL_PATH/topology.sql
 psql -d template_postgis -c "GRANT ALL ON geometry_columns TO PUBLIC;"
 psql -d template_postgis -c "GRANT ALL ON spatial_ref_sys TO PUBLIC;"
+```
+
+Before executing the script, change to the postgres user:
+```bash
+sudo su - postgres
+./template_postgis.sh
 ```
 
 ## Install Ruby ##
@@ -224,6 +254,20 @@ The tiler API and the SQL API are both [Node.js](http://nodejs.org) apps.
 sudo apt-get install nodejs npm
 ```
 
+We currently run our node apps against version 0.8.x. You can install NVM 
+to handle multiple versions in the same system:
+
+```bash
+curl https://raw.github.com/creationix/nvm/master/install.sh | sh
+```
+
+Then you can install and use any version, for example:
+```bash
+nvm install v0.8.9
+nvm use 0.8.9
+```
+
+
 ## Install Redis ##
 Components of CartoDB, like Windshaft or the SQL API depend on [Redis](http://redis.io).
 
@@ -232,13 +276,21 @@ sudo apt-get install redis-server
 ```
 
 ## Install Python dependencies ##
-This need to be done from the cartodb20 local copy.
+This needs to be done from the cartodb20 local copy.
 To install the Python modules that CartoDB depends on, you can use
-`easy_install`:
+`easy_install`.
+
+You need to have some dependencies installed before using pip:
+```bash
+sudo apt-get install python2.7-dev
+sudo apt-get install build-essential
+```
 
 ```bash
-$ easy_install pip
-$ pip install -r python_requirements.txt
+easy_install pip
+export CPLUS_INCLUDE_PATH=/usr/include/gdal
+export C_INCLUDE_PATH=/usr/include/gdal
+pip install --no-use-wheel -r python_requirements.txt
 ```
 
 ## Install Varnish
@@ -354,7 +406,7 @@ sh script/create_dev_user ${SUBDOMAIN}
 Start the resque daemon (needed for import jobs):
 
 ```bash
-$ QUEUE=* bundle exec rake resque:work
+$ bundle exec script/resque
 ```
 
 Finally, start the CartoDB development server on port 3000:
@@ -427,3 +479,6 @@ See TESTING
   - Xabel Álvarez (@johnhackworth)
   - Lorenzo Planas (@lorenzoplanas)
   - Alejandro Martínez (@iamzenitram)
+  - Carlos Matallín (@matallo)
+  - Rafa Casado (@rafacas)
+  - Diego Muñoz (@kartones)

@@ -9,7 +9,8 @@ require_relative './source_file'
 module CartoDB
   module Importer2
     class CsvNormalizer
-      LINE_LIMIT            = 1000
+      LINE_LIMIT            = 1000      # Max line size
+      SAMPLE_READ_LIMIT     = 2000000   # Read big enough sample bytes for the encoding sampling
       COMMON_DELIMITERS     = [',', "\t", ' ', ';']
       DEFAULT_DELIMITER     = ','
       DEFAULT_ENCODING      = 'UTF-8'
@@ -131,7 +132,7 @@ module CartoDB
         return source_file.encoding if source_file.encoding
 
         data    = File.open(filepath, 'r')
-        sample  = data.gets(LINE_LIMIT)
+        sample  = data.read(SAMPLE_READ_LIMIT);
         data.close
 
         result = CharlockHolmes::EncodingDetector.detect(sample)

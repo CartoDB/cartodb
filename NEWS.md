@@ -1,5 +1,46 @@
-2.6.2
+2.8.1 (2014-01-16)
+------------------
+* Bugs Fixed
+  * Some map styles are changed after wizard refactoring.
+  * Fixed duplicated notifications in the dashboard.
+  * A warning message is not shown when no columns are available for applying a category wizard. It shows the wizard with the column selector empty instead.
+  * Category wizard doesn't render "null" color element when there is only that value.
+  * Created task to get modified layers and visualizations within a period.
+
+2.8.0 (2014-01-14)
+------------------
+* Improvements
+  * New organization model on CartoDB (multi-user).
+  * Added new Open Sans fonts.
+
+* Bugs Fixed
+  * When hovering a table row in the dashboard, expand the title if needed.
+  * User message off screen: "Start by adding rows to your table".
+  * Long field type names fall off the cell border (#251).
+  * If user selects an Intensity wizard, apply a determined SQL and then clear the query, the wizard previously selected is removed but the legend is ok.
+  * Added total map views per visualization in the user dashboard.
+  * Layout error with label text on the wizards.
+  * Filters: apply filter to already filtered columns stack.
+  * Updating certain properties from a wizard, shouldn't update the legend.
+  * Adapted API keys and OAuth pages to the new layout (760px).
+  * Points are shown when switching from chrolopleth to point wizard with line query.
+  * Creating a visualization changes the current panel to wizards with wrong width.
+  * Fixed space quota stat.
+  * CartoDB logo flicks a lot when opening a publish dialog and moving the map.
+  * Removed the edit point animation under GMaps basemap.
+  * Created a table from scratch and adding coords manually shows the "Georeference" popup.
+  * Null geometries are shown as "Point" on the table view.
+  * the_geom_webmercator error is not always reported.
+  * When pasting a URL in the 'append' window, it shouldn't offer to set it as a sync table.
+  * Error changing polygon fill.
+  * Fixed line edit.
+
+2.7.0
 -----
+* This version is empty because a feature moved to a future release.
+
+2.6.2 (2013-12-20)
+------------------
 * Improvements
   * Prepare a task to register current ghost tables in metadata
   * Put back time_slider handle for mobiles
@@ -30,8 +71,8 @@
   * Change support google mail url to exchange url
   * Imports get broken when database_host was empty
 
-2.6.1
------
+2.6.1 (2013-12-13)
+------------------
 * Improvements
   * Optimized map frame for mobile.
   * New sharing options on embeded maps.
@@ -61,8 +102,8 @@
   * Custom HTML legends that come from a legend with no items aren't shown.
   * Ensure the dashboard is rendered even if there are exceptions raised when rendering a specific 'table record'.
 
-2.6.0
------
+2.6.0 (2013-12-10)
+------------------
 * Improvements
   * Enabled HTML editor for the legends.
   * cartodb.js: improved legends API.
@@ -102,8 +143,8 @@
   * Customize infowindow empty throws error.
   * Purge varnish items with "cdb_tablemetadata" channel on table update (#308)
  
-2.5.6
------
+2.5.6 (2013-11-28)
+------------------
 * Improvement
   * Allow to customize the colors and its number on the choropleth legend.
 
@@ -112,14 +153,14 @@
   * Custom infowindow with image is not adding correctly <img> tag.
   * Fixed redis configuration in sync tables.
 
-2.5.5
------
+2.5.5 (2013-11-27)
+------------------
 * Improvements
   * Move varnish triggers from user tables to CDB_TableMetadata (#241)
   * Changed empty dashboard page
 
-2.5.4
------
+2.5.4 (2013-11-26)
+------------------
 * Improvements
   * Implemented Torque accumulative visualization.
   * Faster CDB_TransformToWebmercator when input is already mercator.
@@ -152,8 +193,8 @@
   * Fixed broken acceptance specs.
   * Fixed typo in carto_db.rb (by @robinkraft #301).
 
-2.5.3
------
+2.5.3 (2013-11-21)
+------------------
 * Improvements
   * Start storing the api_key in the database.
   * Created a rake task that copies the api_key from redis to PSQL.
@@ -184,8 +225,8 @@
   * Problem applying a polygon-patter-file from simple wizard and changing any value inside CartoCSS editor.
   * [regression] All importable files in a zip file should be imported.
 
-2.5.2
------
+2.5.2 (2013-11-15)
+------------------
 * Improvements
   * WMS / TMS basemap import
   * WMS Proxy Service implementation
@@ -201,8 +242,8 @@
   * When the geocoder process fails, the progress bar is hidden but no error message is shown up. 
   * Dialog to load a marker is the same than to import a file.
 
-2.5.1
------
+2.5.1 (2013-11-14)
+------------------
 * Improvements 
   * Legend is disabled when "torque" wizard is applied.
   * Dragging the time slider stops the animation, and when dragging ends the animation starts.
@@ -225,8 +266,8 @@
   * Fixed CartoDB test suite.
   * Map is not refreshed after editing a field on the map view.
 
-2.5.0
------
+2.5.0 (2013-11-11)
+------------------
 * Improvements
   * Time-animated visualization wizard (torque).
   * Adapt torque timeline to the screen in mobile.
@@ -265,8 +306,8 @@
   * Sublayer_options make embed fails.
   * Prevent layergroup GETs to be cached.
 
-2.4.0
------
+2.4.0 (2013-11-06)
+------------------
 * Improvements
   * Allow to set an image to each category, not only a color.
   * Display remote URL in synchronization options modal window.
@@ -304,8 +345,8 @@
   * Add "make check" rule.
   * Features/cdb transform to webmercator improvement.
 
-2.3.2
------
+2.3.2 (2013-10-30)
+------------------
 * Improvements
   * Color the 'empty' message in the legend title in a subtle gray
   * chrolopleth for points
@@ -331,8 +372,8 @@
   * If legend title is empty and you fill it, it should enable by default
   * Trivial typo within table rename (by @rfc2616)
 
-2.3.1
------
+2.3.1 (2013-10-15)
+------------------
 * Improvements
   * A way to change the name of the layers used in a visualization
   * Update CDB_UserTables() to return name, permissions
@@ -365,8 +406,8 @@
   * Table names within layer selector in embed view should be the table name alias if they are available
   * Merging numeric columns throws an error
 
-2.3.0
------
+2.3.0 (2013-10-14)
+------------------
 * Improvements
   * Finished google drive integration on Create / add new layer modal window
   * Big CSV fixture generator
@@ -433,8 +474,8 @@
   * Map is now show on sync tables
   * 'Basemap adder' dialog bugs and improvements
 
-2.2.1
------
+2.2.1 (2013-10-04)
+------------------
 * Fixed Bugs
   * Refreshing a table view with a query applied on the visualization view it doesn't get the table correctly rendered
   * Public table rendering nothing
@@ -473,16 +514,16 @@
   * Force encoding in file name
   * Implement 'overwrite' mode in importer
 
-2.2.0
------
+2.2.0 (2013-09-30)
+------------------
 * Fixed Bugs
   * Malformed polygons fail without warning
 
 * Improvements
   * Ported cartodb to leaflet 0.6
 
-2.1.5
------
+2.1.5 (2013-09-25)
+------------------
 * Fixed Bugs
   * Geometry editing can mess up interactivity layer
   * layergroup should always return 200 when the call is jsonp
@@ -514,8 +555,8 @@
   * Unify marker-width with marker fill row on the wizards
   * Improve the way we detect the geometry column on the geojson files
 
-2.1.4
------
+2.1.4 (2013-09-18)
+------------------
 * Fixed Bugs
   * Disabling a layer on a visualization causes interactivity to be obtained from wrong layer
   * If you click over Select fields button in the infowindow when there isn't any field selected should open the right tab pane in infowindow panel

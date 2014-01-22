@@ -78,16 +78,6 @@
         width:100%;
         height:60px;
 
-        div.shadow {
-          position:fixed;
-          top:215px;
-          left:0;
-          width:100%;
-          height:10px;
-          background:red;
-          pointer-events:none;
-        }
-
         div.sqlview {
           position: absolute;
           top: 55px;
@@ -296,7 +286,7 @@
           height:10px;
           background: image-url('layout/thead_shadow.png') repeat 0 0;
           pointer-events:none;
-          z-index:0;
+          z-index:1;
         }
 
         // Horizontal movement
@@ -489,8 +479,14 @@
         div.shadow {
           top:244px;
         }
-
       }
+      // Visualization table
+      &.vis {
+        div.shadow {
+          top:215px;
+        } 
+      }
+
       // tbody
 
       // Loaders

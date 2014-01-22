@@ -23,8 +23,7 @@ module CartoDB
 			def create(template)
 				response = Typhoeus.post(@url + '?api_key=' + @api_key, { 
 					headers: @headers,
-					body: ::JSON.dump(template),
-					verbose: true
+					body: ::JSON.dump(template)
 					})
 
 				if response.code == 200

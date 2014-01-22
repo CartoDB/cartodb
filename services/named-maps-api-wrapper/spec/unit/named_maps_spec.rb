@@ -8,8 +8,8 @@ describe NamedMaps do
 
 	describe '#correct_data' do
     it 'test definition data is present' do
-      url = "http://kartones.cartodb.com"
-      api_key = "aee7e849f2f5550598fa49637a766b873d51f45b"
+      url = "http://cartodb.com"
+      api_key = "123456"
       headers = { 'content-type' => 'application/json' }
 
       named_maps = NamedMaps.new(url, api_key)
@@ -31,6 +31,13 @@ describe NamedMaps do
 
   describe '#create' do
     it 'tests the creation of a new named map' do
+      url = "http://cartodb.com"
+      api_key = "123456"
+
+      named_maps = NamedMaps.new(url, api_key)
+
+
+
       pending
     end
   end #get

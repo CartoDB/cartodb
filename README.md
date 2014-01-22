@@ -88,7 +88,7 @@ $ git clone --recursive https://github.com/CartoDB/cartodb.git
 ```
 
 Or you can just [download the CartoDB zip
-file](https://github.com/CartoDB/cartodb20/archive/develop.zip).
+file](https://github.com/CartoDB/cartodb/archive/master.zip).
 
 ## Add CartoDB PPAs ##
 

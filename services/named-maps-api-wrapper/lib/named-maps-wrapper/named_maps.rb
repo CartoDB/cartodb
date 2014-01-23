@@ -41,7 +41,7 @@ module CartoDB
 			def all
 				response = Typhoeus.get(@url + "?api_key=" + @api_key, { headers: @headers })
 
-				raise HTTPResponseError if response.code != 200
+				raise HTTPResponseError, response.code if response.code != 200
 
 				::JSON.parse(response.response_body)
 			end #all

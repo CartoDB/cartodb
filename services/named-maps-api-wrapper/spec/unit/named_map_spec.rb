@@ -11,7 +11,7 @@ describe NamedMap do
 
 	describe '#correct_data' do
     it 'test definition data is present' do
-    	template = 'templateee'
+    	template = { 'templateee' => '1' }
     	url = 'http://cartodb.com'
     	name = "test"
 
@@ -33,7 +33,7 @@ describe NamedMap do
 
   describe '#delete' do
   	it 'tests deletion of a named map' do
-    	template = 'templateee'
+    	template = { 'templateee' => '1' }
     	url = 'http://cartodb.com'
     	name = "test"
     	api_key = "123456789"
@@ -52,7 +52,27 @@ describe NamedMap do
 
   describe '#update' do
   	it 'tests updating data of a named map' do
-  		pending
+      template = { 'templateee' => '1' }
+      new_template = { 'other_data' => 'aaa' }
+      url = 'http://cartodb.com'
+      name = "test"
+      api_key = "123456789"
+  		
+      named_maps_mock = NamedMapsMock.new(url, api_key)
+      named_map = NamedMap.new(name, template, named_maps_mock)
+
+      Typhoeus.stub(named_map.url + "?api_key=" + api_key)
+              .and_return(Stubs.stubbed_response_200)
+
+      named_map.template.should eq template
+
+      named_map.update(new_template)
+
+      named_map.template.should eq new_template
+
+      expect {
+        named_map.update({})
+      }.to raise_error(NamedMapDataError)
   	end
   end #update
 

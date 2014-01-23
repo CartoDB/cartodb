@@ -34,7 +34,7 @@ module CartoDB
 			def tile(z, x, y)
 					response = Typhoeus.get(tile_url(z, x, y), {})
 
-					raise HTTPResponseError if response.code != 200
+					raise HTTPResponseError, response.code if response.code != 200
 
 					response.response_body
 			end #tile

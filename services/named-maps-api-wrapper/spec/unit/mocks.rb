@@ -10,9 +10,10 @@ module CartoDB
 			def initialize(url = "", api_key = "")
 				@url = url
 				@api_key = api_key
+				@headers = { 'content-type' => 'application/json' }
 			end #initialize
 
-			attr_reader	:url, :api_key
+			attr_reader	:url, :api_key, :headers
 
 		end #NamedMapsMock
 

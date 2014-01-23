@@ -1,8 +1,10 @@
 # encoding: utf-8
 
 require_relative '../../lib/named_maps_wrapper'
+require_relative 'stubs'
 
 include CartoDB::NamedMapsWrapper
+include CartoDB::NamedMapsWrapperSpecs
 
 describe MapInstance do
 
@@ -47,7 +49,7 @@ describe MapInstance do
       map_instance = MapInstance.new({ :layergroupid => lgid }, url)
 
       Typhoeus.stub(map_instance.tile_url(z, x, y))
-              .and_return(stubbed_response_200(expected_response_body))
+              .and_return(Stubs.stubbed_response_200(expected_response_body))
 
       tile_output = map_instance.tile(z, x, y)
 
@@ -62,28 +64,12 @@ describe MapInstance do
       map_instance = MapInstance.new({ :layergroupid => "" }, url)
 
       Typhoeus.stub(map_instance.tile_url(1, 2, 3))
-              .and_return(stubbed_response_404())
+              .and_return(Stubs.stubbed_response_404)
 
       expect {
         map_instance.tile(1, 2, 3)
       }.to raise_error(HTTPResponseError)
     end
   end #tile_method_404_exception
-
-  def stubbed_response_200(body, headers={})
-     Typhoeus::Response.new(
-        code:     200,
-        body:     body,
-        headers:  headers
-     )
-  end #stubbed_response_200
-
-  def stubbed_response_404(headers={})
-     Typhoeus::Response.new(
-        code:     404,
-        body:     "",
-        headers:  headers
-     )
-  end #stubbed_response_200
 
 end #MapInstance

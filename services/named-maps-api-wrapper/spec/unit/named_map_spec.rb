@@ -1,8 +1,11 @@
 # encoding: utf-8
 
 require_relative '../../lib/named_maps_wrapper'
+require_relative 'stubs'
+require_relative 'mocks'
 
 include CartoDB::NamedMapsWrapper
+include CartoDB::NamedMapsWrapperSpecs
 
 describe NamedMap do
 
@@ -39,7 +42,7 @@ describe NamedMap do
       named_map = NamedMap.new(name, template, named_maps_mock)
 
 			Typhoeus.stub(named_map.url + "?api_key=" + api_key)
-              .and_return(stubbed_response_200())
+              .and_return(Stubs.stubbed_response_200)
 
       result = named_map.delete
 
@@ -51,27 +54,6 @@ describe NamedMap do
   	it 'tests updating data of a named map' do
   		pending
   	end
-  	pending
   end #update
 
-	def stubbed_response_200(body="", headers={})
-     Typhoeus::Response.new(
-        code:     200,
-        body:     body,
-        headers:  headers
-     )
-  end #stubbed_response_200
-
 end #NamedMap
-
-
-class NamedMapsMock
-
-	def initialize(url = "", api_key = "")
-		@url = url
-		@api_key = api_key
-	end #initialize
-
-	attr_reader	:url, :api_key
-
-end #NamedMapsMock

@@ -2,8 +2,10 @@
 
 require 'json'
 require_relative '../../lib/named_maps_wrapper'
+require_relative 'stubs'
 
 include CartoDB::NamedMapsWrapper
+include CartoDB::NamedMapsWrapperSpecs
 
 describe NamedMaps do
 
@@ -43,12 +45,16 @@ describe NamedMaps do
 
       # TODO include in the stub the sent body/POST data?
       Typhoeus.stub(named_maps.url + "?api_key=" + api_key)
-              .and_return(stubbed_response_200(response, headers))
+              .and_return(Stubs.stubbed_response_200(response, headers))
 
-      new_named_map = named_maps.create(name)
+      new_named_map = named_maps.create(template_data)
 
       new_named_map.should_not eq nil
       new_named_map.template.should eq template_data
+
+      expect {
+        named_maps.create({})
+      }.to raise_error(NamedMapsDataError)
     end
   end #create
 
@@ -63,27 +69,45 @@ describe NamedMaps do
       named_maps = NamedMaps.new(url, api_key)
 
       Typhoeus.stub(named_maps.url + "?api_key=" + api_key)
-              .and_return(stubbed_response_200(response, headers))
+              .and_return(Stubs.stubbed_response_200(response, headers))
 
       all_maps = named_maps.all
 
       all_maps.should_not eq nil
       all_maps.should eq response_data
+
+      Typhoeus.stub(named_maps.url + "?api_key=" + api_key)
+              .and_return(Stubs.stubbed_response_404)
+
+      expect {
+        named_maps.all
+      }.to raise_error(HTTPResponseError)
     end
   end #all
 
   describe '#get' do
     it 'tests the retrieval of a specific named map by its name' do
-      pending
+      url = "http://cartodb.com"
+      api_key = "123456"
+      headers = { 'content-type' => 'application/json' }
+      name = "test"
+      response_data = { 'template_id' => '6' }
+      response = ::JSON.dump(response_data)
+
+      named_maps = NamedMaps.new(url, api_key)
+
+      Typhoeus.stub( [named_maps.url, name ].join('/') + "?api_key=" + api_key)
+              .and_return(Stubs.stubbed_response_200(response, headers))
+
+      response_named_map = named_maps.get(name)
+
+      response_named_map.should_not eq nil
+      response_named_map.template.should eq response_data
+
+      expect {
+        named_maps.get("")
+      }.to raise_error(NamedMapsDataError)
     end
   end #all
-
-  def stubbed_response_200(body="", headers={})
-     Typhoeus::Response.new(
-        code:     200,
-        body:     body,
-        headers:  headers
-     )
-  end #stubbed_response_200
 
 end #NamedMaps

@@ -20,10 +20,14 @@ module CartoDB
 				@host = url
 			end #initialize
 
-			def create(template)
+			def create(template_data)
+
+				raise NamedMapsDataError if template_data.nil? or template_data.size == 0
+				@template = template_data
+
 				response = Typhoeus.post(@url + '?api_key=' + @api_key, { 
 					headers: @headers,
-					body: ::JSON.dump(template)
+					body: ::JSON.dump(template_data)
 					})
 
 				if response.code == 200

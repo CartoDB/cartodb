@@ -47,7 +47,8 @@ module CartoDB
 
       data[:organization] = {
         name:  self.organization.name,
-        owner: self.organization_owner
+        owner: self.organization_owner,
+        email: self.organization.users_dataset.where('organization_owner = true').first.try(:email)
       } if self.organization.present?
 
       if !options[:extended]

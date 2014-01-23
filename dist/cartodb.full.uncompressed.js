@@ -1,6 +1,6 @@
-// cartodb.js version: 3.5.05
+// cartodb.js version: 3.5.06-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: e49e40fe6729b06c7b9ffe3264df610f8b07c679
+// sha: 7d71df431639246a2715c8b33a7aea1bd126fb4e
 (function() {
   var root = this;
 
@@ -20429,7 +20429,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.5.05';
+    cdb.VERSION = '3.5.06-dev';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -20698,7 +20698,7 @@ if(!window.JSON) {
     cdb.config = new Config();
     cdb.config.set({
       cartodb_attributions: "CartoDB <a href='http://cartodb.com/attributions' target='_blank'>attribution</a>",
-      cartodb_logo_link: "http://www.cartodb.com",
+      cartodb_logo_link: "http://www.cartodb.com"
     });
 
 })();
@@ -21543,7 +21543,7 @@ cdb.geo.MapLayer = cdb.core.Model.extend({
       }
     }
     return false; // different type
-  },
+  }
 
 
 });
@@ -23617,7 +23617,7 @@ cdb.geo.ui.Legend.Custom = cdb.geo.ui.CustomLegend.extend({
 
     this.model.bind("change:items change:template change:title change:show_title", this.render, this);
 
-  },
+  }
 
 });
 

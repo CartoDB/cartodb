@@ -3227,6 +3227,10 @@ tree.Dimension.prototype = {
 
         return this;
     },
+    round: function() {
+        this.value = Math.round(this.value);
+        return this;
+    },
     toColor: function() {
         return new tree.Color([this.value, this.value, this.value]);
     },
@@ -4112,6 +4116,13 @@ tree.Reference.validValue = function(env, selector, value) {
         }
     } else if (tree.Reference.selector(selector).type == 'expression') {
         return true;
+    } else if (tree.Reference.selector(selector).type === 'unsigned') {
+        if (value.value[0].is === 'float') {
+            value.value[0].round();
+            return true;
+        } else {
+            return false;
+        }
     } else {
         if (tree.Reference.selector(selector).validate) {
             var valid = false;

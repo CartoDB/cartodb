@@ -18,6 +18,8 @@ module CartoDB
 				@api_key = api_key
 				@headers = { 'content-type' => 'application/json' }
 				@host = url
+
+				@verbose_mode = false
 			end #initialize
 
 			def create(template_data)
@@ -27,8 +29,10 @@ module CartoDB
 
 				response = Typhoeus.post(@url + '?api_key=' + @api_key, { 
 					headers: @headers,
-					body: ::JSON.dump(template_data)
+					body: ::JSON.dump(template_data),
+					verbose: @verbose_mode
 					})
+				p response.body if @verbose_mode
 
 				if response.code == 200
 					body = ::JSON.parse(response.response_body)
@@ -39,7 +43,11 @@ module CartoDB
 			end #create
 
 			def all
-				response = Typhoeus.get(@url + "?api_key=" + @api_key, { headers: @headers })
+				response = Typhoeus.get(@url + "?api_key=" + @api_key, { 
+					headers: @headers,
+					verbose: @verbose_mode
+				})
+				p response.body if @verbose_mode
 
 				raise HTTPResponseError, response.code if response.code != 200
 
@@ -49,7 +57,11 @@ module CartoDB
 			def get(name)
 				raise NamedMapsDataError if name.nil? or name.length == 0
 
-				response = Typhoeus.get( [@url, name ].join('/') + "?api_key=" + @api_key, { headers: @headers, verbose: true })
+				response = Typhoeus.get( [@url, name ].join('/') + "?api_key=" + @api_key, { 
+					headers: @headers,
+					verbose: @verbose_mode
+				})
+				p response.body if @verbose_mode
 
 				if response.code == 200
 					NamedMap.new(name, ::JSON.parse(response.response_body), self)

@@ -17,6 +17,8 @@ module CartoDB
 																						!map_definition.is_a?(Hash) or
 																						!map_definition.has_key?(DEFINITION_LAYERGROUPID_FIELD)
 				@definition = map_definition
+
+				@verbose_mode = false
 			end #initialize
 
 			def tile_url(z, x, y)
@@ -32,7 +34,10 @@ module CartoDB
 			end #tile_url
 
 			def tile(z, x, y)
-					response = Typhoeus.get(tile_url(z, x, y), {})
+					response = Typhoeus.get(tile_url(z, x, y), {
+						verbose: @verbose_mode
+					})
+					p response.body if @verbose_mode
 
 					raise HTTPResponseError, response.code if response.code != 200
 

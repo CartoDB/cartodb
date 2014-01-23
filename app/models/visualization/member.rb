@@ -9,6 +9,7 @@ require_relative './name_checker'
 require_relative './relator'
 require_relative '../table/privacy_manager'
 require_relative '../../../services/minimal-validation/validator'
+require_relative '../../../services/named-maps-api-wrapper/lib/named_maps_wrapper'
 
 module CartoDB
   module Visualization
@@ -32,8 +33,7 @@ module CartoDB
       def_delegators :validator,    :errors, :full_errors
       def_delegators :relator,      *Relator::INTERFACE
 
-      def initialize(attributes={}, repository=Visualization.repository,
-      name_checker=nil)
+      def initialize(attributes={}, repository=Visualization.repository, name_checker=nil)
         super(attributes)
         @repository   = repository
         self.id       ||= @repository.next_id
@@ -48,6 +48,10 @@ module CartoDB
         set_timestamps
         repository.store(id, attributes.to_hash)
         propagate_privacy_and_name_to(table) if table
+
+        #TODO move to after_store or similar
+        create_named_map_if_proceeds
+
         self
       end #store
 
@@ -154,10 +158,43 @@ module CartoDB
         CartoDB::Varnish.new.purge("obj.http.X-Cache-Channel ~ .*#{id}:vizjson")
       end #invalidate_varnish_cache
 
+      def create_named_map_if_proceeds
+        has_private_tables = false
+
+        related_tables.each { |table|
+          has_private_tables |= (table.privacy == ::Table::PRIVATE)
+        }
+
+        if (has_private_tables)
+          named_maps = CartoDB::NamedMapsWrapper::NamedMaps.new(tile_request_url, user.api_key)
+
+          template_data = {
+            version: '0.0.1',
+            name: id.gsub('-', '_'),
+            auth: {
+              method: 'open'
+            }
+          }
+
+          new_named_map = named_maps.create(template_data)
+
+          !new_named_map.nil?
+        else
+          true
+        end
+
+      end #create_named_map_if_proceeds
+
       private
 
       attr_reader   :repository, :name_checker, :validator
       attr_accessor :privacy_changed, :name_changed, :description_changed
+
+      def tile_request_url
+        uri  = "#{user.username}.#{Cartodb.config[:tiler]['private']['domain']}"
+        port = Cartodb.config[:tiler]['private']['port'] || 443
+        "#{Cartodb.config[:tiler]['private']['protocol']}://#{uri}:#{port}"
+      end
 
       def propagate_privacy_and_name_to(table)
         return self unless table
@@ -219,6 +256,7 @@ module CartoDB
           ).include?(table.name)
         end
       end #related_layers_from
+
     end # Member
   end # Visualization
 end # CartoDB

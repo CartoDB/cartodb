@@ -19,10 +19,16 @@ module CartoDB
 
 				raise NamedMapDataError unless parent.respond_to?(:url) and parent.respond_to?(:api_key)
 				@parent = parent
+
+				@verbose_mode = false
 			end #initialize
 
 			def delete
-				response = Typhoeus.delete(url + "?api_key=" + @parent.api_key)
+				response = Typhoeus.delete(url + "?api_key=" + @parent.api_key, {
+					verbose: @verbose_mode
+				})
+				p response.body if @verbose_mode
+
 				response.code == 200
 			end #delete
 
@@ -31,8 +37,10 @@ module CartoDB
 
 				response = Typhoeus.put(url + '?api_key=' + @parent.api_key, { 
 					headers: @parent.headers,
-					body: ::JSON.dump(template_data)
-					})
+					body: ::JSON.dump(template_data),
+					verbose: @verbose_mode
+				})
+				p response.body if @verbose_mode
 
 				if response.code == 200
 					@template = template_data

@@ -182,6 +182,7 @@ function invalidate_fastly() {
 
 function invalidate_cdn() {
   invalidate_fastly();
+  return;
   // invalidate cloudfront
   console.log(" *** flushing cdn cache")
   if(!only_current_version) {

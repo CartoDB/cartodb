@@ -246,6 +246,7 @@ Adds an overlay to the map that can be either a zoom control, a tooltip or an in
 ###### Arguments
 
   + **options**:
+    - **layer**: layer from the visualization where apply the overlay (optional)
     - **type**: ‘zoom’ | ‘tooltip’ | ‘infobox’
     - Extra options are available depending on the UI component selected before
 

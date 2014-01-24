@@ -164,14 +164,16 @@ module CartoDB
         CartoDB::Varnish.new.purge("obj.http.X-Cache-Channel ~ .*#{id}:vizjson")
       end #invalidate_varnish_cache
 
-      def create_named_map_if_proceeds
+      def has_private_tables?
         has_private_tables = false
-
         related_tables.each { |table|
           has_private_tables |= (table.privacy == ::Table::PRIVATE)
         }
+        has_private_tables
+      end #has_private_tables
 
-        if (has_private_tables)
+      def create_named_map_if_proceeds
+        if has_private_tables?
           named_maps = CartoDB::NamedMapsWrapper::NamedMaps.new(tile_request_url, user.api_key)
           vizjson = VizJSON.new(self, { full: false, user_name: user.username }, configuration).to_poro
 

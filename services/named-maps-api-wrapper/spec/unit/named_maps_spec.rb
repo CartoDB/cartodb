@@ -8,6 +8,10 @@ include CartoDB::NamedMapsWrapper
 include CartoDB::NamedMapsWrapperSpecs
 
 describe NamedMaps do
+  
+  after(:each) do
+    Typhoeus::Expectation.clear
+  end  
 
 	describe '#correct_data' do
     it 'test definition data is present' do

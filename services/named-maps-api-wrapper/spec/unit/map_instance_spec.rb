@@ -8,6 +8,10 @@ include CartoDB::NamedMapsWrapperSpecs
 
 describe MapInstance do
 
+  after(:each) do
+    Typhoeus::Expectation.clear
+  end
+
   describe '#correct_data' do
     it 'test definition data is present' do
       MapInstance.new({ :layergroupid => 'test' }, 'http://cartodb.com')

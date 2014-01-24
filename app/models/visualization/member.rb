@@ -45,13 +45,18 @@ module CartoDB
       def store
         raise CartoDB::InvalidMember unless self.valid?
 
+        new_row = repository.fetch(id).nil?
+
         invalidate_varnish_cache if name_changed || privacy_changed || description_changed
         set_timestamps
         repository.store(id, attributes.to_hash)
         propagate_privacy_and_name_to(table) if table
 
-        #TODO move to after_store or similar
-        create_named_map_if_proceeds
+        if new_row
+          create_named_map_if_proceeds
+        else
+          # update named map
+        end
 
         self
       end #store

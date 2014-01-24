@@ -93,8 +93,6 @@ module CartoDB
           end
         end
 
-        debugger
-
         @delimiter
       end #detect_delimiter
 

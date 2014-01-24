@@ -55,6 +55,12 @@ module CartoDB
           lines_for_detection << line unless line.nil?
         }
 
+        # Maybe gets was not able to discern line breaks, try manually
+        if lines_for_detection.size == 1
+          lines_for_detection = lines_for_detection.first.first
+          lines_for_detection = lines_for_detection.split("\x0D")
+        end
+
         occurrences = Hash[
           COMMON_DELIMITERS.map { |delimiter| 
             [delimiter, lines_for_detection.map { |line| 
@@ -87,6 +93,9 @@ module CartoDB
           end
         end
 
+        debugger
+
+        @delimiter
       end #detect_delimiter
 
       def self.supported?(extension)

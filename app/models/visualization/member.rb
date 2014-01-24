@@ -18,6 +18,7 @@ module CartoDB
       include Virtus
 
       PRIVACY_VALUES  = %w{ public private }
+      TEMPLATE_NAME_PREFIX = 'tpl_'
 
       attribute :id,                String
       attribute :name,              String
@@ -170,9 +171,9 @@ module CartoDB
           vizjson = VizJSON.new(self, { full: false, user_name: user.username }, configuration).to_poro
 
           template_data = {
-            # TODO add to named maps config or smilar, inject inside the create call
+            # TODO add to named maps config or similar, inject inside the create call
             version: '0.0.1',
-            name: id.gsub('-', '_'),
+            name: TEMPLATE_NAME_PREFIX + id.gsub('-', '_'),
             auth: {
               method: 'open'
             },

@@ -23,7 +23,6 @@ module CartoDB
 			end #initialize
 
 			def create(template_data)
-
 				raise NamedMapsDataError if template_data.nil? or template_data.size == 0
 				template_json = ::JSON.dump(template_data)
 

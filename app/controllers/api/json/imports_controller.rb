@@ -66,8 +66,7 @@ class Api::Json::ImportsController < Api::ApplicationController
       path = "#{random_token}/#{File.basename(filename)}"
       o = s3_bucket.objects[path]
       o.write(filedata, {
-        acl: :public_read,
-        content_type: MIME::Types.type_for(@file.path).first.to_s
+        acl: :public_read
       })
 
       return o.url_for(:get, expires: url_ttl).to_s

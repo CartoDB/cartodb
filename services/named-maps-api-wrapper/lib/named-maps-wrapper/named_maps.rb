@@ -25,11 +25,13 @@ module CartoDB
 			def create(template_data)
 
 				raise NamedMapsDataError if template_data.nil? or template_data.size == 0
-				@template = template_data
+				template_json = ::JSON.dump(template_data)
+
+				p template_json if @verbose_mode
 
 				response = Typhoeus.post(@url + '?api_key=' + @api_key, { 
 					headers: @headers,
-					body: ::JSON.dump(template_data),
+					body: template_json,
 					verbose: @verbose_mode
 					})
 				p response.body if @verbose_mode
@@ -65,8 +67,11 @@ module CartoDB
 
 				if response.code == 200
 					NamedMap.new(name, ::JSON.parse(response.response_body), self)
-				else
+				elsif response.code == 404
+					# Request ok, template with provided name not found
 					nil
+				else
+					raise HTTPResponseError, response.code
 				end
 			end #get
 

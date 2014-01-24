@@ -167,17 +167,19 @@ module CartoDB
 
         if (has_private_tables)
           named_maps = CartoDB::NamedMapsWrapper::NamedMaps.new(tile_request_url, user.api_key)
+          vizjson = VizJSON.new(self, { full: false, user_name: user.username }, configuration).to_poro
 
           template_data = {
+            # TODO add to named maps config or smilar, inject inside the create call
             version: '0.0.1',
             name: id.gsub('-', '_'),
             auth: {
               method: 'open'
-            }
+            },
+            layergroup: vizjson[:layers][1]
           }
 
           new_named_map = named_maps.create(template_data)
-
           !new_named_map.nil?
         else
           true

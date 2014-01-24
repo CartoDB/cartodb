@@ -1,8 +1,7 @@
 # encoding: utf-8
 
 require_relative '../../lib/named_maps_wrapper'
-require_relative 'stubs'
-require_relative 'mocks'
+require_relative '../spec_helper'
 
 include CartoDB::NamedMapsWrapper
 include CartoDB::NamedMapsWrapperSpecs
@@ -41,11 +40,8 @@ describe NamedMap do
 			named_maps_mock = NamedMapsMock.new(url, api_key)
       named_map = NamedMap.new(name, template, named_maps_mock)
 
-			Typhoeus.stub(named_map.url + "?api_key=" + api_key)
-              .and_return(Stubs.stubbed_response_200)
-
+			Stubs.stubbed_response_200(named_map.url + "?api_key=" + api_key)
       result = named_map.delete
-
       result.should eq true
     end
   end #delete
@@ -61,13 +57,9 @@ describe NamedMap do
       named_maps_mock = NamedMapsMock.new(url, api_key)
       named_map = NamedMap.new(name, template, named_maps_mock)
 
-      Typhoeus.stub(named_map.url + "?api_key=" + api_key)
-              .and_return(Stubs.stubbed_response_200)
-
+      Stubs.stubbed_response_200(named_map.url + "?api_key=" + api_key)
       named_map.template.should eq template
-
       named_map.update(new_template)
-
       named_map.template.should eq new_template
 
       expect {

@@ -1,7 +1,7 @@
 # encoding: utf-8
 
 require_relative '../../lib/named_maps_wrapper'
-require_relative 'stubs'
+require_relative '../spec_helper'
 
 include CartoDB::NamedMapsWrapper
 include CartoDB::NamedMapsWrapperSpecs
@@ -48,11 +48,8 @@ describe MapInstance do
 
       map_instance = MapInstance.new({ :layergroupid => lgid }, url)
 
-      Typhoeus.stub(map_instance.tile_url(z, x, y))
-              .and_return(Stubs.stubbed_response_200(expected_response_body))
-
+      Stubs.stubbed_response_200(map_instance.tile_url(z, x, y), expected_response_body)
       tile_output = map_instance.tile(z, x, y)
-
       tile_output.should eq expected_response_body
     end
   end #tile_method
@@ -63,8 +60,7 @@ describe MapInstance do
 
       map_instance = MapInstance.new({ :layergroupid => "" }, url)
 
-      Typhoeus.stub(map_instance.tile_url(1, 2, 3))
-              .and_return(Stubs.stubbed_response_404)
+      Stubs.stubbed_response_404(map_instance.tile_url(1, 2, 3))
 
       expect {
         map_instance.tile(1, 2, 3)

@@ -52,15 +52,25 @@ class Api::Json::ImportsController < Api::ApplicationController
 
     random_token = Digest::SHA2.hexdigest("#{Time.now.utc}--#{filename.object_id.to_s}").first(20)
 
-    s3_uploader = S3Uploader.new(Cartodb.config)
+    # Set the public_url attribute
+    remote_url = o.public_url.to_s
 
-    if s3_uploader.configured?
+    s3_config = Cartodb.config[:importer]["s3"]
+    if s3_config["access_key_id"] && s3_config["secret_access_key"]
       Rails.logger.info("Importer AWS configuration: ======== " +
                         s3_uploader.s3_configuration.to_s)
+      AWS.config(access_key_id: Cartodb.config[:importer]["s3"]["access_key_id"], secret_access_key: Cartodb.config[:importer]["s3"]["secret_access_key"])
+      s3 = AWS::S3.new
+      s3_bucket = s3.buckets[s3_config["bucket_name"]]
 
       path = "#{random_token}/#{File.basename(filename)}"
-      s3_public_url = s3_uploader.upload(path, filedata)
-      s3_uploader.presigned_url_for(s3_public_url)
+      o = s3_bucket.objects[path]
+      o.write(filedata, {
+        acl: :public_read,
+        content_type: MIME::Types.type_for(@file.path).first.to_s
+      })
+
+      return o.url_for(:get, expires: url_ttl).to_s
     else
       FileUtils.mkdir_p(Rails.root.join('public/uploads').join(random_token))
 

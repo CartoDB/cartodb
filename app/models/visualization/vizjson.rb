@@ -37,8 +37,21 @@ module CartoDB
         }
       end #to_poro
 
-      def layer_group
-        layer_group_for(visualization)
+      def layer_group_for_named_map
+        layer_group_poro = layer_group_for(visualization)
+
+        layers_data = Array.new
+        layer_group_poro[:options][:layer_definition][:layers].each { |layer| 
+          layers_data.push( {
+            type:     layer[:type],
+            options:  layer[:options]
+          } )
+        }
+
+        {
+          version:  layer_group_poro[:options][:layer_definition][:version],
+          layers:   layers_data
+        }
       end #layer_group
 
       private
@@ -51,11 +64,12 @@ module CartoDB
       end #bounds_from
 
       def layers_for(visualization)
-        layers_data = Array.new
+        layers_data = [
+          base_layers_for(visualization)
+        ]
         if visualization.has_private_tables?
           layers_data.push( named_map_for(visualization) )
         else
-          layers_data.push( base_layers_for(visualization) )
           layers_data.push( layer_group_for(visualization) )
           layers_data.push( other_layers_for(visualization) )
         end

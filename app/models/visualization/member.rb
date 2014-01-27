@@ -187,7 +187,7 @@ module CartoDB
             auth: {
               method: 'open'
             },
-            layergroup: vizjson.layer_group
+            layergroup: vizjson.layer_group_for_named_map
           }
 
           new_named_map = named_maps.create(template_data)

@@ -9,6 +9,8 @@ module CartoDB
   module NamedMapsWrapper
 
 		class NamedMap
+			NAMED_MAPS_VERSION  = '0.0.1'
+			NAME_PREFIX = 'tpl_'
 
 			def initialize(name, template_data, parent)
 				raise NamedMapDataError if name.nil? or name.length == 0
@@ -52,6 +54,10 @@ module CartoDB
 			def url
 				[ @parent.url, @name ].join('/')
 			end # url
+
+			def self.normalize_name(raw_name)
+				(NAME_PREFIX + raw_name).gsub(/[^a-zA-Z0-9\-\_.]/ , '').gsub('-', '_')
+			end # self.normalize_name
 
 			attr_reader	:template
 

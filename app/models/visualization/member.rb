@@ -130,7 +130,12 @@ module CartoDB
       end #to_hash
 
       def to_vizjson
-        options = { full: false, user_name: user.username }
+        options = { 
+          full: false, 
+          user_name: user.username,
+          tiler_url: tile_request_url,
+          user_api_key: user.api_key
+        }
         VizJSON.new(self, options, configuration).to_poro
       end #to_hash
 
@@ -175,16 +180,14 @@ module CartoDB
       def create_named_map_if_proceeds
         if has_private_tables?
           named_maps = CartoDB::NamedMapsWrapper::NamedMaps.new(tile_request_url, user.api_key)
-          vizjson = VizJSON.new(self, { full: false, user_name: user.username }, configuration).to_poro
+          vizjson = VizJSON.new(self, { full: false, user_name: user.username }, configuration)
 
           template_data = {
-            # TODO add to named maps config or similar, inject inside the create call
-            version: '0.0.1',
-            name: TEMPLATE_NAME_PREFIX + id.gsub('-', '_'),
+            name: CartoDB::NamedMapsWrapper::NamedMap.normalize_name(id),
             auth: {
               method: 'open'
             },
-            layergroup: vizjson[:layers][1]
+            layergroup: vizjson.layer_group
           }
 
           new_named_map = named_maps.create(template_data)

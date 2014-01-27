@@ -4,6 +4,8 @@ require 'ostruct'
 require_relative '../overlay/presenter'
 require_relative '../layer/presenter'
 require_relative '../layer_group/presenter'
+require_relative '../../../services/named-maps-api-wrapper/lib/named_maps_wrapper.rb'
+
 
 module CartoDB
   module Visualization
@@ -35,6 +37,10 @@ module CartoDB
         }
       end #to_poro
 
+      def layer_group
+        layer_group_for(visualization)
+      end #layer_group
+
       private
 
       attr_reader :visualization, :map, :options, :configuration
@@ -45,12 +51,29 @@ module CartoDB
       end #bounds_from
 
       def layers_for(visualization)
-        [
+        layers_data = [
           base_layers_for(visualization), 
           layer_group_for(visualization),
           other_layers_for(visualization)
-        ].compact.flatten
+        ]
+
+        if visualization.has_private_tables?
+          layers_data.push( named_map_for(visualization) )
+        end
+
+        layers_data.compact.flatten
       end #layers_for
+
+      # Required for named maps generation
+      def named_map_for(visualization)
+        presenter_options = {
+          user_name: options.fetch(:user_name),
+          url: options.delete(:tiler_url),
+          api_key: options.delete(:user_api_key)
+        }
+        CartoDB::NamedMapsWrapper::Presenter.new(visualization, presenter_options, configuration)
+                                            .to_poro
+      end
 
       def base_layers_for(visualization)
         visualization.layers(:base).map do |layer|

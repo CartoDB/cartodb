@@ -24,6 +24,8 @@ module CartoDB
 
 			def create(template_data)
 				raise NamedMapsDataError if template_data.nil? or template_data.size == 0
+
+				template_data = template_data.merge( { version: NamedMap::NAMED_MAPS_VERSION } )
 				template_json = ::JSON.dump(template_data)
 
 				p template_json if @verbose_mode

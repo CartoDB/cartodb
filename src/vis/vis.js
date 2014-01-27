@@ -609,6 +609,7 @@ var Vis = cdb.core.View.extend({
     if (vizjson.layers.length > 1) {
       for(var i = 1; i < vizjson.layers.length; ++i) {
         vizjson.layers[i].options.no_cdn = opt.no_cdn;
+        vizjson.layers[i].options.force_cors = opt.force_cors;
       }
     }
 

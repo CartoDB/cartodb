@@ -861,7 +861,7 @@ class Table < Sequel::Model(:user_tables)
     self.invalidate_varnish_cache
     return {:name => options[:name].to_s.sanitize, :type => type, :cartodb_type => cartodb_type}
   rescue => e
-    if e.message =~ /^PGError/
+    if e.message =~ /^(PG::Error|PGError)/
       raise CartoDB::InvalidType, e.message
     else
       raise e

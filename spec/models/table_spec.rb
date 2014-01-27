@@ -852,7 +852,7 @@ describe Table do
       table.schema.should include([:age, "number"])
     end
 
-    it "should alter the schema automatically when trying to insert a big string (greater than 200 chars)" do
+    pending "should alter the schema automatically when trying to insert a big string (greater than 200 chars)" do
       table = new_table(:user_id => @user.id)
       table.force_schema = "name varchar(40)"
       table.save
@@ -1025,7 +1025,7 @@ describe Table do
       }.should raise_error(CartoDB::InvalidAttributes)
     end
 
-    it "updates data_last_modified when changing data"
+    it "updates data_last_modified when changing data" do
       table = create_table(:user_id => @user.id)
 
       table.insert_row!({})
@@ -1195,10 +1195,10 @@ describe Table do
   end
 
   context "post import processing tests" do
-    it "should run vacuum full" do
+    it "should optimize the table" do
       fixture     = "#{Rails.root}/db/fake_data/SHP1.zip"
+      Table.any_instance.expects(:optimize).once
       data_import = create_import(@user, fixture)
-      data_import.table.table_size.should == 2351104
     end
 
     it "should assign table_id" do
@@ -1277,7 +1277,7 @@ describe Table do
       cartodb_id_schema.should be_present
       cartodb_id_schema = cartodb_id_schema[1]
       cartodb_id_schema[:db_type].should == "integer"
-      cartodb_id_schema[:default].should == "nextval('#{table.name}_cartodb_id_seq1'::regclass)"
+      cartodb_id_schema[:default].should == "nextval('#{table.name}_cartodb_id_seq'::regclass)"
       cartodb_id_schema[:primary_key].should == true
       cartodb_id_schema[:allow_null].should == false
     end

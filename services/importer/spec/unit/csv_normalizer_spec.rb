@@ -5,27 +5,25 @@ require_relative '../../lib/importer/csv_normalizer'
 include CartoDB::Importer2
 
 describe CsvNormalizer do
+  
   describe '#run' do
     it 'transforms the file using a proper comma delimiter' do
       fixture = tab_delimiter_factory
       csv     = CsvNormalizer.new(fixture)
+
+      csv.detect_delimiter
+
       csv.delimiter.should eq "\t"
       csv.run
       csv.delimiter.should eq ','
     end
   end #run
 
-  describe '#temporary_directory' do
-    it 'generates a temporary directory' do
-      pending
-    end 
-  end #temporary_directory
-
-  describe '#delimiter' do
-    it 'guesses the delimiter' do
+  describe '#detect_delimiter' do
+    it 'detects the delimiter' do
       fixture = tab_delimiter_factory
       csv     = CsvNormalizer.new(fixture)
-      csv.delimiter.should eq "\t"
+      csv.detect_delimiter.should eq "\t"
 
       FileUtils.rm(fixture)
     end
@@ -55,10 +53,14 @@ describe CsvNormalizer do
     it 'returns true if CSV header has only one column' do
       fixture = single_column_factory
       csv     = CsvNormalizer.new(fixture)
+      csv.detect_delimiter
+
       csv.single_column?.should eq true
 
       fixture = tab_delimiter_factory
       csv     = CsvNormalizer.new(fixture)
+      csv.detect_delimiter
+
       csv.single_column?.should eq false
     end
   end #single_column?
@@ -79,13 +81,25 @@ describe CsvNormalizer do
     end
   end #multiple_column
 
+  describe '#spaces_and_commas_delimiter_detector' do
+    it 'properly detects delimiter on a CSV containing many spaces and commas' do
+      # Also tests that detector is able to load a file with less rows than CsvNormalizer::LINES_FOR_DETECTION
+      fixture = spaces_and_commas_factory
+      csv     = CsvNormalizer.new(fixture)
+
+      csv.detect_delimiter.should eq ","
+
+      FileUtils.rm(fixture)
+    end
+  end #spaces_and_commas_delimiter_detector
+
   def utf8_factory
-    filepath = "/var/tmp/#{Time.now.to_f}-#{rand(999)}.csv"
+    filepath = get_temp_csv_fullpath
 
     ::CSV.open(filepath, 'wb', col_sep: "\t") do |csv|
       csv << ["name", "description", "field_3"]
-      csv << ["normal 1 1", "normal 1 2", "normal 1 3"]
-      csv << ["normal 2 1", "normal 2 2", "normal 2 3"]
+      csv << ["normal 1 1 ", "normal 1 2", "normal 1 3"]
+      csv << ["normal 2 1", "normal 2 2", "normal 2_3"]
       csv << ["normal 3 1", "normal 3 2", "normal 3 3"]
       csv << (["áÁéÉíÍ", "óÓúÚ", "ñÑ"].map { |s| s.encode('UTF-8') })
       csv << ["normal 5 1", "normal 5 2", "normal 5 3"]
@@ -94,8 +108,23 @@ describe CsvNormalizer do
     filepath
   end #utf8_factory
 
+  def spaces_and_commas_factory
+    filepath = get_temp_csv_fullpath
+
+      ::CSV.open(filepath, 'wb', col_sep: ",") do |csv|
+          csv << ["name", "description", "field_3"]
+          csv << ["normal 1 1 .", "normal 1 2 .", "normal 1 3 ."]
+          csv << ["normal 2 1", "normal 2 2", "normal 2 3"]
+          csv << ["normal 3 1 .", "normal 3 2 .", "normal 3 3 ."]
+          csv << ["normal 4 1", "normal 4 2", "normal 4 3"]
+          csv << ["normal 5 1 . . ", "normal 5 2 . . ", "normal 5 3 . . "]
+      end
+
+      filepath
+  end #spaces_and_commas_factory
+
   def utf16le_factory
-    filepath = "/var/tmp/#{Time.now.to_f}-#{rand(999)}.csv"
+    filepath = get_temp_csv_fullpath
 
     ::CSV.open(filepath, 'wb', col_sep: "\t") do |csv|
       csv << (["name", "description", "wadus"].map  { |s| s.encode('ISO-8859-1') })
@@ -106,7 +135,7 @@ describe CsvNormalizer do
   end #utf16le_factory
 
   def tab_delimiter_factory
-    filepath = "/var/tmp/#{Time.now.to_f}-#{rand(999)}.csv"
+    filepath = get_temp_csv_fullpath
 
     ::CSV.open(filepath, 'w', col_sep: "\t") do |csv|
       csv << ["name", "description", "wadus"]
@@ -117,7 +146,8 @@ describe CsvNormalizer do
   end #tab_delimiter_factory
 
   def single_column_factory
-    filepath = "/var/tmp/#{Time.now.to_f}-#{rand(999)}.csv"
+    filepath = get_temp_csv_fullpath
+
     ::CSV.open(filepath, 'w') do |csv|
       csv << ['header_1']
       csv << ['row 1']
@@ -125,5 +155,10 @@ describe CsvNormalizer do
 
     filepath
   end #single_column_factory
+
+  def get_temp_csv_fullpath
+    "/var/tmp/#{Time.now.to_f}-#{rand(999)}.csv"
+  end #get_temp_csv_fullpath
+
 end # CsvNormalizer
 

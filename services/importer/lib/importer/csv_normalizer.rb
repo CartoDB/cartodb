@@ -9,25 +9,99 @@ require_relative './source_file'
 module CartoDB
   module Importer2
     class CsvNormalizer
-      LINE_LIMIT            = 1000      # Max line size
+      LINES_FOR_DETECTION   = 100       # How many lines to read?
       SAMPLE_READ_LIMIT     = 500000   # Read big enough sample bytes for the encoding sampling
       COMMON_DELIMITERS     = [',', "\t", ' ', ';']
+      DELIMITER_WEIGHTS     = {','=>2, "\t"=>2, ' '=>1, ';'=>2}
       DEFAULT_DELIMITER     = ','
       DEFAULT_ENCODING      = 'UTF-8'
+      DEFAULT_QUOTE         = '"'
+      OUTPUT_DELIMITER      = ','       # Normalized CSVs will use this delimiter
       ENCODING_CONFIDENCE   = 30 
       ACCEPTABLE_ENCODINGS  = %w{ ISO-8859-1 ISO-8859-2 UTF-8 }
+
+
+      def initialize(filepath, job=nil)
+        @filepath = filepath
+        @job      = job || Job.new
+        @delimiter = nil
+      end #initialize
+
+      def run
+        return self unless File.exists?(filepath)
+
+        detect_delimiter
+
+        return self unless needs_normalization?
+
+        normalize(temporary_filepath)
+        release
+        File.rename(temporary_filepath, filepath)
+        FileUtils.rm_rf(temporary_directory)
+        self.temporary_directory = nil
+        self
+      end #run
+
+      def detect_delimiter
+        # Calculate variances of the N first lines for each delimiter, then grab the one that changes less
+        @delimiter = DEFAULT_DELIMITER unless first_line
+
+        stream.rewind
+
+        lines_for_detection = Array.new
+
+        LINES_FOR_DETECTION.times { 
+          line = stream.gets 
+          lines_for_detection << line unless line.nil?
+        }
+
+        # Maybe gets was not able to discern line breaks, try manually
+        if lines_for_detection.size == 1
+          lines_for_detection = lines_for_detection.first.first
+          lines_for_detection = lines_for_detection.split("\x0D")
+        end
+
+        occurrences = Hash[
+          COMMON_DELIMITERS.map { |delimiter| 
+            [delimiter, lines_for_detection.map { |line| 
+              line.count(delimiter) }] 
+          }
+        ]
+
+        variances = Hash.new
+        @delimiter = DEFAULT_DELIMITER
+        
+        use_variance = true
+        occurrences.each { |key, values| 
+          if values.length > 1
+            variances[key] = sample_variance(values) unless values.first == 0
+          elsif values.length == 1
+            # If only detected a single line of data, cannot use variance
+            variances[key] = values.first * DELIMITER_WEIGHTS[key]
+            use_variance = false
+          else
+            use_variance = false
+          end
+        }
+
+        if variances.length > 0
+          if use_variance
+            @delimiter = variances.sort {|a, b| a.last <=> b.last }.first.first
+          else
+            # Use whatever delimiter appears more and hope for the best
+            @delimiter = variances.sort {|a, b| b.last <=> a.last }.first.first
+          end
+        end
+
+        @delimiter
+      end #detect_delimiter
 
       def self.supported?(extension)
         %w(.csv .tsv .txt).include?(extension)
       end #self.supported?
 
-      def initialize(filepath, job=nil)
-        @filepath = filepath
-        @job      = job || Job.new
-      end #initialize
-
       def normalize(temporary_filepath)
-        temporary_csv = ::CSV.open(temporary_filepath, 'w', col_sep: ',')
+        temporary_csv = ::CSV.open(temporary_filepath, 'w', col_sep: OUTPUT_DELIMITER)
 
         File.open(filepath, 'rb', external_encoding: encoding)
         .each_line(line_delimiter) { |line| 
@@ -37,6 +111,8 @@ module CartoDB
         }
 
         temporary_csv.close
+
+        @delimiter = OUTPUT_DELIMITER
       rescue ArgumentError
         raise EncodingDetectionError
       end
@@ -47,16 +123,6 @@ module CartoDB
         nil
       end
 
-      def run
-        return self unless File.exists?(filepath) && needs_normalization?
-        normalize(temporary_filepath)
-        release
-        File.rename(temporary_filepath, filepath)
-        FileUtils.rm_rf(temporary_directory)
-        self.temporary_directory = nil
-        self
-      end #run
-
       def temporary_filepath
         File.join(temporary_directory, File.basename(filepath))
       end #temporary_path
@@ -64,7 +130,7 @@ module CartoDB
       def csv_options
         {
           col_sep:            delimiter,
-          quote_char:         '"'
+          quote_char:         DEFAULT_QUOTE
         }
       end #csv_options
 
@@ -93,39 +159,9 @@ module CartoDB
         row << nil
       end #multiple_column
 
-      def temporary_directory
-        generate_temporary_directory unless @temporary_directory
-        @temporary_directory
-      end #temporary_directory
-
-      def generate_temporary_directory
-        tempfile                  = Tempfile.new("")
-        self.temporary_directory  = tempfile.path
-
-        tempfile.close!
-        Dir.mkdir(temporary_directory)
-        self
-      end #generate_temporary_directory
-
-      def magic_formula_to_detect_comma_separator(occurrences)
-        comma_score     = occurrences[',']
-        highest_score   = occurrences.first.last
-
-        comma_score >= highest_score / 2
-      end #magic_formula_to_detect_comma_separator
-
       def delimiter
-        return @delimiter if @delimiter
-        return DEFAULT_DELIMITER unless first_line
-        occurrences = Hash[
-          COMMON_DELIMITERS.map { |delimiter| 
-            [delimiter, first_line.squeeze(delimiter).count(delimiter)] 
-          }.sort {|a, b| b.last <=> a.last }
-        ]
-
-        @delimiter = ',' if magic_formula_to_detect_comma_separator(occurrences)
-        @delimiter ||= occurrences.first.first unless occurrences.empty?
-      end #delimiter_in
+        return @delimiter
+      end #delimiter
 
       def encoding
         source_file = SourceFile.new(filepath)
@@ -147,11 +183,10 @@ module CartoDB
       def first_line
         return @first_line if @first_line
         stream.rewind
-        @first_line ||= stream.gets(LINE_LIMIT)
+        @first_line ||= stream.gets
       end #first_line
 
       def release
-        @delimiter = nil
         @stream.close
         @stream = nil
         @first_line = nil
@@ -162,16 +197,41 @@ module CartoDB
         @stream ||= File.open(filepath, 'rb')
       end #stream
 
-      def column_count
-        ::CSV.parse(first_line, col_sep: delimiter).first
-      end #column_count
-
       attr_reader   :filepath
       alias_method  :converted_filepath, :filepath
 
       private
 
+      def generate_temporary_directory
+        tempfile                  = Tempfile.new("")
+        self.temporary_directory  = tempfile.path
+
+        tempfile.close!
+        Dir.mkdir(temporary_directory)
+        self
+      end #generate_temporary_directory
+
+      def temporary_directory
+        generate_temporary_directory unless @temporary_directory
+        @temporary_directory
+      end #temporary_directory
+
+      def sum(items_list)
+        items_list.inject(0){|accum, i| accum + i }
+      end #sum
+
+      def mean(items_list)
+        sum(items_list) / items_list.length.to_f
+      end #mean
+
+      def sample_variance(items_list)
+        m = mean(items_list)
+        sum = items_list.inject(0){|accum, i| accum +(i-m)**2 }
+        sum / (items_list.length - 1).to_f
+      end #sample_variance
+
       attr_writer :temporary_directory
+
     end # CsvNormalizer
   end #Importer2
 end # CartoDB

@@ -54,7 +54,6 @@ class Api::Json::ImportsController < Api::ApplicationController
 
     s3_config = Cartodb.config[:importer]["s3"]
     if s3_config["access_key_id"] && s3_config["secret_access_key"]
-      Rails.logger.info("Importer AWS configuration: ======== " + s3_config.inspect)
       AWS.config(access_key_id: Cartodb.config[:importer]["s3"]["access_key_id"], secret_access_key: Cartodb.config[:importer]["s3"]["secret_access_key"])
       s3 = AWS::S3.new
       s3_bucket = s3.buckets[s3_config["bucket_name"]]

@@ -35,7 +35,7 @@ module CartoDB
       rescue => exception
         puts exception.to_s
         puts exception.backtrace
-        raise ExtractionError
+        raise exception #ExtractionError
       end #run
 
       def without_unpacking(path)
@@ -79,7 +79,12 @@ module CartoDB
         stdout, stderr, status  = Open3.capture3(command_for(path))
         Dir.chdir(current_directory)
 
-        raise ExtractionError if unp_failure?(stdout + stderr, status)
+        if unp_failure?(stdout + stderr, status)
+          puts "stdout: #{stdout}"
+          puts "stderr: #{stderr}"
+          puts "status: #{status}"
+          raise ExtractionError
+        end
         FileUtils.rm(path)
         self
       end #extract
@@ -91,7 +96,14 @@ module CartoDB
       end #source_file_for
 
       def command_for(path)
-        "`which unp` #{path} -- -o"
+        stdout, stderr, status  = Open3.capture3("which unp")
+        if (status != 0)
+          puts "Cannot find command 'unp' (required for import task) #{stderr}"
+          raise InstallError # TODO: use InstallError instead ! See #310
+        end
+        unp_path = stdout.chop
+        puts "Path to 'unp': #{unp_path} -- stderr was #{stderr} and status was #{status}"
+        "#{unp_path} #{path} -- -o"
       end #command_for
 
      def supported?(filename)

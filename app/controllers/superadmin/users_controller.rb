@@ -57,6 +57,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
 
   def set_password_if_present(attributes)
     @user.password         = attributes[:password] if attributes[:password].present?
+    @user.password_confirmation = attributes[:password] if attributes[:password].present?
     @user.crypted_password = attributes[:crypted_password] if attributes[:crypted_password].present?
     @user.salt             = attributes[:salt] if attributes[:salt].present?
   end # set_password_if_present

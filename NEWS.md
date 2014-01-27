@@ -1,3 +1,36 @@
+2.8.2 (2014-01-23)
+------------------
+* Improvements
+  * Changed the default Torque visualization parameters.
+  * Added created_at to the user model.
+  * Removed /api/v1/queries endpoint.
+  * Run automatic geocoding after syncing a table.
+  * Reduce memory footprint of importer.
+  * Change settings page for an organization user (not admin).
+  * Change dashboard when user is an organization user (not admin).
+
+* Bugs Fixed
+  * After a background import, the dashboard sorting method is changed.
+  * PostgreSQL 9.2+ support (PGError: ERROR: column "procpid" does not exist). (#267)
+  * Check table geometry type when a row is added, removed or changed.
+  * Clean up old importer code.
+  * The margin between oAuth and simple auth modules is too big.
+  * Creating a table from scratch, then adding a row from the table with a geometry, if you go to map view, you can't apply any wizard.
+  * Problem rendering some CSS gradients with last Chrome version.
+  * Wizard is not refreshed with new properties when a simple wizard is applied and any CartoCSS property is changed.
+  * Category colors are not re-rendered again when the previously applied column was removed.
+  * Fixed enabling fonts in map view. 
+  * Autocomplete table_name when typing is not showing up in Codermirror editors.
+  * Replaced the old table endpoint in the merge functionality.
+  * Reduced default marker width and border-width.
+  * Fixed geocodings API authentication. 
+  * Check geocoding bindings in table and map views.
+  * Fixed encoding issue with xlsx files.
+  * Wizard is active and bland when a new layer without any geometry is added in a visualization.
+  * Table shadow does not appear correctly aligned when you are in a synced table under a visualization.
+  * [Importer] Raise error if unp is not installed (#310).
+  * polygon-fill is added when polygon-pattern-file is being used.
+
 2.8.1 (2014-01-16)
 ------------------
 * Bugs Fixed

@@ -9,6 +9,7 @@ require_relative './name_checker'
 require_relative './relator'
 require_relative '../table/privacy_manager'
 require_relative '../../../services/minimal-validation/validator'
+require_relative '../../../services/named-maps-api-wrapper/lib/named_maps_wrapper'
 
 module CartoDB
   module Visualization
@@ -17,6 +18,7 @@ module CartoDB
       include Virtus
 
       PRIVACY_VALUES  = %w{ public private }
+      TEMPLATE_NAME_PREFIX = 'tpl_'
 
       attribute :id,                String
       attribute :name,              String
@@ -32,8 +34,7 @@ module CartoDB
       def_delegators :validator,    :errors, :full_errors
       def_delegators :relator,      *Relator::INTERFACE
 
-      def initialize(attributes={}, repository=Visualization.repository,
-      name_checker=nil)
+      def initialize(attributes={}, repository=Visualization.repository, name_checker=nil)
         super(attributes)
         @repository   = repository
         self.id       ||= @repository.next_id
@@ -44,10 +45,19 @@ module CartoDB
       def store
         raise CartoDB::InvalidMember unless self.valid?
 
+        new_row = repository.fetch(id).nil?
+
         invalidate_varnish_cache if name_changed || privacy_changed || description_changed
         set_timestamps
         repository.store(id, attributes.to_hash)
         propagate_privacy_and_name_to(table) if table
+
+        if new_row
+          create_named_map_if_proceeds
+        else
+          # update named map
+        end
+
         self
       end #store
 
@@ -120,7 +130,12 @@ module CartoDB
       end #to_hash
 
       def to_vizjson
-        options = { full: false, user_name: user.username }
+        options = { 
+          full: false, 
+          user_name: user.username,
+          tiler_url: tile_request_url,
+          user_api_key: user.api_key
+        }
         VizJSON.new(self, options, configuration).to_poro
       end #to_hash
 
@@ -154,10 +169,45 @@ module CartoDB
         CartoDB::Varnish.new.purge("obj.http.X-Cache-Channel ~ .*#{id}:vizjson")
       end #invalidate_varnish_cache
 
+      def has_private_tables?
+        has_private_tables = false
+        related_tables.each { |table|
+          has_private_tables |= (table.privacy == ::Table::PRIVATE)
+        }
+        has_private_tables
+      end #has_private_tables
+
+      def create_named_map_if_proceeds
+        if has_private_tables?
+          named_maps = CartoDB::NamedMapsWrapper::NamedMaps.new(tile_request_url, user.api_key)
+          vizjson = VizJSON.new(self, { full: false, user_name: user.username }, configuration)
+
+          template_data = {
+            name: CartoDB::NamedMapsWrapper::NamedMap.normalize_name(id),
+            auth: {
+              method: 'open'
+            },
+            layergroup: vizjson.layer_group
+          }
+
+          new_named_map = named_maps.create(template_data)
+          !new_named_map.nil?
+        else
+          true
+        end
+
+      end #create_named_map_if_proceeds
+
       private
 
       attr_reader   :repository, :name_checker, :validator
       attr_accessor :privacy_changed, :name_changed, :description_changed
+
+      def tile_request_url
+        uri  = "#{user.username}.#{Cartodb.config[:tiler]['private']['domain']}"
+        port = Cartodb.config[:tiler]['private']['port'] || 443
+        "#{Cartodb.config[:tiler]['private']['protocol']}://#{uri}:#{port}"
+      end
 
       def propagate_privacy_and_name_to(table)
         return self unless table
@@ -219,6 +269,7 @@ module CartoDB
           ).include?(table.name)
         end
       end #related_layers_from
+
     end # Member
   end # Visualization
 end # CartoDB

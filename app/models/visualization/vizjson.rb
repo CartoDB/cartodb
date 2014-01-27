@@ -51,16 +51,14 @@ module CartoDB
       end #bounds_from
 
       def layers_for(visualization)
-        layers_data = [
-          base_layers_for(visualization), 
-          layer_group_for(visualization),
-          other_layers_for(visualization)
-        ]
-
+        layers_data = Array.new
         if visualization.has_private_tables?
           layers_data.push( named_map_for(visualization) )
+        else
+          layers_data.push( base_layers_for(visualization) )
+          layers_data.push( layer_group_for(visualization) )
+          layers_data.push( other_layers_for(visualization) )
         end
-
         layers_data.compact.flatten
       end #layers_for
 

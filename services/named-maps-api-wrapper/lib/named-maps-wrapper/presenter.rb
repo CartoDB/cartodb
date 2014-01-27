@@ -22,10 +22,10 @@ module CartoDB
       	named_map = fetch if !@fetched
 
         poro = {
-        	type: 		'named-map',
+        	type: 		'namedmap',
 					order: 		1,	# TODO: Remove this?
 	        options: 	{
-            type: 							"named-map",
+            type: 							"namedmap",
             user_name:          @options.fetch(:user_name),
             tiler_protocol:     (@configuration[:tiler]["public"]["protocol"] rescue nil),
             tiler_domain:       (@configuration[:tiler]["public"]["domain"] rescue nil),

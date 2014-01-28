@@ -19,7 +19,7 @@ module CartoDB
         @configuration    = configuration
         logger.info(map.inspect) if logger
       end #initialize
-    
+
       def to_poro
         {
           id:             visualization.id,
@@ -41,7 +41,7 @@ module CartoDB
         layer_group_poro = layer_group_for(visualization)
 
         layers_data = Array.new
-        layer_group_poro[:options][:layer_definition][:layers].each { |layer| 
+        layer_group_poro[:options][:layer_definition][:layers].each { |layer|
           layers_data.push( {
             type:     layer[:type],
             options:  layer[:options]
@@ -80,7 +80,6 @@ module CartoDB
       def named_map_for(visualization)
         presenter_options = {
           user_name: options.fetch(:user_name),
-          url: options.delete(:tiler_url),
           api_key: options.delete(:user_api_key)
         }
         CartoDB::NamedMapsWrapper::Presenter.new(visualization, presenter_options, configuration)
@@ -106,7 +105,7 @@ module CartoDB
       end #other_layers_for
 
       def overlays_for(map)
-        ordered_overlays_for(visualization).map do |overlay| 
+        ordered_overlays_for(visualization).map do |overlay|
           Overlay::Presenter.new(overlay).to_poro
         end
       end #overlays_for

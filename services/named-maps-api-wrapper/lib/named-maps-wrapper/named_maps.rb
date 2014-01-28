@@ -10,14 +10,18 @@ module CartoDB
 
 		class NamedMaps
 
-			def initialize(url = "", api_key = "")
-				raise NamedMapsDataError if url.nil? or url.length == 0		\
-																 or api_key.nil? or api_key.length == 0
+			def initialize(user_config, tiler_config)
+				raise NamedMapsDataError if user_config.nil? or user_config.size == 0			\
+																 or tiler_config.nil? or tiler_config.size == 0
 
-				@url = [ url, 'tiles', 'template' ].join('/')
-				@api_key = api_key
 				@headers = { 'content-type' => 'application/json' }
-				@host = url
+
+				@username = user_config[:name]
+				@api_key = user_config[:api_key]
+
+				@host = "#{tiler_config[:protocol]}://#{@username}.#{tiler_config[:domain]}:#{tiler_config[:port]}"
+
+				@url = [ @host, 'tiles', 'template' ].join('/')
 
 				@verbose_mode = false
 			end #initialize
@@ -74,7 +78,7 @@ module CartoDB
 				end
 			end #get
 
-			attr_reader	:url, :api_key, :headers, :host
+			attr_reader	:url, :api_key, :username, :headers, :host
 
 		end #NamedMaps
 

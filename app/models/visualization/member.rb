@@ -40,12 +40,13 @@ module CartoDB
         self.id         ||= @repository.next_id
         @name_checker   = name_checker
         @validator      = MinimalValidator::Validator.new
+        @named_maps     = nil
+        @user_data      = nil
       end #initialize
 
       def store
         raise CartoDB::InvalidMember unless self.valid?
         do_store
-        named_map = has_named_map?
         self
       end #store
 
@@ -70,7 +71,9 @@ module CartoDB
       end #fetch
 
       def delete
+        # Named map must be deleted before the map, or we lose the reference to it
         named_map = has_named_map?
+        named_map.delete if named_map
 
         invalidate_varnish_cache
         overlays.destroy
@@ -81,8 +84,6 @@ module CartoDB
         repository.delete(id)
         self.attributes.keys.each { |key| self.send("#{key}=", nil) }
 
-        named_map.delete if named_map
-
         self
       end #delete
 
@@ -90,6 +91,11 @@ module CartoDB
         invalidate_varnish_cache
         remove_layers_from(table)
       end #unlink_from
+
+      def user_data=(user_data)
+        @user_data = user_data
+        named_maps(true)
+      end #user_data=
 
       def name=(name)
         name = name.downcase if name && table?
@@ -124,7 +130,6 @@ module CartoDB
         options = {
           full: false,
           user_name: user.username,
-          tiler_url: tile_request_url,
           user_api_key: user.api_key
         }
         VizJSON.new(self, options, configuration).to_poro
@@ -190,16 +195,29 @@ module CartoDB
         end
       end #do_store
 
+      def named_maps(force_init = false)
+        if @named_maps.nil? || force_init
+          @named_maps = CartoDB::NamedMapsWrapper::NamedMaps.new(
+            {
+              name:     user.nil? ? @user_data[:name] : user.username,
+              api_key:  user.nil? ? @user_data[:api_key] : user.api_key
+            },
+            {
+              domain:   Cartodb.config[:tiler]['private']['domain'],
+              port:     Cartodb.config[:tiler]['private']['port'] || 443,
+              protocol: Cartodb.config[:tiler]['private']['protocol']
+            }
+          )
+        end
+        @named_maps
+      end #named_maps
+
       def has_named_map?
-        named_maps = CartoDB::NamedMapsWrapper::NamedMaps.new(tile_request_url, user.api_key)
-        named_map = named_maps.get(CartoDB::NamedMapsWrapper::NamedMap.normalize_name(id))
-        named_map
+        named_maps.get(CartoDB::NamedMapsWrapper::NamedMap.normalize_name(id))
       end #has_named_map?
 
       def create_named_map
-        named_maps = CartoDB::NamedMapsWrapper::NamedMaps.new(tile_request_url, user.api_key)
         vizjson = VizJSON.new(self, { full: false, user_name: user.username }, configuration)
-
         template_data = {
           name: CartoDB::NamedMapsWrapper::NamedMap.normalize_name(id),
           auth: {
@@ -207,7 +225,6 @@ module CartoDB
           },
           layergroup: vizjson.layer_group_for_named_map
         }
-
         new_named_map = named_maps.create(template_data)
         !new_named_map.nil?
       end #create_named_map_if_proceeds
@@ -224,12 +241,6 @@ module CartoDB
         }
         named_map_instance.update(template_data)
       end #update_named_map
-
-      def tile_request_url
-        uri  = "#{user.username}.#{Cartodb.config[:tiler]['private']['domain']}"
-        port = Cartodb.config[:tiler]['private']['port'] || 443
-        "#{Cartodb.config[:tiler]['private']['protocol']}://#{uri}:#{port}"
-      end
 
       def propagate_name_to(table)
         table.name = self.name

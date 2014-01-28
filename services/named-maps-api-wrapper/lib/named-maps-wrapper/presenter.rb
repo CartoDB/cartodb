@@ -27,9 +27,9 @@ module CartoDB
 	        options: 	{
             type: 							"namedmap",
             user_name:          @options.fetch(:user_name),
-            tiler_protocol:     (@configuration[:tiler]["public"]["protocol"] rescue nil),
-            tiler_domain:       (@configuration[:tiler]["public"]["domain"] rescue nil),
-            tiler_port:         (@configuration[:tiler]["public"]["port"] rescue nil),
+            tiler_protocol:     (@configuration[:tiler]["private"]["protocol"] rescue nil),
+            tiler_domain:       (@configuration[:tiler]["private"]["domain"] rescue nil),
+            tiler_port:         (@configuration[:tiler]["private"]["port"] rescue nil),
             require_password: 	false,	# TODO change when supporting auth
             named_map: 					named_map.template.fetch('template')
         	}
@@ -39,7 +39,17 @@ module CartoDB
       end #to_poro
 
       def fetch
-      	named_maps = NamedMaps.new(@options.fetch(:url), @options.fetch(:api_key))
+      	named_maps = NamedMaps.new(
+            {
+              name:     @options.fetch(:user_name),
+              api_key:  @options.fetch(:api_key)
+            },
+            {
+              protocol:   (@configuration[:tiler]["private"]["protocol"] rescue nil),
+              domain: (@configuration[:tiler]["private"]["domain"] rescue nil),
+              port:     (@configuration[:tiler]["private"]["port"] rescue nil)
+            }
+          )
       	new_named_map = named_maps.get(NamedMap.normalize_name(@visualization.id))
       	@fetched = true
       	new_named_map

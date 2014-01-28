@@ -1,6 +1,9 @@
 3.X.Y ()
 - Using Leaflet 0.7.2
 
+3.5.07 (28//01//2014)
+- fixed fetching twice updated_at in torque layers
+
 3.5.06 (23//01//2014)
 - Fixed IE7
 

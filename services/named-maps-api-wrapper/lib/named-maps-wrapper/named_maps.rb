@@ -25,12 +25,10 @@ module CartoDB
 			def create(template_data)
 				raise NamedMapsDataError if template_data.nil? or template_data.size == 0
 
-				template_data = template_data.merge( { version: NamedMap::NAMED_MAPS_VERSION } )
-				template_json = ::JSON.dump(template_data)
-
+				template_json = ::JSON.dump( template_data.merge( { version: NamedMap::NAMED_MAPS_VERSION } ) )
 				p template_json if @verbose_mode
 
-				response = Typhoeus.post(@url + '?api_key=' + @api_key, { 
+				response = Typhoeus.post(@url + '?api_key=' + @api_key, {
 					headers: @headers,
 					body: template_json,
 					verbose: @verbose_mode
@@ -46,7 +44,7 @@ module CartoDB
 			end #create
 
 			def all
-				response = Typhoeus.get(@url + "?api_key=" + @api_key, { 
+				response = Typhoeus.get(@url + "?api_key=" + @api_key, {
 					headers: @headers,
 					verbose: @verbose_mode
 				})
@@ -60,7 +58,7 @@ module CartoDB
 			def get(name)
 				raise NamedMapsDataError if name.nil? or name.length == 0
 
-				response = Typhoeus.get( [@url, name ].join('/') + "?api_key=" + @api_key, { 
+				response = Typhoeus.get( [@url, name ].join('/') + "?api_key=" + @api_key, {
 					headers: @headers,
 					verbose: @verbose_mode
 				})

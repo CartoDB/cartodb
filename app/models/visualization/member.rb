@@ -36,30 +36,24 @@ module CartoDB
 
       def initialize(attributes={}, repository=Visualization.repository, name_checker=nil)
         super(attributes)
-        @repository   = repository
-        self.id       ||= @repository.next_id
-        @name_checker = name_checker
-        @validator    = MinimalValidator::Validator.new
+        @repository     = repository
+        self.id         ||= @repository.next_id
+        @name_checker   = name_checker
+        @validator      = MinimalValidator::Validator.new
       end #initialize
 
       def store
         raise CartoDB::InvalidMember unless self.valid?
-
-        new_row = repository.fetch(id).nil?
-
-        invalidate_varnish_cache if name_changed || privacy_changed || description_changed
-        set_timestamps
-        repository.store(id, attributes.to_hash)
-        propagate_privacy_and_name_to(table) if table
-
-        if new_row
-          create_named_map_if_proceeds
-        else
-          # update named map
-        end
-
+        do_store
+        named_map = has_named_map?
         self
       end #store
+
+      def store_using_table
+        # TODO: Check related_tables has fresh values
+        do_store
+        self
+      end #store_using_table
 
       def valid?
         validator.validate_presence_of(name: name, privacy: privacy, type: type)
@@ -67,14 +61,6 @@ module CartoDB
         validator.validate_uniqueness_of(:name, available_name?)
         validator.valid?
       end #valid?
-
-      def store_using_table(privacy)
-        self.privacy = privacy
-        invalidate_varnish_cache if privacy_changed
-        set_timestamps
-        repository.store(id, attributes.to_hash)
-        self
-      end #store_using_table
 
       def fetch
         data = repository.fetch(id)
@@ -84,6 +70,8 @@ module CartoDB
       end #fetch
 
       def delete
+        named_map = has_named_map?
+
         invalidate_varnish_cache
         overlays.destroy
         layers(:base).map(&:destroy)
@@ -92,6 +80,9 @@ module CartoDB
         table.destroy if type == 'table' && table
         repository.delete(id)
         self.attributes.keys.each { |key| self.send("#{key}=", nil) }
+
+        named_map.delete if named_map
+
         self
       end #delete
 
@@ -130,8 +121,8 @@ module CartoDB
       end #to_hash
 
       def to_vizjson
-        options = { 
-          full: false, 
+        options = {
+          full: false,
           user_name: user.username,
           tiler_url: tile_request_url,
           user_api_key: user.api_key
@@ -177,50 +168,68 @@ module CartoDB
         has_private_tables
       end #has_private_tables
 
-      def create_named_map_if_proceeds
-        if has_private_tables?
-          named_maps = CartoDB::NamedMapsWrapper::NamedMaps.new(tile_request_url, user.api_key)
-          vizjson = VizJSON.new(self, { full: false, user_name: user.username }, configuration)
-
-          template_data = {
-            name: CartoDB::NamedMapsWrapper::NamedMap.normalize_name(id),
-            auth: {
-              method: 'open'
-            },
-            layergroup: vizjson.layer_group_for_named_map
-          }
-
-          new_named_map = named_maps.create(template_data)
-          !new_named_map.nil?
-        else
-          true
-        end
-
-      end #create_named_map_if_proceeds
-
       private
 
       attr_reader   :repository, :name_checker, :validator
       attr_accessor :privacy_changed, :name_changed, :description_changed
+
+      def do_store
+        invalidate_varnish_cache if name_changed || privacy_changed || description_changed
+        set_timestamps
+        repository.store(id, attributes.to_hash)
+
+        named_map = has_named_map?
+        if has_private_tables?
+            if (named_map)
+              update_named_map(named_map)
+             else
+              create_named_map
+            end
+        else
+          named_map.delete if named_map
+        end
+      end #do_store
+
+      def has_named_map?
+        named_maps = CartoDB::NamedMapsWrapper::NamedMaps.new(tile_request_url, user.api_key)
+        named_map = named_maps.get(CartoDB::NamedMapsWrapper::NamedMap.normalize_name(id))
+        named_map
+      end #has_named_map?
+
+      def create_named_map
+        named_maps = CartoDB::NamedMapsWrapper::NamedMaps.new(tile_request_url, user.api_key)
+        vizjson = VizJSON.new(self, { full: false, user_name: user.username }, configuration)
+
+        template_data = {
+          name: CartoDB::NamedMapsWrapper::NamedMap.normalize_name(id),
+          auth: {
+            method: 'open'
+          },
+          layergroup: vizjson.layer_group_for_named_map
+        }
+
+        new_named_map = named_maps.create(template_data)
+        !new_named_map.nil?
+      end #create_named_map_if_proceeds
+
+      def update_named_map(named_map_instance)
+        # Instance as param to avoid performing a second query to the NamedMaps API
+        vizjson = VizJSON.new(self, { full: false, user_name: user.username }, configuration)
+        template_data = {
+          name: CartoDB::NamedMapsWrapper::NamedMap.normalize_name(id),
+          auth: {
+            method: 'open'
+          },
+          layergroup: vizjson.layer_group_for_named_map
+        }
+        named_map_instance.update(template_data)
+      end #update_named_map
 
       def tile_request_url
         uri  = "#{user.username}.#{Cartodb.config[:tiler]['private']['domain']}"
         port = Cartodb.config[:tiler]['private']['port'] || 443
         "#{Cartodb.config[:tiler]['private']['protocol']}://#{uri}:#{port}"
       end
-
-      def propagate_privacy_and_name_to(table)
-        return self unless table
-        propagate_privacy_to(table) if privacy_changed
-        propagate_name_to(table)    if name_changed
-      end #propagate_privacy_and_name_to
-
-      def propagate_privacy_to(table)
-        Table::PrivacyManager.new(table)
-          .set_from(self)
-          .propagate_to_redis_and_varnish
-        self
-      end #propagate_privacy_to
 
       def propagate_name_to(table)
         table.name = self.name
@@ -261,7 +270,7 @@ module CartoDB
         self.active_layer_id = layers(:cartodb).first.id
         store
       end #remove_layers_from
-        
+
       def related_layers_from(table)
         layers(:cartodb).select do |layer|
           (layer.affected_tables.map(&:name) +

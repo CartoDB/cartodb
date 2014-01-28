@@ -13,6 +13,10 @@ describe Layer do
   end
 
   before(:each) do
+    # For Named Maps API wrapper
+    # Using Mocha stubs until we update RSpec (@see http://gofreerange.com/mocha/docs/Mocha/ClassMethods.html)
+    CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
+
     delete_user_data @user
     @table = Table.new
     @table.user_id = @user.id
@@ -82,7 +86,7 @@ describe Layer do
       end
     end
 
-    context "when the type is cartodb and the layer is updated" do      
+    context "when the type is cartodb and the layer is updated" do
       before do
         @map = Map.create(:user_id => @user.id, :table_id => @table.id)
         @layer = Layer.create(kind: 'carto', options: { query: "select * from #{@table.name}" })
@@ -201,7 +205,7 @@ describe Layer do
     it 'returns true if its kind is a base layer' do
       layer = Layer.new(kind: 'tiled')
       layer.base_layer?.should == true
-    end 
+    end
   end #base_layer?
 
   describe '#data_layer?' do
@@ -228,7 +232,7 @@ describe Layer do
       layer.rename_table(table_name, new_table_name)
       layer.save
       layer.reload
-      
+
       options = layer.options
       options.fetch('tile_style') .should      =~ /#{new_table_name}/
       options.fetch('tile_style') .should_not  =~ /#{table_name}/

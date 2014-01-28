@@ -37,15 +37,19 @@ module CartoDB
 			def update(template_data)
 				raise NamedMapDataError if template_data.nil? or template_data.size == 0
 
-				response = Typhoeus.put(url + '?api_key=' + @parent.api_key, { 
+				template_json = ::JSON.dump( template_data.merge( { version: NAMED_MAPS_VERSION } ) )
+				p template_json if @verbose_mode
+
+				response = Typhoeus.put(url + '?api_key=' + @parent.api_key, {
 					headers: @parent.headers,
-					body: ::JSON.dump(template_data),
+					body: template_json,
 					verbose: @verbose_mode
 				})
 				p response.body if @verbose_mode
 
 				if response.code == 200
 					@template = template_data
+					true
 				else
 					raise HTTPResponseError, response.code
 				end

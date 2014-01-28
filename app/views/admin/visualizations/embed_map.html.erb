@@ -169,7 +169,7 @@
           cartodb_logo_link: "http://www.cartodb.com?utm_source=Footer_Link&utm_medium=referral&utm_campaign=Embed_v1&utm_content=Logo",
         })
 
-        cartodb.createVis('map', '<%= v2_vizjson_url(@visualization) %>', opt, function(vis) {
+        cartodb.createVis('map', <%=raw @visualization.to_vizjson.to_json %>, opt, function(vis) {
           // add here your code
           window.vis = vis;
         }).on('error', manageError);

@@ -144,7 +144,7 @@ this is the spec for visjson:
 
        // named-map 
        {
-         type: 'named-map',
+         type: 'namedmap',
          order: 1,
          options: {
             type: "named-map",
@@ -160,9 +160,10 @@ this is the spec for visjson:
                     color: '#FFF',
                     other_var: 1
                 },
-                layers: [
-                    // infowindow...
-                    // legend...
+                layers: [{
+                    infowindow:
+                    legend:
+                    }, {...}
 
                 ]
             },

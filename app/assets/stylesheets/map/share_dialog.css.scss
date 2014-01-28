@@ -11,8 +11,10 @@
 // Map preview
 .share_dialog {
 
-  & > div.head {
-    padding:30px 40px;
+  section.block .content {
+    padding: 0;
+
+    & > div { overflow: hidden; }
   }
 
   div.torque_warning {
@@ -24,26 +26,32 @@
     border-bottom: 1px solid #E5E5E5;
   }
 
-    .cartodb-map_wrapper:-webkit-full-screen {
-      width: 100% !important;
-      height:100%!important;;
-      display:block!important;
-    }
-    .cartodb-map_wrapper:-moz-full-screen {
-      width: 100% !important;
-      height:100%!important;;
-      display:block!important;
-    }
+  .cartodb-map_wrapper:-webkit-full-screen {
+    width: 100% !important;
+    height:100%!important;;
+    display:block!important;
+  }
 
+  .cartodb-map_wrapper:-moz-full-screen {
+    width: 100% !important;
+    height:100%!important;;
+    display:block!important;
+  }
+
+  .map_container {
+    padding: 40px;
+    float:left;
+  }
 
   .cartodb-map_wrapper {
     position: relative;
-    @include inline-block();
-    vertical-align:top;
+    /*@include inline-block();*/
+    /*vertical-align:top;*/
     width:480px;
-    height: 340px;
+    height: 470px;
     border: 1px solid #CCC;
     margin:0;
+    /*padding: 40px;*/
     @include translateZ(10px);
     @include border-radius(3px);
     @include translate3d(0,0,10px);
@@ -183,10 +191,32 @@
 
   // Sharing options
   div.sharing_options {
-    display:inline-block!important;
-    vertical-align:top;
-    width:173px;
-    margin-left:25px;
+    float:left;
+    /*display:inline-block!important;*/
+    /*vertical-align:top;*/
+    width:299px;
+    /*margin-left:25px;*/
+
+    border-right: 1px solid #E5E5E5;
+
+    h3 {
+      .inner { width: 221px; }
+      padding: 31px 0 30px 0;
+    }
+
+    h4 {
+
+      .inner { width: 221px; }
+
+      padding: 12px 0;
+      background: #F6F6F6;
+      border-top: 1px solid #E5E5E5;
+      border-bottom: 1px solid #E5E5E5;
+      color: #CCCCCC;
+      font-size: 11px;
+      font-weight:bold;
+      text-transform: uppercase;
+    }
 
     h5 {
       font-size:17px;
@@ -197,8 +227,10 @@
 
     ul.switches {
       display:block;
+      width: 221px;
       letter-spacing:-4px;
       word-spacing:-4px;
+      padding: 0 40px;
 
       li {
         @include inline-block();

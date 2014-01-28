@@ -74,7 +74,7 @@ cdb.geo.MapLayer = cdb.core.Model.extend({
       }
     }
     return false; // different type
-  },
+  }
 
 
 });

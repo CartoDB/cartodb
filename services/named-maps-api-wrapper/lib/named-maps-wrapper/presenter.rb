@@ -21,17 +21,35 @@ module CartoDB
       def to_poro
       	named_map = fetch if !@fetched
 
+        template_data = named_map.template.fetch('template')
+
+        layers = Array.new
+
+        template_data['layergroup']['layers'].each { |layer|
+          layers.push({
+            layer_name: layer['options']['layer_name'],
+            legend: '',
+            infowindow: ''
+            # TODO: add legend
+            # TODO: add infowindow
+          })
+        }
+
         poro = {
         	type: 		'namedmap',
 					order: 		1,	# TODO: Remove this?
 	        options: 	{
-            type: 							"namedmap",
+            type: 							'namedmap',
             user_name:          @options.fetch(:user_name),
-            tiler_protocol:     (@configuration[:tiler]["private"]["protocol"] rescue nil),
-            tiler_domain:       (@configuration[:tiler]["private"]["domain"] rescue nil),
-            tiler_port:         (@configuration[:tiler]["private"]["port"] rescue nil),
-            require_password: 	false,	# TODO change when supporting auth
-            named_map: 					named_map.template.fetch('template')
+            tiler_protocol:     (@configuration[:tiler]['private']['protocol'] rescue nil),
+            tiler_domain:       (@configuration[:tiler]['private']['domain'] rescue nil),
+            tiler_port:         (@configuration[:tiler]['private']['port'] rescue nil),
+            named_map:          {
+              name:     template_data['name'],
+              auth:     template_data['auth']['method'],
+              params:   {},
+              layers:   layers
+            }
         	}
         }
 
@@ -45,9 +63,9 @@ module CartoDB
               api_key:  @options.fetch(:api_key)
             },
             {
-              protocol:   (@configuration[:tiler]["private"]["protocol"] rescue nil),
-              domain: (@configuration[:tiler]["private"]["domain"] rescue nil),
-              port:     (@configuration[:tiler]["private"]["port"] rescue nil)
+              protocol:   (@configuration[:tiler]['private']['protocol'] rescue nil),
+              domain: (@configuration[:tiler]['private']['domain'] rescue nil),
+              port:     (@configuration[:tiler]['private']['port'] rescue nil)
             }
           )
       	new_named_map = named_maps.get(NamedMap.normalize_name(@visualization.id))

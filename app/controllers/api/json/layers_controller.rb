@@ -47,14 +47,12 @@ class Api::Json::LayersController < Api::ApplicationController
 
   def update
     @layer = Layer[params[:id]]
+    @layer.raise_on_save_failure = true
+    @layer.update(params.slice(:options, :kind, :infowindow, :order))
 
-    if @layer.update(params.slice(:options, :kind, :infowindow, :order))
-      render_jsonp(@layer.public_values)
-    else
-      CartoDB::Logger.info "Error on layers#update", @layer.errors.full_messages
-      render_jsonp({ :description => @layer.errors.full_messages, 
-        :stack => @layer.errors.full_messages}, 400)
-    end
+    render_jsonp(@layer.public_values)
+  rescue Sequel::ValidationFailed, RuntimeError => e
+    render_jsonp({ description: e.message }, 400)
   end
 
   def destroy

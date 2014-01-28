@@ -35,14 +35,14 @@ feature "API 1.0 map layers management" do
   end
 
   scenario "Get layer information" do
-    layer = Layer.create kind: 'carto', order: 1
+    layer = Layer.create kind: 'carto', order: 1, options: { opt1: 'value' }, infowindow: ['column1', 'column2']
     @map.add_layer layer
 
     get_json v1_map_layer_url(params.merge(id: layer.id, map_id: @map.id)) do |response|
       response.status.should be_success
-      response.body[:id].should == layer.id
-      response.body[:kind].should == 'carto'
-      response.body[:order].should == 1
+      response.body[:id].should    eq layer.id
+      response.body[:kind].should  eq 'carto'
+      response.body[:order].should eq 1
     end
   end
 
@@ -98,7 +98,7 @@ feature "API 1.0 map layers management" do
     @map.add_layer layer
     
     delete_json v1_map_layer_url(params.merge(id: layer.id, map_id: @map.id)) do |response|
-      response.status.should be_success
+      response.status.should eq 204
       expect { layer.refresh }.to raise_error
     end
   end

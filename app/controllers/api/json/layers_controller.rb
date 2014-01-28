@@ -3,26 +3,16 @@ require_relative '../../../models/layer/presenter'
 
 class Api::Json::LayersController < Api::ApplicationController
   ssl_required :index, :show, :create, :update, :destroy
-  skip_before_filter :api_authorization_required, :only => [ :show ]  
-
   before_filter :load_parent
 
   def index
     @layers = @parent.layers
-    render_jsonp({ :total_entries => @layers.size,
-                   :layers => @layers.map(&:public_values)
-                })
+    render_jsonp total_entries: @layers.size, layers: @layers.map(&:public_values)
   end
 
   def show
-    @layer = Layer[params[:id]]
-
-    respond_to do |format|
-      format.tilejson do 
-       render :text => "#{params[:callback]}( #{@layer.to_tilejson} )"
-      end
-      format.json { render_jsonp(@layer.to_json) }
-    end
+    @layer = @parent.layers_dataset.where(layer_id: params[:id]).first
+    render_jsonp @layer.to_json
   end
 
   def create
@@ -56,7 +46,7 @@ class Api::Json::LayersController < Api::ApplicationController
   end
 
   def destroy
-    Layer[params[:id]].destroy
+    @parent.layers_dataset.where(layer_id: params[:id]).destroy
     head :no_content
   end
 

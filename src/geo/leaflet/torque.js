@@ -37,7 +37,8 @@ var LeafLetTorqueLayer = L.TorqueLayer.extend({
       },
       cartodb_logo: layerModel.get('cartodb_logo'),
       attribution: layerModel.get('attribution'),
-      cdn_url: layerModel.get('no_cdn') ? null: (layerModel.get('cdn_url') || cdb.CDB_HOST)
+      cdn_url: layerModel.get('no_cdn') ? null: (layerModel.get('cdn_url') || cdb.CDB_HOST),
+      cartocss: layerModel.get('tile_style')
     });
 
     cdb.geo.LeafLetLayerView.call(this, layerModel, this, leafletMap);
@@ -45,7 +46,7 @@ var LeafLetTorqueLayer = L.TorqueLayer.extend({
     // match leaflet events with backbone events
     this.fire = this.trigger;
 
-    this.setCartoCSS(layerModel.get('tile_style'));
+    //this.setCartoCSS(layerModel.get('tile_style'));
     if (layerModel.get('visible')) {
       this.play();
     }

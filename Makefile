@@ -5,7 +5,6 @@ PENDING_SPECS = \
 WORKING_SPECS = \
 	spec/requests/api/user_layers_spec.rb \
 	spec/requests/api/map_layers_spec.rb \
-	spec/models/layer_spec.rb \
   spec/models/table_spec.rb \
   spec/lib/sql_parser_spec.rb \
   spec/lib/sql_test_spec.rb \

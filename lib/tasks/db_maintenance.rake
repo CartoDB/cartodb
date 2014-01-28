@@ -407,9 +407,9 @@ namespace :cartodb do
               t.drop_trigger_cache_checkpoint
             end
           end
-          printf "OK %-#{20}s (%-#{4}s/%-#{4}s)\n", user.username, i+1, count
+          printf "OK %-#{20}s (%-#{5}s/%-#{5}s)\n", user.username, i+1, count
         rescue => e
-          printf "FAIL %-#{20}s (%-#{4}s/%-#{4}s) #{e.message}\n", user.username, i+1, count
+          printf "FAIL %-#{20}s (%-#{5}s/%-#{5}s) #{e.message}\n", user.username, i+1, count
         end
       end
     end

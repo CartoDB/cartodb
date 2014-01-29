@@ -23,15 +23,16 @@ module CartoDB
 
         template_data = named_map.template.fetch('template')
 
-        layers = Array.new
+        layers = @visualization.layers(:cartodb)
 
-        template_data['layergroup']['layers'].each { |layer|
-          layers.push({
-            layer_name: layer['options']['layer_name'],
-            legend: '',
-            infowindow: ''
-            # TODO: add legend
-            # TODO: add infowindow
+        layers_data = Array.new
+
+        layers.each { |layer|
+          layer_vizjson = Layer::Presenter.new(layer, @options, @configuration).to_vizjson_v2
+          layers_data.push({
+            layer_name: layer_vizjson[:options][:layer_name],
+            legend: layer_vizjson[:legend],
+            infowindow: layer_vizjson[:infowindow]
           })
         }
 
@@ -48,7 +49,7 @@ module CartoDB
               name:     template_data['name'],
               auth:     template_data['auth']['method'],
               params:   {},
-              layers:   layers
+              layers:   layers_data
             }
         	}
         }

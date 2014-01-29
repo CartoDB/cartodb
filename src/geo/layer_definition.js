@@ -27,7 +27,9 @@ function NamedMap(named_map, options) {
   var self = this;
   Map.call(this, options);
   this.endPoint = '/tiles/template/' + named_map.name;
+  this.JSONPendPoint = '/tiles/template/' + named_map.name + '/jsonp';
   this.layers = _.clone(named_map.layers) || [];
+  this.named_map = named_map;
 }
 
 function LayerDefinition(layerDefinition, options) {
@@ -249,11 +251,12 @@ Map.prototype = {
     var ajax = this.options.ajax;
     var json = JSON.stringify(this.toJSON());
     var compressor = this._getCompressor(json);
+    var endPoint = self.JSONPendPoint || self.endPoint;
     compressor(json, 3, function(encoded) {
       params.push(encoded);
       ajax({
         dataType: 'jsonp',
-        url: self._tilerHost() + self.endPoint + '?' + params.join('&'),
+        url: self._tilerHost() + endPoint + '?' + params.join('&'),
         success: function(data) {
           if(0 === self._queue.length) {
             callback(data);
@@ -535,7 +538,7 @@ Map.prototype = {
 NamedMap.prototype = _.extend({}, Map.prototype, {
 
   toJSON: function() {
-    return {};
+    return this.named_map.params || {};
   },
 
   containInfowindow: function() {

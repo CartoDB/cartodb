@@ -70,12 +70,19 @@ module ApplicationHelper
       gdrive_app_id:       Cartodb.config[:gdrive]['app_id'],
       max_asset_file_size: Cartodb.config[:assets]["max_file_size"]
     }
+
     if Cartodb.config[:cdn_url].present?
       config[:cdn_url] = {
         http:              Cartodb.config[:cdn_url].try("fetch", "http", nil),
         https:             Cartodb.config[:cdn_url].try("fetch", "https", nil)
       }
     end
+
+    if Cartodb.config[:error_track].present?
+      config[:error_track_url] = Cartodb.config[:error_track]["url"]
+      config[:error_track_percent_users] = Cartodb.config[:error_track]["percent_users"]
+    end
+
     config.to_json
   end
 
@@ -93,12 +100,19 @@ module ApplicationHelper
       account_host:        Cartodb.config[:account_host],
       max_asset_file_size: Cartodb.config[:assets]["max_file_size"]
     }
+
     if Cartodb.config[:cdn_url].present?
       config[:cdn_url] = {
         http:              Cartodb.config[:cdn_url].try("fetch", "http", nil),
         https:             Cartodb.config[:cdn_url].try("fetch", "https", nil)
       }
     end
+
+    if Cartodb.config[:error_track].present?
+      config[:error_track_url] = Cartodb.config[:error_track]["url"]
+      config[:error_track_percent_users] = Cartodb.config[:error_track]["percent_users"]
+    end
+
     config.to_json
   end
 

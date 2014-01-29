@@ -1,6 +1,6 @@
-// cartodb.js version: 3.5.06-dev
+// cartodb.js version: 3.5.07-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: 58c9b557cf1ecfe0785b6ba5b165cf7d581cff94
+// sha: b30c406035142b922baac41a374d653af001ba79
 (function() {
   var root = this;
 
@@ -20429,7 +20429,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.5.06-dev';
+    cdb.VERSION = '3.5.07-dev';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -20698,7 +20698,7 @@ if(!window.JSON) {
     cdb.config = new Config();
     cdb.config.set({
       cartodb_attributions: "CartoDB <a href='http://cartodb.com/attributions' target='_blank'>attribution</a>",
-      cartodb_logo_link: "http://www.cartodb.com",
+      cartodb_logo_link: "http://www.cartodb.com"
     });
 
 })();
@@ -20717,21 +20717,28 @@ if(!window.JSON) {
     });
 
     cdb.core.ErrorList = Backbone.Collection.extend({
-        model: cdb.core.Error
+        model: cdb.core.Error,
+        enableTrack: function() {
+          var old_onerror = window.onerror;
+          window.onerror = function(msg, url, line) {
+              cdb.errors.create({
+                  msg: msg,
+                  url: url,
+                  line: line
+              });
+              if (old_onerror)
+                old_onerror.apply(window, arguments);
+          };
+        }
     });
 
     /** contains all error for the application */
     cdb.errors = new cdb.core.ErrorList();
 
+
     // error tracking!
     if(cdb.config.ERROR_TRACK_ENABLED) {
-        window.onerror = function(msg, url, line) {
-            cdb.errors.create({
-                msg: msg,
-                url: url,
-                line: line
-            });
-        };
+      cdb.errors.enableTrack();
     }
 
 
@@ -21543,7 +21550,7 @@ cdb.geo.MapLayer = cdb.core.Model.extend({
       }
     }
     return false; // different type
-  },
+  }
 
 
 });
@@ -23617,7 +23624,7 @@ cdb.geo.ui.Legend.Custom = cdb.geo.ui.CustomLegend.extend({
 
     this.model.bind("change:items change:template change:title change:show_title", this.render, this);
 
-  },
+  }
 
 });
 

@@ -2,6 +2,7 @@
 
 [![Build Status](http://travis-ci.org/CartoDB/cartodb.png)]
 (http://travis-ci.org/CartoDB/cartodb)
+[![Code Climate](https://codeclimate.com/github/CartoDB/cartodb20.png)](https://codeclimate.com/github/CartoDB/cartodb20)
 
 CartoDB is an open source tool that allows for the storage and
 visualization of geospatial data on the web.

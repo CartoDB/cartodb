@@ -3,7 +3,7 @@ PENDING_SPECS = \
   $(NULL)
 
 WORKING_SPECS = \
-  spec/lib/failed_imports_spec.rb \
+  spec/models/table_spec.rb \
   spec/lib/sql_parser_spec.rb \
   spec/lib/sql_test_spec.rb \
   spec/lib/string_spec.rb \

@@ -42,8 +42,6 @@ module CartoDB
       token = Cartodb.config[:mixpanel]['token']
       Mixpanel::Tracker.new(token).send(:track, *args)
     rescue => exception
-      p exception
-      debugger
       Rollbar.report_message(
         "Failed to send metric to Mixpanel",
         "error",

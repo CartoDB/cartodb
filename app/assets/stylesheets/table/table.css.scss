@@ -286,7 +286,7 @@
           height:10px;
           background: image-url('layout/thead_shadow.png') repeat 0 0;
           pointer-events:none;
-          z-index:1;
+          z-index:0;
         }
 
         // Horizontal movement
@@ -711,5 +711,6 @@
     table { border-collapse: inherit; }
     thead div.sqlview { z-index:1!important; }
     thead tr th div { z-index:2!important; }
+    thead div.shadow { z-index:1!important }
     tbody tr td { border-spacing:1px; border-bottom:1px solid #ECECEC; }
   }

@@ -8,7 +8,7 @@ require 'uuidtools'
 
 module CartoDB
   class Geocoder
-    BATCH_IF_GREATER_THAN = 250
+    BATCH_IF_GREATER_THAN = 1100
     UPLOAD_OPTIONS = {
       action: 'run',
       indelim: ',',

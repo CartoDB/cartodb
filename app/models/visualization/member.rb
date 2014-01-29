@@ -11,6 +11,10 @@ require_relative '../table/privacy_manager'
 require_relative '../../../services/minimal-validation/validator'
 require_relative '../../../services/named-maps-api-wrapper/lib/named_maps_wrapper'
 
+# Every table has always at least one visualization (the "canonical visualization"), of type 'table',
+# which shares the same privacy options as the table and gets synced.
+# Users can create new visualizations, which will never be of type 'table',
+# and those will use named maps when any source tables are private
 module CartoDB
   module Visualization
     class Member

@@ -9,6 +9,7 @@ describe Layer do
   end
 
   after(:all) do
+    CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
     @user.destroy
   end
 

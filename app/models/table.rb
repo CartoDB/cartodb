@@ -413,7 +413,7 @@ class Table < Sequel::Model(:user_tables)
     end
     affected_visualizations.each { |visualization|
       manager.propagate_to(visualization)
-    } if privacy == PRIVATE
+    }
   end
 
   def propagate_name_change_to_table_visualization

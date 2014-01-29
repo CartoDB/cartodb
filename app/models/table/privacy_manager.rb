@@ -29,7 +29,7 @@ module CartoDB
       end #set_from
 
       def propagate_to(visualization)
-        visualization.store_using_table
+        visualization.store_using_table(privacy_text)
         self
       end #propagate_to
 

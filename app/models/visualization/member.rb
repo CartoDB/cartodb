@@ -17,6 +17,7 @@ module CartoDB
       extend Forwardable
       include Virtus
 
+      CANONICAL_TYPE = 'table'
       PRIVACY_VALUES  = %w{ public private }
       TEMPLATE_NAME_PREFIX = 'tpl_'
 
@@ -50,8 +51,11 @@ module CartoDB
         self
       end #store
 
-      def store_using_table
-        # TODO: Check related_tables has fresh values
+      def store_using_table(privacy_text)
+        # Each table has a canonical visualization which must have privacy synced
+        if (type == CANONICAL_TYPE)
+          self.privacy = privacy_text
+        end
         do_store
         self
       end #store_using_table
@@ -183,15 +187,21 @@ module CartoDB
         set_timestamps
         repository.store(id, attributes.to_hash)
 
-        named_map = has_named_map?
-        if has_private_tables?
-            if (named_map)
-              update_named_map(named_map)
-             else
-              create_named_map
-            end
+        if type == CANONICAL_TYPE
+          propagate_privacy_and_name_to(table) if table
         else
-          named_map.delete if named_map
+          propagate_name_to(table) if table
+          # Canonical visualizations don't have named map
+          named_map = has_named_map?
+          if has_private_tables?
+              if (named_map)
+                update_named_map(named_map)
+               else
+                create_named_map
+              end
+          else
+            named_map.delete if named_map
+          end
         end
       end #do_store
 
@@ -241,6 +251,21 @@ module CartoDB
         }
         named_map_instance.update(template_data)
       end #update_named_map
+
+      def propagate_privacy_and_name_to(table)
+        return self unless table
+        propagate_privacy_to(table) if privacy_changed
+        propagate_name_to(table)    if name_changed
+      end #propagate_privacy_and_name_to
+
+      def propagate_privacy_to(table)
+        if type == CANONICAL_TYPE
+          Table::PrivacyManager.new(table)
+            .set_from(self)
+            .propagate_to_redis_and_varnish
+        end
+        self
+      end #propagate_privacy_to
 
       def propagate_name_to(table)
         table.name = self.name

@@ -997,12 +997,14 @@ TRIGGER
   end
 
   def enable_remote_db_user
-    require 'net/http'
-    uri = URI("http://#{self.database_host}:#{Cartodb.config[:signups]["service"]["port"]}/scripts/activate_db_user")
-    res = Net::HTTP.post(uri, '')
-    response = JSON.parse(res.body)
-    if response['retcode'].to_i != 0
-      raise(response['stderr'])
+    response = Typhoeus.post("http://#{self.database_host}:#{Cartodb.config[:signups]["service"]["port"]}/scripts/activate_db_user")
+    if response.code != 200
+      raise(response.body)
+    else
+      comm_response = JSON.parse(response.body)
+      if comm_response['retcode'].to_i != 0
+        raise(response['stderr'])
+      end
     end
   end
 end

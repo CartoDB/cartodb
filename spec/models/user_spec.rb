@@ -163,6 +163,12 @@ describe User do
     @user.in_database(as: :public_user)["show statement_timeout"].first[:statement_timeout].should == "1000s"
   end
 
+  it "should invalidate all his vizjsons when his account type changes" do
+    @user.account_type = 'WADUS'
+    @user.expects(:invalidate_varnish_cache).times(1)
+    @user.save
+  end
+
   it "should read api calls from external service" do
     @user.stubs(:get_old_api_calls).returns({
       "per_day" => [0, 0, 0, 0, 24, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 17, 0, 0, 0, 0, 0], 

@@ -991,5 +991,18 @@ TRIGGER
 
   def monitor_user_notification
     FileUtils.touch(Rails.root.join('log', 'users_modifications'))
+    if !Cartodb.config[:signups].nil? && !Cartodb.config[:signups]["service"].nil? && !Cartodb.config[:signups]["service"]["port"].nil?
+      enable_remote_db_user
+    end
+  end
+
+  def enable_remote_db_user
+    require 'net/http'
+    uri = URI("http://#{self.database_host}:#{Cartodb.config[:signups]["service"]["port"]}/scripts/activate_db_user")
+    res = Net::HTTP.post_form(uri)
+    response = JSON.parse(res.body)
+    if response['retcode'].to_i != 0
+      raise(response['stderr'])
+    end
   end
 end

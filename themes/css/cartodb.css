@@ -721,7 +721,7 @@ div.cartodb-popup.header.yellow a.cartodb-popup-close-button:hover {
   }
 
   div.cartodb-header h1 {
-    width:80%; /* Necessary to support small iframes or displays*/
+    width:78%; /* Necessary to support small iframes or displays*/
     padding:0;
     margin:0;
     font-weight: bold;

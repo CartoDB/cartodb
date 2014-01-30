@@ -997,7 +997,12 @@ TRIGGER
   end
 
   def enable_remote_db_user
-    response = Typhoeus.post("http://#{self.database_host}:#{Cartodb.config[:signups]["service"]["port"]}/scripts/activate_db_user")
+    request = Typhoeus::Request.new(
+      "#{self.database_host}:#{Cartodb.config[:signups]["service"]["port"]}/scripts/activate_db_user",
+      method: :post,
+      headers: { "Content-Type" => "application/json" }
+    )
+    response = request.run
     if response.code != 200
       raise(response.body)
     else

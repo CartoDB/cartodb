@@ -1,6 +1,6 @@
 // cartodb.js version: 3.5.08-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: 0898089d1c40f1a8a351b1fe20ea5f03474fb418
+// sha: 0a6f833202308ba4bac595e031fab75335619829
 (function() {
   var root = this;
 
@@ -29778,6 +29778,13 @@ var Vis = cdb.core.View.extend({
       this.mapView = this.options.mapView;
       this.map = this.mapView.map;
     }
+
+    // recalculate map position on orientation change
+    window.addEventListener('orientationchange', _.bind(this.doOnOrientationChange, this));
+  },
+
+  doOnOrientationChange: function() {
+    this.setMapPosition();
   },
 
   /**

@@ -35,9 +35,14 @@ module CartoDB
           })
         }
 
+        params = {}
+        template_data['placeholders'].each { |key, value|
+          params[key] = value['default']
+        }
+
         poro = {
         	type: 		'namedmap',
-					order: 		1,	# TODO: Remove this?
+					order: 		1,
 	        options: 	{
             type: 							'namedmap',
             user_name:          @options.fetch(:user_name),
@@ -47,7 +52,7 @@ module CartoDB
             named_map:          {
               name:     template_data['name'],
               auth:     template_data['auth']['method'],
-              params:   {},
+              params:   params,
               layers:   layers_data
             }
         	}

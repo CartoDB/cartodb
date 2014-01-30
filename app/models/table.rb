@@ -502,7 +502,7 @@ class Table < Sequel::Model(:user_tables)
     CartoDB::Visualization::Member.new(
       name:         self.name,
       map_id:       self.map_id,
-      type:         'table',
+      type:         CartoDB::Visualization::Member::CANONICAL_TYPE,
       description:  self.description,
       tags:         (tags.split(',') if tags),
       privacy:      (self.privacy == PUBLIC ? 'public' : 'private')

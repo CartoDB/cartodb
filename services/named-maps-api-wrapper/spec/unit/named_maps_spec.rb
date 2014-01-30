@@ -63,8 +63,9 @@ describe NamedMaps do
       Stubs.stubbed_response_200(named_maps.url + '?api_key=' + test_user_config[:api_key], response, headers)
       new_named_map = named_maps.create(template_data)
       new_named_map.should_not eq nil
-      new_named_map.template.should eq template_data
+      new_named_map.template.should eq template_data.merge(version: "0.0.1")
 
+      named_maps = NamedMaps.new(test_user_config, test_tiler_config, ValidatorMock.new(false, {}))
       expect {
         named_maps.create({})
       }.to raise_error(NamedMapsDataError)

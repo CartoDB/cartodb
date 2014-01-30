@@ -16,7 +16,7 @@ describe NamedMap do
     it 'test definition data is present' do
     	template = { 'templateee' => '1' }
     	url = 'http://cartodb.com'
-    	name = "test"
+    	name = 'test'
 
     	named_maps_mock = NamedMapsMock.new(url)
       named_map = NamedMap.new(name, template, named_maps_mock)
@@ -38,13 +38,13 @@ describe NamedMap do
   	it 'tests deletion of a named map' do
     	template = { 'templateee' => '1' }
     	url = 'http://cartodb.com'
-    	name = "test"
-    	api_key = "123456789"
+    	name = 'test'
+    	api_key = '123456789'
 
 			named_maps_mock = NamedMapsMock.new(url, api_key)
       named_map = NamedMap.new(name, template, named_maps_mock)
 
-			Stubs.stubbed_response_200(named_map.url + "?api_key=" + api_key)
+			Stubs.stubbed_response_200(named_map.url + '?api_key=' + api_key)
       result = named_map.delete
       result.should eq true
     end
@@ -55,21 +55,60 @@ describe NamedMap do
       template = { 'templateee' => '1' }
       new_template = { 'other_data' => 'aaa' }
       url = 'http://cartodb.com'
-      name = "test"
-      api_key = "123456789"
+      name = 'test'
+      api_key = '123456789'
   		
       named_maps_mock = NamedMapsMock.new(url, api_key)
       named_map = NamedMap.new(name, template, named_maps_mock)
 
-      Stubs.stubbed_response_200(named_map.url + "?api_key=" + api_key)
+      Stubs.stubbed_response_200(named_map.url + '?api_key=' + api_key)
       named_map.template.should eq template
       named_map.update(new_template)
       named_map.template.should eq new_template
-
-      expect {
-        named_map.update({})
-      }.to raise_error(NamedMapDataError)
   	end
   end #update
+
+  describe '#valid?' do
+    it 'tests the template data validation method' do
+      url = 'http://cartodb.com'
+      name = 'test'
+      api_key = '123456789'
+      # Don't need to be 100% accurate as uses a validator mock
+      template = { 
+        'version' => '1', 
+        'name' => 'name',
+        'auth' => { 
+          'method' => 'open' 
+        },
+        'placeholders' => {},
+        'layergroup' => {
+          'version' => '1',
+          'layers' => []
+        }
+      }
+      wrong_template = { 'something' => 'somevalue' }
+      empty_template = {}
+
+      # no validator, so cannot check and returns true
+      named_maps_mock = NamedMapsMock.new(url, api_key)
+      named_map = NamedMap.new(name, template, named_maps_mock)
+      result, errors = named_map.valid_template?()
+      result.should eq true
+      errors.should eq empty_template
+      result, errors = named_map.valid_template?(wrong_template)
+      result.should eq true
+      errors.should eq empty_template
+
+
+      named_maps_mock = NamedMapsMock.new(url, api_key, ValidatorMock.new)      
+      named_map = NamedMap.new(name, wrong_template, named_maps_mock)
+      result, errors = named_map.valid_template?()
+      result.should eq true
+      errors.should eq empty_template
+      result, errors = named_map.valid_template?(wrong_template)
+      result.should eq true
+      errors.should eq empty_template
+    end
+  end #valid?
 
 end #NamedMap

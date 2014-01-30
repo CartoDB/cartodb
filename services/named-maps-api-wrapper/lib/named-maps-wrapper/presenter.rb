@@ -24,7 +24,6 @@ module CartoDB
         template_data = named_map.template.fetch('template')
 
         layers = @visualization.layers(:cartodb)
-
         layers_data = Array.new
 
         layers.each { |layer|
@@ -53,8 +52,6 @@ module CartoDB
             }
         	}
         }
-
-        poro
       end #to_poro
 
       def fetch
@@ -67,7 +64,9 @@ module CartoDB
               protocol:   (@configuration[:tiler]['private']['protocol'] rescue nil),
               domain: (@configuration[:tiler]['private']['domain'] rescue nil),
               port:     (@configuration[:tiler]['private']['port'] rescue nil)
-            }
+            },
+            # Here should go the retrieval validator, not the creation one
+            #CartoDB::NamedMapsWrapper::TemplateCreationValidator.new()
           )
       	new_named_map = named_maps.get(NamedMap.normalize_name(@visualization.id))
       	@fetched = true

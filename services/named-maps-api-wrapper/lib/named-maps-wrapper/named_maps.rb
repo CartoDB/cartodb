@@ -10,7 +10,7 @@ module CartoDB
 
 		class NamedMaps
 
-			def initialize(user_config, tiler_config)
+			def initialize(user_config, tiler_config, validator = nil)
 				raise NamedMapsDataError if user_config.nil? or user_config.size == 0			\
 																 or tiler_config.nil? or tiler_config.size == 0
 
@@ -20,28 +20,34 @@ module CartoDB
 				@api_key = user_config[:api_key]
 
 				@host = "#{tiler_config[:protocol]}://#{@username}.#{tiler_config[:domain]}:#{tiler_config[:port]}"
-
 				@url = [ @host, 'tiles', 'template' ].join('/')
+
+				@validator = validator
 
 				@verbose_mode = false
 			end #initialize
 
 			def create(template_data)
-				raise NamedMapsDataError if template_data.nil? or template_data.size == 0
+				raise NamedMapsDataError, { 'template_data' => 'not a Hash object' } if template_data.class != Hash
 
-				template_json = ::JSON.dump( template_data.merge( { version: NamedMap::NAMED_MAPS_VERSION } ) )
-				p template_json if @verbose_mode
+				template_data = template_data.merge( { :version => NamedMap::NAMED_MAPS_VERSION } )
+				p template_data if @verbose_mode
+
+				if (not @validator.nil?)
+					is_valid_template, validation_errors = NamedMap.validate_template(template_data, @validator)
+					raise NamedMapsDataError, validation_errors if not is_valid_template
+				end
 
 				response = Typhoeus.post(@url + '?api_key=' + @api_key, {
 					headers: @headers,
-					body: template_json,
+					body: ::JSON.dump(template_data),
 					verbose: @verbose_mode
 					})
 				p response.body if @verbose_mode
 
 				if response.code == 200
 					body = ::JSON.parse(response.response_body)
-					NamedMap.new(body['template_id'], body, self)
+					NamedMap.new(body['template_id'], template_data, self)
 				else
 					nil
 				end
@@ -78,7 +84,7 @@ module CartoDB
 				end
 			end #get
 
-			attr_reader	:url, :api_key, :username, :headers, :host
+			attr_reader	:url, :api_key, :username, :headers, :host, :validator
 
 		end #NamedMaps
 

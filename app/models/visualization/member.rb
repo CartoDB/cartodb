@@ -95,6 +95,7 @@ module CartoDB
         self
       end #delete
 
+      # A visualization is linked to a table when it uses that table in a layergroup (but is not the canonical table)
       def unlink_from(table)
         invalidate_varnish_cache
         remove_layers_from(table)
@@ -220,7 +221,8 @@ module CartoDB
               domain:   Cartodb.config[:tiler]['private']['domain'],
               port:     Cartodb.config[:tiler]['private']['port'] || 443,
               protocol: Cartodb.config[:tiler]['private']['protocol']
-            }
+            },
+            CartoDB::NamedMapsWrapper::TemplateCreationValidator.new()
           )
         end
         @named_maps
@@ -235,8 +237,9 @@ module CartoDB
         template_data = {
           name: CartoDB::NamedMapsWrapper::NamedMap.normalize_name(id),
           auth: {
-            method: 'open'
+            method: CartoDB::NamedMapsWrapper::NamedMap::AUTH_TYPE_OPEN
           },
+          placeholders: {},
           layergroup: vizjson.layer_group_for_named_map
         }
         new_named_map = named_maps.create(template_data)

@@ -35,15 +35,30 @@ module CartoDB
 
 		class NamedMapsMock
 
-			def initialize(url = "", api_key = "")
+			def initialize(url = "", api_key = "", validator = nil)
 				@url = url
 				@api_key = api_key
 				@headers = { 'content-type' => 'application/json' }
+				@validator = validator
 			end #initialize
 
-			attr_reader	:url, :api_key, :headers
+			attr_reader	:url, :api_key, :headers, :validator
 
 		end #NamedMapsMock
+
+		class ValidatorMock
+
+			# IMPROVEMENT: Support 'on consecutive calls' to improve named_map_spec
+			def initialize(return_value = true, return_errors = {})
+				@return_value = return_value
+				@return_errors = return_errors
+			end #initialize
+
+			def validate(template_data)
+				return @return_value, @return_errors
+			end #validate
+
+		end #ValidatorMock
 
   end #NamedMapsWrapperSpecs
 end #CartoDB

@@ -6,14 +6,17 @@ WORKING_SPECS = \
 	spec/requests/api/user_layers_spec.rb \
 	spec/requests/api/map_layers_spec.rb \
   spec/models/table_spec.rb \
+  spec/models/layer_spec.rb \
+  spec/models/tag_spec.rb \
+  spec/models/map_spec.rb \
+  spec/models/visualization/ \
   spec/lib/sql_parser_spec.rb \
   spec/lib/sql_test_spec.rb \
   spec/lib/string_spec.rb \
   spec/lib/metrics_spec.rb \
-  spec/models/layer_spec.rb \
-  spec/models/tag_spec.rb \
-  spec/models/map_spec.rb \
   services/importer/spec/unit/csv_normalizer_spec.rb \
+  spec/requests/admin/visualizations_spec.rb \
+  spec/requests/admin/tables_spec.rb \
   $(NULL)
 
 CDB_PATH=lib/assets/javascripts/cdb

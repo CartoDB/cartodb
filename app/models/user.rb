@@ -999,7 +999,7 @@ TRIGGER
   def enable_remote_db_user
     require 'net/http'
     uri = URI("http://#{self.database_host}:#{Cartodb.config[:signups]["service"]["port"]}/scripts/activate_db_user")
-    res = Net::HTTP.post_form(uri)
+    res = Net::HTTP.post(uri, '')
     response = JSON.parse(res.body)
     if response['retcode'].to_i != 0
       raise(response['stderr'])

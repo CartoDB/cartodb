@@ -4,23 +4,11 @@ require_relative '../../../models/visualization/presenter'
 class Api::Json::TablesController < Api::ApplicationController
   TABLE_QUOTA_REACHED_TEXT = 'You have reached your table quota'
 
-  ssl_required :index, :show, :create, :update, :destroy
-  skip_before_filter :api_authorization_required, :only => [ :vizzjson ]
+  ssl_required :show, :create, :update, :destroy
 
-  before_filter :load_table, except: [:index, :create, :vizzjson]
+  before_filter :load_table, except: [:create]
   before_filter :set_start_time
-  before_filter :link_ghost_tables, only: [:index, :show]
-
-  def index
-    @tables = Table.where(:user_id => current_user.id).order(:id.desc)
-    @tables = @tables.search(params[:q]) unless params[:q].blank?
-    @tables = @tables.multiple_order(params.delete(:o))
-
-    page     = params[:page].to_i > 0 ? params[:page].to_i : 1
-    per_page = params[:per_page].to_i > 0 ? params[:per_page].to_i : 1000
-    render_jsonp({ :tables => @tables.paginate(page, per_page).all.map { |t| t.public_values(except: [ :schema, :geometry_types ]) },
-                   :total_entries => @tables.count })
-  end
+  before_filter :link_ghost_tables, only: [:show]
 
   # Very basic controller method to simply make blank tables
   # All other table creation things are controlled via the imports_controller#create
@@ -106,22 +94,6 @@ class Api::Json::TablesController < Api::ApplicationController
   rescue => e
     CartoDB::Logger.info e.class.name, e.message
     render_jsonp({ :errors => [translate_error(e.message.split("\n").first)] }, 400) and return
-  end
-
-  def destroy
-    @table.destroy
-    head :no_content
-  end
-
-  def vizzjson
-    @table = Table.find_by_subdomain(CartoDB.extract_subdomain(request), params[:id])
-    if @table.present? && (@table.public? || (current_user.present? && @table.owner.id == current_user.id))
-      response.headers['X-Cache-Channel'] = "#{@table.varnish_key}:vizjson"
-      response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
-      render_jsonp({})
-    else
-      head :forbidden
-    end
   end
 
   protected

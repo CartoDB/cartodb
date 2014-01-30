@@ -244,7 +244,17 @@ module CartoDB
           auth: {
             method: CartoDB::NamedMapsWrapper::NamedMap::AUTH_TYPE_OPEN
           },
-          placeholders: {},
+          placeholders: {
+            #TEST
+            color: {
+              type:'css_color',
+              default:'red'
+            },
+            cartodb_id: {
+              type:'number',
+              default: 1
+            }
+          },
           layergroup: vizjson.layer_group_for_named_map
         }
         new_named_map = named_maps.create(template_data)
@@ -257,10 +267,8 @@ module CartoDB
         #TODO: use real values for auth and placeholders
         template_data = {
           name: CartoDB::NamedMapsWrapper::NamedMap.normalize_name(id),
-          auth: {
-            method: CartoDB::NamedMapsWrapper::NamedMap::AUTH_TYPE_OPEN
-          },
-          placeholders: {},
+          auth: named_map_instance.template[:template][:auth],
+          placeholders: named_map_instance.template[:template][:placeholders],
           layergroup: vizjson.layer_group_for_named_map
         }
         named_map_instance.update(template_data)

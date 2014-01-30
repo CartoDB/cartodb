@@ -18,7 +18,7 @@ module CartoDB
       def to_poro
       	named_map = fetch if !@fetched
 
-        template_data = named_map.template.fetch('template')
+        template_data = named_map.template.fetch(:template)
 
         layers = @visualization.layers(:cartodb)
         layers_data = Array.new
@@ -33,8 +33,8 @@ module CartoDB
         }
 
         params = {}
-        template_data['placeholders'].each { |key, value|
-          params[key] = value['default']
+        template_data[:placeholders].each { |key, value|
+          params[key] = value[:default]
         }
 
         poro = {
@@ -47,8 +47,8 @@ module CartoDB
             tiler_domain:       (@configuration[:tiler]['private']['domain'] rescue nil),
             tiler_port:         (@configuration[:tiler]['private']['port'] rescue nil),
             named_map:          {
-              name:     template_data['name'],
-              auth:     template_data['auth']['method'],
+              name:     template_data[:name],
+              auth:     template_data[:auth][:method],
               params:   params,
               layers:   layers_data
             }

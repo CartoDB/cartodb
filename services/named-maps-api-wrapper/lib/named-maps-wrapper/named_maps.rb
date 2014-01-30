@@ -70,7 +70,12 @@ module CartoDB
 				p response.body if @verbose_mode
 
 				if response.code == 200
-					NamedMap.new(name, ::JSON.parse(response.response_body), self)
+					template_data = ::JSON.parse(response.response_body)
+					if template_data.class == Hash
+						# Rails 2.x+
+						template_data = template_data.deep_symbolize_keys
+					end
+					NamedMap.new(name, template_data, self)
 				elsif response.code == 404
 					# Request ok, template with provided name not found
 					nil

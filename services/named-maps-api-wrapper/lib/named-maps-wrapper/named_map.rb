@@ -39,7 +39,6 @@ module CartoDB
 				is_valid_template, validation_errors = valid_template?(template_data)
 				raise NamedMapDataError, validation_errors if not is_valid_template
 
-
 				response = Typhoeus.put(url + '?api_key=' + @parent.api_key, {
 					headers: @parent.headers,
 					body: ::JSON.dump(template_data),

@@ -99,6 +99,7 @@ describe NamedMaps do
       name1 = 'test'
       name2 = 'blablabla'
       response_data = { 'template_id' => '6' }
+      expected_response_data = { :template_id => '6' }
       response = ::JSON.dump(response_data)
 
       named_maps = NamedMaps.new(test_user_config, test_tiler_config)
@@ -108,7 +109,7 @@ describe NamedMaps do
       Stubs.stubbed_response_200(request_url, response, headers)
       response_named_map = named_maps.get(name1)
       response_named_map.should_not eq nil
-      response_named_map.template.should eq response_data
+      response_named_map.template.should eq expected_response_data
 
       expect {
         named_maps.get('')

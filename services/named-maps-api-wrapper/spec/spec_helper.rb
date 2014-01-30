@@ -11,6 +11,10 @@ module CartoDB
 		  	self.stubbed_response(request_url, 200, body, headers)
 		  end #stubbed_response_200
 
+		  def self.stubbed_response_204(request_url, body="", headers={})
+		  	self.stubbed_response(request_url, 204, body, headers)
+		  end #stubbed_response_204
+
 		  def self.stubbed_response_404(request_url, headers={})
 		  	self.stubbed_response(request_url, 404, "", headers)
 		  end #stubbed_response_404

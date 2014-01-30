@@ -1,18 +1,13 @@
 # encoding: utf-8
 
-require 'typhoeus'
-require 'json'
-require_relative './exceptions'
-require_relative './named_map'
-
 module CartoDB
   module NamedMapsWrapper
 
 		class NamedMaps
 
 			def initialize(user_config, tiler_config, validator = nil)
-				raise NamedMapsDataError if user_config.nil? or user_config.size == 0			\
-																 or tiler_config.nil? or tiler_config.size == 0
+				raise NamedMapsDataError, { 'user' => 'config missing' } if user_config.nil? or user_config.size == 0
+				raise NamedMapsDataError, { 'tiler' => 'config missing' } if tiler_config.nil? or tiler_config.size == 0
 
 				@headers = { 'content-type' => 'application/json' }
 
@@ -66,7 +61,7 @@ module CartoDB
 			end #all
 
 			def get(name)
-				raise NamedMapsDataError if name.nil? or name.length == 0
+				raise NamedMapsDataError, { 'name' => 'mising' } if name.nil? or name.length == 0
 
 				response = Typhoeus.get( [@url, name ].join('/') + "?api_key=" + @api_key, {
 					headers: @headers,

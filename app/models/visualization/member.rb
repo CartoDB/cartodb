@@ -81,7 +81,7 @@ module CartoDB
       def delete
         # Named map must be deleted before the map, or we lose the reference to it
         named_map = has_named_map?
-        named_map.delete if named_map
+        operation_result = named_map.delete if named_map
 
         invalidate_varnish_cache
         overlays.destroy
@@ -229,7 +229,12 @@ module CartoDB
       end #named_maps
 
       def has_named_map?
-        named_maps.get(CartoDB::NamedMapsWrapper::NamedMap.normalize_name(id))
+        data = named_maps.get(CartoDB::NamedMapsWrapper::NamedMap.normalize_name(id))
+        if data.nil?
+          false
+        else
+          data
+        end
       end #has_named_map?
 
       def create_named_map
@@ -249,11 +254,13 @@ module CartoDB
       def update_named_map(named_map_instance)
         # Instance as param to avoid performing a second query to the NamedMaps API
         vizjson = VizJSON.new(self, { full: false, user_name: user.username }, configuration)
+        #TODO: use real values for auth and placeholders
         template_data = {
           name: CartoDB::NamedMapsWrapper::NamedMap.normalize_name(id),
           auth: {
-            method: 'open'
+            method: CartoDB::NamedMapsWrapper::NamedMap::AUTH_TYPE_OPEN
           },
+          placeholders: {},
           layergroup: vizjson.layer_group_for_named_map
         }
         named_map_instance.update(template_data)

@@ -11,7 +11,6 @@ WORKING_SPECS = \
   spec/models/layer_spec.rb \
   spec/models/tag_spec.rb \
   spec/models/map_spec.rb \
-  services/named-maps-api-wrapper/spec/unit/map_instance_spec.rb \
   services/named-maps-api-wrapper/spec/unit/named_map_spec.rb \
   services/named-maps-api-wrapper/spec/unit/named_maps_spec.rb \
   $(NULL)

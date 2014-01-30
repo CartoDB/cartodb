@@ -1,6 +1,5 @@
 # encoding: utf-8
 
-require 'json'
 require_relative '../../lib/named_maps_wrapper'
 require_relative '../spec_helper'
 

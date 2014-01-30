@@ -1,10 +1,5 @@
 # encoding: utf-8
 
-require 'typhoeus'
-require 'json'
-require_relative './exceptions'
-require_relative './map_instance'
-
 module CartoDB
   module NamedMapsWrapper
 
@@ -34,19 +29,20 @@ module CartoDB
 				})
 				p response.body if @verbose_mode
 
-				response.code == 200
+				response.code == 204
 			end #delete
 
 			def update(template_data)
+				template_data = template_data.merge( { version: NAMED_MAPS_VERSION } )
+				p template_data if @verbose_mode
+
 				is_valid_template, validation_errors = valid_template?(template_data)
 				raise NamedMapDataError, validation_errors if not is_valid_template
 
-				template_json = ::JSON.dump( template_data.merge( { version: NAMED_MAPS_VERSION } ) )
-				p template_json if @verbose_mode
 
 				response = Typhoeus.put(url + '?api_key=' + @parent.api_key, {
 					headers: @parent.headers,
-					body: template_json,
+					body: ::JSON.dump(template_data),
 					verbose: @verbose_mode
 				})
 				p response.body if @verbose_mode

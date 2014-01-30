@@ -1,8 +1,5 @@
 # encoding: utf-8
 
-require_relative './named_maps'
-require_relative './named_map'
-
 module CartoDB
   module NamedMapsWrapper
 

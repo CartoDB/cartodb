@@ -44,7 +44,7 @@ describe NamedMap do
 			named_maps_mock = NamedMapsMock.new(url, api_key)
       named_map = NamedMap.new(name, template, named_maps_mock)
 
-			Stubs.stubbed_response_200(named_map.url + '?api_key=' + api_key)
+			Stubs.stubbed_response_204(named_map.url + '?api_key=' + api_key)
       result = named_map.delete
       result.should eq true
     end
@@ -64,7 +64,7 @@ describe NamedMap do
       Stubs.stubbed_response_200(named_map.url + '?api_key=' + api_key)
       named_map.template.should eq template
       named_map.update(new_template)
-      named_map.template.should eq new_template
+      named_map.template.should eq new_template.merge(:version=>"0.0.1")
   	end
   end #update
 

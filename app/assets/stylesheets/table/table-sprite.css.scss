@@ -3,12 +3,12 @@
  */
 
 @import "compass/utilities/sprites/base";
- 
+
 // General Sprite Defaults
 // You can override them before you import this file.
 $table-sprite-base-class: ".table-sprite" !default;
 $table-sprite-dimensions: false !default;
- 
+
 $table-sprites: sprite-map("sprites/table/*.png",
   $position:                              0%,
   $spacing:                               0,
@@ -18,37 +18,41 @@ $table-sprites: sprite-map("sprites/table/*.png",
   $table-download_dark-spacing:           1px,
   $table-download_blue-spacing:           1px,
   $table-drag_points-spacing:             40px,
-  $table-unredo-spacing:                  15px
+  $table-unredo-spacing:                  15px,
+  $table-lock_open-spacing:               15px,
+  $table-lock_closed-spacing:             15px,
+  $table-lock_key-spacing:                15px
+
 );
- 
+
 // All sprites should extend this class
 // The table-sprite mixin will do so for you.
 #{$table-sprite-base-class} {
   background: $table-sprites no-repeat;
 }
- 
+
 // Use this to set the dimensions of an element
 // based on the size of the original image.
 @mixin table-sprite-dimensions($name) {
   @include sprite-dimensions($table-sprites, $name)
 }
- 
+
 // Move the background position to display the sprite.
 @mixin table-sprite-position($name, $offset-x: 0, $offset-y: 0) {
   @include sprite-position($table-sprites, $name, $offset-x, $offset-y)
 }
- 
+
 // Extends the sprite base class and set the background position for the desired sprite.
 // It will also apply the image dimensions if $dimensions is true.
 @mixin table-sprite($name, $dimensions: $table-sprite-dimensions, $offset-x: 0, $offset-y: 0) {
   @extend #{$table-sprite-base-class};
   @include sprite($table-sprites, $name, $dimensions, $offset-x, $offset-y)
 }
- 
+
 @mixin table-sprites($sprite-names, $dimensions: $table-sprite-dimensions, $prefix: sprite-map-name($table-sprites)) {
   @include sprites($table-sprites, $sprite-names, $table-sprite-base-class, $dimensions, $prefix)
 }
- 
+
 // Generates a class for each sprited image.
 @mixin all-table-sprites($dimensions: $table-sprite-dimensions, $prefix: sprite-map-name($table-sprites)) {
   @include table-sprites(favorite important photos readonly symbolic-link system unreadable, $dimensions, $prefix);

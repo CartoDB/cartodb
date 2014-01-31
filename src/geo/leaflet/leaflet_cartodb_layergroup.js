@@ -11,7 +11,7 @@ L.CartoDBGroupLayerBase = L.TileLayer.extend({
 
   includes: [
     cdb.geo.LeafLetLayerView.prototype,
-    LayerDefinition.prototype,
+    //LayerDefinition.prototype,
     CartoDBLayerCommon.prototype
   ],
 
@@ -133,10 +133,6 @@ L.CartoDBGroupLayerBase = L.TileLayer.extend({
       this.options.added = false;
       L.TileLayer.prototype.onRemove.call(this, map);
     }
-  },
-
-  onLayerDefinitionUpdated: function() {
-    this.__update();
   },
 
   /**
@@ -335,6 +331,10 @@ function layerView(base) {
 
     ok: function(e) {
       this.model.trigger('tileOk');
+    },
+
+    onLayerDefinitionUpdated: function() {
+      this.__update();
     }
 
   });

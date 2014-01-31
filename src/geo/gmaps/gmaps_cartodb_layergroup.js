@@ -255,7 +255,7 @@ CartoDBLayerGroupBase.prototype._manageOnEvents = function(map,o) {
 // CartoDBLayerGroup type
 CartoDBLayerGroup.Projector = Projector;
 CartoDBLayerGroup.prototype = new wax.g.connector();
-_.extend(CartoDBLayerGroup.prototype, CartoDBLayerGroupBase.prototype, CartoDBLayerCommon.prototype, LayerDefinition.prototype);
+_.extend(CartoDBLayerGroup.prototype, LayerDefinition.prototype, CartoDBLayerGroupBase.prototype, CartoDBLayerCommon.prototype);
 CartoDBLayerGroup.prototype.interactionClass = wax.g.interaction;
 
 

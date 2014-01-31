@@ -245,15 +245,6 @@ module CartoDB
             method: CartoDB::NamedMapsWrapper::NamedMap::AUTH_TYPE_OPEN
           },
           placeholders: {
-            #TEST
-            color: {
-              type:'css_color',
-              default:'red'
-            },
-            cartodb_id: {
-              type:'number',
-              default: 1
-            }
           },
           layergroup: vizjson.layer_group_for_named_map
         }
@@ -262,9 +253,7 @@ module CartoDB
       end #create_named_map_if_proceeds
 
       def update_named_map(named_map_instance)
-        # Instance as param to avoid performing a second query to the NamedMaps API
         vizjson = VizJSON.new(self, { full: false, user_name: user.username }, configuration)
-        #TODO: use real values for auth and placeholders
         template_data = {
           name: CartoDB::NamedMapsWrapper::NamedMap.normalize_name(id),
           auth: named_map_instance.template[:template][:auth],

@@ -423,25 +423,27 @@ var Vis = cdb.core.View.extend({
 
   },
 
-     createLegendView: function(layers) {
-      var legends = [];
-      for(var i = layers.length - 1; i>= 0; --i) {
-        var layer = layers[i];
-        if(layer.legend) {
-          layer.legend.data = layer.legend.items;
-          var legend = layer.legend;
+   createLegendView: function(layers) {
+    var legends = [];
+    for(var i = layers.length - 1; i>= 0; --i) {
+      var layer = layers[i];
+      if(layer.legend) {
+        layer.legend.data = layer.legend.items;
+        var legend = layer.legend;
 
-          if((legend.items && legend.items.length) || legend.template) {
-            layer.legend.index = i;
-            legends.push(new cdb.geo.ui.Legend(layer.legend));
-          }
-        }
-        if(layer.options && layer.options.layer_definition) {
-          legends = legends.concat(this.createLegendView(layer.options.layer_definition.layers));
+        if((legend.items && legend.items.length) || legend.template) {
+          layer.legend.index = i;
+          legends.push(new cdb.geo.ui.Legend(layer.legend));
         }
       }
-      return legends;
-    },
+      if(layer.options && layer.options.layer_definition) {
+        legends = legends.concat(this.createLegendView(layer.options.layer_definition.layers));
+      } else if(layer.options && layer.options.named_map && layer.options.named_map.layers) {
+        legends = legends.concat(this.createLegendView(layer.options.named_map.layers));
+      }
+    }
+    return legends;
+  },
 
   addLegends: function(layers) {
 
@@ -668,9 +670,9 @@ var Vis = cdb.core.View.extend({
 
     // activate interactivity for layers with infowindows
     for(var i = 0; i < layerView.getLayerCount(); ++i) {
-      var interactivity = layerView.getSubLayer(i).get('interactivity');
+      //var interactivity = layerView.getSubLayer(i).get('interactivity');
       // if interactivity is not enabled we can't enable it
-      if(layerView.getInfowindowData(i) && interactivity && interactivity.indexOf('cartodb_id') !== -1) {
+      if(layerView.getInfowindowData(i)) {// && interactivity && interactivity.indexOf('cartodb_id') !== -1) {
         if(!infowindow) {
           infowindow = Overlay.create('infowindow', this, layerView.getInfowindowData(i), true);
           mapView.addInfowindow(infowindow);
@@ -683,74 +685,30 @@ var Vis = cdb.core.View.extend({
       return;
     }
 
-    var sql = this._getSqlApi(layerView.options)
-
-
     // if the layer has no infowindow just pass the interaction
     // data to the infowindow
     layerView.bind(eventType, function(e, latlng, pos, data, layer) {
-        var cartodb_id = data.cartodb_id
-        var infowindowFields = layerView.getInfowindowData(layer)
+
+        var infowindowFields = layerView.getInfowindowData(layer);
         if (!infowindowFields) return;
-        var fields = infowindowFields.fields;
+        var fields = _.pluck(infowindowFields.fields, 'name');
+        var cartodb_id = data.cartodb_id;
 
-        infowindow.model.set({
-          'template': infowindowFields.template,
-          'template_type': infowindowFields.template_type
-        });
-
-        // Scaping column names with double quotes
-        var column_names = _.map(_.pluck(fields, 'name'), function(n) { return "\"" + n + "\"" }).join(',');
-
-        // Send request
-        sql.execute('select {{{ fields }}} from ({{{ sql }}}) as _cartodbjs_alias where cartodb_id = {{{ cartodb_id }}}', {
-          fields: column_names,
-          cartodb_id: cartodb_id,
-          sql: layerView.getQuery(layer)
-        })
-        .done(function(interact_data) {
-          if (interact_data.rows.length == 0 ) return;
-          interact_data = interact_data.rows[0];
-          if (infowindowFields) {
-            var render_fields = [];
-            var fields = infowindowFields.fields;
-            for(var j = 0; j < fields.length; ++j) {
-              var f = fields[j];
-              var value = String(interact_data[f.name]);
-              if(interact_data[f.name] != undefined && value != "") {
-                render_fields.push({
-                  title: f.title ? f.name : null,
-                  value: interact_data[f.name],
-                  index: j ? j : null
-                });
-              }
-            }
-
-            // manage when there is no data to render
-            if (render_fields.length === 0) {
-              render_fields.push({
-                title: null,
-                value: 'No data available',
-                index: j ? j : null,
-                type: 'empty'
-              });
-            }
-            content = render_fields;
-          }
-
+        layerView.fetchAttributes(layer, cartodb_id, fields, function(attributes) {
 
           infowindow.model.set({
-            content:  {
-              fields: content,
-              data: interact_data
-            }
-          })
-          infowindow.adjustPan();
-        })
-        .error(function() {
-          infowindow.setError();
-        })
+            'fields': infowindowFields.fields,
+            'template': infowindowFields.template,
+            'template_type': infowindowFields.template_type
+          });
 
+          if (attributes) {
+            infowindow.model.updateContent(attributes);
+            infowindow.adjustPan();
+          } else {
+            infowindow.setError();
+          }
+        });
 
         // Show infowindow with loading state
         infowindow

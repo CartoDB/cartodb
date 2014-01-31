@@ -410,3 +410,88 @@ describe("LayerDefinition", function() {
 
 });
 
+describe("NamedMap", function() {
+  var namedMap;
+
+  beforeEach(function() {
+    var named_map = {
+      name: 'testing',
+      params: {
+        color: 'red'
+      },
+      layers: [{
+          infowindow: {
+            fields: [ { title:'test', value:true, position:0, index:0 } ]
+          }
+      }]
+    };
+    namedMap= new NamedMap(named_map, {
+      tiler_domain:   "cartodb.com",
+      tiler_port:     "8081",
+      tiler_protocol: "http",
+      user_name: 'rambo',
+      no_cdn: true,
+      subdomains: [null]
+    });
+  });
+
+  it("should instance named_map", function() {
+    var params;
+    namedMap.options.ajax = function(p) { 
+      params = p;
+      p.success({ layergroupid: 'test' });
+    };
+
+    runs(function() {
+      namedMap._getLayerToken();
+    });
+    waits(100);
+    runs(function() {
+      expect(params.dataType).toEqual('jsonp');
+      expect(params.url).toEqual('http://rambo.cartodb.com:8081/tiles/template/testing/jsonp?config=' + encodeURIComponent(JSON.stringify({ color: 'red'})));
+    });
+  });
+
+  it("should instance named_map using POST", function() {
+    var params;
+    namedMap.options.cors = true;
+    namedMap.options.force_cors =true;
+    namedMap.options.ajax = function(p) { 
+      params = p;
+      p.success({ layergroupid: 'test' });
+    };
+
+    runs(function() {
+      namedMap._getLayerToken();
+    });
+    waits(100);
+    runs(function() {
+      expect(params.type).toEqual('POST');
+      expect(params.dataType).toEqual('json');
+      expect(params.url).toEqual('http://rambo.cartodb.com:8081/tiles/template/testing')
+      expect(params.data).toEqual(JSON.stringify({color: 'red'}));
+    });
+  });
+
+  it("shoud have infowindow", function() {
+    expect(namedMap.containInfowindow()).toEqual(true);
+  });
+
+  it("should fetch attributes", function() {
+    namedMap.layerToken = 'test';
+    namedMap._layerGroupTiles
+    namedMap.options.ajax = function(p) { 
+      params = p;
+      p.success({ test: 1 });
+    };
+    namedMap.fetchAttributes(1, 12345, null, function(data) {
+      expect(data).toEqual({test: 1});
+      expect(params.url).toEqual('http://rambo.cartodb.com:8081/api/v1/maps/test/1/attributes/12345')
+      expect(params.dataType).toEqual('jsonp');
+    });
+
+  })
+
+
+});
+

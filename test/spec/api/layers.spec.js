@@ -281,6 +281,34 @@ describe('api.layers', function() {
         });
       });
 
+      it("should create a named map", function() {
+        var layer;
+        runs(function() {
+          cartodb.createLayer(map, {
+            type: 'namedmap',
+            user_name: 'dev',
+            options: {
+              named_map: {
+                name: 'testing',
+                params: {
+                  color: 'red'
+                }
+              }
+            }
+          }).done(function(lyr) {
+            layer = lyr;
+          });
+        });
+
+        waits(100);
+
+        runs(function() {
+          expect(layer).not.toEqual(undefined);
+          expect(layer.toJSON()).toEqual({ color: 'red' });
+        });
+
+      });
+
       it("should create layer form sublayer list", function() {
         var layer;
         runs(function() {

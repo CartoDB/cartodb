@@ -162,6 +162,40 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
       this.trigger('remove:fields')
     }
     return this;
+  },
+
+  // updates content with attributes
+  updateContent: function(attributes) {
+    var fields = this.get('fields');
+    var render_fields = [];
+    for(var j = 0; j < fields.length; ++j) {
+      var f = fields[j];
+      var value = String(attributes[f.name]);
+      if(attributes[f.name] !== undefined && value != "") {
+        render_fields.push({
+          title: f.title ? f.name : null,
+          value: attributes[f.name],
+          index: j ? j : null
+        });
+      }
+    }
+
+    // manage when there is no data to render
+    if (render_fields.length === 0) {
+      render_fields.push({
+        title: null,
+        value: 'No data available',
+        index: j ? j : null,
+        type: 'empty'
+      });
+    }
+
+    this.set({
+      content:  {
+        fields: render_fields,
+        data: attributes
+      }
+    });
   }
 
 });

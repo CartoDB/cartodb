@@ -29,6 +29,10 @@ function NamedMap(named_map, options) {
   this.endPoint = '/tiles/template/' + named_map.name;
   this.JSONPendPoint = '/tiles/template/' + named_map.name + '/jsonp';
   this.layers = _.clone(named_map.layers) || [];
+  for(var i = 0; i < this.layers.length; ++i) {
+    var layer = this.layers[i];
+    layer.options = layer.options || { hidden: false };
+  }
   this.named_map = named_map;
 }
 
@@ -494,7 +498,7 @@ Map.prototype = {
 
   getInfowindowData: function(layer) {
     var lyr;
-    var infowindow = this.layers[layer].infowindow 
+    var infowindow = this.layers[layer].infowindow;
     if (!infowindow && (lyr = this.options.layer_definition.layers[layer])) {
       infowindow = lyr.infowindow;
     }
@@ -542,7 +546,7 @@ NamedMap.prototype = _.extend({}, Map.prototype, {
   },
 
   containInfowindow: function() {
-      var layers = this.options.layers || [];
+      var layers = this.layers || [];
       for(var i = 0; i < layers.length; ++i) {
         var infowindow = layers[i].infowindow;
         if (infowindow && infowindow.fields && infowindow.fields.length > 0) {
@@ -550,7 +554,36 @@ NamedMap.prototype = _.extend({}, Map.prototype, {
         }
       }
       return false;
-    }
+  },
+
+  _attributesUrl: function(layer, feature_id) {
+    // /api/maps/:map_id/:layer_index/attributes/:feature_id
+    return [
+      this._tilerHost(),
+      'api',
+      'v1',
+      'maps',
+      this.layerToken,
+      layer,
+      'attributes',
+      feature_id].join('/');
+  },
+
+  // for named maps attributes are fetch from attributes service
+  fetchAttributes: function(layer_index, feature_id, columnNames, callback) {
+    var ajax = this.options.ajax;
+    ajax({
+      dataType: 'jsonp',
+      url: this._attributesUrl(layer_index, feature_id),
+      success: function(data) {
+        callback(data);
+      },
+      error: function(data) {
+        callback(null);
+      }
+    });
+  }
+
 });
 
 LayerDefinition.prototype = _.extend({}, Map.prototype, {
@@ -692,6 +725,53 @@ LayerDefinition.prototype = _.extend({}, Map.prototype, {
     this.addLayer(attrs);
     return this.getSubLayer(this.getLayerCount() - 1);
   },
+
+  _getSqlApi: function(attrs) {
+    attrs = attrs || {};
+    var port = attrs.sql_api_port
+    var domain = attrs.sql_api_domain + (port ? ':' + port: '')
+    var protocol = attrs.sql_api_protocol;
+    var version = 'v1';
+    if (domain.indexOf('cartodb.com') !== -1) {
+      protocol = 'http';
+      domain = "cartodb.com";
+      version = 'v2';
+    }
+
+    var sql = new cartodb.SQL({
+      user: attrs.user_name,
+      protocol: protocol,
+      host: domain,
+      version: version
+    });
+
+    return sql;
+  },
+
+  fetchAttributes: function(layer_index, feature_id, columnNames, callback) {
+    var layer = this.getLayer(layer_index);
+    var sql = this._getSqlApi(this.options);
+
+    // prepare columns with double quotes
+    columnNames = _.map(columnNames, function(n) {
+      return "\"" + n + "\"";
+    }).join(',');
+
+    // execute the sql
+    sql.execute('select {{{ fields }}} from ({{{ sql }}}) as _cartodbjs_alias where cartodb_id = {{{ cartodb_id }}}', {
+      fields: columnNames,
+      cartodb_id: feature_id,
+      sql: layer.options.sql
+    }).done(function(interact_data) {
+      if (interact_data.rows.length === 0 ) {
+        callback(null);
+        return;
+      }
+      callback(interact_data.rows[0]);
+    }).error(function() {
+      callback(null);
+    });
+  }
 
 
 });

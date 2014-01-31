@@ -65,7 +65,6 @@ describe Geocoding do
       CartoDB::Geocoder.any_instance.stubs(:update_status).returns true
       CartoDB::Geocoder.any_instance.stubs(:total_rows).returns 20
       CartoDB::Geocoder.any_instance.stubs(:processed_rows).returns 10
-
       geocoding.run!
       geocoding.total_rows.should eq 20
       geocoding.processed_rows.should eq 10
@@ -87,9 +86,10 @@ describe Geocoding do
       CartoDB::TableGeocoder.any_instance.stubs(:process_results).returns true
       CartoDB::Geocoder.any_instance.stubs(:status).returns 'submitted'
       CartoDB::Geocoder.any_instance.stubs(:update_status).returns true
-      Timecop.scale(3600)
-      expect { geocoding.run! }.to raise_error
+      geocoding.run_timeout = 0.1
+      geocoding.run!
       geocoding.reload.state.should eq 'failed'
+      geocoding.run_timeout = Geocoding::DEFAULT_TIMEOUT
     end
 
     pending 'creates an automatic geocoder' do

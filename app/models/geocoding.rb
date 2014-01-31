@@ -3,11 +3,15 @@ require_relative '../../services/table-geocoder/lib/table_geocoder'
 
 class Geocoding < Sequel::Model
 
+  DEFAULT_TIMEOUT = 15*60
+
   many_to_one :user
   many_to_one :table
   many_to_one :automatic_geocoding
 
   attr_reader :table_geocoder
+
+  attr_accessor :run_timeout
 
   def validate
     super
@@ -18,6 +22,7 @@ class Geocoding < Sequel::Model
   def after_initialize
     super
     instantiate_table_geocoder
+    @run_timeout = DEFAULT_TIMEOUT
   end #after_initialize
 
   def after_create
@@ -62,7 +67,7 @@ class Geocoding < Sequel::Model
         state: table_geocoder.geocoder.status
       )
       puts "#{processed_rows}/#{total_rows}"
-      raise "Geocoding timeout" if Time.now - started > 15.minutes and ['started', 'submitted', 'accepted'].include? state
+      raise "Geocoding timeout" if Time.now - started > run_timeout and ['started', 'submitted', 'accepted'].include? state
       sleep(2)
     end until ['completed', 'cancelled', 'failed'].include? state
     return false if state == 'cancelled'

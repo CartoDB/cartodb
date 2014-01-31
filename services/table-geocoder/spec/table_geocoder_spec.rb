@@ -169,29 +169,30 @@ describe CartoDB::TableGeocoder do
     end
   end
 
-  # it "Geocodes a table" do
-  #   t = CartoDB::TableGeocoder.new(
-  #     table_name: @table_name,
-  #     formatter:  "name, ', ', sov0name",
-  #     connection: @db,
-  #     app_id: 'KuYppsdXZznpffJsKT24',
-  #     token:  'A7tBPacePg9Mj_zghvKt9Q',
-  #     mailto: 'arango@gmail.com',
-  #     schema: 'public'
-  #   )
-  #   @db.fetch("select count(*) from #{@table_name} where the_geom is null").first[:count].should eq 37
-  #   t.run
-  #   `open #{t.working_dir}`
-  #   until t.geocoder.status == 'completed' do
-  #     t.geocoder.update_status
-  #     puts "#{t.geocoder.status} #{t.geocoder.processed_rows}/#{t.geocoder.total_rows}"
-  #     sleep(2)
-  #   end
-  #   t.process_results
-  #   t.geocoder.status.should eq 'completed'
-  #   @db.fetch("select count(*) from #{@table_name} where the_geom is null").first[:count].should eq 4
-  #   @db.fetch("select count(*) from #{@table_name} where cartodb_georef_status is false").first[:count].should eq 4
-  # end
+  it "Geocodes a table" do
+    t = CartoDB::TableGeocoder.new(
+      table_name: @table_name,
+      formatter:  "name, ', ', sov0name",
+      connection: @db,
+      base_url: 'http://batch.geo.nlp.nokia.com/search-batch/6.2/jobs',
+      app_id: 'KuYppsdXZznpffJsKT24',
+      token:  'A7tBPacePg9Mj_zghvKt9Q',
+      mailto: 'arango@gmail.com',
+      schema: 'public'
+    )
+    @db.fetch("select count(*) from #{@table_name} where the_geom is null").first[:count].should eq 37
+    t.run
+    `open #{t.working_dir}`
+    until t.geocoder.status == 'completed' do
+      t.geocoder.update_status
+      puts "#{t.geocoder.status} #{t.geocoder.processed_rows}/#{t.geocoder.total_rows}"
+      sleep(2)
+    end
+    t.process_results
+    t.geocoder.status.should eq 'completed'
+    @db.fetch("select count(*) from #{@table_name} where the_geom is null").first[:count].should eq 4
+    @db.fetch("select count(*) from #{@table_name} where cartodb_georef_status is false").first[:count].should eq 4
+  end
 
 
   def path_to(filepath = '')

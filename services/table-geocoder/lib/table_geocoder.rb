@@ -19,11 +19,13 @@ module CartoDB
       @schema      = arguments[:schema] || 'cdb'
       @max_rows    = arguments[:max_rows] || 1000000
       @geocoder    = CartoDB::Geocoder.new(
-        app_id:     arguments[:app_id],
-        token:      arguments[:token],
-        mailto:     arguments[:mailto],
-        dir:        @working_dir,
-        request_id: arguments[:remote_id]
+        app_id:             arguments[:app_id],
+        token:              arguments[:token],
+        mailto:             arguments[:mailto],
+        dir:                @working_dir,
+        request_id:         arguments[:remote_id],
+        base_url:           arguments[:base_url],
+        non_batch_base_url: arguments[:non_batch_base_url]
       )
     end # initialize
 

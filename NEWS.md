@@ -1,3 +1,31 @@
+2.9.0 (2014-01-31)
+------------------
+* Improvements
+  * New cluster wizard.
+  * Improved embed_map speed.
+  * Added retina assets for mobile maps.
+  * Slight reorder of label options.
+  * Improved WMS error message.
+
+* Bugs Fixed
+  * Styles applied in a table do not get reflected on the wizards when creating a visualization.
+  * REST API should respond with 400 when tiler style sync does not work.
+  * A layer is shown on reload if it is hidden.
+  * In embed page: visualizing the map in a mobile, when changes landscape mode, map has to be resized.
+  * Leaflet basemap on android dissapears on zoom.
+  * Conditional styles based on zoom are not updated when zooming on torque.
+  * When the layer is hidden and you change wizards nothing happens.
+  * No visual clue about oauth keys on small screens.
+  * In embed visualization, if title or description are not shown the share button is not correctly aligned.
+  * Rows not appearing in table public view.
+  * Importing XLSX fails.
+  * Fixed the wizard when using the torque css editor.
+  * Renaming a table does not change table name in url.
+  * New table shadow is on top of the column menus.
+  * Error loading a multipoint shapefile.
+  * Layout error on the Add baselayer modal window.
+  * Removed deprecated tables endpoints.
+
 2.8.2 (2014-01-23)
 ------------------
 * Improvements

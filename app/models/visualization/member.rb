@@ -214,8 +214,8 @@ module CartoDB
         if @named_maps.nil? || force_init
           @named_maps = CartoDB::NamedMapsWrapper::NamedMaps.new(
             {
-              name:     user.nil? ? @user_data[:name] : user.username,
-              api_key:  user.nil? ? @user_data[:api_key] : user.api_key
+              name:     user.nil? ? (@user_data.nil? ? '' : @user_data[:name]) : user.username,
+              api_key:  user.nil? ? (@user_data.nil? ? '' : @user_data[:api_key]) : user.api_key
             },
             {
               domain:   Cartodb.config[:tiler]['private']['domain'],

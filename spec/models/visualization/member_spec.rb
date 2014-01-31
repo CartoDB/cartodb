@@ -14,6 +14,11 @@ describe Visualization::Member do
     Overlay.repository        = memory
   end
 
+  before(:each) do
+    # Using Mocha stubs until we update RSpec (@see http://gofreerange.com/mocha/docs/Mocha/ClassMethods.html)
+    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+  end
+
   describe '#initialize' do
     it 'assigns an id by default' do
       member = Visualization::Member.new

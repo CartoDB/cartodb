@@ -13,7 +13,7 @@
       , schema = <%=raw @table.schema.to_json %>
       , user_name = '<%=raw @table.owner.username %>'
       , map = <%=raw @table.map.to_json %>
-      , config = <%=raw frontend_config.html_safe %>
+      , config = <%=raw frontend_config_public.html_safe %>
       , vizjson = <%=raw @vizjson.to_json %>
   </script>
   <script>
@@ -23,7 +23,6 @@
     <% end %>
     cdb.config.set('debug', debug);
   </script>
-
 
   <% content_for(:js) do %>
       <script type="text/javascript"

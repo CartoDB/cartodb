@@ -2,6 +2,7 @@
 
 [![Build Status](http://travis-ci.org/CartoDB/cartodb.png)]
 (http://travis-ci.org/CartoDB/cartodb)
+[![Code Climate](https://codeclimate.com/github/CartoDB/cartodb20.png)](https://codeclimate.com/github/CartoDB/cartodb20)
 
 CartoDB is an open source tool that allows for the storage and
 visualization of geospatial data on the web.
@@ -121,6 +122,11 @@ Add CartoDB Varnish PPA
 sudo add-apt-repository  ppa:cartodb/varnish
 ```
 
+Resfresh repositories to use the PPAs
+```bash
+sudo apt-get update
+```
+
 ## Some dependencies ##
 
 unp is required for archive file upload support
@@ -177,7 +183,7 @@ sudo apt-get install postgresql-plpython-9.1
 ```
 
 
-For local development, all connections must be performed using method "trust" inside config file `pg_hba.conf`.
+Currently there is an error with credential-based connections for development, and all connections must be performed using method "trust" inside config file `pg_hba.conf`.
 
 ```bash
 /etc/postgresql/9.1/main$ sudo vim pg_hba.conf
@@ -207,7 +213,7 @@ make install
 ```
 
 Finally, CartoDB depends on a geospatial database template named
-`template_postgis`. In the example script below, make sure that the
+`template_postgis`. In the example script below (can be saved for examples as `template_postgis.sh`), make sure that the
 path to each SQL file is correct:
 
 ```bash
@@ -224,6 +230,12 @@ psql -d template_postgis -f $POSTGIS_SQL_PATH/rtpostgis.sql
 psql -d template_postgis -f $POSTGIS_SQL_PATH/topology.sql
 psql -d template_postgis -c "GRANT ALL ON geometry_columns TO PUBLIC;"
 psql -d template_postgis -c "GRANT ALL ON spatial_ref_sys TO PUBLIC;"
+```
+
+Before executing the script, change to the postgres user:
+```bash
+sudo su - postgres
+./template_postgis.sh
 ```
 
 ## Install Ruby ##
@@ -246,12 +258,6 @@ sudo apt-get install nodejs npm
 We currently run our node apps against version 0.8.x. You can install NVM 
 to handle multiple versions in the same system:
 
-Using npm:
-```bash
-npm install -g nvm
-```
-
-Or directly:
 ```bash
 curl https://raw.github.com/creationix/nvm/master/install.sh | sh
 ```
@@ -271,13 +277,21 @@ sudo apt-get install redis-server
 ```
 
 ## Install Python dependencies ##
-This need to be done from the cartodb20 local copy.
+This needs to be done from the cartodb20 local copy.
 To install the Python modules that CartoDB depends on, you can use
-`easy_install`:
+`easy_install`.
+
+You need to have some dependencies installed before using pip:
+```bash
+sudo apt-get install python2.7-dev
+sudo apt-get install build-essential
+```
 
 ```bash
-$ easy_install pip
-$ pip install -r python_requirements.txt
+easy_install pip
+export CPLUS_INCLUDE_PATH=/usr/include/gdal
+export C_INCLUDE_PATH=/usr/include/gdal
+pip install --no-use-wheel -r python_requirements.txt
 ```
 
 ## Install Varnish

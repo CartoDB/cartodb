@@ -95,6 +95,10 @@ module CartoDB
   LAST_BLOG_POSTS_FILE_PATH = "#{Rails.root}/public/system/last_blog_posts.html"
 
   IMPORTER_ERROR_CODES = {
+    1 => {
+      title: 'Install error',
+      what_about: "Something seems to be wrong with the cartodb install. Please <a href='mailto:support@cartob.com?subject=Install error'>contact us</a> and we'll try to fix that quickly."
+    },
     1000 => {
       title: 'File I/O error',
       what_about: "Something seems to be wrong with the file you uploaded. Check that it is loading fine locally and try uploading it again."

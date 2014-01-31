@@ -61,6 +61,14 @@ describe "Geocodings API" do
         response.body[:id].should eq geocoding.id
       end
     end
+
+    it 'does not return a geocoding owned by another user' do
+      geocoding = FactoryGirl.create(:geocoding, table_id: 1, formatter: 'b', user_id: @user.id + 1)
+
+      get_json v1_geocoding_url(params.merge(id: geocoding.id)) do |response|
+        response.status.should eq 404
+      end
+    end
   end
 
   describe 'PUT /api/v1/geocodings/:id' do

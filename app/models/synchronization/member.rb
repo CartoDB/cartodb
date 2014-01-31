@@ -133,9 +133,19 @@ module CartoDB
         self.retried_times  = 0
         self.run_at         = Time.now + interval
         self.modified_at    = importer.last_modified
+        geocode_table
       rescue
         self
       end
+
+      # Tries to run automatic geocoding if present
+      def geocode_table
+        return unless table && table.automatic_geocoding
+        self.log << "Running automatic geocoding..." 
+        table.automatic_geocoding.run
+      rescue => e
+        self.log << "Error while running automatic geocoding: #{e.message}" 
+      end # geocode_table
 
       def set_retry_state_from(importer)
         self.log     << "******** synchronization failed, will retry ********" 
@@ -174,6 +184,11 @@ module CartoDB
       def user
         @user ||= User.where(id: user_id).first
       end
+
+      def table
+        return nil unless defined?(::Table)
+        @table ||= ::Table.where(name: name, user_id: user.id).first 
+      end # table
 
       def authorize?(user)
         user.id == user_id && !!user.sync_tables_enabled

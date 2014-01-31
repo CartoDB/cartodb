@@ -25,7 +25,7 @@ module CartoDB
           quota:       self.geocoding_quota,
           block_price: self.geocoding_block_price,
           monthly_use: self.get_geocoding_calls,
-          hard_limit:  self.account_type == 'FREE'
+          hard_limit:  self.account_type =~ /(FREE|Magellan|Academy|ACADEMIC)/
         },
         billing_period: self.last_billing_cycle,
         max_layers: self.max_layers,
@@ -47,7 +47,8 @@ module CartoDB
 
       data[:organization] = {
         name:  self.organization.name,
-        owner: self.organization_owner
+        owner: self.organization_owner,
+        email: self.organization.users_dataset.where('organization_owner = true').first.try(:email)
       } if self.organization.present?
 
       if !options[:extended]

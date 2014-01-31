@@ -85,9 +85,9 @@
             <%= form_error_for :password, @user.errors %>
           </div>
           <div class="field field-2">
-            <%= label_tag 'user[confirm_password]', 'Confirm password' %>
-            <%= password_field_tag 'user[confirm_password]', nil, :class => @user.errors[:password].present? ? 'error' : nil %>
-            <%= form_error_for :confirm_password, @user.errors %>
+            <%= label_tag 'user[password_confirmation]', 'Confirm password' %>
+            <%= password_field_tag 'user[password_confirmation]', nil, :class => @user.errors[:password].present? ? 'error' : nil %>
+            <%= form_error_for :password_confirmation, @user.errors %>
           </div>
         </div>
         

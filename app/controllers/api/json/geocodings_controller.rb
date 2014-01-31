@@ -8,12 +8,13 @@ class Api::Json::GeocodingsController < Api::ApplicationController
   end
 
   def show
-    geocoding = Geocoding[params[:id]]
+    geocoding = current_user.geocodings_dataset.where(id: params[:id]).first
+    raise RecordNotFound unless geocoding
     render json: geocoding
   end
 
   def update
-    geocoding = Geocoding[params[:id]]
+    geocoding = current_user.geocodings_dataset.where(id: params[:id]).first
     return head(401) unless geocoding && params[:state] == 'cancelled'
     geocoding.update(state: 'cancelled')
     render_jsonp(geocoding.reload)

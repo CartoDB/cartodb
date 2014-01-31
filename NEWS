@@ -1,5 +1,7 @@
-3.X.Y ()
+3.6.00 (31//01//2014)
 - Using Leaflet 0.7.2
+- Adjusts the map header after the device is rotated
+- Fixes map header when there's no title & description
 
 3.5.07 (28//01//2014)
 - fixed fetching twice updated_at in torque layers

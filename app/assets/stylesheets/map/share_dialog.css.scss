@@ -233,7 +233,7 @@
     .scrollpane {
       overflow: hidden;
       outline:none;
-      max-height: 154px;
+      max-height: 251px;
 
       &:hover .jspVerticalBar { @include opacity(1); }
 
@@ -266,7 +266,7 @@
         letter-spacing:0px;
         word-spacing:0px;
         font:normal 15px $text-fonts;
-        // border: none !important;
+        @include simple-transition(color, 250ms);
 
         &:last-child {
           margin-right: 0;
@@ -281,6 +281,8 @@
           font-size: 15px;
           display:block;
         }
+
+        &.disabled { color: #CCCCCC; }
 
         i {
           float: right;

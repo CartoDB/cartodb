@@ -59,8 +59,8 @@ module CartoDB
         # Each table has a canonical visualization which must have privacy synced
         if (type == CANONICAL_TYPE)
           self.privacy = privacy_text
+          do_store(false)
         end
-        do_store
         self
       end #store_using_table
 
@@ -187,15 +187,15 @@ module CartoDB
       attr_reader   :repository, :name_checker, :validator
       attr_accessor :privacy_changed, :name_changed, :description_changed
 
-      def do_store
+      def do_store(propagate_changes=true)
         invalidate_varnish_cache if name_changed || privacy_changed || description_changed
         set_timestamps
         repository.store(id, attributes.to_hash)
 
         if type == CANONICAL_TYPE
-          propagate_privacy_and_name_to(table) if table
+          propagate_privacy_and_name_to(table) if table and propagate_changes
         else
-          propagate_name_to(table) if table
+          propagate_name_to(table) if table and propagate_changes
           # Canonical visualizations don't have named map
           named_map = has_named_map?
           if has_private_tables?

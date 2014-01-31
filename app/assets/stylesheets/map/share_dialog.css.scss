@@ -5,6 +5,7 @@
 @import "compass/css3/border-radius";
 @import "compass/css3/inline-block";
 @import "compass/css3/transform";
+@import "compass/css3/opacity";
 @import "../common/vars";
 @import "../common/mixins";
 
@@ -12,7 +13,7 @@
 .share_dialog {
 
   section.block .content {
-    padding: 0;
+    padding: 0 40px 0 0;
 
     & > div { overflow: hidden; }
   }
@@ -39,19 +40,23 @@
   }
 
   .map_container {
-    padding: 40px;
     float:left;
+    width: 100%;
+    margin-right: -299px;
+    padding: 40px 0;
+
+    .copy {
+      margin: 0 0 0 299px + 40px;
+    }
+
   }
 
   .cartodb-map_wrapper {
+    margin: 0 0 33px 299px + 40px;
     position: relative;
-    /*@include inline-block();*/
-    /*vertical-align:top;*/
-    width:480px;
+    width:auto;
     height: 470px;
     border: 1px solid #CCC;
-    margin:0;
-    /*padding: 40px;*/
     @include translateZ(10px);
     @include border-radius(3px);
     @include translate3d(0,0,10px);
@@ -60,7 +65,7 @@
     .cartodb-map {
       position:absolute;
       top:65px;
-      bottom:30px;
+      bottom:0px;
       right:0;
       left:0;
       width: 100%;
@@ -191,11 +196,10 @@
 
   // Sharing options
   div.sharing_options {
+    position:absolute;
     float:left;
-    /*display:inline-block!important;*/
-    /*vertical-align:top;*/
     width:299px;
-    /*margin-left:25px;*/
+    height: 100%;
 
     border-right: 1px solid #E5E5E5;
 
@@ -225,12 +229,33 @@
       letter-spacing:-1px;
     }
 
+    .scrollpane {
+      overflow: hidden;
+      outline:none;
+      max-height: 154px;
+
+      &:hover .jspVerticalBar { @include opacity(1); }
+
+      .jspContainer { overflow: hidden; position: relative; }
+      .jspPane { position: absolute; }
+      .jspVerticalBar   { @include simple-transition(opacity, 150ms); @include opacity(0); position: absolute; top: 0; right: 7px; width: 5px; height: 100%; background: none; z-index: 20; }
+      .jspVerticalBar * { margin: 0; padding: 0; }
+      .jspCap { display: none; }
+      .jspTrack { background: none; position: relative; }
+      .jspDrag { background: rgba(#BBB, .5); @include border-radius(5px); position: relative; top: 0; left: 0; cursor: pointer; }
+      .jspArrow { background: none; text-indent: -20000px; display: block; cursor: pointer; }
+      .jspVerticalBar .jspArrow { height: 10px; }
+      .jspVerticalBar .jspArrow:focus { outline: none; }
+      .jspCorner { background: #eeeef4; float: left; height: 100%; }
+
+    }
+
     ul.switches {
       display:block;
       width: 221px;
       letter-spacing:-4px;
       word-spacing:-4px;
-      padding: 0 40px;
+      padding: 7px 40px;
 
       li {
         @include inline-block();

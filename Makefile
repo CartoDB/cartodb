@@ -11,6 +11,7 @@ WORKING_SPECS = \
   spec/models/layer_spec.rb \
   spec/models/tag_spec.rb \
   spec/models/map_spec.rb \
+  spec/models/geocoding_spec.rb \
   services/importer/spec/unit/csv_normalizer_spec.rb \
   $(NULL)
 

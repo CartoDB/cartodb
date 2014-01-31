@@ -1,9 +1,14 @@
 # encoding: utf-8
 require 'typhoeus'
 require 'nokogiri'
+require 'csv'
+require 'json'
+require 'open3'
+require 'uuidtools'
 
 module CartoDB
   class Geocoder
+    BATCH_IF_GREATER_THAN = 1100
     UPLOAD_OPTIONS = {
       action: 'run',
       indelim: ',',
@@ -28,7 +33,17 @@ module CartoDB
       @dir        = arguments[:dir] || Dir.mktmpdir
     end # initialize
 
+    def use_batch_process?
+      input_rows > BATCH_IF_GREATER_THAN
+    end
+
+    def input_rows
+      stdout, stderr, status  = Open3.capture3('wc', '-l', input_file)
+      stdout.to_i
+    end
+
     def upload
+      return run_non_batched unless use_batch_process?
       response = Typhoeus.post(
         api_url(UPLOAD_OPTIONS),
         body: File.open(input_file,"r").read,
@@ -39,6 +54,7 @@ module CartoDB
     end # upload
 
     def cancel
+      return unless use_batch_process?
       response = Typhoeus.put api_url(action: 'cancel')
       handle_api_error(response)
       @status         = extract_response_field(response.body, '//Response/Status')
@@ -46,7 +62,17 @@ module CartoDB
       @total_rows     = extract_response_field(response.body, '//Response/TotalCount')
     end # cancel
 
+    def delete
+      return unless use_batch_process?
+      response = Typhoeus.delete api_url({})
+      handle_api_error(response)
+      @status         = extract_response_field(response.body, '//Response/Status')
+      @processed_rows = extract_response_field(response.body, '//Response/ProcessedCount')
+      @total_rows     = extract_response_field(response.body, '//Response/TotalCount')
+    end # cancel
+
     def update_status
+      return unless use_batch_process?
       response = Typhoeus.get api_url(action: 'status')
       handle_api_error(response)
       @status         = extract_response_field(response.body, '//Response/Status')
@@ -60,6 +86,32 @@ module CartoDB
       system('wget', '-nv', '-E', '-O', results_filename, api_url({}, 'result'))
       @result = Dir[File.join(dir, '*')][0]
     end # results
+
+    def run_non_batched
+      @result = File.join(dir, 'generated_csv_out.txt')
+      @status = 'running'
+      @total_rows = input_rows
+      @processed_rows = 0
+      ::CSV.open(@result, "wb") do |csv|
+        ::CSV.foreach(input_file) do |row|
+          @processed_rows = @processed_rows + 1
+          searchtext = row[1]
+          arguments = { gen: 4, housenumber: 8, jsonattributes: 1, language: 'en-US', maxresults: 1, searchtext: searchtext, app_id: app_id, app_code: token }
+          url = "http://geocoder.cit.api.here.com/6.2/geocode.json?" + URI.encode_www_form(arguments)
+          response =  ::JSON.parse Typhoeus.get(url).body.to_s
+          begin
+            latitude  = response["response"]["view"][0]["result"][0]["location"]["displayPosition"]["latitude"]
+            longitude = response["response"]["view"][0]["result"][0]["location"]["displayPosition"]["longitude"]
+          rescue
+          end
+          puts "#{latitude},#{longitude}"
+          next if latitude == "" || latitude == nil
+          csv << [searchtext,1,1,latitude,longitude]
+        end
+      end
+      @status = 'completed'
+      @request_id = UUIDTools::UUID.timestamp_create.to_s.gsub('-', '')
+    end # run_non_batched
 
     def api_url(arguments, extra_components = nil)
       arguments.merge!(app_id: app_id, token: token, mailto: mailto)

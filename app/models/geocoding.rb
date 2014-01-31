@@ -62,7 +62,7 @@ class Geocoding < Sequel::Model
         state: table_geocoder.geocoder.status
       )
       puts "#{processed_rows}/#{total_rows}"
-      raise "Geocoding timeout" if Time.now - started > 3.minutes and ['started', 'submitted', 'accepted'].include? state
+      raise "Geocoding timeout" if Time.now - started > 15.minutes and ['started', 'submitted', 'accepted'].include? state
       sleep(2)
     end until ['completed', 'cancelled', 'failed'].include? state
     return false if state == 'cancelled'
@@ -75,8 +75,10 @@ class Geocoding < Sequel::Model
   end # run!
 
   def create_automatic_geocoding
-    geocoder = AutomaticGeocoding.create(table: table)
-    self.update(automatic_geocoding_id: geocoder.id)
+    # Disabled until we stop sending previously failed rows
+    # best way to do this: use append mode on synchronizations
+    # geocoder = AutomaticGeocoding.create(table: table)
+    # self.update(automatic_geocoding_id: geocoder.id)
   end # create_automatic_geocoder
 
   # {field}, SPAIN => field, ', SPAIN'

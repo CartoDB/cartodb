@@ -3,6 +3,7 @@
 module CartoDB
   module Importer2
 
+    class InstallError                          < StandardError; end
     class EmptyFileError                        < StandardError; end
     class ExtractionError                       < StandardError; end
     class GeometryCollectionNotSupportedError   < StandardError; end
@@ -24,6 +25,7 @@ module CartoDB
     class EncodingDetectionError                < StandardError; end
 
     ERRORS_MAP = {
+      InstallError                          => 0001,
       EmptyFileError                        => 1005,
       ExtractionError                       => 1003,
       GeometryCollectionNotSupportedError   => 3201,

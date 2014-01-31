@@ -3,7 +3,7 @@ PENDING_SPECS = \
   $(NULL)
 
 WORKING_SPECS = \
-  spec/lib/failed_imports_spec.rb \
+  spec/models/table_spec.rb \
   spec/lib/sql_parser_spec.rb \
   spec/lib/sql_test_spec.rb \
   spec/lib/string_spec.rb \
@@ -13,6 +13,7 @@ WORKING_SPECS = \
   spec/models/map_spec.rb \
   services/named-maps-api-wrapper/spec/unit/named_map_spec.rb \
   services/named-maps-api-wrapper/spec/unit/named_maps_spec.rb \
+  services/importer/spec/unit/csv_normalizer_spec.rb \
   $(NULL)
 
 CDB_PATH=lib/assets/javascripts/cdb

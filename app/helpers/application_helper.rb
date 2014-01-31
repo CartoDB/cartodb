@@ -79,6 +79,29 @@ module ApplicationHelper
     config.to_json
   end
 
+  def frontend_config_public
+    config = {
+      tiler_protocol:      Cartodb.config[:tiler]["public"]["protocol"],
+      tiler_port:          Cartodb.config[:tiler]["public"]["port"],
+      tiler_domain:        Cartodb.config[:tiler]["public"]["domain"],
+      sql_api_protocol:    Cartodb.config[:sql_api]["public"]["protocol"],
+      sql_api_domain:      Cartodb.config[:sql_api]["public"]["domain"],
+      sql_api_endpoint:    Cartodb.config[:sql_api]["public"]["endpoint"],
+      sql_api_port:        Cartodb.config[:sql_api]["public"]["port"],
+      user_name:           CartoDB.extract_subdomain(request),
+      cartodb_com_hosted:  Cartodb.config[:cartodb_com_hosted],
+      account_host:        Cartodb.config[:account_host],
+      max_asset_file_size: Cartodb.config[:assets]["max_file_size"]
+    }
+    if Cartodb.config[:cdn_url].present?
+      config[:cdn_url] = {
+        http:              Cartodb.config[:cdn_url].try("fetch", "http", nil),
+        https:             Cartodb.config[:cdn_url].try("fetch", "https", nil)
+      }
+    end
+    config.to_json
+  end
+
   def stringified_member_type
     current_user.present? ? current_user.account_type.to_s.upcase : 'UNAUTHENTICATED'
   end

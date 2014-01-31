@@ -64,7 +64,6 @@ gem "em-pg-client",            "0.2.1"
 gem "virtus",                   git: "https://github.com/solnic/virtus.git"
 gem "aequitas",                 "0.0.2"
 gem "uuidtools",                "2.1.3"
-gem "rubyzip",                  "0.9.9"
 gem "sinatra",                  "1.3.4", require: 'sinatra/base'
 
 # TODO we should be able to remove this using the new

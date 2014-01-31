@@ -7,6 +7,7 @@ if(typeof(google) == "undefined" || typeof(google.maps) == "undefined")
 var GMapsTorqueLayerView = function(layerModel, gmapsMap) {
 
   var extra = layerModel.get('extra_params');
+  layerModel.attributes.attribution = cdb.config.get('cartodb_attributions');
   cdb.geo.GMapsLayerView.call(this, layerModel, this, gmapsMap);
   torque.GMapsTorqueLayer.call(this, {
       table: layerModel.get('table_name'),
@@ -32,10 +33,12 @@ var GMapsTorqueLayerView = function(layerModel, gmapsMap) {
       },
       map: gmapsMap,
       cartodb_logo: layerModel.get('cartodb_logo'),
-      cdn_url: layerModel.get('no_cdn') ? null: (layerModel.get('cdn_url') || cdb.CDB_HOST)
+      attribution: layerModel.get('attribution'),
+      cdn_url: layerModel.get('no_cdn') ? null: (layerModel.get('cdn_url') || cdb.CDB_HOST),
+      cartocss: this.model.get('tile_style')
   });
 
-  this.setCartoCSS(this.model.get('tile_style'));
+  //this.setCartoCSS(this.model.get('tile_style'));
   if (layerModel.get('visible')) {
     this.play();
   }

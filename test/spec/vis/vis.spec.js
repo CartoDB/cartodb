@@ -194,7 +194,10 @@ describe("Vis", function() {
   it("should add an overlay", function() {
     var v = this.vis.addOverlay({
       type: 'tooltip',
-      template: 'test'
+      template: 'test',
+      layer: new L.CartoDBGroupLayer({
+        layer_definition: {version: '1.0.0', layers: [] }
+      })
     });
     expect(this.vis.getOverlay('tooltip')).toEqual(v);
     expect(this.vis.getOverlays().length).toEqual(1);

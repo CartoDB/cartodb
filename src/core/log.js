@@ -13,21 +13,28 @@
     });
 
     cdb.core.ErrorList = Backbone.Collection.extend({
-        model: cdb.core.Error
+        model: cdb.core.Error,
+        enableTrack: function() {
+          var old_onerror = window.onerror;
+          window.onerror = function(msg, url, line) {
+              cdb.errors.create({
+                  msg: msg,
+                  url: url,
+                  line: line
+              });
+              if (old_onerror)
+                old_onerror.apply(window, arguments);
+          };
+        }
     });
 
     /** contains all error for the application */
     cdb.errors = new cdb.core.ErrorList();
 
+
     // error tracking!
     if(cdb.config.ERROR_TRACK_ENABLED) {
-        window.onerror = function(msg, url, line) {
-            cdb.errors.create({
-                msg: msg,
-                url: url,
-                line: line
-            });
-        };
+      cdb.errors.enableTrack();
     }
 
 

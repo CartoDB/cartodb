@@ -163,6 +163,13 @@ var Vis = cdb.core.View.extend({
       this.mapView = this.options.mapView;
       this.map = this.mapView.map;
     }
+
+    // recalculate map position on orientation change
+    window.addEventListener('orientationchange', _.bind(this.doOnOrientationChange, this));
+  },
+
+  doOnOrientationChange: function() {
+    this.setMapPosition();
   },
 
   /**
@@ -690,6 +697,7 @@ var Vis = cdb.core.View.extend({
     layerView.bind(eventType, function(e, latlng, pos, data, layer) {
         var cartodb_id = data.cartodb_id
         var infowindowFields = layerView.getInfowindowData(layer)
+        if (!infowindowFields) return;
         var fields = infowindowFields.fields;
 
         infowindow.model.set({

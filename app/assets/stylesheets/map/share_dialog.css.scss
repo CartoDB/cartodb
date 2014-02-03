@@ -170,27 +170,8 @@
       color:#858585;
     }
 
-    .cartodb-text {
-      position:absolute;
-      bottom:0;
-      left:0;
-      right:0;
-      display:block;
-      margin:0;
-      padding:0 10px;
-      background:white;
-      font-size:11px;
-      color:#999999;
-      border-top:1px solid #CCC;
-      border-top:1px solid rgba(0,0,0,0);
-      line-height:29px;
-      @include box-shadow(rgba(0,0,0,0.6) 0 0 1px 0);
-      a {text-decoration: underline}
-    }
-
     &.no-logo {
       .cartodb-map {bottom:0}
-      .cartodb-text {display:none}
       .cartodb-legends {bottom:30px}
     }
   }
@@ -306,7 +287,7 @@
 
         &.disabled { color: #CCCCCC; }
 
-        & > i {
+        i {
           float: right;
           @include inline-block();
           width: 20px; height: 20px;

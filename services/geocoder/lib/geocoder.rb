@@ -123,11 +123,10 @@ module CartoDB
     def geocode_text(text)
       options = GEOCODER_OPTIONS.merge(searchtext: text, app_id: app_id, app_code: token)
       url = "#{non_batch_base_url}?#{URI.encode_www_form(options)}"
-
       response =  ::JSON.parse(Typhoeus.get(url).body.to_s)["response"]
       position = response["view"][0]["result"][0]["location"]["displayPosition"]
       return position["latitude"], position["longitude"]
-    rescue
+    rescue => e
       [nil, nil]
     end
 
@@ -147,7 +146,6 @@ module CartoDB
     end # extract_response_field
 
     def handle_api_error(response)
-      puts response.inspect
       raise "Geocoding API communication failure: #{extract_response_field(response.body, '//Details')}" if response.code != 200
     end # handle_api_errpr
 

@@ -75,10 +75,10 @@ describe CartoDB::TableGeocoder do
   end
 
   describe '#deflate_results' do
-    it 'raises an error if no results file' do
+    it 'does not raise an error if no results file' do
       dir = Dir.mktmpdir
       tg = CartoDB::TableGeocoder.new(table_name: 'a', connection: 'b', working_dir: dir)
-      expect { tg.deflate_results }.to raise_error
+      expect { tg.deflate_results }.to_not raise_error
     end
 
     it 'extracts nokia result files' do
@@ -169,20 +169,22 @@ describe CartoDB::TableGeocoder do
     end
   end
 
-  it "Geocodes a table" do
-    t = CartoDB::TableGeocoder.new(
+  it "Geocodes a table using the batch geocoder API" do
+    config = YAML.load_file("#{File.dirname(__FILE__)}/../../../config/app_config.yml")["test"]["geocoder"]
+    pending "No Geocoder config found for test environment" unless config
+    config = config.inject({}){|memo,(k,v)| memo[k.to_sym] = v; memo}
+
+    t = CartoDB::TableGeocoder.new(config.merge(
       table_name: @table_name,
       formatter:  "name, ', ', sov0name",
       connection: @db,
-      base_url: 'http://batch.geo.nlp.nokia.com/search-batch/6.2/jobs',
-      app_id: 'KuYppsdXZznpffJsKT24',
-      token:  'A7tBPacePg9Mj_zghvKt9Q',
-      mailto: 'arango@gmail.com',
-      schema: 'public'
-    )
+      schema:     'public'
+    ))
+    t.geocoder.stubs("use_batch_process?").returns(true)
+
     @db.fetch("select count(*) from #{@table_name} where the_geom is null").first[:count].should eq 37
+    # `open #{t.working_dir}`
     t.run
-    `open #{t.working_dir}`
     until t.geocoder.status == 'completed' do
       t.geocoder.update_status
       puts "#{t.geocoder.status} #{t.geocoder.processed_rows}/#{t.geocoder.total_rows}"
@@ -190,8 +192,8 @@ describe CartoDB::TableGeocoder do
     end
     t.process_results
     t.geocoder.status.should eq 'completed'
-    @db.fetch("select count(*) from #{@table_name} where the_geom is null").first[:count].should eq 4
-    @db.fetch("select count(*) from #{@table_name} where cartodb_georef_status is false").first[:count].should eq 4
+    @db.fetch("select count(*) from #{@table_name} where the_geom is null").first[:count].should eq 3
+    @db.fetch("select count(*) from #{@table_name} where cartodb_georef_status is false").first[:count].should eq 3
   end
 
 

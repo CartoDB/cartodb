@@ -195,8 +195,8 @@
     }
   }
 
-  // Sharing options
-  div.sharing_options {
+  // Sharing and privacy options
+  div.options {
     position:absolute;
     float:left;
     width:299px;
@@ -268,6 +268,28 @@
         font:normal 15px $text-fonts;
         @include simple-transition(color, 250ms);
 
+
+        &.upgrade_message {
+          position:relative;
+          @include box-sizing(border-box);
+          background: rgba(#FF7373, .3) ;
+          color: #666;
+          @include border-radius(3px);
+          padding: 18px;
+          width: 221px;
+          border:none;
+          margin: 29px 0 0 0;
+          line-height: 120%;
+
+          &, p, a {
+            font-size: 15px;
+          }
+          p { margin: 0 0 15px 0; }
+
+          a { text-decoration: underline; }
+          i { position:absolute; bottom: 5px; right: 3px; background: transparent sprite( $table-sprites, lock_closed, $offset-x: 5px, $offset-y: 4px) no-repeat; }
+        }
+
         &:last-child {
           margin-right: 0;
           border:none;
@@ -284,7 +306,7 @@
 
         &.disabled { color: #CCCCCC; }
 
-        i {
+        & > i {
           float: right;
           @include inline-block();
           width: 20px; height: 20px;

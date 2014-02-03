@@ -14,7 +14,7 @@
 .share_dialog {
 
   section.block {
-    /*min-width: 800px;*/
+    min-width: 800px;
     .content > div { display: flex; }
   }
 
@@ -47,12 +47,10 @@
 
   .map_container {
     width: 100%;
-    padding: 40px;
-
-    .copy {
-      /*margin: 0 0 0 40px;*/
-    }
-
+    display:flex;
+    flex-direction: column;
+    padding: 40px 40px 34px 40px;
+    border-left: 1px solid #E5E5E5;
   }
 
   .cartodb-map_wrapper {
@@ -97,8 +95,11 @@
         position:absolute;
         top: 50%;
         left: 50%;
+        min-width: inherit;
+        @include box-sizing(border-box);
         margin-left: -216px;
-        margin-top: -107px;
+        margin-top: -99px;
+        min-width: auto;
 
         @include translateZ(20px);
 
@@ -106,6 +107,10 @@
         .head h3  {
           font: bold 15px "Helvetica", Arial;
           letter-spacing: 0;
+        }
+
+        .content {
+          padding: 20px 26px 30px 26px;
         }
 
       }
@@ -187,7 +192,6 @@
     min-width:299px;
     height: 100%;
 
-    border-right: 1px solid #E5E5E5;
 
     h3 {
       height: 94px; // prevents the jump in size due to the webfont loading

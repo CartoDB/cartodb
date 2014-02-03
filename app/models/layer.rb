@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+require_relative 'layer/presenter'
+
 class Layer < Sequel::Model
   plugin :serialization, :json, :options, :infowindow
   
@@ -152,6 +154,10 @@ class Layer < Sequel::Model
   def legend
     options['legend']
   end #legend
+
+  def get_presenter(options, configuration)
+    CartoDB::Layer::Presenter.new(self, options, configuration)
+  end #get_presenter
 
   private
 

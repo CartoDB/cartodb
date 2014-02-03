@@ -55,7 +55,7 @@ module CartoDB
           version:  layer_group_poro[:options][:layer_definition][:version],
           layers:   layers_data
         }
-      end #layer_group
+      end #layer_group_for_named_map
 
       private
 
@@ -99,12 +99,11 @@ module CartoDB
       end #layer_group_for
 
       def other_layers_for(visualization, named_maps_presenter = nil)
-        # named_maps_presenter.get_decoration_for_layer()
-
         visualization.layers(:others).map do |layer|
           decoration_data_to_apply = nil
           if not named_maps_presenter.nil?
-            decoration_data_to_apply = named_maps_presenter.get_decoration_for_layer(layer.kind, layer.order)
+            # Base layer is not sent to the tiler, so substract one
+            decoration_data_to_apply = named_maps_presenter.get_decoration_for_layer(layer.kind, layer.order-1)
           end
           Layer::Presenter.new(layer, options, configuration, decoration_data_to_apply).to_vizjson_v2
         end

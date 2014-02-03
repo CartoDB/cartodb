@@ -35,7 +35,7 @@ module CartoDB
             'params' =>       params
           }
         }
-      end
+      end #get_decoration_for_layer
 
       # Prepare a PORO (Hash object) for easy JSONification
       # @see https://github.com/CartoDB/cartodb.js/blob/privacy-maps/doc/vizjson_format.md
@@ -46,8 +46,8 @@ module CartoDB
         layers_data = Array.new
 
         layers.each { |layer|
-          # TODO Remove this dependency by having a .getVizjsonLayers at visualization object
-          layer_vizjson = Layer::Presenter.new(layer, @options, @configuration).to_vizjson_v2
+          layer_vizjson = layer.get_presenter(@options, @configuration).to_vizjson_v2()
+
           data = {
             layer_name: layer_vizjson[:options][:layer_name]
           }

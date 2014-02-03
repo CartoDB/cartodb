@@ -186,11 +186,17 @@
     border-right: 1px solid #E5E5E5;
 
     h3 {
-      .inner { width: 221px; }
+      height: 94px; // prevents the jump in size due to the webfont loading
+      @include box-sizing(border-box);
       padding: 31px 0 30px 0;
+
+      .inner { width: 221px; }
     }
 
     h4 {
+
+      height: 41px; // prevents the jump in size due to the webfont loading
+      @include box-sizing(border-box);
 
       .inner { width: 221px; }
 
@@ -269,6 +275,71 @@
 
           a { text-decoration: underline; }
           i { position:absolute; bottom: 5px; right: 3px; background: transparent sprite( $table-sprites, lock_closed, $offset-x: 5px, $offset-y: 4px) no-repeat; }
+
+        }
+
+        .radiobutton span.radio {
+          @include inline-block();
+          margin: -2px 5px 0 0;
+        }
+
+        &.password_protected.open {
+          .radiobutton span.radio {
+            @include inline-block();
+          }
+
+          .radiobutton {
+            width: 14px;
+            @include inline-block();
+          }
+
+        }
+
+        .input_field {
+          position:relative;
+          width: 203px;
+          @include box-sizing(border-box);
+          padding: 5px 4px 5px 7px;
+          @include inline-block();
+          border: 1px solid #CCCCCC;
+          @include border-radius(3px);
+
+          input[type="password"] {
+            position:absolute;
+            border:none;
+            outline:none;
+            width:130px;
+            line-height:120%;
+            font-size:12px;
+            z-index:0;
+          }
+
+          i {
+            position:relative;
+            float:right;
+            @include inline-block();
+            @include border-radius(0 3px 3px 0);
+            z-index: 10;
+          }
+
+          a {
+            position:relative;
+            @include box-sizing(border-box);
+            float:right;
+            height:20px;
+            @include inline-block();
+            background: rgba(#FFA64D, .5);
+            text-transform: uppercase;
+            font-weight:bold;
+            font-size:11px;
+            color: #AD9571;
+            padding: 3px 4px;
+            @include border-radius(3px 0 0 3px);
+            text-align:center;
+            margin: 0 1px 0 0;
+            z-index: 10;
+          }
+
         }
 
         &:last-child {

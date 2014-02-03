@@ -20,7 +20,6 @@ module CartoDB
         @table_name = table_name
         @schema     = schema
         @geometry_columns = geometry_columns || GEOMETRY_POSSIBLE_NAMES
-        @is_multipoint = false
       end #initialize
 
       def run
@@ -57,8 +56,7 @@ module CartoDB
         end
 
         job.log "Creating the_geom from #{geometry_column_name} column"
-        @is_multipoint = multipoint?
-        handle_multipoint(qualified_table_name) if @is_multipoint
+        handle_multipoint(qualified_table_name) if multipoint?
         self
       rescue => exception
         if column.empty?

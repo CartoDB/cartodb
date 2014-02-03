@@ -223,7 +223,7 @@ cdb.vis.Overlay.register('share', function(data, vis) {
         <section class="block modal {{modal_type}}">\
           <a href="#close" class="close">x</a>\
           <div class="head">\
-            <h3>{{ title }}</h3>\
+            <h3>Share this map</h3>\
           </div>\
           <div class="content">\
             <div class="buttons">\

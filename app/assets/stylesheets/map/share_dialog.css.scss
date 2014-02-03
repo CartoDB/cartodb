@@ -13,10 +13,15 @@
 // Map preview
 .share_dialog {
 
-  section.block .content {
-    padding: 0 40px 0 0;
+  section.block {
+    min-width: 800px;
+    .content > div { display: flex; }
+  }
 
-    & > div { overflow: hidden; }
+  section.block .content {
+    padding: 0;
+
+    /*& > div { overflow: hidden; }*/
   }
 
   div.torque_warning {
@@ -29,31 +34,27 @@
   }
 
   .cartodb-map_wrapper:-webkit-full-screen {
-    width: 100% !important;
+    width: 100%!important;
     height:100%!important;;
     display:block!important;
   }
 
   .cartodb-map_wrapper:-moz-full-screen {
-    width: 100% !important;
+    width: 100%!important;
     height:100%!important;;
     display:block!important;
   }
 
   .map_container {
-    float:left;
     width: 100%;
-    margin-right: -299px;
-    padding: 40px 0;
-
-    .copy {
-      margin: 0 0 0 299px + 40px;
-    }
-
+    display:flex;
+    flex-direction: column;
+    padding: 40px 40px 34px 40px;
+    border-left: 1px solid #E5E5E5;
   }
 
   .cartodb-map_wrapper {
-    margin: 0 0 33px 299px + 40px;
+    margin: 0 0 33px 0;
     position: relative;
     width:auto;
     height: 470px;
@@ -94,8 +95,11 @@
         position:absolute;
         top: 50%;
         left: 50%;
+        min-width: inherit;
+        @include box-sizing(border-box);
         margin-left: -216px;
-        margin-top: -107px;
+        margin-top: -99px;
+        min-width: auto;
 
         @include translateZ(20px);
 
@@ -103,6 +107,10 @@
         .head h3  {
           font: bold 15px "Helvetica", Arial;
           letter-spacing: 0;
+        }
+
+        .content {
+          padding: 20px 26px 30px 26px;
         }
 
       }
@@ -178,12 +186,12 @@
 
   // Sharing and privacy options
   div.options {
-    position:absolute;
-    float:left;
+    /*position:absolute;*/
+    /*float:left;*/
     width:299px;
+    min-width:299px;
     height: 100%;
 
-    border-right: 1px solid #E5E5E5;
 
     h3 {
       height: 94px; // prevents the jump in size due to the webfont loading
@@ -397,6 +405,8 @@
       overflow:hidden;
       border:none;
       outline:none;
+
+      &.url { z-index: 0; }
 
       &.loading {
         background: image-url('layout/loader_transparent.gif') no-repeat;

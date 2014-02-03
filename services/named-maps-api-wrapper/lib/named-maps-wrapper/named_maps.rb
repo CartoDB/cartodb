@@ -22,6 +22,7 @@ module CartoDB
 				@verbose_mode = false
 			end #initialize
 
+			# Create a new named map
 			def create(template_data)
 				raise NamedMapsDataError, { 'template_data' => 'not a Hash object' } if template_data.class != Hash
 
@@ -48,6 +49,7 @@ module CartoDB
 				end
 			end #create
 
+			# Retrieve a list of all named maps
 			def all
 				response = Typhoeus.get(@url + "?api_key=" + @api_key, {
 					headers: @headers,
@@ -60,6 +62,7 @@ module CartoDB
 				::JSON.parse(response.response_body)
 			end #all
 
+			# Get a specific named map given it's name
 			def get(name)
 				raise NamedMapsDataError, { 'name' => 'mising' } if name.nil? or name.length == 0
 

@@ -5,31 +5,53 @@ module CartoDB
 
 		class Presenter
 
+      LAYER_TYPES_TO_DECORATE = [ 'torque' ]
+
 			def initialize(visualization, options, configuration)
         @visualization  = visualization
         @options        = options
         @configuration	= configuration
 
-        #TODO: Check options has proper values
-
-        @fetched				= false
+        @named_map          = nil
+        @named_map_template = nil
+        @fetched				    = false
       end #initialize
 
-      def to_poro
-      	named_map = fetch if !@fetched
+      # Prepares additional data to decorate layers in the LAYER_TYPES_TO_DECORATE list
+      def get_decoration_for_layer(layer_type, layer_index)
+        return nil if not LAYER_TYPES_TO_DECORATE.include? layer_type
 
-        template_data = named_map.template.fetch(:template)
+        fetch if !@fetched
+
+        params = {}
+        @named_map_template[:placeholders].each { |key, value|
+          params[key.to_s] = value[:default]
+        }
+
+        { 
+          'named_map' =>  {
+            'name' =>         @named_map_template[:name],
+            'layer_index' =>  layer_index,
+            'params' =>       params
+          }
+        }
+      end
+
+      # Prepare a PORO (Hash object) for easy JSONification
+      # @see https://github.com/CartoDB/cartodb.js/blob/privacy-maps/doc/vizjson_format.md
+      def to_poro
+      	fetch if !@fetched
 
         layers = @visualization.layers(:cartodb)
         layers_data = Array.new
 
         layers.each { |layer|
-          #TODO Remove this dependency by having a .getVizjsonLayers at visualization object
+          # TODO Remove this dependency by having a .getVizjsonLayers at visualization object
           layer_vizjson = Layer::Presenter.new(layer, @options, @configuration).to_vizjson_v2
           data = {
             layer_name: layer_vizjson[:options][:layer_name]
           }
-          
+
           if layer_vizjson[:infowindow].fetch('fields').size > 0
             data[:infowindow] = layer_vizjson[:infowindow]
           end
@@ -41,7 +63,7 @@ module CartoDB
         }
 
         params = {}
-        template_data[:placeholders].each { |key, value|
+        @named_map_template[:placeholders].each { |key, value|
           params[key] = value[:default]
         }
 
@@ -55,8 +77,8 @@ module CartoDB
             tiler_domain:       (@configuration[:tiler]['private']['domain'] rescue nil),
             tiler_port:         (@configuration[:tiler]['private']['port'] rescue nil),
             named_map:          {
-              name:     template_data[:name],
-              auth:     template_data[:auth][:method],
+              name:     @named_map_template[:name],
+              auth:     @named_map_template[:auth][:method],
               params:   params,
               layers:   layers_data
             }
@@ -64,6 +86,7 @@ module CartoDB
         }
       end #to_poro
 
+      # Loads the data of a given named map
       def fetch
       	named_maps = NamedMaps.new(
             {
@@ -75,12 +98,13 @@ module CartoDB
               domain: (@configuration[:tiler]['private']['domain'] rescue nil),
               port:     (@configuration[:tiler]['private']['port'] rescue nil)
             },
-            # Here should go the retrieval validator, not the creation one
+            # TODO: Here should go the retrieval validator, not the creation one
             #CartoDB::NamedMapsWrapper::TemplateCreationValidator.new()
           )
-      	new_named_map = named_maps.get(NamedMap.normalize_name(@visualization.id))
+      	@named_map = named_maps.get(NamedMap.normalize_name(@visualization.id))
+        @named_map_template = @named_map.template.fetch(:template) if not @named_map.nil?
       	@fetched = true
-      	new_named_map
+      	@named_map
       end #fetch
 
 		end #Presenter

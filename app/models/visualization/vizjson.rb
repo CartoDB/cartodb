@@ -20,6 +20,8 @@ module CartoDB
         logger.info(map.inspect) if logger
       end #initialize
 
+      # Return a PORO (Hash object) for easy JSONification
+      # @see https://github.com/CartoDB/cartodb.js/blob/privacy-maps/doc/vizjson_format.md
       def to_poro
         {
           id:             visualization.id,
@@ -37,6 +39,7 @@ module CartoDB
         }
       end #to_poro
 
+      # Return the layer group data for a named map
       def layer_group_for_named_map
         layer_group_poro = layer_group_for(visualization)
 
@@ -67,24 +70,21 @@ module CartoDB
         layers_data = [
           base_layers_for(visualization)
         ]
+
         if visualization.has_private_tables?
-          layers_data.push( named_map_for(visualization) )
+          presenter_options = {
+            user_name: options.fetch(:user_name),
+            api_key: options.delete(:user_api_key)
+          }
+          named_maps_presenter = CartoDB::NamedMapsWrapper::Presenter.new(visualization, presenter_options, configuration)
+          layers_data.push( named_maps_presenter.to_poro() )
         else
+          named_maps_presenter = nil
           layers_data.push( layer_group_for(visualization) )
-          layers_data.push( other_layers_for(visualization) )
         end
+        layers_data.push( other_layers_for( visualization, named_maps_presenter ) )
         layers_data.compact.flatten
       end #layers_for
-
-      # Required for named maps generation
-      def named_map_for(visualization)
-        presenter_options = {
-          user_name: options.fetch(:user_name),
-          api_key: options.delete(:user_api_key)
-        }
-        CartoDB::NamedMapsWrapper::Presenter.new(visualization, presenter_options, configuration)
-                                            .to_poro
-      end
 
       def base_layers_for(visualization)
         visualization.layers(:base).map do |layer|
@@ -98,9 +98,15 @@ module CartoDB
         ).to_poro
       end #layer_group_for
 
-      def other_layers_for(visualization)
+      def other_layers_for(visualization, named_maps_presenter = nil)
+        # named_maps_presenter.get_decoration_for_layer()
+
         visualization.layers(:others).map do |layer|
-          Layer::Presenter.new(layer, options, configuration).to_vizjson_v2
+          decoration_data_to_apply = nil
+          if not named_maps_presenter.nil?
+            decoration_data_to_apply = named_maps_presenter.get_decoration_for_layer(layer.kind, layer.order)
+          end
+          Layer::Presenter.new(layer, options, configuration, decoration_data_to_apply).to_vizjson_v2
         end
       end #other_layers_for
 

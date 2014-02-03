@@ -24,12 +24,20 @@ module CartoDB
         layers_data = Array.new
 
         layers.each { |layer|
+          #TODO Remove this dependency by having a .getVizjsonLayers at visualization object
           layer_vizjson = Layer::Presenter.new(layer, @options, @configuration).to_vizjson_v2
-          layers_data.push({
-            layer_name: layer_vizjson[:options][:layer_name],
-            legend: layer_vizjson[:legend],
-            infowindow: layer_vizjson[:infowindow]
-          })
+          data = {
+            layer_name: layer_vizjson[:options][:layer_name]
+          }
+          
+          if layer_vizjson[:infowindow].fetch('fields').size > 0
+            data[:infowindow] = layer_vizjson[:infowindow]
+          end
+          if layer_vizjson[:legend].fetch('type') != "none"
+            data[:legend] = layer_vizjson[:legend]
+          end
+
+          layers_data.push(data)
         }
 
         params = {}

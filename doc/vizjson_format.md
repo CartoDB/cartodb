@@ -179,10 +179,6 @@ this is the spec for visjson:
             tiler_protocol: "http",
             tiler_domain: "cartodb.com",
             tiler_port: "80",
-            sql_api_protocol: "http",
-            sql_api_domain: "cartodb.com",
-            sql_api_endpoint: "/api/v1/sql",
-            sql_api_port: 80,
             cdn_url: {
               http: "api.cartocdn.com",
               https: "cartocdn.global.ssl.fastly.net"
@@ -190,11 +186,16 @@ this is the spec for visjson:
             query: null,
             table_name: "sensor_log_2013_10_27_12_01",
             user_name: "javi", // cartodb username
-            tile_style: "valid cartocss",
-            property: "cartodb_id",
-            torque-duration: 41,
-            torque-steps: "2048",
-            torque-blend-mode: "lighter"
+            cartocss: "valid cartocss",
+            named_map: { //if this key is present named_map is used, if not it means it's an anonymous map
+                name: 'test',
+                layer_index: 1, // layer_index inside named map
+                params: {
+                    //template params
+                    color: '#FFF',
+                    other_var: 1
+                },
+            }
          }
        },
      ],

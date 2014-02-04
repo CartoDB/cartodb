@@ -492,6 +492,32 @@ describe("NamedMap", function() {
 
   })
 
+  it("should enable/disable layers", function() {
+    var params;
+    namedMap.options.ajax = function(p) { 
+      params = p;
+      p.success({ layergroupid: 'test' });
+    };
+    runs(function() {
+      namedMap.getSubLayer(0).hide();
+      namedMap._getLayerToken();
+    });
+    waits(100);
+    runs(function() {
+      var config ="config=" + encodeURIComponent(JSON.stringify({color: 'red', layer0: false}));
+      expect(params.url.indexOf(config)).not.toEqual(-1);
+    });
+    runs(function() {
+      namedMap.getSubLayer(0).show();
+      namedMap._getLayerToken();
+    });
+    waits(100);
+    runs(function() {
+      var config ="config=" + encodeURIComponent(JSON.stringify({color: 'red'}));
+      expect(params.url.indexOf(config)).not.toEqual(-1);
+    });
+  });
+
 
 });
 

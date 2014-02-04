@@ -32,6 +32,7 @@ function NamedMap(named_map, options) {
   for(var i = 0; i < this.layers.length; ++i) {
     var layer = this.layers[i];
     layer.options = layer.options || { hidden: false };
+    layer.options.layer_name = layer.layer_name;
   }
   this.named_map = named_map;
 }
@@ -499,7 +500,7 @@ Map.prototype = {
   getInfowindowData: function(layer) {
     var lyr;
     var infowindow = this.layers[layer].infowindow;
-    if (!infowindow && (lyr = this.options.layer_definition.layers[layer])) {
+    if (!infowindow && this.options.layer_definition && (lyr = this.options.layer_definition.layers[layer])) {
       infowindow = lyr.infowindow;
     }
     if (infowindow && infowindow.fields && infowindow.fields.length > 0) {
@@ -542,7 +543,17 @@ Map.prototype = {
 NamedMap.prototype = _.extend({}, Map.prototype, {
 
   toJSON: function() {
-    return this.named_map.params || {};
+    var p = this.named_map.params || {};
+    for(var i = 0; i < this.layers.length; ++i) {
+      var layer = this.layers[i];
+      if(layer.options.hidden) {
+        p['layer' + i] = false;
+      } else {
+        // when it's show just don't send it
+        delete p['layer' + i];
+      }
+    }
+    return p;
   },
 
   containInfowindow: function() {

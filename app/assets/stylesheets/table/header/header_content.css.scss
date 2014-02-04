@@ -195,18 +195,22 @@
         padding:0 10px;
         margin:0;
 
+        &.dropdown { padding-right: 12px; }
+
         &:after {
           position:absolute;
-          content:'|';
+          content:'';
           top:0px;
           right:0;
           margin:0;
-          color:rgba(white,0.4);
+          width: 1px;
+          height: 15px;
+          border-right: 1px solid rgba(#fff, .4);
         }
 
         &:last-child {
           padding-right:0;
-          &:after {display:none}
+          &:after { display:none; }
         }
 
         a {
@@ -214,7 +218,6 @@
           display: block;
           font-weight:300;
           &.share, &.data_download { font-weight:500; }
-
 
           &.privacy {
 

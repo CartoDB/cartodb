@@ -1,11 +1,13 @@
 # encoding: utf-8
 
+require_relative '../../../../app/models/visualization/vizjson'
+
 module CartoDB
   module NamedMapsWrapper
 
 		class NamedMaps
 
-			def initialize(user_config, tiler_config, validator = nil)
+			def initialize(user_config, tiler_config, vizjson_config = {})
 				raise NamedMapsDataError, { 'user' => 'config missing' } if user_config.nil? or user_config.size == 0
 				raise NamedMapsDataError, { 'tiler' => 'config missing' } if tiler_config.nil? or tiler_config.size == 0
 
@@ -13,26 +15,17 @@ module CartoDB
 
 				@username = user_config[:name]
 				@api_key = user_config[:api_key]
+				@vizjson_config = vizjson_config
 
 				@host = "#{tiler_config[:protocol]}://#{@username}.#{tiler_config[:domain]}:#{tiler_config[:port]}"
 				@url = [ @host, 'tiles', 'template' ].join('/')
 
-				@validator = validator
-
 				@verbose_mode = false
 			end #initialize
 
-			# Create a new named map
-			def create(template_data)
-				raise NamedMapsDataError, { 'template_data' => 'not a Hash object' } if template_data.class != Hash
-
-				template_data = template_data.merge( { :version => NamedMap::NAMED_MAPS_VERSION } )
+			def create(visualization)
+				template_data = get_template_data(visualization)
 				p template_data if @verbose_mode
-
-				if (not @validator.nil?)
-					is_valid_template, validation_errors = NamedMap.validate_template(template_data, @validator)
-					raise NamedMapsDataError, validation_errors if not is_valid_template
-				end
 
 				response = Typhoeus.post(@url + '?api_key=' + @api_key, {
 					headers: @headers,
@@ -47,7 +40,7 @@ module CartoDB
 				else
 					nil
 				end
-			end #create
+			end
 
 			# Retrieve a list of all named maps
 			def all
@@ -87,7 +80,59 @@ module CartoDB
 				end
 			end #get
 
-			attr_reader	:url, :api_key, :username, :headers, :host, :validator
+			def get_template_data(visualization)
+				# 1) general data
+				template_data = {
+					version: 	NamedMap::NAMED_MAPS_VERSION,
+					name: 		NamedMap.normalize_name(visualization.id),
+					auth: {
+						# TODO: Implement tokens
+            method: 	NamedMap::AUTH_TYPE_OPEN
+          },
+          placeholders: {
+          },
+          layergroup: {
+        		layers: []
+        	}
+        }
+
+        vizjson = CartoDB::Visualization::VizJSON.new(visualization, { full: false, user_name: @username }, @vizjson_config)
+        layers_data = []
+
+        layer_group = vizjson.layer_group_for(visualization)
+        if (!layer_group.nil?())
+        	layer_group[:options][:layer_definition][:layers].each { |layer|
+	          layers_data.push( {
+	            type:     layer[:type].downcase,
+	            options:  layer[:options]
+	          } )
+	        }
+        end
+        
+        other_layers = vizjson.other_layers_for( visualization)
+        if (!other_layers.nil?())
+        	other_layers = other_layers.compact
+        	other_layers.each { |layer|
+
+        		sql_query = layer[:options].fetch('query')
+
+        		layers_data.push( {
+	            type:     layer[:type].downcase,
+	            options:  {
+	            	cartocss_version: '2.0.1',
+	            	cartocss: 				layer[:options].fetch('tile_style'),
+	            	sql: 							sql_query
+	            }
+	          } )
+        	}
+        end
+
+        template_data[:layergroup][:layers] = layers_data.compact.flatten
+
+				template_data
+			end
+
+			attr_reader	:url, :api_key, :username, :headers, :host
 
 		end #NamedMaps
 

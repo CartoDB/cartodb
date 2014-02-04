@@ -34,12 +34,10 @@ module CartoDB
 			end #delete
 
 			# Update a named map's template data (full replace update)
-			def update(template_data)
-				template_data = template_data.merge( { version: NAMED_MAPS_VERSION } )
-				p template_data if @verbose_mode
+			def update(visualization)
 
-				is_valid_template, validation_errors = valid_template?(template_data)
-				raise NamedMapDataError, validation_errors if not is_valid_template
+				template_data = @parent.get_template_data( visualization )
+				p template_data if @verbose_mode
 
 				response = Typhoeus.put(url + '?api_key=' + @parent.api_key, {
 					headers: @parent.headers,
@@ -65,23 +63,6 @@ module CartoDB
 			def self.normalize_name(raw_name)
 				(NAME_PREFIX + raw_name).gsub(/[^a-zA-Z0-9\-\_.]/ , '').gsub('-', '_')
 			end # self.normalize_name
-
-			# Check if a template is valid. 
-			# Should have setup a validator in it's parent NamedMaps instance or will default to true
-			def valid_template?(template_data = nil)
-				return true, {} if @parent.validator.nil? or not @parent.validator.respond_to?(:validate)
-				if (template_data.nil?)
-					NamedMap.validate_template(@template, @parent.validator)
-				else
-					NamedMap.validate_template(template_data, @parent.validator)
-				end
-			end #valid_template?
-
-			# Actual validation method
-			# Public to allow to be used from named maps without a given instance
-			def self.validate_template(template_data, validator)
-					validator.validate(template_data)
-			end #self.validate_template
 
 			attr_reader	:template
 

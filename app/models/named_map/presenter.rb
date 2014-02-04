@@ -2,7 +2,6 @@
 
 module CartoDB
   module NamedMapsWrapper
-
 		class Presenter
 
       LAYER_TYPES_TO_DECORATE = [ 'torque' ]
@@ -47,15 +46,17 @@ module CartoDB
 
         layers.each { |layer|
           layer_vizjson = layer.get_presenter(@options, @configuration).to_vizjson_v2()
-
           data = {
             layer_name: layer_vizjson[:options][:layer_name]
           }
 
-          if layer_vizjson[:infowindow].fetch('fields').size > 0
+          if ( layer_vizjson.include?(:infowindow) && !layer_vizjson[:infowindow].nil?() && 
+               layer_vizjson[:infowindow].fetch('fields').size > 0 )
             data[:infowindow] = layer_vizjson[:infowindow]
           end
-          if layer_vizjson[:legend].fetch('type') != "none"
+
+          if ( layer_vizjson.include?(:legend) && !layer_vizjson[:legend].nil?() && 
+               layer_vizjson[:legend].fetch('type') != "none" )
             data[:legend] = layer_vizjson[:legend]
           end
 
@@ -97,9 +98,7 @@ module CartoDB
               protocol:   (@configuration[:tiler]['private']['protocol'] rescue nil),
               domain: (@configuration[:tiler]['private']['domain'] rescue nil),
               port:     (@configuration[:tiler]['private']['port'] rescue nil)
-            },
-            # TODO: Here should go the retrieval validator, not the creation one
-            #CartoDB::NamedMapsWrapper::TemplateCreationValidator.new()
+            }
           )
       	@named_map = named_maps.get(NamedMap.normalize_name(@visualization.id))
         @named_map_template = @named_map.template.fetch(:template) if not @named_map.nil?

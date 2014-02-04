@@ -4,6 +4,7 @@ require 'ostruct'
 require_relative '../overlay/presenter'
 require_relative '../layer/presenter'
 require_relative '../layer_group/presenter'
+require_relative '../named_map/presenter'
 require_relative '../../../services/named-maps-api-wrapper/lib/named_maps_wrapper'
 
 
@@ -43,6 +44,9 @@ module CartoDB
       def layer_group_for_named_map
         layer_group_poro = layer_group_for(visualization)
 
+        # If there is *only* a torque layer, there is no layergroup
+        return nil if layer_group_poro.nil?
+
         layers_data = Array.new
         layer_group_poro[:options][:layer_definition][:layers].each { |layer|
           layers_data.push( {
@@ -56,6 +60,23 @@ module CartoDB
           layers:   layers_data
         }
       end #layer_group_for_named_map
+
+      def layer_group_for(visualization)
+        LayerGroup::Presenter.new(
+          visualization.layers(:cartodb), options, configuration
+        ).to_poro
+      end #layer_group_for
+
+      def other_layers_for(visualization, named_maps_presenter = nil)
+        visualization.layers(:others).map do |layer|
+          decoration_data_to_apply = nil
+          if not named_maps_presenter.nil?
+            # Base layer is not sent to the tiler, so substract one
+            decoration_data_to_apply = named_maps_presenter.get_decoration_for_layer(layer.kind, layer.order-1)
+          end
+          Layer::Presenter.new(layer, options, configuration, decoration_data_to_apply).to_vizjson_v2
+        end
+      end #other_layers_for
 
       private
 
@@ -91,23 +112,6 @@ module CartoDB
           Layer::Presenter.new(layer, options, configuration).to_vizjson_v2
         end
       end #base_layers_for
-
-      def layer_group_for(visualization)
-        LayerGroup::Presenter.new(
-          visualization.layers(:cartodb), options, configuration
-        ).to_poro
-      end #layer_group_for
-
-      def other_layers_for(visualization, named_maps_presenter = nil)
-        visualization.layers(:others).map do |layer|
-          decoration_data_to_apply = nil
-          if not named_maps_presenter.nil?
-            # Base layer is not sent to the tiler, so substract one
-            decoration_data_to_apply = named_maps_presenter.get_decoration_for_layer(layer.kind, layer.order-1)
-          end
-          Layer::Presenter.new(layer, options, configuration, decoration_data_to_apply).to_vizjson_v2
-        end
-      end #other_layers_for
 
       def overlays_for(map)
         ordered_overlays_for(visualization).map do |overlay|

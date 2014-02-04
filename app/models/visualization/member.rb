@@ -4,7 +4,6 @@ require 'virtus'
 require 'json'
 require_relative './collection'
 require_relative './presenter'
-require_relative './vizjson'
 require_relative './name_checker'
 require_relative './relator'
 require_relative '../table/privacy_manager'
@@ -222,7 +221,7 @@ module CartoDB
               port:     Cartodb.config[:tiler]['private']['port'] || 443,
               protocol: Cartodb.config[:tiler]['private']['protocol']
             },
-            CartoDB::NamedMapsWrapper::TemplateCreationValidator.new()
+            configuration
           )
         end
         @named_maps
@@ -238,29 +237,12 @@ module CartoDB
       end #has_named_map?
 
       def create_named_map
-        vizjson = VizJSON.new(self, { full: false, user_name: user.username }, configuration)
-        template_data = {
-          name: CartoDB::NamedMapsWrapper::NamedMap.normalize_name(id),
-          auth: {
-            method: CartoDB::NamedMapsWrapper::NamedMap::AUTH_TYPE_OPEN
-          },
-          placeholders: {
-          },
-          layergroup: vizjson.layer_group_for_named_map
-        }
-        new_named_map = named_maps.create(template_data)
-        !new_named_map.nil?
+        new_named_map = named_maps.create(self)
+        return !new_named_map.nil?        
       end #create_named_map_if_proceeds
 
       def update_named_map(named_map_instance)
-        vizjson = VizJSON.new(self, { full: false, user_name: user.username }, configuration)
-        template_data = {
-          name: CartoDB::NamedMapsWrapper::NamedMap.normalize_name(id),
-          auth: named_map_instance.template[:template][:auth],
-          placeholders: named_map_instance.template[:template][:placeholders],
-          layergroup: vizjson.layer_group_for_named_map
-        }
-        named_map_instance.update(template_data)
+        named_map_instance.update( self )
       end #update_named_map
 
       def propagate_privacy_and_name_to(table)
@@ -304,11 +286,6 @@ module CartoDB
         name_checker.available?(name)
       end #available_name?
 
-      def configuration
-        return {} unless defined?(Cartodb)
-        Cartodb.config
-      end #configuration
-
       def remove_layers_from(table)
         related_layers_from(table).each { |layer|
           map.remove_layer(layer)
@@ -325,6 +302,11 @@ module CartoDB
           ).include?(table.name)
         end
       end #related_layers_from
+
+      def configuration
+        return {} unless defined?(Cartodb)
+        Cartodb.config
+      end #configuration
 
     end # Member
   end # Visualization

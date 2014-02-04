@@ -31,6 +31,8 @@ describe NamedMaps do
 
 	describe '#correct_data' do
     it 'test definition data is present' do
+      pending
+
       headers = { 'content-type' => 'application/json' }
 
       named_maps = NamedMaps.new(test_user_config, test_tiler_config)
@@ -53,6 +55,8 @@ describe NamedMaps do
 
   describe '#create' do
     it 'tests the creation of a new named map' do
+      pending
+
       headers = { 'content-type' => 'application/json' }
       template_data = { 'template_id' => '13' }
       response = ::JSON.dump(template_data)
@@ -73,6 +77,8 @@ describe NamedMaps do
 
   describe '#all' do
     it 'tests the retrieval of all named maps for a given api key' do
+      pending
+
       headers = { 'content-type' => 'application/json' }
       response_data = { 'template_id' => ['1', '2'] }
       response = ::JSON.dump(response_data)
@@ -95,6 +101,8 @@ describe NamedMaps do
 
   describe '#get' do
     it 'tests the retrieval of a specific named map by its name' do
+      pending
+      
       headers = { 'content-type' => 'application/json' }
       name1 = 'test'
       name2 = 'blablabla'

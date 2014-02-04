@@ -80,6 +80,9 @@ module CartoDB
       end #with_kind_as_type
 
       def as_torque(attributes)
+        # Make torque always have a SQL query too (as vizjson v2)
+        layer.options['query'] = sql_from(layer.options)
+
         if (not @decoration_data.nil?)
           layer_options = layer.options.merge(@decoration_data)
         else

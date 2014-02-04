@@ -14,6 +14,8 @@ describe NamedMap do
 
 	describe '#correct_data' do
     it 'test definition data is present' do
+      pending
+
     	template = { 'templateee' => '1' }
     	url = 'http://cartodb.com'
     	name = 'test'
@@ -36,6 +38,8 @@ describe NamedMap do
 
   describe '#delete' do
   	it 'tests deletion of a named map' do
+      pending
+
     	template = { 'templateee' => '1' }
     	url = 'http://cartodb.com'
     	name = 'test'
@@ -52,6 +56,8 @@ describe NamedMap do
 
   describe '#update' do
   	it 'tests updating data of a named map' do
+      pending
+
       template = { 'templateee' => '1' }
       new_template = { 'other_data' => 'aaa' }
       url = 'http://cartodb.com'
@@ -70,6 +76,8 @@ describe NamedMap do
 
   describe '#valid?' do
     it 'tests the template data validation method' do
+      pending
+      
       url = 'http://cartodb.com'
       name = 'test'
       api_key = '123456789'

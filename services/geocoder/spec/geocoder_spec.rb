@@ -2,7 +2,7 @@
 require_relative '../lib/geocoder.rb'
 
 describe CartoDB::Geocoder do
-  let(:default_params) { {app_id: '', token: '', mailto: ''} }
+  let(:default_params) { {app_id: '', token: '', mailto: '', force_batch: true, base_url: 'http://wadus.nokia.com'} }
 
   describe '#upload' do
     it 'returns rec_id on success' do
@@ -79,15 +79,15 @@ describe CartoDB::Geocoder do
     let(:geocoder) { CartoDB::Geocoder.new(app_id: 'a', token: 'b', mailto: 'c') }
 
     it 'returns base url by default' do
-      geocoder.api_url({}).should == "http://batch.geo.nlp.nokia.com/search-batch/6.2/jobs/?app_id=a&token=b&mailto=c"
+      geocoder.api_url({}).should == "/?app_id=a&token=b&mailto=c"
     end
 
     it 'allows for api method specification' do
-      geocoder.api_url({}, 'all').should == "http://batch.geo.nlp.nokia.com/search-batch/6.2/jobs/all/?app_id=a&token=b&mailto=c"
+      geocoder.api_url({}, 'all').should == "/all/?app_id=a&token=b&mailto=c"
     end
 
     it 'allows for api attributes specification' do
-      geocoder.api_url({attr: 'wadus'}, 'all').should == "http://batch.geo.nlp.nokia.com/search-batch/6.2/jobs/all/?attr=wadus&app_id=a&token=b&mailto=c"
+      geocoder.api_url({attr: 'wadus'}, 'all').should == "/all/?attr=wadus&app_id=a&token=b&mailto=c"
     end
   end
 

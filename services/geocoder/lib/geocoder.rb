@@ -43,11 +43,12 @@ module CartoDB
       @app_id             = arguments.fetch(:app_id)
       @token              = arguments.fetch(:token)
       @mailto             = arguments.fetch(:mailto)
+      @force_batch        = arguments[:force_batch] || false
       @dir                = arguments[:dir] || Dir.mktmpdir
     end # initialize
 
     def use_batch_process?
-      true #input_rows > BATCH_FILES_OVER
+      @force_batch || input_rows > BATCH_FILES_OVER
     end
 
     def input_rows

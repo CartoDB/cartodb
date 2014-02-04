@@ -163,6 +163,13 @@ var Vis = cdb.core.View.extend({
       this.mapView = this.options.mapView;
       this.map = this.mapView.map;
     }
+
+    // recalculate map position on orientation change
+    window.addEventListener('orientationchange', _.bind(this.doOnOrientationChange, this));
+  },
+
+  doOnOrientationChange: function() {
+    this.setMapPosition();
   },
 
   /**
@@ -343,6 +350,8 @@ var Vis = cdb.core.View.extend({
       }
     }
 
+    if (options.fullscreen) this.addFullScreen();
+
     if (device) this.addMobile(torqueLayer);
 
     // set layer options
@@ -390,6 +399,14 @@ var Vis = cdb.core.View.extend({
     })
 
     return this;
+  },
+
+  addFullScreen: function() {
+
+    this.addOverlay({
+      type: 'fullscreen'
+    });
+
   },
 
   addMobile: function(torqueLayer) {

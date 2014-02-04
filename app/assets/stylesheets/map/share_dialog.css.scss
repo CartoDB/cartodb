@@ -16,18 +16,17 @@
 
   section.block {
     .content > div {
-      /*overflow:hidden;*/
-      width: 100%;
 
       @include display-box;
       @include box-orient(horizontal);
       @include box-align(stretch);
-
     }
-
   }
 
   & > .mamufas > section.block {
+
+    .content > div { width: 100%;}
+
     top: auto;
     margin-top: 0;
     min-width: 800px;
@@ -36,8 +35,6 @@
 
   section.block .content {
     padding: 0;
-
-    /*& > div { overflow: hidden; }*/
   }
 
   div.torque_warning {
@@ -125,6 +122,7 @@
         }
 
         .content {
+          & > div { width :auto; }
           padding: 20px 26px 30px 26px;
         }
 
@@ -201,8 +199,6 @@
 
   // Sharing and privacy options
   div.options {
-    /*position:absolute;*/
-    /*float:left;*/
 
     @include box-flex(1);
     width:299px;
@@ -311,7 +307,6 @@
         &.password_protected.open {
           clear:both; overflow:hidden;
           .radiobutton span.radio {
-            /*@include inline-block();*/
             float:left;
           }
 

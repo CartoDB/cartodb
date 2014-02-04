@@ -1,6 +1,7 @@
 /**
  * share map dialog
  */
+@import "compass/css3/box";
 @import "compass/css3/box-shadow";
 @import "compass/css3/border-radius";
 @import "compass/css3/inline-block";
@@ -14,14 +15,26 @@
 .share_dialog {
 
   section.block {
+    .content > div {
+
+      @include display-box;
+      @include box-orient(horizontal);
+      @include box-align(stretch);
+    }
+  }
+
+  & > .mamufas > section.block {
+
+    .content > div { width: 100%;}
+
+    top: auto;
+    margin-top: 0;
     min-width: 800px;
-    .content > div { display: flex; }
+    min-height: 632px;
   }
 
   section.block .content {
     padding: 0;
-
-    /*& > div { overflow: hidden; }*/
   }
 
   div.torque_warning {
@@ -47,8 +60,7 @@
 
   .map_container {
     width: 100%;
-    display:flex;
-    flex-direction: column;
+    @include box-flex(1);
     padding: 40px 40px 34px 40px;
     border-left: 1px solid #E5E5E5;
   }
@@ -110,6 +122,7 @@
         }
 
         .content {
+          & > div { width :auto; }
           padding: 20px 26px 30px 26px;
         }
 
@@ -162,7 +175,7 @@
     div.cartodb-legends {
       position:absolute;
       display:none;
-      bottom: 60px;
+      bottom: 30px;
       right: 15px;
 
       @include box-shadow(rgba(0, 0, 0, 0.2) 0 0 4px 2px);
@@ -186,9 +199,10 @@
 
   // Sharing and privacy options
   div.options {
-    /*position:absolute;*/
-    /*float:left;*/
+
+    @include box-flex(1);
     width:299px;
+    max-width:299px;
     min-width:299px;
     height: 100%;
 
@@ -228,7 +242,6 @@
     .scrollpane {
       overflow: hidden;
       outline:none;
-      max-height: 251px;
 
       &:hover .jspVerticalBar { @include opacity(1); }
 
@@ -292,13 +305,15 @@
         }
 
         &.password_protected.open {
+          clear:both; overflow:hidden;
           .radiobutton span.radio {
-            @include inline-block();
+            float:left;
           }
 
           .radiobutton {
-            width: 14px;
-            @include inline-block();
+            width: 12px;
+            margin: 11px 6px 0 0;
+            float:left;
           }
 
         }
@@ -392,6 +407,18 @@
 
   .input {
 
+    display:block;
+    margin-top:5px;
+    padding:14px 50px 14px 14px;
+    @include border-radius(3px);
+    line-height:normal;
+    border:1px solid #CCCCCC;
+    background:#F5F5F5;
+    text-overflow:ellipsis;
+    overflow:hidden;
+    white-space:nowrap;
+    font-size:15px;
+
     p {
       width:480px;
       overflow:hidden;
@@ -443,18 +470,6 @@
 
     }
 
-
-    display:block;
-    margin-top:5px;
-    padding:14px 50px 14px 14px;
-    @include border-radius(3px);
-    line-height:normal;
-    border:1px solid #CCCCCC;
-    background:#F5F5F5;
-    text-overflow:ellipsis;
-    overflow:hidden;
-    white-space:nowrap;
-    font-size:15px;
 
     &:hover {
       border-color:#999999;

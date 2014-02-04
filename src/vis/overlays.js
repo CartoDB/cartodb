@@ -207,6 +207,22 @@ cdb.vis.Overlay.register('layer_selector', function(data, vis) {
   return layerSelector.render();
 });
 
+// fullscreen
+cdb.vis.Overlay.register('fullscreen', function(data, vis) {
+
+  var template = cdb.core.Template.compile(
+    data.template || '<a href="#"></a>',
+    data.templateType || 'mustache'
+  );
+
+  var fullscreen = new cdb.ui.common.FullScreen({
+    template: template
+  });
+
+  return fullscreen.render();
+
+});
+
 // search content
 cdb.vis.Overlay.register('share', function(data, vis) {
 

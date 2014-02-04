@@ -76,6 +76,7 @@
 //= require cdb/src/geo/ui/tiles_loader
 //= require cdb/src/geo/ui/infobox
 //= require cdb/src/geo/ui/time_slider
+//= require cdb/src/geo/ui/fullscreen
 //
 //= require cdb/src/ui/common/tabpane
 //= require cdb/src/ui/common/dialog

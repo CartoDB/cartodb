@@ -835,6 +835,40 @@ div.cartodb-popup.header.yellow a.cartodb-popup-close-button:hover {
     cursor: pointer;
   }
 
+  .cartodb-fullscreen a:active { 
+    background-position: 5px 5px!important;
+  }
+  .cartodb-fullscreen a:hover { 
+    background-position: -25px 5px;
+  }
+
+  .cartodb-fullscreen { 
+    position: relative;
+    margin: 20px 20px 0 0;
+    float:right;
+  }
+
+  .cartodb-fullscreen a { 
+    display:block; 
+    width: 20px; 
+    height: 20px;
+    padding: 5px;
+
+    background: #ffffff url('../img/fullscreen.png') no-repeat 5px 5px;
+
+    -webkit-box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
+    -moz-box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
+    box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    -ms-border-radius: 4px;
+    -o-border-radius: 4px;
+    border-radius: 4px;
+    border: 1px solid #999999;
+    z-index:5;
+
+  }
+
   /* CartoDB Share Dialog styles */
 
   .cartodb-share-dialog {

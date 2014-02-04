@@ -86,6 +86,7 @@ class User < Sequel::Model
     changes = (self.previous_changes.present? ? self.previous_changes.keys : [])
     set_statement_timeouts if changes.include?(:user_timeout) || changes.include?(:database_timeout)
     rebuild_quota_trigger if changed_columns.include?(:quota_in_bytes)
+    invalidate_varnish_cache if changes.include?(:account_type)
   end
 
   def before_destroy

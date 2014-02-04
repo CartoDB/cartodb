@@ -43,7 +43,7 @@ describe Admin::TablesController do
 
   describe 'GET /tables/:id' do
     it 'returns a table' do
-      id = factory.fetch('id')
+      id = factory.id
       login_as(@user, scope: 'test')
 
       get "/tables/#{id}", {}, @headers
@@ -51,34 +51,8 @@ describe Admin::TablesController do
     end
   end # GET /tables/:id
 
-  describe 'GET /tables/:id/public' do
-    it 'returns public data for a table' do
-      id = factory.fetch('id')
-
-      get "/tables/#{id}/public", {}, @headers
-      last_response.status.should == 200
-    end
-  end # GET /tables/:id/public
-
   def factory
-    payload = { name: "table #{rand(9999)}" }
-    post "/api/v1/tables?api_key=#{@api_key}",
-      payload.to_json, @headers
-
-    table_attributes  = JSON.parse(last_response.body)
-    table_id          = table_attributes.fetch('id')
-    table_name        = table_attributes.fetch('name')
-
-    put "/api/v1/tables/#{table_id}?api_key=#{@api_key}",
-      { privacy: 1 }.to_json, @headers
-
-    sql = URI.escape(%Q{
-      INSERT INTO #{table_name} (description)
-      VALUES('bogus description')
-    })
-
-    get "/api/v1/queries?sql=#{sql}&api_key=#{@api_key}", {}, @headers
-    table_attributes
+    new_table(user_id: @user.id).save.reload
   end #table_attributes
 end # Admin::TablesController
 

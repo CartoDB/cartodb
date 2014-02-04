@@ -377,7 +377,7 @@ div.map {
       position:relative;
       margin: 0;
 
-      &.custom, &.bubble, &.color, &.intensity, &.density { display: block; }
+      &.custom, &.cluster, &.bubble, &.color, &.intensity, &.density { display: block; }
     }
   }
 

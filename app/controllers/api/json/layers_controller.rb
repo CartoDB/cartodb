@@ -3,26 +3,16 @@ require_relative '../../../models/layer/presenter'
 
 class Api::Json::LayersController < Api::ApplicationController
   ssl_required :index, :show, :create, :update, :destroy
-  skip_before_filter :api_authorization_required, :only => [ :show ]  
-
   before_filter :load_parent
 
   def index
     @layers = @parent.layers
-    render_jsonp({ :total_entries => @layers.size,
-                   :layers => @layers.map(&:public_values)
-                })
+    render_jsonp total_entries: @layers.size, layers: @layers.map(&:public_values)
   end
 
   def show
-    @layer = Layer[params[:id]]
-
-    respond_to do |format|
-      format.tilejson do 
-       render :text => "#{params[:callback]}( #{@layer.to_tilejson} )"
-      end
-      format.json { render_jsonp(@layer.to_json) }
-    end
+    @layer = @parent.layers_dataset.where(layer_id: params[:id]).first
+    render_jsonp @layer.to_json
   end
 
   def create
@@ -47,18 +37,16 @@ class Api::Json::LayersController < Api::ApplicationController
 
   def update
     @layer = Layer[params[:id]]
+    @layer.raise_on_save_failure = true
+    @layer.update(params.slice(:options, :kind, :infowindow, :order))
 
-    if @layer.update(params.slice(:options, :kind, :infowindow, :order))
-      render_jsonp(@layer.public_values)
-    else
-      CartoDB::Logger.info "Error on layers#update", @layer.errors.full_messages
-      render_jsonp({ :description => @layer.errors.full_messages, 
-        :stack => @layer.errors.full_messages}, 400)
-    end
+    render_jsonp(@layer.public_values)
+  rescue Sequel::ValidationFailed, RuntimeError => e
+    render_jsonp({ description: e.message }, 400)
   end
 
   def destroy
-    Layer[params[:id]].destroy
+    @parent.layers_dataset.where(layer_id: params[:id]).destroy
     head :no_content
   end
 

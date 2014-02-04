@@ -20,7 +20,9 @@
         <h3>Your Api key</h3>
         <p class="margin10 light">This offers the simplest way to access you private data or perform writes and updates to your account.</p>
       </div>
-      <ul><%= render :partial => 'shared/flash_message' %></ul>
+      <% if params[:type] == "api_key" %>
+        <ul><%= render :partial => 'shared/flash_message' %></ul>
+      <% end %>
       <div class="content">
         <ul>
           <li>
@@ -75,6 +77,9 @@
         <h3>Your OAuth credentials</h3>
         <p class="margin10 light">OAuth is an authentication protocol that allows users to approve application to act on their behalf without sharing their password.</p>
       </div>
+      <% if params[:type] == "oauth" %>
+        <ul><%= render :partial => 'shared/flash_message' %></ul>
+      <% end %>
       <div class="content">
         <ul>
           <li>

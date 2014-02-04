@@ -21,6 +21,7 @@ module CartoDB
         @table_name = table_name
         @schema     = schema
         @geometry_columns = geometry_columns || GEOMETRY_POSSIBLE_NAMES
+        @is_multipoint = false
       end #initialize
 
       def run
@@ -57,7 +58,8 @@ module CartoDB
         end
 
         job.log "Creating the_geom from #{geometry_column_name} column"
-        handle_multipoint(column) if multipoint?
+        @is_multipoint = multipoint?
+        handle_multipoint(column) if @is_multipoint
         self
       rescue => exception
         if column.empty?
@@ -133,7 +135,7 @@ module CartoDB
       end #drop_the_geom_webmercator
 
       def raise_if_geometry_collection
-        column = Column.new(db, table_name, :the_geom, schema, job)
+        column = Column.new(db, table_name, @is_multipoint ? :the_geom_raw : :the_geom, schema, job)
         return self unless column.geometry_type == 'GEOMETRYCOLLECTION'
         raise GeometryCollectionNotSupportedError
       end #raise_if_geometry_collection

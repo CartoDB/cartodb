@@ -129,9 +129,8 @@ module CartoDB
       end #authorize?
 
       def varnish_key
-        "#{related_tables.map(&:name)
-          .sort { |i, j| i <=> j }
-          .join(',')},#{id}"
+        sorted_table_names = related_tables.map(&:name).sort { |i, j| i <=> j }.join(',')
+        "#{user.database_name}:#{sorted_table_names},#{id}"
       end #varnish_key
 
       def derived?

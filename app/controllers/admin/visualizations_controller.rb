@@ -47,6 +47,8 @@ class Admin::VisualizationsController < ApplicationController
     
     return(pretty_404) unless @visualization
     return(embed_forbidden) if @visualization.private?
+    response.headers['X-Cache-Channel'] = "#{@visualization.varnish_key}:vizjson"
+    response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
 
     respond_to do |format|
       format.html { render layout: false }

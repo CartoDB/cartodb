@@ -29,13 +29,13 @@ DECLARE
 BEGIN
 
   pbfact := TG_ARGV[0];
-  qmax := TG_ARGV[1];
   dice := random();
 
-  -- RAISE DEBUG 'CDB_CheckQuota enter: pbfact=% qmax=% dice=%', pbfact, qmax, dice;
+  -- RAISE DEBUG 'CDB_CheckQuota enter: pbfact=% dice=%', pbfact, dice;
 
   IF dice < pbfact THEN
     RAISE DEBUG 'Checking quota on table % (dice:%, needed:<%)', TG_RELID::text, dice, pbfact;
+    qmax := public._CDB_UserQuotaInBytes();
     SELECT CDB_UserDataSize() INTO quota;
     IF quota > qmax THEN
         RAISE EXCEPTION 'Quota exceeded by %KB', (quota-qmax)/1024;

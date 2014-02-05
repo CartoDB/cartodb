@@ -1,6 +1,6 @@
 // cartodb.js version: 3.7.00-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: 602f4b56b3ac1aca4cec3396dc79934563c3f45e
+// sha: 03c7abfa22811bdc8b68a748f4e7c79e8decf042
 (function() {
   var root = this;
 
@@ -28318,6 +28318,7 @@ CartoDBLayerGroup.prototype.interactionClass = wax.g.interaction;
 // CartoDBNamedMap
 CartoDBNamedMap.prototype = new wax.g.connector();
 _.extend(CartoDBNamedMap.prototype, CartoDBLayerGroupBase.prototype, CartoDBLayerCommon.prototype, NamedMap.prototype);
+CartoDBNamedMap.prototype.interactionClass = wax.g.interaction;
 
 
 // export

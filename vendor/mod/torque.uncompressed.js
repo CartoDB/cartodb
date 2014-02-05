@@ -1941,12 +1941,12 @@ exports.Profiler = Profiler;
     _fetchMap: function(callback) {
       var self = this;
       var layergroup = {};
-      var url = this._tilerHost() + "/tiles/layergroup";
+      var url = this._tilerHost() + "/maps";
       var named = this.options.named_map;
 
       if(named) {
         //tiles/template
-        url = this._tilerHost() + "/tiles/template/" + named.name + "/jsonp"
+        url = this._tilerHost() + "/maps/named/" + named.name + "/jsonp"
         //url = this._tilerHost() + "/maps/" + named.name + "/jsonp"
       } else {
         layergroup = {
@@ -1982,7 +1982,7 @@ exports.Profiler = Profiler;
         for(var k in opt) {
           self.options[k] = opt[k];
         }
-        self.templateUrl = self.url() + "/tiles/layergroup/" + data.layergroupid + "/" + torque_key + "/{z}/{x}/{y}.json.torque";
+        self.templateUrl = self.url() + "/maps/" + data.layergroupid + "/" + torque_key + "/{z}/{x}/{y}.json.torque";
         self._setReady(true);
         }
       });

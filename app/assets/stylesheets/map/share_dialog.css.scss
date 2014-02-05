@@ -44,6 +44,7 @@
     font-size: 13px;
     color: $cGray2;
     border-bottom: 1px solid #E5E5E5;
+    @include border-radius(4px 4px 0 0);
   }
 
   .cartodb-map_wrapper:-webkit-full-screen {

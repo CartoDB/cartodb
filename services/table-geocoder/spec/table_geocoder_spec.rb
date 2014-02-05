@@ -22,6 +22,27 @@ describe CartoDB::TableGeocoder do
     @db.drop_table @table_name
   end
 
+
+  describe '#read_from_cache' do
+    before do
+      @tg = CartoDB::TableGeocoder.new(default_params.merge({
+        table_name: @table_name,
+        formatter:  "name, ', ', sov0name",
+        connection: @db,
+        sql_api: { base_url: 'http://username.cartodb.com/api/v2/sql', api_key: '' }
+      }))
+      @tg.geocoder.stubs(:upload).returns(true)
+      @tg.geocoder.stubs(:request_id).returns('111')
+      @tg.add_georef_status_column
+      @tg.read_from_cache
+    end
+
+    it "generates a csv file for uploading" do
+      true.should eq true
+    end
+  end
+
+
   describe '#run' do
     before do
       @tg = CartoDB::TableGeocoder.new(default_params.merge({

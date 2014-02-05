@@ -23,7 +23,7 @@ function Map(options) {
   this._refreshTimer = -1;
 }
 
-Map.BASE_URL = '/maps';
+Map.BASE_URL = '/api/v1/maps';
 
 function NamedMap(named_map, options) {
   var self = this;
@@ -595,6 +595,38 @@ NamedMap.prototype = _.extend({}, Map.prototype, {
         callback(null);
       }
     });
+  },
+
+  setSQL: function(sql) {
+    throw new Error("SQL is read-only in NamedMaps");
+  },
+
+  setCartoCSS: function(sql) {
+    throw new Error("cartocss is read-only in NamedMaps");
+  },
+
+  setLayer: function(layer, def) {
+    var not_allowed_attrs = {'sql': 1, 'cartocss': 1 };
+
+    for(var k in def.options) {
+      if (k in not_allowed_attrs) {
+        delete def.options[k];
+        throw new Error( k + " is read-only in NamedMaps");
+      }
+    }
+    return Map.prototype.setLayer.call(this, layer, def);
+  },
+
+  removeLayer: function(layer) {
+    throw new Error("sublayers are read-only in Named Maps");
+  },
+
+  createSubLayer: function(attrs, options) {
+    throw new Error("sublayers are read-only in Named Maps");
+  }, 
+
+  addLayer: function(def, layer) {
+    throw new Error("sublayers are read-only in Named Maps");
   }
 
 });

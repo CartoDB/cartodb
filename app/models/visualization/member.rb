@@ -173,6 +173,24 @@ module CartoDB
         CartoDB::Varnish.new.purge("obj.http.X-Cache-Channel ~ .*#{id}:vizjson")
       end #invalidate_varnish_cache
 
+      def invalidate_cache_and_refresh_named_map
+        invalidate_varnish_cache
+
+        if type != CANONICAL_TYPE        
+          named_map = has_named_map?
+          if has_private_tables?
+            # TODO: Might only need to update
+            if (named_map)
+              update_named_map(named_map)
+             else
+              create_named_map
+            end
+          else
+            named_map.delete if named_map
+          end
+        end
+      end #invalidate_cache_and_refresh_named_map
+
       def has_private_tables?
         has_private_tables = false
         related_tables.each { |table|

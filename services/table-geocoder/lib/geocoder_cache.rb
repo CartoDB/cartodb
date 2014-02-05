@@ -22,7 +22,7 @@ module CartoDB
       @cache_results = File.join(working_dir, "#{temp_table_name}_results.csv")
 
       sql_start = "WITH addresses(address) AS (VALUES "
-      sql_end   = ") SELECT st_x(g.the_geom) longitude,st_y(g.the_geom) latitude,g.geocode_string FROM addresses a INNER JOIN geocodes g ON md5(g.geocode_string)=a.address"
+      sql_end   = ") SELECT st_x(g.the_geom) longitude,st_y(g.the_geom) latitude,g.geocode_string FROM addresses a INNER JOIN #{sql_api[:table_name]} g ON md5(g.geocode_string)=a.address"
       count     = 0
       begin
         rows = connection.fetch(%Q{
@@ -33,7 +33,7 @@ module CartoDB
             LIMIT #{BATCH_SIZE} OFFSET #{count * BATCH_SIZE}
         }).all
         sql = rows.map { |r| "('#{r[:searchtext]}')" }.join(',')
-        response = run_query("#{sql_start}#{sql}#{sql_end}").gsub(/\A.*/, '').gsub(/^$\n/, '')
+        response = run_query("#{sql_start}#{sql}#{sql_end}", 'csv').gsub(/\A.*/, '').gsub(/^$\n/, '')
         File.open(cache_results, 'a') { |f| f.write(response) } unless response == "\n"
         count = count + 1
       end while rows.size >= BATCH_SIZE
@@ -43,6 +43,23 @@ module CartoDB
     ensure
       delete_temp_table
     end # run
+
+    def store
+      sql_start = "INSERT INTO #{sql_api[:table_name]} (geocode_string, the_geom) VALUES "
+      count = 0
+      begin
+        rows = connection.fetch(%Q{
+          SELECT quote_nullable(#{formatter}) as searchtext, the_geom 
+          from #{table_name} 
+          where cartodb_georef_status is true and the_geom is not null
+          limit #{BATCH_SIZE} OFFSET #{count * BATCH_SIZE}
+        }).all
+        sql = rows.map { |r| "(#{r[:searchtext]}, '#{r[:the_geom]}')" }.join(',')
+        response = run_query("#{sql_start} #{sql}")
+        puts response
+        count = count + 1
+      end while rows.size >= BATCH_SIZE
+    end # store
 
     def create_temp_table
       connection.run(%Q{
@@ -78,10 +95,14 @@ module CartoDB
       @temp_table_name ||= "geocoding_cache_#{Time.now.to_i}"
     end # temp_table_name
 
-    def run_query(query)
-      params = { q: query, api_key: sql_api[:api_key], format: 'csv' }
-      url = "?#{URI.encode_www_form(params)}"
-      response = Typhoeus.get(url)
+    def run_query(query, format = '')
+      params = { q: query, api_key: sql_api[:api_key], format: format }
+      puts "**\n#{URI.encode_www_form(params)}\n***"
+      response = Typhoeus.post(
+        sql_api[:base_url],
+        body: URI.encode_www_form(params)
+      )
+      puts response.body
       response.body
     end # run_query
 

@@ -6,7 +6,7 @@ module CartoDB
   class TableGeocoder
 
     attr_reader   :connection, :working_dir, :geocoder, :result, 
-                  :temp_table_name, :max_rows, :sql_api
+                  :temp_table_name, :max_rows, :cache
 
     attr_accessor :table_name, :formatter, :remote_id
 
@@ -19,7 +19,7 @@ module CartoDB
       @remote_id   = arguments[:remote_id]
       @schema      = arguments[:schema] || 'cdb'
       @max_rows    = arguments[:max_rows] || 1000000
-      @sql_api     = arguments[:sql_api]
+      @cache       = arguments[:cache]
       @geocoder    = CartoDB::Geocoder.new(
         app_id:             arguments[:app_id],
         token:              arguments[:token],
@@ -42,7 +42,7 @@ module CartoDB
       CartoDB::GeocoderCache.new(
         connection:  connection,
         formatter:   clean_formatter,
-        sql_api:     sql_api,
+        sql_api:     cache,
         working_dir: working_dir,
         table_name:  table_name
       ).run
@@ -82,6 +82,14 @@ module CartoDB
       create_temp_table
       import_results_to_temp_table
       load_results_into_original_table
+      CartoDB::GeocoderCache.new(
+        connection:  connection,
+        formatter:   clean_formatter,
+        sql_api:     cache,
+        working_dir: working_dir,
+        table_name:  table_name
+      ).store
+
     ensure
       drop_temp_table
     end

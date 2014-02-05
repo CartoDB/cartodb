@@ -108,7 +108,7 @@ module CartoDB
 	        			 layer[:infowindow].fetch('fields').size > 0 )
 	        		layer_data[:options] = layer[:options]
 
-	        		layer_data[:attributes] = {
+	        		layer_data[:options][:attributes] = {
         				id: 'cartodb_id', 
 	        			columns: layer[:infowindow]['fields'].map { |field|
 																							        			field.fetch('name')

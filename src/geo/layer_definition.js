@@ -23,11 +23,13 @@ function Map(options) {
   this._refreshTimer = -1;
 }
 
+Map.BASE_URL = '/maps';
+
 function NamedMap(named_map, options) {
   var self = this;
   Map.call(this, options);
-  this.endPoint = '/tiles/template/' + named_map.name;
-  this.JSONPendPoint = '/tiles/template/' + named_map.name + '/jsonp';
+  this.endPoint = Map.BASE_URL + '/named/' + named_map.name;
+  this.JSONPendPoint = Map.BASE_URL + '/named/' + named_map.name + '/jsonp';
   this.layers = _.clone(named_map.layers) || [];
   for(var i = 0; i < this.layers.length; ++i) {
     var layer = this.layers[i];
@@ -40,7 +42,7 @@ function NamedMap(named_map, options) {
 function LayerDefinition(layerDefinition, options) {
   var self = this;
   Map.call(this, options);
-  this.endPoint = '/tiles/layergroup';
+  this.endPoint = Map.BASE_URL;
   this.setLayerDefinition(layerDefinition, { silent: true });
 }
 
@@ -382,7 +384,7 @@ Map.prototype = {
     var pngParams = this._encodeParams(params, this.options.pngParams);
     for(var i = 0; i < subdomains.length; ++i) {
       var s = subdomains[i]
-      var cartodb_url = this._host(s) + '/tiles/layergroup/' + layerGroupId
+      var cartodb_url = this._host(s) + Map.BASE_URL + '/' + layerGroupId
       tiles.push(cartodb_url + tileTemplate + ".png" + (pngParams ? "?" + pngParams: '') );
 
       var gridParams = this._encodeParams(params, this.options.gridParams);
@@ -571,9 +573,9 @@ NamedMap.prototype = _.extend({}, Map.prototype, {
     // /api/maps/:map_id/:layer_index/attributes/:feature_id
     return [
       this._tilerHost(),
-      'api',
-      'v1',
-      'maps',
+      //'api',
+      //'v1',
+      Map.BASE_URL.slice(1),
       this.layerToken,
       layer,
       'attributes',

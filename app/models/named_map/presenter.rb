@@ -47,7 +47,8 @@ module CartoDB
         layers.each { |layer|
           layer_vizjson = layer.get_presenter(@options, @configuration).to_vizjson_v2()
           data = {
-            layer_name: layer_vizjson[:options][:layer_name]
+            layer_name: layer_vizjson[:options][:layer_name],
+            interactivity: layer_vizjson[:options][:interactivity]
           }
 
           if ( layer_vizjson.include?(:infowindow) && !layer_vizjson[:infowindow].nil?() && 

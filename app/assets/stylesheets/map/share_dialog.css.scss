@@ -71,7 +71,7 @@
     position: relative;
     width:auto;
     height: 470px;
-    border: 1px solid #CCC;
+    border: 1px solid rgba(#000,.3);
     @include translateZ(10px);
     @include border-radius(3px);
     @include translate3d(0,0,10px);
@@ -308,6 +308,7 @@
 
         &.password_protected.open {
           clear:both; overflow:hidden;
+
           .radiobutton span.radio {
             float:left;
           }
@@ -393,7 +394,8 @@
 
         &.link_protected     i { background: rgba(#FFA64D, .5) sprite( $table-sprites, lock_open,   $offset-x: 5px, $offset-y: 4px) no-repeat; }
         &.password_protected i { background: rgba(#FFA64D, .5) sprite( $table-sprites, lock_key,    $offset-x: 5px, $offset-y: 4px) no-repeat; }
-        &.private            i { background: rgba(#FF7373, .5) sprite( $table-sprites, lock_closed, $offset-x: 5px, $offset-y: 4px) no-repeat; }
+        &.private a           i { background: rgba(#FF7373, .5) sprite( $table-sprites, lock_closed, $offset-x: 5px, $offset-y: 4px) no-repeat; }
+        &.private a.animated  i { background: rgba(#FF7373, .5) image-url('layout/lock_closed_animated.gif') no-repeat 5px 4px; }
 
 
       }

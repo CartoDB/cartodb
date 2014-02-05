@@ -43,7 +43,6 @@ module CartoDB
       end #run
 
       def detect_delimiter
-        
 
         # Calculate variances of the N first lines for each delimiter, then grab the one that changes less
         @delimiter = DEFAULT_DELIMITER unless first_line
@@ -57,9 +56,14 @@ module CartoDB
 
         stream.rewind
 
-        # Maybe gets was not able to discern line breaks, try manually
+        # Maybe gets was not able to discern line breaks, try manually:
         if lines_for_detection.size == 1
-          lines_for_detection = lines_for_detection.first.first
+          lines_for_detection = lines_for_detection.first
+          # Did it read as columns instead of rows?
+          if (lines_for_detection.class == Array)
+            lines_for_detection.first
+          end
+          # Carriage return without newline
           lines_for_detection = lines_for_detection.split("\x0D")
         end
 

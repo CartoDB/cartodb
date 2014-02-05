@@ -36,7 +36,7 @@ module CartoDB
 
 				if response.code == 200
 					body = ::JSON.parse(response.response_body)
-					self.new(body['template_id'], template_data, parent)
+					self.new( body['template_id'], template_data, parent )
 				else
 					nil
 				end
@@ -61,7 +61,7 @@ module CartoDB
 
 			# Delete existing named map
 			def delete
-				response = Typhoeus.delete(url + "?api_key=" + @parent.api_key)
+				response = Typhoeus.delete( url + "?api_key=" + @parent.api_key )
 				response.code == 204
 			end #delete
 
@@ -72,10 +72,12 @@ module CartoDB
 
 			# Normalize a name to make it "named map valid"
 			def self.normalize_name( raw_name )
-				(NAME_PREFIX + raw_name).gsub( /[^a-zA-Z0-9\-\_.]/ , '' ).gsub( '-', '_' )
+				( NAME_PREFIX + raw_name ).gsub( /[^a-zA-Z0-9\-\_.]/ , '' ).gsub( '-', '_' )
 			end # self.normalize_name
 
 			def self.get_template_data( visualization, parent )
+				presenter_options = { full: false, user_name: parent.username }
+
 				# 1) general data
 				template_data = {
 					version: 	NAMED_MAPS_VERSION,
@@ -91,20 +93,33 @@ module CartoDB
         	}
         }
 
-        vizjson = CartoDB::Visualization::VizJSON.new(
-        	visualization, 
-        	{ full: false, user_name: parent.username }, 
-        	parent.vizjson_config
-      	)
+        vizjson = CartoDB::Visualization::VizJSON.new( visualization, presenter_options, parent.vizjson_config )
         layers_data = []
 
         layer_group = vizjson.layer_group_for( visualization )
-        if (!layer_group.nil?())
+        if ( !layer_group.nil?() )
         	layer_group[:options][:layer_definition][:layers].each { |layer|
-	          layers_data.push( {
-	            type:     layer[:type].downcase,
-	            options:  layer[:options]
-	          } )
+
+        		layer_data = {
+        			type: 	layer[:type].downcase
+        		}
+
+	        	if ( layer.include?( :infowindow ) && !layer[:infowindow].nil? && 
+	        			 layer[:infowindow].fetch('fields').size > 0 )
+	        		layer_data[:options] = layer[:options]
+
+	        		layer_data[:attributes] = {
+        				id: 'cartodb_id', 
+	        			columns: layer[:infowindow]['fields'].map { |field|
+																							        			field.fetch('name')
+																							        		}
+	        		}
+	        	else
+	        		layer_data[:options] = layer[:options].except( :interactivity )
+	        	end
+
+
+	          layers_data.push( layer_data )
 	        }
         end
         
@@ -112,21 +127,22 @@ module CartoDB
         if ( !other_layers.nil?() )
         	other_layers = other_layers.compact
         	other_layers.each { |layer|
-
         		sql_query = layer[:options].fetch( 'query' )
 
-        		layers_data.push( {
-	            type:     layer[:type].downcase,
-	            options:  {
+        		options = {
 	            	cartocss_version: '2.0.1',
 	            	cartocss: 				layer[:options].fetch( 'tile_style' ),
 	            	sql: 							sql_query
 	            }
+
+        		layers_data.push( {
+	            type:     layer[:type].downcase,
+	            options:  options
 	          } )
         	}
         end
 
-        template_data[:layergroup][:layers] = layers_data.compact.flatten
+        template_data[:layergroup][:layers] = layers_data.compact().flatten()
 
 				template_data
 			end #get_template_data

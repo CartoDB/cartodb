@@ -23,7 +23,7 @@ function Map(options) {
   this._refreshTimer = -1;
 }
 
-Map.BASE_URL = '/api/v1/maps';
+Map.BASE_URL = '/api/v1/map';
 
 function NamedMap(named_map, options) {
   var self = this;

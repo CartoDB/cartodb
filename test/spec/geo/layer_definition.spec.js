@@ -504,7 +504,7 @@ describe("NamedMap", function() {
     });
     waits(100);
     runs(function() {
-      var config ="config=" + encodeURIComponent(JSON.stringify({color: 'red', layer0: false}));
+      var config ="config=" + encodeURIComponent(JSON.stringify({color: 'red', layer0: 0}));
       expect(params.url.indexOf(config)).not.toEqual(-1);
     });
     runs(function() {

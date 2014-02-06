@@ -2,9 +2,47 @@
  * Delete dialog (with export section)
  */
 
-
 @import "common/mixins";
+@import "compass/css3/inline-block";
+@import "../table/table-sprite";
 
+.change_privacy_dialog {
+
+  section.block div.content {
+    padding: 40px 40px 0 40px;
+  }
+
+  section.block div.foot { border-top:none; }
+
+  section.block div.content ul {
+
+    li {
+      margin: 0 0 20px 0;
+      padding: 0 0 20px 0;
+
+      border:none;
+      cursor: pointer;
+
+      &:last-child { margin: 0; padding: 0; border: none; }
+      border-bottom: 1px solid rgba(204,204,204,0.35);
+
+      a { width: 100%; }
+
+      i {
+        float: right;
+        @include inline-block();
+        width: 20px; height: 20px;
+        background: rgba(#97C341, .5) sprite($table-sprites, lock_open, $offset-x: 5px, $offset-y: 4px) no-repeat;
+        @include border-radius(3px);
+      }
+
+      &.private a i { background: rgba(#FF7373, .5) sprite( $table-sprites, lock_closed, $offset-x: 5px, $offset-y: 4px) no-repeat; }
+
+    }
+
+  }
+
+}
 
 .delete_table_dialog {
 

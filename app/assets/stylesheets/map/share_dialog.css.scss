@@ -279,6 +279,10 @@
       }
 
       &.privacy li.upgrade_message { padding: 18px; }
+      /*&.privacy {*/
+        /*height: 50px;*/
+        /*@include box-sizing(border-box);*/
+      /*}*/
 
       li {
         @include inline-block();
@@ -289,7 +293,6 @@
         word-spacing:0px;
         font:normal 15px $text-fonts;
         @include simple-transition(color, 250ms);
-
 
         &.upgrade_message {
           position:relative;
@@ -326,13 +329,11 @@
           clear:both;
           overflow:hidden;
 
-          .t, a > i { display: none; }
+          .title, a > i { display: none; }
 
           .input_field { @include inline-block(); }
 
-          .radiobutton span.radio {
-            float:left;
-          }
+          .radiobutton span.radio { float:left; }
 
           .radiobutton {
             width: 12px;

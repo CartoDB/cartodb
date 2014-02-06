@@ -78,6 +78,9 @@ module CartoDB
 			def self.get_template_data( visualization, parent )
 				presenter_options = { full: false, user_name: parent.username }
 
+        # Layers are zero-based on the client
+        layer_num = 0
+
 				# 1) general data
 				template_data = {
 					version: 	NAMED_MAPS_VERSION,
@@ -100,26 +103,34 @@ module CartoDB
         if ( !layer_group.nil?() )
         	layer_group[:options][:layer_definition][:layers].each { |layer|
 
-        		layer_data = {
-        			type: 	layer[:type].downcase
-        		}
+            layer_options = layer[:options].except [ :sql, :interactivity ]
+
+            layer_placeholder = "layer#{layer_num}"
+            layer_num += 1
+            layer_options[:sql] = "WITH wrapped_query AS (#{layer[:options][:sql]}) SELECT * from wrapped_query where <%= #{layer_placeholder} %>=1"
+
+            template_data[:placeholders][layer_placeholder.to_sym()] = {
+              type:     'number',
+              default:  1
+            }
 
 	        	if ( layer.include?( :infowindow ) && !layer[:infowindow].nil? && 
 	        			 layer[:infowindow].fetch('fields').size > 0 )
-	        		layer_data[:options] = layer[:options]
+	        	
+              layer_options[:interactivity] = layer[:options][:interactivity]
 
-	        		layer_data[:options][:attributes] = {
+	        		layer_options[:attributes] = {
         				id: 'cartodb_id', 
 	        			columns: layer[:infowindow]['fields'].map { |field|
-																							        			field.fetch('name')
-																							        		}
+		        			field.fetch('name')
+		        		}
 	        		}
-	        	else
-	        		layer_data[:options] = layer[:options].except( :interactivity )
 	        	end
 
-
-	          layers_data.push( layer_data )
+	          layers_data.push( {
+              type:     layer[:type].downcase,
+              options:  layer_options
+            } )
 	        }
         end
         

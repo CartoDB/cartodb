@@ -30,7 +30,8 @@ module CartoDB
 
 				response = Typhoeus.post( parent.url + '?api_key=' + parent.api_key, {
 					headers: parent.headers,
-					body: ::JSON.dump( template_data )
+					body: ::JSON.dump( template_data ),
+          ssl_verifypeer: @parent.verify_cert
 					#,verbose: true
 					} )
 
@@ -48,7 +49,8 @@ module CartoDB
 
 				response = Typhoeus.put( url + '?api_key=' + @parent.api_key, {
 					headers: @parent.headers,
-					body: ::JSON.dump( template_data )
+					body: ::JSON.dump( template_data ),
+          ssl_verifypeer: @parent.verify_cert
 				} )
 
 				if response.code == 200
@@ -61,7 +63,7 @@ module CartoDB
 
 			# Delete existing named map
 			def delete
-				response = Typhoeus.delete( url + "?api_key=" + @parent.api_key )
+				response = Typhoeus.delete( url + "?api_key=" + @parent.api_key, { ssl_verifypeer: @parent.verify_cert } )
 				response.code == 204
 			end #delete
 

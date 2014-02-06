@@ -26,6 +26,14 @@ describe User do
     @user.reload.api_key.should_not be_blank
   end
 
+  it "should set created_at" do
+    @user.created_at.should_not be_nil
+  end
+
+  it "should update updated_at" do
+    expect { @user.save }.to change(@user, :updated_at)
+  end
+
   it "should set up a user after create" do
     @new_user.save
     @new_user.reload

@@ -31,8 +31,8 @@ module CartoDB
 				response = Typhoeus.post( parent.url + '?api_key=' + parent.api_key, {
 					headers: parent.headers,
 					body: ::JSON.dump( template_data ),
-          ssl_verifypeer: @parent.verify_cert,
-          ssl_verifyhost: @parent.verify_cert ? 0 : 2
+          ssl_verifypeer: parent.verify_cert,
+          ssl_verifyhost: parent.verify_cert ? 0 : 2
 					#,verbose: true
 					} )
 

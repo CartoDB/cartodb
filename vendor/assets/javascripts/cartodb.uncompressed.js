@@ -1,6 +1,6 @@
 // cartodb.js version: 3.7.00-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: 602f4b56b3ac1aca4cec3396dc79934563c3f45e
+// sha: 50d8dd02516ff85833dd68ac5c762a39e12bc3d9
 (function() {
   var root = this;
 
@@ -25622,11 +25622,13 @@ function Map(options) {
   this._refreshTimer = -1;
 }
 
-Map.BASE_URL = '/maps';
+Map.BASE_URL = '/api/v1/map';
 
 function NamedMap(named_map, options) {
   var self = this;
   Map.call(this, options);
+  this.options.pngParams.push('auth_token')
+  this.options.gridParams.push('auth_token')
   this.endPoint = Map.BASE_URL + '/named/' + named_map.name;
   this.JSONPendPoint = Map.BASE_URL + '/named/' + named_map.name + '/jsonp';
   this.layers = _.clone(named_map.layers) || [];
@@ -25636,6 +25638,10 @@ function NamedMap(named_map, options) {
     layer.options.layer_name = layer.layer_name;
   }
   this.named_map = named_map;
+  var token = named_map.auth_token || options.auth_token;
+  if (token) {
+    this.setAuthToken(token);
+  }
 }
 
 function LayerDefinition(layerDefinition, options) {
@@ -25901,6 +25907,9 @@ Map.prototype = {
     if(api_key) {
       params.push("map_key=" + api_key);
     }
+    if(extra_params.auth_token) {
+      params.push("auth_token=" + extra_params.auth_token);
+    }
     // mark as the request is being done
     this._waiting = true;
     var req = null;
@@ -26143,6 +26152,14 @@ Map.prototype = {
 
 NamedMap.prototype = _.extend({}, Map.prototype, {
 
+  setAuthToken: function(token) {
+    if(!this.isHttps()) {
+      throw new Error("https must be used when auth_token is set");
+    }
+    this.options.extra_params = this.options.extra_params || {};
+    this.options.extra_params.auth_token = token;
+  },
+
   toJSON: function() {
     var p = this.named_map.params || {};
     for(var i = 0; i < this.layers.length; ++i) {
@@ -26194,6 +26211,38 @@ NamedMap.prototype = _.extend({}, Map.prototype, {
         callback(null);
       }
     });
+  },
+
+  setSQL: function(sql) {
+    throw new Error("SQL is read-only in NamedMaps");
+  },
+
+  setCartoCSS: function(sql) {
+    throw new Error("cartocss is read-only in NamedMaps");
+  },
+
+  setLayer: function(layer, def) {
+    var not_allowed_attrs = {'sql': 1, 'cartocss': 1 };
+
+    for(var k in def.options) {
+      if (k in not_allowed_attrs) {
+        delete def.options[k];
+        throw new Error( k + " is read-only in NamedMaps");
+      }
+    }
+    return Map.prototype.setLayer.call(this, layer, def);
+  },
+
+  removeLayer: function(layer) {
+    throw new Error("sublayers are read-only in Named Maps");
+  },
+
+  createSubLayer: function(attrs, options) {
+    throw new Error("sublayers are read-only in Named Maps");
+  }, 
+
+  addLayer: function(def, layer) {
+    throw new Error("sublayers are read-only in Named Maps");
   }
 
 });
@@ -28318,6 +28367,7 @@ CartoDBLayerGroup.prototype.interactionClass = wax.g.interaction;
 // CartoDBNamedMap
 CartoDBNamedMap.prototype = new wax.g.connector();
 _.extend(CartoDBNamedMap.prototype, CartoDBLayerGroupBase.prototype, CartoDBLayerCommon.prototype, NamedMap.prototype);
+CartoDBNamedMap.prototype.interactionClass = wax.g.interaction;
 
 
 // export
@@ -30575,9 +30625,14 @@ var Vis = cdb.core.View.extend({
     }
 
     if (vizjson.layers.length > 1) {
+      var token = opt.auth_token;
       for(var i = 1; i < vizjson.layers.length; ++i) {
-        vizjson.layers[i].options.no_cdn = opt.no_cdn;
-        vizjson.layers[i].options.force_cors = opt.force_cors;
+        var o = vizjson.layers[i].options;
+        o.no_cdn = opt.no_cdn;
+        o.force_cors = opt.force_cors;
+        if(token) {
+          o.auth_token = token;
+        }
       }
     }
 

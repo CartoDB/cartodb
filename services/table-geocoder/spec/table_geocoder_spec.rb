@@ -22,27 +22,6 @@ describe CartoDB::TableGeocoder do
     @db.drop_table @table_name
   end
 
-
-  describe '#read_from_cache' do
-    before do
-      @tg = CartoDB::TableGeocoder.new(default_params.merge({
-        table_name: @table_name,
-        formatter:  "name, ', ', sov0name",
-        connection: @db,
-        sql_api: { base_url: 'http://username.cartodb.com/api/v2/sql', api_key: '' }
-      }))
-      @tg.geocoder.stubs(:upload).returns(true)
-      @tg.geocoder.stubs(:request_id).returns('111')
-      @tg.add_georef_status_column
-      @tg.read_from_cache
-    end
-
-    it "generates a csv file for uploading" do
-      true.should eq true
-    end
-  end
-
-
   describe '#run' do
     before do
       @tg = CartoDB::TableGeocoder.new(default_params.merge({
@@ -194,7 +173,7 @@ describe CartoDB::TableGeocoder do
     config = YAML.load_file("#{File.dirname(__FILE__)}/../../../config/app_config.yml")["test"]["geocoder"]
     pending "No Geocoder config found for test environment" unless config
     config = config.inject({}){|memo,(k,v)| memo[k.to_sym] = v; memo}
-
+    config[:cache] = config[:cache].inject({}){|memo,(k,v)| memo[k.to_sym] = v; memo}
     t = CartoDB::TableGeocoder.new(config.merge(
       table_name: @table_name,
       formatter:  "name, ', ', sov0name",
@@ -204,7 +183,6 @@ describe CartoDB::TableGeocoder do
     t.geocoder.stubs("use_batch_process?").returns(true)
 
     @db.fetch("select count(*) from #{@table_name} where the_geom is null").first[:count].should eq 37
-    # `open #{t.working_dir}`
     t.run
     until t.geocoder.status == 'completed' do
       t.geocoder.update_status
@@ -213,6 +191,7 @@ describe CartoDB::TableGeocoder do
     end
     t.process_results
     t.geocoder.status.should eq 'completed'
+    t.geocoder.processed_rows.should eq 3
     @db.fetch("select count(*) from #{@table_name} where the_geom is null").first[:count].should eq 3
     @db.fetch("select count(*) from #{@table_name} where cartodb_georef_status is false").first[:count].should eq 3
   end

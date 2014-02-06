@@ -20,45 +20,44 @@ module CartoDB
 
     def run
       @cache_results = File.join(working_dir, "#{temp_table_name}_results.csv")
-
-      sql_start = "WITH addresses(address) AS (VALUES "
-      sql_end   = ") SELECT st_x(g.the_geom) longitude,st_y(g.the_geom) latitude,g.geocode_string FROM addresses a INNER JOIN #{sql_api[:table_name]} g ON md5(g.geocode_string)=a.address"
-      count     = 0
       begin
+        count = count + 1 rescue 0
+        sql   = "WITH addresses(address) AS (VALUES "
         rows = connection.fetch(%Q{
-            SELECT md5(#{formatter}) as searchtext
+            SELECT md5(#{formatter}) AS searchtext
             FROM #{table_name}
-            WHERE cartodb_georef_status IS FALSE OR cartodb_georef_status IS NULL
+            WHERE cartodb_georef_status IS false OR cartodb_georef_status IS NULL
             GROUP BY searchtext
             LIMIT #{BATCH_SIZE} OFFSET #{count * BATCH_SIZE}
         }).all
-        sql = rows.map { |r| "('#{r[:searchtext]}')" }.join(',')
-        response = run_query("#{sql_start}#{sql}#{sql_end}", 'csv').gsub(/\A.*/, '').gsub(/^$\n/, '')
+        sql << rows.map { |r| "('#{r[:searchtext]}')" }.join(',')
+        sql << ") SELECT st_x(g.the_geom) longitude, st_y(g.the_geom) latitude,g.geocode_string FROM addresses a INNER JOIN #{sql_api[:table_name]} g ON md5(g.geocode_string)=a.address"
+        response = run_query(sql, 'csv').gsub(/\A.*/, '').gsub(/^$\n/, '')
         File.open(cache_results, 'a') { |f| f.write(response) } unless response == "\n"
-        count = count + 1
       end while rows.size >= BATCH_SIZE
       create_temp_table
       load_results_to_temp_table
       copy_results_to_table
-    ensure
-      delete_temp_table
+    rescue => e
+      drop_temp_table
+      raise e
     end # run
 
     def store
-      sql_start = "INSERT INTO #{sql_api[:table_name]} (geocode_string, the_geom) VALUES "
-      count = 0
       begin
+        count = count + 1 rescue 0
+        sql   = "INSERT INTO #{sql_api[:table_name]} (geocode_string, the_geom) VALUES "
         rows = connection.fetch(%Q{
-          SELECT quote_nullable(#{formatter}) as searchtext, the_geom 
-          from #{table_name} 
-          where cartodb_georef_status is true and the_geom is not null
-          limit #{BATCH_SIZE} OFFSET #{count * BATCH_SIZE}
+          SELECT quote_nullable(#{formatter}) AS searchtext, the_geom 
+          FROM #{table_name} AS orig
+          WHERE orig.the_geom IS NOT null AND #{formatter} NOT IN (SELECT geocode_string FROM #{temp_table_name})
+          LIMIT #{BATCH_SIZE} OFFSET #{count * BATCH_SIZE}
         }).all
-        sql = rows.map { |r| "(#{r[:searchtext]}, '#{r[:the_geom]}')" }.join(',')
-        response = run_query("#{sql_start} #{sql}")
-        puts response
-        count = count + 1
+        sql << rows.map { |r| "(#{r[:searchtext]}, '#{r[:the_geom]}')" }.join(',')
+        run_query(sql)
       end while rows.size >= BATCH_SIZE
+    ensure
+      drop_temp_table
     end # store
 
     def create_temp_table
@@ -87,9 +86,9 @@ module CartoDB
       })
     end # copy_results_to_table
 
-    def delete_temp_table
-      connection.run("drop table #{temp_table_name}")
-    end # delete_temp_table
+    def drop_temp_table
+      connection.run("DROP TABLE IF EXISTS #{temp_table_name}")
+    end # drop_temp_table
 
     def temp_table_name
       @temp_table_name ||= "geocoding_cache_#{Time.now.to_i}"
@@ -97,12 +96,10 @@ module CartoDB
 
     def run_query(query, format = '')
       params = { q: query, api_key: sql_api[:api_key], format: format }
-      puts "**\n#{URI.encode_www_form(params)}\n***"
       response = Typhoeus.post(
         sql_api[:base_url],
         body: URI.encode_www_form(params)
       )
-      puts response.body
       response.body
     end # run_query
 

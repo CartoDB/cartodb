@@ -32,13 +32,14 @@ class Geocoding < Sequel::Model
   end # before_save
 
   def instantiate_table_geocoder
-    @table_geocoder = CartoDB::TableGeocoder.new(Cartodb.config[:geocoder].symbolize_keys.merge(
+    config = Cartodb.config[:geocoder].deep_symbolize_keys.merge(
       table_name: table.try(:name),
       formatter:  translate_formatter,
       connection: (user.present? ? user.in_database(as: :superuser) : nil),
       remote_id:  remote_id,
       max_rows:   max_geocodable_rows
-    ))
+    )
+    @table_geocoder = CartoDB::TableGeocoder.new(config)
   end # instantiate_table_geocoder
 
   def cancel

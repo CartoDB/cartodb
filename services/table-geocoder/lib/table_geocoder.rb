@@ -19,7 +19,6 @@ module CartoDB
       @remote_id   = arguments[:remote_id]
       @schema      = arguments[:schema] || 'cdb'
       @max_rows    = arguments[:max_rows] || 1000000
-      @cache       = arguments[:cache]
       @geocoder    = CartoDB::Geocoder.new(
         app_id:             arguments[:app_id],
         token:              arguments[:token],
@@ -29,23 +28,20 @@ module CartoDB
         base_url:           arguments[:base_url],
         non_batch_base_url: arguments[:non_batch_base_url]
       )
+      @cache       = CartoDB::GeocoderCache.new(
+        connection:  connection,
+        formatter:   clean_formatter,
+        sql_api:     arguments[:cache],
+        working_dir: working_dir,
+        table_name:  table_name
+      )
     end # initialize
 
     def run
       add_georef_status_column
-      read_from_cache
+      cache.run
       csv_file = generate_csv
       start_geocoding_job(csv_file)
-    end
-
-    def read_from_cache
-      CartoDB::GeocoderCache.new(
-        connection:  connection,
-        formatter:   clean_formatter,
-        sql_api:     cache,
-        working_dir: working_dir,
-        table_name:  table_name
-      ).run
     end
 
     def generate_csv
@@ -82,13 +78,7 @@ module CartoDB
       create_temp_table
       import_results_to_temp_table
       load_results_into_original_table
-      CartoDB::GeocoderCache.new(
-        connection:  connection,
-        formatter:   clean_formatter,
-        sql_api:     cache,
-        working_dir: working_dir,
-        table_name:  table_name
-      ).store
+      cache.store
 
     ensure
       drop_temp_table

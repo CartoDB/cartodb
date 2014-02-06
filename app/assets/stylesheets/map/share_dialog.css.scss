@@ -278,7 +278,7 @@
         padding-bottom: 0;
       }
 
-      &.privacy li.upgrade_message { padding: 18px;}
+      &.privacy li.upgrade_message { padding: 18px; }
 
       li {
         @include inline-block();
@@ -317,8 +317,18 @@
           margin: -2px 5px 0 0;
         }
 
+        &.password_protected .input_field {
+          display:none;
+        }
+
         &.password_protected.open {
-          clear:both; overflow:hidden;
+
+          clear:both;
+          overflow:hidden;
+
+          .t, a > i { display: none; }
+
+          .input_field { @include inline-block(); }
 
           .radiobutton span.radio {
             float:left;
@@ -333,6 +343,7 @@
         }
 
         .input_field {
+
           position:relative;
           width: 203px;
           @include box-sizing(border-box);

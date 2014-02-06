@@ -115,6 +115,10 @@ module CartoDB
       title: 'Decompression error',
       what_about: "The archive you uploaded didn't seem to unpack properly. Try recreating it from the original files again and uploading the new version."
     },
+    1004 => {
+      title: 'XLS/XLSX Error',
+      what_about: "The XLS/XLSX archive could not be opened or contains data that cannot be imported. Try exporting it into CSV and uploading the CSV instead."
+    },
     1005 => {
       title: 'Zero byte file',
       what_about: "The file appears to have no information. Double check using a local tool such as QGIS that the file is indeed correct. If everything appears fine, try uploading it again or <a href='mailto:support@cartodb.com?subject=Zero byte file'>contact us</a>."

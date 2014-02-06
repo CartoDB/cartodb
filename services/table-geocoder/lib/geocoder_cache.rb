@@ -6,7 +6,7 @@ module CartoDB
 
     BATCH_SIZE = 10
 
-    attr_reader :connection, :working_dir, :table_name, 
+    attr_reader :connection, :working_dir, :table_name, :hits,
                 :max_rows, :sql_api, :formatter, :cache_results
 
     def initialize(arguments)
@@ -37,6 +37,7 @@ module CartoDB
       end while rows.size >= BATCH_SIZE
       create_temp_table
       load_results_to_temp_table
+      @hits = connection.fetch("SELECT count(*) FROM #{temp_table_name}").first[:count].to_i
       copy_results_to_table
     rescue => e
       drop_temp_table

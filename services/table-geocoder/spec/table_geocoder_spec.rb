@@ -191,7 +191,8 @@ describe CartoDB::TableGeocoder do
     end
     t.process_results
     t.geocoder.status.should eq 'completed'
-    t.geocoder.processed_rows.should eq 3
+    t.geocoder.processed_rows.to_i.should eq 3
+    t.cache.hits.should eq 34
     @db.fetch("select count(*) from #{@table_name} where the_geom is null").first[:count].should eq 3
     @db.fetch("select count(*) from #{@table_name} where cartodb_georef_status is false").first[:count].should eq 3
   end

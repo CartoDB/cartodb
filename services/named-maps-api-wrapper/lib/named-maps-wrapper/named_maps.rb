@@ -35,6 +35,7 @@ module CartoDB
 
 				raise HTTPResponseError, response.code if response.code != 200
 
+
 				::JSON.parse(response.response_body)
 			end #all
 

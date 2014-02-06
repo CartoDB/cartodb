@@ -39,8 +39,9 @@ function NamedMap(named_map, options) {
     layer.options.layer_name = layer.layer_name;
   }
   this.named_map = named_map;
-  if (named_map.auth_token) {
-    this.setAuthToken(named_map.auth_token);
+  var token = named_map.auth_token || options.auth_token;
+  if (token) {
+    this.setAuthToken(token);
   }
 }
 

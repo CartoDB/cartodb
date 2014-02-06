@@ -1665,6 +1665,10 @@ exports.Profiler = Profiler;
     if (this.options.data_aggregation) {
       this.options.cumulative = this.options.data_aggregation === 'cumulative';
     }
+    if (this.options.auth_token) {
+      var e = this.options.extra_params || (this.options.extra_params = {});
+      e.auth_token = this.options.auth_token;
+    }
 
     this._fetchMap();
   };
@@ -1941,13 +1945,13 @@ exports.Profiler = Profiler;
     _fetchMap: function(callback) {
       var self = this;
       var layergroup = {};
-      var url = this._tilerHost() + "/api/v1/maps";
+      var url = this._tilerHost() + "/api/v1/map";
       var named = this.options.named_map;
 
       if(named) {
         //tiles/template
-        url = this._tilerHost() + "/api/v1/maps/named/" + named.name + "/jsonp"
-        //url = this._tilerHost() + "/maps/" + named.name + "/jsonp"
+        url = this._tilerHost() + "/api/v1/map/named/" + named.name + "/jsonp"
+        //url = this._tilerHost() + "/map/" + named.name + "/jsonp"
       } else {
         layergroup = {
           "version": "1.0.1",
@@ -1976,13 +1980,12 @@ exports.Profiler = Profiler;
 
       torque.net.jsonp(url, function (data) {
         if (data) {
-        //TODO: update options with layer metadata
         var torque_key = Object.keys(data.metadata.torque)[0]
         var opt = data.metadata.torque[torque_key];
         for(var k in opt) {
           self.options[k] = opt[k];
         }
-        self.templateUrl = self.url() + "/api/v1/maps/" + data.layergroupid + "/" + torque_key + "/{z}/{x}/{y}.json.torque";
+        self.templateUrl = self.url() + "/api/v1/map/" + data.layergroupid + "/" + torque_key + "/{z}/{x}/{y}.json.torque";
         self._setReady(true);
         }
       });

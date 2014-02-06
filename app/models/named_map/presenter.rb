@@ -98,7 +98,8 @@ module CartoDB
             {
               protocol:   (@configuration[:tiler]['private']['protocol'] rescue nil),
               domain: (@configuration[:tiler]['private']['domain'] rescue nil),
-              port:     (@configuration[:tiler]['private']['port'] rescue nil)
+              port:     (@configuration[:tiler]['private']['port'] rescue nil),
+              verifycert: (configuration[:tiler]['private']['verifycert'] rescue true)
             }
           )
       	@named_map = named_maps.get(NamedMap.normalize_name(@visualization.id))

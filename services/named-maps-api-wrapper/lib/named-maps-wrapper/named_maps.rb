@@ -14,6 +14,7 @@ module CartoDB
 				@username = user_config[:name]
 				@api_key = user_config[:api_key]
 				@vizjson_config = vizjson_config
+        @verify_cert = tiler_config[:verifycert]
 
 				@host = "#{tiler_config[:protocol]}://#{@username}.#{tiler_config[:domain]}:#{tiler_config[:port]}"
 				@url = [ @host, 'tiles', 'template' ].join('/')
@@ -27,7 +28,8 @@ module CartoDB
 			# Retrieve a list of all named maps
 			def all
 				response = Typhoeus.get(@url + "?api_key=" + @api_key, {
-					headers: @headers
+					headers: @headers,
+          ssl_verifypeer: verify_cert
 				})
 
 				raise HTTPResponseError, response.code if response.code != 200
@@ -40,7 +42,8 @@ module CartoDB
 				raise NamedMapsDataError, { 'name' => 'mising' } if name.nil? or name.length == 0
 
 				response = Typhoeus.get( [@url, name ].join('/') + "?api_key=" + @api_key, {
-					headers: @headers
+					headers: @headers,
+          ssl_verifypeer: verify_cert
 				})
 
 				if response.code == 200
@@ -58,7 +61,7 @@ module CartoDB
 				end
 			end #get
 
-			attr_reader	:url, :api_key, :username, :headers, :host, :vizjson_config
+			attr_reader	:url, :api_key, :username, :headers, :host, :vizjson_config, :verify_cert
 
 		end #NamedMaps
 

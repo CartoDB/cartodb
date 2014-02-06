@@ -235,9 +235,10 @@ module CartoDB
               api_key:  user.nil? ? (@user_data.nil? ? '' : @user_data[:api_key]) : user.api_key
             },
             {
-              domain:   Cartodb.config[:tiler]['private']['domain'],
-              port:     Cartodb.config[:tiler]['private']['port'] || 443,
-              protocol: Cartodb.config[:tiler]['private']['protocol']
+              domain:     Cartodb.config[:tiler]['private']['domain'],
+              port:       Cartodb.config[:tiler]['private']['port'] || 443,
+              protocol:   Cartodb.config[:tiler]['private']['protocol'],
+              verifycert: Cartodb.config[:tiler]['private']['verifycert']
             },
             configuration
           )

@@ -28,6 +28,8 @@ Map.BASE_URL = '/api/v1/maps';
 function NamedMap(named_map, options) {
   var self = this;
   Map.call(this, options);
+  this.options.pngParams.push('auth_token')
+  this.options.gridParams.push('auth_token')
   this.endPoint = Map.BASE_URL + '/named/' + named_map.name;
   this.JSONPendPoint = Map.BASE_URL + '/named/' + named_map.name + '/jsonp';
   this.layers = _.clone(named_map.layers) || [];
@@ -37,6 +39,9 @@ function NamedMap(named_map, options) {
     layer.options.layer_name = layer.layer_name;
   }
   this.named_map = named_map;
+  if (named_map.auth_token) {
+    this.setAuthToken(named_map.auth_token);
+  }
 }
 
 function LayerDefinition(layerDefinition, options) {
@@ -302,6 +307,9 @@ Map.prototype = {
     if(api_key) {
       params.push("map_key=" + api_key);
     }
+    if(extra_params.auth_token) {
+      params.push("auth_token=" + extra_params.auth_token);
+    }
     // mark as the request is being done
     this._waiting = true;
     var req = null;
@@ -543,6 +551,14 @@ Map.prototype = {
 };
 
 NamedMap.prototype = _.extend({}, Map.prototype, {
+
+  setAuthToken: function(token) {
+    if(!this.isHttps()) {
+      throw new Error("https must be used when auth_token is set");
+    }
+    this.options.extra_params = this.options.extra_params || {};
+    this.options.extra_params.auth_token = token;
+  },
 
   toJSON: function() {
     var p = this.named_map.params || {};

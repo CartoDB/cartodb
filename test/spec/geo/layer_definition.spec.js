@@ -541,6 +541,70 @@ describe("NamedMap", function() {
     }).toThrow(new Error("sublayers are read-only in Named Maps"));
   });
 
+  it("should send auth_token when it's provided", function() {
+    var tiles;
+    var named_map = {
+      name: 'testing',
+      auth_token: 'auth_token_test',
+      params: {
+        color: 'red'
+      },
+      layers: [{}]
+    };
+    namedMap = new NamedMap(named_map, {
+      tiler_domain:   "cartodb.com",
+      tiler_port:     "8081",
+      tiler_protocol: "https",
+      user_name: 'rambo',
+      no_cdn: true,
+      subdomains: [null]
+    });
+    namedMap.options.ajax = function(p) { 
+      params = p;
+      p.success({ layergroupid: 'test' });
+    };
+    runs(function() {
+      namedMap._getLayerToken();
+      namedMap.getTiles(function(t) {
+        tiles = t;
+      });
+    });
+    waits(100);
+    runs(function() {
+      expect(params.url.indexOf('auth_token=auth_token_test')).not.toEqual(-1);
+      expect(tiles.tiles[0].indexOf('auth_token=auth_token_test')).not.toEqual(-1);
+      expect(tiles.grids[0][0].indexOf('auth_token=auth_token_test')).not.toEqual(-1);
+    });
+    runs(function() {
+      namedMap.setAuthToken('test2');
+      namedMap._getLayerToken();
+    });
+    waits(100);
+    runs(function() {
+      expect(params.url.indexOf('auth_token=test2')).not.toEqual(-1);
+    });
+  });
+
+  it("should use https when auth_token is provided", function() {
+    var named_map = {
+      name: 'testing',
+      auth_token: 'auth_token_test',
+    };
+    try {
+      namedMap = new NamedMap(named_map, {
+        tiler_domain:   "cartodb.com",
+        tiler_port:     "8081",
+        tiler_protocol: "http",
+        user_name: 'rambo',
+        no_cdn: true,
+        subdomains: [null]
+      });
+      expect(0).toBe(1);
+    } catch(e) {
+      expect(e.message).toEqual("https must be used when auth_token is set");
+    }
+  });
+
 
 });
 

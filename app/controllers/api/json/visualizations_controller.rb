@@ -167,8 +167,8 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     render_jsonp(visualization.to_vizjson)
   rescue KeyError => exception
     render(text: exception.message, status: 403)
-  rescue CartoDB::NamedMapsWrapper::HTTPResponseError 
-    render_jsonp({ errors: { named_maps_api: 'communication error with tiler API' } }, 400)
+  rescue CartoDB::NamedMapsWrapper::HTTPResponseError => exception
+    render_jsonp({ errors: { named_maps_api: "communication error with tiler API. Error #{exception.message}" } }, 400)
   rescue CartoDB::NamedMapsWrapper::NamedMapDataError => exception
     render_jsonp({ errors: { named_map: exception } }, 400)
   rescue CartoDB::NamedMapsWrapper::NamedMapsDataError => exception

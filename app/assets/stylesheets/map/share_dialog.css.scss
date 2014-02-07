@@ -254,8 +254,6 @@
       &.top    { @include opacity(1); @include position(135px, false, false, 0); @extend .white-gradient-shadow-top;    z-index: 1000; }
       &.bottom { @include opacity(1); @include position(0, false, false, 0);  @extend .white-gradient-shadow-bottom; z-index: 1000; }
 
-      /*&.top, &.bottom { background:red; }*/
-
       @include size(100%, 16px);
 
     }

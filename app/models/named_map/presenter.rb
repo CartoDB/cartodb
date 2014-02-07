@@ -13,14 +13,14 @@ module CartoDB
 
         @named_map          = nil
         @named_map_template = nil
-        @fetched				    = false
+        @loaded				    = false
       end #initialize
 
       # Prepares additional data to decorate layers in the LAYER_TYPES_TO_DECORATE list
       def get_decoration_for_layer(layer_type, layer_index)
         return nil if not LAYER_TYPES_TO_DECORATE.include? layer_type
 
-        fetch if !@fetched
+        load_named_map_data() if !@loaded
 
         params = {}
         @named_map_template[:placeholders].each { |key, value|
@@ -39,7 +39,7 @@ module CartoDB
       # Prepare a PORO (Hash object) for easy JSONification
       # @see https://github.com/CartoDB/cartodb.js/blob/privacy-maps/doc/vizjson_format.md
       def to_poro
-      	fetch if !@fetched
+      	load_named_map_data() if !@loaded
 
         layers = @visualization.layers(:cartodb)
         layers_data = Array.new
@@ -69,27 +69,34 @@ module CartoDB
           params[key] = value[:default]
         }
 
-        poro = {
-        	type: 		'namedmap',
-					order: 		1,
-	        options: 	{
-            type: 							'namedmap',
-            user_name:          @options.fetch(:user_name),
-            tiler_protocol:     (@configuration[:tiler]['private']['protocol'] rescue nil),
-            tiler_domain:       (@configuration[:tiler]['private']['domain'] rescue nil),
-            tiler_port:         (@configuration[:tiler]['private']['port'] rescue nil),
-            named_map:          {
-              name:     @named_map_template[:name],
-              auth:     @named_map_template[:auth][:method],
-              params:   params,
-              layers:   layers_data
+        if (@visualization.layers(:cartodb).size() == 0)
+          # When there no layer don't return anything
+          nil
+        else
+          {
+            type:     'namedmap',
+            order:    1,
+            options:  {
+              type:               'namedmap',
+              user_name:          @options.fetch(:user_name),
+              tiler_protocol:     (@configuration[:tiler]['public']['protocol'] rescue nil),
+              tiler_domain:       (@configuration[:tiler]['public']['domain'] rescue nil),
+              tiler_port:         (@configuration[:tiler]['public']['port'] rescue nil),
+              named_map:          {
+                name:     @named_map_template[:name],
+                auth:     @named_map_template[:auth][:method],
+                params:   params,
+                layers:   layers_data
+              }
             }
-        	}
-        }
+          }
+        end
       end #to_poro
 
+      private
+
       # Loads the data of a given named map
-      def fetch
+      def load_named_map_data()
       	named_maps = NamedMaps.new(
             {
               name:     @options.fetch(:user_name),
@@ -104,8 +111,7 @@ module CartoDB
           )
       	@named_map = named_maps.get(NamedMap.normalize_name(@visualization.id))
         @named_map_template = @named_map.template.fetch(:template) if not @named_map.nil?
-      	@fetched = true
-      	@named_map
+      	@loaded = true
       end #fetch
 
 		end #Presenter

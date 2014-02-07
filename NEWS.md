@@ -1,3 +1,8 @@
+2.9.1 (2014-02-07)
+------------------
+* Improvements
+  * Use a geocoder cache.
+
 2.9.0 (2014-01-31)
 ------------------
 * Improvements

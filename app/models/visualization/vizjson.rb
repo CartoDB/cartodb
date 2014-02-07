@@ -69,9 +69,11 @@ module CartoDB
 
       def other_layers_for(visualization, named_maps_presenter = nil)
         visualization.layers(:others).map do |layer|
-          decoration_data_to_apply = nil
-          if not named_maps_presenter.nil?
-            # Base layer is not sent to the tiler, so substract one
+          
+          if named_maps_presenter.nil?
+            decoration_data_to_apply = {}
+          else
+            # Base layer is not sent to the tiler, so order--
             decoration_data_to_apply = named_maps_presenter.get_decoration_for_layer(layer.kind, layer.order-1)
           end
           Layer::Presenter.new(layer, options, configuration, decoration_data_to_apply).to_vizjson_v2

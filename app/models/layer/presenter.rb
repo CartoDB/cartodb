@@ -24,7 +24,7 @@ module CartoDB
         fields template_name template alternative_names
       )
 
-      def initialize(layer, options={}, configuration={}, decoration_data=nil)
+      def initialize(layer, options={}, configuration={}, decoration_data={})
         @layer            = layer
         @options          = options
         @configuration    = configuration
@@ -72,11 +72,7 @@ module CartoDB
       end #torque?
 
       def with_kind_as_type(attributes)
-        if (not @decoration_data.nil?)
-          attributes.merge(type: attributes.delete('kind')).merge(@decoration_data)
-        else
-          attributes.merge(type: attributes.delete('kind'))
-        end
+        attributes.merge(type: attributes.delete('kind')).merge(@decoration_data)
       end #with_kind_as_type
 
       def as_torque(attributes)

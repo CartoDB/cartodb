@@ -18,7 +18,7 @@ module CartoDB
 
       # Prepares additional data to decorate layers in the LAYER_TYPES_TO_DECORATE list
       def get_decoration_for_layer(layer_type, layer_index)
-        return nil if not LAYER_TYPES_TO_DECORATE.include? layer_type
+        return {} if not LAYER_TYPES_TO_DECORATE.include? layer_type
 
         load_named_map_data() if !@loaded
 
@@ -79,9 +79,9 @@ module CartoDB
             options:  {
               type:               'namedmap',
               user_name:          @options.fetch(:user_name),
-              tiler_protocol:     (@configuration[:tiler]['public']['protocol'] rescue nil),
-              tiler_domain:       (@configuration[:tiler]['public']['domain'] rescue nil),
-              tiler_port:         (@configuration[:tiler]['public']['port'] rescue nil),
+              tiler_protocol:     @configuration[:tiler]['public']['protocol'],
+              tiler_domain:       @configuration[:tiler]['public']['domain'],
+              tiler_port:         @configuration[:tiler]['public']['port'],
               named_map:          {
                 name:     @named_map_template[:name],
                 auth:     @named_map_template[:auth][:method],
@@ -103,9 +103,9 @@ module CartoDB
               api_key:  @options.fetch(:api_key)
             },
             {
-              protocol:   (@configuration[:tiler]['private']['protocol'] rescue nil),
-              domain: (@configuration[:tiler]['private']['domain'] rescue nil),
-              port:     (@configuration[:tiler]['private']['port'] rescue nil),
+              protocol:   @configuration[:tiler]['private']['protocol'],
+              domain:     @configuration[:tiler]['private']['domain'],
+              port:       @configuration[:tiler]['private']['port'],
               verifycert: (@configuration[:tiler]['private']['verifycert'] rescue true)
             }
           )

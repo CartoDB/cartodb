@@ -71,6 +71,11 @@ class User < Sequel::Model
     self.api_key ||= self.class.make_token
   end
 
+  def before_save
+    super
+    self.updated_at = Time.now
+  end #before_save
+
   def after_create
     super
     setup_user
@@ -86,6 +91,7 @@ class User < Sequel::Model
     changes = (self.previous_changes.present? ? self.previous_changes.keys : [])
     set_statement_timeouts if changes.include?(:user_timeout) || changes.include?(:database_timeout)
     rebuild_quota_trigger if changed_columns.include?(:quota_in_bytes)
+    invalidate_varnish_cache if changes.include?(:account_type)
   end
 
   def before_destroy
@@ -412,7 +418,7 @@ $$
     date_to = (options[:to] ? options[:to].to_date : Date.today)
     date_from = (options[:from] ? options[:from].to_date : self.last_billing_cycle)
     Geocoding.where('user_id = ? AND created_at >= ? and created_at <= ?', self.id, date_from, date_to + 1.days)
-      .sum(:processed_rows).to_i
+      .sum("processed_rows + cache_hits".lit).to_i
   end # get_geocoding_calls
 
   # Legacy stats fetching
@@ -991,5 +997,25 @@ TRIGGER
 
   def monitor_user_notification
     FileUtils.touch(Rails.root.join('log', 'users_modifications'))
+    if !Cartodb.config[:signups].nil? && !Cartodb.config[:signups]["service"].nil? && !Cartodb.config[:signups]["service"]["port"].nil?
+      enable_remote_db_user
+    end
+  end
+
+  def enable_remote_db_user
+    request = Typhoeus::Request.new(
+      "#{self.database_host}:#{Cartodb.config[:signups]["service"]["port"]}/scripts/activate_db_user",
+      method: :post,
+      headers: { "Content-Type" => "application/json" }
+    )
+    response = request.run
+    if response.code != 200
+      raise(response.body)
+    else
+      comm_response = JSON.parse(response.body)
+      if comm_response['retcode'].to_i != 0
+        raise(response['stderr'])
+      end
+    end
   end
 end

@@ -1,0 +1,50 @@
+#!/usr/bin/env ruby
+require 'yaml'
+require File.expand_path('../../services/geocoder/lib/geocoder.rb',  __FILE__)
+
+TIMEOUT = 300 # seconds before raising a timeout error
+
+def usage
+  abort "usage: script/geocoder_test environment <non-batch>"
+end
+
+environment = ARGV[0]
+non_batch = ARGV[1] == 'non-batch'
+usage unless environment
+
+def load_config(environment)
+  config_file_hash = YAML.load_file(File.expand_path('../../config/app_config.yml',  __FILE__))
+  config_file_hash[environment]["geocoder"].inject({}){|memo,(k,v)| memo[k.to_sym] = v; memo}
+rescue => e
+  raise "Missing or inaccessible config for environment #{environment} in config/app_config.yml: #{e.message}"
+end
+
+config = load_config(environment)
+geocoder = CartoDB::Geocoder.new(config.merge(
+  input_file: File.expand_path('../../services/geocoder/spec/fixtures/nokia_input.csv',  __FILE__),
+  force_batch: !non_batch
+))
+
+puts "Runing #{(non_batch ? 'non batch' : 'batch')} geocoder..."
+start = Time.now
+geocoder.upload
+finish = Time.now
+until geocoder.status == 'completed' do
+  finish = Time.now
+  raise "Geocoder FAILURE: Timeout" if (finish - start) > TIMEOUT
+  geocoder.update_status
+  sleep(2)
+end
+raise "Geocoder FAILURE" unless geocoder.status == 'completed'
+
+Dir.chdir geocoder.dir
+`unp #{geocoder.result} 2>&1`
+file_path = (non_batch ? geocoder.result : Dir[File.join(geocoder.dir, '*_out.txt')][0])
+response = File.read(file_path).split(',')
+
+expected_position = [45.96, -66.60]
+position = [response[4].to_f, response[5].to_f]
+distance = Math.sqrt(expected_position.zip(position).map { |x| (x[1] - x[0])**2 }.reduce(:+))
+raise "Geocoder FAILURE: wrong geocoded position #{position}, expected #{expected_position}, distance: #{distance}" if distance > 0.04
+
+puts "\e[32mGeocoder OK #{(finish - start)} secs\e[0m"

@@ -26,6 +26,14 @@ describe User do
     @user.reload.api_key.should_not be_blank
   end
 
+  it "should set created_at" do
+    @user.created_at.should_not be_nil
+  end
+
+  it "should update updated_at" do
+    expect { @user.save }.to change(@user, :updated_at)
+  end
+
   it "should set up a user after create" do
     @new_user.save
     @new_user.reload
@@ -163,6 +171,12 @@ describe User do
     @user.in_database(as: :public_user)["show statement_timeout"].first[:statement_timeout].should == "1000s"
   end
 
+  it "should invalidate all his vizjsons when his account type changes" do
+    @user.account_type = 'WADUS'
+    @user.expects(:invalidate_varnish_cache).times(1)
+    @user.save
+  end
+
   it "should read api calls from external service" do
     @user.stubs(:get_old_api_calls).returns({
       "per_day" => [0, 0, 0, 0, 24, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 17, 0, 0, 0, 0, 0], 
@@ -212,7 +226,7 @@ describe User do
       delete_user_data @user
       @user.stubs(:last_billing_cycle).returns(Date.today)
       FactoryGirl.create(:geocoding, user: @user, created_at: Time.now, processed_rows: 1)
-      FactoryGirl.create(:geocoding, user: @user, created_at: Time.now - 5.days, processed_rows: 2)
+      FactoryGirl.create(:geocoding, user: @user, created_at: Time.now - 5.days, processed_rows: 1, cache_hits: 1)
     end
 
     it "should return the sum of geocoded rows for the current billing period" do

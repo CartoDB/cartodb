@@ -70,9 +70,7 @@ module CartoDB
     end # create_temp_table
 
     def load_results_to_temp_table
-      connection.run(%Q{
-        COPY #{temp_table_name} FROM '#{cache_results}' DELIMITER ',' CSV
-      })
+      connection.copy_into(temp_table_name.lit, data: File.read(cache_results), format: :csv)
     end # load_results_to_temp_table
 
     def copy_results_to_table

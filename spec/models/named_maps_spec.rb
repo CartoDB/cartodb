@@ -7,24 +7,14 @@ include CartoDB
 
 # Specs for /services/named-maps-api-wrapper
 # Does not check responses from the windshaft API endpoint
-
 describe CartoDB::NamedMapsWrapper::NamedMaps do
 
   SPEC_NAME = 'named_maps_spec'
 
   before(:all) do
     CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
-
-    db_config   = Rails.configuration.database_configuration[Rails.env]
-    @db         = Sequel.postgres(
-                    host:     db_config.fetch('host'),
-                    port:     db_config.fetch('port'),
-                    username: db_config.fetch('username')
-                  )
-    @relation   = "visualizations_#{Time.now.to_i}".to_sym
-    @repository = DataRepository::Backend::Sequel.new(@db, @relation)
-    Visualization::Migrator.new(@db).migrate(@relation)
-    Visualization.repository = @repository
+    # Hook new backend to Sequel current connection
+    Visualization.repository = DataRepository::Backend::Sequel.new(Rails::Sequel.connection, :visualizations)
 
     puts "\n[rspec][#{SPEC_NAME}] Creating test user database..."
     @user = create_user( :quota_in_bytes => 524288000, :table_quota => 100 )
@@ -54,12 +44,10 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
       collection.add(derived_vis)
       collection.store()
 
-      debugger
-
-      table.affected_visualizations.size.should eq 1
-      table.affected_visualizations.first.should eq derived_vis
-
-
+      table.affected_visualizations.size.should eq 2
+      table.affected_visualizations[0].id.should eq table.table_visualization.id
+      table.affected_visualizations[1].id.should eq derived_vis.id
+      table.affected_visualizations[0].id.should_not eq table.affected_visualizations[1].id
     end
   end #public_table_public_vis
 

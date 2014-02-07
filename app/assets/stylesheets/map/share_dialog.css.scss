@@ -209,11 +209,11 @@
   div.options {
 
     @include box-flex(1);
+    position:relative;
     width:299px;
     max-width:299px;
     min-width:299px;
     height: 100%;
-
 
     h3 {
       height: 94px; // prevents the jump in size due to the webfont loading
@@ -245,6 +245,17 @@
       line-height:67px;
       border-bottom:1px solid rgba(204, 204, 204, 0.75);
       letter-spacing:-1px;
+    }
+
+    .white-gradient-shadow {
+
+      pointer-events: none;
+
+      &.top    { @include opacity(1); @include position(135px, false, false, 0); @extend .white-gradient-shadow-top;    z-index: 1000; }
+      &.bottom { @include opacity(1); @include position(0, false, false, 0);  @extend .white-gradient-shadow-bottom; z-index: 1000; }
+
+      @include size(100%, 16px);
+
     }
 
     .scrollpane {
@@ -279,10 +290,6 @@
       }
 
       &.privacy li.upgrade_message { padding: 18px; }
-      /*&.privacy {*/
-        /*height: 50px;*/
-        /*@include box-sizing(border-box);*/
-      /*}*/
 
       li {
         @include inline-block();
@@ -293,54 +300,34 @@
         word-spacing:0px;
         font:normal 15px $text-fonts;
         @include simple-transition(color, 250ms);
+      }
 
-        &.upgrade_message {
-          position:relative;
-          @include box-sizing(border-box);
-          background: rgba(#FF7373, .3) ;
-          color: #666;
-          @include border-radius(3px);
-          width: 221px;
-          border:none;
-          margin: 29px 0 0 0;
-          line-height: 120%;
+      li.upgrade_message {
+        position:relative;
+        @include box-sizing(border-box);
+        background: rgba(#FF7373, .3) ;
+        color: #666;
+        @include border-radius(3px);
+        width: 221px;
+        border:none;
+        margin: 29px 0 0 0;
+        line-height: 120%;
 
-          &, p, a {
-            font-size: 15px;
-          }
-          p { margin: 0 0 15px 0; }
-
-          a { text-decoration: underline; }
-          i { position:absolute; bottom: 5px; right: 3px; background: transparent sprite( $table-sprites, lock_closed, $offset-x: 5px, $offset-y: 4px) no-repeat; }
-
+        &, p, a {
+          font-size: 15px;
         }
+        p { margin: 0 0 15px 0; }
+
+        a { text-decoration: underline; }
+        i { position:absolute; bottom: 5px; right: 3px; background: transparent sprite( $table-sprites, lock_closed, $offset-x: 5px, $offset-y: 4px) no-repeat; }
+
+      }
+
+      li {
 
         .radiobutton span.radio {
           @include inline-block();
           margin: -2px 5px 0 0;
-        }
-
-        &.password_protected .input_field {
-          display:none;
-        }
-
-        &.password_protected.open {
-
-          clear:both;
-          overflow:hidden;
-
-          .title, a > i { display: none; }
-
-          .input_field { @include inline-block(); }
-
-          .radiobutton span.radio { float:left; }
-
-          .radiobutton {
-            width: 12px;
-            margin: 11px 6px 0 0;
-            float:left;
-          }
-
         }
 
         .input_field {
@@ -352,6 +339,8 @@
           @include inline-block();
           border: 1px solid #CCCCCC;
           @include border-radius(3px);
+
+          float:left;
 
           input[type="password"] {
             position:absolute;
@@ -388,7 +377,6 @@
             margin: 0 1px 0 0;
             z-index: 10;
           }
-
         }
 
         &:last-child {
@@ -421,6 +409,32 @@
 
 
       }
+
+      li.password_protected {
+
+        .radiobutton { width: 100%; }
+        .input_field { display:none; }
+        i { float:right; }
+
+        &.open {
+
+          clear:both;
+          overflow:hidden;
+
+          .title, a > i { display: none; }
+
+          /*.input_field { display: block; }*/
+
+          .radiobutton {
+            float:left;
+            width: 12px;
+            margin: 11px 6px 0 0;
+
+            span.radio { float:left; }
+          }
+        }
+      }
+
     } // ul.switches
   }
 

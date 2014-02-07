@@ -8,7 +8,9 @@ require 'uuidtools'
 
 module CartoDB
   class Geocoder
-    BATCH_IF_GREATER_THAN = 1100
+    BATCH_FILES_OVER = 1100 # Use Here Batch Geocoder API with tables over x rows
+    
+    # Options for the csv upload endpoint of the Batch Geocoder API
     UPLOAD_OPTIONS = {
       action: 'run',
       indelim: ',',
@@ -18,28 +20,42 @@ module CartoDB
       outcols: "displayLatitude,displayLongitude"
     }
 
+    # Default options for the regular Geocoder API
+    GEOCODER_OPTIONS = { 
+      gen: 4, 
+      housenumber: 8, 
+      jsonattributes: 1, 
+      language: 'en-US', 
+      maxresults: 1
+    }
+
     attr_reader   :base_url, :request_id, :app_id, :token, :mailto,
-                  :status, :processed_rows, :total_rows, :dir
+                  :status, :processed_rows, :total_rows, :dir,
+                  :non_batch_base_url
 
     attr_accessor :input_file
 
     def initialize(arguments)
-      @input_file = arguments[:input_file]
-      @base_url   = "http://batch.geo.nlp.nokia.com/search-batch/6.2/jobs"
-      @request_id = arguments[:request_id]
-      @app_id     = arguments.fetch(:app_id)
-      @token      = arguments.fetch(:token)
-      @mailto     = arguments.fetch(:mailto)
-      @dir        = arguments[:dir] || Dir.mktmpdir
+      @input_file         = arguments[:input_file]
+      @base_url           = arguments[:base_url]
+      @non_batch_base_url = arguments[:non_batch_base_url]
+      @request_id         = arguments[:request_id]
+      @app_id             = arguments.fetch(:app_id)
+      @token              = arguments.fetch(:token)
+      @mailto             = arguments.fetch(:mailto)
+      @force_batch        = arguments[:force_batch] || false
+      @dir                = arguments[:dir] || Dir.mktmpdir
     end # initialize
 
     def use_batch_process?
-      input_rows > BATCH_IF_GREATER_THAN
+      @force_batch || input_rows > BATCH_FILES_OVER
     end
 
     def input_rows
       stdout, stderr, status  = Open3.capture3('wc', '-l', input_file)
       stdout.to_i
+    rescue => e
+      0
     end
 
     def upload
@@ -92,26 +108,28 @@ module CartoDB
       @status = 'running'
       @total_rows = input_rows
       @processed_rows = 0
-      ::CSV.open(@result, "wb") do |csv|
-        ::CSV.foreach(input_file) do |row|
-          @processed_rows = @processed_rows + 1
-          searchtext = row[1]
-          arguments = { gen: 4, housenumber: 8, jsonattributes: 1, language: 'en-US', maxresults: 1, searchtext: searchtext, app_id: app_id, app_code: token }
-          url = "http://geocoder.cit.api.here.com/6.2/geocode.json?" + URI.encode_www_form(arguments)
-          response =  ::JSON.parse Typhoeus.get(url).body.to_s
-          begin
-            latitude  = response["response"]["view"][0]["result"][0]["location"]["displayPosition"]["latitude"]
-            longitude = response["response"]["view"][0]["result"][0]["location"]["displayPosition"]["longitude"]
-          rescue
-          end
-          puts "#{latitude},#{longitude}"
-          next if latitude == "" || latitude == nil
-          csv << [searchtext,1,1,latitude,longitude]
-        end
+      csv = ::CSV.open(@result, "wb")
+      ::CSV.foreach(input_file) do |row|
+        @processed_rows = @processed_rows + 1
+        searchtext = row[1]
+        latitude, longitude = geocode_text(searchtext)
+        next if latitude == "" || latitude == nil
+        csv << [searchtext, 1, 1, latitude, longitude]
       end
+      csv.close
       @status = 'completed'
       @request_id = UUIDTools::UUID.timestamp_create.to_s.gsub('-', '')
     end # run_non_batched
+
+    def geocode_text(text)
+      options = GEOCODER_OPTIONS.merge(searchtext: text, app_id: app_id, app_code: token)
+      url = "#{non_batch_base_url}?#{URI.encode_www_form(options)}"
+      response =  ::JSON.parse(Typhoeus.get(url).body.to_s)["response"]
+      position = response["view"][0]["result"][0]["location"]["displayPosition"]
+      return position["latitude"], position["longitude"]
+    rescue => e
+      [nil, nil]
+    end
 
     def api_url(arguments, extra_components = nil)
       arguments.merge!(app_id: app_id, token: token, mailto: mailto)

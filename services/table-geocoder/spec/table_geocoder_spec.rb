@@ -75,10 +75,10 @@ describe CartoDB::TableGeocoder do
   end
 
   describe '#deflate_results' do
-    it 'raises an error if no results file' do
+    it 'does not raise an error if no results file' do
       dir = Dir.mktmpdir
       tg = CartoDB::TableGeocoder.new(table_name: 'a', connection: 'b', working_dir: dir)
-      expect { tg.deflate_results }.to raise_error
+      expect { tg.deflate_results }.to_not raise_error
     end
 
     it 'extracts nokia result files' do
@@ -169,29 +169,33 @@ describe CartoDB::TableGeocoder do
     end
   end
 
-  # it "Geocodes a table" do
-  #   t = CartoDB::TableGeocoder.new(
-  #     table_name: @table_name,
-  #     formatter:  "name, ', ', sov0name",
-  #     connection: @db,
-  #     app_id: 'KuYppsdXZznpffJsKT24',
-  #     token:  'A7tBPacePg9Mj_zghvKt9Q',
-  #     mailto: 'arango@gmail.com',
-  #     schema: 'public'
-  #   )
-  #   @db.fetch("select count(*) from #{@table_name} where the_geom is null").first[:count].should eq 37
-  #   t.run
-  #   `open #{t.working_dir}`
-  #   until t.geocoder.status == 'completed' do
-  #     t.geocoder.update_status
-  #     puts "#{t.geocoder.status} #{t.geocoder.processed_rows}/#{t.geocoder.total_rows}"
-  #     sleep(2)
-  #   end
-  #   t.process_results
-  #   t.geocoder.status.should eq 'completed'
-  #   @db.fetch("select count(*) from #{@table_name} where the_geom is null").first[:count].should eq 4
-  #   @db.fetch("select count(*) from #{@table_name} where cartodb_georef_status is false").first[:count].should eq 4
-  # end
+  it "Geocodes a table using the batch geocoder API" do
+    config = YAML.load_file("#{File.dirname(__FILE__)}/../../../config/app_config.yml")["test"]["geocoder"]
+    pending "No Geocoder config found for test environment" unless config
+    config = config.inject({}){|memo,(k,v)| memo[k.to_sym] = v; memo}
+    config[:cache] = config[:cache].inject({}){|memo,(k,v)| memo[k.to_sym] = v; memo}
+    t = CartoDB::TableGeocoder.new(config.merge(
+      table_name: @table_name,
+      formatter:  "name, ', ', sov0name",
+      connection: @db,
+      schema:     'public'
+    ))
+    t.geocoder.stubs("use_batch_process?").returns(true)
+
+    @db.fetch("select count(*) from #{@table_name} where the_geom is null").first[:count].should eq 37
+    t.run
+    until t.geocoder.status == 'completed' do
+      t.geocoder.update_status
+      puts "#{t.geocoder.status} #{t.geocoder.processed_rows}/#{t.geocoder.total_rows}"
+      sleep(2)
+    end
+    t.process_results
+    t.geocoder.status.should eq 'completed'
+    t.geocoder.processed_rows.to_i.should eq 3
+    t.cache.hits.should eq 34
+    @db.fetch("select count(*) from #{@table_name} where the_geom is null").first[:count].should eq 3
+    @db.fetch("select count(*) from #{@table_name} where cartodb_georef_status is false").first[:count].should eq 3
+  end
 
 
   def path_to(filepath = '')

@@ -1818,9 +1818,38 @@ exports.Profiler = Profiler;
     },
 
     setOptions: function(opt) {
-      for(var k in opt) {
-        this.options[k] = opt[k];
+      var refresh = false;
+
+      if(opt.resolution !== undefined && opt.resolution !== this.options.resolution) {
+        this.options.resolution = opt.resolution;
+        refresh = true;
       }
+
+      if(opt.steps !== undefined && opt.steps !== this.options.steps) {
+        this.setSteps(opt.steps, { silent: true });
+        refresh = true;
+      }
+
+      if(opt.column !== undefined && opt.column !== this.options.column) {
+        this.options.column = opt.column;
+        refresh = true;
+      }
+
+      if(opt.countby !== undefined && opt.countby !== this.options.countby) {
+        this.options.countby = opt.countby;
+        refresh = true;
+      }
+
+      if(opt.data_aggregation !== undefined) {
+        var c = opt.data_aggregation === 'cumulative';
+        if (this.options.cumulative !== c) {
+          this.options.cumulative = c;
+          refresh = true;
+        }
+      }
+
+      if (refresh) this.reload();
+      return refresh;
       return false;
     },
 
@@ -3888,7 +3917,7 @@ L.CanvasLayer = L.Class.extend({
   },
 
   onRemove: function (map) {
-    map._container.removeChild(this._staticPane);
+    this._staticPane.removeChild(this._canvas);
     map.off({
         'viewreset': this._reset,
         'move': this._render,

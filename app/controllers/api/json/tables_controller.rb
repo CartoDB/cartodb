@@ -108,8 +108,8 @@ class Api::Json::TablesController < Api::ApplicationController
   rescue => e
     CartoDB::Logger.info e.class.name, e.message
     render_jsonp({ :errors => [translate_error(e.message.split("\n").first)] }, 400) and return
-  rescue CartoDB::NamedMapsWrapper::HTTPResponseError
-    render_jsonp({ errors: { named_maps_api: 'communication error with tiler API' } }, 400)
+  rescue CartoDB::NamedMapsWrapper::HTTPResponseError => exception
+    render_jsonp({ errors: { named_maps_api: "Communication error with tiler API. HTTP Code: #{exception.message}" } }, 400)
   rescue CartoDB::NamedMapsWrapper::NamedMapDataError => exception
     render_jsonp({ errors: { named_map: exception } }, 400)
   rescue CartoDB::NamedMapsWrapper::NamedMapsDataError => exception
@@ -119,8 +119,8 @@ class Api::Json::TablesController < Api::ApplicationController
   def destroy
     @table.destroy
     head :no_content
-  rescue CartoDB::NamedMapsWrapper::HTTPResponseError
-    render_jsonp({ errors: { named_maps_api: 'communication error with tiler API' } }, 400)
+  rescue CartoDB::NamedMapsWrapper::HTTPResponseError => exception
+    render_jsonp({ errors: { named_maps_api: "Communication error with tiler API. HTTP Code: #{exception.message}" } }, 400)
   rescue CartoDB::NamedMapsWrapper::NamedMapDataError => exception
     render_jsonp({ errors: { named_map: exception } }, 400)
   rescue CartoDB::NamedMapsWrapper::NamedMapsDataError => exception

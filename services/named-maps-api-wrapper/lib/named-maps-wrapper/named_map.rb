@@ -16,9 +16,7 @@ module CartoDB
 				raise NamedMapDataError, 'Name empty' if name.nil? or name.length == 0
 				@name = name
 
-				raise NamedMapDataError, 'Parent instance of named maps invalid' unless parent.respond_to?( :url ) 			\
-					 and parent.respond_to?( :api_key )		\
-					 and parent.respond_to?( :headers )
+				raise NamedMapDataError, 'Invalid parent named maps instance' unless parent.kind_of?( CartoDB::NamedMapsWrapper::NamedMaps)
 				@parent = parent
 
 				@template = template_data
@@ -29,52 +27,42 @@ module CartoDB
 				template_data = NamedMap.get_template_data( visualization, parent )
 
 				response = Typhoeus.post( parent.url + '?api_key=' + parent.api_key, {
-					headers: parent.headers,
-					body: ::JSON.dump( template_data ),
-          ssl_verifypeer: parent.verify_cert,
-          ssl_verifyhost: parent.verify_cert ? 0 : 2
-					#,verbose: true
+					headers:         parent.headers,
+					body:            ::JSON.dump( template_data ),
+          ssl_verifypeer:  parent.verify_cert,
+          ssl_verifyhost:  parent.verify_cert ? 0 : 2
 					} )
+        raise HTTPResponseError, response.code unless response.code == 200
 
-				if response.code == 200
-					body = ::JSON.parse(response.response_body)
-					self.new( body['template_id'], template_data, parent )
-				else
-					nil
-				end
+				body = ::JSON.parse(response.response_body)
+				self.new( body['template_id'], template_data, parent )
 			end #self.create_new
 
 			# Update a named map's template data (full replace update)
 			def update( visualization )
-				template_data = NamedMap.get_template_data( visualization, @parent )
-
+        @template = NamedMap.get_template_data( visualization, @parent )
 				response = Typhoeus.put( url + '?api_key=' + @parent.api_key, {
 					headers: @parent.headers,
-					body: ::JSON.dump( template_data ),
+					body: ::JSON.dump( @template ),
           ssl_verifypeer: @parent.verify_cert,
           ssl_verifyhost: @parent.verify_cert ? 0 : 2
 				} )
-
-				if response.code == 200
-					@template = template_data
-					true
-				else
-					raise HTTPResponseError, response.code
-				end
+        raise HTTPResponseError, response.code unless response.code == 200
+        @template
 			end #update
 
 			# Delete existing named map
-			def delete
+			def delete()
 				response = Typhoeus.delete( url + "?api_key=" + @parent.api_key, 
           { 
             ssl_verifypeer: @parent.verify_cert,
             ssl_verifyhost: @parent.verify_cert ? 0 : 2 
           } )
-				response.code == 204
+        raise HTTPResponseError, response.code unless response.code == 204
 			end #delete
 
 			# Url to access a named map's tiles
-			def url
+			def url()
 				[ @parent.url, @name ].join('/')
 			end # url
 
@@ -91,17 +79,16 @@ module CartoDB
 
 				# 1) general data
 				template_data = {
-					version: 	NAMED_MAPS_VERSION,
-					name: 		self.normalize_name(visualization.id),
-					auth: {
-						# TODO: Implement tokens
-            method: 	AUTH_TYPE_OPEN
-          },
-          placeholders: {
-          },
-          layergroup: {
-        		layers: []
-        	}
+					version:      NAMED_MAPS_VERSION,
+					name: 		    self.normalize_name(visualization.id),
+    			auth:         {
+            					    # TODO: Implement tokens
+                          method: 	AUTH_TYPE_OPEN
+                        },
+          placeholders: { },
+          layergroup:   {
+                    		  layers: []
+                    	  }
         }
 
         vizjson = CartoDB::Visualization::VizJSON.new( visualization, presenter_options, parent.vizjson_config )
@@ -110,7 +97,6 @@ module CartoDB
         layer_group = vizjson.layer_group_for( visualization )
         if ( !layer_group.nil?() )
         	layer_group[:options][:layer_definition][:layers].each { |layer|
-
             layer_options = layer[:options].except [ :sql, :interactivity ]
 
             layer_placeholder = "layer#{layer_num}"
@@ -124,14 +110,12 @@ module CartoDB
 
 	        	if ( layer.include?( :infowindow ) && !layer[:infowindow].nil? && 
 	        			 layer[:infowindow].fetch('fields').size > 0 )
-	        	
               layer_options[:interactivity] = layer[:options][:interactivity]
-
 	        		layer_options[:attributes] = {
-        				id: 'cartodb_id', 
-	        			columns: layer[:infowindow]['fields'].map { |field|
-		        			field.fetch('name')
-		        		}
+        				id:       'cartodb_id', 
+	        			columns:  layer[:infowindow]['fields'].map { |field|
+          		        			field.fetch('name')
+          		            }
 	        		}
 	        	end
 
@@ -144,19 +128,14 @@ module CartoDB
         
         other_layers = vizjson.other_layers_for( visualization )
         if ( !other_layers.nil?() )
-        	other_layers = other_layers.compact
-        	other_layers.each { |layer|
-        		sql_query = layer[:options].fetch( 'query' )
-
-        		options = {
-	            	cartocss_version: '2.0.1',
-	            	cartocss: 				layer[:options].fetch( 'tile_style' ),
-	            	sql: 							sql_query
-	            }
-
+        	other_layers.compact.each { |layer|
         		layers_data.push( {
 	            type:     layer[:type].downcase,
-	            options:  options
+	            options:  {
+                          cartocss_version: '2.0.1',
+                          cartocss:         layer[:options].fetch( 'tile_style' ),
+                          sql:              layer[:options].fetch( 'query' )
+                        }
 	          } )
         	}
         end

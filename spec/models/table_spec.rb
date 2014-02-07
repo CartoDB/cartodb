@@ -622,6 +622,7 @@ describe Table do
     end
 
     it 'deletes derived visualizations that depend on this table' do
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:create).returns(true)
       table   = create_table(name: 'bogus_name', user_id: @user.id)
       source  = table.table_visualization
       derived = CartoDB::Visualization::Copier.new(@user, source).copy

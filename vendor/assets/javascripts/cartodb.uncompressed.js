@@ -1,6 +1,6 @@
 // cartodb.js version: 3.7.00-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: 50d8dd02516ff85833dd68ac5c762a39e12bc3d9
+// sha: 60872a25a4b731e223a778d266509c8a29d59bbe
 (function() {
   var root = this;
 
@@ -26165,7 +26165,7 @@ NamedMap.prototype = _.extend({}, Map.prototype, {
     for(var i = 0; i < this.layers.length; ++i) {
       var layer = this.layers[i];
       if(layer.options.hidden) {
-        p['layer' + i] = false;
+        p['layer' + i] = 0;
       } else {
         // when it's show just don't send it
         delete p['layer' + i];

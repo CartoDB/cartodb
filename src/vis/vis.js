@@ -626,9 +626,14 @@ var Vis = cdb.core.View.extend({
     }
 
     if (vizjson.layers.length > 1) {
+      var token = opt.auth_token;
       for(var i = 1; i < vizjson.layers.length; ++i) {
-        vizjson.layers[i].options.no_cdn = opt.no_cdn;
-        vizjson.layers[i].options.force_cors = opt.force_cors;
+        var o = vizjson.layers[i].options;
+        o.no_cdn = opt.no_cdn;
+        o.force_cors = opt.force_cors;
+        if(token) {
+          o.auth_token = token;
+        }
       }
     }
 

@@ -109,12 +109,11 @@ module CartoDB
       @total_rows = input_rows
       @processed_rows = 0
       csv = ::CSV.open(@result, "wb")
-      ::CSV.foreach(input_file) do |row|
+      ::CSV.foreach(input_file, headers: true) do |row|
         @processed_rows = @processed_rows + 1
-        searchtext = row[1]
-        latitude, longitude = geocode_text(searchtext)
+        latitude, longitude = geocode_text(row["searchtext"])
         next if latitude == "" || latitude == nil
-        csv << [searchtext, 1, 1, latitude, longitude]
+        csv << [row["searchtext"], 1, 1, latitude, longitude]
       end
       csv.close
       @status = 'completed'

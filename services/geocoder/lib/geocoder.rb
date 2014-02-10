@@ -99,7 +99,7 @@ module CartoDB
     def result
       return @result unless @result.nil?
       results_filename = File.join(dir, "#{request_id}.zip")
-      system('wget', '-nv', '-E', '-O', results_filename, api_url({}, 'result'))
+      stdout, stderr, status  = Open3.capture3('wget', '-nv', '-E', '-O', results_filename, api_url({}, 'result'))
       @result = Dir[File.join(dir, '*')][0]
     end # results
 

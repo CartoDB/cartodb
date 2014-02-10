@@ -52,6 +52,7 @@ and (orientation : portrait) {
 
   .cartodb-text {display:none}
   .cartodb-map-wrapper { bottom: 0!Important;}
+
 }
 
 /* iPhone landscape */
@@ -92,36 +93,6 @@ and (orientation : landscape) {
     border:none!Important;
     background-size: 11px 12px!Important;
   }
-
-}
-
-/* iPad landscape */
-@media only screen 
-and (min-device-width : 768px) 
-and (max-device-width : 1024px) 
-and (orientation : landscape) { 
-
-  /*div.cartodb-timeslider .ui-slider .ui-slider-handle {*/
-    /*top: -12px!Important;*/
-    /*padding: 9px 3px;*/
-    /*background:transparent url('../img/handle.png') center center no-repeat!Important;*/
-    /*border:none!Important;*/
-  /*}*/
-
-}
-
-/* iPad portrait */
-@media only screen 
-and (min-device-width : 768px) 
-and (max-device-width : 1024px) 
-and (orientation : portrait) { 
-
-  /*div.cartodb-timeslider .ui-slider .ui-slider-handle {*/
-    /*top: -12px!Important;*/
-    /*padding: 9px 3px;*/
-    /*background:transparent url('../img/handle.png') center center no-repeat!Important;*/
-    /*border:none!Important;*/
-  /*}*/
 
 }
 

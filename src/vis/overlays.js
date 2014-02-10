@@ -90,7 +90,7 @@ cdb.vis.Overlay.register('header', function(data, vis) {
         </div>\
       {{/mobile_shareable}}\
       {{#shareable}}\
-        <a href='#' class='share'>Share</a>\
+         <div class='cartodb-share' style='display: block;'><a href='#'></a></div>\
       {{/shareable}}\
     ",
     data.templateType || 'mustache'
@@ -269,7 +269,7 @@ cdb.vis.Overlay.register('share', function(data, vis) {
     url: data.url,
     share_url: data.share_url,
     template: template,
-    target: $(".cartodb-header .share"),
+    target: $(".cartodb-header .cartodb-share"),
     size: $(document).width() > 400 ? "" : "small",
     width: $(document).width() > 400 ? 430 : 216
   });

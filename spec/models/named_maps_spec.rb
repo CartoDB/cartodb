@@ -26,7 +26,7 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
     CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
   end
 
-  describe 'public_table_public_vis' do
+  describe 'public_table' do
     it 'public map with public visualization does not create a named map' do
       table = create_table( user_id: @user.id )
       table.privacy = Table::PUBLIC
@@ -50,5 +50,24 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
       table.affected_visualizations[0].id.should_not eq table.affected_visualizations[1].id
     end
   end #public_table_public_vis
+
+  describe 'private_table' do
+    it 'private map with public visualization should create a named map' do
+      pending
+      
+      table = create_table( user_id: @user.id )
+
+      derived_vis = CartoDB::Visualization::Copier.new(@user, table.table_visualization).copy()
+      derived_vis.privacy = CartoDB::Visualization::Member::PUBLIC
+
+      CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
+
+      derived_vis.store()
+      collection  = Visualization::Collection.new.fetch()
+      collection.add(derived_vis)
+      collection.store()
+
+    end
+  end #private_table
 
 end

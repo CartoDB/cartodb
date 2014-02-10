@@ -20,6 +20,9 @@ module CartoDB
       extend Forwardable
       include Virtus
 
+      PUBLIC = 'public'
+      PRIVATE = 'private'
+
       CANONICAL_TYPE = 'table'
       PRIVACY_VALUES  = %w{ public private }
       TEMPLATE_NAME_PREFIX = 'tpl_'

@@ -23,6 +23,7 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
   end
 
   before(:each) do
+    Typhoeus::Expectation.clear()
     CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
   end
 
@@ -53,20 +54,33 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
 
   describe 'private_table' do
     it 'private map with public visualization should create a named map' do
-      pending
       
       table = create_table( user_id: @user.id )
 
       derived_vis = CartoDB::Visualization::Copier.new(@user, table.table_visualization).copy()
       derived_vis.privacy = CartoDB::Visualization::Member::PUBLIC
 
-      CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
+      # Get
+      Typhoeus.stub(%r{http:\/\/[a-z0-9]+\.localhost\.lan:8181\/tiles\/template\/[a-zA-Z0-9_]+\?api_key=.*})
+               .and_return(
+                  Typhoeus::Response.new(code: 404, body: "")
+                )
+
+
+      #Post to create
+      new_template_body = { template_id: '12345' }
+
+      Typhoeus.stub(%r{http:\/\/[a-z0-9]+\.localhost\.lan:8181\/tiles\/template\?api_key=.*})
+               .and_return(
+                  Typhoeus::Response.new( code: 200, body: JSON::dump( new_template_body ) )
+                )
 
       derived_vis.store()
       collection  = Visualization::Collection.new.fetch()
       collection.add(derived_vis)
       collection.store()
 
+      pending "Still unfinished"
     end
   end #private_table
 

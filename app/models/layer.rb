@@ -92,23 +92,6 @@ class Layer < Sequel::Model
     end
   end
 
-  def to_tilejson
-    o = JSON.parse(self.values[:options])
-    if self.kind == 'carto'
-
-      url = o['tiler_protocol'] + "://" + o['user_name'] + "." + o['tiler_domain'] + ":" + o ['tiler_port'] + "/tiles/" + o['table_name'] + "/{z}/{x}/{y}.png"
-
-    else
-      url = o['urlTemplate']
-    end
-
-    return {
-      "version" => "1.0.0",
-      "scheme" => "xyz",
-      "tiles" => [url]
-    }.to_json
-  end
-
   def copy
     attributes = public_values.select { |k, v| k != 'id' }
     ::Layer.new(attributes)

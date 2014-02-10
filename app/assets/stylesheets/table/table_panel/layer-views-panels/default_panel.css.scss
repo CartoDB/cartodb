@@ -124,18 +124,41 @@
       left:0;
       max-height:30%;
       padding:17px 17px 17px 52px;
-      background:rgba(yellow,0.3);
+      background:#FFF7E0;
       color:#888;
       z-index:2;
       font-size:13px;
       border-top:1px solid #EBDCE0;
+      letter-spacing:0;
 
-      p {line-height:17px; word-wrap: break-word}
+      p {
+        display:inline-block;
+        letter-spacing:0;
+        line-height:17px;
+        word-wrap: break-word;
+        color:#666666;
+      }
 
       &.error {
         background:rgba(#FFD7E3,0.5);
         p {color:#EB2466;}
       }
+
+      &.warning {
+        display:block;
+        bottom:0;
+        height:auto;
+        max-height:none;
+        padding:0;
+        z-index:1001; // Filter shadow forces me to do it :S
+
+        p { padding:20px 30px }
+
+        &.editor {
+          bottom:79px;
+          p { padding-left:56px }
+        }
+      }
     }
- 
+
   }

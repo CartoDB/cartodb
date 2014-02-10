@@ -87,8 +87,8 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     render_jsonp(member)
   rescue CartoDB::InvalidMember => exception
     render_jsonp({ errors: member.full_errors }, 400)
-  rescue CartoDB::NamedMapsWrapper::HTTPResponseError
-    render_jsonp({ errors: { named_maps_api: 'communication error with tiler API' } }, 400)
+  rescue CartoDB::NamedMapsWrapper::HTTPResponseError => exception
+    render_jsonp({ errors: { named_maps_api: "Communication error with tiler API. HTTP Code: #{exception.message}" } }, 400)
   rescue CartoDB::NamedMapsWrapper::NamedMapDataError => exception
     render_jsonp({ errors: { named_map: exception } }, 400)
   rescue CartoDB::NamedMapsWrapper::NamedMapsDataError => exception
@@ -114,8 +114,8 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     head(404)
   rescue CartoDB::InvalidMember => exception
     render_jsonp({ errors: member.full_errors }, 400)
-  rescue CartoDB::NamedMapsWrapper::HTTPResponseError
-    render_jsonp({ errors: { named_maps_api: 'communication error with tiler API' } }, 400)
+  rescue CartoDB::NamedMapsWrapper::HTTPResponseError => exception
+    render_jsonp({ errors: { named_maps_api: "Communication error with tiler API. HTTP Code: #{exception.message}" } }, 400)
   rescue CartoDB::NamedMapsWrapper::NamedMapDataError => exception
     render_jsonp({ errors: { named_map: exception } }, 400)
   rescue CartoDB::NamedMapsWrapper::NamedMapsDataError => exception
@@ -130,8 +130,8 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     return head 204
   rescue KeyError
     head(404)
-  rescue CartoDB::NamedMapsWrapper::HTTPResponseError
-    render_jsonp({ errors: { named_maps_api: 'communication error with tiler API' } }, 400)
+  rescue CartoDB::NamedMapsWrapper::HTTPResponseError => exception
+    render_jsonp({ errors: { named_maps_api: "Communication error with tiler API. HTTP Code: #{exception.message}" } }, 400)
   rescue CartoDB::NamedMapsWrapper::NamedMapDataError => exception
     render_jsonp({ errors: { named_map: exception } }, 400)
   rescue CartoDB::NamedMapsWrapper::NamedMapsDataError => exception
@@ -168,7 +168,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   rescue KeyError => exception
     render(text: exception.message, status: 403)
   rescue CartoDB::NamedMapsWrapper::HTTPResponseError => exception
-    render_jsonp({ errors: { named_maps_api: "communication error with tiler API. Error #{exception.message}" } }, 400)
+    render_jsonp({ errors: { named_maps_api: "Communication error with tiler API. HTTP Code: #{exception.message}" } }, 400)
   rescue CartoDB::NamedMapsWrapper::NamedMapDataError => exception
     render_jsonp({ errors: { named_map: exception } }, 400)
   rescue CartoDB::NamedMapsWrapper::NamedMapsDataError => exception

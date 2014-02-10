@@ -47,34 +47,6 @@ class Admin::TablesController < ApplicationController
     end
   end
 
-  def embed_map
-    # Code done with ♥ by almost every human being working at @vizzuality
-    @subdomain = CartoDB.extract_subdomain(request)
-    @table = Table.find_by_subdomain(@subdomain, params[:id])
-
-    if @table.blank? || @table.private?
-      respond_to do |format|
-        format.html { render "embed_map_error.html.erb", :layout => false, :status => :forbidden }
-        format.js { render "embed_map_error.js.erb", :layout => false }
-      end
-    else
-      respond_to do |format|
-        format.html { render :layout => false }
-        format.js { render 'embed_map.js.erb', :content_type => 'application/javascript' }
-      end
-    end
-  end
-
-  def embed_forbidden
-    render 'embed_map_error.html.erb', :layout => false, :status => :forbidden
-  end
-
-  def track_embed
-    response.headers['X-Cache-Channel'] = "embeds_google_analytics"
-    response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
-    render 'track.html.erb', :layout => false
-  end
-
   private
   def download_formats table, format
     format.sql  { send_data table.to_sql, send_data_conf(table, 'zip', 'zip') }

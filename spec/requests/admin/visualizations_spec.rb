@@ -71,7 +71,7 @@ describe Admin::VisualizationsController do
     end
 
     it 'keeps the base path (table|visualization) when redirecting' do
-      id = table_factory.fetch('id')
+      id = table_factory.id
 
       get "/tables/#{id}", {}, @headers
       follow_redirect!
@@ -81,23 +81,14 @@ describe Admin::VisualizationsController do
 
   describe 'GET /viz/:id/public' do
     it 'returns public data for a table visualization' do
-      table_attributes = table_factory
-      id = table_attributes.fetch('id')
+      id = table_factory(privacy: ::Table::PUBLIC).table_visualization.id
 
       get "/viz/#{id}/public", {}, @headers
       last_response.status.should == 200
     end
 
     it 'returns a 404 if table is private' do
-      payload = { 
-        name:     "table #{rand(9999)}",
-        privacy:  "private"
-      }
-      post "/api/v1/tables?api_key=#{@api_key}",
-        payload.to_json, @headers
-
-      table_attributes = JSON.parse(last_response.body)
-      id = table_attributes.fetch('id')
+      id = table_factory.table_visualization.id
 
       get "/viz/#{id}/public", {}, @headers
       last_response.status.should == 404
@@ -105,9 +96,7 @@ describe Admin::VisualizationsController do
     end
 
     it "redirects to embed_map if visualization is 'derived'" do
-      table_attributes  = table_factory
-      id                = table_attributes.fetch('table_visualization')
-                            .fetch('id')
+      id                = table_factory(privacy: ::Table::PUBLIC).table_visualization.id
       payload           = { source_visualization_id: id }
 
       post "/api/v1/viz?api_key=#{@api_key}", 
@@ -120,7 +109,6 @@ describe Admin::VisualizationsController do
       get "/viz/#{id}/public", {}, @headers
       last_response.status.should == 302
       follow_redirect!
-
       last_response.status.should == 200
       last_request.url.should =~ %r{.*#{id}/embed_map.*}
     end
@@ -128,20 +116,18 @@ describe Admin::VisualizationsController do
 
   describe 'GET /viz/:name/embed_map' do
     it 'renders the view by passing a visualization name' do
-      table_attributes = table_factory
-      name = table_attributes.fetch('table_visualization').fetch('name')
-      name = URI::encode(name)
+      table = table_factory(privacy: ::Table::PUBLIC)
+      name = table.table_visualization.name
 
-      login_as(@user, scope: 'test')
-
-      get "/viz/#{name}/embed_map", {}, @headers
+      get "/viz/#{URI::encode(name)}/embed_map", {}, @headers
       last_response.status.should == 200
+      last_response.headers["X-Cache-Channel"].should_not be_empty
+      last_response.headers["X-Cache-Channel"].should include(table.name)
+      last_response.headers["X-Cache-Channel"].should include(table.table_visualization.varnish_key)
     end
 
     it 'renders embed_map.js' do
-      table_attributes  = table_factory
-      id                = table_attributes.fetch('table_visualization')
-                            .fetch('id')
+      id                = table_factory(privacy: ::Table::PUBLIC).table_visualization.id
       payload           = { source_visualization_id: id }
 
       post "/api/v1/viz?api_key=#{@api_key}", 
@@ -158,11 +144,11 @@ describe Admin::VisualizationsController do
     end
 
     it 'renders embed map error page if visualization private' do
-      table_attributes = table_factory
-      put "/api/v1/tables/#{table_attributes.fetch('id')}?api_key=#{@api_key}",
+      table = table_factory
+      put "/api/v1/tables/#{table.id}?api_key=#{@api_key}",
         { privacy: 0 }.to_json, @headers
 
-      name = table_attributes.fetch('table_visualization').fetch('name')
+      name = table.table_visualization.name
       name = URI::encode(name)
 
       login_as(@user, scope: 'test')
@@ -229,25 +215,7 @@ describe Admin::VisualizationsController do
     JSON.parse(last_response.body)
   end #factory
 
-  def table_factory
-    payload = { name: "table #{rand(9999)}" }
-    post "/api/v1/tables?api_key=#{@api_key}",
-      payload.to_json, @headers
-
-    table_attributes  = JSON.parse(last_response.body)
-    table_id          = table_attributes.fetch('id')
-    table_name        = table_attributes.fetch('name')
-
-    put "/api/v1/tables/#{table_id}?api_key=#{@api_key}",
-      { privacy: 1 }.to_json, @headers
-
-    sql = URI.escape(%Q{
-      INSERT INTO #{table_name} (description)
-      VALUES('bogus description')
-    })
-
-    get "/api/v1/queries?sql=#{sql}&api_key=#{@api_key}", {}, @headers
-    table_attributes
+  def table_factory(attrs = {})
+    new_table(attrs.merge(user_id: @user.id)).save.reload
   end #table_factory
 end # Admin::VisualizationsController
-

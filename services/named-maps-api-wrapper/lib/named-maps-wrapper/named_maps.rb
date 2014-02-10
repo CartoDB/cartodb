@@ -10,12 +10,10 @@ module CartoDB
 				raise NamedMapsDataError, { 'tiler' => 'config missing' } if tiler_config.nil? or tiler_config.size == 0
 
 				@headers = { 'content-type' => 'application/json' }
-
 				@username = user_config[:name]
 				@api_key = user_config[:api_key]
 				@vizjson_config = vizjson_config
         @verify_cert = tiler_config[:verifycert]
-
 				@host = "#{tiler_config[:protocol]}://#{@username}.#{tiler_config[:domain]}:#{tiler_config[:port]}"
 				@url = [ @host, 'tiles', 'template' ].join('/')
 			end #initialize
@@ -32,9 +30,7 @@ module CartoDB
           ssl_verifypeer: @verify_cert,
           ssl_verifyhost: @verify_cert ? 0 : 2
 				})
-
 				raise HTTPResponseError, response.code if response.code != 200
-
 
 				::JSON.parse(response.response_body)
 			end #all

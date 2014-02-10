@@ -1,11 +1,12 @@
 # encoding: utf-8
 require_relative '../../geocoder/lib/geocoder'
+require_relative 'geocoder_cache'
 
 module CartoDB
   class TableGeocoder
 
     attr_reader   :connection, :working_dir, :geocoder, :result, 
-                  :temp_table_name, :max_rows
+                  :temp_table_name, :max_rows, :cache
 
     attr_accessor :table_name, :formatter, :remote_id
 
@@ -19,16 +20,26 @@ module CartoDB
       @schema      = arguments[:schema] || 'cdb'
       @max_rows    = arguments[:max_rows] || 1000000
       @geocoder    = CartoDB::Geocoder.new(
-        app_id:     arguments[:app_id],
-        token:      arguments[:token],
-        mailto:     arguments[:mailto],
-        dir:        @working_dir,
-        request_id: arguments[:remote_id]
+        app_id:             arguments[:app_id],
+        token:              arguments[:token],
+        mailto:             arguments[:mailto],
+        dir:                @working_dir,
+        request_id:         arguments[:remote_id],
+        base_url:           arguments[:base_url],
+        non_batch_base_url: arguments[:non_batch_base_url]
+      )
+      @cache       = CartoDB::GeocoderCache.new(
+        connection:  connection,
+        formatter:   clean_formatter,
+        sql_api:     arguments[:cache],
+        working_dir: working_dir,
+        table_name:  table_name
       )
     end # initialize
 
     def run
       add_georef_status_column
+      cache.run
       csv_file = generate_csv
       start_geocoding_job(csv_file)
     end
@@ -67,6 +78,8 @@ module CartoDB
       create_temp_table
       import_results_to_temp_table
       load_results_into_original_table
+      cache.store
+
     ensure
       drop_temp_table
     end

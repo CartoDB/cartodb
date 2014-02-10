@@ -3,6 +3,9 @@
 module CartoDB
   module Importer2
 
+    # Generic/unmapped errors
+    class GenericImportError                    < StandardError; end
+    # Mapped errors
     class InstallError                          < StandardError; end
     class EmptyFileError                        < StandardError; end
     class ExtractionError                       < StandardError; end

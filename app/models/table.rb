@@ -1564,8 +1564,9 @@ SQL
       end
       propagate_name_change_to_table_visualization
 
+      require_relative '../../services/importer/lib/importer/exceptions'
       CartoDB::notify_exception(
-        CartoDB::GenericImportError.new("Attempt to rename table without layers #{self.name}"), 
+        CartoDB::Importer2::GenericImportError.new("Attempt to rename table without layers #{self.name}"), 
         user: owner
       ) if layers.blank?
 

@@ -136,12 +136,7 @@
     }
 
     div.cartodb-fullscreen {
-      display:none;
-      position:relative;
-      top: 65px;
-      left: 0;
-      margin: 15px 0 0 15px;
-      z-index: 5;
+      margin: 10px 0 0 15px;
     }
 
     div.cartodb-share {
@@ -232,6 +227,9 @@
       height: 41px; // prevents the jump in size due to the webfont loading
       @include box-sizing(border-box);
 
+      position:relative;
+      z-index: 11;
+
       .inner { width: 221px; }
 
       padding: 12px 0;
@@ -255,8 +253,8 @@
 
       pointer-events: none;
 
-      &.top    { @include opacity(1); @include position(135px, false, false, 0); @extend .white-gradient-shadow-top;    z-index: 1000; }
-      &.bottom { @include opacity(1); @include position(0, false, false, 0);  @extend .white-gradient-shadow-bottom; z-index: 1000; }
+      &.top    { @include opacity(1); @include position(135px, false, false, 0); @extend .white-gradient-shadow-top; z-index: 10; }
+      &.bottom { @include opacity(1); @include position(0, false, false, 0);  @extend .white-gradient-shadow-bottom; z-index: 10; }
 
       @include size(100%, 16px);
 
@@ -408,9 +406,14 @@
         }
 
         &.link_protected     i { background: rgba(#FFA64D, .5) sprite( $table-sprites, lock_open,   $offset-x: 5px, $offset-y: 4px) no-repeat; }
-        &.password_protected i { background: rgba(#FFA64D, .5) sprite( $table-sprites, lock_key,    $offset-x: 5px, $offset-y: 4px) no-repeat; }
         &.private a          i { background: rgba(#FF7373, .5) sprite( $table-sprites, lock_closed, $offset-x: 5px, $offset-y: 4px) no-repeat; }
 
+        &.password_protected i { background: rgba(#FFA64D, .5) sprite( $table-sprites, lock_key,    $offset-x: 5px, $offset-y: 4px) no-repeat; }
+        &.password_protected.loading i {
+          background: rgba(#FFA64D, .5) image-url('layout/password_protected_loader.gif') no-repeat;
+          background-size: 12px;
+          background-position: 50%;
+        }
 
       }
 

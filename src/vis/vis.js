@@ -350,8 +350,6 @@ var Vis = cdb.core.View.extend({
       }
     }
 
-    if (options.fullscreen) this.addFullScreen();
-
     if (device) this.addMobile(torqueLayer);
 
     // set layer options
@@ -393,6 +391,8 @@ var Vis = cdb.core.View.extend({
     for (var i in data.overlays) {
       this.addOverlay(data.overlays[i]);
     }
+
+    if (options.fullscreen && !device) this.addFullScreen();
 
     _.defer(function() {
       self.trigger('done', self, self.getLayers());

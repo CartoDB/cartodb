@@ -133,7 +133,6 @@
         }
 
       }
-
     }
 
     div.cartodb-fullscreen {
@@ -169,8 +168,14 @@
         border: 1px solid #999999;
 
         background: #fff sprite( $table-sprites, share, $offset-x: 8px, $offset-y: 8px) no-repeat;
-        /*@include opacity(.8);*/
-        /*&:hover { @include opacity(1); }*/
+
+        &:hover {
+          background: #fff sprite( $table-sprites, share, $offset-x: -27px, $offset-y: 8px) no-repeat;
+        }
+
+        &:active, &:hover:active {
+          background: #fff sprite( $table-sprites, share, $offset-x: 8px, $offset-y: 8px) no-repeat!important;
+        }
 
       }
 

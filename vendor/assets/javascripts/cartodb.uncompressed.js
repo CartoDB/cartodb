@@ -1,6 +1,6 @@
 // cartodb.js version: 3.7.00-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: 60872a25a4b731e223a778d266509c8a29d59bbe
+// sha: 3855fb9acfe8f4d2201b5bec158ed7f040c30a78
 (function() {
   var root = this;
 
@@ -30349,8 +30349,6 @@ var Vis = cdb.core.View.extend({
       }
     }
 
-    if (options.fullscreen) this.addFullScreen();
-
     if (device) this.addMobile(torqueLayer);
 
     // set layer options
@@ -30392,6 +30390,8 @@ var Vis = cdb.core.View.extend({
     for (var i in data.overlays) {
       this.addOverlay(data.overlays[i]);
     }
+
+    if (options.fullscreen) this.addFullScreen();
 
     _.defer(function() {
       self.trigger('done', self, self.getLayers());
@@ -31076,7 +31076,7 @@ cdb.vis.Overlay.register('header', function(data, vis) {
         </div>\
       {{/mobile_shareable}}\
       {{#shareable}}\
-        <a href='#' class='share'>Share</a>\
+         <div class='cartodb-share' style='display: block;'><a href='#'></a></div>\
       {{/shareable}}\
     ",
     data.templateType || 'mustache'
@@ -31255,7 +31255,7 @@ cdb.vis.Overlay.register('share', function(data, vis) {
     url: data.url,
     share_url: data.share_url,
     template: template,
-    target: $(".cartodb-header .share"),
+    target: $(".cartodb-header .cartodb-share"),
     size: $(document).width() > 400 ? "" : "small",
     width: $(document).width() > 400 ? 430 : 216
   });

@@ -82,6 +82,7 @@ module CartoDB
               tiler_protocol:     @configuration[:tiler]['public']['protocol'],
               tiler_domain:       @configuration[:tiler]['public']['domain'],
               tiler_port:         @configuration[:tiler]['public']['port'],
+              cdn_url:            @configuration.fetch(:cdn_url, nil),
               named_map:          {
                 name:     @named_map_template[:name],
                 auth:     @named_map_template[:auth][:method],

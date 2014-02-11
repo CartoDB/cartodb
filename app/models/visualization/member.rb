@@ -126,7 +126,7 @@ module CartoDB
       end #privacy=
 
       def public?
-        privacy == 'public'
+        privacy == PUBLIC
       end #public?
 
       def private?

@@ -85,7 +85,6 @@ module CartoDB
               cdn_url:            @configuration.fetch(:cdn_url, nil),
               named_map:          {
                 name:     @named_map_template[:name],
-                auth:     @named_map_template[:auth][:method],
                 params:   params,
                 layers:   layers_data
               }

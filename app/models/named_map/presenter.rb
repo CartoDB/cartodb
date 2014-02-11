@@ -17,6 +17,7 @@ module CartoDB
       end #initialize
 
       # Prepares additional data to decorate layers in the LAYER_TYPES_TO_DECORATE list
+      # - Parameters set inside as nil will remove the field itself from the layer data
       def get_decoration_for_layer(layer_type, layer_index)
         return {} if not LAYER_TYPES_TO_DECORATE.include? layer_type
 
@@ -32,7 +33,8 @@ module CartoDB
             'name' =>         @named_map_template[:name],
             'layer_index' =>  layer_index,
             'params' =>       params
-          }
+          },
+          'query' => nil  #do not expose SQL query on Torque layers with named maps
         }
       end #get_decoration_for_layer
 

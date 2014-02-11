@@ -327,6 +327,10 @@ var Vis = cdb.core.View.extend({
     var legends, torqueLayer;
     var device = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
+    if (options.shareable && !device) {
+      this.container.find(".cartodb-map-wrapper").append('<div class="cartodb-share" style="display: block;"><a href="#"></a></div>');
+    }
+
     if (!device && options.legends) {
       this.addLegends(data.layers);
     } else {
@@ -560,7 +564,7 @@ var Vis = cdb.core.View.extend({
       });
     }
 
-    if (opt.title  || opt.description || opt.shareable) {
+    if ( (opt.title && vizjson.title) || (opt.description && vizjson.description) ) {
       vizjson.overlays.unshift({
         type: "header",
         shareable: opt.shareable ? true: false,
@@ -795,10 +799,8 @@ var Vis = cdb.core.View.extend({
 
   loadingTiles: function() {
     if (this.loader) {
-
       this.$el.find(".cartodb-fullscreen").hide();
       this.loader.show()
-
     }
   },
 

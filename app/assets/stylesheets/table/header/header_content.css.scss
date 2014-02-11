@@ -244,6 +244,7 @@
               margin: 0 10px 0 0;
               background: rgba(#EEE, .5) sprite($table-sprites,  lock_open,   $offset-x: 12px, $offset-y: 4px) no-repeat;
               border-right: 1px solid rgba(#000, .15);
+              @include simple-transition(all, 150ms);
               @include border-radius(25px 0 0 25px);
             }
 

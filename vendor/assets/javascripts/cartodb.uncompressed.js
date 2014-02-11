@@ -30570,11 +30570,13 @@ var Vis = cdb.core.View.extend({
         url: vizjson.url
       });
 
+    }
+
+    if (opt.shareable && !device) {
       vizjson.overlays.push({
         type: "share",
         url: vizjson.url
       });
-
     }
 
     var device = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
@@ -31269,7 +31271,7 @@ cdb.vis.Overlay.register('share', function(data, vis) {
     url: data.url,
     share_url: data.share_url,
     template: template,
-    target: $(".cartodb-header .cartodb-share"),
+    target: $(".cartodb-share a"),
     size: $(document).width() > 400 ? "" : "small",
     width: $(document).width() > 400 ? 430 : 216
   });

@@ -58,11 +58,12 @@ module CartoDB
       end #store
 
       def store_using_table(privacy_text)
-        # Each table has a canonical visualization which must have privacy synced
         if (type == CANONICAL_TYPE)
+          # Each table has a canonical visualization which must have privacy synced
           self.privacy = privacy_text
-          do_store(false)
         end
+        # But as this method also notifies of changes in a table, must save always
+        do_store(false)
         self
       end #store_using_table
 

@@ -411,6 +411,7 @@ class Table < Sequel::Model(:user_tables)
       manager.propagate_to_redis_and_varnish
       update_cdb_tablemetadata
     end
+    
     affected_visualizations.each { |visualization|
       manager.propagate_to(visualization)
     }

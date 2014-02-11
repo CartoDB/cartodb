@@ -143,19 +143,20 @@
       display:none;
       position:relative;
       float:right;
-      margin: 15px 10px 0 0;
+      margin: 15px 15px 0 0;
       z-index: 5;
 
       a {
         width: 13px;
         height: 13px;
         display: block;
+        padding: 8px 8px;
+
         color: #397DB8;
         font-size:10px;
         font-weight:bold;
         text-transform: uppercase;
         text-shadow: none;
-        padding: 8px 8px;
 
         @include box-shadow(rgba(0, 0, 0, 0.2) 0 0 4px 2px);
         @include border-radius(4px);

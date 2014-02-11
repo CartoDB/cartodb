@@ -63,6 +63,19 @@ module CartoDB
 
       attr_reader :layer, :options, :configuration
 
+      # Decorates the layer presentation with data if needed. nils on the decoration act as removing the field
+      def decorate_with_data(source_hash, decoration_data=nil)
+        if (not decoration_data.nil?)
+          decoration_data.each { |key, value| 
+            source_hash[key] = value
+            source_hash.delete_if { |k, v| 
+              v.nil? 
+            }
+          }
+        end
+        source_hash
+      end #decorate_with_data
+
       def base?(layer)
         ['tiled', 'background', 'gmapsbase', 'wms'].include? layer.kind
       end #base?
@@ -72,18 +85,14 @@ module CartoDB
       end #torque?
 
       def with_kind_as_type(attributes)
-        attributes.merge(type: attributes.delete('kind')).merge(@decoration_data)
+        attributes = decorate_with_data(attributes.merge(type: attributes.delete('kind')), @decoration_data)
       end #with_kind_as_type
 
       def as_torque(attributes)
         # Make torque always have a SQL query too (as vizjson v2)
         layer.options['query'] = sql_from(layer.options)
 
-        if (not @decoration_data.nil?)
-          layer_options = layer.options.merge(@decoration_data)
-        else
-          layer_options = layer.options
-        end
+        layer_options = decorate_with_data(layer.options, @decoration_data)
 
         data = {
           id:         layer.id,
@@ -124,25 +133,20 @@ module CartoDB
       end
 
       def options_data_v2
-        if (not @decoration_data.nil?)
-          full_data = layer.options.merge(@decoration_data)
+        if options[:full]
+          full_data = decorate_with_data(layer.options, @decoration_data)
+          full_data.options
         else
-          full_data = layer.options
+          sql = sql_from(layer.options)
+          data = {
+            sql:                wrap(sql, layer.options),
+            layer_name:         name_for(layer),
+            cartocss:           layer.options.fetch('tile_style'),
+            cartocss_version:   layer.options.fetch('style_version'),
+            interactivity:      layer.options.fetch('interactivity')
+          }
+          data = decorate_with_data(data, @decoration_data)
         end
-
-        return full_data.options if options[:full]
-        sql = sql_from(layer.options)
-        data = {
-          sql:                wrap(sql, layer.options),
-          layer_name:         name_for(layer),
-          cartocss:           layer.options.fetch('tile_style'),
-          cartocss_version:   layer.options.fetch('style_version'),
-          interactivity:      layer.options.fetch('interactivity')
-        }
-        if (not @decoration_data.nil?)
-          data.merge(@decoration_data)
-        end
-        return data
       end #options_data_v2
 
       alias_method :to_poro, :to_vizjson_v1

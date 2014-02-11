@@ -202,6 +202,15 @@ module CartoDB
         has_private_tables
       end #has_private_tables
 
+      def has_named_map?
+        data = named_maps.get(CartoDB::NamedMapsWrapper::NamedMap.normalize_name(id))
+        if data.nil?
+          false
+        else
+          data
+        end
+      end #has_named_map?
+
       private
 
       attr_reader   :repository, :name_checker, :validator
@@ -248,15 +257,6 @@ module CartoDB
         end
         @named_maps
       end #named_maps
-
-      def has_named_map?
-        data = named_maps.get(CartoDB::NamedMapsWrapper::NamedMap.normalize_name(id))
-        if data.nil?
-          false
-        else
-          data
-        end
-      end #has_named_map?
 
       def create_named_map
         new_named_map = named_maps.create(self)

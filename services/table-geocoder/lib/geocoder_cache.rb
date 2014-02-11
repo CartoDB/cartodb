@@ -40,8 +40,7 @@ module CartoDB
       @hits = connection.fetch("SELECT count(*) FROM #{temp_table_name}").first[:count].to_i
       copy_results_to_table
     rescue => e
-      drop_temp_table
-      raise e
+      handle_cache_exception e
     end # run
 
     def store
@@ -57,8 +56,8 @@ module CartoDB
         sql << rows.map { |r| "(#{r[:searchtext]}, '#{r[:the_geom]}')" }.join(',')
         run_query(sql) if rows && rows.size > 0
       end while rows.size >= BATCH_SIZE
-    ensure
-      drop_temp_table
+    rescue => e
+      handle_cache_exception e
     end # store
 
     def create_temp_table
@@ -101,6 +100,13 @@ module CartoDB
       )
       response.body
     end # run_query
+
+    def handle_cache_exception(exception)
+      drop_temp_table
+      ::Rollbar.report_exception(exception)
+    rescue => e
+      raise exception
+    end
 
   end # GeocoderCache
 end # CartoDB

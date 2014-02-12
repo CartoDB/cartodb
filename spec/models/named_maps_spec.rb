@@ -244,6 +244,63 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
   end #only_normal_layer
 
 
+  describe 'torque_and_normal_layers' do
+    it 'checks returned viz.json given a named map with a normal layer and a torque one' do
+      template_data = {
+        template: {
+          version: '0.0.1',
+          name: '@@PLACEHOLDER@@',
+          auth: {
+            method: 'open'
+          },
+          placeholders: {
+            layer0: {
+              type: "number",
+              default: 1
+            }
+          },
+          layergroup: {
+            layers: [
+              {
+                type: "cartodb",
+                options: {
+                  sql: "WITH wrapped_query AS (select * from table_50m_urban_area) SELECT * from wrapped_query where <%= layer0 %>=1",
+                  layer_name: "table_50m_urban_area",
+                  cartocss: "/** */",
+                  cartocss_version: "2.1.1",
+                  interactivity: "cartodb_id"
+                }
+              },
+              {
+                type: "torque",
+                options: {
+                  cartocss_version: "2.0.1",
+                  cartocss: "/** */",
+                  sql: "select * from ne_10m_populated_places_simple"
+                }
+              }
+            ]
+          }
+        }
+      }
+
+      table, derived_vis, template_id = create_private_table_with_public_visualization(template_data)
+
+      derived_vis.map.add_layer( Layer.create( 
+        kind: 'torque', 
+        options: { 
+          query: "select * from #{table.name}", 
+          table_name: table.name ,
+          tile_style: '',
+        } 
+      ) )
+
+      vizjson = get_vizjson(derived_vis)
+
+    end
+  end #torque_and_normal_layers
+
+
   private
 
   # To ease testing, convert everything to symbols

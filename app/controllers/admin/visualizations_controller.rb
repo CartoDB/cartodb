@@ -58,6 +58,10 @@ class Admin::VisualizationsController < ApplicationController
     embed_forbidden
   end #embed_map
 
+  def embed_protected
+    render 'embed_map_password', :layout => false, :status => :protected
+  end
+
   def embed_forbidden
     render 'embed_map_error', layout: false, status: :forbidden
   end #embed_forbidden

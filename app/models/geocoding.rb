@@ -6,6 +6,7 @@ class Geocoding < Sequel::Model
   many_to_one :user
   many_to_one :table
   many_to_one :automatic_geocoding
+  TIMEOUT = 15.minutes
 
   attr_reader :table_geocoder
 
@@ -63,7 +64,7 @@ class Geocoding < Sequel::Model
         state: table_geocoder.geocoder.status
       )
       puts "#{processed_rows}/#{total_rows}"
-      raise "Geocoding timeout" if Time.now - started > 15.minutes and ['started', 'submitted', 'accepted'].include? state
+      raise "Geocoding timeout" if Time.now - started > TIMEOUT and ['started', 'submitted', 'accepted'].include? state
       sleep(2)
     end until ['completed', 'cancelled', 'failed'].include? state
     return false if state == 'cancelled'

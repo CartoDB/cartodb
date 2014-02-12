@@ -143,11 +143,124 @@
     }
   }
 
-  // Related dropdown
+
+
+  // Related color dropdown
   div.dropdown.color_picker {
     border:1px solid #999999;
-    padding:6px;
 
+    div.top,
+    div.content,
+    div.bottom { display:block }
+
+    div.top {
+      position:relative;
+      padding:8px;
+      overflow:visible;
+      background:#EEEEEE;
+      text-align:center;
+      @include border-top-radius(3px);
+      border-bottom:1px solid #D6D6D6;
+
+      &.advanced {
+        height:100px;
+
+        .advanced { display:none }
+        .picker-wrapper,
+        .slider-wrapper {
+          display:block!important;
+        }
+      }
+    }
+
+    div.content,
+    div.bottom {
+      overflow:auto;
+      padding:8px;
+    }
+
+    div.bottom { padding-top:0 }
+
+
+    // Picker
+    .picker-wrapper,
+    .slider-wrapper {
+      position:relative;
+      display:none;
+    }
+
+    .picker-wrapper {
+      float:left;
+      width:164px;
+      height:100px;
+    }
+
+    .picker {
+      @include inline-block();
+      width:164px;
+      height:100px;
+      @include border-left-radius(2px);
+      cursor: crosshair;
+
+      &:before {
+        content:'';
+        position:absolute;
+        @include position(0,0,0,0);
+        border:1px solid rgba(white,0.4);
+      }
+    }
+
+    .picker-indicator {
+      position: absolute;
+      width:6px;
+      height:6px;
+      border:1px solid black;
+      @include border-radius(10px);
+      z-index:1;
+
+      &:before {
+        content:'';
+        position:absolute;
+        left:-2px;
+        top:-2px;
+        width:8px;
+        height:8px;
+        border:1px solid white;
+        @include border-radius(10px);
+        z-index:0;
+      }
+    }
+
+    // Picker slider
+    .slider-wrapper {
+      float:right;
+      width:13px;
+      height:100px;
+    }
+
+    .slider {
+      @include inline-block();
+      width:13px;
+      height:100px;
+      @include border-right-radius(2px);
+      cursor: crosshair;
+    }
+    .slider-indicator {
+      position: absolute;
+      left:-2px;
+      width: 15px;
+      height: 1px;
+      background:black;
+      border:1px solid white;
+    }
+
+    // Advanced link
+    a.advanced {
+      display:block;
+      font-size:13px;
+    }
+
+    // Lists
     div.colors {
       position:relative;
       width:100%;
@@ -159,51 +272,13 @@
         letter-spacing:-4px;
         @include border-radius(2px);
 
-        &.extra {
-          margin-bottom: 5px;
-
-          li:first-child a { @include border-top-left-radius(2px); @include border-bottom-left-radius(2px); }
-          li:last-child a  { @include border-top-right-radius(2px); @include border-bottom-right-radius(2px); }
-
-          li:nth-child(17) {
-            a {
-              @include border-top-right-radius(2px);
-              @include border-bottom-right-radius(2px);
-
-              &:hover:before {
-                @include border-top-right-radius(2px);
-                border-color:#999999!important;
-              }
-            }
-
-          }
-        }
-
-        &.colors li:first-child {
-          a { @include border-top-left-radius(2px)}
-        }
-        &.colors li:last-child {
-          a { @include border-bottom-right-radius(2px)}
-        }
-        &.colors li:nth-child(18) {
-          a { @include border-bottom-left-radius(2px)}
-        }
-        &.colors li:nth-child(17) {
-          a {
-            @include border-top-right-radius(2px);
-            &:hover:before {
-              @include border-top-right-radius(2px);
-              border-color:#999999!important;
-            }
-          }
-
-        }
+        &.extra { margin-bottom: 5px }
 
         li {
           @include inline-block();
           vertical-align:top;
           letter-spacing:0px;
-          width:13px;
+          width:12px;
           height:20px;
           padding:0;
           margin:0;
@@ -211,10 +286,11 @@
 
           a {
             position:relative;
-            width:14px;
+            width:12px;
             height:20px;
             padding:0;
             margin:0;
+
             &:hover {
               z-index:2;
               &:before {
@@ -229,14 +305,17 @@
               }
             }
           }
+
+          &:first-child a { @include border-top-left-radius(2px) }
+          &:nth-child(16) a { @include border-bottom-left-radius(2px) }
+          &:nth-child(15) a {
+            @include border-top-right-radius(2px);
+            &:before { border-color:#ABABAB; @include border-top-right-radius(2px); }
+          }
+          &:last-child a { @include border-bottom-right-radius(2px) }
         }
       }
     }
-
-    div.bottom {
-      margin:6px 0 0 0;
-    }
-
   }
 
 
@@ -271,10 +350,10 @@
       }
     }
 
-    input {
+    input.text {
       @include inline-block();
-
-      width:65px;
+      vertical-align:top;
+      width:48px;
       height:13px;
       padding:3px;
       border:1px solid rgba(0,0,0,0.2);
@@ -292,10 +371,21 @@
         border-color:rgba(#F84F40,0.8);
       }
     }
+
+    input.submit {
+      @include inline-block();
+      vertical-align:top;
+      width:50px;
+      height:21px;
+      padding:0!important;
+      margin:0 0 0 3px;
+      line-height:21px;
+      font-size:12px!important;
+    }
   }
 
   .image_picker a {
-    width: 65px;
+    width: 50px;
     height: 13px;
     padding: 3px;
     @include inline-block();

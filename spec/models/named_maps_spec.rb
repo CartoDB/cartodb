@@ -6,7 +6,9 @@ require_relative '../../services/named-maps-api-wrapper/lib/named_maps_wrapper'
 include CartoDB
 
 # Specs for /services/named-maps-api-wrapper
-# Does not check responses from the windshaft API endpoint
+# NOTES:
+# - Does not check responses from the windshaft API endpoint, stubs them
+# - Typhoeus allows stubbing, but no easy way of knowing how many times (if any) you called it
 describe CartoDB::NamedMapsWrapper::NamedMaps do
 
   SPEC_NAME = 'named_maps_spec'
@@ -103,8 +105,6 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
   end #private_table
 
 
-
-
   describe 'named_map_updated_on_visualization_updated' do
     it 'checks that when you update a visualization the named map gets updated' do
       template_data = {
@@ -144,6 +144,117 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
       # This should trigger the PUT call
       derived_vis.store()
 
+    end
+  end #named_map_updated_on_visualization_updated
+
+
+  describe 'named_map_deleted_on_visualization_updated' do
+    it 'checks that when you delete a visualization with a named map it gets deleted too' do
+      template_data = {
+        template: {
+          version: '0.0.1',
+          name: '@@PLACEHOLDER@@',
+          auth: {
+            method: 'open'
+          },
+          placeholders: {
+            layer0: {
+              type: "number",
+              default: 1
+            }
+          },
+          layergroup: {
+            layers: [
+              {
+                type: "cartodb",
+                options: {
+                  sql: "WITH wrapped_query AS (select * from test1) SELECT * from wrapped_query where <%= layer0 %>=1",
+                  layer_name: "test1",
+                  cartocss: "/** */",
+                  cartocss_version: "2.1.1",
+                  interactivity: "cartodb_id"
+                }
+              }
+            ]
+          }
+        }
+      }
+
+      table, derived_vis, template_id = create_private_table_with_public_visualization(template_data)
+
+      Typhoeus::Expectation.clear()
+
+      # Return having a named map...
+      Typhoeus.stub(
+        "http://#{@user.username}.localhost.lan:8181/tiles/template/#{template_id}?api_key=#{@user.api_key}", 
+        { method: :get} )
+            .and_return(
+              Typhoeus::Response.new( code: 200, body: JSON::dump( template_data ) )
+            )
+      # Before deleting a put is performed too
+      Typhoeus.stub(
+        "http://#{@user.username}.localhost.lan:8181/tiles/template/#{template_id}?api_key=#{@user.api_key}", 
+        { method: :put} )
+            .and_return(
+              Typhoeus::Response.new( code: 200, body: JSON::dump( template_data ) )
+            )
+      # And return a 204 correctly on deletion
+      Typhoeus.stub(
+        "http://#{@user.username}.localhost.lan:8181/tiles/template/#{template_id}?api_key=#{@user.api_key}", 
+        { method: :delete } )
+              .and_return(
+                Typhoeus::Response.new( code: 204, body: "" )
+              )
+
+      derived_vis.delete()  # This will trigger a delete
+    end
+  end #named_map_updated_on_visualization_updated
+
+
+  describe 'named_map_deleted_on_table_made_public' do
+    it 'checks that when you make a table public and the visualization had a named map, it gets deleted' do
+      template_data = {
+        template: {
+          version: '0.0.1',
+          name: '@@PLACEHOLDER@@',
+          auth: {
+            method: 'open'
+          },
+          placeholders: {
+            layer0: {
+              type: "number",
+              default: 1
+            }
+          },
+          layergroup: {
+            layers: [
+              {
+                type: "cartodb",
+                options: {
+                  sql: "WITH wrapped_query AS (select * from test1) SELECT * from wrapped_query where <%= layer0 %>=1",
+                  layer_name: "test1",
+                  cartocss: "/** */",
+                  cartocss_version: "2.1.1",
+                  interactivity: "cartodb_id"
+                }
+              }
+            ]
+          }
+        }
+      }
+
+      table, derived_vis, template_id = create_private_table_with_public_visualization(template_data)
+
+      Typhoeus.stub(
+        "http://#{@user.username}.localhost.lan:8181/tiles/template/#{template_id}?api_key=#{@user.api_key}", 
+        { method: :delete } )
+              .and_return(
+                Typhoeus::Response.new( code: 204, body: "" )
+              )
+
+      table.privacy = Table::PUBLIC
+      table.save()
+      table.reload()  # Will trigger a DELETE
     end
   end #named_map_updated_on_visualization_updated
 

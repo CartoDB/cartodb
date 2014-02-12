@@ -786,7 +786,7 @@ div.cartodb-popup.header.yellow a.cartodb-popup-close-button:hover {
     display:none;
     position:relative;
     float:right;
-    margin: 43px 10px 0 0;
+    margin: 20px 20px 0 0;
     z-index: 5;
   }
 
@@ -839,10 +839,11 @@ div.cartodb-popup.header.yellow a.cartodb-popup-close-button:hover {
   }
 
   .cartodb-fullscreen {
+    display:none;
     position:relative;
-    top: 120px;
-    left: 0;
-    margin: 15px 0 0 20px;
+    margin: 11px 0 0 20px;
+    float:left;
+    clear:both;
 
     z-index: 5;
   }

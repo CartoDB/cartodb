@@ -321,11 +321,15 @@ var Vis = cdb.core.View.extend({
     // Add layers
     for(var i in data.layers) {
       var layerData = data.layers[i];
-      this.loadLayer(layerData);
+      this.loadLayer(layerData, options);
     }
 
     var legends, torqueLayer;
     var device = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+    if (options.shareable && !device) {
+      this.container.find(".cartodb-map-wrapper").append('<div class="cartodb-share" style="display: block;"><a href="#"></a></div>');
+    }
 
     if (!device && options.legends) {
       this.addLegends(data.layers);
@@ -560,18 +564,20 @@ var Vis = cdb.core.View.extend({
       });
     }
 
-    if (opt.title  || opt.description || opt.shareable) {
+    if ( (opt.title && vizjson.title) || (opt.description && vizjson.description) ) {
       vizjson.overlays.unshift({
         type: "header",
         shareable: opt.shareable ? true: false,
         url: vizjson.url
       });
 
+    }
+
+    if (opt.shareable && !device) {
       vizjson.overlays.push({
         type: "share",
         url: vizjson.url
       });
-
     }
 
     var device = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
@@ -775,8 +781,18 @@ var Vis = cdb.core.View.extend({
     }
 
     if (layerView) {
-      layerView.bind('loading', this.loadingTiles);
-      layerView.bind('load',    this.loadTiles);
+      var self = this;
+
+      var loadingTiles = function() {
+        self.loadingTiles(opts);
+      };
+
+      var loadTiles = function() {
+        self.loadTiles(opts);
+      };
+
+      layerView.bind('loading', loadingTiles);
+      layerView.bind('load',    loadTiles);
     }
 
     return layerView;
@@ -785,6 +801,7 @@ var Vis = cdb.core.View.extend({
 
   loadingTiles: function() {
     if (this.loader) {
+      this.$el.find(".cartodb-fullscreen").hide();
       this.loader.show()
     }
   },
@@ -792,6 +809,7 @@ var Vis = cdb.core.View.extend({
   loadTiles: function() {
     if (this.loader) {
       this.loader.hide();
+      this.$el.find(".cartodb-fullscreen").fadeIn(150);
     }
   },
 

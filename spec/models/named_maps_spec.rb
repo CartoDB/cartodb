@@ -178,7 +178,11 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
                   Typhoeus::Response.new( code: 200, body: JSON::dump( template_data ) )
                 )
 
-      vizjson = derived_vis.to_vizjson()
+      # To ease testing, convert everything to symbols
+      vizjson = derived_vis.to_vizjson().deep_symbolize_keys()
+      vizjson[:layers].map! { |layer| 
+        layer.deep_symbolize_keys()
+      }
 
       vizjson.include?(:id).should eq true
       vizjson.include?(:version).should eq true
@@ -186,9 +190,27 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
       vizjson.include?(:description).should eq true
       vizjson.include?(:layers).should eq true
 
-      # TODO: Finish detecting fields
-      pending
+      vizjson[:layers].size.should eq 2
+      # First is always the base layer
+      vizjson[:layers][0][:type].should eq 'tiled'
 
+      vizjson[:layers][1][:type].should eq 'torque'
+      vizjson[:layers][1][:options][:tiler_protocol].should eq 'http'
+      vizjson[:layers][1][:options][:tiler_domain].should eq 'localhost.lan'
+      vizjson[:layers][1][:options][:tiler_port].should eq '8181'
+      vizjson[:layers][1][:options][:sql_api_protocol].should eq 'http'
+      vizjson[:layers][1][:options][:sql_api_domain].should eq 'localhost.lan'
+      vizjson[:layers][1][:options][:sql_api_endpoint].should eq '/api/v1/sql'
+      vizjson[:layers][1][:options][:sql_api_port].should eq 8080
+
+      vizjson[:layers][1][:options].include?(:cdn_url).should eq true
+      vizjson[:layers][1][:options].include?(:layer_name).should eq true
+      vizjson[:layers][1][:options].include?(:table_name).should eq true
+      vizjson[:layers][1][:options].include?(:tile_style).should eq true
+      vizjson[:layers][1][:options].include?(:named_map).should eq true
+      vizjson[:layers][1][:options][:named_map][:name].should eq template_id
+
+      vizjson[:layers][1][:options].include?(:sql).should_not eq true
     end
   end #only_torque_layer
 

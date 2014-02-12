@@ -983,6 +983,11 @@ describe Table do
       table.modify_column!(name: 'balance', type: 'double precision')
       table.records[:rows][0][:balance].should == 9123456.789
     end
+
+    it 'does not raise error when tables with the same name exist on separate schemas' do
+      @user.in_database.run("CREATE TABLE cdb_importer.repeated_table (id integer)")
+      expect { create_table(user_id: @user.id, name: 'repeated_table') }.to_not raise_error
+    end
   end
 
   context "insert and update rows" do

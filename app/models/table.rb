@@ -1135,14 +1135,28 @@ class Table < Sequel::Model(:user_tables)
              :trigger_name => trigger_name).count > 0
   end
 
-  def has_index? index_name
-    self.pg_indexes.include? index_name.to_s
+  def get_index_name(prefix)
+    "#{prefix}_#{UUIDTools::UUID.timestamp_create.to_s.gsub('-', '_')}"
+  end # get_index_name
+
+  def has_index? column_name
+    pg_indexes.include? column_name
   end
 
   def pg_indexes
-    owner.in_database(:as => :superuser).select(:indexname)
-      .from(:pg_indexes).where(:tablename => self.name)
-      .all.map { |t| t[:indexname] }
+    owner.in_database(:as => :superuser).fetch(%Q{
+      SELECT
+        a.attname
+      FROM
+        pg_class t, pg_class i, pg_index ix, pg_attribute a
+      WHERE
+        t.oid = ix.indrelid
+        AND i.oid = ix.indexrelid
+        AND a.attrelid = t.oid
+        AND a.attnum = ANY(ix.indkey)
+        AND t.relkind = 'r'
+        AND t.relname = '#{self.name}';
+    }).all.map { |t| t[:attname] }
   end
 
   def set_triggers
@@ -1447,15 +1461,15 @@ TRIGGER
 
       # Ensure we add triggers and indexes when required
       if user_database.schema(name, :reload => true).flatten.include?(THE_GEOM_WEBMERCATOR)
-        unless self.has_index? "#{self.name}_the_geom_webmercator_idx"
+        unless self.has_index? "the_geom_webmercator"
           updates = true
-          user_database.run(%Q{CREATE INDEX ON "#{self.name}" USING GIST(#{THE_GEOM_WEBMERCATOR})})
+          user_database.run(%Q{CREATE INDEX #{get_index_name('the_geom_webmercator')} ON "#{self.name}" USING GIST(#{THE_GEOM_WEBMERCATOR})})
         end
       end
       if user_database.schema(name, :reload => true).flatten.include?(THE_GEOM)
-        unless self.has_index? "#{self.name}_the_geom_idx"
+        unless self.has_index? "the_geom"
           updates = true
-          user_database.run(%Q{CREATE INDEX ON "#{self.name}" USING GIST(the_geom)})
+          user_database.run(%Q{CREATE INDEX #{get_index_name('the_geom')} ON "#{self.name}" USING GIST(the_geom)})
         end
       end
 

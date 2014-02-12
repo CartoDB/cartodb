@@ -1759,6 +1759,21 @@ describe Table do
     end
   end
 
+  describe '#has_index?' do
+    let(:table) { create_table name: 'table_with_indexes', user_id: @user.id }
+
+    it 'returns true when the index exists' do
+      table.has_index?('cartodb_id').should be_true
+      table.has_index?('the_geom').should be_true
+      table.has_index?('the_geom_webmercator').should be_true
+    end
+
+    it 'returns false when the index does not exist' do
+      table.has_index?('cartodb_id2').should be_false
+      table.has_index?('the_geom_wadus').should be_false
+    end
+  end
+
   describe '#name=' do
     it 'does not change the name if it is equivalent to the current one' do
       table = Table.new

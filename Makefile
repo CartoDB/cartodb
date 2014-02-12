@@ -17,6 +17,7 @@ WORKING_SPECS = \
   services/importer/spec/unit/csv_normalizer_spec.rb \
   spec/requests/admin/visualizations_spec.rb \
   spec/requests/admin/tables_spec.rb \
+  spec/requests/api/imports_spec.rb \
   $(NULL)
 
 CDB_PATH=lib/assets/javascripts/cdb

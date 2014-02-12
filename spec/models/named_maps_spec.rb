@@ -297,6 +297,8 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
 
       vizjson = get_vizjson(derived_vis)
 
+      pending
+
     end
   end #torque_and_normal_layers
 

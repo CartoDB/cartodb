@@ -69,8 +69,8 @@ class Geocoding < Sequel::Model
     end until ['completed', 'cancelled', 'failed'].include? state
     return false if state == 'cancelled'
     self.update(cache_hits: table_geocoder.cache.hits)
-    Statsd.increment("geocodings.requests", self.processed_rows) rescue nil
-    Statsd.increment("geocodings.cache_hits", self.cache_hits) rescue nil
+    Statsd.gauge("geocodings.requests", "+#{self.processed_rows}") rescue nil
+    Statsd.gauge("geocodings.cache_hits", "+#{self.cache_hits}") rescue nil
     table_geocoder.process_results
     create_automatic_geocoding if automatic_geocoding_id.blank?
     self.update(state: 'finished')

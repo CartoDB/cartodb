@@ -100,8 +100,23 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     member = Visualization::Member.new(id: params.fetch('id')).fetch
     return head(401) unless member.authorize?(current_user)
 
-    member.attributes = payload
-    member.store.fetch
+    # when a table gets renamed, first it's canonical visualization is renamed, so we must revert renaming if that failed
+    # This is far from perfect, but works without messing with table-vis sync and their two backends
+    if member.table?
+      old_vis_name = member.name
+      member.attributes = payload  
+      new_vis_name = member.name
+      old_table_name = member.table.name
+      member.store.fetch
+      if (new_vis_name != old_vis_name && member.table.name == old_table_name)
+        member.name = old_vis_name
+        member.store.fetch
+      end
+    else
+      member.attributes = payload  
+      member.store.fetch
+    end
+
     render_jsonp(member)
   rescue KeyError
     head(404)

@@ -2,6 +2,10 @@
 - Using Leaflet 0.7.2
 - Added support for named maps
 
+3.6.01 (13//02//2014)
+- Fixes a call to window.addEventListener in IE8.
+- Adds fullscreen detection.
+
 3.6.00 (31//01//2014)
 - Using Leaflet 0.7.2
 - Adjusts the map header after the device is rotated

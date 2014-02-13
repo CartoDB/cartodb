@@ -1,6 +1,6 @@
-// cartodb.js version: 3.6.00
+// cartodb.js version: 3.6.01
 // uncompressed version: cartodb.uncompressed.js
-// sha: f8c704aeb14a889df5960fc6ff6dce70e85c9c3a
+// sha: a61e0e66b883869d04bff3fe6f18f67729c0d1b0
 (function() {
   var root = this;
 
@@ -20686,7 +20686,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.6.00';
+    cdb.VERSION = '3.6.01';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -29780,7 +29780,12 @@ var Vis = cdb.core.View.extend({
     }
 
     // recalculate map position on orientation change
-    window.addEventListener('orientationchange', _.bind(this.doOnOrientationChange, this));
+    if (!window.addEventListener) {
+      window.attachEvent('orientationchange', this.doOnOrientationChange, this);
+    } else {
+      window.addEventListener('orientationchange', _.bind(this.doOnOrientationChange, this));
+    }
+
   },
 
   doOnOrientationChange: function() {
@@ -30006,6 +30011,10 @@ var Vis = cdb.core.View.extend({
     for (var i in data.overlays) {
       this.addOverlay(data.overlays[i]);
     }
+
+    var fullscreenEnabled = document.fullscreenEnabled || document.mozFullScreenEnabled || document.webkitFullscreenEnabled;
+
+    if (options.fullscreen && fullscreenEnabled && !device) this.addFullScreen();
 
     _.defer(function() {
       self.trigger('done', self, self.getLayers());

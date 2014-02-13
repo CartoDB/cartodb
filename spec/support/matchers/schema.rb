@@ -21,6 +21,10 @@ RSpec::Matchers.define :be_equal_to_default_db_schema do |expected|
    diff = expected - actual
    diff.should == []
   end
+
+  failure_message_for_should do |actual|
+    "missing #{@diff.inspect}"
+  end  
 end
 
 

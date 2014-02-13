@@ -74,7 +74,6 @@
 
 
 
-
   // FORM COLOR
 
   /*
@@ -87,9 +86,88 @@
   .form_color {
     position:relative;
     @include inline-block();
-    @include border-radius(3px);
-    width:43px;
+    width:42px;
     height:21px;
+
+    $rad: 3px;
+
+    a {
+      position:absolute;
+      top:0;
+      bottom:0;
+      height:21px;
+      width:21px;
+
+      .handle {
+        position:absolute;
+        top:6px; left:6px;
+        height:8px;
+        width:8px;
+
+        b { position:absolute }
+      }
+    }
+
+
+    // Image picker
+    a.image-picker {
+      left:0;
+      height:19px;
+      width:20px;
+      border:1px solid #B2B2B2;
+      border-right:0;
+      @include border-left-radius($rad);
+
+      span.handle {
+        width:8px;
+        height:8px;
+        @include elements-sprite(image_fill);
+      }
+    }
+
+    // Color picker
+    a.color-picker {
+      right:0;
+      @include border-right-radius($rad);
+      @include elements-sprite(image_color, $offset-x:2px, $offset-y:4px);
+
+      span.handle {
+        top:7px;
+        left:7px;
+        @include border-radius(2px);
+        background:rgba(black,0.3);
+
+        b {
+          top:3px;
+          left:2px;
+          width:0;
+          height:0;
+          border-left:2px solid transparent;
+          border-right:2px solid transparent;
+          border-top:3px solid white;
+        }
+      }
+
+      &:before {
+        content:' ';
+        position:absolute;
+        left:0;
+        top:0;
+        width:19px;
+        height:19px;
+        background:none;
+        @include border-right-radius($rad);
+        border:1px solid rgba(0,0,0,0.3);
+      }
+
+      &:hover {
+        &:before { border-color: rgba(0,0,0,0.4) }
+        span.handle { background:rgba(black,0.4) }
+      }
+    }
+
+
+    /*
 
     span.color {
       @include inline-block();
@@ -141,277 +219,8 @@
       cursor:pointer;
       a:before {border-top:3px solid #000000;}
     }
+    */
   }
-
-
-
-  // Related color dropdown
-  div.dropdown.color_picker {
-    border:1px solid #999999;
-
-    div.top,
-    div.content,
-    div.bottom { display:block }
-
-    div.top {
-      position:relative;
-      padding:8px;
-      overflow:visible;
-      background:#EEEEEE;
-      text-align:center;
-      @include border-top-radius(3px);
-      border-bottom:1px solid #D6D6D6;
-
-      &.advanced {
-        height:100px;
-
-        .advanced { display:none }
-        .picker-wrapper,
-        .slider-wrapper {
-          display:block!important;
-        }
-      }
-    }
-
-    div.content,
-    div.bottom {
-      overflow:auto;
-      padding:8px;
-    }
-
-    div.bottom { padding-top:0 }
-
-
-    // Picker
-    .picker-wrapper,
-    .slider-wrapper {
-      position:relative;
-      display:none;
-    }
-
-    .picker-wrapper {
-      float:left;
-      width:164px;
-      height:100px;
-    }
-
-    .picker {
-      @include inline-block();
-      width:164px;
-      height:100px;
-      @include border-left-radius(2px);
-      cursor: crosshair;
-
-      &:before {
-        content:'';
-        position:absolute;
-        @include position(0,0,0,0);
-        border:1px solid rgba(white,0.4);
-      }
-    }
-
-    .picker-indicator {
-      position: absolute;
-      width:6px;
-      height:6px;
-      border:1px solid black;
-      @include border-radius(10px);
-      z-index:1;
-
-      &:before {
-        content:'';
-        position:absolute;
-        left:-2px;
-        top:-2px;
-        width:8px;
-        height:8px;
-        border:1px solid white;
-        @include border-radius(10px);
-        z-index:0;
-      }
-    }
-
-    // Picker slider
-    .slider-wrapper {
-      float:right;
-      width:13px;
-      height:100px;
-    }
-
-    .slider {
-      @include inline-block();
-      width:13px;
-      height:100px;
-      @include border-right-radius(2px);
-      cursor: crosshair;
-    }
-    .slider-indicator {
-      position: absolute;
-      left:-2px;
-      width: 15px;
-      height: 1px;
-      background:black;
-      border:1px solid white;
-    }
-
-    // Advanced link
-    a.advanced {
-      display:block;
-      font-size:13px;
-    }
-
-    // Lists
-    div.colors {
-      position:relative;
-      width:100%;
-
-      ul {
-        display:block;
-        width:100%;
-        margin:0;
-        letter-spacing:-4px;
-        @include border-radius(2px);
-
-        &.extra { margin-bottom: 5px }
-
-        li {
-          @include inline-block();
-          vertical-align:top;
-          letter-spacing:0px;
-          width:12px;
-          height:20px;
-          padding:0;
-          margin:0;
-          border:none;
-
-          a {
-            position:relative;
-            width:12px;
-            height:20px;
-            padding:0;
-            margin:0;
-
-            &:hover {
-              z-index:2;
-              &:before {
-                content:' ';
-                position:absolute;
-                top:-1px;
-                bottom:-1px;
-                left:-1px;
-                right:-1px;
-                border:1px solid white;
-                z-index:2;
-              }
-            }
-          }
-
-          &:first-child a { @include border-top-left-radius(2px) }
-          &:nth-child(16) a { @include border-bottom-left-radius(2px) }
-          &:nth-child(15) a {
-            @include border-top-right-radius(2px);
-            &:before { border-color:#ABABAB; @include border-top-right-radius(2px); }
-          }
-          &:last-child a { @include border-bottom-right-radius(2px) }
-        }
-      }
-    }
-  }
-
-
-  // FORM INPUT COLOR
-  /* <div class="form_input_color left">
-       <span class="color"></span>
-       <input type="text" value=""/>
-     </div>
-  */
-
-  .form_input_color {
-    letter-spacing:-4px;
-
-    span.color {
-      position:relative;
-      @include inline-block();
-      @include border-left-radius(3px);
-      width:12px;
-      height:21px;
-      letter-spacing:0px;
-
-      &:before {
-        content:' ';
-        position:absolute;
-        left:0;
-        top:0;
-        width:10px;
-        height:19px;
-        background:none;
-        @include border-left-radius(3px);
-        border:1px solid rgba(0,0,0,0.2);
-      }
-    }
-
-    input.text {
-      @include inline-block();
-      vertical-align:top;
-      width:48px;
-      height:13px;
-      padding:3px;
-      border:1px solid rgba(0,0,0,0.2);
-      border-left:0;
-      font:normal 11px $text-fonts;
-      line-height:13px;
-      @include border-right-radius(3px);
-      letter-spacing:0px;
-      color:#666666;
-      &:focus {
-        outline:none;
-        border-color:rgba(0,0,0,0.4);
-      }
-      &.error,&.error:focus {
-        border-color:rgba(#F84F40,0.8);
-      }
-    }
-
-    input.submit {
-      @include inline-block();
-      vertical-align:top;
-      width:50px;
-      height:21px;
-      padding:0!important;
-      margin:0 0 0 3px;
-      line-height:21px;
-      font-size:12px!important;
-    }
-  }
-
-  .image_picker a {
-    width: 50px;
-    height: 13px;
-    padding: 3px;
-    @include inline-block();
-    @include border-radius(3px);
-    border: 1px solid #9e9e9e;
-    @include background(image-gradient(#fff, #f2f2f2));
-    font-size: 11px;
-    line-height: 13px;
-    color: #333;
-    text-decoration: none;
-    text-align: center;
-
-    &:hover {
-      border: 1px solid #888;
-    }
-
-    i {
-      @include inline-block();
-      height: 11px;
-      width: 10px;
-      margin-right: 5px;
-      margin-top: -2px;
-      @include elements-sprite(image_fill);
-    }
-  }
-
 
 
 

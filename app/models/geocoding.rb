@@ -6,6 +6,7 @@ class Geocoding < Sequel::Model
   many_to_one :user
   many_to_one :table
   many_to_one :automatic_geocoding
+  TIMEOUT = 15.minutes
 
   attr_reader :table_geocoder
 
@@ -63,11 +64,13 @@ class Geocoding < Sequel::Model
         state: table_geocoder.geocoder.status
       )
       puts "#{processed_rows}/#{total_rows}"
-      raise "Geocoding timeout" if Time.now - started > 15.minutes and ['started', 'submitted', 'accepted'].include? state
+      raise "Geocoding timeout" if Time.now - started > TIMEOUT and ['started', 'submitted', 'accepted'].include? state
       sleep(2)
     end until ['completed', 'cancelled', 'failed'].include? state
     return false if state == 'cancelled'
     self.update(cache_hits: table_geocoder.cache.hits)
+    Statsd.gauge("geocodings.requests", "+#{self.processed_rows}") rescue nil
+    Statsd.gauge("geocodings.cache_hits", "+#{self.cache_hits}") rescue nil
     table_geocoder.process_results
     create_automatic_geocoding if automatic_geocoding_id.blank?
     self.update(state: 'finished')

@@ -4,6 +4,7 @@
  */
 
 @import "compass/css3/inline-block";
+@import "compass/css3/filter";
 @import "../../common/vars";
 @import "../../common/form-elements";
 @import "../../common/mixins";
@@ -22,7 +23,174 @@
   div.content {
     padding:40px 40px 30px!important;
 
-    ul li {
+    .georeference_styles {
+      display:none;
+      width: 493px;
+
+      clear:both;
+      overflow: hidden;
+
+      li {
+        position:relative;
+        border:none;
+
+        -webkit-transition: background-color 350ms ease-in-out;
+        -moz-transition:    background-color 350ms ease-in-out;
+        -o-transition:      background-color 350ms ease-in-out;
+        transition:         background-color 350ms ease-in-out;
+
+        &.selected {
+
+          a {
+            color: #333333;
+            background: #F2F2F2;
+          }
+
+          .marker {
+            background: #4F79BD;
+            border-color: #25527C;
+          }
+
+        }
+
+        a {
+
+          /*&:hover { background: #ddd; }*/
+
+          display: block;
+          position:relative;
+          padding: 25px 20px;
+          float:left;
+          width: 245px;
+          @include box-sizing(border-box);
+          min-height: 203px;
+
+          border: 1px solid #E4E4E4;
+
+          font-size:15px;
+          font-weight:bold;
+          text-align:center;
+
+        }
+
+        &:first-child a { border-right: none; @include border-radius(5px 0px 0px 5px); }
+        &:last-child  a { border-bottom: 1px solid #E4E4E4; @include border-radius(0px 5px 5px 0px); }
+
+        span {
+          position:absolute;
+          bottom: 30px;
+          @include inline-block();
+          $width: 163px;
+          width: $width;
+          left: 50%;
+          margin-left: -$width/2;
+        }
+
+        &:last-child span {
+          $width: 195px;
+          width: $width;
+          margin-left: -$width/2;
+        }
+
+        .marker {
+
+          &.a { top: 0px;  left: 14px; }
+          &.b { top: 30px; left: 30px; }
+          &.c { top: 20px; left: 73px; }
+
+          @include opacity(0);
+          width: 12px; height: 12px;
+          display:block;
+          position:absolute;
+          @include border-radius(100px);
+          background: #ccc;
+          border: 1px solid #bbb;
+
+          &.a {
+            -webkit-transition: border-color 400ms ease-in-out, background-color 400ms ease-in-out, top 300ms ease-in-out, opacity 200ms ease-in;
+            -moz-transition:    border-color 400ms ease-in-out, background-color 400ms ease-in-out, top 300ms ease-in-out, opacity 200ms ease-in;
+            -o-transition:      border-color 400ms ease-in-out, background-color 400ms ease-in-out, top 300ms ease-in-out, opacity 200ms ease-in;
+            transition:         border-color 400ms ease-in-out, background-color 400ms ease-in-out, top 300ms ease-in-out, opacity 200ms ease-in;
+          }
+
+          &.b {
+            -webkit-transition: border-color 400ms ease-in-out, background-color 400ms ease-in-out, top 200ms ease-in-out, opacity 200ms ease-in;
+            -moz-transition:    border-color 400ms ease-in-out, background-color 400ms ease-in-out, top 200ms ease-in-out, opacity 200ms ease-in;
+            -o-transition:      border-color 400ms ease-in-out, background-color 400ms ease-in-out, top 200ms ease-in-out, opacity 200ms ease-in;
+            transition:         border-color 400ms ease-in-out, background-color 400ms ease-in-out, top 200ms ease-in-out, opacity 200ms ease-in;
+          }
+
+          &.c {
+            -webkit-transition: border-color 400ms ease-in-out, background-color 400ms ease-in-out, top 400ms ease-in-out, opacity 400ms ease-in;
+            -moz-transition:    border-color 400ms ease-in-out, background-color 400ms ease-in-out, top 400ms ease-in-out, opacity 400ms ease-in;
+            -o-transition:      border-color 400ms ease-in-out, background-color 400ms ease-in-out, top 400ms ease-in-out, opacity 400ms ease-in;
+            transition:         border-color 400ms ease-in-out, background-color 400ms ease-in-out, top 400ms ease-in-out, opacity 400ms ease-in;
+          }
+
+        }
+
+        i:before {
+          content: '';
+          display:block;
+          position:absolute;
+          top: 2px; left: 2px;
+          width: 96px;
+          height: 96px;
+        }
+
+
+        i {
+          padding: 2px;
+          @include border-radius(200px);
+          background: #ccc;
+
+          position:relative;
+          display:block;
+          margin: 0 auto 5px auto;
+          width: 96px;
+          height: 96px;
+
+        }
+
+        a {
+
+          @include filter(grayscale(100%));
+          @include opacity(.9);
+
+          -webkit-transition: all 250ms ease-in-out;
+          -moz-transition:    all 250ms ease-in-out;
+          -o-transition:      all 250ms ease-in-out;
+          transition:         all 250ms ease-in-out;
+
+        }
+
+        &.selected .selected i {
+          background: rgba(#333, .75);
+          @include opacity(1);
+        }
+
+        &.selected a {
+          @include filter(grayscale(0%));
+          @include opacity(1);
+        }
+
+        &.points i {
+          &:before { @include background(image-url("layout/georeference_points.png") repeat center center); }
+        }
+
+        &.points.animated i .marker.a { top: 35px; @include opacity(1); }
+        &.points.animated i .marker.b { top: 60px; @include opacity(1); }
+        &.points.animated i .marker.c { top: 40px; @include opacity(1); }
+
+        &.regions i:before {
+          @include background(image-url("layout/georeference_regions.png") repeat center center);
+        }
+
+      }
+
+    }
+
+    .options li {
       margin-bottom:25px;
       border-bottom:none!important;
 
@@ -37,6 +205,20 @@
     font-size: 13px;
     color: #999999;
     margin: 6px 0 0 20px;
+  }
+
+  div.content .option .cont ul {
+    margin: 20px 0 0 0;
+
+    li {
+      margin: 0;
+      padding: 15px 0;
+      line-height:normal;
+      color: #999999;
+      border-top: 1px solid #E5E5E5;
+      font-size: 15px;
+    }
+
   }
 
   // Address option
@@ -107,7 +289,8 @@
   div.foot {
     border:none!important;
     margin-top:0;
-    a.cancel {margin-top:15px;}
+
+    a.back { margin-top:15px; }
+
   }
 }
-

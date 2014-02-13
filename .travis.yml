@@ -36,7 +36,6 @@ script:
   - make check-prepared
   # check list of database names
   - sudo su postgres -c "echo 'select datname from pg_database;' | psql template_postgis"
-  - make check-prepared # running twice catches status leaks (db, users..)
 
 env:
 

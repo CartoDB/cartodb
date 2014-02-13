@@ -62,6 +62,7 @@ module CartoDB
         handle_multipoint(column) if @is_multipoint
         self
       rescue => exception
+        job.log "Error creating the_geom: #{exception}"
         if column.empty?
           job.log "Dropping empty #{geometry_column_name}"
           column.drop 

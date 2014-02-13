@@ -6,7 +6,6 @@ describe "Imports API" do
 
   before(:all) do
     @user = create_user(:username => 'test', :email => "client@example.com", :password => "clientex")
-    @user.set_map_key
   end
 
   before(:each) do
@@ -113,7 +112,7 @@ describe "Imports API" do
     import['state'].should be == 'complete'
   end
 
-  it 'appends data to an existing table' do
+  pending 'appends data to an existing table' do
     @table = FactoryGirl.create(:table, :user_id => @user.id)
 
     f = upload_file('db/fake_data/column_number_to_boolean.csv', 'text/csv')

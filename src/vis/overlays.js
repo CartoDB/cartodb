@@ -234,7 +234,7 @@ cdb.vis.Overlay.register('share', function(data, vis) {
   var template = cdb.core.Template.compile(
     data.template || '\
       <div class="mamufas">\
-        <section class="block modal {{modal_type}}">\
+        <div class="block modal {{modal_type}}">\
           <a href="#close" class="close">x</a>\
           <div class="head">\
             <h3>Share this map</h3>\

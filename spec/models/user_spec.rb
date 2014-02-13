@@ -177,6 +177,12 @@ describe User do
     @user.save
   end
 
+  it "should rebuild the quota trigger after changing the quota" do
+    @user.expects(:rebuild_quota_trigger).once
+    @user.quota_in_bytes = @user.quota_in_bytes + 1.megabytes
+    @user.save
+  end
+
   it "should read api calls from external service" do
     @user.stubs(:get_old_api_calls).returns({
       "per_day" => [0, 0, 0, 0, 24, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 17, 0, 0, 0, 0, 0], 

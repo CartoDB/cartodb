@@ -8,6 +8,7 @@ end
 describe CartoDB::ImageMetadata do
   let(:png_path) { File.expand_path('../../support/data/images/pattern.png', __FILE__) }
   let(:jpg_path) { File.expand_path('../../support/data/images/pattern.jpg', __FILE__) }
+  let(:svg_path) { File.expand_path('../../support/data/images/pattern.svg', __FILE__) }
 
   describe '#extract_metadata' do
     let(:metadata) { CartoDB::ImageMetadata.new(png_path) }
@@ -40,6 +41,13 @@ describe CartoDB::ImageMetadata do
       metadata.width.should eq 0
       metadata.height.should eq 0
     end
+
+    it 'should not raise error when trying to extract svg dimensions' do
+      metadata = CartoDB::ImageMetadata.new(svg_path)
+      expect { metadata.parse_file }.to_not raise_error
+      metadata.width.should eq 0
+      metadata.height.should eq 0
+    end
   end
 
   describe '#parse_identify' do
@@ -55,6 +63,13 @@ describe CartoDB::ImageMetadata do
       metadata.parse_identify
       metadata.width.should eq 250
       metadata.height.should eq 250
+    end
+
+    it 'should extract svg dimensions' do
+      metadata = CartoDB::ImageMetadata.new(svg_path)
+      expect { metadata.parse_identify }.to_not raise_error
+      metadata.width.should eq 645
+      metadata.height.should eq 585
     end
   end
 end

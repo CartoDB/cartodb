@@ -147,10 +147,7 @@
           clear:both;
           overflow:hidden;
 
-          .icon {
-            width: 96px;
-            height: 96px;
-          }
+          .icon { width: 96px; height: 96px; }
 
         }
 
@@ -172,32 +169,43 @@
         &.disabled a,
         &.disabled.selected a {
 
-          .icon {
-            @include filter(grayscale(100%));
-            @include filter(brightness(100%));
+          .icon_container {
+            border: 2px solid rgba(#333, .55);
+            .icon {
+              @include filter(grayscale(100%));
+            }
           }
 
-          @include opacity(1);
-
-          .icon { background: #ccc; }
-          background: #fff;
+          span { color: #999999; font-weight:normal;}
+          background:#fff;
 
         }
 
-        &.disabled.regions .icon:before,
-        &.disabled.selected.regions .icon:before {
+        &.disabled.regions .icon,
+        &.disabled.selected.regions .icon {
           -webkit-transform: scale(1, 1);
           transform: scale(1, 1);
         }
 
         a .warning {
+          /*display:none;*/
           position:absolute;
-          top: 30px;
+          top: 20px;
           right:60px;
-          display:block;
           width:31px;
           height:31px;
           @include background(image-url("layout/georeference_warning.png") repeat center center);
+          @include simple-transition(all, 170ms, ease-in);
+          @include opacity(0);
+        }
+
+        &.disabled {
+          .warning {
+            display:block;
+            @include opacity(1);
+            top: 30px;
+            right:60px;
+          }
         }
 
 
@@ -217,27 +225,47 @@
         &.points.selected.animated .icon .marker.b { top: 60px; @include opacity(1);-webkit-transform: scale(1, 1); transform: scale(1, 1); }
         &.points.selected.animated .icon .marker.c { top: 40px; @include opacity(1);-webkit-transform: scale(1, 1); transform: scale(1, 1); }
 
-        &.points.animated .icon .marker.a { top: 35px; @include opacity(.7); -webkit-transform: scale(.7, .7); transform: scale(.7, .7);}
-        &.points.animated .icon .marker.b { top: 60px; @include opacity(.7); -webkit-transform: scale(.7, .7); transform: scale(.7, .7);}
-        &.points.animated .icon .marker.c { top: 40px; @include opacity(.7); -webkit-transform: scale(.7, .7); transform: scale(.7, .7);}
+        &.points.animated .icon .marker.a { top: 35px; @include opacity(.7); -webkit-transform: scale(.7, .7); transform: scale(.7, .7); }
+        &.points.animated .icon .marker.b { top: 60px; @include opacity(.7); -webkit-transform: scale(.7, .7); transform: scale(.7, .7); }
+        &.points.animated .icon .marker.c { top: 40px; @include opacity(.7); -webkit-transform: scale(.7, .7); transform: scale(.7, .7); }
 
         &.regions {
-          .icon {
-            -webkit-transform: scale(1.5, 1.5) rotate(10deg);
-            transform: scale(1.5, 1.5) rotate(10deg);
 
+          .icon_container:before {
+            content: '';
+            background: red;
+            width: 100px;
+            height: 100px;
+            display: block;
+            border: 3px solid #fff;
+            background: none;
+            position: absolute;
+            border-radius: 300px;
+            top: 50%;
+            left: 50%;
+            margin-left: -50px;
+            margin-top: -50px;
+            padding: 0;
+            box-sizing: border-box;
+            z-index:1;
+          }
+          .icon {
+            -webkit-transform: scale(.5, .5) rotate(10deg);
+            transform: scale(.5, .5) rotate(10deg);
             @include background(image-url("layout/georeference_regions.png") repeat center center);
+            width: 400px;
+            height: 400px;
+            top: -132px;
+            left: -137px;
+            position: absolute;
           }
 
           &.selected .icon {
             -webkit-transform: scale(1, 1);
             transform: scale(1, 1);
           }
-
         }
-
       }
-
     }
 
     .options li {

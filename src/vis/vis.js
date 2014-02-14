@@ -158,6 +158,7 @@ var Vis = cdb.core.View.extend({
     this.https = false;
     this.overlays = [];
     this.moduleChecked = false;
+    this.layersLoading = 0;
 
     if (this.options.mapView) {
       this.mapView = this.options.mapView;
@@ -810,19 +811,21 @@ var Vis = cdb.core.View.extend({
     if (this.loader) {
       this.$el.find(".cartodb-fullscreen").hide();
       this.loader.show()
-      if(this.loader.visible()) {
-        this.trigger('loading');
-      }
     }
+    if(this.layersLoading === 0) {
+        this.trigger('loading');
+    }
+    this.layersLoading++;
   },
 
   loadTiles: function() {
     if (this.loader) {
       this.loader.hide();
       this.$el.find(".cartodb-fullscreen").fadeIn(150);
-      if(!this.loader.visible()) {
-        this.trigger('load');
-      }
+    }
+    this.layersLoading--;
+    if(this.layersLoading === 0) {
+      this.trigger('load');
     }
   },
 

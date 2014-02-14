@@ -406,11 +406,27 @@
           @include border-radius(3px);
         }
 
-        &.link_protected     i { background: rgba(#FFA64D, .5) sprite( $table-sprites, lock_open,   $offset-x: 5px, $offset-y: 4px) no-repeat; }
+        &.loading i {
+          background: rgba(#97C341, .5) image-url('layout/public_loader.gif') no-repeat;
+          background-size: 12px;
+          background-position: 50%;
+        }
+
+
+        &.link     i { background: rgba(#FFA64D, .5) sprite( $table-sprites, lock_open,   $offset-x: 5px, $offset-y: 4px) no-repeat; }
+
         &.private a          i { background: rgba(#FF7373, .5) sprite( $table-sprites, lock_closed, $offset-x: 5px, $offset-y: 4px) no-repeat; }
 
-        &.password_protected i { background: rgba(#FFA64D, .5) sprite( $table-sprites, lock_key,    $offset-x: 5px, $offset-y: 4px) no-repeat; }
-        &.password_protected.loading i {
+        &.private.loading i {
+          background: rgba(#FF7373, .5) image-url('layout/private_loader.gif') no-repeat;
+          background-size: 12px;
+          background-position: 50%;
+        }
+
+        &.password i { background: rgba(#FFA64D, .5) sprite( $table-sprites, lock_key,    $offset-x: 5px, $offset-y: 4px) no-repeat; }
+
+        &.link.loading i,
+        &.password.loading i {
           background: rgba(#FFA64D, .5) image-url('layout/password_protected_loader.gif') no-repeat;
           background-size: 12px;
           background-position: 50%;
@@ -418,7 +434,7 @@
 
       }
 
-      li.password_protected {
+      li.password {
 
         .radiobutton { width: 100%; }
         .input_field { display:none; }

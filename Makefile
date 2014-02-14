@@ -3,8 +3,8 @@ PENDING_SPECS = \
   $(NULL)
 
 WORKING_SPECS = \
-	spec/requests/api/user_layers_spec.rb \
-	spec/requests/api/map_layers_spec.rb \
+  spec/requests/api/user_layers_spec.rb \
+  spec/requests/api/map_layers_spec.rb \
   spec/models/table_spec.rb \
   spec/models/layer_spec.rb \
   spec/models/tag_spec.rb \
@@ -20,6 +20,8 @@ WORKING_SPECS = \
   services/importer/spec/unit/csv_normalizer_spec.rb \
   spec/requests/admin/visualizations_spec.rb \
   spec/requests/admin/tables_spec.rb \
+  spec/models/geocoding_spec.rb \
+  spec/requests/api/imports_spec.rb \
   $(NULL)
 
 CDB_PATH=lib/assets/javascripts/cdb

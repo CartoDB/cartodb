@@ -992,6 +992,11 @@ describe Table do
       table.modify_column!(name: 'balance', type: 'double precision')
       table.records[:rows][0][:balance].should == 9123456.789
     end
+
+    it 'does not raise error when tables with the same name exist on separate schemas' do
+      @user.in_database.run("CREATE TABLE cdb_importer.repeated_table (id integer)")
+      expect { create_table(user_id: @user.id, name: 'repeated_table') }.to_not raise_error
+    end
   end
 
   context "insert and update rows" do
@@ -1765,6 +1770,21 @@ describe Table do
       new_table = Table.find_by_subdomain(nil, table.id)
 
       new_table.should == nil
+    end
+  end
+
+  describe '#has_index?' do
+    let(:table) { create_table name: 'table_with_indexes', user_id: @user.id }
+
+    it 'returns true when the index exists' do
+      table.has_index?('cartodb_id').should be_true
+      table.has_index?('the_geom').should be_true
+      table.has_index?('the_geom_webmercator').should be_true
+    end
+
+    it 'returns false when the index does not exist' do
+      table.has_index?('cartodb_id2').should be_false
+      table.has_index?('the_geom_wadus').should be_false
     end
   end
 

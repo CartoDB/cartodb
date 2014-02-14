@@ -30,6 +30,11 @@ gem "addressable",             "2.2.8", require: "addressable/uri"
 gem "github_api",              "~> 0.10.2"
 
 gem "ejs",                     "~> 1.1.1"
+
+group :production, :staging do
+  gem 'unicorn',               "4.8.2"
+end
+
 group :assets do
   gem 'asset_sync',            "~> 1.0.0"
   gem 'fog',                   "1.15.0"

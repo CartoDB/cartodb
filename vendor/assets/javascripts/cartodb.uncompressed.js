@@ -1,6 +1,6 @@
 // cartodb.js version: 3.7.00-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: e22100ebd87f02d2f5da67da8d782806f8250da7
+// sha: 60872a25a4b731e223a778d266509c8a29d59bbe
 (function() {
   var root = this;
 
@@ -30320,15 +30320,11 @@ var Vis = cdb.core.View.extend({
     // Add layers
     for(var i in data.layers) {
       var layerData = data.layers[i];
-      this.loadLayer(layerData, options);
+      this.loadLayer(layerData);
     }
 
     var legends, torqueLayer;
     var device = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-
-    if (options.shareable && !device) {
-      this.container.find(".cartodb-map-wrapper").append('<div class="cartodb-share" style="display: block;"><a href="#"></a></div>');
-    }
 
     if (!device && options.legends) {
       this.addLegends(data.layers);
@@ -30352,6 +30348,8 @@ var Vis = cdb.core.View.extend({
 
       }
     }
+
+    if (options.fullscreen) this.addFullScreen();
 
     if (device) this.addMobile(torqueLayer);
 
@@ -30394,8 +30392,6 @@ var Vis = cdb.core.View.extend({
     for (var i in data.overlays) {
       this.addOverlay(data.overlays[i]);
     }
-
-    if (options.fullscreen && !device) this.addFullScreen();
 
     _.defer(function() {
       self.trigger('done', self, self.getLayers());
@@ -30563,20 +30559,18 @@ var Vis = cdb.core.View.extend({
       });
     }
 
-    if ( (opt.title && vizjson.title) || (opt.description && vizjson.description) ) {
+    if (opt.title  || opt.description || opt.shareable) {
       vizjson.overlays.unshift({
         type: "header",
         shareable: opt.shareable ? true: false,
         url: vizjson.url
       });
 
-    }
-
-    if (opt.shareable && !device) {
       vizjson.overlays.push({
         type: "share",
         url: vizjson.url
       });
+
     }
 
     var device = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
@@ -30780,18 +30774,8 @@ var Vis = cdb.core.View.extend({
     }
 
     if (layerView) {
-      var self = this;
-
-      var loadingTiles = function() {
-        self.loadingTiles(opts);
-      };
-
-      var loadTiles = function() {
-        self.loadTiles(opts);
-      };
-
-      layerView.bind('loading', loadingTiles);
-      layerView.bind('load',    loadTiles);
+      layerView.bind('loading', this.loadingTiles);
+      layerView.bind('load',    this.loadTiles);
     }
 
     return layerView;
@@ -30800,7 +30784,6 @@ var Vis = cdb.core.View.extend({
 
   loadingTiles: function() {
     if (this.loader) {
-      this.$el.find(".cartodb-fullscreen").hide();
       this.loader.show()
     }
   },
@@ -30808,7 +30791,6 @@ var Vis = cdb.core.View.extend({
   loadTiles: function() {
     if (this.loader) {
       this.loader.hide();
-      this.$el.find(".cartodb-fullscreen").fadeIn(150);
     }
   },
 
@@ -31093,6 +31075,9 @@ cdb.vis.Overlay.register('header', function(data, vis) {
            target='_blank'>T</a>\
         </div>\
       {{/mobile_shareable}}\
+      {{#shareable}}\
+        <a href='#' class='share'>Share</a>\
+      {{/shareable}}\
     ",
     data.templateType || 'mustache'
   );
@@ -31224,8 +31209,7 @@ cdb.vis.Overlay.register('fullscreen', function(data, vis) {
 
 });
 
-
-// share content
+// search content
 cdb.vis.Overlay.register('share', function(data, vis) {
 
   // Add the complete url for facebook and twitter
@@ -31271,7 +31255,7 @@ cdb.vis.Overlay.register('share', function(data, vis) {
     url: data.url,
     share_url: data.share_url,
     template: template,
-    target: $(".cartodb-share a"),
+    target: $(".cartodb-header .share"),
     size: $(document).width() > 400 ? "" : "small",
     width: $(document).width() > 400 ? 430 : 216
   });

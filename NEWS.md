@@ -1,3 +1,18 @@
+2.9.2 (2014-02-14)
+------------------
+* Improvements
+  * Added geocodings bar to the submenu.
+  * Use unique names on indexes and sequences.
+
+* Bugs Fixed
+  * Fixed encoding error on geocoder.
+  * the_geom column is empty after loading a shapefile multipoint.
+  * Fix error when having tables with same name on different schemas
+  * XLSX file with multiline in row fields breaks importer.
+  * Roo is not able to open certain XSLX.
+  * Table name sanitizer failing when sanitized name already exists.
+  * Fix error when changing user quotas.
+
 2.9.1 (2014-02-07)
 ------------------
 * Improvements

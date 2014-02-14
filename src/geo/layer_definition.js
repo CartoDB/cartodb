@@ -862,15 +862,19 @@ SubLayer.prototype = {
   },
 
   show: function() {
-    this.set({
-      hidden: false
-    });
+    if(this.get('hidden')) {
+      this.set({
+        hidden: false
+      });
+    }
   },
 
   hide: function() {
-    this.set({
-      hidden: true
-    });
+    if(!this.get('hidden')) {
+      this.set({
+        hidden: true
+      });
+    }
   },
 
   setSQL: function(sql) {

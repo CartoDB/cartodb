@@ -810,6 +810,9 @@ var Vis = cdb.core.View.extend({
     if (this.loader) {
       this.$el.find(".cartodb-fullscreen").hide();
       this.loader.show()
+      if(this.loader.visible()) {
+        this.trigger('loading');
+      }
     }
   },
 
@@ -817,6 +820,9 @@ var Vis = cdb.core.View.extend({
     if (this.loader) {
       this.loader.hide();
       this.$el.find(".cartodb-fullscreen").fadeIn(150);
+      if(!this.loader.visible()) {
+        this.trigger('load');
+      }
     }
   },
 

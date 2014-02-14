@@ -33,7 +33,7 @@ module CartoDB
         sql << rows.map { |r| "('#{r[:searchtext]}')" }.join(',')
         sql << ") SELECT DISTINCT ON(geocode_string) st_x(g.the_geom) longitude, st_y(g.the_geom) latitude,g.geocode_string FROM addresses a INNER JOIN #{sql_api[:table_name]} g ON md5(g.geocode_string)=a.address"
         response = run_query(sql, 'csv').gsub(/\A.*/, '').gsub(/^$\n/, '')
-        File.open(cache_results, 'a') { |f| f.write(response) } unless response == "\n"
+        File.open(cache_results, 'a') { |f| f.write(response.force_encoding("UTF-8")) } unless response == "\n"
       end while rows.size >= BATCH_SIZE
       create_temp_table
       load_results_to_temp_table

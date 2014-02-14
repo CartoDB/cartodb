@@ -25,7 +25,8 @@ module CartoDB
       PRIVACY_LINK      = 'link'      # published but not listen in public profile
       PRIVACY_PROTECTED = 'password'  # published but password protected
 
-      CANONICAL_TYPE = 'table'
+      CANONICAL_TYPE  = 'table'
+      DERIVED_TYPE    =  'derived'
       PRIVACY_VALUES  = [ PRIVACY_PUBLIC, PRIVACY_PRIVATE, PRIVACY_LINK, PRIVACY_PROTECTED ]
       TEMPLATE_NAME_PREFIX = 'tpl_'
 
@@ -105,7 +106,7 @@ module CartoDB
         layers(:base).map(&:destroy)
         layers(:cartodb).map(&:destroy)
         map.destroy if map
-        table.destroy if type == 'table' && table
+        table.destroy if type == CANONICAL_TYPE && table
         repository.delete(id)
         self.attributes.keys.each { |key| self.send("#{key}=", nil) }
 
@@ -180,11 +181,11 @@ module CartoDB
       end #varnish_key
 
       def derived?
-        type == 'derived'
+        type == DERIVED_TYPE
       end #derived?
 
       def table?
-        type == 'table'
+        type == CANONICAL_TYPE
       end #table?
 
       def dependent?
@@ -237,6 +238,11 @@ module CartoDB
         @password_salt = generate_salt() if @password_salt.nil?
         @encrypted_password = password_digest(value, @password_salt)
       end #password
+
+      def is_password_valid?(password)
+        raise CartoDB::InvalidMember unless (privacy != PRIVACY_PROTECTED && !@password_salt.nil? && !@password_digest.nil?)
+        ( password_digest(password, @password_salt) == @password_digest )
+      end #is_password_valid
 
       def remove_password()
         @password_salt = nil

@@ -594,7 +594,7 @@ describe User do
 
   it "should invalidate its Varnish cache after deletion" do
     doomed_user = create_user :email => 'doomed2@example.com', :username => 'doomed2', :password => 'doomed123'
-    CartoDB::Varnish.any_instance.expects(:purge).with("obj.http.X-Cache-Channel ~ #{doomed_user.database_name}.*").returns(true)
+    CartoDB::Varnish.any_instance.expects(:purge).with("#{doomed_user.database_name}.*").returns(true)
 
     doomed_user.destroy
   end
@@ -608,13 +608,13 @@ describe User do
     uuid      = Table.where(id: table_id).first.table_visualization.id
     
     CartoDB::Varnish.any_instance.expects(:purge)
-      .with("obj.http.X-Cache-Channel ~ #{doomed_user.database_name}.*")
+      .with("#{doomed_user.database_name}.*")
       .returns(true)
     CartoDB::Varnish.any_instance.expects(:purge)
-      .with("obj.http.X-Cache-Channel ~ ^#{doomed_user.database_name}:(.*clubbing.*)|(table)$")
+      .with("#{doomed_user.database_name}:(.*clubbing.*)|(table)$")
       .returns(true)
     CartoDB::Varnish.any_instance.expects(:purge)
-      .with("obj.http.X-Cache-Channel ~ .*#{uuid}:vizjson")
+      .with("#{uuid}:vizjson")
       .times(2)
       .returns(true)
     Table.any_instance.expects(:delete_tile_style).returns(true)

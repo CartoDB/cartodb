@@ -28,3 +28,6 @@ services/importer/spec/factories/database.json
 .ruby-version
 cartodb.sublime-workspace
 cartodb.sublime-project
+lib/assets/dist
+lib/assets/node_modules
+.idea

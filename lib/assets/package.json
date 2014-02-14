@@ -1,0 +1,36 @@
+{
+  "name": "cartodb-ui",
+  "version": "1.0.0",
+  "description": "CartoDB UI frontend",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/CartoDB/cartodb.git"
+  },
+  "author": {
+    "name": "CartoDB",
+    "url": "http://cartodb.com/",
+    "email": "wadus@cartodb.com"
+  },
+  "contributors": [],
+  "licenses": [
+    {
+      "type": "BSD"
+    }
+  ],
+  "devDependencies": {
+    "uglify-js": "1.3.3",
+    "aws-sdk": "",
+    "git-rev": "",
+    "underscore": "",
+    "grunt": "~0.4.1",
+    "grunt-contrib-concat": "",
+    "grunt-contrib-jasmine": "",
+    "grunt-casper": "",
+    "grunt-contrib-jst": "~0.5.1",
+    "grunt-mustache": "~0.1.6"
+  },
+  "files": [
+    "dist"
+  ],
+  "main": "cartodb"
+}

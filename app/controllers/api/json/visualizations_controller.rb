@@ -80,7 +80,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     end
 
     # Make public by default
-    member.privacy = Visualization::Member::PUBLIC
+    member.privacy = Visualization::Member::PRIVACY_PUBLIC
 
     member.store
     collection  = Visualization::Collection.new.fetch
@@ -217,7 +217,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   end #payload_with_default_privacy
 
   def default_privacy
-    current_user.private_tables_enabled ? Visualization::Member::PRIVATE : Visualization::Member::PUBLIC
+    current_user.private_tables_enabled ? Visualization::Member::PRIVACY_PRIVATE : Visualization::Member::PRIVACY_PUBLIC
   end #default_privacy
 
   def name_candidate

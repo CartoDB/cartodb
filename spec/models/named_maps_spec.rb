@@ -61,7 +61,7 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
       table = create_table( user_id: @user.id )
 
       derived_vis = CartoDB::Visualization::Copier.new(@user, table.table_visualization).copy()
-      derived_vis.privacy = CartoDB::Visualization::Member::PUBLIC
+      derived_vis.privacy = CartoDB::Visualization::Member::PRIVACY_PUBLIC
 
       # Get
       Typhoeus.stub( %r{http:\/\/[a-z0-9]+\.localhost\.lan:8181\/tiles\/template\/[a-zA-Z0-9_]+\?api_key=.*} )
@@ -621,7 +621,8 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
 
   # Does all the work and stubbing required to create a private table with an associated visualization
   # NOTE: Leaves stubbed calls to GET the template so they return the correct template data
-  def create_private_table_with_public_visualization(template_data, visualization_privacy = CartoDB::Visualization::Member::PUBLIC)
+  def create_private_table_with_public_visualization(template_data, 
+      visualization_privacy = CartoDB::Visualization::Member::PRIVACY_PUBLIC)
     table = create_table( user_id: @user.id )
     derived_vis = CartoDB::Visualization::Copier.new(@user, table.table_visualization).copy()
     derived_vis.privacy = visualization_privacy

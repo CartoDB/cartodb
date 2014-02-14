@@ -20,23 +20,29 @@ module CartoDB
       extend Forwardable
       include Virtus
 
-      PUBLIC = 'public'
-      PRIVATE = 'private'
+      PRIVACY_PUBLIC    = 'public'    # published and listable in public user profile
+      PRIVACY_PRIVATE   = 'private'   # not published (viz.json and embed_map should return 404)
+      PRIVACY_LINK      = 'link'      # published but not listen in public profile
+      PRIVACY_PROTECTED = 'password'  # published but password protected
 
       CANONICAL_TYPE = 'table'
-      PRIVACY_VALUES  = %w{ public private }
+      PRIVACY_VALUES  = [ PRIVACY_PUBLIC, PRIVACY_PRIVATE, PRIVACY_LINK, PRIVACY_PROTECTED ]
       TEMPLATE_NAME_PREFIX = 'tpl_'
 
-      attribute :id,                String
-      attribute :name,              String
-      attribute :map_id,            Integer
-      attribute :active_layer_id,   Integer
-      attribute :type,              String
-      attribute :privacy,           String
-      attribute :tags,              Array[String], default: []
-      attribute :description,       String
-      attribute :created_at,        Time
-      attribute :updated_at,        Time
+      AUTH_DIGEST = '1211b3e77138f6e1724721f1ab740c9c70e66ba6fec5e989bb6640c4541ed15d06dbd5fdcbd3052b'
+
+      attribute :id,                  String
+      attribute :name,                String
+      attribute :map_id,              Integer
+      attribute :active_layer_id,     Integer
+      attribute :type,                String
+      attribute :privacy,             String
+      attribute :tags,                Array[String], default: []
+      attribute :description,         String
+      attribute :created_at,          Time
+      attribute :updated_at,          Time
+      attribute :encrypted_password,  String, default: nil
+      attribute :password_salt,       String, default: nil
 
       def_delegators :validator,    :errors, :full_errors
       def_delegators :relator,      *Relator::INTERFACE
@@ -71,6 +77,14 @@ module CartoDB
         validator.validate_presence_of(name: name, privacy: privacy, type: type)
         validator.validate_in(:privacy, privacy, PRIVACY_VALUES)
         validator.validate_uniqueness_of(:name, available_name?)
+
+        if (privacy == PRIVACY_PROTECTED)
+          validator.validate_presence_of_with_custom_message(
+            { encrypted_password: encrypted_password, password_salt: password_salt },
+            "password can't be blank"
+            )
+        end
+
         validator.valid?
       end #valid?
 
@@ -122,17 +136,26 @@ module CartoDB
 
       def privacy=(privacy)
         privacy = privacy.downcase if privacy
-        self.privacy_changed = true if privacy != @privacy && !@privacy.nil?
+        self.privacy_changed = true if ( privacy != @privacy && !@privacy.nil? )
         super(privacy)
       end #privacy=
 
       def public?
-        privacy == PUBLIC
+        privacy == PRIVACY_PUBLIC
       end #public?
 
+      # TODO: Unused yet
+      def public_with_link?
+        privacy == PRIVACY_LINK
+      end #public_with_link?
+
       def private?
-        !public?
+        privacy == PRIVACY_PRIVATE
       end #private?
+
+      def password_protected?
+        privacy == PRIVACY_PROTECTED
+      end #password_protected?
 
       def to_hash(options={})
         Presenter.new(self, options).to_poro
@@ -182,7 +205,6 @@ module CartoDB
         if type != CANONICAL_TYPE        
           named_map = has_named_map?
           if has_private_tables?
-            # TODO: Might only need to update
             if (named_map)
               update_named_map(named_map)
              else
@@ -211,6 +233,16 @@ module CartoDB
         end
       end #has_named_map?
 
+      def password=(value)
+        @password_salt = generate_salt() if @password_salt.nil?
+        @encrypted_password = password_digest(value, @password_salt)
+      end #password
+
+      def remove_password()
+        @password_salt = nil
+        @encrypted_password = nil
+      end #remove_password
+
       private
 
       attr_reader   :repository, :name_checker, :validator
@@ -219,6 +251,9 @@ module CartoDB
       def do_store(propagate_changes=true)
         invalidate_varnish_cache if name_changed || privacy_changed || description_changed
         set_timestamps
+
+        remove_password() if not password_protected?
+
         repository.store(id, attributes.to_hash)
 
         if type == CANONICAL_TYPE
@@ -329,6 +364,22 @@ module CartoDB
         return {} unless defined?(Cartodb)
         Cartodb.config
       end #configuration
+
+      def password_digest(password, salt)
+        digest = AUTH_DIGEST
+        10.times do
+          digest = secure_digest(digest, salt, password, AUTH_DIGEST)
+        end
+        digest
+      end #password_digest
+
+      def generate_salt()
+        secure_digest(Time.now, (1..10).map{ rand.to_s() })
+      end #generate_salt
+
+      def secure_digest(*args)
+        Digest::SHA256.hexdigest(args.flatten().join())
+      end #secure_digest
 
     end # Member
   end # Visualization

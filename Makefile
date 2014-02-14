@@ -7,6 +7,7 @@ WORKING_SPECS = \
 	spec/requests/api/records_spec.rb \
 	spec/requests/api/map_layers_spec.rb \
   spec/models/table_spec.rb \
+  spec/models/user_spec.rb \
   spec/models/layer_spec.rb \
   spec/models/tag_spec.rb \
   spec/models/map_spec.rb \

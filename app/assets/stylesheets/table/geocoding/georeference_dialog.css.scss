@@ -107,83 +107,133 @@
           border: 1px solid #bbb;
 
           &.a {
-            -webkit-transition: border-color 400ms ease-in-out, background-color 400ms ease-in-out, top 300ms ease-in-out, opacity 200ms ease-in;
-            -moz-transition:    border-color 400ms ease-in-out, background-color 400ms ease-in-out, top 300ms ease-in-out, opacity 200ms ease-in;
-            -o-transition:      border-color 400ms ease-in-out, background-color 400ms ease-in-out, top 300ms ease-in-out, opacity 200ms ease-in;
-            transition:         border-color 400ms ease-in-out, background-color 400ms ease-in-out, top 300ms ease-in-out, opacity 200ms ease-in;
+            -webkit-transition: all 400ms ease-in-out,border-color 400ms ease-in-out, background-color 400ms ease-in-out, top 300ms ease-in-out, opacity 200ms ease-in;
+            -moz-transition:    all 400ms ease-in-out,border-color 400ms ease-in-out, background-color 400ms ease-in-out, top 300ms ease-in-out, opacity 200ms ease-in;
+            -o-transition:      all 400ms ease-in-out,border-color 400ms ease-in-out, background-color 400ms ease-in-out, top 300ms ease-in-out, opacity 200ms ease-in;
+            transition:         all 400ms ease-in-out,border-color 400ms ease-in-out, background-color 400ms ease-in-out, top 300ms ease-in-out, opacity 200ms ease-in;
           }
 
           &.b {
-            -webkit-transition: border-color 400ms ease-in-out, background-color 400ms ease-in-out, top 200ms ease-in-out, opacity 200ms ease-in;
-            -moz-transition:    border-color 400ms ease-in-out, background-color 400ms ease-in-out, top 200ms ease-in-out, opacity 200ms ease-in;
-            -o-transition:      border-color 400ms ease-in-out, background-color 400ms ease-in-out, top 200ms ease-in-out, opacity 200ms ease-in;
-            transition:         border-color 400ms ease-in-out, background-color 400ms ease-in-out, top 200ms ease-in-out, opacity 200ms ease-in;
+            -webkit-transition: all 400ms ease-in-out,border-color 400ms ease-in-out, background-color 400ms ease-in-out, top 200ms ease-in-out, opacity 200ms ease-in;
+            -moz-transition:    all 400ms ease-in-out,border-color 400ms ease-in-out, background-color 400ms ease-in-out, top 200ms ease-in-out, opacity 200ms ease-in;
+            -o-transition:      all 400ms ease-in-out,border-color 400ms ease-in-out, background-color 400ms ease-in-out, top 200ms ease-in-out, opacity 200ms ease-in;
+            transition:         all 400ms ease-in-out,border-color 400ms ease-in-out, background-color 400ms ease-in-out, top 200ms ease-in-out, opacity 200ms ease-in;
           }
 
           &.c {
-            -webkit-transition: border-color 400ms ease-in-out, background-color 400ms ease-in-out, top 400ms ease-in-out, opacity 400ms ease-in;
-            -moz-transition:    border-color 400ms ease-in-out, background-color 400ms ease-in-out, top 400ms ease-in-out, opacity 400ms ease-in;
-            -o-transition:      border-color 400ms ease-in-out, background-color 400ms ease-in-out, top 400ms ease-in-out, opacity 400ms ease-in;
-            transition:         border-color 400ms ease-in-out, background-color 400ms ease-in-out, top 400ms ease-in-out, opacity 400ms ease-in;
+            -webkit-transition: all 400ms ease-in-out,border-color 400ms ease-in-out, background-color 400ms ease-in-out, top 400ms ease-in-out, opacity 400ms ease-in;
+            -moz-transition:    all 400ms ease-in-out,border-color 400ms ease-in-out, background-color 400ms ease-in-out, top 400ms ease-in-out, opacity 400ms ease-in;
+            -o-transition:      all 400ms ease-in-out,border-color 400ms ease-in-out, background-color 400ms ease-in-out, top 400ms ease-in-out, opacity 400ms ease-in;
+            transition:         all 400ms ease-in-out,border-color 400ms ease-in-out, background-color 400ms ease-in-out, top 400ms ease-in-out, opacity 400ms ease-in;
           }
 
         }
 
-        i:before {
-          content: '';
-          display:block;
-          position:absolute;
-          top: 2px; left: 2px;
-          width: 96px;
-          height: 96px;
-        }
-
-
-        i {
-          padding: 2px;
-          @include border-radius(200px);
-          background: #ccc;
-
-          position:relative;
-          display:block;
+        .icon_container {
           margin: 0 auto 5px auto;
+          position:relative;
           width: 96px;
           height: 96px;
+          @include border-radius(200px);
+          border: 2px solid rgba(#333, .55);
+
+          -webkit-background-clip: padding-box;
+          -moz-background-clip:    padding;
+          background-clip:         padding-box;
+          -webkit-transform: translate3d(0px,0px,0);
+          transform: translate3d(0px,0px,0);
+          background-size: cover;
+
+          clear:both;
+          overflow:hidden;
+
+          .icon {
+            width: 96px;
+            height: 96px;
+          }
 
         }
 
-        a {
-
+        a .icon {
           @include filter(grayscale(100%));
           @include opacity(.9);
+        }
 
+        /*a span {color: #397DB8;}*/
+        /*&.selected a span {color: #333;}*/
+
+        a, a .icon {
           -webkit-transition: all 250ms ease-in-out;
           -moz-transition:    all 250ms ease-in-out;
           -o-transition:      all 250ms ease-in-out;
           transition:         all 250ms ease-in-out;
-
         }
 
-        &.selected .selected i {
-          background: rgba(#333, .75);
+        &.disabled a,
+        &.disabled.selected a {
+
+          .icon {
+            @include filter(grayscale(100%));
+            @include filter(brightness(100%));
+          }
+
           @include opacity(1);
+
+          .icon { background: #ccc; }
+          background: #fff;
+
         }
 
-        &.selected a {
+        &.disabled.regions .icon:before,
+        &.disabled.selected.regions .icon:before {
+          -webkit-transform: scale(1, 1);
+          transform: scale(1, 1);
+        }
+
+        a .warning {
+          position:absolute;
+          top: 30px;
+          right:60px;
+          display:block;
+          width:31px;
+          height:31px;
+          @include background(image-url("layout/georeference_warning.png") repeat center center);
+        }
+
+
+        &.selected a .icon_container {
+          border: 2px solid rgba(#333, .75);
+          .icon { @include opacity(1); }
+        }
+
+        &.selected a .icon {
           @include filter(grayscale(0%));
           @include opacity(1);
         }
 
-        &.points i {
-          &:before { @include background(image-url("layout/georeference_points.png") repeat center center); }
-        }
+        &.points .icon { @include background(image-url("layout/georeference_points.png") repeat center center); }
 
-        &.points.animated i .marker.a { top: 35px; @include opacity(1); }
-        &.points.animated i .marker.b { top: 60px; @include opacity(1); }
-        &.points.animated i .marker.c { top: 40px; @include opacity(1); }
+        &.points.selected.animated .icon .marker.a { top: 35px; @include opacity(1);-webkit-transform: scale(1, 1); transform: scale(1, 1); }
+        &.points.selected.animated .icon .marker.b { top: 60px; @include opacity(1);-webkit-transform: scale(1, 1); transform: scale(1, 1); }
+        &.points.selected.animated .icon .marker.c { top: 40px; @include opacity(1);-webkit-transform: scale(1, 1); transform: scale(1, 1); }
 
-        &.regions i:before {
-          @include background(image-url("layout/georeference_regions.png") repeat center center);
+        &.points.animated .icon .marker.a { top: 35px; @include opacity(.7); -webkit-transform: scale(.7, .7); transform: scale(.7, .7);}
+        &.points.animated .icon .marker.b { top: 60px; @include opacity(.7); -webkit-transform: scale(.7, .7); transform: scale(.7, .7);}
+        &.points.animated .icon .marker.c { top: 40px; @include opacity(.7); -webkit-transform: scale(.7, .7); transform: scale(.7, .7);}
+
+        &.regions {
+          .icon {
+            -webkit-transform: scale(1.5, 1.5) rotate(10deg);
+            transform: scale(1.5, 1.5) rotate(10deg);
+
+            @include background(image-url("layout/georeference_regions.png") repeat center center);
+          }
+
+          &.selected .icon {
+            -webkit-transform: scale(1, 1);
+            transform: scale(1, 1);
+          }
+
         }
 
       }

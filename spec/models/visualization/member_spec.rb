@@ -15,7 +15,6 @@ describe Visualization::Member do
   end
 
   before(:each) do
-    # Using Mocha stubs until we update RSpec (@see http://gofreerange.com/mocha/docs/Mocha/ClassMethods.html)
     CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
   end
 
@@ -219,7 +218,7 @@ describe Visualization::Member do
 
   describe '#derived?' do
     it "returns true if type is derived" do
-      visualization = Visualization::Member.new(type: 'derived')
+      visualization = Visualization::Member.new(type: Visualization::Member::DERIVED_TYPE)
       visualization.derived?.should be_true
       visualization.table?.should be_false
 
@@ -231,7 +230,7 @@ describe Visualization::Member do
 
   describe '#table?' do
     it "returns true if type is 'table'" do
-      visualization = Visualization::Member.new(type: 'table')
+      visualization = Visualization::Member.new(type: Visualization::Member::CANONICAL_TYPE)
       visualization.derived?.should be_false
       visualization.table?.should be_true
 
@@ -239,16 +238,28 @@ describe Visualization::Member do
       visualization.derived?.should be_false
       visualization.table?.should be_false
     end
-  end
+  end #table?
+
+  #describe '#password=' do
+  #  it '' do
+
+   # end
+  #end #password=
+
+  # password=
+  # is_password_valid?
+  # remove_password
+  # has_named_map?
+  # has_private_tables?
 
   def random_attributes(attributes={})
     random = rand(999)
     {
       name:         attributes.fetch(:name, "name #{random}"),
       description:  attributes.fetch(:description, "description #{random}"),
-      privacy:      attributes.fetch(:privacy, 'public'),
+      privacy:      attributes.fetch(:privacy, Visualization::Member::PRIVACY_PUBLIC),
       tags:         attributes.fetch(:tags, ['tag 1']),
-      type:         attributes.fetch(:type, 'table'),
+      type:         attributes.fetch(:type, Visualization::Member::CANONICAL_TYPE),
       active_layer_id: random
     }
   end #random_attributes

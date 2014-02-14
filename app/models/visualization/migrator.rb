@@ -21,6 +21,8 @@ module CartoDB
           String    :privacy
           DateTime  :created_at, null: false
           DateTime  :updated_at, null: false
+          String    :encrypted_password
+          String    :password_salt
         end
 
         @db.run(%Q{

@@ -65,14 +65,14 @@
           h4 {
             letter-spacing:0;
             padding-left:30px;
-            &.exclamation {
-              @include elements-sprite(background_loader_error, $offset-y:2px);
-            }
-            &.question {
-              @include elements-sprite(question, $offset-y:2px);
-            }
+
+            &.exclamation { @include elements-sprite(background_loader_error, $offset-y:2px); }
+            &.question    { @include elements-sprite(question, $offset-y:2px); }
+
           }
+
           p {padding-left:30px}
+
         }
 
         .block p a { text-decoration: underline; }

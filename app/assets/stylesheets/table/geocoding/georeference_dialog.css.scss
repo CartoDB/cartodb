@@ -19,6 +19,8 @@
     margin-left:20px;
   }
 
+  .geocoder_stats { display: none; }
+
   // Dialog styles
   div.content {
     padding:40px 40px 30px!important;
@@ -41,7 +43,7 @@
 
         &.selected {
 
-          a {
+          .opt {
             color: #333333;
             background: #F2F2F2;
           }
@@ -53,7 +55,7 @@
 
         }
 
-        a {
+        .opt {
 
           /*&:hover { background: #ddd; }*/
 
@@ -73,21 +75,22 @@
 
         }
 
-        &:first-child a { border-right: none; @include border-radius(5px 0px 0px 5px); }
-        &:last-child  a { border-bottom: 1px solid #E4E4E4; @include border-radius(0px 5px 5px 0px); }
+        &:first-child .opt { border-right: none; @include border-radius(5px 0px 0px 5px); }
+        &:last-child  .opt { border-bottom: 1px solid #E4E4E4; @include border-radius(0px 5px 5px 0px); }
 
         span {
           position:absolute;
-          bottom: 30px;
+          bottom: 25px;
           @include inline-block();
           $width: 163px;
           width: $width;
           left: 50%;
           margin-left: -$width/2;
+          line-height:normal;
         }
 
         &:last-child span {
-          $width: 195px;
+          $width: 200px;
           width: $width;
           margin-left: -$width/2;
         }
@@ -151,28 +154,31 @@
 
         }
 
-        a .icon {
+        .opt .icon {
           @include filter(grayscale(100%));
           @include opacity(.9);
         }
 
-        /*a span {color: #397DB8;}*/
-        /*&.selected a span {color: #333;}*/
+        /*.opt span {color: #397DB8;}*/
+        /*&.selected .opt span {color: #333;}*/
 
-        a, a .icon {
+        .opt, .opt .icon {
           -webkit-transition: all 250ms ease-in-out;
           -moz-transition:    all 250ms ease-in-out;
           -o-transition:      all 250ms ease-in-out;
           transition:         all 250ms ease-in-out;
         }
 
-        &.disabled a,
-        &.disabled.selected a {
+        &.disabled .opt,
+        &.disabled.selected .opt {
 
           .icon_container {
-            border: 2px solid rgba(#333, .55);
+
+            border: 2px solid rgba(#333, .3);
+
             .icon {
               @include filter(grayscale(100%));
+              @include opacity(.5);
             }
           }
 
@@ -187,7 +193,7 @@
           transform: scale(1, 1);
         }
 
-        a .warning {
+        .opt .warning {
           /*display:none;*/
           position:absolute;
           top: 20px;
@@ -209,12 +215,12 @@
         }
 
 
-        &.selected a .icon_container {
+        &.selected .opt .icon_container {
           border: 2px solid rgba(#333, .75);
           .icon { @include opacity(1); }
         }
 
-        &.selected a .icon {
+        &.selected .opt .icon {
           @include filter(grayscale(0%));
           @include opacity(1);
         }
@@ -267,6 +273,8 @@
         }
       }
     }
+
+    .message { display: none; }
 
     .options li {
       margin-bottom:25px;

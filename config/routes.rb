@@ -47,7 +47,6 @@ CartoDB::Application.routes.draw do
 
     get '/tables/track_embed'       => 'visualizations#track_embed'
     get '/tables/embed_forbidden'   => 'visualizations#embed_forbidden'
-    get '/tables/embed_protected'   => 'visualizations#embed_protected'
     get '/tables/:id'               => 'visualizations#show'
     get '/tables/:id/map'           => 'visualizations#show'
     get '/tables/:id/table'         => 'visualizations#show'
@@ -65,7 +64,7 @@ CartoDB::Application.routes.draw do
     get '/viz/:id/public'           => 'visualizations#public'
     get '/viz/:id/embed_map'        => 'visualizations#embed_map'
 
-    post '/viz/:id/protected_embed_map'    => 'visualizations#show_protected_embed_map'
+    post '/viz/:id/protected_embed_map'    => 'visualizations#show_protected_embed_map', :as => :protected_embed_map
 
     match '/your_apps' => 'client_applications#api_key', :as => :api_key_credentials
     post  '/your_apps/api_key/regenerate' => 'client_applications#regenerate_api_key', :as => :regenerate_api_key

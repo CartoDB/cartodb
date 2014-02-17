@@ -53,7 +53,7 @@ class Admin::VisualizationsController < ApplicationController
       return(embed_protected)
     end
 
-    @protected_map_token = 'test_token'
+    @protected_map_token = @visualization.get_auth_token()
 
     respond_to do |format|
       format.html { render 'embed_map', layout: false }

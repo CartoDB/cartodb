@@ -163,6 +163,7 @@
 
         <% if (@visualization.password_protected?) %>
           opt.auth_token = '<%= @protected_map_token %>';
+          opt.https = true; // when auth_token is used tiles should be fetch using https
         <% end %>
 
         <% if Rails.env.development? || Cartodb.config[:no_cdn] == true %>

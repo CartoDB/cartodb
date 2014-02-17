@@ -6,7 +6,7 @@ CSS_FILES_IE = $(wildcard themes/css/ie/*.css)
 
 TORQUE_FILES = vendor/mod/carto.js vendor/mod/torque.uncompressed.js src/geo/gmaps/torque.js src/geo/leaflet/torque.js src/geo/ui/time_slider.js      vendor/mod/jquery-ui/jquery.ui.core.js vendor/mod/jquery-ui/jquery.ui.widget.js vendor/mod/jquery-ui/jquery.ui.mouse.js vendor/mod/jquery-ui/jquery.ui.slider.js     scripts/mod.torque.footer.js
 #dist:  dist/cartodb.js dist/cartodb.full.js themes
-dist:  dist/cartodb.js dist/cartodb.css dist/cartodb.ie.css dist/cartodb.nojquery.js dist/cartodb.core.js dist/cartodb.mod.torque.js
+dist:  dist/cartodb.js dist/cartodb.css dist/cartodb.ie.css dist/cartodb.nojquery.js dist/cartodb.core.js dist/cartodb.mod.torque.js dist/cartodb.noleaflet.js
 
 
 dist_folder:
@@ -42,6 +42,10 @@ dist/cartodb.mod.torque.js: dist/cartodb.mod.torque.uncompressed.js
 dist/cartodb.nojquery.js: dist/cartodb.uncompressed.js
 	$(UGLIFYJS) dist/_cartodb_nojquery.js > dist/cartodb.nojquery.js
 	rm dist/_cartodb_nojquery.js
+
+dist/cartodb.noleaflet.js: dist/_cartodb_noleaflet.js
+	$(UGLIFYJS) dist/_cartodb_noleaflet.js > dist/cartodb.noleaflet.js
+	rm dist/_cartodb_noleaflet.js
 
 dist/cartodb.css: css
 	cp themes/css/cartodb.css dist

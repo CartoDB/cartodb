@@ -82,7 +82,7 @@ class Admin::VisualizationsController < ApplicationController
 
   # Renders input password view
   def embed_protected
-    render 'embed_map_password', :layout => false, :status => :protected
+    render 'embed_map_password', :layout => false
   end #embed_protected
 
   def embed_forbidden

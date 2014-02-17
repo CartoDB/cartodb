@@ -153,8 +153,8 @@
 
       $(document).ready(function(){
 
-        // TODO: enable this when we integrate statsd
-        //cartodb.core.Profiler.backend(statsc.send.bind(statsc))
+        statsc.connect('http://<%= Cartodb.config[:graphite]['host'] %>:<%= Cartodb.config[:graphite]['port'] %>');
+        cartodb.core.Profiler.backend(statsc.send.bind(statsc))
 
         var bool_fn = function(v) { return v == 'true' }
         , is_custom_install = <%= Cartodb.config[:cartodb_com_hosted].present? %>

@@ -27,7 +27,10 @@
     "grunt-contrib-jasmine": "",
     "grunt-casper": "",
     "grunt-contrib-jst": "~0.5.1",
-    "grunt-mustache": "~0.1.6"
+    "grunt-mustache": "~0.1.6",
+    "grunt-contrib-sass": "~0.7.2",
+    "grunt-contrib-compass": "~0.7.2",
+    "mustache": "https://github.com/janl/mustache.js/archive/0.5.2.zip"
   },
   "files": [
     "dist"

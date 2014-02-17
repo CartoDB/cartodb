@@ -161,6 +161,11 @@
           'legends': bool_fn
         });
 
+        <% if (@visualization.password_protected?) %>
+          opt.auth_token = '<% @protected_map_token %>';
+          debuggger
+        <% end %>
+
         <% if Rails.env.development? || Cartodb.config[:no_cdn] == true %>
         opt.no_cdn = true;
         <% end %>

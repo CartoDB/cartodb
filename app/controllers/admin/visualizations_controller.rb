@@ -43,10 +43,16 @@ class Admin::VisualizationsController < ApplicationController
   def show_protected_embed_map
     id = params.fetch(:id)
     submitted_password = params.fetch(:password)
-    @visualization, @table = locator.get( id, CartoDB.extract_subdomain( request ) )
+    @visualization, @table = locator.get(id, CartoDB.extract_subdomain(request))
 
-    return( pretty_404 ) unless @visualization and @visualization.password_protected? and @visualization.has_password?
-    return( embed_forbidden ) if not @visualization.is_password_valid?( submitted_password )
+    return(pretty_404) unless @visualization and @visualization.password_protected? and @visualization.has_password?
+
+    if not @visualization.is_password_valid?(submitted_password)
+      flash[:error] = "Invalid password"
+      return(embed_protected)
+    end
+
+    @protected_map_token = ''
 
     respond_to do |format|
       format.html { render 'embed_map', layout: false }

@@ -29,6 +29,87 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
     CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
   end
 
+  describe 'password_protected_visualization' do
+    it 'tests visualization auth capabilities for password restricted type' do
+
+      auth_token = '1234567890abcdef'
+
+      template_data = {
+        template: {
+          version: '0.0.1',
+          name: '@@PLACEHOLDER@@',
+          auth: {
+            method: 'token',
+            valid_tokens: [ auth_token ]
+          },
+          placeholders: {
+            layer0: {
+              type: "number",
+              default: 1
+            }
+          },
+          layergroup: {
+            layers: [
+              {
+                type: "cartodb",
+                options: {
+                  sql: "WITH wrapped_query AS (select * from test1) SELECT * from wrapped_query where <%= layer0 %>=1",
+                  layer_name: "test1",
+                  cartocss: "/** */",
+                  cartocss_version: "2.1.1",
+                  interactivity: "cartodb_id"
+                }
+              }
+            ]
+          }
+        }
+      }
+
+      table = create_table( user_id: @user.id )
+      table.privacy = Table::PUBLIC
+      table.save()
+      derived_vis = CartoDB::Visualization::Copier.new(@user, table.table_visualization).copy()
+
+      password = 's4mpl3_:Password!!!'
+
+      derived_vis.privacy = CartoDB::Visualization::Member::PRIVACY_PROTECTED
+      derived_vis.password = password
+
+      # get: not present
+      Typhoeus.stub( %r{http:\/\/[a-z0-9]+\.localhost\.lan:8181\/tiles\/template\/[a-zA-Z0-9_]+\?api_key=.*},
+      { method: :get}  )
+            .and_return(
+              Typhoeus::Response.new(code: 404, body: "")
+            )
+      # Post: to create
+      Typhoeus.stub( "http://#{@user.username}.localhost.lan:8181/tiles/template?api_key=#{@user.api_key}",
+        { method: :post } )
+              .and_return(
+                Typhoeus::Response.new( code: 200, body: JSON::dump( { template_id: 'tpl_fakeid' } ) )
+              )
+
+      derived_vis.store()
+      template_id = CartoDB::NamedMapsWrapper::NamedMap.normalize_name(derived_vis.id)
+
+      Typhoeus::Expectation.clear()
+      # Retrieval
+      Typhoeus.stub(
+      "http://#{@user.username}.localhost.lan:8181/tiles/template/#{template_id}?api_key=#{@user.api_key}", 
+      { method: :get} )
+            .and_return(
+              Typhoeus::Response.new( code: 200, body: JSON::dump( template_data ) )
+            )
+
+      derived_vis.privacy.should eq CartoDB::Visualization::Member::PRIVACY_PROTECTED
+      derived_vis.has_password?.should eq true
+      derived_vis.is_password_valid?(password).should eq true
+      derived_vis.is_password_valid?('some invalid passsword').should eq false
+
+      derived_vis.get_auth_token().should eq auth_token
+
+    end
+  end
+
 
   describe 'public_table' do
     it 'public map with public visualization does not create a named map' do
@@ -36,7 +117,7 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
       table.privacy = Table::PUBLIC
       table.save()
       table.should be_public
-      table.table_visualization.privacy.should eq 'public'
+      table.table_visualization.privacy.should eq CartoDB::Visualization::Member::PRIVACY_PUBLIC
 
       derived_vis = CartoDB::Visualization::Copier.new(@user, table.table_visualization).copy()
 

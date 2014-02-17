@@ -256,6 +256,15 @@ module CartoDB
         digest            
       end #make_auth_token
 
+      def get_auth_token()
+        named_map = has_named_map?
+        raise CartoDB::InvalidMember unless named_map
+
+        tokens = named_map.template[:template][:auth][:valid_tokens]
+        raise CartoDB::InvalidMember if tokens.size == 0
+        tokens.first
+      end #get_auth_token
+
       private
 
       attr_reader   :repository, :name_checker, :validator

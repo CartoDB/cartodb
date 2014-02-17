@@ -86,7 +86,7 @@
   .form_color {
     position:relative;
     @include inline-block();
-    width:42px;
+    width:44px;
     height:21px;
 
     $rad: 3px;
@@ -113,15 +113,21 @@
     a.image-picker {
       left:0;
       height:19px;
-      width:20px;
+      width:22px;
       border:1px solid #B2B2B2;
       border-right:0;
       @include border-left-radius($rad);
 
       span.handle {
-        width:8px;
+        top:5px;
+        left:4px;
+        width:14px;
         height:8px;
         @include elements-sprite(image_fill);
+      }
+
+      &:hover span.handle {
+        @include elements-sprite(image_fill, $offset-x:-24px);
       }
     }
 
@@ -133,7 +139,8 @@
 
       span.handle {
         top:7px;
-        left:7px;
+        right:6px;
+        left:auto;
         @include border-radius(2px);
         background:rgba(black,0.3);
 
@@ -153,11 +160,18 @@
         position:absolute;
         left:0;
         top:0;
-        width:19px;
-        height:19px;
+        right:0;
+        bottom:0;
         background:none;
         @include border-right-radius($rad);
         border:1px solid rgba(0,0,0,0.3);
+      }
+
+      // Color expanded
+      &.expanded {
+        width:44px;
+        @include border-radius($rad);
+        &:before { @include border-radius($rad) }
       }
 
       &:hover {

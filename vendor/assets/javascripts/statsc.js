@@ -145,7 +145,7 @@
   /**
    * Expose `statsc` to the world
    */
-  if (typeof require == 'function' && module) {
+  if (typeof require == 'function' && typeof(module) !== 'undefined') {
     module.exports = statsc;
   }
   if (typeof window == 'object') {

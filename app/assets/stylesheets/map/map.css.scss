@@ -11,6 +11,7 @@
 @import "../common/vars";
 @import "../common/mixins";
 @import "../map/map-sprite";
+@import "../elements/elements-sprite";
 
 
 div.map {
@@ -190,7 +191,13 @@ div.map {
         line-height: 13px;
         @include clearfix();
 
-        small { display:block; margin: 0 0 0 29px; font-size: 9px; color: #AAAAAA; }
+        small {
+          display:block;
+          margin: 0 0 0 29px;
+          font-size: 9px;
+          line-height:11px;
+          color: #AAAAAA;
+        }
 
         &:hover small {
           color: #AAAAAA;
@@ -198,10 +205,10 @@ div.map {
 
         .name {
           float:left;
-          font-size:13px;
           width: 150px;
           margin: 0 0 0 5px;
-
+          font-size:13px;
+          line-height:14px;
           text-overflow:ellipsis;
           white-space: nowrap;
           overflow: hidden;
@@ -300,6 +307,10 @@ div.map {
         &.add .thumb {
           background-size:auto;
           @include map-sprite(plus);
+        }
+
+        &.pattern .thumb {
+          @include elements-sprite(image_fill, $offset-x:5px, $offset-y:7px);
         }
 
         span.color {

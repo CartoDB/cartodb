@@ -240,11 +240,29 @@ describe Visualization::Member do
     end
   end #table?
 
-  #describe '#password=' do
-  #  it '' do
+  describe '#password' do
+    it 'checks that when using password protected type, encrypted password is generated and stored correctly' do
+      password_value = '123456'
 
-   # end
-  #end #password=
+      visualization = Visualization::Member.new(type: Visualization::Member::DERIVED_TYPE)
+      visualization.privacy = Visualization::Member::PRIVACY_PROTECTED
+
+      visualization.password = password_value
+      visualization.has_password?.should be_true
+      visualization.is_password_valid?(password_value).should be_true
+
+      # Shouldn't remove the password, and be equal
+      visualization.password = ''
+      visualization.has_password?.should be_true
+      visualization.is_password_valid?(password_value).should be_true
+      visualization.password = nil
+      visualization.has_password?.should be_true
+      visualization.is_password_valid?(password_value).should be_true
+
+      # TODO: Test removing the password, should work
+
+    end
+  end #password=
 
   # password=
   # is_password_valid?

@@ -69,8 +69,8 @@ module ApplicationHelper
       gdrive_api_key:      Cartodb.config[:gdrive]['api_key'],
       gdrive_app_id:       Cartodb.config[:gdrive]['app_id'],
       max_asset_file_size: Cartodb.config[:assets]["max_file_size"],
-      statsd_host:         Cartodb.config[:graphite]['host'],
-      statsd_port:         Cartodb.config[:graphite]['port']
+      statsd_host:         Cartodb.config[:graphite_public]['host'],
+      statsd_port:         Cartodb.config[:graphite_public]['port']
     }
 
     if Cartodb.config[:cdn_url].present?
@@ -101,8 +101,8 @@ module ApplicationHelper
       cartodb_com_hosted:  Cartodb.config[:cartodb_com_hosted],
       account_host:        Cartodb.config[:account_host],
       max_asset_file_size: Cartodb.config[:assets]["max_file_size"],
-      statsd_host:         Cartodb.config[:graphite]['host'],
-      statsd_port:         Cartodb.config[:graphite]['port']
+      statsd_host:         Cartodb.config[:graphite_public]['host'],
+      statsd_port:         Cartodb.config[:graphite_public]['port']
     }
 
     if Cartodb.config[:cdn_url].present?

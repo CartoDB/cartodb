@@ -6,7 +6,7 @@ class Admin::VisualizationsController < ApplicationController
   ssl_allowed :embed_map
   ssl_required :index, :show, :protected_embed_map
   before_filter :login_required, only: [:index]
-  skip_before_filter :browser_is_html5_compliant?, only: [:embed_map, :track_embed]
+  skip_before_filter :browser_is_html5_compliant?, only: [:embed_map, :track_embed, :show_protected_embed_map]
 
   def index
     @tables_count  = current_user.tables.count

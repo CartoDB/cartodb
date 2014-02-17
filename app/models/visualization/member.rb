@@ -235,13 +235,19 @@ module CartoDB
       end #has_named_map?
 
       def password=(value)
-        @password_salt = generate_salt() if @password_salt.nil?
-        @encrypted_password = password_digest(value, @password_salt)
+        if (value && value.size > 0)
+          @password_salt = generate_salt() if @password_salt.nil?
+          @encrypted_password = password_digest(value, @password_salt)
+        end
       end #password
 
+      def has_password?
+        ( !@password_salt.nil? && !@encrypted_password.nil? ) 
+      end #has_password
+
       def is_password_valid?(password)
-        raise CartoDB::InvalidMember unless (privacy != PRIVACY_PROTECTED && !@password_salt.nil? && !@password_digest.nil?)
-        ( password_digest(password, @password_salt) == @password_digest )
+        raise CartoDB::InvalidMember unless ( privacy == PRIVACY_PROTECTED && has_password? )
+        ( password_digest(password, @password_salt) == @encrypted_password )
       end #is_password_valid
 
       def remove_password()

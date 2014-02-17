@@ -15,8 +15,6 @@ WORKING_SPECS = \
   spec/lib/sql_test_spec.rb \
   spec/lib/string_spec.rb \
   spec/lib/metrics_spec.rb \
-  services/named-maps-api-wrapper/spec/unit/named_map_spec.rb \
-  services/named-maps-api-wrapper/spec/unit/named_maps_spec.rb \
   services/importer/spec/unit/csv_normalizer_spec.rb \
   spec/requests/admin/visualizations_spec.rb \
   spec/requests/admin/tables_spec.rb \

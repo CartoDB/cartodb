@@ -26,7 +26,6 @@ before_script:
   - npm install -g grunt-cli
 
 install:
-  - cd lib/assets && npm install
   - gdal-config --version
   - ruby --version
   - sudo gem install bundler
@@ -36,14 +35,15 @@ install:
   - cp config/app_config.yml.sample config/app_config.yml
   - cp config/database.yml.sample config/database.yml
   - cat python_requirements.txt | grep -v gdal | sudo pip install -r /dev/stdin
+  - cd lib/assets && npm install
 
 script:
-  - cd lib/assets && grunt jasmine
   - make prepare-test-db
   - make check-prepared
   # check list of database names
   - sudo su postgres -c "echo 'select datname from pg_database;' | psql template_postgis"
   - make check-prepared # running twice catches status leaks (db, users..)
+  - cd lib/assets && grunt jasmine
 
 env:
 

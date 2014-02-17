@@ -33,6 +33,7 @@ gem "ejs",                     "~> 1.1.1"
 
 group :production, :staging do
   gem 'unicorn',               "4.8.2"
+  gem 'raindrops',             "0.12.0"
 end
 
 group :assets do

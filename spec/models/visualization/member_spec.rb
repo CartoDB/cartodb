@@ -243,6 +243,7 @@ describe Visualization::Member do
   describe '#password' do
     it 'checks that when using password protected type, encrypted password is generated and stored correctly' do
       password_value = '123456'
+      password_second_value = '456789'
 
       visualization = Visualization::Member.new(type: Visualization::Member::DERIVED_TYPE)
       visualization.privacy = Visualization::Member::PRIVACY_PROTECTED
@@ -259,16 +260,20 @@ describe Visualization::Member do
       visualization.has_password?.should be_true
       visualization.is_password_valid?(password_value).should be_true
 
-      # TODO: Test removing the password, should work
+      # Modify the password
+      visualization.password = password_second_value
+      visualization.has_password?.should be_true
+      visualization.is_password_valid?(password_second_value).should be_true
+      visualization.is_password_valid?(password_value).should be_false
 
+      # Test removing the password, should work
+      visualization.remove_password()
+      visualization.has_password?.should be_false
+      lambda { 
+        visualization.is_password_valid?(password_value)
+      }.should raise_error CartoDB::InvalidMember
     end
   end #password=
-
-  # password=
-  # is_password_valid?
-  # remove_password
-  # has_named_map?
-  # has_private_tables?
 
   def random_attributes(attributes={})
     random = rand(999)

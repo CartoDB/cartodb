@@ -4,7 +4,7 @@ require_relative '../../models/visualization/locator'
 
 class Admin::VisualizationsController < ApplicationController
   ssl_allowed :embed_map
-  ssl_required :index, :show
+  ssl_required :index, :show, :protected_embed_map
   before_filter :login_required, only: [:index]
   skip_before_filter :browser_is_html5_compliant?, only: [:embed_map, :track_embed]
 
@@ -30,7 +30,6 @@ class Admin::VisualizationsController < ApplicationController
     id = params.fetch(:id)
     @visualization, @table = locator.get(id, CartoDB.extract_subdomain(request))
 
-    id = params.fetch(:id)
     return(pretty_404) if @visualization.nil? || @visualization.private?
     return(redirect_to embed_map_url_for(id)) if @visualization.derived?
     
@@ -41,12 +40,29 @@ class Admin::VisualizationsController < ApplicationController
     end
   end #public
 
+  def show_protected_embed_map
+    id = params.fetch(:id)
+    submitted_password = params.fetch(:password)
+    @visualization, @table = locator.get( id, CartoDB.extract_subdomain( request ) )
+
+    return( pretty_404 ) unless @visualization and @visualization.password_protected? and @visualization.has_password?
+    return( embed_forbidden ) if not @visualization.is_password_valid?( submitted_password )
+
+    respond_to do |format|
+      format.html { render 'embed_map', layout: false }
+    end    
+  rescue => exception
+    embed_forbidden
+  end #show_protected_embed_map
+
   def embed_map
     id = params.fetch(:id)
     @visualization, @table = locator.get(id, CartoDB.extract_subdomain(request))
     
     return(pretty_404) unless @visualization
     return(embed_forbidden) if @visualization.private?
+    return(embed_protected) if @visualization.password_protected?
+
     response.headers['X-Cache-Channel'] = "#{@visualization.varnish_key}:vizjson"
     response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
 
@@ -58,9 +74,10 @@ class Admin::VisualizationsController < ApplicationController
     embed_forbidden
   end #embed_map
 
+  # Renders input password view
   def embed_protected
     render 'embed_map_password', :layout => false, :status => :protected
-  end
+  end #embed_protected
 
   def embed_forbidden
     render 'embed_map_error', layout: false, status: :forbidden

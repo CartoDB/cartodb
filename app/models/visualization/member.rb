@@ -261,10 +261,14 @@ module CartoDB
       attr_accessor :privacy_changed, :name_changed, :description_changed
 
       def do_store(propagate_changes=true)
+        if (password_protected?)
+          raise CartoDB::InvalidMember if not has_password?
+        else
+          remove_password()
+        end
+
         invalidate_varnish_cache if name_changed || privacy_changed || description_changed
         set_timestamps
-
-        remove_password() if not password_protected?
 
         repository.store(id, attributes.to_hash)
 

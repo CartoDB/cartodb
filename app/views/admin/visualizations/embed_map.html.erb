@@ -166,7 +166,7 @@
         <% end %>
 
         <% if Rails.env.development? || Cartodb.config[:no_cdn] == true %>
-        opt.no_cdn = true;
+          opt.no_cdn = true;
         <% end %>
 
         cartodb.config.set({

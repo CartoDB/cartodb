@@ -77,19 +77,25 @@ module CartoDB
         # Layers are zero-based on the client
         layer_num = 0
 
+        auth_type = visualization.password_protected? ? AUTH_TYPE_SIGNED : AUTH_TYPE_OPEN
+
 				# 1) general data
 				template_data = {
 					version:      NAMED_MAPS_VERSION,
 					name: 		    self.normalize_name(visualization.id),
     			auth:         {
-            					    # TODO: Implement tokens
-                          method: 	AUTH_TYPE_OPEN
+                          method: 	auth_type
                         },
           placeholders: { },
           layergroup:   {
                     		  layers: []
                     	  }
         }
+
+        if (auth_type == AUTH_TYPE_SIGNED)
+          auth_token = visualization.make_auth_token()
+          template_data[:auth][:valid_tokens] = [ auth_token ];
+        end
 
         vizjson = CartoDB::Visualization::VizJSON.new( visualization, presenter_options, parent.vizjson_config )
         layers_data = []

@@ -31,6 +31,7 @@ module CartoDB
       TEMPLATE_NAME_PREFIX = 'tpl_'
 
       AUTH_DIGEST = '1211b3e77138f6e1724721f1ab740c9c70e66ba6fec5e989bb6640c4541ed15d06dbd5fdcbd3052b'
+      TOKEN_DIGEST = '6da98b2da1b38c5ada2547ad2c3268caa1eb58dc20c9144ead844a2eda1917067a06dcb54833ba2'
 
       attribute :id,                  String
       attribute :name,                String
@@ -203,17 +204,8 @@ module CartoDB
       def invalidate_cache_and_refresh_named_map
         invalidate_varnish_cache
 
-        if type != CANONICAL_TYPE        
-          named_map = has_named_map?
-          if has_private_tables?
-            if (named_map)
-              update_named_map(named_map)
-             else
-              create_named_map
-            end
-          else
-            named_map.delete if named_map
-          end
+        if type != CANONICAL_TYPE   
+          save_named_map()     
         end
       end #invalidate_cache_and_refresh_named_map
 
@@ -255,6 +247,15 @@ module CartoDB
         @encrypted_password = nil
       end #remove_password
 
+      # To be stored with the named map
+      def make_auth_token()
+        digest = secure_digest(Time.now, (1..10).map{ rand.to_s() })
+        10.times do
+          digest = secure_digest(digest, TOKEN_DIGEST)
+        end
+        digest            
+      end #make_auth_token
+
       private
 
       attr_reader   :repository, :name_checker, :validator
@@ -272,21 +273,11 @@ module CartoDB
 
         repository.store(id, attributes.to_hash)
 
-        if type == CANONICAL_TYPE
+        if (type == CANONICAL_TYPE)
           propagate_privacy_and_name_to(table) if table and propagate_changes
         else
           propagate_name_to(table) if table and propagate_changes
-          # Canonical visualizations don't have named map
-          named_map = has_named_map?
-          if has_private_tables?
-              if (named_map)
-                update_named_map(named_map)
-               else
-                create_named_map
-              end
-          else
-            named_map.delete if named_map
-          end
+          save_named_map()
         end
       end #do_store
 
@@ -309,13 +300,26 @@ module CartoDB
         @named_maps
       end #named_maps
 
+      def save_named_map
+        named_map = has_named_map?
+        if has_private_tables? || password_protected?
+            if (named_map)
+              update_named_map(named_map)
+             else
+              create_named_map()
+            end
+        else
+          named_map.delete() if named_map
+        end
+      end #save_named_map
+
       def create_named_map
         new_named_map = named_maps.create(self)
         return !new_named_map.nil?        
       end #create_named_map_if_proceeds
 
       def update_named_map(named_map_instance)
-        named_map_instance.update( self )
+        named_map_instance.update(self)
       end #update_named_map
 
       def propagate_privacy_and_name_to(table)

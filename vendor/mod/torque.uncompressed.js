@@ -629,7 +629,7 @@ exports.torque.common.TorqueLayer = TorqueLayer;
 
 if (typeof module !== "undefined") {
   module.exports = {
-    cartocss_reference: require('./cartocss_reference').torque['torque-reference'],
+    cartocss_reference: require('./cartocss_reference').torque['torque-reference']
   };
 }
 (function(exports) {
@@ -2018,7 +2018,7 @@ exports.Profiler = Profiler;
         self._setReady(true);
         }
       });
-    },
+    }
 
   };
 
@@ -3869,6 +3869,7 @@ L.CanvasLayer = L.Class.extend({
     this._canvas.style.position = 'absolute';
     this._canvas.style.top = 0;
     this._canvas.style.left = 0;
+    this._canvas.style.pointerEvents = "none";
     this._canvas.style.zIndex = options.zIndex || 0;
 
     this._ctx = this._canvas.getContext('2d');

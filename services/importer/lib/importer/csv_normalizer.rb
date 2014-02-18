@@ -211,7 +211,7 @@ module CartoDB
 
       # Attempts to 
       def remove_newlines(temporary_filepath)
-        sanitized_file = File.open(temporary_filepath, 'w')
+        sanitized_file = File.open(temporary_filepath, 'wb')
 
         aggregated_line = ''
         opened_quotes = 0

@@ -45,7 +45,6 @@ class DataImport < Sequel::Model
   def run_import!
     success = !!dispatch
     if self.results.empty?
-      set_unsupported_file_error
       self.error_code = 1002
       self.state      = 'failure'
       save

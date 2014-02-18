@@ -46,20 +46,11 @@
 
     <% if !Rails.env.production? %>
       <%= stylesheet_link_tag 'cdb/themes/css/cartodb' %>
-      <!--[if lte IE 8]>
-      <%= stylesheet_link_tag 'cdb/themes/css/cartodb.ie' %>
-      <![endif]-->
     <% else %>
      <% if request.protocol == 'https://' %>
         <link rel="stylesheet" href="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/themes/css/cartodb.css" />
-        <!--[if lte IE 8]>
-        <link rel="stylesheet" href="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/themes/css/cartodb.ie.css" />
-        <![endif]-->
      <% else %>
         <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.css" />
-        <!--[if lte IE 8]>
-        <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.ie.css" />
-        <![endif]-->
      <% end %>
 
     <% end %>

@@ -46,20 +46,11 @@
 
     <% if !Rails.env.production? %>
       <%= stylesheet_link_tag 'cdb/themes/css/cartodb' %>
-      <!--[if lte IE 8]>
-      <%= stylesheet_link_tag 'cdb/themes/css/cartodb.ie' %>
-      <![endif]-->
     <% else %>
      <% if request.protocol == 'https://' %>
         <link rel="stylesheet" href="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/themes/css/cartodb.css" />
-        <!--[if lte IE 8]>
-        <link rel="stylesheet" href="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/themes/css/cartodb.ie.css" />
-        <![endif]-->
      <% else %>
         <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.css" />
-        <!--[if lte IE 8]>
-        <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.ie.css" />
-        <![endif]-->
      <% end %>
 
     <% end %>
@@ -89,13 +80,15 @@
 
     <% if !Rails.env.production? %>
       <%= javascript_include_tag :cdb %>
+      <script type="text/javascript"><%= raw Rails.application.assets['statsc.min.js'].to_s %></script>
     <% else %>
       <% if request.protocol == 'https://' %>
         <script src="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/cartodb.js"></script>
       <% else %>
         <script src="http://libs.cartocdn.com/cartodb.js/v3/cartodb.js"></script>
       <% end %>
-
+      <!-- inline statsc -->
+      <script type="text/javascript"><%= raw Rails.application.assets['statsc.min.js'].to_s %></script>
     <% end %>
 
     <script>

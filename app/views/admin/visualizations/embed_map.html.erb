@@ -16,9 +16,8 @@
     <meta property="og:image" content="<%= asset_path "layout/cartofante_blue.png" %>"/>
 
     <style type="text/css">
-      html, body, #map {height: 100%; padding: 0; margin: 0;}
-      .cartodb-text {position:absolute; display:none; bottom:0; left:0; right:0; margin:0; padding:0 10px; background:white; font:normal 11px "Helvetica",Arial; color:#999999; border-top:1px solid #CCC; border-top:1px solid rgba(0,0,0,0); box-shadow:rgba(0,0,0,0.6) 0 0 1px 0; -webkit-box-shadow:rgba(0,0,0,0.6) 0 0 1px 0; -moz-box-shadow:rgba(0,0,0,0.6) 0 0 1px 0; -o-box-shadow:rgba(0,0,0,0.6) 0 0 1px 0; line-height:29px; z-index:2; }
-      .cartodb-text a {color:#397DB8; text-decoration:underline;}
+      html, body {height: 100%; padding: 0; margin: 0;}
+      #map {height: 629px; padding: 0; margin: 0;}
 
       #not_supported_dialog {position:absolute; width:356px; height:213px; top:50%; left:50%; margin-top:-107px; margin-left:-178px; padding:0; background-color:#FFF; text-align:center; font-family:'Helvetica', Arial; color:#666666; z-index:10000;}
       #not_supported_dialog h2 {display:inline-block; width:77px; margin:30px 0 0; padding-bottom:16px; font-size:13px; font-weight:bold; border-bottom:1px solid #D9D9D9; vertical-align:top; zoom:1; *display:inline;}
@@ -34,11 +33,9 @@
       /* Styles showing up new cartodb text */
       <% if @visualization.user.remove_logo? && !Cartodb.config[:cartodb_com_hosted].present? %>
         <% if !params['cartodb_logo'] || params['cartodb_logo'] == "true" %>
-          .cartodb-map-wrapper {bottom:30px!important;}
           .cartodb-text {display:block;}
         <% end %>
       <% else %>
-        .cartodb-map-wrapper {bottom:30px!important;}
         .cartodb-text {display:block;}
       <% end %>
 
@@ -77,7 +74,56 @@
           <li class="last"><a href="http://www.mozilla.org/en-US/firefox/all/‎" class="firefox">Firefox</a></li>
         </ul>
       </div>
-      <div class="cartodb-text">Create your own custom maps with <a href="http://cartodb.com?utm_source=Footer_Link&utm_medium=referral&utm_campaign=Embed_v1&utm_content=CartoDB&utm_term=<%= @visualization.user.username %>" target="_blank">CartoDB</a></div>
+      <div class="cartodb-info">
+        <div class="inner">
+          <div class="details embed-left-col">
+            <h1>JCD 2014 - Annje and the tides</h1>
+            <p>At low tide, Herring Gull Anne uses the mudflats and the lower parts of the jetties to feed on arthropods and shellfish. During high tide she rests on the higher parts of the jetties or at the beach.</p>
+          </div>
+          <div class="user embed-right-col">
+            by peterdesmet
+            17 maps created
+          </div>
+        </div>
+      </div>
+
+      <div class="cartodb-body">
+        <div class="inner">
+          <div class="comments embed-left-col">
+            <div id="disqus_thread"></div>
+            <script type="text/javascript">
+              /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+              var disqus_shortname = 'cartodb'; // required: replace example with your forum shortname
+
+              /* * * DON'T EDIT BELOW THIS LINE * * */
+              (function() {
+                var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+              })();
+            </script>
+            <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+            <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+          </div>
+          <div class="map-info embed-right-col">
+
+            <h2>Datasets used in this map</h2>
+
+            <ul>
+              <li><a href="#">Biodiversity</a><span>2.5MB</span></li>
+              <li><a href="#">Law</a><span>7MB</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="cartodb-footer">
+        <div class="inner">
+          <div class="copyright embed-left-col">&copy; 2014 CartoDB - <a href="#">Create your own maps</a></div>
+          <div class="terms embed-right-col"><a href="#">Terms of Service</a></div>
+        </div>
+      </div>
     <% end %>
 
     <% if @visualization.map.provider == 'googlemaps' %>

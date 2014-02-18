@@ -98,11 +98,12 @@ class User < Sequel::Model
     # Remove user tables
     self.tables.all.each { |t| t.destroy }
     
-    # Remove user data imports, maps and layers
+    # Remove user data imports, maps, layers and assets
     self.data_imports.each { |d| d.destroy }
     self.maps.each { |m| m.destroy }
     self.layers.each { |l| self.remove_layer l }
     self.geocodings.each { |g| g.destroy }
+    self.assets.each { |a| a.destroy }
 
     # Remove metadata from redis
     $users_metadata.DEL(self.key)

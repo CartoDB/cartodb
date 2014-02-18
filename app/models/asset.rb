@@ -92,7 +92,7 @@ class Asset < Sequel::Model
       return
     end
     basename = File.basename(public_url)
-    o = s3_bucket.objects["#{asset_path}#{basename}"]
+    o = s3_bucket.objects["#{target_asset_path}#{basename}"]
     o.delete
   end
 

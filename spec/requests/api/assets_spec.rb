@@ -6,8 +6,7 @@ describe "Assets API" do
 
   before(:all) do
     @user = create_user(:username => 'test', :email => "client@example.com", :password => "clientex")
-    @user.set_map_key
-    AWS.stub! # Live S3 requests tested on the model spec
+    AWS.stub!
   end
 
   before(:each) do
@@ -39,7 +38,7 @@ describe "Assets API" do
       :filename => Rack::Test::UploadedFile.new(Rails.root.join('spec/support/data/cartofante_blue.png'), 'image/png').path)
     ) do |response|
       response.status.should == 400
-      response.body[:description].should == "file error uploading OMG AWS exception"
+      response.body[:description].should == "OMG AWS exception"
     end
   end
 

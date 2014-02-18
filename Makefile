@@ -21,6 +21,7 @@ WORKING_SPECS = \
   spec/models/geocoding_spec.rb \
   spec/requests/api/imports_spec.rb \
   spec/lib/image_metadata_spec.rb \
+	spec/requests/api/assets_spec.rb \
   $(NULL)
 
 CDB_PATH=lib/assets/javascripts/cdb

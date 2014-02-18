@@ -89,13 +89,15 @@
 
     <% if !Rails.env.production? %>
       <%= javascript_include_tag :cdb %>
+      <script type="text/javascript"><%= raw Rails.application.assets['statsc.min.js'].to_s %></script>
     <% else %>
       <% if request.protocol == 'https://' %>
         <script src="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/cartodb.js"></script>
       <% else %>
         <script src="http://libs.cartocdn.com/cartodb.js/v3/cartodb.js"></script>
       <% end %>
-
+      <!-- inline statsc -->
+      <script type="text/javascript"><%= raw Rails.application.assets['statsc.min.js'].to_s %></script>
     <% end %>
 
     <script>

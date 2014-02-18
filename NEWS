@@ -1,3 +1,6 @@
+3.6.02 (18//02//2014)
+- Adds profiling support for plugable backends
+
 3.6.01 (13//02//2014)
 - Fixes a call to window.addEventListener in IE8.
 - Adds fullscreen detection.

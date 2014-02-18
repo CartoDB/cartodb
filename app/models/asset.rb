@@ -77,8 +77,8 @@ class Asset < Sequel::Model
   def save_local(filename)
     local_path = Rails.root.join 'public', 'uploads', target_asset_path
     FileUtils.mkdir_p local_path
-    FileUtils.cp @file, local_path.join(filename)
-    File.join('/', 'public', 'uploads', target_asset_path, filename)
+    FileUtils.cp @file.path, local_path.join(filename)
+    File.join('/', 'uploads', target_asset_path, filename)
   end
 
   def use_s3?

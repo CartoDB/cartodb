@@ -26,7 +26,7 @@ module CartoDB
       end 
 
       def request_capabilities
-        response = Typhoeus.get(url)
+        response = Typhoeus.get(url, followlocation: true)
         raise URI::InvalidURIError unless [200, 201].include?(response.code)
         @response = response.response_body
         nil

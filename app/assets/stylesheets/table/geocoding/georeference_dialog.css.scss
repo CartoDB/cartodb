@@ -314,38 +314,51 @@
       margin-right:20px!important;
     }
 
+    .help {
+      position: absolute;
+      top: 12px;
+      right: 0;
+      width: 16px;
+      height: 16px;
+      padding: 0 !important;
+      line-height: 16px;
+      font-size: 12px;
+      color: white;
+      text-align: center;
+      -webkit-border-radius: 20px;
+      -moz-border-radius: 20px;
+      -ms-border-radius: 20px;
+      -o-border-radius: 20px;
+      border-radius: 20px;
+      background: #E5E5E5;
+      border: none;
+      z-index: 10;
+    }
+
+
     // Default input
     @include default-input;
     @include default-form-info();
 
     input {
+      padding-right: 40px;
+      width: 448px - 40px;
+    }
+
+    .input_field {
+      position:relative;
       margin-top:15px;
       width: 448px;
     }
 
-    div.hint {
-      position:relative;
-      width:472px;
-      margin-top:15px;
-      background:image-url('layout/hint_line_bkg.png') repeat 0 -3px;
 
-      p {
-        @include inline-block();
-        vertical-align:top;
-        width:415px;
-        line-height:18px;
-      }
-
-      span {
-        @include inline-block();
-        vertical-align:top;
-        margin:4px 10px 0 14px;
-        font:bold 11px $text-fonts2;
-        color:#333333;
-      }
+    .hint {
+      font-size: 13px;
+      color: #999999;
+      margin: 6px 0 0 0;
     }
-  }
 
+  }
 
   // Column selector
   .column_selector {

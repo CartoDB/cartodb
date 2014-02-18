@@ -1,6 +1,6 @@
-// cartodb.js version: 3.6.01
+// cartodb.js version: 3.6.02
 // uncompressed version: cartodb.uncompressed.js
-// sha: a61e0e66b883869d04bff3fe6f18f67729c0d1b0
+// sha: 18478bb46522d88aee0409d2c2c7fd02964b9599
 (function() {
   var root = this;
 
@@ -20686,7 +20686,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.6.01';
+    cdb.VERSION = '3.6.02';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -21078,6 +21078,7 @@ cdb.log = new cdb.core.Log({tag: 'cdb'});
 var MAX_HISTORY = 1024;
 function Profiler() {}
 Profiler.metrics = {};
+Profiler._backend = null;
 
 Profiler.get = function(name) {
   return Profiler.metrics[name] || {
@@ -21090,8 +21091,15 @@ Profiler.get = function(name) {
   };
 };
 
-Profiler.new_value = function (name, value) {
+Profiler.backend = function (_) {
+  Profiler._backend = _;
+}
+
+Profiler.new_value = function (name, value, type) {
+  type =  type || 'i';
   var t = Profiler.metrics[name] = Profiler.get(name);
+
+  Profiler._backend && Profiler._backend([type, name, value]);
 
   t.max = Math.max(t.max, value);
   t.min = Math.min(t.min, value);
@@ -21141,7 +21149,7 @@ Metric.prototype = {
   //
   end: function() {
     if (this.t0 !== null) {
-      Profiler.new_value(this.name, this._elapsed());
+      Profiler.new_value(this.name, this._elapsed(), 't');
       this.t0 = null;
     }
   },
@@ -21152,7 +21160,7 @@ Metric.prototype = {
   //
   inc: function(qty) {
     qty = qty === undefined ? 1: qty;
-    Profiler.new_value(this.name, qty);
+    Profiler.new_value(this.name, qty, 'i');
   },
 
   //
@@ -21161,7 +21169,7 @@ Metric.prototype = {
   //
   dec: function(qty) {
     qty = qty === undefined ? 1: qty;
-    this.inc(-qty);
+    Profiler.new_value(this.name, qty, 'd');
   },
 
   //

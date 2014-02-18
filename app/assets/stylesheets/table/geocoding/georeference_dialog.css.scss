@@ -10,6 +10,10 @@
 @import "../../common/mixins";
 
 
+.tipsy {
+  line-height: 120%;
+}
+
 .georeference_dialog {
 
   // option container
@@ -98,8 +102,8 @@
         .marker {
 
           &.a { top: 0px;  left: 14px; }
-          &.b { top: 30px; left: 30px; }
-          &.c { top: 20px; left: 73px; }
+          &.b { top: 30px; left: 42px; }
+          &.c { top: 20px; left: 72px; }
 
           @include opacity(0);
           width: 12px; height: 12px;
@@ -227,13 +231,13 @@
 
         &.points .icon { @include background(image-url("layout/georeference_points.png") repeat center center); }
 
-        &.points.selected.animated .icon .marker.a { top: 35px; @include opacity(1);-webkit-transform: scale(1, 1); transform: scale(1, 1); }
+        &.points.selected.animated .icon .marker.a { top: 33px; @include opacity(1);-webkit-transform: scale(1, 1); transform: scale(1, 1); }
         &.points.selected.animated .icon .marker.b { top: 60px; @include opacity(1);-webkit-transform: scale(1, 1); transform: scale(1, 1); }
         &.points.selected.animated .icon .marker.c { top: 40px; @include opacity(1);-webkit-transform: scale(1, 1); transform: scale(1, 1); }
 
-        &.points.animated .icon .marker.a { top: 35px; @include opacity(.7); -webkit-transform: scale(.7, .7); transform: scale(.7, .7); }
-        &.points.animated .icon .marker.b { top: 60px; @include opacity(.7); -webkit-transform: scale(.7, .7); transform: scale(.7, .7); }
-        &.points.animated .icon .marker.c { top: 40px; @include opacity(.7); -webkit-transform: scale(.7, .7); transform: scale(.7, .7); }
+        &.points.animated .icon .marker.a { top: 33px; @include opacity(.7); -webkit-transform: scale(.6, .6); transform: scale(.6, .6); }
+        &.points.animated .icon .marker.b { top: 60px; @include opacity(.7); -webkit-transform: scale(.6, .6); transform: scale(.6, .6); }
+        &.points.animated .icon .marker.c { top: 40px; @include opacity(.7); -webkit-transform: scale(.6, .6); transform: scale(.6, .6); }
 
         &.regions {
 
@@ -335,6 +339,9 @@
       z-index: 10;
     }
 
+    .tipsy {
+      line-height: 120%;
+    }
 
     // Default input
     @include default-input;

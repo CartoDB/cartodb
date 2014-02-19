@@ -7,7 +7,6 @@
           <li><%= link_to "Back", root_path, :class => "back" %></li>
           <li><span class="type">T</span></li>
           <li><h1><%= link_to "", "#/change-title", :class => "title" %></h1></li>
-          <li><a href="#/change-status" class="status button_header rounded white">&nbsp;</a></li>
           <li><span class="tags"></span></li>
         </ul>
         <div class="description">
@@ -17,7 +16,9 @@
       <div class="right">
         <ul class="options">
           <li><%= link_to "options", "#/options", :class => "dropdown options" %></li>
-          <li><%= link_to "visualize", "#/visualize", :class => "rounded share" %></li>
+          <li>
+            <a class="privacy rounded share" href="#/visualize"><i></i><span>VISUALIZE</span></a>
+          </li>
         </ul>
       </div>
     </div>

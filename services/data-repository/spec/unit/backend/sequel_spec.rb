@@ -17,6 +17,8 @@ describe DataRepository::Backend::Sequel do
       Integer   :active_layer_id
       String    :type
       String    :privacy
+      String    :encrypted_password
+      String    :password_salt
     end
 
     db.create_table :overlays do

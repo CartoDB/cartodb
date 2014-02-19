@@ -13,10 +13,15 @@ describe Map do
   end
 
   after(:all) do
+    CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
     @user.destroy
   end
 
   before(:each) do
+    # For Named Maps API wrapper
+    # Using Mocha stubs until we update RSpec (@see http://gofreerange.com/mocha/docs/Mocha/ClassMethods.html)
+    CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
+
     @table = Table.new
     @table.user_id = @user.id
     @table.save
@@ -28,7 +33,7 @@ describe Map do
       @table.reload
       map.reload
       map.tables.should include(@table)
-    end 
+    end
   end #tables
 
   describe '#base_layers' do
@@ -50,7 +55,7 @@ describe Map do
       map.add_layer(data_layer)
 
       map.reload.data_layers.first.id.should == data_layer.id
-    end 
+    end
   end #data_layers
 
   describe '#user_layers' do
@@ -116,7 +121,7 @@ describe Map do
     end
 
     describe 'when linked to a table visualization' do
-      it 'returns false when passed a data layer 
+      it 'returns false when passed a data layer
       and it is already linked to a base layer' do
         map = @table.map
         map.remove_layer(map.data_layers.first)
@@ -167,11 +172,14 @@ describe Map do
       map = @table.map
       map.expects(:invalidate_vizjson_varnish_cache)
       map.destroy
-    end 
+    end
   end #before_destroy
 
   describe '#process_privacy_in' do
     it 'sets related visualization private if layer uses private tables' do
+
+      pending("To be checked when private tables are coded")
+
       @table1 = Table.new
       @table1.user_id = @user.id
       @table1.save

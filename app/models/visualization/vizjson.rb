@@ -4,6 +4,9 @@ require 'ostruct'
 require_relative '../overlay/presenter'
 require_relative '../layer/presenter'
 require_relative '../layer_group/presenter'
+require_relative '../named_map/presenter'
+require_relative '../../../services/named-maps-api-wrapper/lib/named_maps_wrapper'
+
 
 module CartoDB
   module Visualization
@@ -17,7 +20,9 @@ module CartoDB
         @configuration    = configuration
         logger.info(map.inspect) if logger
       end #initialize
-    
+
+      # Return a PORO (Hash object) for easy JSONification
+      # @see https://github.com/CartoDB/cartodb.js/blob/privacy-maps/doc/vizjson_format.md
       def to_poro
         {
           id:             visualization.id,
@@ -35,6 +40,46 @@ module CartoDB
         }
       end #to_poro
 
+      # Return the layer group data for a named map
+      def layer_group_for_named_map
+        layer_group_poro = layer_group_for(visualization)
+
+        # If there is *only* a torque layer, there is no layergroup
+        return nil if layer_group_poro.nil?
+
+        layers_data = Array.new
+        layer_group_poro[:options][:layer_definition][:layers].each { |layer|
+          layers_data.push( {
+            type:     layer[:type],
+            options:  layer[:options]
+          } )
+        }
+
+        {
+          version:  layer_group_poro[:options][:layer_definition][:version],
+          layers:   layers_data
+        }
+      end #layer_group_for_named_map
+
+      def layer_group_for(visualization)
+        LayerGroup::Presenter.new(
+          visualization.layers(:cartodb), options, configuration
+        ).to_poro
+      end #layer_group_for
+
+      def other_layers_for(visualization, named_maps_presenter = nil)
+        visualization.layers(:others).map do |layer|
+          
+          if named_maps_presenter.nil?
+            decoration_data_to_apply = {}
+          else
+            # Base layer is not sent to the tiler, so order--
+            decoration_data_to_apply = named_maps_presenter.get_decoration_for_layer(layer.kind, layer.order-1)
+          end
+          Layer::Presenter.new(layer, options, configuration, decoration_data_to_apply).to_vizjson_v2
+        end
+      end #other_layers_for
+
       private
 
       attr_reader :visualization, :map, :options, :configuration
@@ -45,11 +90,23 @@ module CartoDB
       end #bounds_from
 
       def layers_for(visualization)
-        [
-          base_layers_for(visualization), 
-          layer_group_for(visualization),
-          other_layers_for(visualization)
-        ].compact.flatten
+        layers_data = [
+          base_layers_for(visualization)
+        ]
+
+        if visualization.has_private_tables?
+          presenter_options = {
+            user_name: options.fetch(:user_name),
+            api_key: options.delete(:user_api_key)
+          }
+          named_maps_presenter = CartoDB::NamedMapsWrapper::Presenter.new(visualization, presenter_options, configuration)
+          layers_data.push( named_maps_presenter.to_poro() )
+        else
+          named_maps_presenter = nil
+          layers_data.push( layer_group_for(visualization) )
+        end
+        layers_data.push( other_layers_for( visualization, named_maps_presenter ) )
+        layers_data.compact.flatten
       end #layers_for
 
       def base_layers_for(visualization)
@@ -58,20 +115,8 @@ module CartoDB
         end
       end #base_layers_for
 
-      def layer_group_for(visualization)
-        LayerGroup::Presenter.new(
-          visualization.layers(:cartodb), options, configuration
-        ).to_poro
-      end #layer_group_for
-
-      def other_layers_for(visualization)
-        visualization.layers(:others).map do |layer|
-          Layer::Presenter.new(layer, options, configuration).to_vizjson_v2
-        end
-      end #other_layers_for
-
       def overlays_for(map)
-        ordered_overlays_for(visualization).map do |overlay| 
+        ordered_overlays_for(visualization).map do |overlay|
           Overlay::Presenter.new(overlay).to_poro
         end
       end #overlays_for

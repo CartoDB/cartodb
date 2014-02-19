@@ -170,6 +170,7 @@
           'title':        bool_fn,
           'description':  bool_fn,
           'shareable':    bool_fn,
+          'fullscreen':   bool_fn,
           'cartodb_logo': logo_fn,
           'scrollwheel':  bool_fn,
           'sublayer_options': layer_fn,
@@ -177,8 +178,12 @@
           'legends': bool_fn
         });
 
+        <% if (@visualization.password_protected?) %>
+          opt.auth_token = '<%= @protected_map_token %>';
+        <% end %>
+
         <% if Rails.env.development? || Cartodb.config[:no_cdn] == true %>
-        opt.no_cdn = true;
+          opt.no_cdn = true;
         <% end %>
 
         cartodb.config.set({

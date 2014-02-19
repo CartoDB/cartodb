@@ -7,6 +7,10 @@ describe Geocoding do
     @table = FactoryGirl.create(:table, user_id: @user.id)
   end
 
+  before(:each) do
+    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+  end
+
   describe '#setup' do
     let(:geocoding) { FactoryGirl.create(:geocoding, user: @user, table: @table) }
 

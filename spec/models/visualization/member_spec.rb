@@ -14,6 +14,10 @@ describe Visualization::Member do
     Overlay.repository        = memory
   end
 
+  before(:each) do
+    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+  end
+
   describe '#initialize' do
     it 'assigns an id by default' do
       member = Visualization::Member.new
@@ -214,7 +218,7 @@ describe Visualization::Member do
 
   describe '#derived?' do
     it "returns true if type is derived" do
-      visualization = Visualization::Member.new(type: 'derived')
+      visualization = Visualization::Member.new(type: Visualization::Member::DERIVED_TYPE)
       visualization.derived?.should be_true
       visualization.table?.should be_false
 
@@ -226,7 +230,7 @@ describe Visualization::Member do
 
   describe '#table?' do
     it "returns true if type is 'table'" do
-      visualization = Visualization::Member.new(type: 'table')
+      visualization = Visualization::Member.new(type: Visualization::Member::CANONICAL_TYPE)
       visualization.derived?.should be_false
       visualization.table?.should be_true
 
@@ -234,16 +238,51 @@ describe Visualization::Member do
       visualization.derived?.should be_false
       visualization.table?.should be_false
     end
-  end
+  end #table?
+
+  describe '#password' do
+    it 'checks that when using password protected type, encrypted password is generated and stored correctly' do
+      password_value = '123456'
+      password_second_value = '456789'
+
+      visualization = Visualization::Member.new(type: Visualization::Member::DERIVED_TYPE)
+      visualization.privacy = Visualization::Member::PRIVACY_PROTECTED
+
+      visualization.password = password_value
+      visualization.has_password?.should be_true
+      visualization.is_password_valid?(password_value).should be_true
+
+      # Shouldn't remove the password, and be equal
+      visualization.password = ''
+      visualization.has_password?.should be_true
+      visualization.is_password_valid?(password_value).should be_true
+      visualization.password = nil
+      visualization.has_password?.should be_true
+      visualization.is_password_valid?(password_value).should be_true
+
+      # Modify the password
+      visualization.password = password_second_value
+      visualization.has_password?.should be_true
+      visualization.is_password_valid?(password_second_value).should be_true
+      visualization.is_password_valid?(password_value).should be_false
+
+      # Test removing the password, should work
+      visualization.remove_password()
+      visualization.has_password?.should be_false
+      lambda { 
+        visualization.is_password_valid?(password_value)
+      }.should raise_error CartoDB::InvalidMember
+    end
+  end #password=
 
   def random_attributes(attributes={})
     random = rand(999)
     {
       name:         attributes.fetch(:name, "name #{random}"),
       description:  attributes.fetch(:description, "description #{random}"),
-      privacy:      attributes.fetch(:privacy, 'public'),
+      privacy:      attributes.fetch(:privacy, Visualization::Member::PRIVACY_PUBLIC),
       tags:         attributes.fetch(:tags, ['tag 1']),
-      type:         attributes.fetch(:type, 'table'),
+      type:         attributes.fetch(:type, Visualization::Member::CANONICAL_TYPE),
       active_layer_id: random
     }
   end #random_attributes

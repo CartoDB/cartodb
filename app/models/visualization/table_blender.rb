@@ -18,8 +18,8 @@ module CartoDB
       end #blend
 
       def blended_privacy
-        return 'private' if tables.map(&:privacy_text).include?('PRIVATE')
-        return 'public'
+        return Member::PRIVACY_PRIVATE if tables.map(&:privacy_text).include?('PRIVATE')
+        return Member::PRIVACY_PUBLIC
       end #blended_privacy
 
       private

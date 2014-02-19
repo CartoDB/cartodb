@@ -42,6 +42,8 @@ describe Table do
   end
   before(:each) do
     CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
+
+    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
   end
 
   context "table setups" do
@@ -546,6 +548,7 @@ describe Table do
     end
 
     it "should remove varnish cache when updating the table privacy" do
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
       @user.private_tables_enabled = true
       @user.save
       table = create_table(user_id: @user.id, name: "varnish_privacy", privacy: Table::PRIVATE)
@@ -565,10 +568,15 @@ describe Table do
 
   context "when removing the table" do
     before(:all) do
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
       CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
       @doomed_table = create_table(user_id: @user.id)
       @automatic_geocoding = FactoryGirl.create(:automatic_geocoding, table: @doomed_table)
       @doomed_table.destroy
+    end
+
+    before(:each) do
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
     end
 
     it "should remove the automatic_geocoding" do
@@ -614,6 +622,7 @@ describe Table do
     end
 
     it 'deletes derived visualizations that depend on this table' do
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:create).returns(true)
       table   = create_table(name: 'bogus_name', user_id: @user.id)
       source  = table.table_visualization
       derived = CartoDB::Visualization::Copier.new(@user, source).copy

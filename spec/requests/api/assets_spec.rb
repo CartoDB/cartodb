@@ -17,6 +17,7 @@ describe "Assets API" do
   let(:params) { { :api_key => @user.api_key } }
 
   it "creates a new asset" do
+    Asset.any_instance.stubs("use_s3?").returns(false)    
     post_json v1_user_assets_url(@user, params.merge(
       kind: 'wadus',
       filename: Rack::Test::UploadedFile.new(Rails.root.join('spec/support/data/cartofante_blue.png'), 'image/png').path)
@@ -38,7 +39,7 @@ describe "Assets API" do
       :filename => Rack::Test::UploadedFile.new(Rails.root.join('spec/support/data/cartofante_blue.png'), 'image/png').path)
     ) do |response|
       response.status.should == 400
-      response.body[:description].should == "OMG AWS exception"
+      response.body[:error].should == ["OMG AWS exception"]
     end
   end
 

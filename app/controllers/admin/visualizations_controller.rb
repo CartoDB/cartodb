@@ -50,6 +50,8 @@ class Admin::VisualizationsController < ApplicationController
     response.headers['X-Cache-Channel'] = "#{@visualization.varnish_key}:vizjson"
     response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
 
+    @avatar_url = "http://www.gravatar.com/avatar/#{Digest::MD5.hexdigest(@visualization.user.email)}"
+
     respond_to do |format|
       format.html { render layout: false }
       format.js { render 'embed_map', content_type: 'application/javascript' }

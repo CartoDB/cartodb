@@ -929,7 +929,8 @@ class Table < Sequel::Model(:user_tables)
     records_count = 0
     page, per_page = CartoDB::Pagination.get_page_and_per_page(options)
     order_by_column = options[:order_by] || "cartodb_id"
-    mode = (options[:mode] || 'asc').downcase == 'asc' ? 'asc' : 'desc'
+    mode = (options[:mode] || 'asc').downcase == 'asc' ? 'ASC' : 'DESC NULLS LAST'
+
     filters = options.slice(:filter_column, :filter_value).reject{|k,v| v.blank?}.values
     where = "WHERE (#{filters.first})|| '' ILIKE '%#{filters.second}%'" if filters.present?
 

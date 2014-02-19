@@ -78,12 +78,12 @@
       <div class="cartodb-info">
         <div class="inner">
           <div class="details embed-left-col">
-            <h1>JCD 2014 - Annje and the tides</h1>
-            <p>At low tide, Herring Gull Anne uses the mudflats and the lower parts of the jetties to feed on arthropods and shellfish. During high tide she rests on the higher parts of the jetties or at the beach.</p>
+            <h1><%= @visualization.name %></h1>
+            <p><%= @visualization.description %></p>
           </div>
           <div class="user embed-right-col">
             <div class="user-info">
-              <h4>by peterdesmet</h4>
+              <h4>by <%= @visualization.user.username %></h4>
               <h5>17 maps created</h5>
             </div>
             <div class="avatar"></div>

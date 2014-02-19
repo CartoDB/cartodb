@@ -64,6 +64,7 @@
   </head>
   <body>
     <% if @visualization.public? %>
+      <div class="cartodb-new-header"><div>
       <div id="map"></div>
       <div id="not_supported_dialog" style="display: none">
         <h2>CartoDB</h2>
@@ -81,8 +82,11 @@
             <p>At low tide, Herring Gull Anne uses the mudflats and the lower parts of the jetties to feed on arthropods and shellfish. During high tide she rests on the higher parts of the jetties or at the beach.</p>
           </div>
           <div class="user embed-right-col">
-            by peterdesmet
-            17 maps created
+            <div class="user-info">
+              <h4>by peterdesmet</h4>
+              <h5>17 maps created</h5>
+            </div>
+            <div class="avatar"></div>
           </div>
         </div>
       </div>

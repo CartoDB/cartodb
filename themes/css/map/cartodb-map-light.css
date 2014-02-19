@@ -3,6 +3,33 @@
    *  CartoDB map style components 
    */ 
 
+@font-face {
+  font-family: 'ProximaNova';
+  src: url('../fonts/ProximaNova-Regular.eot'); /* IE9 Compat Modes */
+  src: url('../fonts/ProximaNova-Regular.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+  url('../fonts/ProximaNova-Regular.woff') format('woff'), /* Modern Browsers */
+  url('../fonts/ProximaNova-Regular.ttf') format('truetype'), /* Safari, Android, iOS */
+  url('../fonts/ProximaNova-Regular.svg#svgFontName') format('svg'); /* Legacy iOS */
+}
+
+@font-face {
+  font-family: 'ProximaNova-Light';
+  src: url('../fonts/ProximaNova-Light.eot'); /* IE9 Compat Modes */
+  src: url('../fonts/ProximaNova-Light.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+  url('../fonts/ProximaNova-Light.woff') format('woff'), /* Modern Browsers */
+  url('../fonts/ProximaNova-Light.ttf') format('truetype'), /* Safari, Android, iOS */
+  url('../fonts/ProximaNova-Light.svg#svgFontName') format('svg'); /* Legacy iOS */
+}
+
+@font-face {
+  font-family: 'ProximaNova-Semibold';
+  src: url('../fonts/ProximaNova-Semibold.eot'); /* IE9 Compat Modes */
+  src: url('../fonts/ProximaNova-Semibold.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+  url('../fonts/ProximaNova-Semibold.woff') format('woff'), /* Modern Browsers */
+  url('../fonts/ProximaNova-Semibold.ttf') format('truetype'), /* Safari, Android, iOS */
+  url('../fonts/ProximaNova-Semibold.svg#svgFontName') format('svg'); /* Legacy iOS */
+}
+
   div.cartodb-header *,
   div.cartodb-popup *,
   div.cartodb-timeslider *,
@@ -34,15 +61,58 @@
   }
 
   div.cartodb-info .inner .user {
+    text-align:right;
+    padding: 13px 0;
+  }
+
+  div.cartodb-info .inner .user .avatar {
+    display:inline-block;
+    zoom: 1;
+    *display: inline;
+    vertical-align: top;
+
+    width: 46px;
+    height: 46px;
+    background: #ccc;
+
+    -moz-border-radius: 100px;
+    -webkit-border-radius: 100px;
+    border-radius: 100px;
+
+  }
+
+  div.cartodb-info .inner .user .user-info {
+    margin: 5px 8px 0 0;
+    text-align:right;
     display:inline-block;
     zoom: 1;
     *display: inline;
     vertical-align: top;
   }
 
+  div.cartodb-info .inner .user h4,
+  div.cartodb-info .inner .user h5 {
+    margin: 0;
+    padding: 0;
+    font-family: 'ProximaNova', Helvetica, sans-serif;
+    font-weight: normal;
+  }
+
+  div.cartodb-info .inner .user h4 {
+    font-size: 17px;
+    color: #444444;
+    margin: 0 0 6px 0;
+  }
+
+  div.cartodb-info .inner .user h5 {
+    font-size: 15px;
+    color: #858585;
+  }
+
   div.cartodb-info .inner .details h1 {
-    font-family: 'Helvetica Neue', Helvetica, sans-serif;
-    font-weight:27px;
+    font-family: 'ProximaNova-Semibold', Helvetica, sans-serif;
+    font-weight: normal;
+    font-size:27px;
     color: #444444;
     padding: 0;
     margin: 0 0 10px 0;
@@ -94,11 +164,16 @@
     text-decoration:none;
   }
 
+  div.cartodb-body .inner .map-info ul li a:hover {
+    text-decoration: underline;
+    color: #333;
+  }
+
   div.cartodb-body .inner .map-info ul li span {
     float:right;
     font-size: 11px;
     color: #CCCCCC;
-    font-family: 'Helvetica Neue', Helvetica, sans-serif; /* Change to Proxima */
+    font-family: 'ProximaNova-Semibold', Helvetica, sans-serif;
   }
 
   .embed-right-col {
@@ -123,11 +198,22 @@
     border-top: 1px solid #D1D1D1;
   }
 
+  div.cartodb-footer a {
+    color: #2483B2;
+    text-decoration: none;
+  }
+
+  div.cartodb-footer a:hover {
+    text-decoration: underline;
+    color: #333;
+  }
+
+
   div.cartodb-footer .embed-left-col {
     border:none;
   }
- 
-  div.cartodb-header {
+  
+  div.cartodb-new-header {
     position: relative;
     display: block;
     border: none;
@@ -137,12 +223,37 @@
     -webkit-box-shadow: rgba(0, 0, 0, 0.1) 0 6px 4px -2px;
     -moz-box-shadow: rgba(0, 0, 0, 0.1) 0 6px 4px -2px;
     box-shadow: rgba(0, 0, 0, 0.1) 0 6px 4px -2px;
-
     background: url('../img/gradient.png') repeat-x center center;
-
     margin:0;
-    /*padding:20px;*/
+    font-family: 'Helvetica Neue', Helvetica, sans-serif;
+    z-index: 0;
+  }
 
+ 
+  div.cartodb-header {
+    position: relative;
+    display: block;
+    min-height:11px;
+    background: #FFF;
+    border: none;
+    border-bottom: 1px solid #808080; /*IE*/
+    border-bottom: 1px solid rgba(0, 0, 0, 0.5);
+    margin:0;
+    padding:20px;
+    -moz-border-radius-topleft: 1px;
+    -webkit-border-top-left-radius: 1px;
+    border-top-left-radius: 1px;
+    -moz-border-radius-topright: 1px;
+    -webkit-border-top-right-radius: 1px;
+    border-top-right-radius: 1px;
+    -webkit-box-shadow: rgba(0, 0, 0, 0.1) 0 6px 4px -2px;
+    -moz-box-shadow: rgba(0, 0, 0, 0.1) 0 6px 4px -2px;
+    box-shadow: rgba(0, 0, 0, 0.1) 0 6px 4px -2px;
+    /*-webkit-transform: translateZ(10px);*/
+    /*-moz-transform: translateZ(10px);*/
+    /*-ms-transform: translateZ(10px);*/
+    /*-o-transform: translateZ(10px);*/
+    /*transform: translateZ(10px);*/
     font-family: 'Helvetica Neue', Helvetica, sans-serif;
     z-index: 0;
   }

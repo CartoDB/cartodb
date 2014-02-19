@@ -20,12 +20,12 @@ module CartoDB
       outcols: "displayLatitude,displayLongitude"
     }
 
-    # Default options for the regular Geocoder API
+    # Default options for the regular HERE Geocoding API
+    # Refer to developer.here.com for further reading
     GEOCODER_OPTIONS = { 
-      gen: 4, 
-      housenumber: 8, 
-      jsonattributes: 1, 
-      language: 'en-US', 
+      gen: 4,                # enables or disables backward incompatible behavior in the API
+      jsonattributes: 1,     # Lowercase the first character of each JSON response attribute name
+      language: 'en-US',     # preferred language of address elements in the result
       maxresults: 1
     }
 

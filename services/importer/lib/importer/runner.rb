@@ -78,7 +78,7 @@ module CartoDB
       end #report
 
       def db
-        @db ||= Sequel.postgres(pg_options)
+        @db = Sequel.postgres(pg_options)
       end #db
 
       def loader_for(source_file)

@@ -23,7 +23,7 @@ module CartoDB
       end #table_name
 
       def db
-        @db ||= Sequel.postgres(pg_options)
+        @db = Sequel.postgres(pg_options)
       end #db
 
       def qualified_table_name

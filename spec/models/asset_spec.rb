@@ -48,11 +48,13 @@ describe Asset do
 
       it 'should save the file when passing a full path as an argument' do
         asset = Asset.create user_id: @user.id, asset_file: (Rails.root + 'db/fake_data/simple.json').to_s
+        File.exists?("#{Rails.root}/public#{asset.public_url}").should be_true
         asset.public_url.should =~ /.*test\/#{@user.username}\/assets\/\d+simple\.json.*/
       end
 
       it 'should save the file when passing an UploadedFile as an argument' do
         asset = Asset.create user_id: @user.id, asset_file: Rack::Test::UploadedFile.new(Rails.root.join('db/fake_data/column_number_to_boolean.csv'), 'text/csv')
+        File.exists?("#{Rails.root}/public#{asset.public_url}").should be_true
         asset.public_url.should =~ /.*test\/#{@user.username}\/assets\/\d+column_number_to_boolean.csv.*/
       end
 
@@ -68,6 +70,7 @@ describe Asset do
         file = Rails.root.join('spec/support/data/cartofante_blue.png')
         serve_file file do |url|
           asset = Asset.create(user_id: @user.id, url: url)
+          File.exists?("#{Rails.root}/public#{asset.public_url}").should be_true
           asset.public_url.should =~ /\/test\/test\/assets\/\d+cartofante_blue\.png/
         end
       end
@@ -79,7 +82,7 @@ describe Asset do
     it 'removes the file from storage if needed' do
       Asset.any_instance.stubs("use_s3?").returns(false)
       asset = Asset.create user_id: @user.id, asset_file: (Rails.root + 'db/fake_data/simple.json').to_s
-      path = "#{Rails.root}#{asset.public_url}"
+      path = "#{Rails.root}/public#{asset.public_url}"
       File.exists?(path).should be_true
       asset.destroy
       File.exists?(path).should be_false

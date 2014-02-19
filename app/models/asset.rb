@@ -88,7 +88,7 @@ class Asset < Sequel::Model
 
   def remove
     unless use_s3?
-      FileUtils.rm("#{Rails.root}#{public_url}") rescue ''
+      FileUtils.rm("#{Rails.root}/public#{public_url}") rescue ''
       return
     end
     basename = File.basename(public_url)

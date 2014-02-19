@@ -1,3 +1,18 @@
+2.9.3 (2014-02-19)
+------------------
+* Improvements
+  * Improved color picker.
+
+* Bugs Fixed
+  * When deleting a user from the box, his database should be deleted before deleting his metadata.
+  * Map turns blank at "Publish" time.
+  * Revamp option for selecting a marker image / polygon pattern fill.
+  * Wrong message shown in dashboard.
+  * Undefined constants in certain importer flows.
+  * When edit a polygon in leaflet move the map to [-180, 180]
+  * Wizards don't show anything selecteed.
+  * Autoselect last uploaded asset by default in the assets modal window.
+
 2.9.2 (2014-02-14)
 ------------------
 * Improvements

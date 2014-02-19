@@ -193,6 +193,7 @@ module CartoDB
         return @first_line if @first_line
         stream.rewind
         @first_line ||= stream.gets
+        stream.rewind
       end #first_line
 
       def release

@@ -12,6 +12,7 @@ module CartoDB
         @runner       = runner
         @database     = database
         @user         = user
+        @failed       = false
       end
 
       def run(&tracker)
@@ -25,8 +26,11 @@ module CartoDB
         end
         self
       rescue => exception
+        @failed = true
+        puts '=================='
         puts exception.to_s
         puts exception.backtrace
+        puts '=================='
       end
 
       def overwrite(table_name, result)
@@ -85,7 +89,7 @@ module CartoDB
       end
 
       def success?
-        runner.success?
+        (!@failed  && runner.success?)
       end
 
       def etag

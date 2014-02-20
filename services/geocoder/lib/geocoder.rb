@@ -24,7 +24,7 @@ module CartoDB
     # Refer to developer.here.com for further reading
     GEOCODER_OPTIONS = { 
       gen: 4,                # enables or disables backward incompatible behavior in the API
-      jsonattributes: 1,     # Lowercase the first character of each JSON response attribute name
+      jsonattributes: 1,     # lowercase the first character of each JSON response attribute name
       language: 'en-US',     # preferred language of address elements in the result
       maxresults: 1
     }

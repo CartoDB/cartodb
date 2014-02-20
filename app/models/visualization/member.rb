@@ -301,7 +301,7 @@ module CartoDB
               domain:     Cartodb.config[:tiler]['private']['domain'],
               port:       Cartodb.config[:tiler]['private']['port'] || 443,
               protocol:   Cartodb.config[:tiler]['private']['protocol'],
-              verifycert: Cartodb.config[:tiler]['private']['verifycert']
+              verifycert: (Cartodb.config[:tiler]['private']['verifycert'] rescue true)
             },
             configuration
           )

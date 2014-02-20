@@ -10,10 +10,12 @@ defaults: &defaults
       protocol:      'http'
       domain:        'localhost.lan'
       port:          '8181'
+      verifycert:     false
     public:
       protocol:      'http'
       domain:        'localhost.lan'
       port:          '8181'
+      verifycert:     false
   sql_api:
     private:
       protocol:   'http'

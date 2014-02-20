@@ -7,3 +7,7 @@
 4|4|SELECT 5
 5|1|INSER INTO "my''""t" values ('''','""'';;')
 5|2|SELECT $qu;oted$ hi $qu;oted$
+6|1|SELECT
+1
+6|2|SELECT
+2

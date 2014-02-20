@@ -102,12 +102,25 @@ class User < Sequel::Model
     self.data_imports.each { |d| d.destroy }
     self.maps.each { |m| m.destroy }
     self.layers.each { |l| self.remove_layer l }
+    self.geocodings.each { |g| g.destroy }
 
     # Remove metadata from redis
     $users_metadata.DEL(self.key)
 
     # Invalidate user cache
     self.invalidate_varnish_cache
+    self.drop_database_and_user
+  end
+
+  def drop_database_and_user
+    Thread.new do
+      conn = Rails::Sequel.connection
+      conn.run("UPDATE pg_database SET datallowconn = 'false' WHERE datname = '#{database_name}'")
+      User.terminate_database_connections(database_name)
+      conn.run("DROP DATABASE #{database_name}")
+      conn.run("DROP USER #{database_username}")
+    end.join
+    monitor_user_notification
   end
 
   def self.terminate_database_connections(database_name)
@@ -137,18 +150,6 @@ BEGIN
 END
 $$
       ")
-  end
-
-  def after_destroy_commit
-    # Remove database
-    Thread.new do
-      conn = Rails::Sequel.connection
-      conn.run("UPDATE pg_database SET datallowconn = 'false' WHERE datname = '#{database_name}'")
-      User.terminate_database_connections(database_name)
-      conn.run("DROP DATABASE #{database_name}")
-      conn.run("DROP USER #{database_username}")
-    end.join
-    monitor_user_notification
   end
 
   def invalidate_varnish_cache
@@ -683,7 +684,6 @@ $$
   
   def rebuild_quota_trigger
     load_cartodb_functions
-    puts "Rebuilding quota trigger in db '#{database_name}' (#{username})"
     tables.all.each do |table|
       begin
         table.set_trigger_check_quota
@@ -827,7 +827,6 @@ $$
                 import varnish
                 client = GD['varnish'] = varnish.VarnishHandler(('#{varnish_host}', #{varnish_port}, timeout))
               except Exception as err:
-                plpy.warning('Varnish connection error: ' +  str(err))
                 # NOTE: we won't retry on connection error
                 if critical:
                   plpy.error('Varnish connection error: ' +  str(err))

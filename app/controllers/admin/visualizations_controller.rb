@@ -50,7 +50,7 @@ class Admin::VisualizationsController < ApplicationController
     response.headers['X-Cache-Channel'] = "#{@visualization.varnish_key}:vizjson"
     response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
 
-    @avatar_url = "http://www.gravatar.com/avatar/#{Digest::MD5.hexdigest(@visualization.user.email)}"
+    @avatar_url = get_avatar(@visualization, 64)
 
     respond_to do |format|
       format.html { render layout: false }
@@ -59,6 +59,15 @@ class Admin::VisualizationsController < ApplicationController
   rescue
     embed_forbidden
   end #embed_map
+
+  def get_avatar(vis, size = 128)
+
+    email  = vis.user.email.strip.downcase
+    digest = Digest::MD5.hexdigest(email)
+
+    "http://www.gravatar.com/avatar/#{digest}?s=#{size}"
+
+  end
 
   def embed_forbidden
     render 'embed_map_error', layout: false, status: :forbidden

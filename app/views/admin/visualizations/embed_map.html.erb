@@ -93,6 +93,15 @@
 
       <div class="cartodb-body">
         <div class="inner">
+
+          <div class="map-info embed-right-col">
+            <h2>Datasets used in this map</h2>
+            <ul>
+              <li><a href="#">Biodiversity</a><span>2.5MB</span></li>
+              <li><a href="#">Law</a><span>7MB</span></li>
+            </ul>
+          </div>
+
           <div class="comments embed-left-col">
             <div id="disqus_thread"></div>
             <script type="text/javascript">
@@ -110,15 +119,7 @@
             <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
 
           </div>
-          <div class="map-info embed-right-col">
 
-            <h2>Datasets used in this map</h2>
-
-            <ul>
-              <li><a href="#">Biodiversity</a><span>2.5MB</span></li>
-              <li><a href="#">Law</a><span>7MB</span></li>
-            </ul>
-          </div>
         </div>
       </div>
 
@@ -149,6 +150,20 @@
     <% end %>
 
     <script>
+
+      reset_disqus = function() {
+
+        DISQUS.reset({
+          reload: true
+        });
+
+      };
+
+    if (!window.addEventListener) {
+      window.attachEvent('orientationchange', reset_disqus, this);
+    } else {
+      window.addEventListener('orientationchange', reset_disqus);
+    }
 
       function get_url_params(conversion) {
 

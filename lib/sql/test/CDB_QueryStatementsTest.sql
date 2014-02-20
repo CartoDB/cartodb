@@ -33,3 +33,24 @@ SELECT
 2
 $the_param$) as statement )
 SELECT '6', row_number() over (), statement FROM q;
+
+-- This is an insane input, illegal sql
+-- we are really only testing that it does not
+-- take forever to process..
+-- The actual result is not correct, so if the function
+-- ever gets fixed check if it's better
+WITH q AS ( SELECT CDB_QueryStatements($the_param$
+
+
+
+
+
+
+
+
+    /a
+    $b$
+    $c$d
+    ;
+$the_param$) as statement )
+SELECT '7', row_number() over (), statement FROM q;

@@ -18,7 +18,10 @@ module Resque
       begin
         action.call(options)
       rescue Sequel::DatabaseDisconnectError => e
-        if (/server has gone away/.match(e.message) || /decryption failed or bad record mac/.match(e.message))
+        regexps = [ /server has gone away/, /decryption failed or bad record mac/, /SSL SYSCALL error: EOF detected/ ]
+        match_found = regexps.map { |regexp| regexp.match(e.message) }.any? { |matches| matches }
+
+        if (match_found)
           @@retries += 1
           if (@@retries < MAX_RETRIES)
             retry

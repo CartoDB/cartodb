@@ -112,7 +112,9 @@ CartoDB::Application.routes.draw do
       end
 
       # Geocoder
-      resources :geocodings, :only                  => [:create, :show, :index, :update]
+      resources :geocodings, :only                  => [:create, :show, :index, :update] do
+        get 'country_data_for/:country_code', to: 'geocodings#country_data_for', on: :collection
+      end
 
       get     'viz/tags' => 'tags#index', :as => 'list_tags'
       get     'viz'                                 => 'visualizations#index'

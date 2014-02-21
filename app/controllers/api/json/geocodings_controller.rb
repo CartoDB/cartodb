@@ -38,4 +38,13 @@ class Api::Json::GeocodingsController < Api::ApplicationController
   rescue Sequel::ValidationFailed => e
     render_jsonp( { description: e.message }, 422)
   end
+
+  def country_data_for
+    render json: {
+      admin1: [ "polygons", "points" ],
+      admin2: [ "points" ],
+      zip: [ "points", "polygons" ]
+    }
+  end
+
 end

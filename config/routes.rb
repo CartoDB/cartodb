@@ -63,6 +63,7 @@ CartoDB::Application.routes.draw do
     get '/viz/:id/table'            => 'visualizations#show'
     get '/viz/:id/public'           => 'visualizations#public'
     get '/viz/:id/embed_map'        => 'visualizations#embed_map'
+    get '/viz/:id/public_map'       => 'visualizations#public_map'
 
     match '/your_apps' => 'client_applications#api_key', :as => :api_key_credentials
     post  '/your_apps/api_key/regenerate' => 'client_applications#regenerate_api_key', :as => :regenerate_api_key

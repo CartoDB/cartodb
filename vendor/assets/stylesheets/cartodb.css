@@ -711,74 +711,35 @@ div.cartodb-popup.header.yellow a.cartodb-popup-close-button:hover {
 
 body:after {
   content: "Default";
-  left: 50%;
+  left: 0px;
+  padding: 5px 10px;
+  background:#fff;
   position: fixed;
-  top: 0;
+  top: 0px;
+  z-index: 1000;
 }
 
-@media only screen and (max-width: 600px) {
+@media only screen and (max-width: 770px) {
   body:after {
     content: "Small";
   }
 
-  div.cartodb-info .inner,
-  div.cartodb-body .inner,
-  div.cartodb-footer .inner {
-    width: 100%!important;
-  }
-
-  div.cartodb-info   .inner .embed-left-col,
-  div.cartodb-body   .inner .embed-left-col,
-  div.cartodb-footer .inner .embed-left-col,
-  div.cartodb-info   .inner .embed-right-col,
-  div.cartodb-body   .inner .embed-right-col,
-  div.cartodb-footer .inner .embed-right-col {
-    border: none;
-    float: none;
-    width: auto;
-    padding: 0 20px!important;
-    margin: 0;
-  }
-
-  div.cartodb-info .inner .details.embed-left-col {
-    margin: 0 0 10px 0;
-  }
-
-  div.cartodb-info .inner .details.embed-left-col p {
-    padding: 0;
-  }
-
-  div.cartodb-info .inner .user.embed-right-col .user-info {
-    margin: 0; 
-    text-align:left;
-  }
-
-  div.cartodb-info .inner .user.embed-right-col {
-    float:none;
-    width: auto;
-    text-align: left;
-  }
-
-  div.cartodb-body .inner .map-info.embed-right-col {
-    margin-bottom: 40px;
-  }
-
-  div.cartodb-body .inner .comments.embed-left-col,
-  div.cartodb-body .inner .map-info.embed-right-col { 
-    float:none;
-    width: auto;
-  }
-
-  .embed-left-col, .embed-right-col {
-    float:none!important;
-  }
+  .inner .embed-left-col  { margin: 0; float: none; width: 100%; }
+  .inner .embed-right-col { float: none;  width: 100%; }
+  .inner .embed-left-col .content { margin-left: 0px; border-right: none; padding-right: 0; max-width: none; }
 
 }
 
-@media only screen and (min-width: 601px) and (max-width: 1035px) {
+@media only screen and (min-width: 771px) and (max-width: 1035px) {
   body:after {
     content: "Medium";
   }
+
+  .inner .embed-left-col  { margin: 0; float: none; width: 100%; }
+  .inner .embed-right-col { float: none;  width: 100%; }
+  .inner .embed-left-col .content { margin-left: 0px; border-right: none; padding-right: 0; max-width: none; }
+
+  
 
 }
 
@@ -788,38 +749,74 @@ body:after {
   }
 }
 
-  div.cartodb-header *,
-  div.cartodb-popup *,
-  div.cartodb-timeslider *,
-  div.cartodb-dropdown {
-    -webkit-margin-before:0em;
-    -webkit-margin-after:0em;
-    -webkit-padding-start:0em;
+.inner { 
+  max-width: 1024px;
+  margin: auto;
+  clear:both;
+  overflow:hidden;
+  /*background: red; */
+  padding: 0 20px; 
+}
+
+
+.embed-left-col{
+  /*background:#ddd;*/
+  float: left;
+  width: 100%;
+  /*height: 200px;*/
+  margin-left: -245px; /* The size of the fixed block. */
+}
+
+.embed-right-col {
+  float: right;
+  /*height: 200px;*/
+  width: 245px;
+  /*background:#ccc;*/
+}
+
+.embed-left-col .content { 
+  max-width:  689px;
+  margin-left: 245px;
+  /*background:pink;*/
+  border-right: 1px solid #D1D1D1;
+  padding-right: 48px;
+}
+
+.cartodb-footer .embed-left-col .content { border-right: none; }
+
+/*.embed-right-col .content { background: pink; }*/
+
+div.cartodb-map-data {
+  position:absolute;
+  width: 100%;
+  background:#fff;
+}
+
+div.cartodb-info {
+  background: #F6F6F6;
+  border-bottom: 1px solid #D1D1D1;
+  border-top: 1px solid #D1D1D1;
+  padding: 30px 0;
+}
+
+ div.cartodb-info .inner .details h1 {
+    font-family: 'ProximaNova-Semibold', Helvetica, sans-serif;
+    font-weight: normal;
+    font-size:27px;
+    color: #444444;
+    padding: 0;
+    margin: 0 0 10px 0;
   }
 
-  /* CartoDB header component */
-
-  div.cartodb-info {
-    background: #F6F6F6;
-    border-bottom: 1px solid #D1D1D1;
-    border-top: 1px solid #D1D1D1;
+  div.cartodb-info .inner .details p {
+    margin: 0; 
+    padding: 0;
+    font-family: 'Helvetica Neue', Helvetica, sans-serif;
+    font-size:15px;
+    color: #868686;
   }
 
-  div.cartodb-info .inner,
-  div.cartodb-body .inner,
-  div.cartodb-footer .inner {
-    width: 1025px;
-    margin: auto;
-
-    padding: 36px 0;
-    clear: both;
-    overflow:hidden;
-  }
-
-  div.cartodb-info .inner .details {
-  }
-
-  div.cartodb-info .inner .user {
+div.cartodb-info .inner .user {
     text-align:right;
     padding: 13px 0;
   }
@@ -850,16 +847,15 @@ body:after {
 
   div.cartodb-info .inner .user h4,
   div.cartodb-info .inner .user h5 {
-    margin: 0;
-    padding: 0;
+    margin: 0; padding: 0;
     font-family: 'ProximaNova', Helvetica, sans-serif;
     font-weight: normal;
   }
 
   div.cartodb-info .inner .user h4 {
+    margin: 0 0 6px 0;
     font-size: 17px;
     color: #444444;
-    margin: 0 0 6px 0;
   }
 
   div.cartodb-info .inner .user h5 {
@@ -867,29 +863,13 @@ body:after {
     color: #858585;
   }
 
-  div.cartodb-info .inner .details h1 {
-    font-family: 'ProximaNova-Semibold', Helvetica, sans-serif;
-    font-weight: normal;
-    font-size:27px;
-    color: #444444;
-    padding: 0;
-    margin: 0 0 10px 0;
-  }
-
-  div.cartodb-info .inner .details p {
-    margin: 0; 
-    padding: 0;
-    font-family: 'Helvetica Neue', Helvetica, sans-serif;
-    font-size:15px;
-    color: #868686;
-  }
-
-  div.cartodb-body .inner .comments { }
-  div.cartodb-body .inner .map-info { }
-  div.cartodb-body .inner .map-info.embed-right-col { float:right; }
 
 
-  div.cartodb-body .inner .map-info h2 {
+div.cartodb-body {
+  padding: 30px 0;
+}
+
+div.cartodb-body .inner .map-info h2 {
     margin: 0 0 21px 0;
     padding: 0;
     font-size: 17px;
@@ -934,26 +914,15 @@ body:after {
     font-family: 'ProximaNova-Semibold', Helvetica, sans-serif;
   }
 
-  .embed-right-col {
-    float:left;
-    width: 245px;
-  }
-
-  .embed-left-col {
-    float:left;
-    width: 689px;
-    padding-right: 49px;
-    margin-right:40px;
-    border-right: 1px solid #D1D1D1;
-  }
 
 
-  div.cartodb-footer {
+ div.cartodb-footer {
     font-size:13px;
     font-family: 'Helvetica Neue', Helvetica, sans-serif;
     color: #999999;
     background: #F6F6F6;
     border-top: 1px solid #D1D1D1;
+    padding: 40px 0;
   }
 
   div.cartodb-footer a {
@@ -965,12 +934,9 @@ body:after {
     text-decoration: underline;
     color: #333;
   }
-
-
-  div.cartodb-footer .embed-left-col {
-    border:none;
-  }
   
+
+
   div.cartodb-new-header {
     position: relative;
     display: block;
@@ -984,40 +950,37 @@ body:after {
     background: url('../img/gradient.png') repeat-x center center;
     margin:0;
     font-family: 'Helvetica Neue', Helvetica, sans-serif;
-    z-index: 0;
+    z-index: 10;
   }
 
- 
   div.cartodb-header {
     position: relative;
     display: block;
     min-height:11px;
     background: #FFF;
+    margin:0;
+    padding:20px;
+
     border: none;
     border-bottom: 1px solid #808080; /*IE*/
     border-bottom: 1px solid rgba(0, 0, 0, 0.5);
-    margin:0;
-    padding:20px;
+
     -moz-border-radius-topleft: 1px;
     -webkit-border-top-left-radius: 1px;
     border-top-left-radius: 1px;
     -moz-border-radius-topright: 1px;
     -webkit-border-top-right-radius: 1px;
     border-top-right-radius: 1px;
+
     -webkit-box-shadow: rgba(0, 0, 0, 0.1) 0 6px 4px -2px;
     -moz-box-shadow: rgba(0, 0, 0, 0.1) 0 6px 4px -2px;
     box-shadow: rgba(0, 0, 0, 0.1) 0 6px 4px -2px;
-    /*-webkit-transform: translateZ(10px);*/
-    /*-moz-transform: translateZ(10px);*/
-    /*-ms-transform: translateZ(10px);*/
-    /*-o-transform: translateZ(10px);*/
-    /*transform: translateZ(10px);*/
+
     font-family: 'Helvetica Neue', Helvetica, sans-serif;
     z-index: 0;
   }
 
   div.cartodb-header h1 {
-    /*width:78%; [> Necessary to support small iframes or displays<]*/
     padding:0;
     margin:0;
     font-weight: bold;
@@ -1040,7 +1003,6 @@ body:after {
   }
 
   div.cartodb-header > p {
-    /*width:80%; [> Necessary to support small iframes or displays<]*/
     margin:5px 0 0 0;
     padding: 0;
     font-weight: normal;

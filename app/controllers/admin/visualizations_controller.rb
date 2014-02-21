@@ -41,6 +41,24 @@ class Admin::VisualizationsController < ApplicationController
     end
   end #public
 
+  def public_map
+    id = params.fetch(:id)
+    @visualization, @table = locator.get(id, CartoDB.extract_subdomain(request))
+    
+    return(pretty_404) unless @visualization
+    return(embed_forbidden) if @visualization.private?
+    response.headers['X-Cache-Channel'] = "#{@visualization.varnish_key}:vizjson"
+    response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
+
+    @avatar_url = get_avatar(@visualization, 64)
+
+    respond_to do |format|
+      format.html { render layout: false }
+      format.js { render 'embed_map', content_type: 'application/javascript' }
+    end
+  rescue
+    embed_forbidden
+  end #embed_map
   def embed_map
     id = params.fetch(:id)
     @visualization, @table = locator.get(id, CartoDB.extract_subdomain(request))

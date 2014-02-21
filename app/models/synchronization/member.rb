@@ -91,9 +91,10 @@ module CartoDB
 
         downloader    = CartoDB::Importer2::Downloader.new(
                           url,
-                          etag:           etag,
-                          last_modified:  modified_at,
-                          checksum:       checksum
+                          etag:             etag,
+                          last_modified:    modified_at,
+                          checksum:         checksum,
+                          verify_ssl_cert:  false
                         )
         runner        = CartoDB::Importer2::Runner.new(
                           pg_options, downloader, log, user.remaining_quota

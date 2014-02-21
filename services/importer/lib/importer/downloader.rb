@@ -86,10 +86,13 @@ module CartoDB
       end
 
       def typhoeus_options
+        verify_ssl = http_options.fetch(:verify_ssl_cert, true)
         {
           cookiefile:     cookiejar,
           cookiejar:      cookiejar,
-          followlocation: true
+          followlocation: true,
+          ssl_verifypeer: verify_ssl,
+          ssl_verifyhost: (verify_ssl ? 2 : 0)
         }
       end 
 

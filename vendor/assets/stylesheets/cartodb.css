@@ -709,7 +709,7 @@ div.cartodb-popup.header.yellow a.cartodb-popup-close-button:hover {
 }
 
 
-body:after {
+/*body:after {
   content: "Default";
   left: 0px;
   padding: 5px 10px;
@@ -718,7 +718,7 @@ body:after {
   top: 0px;
   z-index: 1000;
 }
-
+*/
 @media only screen and (max-width: 770px) {
   body:after {
     content: "Small";
@@ -727,6 +727,16 @@ body:after {
   .inner .embed-left-col  { margin: 0; float: none; width: 100%; }
   .inner .embed-right-col { float: none;  width: 100%; }
   .inner .embed-left-col .content { margin-left: 0px; border-right: none; padding-right: 0; max-width: none; }
+
+  div.cartodb-footer .inner .embed-left-col  {
+    text-align: center;
+    padding: 10px 0;
+  }
+
+
+  div.cartodb-footer .inner .embed-right-col  {
+    text-align: center;
+  }
 
 }
 
@@ -739,7 +749,17 @@ body:after {
   .inner .embed-right-col { float: none;  width: 100%; }
   .inner .embed-left-col .content { margin-left: 0px; border-right: none; padding-right: 0; max-width: none; }
 
-  
+  div.cartodb-footer .inner .embed-left-col  {
+    float:left;
+    width: 50%;
+  }
+
+
+  div.cartodb-footer .inner .embed-right-col  {
+    float: right;
+    width: 50%;
+    text-align:right;
+  }
 
 }
 
@@ -749,7 +769,8 @@ body:after {
   }
 }
 
-.inner { 
+.cartodb-new-header .inner,
+.cartodb-map-data .inner { 
   max-width: 1024px;
   margin: auto;
   clear:both;
@@ -777,7 +798,6 @@ body:after {
 .embed-left-col .content { 
   max-width:  689px;
   margin-left: 245px;
-  /*background:pink;*/
   border-right: 1px solid #D1D1D1;
   padding-right: 48px;
 }
@@ -914,9 +934,7 @@ div.cartodb-body .inner .map-info h2 {
     font-family: 'ProximaNova-Semibold', Helvetica, sans-serif;
   }
 
-
-
- div.cartodb-footer {
+  div.cartodb-footer {
     font-size:13px;
     font-family: 'Helvetica Neue', Helvetica, sans-serif;
     color: #999999;
@@ -934,8 +952,89 @@ div.cartodb-body .inner .map-info h2 {
     text-decoration: underline;
     color: #333;
   }
+
+  div.cartodb-new-header .inner .options { 
+    margin: 23px 0;
+  }
+
+  div.cartodb-new-header .inner .options .learn { 
+    margin-right: 26px;
+    color: #fff;
+    font-size: 15px;
+    font-family: 'Helvetica Neue', Helvetica, sans-serif;
+    text-decoration:none;
+    font-weight: 200;
+  }
+
+  div.cartodb-new-header .inner .options .learn:hover { 
+    text-decoration: underline;
+  }
+
+  a.button.green:hover {
+    background: #749C33;
+    background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #94be42), color-stop(100%, #799e33));
+    background: -webkit-linear-gradient(#94be42,#799e33);
+    background: -moz-linear-gradient(#94be42,#799e33);
+    background: -o-linear-gradient(#94be42,#799e33);
+    background: linear-gradient(#94be42,#799e33);
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  a.button.green {
+    padding: 8px 10px;
+    font-size: 12px;
+    font-weight: bold;
+    font-family: "Segoe UI Bold", "Helvetica Bold", "Helvetica", Arial;
+    line-height: normal;
+    text-decoration: none;
+    text-transform: uppercase;
+    color: white;
+    text-shadow: 0 1px 0 #3C5219;
+    background: #94BE42;
+    background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #94be42), color-stop(100%, #7fa938));
+    background: -webkit-linear-gradient(#94be42,#7fa938);
+    background: -moz-linear-gradient(#94be42,#7fa938);
+    background: -o-linear-gradient(#94be42,#7fa938);
+    background: linear-gradient(#94be42,#7fa938);
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    -ms-border-radius: 3px;
+    -o-border-radius: 3px;
+    border-radius: 3px;
+    border: 1px solid #1E3C54;
+    letter-spacing: 0;
+    word-spacing: 1px;
+    -webkit-transform-style: "linear";
+    -moz-transform-style: "linear";
+    -ms-transform-style: "linear";
+    -o-transform-style: "linear";
+    transform-style: "linear";
+    -webkit-transition-property: box-shadow,border;
+    -moz-transition-property: box-shadow,border;
+    -o-transition-property: box-shadow,border;
+    transition-property: box-shadow,border;
+    -webkit-transition-duration: 250ms;
+    -moz-transition-duration: 250ms;
+    -o-transition-duration: 250ms;
+    transition-duration: 250ms;
+  }
   
 
+  div.cartodb-new-header .inner .logo { 
+    background: url('../img/cartodb.png') no-repeat;
+    margin: 23px 0;
+    display: block;
+    width: 93px;
+    height: 18px;
+    text-indent: -9999px;
+    line-height: 0px;
+    font-size: 0px;
+    text-transform: uppercase;
+  }
+
+  div.cartodb-new-header .inner .logo { float:left; }
+  div.cartodb-new-header .inner .options { float:right; }
 
   div.cartodb-new-header {
     position: relative;

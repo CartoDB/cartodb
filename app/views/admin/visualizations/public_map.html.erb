@@ -64,7 +64,18 @@
   </head>
   <body>
     <% if @visualization.public? %>
-      <div class="cartodb-new-header"></div>
+      <div class="cartodb-new-header">
+        <div class="inner">
+
+          <a class="logo" href="#">Logo</a>
+
+          <div class="options">
+            <a href="#" class="learn">Learn more</a>
+            <a href="#" class="signin green button">Sign In</a>
+          </div>
+
+        </div>
+      </div>
       <div id="map"></div>
       <div id="not_supported_dialog" style="display: none">
         <h2>CartoDB</h2>
@@ -258,23 +269,22 @@
           cartodb_logo_link: "http://www.cartodb.com?utm_source=Footer_Link&utm_medium=referral&utm_campaign=Embed_v1&utm_content=Logo",
         })
 
-        $(function() {
-
-
-        
-        });
-
         cartodb.createVis('map', <%=raw @visualization.to_vizjson.to_json %>, opt, function(vis) {
-          // add here your code
           window.vis = vis;
 
-          $("#map").css({ height: $(window).height() - 260 }); // - 132 - 68
-          $(".cartodb-map-data").css({ top: $(window).height() - 192 });
+          var device = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
+          if (!device) {
+            $("#map").css({ height: $(window).height() - 260 }); // - 132 - 68
+            $(".cartodb-map-data").css({ top: $(window).height() - 192 });
+          }
+
+          if (!device) {
           $(window).on("resize", function() {
             $("#map").css({ height: $(window).height() - 260 }); // - 132 - 68
             $(".cartodb-map-data").css({ top: $(window).height() - 192 });
-          })
+          });
+          }
 
         }).on('error', manageError);
       });

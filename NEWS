@@ -1,5 +1,6 @@
 3.7.00 (24//02/2014)
 - Added support for named maps
+- Added cartodb.noleaflet.js to build (#105)
 
 3.6.02 (18//02//2014)
 - Adds profiling support for plugable backends

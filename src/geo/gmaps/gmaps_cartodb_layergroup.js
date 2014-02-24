@@ -24,25 +24,54 @@ Projector.prototype.pixelToLatLng = function(point) {
   //return this.map.getProjection().fromPointToLatLng(point);
 };
 
-var CartoDBLayerGroup = function(opts) {
+var default_options = {
+  opacity:        0.99,
+  attribution:    "CartoDB",
+  debug:          false,
+  visible:        true,
+  added:          false,
+  tiler_domain:   "cartodb.com",
+  tiler_port:     "80",
+  tiler_protocol: "http",
+  sql_api_domain:     "cartodb.com",
+  sql_api_port:       "80",
+  sql_api_protocol:   "http",
+  extra_params:   {
+  },
+  cdn_url:        null,
+  subdomains:     null
+};
 
-  var default_options = {
-    opacity:        0.99,
-    attribution:    "CartoDB",
-    debug:          false,
-    visible:        true,
-    added:          false,
-    tiler_domain:   "cartodb.com",
-    tiler_port:     "80",
-    tiler_protocol: "http",
-    sql_api_domain:     "cartodb.com",
-    sql_api_port:       "80",
-    sql_api_protocol:   "http",
-    extra_params:   {
-    },
-    cdn_url:        null,
-    subdomains:     null
-  };
+
+var CartoDBNamedMap = function(opts) {
+
+  this.options = _.defaults(opts, default_options);
+  this.tiles = 0;
+  this.tilejson = null;
+  this.interaction = [];
+
+  if (!opts.named_map && !opts.sublayers) {
+      throw new Error('cartodb-gmaps needs at least the named_map');
+  }
+
+  // Add CartoDB logo
+  if (this.options.cartodb_logo != false)
+    cdb.geo.common.CartoDBLogo.addWadus({ left: 74, bottom:8 }, 2000, this.options.map.getDiv());
+
+  wax.g.connector.call(this, opts);
+
+  // lovely wax connector overwrites options so set them again
+  // TODO: remove wax.connector here
+   _.extend(this.options, opts);
+  this.projector = new Projector(opts.map);
+  NamedMap.call(this, this.options.named_map, this.options);
+  CartoDBLayerCommon.call(this);
+  // precache
+  this.update();
+};
+
+
+var CartoDBLayerGroup = function(opts) {
 
   this.options = _.defaults(opts, default_options);
   this.tiles = 0;
@@ -74,14 +103,9 @@ var CartoDBLayerGroup = function(opts) {
   this.update();
 };
 
-CartoDBLayerGroup.Projector = Projector;
+function CartoDBLayerGroupBase() {}
 
-CartoDBLayerGroup.prototype = new wax.g.connector();
-_.extend(CartoDBLayerGroup.prototype, CartoDBLayerCommon.prototype, LayerDefinition.prototype);
-
-CartoDBLayerGroup.prototype.interactionClass = wax.g.interaction;
-
-CartoDBLayerGroup.prototype.setOpacity = function(opacity) {
+CartoDBLayerGroupBase.prototype.setOpacity = function(opacity) {
   if (isNaN(opacity) || opacity > 1 || opacity < 0) {
     throw new Error(opacity + ' is not a valid value, should be in [0, 1] range');
   }
@@ -95,9 +119,9 @@ CartoDBLayerGroup.prototype.setOpacity = function(opacity) {
 
 };
 
-CartoDBLayerGroup.prototype.setAttribution = function() {};
+CartoDBLayerGroupBase.prototype.setAttribution = function() {};
 
-CartoDBLayerGroup.prototype.getTile = function(coord, zoom, ownerDocument) {
+CartoDBLayerGroupBase.prototype.getTile = function(coord, zoom, ownerDocument) {
   var EMPTY_GIF = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
 
   var self = this;
@@ -131,16 +155,16 @@ CartoDBLayerGroup.prototype.getTile = function(coord, zoom, ownerDocument) {
   return im;
 };
 
-CartoDBLayerGroup.prototype.onAdd = function () {
+CartoDBLayerGroupBase.prototype.onAdd = function () {
   //this.update();
 };
 
-CartoDBLayerGroup.prototype.clear = function () {
+CartoDBLayerGroupBase.prototype.clear = function () {
   this._clearInteraction();
   self.finishLoading && self.finishLoading();
 };
 
-CartoDBLayerGroup.prototype.update = function (done) {
+CartoDBLayerGroupBase.prototype.update = function (done) {
   var self = this;
   this.loading && this.loading();
   this.getTiles(function(urls, err) {
@@ -160,7 +184,7 @@ CartoDBLayerGroup.prototype.update = function (done) {
 };
 
 
-CartoDBLayerGroup.prototype.refreshView = function() {
+CartoDBLayerGroupBase.prototype.refreshView = function() {
   var self = this;
   var map = this.options.map;
   map.overlayMapTypes.forEach(
@@ -172,17 +196,17 @@ CartoDBLayerGroup.prototype.refreshView = function() {
     }
   );
 }
-CartoDBLayerGroup.prototype.onLayerDefinitionUpdated = function() {
+CartoDBLayerGroupBase.prototype.onLayerDefinitionUpdated = function() {
     this.update();
 }
 
-CartoDBLayerGroup.prototype._checkLayer = function() {
+CartoDBLayerGroupBase.prototype._checkLayer = function() {
   if (!this.options.added) {
     throw new Error('the layer is not still added to the map');
   }
 }
 
-CartoDBLayerGroup.prototype._findPos = function (map,o) {
+CartoDBLayerGroupBase.prototype._findPos = function (map,o) {
   var curleft, cartop;
   curleft = curtop = 0;
   var obj = map.getDiv();
@@ -196,14 +220,14 @@ CartoDBLayerGroup.prototype._findPos = function (map,o) {
   );
 };
 
-CartoDBLayerGroup.prototype._manageOffEvents = function(map, o){
+CartoDBLayerGroupBase.prototype._manageOffEvents = function(map, o){
   if (this.options.featureOut) {
     return this.options.featureOut && this.options.featureOut(o.e, o.layer);
   }
 };
 
 
-CartoDBLayerGroup.prototype._manageOnEvents = function(map,o) {
+CartoDBLayerGroupBase.prototype._manageOnEvents = function(map,o) {
   var point  = this._findPos(map, o);
   var latlng = this.projector.pixelToLatLng(point);
   var event_type = o.e.type.toLowerCase();
@@ -228,7 +252,22 @@ CartoDBLayerGroup.prototype._manageOnEvents = function(map,o) {
   }
 }
 
+// CartoDBLayerGroup type
+CartoDBLayerGroup.Projector = Projector;
+CartoDBLayerGroup.prototype = new wax.g.connector();
+_.extend(CartoDBLayerGroup.prototype, LayerDefinition.prototype, CartoDBLayerGroupBase.prototype, CartoDBLayerCommon.prototype);
+CartoDBLayerGroup.prototype.interactionClass = wax.g.interaction;
+
+
+// CartoDBNamedMap
+CartoDBNamedMap.prototype = new wax.g.connector();
+_.extend(CartoDBNamedMap.prototype, CartoDBLayerGroupBase.prototype, CartoDBLayerCommon.prototype, NamedMap.prototype);
+CartoDBNamedMap.prototype.interactionClass = wax.g.interaction;
+
+
+// export
 cdb.geo.CartoDBLayerGroupGMaps = CartoDBLayerGroup;
+cdb.geo.CartoDBNamedMapGMaps = CartoDBNamedMap;
 
 /*
  *
@@ -236,108 +275,114 @@ cdb.geo.CartoDBLayerGroupGMaps = CartoDBLayerGroup;
  *
  */
 
-var GMapsCartoDBLayerGroupView = function(layerModel, gmapsMap) {
-  var self = this;
+function LayerGroupView(base) {
+  var GMapsCartoDBLayerGroupView = function(layerModel, gmapsMap) {
+    var self = this;
 
-  _.bindAll(this, 'featureOut', 'featureOver', 'featureClick');
+    _.bindAll(this, 'featureOut', 'featureOver', 'featureClick');
 
-  // CartoDB new attribution,
-  // also we have the logo
-  layerModel.attributes.attribution = cdb.config.get('cartodb_attributions');
+    // CartoDB new attribution,
+    // also we have the logo
+    layerModel.attributes.attribution = cdb.config.get('cartodb_attributions');
 
-  var opts = _.clone(layerModel.attributes);
+    var opts = _.clone(layerModel.attributes);
 
-  opts.map =  gmapsMap;
+    opts.map =  gmapsMap;
 
-  var // preserve the user's callbacks
-  _featureOver  = opts.featureOver,
-  _featureOut   = opts.featureOut,
-  _featureClick = opts.featureClick;
+    var // preserve the user's callbacks
+    _featureOver  = opts.featureOver,
+    _featureOut   = opts.featureOut,
+    _featureClick = opts.featureClick;
 
-  opts.featureOver  = function() {
-    _featureOver  && _featureOver.apply(this, arguments);
-    self.featureOver  && self.featureOver.apply(this, arguments);
+    opts.featureOver  = function() {
+      _featureOver  && _featureOver.apply(this, arguments);
+      self.featureOver  && self.featureOver.apply(this, arguments);
+    };
+
+    opts.featureOut  = function() {
+      _featureOut  && _featureOut.apply(this, arguments);
+      self.featureOut  && self.featureOut.apply(this, arguments);
+    };
+
+    opts.featureClick  = function() {
+      _featureClick  && _featureClick.apply(this, arguments);
+      self.featureClick  && self.featureClick.apply(opts, arguments);
+    };
+
+    
+    //CartoDBLayerGroup.call(this, opts);
+    base.call(this, opts);
+    cdb.geo.GMapsLayerView.call(this, layerModel, this, gmapsMap);
   };
 
-  opts.featureOut  = function() {
-    _featureOut  && _featureOut.apply(this, arguments);
-    self.featureOut  && self.featureOut.apply(this, arguments);
-  };
-
-  opts.featureClick  = function() {
-    _featureClick  && _featureClick.apply(this, arguments);
-    self.featureClick  && self.featureClick.apply(opts, arguments);
-  };
-
-  
-  CartoDBLayerGroup.call(this, opts);
-  cdb.geo.GMapsLayerView.call(this, layerModel, this, gmapsMap);
-};
 
 
+  _.extend(
+    GMapsCartoDBLayerGroupView.prototype,
+    cdb.geo.GMapsLayerView.prototype,
+    base.prototype,
+    {
 
-_.extend(
-  GMapsCartoDBLayerGroupView.prototype,
-  cdb.geo.GMapsLayerView.prototype,
-  CartoDBLayerGroup.prototype,
-  {
+    _update: function() {
+      this.setOptions(this.model.attributes);
+    },
 
-  _update: function() {
-    this.setOptions(this.model.attributes);
-  },
+    reload: function() {
+      this.model.invalidate();
+    },
 
-  reload: function() {
-    this.model.invalidate();
-  },
+    remove: function() {
+      cdb.geo.GMapsLayerView.prototype.remove.call(this);
+      this.clear();
+    },
 
-  remove: function() {
-    cdb.geo.GMapsLayerView.prototype.remove.call(this);
-    this.clear();
-  },
+    featureOver: function(e, latlon, pixelPos, data, layer) {
+      // dont pass gmaps LatLng
+      this.trigger('featureOver', e, [latlon.lat(), latlon.lng()], pixelPos, data, layer);
+    },
 
-  featureOver: function(e, latlon, pixelPos, data, layer) {
-    // dont pass gmaps LatLng
-    this.trigger('featureOver', e, [latlon.lat(), latlon.lng()], pixelPos, data, layer);
-  },
+    featureOut: function(e, layer) {
+      this.trigger('featureOut', e, layer);
+    },
 
-  featureOut: function(e, layer) {
-    this.trigger('featureOut', e, layer);
-  },
+    featureClick: function(e, latlon, pixelPos, data, layer) {
+      // dont pass leaflet lat/lon
+      this.trigger('featureClick', e, [latlon.lat(), latlon.lng()], pixelPos, data, layer);
+    },
 
-  featureClick: function(e, latlon, pixelPos, data, layer) {
-    // dont pass leaflet lat/lon
-    this.trigger('featureClick', e, [latlon.lat(), latlon.lng()], pixelPos, data, layer);
-  },
+    error: function(e) {
+      if(this.model) {
+        //trigger the error form _checkTiles in the model
+        this.model.trigger('error', e?e.errors:'unknown error');
+        this.model.trigger('tileError', e?e.errors:'unknown error');
+      }
+    },
 
-  error: function(e) {
-    if(this.model) {
-      //trigger the error form _checkTiles in the model
-      this.model.trigger('error', e?e.errors:'unknown error');
-      this.model.trigger('tileError', e?e.errors:'unknown error');
+    ok: function(e) {
+      this.model.trigger('tileOk');
+    },
+
+    tilesOk: function(e) {
+      this.model.trigger('tileOk');
+    },
+
+    loading: function() {
+      this.trigger("loading");
+    },
+
+    finishLoading: function() {
+      this.trigger("load");
     }
-  },
-
-  ok: function(e) {
-    this.model.trigger('tileOk');
-  },
-
-  tilesOk: function(e) {
-    this.model.trigger('tileOk');
-  },
-
-  loading: function() {
-    this.trigger("loading");
-  },
-
-  finishLoading: function() {
-    this.trigger("load");
-  }
 
 
-});
+  });
+  return GMapsCartoDBLayerGroupView;
+}
 
-cdb.geo.GMapsCartoDBLayerGroupView = GMapsCartoDBLayerGroupView;
+cdb.geo.GMapsCartoDBLayerGroupView = LayerGroupView(CartoDBLayerGroup);
+cdb.geo.GMapsCartoDBNamedMapView = LayerGroupView(CartoDBNamedMap);
 
+cdb.geo.CartoDBNamedMapGMaps = CartoDBNamedMap;
 /**
 * gmaps cartodb layer
 */

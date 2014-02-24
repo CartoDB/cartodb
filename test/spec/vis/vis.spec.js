@@ -166,6 +166,9 @@ describe("Vis", function() {
   });
 
   it("should add header", function() {
+
+    this.mapConfig.title = "title";
+
     this.vis.load(this.mapConfig, {
       title: true
     });
@@ -174,14 +177,17 @@ describe("Vis", function() {
 
   it("should add header without link in the title", function() {
     var mapConfig = _.clone(this.mapConfig);
+    mapConfig.title = "title"
     mapConfig.url = null;
+
     this.vis.load(mapConfig, {
       title: true
     });
+
     expect(this.vis.$('.cartodb-header').length).toEqual(1);
     expect(this.vis.$('.cartodb-header h1 > a').length).toEqual(0);
   });
-  
+
   it("should use zoom", function() {
     this.vis.load(this.mapConfig, {
       zoom: 10,

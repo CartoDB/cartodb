@@ -4,7 +4,7 @@
  *  node print_lzma.js lzma_param
  */
 
-var LZMA       = require('lzma/lzma_worker.js').LZMA
+var LZMA       = require('../vendor/lzma').LZMA
 
 var str = decodeURIComponent(process.argv[2]);
 

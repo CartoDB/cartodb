@@ -95,7 +95,7 @@ module CartoDB
           base_layers_for(visualization)
         ]
 
-        if visualization.has_private_tables? || visualization.password_protected?
+        if visualization.retrieve_named_map?
           presenter_options = {
             user_name: options.fetch(:user_name),
             api_key: options.delete(:user_api_key)

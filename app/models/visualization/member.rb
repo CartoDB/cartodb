@@ -302,10 +302,10 @@ module CartoDB
               api_key:  user.nil? ? (@user_data.nil? ? '' : @user_data[:api_key]) : user.api_key
             },
             {
-              domain:     Cartodb.config[:tiler]['private']['domain'],
-              port:       Cartodb.config[:tiler]['private']['port'] || 443,
-              protocol:   Cartodb.config[:tiler]['private']['protocol'],
-              verifycert: (Cartodb.config[:tiler]['private']['verifycert'] rescue true)
+              domain:     Cartodb.config[:tiler]['internal']['domain'],
+              port:       Cartodb.config[:tiler]['internal']['port'] || 443,
+              protocol:   Cartodb.config[:tiler]['internal']['protocol'],
+              verifycert: (Cartodb.config[:tiler]['internal']['verifycert'] rescue true)
             },
             configuration
           )

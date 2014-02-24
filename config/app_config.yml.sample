@@ -6,6 +6,11 @@ defaults: &defaults
   account_host:       'localhost:3000'
   account_path:       '/account'
   tiler:
+    internal:
+      protocol:      'http'
+      domain:        'localhost.lan'
+      port:          '8181'
+      verifycert:     false
     private:
       protocol:      'http'
       domain:        'localhost.lan'

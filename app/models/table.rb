@@ -1625,10 +1625,10 @@ SQL
   end
 
   def tile_request(request_method, request_uri, form = {})
-    uri  = "#{owner.username}.#{Cartodb.config[:tiler]['private']['domain']}"
-    port = Cartodb.config[:tiler]['private']['port'] || 443
+    uri  = "#{owner.username}.#{Cartodb.config[:tiler]['internal']['domain']}"
+    port = Cartodb.config[:tiler]['internal']['port'] || 443
     http_req = Net::HTTP.new uri, port
-    http_req.use_ssl = Cartodb.config[:tiler]['private']['protocol'] == 'https' ? true : false
+    http_req.use_ssl = Cartodb.config[:tiler]['internal']['protocol'] == 'https' ? true : false
     http_req.verify_mode = OpenSSL::SSL::VERIFY_NONE
     request_headers = {'Host' => uri}
     case request_method

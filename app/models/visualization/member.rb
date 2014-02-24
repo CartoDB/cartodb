@@ -217,6 +217,10 @@ module CartoDB
         has_private_tables
       end #has_private_tables
 
+      def retrieve_named_map?
+        return password_protected? || has_private_tables?
+      end #retrieve_named_map?
+
       def has_named_map?
         data = named_maps.get(CartoDB::NamedMapsWrapper::NamedMap.normalize_name(id))
         if data.nil?
@@ -311,7 +315,7 @@ module CartoDB
 
       def save_named_map
         named_map = has_named_map?
-        if has_private_tables? || password_protected?
+        if retrieve_named_map?
             if (named_map)
               update_named_map(named_map)
              else

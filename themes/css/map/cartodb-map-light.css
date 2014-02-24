@@ -82,6 +82,10 @@ body:after { // TODO: REMOVE THIS ON LAUNCH
     float:right;
   }
 
+  .cartodb-info .inner .details.embed-left-col p {
+    padding-right: 20px;
+  }
+
   .inner .details.embed-left-col {
     max-width:  70%;
     border-right: 1px solid #D1D1D1;
@@ -97,10 +101,6 @@ body:after { // TODO: REMOVE THIS ON LAUNCH
     float: right;
     width: 50%;
     text-align:right;
-  }
-
-  div.cartodb-info .inner .details {
-    margin-bottom: 30px;
   }
 
 }
@@ -308,7 +308,7 @@ div.cartodb-new-header .inner .options .learn:hover {
   text-decoration: underline;
 }
 
-a.button.green:hover {
+div.cartodb-new-header a.button.green:hover {
   background: #749C33;
   background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #94be42), color-stop(100%, #799e33));
   background: -webkit-linear-gradient(#94be42,#799e33);
@@ -319,7 +319,7 @@ a.button.green:hover {
   cursor: pointer;
 }
 
-a.button.green {
+div.cartodb-new-header a.button.green {
   padding: 8px 10px;
   font-size: 12px;
   font-weight: bold;

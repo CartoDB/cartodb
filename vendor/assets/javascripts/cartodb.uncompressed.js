@@ -1,6 +1,6 @@
-// cartodb.js version: 3.7.00-dev
+// cartodb.js version: 3.7.01-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: 60872a25a4b731e223a778d266509c8a29d59bbe
+// sha: 62ae31969de44600a361fc90c10c589cf80d78cb
 (function() {
   var root = this;
 
@@ -20686,7 +20686,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.7.00-dev';
+    cdb.VERSION = '3.7.01-dev';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -21079,6 +21079,7 @@ cdb.log = new cdb.core.Log({tag: 'cdb'});
 var MAX_HISTORY = 1024;
 function Profiler() {}
 Profiler.metrics = {};
+Profiler._backend = null;
 
 Profiler.get = function(name) {
   return Profiler.metrics[name] || {
@@ -21091,8 +21092,15 @@ Profiler.get = function(name) {
   };
 };
 
-Profiler.new_value = function (name, value) {
+Profiler.backend = function (_) {
+  Profiler._backend = _;
+}
+
+Profiler.new_value = function (name, value, type) {
+  type =  type || 'i';
   var t = Profiler.metrics[name] = Profiler.get(name);
+
+  Profiler._backend && Profiler._backend([type, name, value]);
 
   t.max = Math.max(t.max, value);
   t.min = Math.min(t.min, value);
@@ -21142,7 +21150,7 @@ Metric.prototype = {
   //
   end: function() {
     if (this.t0 !== null) {
-      Profiler.new_value(this.name, this._elapsed());
+      Profiler.new_value(this.name, this._elapsed(), 't');
       this.t0 = null;
     }
   },
@@ -21153,7 +21161,7 @@ Metric.prototype = {
   //
   inc: function(qty) {
     qty = qty === undefined ? 1: qty;
-    Profiler.new_value(this.name, qty);
+    Profiler.new_value(this.name, qty, 'i');
   },
 
   //
@@ -21162,7 +21170,7 @@ Metric.prototype = {
   //
   dec: function(qty) {
     qty = qty === undefined ? 1: qty;
-    this.inc(-qty);
+    Profiler.new_value(this.name, qty, 'd');
   },
 
   //
@@ -25394,7 +25402,7 @@ cdb.geo.ui.TilesLoader = cdb.core.View.extend({
 
   initialize: function() {
     _.defaults(this.options, this.default_options);
-    this.isVisible = false;
+    this.isVisible = 0;
     this.template = this.options.template ? this.options.template : cdb.templates.getTemplate('geo/tiles_loader');
   },
 
@@ -25404,21 +25412,27 @@ cdb.geo.ui.TilesLoader = cdb.core.View.extend({
   },
 
   show: function(ev) {
-    this.isVisible = true;
+    if(this.isVisible) return;
     if (!$.browser.msie || ($.browser.msie && $.browser.version.indexOf("9.") != 0)) {
       this.$el.fadeTo(this.options.animationSpeed, 1)
     } else {
       this.$el.show();
     }
+    this.isVisible++;
   },
 
   hide: function(ev) {
-    this.isVisible = false;
+    this.isVisible--;
+    if(this.isVisible) return;
     if (!$.browser.msie || ($.browser.msie && $.browser.version.indexOf("9.") == 0)) {
       this.$el.stop(true).fadeTo(this.options.animationSpeed, 0)
     } else {
       this.$el.hide();
     }
+  },
+
+  visible: function() {
+    return this.isVisible > 0;
   }
 
 });
@@ -25572,7 +25586,7 @@ cdb.ui.common.FullScreen = cdb.core.View.extend({
     }
 
     var requestFullScreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen;
-    var cancelFullScreen = doc.exitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen;
+    var cancelFullScreen  = doc.exitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen;
 
     if(!doc.fullscreenElement && !doc.mozFullScreenElement && !doc.webkitFullscreenElement) {
 
@@ -26461,15 +26475,19 @@ SubLayer.prototype = {
   },
 
   show: function() {
-    this.set({
-      hidden: false
-    });
+    if(this.get('hidden')) {
+      this.set({
+        hidden: false
+      });
+    }
   },
 
   hide: function() {
-    this.set({
-      hidden: true
-    });
+    if(!this.get('hidden')) {
+      this.set({
+        hidden: true
+      });
+    }
   },
 
   setSQL: function(sql) {
@@ -30157,6 +30175,7 @@ var Vis = cdb.core.View.extend({
     this.https = false;
     this.overlays = [];
     this.moduleChecked = false;
+    this.layersLoading = 0;
 
     if (this.options.mapView) {
       this.mapView = this.options.mapView;
@@ -30164,7 +30183,12 @@ var Vis = cdb.core.View.extend({
     }
 
     // recalculate map position on orientation change
-    window.addEventListener('orientationchange', _.bind(this.doOnOrientationChange, this));
+    if (!window.addEventListener) {
+      window.attachEvent('orientationchange', this.doOnOrientationChange, this);
+    } else {
+      window.addEventListener('orientationchange', _.bind(this.doOnOrientationChange, this));
+    }
+
   },
 
   doOnOrientationChange: function() {
@@ -30320,11 +30344,15 @@ var Vis = cdb.core.View.extend({
     // Add layers
     for(var i in data.layers) {
       var layerData = data.layers[i];
-      this.loadLayer(layerData);
+      this.loadLayer(layerData, options);
     }
 
     var legends, torqueLayer;
     var device = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+    if (options.shareable && !device) {
+      this.container.find(".cartodb-map-wrapper").append('<div class="cartodb-share" style="display: block;"><a href="#"></a></div>');
+    }
 
     if (!device && options.legends) {
       this.addLegends(data.layers);
@@ -30348,8 +30376,6 @@ var Vis = cdb.core.View.extend({
 
       }
     }
-
-    if (options.fullscreen) this.addFullScreen();
 
     if (device) this.addMobile(torqueLayer);
 
@@ -30392,6 +30418,10 @@ var Vis = cdb.core.View.extend({
     for (var i in data.overlays) {
       this.addOverlay(data.overlays[i]);
     }
+
+    var fullscreenEnabled = document.fullscreenEnabled || document.mozFullScreenEnabled || document.webkitFullscreenEnabled;
+
+    if (options.fullscreen && fullscreenEnabled && !device) this.addFullScreen();
 
     _.defer(function() {
       self.trigger('done', self, self.getLayers());
@@ -30559,18 +30589,20 @@ var Vis = cdb.core.View.extend({
       });
     }
 
-    if (opt.title  || opt.description || opt.shareable) {
+    if ( (opt.title && vizjson.title) || (opt.description && vizjson.description) ) {
       vizjson.overlays.unshift({
         type: "header",
         shareable: opt.shareable ? true: false,
         url: vizjson.url
       });
 
+    }
+
+    if (opt.shareable && !device) {
       vizjson.overlays.push({
         type: "share",
         url: vizjson.url
       });
-
     }
 
     var device = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
@@ -30774,8 +30806,18 @@ var Vis = cdb.core.View.extend({
     }
 
     if (layerView) {
-      layerView.bind('loading', this.loadingTiles);
-      layerView.bind('load',    this.loadTiles);
+      var self = this;
+
+      var loadingTiles = function() {
+        self.loadingTiles(opts);
+      };
+
+      var loadTiles = function() {
+        self.loadTiles(opts);
+      };
+
+      layerView.bind('loading', loadingTiles);
+      layerView.bind('load',    loadTiles);
     }
 
     return layerView;
@@ -30784,13 +30826,23 @@ var Vis = cdb.core.View.extend({
 
   loadingTiles: function() {
     if (this.loader) {
+      this.$el.find(".cartodb-fullscreen").hide();
       this.loader.show()
     }
+    if(this.layersLoading === 0) {
+        this.trigger('loading');
+    }
+    this.layersLoading++;
   },
 
   loadTiles: function() {
     if (this.loader) {
       this.loader.hide();
+      this.$el.find(".cartodb-fullscreen").fadeIn(150);
+    }
+    this.layersLoading--;
+    if(this.layersLoading === 0) {
+      this.trigger('load');
     }
   },
 
@@ -31075,9 +31127,6 @@ cdb.vis.Overlay.register('header', function(data, vis) {
            target='_blank'>T</a>\
         </div>\
       {{/mobile_shareable}}\
-      {{#shareable}}\
-        <a href='#' class='share'>Share</a>\
-      {{/shareable}}\
     ",
     data.templateType || 'mustache'
   );
@@ -31209,7 +31258,8 @@ cdb.vis.Overlay.register('fullscreen', function(data, vis) {
 
 });
 
-// search content
+
+// share content
 cdb.vis.Overlay.register('share', function(data, vis) {
 
   // Add the complete url for facebook and twitter
@@ -31222,7 +31272,7 @@ cdb.vis.Overlay.register('share', function(data, vis) {
   var template = cdb.core.Template.compile(
     data.template || '\
       <div class="mamufas">\
-        <section class="block modal {{modal_type}}">\
+        <div class="block modal {{modal_type}}">\
           <a href="#close" class="close">x</a>\
           <div class="head">\
             <h3>Share this map</h3>\
@@ -31255,7 +31305,7 @@ cdb.vis.Overlay.register('share', function(data, vis) {
     url: data.url,
     share_url: data.share_url,
     template: template,
-    target: $(".cartodb-header .share"),
+    target: $(".cartodb-share a"),
     size: $(document).width() > 400 ? "" : "small",
     width: $(document).width() > 400 ? 430 : 216
   });

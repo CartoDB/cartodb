@@ -5878,7 +5878,7 @@ exports.torque.common.TorqueLayer = TorqueLayer;
 
 if (typeof module !== "undefined") {
   module.exports = {
-    cartocss_reference: require('./cartocss_reference').torque['torque-reference'],
+    cartocss_reference: require('./cartocss_reference').torque['torque-reference']
   };
 }
 (function(exports) {
@@ -7267,7 +7267,7 @@ exports.Profiler = Profiler;
         self._setReady(true);
         }
       });
-    },
+    }
 
   };
 
@@ -9118,6 +9118,7 @@ L.CanvasLayer = L.Class.extend({
     this._canvas.style.position = 'absolute';
     this._canvas.style.top = 0;
     this._canvas.style.left = 0;
+    this._canvas.style.pointerEvents = "none";
     this._canvas.style.zIndex = options.zIndex || 0;
 
     this._ctx = this._canvas.getContext('2d');
@@ -9607,7 +9608,8 @@ var GMapsTorqueLayerView = function(layerModel, gmapsMap) {
       attribution: layerModel.get('attribution'),
       cdn_url: layerModel.get('no_cdn') ? null: (layerModel.get('cdn_url') || cdb.CDB_HOST),
       cartocss: layerModel.get('cartocss') || layerModel.get('tile_style'),
-      named_map: layerModel.get('named_map')
+      named_map: layerModel.get('named_map'),
+      auth_token: layerModel.get('auth_token')
   });
 
   //this.setCartoCSS(this.model.get('tile_style'));
@@ -9696,7 +9698,8 @@ var LeafLetTorqueLayer = L.TorqueLayer.extend({
       attribution: layerModel.get('attribution'),
       cdn_url: layerModel.get('no_cdn') ? null: (layerModel.get('cdn_url') || cdb.CDB_HOST),
       cartocss: layerModel.get('cartocss') || layerModel.get('tile_style'),
-      named_map: layerModel.get('named_map')
+      named_map: layerModel.get('named_map'),
+      auth_token: layerModel.get('auth_token')
     });
 
     cdb.geo.LeafLetLayerView.call(this, layerModel, this, leafletMap);

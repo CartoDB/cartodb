@@ -22,7 +22,7 @@
     "aws-sdk": "",
     "git-rev": "",
     "underscore": "",
-    "grunt": "~0.4.1",
+    "grunt": "~0.4.2",
     "grunt-contrib-concat": "",
     "grunt-contrib-jasmine": "",
     "grunt-casper": "",

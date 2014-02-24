@@ -25,7 +25,6 @@
     "grunt": "~0.4.2",
     "grunt-contrib-concat": "",
     "grunt-contrib-jasmine": "",
-    "grunt-casper": "",
     "grunt-contrib-jst": "~0.5.1",
     "grunt-mustache": "~0.1.6",
     "grunt-contrib-sass": "~0.7.1",

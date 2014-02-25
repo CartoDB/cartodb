@@ -68,14 +68,15 @@ module CartoDB
       end #layer_group_for
 
       def other_layers_for(visualization, named_maps_presenter = nil)
+        layer_index = visualization.layers(:cartodb).size
+
         visualization.layers(:others).map do |layer|
-          
           if named_maps_presenter.nil?
             decoration_data_to_apply = {}
           else
-            # Base layer is not sent to the tiler, so order--
-            decoration_data_to_apply = named_maps_presenter.get_decoration_for_layer(layer.kind, layer.order-1)
+            decoration_data_to_apply = named_maps_presenter.get_decoration_for_layer(layer.kind, layer_index)
           end
+          layer_index += 1
           Layer::Presenter.new(layer, options, configuration, decoration_data_to_apply).to_vizjson_v2
         end
       end #other_layers_for
@@ -94,7 +95,7 @@ module CartoDB
           base_layers_for(visualization)
         ]
 
-        if visualization.has_private_tables?
+        if visualization.retrieve_named_map?
           presenter_options = {
             user_name: options.fetch(:user_name),
             api_key: options.delete(:user_api_key)

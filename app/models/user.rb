@@ -353,11 +353,15 @@ $$
   end
 
   def dedicated_support?
-    [/FREE/i, /MAGELLAN/i].select { |rx| self.account_type =~ rx }.empty?
+    /(FREE|MAGELLAN|JOHN SNOW|ACADEMY|ACADEMIC|ON HOLD)/i.match(self.account_type) ? true : false
   end
 
   def remove_logo?
-    [/FREE/i, /MAGELLAN/i, /JOHN SNOW/i].select { |rx| self.account_type =~ rx }.empty?
+    /(FREE|MAGELLAN|JOHN SNOW|ACADEMY|ACADEMIC|ON HOLD)/i.match(self.account_type) ? false : true
+  end
+
+  def private_maps_enabled
+    /(FREE|MAGELLAN|JOHN SNOW|ACADEMY|ACADEMIC|ON HOLD)/i.match(self.account_type) ? false : true
   end
 
   def import_quota

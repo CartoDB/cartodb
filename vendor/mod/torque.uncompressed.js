@@ -1817,6 +1817,10 @@ exports.Profiler = Profiler;
       };
     },
 
+    setCartoCSS: function(c) {
+      this.options.cartocss = c;
+    },
+
     setOptions: function(opt) {
       var refresh = false;
 
@@ -1988,7 +1992,7 @@ exports.Profiler = Profiler;
           "layers": [{
             "type": "torque",
             "options": {
-              "cartocss_version": "2.1.1",
+              "cartocss_version": "1.0.0",
               "cartocss": this.options.cartocss,
               "sql": this.getSQL()
             }
@@ -3605,6 +3609,7 @@ GMapsTorqueLayer.prototype = _.extend({},
 
     // provider options
     var options = torque.common.TorqueLayer.optionsFromLayer(shader.findLayer({ name: 'Map' }));
+    this.provider.setCartoCSS && this.provider.setCartoCSS(cartocss);
     if(this.provider && this.provider.setOptions(options)) {
       this._reloadTiles();
     }
@@ -4250,9 +4255,11 @@ L.TorqueLayer = L.CanvasLayer.extend({
 
     // provider options
     var options = torque.common.TorqueLayer.optionsFromLayer(shader.findLayer({ name: 'Map' }));
+    this.provider.setCartoCSS && this.provider.setCartoCSS(cartocss);
     if(this.provider.setOptions(options)) {
       this._reloadTiles();
     }
+
     _.extend(this.options, options);
 
     // animator options

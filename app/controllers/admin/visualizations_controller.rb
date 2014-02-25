@@ -56,7 +56,7 @@ class Admin::VisualizationsController < ApplicationController
 
     respond_to do |format|
       format.html { render layout: false }
-      format.js { render 'embed_map', content_type: 'application/javascript' }
+      format.js { render 'public_map', content_type: 'application/javascript' }
     end
   rescue
     embed_forbidden

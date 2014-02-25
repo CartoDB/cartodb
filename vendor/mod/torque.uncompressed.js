@@ -3154,6 +3154,7 @@ GMapsTileLoader.prototype = {
     this._map = map;
     this._projection = projection;
     this._tiles = {};
+    this._tilesLoading = {};
     this._tilesToLoad = 0;
     this._updateTiles = this._updateTiles.bind(this);
     this._listeners = [];
@@ -3242,15 +3243,23 @@ GMapsTileLoader.prototype = {
   _removeTile: function (key) {
       this.onTileRemoved && this.onTileRemoved(this._tiles[key]); 
       delete this._tiles[key];
+      delete this._tilesLoading[key];
+  },
+
+  _tileKey: function(tilePoint) {
+    return tilePoint.x + ':' + tilePoint.y + ':' + tilePoint.zoom;
   },
 
   _tileShouldBeLoaded: function (tilePoint) {
-      return !((tilePoint.x + ':' + tilePoint.y + ':' + tilePoint.zoom) in this._tiles);
+      var k = this._tileKey(tilePoint);
+      return !(k in this._tiles) && !(k in this._tilesLoading);
   },
 
   _tileLoaded: function(tilePoint, tileData) {
     this._tilesToLoad--;
-    this._tiles[tilePoint.x + ':' + tilePoint.y + ':' + tilePoint.zoom] = tileData;
+    var k = tilePoint.x + ':' + tilePoint.y + ':' + tilePoint.zoom
+    this._tiles[k] = tileData;
+    delete this._tilesLoading[k];
     if(this._tilesToLoad === 0) {
       this.onTilesLoaded && this.onTilesLoaded();
     }
@@ -3324,11 +3333,17 @@ GMapsTileLoader.prototype = {
 
       this._tilesToLoad += tilesToLoad;
 
-      if (this.onTileAdded) {
         for (i = 0; i < tilesToLoad; i++) {
-          this.onTileAdded(queue[i]);
+          var t = queue[i];
+          var k = this._tileKey(t);
+          this._tilesLoading[k] = t;
+          // events
+          if (this.onTileAdded) {
+            this.onTileAdded(t);
+          }
         }
-      }
+
+      this.onTilesLoading && this.onTilesLoading();
   }
 
 }
@@ -3704,6 +3719,7 @@ L.Mixin.TileLoader = {
 
   _initTileLoader: function() {
     this._tiles = {}
+    this._tilesLoading = {};
     this._tilesToLoad = 0;
     this._map.on({
         'moveend': this._updateTiles
@@ -3777,15 +3793,23 @@ L.Mixin.TileLoader = {
   _removeTile: function (key) {
       this.fire('tileRemoved', this._tiles[key]);
       delete this._tiles[key];
+      delete this._tilesLoading[key];
+  },
+
+  _tileKey: function(tilePoint) {
+    return tilePoint.x + ':' + tilePoint.y + ':' + tilePoint.zoom;
   },
 
   _tileShouldBeLoaded: function (tilePoint) {
-      return !((tilePoint.x + ':' + tilePoint.y + ':' + tilePoint.zoom) in this._tiles);
+      var k = this._tileKey(tilePoint);
+      return !(k in this._tiles) && !(k in this._tilesLoading);
   },
 
   _tileLoaded: function(tilePoint, tileData) {
     this._tilesToLoad--;
-    this._tiles[tilePoint.x + ':' + tilePoint.y + ':' + tilePoint.zoom] = tileData;
+    var k = tilePoint.x + ':' + tilePoint.y + ':' + tilePoint.zoom
+    this._tiles[k] = tileData;
+    delete this._tilesLoading[k];
     if(this._tilesToLoad === 0) {
       this.fire("tilesLoaded");
     }
@@ -3829,8 +3853,12 @@ L.Mixin.TileLoader = {
       this._tilesToLoad += tilesToLoad;
 
       for (i = 0; i < tilesToLoad; i++) {
-        this.fire('tileAdded', queue[i]);
+        var t = queue[i];
+        var k = this._tileKey(t);
+        this._tilesLoading[k] = t;
+        this.fire('tileAdded', t);
       }
+      this.fire("tilesLoading");
 
   }
 }

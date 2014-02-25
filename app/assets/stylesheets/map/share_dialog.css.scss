@@ -17,7 +17,7 @@
   section.block {
     .content > div {
 
-      @include display-box;
+      @include display-flex();
       @include box-orient(horizontal);
       @include box-align(stretch);
     }
@@ -61,7 +61,7 @@
 
   .map_container {
     width: 100%;
-    @include box-flex(1);
+    @include flex(1);
     padding: 40px 40px 34px 40px;
     border-left: 1px solid #E5E5E5;
   }
@@ -108,6 +108,8 @@
     }
 
     .cartodb-share-dialog {
+
+      .mamufas { position:absolute }
 
       section.block.modal {
         position:absolute;
@@ -208,7 +210,7 @@
   // Sharing and privacy options
   div.options {
 
-    @include box-flex(1);
+    @include flex(1);
     position:relative;
     width:299px;
     max-width:299px;
@@ -487,6 +489,11 @@
       width:480px;
       overflow:hidden;
       text-overflow:ellipsis;
+
+      &.loading {
+        min-height:17px;
+        background: image-url('layout/loader_transparent.gif') no-repeat;
+      }
     }
 
     input {

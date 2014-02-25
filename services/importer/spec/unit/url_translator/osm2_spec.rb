@@ -11,6 +11,13 @@ describe UrlTranslator::OSM2 do
       translated.should match /api.openstreetmap.org/
     end
 
+    it 'returns a translated OSM2 url after Feb2014 url format changes' do
+      url = "http://www.openstreetmap.org/export#map=18/40.43494/-3.70068"
+      translated = UrlTranslator::OSM2.new.translate(url)
+      translated.should match /api.openstreetmap.org/
+    end
+
+
     it 'returns the url if already translated' do
       translated = 'http://api.openstreetmap.org'
       UrlTranslator::OSM2.new.translate(translated).should eq translated

@@ -7,7 +7,7 @@ module CartoDB
       class OSM2
         URL_REGEX               = %r{openstreetmap.org/#map=}
         # New format as of Feb2014
-        #URL_REGEX2               = %r{openstreetmap.org/export#map=}
+        URL_REGEX2               = %r{openstreetmap.org/export#map=}
         TRANSLATED_URL_REGEX    = /api.openstreetmap.org/
         URL_TEMPLATE  = "http://api.openstreetmap.org/api/0.6/map?bbox="
         DW = 1200.0/2.0
@@ -19,9 +19,11 @@ module CartoDB
         end #translate
 
         def bounding_box_for(url)
-          lon   = url.split('/')[-1].to_f
-          lat   = url.split('/')[-2].to_f
-          zoom  = url.split('/')[-3].match(/#map=(\d+)/)[1].to_i
+          url_pieces = url.split('/')
+
+          lon   = url_pieces[-1].to_f
+          lat   = url_pieces[-2].to_f
+          zoom  = is_old_format?(url) ? url_pieces[-3].match(/#map=(\d+)/)[1].to_i : url_pieces[-3].match(/export#map=(\d+)/)[1].to_i
 
           res   = 180 / 256.0 / 2**zoom
           py    = (90 + lat) / res
@@ -40,7 +42,7 @@ module CartoDB
         end #bounding_box_for
 
         def supported?(url)
-          !!(url =~ URL_REGEX) #|| !!(url =~ URL_REGEX2)
+          !!(url =~ URL_REGEX2) || !!(url =~ URL_REGEX)
         end #supported?
 
         def translated?(url)
@@ -50,7 +52,7 @@ module CartoDB
         private
 
         def is_old_format?(url)
-
+          !!(url =~ URL_REGEX)
         end #is_old_format?
 
 

@@ -76,6 +76,10 @@ _.extend(
   onTilesLoaded: function() {
     //this.trigger('load');
     Backbone.Events.trigger.call(this, 'load');
+  },
+
+  onTilesLoading: function() {
+    Backbone.Events.trigger.call(this, 'loading');
   }
 
 });

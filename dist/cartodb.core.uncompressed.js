@@ -1,5 +1,5 @@
-// version: 3.7.01
-// sha: e392c3801b434a7a3ede6da5f8c4a630761ceced
+// version: 3.7.02
+// sha: 29c6f53adcc4b116bbfc51eab1444053b9b45034
 ;(function() {
   this.cartodb = {};
   var Backbone = {};
@@ -1141,7 +1141,7 @@ var Mustache;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.7.01';
+    cdb.VERSION = '3.7.02';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -2330,7 +2330,7 @@ NamedMap.prototype = _.extend({}, Map.prototype, {
 
   _attributesUrl: function(layer, feature_id) {
     // /api/maps/:map_id/:layer_index/attributes/:feature_id
-    return [
+    var url = [
       this._tilerHost(),
       //'api',
       //'v1',
@@ -2339,6 +2339,13 @@ NamedMap.prototype = _.extend({}, Map.prototype, {
       layer,
       'attributes',
       feature_id].join('/');
+
+    var extra_params = this.options.extra_params || {};
+    var token = extra_params.auth_token;
+    if (token) {
+      url += "?auth_token=" + token
+    }
+    return url;
   },
 
   // for named maps attributes are fetch from attributes service

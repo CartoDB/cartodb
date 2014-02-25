@@ -824,7 +824,10 @@ var Vis = cdb.core.View.extend({
       this.$el.find(".cartodb-fullscreen").fadeIn(150);
     }
     this.layersLoading--;
-    if(this.layersLoading === 0) {
+    // check less than 0 because loading event sometimes is
+    // thrown before visualization creation
+    if(this.layersLoading <= 0) {
+      this.layersLoading = 0;
       this.trigger('load');
     }
   },

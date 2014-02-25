@@ -40,7 +40,8 @@ cdb.geo.ui.TilesLoader = cdb.core.View.extend({
 
   hide: function(ev) {
     this.isVisible--;
-    if(this.isVisible) return;
+    if(this.isVisible > 0) return;
+    this.isVisible = 0;
     if (!$.browser.msie || ($.browser.msie && $.browser.version.indexOf("9.") == 0)) {
       this.$el.stop(true).fadeTo(this.options.animationSpeed, 0)
     } else {

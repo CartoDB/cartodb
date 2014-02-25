@@ -1,6 +1,6 @@
-// cartodb.js version: 3.7.01-dev
+// cartodb.js version: 3.7.02-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: e5b18e4795c8fa77873caf813d6d064ee465c34e
+// sha: e8bd8bc158177b4de8c8564e9fe13b18e9e034ed
 (function() {
   var root = this;
 
@@ -20686,7 +20686,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.7.01-dev';
+    cdb.VERSION = '3.7.02-dev';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -25423,7 +25423,8 @@ cdb.geo.ui.TilesLoader = cdb.core.View.extend({
 
   hide: function(ev) {
     this.isVisible--;
-    if(this.isVisible) return;
+    if(this.isVisible > 0) return;
+    this.isVisible = 0;
     if (!$.browser.msie || ($.browser.msie && $.browser.version.indexOf("9.") == 0)) {
       this.$el.stop(true).fadeTo(this.options.animationSpeed, 0)
     } else {
@@ -30841,7 +30842,10 @@ var Vis = cdb.core.View.extend({
       this.$el.find(".cartodb-fullscreen").fadeIn(150);
     }
     this.layersLoading--;
-    if(this.layersLoading === 0) {
+    // check less than 0 because loading event sometimes is
+    // thrown before visualization creation
+    if(this.layersLoading <= 0) {
+      this.layersLoading = 0;
       this.trigger('load');
     }
   },

@@ -487,6 +487,11 @@
       width:480px;
       overflow:hidden;
       text-overflow:ellipsis;
+
+      &.loading {
+        min-height:17px;
+        background: image-url('layout/loader_transparent.gif') no-repeat;
+      }
     }
 
     input {

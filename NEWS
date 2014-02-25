@@ -1,3 +1,6 @@
+3.7.03 (25//02//2013)
+- Fixed https in torque tiles
+
 3.7.02 (25//02//2013)
 - Fixed auth_token fetching infowindow attributes
 - updated torque library

@@ -57,6 +57,10 @@ var LeafLetTorqueLayer = L.TorqueLayer.extend({
       this.trigger('load');
     }, this);
 
+    this.bind('tilesLoading', function() {
+      this.trigger('loading');
+    }, this);
+
   },
 
   onAdd: function(map) {

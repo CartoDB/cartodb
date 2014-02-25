@@ -1,3 +1,24 @@
+2.10.0 (2014-02-25)
+-------------------
+* Improvements
+  * Revamped privacy for visualizations.
+  * Implement unified MAP API.
+  * Named Maps Ruby API wrapper Unit/Integration tests.
+  * Add Fullscreen button to iframe.
+
+* Bugs Fixed
+  * Set correct attributes service params to work with infowindows.
+  * Upgraded message still present after downgrade.
+  * It's impossible to move points when there's a torque layer.
+  * Ordering by numeric DESC will show nulls at top.
+  * viz.json includes infowindow template when there are no infowindow fields active.
+  * The title of the fake share window inside of the publish modal is missing.
+  * Infowindow shouldn't be enabled in Cluster wizard.
+  * CSV importer failure due to missing stream.rewind.
+  * Disable GDrive panel for importing new files.
+  * When switching from normal layer to torque layers the normal layer is still shown.
+  * Change resolution in torque layer does not work.
+
 2.9.3 (2014-02-19)
 ------------------
 * Improvements

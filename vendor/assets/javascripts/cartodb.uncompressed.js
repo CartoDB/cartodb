@@ -1,6 +1,6 @@
 // cartodb.js version: 3.7.02-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: e8bd8bc158177b4de8c8564e9fe13b18e9e034ed
+// sha: bd759665826e4d9a0e219f3e029014485b5076a4
 (function() {
   var root = this;
 
@@ -26202,7 +26202,7 @@ NamedMap.prototype = _.extend({}, Map.prototype, {
 
   _attributesUrl: function(layer, feature_id) {
     // /api/maps/:map_id/:layer_index/attributes/:feature_id
-    return [
+    var url = [
       this._tilerHost(),
       //'api',
       //'v1',
@@ -26211,6 +26211,13 @@ NamedMap.prototype = _.extend({}, Map.prototype, {
       layer,
       'attributes',
       feature_id].join('/');
+
+    var extra_params = this.options.extra_params || {};
+    var token = extra_params.auth_token;
+    if (token) {
+      url += "?auth_token=" + token
+    }
+    return url;
   },
 
   // for named maps attributes are fetch from attributes service

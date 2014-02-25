@@ -102,7 +102,7 @@
               <div class="content">
                 <div class="user-info">
                   <h4>by <%= @visualization.user.username %></h4>
-                  <h5>17 maps created</h5>
+                  <h5><%= @visualization_count %> maps created</h5>
                 </div>
                 <img src="<%= @avatar_url %>" class="avatar" />
               </div>
@@ -116,10 +116,14 @@
 
             <div class="map-info embed-right-col">
               <div class="content">
+
                 <h2>Datasets used in this map</h2>
                 <ul>
-                  <li><a href="#" title="This is a test of a long title that should be shortened">This is a test of a long title that should be shortened</a><span>2.5MB</span></li>
-                  <li><a href="#">Law</a><span>7MB</span></li>
+
+                  <% @related_tables.each do |table| %>
+                    <li><a href="#" title="<%= table.name %>"><%= table.name %></a><span><%= table.table_size %></span></li>
+                  <% end %>
+
                 </ul>
               </div>
             </div>

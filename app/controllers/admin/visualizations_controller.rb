@@ -3,10 +3,10 @@ require_relative '../../models/map/presenter'
 require_relative '../../models/visualization/locator'
 
 class Admin::VisualizationsController < ApplicationController
-  ssl_allowed :embed_map
+  ssl_allowed :embed_map, :public_map
   ssl_required :index, :show
   before_filter :login_required, only: [:index]
-  skip_before_filter :browser_is_html5_compliant?, only: [:embed_map, :track_embed]
+  skip_before_filter :browser_is_html5_compliant?, only: [:public_map, :embed_map, :track_embed]
 
   def index
     @tables_count  = current_user.tables.count
@@ -32,7 +32,7 @@ class Admin::VisualizationsController < ApplicationController
 
     id = params.fetch(:id)
     return(pretty_404) if @visualization.nil? || @visualization.private?
-    return(redirect_to embed_map_url_for(id)) if @visualization.derived?
+    return(redirect_to public_map_url_for(id)) if @visualization.derived?
     
     @vizjson = @visualization.to_vizjson
 
@@ -51,6 +51,8 @@ class Admin::VisualizationsController < ApplicationController
     response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
 
     @avatar_url = get_avatar(@visualization, 64)
+    @visualization_count = current_user.visualization_count
+    @related_tables = @visualization.related_tables
 
     respond_to do |format|
       format.html { render layout: false }
@@ -59,6 +61,7 @@ class Admin::VisualizationsController < ApplicationController
   rescue
     embed_forbidden
   end #embed_map
+
   def embed_map
     id = params.fetch(:id)
     @visualization, @table = locator.get(id, CartoDB.extract_subdomain(request))

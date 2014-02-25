@@ -140,8 +140,7 @@
                     (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
                   })();
                 </script>
-                <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-                <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+                <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript" class="no_script">comments powered by Disqus.</a></noscript>
               </div>
             </div>
 
@@ -153,13 +152,13 @@
 
             <div class="copyright embed-left-col">
               <div class="content">
-                &copy; 2014 CartoDB - <a href="#">Create your own maps</a>
+                &copy; <%= Time.now.year %> CartoDB - <a href="https://cartodb.com/signup" title="Create your own maps with CartoDB">Create your own maps</a>
               </div>
             </div>
 
             <div class="terms embed-right-col">
               <div class="content">
-                <a href="#">Terms of Service</a>
+                <a href="http://cartodb.com/terms" title="CartoDB's ToS">Terms of Service</a>
               </div>
             </div>
 
@@ -281,13 +280,17 @@
           if (!device) {
             $("#map").css({ height: $(window).height() - 260 }); // - 132 - 68
             $(".cartodb-map-data").css({ top: $(window).height() - 192 });
-          }
 
-          if (!device) {
-          $(window).on("resize", function() {
-            $("#map").css({ height: $(window).height() - 260 }); // - 132 - 68
-            $(".cartodb-map-data").css({ top: $(window).height() - 192 });
-          });
+            $(window).on("resize", function() {
+              $("#map").css({ height: $(window).height() - 260 }); // - 132 - 68
+              $(".cartodb-map-data").css({ top: $(window).height() - 192 });
+            });
+
+          } else {
+          
+            $("#map").css({ height: $(window).height() - 120 }); // - 132 - 68
+            $(".cartodb-map-data").css({ top: $(window).height() - 52 });
+
           }
 
         }).on('error', manageError);

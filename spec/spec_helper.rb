@@ -33,9 +33,10 @@ RSpec.configure do |config|
     $pool.close_connections!
     Rails::Sequel.connection[
       "SELECT datname FROM pg_database WHERE datistemplate IS FALSE AND datallowconn IS TRUE AND datname like 'cartodb_test_user_%'"
-    ].map(:datname).each { |user_database_name| 
+    ].map(:datname).each { |user_database_name|
+      puts "Dropping leaked test database #{user_database_name}"
       User::terminate_database_connections(user_database_name);
-      Rails::Sequel.connection.run("drop database #{user_database_name}") 
+      Rails::Sequel.connection.run("drop database #{user_database_name}")
     }
     Rails::Sequel.connection[
       "SELECT u.usename FROM pg_catalog.pg_user u"

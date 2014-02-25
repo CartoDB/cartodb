@@ -58,7 +58,7 @@ gem "google-spreadsheet-ruby", "0.1.8"
 gem "rubyzip",                 "0.9.9"
 gem "builder",                 "3.0.0"
 gem "state_machine",           "1.1.2"
-gem "typhoeus",                "0.6.3"
+gem "typhoeus",                "0.6.7"
 gem "charlock_holmes",         "0.6.9.4"
 gem "dbf",                     "2.0.6"
 

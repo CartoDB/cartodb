@@ -42,6 +42,8 @@ describe Table do
   end
   before(:each) do
     CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
+
+    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
   end
 
   context "table setups" do
@@ -546,6 +548,7 @@ describe Table do
     end
 
     it "should remove varnish cache when updating the table privacy" do
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
       @user.private_tables_enabled = true
       @user.save
       table = create_table(user_id: @user.id, name: "varnish_privacy", privacy: Table::PRIVATE)
@@ -565,10 +568,15 @@ describe Table do
 
   context "when removing the table" do
     before(:all) do
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
       CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
       @doomed_table = create_table(user_id: @user.id)
       @automatic_geocoding = FactoryGirl.create(:automatic_geocoding, table: @doomed_table)
       @doomed_table.destroy
+    end
+
+    before(:each) do
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
     end
 
     it "should remove the automatic_geocoding" do
@@ -614,6 +622,7 @@ describe Table do
     end
 
     it 'deletes derived visualizations that depend on this table' do
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:create).returns(true)
       table   = create_table(name: 'bogus_name', user_id: @user.id)
       source  = table.table_visualization
       derived = CartoDB::Visualization::Copier.new(@user, source).copy
@@ -1316,48 +1325,15 @@ describe Table do
       table.geometry_types.should == ['ST_Point']
     end
 
-    # FIXME: Don't know if we still support this behaviour, or if it's something from the past
-    pending "should copy cartodb_id values to a new cartodb_id serial column when importing a file which already has a cartodb_id column" do
-      data_import = DataImport.create( :user_id       => @user.id,
-                                       :data_source   => '/../db/fake_data/with_cartodb_id.csv' )
-      data_import.run_import!
-      table = Table[data_import.table_id]
-
-      check_schema(table, [
-        [:cartodb_id, "number"], [:name, "string"], [:the_geom, "geometry",
-        "geometry", "point"], [:invalid_the_geom, "string"], [:created_at, "date"],
-        [:updated_at, "date"]
-      ], :cartodb_types => true)
-
-      table_schema = @user.in_database.schema(table.name)
-      cartodb_id_schema = table_schema.detect {|s| s[0].to_s == "cartodb_id"}
-      cartodb_id_schema.should be_present
-      cartodb_id_schema = cartodb_id_schema[1]
-      cartodb_id_schema[:db_type].should == "integer"
-      cartodb_id_schema[:default].should == "nextval('#{table.name}_cartodb_id_seq'::regclass)"
-      cartodb_id_schema[:primary_key].should == true
-      cartodb_id_schema[:allow_null].should == false
-
-      # CSV has this data:
-      # 3,Row 3,2011-08-29 16:18:37.114106,2011-08-29 16:19:07.61527,
-      # 5,Row 5,2011-08-29 16:18:37.114106,2011-08-29 16:19:16.216058,
-      # 7,Row 7,2011-08-29 16:18:37.114106,2011-08-29 16:19:31.380103,
-
-      # cartodb_id values should be preserved
-      rows = table.records(:order_by => "cartodb_id", :mode => "asc")[:rows]
-      rows.size.should == 3
-      rows[0][:cartodb_id].should == 3
-      rows[0][:name].should == "Row 3"
-      rows[1][:cartodb_id].should == 5
-      rows[1][:name].should == "Row 5"
-      rows[2][:cartodb_id].should == 7
-      rows[2][:name].should == "Row 7"
-
-      table.insert_row!(:name => "Row 8")
-      rows = table.records(:order_by => "cartodb_id", :mode => "asc")[:rows]
-      rows.size.should == 4
-      rows.last[:cartodb_id].should == 8
-      rows.last[:name].should == "Row 8"
+    it "returns null values at the end when ordering desc" do
+      table = create_table(user_id: @user.id)
+      resp = table.add_column!(name: "numbercolumn", type: "number")
+      table.insert_row!(numbercolumn: 1)
+      table.insert_row!(numbercolumn: nil)
+      table.insert_row!(numbercolumn: 2)
+      rows = table.records(order_by: 'numbercolumn', mode: 'desc')[:rows]
+      rows.last[:numbercolumn].should eq nil
+      rows.first[:numbercolumn].should eq 2
     end
 
     it "should make sure it converts created_at and updated at to date types when importing from CSV" do

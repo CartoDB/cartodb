@@ -57,6 +57,7 @@ var _mapnik_reference_latest = {
                 "src",
                 "dst",
                 "src-over",
+                "source-over", // added for torque
                 "dst-over",
                 "src-in",
                 "dst-in",
@@ -191,6 +192,7 @@ var _mapnik_reference_latest = {
                     "src",
                     "dst",
                     "src-over",
+                    "source-over", // added for torque
                     "dst-over",
                     "src-in",
                     "dst-in",

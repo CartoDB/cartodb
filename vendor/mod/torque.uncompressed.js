@@ -1916,8 +1916,8 @@ exports.Profiler = Profiler;
 
     getKeySpan: function() {
       return {
-        start: this.options.start * 1000,
-        end: this.options.end * 1000,
+        start: this.options.start,
+        end: this.options.end,
         step: this.options.step,
         steps: this.options.steps,
         columnType: this.options.column_type

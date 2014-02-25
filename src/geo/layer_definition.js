@@ -588,7 +588,7 @@ NamedMap.prototype = _.extend({}, Map.prototype, {
 
   _attributesUrl: function(layer, feature_id) {
     // /api/maps/:map_id/:layer_index/attributes/:feature_id
-    return [
+    var url = [
       this._tilerHost(),
       //'api',
       //'v1',
@@ -597,6 +597,13 @@ NamedMap.prototype = _.extend({}, Map.prototype, {
       layer,
       'attributes',
       feature_id].join('/');
+
+    var extra_params = this.options.extra_params || {};
+    var token = extra_params.auth_token;
+    if (token) {
+      url += "?auth_token=" + token
+    }
+    return url;
   },
 
   // for named maps attributes are fetch from attributes service

@@ -1854,7 +1854,6 @@ exports.Profiler = Profiler;
 
       if (refresh) this.reload();
       return refresh;
-      return false;
     },
 
     _extraParams: function() {
@@ -1966,7 +1965,10 @@ exports.Profiler = Profiler;
       if (!this.options.cdn_url) {
         return this._tilerHost();
       }
-      var h = protocol + "://{s}.";
+      var h = protocol + "://"
+      if (protocol === 'http') {
+        h += "{s}.";
+      }
       var cdn_host = opts.cdn_url;
       if(!cdn_host.http && !cdn_host.https) {
         throw new Error("cdn_host should contain http and/or https entries");

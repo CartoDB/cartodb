@@ -18,6 +18,7 @@ describe Api::Json::RecordsController do
   end
 
   before(:each) do
+    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
     delete_user_data @user
     @table = create_table :user_id => @user.id
     @headers = { 

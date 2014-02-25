@@ -1,4 +1,15 @@
-// CodeMirror version 3.16
+// CodeMirror version 3.16 ( + custom code, read below )
+//
+//
+//
+//  There is one function touched and another created.
+//
+//  relativeLuminanceW3C: for getting the luminiscence of a hex color
+//  elt:                  for creating new dom elements
+//
+//  BE CAREFUL IF YOU UPDATE THIS LIBRARY, YOU CAN BREAK THINGS!
+//
+//
 //
 // CodeMirror is the only global var we claim
 window.CodeMirror = (function() {
@@ -5403,12 +5414,42 @@ window.CodeMirror = (function() {
 
   // DOM UTILITIES
 
+  // Custom codemirror
+  function relativeLuminanceW3C(R8bit, G8bit, B8bit) { 
+    var RsRGB = R8bit/255;
+    var GsRGB = G8bit/255;
+    var BsRGB = B8bit/255;
+
+    var R = (RsRGB <= 0.03928) ? RsRGB/12.92 : Math.pow((RsRGB+0.055)/1.055, 2.4);
+    var G = (GsRGB <= 0.03928) ? GsRGB/12.92 : Math.pow((GsRGB+0.055)/1.055, 2.4);
+    var B = (BsRGB <= 0.03928) ? BsRGB/12.92 : Math.pow((BsRGB+0.055)/1.055, 2.4);
+
+    // For the sRGB colorspace, the relative luminance of a color is defined as: 
+    var L = 0.2126 * R + 0.7152 * G + 0.0722 * B;
+
+    return L;
+  }
+
+
   function elt(tag, content, className, style) {
     var e = document.createElement(tag);
     if (className) e.className = className;
     if (style) e.style.cssText = style;
     if (typeof content == "string") setTextContent(e, content);
     else if (content) for (var i = 0; i < content.length; ++i) e.appendChild(content[i]);
+    
+    // Color stuff
+    if (className === "cm-color") {
+      
+      var color = new RGBColor(e.innerHTML);
+      var luminance = relativeLuminanceW3C(color.r,color.g,color.b);
+      
+      if (luminance < 0.51) {
+        e.style.color = "white"
+      }
+
+      e.style.background = e.innerHTML;
+    }
     return e;
   }
 

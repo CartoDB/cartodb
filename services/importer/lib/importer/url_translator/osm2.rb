@@ -6,6 +6,8 @@ module CartoDB
     module UrlTranslator
       class OSM2
         URL_REGEX               = %r{openstreetmap.org/#map=}
+        # New format as of Feb2014
+        #URL_REGEX2               = %r{openstreetmap.org/export#map=}
         TRANSLATED_URL_REGEX    = /api.openstreetmap.org/
         URL_TEMPLATE  = "http://api.openstreetmap.org/api/0.6/map?bbox="
         DW = 1200.0/2.0
@@ -38,12 +40,20 @@ module CartoDB
         end #bounding_box_for
 
         def supported?(url)
-          !!(url =~ URL_REGEX)
+          !!(url =~ URL_REGEX) #|| !!(url =~ URL_REGEX2)
         end #supported?
 
         def translated?(url)
           !!(url =~ TRANSLATED_URL_REGEX)
         end #translated?
+
+        private
+
+        def is_old_format?(url)
+
+        end #is_old_format?
+
+
       end #OSM2
     end # UrlTranslator
   end # Importer2

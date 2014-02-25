@@ -22,6 +22,8 @@ WORKING_SPECS = \
   spec/requests/admin/tables_spec.rb \
   spec/models/geocoding_spec.rb \
   spec/requests/api/imports_spec.rb \
+  services/importer/spec/unit/url_translator/osm_spec.rb \
+  services/importer/spec/unit/url_translator/osm2_spec.rb \
   $(NULL)
 
 CDB_PATH=lib/assets/javascripts/cdb

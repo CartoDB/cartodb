@@ -1,6 +1,4 @@
 # encoding: utf-8
-gem 'minitest'
-require 'minitest/autorun'
 require_relative '../../../lib/importer/url_translator/osm2'
 
 include CartoDB::Importer2
@@ -10,17 +8,17 @@ describe UrlTranslator::OSM2 do
     it 'returns a translated OSM2 url' do
       url = "http://www.openstreetmap.org/#map=18/40.43494/-3.70068"
       translated = UrlTranslator::OSM2.new.translate(url)
-      translated.must_match /api.openstreetmap.org/
+      translated.should match /api.openstreetmap.org/
     end
 
     it 'returns the url if already translated' do
       translated = 'http://api.openstreetmap.org'
-      UrlTranslator::OSM2.new.translate(translated).must_equal translated
+      UrlTranslator::OSM2.new.translate(translated).should eq translated
     end
 
     it 'returns the url if not supported' do
       not_supported = 'http://bogus.com'
-      UrlTranslator::OSM2.new.translate(not_supported).must_equal not_supported
+      UrlTranslator::OSM2.new.translate(not_supported).should eq not_supported
     end
   end #translate
 
@@ -35,7 +33,7 @@ describe UrlTranslator::OSM2 do
 
       url = "http://www.openstreetmap.org/#map=18/40.43494/-3.70068"
       UrlTranslator::OSM2.new.bounding_box_for(url)
-        .must_equal bounding_box.join(',')
+        .should eq bounding_box.join(',')
     end
   end #bounding_box_for
 
@@ -43,18 +41,18 @@ describe UrlTranslator::OSM2 do
     it 'returns true if URL is from OSM2' do
       url = "http://www.openstreetmap.org/#map=18/40.43494/-3.70068"
       UrlTranslator::OSM2.new.supported?(url)
-        .must_equal true
+        .should eq true
       UrlTranslator::OSM2.new.supported?('http://bogus.com')
-        .must_equal false
+        .should eq false
     end
   end #supported?
 
   describe '#translated?' do
     it 'returns true if URL already translated' do
       UrlTranslator::OSM2.new.translated?('http://api.openstreetmap.org')
-        .must_equal true
+        .should eq true
       UrlTranslator::OSM2.new.translated?('http://www.openstreetmap.org')
-        .must_equal false
+        .should eq false
     end
   end #translated?
 end # UrlTranslator::OSM2

@@ -119,12 +119,11 @@
 
                 <h2>Datasets used in this map</h2>
                 <ul>
-
                   <% @related_tables.each do |table| %>
-                    <li><a href="#" title="<%= table.name %>"><%= table.name %></a><span><%= table.table_size %></span></li>
+                    <li><a href="/tables/<%= table.name %>/public" title="<%= table.name %>"><%= table.name %></a><span><%= number_to_human_size(table.table_size) %></span></li>
                   <% end %>
-
                 </ul>
+
               </div>
             </div>
 

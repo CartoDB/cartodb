@@ -1,3 +1,7 @@
+3.7.02 (25//02//2013)
+- Fixed auth_token fetching infowindow attributes
+- updated torque library
+
 3.7.01 (25//02//2013)
 - Fixed auth_token in torque layers
 - Fixed time slider in torque layers

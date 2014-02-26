@@ -159,9 +159,7 @@ module CartoDB
 			end #get_template_data
 
       def self.css_from(options)
-        css = options.fetch('tile_style')
-        css.strip!
-        css.empty? ? EMPTY_CSS : css
+        options.fetch('tile_style').strip.empty? ? EMPTY_CSS : options.fetch('tile_style')
       end #css_from
 
 

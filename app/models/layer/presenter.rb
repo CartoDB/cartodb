@@ -174,9 +174,8 @@ module CartoDB
       end #sql_from
 
       def css_from(options)
-        css = options.fetch('tile_style')
-        css.strip!
-        css.empty? ? EMPTY_CSS : css
+        style = options.include?('tile_style') ? options['tile_style'] : nil
+        (style.nil? || style.strip.empty?) ? EMPTY_CSS : options.fetch('tile_style')
       end #css_from
 
       def wrap(query, options)

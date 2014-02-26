@@ -10,6 +10,7 @@ module CartoDB
 			NAME_PREFIX = 'tpl_'
 			AUTH_TYPE_OPEN = 'open'
 			AUTH_TYPE_SIGNED = 'token'
+      EMPTY_CSS = '#dummy{}'
 
 			# Load with existing data
 			def initialize( name, template_data, parent )
@@ -145,7 +146,7 @@ module CartoDB
 	            type:     layer[:type].downcase,
 	            options:  {
                           cartocss_version: '2.0.1',
-                          cartocss:         layer[:options].fetch( 'tile_style' ),
+                          cartocss:         self.css_from(layer[:options]),
                           sql:              layer[:options].fetch( 'query' )
                         }
 	          } )
@@ -156,6 +157,13 @@ module CartoDB
 
 				template_data
 			end #get_template_data
+
+      def self.css_from(options)
+        css = options.fetch('tile_style')
+        css.strip!
+        css.empty? ? EMPTY_CSS : css
+      end #css_from
+
 
 			attr_reader	:template
 

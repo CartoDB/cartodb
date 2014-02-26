@@ -19,22 +19,39 @@
   // option container
   .cont {
     display:none;
-    /*width:100%;*/
     margin-left:20px;
   }
 
   .geocoder_stats { display: none; }
 
+  .inner {
+    width: 2000px;
+    clear:both;
+    overflow:hidden;
+    padding:40px 40px 40px 40px;
+  }
+
   // Dialog styles
   div.content {
-    padding:40px 40px 30px!important;
+    width: 532px;
+    padding: 0!Important;
+
+    clear:both;
+    overflow: hidden;
+
+    ul.options {
+      width: 492px;
+      float:left;
+      margin-right: 60px;
+    }
 
     .georeference_styles {
-      display:none;
+      /*display:none;*/
+      float:left;
       width: 493px;
 
-      clear:both;
-      overflow: hidden;
+      /*clear:both;*/
+      /*overflow: hidden;*/
 
       li {
         position:relative;
@@ -320,7 +337,7 @@
   .address {
     div.info {
       margin-left:0!important;
-      margin-right:20px!important;
+      /*margin-right:20px!important;*/
     }
 
     .help {
@@ -397,8 +414,13 @@
     }
   }
 
-  div.foot {
-    border:none!important;
+  &.option_0 section.block.modal .foot,
+  &.option_2 section.block.modal .foot { border-top: 1px solid #E5E5E5; }
+
+  &.option_2.step_1 section.block.modal .foot { border-top: none; }
+
+  section.block.modal div.foot {
+    border-top:none;
     margin-top:0;
 
     a.back { margin-top:15px; }

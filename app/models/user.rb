@@ -279,20 +279,10 @@ $$
       :total_rows => rows.size,
       :rows => rows.map{ |row| row.delete("the_geom"); row }
     }
-  rescue => e
-    if e.message =~ /^PGError/
-      if e.message.include?("does not exist")
-        if e.message.include?("column")
-          raise CartoDB::ColumnNotExists, e.message
-        else
-          raise CartoDB::TableNotExists, e.message
-        end
-      else
-        raise CartoDB::ErrorRunningQuery, e.message
-      end
-    else
-      raise e
-    end
+  rescue Sequel::DatabaseError => exception
+    raise CartoDB::ColumnNotExists, exception.message if exception.message =~ /column.*does not exist/
+    raise CartoDB::TableNotExists, exception.message if exception.message =~ /does not exist/
+    raise CartoDB::ErrorRunningQuery, exception.message
   end
 
   def run_pg_query(query)
@@ -363,11 +353,15 @@ $$
   end
 
   def dedicated_support?
-    [/FREE/i, /MAGELLAN/i].select { |rx| self.account_type =~ rx }.empty?
+    /(FREE|MAGELLAN|JOHN SNOW|ACADEMY|ACADEMIC|ON HOLD)/i.match(self.account_type) ? true : false
   end
 
   def remove_logo?
-    [/FREE/i, /MAGELLAN/i, /JOHN SNOW/i].select { |rx| self.account_type =~ rx }.empty?
+    /(FREE|MAGELLAN|JOHN SNOW|ACADEMY|ACADEMIC|ON HOLD)/i.match(self.account_type) ? false : true
+  end
+
+  def private_maps_enabled
+    /(FREE|MAGELLAN|JOHN SNOW|ACADEMY|ACADEMIC|ON HOLD)/i.match(self.account_type) ? false : true
   end
 
   def import_quota

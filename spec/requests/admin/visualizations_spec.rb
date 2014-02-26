@@ -25,6 +25,8 @@ describe Admin::VisualizationsController do
   end
 
   before(:each) do
+    CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
+    
     @db = Sequel.sqlite
     Sequel.extension(:pagination)
 

@@ -18,6 +18,16 @@ module MinimalValidator
       end
     end #validate_presence_of
 
+    def validate_presence_of_with_custom_message(attributes, custom_message)
+      has_errors = false
+      attributes.each do |attribute, value|
+        if (value.nil? || value.empty?)
+          has_errors = true
+        end
+      end
+      errors.store(custom_message) if has_errors
+    end #validate_presence_of_with_custom_message
+
     def validate_available_name
       return self unless name_changed && user
     end #validate_available_name

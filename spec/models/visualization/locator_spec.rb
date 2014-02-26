@@ -12,6 +12,9 @@ include CartoDB
 
 describe Visualization::Locator do
   before do
+    # Using Mocha stubs until we update RSpec (@see http://gofreerange.com/mocha/docs/Mocha/ClassMethods.html)
+    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+
     @db = Sequel.sqlite
     Sequel.extension(:pagination)
 

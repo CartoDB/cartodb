@@ -850,25 +850,19 @@ and (orientation : landscape) {
   padding: 0 20px; 
 }
 
-.cartodb-map-data .embed-left-col{
+.embed-left-col{
   float: left;
   width: 100%;
   margin-left: -245px; /* The size of the fixed block. */
 }
 
-.cartodb-map-data .embed-right-col {
+.embed-right-col {
   float: right;
   width: 245px;
 }
 
+.cartodb-map-data .no_script,
 .cartodb-map-data .dsq-brlink {
-  font-family: 'Helvetica Neue', Helvetica, sans-serif;
-  font-size:15px;
-  color: #397DB8;
-}
-
-.cartodb-map-data .no_script { 
-  /*display:none;*/
   font-family: 'Helvetica Neue', Helvetica, sans-serif;
   font-size:15px;
   color: #397DB8;
@@ -986,6 +980,7 @@ div.cartodb-body .inner .map-info ul li {
   margin: 0 0 17px 0;
   padding: 0 0 17px 0;
   border-bottom: 1px solid #E4E4E4;
+  font-size: 15px;
 }
 
 div.cartodb-body .inner .map-info ul li a {
@@ -993,6 +988,7 @@ div.cartodb-body .inner .map-info ul li a {
   font-family: 'Helvetica Neue', Helvetica, sans-serif;
   color: #397DB8;
   text-decoration:none;
+  font-size: 15px;
 
   /* Ellipsis */
   width: 200px;

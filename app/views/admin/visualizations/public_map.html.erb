@@ -67,11 +67,11 @@
       <div class="cartodb-new-header">
         <div class="inner">
 
-          <a class="logo" href="#">Logo</a>
+          <a class="logo" href="http://www.cartodb.com">CartoDB</a>
 
           <div class="options">
-            <a href="#" class="learn">Learn more</a>
-            <a href="#" class="signin green button">Sign In</a>
+            <a href="http://www.cartodb.com" class="regular" title="Create a Map with CartoDB">Create a Map</a>
+            <a href="http://www.cartodb.com/login" class="signin green button" title="Sign In">Sign In</a>
           </div>
 
         </div>
@@ -101,7 +101,7 @@
             <div class="user embed-right-col">
               <div class="content">
                 <div class="user-info">
-                  <h4>by <%= @visualization.user.username %></h4>
+                  <h4>by <%= @visualization.user.username.truncate(20) %></h4>
                   <h5><%= @visualization_count %> maps created</h5>
                 </div>
                 <img src="<%= @avatar_url %>" class="avatar" />
@@ -157,7 +157,7 @@
 
             <div class="terms embed-right-col">
               <div class="content">
-                <a href="http://cartodb.com/terms" title="CartoDB's ToS">Terms of Service</a>
+                <a href="http://cartodb.com/terms" title="CartoDB's Terms of service">Terms of Service</a>
               </div>
             </div>
 
@@ -271,25 +271,82 @@
           cartodb_logo_link: "http://www.cartodb.com?utm_source=Footer_Link&utm_medium=referral&utm_campaign=Embed_v1&utm_content=Logo",
         })
 
-        cartodb.createVis('map', <%=raw @visualization.to_vizjson.to_json %>, opt, function(vis) {
-          window.vis = vis;
+        var onResize = function() {
 
-          var device = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+          $("#map").css({ height: $(window).height() - 260 }); // - 132 - 68
+          $(".cartodb-map-data").css({ top: $(window).height() - 192 });
 
-          if (!device) {
-            $("#map").css({ height: $(window).height() - 260 }); // - 132 - 68
-            $(".cartodb-map-data").css({ top: $(window).height() - 192 });
+        };
 
-            $(window).on("resize", function() {
-              $("#map").css({ height: $(window).height() - 260 }); // - 132 - 68
-              $(".cartodb-map-data").css({ top: $(window).height() - 192 });
-            });
+
+        var setupMapDimensions;
+
+        var doOnOrientationChange = function() {
+
+          switch(window.orientation)
+          {
+            case -90:
+              case 90: setupMapDimensions(true, true);
+            break;
+            default: setupMapDimensions(true, true);
+            break;
+          }
+        
+        };
+
+        $.extend( $.easing, {
+          easeInQuad: function (x, t, b, c, d) {
+            return c*(t/=d)*t + b;
+          }
+        })
+
+        setupMapDimensions = function(mobileDevice, animated) {
+
+          var windowHeight = $(window).height();
+          var h, height, top;
+
+          if (mobileDevice) {
+
+            if (windowHeight > 670) {
+              h = 180;
+            } else { // iPhone, etc.
+              h = 120;
+            }
 
           } else {
-          
-            $("#map").css({ height: $(window).height() - 120 }); // - 132 - 68
-            $(".cartodb-map-data").css({ top: $(window).height() - 52 });
+            h = 260;
+          }
 
+          height = windowHeight - h;
+          top    = windowHeight - (h - 68);
+
+          if (animated) {
+            $("#map").animate({ height: height }, { easing: "easeInQuad", duration: 150 }); 
+            $(".cartodb-map-data").animate({ top: top }, { easing: "easeInQuad", duration: 150 });
+          } else {
+            $("#map").css({ height: height }); 
+            $(".cartodb-map-data").css({ top: top });
+          }
+
+        };
+
+        cartodb.createVis('map', <%=raw @visualization.to_vizjson.to_json %>, opt, function(vis) {
+
+          window.vis = vis;
+
+          var mobileDevice = /Android|webOS|iPad|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+          if (!mobileDevice) {
+            $(window).on("resize", onResize);
+          } 
+
+          setupMapDimensions(mobileDevice);
+
+          // recalculate map position on orientation change
+          if (!window.addEventListener) {
+            window.attachEvent('orientationchange', doOnOrientationChange);
+          } else {
+            window.addEventListener('orientationchange', _.bind(doOnOrientationChange));
           }
 
         }).on('error', manageError);

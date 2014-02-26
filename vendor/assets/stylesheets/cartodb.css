@@ -709,7 +709,7 @@ div.cartodb-popup.header.yellow a.cartodb-popup-close-button:hover {
 }
 
 body:after { 
-  position: absolute!important;
+  position: fixed!important;
   top: 0px;
   left: 0px;
   content: "Default";
@@ -733,7 +733,7 @@ only screen and (                min-resolution: 2dppx) {
 
 }
 
-@media only screen and (max-width: 770px) {
+@media only screen and (max-width: 710px) {
 
   body:after {
     content: "Small";
@@ -798,7 +798,7 @@ and (orientation : landscape) {
 
 }
 
-@media only screen and (min-width: 771px) and (max-width: 1035px) {
+@media only screen and (min-width: 711px) and (max-width: 1035px) {
   body:after {
     content: "Medium";
   }
@@ -1035,7 +1035,7 @@ div.cartodb-new-header .inner .options {
   margin: 23px 0;
 }
 
-div.cartodb-new-header .inner .options .learn { 
+div.cartodb-new-header .inner .options .regular { 
   margin-right: 26px;
   color: #fff;
   font-size: 15px;
@@ -1044,7 +1044,7 @@ div.cartodb-new-header .inner .options .learn {
   font-weight: 200;
 }
 
-div.cartodb-new-header .inner .options .learn:hover { 
+div.cartodb-new-header .inner .options .regular:hover { 
   text-decoration: underline;
 }
 

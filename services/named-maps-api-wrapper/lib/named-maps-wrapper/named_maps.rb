@@ -33,7 +33,8 @@ module CartoDB
 				response = Typhoeus.get(@url + "?api_key=" + @api_key, {
 					headers: @headers,
           ssl_verifypeer: @verify_cert,
-          ssl_verifyhost: @verify_cert ? 0 : 2
+          ssl_verifyhost: @verify_cert ? 0 : 2,
+          followlocation: true
 				})
 				raise HTTPResponseError, "#{response.code} #{response.request.url} (GET)" if response.code != 200
 
@@ -47,7 +48,8 @@ module CartoDB
 				response = Typhoeus.get( [@url, name ].join('/') + "?api_key=" + @api_key, {
 					headers: @headers,
           ssl_verifypeer: @verify_cert,
-          ssl_verifyhost: @verify_cert ? 0 : 2
+          ssl_verifyhost: @verify_cert ? 0 : 2,
+          followlocation: true
 				})
 
 				if response.code == 200

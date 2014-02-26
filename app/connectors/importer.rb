@@ -1,4 +1,5 @@
 # encoding: utf-8
+require 'uuidtools'
 
 module CartoDB
   module Connector
@@ -77,7 +78,7 @@ module CartoDB
       def rename_the_geom_index_if_exists(current_name, new_name)
         database.execute(%Q{
           ALTER INDEX "#{ORIGIN_SCHEMA}"."#{current_name}_geom_idx"
-          RENAME TO "#{new_name}_the_geom_idx"
+          RENAME TO "the_geom_#{UUIDTools::UUID.timestamp_create.to_s.gsub('-', '_')}"
         })
       rescue => exception
       end

@@ -21,6 +21,10 @@ RSpec::Matchers.define :be_equal_to_default_db_schema do |expected|
    diff = expected - actual
    diff.should == []
   end
+
+  failure_message_for_should do |actual|
+    "missing #{@diff.inspect}"
+  end  
 end
 
 
@@ -30,8 +34,8 @@ RSpec::Matchers.define :have_required_indexes_and_triggers do
     @diff << "update_the_geom_webmercator_trigger" unless actual.has_trigger?('update_the_geom_webmercator_trigger')
     @diff << "update_updated_at_trigger"           unless actual.has_trigger?('update_updated_at_trigger')
     @diff << "track_updates"                       unless actual.has_trigger?('track_updates')
-    @diff << "the_geom_idx"                        unless actual.has_index?("#{actual.name}_the_geom_idx")
-    @diff << "the_geom_webmercator_idx"            unless actual.has_index?("#{actual.name[0..37]}_the_geom_webmercator_idx")
+    @diff << "the_geom_idx"                        unless actual.has_index?("the_geom")
+    @diff << "the_geom_webmercator_idx"            unless actual.has_index?("the_geom_webmercator")
     @diff << "created_at_default"                  unless actual.owner.in_database.schema(actual.name).select {|i| i[0] == :created_at }[0][1][:default] == "now()"
     @diff << "updated_at_default"                  unless actual.owner.in_database.schema(actual.name).select {|i| i[0] == :updated_at }[0][1][:default] == "now()"
     @diff.should == []

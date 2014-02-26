@@ -89,8 +89,8 @@ class User < Sequel::Model
     super
     save_metadata
     changes = (self.previous_changes.present? ? self.previous_changes.keys : [])
-    set_statement_timeouts if changes.include?(:user_timeout) || changes.include?(:database_timeout)
-    rebuild_quota_trigger if changed_columns.include?(:quota_in_bytes)
+    set_statement_timeouts   if changes.include?(:user_timeout) || changes.include?(:database_timeout)
+    rebuild_quota_trigger    if changes.include?(:quota_in_bytes)
     invalidate_varnish_cache if changes.include?(:account_type)
   end
 
@@ -102,12 +102,25 @@ class User < Sequel::Model
     self.data_imports.each { |d| d.destroy }
     self.maps.each { |m| m.destroy }
     self.layers.each { |l| self.remove_layer l }
+    self.geocodings.each { |g| g.destroy }
 
     # Remove metadata from redis
     $users_metadata.DEL(self.key)
 
     # Invalidate user cache
     self.invalidate_varnish_cache
+    self.drop_database_and_user
+  end
+
+  def drop_database_and_user
+    Thread.new do
+      conn = Rails::Sequel.connection
+      conn.run("UPDATE pg_database SET datallowconn = 'false' WHERE datname = '#{database_name}'")
+      User.terminate_database_connections(database_name)
+      conn.run("DROP DATABASE #{database_name}")
+      conn.run("DROP USER #{database_username}")
+    end.join
+    monitor_user_notification
   end
 
   def self.terminate_database_connections(database_name)
@@ -137,18 +150,6 @@ BEGIN
 END
 $$
       ")
-  end
-
-  def after_destroy_commit
-    # Remove database
-    Thread.new do
-      conn = Rails::Sequel.connection
-      conn.run("UPDATE pg_database SET datallowconn = 'false' WHERE datname = '#{database_name}'")
-      User.terminate_database_connections(database_name)
-      conn.run("DROP DATABASE #{database_name}")
-      conn.run("DROP USER #{database_username}")
-    end.join
-    monitor_user_notification
   end
 
   def invalidate_varnish_cache
@@ -278,20 +279,10 @@ $$
       :total_rows => rows.size,
       :rows => rows.map{ |row| row.delete("the_geom"); row }
     }
-  rescue => e
-    if e.message =~ /^PGError/
-      if e.message.include?("does not exist")
-        if e.message.include?("column")
-          raise CartoDB::ColumnNotExists, e.message
-        else
-          raise CartoDB::TableNotExists, e.message
-        end
-      else
-        raise CartoDB::ErrorRunningQuery, e.message
-      end
-    else
-      raise e
-    end
+  rescue Sequel::DatabaseError => exception
+    raise CartoDB::ColumnNotExists, exception.message if exception.message =~ /column.*does not exist/
+    raise CartoDB::TableNotExists, exception.message if exception.message =~ /does not exist/
+    raise CartoDB::ErrorRunningQuery, exception.message
   end
 
   def run_pg_query(query)
@@ -362,11 +353,15 @@ $$
   end
 
   def dedicated_support?
-    [/FREE/i, /MAGELLAN/i].select { |rx| self.account_type =~ rx }.empty?
+    /(FREE|MAGELLAN|JOHN SNOW|ACADEMY|ACADEMIC|ON HOLD)/i.match(self.account_type) ? true : false
   end
 
   def remove_logo?
-    [/FREE/i, /MAGELLAN/i, /JOHN SNOW/i].select { |rx| self.account_type =~ rx }.empty?
+    /(FREE|MAGELLAN|JOHN SNOW|ACADEMY|ACADEMIC|ON HOLD)/i.match(self.account_type) ? false : true
+  end
+
+  def private_maps_enabled
+    /(FREE|MAGELLAN|JOHN SNOW|ACADEMY|ACADEMIC|ON HOLD)/i.match(self.account_type) ? false : true
   end
 
   def import_quota
@@ -683,7 +678,6 @@ $$
   
   def rebuild_quota_trigger
     load_cartodb_functions
-    puts "Rebuilding quota trigger in db '#{database_name}' (#{username})"
     tables.all.each do |table|
       begin
         table.set_trigger_check_quota
@@ -827,7 +821,6 @@ $$
                 import varnish
                 client = GD['varnish'] = varnish.VarnishHandler(('#{varnish_host}', #{varnish_port}, timeout))
               except Exception as err:
-                plpy.warning('Varnish connection error: ' +  str(err))
                 # NOTE: we won't retry on connection error
                 if critical:
                   plpy.error('Varnish connection error: ' +  str(err))

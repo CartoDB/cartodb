@@ -1,8 +1,7 @@
 {
   "host"      : "localhost",
   "port"      : 5432,
-  "user"      : "test",
+  "user"      : "postgres",
   "password"  : "",
-  "database"  : "test"
+  "database"  : "carto_db_test"
 }
-

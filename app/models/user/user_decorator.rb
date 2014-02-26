@@ -37,6 +37,7 @@ module CartoDB
         show_upgraded_message: (self.account_type.downcase != 'free' && self.upgraded_at && self.upgraded_at + 15.days > Date.today ? true : false),
         actions: {
           private_tables: self.private_tables_enabled,
+          private_maps: self.private_maps_enabled,
           dedicated_support: self.dedicated_support?,
           import_quota: self.import_quota,
           remove_logo: self.remove_logo?,

@@ -91,7 +91,7 @@ class Map < Sequel::Model
 
   def invalidate_vizjson_varnish_cache
     visualizations.each do |visualization|
-      visualization.invalidate_varnish_cache
+      visualization.invalidate_cache_and_refresh_named_map
     end
   end #invalidate_varnish_cache
 

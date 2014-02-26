@@ -30,6 +30,12 @@ gem "addressable",             "2.2.8", require: "addressable/uri"
 gem "github_api",              "~> 0.10.2"
 
 gem "ejs",                     "~> 1.1.1"
+
+group :production, :staging do
+  gem 'unicorn',               "4.8.2"
+  gem 'raindrops',             "0.12.0"
+end
+
 group :assets do
   gem 'asset_sync',            "~> 1.0.0"
   gem 'fog',                   "1.15.0"
@@ -52,7 +58,7 @@ gem "google-spreadsheet-ruby", "0.1.8"
 gem "rubyzip",                 "0.9.9"
 gem "builder",                 "3.0.0"
 gem "state_machine",           "1.1.2"
-gem "typhoeus",                "0.6.3"
+gem "typhoeus",                "0.6.7"
 gem "charlock_holmes",         "0.6.9.4"
 gem "dbf",                     "2.0.6"
 

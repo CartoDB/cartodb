@@ -10,10 +10,12 @@ defaults: &defaults
       protocol:      'http'
       domain:        'localhost.lan'
       port:          '8181'
+      verifycert:     false
     public:
       protocol:      'http'
       domain:        'localhost.lan'
       port:          '8181'
+      verifycert:     false
   sql_api:
     private:
       protocol:   'http'
@@ -70,6 +72,10 @@ defaults: &defaults
   error_track:
     url: 'https://viz2.cartodb.com/api/v1/sql'
     percent_users: 10
+  # graphite endpoint used to post frontend stats
+  graphite_public:
+    host: "graphite.dioc.cartodb.net"
+    port: 8127
 
 
 

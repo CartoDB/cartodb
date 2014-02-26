@@ -9,10 +9,15 @@ describe Layer do
   end
 
   after(:all) do
+    # Using Mocha stubs until we update RSpec (@see http://gofreerange.com/mocha/docs/Mocha/ClassMethods.html)
+    CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
+
     @user.destroy
   end
 
   before(:each) do
+    CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
+
     delete_user_data @user
     @table = Table.new
     @table.user_id = @user.id
@@ -82,7 +87,7 @@ describe Layer do
       end
     end
 
-    context "when the type is cartodb and the layer is updated" do      
+    context "when the type is cartodb and the layer is updated" do
       before do
         @map = Map.create(:user_id => @user.id, :table_id => @table.id)
         @layer = Layer.create(kind: 'carto', options: { query: "select * from #{@table.name}" })
@@ -201,7 +206,7 @@ describe Layer do
     it 'returns true if its kind is a base layer' do
       layer = Layer.new(kind: 'tiled')
       layer.base_layer?.should == true
-    end 
+    end
   end #base_layer?
 
   describe '#data_layer?' do
@@ -228,7 +233,7 @@ describe Layer do
       layer.rename_table(table_name, new_table_name)
       layer.save
       layer.reload
-      
+
       options = layer.options
       options.fetch('tile_style') .should      =~ /#{new_table_name}/
       options.fetch('tile_style') .should_not  =~ /#{table_name}/
@@ -271,6 +276,8 @@ describe Layer do
 
   describe '#uses_private_tables?' do
     it 'returns true if any of the affected tables is private' do
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:create).returns(true)
+      
       map     = Map.create(:user_id => @user.id, :table_id => @table.id)
       source  = @table.table_visualization
       derived = CartoDB::Visualization::Copier.new(@user, source).copy

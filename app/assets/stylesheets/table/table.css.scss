@@ -6,6 +6,14 @@
   @import "../common/vars";
   @import "../common/form-elements";
   @import "../table/table-sprite";
+  @import "../../elements/progress-bar";
+
+
+  // Table/vis options menu
+  .dropdown.table-options {
+    @include progress-bar(4px, 4px, true, 3px);
+    div.progress-bar { margin-top:10px }
+  }
 
   div.panes {
     position:absolute;

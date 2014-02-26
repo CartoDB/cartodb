@@ -29,6 +29,8 @@ install:
   - bundle install
   - cp config/app_config.yml.sample config/app_config.yml
   - cp config/database.yml.sample config/database.yml
+  # Needs fixing first some tests:
+  #- cp services/importer/spec/factories/database.json.sample services/importer/spec/factories/database.json
   - cat python_requirements.txt | grep -v gdal | sudo pip install -r /dev/stdin
 
 script:
@@ -36,7 +38,6 @@ script:
   - make check-prepared
   # check list of database names
   - sudo su postgres -c "echo 'select datname from pg_database;' | psql template_postgis"
-  - make check-prepared # running twice catches status leaks (db, users..)
 
 env:
 

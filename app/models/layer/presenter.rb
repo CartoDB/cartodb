@@ -17,16 +17,18 @@ module CartoDB
         torque-blend-mode
         query
         tile_style
+        named_map
       )
 
       INFOWINDOW_KEYS = %w(
         fields template_name template alternative_names
       )
 
-      def initialize(layer, options={}, configuration={})
-        @layer          = layer
-        @options        = options
-        @configuration  = configuration
+      def initialize(layer, options={}, configuration={}, decoration_data={})
+        @layer            = layer
+        @options          = options
+        @configuration    = configuration
+        @decoration_data  = decoration_data
       end #initialize
 
       def to_vizjson_v2
@@ -61,6 +63,19 @@ module CartoDB
 
       attr_reader :layer, :options, :configuration
 
+      # Decorates the layer presentation with data if needed. nils on the decoration act as removing the field
+      def decorate_with_data(source_hash, decoration_data=nil)
+        if (not decoration_data.nil?)
+          decoration_data.each { |key, value| 
+            source_hash[key] = value
+            source_hash.delete_if { |k, v| 
+              v.nil? 
+            }
+          }
+        end
+        source_hash
+      end #decorate_with_data
+
       def base?(layer)
         ['tiled', 'background', 'gmapsbase', 'wms'].include? layer.kind
       end #base?
@@ -70,11 +85,16 @@ module CartoDB
       end #torque?
 
       def with_kind_as_type(attributes)
-        attributes.merge(type: attributes.delete('kind'))
+        attributes = decorate_with_data(attributes.merge(type: attributes.delete('kind')), @decoration_data)
       end #with_kind_as_type
 
       def as_torque(attributes)
-        {
+        # Make torque always have a SQL query too (as vizjson v2)
+        layer.options['query'] = sql_from(layer.options)
+
+        layer_options = decorate_with_data(layer.options, @decoration_data)
+
+        data = {
           id:         layer.id,
           type:       'torque',
           order:      layer.order,
@@ -89,7 +109,8 @@ module CartoDB
             sql_api_port:       (configuration[:sql_api]["public"]["port"] rescue nil),
             cdn_url:            configuration.fetch(:cdn_url, nil),
             layer_name:         name_for(layer)
-          }.merge(layer.options.select { |k| TORQUE_ATTRS.include? k })
+          }.merge(
+            layer_options.select { |k| TORQUE_ATTRS.include? k })
         }
       end #as_torque
 
@@ -112,15 +133,20 @@ module CartoDB
       end
 
       def options_data_v2
-        return layer.options if options[:full]
-        sql = sql_from(layer.options)
-        {
-          sql:                wrap(sql, layer.options),
-          layer_name:         name_for(layer),
-          cartocss:           layer.options.fetch('tile_style'),
-          cartocss_version:   layer.options.fetch('style_version'),
-          interactivity:      layer.options.fetch('interactivity')
-        }
+        if options[:full]
+          full_data = decorate_with_data(layer.options, @decoration_data)
+          full_data.options
+        else
+          sql = sql_from(layer.options)
+          data = {
+            sql:                wrap(sql, layer.options),
+            layer_name:         name_for(layer),
+            cartocss:           layer.options.fetch('tile_style'),
+            cartocss_version:   layer.options.fetch('style_version'),
+            interactivity:      layer.options.fetch('interactivity')
+          }
+          data = decorate_with_data(data, @decoration_data)
+        end
       end #options_data_v2
 
       alias_method :to_poro, :to_vizjson_v1

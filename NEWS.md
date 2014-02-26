@@ -1,3 +1,54 @@
+2.10.0 (2014-02-25)
+-------------------
+* Improvements
+  * Revamped privacy for visualizations.
+  * Implement unified MAP API.
+  * Named Maps Ruby API wrapper Unit/Integration tests.
+  * Add Fullscreen button to iframe.
+
+* Bugs Fixed
+  * Set correct attributes service params to work with infowindows.
+  * Upgraded message still present after downgrade.
+  * It's impossible to move points when there's a torque layer.
+  * Ordering by numeric DESC will show nulls at top.
+  * viz.json includes infowindow template when there are no infowindow fields active.
+  * The title of the fake share window inside of the publish modal is missing.
+  * Infowindow shouldn't be enabled in Cluster wizard.
+  * CSV importer failure due to missing stream.rewind.
+  * Disable GDrive panel for importing new files.
+  * When switching from normal layer to torque layers the normal layer is still shown.
+  * Change resolution in torque layer does not work.
+
+2.9.3 (2014-02-19)
+------------------
+* Improvements
+  * Improved color picker.
+
+* Bugs Fixed
+  * When deleting a user from the box, his database should be deleted before deleting his metadata.
+  * Map turns blank at "Publish" time.
+  * Revamp option for selecting a marker image / polygon pattern fill.
+  * Wrong message shown in dashboard.
+  * Undefined constants in certain importer flows.
+  * When edit a polygon in leaflet move the map to [-180, 180]
+  * Wizards don't show anything selecteed.
+  * Autoselect last uploaded asset by default in the assets modal window.
+
+2.9.2 (2014-02-14)
+------------------
+* Improvements
+  * Added geocodings bar to the submenu.
+  * Use unique names on indexes and sequences.
+
+* Bugs Fixed
+  * Fixed encoding error on geocoder.
+  * the_geom column is empty after loading a shapefile multipoint.
+  * Fix error when having tables with same name on different schemas
+  * XLSX file with multiline in row fields breaks importer.
+  * Roo is not able to open certain XSLX.
+  * Table name sanitizer failing when sanitized name already exists.
+  * Fix error when changing user quotas.
+
 2.9.1 (2014-02-07)
 ------------------
 * Improvements

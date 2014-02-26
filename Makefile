@@ -18,10 +18,12 @@ WORKING_SPECS = \
   spec/lib/string_spec.rb \
   spec/lib/metrics_spec.rb \
   services/importer/spec/unit/csv_normalizer_spec.rb \
+  services/sql-api/spec/sql_api_spec.rb \
   spec/requests/admin/visualizations_spec.rb \
   spec/requests/admin/tables_spec.rb \
   spec/models/geocoding_spec.rb \
   spec/requests/api/imports_spec.rb \
+  spec/requests/api/geocodings_spec.rb \
   $(NULL)
 
 CDB_PATH=lib/assets/javascripts/cdb

@@ -1,4 +1,6 @@
 #encoding: UTF-8
+require Rails.root.join('services', 'sql-api', 'sql_api')
+
 class Api::Json::GeocodingsController < Api::ApplicationController
   ssl_required :index, :show, :create, :update
 
@@ -40,11 +42,10 @@ class Api::Json::GeocodingsController < Api::ApplicationController
   end
 
   def country_data_for
-    render json: {
-      admin1: [ "polygons", "points" ],
-      admin2: [ "points" ],
-      zip: [ "points", "polygons" ]
-    }
+    rows = CartoDB::SQLApi.new(username: 'geocoding')
+            .fetch("SELECT service, type FROM available_services WHERE iso3 = '#{params[:country_code]}'")
+
+    render json: rows
   end
 
 end

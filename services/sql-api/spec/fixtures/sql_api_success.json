@@ -1,0 +1,1 @@
+{"time":0.001,"fields":{"cartodb_id":{"type":"number"},"description":{"type":"string"}},"total_rows":4,"rows":[{"cartodb_id":1,"description":"a"},{"cartodb_id":2,"description":"b"},{"cartodb_id":3,"description":"c"},{"cartodb_id":4,"description":"d"}]}

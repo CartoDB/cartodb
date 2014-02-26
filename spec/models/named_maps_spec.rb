@@ -13,6 +13,30 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
 
   SPEC_NAME = 'named_maps_spec'
 
+  def tiler_port()
+    Cartodb.config[:tiler]['internal']['port']
+  end
+
+  def public_tiler_port()
+    Cartodb.config[:tiler]['public']['port']
+  end
+
+  def tiler_regex()
+    if (tiler_port == '8888')
+      %r{http:\/\/127\.0\.0\.1:8888\/tiles\/template\/[a-zA-Z0-9_]+\?api_key=.*}
+    else
+      %r{http:\/\/127\.0\.0\.1:8181\/tiles\/template\/[a-zA-Z0-9_]+\?api_key=.*}
+    end
+  end
+
+  def named_maps_url(user_api_key)
+    "http://127.0.0.1:#{tiler_port}/tiles/template?api_key=#{user_api_key}"
+  end
+
+  def named_map_url(template_id, user_api_key)
+    "http://127.0.0.1:#{tiler_port}/tiles/template/#{template_id}?api_key=#{user_api_key}"
+  end
+
   before(:all) do
     CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
     # Hook new backend to Sequel current connection
@@ -28,7 +52,7 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
     Typhoeus::Expectation.clear()
     CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
 
-    Typhoeus.stub( %r{http:\/\/[a-z0-9]+\.localhost\.lan:8181\/tiles\/template\/[a-zA-Z0-9_]+\?api_key=.*},
+    Typhoeus.stub( tiler_regex,
       { method: :get}  )
             .and_return(
               Typhoeus::Response.new(code: 404, body: "")
@@ -98,13 +122,13 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
       derived_vis.password = password
 
       # get: not present
-      Typhoeus.stub( %r{http:\/\/[a-z0-9]+\.localhost\.lan:8181\/tiles\/template\/[a-zA-Z0-9_]+\?api_key=.*},
+      Typhoeus.stub( tiler_regex,
       { method: :get}  )
             .and_return(
               Typhoeus::Response.new(code: 404, body: "")
             )
       # Post: to create
-      Typhoeus.stub( "http://#{@user.username}.localhost.lan:8181/tiles/template?api_key=#{@user.api_key}",
+      Typhoeus.stub( named_maps_url(@user.api_key),
         { method: :post } )
               .and_return(
                 Typhoeus::Response.new( code: 200, body: JSON::dump( { template_id: 'tpl_fakeid' } ) )
@@ -115,8 +139,7 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
 
       Typhoeus::Expectation.clear()
       # Retrieval
-      Typhoeus.stub(
-      "http://#{@user.username}.localhost.lan:8181/tiles/template/#{template_id}?api_key=#{@user.api_key}", 
+      Typhoeus.stub( named_map_url(template_id, @user.api_key), 
       { method: :get} )
             .and_return(
               Typhoeus::Response.new( code: 200, body: JSON::dump( template_data ) )
@@ -128,7 +151,6 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
       derived_vis.is_password_valid?('some invalid passsword').should eq false
 
       derived_vis.get_auth_token().should eq auth_token
-
     end
   end
 
@@ -167,7 +189,7 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
       derived_vis.privacy = CartoDB::Visualization::Member::PRIVACY_PUBLIC
 
       # Get
-      Typhoeus.stub( %r{http:\/\/[a-z0-9]+\.localhost\.lan:8181\/tiles\/template\/[a-zA-Z0-9_]+\?api_key=.*} )
+      Typhoeus.stub( tiler_regex )
               .and_return(
                 Typhoeus::Response.new(code: 404, body: "")
               )
@@ -175,7 +197,7 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
       #Post to create
       new_template_body = { template_id: 'tpl_fakeid' }
 
-      Typhoeus.stub( "http://#{@user.username}.localhost.lan:8181/tiles/template?api_key=#{@user.api_key}" )
+      Typhoeus.stub( named_maps_url(@user.api_key) )
               .and_return(
                 Typhoeus::Response.new( code: 200, body: JSON::dump( new_template_body ) )
               )
@@ -195,7 +217,7 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
       Typhoeus::Expectation.clear()
 
       # Now check that named_map_template_data[:template_id] is the template asked for
-      Typhoeus.stub( "http://#{@user.username}.localhost.lan:8181/tiles/template/#{template_id}?api_key=#{@user.api_key}" )
+      Typhoeus.stub( named_map_url(template_id,@user.api_key) )
               .and_return(
                 Typhoeus::Response.new( code: 200, body: JSON::dump( named_map_template_data ) )
               )
@@ -288,22 +310,19 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
       Typhoeus::Expectation.clear()
 
       # Return having a named map...
-      Typhoeus.stub(
-        "http://#{@user.username}.localhost.lan:8181/tiles/template/#{template_id}?api_key=#{@user.api_key}", 
+      Typhoeus.stub( named_map_url(template_id,@user.api_key), 
         { method: :get} )
             .and_return(
               Typhoeus::Response.new( code: 200, body: JSON::dump( template_data ) )
             )
       # Before deleting a put is performed too
-      Typhoeus.stub(
-        "http://#{@user.username}.localhost.lan:8181/tiles/template/#{template_id}?api_key=#{@user.api_key}", 
+      Typhoeus.stub( named_map_url(template_id,@user.api_key), 
         { method: :put} )
             .and_return(
               Typhoeus::Response.new( code: 200, body: JSON::dump( template_data ) )
             )
       # And return a 204 correctly on deletion
-      Typhoeus.stub(
-        "http://#{@user.username}.localhost.lan:8181/tiles/template/#{template_id}?api_key=#{@user.api_key}", 
+      Typhoeus.stub( named_map_url(template_id,@user.api_key), 
         { method: :delete } )
               .and_return(
                 Typhoeus::Response.new( code: 204, body: "" )
@@ -348,8 +367,7 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
 
       table, derived_vis, template_id = create_private_table_with_public_visualization(template_data)
 
-      Typhoeus.stub(
-        "http://#{@user.username}.localhost.lan:8181/tiles/template/#{template_id}?api_key=#{@user.api_key}", 
+      Typhoeus.stub( named_map_url(template_id,@user.api_key), 
         { method: :delete } )
               .and_return(
                 Typhoeus::Response.new( code: 204, body: "" )
@@ -420,7 +438,7 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
       vizjson[:layers][1].include?(:order).should eq true
       vizjson[:layers][1][:options][:tiler_protocol].should eq 'http'
       vizjson[:layers][1][:options][:tiler_domain].should eq 'localhost.lan'
-      vizjson[:layers][1][:options][:tiler_port].should eq '8181'
+      vizjson[:layers][1][:options][:tiler_port].should eq public_tiler_port
       vizjson[:layers][1][:options][:sql_api_protocol].should eq 'http'
       vizjson[:layers][1][:options][:sql_api_domain].should eq 'localhost.lan'
       vizjson[:layers][1][:options][:sql_api_endpoint].should eq '/api/v1/sql'
@@ -489,7 +507,7 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
       vizjson[:layers][1][:options].include?(:user_name).should eq true
       vizjson[:layers][1][:options][:tiler_protocol].should eq 'http'
       vizjson[:layers][1][:options][:tiler_domain].should eq 'localhost.lan'
-      vizjson[:layers][1][:options][:tiler_port].should eq '8181'
+      vizjson[:layers][1][:options][:tiler_port].should eq public_tiler_port
       vizjson[:layers][1][:options].include?(:cdn_url).should eq true
       vizjson[:layers][1][:options].include?(:named_map).should eq true
       vizjson[:layers][1][:options][:named_map][:name].should eq template_id
@@ -576,7 +594,7 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
       vizjson[:layers][1][:options].include?(:user_name).should eq true
       vizjson[:layers][1][:options][:tiler_protocol].should eq 'http'
       vizjson[:layers][1][:options][:tiler_domain].should eq 'localhost.lan'
-      vizjson[:layers][1][:options][:tiler_port].should eq '8181'
+      vizjson[:layers][1][:options][:tiler_port].should eq public_tiler_port
       vizjson[:layers][1][:options].include?(:cdn_url).should eq true
       vizjson[:layers][1][:options].include?(:named_map).should eq true
       vizjson[:layers][1][:options][:named_map][:name].should eq template_id
@@ -592,7 +610,7 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
       vizjson[:layers][2].include?(:order).should eq true
       vizjson[:layers][2][:options][:tiler_protocol].should eq 'http'
       vizjson[:layers][2][:options][:tiler_domain].should eq 'localhost.lan'
-      vizjson[:layers][2][:options][:tiler_port].should eq '8181'
+      vizjson[:layers][2][:options][:tiler_port].should eq public_tiler_port
       vizjson[:layers][2][:options][:sql_api_protocol].should eq 'http'
       vizjson[:layers][2][:options][:sql_api_domain].should eq 'localhost.lan'
       vizjson[:layers][2][:options][:sql_api_endpoint].should eq '/api/v1/sql'
@@ -688,7 +706,7 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
       vizjson[:layers][1][:options].include?(:user_name).should eq true
       vizjson[:layers][1][:options][:tiler_protocol].should eq 'http'
       vizjson[:layers][1][:options][:tiler_domain].should eq 'localhost.lan'
-      vizjson[:layers][1][:options][:tiler_port].should eq '8181'
+      vizjson[:layers][1][:options][:tiler_port].should eq public_tiler_port
       vizjson[:layers][1][:options].include?(:cdn_url).should eq true
       vizjson[:layers][1][:options].include?(:named_map).should eq true
       vizjson[:layers][1][:options][:named_map][:name].should eq template_id
@@ -731,12 +749,12 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
     derived_vis.privacy = visualization_privacy
     template_id = CartoDB::NamedMapsWrapper::NamedMap.normalize_name(derived_vis.id)
 
-    Typhoeus.stub( %r{http:\/\/[a-z0-9]+\.localhost\.lan:8181\/tiles\/template\/[a-zA-Z0-9_]+\?api_key=.*} )
+    Typhoeus.stub( tiler_regex )
             .and_return(
               Typhoeus::Response.new(code: 404, body: "")
             )
     # Stub all petitions, not just GET
-    Typhoeus.stub( "http://#{@user.username}.localhost.lan:8181/tiles/template?api_key=#{@user.api_key}" )
+    Typhoeus.stub( named_maps_url(@user.api_key) )
             .and_return(
               Typhoeus::Response.new( code: 200, body: JSON::dump( template_id: template_id ) )
             )
@@ -750,20 +768,26 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
 
     Typhoeus::Expectation.clear()
     # Retrievals
-    Typhoeus.stub(
-      "http://#{@user.username}.localhost.lan:8181/tiles/template/#{template_id}?api_key=#{@user.api_key}", 
+    Typhoeus.stub( named_map_url(template_id, @user.api_key), 
       { method: :get} )
             .and_return(
               Typhoeus::Response.new( code: 200, body: JSON::dump( template_data ) )
             )
 
     # Updates
-    Typhoeus.stub(
-        "http://#{@user.username}.localhost.lan:8181/tiles/template/#{template_id}?api_key=#{@user.api_key}", 
+    Typhoeus.stub( named_map_url(template_id, @user.api_key), 
         { method: :put} )
               .and_return(
                 Typhoeus::Response.new( code: 200, body: JSON::dump( template_data ) )
               )
+
+    # Vizjson uses the public endpoint, so stub it too
+    Typhoeus.stub( "http://#{@user.username}.localhost.lan:#{public_tiler_port}/tiles/template/#{template_id}?api_key=#{@user.api_key}", 
+      { method: :get} )
+            .and_return(
+              Typhoeus::Response.new( code: 200, body: JSON::dump( template_data ) )
+            )
+
 
     return table, derived_vis, template_id
   end #create_map_with_public_visualization

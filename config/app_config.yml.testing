@@ -15,12 +15,12 @@ defaults: &defaults
     private:
       protocol:      'http'
       domain:        'localhost.lan'
-      port:          '8181'
+      port:          '8888'
       verifycert:     false
     public:
       protocol:      'http'
       domain:        'localhost.lan'
-      port:          '8181'
+      port:          '8888'
       verifycert:     false
   sql_api:
     private:

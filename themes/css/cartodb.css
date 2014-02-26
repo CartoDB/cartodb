@@ -708,17 +708,33 @@ div.cartodb-popup.header.yellow a.cartodb-popup-close-button:hover {
   url('../fonts/ProximaNova-Semibold.svg#svgFontName') format('svg'); /* Legacy iOS */
 }
 
-body:after { // TODO: REMOVE THIS ON LAUNCH
-  position: fixed;
+body:after { 
+  position: fixed!important;
   top: 0px;
   left: 0px;
   content: "Default";
   padding: 5px 10px;
-  background:#fff;
-  z-index: 1000;
+  background:red;
+  z-index: 10000;
 }
 
-@media only screen and (max-width: 770px) {
+@media
+only screen and (-webkit-min-device-pixel-ratio: 2),
+only screen and (   min--moz-device-pixel-ratio: 2),
+only screen and (     -o-min-device-pixel-ratio: 2/1),
+only screen and (        min-device-pixel-ratio: 2),
+only screen and (                min-resolution: 192dpi),
+only screen and (                min-resolution: 2dppx) { 
+
+  div.cartodb-new-header .inner .logo { 
+    background: url('../img/cartodb@2x.png') no-repeat!important;
+    background-size: 93px 18px!important;
+  }
+
+}
+
+@media only screen and (max-width: 710px) {
+
   body:after {
     content: "Small";
   }
@@ -746,7 +762,43 @@ body:after { // TODO: REMOVE THIS ON LAUNCH
 
 }
 
-@media only screen and (min-width: 771px) and (max-width: 1035px) {
+/* iPhone portrait */
+@media only screen 
+and (min-device-width : 320px) 
+and (max-device-width : 480px) 
+and (orientation : portrait) { 
+
+  body:after { 
+    content: "iPhone portrait";
+  }
+
+  .cartodb-map-data .cartodb-info {
+    padding: 20px 0;
+  }
+
+  .cartodb-map-data .cartodb-info .inner .details h1 {
+    font-size:20px;
+  }
+
+}
+
+/* iPhone landscape */
+@media only screen 
+and (min-device-width : 320px) 
+and (max-device-width : 480px) 
+and (orientation : landscape) { 
+
+  body:after { 
+    content: "iPhone landscape";
+  }
+
+  .cartodb-map-data .cartodb-info .inner .details h1 {
+    font-size:20px;
+  }
+
+}
+
+@media only screen and (min-width: 711px) and (max-width: 1035px) {
   body:after {
     content: "Medium";
   }
@@ -809,6 +861,13 @@ body:after { // TODO: REMOVE THIS ON LAUNCH
   width: 245px;
 }
 
+.cartodb-map-data .no_script,
+.cartodb-map-data .dsq-brlink {
+  font-family: 'Helvetica Neue', Helvetica, sans-serif;
+  font-size:15px;
+  color: #397DB8;
+}
+
 .embed-left-col .content { 
   max-width:  689px;
   margin-left: 245px;
@@ -817,7 +876,7 @@ body:after { // TODO: REMOVE THIS ON LAUNCH
 }
 
 .embed-left-col.details .content {
-  min-height: 72px;
+  /*min-height: 72px;*/
 }
 
 .cartodb-footer .embed-left-col .content { border-right: none; }
@@ -832,7 +891,7 @@ div.cartodb-info {
   background: #F6F6F6;
   border-bottom: 1px solid #D1D1D1;
   border-top: 1px solid #D1D1D1;
-  padding: 30px 0;
+  padding: 38px 0 36px 0;
 }
 
 div.cartodb-info .inner .details h1 {
@@ -841,7 +900,7 @@ div.cartodb-info .inner .details h1 {
   font-size:27px;
   color: #444444;
   padding: 0;
-  margin: 0 0 10px 0;
+  margin: 0 0 5px 0;
 }
 
 div.cartodb-info .inner .details p {
@@ -854,7 +913,7 @@ div.cartodb-info .inner .details p {
 
 div.cartodb-info .inner .user {
   text-align:right;
-  padding: 13px 0;
+  padding: 2px 0;
 }
 
 div.cartodb-info .inner .user .avatar {
@@ -921,6 +980,7 @@ div.cartodb-body .inner .map-info ul li {
   margin: 0 0 17px 0;
   padding: 0 0 17px 0;
   border-bottom: 1px solid #E4E4E4;
+  font-size: 15px;
 }
 
 div.cartodb-body .inner .map-info ul li a {
@@ -928,6 +988,7 @@ div.cartodb-body .inner .map-info ul li a {
   font-family: 'Helvetica Neue', Helvetica, sans-serif;
   color: #397DB8;
   text-decoration:none;
+  font-size: 15px;
 
   /* Ellipsis */
   width: 200px;
@@ -960,6 +1021,7 @@ div.cartodb-footer {
 }
 
 div.cartodb-footer a {
+  font-size:13px;
   color: #2483B2;
   text-decoration: none;
 }
@@ -973,7 +1035,7 @@ div.cartodb-new-header .inner .options {
   margin: 23px 0;
 }
 
-div.cartodb-new-header .inner .options .learn { 
+div.cartodb-new-header .inner .options .regular { 
   margin-right: 26px;
   color: #fff;
   font-size: 15px;
@@ -982,7 +1044,7 @@ div.cartodb-new-header .inner .options .learn {
   font-weight: 200;
 }
 
-div.cartodb-new-header .inner .options .learn:hover { 
+div.cartodb-new-header .inner .options .regular:hover { 
   text-decoration: underline;
 }
 

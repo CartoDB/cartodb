@@ -19,7 +19,7 @@
   // option container
   .cont {
     display:none;
-    width:100%;
+    /*width:100%;*/
     margin-left:20px;
   }
 
@@ -309,7 +309,8 @@
       font-size: 15px;
 
       #s2id_adm, #s2id_columns { float:right; }
-      .by { margin: 0 20px 0 34px; }
+      .select2-container { margin-top: -1px; }
+      .by { margin: 0 21px 0 24px; }
       .margin-right { margin: 0 21px 0 0; }
     }
 
@@ -353,13 +354,13 @@
 
     input {
       padding-right: 40px;
-      width: 448px - 40px;
+      width: 448px - 40px + 11;
     }
 
     .input_field {
       position:relative;
       margin-top:15px;
-      width: 448px;
+      width: 448px + 11;
     }
 
 

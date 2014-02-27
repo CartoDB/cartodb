@@ -1817,8 +1817,18 @@ exports.Profiler = Profiler;
       };
     },
 
-    setCartoCSS: function(c) {
+    /*setCartoCSS: function(c) {
       this.options.cartocss = c;
+    },*/
+
+    setSteps: function(steps, opt) { 
+      opt = opt || {};
+      if (this.options.steps !== steps) {
+        this.options.steps = steps;
+        this.options.step = (this.options.end - this.options.start)/this.getSteps();
+        this.options.step = this.options.step || 1;
+        if (!opt.silent) this.reload();
+      }
     },
 
     setOptions: function(opt) {
@@ -1977,6 +1987,21 @@ exports.Profiler = Profiler;
       return h;
     },
 
+    _generateCartoCSS: function() {
+      var attr = {
+        '-torque-frame-count': this.options.steps,
+        '-torque-resolution': this.options.resolution,
+        '-torque-aggregation-function': "'" + this.options.countby + "'",
+        '-torque-time-attribute': "'" + this.options.column + "'",
+        '-torque-data-aggregation': this.options.cumulative ? 'cumulative': 'linear',
+      };
+      var st = 'Map{';
+      for (var k in attr) {
+        st += k + ":" + attr[k] + ";";
+      }
+      return st + "}";
+    },
+
     _fetchMap: function(callback) {
       var self = this;
       var layergroup = {};
@@ -1995,7 +2020,7 @@ exports.Profiler = Profiler;
             "type": "torque",
             "options": {
               "cartocss_version": "1.0.0",
-              "cartocss": this.options.cartocss,
+              "cartocss": this._generateCartoCSS(),
               "sql": this.getSQL()
             }
           }]

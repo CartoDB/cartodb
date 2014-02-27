@@ -58,7 +58,7 @@ class Table < Sequel::Model(:user_tables)
     owner.in_database[<<-SQL
       SELECT DISTINCT ST_GeometryType(the_geom) FROM (
         SELECT the_geom
-        FROM #{self.name}
+        FROM "#{self.name}"
         WHERE (the_geom is not null) LIMIT 10
       ) as foo
     SQL

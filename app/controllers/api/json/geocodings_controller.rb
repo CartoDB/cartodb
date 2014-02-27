@@ -44,7 +44,7 @@ class Api::Json::GeocodingsController < Api::ApplicationController
   def country_data_for
     rows = CartoDB::SQLApi.new(username: 'geocoding')
             .fetch("SELECT service, type FROM available_services WHERE iso3 = '#{params[:country_code]}'")
-
+    rows = Hash[rows.group_by {|d| d["service"]}.collect {|k,v| [k, v.map {|va| va["type"]}]}]
     render json: rows
   end
 

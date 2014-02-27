@@ -93,6 +93,41 @@ describe CsvNormalizer do
     end
   end #spaces_and_commas_delimiter_detector
 
+  describe '#remove_newlines' do
+    it 'tests the cleaning of non row-separating newlines inside CSVs' do
+      fixture_filepath, expected_content = newlines_factory()
+
+      csv = CsvNormalizer.new(fixture_filepath)
+
+      temporary_filepath = csv.remove_newlines(get_temp_csv_fullpath())
+
+      line_num = 0
+      File.open(temporary_filepath, 'r')
+          .each_line { |line| 
+            line.should eq expected_content[line_num]
+            line_num += 1
+      }
+
+      FileUtils.rm(fixture_filepath)
+    end
+  end #remove_newlines
+
+
+  # Helpers
+
+  def newlines_factory
+    invalid_content = "field1,field2,field3\na,b,c\na2,\"b\n2\",c2\na3,b3,c3\na4,\"\nb\n4\n\",\"c\n4\""
+    valid_content = [ "field1,field2,field3\n", "a,b,c\n", "a2,\"b2\",c2\n", "a3,b3,c3\n", "a4,\"b4\",\"c4\"\n" ]
+
+    filepath = get_temp_csv_fullpath()
+
+    File.open(filepath, 'wb') do |f2|  
+      f2.puts invalid_content
+    end  
+
+    return filepath, valid_content
+  end #newlines_factory
+
   def utf8_factory
     filepath = get_temp_csv_fullpath
 

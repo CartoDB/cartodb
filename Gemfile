@@ -90,7 +90,7 @@ group :development, :test do
 
   gem "mocha",                 "0.10.5"
 
-  gem "debugger",              "1.3.0"
+  gem "debugger",              "1.6.5"
 
   gem "rspec-rails",           "2.10.1"
   gem "capybara",              "1.1.2"

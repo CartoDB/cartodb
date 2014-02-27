@@ -5,6 +5,8 @@ require 'ejs'
 module CartoDB
   class Layer
     class Presenter
+      EMPTY_CSS = '#dummy{}'
+
       TORQUE_ATTRS = %w(
         table_name
         user_name
@@ -141,7 +143,7 @@ module CartoDB
           data = {
             sql:                wrap(sql, layer.options),
             layer_name:         name_for(layer),
-            cartocss:           layer.options.fetch('tile_style'),
+            cartocss:           css_from(layer.options),
             cartocss_version:   layer.options.fetch('style_version'),
             interactivity:      layer.options.fetch('interactivity')
           }
@@ -170,6 +172,11 @@ module CartoDB
         return default_query_for(options) if query.nil? || query.empty?
         query
       end #sql_from
+
+      def css_from(options)
+        style = options.include?('tile_style') ? options['tile_style'] : nil
+        (style.nil? || style.strip.empty?) ? EMPTY_CSS : options.fetch('tile_style')
+      end #css_from
 
       def wrap(query, options)
         wrapper = options.fetch('query_wrapper', nil)

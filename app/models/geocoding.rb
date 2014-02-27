@@ -62,8 +62,7 @@ class Geocoding < Sequel::Model
     self.update remote_id: table_geocoder.remote_id, total_rows: table_geocoder.total_rows
     started = Time.now
     begin
-      table_geocoder.geocoder.update_status
-      self.update(update_geocoding_status)
+      self.update(table_geocoder.update_geocoding_status)
       puts "#{processed_rows}/#{total_rows}"
       raise "Geocoding timeout" if Time.now - started > run_timeout and ['started', 'submitted', 'accepted'].include? state
       sleep(2)

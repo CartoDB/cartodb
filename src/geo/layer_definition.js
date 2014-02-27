@@ -272,7 +272,12 @@ Map.prototype = {
         url: self._tilerHost() + endPoint + '?' + params.join('&'),
         success: function(data) {
           if(0 === self._queue.length) {
-            callback(data);
+            // check for errors
+            if (data.error) {
+              callback(null, data.error);
+            } else {
+              callback(data);
+            }
           }
           self._requestFinished();
         },

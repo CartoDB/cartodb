@@ -1,6 +1,6 @@
-// cartodb.js version: 3.7.03
+// cartodb.js version: 3.7.04
 // uncompressed version: cartodb.uncompressed.js
-// sha: f815258c933d136dbf6551dcd7c36caacac8138d
+// sha: b653c8a3576a3c7231db80894d57e7b8a185c60f
 (function() {
   var root = this;
 
@@ -20686,7 +20686,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.7.03';
+    cdb.VERSION = '3.7.04';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -25886,7 +25886,12 @@ Map.prototype = {
         url: self._tilerHost() + endPoint + '?' + params.join('&'),
         success: function(data) {
           if(0 === self._queue.length) {
-            callback(data);
+            // check for errors
+            if (data.error) {
+              callback(null, data.error);
+            } else {
+              callback(data);
+            }
           }
           self._requestFinished();
         },
@@ -28392,7 +28397,7 @@ CartoDBLayerGroup.prototype.interactionClass = wax.g.interaction;
 
 // CartoDBNamedMap
 CartoDBNamedMap.prototype = new wax.g.connector();
-_.extend(CartoDBNamedMap.prototype, CartoDBLayerGroupBase.prototype, CartoDBLayerCommon.prototype, NamedMap.prototype);
+_.extend(CartoDBNamedMap.prototype, NamedMap.prototype, CartoDBLayerGroupBase.prototype, CartoDBLayerCommon.prototype);
 CartoDBNamedMap.prototype.interactionClass = wax.g.interaction;
 
 

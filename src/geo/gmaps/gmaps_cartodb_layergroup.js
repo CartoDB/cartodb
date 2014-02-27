@@ -261,7 +261,7 @@ CartoDBLayerGroup.prototype.interactionClass = wax.g.interaction;
 
 // CartoDBNamedMap
 CartoDBNamedMap.prototype = new wax.g.connector();
-_.extend(CartoDBNamedMap.prototype, CartoDBLayerGroupBase.prototype, CartoDBLayerCommon.prototype, NamedMap.prototype);
+_.extend(CartoDBNamedMap.prototype, NamedMap.prototype, CartoDBLayerGroupBase.prototype, CartoDBLayerCommon.prototype);
 CartoDBNamedMap.prototype.interactionClass = wax.g.interaction;
 
 

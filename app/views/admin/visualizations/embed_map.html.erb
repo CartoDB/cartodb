@@ -197,7 +197,10 @@
           cartodb_logo_link: "http://www.cartodb.com?utm_source=Footer_Link&utm_medium=referral&utm_campaign=Embed_v1&utm_content=Logo"
         })
 
-        var errors = new cdb.admin.ErrorStats();
+        <% if !Rails.env.development? %>
+          var errors = new cdb.admin.ErrorStats();
+        <% end %>
+        
         var loadingTime = cartodb.core.Profiler.metric('cartodb-js.embed.time_full_loaded').start();
         var visReadyTime = cartodb.core.Profiler.metric('cartodb-js.embed.time_vis_loaded').start();
 

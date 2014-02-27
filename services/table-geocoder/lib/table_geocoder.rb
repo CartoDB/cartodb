@@ -56,7 +56,7 @@ module CartoDB
     end
 
     def total_rows
-      dataset.count
+      @total_rows ||= dataset.count
     end
 
     def update_geocoding_status

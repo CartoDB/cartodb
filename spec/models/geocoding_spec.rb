@@ -66,9 +66,9 @@ describe Geocoding do
       geocoding.table_geocoder.stubs(:run).returns true
       geocoding.table_geocoder.stubs(:cache).returns  OpenStruct.new(hits: 5)
       geocoding.table_geocoder.stubs(:process_results).returns true
+      geocoding.table_geocoder.stubs(:total_rows).returns 20
       CartoDB::Geocoder.any_instance.stubs(:status).returns 'completed'
       CartoDB::Geocoder.any_instance.stubs(:update_status).returns true
-      CartoDB::Geocoder.any_instance.stubs(:total_rows).returns 20
       CartoDB::Geocoder.any_instance.stubs(:processed_rows).returns 10
       geocoding.run!
       geocoding.total_rows.should eq 20

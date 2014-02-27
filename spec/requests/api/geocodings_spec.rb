@@ -105,4 +105,16 @@ describe "Geocodings API" do
       end
     end
   end
+
+
+  describe 'GET /api/v1/geocodings/get_countries' do
+    it 'returns the list of countries with geocoding data' do
+      get_json get_countries_v1_geocodings_url(params) do |response|
+        api_response = [{"iso3"=>"ESP"}]
+        ::CartoDB::SQLApi.any_instance.stubs(:fetch).returns(api_response)
+        response.status.should be_success
+        response.body.should eq [{"iso3"=>"ESP", "name" => "Spain"}]
+      end
+    end
+  end
 end

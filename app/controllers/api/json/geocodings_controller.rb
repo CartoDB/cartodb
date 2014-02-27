@@ -48,4 +48,10 @@ class Api::Json::GeocodingsController < Api::ApplicationController
     render json: rows
   end
 
+  def get_countries
+    rows = CartoDB::SQLApi.new(Cartodb.config[:geocoder][:internal])
+            .fetch("SELECT distinct(serv.iso3), pol.name FROM available_services serv, global_admin0_polygons pol WHERE pol.iso3 = serv.iso3 ORDER BY serv.iso3 DESC")
+
+    render json: rows
+  end
 end

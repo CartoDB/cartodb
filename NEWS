@@ -1,3 +1,6 @@
+3.8.00 ()
+- Added setParams method to layer to support named maps (#106)
+
 3.7.04 (27//02//2013)
 - fixed layer update in gmaps 
 - when jsonp is used errors are not reported to the layer 

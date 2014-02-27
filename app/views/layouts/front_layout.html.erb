@@ -11,8 +11,9 @@
     <link rel="shortcut icon" href="/favicons/favicon.ico" />
     <%= stylesheet_link_tag :common, :front, :media => 'all' %>
     <!--[if gt IE 8]><%= stylesheet_link_tag :fonts_ie %><![endif]-->
-    <%= yield :js %>
+    <%= insert_rollbar() %>
     <%= insert_google_analytics('primary') %>
+    <%= yield :js %>
     <noscript><meta http-equiv="refresh" content="0;url=/no_javascript.html"></noscript>
   </head>
   <body class="sessions">

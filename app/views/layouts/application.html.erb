@@ -6,10 +6,11 @@
     <link id="favicon" rel="shortcut icon" href="/favicons/favicon.ico" />
     <%= yield :css %>
     <!--[if gt IE 8]><%= stylesheet_link_tag :fonts_ie %><![endif]-->
-    <%= yield :js %>
-    <%= csrf_meta_tag %>
+    <%= insert_rollbar() %>
     <%= insert_google_analytics('primary') %>
     <%= render 'shared/mixpanel' %>
+    <%= yield :js %>
+    <%= csrf_meta_tag %>
     <noscript><meta http-equiv="refresh" content="0;url=/no_javascript.html"></noscript>
   </head>
   <body>

@@ -1,4 +1,4 @@
-<% unless token.blank?  %> <!-- || Rails.env.development? -->
+<% unless token.blank? || Rails.env.development? %>
   <script>
   var _rollbarConfig = {
     accessToken:      "<%= token %>",

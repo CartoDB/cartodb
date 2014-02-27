@@ -1,6 +1,6 @@
-// cartodb.js version: 3.7.04-dev
+// cartodb.js version: 3.7.05-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: 01d058edce745429e772f3e17f669b9509b36465
+// sha: 10e16be013c04445d79a9fb91c0912c35851f2dc
 (function() {
   var root = this;
 
@@ -20686,7 +20686,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.7.04-dev';
+    cdb.VERSION = '3.7.05-dev';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -25886,7 +25886,12 @@ Map.prototype = {
         url: self._tilerHost() + endPoint + '?' + params.join('&'),
         success: function(data) {
           if(0 === self._queue.length) {
-            callback(data);
+            // check for errors
+            if (data.error) {
+              callback(null, data.error);
+            } else {
+              callback(data);
+            }
           }
           self._requestFinished();
         },
@@ -26173,6 +26178,27 @@ NamedMap.prototype = _.extend({}, Map.prototype, {
     }
     this.options.extra_params = this.options.extra_params || {};
     this.options.extra_params.auth_token = token;
+    this.invalidate();
+    return this;
+  },
+
+  setParams: function(attr, v) {
+    var params;
+    if (arguments.length === 2) {
+      params = {}
+      params[attr] = v;
+    } else {
+      params = attr;
+    }
+    for (var k in params) {
+      if (params[k] === undefined || params[k] === null) {
+        delete this.named_map.params[k];
+      } else {
+        this.named_map.params[k] = params[k];
+      }
+    }
+    this.invalidate();
+    return this;
   },
 
   toJSON: function() {
@@ -28392,7 +28418,7 @@ CartoDBLayerGroup.prototype.interactionClass = wax.g.interaction;
 
 // CartoDBNamedMap
 CartoDBNamedMap.prototype = new wax.g.connector();
-_.extend(CartoDBNamedMap.prototype, CartoDBLayerGroupBase.prototype, CartoDBLayerCommon.prototype, NamedMap.prototype);
+_.extend(CartoDBNamedMap.prototype, NamedMap.prototype, CartoDBLayerGroupBase.prototype, CartoDBLayerCommon.prototype);
 CartoDBNamedMap.prototype.interactionClass = wax.g.interaction;
 
 

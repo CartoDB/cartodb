@@ -1,4 +1,4 @@
-3.7.04 ()
+3.7.04 (27//02//2013)
 - fixed layer update in gmaps 
 - when jsonp is used errors are not reported to the layer 
 - updated torque, fix problem with some cartocss options (step) 

@@ -42,8 +42,10 @@ module CartoDB
       add_georef_status_column
       cache.run
       csv_file = generate_csv
-      connection.run(dataset.where("cartodb_id".lit => dataset.select('cartodb_id'.lit)).
-        update_sql('cartodb_georef_status = false'))
+      connection.run(
+        dataset.where('cartodb_id'.lit => dataset.select('cartodb_id'.lit))
+          .update_sql('cartodb_georef_status = false')
+      )
       start_geocoding_job(csv_file)
     end
 

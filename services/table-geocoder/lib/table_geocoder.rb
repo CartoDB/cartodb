@@ -57,10 +57,6 @@ module CartoDB
       return csv_file
     end
 
-    def total_rows
-      @total_rows ||= dataset.count
-    end
-
     def update_geocoding_status
       geocoder.update_status
       { processed_rows: geocoder.processed_rows, state: geocoder.status }

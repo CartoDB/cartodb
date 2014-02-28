@@ -25,7 +25,7 @@ module CartoDB
           quota:       self.geocoding_quota,
           block_price: self.geocoding_block_price,
           monthly_use: self.get_geocoding_calls,
-          hard_limit:  (self.account_type =~ /(FREE|Magellan|Academy|ACADEMIC)/ ? true : false)
+          hard_limit:  self.hard_geocoding_limit?,
         },
         billing_period: self.last_billing_cycle,
         max_layers: self.max_layers,

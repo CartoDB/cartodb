@@ -111,11 +111,18 @@ describe Geocoding do
   describe '#max_geocodable_rows' do
     let(:geocoding) { FactoryGirl.build(:geocoding, user: @user) }
 
-    it 'returns the remaining geocoding quota for the current billing period' do
+    it 'returns the remaining quota if the user has hard limit' do
+      @user.stubs('hard_geocoding_limit?').returns(true)
       delete_user_data @user
       geocoding.max_geocodable_rows.should eq 200
       FactoryGirl.create(:geocoding, user: @user, processed_rows: 100)
       geocoding.max_geocodable_rows.should eq 100
+    end
+
+    it 'returns nil if the user has soft limit' do
+      @user.stubs('hard_geocoding_limit?').returns(false)
+      FactoryGirl.create(:geocoding, user: @user, processed_rows: 100)
+      geocoding.max_geocodable_rows.should eq nil      
     end
   end
 

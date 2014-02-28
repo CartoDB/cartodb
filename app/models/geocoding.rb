@@ -3,12 +3,11 @@ require_relative '../../services/table-geocoder/lib/table_geocoder'
 
 class Geocoding < Sequel::Model
 
-  DEFAULT_TIMEOUT = 15*60
+  DEFAULT_TIMEOUT = 15.minutes
 
   many_to_one :user
   many_to_one :table
   many_to_one :automatic_geocoding
-  TIMEOUT = 15.minutes
 
   attr_reader :table_geocoder
 
@@ -98,7 +97,7 @@ class Geocoding < Sequel::Model
   end # translate_formatter
 
   def max_geocodable_rows
-    return nil if user.blank? || user.account_type != 'FREE'
+    return nil if user.blank? || !user.hard_geocoding_limit?
     user.geocoding_quota - user.get_geocoding_calls
   rescue
     nil

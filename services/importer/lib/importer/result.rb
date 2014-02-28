@@ -3,7 +3,7 @@
 module CartoDB
   module Importer2
     class Result
-      ATTRIBUTES = %w{ name schema extension tables success error_code }
+      ATTRIBUTES = %w{ name schema extension tables success error_code log_trace }
       attr_reader *ATTRIBUTES.map(&:to_sym)
 
       def initialize(attributes)

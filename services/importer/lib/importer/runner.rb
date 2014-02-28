@@ -17,18 +17,17 @@ module CartoDB
       DEFAULT_LOADER          = Loader
       UNKNOWN_ERROR_CODE      = 99999
 
-      def initialize(pg_options, downloader, log=nil, available_quota=nil,
-      unpacker=nil)
+      def initialize(pg_options, downloader, log=nil, available_quota=nil, unpacker=nil)
         @pg_options       = pg_options
         @downloader       = downloader
-        @log              = log || TrackRecord::Log.new
+        @log              = log             || TrackRecord::Log.new
         @available_quota  = available_quota || DEFAULT_AVAILABLE_QUOTA
-        @unpacker         = unpacker || Unp.new
+        @unpacker         = unpacker        || Unp.new
         @results          = []
       end #initialize
 
       def run(&tracker_block)
-        self.tracker = tracker_block
+        @tracker = tracker_block
         tracker.call('uploading')
         log.append "Getting file from #{downloader.url}"
         downloader.run(available_quota)
@@ -48,7 +47,10 @@ module CartoDB
       rescue => exception
         log.append exception.to_s
         log.append exception.backtrace
-        self.results.push(Result.new(error_code: error_for(exception.class)))
+        @results.push(Result.new(
+            error_code: error_for(exception.class),
+            log_trace:  report()
+          ))
       end #run
       
       def import(source_file, job=nil, loader=nil)
@@ -57,20 +59,18 @@ module CartoDB
 
         raise EmptyFileError if source_file.empty?
 
-        self.tracker.call('importing')
+        tracker.call('importing')
         job.log "Importing data from #{source_file.fullpath}"
         loader.run
 
         job.success_status = true
-        self.results.push(result_for(job, source_file, loader.valid_table_names))
+        @results.push(result_for(job, source_file, loader.valid_table_names))
       rescue => exception
         job.log exception.class.to_s
         job.log exception.to_s
         job.log exception.backtrace
         job.success_status = false
-        self.results.push(
-          result_for(job, source_file, loader.valid_table_names, exception.class)
-        )
+        @results.push(result_for(job, source_file, loader.valid_table_names, exception.class))
       end #import
 
       def report
@@ -104,7 +104,7 @@ module CartoDB
       end
 
       def tracker
-        @tracker || lambda { |state| }
+        @tracker || lambda { |state| state }
       end #tracker
 
       def success?
@@ -141,7 +141,6 @@ module CartoDB
       def raise_if_over_storage_quota
         file_size   = File.size(downloader.source_file.fullpath)
         over_quota  = available_quota < QUOTA_MAGIC_NUMBER * file_size
-
         raise StorageQuotaExceededError if over_quota
         self
       end #raise_if_over_storage_quota

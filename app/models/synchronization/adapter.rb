@@ -17,8 +17,10 @@ module CartoDB
 
       def run(&tracker)
         runner.run(&tracker)
-        result = results.select(&:success?).first
+        result = runner.results.select(&:success?).first
+
         if runner.remote_data_updated?
+          raise ("Expecting success data for table '#{table_name}'.Results:" + runner.results.to_s) if result.nil?
           copy_privileges("public.#{table_name}", result.qualified_table_name)
           copy_indexes("public.#{table_name}", result.qualified_table_name)
           overwrite(table_name, result)
@@ -44,7 +46,7 @@ module CartoDB
           rename(result.table_name, table_name)
           drop(temporary_name) if exists?(temporary_name)
         end
-      rescue => exception
+      rescue
         drop(result.table_name) if exists?(result.table_name)
       end
 
@@ -71,7 +73,7 @@ module CartoDB
       rescue => exception
         stacktrace = exception.to_s + exception.backtrace.join
         puts stacktrace
-        Rollbar.report_message("Sync cartodbfy error", "error", error_info: stacktrace)
+        Rollbar.report_message('Sync cartodbfy error', 'error', error_info: stacktrace)
         table.send(:invalidate_varnish_cache)
       end
 
@@ -80,7 +82,7 @@ module CartoDB
           INSERT INTO cdb_tablemetadata (tabname, updated_at)
           VALUES ('#{name}'::regclass::oid, NOW())
         })
-      rescue Sequel::DatabaseError => exception
+      rescue Sequel::DatabaseError
         user.in_database(as: :superuser).run(%Q{
            UPDATE cdb_tablemetadata
            SET updated_at = NOW()
@@ -134,8 +136,12 @@ module CartoDB
       end 
 
       def error_code
-        results.map(&:error_code).compact.first
+        runner.results.map(&:error_code).compact.first
       end #errors_from
+
+      def runner_log_trace
+        runner.results.map(&:log_trace).compact.first
+      end #runner_log_trace
 
       def error_message
         ''

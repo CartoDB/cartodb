@@ -33,8 +33,7 @@ module CartoDB
 
         @http_options = http_options
         @seed         = seed
-        @repository   = repository || 
-                          DataRepository::Filesystem::Local.new(temporary_directory)
+        @repository   = repository || DataRepository::Filesystem::Local.new(temporary_directory)
       end #initialize
 
       def run(available_quota_in_bytes=nil)
@@ -126,31 +125,29 @@ module CartoDB
         previous_checksum       = http_options.fetch(:checksum, false)
         etag                    = etag_from(headers)
         last_modified           = last_modified_from(headers)
-        checksum                = @checksum if defined?(@checksum)
+        checksum                = (defined?(@checksum) ? @checksum : false)
 
         return true unless (previous_etag || previous_last_modified) 
         return true if previous_etag && etag && previous_etag != etag
-        return true if previous_last_modified && last_modified && 
-          previous_last_modified.to_i < last_modified.to_i
-        return true if previous_checksum && checksum &&
-          previous_checksum != checksum
+        return true if previous_last_modified && last_modified && previous_last_modified.to_i < last_modified.to_i
+        return true if previous_checksum && checksum && previous_checksum != checksum
         false
       rescue
         false
       end
 
       def etag_from(headers)
-        etag  =   headers.fetch("ETag", nil)
-        etag  ||= headers.fetch("Etag", nil)
-        etag  ||= headers.fetch("etag", nil)
+        etag  =   headers.fetch('ETag', nil)
+        etag  ||= headers.fetch('Etag', nil)
+        etag  ||= headers.fetch('etag', nil)
         etag  = etag.delete('"').delete("'") if etag
         etag
       end
 
       def last_modified_from(headers)
-        last_modified =   headers.fetch("Last-Modified", nil)
-        last_modified ||= headers.fetch("Last-modified", nil)
-        last_modified ||= headers.fetch("last-modified", nil)
+        last_modified =   headers.fetch('Last-Modified', nil)
+        last_modified ||= headers.fetch('Last-modified', nil)
+        last_modified ||= headers.fetch('last-modified', nil)
         last_modified = last_modified.delete('"').delete("'") if last_modified
         last_modified
       end
@@ -195,7 +192,7 @@ module CartoDB
 
       def temporary_directory
         return @temporary_directory if @temporary_directory
-        tempfile              = Tempfile.new("")
+        tempfile              = Tempfile.new('')
         @temporary_directory  = tempfile.path
 
         tempfile.close!
@@ -204,7 +201,7 @@ module CartoDB
       end #temporary_directory
 
       def gdrive_deny_in?(headers)
-        headers.fetch("X-Frame-Options", nil) == 'DENY'
+        headers.fetch('X-Frame-Options', nil) == 'DENY'
       end
 
       def md5_command_for(name)

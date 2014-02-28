@@ -231,6 +231,7 @@ Creates a visualization inside the map_id DOM object.
     - **legends**: if it's true legends are shown in the map.
     - **https**: if true forces tiles to be fetched using https. If false it uses the predefined method
     - **scrollwheel**: enable/disable the ability of zooming using scrollwheel (default enabled)
+    - **fullscreen**: if true adds a button to toggle the map fullscreen
 
 
 #### cartodb.Vis

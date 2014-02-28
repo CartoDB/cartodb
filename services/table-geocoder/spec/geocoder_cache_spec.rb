@@ -14,27 +14,33 @@ describe CartoDB::GeocoderCache do
     @db           = conn.connection
     @pg_options   = conn.pg_options
     @table_name   = "ne_10m_populated_places_simple"
-    load_sql path_to("populated_places_short.sql"), @pg_options
+    load_csv path_to("populated_places_short.csv")
   end
 
-  let(:default_params) { { table_name: @table_name, formatter: "concat(name, sov0name)", connection: @db, sql_api: { table_name: '' } } }
+  after do
+    @db.drop_table @table_name
+  end
+
+  let(:default_params) { { table_name: @table_name, formatter: "concat(name, iso3)", connection: @db, sql_api: { table_name: '' } } }
 
   describe '#get_cache_results' do
     it "runs the query in batches" do
       cache = CartoDB::GeocoderCache.new(default_params.merge(batch_size: 5))
-      cache.expects(:run_query).times(8).returns('')
+      cache.expects(:run_query).times(3).returns('')
       cache.get_cache_results
     end
 
     it "honors max_rows" do
       cache = CartoDB::GeocoderCache.new(default_params.merge(
         batch_size: 5,
-        max_rows: 16
+        max_rows: 10
       ))
-      cache.expects(:run_query).times(4).returns("")
+      cache.expects(:run_query).times(2).returns('')
       cache.get_cache_results
     end
   end #run
+
+
 
   def path_to(filepath = '')
     File.expand_path(
@@ -42,9 +48,9 @@ describe CartoDB::GeocoderCache do
     )
   end #path_to
 
-
-  def load_sql(path, pg_options)
-    `psql -U #{pg_options[:user]} -f #{path} #{pg_options[:database]}`
+  def load_csv(path)
+    @db.run("CREATE TABLE #{@table_name} (the_geom geometry, cartodb_id integer, name text, iso3 text)")
+    @db.run("COPY #{@table_name.lit}(cartodb_id, name, iso3) FROM '#{path}' DELIMITER ',' CSV")
   end # create_table
 
 end # CartoDB::GeocoderCache

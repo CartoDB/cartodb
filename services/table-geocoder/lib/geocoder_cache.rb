@@ -21,13 +21,14 @@ module CartoDB
       @cache_results = nil
       @batch_size    = arguments[:batch_size] || DEFAULT_BATCH_SIZE
       @cache_results = File.join(working_dir, "#{temp_table_name}_results.csv")
+      @hits          = 0
     end # initialize
 
     def run
       get_cache_results
       create_temp_table
       load_results_to_temp_table
-      @hits = connection.select.from(temp_table_name).count
+      @hits = connection.select.from(temp_table_name).count.to_i
       copy_results_to_table
     rescue => e
       handle_cache_exception e

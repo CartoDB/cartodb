@@ -43,6 +43,7 @@ cdb.ui.common.ShareDialog = cdb.ui.common.Dialog.extend({
 
     if (this.options.target) {
       this.options.target.on("click", function(e) {
+        e.preventDefault();
         e.stopPropagation();
 
         self.open();

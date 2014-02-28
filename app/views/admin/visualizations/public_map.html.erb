@@ -18,6 +18,8 @@
     <style type="text/css">
       html, body {height: 100%; padding: 0; margin: 0;}
       #map {height: 629px; padding: 0; margin: 0;}
+      .cartodb-text {position:absolute; display:none; bottom:0; left:0; right:0; margin:0; padding:0 10px; background:white; font:normal 11px "Helvetica",Arial; color:#999999; border-top:1px solid #CCC; border-top:1px solid rgba(0,0,0,0); box-shadow:rgba(0,0,0,0.6) 0 0 1px 0; -webkit-box-shadow:rgba(0,0,0,0.6) 0 0 1px 0; -moz-box-shadow:rgba(0,0,0,0.6) 0 0 1px 0; -o-box-shadow:rgba(0,0,0,0.6) 0 0 1px 0; line-height:29px; z-index:2; }
+      .cartodb-text a {color:#397DB8; text-decoration:underline;}
 
       #not_supported_dialog {position:absolute; width:356px; height:213px; top:50%; left:50%; margin-top:-107px; margin-left:-178px; padding:0; background-color:#FFF; text-align:center; font-family:'Helvetica', Arial; color:#666666; z-index:10000;}
       #not_supported_dialog h2 {display:inline-block; width:77px; margin:30px 0 0; padding-bottom:16px; font-size:13px; font-weight:bold; border-bottom:1px solid #D9D9D9; vertical-align:top; zoom:1; *display:inline;}
@@ -43,27 +45,20 @@
 
     <% if !Rails.env.production? %>
       <%= stylesheet_link_tag 'cdb/themes/css/cartodb' %>
-      <!--[if lte IE 8]>
-      <%= stylesheet_link_tag 'cdb/themes/css/cartodb.ie' %>
-      <![endif]-->
     <% else %>
      <% if request.protocol == 'https://' %>
         <link rel="stylesheet" href="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/themes/css/cartodb.css" />
-        <!--[if lte IE 8]>
-        <link rel="stylesheet" href="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/themes/css/cartodb.ie.css" />
-        <![endif]-->
      <% else %>
         <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.css" />
-        <!--[if lte IE 8]>
-        <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.ie.css" />
-        <![endif]-->
      <% end %>
-
     <% end %>
+
+    <%= insert_rollbar() %>
 
   </head>
   <body>
-    <% if @visualization.public? %>
+    <% if @visualization.public? || @visualization.password_protected? %>
+
       <div class="cartodb-new-header">
         <div class="inner">
 
@@ -76,6 +71,7 @@
 
         </div>
       </div>
+
       <div id="map"></div>
       <div id="not_supported_dialog" style="display: none">
         <h2>CartoDB</h2>
@@ -86,7 +82,6 @@
           <li class="last"><a href="http://www.mozilla.org/en-US/firefox/all/‎" class="firefox">Firefox</a></li>
         </ul>
       </div>
-
       <div class="cartodb-map-data">
         <div class="cartodb-info">
           <div class="inner">
@@ -164,7 +159,6 @@
           </div>
         </div>
       </div>
-
     <% end %>
 
     <% if @visualization.map.provider == 'googlemaps' %>
@@ -176,27 +170,35 @@
 
     <% if !Rails.env.production? %>
       <%= javascript_include_tag :cdb %>
+      <script type="text/javascript"><%= raw Rails.application.assets['statsc.min.js'].to_s %></script>
     <% else %>
       <% if request.protocol == 'https://' %>
         <script src="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/cartodb.js"></script>
       <% else %>
         <script src="http://libs.cartocdn.com/cartodb.js/v3/cartodb.js"></script>
       <% end %>
-
+      <!-- inline statsc -->
+      <script type="text/javascript"><%= raw Rails.application.assets['statsc.min.js'].to_s %></script>
+      <!-- inline js errors -->
+      <script type="text/javascript">
+        var cdb = cartodb;
+        <%= raw Rails.application.assets['cartodb/common/error_stats.js'].to_s %>
+      </script>
     <% end %>
 
     <script>
+
       reset_disqus = function() {
         DISQUS.reset({
           reload: true
         });
       };
 
-    if (!window.addEventListener) {
-      window.attachEvent('orientationchange', reset_disqus, this);
-    } else {
-      window.addEventListener('orientationchange', reset_disqus);
-    }
+      if (!window.addEventListener) {
+        window.attachEvent('orientationchange', reset_disqus, this);
+      } else {
+        window.addEventListener('orientationchange', reset_disqus);
+      }
 
       function get_url_params(conversion) {
 
@@ -230,7 +232,31 @@
           }
       }
 
+      function stats() {
+          var browser;
+          var ua = navigator.userAgent;
+          var checks = [
+              ['MSIE 10.0', 'ms10'],
+              ['MSIE 9.0', 'ms9'],
+              ['MSIE 8.0', 'ms8'],
+              ['MSIE 7.0','ms7'],
+              ['Chrome', 'chr'],
+              ['Firefox', 'ff'],
+              ['Safari', 'ff']
+          ]
+          for(var i = 0; i < checks.length && !browser; ++i) {
+            if(ua.indexOf(checks[i][0]) !== -1) browser = checks[i][1];
+          }
+          browser = browser || 'none';
+          cartodb.core.Profiler.metric('cartodb-js.embed.' + browser).inc();
+      }
+
       $(document).ready(function(){
+
+        statsc.connect('http://<%= Cartodb.config[:graphite_public]['host'] %>:<%= Cartodb.config[:graphite_public]['port'] %>/');
+        cartodb.core.Profiler.backend(function () {
+          statsc.send.apply(statsc, arguments);
+        })
 
         var bool_fn = function(v) { return v == 'true' }
         , is_custom_install = <%= Cartodb.config[:cartodb_com_hosted].present? %>
@@ -251,6 +277,7 @@
           'title':        bool_fn,
           'description':  bool_fn,
           'shareable':    bool_fn,
+          'fullscreen':   bool_fn,
           'cartodb_logo': logo_fn,
           'scrollwheel':  bool_fn,
           'sublayer_options': layer_fn,
@@ -258,8 +285,13 @@
           'legends': bool_fn
         });
 
+        <% if (@visualization.password_protected?) %>
+          opt.auth_token = '<%= @protected_map_token %>';
+          opt.https = true; // when auth_token is used tiles should be fetch using https
+        <% end %>
+
         <% if Rails.env.development? || Cartodb.config[:no_cdn] == true %>
-        opt.no_cdn = true;
+          opt.no_cdn = true;
         <% end %>
 
         opt.title       = false;
@@ -268,8 +300,15 @@
 
         cartodb.config.set({
           cartodb_attributions: "CartoDB <a href='http://cartodb.com/attributions?utm_source=Footer_Link&utm_medium=referral&utm_campaign=Embed_v1&utm_content=Attributions&utm_term=<%= @visualization.user.username %>' target='_blank'>attribution</a>",
-          cartodb_logo_link: "http://www.cartodb.com?utm_source=Footer_Link&utm_medium=referral&utm_campaign=Embed_v1&utm_content=Logo",
+          cartodb_logo_link: "http://www.cartodb.com?utm_source=Footer_Link&utm_medium=referral&utm_campaign=Embed_v1&utm_content=Logo"
         })
+
+        <% if !Rails.env.development? %>
+          var errors = new cdb.admin.ErrorStats();
+        <% end %>
+        
+        var loadingTime = cartodb.core.Profiler.metric('cartodb-js.embed.time_full_loaded').start();
+        var visReadyTime = cartodb.core.Profiler.metric('cartodb-js.embed.time_vis_loaded').start();
 
         var onResize = function() {
 
@@ -330,9 +369,17 @@
 
         };
 
-        cartodb.createVis('map', <%=raw @visualization.to_vizjson.to_json %>, opt, function(vis) {
 
+
+        cartodb.createVis('map', <%=raw @visualization.to_vizjson.to_json %>, opt, function(vis) {
+          visReadyTime.end();
+          vis.on('load', function() {
+            loadingTime.end();
+          })
+          // add here your code
           window.vis = vis;
+          // some stats
+          stats();
 
           var mobileDevice = /Android|webOS|iPad|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
@@ -360,3 +407,4 @@
     } %>
   </body>
 </html>
+

@@ -80,8 +80,8 @@ defaults: &defaults
     percent_users: 10
   # graphite endpoint used to post frontend stats
   graphite_public:
-    host: "graphite.dioc.cartodb.net"
-    port: 8127
+    host: ""
+    port:
 
 
 

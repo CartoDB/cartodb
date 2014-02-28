@@ -9,18 +9,18 @@ defaults: &defaults
     internal:
       protocol:      'http'
       domain:        'localhost.lan'
-      port:          '8181'
+      port:          '8888'
       host:          '127.0.0.1'
       verifycert:     false
     private:
       protocol:      'http'
       domain:        'localhost.lan'
-      port:          '8181'
+      port:          '8888'
       verifycert:     false
     public:
       protocol:      'http'
       domain:        'localhost.lan'
-      port:          '8181'
+      port:          '8888'
       verifycert:     false
   sql_api:
     private:
@@ -39,8 +39,6 @@ defaults: &defaults
     primary:          ''
     embeds:           ''
     domain:           ''
-  rollbar:
-    token: ''
   varnish_management:
     critical: false
     host: '127.0.0.1'

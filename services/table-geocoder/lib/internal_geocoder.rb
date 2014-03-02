@@ -10,6 +10,18 @@ module CartoDB
 
     attr_accessor :table_name, :column_name
 
+    SQL_PATTERNS = {
+      points: {
+        named_places: 'SELECT (geocode_namedplace(Array[{search_terms}], Array[{country_list}])).*'
+        ip_addresses: 'SELECT (geocode_ip(Array[{search_terms}])).*'
+      },
+      polygons: {
+        admin0:       'SELECT (geocode_admin0_polygons(Array[{search_terms}])).*',
+        admin1:       'SELECT (geocode_admin1_polygons(Array[{search_terms}], Array[{country_list}])).*',
+        postal_codes: 'SELECT (geocode_postalcode_polygons(Array[{search_terms}], Array[{country_list}])).*'
+      }
+    }
+
     def initialize(arguments)
       @sql_api     = arguments.fetch(:sql_api)
       @connection  = arguments.fetch(:connection)
@@ -26,14 +38,13 @@ module CartoDB
       download_results
       create_temp_table
       load_results_to_temp_table
-      @hits = connection.select.from(temp_table_name).count.to_i
       copy_results_to_table
     end
 
     def download_results
       begin
         count = count + 1 rescue 0
-        sql_pattern = "SELECT (geocode_admin0_polygons(Array[{search_terms}])).*"
+        sql_pattern = SQL_PATTERNS[:polygons][:admin0]
         search_terms = get_search_terms(count)
         sql = sql_pattern.gsub '{search_terms}', search_terms.join(',')
         response = run_query(sql, 'csv').gsub(/\A.*/, '').gsub(/^$\n/, '')
@@ -50,6 +61,38 @@ module CartoDB
           LIMIT #{limit} OFFSET #{page * @batch_size}
       }).all.map { |r| r[:searchtext] }
     end # get_search_terms
+
+    def create_temp_table
+      connection.run(%Q{
+        CREATE TABLE #{temp_table_name} (
+          longitude text, latitude text, geocode_string text
+        );
+      })
+    end # create_temp_table
+
+    def load_results_to_temp_table
+      connection.copy_into(temp_table_name.lit, data: File.read(cache_results), format: :csv)
+    end # load_results_to_temp_table
+
+    def copy_results_to_table
+      connection.run(%Q{
+        UPDATE #{table_name} AS dest
+        SET the_geom = ST_GeomFromText(
+              'POINT(' || orig.longitude || ' ' || orig.latitude || ')', 4326
+            ),
+            cartodb_georef_status = true
+        FROM #{temp_table_name} AS orig
+        WHERE #{formatter} = orig.geocode_string
+      })
+    end # copy_results_to_table
+
+    def drop_temp_table
+      connection.run("DROP TABLE IF EXISTS #{temp_table_name}")
+    end # drop_temp_table
+
+    def temp_table_name
+      @temp_table_name ||= "geocoding_cache_#{Time.now.to_i}"
+    end # temp_table_name
 
     def run_query(query, format = '')
       params = { q: query, api_key: sql_api[:api_key], format: format }

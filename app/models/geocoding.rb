@@ -42,6 +42,7 @@ class Geocoding < Sequel::Model
       formatter:  translate_formatter,
       connection: (user.present? ? user.in_database(as: :superuser) : nil),
       remote_id:  remote_id,
+      kind:       kind,
       max_rows:   max_geocodable_rows
     )
     @table_geocoder = CartoDB::TableGeocoder.new(config)

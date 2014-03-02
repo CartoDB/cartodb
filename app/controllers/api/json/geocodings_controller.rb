@@ -25,9 +25,11 @@ class Api::Json::GeocodingsController < Api::ApplicationController
   def create
     table = current_user.tables.where(name: params[:table_name]).first
     options = { 
-      user_id:     current_user.id,
-      table_id:    table.try(:id),
-      formatter:   params[:formatter].presence
+      user_id:       current_user.id,
+      table_id:      table.try(:id),
+      kind:          params[:kind],
+      geometry_type: params[:geometry_type],
+      formatter:     params[:formatter]
     }
       
     geocoding = Geocoding.create(options)

@@ -13,6 +13,7 @@ WORKING_SPECS = \
   spec/models/map_spec.rb \
   spec/models/visualization/ \
   spec/models/named_maps_spec.rb \
+  spec/models/geocoding_spec.rb \
   spec/lib/sql_parser_spec.rb \
   spec/lib/sql_test_spec.rb \
   spec/lib/string_spec.rb \
@@ -24,6 +25,9 @@ WORKING_SPECS = \
   spec/models/geocoding_spec.rb \
   spec/requests/api/imports_spec.rb \
   spec/requests/api/geocodings_spec.rb \
+  services/importer/spec/unit/url_translator/osm_spec.rb \
+  services/importer/spec/unit/url_translator/osm2_spec.rb \
+  services/geocoder/spec/geocoder_spec.rb \
   $(NULL)
 
 CDB_PATH=lib/assets/javascripts/cdb

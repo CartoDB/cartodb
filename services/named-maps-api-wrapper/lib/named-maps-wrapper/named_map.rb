@@ -30,9 +30,10 @@ module CartoDB
 					headers:         parent.headers,
 					body:            ::JSON.dump( template_data ),
           ssl_verifypeer:  parent.verify_cert,
-          ssl_verifyhost:  parent.verify_cert ? 0 : 2
+          ssl_verifyhost:  parent.verify_cert ? 0 : 2,
+          followlocation: true
 					} )
-        raise HTTPResponseError, response.code unless response.code == 200
+        raise HTTPResponseError, "#{response.code} #{response.request.url} (POST)" unless response.code == 200
 
 				body = ::JSON.parse(response.response_body)
 				self.new( body['template_id'], template_data, parent )
@@ -41,13 +42,16 @@ module CartoDB
 			# Update a named map's template data (full replace update)
 			def update( visualization )
         @template = NamedMap.get_template_data( visualization, @parent )
+
 				response = Typhoeus.put( url + '?api_key=' + @parent.api_key, {
 					headers: @parent.headers,
 					body: ::JSON.dump( @template ),
           ssl_verifypeer: @parent.verify_cert,
-          ssl_verifyhost: @parent.verify_cert ? 0 : 2
+          ssl_verifyhost: @parent.verify_cert ? 0 : 2,
+          followlocation: true
 				} )
-        raise HTTPResponseError, response.code unless response.code == 200
+
+        raise HTTPResponseError, "#{response.code} #{response.request.url} (PUT)" unless response.code == 200
         @template
 			end #update
 
@@ -55,10 +59,12 @@ module CartoDB
 			def delete()
 				response = Typhoeus.delete( url + "?api_key=" + @parent.api_key, 
           { 
+            headers: @parent.headers,
             ssl_verifypeer: @parent.verify_cert,
-            ssl_verifyhost: @parent.verify_cert ? 0 : 2 
+            ssl_verifyhost: @parent.verify_cert ? 0 : 2,
+            followlocation: true
           } )
-        raise HTTPResponseError, response.code unless response.code == 204
+        raise HTTPResponseError, "#{response.code} #{response.request.url} (DELETE)" unless response.code == 204
 			end #delete
 
 			# Url to access a named map's tiles

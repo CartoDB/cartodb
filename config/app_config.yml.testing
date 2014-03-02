@@ -9,18 +9,18 @@ defaults: &defaults
     internal:
       protocol:      'http'
       domain:        'localhost.lan'
-      port:          '8181'
+      port:          '8888'
       host:          '127.0.0.1'
       verifycert:     false
     private:
       protocol:      'http'
       domain:        'localhost.lan'
-      port:          '8181'
+      port:          '8888'
       verifycert:     false
     public:
       protocol:      'http'
       domain:        'localhost.lan'
-      port:          '8181'
+      port:          '8888'
       verifycert:     false
   sql_api:
     private:
@@ -80,8 +80,8 @@ defaults: &defaults
     percent_users: 10
   # graphite endpoint used to post frontend stats
   graphite_public:
-    host: ""
-    port:
+    host: "graphite.dioc.cartodb.net"
+    port: 8127
 
 
 

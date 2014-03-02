@@ -27,7 +27,7 @@ install:
   # http://stackoverflow.com/questions/10916784/error-installing-debugger-linecache-in-ruby-1-9-3
   - gem install debugger-linecache -v '1.1.2' -- --with-ruby-include=$rvm_path/src/ruby-1.9.3-p484/
   - bundle install
-  - cp config/app_config.yml.sample config/app_config.yml
+  - cp config/app_config.yml.testing config/app_config.yml
   - cp config/database.yml.sample config/database.yml
   # Needs fixing first some tests:
   #- cp services/importer/spec/factories/database.json.sample services/importer/spec/factories/database.json

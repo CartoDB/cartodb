@@ -645,6 +645,22 @@ describe User do
     @user.trial_ends_at.should_not be_nil
   end
 
+  describe '#hard_geocoding_limit?' do
+    it 'returns true when the plan is AMBASSADOR or FREE' do
+      @user.stubs(:account_type).returns('AMBASSADOR')
+      @user.hard_geocoding_limit?.should be_true
+      @user.stubs(:account_type).returns('FREE')
+      @user.hard_geocoding_limit?.should be_true
+    end
+
+    it 'returns false when the plan is CORONELLI or MERCATOR' do
+      @user.stubs(:account_type).returns('CORONELLI')
+      @user.hard_geocoding_limit?.should be_false
+      @user.stubs(:account_type).returns('MERCATOR')
+      @user.hard_geocoding_limit?.should be_false
+    end
+  end
+
   describe '#link_ghost_tables' do
     it "should correctly count real tables" do
     reload_user_data(@user) && @user.reload

@@ -3,12 +3,11 @@ require_relative '../../services/table-geocoder/lib/table_geocoder'
 
 class Geocoding < Sequel::Model
 
-  DEFAULT_TIMEOUT = 15*60
+  DEFAULT_TIMEOUT = 15.minutes
 
   many_to_one :user
   many_to_one :table
   many_to_one :automatic_geocoding
-  TIMEOUT = 15.minutes
 
   attr_reader :table_geocoder
 
@@ -43,6 +42,7 @@ class Geocoding < Sequel::Model
       formatter:  translate_formatter,
       connection: (user.present? ? user.in_database(as: :superuser) : nil),
       remote_id:  remote_id,
+      kind:       kind,
       max_rows:   max_geocodable_rows
     )
     @table_geocoder = CartoDB::TableGeocoder.new(config)
@@ -62,13 +62,8 @@ class Geocoding < Sequel::Model
     self.update remote_id: table_geocoder.remote_id
     started = Time.now
     begin
-      table_geocoder.geocoder.update_status
-      self.update(
-        processed_rows: table_geocoder.geocoder.processed_rows,
-        total_rows: table_geocoder.geocoder.total_rows,
-        state: table_geocoder.geocoder.status
-      )
-      puts "#{processed_rows}/#{total_rows}"
+      self.update(table_geocoder.update_geocoding_status)
+      puts "Processed: #{processed_rows}"
       raise "Geocoding timeout" if Time.now - started > run_timeout and ['started', 'submitted', 'accepted'].include? state
       sleep(2)
     end until ['completed', 'cancelled', 'failed'].include? state
@@ -103,7 +98,7 @@ class Geocoding < Sequel::Model
   end # translate_formatter
 
   def max_geocodable_rows
-    return nil if user.blank? || user.account_type != 'FREE'
+    return nil if user.blank? || !user.hard_geocoding_limit?
     user.geocoding_quota - user.get_geocoding_calls
   rescue
     nil

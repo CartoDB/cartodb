@@ -134,6 +134,10 @@ class Admin::VisualizationsController < ApplicationController
     "/#{resource_base}/#{id}/public"
   end #public_url_for
 
+  def public_map_url_for(id)
+    "/#{resource_base}/#{id}/public_map"
+  end #public_url_for
+
   def embed_map_url_for(id)
     "/#{resource_base}/#{id}/embed_map"
   end #public_url_for

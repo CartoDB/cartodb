@@ -1,6 +1,7 @@
 <% unless token.blank? || Rails.env.development? %>
   <script>
   var _rollbarConfig = {
+    reportLevel:      "info",
     accessToken:      "<%= token %>",
     captureUncaught:  true,
     payload: {

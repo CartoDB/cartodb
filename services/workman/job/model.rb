@@ -7,7 +7,7 @@ require_relative '../../data-repository/repository'
 module Workman
   module Job
     class Model
-      include Virtus
+      include Virtus.model
       include Aequitas
 
       STATES      = %w{ queued running success failure aborted }

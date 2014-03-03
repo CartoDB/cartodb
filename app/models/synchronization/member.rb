@@ -11,7 +11,7 @@ module CartoDB
     end
 
     class Member
-      include Virtus
+      include Virtus.model
 
       STATES                        = %w{ success failure syncing }
       REDIS_LOG_KEY_PREFIX          = 'synchronization'

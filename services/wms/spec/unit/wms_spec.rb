@@ -1,6 +1,4 @@
 # encoding: utf-8
-gem 'minitest'
-require 'minitest/autorun'
 require_relative '../../proxy'
 
 include CartoDB::WMS
@@ -32,13 +30,13 @@ describe Proxy do
 
   describe '#initialize' do
     it 'takes a URL for the service capabilities' do
-      lambda { Proxy.new }.must_raise ArgumentError
+      expect { Proxy.new }.to raise_error ArgumentError
       Proxy.new(@url)
     end
 
     it 'accepts an optional preloaded response' do
       proxy = Proxy.new(@url, @xml)
-      proxy.response.must_equal @xml
+      proxy.response.should eq @xml
     end
   end
 
@@ -46,18 +44,18 @@ describe Proxy do
     it 'returns a hash representation of the WMS capabilities' do
       proxy = Proxy.new(@url, @xml)
       representation = proxy.serialize
-      representation.fetch(:server).wont_be_nil
-      representation.fetch(:formats).wont_be_empty
-      representation.fetch(:layers).wont_be_empty
+      representation.fetch(:server).nil?.should eq false
+      representation.fetch(:formats).empty?.should eq false
+      representation.fetch(:layers).empty?.should eq false
     end
   end
 
   describe '#run' do
     it 'will not touch the preloaded response if passed at initialization' do
       proxy = Proxy.new(@url, @xml)
-      proxy.response.must_equal @xml
+      proxy.response.should eq @xml
       proxy.run
-      proxy.response.must_equal @xml
+      proxy.response.should eq @xml
     end
   end
 
@@ -65,7 +63,7 @@ describe Proxy do
     it 'returns the HTTP/HTTPS entry point for the services' do
       proxy = Proxy.new(@url, @xml)
       proxy.run
-      proxy.server.must_equal @endpoint
+      proxy.server.should eq @endpoint
     end
   end
 
@@ -73,17 +71,17 @@ describe Proxy do
     it 'returns available layers' do
       proxy = Proxy.new(@url, @xml)
       proxy.run
-      proxy.layers.length.must_equal 3
+      proxy.layers.length.should eq 3
 
       url = "http://www2.demis.nl/worldmap/wms.asp?request=GetCapabilities&version=1.0.0"
       proxy = Proxy.new(url)
       proxy.run
-      proxy.layers.wont_be_empty
+      proxy.layers.empty?.should eq false
 
       url = "http://nowcoast.noaa.gov/wms/com.esri.wms.Esrimap/obs?service=WMS&request=GetCapabilities"
       proxy = Proxy.new(url)
       proxy.run
-      proxy.layers.wont_be_empty
+      proxy.layers.empty?.should eq false
     end
   end
 
@@ -103,7 +101,7 @@ describe Proxy do
 
       proxy = Proxy.new(@url, @xml)
       proxy.run
-      proxy.formats.sort.must_equal expected_formats.sort
+      proxy.formats.sort.should eq expected_formats.sort
     end
   end
 end # Proxy

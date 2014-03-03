@@ -19,8 +19,10 @@ class Api::Json::AssetsController < Api::ApplicationController
 
     @asset.save
     render_jsonp(@asset.public_values)
+  rescue Sequel::ValidationFailed => e
+    render json: { error: @asset.errors.full_messages }, status: 400
   rescue => e
-    render_jsonp( { description: e.message }, 400)
+    render json: { error: [e.message] }, status: 400
   end
 
   def destroy

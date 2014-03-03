@@ -30,13 +30,16 @@ module CartoDB
       def run
         return self unless File.exists?(filepath)
 
-        detect_delimiter
+        sanitized_filepath = remove_newlines(temporary_filepath('nl_'))
+        File.rename(sanitized_filepath, filepath)
+
+        detect_delimiter()
 
         return self unless needs_normalization?
 
-        normalize(temporary_filepath)
-        release
-        File.rename(temporary_filepath, filepath)
+        normalize(temporary_filepath())
+        release()
+        File.rename(temporary_filepath(), filepath)
         FileUtils.rm_rf(temporary_directory)
         self.temporary_directory = nil
         self
@@ -132,8 +135,8 @@ module CartoDB
         nil
       end
 
-      def temporary_filepath
-        File.join(temporary_directory, File.basename(filepath))
+      def temporary_filepath(filename_prefix = '')
+        File.join(temporary_directory, filename_prefix + File.basename(filepath))
       end #temporary_path
 
       def csv_options
@@ -206,6 +209,36 @@ module CartoDB
       def stream
         @stream ||= File.open(filepath, 'rb')
       end #stream
+
+      # Attempts to 
+      def remove_newlines(temporary_filepath)
+        sanitized_file = File.open(temporary_filepath, 'wb')
+
+        aggregated_line = ''
+        opened_quotes = 0
+        File.open(filepath, 'rb')
+            .each_line(line_delimiter) { |line| 
+
+          line.each_char { |character|
+            if (character == "\"")
+              opened_quotes += 1
+            end
+            if (character != "\n")
+              aggregated_line += character
+            end
+          }
+
+          if (opened_quotes % 2 == 0)
+            sanitized_file << (aggregated_line + "\n")
+            aggregated_line = ''
+            opened_quotes = 0
+          end
+        }
+
+        sanitized_file.close
+
+        temporary_filepath
+      end
 
       attr_reader   :filepath
       alias_method  :converted_filepath, :filepath

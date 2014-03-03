@@ -55,8 +55,7 @@ module CartoDB
 				if response.code == 200
 					template_data = ::JSON.parse(response.response_body)
 					if template_data.class == Hash
-						# Rails 2.x+
-						template_data = template_data.deep_symbolize_keys
+						template_data = template_data.deep_symbolize_keys   # Rails 2.x+
 					end
 					NamedMap.new(name, template_data, self)
 				elsif response.code == 404

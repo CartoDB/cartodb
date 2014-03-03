@@ -15,3 +15,5 @@
 7|2|b
 7|3|c
 7|4|d
+8|1|SELECT $quoted$ hi
+$quoted$

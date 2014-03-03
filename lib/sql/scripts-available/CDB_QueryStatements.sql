@@ -6,7 +6,7 @@
 CREATE OR REPLACE FUNCTION CDB_QueryStatements(query text) 
 RETURNS SETOF TEXT AS $$
   import re
-  pat = re.compile( r'''((?:[^'"$;]+|"[^"]*"|'[^']*'|(\$[^$]*\$).*?\2)+)''' )
+  pat = re.compile( r'''((?:[^'"$;]+|"[^"]*"|'[^']*'|(\$[^$]*\$).*?\2)+)''', re.DOTALL )
   for match in pat.findall(query):
     cleaned = match[0].strip()
     if ( cleaned ):

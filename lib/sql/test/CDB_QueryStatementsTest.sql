@@ -54,3 +54,10 @@ WITH q AS ( SELECT CDB_QueryStatements($the_param$
     ;
 $the_param$) as statement )
 SELECT '7', row_number() over (), statement FROM q;
+
+
+WITH q AS ( SELECT CDB_QueryStatements($the_param$
+SELECT $quoted$ hi
+$quoted$;
+$the_param$) as statement )
+SELECT '8', row_number() over (), statement FROM q;

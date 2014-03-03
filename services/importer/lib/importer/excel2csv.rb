@@ -39,18 +39,28 @@ module CartoDB
       protected
 
       def remove_newlines(spreadsheet)
+        job.log "Removing newlines"
         spreadsheet.default_sheet = spreadsheet.sheets.first
-        spreadsheet.first_row.upto(spreadsheet.last_row) { |current_row| 
-          spreadsheet.first_column.upto(spreadsheet.last_column) { |current_col|
-            if (spreadsheet.celltype(current_row, current_col) == :string)
-              current_value = spreadsheet.cell(current_row,current_col)
+        job.log "Processing first sheet"
+
+        job.log "Calculating columns (this can take long as will scan the full document)"
+        col_count = spreadsheet.sheet(0).last_column
+        job.log "Calculating rows"
+        row_count = spreadsheet.sheet(0).last_row
+
+        for row_index in 1..row_count
+          for col_index in 1..col_count
+            if (spreadsheet.celltype(row_index, col_index) == :string)
+              current_value = spreadsheet.cell(row_index,col_index)
               # As we are going to export to CSV, remove newlines or will cause problems (even being quoted)
               if (current_value.index("\n") != nil)
-                spreadsheet.set(current_row, current_col, current_value.gsub("\n",''))
+                spreadsheet.set(row_index, col_index, current_value.gsub("\n",''))
               end
             end
-          }
-        }
+          end
+        end
+
+        job.log "Newlines removed"
         spreadsheet
       rescue NoMethodError
         raise XLSXFormatError

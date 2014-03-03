@@ -12,7 +12,7 @@ module CartoDB
 
     SQL_PATTERNS = {
       points: {
-        named_places: 'SELECT (geocode_namedplace(Array[{search_terms}], Array[{country_list}])).*'
+        named_places: 'SELECT (geocode_namedplace(Array[{search_terms}], Array[{country_list}])).*',
         ip_addresses: 'SELECT (geocode_ip(Array[{search_terms}])).*'
       },
       polygons: {

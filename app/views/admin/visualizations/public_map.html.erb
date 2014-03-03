@@ -55,6 +55,10 @@
 
     <%= insert_rollbar() %>
 
+    <!--[if lt IE 9]>
+    <%= javascript_include_tag :"embeds/respond" %>
+    <![endif]-->
+
   </head>
   <body>
     <% if @visualization.public? || @visualization.password_protected? %>
@@ -180,6 +184,7 @@
       <!-- inline statsc -->
       <script type="text/javascript"><%= raw Rails.application.assets['statsc.min.js'].to_s %></script>
     <% end %>
+
 
     <script>
 
@@ -358,8 +363,6 @@
           }
 
         };
-
-
 
         cartodb.createVis('map', <%=raw @visualization.to_vizjson.to_json %>, opt, function(vis) {
           visReadyTime.end();

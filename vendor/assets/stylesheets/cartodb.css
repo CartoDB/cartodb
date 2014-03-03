@@ -1011,6 +1011,12 @@ div.cartodb-body .inner .map-info ul li span {
   font-family: 'ProximaNova-Semibold', Helvetica, sans-serif;
 }
 
+div.cartodb-body a {
+  color: #397DB8;
+  text-decoration: underline;
+  cursor: auto;
+}
+
 div.cartodb-footer {
   font-size:13px;
   font-family: 'Helvetica Neue', Helvetica, sans-serif;

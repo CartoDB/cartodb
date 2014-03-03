@@ -179,11 +179,6 @@
       <% end %>
       <!-- inline statsc -->
       <script type="text/javascript"><%= raw Rails.application.assets['statsc.min.js'].to_s %></script>
-      <!-- inline js errors -->
-      <script type="text/javascript">
-        var cdb = cartodb;
-        <%= raw Rails.application.assets['cartodb/common/error_stats.js'].to_s %>
-      </script>
     <% end %>
 
     <script>
@@ -303,10 +298,6 @@
           cartodb_logo_link: "http://www.cartodb.com?utm_source=Footer_Link&utm_medium=referral&utm_campaign=Embed_v1&utm_content=Logo"
         })
 
-        <% if !Rails.env.development? %>
-          var errors = new cdb.admin.ErrorStats();
-        <% end %>
-        
         var loadingTime = cartodb.core.Profiler.metric('cartodb-js.embed.time_full_loaded').start();
         var visReadyTime = cartodb.core.Profiler.metric('cartodb-js.embed.time_vis_loaded').start();
 
@@ -316,7 +307,6 @@
           $(".cartodb-map-data").css({ top: $(window).height() - 192 });
 
         };
-
 
         var setupMapDimensions;
 

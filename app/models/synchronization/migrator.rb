@@ -21,7 +21,13 @@ module CartoDB
           DateTime  :updated_at, null: false
           DateTime  :run_at
           DateTime  :ran_at
+          DateTime  :modified_at
           Integer   :retried_times
+          String    :etag
+          String    :checksum
+          String    :log_id
+          Integer   :error_code
+          String    :error_message
         end
       end #migrate
 

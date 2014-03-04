@@ -38,6 +38,7 @@ module CartoDB
       def initialize(attributes={}, repository=Synchronization.repository)
         super(attributes)
 
+        self.log_trace      = nil
         @repository         = repository
         self.id             ||= @repository.next_id
         self.state          ||= 'created'
@@ -53,7 +54,7 @@ module CartoDB
         if seconds
           self.run_at = Time.now + (seconds.to_i || 3600)
         end
-        @seconds
+        seconds
       end
 
       def store
@@ -82,6 +83,7 @@ module CartoDB
 
       def run
         self.state    = 'syncing'
+
         log           = TrackRecord::Log.new(
                           prefix:     REDIS_LOG_KEY_PREFIX,
                           expiration: REDIS_LOG_EXPIRATION_IN_SECS
@@ -91,9 +93,10 @@ module CartoDB
 
         downloader    = CartoDB::Importer2::Downloader.new(
                           url,
-                          etag:           etag,
-                          last_modified:  modified_at,
-                          checksum:       checksum
+                          etag:             etag,
+                          last_modified:    modified_at,
+                          checksum:         checksum,
+                          verify_ssl_cert:  false
                         )
         runner        = CartoDB::Importer2::Runner.new(
                           pg_options, downloader, log, user.remaining_quota
@@ -101,7 +104,7 @@ module CartoDB
         database      = user.in_database
         importer      = CartoDB::Synchronization::Adapter
                           .new(name, runner, database, user)
-        
+
         importer.run
         self.ran_at   = Time.now
         self.run_at   = Time.now + interval
@@ -109,8 +112,10 @@ module CartoDB
         if importer.success?
           set_success_state_from(importer)
         elsif retried_times < 3
+          @log_trace = importer.runner_log_trace
           set_retry_state_from(importer)
         else
+          @log_trace = importer.runner_log_trace
           set_failure_state_from(importer)
         end
 
@@ -124,7 +129,8 @@ module CartoDB
       end
 
       def set_success_state_from(importer)
-        self.log            << "******** synchronization succeeded ********" 
+        self.log            << '******** synchronization succeeded ********'
+        self.log_trace      = nil
         self.state          = 'success'
         self.etag           = importer.etag
         self.checksum       = importer.checksum
@@ -141,14 +147,16 @@ module CartoDB
       # Tries to run automatic geocoding if present
       def geocode_table
         return unless table && table.automatic_geocoding
-        self.log << "Running automatic geocoding..." 
+        self.log << 'Running automatic geocoding...'
         table.automatic_geocoding.run
       rescue => e
         self.log << "Error while running automatic geocoding: #{e.message}" 
       end # geocode_table
 
       def set_retry_state_from(importer)
-        self.log     << "******** synchronization failed, will retry ********" 
+        self.log            << '******** synchronization failed, will retry ********'
+        self.log_trace      = importer.runner_log_trace
+        self.log            << "*** Runner log: #{self.log_trace} \n***" unless self.log_trace.nil?
         self.state          = 'success'
         self.error_code     = importer.error_code
         self.error_message  = importer.error_message
@@ -156,7 +164,9 @@ module CartoDB
       end
 
       def set_failure_state_from(importer)
-        self.log            << "******** synchronization failed ********" 
+        self.log            << '******** synchronization failed ********'
+        self.log_trace      = importer.runner_log_trace
+        self.log            << "*** Runner log: #{self.log_trace} \n***" unless self.log_trace.nil?
         self.state          = 'failure'
         self.error_code     = importer.error_code
         self.error_message  = importer.error_message
@@ -218,13 +228,16 @@ module CartoDB
 
       def valid_uuid?(text)
         !!UUIDTools::UUID.parse(text)
-      rescue TypeError => exception
+      rescue TypeError
         false
-      rescue ArgumentError => exception
+      rescue ArgumentError
         false
       end
 
       attr_reader :repository
+
+      attr_accessor :log_trace
+
     end # Member
   end # Synchronization
 end # CartoDB

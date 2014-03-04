@@ -118,8 +118,15 @@
 
                 <h2>Datasets used in this map</h2>
                 <ul>
+
                   <% @related_tables.each do |table| %>
-                    <li><a href="/tables/<%= table.name %>/public" title="<%= table.name %>"><%= table.name %></a><span><%= number_to_human_size(table.table_size) %></span></li>
+                    <% if (table.privacy_text == "PUBLIC") %>
+                      <li><a href="/tables/<%= table.name %>/public" title="<%= table.name.gsub(/_/," ") %>"><%= table.name.gsub(/_/, " ") %></a><span><%= number_to_human_size(table.table_size) %></span></li>
+                    <% end %>
+                  <% end %>
+
+                  <% if (@private_tables_count > 0) %>
+                    <li class="private"><%= @private_tables_count %> private dataset<%= @private_tables_count != 1 ? 's' : '' %><span class="help" original-title="This map contains 2 private datasets only accesible to the map publisher">(?)</span></li>
                   <% end %>
                 </ul>
 
@@ -130,7 +137,9 @@
               <div class="content">
                 <div id="disqus_thread"></div>
                 <script type="text/javascript">
-                  var disqus_shortname = 'cartodb'; 
+
+                  var disqus_shortname  = 'cartodb'; 
+                  var disqus_identifier = '<%= @visualization.id %>';
 
                   (function() {
                     var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
@@ -393,6 +402,15 @@
       });
 
     </script>
+
+    <%= javascript_include_tag :"jquery.tipsy" %>
+
+    <script type="text/javascript">
+      $(function() {
+        $("span.help").tipsy({ gravity: "s", fade: true });
+      });
+    </script>
+
     <%= render partial: 'shared/analytics', locals: { 
       ua:     Cartodb.config[:google_analytics]['embeds'],
       domain: Cartodb.config[:google_analytics]['domain'],

@@ -52,6 +52,7 @@ class Admin::VisualizationsController < ApplicationController
     @avatar_url = get_avatar(@visualization, 64)
     @visualization_count = @visualization.user.visualization_count
     @related_tables = @visualization.related_tables
+    @private_tables_count = @related_tables.select{|p| p.privacy_text == 'PRIVATE' }.count 
 
     respond_to do |format|
       format.html { render layout: false }

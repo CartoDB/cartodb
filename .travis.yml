@@ -43,8 +43,8 @@ script:
   - make prepare-test-db
   - make check-prepared
   # check list of database names
-  - sudo su postgres -c "echo 'select datname from pg_database;' | psql template_postgis"
   - cd lib/assets && grunt test && cd ../..
+  - sudo su postgres -c "echo 'select datname from pg_database;' | psql template_postgis"
 
 env:
 

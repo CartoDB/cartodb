@@ -1,6 +1,5 @@
 # encoding: utf-8
 require_relative '../sql_api.rb'
-require 'ruby-debug'
 
 RSpec.configure do |config|
   config.mock_with :mocha

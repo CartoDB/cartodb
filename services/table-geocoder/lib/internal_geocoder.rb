@@ -5,8 +5,8 @@ require_relative 'geocoder_cache'
 module CartoDB
   class InternalGeocoder
 
-    attr_reader   :connection, :working_dir, :temp_table_name,
-                  :sql_api, :cache_results
+    attr_reader   :connection, :temp_table_name, :sql_api, :geocoding_results,
+                  :working_dir
 
     attr_accessor :table_name, :column_name
 
@@ -25,13 +25,13 @@ module CartoDB
     def initialize(arguments)
       @sql_api     = arguments.fetch(:sql_api)
       @connection  = arguments.fetch(:connection)
-      @working_dir = arguments[:working_dir] || Dir.mktmpdir
+      @working_dir = Dir.mktmpdir
       `chmod 777 #{@working_dir}`
       @table_name  = arguments[:table_name]
       @column_name = arguments[:column_name]
       @schema      = arguments[:schema] || 'cdb'
       @batch_size  = 5
-      @cache_results = File.join(working_dir, "#{temp_table_name}_results.csv")
+      @geocoding_results = File.join(working_dir, "#{temp_table_name}_results.csv")
     end # initialize
 
     def run
@@ -48,9 +48,9 @@ module CartoDB
         search_terms = get_search_terms(count)
         sql = sql_pattern.gsub '{search_terms}', search_terms.join(',')
         response = run_query(sql, 'csv').gsub(/\A.*/, '').gsub(/^$\n/, '')
-        File.open(cache_results, 'a') { |f| f.write(response.force_encoding("UTF-8")) } unless response == "\n"
+        File.open(geocoding_results, 'a') { |f| f.write(response.force_encoding("UTF-8")) } unless response == "\n"
       end while search_terms.size >= @batch_size # && (count * @batch_size) + rows.size < @max_rows
-      cache_results
+      geocoding_results
     end # download_results
 
     def get_search_terms(page)
@@ -91,16 +91,20 @@ module CartoDB
     end # drop_temp_table
 
     def temp_table_name
-      @temp_table_name ||= "geocoding_cache_#{Time.now.to_i}"
+      @temp_table_name ||= "internal_geocoding_#{Time.now.to_i}"
     end # temp_table_name
 
     def run_query(query, format = '')
       params = { q: query, api_key: sql_api[:api_key], format: format }
-      response = Typhoeus.post(
+      response = Typhoeus::Request.new(
         sql_api[:base_url],
-        body: URI.encode_www_form(params)
-      )
-      response.body
+        method: :post,
+        body: URI.encode_www_form(params),
+        headers: { 'Accept-Encoding' => 'gzip,deflate' }
+      ).run
+      Zlib::GzipReader.new(StringIO.new(response.body.to_s)).read
+    rescue Zlib::GzipFile::Error
+      return response.body.to_s
     end # run_query
 
   end # InternalGeocoder

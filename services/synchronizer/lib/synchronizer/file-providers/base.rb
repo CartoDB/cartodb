@@ -3,7 +3,7 @@
 module CartoDB
   module Synchronizer
     module FileProviders
-      class Base
+      class BaseProvider
 
         FORMAT_CSV = 'csv'
         FORMAT_EXCEL = 'xls'

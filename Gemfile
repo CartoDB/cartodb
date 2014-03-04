@@ -62,6 +62,7 @@ gem 'dbf',                     '2.0.6'
 
 # Sync tables
 gem 'faraday',                 '0.9.0'
+gem 'retriable',               '1.4.1'
 gem 'google-api-client',       '0.7.0'
 gem 'dropbox-sdk',             '1.6.3'
 

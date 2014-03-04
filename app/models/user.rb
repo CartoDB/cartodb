@@ -401,10 +401,11 @@ $$
   def get_api_calls(options = {})
     date_to = (options[:to] ? options[:to].to_date : Date.today)
     date_from = (options[:from] ? options[:from].to_date : Date.today - 29.days)
-    calls = []
-    date_to.downto(date_from) do |date|
-      calls << $users_metadata.ZSCORE("user:#{username}:mapviews:global", date.strftime("%Y%m%d")).to_i
-    end
+    calls = $users_metadata.pipelined do
+      date_to.downto(date_from) do |date|
+        $users_metadata.ZSCORE "user:#{username}:mapviews:global", date.strftime("%Y%m%d")
+      end
+    end.map &:to_i
 
     # Add old api calls
     old_calls = get_old_api_calls["per_day"].to_a.reverse rescue []

@@ -30,23 +30,25 @@ module CartoDB
       def run
         return self unless File.exists?(filepath)
 
-        detect_delimiter
+        sanitized_filepath = remove_newlines(temporary_filepath('nl_'))
+        File.rename(sanitized_filepath, filepath)
+
+        detect_delimiter()
 
         return self unless needs_normalization?
 
-        normalize(temporary_filepath)
-        release
-        File.rename(temporary_filepath, filepath)
+        normalize(temporary_filepath())
+        release()
+        File.rename(temporary_filepath(), filepath)
         FileUtils.rm_rf(temporary_directory)
         self.temporary_directory = nil
         self
       end #run
 
       def detect_delimiter
+
         # Calculate variances of the N first lines for each delimiter, then grab the one that changes less
         @delimiter = DEFAULT_DELIMITER unless first_line
-
-        stream.rewind
 
         lines_for_detection = Array.new
 
@@ -55,9 +57,16 @@ module CartoDB
           lines_for_detection << line unless line.nil?
         }
 
-        # Maybe gets was not able to discern line breaks, try manually
+        stream.rewind
+
+        # Maybe gets was not able to discern line breaks, try manually:
         if lines_for_detection.size == 1
-          lines_for_detection = lines_for_detection.first.first
+          lines_for_detection = lines_for_detection.first
+          # Did it read as columns instead of rows?
+          if (lines_for_detection.class == Array)
+            lines_for_detection.first
+          end
+          # Carriage return without newline
           lines_for_detection = lines_for_detection.split("\x0D")
         end
 
@@ -67,6 +76,8 @@ module CartoDB
               line.count(delimiter) }] 
           }
         ]
+
+        stream.rewind
 
         variances = Hash.new
         @delimiter = DEFAULT_DELIMITER
@@ -105,6 +116,7 @@ module CartoDB
 
         File.open(filepath, 'rb', external_encoding: encoding)
         .each_line(line_delimiter) { |line| 
+
           row = parsed_line(line)
           next unless row
           temporary_csv << multiple_column(row)
@@ -123,8 +135,8 @@ module CartoDB
         nil
       end
 
-      def temporary_filepath
-        File.join(temporary_directory, File.basename(filepath))
+      def temporary_filepath(filename_prefix = '')
+        File.join(temporary_directory, filename_prefix + File.basename(filepath))
       end #temporary_path
 
       def csv_options
@@ -184,6 +196,7 @@ module CartoDB
         return @first_line if @first_line
         stream.rewind
         @first_line ||= stream.gets
+        stream.rewind
       end #first_line
 
       def release
@@ -196,6 +209,36 @@ module CartoDB
       def stream
         @stream ||= File.open(filepath, 'rb')
       end #stream
+
+      # Attempts to 
+      def remove_newlines(temporary_filepath)
+        sanitized_file = File.open(temporary_filepath, 'wb')
+
+        aggregated_line = ''
+        opened_quotes = 0
+        File.open(filepath, 'rb')
+            .each_line(line_delimiter) { |line| 
+
+          line.each_char { |character|
+            if (character == "\"")
+              opened_quotes += 1
+            end
+            if (character != "\n")
+              aggregated_line += character
+            end
+          }
+
+          if (opened_quotes % 2 == 0)
+            sanitized_file << (aggregated_line + "\n")
+            aggregated_line = ''
+            opened_quotes = 0
+          end
+        }
+
+        sanitized_file.close
+
+        temporary_filepath
+      end
 
       attr_reader   :filepath
       alias_method  :converted_filepath, :filepath

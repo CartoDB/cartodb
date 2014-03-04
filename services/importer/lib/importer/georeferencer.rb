@@ -9,8 +9,7 @@ module CartoDB
         latitud lati decimallatitude decimallat }
       LONGITUDE_POSSIBLE_NAMES  = %w{ longitude lon lng 
         longitudedecimal longitud long decimallongitude decimallong }
-      GEOMETRY_POSSIBLE_NAMES   = %w{ geometry the_geom wkb_geometry geom
-                                      geojson wkt }
+      GEOMETRY_POSSIBLE_NAMES   = %w{ geometry the_geom wkb_geometry geom geojson wkt }
       DEFAULT_SCHEMA            = 'cdb_importer'
       THE_GEOM_WEBMERCATOR     = 'the_geom_webmercator'
 
@@ -21,7 +20,6 @@ module CartoDB
         @table_name = table_name
         @schema     = schema
         @geometry_columns = geometry_columns || GEOMETRY_POSSIBLE_NAMES
-        @is_multipoint = false
       end #initialize
 
       def run
@@ -48,7 +46,7 @@ module CartoDB
       end #create_the_geom_from_latlon
 
       def create_the_geom_from_geometry_column
-        geometry_column_name = geometry_column_in(table_name)
+        geometry_column_name = geometry_column_in(qualified_table_name)
         return false unless geometry_column_name
         column = Column.new(db, table_name, geometry_column_name, schema, job)
         column.geometrify
@@ -58,10 +56,10 @@ module CartoDB
         end
 
         job.log "Creating the_geom from #{geometry_column_name} column"
-        @is_multipoint = multipoint?
-        handle_multipoint(column) if @is_multipoint
+        handle_multipoint(qualified_table_name) if multipoint?
         self
       rescue => exception
+        job.log "Error creating the_geom: #{exception}"
         if column.empty?
           job.log "Dropping empty #{geometry_column_name}"
           column.drop 
@@ -135,7 +133,7 @@ module CartoDB
       end #drop_the_geom_webmercator
 
       def raise_if_geometry_collection
-        column = Column.new(db, table_name, @is_multipoint ? :the_geom_raw : :the_geom, schema, job)
+        column = Column.new(db, table_name, :the_geom, schema, job)
         return self unless column.geometry_type == 'GEOMETRYCOLLECTION'
         raise GeometryCollectionNotSupportedError
       end #raise_if_geometry_collection
@@ -153,9 +151,12 @@ module CartoDB
         !!sample && sample.fetch(:column_name, false)
       end #find_column_in
 
-      def handle_multipoint(column)
-        job.log "Renaming the_geom to the_geom_raw"
-        column.rename_to(:the_geom_raw)
+      def handle_multipoint(qualified_table_name)
+        job.log "Converting detected multipoint to point"
+        db.run(%Q{
+          UPDATE #{qualified_table_name} 
+          SET the_geom = ST_GeometryN(the_geom, 1)
+        })
       end #handle_multipoint
 
       def multipoint?

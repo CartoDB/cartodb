@@ -46,27 +46,18 @@
 
     <% if !Rails.env.production? %>
       <%= stylesheet_link_tag 'cdb/themes/css/cartodb' %>
-      <!--[if lte IE 8]>
-      <%= stylesheet_link_tag 'cdb/themes/css/cartodb.ie' %>
-      <![endif]-->
     <% else %>
      <% if request.protocol == 'https://' %>
         <link rel="stylesheet" href="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/themes/css/cartodb.css" />
-        <!--[if lte IE 8]>
-        <link rel="stylesheet" href="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/themes/css/cartodb.ie.css" />
-        <![endif]-->
      <% else %>
         <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.css" />
-        <!--[if lte IE 8]>
-        <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.ie.css" />
-        <![endif]-->
      <% end %>
 
     <% end %>
 
   </head>
   <body>
-    <% if @visualization.public? %>
+    <% if @visualization.public? || @visualization.password_protected? %>
       <div id="map"></div>
       <div id="not_supported_dialog" style="display: none">
         <h2>CartoDB</h2>
@@ -89,13 +80,15 @@
 
     <% if !Rails.env.production? %>
       <%= javascript_include_tag :cdb %>
+      <script type="text/javascript"><%= raw Rails.application.assets['statsc.min.js'].to_s %></script>
     <% else %>
       <% if request.protocol == 'https://' %>
         <script src="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/cartodb.js"></script>
       <% else %>
         <script src="http://libs.cartocdn.com/cartodb.js/v3/cartodb.js"></script>
+        <!-- inline statsc -->
+        <script type="text/javascript"><%= raw Rails.application.assets['statsc.min.js'].to_s %></script>
       <% end %>
-
     <% end %>
 
     <script>
@@ -132,7 +125,33 @@
           }
       }
 
+      function stats() {
+          var browser;
+          var ua = navigator.userAgent;
+          var checks = [
+              ['MSIE 10.0', 'ms10'],
+              ['MSIE 9.0', 'ms9'],
+              ['MSIE 8.0', 'ms8'],
+              ['MSIE 7.0','ms7'],
+              ['Chrome', 'chr'],
+              ['Firefox', 'ff'],
+              ['Safari', 'ff']
+          ]
+          for(var i = 0; i < checks.length && !browser; ++i) {
+            if(ua.indexOf(checks[i][0]) !== -1) browser = checks[i][1];
+          }
+          browser = browser || 'none';
+          cartodb.core.Profiler.metric('cartodb-js.embed.' + browser).inc();
+      }
+
       $(document).ready(function(){
+
+        <% if request.protocol != 'https://' %>
+        statsc.connect('http://<%= Cartodb.config[:graphite_public]['host'] %>:<%= Cartodb.config[:graphite_public]['port'] %>/');
+        cartodb.core.Profiler.backend(function () {
+          statsc.send.apply(statsc, arguments);
+        })
+        <% end %>
 
         var bool_fn = function(v) { return v == 'true' }
         , is_custom_install = <%= Cartodb.config[:cartodb_com_hosted].present? %>
@@ -153,6 +172,7 @@
           'title':        bool_fn,
           'description':  bool_fn,
           'shareable':    bool_fn,
+          'fullscreen':   bool_fn,
           'cartodb_logo': logo_fn,
           'scrollwheel':  bool_fn,
           'sublayer_options': layer_fn,
@@ -160,18 +180,32 @@
           'legends': bool_fn
         });
 
+        <% if (@visualization.password_protected?) %>
+          opt.auth_token = '<%= @protected_map_token %>';
+          opt.https = true; // when auth_token is used tiles should be fetch using https
+        <% end %>
+
         <% if Rails.env.development? || Cartodb.config[:no_cdn] == true %>
-        opt.no_cdn = true;
+          opt.no_cdn = true;
         <% end %>
 
         cartodb.config.set({
           cartodb_attributions: "CartoDB <a href='http://cartodb.com/attributions?utm_source=Footer_Link&utm_medium=referral&utm_campaign=Embed_v1&utm_content=Attributions&utm_term=<%= @visualization.user.username %>' target='_blank'>attribution</a>",
-          cartodb_logo_link: "http://www.cartodb.com?utm_source=Footer_Link&utm_medium=referral&utm_campaign=Embed_v1&utm_content=Logo",
+          cartodb_logo_link: "http://www.cartodb.com?utm_source=Footer_Link&utm_medium=referral&utm_campaign=Embed_v1&utm_content=Logo"
         })
 
+        var loadingTime = cartodb.core.Profiler.metric('cartodb-js.embed.time_full_loaded').start();
+        var visReadyTime = cartodb.core.Profiler.metric('cartodb-js.embed.time_vis_loaded').start();
+
         cartodb.createVis('map', <%=raw @visualization.to_vizjson.to_json %>, opt, function(vis) {
+          visReadyTime.end();
+          vis.on('load', function() {
+            loadingTime.end();
+          })
           // add here your code
           window.vis = vis;
+          // some stats
+          stats();
         }).on('error', manageError);
       });
 

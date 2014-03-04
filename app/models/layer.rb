@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+require_relative 'layer/presenter'
+
 class Layer < Sequel::Model
   plugin :serialization, :json, :options, :infowindow
   
@@ -42,7 +44,16 @@ class Layer < Sequel::Model
   def validate
     super
     errors.add(:kind, "not accepted") unless ALLOWED_KINDS.include?(kind)
-  end
+
+    if ((Cartodb.config[:enforce_non_empty_layer_css] rescue true))
+      style = options.include?('tile_style') ? options['tile_style'] : nil
+      if style.nil? || style.strip.empty?
+        errors.add(:options, 'Tile style is empty')
+        Statsd.increment('cartodb-com.errors.empty-css')
+        Statsd.increment('cartodb-com.errors.total')
+      end
+    end
+  end #validate
 
   def before_save
     super  
@@ -135,6 +146,10 @@ class Layer < Sequel::Model
   def legend
     options['legend']
   end #legend
+
+  def get_presenter(options, configuration)
+    CartoDB::Layer::Presenter.new(self, options, configuration)
+  end #get_presenter
 
   private
 

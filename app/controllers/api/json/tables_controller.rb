@@ -1,5 +1,6 @@
 # coding: UTF-8
 require_relative '../../../models/visualization/presenter'
+require_relative '../../../../services/named-maps-api-wrapper/lib/named-maps-wrapper/exceptions'
 
 class Api::Json::TablesController < Api::ApplicationController
   TABLE_QUOTA_REACHED_TEXT = 'You have reached your table quota'
@@ -75,6 +76,7 @@ class Api::Json::TablesController < Api::ApplicationController
           @table.save(:name)
         end
       end
+
     end
 
     @table.set_except(params, :name)
@@ -94,6 +96,34 @@ class Api::Json::TablesController < Api::ApplicationController
   rescue => e
     CartoDB::Logger.info e.class.name, e.message
     render_jsonp({ :errors => [translate_error(e.message.split("\n").first)] }, 400) and return
+  rescue CartoDB::NamedMapsWrapper::HTTPResponseError => exception
+    render_jsonp({ errors: { named_maps_api: "Communication error with tiler API. HTTP Code: #{exception.message}" } }, 400)
+  rescue CartoDB::NamedMapsWrapper::NamedMapDataError => exception
+    render_jsonp({ errors: { named_map: exception } }, 400)
+  rescue CartoDB::NamedMapsWrapper::NamedMapsDataError => exception
+    render_jsonp({ errors: { named_maps: exception } }, 400)
+  end
+
+  def destroy
+    @table.destroy
+    head :no_content
+  rescue CartoDB::NamedMapsWrapper::HTTPResponseError => exception
+    render_jsonp({ errors: { named_maps_api: "Communication error with tiler API. HTTP Code: #{exception.message}" } }, 400)
+  rescue CartoDB::NamedMapsWrapper::NamedMapDataError => exception
+    render_jsonp({ errors: { named_map: exception } }, 400)
+  rescue CartoDB::NamedMapsWrapper::NamedMapsDataError => exception
+    render_jsonp({ errors: { named_maps: exception } }, 400)
+  end
+
+  def vizzjson
+    @table = Table.find_by_subdomain(CartoDB.extract_subdomain(request), params[:id])
+    if @table.present? && (@table.public? || (current_user.present? && @table.owner.id == current_user.id))
+      response.headers['X-Cache-Channel'] = "#{@table.varnish_key}:vizjson"
+      response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
+      render_jsonp({})
+    else
+      head :forbidden
+    end
   end
 
   protected

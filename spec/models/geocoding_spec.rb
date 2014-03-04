@@ -7,6 +7,10 @@ describe Geocoding do
     @table = FactoryGirl.create(:table, user_id: @user.id)
   end
 
+  before(:each) do
+    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+  end
+
   describe '#setup' do
     let(:geocoding) { FactoryGirl.create(:geocoding, user: @user, table: @table) }
 
@@ -66,7 +70,6 @@ describe Geocoding do
       CartoDB::Geocoder.any_instance.stubs(:update_status).returns true
       CartoDB::Geocoder.any_instance.stubs(:total_rows).returns 20
       CartoDB::Geocoder.any_instance.stubs(:processed_rows).returns 10
-
       geocoding.run!
       geocoding.total_rows.should eq 20
       geocoding.processed_rows.should eq 10
@@ -89,9 +92,10 @@ describe Geocoding do
       CartoDB::TableGeocoder.any_instance.stubs(:process_results).returns true
       CartoDB::Geocoder.any_instance.stubs(:status).returns 'submitted'
       CartoDB::Geocoder.any_instance.stubs(:update_status).returns true
-      Timecop.scale(3600)
-      expect { geocoding.run! }.to raise_error
+      geocoding.run_timeout = 0.1
+      geocoding.run!
       geocoding.reload.state.should eq 'failed'
+      geocoding.run_timeout = Geocoding::DEFAULT_TIMEOUT
     end
 
     pending 'creates an automatic geocoder' do
@@ -100,6 +104,7 @@ describe Geocoding do
       CartoDB::TableGeocoder.any_instance.stubs(:process_results).returns true
       CartoDB::Geocoder.any_instance.stubs(:status).returns 'completed'
       CartoDB::Geocoder.any_instance.stubs(:update_status).returns true
+      CartoDB.expects(:notify_exception).once.returns(true)
       expect { geocoding.run! }.to change { AutomaticGeocoding.count }.by(1)
       geocoding.automatic_geocoding_id.should_not be_nil
     end

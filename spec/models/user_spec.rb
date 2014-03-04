@@ -15,6 +15,7 @@ describe User do
   end
 
   before(:each) do
+    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
     CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
   end
 
@@ -48,16 +49,30 @@ describe User do
   end
 
   it "should authenticate if given email and password are correct" do
-    User.authenticate('admin@example.com', 'admin123').should == @user
+    response_user = User.authenticate('admin@example.com', 'admin123')
+    response_user.id.should eq @user.id
+    response_user.email.should eq @user.email
+
     User.authenticate('admin@example.com', 'admin321').should be_nil
     User.authenticate('', '').should be_nil
   end
 
   it "should authenticate with case-insensitive email and username" do
-    User.authenticate('admin@example.com', 'admin123').should == @user
-    User.authenticate('aDMin@eXaMpLe.Com', 'admin123').should == @user
-    User.authenticate('admin', 'admin123').should == @user
-    User.authenticate('ADMIN', 'admin123').should == @user
+    response_user = User.authenticate('admin@example.com', 'admin123')
+    response_user.id.should eq @user.id
+    response_user.email.should eq @user.email
+
+    response_user_2 = User.authenticate('aDMin@eXaMpLe.Com', 'admin123')
+    response_user_2.id.should eq @user.id
+    response_user_2.email.should eq @user.email
+
+    response_user_3 = User.authenticate('admin', 'admin123')
+    response_user_3.id.should eq @user.id
+    response_user_3.email.should eq @user.email
+
+    response_user_4 = User.authenticate('ADMIN', 'admin123')
+    response_user_4.id.should eq @user.id
+    response_user_4.email.should eq @user.email
   end
 
   it "should only allow legal usernames" do
@@ -177,6 +192,12 @@ describe User do
     @user.save
   end
 
+  it "should rebuild the quota trigger after changing the quota" do
+    @user.expects(:rebuild_quota_trigger).once
+    @user.quota_in_bytes = @user.quota_in_bytes + 1.megabytes
+    @user.save
+  end
+
   it "should read api calls from external service" do
     @user.stubs(:get_old_api_calls).returns({
       "per_day" => [0, 0, 0, 0, 24, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 17, 0, 0, 0, 0, 0], 
@@ -195,7 +216,7 @@ describe User do
       User.overquota.should be_empty
       User.any_instance.stubs(:get_api_calls).returns (0..30).to_a
       User.any_instance.stubs(:map_view_quota).returns 10
-      User.overquota.should include(@user)
+      User.overquota.map(&:id).should include(@user.id)
       User.overquota.size.should == User.count
     end
 
@@ -203,7 +224,7 @@ describe User do
       User.any_instance.stubs(:get_api_calls).returns([81])
       User.any_instance.stubs(:map_view_quota).returns(100)
       User.overquota.should be_empty
-      User.overquota(0.20).should include(@user)
+      User.overquota(0.20).map(&:id).should include(@user.id)
       User.overquota(0.20).size.should == User.count
       User.overquota(0.10).should be_empty
     end
@@ -214,7 +235,7 @@ describe User do
       User.any_instance.stubs(:get_geocoding_calls).returns(81)
       User.any_instance.stubs(:geocoding_quota).returns(100)
       User.overquota.should be_empty
-      User.overquota(0.20).should include(@user)
+      User.overquota(0.20).map(&:id).should include(@user.id)
       User.overquota(0.20).size.should == User.count
       User.overquota(0.10).should be_empty
     end
@@ -622,6 +643,22 @@ describe User do
     @user.trial_ends_at.should be_nil
     @user.stubs(:upgraded_at).returns(Time.now - 15.days)
     @user.trial_ends_at.should_not be_nil
+  end
+
+  describe '#hard_geocoding_limit?' do
+    it 'returns true when the plan is AMBASSADOR or FREE' do
+      @user.stubs(:account_type).returns('AMBASSADOR')
+      @user.hard_geocoding_limit?.should be_true
+      @user.stubs(:account_type).returns('FREE')
+      @user.hard_geocoding_limit?.should be_true
+    end
+
+    it 'returns false when the plan is CORONELLI or MERCATOR' do
+      @user.stubs(:account_type).returns('CORONELLI')
+      @user.hard_geocoding_limit?.should be_false
+      @user.stubs(:account_type).returns('MERCATOR')
+      @user.hard_geocoding_limit?.should be_false
+    end
   end
 
   describe '#link_ghost_tables' do

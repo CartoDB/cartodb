@@ -31,3 +31,4 @@ cartodb.sublime-project
 lib/assets/dist
 lib/assets/node_modules
 .idea
+.ruby-gemset

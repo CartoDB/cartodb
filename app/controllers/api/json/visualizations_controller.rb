@@ -8,6 +8,7 @@ require_relative '../../../models/visualization/copier'
 require_relative '../../../models/visualization/name_generator'
 require_relative '../../../models/visualization/table_blender'
 require_relative '../../../models/map/presenter'
+require_relative '../../../../services/named-maps-api-wrapper/lib/named-maps-wrapper/exceptions'
 
 class Api::Json::VisualizationsController < Api::ApplicationController
   include CartoDB
@@ -78,6 +79,9 @@ class Api::Json::VisualizationsController < Api::ApplicationController
                   )
     end
 
+    # Make public by default
+    member.privacy = Visualization::Member::PRIVACY_PUBLIC
+
     member.store
     collection  = Visualization::Collection.new.fetch
     collection.add(member)
@@ -86,6 +90,12 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     render_jsonp(member)
   rescue CartoDB::InvalidMember => exception
     render_jsonp({ errors: member.full_errors }, 400)
+  rescue CartoDB::NamedMapsWrapper::HTTPResponseError => exception
+    render_jsonp({ errors: { named_maps_api: "Communication error with tiler API. HTTP Code: #{exception.message}" } }, 400)
+  rescue CartoDB::NamedMapsWrapper::NamedMapDataError => exception
+    render_jsonp({ errors: { named_map: exception } }, 400)
+  rescue CartoDB::NamedMapsWrapper::NamedMapsDataError => exception
+    render_jsonp({ errors: { named_maps: exception } }, 400)
   end #create
 
   def show
@@ -100,13 +110,34 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     member = Visualization::Member.new(id: params.fetch('id')).fetch
     return head(401) unless member.authorize?(current_user)
 
-    member.attributes = payload
-    member.store.fetch
+    # when a table gets renamed, first it's canonical visualization is renamed, so we must revert renaming if that failed
+    # This is far from perfect, but works without messing with table-vis sync and their two backends
+    if member.table?
+      old_vis_name = member.name
+      member.attributes = payload  
+      new_vis_name = member.name
+      old_table_name = member.table.name
+      member.store.fetch
+      if (new_vis_name != old_vis_name && member.table.name == old_table_name)
+        member.name = old_vis_name
+        member.store.fetch
+      end
+    else
+      member.attributes = payload  
+      member.store.fetch
+    end
+
     render_jsonp(member)
   rescue KeyError
     head(404)
   rescue CartoDB::InvalidMember => exception
     render_jsonp({ errors: member.full_errors }, 400)
+  rescue CartoDB::NamedMapsWrapper::HTTPResponseError => exception
+    render_jsonp({ errors: { named_maps_api: "Communication error with tiler API. HTTP Code: #{exception.message}" } }, 400)
+  rescue CartoDB::NamedMapsWrapper::NamedMapDataError => exception
+    render_jsonp({ errors: { named_map: exception } }, 400)
+  rescue CartoDB::NamedMapsWrapper::NamedMapsDataError => exception
+    render_jsonp({ errors: { named_maps: exception } }, 400)
   end #update
 
   def destroy
@@ -117,6 +148,12 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     return head 204
   rescue KeyError
     head(404)
+  rescue CartoDB::NamedMapsWrapper::HTTPResponseError => exception
+    render_jsonp({ errors: { named_maps_api: "Communication error with tiler API. HTTP Code: #{exception.message}" } }, 400)
+  rescue CartoDB::NamedMapsWrapper::NamedMapDataError => exception
+    render_jsonp({ errors: { named_map: exception } }, 400)
+  rescue CartoDB::NamedMapsWrapper::NamedMapsDataError => exception
+    render_jsonp({ errors: { named_maps: exception } }, 400)
   end #destroy
 
   def stats
@@ -148,6 +185,12 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     render_jsonp(visualization.to_vizjson)
   rescue KeyError => exception
     render(text: exception.message, status: 403)
+  rescue CartoDB::NamedMapsWrapper::HTTPResponseError => exception
+    render_jsonp({ errors: { named_maps_api: "Communication error with tiler API. HTTP Code: #{exception.message}" } }, 400)
+  rescue CartoDB::NamedMapsWrapper::NamedMapDataError => exception
+    render_jsonp({ errors: { named_map: exception } }, 400)
+  rescue CartoDB::NamedMapsWrapper::NamedMapsDataError => exception
+    render_jsonp({ errors: { named_maps: exception } }, 400)
   end #vizjson
 
   private
@@ -185,11 +228,11 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   end #payload
 
   def payload_with_default_privacy
-    { privacy: default_privacy}.merge(payload)
+    { privacy: default_privacy }.merge(payload)
   end #payload_with_default_privacy
 
   def default_privacy
-    current_user.private_tables_enabled ? 'private' : 'public'
+    current_user.private_tables_enabled ? Visualization::Member::PRIVACY_PRIVATE : Visualization::Member::PRIVACY_PUBLIC
   end #default_privacy
 
   def name_candidate

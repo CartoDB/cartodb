@@ -25,7 +25,7 @@ module CartoDB
           quota:       self.geocoding_quota,
           block_price: self.geocoding_block_price,
           monthly_use: self.get_geocoding_calls,
-          hard_limit:  (self.account_type =~ /(FREE|Magellan|Academy|ACADEMIC)/ ? true : false)
+          hard_limit:  self.hard_geocoding_limit?,
         },
         billing_period: self.last_billing_cycle,
         max_layers: self.max_layers,
@@ -37,6 +37,7 @@ module CartoDB
         show_upgraded_message: (self.account_type.downcase != 'free' && self.upgraded_at && self.upgraded_at + 15.days > Date.today ? true : false),
         actions: {
           private_tables: self.private_tables_enabled,
+          private_maps: self.private_maps_enabled,
           dedicated_support: self.dedicated_support?,
           import_quota: self.import_quota,
           remove_logo: self.remove_logo?,

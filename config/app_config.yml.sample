@@ -6,14 +6,22 @@ defaults: &defaults
   account_host:       'localhost:3000'
   account_path:       '/account'
   tiler:
+    internal:
+      protocol:      'http'
+      domain:        'localhost.lan'
+      port:          '8181'
+      host:          '127.0.0.1'
+      verifycert:     false
     private:
       protocol:      'http'
       domain:        'localhost.lan'
       port:          '8181'
+      verifycert:     false
     public:
       protocol:      'http'
       domain:        'localhost.lan'
       port:          '8181'
+      verifycert:     false
   sql_api:
     private:
       protocol:   'http'
@@ -70,6 +78,10 @@ defaults: &defaults
   error_track:
     url: 'https://viz2.cartodb.com/api/v1/sql'
     percent_users: 10
+  # graphite endpoint used to post frontend stats
+  graphite_public:
+    host: ""
+    port:
 
 
 
@@ -145,6 +157,7 @@ defaults: &defaults
   gdrive: 
     api_key: ""
     app_id: ""
+  enforce_non_empty_layer_css: true
 
 development:
   <<: *defaults
@@ -156,12 +169,14 @@ development:
     url_purge_command: 'url.purge'
     retries: 5
     timeout: 5
+  enforce_non_empty_layer_css: false
 
 test:
   <<: *defaults
   redis:
     host: '127.0.0.1'
     port: 6335
+  enforce_non_empty_layer_css: false
 
 staging:
   <<: *defaults

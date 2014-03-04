@@ -13,8 +13,7 @@ module CartoDB
     class Loader
       SCHEMA            = 'cdb_importer'
       TABLE_PREFIX      = 'importer'
-      NORMALIZERS       = [FormatLinter, CsvNormalizer, Xls2Csv, Xlsx2Csv, 
-                          Json2Csv]
+      NORMALIZERS       = [FormatLinter, CsvNormalizer, Xls2Csv, Xlsx2Csv, Json2Csv]
       DEFAULT_ENCODING  = 'UTF-8'
 
       def self.supported?(extension)
@@ -39,7 +38,7 @@ module CartoDB
         job.log "ogr2ogr exit code: #{ogr2ogr.exit_code}"
 
         raise InvalidGeoJSONError if ogr2ogr.command_output =~ /nrecognized GeoJSON/
-        raise LoadError if ogr2ogr.exit_code != 0
+        raise LoadError(job.fetch) if ogr2ogr.exit_code != 0
         georeferencer.run
         self
       end #run

@@ -19,6 +19,9 @@ describe Visualization::Collection do
     @repository = DataRepository::Backend::Sequel.new(@db, @relation)
     Visualization::Migrator.new(@db).migrate(@relation)
     Visualization.repository = @repository
+
+    # Using Mocha stubs until we update RSpec (@see http://gofreerange.com/mocha/docs/Mocha/ClassMethods.html)
+    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
   end
 
   after(:each) do

@@ -45,7 +45,6 @@ class DataImport < Sequel::Model
   def run_import!
     success = !!dispatch
     if self.results.empty?
-      set_unsupported_file_error
       self.error_code = 1002
       self.state      = 'failure'
       save
@@ -85,7 +84,7 @@ class DataImport < Sequel::Model
     save
 
     CartoDB::notify_exception(
-      CartoDB::GenericImportError.new("Import timed out"), 
+      CartoDB::Importer2::GenericImportError.new("Import timed out"), 
       user: current_user
     )
     return true

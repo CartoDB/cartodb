@@ -14,11 +14,11 @@ describe Api::Json::RecordsController do
       email:    'client@example.com',
       password: 'clientex'
     )
-    @user.set_map_key
     @api_key = @user.api_key
   end
 
   before(:each) do
+    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
     delete_user_data @user
     @table = create_table :user_id => @user.id
     @headers = { 

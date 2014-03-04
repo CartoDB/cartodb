@@ -13,6 +13,7 @@
 //= require tag-it
 //= require jquery.tipsy
 //= require d3.v2
+//= require colorpicker
 //= require jquery.fileupload
 //= require jquery.fileupload-fp
 //= require jquery.fileupload-ui

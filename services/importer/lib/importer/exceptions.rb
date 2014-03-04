@@ -3,6 +3,9 @@
 module CartoDB
   module Importer2
 
+    # Generic/unmapped errors
+    class GenericImportError                    < StandardError; end
+    # Mapped errors
     class InstallError                          < StandardError; end
     class EmptyFileError                        < StandardError; end
     class ExtractionError                       < StandardError; end
@@ -23,6 +26,7 @@ module CartoDB
     class DownloadError                         < StandardError; end
     class GDriveNotPublicError                  < StandardError; end
     class EncodingDetectionError                < StandardError; end
+    class XLSXFormatError                       < StandardError; end
 
     ERRORS_MAP = {
       InstallError                          => 0001,
@@ -40,6 +44,7 @@ module CartoDB
       UnknownError                          => 99999,
       UnknownSridError                      => 3008,
       UnsupportedFormatError                => 1002,
+      XLSXFormatError                       => 1004,
       UploadError                           => 1000,
       DownloadError                         => 1001,
       GDriveNotPublicError                  => 1010,

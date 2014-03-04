@@ -84,6 +84,9 @@ describe Visualization::Member do
     end
 
     it 'invalidates vizjson cache in varnish if privacy changed' do
+      # Need to at least have this decorated in the user data or checks before becoming private will raise an error
+      CartoDB::Visualization::Member.any_instance.stubs(:supports_private_maps?).returns(true)
+      
       member      = Visualization::Member.new(random_attributes)
       member.store
 

@@ -269,6 +269,10 @@ module CartoDB
         tokens.first
       end #get_auth_token
 
+      def supports_private_maps?
+        !@user_data.nil? && @user_data.respond_to?(:actions) && @user_data.actions.respond_to?(:private_maps)
+      end # supports_private_maps?
+
       private
 
       attr_reader   :repository, :name_checker, :validator
@@ -279,6 +283,10 @@ module CartoDB
           raise CartoDB::InvalidMember if not has_password?
         else
           remove_password()
+        end
+
+        if (privacy_changed && @privacy == PRIVACY_PRIVATE && !supports_private_maps?)
+          raise CartoDB::InvalidMember
         end
 
         invalidate_varnish_cache if name_changed || privacy_changed || description_changed

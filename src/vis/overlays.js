@@ -213,6 +213,7 @@ cdb.vis.Overlay.register('fullscreen', function(data, vis) {
   );
 
   var fullscreen = new cdb.ui.common.FullScreen({
+    doc: "#map > div",
     template: template
   });
 

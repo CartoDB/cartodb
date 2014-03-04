@@ -3,7 +3,8 @@
   <body>
     <%= render partial: 'shared/analytics', locals: { 
       ua:     Cartodb.config[:google_analytics]['embeds'],
-      domain: Cartodb.config[:google_analytics]['domain']
+      domain: Cartodb.config[:google_analytics]['domain'],
+      page_owner: @visualization.user
     } %>
   </body>
 </html>

@@ -29,7 +29,7 @@
     "grunt-mustache": "~0.1.6",
     "grunt-contrib-sass": "~0.7.1",
     "grunt-contrib-compass": "~0.7.2",
-    "mustache": "anl/mustache.js#0.5.2"
+    "mustache": "janl/mustache.js#0.5.2"
   },
   "files": [
     "dist"

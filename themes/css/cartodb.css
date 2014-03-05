@@ -793,8 +793,13 @@ and (orientation : portrait) {
     padding: 20px 0;
   }
 
-  .cartodb-map-data .cartodb-info .inner .details h1 {
+  div.cartodb-map-data .cartodb-info .inner .details h1 {
     font-size:20px;
+    padding-right: 0px;
+  }
+
+  div.cartodb-public-header .inner .options .create-map { 
+    display:none;
   }
 
 }
@@ -809,8 +814,9 @@ and (orientation : landscape) {
     content: "iPhone landscape";
   }*/
 
-  .cartodb-map-data .cartodb-info .inner .details h1 {
+  div.cartodb-map-data .cartodb-info .inner .details h1 {
     font-size:20px;
+    padding-right: 0px;
   }
 
 }

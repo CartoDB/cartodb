@@ -25,7 +25,7 @@
     "grunt": "~0.4.2",
     "grunt-contrib-concat": "",
     "grunt-contrib-jasmine": "",
-    "grunt-contrib-jst": "~0.5.1",
+    "grunt-contrib-jst": "git://github.com/javisantana/grunt-contrib-jst.git#master",
     "grunt-mustache": "~0.1.6",
     "grunt-contrib-sass": "~0.7.1",
     "grunt-contrib-compass": "~0.7.2"

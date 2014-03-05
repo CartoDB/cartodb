@@ -26,6 +26,13 @@ describe CartoDB::SQLApi do
       expect { api.fetch("wrong query") }.to raise_error(CartoDB::SQLApi::SQLError)
     end
 
+    it "handles gzipped output" do
+      stub_api_request 200, 'sql_api_binary.bin'
+      result = api.fetch("SELECT description from public_table", 'csv')
+      result.should match /description,\r\n\"Pretend that you’ve opened this book/
+      result.should match /And if not, then the onion will make it all happen for you.*$/
+    end
+
   end #fetch
 
 

@@ -28,8 +28,7 @@
     "grunt-contrib-jst": "~0.5.1",
     "grunt-mustache": "~0.1.6",
     "grunt-contrib-sass": "~0.7.1",
-    "grunt-contrib-compass": "~0.7.2",
-    "mustache": "git+ssh://git@github.com/janl/mustache.js.git#6d1954cb5c125c40548c9952efe79a4534c6760a"
+    "grunt-contrib-compass": "~0.7.2"
   },
   "files": [
     "dist"

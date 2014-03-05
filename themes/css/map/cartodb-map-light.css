@@ -49,7 +49,7 @@ only screen and (        min-device-pixel-ratio: 2),
 only screen and (                min-resolution: 192dpi),
 only screen and (                min-resolution: 2dppx) { 
 
-  div.cartodb-new-header .inner .logo { 
+  div.cartodb-public-header .inner .logo { 
     background: url('../img/cartodb@2x.png') no-repeat!important;
     background-size: 93px 18px!important;
   }
@@ -91,7 +91,7 @@ only screen and (                min-resolution: 2dppx) {
     text-align: center;
   }
 
-  div.cartodb-new-header .inner .logo { 
+  div.cartodb-public-header .inner .logo { 
     background-size:  50%;
   }
 
@@ -187,7 +187,7 @@ and (orientation : landscape) {
 
 }
 
-.cartodb-new-header .inner,
+.cartodb-public-header .inner,
 .cartodb-map-data .inner { 
   max-width: 1024px;
   margin: auto;
@@ -247,6 +247,7 @@ div.cartodb-info .inner .details h1 {
   color: #444444;
   padding: 0;
   margin: 0 0 5px 0;
+  line-height: 110%;
 }
 
 div.cartodb-info .inner .details p {
@@ -388,11 +389,11 @@ div.cartodb-footer a:hover {
   color: #333;
 }
 
-div.cartodb-new-header .inner .options { 
+div.cartodb-public-header .inner .options { 
   margin: 23px 0;
 }
 
-div.cartodb-new-header .inner .options .regular { 
+div.cartodb-public-header .inner .options .regular { 
   margin-right: 26px;
   color: #fff;
   font-size: 15px;
@@ -401,11 +402,11 @@ div.cartodb-new-header .inner .options .regular {
   font-weight: 200;
 }
 
-div.cartodb-new-header .inner .options .regular:hover { 
+div.cartodb-public-header .inner .options .regular:hover { 
   text-decoration: underline;
 }
 
-div.cartodb-new-header a.button.green:hover {
+div.cartodb-public-header a.button.green:hover {
   background: #749C33;
   background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #94be42), color-stop(100%, #799e33));
   background: -webkit-linear-gradient(#94be42,#799e33);
@@ -416,7 +417,7 @@ div.cartodb-new-header a.button.green:hover {
   cursor: pointer;
 }
 
-div.cartodb-new-header a.button.green {
+div.cartodb-public-header a.button.green {
   padding: 8px 10px;
   font-size: 12px;
   font-weight: bold;
@@ -455,7 +456,7 @@ div.cartodb-new-header a.button.green {
   transition-duration: 250ms;
 }
 
-div.cartodb-new-header .inner .logo { 
+div.cartodb-public-header .inner .logo { 
   background: url('../img/cartodb.png') no-repeat;
   margin: 23px 0;
   display: block;
@@ -467,10 +468,10 @@ div.cartodb-new-header .inner .logo {
   text-transform: uppercase;
 }
 
-div.cartodb-new-header .inner .logo { float:left; }
-div.cartodb-new-header .inner .options { float:right; }
+div.cartodb-public-header .inner .logo { float:left; }
+div.cartodb-public-header .inner .options { float:right; }
 
-div.cartodb-new-header {
+div.cartodb-public-header {
   position: relative;
   display: block;
   border: none;

@@ -95,12 +95,39 @@ module CartoDB
           all_results
         end
 
-        def store_chosen_file(id, url, service, sync_type)
-          raise 'Pending implementation'
+        # Stores a sync table entry
+        # @param id string
+        # @param sync_type
+        # @return bool
+        def store_chosen_file(id, sync_type)
+          item_data = nil
+          response = @client.metadata(id)
+          item_data = format_item_data(response)
+
+          #TODO: Store
+          puts item_data.to_hash
+          true
         end #store_chosen_file
 
-        def download_file(service, id, url)
-          raise 'Pending implementation'
+        # Checks if a file has been modified
+        # @param id string
+        # @return bool
+        def file_modified?(id)
+          new_item_data = nil
+          response = @client.metadata(id)
+          new_item_data = format_item_data(response)
+
+          #TODO: check against stored checksum
+          puts item_data.to_hash
+          false
+        end #file_modified?
+
+        # Downloads a file and returns its contents
+        # @param id string
+        # @return mixed
+        def download_file(id)
+          contents, metadata = @client.get_file_and_metadata(id)
+          return contents
         end #download_file
 
         # Prepares the list of formats that Dropbox will require when performing the query
@@ -129,10 +156,18 @@ module CartoDB
               id:       item_data.fetch('path'),
               title:    item_data.fetch('path'),
               url:      '',
-              service:  SERVICE
+              service:  SERVICE,
+              checksum: checksum_of(item_data.fetch('rev'))
             }
           data
         end #format_item_data
+
+        # Calculates a checksum of given input
+        # @param origin string
+        # @return string
+        def checksum_of(origin)
+          Zlib::crc32(origin).to_s
+        end #checksum_of
 
       end #Dropbox
     end #FileProviders

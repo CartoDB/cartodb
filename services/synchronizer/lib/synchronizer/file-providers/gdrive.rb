@@ -118,12 +118,61 @@ module CartoDB
           all_results
         end #get_files_list
 
-        def store_chosen_file(id, url, service, sync_type)
-          raise 'Pending implementation'
+        # Stores a sync table entry
+        # @param id string
+        # @param sync_type
+        # @return bool
+        def store_chosen_file(id, sync_type)
+          item_data = nil
+          result = @client.execute( api_method: @drive.files.get, parameters: { fileId: id } )
+          if result.status == 200
+            item_data = format_item_data(result.data.to_hash)
+
+            #TODO: Store
+            puts item_data.to_hash
+            true
+          else
+            @log.append "Error #{result.status} retrieving file #{id} metadata with #{SERVICE}: #{result.data['error']['message']}"
+            false
+          end
         end #store_chosen_file
 
-        def download_file(service, id, url)
-          raise 'Pending implementation'
+        # Checks if a file has been modified
+        # @param id string
+        # @return bool
+        def file_modified?(id)
+          new_item_data = nil
+          result = @client.execute( api_method: @drive.files.get, parameters: { fileId: id } )
+          if result.status == 200
+            new_item_data = format_item_data(result.data.to_hash)
+
+            #TODO: check against stored checksum
+            puts new_item_data.to_hash
+            false
+          else
+            @log.append "Error #{result.status} retrieving file #{id} metadata with #{SERVICE}: #{result.data['error']['message']}"
+            false
+          end
+        end #file_modified?
+
+        # Downloads a file and returns its contents
+        # @param id string
+        # @return mixed
+        def download_file(id)
+          result = @client.execute( api_method: @drive.files.get, parameters: { fileId: id } )
+          if result.status != 200
+            @log.append "Error #{result.status} retrieving file metadata for download #{id} with #{SERVICE}: #{result.data['error']['message']}"
+            return nil
+          end
+          item_data = format_item_data(result.data.to_hash)
+
+          result = @client.execute(uri: item_data.fetch(:url))
+          if result.status == 200
+            result.body
+          else
+            @log.append "Error #{result.status} downloading file #{id} with #{SERVICE}: #{result.data['error']['message']}"
+            nil
+          end
         end #download_file
 
         # Prepares the list of formats that GDrive will require when performing the query
@@ -145,13 +194,14 @@ module CartoDB
 
         # Formats all data to comply with our desired format
         # @param item_data Hash : Single item returned from GDrive API
-        # @return { :id, :title, :url, :service }
+        # @return { :id, :title, :url, :service, :checksum }
         def format_item_data(item_data)
           data =
             {
-              id:       item_data.fetch('id'),
-              title:    item_data.fetch('title'),
-              service:  SERVICE
+              id:           item_data.fetch('id'),
+              title:        item_data.fetch('title'),
+              service:      SERVICE,
+              checksum:     checksum_of(item_data.fetch('modifiedDate')),
             }
           if item_data.include?('exportLinks')
             data[:url] = item_data.fetch('exportLinks').first.last
@@ -182,8 +232,15 @@ module CartoDB
 
         # GDrive-formatted string containing list of which fields to fetch
         def fields_to_retrieve
-          'items(downloadUrl,etag,exportLinks,fileExtension,id,mimeType,modifiedDate,originalFilename,title)'
+          'items(downloadUrl,exportLinks,id,modifiedDate,title)'
         end #fields_to_retrieve
+
+        # Calculates a checksum of given input
+        # @param origin string
+        # @return string
+        def checksum_of(origin)
+          Zlib::crc32(origin).to_s
+        end #checksum_of
 
       end #GDrive
     end #FileProviders

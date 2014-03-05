@@ -11,21 +11,18 @@ describe Dropbox do
       app_key: @config['app_key'],
       app_secret: @config['app_secret']
     }
-    config_hash[:access_token] = 'T8rNjQui1_gAAAAAAAAAAZLZSgMWBUqL-XDSrDh-awywh7jpIV5JTo7rSHwdNnCS'
     config_hash
   end #get_config
 
   describe '#manual_test' do
     it 'with user interaction, tests the full oauth flow and lists files of an account' do
-      #pending('This test requires manual run, opening the url in a browser, grabbing the code and setting "input" to it')
-
       config = get_config
-
       dropbox_provider = CartoDB::Synchronizer::FileProviders::Dropbox.get_new(config)
 
       if config.include?(:access_token)
         dropbox_provider.token = config[:access_token]
       else
+        pending('This test requires manual run, opening the url in a browser, grabbing the code and setting "input" to it')
         puts dropbox_provider.get_auth_url
         input = ''
         debugger

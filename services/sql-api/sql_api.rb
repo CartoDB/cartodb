@@ -9,7 +9,7 @@ module CartoDB
     class PermissionError < StandardError; end
 
     attr_accessor :api_key, :username
-    attr_reader   :response_code, :raw_response, :parsed_response
+    attr_reader   :response_code, :response_body, :parsed_response
 
     def initialize(arguments)
       self.username   = arguments.fetch(:username)
@@ -19,23 +19,31 @@ module CartoDB
 
     def fetch(query, format = '')
       params   = { q: query, api_key: api_key, format: format }
-      response = Typhoeus.post(
+      response = Typhoeus::Request.new(
         base_url,
-        body: URI.encode_www_form(params)
-      )
+        method: :post,
+        body: URI.encode_www_form(params),
+        headers: { 'Accept-Encoding' => 'gzip,deflate' }
+      ).run
       handle_response(response)
     end # fetch
 
     def handle_response(response)
-      @response_code   = response.response_code
-      @raw_response    = response.body
-      @parsed_response =  ::JSON.parse(response.body.to_s)
+      @response_code    = response.response_code
+      body              = inflate(response.body.to_s)
+      @parsed_response  = ::JSON.parse(body) rescue nil
       raise_if_error
-      parsed_response["rows"]
-    end
+      parsed_response["rows"] rescue body
+    end # handle_response
+
+    def inflate(text)
+      Zlib::GzipReader.new(StringIO.new(text)).read
+    rescue Zlib::GzipFile::Error
+      return text
+    end # inflate
 
     def raise_if_error
-      error_message = parsed_response["error"].first rescue nil
+      error_message   = parsed_response["error"].first rescue nil
       raise PermissionError if error_message =~ /^permission denied for relation/
       raise SQLError.new(error_message) if response_code != 200
     end

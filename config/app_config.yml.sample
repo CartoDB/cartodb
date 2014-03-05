@@ -69,6 +69,15 @@ defaults: &defaults
     app_id: ''
     token:  ''
     mailto: ''
+    base_url: ''
+    non_batch_base_url: ''
+    internal:
+      username: ''
+      api_key: ''
+    cache:
+      base_url: ''
+      api_key: ''
+      table_name: ''
   importer:
     s3:
       access_key_id:

@@ -25,22 +25,22 @@ class Api::Json::GeocodingsController < Api::ApplicationController
   end
 
   def create
-    table = current_user.tables.where(name: params[:table_name]).first
-    options = { 
-      user_id:       current_user.id,
-      table_id:      table.try(:id),
-      kind:          params[:kind],
-      geometry_type: params[:geometry_type],
-      formatter:     params[:formatter]
-    }
-      
-    geocoding = Geocoding.create(options)
+    table     = current_user.tables.where(name: params[:table_name]).first
+    geocoding = Geocoding.new params.slice(:kind, :geometry_type, :formatter, :country_code)
+    geocoding.formatter = params[:column_name] if params[:column_name].present?
+    geocoding.user      = current_user
+    geocoding.table_id  = table.try(:id)
+    geocoding.raise_on_save_failure = true
+    geocoding.save
+
     table.automatic_geocoding.destroy if table.automatic_geocoding.present?
     Resque.enqueue(Resque::GeocoderJobs, job_id: geocoding.id)
 
     render_jsonp(geocoding.to_json)
   rescue Sequel::ValidationFailed => e
     render_jsonp( { description: e.message }, 422)
+  rescue => e
+    render_jsonp( { description: e.message }, 500)
   end
 
   def country_data_for

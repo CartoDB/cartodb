@@ -87,9 +87,9 @@
         <script src="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/cartodb.js"></script>
       <% else %>
         <script src="http://libs.cartocdn.com/cartodb.js/v3/cartodb.js"></script>
+        <!-- inline statsc -->
+        <script type="text/javascript"><%= raw Rails.application.assets['statsc.min.js'].to_s %></script>
       <% end %>
-      <!-- inline statsc -->
-      <script type="text/javascript"><%= raw Rails.application.assets['statsc.min.js'].to_s %></script>
     <% end %>
 
     <script>
@@ -147,10 +147,12 @@
 
       $(document).ready(function(){
 
+        <% if request.protocol != 'https://' %>
         statsc.connect('http://<%= Cartodb.config[:graphite_public]['host'] %>:<%= Cartodb.config[:graphite_public]['port'] %>/');
         cartodb.core.Profiler.backend(function () {
           statsc.send.apply(statsc, arguments);
         })
+        <% end %>
 
         var bool_fn = function(v) { return v == 'true' }
         , is_custom_install = <%= Cartodb.config[:cartodb_com_hosted].present? %>

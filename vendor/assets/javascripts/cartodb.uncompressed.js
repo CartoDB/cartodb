@@ -1,6 +1,6 @@
 // cartodb.js version: 3.7.00-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: 29d82f4abbad44c640daa73c193f9df201855866
+// sha: 1077b9a9b336477dd11d0dfd21f77ff47c4893de
 (function() {
   var root = this;
 
@@ -25577,6 +25577,7 @@ cdb.ui.common.FullScreen = cdb.core.View.extend({
   _toggleFullScreen: function(ev) {
 
     ev.stopPropagation();
+    ev.preventDefault();
 
     var doc   = window.document;
     var docEl = doc.documentElement;
@@ -31251,6 +31252,7 @@ cdb.vis.Overlay.register('fullscreen', function(data, vis) {
   );
 
   var fullscreen = new cdb.ui.common.FullScreen({
+    doc: "#map > div",
     template: template
   });
 

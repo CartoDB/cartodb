@@ -81,7 +81,7 @@ class Admin::VisualizationsController < ApplicationController
       format.html { render 'embed_map', layout: false }
     end    
   rescue => exception
-    embed_forbidden
+    embed_protected
   end #show_protected_embed_map
 
   def embed_map

@@ -1,13 +1,14 @@
 -- Return an array of statements found in the given query text
 --
--- Curtesy of Hubert Lubaczewski (depesz)
+-- Regexp curtesy of Hubert Lubaczewski (depesz)
+-- Implemented in plpython for performance reasons
 --
 CREATE OR REPLACE FUNCTION CDB_QueryStatements(query text) 
 RETURNS SETOF TEXT AS $$
-   SELECT stmt FROM (
-     SELECT btrim(q[1], E' \n\t\r;') as stmt FROM (
-       SELECT regexp_matches( $1, $REG$((?:[^'"$;]+|"[^"]*"|'(?:[^']*|'')*'|(\$[^$]*\$).*?\2)+)$REG$, 'g' ) as q
-     ) i
-   ) j
-   WHERE stmt <> '';
-$$ language sql IMMUTABLE STRICT;
+  import re
+  pat = re.compile( r'''((?:[^'"$;]+|"[^"]*"|'[^']*'|(\$[^$]*\$).*?\2)+)''', re.DOTALL )
+  for match in pat.findall(query):
+    cleaned = match[0].strip()
+    if ( cleaned ):
+      yield cleaned
+$$ language 'plpythonu' IMMUTABLE STRICT;

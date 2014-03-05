@@ -52,7 +52,7 @@ end
 # Importer
 gem "ruby-ole",                "1.2.11.3"
 gem "rchardet19",              "1.3.5"
-gem "roo",                     "1.12.1"
+gem "roo",                     "1.13.2"
 gem "spreadsheet",             "0.6.5.9"
 gem "google-spreadsheet-ruby", "0.1.8"
 gem "rubyzip",                 "0.9.9"
@@ -90,7 +90,7 @@ group :development, :test do
 
   gem "mocha",                 "0.10.5"
 
-  gem "debugger",              "1.3.0"
+  gem "debugger",              "1.6.5"
 
   gem "rspec-rails",           "2.10.1"
   gem "capybara",              "1.1.2"

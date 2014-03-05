@@ -98,11 +98,12 @@ class User < Sequel::Model
     # Remove user tables
     self.tables.all.each { |t| t.destroy }
     
-    # Remove user data imports, maps and layers
+    # Remove user data imports, maps, layers and assets
     self.data_imports.each { |d| d.destroy }
     self.maps.each { |m| m.destroy }
     self.layers.each { |l| self.remove_layer l }
     self.geocodings.each { |g| g.destroy }
+    self.assets.each { |a| a.destroy }
 
     # Remove metadata from redis
     $users_metadata.DEL(self.key)
@@ -360,6 +361,11 @@ $$
     /(FREE|MAGELLAN|JOHN SNOW|ACADEMY|ACADEMIC|ON HOLD)/i.match(self.account_type) ? false : true
   end
 
+  def hard_geocoding_limit?
+    plan_list = "ACADEMIC|Academy|Academic|INTERNAL|FREE|AMBASSADOR|ACADEMIC MAGELLAN|PARTNER|FREE|Magellan|Academy|ACADEMIC|AMBASSADOR"
+    (self.account_type =~ /(#{plan_list})/ ? true : false)
+  end
+
   def private_maps_enabled
     /(FREE|MAGELLAN|JOHN SNOW|ACADEMY|ACADEMIC|ON HOLD)/i.match(self.account_type) ? false : true
   end
@@ -395,10 +401,11 @@ $$
   def get_api_calls(options = {})
     date_to = (options[:to] ? options[:to].to_date : Date.today)
     date_from = (options[:from] ? options[:from].to_date : Date.today - 29.days)
-    calls = []
-    date_to.downto(date_from) do |date|
-      calls << $users_metadata.ZSCORE("user:#{username}:mapviews:global", date.strftime("%Y%m%d")).to_i
-    end
+    calls = $users_metadata.pipelined do
+      date_to.downto(date_from) do |date|
+        $users_metadata.ZSCORE "user:#{username}:mapviews:global", date.strftime("%Y%m%d")
+      end
+    end.map &:to_i
 
     # Add old api calls
     old_calls = get_old_api_calls["per_day"].to_a.reverse rescue []

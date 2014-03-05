@@ -1,3 +1,35 @@
+2.10.1 (2014-03-03)
+-------------------
+* Improvements
+  * Improved invalid WMS layers feedback.
+  * Buttons for the Embeds
+  * Added an alert so the user knows when a private map viz.json is used.
+  * Allow CSVs with multiline inside for importing.
+
+* Bugs Fixed
+  * Legend number is null when apply filter.
+  * Metatile with too many features is messing up some maps.
+  * Problems importing a kml.
+  * Problem with sequel and columns with same name in different schemas.
+  * Changed embed to open password dialog when visualization needs password.
+  * Infowindow data is cached when feature is edited.
+  * SQL is being send in viz.json for torque layer with named maps.
+  * 'searchControl' doesn't work using CartoDB.js and a viz.json.
+  * Legends should be activated by default after applying a choropleth / category / intensity / etc... wizard.
+  * named maps does not manage queries with !bbox!
+  * Roo Excel import Ruby gem takes too long on big files.
+  * If user types a non valid number within a number widget, a JS error appears.
+  * viz.json includes wrong layer_index.
+  * public map + pass protected vis is not returning named map in viz.json.
+  * When discards adding a new point, a javascript exception appears.
+  * Going to protected_embed_map directly throws 404.
+  * OSM import via URL broken due to URL format change.
+  * Private visualizations should be allowed when private tables are enabled.
+  * Private map created with empty css.
+  * Keep getting an error when setting new Torque CSS in dashboard.
+  * Layer selector does not work in gmaps.
+  * Fixed typo in api keys view.
+
 2.10.0 (2014-02-25)
 -------------------
 * Improvements

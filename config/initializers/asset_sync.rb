@@ -1,4 +1,4 @@
-if Cartodb.config[:app_assets]
+if Cartodb.config[:app_assets] && Cartodb.config.fetch(:aws,{}).fetch('s3', false)
   AssetSync.configure do |config|
     config.fog_provider = 'AWS'
     config.aws_access_key_id = Cartodb.config[:aws]['s3']['access_key_id']
@@ -27,4 +27,6 @@ if Cartodb.config[:app_assets]
     # Fail silently.  Useful for environments such as Heroku
     # config.fail_silently = true
   end
+else
+  AssetSync.config.enabled = false
 end

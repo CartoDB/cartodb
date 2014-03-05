@@ -707,6 +707,7 @@ div.cartodb-popup.header.yellow a.cartodb-popup-close-button:hover {
   url('../fonts/ProximaNova-Semibold.svg#svgFontName') format('svg'); /* Legacy iOS */
 }
 
+/*
 body:after { 
   position: fixed!important;
   top: 0px;
@@ -716,6 +717,7 @@ body:after {
   background:red;
   z-index: 10000;
 }
+*/
 
 @media
 only screen and (-webkit-min-device-pixel-ratio: 2),
@@ -734,13 +736,29 @@ only screen and (                min-resolution: 2dppx) {
 
 @media only screen and (max-width: 710px) {
 
-  body:after {
+  /*body:after {
     content: "Small";
-  }
+  }*/
 
   .inner .embed-left-col  { margin: 0; float: none; width: 100%; }
   .inner .embed-left-col .content { margin-left: 0px; border-right: none; padding-right: 0; max-width: none; }
   .inner .embed-right-col { float: none;  width: 100%; }
+
+  div.cartodb-map-data .cartodb-info .inner .details h1 {
+    padding-right: 20px;
+  }
+
+  div.cartodb-info .inner .user.embed-right-col {
+    float:right;
+    text-align: left;
+  }
+
+  div.cartodb-info .inner .user.embed-right-col .user-info {
+    float: right;
+    text-align: left;
+    position:absolute;
+    left: 75px;
+  }
 
   div.cartodb-footer .inner .embed-left-col  {
     text-align: center;
@@ -767,9 +785,9 @@ and (min-device-width : 320px)
 and (max-device-width : 480px) 
 and (orientation : portrait) { 
 
-  body:after { 
+  /*body:after { 
     content: "iPhone portrait";
-  }
+  }*/
 
   .cartodb-map-data .cartodb-info {
     padding: 20px 0;
@@ -787,9 +805,9 @@ and (min-device-width : 320px)
 and (max-device-width : 480px) 
 and (orientation : landscape) { 
 
-  body:after { 
+  /*body:after { 
     content: "iPhone landscape";
-  }
+  }*/
 
   .cartodb-map-data .cartodb-info .inner .details h1 {
     font-size:20px;
@@ -798,17 +816,22 @@ and (orientation : landscape) {
 }
 
 @media only screen and (min-width: 711px) and (max-width: 1035px) {
-  body:after {
+
+  /*body:after {
     content: "Medium";
-  }
+  }*/
 
   .inner .embed-left-col  { margin: 0; float: none; width: 100%; }
   .inner .embed-left-col .content { margin-left: 0px; border-right: none; padding-right: 0; max-width: none; }
   .inner .embed-right-col { float: none;  width: 100%; }
 
   .inner .user.embed-right-col {
-    width:  200px;
-    float:right;
+    width: 200px;
+    float: right;
+  }
+
+  div.cartodb-map-data .cartodb-info .inner .details h1 {
+    padding-right: 20px;
   }
 
   .cartodb-info .inner .details.embed-left-col p {
@@ -835,9 +858,11 @@ and (orientation : landscape) {
 }
 
 @media only screen and (min-width: 1201px) {
-  body:after {
+
+  /*body:after {
     content: "Large";
-  }
+  }*/
+
 }
 
 .cartodb-new-header .inner,
@@ -1233,8 +1258,8 @@ div.cartodb-share {
 }
 
 div.cartodb-share a {
-  width: 13px;
-  height: 13px;
+  width: 14px;
+  height: 14px;
   display: block;
   color: #397DB8;
   font-size:10px;
@@ -1243,7 +1268,7 @@ div.cartodb-share a {
   text-shadow: none;
   padding: 7px 7px;
 
-  background: #ffffff url('../img/share.png') no-repeat 7px 7px;
+  background: #ffffff url('../img/share.png') no-repeat 7px 8px;
 
   -webkit-box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
   -moz-box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
@@ -1266,11 +1291,11 @@ div.cartodb-share a {
 }
 
 div.cartodb-share a:hover {
-  background: #ffffff url('../img/share.png') no-repeat -28px 7px;
+  background: #ffffff url('../img/share.png') no-repeat -28px 8px;
 }
 
 div.cartodb-share a:active, div.cartodb-share a:hover:active {
-  background: #ffffff url('../img/share.png') no-repeat 7px 7px;
+  background: #ffffff url('../img/share.png') no-repeat 7px 8px;
 }
 
 .cartodb-fullscreen a:active { 

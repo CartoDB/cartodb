@@ -162,7 +162,9 @@ defaults: &defaults
     application_name: ''
     client_id: ''
     client_secret: ''
-
+  dropbox_oauth:
+    app_key:  ''
+    app_secret: ''
 
 development:
   <<: *defaults

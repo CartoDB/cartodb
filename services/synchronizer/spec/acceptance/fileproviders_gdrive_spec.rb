@@ -25,15 +25,14 @@ describe GDrive do
 
       gdrive_provider = GDrive.get_new(config)
 
-      gdrive_provider.setup_formats_filter
       if config.include?(:refresh_token)
-        gdrive_provider.refresh_token = config[:refresh_token]
+        gdrive_provider.token = config[:refresh_token]
       else
         puts gdrive_provider.get_auth_url
         input = ''
         debugger
         gdrive_provider.validate_auth_code(input)
-        puts gdrive_provider.access_token
+        puts gdrive_provider.token
       end
       data = gdrive_provider.get_files_list
       puts data

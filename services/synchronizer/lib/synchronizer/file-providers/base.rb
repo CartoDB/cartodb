@@ -7,21 +7,18 @@ module CartoDB
     module FileProviders
       class BaseProvider
 
+        # .csv
         FORMAT_CSV = 'csv'
+        # .xls .xlsx
         FORMAT_EXCEL = 'xls'
-        FORMAT_COMPRESSED = 'zip'
+        # .png
         FORMAT_PNG = 'png'
+        # .jpg .jpeg
         FORMAT_JPG = 'jpg'
+        # .svg
         FORMAT_SVG = 'svg'
-
-        SUPPORTED_FORMATS = {
-            FORMAT_CSV => %W( csv ),
-            FORMAT_EXCEL => %W( xls xlsx ),
-            FORMAT_COMPRESSED => %W( zip gz tgz tar.gz bz2 tar kmz ),
-            FORMAT_PNG => %W( png ),
-            FORMAT_JPG => %W( jpg jpeg ),
-            FORMAT_SVG => %W( svg )
-        }
+        # .zip
+        FORMAT_COMPRESSED = 'zip'
 
         def get_new
           raise 'To be implemented in child classes'
@@ -35,20 +32,33 @@ module CartoDB
           raise 'To be implemented in child classes'
         end
 
+        def token=(token)
+          raise 'To be implemented in child classes'
+        end #token=
+
+        def token
+          raise 'To be implemented in child classes'
+        end #token
+
         def get_files_list(formats_filter={})
-          # [ 'service', 'id', 'title' ]
           raise 'To be implemented in child classes'
         end
 
-        def store_chosen_files(id, service, sync_type)
+        def store_chosen_file(id, url, service, sync_type)
           raise 'To be implemented in child classes'
         end
 
-        def download_file(service, id)
+        def download_file(service, id, url)
+          raise 'To be implemented in child classes'
+        end
+
+        def setup_formats_filter(formats_filter=[])
           raise 'To be implemented in child classes'
         end
 
         private_class_method :new
+
+        attr_reader :formats
 
       end # Base
     end #FileProviders

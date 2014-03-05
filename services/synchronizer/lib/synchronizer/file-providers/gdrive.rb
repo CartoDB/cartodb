@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-require_relative 'base'
+require_relative './base'
 require 'google/api_client'
 
 module CartoDB
@@ -15,10 +15,10 @@ module CartoDB
         FORMATS_TO_MIME_TYPES = {
             FORMAT_CSV =>         %W( text/csv ),
             FORMAT_EXCEL =>       %W( application/vnd.ms-excel application/vnd.google-apps.spreadsheet application/vnd.openxmlformats-officedocument.spreadsheetml.sheet ),
-            FORMAT_COMPRESSED =>  %W( application/zip application/x-compressed-tar application/x-gzip application/x-bzip application/x-tar ),
             FORMAT_PNG =>         %W( image/png ),
             FORMAT_JPG =>         %W( image/jpeg ),
-            FORMAT_SVG =>         %W( image/svg+xml )
+            FORMAT_SVG =>         %W( image/svg+xml ),
+            FORMAT_COMPRESSED =>  %W( application/zip ), #application/x-compressed-tar application/x-gzip application/x-bzip application/x-tar )
         }
 
         # Factory method
@@ -38,8 +38,9 @@ module CartoDB
         def initialize(config, log=nil)
           @service_name = SERVICE
 
-          @log = log ||= TrackRecord::Log.new
+          @formats = []
           @refresh_token = nil
+          @log = log ||= TrackRecord::Log.new
 
           @client = Google::APIClient.new ({
               application_name: config.fetch(:application_name)
@@ -52,33 +53,35 @@ module CartoDB
           @client.authorization.redirect_uri = redirect_uri
         end #initialize
 
-        # Return the url to be displayed or sent the user to to authenticate and get authroization code
+        # Return the url to be displayed or sent the user to to authenticate and get authorization code
         def get_auth_url
           return @client.authorization.authorization_uri
         end #get_auth_url
 
-        # Validate authorization code and store it
+        # Validate authorization code and store token
         # @param auth_code : string
         # @return string : Access token
         def validate_auth_code(auth_code)
           @client.authorization.code = auth_code
           @client.authorization.fetch_access_token!
           @refresh_token = @client.authorization.refresh_token
+          # TODO: Store token in backend
         end #validate_auth_code
 
-        # Store refresh token
+        # Store token
         # Triggers generation of a valid access token for the lifetime of this instance
-        def refresh_token=(token)
+        # @param token string
+        def token=(token)
           @refresh_token = token
           @client.authorization.update_token!( { refresh_token: @refresh_token } )
           @client.authorization.fetch_access_token!
-        end #refresh_token=
+        end #token=
 
-        # Retrieve the refresh token
-        # @return string|nil
-        def refresh_token
+        # Retrieve token
+        # @return string | nil
+        def token
           @refresh_token
-        end #refresh_token
+        end #token
 
         # Perform the GDrive listing and return results
         # @param formats_filter Array : (Optional) formats list to retrieve. Leave empty for all supported formats.
@@ -115,12 +118,11 @@ module CartoDB
           all_results
         end #get_files_list
 
-        # TODO: Maybe we need to store also a download link, check and if so, send also to the UI
-        def store_chosen_files(id, url, service, sync_type)
+        def store_chosen_file(id, url, service, sync_type)
           raise 'Pending implementation'
-        end #store_chosen_files
+        end #store_chosen_file
 
-        def download_file(service, id)
+        def download_file(service, id, url)
           raise 'Pending implementation'
         end #download_file
 
@@ -146,11 +148,11 @@ module CartoDB
         # @return { :id, :title, :url, :service }
         def format_item_data(item_data)
           data =
-              {
-                  id:       item_data.fetch('id'),
-                  title:    item_data.fetch('title'),
-                  service:  SERVICE
-              }
+            {
+              id:       item_data.fetch('id'),
+              title:    item_data.fetch('title'),
+              service:  SERVICE
+            }
           if item_data.include?('exportLinks')
             data[:url] = item_data.fetch('exportLinks').first.last
             data[:url] = data[:url][0..data[:url].rindex('=')] + 'csv'

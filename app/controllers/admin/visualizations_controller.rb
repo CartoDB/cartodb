@@ -50,8 +50,10 @@ class Admin::VisualizationsController < ApplicationController
     response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
 
     @avatar_url = get_avatar(@visualization, 64)
-    @visualization_count = @visualization.user.visualization_count
-    @related_tables = @visualization.related_tables
+
+    @disqus_shortname     = @visualization.user.disqus_shortname || 'cartodb'
+    @visualization_count  = @visualization.user.visualization_count
+    @related_tables       = @visualization.related_tables
     @private_tables_count = @related_tables.select{|p| p.privacy_text == 'PRIVATE' }.count 
 
     respond_to do |format|

@@ -126,7 +126,7 @@
                   <% end %>
 
                   <% if (@private_tables_count > 0) %>
-                    <li class="private"><%= @private_tables_count %> private dataset<%= @private_tables_count != 1 ? 's' : '' %><span class="help" original-title="This map contains 2 private datasets only accesible to the map publisher">(?)</span></li>
+                    <li class="private"><%= @private_tables_count %> private dataset<%= @private_tables_count != 1 ? 's' : '' %><span class="help" original-title="This map contains <%= @private_tables_count %> dataset<%= @private_tables_count != 1 ? 's' : '' %> made private by the publisher">(?)</span></li>
                   <% end %>
                 </ul>
 
@@ -138,7 +138,7 @@
                 <div id="disqus_thread"></div>
                 <script type="text/javascript">
 
-                  var disqus_shortname  = 'cartodb'; 
+                  var disqus_shortname  = '<%= @disqus_shortname %>';
                   var disqus_identifier = '<%= @visualization.id %>';
 
                   (function() {
@@ -146,6 +146,7 @@
                     dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
                     (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
                   })();
+
                 </script>
                 <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript" class="no_script">comments powered by Disqus.</a></noscript>
               </div>
@@ -407,7 +408,7 @@
 
     <script type="text/javascript">
       $(function() {
-        $("span.help").tipsy({ gravity: "s", fade: true });
+        $("span.help").tipsy({ gravity: $.fn.tipsy.autoBounds(250, 's'), fade: true });
       });
     </script>
 

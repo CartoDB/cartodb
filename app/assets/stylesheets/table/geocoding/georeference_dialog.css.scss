@@ -20,8 +20,14 @@
   h4 { margin: 0 0 10px 0; padding: 0; font-size: 17px; line-height:normal; }
   p  { font-size: 15px; color: #666666; line-height:normal; }
 
-  .block.modal.notification div.foot { overflow: visible; padding: 0px 40px 48px 40px; }
-  .block.modal.notification div.foot a { padding: 12px 32px; }
+  .mamufas .block.modal a.close {
+    right: -18px;
+    top: -18px;
+  }
+
+  .mamufas .block.modal div.content { padding: 40px; }
+  .mamufas .block.modal div.foot { overflow: visible; padding: 0px 40px 48px 40px; }
+  .mamufas .block.modal div.foot a { padding: 12px 32px; }
 
   .marker {
 
@@ -59,6 +65,15 @@
       transition:         all 400ms ease-in-out,border-color 400ms ease-in-out, background-color 400ms ease-in-out, top 400ms ease-in-out, opacity 400ms ease-in;
     }
 
+    &.error:after {
+      content: '×';
+      color: #f1f1f1;
+      display: block;
+      position: relative;
+      top: -3px;
+      font-size: 15px;
+    }
+
   }
 
   .icon_container {
@@ -89,37 +104,44 @@
     margin: 0 auto 25px auto;
   }
 
-  .opt .icon {
+  .opt .icon_container .icon {
     @include filter(grayscale(100%));
     @include opacity(.9);
   }
 
-  .opt, .opt .icon {
+  .opt, .opt > .icon {
     -webkit-transition: all 250ms ease-in-out;
     -moz-transition:    all 250ms ease-in-out;
     -o-transition:      all 250ms ease-in-out;
     transition:         all 250ms ease-in-out;
   }
 
-  .opt .warning {
+  .opt > .icon {
     position:absolute;
     top: 0px;
-    right: 0px;
+    right: -5px;
     width:31px;
     height:31px;
-    @include background(image-url("layout/georeference_warning.png") repeat center center);
     @include simple-transition(all, 170ms, ease-in);
   }
 
-  .points .icon { @include background(image-url("layout/georeference_points.png") repeat center center); }
+  .opt .icon.warning {
+    @include background(image-url("layout/georeference_warning.png") repeat center center);
+  }
 
-  .points.selected.animated .icon .marker.a { top: 33px; @include opacity(1);-webkit-transform: scale(1, 1); transform: scale(1, 1); }
-  .points.selected.animated .icon .marker.b { top: 60px; @include opacity(1);-webkit-transform: scale(1, 1); transform: scale(1, 1); }
-  .points.selected.animated .icon .marker.c { top: 40px; @include opacity(1);-webkit-transform: scale(1, 1); transform: scale(1, 1); }
+  .opt .icon.error {
+    @include background(image-url("layout/georeference_error.png") repeat center center);
+  }
 
-  .points.animated .icon .marker.a { top: 33px; @include opacity(.7); -webkit-transform: scale(.6, .6); transform: scale(.6, .6); }
-  .points.animated .icon .marker.b { top: 60px; @include opacity(.7); -webkit-transform: scale(.6, .6); transform: scale(.6, .6); }
-  .points.animated .icon .marker.c { top: 40px; @include opacity(.7); -webkit-transform: scale(.6, .6); transform: scale(.6, .6); }
+  .points .icon_container .icon { @include background(image-url("layout/georeference_points.png") repeat center center); }
+
+  .points.selected.animated .icon_container .icon .marker.a { top: 33px; @include opacity(1);-webkit-transform: scale(1, 1); transform: scale(1, 1); }
+  .points.selected.animated .icon_container .icon .marker.b { top: 60px; @include opacity(1);-webkit-transform: scale(1, 1); transform: scale(1, 1); }
+  .points.selected.animated .icon_container .icon .marker.c { top: 40px; @include opacity(1);-webkit-transform: scale(1, 1); transform: scale(1, 1); }
+
+  .points.animated .icon_container .icon .marker.a { top: 33px; @include opacity(.7); -webkit-transform: scale(.6, .6); transform: scale(.6, .6); }
+  .points.animated .icon_container .icon .marker.b { top: 60px; @include opacity(.7); -webkit-transform: scale(.6, .6); transform: scale(.6, .6); }
+  .points.animated .icon_container .icon .marker.c { top: 40px; @include opacity(.7); -webkit-transform: scale(.6, .6); transform: scale(.6, .6); }
 
   .polygons {
 
@@ -142,7 +164,7 @@
       z-index:1;
     }
 
-    .icon {
+    .icon_container .icon {
       -webkit-transform: scale(.5, .5) rotate(10deg);
       transform: scale(.5, .5) rotate(10deg);
       @include background(image-url("layout/georeference_polygons.png") repeat center center);
@@ -153,7 +175,7 @@
       position: absolute;
     }
 
-    &.selected .icon {
+    &.selected .icon_container .icon {
       -webkit-transform: scale(1, 1);
       transform: scale(1, 1);
     }

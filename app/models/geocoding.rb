@@ -1,9 +1,11 @@
 # encoding: UTF-8'
 require_relative '../../services/table-geocoder/lib/table_geocoder'
+require_relative '../../services/table-geocoder/lib/internal_geocoder.rb'
 
 class Geocoding < Sequel::Model
 
   DEFAULT_TIMEOUT = 15.minutes
+  ALLOWED_KINDS   = %w(admin0 admin1 namedplace postalcode high-resolution)
 
   many_to_one :user
   many_to_one :table
@@ -11,24 +13,19 @@ class Geocoding < Sequel::Model
 
   attr_reader :table_geocoder
 
-  attr_accessor :run_timeout
+  attr_accessor :run_timeout, :column_name
 
   def validate
     super
     validates_presence :formatter
     validates_presence :table_id
+    validates_includes ALLOWED_KINDS, :kind
   end # validate
 
   def after_initialize
     super
-    instantiate_table_geocoder
     @run_timeout = DEFAULT_TIMEOUT
   end #after_initialize
-
-  def after_create
-    super
-    instantiate_table_geocoder
-  end # after_create
 
   def before_save
     super
@@ -36,17 +33,17 @@ class Geocoding < Sequel::Model
     cancel if state == 'cancelled'
   end # before_save
 
-  def instantiate_table_geocoder
+  def table_geocoder
+    geocoder_class = (kind == 'high-resolution' ? CartoDB::TableGeocoder : CartoDB::InternalGeocoder)
     config = Cartodb.config[:geocoder].deep_symbolize_keys.merge(
       table_name: table.try(:name),
       formatter:  translate_formatter,
       connection: (user.present? ? user.in_database(as: :superuser) : nil),
       remote_id:  remote_id,
-      kind:       kind,
       max_rows:   max_geocodable_rows
     )
-    @table_geocoder = CartoDB::TableGeocoder.new(config)
-  end # instantiate_table_geocoder
+    @table_geocoder ||= geocoder_class.new(config)
+  end # table_geocoder
 
   def cancel
     table_geocoder.cancel

@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+require_relative '../../../../track_record/track_record'
+
 module CartoDB
   module Synchronizer
     module FileProviders
@@ -45,7 +47,6 @@ module CartoDB
         def download_file(service, id)
           raise 'To be implemented in child classes'
         end
-
 
         private_class_method :new
 

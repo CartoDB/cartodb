@@ -44,21 +44,5 @@ describe GDrive do
     end
   end #run
 
-  describe '#manual_test' do
-    it 'with user interaction, tests the full oauth flow' do
-      pending('This test requires manual run, opening the url in a browser, grabbing the code and setting input to it')
-
-      gdrive_provider = GDrive.get_new(get_config)
-
-      gdrive_provider.setup_formats_filter()
-      puts gdrive_provider.get_auth_url
-      input = ''
-      debugger
-      gdrive_provider.validate_auth_code(input)
-      data = gdrive_provider.get_files_list()
-      puts data
-    end
-  end
-
 end
 

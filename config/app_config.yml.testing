@@ -158,6 +158,12 @@ defaults: &defaults
     api_key: ""
     app_id: ""
   enforce_non_empty_layer_css: false
+  gdrive_oauth:
+    application_name: ''
+    client_id: ''
+    client_secret: ''
+
+
 
 development:
   <<: *defaults

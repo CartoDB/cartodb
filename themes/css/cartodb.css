@@ -744,6 +744,10 @@ only screen and (                min-resolution: 2dppx) {
   .inner .embed-left-col .content { margin-left: 0px; border-right: none; padding-right: 0; max-width: none; }
   .inner .embed-right-col { float: none;  width: 100%; }
 
+  div.cartodb-map-data .cartodb-info .inner .details h1 {
+    padding-right: 20px;
+  }
+
   div.cartodb-info .inner .user.embed-right-col {
     float:right;
     text-align: left;
@@ -824,6 +828,10 @@ and (orientation : landscape) {
   .inner .user.embed-right-col {
     width: 200px;
     float: right;
+  }
+
+  div.cartodb-map-data .cartodb-info .inner .details h1 {
+    padding-right: 20px;
   }
 
   .cartodb-info .inner .details.embed-left-col p {

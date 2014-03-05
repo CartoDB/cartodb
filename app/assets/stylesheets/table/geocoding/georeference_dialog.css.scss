@@ -178,6 +178,14 @@
     padding:40px 40px 40px 40px;
   }
 
+  &.no_data {
+    div.content, div.content .inner { overflow: visible; }
+    div.content, div.content .inner { width: auto; }
+    div.content div.inner {
+      padding:40px 39px 20px 39px;
+    }
+  }
+
   // Dialog styles
   div.content {
     width: 532px;
@@ -185,6 +193,8 @@
 
     clear:both;
     overflow: hidden;
+
+    p { line-height: 120%; }
 
     ul.options {
       width: 492px;

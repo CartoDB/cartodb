@@ -611,7 +611,7 @@ describe User do
       .with("#{doomed_user.database_name}.*")
       .returns(true)
     CartoDB::Varnish.any_instance.expects(:purge)
-      .with("#{doomed_user.database_name}:(.*clubbing.*)|(table)$")
+      .with("^#{doomed_user.database_name}:(.*clubbing.*)|(table)$")
       .returns(true)
     CartoDB::Varnish.any_instance.expects(:purge)
       .with("#{uuid}:vizjson")

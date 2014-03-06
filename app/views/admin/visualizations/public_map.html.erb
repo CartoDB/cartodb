@@ -264,9 +264,10 @@
       $(document).ready(function(){
 
         statsc.connect('http://<%= Cartodb.config[:graphite_public]['host'] %>:<%= Cartodb.config[:graphite_public]['port'] %>/');
+
         cartodb.core.Profiler.backend(function () {
           statsc.send.apply(statsc, arguments);
-        })
+        });
 
         var bool_fn = function(v) { return v == 'true' }
         , is_custom_install = <%= Cartodb.config[:cartodb_com_hosted].present? %>
@@ -335,7 +336,7 @@
             default: setupMapDimensions(true, true);
             break;
           }
-        
+
         };
 
         $.extend( $.easing, {
@@ -409,6 +410,10 @@
     <script type="text/javascript">
       $(function() {
         $("span.help").tipsy({ gravity: $.fn.tipsy.autoBounds(250, 's'), fade: true });
+
+        if ($.browser.msie && parseInt($.browser.version) == 7 ) {
+          $(".comments .content").html("<p>Your browser doesn't support comments.</p>")
+        }
       });
     </script>
 

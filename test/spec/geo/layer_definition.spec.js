@@ -491,6 +491,7 @@ describe("NamedMap", function() {
     });
     namedMap.options.tiler_protocol = 'https';
     namedMap.setAuthToken('test');
+    namedMap.layerToken = 'test';
     namedMap.fetchAttributes(1, 12345, null, function(data) {
       expect(data).toEqual({test: 1});
       expect(params.url).toEqual('https://rambo.cartodb.com:8081/api/v1/map/test/1/attributes/12345?auth_token=test')

@@ -713,7 +713,8 @@ var Vis = cdb.core.View.extend({
           infowindow = Overlay.create('infowindow', this, layerView.getInfowindowData(i), true);
           mapView.addInfowindow(infowindow);
         }
-        layerView.setInteraction(i, true);
+        var index = layerView.getLayerNumberByIndex(i);
+        layerView.setInteraction(index, true);
       }
     }
 

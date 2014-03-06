@@ -999,6 +999,13 @@ div.cartodb-body {
   padding: 30px 0;
 }
 
+div.cartodb-body .comments .content p {
+  font-size: 16px;
+  font-family: 'Helvetica Neue', Helvetica, sans-serif;
+  color: #444444;
+  line-height: normal;
+}
+
 div.cartodb-body .inner .map-info h2 {
   margin: 0 0 21px 0;
   padding: 0;
@@ -1094,6 +1101,8 @@ div.cartodb-public-header .inner .options .regular {
   font-family: 'Helvetica Neue', Helvetica, sans-serif;
   text-decoration:none;
   font-weight: 200;
+  zoom: 1; *display: inline; 
+  *padding: 8px 0;
 }
 
 div.cartodb-public-header .inner .options .regular:hover { 
@@ -1148,6 +1157,8 @@ div.cartodb-public-header a.button.green {
   -moz-transition-duration: 250ms;
   -o-transition-duration: 250ms;
   transition-duration: 250ms;
+
+  zoom: 1; *display: inline; 
 }
 
 div.cartodb-public-header .inner .logo { 

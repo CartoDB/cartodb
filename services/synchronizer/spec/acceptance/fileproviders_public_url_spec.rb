@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-require_relative '../../lib/synchronizer/file-providers/public_url'
+require_relative '../../lib/synchronizer/file-providers/public_url_provider'
 
 include CartoDB::Synchronizer::FileProviders
 

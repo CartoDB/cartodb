@@ -23,7 +23,7 @@ module CartoDB
     }
 
     def initialize(arguments)
-      @sql_api     = arguments.fetch(:sql_api)
+      @sql_api     = arguments.fetch(:internal)
       @connection  = arguments.fetch(:connection)
       @working_dir = Dir.mktmpdir
       `chmod 777 #{@working_dir}`

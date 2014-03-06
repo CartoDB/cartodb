@@ -13,7 +13,7 @@ class Geocoding < Sequel::Model
 
   attr_reader :table_geocoder
 
-  attr_accessor :run_timeout, :column_name
+  attr_accessor :run_timeout
 
   def validate
     super

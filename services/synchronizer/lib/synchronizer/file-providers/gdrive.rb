@@ -6,10 +6,14 @@ require 'google/api_client'
 module CartoDB
   module Synchronizer
     module FileProviders
-      class GDrive < BaseProvider
+      class GDriveProvider < BaseProvider
 
         # Required for all providers
         SERVICE = 'gdrive'
+
+        OAUTH_SCOPE = 'https://www.googleapis.com/auth/drive'
+        REDIRECT_URI = 'urn:ietf:wg:oauth:2.0:oob'
+        FIELDS_TO_RETRIEVE = 'items(downloadUrl,exportLinks,id,modifiedDate,title)'
 
         # Specific of this provider
         FORMATS_TO_MIME_TYPES = {
@@ -34,13 +38,14 @@ module CartoDB
         #  :client_id
         #  :client_secret
         # ]
-        # @param log object | nil
-        def initialize(config, log=nil)
-          @service_name = SERVICE
+        # @throws ConfigurationError
+        def initialize(config)
+          raise ConfigurationError.new('missing application_name', SERVICE) unless config.include?(:application_name)
+          raise ConfigurationError.new('missing client_id', SERVICE) unless config.include?(:client_id)
+          raise ConfigurationError.new('missing client_secret', SERVICE) unless config.include?(:client_secret)
 
           @formats = []
           @refresh_token = nil
-          @log = log ||= TrackRecord::Log.new
 
           @client = Google::APIClient.new ({
               application_name: config.fetch(:application_name)
@@ -49,11 +54,12 @@ module CartoDB
 
           @client.authorization.client_id = config.fetch(:client_id)
           @client.authorization.client_secret = config.fetch(:client_secret)
-          @client.authorization.scope = oauth_scope
-          @client.authorization.redirect_uri = redirect_uri
+          @client.authorization.scope = OAUTH_SCOPE
+          @client.authorization.redirect_uri = REDIRECT_URI
         end #initialize
 
         # Return the url to be displayed or sent the user to to authenticate and get authorization code
+        # @return string | nil
         def get_auth_url
           return @client.authorization.authorization_uri
         end #get_auth_url
@@ -61,20 +67,26 @@ module CartoDB
         # Validate authorization code and store token
         # @param auth_code : string
         # @return string : Access token
+        # @throws AuthError
         def validate_auth_code(auth_code)
           @client.authorization.code = auth_code
           @client.authorization.fetch_access_token!
           @refresh_token = @client.authorization.refresh_token
           # TODO: Store token in backend
+        rescue Google::APIClient::InvalidIDTokenError, Signet::AuthorizationError
+          raise AuthError.new('validating auth code', SERVICE)
         end #validate_auth_code
 
         # Store token
         # Triggers generation of a valid access token for the lifetime of this instance
         # @param token string
+        # @throws AuthError
         def token=(token)
           @refresh_token = token
           @client.authorization.update_token!( { refresh_token: @refresh_token } )
           @client.authorization.fetch_access_token!
+        rescue Google::APIClient::InvalidIDTokenError, Signet::AuthorizationError
+          raise AuthError.new('setting token', SERVICE)
         end #token=
 
         # Retrieve token
@@ -86,20 +98,19 @@ module CartoDB
         # Perform the GDrive listing and return results
         # @param formats_filter Array : (Optional) formats list to retrieve. Leave empty for all supported formats.
         # @return [ { :id, :title, :url, :service } ]
+        # @throws DownloadError
+        # @throws AuthError
         def get_files_list(formats_filter=[])
           all_results = []
           setup_formats_filter(formats_filter)
 
           batch_request = Google::APIClient::BatchRequest.new do |result|
-            if result.status == 200
-              data = result.data.to_hash
-              if data.include? 'items'
-                data['items'].each do |item|
-                  all_results.push(format_item_data(item))
-                end
+            raise DownloadError.new("(#{result.status}) Retrieving files: #{result.data['error']['message']}", SERVICE) if result.status != 200
+            data = result.data.to_hash
+            if data.include? 'items'
+              data['items'].each do |item|
+                all_results.push(format_item_data(item))
               end
-            else
-              @log.append "Error #{result.status} retrieving files with #{SERVICE}: #{result.data['error']['message']}"
             end
           end
 
@@ -109,70 +120,78 @@ module CartoDB
               parameters: {
                 trashed:  'false',
                 q:        "mime_type = '#{mime_type}'",
-                fields:   fields_to_retrieve
+                fields:   FIELDS_TO_RETRIEVE
               }
             )
           end
-          @client.execute(batch_request)
 
+          @client.execute(batch_request)
           all_results
+        rescue Google::APIClient::InvalidIDTokenError
+          raise AuthError.new('Invalid token', SERVICE)
+        rescue Google::APIClient::BatchError, Google::APIClient::TransmissionError
+          raise DownloadError.new('getting files', SERVICE)
         end #get_files_list
 
         # Stores a sync table entry
         # @param id string
         # @param sync_type
         # @return bool
+        # @throws DownloadError
+        # @throws AuthError
         def store_chosen_file(id, sync_type)
-          item_data = nil
           result = @client.execute( api_method: @drive.files.get, parameters: { fileId: id } )
-          if result.status == 200
-            item_data = format_item_data(result.data.to_hash)
+          raise DownloadError.new("(#{result.status}) retrieving file #{id} metadata: #{result.data['error']['message']}", SERVICE) if result.status != 200
 
-            #TODO: Store
-            puts item_data.to_hash
-            true
-          else
-            @log.append "Error #{result.status} retrieving file #{id} metadata with #{SERVICE}: #{result.data['error']['message']}"
-            false
-          end
+          item_data = format_item_data(result.data.to_hash)
+
+          #TODO: Store
+          puts item_data.to_hash
+          true
+        rescue Google::APIClient::InvalidIDTokenError
+          raise AuthError.new('Invalid token', SERVICE)
+        rescue Google::APIClient::TransmissionError
+          raise DownloadError.new("storing file #{id}", SERVICE)
         end #store_chosen_file
 
         # Checks if a file has been modified
         # @param id string
         # @return bool
+        # @throws DownloadError
+        # @throws AuthError
         def file_modified?(id)
-          new_item_data = nil
           result = @client.execute( api_method: @drive.files.get, parameters: { fileId: id } )
-          if result.status == 200
-            new_item_data = format_item_data(result.data.to_hash)
+          raise DownloadError.new("(#{result.status}) retrieving file #{id} metadata: #{result.data['error']['message']}", SERVICE) if result.status != 200
 
-            #TODO: check against stored checksum
-            puts new_item_data.to_hash
-            false
-          else
-            @log.append "Error #{result.status} retrieving file #{id} metadata with #{SERVICE}: #{result.data['error']['message']}"
-            false
-          end
+          new_item_data = format_item_data(result.data.to_hash)
+
+          #TODO: check against stored checksum
+          puts new_item_data.to_hash
+          false
+        rescue Google::APIClient::InvalidIDTokenError
+          raise AuthError.new('Invalid token', SERVICE)
+        rescue Google::APIClient::TransmissionError
+          raise DownloadError.new("checking if file #{id} has been modified", SERVICE)
         end #file_modified?
 
         # Downloads a file and returns its contents
         # @param id string
         # @return mixed
+        # @throws DownloadError
+        # @throws AuthError
         def download_file(id)
           result = @client.execute( api_method: @drive.files.get, parameters: { fileId: id } )
-          if result.status != 200
-            @log.append "Error #{result.status} retrieving file metadata for download #{id} with #{SERVICE}: #{result.data['error']['message']}"
-            return nil
-          end
+          raise DownloadError.new("(#{result.status}) retrieving file #{id} metadata for download: #{result.data['error']['message']}", SERVICE) if result.status != 200
+
           item_data = format_item_data(result.data.to_hash)
 
           result = @client.execute(uri: item_data.fetch(:url))
-          if result.status == 200
-            result.body
-          else
-            @log.append "Error #{result.status} downloading file #{id} with #{SERVICE}: #{result.data['error']['message']}"
-            nil
-          end
+          raise DownloadError.new("(#{result.status}) downloading file #{id}: #{result.data['error']['message']}", SERVICE) if result.status != 200
+          result.body
+        rescue Google::APIClient::InvalidIDTokenError
+          raise AuthError.new('Invalid token', SERVICE)
+        rescue Google::APIClient::TransmissionError
+          raise DownloadError.new("downloading file #{id}", SERVICE)
         end #download_file
 
         # Prepares the list of formats that GDrive will require when performing the query
@@ -211,29 +230,6 @@ module CartoDB
           end
           data
         end #format_item_data
-
-        # Path to the oauth scope
-        # @return string
-        def oauth_scope
-          'https://www.googleapis.com/auth/drive'
-        end #oauth_scope
-
-        # Redirection URI. Generic Google page with authorization token
-        # @return string
-        def redirect_uri
-          'urn:ietf:wg:oauth:2.0:oob'
-        end #redirect_uri
-
-        # Path to access token refresh action
-        # @return string
-        def token_uri
-          'https://accounts.google.com/o/oauth2/token'
-        end
-
-        # GDrive-formatted string containing list of which fields to fetch
-        def fields_to_retrieve
-          'items(downloadUrl,exportLinks,id,modifiedDate,title)'
-        end #fields_to_retrieve
 
         # Calculates a checksum of given input
         # @param origin string

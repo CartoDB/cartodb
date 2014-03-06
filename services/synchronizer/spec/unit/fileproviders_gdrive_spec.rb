@@ -1,10 +1,10 @@
 # encoding: utf-8
 
-require_relative '../../lib/synchronizer/file-providers/gdrive'
+require_relative '../../lib/synchronizer/file-providers/gdrive_provider'
 
 include CartoDB::Synchronizer::FileProviders
 
-describe GDrive do
+describe GDriveProvider do
 
   def get_config
     {
@@ -16,11 +16,11 @@ describe GDrive do
 
   describe '#filters' do
     it 'test that filter options work correctly' do
-      gdrive_provider = GDrive.get_new(get_config)
+      gdrive_provider = GDriveProvider.get_new(get_config)
 
       # No filter = all formats allowed
       expected_formats = []
-      GDrive::FORMATS_TO_MIME_TYPES.each do |id, mime_types|
+      GDriveProvider::FORMATS_TO_MIME_TYPES.each do |id, mime_types|
         mime_types.each do |mime_type|
           expected_formats = expected_formats.push(mime_type)
         end
@@ -30,8 +30,8 @@ describe GDrive do
 
       # Filter to 'documents'
       expected_formats = []
-      format_ids = [ GDrive::FORMAT_CSV, GDrive::FORMAT_EXCEL ]
-      GDrive::FORMATS_TO_MIME_TYPES.each do |id, mime_types|
+      format_ids = [ GDriveProvider::FORMAT_CSV, GDriveProvider::FORMAT_EXCEL ]
+      GDriveProvider::FORMATS_TO_MIME_TYPES.each do |id, mime_types|
         if format_ids.include?(id)
           mime_types.each do |mime_type|
             expected_formats = expected_formats.push(mime_type)

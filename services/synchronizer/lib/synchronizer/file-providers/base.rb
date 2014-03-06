@@ -1,7 +1,7 @@
 # encoding: utf-8
 
 require 'zlib'
-require_relative '../../../../track_record/track_record'
+require_relative './exceptions'
 
 module CartoDB
   module Synchronizer
@@ -21,7 +21,7 @@ module CartoDB
         # .zip
         FORMAT_COMPRESSED = 'zip'
 
-        def get_new
+        def get_new(config)
           raise 'To be implemented in child classes'
         end
 

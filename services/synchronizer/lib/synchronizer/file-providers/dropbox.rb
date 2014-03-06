@@ -6,7 +6,7 @@ require 'dropbox_sdk'
 module CartoDB
   module Synchronizer
     module FileProviders
-      class Dropbox < BaseProvider
+      class DropboxProvider < BaseProvider
 
         # Required for all providers
         SERVICE = 'dropbox'
@@ -33,13 +33,13 @@ module CartoDB
         #  :app_key
         #  :app_secret
         # ]
-        # @param log object | nil
-        def initialize(config, log=nil)
-          @service_name = SERVICE
-
+        # @throws ConfigurationError
+        def initialize(config)
           @formats = []
           @access_token = nil
-          @log = log ||= TrackRecord::Log.new
+
+          raise ConfigurationError.new('missing application_name', SERVICE) unless config.include?(:app_key)
+          raise ConfigurationError.new('missing application_name', SERVICE) unless config.include?(:app_secret)
 
           @app_key = config.fetch(:app_key)
           @app_secret = config.fetch(:app_secret)
@@ -49,27 +49,36 @@ module CartoDB
         end #initialize
 
         # Return the url to be displayed or sent the user to to authenticate and get authorization code
+        # @throws AuthError
         def get_auth_url
           @auth_flow = DropboxOAuth2FlowNoRedirect.new(@app_key, @app_secret)
           @auth_flow.start()
+        rescue DropboxError, ArgumentError
+          raise AuthError.new('getting auth url', SERVICE)
         end #get_auth_url
 
         # Validate authorization code and store token
         # @param auth_code : string
         # @return string : Access token
+        # @throws AuthError
         def validate_auth_code(auth_code)
           data = @auth_flow.finish(auth_code)
           @access_token = data[0] # Only keep the access token
           @auth_flow = nil
           @client = DropboxClient.new(@access_token)
           # TODO: Store token in backend
+        rescue DropboxError, ArgumentError
+          raise AuthError.new('validating auth code', SERVICE)
         end #validate_auth_code
 
         # Store token
         # @param token string
+        # @throws AuthError
         def token=(token)
           @access_token = token
           @client = DropboxClient.new(@access_token)
+        rescue DropboxError, ArgumentError
+          raise AuthError.new('setting token', SERVICE)
         end #token=
 
         # Retrieve token
@@ -81,6 +90,7 @@ module CartoDB
         # Perform the GDrive listing and return results
         # @param formats_filter Array : (Optional) formats list to retrieve. Leave empty for all supported formats.
         # @return [ { :id, :title, :url, :service } ]
+        # @throws DownloadError
         def get_files_list(formats_filter=[])
           all_results = []
           setup_formats_filter(formats_filter)
@@ -93,12 +103,15 @@ module CartoDB
           end
 
           all_results
+        rescue DropboxError, ArgumentError
+          raise DownloadError.new('getting files list', SERVICE)
         end
 
         # Stores a sync table entry
         # @param id string
         # @param sync_type
         # @return bool
+        # @throws DownloadError
         def store_chosen_file(id, sync_type)
           item_data = nil
           response = @client.metadata(id)
@@ -107,11 +120,14 @@ module CartoDB
           #TODO: Store
           puts item_data.to_hash
           true
+        rescue DropboxError, ArgumentError
+          raise DownloadError.new("Storing file #{id}", SERVICE)
         end #store_chosen_file
 
         # Checks if a file has been modified
         # @param id string
         # @return bool
+        # @throws DownloadError
         def file_modified?(id)
           new_item_data = nil
           response = @client.metadata(id)
@@ -120,14 +136,19 @@ module CartoDB
           #TODO: check against stored checksum
           puts item_data.to_hash
           false
+        rescue DropboxError, ArgumentError
+          raise DownloadError.new("checking if file #{id} has been modified", SERVICE)
         end #file_modified?
 
         # Downloads a file and returns its contents
         # @param id string
         # @return mixed
+        # @throws DownloadError
         def download_file(id)
           contents, metadata = @client.get_file_and_metadata(id)
           return contents
+        rescue DropboxError, ArgumentError
+          raise DownloadError.new("downloading file #{id}", SERVICE)
         end #download_file
 
         # Prepares the list of formats that Dropbox will require when performing the query

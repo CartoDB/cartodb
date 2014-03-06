@@ -29,6 +29,10 @@ WORKING_SPECS = \
   spec/requests/api/map_layers_spec.rb \
   spec/requests/api/records_spec.rb \
   services/synchronizer/spec/unit/fileproviders_gdrive_spec.rb \
+  services/synchronizer/spec/unit/fileproviders_dropbox_spec.rb \
+  services/synchronizer/spec/acceptance/fileproviders_public_url_spec.rb \
+  services/synchronizer/spec/acceptance/fileproviders_gdrive_spec.rb \
+  services/synchronizer/spec/acceptance/fileproviders_dropbox_spec.rb \
   $(NULL)
 
 CDB_PATH=lib/assets/javascripts/cdb

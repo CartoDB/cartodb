@@ -1,9 +1,11 @@
 # encoding: utf-8
 
-require_relative '../../lib/synchronizer/file-providers/dropbox'
+require_relative '../../lib/synchronizer/file-providers/dropbox_provider'
 require 'yaml'
 
-describe Dropbox do
+include CartoDB::Synchronizer::FileProviders
+
+describe DropboxProvider do
 
   def get_config
     @config ||= YAML.load_file("#{File.dirname(__FILE__)}/../../../../config/app_config.yml")['defaults']['dropbox_oauth']
@@ -17,7 +19,7 @@ describe Dropbox do
   describe '#manual_test' do
     it 'with user interaction, tests the full oauth flow and lists files of an account' do
       config = get_config
-      dropbox_provider = CartoDB::Synchronizer::FileProviders::Dropbox.get_new(config)
+      dropbox_provider = DropboxProvider.get_new(config)
 
       if config.include?(:access_token)
         dropbox_provider.token = config[:access_token]

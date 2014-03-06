@@ -1,11 +1,11 @@
 # encoding: utf-8
 
-require_relative '../../lib/synchronizer/file-providers/gdrive'
+require_relative '../../lib/synchronizer/file-providers/gdrive_provider'
 require 'yaml'
 
 include CartoDB::Synchronizer::FileProviders
 
-describe GDrive do
+describe GDriveProvider do
 
   def get_config
     @config ||= YAML.load_file("#{File.dirname(__FILE__)}/../../../../config/app_config.yml")['defaults']['gdrive_oauth']
@@ -20,7 +20,7 @@ describe GDrive do
   describe '#manual_test' do
     it 'with user interaction, tests the full oauth flow and lists files of an account' do
       config = get_config
-      gdrive_provider = GDrive.get_new(config)
+      gdrive_provider = GDriveProvider.get_new(config)
 
       if config.include?(:refresh_token)
         gdrive_provider.token = config[:refresh_token]

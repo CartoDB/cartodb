@@ -7211,6 +7211,13 @@ exports.Profiler = Profiler;
       return this.options.sql || "select * from " + this.options.table;
     },
 
+    setSQL: function(sql) {
+      if (this.options.sql != sql) {
+        this.options.sql = sql;
+        this.reload();
+      }
+    },
+
     _tilerHost: function() {
       var opts = this.options;
       var user = (opts.user_name || opts.user);
@@ -9547,88 +9554,6 @@ L.TorqueLayer = L.CanvasLayer.extend({
 
     this.redraw();
     return this;
-  }
-
-});
-
-
-L.TiledTorqueLayer = L.TileLayer.Canvas.extend({
-
-  providers: {
-    'sql_api': torque.providers.json,
-    'url_template': torque.providers.JsonArray
-  },
-
-  renderers: {
-    'point': torque.renderer.Point,
-    'pixel': torque.renderer.Rectangle
-  },
-
-  initialize: function(options) {
-    var self = this;
-    this.key = 0;
-
-    options.async = true;
-    L.TileLayer.Canvas.prototype.initialize.call(this, options);
-
-
-    this.options.renderer = this.options.renderer || 'pixel';
-    this.options.provider = this.options.provider || 'sql_api';
-
-    this.provider = new this.providers[this.options.provider](options);
-    this.renderer = new this.renderers[this.options.renderer](null, options);
-
-  },
-
-  _tileLoaded: function(tile, tilePoint, tileData) {
-    if(this._tiles[tilePoint.x + ':' + tilePoint.y] !== undefined) {
-      this._tiles[tilePoint.x + ':' + tilePoint.y].data = tileData;
-      this.drawTile(tile);
-    }
-    L.TileLayer.Canvas.prototype._tileLoaded.call(this);
-  },
-
-  redraw: function() {
-    for (var i in this._tiles) {
-        this._redrawTile(this._tiles[i]);
-    }
-  },
-
-  _loadTile: function(tile, tilePoint) {
-    var self = this;
-    L.TileLayer.Canvas.prototype._loadTile.apply(this, arguments);
-
-    // get the data from adjusted point but render in the right canvas
-    var adjusted = tilePoint.clone()
-    this._adjustTilePoint(adjusted);
-    this.provider.getTileData(adjusted, this._map.getZoom(), function(tileData) {
-      self._tileLoaded(tile, tilePoint, tileData);
-      L.DomUtil.addClass(tile, 'leaflet-tile-loaded');
-    });
-  },
-
-  drawTile: function (tile) {
-    var canvas = tile;
-    if(!tile.data) return;
-    canvas.width = canvas.width;
-
-    this.renderer.setCanvas(canvas);
-
-    var accum = this.renderer.accumulate(tile.data, this.key);
-    this.renderer.renderTileAccum(accum, 0, 0);
-  },
-
-  setKey: function(key) {
-    this.key = key;
-    this.redraw();
-  },
-
-  /**
-   * set the cartocss for the current renderer
-   */
-  setCartoCSS: function(cartocss) {
-    if (!this.renderer) throw new Error('renderer is not valid');
-    return this.renderer.setCartoCSS(cartocss);
   }
 
 });

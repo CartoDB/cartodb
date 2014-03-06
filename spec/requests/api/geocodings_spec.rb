@@ -17,10 +17,11 @@ describe "Geocodings API" do
   let(:params) { { :api_key => @user.api_key } }
 
   describe 'POST /api/v1/geocodings' do
+    let(:table) { create_table(user_id: @user.id) }
+
     it 'creates a new geocoding' do
       Geocoding.any_instance.stubs("run!").returns(true)
-      table = create_table(user_id: @user.id)
-      payload = params.merge(table_name: table.name, formatter:  'name, description')
+      payload = params.merge table_name: table.name, formatter:  'name, description', kind: 'high-resolution'
       post_json v1_geocodings_url(payload) do |response|
         response.status.should eq 200
         response.body[:id].should_not be_nil
@@ -32,11 +33,30 @@ describe "Geocodings API" do
       end
     end
 
-    it 'returns an error on bad payload' do
-      payload = params.merge(table_name: '', formatter:  '')
+    it 'uses column_name instead of formatter if present' do
+      Geocoding.any_instance.stubs("run!").returns(true)
+      payload = params.merge table_name: table.name, column_name:  'name', kind: 'high-resolution'
+      post_json v1_geocodings_url(payload) do |response|
+        response.status.should eq 200
+        response.body[:id].should_not be_nil
+        response.body[:formatter].should eq 'name'
+      end
+    end
+
+    it 'responds with 422 on bad payload' do
+      payload = params.merge(table_name: '', formatter:  '', kind: 'high-resolution')
       post_json v1_geocodings_url(payload) do |response|
         response.status.should eq 422
         response.body[:description].should eq "formatter is not present, table_id is not present"
+      end
+    end
+
+    it 'responds with 500 on failure' do
+      payload = params.merge(table_name: '', formatter:  '', kind: 'high-resolution')
+      Geocoding.any_instance.stubs(:save).raises(RuntimeError.new)
+      post_json v1_geocodings_url(payload) do |response|
+        response.status.should eq 500
+        response.body[:description].should eq "RuntimeError"
       end
     end
   end

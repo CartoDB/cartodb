@@ -13,7 +13,7 @@ describe CartoDB::InternalGeocoder do
     @pg_options   = conn.pg_options
   end
 
-  let(:default_params) { { connection: @db, sql_api: { base_url: 'http://geocoding.cartodb.com/api/v2/sql' }  } }
+  let(:default_params) { { connection: @db, internal: { base_url: 'http://geocoding.cartodb.com/api/v2/sql' }  } }
 
   describe '#download_results' do
     before do

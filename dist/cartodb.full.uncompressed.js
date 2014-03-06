@@ -1,6 +1,6 @@
-// cartodb.js version: 3.7.04
+// cartodb.js version: 3.7.05
 // uncompressed version: cartodb.uncompressed.js
-// sha: b653c8a3576a3c7231db80894d57e7b8a185c60f
+// sha: 76d83c2b1d85b1b2750579ffaf711f08265815db
 (function() {
   var root = this;
 
@@ -20686,7 +20686,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.7.04';
+    cdb.VERSION = '3.7.05';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -24564,6 +24564,11 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
 
       // If the template is 'cover-enabled', load the cover
       this._loadCover();
+
+      if(!this.isLoadingData()) {
+        this.model.trigger('domready', this, this.$el);
+        this.trigger('domready', this, this.$el);
+      }
     }
 
     return this;
@@ -24686,16 +24691,19 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     return attr;
   },
 
+  isLoadingData: function() {
+    var content = this.model.get("content");
+    return content.fields && content.fields.length == 1 && content.fields[0].type === "loading";
+  },
+
   /**
    *  Check if infowindow is loading the row content
    */
   _checkLoading: function() {
-    var content = this.model.get("content");
-
-    if (content.fields && content.fields.length == 1 && content.fields[0].type == "loading") {
-      this._startSpinner()
+    if (this.isLoadingData()) {
+      this._startSpinner();
     } else {
-      this._stopSpinner()
+      this._stopSpinner();
     }
   },
 
@@ -25720,6 +25728,21 @@ Map.prototype = {
     return btoa(input)
   },
 
+  // given number inside layergroup 
+  // returns the real index in tiler layergroup`
+  getLayerIndexByNumber: function(number) {
+    var layers = {}
+    var c = 0;
+    for(var i = 0; i < this.layers.length; ++i) {
+      var layer = this.layers[i];
+      layers[i] = c;
+      if(layer.options && !layer.options.hidden) {
+        ++c;
+      }
+    }
+    return layers[number];
+  },
+
   /**
    * return the layer number by index taking into
    * account the hidden layers.
@@ -26178,6 +26201,27 @@ NamedMap.prototype = _.extend({}, Map.prototype, {
     }
     this.options.extra_params = this.options.extra_params || {};
     this.options.extra_params.auth_token = token;
+    this.invalidate();
+    return this;
+  },
+
+  setParams: function(attr, v) {
+    var params;
+    if (arguments.length === 2) {
+      params = {}
+      params[attr] = v;
+    } else {
+      params = attr;
+    }
+    for (var k in params) {
+      if (params[k] === undefined || params[k] === null) {
+        delete this.named_map.params[k];
+      } else {
+        this.named_map.params[k] = params[k];
+      }
+    }
+    this.invalidate();
+    return this;
   },
 
   toJSON: function() {
@@ -26649,7 +26693,8 @@ CartoDBLayerCommon.prototype = {
       // layer will be created
       if(this.urls) {
         // generate the tilejson from the urls. wax needs it
-        var tilejson = this._tileJSONfromTiles(layer, this.urls);
+        var layer_index = this.getLayerIndexByNumber(+layer);
+        var tilejson = this._tileJSONfromTiles(layer_index, this.urls);
 
         // remove previous
         layerInteraction = this.interaction[layer];
@@ -26663,14 +26708,16 @@ CartoDBLayerCommon.prototype = {
           .map(this.options.map)
           .tilejson(tilejson)
           .on('on', function(o) {
-            o.layer = layer || 0;
-            o.layer = self.getLayerNumberByIndex(o.layer);
+            //o.layer = layer || 0;
+            //o.layer = self.getLayerNumberByIndex(+o.layer);
+            o.layer = +layer;
             self._manageOnEvents(self.options.map, o);
           })
           .on('off', function(o) {
             o = o || {}
-            o.layer = layer || 0;
-            o.layer = self.getLayerNumberByIndex(o.layer);
+            //o.layer = layer || 0;
+            //o.layer = self.getLayerNumberByIndex(+o.layer);
+            o.layer = +layer;
             self._manageOffEvents(self.options.map, o);
           });
       }
@@ -30743,7 +30790,8 @@ var Vis = cdb.core.View.extend({
           infowindow = Overlay.create('infowindow', this, layerView.getInfowindowData(i), true);
           mapView.addInfowindow(infowindow);
         }
-        layerView.setInteraction(i, true);
+        var index = layerView.getLayerNumberByIndex(i);
+        layerView.setInteraction(index, true);
       }
     }
 

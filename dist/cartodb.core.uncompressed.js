@@ -1,5 +1,5 @@
-// version: 3.7.04
-// sha: b653c8a3576a3c7231db80894d57e7b8a185c60f
+// version: 3.7.05
+// sha: 76d83c2b1d85b1b2750579ffaf711f08265815db
 ;(function() {
   this.cartodb = {};
   var Backbone = {};
@@ -1141,7 +1141,7 @@ var Mustache;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.7.04';
+    cdb.VERSION = '3.7.05';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -1848,6 +1848,21 @@ Map.prototype = {
     return btoa(input)
   },
 
+  // given number inside layergroup 
+  // returns the real index in tiler layergroup`
+  getLayerIndexByNumber: function(number) {
+    var layers = {}
+    var c = 0;
+    for(var i = 0; i < this.layers.length; ++i) {
+      var layer = this.layers[i];
+      layers[i] = c;
+      if(layer.options && !layer.options.hidden) {
+        ++c;
+      }
+    }
+    return layers[number];
+  },
+
   /**
    * return the layer number by index taking into
    * account the hidden layers.
@@ -2306,6 +2321,27 @@ NamedMap.prototype = _.extend({}, Map.prototype, {
     }
     this.options.extra_params = this.options.extra_params || {};
     this.options.extra_params.auth_token = token;
+    this.invalidate();
+    return this;
+  },
+
+  setParams: function(attr, v) {
+    var params;
+    if (arguments.length === 2) {
+      params = {}
+      params[attr] = v;
+    } else {
+      params = attr;
+    }
+    for (var k in params) {
+      if (params[k] === undefined || params[k] === null) {
+        delete this.named_map.params[k];
+      } else {
+        this.named_map.params[k] = params[k];
+      }
+    }
+    this.invalidate();
+    return this;
   },
 
   toJSON: function() {

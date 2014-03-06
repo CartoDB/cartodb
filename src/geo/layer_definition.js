@@ -106,6 +106,21 @@ Map.prototype = {
     return btoa(input)
   },
 
+  // given number inside layergroup 
+  // returns the real index in tiler layergroup`
+  getLayerIndexByNumber: function(number) {
+    var layers = {}
+    var c = 0;
+    for(var i = 0; i < this.layers.length; ++i) {
+      var layer = this.layers[i];
+      layers[i] = c;
+      if(layer.options && !layer.options.hidden) {
+        ++c;
+      }
+    }
+    return layers[number];
+  },
+
   /**
    * return the layer number by index taking into
    * account the hidden layers.
@@ -564,6 +579,27 @@ NamedMap.prototype = _.extend({}, Map.prototype, {
     }
     this.options.extra_params = this.options.extra_params || {};
     this.options.extra_params.auth_token = token;
+    this.invalidate();
+    return this;
+  },
+
+  setParams: function(attr, v) {
+    var params;
+    if (arguments.length === 2) {
+      params = {}
+      params[attr] = v;
+    } else {
+      params = attr;
+    }
+    for (var k in params) {
+      if (params[k] === undefined || params[k] === null) {
+        delete this.named_map.params[k];
+      } else {
+        this.named_map.params[k] = params[k];
+      }
+    }
+    this.invalidate();
+    return this;
   },
 
   toJSON: function() {

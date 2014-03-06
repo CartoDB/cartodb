@@ -491,6 +491,7 @@ describe("NamedMap", function() {
     });
     namedMap.options.tiler_protocol = 'https';
     namedMap.setAuthToken('test');
+    namedMap.layerToken = 'test';
     namedMap.fetchAttributes(1, 12345, null, function(data) {
       expect(data).toEqual({test: 1});
       expect(params.url).toEqual('https://rambo.cartodb.com:8081/api/v1/map/test/1/attributes/12345?auth_token=test')
@@ -589,6 +590,38 @@ describe("NamedMap", function() {
     waits(100);
     runs(function() {
       expect(params.url.indexOf('auth_token=test2')).not.toEqual(-1);
+    });
+  });
+
+  it("should add params", function() {
+    var params;
+    namedMap.options.ajax = function(p) { 
+      params = p;
+      p.success({ layergroupid: 'test' });
+    };
+    namedMap.named_map.params = { color: 'red' }
+    spyOn(namedMap,'onLayerDefinitionUpdated');
+    namedMap.setParams('test', 10);
+
+    expect(namedMap.onLayerDefinitionUpdated).toHaveBeenCalled();
+
+    runs(function() { namedMap._getLayerToken(); });
+    waits(100);
+    runs(function() {
+      var config ="config=" + encodeURIComponent(JSON.stringify({color: 'red', test: 10}));
+      console.log(params.url);
+      expect(params.url.indexOf(config)).not.toEqual(-1);
+    });
+    waits(100);
+    runs(function() {
+      namedMap.setParams('color', null);
+      runs(function() { namedMap._getLayerToken(); });
+    });
+    waits(100);
+    runs(function() {
+      var config ="config=" + encodeURIComponent(JSON.stringify({ test: 10}));
+      console.log(params.url);
+      expect(params.url.indexOf(config)).not.toEqual(-1);
     });
   });
 

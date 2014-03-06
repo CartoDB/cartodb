@@ -231,6 +231,7 @@ Creates a visualization inside the map_id DOM object.
     - **legends**: if it's true legends are shown in the map.
     - **https**: if true forces tiles to be fetched using https. If false it uses the predefined method
     - **scrollwheel**: enable/disable the ability of zooming using scrollwheel (default enabled)
+    - **fullscreen**: if true adds a button to toggle the map fullscreen
 
 
 #### cartodb.Vis
@@ -457,6 +458,40 @@ SubLayer object
 ##### **layer.invalidate() **
 
 Refresh the data. If the data has been changed in CartoDB server it is displayed. If not nothing happens. Every time a parameter is changed in a sublayer the layer is refreshed so this method don't need to be called manually. New in V3.
+
+##### **layer.setAuthToken(auth_token) **
+
+Sets the auth token to create the layer. Only available for private visualizations. An exception is
+raised if the layer is not being loaded with HTTPS.
+
+##### Returns
+
+the layer itself 
+
+###### Arguments
+
+ + auth_token: string
+
+##### **layer.setParams(key, value) **
+
+Using named maps this function changes the layer confuguration. This could be called in different
+ways:
+
+    ```
+        layer.setParams('test', 10); // sets test = 10
+        layer.setParams('test', null); // unset test
+        layer.setParams({'test': 1, 'color': '#F00'}); // unset test
+    ```
+
+###### Arguments
+
+ + key: string
+ + value: string or number
+
+##### Returns
+
+the layer itself 
+
 
 #### cartodb.CartoDBLayer.SubLayer
 

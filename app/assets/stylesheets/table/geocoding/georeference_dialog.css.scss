@@ -87,8 +87,9 @@
     -webkit-background-clip: padding-box;
     -moz-background-clip:    padding;
     background-clip:         padding-box;
-    -webkit-transform: translate3d(0px,0px,0);
-    transform: translate3d(0px,0px,0);
+    -webkit-transform: translate3d(0,0,0);
+    -moz-transform: translate3d(0,0,0);
+    transform: translate3d(0,0,0);
     background-size: cover;
 
     clear:both;
@@ -147,7 +148,6 @@
 
     .icon_container:before {
       content: '';
-      background: red;
       width: 100px;
       height: 100px;
       display: block;
@@ -188,7 +188,7 @@
   // option container
   .cont {
     display:none;
-    margin-left:20px;
+    margin-left:19px;
   }
 
   .geocoder_stats { display: none; }
@@ -332,14 +332,17 @@
           position:relative;
           width: 96px;
           height: 96px;
+
           @include border-radius(200px);
           border: 2px solid rgba(#333, .55);
 
           -webkit-background-clip: padding-box;
           -moz-background-clip:    padding;
           background-clip:         padding-box;
-          -webkit-transform: translate3d(0px,0px,0);
-          transform: translate3d(0px,0px,0);
+
+          -webkit-transform: translate3d(0,0,0);
+          -moz-transform: translate3d(0,0,0);
+          transform: translate3d(0,0,0);
           background-size: cover;
 
           clear:both;
@@ -436,7 +439,6 @@
 
           .icon_container:before {
             content: '';
-            background: red;
             width: 100px;
             height: 100px;
             display: block;
@@ -452,6 +454,7 @@
             box-sizing: border-box;
             z-index:1;
           }
+
           .icon {
             -webkit-transform: scale(.5, .5) rotate(10deg);
             transform: scale(.5, .5) rotate(10deg);

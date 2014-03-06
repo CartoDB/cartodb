@@ -77,7 +77,7 @@
   }
 
   .icon_container {
-    margin: 0 auto 5px auto;
+    margin: 0 50px 5px 50px;
     position:relative;
     width: 96px;
     height: 96px;
@@ -157,15 +157,16 @@
       border-radius: 300px;
       top: 50%;
       left: 50%;
-      margin-left: -50px;
-      margin-top: -50px;
+      margin-left: -49px;
+      margin-top: -49px;
       padding: 0;
-      box-sizing: border-box;
+      @include box-sizing(border-box);
       z-index:1;
     }
 
     .icon_container .icon {
       -webkit-transform: scale(.5, .5) rotate(10deg);
+      -moz-transform: scale(.5, .5) rotate(10deg);
       transform: scale(.5, .5) rotate(10deg);
       @include background(image-url("layout/georeference_polygons.png") repeat center center);
       width: 400px;
@@ -328,7 +329,7 @@
         }
 
         .icon_container {
-          margin: 0 auto 5px auto;
+          margin: 0 50px 5px 50px;
           position:relative;
           width: 96px;
           height: 96px;
@@ -358,10 +359,10 @@
         }
 
         .opt, .opt .icon {
-          -webkit-transition: all 250ms ease-in-out;
-          -moz-transition:    all 250ms ease-in-out;
-          -o-transition:      all 250ms ease-in-out;
-          transition:         all 250ms ease-in-out;
+          -webkit-transition: all 250ms ease-out;
+          -moz-transition:    all 250ms ease-out;
+          -o-transition:      all 250ms ease-out;
+          transition:         all 250ms ease-out;
         }
 
         &.disabled .opt,
@@ -397,7 +398,7 @@
           display:none;
           position:absolute;
           top: 20px;
-          right:60px;
+          right:65px;
           width:31px;
           height:31px;
           @include background(image-url("layout/georeference_warning.png") repeat center center);
@@ -410,7 +411,7 @@
             display:block;
             @include opacity(1);
             top: 30px;
-            right:60px;
+            right:65px;
           }
         }
 
@@ -445,13 +446,13 @@
             border: 3px solid #fff;
             background: none;
             position: absolute;
-            border-radius: 300px;
+            border-radius: 100px;
             top: 50%;
             left: 50%;
             margin-left: -50px;
             margin-top: -50px;
             padding: 0;
-            box-sizing: border-box;
+            @include box-sizing(border-box);
             z-index:1;
           }
 

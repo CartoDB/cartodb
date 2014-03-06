@@ -707,17 +707,15 @@ div.cartodb-popup.header.yellow a.cartodb-popup-close-button:hover {
   url('../fonts/ProximaNova-Semibold.svg#svgFontName') format('svg'); /* Legacy iOS */
 }
 
-/*
-body:after { 
-  position: fixed!important;
-  top: 0px;
-  left: 0px;
-  content: "Default";
-  padding: 5px 10px;
-  background:red;
-  z-index: 10000;
-}
-*/
+/*body:after { */
+  /*position: fixed!important;*/
+  /*top: 0px;*/
+  /*left: 0px;*/
+  /*content: "Default";*/
+  /*padding: 5px 10px;*/
+  /*background:red;*/
+  /*z-index: 10000;*/
+/*}*/
 
 @media
 only screen and (-webkit-min-device-pixel-ratio: 2),
@@ -730,6 +728,18 @@ only screen and (                min-resolution: 2dppx) {
   div.cartodb-public-header .inner .logo { 
     background: url('../img/cartodb@2x.png') no-repeat!important;
     background-size: 93px 18px!important;
+  }
+
+}
+
+@media only screen and (max-width: 350px) {
+
+  /*body:after {*/
+    /*content: "X-Small";*/
+  /*}*/
+  
+  div.cartodb-public-header .inner .options .create-map { 
+    display:none!important;
   }
 
 }
@@ -2469,7 +2479,7 @@ div.cartodb-layer-selector-box {
   float:right;
   margin: 20px 20px 0 0;
   width: 142px;
-  height:29px;
+  height: 29px;
   color: #CCCCCC;
   font-size:13px;
   -webkit-box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;

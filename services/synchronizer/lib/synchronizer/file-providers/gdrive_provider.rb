@@ -34,26 +34,26 @@ module CartoDB
         # Constructor (hidden)
         # @param config
         # [
-        #  :application_name
-        #  :client_id
-        #  :client_secret
+        #  'application_name'
+        #  'client_id'
+        #  'client_secret'
         # ]
         # @throws ConfigurationError
         def initialize(config)
-          raise ConfigurationError.new('missing application_name', SERVICE) unless config.include?(:application_name)
-          raise ConfigurationError.new('missing client_id', SERVICE) unless config.include?(:client_id)
-          raise ConfigurationError.new('missing client_secret', SERVICE) unless config.include?(:client_secret)
+          raise ConfigurationError.new('missing application_name', SERVICE) unless config.include?('application_name')
+          raise ConfigurationError.new('missing client_id', SERVICE) unless config.include?('client_id')
+          raise ConfigurationError.new('missing client_secret', SERVICE) unless config.include?('client_secret')
 
           @formats = []
           @refresh_token = nil
 
           @client = Google::APIClient.new ({
-              application_name: config.fetch(:application_name)
+              application_name: config.fetch('application_name')
           })
           @drive = @client.discovered_api('drive', 'v2')
 
-          @client.authorization.client_id = config.fetch(:client_id)
-          @client.authorization.client_secret = config.fetch(:client_secret)
+          @client.authorization.client_id = config.fetch('client_id')
+          @client.authorization.client_secret = config.fetch('client_secret')
           @client.authorization.scope = OAUTH_SCOPE
           @client.authorization.redirect_uri = REDIRECT_URI
         end #initialize

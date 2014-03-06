@@ -30,19 +30,19 @@ module CartoDB
         # Constructor (hidden)
         # @param config
         # [
-        #  :app_key
-        #  :app_secret
+        #  'app_key'
+        #  'app_secret'
         # ]
         # @throws ConfigurationError
         def initialize(config)
           @formats = []
           @access_token = nil
 
-          raise ConfigurationError.new('missing application_name', SERVICE) unless config.include?(:app_key)
-          raise ConfigurationError.new('missing application_name', SERVICE) unless config.include?(:app_secret)
+          raise ConfigurationError.new('missing app_key', SERVICE) unless config.include?('app_key')
+          raise ConfigurationError.new('missing app_secret', SERVICE) unless config.include?('app_secret')
 
-          @app_key = config.fetch(:app_key)
-          @app_secret = config.fetch(:app_secret)
+          @app_key = config.fetch('app_key')
+          @app_secret = config.fetch('app_secret')
 
           @client = nil
           @auth_flow = nil

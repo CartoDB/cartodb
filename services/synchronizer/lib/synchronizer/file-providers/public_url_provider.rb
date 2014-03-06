@@ -6,7 +6,7 @@ require 'typhoeus'
 module CartoDB
   module Synchronizer
     module FileProviders
-      class PublicUrl < BaseProvider
+      class PublicUrlProvider < BaseProvider
 
         # Required for all providers
         SERVICE = 'public_url'

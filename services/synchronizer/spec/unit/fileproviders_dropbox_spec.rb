@@ -8,8 +8,8 @@ describe DropboxProvider do
 
   def get_config
     {
-      app_key: '',
-      app_secret: ''
+      'app_key' => '',
+      'app_secret' => ''
     }
   end #get_config
 

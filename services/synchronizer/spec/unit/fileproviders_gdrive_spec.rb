@@ -8,9 +8,9 @@ describe GDriveProvider do
 
   def get_config
     {
-      application_name: '',
-      client_id: '',
-      client_secret: ''
+      'application_name' => '',
+      'client_id' => '',
+      'client_secret' => ''
     }
   end #get_config
 

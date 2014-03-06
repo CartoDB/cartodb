@@ -8,12 +8,7 @@ include CartoDB::Synchronizer::FileProviders
 describe DropboxProvider do
 
   def get_config
-    @config ||= YAML.load_file("#{File.dirname(__FILE__)}/../../../../config/app_config.yml")['defaults']['dropbox_oauth']
-    config_hash = {
-      app_key: @config['app_key'],
-      app_secret: @config['app_secret']
-    }
-    config_hash
+    @config ||= YAML.load_file("#{File.dirname(__FILE__)}/../../../../config/app_config.yml")['defaults']['oauth']['dropbox']
   end #get_config
 
   describe '#manual_test' do

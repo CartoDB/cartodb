@@ -8,13 +8,7 @@ include CartoDB::Synchronizer::FileProviders
 describe GDriveProvider do
 
   def get_config
-    @config ||= YAML.load_file("#{File.dirname(__FILE__)}/../../../../config/app_config.yml")['defaults']['gdrive_oauth']
-    config_hash = {
-      application_name: @config['application_name'],
-      client_id: @config['client_id'],
-      client_secret: @config['client_secret']
-    }
-    config_hash
+    @config ||= YAML.load_file("#{File.dirname(__FILE__)}/../../../../config/app_config.yml")['defaults']['oauth']['gdrive']
   end #get_config
 
   describe '#manual_test' do

@@ -4,11 +4,11 @@ require_relative '../../lib/synchronizer/file-providers/public_url_provider'
 
 include CartoDB::Synchronizer::FileProviders
 
-describe PublicUrl do
+describe PublicUrlProvider do
 
   describe '#basic_tests' do
     it 'Some basic download flows of this file provider, including error handling' do
-      url_provider = PublicUrl.get_new()
+      url_provider = PublicUrlProvider.get_new()
 
       file_url = 'http://cartodb.com/'
       invalid_url = 'http://cartodb.com/non_existant_page'

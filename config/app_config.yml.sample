@@ -158,13 +158,15 @@ defaults: &defaults
     api_key: ""
     app_id: ""
   enforce_non_empty_layer_css: true
-  gdrive_oauth:
-    application_name: ''
-    client_id: ''
-    client_secret: ''
-  dropbox_oauth:
-    app_key:  ''
-    app_secret: ''
+  oauth:
+    # Must be the same as FileProvider SERVICE constant
+    gdrive:
+      application_name: ''
+      client_id: ''
+      client_secret: ''
+    dropbox:
+      app_key:  ''
+      app_secret: ''
 
 development:
   <<: *defaults

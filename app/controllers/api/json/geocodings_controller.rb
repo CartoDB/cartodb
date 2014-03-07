@@ -27,7 +27,7 @@ class Api::Json::GeocodingsController < Api::ApplicationController
   def create
     table     = current_user.tables.where(name: params[:table_name]).first
     geocoding = Geocoding.new params.slice(:kind, :geometry_type, :formatter, :country_code)
-    geocoding.formatter = params[:column_name] if params[:column_name].present?
+    geocoding.formatter = "{#{params[:column_name]}}" if params[:column_name].present?
     geocoding.user      = current_user
     geocoding.table_id  = table.try(:id)
     geocoding.raise_on_save_failure = true
@@ -44,15 +44,18 @@ class Api::Json::GeocodingsController < Api::ApplicationController
   end
 
   def country_data_for
-    rows = CartoDB::SQLApi.new(username: 'geocoding')
-            .fetch("SELECT service, type FROM available_services WHERE iso3 = '#{params[:country_code]}'")
-    rows = Hash[rows.group_by {|d| d["service"]}.collect {|k,v| [k, v.map {|va| va["type"]}]}]
-    render json: rows
+    response = { admin0: ["polygon"], admin1: ["polygon"], namedplace: ["point"] }
+    rows     = CartoDB::SQLApi.new(username: 'geocoding')
+                 .fetch("SELECT service FROM postal_code_coverage WHERE iso3 = '#{params[:country_code]}'")
+                 .map { |i| i['service'] }
+    response[:postalcode] = rows if rows.size > 0
+
+    render json: response
   end
 
   def get_countries
     rows = CartoDB::SQLApi.new(Cartodb.config[:geocoder]["internal"].symbolize_keys)
-            .fetch("SELECT distinct(serv.iso3), pol.name FROM available_services serv, global_admin0_polygons pol WHERE pol.iso3 = serv.iso3 ORDER BY serv.iso3 DESC")
+            .fetch("SELECT distinct(pol.iso3), pol.name FROM country_decoder pol ORDER BY pol.name ASC")
 
     render json: rows
   end

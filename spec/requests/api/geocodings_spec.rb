@@ -117,9 +117,9 @@ describe "Geocodings API" do
 
   describe 'GET /api/v1/geocodings/country_data_for/:country_code' do
     it 'returns the available services for that country code' do
-      api_response = [{"service"=>"admin0", "type"=>"polygon"}, {"service"=>"admin1", "type"=>"polygon"}, {"service"=>"namedplace", "type"=>"point"}, {"service"=>"postalcode", "type"=>"polygon"}, {"service" => "postalcode", "type" => "point"}]
+      api_response = [{"service"=>"postal_codes", "iso3"=>"ESP"}]
       ::CartoDB::SQLApi.any_instance.stubs(:fetch).returns(api_response)
-      expected_response = { admin0: ["polygon"], admin1: ["polygon"], namedplace: ["point"], postalcode: ["polygon", "point"] }
+      expected_response = { admin0: ["polygon"], admin1: ["polygon"], namedplace: ["point"], postalcode: ["polygon"] }
 
       get_json country_data_v1_geocodings_url(params.merge(country_code: 'ESP')) do |response|
         response.status.should be_success

@@ -51,8 +51,7 @@ class Admin::VisualizationsController < ApplicationController
     response.headers['X-Cache-Channel'] = "#{@visualization.varnish_key}:vizjson"
     response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
 
-    @avatar_url = get_avatar(@visualization, 64)
-
+    @avatar_url           = get_avatar(@visualization, 64)
     @disqus_shortname     = @visualization.user.disqus_shortname || 'cartodb'
     @visualization_count  = @visualization.user.visualization_count
     @related_tables       = @visualization.related_tables
@@ -92,7 +91,6 @@ class Admin::VisualizationsController < ApplicationController
       format.html { render 'public_map', layout: false }
     end    
   rescue => exception
-    debugger
     public_map_protected
   end #show_protected_public_map
 

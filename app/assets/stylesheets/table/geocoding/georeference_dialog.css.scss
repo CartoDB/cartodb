@@ -134,17 +134,17 @@
     @include background(image-url("layout/georeference_error.png") repeat center center);
   }
 
-  .points .icon_container .icon { @include background(image-url("layout/georeference_points.png") repeat center center); }
+  .point .icon_container .icon { @include background(image-url("layout/georeference_points.png") repeat center center); }
 
-  .points.selected.animated .icon_container .icon .marker.a { top: 33px; @include opacity(1);-webkit-transform: scale(1, 1); transform: scale(1, 1); }
-  .points.selected.animated .icon_container .icon .marker.b { top: 60px; @include opacity(1);-webkit-transform: scale(1, 1); transform: scale(1, 1); }
-  .points.selected.animated .icon_container .icon .marker.c { top: 40px; @include opacity(1);-webkit-transform: scale(1, 1); transform: scale(1, 1); }
+  .point.selected.animated .icon_container .icon .marker.a { top: 33px; @include opacity(1);-webkit-transform: scale(1, 1); transform: scale(1, 1); }
+  .point.selected.animated .icon_container .icon .marker.b { top: 60px; @include opacity(1);-webkit-transform: scale(1, 1); transform: scale(1, 1); }
+  .point.selected.animated .icon_container .icon .marker.c { top: 40px; @include opacity(1);-webkit-transform: scale(1, 1); transform: scale(1, 1); }
 
-  .points.animated .icon_container .icon .marker.a { top: 33px; @include opacity(.7); -webkit-transform: scale(.6, .6); transform: scale(.6, .6); }
-  .points.animated .icon_container .icon .marker.b { top: 60px; @include opacity(.7); -webkit-transform: scale(.6, .6); transform: scale(.6, .6); }
-  .points.animated .icon_container .icon .marker.c { top: 40px; @include opacity(.7); -webkit-transform: scale(.6, .6); transform: scale(.6, .6); }
+  .point.animated .icon_container .icon .marker.a { top: 33px; @include opacity(.7); -webkit-transform: scale(.6, .6); transform: scale(.6, .6); }
+  .point.animated .icon_container .icon .marker.b { top: 60px; @include opacity(.7); -webkit-transform: scale(.6, .6); transform: scale(.6, .6); }
+  .point.animated .icon_container .icon .marker.c { top: 40px; @include opacity(.7); -webkit-transform: scale(.6, .6); transform: scale(.6, .6); }
 
-  .polygons {
+  .polygon {
 
     .icon_container:before {
       content: '';
@@ -383,13 +383,13 @@
 
         }
 
-        &.disabled.points span {
+        &.disabled.point span {
           width: 200px;
           margin-left: -100px;
         }
 
-        &.disabled.polygons .icon,
-        &.disabled.selected.polygons .icon {
+        &.disabled.polygon .icon,
+        &.disabled.selected.polygon .icon {
           -webkit-transform: scale(1, 1);
           transform: scale(1, 1);
         }
@@ -426,17 +426,17 @@
           @include opacity(1);
         }
 
-        &.points .icon { @include background(image-url("layout/georeference_points.png") repeat center center); }
+        &.point .icon { @include background(image-url("layout/georeference_points.png") repeat center center); }
 
-        &.points.selected.animated .icon .marker.a { top: 33px; @include opacity(1);-webkit-transform: scale(1, 1); transform: scale(1, 1); }
-        &.points.selected.animated .icon .marker.b { top: 60px; @include opacity(1);-webkit-transform: scale(1, 1); transform: scale(1, 1); }
-        &.points.selected.animated .icon .marker.c { top: 40px; @include opacity(1);-webkit-transform: scale(1, 1); transform: scale(1, 1); }
+        &.point.selected.animated .icon .marker.a { top: 33px; @include opacity(1);-webkit-transform: scale(1, 1); transform: scale(1, 1); }
+        &.point.selected.animated .icon .marker.b { top: 60px; @include opacity(1);-webkit-transform: scale(1, 1); transform: scale(1, 1); }
+        &.point.selected.animated .icon .marker.c { top: 40px; @include opacity(1);-webkit-transform: scale(1, 1); transform: scale(1, 1); }
 
-        &.points.animated .icon .marker.a { top: 33px; @include opacity(.7); -webkit-transform: scale(.6, .6); transform: scale(.6, .6); }
-        &.points.animated .icon .marker.b { top: 60px; @include opacity(.7); -webkit-transform: scale(.6, .6); transform: scale(.6, .6); }
-        &.points.animated .icon .marker.c { top: 40px; @include opacity(.7); -webkit-transform: scale(.6, .6); transform: scale(.6, .6); }
+        &.point.animated .icon .marker.a { top: 33px; @include opacity(.7); -webkit-transform: scale(.6, .6); transform: scale(.6, .6); }
+        &.point.animated .icon .marker.b { top: 60px; @include opacity(.7); -webkit-transform: scale(.6, .6); transform: scale(.6, .6); }
+        &.point.animated .icon .marker.c { top: 40px; @include opacity(.7); -webkit-transform: scale(.6, .6); transform: scale(.6, .6); }
 
-        &.polygons {
+        &.polygon {
 
           .icon_container:before {
             content: '';

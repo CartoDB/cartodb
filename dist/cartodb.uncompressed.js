@@ -1,6 +1,6 @@
-// cartodb.js version: 3.7.05
+// cartodb.js version: 3.7.06
 // uncompressed version: cartodb.uncompressed.js
-// sha: 76d83c2b1d85b1b2750579ffaf711f08265815db
+// sha: d22802aa7fcc26d20baea57aae926e1ed284c7a5
 (function() {
   var root = this;
 
@@ -20686,7 +20686,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.7.05';
+    cdb.VERSION = '3.7.06';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -30813,7 +30813,8 @@ var Vis = cdb.core.View.extend({
           infowindow.model.set({
             'fields': infowindowFields.fields,
             'template': infowindowFields.template,
-            'template_type': infowindowFields.template_type
+            'template_type': infowindowFields.template_type,
+            'alternative_names': infowindowFields.alternative_names
           });
 
           if (attributes) {

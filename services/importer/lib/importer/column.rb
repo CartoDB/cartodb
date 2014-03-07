@@ -184,10 +184,18 @@ module CartoDB
       end #drop
 
       def empty_lines_to_nulls
-        db.run(%Q{
-          UPDATE #{qualified_table_name}
-          SET #{column_name}=NULL WHERE #{column_name}=''
-        })
+        column_id = column_name.to_sym
+        column_type = nil
+        db.schema(table_name).each do |colid, coldef|
+          if colid == column_id
+            column_type = coldef[:type]
+          end
+        end
+        if column_type != nil && column_type == :string
+          db.run(%Q{
+            UPDATE #{qualified_table_name} SET #{column_name}=NULL WHERE #{column_name}=''
+          })
+        end
       end #empty_lines_to_nulls
 
       def sanitize

@@ -7,6 +7,9 @@ class Geocoding < Sequel::Model
   DEFAULT_TIMEOUT = 15.minutes
   ALLOWED_KINDS   = %w(admin0 admin1 namedplace postalcode high-resolution)
 
+  PUBLIC_ATTRIBUTES = [:id, :table_id, :kind, :country_code, :formatter, :geometry_type, 
+                       :error, :processed_rows, :cache_hits]
+
   many_to_one :user
   many_to_one :table
   many_to_one :automatic_geocoding
@@ -14,6 +17,10 @@ class Geocoding < Sequel::Model
   attr_reader :table_geocoder
 
   attr_accessor :run_timeout
+
+  def public_values
+    Hash[PUBLIC_ATTRIBUTES.map{ |k| [k, (self.send(k) rescue self[k].to_s)] }]
+  end
 
   def validate
     super
@@ -33,14 +40,21 @@ class Geocoding < Sequel::Model
     cancel if state == 'cancelled'
   end # before_save
 
+  def error
+    { title: 'Geocoding error', description: '' }
+  end
+
   def table_geocoder
     geocoder_class = (kind == 'high-resolution' ? CartoDB::TableGeocoder : CartoDB::InternalGeocoder)
     config = Cartodb.config[:geocoder].deep_symbolize_keys.merge(
-      table_name: table.try(:name),
-      formatter:  translate_formatter,
-      connection: (user.present? ? user.in_database(as: :superuser) : nil),
-      remote_id:  remote_id,
-      max_rows:   max_geocodable_rows
+      table_name:    table.try(:name),
+      formatter:     translate_formatter,
+      connection:    (user.present? ? user.in_database(as: :superuser) : nil),
+      remote_id:     remote_id,
+      countries:     country_code,
+      geometry_type: geometry_type,
+      kind:          kind,
+      max_rows:      max_geocodable_rows
     )
     @table_geocoder ||= geocoder_class.new(config)
   end # table_geocoder
@@ -51,7 +65,7 @@ class Geocoding < Sequel::Model
     count ||= 1
     retry unless (count = count.next) > 5
     CartoDB::notify_exception(e, user: user)
-  end
+  end # cancel
 
   def run!
     self.update(state: 'started')
@@ -65,15 +79,15 @@ class Geocoding < Sequel::Model
       sleep(2)
     end until ['completed', 'cancelled', 'failed'].include? state
     return false if state == 'cancelled'
-    self.update(cache_hits: table_geocoder.cache.hits)
+    self.update(cache_hits: table_geocoder.cache.hits) if table_geocoder.respond_to?(:cache)
     Statsd.gauge("geocodings.requests", "+#{self.processed_rows}") rescue nil
     Statsd.gauge("geocodings.cache_hits", "+#{self.cache_hits}") rescue nil
     table_geocoder.process_results
     create_automatic_geocoding if automatic_geocoding_id.blank?
     self.update(state: 'finished')
   rescue => e
+    self.update(state: 'failed', processed_rows: 0, cache_hits: 0)
     CartoDB::notify_exception(e, user: user)
-    self.update(state: 'failed')
   end # run!
 
   def create_automatic_geocoding

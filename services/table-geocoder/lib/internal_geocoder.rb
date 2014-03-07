@@ -1,88 +1,111 @@
 # encoding: utf-8
-require_relative '../../geocoder/lib/geocoder'
-require_relative 'geocoder_cache'
+require_relative '../../sql-api/sql_api'
 
 module CartoDB
   class InternalGeocoder
+    class NotImplementedError < StandardError; end
 
     attr_reader   :connection, :temp_table_name, :sql_api, :geocoding_results,
-                  :working_dir
+                  :working_dir, :remote_id, :state, :processed_rows
 
     attr_accessor :table_name, :column_name
 
     SQL_PATTERNS = {
-      points: {
-        named_places: 'SELECT (geocode_namedplace(Array[{search_terms}], Array[{country_list}])).*',
-        ip_addresses: 'SELECT (geocode_ip(Array[{search_terms}])).*'
+      point: {
+        namedplace: 'SELECT (geocode_namedplace(Array[{search_terms}], Array[{country_list}])).*',
+        ipaddress:  'SELECT (geocode_ip(Array[{search_terms}])).*',
+        postalcode: 'SELECT (geocode_postalcode_points(Array[{search_terms}], Array[{country_list}])).*'
       },
-      polygons: {
-        admin0:       'SELECT (geocode_admin0_polygons(Array[{search_terms}])).*',
-        admin1:       'SELECT (geocode_admin1_polygons(Array[{search_terms}], Array[{country_list}])).*',
-        postal_codes: 'SELECT (geocode_postalcode_polygons(Array[{search_terms}], Array[{country_list}])).*'
+      polygon: {
+        admin0:     'SELECT (geocode_admin0_polygons(Array[{search_terms}])).*',
+        admin1:     'SELECT (geocode_admin1_polygons(Array[{search_terms}], Array[{country_list}])).*',
+        postalcode: 'SELECT (geocode_postalcode_polygons(Array[{search_terms}], Array[{country_list}])).*'
       }
     }
 
     def initialize(arguments)
-      @sql_api     = arguments.fetch(:internal)
-      @connection  = arguments.fetch(:connection)
-      @working_dir = Dir.mktmpdir
+      @sql_api           = CartoDB::SQLApi.new arguments.fetch(:internal)
+      @connection        = arguments.fetch(:connection)
+      @working_dir       = Dir.mktmpdir
       `chmod 777 #{@working_dir}`
-      @table_name  = arguments[:table_name]
-      @column_name = arguments[:column_name]
-      @schema      = arguments[:schema] || 'cdb'
-      @batch_size  = 5
+      @table_name        = arguments[:table_name]
+      @column_name       = arguments[:formatter]
+      @countries         = arguments[:countries].to_s
+      @geometry_type     = arguments.fetch(:geometry_type, '').to_sym
+      @kind              = arguments.fetch(:kind, '').to_sym
+      @schema            = arguments[:schema] || 'cdb'
+      @batch_size        = (@geometry_type == :point ? 5000 : 10)
+      @state             = 'submitted'
       @geocoding_results = File.join(working_dir, "#{temp_table_name}_results.csv")
     end # initialize
 
     def run
+      @state = 'processing'
       download_results
       create_temp_table
       load_results_to_temp_table
       copy_results_to_table
+      @state = 'completed'
+    rescue => e
+      @state = 'failed'
+      raise e
+    ensure
+      drop_temp_table
     end
 
     def download_results
       begin
         count = count + 1 rescue 0
-        sql_pattern = SQL_PATTERNS[:polygons][:admin0]
         search_terms = get_search_terms(count)
-        sql = sql_pattern.gsub '{search_terms}', search_terms.join(',')
-        response = run_query(sql, 'csv').gsub(/\A.*/, '').gsub(/^$\n/, '')
+        sql = generate_sql(search_terms)
+        response = sql_api.fetch(sql, 'csv').gsub(/\A.*/, '').gsub(/^$\n/, '')
         File.open(geocoding_results, 'a') { |f| f.write(response.force_encoding("UTF-8")) } unless response == "\n"
-      end while search_terms.size >= @batch_size # && (count * @batch_size) + rows.size < @max_rows
+      end while search_terms.size >= @batch_size
+      @processed_rows = `wc -l #{geocoding_results} 2>&1`.to_i
       geocoding_results
     end # download_results
 
+    def generate_sql(search_terms)
+      SQL_PATTERNS.fetch(@geometry_type).fetch(@kind)
+        .gsub('{search_terms}', search_terms.join(','))
+        .gsub('{country_list}', "'#{@countries}'")
+    rescue KeyError => e
+      raise NotImplementedError.new("Can't find geocoding function for #{@geometry_type}, #{@kind}")
+    end # generate_sql
+
     def get_search_terms(page)
-      limit = @batch_size #, @max_rows - (count * @batch_size)].min
       connection.fetch(%Q{
           SELECT DISTINCT(quote_nullable(#{column_name})) AS searchtext
           FROM #{table_name}
-          LIMIT #{limit} OFFSET #{page * @batch_size}
+          LIMIT #{@batch_size} OFFSET #{page * @batch_size}
       }).all.map { |r| r[:searchtext] }
     end # get_search_terms
 
     def create_temp_table
       connection.run(%Q{
         CREATE TABLE #{temp_table_name} (
-          longitude text, latitude text, geocode_string text
+          geocode_string text, iso3 text, the_geom geometry, cartodb_georef_status boolean
         );
       })
     end # create_temp_table
 
+    def update_geocoding_status
+      { processed_rows: processed_rows, state: state }
+    end # update_geocoding_status
+
+    def process_results; end
+    def cancel; end
+
     def load_results_to_temp_table
-      connection.copy_into(temp_table_name.lit, data: File.read(cache_results), format: :csv)
+      connection.copy_into(temp_table_name.lit, data: File.read(geocoding_results), format: :csv)
     end # load_results_to_temp_table
 
     def copy_results_to_table
       connection.run(%Q{
         UPDATE #{table_name} AS dest
-        SET the_geom = ST_GeomFromText(
-              'POINT(' || orig.longitude || ' ' || orig.latitude || ')', 4326
-            ),
-            cartodb_georef_status = true
+        SET the_geom = orig.the_geom, cartodb_georef_status = orig.cartodb_georef_status
         FROM #{temp_table_name} AS orig
-        WHERE #{formatter} = orig.geocode_string
+        WHERE #{column_name} = orig.geocode_string
       })
     end # copy_results_to_table
 
@@ -93,19 +116,6 @@ module CartoDB
     def temp_table_name
       @temp_table_name ||= "internal_geocoding_#{Time.now.to_i}"
     end # temp_table_name
-
-    def run_query(query, format = '')
-      params = { q: query, api_key: sql_api[:api_key], format: format }
-      response = Typhoeus::Request.new(
-        sql_api[:base_url],
-        method: :post,
-        body: URI.encode_www_form(params),
-        headers: { 'Accept-Encoding' => 'gzip,deflate' }
-      ).run
-      Zlib::GzipReader.new(StringIO.new(response.body.to_s)).read
-    rescue Zlib::GzipFile::Error
-      return response.body.to_s
-    end # run_query
 
   end # InternalGeocoder
 end # CartoDB

@@ -13,7 +13,7 @@ describe CartoDB::InternalGeocoder do
     @pg_options   = conn.pg_options
   end
 
-  let(:default_params) { { connection: @db, internal: { base_url: 'http://geocoding.cartodb.com/api/v2/sql' }  } }
+  let(:default_params) { { connection: @db, internal: { username: 'geocoding' }, kind: 'admin0', geometry_type: 'polygon' } }
 
   describe '#download_results' do
     before do
@@ -25,9 +25,10 @@ describe CartoDB::InternalGeocoder do
     end
 
     it "generates a csv with geocoded data" do
-      ig = CartoDB::InternalGeocoder.new(default_params.merge(table_name: 'adm0', column_name: 'geo_string'))
+      ig = CartoDB::InternalGeocoder.new(default_params.merge(table_name: 'adm0', formatter: 'geo_string'))
       results = ig.download_results
       `wc -l #{results} 2>&1`.to_i.should eq 11
+      ig.processed_rows.should eq 11
     end
   end #run
 

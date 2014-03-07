@@ -497,9 +497,13 @@
     }
 
     input {
-      width:484px;
+      width: 100%;
       padding: 0;
       margin: 0;
+
+      padding-right: 130px;
+      @include box-sizing(border-box);
+
       overflow:hidden;
       border:none;
       outline:none;

@@ -1,6 +1,6 @@
-// cartodb.js version: 3.7.05-dev
+// cartodb.js version: 3.7.00-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: 3bb50cf742695ddfddab89caa953c5bd48bf1fd0
+// sha: a98c7af2cbf7fc77bc7f2c8cbcbffcfa1b85552f
 (function() {
   var root = this;
 
@@ -20686,7 +20686,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.7.05-dev';
+    cdb.VERSION = '3.7.00-dev';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -25423,8 +25423,7 @@ cdb.geo.ui.TilesLoader = cdb.core.View.extend({
 
   hide: function(ev) {
     this.isVisible--;
-    if(this.isVisible > 0) return;
-    this.isVisible = 0;
+    if(this.isVisible) return;
     if (!$.browser.msie || ($.browser.msie && $.browser.version.indexOf("9.") == 0)) {
       this.$el.stop(true).fadeTo(this.options.animationSpeed, 0)
     } else {
@@ -25578,6 +25577,7 @@ cdb.ui.common.FullScreen = cdb.core.View.extend({
   _toggleFullScreen: function(ev) {
 
     ev.stopPropagation();
+    ev.preventDefault();
 
     var doc   = window.document;
     var docEl = doc.documentElement;
@@ -25886,12 +25886,7 @@ Map.prototype = {
         url: self._tilerHost() + endPoint + '?' + params.join('&'),
         success: function(data) {
           if(0 === self._queue.length) {
-            // check for errors
-            if (data.error) {
-              callback(null, data.error);
-            } else {
-              callback(data);
-            }
+            callback(data);
           }
           self._requestFinished();
         },
@@ -26178,27 +26173,6 @@ NamedMap.prototype = _.extend({}, Map.prototype, {
     }
     this.options.extra_params = this.options.extra_params || {};
     this.options.extra_params.auth_token = token;
-    this.invalidate();
-    return this;
-  },
-
-  setParams: function(attr, v) {
-    var params;
-    if (arguments.length === 2) {
-      params = {}
-      params[attr] = v;
-    } else {
-      params = attr;
-    }
-    for (var k in params) {
-      if (params[k] === undefined || params[k] === null) {
-        delete this.named_map.params[k];
-      } else {
-        this.named_map.params[k] = params[k];
-      }
-    }
-    this.invalidate();
-    return this;
   },
 
   toJSON: function() {
@@ -26228,7 +26202,7 @@ NamedMap.prototype = _.extend({}, Map.prototype, {
 
   _attributesUrl: function(layer, feature_id) {
     // /api/maps/:map_id/:layer_index/attributes/:feature_id
-    var url = [
+    return [
       this._tilerHost(),
       //'api',
       //'v1',
@@ -26237,13 +26211,6 @@ NamedMap.prototype = _.extend({}, Map.prototype, {
       layer,
       'attributes',
       feature_id].join('/');
-
-    var extra_params = this.options.extra_params || {};
-    var token = extra_params.auth_token;
-    if (token) {
-      url += "?auth_token=" + token
-    }
-    return url;
   },
 
   // for named maps attributes are fetch from attributes service
@@ -28418,7 +28385,7 @@ CartoDBLayerGroup.prototype.interactionClass = wax.g.interaction;
 
 // CartoDBNamedMap
 CartoDBNamedMap.prototype = new wax.g.connector();
-_.extend(CartoDBNamedMap.prototype, NamedMap.prototype, CartoDBLayerGroupBase.prototype, CartoDBLayerCommon.prototype);
+_.extend(CartoDBNamedMap.prototype, CartoDBLayerGroupBase.prototype, CartoDBLayerCommon.prototype, NamedMap.prototype);
 CartoDBNamedMap.prototype.interactionClass = wax.g.interaction;
 
 
@@ -30875,10 +30842,7 @@ var Vis = cdb.core.View.extend({
       this.$el.find(".cartodb-fullscreen").fadeIn(150);
     }
     this.layersLoading--;
-    // check less than 0 because loading event sometimes is
-    // thrown before visualization creation
-    if(this.layersLoading <= 0) {
-      this.layersLoading = 0;
+    if(this.layersLoading === 0) {
       this.trigger('load');
     }
   },
@@ -31288,6 +31252,7 @@ cdb.vis.Overlay.register('fullscreen', function(data, vis) {
   );
 
   var fullscreen = new cdb.ui.common.FullScreen({
+    doc: "#map > div",
     template: template
   });
 

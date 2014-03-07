@@ -19,13 +19,14 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
   end
 
   def create
-    member = Synchronization::Member.new(
-      payload.merge(
+    member_attributes = payload.merge(
         name:       params[:table_name],
         user_id:    current_user.id,
-        state:      'created'
-      )
+        state:      Synchronization::Member::STATE_CREATED
     )
+    member_attributes = member_attributes.merge(sync_file_provider_params) if from_sync_file_provider?
+
+    member = Synchronization::Member.new(member_attributes)
 
     options = { 
       user_id:            current_user.id,
@@ -44,7 +45,7 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
 
     response = {
       data_import: { 
-        endpoint:       "/api/v1/imports",
+        endpoint:       '/api/v1/imports',
         item_queue_id:  data_import.id
       }
     }.merge(member.to_hash)
@@ -91,6 +92,19 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
   end
 
   private
+
+  def sync_file_provider_params
+    {
+      url:              params[:url],
+      service_name:     params[:service],
+      service_item_id:  params[:id],
+      checksum:         params[:checksum]
+    }
+  end #sync_file_provider_params
+
+  def from_sync_file_provider?
+    (params.include?(:url) && params.include?(:id) && params.include?(:service) && params.include?(:checksum))
+  end #from_sync_file_provider?
 
   def payload
     request.body.rewind

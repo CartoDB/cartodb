@@ -28,6 +28,8 @@ module CartoDB
           String    :log_id
           Integer   :error_code
           String    :error_message
+          String    :service_name
+          Stringe   :service_item_id
         end
       end #migrate
 

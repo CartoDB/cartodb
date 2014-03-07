@@ -13,6 +13,11 @@ module CartoDB
     class Member
       include Virtus.model
 
+      STATE_CREATED   = 'created'
+      STATE_SYNCING   = 'syncing'
+      STATE_SUCCESS   = 'success'
+      STATE_FAILURE   = 'failure'
+
       STATES                        = %w{ success failure syncing }
       REDIS_LOG_KEY_PREFIX          = 'synchronization'
       REDIS_LOG_EXPIRATION_IN_SECS  = 3600 * 24 * 2 # 2 days
@@ -21,7 +26,7 @@ module CartoDB
       attribute :name,            String
       attribute :interval,        Integer,  default: 3600
       attribute :url,             String
-      attribute :state,           String,   default: 'created'
+      attribute :state,           String,   default: STATE_CREATED
       attribute :user_id,         Integer
       attribute :created_at,      Time
       attribute :updated_at,      Time
@@ -34,6 +39,8 @@ module CartoDB
       attribute :error_code,      Integer
       attribute :error_message,   String
       attribute :retried_times,   Integer,  default: 0
+      attribute :service_name,    String
+      attribute :service_item_id, String
 
       def initialize(attributes={}, repository=Synchronization.repository)
         super(attributes)
@@ -41,7 +48,7 @@ module CartoDB
         self.log_trace      = nil
         @repository         = repository
         self.id             ||= @repository.next_id
-        self.state          ||= 'created'
+        self.state          ||= STATE_CREATED
         self.ran_at         ||= Time.now
         self.interval       ||= 3600
         self.run_at         ||= Time.now + interval
@@ -82,7 +89,7 @@ module CartoDB
       end
 
       def run
-        self.state    = 'syncing'
+        self.state    = STATE_SYNCING
 
         log           = TrackRecord::Log.new(
                           prefix:     REDIS_LOG_KEY_PREFIX,
@@ -131,7 +138,7 @@ module CartoDB
       def set_success_state_from(importer)
         self.log            << '******** synchronization succeeded ********'
         self.log_trace      = nil
-        self.state          = 'success'
+        self.state          = STATE_SUCCESS
         self.etag           = importer.etag
         self.checksum       = importer.checksum
         self.error_code     = nil
@@ -157,7 +164,7 @@ module CartoDB
         self.log            << '******** synchronization failed, will retry ********'
         self.log_trace      = importer.runner_log_trace
         self.log            << "*** Runner log: #{self.log_trace} \n***" unless self.log_trace.nil?
-        self.state          = 'success'
+        self.state          = STATE_SUCCESS
         self.error_code     = importer.error_code
         self.error_message  = importer.error_message
         self.retried_times  = self.retried_times + 1
@@ -167,7 +174,7 @@ module CartoDB
         self.log            << '******** synchronization failed ********'
         self.log_trace      = importer.runner_log_trace
         self.log            << "*** Runner log: #{self.log_trace} \n***" unless self.log_trace.nil?
-        self.state          = 'failure'
+        self.state          = STATE_FAILURE
         self.error_code     = importer.error_code
         self.error_message  = importer.error_message
         self.retried_times  = self.retried_times + 1

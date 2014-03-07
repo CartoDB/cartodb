@@ -270,7 +270,11 @@ module CartoDB
       end #get_auth_token
 
       def supports_private_maps?
-        !@user_data.nil? && @user_data.respond_to?(:actions) && @user_data.actions.respond_to?(:private_maps)
+        if @user_data.nil? && !user.nil?
+          @user_data = user.data
+        end
+
+        !@user_data.nil? && @user_data.include?(:actions) && @user_data[:actions].include?(:private_maps)
       end # supports_private_maps?
 
       private

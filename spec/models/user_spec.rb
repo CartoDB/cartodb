@@ -614,7 +614,7 @@ describe User do
       .with("^#{doomed_user.database_name}:(.*clubbing.*)|(table)$")
       .returns(true)
     CartoDB::Varnish.any_instance.expects(:purge)
-      .with("#{uuid}:vizjson")
+      .with(".*#{uuid}:vizjson")
       .times(2)
       .returns(true)
     Table.any_instance.expects(:delete_tile_style).returns(true)

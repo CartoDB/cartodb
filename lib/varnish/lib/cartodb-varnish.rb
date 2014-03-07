@@ -8,12 +8,12 @@ module CartoDB
         conf = Cartodb::config[:varnish_management]
         if conf['http_port']
           request = Typhoeus::Request.new(
-            "http://#{conf['host']}:6081/batch", method: :purge, headers: {"Invalidation-Match" => what}).run
-          return request.code =~ /200/
+            "http://#{conf['host']}:#{conf['http_port']}/batch", method: :purge, headers: {"Invalidation-Match" => what}).run
+          return request.code
         else
-          send_command("#{purge_command} obj.http.X-Cache-Channel ~ #{what}") do |result|
+          return send_command("#{purge_command} obj.http.X-Cache-Channel ~ #{what}") do |result|
             payload[:result] = result
-            result =~ /200/
+            result
           end
         end
       end
@@ -31,6 +31,7 @@ module CartoDB
           'Timeout' => conf["timeout"] || 5)
 
         connection.cmd('String' => command, 'Match' => /\n\n/) {|r| response = r.split("\n").first.strip}
+        p connection.respond_to?(:close)
         connection.close if connection.respond_to?(:close)
       rescue Exception => e
         if retries < conf["retries"]

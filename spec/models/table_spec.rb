@@ -174,6 +174,9 @@ describe Table do
     end
 
     it 'propagates privacy changes to the associated visualization' do
+      # Need to at least have this decorated in the user data or checks before becoming private will raise an error
+      CartoDB::Visualization::Member.any_instance.stubs(:supports_private_maps?).returns(true)
+
       table = create_table(user_id: @user.id)
       table.should be_private
       table.table_visualization.should be_private
@@ -201,6 +204,9 @@ describe Table do
 
     it 'propagates changes to affected visualizations
     if privacy set to PRIVATE' do
+      # Need to at least have this decorated in the user data or checks before becoming private will raise an error
+      CartoDB::Visualization::Member.any_instance.stubs(:supports_private_maps?).returns(true)
+
       table = create_table(user_id: @user.id)
       table.should be_private
       table.table_visualization.should be_private
@@ -220,6 +226,9 @@ describe Table do
     end
 
     it 'receives privacy changes from the associated visualization' do
+      # Need to at least have this decorated in the user data or checks before becoming private will raise an error
+      CartoDB::Visualization::Member.any_instance.stubs(:supports_private_maps?).returns(true)
+
       table = create_table(user_id: @user.id)
       table.should be_private
       table.table_visualization.should be_private

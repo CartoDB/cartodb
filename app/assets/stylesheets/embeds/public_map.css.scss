@@ -247,7 +247,7 @@ div.cartodb-info .inner .user .avatar {
 
   width: 46px;
   height: 46px;
-  background: #ccc;
+  background: #fff;
 
   -moz-border-radius: 100px;
   -webkit-border-radius: 100px;
@@ -498,3 +498,18 @@ div.cartodb-share-dialog .block .buttons li a {
   font-family: "Helvetica Bold", "Helvetica", Arial;
 }
 
+:-webkit-full-screen {
+  width: 100%;
+  height: 100%;
+
+  #map { height: 100%!important; }
+
+}
+
+:-moz-full-screen {
+  width: 100%;
+  height: 100%;
+
+  #map { height: 100%!important; }
+
+}

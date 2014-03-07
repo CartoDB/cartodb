@@ -19,24 +19,24 @@
 
     <style type="text/css">
       /* Styles showing up new cartodb text */
-      <% if @visualization.user.remove_logo? && !Cartodb.config[:cartodb_com_hosted].present? %>
-        <% if !params['cartodb_logo'] || params['cartodb_logo'] == "true" %>
-          .cartodb-text {display:block;}
-        <% end %>
-      <% else %>
+    <% if @visualization.user.remove_logo? && !Cartodb.config[:cartodb_com_hosted].present? %>
+      <% if !params['cartodb_logo'] || params['cartodb_logo'] == "true" %>
         .cartodb-text {display:block;}
       <% end %>
+    <% else %>
+      .cartodb-text {display:block;}
+    <% end %>
 
     </style>
 
     <% if !Rails.env.production? %>
       <%= stylesheet_link_tag 'cdb/themes/css/cartodb' %>
     <% else %>
-     <% if request.protocol == 'https://' %>
+      <% if request.protocol == 'https://' %>
         <link rel="stylesheet" href="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/themes/css/cartodb.css" />
-     <% else %>
+      <% else %>
         <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.css" />
-     <% end %>
+      <% end %>
     <% end %>
 
     <%= insert_rollbar() %>
@@ -49,29 +49,33 @@
   <body>
     <% if @visualization.public? || @visualization.password_protected? %>
 
-      <div class="cartodb-public-header">
-        <div class="inner">
+      <div class="cartodb-public-wrapper">
+        <div class="cartodb-public-header">
+          <div class="inner">
 
-          <a class="logo" href="http://www.cartodb.com">CartoDB</a>
+            <a class="logo" href="http://www.cartodb.com">CartoDB</a>
 
-          <div class="options">
-            <a href="http://www.cartodb.com" class="create-map regular" title="Create a Map with CartoDB">Create a Map</a>
-            <a href="http://www.cartodb.com/login" class="signin green button" title="Sign In">Sign In</a>
+            <div class="options">
+              <a href="http://www.cartodb.com" class="create-map regular" title="Create a Map with CartoDB">Create a Map</a>
+              <a href="http://www.cartodb.com/login" class="signin green button" title="Sign In">Sign In</a>
+            </div>
+
           </div>
+        </div>
 
+        <div id="map"></div>
+
+        <div id="not_supported_dialog" style="display: none">
+          <h2>CartoDB</h2>
+          <p>This visualization only works in modern browsers. Upgrade yours and enjoy.</p>
+          <ul>
+            <li><a href="http://www.apple.com/safari/" class="safari">Safari</a></li>
+            <li><a href="https://www.google.com/chrome/" class="chrome">Chrome</a></li>
+            <li class="last"><a href="http://www.mozilla.org/en-US/firefox/all/‎" class="firefox">Firefox</a></li>
+          </ul>
         </div>
       </div>
 
-      <div id="map"></div>
-      <div id="not_supported_dialog" style="display: none">
-        <h2>CartoDB</h2>
-        <p>This visualization only works in modern browsers. Upgrade yours and enjoy.</p>
-        <ul>
-          <li><a href="http://www.apple.com/safari/" class="safari">Safari</a></li>
-          <li><a href="https://www.google.com/chrome/" class="chrome">Chrome</a></li>
-          <li class="last"><a href="http://www.mozilla.org/en-US/firefox/all/‎" class="firefox">Firefox</a></li>
-        </ul>
-      </div>
       <div class="cartodb-map-data">
         <div class="cartodb-info">
           <div class="inner">
@@ -217,34 +221,34 @@
       }
 
       function manageError(err, layer) {
-          if(layer && layer.get('type') === 'torque') {
-              $('#not_supported_dialog').show();
-              // hide all the overlays
-              var overlays = vis.getOverlays()
-              for (var i = 0; i < overlays.length; ++i) {
-                  var o = overlays[i];
-                  o.hide && o.hide();
-              }
+        if(layer && layer.get('type') === 'torque') {
+          $('#not_supported_dialog').show();
+          // hide all the overlays
+          var overlays = vis.getOverlays()
+          for (var i = 0; i < overlays.length; ++i) {
+            var o = overlays[i];
+            o.hide && o.hide();
           }
+        }
       }
 
       function stats() {
-          var browser;
-          var ua = navigator.userAgent;
-          var checks = [
-              ['MSIE 10.0', 'ms10'],
-              ['MSIE 9.0', 'ms9'],
-              ['MSIE 8.0', 'ms8'],
-              ['MSIE 7.0','ms7'],
-              ['Chrome', 'chr'],
-              ['Firefox', 'ff'],
-              ['Safari', 'ff']
-          ]
-          for(var i = 0; i < checks.length && !browser; ++i) {
-            if(ua.indexOf(checks[i][0]) !== -1) browser = checks[i][1];
-          }
-          browser = browser || 'none';
-          cartodb.core.Profiler.metric('cartodb-js.embed.' + browser).inc();
+        var browser;
+        var ua = navigator.userAgent;
+        var checks = [
+          ['MSIE 10.0', 'ms10'],
+          ['MSIE 9.0', 'ms9'],
+          ['MSIE 8.0', 'ms8'],
+          ['MSIE 7.0','ms7'],
+          ['Chrome', 'chr'],
+          ['Firefox', 'ff'],
+          ['Safari', 'ff']
+        ]
+        for(var i = 0; i < checks.length && !browser; ++i) {
+          if(ua.indexOf(checks[i][0]) !== -1) browser = checks[i][1];
+        }
+        browser = browser || 'none';
+        cartodb.core.Profiler.metric('cartodb-js.embed.' + browser).inc();
       }
 
       $(document).ready(function(){
@@ -256,137 +260,139 @@
         });
 
         var bool_fn = function(v) { return v == 'true' }
-        , is_custom_install = <%= Cartodb.config[:cartodb_com_hosted].present? %>
-        , logo_fn  = function(v) { return ( <%= !@visualization.user.remove_logo? %> || is_custom_install ) ? true : v == 'true' }
-        , layer_fn = function(v) {
-          if(!v || !v.length) {
-              return null;
-          }
+          , is_custom_install = <%= Cartodb.config[:cartodb_com_hosted].present? %>
+          , logo_fn  = function(v) { return ( <%= !@visualization.user.remove_logo? %> || is_custom_install ) ? true : v == 'true' }
+          , layer_fn = function(v) {
+        if(!v || !v.length) {
+          return null;
+        }
 
-          return _.map(v.split("|"), function(v) {
-            return { visible: !!parseInt(v, 10) }
-          });
-
-        };
-
-        var opt = get_url_params({
-          'search':       bool_fn,
-          'title':        bool_fn,
-          'description':  bool_fn,
-          'shareable':    bool_fn,
-          'fullscreen':   bool_fn,
-          'cartodb_logo': logo_fn,
-          'scrollwheel':  bool_fn,
-          'sublayer_options': layer_fn,
-          'layer_selector': bool_fn,
-          'legends': bool_fn
+        return _.map(v.split("|"), function(v) {
+          return { visible: !!parseInt(v, 10) }
         });
 
-        <% if (@visualization.password_protected?) %>
-          opt.auth_token = '<%= @protected_map_token %>';
-          opt.https = true; // when auth_token is used tiles should be fetch using https
-        <% end %>
+          };
 
-        <% if Rails.env.development? || Cartodb.config[:no_cdn] == true %>
-          opt.no_cdn = true;
-        <% end %>
+          var opt = get_url_params({
+            'search':       bool_fn,
+            'title':        bool_fn,
+            'description':  bool_fn,
+            'shareable':    bool_fn,
+            'fullscreen':   bool_fn,
+            'cartodb_logo': logo_fn,
+            'scrollwheel':  bool_fn,
+            'sublayer_options': layer_fn,
+            'layer_selector': bool_fn,
+            'legends': bool_fn
+          });
 
-        opt.title       = false;
-        opt.description = false;
-        opt.scrollwheel = false;
+          <% if (@visualization.password_protected?) %>
+              opt.auth_token = '<%= @protected_map_token %>';
+            opt.https = true; // when auth_token is used tiles should be fetch using https
+          <% end %>
 
-        cartodb.config.set({
-          cartodb_attributions: "CartoDB <a href='http://cartodb.com/attributions?utm_source=Footer_Link&utm_medium=referral&utm_campaign=Embed_v1&utm_content=Attributions&utm_term=<%= @visualization.user.username %>' target='_blank'>attribution</a>",
-          cartodb_logo_link: "http://www.cartodb.com?utm_source=Footer_Link&utm_medium=referral&utm_campaign=Embed_v1&utm_content=Logo"
-        })
+          <% if Rails.env.development? || Cartodb.config[:no_cdn] == true %>
+              opt.no_cdn = true;
+          <% end %>
 
-        var loadingTime = cartodb.core.Profiler.metric('cartodb-js.embed.time_full_loaded').start();
-        var visReadyTime = cartodb.core.Profiler.metric('cartodb-js.embed.time_vis_loaded').start();
+          opt.title       = false;
+          opt.description = false;
+          opt.scrollwheel = false;
 
-        var onResize = function() {
+          cartodb.config.set({
+            cartodb_attributions: "CartoDB <a href='http://cartodb.com/attributions?utm_source=Footer_Link&utm_medium=referral&utm_campaign=Embed_v1&utm_content=Attributions&utm_term=<%= @visualization.user.username %>' target='_blank'>attribution</a>",
+            cartodb_logo_link: "http://www.cartodb.com?utm_source=Footer_Link&utm_medium=referral&utm_campaign=Embed_v1&utm_content=Logo"
+          })
 
-          $("#map").css({ height: $(window).height() - 260 }); // - 132 - 68
-          $(".cartodb-map-data").css({ top: $(window).height() - 192 });
+          var loadingTime = cartodb.core.Profiler.metric('cartodb-js.embed.time_full_loaded').start();
+          var visReadyTime = cartodb.core.Profiler.metric('cartodb-js.embed.time_vis_loaded').start();
 
-        };
+          var onResize = function() {
 
-        var setupMapDimensions;
+            $("#map").css({ height: $(window).height() - 260 }); // - 132 - 68
+            $(".cartodb-map-data").css({ top: $(window).height() - 192 });
 
-        var doOnOrientationChange = function() {
+          };
 
-          switch(window.orientation)
-          {
-            case -90:
-              case 90: setupMapDimensions(true, true);
-            break;
-            default: setupMapDimensions(true, true);
-            break;
-          }
+          var setupMapDimensions;
 
-        };
+          var doOnOrientationChange = function() {
 
-        $.extend( $.easing, {
-          easeInQuad: function (x, t, b, c, d) {
-            return c*(t/=d)*t + b;
-          }
-        })
-
-        setupMapDimensions = function(mobileDevice, animated) {
-
-          var windowHeight = $(window).height();
-          var h, height, top;
-
-          if (mobileDevice) {
-
-            if (windowHeight > 670) {
-              h = 180;
-            } else { // iPhone, etc.
-              h = 120;
+            switch(window.orientation)
+            {
+              case -90:
+                case 90: setupMapDimensions(true, true);
+              break;
+              default: setupMapDimensions(true, true);
+              break;
             }
 
-          } else {
-            h = 260;
-          }
+          };
 
-          height = windowHeight - h;
-          top    = windowHeight - (h - 68);
-
-          if (animated) {
-            $("#map").animate({ height: height }, { easing: "easeInQuad", duration: 150 }); 
-            $(".cartodb-map-data").animate({ top: top }, { easing: "easeInQuad", duration: 150 });
-          } else {
-            $("#map").css({ height: height }); 
-            $(".cartodb-map-data").css({ top: top });
-          }
-
-        };
-
-        cartodb.createVis('map', <%=raw @visualization.to_vizjson.to_json %>, opt, function(vis) {
-          visReadyTime.end();
-          vis.on('load', function() {
-            loadingTime.end();
+          $.extend( $.easing, {
+            easeInQuad: function (x, t, b, c, d) {
+              return c*(t/=d)*t + b;
+            }
           })
-          // add here your code
-          window.vis = vis;
-          // some stats
-          stats();
 
-          var mobileDevice = /Android|webOS|iPad|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+          setupMapDimensions = function(mobileDevice, animated) {
 
-          if (!mobileDevice) {
-            $(window).on("resize", onResize);
-          } 
+            var windowHeight = $(window).height();
+            var h, height, top;
 
-          setupMapDimensions(mobileDevice);
+            if (mobileDevice) {
 
-          // recalculate map position on orientation change
-          if (!window.addEventListener) {
-            window.attachEvent('orientationchange', doOnOrientationChange);
-          } else {
-            window.addEventListener('orientationchange', _.bind(doOnOrientationChange));
-          }
+              if (windowHeight > 670) {
+                h = 180;
+              } else { // iPhone, etc.
+                h = 120;
+              }
 
-        }).on('error', manageError);
+            } else {
+              h = 260;
+            }
+
+            height = windowHeight - h;
+            top    = windowHeight - (h - 68);
+
+            if (animated) {
+              $("#map").animate({ height: height }, { easing: "easeInQuad", duration: 150 }); 
+              $(".cartodb-map-data").animate({ top: top }, { easing: "easeInQuad", duration: 150 });
+            } else {
+              $("#map").css({ height: height }); 
+              $(".cartodb-map-data").css({ top: top });
+            }
+
+            window.vis.mapView.invalidateSize()
+
+          };
+
+          cartodb.createVis('map', <%=raw @visualization.to_vizjson.to_json %>, opt, function(vis) {
+            visReadyTime.end();
+            vis.on('load', function() {
+              loadingTime.end();
+            })
+            // add here your code
+            window.vis = vis;
+            // some stats
+            stats();
+
+            var mobileDevice = /Android|webOS|iPad|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+            if (!mobileDevice) {
+              $(window).on("resize", onResize);
+            } 
+
+            setupMapDimensions(mobileDevice);
+
+            // recalculate map position on orientation change
+            if (!window.addEventListener) {
+              window.attachEvent('orientationchange', doOnOrientationChange);
+            } else {
+              window.addEventListener('orientationchange', _.bind(doOnOrientationChange));
+            }
+
+          }).on('error', manageError);
       });
 
     </script>

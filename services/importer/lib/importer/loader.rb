@@ -39,6 +39,7 @@ module CartoDB
 
         raise InvalidGeoJSONError if ogr2ogr.command_output =~ /nrecognized GeoJSON/
         raise LoadError(job.fetch) if ogr2ogr.exit_code != 0
+        job.log 'Georeferencing...'
         georeferencer.run
         self
       end #run

@@ -373,9 +373,11 @@
             border: 2px solid rgba(#333, .3);
 
             .icon {
-              @include filter(grayscale(100%));
+              @include filter(grayscale(80%));
               @include opacity(.5);
+              .marker { background: #666; border-color: #333; }
             }
+
           }
 
           span { color: #999999; font-weight:normal;}

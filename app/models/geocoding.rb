@@ -7,7 +7,7 @@ class Geocoding < Sequel::Model
   DEFAULT_TIMEOUT = 15.minutes
   ALLOWED_KINDS   = %w(admin0 admin1 namedplace postalcode high-resolution)
 
-  PUBLIC_ATTRIBUTES = [:id, :table_id, :kind, :country_code, :formatter, :geometry_type, 
+  PUBLIC_ATTRIBUTES = [:id, :table_id, :state, :kind, :country_code, :formatter, :geometry_type, 
                        :error, :processed_rows, :cache_hits]
 
   many_to_one :user

@@ -5,29 +5,8 @@ require 'redis'
 
 # RAILS_ENV=development DBNAME=carto_db_development DBHOST=127.0.0.1 DBUSER=postgres REDIS_HOST=127.0.0.1
 
-raise "You need to initialize a environment with RAILS_ENV" if (ENV['RAILS_ENV'].nil? || ENV['RAILS_ENV'].empty?)
-raise "You need to set a DBNAME env" if (ENV['DBNAME'].nil? || ENV['DBNAME'].empty?)
-raise "You need to set a DBHOST env" if (ENV['DBHOST'].nil? || ENV['DBHOST'].empty?)
-raise "You need to set a DBUSER env" if (ENV['DBUSER'].nil? || ENV['DBUSER'].empty?)
-raise "You need to set a REDIS_HOST env" if (ENV['REDIS_HOST'].nil? || ENV['REDIS_HOST'].empty?)
-
-ENVIRONMENT = ENV['RAILS_ENV']
-DBHOST = ENV['DBHOST']
-DBPORT = 6432
-DBUSER = ENV['DBUSER']
-DBNAME = ENV['DBNAME']
-REDIS_HOST = ENV['REDIS_HOST']
 
 
-@actions = {
-            'schema' => 'Creates a UUID column in every table with a id. Also creates all the UUID dependency columns between tables. You can still rollback after this step',
-            'meta' => 'Update every dependency UUID column with the proper one based on the id integer relations. This is the last step that you can rollback',
-            'rollback' => 'Try to rollback previous steps',
-            'data' => 'Migrate all postgresql database and users names to UUID format. Also update the user model database_name attribute. Update all redis info with UUIDs',
-            'clean' => 'Drop old id columns. Rename new uuid colums to id. Rename all uuid dependency columns to id. Create new primary keys from UUID attributes'
-           }
-
-ACTION = ARGV[0]
 
 def execution_summary()
   wait_time = 30
@@ -61,10 +40,25 @@ def execution_summary()
   counter(wait_time)
 end
 
-def usage()
-  puts "Usage: #{__FILE__} <action>"
+def usage(message = nil)
+  if !message.nil?
+    puts ""
+    puts "ERROR: #{message}"
+    puts ""
+  end
+  puts "Usage:"
+  puts "  export RAILS_ENV=<rails_env>"
+  puts "  export DBNAME=<your_postgresql_database_name>"
+  puts "  export DBHOST=<your_postgresql_database_host>"
+  puts "  export DBUSER=<your_postgresql_database_user>"
+  puts "  export REDIS_HOST=<your_redis_host>"
+  puts ""
+  puts "# Notice that you probably want to use the same values found in your database.yml and app_config.yml"
+  puts ""
+  puts "  #{__FILE__} <action>"
+  puts ""
   puts "Actions:"
-  @actions.each {|k,v| puts "  %10s   %s" % [k, v]}
+  @actions.each {|k,v| puts "  %10s   %s" % [k, v]; puts "" }
   exit 1
 end
 
@@ -76,8 +70,35 @@ def counter(max)
   end
 end
 
+## MAIN
+#
+
+@actions = {
+            'schema' => 'Creates a UUID column in every table with a id. Also creates a\nll the UUID dependency columns between tables. You can still rollback after this step',
+            'meta' => 'Update every dependency UUID column with the proper one based on the id integer relations. This is the last step that you can rollback',
+            'rollback' => 'Try to rollback previous steps',
+            'data' => 'Migrate all postgresql database and users names to UUID format. Also update the user model database_name attribute. Update all redis info with UUIDs. IMPORTANT: You cannot rollback this step',
+            'clean' => 'Drop old id columns. Rename new uuid colums to id. Rename all uuid dependency columns to id. Create new primary keys from UUID attributes. IMPORTANT: You cannot rollback this step'
+           }
+
+usage "You need to initialize a environment with RAILS_ENV" if (ENV['RAILS_ENV'].nil? || ENV['RAILS_ENV'].empty?)
+usage "You need to set a DBNAME env" if (ENV['DBNAME'].nil? || ENV['DBNAME'].empty?)
+usage "You need to set a DBHOST env" if (ENV['DBHOST'].nil? || ENV['DBHOST'].empty?)
+usage "You need to set a DBUSER env" if (ENV['DBUSER'].nil? || ENV['DBUSER'].empty?)
+usage "You need to set a REDIS_HOST env" if (ENV['REDIS_HOST'].nil? || ENV['REDIS_HOST'].empty?)
+
+ENVIRONMENT = ENV['RAILS_ENV']
+DBHOST = ENV['DBHOST']
+DBPORT = 6432
+DBUSER = ENV['DBUSER']
+DBNAME = ENV['DBNAME']
+REDIS_HOST = ENV['REDIS_HOST']
+
+
+ACTION = ARGV[0]
+
 if ACTION.nil? || !@actions.keys.include?(ACTION)
-  usage()
+  usage "Missing action"
 end
 
 @logs = Hash.new

@@ -736,7 +736,8 @@ var Vis = cdb.core.View.extend({
           infowindow.model.set({
             'fields': infowindowFields.fields,
             'template': infowindowFields.template,
-            'template_type': infowindowFields.template_type
+            'template_type': infowindowFields.template_type,
+            'alternative_names': infowindowFields.alternative_names
           });
 
           if (attributes) {

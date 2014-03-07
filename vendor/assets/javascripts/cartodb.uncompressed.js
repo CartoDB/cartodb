@@ -1,6 +1,6 @@
 // cartodb.js version: 3.7.06-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: 96052f05c03709f0c375112ce2a7a7a8b6bfda40
+// sha: c0cb15d72f97251f9df2623b88301dfba99b3aa0
 (function() {
   var root = this;
 
@@ -29246,12 +29246,12 @@ cdb.ui.common.ShareDialog = cdb.ui.common.Dialog.extend({
   className: 'cartodb-share-dialog',
 
   events: {
-    'click .ok': '_ok',
-    'click .cancel': '_cancel',
-    'click .close': '_cancel',
-    "click":                      '_stopPropagation',
-    "dblclick":                   '_stopPropagation',
-    "mousedown":                  '_stopPropagation'
+    'click .ok':       '_ok',
+    'click .cancel':   '_cancel',
+    'click .close':    '_cancel',
+    "click":           '_stopPropagation',
+    "dblclick":        '_stopPropagation',
+    "mousedown":       '_stopPropagation'
   },
 
   default_options: {
@@ -29283,8 +29283,12 @@ cdb.ui.common.ShareDialog = cdb.ui.common.Dialog.extend({
     var self = this;
 
     if (this.options.target) {
-      this.options.target.on("click", function() {
+      this.options.target.on("click", function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+
         self.open();
+
       })
     }
 

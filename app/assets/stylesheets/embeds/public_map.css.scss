@@ -218,7 +218,7 @@ div.cartodb-info {
 }
 
 div.cartodb-info .inner .details h1 {
-  font-family: 'ProximaNova-Semibold', Helvetica, sans-serif;
+  font-family: 'ProximaNova-Sembibold', Helvetica, sans-serif;
   font-weight: normal;
   font-size:27px;
   color: #444444;
@@ -263,7 +263,7 @@ div.cartodb-info .inner .user .user-info {
 div.cartodb-info .inner .user h4,
 div.cartodb-info .inner .user h5 {
   margin: 0; padding: 0;
-  font-family: 'ProximaNova', Helvetica, sans-serif;
+  font-family: 'ProximaNova-Semibold', Helvetica, sans-serif;
   font-weight: normal;
 }
 
@@ -294,6 +294,7 @@ div.cartodb-body .inner .map-info h2 {
   padding: 0;
   font-size: 17px;
   font-family: 'Helvetica Neue', Helvetica, sans-serif;
+  font-weight:bold;
   color: #444444;
   line-height: normal;
 }
@@ -340,11 +341,15 @@ div.cartodb-body .inner .map-info ul li a:hover {
 
 div.cartodb-body .inner .map-info ul li span {
   position:relative;
-  top: 7px;
+  top: 4px;
   float:right;
   font-size: 11px;
   color: #CCCCCC;
-  font-family: 'ProximaNova-Semibold', Helvetica, sans-serif;
+  font-family: 'ProximaNova', Helvetica, sans-serif;
+}
+
+div.cartodb-body .inner .map-info ul li span.help {
+  top: 3px;
 }
 
 div.cartodb-body a {
@@ -384,93 +389,110 @@ div.cartodb-public-header .inner .options .regular {
   font-family: 'Helvetica Neue', Helvetica, sans-serif;
   text-decoration:none;
   font-weight: 200;
+  zoom: 1; *display: inline; *padding: 8px 0;
+}
+
+div.cartodb-public-header .inner .options .regular:hover {
+  text-decoration: underline;
+}
+
+div.cartodb-public-header a.button.green:hover {
+  background: #749C33;
+  background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #94be42), color-stop(100%, #799e33));
+  background: -webkit-linear-gradient(#94be42,#799e33);
+  background: -moz-linear-gradient(#94be42,#799e33);
+  background: -o-linear-gradient(#94be42,#799e33);
+  background: linear-gradient(#94be42,#799e33);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+div.cartodb-public-header a.button.green {
+  padding: 8px 10px;
+  font-size: 12px;
+  font-weight: bold;
+  font-family: "Segoe UI Bold", "Helvetica Bold", "Helvetica", Arial;
+  line-height: normal;
+  text-decoration: none;
+  text-transform: uppercase;
+  color: white;
+  text-shadow: 0 1px 0 #3C5219;
+  background: #94BE42;
+  background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #94be42), color-stop(100%, #7fa938));
+  background: -webkit-linear-gradient(#94be42,#7fa938);
+  background: -moz-linear-gradient(#94be42,#7fa938);
+  background: -o-linear-gradient(#94be42,#7fa938);
+  background: linear-gradient(#94be42,#7fa938);
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  -ms-border-radius: 3px;
+  -o-border-radius: 3px;
+  border-radius: 3px;
+  border: 1px solid #1E3C54;
+  letter-spacing: 0;
+  word-spacing: 1px;
+  -webkit-transform-style: "linear";
+  -moz-transform-style: "linear";
+  -ms-transform-style: "linear";
+  -o-transform-style: "linear";
+  transform-style: "linear";
+  -webkit-transition-property: box-shadow,border;
+  -moz-transition-property: box-shadow,border;
+  -o-transition-property: box-shadow,border;
+  transition-property: box-shadow,border;
+  -webkit-transition-duration: 250ms;
+  -moz-transition-duration: 250ms;
+  -o-transition-duration: 250ms;
+  transition-duration: 250ms;
+
   zoom: 1; *display: inline;
-        *padding: 8px 0;
-      }
+}
 
-      div.cartodb-public-header .inner .options .regular:hover {
-        text-decoration: underline;
-      }
+div.cartodb-public-header .inner .logo {
+  background: url('/assets/layout/cartodb.png') no-repeat;
+  margin: 23px 0;
+  display: block;
+  width: 93px;
+  height: 18px;
+  text-indent: -9999px;
+  line-height: 0px;
+  font-size: 0px;
+  text-transform: uppercase;
+}
 
-      div.cartodb-public-header a.button.green:hover {
-        background: #749C33;
-        background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #94be42), color-stop(100%, #799e33));
-        background: -webkit-linear-gradient(#94be42,#799e33);
-        background: -moz-linear-gradient(#94be42,#799e33);
-        background: -o-linear-gradient(#94be42,#799e33);
-        background: linear-gradient(#94be42,#799e33);
-        text-decoration: none;
-        cursor: pointer;
-      }
+div.cartodb-public-header .inner .logo { float:left; }
+div.cartodb-public-header .inner .options { float:right; }
 
-      div.cartodb-public-header a.button.green {
-        padding: 8px 10px;
-        font-size: 12px;
-        font-weight: bold;
-        font-family: "Segoe UI Bold", "Helvetica Bold", "Helvetica", Arial;
-        line-height: normal;
-        text-decoration: none;
-        text-transform: uppercase;
-        color: white;
-        text-shadow: 0 1px 0 #3C5219;
-        background: #94BE42;
-        background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #94be42), color-stop(100%, #7fa938));
-        background: -webkit-linear-gradient(#94be42,#7fa938);
-        background: -moz-linear-gradient(#94be42,#7fa938);
-        background: -o-linear-gradient(#94be42,#7fa938);
-        background: linear-gradient(#94be42,#7fa938);
-        -webkit-border-radius: 3px;
-        -moz-border-radius: 3px;
-        -ms-border-radius: 3px;
-        -o-border-radius: 3px;
-        border-radius: 3px;
-        border: 1px solid #1E3C54;
-        letter-spacing: 0;
-        word-spacing: 1px;
-        -webkit-transform-style: "linear";
-        -moz-transform-style: "linear";
-        -ms-transform-style: "linear";
-        -o-transform-style: "linear";
-        transform-style: "linear";
-        -webkit-transition-property: box-shadow,border;
-        -moz-transition-property: box-shadow,border;
-        -o-transition-property: box-shadow,border;
-        transition-property: box-shadow,border;
-        -webkit-transition-duration: 250ms;
-        -moz-transition-duration: 250ms;
-        -o-transition-duration: 250ms;
-        transition-duration: 250ms;
+div.cartodb-public-header {
+  position: relative;
+  display: block;
+  border: none;
+  border-bottom: 1px solid #808080; /*IE*/
+  border-bottom: 1px solid rgba(0, 0, 0, 0.5);
+  height: 67px;
+  -webkit-box-shadow: rgba(0, 0, 0, 0.1) 0 6px 4px -2px;
+  -moz-box-shadow: rgba(0, 0, 0, 0.1) 0 6px 4px -2px;
+  box-shadow: rgba(0, 0, 0, 0.1) 0 6px 4px -2px;
+  background: url('/assets/layout/gradient.png') repeat-x center center;
+  margin:0;
+  font-family: 'Helvetica Neue', Helvetica, sans-serif;
+  z-index: 10;
+}
 
-        zoom: 1; *display: inline;
-      }
 
-      div.cartodb-public-header .inner .logo {
-        background: url('/assets/layout/cartodb.png') no-repeat;
-        margin: 23px 0;
-        display: block;
-        width: 93px;
-        height: 18px;
-        text-indent: -9999px;
-        line-height: 0px;
-        font-size: 0px;
-        text-transform: uppercase;
-      }
+div.cartodb-share-dialog .block.modal .head h3 {
+  font-family: "Helvetica Bold", "Helvetica", Arial;
+  font-weight: bold;
+  font-size: 15px;
+  color: #333;
+  line-height: normal;
+}
 
-      div.cartodb-public-header .inner .logo { float:left; }
-      div.cartodb-public-header .inner .options { float:right; }
+div.cartodb-share-dialog .block.modal h4 {
+  font-family: "Helvetica Bold", "Helvetica", Arial;
+}
 
-      div.cartodb-public-header {
-        position: relative;
-        display: block;
-        border: none;
-        border-bottom: 1px solid #808080; /*IE*/
-        border-bottom: 1px solid rgba(0, 0, 0, 0.5);
-        height: 67px;
-        -webkit-box-shadow: rgba(0, 0, 0, 0.1) 0 6px 4px -2px;
-        -moz-box-shadow: rgba(0, 0, 0, 0.1) 0 6px 4px -2px;
-        box-shadow: rgba(0, 0, 0, 0.1) 0 6px 4px -2px;
-        background: url('/assets/layout/gradient.png') repeat-x center center;
-        margin:0;
-        font-family: 'Helvetica Neue', Helvetica, sans-serif;
-        z-index: 10;
-      }
+div.cartodb-share-dialog .block .buttons li a {
+  font-family: "Helvetica Bold", "Helvetica", Arial;
+}
+

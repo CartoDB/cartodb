@@ -12,7 +12,7 @@ class Api::Json::GeocodingsController < Api::ApplicationController
   def show
     geocoding = current_user.geocodings_dataset.where(id: params[:id]).first
     raise RecordNotFound unless geocoding
-    render json: geocoding
+    render json: geocoding.public_values
   end
 
   def update

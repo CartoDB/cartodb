@@ -29,6 +29,7 @@ cdb.ui.common.FullScreen = cdb.core.View.extend({
   _toggleFullScreen: function(ev) {
 
     ev.stopPropagation();
+    ev.preventDefault();
 
     var doc   = window.document;
     var docEl = doc.documentElement;

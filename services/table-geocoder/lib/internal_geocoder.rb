@@ -44,6 +44,7 @@ module CartoDB
       download_results
       create_temp_table
       load_results_to_temp_table
+      add_georef_status_column
       copy_results_to_table
       @state = 'completed'
     rescue => e
@@ -116,6 +117,25 @@ module CartoDB
     def temp_table_name
       @temp_table_name ||= "internal_geocoding_#{Time.now.to_i}"
     end # temp_table_name
+
+    def add_georef_status_column
+      connection.run(%Q{
+        ALTER TABLE #{table_name} 
+        ADD COLUMN cartodb_georef_status BOOLEAN DEFAULT NULL
+      })
+    rescue Sequel::DatabaseError => e
+      raise unless e.message =~ /column .* of relation .* already exists/
+      cast_georef_status_column
+    end
+
+    def cast_georef_status_column
+      connection.run(%Q{
+        ALTER TABLE #{table_name} ALTER COLUMN cartodb_georef_status 
+        TYPE boolean USING cast(cartodb_georef_status as boolean)
+      })
+    rescue => e
+      raise "Error converting cartodb_georef_status to boolean, please, convert it manually or remove it."
+    end
 
   end # InternalGeocoder
 end # CartoDB

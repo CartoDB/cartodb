@@ -78,6 +78,9 @@ class Admin::VisualizationsController < ApplicationController
       return(embed_protected)
     end
 
+    response.headers['X-Cache-Channel'] = "#{@visualization.varnish_key}:vizjson"
+    response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
+
     @protected_map_token = @visualization.get_auth_token()
 
     @avatar_url = get_avatar(@visualization, 64)
@@ -106,6 +109,9 @@ class Admin::VisualizationsController < ApplicationController
       flash[:error] = "Invalid password"
       return(embed_protected)
     end
+
+    response.headers['X-Cache-Channel'] = "#{@visualization.varnish_key}:vizjson"
+    response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
 
     @protected_map_token = @visualization.get_auth_token()
 

@@ -4,9 +4,9 @@ require_relative '../../models/visualization/locator'
 
 class Admin::VisualizationsController < ApplicationController
   ssl_allowed :embed_map, :public_map
-  ssl_required :index, :show, :protected_embed_map
+  ssl_required :index, :show, :protected_embed_map, :protected_public_map
   before_filter :login_required, only: [:index]
-  skip_before_filter :browser_is_html5_compliant?, only: [:public_map, :embed_map, :track_embed, :show_protected_embed_map]
+  skip_before_filter :browser_is_html5_compliant?, only: [:public_map, :embed_map, :track_embed, :show_protected_embed_map, :show_protected_public_map]
 
   def index
     @tables_count  = current_user.tables.count
@@ -46,6 +46,8 @@ class Admin::VisualizationsController < ApplicationController
     
     return(pretty_404) unless @visualization
     return(embed_forbidden) if @visualization.private?
+    return(public_map_protected) if @visualization.password_protected?
+
     response.headers['X-Cache-Channel'] = "#{@visualization.varnish_key}:vizjson"
     response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
 
@@ -63,6 +65,36 @@ class Admin::VisualizationsController < ApplicationController
   rescue
     embed_forbidden
   end #embed_map
+
+  def show_protected_public_map
+    id = params.fetch(:id)
+    submitted_password = params.fetch(:password)
+    @visualization, @table = locator.get(id, CartoDB.extract_subdomain(request))
+
+    return(pretty_404) unless @visualization and @visualization.password_protected? and @visualization.has_password?
+
+    if not @visualization.is_password_valid?(submitted_password)
+      flash[:placeholder] = '*' * submitted_password.size()
+      flash[:error] = "Invalid password"
+      return(embed_protected)
+    end
+
+    @protected_map_token = @visualization.get_auth_token()
+
+    @avatar_url = get_avatar(@visualization, 64)
+
+    @disqus_shortname     = @visualization.user.disqus_shortname || 'cartodb'
+    @visualization_count  = @visualization.user.visualization_count
+    @related_tables       = @visualization.related_tables
+    @private_tables_count = @related_tables.select{|p| p.privacy_text == 'PRIVATE' }.count 
+
+    respond_to do |format|
+      format.html { render 'public_map', layout: false }
+    end    
+  rescue => exception
+    debugger
+    public_map_protected
+  end #show_protected_public_map
 
   def show_protected_embed_map
     id = params.fetch(:id)
@@ -97,8 +129,6 @@ class Admin::VisualizationsController < ApplicationController
     response.headers['X-Cache-Channel'] = "#{@visualization.varnish_key}:vizjson"
     response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
 
-    @avatar_url = get_avatar(@visualization, 64)
-
     respond_to do |format|
       format.html { render layout: false }
       format.js { render 'embed_map', content_type: 'application/javascript' }
@@ -120,6 +150,10 @@ class Admin::VisualizationsController < ApplicationController
   def embed_protected
     render 'embed_map_password', :layout => false
   end #embed_protected
+
+  def public_map_protected
+    render 'public_map_password', :layout => false
+  end #public_map_protected
 
   def embed_forbidden
     render 'embed_map_error', layout: false, status: :forbidden

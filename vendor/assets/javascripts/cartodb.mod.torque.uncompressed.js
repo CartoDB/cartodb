@@ -57,6 +57,7 @@ var _mapnik_reference_latest = {
                 "src",
                 "dst",
                 "src-over",
+                "source-over", // added for torque
                 "dst-over",
                 "src-in",
                 "dst-in",
@@ -191,6 +192,7 @@ var _mapnik_reference_latest = {
                     "src",
                     "dst",
                     "src-over",
+                    "source-over", // added for torque
                     "dst-over",
                     "src-in",
                     "dst-in",
@@ -7066,6 +7068,20 @@ exports.Profiler = Profiler;
       };
     },
 
+    /*setCartoCSS: function(c) {
+      this.options.cartocss = c;
+    },*/
+
+    setSteps: function(steps, opt) { 
+      opt = opt || {};
+      if (this.options.steps !== steps) {
+        this.options.steps = steps;
+        this.options.step = (this.options.end - this.options.start)/this.getSteps();
+        this.options.step = this.options.step || 1;
+        if (!opt.silent) this.reload();
+      }
+    },
+
     setOptions: function(opt) {
       var refresh = false;
 
@@ -7099,7 +7115,6 @@ exports.Profiler = Profiler;
 
       if (refresh) this.reload();
       return refresh;
-      return false;
     },
 
     _extraParams: function() {
@@ -7165,8 +7180,8 @@ exports.Profiler = Profiler;
 
     getKeySpan: function() {
       return {
-        start: this.options.start * 1000,
-        end: this.options.end * 1000,
+        start: this.options.start,
+        end: this.options.end,
         step: this.options.step,
         steps: this.options.steps,
         columnType: this.options.column_type
@@ -7196,6 +7211,13 @@ exports.Profiler = Profiler;
       return this.options.sql || "select * from " + this.options.table;
     },
 
+    setSQL: function(sql) {
+      if (this.options.sql != sql) {
+        this.options.sql = sql;
+        this.reload();
+      }
+    },
+
     _tilerHost: function() {
       var opts = this.options;
       var user = (opts.user_name || opts.user);
@@ -7211,13 +7233,31 @@ exports.Profiler = Profiler;
       if (!this.options.cdn_url) {
         return this._tilerHost();
       }
-      var h = protocol + "://{s}.";
+      var h = protocol + "://"
+      if (protocol === 'http') {
+        h += "{s}.";
+      }
       var cdn_host = opts.cdn_url;
       if(!cdn_host.http && !cdn_host.https) {
         throw new Error("cdn_host should contain http and/or https entries");
       }
       h += cdn_host[protocol] + "/" + (opts.user_name || opts.user);
       return h;
+    },
+
+    _generateCartoCSS: function() {
+      var attr = {
+        '-torque-frame-count': this.options.steps,
+        '-torque-resolution': this.options.resolution,
+        '-torque-aggregation-function': "'" + this.options.countby + "'",
+        '-torque-time-attribute': "'" + this.options.column + "'",
+        '-torque-data-aggregation': this.options.cumulative ? 'cumulative': 'linear',
+      };
+      var st = 'Map{';
+      for (var k in attr) {
+        st += k + ":" + attr[k] + ";";
+      }
+      return st + "}";
     },
 
     _fetchMap: function(callback) {
@@ -7237,8 +7277,8 @@ exports.Profiler = Profiler;
           "layers": [{
             "type": "torque",
             "options": {
-              "cartocss_version": "2.1.1",
-              "cartocss": this.options.cartocss,
+              "cartocss_version": "1.0.0",
+              "cartocss": this._generateCartoCSS(),
               "sql": this.getSQL()
             }
           }]
@@ -8403,6 +8443,7 @@ GMapsTileLoader.prototype = {
     this._map = map;
     this._projection = projection;
     this._tiles = {};
+    this._tilesLoading = {};
     this._tilesToLoad = 0;
     this._updateTiles = this._updateTiles.bind(this);
     this._listeners = [];
@@ -8491,15 +8532,23 @@ GMapsTileLoader.prototype = {
   _removeTile: function (key) {
       this.onTileRemoved && this.onTileRemoved(this._tiles[key]); 
       delete this._tiles[key];
+      delete this._tilesLoading[key];
+  },
+
+  _tileKey: function(tilePoint) {
+    return tilePoint.x + ':' + tilePoint.y + ':' + tilePoint.zoom;
   },
 
   _tileShouldBeLoaded: function (tilePoint) {
-      return !((tilePoint.x + ':' + tilePoint.y + ':' + tilePoint.zoom) in this._tiles);
+      var k = this._tileKey(tilePoint);
+      return !(k in this._tiles) && !(k in this._tilesLoading);
   },
 
   _tileLoaded: function(tilePoint, tileData) {
     this._tilesToLoad--;
-    this._tiles[tilePoint.x + ':' + tilePoint.y + ':' + tilePoint.zoom] = tileData;
+    var k = tilePoint.x + ':' + tilePoint.y + ':' + tilePoint.zoom
+    this._tiles[k] = tileData;
+    delete this._tilesLoading[k];
     if(this._tilesToLoad === 0) {
       this.onTilesLoaded && this.onTilesLoaded();
     }
@@ -8573,11 +8622,17 @@ GMapsTileLoader.prototype = {
 
       this._tilesToLoad += tilesToLoad;
 
-      if (this.onTileAdded) {
         for (i = 0; i < tilesToLoad; i++) {
-          this.onTileAdded(queue[i]);
+          var t = queue[i];
+          var k = this._tileKey(t);
+          this._tilesLoading[k] = t;
+          // events
+          if (this.onTileAdded) {
+            this.onTileAdded(t);
+          }
         }
-      }
+
+      this.onTilesLoading && this.onTilesLoading();
   }
 
 }
@@ -8839,6 +8894,7 @@ GMapsTorqueLayer.prototype = _.extend({},
 
     // provider options
     var options = torque.common.TorqueLayer.optionsFromLayer(shader.findLayer({ name: 'Map' }));
+    this.provider.setCartoCSS && this.provider.setCartoCSS(cartocss);
     if(this.provider && this.provider.setOptions(options)) {
       this._reloadTiles();
     }
@@ -8953,6 +9009,7 @@ L.Mixin.TileLoader = {
 
   _initTileLoader: function() {
     this._tiles = {}
+    this._tilesLoading = {};
     this._tilesToLoad = 0;
     this._map.on({
         'moveend': this._updateTiles
@@ -9026,15 +9083,23 @@ L.Mixin.TileLoader = {
   _removeTile: function (key) {
       this.fire('tileRemoved', this._tiles[key]);
       delete this._tiles[key];
+      delete this._tilesLoading[key];
+  },
+
+  _tileKey: function(tilePoint) {
+    return tilePoint.x + ':' + tilePoint.y + ':' + tilePoint.zoom;
   },
 
   _tileShouldBeLoaded: function (tilePoint) {
-      return !((tilePoint.x + ':' + tilePoint.y + ':' + tilePoint.zoom) in this._tiles);
+      var k = this._tileKey(tilePoint);
+      return !(k in this._tiles) && !(k in this._tilesLoading);
   },
 
   _tileLoaded: function(tilePoint, tileData) {
     this._tilesToLoad--;
-    this._tiles[tilePoint.x + ':' + tilePoint.y + ':' + tilePoint.zoom] = tileData;
+    var k = tilePoint.x + ':' + tilePoint.y + ':' + tilePoint.zoom
+    this._tiles[k] = tileData;
+    delete this._tilesLoading[k];
     if(this._tilesToLoad === 0) {
       this.fire("tilesLoaded");
     }
@@ -9078,8 +9143,12 @@ L.Mixin.TileLoader = {
       this._tilesToLoad += tilesToLoad;
 
       for (i = 0; i < tilesToLoad; i++) {
-        this.fire('tileAdded', queue[i]);
+        var t = queue[i];
+        var k = this._tileKey(t);
+        this._tilesLoading[k] = t;
+        this.fire('tileAdded', t);
       }
+      this.fire("tilesLoading");
 
   }
 }
@@ -9471,9 +9540,11 @@ L.TorqueLayer = L.CanvasLayer.extend({
 
     // provider options
     var options = torque.common.TorqueLayer.optionsFromLayer(shader.findLayer({ name: 'Map' }));
+    this.provider.setCartoCSS && this.provider.setCartoCSS(cartocss);
     if(this.provider.setOptions(options)) {
       this._reloadTiles();
     }
+
     _.extend(this.options, options);
 
     // animator options
@@ -9483,88 +9554,6 @@ L.TorqueLayer = L.CanvasLayer.extend({
 
     this.redraw();
     return this;
-  }
-
-});
-
-
-L.TiledTorqueLayer = L.TileLayer.Canvas.extend({
-
-  providers: {
-    'sql_api': torque.providers.json,
-    'url_template': torque.providers.JsonArray
-  },
-
-  renderers: {
-    'point': torque.renderer.Point,
-    'pixel': torque.renderer.Rectangle
-  },
-
-  initialize: function(options) {
-    var self = this;
-    this.key = 0;
-
-    options.async = true;
-    L.TileLayer.Canvas.prototype.initialize.call(this, options);
-
-
-    this.options.renderer = this.options.renderer || 'pixel';
-    this.options.provider = this.options.provider || 'sql_api';
-
-    this.provider = new this.providers[this.options.provider](options);
-    this.renderer = new this.renderers[this.options.renderer](null, options);
-
-  },
-
-  _tileLoaded: function(tile, tilePoint, tileData) {
-    if(this._tiles[tilePoint.x + ':' + tilePoint.y] !== undefined) {
-      this._tiles[tilePoint.x + ':' + tilePoint.y].data = tileData;
-      this.drawTile(tile);
-    }
-    L.TileLayer.Canvas.prototype._tileLoaded.call(this);
-  },
-
-  redraw: function() {
-    for (var i in this._tiles) {
-        this._redrawTile(this._tiles[i]);
-    }
-  },
-
-  _loadTile: function(tile, tilePoint) {
-    var self = this;
-    L.TileLayer.Canvas.prototype._loadTile.apply(this, arguments);
-
-    // get the data from adjusted point but render in the right canvas
-    var adjusted = tilePoint.clone()
-    this._adjustTilePoint(adjusted);
-    this.provider.getTileData(adjusted, this._map.getZoom(), function(tileData) {
-      self._tileLoaded(tile, tilePoint, tileData);
-      L.DomUtil.addClass(tile, 'leaflet-tile-loaded');
-    });
-  },
-
-  drawTile: function (tile) {
-    var canvas = tile;
-    if(!tile.data) return;
-    canvas.width = canvas.width;
-
-    this.renderer.setCanvas(canvas);
-
-    var accum = this.renderer.accumulate(tile.data, this.key);
-    this.renderer.renderTileAccum(accum, 0, 0);
-  },
-
-  setKey: function(key) {
-    this.key = key;
-    this.redraw();
-  },
-
-  /**
-   * set the cartocss for the current renderer
-   */
-  setCartoCSS: function(cartocss) {
-    if (!this.renderer) throw new Error('renderer is not valid');
-    return this.renderer.setCartoCSS(cartocss);
   }
 
 });
@@ -9608,7 +9597,8 @@ var GMapsTorqueLayerView = function(layerModel, gmapsMap) {
       attribution: layerModel.get('attribution'),
       cdn_url: layerModel.get('no_cdn') ? null: (layerModel.get('cdn_url') || cdb.CDB_HOST),
       cartocss: layerModel.get('cartocss') || layerModel.get('tile_style'),
-      named_map: layerModel.get('named_map')
+      named_map: layerModel.get('named_map'),
+      auth_token: layerModel.get('auth_token')
   });
 
   //this.setCartoCSS(this.model.get('tile_style'));
@@ -9647,6 +9637,10 @@ _.extend(
   onTilesLoaded: function() {
     //this.trigger('load');
     Backbone.Events.trigger.call(this, 'load');
+  },
+
+  onTilesLoading: function() {
+    Backbone.Events.trigger.call(this, 'loading');
   }
 
 });
@@ -9697,7 +9691,8 @@ var LeafLetTorqueLayer = L.TorqueLayer.extend({
       attribution: layerModel.get('attribution'),
       cdn_url: layerModel.get('no_cdn') ? null: (layerModel.get('cdn_url') || cdb.CDB_HOST),
       cartocss: layerModel.get('cartocss') || layerModel.get('tile_style'),
-      named_map: layerModel.get('named_map')
+      named_map: layerModel.get('named_map'),
+      auth_token: layerModel.get('auth_token')
     });
 
     cdb.geo.LeafLetLayerView.call(this, layerModel, this, leafletMap);
@@ -9712,6 +9707,10 @@ var LeafLetTorqueLayer = L.TorqueLayer.extend({
 
     this.bind('tilesLoaded', function() {
       this.trigger('load');
+    }, this);
+
+    this.bind('tilesLoading', function() {
+      this.trigger('loading');
     }, this);
 
   },

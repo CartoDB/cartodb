@@ -45,6 +45,10 @@ cdb.ui.common.FullScreen = cdb.core.View.extend({
 
       requestFullScreen.call(docEl);
 
+      if (this.options.mapView) {
+        this.options.mapView.invalidateSize();
+      }
+
     } else {
 
       cancelFullScreen.call(doc);

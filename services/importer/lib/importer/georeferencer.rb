@@ -49,6 +49,7 @@ module CartoDB
         geometry_column_name = geometry_column_in(qualified_table_name)
         return false unless geometry_column_name
         column = Column.new(db, table_name, geometry_column_name, schema, job)
+        column.empty_lines_to_nulls
         column.geometrify
         
         unless column_exists_in?(table_name, :the_geom)
@@ -152,7 +153,7 @@ module CartoDB
       end #find_column_in
 
       def handle_multipoint(qualified_table_name)
-        job.log "Converting detected multipoint to point"
+        job.log 'Converting detected multipoint to point'
         db.run(%Q{
           UPDATE #{qualified_table_name} 
           SET the_geom = ST_GeometryN(the_geom, 1)

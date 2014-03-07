@@ -183,6 +183,13 @@ module CartoDB
         })
       end #drop
 
+      def empty_lines_to_nulls
+        db.run(%Q{
+          UPDATE #{qualified_table_name}
+          SET #{column_name}=NULL WHERE #{column_name}=''
+        })
+      end #empty_lines_to_nulls
+
       def sanitize
         rename_to(sanitized_name)
       end #sanitize

@@ -95,22 +95,28 @@ class User < Sequel::Model
   end
 
   def before_destroy
-    # Remove user tables
-    self.tables.all.each { |t| t.destroy }
-    
-    # Remove user data imports, maps, layers and assets
-    self.data_imports.each { |d| d.destroy }
-    self.maps.each { |m| m.destroy }
-    self.layers.each { |l| self.remove_layer l }
-    self.geocodings.each { |g| g.destroy }
-    self.assets.each { |a| a.destroy }
+    error_happened = false
+    begin
+      # Remove user tables
+      self.tables.all.each { |t| t.destroy }
+
+      # Remove user data imports, maps, layers and assets
+      self.data_imports.each { |d| d.destroy }
+      self.maps.each { |m| m.destroy }
+      self.layers.each { |l| self.remove_layer l }
+      self.geocodings.each { |g| g.destroy }
+      self.assets.each { |a| a.destroy }
+    rescue StandardError => exception
+      error_happened = true
+      CartoDB::Logger.info "Error destroying user #{username}. #{exception.message}\n#{exception.backtrace}"
+    end
 
     # Remove metadata from redis
-    $users_metadata.DEL(self.key)
+    $users_metadata.DEL(self.key) unless error_happened
 
     # Invalidate user cache
     self.invalidate_varnish_cache
-    self.drop_database_and_user
+    self.drop_database_and_user unless error_happened
   end
 
   def drop_database_and_user

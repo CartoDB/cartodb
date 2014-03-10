@@ -12,14 +12,14 @@ module CartoDB
 
     SQL_PATTERNS = {
       point: {
-        namedplace: 'SELECT (geocode_namedplace(Array[{search_terms}], null, Array[{country_list}])).*',
-        ipaddress:  'SELECT (geocode_ip(Array[{search_terms}])).*',
-        postalcode: 'SELECT (geocode_postalcode_points(Array[{search_terms}], Array[{country_list}])).*'
+        namedplace: 'WITH geo_function AS (SELECT (geocode_namedplace(Array[{search_terms}], null, Array[{country_list}])).*) SELECT q, null, geom, success FROM geo_function',
+        ipaddress:  'WITH geo_function AS (SELECT (geocode_ip(Array[{search_terms}])).*) SELECT q, null, geom, success FROM geo_function',
+        postalcode: 'WITH geo_function AS (SELECT (geocode_postalcode_points(Array[{search_terms}], Array[{country_list}])).*) SELECT q, c, geom, success FROM geo_function'
       },
       polygon: {
-        admin0:     'SELECT (geocode_admin0_polygons(Array[{search_terms}])).*',
-        admin1:     'SELECT (geocode_admin1_polygons(Array[{search_terms}], Array[{country_list}])).*',
-        postalcode: 'SELECT (geocode_postalcode_polygons(Array[{search_terms}], Array[{country_list}])).*'
+        admin0:     'WITH geo_function AS (SELECT (geocode_admin0_polygons(Array[{search_terms}])).*) SELECT q, null, geom, success FROM geo_function',
+        admin1:     'WITH geo_function AS (SELECT (geocode_admin1_polygons(Array[{search_terms}], Array[{country_list}])).*) SELECT q, c, geom, success FROM geo_function',
+        postalcode: 'WITH geo_function AS (SELECT (geocode_postalcode_polygons(Array[{search_terms}], Array[{country_list}])).*) SELECT q, c, geom, success FROM geo_function'
       }
     }
 

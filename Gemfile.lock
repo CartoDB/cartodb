@@ -413,13 +413,8 @@ DEPENDENCIES
   resque (= 1.23.0)
   rgeo (= 0.3.2)
   rgeo-geojson (= 0.2.1)
-<<<<<<< HEAD
-  rollbar (= 0.9.6)
   roo (= 1.13.2)
-=======
   rollbar (= 0.12.12)
-  roo (= 1.12.1)
->>>>>>> origin/CDB-1699
   rspec-rails (= 2.10.1)
   ruby-ole (= 1.2.11.3)
   rubyzip (= 0.9.9)

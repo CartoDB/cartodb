@@ -2,7 +2,6 @@
 require_relative '../lib/table_geocoder.rb'
 require_relative '../../geocoder/lib/geocoder.rb'
 require_relative 'factories/pg_connection'
-require 'ruby-debug'
 
 RSpec.configure do |config|
   config.mock_with :mocha
@@ -15,7 +14,7 @@ describe CartoDB::TableGeocoder do
     @db           = conn.connection
     @pg_options   = conn.pg_options
     @table_name   = "ne_10m_populated_places_simple"
-    load_sql path_to("populated_places_short.sql"), @pg_options
+    load_csv path_to("populated_places_short.csv")
   end
 
   after do
@@ -26,11 +25,12 @@ describe CartoDB::TableGeocoder do
     before do
       @tg = CartoDB::TableGeocoder.new(default_params.merge({
         table_name: @table_name,
-        formatter:  "name, ', ', sov0name",
+        formatter:  "name, ', ', iso3",
         connection: @db
       }))
       @tg.geocoder.stubs(:upload).returns(true)
       @tg.geocoder.stubs(:request_id).returns('111')
+      @tg.cache.stubs(:run).returns(true)
       @tg.run
     end
 
@@ -47,7 +47,7 @@ describe CartoDB::TableGeocoder do
     before do
       @tg = CartoDB::TableGeocoder.new(default_params.merge({
         table_name: @table_name,
-        formatter:  "name, ', ', sov0name",
+        formatter:  "name, ', ', iso3",
         connection: @db
       }))
       @tg.add_georef_status_column
@@ -55,7 +55,7 @@ describe CartoDB::TableGeocoder do
 
     it "generates a csv file with the correct format" do
       @tg.generate_csv
-      File.open("#{@tg.working_dir}/wadus.csv").read.should == File.read(path_to('nokia_input.csv'))
+      File.read("#{@tg.working_dir}/wadus.csv").should == File.read(path_to('nokia_input.csv'))
     end
 
     it "honors max_rows" do
@@ -176,13 +176,13 @@ describe CartoDB::TableGeocoder do
     config[:cache] = config[:cache].inject({}){|memo,(k,v)| memo[k.to_sym] = v; memo}
     t = CartoDB::TableGeocoder.new(config.merge(
       table_name: @table_name,
-      formatter:  "name, ', ', sov0name",
+      formatter:  "name, ', ', iso3",
       connection: @db,
       schema:     'public'
     ))
     t.geocoder.stubs("use_batch_process?").returns(true)
 
-    @db.fetch("select count(*) from #{@table_name} where the_geom is null").first[:count].should eq 37
+    @db.fetch("select count(*) from #{@table_name} where the_geom is null").first[:count].should eq 14
     t.run
     until t.geocoder.status == 'completed' do
       t.geocoder.update_status
@@ -191,10 +191,10 @@ describe CartoDB::TableGeocoder do
     end
     t.process_results
     t.geocoder.status.should eq 'completed'
-    t.geocoder.processed_rows.to_i.should eq 3
-    t.cache.hits.should eq 34
-    @db.fetch("select count(*) from #{@table_name} where the_geom is null").first[:count].should eq 3
-    @db.fetch("select count(*) from #{@table_name} where cartodb_georef_status is false").first[:count].should eq 3
+    t.geocoder.processed_rows.to_i.should eq 0
+    t.cache.hits.should eq 10
+    @db.fetch("select count(*) from #{@table_name} where the_geom is null").first[:count].should eq 2
+    @db.fetch("select count(*) from #{@table_name} where cartodb_georef_status is false").first[:count].should eq 0
   end
 
 
@@ -205,8 +205,9 @@ describe CartoDB::TableGeocoder do
   end #path_to
 
 
-  def load_sql(path, pg_options)
-    `psql -U #{pg_options[:user]} -f #{path} #{pg_options[:database]}`
+  def load_csv(path)
+    @db.run("CREATE TABLE #{@table_name} (the_geom geometry, cartodb_id integer, name text, iso3 text)")
+    @db.run("COPY #{@table_name.lit}(cartodb_id, name, iso3) FROM '#{path}' DELIMITER ',' CSV")
   end # create_table
 
 end # CartoDB::Geocoder

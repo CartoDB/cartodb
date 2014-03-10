@@ -3,7 +3,7 @@
    *  Merge tables dialog
    */
 
-  
+
   @import "../common/form-elements";
   @import "../common/mixins";
 
@@ -30,14 +30,6 @@
         display:block;
         margin: 0 0 5px 0;
       }
-
-
-      /*.content {
-        position:relative;
-        clear:both;
-        overflow:hidden;
-        background:red;
-      }*/
 
       ul.join_types {
         width:100%;

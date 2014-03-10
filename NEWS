@@ -1,7 +1,10 @@
-3.7.06 (07//02//2014)
+3.7.07 (10//03//2014)
+- Fixes infowindow placement in fullscreen mode.
+
+3.7.06 (07//03//2014)
 - alternate_names in infowindow was not being honored
 
-3.7.05 (06//02//2014)
+3.7.05 (06//03//2014)
 - Added setParams method to layer to support named maps (#106)
 - fixed problems with infowindow when there are hidden layers
 

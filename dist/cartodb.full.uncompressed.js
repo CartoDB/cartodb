@@ -1,6 +1,6 @@
-// cartodb.js version: 3.7.06
+// cartodb.js version: 3.7.07
 // uncompressed version: cartodb.uncompressed.js
-// sha: d22802aa7fcc26d20baea57aae926e1ed284c7a5
+// sha: 6cf18fd5e5922842a1594fd934766c746af90a90
 (function() {
   var root = this;
 
@@ -20686,7 +20686,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.7.06';
+    cdb.VERSION = '3.7.07';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -25586,6 +25586,7 @@ cdb.ui.common.FullScreen = cdb.core.View.extend({
   _toggleFullScreen: function(ev) {
 
     ev.stopPropagation();
+    ev.preventDefault();
 
     var doc   = window.document;
     var docEl = doc.documentElement;
@@ -25600,6 +25601,10 @@ cdb.ui.common.FullScreen = cdb.core.View.extend({
     if(!doc.fullscreenElement && !doc.mozFullScreenElement && !doc.webkitFullscreenElement) {
 
       requestFullScreen.call(docEl);
+
+      if (this.options.mapView) {
+        this.options.mapView.invalidateSize();
+      }
 
     } else {
 
@@ -29245,12 +29250,12 @@ cdb.ui.common.ShareDialog = cdb.ui.common.Dialog.extend({
   className: 'cartodb-share-dialog',
 
   events: {
-    'click .ok': '_ok',
-    'click .cancel': '_cancel',
-    'click .close': '_cancel',
-    "click":                      '_stopPropagation',
-    "dblclick":                   '_stopPropagation',
-    "mousedown":                  '_stopPropagation'
+    'click .ok':       '_ok',
+    'click .cancel':   '_cancel',
+    'click .close':    '_cancel',
+    "click":           '_stopPropagation',
+    "dblclick":        '_stopPropagation',
+    "mousedown":       '_stopPropagation'
   },
 
   default_options: {
@@ -29282,8 +29287,12 @@ cdb.ui.common.ShareDialog = cdb.ui.common.Dialog.extend({
     var self = this;
 
     if (this.options.target) {
-      this.options.target.on("click", function() {
+      this.options.target.on("click", function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+
         self.open();
+
       })
     }
 
@@ -31316,6 +31325,8 @@ cdb.vis.Overlay.register('fullscreen', function(data, vis) {
   );
 
   var fullscreen = new cdb.ui.common.FullScreen({
+    doc: ".cartodb-public-wrapper",
+    mapView: vis.mapView,
     template: template
   });
 

@@ -37,6 +37,7 @@ class Api::Json::TablesController < Api::ApplicationController
   end
 
   def show
+    return head(404) if @table == nil
     respond_to do |format|
       format.csv do
         send_data @table.to_csv,

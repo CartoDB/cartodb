@@ -1,6 +1,6 @@
-// cartodb.js version: 3.7.07-dev
+// cartodb.js version: 3.7.06-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: 258dc960fe9fedcd77a9157cfb7d4321e05e17bb
+// sha: c0cb15d72f97251f9df2623b88301dfba99b3aa0
 (function() {
   var root = this;
 
@@ -20686,7 +20686,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.7.07-dev';
+    cdb.VERSION = '3.7.06-dev';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -25601,10 +25601,6 @@ cdb.ui.common.FullScreen = cdb.core.View.extend({
     if(!doc.fullscreenElement && !doc.mozFullScreenElement && !doc.webkitFullscreenElement) {
 
       requestFullScreen.call(docEl);
-
-      if (this.options.mapView) {
-        this.options.mapView.invalidateSize();
-      }
 
     } else {
 
@@ -30822,8 +30818,7 @@ var Vis = cdb.core.View.extend({
           infowindow.model.set({
             'fields': infowindowFields.fields,
             'template': infowindowFields.template,
-            'template_type': infowindowFields.template_type,
-            'alternative_names': infowindowFields.alternative_names
+            'template_type': infowindowFields.template_type
           });
 
           if (attributes) {
@@ -31325,8 +31320,7 @@ cdb.vis.Overlay.register('fullscreen', function(data, vis) {
   );
 
   var fullscreen = new cdb.ui.common.FullScreen({
-    doc: ".cartodb-public-wrapper",
-    mapView: vis.mapView,
+    doc: "#map > div",
     template: template
   });
 

@@ -1,4 +1,3 @@
-
 /**
  * Georeference dialog
  */
@@ -230,6 +229,10 @@
       float:left;
       width: 493px;
 
+      -webkit-transform: translate3d(0,0,0);
+      -moz-transform: translate3d(0,0,0);
+      transform: translate3d(0,0,0);
+
       li {
         position:relative;
         border:none;
@@ -377,7 +380,6 @@
               @include opacity(.5);
               .marker { background: #666; border-color: #333; }
             }
-
           }
 
           span { color: #999999; font-weight:normal;}

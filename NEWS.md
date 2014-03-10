@@ -1,3 +1,82 @@
+2.11.0 (2014-03-10)
+-------------------
+
+IMPORTANT NOTE
+==============
+From this release, CartoDB uses UUIDs instead of IDs to reference to all objects on
+the database, so that it is being able to work on distributed environments much
+reliably.
+
+Your database would need manual upgrade in order to use this CartoDB version.
+
+We have created a script to help you migrate your database. Even this script has
+been tested on production environments by us, we highly encourage
+to make a FULL backup of your database before running it.
+This backup should involve both PostgreSQL metadata and user data databases
+and redis metadata database.
+
+In order to run this migration you need to stop your application and make sure
+that there is not any connection to your databases while you run the script.
+
+After you run the migration script manually you will need to run the rails
+migration task as usual.
+This migration will detect that your database is already in the right state and will
+continue normally (and won't work until you do so).
+
+Notice that this migration is mandatory in order to use this CartoDB version
+and any other future version. Also, versions starting with this one are
+incompatible with the old database schema with integer based ids.
+
+These are the steps you need to follow in order to run the manual script:
+``` 
+  $ cd <application_root>
+  $ export RAILS_ENV=<rails_env>
+  $ export DBNAME=<your_postgresql_database_name>
+  $ export DBHOST=<your_postgresql_database_host>
+  $ export DBUSER=<your_postgresql_database_user>
+  $ export REDIS_HOST=<your_redis_host>
+  $ bundle exec ./script/migrate_to_uuid.rb schema
+  $ bundle exec ./script/migrate_to_uuid.rb meta
+  $ bundle exec ./script/migrate_to_uuid.rb data
+  $ bundle exec ./script/migrate_to_uuid.rb clean
+```
+
+Now, back to the new features!
+
+* New Features
+  * All metadata storage is now UUID-based
+  * Implement new public map page
+  * Implement new georeference options
+  * Implement new geocoder logic in the backend, allowing to geocode by regions 
+    using open data
+
+* Bugs Fixed
+  * Improvements of traces for Sync Tables
+  * Fix errors when deleting user databases on distributed environemtns
+  * Show in color-picker all the colors you are using in your visualization 
+    (colors from other layers and so on)
+  * Make cartodb UI work without Google Maps JS
+  * Fix error with geocoder row counts
+  * Changed XYZ test preventing server issues
+  * Changed color picker interaction
+  * Prevent default actions from new share buttons
+  * Fix several JS specs
+  * Disable statsc collection in https from embed to avoid security problems
+  * Adding a table to a public visualization changes the privacy of the vis
+  * Full screen options are enabled by default for public visualizations
+  * Empty the_geom from CSV no longer imports to "" instead of NULL
+  * Trying to change a password no longer returns unauthorized
+  * User destroy no longer fails when he has named maps
+  * /api/v1/tables returns 404 when table does not exist
+
+
+* Improvements
+  * Integrate JavaScript error handling reporting
+  * Add db migrations to alter the schemas to uuid
+  * Activate fullscreen button on embeds by default
+  * When adding a color, add a thumbnail close to the HEX value on the cartocss
+      editor
+
 2.10.1 (2014-03-03)
 -------------------
 * Improvements

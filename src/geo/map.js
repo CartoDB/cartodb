@@ -187,6 +187,13 @@ cdb.geo.CartoDBGroupLayer = cdb.geo.MapLayer.extend({
   }
 });
 
+cdb.geo.CartoDBNamedMapLayer = cdb.geo.MapLayer.extend({
+  defaults: {
+    visible: true,
+    type: 'namedmap'
+  }
+});
+
 cdb.geo.Layers = Backbone.Collection.extend({
 
   model: cdb.geo.MapLayer,

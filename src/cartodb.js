@@ -5,7 +5,7 @@
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.6.01';
+    cdb.VERSION = '3.7.07';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -74,6 +74,7 @@
         'geo/ui/tiles_loader.js',
         'geo/ui/infobox.js',
         'geo/ui/tooltip.js',
+        'geo/ui/fullscreen.js',
 
         'geo/layer_definition.js',
         'geo/common.js',

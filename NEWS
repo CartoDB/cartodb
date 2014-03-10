@@ -1,3 +1,37 @@
+3.7.07 (10//03//2014)
+- Fixes infowindow placement in fullscreen mode.
+
+3.7.06 (07//03//2014)
+- alternate_names in infowindow was not being honored
+
+3.7.05 (06//03//2014)
+- Added setParams method to layer to support named maps (#106)
+- fixed problems with infowindow when there are hidden layers
+
+3.7.04 (27//02//2014)
+- fixed layer update in gmaps 
+- when jsonp is used errors are not reported to the layer 
+- updated torque, fix problem with some cartocss options (step) 
+
+3.7.03 (25//02//2014)
+- Fixed https in torque tiles
+
+3.7.02 (25//02//2014)
+- Fixed auth_token fetching infowindow attributes
+- updated torque library
+
+3.7.01 (25//02//2014)
+- Fixed auth_token in torque layers
+- Fixed time slider in torque layers
+- Fixed auth_token fetching attributes
+
+3.7.00 (24//02/2014)
+- Added support for named maps
+- Added cartodb.noleaflet.js to build (#105)
+
+3.6.02 (18//02//2014)
+- Adds profiling support for plugable backends
+
 3.6.01 (13//02//2014)
 - Fixes a call to window.addEventListener in IE8.
 - Adds fullscreen detection.

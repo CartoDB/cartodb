@@ -85,6 +85,7 @@ cdb_ui_files = [
 
 create_dist_file(vendor_files, cdb_files, [], "dist/_cartodb.js");
 create_dist_file(vendor_files, cdb_files, ['./vendor/jquery.min.js'], "dist/_cartodb_nojquery.js");
+create_dist_file(vendor_files, cdb_files, ['./vendor/leaflet.js'], "dist/_cartodb_noleaflet.js");
 create_dist_file(vendor_files, cdb_files.concat(cdb_ui_files), [], "dist/cartodb.full.uncompressed.js");
 
 

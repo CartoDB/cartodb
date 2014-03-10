@@ -77,16 +77,16 @@ quick start
 examples
 ========
 
- - [Load a layer with Google Maps](http://cartodb.github.com/cartodb.js/examples/gmaps.html)
- - [Load a layer with Leaflet](http://cartodb.github.com/cartodb.js/examples/leaflet.html)
- - [Show a complete visualization](http://cartodb.github.com/cartodb.js/examples/easy.html)
- - [A visualization with a layer selector](http://cartodb.github.com/cartodb.js/examples/layer_selector.html)
- - [How to create a custom infowindow](http://cartodb.github.com/cartodb.js/examples/custom_infowindow.html)
- - [The Hobbit filming location paths](http://cartodb.github.com/cartodb.js/examples/TheHobbitLocations/) a full example with some widgets
- - [Load a vector layer with Google Maps](http://cartodb.github.com/cartodb.js/examples/gmaps_vector.html)
- - [Load a vector layer with Leaflet](http://cartodb.github.com/cartodb.js/examples/leaflet_vector.html)
- - [Load a vector layer to Leaflet with hover effect](http://cartodb.github.com/cartodb.js/examples/leaflet_vector_hover.html)
- - [Add cursor interaction without a visualization](http://cartodb.github.com/cartodb.js/examples/cursor_interaction.html)
+ - [Load a layer with Google Maps](http://cartodb.github.io/cartodb.js/examples/gmaps.html)
+ - [Load a layer with Leaflet](http://cartodb.github.io/cartodb.js/examples/leaflet.html)
+ - [Show a complete visualization](http://cartodb.github.io/cartodb.js/examples/easy.html)
+ - [A visualization with a layer selector](http://cartodb.github.io/cartodb.js/examples/layer_selector.html)
+ - [How to create a custom infowindow](http://cartodb.github.io/cartodb.js/examples/custom_infowindow.html)
+ - [The Hobbit filming location paths](http://cartodb.github.io/cartodb.js/examples/TheHobbitLocations/) a full example with some widgets
+ - [Load a vector layer with Google Maps](http://cartodb.github.io/cartodb.js/examples/gmaps_vector.html)
+ - [Load a vector layer with Leaflet](http://cartodb.github.io/cartodb.js/examples/leaflet_vector.html)
+ - [Load a vector layer to Leaflet with hover effect](http://cartodb.github.io/cartodb.js/examples/leaflet_vector_hover.html)
+ - [Add cursor interaction without a visualization](http://cartodb.github.io/cartodb.js/examples/cursor_interaction.html)
 
 
 next steps

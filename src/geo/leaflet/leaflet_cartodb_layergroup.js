@@ -4,13 +4,14 @@
 if(typeof(L) == "undefined")
   return;
 
-L.CartoDBGroupLayer = L.TileLayer.extend({
+
+L.CartoDBGroupLayerBase = L.TileLayer.extend({
 
   interactionClass: wax.leaf.interaction,
 
   includes: [
     cdb.geo.LeafLetLayerView.prototype,
-    LayerDefinition.prototype,
+    //LayerDefinition.prototype,
     CartoDBLayerCommon.prototype
   ],
 
@@ -132,10 +133,6 @@ L.CartoDBGroupLayer = L.TileLayer.extend({
       this.options.added = false;
       L.TileLayer.prototype.onRemove.call(this, map);
     }
-  },
-
-  onLayerDefinitionUpdated: function() {
-    this.__update();
   },
 
   /**
@@ -261,74 +258,122 @@ L.CartoDBGroupLayer = L.TileLayer.extend({
 
 });
 
-cdb.geo.LeafLetCartoDBLayerGroupView = L.CartoDBGroupLayer.extend({
+L.CartoDBGroupLayer = L.CartoDBGroupLayerBase.extend({
+  includes: [
+    LayerDefinition.prototype,
+  ]
+});
 
+function layerView(base) {
+  var layerViewClass = base.extend({
+
+    includes: [
+      cdb.geo.LeafLetLayerView.prototype,
+      Backbone.Events
+    ],
+
+    initialize: function(layerModel, leafletMap) {
+      var self = this;
+
+      //_.bindAll(this, 'featureOut', 'featureOver', 'featureClick');
+
+      // CartoDB new attribution,
+      // also we have the logo
+      layerModel.attributes.attribution = cdb.config.get('cartodb_attributions');
+
+      var opts = _.clone(layerModel.attributes);
+
+      opts.map =  leafletMap;
+
+      var // preserve the user's callbacks
+      _featureOver  = opts.featureOver,
+      _featureOut   = opts.featureOut,
+      _featureClick = opts.featureClick;
+
+      opts.featureOver  = function() {
+        _featureOver  && _featureOver.apply(self, arguments);
+        self.featureOver  && self.featureOver.apply(self, arguments);
+      };
+
+      opts.featureOut  = function() {
+        _featureOut  && _featureOut.apply(self, arguments);
+        self.featureOut  && self.featureOut.apply(self, arguments);
+      };
+
+      opts.featureClick  = function() {
+        _featureClick  && _featureClick.apply(self, arguments);
+        self.featureClick  && self.featureClick.apply(self, arguments);
+      };
+
+      base.prototype.initialize.call(this, opts);
+      cdb.geo.LeafLetLayerView.call(this, layerModel, this, leafletMap);
+
+    },
+
+    featureOver: function(e, latlon, pixelPos, data, layer) {
+      // dont pass leaflet lat/lon
+      this.trigger('featureOver', e, [latlon.lat, latlon.lng], pixelPos, data, layer);
+    },
+
+    featureOut: function(e, layer) {
+      this.trigger('featureOut', e, layer);
+    },
+
+    featureClick: function(e, latlon, pixelPos, data, layer) {
+      // dont pass leaflet lat/lon
+      this.trigger('featureClick', e, [latlon.lat, latlon.lng], pixelPos, data, layer);
+    },
+
+    error: function(e) {
+      this.trigger('error', e ? e.errors : 'unknown error');
+      this.model.trigger('error', e?e.errors:'unknown error');
+    },
+
+    ok: function(e) {
+      this.model.trigger('tileOk');
+    },
+
+    onLayerDefinitionUpdated: function() {
+      this.__update();
+    }
+
+  });
+
+  return layerViewClass;
+}
+
+L.NamedMap = L.CartoDBGroupLayerBase.extend({
   includes: [
     cdb.geo.LeafLetLayerView.prototype,
-    Backbone.Events
+    NamedMap.prototype,
+    CartoDBLayerCommon.prototype
   ],
 
-  initialize: function(layerModel, leafletMap) {
-    var self = this;
+  initialize: function (options) {
+    options = options || {};
+    // Set options
+    L.Util.setOptions(this, options);
 
-    //_.bindAll(this, 'featureOut', 'featureOver', 'featureClick');
+    // Some checks
+    if (!options.named_map && !options.sublayers) {
+        throw new Error('cartodb-leaflet needs at least the named_map');
+    }
 
-    // CartoDB new attribution,
-    // also we have the logo
-    layerModel.attributes.attribution = cdb.config.get('cartodb_attributions');
+    /*if(!options.layer_definition) {
+      this.options.layer_definition = LayerDefinition.layerDefFromSubLayers(options.sublayers);
+    }*/
 
-    var opts = _.clone(layerModel.attributes);
+    NamedMap.call(this, this.options.named_map, this.options);
 
-    opts.map =  leafletMap;
+    this.fire = this.trigger;
 
-    var // preserve the user's callbacks
-    _featureOver  = opts.featureOver,
-    _featureOut   = opts.featureOut,
-    _featureClick = opts.featureClick;
-
-    opts.featureOver  = function() {
-      _featureOver  && _featureOver.apply(self, arguments);
-      self.featureOver  && self.featureOver.apply(self, arguments);
-    };
-
-    opts.featureOut  = function() {
-      _featureOut  && _featureOut.apply(self, arguments);
-      self.featureOut  && self.featureOut.apply(self, arguments);
-    };
-
-    opts.featureClick  = function() {
-      _featureClick  && _featureClick.apply(self, arguments);
-      self.featureClick  && self.featureClick.apply(self, arguments);
-    };
-
-    L.CartoDBGroupLayer.prototype.initialize.call(this, opts);
-    cdb.geo.LeafLetLayerView.call(this, layerModel, this, leafletMap);
-
-  },
-
-  featureOver: function(e, latlon, pixelPos, data, layer) {
-    // dont pass leaflet lat/lon
-    this.trigger('featureOver', e, [latlon.lat, latlon.lng], pixelPos, data, layer);
-  },
-
-  featureOut: function(e, layer) {
-    this.trigger('featureOut', e, layer);
-  },
-
-  featureClick: function(e, latlon, pixelPos, data, layer) {
-    // dont pass leaflet lat/lon
-    this.trigger('featureClick', e, [latlon.lat, latlon.lng], pixelPos, data, layer);
-  },
-
-  error: function(e) {
-    this.trigger('error', e ? e.errors : 'unknown error');
-    this.model.trigger('error', e?e.errors:'unknown error');
-  },
-
-  ok: function(e) {
-    this.model.trigger('tileOk');
+    CartoDBLayerCommon.call(this);
+    L.TileLayer.prototype.initialize.call(this);
+    this.interaction = [];
   }
-
 });
+
+cdb.geo.LeafLetCartoDBLayerGroupView = layerView(L.CartoDBGroupLayer);
+cdb.geo.LeafLetCartoDBNamedMapView = layerView(L.NamedMap);
 
 })();

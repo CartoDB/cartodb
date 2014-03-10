@@ -281,6 +281,65 @@ describe('api.layers', function() {
         });
       });
 
+      it("should create a named map", function() {
+        var layer;
+        runs(function() {
+          cartodb.createLayer(map, {
+            type: 'namedmap',
+            user_name: 'dev',
+            options: {
+              named_map: {
+                name: 'testing',
+                params: {
+                  color: 'red'
+                }
+              }
+            }
+          }).done(function(lyr) {
+            layer = lyr;
+          });
+        });
+
+        waits(100);
+
+        runs(function() {
+          expect(layer).not.toEqual(undefined);
+          expect(layer.toJSON()).toEqual({ color: 'red' });
+        });
+
+      });
+
+      it("should use access_token", function() {
+        var layer;
+        runs(function() {
+          cartodb.createLayer(map, {
+            type: 'namedmap',
+            user_name: 'dev',
+            options: {
+              named_map: {
+                name: 'testing',
+                params: {
+                  color: 'red'
+                }
+              }
+            }
+          }, { https: true,  auth_token: 'at_rambo' }).done(function(lyr) {
+            layer = lyr;
+          });
+        });
+
+        waits(100);
+
+        runs(function() {
+          expect(layer).not.toEqual(undefined);
+          layer.layerToken = 'test';
+          layer.getTiles(function(tiles) {
+            expect(tiles.tiles[0].indexOf("auth_token=at_rambo")).not.toEqual(-1);
+          });
+        });
+
+      });
+
       it("should create layer form sublayer list", function() {
         var layer;
         runs(function() {

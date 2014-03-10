@@ -97,7 +97,7 @@ module CartoDB
         self
       end #fetch
 
-      def delete
+      def delete(from_table_deletion=false)
         # Named map must be deleted before the map, or we lose the reference to it
         named_map = has_named_map?
         operation_result = named_map.delete if named_map
@@ -107,7 +107,7 @@ module CartoDB
         layers(:base).map(&:destroy)
         layers(:cartodb).map(&:destroy)
         map.destroy if map
-        table.destroy if type == CANONICAL_TYPE && table
+        table.destroy if (type == CANONICAL_TYPE && table && !from_table_deletion)
         repository.delete(id)
         self.attributes.keys.each { |key| self.send("#{key}=", nil) }
 

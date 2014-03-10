@@ -99,8 +99,14 @@ module CartoDB
 
       def delete(from_table_deletion=false)
         # Named map must be deleted before the map, or we lose the reference to it
-        named_map = has_named_map?
-        operation_result = named_map.delete if named_map
+
+        begin
+          named_map = has_named_map?
+          named_map.delete if named_map
+        rescue NamedMapsWrapper::HTTPResponseError => exception
+          # CDB-1964: Silence named maps API exception if deleting data to avoid interrupting whole flow
+          raise exception unless from_table_deletion
+        end
 
         invalidate_varnish_cache
         overlays.destroy

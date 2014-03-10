@@ -536,7 +536,7 @@ class Table < Sequel::Model(:user_tables)
   def after_destroy
     super
     # Delete visualization BEFORE deleting metadata, or named map won't be destroyed properly
-    @table_visualization.delete if @table_visualization
+    @table_visualization.delete(from_table_deletion=true) if @table_visualization
     $tables_metadata.del key
     Tag.filter(:user_id => user_id, :table_id => id).delete
     remove_table_from_stats

@@ -35,7 +35,7 @@ module CartoDB
 
       attribute :id,                  String
       attribute :name,                String
-      attribute :map_id,              Integer
+      attribute :map_id,              String
       attribute :active_layer_id,     Integer
       attribute :type,                String
       attribute :privacy,             String

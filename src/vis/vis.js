@@ -777,7 +777,7 @@ var Vis = cdb.core.View.extend({
     var layerView = mapView.getLayerByCid(layer_cid);
 
     if (!layerView) {
-      this.throwError("layer can't be created: " + map.layers.getByCid(layer_cid).get('type'));
+      this.throwError("layer can't be created", map.layers.getByCid(layer_cid));
       return;
     }
 
@@ -830,11 +830,11 @@ var Vis = cdb.core.View.extend({
     }
   },
 
-  throwError: function(msg) {
+  throwError: function(msg, lyr) {
     cdb.log.error(msg);
     var self = this;
     _.defer(function() {
-      self.trigger('error', msg);
+      self.trigger('error', msg, lyr);
     });
   },
 

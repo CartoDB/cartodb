@@ -295,7 +295,8 @@ module CartoDB
           remove_password()
         end
 
-        if (privacy_changed && @privacy == PRIVACY_PRIVATE && !supports_private_maps?)
+        # Warning, imports create by default private canonical visualizations
+        if type != CANONICAL_TYPE && @privacy == PRIVACY_PRIVATE && privacy_changed && !supports_private_maps?
           raise CartoDB::InvalidMember
         end
 

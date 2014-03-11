@@ -1,5 +1,5 @@
-// version: 3.7.07
-// sha: 6cf18fd5e5922842a1594fd934766c746af90a90
+// version: 3.8.00
+// sha: 37b356db0b0445d0d35732cea2a729afa69f73fd
 ;(function() {
   this.cartodb = {};
   var Backbone = {};
@@ -1141,7 +1141,7 @@ var Mustache;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.7.07';
+    cdb.VERSION = '3.8.00';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -2734,17 +2734,20 @@ SubLayer.prototype = {
     var self = this;
     // binds a signal to a layer event and trigger on this sublayer
     // in case the position matches
-    var _bindSignal = function(signal) {
+    var _bindSignal = function(signal, signalAlias) {
+      signalAlias = signalAlias || signal;
       self._parent.on(signal, function() {
         var args = Array.prototype.slice.call(arguments);
         if (parseInt(args[args.length - 1], 10) ==  self._position) {
-          self.trigger.apply(self, [signal].concat(args));
+          self.trigger.apply(self, [signalAlias].concat(args));
         }
       }, self);
     };
     _bindSignal('featureOver');
     _bindSignal('featureOut');
     _bindSignal('featureClick');
+    _bindSignal('layermouseover', 'mouseover');
+    _bindSignal('layermouseout', 'mouseout');
   },
 
   _setPosition: function(p) {

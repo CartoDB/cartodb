@@ -198,10 +198,11 @@ var Vis = cdb.core.View.extend({
         done();
       }
     }
-    //TODO: add a timeout to raise error
+    
     cdb.config.bind('moduleLoaded', loaded);
-    loaded();
+    _.defer(loaded);
   },
+
 
   load: function(data, options) {
     var self = this;
@@ -211,7 +212,7 @@ var Vis = cdb.core.View.extend({
         if (data) {
           self.load(data, options);
         } else {
-          self.trigger('error', 'error fetching viz.json file');
+          self.throwError('error fetching viz.json file');
         }
       });
       return this;
@@ -219,8 +220,7 @@ var Vis = cdb.core.View.extend({
 
     if(!this.checkModules(data.layers)) {
       if(this.moduleChecked) {
-        cdb.log.error("modules not found");
-        self.trigger('error', "modules couldn't be loaded");
+        self.throwError("modules couldn't be loaded");
         return this;
       }
       this.moduleChecked = true;
@@ -757,16 +757,12 @@ var Vis = cdb.core.View.extend({
 
     var hovers = [];
 
-    layerView.bind('featureOver', function(e, latlon, pxPos, data, layer) {
-      hovers[layer] = 1;
-      if(_.any(hovers))
-        mapView.setCursor('pointer');
+    layerView.bind('mouseover', function() {
+      mapView.setCursor('pointer');
     });
 
-    layerView.bind('featureOut', function(m, layer) {
-      hovers[layer] = 0;
-      if(!_.any(hovers))
-        mapView.setCursor('auto');
+    layerView.bind('mouseout', function(m, layer) {
+      mapView.setCursor('auto');
     });
 
     layerView.infowindow = infowindow.model;
@@ -781,7 +777,7 @@ var Vis = cdb.core.View.extend({
     var layerView = mapView.getLayerByCid(layer_cid);
 
     if (!layerView) {
-      this.trigger('error', "layer can't be created", map.layers.getByCid(layer_cid));
+      this.throwError("layer can't be created", map.layers.getByCid(layer_cid));
       return;
     }
 
@@ -832,6 +828,14 @@ var Vis = cdb.core.View.extend({
       this.layersLoading = 0;
       this.trigger('load');
     }
+  },
+
+  throwError: function(msg, lyr) {
+    cdb.log.error(msg);
+    var self = this;
+    _.defer(function() {
+      self.trigger('error', msg, lyr);
+    });
   },
 
   error: function(fn) {
@@ -975,21 +979,14 @@ var Vis = cdb.core.View.extend({
   },
 
   addCursorInteraction: function(map, layer) {
-
-    var hovers = [];
     var mapView = map.viz.mapView;
+    layerView.bind('mouseover', function() {
+      mapView.setCursor('pointer');
+    });
 
-    layer.bind('featureOver', function(e, latlon, pxPos, data, layer) {
-      hovers[layer] = 1;
-      if(_.any(hovers))
-        mapView.setCursor('pointer');
-    }, mapView);
-
-    layer.bind('featureOut', function(m, layer) {
-      hovers[layer] = 0;
-      if(!_.any(hovers))
-        mapView.setCursor('auto');
-    }, mapView);
+    layerView.bind('mouseout', function(m, layer) {
+      mapView.setCursor('auto');
+    });
   },
 
   removeCursorInteraction: function(map, layer) {

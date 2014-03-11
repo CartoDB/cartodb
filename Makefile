@@ -10,7 +10,7 @@ WORKING_SPECS = \
   spec/models/map_spec.rb \
   spec/models/visualization/ \
   spec/models/named_maps_spec.rb \
-  spec/models/asset_spec.rb \
+  spec/models/geocoding_spec.rb \
   spec/lib/sql_parser_spec.rb \
   spec/lib/sql_test_spec.rb \
   spec/lib/string_spec.rb \
@@ -18,13 +18,15 @@ WORKING_SPECS = \
   spec/lib/image_metadata_spec.rb \
   services/importer/spec/unit/csv_normalizer_spec.rb \
   services/wms/spec/unit/wms_spec.rb \
+  services/sql-api/spec/sql_api_spec.rb \
   spec/requests/admin/visualizations_spec.rb \
   spec/requests/admin/tables_spec.rb \
   spec/models/geocoding_spec.rb \
   spec/requests/api/imports_spec.rb \
+  spec/requests/api/geocodings_spec.rb \
   services/importer/spec/unit/url_translator/osm_spec.rb \
   services/importer/spec/unit/url_translator/osm2_spec.rb \
-	spec/requests/api/assets_spec.rb \
+  spec/requests/api/assets_spec.rb \
   spec/requests/api/user_layers_spec.rb \
   spec/requests/api/map_layers_spec.rb \
   spec/requests/api/records_spec.rb \
@@ -33,6 +35,7 @@ WORKING_SPECS = \
   services/synchronizer/spec/acceptance/fileproviders_public_url_spec.rb \
   services/synchronizer/spec/acceptance/fileproviders_gdrive_spec.rb \
   services/synchronizer/spec/acceptance/fileproviders_dropbox_spec.rb \
+  services/geocoder/spec/geocoder_spec.rb \
   $(NULL)
 
 CDB_PATH=lib/assets/javascripts/cdb

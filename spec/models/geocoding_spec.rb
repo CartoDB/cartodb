@@ -22,21 +22,43 @@ describe Geocoding do
     it 'links user and geocoding' do
       geocoding.user.should eq @user
     end
+  end
 
-    it 'initializes table geocoder' do
+  describe '#table_geocoder' do
+    it 'returns an instance of TableGeocoder when kind is high-resolution' do
+      geocoding = FactoryGirl.build(:geocoding, user: @user, table: @table, kind: 'high-resolution')
       geocoding.table_geocoder.should be_kind_of(CartoDB::TableGeocoder)
+    end
+
+    it 'returns an instance of InternalGeocoder when kind is not high-resolution' do
+      geocoding = FactoryGirl.build(:geocoding, user: @user, table: @table, kind: 'admin0')
+      geocoding.table_geocoder.should be_kind_of(CartoDB::InternalGeocoder)
+    end
+
+    it 'memoizes' do
+      geocoding = FactoryGirl.build(:geocoding, user: @user, table: @table, kind: 'admin0')
+      geocoder = geocoding.table_geocoder
+      geocoder.should be_kind_of(CartoDB::InternalGeocoder)
+      geocoder.should eq geocoding.table_geocoder
     end
   end
 
   describe '#save' do
     let(:geocoding) { FactoryGirl.build(:geocoding, user: @user, table: @table) }
 
-    it 'validates table_name and formatter' do
+    it 'validates formatter' do
       expect { geocoding.save }.to raise_error(Sequel::ValidationFailed)
+      geocoding.errors[:formatter].join(',').should match /is not present/
+    end
+
+    it 'validates kind' do
+      geocoding.kind = 'nonsense'
+      expect { geocoding.save }.to raise_error(Sequel::ValidationFailed)
+      geocoding.errors[:kind].join(',').should match /is not in range or set/
     end
 
     it 'updates updated_at' do
-      geocoding = FactoryGirl.build(:geocoding, user: @user, table: @table, formatter: 'b')
+      geocoding = FactoryGirl.build(:geocoding, user: @user, table: @table, formatter: 'b', kind: 'admin0')
       expect { geocoding.save }.to change(geocoding, :updated_at)
     end
   end
@@ -61,24 +83,22 @@ describe Geocoding do
   end
 
   describe '#run!' do
-    it 'updates total_rows, processed_rows, cache_hits and state' do
-      geocoding = Geocoding.create(user: @user, table: @table, formatter: 'b')
+    it 'updates processed_rows, cache_hits and state' do
+      geocoding = FactoryGirl.create(:geocoding, user: @user, table: @table, formatter: 'b')
       geocoding.table_geocoder.stubs(:run).returns true
       geocoding.table_geocoder.stubs(:cache).returns  OpenStruct.new(hits: 5)
       geocoding.table_geocoder.stubs(:process_results).returns true
       CartoDB::Geocoder.any_instance.stubs(:status).returns 'completed'
       CartoDB::Geocoder.any_instance.stubs(:update_status).returns true
-      CartoDB::Geocoder.any_instance.stubs(:total_rows).returns 20
       CartoDB::Geocoder.any_instance.stubs(:processed_rows).returns 10
       geocoding.run!
-      geocoding.total_rows.should eq 20
       geocoding.processed_rows.should eq 10
       geocoding.state.should eq 'finished'
       geocoding.cache_hits.should eq 5
     end
 
     it 'marks the geocoding as failed if the geocoding job fails' do
-      geocoding = FactoryGirl.build(:geocoding, user: @user, formatter: 'a', table: @table)
+      geocoding = FactoryGirl.build(:geocoding, user: @user, formatter: 'a', table: @table, formatter: 'b')
       CartoDB::TableGeocoder.any_instance.stubs(:run).raises("Error")
       CartoDB.expects(:notify_exception).times(1)
 
@@ -87,7 +107,7 @@ describe Geocoding do
     end
 
     it 'raises a timeout error if geocoding takes more than 15 minutes to start' do
-      geocoding = Geocoding.create(user: @user, table: @table, formatter: 'b')
+      geocoding = FactoryGirl.create(:geocoding, user: @user, table: @table, formatter: 'b')
       CartoDB::TableGeocoder.any_instance.stubs(:run).returns true
       CartoDB::TableGeocoder.any_instance.stubs(:process_results).returns true
       CartoDB::Geocoder.any_instance.stubs(:status).returns 'submitted'
@@ -113,11 +133,18 @@ describe Geocoding do
   describe '#max_geocodable_rows' do
     let(:geocoding) { FactoryGirl.build(:geocoding, user: @user) }
 
-    it 'returns the remaining geocoding quota for the current billing period' do
+    it 'returns the remaining quota if the user has hard limit' do
+      @user.stubs('hard_geocoding_limit?').returns(true)
       delete_user_data @user
       geocoding.max_geocodable_rows.should eq 200
       FactoryGirl.create(:geocoding, user: @user, processed_rows: 100)
       geocoding.max_geocodable_rows.should eq 100
+    end
+
+    it 'returns nil if the user has soft limit' do
+      @user.stubs('hard_geocoding_limit?').returns(false)
+      FactoryGirl.create(:geocoding, user: @user, processed_rows: 100)
+      geocoding.max_geocodable_rows.should eq nil      
     end
   end
 

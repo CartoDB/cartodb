@@ -9,6 +9,7 @@ describe "Geocodings API" do
   end
 
   before(:each) do
+    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
     delete_user_data @user
     host! 'test.localhost.lan'
   end
@@ -16,10 +17,11 @@ describe "Geocodings API" do
   let(:params) { { :api_key => @user.api_key } }
 
   describe 'POST /api/v1/geocodings' do
+    let(:table) { create_table(user_id: @user.id) }
+
     it 'creates a new geocoding' do
       Geocoding.any_instance.stubs("run!").returns(true)
-      table = create_table(user_id: @user.id)
-      payload = params.merge(table_name: table.name, formatter:  'name, description')
+      payload = params.merge table_name: table.name, formatter:  'name, description', kind: 'high-resolution'
       post_json v1_geocodings_url(payload) do |response|
         response.status.should eq 200
         response.body[:id].should_not be_nil
@@ -31,11 +33,30 @@ describe "Geocodings API" do
       end
     end
 
-    it 'returns an error on bad payload' do
-      payload = params.merge(table_name: '', formatter:  '')
+    it 'uses column_name instead of formatter if present' do
+      Geocoding.any_instance.stubs("run!").returns(true)
+      payload = params.merge table_name: table.name, column_name:  'name', kind: 'high-resolution'
+      post_json v1_geocodings_url(payload) do |response|
+        response.status.should eq 200
+        response.body[:id].should_not be_nil
+        response.body[:formatter].should eq 'name'
+      end
+    end
+
+    it 'responds with 422 on bad payload' do
+      payload = params.merge(table_name: '', formatter:  '', kind: 'high-resolution')
       post_json v1_geocodings_url(payload) do |response|
         response.status.should eq 422
         response.body[:description].should eq "formatter is not present, table_id is not present"
+      end
+    end
+
+    it 'responds with 500 on failure' do
+      payload = params.merge(table_name: '', formatter:  '', kind: 'high-resolution')
+      Geocoding.any_instance.stubs(:save).raises(RuntimeError.new)
+      post_json v1_geocodings_url(payload) do |response|
+        response.status.should eq 500
+        response.body[:description].should eq "RuntimeError"
       end
     end
   end
@@ -90,6 +111,32 @@ describe "Geocodings API" do
       put_json v1_geocoding_url(params.merge(id: geocoding.id)), { state: 'cancelled' } do |response|
         response.status.should eq 400
         response.body.should eq errors: "wadus"
+      end
+    end
+  end
+
+  describe 'GET /api/v1/geocodings/country_data_for/:country_code' do
+    it 'returns the available services for that country code' do
+      api_response = [{"service"=>"postal_codes", "iso3"=>"ESP"}]
+      ::CartoDB::SQLApi.any_instance.stubs(:fetch).returns(api_response)
+      expected_response = { admin0: ["polygon"], admin1: ["polygon"], namedplace: ["point"], postalcode: ["polygon"] }
+
+      get_json country_data_v1_geocodings_url(params.merge(country_code: 'ESP')) do |response|
+        response.status.should be_success
+        response.body.should eq expected_response
+      end
+    end
+  end
+
+
+  describe 'GET /api/v1/geocodings/get_countries' do
+    it 'returns the list of countries with geocoding data' do
+      api_response = [{"iso3"=>"ESP"}]
+      ::CartoDB::SQLApi.any_instance.stubs(:fetch).returns(api_response)
+
+      get_json get_countries_v1_geocodings_url(params) do |response|
+        response.status.should be_success
+        response.body.should eq api_response
       end
     end
   end

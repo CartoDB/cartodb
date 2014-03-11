@@ -8,6 +8,9 @@
   <script src="https://apis.google.com/js/client.js"></script>
   <script type="text/javascript" id="dropboxjs" src="//www.dropbox.com/static/api/1/dropins.js" data-app-key="<%= Cartodb.config[:dropbox_api_key] %>"></script>
   <script type="text/javascript">
+    if (typeof(google) !== 'undefined') {
+      google.load('picker', '1');
+    }
     var username = "<%= current_user.username %>"
     , user_data = <%=raw current_user.data.to_json.html_safe %>
     , config = <%=raw frontend_config.html_safe %>

@@ -1,6 +1,6 @@
-// cartodb.js version: 3.7.05-dev
+// cartodb.js version: 3.7.07-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: 3bb50cf742695ddfddab89caa953c5bd48bf1fd0
+// sha: 258dc960fe9fedcd77a9157cfb7d4321e05e17bb
 (function() {
   var root = this;
 
@@ -20686,7 +20686,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.7.05-dev';
+    cdb.VERSION = '3.7.07-dev';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -24564,6 +24564,11 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
 
       // If the template is 'cover-enabled', load the cover
       this._loadCover();
+
+      if(!this.isLoadingData()) {
+        this.model.trigger('domready', this, this.$el);
+        this.trigger('domready', this, this.$el);
+      }
     }
 
     return this;
@@ -24686,16 +24691,19 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     return attr;
   },
 
+  isLoadingData: function() {
+    var content = this.model.get("content");
+    return content.fields && content.fields.length == 1 && content.fields[0].type === "loading";
+  },
+
   /**
    *  Check if infowindow is loading the row content
    */
   _checkLoading: function() {
-    var content = this.model.get("content");
-
-    if (content.fields && content.fields.length == 1 && content.fields[0].type == "loading") {
-      this._startSpinner()
+    if (this.isLoadingData()) {
+      this._startSpinner();
     } else {
-      this._stopSpinner()
+      this._stopSpinner();
     }
   },
 
@@ -25578,6 +25586,7 @@ cdb.ui.common.FullScreen = cdb.core.View.extend({
   _toggleFullScreen: function(ev) {
 
     ev.stopPropagation();
+    ev.preventDefault();
 
     var doc   = window.document;
     var docEl = doc.documentElement;
@@ -25592,6 +25601,10 @@ cdb.ui.common.FullScreen = cdb.core.View.extend({
     if(!doc.fullscreenElement && !doc.mozFullScreenElement && !doc.webkitFullscreenElement) {
 
       requestFullScreen.call(docEl);
+
+      if (this.options.mapView) {
+        this.options.mapView.invalidateSize();
+      }
 
     } else {
 
@@ -25718,6 +25731,21 @@ Map.prototype = {
 
   _encodeBase64Native: function (input) {
     return btoa(input)
+  },
+
+  // given number inside layergroup 
+  // returns the real index in tiler layergroup`
+  getLayerIndexByNumber: function(number) {
+    var layers = {}
+    var c = 0;
+    for(var i = 0; i < this.layers.length; ++i) {
+      var layer = this.layers[i];
+      layers[i] = c;
+      if(layer.options && !layer.options.hidden) {
+        ++c;
+      }
+    }
+    return layers[number];
   },
 
   /**
@@ -26670,7 +26698,8 @@ CartoDBLayerCommon.prototype = {
       // layer will be created
       if(this.urls) {
         // generate the tilejson from the urls. wax needs it
-        var tilejson = this._tileJSONfromTiles(layer, this.urls);
+        var layer_index = this.getLayerIndexByNumber(+layer);
+        var tilejson = this._tileJSONfromTiles(layer_index, this.urls);
 
         // remove previous
         layerInteraction = this.interaction[layer];
@@ -26684,14 +26713,16 @@ CartoDBLayerCommon.prototype = {
           .map(this.options.map)
           .tilejson(tilejson)
           .on('on', function(o) {
-            o.layer = layer || 0;
-            o.layer = self.getLayerNumberByIndex(o.layer);
+            //o.layer = layer || 0;
+            //o.layer = self.getLayerNumberByIndex(+o.layer);
+            o.layer = +layer;
             self._manageOnEvents(self.options.map, o);
           })
           .on('off', function(o) {
             o = o || {}
-            o.layer = layer || 0;
-            o.layer = self.getLayerNumberByIndex(o.layer);
+            //o.layer = layer || 0;
+            //o.layer = self.getLayerNumberByIndex(+o.layer);
+            o.layer = +layer;
             self._manageOffEvents(self.options.map, o);
           });
       }
@@ -29219,12 +29250,12 @@ cdb.ui.common.ShareDialog = cdb.ui.common.Dialog.extend({
   className: 'cartodb-share-dialog',
 
   events: {
-    'click .ok': '_ok',
-    'click .cancel': '_cancel',
-    'click .close': '_cancel',
-    "click":                      '_stopPropagation',
-    "dblclick":                   '_stopPropagation',
-    "mousedown":                  '_stopPropagation'
+    'click .ok':       '_ok',
+    'click .cancel':   '_cancel',
+    'click .close':    '_cancel',
+    "click":           '_stopPropagation',
+    "dblclick":        '_stopPropagation',
+    "mousedown":       '_stopPropagation'
   },
 
   default_options: {
@@ -29256,8 +29287,12 @@ cdb.ui.common.ShareDialog = cdb.ui.common.Dialog.extend({
     var self = this;
 
     if (this.options.target) {
-      this.options.target.on("click", function() {
+      this.options.target.on("click", function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+
         self.open();
+
       })
     }
 
@@ -30764,7 +30799,8 @@ var Vis = cdb.core.View.extend({
           infowindow = Overlay.create('infowindow', this, layerView.getInfowindowData(i), true);
           mapView.addInfowindow(infowindow);
         }
-        layerView.setInteraction(i, true);
+        var index = layerView.getLayerNumberByIndex(i);
+        layerView.setInteraction(index, true);
       }
     }
 
@@ -30786,7 +30822,8 @@ var Vis = cdb.core.View.extend({
           infowindow.model.set({
             'fields': infowindowFields.fields,
             'template': infowindowFields.template,
-            'template_type': infowindowFields.template_type
+            'template_type': infowindowFields.template_type,
+            'alternative_names': infowindowFields.alternative_names
           });
 
           if (attributes) {
@@ -31288,6 +31325,8 @@ cdb.vis.Overlay.register('fullscreen', function(data, vis) {
   );
 
   var fullscreen = new cdb.ui.common.FullScreen({
+    doc: ".cartodb-public-wrapper",
+    mapView: vis.mapView,
     template: template
   });
 

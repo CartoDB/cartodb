@@ -47,13 +47,10 @@
     <% if !Rails.env.production? %>
       <%= stylesheet_link_tag 'cdb/themes/css/cartodb' %>
     <% else %>
-     <% if request.protocol == 'https://' %>
-        <link rel="stylesheet" href="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/themes/css/cartodb.css" />
-     <% else %>
-        <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.css" />
-     <% end %>
-
+        <link rel="stylesheet" href="//cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/themes/css/cartodb.css" />
     <% end %>
+
+    <%= insert_rollbar() %>
 
   </head>
   <body>
@@ -82,13 +79,9 @@
       <%= javascript_include_tag :cdb %>
       <script type="text/javascript"><%= raw Rails.application.assets['statsc.min.js'].to_s %></script>
     <% else %>
-      <% if request.protocol == 'https://' %>
-        <script src="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/cartodb.js"></script>
-      <% else %>
-        <script src="http://libs.cartocdn.com/cartodb.js/v3/cartodb.js"></script>
-      <% end %>
-      <!-- inline statsc -->
-      <script type="text/javascript"><%= raw Rails.application.assets['statsc.min.js'].to_s %></script>
+        <script src="//cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/cartodb.js"></script>
+        <!-- inline statsc -->
+        <script type="text/javascript"><%= raw Rails.application.assets['statsc.min.js'].to_s %></script>
     <% end %>
 
     <script>
@@ -146,10 +139,12 @@
 
       $(document).ready(function(){
 
-        statsc.connect('http://<%= Cartodb.config[:graphite_public]['host'] %>:<%= Cartodb.config[:graphite_public]['port'] %>/');
-        cartodb.core.Profiler.backend(function () {
-          statsc.send.apply(statsc, arguments);
-        })
+        if (location.protocol.indexOf('https') === -1) {
+            statsc.connect('http://<%= Cartodb.config[:graphite_public]['host'] %>:<%= Cartodb.config[:graphite_public]['port'] %>/');
+            cartodb.core.Profiler.backend(function () {
+              statsc.send.apply(statsc, arguments);
+            })
+        }
 
         var bool_fn = function(v) { return v == 'true' }
         , is_custom_install = <%= Cartodb.config[:cartodb_com_hosted].present? %>
@@ -191,7 +186,7 @@
           cartodb_attributions: "CartoDB <a href='http://cartodb.com/attributions?utm_source=Footer_Link&utm_medium=referral&utm_campaign=Embed_v1&utm_content=Attributions&utm_term=<%= @visualization.user.username %>' target='_blank'>attribution</a>",
           cartodb_logo_link: "http://www.cartodb.com?utm_source=Footer_Link&utm_medium=referral&utm_campaign=Embed_v1&utm_content=Logo"
         })
-
+        
         var loadingTime = cartodb.core.Profiler.metric('cartodb-js.embed.time_full_loaded').start();
         var visReadyTime = cartodb.core.Profiler.metric('cartodb-js.embed.time_vis_loaded').start();
 

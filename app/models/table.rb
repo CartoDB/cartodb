@@ -58,7 +58,7 @@ class Table < Sequel::Model(:user_tables)
     owner.in_database[<<-SQL
       SELECT DISTINCT ST_GeometryType(the_geom) FROM (
         SELECT the_geom
-        FROM #{self.name}
+        FROM "#{self.name}"
         WHERE (the_geom is not null) LIMIT 10
       ) as foo
     SQL
@@ -535,6 +535,8 @@ class Table < Sequel::Model(:user_tables)
 
   def after_destroy
     super
+    # Delete visualization BEFORE deleting metadata, or named map won't be destroyed properly
+    @table_visualization.delete(from_table_deletion=true) if @table_visualization
     $tables_metadata.del key
     Tag.filter(:user_id => user_id, :table_id => id).delete
     remove_table_from_stats
@@ -543,7 +545,6 @@ class Table < Sequel::Model(:user_tables)
     @non_dependent_visualizations_cache.each do |visualization|
       visualization.unlink_from(self)
     end
-    @table_visualization.delete if @table_visualization
     delete_tile_style
     remove_table_from_user_database unless keep_user_database_table
     synchronization.delete if synchronization
@@ -1120,11 +1121,23 @@ class Table < Sequel::Model(:user_tables)
     table
   end
 
-  def self.find_by_subdomain(subdomain, identifier)
+  def self.find_by_name_subdomain(subdomain, table_name)
     if user = User.find(:username => subdomain)
-      Table.find_by_identifier(user.id, identifier)
+      Table.where(:name => table_name, :user_id => user.id).first
     end
   end
+  
+  def self.find_by_id_subdomain(subdomain, table_id)
+    if user = User.find(:username => subdomain)
+      Table.where(:id => table_id, :user_id => user.id).first
+    end
+  end
+
+  #def self.find_by_subdomain(subdomain, identifier)
+  #  if user = User.find(:username => subdomain)
+  #    Table.find_by_identifier(user.id, identifier)
+  #  end
+  #end
 
   def oid
     @oid ||= owner.in_database["SELECT '#{self.name}'::regclass::oid"].first[:oid]

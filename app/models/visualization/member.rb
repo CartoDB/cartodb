@@ -97,17 +97,23 @@ module CartoDB
         self
       end #fetch
 
-      def delete
+      def delete(from_table_deletion=false)
         # Named map must be deleted before the map, or we lose the reference to it
-        named_map = has_named_map?
-        operation_result = named_map.delete if named_map
+
+        begin
+          named_map = has_named_map?
+          named_map.delete if named_map
+        rescue NamedMapsWrapper::HTTPResponseError => exception
+          # CDB-1964: Silence named maps API exception if deleting data to avoid interrupting whole flow
+          raise exception unless from_table_deletion
+        end
 
         invalidate_varnish_cache
         overlays.destroy
         layers(:base).map(&:destroy)
         layers(:cartodb).map(&:destroy)
         map.destroy if map
-        table.destroy if type == CANONICAL_TYPE && table
+        table.destroy if (type == CANONICAL_TYPE && table && !from_table_deletion)
         repository.delete(id)
         self.attributes.keys.each { |key| self.send("#{key}=", nil) }
 
@@ -269,6 +275,14 @@ module CartoDB
         tokens.first
       end #get_auth_token
 
+      def supports_private_maps?
+        if @user_data.nil? && !user.nil?
+          @user_data = user.data
+        end
+
+        !@user_data.nil? && @user_data.include?(:actions) && @user_data[:actions].include?(:private_maps)
+      end # supports_private_maps?
+
       private
 
       attr_reader   :repository, :name_checker, :validator
@@ -279,6 +293,11 @@ module CartoDB
           raise CartoDB::InvalidMember if not has_password?
         else
           remove_password()
+        end
+
+        # Warning, imports create by default private canonical visualizations
+        if type != CANONICAL_TYPE && @privacy == PRIVACY_PRIVATE && privacy_changed && !supports_private_maps?
+          raise CartoDB::InvalidMember
         end
 
         invalidate_varnish_cache if name_changed || privacy_changed || description_changed

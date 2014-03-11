@@ -1,4 +1,4 @@
-3.8.00 (xx//xx//2014)
+3.8.00 (11//03//2014)
 - Added mouseover and mouseout for layers
 - Fixed error in old IE browsers for torque visualizations.
 - Changed CartoDB attribution style under google maps.

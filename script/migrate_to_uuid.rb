@@ -28,6 +28,7 @@ def execution_summary()
   # Database port: #{DBPORT}
   # Database name: #{DBNAME}
   # Database user: #{DBUSER}
+  # Database port: #{DBPORT}
   #
   # Redis Connection
   # ----------------
@@ -50,6 +51,7 @@ def usage(message = nil)
   puts "  export RAILS_ENV=<rails_env>"
   puts "  export DBNAME=<your_postgresql_database_name>"
   puts "  export DBHOST=<your_postgresql_database_host>"
+  puts "  export DBPORT=<your_postgresql_database_port>"
   puts "  export DBUSER=<your_postgresql_database_user>"
   puts "  export REDIS_HOST=<your_redis_host>"
   puts ""
@@ -84,12 +86,13 @@ end
 usage "You need to initialize a environment with RAILS_ENV" if (ENV['RAILS_ENV'].nil? || ENV['RAILS_ENV'].empty?)
 usage "You need to set a DBNAME env" if (ENV['DBNAME'].nil? || ENV['DBNAME'].empty?)
 usage "You need to set a DBHOST env" if (ENV['DBHOST'].nil? || ENV['DBHOST'].empty?)
+usage "You need to set a DBPORT env" if (ENV['DBPORT'].nil? || ENV['DBPORT'].empty?)
 usage "You need to set a DBUSER env" if (ENV['DBUSER'].nil? || ENV['DBUSER'].empty?)
 usage "You need to set a REDIS_HOST env" if (ENV['REDIS_HOST'].nil? || ENV['REDIS_HOST'].empty?)
 
 ENVIRONMENT = ENV['RAILS_ENV']
 DBHOST = ENV['DBHOST']
-DBPORT = 6432
+DBPORT = ENV['DBPORT']
 DBUSER = ENV['DBUSER']
 DBNAME = ENV['DBNAME']
 REDIS_HOST = ENV['REDIS_HOST']
@@ -361,7 +364,7 @@ end
 
 
 def migrate_data(redis_keys)
-  sconn = PGconn.connect( host: DBHOST, port: DBPORT, user: 'postgres', dbname: 'postgres' )
+  sconn = PGconn.connect( host: DBHOST, port: DBPORT, user: DBUSER, dbname: 'postgres' )
   @conn.exec("SELECT id,uuid,database_name,username FROM users") do |result|
     result.each do |row|
       puts "Renaming pg user and db for id #{row['id']}"

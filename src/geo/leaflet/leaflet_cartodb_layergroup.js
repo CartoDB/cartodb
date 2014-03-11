@@ -274,8 +274,7 @@ function layerView(base) {
 
     initialize: function(layerModel, leafletMap) {
       var self = this;
-
-      //_.bindAll(this, 'featureOut', 'featureOver', 'featureClick');
+      var hovers = [];
 
       // CartoDB new attribution,
       // also we have the logo
@@ -290,20 +289,34 @@ function layerView(base) {
       _featureOut   = opts.featureOut,
       _featureClick = opts.featureClick;
 
-      opts.featureOver  = function() {
-        _featureOver  && _featureOver.apply(self, arguments);
+      opts.featureOver  = function(e, latlon, pxPos, data, layer) {
+        if (!hovers[layer]) {
+          self.trigger('layermouseover', layer);
+        }
+        hovers[layer] = 1;
+        if(_.any(hovers)) {
+          self.trigger('mouseover');
+        }
+        _featureOver  && _featureOver.apply(this, arguments);
         self.featureOver  && self.featureOver.apply(self, arguments);
       };
 
-      opts.featureOut  = function() {
-        _featureOut  && _featureOut.apply(self, arguments);
+      opts.featureOut  = function(m, layer) {
+        if (hovers[layer]) {
+          self.trigger('layermouseout', layer);
+        }
+        hovers[layer] = 0;
+        if(!_.any(hovers)) {
+          self.trigger('mouseout');
+        }
+        _featureOut  && _featureOut.apply(this, arguments);
         self.featureOut  && self.featureOut.apply(self, arguments);
       };
 
-      opts.featureClick  = function() {
+      opts.featureClick  = _.debounce(function() {
         _featureClick  && _featureClick.apply(self, arguments);
         self.featureClick  && self.featureClick.apply(self, arguments);
-      };
+      }, 10);
 
       base.prototype.initialize.call(this, opts);
       cdb.geo.LeafLetLayerView.call(this, layerModel, this, leafletMap);

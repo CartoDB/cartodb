@@ -992,17 +992,20 @@ SubLayer.prototype = {
     var self = this;
     // binds a signal to a layer event and trigger on this sublayer
     // in case the position matches
-    var _bindSignal = function(signal) {
+    var _bindSignal = function(signal, signalAlias) {
+      signalAlias = signalAlias || signal;
       self._parent.on(signal, function() {
         var args = Array.prototype.slice.call(arguments);
         if (parseInt(args[args.length - 1], 10) ==  self._position) {
-          self.trigger.apply(self, [signal].concat(args));
+          self.trigger.apply(self, [signalAlias].concat(args));
         }
       }, self);
     };
     _bindSignal('featureOver');
     _bindSignal('featureOut');
     _bindSignal('featureClick');
+    _bindSignal('layermouseover', 'mouseover');
+    _bindSignal('layermouseout', 'mouseout');
   },
 
   _setPosition: function(p) {

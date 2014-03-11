@@ -1,6 +1,6 @@
 // cartodb.js version: 3.8.00-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: b0fb2b133c1cc2b23a424aa54343be238225fb76
+// sha: f94a35a4d4d287549be1752eede33599d21397ef
 (function() {
   var root = this;
 
@@ -30890,7 +30890,7 @@ var Vis = cdb.core.View.extend({
     var layerView = mapView.getLayerByCid(layer_cid);
 
     if (!layerView) {
-      this.throwError("layer can't be created: " + map.layers.getByCid(layer_cid).get('type'));
+      this.throwError("layer can't be created", map.layers.getByCid(layer_cid));
       return;
     }
 
@@ -30943,11 +30943,11 @@ var Vis = cdb.core.View.extend({
     }
   },
 
-  throwError: function(msg) {
+  throwError: function(msg, lyr) {
     cdb.log.error(msg);
     var self = this;
     _.defer(function() {
-      self.trigger('error', msg);
+      self.trigger('error', msg, lyr);
     });
   },
 

@@ -1,6 +1,6 @@
 // cartodb.js version: 3.8.00-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: bcfea730b86d31f47cec3e3861ab66bd74b9751d
+// sha: b0fb2b133c1cc2b23a424aa54343be238225fb76
 (function() {
   var root = this;
 
@@ -30316,6 +30316,7 @@ var Vis = cdb.core.View.extend({
     _.defer(loaded);
   },
 
+
   load: function(data, options) {
     var self = this;
     if (typeof(data) === 'string') {
@@ -30324,7 +30325,7 @@ var Vis = cdb.core.View.extend({
         if (data) {
           self.load(data, options);
         } else {
-          self.trigger('error', 'error fetching viz.json file');
+          self.throwError('error fetching viz.json file');
         }
       });
       return this;
@@ -30332,8 +30333,7 @@ var Vis = cdb.core.View.extend({
 
     if(!this.checkModules(data.layers)) {
       if(this.moduleChecked) {
-        cdb.log.error("modules not found");
-        self.trigger('error', "modules couldn't be loaded");
+        self.throwError("modules couldn't be loaded");
         return this;
       }
       this.moduleChecked = true;
@@ -30342,10 +30342,6 @@ var Vis = cdb.core.View.extend({
         self.load(data, options);
       });
       return this;
-    } else {
-      _.defer(function() {
-        self.load(data, options);
-      })
     }
 
 
@@ -30894,7 +30890,7 @@ var Vis = cdb.core.View.extend({
     var layerView = mapView.getLayerByCid(layer_cid);
 
     if (!layerView) {
-      this.trigger('error', "layer can't be created", map.layers.getByCid(layer_cid));
+      this.throwError("layer can't be created: " + map.layers.getByCid(layer_cid).get('type'));
       return;
     }
 
@@ -30945,6 +30941,14 @@ var Vis = cdb.core.View.extend({
       this.layersLoading = 0;
       this.trigger('load');
     }
+  },
+
+  throwError: function(msg) {
+    cdb.log.error(msg);
+    var self = this;
+    _.defer(function() {
+      self.trigger('error', msg);
+    });
   },
 
   error: function(fn) {

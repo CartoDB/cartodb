@@ -58,8 +58,8 @@ for(var i = 0; i < files.length; ++i) {
 
 function create_dist_file(vendor_files, cdb_files, ignore, name) {
   require('git-rev').long(function (sha) {
-    concat_files(vendor_files, [], function(vendor_js) {
-      concat_files(cdb_files, [], function(cdb_js) {
+    concat_files(vendor_files, ignore, function(vendor_js) {
+      concat_files(cdb_files, ignore, function(cdb_js) {
         fs.readFile('scripts/wrapper.js', 'utf8', function (err, final_js) {
           fs.writeFile(name, _.template(final_js)({
             CDB_DEPS: vendor_js,

@@ -198,9 +198,9 @@ var Vis = cdb.core.View.extend({
         done();
       }
     }
-    //TODO: add a timeout to raise error
+    
     cdb.config.bind('moduleLoaded', loaded);
-    loaded();
+    _.defer(loaded);
   },
 
   load: function(data, options) {
@@ -229,6 +229,10 @@ var Vis = cdb.core.View.extend({
         self.load(data, options);
       });
       return this;
+    } else {
+      _.defer(function() {
+        self.load(data, options);
+      })
     }
 
 

@@ -42,6 +42,7 @@ module CartoDB
         rows = connection.fetch(%Q{
             SELECT DISTINCT(md5(#{formatter})) AS searchtext
             FROM #{table_name}
+            WHERE cartodb_georef_status IS NULL
             LIMIT #{limit} OFFSET #{count * @batch_size}
         }).all
         sql << rows.map { |r| "('#{r[:searchtext]}')" }.join(',')

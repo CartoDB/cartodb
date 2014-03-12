@@ -35,8 +35,8 @@ module CartoDB
 
       attribute :id,                  String
       attribute :name,                String
-      attribute :map_id,              Integer
-      attribute :active_layer_id,     Integer
+      attribute :map_id,              String
+      attribute :active_layer_id,     String
       attribute :type,                String
       attribute :privacy,             String
       attribute :tags,                Array[String], default: []
@@ -252,13 +252,13 @@ module CartoDB
         ( password_digest(password, @password_salt) == @encrypted_password )
       end #is_password_valid
 
-      def remove_password()
+      def remove_password
         @password_salt = nil
         @encrypted_password = nil
       end #remove_password
 
       # To be stored with the named map
-      def make_auth_token()
+      def make_auth_token
         digest = secure_digest(Time.now, (1..10).map{ rand.to_s() })
         10.times do
           digest = secure_digest(digest, TOKEN_DIGEST)
@@ -266,7 +266,7 @@ module CartoDB
         digest            
       end #make_auth_token
 
-      def get_auth_token()
+      def get_auth_token
         named_map = has_named_map?
         raise CartoDB::InvalidMember unless named_map
 
@@ -336,13 +336,13 @@ module CartoDB
       def save_named_map
         named_map = has_named_map?
         if retrieve_named_map?
-            if (named_map)
+            if named_map
               update_named_map(named_map)
              else
-              create_named_map()
+              create_named_map
             end
         else
-          named_map.delete() if named_map
+          named_map.delete if named_map
         end
       end #save_named_map
 
@@ -426,7 +426,7 @@ module CartoDB
         digest
       end #password_digest
 
-      def generate_salt()
+      def generate_salt
         secure_digest(Time.now, (1..10).map{ rand.to_s() })
       end #generate_salt
 

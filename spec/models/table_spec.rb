@@ -1713,13 +1713,9 @@ describe Table do
       table.name = 'awesome name'
       table.save.reload
 
-      Table.find_by_identifier(@user.id, table.id).id.should == table.id
       Table.find_by_identifier(@user.id, table.name).id.should == table.id
       lambda {
         Table.find_by_identifier(666, table.name)
-      }.should raise_error
-      lambda {
-        Table.find_by_identifier(666, table.id)
       }.should raise_error
     end
 

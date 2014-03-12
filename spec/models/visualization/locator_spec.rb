@@ -11,6 +11,9 @@ require_relative '../../../app/models/visualization/migrator'
 include CartoDB
 
 describe Visualization::Locator do
+
+  UUID = 'db0dfb0c-a944-11e3-a51e-30f9edfe5da6'
+
   before do
     # Using Mocha stubs until we update RSpec (@see http://gofreerange.com/mocha/docs/Mocha/ClassMethods.html)
     CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
@@ -22,13 +25,14 @@ describe Visualization::Locator do
     Visualization.repository  = 
       DataRepository::Backend::Sequel.new(@db, :visualizations)
 
-    @map_id         = rand(999)
+    @map_id         = UUIDTools::UUID.timestamp_create.to_s
     @visualization  = Visualization::Member.new(
       name:         'Visualization 1',
       description:  'A sample visualization',
       privacy:      'public',
       type:         'derived',
-      map_id:       8
+      map_id:       UUID,
+      id:           @map_id
     ).store
 
     table_fake    = model_fake
@@ -69,7 +73,7 @@ describe Visualization::Locator do
     model_klass = Object.new
     def model_klass.where(filter)
       @called_filter = filter
-      [OpenStruct.new(maps: [OpenStruct.new(id: 8)])]
+      [OpenStruct.new(maps: [OpenStruct.new(id: UUID)])]
     end
 
     def model_klass.called_filter; @called_filter; end

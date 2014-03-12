@@ -34,11 +34,12 @@ These are the steps you need to follow in order to run the manual script:
   $ export DBNAME=<your_postgresql_database_name>
   $ export DBHOST=<your_postgresql_database_host>
   $ export DBUSER=<your_postgresql_database_user>
+  $ export DBPORT=<your_postgresql_database_port>
   $ export REDIS_HOST=<your_redis_host>
-  $ bundle exec ./script/migrate_to_uuid.rb schema
-  $ bundle exec ./script/migrate_to_uuid.rb meta
-  $ bundle exec ./script/migrate_to_uuid.rb data
-  $ bundle exec ./script/migrate_to_uuid.rb clean
+  $ bundle exec ruby ./script/migrate_to_uuid.rb schema
+  $ bundle exec ruby ./script/migrate_to_uuid.rb meta
+  $ bundle exec ruby ./script/migrate_to_uuid.rb data
+  $ bundle exec ruby ./script/migrate_to_uuid.rb clean
 ```
 
 Now, back to the new features!

@@ -351,7 +351,7 @@ def migrate_meta(tables)
         tinfo[:related].each do |rtable|
           puts "Setting #{relation_column_name_for(tables, tname, rtable)}_uuid in #{rtable}"
           begin
-            @conn.exec("UPDATE #{rtable} SET #{relation_column_name_for(tables, tname, rtable)}_uuid='#{row['uuid']}' WHERE #{relation_column_name_for(tables, tname, rtable)}_id='#{row['id']}'"
+            @conn.exec("UPDATE #{rtable} SET #{relation_column_name_for(tables, tname, rtable)}_uuid='#{row['uuid']}' WHERE #{relation_column_name_for(tables, tname, rtable)}_id='#{row['id']}'")
           rescue => e
             log('C', "Setting #{relation_column_name_for(tables, tname, rtable)}_uuid in #{rtable}", e.error.strip)
           end

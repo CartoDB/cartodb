@@ -28,7 +28,6 @@ def execution_summary()
   # Database port: #{DBPORT}
   # Database name: #{DBNAME}
   # Database user: #{DBUSER}
-  # Database port: #{DBPORT}
   #
   # Redis Connection
   # ----------------

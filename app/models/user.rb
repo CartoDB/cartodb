@@ -91,7 +91,7 @@ class User < Sequel::Model
     changes = (self.previous_changes.present? ? self.previous_changes.keys : [])
     set_statement_timeouts   if changes.include?(:user_timeout) || changes.include?(:database_timeout)
     rebuild_quota_trigger    if changes.include?(:quota_in_bytes)
-    invalidate_varnish_cache if changes.include?(:account_type)
+    invalidate_varnish_cache(regex: '.*:vizjson') if changes.include?(:account_type) || changes.include?(:disqus_shortname)
   end
 
   def before_destroy
@@ -159,8 +159,9 @@ $$
       ")
   end
 
-  def invalidate_varnish_cache
-    CartoDB::Varnish.new.purge("obj.http.X-Cache-Channel ~ #{database_name}.*")
+  def invalidate_varnish_cache(options = {})
+    options[:regex] ||= '.*'
+    CartoDB::Varnish.new.purge("obj.http.X-Cache-Channel ~ #{database_name}#{options[:regex]}")
   end
 
   ## Authentication

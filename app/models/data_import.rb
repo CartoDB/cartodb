@@ -101,8 +101,6 @@ class DataImport < Sequel::Model
     elsif Addressable::URI.parse(data_source).host.present?
       self.values[:data_type] = 'url'
       self.values[:data_source] = data_source
-    else
-      log.append "datasource not file nor url: #{data_source}"
     end
   end
 

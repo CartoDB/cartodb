@@ -1108,7 +1108,7 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def self.find_by_identifier(user_id, identifier)
-    col = (identifier =~ /\A\d+\Z/ || identifier.is_a?(Fixnum)) ? 'id' : 'name'
+    col = 'name'
 
     table = fetch(%Q{
       SELECT *
@@ -1132,12 +1132,6 @@ class Table < Sequel::Model(:user_tables)
       Table.where(:id => table_id, :user_id => user.id).first
     end
   end
-
-  #def self.find_by_subdomain(subdomain, identifier)
-  #  if user = User.find(:username => subdomain)
-  #    Table.find_by_identifier(user.id, identifier)
-  #  end
-  #end
 
   def oid
     @oid ||= owner.in_database["SELECT '#{self.name}'::regclass::oid"].first[:oid]

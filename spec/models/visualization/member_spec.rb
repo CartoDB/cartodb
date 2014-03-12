@@ -42,13 +42,15 @@ describe Visualization::Member do
     end
 
     it 'persists tags as an array if the backend supports it' do
+      relation_id = UUIDTools::UUID.timestamp_create.to_s
+
       db_config   = Rails.configuration.database_configuration[Rails.env]
       db          = Sequel.postgres(
                       host:     db_config.fetch('host'),
                       port:     db_config.fetch('port'),
                       username: db_config.fetch('username')
                     )
-      relation    = "visualizations_#{Time.now.to_i}".to_sym
+      relation    = "visualizations_#{relation_id}".to_sym
       repository  = DataRepository::Backend::Sequel.new(db, relation)
       Visualization::Migrator.new(db).migrate(relation)
       attributes  = random_attributes(tags: ['tag 1', 'tag 2'])
@@ -161,7 +163,7 @@ describe Visualization::Member do
 
   describe '#authorize?' do
     it 'returns true if user maps include map_id' do
-      map_id  = rand(99)
+      map_id  = UUIDTools::UUID.timestamp_create.to_s
       member  = Visualization::Member.new(name: 'foo', map_id: map_id)
 
       maps    = [OpenStruct.new(id: map_id)]
@@ -321,7 +323,7 @@ describe Visualization::Member do
   end
 
   def random_attributes(attributes={})
-    random = rand(999)
+    random = UUIDTools::UUID.timestamp_create.to_s
     {
       name:         attributes.fetch(:name, "name #{random}"),
       description:  attributes.fetch(:description, "description #{random}"),

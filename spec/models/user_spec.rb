@@ -609,7 +609,7 @@ describe User do
 
     DataImport.where(:user_id => doomed_user.id).count.should == 0
     Table.where(:user_id => doomed_user.id).count.should == 0
-    Layer.db["SELECT * from layers_users WHERE user_id = #{doomed_user.id}"].count.should == 0
+    Layer.db["SELECT * from layers_users WHERE user_id = '#{doomed_user.id}'"].count.should == 0
   end
 
   it "should correctly identify last billing cycle" do

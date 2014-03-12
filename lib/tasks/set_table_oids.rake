@@ -29,7 +29,7 @@ namespace :cartodb do
             ]
           end
 
-          raise "No tables found!!!!" if entries_in_database.empty?
+          raise 'No tables found!!!!' if entries_in_database.empty?
           entries_in_metadata = Hash[
             Table.fetch(%Q(
               SELECT name, table_id

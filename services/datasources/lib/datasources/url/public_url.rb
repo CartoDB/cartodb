@@ -1,116 +1,87 @@
 # encoding: utf-8
 
-require_relative './base'
 require 'typhoeus'
 
 module CartoDB
-  module Synchronizer
-    module FileProviders
-      class PublicUrlProvider < BaseProvider
+  module Datasources
+    module Url
+      class PublicUrl < Base
 
-        # Required for all providers
-        SERVICE = 'public_url'
-
-        # Factory method
-        # @return CartoDB::Synchronizer::FileProviders::PublicUrl
-        def self.get_new(config={})
-          return new(config)
-        end #get_new
+        # Required for all datasources
+        DATASOURCE_NAME = 'public_url'
 
         # Constructor (hidden)
         # @param config
         # [ ]
         def initialize(config)
-          @service_name = SERVICE
+          @service_name = DATASOURCE_NAME
 
           @headers = nil
         end #initialize
 
-        # Return the url to be displayed or sent the user to to authenticate and get authorization code
-        def get_auth_url
-          nil
-        end #get_auth_url
-
-        # Validate authorization code and store token
-        # @param auth_code : string
-        # @return string : Access token
-        def validate_auth_code(auth_code)
-          nil
-        end #validate_auth_code
-
-        # Store token
-        # @param token string
-        def token=(token)
-          nil
-        end #token=
-
-        # Retrieve token
-        # @return string | nil
-        def token
-          nil
-        end #token
+        # Factory method
+        # @param config {}
+        # @return CartoDB::Datasources::Url::PublicUrl
+        def self.get_new(config={})
+          return new(config)
+        end #get_new
 
         # Perform the listing and return results
-        # @param formats_filter Array : (Optional) formats list to retrieve. Leave empty for all supported formats.
+        # @param filter Array : (Optional) filter to specify which resources to retrieve. Leave empty for all supported.
         # @return [ { :id, :title, :url, :service } ]
-        def get_files_list(formats_filter=[])
+        def get_resources_list(filter=[])
           nil
-        end
+        end #get_resources_list
+
+        # Retrieves a resource and returns its contents
+        # @param id string
+        # @return mixed
+        # @throws DownloadError
+        def get_resource(id)
+          response = Typhoeus.get(id, http_options)
+          while response.headers['location']
+            response = Typhoeus.get(id, http_options)
+          end
+          raise DownloadError.new("get_resource() #{id}", DATASOURCE_NAME) unless response.code.to_s =~ /\A[23]\d+/
+          response.response_body
+        end #get_resource
 
         # Stores a sync table entry
         # @param id string
-        # @param sync_type
+        # @param {} sync_options
         # @return bool
-        def store_chosen_file(id, sync_type)
+        def store_resource(id, sync_options={})
           #TODO: Store
           puts id
           true
         end #store_chosen_file
 
-        # Checks if a file has been modified
+        # Checks if a specific resource has been modified
         # @param id string
         # @return bool
-        def file_modified?(id)
+        def resource_modified?(id)
           fetch_headers(id)
           new_checksum = checksum_of(id, etag_header, last_modified_header)
 
           #TODO: check against stored checksum
           puts id + ' ' + etag_header + ' ' + last_modified_header + new_checksum
           false
-        end #file_modified?
-
-        # Downloads a file and returns its contents
-        # @param id string
-        # @return mixed
-        # @throws DownloadError
-        def download_file(id)
-          response = Typhoeus.get(id, http_options)
-          while response.headers['location']
-            response = Typhoeus.get(id, http_options)
-          end
-          raise DownloadError.new("Downloading #{id}", SERVICE) unless response.code.to_s =~ /\A[23]\d+/
-          response.response_body
-        end #download_file
-
-        # Prepares the list of formats that Dropbox will require when performing the query
-        # @param filter Array
-        def setup_formats_filter(formats_filter=[])
-        end #setup_formats_filter
+        end #resource_modified?
 
         # Fetches the headers for a given url
         # @throws DownloadError
         def fetch_headers(url)
           @headers = nil  # In case of error, always leave empty the headers
           response = Typhoeus.head(url, http_options)
-          raise DownloadError.new("Fetching headers of #{url}", SERVICE) unless response.code.to_s =~ /\A[23]\d+/
+          raise DownloadError.new("Fetching headers of #{url}", DATASOURCE_NAME) unless response.code.to_s =~ /\A[23]\d+/
           @headers = response.headers
-        end #headers
+        end #fetch_headers
 
         # Get the etag header if present
         # @return string
         # @throws UninitializedError
         def etag_header()
-          raise UninitializedError.new('headers not fetched', SERVICE) if @headers.nil?
+          raise UninitializedError.new('headers not fetched', DATASOURCE_NAME) if @headers.nil?
           etag  =   @headers.fetch('ETag', nil)
           etag  ||= @headers.fetch('Etag', nil)
           etag  ||= @headers.fetch('etag', '')
@@ -122,15 +93,13 @@ module CartoDB
         # @return string
         # @throws UninitializedError
         def last_modified_header()
-          raise UninitializedError.new('headers not fetched', SERVICE) if @headers.nil?
+          raise UninitializedError.new('headers not fetched', DATASOURCE_NAME) if @headers.nil?
           last_modified =   @headers.fetch('Last-Modified', nil)
           last_modified ||= @headers.fetch('Last-modified', nil)
           last_modified ||= @headers.fetch('last-modified', '')
           last_modified = last_modified.delete('"').delete("'") if !last_modified.empty?
           last_modified
         end #last_modified_header
-
-        attr_reader :formats
 
         private
 

@@ -1,11 +1,12 @@
 # encoding: utf-8
 
-require_relative '../../lib/synchronizer/file-providers/dropbox_provider'
 require 'yaml'
 
-include CartoDB::Synchronizer::FileProviders
+require_relative '../../lib/datasources'
 
-describe DropboxProvider do
+include CartoDB::Datasources
+
+describe Url::Dropbox do
 
   def get_config
     @config ||= YAML.load_file("#{File.dirname(__FILE__)}/../../../../config/app_config.yml")['defaults']['oauth']['dropbox']
@@ -14,19 +15,19 @@ describe DropboxProvider do
   describe '#manual_test' do
     it 'with user interaction, tests the full oauth flow and lists files of an account' do
       config = get_config
-      dropbox_provider = DropboxProvider.get_new(config)
+      dropbox_datasource = Url::Dropbox.get_new(config)
 
       if config.include?(:access_token)
-        dropbox_provider.token = config[:access_token]
+        dropbox_datasource.token = config[:access_token]
       else
         pending('This test requires manual run, opening the url in a browser, grabbing the code and setting "input" to it')
-        puts dropbox_provider.get_auth_url
+        puts dropbox_datasource.get_auth_url
         input = ''
         debugger
-        dropbox_provider.validate_auth_code(input)
-        puts dropbox_provider.token
+        dropbox_datasource.validate_auth_code(input)
+        puts dropbox_datasource.token
       end
-      data = dropbox_provider.get_files_list
+      data = dropbox_datasource.get_resources_list
       puts data
     end
   end

@@ -1,23 +1,23 @@
 # encoding: utf-8
 
-require_relative '../../lib/synchronizer/file-providers/public_url_provider'
+require_relative '../../lib/datasources'
 
-include CartoDB::Synchronizer::FileProviders
+include CartoDB::Datasources
 
-describe PublicUrlProvider do
+describe Url::PublicUrl do
 
   describe '#basic_tests' do
     it 'Some basic download flows of this file provider, including error handling' do
-      url_provider = PublicUrlProvider.get_new()
+      url_provider = Url::PublicUrl.get_new()
 
       file_url = 'http://cartodb.com/'
       invalid_url = 'http://cartodb.com/non_existant_page'
 
-      data = url_provider.download_file(file_url)
+      data = url_provider.get_resource(file_url)
       data.empty?.should eq false
 
       expect {
-        url_provider.download_file(invalid_url)
+        url_provider.get_resource(invalid_url)
       }.to raise_exception DownloadError
 
       url_provider.fetch_headers(file_url)

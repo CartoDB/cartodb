@@ -97,6 +97,7 @@ class DataImport < Sequel::Model
       self.values[:data_type] = 'url'
       self.values[:data_source] = data_source
     end
+    # else SQL-based import
   end
 
   def remove_uploaded_resources
@@ -303,8 +304,7 @@ class DataImport < Sequel::Model
     self.table_name = importer.table.name if importer.success? && importer.table
     self.table_id   = importer.table.id if importer.success? && importer.table
     if synchronization_id
-      synchronization = 
-        CartoDB::Synchronization::Member.new(id: synchronization_id).fetch
+      synchronization = CartoDB::Synchronization::Member.new(id: synchronization_id).fetch
       synchronization.name    = self.table_name
       synchronization.log_id  = log.id
 

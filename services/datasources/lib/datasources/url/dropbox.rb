@@ -1,17 +1,16 @@
 # encoding: utf-8
 
-require_relative './base'
 require 'dropbox_sdk'
 
 module CartoDB
-  module Synchronizer
-    module FileProviders
-      class DropboxProvider < BaseProvider
+  module Datasources
+    module Url
+      class Dropbox < BaseOAuth
 
-        # Required for all providers
-        SERVICE = 'dropbox'
+        # Required for all datasources
+        DATASOURCE_NAME = 'dropbox'
 
-        # Specific of this provider
+        # Specific of this datasource
         FORMATS_TO_SEARCH_QUERIES = {
             FORMAT_CSV =>         %W( .csv ),
             FORMAT_EXCEL =>       %W( .xls .xlsx ),
@@ -21,12 +20,6 @@ module CartoDB
             FORMAT_COMPRESSED =>  %W( .zip )
         }
 
-        # Factory method
-        # @return CartoDB::Synchronizer::FileProviders::Dropbox
-        def self.get_new(config)
-          return new(config)
-        end #get_new
-
         # Constructor (hidden)
         # @param config
         # [
@@ -35,18 +28,26 @@ module CartoDB
         # ]
         # @throws ConfigurationError
         def initialize(config)
-          @formats = []
           @access_token = nil
 
-          raise ConfigurationError.new('missing app_key', SERVICE) unless config.include?('app_key')
-          raise ConfigurationError.new('missing app_secret', SERVICE) unless config.include?('app_secret')
+          raise ConfigurationError.new('missing app_key', DATASOURCE_NAME) unless config.include?('app_key')
+          raise ConfigurationError.new('missing app_secret', DATASOURCE_NAME) unless config.include?('app_secret')
 
           @app_key = config.fetch('app_key')
           @app_secret = config.fetch('app_secret')
 
+          self.filter=[]
+
           @client = nil
           @auth_flow = nil
         end #initialize
+
+        # Factory method
+        # @param config {}
+        # @return CartoDB::Synchronizer::FileProviders::Dropbox
+        def self.get_new(config)
+          return new(config)
+        end #get_new
 
         # Return the url to be displayed or sent the user to to authenticate and get authorization code
         # @throws AuthError
@@ -54,7 +55,7 @@ module CartoDB
           @auth_flow = DropboxOAuth2FlowNoRedirect.new(@app_key, @app_secret)
           @auth_flow.start()
         rescue DropboxError, ArgumentError
-          raise AuthError.new('getting auth url', SERVICE)
+          raise AuthError.new('get_auth_url()', DATASOURCE_NAME)
         end #get_auth_url
 
         # Validate authorization code and store token
@@ -68,7 +69,7 @@ module CartoDB
           @client = DropboxClient.new(@access_token)
           # TODO: Store token in backend
         rescue DropboxError, ArgumentError
-          raise AuthError.new('validating auth code', SERVICE)
+          raise AuthError.new('validate_auth_code()', DATASOURCE_NAME)
         end #validate_auth_code
 
         # Store token
@@ -78,7 +79,7 @@ module CartoDB
           @access_token = token
           @client = DropboxClient.new(@access_token)
         rescue DropboxError, ArgumentError
-          raise AuthError.new('setting token', SERVICE)
+          raise AuthError.new('token=', DATASOURCE_NAME)
         end #token=
 
         # Retrieve token
@@ -87,32 +88,42 @@ module CartoDB
           @access_token
         end #token
 
-        # Perform the GDrive listing and return results
-        # @param formats_filter Array : (Optional) formats list to retrieve. Leave empty for all supported formats.
+        # Perform the listing and return results
+        # @param filter Array : (Optional) filter to specify which resources to retrieve. Leave empty for all supported.
         # @return [ { :id, :title, :url, :service } ]
         # @throws DownloadError
-        def get_files_list(formats_filter=[])
+        def get_resources_list(filter=[])
           all_results = []
-          setup_formats_filter(formats_filter)
+          self.filter = filter
 
           @formats.each do |search_query|
             response = @client.search('/', search_query)
-            for item in response
+            response.each do |item|
               all_results.push(format_item_data(item))
             end
           end
-
           all_results
         rescue DropboxError, ArgumentError
-          raise DownloadError.new('getting files list', SERVICE)
-        end
+          raise DownloadError.new('get_resources_list()', DATASOURCE_NAME)
+        end #get_resources_list
+
+        # Retrieves a resource and returns its contents
+        # @param id string
+        # @return mixed
+        # @throws DownloadError
+        def get_resource(id)
+          contents, metadata = @client.get_file_and_metadata(id)
+          return contents
+        rescue DropboxError, ArgumentError
+          raise DownloadError.new("get_resource() #{id}", DATASOURCE_NAME)
+        end #get_resource
 
         # Stores a sync table entry
         # @param id string
-        # @param sync_type
+        # @param {} sync_options
         # @return bool
         # @throws DownloadError
-        def store_chosen_file(id, sync_type)
+        def store_resource(id, sync_options={})
           item_data = nil
           response = @client.metadata(id)
           item_data = format_item_data(response)
@@ -121,14 +132,14 @@ module CartoDB
           puts item_data.to_hash
           true
         rescue DropboxError, ArgumentError
-          raise DownloadError.new("Storing file #{id}", SERVICE)
-        end #store_chosen_file
+          raise DownloadError.new("store_resource() #{id}", DATASOURCE_NAME)
+        end #store_resource
 
-        # Checks if a file has been modified
+        # Checks if a specific resource has been modified
         # @param id string
         # @return bool
         # @throws DownloadError
-        def file_modified?(id)
+        def resource_modified?(id)
           new_item_data = nil
           response = @client.metadata(id)
           new_item_data = format_item_data(response)
@@ -137,34 +148,27 @@ module CartoDB
           puts item_data.to_hash
           false
         rescue DropboxError, ArgumentError
-          raise DownloadError.new("checking if file #{id} has been modified", SERVICE)
-        end #file_modified?
+          raise DownloadError.new("resource_modified?() #{id}", DATASOURCE_NAME)
+        end #resource_modified?
 
-        # Downloads a file and returns its contents
-        # @param id string
-        # @return mixed
-        # @throws DownloadError
-        def download_file(id)
-          contents, metadata = @client.get_file_and_metadata(id)
-          return contents
-        rescue DropboxError, ArgumentError
-          raise DownloadError.new("downloading file #{id}", SERVICE)
-        end #download_file
+        # Retrieves current filters
+        # @return {}
+        def filter
+          @formats
+        end #filter
 
-        # Prepares the list of formats that Dropbox will require when performing the query
-        # @param filter Array
-        def setup_formats_filter(formats_filter=[])
+        # Sets current filters
+        # @param filter_data {}
+        def filter=(filter_data=[])
           @formats = []
           FORMATS_TO_SEARCH_QUERIES.each do |id, queries|
-            if (formats_filter.empty? || formats_filter.include?(id))
+            if (filter_data.empty? || filter_data.include?(id))
               queries.each do |query|
                 @formats = @formats.push(query)
               end
             end
           end
-        end #setup_formats_filter
-
-        attr_reader :formats
+        end #filter=
 
         private
 
@@ -177,7 +181,7 @@ module CartoDB
               id:       item_data.fetch('path'),
               title:    item_data.fetch('path'),
               url:      '',
-              service:  SERVICE,
+              service:  DATASOURCE_NAME,
               checksum: checksum_of(item_data.fetch('rev'))
             }
           data

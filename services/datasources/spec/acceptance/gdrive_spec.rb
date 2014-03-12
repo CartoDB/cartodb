@@ -1,11 +1,12 @@
 # encoding: utf-8
 
-require_relative '../../lib/synchronizer/file-providers/gdrive_provider'
 require 'yaml'
 
-include CartoDB::Synchronizer::FileProviders
+require_relative '../../lib/datasources'
 
-describe GDriveProvider do
+include CartoDB::Datasources
+
+describe Url::GDrive do
 
   def get_config
     @config ||= YAML.load_file("#{File.dirname(__FILE__)}/../../../../config/app_config.yml")['defaults']['oauth']['gdrive']
@@ -14,19 +15,19 @@ describe GDriveProvider do
   describe '#manual_test' do
     it 'with user interaction, tests the full oauth flow and lists files of an account' do
       config = get_config
-      gdrive_provider = GDriveProvider.get_new(config)
+      gdrive_datasource = Url::GDrive.get_new(config)
 
       if config.include?(:refresh_token)
-        gdrive_provider.token = config[:refresh_token]
+        gdrive_datasource.token = config[:refresh_token]
       else
         pending('If config unset, this test requires manual running. Check its source code to see what to do')
-        puts gdrive_provider.get_auth_url
+        puts gdrive_datasource.get_auth_url
         input = ''
         debugger
-        gdrive_provider.validate_auth_code(input)
-        puts gdrive_provider.token
+        gdrive_datasource.validate_auth_code(input)
+        puts gdrive_datasource.token
       end
-      data = gdrive_provider.get_files_list
+      data = gdrive_datasource.get_resources_list
       puts data
     end
   end

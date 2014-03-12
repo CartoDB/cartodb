@@ -1,15 +1,14 @@
 # encoding: utf-8
 
-require_relative './base'
 require 'google/api_client'
 
 module CartoDB
-  module Synchronizer
-    module FileProviders
-      class GDriveProvider < BaseProvider
+  module Datasources
+    module Url
+      class GDrive < BaseOAuth
 
         # Required for all providers
-        SERVICE = 'gdrive'
+        DATASOURCE_NAME = 'gdrive'
 
         OAUTH_SCOPE = 'https://www.googleapis.com/auth/drive'
         REDIRECT_URI = 'urn:ietf:wg:oauth:2.0:oob'
@@ -25,12 +24,6 @@ module CartoDB
             FORMAT_COMPRESSED =>  %W( application/zip ), #application/x-compressed-tar application/x-gzip application/x-bzip application/x-tar )
         }
 
-        # Factory method
-        # @return CartoDB::Synchronizer::FileProviders::GDrive
-        def self.get_new(config)
-          return new(config)
-        end #get_new
-
         # Constructor (hidden)
         # @param config
         # [
@@ -40,11 +33,11 @@ module CartoDB
         # ]
         # @throws ConfigurationError
         def initialize(config)
-          raise ConfigurationError.new('missing application_name', SERVICE) unless config.include?('application_name')
-          raise ConfigurationError.new('missing client_id', SERVICE) unless config.include?('client_id')
-          raise ConfigurationError.new('missing client_secret', SERVICE) unless config.include?('client_secret')
+          raise ConfigurationError.new('missing application_name', DATASOURCE_NAME) unless config.include?('application_name')
+          raise ConfigurationError.new('missing client_id', DATASOURCE_NAME) unless config.include?('client_id')
+          raise ConfigurationError.new('missing client_secret', DATASOURCE_NAME) unless config.include?('client_secret')
 
-          @formats = []
+          self.filter=[]
           @refresh_token = nil
 
           @client = Google::APIClient.new ({
@@ -57,6 +50,13 @@ module CartoDB
           @client.authorization.scope = OAUTH_SCOPE
           @client.authorization.redirect_uri = REDIRECT_URI
         end #initialize
+
+        # Factory method
+        # @param config {}
+        # @return CartoDB::Synchronizer::FileProviders::GDrive
+        def self.get_new(config)
+          return new(config)
+        end #get_new
 
         # Return the url to be displayed or sent the user to to authenticate and get authorization code
         # @return string | nil
@@ -74,7 +74,7 @@ module CartoDB
           @refresh_token = @client.authorization.refresh_token
           # TODO: Store token in backend
         rescue Google::APIClient::InvalidIDTokenError, Signet::AuthorizationError
-          raise AuthError.new('validating auth code', SERVICE)
+          raise AuthError.new('validating auth code', DATASOURCE_NAME)
         end #validate_auth_code
 
         # Store token
@@ -86,7 +86,7 @@ module CartoDB
           @client.authorization.update_token!( { refresh_token: @refresh_token } )
           @client.authorization.fetch_access_token!
         rescue Google::APIClient::InvalidIDTokenError, Signet::AuthorizationError
-          raise AuthError.new('setting token', SERVICE)
+          raise AuthError.new('setting token', DATASOURCE_NAME)
         end #token=
 
         # Retrieve token
@@ -95,17 +95,16 @@ module CartoDB
           @refresh_token
         end #token
 
-        # Perform the GDrive listing and return results
-        # @param formats_filter Array : (Optional) formats list to retrieve. Leave empty for all supported formats.
+        # Perform the listing and return results
+        # @param filter Array : (Optional) filter to specify which resources to retrieve. Leave empty for all supported.
         # @return [ { :id, :title, :url, :service } ]
         # @throws DownloadError
-        # @throws AuthError
-        def get_files_list(formats_filter=[])
+        def get_resources_list(filter=[])
           all_results = []
-          setup_formats_filter(formats_filter)
+          self.filter = filter
 
           batch_request = Google::APIClient::BatchRequest.new do |result|
-            raise DownloadError.new("(#{result.status}) Retrieving files: #{result.data['error']['message']}", SERVICE) if result.status != 200
+            raise DownloadError.new("get_resources_list() #{result.data['error']['message']} (#{result.status})", DATASOURCE_NAME) if result.status != 200
             data = result.data.to_hash
             if data.include? 'items'
               data['items'].each do |item|
@@ -128,10 +127,30 @@ module CartoDB
           @client.execute(batch_request)
           all_results
         rescue Google::APIClient::InvalidIDTokenError
-          raise AuthError.new('Invalid token', SERVICE)
+          raise AuthError.new('Invalid token', DATASOURCE_NAME)
         rescue Google::APIClient::BatchError, Google::APIClient::TransmissionError
-          raise DownloadError.new('getting files', SERVICE)
-        end #get_files_list
+          raise DownloadError.new('getting resources', DATASOURCE_NAME)
+        end #get_resources_list
+
+        # Retrieves a resource and returns its contents
+        # @param id string
+        # @return mixed
+        # @throws DownloadError
+        # @throws AuthError
+        def get_resource(id)
+          result = @client.execute( api_method: @drive.files.get, parameters: { fileId: id } )
+          raise DownloadError.new("(#{result.status}) retrieving file #{id} metadata for download: #{result.data['error']['message']}", DATASOURCE_NAME) if result.status != 200
+
+          item_data = format_item_data(result.data.to_hash)
+
+          result = @client.execute(uri: item_data.fetch(:url))
+          raise DownloadError.new("(#{result.status}) downloading file #{id}: #{result.data['error']['message']}", DATASOURCE_NAME) if result.status != 200
+          result.body
+        rescue Google::APIClient::InvalidIDTokenError
+          raise AuthError.new('Invalid token', DATASOURCE_NAME)
+        rescue Google::APIClient::TransmissionError
+          raise DownloadError.new("downloading file #{id}", DATASOURCE_NAME)
+        end #get_resource
 
         # Stores a sync table entry
         # @param id string
@@ -139,9 +158,9 @@ module CartoDB
         # @return bool
         # @throws DownloadError
         # @throws AuthError
-        def store_chosen_file(id, sync_type)
+        def store_resource(id, sync_type)
           result = @client.execute( api_method: @drive.files.get, parameters: { fileId: id } )
-          raise DownloadError.new("(#{result.status}) retrieving file #{id} metadata: #{result.data['error']['message']}", SERVICE) if result.status != 200
+          raise DownloadError.new("(#{result.status}) retrieving file #{id} metadata: #{result.data['error']['message']}", DATASOURCE_NAME) if result.status != 200
 
           item_data = format_item_data(result.data.to_hash)
 
@@ -149,19 +168,19 @@ module CartoDB
           puts item_data.to_hash
           true
         rescue Google::APIClient::InvalidIDTokenError
-          raise AuthError.new('Invalid token', SERVICE)
+          raise AuthError.new('Invalid token', DATASOURCE_NAME)
         rescue Google::APIClient::TransmissionError
-          raise DownloadError.new("storing file #{id}", SERVICE)
-        end #store_chosen_file
+          raise DownloadError.new("storing file #{id}", DATASOURCE_NAME)
+        end #store_resource
 
         # Checks if a file has been modified
         # @param id string
         # @return bool
         # @throws DownloadError
         # @throws AuthError
-        def file_modified?(id)
+        def resource_modified?(id)
           result = @client.execute( api_method: @drive.files.get, parameters: { fileId: id } )
-          raise DownloadError.new("(#{result.status}) retrieving file #{id} metadata: #{result.data['error']['message']}", SERVICE) if result.status != 200
+          raise DownloadError.new("(#{result.status}) retrieving file #{id} metadata: #{result.data['error']['message']}", DATASOURCE_NAME) if result.status != 200
 
           new_item_data = format_item_data(result.data.to_hash)
 
@@ -169,45 +188,29 @@ module CartoDB
           puts new_item_data.to_hash
           false
         rescue Google::APIClient::InvalidIDTokenError
-          raise AuthError.new('Invalid token', SERVICE)
+          raise AuthError.new('Invalid token', DATASOURCE_NAME)
         rescue Google::APIClient::TransmissionError
-          raise DownloadError.new("checking if file #{id} has been modified", SERVICE)
-        end #file_modified?
+          raise DownloadError.new("checking if file #{id} has been modified", DATASOURCE_NAME)
+        end #resource_modified?
 
-        # Downloads a file and returns its contents
-        # @param id string
-        # @return mixed
-        # @throws DownloadError
-        # @throws AuthError
-        def download_file(id)
-          result = @client.execute( api_method: @drive.files.get, parameters: { fileId: id } )
-          raise DownloadError.new("(#{result.status}) retrieving file #{id} metadata for download: #{result.data['error']['message']}", SERVICE) if result.status != 200
+        # Retrieves current filters
+        # @return {}
+        def filter
+          @formats
+        end #filter
 
-          item_data = format_item_data(result.data.to_hash)
-
-          result = @client.execute(uri: item_data.fetch(:url))
-          raise DownloadError.new("(#{result.status}) downloading file #{id}: #{result.data['error']['message']}", SERVICE) if result.status != 200
-          result.body
-        rescue Google::APIClient::InvalidIDTokenError
-          raise AuthError.new('Invalid token', SERVICE)
-        rescue Google::APIClient::TransmissionError
-          raise DownloadError.new("downloading file #{id}", SERVICE)
-        end #download_file
-
-        # Prepares the list of formats that GDrive will require when performing the query
-        # @param filter Array
-        def setup_formats_filter(formats_filter=[])
+        # Sets current filters
+        # @param filter_data {}
+        def filter=(filter_data=[])
           @formats = []
           FORMATS_TO_MIME_TYPES.each do |id, mime_types|
-            if (formats_filter.empty? || formats_filter.include?(id))
+            if (filter_data.empty? || filter_data.include?(id))
               mime_types.each do |mime_type|
                 @formats = @formats.push(mime_type)
               end
             end
           end
-        end #setup_formats_filter
-
-        attr_reader :formats
+        end #filter=
 
         private
 
@@ -219,7 +222,7 @@ module CartoDB
             {
               id:           item_data.fetch('id'),
               title:        item_data.fetch('title'),
-              service:      SERVICE,
+              service:      DATASOURCE_NAME,
               checksum:     checksum_of(item_data.fetch('modifiedDate')),
             }
           if item_data.include?('exportLinks')

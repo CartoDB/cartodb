@@ -33,5 +33,6 @@ cartodb.sublime-workspace
 cartodb.sublime-project
 lib/build/dist
 lib/build/node_modules
+npm-debug.log
 .idea
 .ruby-gemset

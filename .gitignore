@@ -37,3 +37,5 @@ lib/build/node_modules
 npm-debug.log
 .idea
 .ruby-gemset
+lib/build/dist
+lib/build/node_modules

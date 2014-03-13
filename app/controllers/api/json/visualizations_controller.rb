@@ -61,7 +61,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
                   ).copy
     elsif params[:tables]
       tables    = params[:tables].map do |table_name| 
-                    ::Table.find_by_subdomain(CartoDB.extract_subdomain(request), table_name)
+                    ::Table.find_by_name_subdomain(CartoDB.extract_subdomain(request), table_name)
                   end
       blender   = Visualization::TableBlender.new(current_user, tables)
       map       = blender.blend

@@ -22,7 +22,7 @@ module CartoDB
       attribute :interval,        Integer,  default: 3600
       attribute :url,             String
       attribute :state,           String,   default: 'created'
-      attribute :user_id,         Integer
+      attribute :user_id,         String
       attribute :created_at,      Time
       attribute :updated_at,      Time
       attribute :run_at,          Time     

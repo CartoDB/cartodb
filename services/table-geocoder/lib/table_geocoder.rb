@@ -33,7 +33,8 @@ module CartoDB
         formatter:   clean_formatter,
         sql_api:     arguments[:cache],
         working_dir: working_dir,
-        table_name:  table_name
+        table_name:  table_name,
+        max_rows:    @max_rows
       )
     end # initialize
 
@@ -41,21 +42,31 @@ module CartoDB
       add_georef_status_column
       cache.run
       csv_file = generate_csv
+      connection.run(
+        dataset.where('cartodb_id'.lit => dataset.select('cartodb_id'.lit))
+          .update_sql('cartodb_georef_status = false')
+      )
       start_geocoding_job(csv_file)
     end
 
     def generate_csv
       csv_file = File.join(working_dir, "wadus.csv")
-      query = %Q{
-          SELECT #{clean_formatter} as recId, #{clean_formatter} as searchText 
-          FROM #{table_name}
-          WHERE cartodb_georef_status IS FALSE OR cartodb_georef_status IS NULL
-          GROUP BY recId
-          LIMIT #{max_rows}
-      }
+      query = dataset.limit(@max_rows - cache.hits).select_sql
       result = connection.copy_table(connection[query], format: :csv, options: 'HEADER')
       File.write(csv_file, result.force_encoding("UTF-8"))
       return csv_file
+    end
+
+    def update_geocoding_status
+      geocoder.update_status
+      { processed_rows: geocoder.processed_rows, state: geocoder.status }
+    end
+
+    def dataset
+      connection.select("DISTINCT(#{clean_formatter}) recId, #{clean_formatter} searchText".lit)
+        .from(table_name.lit)
+        .limit(max_rows)
+        .where("cartodb_georef_status IS NULL".lit)
     end
 
     def clean_formatter
@@ -132,7 +143,7 @@ module CartoDB
     def add_georef_status_column
       connection.run(%Q{
         ALTER TABLE #{table_name} 
-        ADD COLUMN cartodb_georef_status BOOLEAN DEFAULT FALSE
+        ADD COLUMN cartodb_georef_status BOOLEAN DEFAULT NULL
       })
     rescue Sequel::DatabaseError => e
       raise unless e.message =~ /column .* of relation .* already exists/

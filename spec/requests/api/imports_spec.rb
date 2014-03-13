@@ -217,15 +217,16 @@ describe "Imports API" do
   it 'kills pending imports'
 
   it 'imports all the sample data' do
-    pending
     @user.update table_quota: 10
-    import_files = ["http://cartodb.s3.amazonaws.com/static/TM_WORLD_BORDERS_SIMPL-0.3.zip",
-                    "http://cartodb.s3.amazonaws.com/static/european_countries.zip",
-                    "http://cartodb.s3.amazonaws.com/static/50m-urban-area.zip",
-                    "http://cartodb.s3.amazonaws.com/static/10m-populated-places-simple.zip",
-                    "http://cartodb.s3.amazonaws.com/static/50m-rivers-lake-centerlines-with-scale-ranks.zip",
-                    "http://cartodb.s3.amazonaws.com/static/counties_ny.zip",
-                    "http://cartodb.s3.amazonaws.com/static/nyc_subway_entrance.zip"]
+    import_files = [
+        "http://cartodb.s3.amazonaws.com/static/TM_WORLD_BORDERS_SIMPL-0.3.zip",
+#                    "http://cartodb.s3.amazonaws.com/static/european_countries.zip",
+#                    "http://cartodb.s3.amazonaws.com/static/50m-urban-area.zip",
+#                    "http://cartodb.s3.amazonaws.com/static/10m-populated-places-simple.zip",
+ #                   "http://cartodb.s3.amazonaws.com/static/50m-rivers-lake-centerlines-with-scale-ranks.zip",
+#                    "http://cartodb.s3.amazonaws.com/static/counties_ny.zip",
+#                    "http://cartodb.s3.amazonaws.com/static/nyc_subway_entrance.zip"
+    ]
 
     import_files.each do |url|
       post v1_imports_url(params.merge(:url => url, :table_name => "wadus"))
@@ -236,8 +237,10 @@ describe "Imports API" do
       last_import = DataImport[response_json['item_queue_id']]
 
       last_import.state.should be == 'complete'
-      table = Table.order(:id).last
+      table = Table[last_import.table_id]
+
       table.should have_required_indexes_and_triggers
+      table.should have_no_invalid_the_geom
       table.geometry_types.should_not be_blank
     end
     

@@ -4,7 +4,8 @@ require 'typhoeus'
 module CartoDB
   class GeocoderCache
 
-    BATCH_SIZE = 10
+    DEFAULT_BATCH_SIZE = 5000
+    DEFAULT_MAX_ROWS   = 1000000
 
     attr_reader :connection, :working_dir, :table_name, :hits,
                 :max_rows, :sql_api, :formatter, :cache_results
@@ -13,51 +14,61 @@ module CartoDB
       @sql_api       = arguments.fetch(:sql_api)
       @connection    = arguments.fetch(:connection)
       @table_name    = arguments.fetch(:table_name)
-      @working_dir   = arguments.fetch(:working_dir)
+      @working_dir   = arguments[:working_dir] || Dir.mktmpdir
+      `chmod 777 #{@working_dir}`
       @formatter     = arguments.fetch(:formatter)
+      @max_rows      = arguments[:max_rows] || DEFAULT_MAX_ROWS
       @cache_results = nil
+      @batch_size    = arguments[:batch_size] || DEFAULT_BATCH_SIZE
+      @cache_results = File.join(working_dir, "#{temp_table_name}_results.csv")
+      @hits          = 0
     end # initialize
 
     def run
-      @cache_results = File.join(working_dir, "#{temp_table_name}_results.csv")
+      get_cache_results
+      create_temp_table
+      load_results_to_temp_table
+      @hits = connection.select.from(temp_table_name).count.to_i
+      copy_results_to_table
+    rescue => e
+      handle_cache_exception e
+    end # run
+
+    def get_cache_results
       begin
         count = count + 1 rescue 0
         sql   = "WITH addresses(address) AS (VALUES "
+        limit = [@batch_size, @max_rows - (count * @batch_size)].min
         rows = connection.fetch(%Q{
-            SELECT md5(#{formatter}) AS searchtext
+            SELECT DISTINCT(md5(#{formatter})) AS searchtext
             FROM #{table_name}
-            WHERE cartodb_georef_status IS false OR cartodb_georef_status IS NULL
-            GROUP BY searchtext
-            LIMIT #{BATCH_SIZE} OFFSET #{count * BATCH_SIZE}
+            WHERE cartodb_georef_status IS NULL
+            LIMIT #{limit} OFFSET #{count * @batch_size}
         }).all
         sql << rows.map { |r| "('#{r[:searchtext]}')" }.join(',')
         sql << ") SELECT DISTINCT ON(geocode_string) st_x(g.the_geom) longitude, st_y(g.the_geom) latitude,g.geocode_string FROM addresses a INNER JOIN #{sql_api[:table_name]} g ON md5(g.geocode_string)=a.address"
         response = run_query(sql, 'csv').gsub(/\A.*/, '').gsub(/^$\n/, '')
         File.open(cache_results, 'a') { |f| f.write(response.force_encoding("UTF-8")) } unless response == "\n"
-      end while rows.size >= BATCH_SIZE
-      create_temp_table
-      load_results_to_temp_table
-      @hits = connection.fetch("SELECT count(*) FROM #{temp_table_name}").first[:count].to_i
-      copy_results_to_table
-    rescue => e
-      handle_cache_exception e
-    end # run
+      end while rows.size >= @batch_size && (count * @batch_size) + rows.size < @max_rows
+    end
 
     def store
       begin
         count = count + 1 rescue 0
         sql   = "INSERT INTO #{sql_api[:table_name]} (geocode_string, the_geom) VALUES "
         rows = connection.fetch(%Q{
-          SELECT quote_nullable(#{formatter}) AS searchtext, the_geom 
+          SELECT DISTINCT(quote_nullable(#{formatter})) AS searchtext, the_geom 
           FROM #{table_name} AS orig
-          WHERE orig.the_geom IS NOT null AND #{formatter} NOT IN (SELECT geocode_string FROM #{temp_table_name})
-          LIMIT #{BATCH_SIZE} OFFSET #{count * BATCH_SIZE}
+          WHERE orig.cartodb_georef_status IS NOT NULL AND #{formatter} NOT IN (SELECT geocode_string FROM #{temp_table_name})
+          LIMIT #{@batch_size} OFFSET #{count * @batch_size}
         }).all
-        sql << rows.map { |r| "(#{r[:searchtext]}, '#{r[:the_geom]}')" }.join(',')
+        sql << rows.map { |r| "(#{r[:searchtext]}, #{(r[:the_geom] == nil ? 'NULL' : "'#{r[:the_geom]}'")})" }.join(',')
         run_query(sql) if rows && rows.size > 0
-      end while rows.size >= BATCH_SIZE
+      end while rows.size >= @batch_size
     rescue => e
       handle_cache_exception e
+    ensure
+      drop_temp_table
     end # store
 
     def create_temp_table

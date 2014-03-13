@@ -57,7 +57,7 @@ class Api::Json::ColumnsController < Api::ApplicationController
   protected
 
   def load_table
-    @table = Table.find_by_identifier(current_user.id, params[:table_id])
+    @table = Table.where(:name => params[:table_id], :user_id => current_user.id).first
     raise RecordNotFound if @table.nil?
   end
 end

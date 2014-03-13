@@ -1,4 +1,5 @@
 require 'spec_helper'
+require_relative '../../lib/cartodb/metrics'
 
 describe CartoDB::Metrics do
   before(:all) do

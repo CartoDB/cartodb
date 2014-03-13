@@ -16,7 +16,7 @@ module CartoDB
     class Downloader
 
       DEFAULT_FILENAME        = 'importer'
-      CONTENT_DISPOSITION_RE  = %r{; filename=(.*;|.*)}
+      CONTENT_DISPOSITION_RE  = %r{;\s*filename=(.*;|.*)}
       URL_RE                  = %r{://}
       URL_TRANSLATORS         = [
                                   UrlTranslator::OSM2,

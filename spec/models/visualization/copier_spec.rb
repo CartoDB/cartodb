@@ -15,7 +15,10 @@ describe Visualization::Copier do
     Visualization::Migrator.new(@db).migrate
     Visualization.repository = 
       DataRepository::Backend::Sequel.new(@db, :visualizations)
-    @user = OpenStruct.new(id: rand(999), maps: [])
+
+    @user = FactoryGirl.create(:user)
+
+    #@user = OpenStruct.new(id: rand(999), maps: [])
   end
 
   describe '#initialize' do

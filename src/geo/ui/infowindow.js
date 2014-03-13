@@ -221,7 +221,8 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     "MSPointerDown":        "_checkOrigin",
     "dblclick":             "_stopPropagation",
     "mousewheel":           "_stopPropagation",
-    "DOMMouseScroll":       "_stopPropagation",
+    "DOMMouseScroll":       "_stopBubbling",
+    "mousewheel":           "_stopBubbling",
     "dbclick":              "_stopPropagation",
     "click":                "_stopPropagation"
   },
@@ -612,6 +613,19 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
    */
   toggle: function() {
     this.model.get("visibility") ? this.show() : this.hide();
+  },
+
+  /**
+   *  Stop event bubbling
+   */
+  _stopBubbling: function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    //e = e || window.event;
+    //if (e.preventDefault)
+    //e.preventDefault();
+    //e.returnValue = false;  
   },
 
   /**

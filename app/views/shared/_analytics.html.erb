@@ -4,9 +4,7 @@
       _gaq.push(['_setAccount', '<%= ua %>']);
       _gaq.push(['_setDomainName', '<%= domain %>']);
       _gaq.push(['_setAllowLinker', true]);
-      <% if defined? page_owner -%> 
-      _gaq.push(['_setCustomVar', 1, 'Owner Type', '<%= page_owner.account_type.to_s.upcase %>', 1]);
-      <% else -%>
+      <% unless defined? page_owner -%> 
       _gaq.push(['_setCustomVar', 1, 'Member Type', '<%= stringified_member_type %>', 1]);
       <% end -%>
       

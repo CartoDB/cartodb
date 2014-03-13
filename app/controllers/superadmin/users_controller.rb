@@ -10,7 +10,8 @@ class Superadmin::UsersController < Superadmin::SuperadminController
     :username, :email, :admin, :quota_in_bytes, :table_quota, :account_type,
     :private_tables_enabled, :sync_tables_enabled, :map_view_quota, :map_view_block_price,
     :geocoding_quota, :geocoding_block_price, :period_end_date, :max_layers, :user_timeout,
-    :database_timeout, :database_host, :upgraded_at, :notification, :organization_owner
+    :database_timeout, :database_host, :upgraded_at, :notification, :organization_owner,
+    :disqus_shortname
   ]
 
   def show

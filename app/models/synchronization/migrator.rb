@@ -16,7 +16,7 @@ module CartoDB
           Integer   :interval
           String    :url
           String    :state
-          Integer   :user_id
+          String    :user_id
           DateTime  :created_at, null: false
           DateTime  :updated_at, null: false
           DateTime  :run_at

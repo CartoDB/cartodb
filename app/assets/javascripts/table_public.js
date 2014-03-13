@@ -7,6 +7,7 @@
 //= require ZeroClipboard
 //= require tag-it
 //= require jquery.tipsy
+//= require ../../../lib/assets/javascripts/utils/color.keywords
 //= require ../../../lib/assets/javascripts/utils/postgres.codemirror
 //= require ../../../lib/assets/javascripts/utils/carto.codemirror
 //= require models

@@ -64,9 +64,13 @@ CartoDB::Application.routes.draw do
     get '/viz/:id/table'            => 'visualizations#show'
     get '/viz/:id/public'           => 'visualizations#public'
     get '/viz/:id/embed_map'        => 'visualizations#embed_map'
+    get '/viz/:id/public_map'       => 'visualizations#public_map'
 
     get '/viz/:id/protected_embed_map'  => 'visualizations#show_protected_embed_map'
     post '/viz/:id/protected_embed_map' => 'visualizations#show_protected_embed_map', :as => :protected_embed_map
+
+    get '/viz/:id/protected_public_map'  => 'visualizations#show_protected_public_map'
+    post '/viz/:id/protected_public_map' => 'visualizations#show_protected_public_map', :as => :protected_public_map
 
     match '/your_apps' => 'client_applications#api_key', :as => :api_key_credentials
     post  '/your_apps/api_key/regenerate' => 'client_applications#regenerate_api_key', :as => :regenerate_api_key
@@ -116,7 +120,10 @@ CartoDB::Application.routes.draw do
       end
 
       # Geocoder
-      resources :geocodings, :only                  => [:create, :show, :index, :update]
+      resources :geocodings, :only                  => [:create, :show, :index, :update] do
+        get 'country_data_for/:country_code', to: 'geocodings#country_data_for', on: :collection, as: 'country_data'
+        get 'get_countries',                  to: 'geocodings#get_countries',    on: :collection, as: 'get_countries'
+      end
 
       get     'viz/tags' => 'tags#index', :as => 'list_tags'
       get     'viz'                                 => 'visualizations#index'

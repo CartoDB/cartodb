@@ -1,7 +1,7 @@
 require 'rollbar/rails'
 Rollbar.configure do |config|
   config.access_token = Cartodb.config[:rollbar_api_key]
-
+  config.enabled = Rails.env.production? || Rails.env.staging?
   # Add exception class names to the exception_level_filters hash to
   # change the level that exception is reported at. Note that if an exception
   # has already been reported and logged the level will need to be changed

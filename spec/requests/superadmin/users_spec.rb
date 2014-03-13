@@ -144,7 +144,8 @@ feature "Superadmin's users API" do
                     :map_view_block_price => 200,
                     :geocoding_quota => 230,
                     :geocoding_block_price => 5,
-                    :notification => 'Test' }
+                    :notification => 'Test',
+                    :disqus_shortname => 'abc' }
 
     # test to true
     put_json superadmin_user_path(user), { :user => @update_atts }, default_headers do |response|
@@ -164,6 +165,7 @@ feature "Superadmin's users API" do
     user.geocoding_quota.should == 230
     user.geocoding_block_price.should == 5
     user.notification.should == 'Test'
+    user.disqus_shortname.should == 'abc'
 
     # then test back to false
     put_json superadmin_user_path(user), { :user => {:private_tables_enabled => false} }, default_headers do |response|

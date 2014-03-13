@@ -46,6 +46,22 @@ RSpec::Matchers.define :have_required_indexes_and_triggers do
   end
 end
 
+RSpec::Matchers.define :have_no_invalid_the_geom do
+  match do |actual|
+    found = false
+    actual.schema.each do |colid, coldef|
+      if colid == :invalid_the_geom
+        found = true
+      end
+    end
+    found.should eq false
+  end
+
+  failure_message_for_should do |actual|
+    "Found invalid_the_geom on #{actual.name}"
+  end
+end
+
 
 RSpec::Matchers.define :pass_sql_tests do
   match do |actual|

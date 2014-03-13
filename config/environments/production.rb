@@ -52,15 +52,15 @@ CartoDB::Application.configure do
 
   # Compress JavaScript and CSS
   config.assets.compress = true
-     
+
   # Don't fallback to assets pipeline
   config.assets.compile = false
-     
+
   # Generate digests for assets URLs
   config.assets.digest = true
-  
+
   config.assets.initialize_on_precompile = true
-  
+
   config.action_controller.asset_host = Proc.new { Cartodb.config[:app_assets] ? Cartodb.config[:app_assets]['asset_host'] : nil }
-  
+
 end

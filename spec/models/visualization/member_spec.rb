@@ -42,13 +42,15 @@ describe Visualization::Member do
     end
 
     it 'persists tags as an array if the backend supports it' do
+      relation_id = UUIDTools::UUID.timestamp_create.to_s
+
       db_config   = Rails.configuration.database_configuration[Rails.env]
       db          = Sequel.postgres(
                       host:     db_config.fetch('host'),
                       port:     db_config.fetch('port'),
                       username: db_config.fetch('username')
                     )
-      relation    = "visualizations_#{Time.now.to_i}".to_sym
+      relation    = "visualizations_#{relation_id}".to_sym
       repository  = DataRepository::Backend::Sequel.new(db, relation)
       Visualization::Migrator.new(db).migrate(relation)
       attributes  = random_attributes(tags: ['tag 1', 'tag 2'])
@@ -84,6 +86,9 @@ describe Visualization::Member do
     end
 
     it 'invalidates vizjson cache in varnish if privacy changed' do
+      # Need to at least have this decorated in the user data or checks before becoming private will raise an error
+      CartoDB::Visualization::Member.any_instance.stubs(:supports_private_maps?).returns(true)
+      
       member      = Visualization::Member.new(random_attributes)
       member.store
 
@@ -158,7 +163,7 @@ describe Visualization::Member do
 
   describe '#authorize?' do
     it 'returns true if user maps include map_id' do
-      map_id  = rand(99)
+      map_id  = UUIDTools::UUID.timestamp_create.to_s
       member  = Visualization::Member.new(name: 'foo', map_id: map_id)
 
       maps    = [OpenStruct.new(id: map_id)]
@@ -273,10 +278,52 @@ describe Visualization::Member do
         visualization.is_password_valid?(password_value)
       }.should raise_error CartoDB::InvalidMember
     end
-  end #password=
+  end #password
+
+  describe '#privachy_and_exceptions' do
+    it 'checks different privacy options to make sure exceptions are raised when they should' do
+      visualization = Visualization::Member.new(type: Visualization::Member::DERIVED_TYPE)
+      visualization.name = 'test'
+
+      # Private maps allowed
+      visualization.user_data = { actions: { private_maps: true } }
+
+      # Forces internal "dirty" flag
+      visualization.privacy = Visualization::Member::PRIVACY_PUBLIC
+      visualization.privacy = Visualization::Member::PRIVACY_PRIVATE
+
+      visualization.store
+
+      # -------------
+
+      # No private maps allowed
+      visualization.user_data = { actions: { } }
+
+      visualization.privacy = Visualization::Member::PRIVACY_PUBLIC
+      visualization.privacy = Visualization::Member::PRIVACY_PRIVATE
+
+      # Derived table without private maps flag = error
+      expect {
+        visualization.store
+      }.to raise_exception CartoDB::InvalidMember
+
+      # -------------
+
+      visualization = Visualization::Member.new(type: Visualization::Member::CANONICAL_TYPE)
+      visualization.name = 'test'
+      # No private maps allowed
+      visualization.user_data = { actions: { } }
+
+      visualization.privacy = Visualization::Member::PRIVACY_PUBLIC
+      visualization.privacy = Visualization::Member::PRIVACY_PRIVATE
+
+      # Canonical visualizations can always be private
+      visualization.store
+    end
+  end
 
   def random_attributes(attributes={})
-    random = rand(999)
+    random = UUIDTools::UUID.timestamp_create.to_s
     {
       name:         attributes.fetch(:name, "name #{random}"),
       description:  attributes.fetch(:description, "description #{random}"),

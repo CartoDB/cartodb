@@ -13,8 +13,8 @@ describe DataRepository::Backend::Sequel do
       String    :name
       String    :description
       String    :tags
-      Integer   :map_id
-      Integer   :active_layer_id
+      String   :map_id
+      String   :active_layer_id
       String    :type
       String    :privacy
       String    :encrypted_password

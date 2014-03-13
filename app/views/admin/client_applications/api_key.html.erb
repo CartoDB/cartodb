@@ -2,12 +2,12 @@
   Your apps |
 <% end %>
 <%= content_for(:js) do %>
-  <%= javascript_include_tag 'cdb.js', 'application.js', 'keys.js' %>
   <script type="text/javascript">
     var username = "<%= current_user.username %>"
       , config = <%=raw frontend_config.html_safe %>
       , user_data = <%= raw current_user.data.to_json.html_safe %>;
   </script>
+  <%= javascript_include_tag 'cdb.js', 'application.js', 'models.js', 'keys.js', 'templates.js' %>
 <% end %>
 <%= content_for(:css) do %>
   <%= stylesheet_link_tag 'common.css', 'keys.css', :media => 'all' %>

@@ -35,8 +35,8 @@ module CartoDB
 
       attribute :id,                  String
       attribute :name,                String
-      attribute :map_id,              Integer
-      attribute :active_layer_id,     Integer
+      attribute :map_id,              String
+      attribute :active_layer_id,     String
       attribute :type,                String
       attribute :privacy,             String
       attribute :tags,                Array[String], default: []
@@ -97,17 +97,23 @@ module CartoDB
         self
       end #fetch
 
-      def delete
+      def delete(from_table_deletion=false)
         # Named map must be deleted before the map, or we lose the reference to it
-        named_map = has_named_map?
-        operation_result = named_map.delete if named_map
+
+        begin
+          named_map = has_named_map?
+          named_map.delete if named_map
+        rescue NamedMapsWrapper::HTTPResponseError => exception
+          # CDB-1964: Silence named maps API exception if deleting data to avoid interrupting whole flow
+          raise exception unless from_table_deletion
+        end
 
         invalidate_varnish_cache
         overlays.destroy
         layers(:base).map(&:destroy)
         layers(:cartodb).map(&:destroy)
         map.destroy if map
-        table.destroy if type == CANONICAL_TYPE && table
+        table.destroy if (type == CANONICAL_TYPE && table && !from_table_deletion)
         repository.delete(id)
         self.attributes.keys.each { |key| self.send("#{key}=", nil) }
 
@@ -246,13 +252,13 @@ module CartoDB
         ( password_digest(password, @password_salt) == @encrypted_password )
       end #is_password_valid
 
-      def remove_password()
+      def remove_password
         @password_salt = nil
         @encrypted_password = nil
       end #remove_password
 
       # To be stored with the named map
-      def make_auth_token()
+      def make_auth_token
         digest = secure_digest(Time.now, (1..10).map{ rand.to_s() })
         10.times do
           digest = secure_digest(digest, TOKEN_DIGEST)
@@ -260,7 +266,7 @@ module CartoDB
         digest            
       end #make_auth_token
 
-      def get_auth_token()
+      def get_auth_token
         named_map = has_named_map?
         raise CartoDB::InvalidMember unless named_map
 
@@ -268,6 +274,14 @@ module CartoDB
         raise CartoDB::InvalidMember if tokens.size == 0
         tokens.first
       end #get_auth_token
+
+      def supports_private_maps?
+        if @user_data.nil? && !user.nil?
+          @user_data = user.data
+        end
+
+        !@user_data.nil? && @user_data.include?(:actions) && @user_data[:actions].include?(:private_maps)
+      end # supports_private_maps?
 
       private
 
@@ -279,6 +293,11 @@ module CartoDB
           raise CartoDB::InvalidMember if not has_password?
         else
           remove_password()
+        end
+
+        # Warning, imports create by default private canonical visualizations
+        if type != CANONICAL_TYPE && @privacy == PRIVACY_PRIVATE && privacy_changed && !supports_private_maps?
+          raise CartoDB::InvalidMember
         end
 
         invalidate_varnish_cache if name_changed || privacy_changed || description_changed
@@ -317,13 +336,13 @@ module CartoDB
       def save_named_map
         named_map = has_named_map?
         if retrieve_named_map?
-            if (named_map)
+            if named_map
               update_named_map(named_map)
              else
-              create_named_map()
+              create_named_map
             end
         else
-          named_map.delete() if named_map
+          named_map.delete if named_map
         end
       end #save_named_map
 
@@ -407,7 +426,7 @@ module CartoDB
         digest
       end #password_digest
 
-      def generate_salt()
+      def generate_salt
         secure_digest(Time.now, (1..10).map{ rand.to_s() })
       end #generate_salt
 

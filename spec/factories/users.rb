@@ -9,6 +9,7 @@ FactoryGirl.define do
     password               { email.split('@').first }
     table_quota            5
     quota_in_bytes         5000000
+    id                     { UUIDTools::UUID.timestamp_create.to_s }
 
     trait :admin_privileges do
 

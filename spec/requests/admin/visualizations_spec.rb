@@ -112,7 +112,7 @@ describe Admin::VisualizationsController do
       last_response.status.should == 302
       follow_redirect!
       last_response.status.should == 200
-      last_request.url.should =~ %r{.*#{id}/embed_map.*}
+      last_request.url.should =~ %r{.*#{id}/public_map.*}
     end
   end # GET /viz/:id/public
 

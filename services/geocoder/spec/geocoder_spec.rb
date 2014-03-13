@@ -2,7 +2,7 @@
 require_relative '../lib/geocoder.rb'
 
 describe CartoDB::Geocoder do
-  let(:default_params) { {app_id: '', token: '', mailto: '', force_batch: true, base_url: 'http://wadus.nokia.com'} }
+  let(:default_params) { {app_id: '', token: '', mailto: '', force_batch: true, base_url: 'http://wadus.nokia.com', non_batch_base_url: 'http://wadus.nokia.com'} }
 
   describe '#upload' do
     it 'returns rec_id on success' do
@@ -88,6 +88,14 @@ describe CartoDB::Geocoder do
 
     it 'allows for api attributes specification' do
       geocoder.api_url({attr: 'wadus'}, 'all').should == "/all/?attr=wadus&app_id=a&token=b&mailto=c"
+    end
+  end
+
+  describe '#geocode_text' do
+    it 'returns lat/lon on success' do
+      stub_api_request 200, 'response_example_non_batch.json'
+      g = CartoDB::Geocoder.new(default_params)
+      g.geocode_text("United States").should eq [38.89037, -77.03196]
     end
   end
 

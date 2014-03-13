@@ -130,6 +130,12 @@ module ApplicationHelper
     end
   end
 
+  def insert_rollbar()
+    if not Cartodb.config[:rollbar].blank? and not Cartodb.config[:rollbar]['token'].blank?
+      render(:partial => 'shared/rollbar', :locals => { token: Cartodb.config[:rollbar]['token'] })
+    end
+  end
+
   ##
   # Checks that the precompile list contains this file or raises an error, in dev only
   # Note: You will need to move config.assets.precompile to application.rb from production.rb

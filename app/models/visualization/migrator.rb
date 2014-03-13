@@ -15,8 +15,8 @@ module CartoDB
           String    :id, primary_key: true
           String    :name
           String    :description
-          Integer   :map_id, index: true
-          Integer   :active_layer_id
+          String    :map_id, index: true
+          String   :active_layer_id
           String    :type
           String    :privacy
           DateTime  :created_at, null: false
@@ -26,7 +26,7 @@ module CartoDB
         end
 
         @db.run(%Q{
-          ALTER TABLE #{relation}
+          ALTER TABLE "#{relation}"
           ADD COLUMN tags text[]
         })
       end #migrate

@@ -18,7 +18,7 @@ class DataImport < Sequel::Model
   REDIS_LOG_EXPIRATION_IN_SECS  = 3600 * 24 * 2 # 2 days
   MERGE_WITH_UNMATCHING_COLUMN_TYPES_RE = /No .*matches.*argument type.*/
 
-  attr_reader   :log
+  attr_accessor   :log, :results
 
   PUBLIC_ATTRIBUTES = %W{ id user_id table_id data_type table_name state
     error_code queue_id get_error_text tables_created_count 
@@ -37,13 +37,15 @@ class DataImport < Sequel::Model
 
   def public_values
     values = Hash[PUBLIC_ATTRIBUTES.map{ |attribute| [attribute, send(attribute)] }]
-    values.merge!("queue_id" => id)
+    values.merge!('queue_id' => id)
     values.merge!(success: success) if (state == 'complete' || state == 'failure')
     values
   end
 
   def run_import!
+    log.append 'Before dispatch'
     success = !!dispatch
+    log.append 'After dispatch'
     if self.results.empty?
       self.error_code = 1002
       self.state      = 'failure'
@@ -58,7 +60,7 @@ class DataImport < Sequel::Model
     log.append "Exception: #{exception.to_s}"
     log.append exception.backtrace
     stacktrace = exception.to_s + exception.backtrace.join
-    Rollbar.report_message("Import error", "error", error_info: stacktrace)
+    Rollbar.report_message('Import error', 'error', error_info: stacktrace)
     handle_failure
     self
   end
@@ -69,22 +71,24 @@ class DataImport < Sequel::Model
   end
 
   def raise_over_table_quota_error
+    log.append 'Over account table limit, please upgrade'
     self.error_code = 8002
     self.state      = 'failure'
     save
-    log.append("Over account table limit, please upgrade")
-    raise CartoDB::QuotaExceeded, "More tables required"
+    raise CartoDB::QuotaExceeded, 'More tables required'
   end
 
   def mark_as_failed_if_stuck!    
     return false unless stuck?
+
+    log.append 'Import timed out'
 
     self.success  = false
     self.state    = 'failure'
     save
 
     CartoDB::notify_exception(
-      CartoDB::Importer2::GenericImportError.new("Import timed out"), 
+      CartoDB::Importer2::GenericImportError.new('Import timed out'),
       user: current_user
     )
     return true
@@ -103,7 +107,7 @@ class DataImport < Sequel::Model
   def remove_uploaded_resources
     return nil unless uploaded_file
 
-    path = Rails.root.join("public", "uploads", uploaded_file[1])
+    path = Rails.root.join('public', 'uploads', uploaded_file[1])
     FileUtils.rm_rf(path) if Dir.exists?(path)
   end #remove_uploaded_resources
 
@@ -111,7 +115,7 @@ class DataImport < Sequel::Model
     CartodbStats.increment_imports
     self.success  = true
     self.state    = 'complete'
-    self.log << "SUCCESS!\n"
+    log.append "SUCCESS!\n"
     save
     notify(results)
     self
@@ -120,23 +124,21 @@ class DataImport < Sequel::Model
   def handle_failure
     self.success    = false
     self.state      = 'failure'
-    self.log << "ERROR!\n"
+    log.append "ERROR!\n"
     self.save
     notify(results)
     self
   rescue => exception
+    log.append "Exception: #{exception.to_s}"
+    log.append exception.backtrace
     self
   end #handle_failure
-
-  attr_reader :results
 
   def table
     Table.where(id: table_id, user_id: user_id).first
   end #table
 
   private
-
-  attr_writer :results, :log
 
   def dispatch
     return migrate_existing   if migrate_table.present?
@@ -149,8 +151,8 @@ class DataImport < Sequel::Model
 
   def running_import_ids
     Resque::Worker.all.map do |worker|
-      next unless worker.job["queue"] == "imports"
-      worker.job["payload"]["args"].first["job_id"] rescue nil 
+      next unless worker.job['queue'] == 'imports'
+      worker.job['payload']['args'].first['job_id'] rescue nil
     end.compact
   end
 
@@ -203,6 +205,8 @@ class DataImport < Sequel::Model
   end
 
   def from_table
+    log.append 'from_table()'
+
     number_of_tables = 1
     quota_checker = CartoDB::QuotaChecker.new(current_user)
     if quota_checker.will_be_over_table_quota?(number_of_tables)
@@ -211,8 +215,10 @@ class DataImport < Sequel::Model
 
     query = table_copy ? "SELECT * FROM #{table_copy}" : from_query
     new_table_name = import_from_query(table_name, query)
+
     self.update(table_names: new_table_name)
     migrate_existing(new_table_name)
+
     self.results.push CartoDB::Importer2::Result.new(success: true, error: nil)
   rescue Sequel::DatabaseError => exception
     if exception.to_s =~ MERGE_WITH_UNMATCHING_COLUMN_TYPES_RE
@@ -224,6 +230,8 @@ class DataImport < Sequel::Model
   end
 
   def import_from_query(name, query)
+    log.append 'import_from_query()'
+
     self.data_type    = 'query'
     self.data_source  = query
     self.save
@@ -232,13 +240,13 @@ class DataImport < Sequel::Model
     table_name = Table.get_valid_table_name(name, name_candidates: candidates)
     current_user.in_database.run(%Q{CREATE TABLE #{table_name} AS #{query}})
     if current_user.over_disk_quota?
-      log.append "Over storage quota"
+      log.append 'Over storage quota'
       log.append "Dropping table #{table_name}"
       current_user.in_database.run(%Q{DROP TABLE #{table_name}})
       self.error_code = 8001
       self.state      = 'failure'
       save
-      raise CartoDB::QuotaExceeded, "More storage required"
+      raise CartoDB::QuotaExceeded, 'More storage required'
     end
 
     table_name
@@ -247,17 +255,20 @@ class DataImport < Sequel::Model
   def migrate_existing(imported_name=migrate_table, name=nil)
     new_name = imported_name || name
 
+    log.append 'migrate_existing()'
+
     table         = Table.new
     table.user_id = user_id
     table.name    = new_name
     table.migrate_existing_table = imported_name
 
     if table.valid?
+      log.append 'Table valid'
       table.save
       table.optimize
       table.map.recalculate_bounds!
       if current_user.remaining_quota < 0
-        self.log.append("Over storage quota, removing table" )
+        log.append 'Over storage quota, removing table'
         self.error_code = 8001
         table.destroy
         return false
@@ -266,11 +277,11 @@ class DataImport < Sequel::Model
       self.table_id = table.id
       self.table_name = table.name
       save
-      return true
+      true
     else
       reload
-      self.log << ("Error linking #{imported_name} to UI: " + table.errors.full_messages.join(" - "))
-      return false
+      log.append "Table invalid: Error linking #{imported_name} to UI: " + table.errors.full_messages.join(' - ')
+      false
     end
   end
 
@@ -285,6 +296,8 @@ class DataImport < Sequel::Model
   end #pg_options
 
   def new_importer
+    log.append 'new_importer()'
+
     tracker       = lambda { |state| self.state = state; save }
     downloader    = CartoDB::Importer2::Downloader.new(data_source)
     runner        = CartoDB::Importer2::Runner.new(
@@ -296,16 +309,18 @@ class DataImport < Sequel::Model
     importer      = CartoDB::Connector::Importer.new(
                       runner, registrar, quota_checker, database, id
                     )
-    
+
+    log.append 'Before run.'
     importer.run(tracker)
+    log.append 'After run.'
 
     self.results    = importer.results
     self.error_code = importer.error_code
     self.table_name = importer.table.name if importer.success? && importer.table
     self.table_id   = importer.table.id if importer.success? && importer.table
     if synchronization_id
-      synchronization = 
-        CartoDB::Synchronization::Member.new(id: synchronization_id).fetch
+      log.append "synchronization_id: #{synchronization_id}"
+      synchronization = CartoDB::Synchronization::Member.new(id: synchronization_id).fetch
       synchronization.name    = self.table_name
       synchronization.log_id  = log.id
 
@@ -318,6 +333,7 @@ class DataImport < Sequel::Model
         synchronization.error_code = error_code
         synchronization.error_message = get_error_text
       end
+      log.append "importer.success? #{synchronization.state}"
       synchronization.store
     end
     importer.success?
@@ -355,6 +371,7 @@ class DataImport < Sequel::Model
   end
 
   def set_merge_error(error_code)
+    log.append("going to set merge error with code #{error_code}")
     self.results = [CartoDB::Importer2::Result.new(
       success: false, error_code: error_code
     )]

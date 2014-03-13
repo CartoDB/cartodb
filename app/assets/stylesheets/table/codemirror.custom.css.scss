@@ -5,6 +5,11 @@
 @import "../common/vars";
 
 /** customization of codemirror styles */
+.cm-s-default .cm-color {
+  color: black;
+  @include border-radius(2px);
+  &:hover { cursor:pointer }
+}
 .cm-s-default .cm-variable {color: #666666;}
 .cm-s-default .cm-keyword {color: #FF9900;}
 .cm-s-default .cm-atom {color: #FF9900;}

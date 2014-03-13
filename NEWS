@@ -1,3 +1,6 @@
+3.8.01 ()
+- fixed nokia https to http url rewrite
+
 3.8.00 (11//03//2014)
 - Added mouseover and mouseout for layers
 - Fixed error in old IE browsers for torque visualizations.

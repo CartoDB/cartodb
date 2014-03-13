@@ -7,6 +7,8 @@ tmp/*
 tmp/**/*
 public/system
 public/uploads
+public/javascripts
+public/stylesheets
 db/schema.rb
 *.pyc
 bin/

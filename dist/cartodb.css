@@ -2375,19 +2375,17 @@ div.cartodb-tooltip p {
 div#cartodb-gmaps-attribution {
   position:absolute;
   display:block;
-  bottom:19px;
+  bottom:10px;
   right:0;
-  height:19px;
-  line-height:19px;
-  padding:0 6px 0 50px;
+  height:10px;
+  line-height:10px;
+  padding:0 6px 4px 6px;
   background: white;
-  background: -ms-linear-gradient(left, rgba(255, 255, 255, 0) 0px, rgba(255, 255, 255, 0.5) 50px);
-  background: -webkit-linear-gradient(left, rgba(255, 255, 255, 0) 0px,rgba(255, 255, 255, 0.498039) 50px);
-  background: linear-gradient(left, rgba(255, 255, 255, 0) 0px, rgba(255, 255, 255, 0.498039) 50px);
-  background: -moz-linear-gradient(left center , rgba(255, 255, 255, 0) 0px, rgba(255, 255, 255, 0.5) 50px) repeat scroll 0% 0% transparent;
-  font-family: Arial, sans-serif;
-  font-size: 10px;
-  color: rgb(68, 68, 68)!important;
+  background: rgba(245,245,245,0.7);
+  font-family: "Roboto", Arial, sans-serif!important;
+  font-size: 11px;
+  font-weight: 400;
+  color: #444!important;
   white-space: nowrap;
   direction: ltr;
   text-align: right;
@@ -2398,8 +2396,8 @@ div#cartodb-gmaps-attribution {
 }  
 
 div#cartodb-gmaps-attribution a {
-  color: rgb(68,68,68);
-  text-decoration: underline;
+  color: #444;
+  text-decoration:none;
 }
 
 /* SLIDER */

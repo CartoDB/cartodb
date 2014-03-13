@@ -25,11 +25,13 @@ describe CartoDB::GeocoderCache do
   describe '#get_cache_results' do
     it "runs the query in batches" do
       cache = CartoDB::GeocoderCache.new(default_params.merge(batch_size: 5))
+      @db.run("alter table #{@table_name} add column cartodb_georef_status BOOLEAN DEFAULT NULL")
       cache.expects(:run_query).times(3).returns('')
       cache.get_cache_results
     end
 
     it "honors max_rows" do
+      @db.run("alter table #{@table_name} add column cartodb_georef_status BOOLEAN DEFAULT NULL")
       cache = CartoDB::GeocoderCache.new(default_params.merge(
         batch_size: 5,
         max_rows: 10

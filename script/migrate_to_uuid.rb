@@ -28,7 +28,6 @@ def execution_summary()
   # Database port: #{DBPORT}
   # Database name: #{DBNAME}
   # Database user: #{DBUSER}
-  # Database port: #{DBPORT}
   #
   # Redis Connection
   # ----------------
@@ -352,7 +351,7 @@ def migrate_meta(tables)
         tinfo[:related].each do |rtable|
           puts "Setting #{relation_column_name_for(tables, tname, rtable)}_uuid in #{rtable}"
           begin
-            @conn.exec("UPDATE #{rtable} SET #{relation_column_name_for(tables, tname, rtable)}_uuid='#{row['uuid']}' WHERE #{relation_column_name_for(tables, tname, rtable)}_id=#{row['id']}")        
+            @conn.exec("UPDATE #{rtable} SET #{relation_column_name_for(tables, tname, rtable)}_uuid='#{row['uuid']}' WHERE #{relation_column_name_for(tables, tname, rtable)}_id='#{row['id']}'")
           rescue => e
             log('C', "Setting #{relation_column_name_for(tables, tname, rtable)}_uuid in #{rtable}", e.error.strip)
           end
@@ -372,7 +371,7 @@ def migrate_data(redis_keys)
         sconn.exec("ALTER DATABASE \"#{row['database_name']}\" RENAME TO \"#{user_database(row['uuid'])}\"")
         sconn.exec("ALTER ROLE \"#{database_username(row['id'])}\" RENAME TO \"#{database_username(row['uuid'])}\"")
         @conn.exec("UPDATE users SET database_name='#{user_database(row['uuid'])}' WHERE id=#{row['id']} AND uuid='#{row['uuid']}'")
-        @conn.exec("UPDATE user_tables SET database_name='#{user_database(row['uuid'])}' WHERE user_id=#{row['id']} AND user_uuid='#{row['uuid']}'")
+        @conn.exec("UPDATE user_tables SET database_name='#{user_database(row['uuid'])}' WHERE user_id='#{row['id']}' AND user_uuid='#{row['uuid']}'")
       rescue => e
         log('C', "Renaming pg user and db for id #{row['id']}", e.error.strip)
       end

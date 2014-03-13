@@ -561,7 +561,7 @@ Remove the sublayer. If a method is called after removing it an exception is thr
 
 ##### **sublayer.setInteraction(true) **
 
-Sets the interaction of your layer to true (enabled) or false (disabled). When is disabled **featureOver**, **featureClick** and **featureOut** are **not** triggered.
+Sets the interaction of your layer to true (enabled) or false (disabled). When is disabled **featureOver**, **featureClick**, **featureOut**, **mouseover** and **mouseout** are **not** triggered.
 
 ###### Arguments
 
@@ -650,6 +650,29 @@ A callback when clicks in a feature.
 ###### callback arguments
 
 Same as **featureOver**.
+
+##### sublayer.mouseover -> ()
+
+Called when the mouse enters in **any** feature, useful to change cursor for hover
+
+##### sublayer.mouseout -> ()
+
+Called when the mouse leaves all the features, useful to change cursor for hover
+
+###### Example
+
+<div class="margin20"></div>
+<div class="code_title">sublayer.on</div>
+  ```
+    sublayer.on('mouseover', function() {
+      cursor.set('hand')
+    });
+    sublayer.on('mouseout', function() {
+      cursor.set('auto')
+    });
+  ```
+<div class="margin20"></div>
+
 
 ### Specific UI functions
 

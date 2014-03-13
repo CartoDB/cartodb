@@ -29,6 +29,7 @@ cdb.ui.common.FullScreen = cdb.core.View.extend({
   _toggleFullScreen: function(ev) {
 
     ev.stopPropagation();
+    ev.preventDefault();
 
     var doc   = window.document;
     var docEl = doc.documentElement;
@@ -43,6 +44,10 @@ cdb.ui.common.FullScreen = cdb.core.View.extend({
     if(!doc.fullscreenElement && !doc.mozFullScreenElement && !doc.webkitFullscreenElement) {
 
       requestFullScreen.call(docEl);
+
+      if (this.options.mapView) {
+        this.options.mapView.invalidateSize();
+      }
 
     } else {
 

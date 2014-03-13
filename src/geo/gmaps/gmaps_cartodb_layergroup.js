@@ -278,10 +278,11 @@ cdb.geo.CartoDBNamedMapGMaps = CartoDBNamedMap;
 function LayerGroupView(base) {
   var GMapsCartoDBLayerGroupView = function(layerModel, gmapsMap) {
     var self = this;
+    var hovers = [];
 
     _.bindAll(this, 'featureOut', 'featureOver', 'featureClick');
 
-    // CartoDB new attribution,
+    // CartoDB new attribution,z
     // also we have the logo
     layerModel.attributes.attribution = cdb.config.get('cartodb_attributions');
 
@@ -294,20 +295,34 @@ function LayerGroupView(base) {
     _featureOut   = opts.featureOut,
     _featureClick = opts.featureClick;
 
-    opts.featureOver  = function() {
+    opts.featureOver  = function(e, latlon, pxPos, data, layer) {
+      if (!hovers[layer]) {
+        self.trigger('layermouseover', layer);
+      }
+      hovers[layer] = 1;
+      if(_.any(hovers)) {
+        self.trigger('mouseover');
+      }
       _featureOver  && _featureOver.apply(this, arguments);
       self.featureOver  && self.featureOver.apply(this, arguments);
     };
 
-    opts.featureOut  = function() {
+    opts.featureOut  = function(m, layer) {
+      if (hovers[layer]) {
+        self.trigger('layermouseout', layer);
+      }
+      hovers[layer] = 0;
+      if(!_.any(hovers)) {
+        self.trigger('mouseout');
+      }
       _featureOut  && _featureOut.apply(this, arguments);
       self.featureOut  && self.featureOut.apply(this, arguments);
     };
 
-    opts.featureClick  = function() {
+    opts.featureClick  = _.debounce(function() {
       _featureClick  && _featureClick.apply(this, arguments);
       self.featureClick  && self.featureClick.apply(opts, arguments);
-    };
+    }, 10);
 
     
     //CartoDBLayerGroup.call(this, opts);

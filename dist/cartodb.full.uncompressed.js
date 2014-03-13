@@ -1,6 +1,6 @@
-// cartodb.js version: 3.7.06
+// cartodb.js version: 3.8.01
 // uncompressed version: cartodb.uncompressed.js
-// sha: d22802aa7fcc26d20baea57aae926e1ed284c7a5
+// sha: fa4e1a471878484c088e93c0d3f57118cf4e1339
 (function() {
   var root = this;
 
@@ -20686,7 +20686,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.7.06';
+    cdb.VERSION = '3.8.01';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -25586,6 +25586,7 @@ cdb.ui.common.FullScreen = cdb.core.View.extend({
   _toggleFullScreen: function(ev) {
 
     ev.stopPropagation();
+    ev.preventDefault();
 
     var doc   = window.document;
     var docEl = doc.documentElement;
@@ -25600,6 +25601,10 @@ cdb.ui.common.FullScreen = cdb.core.View.extend({
     if(!doc.fullscreenElement && !doc.mozFullScreenElement && !doc.webkitFullscreenElement) {
 
       requestFullScreen.call(docEl);
+
+      if (this.options.mapView) {
+        this.options.mapView.invalidateSize();
+      }
 
     } else {
 
@@ -26614,17 +26619,20 @@ SubLayer.prototype = {
     var self = this;
     // binds a signal to a layer event and trigger on this sublayer
     // in case the position matches
-    var _bindSignal = function(signal) {
+    var _bindSignal = function(signal, signalAlias) {
+      signalAlias = signalAlias || signal;
       self._parent.on(signal, function() {
         var args = Array.prototype.slice.call(arguments);
         if (parseInt(args[args.length - 1], 10) ==  self._position) {
-          self.trigger.apply(self, [signal].concat(args));
+          self.trigger.apply(self, [signalAlias].concat(args));
         }
       }, self);
     };
     _bindSignal('featureOver');
     _bindSignal('featureOut');
     _bindSignal('featureClick');
+    _bindSignal('layermouseover', 'mouseover');
+    _bindSignal('layermouseout', 'mouseout');
   },
 
   _setPosition: function(p) {
@@ -26708,15 +26716,11 @@ CartoDBLayerCommon.prototype = {
           .map(this.options.map)
           .tilejson(tilejson)
           .on('on', function(o) {
-            //o.layer = layer || 0;
-            //o.layer = self.getLayerNumberByIndex(+o.layer);
             o.layer = +layer;
             self._manageOnEvents(self.options.map, o);
           })
           .on('off', function(o) {
             o = o || {}
-            //o.layer = layer || 0;
-            //o.layer = self.getLayerNumberByIndex(+o.layer);
             o.layer = +layer;
             self._manageOffEvents(self.options.map, o);
           });
@@ -27347,8 +27351,7 @@ function layerView(base) {
 
     initialize: function(layerModel, leafletMap) {
       var self = this;
-
-      //_.bindAll(this, 'featureOut', 'featureOver', 'featureClick');
+      var hovers = [];
 
       // CartoDB new attribution,
       // also we have the logo
@@ -27363,20 +27366,34 @@ function layerView(base) {
       _featureOut   = opts.featureOut,
       _featureClick = opts.featureClick;
 
-      opts.featureOver  = function() {
-        _featureOver  && _featureOver.apply(self, arguments);
+      opts.featureOver  = function(e, latlon, pxPos, data, layer) {
+        if (!hovers[layer]) {
+          self.trigger('layermouseover', layer);
+        }
+        hovers[layer] = 1;
+        if(_.any(hovers)) {
+          self.trigger('mouseover');
+        }
+        _featureOver  && _featureOver.apply(this, arguments);
         self.featureOver  && self.featureOver.apply(self, arguments);
       };
 
-      opts.featureOut  = function() {
-        _featureOut  && _featureOut.apply(self, arguments);
+      opts.featureOut  = function(m, layer) {
+        if (hovers[layer]) {
+          self.trigger('layermouseout', layer);
+        }
+        hovers[layer] = 0;
+        if(!_.any(hovers)) {
+          self.trigger('mouseout');
+        }
+        _featureOut  && _featureOut.apply(this, arguments);
         self.featureOut  && self.featureOut.apply(self, arguments);
       };
 
-      opts.featureClick  = function() {
+      opts.featureClick  = _.debounce(function() {
         _featureClick  && _featureClick.apply(self, arguments);
         self.featureClick  && self.featureClick.apply(self, arguments);
-      };
+      }, 10);
 
       base.prototype.initialize.call(this, opts);
       cdb.geo.LeafLetLayerView.call(this, layerModel, this, leafletMap);
@@ -28461,10 +28478,11 @@ cdb.geo.CartoDBNamedMapGMaps = CartoDBNamedMap;
 function LayerGroupView(base) {
   var GMapsCartoDBLayerGroupView = function(layerModel, gmapsMap) {
     var self = this;
+    var hovers = [];
 
     _.bindAll(this, 'featureOut', 'featureOver', 'featureClick');
 
-    // CartoDB new attribution,
+    // CartoDB new attribution,z
     // also we have the logo
     layerModel.attributes.attribution = cdb.config.get('cartodb_attributions');
 
@@ -28477,20 +28495,34 @@ function LayerGroupView(base) {
     _featureOut   = opts.featureOut,
     _featureClick = opts.featureClick;
 
-    opts.featureOver  = function() {
+    opts.featureOver  = function(e, latlon, pxPos, data, layer) {
+      if (!hovers[layer]) {
+        self.trigger('layermouseover', layer);
+      }
+      hovers[layer] = 1;
+      if(_.any(hovers)) {
+        self.trigger('mouseover');
+      }
       _featureOver  && _featureOver.apply(this, arguments);
       self.featureOver  && self.featureOver.apply(this, arguments);
     };
 
-    opts.featureOut  = function() {
+    opts.featureOut  = function(m, layer) {
+      if (hovers[layer]) {
+        self.trigger('layermouseout', layer);
+      }
+      hovers[layer] = 0;
+      if(!_.any(hovers)) {
+        self.trigger('mouseout');
+      }
       _featureOut  && _featureOut.apply(this, arguments);
       self.featureOut  && self.featureOut.apply(this, arguments);
     };
 
-    opts.featureClick  = function() {
+    opts.featureClick  = _.debounce(function() {
       _featureClick  && _featureClick.apply(this, arguments);
       self.featureClick  && self.featureClick.apply(opts, arguments);
-    };
+    }, 10);
 
     
     //CartoDBLayerGroup.call(this, opts);
@@ -29245,12 +29277,12 @@ cdb.ui.common.ShareDialog = cdb.ui.common.Dialog.extend({
   className: 'cartodb-share-dialog',
 
   events: {
-    'click .ok': '_ok',
-    'click .cancel': '_cancel',
-    'click .close': '_cancel',
-    "click":                      '_stopPropagation',
-    "dblclick":                   '_stopPropagation',
-    "mousedown":                  '_stopPropagation'
+    'click .ok':       '_ok',
+    'click .cancel':   '_cancel',
+    'click .close':    '_cancel',
+    "click":           '_stopPropagation',
+    "dblclick":        '_stopPropagation',
+    "mousedown":       '_stopPropagation'
   },
 
   default_options: {
@@ -29282,8 +29314,12 @@ cdb.ui.common.ShareDialog = cdb.ui.common.Dialog.extend({
     var self = this;
 
     if (this.options.target) {
-      this.options.target.on("click", function() {
+      this.options.target.on("click", function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+
         self.open();
+
       })
     }
 
@@ -30275,10 +30311,11 @@ var Vis = cdb.core.View.extend({
         done();
       }
     }
-    //TODO: add a timeout to raise error
+    
     cdb.config.bind('moduleLoaded', loaded);
-    loaded();
+    _.defer(loaded);
   },
+
 
   load: function(data, options) {
     var self = this;
@@ -30288,7 +30325,7 @@ var Vis = cdb.core.View.extend({
         if (data) {
           self.load(data, options);
         } else {
-          self.trigger('error', 'error fetching viz.json file');
+          self.throwError('error fetching viz.json file');
         }
       });
       return this;
@@ -30296,8 +30333,7 @@ var Vis = cdb.core.View.extend({
 
     if(!this.checkModules(data.layers)) {
       if(this.moduleChecked) {
-        cdb.log.error("modules not found");
-        self.trigger('error', "modules couldn't be loaded");
+        self.throwError("modules couldn't be loaded");
         return this;
       }
       this.moduleChecked = true;
@@ -30834,16 +30870,12 @@ var Vis = cdb.core.View.extend({
 
     var hovers = [];
 
-    layerView.bind('featureOver', function(e, latlon, pxPos, data, layer) {
-      hovers[layer] = 1;
-      if(_.any(hovers))
-        mapView.setCursor('pointer');
+    layerView.bind('mouseover', function() {
+      mapView.setCursor('pointer');
     });
 
-    layerView.bind('featureOut', function(m, layer) {
-      hovers[layer] = 0;
-      if(!_.any(hovers))
-        mapView.setCursor('auto');
+    layerView.bind('mouseout', function(m, layer) {
+      mapView.setCursor('auto');
     });
 
     layerView.infowindow = infowindow.model;
@@ -30858,7 +30890,7 @@ var Vis = cdb.core.View.extend({
     var layerView = mapView.getLayerByCid(layer_cid);
 
     if (!layerView) {
-      this.trigger('error', "layer can't be created", map.layers.getByCid(layer_cid));
+      this.throwError("layer can't be created", map.layers.getByCid(layer_cid));
       return;
     }
 
@@ -30909,6 +30941,14 @@ var Vis = cdb.core.View.extend({
       this.layersLoading = 0;
       this.trigger('load');
     }
+  },
+
+  throwError: function(msg, lyr) {
+    cdb.log.error(msg);
+    var self = this;
+    _.defer(function() {
+      self.trigger('error', msg, lyr);
+    });
   },
 
   error: function(fn) {
@@ -31052,21 +31092,14 @@ var Vis = cdb.core.View.extend({
   },
 
   addCursorInteraction: function(map, layer) {
-
-    var hovers = [];
     var mapView = map.viz.mapView;
+    layerView.bind('mouseover', function() {
+      mapView.setCursor('pointer');
+    });
 
-    layer.bind('featureOver', function(e, latlon, pxPos, data, layer) {
-      hovers[layer] = 1;
-      if(_.any(hovers))
-        mapView.setCursor('pointer');
-    }, mapView);
-
-    layer.bind('featureOut', function(m, layer) {
-      hovers[layer] = 0;
-      if(!_.any(hovers))
-        mapView.setCursor('auto');
-    }, mapView);
+    layerView.bind('mouseout', function(m, layer) {
+      mapView.setCursor('auto');
+    });
   },
 
   removeCursorInteraction: function(map, layer) {
@@ -31316,6 +31349,8 @@ cdb.vis.Overlay.register('fullscreen', function(data, vis) {
   );
 
   var fullscreen = new cdb.ui.common.FullScreen({
+    doc: ".cartodb-public-wrapper",
+    mapView: vis.mapView,
     template: template
   });
 
@@ -31453,7 +31488,8 @@ var Layers = cdb.vis.Layers;
 var HTTPS_TO_HTTP = {
   'https://dnv9my2eseobd.cloudfront.net/': 'http://a.tiles.mapbox.com/',
   'https://maps.nlp.nokia.com/': 'http://maps.nlp.nokia.com/',
-  'https://tile.stamen.com/': 'http://tile.stamen.com/'
+  'https://tile.stamen.com/': 'http://tile.stamen.com/',
+  "https://{s}.maps.nlp.nokia.com/": "http://{s}.maps.nlp.nokia.com/"
 };
 
 function transformToHTTP(tilesTemplate) {

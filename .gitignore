@@ -10,6 +10,7 @@ public/system
 public/uploads
 public/javascripts
 public/stylesheets
+app/assets/stylesheets/tmp/
 db/schema.rb
 *.pyc
 bin/

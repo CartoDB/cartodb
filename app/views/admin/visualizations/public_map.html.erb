@@ -10,12 +10,12 @@
     <meta name="author" content="CartoDB">
     <meta name="DC.title" content="<%= @visualization.description %> | CartoDB">
     <meta property="og:title" content="<%= @visualization.name.gsub(/_/," ") %> | CartoDB"/>
-    <meta property="og:description" content="<%= @visualization.description || @visualization.name.gsub(/_/," ") %>"/> 
+    <meta property="og:description" content="<%= @visualization.description || @visualization.name.gsub(/_/," ") %>"/>
     <meta property="og:type" content="Visualization"/>
     <meta property="og:url" content="<%= request.fullpath %>" />
     <meta property="og:image" content="<%= asset_path "layout/cartofante_blue.png" %>"/>
 
-    <%= stylesheet_link_tag 'embeds/public_map' %>
+    <%= stylesheet_link_tag 'embeds/public_map.css' %>
 
     <style type="text/css">
       /* Styles showing up new cartodb text */
@@ -30,7 +30,7 @@
     </style>
 
     <% if !Rails.env.production? %>
-      <%= stylesheet_link_tag 'cdb/themes/css/cartodb' %>
+      <%= stylesheet_link_tag 'embeds.css' %>
     <% else %>
       <% if request.protocol == 'https://' %>
         <link rel="stylesheet" href="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/themes/css/cartodb.css" />
@@ -42,7 +42,7 @@
     <%= insert_rollbar() %>
 
     <!--[if lt IE 9]>
-    <%= javascript_include_tag :"respond" %>
+    <%= javascript_include_tag "respond.js" %>
     <![endif]-->
 
   </head>
@@ -173,7 +173,7 @@
     <% end %>
 
     <% if !Rails.env.production? %>
-      <%= javascript_include_tag :cdb %>
+      <%= javascript_include_tag 'cdb.js' %>
       <script type="text/javascript"><%= raw Rails.application.assets['statsc.min.js'].to_s %></script>
     <% else %>
       <% if request.protocol == 'https://' %>
@@ -356,10 +356,10 @@
             top    = windowHeight - (h - 68);
 
             if (animated) {
-              $("#map").animate({ height: height }, { easing: "easeInQuad", duration: 150 }); 
+              $("#map").animate({ height: height }, { easing: "easeInQuad", duration: 150 });
               $(".cartodb-map-data").animate({ top: top }, { easing: "easeInQuad", duration: 150 });
             } else {
-              $("#map").css({ height: height }); 
+              $("#map").css({ height: height });
               $(".cartodb-map-data").css({ top: top });
             }
 
@@ -381,7 +381,7 @@
 
             if (!mobileDevice) {
               $(window).on("resize", onResize);
-            } 
+            }
 
             setupMapDimensions(mobileDevice);
 
@@ -397,7 +397,7 @@
 
     </script>
 
-    <%= javascript_include_tag :"jquery.tipsy" %>
+    <%= javascript_include_tag "tipsy.js" %>
 
     <script type="text/javascript">
       $(function() {
@@ -409,7 +409,7 @@
       });
     </script>
 
-    <%= render partial: 'shared/analytics', locals: { 
+    <%= render partial: 'shared/analytics', locals: {
       ua:     Cartodb.config[:google_analytics]['embeds'],
       domain: Cartodb.config[:google_analytics]['domain'],
       page_owner: @visualization.user

@@ -10,7 +10,7 @@
     <meta name="author" content="CartoDB">
     <meta name="DC.title" content="<%= @visualization.description %> | CartoDB">
     <meta property="og:title" content="<%= @visualization.name.gsub(/_/," ") %> | CartoDB"/>
-    <meta property="og:description" content="<%= @visualization.description || @visualization.name.gsub(/_/," ") %>"/> 
+    <meta property="og:description" content="<%= @visualization.description || @visualization.name.gsub(/_/," ") %>"/>
     <meta property="og:type" content="Visualization"/>
     <meta property="og:url" content="<%= request.fullpath %>" />
     <meta property="og:image" content="<%= asset_path "layout/cartofante_blue.png" %>"/>
@@ -45,7 +45,7 @@
     </style>
 
     <% if !Rails.env.production? %>
-      <%= stylesheet_link_tag 'cdb/themes/css/cartodb' %>
+      <%= stylesheet_link_tag 'embeds.css' %>
     <% else %>
         <link rel="stylesheet" href="//cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/themes/css/cartodb.css" />
     <% end %>
@@ -76,7 +76,7 @@
     <% end %>
 
     <% if !Rails.env.production? %>
-      <%= javascript_include_tag :cdb %>
+      <%= javascript_include_tag 'cdb.js' %>
       <script type="text/javascript"><%= raw Rails.application.assets['statsc.min.js'].to_s %></script>
     <% else %>
         <script src="//cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/cartodb.js"></script>
@@ -186,7 +186,7 @@
           cartodb_attributions: "CartoDB <a href='http://cartodb.com/attributions?utm_source=Footer_Link&utm_medium=referral&utm_campaign=Embed_v1&utm_content=Attributions&utm_term=<%= @visualization.user.username %>' target='_blank'>attribution</a>",
           cartodb_logo_link: "http://www.cartodb.com?utm_source=Footer_Link&utm_medium=referral&utm_campaign=Embed_v1&utm_content=Logo"
         })
-        
+
         var loadingTime = cartodb.core.Profiler.metric('cartodb-js.embed.time_full_loaded').start();
         var visReadyTime = cartodb.core.Profiler.metric('cartodb-js.embed.time_vis_loaded').start();
 
@@ -203,7 +203,7 @@
       });
 
     </script>
-    <%= render partial: 'shared/analytics', locals: { 
+    <%= render partial: 'shared/analytics', locals: {
       ua:     Cartodb.config[:google_analytics]['embeds'],
       domain: Cartodb.config[:google_analytics]['domain'],
       page_owner: @visualization.user

@@ -8,6 +8,8 @@ tmp/*
 tmp/**/*
 public/system
 public/uploads
+public/javascripts
+public/stylesheets
 db/schema.rb
 *.pyc
 bin/
@@ -31,5 +33,6 @@ cartodb.sublime-workspace
 cartodb.sublime-project
 lib/build/dist
 lib/build/node_modules
+npm-debug.log
 .idea
 .ruby-gemset

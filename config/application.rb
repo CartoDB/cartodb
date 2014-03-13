@@ -53,11 +53,11 @@ module CartoDB
     ::Sequel.extension(:pagination)
 
     # Enable the asset pipeline
-    config.assets.enabled = true
+    config.assets.enabled = false
 
     # Default setting is [/\w+\.(?!js|css).+/, /application.(css|js)$/]
-    config.assets.precompile = %w( application.js cdb.js organization.js keys.js dashboard.js common_data.js table.js table_public.js login.js specs.js common.js jquery.tipsy.js respond.js)
-    config.assets.precompile += %w( common.css organization.css keys.css leaflet.css tables.css pages.css map.css table.css front.css embeds/password_protected.css embeds/public_map.css cdb/themes/css/cartodb.css cdb/themes/css/cartodb.ie.css specs.css map/leaflet.ie.css plugins/tipsy.css fonts_ie.css dashboard.css)
+    config.assets.precompile = %w( cdb.js models.js templates.js application.js common_data.js )
+    config.assets.precompile += %w( common.css organization.css keys.css leaflet.css tables.css pages.css map.css table.css front.css embeds/password_protected.css embeds/public_map.css cdb/themes/css/cartodb.css cdb/themes/css/cartodb.ie.css specs.css map/leaflet.ie.css plugins/tipsy.css fonts_ie.css dashboard.css )
     config.assets.precompile += %w( *.jpg *.ico *.gif *.png *.eot *.otf *.svg *.woff *.ttf *.swf )
 
     # Version of your assets, change this if you want to expire all your assets

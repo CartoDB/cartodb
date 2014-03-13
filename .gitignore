@@ -10,6 +10,9 @@ public/system
 public/uploads
 public/javascripts
 public/stylesheets
+public/images
+public/fonts
+public/flash
 app/assets/stylesheets/tmp/
 db/schema.rb
 *.pyc
@@ -34,6 +37,7 @@ cartodb.sublime-workspace
 cartodb.sublime-project
 lib/build/dist
 lib/build/node_modules
+app/assets/images/sprites/*.png
 npm-debug.log
 .idea
 .ruby-gemset

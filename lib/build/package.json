@@ -25,11 +25,11 @@
     "grunt": "~0.4.2",
     "grunt-contrib-concat": "",
     "grunt-contrib-jasmine": "",
+    "grunt-contrib-clean": "",
     "grunt-contrib-copy": "",
     "grunt-contrib-jst": "git://github.com/javisantana/grunt-contrib-jst.git#master",
     "grunt-mustache": "~0.1.6",
-    "grunt-contrib-sass": "~0.7.1",
-    "grunt-compass-multiple": ""
+    "grunt-contrib-sass": "~0.7.1"
   },
   "files": [
     "dist"

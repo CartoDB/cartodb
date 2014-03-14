@@ -1,6 +1,6 @@
-// cartodb.js version: 3.8.02-dev
+// cartodb.js version: 3.8.03-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: 754c6b85b4946ebf61eb4457e78e7c4363cbbb8f
+// sha: ea4e83f59980dc0294eb577ba67323580532aa60
 (function() {
   var root = this;
 
@@ -20686,7 +20686,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.8.02-dev';
+    cdb.VERSION = '3.8.03-dev';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -24273,7 +24273,9 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
   },
 
   fieldCount: function() {
-    return this.get('fields').length
+    var fields = this.get('fields')
+    if (!fields) return 0;
+    return fields.length
   },
 
   restoreFields: function(whiteList, from) {

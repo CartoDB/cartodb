@@ -213,7 +213,7 @@ cdb.vis.Overlay.register('fullscreen', function(data, vis) {
   );
 
   var fullscreen = new cdb.ui.common.FullScreen({
-    doc: ".cartodb-public-wrapper",
+    doc: "#map > div",
     mapView: vis.mapView,
     template: template
   });

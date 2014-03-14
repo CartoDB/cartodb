@@ -1,3 +1,11 @@
+3.8.02
+- use cdn_url from tiler requests
+- use https to fetch infowindow data when https is used
+- changes default target for the fullscreen option in embeds
+
+3.8.01 (13//03/2014)
+- fixed nokia https to http url rewrite
+
 3.8.00 (11//03//2014)
 - Added mouseover and mouseout for layers
 - Fixed error in old IE browsers for torque visualizations.

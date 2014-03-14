@@ -377,6 +377,9 @@
             // some stats
             stats();
 
+            var fullscreen = vis.getOverlay("fullscreen");
+            fullscreen.model.set("allowWheelOnFullscreen", true);
+
             var mobileDevice = /Android|webOS|iPad|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
             if (!mobileDevice) {

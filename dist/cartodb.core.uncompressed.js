@@ -1,5 +1,5 @@
-// version: 3.8.01
-// sha: fa4e1a471878484c088e93c0d3f57118cf4e1339
+// version: 3.8.02
+// sha: 50b7fa7ce08106793265d0d91f5756dc01ec8b30
 ;(function() {
   this.cartodb = {};
   var Backbone = {};
@@ -1141,7 +1141,7 @@ var Mustache;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.8.01';
+    cdb.VERSION = '3.8.02';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -2128,6 +2128,12 @@ Map.prototype = {
     this.getLayerToken(function(data, err) {
       if(data) {
         self.layerToken = data.layergroupid;
+        // if cdn_url is present, use it
+        if (data.cdn_url) {
+          var c = self.options.cdn_url = self.options.cdn_url || {};
+          c.http = data.cdn_url.http || c.http;
+          c.https = data.cdn_url.https || c.https;
+        }
         self.urls = self._layerGroupTiles(data.layergroupid, self.options.extra_params);
         callback && callback(self.urls);
       } else {
@@ -2585,7 +2591,7 @@ LayerDefinition.prototype = _.extend({}, Map.prototype, {
     var protocol = attrs.sql_api_protocol;
     var version = 'v1';
     if (domain.indexOf('cartodb.com') !== -1) {
-      protocol = 'http';
+      //protocol = 'http';
       domain = "cartodb.com";
       version = 'v2';
     }

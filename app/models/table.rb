@@ -929,99 +929,99 @@ class Table < Sequel::Model(:user_tables)
     ).run
   end #convert_column_datatype
 
-  #def records(options = {})
-    #rows = []
-    #records_count = 0
-    #page, per_page = CartoDB::Pagination.get_page_and_per_page(options)
-    #order_by_column = options[:order_by] || "cartodb_id"
-    #mode = (options[:mode] || 'asc').downcase == 'asc' ? 'ASC' : 'DESC NULLS LAST'
+  def records(options = {})
+    rows = []
+    records_count = 0
+    page, per_page = CartoDB::Pagination.get_page_and_per_page(options)
+    order_by_column = options[:order_by] || "cartodb_id"
+    mode = (options[:mode] || 'asc').downcase == 'asc' ? 'ASC' : 'DESC NULLS LAST'
 
-    #filters = options.slice(:filter_column, :filter_value).reject{|k,v| v.blank?}.values
-    #where = "WHERE (#{filters.first})|| '' ILIKE '%#{filters.second}%'" if filters.present?
+    filters = options.slice(:filter_column, :filter_value).reject{|k,v| v.blank?}.values
+    where = "WHERE (#{filters.first})|| '' ILIKE '%#{filters.second}%'" if filters.present?
 
-    #owner.in_database do |user_database|
-      #columns_sql_builder = <<-SQL
-      #SELECT array_to_string(ARRAY(SELECT '"#{name}"' || '.' || quote_ident(c.column_name)
-        #FROM information_schema.columns As c
-        #WHERE table_name = '#{name}'
-        #AND c.column_name <> 'the_geom_webmercator'
-        #), ',') AS column_names
-      #SQL
+    owner.in_database do |user_database|
+      columns_sql_builder = <<-SQL
+      SELECT array_to_string(ARRAY(SELECT '"#{name}"' || '.' || quote_ident(c.column_name)
+        FROM information_schema.columns As c
+        WHERE table_name = '#{name}'
+        AND c.column_name <> 'the_geom_webmercator'
+        ), ',') AS column_names
+      SQL
 
-      #column_names = user_database[columns_sql_builder].first[:column_names].split(',')
-      #if the_geom_index = column_names.index("\"#{name}\".the_geom")
-        #column_names[the_geom_index] = <<-STR
-            #CASE
-            #WHEN GeometryType(the_geom) = 'POINT' THEN
-              #ST_AsGeoJSON(the_geom,8)
-            #WHEN (the_geom IS NULL) THEN
-              #NULL
-            #ELSE
-              #'GeoJSON'
-            #END the_geom
-        #STR
-      #end
-      #select_columns = column_names.join(',')
+      column_names = user_database[columns_sql_builder].first[:column_names].split(',')
+      if the_geom_index = column_names.index("\"#{name}\".the_geom")
+        column_names[the_geom_index] = <<-STR
+            CASE
+            WHEN GeometryType(the_geom) = 'POINT' THEN
+              ST_AsGeoJSON(the_geom,8)
+            WHEN (the_geom IS NULL) THEN
+              NULL
+            ELSE
+              'GeoJSON'
+            END the_geom
+        STR
+      end
+      select_columns = column_names.join(',')
 
-      ## Counting results can be really expensive, so we estimate
-      ##
-      ## See https://github.com/Vizzuality/cartodb/issues/716
-      ##
-      #max_countable_rows = 65535 # up to this number we accept to count
-      #rows_count = 0
-      #rows_count_is_estimated = true
-      #if filters.present?
-        #query = "SELECT cartodb_id as total_rows FROM "#{name}" #{where} "
-        #rows_count = rows_estimated_query(query)
-        #if rows_count <= max_countable_rows
-          #query = "SELECT COUNT(cartodb_id) as total_rows FROM "#{name}" #{where} "
-          #rows_count = user_database[query].get(:total_rows)
-          #rows_count_is_estimated = false
-        #end
-      #else
-        #rows_count = rows_estimated
-        #if rows_count <= max_countable_rows
-          #rows_count = rows_counted
-          #rows_count_is_estimated = false
-        #end
-      #end
+      # Counting results can be really expensive, so we estimate
+      #
+      # See https://github.com/Vizzuality/cartodb/issues/716
+      #
+      max_countable_rows = 65535 # up to this number we accept to count
+      rows_count = 0
+      rows_count_is_estimated = true
+      if filters.present?
+        query = "SELECT cartodb_id as total_rows FROM "#{name}" #{where} "
+        rows_count = rows_estimated_query(query)
+        if rows_count <= max_countable_rows
+          query = "SELECT COUNT(cartodb_id) as total_rows FROM "#{name}" #{where} "
+          rows_count = user_database[query].get(:total_rows)
+          rows_count_is_estimated = false
+        end
+      else
+        rows_count = rows_estimated
+        if rows_count <= max_countable_rows
+          rows_count = rows_counted
+          rows_count_is_estimated = false
+        end
+      end
 
-      ## If we force to get the name from an schema, we avoid the problem of having as
-      ## table name a reserved word, such 'as'
-      ##
-      ## NOTE: we fetch one more row to verify estimated rowcount is not short
-      ##
-      #rows = user_database[%Q{SELECT #{select_columns} FROM "#{name}" #{where} ORDER BY \"#{order_by_column}\" #{mode} LIMIT #{per_page}+1 OFFSET #{page}}].all
-      #CartoDB::Logger.info "Query", "fetch: #{rows.length}"
+      # If we force to get the name from an schema, we avoid the problem of having as
+      # table name a reserved word, such 'as'
+      #
+      # NOTE: we fetch one more row to verify estimated rowcount is not short
+      #
+      rows = user_database[%Q{SELECT #{select_columns} FROM "#{name}" #{where} ORDER BY \"#{order_by_column}\" #{mode} LIMIT #{per_page}+1 OFFSET #{page}}].all
+      CartoDB::Logger.info "Query", "fetch: #{rows.length}"
 
-      ## Tweak estimation if needed
-      #fetched = rows.length
-      #fetched += page if page
+      # Tweak estimation if needed
+      fetched = rows.length
+      fetched += page if page
 
-      #have_more = rows.length > per_page
-      #rows.pop if have_more
+      have_more = rows.length > per_page
+      rows.pop if have_more
 
-      #records_count = rows_count
-      #if rows_count_is_estimated
-        #if have_more
-          #records_count = fetched > rows_count ? fetched : rows_count
-        #else
-          #records_count = fetched
-        #end
-      #end
+      records_count = rows_count
+      if rows_count_is_estimated
+        if have_more
+          records_count = fetched > rows_count ? fetched : rows_count
+        else
+          records_count = fetched
+        end
+      end
 
-      ## TODO: cache row count !!
-      ## See https://github.com/Vizzuality/cartodb/issues/459
+      # TODO: cache row count !!
+      # See https://github.com/Vizzuality/cartodb/issues/459
 
 
-    #end
-    #{
-      #:id         => id,
-      #:name       => name,
-      #:total_rows => records_count,
-      #:rows       => rows
-    #}
-  #end
+    end
+    {
+      :id         => id,
+      :name       => name,
+      :total_rows => records_count,
+      :rows       => rows
+    }
+  end
 
   def record(identifier)
     row = nil

@@ -301,14 +301,7 @@ class DataImport < Sequel::Model
   def new_importer(datasource_name=nil)
     log.append 'new_importer()'
 
-    begin
-      datasource_provider = DatasourcesFactory.get_datasource(datasource_name, current_user)
-    rescue ConfigurationError => exception
-      datasource_provider = nil
-      log.append "Exception: #{exception.to_s}"
-      log.append exception.backtrace
-      Rollbar.report_message('Import error', 'error', error_info: exception.to_s + exception.backtrace.join)
-    end
+    datasource_provider = get_datasource(datasource_name)
 
     tracker       = lambda { |state| self.state = state; save }
     downloader    = CartoDB::Importer2::Downloader.new(data_source)
@@ -318,9 +311,7 @@ class DataImport < Sequel::Model
     registrar     = CartoDB::TableRegistrar.new(current_user, Table)
     quota_checker = CartoDB::QuotaChecker.new(current_user)
     database      = current_user.in_database
-    importer      = CartoDB::Connector::Importer.new(
-                      runner, registrar, quota_checker, database, id
-                    )
+    importer      = CartoDB::Connector::Importer.new(runner, registrar, quota_checker, database, id)
 
     log.append 'Before run.'
     importer.run(tracker)
@@ -330,6 +321,7 @@ class DataImport < Sequel::Model
     self.error_code = importer.error_code
     self.table_name = importer.table.name if importer.success? && importer.table
     self.table_id   = importer.table.id if importer.success? && importer.table
+
     if synchronization_id
       log.append "synchronization_id: #{synchronization_id}"
       synchronization = CartoDB::Synchronization::Member.new(id: synchronization_id).fetch
@@ -348,6 +340,7 @@ class DataImport < Sequel::Model
       log.append "importer.success? #{synchronization.state}"
       synchronization.store
     end
+
     importer.success?
   end
 
@@ -381,6 +374,17 @@ class DataImport < Sequel::Model
     payload.merge!(error_title: get_error_text) if state == 'failure'
     payload
   end
+
+  def get_datasource(datasource_name)
+    begin
+      DatasourcesFactory.get_datasource(datasource_name, current_user)
+    rescue ConfigurationError => exception
+      nil
+      log.append "Exception: #{exception.to_s}"
+      log.append exception.backtrace
+      Rollbar.report_message('Import error: ', 'error', error_info: exception.to_s + exception.backtrace.join)
+    end
+  end #get_datasource
 
   def set_merge_error(error_code)
     log.append("going to set merge error with code #{error_code}")

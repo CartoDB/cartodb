@@ -33,6 +33,7 @@ WORKING_SPECS = \
   services/synchronizer/spec/unit/ \
   services/synchronizer/spec/acceptance/ \
   services/geocoder/spec/geocoder_spec.rb \
+  spec/models/synchronization/synchronization_oauth_spec.rb \
   $(NULL)
 
 CDB_PATH=lib/assets/javascripts/cdb

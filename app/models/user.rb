@@ -7,7 +7,8 @@ class User < Sequel::Model
   self.strict_param_setting = false
 
   one_to_one :client_application
-  plugin :association_dependencies, :client_application => :destroy
+  # @param synchronization_oauths
+  one_to_many :synchronization_oauths
   one_to_many :tokens, :class => :OauthToken
   one_to_many :maps
   one_to_many :assets
@@ -20,6 +21,7 @@ class User < Sequel::Model
   }
 
   # Sequel setup & plugins
+  plugin :association_dependencies, :client_application => :destroy, :synchronization_oauths => :destroy
   plugin :validation_helpers
   plugin :json_serializer
   plugin :dirty

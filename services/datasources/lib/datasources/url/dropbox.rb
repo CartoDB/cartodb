@@ -41,9 +41,9 @@ module CartoDB
           @user = user
 
           self.filter=[]
-
           @client = nil
           @auth_flow = nil
+
         end #initialize
 
         # Factory method

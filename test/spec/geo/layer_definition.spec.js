@@ -159,6 +159,31 @@ describe("LayerDefinition", function() {
     expect(layerDefinition._host('a')).toEqual('https://a.cartocdn.global.ssl.fastly.net/rambo');
   });
 
+  it("should use cdn_url from tiler when present", function() {
+    var params;
+    delete layerDefinition.options.no_cdn;
+    layerDefinition.options.ajax = function(p) { 
+      params = p;
+      p.success({ layergroupid: 'test', cdn_url: { http: 'cdn.test.com', https:'cdn.testhttps.com' }});
+    };
+    runs(function() {
+      layerDefinition.getTiles();
+    });
+    waits(100);
+    runs(function() {
+      expect(layerDefinition._host()).toEqual('http://cdn.test.com/rambo');
+    });
+    waits(200);
+    runs(function() {
+      layerDefinition.options.tiler_protocol = 'https';
+      layerDefinition.getTiles();
+    })
+    waits(100);
+    runs(function() {
+      expect(layerDefinition._host()).toEqual('https://cdn.testhttps.com/rambo');
+    })
+  });
+
   it("should return values for the latest query", function() {
     tokens = [];
     layerDefinition.options.ajax = function(p) { 

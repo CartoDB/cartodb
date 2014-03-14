@@ -1,3 +1,6 @@
+3.8.02
+- use cdn_url from tiler requests
+
 3.8.01 (13//03/2014)
 - fixed nokia https to http url rewrite
 

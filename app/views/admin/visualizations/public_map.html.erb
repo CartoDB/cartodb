@@ -368,10 +368,13 @@
           };
 
           cartodb.createVis('map', <%=raw @visualization.to_vizjson.to_json %>, opt, function(vis) {
+
             visReadyTime.end();
+
             vis.on('load', function() {
               loadingTime.end();
-            })
+            });
+
             // add here your code
             window.vis = vis;
 
@@ -379,13 +382,11 @@
 
             if (fullscreen) {
               fullscreen.options.doc = ".cartodb-public-wrapper";
+              fullscreen.model.set("allowWheelOnFullscreen", true);
             }
 
             // some stats
             stats();
-
-            var fullscreen = vis.getOverlay("fullscreen");
-            fullscreen.model.set("allowWheelOnFullscreen", true);
 
             var mobileDevice = /Android|webOS|iPad|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 

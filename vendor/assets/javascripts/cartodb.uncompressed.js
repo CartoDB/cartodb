@@ -1,6 +1,6 @@
-// cartodb.js version: 3.8.00-dev
+// cartodb.js version: 3.8.02-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: f94a35a4d4d287549be1752eede33599d21397ef
+// sha: 754c6b85b4946ebf61eb4457e78e7c4363cbbb8f
 (function() {
   var root = this;
 
@@ -20686,7 +20686,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.8.00-dev';
+    cdb.VERSION = '3.8.02-dev';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -26013,6 +26013,12 @@ Map.prototype = {
     this.getLayerToken(function(data, err) {
       if(data) {
         self.layerToken = data.layergroupid;
+        // if cdn_url is present, use it
+        if (data.cdn_url) {
+          var c = self.options.cdn_url = self.options.cdn_url || {};
+          c.http = data.cdn_url.http || c.http;
+          c.https = data.cdn_url.https || c.https;
+        }
         self.urls = self._layerGroupTiles(data.layergroupid, self.options.extra_params);
         callback && callback(self.urls);
       } else {
@@ -26470,7 +26476,7 @@ LayerDefinition.prototype = _.extend({}, Map.prototype, {
     var protocol = attrs.sql_api_protocol;
     var version = 'v1';
     if (domain.indexOf('cartodb.com') !== -1) {
-      protocol = 'http';
+      //protocol = 'http';
       domain = "cartodb.com";
       version = 'v2';
     }
@@ -31349,7 +31355,7 @@ cdb.vis.Overlay.register('fullscreen', function(data, vis) {
   );
 
   var fullscreen = new cdb.ui.common.FullScreen({
-    doc: ".cartodb-public-wrapper",
+    doc: "#map > div",
     mapView: vis.mapView,
     template: template
   });
@@ -31488,7 +31494,8 @@ var Layers = cdb.vis.Layers;
 var HTTPS_TO_HTTP = {
   'https://dnv9my2eseobd.cloudfront.net/': 'http://a.tiles.mapbox.com/',
   'https://maps.nlp.nokia.com/': 'http://maps.nlp.nokia.com/',
-  'https://tile.stamen.com/': 'http://tile.stamen.com/'
+  'https://tile.stamen.com/': 'http://tile.stamen.com/',
+  "https://{s}.maps.nlp.nokia.com/": "http://{s}.maps.nlp.nokia.com/"
 };
 
 function transformToHTTP(tilesTemplate) {
@@ -31546,6 +31553,8 @@ function normalizeOptions(vis, data) {
   if(vis.https) {
     data.tiler_protocol = 'https';
     data.tiler_port = 443;
+    data.sql_api_protocol = 'https';
+    data.sql_api_port = 443;
   }
   data.cartodb_logo = vis.cartodb_logo == undefined ? data.cartodb_logo : vis.cartodb_logo;
 }

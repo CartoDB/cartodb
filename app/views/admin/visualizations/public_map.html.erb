@@ -374,6 +374,13 @@
             })
             // add here your code
             window.vis = vis;
+
+            var fullscreen = vis.getOverlay("fullscreen");
+
+            if (fullscreen) {
+              fullscreen.options.doc = ".cartodb-public-wrapper";
+            }
+
             // some stats
             stats();
 

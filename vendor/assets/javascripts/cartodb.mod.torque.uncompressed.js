@@ -5873,8 +5873,7 @@ exports.torque.common.TorqueLayer = TorqueLayer;
   };
 
   exports.torque.isBrowserSupported = function() {
-    var c = document.createElement('canvas');
-    return !!c && c.getContext;
+    return !!document.createElement('canvas');
   };
 
 })(typeof exports === "undefined" ? this : exports);

@@ -70,6 +70,8 @@ function normalizeOptions(vis, data) {
   if(vis.https) {
     data.tiler_protocol = 'https';
     data.tiler_port = 443;
+    data.sql_api_protocol = 'https';
+    data.sql_api_port = 443;
   }
   data.cartodb_logo = vis.cartodb_logo == undefined ? data.cartodb_logo : vis.cartodb_logo;
 }

@@ -849,7 +849,7 @@ LayerDefinition.prototype = _.extend({}, Map.prototype, {
     var protocol = attrs.sql_api_protocol;
     var version = 'v1';
     if (domain.indexOf('cartodb.com') !== -1) {
-      protocol = 'http';
+      //protocol = 'http';
       domain = "cartodb.com";
       version = 'v2';
     }

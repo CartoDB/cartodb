@@ -1,5 +1,6 @@
 3.8.02
 - use cdn_url from tiler requests
+- use https to fetch infowindow data when https is used
 
 3.8.01 (13//03/2014)
 - fixed nokia https to http url rewrite

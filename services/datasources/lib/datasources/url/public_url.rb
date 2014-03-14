@@ -101,6 +101,12 @@ module CartoDB
           last_modified
         end #last_modified_header
 
+        # Just return datasource name
+        # @return string
+        def to_s
+          DATASOURCE_NAME
+        end
+
         private
 
         # Calculates a checksum of given url

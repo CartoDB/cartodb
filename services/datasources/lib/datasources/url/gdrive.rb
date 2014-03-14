@@ -31,8 +31,11 @@ module CartoDB
         #  'client_id'
         #  'client_secret'
         # ]
+        # @param user User
+        # @throws UninitializedError
         # @throws ConfigurationError
-        def initialize(config)
+        def initialize(config, user)
+          raise UninitializedError.new('missing user instance', DATASOURCE_NAME) if user.nil?
           raise ConfigurationError.new('missing application_name', DATASOURCE_NAME) unless config.include?('application_name')
           raise ConfigurationError.new('missing client_id', DATASOURCE_NAME) unless config.include?('client_id')
           raise ConfigurationError.new('missing client_secret', DATASOURCE_NAME) unless config.include?('client_secret')
@@ -53,9 +56,10 @@ module CartoDB
 
         # Factory method
         # @param config {}
+        # @param user User
         # @return CartoDB::Synchronizer::FileProviders::GDrive
-        def self.get_new(config)
-          return new(config)
+        def self.get_new(config, user)
+          return new(config, user)
         end #get_new
 
         # Return the url to be displayed or sent the user to to authenticate and get authorization code
@@ -240,6 +244,12 @@ module CartoDB
         def checksum_of(origin)
           Zlib::crc32(origin).to_s
         end #checksum_of
+
+        # Just return datasource name
+        # @return string
+        def to_s
+          DATASOURCE_NAME
+        end
 
       end #GDrive
     end #FileProviders

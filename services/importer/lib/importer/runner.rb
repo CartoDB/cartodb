@@ -17,18 +17,25 @@ module CartoDB
       DEFAULT_LOADER          = Loader
       UNKNOWN_ERROR_CODE      = 99999
 
-      def initialize(pg_options, downloader, log=nil, available_quota=nil, unpacker=nil)
+      def initialize(pg_options, downloader, log=nil, available_quota=nil, unpacker=nil, datasource=nil)
         @pg_options       = pg_options
         @downloader       = downloader
         @log              = log             || TrackRecord::Log.new
         @available_quota  = available_quota || DEFAULT_AVAILABLE_QUOTA
         @unpacker         = unpacker        || Unp.new
         @results          = []
+        @datasource       = datasource      || nil
       end #initialize
 
       def run(&tracker_block)
         @tracker = tracker_block
         tracker.call('uploading')
+
+        if !@datasource.nil?
+          log.append "Fetching datasource #{@datasource.to_s}"
+
+        end
+
         log.append "Getting file from #{downloader.url}"
         downloader.run(available_quota)
 

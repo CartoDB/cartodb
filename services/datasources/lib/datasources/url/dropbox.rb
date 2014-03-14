@@ -26,15 +26,19 @@ module CartoDB
         #  'app_key'
         #  'app_secret'
         # ]
+        # @param user User
+        # @throws UninitializedError
         # @throws ConfigurationError
-        def initialize(config)
+        def initialize(config, user)
           @access_token = nil
 
+          raise UninitializedError.new('missing user instance', DATASOURCE_NAME) if user.nil?
           raise ConfigurationError.new('missing app_key', DATASOURCE_NAME) unless config.include?('app_key')
           raise ConfigurationError.new('missing app_secret', DATASOURCE_NAME) unless config.include?('app_secret')
 
           @app_key = config.fetch('app_key')
           @app_secret = config.fetch('app_secret')
+          @user = user
 
           self.filter=[]
 
@@ -44,9 +48,10 @@ module CartoDB
 
         # Factory method
         # @param config {}
+        # @param user User
         # @return CartoDB::Synchronizer::FileProviders::Dropbox
-        def self.get_new(config)
-          return new(config)
+        def self.get_new(config, user)
+          return new(config, user)
         end #get_new
 
         # Return the url to be displayed or sent the user to to authenticate and get authorization code
@@ -169,6 +174,12 @@ module CartoDB
             end
           end
         end #filter=
+
+        # Just return datasource name
+        # @return string
+        def to_s
+          DATASOURCE_NAME
+        end
 
         private
 

@@ -12,6 +12,9 @@ require_relative '../../config/initializers/redis'
 require_relative '../../services/importer/lib/importer'
 require_relative '../connectors/importer'
 
+require_relative '../../services/datasources/lib/datasources'
+include CartoDB::Datasources
+
 class DataImport < Sequel::Model
   REDIS_LOG_KEY_PREFIX          = 'importer'
   REDIS_LOG_EXPIRATION_IN_SECS  = 3600 * 24 * 2 # 2 days
@@ -295,13 +298,22 @@ class DataImport < Sequel::Model
       ) {|key, o, n| n.nil? || n.empty? ? o : n}
   end #pg_options
 
-  def new_importer
+  def new_importer(datasource_name=nil)
     log.append 'new_importer()'
+
+    begin
+      datasource_provider = DatasourcesFactory.get_datasource(datasource_name, current_user)
+    rescue ConfigurationError => exception
+      datasource_provider = nil
+      log.append "Exception: #{exception.to_s}"
+      log.append exception.backtrace
+      Rollbar.report_message('Import error', 'error', error_info: exception.to_s + exception.backtrace.join)
+    end
 
     tracker       = lambda { |state| self.state = state; save }
     downloader    = CartoDB::Importer2::Downloader.new(data_source)
     runner        = CartoDB::Importer2::Runner.new(
-                      pg_options, downloader, log, current_user.remaining_quota
+                      pg_options, downloader, log, current_user.remaining_quota, nil, datasource_provider
                     )
     registrar     = CartoDB::TableRegistrar.new(current_user, Table)
     quota_checker = CartoDB::QuotaChecker.new(current_user)

@@ -251,11 +251,11 @@ class Table < Sequel::Model(:user_tables)
 
       # with table #{uniname} table created now run migrator to CartoDBify
       hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-        "host" => owner.database_host,
-        "database" => database_name,
+        'host' => owner.database_host,
+        'database' => database_name,
         :logger => ::Rails.logger,
-        "username" => owner.database_username,
-        "password" => owner.database_password,
+        'username' => owner.database_username,
+        'password' => owner.database_password,
         :current_name => migrate_existing_table || uniname,
         :suggested_name => uniname,
         :debug => (Rails.env.development?),
@@ -289,7 +289,7 @@ class Table < Sequel::Model(:user_tables)
       #  - If cartodb_id does not exist, remove the primary key constraint and treat ogc_fid as the auxiliary column
       if schema.present? && schema.flatten.include?(:ogc_fid)
         if aux_cartodb_id_column.nil?
-          aux_cartodb_id_column = "ogc_fid"
+          aux_cartodb_id_column = 'ogc_fid'
         else
           #@data_import.log << ('Removing ogc_fid from import file')
           user_database.run(%Q{ALTER TABLE "#{self.name}" DROP COLUMN ogc_fid})
@@ -297,7 +297,7 @@ class Table < Sequel::Model(:user_tables)
       end
       if schema.present? && schema.flatten.include?(:gid)
         if aux_cartodb_id_column.nil?
-          aux_cartodb_id_column = "gid"
+          aux_cartodb_id_column = 'gid'
         else
           #@data_import.log << ('Removing gid from import file')
           user_database.run(%Q{ALTER TABLE "#{self.name}" DROP COLUMN gid})
@@ -515,8 +515,8 @@ class Table < Sequel::Model(:user_tables)
   def send_tile_style_request(data_layer=nil)
     data_layer ||= self.map.data_layers.first
     tile_request('POST', "/tiles/#{self.name}/style?map_key=#{owner.api_key}", {
-      'style_version' => data_layer.options["style_version"],
-      'style'         => data_layer.options["tile_style"]
+      'style_version' => data_layer.options['style_version'],
+      'style'         => data_layer.options['tile_style']
     })
   rescue => exception
     raise exception if Rails.env.production? || Rails.env.staging?
@@ -1410,7 +1410,7 @@ TRIGGER
   def set_the_geom_column!(type = nil)
     if type.nil?
       if self.schema(reload: true).flatten.include?(THE_GEOM)
-        if self.schema.select{ |k| k[0] == THE_GEOM }.first[1] == "geometry"
+        if self.schema.select{ |k| k[0] == THE_GEOM }.first[1] == 'geometry'
           if row = owner.in_database["select GeometryType(#{THE_GEOM}) FROM #{self.name} where #{THE_GEOM} is not null limit 1"].first
             type = row[:geometrytype]
           else

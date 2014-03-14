@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 require_relative '../../lib/datasources'
+require_relative '../doubles/user'
 
 include CartoDB::Datasources
 
@@ -15,7 +16,9 @@ describe Url::Dropbox do
 
   describe '#filters' do
     it 'test that filter options work correctly' do
-      dropbox_provider = Url::Dropbox.get_new(get_config)
+      user_mock = Doubles::User.new
+
+      dropbox_provider = Url::Dropbox.get_new(get_config, user_mock)
 
       # No filter = all formats allowed
       filter = []

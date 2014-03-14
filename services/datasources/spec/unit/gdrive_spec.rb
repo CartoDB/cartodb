@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 require_relative '../../lib/datasources'
+require_relative '../doubles/user'
 
 include CartoDB::Datasources
 
@@ -16,7 +17,9 @@ describe Url::GDrive do
 
   describe '#filters' do
     it 'test that filter options work correctly' do
-      gdrive_provider = Url::GDrive.get_new(get_config)
+      user_mock = Doubles::User.new
+
+      gdrive_provider = Url::GDrive.get_new(get_config, user_mock)
 
       # No filter = all formats allowed
       filter = []

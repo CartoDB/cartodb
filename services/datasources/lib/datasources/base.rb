@@ -65,6 +65,12 @@ module CartoDB
         raise 'To be implemented in child classes'
       end
 
+      # Just return datasource name
+      # @return string
+      def to_s
+        raise 'To be implemented in child classes'
+      end
+
       private_class_method :new
 
     end #Base

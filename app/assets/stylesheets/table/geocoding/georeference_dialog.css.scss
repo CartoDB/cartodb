@@ -236,6 +236,7 @@
       li {
         position:relative;
         border:none;
+        outline:none;
 
         -webkit-transition: background-color 350ms ease-in-out;
         -moz-transition:    background-color 350ms ease-in-out;
@@ -260,6 +261,7 @@
 
           display: block;
           position:relative;
+          outline:none;
           padding: 25px 20px;
           float:left;
           width: 245px;
@@ -418,7 +420,6 @@
             right:65px;
           }
         }
-
 
         &.selected .opt .icon_container {
           border: 2px solid rgba(#333, .75);

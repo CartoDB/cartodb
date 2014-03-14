@@ -24,6 +24,29 @@ cdb.ui.common.FullScreen = cdb.core.View.extend({
     _.bindAll(this, 'render');
     _.defaults(this.options, this.default_options);
 
+    this.model = new cdb.core.Model({
+      allowWheelOnFullscreen: false
+    });
+
+    this._addWheelEvent();
+
+  },
+
+  _addWheelEvent: function() {
+
+      var self    = this;
+      var mapView = this.options.mapView;
+
+      $(document).on('webkitfullscreenchange mozfullscreenchange fullscreenchange', function() {
+
+        if ( !document.fullscreenElement && !document.webkitFullscreenElement && !document.mozFullScreenElement && !document.msFullscreenElement) {
+          if (self.model.get("allowWheelOnFullscreen")) {
+
+            mapView.options.map.set("scrollwheel", false);
+          }
+        }
+      });
+
   },
 
   _toggleFullScreen: function(ev) {
@@ -41,12 +64,19 @@ cdb.ui.common.FullScreen = cdb.core.View.extend({
     var requestFullScreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen;
     var cancelFullScreen  = doc.exitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen;
 
+    var mapView = this.options.mapView;
+
     if(!doc.fullscreenElement && !doc.mozFullScreenElement && !doc.webkitFullscreenElement) {
 
       requestFullScreen.call(docEl);
 
-      if (this.options.mapView) {
-        this.options.mapView.invalidateSize();
+      if (mapView) {
+        mapView.invalidateSize();
+
+        if (this.model.get("allowWheelOnFullscreen")) {
+          mapView.options.map.set("scrollwheel", true);
+        }
+
       }
 
     } else {

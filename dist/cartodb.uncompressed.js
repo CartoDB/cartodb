@@ -1,6 +1,6 @@
-// cartodb.js version: 3.8.01
+// cartodb.js version: 3.8.03
 // uncompressed version: cartodb.uncompressed.js
-// sha: fa4e1a471878484c088e93c0d3f57118cf4e1339
+// sha: 53ea848b1165176cc396f1be9d4e2860d03908d4
 (function() {
   var root = this;
 
@@ -20686,7 +20686,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.8.01';
+    cdb.VERSION = '3.8.03';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -24273,7 +24273,9 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
   },
 
   fieldCount: function() {
-    return this.get('fields').length
+    var fields = this.get('fields')
+    if (!fields) return 0;
+    return fields.length
   },
 
   restoreFields: function(whiteList, from) {
@@ -26013,6 +26015,12 @@ Map.prototype = {
     this.getLayerToken(function(data, err) {
       if(data) {
         self.layerToken = data.layergroupid;
+        // if cdn_url is present, use it
+        if (data.cdn_url) {
+          var c = self.options.cdn_url = self.options.cdn_url || {};
+          c.http = data.cdn_url.http || c.http;
+          c.https = data.cdn_url.https || c.https;
+        }
         self.urls = self._layerGroupTiles(data.layergroupid, self.options.extra_params);
         callback && callback(self.urls);
       } else {
@@ -26470,7 +26478,7 @@ LayerDefinition.prototype = _.extend({}, Map.prototype, {
     var protocol = attrs.sql_api_protocol;
     var version = 'v1';
     if (domain.indexOf('cartodb.com') !== -1) {
-      protocol = 'http';
+      //protocol = 'http';
       domain = "cartodb.com";
       version = 'v2';
     }
@@ -31093,11 +31101,11 @@ var Vis = cdb.core.View.extend({
 
   addCursorInteraction: function(map, layer) {
     var mapView = map.viz.mapView;
-    layerView.bind('mouseover', function() {
+    layer.bind('mouseover', function() {
       mapView.setCursor('pointer');
     });
 
-    layerView.bind('mouseout', function(m, layer) {
+    layer.bind('mouseout', function(m, layer) {
       mapView.setCursor('auto');
     });
   },
@@ -31349,7 +31357,7 @@ cdb.vis.Overlay.register('fullscreen', function(data, vis) {
   );
 
   var fullscreen = new cdb.ui.common.FullScreen({
-    doc: ".cartodb-public-wrapper",
+    doc: "#map > div",
     mapView: vis.mapView,
     template: template
   });
@@ -31547,6 +31555,8 @@ function normalizeOptions(vis, data) {
   if(vis.https) {
     data.tiler_protocol = 'https';
     data.tiler_port = 443;
+    data.sql_api_protocol = 'https';
+    data.sql_api_port = 443;
   }
   data.cartodb_logo = vis.cartodb_logo == undefined ? data.cartodb_logo : vis.cartodb_logo;
 }
@@ -32149,3 +32159,4 @@ Layers.register('torque', function(vis, data) {
 
 
 })();
+// uncompressed version: cartodb.uncompressed.js

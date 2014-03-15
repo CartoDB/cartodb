@@ -980,11 +980,11 @@ var Vis = cdb.core.View.extend({
 
   addCursorInteraction: function(map, layer) {
     var mapView = map.viz.mapView;
-    layerView.bind('mouseover', function() {
+    layer.bind('mouseover', function() {
       mapView.setCursor('pointer');
     });
 
-    layerView.bind('mouseout', function(m, layer) {
+    layer.bind('mouseout', function(m, layer) {
       mapView.setCursor('auto');
     });
   },

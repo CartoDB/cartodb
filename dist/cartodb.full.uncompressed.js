@@ -1,6 +1,6 @@
-// cartodb.js version: 3.8.02
+// cartodb.js version: 3.8.03
 // uncompressed version: cartodb.uncompressed.js
-// sha: 50b7fa7ce08106793265d0d91f5756dc01ec8b30
+// sha: 53ea848b1165176cc396f1be9d4e2860d03908d4
 (function() {
   var root = this;
 
@@ -20686,7 +20686,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.8.02';
+    cdb.VERSION = '3.8.03';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -24273,7 +24273,9 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
   },
 
   fieldCount: function() {
-    return this.get('fields').length
+    var fields = this.get('fields')
+    if (!fields) return 0;
+    return fields.length
   },
 
   restoreFields: function(whiteList, from) {
@@ -31099,11 +31101,11 @@ var Vis = cdb.core.View.extend({
 
   addCursorInteraction: function(map, layer) {
     var mapView = map.viz.mapView;
-    layerView.bind('mouseover', function() {
+    layer.bind('mouseover', function() {
       mapView.setCursor('pointer');
     });
 
-    layerView.bind('mouseout', function(m, layer) {
+    layer.bind('mouseout', function(m, layer) {
       mapView.setCursor('auto');
     });
   },

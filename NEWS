@@ -1,4 +1,8 @@
-3.8.02
+3.8.03 (15//03//2014)
+- fixed addCursorInteraction
+- fixed fieldCount when there are no fields in infowindow
+
+3.8.02 (14//03//2014)
 - use cdn_url from tiler requests
 - use https to fetch infowindow data when https is used
 - changes default target for the fullscreen option in embeds

@@ -71,19 +71,43 @@ module CartoDB
         false
       end #create_the_geom_from_geometry_column
 
-      def populate_the_geom_from_latlon(qualified_table_name, 
-      latitude_column_name, longitude_column_name)
+      def populate_the_geom_from_latlon(qualified_table_name, latitude_column_name, longitude_column_name)
         job.log 'Populating the_geom from latitude / longitude'
+
+        batch_size = 25000  # TODO: Magic number, should be benchmarked
+        id_column = 'ogc_fid' # Only for PostGIS driver
+        temp_finished_column = 'the_geom_populated'
+
         db.run(%Q{
-          UPDATE #{qualified_table_name} 
-          SET the_geom = public.ST_GeomFromText(
-              'POINT(' || trim(CAST("#{longitude_column_name}" AS text)) || ' ' ||
-                trim(CAST("#{latitude_column_name}" AS text)) || ')', 4326
-          )
-          WHERE trim(CAST("#{longitude_column_name}" AS text)) ~ 
-            '^(([-+]?(([0-9]|[1-9][0-9]|1[0-7][0-9])(\.[0-9]+)?))|[-+]?180)$'
-          AND trim(CAST("#{latitude_column_name}" AS text))  ~
-            '^(([-+]?(([0-9]|[1-8][0-9])(\.[0-9]+)?))|[-+]?90)$'
+         ALTER TABLE #{qualified_table_name} ADD #{temp_finished_column} BOOLEAN DEFAULT FALSE;
+        })
+
+        total_rows_processed = 0
+        affected_rows_count = 0
+
+        begin
+          affected_rows_count = db.execute(%Q{
+            UPDATE #{qualified_table_name}
+            SET
+              the_geom = public.ST_GeomFromText(
+                'POINT(' || trim(CAST("#{longitude_column_name}" AS text)) || ' ' ||
+                  trim(CAST("#{latitude_column_name}" AS text)) || ')', 4326
+              ),
+              #{temp_finished_column} = TRUE
+            WHERE trim(CAST("#{longitude_column_name}" AS text)) ~
+              '^(([-+]?(([0-9]|[1-9][0-9]|1[0-7][0-9])(\.[0-9]+)?))|[-+]?180)$'
+            AND trim(CAST("#{latitude_column_name}" AS text))  ~
+              '^(([-+]?(([0-9]|[1-8][0-9])(\.[0-9]+)?))|[-+]?90)$'
+            AND #{id_column} IN (
+              SELECT #{id_column} FROM #{qualified_table_name} WHERE #{temp_finished_column} != TRUE LIMIT #{batch_size}
+            )
+          })
+          total_rows_processed = total_rows_processed + affected_rows_count
+          job.log "Total processed: #{total_rows_processed}"
+        end while affected_rows_count > 0
+
+        db.run(%Q{
+         ALTER TABLE #{qualified_table_name} DROP #{temp_finished_column};
         })
       end #populate_the_geom_from_latlon
 

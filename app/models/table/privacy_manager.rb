@@ -36,7 +36,7 @@ module CartoDB
       def propagate_to_redis_and_varnish
         raise 'table privacy cannot be nil' unless privacy
 
-        $tables_metadata.hset redis_key, "privacy", privacy
+        $tables_metadata.hset redis_key, 'privacy', privacy
         invalidate_varnish_cache
         self
       end #propagate_to_redis_and_varnish
@@ -73,16 +73,15 @@ module CartoDB
       end #invalidate_varnish_cache
 
       def varnish_key
-        "^#{table.database_name}:(.*#{table.name}.*)|(table)$"
+        "^#{table.owner.database_name}:(.*#{table.name}.*)|(table)$"
       end #varnish_key
 
       def redis_key
-        "rails:#{table.database_name}:#{table.name}"
+        "rails:#{table.owner.database_name}:#{table.name}"
       end #redis_key
 
       def privacy_text
-        return 'public' if privacy == ::Table::PUBLIC
-        return 'private'
+        privacy == ::Table::PUBLIC ? 'public' : 'private'
       end #privacy_text
     end # PrivacyManager
   end # Table

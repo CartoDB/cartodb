@@ -404,7 +404,7 @@ describe Table do
       @user.save
       table = create_table(:user_id => @user.id)
 
-      table.database_name.should == @user.database_name
+      table.owner.database_name.should == @user.database_name
     end
 
     it "should rename a database table when the attribute name is modified" do
@@ -526,7 +526,7 @@ describe Table do
   context "redis syncs" do
     it "should have a unique key to be identified in Redis" do
       table = create_table(:user_id => @user.id)
-      table.key.should == "rails:#{table.database_name}:#{table.name}"
+      table.key.should == "rails:#{table.owner.database_name}:#{table.name}"
     end
 
     it "should rename the entries in Redis when the table has been renamed" do
@@ -538,7 +538,7 @@ describe Table do
       table.save_changes
       table.reload
 
-      table.key.should == "rails:#{table.database_name}:#{table.name}"
+      table.key.should == "rails:#{table.owner.database_name}:#{table.name}"
       $tables_metadata.exists(table.key).should be_true
       $tables_metadata.exists(original_name).should be_false
       $tables_metadata.hget(table.key, "privacy").should be_present
@@ -647,8 +647,8 @@ describe Table do
     end
   end
 
-  context "schema and columns" do
-    it "has a default schema" do
+  context 'schema and columns' do
+    it 'has a default schema' do
       table = create_table(:user_id => @user.id)
       table.reload
       table.schema(:cartodb_types => false).should be_equal_to_default_db_schema

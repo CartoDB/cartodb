@@ -295,9 +295,11 @@
               opt.no_cdn = true;
           <% end %>
 
+          var scrollwheelEnabled = opt.scrollwheel;
+
           opt.title       = false;
           opt.description = false;
-          opt.scrollwheel = false;
+          opt.scrollwheel = false; 
 
           cartodb.config.set({
             cartodb_attributions: "CartoDB <a href='http://cartodb.com/attributions?utm_source=Footer_Link&utm_medium=referral&utm_campaign=Embed_v1&utm_content=Attributions&utm_term=<%= @visualization.user.username %>' target='_blank'>attribution</a>",
@@ -381,8 +383,10 @@
             var fullscreen = vis.getOverlay("fullscreen");
 
             if (fullscreen) {
+
               fullscreen.options.doc = ".cartodb-public-wrapper";
-              fullscreen.model.set("allowWheelOnFullscreen", true);
+              fullscreen.model.set("allowWheelOnFullscreen", scrollwheelEnabled);
+
             }
 
             // some stats

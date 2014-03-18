@@ -303,9 +303,10 @@
           &.c { top: 20px; left: 72px; }
 
           @include opacity(0);
-          width: 12px; height: 12px;
-          display:block;
           position:absolute;
+          width: 12px; 
+          height: 12px;
+          display: block;
           @include border-radius(100px);
           background: #ccc;
           border: 1px solid #bbb;
@@ -370,34 +371,57 @@
           transition:         all 250ms ease-out;
         }
 
-        &.disabled .opt,
-        &.disabled.selected .opt {
 
-          .icon_container {
+        &.disabled {
 
-            border: 2px solid rgba(#333, .3);
+          &.animated {
 
-            .icon {
-              @include filter(grayscale(80%));
-              @include opacity(.5);
-              .marker { background: #666; border-color: #333; }
-            }
+            
+            .icon .marker.a { top: 33px; @include opacity(1); }
+            .icon .marker.b { top: 60px; @include opacity(1); }
+            .icon .marker.c { top: 40px; @include opacity(1); }
+          
           }
 
-          span { color: #999999; font-weight:normal;}
-          background:#fff;
+          .opt, &.selected .opt {
 
-        }
+            .icon_container {
 
-        &.disabled.point span {
-          width: 200px;
-          margin-left: -100px;
-        }
+              border: 2px solid rgba(#333, .3);
 
-        &.disabled.polygon .icon,
-        &.disabled.selected.polygon .icon {
-          -webkit-transform: scale(1, 1);
-          transform: scale(1, 1);
+              .icon {
+                @include filter(grayscale(80%));
+                @include opacity(.5);
+                .marker { 
+                  background: #666;
+                  border-color: #333;
+
+                }
+              }
+            }
+
+            span { color: #999999; font-weight:normal;}
+            background:#fff;
+          }
+
+          &.point span {
+            width: 200px;
+            margin-left: -100px;
+          }
+
+          &.polygon .icon,
+          &.selected.polygon .icon {
+            -webkit-transform: scale(1, 1);
+            transform: scale(1, 1);
+          }
+
+          .warning {
+            display:block;
+            @include opacity(1);
+            top: 30px;
+            right:65px;
+          }
+
         }
 
         .opt .warning {
@@ -412,34 +436,37 @@
           @include opacity(0);
         }
 
-        &.disabled {
-          .warning {
-            display:block;
-            @include opacity(1);
-            top: 30px;
-            right:65px;
+        &.selected .opt {
+
+          .icon_container {
+            border: 2px solid rgba(#333, .75);
+            .icon { @include opacity(1); }
           }
+
+          .icon {
+            @include filter(grayscale(0%));
+            @include opacity(1);
+          }
+
         }
 
-        &.selected .opt .icon_container {
-          border: 2px solid rgba(#333, .75);
-          .icon { @include opacity(1); }
+        &.point {
+
+          .icon { @include background(image-url("layout/georeference_points.png") repeat center center); }
+
+          &.selected.animated .icon .marker {
+            &.a { top: 33px; @include opacity(1); }
+            &.b { top: 60px; @include opacity(1); }
+            &.c { top: 40px; @include opacity(1); }
+          }
+
+          &.animated .icon .marker {
+            &.a { top: 33px; @include opacity(.7); }
+            &.b { top: 60px; @include opacity(.7); }
+            &.c { top: 40px; @include opacity(.7); }
+          }
+
         }
-
-        &.selected .opt .icon {
-          @include filter(grayscale(0%));
-          @include opacity(1);
-        }
-
-        &.point .icon { @include background(image-url("layout/georeference_points.png") repeat center center); }
-
-        &.point.selected.animated .icon .marker.a { top: 33px; @include opacity(1);-webkit-transform: scale(1, 1); transform: scale(1, 1); }
-        &.point.selected.animated .icon .marker.b { top: 60px; @include opacity(1);-webkit-transform: scale(1, 1); transform: scale(1, 1); }
-        &.point.selected.animated .icon .marker.c { top: 40px; @include opacity(1);-webkit-transform: scale(1, 1); transform: scale(1, 1); }
-
-        &.point.animated .icon .marker.a { top: 33px; @include opacity(.7); -webkit-transform: scale(.6, .6); transform: scale(.6, .6); }
-        &.point.animated .icon .marker.b { top: 60px; @include opacity(.7); -webkit-transform: scale(.6, .6); transform: scale(.6, .6); }
-        &.point.animated .icon .marker.c { top: 40px; @include opacity(.7); -webkit-transform: scale(.6, .6); transform: scale(.6, .6); }
 
         &.polygon {
 
@@ -476,7 +503,8 @@
             -webkit-transform: scale(1, 1);
             transform: scale(1, 1);
           }
-        }
+        } // polygon
+
       }
     }
 

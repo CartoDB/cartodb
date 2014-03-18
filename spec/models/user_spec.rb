@@ -189,14 +189,14 @@ describe User do
   it "should invalidate all his vizjsons when his account type changes" do
     @user.account_type = 'WADUS'
     CartoDB::Varnish.any_instance.expects(:purge)
-      .with("obj.http.X-Cache-Channel ~ #{@user.database_name}.*:vizjson").times(1).returns(true)
+      .with("#{@user.database_name}.*:vizjson").times(1).returns(true)
     @user.save
   end
 
   it "should invalidate all his vizjsons when his disqus_shortname changes" do
     @user.disqus_shortname = 'WADUS'
     CartoDB::Varnish.any_instance.expects(:purge)
-      .with("obj.http.X-Cache-Channel ~ #{@user.database_name}.*:vizjson").times(1).returns(true)
+      .with("#{@user.database_name}.*:vizjson").times(1).returns(true)
     @user.save
   end
 

@@ -220,8 +220,8 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     "touchstart":           "_checkOrigin",
     "MSPointerDown":        "_checkOrigin",
     "dblclick":             "_stopPropagation",
-    "mousewheel":           "_stopPropagation",
     "DOMMouseScroll":       "_stopBubbling",
+    'MozMousePixelScroll':  "_stopBubbling",
     "mousewheel":           "_stopBubbling",
     "dbclick":              "_stopPropagation",
     "click":                "_stopPropagation"
@@ -621,11 +621,6 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
   _stopBubbling: function (e) {
     e.preventDefault();
     e.stopPropagation();
-
-    //e = e || window.event;
-    //if (e.preventDefault)
-    //e.preventDefault();
-    //e.returnValue = false;  
   },
 
   /**

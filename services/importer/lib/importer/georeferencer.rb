@@ -5,6 +5,7 @@ require_relative './job'
 module CartoDB
   module Importer2
     class Georeferencer
+      DEFAULT_BATCH_SIZE = 25000
       LATITUDE_POSSIBLE_NAMES   = %w{ latitude lat latitudedecimal
         latitud lati decimallatitude decimallat }
       LONGITUDE_POSSIBLE_NAMES  = %w{ longitude lon lng 
@@ -46,8 +47,10 @@ module CartoDB
       end #create_the_geom_from_latlon
 
       def create_the_geom_from_geometry_column
+        column = nil
         geometry_column_name = geometry_column_in
         return false unless geometry_column_name
+        job.log "Creating the_geom from #{geometry_column_name} column"
         column = Column.new(db, table_name, geometry_column_name, schema, job)
         column.empty_lines_to_nulls
         column.geometrify
@@ -55,8 +58,6 @@ module CartoDB
         unless column_exists_in?(table_name, :the_geom)
           column.rename_to(:the_geom) 
         end
-
-        job.log "Creating the_geom from #{geometry_column_name} column"
         handle_multipoint(qualified_table_name) if multipoint?
         self
       rescue => exception
@@ -74,7 +75,7 @@ module CartoDB
       def populate_the_geom_from_latlon(qualified_table_name, latitude_column_name, longitude_column_name)
         job.log 'Populating the_geom from latitude / longitude'
 
-        batch_size = 25000  # TODO: Magic number, should be benchmarked
+        batch_size = DEFAULT_BATCH_SIZE  # TODO: Magic number, should be benchmarked
         id_column = 'ogc_fid' # Only PostGIS driver (but can be changed, @see http://www.gdal.org/ogr/drv_pg.html)
         temp_finished_column = 'the_geom_populated'
 
@@ -112,7 +113,7 @@ module CartoDB
       end #populate_the_geom_from_latlon
 
       def create_the_geom_in(table_name)
-        'Creating the_geom column'
+        job.log 'Creating the_geom column'
         return false if column_exists_in?(table_name, 'the_geom')
 
         db.run(%Q{

@@ -8,7 +8,7 @@ CartoDB::Application.configure do
   config.cache_classes = true
 
   # Full error reports are disabled and caching is turned on
-  config.consider_all_requests_local       = false
+  config.consider_all_requests_local       = true
   config.action_controller.perform_caching = false
 
   # Specifies the header that your server uses for sending files
@@ -55,6 +55,7 @@ CartoDB::Application.configure do
 
   # Don't fallback to assets pipeline
   config.assets.compile = false
+  config.assets.debug = true
 
   # Generate digests for assets URLs
   config.assets.digest = true

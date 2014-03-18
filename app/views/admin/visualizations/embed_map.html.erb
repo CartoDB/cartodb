@@ -139,12 +139,14 @@
 
       $(document).ready(function(){
 
-        if (location.protocol.indexOf('https') === -1) {
-            statsc.connect('http://<%= Cartodb.config[:graphite_public]['host'] %>:<%= Cartodb.config[:graphite_public]['port'] %>/');
-            cartodb.core.Profiler.backend(function () {
-              statsc.send.apply(statsc, arguments);
-            })
-        }
+        <% if Cartodb.config[:graphite_public] %>
+            if (location.protocol.indexOf('https') === -1) {
+                statsc.connect('http://<%= Cartodb.config[:graphite_public]['host'] %>:<%= Cartodb.config[:graphite_public]['port'] %>/');
+                cartodb.core.Profiler.backend(function () {
+                  statsc.send.apply(statsc, arguments);
+                })
+            }
+        <% end %>
 
         var bool_fn = function(v) { return v == 'true' }
         , is_custom_install = <%= Cartodb.config[:cartodb_com_hosted].present? %>

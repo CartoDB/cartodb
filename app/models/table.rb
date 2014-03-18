@@ -398,23 +398,31 @@ class Table < Sequel::Model(:user_tables)
   end #before_save
 
   def after_save
+    had_errors = false
     super
     manage_tags
-    update_name_changes
-    self.map.save
-
-    manager = CartoDB::Table::PrivacyManager.new(self)
-    manager.set_private if privacy == PRIVATE
-    manager.set_public  if privacy == PUBLIC
-    manager.propagate_to(table_visualization)
-    if privacy_changed?
-      manager.propagate_to_redis_and_varnish
-      update_cdb_tablemetadata
+    begin
+      update_name_changes
+    rescue CartoDB::BaseCartoDBError
+      had_errors = true
     end
-    
-    affected_visualizations.each { |visualization|
-      manager.propagate_to(visualization)
-    }
+
+    unless had_errors
+      self.map.save
+
+      manager = CartoDB::Table::PrivacyManager.new(self)
+      manager.set_private if privacy == PRIVATE
+      manager.set_public  if privacy == PUBLIC
+      manager.propagate_to(table_visualization)
+      if privacy_changed?
+        manager.propagate_to_redis_and_varnish
+        update_cdb_tablemetadata
+      end
+
+      affected_visualizations.each { |visualization|
+        manager.propagate_to(visualization)
+      }
+    end
   end
 
   def propagate_name_change_to_table_visualization
@@ -1334,6 +1342,42 @@ TRIGGER
     record.nil? ? nil : record[:oid]
   end # get_table_id
 
+  # @throws CartoDB::TableError
+  def update_name_changes
+    if @name_changed_from.present? && @name_changed_from != name
+      # update metadata records
+      reload
+      begin
+        $tables_metadata.rename(Table.key(database_name,@name_changed_from), key)
+      rescue StandardError => exception
+        exception_to_raise = CartoDB::BaseCartoDBError.new(
+            "Table update_name_changes(): '#{@name_changed_from}','#{key}' renaming metadata", exception)
+        CartoDB::notify_exception(exception_to_raise, user: owner)
+        raise exception_to_raise
+      end
+
+      begin
+        owner.in_database.rename_table(@name_changed_from, name)
+      rescue StandardError => exception
+        exception_to_raise = CartoDB::BaseCartoDBError.new(
+            "Table update_name_changes(): '#{@name_changed_from}' doesn't exist", exception)
+        CartoDB::notify_exception(exception_to_raise, user: owner)
+        raise exception_to_raise
+      end
+      propagate_name_change_to_table_visualization
+
+      if layers.blank?
+        exception_to_raise = CartoDB::TableError.new("Attempt to rename table without layers #{self.name}")
+        CartoDB::notify_exception(exception_to_raise, user: owner)
+        raise exception_to_raise
+      end
+
+      layers.each do |layer|
+        layer.rename_table(@name_changed_from, name).save
+      end
+    end
+    @name_changed_from = nil
+  end
 
   private
 
@@ -1572,51 +1616,6 @@ SQL
         new_tag.save
       end
     end
-  end
-
-  def update_name_changes
-    if @name_changed_from.present? && @name_changed_from != name
-      # update metadata records
-      reload
-      begin
-        $tables_metadata.rename(Table.key(database_name,@name_changed_from), key)
-      rescue
-      end
-      begin
-        owner.in_database.rename_table(@name_changed_from, name)
-      rescue
-        puts "Error attempting to rename table in DB: #{@name_changed_from} doesn't exist"
-      end
-      propagate_name_change_to_table_visualization
-
-      require_relative '../../services/importer/lib/importer/exceptions'
-      CartoDB::notify_exception(
-        CartoDB::Importer2::GenericImportError.new("Attempt to rename table without layers #{self.name}"),
-        user: owner
-      ) if layers.blank?
-
-      layers.each do |layer|
-        layer.rename_table(@name_changed_from, name).save
-      end
-
-      # update tile styles
-      begin
-        # get old tile style
-        #old_style = tile_request('GET', "/tiles/#{@name_changed_from}/style?map_key=#{owner.api_key}").try(:body)
-
-        # parse old CartoCSS style out
-        #old_style = JSON.parse(old_style).with_indifferent_access[:style]
-
-        # rename common table name based variables
-        #old_style.gsub!(@name_changed_from, self.name)
-
-        # post new style
-        #tile_request('POST', "/tiles/#{self.name}/style?map_key=#{owner.api_key}", {"style" => old_style})
-      rescue => e
-        CartoDB::Logger.info "tilestyle#rename error for", "#{e.inspect}"
-      end
-    end
-    @name_changed_from = nil
   end
 
   def delete_tile_style

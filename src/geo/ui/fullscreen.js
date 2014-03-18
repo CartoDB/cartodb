@@ -41,10 +41,12 @@ cdb.ui.common.FullScreen = cdb.core.View.extend({
 
         if ( !document.fullscreenElement && !document.webkitFullscreenElement && !document.mozFullScreenElement && !document.msFullscreenElement) {
           if (self.model.get("allowWheelOnFullscreen")) {
-
             mapView.options.map.set("scrollwheel", false);
           }
         }
+
+        mapView.invalidateSize();
+
       });
 
   },
@@ -66,12 +68,11 @@ cdb.ui.common.FullScreen = cdb.core.View.extend({
 
     var mapView = this.options.mapView;
 
-    if(!doc.fullscreenElement && !doc.mozFullScreenElement && !doc.webkitFullscreenElement) {
+    if (!doc.fullscreenElement && !doc.mozFullScreenElement && !doc.webkitFullscreenElement) {
 
       requestFullScreen.call(docEl);
 
       if (mapView) {
-        mapView.invalidateSize();
 
         if (this.model.get("allowWheelOnFullscreen")) {
           mapView.options.map.set("scrollwheel", true);

@@ -37,13 +37,13 @@ install:
   # Needs fixing first some tests:
   #- cp services/importer/spec/factories/database.json.sample services/importer/spec/factories/database.json
   - cat python_requirements.txt | grep -v gdal | sudo pip install -r /dev/stdin
-  - cd lib/assets && npm install && cd ../..
+  - cd lib/build && npm install && cd ../..
 
 script:
   - make prepare-test-db
   - make check-prepared
   # check list of database names
-  - cd lib/assets && grunt test && cd ../..
+  - cd lib/build && grunt test && cd ../..
   - sudo su postgres -c "echo 'select datname from pg_database;' | psql template_postgis"
 
 env:

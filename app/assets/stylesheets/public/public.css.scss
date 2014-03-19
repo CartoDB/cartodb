@@ -10,6 +10,7 @@
 body {
   @include background(image-url("layout/bkg.jpg") repeat 0 0);
 }
+
 .content {
   width: 1022px;
   margin: 50px auto 0 auto;
@@ -26,17 +27,21 @@ body {
 
 .info .tags {
 
+  margin: 0 0 40px 0;
+
   li  {
     padding: 17px 0;
     border-bottom: 1px solid rgba(#BBBBBB, .2);
 
     &:first-child { padding-top: 0; }
+    &:last-child  { border:none; }
 
     strong {
       text-transform: uppercase;
       font-size:13px;
       color: #BABABA;
-      font-family: 'ProximaNova-Sembibold', Helvetica, sans-serif;
+      font-family: 'ProximaNova-Semibold', Helvetica, sans-serif;
+      font-weight: 400;
     }
 
     a {
@@ -100,7 +105,8 @@ body {
       }
 
       &, a {
-        font-family: 'ProximaNova-Sembibold', Helvetica, sans-serif;
+        font-family: 'ProximaNova-Semibold', Helvetica, sans-serif;
+        font-weight: 400;
         font-size:11px;
       }
 
@@ -125,7 +131,8 @@ body {
     h2  {
       font-size: 21px;
       color: #333333;
-      font-family: 'ProximaNova-Sembibold', Helvetica, sans-serif;
+      font-family: 'ProximaNova-Semibold', Helvetica, sans-serif;
+      font-weight: 400;
     }
 
 
@@ -167,10 +174,12 @@ body {
 
       h3 {
         margin: 0 0 5px 0;
-        font-family: 'ProximaNova-Sembibold', Helvetica, sans-serif;
+        font-family: 'ProximaNova-Semibold', Helvetica, sans-serif;
+        font-weight: 400;
         color: #fff;
         font-size: 27px;
       }
+
       p {
         font-size:15px;
         color: #DDDDDD;
@@ -188,7 +197,8 @@ body {
   .mapviews {
     float:right;
     font-size: 15px;
-    font-family: 'ProximaNova-Sembibold', Helvetica, sans-serif;
+    font-family: 'ProximaNova-Semibold', Helvetica, sans-serif;
+      font-weight: 400;
     color: #CCCCCC;
   }
 
@@ -212,8 +222,29 @@ body {
       background: rgba(#FFD24D, .50);
       @include border-radius(3px);
     }
-    
-  
   }
 
+}
+
+.pagination {
+  margin: 36px 0 60px 0;
+  clear:both;
+  overflow:hidden;
+
+  .next {
+    float:right;
+  }
+}
+.next {
+  display:block;
+  @include inline-block();
+  padding: 11px 13px;
+  font-size:13px;
+  font-family: 'ProximaNova-Semibold', Helvetica, sans-serif;
+  font-weight:400;
+  color:#fff;
+  text-transform: uppercase;
+  background: #397DB9;
+  @include border-radius(3px);
+  line-height:120%;
 }

@@ -5,7 +5,7 @@ require_relative './job'
 module CartoDB
   module Importer2
     class Georeferencer
-      DEFAULT_BATCH_SIZE = 25000
+      DEFAULT_BATCH_SIZE = 50000
       LATITUDE_POSSIBLE_NAMES   = %w{ latitude lat latitudedecimal
         latitud lati decimallatitude decimallat }
       LONGITUDE_POSSIBLE_NAMES  = %w{ longitude lon lng 
@@ -54,20 +54,22 @@ module CartoDB
         column = Column.new(db, table_name, geometry_column_name, schema, job)
         column.empty_lines_to_nulls
         column.geometrify
-        
         unless column_exists_in?(table_name, :the_geom)
           column.rename_to(:the_geom) 
         end
         handle_multipoint(qualified_table_name) if multipoint?
         self
       rescue => exception
-        job.log "Error creating the_geom: #{exception}"
-        if column.empty?
-          job.log "Dropping empty #{geometry_column_name}"
-          column.drop 
-        else
-          job.log "Renaming #{geometry_column_name} to invalid_the_geom"
-          column.rename_to(:invalid_the_geom)
+        job.log "Error creating the_geom: #{exception}. Trace: #{exception.backtrace}"
+        if /statement timeout/.match(exception.message).nil?
+          if column.empty?
+            job.log "Dropping empty #{geometry_column_name}"
+            column.drop
+          else
+            # probably this one needs to be kept doing... but how if times out?
+            job.log "Renaming #{geometry_column_name} to invalid_the_geom"
+            column.rename_to(:invalid_the_geom)
+          end
         end
         false
       end #create_the_geom_from_geometry_column
@@ -81,6 +83,9 @@ module CartoDB
 
         db.run(%Q{
          ALTER TABLE #{qualified_table_name} ADD #{temp_finished_column} BOOLEAN DEFAULT FALSE;
+        })
+        db.run(%Q{
+          CREATE INDEX idx_#{temp_finished_column} ON #{qualified_table_name} (#{temp_finished_column})
         })
 
         total_rows_processed = 0
@@ -178,19 +183,25 @@ module CartoDB
       end #find_column_in
 
       def handle_multipoint(qualified_table_name)
-        job.log 'Converting detected multipoint to point'
-        db.run(%Q{
-          UPDATE #{qualified_table_name} 
-          SET the_geom = ST_GeometryN(the_geom, 1)
-        })
+        batched_execute(
+          'Converting detected multipoint to point',
+          %Q{
+            UPDATE #{qualified_table_name}
+            SET the_geom = ST_GeometryN(the_geom, 1)
+          }
+        )
       end #handle_multipoint
 
       def multipoint?
-        db[%Q{
+        is_multipoint = db[%Q{
           SELECT public.GeometryType(the_geom)
           FROM #{qualified_table_name}
           AS geometrytype
         }].first.fetch(:geometrytype) == 'MULTIPOINT'
+
+        job.log 'found MULTIPOING geometry' if is_multipoint
+
+        is_multipoint
       rescue
         false
       end #multipoint?
@@ -198,6 +209,51 @@ module CartoDB
       private
 
       attr_reader :db, :table_name, :schema, :job, :geometry_columns
+
+      def batched_execute(log_message, convert_query, batch_size=DEFAULT_BATCH_SIZE)
+        job.log log_message
+
+        total_rows_processed = 0
+        affected_rows_count = 0
+        id_column = 'ogc_fid' # Only PostGIS driver (but can be changed, @see http://www.gdal.org/ogr/drv_pg.html)
+        temp_finished_column = 'converted_row_flag'
+
+        batching_query_fragment = %Q{
+          , #{temp_finished_column} = TRUE
+          WHERE #{id_column} IN (
+            SELECT #{id_column} FROM #{qualified_table_name} WHERE #{temp_finished_column} != TRUE LIMIT #{batch_size}
+          )
+        }
+
+        db.run(%Q{
+         ALTER TABLE #{qualified_table_name} ADD #{temp_finished_column} BOOLEAN DEFAULT FALSE;
+        })
+        db.run(%Q{
+          CREATE INDEX idx_#{temp_finished_column} ON #{qualified_table_name} (#{temp_finished_column})
+        })
+
+        begin
+          begin
+            affected_rows_count = db.execute(convert_query + batching_query_fragment)
+            total_rows_processed = total_rows_processed + affected_rows_count
+            job.log "Total processed: #{total_rows_processed}"
+          rescue => exception
+            job.log exception.to_s
+            job.log '---------------------------'
+            job.log "Total processed:#{total_rows_processed}\nQUERY:\n#{convert_query}#{batching_query_fragment}"
+            job.log '---------------------------'
+            job.log exception.backtrace
+            job.log '---------------------------'
+            affected_rows_count = -1
+          end
+        end while affected_rows_count > 0
+
+        db.run(%Q{
+         ALTER TABLE #{qualified_table_name} DROP #{temp_finished_column};
+        })
+
+        job.log "FINISHED: #{log_message}"
+      end #batched_execute
 
       def qualified_table_name
         %Q("#{schema}"."#{table_name}")

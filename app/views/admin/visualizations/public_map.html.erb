@@ -63,7 +63,7 @@
           </div>
         </div>
 
-        <div id="map"></div>
+          <div id="map"></div>
 
         <div id="not_supported_dialog" style="display: none">
           <h2>CartoDB</h2>
@@ -308,10 +308,8 @@
           var visReadyTime = cartodb.core.Profiler.metric('cartodb-js.embed.time_vis_loaded').start();
 
           var onResize = function() {
-
             $("#map").css({ height: $(window).height() - 260 }); // - 132 - 68
-            $(".cartodb-map-data").css({ top: $(window).height() - 192 });
-
+            $("#map").delay(500).animate({ opacity: 1 }, 250); 
           };
 
           var setupMapDimensions;
@@ -357,10 +355,13 @@
 
             if (animated) {
               $("#map").animate({ height: height }, { easing: "easeInQuad", duration: 150 }); 
-              $(".cartodb-map-data").animate({ top: top }, { easing: "easeInQuad", duration: 150 });
             } else {
-              $("#map").css({ height: height }); 
-              $(".cartodb-map-data").css({ top: top });
+
+              if (mobileDevice) {
+                $("#map").css({ height: height, opacity: 1 }); // - 132 - 68
+              }
+
+              $("#map").trigger("resize");
             }
 
             window.vis.mapView.invalidateSize()

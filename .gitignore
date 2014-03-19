@@ -6,6 +6,7 @@ db/*.sqlite3
 log
 tmp/*
 tmp/**/*
+public/assets
 public/system
 public/uploads
 public/javascripts

@@ -1,0 +1,77 @@
+<% content_for(:page_title) do %>
+  <%= current_user.username %> |
+<% end %>
+
+<%= content_for(:js) do %>
+  <%= javascript_include_tag :cdb, :application %>
+  <script type="text/javascript">
+    var username = "<%= current_user.username %>"
+      , user_data = <%=raw current_user.data.to_json.html_safe %>
+    , config = <%=raw frontend_config.html_safe %>
+  , mixpanel_token = "<%= Cartodb.config[:mixpanel]['token'] if Cartodb.config[:mixpanel].present? %>"
+
+  </script>
+<% end %>
+
+<%= content_for(:css) do %>
+  <%= stylesheet_link_tag :common, :dashboard, :public %>
+<% end %>
+
+<div class="content">
+
+<div class="info">
+
+  <div class="user-info">
+
+    <div class="avatar">
+      <div class="circle"></div>
+    </div>
+
+    <div class="username">
+      <h2>Peterdesmet</h2>
+    </div>
+
+    <ul>
+      <li><a href="#"><strong>17</strong>datasets</a></li>
+      <li><strong>12</strong>visualizations</li>
+    </ul>
+
+  </div>
+
+
+  <ul class="tags">
+    <li><strong>Browse by tag</strong></li>
+    <li><a href="#">Biodiversity</a></li>
+    <li><a href="#">Law</a></li>
+    <li><a href="#">Contest</a></li>
+    <li><a href="#">MWC2013</a></li>
+  </ul>
+
+
+</div>
+
+<div class="visualizations">
+
+  <div class="vis">
+    <div class="image">
+      <div class="title">
+        <h3>Map of trips per day</h3>
+        <p>To get a better sense of the trips Eric made...</p>
+      </div>
+      <div class="gradient"></div>
+    </div>
+
+    <div class="header">
+      <ul class="tags">
+        <li><a href="#">Biodiversity</a></li>
+        <li><a href="#">Law</a></li>
+      </ul>
+    <div class="mapviews">12,376 Map views</div>
+    </div>
+  </div>
+
+</div>
+
+<div class="pagination"></div>
+
+</div>

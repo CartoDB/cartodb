@@ -1,0 +1,219 @@
+@import "compass/css3/text-shadow";
+@import "../common/mixins";
+@import "../common/fonts";
+@import "../common/vars";
+@import "common/form-elements";
+@import "../common/common-sprite";
+@import "../dashboard/dashboard-sprite";
+
+
+body {
+  @include background(image-url("layout/bkg.jpg") repeat 0 0);
+}
+.content {
+  width: 1022px;
+  margin: 50px auto 0 auto;
+  clear:both;
+  overflow:hidden;
+}
+
+
+.info {
+  float:left;
+  width: 283px;
+  @include inline-block();
+}
+
+.info .tags {
+
+  li  {
+    padding: 17px 0;
+    border-bottom: 1px solid rgba(#BBBBBB, .2);
+
+    &:first-child { padding-top: 0; }
+
+    strong {
+      text-transform: uppercase;
+      font-size:13px;
+      color: #BABABA;
+      font-family: 'ProximaNova-Sembibold', Helvetica, sans-serif;
+    }
+
+    a {
+      font-size: 15px;
+    }
+  }
+  
+}
+
+.user-info {
+  
+  $width: 283px;
+  width: $width;
+  margin: 0 0 45px 0;
+  background:#fff;
+  text-align:center;
+
+  border: 1px solid #BBBBBB;
+  @include border-radius(5px);
+
+  .avatar {
+    position: relative;
+    height: 220px;
+    border-bottom: 1px solid #BBBBBB;
+    background: url(/images/layout/avatar_bkg.png) repeat 0 0;
+    @include background(image-url("layout/avatar_bkg.png") no-repeat);
+
+    .circle {
+      $width: 128px;
+      display:block;
+      width: $width;
+      height: $width;
+      @include border-radius(300px);
+      background:#fff;
+      position:absolute;
+      top: 50%;
+      left: 50%;
+      margin-left: -$width/2;
+      margin-top: -$width/2;
+      @include box-shadow(0px 0px 0 4px rgba(#333, .2));
+      
+
+    }
+  }
+  
+  ul {
+    clear:both;
+    overflow:hidden;
+
+    li {
+      width: 141px;
+      float:left;
+      padding: 25px 0;
+      text-align:center;
+      color: #333333;
+      text-transform: uppercase;
+
+      strong {
+        font-size:51px;
+        display:block;
+      }
+
+      &, a {
+        font-family: 'ProximaNova-Sembibold', Helvetica, sans-serif;
+        font-size:11px;
+      }
+
+      a:hover {
+        text-decoration:none;
+      }
+
+    }
+
+    li:first-child {
+      border-right: 1px solid #BBBBBB;
+    }
+    
+  }
+  
+  .username {
+
+    border-bottom: 1px solid #BBBBBB;
+
+    padding: 30px 0;
+
+    h2  {
+      font-size: 21px;
+      color: #333333;
+      font-family: 'ProximaNova-Sembibold', Helvetica, sans-serif;
+    }
+
+
+  }
+}
+
+.visualizations {
+  @include inline-block();
+  float:right;
+}
+
+.vis {
+  width: 700px;
+  margin: 0 0 29px 0;
+  background: #fff;
+  border: 1px solid #BBBBBB;
+  @include border-radius(5px);
+
+  .image {
+    height: 300px;
+    position:relative;
+
+    .gradient {
+      @include opacity(.6);
+      @include background(image-url("layout/gray_gradient.png") repeat-x 0 0);
+      position:absolute;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      height: 125px;
+      z-index: 0;
+    }
+
+    .title {
+      position:absolute;
+      bottom: 28px;
+      left: 42px;
+      z-index: 10;
+
+      h3 {
+        margin: 0 0 5px 0;
+        font-family: 'ProximaNova-Sembibold', Helvetica, sans-serif;
+        color: #fff;
+        font-size: 27px;
+      }
+      p {
+        font-size:15px;
+        color: #DDDDDD;
+      }
+    }
+  }
+
+  .header {
+    border-top: 1px solid #BBBBBB;
+    padding: 30px 34px;
+    clear:both;
+    overflow:hidden;
+  }
+
+  .mapviews {
+    float:right;
+    font-size: 15px;
+    font-family: 'ProximaNova-Sembibold', Helvetica, sans-serif;
+    color: #CCCCCC;
+  }
+
+  .tags {
+
+    float:left;
+
+    li {
+      @include inline-block();
+      border:none;
+    }
+
+    a {
+      padding: 6px 9px;
+      display:block;
+      text-decoration: none;
+      font-family: 'ProximaNova-Bold', Helvetica, sans-serif;
+      color: #545454;
+      font-size:11px;
+      text-transform: uppercase;
+      background: rgba(#FFD24D, .50);
+      @include border-radius(3px);
+    }
+    
+  
+  }
+
+}

@@ -14,7 +14,10 @@
     <noscript><meta http-equiv="refresh" content="0;url=/no_javascript.html"></noscript>
   </head>
   <body>
-    <% if ( ( controller_name != "visualizations" && controller_name != "tables" )  || action_name != "show" ) %>
+
+    <% if (controller_name == "pages" && action_name == "public") %>
+      <%= render 'admin/shared/public_header' %>
+    <% elsif ( ( controller_name != "visualizations" && controller_name != "tables" )  || action_name != "show" ) %>
       <%= render 'admin/shared/header' %>
     <% else %>
       <%= render 'admin/shared/vis_header' %>

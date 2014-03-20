@@ -4,6 +4,7 @@
 - fixes the embed_map url in the share dialog.
 - raised leaflet maxZoom from 18 to 30
 - fixed setting interactivity in private layers should raise an exception (#108)
+- added metrics for tile and layergroup loading time
 
 3.8.03 (15//03//2014)
 - fixed addCursorInteraction

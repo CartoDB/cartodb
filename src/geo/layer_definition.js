@@ -677,7 +677,7 @@ NamedMap.prototype = _.extend({}, Map.prototype, {
   },
 
   setLayer: function(layer, def) {
-    var not_allowed_attrs = {'sql': 1, 'cartocss': 1 };
+    var not_allowed_attrs = {'sql': 1, 'cartocss': 1, 'interactivity': 1 };
 
     for(var k in def.options) {
       if (k in not_allowed_attrs) {

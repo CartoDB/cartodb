@@ -1,6 +1,6 @@
 // cartodb.js version: 3.8.04-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: 7405cd80773a98f7c08dda35a7f828e21a517c46
+// sha: 054f3d64a45831192af5b35fd7834483f5e2d579
 (function() {
   var root = this;
 
@@ -27198,7 +27198,7 @@ L.CartoDBGroupLayerBase = L.TileLayer.extend({
   addProfiling: function() {
     this.bind('tileloadstart', function(e) {
       var s = this.tileStats || (this.tileStats = {});
-      s[e.tile.src] = cartodb.core.Profiler.metric('cartodb-js.tile.load.time').start();
+      s[e.tile.src] = cartodb.core.Profiler.metric('cartodb-js.tile.png.load.time').start();
     });
     var finish = function(e) {
       var s = this.tileStats && this.tileStats[e.tile.src];
@@ -27206,7 +27206,7 @@ L.CartoDBGroupLayerBase = L.TileLayer.extend({
     };
     this.bind('tileload', finish);
     this.bind('tileerror', function(e) {
-      cartodb.core.Profiler.metric('cartodb-js.tile.load.error').inc();
+      cartodb.core.Profiler.metric('cartodb-js.tile.png.error').inc();
       finish(e);
     });
   },
@@ -28423,7 +28423,7 @@ CartoDBLayerGroupBase.prototype.getTile = function(coord, zoom, ownerDocument) {
 
   this.tiles++;
 
-  var loadTime = cartodb.core.Profiler.metric('cartodb-js.tile.load.time').start();
+  var loadTime = cartodb.core.Profiler.metric('cartodb-js.tile.png.load.time').start();
 
   var finished = function() {
     loadTime.end();
@@ -28434,7 +28434,7 @@ CartoDBLayerGroupBase.prototype.getTile = function(coord, zoom, ownerDocument) {
   };
   im.onload = finished;
   im.onerror = function() {
-    cartodb.core.Profiler.metric('cartodb-js.tile.load.error').inc();
+    cartodb.core.Profiler.metric('cartodb-js.tile.png.error').inc();
     finish();
   }
 

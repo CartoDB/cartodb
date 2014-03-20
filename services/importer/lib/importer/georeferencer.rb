@@ -71,18 +71,19 @@ module CartoDB
         false
       end #create_the_geom_from_geometry_column
 
-      def populate_the_geom_from_latlon(qualified_table_name, 
-      latitude_column_name, longitude_column_name)
+      # Note: Performs a really simple ',' to '.' normalization.
+      # TODO: Candidate for moving to a CDB_xxx function that gets the_geom from lat/long if valid or "convertible"
+      def populate_the_geom_from_latlon(qualified_table_name, latitude_column_name, longitude_column_name)
         job.log 'Populating the_geom from latitude / longitude'
         db.run(%Q{
-          UPDATE #{qualified_table_name} 
+          UPDATE #{qualified_table_name}
           SET the_geom = public.ST_GeomFromText(
-              'POINT(' || trim(CAST("#{longitude_column_name}" AS text)) || ' ' ||
-                trim(CAST("#{latitude_column_name}" AS text)) || ')', 4326
+              'POINT(' || REPLACE(TRIM(CAST("#{longitude_column_name}" AS text)), ',', '.') || ' ' ||
+                REPLACE(TRIM(CAST("#{latitude_column_name}" AS text)), ',', '.') || ')', 4326
           )
-          WHERE trim(CAST("#{longitude_column_name}" AS text)) ~ 
+          WHERE REPLACE(TRIM(CAST("#{longitude_column_name}" AS text)), ',', '.') ~
             '^(([-+]?(([0-9]|[1-9][0-9]|1[0-7][0-9])(\.[0-9]+)?))|[-+]?180)$'
-          AND trim(CAST("#{latitude_column_name}" AS text))  ~
+          AND REPLACE(TRIM(CAST("#{latitude_column_name}" AS text)), ',', '.') ~
             '^(([-+]?(([0-9]|[1-8][0-9])(\.[0-9]+)?))|[-+]?90)$'
         })
       end #populate_the_geom_from_latlon

@@ -2,6 +2,7 @@
 require_relative './job'
 require_relative './string_sanitizer'
 require_relative './exceptions'
+require_relative './query_batcher'
 
 module CartoDB
   module Importer2
@@ -57,100 +58,75 @@ module CartoDB
         self
       end #geometrify
 
-      def batched_convert(log_message, convert_query, batch_size=DEFAULT_BATCH_SIZE)
-        job.log log_message
-
-        total_rows_processed = 0
-        affected_rows_count = 0
-        id_column = 'ogc_fid' # Only PostGIS driver (but can be changed, @see http://www.gdal.org/ogr/drv_pg.html)
-        temp_finished_column = 'converted_row_flag'
-
-        batching_query_fragment = %Q{
-          , #{temp_finished_column} = TRUE
-          WHERE #{id_column} IN (
-            SELECT #{id_column} FROM #{qualified_table_name} WHERE #{temp_finished_column} != TRUE LIMIT #{batch_size}
-          )
-        }
-
-        db.run(%Q{
-         ALTER TABLE #{qualified_table_name} ADD #{temp_finished_column} BOOLEAN DEFAULT FALSE;
-        })
-        db.run(%Q{
-          CREATE INDEX idx_#{temp_finished_column} ON #{qualified_table_name} (#{temp_finished_column})
-        })
-
-        begin
-          begin
-            affected_rows_count = db.execute(convert_query + batching_query_fragment)
-            total_rows_processed = total_rows_processed + affected_rows_count
-            job.log "Total processed: #{total_rows_processed}"
-          rescue => exception
-            job.log exception.to_s
-            job.log '---------------------------'
-            job.log "Total processed:#{total_rows_processed}\nQUERY:\n#{convert_query}#{batching_query_fragment}"
-            job.log '---------------------------'
-            job.log exception.backtrace
-            job.log '---------------------------'
-            affected_rows_count = -1
-          end
-        end while affected_rows_count > 0
-
-        db.run(%Q{
-         ALTER TABLE #{qualified_table_name} DROP #{temp_finished_column};
-        })
-
-        job.log "FINISHED: #{log_message}"
-      end #batched_convert
-
       def convert_from_wkt
-        batched_convert(
-          'Converting geometry from WKT to WKB',
+        QueryBatcher::execute(
+          db,
           %Q{
             UPDATE #{qualified_table_name}
             SET #{column_name} = public.ST_GeomFromText(#{column_name}, #{DEFAULT_SRID})
-          }
+          },
+          qualified_table_name,
+          job,
+          'Converting geometry from WKT to WKB',
+          capture_exceptions=true
         )
         self
       end #convert_from_wkt
 
       def convert_from_geojson
-        batched_convert(
-          'Converting geometry from GeoJSON to WKB',
+        QueryBatcher::execute(
+          db,
           %Q{
             UPDATE #{qualified_table_name}
             SET #{column_name} = public.ST_SetSRID(public.ST_GeomFromGeoJSON(#{column_name}), #{DEFAULT_SRID})
-          }
+          },
+          qualified_table_name,
+          job,
+          'Converting geometry from GeoJSON to WKB',
+          capture_exceptions=true
         )
         self
       end #convert_from_geojson
 
       def convert_from_kml_point
-        batched_convert(
-          'Converting geometry from KML point to WKB',
+        QueryBatcher::execute(
+          db,
           %Q{
             UPDATE #{qualified_table_name}
             SET #{column_name} = public.ST_SetSRID(public.ST_GeomFromKML(#{column_name}),#{DEFAULT_SRID})
-          }
+          },
+          qualified_table_name,
+          job,
+          'Converting geometry from KML point to WKB',
+          capture_exceptions=true
         )
       end #convert_from_kml_point
 
       def convert_from_kml_multi
-        batched_convert(
-          'Converting geometry from KML multi to WKB',
+        QueryBatcher::execute(
+          db,
           %Q{
             UPDATE #{qualified_table_name}
             SET #{column_name} = public.ST_SetSRID(public.ST_Multi(public.ST_GeomFromKML(#{column_name})),#{DEFAULT_SRID})
-          }
+          },
+          qualified_table_name,
+          job,
+          'Converting geometry from KML multi to WKB',
+          capture_exceptions=true
         )
       end #convert_from_kml_multi
 
       def convert_to_2d
-        batched_convert(
-          'Converting to 2D point',
+        QueryBatcher::execute(
+          db,
           %Q{
             UPDATE #{qualified_table_name}
             SET #{column_name} = public.ST_Force_2D(#{column_name})
-          }
+          },
+          qualified_table_name,
+          job,
+          'Converting to 2D point',
+          capture_exceptions=true
         )
       end #convert_to_2d
 
@@ -243,48 +219,20 @@ module CartoDB
           end
         end
         if column_type != nil && column_type == :string
-          job.log 'string column found, replacing'
-          total_rows_processed = 0
-          affected_rows_count = 0
-          id_column = 'ogc_fid' # Only PostGIS driver (but can be changed, @see http://www.gdal.org/ogr/drv_pg.html)
-          temp_finished_column = 'converted_row_flag'
-
-          db.run(%Q{
-           ALTER TABLE #{qualified_table_name} ADD #{temp_finished_column} BOOLEAN DEFAULT FALSE;
-          })
-          db.run(%Q{
-            CREATE INDEX idx_#{temp_finished_column} ON #{qualified_table_name} (#{temp_finished_column})
-          })
-
-          query = %Q{
-            UPDATE #{qualified_table_name}
-            SET #{column_name}=NULL,
-            #{temp_finished_column} = TRUE
-            WHERE #{column_name}=''
-            AND #{id_column} IN (
-              SELECT #{id_column} FROM #{qualified_table_name} WHERE #{temp_finished_column} != TRUE LIMIT #{DEFAULT_BATCH_SIZE}
-            )
-          }
-
-          begin
-            begin
-              affected_rows_count = db.execute(query)
-              total_rows_processed = total_rows_processed + affected_rows_count
-              job.log "Total processed: #{total_rows_processed}"
-            rescue => exception
-              job.log exception.to_s
-              job.log '---------------------------'
-              job.log "Total processed:#{total_rows_processed}\nQUERY:\n#{query}"
-              job.log '---------------------------'
-              job.log exception.backtrace
-              job.log '---------------------------'
-              affected_rows_count = -1
-            end
-          end while affected_rows_count > 0
-
-          db.run(%Q{
-           ALTER TABLE #{qualified_table_name} DROP #{temp_finished_column};
-          })
+          QueryBatcher::execute(
+            db,
+            %Q{
+              UPDATE #{qualified_table_name}
+              SET #{column_name}=NULL
+              #{QueryBatcher::QUERY_WHERE_PLACEHOLDER}
+              WHERE #{column_name}=''
+              #{QueryBatcher::QUERY_LIMIT_SUBQUERY_PLACEHOLDER}
+            },
+            qualified_table_name,
+            job,
+            'string column found, replacing',
+            capture_exceptions=true
+          )
         else
           job.log 'no string column found, nothing replaced'
         end

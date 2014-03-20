@@ -2,7 +2,7 @@
   Add a new user |
 <% end %>
 <%= content_for(:js) do %>
-  <%= javascript_include_tag 'cdb.js', 'application.js', 'organization.js' %>
+  <%= javascript_include_tag 'cdb.js', 'application.js', 'models.js', 'organization.js', 'templates.js' %>
   <script type="text/javascript">
     var username = "<%= current_user.username %>"
       , type = "oauth"

@@ -1,7 +1,7 @@
 3.8.04 (20//03//2014)
-- Prevent the scrolling of the map when the user scrolls the infowindow content.
-- Enables the scrollwheel when the user enters in the fullscreen model.
-- Fixes the embed_map url in the share dialog.
+- prevent the scrolling of the map when the user scrolls the infowindow content.
+- enables the scrollwheel when the user enters in the fullscreen model.
+- fixes the embed_map url in the share dialog.
 - raised leaflet maxZoom from 18 to 30
 
 3.8.03 (15//03//2014)

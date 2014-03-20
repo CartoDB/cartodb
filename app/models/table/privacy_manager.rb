@@ -69,7 +69,7 @@ module CartoDB
       end #grant_query
 
       def invalidate_varnish_cache
-        Varnish.new.purge("obj.http.X-Cache-Channel ~ #{varnish_key}")
+        Varnish.new.purge("#{varnish_key}")
       end #invalidate_varnish_cache
 
       def varnish_key

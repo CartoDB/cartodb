@@ -567,7 +567,7 @@ class Table < Sequel::Model(:user_tables)
   # tiles included. Use with care O:-)
 
   def invalidate_varnish_cache
-    CartoDB::Varnish.new.purge("obj.http.X-Cache-Channel ~ #{varnish_key}")
+    CartoDB::Varnish.new.purge("#{varnish_key}")
     invalidate_cache_for(affected_visualizations) if id && table_visualization
     self
   end

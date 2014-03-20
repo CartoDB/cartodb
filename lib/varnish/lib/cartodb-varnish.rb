@@ -4,12 +4,20 @@ module CartoDB
   class Varnish
     def purge(what)
       ActiveSupport::Notifications.instrument('purge.varnish', what: what) do |payload|
-        send_command("#{purge_command} #{what}") do |result|
-          payload[:result] = result
-          result =~ /200/
+
+        conf = Cartodb::config[:varnish_management]
+        if conf['http_port']
+          request = Typhoeus::Request.new(
+            "http://#{conf['host']}:#{conf['http_port']}/batch", method: :purge, headers: {"Invalidation-Match" => what}).run
+          return request.code
+        else
+          return send_command("#{purge_command} obj.http.X-Cache-Channel ~ #{what}") do |result|
+            payload[:result] = result
+            result
+          end
         end
       end
-    end
+    end # purge
 
     def send_command(command)
       retries = 0
@@ -23,6 +31,7 @@ module CartoDB
           'Timeout' => conf["timeout"] || 5)
 
         connection.cmd('String' => command, 'Match' => /\n\n/) {|r| response = r.split("\n").first.strip}
+        p connection.respond_to?(:close)
         connection.close if connection.respond_to?(:close)
       rescue Exception => e
         if retries < conf["retries"]
@@ -39,11 +48,11 @@ module CartoDB
     private
 
     def purge_command
-       Cartodb::config[:varnish_management]["purge_command"]
+      Cartodb::config[:varnish_management]["purge_command"]
     end #purge_command
 
     def url_purge_command
-       Cartodb::config[:varnish_management]["url_purge_command"]
+      Cartodb::config[:varnish_management]["url_purge_command"]
     end #purge_command
   end # Varnish
 end # CartoDB

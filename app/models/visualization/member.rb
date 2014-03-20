@@ -204,7 +204,7 @@ module CartoDB
       end #non_dependent?
 
       def invalidate_varnish_cache
-        CartoDB::Varnish.new.purge("obj.http.X-Cache-Channel ~ .*#{id}:vizjson")
+        CartoDB::Varnish.new.purge(".*#{id}:vizjson")
       end #invalidate_varnish_cache
 
       def invalidate_cache_and_refresh_named_map

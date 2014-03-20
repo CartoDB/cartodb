@@ -161,7 +161,7 @@ $$
 
   def invalidate_varnish_cache(options = {})
     options[:regex] ||= '.*'
-    CartoDB::Varnish.new.purge("obj.http.X-Cache-Channel ~ #{database_name}#{options[:regex]}")
+    CartoDB::Varnish.new.purge("#{database_name}#{options[:regex]}")
   end
 
   ## Authentication

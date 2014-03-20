@@ -6,7 +6,6 @@
 @import "../common/common-sprite";
 @import "../dashboard/dashboard-sprite";
 
-
 body {
   @include background(image-url("layout/bkg.jpg") repeat 0 0);
 }
@@ -17,7 +16,6 @@ body {
   clear:both;
   overflow:hidden;
 }
-
 
 .info {
   float:left;
@@ -48,11 +46,11 @@ body {
       font-size: 15px;
     }
   }
-  
+
 }
 
 .user-info {
-  
+
   $width: 283px;
   width: $width;
   margin: 0 0 45px 0;
@@ -82,11 +80,9 @@ body {
       margin-left: -$width/2;
       margin-top: -$width/2;
       @include box-shadow(0px 0px 0 4px rgba(#333, .2));
-      
-
     }
   }
-  
+
   ul {
     clear:both;
     overflow:hidden;
@@ -119,9 +115,9 @@ body {
     li:first-child {
       border-right: 1px solid #BBBBBB;
     }
-    
+
   }
-  
+
   .username {
 
     border-bottom: 1px solid #BBBBBB;
@@ -134,7 +130,6 @@ body {
       font-family: 'ProximaNova-Semibold', Helvetica, sans-serif;
       font-weight: 400;
     }
-
 
   }
 }
@@ -198,7 +193,7 @@ body {
     float:right;
     font-size: 15px;
     font-family: 'ProximaNova-Semibold', Helvetica, sans-serif;
-      font-weight: 400;
+    font-weight: 400;
     color: #CCCCCC;
   }
 
@@ -221,6 +216,11 @@ body {
       text-transform: uppercase;
       background: rgba(#FFD24D, .50);
       @include border-radius(3px);
+
+      &:hover {
+        background: rgba(#FFD24D, .70);
+        text-decoration:underline;
+      }
     }
   }
 
@@ -228,22 +228,31 @@ body {
 
 .pagination {
   margin: 36px 0 60px 0;
+
   clear:both;
   overflow:hidden;
 
-  .next {
-    float:right;
-  }
+  .next { float:right; }
+
 }
+
 .next {
-  display:block;
+
+  &:hover {
+    text-decoration:underline;
+    background: darken(#397DB9, 10%);
+    color: #fff;
+  }
+
   @include inline-block();
   padding: 11px 13px;
+
   font-size:13px;
   font-family: 'ProximaNova-Semibold', Helvetica, sans-serif;
   font-weight:400;
-  color:#fff;
   text-transform: uppercase;
+
+  color:#fff;
   background: #397DB9;
   @include border-radius(3px);
   line-height:120%;

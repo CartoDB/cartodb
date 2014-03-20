@@ -33,8 +33,8 @@ module CartoDB
       end #run
 
       def create_the_geom_from_latlon
-        latitude_column_name  = latitude_column_name_in(qualified_table_name)
-        longitude_column_name = longitude_column_name_in(qualified_table_name)
+        latitude_column_name  = latitude_column_name_in
+        longitude_column_name = longitude_column_name_in
 
         return false unless latitude_column_name && longitude_column_name
 
@@ -46,7 +46,7 @@ module CartoDB
       end #create_the_geom_from_latlon
 
       def create_the_geom_from_geometry_column
-        geometry_column_name = geometry_column_in(qualified_table_name)
+        geometry_column_name = geometry_column_in
         return false unless geometry_column_name
         column = Column.new(db, table_name, geometry_column_name, schema, job)
         column.empty_lines_to_nulls
@@ -75,16 +75,41 @@ module CartoDB
       # TODO: Candidate for moving to a CDB_xxx function that gets the_geom from lat/long if valid or "convertible"
       def populate_the_geom_from_latlon(qualified_table_name, latitude_column_name, longitude_column_name)
         job.log 'Populating the_geom from latitude / longitude'
+
+        batch_size = 25000  # TODO: Magic number, should be benchmarked
+        id_column = 'ogc_fid' # Only PostGIS driver (but can be changed, @see http://www.gdal.org/ogr/drv_pg.html)
+        temp_finished_column = 'the_geom_populated'
+
         db.run(%Q{
-          UPDATE #{qualified_table_name}
-          SET the_geom = public.ST_GeomFromText(
-              'POINT(' || REPLACE(TRIM(CAST("#{longitude_column_name}" AS text)), ',', '.') || ' ' ||
-                REPLACE(TRIM(CAST("#{latitude_column_name}" AS text)), ',', '.') || ')', 4326
-          )
-          WHERE REPLACE(TRIM(CAST("#{longitude_column_name}" AS text)), ',', '.') ~
-            '^(([-+]?(([0-9]|[1-9][0-9]|1[0-7][0-9])(\.[0-9]+)?))|[-+]?180)$'
-          AND REPLACE(TRIM(CAST("#{latitude_column_name}" AS text)), ',', '.') ~
-            '^(([-+]?(([0-9]|[1-8][0-9])(\.[0-9]+)?))|[-+]?90)$'
+         ALTER TABLE #{qualified_table_name} ADD #{temp_finished_column} BOOLEAN DEFAULT FALSE;
+        })
+
+        total_rows_processed = 0
+        affected_rows_count = 0
+
+        begin
+          affected_rows_count = db.execute(%Q{
+            UPDATE #{qualified_table_name}
+            SET
+              the_geom = public.ST_GeomFromText(
+                'POINT(' || REPLACE(TRIM(CAST("#{longitude_column_name}" AS text)), ',', '.') || ' ' ||
+                  REPLACE(TRIM(CAST("#{latitude_column_name}" AS text)), ',', '.') || ')', 4326
+              ),
+              #{temp_finished_column} = TRUE
+            WHERE REPLACE(TRIM(CAST("#{longitude_column_name}" AS text)), ',', '.') ~
+              '^(([-+]?(([0-9]|[1-9][0-9]|1[0-7][0-9])(\.[0-9]+)?))|[-+]?180)$'
+            AND REPLACE(TRIM(CAST("#{latitude_column_name}" AS text)), ',', '.')  ~
+              '^(([-+]?(([0-9]|[1-8][0-9])(\.[0-9]+)?))|[-+]?90)$'
+            AND #{id_column} IN (
+              SELECT #{id_column} FROM #{qualified_table_name} WHERE #{temp_finished_column} != TRUE LIMIT #{batch_size}
+            )
+          })
+          total_rows_processed = total_rows_processed + affected_rows_count
+          job.log "Total processed: #{total_rows_processed}"
+        end while affected_rows_count > 0
+
+        db.run(%Q{
+         ALTER TABLE #{qualified_table_name} DROP #{temp_finished_column};
         })
       end #populate_the_geom_from_latlon
 
@@ -107,21 +132,21 @@ module CartoDB
         db.schema(table_name, reload: true, schema: schema).map(&:first)
       end #columns_in
 
-      def latitude_column_name_in(qualified_table_name)
+      def latitude_column_name_in
         names = LATITUDE_POSSIBLE_NAMES.map { |name| "'#{name}'" }.join(',')
         name  = find_column_in(table_name, names)
         job.log "Identified #{name} as latitude column" if name
         name
       end #latitude_column_name_in
 
-      def longitude_column_name_in(qualified_table_name)
+      def longitude_column_name_in
         names = LONGITUDE_POSSIBLE_NAMES.map { |name| "'#{name}'" }.join(',')
         name = find_column_in(table_name, names)
         job.log "Identified #{name} as longitude column" if name
         name
       end #longitude_column_name_in
 
-      def geometry_column_in(qualified_table_name)
+      def geometry_column_in
         names = geometry_columns.map { |name| "'#{name}'" }.join(',')
         find_column_in(table_name, names)
       end #geometry_column_in

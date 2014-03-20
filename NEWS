@@ -1,3 +1,7 @@
+3.8.04 (20//03//2014)
+- Prevent the scrolling of the map when the user scrolls the infowindow content.
+- Enables the scrollwheel when the user enters in the fullscreen model.
+
 3.8.03 (15//03//2014)
 - fixed addCursorInteraction
 - fixed fieldCount when there are no fields in infowindow

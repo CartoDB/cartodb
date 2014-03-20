@@ -1,3 +1,6 @@
+3.8.04
+- raised leaflet maxZoom from 18 to 30
+
 3.8.03 (15//03//2014)
 - fixed addCursorInteraction
 - fixed fieldCount when there are no fields in infowindow

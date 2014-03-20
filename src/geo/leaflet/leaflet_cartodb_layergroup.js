@@ -27,6 +27,7 @@ L.CartoDBGroupLayerBase = L.TileLayer.extend({
     sql_api_domain:     "cartodb.com",
     sql_api_port:       "80",
     sql_api_protocol:   "http",
+    maxZoom: 30, // default leaflet zoom level for a layers is 18, raise it 
     extra_params:   {
     },
     cdn_url:        null,

@@ -1,6 +1,6 @@
 // cartodb.js version: 3.8.04-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: 8859864eab818db9264b4d4f35c36a5ddf6e3284
+// sha: 7405cd80773a98f7c08dda35a7f828e21a517c46
 (function() {
   var root = this;
 
@@ -25888,6 +25888,9 @@ Map.prototype = {
   _requestPOST: function(params, callback) {
     var self = this;
     var ajax = this.options.ajax;
+
+    var loadingTime = cartodb.core.Profiler.metric('cartodb-js.layergroup.post.time').start();
+
     ajax({
       crossOrigin: true,
       type: 'POST',
@@ -25897,6 +25900,7 @@ Map.prototype = {
       url: this._tilerHost() + this.endPoint + (params.length ? "?" + params.join('&'): ''),
       data: JSON.stringify(this.toJSON()),
       success: function(data) {
+        loadingTime.end();
         // discard previous calls when there is another call waiting
         if(0 === self._queue.length) {
           callback(data);
@@ -25904,6 +25908,8 @@ Map.prototype = {
         self._requestFinished();
       },
       error: function(xhr) {
+        loadingTime.end();
+        cartodb.core.Profiler.metric('cartodb-js.layergroup.post.error').inc();
         var err = { errors: ['unknow error'] };
         if (xhr.status === 0) {
           err = { errors: ['connection error'] };
@@ -25951,13 +25957,16 @@ Map.prototype = {
     var endPoint = self.JSONPendPoint || self.endPoint;
     compressor(json, 3, function(encoded) {
       params.push(encoded);
+      var loadingTime = cartodb.core.Profiler.metric('cartodb-js.layergroup.get.time').start();
       ajax({
         dataType: 'jsonp',
         url: self._tilerHost() + endPoint + '?' + params.join('&'),
         success: function(data) {
+          loadingTime.end();
           if(0 === self._queue.length) {
             // check for errors
             if (data.error) {
+              cartodb.core.Profiler.metric('cartodb-js.layergroup.get.error').inc();
               callback(null, data.error);
             } else {
               callback(data);
@@ -25966,6 +25975,8 @@ Map.prototype = {
           self._requestFinished();
         },
         error: function(data) {
+          loadingTime.end();
+          cartodb.core.Profiler.metric('cartodb-js.layergroup.get.error').inc();
           var err = { errors: ['unknow error'] };
           try {
             err = JSON.parse(xhr.responseText);
@@ -26346,7 +26357,7 @@ NamedMap.prototype = _.extend({}, Map.prototype, {
   },
 
   setLayer: function(layer, def) {
-    var not_allowed_attrs = {'sql': 1, 'cartocss': 1 };
+    var not_allowed_attrs = {'sql': 1, 'cartocss': 1, 'interactivity': 1 };
 
     for(var k in def.options) {
       if (k in not_allowed_attrs) {
@@ -27152,6 +27163,7 @@ L.CartoDBGroupLayerBase = L.TileLayer.extend({
     sql_api_domain:     "cartodb.com",
     sql_api_port:       "80",
     sql_api_protocol:   "http",
+    maxZoom: 30, // default leaflet zoom level for a layers is 18, raise it 
     extra_params:   {
     },
     cdn_url:        null,
@@ -27180,6 +27192,23 @@ L.CartoDBGroupLayerBase = L.TileLayer.extend({
     CartoDBLayerCommon.call(this);
     L.TileLayer.prototype.initialize.call(this);
     this.interaction = [];
+    this.addProfiling();
+  },
+
+  addProfiling: function() {
+    this.bind('tileloadstart', function(e) {
+      var s = this.tileStats || (this.tileStats = {});
+      s[e.tile.src] = cartodb.core.Profiler.metric('cartodb-js.tile.load.time').start();
+    });
+    var finish = function(e) {
+      var s = this.tileStats && this.tileStats[e.tile.src];
+      s && s.end();
+    };
+    this.bind('tileload', finish);
+    this.bind('tileerror', function(e) {
+      cartodb.core.Profiler.metric('cartodb-js.tile.load.error').inc();
+      finish(e);
+    });
   },
 
 
@@ -27508,6 +27537,7 @@ L.NamedMap = L.CartoDBGroupLayerBase.extend({
     CartoDBLayerCommon.call(this);
     L.TileLayer.prototype.initialize.call(this);
     this.interaction = [];
+    this.addProfiling();
   }
 });
 
@@ -28393,12 +28423,21 @@ CartoDBLayerGroupBase.prototype.getTile = function(coord, zoom, ownerDocument) {
 
   this.tiles++;
 
-  im.onload = im.onerror = function() {
+  var loadTime = cartodb.core.Profiler.metric('cartodb-js.tile.load.time').start();
+
+  var finished = function() {
+    loadTime.end();
     self.tiles--;
     if (self.tiles === 0) {
       self.finishLoading && self.finishLoading();
     }
   };
+  im.onload = finished;
+  im.onerror = function() {
+    cartodb.core.Profiler.metric('cartodb-js.tile.load.error').inc();
+    finish();
+  }
+
 
   return im;
 };
@@ -31443,7 +31482,11 @@ cdb.vis.Overlay.register('share', function(data, vis) {
     data.templateType || 'mustache'
   );
 
-  var code = "<iframe width='100%' height='520' frameborder='0' src='" + location.href + "'></iframe>";
+  var url = location.href;
+
+  url = url.replace("public_map", "embed_map");
+
+  var code = "<iframe width='100%' height='520' frameborder='0' src='" + url + "'></iframe>";
 
   var dialog = new cdb.ui.common.ShareDialog({
     title: data.map.get("title"),

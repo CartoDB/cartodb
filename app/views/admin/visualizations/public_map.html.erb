@@ -32,11 +32,7 @@
     <% if !Rails.env.production? %>
       <%= stylesheet_link_tag 'cdb/themes/css/cartodb' %>
     <% else %>
-      <% if request.protocol == 'https://' %>
-        <link rel="stylesheet" href="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/themes/css/cartodb.css" />
-      <% else %>
-        <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.css" />
-      <% end %>
+      <link rel="stylesheet" href="//cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/themes/css/cartodb.css" />
     <% end %>
 
     <%= insert_rollbar() %>
@@ -178,11 +174,7 @@
       <%= javascript_include_tag :cdb %>
       <script type="text/javascript"><%= raw Rails.application.assets['statsc.min.js'].to_s %></script>
     <% else %>
-      <% if request.protocol == 'https://' %>
-        <script src="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/cartodb.js"></script>
-      <% else %>
-        <script src="http://libs.cartocdn.com/cartodb.js/v3/cartodb.js"></script>
-      <% end %>
+      <script src="//cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/cartodb.js"></script>
       <!-- inline statsc -->
       <script type="text/javascript"><%= raw Rails.application.assets['statsc.min.js'].to_s %></script>
     <% end %>

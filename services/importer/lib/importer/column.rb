@@ -7,7 +7,6 @@ require_relative './query_batcher'
 module CartoDB
   module Importer2
     class Column
-      DEFAULT_BATCH_SIZE = 25000
       DEFAULT_SRID    = 4326
       WKB_RE          = /^\d{2}/
       GEOJSON_RE      = /{.*\"type\".*\"coordinates\"/

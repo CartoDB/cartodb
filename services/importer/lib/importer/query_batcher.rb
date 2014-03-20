@@ -2,7 +2,7 @@
 module CartoDB
   module Importer2
     class QueryBatcher
-      DEFAULT_BATCH_SIZE = 50000
+      DEFAULT_BATCH_SIZE = 25000
       # If present, will concat there the additional where condition required for batching
       QUERY_WHERE_PLACEHOLDER = '/* BATCHER_WHERE */'
       QUERY_LIMIT_SUBQUERY_PLACEHOLDER = '/* BATCHER_SUBQUERY */'

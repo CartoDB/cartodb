@@ -560,6 +560,14 @@ describe("NamedMap", function() {
     }).toThrow(new Error("sql is read-only in NamedMaps"));
 
     expect(function() {
+      namedMap.getSubLayer(0).set({ interactivity: 'test1' });
+    }).toThrow(new Error("interactivity is read-only in NamedMaps"));
+
+    expect(function() {
+      namedMap.getSubLayer(0).setInteractivity('test1');
+    }).toThrow(new Error("interactivity is read-only in NamedMaps"));
+
+    expect(function() {
       namedMap.getSubLayer(0).set({ 'hidden': 1 });
     }).not.toThrow();
 

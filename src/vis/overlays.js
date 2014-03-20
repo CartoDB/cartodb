@@ -259,7 +259,11 @@ cdb.vis.Overlay.register('share', function(data, vis) {
     data.templateType || 'mustache'
   );
 
-  var code = "<iframe width='100%' height='520' frameborder='0' src='" + location.href + "'></iframe>";
+  var url = location.href;
+
+  url = url.replace("public_map", "embed_map");
+
+  var code = "<iframe width='100%' height='520' frameborder='0' src='" + url + "'></iframe>";
 
   var dialog = new cdb.ui.common.ShareDialog({
     title: data.map.get("title"),

@@ -1,4 +1,16 @@
-3.8.02
+3.8.04 (20//03//2014)
+- prevent the scrolling of the map when the user scrolls the infowindow content.
+- enables the scrollwheel when the user enters in the fullscreen model.
+- fixes the embed_map url in the share dialog.
+- raised leaflet maxZoom from 18 to 30
+- fixed setting interactivity in private layers should raise an exception (#108)
+- added metrics for tile and layergroup loading time
+
+3.8.03 (15//03//2014)
+- fixed addCursorInteraction
+- fixed fieldCount when there are no fields in infowindow
+
+3.8.02 (14//03//2014)
 - use cdn_url from tiler requests
 - use https to fetch infowindow data when https is used
 - changes default target for the fullscreen option in embeds

@@ -1,5 +1,5 @@
-// version: 3.8.02
-// sha: 50b7fa7ce08106793265d0d91f5756dc01ec8b30
+// version: 3.8.04
+// sha: cf86d034e88f8c2f9ce07a8aa3f87d93a6e64452
 ;(function() {
   this.cartodb = {};
   var Backbone = {};
@@ -1141,7 +1141,7 @@ var Mustache;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.8.02';
+    cdb.VERSION = '3.8.04';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -1961,6 +1961,9 @@ Map.prototype = {
   _requestPOST: function(params, callback) {
     var self = this;
     var ajax = this.options.ajax;
+
+    var loadingTime = cartodb.core.Profiler.metric('cartodb-js.layergroup.post.time').start();
+
     ajax({
       crossOrigin: true,
       type: 'POST',
@@ -1970,6 +1973,7 @@ Map.prototype = {
       url: this._tilerHost() + this.endPoint + (params.length ? "?" + params.join('&'): ''),
       data: JSON.stringify(this.toJSON()),
       success: function(data) {
+        loadingTime.end();
         // discard previous calls when there is another call waiting
         if(0 === self._queue.length) {
           callback(data);
@@ -1977,6 +1981,8 @@ Map.prototype = {
         self._requestFinished();
       },
       error: function(xhr) {
+        loadingTime.end();
+        cartodb.core.Profiler.metric('cartodb-js.layergroup.post.error').inc();
         var err = { errors: ['unknow error'] };
         if (xhr.status === 0) {
           err = { errors: ['connection error'] };
@@ -2024,13 +2030,16 @@ Map.prototype = {
     var endPoint = self.JSONPendPoint || self.endPoint;
     compressor(json, 3, function(encoded) {
       params.push(encoded);
+      var loadingTime = cartodb.core.Profiler.metric('cartodb-js.layergroup.get.time').start();
       ajax({
         dataType: 'jsonp',
         url: self._tilerHost() + endPoint + '?' + params.join('&'),
         success: function(data) {
+          loadingTime.end();
           if(0 === self._queue.length) {
             // check for errors
             if (data.error) {
+              cartodb.core.Profiler.metric('cartodb-js.layergroup.get.error').inc();
               callback(null, data.error);
             } else {
               callback(data);
@@ -2039,6 +2048,8 @@ Map.prototype = {
           self._requestFinished();
         },
         error: function(data) {
+          loadingTime.end();
+          cartodb.core.Profiler.metric('cartodb-js.layergroup.get.error').inc();
           var err = { errors: ['unknow error'] };
           try {
             err = JSON.parse(xhr.responseText);
@@ -2419,7 +2430,7 @@ NamedMap.prototype = _.extend({}, Map.prototype, {
   },
 
   setLayer: function(layer, def) {
-    var not_allowed_attrs = {'sql': 1, 'cartocss': 1 };
+    var not_allowed_attrs = {'sql': 1, 'cartocss': 1, 'interactivity': 1 };
 
     for(var k in def.options) {
       if (k in not_allowed_attrs) {

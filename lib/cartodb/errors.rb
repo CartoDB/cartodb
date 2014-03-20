@@ -1,7 +1,21 @@
 class RecordNotFound < StandardError; end
-class NoHTML5Compliant < Exception; end;
+class NoHTML5Compliant < Exception; end
 
 module CartoDB
+
+  class BaseCartoDBError < StandardError
+    APPENDED_MESSAGE_PREFIX = '. Original Message: '
+
+    def initialize(message, parent_exception = nil)
+      if parent_exception.nil?
+        super(message)
+      else
+        super(message + APPENDED_MESSAGE_PREFIX + parent_exception.message)
+        set_backtrace(parent_exception.backtrace)
+      end
+    end
+  end
+
   class InvalidUser < StandardError; end
   class InvalidTableName < StandardError; end
   class InvalidColumnName < StandardError; end
@@ -11,7 +25,9 @@ module CartoDB
   class QueryNotAllowed < StandardError; end
   
   class InvalidMember < StandardError; end
-  
+
+  class TableError < StandardError; end
+
   # importer errors
   class EmptyFile < StandardError 
     def detail
@@ -78,14 +94,14 @@ module CartoDB
     def initialize(message)
       @db_message = message.split("\n")[0]
       @syntax_message = message.split("\n")[1..-1].join("\n")
-      CartoDB::Logger.info "InvalidType", message
+      CartoDB::Logger.info 'InvalidType', message
     end
   end
 
   class InvalidQuery < StandardError
     attr_accessor :message
     def initialize
-      @message = "Only SELECT statement is allowed"
+      @message = 'Only SELECT statement is allowed'
     end
   end
 
@@ -93,7 +109,7 @@ module CartoDB
     attr_accessor :error_message
     def initialize(message)
       @error_message = message
-      CartoDB::Logger.info "EmptyAttributes", message      
+      CartoDB::Logger.info 'EmptyAttributes', message
     end
   end
 
@@ -101,7 +117,7 @@ module CartoDB
     attr_accessor :error_message
     def initialize(message)
       @error_message = message
-      CartoDB::Logger.info "InvalidAttributes", message      
+      CartoDB::Logger.info 'InvalidAttributes', message
     end
   end
 

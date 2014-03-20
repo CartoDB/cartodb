@@ -3,6 +3,7 @@
 - Enables the scrollwheel when the user enters in the fullscreen model.
 - Fixes the embed_map url in the share dialog.
 - raised leaflet maxZoom from 18 to 30
+- fixed setting interactivity in private layers should raise an exception (#108)
 
 3.8.03 (15//03//2014)
 - fixed addCursorInteraction

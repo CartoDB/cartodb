@@ -37,7 +37,7 @@ class Api::Json::ImportsController < Api::ApplicationController
   end
 
   def _upload_file
-    temp_file = filename = filedata = nil
+    filename = filedata = nil
 
     case
     when params[:filename].present? && request.body.present?

@@ -145,7 +145,7 @@ CartoDBLayerGroupBase.prototype.getTile = function(coord, zoom, ownerDocument) {
 
   this.tiles++;
 
-  var loadTime = cartodb.core.Profiler.metric('cartodb-js.tile.load.time').start();
+  var loadTime = cartodb.core.Profiler.metric('cartodb-js.tile.png.load.time').start();
 
   var finished = function() {
     loadTime.end();
@@ -156,7 +156,7 @@ CartoDBLayerGroupBase.prototype.getTile = function(coord, zoom, ownerDocument) {
   };
   im.onload = finished;
   im.onerror = function() {
-    cartodb.core.Profiler.metric('cartodb-js.tile.load.error').inc();
+    cartodb.core.Profiler.metric('cartodb-js.tile.png.error').inc();
     finish();
   }
 

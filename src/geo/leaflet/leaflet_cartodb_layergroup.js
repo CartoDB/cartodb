@@ -62,7 +62,7 @@ L.CartoDBGroupLayerBase = L.TileLayer.extend({
   addProfiling: function() {
     this.bind('tileloadstart', function(e) {
       var s = this.tileStats || (this.tileStats = {});
-      s[e.tile.src] = cartodb.core.Profiler.metric('cartodb-js.tile.load.time').start();
+      s[e.tile.src] = cartodb.core.Profiler.metric('cartodb-js.tile.png.load.time').start();
     });
     var finish = function(e) {
       var s = this.tileStats && this.tileStats[e.tile.src];
@@ -70,7 +70,7 @@ L.CartoDBGroupLayerBase = L.TileLayer.extend({
     };
     this.bind('tileload', finish);
     this.bind('tileerror', function(e) {
-      cartodb.core.Profiler.metric('cartodb-js.tile.load.error').inc();
+      cartodb.core.Profiler.metric('cartodb-js.tile.png.error').inc();
       finish(e);
     });
   },

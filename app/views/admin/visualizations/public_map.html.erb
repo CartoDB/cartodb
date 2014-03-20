@@ -431,10 +431,11 @@
     </script>
 
     <%= render partial: 'shared/analytics', locals: { 
-      ua:     Cartodb.config[:google_analytics]['embeds'],
+      ua:     Cartodb.config[:google_analytics]['primary'],
       domain: Cartodb.config[:google_analytics]['domain'],
       page_owner: @visualization.user
     } %>
+
   </body>
 </html>
 

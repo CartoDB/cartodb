@@ -1,3 +1,32 @@
+2.11.1 (2014-03-20)
+-------------------
+* Improvements
+  * Improved Cluster Wizard.
+  * Changed behaviour in the asset manager dialog.
+  * Alternative automatic geocoding from tab delimited uploads over X rows.
+  * Enable mouse wheel when the map is in fullscreen mode.
+
+* Bugs Fixed
+  * Small fixes in the public map page.
+  * Public pages map center does not correspond with share dialog.
+  * Scrolling infowindows in the public_map page scrolls the whole map.
+  * Fixed padding in the public table list.
+  * Click over lock should open privacy window.
+  * Importer: cannot guess content-type from http header.
+  * Styles are wrongly set after renaming a freshly imported table.
+  * Added a row of last colours used in the visualization (on the wizards) in the colorpicker.
+  * Using a cartocss variable makes the UI to stop working. It does not apply new styles.
+  * Table renaming "unlinks" tables and vis sometimes.
+  * Creating a visualization from a table does not add the table.
+  * When cluster wizard is applied and using a filter, a message of 'interaction is disabled' appears.
+  * Small typo when free user tries to switch to private.
+  * Using the new color picker in the CartoCSS editor, after choosing a default color, we should not lose the focus in the editor.
+  * Table UI won't reload after successful geocoding.
+  * Do not escape single quotes in category wizard.
+  * Infowindow fields are renderer in reverse order.
+  * Import files containing lat/lon with ',' instead of '.' break.
+  * Infowindow content is not being loaded using https when embed is loaded with https.
+  
 2.11.0 (2014-03-10)
 -------------------
 

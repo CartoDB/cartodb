@@ -1,6 +1,6 @@
-// cartodb.js version: 3.8.03-dev
+// cartodb.js version: 3.8.04-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: ea4e83f59980dc0294eb577ba67323580532aa60
+// sha: 8859864eab818db9264b4d4f35c36a5ddf6e3284
 (function() {
   var root = this;
 
@@ -20686,7 +20686,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.8.03-dev';
+    cdb.VERSION = '3.8.04-dev';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -24451,8 +24451,9 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     "touchstart":           "_checkOrigin",
     "MSPointerDown":        "_checkOrigin",
     "dblclick":             "_stopPropagation",
-    "mousewheel":           "_stopPropagation",
-    "DOMMouseScroll":       "_stopPropagation",
+    "DOMMouseScroll":       "_stopBubbling",
+    'MozMousePixelScroll':  "_stopBubbling",
+    "mousewheel":           "_stopBubbling",
     "dbclick":              "_stopPropagation",
     "click":                "_stopPropagation"
   },
@@ -24843,6 +24844,14 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
    */
   toggle: function() {
     this.model.get("visibility") ? this.show() : this.hide();
+  },
+
+  /**
+   *  Stop event bubbling
+   */
+  _stopBubbling: function (e) {
+    e.preventDefault();
+    e.stopPropagation();
   },
 
   /**
@@ -31132,11 +31141,11 @@ var Vis = cdb.core.View.extend({
 
   addCursorInteraction: function(map, layer) {
     var mapView = map.viz.mapView;
-    layerView.bind('mouseover', function() {
+    layer.bind('mouseover', function() {
       mapView.setCursor('pointer');
     });
 
-    layerView.bind('mouseout', function(m, layer) {
+    layer.bind('mouseout', function(m, layer) {
       mapView.setCursor('auto');
     });
   },

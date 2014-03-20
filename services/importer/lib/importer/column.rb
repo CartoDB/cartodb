@@ -6,6 +6,7 @@ require_relative './exceptions'
 module CartoDB
   module Importer2
     class Column
+      DEFAULT_BATCH_SIZE = 50000
       DEFAULT_SRID    = 4326
       WKB_RE          = /^\d{2}/
       GEOJSON_RE      = /{.*\"type\".*\"coordinates\"/
@@ -44,6 +45,7 @@ module CartoDB
       end #type
 
       def geometrify
+        job.log 'geometrifying'
         raise                     if empty?
         convert_from_wkt          if wkt?
         convert_from_kml_multi    if kml_multi?
@@ -51,61 +53,105 @@ module CartoDB
         convert_from_geojson      if geojson?
         cast_to('geometry')
         convert_to_2d
+        job.log 'geometrified'
         self
       end #geometrify
 
-      def convert_from_wkt
-        job.log 'Converting geometry from WKT to WKB'
+      def batched_convert(log_message, convert_query, batch_size=DEFAULT_BATCH_SIZE)
+        job.log log_message
+
+        total_rows_processed = 0
+        affected_rows_count = 0
+        id_column = 'ogc_fid' # Only PostGIS driver (but can be changed, @see http://www.gdal.org/ogr/drv_pg.html)
+        temp_finished_column = 'converted_row_flag'
+
+        batching_query_fragment = %Q{
+          , #{temp_finished_column} = TRUE
+          WHERE #{id_column} IN (
+            SELECT #{id_column} FROM #{qualified_table_name} WHERE #{temp_finished_column} != TRUE LIMIT #{batch_size}
+          )
+        }
+
         db.run(%Q{
-          UPDATE #{qualified_table_name}
-          SET #{column_name} = 
-            public.ST_GeomFromText(#{column_name}, #{DEFAULT_SRID})
+         ALTER TABLE #{qualified_table_name} ADD #{temp_finished_column} BOOLEAN DEFAULT FALSE;
         })
+        db.run(%Q{
+          CREATE INDEX idx_#{temp_finished_column} ON #{qualified_table_name} (#{temp_finished_column})
+        })
+
+        begin
+          begin
+            affected_rows_count = db.execute(convert_query + batching_query_fragment)
+            total_rows_processed = total_rows_processed + affected_rows_count
+            job.log "Total processed: #{total_rows_processed}"
+          rescue => exception
+            job.log exception.to_s
+            job.log '---------------------------'
+            job.log "Total processed:#{total_rows_processed}\nQUERY:\n#{convert_query}#{batching_query_fragment}"
+            job.log '---------------------------'
+            job.log exception.backtrace
+            job.log '---------------------------'
+            affected_rows_count = -1
+          end
+        end while affected_rows_count > 0
+
+        db.run(%Q{
+         ALTER TABLE #{qualified_table_name} DROP #{temp_finished_column};
+        })
+
+        job.log "FINISHED: #{log_message}"
+      end #batched_convert
+
+      def convert_from_wkt
+        batched_convert(
+          'Converting geometry from WKT to WKB',
+          %Q{
+            UPDATE #{qualified_table_name}
+            SET #{column_name} = public.ST_GeomFromText(#{column_name}, #{DEFAULT_SRID})
+          }
+        )
         self
       end #convert_from_wkt
 
       def convert_from_geojson
-        job.log 'Converting geometry from GeoJSON to WKB'
-        db.run(%Q{
-          UPDATE #{qualified_table_name}
-          SET #{column_name} = public.ST_SetSRID(
-            public.ST_GeomFromGeoJSON(#{column_name}), #{DEFAULT_SRID}
-          )
-        })
-        self
-      rescue => exception
-        job.log exception.to_s
-        job.log exception.backtrace
+        batched_convert(
+          'Converting geometry from GeoJSON to WKB',
+          %Q{
+            UPDATE #{qualified_table_name}
+            SET #{column_name} = public.ST_SetSRID(public.ST_GeomFromGeoJSON(#{column_name}), #{DEFAULT_SRID})
+          }
+        )
         self
       end #convert_from_geojson
 
       def convert_from_kml_point
-        job.log 'Converting geometry from KML point to WKB'
-        db.run(%Q{
-          UPDATE #{qualified_table_name}
-          SET #{column_name} = public.ST_SetSRID(
-            public.ST_GeomFromKML(#{column_name}),
-            #{DEFAULT_SRID}
-          )
-        })
+        batched_convert(
+          'Converting geometry from KML point to WKB',
+          %Q{
+            UPDATE #{qualified_table_name}
+            SET #{column_name} = public.ST_SetSRID(public.ST_GeomFromKML(#{column_name}),#{DEFAULT_SRID})
+          }
+        )
       end #convert_from_kml_point
 
       def convert_from_kml_multi
-        job.log 'Converting geometry from KML multi to WKB'
-        db.run(%Q{
-          UPDATE #{qualified_table_name}
-          SET #{column_name} = public.ST_SetSRID(
-            public.ST_Multi(public.ST_GeomFromKML(#{column_name})),
-            #{DEFAULT_SRID}
-          )
-        })
+        batched_convert(
+          'Converting geometry from KML multi to WKB',
+          %Q{
+            UPDATE #{qualified_table_name}
+            SET #{column_name} = public.ST_SetSRID(public.ST_Multi(public.ST_GeomFromKML(#{column_name})),#{DEFAULT_SRID})
+          }
+        )
       end #convert_from_kml_multi
 
       def convert_to_2d
-        db.run(%Q{
-          UPDATE #{qualified_table_name}
-          SET #{column_name} = public.ST_Force_2D(#{column_name})
-        })
+        batched_convert(
+          'Converting to 2D point',
+          %Q{
+            UPDATE #{qualified_table_name}
+            SET #{column_name} = public.ST_Force_2D(#{column_name})
+          }
+        )
       end #convert_to_2d
 
       def wkb?
@@ -129,6 +175,7 @@ module CartoDB
       end #kml_multi?
 
       def cast_to(type)
+        job.log "casting #{column_name} to #{type}"
         db.run(%Q{
           ALTER TABLE #{qualified_table_name}
           ALTER #{column_name}
@@ -158,6 +205,8 @@ module CartoDB
       def rename_to(new_name)
         return self if new_name.to_s == column_name.to_s
 
+        job.log "Renaming column #{column_name} TO #{new_name}"
+
         db.run(%Q{
           ALTER TABLE "#{schema}"."#{table_name}"
           RENAME COLUMN "#{column_name}" TO "#{new_name}"
@@ -183,7 +232,9 @@ module CartoDB
         })
       end #drop
 
+      # Replace empty strings by nulls to avoid cast errors
       def empty_lines_to_nulls
+        job.log 'replace empty strings by nulls?'
         column_id = column_name.to_sym
         column_type = nil
         db.schema(table_name).each do |colid, coldef|
@@ -192,9 +243,50 @@ module CartoDB
           end
         end
         if column_type != nil && column_type == :string
+          job.log 'string column found, replacing'
+          total_rows_processed = 0
+          affected_rows_count = 0
+          id_column = 'ogc_fid' # Only PostGIS driver (but can be changed, @see http://www.gdal.org/ogr/drv_pg.html)
+          temp_finished_column = 'converted_row_flag'
+
           db.run(%Q{
-            UPDATE #{qualified_table_name} SET #{column_name}=NULL WHERE #{column_name}=''
+           ALTER TABLE #{qualified_table_name} ADD #{temp_finished_column} BOOLEAN DEFAULT FALSE;
           })
+          db.run(%Q{
+            CREATE INDEX idx_#{temp_finished_column} ON #{qualified_table_name} (#{temp_finished_column})
+          })
+
+          query = %Q{
+            UPDATE #{qualified_table_name}
+            SET #{column_name}=NULL,
+            #{temp_finished_column} = TRUE
+            WHERE #{column_name}=''
+            AND #{id_column} IN (
+              SELECT #{id_column} FROM #{qualified_table_name} WHERE #{temp_finished_column} != TRUE LIMIT #{DEFAULT_BATCH_SIZE}
+            )
+          }
+
+          begin
+            begin
+              affected_rows_count = db.execute(query)
+              total_rows_processed = total_rows_processed + affected_rows_count
+              job.log "Total processed: #{total_rows_processed}"
+            rescue => exception
+              job.log exception.to_s
+              job.log '---------------------------'
+              job.log "Total processed:#{total_rows_processed}\nQUERY:\n#{query}"
+              job.log '---------------------------'
+              job.log exception.backtrace
+              job.log '---------------------------'
+              affected_rows_count = -1
+            end
+          end while affected_rows_count > 0
+
+          db.run(%Q{
+           ALTER TABLE #{qualified_table_name} DROP #{temp_finished_column};
+          })
+        else
+          job.log 'no string column found, nothing replaced'
         end
       end #empty_lines_to_nulls
 

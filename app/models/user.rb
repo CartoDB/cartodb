@@ -131,7 +131,7 @@ class User < Sequel::Model
       User.terminate_database_connections(database_name, database_host)
       conn.run("DROP DATABASE \"#{database_name}\"")
       conn.run("DROP USER \"#{database_username}\"")
-      conn.close
+      conn.disconnect
     end.join
     monitor_user_notification
   end
@@ -168,7 +168,7 @@ BEGIN
 END
 $$
       ")
-      conn.close
+      conn.disconnect
   end
 
   def invalidate_varnish_cache(options = {})

@@ -56,6 +56,23 @@ L.CartoDBGroupLayerBase = L.TileLayer.extend({
     CartoDBLayerCommon.call(this);
     L.TileLayer.prototype.initialize.call(this);
     this.interaction = [];
+    this.addProfiling();
+  },
+
+  addProfiling: function() {
+    this.bind('tileloadstart', function(e) {
+      var s = this.tileStats || (this.tileStats = {});
+      s[e.tile.src] = cartodb.core.Profiler.metric('cartodb-js.tile.load.time').start();
+    });
+    var finish = function(e) {
+      var s = this.tileStats && this.tileStats[e.tile.src];
+      s && s.end();
+    };
+    this.bind('tileload', finish);
+    this.bind('tileerror', function(e) {
+      cartodb.core.Profiler.metric('cartodb-js.tile.load.error').inc();
+      finish(e);
+    });
   },
 
 
@@ -384,6 +401,7 @@ L.NamedMap = L.CartoDBGroupLayerBase.extend({
     CartoDBLayerCommon.call(this);
     L.TileLayer.prototype.initialize.call(this);
     this.interaction = [];
+    this.addProfiling();
   }
 });
 

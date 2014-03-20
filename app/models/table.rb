@@ -1372,6 +1372,52 @@ TRIGGER
     @name_changed_from = nil
   end
 
+  def update_name_changes
+    if @name_changed_from.present? && @name_changed_from != name
+      # update metadata records
+      reload
+      begin
+        $tables_metadata.rename(Table.key(owner.database_name,@name_changed_from), key)
+      rescue
+        # Do nothing
+      end
+      begin
+        owner.in_database.rename_table(@name_changed_from, name)
+      rescue
+        puts "Error attempting to rename table in DB: #{@name_changed_from} doesn't exist"
+      end
+      propagate_namechange_to_table_vis
+
+      require_relative '../../services/importer/lib/importer/exceptions'
+      CartoDB::notify_exception(
+          CartoDB::Importer2::GenericImportError.new("Attempt to rename table without layers #{self.name}"),
+          user: owner
+      ) if layers.blank?
+
+      layers.each do |layer|
+        layer.rename_table(@name_changed_from, name).save
+      end
+
+      # update tile styles
+      begin
+        # get old tile style
+        #old_style = tile_request('GET', "/tiles/#{@name_changed_from}/style?map_key=#{owner.api_key}").try(:body)
+
+        # parse old CartoCSS style out
+        #old_style = JSON.parse(old_style).with_indifferent_access[:style]
+
+        # rename common table name based variables
+        #old_style.gsub!(@name_changed_from, self.name)
+
+        # post new style
+        #tile_request('POST', "/tiles/#{self.name}/style?map_key=#{owner.api_key}", {"style" => old_style})
+      rescue => e
+        CartoDB::Logger.info 'tilestyle#rename error for', "#{e.inspect}"
+      end
+    end
+    @name_changed_from = nil
+  end
+
   private
 
   def update_cdb_tablemetadata
@@ -1610,52 +1656,6 @@ SQL
         new_tag.save
       end
     end
-  end
-
-  def update_name_changes
-    if @name_changed_from.present? && @name_changed_from != name
-      # update metadata records
-      reload
-      begin
-        $tables_metadata.rename(Table.key(owner.database_name,@name_changed_from), key)
-      rescue
-        # Do nothing
-      end
-      begin
-        owner.in_database.rename_table(@name_changed_from, name)
-      rescue
-        puts "Error attempting to rename table in DB: #{@name_changed_from} doesn't exist"
-      end
-      propagate_namechange_to_table_vis
-
-      require_relative '../../services/importer/lib/importer/exceptions'
-      CartoDB::notify_exception(
-        CartoDB::Importer2::GenericImportError.new("Attempt to rename table without layers #{self.name}"),
-        user: owner
-      ) if layers.blank?
-
-      layers.each do |layer|
-        layer.rename_table(@name_changed_from, name).save
-      end
-
-      # update tile styles
-      begin
-        # get old tile style
-        #old_style = tile_request('GET', "/tiles/#{@name_changed_from}/style?map_key=#{owner.api_key}").try(:body)
-
-        # parse old CartoCSS style out
-        #old_style = JSON.parse(old_style).with_indifferent_access[:style]
-
-        # rename common table name based variables
-        #old_style.gsub!(@name_changed_from, self.name)
-
-        # post new style
-        #tile_request('POST', "/tiles/#{self.name}/style?map_key=#{owner.api_key}", {"style" => old_style})
-      rescue => e
-        CartoDB::Logger.info 'tilestyle#rename error for', "#{e.inspect}"
-      end
-    end
-    @name_changed_from = nil
   end
 
   def delete_tile_style

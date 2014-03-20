@@ -1,6 +1,7 @@
 # encoding: utf-8
 require_relative './column'
 require_relative './job'
+require_relative './query_batcher'
 
 module CartoDB
   module Importer2
@@ -39,14 +40,14 @@ module CartoDB
       end #run
 
       def disable_autovacuum
-        job.log "Disabling autovacuum for table #{qualified_table_name}"
+        job.log "Disabling autovacuum for #{qualified_table_name}"
         db.run(%Q{
          ALTER TABLE #{qualified_table_name} SET (autovacuum_enabled = FALSE, toast.autovacuum_enabled = FALSE);
         })
       end #disable_autovacuum
 
       def enable_autovacuum
-        job.log "Enabling autovacuum for table #{qualified_table_name}"
+        job.log "Enabling autovacuum for #{qualified_table_name}"
         db.run(%Q{
          ALTER TABLE #{qualified_table_name} SET (autovacuum_enabled = TRUE, toast.autovacuum_enabled = TRUE);
         })
@@ -96,46 +97,26 @@ module CartoDB
       # Note: Performs a really simple ',' to '.' normalization.
       # TODO: Candidate for moving to a CDB_xxx function that gets the_geom from lat/long if valid or "convertible"
       def populate_the_geom_from_latlon(qualified_table_name, latitude_column_name, longitude_column_name)
-        job.log 'Populating the_geom from latitude / longitude'
-
-        batch_size = DEFAULT_BATCH_SIZE  # TODO: Magic number, should be benchmarked
-        id_column = 'ogc_fid' # Only PostGIS driver (but can be changed, @see http://www.gdal.org/ogr/drv_pg.html)
-        temp_finished_column = 'the_geom_populated'
-
-        db.run(%Q{
-         ALTER TABLE #{qualified_table_name} ADD #{temp_finished_column} BOOLEAN DEFAULT FALSE;
-        })
-        db.run(%Q{
-          CREATE INDEX idx_#{temp_finished_column} ON #{qualified_table_name} (#{temp_finished_column})
-        })
-
-        total_rows_processed = 0
-        affected_rows_count = 0
-
-        begin
-          affected_rows_count = db.execute(%Q{
+        QueryBatcher::execute(
+          db,
+          %Q{
             UPDATE #{qualified_table_name}
             SET
               the_geom = public.ST_GeomFromText(
                 'POINT(' || REPLACE(TRIM(CAST("#{longitude_column_name}" AS text)), ',', '.') || ' ' ||
                   REPLACE(TRIM(CAST("#{latitude_column_name}" AS text)), ',', '.') || ')', 4326
-              ),
-              #{temp_finished_column} = TRUE
+              )
+              #{QueryBatcher::QUERY_WHERE_PLACEHOLDER}
             WHERE REPLACE(TRIM(CAST("#{longitude_column_name}" AS text)), ',', '.') ~
               '^(([-+]?(([0-9]|[1-9][0-9]|1[0-7][0-9])(\.[0-9]+)?))|[-+]?180)$'
             AND REPLACE(TRIM(CAST("#{latitude_column_name}" AS text)), ',', '.')  ~
               '^(([-+]?(([0-9]|[1-8][0-9])(\.[0-9]+)?))|[-+]?90)$'
-            AND #{id_column} IN (
-              SELECT #{id_column} FROM #{qualified_table_name} WHERE #{temp_finished_column} != TRUE LIMIT #{batch_size}
-            )
-          })
-          total_rows_processed = total_rows_processed + affected_rows_count
-          job.log "Total processed: #{total_rows_processed}"
-        end while affected_rows_count > 0
-
-        db.run(%Q{
-         ALTER TABLE #{qualified_table_name} DROP #{temp_finished_column};
-        })
+            #{QueryBatcher::QUERY_LIMIT_SUBQUERY_PLACEHOLDER}
+          },
+          qualified_table_name,
+          job,
+          'Populating the_geom from latitude / longitude'
+        )
       end #populate_the_geom_from_latlon
 
       def create_the_geom_in(table_name)
@@ -204,12 +185,16 @@ module CartoDB
       end #find_column_in
 
       def handle_multipoint(qualified_table_name)
-        batched_execute(
-          'Converting detected multipoint to point',
+        QueryBatcher::execute(
+          db,
           %Q{
             UPDATE #{qualified_table_name}
             SET the_geom = ST_GeometryN(the_geom, 1)
-          }
+          },
+          qualified_table_name,
+          job,
+          'Converting detected multipoint to point',
+          capture_exceptions=true
         )
       end #handle_multipoint
 
@@ -230,51 +215,6 @@ module CartoDB
       private
 
       attr_reader :db, :table_name, :schema, :job, :geometry_columns
-
-      def batched_execute(log_message, convert_query, batch_size=DEFAULT_BATCH_SIZE)
-        job.log log_message
-
-        total_rows_processed = 0
-        affected_rows_count = 0
-        id_column = 'ogc_fid' # Only PostGIS driver (but can be changed, @see http://www.gdal.org/ogr/drv_pg.html)
-        temp_finished_column = 'converted_row_flag'
-
-        batching_query_fragment = %Q{
-          , #{temp_finished_column} = TRUE
-          WHERE #{id_column} IN (
-            SELECT #{id_column} FROM #{qualified_table_name} WHERE #{temp_finished_column} != TRUE LIMIT #{batch_size}
-          )
-        }
-
-        db.run(%Q{
-         ALTER TABLE #{qualified_table_name} ADD #{temp_finished_column} BOOLEAN DEFAULT FALSE;
-        })
-        db.run(%Q{
-          CREATE INDEX idx_#{temp_finished_column} ON #{qualified_table_name} (#{temp_finished_column})
-        })
-
-        begin
-          begin
-            affected_rows_count = db.execute(convert_query + batching_query_fragment)
-            total_rows_processed = total_rows_processed + affected_rows_count
-            job.log "Total processed: #{total_rows_processed}"
-          rescue => exception
-            job.log exception.to_s
-            job.log '---------------------------'
-            job.log "Total processed:#{total_rows_processed}\nQUERY:\n#{convert_query}#{batching_query_fragment}"
-            job.log '---------------------------'
-            job.log exception.backtrace
-            job.log '---------------------------'
-            affected_rows_count = -1
-          end
-        end while affected_rows_count > 0
-
-        db.run(%Q{
-         ALTER TABLE #{qualified_table_name} DROP #{temp_finished_column};
-        })
-
-        job.log "FINISHED: #{log_message}"
-      end #batched_execute
 
       def qualified_table_name
         %Q("#{schema}"."#{table_name}")

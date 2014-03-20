@@ -24,14 +24,33 @@ module CartoDB
       end #initialize
 
       def run
+        disable_autovacuum
+
         drop_the_geom_webmercator
 
         create_the_geom_from_geometry_column  || 
         create_the_geom_from_latlon           ||
         create_the_geom_in(table_name)
+
+        enable_autovacuum
+
         raise_if_geometry_collection
         self
       end #run
+
+      def disable_autovacuum
+        job.log "Disabling autovacuum for table #{qualified_table_name}"
+        db.run(%Q{
+         ALTER TABLE #{qualified_table_name} SET (autovacuum_enabled = FALSE, toast.autovacuum_enabled = FALSE);
+        })
+      end #disable_autovacuum
+
+      def enable_autovacuum
+        job.log "Enabling autovacuum for table #{qualified_table_name}"
+        db.run(%Q{
+         ALTER TABLE #{qualified_table_name} SET (autovacuum_enabled = TRUE, toast.autovacuum_enabled = TRUE);
+        })
+      end #enable_autovacuum
 
       def create_the_geom_from_latlon
         latitude_column_name  = latitude_column_name_in

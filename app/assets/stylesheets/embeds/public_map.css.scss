@@ -2,6 +2,7 @@
  * embed map
  */
 @import "compass/reset";
+@import "compass/css3/opacity";
 @import "compass/css3/box-shadow";
 @import "compass/css3/border-radius";
 @import "compass/css3/inline-block";
@@ -66,6 +67,10 @@ only screen and (                min-resolution: 2dppx) {
     text-align: left;
   }
 
+  div.cartodb-map-data .cartodb-body .inner .map-info {
+    top: 0;
+  }
+
   div.cartodb-info .inner .user.embed-right-col .user-info {
     float: right;
     text-align: left;
@@ -102,6 +107,10 @@ and (orientation : portrait) {
     padding: 20px 0;
   }
 
+  div.cartodb-map-data .cartodb-body .inner .map-info {
+    top: 0;
+  }
+
   div.cartodb-map-data .cartodb-info .inner .details h1 {
     font-size:20px;
     padding-right: 0px;
@@ -119,6 +128,10 @@ and (min-device-width : 320px)
 and (max-device-width : 480px)
 and (orientation : landscape) {
 
+  div.cartodb-map-data .cartodb-body .inner .map-info {
+    top: 0;
+  }
+
   div.cartodb-map-data .cartodb-info .inner .details h1 {
     font-size:20px;
     padding-right: 0px;
@@ -135,6 +148,10 @@ and (orientation : landscape) {
   .inner .user.embed-right-col {
     width: 200px;
     float: right;
+  }
+
+  div.cartodb-map-data .cartodb-body .inner .map-info {
+    top: 0;
   }
 
   div.cartodb-map-data .cartodb-info .inner .details h1 {
@@ -199,7 +216,7 @@ and (orientation : landscape) {
 }
 
 .embed-left-col.details .content {
-  /*min-height: 72px;*/
+  min-height: 46px;
 }
 
 .cartodb-footer .embed-left-col .content { border-right: none; }
@@ -213,12 +230,12 @@ div.cartodb-map-data {
 div.cartodb-info {
   background: #F6F6F6;
   border-bottom: 1px solid #D1D1D1;
-  border-top: 1px solid #D1D1D1;
+  /*border-top: 1px solid #D1D1D1;*/
   padding: 38px 0 36px 0;
 }
 
 div.cartodb-info .inner .details h1 {
-  font-family: 'ProximaNova-Sembibold', Helvetica, sans-serif;
+  font-family: 'ProximaNova-Semibold', Helvetica, sans-serif;
   font-weight: normal;
   font-size:27px;
   color: #444444;
@@ -288,6 +305,11 @@ div.cartodb-body .comments .content p {
   font-family: 'Helvetica Neue', Helvetica, sans-serif;
   color: #444444;
   line-height: normal;
+}
+
+div.cartodb-body .inner .map-info {
+  position:relative;
+  top: 8px;
 }
 
 div.cartodb-body .inner .map-info h2 {
@@ -471,8 +493,6 @@ div.cartodb-public-header {
   position: relative;
   display: block;
   border: none;
-  border-bottom: 1px solid #808080; /*IE*/
-  border-bottom: 1px solid rgba(0, 0, 0, 0.5);
   height: 67px;
   -webkit-box-shadow: rgba(0, 0, 0, 0.1) 0 6px 4px -2px;
   -moz-box-shadow: rgba(0, 0, 0, 0.1) 0 6px 4px -2px;
@@ -483,6 +503,19 @@ div.cartodb-public-header {
   z-index: 10;
 }
 
+div.separator {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 1px;
+  background: #808080; /*IE*/
+  background: #000;
+  @include opacity(.2);
+  z-index: 1000; 
+  
+  &.top { top: 67px; }
+  &.bottom { top: -1px; position: relative; }
+}
 
 div.cartodb-share-dialog .block.modal .head h3 {
   font-family: "Helvetica Bold", "Helvetica", Arial;

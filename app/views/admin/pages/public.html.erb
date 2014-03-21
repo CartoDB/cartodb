@@ -4,114 +4,160 @@
 
 <%= content_for(:js) do %>
   <%= javascript_include_tag :cdb, :application %>
-  <script type="text/javascript">
-    var username = "<%= current_user.username %>"
-      , user_data = <%=raw current_user.data.to_json.html_safe %>
-    , config = <%=raw frontend_config.html_safe %>
-  , mixpanel_token = "<%= Cartodb.config[:mixpanel]['token'] if Cartodb.config[:mixpanel].present? %>"
 
+  <script type="text/javascript">
+    var username  = "<%= current_user.username %>";
+    var user_data = <%= raw current_user.data.to_json.html_safe %>;
+    var config    = <%= raw frontend_config.html_safe %>;
+    var mixpanel_token = "<%= Cartodb.config[:mixpanel]['token'] if Cartodb.config[:mixpanel].present? %>";
   </script>
+
 <% end %>
 
 <%= content_for(:css) do %>
   <%= stylesheet_link_tag :common, :dashboard, :public %>
+  <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.css" />
+  <!--[if lte IE 8]>
+  <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.ie.css" />
+  <![endif]-->
 <% end %>
 
 <div class="content">
 
-<div class="info">
+  <div class="info">
 
-  <div class="user-info">
+    <div class="user-info">
 
-    <div class="avatar">
-      <div class="circle"></div>
+      <div class="avatar">
+        <div class="circle"></div>
+      </div>
+
+      <div class="username">
+        <h2>Peterdesmet</h2>
+      </div>
+
+      <ul>
+        <li><a href="#"><strong>17</strong>datasets</a></li>
+        <li><strong>12</strong>visualizations</li>
+      </ul>
+
     </div>
 
-    <div class="username">
-      <h2>Peterdesmet</h2>
-    </div>
 
-    <ul>
-      <li><a href="#"><strong>17</strong>datasets</a></li>
-      <li><strong>12</strong>visualizations</li>
+    <ul class="tags">
+      <li><strong>Browse by tag</strong></li>
+      <li><a href="#">Biodiversity</a></li>
+      <li><a href="#">Law</a></li>
+      <li><a href="#">Contest</a></li>
+      <li><a href="#">MWC2013</a></li>
     </ul>
 
+
   </div>
 
+  <div class="visualizations">
+  <ul>
 
-  <ul class="tags">
-    <li><strong>Browse by tag</strong></li>
-    <li><a href="#">Biodiversity</a></li>
-    <li><a href="#">Law</a></li>
-    <li><a href="#">Contest</a></li>
-    <li><a href="#">MWC2013</a></li>
+    <li>
+      <div class="map-wrapper">
+
+        <div class="backdrop"></div>
+        <div id="map_0" class="map"></div>
+
+        <div class="title">
+          <h3>Map of trips per day</h3>
+          <p>To get a better sense of the trips Eric made...</p>
+        </div>
+        <div class="gradient"></div>
+      </div>
+
+      <div class="header">
+        <ul class="tags">
+          <li><a href="#">Biodiversity</a></li>
+          <li><a href="#">Law</a></li>
+          <li><a href="#">Biodiversity</a></li>
+          <li><a href="#">Law</a></li>
+          <li><a href="#">Biodiversity</a></li>
+          <li><a href="#">Law</a></li>
+        </ul>
+        <div class="mapviews">12,376 Map views</div>
+      </div>
+    </li>
+
+    <li>
+      <div class="map-wrapper">
+
+        <div class="backdrop"></div>
+        <div id="map_1" class="map"></div>
+
+        <div class="title">
+          <h3>Map of trips per day</h3>
+          <p>To get a better sense of the trips Eric made...</p>
+        </div>
+        <div class="gradient"></div>
+      </div>
+
+      <div class="header">
+        <ul class="tags">
+          <li><a href="#">Biodiversity</a></li>
+          <li><a href="#">Law</a></li>
+        </ul>
+        <div class="mapviews">12,376 Map views</div>
+      </div>
+    </li>
+
+    <li>
+      <div class="map-wrapper">
+
+        <div class="backdrop"></div>
+        <div id="map_2" class="map"></div>
+
+        <div class="title">
+          <h3>Public and non-commercial use records</h3>
+          <p>Overlapping points generate a higher colour intensity, highlighting clusters on the map.</p>
+        </div>
+        <div class="gradient"></div>
+      </div>
+
+      <div class="header">
+        <ul class="tags">
+          <li><a href="#">Biodiversity</a></li>
+          <li><a href="#">Law</a></li>
+        </ul>
+        <div class="mapviews">12,376 Map views</div>
+      </div>
+    </li>
+
   </ul>
 
-
-</div>
-
-<div class="visualizations">
-
-  <div class="vis">
-    <div class="image">
-
-      <div class="title">
-        <h3>Map of trips per day</h3>
-        <p>To get a better sense of the trips Eric made...</p>
-      </div>
-      <div class="gradient"></div>
-    </div>
-
-    <div class="header">
-      <ul class="tags">
-        <li><a href="#">Biodiversity</a></li>
-        <li><a href="#">Law</a></li>
-      </ul>
-    <div class="mapviews">12,376 Map views</div>
-    </div>
-  </div>
-
-  <div class="vis">
-    <div class="image">
-      <div class="title">
-        <h3>Map of trips per day</h3>
-        <p>To get a better sense of the trips Eric made...</p>
-      </div>
-      <div class="gradient"></div>
-    </div>
-
-    <div class="header">
-      <ul class="tags">
-        <li><a href="#">Biodiversity</a></li>
-        <li><a href="#">Law</a></li>
-      </ul>
-    <div class="mapviews">12,376 Map views</div>
-    </div>
-  </div>
-
-  <div class="vis">
-    <div class="image">
-      <div class="title">
-        <h3>Map of trips per day</h3>
-        <p>To get a better sense of the trips Eric made...</p>
-      </div>
-      <div class="gradient"></div>
-    </div>
-
-    <div class="header">
-      <ul class="tags">
-        <li><a href="#">Biodiversity</a></li>
-        <li><a href="#">Law</a></li>
-      </ul>
-    <div class="mapviews">12,376 Map views</div>
-    </div>
-  </div>
-
-<div class="pagination">
-  <a class="next" href="#">Next</a>
-</div>
-
+  <div class="pagination">
+    <a class="next" href="#">Next</a>
+  </div> 
 
 </div>
 
 </div>
+
+<script>
+  $(function() {
+
+    var options = {
+      zoomControl: false,
+      cartodb_logo: false,
+      scrollwheel: false,
+      legends: false,
+      time_slider: false
+    };
+
+    var urls = [
+      'http://arce.cartodb.com/api/v2/viz/008cee18-a9c4-11e3-b86c-0e73339ffa50/viz.json',
+      'http://simonrogers.cartodb.com/api/v2/viz/74910048-aba8-11e3-8eee-0e10bcd91c2b/viz.json',
+      'http://arce.cartodb.com/api/v2/viz/008cee18-a9c4-11e3-b86c-0e73339ffa50/viz.json'
+    ];
+
+    _.each(urls, function(url, i) {
+      cartodb.createVis('map_' + i , url, options);
+    })
+
+  });
+</script>

@@ -14,7 +14,7 @@ body {
 .content {
   width: 1022px;
   margin: 50px auto 0 auto;
-    @include clearfix();
+  @include clearfix();
   @include box-sizing(border-box);
 }
 
@@ -91,7 +91,6 @@ body {
   } // .avatar
 
   ul {
-    width: 100%;
     clear:both;
     overflow:hidden;
     background:#fff;
@@ -222,15 +221,14 @@ body {
 
   .header {
     padding: 30px 34px;
-    clear:both;
-    overflow:hidden;
     border: 1px solid #BBBBBB;
     border-top: none;
+    @include clearfix();
     @include border-radius(0 0 5px 5px);
   }
 
   .mapviews {
-    top:3px;
+    top:7px;
 
     position:relative;
     float:right;
@@ -248,6 +246,7 @@ body {
     li {
       @include inline-block();
       border:none;
+      line-height:120%;
     }
 
     a {
@@ -327,6 +326,61 @@ body:after {
   
 }
 
+a.button.green:hover {
+  background: #749C33;
+  background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #94be42), color-stop(100%, #799e33));
+  background: -webkit-linear-gradient(#94be42,#799e33);
+  background: -moz-linear-gradient(#94be42,#799e33);
+  background: -o-linear-gradient(#94be42,#799e33);
+  background: linear-gradient(#94be42,#799e33);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+a.button.green {
+  padding: 8px 10px;
+  font-size: 12px;
+  font-weight: bold;
+  font-family: "Segoe UI Bold", "Helvetica Bold", "Helvetica", Arial;
+  line-height: normal;
+  text-decoration: none;
+  text-transform: uppercase;
+  color: white;
+  text-shadow: 0 1px 0 #3C5219;
+  background: #94BE42;
+  background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #94be42), color-stop(100%, #7fa938));
+  background: -webkit-linear-gradient(#94be42,#7fa938);
+  background: -moz-linear-gradient(#94be42,#7fa938);
+  background: -o-linear-gradient(#94be42,#7fa938);
+  background: linear-gradient(#94be42,#7fa938);
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  -ms-border-radius: 3px;
+  -o-border-radius: 3px;
+  border-radius: 3px;
+  border: 1px solid #1E3C54;
+  letter-spacing: 0;
+  word-spacing: 1px;
+  -webkit-transform-style: "linear";
+  -moz-transform-style: "linear";
+  -ms-transform-style: "linear";
+  -o-transform-style: "linear";
+  transform-style: "linear";
+  -webkit-transition-property: box-shadow,border;
+  -moz-transition-property: box-shadow,border;
+  -o-transition-property: box-shadow,border;
+  transition-property: box-shadow,border;
+  -webkit-transition-duration: 250ms;
+  -moz-transition-duration: 250ms;
+  -o-transition-duration: 250ms;
+  transition-duration: 250ms;
+
+  zoom: 1; *display: inline;
+}
+
+
+
+
 @media
 only screen and (-webkit-min-device-pixel-ratio: 2),
 only screen and (   min--moz-device-pixel-ratio: 2),
@@ -351,6 +405,13 @@ only screen and (                min-resolution: 2dppx) {
     content: 'medium';
   }
 
+  header {
+    .inner {
+      width: 100%;
+      padding: 0 40px;
+    }
+  }
+
   .info,
   .visualizations  {
     float:none;
@@ -358,12 +419,16 @@ only screen and (                min-resolution: 2dppx) {
     width: 100%;
   }
 
-  .content { padding: 0 30px; width: 100%; }
+  .content { padding: 0 15px; width: 100%; }
 
   .user-info,
   .user-info .avatar,
   .user-info .username,
   .visualizations > ul > li {
+    width: 100%;
+  }
+
+  .user-info ul {
     width: 100%;
   }
 
@@ -373,6 +438,24 @@ only screen and (                min-resolution: 2dppx) {
     }
     width: 50%;
     border:none;
+  }
+
+  .visualizations ul li .header {
+
+    .tags {
+      float:none;
+      width: 100%;
+      margin: 0 0 10px 0;
+
+      li { margin: 0 0 7px 0; }
+
+    }
+
+    .mapviews {
+      float:none;
+      width: 100%;
+      text-align: left;
+    }
   }
 
 }
@@ -390,12 +473,16 @@ only screen and (                min-resolution: 2dppx) {
     width: 100%;
   }
 
-  .content { padding: 0 30px; width: 100%; }
+  .content { padding: 0 15px; width: 100%; }
 
   .user-info,
   .user-info .avatar,
   .user-info .username,
   .visualizations > ul > li {
+    width: 100%;
+  }
+
+  .user-info ul {
     width: 100%;
   }
 
@@ -414,6 +501,12 @@ only screen and (                min-resolution: 2dppx) {
 and (min-device-width : 320px)
 and (max-device-width : 480px)
 and (orientation : portrait) {
+
+  header {
+    .inner {
+      width: 100%;
+    }
+  }
 
 }
 

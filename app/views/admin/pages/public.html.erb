@@ -1,14 +1,14 @@
 <% content_for(:page_title) do %>
-  <%= current_user.username %> |
+  <%#= current_user.username %> |
 <% end %>
 
 <%= content_for(:js) do %>
   <%= javascript_include_tag :cdb, :application %>
 
   <script type="text/javascript">
-    var username  = "<%= current_user.username %>";
-    var user_data = <%= raw current_user.data.to_json.html_safe %>;
-    var config    = <%= raw frontend_config.html_safe %>;
+    var username  = "<%#= current_user.username %>";
+    var user_data = <%#= raw current_user.data.to_json.html_safe %>;
+    var config    = <%#= raw frontend_config.html_safe %>;
     var mixpanel_token = "<%= Cartodb.config[:mixpanel]['token'] if Cartodb.config[:mixpanel].present? %>";
   </script>
 
@@ -75,9 +75,9 @@
         <ul class="tags">
           <li><a href="#">Biodiversity</a></li>
           <li><a href="#">Law</a></li>
-          <li><a href="#">Biodiversity</a></li>
-          <li><a href="#">Law</a></li>
-          <li><a href="#">Biodiversity</a></li>
+          <li><a href="#">Pirates</a></li>
+          <li><a href="#">Zombies</a></li>
+          <li><a href="#">Whales</a></li>
           <li><a href="#">Law</a></li>
         </ul>
         <div class="mapviews">12,376 Map views</div>

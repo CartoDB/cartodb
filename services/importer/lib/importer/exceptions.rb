@@ -6,6 +6,7 @@ module CartoDB
     # Generic/unmapped errors
     class GenericImportError                    < StandardError; end
     # Mapped errors
+    class FileTooBigError                       < StandardError; end
     class InstallError                          < StandardError; end
     class EmptyFileError                        < StandardError; end
     class ExtractionError                       < StandardError; end
@@ -28,6 +29,7 @@ module CartoDB
     class EncodingDetectionError                < StandardError; end
     class XLSXFormatError                       < StandardError; end
 
+    # IMPORTER_ERROR_CODES are in /config/initializers/carto_db.rb
     ERRORS_MAP = {
       InstallError                          => 0001,
       EmptyFileError                        => 1005,
@@ -48,7 +50,8 @@ module CartoDB
       UploadError                           => 1000,
       DownloadError                         => 1001,
       GDriveNotPublicError                  => 1010,
-      EncodingDetectionError                => 2002
+      EncodingDetectionError                => 2002,
+      FileTooBigError                       => 6666
     }
   end # Importer2
 end # CartoDB

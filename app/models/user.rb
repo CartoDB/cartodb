@@ -92,7 +92,7 @@ class User < Sequel::Model
     set_statement_timeouts   if changes.include?(:user_timeout) || changes.include?(:database_timeout)
     rebuild_quota_trigger    if changes.include?(:quota_in_bytes)
     invalidate_varnish_cache(regex: '.*:vizjson') if changes.include?(:account_type) || changes.include?(:disqus_shortname)
-    terminate_database_connections(database_name, previous_changes[:database_host][0]) if changes.include?(:database_host)
+    User.terminate_database_connections(database_name, previous_changes[:database_host][0]) if changes.include?(:database_host)
   end
 
   def before_destroy

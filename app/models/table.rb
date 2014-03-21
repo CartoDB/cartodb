@@ -26,7 +26,7 @@ class Table < Sequel::Model(:user_tables)
     :synchronization => :serialize_synchronization
   }
 
-  DEFAULT_THE_GEOM_TYPE = "geometry"
+  DEFAULT_THE_GEOM_TYPE = 'geometry'
 
   # Associations
   many_to_one  :map
@@ -55,14 +55,13 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def geometry_types
-    owner.in_database[<<-SQL
+    owner.in_database[ %Q{
       SELECT DISTINCT ST_GeometryType(the_geom) FROM (
         SELECT the_geom
         FROM "#{self.name}"
         WHERE (the_geom is not null) LIMIT 10
       ) as foo
-    SQL
-    ].all.map {|r| r[:st_geometrytype] }
+    }].all.map {|r| r[:st_geometrytype] }
   end
 
   def_dataset_method(:search) do |query|
@@ -73,12 +72,14 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def_dataset_method(:multiple_order) do |criteria|
-    return order(:id) if criteria.nil? || criteria.empty?
-    order_params = criteria.map do |key, order|
-      Sequel.send(order.to_sym, key.to_sym)
+    if criteria.nil? || criteria.empty?
+      order(:id)
+    else
+      order_params = criteria.map do |key, order|
+        Sequel.send(order.to_sym, key.to_sym)
+      end
+      order(*order_params)
     end
-
-    order(*order_params)
   end #multiple_order
 
 
@@ -107,14 +108,14 @@ class Table < Sequel::Model(:user_tables)
     errors.add(:user_id, "can't be blank") if user_id.blank?
 
     errors.add(
-      :name, "is a reserved keyword, please choose a different one"
+      :name, 'is a reserved keyword, please choose a different one'
     ) if self.name == 'layergroup'
 
     # privacy setting must be a sane value
     errors.add(:privacy, 'has an invalid value') if privacy != PRIVATE && privacy != PUBLIC
 
     # Branch if owner dows not have private table privileges
-    if !self.owner.try(:private_tables_enabled)
+    unless self.owner.try(:private_tables_enabled)
 
       # If it's a new table and the user is trying to make it private
       if self.new? && privacy == PRIVATE
@@ -143,7 +144,6 @@ class Table < Sequel::Model(:user_tables)
                               schema: new_schema_name
                             )
     new_schema_hash       = Hash[new_schema]
-    self.database_name    = owner.database_name
     append_to_table       = self
     new_schema_names      = new_schema.map(&:first)
     existing_schema_hash  = Hash[append_to_table.schema(reload: true)]
@@ -152,8 +152,7 @@ class Table < Sequel::Model(:user_tables)
 
     # fun schema check here
     new_schema_hash.keys.each do |column_name|
-      if (RESERVED_COLUMN_NAMES.include?(column_name.to_s) ||
-      drop_names.include?(column_name.to_s))
+      if RESERVED_COLUMN_NAMES.include?(column_name.to_s) || drop_names.include?(column_name.to_s)
         new_schema_names.delete(column_name)
       elsif column_name.to_s != 'the_geom'
         if existing_schema_hash.keys.include?(column_name)
@@ -191,7 +190,6 @@ class Table < Sequel::Model(:user_tables)
 
   def append_to_table(options)
     from_table = options[:from_table]
-    self.database_name = owner.database_name
     append_to_table = self
     # if concatenate_to_table is set, it will join the table just created
     # to the table named in concatenate_to_table and then drop the created table
@@ -239,8 +237,7 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def import_to_cartodb(uniname=nil)
-    @data_import ||= DataImport.where(id: data_import_id).first ||
-                      DataImport.new(user_id: owner.id)
+    @data_import ||= DataImport.where(id: data_import_id).first || DataImport.new(user_id: owner.id)
     if migrate_existing_table.present? || uniname
       @data_import.data_type = 'external_table'
       @data_import.data_source = migrate_existing_table || uniname
@@ -252,11 +249,11 @@ class Table < Sequel::Model(:user_tables)
 
       # with table #{uniname} table created now run migrator to CartoDBify
       hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-        "host" => owner.database_host,
-        "database" => database_name,
+        'host' => owner.database_host,
+        'database' => owner.database_name,
         :logger => ::Rails.logger,
-        "username" => owner.database_username,
-        "password" => owner.database_password,
+        'username' => owner.database_username,
+        'password' => owner.database_password,
         :current_name => migrate_existing_table || uniname,
         :suggested_name => uniname,
         :debug => (Rails.env.development?),
@@ -269,7 +266,7 @@ class Table < Sequel::Model(:user_tables)
       @data_import.reload
       #@data_import.migrated
       @data_import.save
-      return importer.name
+      importer.name
     end
   end
 
@@ -290,7 +287,7 @@ class Table < Sequel::Model(:user_tables)
       #  - If cartodb_id does not exist, remove the primary key constraint and treat ogc_fid as the auxiliary column
       if schema.present? && schema.flatten.include?(:ogc_fid)
         if aux_cartodb_id_column.nil?
-          aux_cartodb_id_column = "ogc_fid"
+          aux_cartodb_id_column = 'ogc_fid'
         else
           #@data_import.log << ('Removing ogc_fid from import file')
           user_database.run(%Q{ALTER TABLE "#{self.name}" DROP COLUMN ogc_fid})
@@ -298,7 +295,7 @@ class Table < Sequel::Model(:user_tables)
       end
       if schema.present? && schema.flatten.include?(:gid)
         if aux_cartodb_id_column.nil?
-          aux_cartodb_id_column = "gid"
+          aux_cartodb_id_column = 'gid'
         else
           #@data_import.log << ('Removing gid from import file')
           user_database.run(%Q{ALTER TABLE "#{self.name}" DROP COLUMN gid})
@@ -306,7 +303,7 @@ class Table < Sequel::Model(:user_tables)
       end
       self.schema(reload: true, cartodb_types: false).each do |column|
         if column[1] =~ /^character varying/
-          user_database.run(%Q{ALTER TABLE "#{self.name}" ALTER COLUMN \"#{column[0]}\" TYPE text})
+          user_database.run(%Q{ALTER TABLE "#{self.name}" ALTER COLUMN "#{column[0]}" TYPE text})
         end
       end
       schema = self.schema(reload: true)
@@ -352,7 +349,6 @@ class Table < Sequel::Model(:user_tables)
     raise CartoDB::QuotaExceeded if owner.over_table_quota?
     super
     update_updated_at
-    self.database_name = owner.database_name
 
     # The Table model only migrates now, never imports
     if migrate_existing_table.present?
@@ -373,7 +369,7 @@ class Table < Sequel::Model(:user_tables)
 
       self[:name] = importer_result_name
 
-      schema = self.schema(reload: true)
+      self.schema(reload: true)
 
       import_cleanup
       set_the_geom_column!
@@ -383,7 +379,7 @@ class Table < Sequel::Model(:user_tables)
     else
       create_table_in_database!
       set_table_id
-      if !self.temporal_the_geom_type.blank?
+      unless self.temporal_the_geom_type.blank?
         self.the_geom_type = self.temporal_the_geom_type
         self.temporal_the_geom_type = nil
       end
@@ -398,29 +394,37 @@ class Table < Sequel::Model(:user_tables)
   end #before_save
 
   def after_save
+    had_errors = false
     super
     manage_tags
-    update_name_changes
-    self.map.save
-
-    manager = CartoDB::Table::PrivacyManager.new(self)
-    manager.set_private if privacy == PRIVATE
-    manager.set_public  if privacy == PUBLIC
-    manager.propagate_to(table_visualization)
-    if privacy_changed?
-      manager.propagate_to_redis_and_varnish
-      update_cdb_tablemetadata
+    begin
+      update_name_changes
+    rescue CartoDB::BaseCartoDBError
+      had_errors = true
     end
-    
-    affected_visualizations.each { |visualization|
-      manager.propagate_to(visualization)
-    }
+
+    unless had_errors
+      self.map.save
+
+      manager = CartoDB::Table::PrivacyManager.new(self)
+      manager.set_private if privacy == PRIVATE
+      manager.set_public  if privacy == PUBLIC
+      manager.propagate_to(table_visualization)
+      if privacy_changed?
+        manager.propagate_to_redis_and_varnish
+        update_cdb_tablemetadata
+      end
+
+      affected_visualizations.each { |visualization|
+        manager.propagate_to(visualization)
+      }
+    end
   end
 
-  def propagate_name_change_to_table_visualization
+  def propagate_namechange_to_table_vis
     table_visualization.name = name
     table_visualization.store
-  end #propagate_name_change_to_table_visualization
+  end #propagate_namechange_to_table_vis
 
   def after_create
     super
@@ -432,7 +436,7 @@ class Table < Sequel::Model(:user_tables)
     set_default_table_privacy
 
     @force_schema = nil
-    $tables_metadata.hset key, "user_id", user_id
+    $tables_metadata.hset key, 'user_id', user_id
     self.new_table = true
 
     # finally, close off the data import
@@ -469,7 +473,7 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def handle_creation_error(e)
-    CartoDB::Logger.info "table#create error", "#{e.inspect}"
+    CartoDB::Logger.info 'table#create error', "#{e.inspect}"
 
     # Remove the table, except if it already exists
     unless self.name.blank? || e.message =~ /relation .* already exists/
@@ -487,13 +491,13 @@ class Table < Sequel::Model(:user_tables)
   def create_default_map_and_layers
     m = Map.create(Map::DEFAULT_OPTIONS.merge(table_id: self.id, user_id: self.user_id))
     self.map_id = m.id
-    base_layer = Layer.new(Cartodb.config[:layer_opts]["base"])
+    base_layer = Layer.new(Cartodb.config[:layer_opts]['base'])
     m.add_layer(base_layer)
 
-    data_layer = Layer.new(Cartodb.config[:layer_opts]["data"])
-    data_layer.options["table_name"] = self.name
-    data_layer.options["user_name"] = self.owner.username
-    data_layer.options["tile_style"] = "##{self.name} #{Cartodb.config[:layer_opts]["default_tile_styles"][self.the_geom_type]}"
+    data_layer = Layer.new(Cartodb.config[:layer_opts]['data'])
+    data_layer.options['table_name'] = self.name
+    data_layer.options['user_name'] = self.owner.username
+    data_layer.options['tile_style'] = "##{self.name} #{Cartodb.config[:layer_opts]['default_tile_styles'][self.the_geom_type]}"
     data_layer.infowindow ||= {}
     data_layer.infowindow['fields'] = []
     m.add_layer(data_layer)
@@ -516,8 +520,8 @@ class Table < Sequel::Model(:user_tables)
   def send_tile_style_request(data_layer=nil)
     data_layer ||= self.map.data_layers.first
     tile_request('POST', "/tiles/#{self.name}/style?map_key=#{owner.api_key}", {
-      'style_version' => data_layer.options["style_version"],
-      'style'         => data_layer.options["tile_style"]
+      'style_version' => data_layer.options['style_version'],
+      'style'         => data_layer.options['tile_style']
     })
   rescue => exception
     raise exception if Rails.env.production? || Rails.env.staging?
@@ -555,7 +559,7 @@ class Table < Sequel::Model(:user_tables)
       begin
         user_database.run("DROP SEQUENCE IF EXISTS cartodb_id_#{oid}_seq")
       rescue => e
-        CartoDB::Logger.info "Table#after_destroy error", "maybe table #{self.name} doesn't exist: #{e.inspect}"
+        CartoDB::Logger.info 'Table#after_destroy error', "maybe table #{self.name} doesn't exist: #{e.inspect}"
       end
       user_database.run(%Q{DROP TABLE IF EXISTS "#{self.name}"})
     end
@@ -567,7 +571,7 @@ class Table < Sequel::Model(:user_tables)
   # tiles included. Use with care O:-)
 
   def invalidate_varnish_cache
-    CartoDB::Varnish.new.purge("obj.http.X-Cache-Channel ~ #{varnish_key}")
+    CartoDB::Varnish.new.purge("#{varnish_key}")
     invalidate_cache_for(affected_visualizations) if id && table_visualization
     self
   end
@@ -599,7 +603,7 @@ class Table < Sequel::Model(:user_tables)
       # if column already exists, cast to timestamp value and set default
       if column_type == 'string' && schema.flatten.include?(column)
         success = ms_to_timestamp(database, name, column)
-        success = string_to_timestamp(database, name, column) unless success
+        string_to_timestamp(database, name, column) unless success
 
         database.run(%Q{
           ALTER TABLE "#{name}"
@@ -646,7 +650,7 @@ class Table < Sequel::Model(:user_tables)
       # TODO: extend .run to take a "long_running" indicator? See #730.
       owner.in_database.run(%Q{SET statement_timeout TO 600000;UPDATE "#{self.name}" SET the_geom = ST_MakeValid(the_geom);SET statement_timeout TO DEFAULT})
     rescue => e
-      CartoDB::Logger.info "Table#make_geom_valid error", "table #{self.name} make valid failed: #{e.inspect}"
+      CartoDB::Logger.info 'Table#make_geom_valid error', "table #{self.name} make valid failed: #{e.inspect}"
     end
   end
 
@@ -657,7 +661,8 @@ class Table < Sequel::Model(:user_tables)
 
     # Do not keep track of name changes until table has been saved
     @name_changed_from = self.name if !new? && self.name.present?
-    self.invalidate_varnish_cache if self.database_name
+
+    self.invalidate_varnish_cache if !owner.nil? && owner.database_name
     self[:name] = new_name
   end
 
@@ -667,7 +672,7 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def private?
-    $tables_metadata.hget(key, "privacy").to_i == PRIVATE
+    $tables_metadata.hget(key, 'privacy').to_i == PRIVATE
   end
 
   def public?
@@ -681,9 +686,9 @@ class Table < Sequel::Model(:user_tables)
 
   # enforce standard format for this field
   def privacy=(value)
-    if value == "PRIVATE" || value == PRIVATE || value == PRIVATE.to_s
+    if value == 'PRIVATE' || value == PRIVATE || value == PRIVATE.to_s
       self[:privacy] = PRIVATE
-    elsif value == "PUBLIC" || value == PUBLIC || value == PUBLIC.to_s
+    elsif value == 'PUBLIC' || value == PUBLIC || value == PUBLIC.to_s
       self[:privacy] = PUBLIC
     end
   end
@@ -693,7 +698,7 @@ class Table < Sequel::Model(:user_tables)
   end #privacy_changed?
 
   def key
-    Table.key(database_name, name)
+    Table.key(owner.database_name, name)
   rescue
     nil
   end
@@ -730,7 +735,7 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def self.table_size(name, options)
-    options[:connection]["SELECT pg_total_relation_size(?) as size", name].first[:size] / 2
+    options[:connection]['SELECT pg_total_relation_size(?) AS size', name].first[:size] / 2
   rescue Sequel::DatabaseError => e
     nil
   end
@@ -742,11 +747,13 @@ class Table < Sequel::Model(:user_tables)
     last_columns      = []
     owner.in_database.schema(name, options.slice(:reload).merge(schema: 'public')).each do |column|
       next if column[0] == THE_GEOM_WEBMERCATOR
-      col_db_type = column[1][:db_type].starts_with?("geometry") ? "geometry" : column[1][:db_type]
-      col = [ column[0],
-        (options[:cartodb_types] == false) ? col_db_type : col_db_type.convert_to_cartodb_type,
-        col_db_type == "geometry" ? "geometry" : nil,
-        col_db_type == "geometry" ? the_geom_type : nil
+      col_db_type = column[1][:db_type].starts_with?('geometry') ? 'geometry' : column[1][:db_type]
+      col = [
+        column[0],
+        # Default/unset or set to true means we want cartodb types
+        (options.include?(:cartodb_types) && options[:cartodb_types] == false ? col_db_type : col_db_type.convert_to_cartodb_type),
+        col_db_type == 'geometry' ? 'geometry' : nil,
+        col_db_type == 'geometry' ? the_geom_type : nil
       ].compact
 
       # Make sensible sorting for UI
@@ -820,7 +827,12 @@ class Table < Sequel::Model(:user_tables)
       if attributes.keys.size != raw_attributes.keys.size
         raise CartoDB::InvalidAttributes, "Invalid rows: #{(raw_attributes.keys - attributes.keys).join(',')}"
       end
-      if !attributes.except(THE_GEOM).empty?
+
+      if attributes.except(THE_GEOM).empty?
+        if attributes.size == 1 && attributes.keys == [THE_GEOM]
+          rows_updated = 1
+        end
+      else
         begin
           # update row
           rows_updated = user_database.from(name).filter(:cartodb_id => row_id).update(make_sequel_compatible(attributes))
@@ -841,10 +853,6 @@ class Table < Sequel::Model(:user_tables)
             raise e
           end
         end
-      else
-        if attributes.size == 1 && attributes.keys == [THE_GEOM]
-          rows_updated = 1
-        end
       end
     end
     update_the_geom!(raw_attributes, row_id)
@@ -853,7 +861,7 @@ class Table < Sequel::Model(:user_tables)
 
   # make all identifiers SEQUEL Compatible
   # https://github.com/Vizzuality/cartodb/issues/331
-  def make_sequel_compatible attributes
+  def make_sequel_compatible(attributes)
     attributes.except(THE_GEOM).convert_nulls.each_with_object({}) { |(k, v), h| h[k.identifier] = v }
   end
 
@@ -904,7 +912,7 @@ class Table < Sequel::Model(:user_tables)
     db.schema(table_name, schema: 'public', reload: true).map{ |s| s[0].to_s }
   end #column_names
 
-  def rename_column(old_name, new_name="")
+  def rename_column(old_name, new_name='')
     raise 'Please provide a column name' if new_name.empty?
     raise 'This column cannot be renamed' if CARTODB_COLUMNS.include?(old_name.to_s)
 
@@ -933,7 +941,7 @@ class Table < Sequel::Model(:user_tables)
     rows = []
     records_count = 0
     page, per_page = CartoDB::Pagination.get_page_and_per_page(options)
-    order_by_column = options[:order_by] || "cartodb_id"
+    order_by_column = options[:order_by] || 'cartodb_id'
     mode = (options[:mode] || 'asc').downcase == 'asc' ? 'ASC' : 'DESC NULLS LAST'
 
     filters = options.slice(:filter_column, :filter_value).reject{|k,v| v.blank?}.values
@@ -949,7 +957,8 @@ class Table < Sequel::Model(:user_tables)
       SQL
 
       column_names = user_database[columns_sql_builder].first[:column_names].split(',')
-      if the_geom_index = column_names.index("\"#{name}\".the_geom")
+      the_geom_index = column_names.index("\"#{name}\".the_geom")
+      if the_geom_index
         column_names[the_geom_index] = <<-STR
             CASE
             WHEN GeometryType(the_geom) = 'POINT' THEN
@@ -968,22 +977,11 @@ class Table < Sequel::Model(:user_tables)
       # See https://github.com/Vizzuality/cartodb/issues/716
       #
       max_countable_rows = 65535 # up to this number we accept to count
-      rows_count = 0
       rows_count_is_estimated = true
-      if filters.present?
-        query = "SELECT cartodb_id as total_rows FROM "#{name}" #{where} "
-        rows_count = rows_estimated_query(query)
-        if rows_count <= max_countable_rows
-          query = "SELECT COUNT(cartodb_id) as total_rows FROM "#{name}" #{where} "
-          rows_count = user_database[query].get(:total_rows)
-          rows_count_is_estimated = false
-        end
-      else
-        rows_count = rows_estimated
-        if rows_count <= max_countable_rows
-          rows_count = rows_counted
-          rows_count_is_estimated = false
-        end
+      rows_count = rows_estimated
+      if rows_count <= max_countable_rows
+        rows_count = rows_counted
+        rows_count_is_estimated = false
       end
 
       # If we force to get the name from an schema, we avoid the problem of having as
@@ -991,8 +989,10 @@ class Table < Sequel::Model(:user_tables)
       #
       # NOTE: we fetch one more row to verify estimated rowcount is not short
       #
-      rows = user_database[%Q{SELECT #{select_columns} FROM "#{name}" #{where} ORDER BY \"#{order_by_column}\" #{mode} LIMIT #{per_page}+1 OFFSET #{page}}].all
-      CartoDB::Logger.info "Query", "fetch: #{rows.length}"
+      rows = user_database[%Q{
+        SELECT #{select_columns} FROM "#{name}" #{where} ORDER BY "#{order_by_column}" #{mode} LIMIT #{per_page}+1 OFFSET #{page}
+      }].all
+      CartoDB::Logger.info 'Query', "fetch: #{rows.length}"
 
       # Tweak estimation if needed
       fetched = rows.length
@@ -1012,9 +1012,8 @@ class Table < Sequel::Model(:user_tables)
 
       # TODO: cache row count !!
       # See https://github.com/Vizzuality/cartodb/issues/459
-
-
     end
+
     {
       :id         => id,
       :name       => name,
@@ -1027,7 +1026,7 @@ class Table < Sequel::Model(:user_tables)
     row = nil
     owner.in_database do |user_database|
       select = if schema.flatten.include?(THE_GEOM)
-        schema.select{|c| c[0] != THE_GEOM }.map{|c| %Q{"#{c[0]}"} }.join(',') + ",ST_AsGeoJSON(the_geom,8) as the_geom"
+        schema.select{|c| c[0] != THE_GEOM }.map{|c| %Q{"#{c[0]}"} }.join(',') + ',ST_AsGeoJSON(the_geom,8) as the_geom'
       else
         schema.map{|c| %Q{"#{c[0]}"} }.join(',')
       end
@@ -1045,7 +1044,7 @@ class Table < Sequel::Model(:user_tables)
 
   def georeference_from!(options = {})
     if !options[:latitude_column].blank? && !options[:longitude_column].blank?
-      set_the_geom_column!("point")
+      set_the_geom_column!('point')
 
       owner.in_database do |user_database|
         user_database.run(<<-GEOREF
@@ -1069,23 +1068,23 @@ class Table < Sequel::Model(:user_tables)
 
 
   def the_geom_type
-    $tables_metadata.hget(key,"the_geom_type") || DEFAULT_THE_GEOM_TYPE
+    $tables_metadata.hget(key,'the_geom_type') || DEFAULT_THE_GEOM_TYPE
   end
 
   def the_geom_type=(value)
     the_geom_type_value = case value.downcase
-      when "geometry"
-        "geometry"
-      when "point"
-        "point"
-      when "line"
-        "multilinestring"
+      when 'geometry'
+        'geometry'
+      when 'point'
+        'point'
+      when 'line'
+        'multilinestring'
       else
         value !~ /^multi/ ? "multi#{value.downcase}" : value.downcase
     end
     raise CartoDB::InvalidGeomType unless CartoDB::VALID_GEOMETRY_TYPES.include?(the_geom_type_value)
     if owner.in_database.table_exists?(name)
-      $tables_metadata.hset(key,"the_geom_type",the_geom_type_value)
+      $tables_metadata.hset(key, 'the_geom_type', the_geom_type_value)
     else
       self.temporal_the_geom_type = the_geom_type_value
     end
@@ -1122,13 +1121,15 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def self.find_by_name_subdomain(subdomain, table_name)
-    if user = User.find(:username => subdomain)
+    user = User.find(:username => subdomain)
+    if user
       Table.where(:name => table_name, :user_id => user.id).first
     end
   end
   
   def self.find_by_id_subdomain(subdomain, table_id)
-    if user = User.find(:username => subdomain)
+    user = User.find(:username => subdomain)
+    if user
       Table.where(:id => table_id, :user_id => user.id).first
     end
   end
@@ -1139,7 +1140,7 @@ class Table < Sequel::Model(:user_tables)
 
   # DB Triggers and things
 
-  def has_trigger? trigger_name
+  def has_trigger?(trigger_name)
     owner.in_database(:as => :superuser).select('trigger_name').from(:information_schema__triggers)
       .where(:event_object_catalog => owner.database_name,
              :event_object_table => self.name,
@@ -1150,7 +1151,7 @@ class Table < Sequel::Model(:user_tables)
     "#{prefix}_#{UUIDTools::UUID.timestamp_create.to_s.gsub('-', '_')}"
   end # get_index_name
 
-  def has_index? column_name
+  def has_index?(column_name)
     pg_indexes.include? column_name
   end
 
@@ -1297,7 +1298,7 @@ TRIGGER
   end
 
   def table_style_from_redis
-    $tables_metadata.get("map_style|#{self.database_name}|#{self.name}")
+    $tables_metadata.get("map_style|#{owner.database_name}|#{self.name}")
   end
 
   def data_last_modified
@@ -1334,6 +1335,88 @@ TRIGGER
     record.nil? ? nil : record[:oid]
   end # get_table_id
 
+  # @throws CartoDB::TableError
+  def update_name_changes
+    if @name_changed_from.present? && @name_changed_from != name
+      # update metadata records
+      reload
+      begin
+        $tables_metadata.rename(Table.key(database_name,@name_changed_from), key)
+      rescue StandardError => exception
+        exception_to_raise = CartoDB::BaseCartoDBError.new(
+            "Table update_name_changes(): '#{@name_changed_from}','#{key}' renaming metadata", exception)
+        CartoDB::notify_exception(exception_to_raise, user: owner)
+        raise exception_to_raise
+      end
+
+      begin
+        owner.in_database.rename_table(@name_changed_from, name)
+      rescue StandardError => exception
+        exception_to_raise = CartoDB::BaseCartoDBError.new(
+            "Table update_name_changes(): '#{@name_changed_from}' doesn't exist", exception)
+        CartoDB::notify_exception(exception_to_raise, user: owner)
+        raise exception_to_raise
+      end
+      propagate_name_change_to_table_visualization
+
+      if layers.blank?
+        exception_to_raise = CartoDB::TableError.new("Attempt to rename table without layers #{self.name}")
+        CartoDB::notify_exception(exception_to_raise, user: owner)
+        raise exception_to_raise
+      end
+
+      layers.each do |layer|
+        layer.rename_table(@name_changed_from, name).save
+      end
+    end
+    @name_changed_from = nil
+  end
+
+  def update_name_changes
+    if @name_changed_from.present? && @name_changed_from != name
+      # update metadata records
+      reload
+      begin
+        $tables_metadata.rename(Table.key(owner.database_name,@name_changed_from), key)
+      rescue
+        # Do nothing
+      end
+      begin
+        owner.in_database.rename_table(@name_changed_from, name)
+      rescue
+        puts "Error attempting to rename table in DB: #{@name_changed_from} doesn't exist"
+      end
+      propagate_namechange_to_table_vis
+
+      require_relative '../../services/importer/lib/importer/exceptions'
+      CartoDB::notify_exception(
+          CartoDB::Importer2::GenericImportError.new("Attempt to rename table without layers #{self.name}"),
+          user: owner
+      ) if layers.blank?
+
+      layers.each do |layer|
+        layer.rename_table(@name_changed_from, name).save
+      end
+
+      # update tile styles
+      begin
+        # get old tile style
+        #old_style = tile_request('GET', "/tiles/#{@name_changed_from}/style?map_key=#{owner.api_key}").try(:body)
+
+        # parse old CartoCSS style out
+        #old_style = JSON.parse(old_style).with_indifferent_access[:style]
+
+        # rename common table name based variables
+        #old_style.gsub!(@name_changed_from, self.name)
+
+        # post new style
+        #tile_request('POST', "/tiles/#{self.name}/style?map_key=#{owner.api_key}", {"style" => old_style})
+      rescue => e
+        CartoDB::Logger.info 'tilestyle#rename error for', "#{e.inspect}"
+      end
+    end
+    @name_changed_from = nil
+  end
 
   private
 
@@ -1343,7 +1426,7 @@ TRIGGER
       VALUES ('#{table_id}', NOW())
     })
     #updated_at) VALUES ('#{name}'::regclass::oid, NOW())
-  rescue Sequel::DatabaseError => exception
+  rescue Sequel::DatabaseError
     owner.in_database(as: :superuser).run(%Q{
       UPDATE cdb_tablemetadata
       SET updated_at = NOW()
@@ -1404,15 +1487,16 @@ TRIGGER
     flatten_cartodb_schema = schema.flatten
     cartodb_column_type = flatten_cartodb_schema[flatten_cartodb_schema.index(invalid_column.to_sym) + 1]
     flatten_schema = schema(cartodb_types: false).flatten
-    column_type = flatten_schema[flatten_schema.index(invalid_column.to_sym) + 1]
+    flatten_schema[flatten_schema.index(invalid_column.to_sym) + 1]
     CartoDB::NEXT_TYPE[cartodb_column_type]
   end
 
   def set_the_geom_column!(type = nil)
     if type.nil?
       if self.schema(reload: true).flatten.include?(THE_GEOM)
-        if self.schema.select{ |k| k[0] == THE_GEOM }.first[1] == "geometry"
-          if row = owner.in_database["select GeometryType(#{THE_GEOM}) FROM #{self.name} where #{THE_GEOM} is not null limit 1"].first
+        if self.schema.select{ |k| k[0] == THE_GEOM }.first[1] == 'geometry'
+          row = owner.in_database["select GeometryType(#{THE_GEOM}) FROM #{self.name} where #{THE_GEOM} is not null limit 1"].first
+          if row
             type = row[:geometrytype]
           else
             type = DEFAULT_THE_GEOM_TYPE
@@ -1427,18 +1511,18 @@ TRIGGER
     return if type.nil?
 
     #if the geometry is MULTIPOINT we convert it to POINT
-    if type.to_s.downcase == "multipoint"
+    if type.to_s.downcase == 'multipoint'
       owner.in_database do |user_database|
         user_database.run("SELECT AddGeometryColumn('#{self.name}','the_geom_simple',4326, 'POINT', 2);")
         user_database.run(%Q{UPDATE "#{self.name}" SET the_geom_simple = ST_GeometryN(the_geom,1);})
-        user_database.run("SELECT DropGeometryColumn('#{self.name}','the_geom');");
+        user_database.run("SELECT DropGeometryColumn('#{self.name}','the_geom');")
         user_database.run(%Q{ALTER TABLE "#{self.name}" RENAME COLUMN the_geom_simple TO the_geom;})
       end
-      type = "point"
+      type = 'point'
     end
 
     #if the geometry is LINESTRING or POLYGON we convert it to MULTILINESTRING and MULTIPOLYGON resp.
-    if ["linestring","polygon"].include?(type.to_s.downcase)
+    if ['linestring','polygon'].include?(type.to_s.downcase)
       owner.in_database do |user_database|
         if type.to_s.downcase == 'polygon'
           user_database.run("SELECT AddGeometryColumn('#{self.name}','the_geom_simple',4326, 'MULTIPOLYGON', 2);")
@@ -1446,7 +1530,7 @@ TRIGGER
           user_database.run("SELECT AddGeometryColumn('#{self.name}','the_geom_simple',4326, 'MULTILINESTRING', 2);")
         end
         user_database.run(%Q{UPDATE "#{self.name}" SET the_geom_simple = ST_Multi(the_geom);})
-        user_database.run("SELECT DropGeometryColumn('#{self.name}','the_geom');");
+        user_database.run("SELECT DropGeometryColumn('#{self.name}','the_geom');")
         user_database.run(%Q{ALTER TABLE "#{self.name}" RENAME COLUMN the_geom_simple TO the_geom;})
         type = owner.in_database["select GeometryType(#{THE_GEOM}) FROM #{self.name} where #{THE_GEOM} is not null limit 1"].first[:geometrytype]
       end
@@ -1471,14 +1555,14 @@ TRIGGER
 
       # Ensure we add triggers and indexes when required
       if user_database.schema(name, schema: 'public', reload: true).flatten.include?(THE_GEOM_WEBMERCATOR)
-        unless self.has_index? "the_geom_webmercator"
+        unless self.has_index? 'the_geom_webmercator'
           updates = true
           user_database.run(%Q{CREATE INDEX #{get_index_name('the_geom_webmercator')} ON "#{self.name}" USING GIST(#{THE_GEOM_WEBMERCATOR})})
         end
       end
 
       if user_database.schema(name, schema: 'public', reload: true).flatten.include?(THE_GEOM)
-        unless self.has_index? "the_geom"
+        unless self.has_index? 'the_geom'
           updates = true
           user_database.run(%Q{CREATE INDEX #{get_index_name('the_geom')} ON "#{self.name}" USING GIST(the_geom)})
         end
@@ -1498,7 +1582,7 @@ TRIGGER
     owner.in_database do |user_database|
       if force_schema.blank?
         user_database.create_table self.name do
-          column :cartodb_id, "SERIAL PRIMARY KEY"
+          column :cartodb_id, 'SERIAL PRIMARY KEY'
           String :name
           String :description, :text => true
           column :created_at, 'timestamp with time zone', :default => Sequel::CURRENT_TIMESTAMP
@@ -1508,14 +1592,14 @@ TRIGGER
         sanitized_force_schema = force_schema.split(',').map do |column|
           # Convert existing primary key into a unique key
           if column =~ /^\s*\"([^\"]+)\"(.*)$/
-            "#{$1.sanitize} #{$2.gsub(/primary\s+key/i,"UNIQUE")}"
+            "#{$1.sanitize} #{$2.gsub(/primary\s+key/i,'UNIQUE')}"
           else
-            column.gsub(/primary\s+key/i,"UNIQUE")
+            column.gsub(/primary\s+key/i,'UNIQUE')
           end
         end
-        sanitized_force_schema.unshift("cartodb_id SERIAL PRIMARY KEY").
-                               unshift("created_at timestamp with time zone").
-                               unshift("updated_at timestamp with time zone")
+        sanitized_force_schema.unshift('cartodb_id SERIAL PRIMARY KEY').
+                               unshift('created_at timestamp with time zone').
+                               unshift('updated_at timestamp with time zone')
         user_database.run(<<-SQL
 CREATE TABLE "#{self.name}" (#{sanitized_force_schema.join(', ')});
 ALTER TABLE  "#{self.name}" ALTER COLUMN created_at SET DEFAULT now();
@@ -1532,15 +1616,15 @@ SQL
     geojson = geojson.to_json if geojson.is_a? Hash
 
     geojson = RGeo::GeoJSON.decode(geojson, :json_parser => :json)
-    raise(CartoDB::InvalidGeoJSONFormat, "Invalid geometry") unless valid_geometry?(geojson)
+    raise(CartoDB::InvalidGeoJSONFormat, 'Invalid geometry') unless valid_geometry?(geojson)
 
     begin
       owner.in_database.run(%Q{UPDATE "#{self.name}" SET the_geom =
       ST_GeomFromText('#{geojson.as_text}',#{CartoDB::SRID}) where cartodb_id =
       #{primary_key}})
 
-    rescue => exception
-      raise CartoDB::InvalidGeoJSONFormat, "Invalid geometry"
+    rescue
+      raise CartoDB::InvalidGeoJSONFormat, 'Invalid geometry'
     end
   end
 
@@ -1557,10 +1641,10 @@ SQL
       unless table_tags.empty?
         # Remove tags that are not in the new names list
         table_tags.each do |tag|
-          unless tag_names.include?(tag.name)
-            tag.destroy
-          else
+          if tag_names.include?(tag.name)
             tag_names.delete(tag.name)
+          else
+            tag.destroy
           end
         end
       end
@@ -1574,61 +1658,16 @@ SQL
     end
   end
 
-  def update_name_changes
-    if @name_changed_from.present? && @name_changed_from != name
-      # update metadata records
-      reload
-      begin
-        $tables_metadata.rename(Table.key(database_name,@name_changed_from), key)
-      rescue
-      end
-      begin
-        owner.in_database.rename_table(@name_changed_from, name)
-      rescue
-        puts "Error attempting to rename table in DB: #{@name_changed_from} doesn't exist"
-      end
-      propagate_name_change_to_table_visualization
-
-      require_relative '../../services/importer/lib/importer/exceptions'
-      CartoDB::notify_exception(
-        CartoDB::Importer2::GenericImportError.new("Attempt to rename table without layers #{self.name}"),
-        user: owner
-      ) if layers.blank?
-
-      layers.each do |layer|
-        layer.rename_table(@name_changed_from, name).save
-      end
-
-      # update tile styles
-      begin
-        # get old tile style
-        #old_style = tile_request('GET', "/tiles/#{@name_changed_from}/style?map_key=#{owner.api_key}").try(:body)
-
-        # parse old CartoCSS style out
-        #old_style = JSON.parse(old_style).with_indifferent_access[:style]
-
-        # rename common table name based variables
-        #old_style.gsub!(@name_changed_from, self.name)
-
-        # post new style
-        #tile_request('POST', "/tiles/#{self.name}/style?map_key=#{owner.api_key}", {"style" => old_style})
-      rescue => e
-        CartoDB::Logger.info "tilestyle#rename error for", "#{e.inspect}"
-      end
-    end
-    @name_changed_from = nil
-  end
-
   def delete_tile_style
     tile_request('DELETE', "/tiles/#{self.name}/style?map_key=#{owner.api_key}")
   rescue => exception
-    CartoDB::Logger.info "tilestyle#delete error", "#{exception.inspect}"
+    CartoDB::Logger.info 'tilestyle#delete error', "#{exception.inspect}"
   end
 
   def flush_cache
     tile_request('DELETE', "/tiles/#{self.name}/flush_cache?map_key=#{owner.api_key}")
   rescue => exception
-    CartoDB::Logger.info "cache#flush error", "#{exception.inspect}"
+    CartoDB::Logger.info 'cache#flush error', "#{exception.inspect}"
   end
 
   def tile_request(request_method, request_uri, form = {})

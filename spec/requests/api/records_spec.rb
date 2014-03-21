@@ -237,25 +237,24 @@ describe Api::Json::RecordsController do
     @table.rows_counted.should == 1
   end
   
-  it "Create a new row of type number and insert float values" do
-    base_url  = "/api/v1/tables"
+  it 'Create a new row of type number and insert float values' do
+    base_url  = '/api/v1/tables'
     payload   = {
-      name:   "My new imported table",
-      schema: "name varchar, age integer"
+      name:   'My new imported table',
+      schema: 'name varchar, age integer'
     }
 
     post "#{base_url}?api_key=#{@api_key}", payload.to_json, @headers
     last_response.status.should == 200
     name = JSON.parse(last_response.body).fetch('name')
 
-    table_name  = JSON.parse(last_response.body)['name']
     base_url    = "/api/v1/tables/#{name}"
 
-    payload = { name: "Fernando Blat", age: "29" }
+    payload = { name: 'Fernando Blat', age: '29' }
     post "#{base_url}/records?api_key=#{@api_key}", payload.to_json, @headers
     last_response.status.should == 200
 
-    payload = { name: "Beatriz", age: "30.2" }
+    payload = { name: 'Beatriz', age: '30.2' }
     post "#{base_url}/records?api_key=#{@api_key}", payload.to_json, @headers
     last_response.status.should == 200
 
@@ -263,7 +262,7 @@ describe Api::Json::RecordsController do
 
     get "#{base_url}/columns?api_key=#{@api_key}", payload.to_json, @headers
     last_response.status.should == 200
-    JSON.parse(last_response.body).should include(["age", "number"])
+    JSON.parse(last_response.body).should include(%w{age number})
     
     get "#{base_url}/records/#{row_id}?api_key=#{@api_key}", payload.to_json, @headers
     last_response.status.should == 200

@@ -12,6 +12,9 @@
 
     div.content > div {display:block; margin:0;}
 
+    // Hide uploader and ok button from the beginning
+    div.uploader, a.ok { display:none }
+
     // Assets styles
     div.assets {
       margin-bottom:30px;
@@ -27,7 +30,8 @@
         position:relative;
         display:block;
         height:auto;
-        margin:10px 0 0 0;
+        max-height:220px;
+        margin:20px 0 0 0;
       }
 
       .assets-item {
@@ -42,8 +46,7 @@
         background: image-url("layout/loader_transparent_small.gif") no-repeat center;
 
         a.image {
-          display:block;
-          position: absolute;
+          @include inline-block();
           width:42px;
           height:42px;
           @include border-radius(3px);

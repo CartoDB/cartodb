@@ -7,12 +7,12 @@ class Api::Json::RecordsController < Api::ApplicationController
 
   before_filter :load_table, :set_start_time
 
-  def index
-    render_jsonp(Yajl::Encoder.encode(@table.records(params.slice(:page, :rows_per_page, :order_by, :mode, :filter_column, :filter_value))))
-  rescue => e
-    CartoDB::Logger.info "exception on records#index", e.inspect
-    render_jsonp({ :errors => [e] }, 400)
-  end
+  #def index
+    #render_jsonp(Yajl::Encoder.encode(@table.records(params.slice(:page, :rows_per_page, :order_by, :mode, :filter_column, :filter_value))))
+  #rescue => e
+    #CartoDB::Logger.info "exception on records#index", e.inspect
+    #render_jsonp({ :errors => [e] }, 400)
+  #end
 
   def create
     primary_key = @table.insert_row!(params.reject{|k,v| REJECT_PARAMS.include?(k)}.symbolize_keys)

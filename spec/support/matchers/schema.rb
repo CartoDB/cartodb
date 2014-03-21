@@ -1,28 +1,26 @@
 require 'rspec/expectations'
 
-RSpec::Matchers.define :be_equal_to_default_cartodb_schema do |expected|
+RSpec::Matchers.define :be_equal_to_default_cartodb_schema do
   expected = [
     [:cartodb_id, "number"], [:name, "string"], [:description, "string"],
     [:the_geom, "geometry", "geometry", "geometry"], [:created_at, "date"], [:updated_at, "date"]
   ]
-  
   match do |actual|
    diff = expected - actual
    diff.should == []
   end
 end
 
-RSpec::Matchers.define :be_equal_to_default_db_schema do |expected|
+RSpec::Matchers.define :be_equal_to_default_db_schema do
   expected = [
     [:cartodb_id, "integer"], [:name, "text"], [:description, "text"],
     [:the_geom, "geometry", "geometry", "geometry"], [:created_at, "timestamp with time zone"], [:updated_at, "timestamp with time zone"]]
-
   match do |actual|
    diff = expected - actual
    diff.should == []
   end
 
-  failure_message_for_should do |actual|
+  failure_message_for_should do
     "missing #{@diff.inspect}"
   end  
 end

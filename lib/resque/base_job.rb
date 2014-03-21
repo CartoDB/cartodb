@@ -26,7 +26,7 @@ module Resque
         if (match_found)
           @@retries += 1
           if (@@retries < MAX_RETRIES)
-            puts "Retrying job"
+            puts 'Retrying job'
             retry
           else
             raise e

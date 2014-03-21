@@ -2,6 +2,7 @@
 require_relative './job'
 require_relative './string_sanitizer'
 require_relative './exceptions'
+require_relative './query_batcher'
 
 module CartoDB
   module Importer2
@@ -44,6 +45,7 @@ module CartoDB
       end #type
 
       def geometrify
+        job.log 'geometrifying'
         raise                     if empty?
         convert_from_wkt          if wkt?
         convert_from_kml_multi    if kml_multi?
@@ -51,61 +53,80 @@ module CartoDB
         convert_from_geojson      if geojson?
         cast_to('geometry')
         convert_to_2d
+        job.log 'geometrified'
         self
       end #geometrify
 
       def convert_from_wkt
-        job.log 'Converting geometry from WKT to WKB'
-        db.run(%Q{
-          UPDATE #{qualified_table_name}
-          SET #{column_name} = 
-            public.ST_GeomFromText(#{column_name}, #{DEFAULT_SRID})
-        })
+        QueryBatcher::execute(
+          db,
+          %Q{
+            UPDATE #{qualified_table_name}
+            SET #{column_name} = public.ST_GeomFromText(#{column_name}, #{DEFAULT_SRID})
+          },
+          qualified_table_name,
+          job,
+          'Converting geometry from WKT to WKB',
+          capture_exceptions=true
+        )
         self
       end #convert_from_wkt
 
       def convert_from_geojson
-        job.log 'Converting geometry from GeoJSON to WKB'
-        db.run(%Q{
-          UPDATE #{qualified_table_name}
-          SET #{column_name} = public.ST_SetSRID(
-            public.ST_GeomFromGeoJSON(#{column_name}), #{DEFAULT_SRID}
-          )
-        })
-        self
-      rescue => exception
-        job.log exception.to_s
-        job.log exception.backtrace
+        QueryBatcher::execute(
+          db,
+          %Q{
+            UPDATE #{qualified_table_name}
+            SET #{column_name} = public.ST_SetSRID(public.ST_GeomFromGeoJSON(#{column_name}), #{DEFAULT_SRID})
+          },
+          qualified_table_name,
+          job,
+          'Converting geometry from GeoJSON to WKB',
+          capture_exceptions=true
+        )
         self
       end #convert_from_geojson
 
       def convert_from_kml_point
-        job.log 'Converting geometry from KML point to WKB'
-        db.run(%Q{
-          UPDATE #{qualified_table_name}
-          SET #{column_name} = public.ST_SetSRID(
-            public.ST_GeomFromKML(#{column_name}),
-            #{DEFAULT_SRID}
-          )
-        })
+        QueryBatcher::execute(
+          db,
+          %Q{
+            UPDATE #{qualified_table_name}
+            SET #{column_name} = public.ST_SetSRID(public.ST_GeomFromKML(#{column_name}),#{DEFAULT_SRID})
+          },
+          qualified_table_name,
+          job,
+          'Converting geometry from KML point to WKB',
+          capture_exceptions=true
+        )
       end #convert_from_kml_point
 
       def convert_from_kml_multi
-        job.log 'Converting geometry from KML multi to WKB'
-        db.run(%Q{
-          UPDATE #{qualified_table_name}
-          SET #{column_name} = public.ST_SetSRID(
-            public.ST_Multi(public.ST_GeomFromKML(#{column_name})),
-            #{DEFAULT_SRID}
-          )
-        })
+        QueryBatcher::execute(
+          db,
+          %Q{
+            UPDATE #{qualified_table_name}
+            SET #{column_name} = public.ST_SetSRID(public.ST_Multi(public.ST_GeomFromKML(#{column_name})),#{DEFAULT_SRID})
+          },
+          qualified_table_name,
+          job,
+          'Converting geometry from KML multi to WKB',
+          capture_exceptions=true
+        )
       end #convert_from_kml_multi
 
       def convert_to_2d
-        db.run(%Q{
-          UPDATE #{qualified_table_name}
-          SET #{column_name} = public.ST_Force_2D(#{column_name})
-        })
+        QueryBatcher::execute(
+          db,
+          %Q{
+            UPDATE #{qualified_table_name}
+            SET #{column_name} = public.ST_Force_2D(#{column_name})
+          },
+          qualified_table_name,
+          job,
+          'Converting to 2D point',
+          capture_exceptions=true
+        )
       end #convert_to_2d
 
       def wkb?
@@ -129,6 +150,7 @@ module CartoDB
       end #kml_multi?
 
       def cast_to(type)
+        job.log "casting #{column_name} to #{type}"
         db.run(%Q{
           ALTER TABLE #{qualified_table_name}
           ALTER #{column_name}
@@ -158,6 +180,8 @@ module CartoDB
       def rename_to(new_name)
         return self if new_name.to_s == column_name.to_s
 
+        job.log "Renaming column #{column_name} TO #{new_name}"
+
         db.run(%Q{
           ALTER TABLE "#{schema}"."#{table_name}"
           RENAME COLUMN "#{column_name}" TO "#{new_name}"
@@ -183,7 +207,9 @@ module CartoDB
         })
       end #drop
 
+      # Replace empty strings by nulls to avoid cast errors
       def empty_lines_to_nulls
+        job.log 'replace empty strings by nulls?'
         column_id = column_name.to_sym
         column_type = nil
         db.schema(table_name).each do |colid, coldef|
@@ -192,9 +218,22 @@ module CartoDB
           end
         end
         if column_type != nil && column_type == :string
-          db.run(%Q{
-            UPDATE #{qualified_table_name} SET #{column_name}=NULL WHERE #{column_name}=''
-          })
+          QueryBatcher::execute(
+            db,
+            %Q{
+              UPDATE #{qualified_table_name}
+              SET #{column_name}=NULL
+              #{QueryBatcher::QUERY_WHERE_PLACEHOLDER}
+              WHERE #{column_name}=''
+              #{QueryBatcher::QUERY_LIMIT_SUBQUERY_PLACEHOLDER}
+            },
+            qualified_table_name,
+            job,
+            'string column found, replacing',
+            capture_exceptions=true
+          )
+        else
+          job.log 'no string column found, nothing replaced'
         end
       end #empty_lines_to_nulls
 

@@ -30,6 +30,7 @@ module CartoDB
           relocator.migrate
           user.database_host = new_database_host
           puts user.save #this will terminate all connections
+          user.enable_remote_db_user
           relocator.finalize
         rescue => e
           puts "Error: #{e}, #{e.backtrace}"

@@ -8,13 +8,14 @@
 
 body {
   @include background(image-url("layout/bkg.jpg") repeat 0 0);
+  min-width: 100%;
 }
 
 .content {
   width: 1022px;
   margin: 50px auto 0 auto;
-  clear:both;
-  overflow:hidden;
+    @include clearfix();
+  @include box-sizing(border-box);
 }
 
 .info {
@@ -65,8 +66,8 @@ body {
     height: 220px;
     border: 1px solid rgba(#1D4879, .6);
     border-bottom: none;
-    background: url(/images/layout/avatar_bkg.png) repeat 0 0;
-    @include background(image-url("layout/avatar_bkg.png") no-repeat);
+    /*background: url(/images/layout/avatar_bkg.png) repeat 0 0;*/
+    @include background(image-url("layout/avatar_bkg.png") repeat);
 
     @include border-radius(5px 5px 0 0);
 
@@ -90,6 +91,7 @@ body {
   } // .avatar
 
   ul {
+    width: 100%;
     clear:both;
     overflow:hidden;
     background:#fff;
@@ -151,6 +153,8 @@ body {
 }
 
 .visualizations > ul > li {
+
+  @include box-sizing(border-box);
 
   width: 700px;
   margin: 0 0 29px 0;
@@ -303,3 +307,120 @@ body {
   line-height:120%;
 
 } // .next
+
+
+body:after {
+  @include box-sizing(border-box);
+  content: '';
+  background: rgba(red, .8);
+  color: #fff;
+  padding: 7px;
+  position:fixed;
+  top: 0;
+  left: 50%;
+  width: 80px;
+  margin-left: -40px;
+  text-align:center;
+  z-index: 1000;
+  @include simple-transform(all);
+  @include border-radius(0 0 3px 3px);
+  
+}
+
+@media
+only screen and (-webkit-min-device-pixel-ratio: 2),
+only screen and (   min--moz-device-pixel-ratio: 2),
+only screen and (     -o-min-device-pixel-ratio: 2/1),
+only screen and (        min-device-pixel-ratio: 2),
+only screen and (                min-resolution: 192dpi),
+only screen and (                min-resolution: 2dppx) {
+
+}
+
+@media only screen and (max-width: 350px) {
+
+  body:after {
+    content: 'small';
+  }
+
+}
+
+@media only screen and (max-width: 710px) {
+
+  body:after {
+    content: 'medium';
+  }
+
+  .info,
+  .visualizations  {
+    float:none;
+    display:block;
+    width: 100%;
+  }
+
+  .content { padding: 0 30px; width: 100%; }
+
+  .user-info,
+  .user-info .avatar,
+  .user-info .username,
+  .visualizations > ul > li {
+    width: 100%;
+  }
+
+  .user-info ul li {
+    &:first-child {
+      border:none;
+    }
+    width: 50%;
+    border:none;
+  }
+
+}
+
+@media only screen and (min-width: 711px) and (max-width: 1035px) {
+
+  body:after {
+    content: 'big';
+  }
+
+  .info,
+  .visualizations  {
+    float:none;
+    display:block;
+    width: 100%;
+  }
+
+  .content { padding: 0 30px; width: 100%; }
+
+  .user-info,
+  .user-info .avatar,
+  .user-info .username,
+  .visualizations > ul > li {
+    width: 100%;
+  }
+
+  .user-info ul li {
+    &:first-child {
+      border:none;
+    }
+    width: 50%;
+    border:none;
+  }
+
+}
+
+/* iPhone portrait */
+@media only screen
+and (min-device-width : 320px)
+and (max-device-width : 480px)
+and (orientation : portrait) {
+
+}
+
+/* iPhone landscape */
+@media only screen
+and (min-device-width : 320px)
+and (max-device-width : 480px)
+and (orientation : landscape) {
+
+}

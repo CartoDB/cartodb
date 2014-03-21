@@ -1,7 +1,13 @@
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 // cartodb.js version: 3.8.05-dev
 // uncompressed version: cartodb.uncompressed.js
 // sha: 9c36b23a91fcee49aab1b67d21de3526c1498e86
+=======
+// cartodb.js version: 3.8.04-dev
+// uncompressed version: cartodb.uncompressed.js
+// sha: 09e86a94d7eed3847ad5b040dafd5deaf9d531a1
+>>>>>>> Stashed changes
 =======
 // cartodb.js version: 3.8.04-dev
 // uncompressed version: cartodb.uncompressed.js
@@ -20693,7 +20699,11 @@ this.LZMA = LZMA;
     var cdb = root.cdb = {};
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     cdb.VERSION = '3.8.05-dev';
+=======
+    cdb.VERSION = '3.8.04-dev';
+>>>>>>> Stashed changes
 =======
     cdb.VERSION = '3.8.04-dev';
 >>>>>>> Stashed changes

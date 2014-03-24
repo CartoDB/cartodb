@@ -341,6 +341,12 @@ $$
     end
   end
 
+  # List all public visualization tags of the user
+  def tags
+    require_relative './visualization/tag_counter'
+    CartoDB::Visualization::TagCounter.new(self).names({ privacy: CartoDB::Visualization::Member::PRIVACY_PUBLIC })
+  end #tags
+
 
   def tables
     Table.filter(:user_id => self.id).order(:id).reverse
@@ -677,8 +683,10 @@ $$
   end
 
   def visualization_count
+    # could also be retrieved querying count of visualizations type derived
+    # one map per visualization - each table visualization (canonical visualization)
     maps.count - table_count
-  end
+  end #visualization_count
 
   def last_visualization_created_at
     Rails::Sequel.connection.fetch("SELECT created_at FROM visualizations WHERE " +

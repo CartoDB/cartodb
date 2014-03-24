@@ -182,7 +182,7 @@ module ApplicationHelper
 
   def v2_vizjson_url(visualization)
     "/api/v2/viz/#{visualization.id}/viz"
-  end #v2_vizjon_url
+  end #v2_vizjson_url
 
   # TODO reactivate in order to allow CartoDB plugins
   # to inject content into the CartoDB admin UI 

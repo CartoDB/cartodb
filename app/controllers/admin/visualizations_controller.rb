@@ -26,20 +26,6 @@ class Admin::VisualizationsController < ApplicationController
     update_user_last_activity
   end #show
 
-  def public
-    id = params.fetch(:id)
-    @visualization, @table = locator.get(id, CartoDB.extract_subdomain(request))
-
-    return(pretty_404) if @visualization.nil? || @visualization.private?
-    return(redirect_to public_map_url_for(id)) if @visualization.derived?
-    
-    @vizjson = @visualization.to_vizjson
-
-    respond_to do |format|
-      format.html { render 'public', layout: 'application_public' }
-    end
-  end #public
-
   def public_map
     id = params.fetch(:id)
     @visualization, @table = locator.get(id, CartoDB.extract_subdomain(request))

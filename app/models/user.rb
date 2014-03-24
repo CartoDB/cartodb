@@ -677,8 +677,10 @@ $$
   end
 
   def visualization_count
+    # could also be retrieved querying count of visualizations type derived
+    # one map per visualization - each table visualization (canonical visualization)
     maps.count - table_count
-  end
+  end #visualization_count
 
   def last_visualization_created_at
     Rails::Sequel.connection.fetch("SELECT created_at FROM visualizations WHERE " +

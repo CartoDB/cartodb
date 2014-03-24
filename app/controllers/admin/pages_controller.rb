@@ -1,6 +1,13 @@
 # coding: utf-8
 
+require_relative '../../models/visualization/member'
+require_relative '../../models/visualization/collection'
+
 class Admin::PagesController < ApplicationController
+  include CartoDB
+
+  VISUALIZATIONS_PER_PAGE = 3
+
   ssl_required :common_data, :public
 
   before_filter :login_required, :except => :public
@@ -19,35 +26,34 @@ class Admin::PagesController < ApplicationController
 
     @tags = %w(biodiversity law contest MWC2013)
 
-    @username   = "peterdesmet"
+    @username   = current_user.username
+    @avatar_url = get_avatar(current_user.email)
 
-    @tables_num = 12
-    @vis_num    = 16
+    @tables_num = current_user.tables.count
+    @vis_num    = current_user.visualization_count
 
-    @avatar_url = get_avatar("javierarce@gmail.com")
+    page_num = 1
 
-    # TODO: This list should be paginated (3 visualizations per page)
-    @visualizations = [{
-        :title       =>  "Map of trips per day",
-        :description => "To get a better sense of the trips Eric made...",
-        :url         => 'http://arce.cartodb.com/api/v2/viz/008cee18-a9c4-11e3-b86c-0e73339ffa50/viz.json',
-        :tags        => %w(biodiversity law contest MWC2013),
-        :mapviews    => "12,376"
-      }, {
-        :title       =>  "Map of trips per day",
-        :description => "To get a better sense of the trips Eric made...",
-        :url         => 'http://simonrogers.cartodb.com/api/v2/viz/74910048-aba8-11e3-8eee-0e10bcd91c2b/viz.json',
-        :tags        => %w(biodiversity law contest MWC2013),
-        :mapviews    => "12,376"
-      }, {
-        :title       => "Map of trips per day",
-        :description => "To get a better sense of the trips Eric made...",
-        :url         => 'http://arce.cartodb.com/api/v2/viz/008cee18-a9c4-11e3-b86c-0e73339ffa50/viz.json',
-        :tags        => %w(biodiversity law contest MWC2013),
-        :mapviews    => "12,376"
-      }
+    # TODO: Pending order by date created DESC
+    visualizations = Visualization::Collection.new.fetch({
+      map_id: current_user.maps.map(&:id),
+      type: Visualization::Member::DERIVED_TYPE,
+      page: page_num,
+      per_page: VISUALIZATIONS_PER_PAGE
+    })
 
-    ]
+    @visualizations = []
+    visualizations.each do |vis|
+      @visualizations.push(
+        {
+          title:        vis.name,
+          description:  vis.description,
+          id:          vis.id,
+          tags:         vis.tags,
+          mapviews:     '123'
+        }
+      )
+    end
 
     respond_to do |format|
       format.html { render 'public', layout: 'application_public' }

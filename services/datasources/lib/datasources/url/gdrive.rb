@@ -33,12 +33,12 @@ module CartoDB
         # ]
         # @param user User
         # @throws UninitializedError
-        # @throws ConfigurationError
+        # @throws MissingConfigurationError
         def initialize(config, user)
           raise UninitializedError.new('missing user instance', DATASOURCE_NAME) if user.nil?
-          raise ConfigurationError.new('missing application_name', DATASOURCE_NAME) unless config.include?('application_name')
-          raise ConfigurationError.new('missing client_id', DATASOURCE_NAME) unless config.include?('client_id')
-          raise ConfigurationError.new('missing client_secret', DATASOURCE_NAME) unless config.include?('client_secret')
+          raise MissingConfigurationError.new('missing application_name', DATASOURCE_NAME) unless config.include?('application_name')
+          raise MissingConfigurationError.new('missing client_id', DATASOURCE_NAME) unless config.include?('client_id')
+          raise MissingConfigurationError.new('missing client_secret', DATASOURCE_NAME) unless config.include?('client_secret')
 
           self.filter=[]
           @refresh_token = nil

@@ -34,7 +34,7 @@ describe DatasourcesFactory do
 
       expect {
         DatasourcesFactory.get_datasource('blablabla...', user_mock)
-      }.to raise_exception ConfigurationError
+      }.to raise_exception MissingConfigurationError
 
     end
   end

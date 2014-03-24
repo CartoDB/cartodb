@@ -380,7 +380,7 @@ class DataImport < Sequel::Model
   def get_datasource(datasource_name)
     begin
       DatasourcesFactory.get_datasource(datasource_name, current_user)
-    rescue ConfigurationError => exception
+    rescue MissingConfigurationError => exception
       nil
       log.append "Exception: #{exception.to_s}"
       log.append exception.backtrace

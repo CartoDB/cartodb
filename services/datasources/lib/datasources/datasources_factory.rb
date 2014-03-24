@@ -10,7 +10,7 @@ module CartoDB
         # @param datasource_name string
         # @param user User
         # @return mixed
-        # @throws ConfigurationError
+        # @throws MissingConfigurationError
         def self.get_datasource(datasource_name, user)
           case datasource_name
             when Url::Dropbox::DATASOURCE_NAME
@@ -22,18 +22,18 @@ module CartoDB
             when nil
               nil
             else
-              raise ConfigurationError.new("unrecognized datasource #{datasource_name}", NAME)
+              raise MissingConfigurationError.new("unrecognized datasource #{datasource_name}", NAME)
           end
         end #self.get_datasource
 
         # Gets the config of a certain datasource
         # @param datasource_name string
         # @return string
-        # @throws ConfigurationError
+        # @throws MissingConfigurationError
         def self.config_for(datasource_name)
           # Cartodb::config[:assets]["max_file_size"]
           @config ||= (Cartodb.config[:oauth] rescue [])
-          raise ConfigurationError.new("missing configuration for datasource #{datasource_name}", NAME) if @config.empty?
+          raise MissingConfigurationError.new("missing configuration for datasource #{datasource_name}", NAME) if @config.empty?
           @config.fetch(datasource_name)
         end #self.config_for
 

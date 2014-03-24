@@ -5,6 +5,17 @@
 <%= content_for(:js) do %>
   <%= javascript_include_tag :cdb, :application %>
 
+<!--[if lt IE 9]>
+   <script>
+      document.createElement('header');
+      document.createElement('nav');
+      document.createElement('section');
+      document.createElement('article');
+      document.createElement('aside');
+      document.createElement('footer');
+   </script>
+<![endif]-->
+
   <script type="text/javascript">
     var username  = "<%#= current_user.username %>";
     var user_data = <%#= raw current_user.data.to_json.html_safe %>;

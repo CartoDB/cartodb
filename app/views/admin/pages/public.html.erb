@@ -69,50 +69,49 @@
   </div>
 
   <div class="visualizations">
-
     <% if @visualizations.size > 0 %>
-  <ul>
-    <% @visualizations.each_with_index do |vis, i| %>
-    <li>
-      <div class="map-wrapper">
+      <ul>
+        <% @visualizations.each_with_index do |vis, i| %>
+          <li>
+            <div class="map-wrapper">
 
-        <div class="backdrop"></div>
-        <div id="map_<%= i %>" class="map"></div>
+              <a href="#" class="backdrop"></a>
+              <div id="map_<%= i %>" class="map"></div>
 
-        <div class="title">
-          <h3><%= vis[:title]  %></h3>
-          <p><%= vis[:description] %></p>
-        </div>
-        <div class="gradient"></div>
-      </div>
+              <div class="title">
+                <h3><%= vis[:title]  %></h3>
+                <p><%= vis[:description] %></p>
+              </div>
+              <div class="gradient"></div>
+            </div>
 
-      <div class="header">
-        <% if vis[:tags] %>
-          <ul class="tags">
-            <% vis[:tags].each do |tag| %>
-              <li><%= link_to tag, tag %></li>
-            <% end %>
-          </ul>
+            <div class="header">
+              <% if vis[:tags] %>
+                <ul class="tags">
+                  <% vis[:tags].each do |tag| %>
+                    <li><%= link_to tag, tag %></li>
+                  <% end %>
+                </ul>
+              <% end %>
+              <div class="mapviews"><%= vis[:mapviews] %> Map views</div>
+            </div>
+          </li>
         <% end %>
-        <div class="mapviews"><%= vis[:mapviews] %> Map views</div>
-      </div>
-    </li>
-  <% end %>
-  </ul>
-  <% end %>
+      </ul>
+    <% end %>
 
-  <div class="pagination">
+    <div class="pagination">
 
-    <ul>
-      <li class="selected"><a href="#"></a></li>
-      <li><a href="#"></a></li>
-      <li><a href="#"></a></li>
-    </ul>
-    
-    <a class="next" href="#">Next</a>
-  </div> 
+      <ul>
+        <li class="selected"><a href="#"></a></li>
+        <li><a href="#"></a></li>
+        <li><a href="#"></a></li>
+      </ul>
 
-</div>
+      <a class="next" href="#">Next</a>
+    </div> 
+
+  </div>
 
 </div>
 

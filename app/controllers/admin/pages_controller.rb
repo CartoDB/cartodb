@@ -14,21 +14,12 @@ class Admin::PagesController < ApplicationController
   before_filter :login_required, :except => :public
   skip_before_filter :browser_is_html5_compliant?, only: [:public]
 
-  def get_avatar(email, size = 128)
-
-    email  = email.strip.downcase
-    digest = Digest::MD5.hexdigest(email)
-
-    "http://www.gravatar.com/avatar/#{digest}?s=#{size}&d=http%3A%2F%2Fcartodb.s3.amazonaws.com%2Fstatic%2Fmap-avatar-03.png"
-
-  end
-
   def public
 
     @tags = current_user.tags
 
     @username   = current_user.username
-    @avatar_url = get_avatar(current_user.email)
+    @avatar_url = current_user.gravatar
 
     @tables_num = current_user.tables.count
     @vis_num    = current_user.visualization_count

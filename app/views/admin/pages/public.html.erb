@@ -4,7 +4,6 @@
 
 <%= content_for(:js) do %>
   <%= javascript_include_tag :cdb, :application %>
-
 <!--[if lt IE 9]>
    <script>
       document.createElement('header');
@@ -40,7 +39,9 @@
     <div class="user-info">
 
       <div class="avatar">
-        <div class="circle"></div>
+        <div class="circle">
+          <img src="<%= @avatar_url %>" />
+        </div>
       </div>
 
       <div class="username">
@@ -57,91 +58,57 @@
 
     <ul class="tags">
       <li><strong>Browse by tag</strong></li>
-      <li><a href="#">Biodiversity</a></li>
-      <li><a href="#">Law</a></li>
-      <li><a href="#">Contest</a></li>
-      <li><a href="#">MWC2013</a></li>
+
+      <% @tags.each do |tag| %>
+        <li><%= link_to tag.capitalize, tag %>
+      <% end %>
+
     </ul>
 
 
   </div>
 
   <div class="visualizations">
+
+    <% if @visualizations.size > 0 %>
   <ul>
-
+    <% @visualizations.each_with_index do |vis, i| %>
     <li>
       <div class="map-wrapper">
 
         <div class="backdrop"></div>
-        <div id="map_0" class="map"></div>
+        <div id="map_<%= i %>" class="map"></div>
 
         <div class="title">
-          <h3>Map of trips per day</h3>
-          <p>To get a better sense of the trips Eric made...</p>
+          <h3><%= vis[:title]  %></h3>
+          <p><%= vis[:description] %></p>
         </div>
         <div class="gradient"></div>
       </div>
 
       <div class="header">
-        <ul class="tags">
-          <li><a href="#">Biodiversity</a></li>
-          <li><a href="#">Law</a></li>
-          <li><a href="#">Pirates</a></li>
-          <li><a href="#">Zombies</a></li>
-          <li><a href="#">Whales</a></li>
-          <li><a href="#">Law</a></li>
-        </ul>
-        <div class="mapviews">12,376 Map views</div>
+        <% if vis[:tags] %>
+          <ul class="tags">
+            <% vis[:tags].each do |tag| %>
+              <li><%= link_to tag, tag %></li>
+            <% end %>
+          </ul>
+        <% end %>
+        <div class="mapviews"><%= vis[:mapviews] %> Map views</div>
       </div>
     </li>
-
-    <li>
-      <div class="map-wrapper">
-
-        <div class="backdrop"></div>
-        <div id="map_1" class="map"></div>
-
-        <div class="title">
-          <h3>Map of trips per day</h3>
-          <p>To get a better sense of the trips Eric made...</p>
-        </div>
-        <div class="gradient"></div>
-      </div>
-
-      <div class="header">
-        <ul class="tags">
-          <li><a href="#">Biodiversity</a></li>
-          <li><a href="#">Law</a></li>
-        </ul>
-        <div class="mapviews">12,376 Map views</div>
-      </div>
-    </li>
-
-    <li>
-      <div class="map-wrapper">
-
-        <div class="backdrop"></div>
-        <div id="map_2" class="map"></div>
-
-        <div class="title">
-          <h3>Public and non-commercial use records</h3>
-          <p>Overlapping points generate a higher colour intensity, highlighting clusters on the map.</p>
-        </div>
-        <div class="gradient"></div>
-      </div>
-
-      <div class="header">
-        <ul class="tags">
-          <li><a href="#">Biodiversity</a></li>
-          <li><a href="#">Law</a></li>
-        </ul>
-        <div class="mapviews">12,376 Map views</div>
-      </div>
-    </li>
-
+  <% end %>
   </ul>
+  <% end %>
 
   <div class="pagination">
+
+    <ul>
+      <li class="selected"><a href="#"></a></li>
+      <li><a href="#"></a></li>
+      <li><a href="#"></a></li>
+    </ul>
+    
     <a class="next" href="#">Next</a>
   </div> 
 
@@ -160,11 +127,7 @@
       time_slider: false
     };
 
-    var urls = [
-      'http://arce.cartodb.com/api/v2/viz/008cee18-a9c4-11e3-b86c-0e73339ffa50/viz.json',
-      'http://simonrogers.cartodb.com/api/v2/viz/74910048-aba8-11e3-8eee-0e10bcd91c2b/viz.json',
-      'http://arce.cartodb.com/api/v2/viz/008cee18-a9c4-11e3-b86c-0e73339ffa50/viz.json'
-    ];
+    var urls = <%= raw @visualizations.map {|v| v[:url]}.to_json %>;
 
     _.each(urls, function(url, i) {
       cartodb.createVis('map_' + i , url, options);

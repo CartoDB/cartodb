@@ -93,9 +93,8 @@ header {
     height: 220px;
     border: 1px solid rgba(#1D4879, .6);
     border-bottom: none;
-    /*background: url(/images/layout/avatar_bkg.png) repeat 0 0;*/
-    @include background(image-url("layout/avatar_bkg.png") repeat);
 
+    @include background(image-url("layout/avatar_bkg.png") repeat);
     @include border-radius(5px 5px 0 0);
 
     .circle {
@@ -317,11 +316,17 @@ header {
 
   text-align: center;
 
+  .next {
+    float: right;
+    margin-left: -60px;
+  }
+
   ul {
 
     float:left;
-    width: 639px;
-    margin: 10px 0 0 0;
+    width: 100%;
+    margin-right: 60px;
+    margin: 9px 0 0 0;
 
     li {
 
@@ -345,11 +350,11 @@ header {
       }
 
     }
-  }
+  } // ul
 
-  .next { float:right; }
+  .next { float: right; }
 
-}
+} // .pagination
 
 .next {
 

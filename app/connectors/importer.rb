@@ -6,6 +6,7 @@ module CartoDB
     class Importer
       ORIGIN_SCHEMA       = 'cdb_importer'
       DESTINATION_SCHEMA  = 'public'
+      MAX_RENAME_RETRIES  = 5
 
       attr_accessor :table
 
@@ -34,7 +35,7 @@ module CartoDB
         name = rename(result.table_name, result.name)
         move_to_schema(name, ORIGIN_SCHEMA, DESTINATION_SCHEMA)
         persist_metadata(name, data_import_id)
-      rescue => exception
+      rescue
       end
 
       def success?
@@ -60,8 +61,13 @@ module CartoDB
       end
 
       def rename(current_name, new_name, rename_attempts=0)
-        rename_attempts = rename_attempts + 1
         new_name        = table_registrar.get_valid_table_name(new_name)
+
+        if (rename_attempts > 0)
+          new_name = "#{new_name}_#{rename_attempts}"
+        end
+
+        rename_attempts = rename_attempts + 1
 
         database.execute(%Q{
           ALTER TABLE "#{ORIGIN_SCHEMA}"."#{current_name}"
@@ -70,8 +76,8 @@ module CartoDB
 
         rename_the_geom_index_if_exists(current_name, new_name)
         new_name
-      rescue => exception
-        retry unless rename_attempts > 1
+      rescue
+        retry unless rename_attempts > MAX_RENAME_RETRIES
       end
 
       def rename_the_geom_index_if_exists(current_name, new_name)
@@ -79,7 +85,7 @@ module CartoDB
           ALTER INDEX "#{ORIGIN_SCHEMA}"."#{current_name}_geom_idx"
           RENAME TO "the_geom_#{UUIDTools::UUID.timestamp_create.to_s.gsub('-', '_')}"
         })
-      rescue => exception
+      rescue
       end
 
       def persist_metadata(name, data_import_id)

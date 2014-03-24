@@ -273,8 +273,10 @@ class DataImport < Sequel::Model
       if current_user.remaining_quota < 0
         log.append 'Over storage quota, removing table'
         self.error_code = 8001
+        self.state      = 'failure'
+        save
         table.destroy
-        return false
+        raise CartoDB::QuotaExceeded, 'More storage required'
       end
       refresh
       self.table_id = table.id

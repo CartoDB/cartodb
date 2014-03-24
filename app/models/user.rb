@@ -94,6 +94,7 @@ class User < Sequel::Model
     set_statement_timeouts   if changes.include?(:user_timeout) || changes.include?(:database_timeout)
     rebuild_quota_trigger    if changes.include?(:quota_in_bytes)
     invalidate_varnish_cache(regex: '.*:vizjson') if changes.include?(:account_type) || changes.include?(:disqus_shortname)
+    User.terminate_database_connections(database_name, previous_changes[:database_host][0]) if changes.include?(:database_host)
   end
 
   def before_destroy
@@ -123,17 +124,27 @@ class User < Sequel::Model
 
   def drop_database_and_user
     Thread.new do
-      conn = Rails::Sequel.connection
+      connection_params = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+        'host' => database_host,
+        'database' => 'postgres'
+      ) {|key, o, n| n.nil? ? o : n}
+      conn = ::Sequel.connect(connection_params)
       conn.run("UPDATE pg_database SET datallowconn = 'false' WHERE datname = '#{database_name}'")
-      User.terminate_database_connections(database_name)
+      User.terminate_database_connections(database_name, database_host)
       conn.run("DROP DATABASE \"#{database_name}\"")
       conn.run("DROP USER \"#{database_username}\"")
+      conn.disconnect
     end.join
     monitor_user_notification
   end
 
-  def self.terminate_database_connections(database_name)
-      Rails::Sequel.connection.run("
+  def self.terminate_database_connections(database_name, database_host)
+      connection_params = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+        'host' => database_host,
+        'database' => 'postgres'
+      ) {|key, o, n| n.nil? ? o : n}
+      conn = ::Sequel.connect(connection_params)
+      conn.run("
 DO language plpgsql $$
 DECLARE
     ver INT[];
@@ -159,11 +170,12 @@ BEGIN
 END
 $$
       ")
+      conn.disconnect
   end
 
   def invalidate_varnish_cache(options = {})
     options[:regex] ||= '.*'
-    CartoDB::Varnish.new.purge("obj.http.X-Cache-Channel ~ #{database_name}#{options[:regex]}")
+    CartoDB::Varnish.new.purge("#{database_name}#{options[:regex]}")
   end
 
   ## Authentication

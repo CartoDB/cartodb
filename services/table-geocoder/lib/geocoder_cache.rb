@@ -59,7 +59,7 @@ module CartoDB
         rows = connection.fetch(%Q{
           SELECT DISTINCT(quote_nullable(#{formatter})) AS searchtext, the_geom 
           FROM #{table_name} AS orig
-          WHERE orig.cartodb_georef_status IS NOT NULL AND #{formatter} NOT IN (SELECT geocode_string FROM #{temp_table_name})
+          WHERE orig.cartodb_georef_status IS NOT NULL AND #{formatter} NOT IN (SELECT geocode_string FROM #{temp_table_name} WHERE geocode_string IS NOT NULL)
           LIMIT #{@batch_size} OFFSET #{count * @batch_size}
         }).all
         sql << rows.map { |r| "(#{r[:searchtext]}, #{(r[:the_geom] == nil ? 'NULL' : "'#{r[:the_geom]}'")})" }.join(',')

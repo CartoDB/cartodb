@@ -35,7 +35,7 @@ RSpec.configure do |config|
       "SELECT datname FROM pg_database WHERE datistemplate IS FALSE AND datallowconn IS TRUE AND datname like 'cartodb_test_user_%'"
     ].map(:datname).each { |user_database_name|
       puts "Dropping leaked test database #{user_database_name}"
-      User::terminate_database_connections(user_database_name);
+      User::terminate_database_connections(user_database_name, ::Rails::Sequel.configuration.environment_for(Rails.env)['host']);
       Rails::Sequel.connection.run("drop database \"#{user_database_name}\"")
     }
     Rails::Sequel.connection[

@@ -66,7 +66,7 @@ module CartoDB
       end #store
 
       def store_using_table(privacy_text)
-        if (type == CANONICAL_TYPE)
+        if type == CANONICAL_TYPE
           # Each table has a canonical visualization which must have privacy synced
           self.privacy = privacy_text
         end
@@ -80,7 +80,7 @@ module CartoDB
         validator.validate_in(:privacy, privacy, PRIVACY_VALUES)
         validator.validate_uniqueness_of(:name, available_name?)
 
-        if (privacy == PRIVACY_PROTECTED)
+        if privacy == PRIVACY_PROTECTED
           validator.validate_presence_of_with_custom_message(
             { encrypted_password: encrypted_password, password_salt: password_salt },
             "password can't be blank"
@@ -204,14 +204,14 @@ module CartoDB
       end #non_dependent?
 
       def invalidate_varnish_cache
-        CartoDB::Varnish.new.purge("obj.http.X-Cache-Channel ~ .*#{id}:vizjson")
+        CartoDB::Varnish.new.purge(".*#{id}:vizjson")
       end #invalidate_varnish_cache
 
       def invalidate_cache_and_refresh_named_map
         invalidate_varnish_cache
 
         if type != CANONICAL_TYPE   
-          save_named_map()     
+          save_named_map
         end
       end #invalidate_cache_and_refresh_named_map
 
@@ -224,7 +224,7 @@ module CartoDB
       end #has_private_tables
 
       def retrieve_named_map?
-        return password_protected? || has_private_tables?
+        password_protected? || has_private_tables?
       end #retrieve_named_map?
 
       def has_named_map?
@@ -237,8 +237,8 @@ module CartoDB
       end #has_named_map?
 
       def password=(value)
-        if (value && value.size > 0)
-          @password_salt = generate_salt() if @password_salt.nil?
+        if value && value.size > 0
+          @password_salt = generate_salt if @password_salt.nil?
           @encrypted_password = password_digest(value, @password_salt)
         end
       end #password
@@ -259,7 +259,7 @@ module CartoDB
 
       # To be stored with the named map
       def make_auth_token
-        digest = secure_digest(Time.now, (1..10).map{ rand.to_s() })
+        digest = secure_digest(Time.now, (1..10).map{ rand.to_s })
         10.times do
           digest = secure_digest(digest, TOKEN_DIGEST)
         end
@@ -289,10 +289,10 @@ module CartoDB
       attr_accessor :privacy_changed, :name_changed, :description_changed
 
       def do_store(propagate_changes=true)
-        if (password_protected?)
-          raise CartoDB::InvalidMember if not has_password?
+        if password_protected?
+          raise CartoDB::InvalidMember unless has_password?
         else
-          remove_password()
+          remove_password
         end
 
         # Warning, imports create by default private canonical visualizations
@@ -305,20 +305,27 @@ module CartoDB
 
         repository.store(id, attributes.to_hash)
 
-        if (type == CANONICAL_TYPE)
+        if type == CANONICAL_TYPE
           propagate_privacy_and_name_to(table) if table and propagate_changes
         else
+          save_named_map
           propagate_name_to(table) if table and propagate_changes
-          save_named_map()
         end
       end #do_store
 
       def named_maps(force_init = false)
         if @named_maps.nil? || force_init
+          if user.nil?
+            name_param = @user_data.nil? ? '' : @user_data[:name]
+            api_key_param = @user_data.nil? ? '' : @user_data[:api_key]
+          else
+            name_param = user.username
+            api_key_param = user.api_key
+          end
           @named_maps = CartoDB::NamedMapsWrapper::NamedMaps.new(
             {
-              name:     user.nil? ? (@user_data.nil? ? '' : @user_data[:name]) : user.username,
-              api_key:  user.nil? ? (@user_data.nil? ? '' : @user_data[:api_key]) : user.api_key
+              name:     name_param,
+              api_key:  api_key_param
             },
             {
               domain:     Cartodb.config[:tiler]['internal']['domain'],
@@ -342,13 +349,14 @@ module CartoDB
               create_named_map
             end
         else
+          # Privacy changed, remove the map
           named_map.delete if named_map
         end
       end #save_named_map
 
       def create_named_map
         new_named_map = named_maps.create(self)
-        return !new_named_map.nil?        
+        !new_named_map.nil?
       end #create_named_map_if_proceeds
 
       def update_named_map(named_map_instance)
@@ -373,7 +381,7 @@ module CartoDB
       def propagate_name_to(table)
         table.name = self.name
         table.update(name: self.name)
-        table.send(:update_name_changes)
+        table.update_name_changes
         self
       end #propagate_name_to
 
@@ -427,7 +435,7 @@ module CartoDB
       end #password_digest
 
       def generate_salt
-        secure_digest(Time.now, (1..10).map{ rand.to_s() })
+        secure_digest(Time.now, (1..10).map{ rand.to_s })
       end #generate_salt
 
       def secure_digest(*args)

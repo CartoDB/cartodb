@@ -1,0 +1,136 @@
+<% content_for(:page_title) do %>
+  <%#= current_user.username %> |
+<% end %>
+
+<%= content_for(:js) do %>
+  <%= javascript_include_tag :cdb, :application %>
+<!--[if lt IE 9]>
+   <script>
+      document.createElement('header');
+      document.createElement('nav');
+      document.createElement('section');
+      document.createElement('article');
+      document.createElement('aside');
+      document.createElement('footer');
+   </script>
+<![endif]-->
+
+  <script type="text/javascript">
+    var username  = "<%#= current_user.username %>";
+    var user_data = <%#= raw current_user.data.to_json.html_safe %>;
+    var config    = <%#= raw frontend_config.html_safe %>;
+    var mixpanel_token = "<%= Cartodb.config[:mixpanel]['token'] if Cartodb.config[:mixpanel].present? %>";
+  </script>
+
+<% end %>
+
+<%= content_for(:css) do %>
+  <%= stylesheet_link_tag :common, :dashboard, :public %>
+  <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.css" />
+  <!--[if lte IE 8]>
+  <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.ie.css" />
+  <![endif]-->
+<% end %>
+
+<div class="content">
+
+  <div class="info">
+
+    <div class="user-info">
+
+      <div class="avatar">
+        <div class="circle">
+          <img src="<%= @avatar_url %>" />
+        </div>
+      </div>
+
+      <div class="username">
+        <h2><%= @username %></h2>
+      </div>
+
+      <ul>
+        <li><strong><%= @tables_num %></strong>dataset<%= @tables_num == 1 ? '' : 's' %></li>
+        <li><strong><%= @vis_num %></strong>visualization<%= @vis_num == 1 ? '' : 's' %></li>
+      </ul>
+
+    </div>
+
+
+    <ul class="tags">
+      <li><strong>Browse by tag</strong></li>
+
+      <% @tags.each do |tag| %>
+        <li><%= link_to tag.capitalize, tag %>
+      <% end %>
+
+    </ul>
+
+
+  </div>
+
+  <div class="visualizations">
+    <% if @visualizations.size > 0 %>
+      <ul>
+        <% @visualizations.each_with_index do |vis, i| %>
+          <li>
+            <div class="map-wrapper">
+
+              <a href="#" class="backdrop"></a>
+              <div id="map_<%= i %>" class="map"></div>
+
+              <div class="title">
+                <h3><%= vis[:title]  %></h3>
+                <p><%= vis[:description] %></p>
+              </div>
+              <div class="gradient"></div>
+            </div>
+
+            <div class="header">
+              <% if vis[:tags] %>
+                <ul class="tags">
+                  <% vis[:tags].each do |tag| %>
+                    <li><%= link_to tag, tag %></li>
+                  <% end %>
+                </ul>
+              <% end %>
+              <div class="mapviews"><%= vis[:mapviews] %> Map views</div>
+            </div>
+          </li>
+        <% end %>
+      </ul>
+    <% end %>
+
+    <div class="pagination">
+
+      <ul>
+        <li class="selected"><a href="#"></a></li>
+        <li><a href="#"></a></li>
+        <li><a href="#"></a></li>
+      </ul>
+
+      <a class="next" href="#">Next</a>
+    </div> 
+
+  </div>
+
+</div>
+
+<script>
+  $(function() {
+
+    var options = {
+      zoomControl: false,
+      cartodb_logo: false,
+      scrollwheel: false,
+      legends: false,
+      time_slider: false
+    };
+
+    var urls = <%= raw @visualizations.map {|v| v[:url]}.to_json %>;
+
+    _.each(urls, function(url, i) {
+      cartodb.createVis('map_' + i , url, options);
+    })
+
+  });
+</script>

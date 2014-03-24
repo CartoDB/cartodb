@@ -43,6 +43,7 @@ CartoDB::Application.routes.draw do
     # Tags
     get '/dashboard/tag/:tag'                       => 'visualizations#index'
 
+    get '/dashboard/public'         => 'pages#public'
     get '/dashboard/common_data'    => 'pages#common_data'
 
     get '/tables/track_embed'       => 'visualizations#track_embed'

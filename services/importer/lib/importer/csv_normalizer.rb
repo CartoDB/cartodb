@@ -5,6 +5,7 @@ require 'tempfile'
 require 'fileutils'
 require_relative './job'
 require_relative './source_file'
+require_relative './unp'
 
 module CartoDB
   module Importer2
@@ -33,13 +34,13 @@ module CartoDB
         sanitized_filepath = remove_newlines(temporary_filepath('nl_'))
         File.rename(sanitized_filepath, filepath)
 
-        detect_delimiter()
+        detect_delimiter
 
         return self unless needs_normalization?
 
-        normalize(temporary_filepath())
-        release()
-        File.rename(temporary_filepath(), filepath)
+        normalize(temporary_filepath)
+        release
+        File.rename(temporary_filepath, filepath)
         FileUtils.rm_rf(temporary_directory)
         self.temporary_directory = nil
         self
@@ -63,7 +64,7 @@ module CartoDB
         if lines_for_detection.size == 1
           lines_for_detection = lines_for_detection.first
           # Did it read as columns instead of rows?
-          if (lines_for_detection.class == Array)
+          if lines_for_detection.class == Array
             lines_for_detection.first
           end
           # Carriage return without newline
@@ -131,7 +132,7 @@ module CartoDB
 
       def parsed_line(line)
         ::CSV.parse_line(line.chomp.encode('UTF-8'), csv_options)
-      rescue => exception
+      rescue
         nil
       end
 
@@ -147,8 +148,7 @@ module CartoDB
       end #csv_options
 
       def line_delimiter
-        return "\r" if windows_eol?
-        return $/ 
+        windows_eol? ? "\r" : $/
       end #line_delimiter
 
       def windows_eol?
@@ -172,7 +172,7 @@ module CartoDB
       end #multiple_column
 
       def delimiter
-        return @delimiter
+        @delimiter
       end #delimiter
 
       def encoding
@@ -180,7 +180,7 @@ module CartoDB
         return source_file.encoding if source_file.encoding
 
         data    = File.open(filepath, 'r')
-        sample  = data.read(SAMPLE_READ_LIMIT);
+        sample  = data.read(SAMPLE_READ_LIMIT)
         data.close
 
         result = CharlockHolmes::EncodingDetector.detect(sample)
@@ -220,15 +220,15 @@ module CartoDB
             .each_line(line_delimiter) { |line| 
 
           line.each_char { |character|
-            if (character == "\"")
+            if character == "\""
               opened_quotes += 1
             end
-            if (character != "\n")
+            if character != "\n"
               aggregated_line += character
             end
           }
 
-          if (opened_quotes % 2 == 0)
+          if opened_quotes % 2 == 0
             sanitized_file << (aggregated_line + "\n")
             aggregated_line = ''
             opened_quotes = 0
@@ -246,11 +246,7 @@ module CartoDB
       private
 
       def generate_temporary_directory
-        tempfile                  = Tempfile.new("")
-        self.temporary_directory  = tempfile.path
-
-        tempfile.close!
-        Dir.mkdir(temporary_directory)
+        self.temporary_directory = Unp.new.generate_temporary_directory.temporary_directory
         self
       end #generate_temporary_directory
 
@@ -269,7 +265,7 @@ module CartoDB
 
       def sample_variance(items_list)
         m = mean(items_list)
-        sum = items_list.inject(0){|accum, i| accum +(i-m)**2 }
+        sum = items_list.inject(0){|accum, i| accum + (i-m)**2 }
         sum / (items_list.length - 1).to_f
       end #sample_variance
 

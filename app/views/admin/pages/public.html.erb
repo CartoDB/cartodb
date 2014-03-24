@@ -17,8 +17,8 @@
 
   <script type="text/javascript">
     var username  = "<%#= current_user.username %>";
-    var user_data = <%#= raw current_user.data.to_json.html_safe %>;
-    var config    = <%#= raw frontend_config.html_safe %>;
+    var user_data = "<%#= raw current_user.data.to_json.html_safe %>";
+    var config    = "<%#= raw frontend_config.html_safe %>";
     var mixpanel_token = "<%= Cartodb.config[:mixpanel]['token'] if Cartodb.config[:mixpanel].present? %>";
   </script>
 

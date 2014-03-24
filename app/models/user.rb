@@ -92,7 +92,7 @@ class User < Sequel::Model
     set_statement_timeouts   if changes.include?(:user_timeout) || changes.include?(:database_timeout)
     rebuild_quota_trigger    if changes.include?(:quota_in_bytes)
     invalidate_varnish_cache(regex: '.*:vizjson') if changes.include?(:account_type) || changes.include?(:disqus_shortname)
-    terminate_database_connections(database_name, previous_changes[:database_host][0]) if changes.include?(:database_host)
+    User.terminate_database_connections(database_name, previous_changes[:database_host][0]) if changes.include?(:database_host)
   end
 
   def before_destroy
@@ -340,6 +340,12 @@ $$
       raise e
     end
   end
+
+  # List all public visualization tags of the user
+  def tags
+    require_relative './visualization/tag_counter'
+    CartoDB::Visualization::TagCounter.new(self).names({ privacy: CartoDB::Visualization::Member::PRIVACY_PUBLIC })
+  end #tags
 
 
   def tables
@@ -677,8 +683,10 @@ $$
   end
 
   def visualization_count
+    # could also be retrieved querying count of visualizations type derived
+    # one map per visualization - each table visualization (canonical visualization)
     maps.count - table_count
-  end
+  end #visualization_count
 
   def last_visualization_created_at
     Rails::Sequel.connection.fetch("SELECT created_at FROM visualizations WHERE " +

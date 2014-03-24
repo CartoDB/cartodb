@@ -15,19 +15,23 @@ class Admin::PagesController < ApplicationController
   skip_before_filter :browser_is_html5_compliant?, only: [:public]
 
   def public
+    user = CartoDB.extract_subdomain(request)
+    viewed_user = User.where(username: user.strip.downcase).first
+    render_404 if viewed_user.nil?
 
-    @tags = current_user.tags
+    @tags = viewed_user.tags
 
-    @username   = current_user.username
-    @avatar_url = current_user.gravatar
+    @username   = viewed_user.username
+    @avatar_url = viewed_user.gravatar
 
-    @tables_num = current_user.tables.count
-    @vis_num    = current_user.visualization_count
+    @tables_num = viewed_user.tables.count
+    @vis_num    = viewed_user.visualization_count
 
+    #TODO: Paginate according to some parameter setn by the frontend/JS
     page_num = 1
 
     visualizations = Visualization::Collection.new.fetch({
-      map_id:   current_user.maps.map(&:id),
+      map_id:   viewed_user.maps.map(&:id),
       type:     Visualization::Member::DERIVED_TYPE,
       page:     page_num,
       per_page: VISUALIZATIONS_PER_PAGE,

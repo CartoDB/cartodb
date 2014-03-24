@@ -12,24 +12,15 @@ quick start
     ```html
 
         <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.css" />
-        <!--[if lte IE 8]>
-            <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.ie.css" />
-        <![endif]-->
-
 
         <script src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
         <script src="http://libs.cartocdn.com/cartodb.js/v3/cartodb.js"></script>
 
         <!-- use these cartodb.css links if you are using https -->
-
-        <!--link rel="stylesheet" href="https://d3voyrscnb0slx.cloudfront.net/cartodb.js/v3/themes/css/cartodb.css" /-->
-        <!--[if lte IE 8]>
-            <!--link rel="stylesheet" href="https://d3voyrscnb0slx.cloudfront.net/cartodb.js/v3/themes/css/cartodb.ie.css" /-->
-        <![endif]-->
-
+        <!--link rel="stylesheet" href="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/themes/css/cartodb.css" /-->
 
         <!-- use this cartodb.js link if you are using https -->
-        <!-- script src="https://d3voyrscnb0slx.cloudfront.net/cartodb.js/v3/cartodb.js"></script -->
+        <!-- script src="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/cartodb.js"></script -->
     ```
 
 

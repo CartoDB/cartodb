@@ -7,6 +7,7 @@ class Admin::PagesController < ApplicationController
   include CartoDB
 
   VISUALIZATIONS_PER_PAGE = 3
+  USER_TAGS_LIMIT = 100
 
   ssl_required :common_data, :public
 
@@ -24,7 +25,7 @@ class Admin::PagesController < ApplicationController
 
   def public
 
-    @tags = %w(biodiversity law contest MWC2013)
+    @tags = current_user.tags
 
     @username   = current_user.username
     @avatar_url = get_avatar(current_user.email)
@@ -34,12 +35,13 @@ class Admin::PagesController < ApplicationController
 
     page_num = 1
 
-    # TODO: Pending order by date created DESC
     visualizations = Visualization::Collection.new.fetch({
-      map_id: current_user.maps.map(&:id),
-      type: Visualization::Member::DERIVED_TYPE,
-      page: page_num,
-      per_page: VISUALIZATIONS_PER_PAGE
+      map_id:   current_user.maps.map(&:id),
+      type:     Visualization::Member::DERIVED_TYPE,
+      page:     page_num,
+      per_page: VISUALIZATIONS_PER_PAGE,
+      order:    'created_at',
+      o:        {created_at: :desc}
     })
 
     @visualizations = []
@@ -48,9 +50,9 @@ class Admin::PagesController < ApplicationController
         {
           title:        vis.name,
           description:  vis.description,
-          id:          vis.id,
+          id:           vis.id,
           tags:         vis.tags,
-          mapviews:     '123'
+          mapviews:     vis.stats.values.reduce(:+) # Sum last 30 days stats, for now only approach
         }
       )
     end

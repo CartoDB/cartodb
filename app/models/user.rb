@@ -341,6 +341,12 @@ $$
     end
   end
 
+  # List all public visualization tags of the user
+  def tags
+    require_relative './visualization/tag_counter'
+    CartoDB::Visualization::TagCounter.new(self).names({ privacy: CartoDB::Visualization::Member::PRIVACY_PUBLIC })
+  end #tags
+
 
   def tables
     Table.filter(:user_id => self.id).order(:id).reverse

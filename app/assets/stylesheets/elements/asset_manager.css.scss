@@ -8,6 +8,7 @@
   @import "compass/css3/images";
   @import "../common/mixins";
 
+
   .asset_manager {
 
     div.content > div {display:block; margin:0;}
@@ -17,7 +18,7 @@
 
     // Assets styles
     div.assets {
-      margin-bottom:30px;
+      margin-bottom:10px;
 
       label {
         font-weight:bold;
@@ -32,6 +33,7 @@
         height:auto;
         max-height:220px;
         margin:20px 0 0 0;
+        overflow: auto;
       }
 
       .assets-item {
@@ -116,12 +118,44 @@
       }
     }
 
-    .upload-tabs {margin:0}
+    // Tabs style
+    .upload-tab {
+      margin:0; // Reset
+      margin-left:-1px;
+
+      &.right {
+        float:right;
+        margin-right:-1px;
+      }
+    }
 
     div.loader {
       padding:28px 0 20px;
       @include background(image-url('layout/loader.gif') no-repeat center top);
       p {text-align:center;}
+    }
+
+    .disclaimer {
+      display:block;
+      padding:10px;
+      margin-top: 20px;
+      background:#FFF8E3;
+      color:#666666;
+      @include border-radius(3px);
+      font-size:13px;
+
+      sup {
+        position: relative;
+        vertical-align: baseline;
+        top: -6px;
+        font-size:9px;
+      }
+
+      a {
+        color:#666;
+        text-decoration:underline;
+        &:hover { color:#333 }
+      }
     }
 
     div.assets-list {

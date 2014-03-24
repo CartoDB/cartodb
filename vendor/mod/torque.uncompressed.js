@@ -4029,6 +4029,8 @@ L.CanvasLayer = L.Class.extend({
     var pos = this._canvas._leaflet_pos || { x: 0, y: 0 };
     back.getContext('2d').drawImage(this._canvas, 0, 0);
 
+    L.DomUtil.setPosition(back, L.DomUtil.getPosition(this._canvas));
+
     // hide original
     this._canvas.style.display = 'none';
     back.style.display = 'block';
@@ -4044,13 +4046,16 @@ L.CanvasLayer = L.Class.extend({
 
     var bg = back;
     var transform = L.DomUtil.TRANSFORM;
-    bg.style[transform] =  L.DomUtil.getTranslateString(origin) + ' scale(' + e.scale + ') ';
+    setTimeout(function() {
+      bg.style[transform] = L.DomUtil.getTranslateString(origin) + ' scale(' + e.scale + ') ';
+    }, 0)
   },
 
   _endZoomAnim: function () {
     this._animating = false;
     this._canvas.style.display = 'block';
     this._backCanvas.style.display = 'none';
+    this._backCanvas.style[L.DomUtil.TRANSFORM] = '';
   },
 
   getCanvas: function() {

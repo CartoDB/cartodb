@@ -25,6 +25,7 @@ class Admin::PagesController < ApplicationController
 
     @avatar_url = get_avatar("javierarce@gmail.com")
 
+    # This list should be paginated
     @visualizations = [{
         :title =>  "Map of trips per day",
         :description => "To get a better sense of the trips Eric made...",

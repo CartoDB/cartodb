@@ -1,5 +1,7 @@
 3.8.xx 
 - update torque library
+- fixed interaction with naned maps when there is a hidden layer
+
 3.8.04 (20//03//2014)
 - prevent the scrolling of the map when the user scrolls the infowindow content.
 - enables the scrollwheel when the user enters in the fullscreen model.

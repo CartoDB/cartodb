@@ -28,13 +28,13 @@ class Admin::PagesController < ApplicationController
 
     # TODO: This list should be paginated (3 visualizations per page)
     @visualizations = [{
-        :title       =>  "Map of trips per day",
+        :title       => "Map of trips per day",
         :description => "To get a better sense of the trips Eric made...",
         :url         => 'http://arce.cartodb.com/api/v2/viz/008cee18-a9c4-11e3-b86c-0e73339ffa50/viz.json',
         :tags        => %w(biodiversity law contest MWC2013),
         :mapviews    => "12,376"
       }, {
-        :title       =>  "Map of trips per day",
+        :title       => "Map of trips per day",
         :description => "To get a better sense of the trips Eric made...",
         :url         => 'http://simonrogers.cartodb.com/api/v2/viz/74910048-aba8-11e3-8eee-0e10bcd91c2b/viz.json',
         :tags        => %w(biodiversity law contest MWC2013),

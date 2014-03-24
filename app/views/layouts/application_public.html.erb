@@ -2,8 +2,16 @@
 <html lang="en">
   <head>
     <meta charset='utf-8' />
-    <title><%= yield :page_title %>CartoDB</title>
+    <title>Maps by <%= @username %> on CartoDB</title>
     <link id="favicon" rel="shortcut icon" href="/favicons/favicon.ico" />
+
+    <meta name="description" content="<%= @username %> is creating maps and visualizations using CartoDB">
+    <meta name="keywords" content="<%= @username %>, maps, visualizations, CartoDB">
+    <meta name="author" content="<%= @username %>">
+    <meta property="og:title" content="Maps by <%= @username %> on CartoDB" />
+    <meta property="og:description" content="<%= @username %> is creating maps and visualizations using CartoDB" /> 
+    <meta property="og:type" content="Visualizations list"/>
+    <meta property="og:url" content="<%= request.fullpath %>" />
 
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
 

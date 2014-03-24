@@ -45,12 +45,12 @@
       </div>
 
       <div class="username">
-        <h2>Peterdesmet</h2>
+        <h2><%= @username %></h2>
       </div>
 
       <ul>
-        <li><a href="#"><strong>17</strong>datasets</a></li>
-        <li><strong>12</strong>visualizations</li>
+        <li><strong><%= @tables_num %></strong>dataset<%= @tables_num == 1 ? '' : 's' %></li>
+        <li><strong><%= @vis_num %></strong>visualization<%= @vis_num == 1 ? '' : 's' %></li>
       </ul>
 
     </div>

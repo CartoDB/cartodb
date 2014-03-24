@@ -19,6 +19,10 @@ class Admin::PagesController < ApplicationController
 
     @tags = %w(biodiversity law contest MWC2013)
 
+    @username   = "peterdesmet"
+    @tables_num = 12
+    @vis_num    = 16
+
     @avatar_url = get_avatar("javierarce@gmail.com")
 
     @visualizations = [{

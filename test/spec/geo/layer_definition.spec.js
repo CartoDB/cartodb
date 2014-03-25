@@ -337,10 +337,14 @@ describe("LayerDefinition", function() {
     expect(layerDefinition.getLayerNumberByIndex(0)).toEqual(0);
     expect(layerDefinition.getLayerNumberByIndex(1)).toEqual(1);
 
+    expect(layerDefinition.getLayerIndexByNumber(0)).toEqual(0);
+    expect(layerDefinition.getLayerIndexByNumber(1)).toEqual(1);
+
     layerDefinition.getSubLayer(0).hide();
     expect(layerDefinition.getLayerNumberByIndex(0)).toEqual(1);
-
     expect(layerDefinition.getLayerNumberByIndex(1)).toEqual(-1);
+
+    expect(layerDefinition.getLayerIndexByNumber(1)).toEqual(0);
   }),
 
   describe("sublayers", function() {
@@ -560,6 +564,14 @@ describe("NamedMap", function() {
     }).toThrow(new Error("sql is read-only in NamedMaps"));
 
     expect(function() {
+      namedMap.getSubLayer(0).set({ interactivity: 'test1' });
+    }).toThrow(new Error("interactivity is read-only in NamedMaps"));
+
+    expect(function() {
+      namedMap.getSubLayer(0).setInteractivity('test1');
+    }).toThrow(new Error("interactivity is read-only in NamedMaps"));
+
+    expect(function() {
       namedMap.getSubLayer(0).set({ 'hidden': 1 });
     }).not.toThrow();
 
@@ -668,6 +680,11 @@ describe("NamedMap", function() {
     } catch(e) {
       expect(e.message).toEqual("https must be used when auth_token is set");
     }
+  });
+
+  it("should return layer by index", function() {
+    expect(namedMap.getLayerIndexByNumber(0)).toEqual(0);
+    expect(namedMap.getLayerIndexByNumber(1)).toEqual(1);
   });
 
 

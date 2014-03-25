@@ -145,12 +145,21 @@ CartoDBLayerGroupBase.prototype.getTile = function(coord, zoom, ownerDocument) {
 
   this.tiles++;
 
-  im.onload = im.onerror = function() {
+  var loadTime = cartodb.core.Profiler.metric('cartodb-js.tile.png.load.time').start();
+
+  var finished = function() {
+    loadTime.end();
     self.tiles--;
     if (self.tiles === 0) {
       self.finishLoading && self.finishLoading();
     }
   };
+  im.onload = finished;
+  im.onerror = function() {
+    cartodb.core.Profiler.metric('cartodb-js.tile.png.error').inc();
+    finish();
+  }
+
 
   return im;
 };

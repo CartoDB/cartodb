@@ -25,11 +25,12 @@
         url: "/api/v1/viz",
         complete: function(request) {
 
-          if (request.status != 200) {
+          if (request.status == 200) {
 
-            $("a.signin").text("Sign in");
-            $("a.signin").attr("href", "/login");
-            $("a.signin").attr("title", "Sign in");
+            $("a.signin").text("Logout");
+            $("a.signin").attr("href", "/logout");
+            $("a.signin").attr("title", "Logout");
+
           }
 
         }});

@@ -77,7 +77,7 @@ module CartoDB
         raise GDriveNotPublicError if gdrive_deny_in?(headers)
 
         data            = StringIO.new(response.response_body)
-        name            = name_from(headers, url)
+        name            = name_from(headers, url, @custom_filename)
 
         @etag           = etag_from(headers)
         @last_modified  = last_modified_from(headers)
@@ -123,8 +123,8 @@ module CartoDB
         response
       end
 
-      def name_from(headers, url)
-        @custom_filename || name_from_http(headers) || name_in(url)
+      def name_from(headers, url, custom=nil)
+        custom || name_from_http(headers) || name_in(url)
       end #filename_from
 
       def content_length_from(headers)

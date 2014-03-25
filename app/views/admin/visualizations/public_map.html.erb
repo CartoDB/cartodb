@@ -307,7 +307,7 @@
           var visReadyTime = cartodb.core.Profiler.metric('cartodb-js.embed.time_vis_loaded').start();
 
           var onResize = function() {
-            $("#map").css({ height: $(window).height() - 260 }); // - 132 - 68
+            $("#map").css({ height: $(window).height() - 194 }); 
             $("#map").delay(500).animate({ opacity: 1 }, 250); 
           };
 
@@ -357,7 +357,7 @@
             } else {
 
               if (mobileDevice) {
-                $("#map").css({ height: height, opacity: 1 }); // - 132 - 68
+                $("#map").css({ height: height, opacity: 1 }); 
               }
 
               $("#map").trigger("resize");

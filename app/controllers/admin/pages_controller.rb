@@ -45,6 +45,8 @@ class Admin::PagesController < ApplicationController
     })
 
     @visualizations = []
+    @pages = (visualizations.total_entries.to_f / VISUALIZATIONS_PER_PAGE).ceil
+
     visualizations.each do |vis|
       @visualizations.push(
         {
@@ -62,4 +64,5 @@ class Admin::PagesController < ApplicationController
     end
 
   end
+
 end

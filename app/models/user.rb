@@ -1,5 +1,7 @@
 # coding: UTF-8
 require_relative './user/user_decorator'
+require_relative './user/oauths'
+require_relative '../models/synchronization/synchronization_oauth'
 
 class User < Sequel::Model
   include CartoDB::MiniSequel
@@ -356,7 +358,7 @@ $$
   # NOTE: this currently returns all public tables, can be
   #       improved to skip "service" tables
   #
-  def tables_effective()
+  def tables_effective
     in_database do |user_database|
       user_database.synchronize do |conn|
         query = "select table_name::text from information_schema.tables where table_schema = 'public'"
@@ -364,6 +366,12 @@ $$
         return tables
       end
     end
+  end
+
+  # Gets the list of OAuth accounts the user has (currently only used for synchronization)
+  # @return CartoDB::OAuths
+  def oauths
+    @oauths ||= CartoDB::OAuths.new(self)
   end
 
   def trial_ends_at
@@ -519,6 +527,7 @@ $$
     conn = ::Sequel.connect(connection_params)
     conn[:pg_database].filter(:datname => database_name).all.any?
   end
+
   private :database_exists?
 
   # This method is innaccurate and understates point based tables (the /2 is to account for the_geom_webmercator)

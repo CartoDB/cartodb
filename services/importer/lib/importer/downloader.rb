@@ -10,6 +10,7 @@ require_relative './url_translator/fusion_tables'
 require_relative './url_translator/github'
 require_relative './url_translator/google_maps'
 require_relative './url_translator/google_docs'
+require_relative './url_translator/kimono_labs'
 
 module CartoDB
   module Importer2
@@ -24,7 +25,8 @@ module CartoDB
                                   UrlTranslator::FusionTables,
                                   UrlTranslator::GitHub,
                                   UrlTranslator::GoogleMaps,
-                                  UrlTranslator::GoogleDocs
+                                  UrlTranslator::GoogleDocs,
+                                  UrlTranslator::KimonoLabs
                                 ]
 
       def initialize(url, http_options={}, seed=nil, repository=nil)
@@ -34,6 +36,16 @@ module CartoDB
         @http_options = http_options
         @seed         = seed
         @repository   = repository || DataRepository::Filesystem::Local.new(temporary_directory)
+
+        translators = URL_TRANSLATORS.map(&:new)
+        translator = translators.find { |translator| translator.supported?(url) }
+        if translator.nil?
+          @translated_url = url
+          @custom_filename = nil
+        else
+          @translated_url = translator.translate(url)
+          @custom_filename = translator.respond_to?(:rename_destination) ? translator.rename_destination(url) : nil
+        end
       end #initialize
 
       def run(available_quota_in_bytes=nil)
@@ -96,7 +108,7 @@ module CartoDB
       end 
 
       def headers
-        @headers ||= Typhoeus.head(translate(url), typhoeus_options).headers
+        @headers ||= Typhoeus.head(@translated_url, typhoeus_options).headers
       end
 
       def cookiejar
@@ -104,15 +116,15 @@ module CartoDB
       end
 
       def download
-        response = Typhoeus.get(translate(url), typhoeus_options)
+        response = Typhoeus.get(@translated_url, typhoeus_options)
         while response.headers['location']
-          response = Typhoeus.get(translate(url), typhoeus_options)
+          response = Typhoeus.get(@translated_url, typhoeus_options)
         end
         response
       end
 
       def name_from(headers, url)
-        name_from_http(headers) || name_in(url)
+        @custom_filename || name_from_http(headers) || name_in(url)
       end #filename_from
 
       def content_length_from(headers)

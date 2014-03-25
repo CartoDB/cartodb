@@ -352,6 +352,11 @@ $$
     Table.filter(:user_id => self.id).order(:id).reverse
   end
 
+  def gravatar(size = 128)
+    digest = Digest::MD5.hexdigest(email.downcase)
+    "http://www.gravatar.com/avatar/#{digest}?s=#{size}&d=http%3A%2F%2Fcartodb.s3.amazonaws.com%2Fstatic%2Fmap-avatar-03.png"
+  end #gravatar
+
   # Retrive list of user tables from database catalogue
   #
   # You can use this to check for dangling records in the
@@ -360,7 +365,7 @@ $$
   # NOTE: this currently returns all public tables, can be
   #       improved to skip "service" tables
   #
-  def tables_effective()
+  def tables_effective
     in_database do |user_database|
       user_database.synchronize do |conn|
         query = "select table_name::text from information_schema.tables where table_schema = 'public'"

@@ -37,11 +37,11 @@
 
     <div class="user-info">
 
-      <div class="avatar">
+      <a href="/" class="avatar">
         <div class="circle">
           <img src="<%= @avatar_url %>" />
         </div>
-      </div>
+      </a>
 
       <div class="username">
         <h2><%= @username %></h2>
@@ -105,7 +105,7 @@
           <% if @pages > 1 && params[:page].to_i > 1 %>
             <% p = params[:page] || 1 %>
             <% if params[:tag] %>
-              <a class="next" href="/tag/<%= "#{params[:tag]}" if params[:tag] %>/<%= p.to_i - 1 %>">Next</a>
+              <a class="prev" href="/tag/<%= "#{params[:tag]}" if params[:tag] %>/<%= p.to_i - 1 %>">Prev</a>
             <% else %>
               <a class="prev" href="/page/<%= p.to_i - 1 %>">Prev</a>
             <% end %>
@@ -113,11 +113,15 @@
 
           <ul>
             <% @pages.times do |i| %>
-              <li <%= "class='selected'" if ((!params[:page] && i == 0) || (params[:page].to_i - 1) == i) %>><a href="/page/<%= i + 1 %>"></a></li>
+              <% if params[:tag] %>
+                <li <%= "class='selected'" if ((!params[:page] && i == 0) || (params[:page].to_i - 1) == i) %>><a href="/tag/<%= params[:tag] %>/<%= i + 1 %>"></a></li>
+              <% else %>
+                <li <%= "class='selected'" if ((!params[:page] && i == 0) || (params[:page].to_i - 1) == i) %>><a href="/page/<%= i + 1 %>"></a></li>
+              <% end %>
             <% end %>
           </ul>
 
-          <% if @pages > 1 && params[:page].to_i < @pages %>
+          <% if @pages > 1 && (params[:page].to_i < @pages) %>
             <% p = params[:page] || 1 %>
             <% if params[:tag] %>
               <a class="next" href="/tag/<%= "#{params[:tag]}" if params[:tag] %>/<%= p.to_i + 1 %>">Next</a>

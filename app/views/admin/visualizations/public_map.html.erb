@@ -86,15 +86,13 @@
             </div>
 
             <div class="user embed-right-col">
-              <div class="content">
+              <a href="/" title="Maps by <%= @visualization.user.username %>" class="content">
                 <div class="user-info">
-                  <h4>by <a href="/" class="username" title="Maps by <%= @visualization.user.username %>"><%= @visualization.user.username.truncate(20) %></a></h4>
-                  <a href="/" class="count" title="Maps by <%= @visualization.user.username %>"><%= "#{@visualization_count} #{@visualization_count != 1 ? "maps" :"map"} created" %></a>
+                  <h4>by <%= @visualization.user.username.truncate(20) %></h4>
+                  <h5><%= "#{@visualization_count} #{@visualization_count != 1 ? "maps" :"map"} created" %></h5>
                 </div>
-                <a href="/" class="avatar" title="Maps by <%= @visualization.user.username %>">
-                  <img src="<%= @avatar_url %>" />
-                </a>
-              </div>
+                <img src="<%= @avatar_url %>" class="avatar" />
+              </a>
             </div>
 
           </div>

@@ -271,11 +271,6 @@ div.cartodb-info .inner .user {
 
 div.cartodb-info .inner .user .avatar {
   display:inline-block;
-  text-decoration:none;
-}
-
-div.cartodb-info .inner .user .avatar img {
-  display:inline-block;
   zoom: 1; *display: inline; vertical-align: top;
 
   width: 46px;
@@ -287,6 +282,16 @@ div.cartodb-info .inner .user .avatar img {
   border-radius: 100px;
 }
 
+
+div.cartodb-info .inner .user .content {
+  text-decoration:none;
+
+  &:hover .user-info h5 {
+    text-decoration: underline;
+  }
+
+}
+
 div.cartodb-info .inner .user .user-info {
   margin: 5px 8px 0 0;
   text-align:right;
@@ -295,7 +300,6 @@ div.cartodb-info .inner .user .user-info {
 }
 
 div.cartodb-info .inner .user h4,
-div.cartodb-info .inner .user h4 a,
 div.cartodb-info .inner .user h5,
 div.cartodb-info .inner .user .count {
   margin: 0; padding: 0;
@@ -303,31 +307,15 @@ div.cartodb-info .inner .user .count {
   font-weight: normal;
 }
 
-div.cartodb-info .inner .user h4,
-div.cartodb-info .inner .user h4 a {
+div.cartodb-info .inner .user h4 {
   margin: 0 0 6px 0;
   font-size: 17px;
   color: #444444;
 }
 
-div.cartodb-info .inner .user h4 a {
-
-  text-decoration: none;
-
-  &:hover {
-    text-decoration: underline;
-  }
-
-}
-
-div.cartodb-info .inner .user h5,
-div.cartodb-info .inner .user .count {
+div.cartodb-info .inner .user h5 {
   font-size: 15px;
   color: #858585;
-  text-decoration:none;
-  &:hover {
-    text-decoration:underline;
-  }
 }
 
 div.cartodb-body {

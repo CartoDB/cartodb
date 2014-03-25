@@ -4,7 +4,7 @@ require_relative './member'
 
 module CartoDB
   module Visualization
-    class TagCounter
+    class Tags
       DEFAULT_LIMIT = 500
 
       def initialize(user)
@@ -61,7 +61,7 @@ module CartoDB
       def limit_from(params={})
         (params.fetch(:limit, DEFAULT_LIMIT) || DEFAULT_LIMIT).to_i
       end #limit_from
-    end # TagCounter
+    end # Tags
   end # Visualization   
 end # CartoDB
 

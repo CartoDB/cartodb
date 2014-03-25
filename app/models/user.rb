@@ -343,8 +343,11 @@ $$
 
   # List all public visualization tags of the user
   def tags
-    require_relative './visualization/tag_counter'
-    CartoDB::Visualization::TagCounter.new(self).names({ privacy: CartoDB::Visualization::Member::PRIVACY_PUBLIC })
+    require_relative './visualization/tags'
+    CartoDB::Visualization::Tags.new(self).names({
+      type: CartoDB::Visualization::Member::DERIVED_TYPE,
+      privacy: CartoDB::Visualization::Member::PRIVACY_PUBLIC
+    })
   end #tags
 
 

@@ -2346,7 +2346,7 @@ exports.Profiler = Profiler;
           torque.cartocss.renderPoint(ctx, st);
         }
       }
-      prof.end();
+      prof.end(true);
       return canvas;
     },
 
@@ -2368,7 +2368,7 @@ exports.Profiler = Profiler;
           }
         }
       }
-      prof.end();
+      prof.end(true);
     },
 
     //
@@ -2408,7 +2408,7 @@ exports.Profiler = Profiler;
           }
         }
       }
-      prof.end();
+      prof.end(true);
     },
 
     setBlendMode: function(b) {

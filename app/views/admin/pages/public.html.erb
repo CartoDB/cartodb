@@ -17,6 +17,23 @@
     var user_data = "<%#= raw current_user.data.to_json.html_safe %>";
     var config    = "<%#= raw frontend_config.html_safe %>";
     var mixpanel_token = "<%= Cartodb.config[:mixpanel]['token'] if Cartodb.config[:mixpanel].present? %>";
+
+    $(function() {
+
+      $.ajax({ 
+        type: "GET",
+        url: "/api/v1/viz",
+        complete: function(request) {
+
+          if (request.status != 200) {
+
+            $("a.signin").text("Sign in");
+            $("a.signin").attr("href", "/login");
+            $("a.signin").attr("title", "Sign in");
+          }
+
+        }});
+      });
   </script>
 
 <% end %>

@@ -60,7 +60,17 @@ class Admin::PagesController < ApplicationController
     viewed_user = User.where(username: user.strip.downcase).first
     return render_404 if viewed_user.nil? || params[:tag].nil?
 
-    # params[:tag]
-    # params[:page].nil? ? 1 : params[:page]
+    visualizations = Visualization::Collection.new.fetch({
+      map_id:   viewed_user.maps.map(&:id),
+      type:     Visualization::Member::DERIVED_TYPE,
+      page:     params[:page].nil? ? 1 : params[:page],
+      per_page: VISUALIZATIONS_PER_PAGE,
+      order:    'created_at',
+      o:        {created_at: :desc},
+      tags:     params[:tag]
+    })
+
+    puts visualizations
+
   end #tag
 end

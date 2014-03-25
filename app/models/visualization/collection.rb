@@ -98,6 +98,7 @@ module CartoDB
       def order_params_from(criteria)
         criteria.map { |key, order| Sequel.send(order.to_sym, key.to_sym) }
       end #order_params_from
+
     end # Collection
   end # Visualization
 end # CartoDB

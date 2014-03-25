@@ -31,6 +31,8 @@
 
 <div class="content">
 
+  <div class="inner">
+
   <div class="info">
 
     <div class="user-info">
@@ -58,7 +60,7 @@
         <li><strong>Browse by tag</strong></li>
 
         <% @tags.each do |tag| %>
-          <li><%= link_to tag.capitalize, tag %>
+          <li><%= link_to tag.capitalize, public_tag_url(tag) %>
         <% end %>
       </ul>
     <% end %>
@@ -86,7 +88,7 @@
               <% if vis[:tags].size > 0 %>
                 <ul class="tags">
                   <% vis[:tags].each do |tag| %>
-                    <li><%= link_to tag, tag %></li>
+                    <li><%= link_to tag, public_tag_url(tag) %></li>
                   <% end %>
                 </ul>
               <% end %>
@@ -100,18 +102,28 @@
       <div class="pagination">
         <% if @pages > 1 %>
 
+          <% if @pages > 1 && params[:page].to_i > 1 %>
+            <% p = params[:page] || 1 %>
+            <a class="prev" href="/page/<%= p.to_i - 1 %>">Prev</a>
+          <% end %>
+
           <ul>
             <% @pages.times do |i| %>
-              <li><a href="/page/<%= i + 1 %>"></a></li>
+              <li <%= "class='selected'" if ((!params[:page] && i == 0) || (params[:page].to_i - 1) == i) %>><a href="/page/<%= i + 1 %>"></a></li>
             <% end %>
           </ul>
 
-          <a class="next" href="#">Next</a>
+          <% if @pages > 1 && params[:page].to_i < @pages %>
+            <% p = params[:page] || 1 %>
+            <a class="next" href="/page/<%= p.to_i + 1 %>">Next</a>
+          <% end %>
+
         <% end %>
       </div>
 
   </div>
 
+</div>
 </div>
 
 <script>

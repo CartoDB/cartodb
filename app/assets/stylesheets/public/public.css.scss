@@ -7,15 +7,21 @@
 @import "../dashboard/dashboard-sprite";
 
 body {
-  @include background(image-url("layout/bkg.jpg") repeat 0 0);
+  background: #fff;
   min-width: 100%;
 }
 
 .content {
-  width: 1022px;
-  margin: 50px auto 0 auto;
-  @include clearfix();
-  @include box-sizing(border-box);
+  @include background(image-url("layout/bkg.jpg") repeat 0 0);
+  
+  padding: 50px 0 0 0;
+
+  .inner{
+    width: 1022px;
+    margin: 0 auto;
+    @include clearfix();
+    @include box-sizing(border-box);
+  }
 }
 
 header, footer { display :block; } // IE<9
@@ -334,6 +340,11 @@ header {
 
   text-align: center;
 
+  .prev {
+    float: left;
+    margin-right: -60px;
+  }
+
   .next {
     float: right;
     margin-left: -60px;
@@ -341,10 +352,13 @@ header {
 
   ul {
 
+    position:relative;
     float:left;
     width: 100%;
     margin-right: 60px;
+    margin-left: -60px;
     margin: 9px 0 0 0;
+    z-index: 1;
 
     li {
 
@@ -374,13 +388,9 @@ header {
 
 } // .pagination
 
-.next {
+.prev, .next {
 
-  &:hover {
-    text-decoration:underline;
-    background: darken(#397DB9, 10%);
-    color: #fff;
-  }
+  position:relative;
 
   @include inline-block();
   padding: 11px 13px;
@@ -395,8 +405,16 @@ header {
   @include border-radius(3px);
   line-height:120%;
 
-} // .next
+  z-index: 10;
 
+  &:hover {
+    text-decoration:underline;
+    background: darken(#397DB9, 10%);
+    color: #fff;
+  }
+
+
+} // .prev, .next
 
 body:after {
   @include box-sizing(border-box);
@@ -509,7 +527,7 @@ only screen and (                min-resolution: 2dppx) {
     width: 100%;
   }
 
-  .content { padding: 0 15px; width: 100%; }
+  .content .inner { padding: 0 15px; width: 100%; }
 
   .user-info,
   .user-info .avatar,
@@ -583,7 +601,7 @@ only screen and (                min-resolution: 2dppx) {
     width: 100%;
   }
 
-  .content { padding: 0 15px; width: 100%; }
+  .content .inner { padding: 0 15px; width: 100%; }
 
   .user-info,
   .user-info .avatar,
@@ -642,7 +660,7 @@ only screen and (                min-resolution: 2dppx) {
   }
 
 
-  .content { padding: 0 15px; width: 100%; }
+  .content .inner { padding: 0 15px; width: 100%; }
 
   .info {
     float:left;
@@ -701,7 +719,7 @@ only screen and (                min-resolution: 2dppx) {
     width: 100%;
   }
 
-  .content { padding: 0 15px; width: 100%; }
+  .content .inner { padding: 0 15px; width: 100%; }
 
   .user-info,
   .user-info .avatar,

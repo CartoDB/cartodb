@@ -50,7 +50,7 @@ CartoDB::Application.routes.draw do
     # Public dashboard
     # root goes to 'pages#public'
     get '/page/:page'               => 'pages#public'
-    get '/tag/:tag'                 => 'pages#tag'
+    get '/tag/:tag'                 => 'pages#tag', :as => :public_tag
     get '/tag/:tag/:page'           => 'pages#tag'
 
     get '/tables/track_embed'       => 'visualizations#track_embed'

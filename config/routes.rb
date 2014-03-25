@@ -1,7 +1,7 @@
 # encoding: utf-8
 
 CartoDB::Application.routes.draw do
-  root :to => redirect("/login")
+  root :to => 'admin/pages#public'
 
   get   '/login' => 'sessions#new', :as => :login
   get   '/logout' => 'sessions#destroy', :as => :logout
@@ -11,7 +11,7 @@ CartoDB::Application.routes.draw do
 
   get   '/test' => 'test#index', :as => :test
 
-  scope :module => "admin" do
+  scope :module => 'admin' do
     get '/dashboard/'                         => 'visualizations#index', :as => :dashboard
 
     resource :organization, only: [:show] do
@@ -43,8 +43,15 @@ CartoDB::Application.routes.draw do
     # Tags
     get '/dashboard/tag/:tag'                       => 'visualizations#index'
 
-    get '/dashboard/public'         => 'pages#public'
+    # Private dashboard
+    get '/dashboard'                => 'visualizations#index'
     get '/dashboard/common_data'    => 'pages#common_data'
+
+    # Public dashboard
+    # root goes to 'pages#public'
+    get '/page/:page'               => 'pages#public'
+    get '/tag/:tag'                 => 'pages#tag'
+    get '/tag/:tag/:page'           => 'pages#tag'
 
     get '/tables/track_embed'       => 'visualizations#track_embed'
     get '/tables/embed_forbidden'   => 'visualizations#embed_forbidden'
@@ -91,8 +98,8 @@ CartoDB::Application.routes.draw do
     get   '/identity'       => 'sessions#show'
   end
 
-  scope "/api" do
-    namespace CartoDB::API::VERSION_1, :format => :json, :module => "api/json" do
+  scope '/api' do
+    namespace CartoDB::API::VERSION_1, :format => :json, :module => 'api/json' do
       get    '/column_types'                                    => 'meta#column_types'
 
 

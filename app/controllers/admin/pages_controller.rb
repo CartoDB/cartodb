@@ -19,7 +19,7 @@ class Admin::PagesController < ApplicationController
     viewed_user = User.where(username: user.strip.downcase).first
     return render_404 if viewed_user.nil?
 
-    @tags = viewed_user.tags
+    @tags       = viewed_user.tags
 
     @username   = viewed_user.username
     @avatar_url = viewed_user.gravatar
@@ -33,7 +33,8 @@ class Admin::PagesController < ApplicationController
       page:     params[:page].nil? ? 1 : params[:page],
       per_page: VISUALIZATIONS_PER_PAGE,
       order:    'created_at',
-      o:        {created_at: :desc}
+      o:        {created_at: :desc},
+      tags:     params[:tag]
     })
 
     @visualizations = []
@@ -56,24 +57,5 @@ class Admin::PagesController < ApplicationController
     end
 
   end #public
-
-  def tag
-    user = CartoDB.extract_subdomain(request)
-    viewed_user = User.where(username: user.strip.downcase).first
-    return render_404 if viewed_user.nil? || params[:tag].nil?
-
-    visualizations = Visualization::Collection.new.fetch({
-      map_id:   viewed_user.maps.map(&:id),
-      type:     Visualization::Member::DERIVED_TYPE,
-      page:     params[:page].nil? ? 1 : params[:page],
-      per_page: VISUALIZATIONS_PER_PAGE,
-      order:    'created_at',
-      o:        {created_at: :desc},
-      tags:     params[:tag]
-    })
-
-    puts visualizations
-
-  end #tag
 
 end

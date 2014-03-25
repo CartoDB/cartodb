@@ -104,7 +104,11 @@
 
           <% if @pages > 1 && params[:page].to_i > 1 %>
             <% p = params[:page] || 1 %>
-            <a class="prev" href="/page/<%= p.to_i - 1 %>">Prev</a>
+            <% if params[:tag] %>
+              <a class="next" href="/tag/<%= "#{params[:tag]}" if params[:tag] %>/<%= p.to_i - 1 %>">Next</a>
+            <% else %>
+              <a class="prev" href="/page/<%= p.to_i - 1 %>">Prev</a>
+            <% end %>
           <% end %>
 
           <ul>
@@ -115,7 +119,11 @@
 
           <% if @pages > 1 && params[:page].to_i < @pages %>
             <% p = params[:page] || 1 %>
-            <a class="next" href="/page/<%= p.to_i + 1 %>">Next</a>
+            <% if params[:tag] %>
+              <a class="next" href="/tag/<%= "#{params[:tag]}" if params[:tag] %>/<%= p.to_i + 1 %>">Next</a>
+            <% else %>
+              <a class="next" href="/page/<%= p.to_i + 1 %>">Next</a>
+            <% end %>
           <% end %>
 
         <% end %>

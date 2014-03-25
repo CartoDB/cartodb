@@ -88,10 +88,12 @@
             <div class="user embed-right-col">
               <div class="content">
                 <div class="user-info">
-                  <h4>by <%= @visualization.user.username.truncate(20) %></h4>
-                  <h5><%= "#{@visualization_count} #{@visualization_count != 1 ? "maps" :"map"} created" %></h5>
+                  <h4>by <a href="/" class="username" title="Maps by <%= @visualization.user.username %>"><%= @visualization.user.username.truncate(20) %></a></h4>
+                  <a href="/" class="count" title="Maps by <%= @visualization.user.username %>"><%= "#{@visualization_count} #{@visualization_count != 1 ? "maps" :"map"} created" %></a>
                 </div>
-                <img src="<%= @avatar_url %>" class="avatar" />
+                <a href="/" class="avatar" title="Maps by <%= @visualization.user.username %>">
+                  <img src="<%= @avatar_url %>" />
+                </a>
               </div>
             </div>
 
@@ -178,7 +180,6 @@
       <!-- inline statsc -->
       <script type="text/javascript"><%= raw Rails.application.assets['statsc.min.js'].to_s %></script>
     <% end %>
-
 
     <script>
 

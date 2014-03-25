@@ -667,13 +667,17 @@ NamedMap.prototype = _.extend({}, Map.prototype, {
   // for named maps attributes are fetch from attributes service
   fetchAttributes: function(layer_index, feature_id, columnNames, callback) {
     var ajax = this.options.ajax;
+    var loadingTime = cartodb.core.Profiler.metric('cartodb-js.named_map.attributes.time').start();
     ajax({
       dataType: 'jsonp',
       url: this._attributesUrl(layer_index, feature_id),
       success: function(data) {
+        loadingTime.end()
         callback(data);
       },
       error: function(data) {
+        loadingTime.end()
+        cartodb.core.Profiler.metric('cartodb-js.named_map.attributes.error').inc();
         callback(null);
       }
     });
@@ -891,18 +895,22 @@ LayerDefinition.prototype = _.extend({}, Map.prototype, {
       return "\"" + n + "\"";
     }).join(',');
 
+    var loadingTime = cartodb.core.Profiler.metric('cartodb-js.layergroup.attributes.time').start();
     // execute the sql
     sql.execute('select {{{ fields }}} from ({{{ sql }}}) as _cartodbjs_alias where cartodb_id = {{{ cartodb_id }}}', {
       fields: columnNames,
       cartodb_id: feature_id,
       sql: layer.options.sql
     }).done(function(interact_data) {
+      loadingTime.end();
       if (interact_data.rows.length === 0 ) {
         callback(null);
         return;
       }
       callback(interact_data.rows[0]);
     }).error(function() {
+      loadingTime.end();
+      cartodb.core.Profiler.metric('cartodb-js.layergroup.attributes.error').inc();
       callback(null);
     });
   }

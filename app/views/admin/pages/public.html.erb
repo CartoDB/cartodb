@@ -83,7 +83,7 @@
             </div>
 
             <div class="header">
-              <% if vis[:tags] %>
+              <% if vis[:tags].size > 0 %>
                 <ul class="tags">
                   <% vis[:tags].each do |tag| %>
                     <li><%= link_to tag, tag %></li>

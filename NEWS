@@ -1,6 +1,7 @@
-3.8.xx 
+3.8.05 (25//03/2014)
 - update torque library
 - fixed interaction with naned maps when there is a hidden layer
+- added multiple metrics
 
 3.8.04 (20//03//2014)
 - prevent the scrolling of the map when the user scrolls the infowindow content.

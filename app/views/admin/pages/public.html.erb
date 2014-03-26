@@ -17,13 +17,8 @@
 
     $(function() {
 
-      $.ajax({ 
-        dataType: "json",
-        type: "GET",
-        url: "/api/v1/get_authenticated_users",
-        complete: function(response) {
-
-          var users = JSON.parse(response.responseText);
+      $.getJSON("/api/v1/get_authenticated_users", {},
+        function(users, status, response) {
 
           if (response.status == 200 && users && users.length > 0) {
 
@@ -47,7 +42,7 @@
           }
 
         }
-      });
+      );
 
       });
   </script>

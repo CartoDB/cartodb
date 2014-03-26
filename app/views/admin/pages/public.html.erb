@@ -5,6 +5,7 @@
 <%= content_for(:js) do %>
   <%= javascript_include_tag :cdb, :application %>
 <!--[if lt IE 9]>
+    <%= javascript_include_tag :"respond" %>
    <script>
       document.createElement('header');
       document.createElement('nav');
@@ -13,10 +14,6 @@
 <![endif]-->
 
   <script type="text/javascript">
-    var username  = "<%#= current_user.username %>";
-    var user_data = "<%#= raw current_user.data.to_json.html_safe %>";
-    var config    = "<%#= raw frontend_config.html_safe %>";
-    var mixpanel_token = "<%= Cartodb.config[:mixpanel]['token'] if Cartodb.config[:mixpanel].present? %>";
 
     $(function() {
 
@@ -44,6 +41,7 @@
   <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.css" />
   <!--[if lte IE 8]>
   <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.ie.css" />
+  <%= stylesheet_link_tag :public_ie %>
   <![endif]-->
 <% end %>
 
@@ -72,13 +70,12 @@
 
     </div>
 
-
     <% if @tags.size > 0 %>
       <ul class="tags">
         <li><strong>Browse by tag</strong></li>
 
-        <% @tags.each do |tag| %>
-          <li><%= link_to tag.capitalize, public_tag_url(tag) %>
+        <% @tags.each_with_index do |tag, i| %>
+          <li<%= " class='#{i == 0 ? "first" : "last" }'" if i == 0 || i == @tags.size - 1 %>><%= link_to tag.capitalize, public_tag_url(tag) %>
         <% end %>
       </ul>
     <% end %>

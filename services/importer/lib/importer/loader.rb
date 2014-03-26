@@ -41,6 +41,7 @@ module CartoDB
         raise LoadError(job.fetch) if ogr2ogr.exit_code != 0
         job.log 'Georeferencing...'
         georeferencer.run
+        job.log 'Georeferenced'
         self
       end #run
 

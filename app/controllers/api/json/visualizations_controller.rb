@@ -88,7 +88,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     collection.store
     current_user.update_visualization_metrics
     render_jsonp(member)
-  rescue CartoDB::InvalidMember => exception
+  rescue CartoDB::InvalidMember
     render_jsonp({ errors: member.full_errors }, 400)
   rescue CartoDB::NamedMapsWrapper::HTTPResponseError => exception
     render_jsonp({ errors: { named_maps_api: "Communication error with tiler API. HTTP Code: #{exception.message}" } }, 400)
@@ -118,7 +118,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
       new_vis_name = member.name
       old_table_name = member.table.name
       member.store.fetch
-      if (new_vis_name != old_vis_name && member.table.name == old_table_name)
+      if new_vis_name != old_vis_name && member.table.name == old_table_name
         member.name = old_vis_name
         member.store.fetch
       end
@@ -130,7 +130,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     render_jsonp(member)
   rescue KeyError
     head(404)
-  rescue CartoDB::InvalidMember => exception
+  rescue CartoDB::InvalidMember
     render_jsonp({ errors: member.full_errors }, 400)
   rescue CartoDB::NamedMapsWrapper::HTTPResponseError => exception
     render_jsonp({ errors: { named_maps_api: "Communication error with tiler API. HTTP Code: #{exception.message}" } }, 400)
@@ -216,10 +216,8 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   end #current_user_is_owner?
 
   def set_vizjson_response_headers_for(visualization)
-    response.headers['X-Cache-Channel'] = 
-      "#{visualization.varnish_key}:vizjson"
-    response.headers['Cache-Control']   =
-      "no-cache,max-age=86400,must-revalidate, public"
+    response.headers['X-Cache-Channel'] = "#{visualization.varnish_key}:vizjson"
+    response.headers['Cache-Control']   = 'no-cache,max-age=86400,must-revalidate, public'
   end #set_vizjson_response_headers
 
   def payload
@@ -249,7 +247,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   def synchronizations_by_table_name(table_names)
     Hash[
       ::Table.db.fetch(
-        "SELECT * FROM synchronizations WHERE user_id = ? AND name IN ?", 
+        'SELECT * FROM synchronizations WHERE user_id = ? AND name IN ?',
         current_user.id,
         table_names
       ).all.map { |s| [s[:name], s] }
@@ -264,7 +262,8 @@ class Api::Json::VisualizationsController < Api::ApplicationController
           pg_total_relation_size(relname::regclass) AS total_relation_size,
           reltuples::integer AS reltuples 
         FROM pg_class
-        WHERE relname IN ?}, table_names
+        WHERE relname IN ?
+      }, table_names
       ).all.map { |r| 
         [r[:table_name], {
           size: r[:total_relation_size].to_i / 2,

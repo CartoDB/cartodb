@@ -41,11 +41,11 @@ module CartoDB
       attr_accessor :filepath, :pg_options, :options, :table_name, :layer
 
       def output_format_option
-        "-f PostgreSQL"
+        '-f PostgreSQL'
       end #output_format_option
 
       def pg_copy_option
-        "PG_USE_COPY=YES"
+        'PG_USE_COPY=YES'
       end #pg_copy_option
 
       def client_encoding_option
@@ -77,27 +77,27 @@ module CartoDB
 
       def projection_option
         return nil if filepath =~ /\.csv/ || filepath =~ /\.ods/
-        "-t_srs EPSG:4326 "
+        '-t_srs EPSG:4326 '
       end #projection_option
 
       def the_geom_name_option
-        "GEOMETRY_NAME=the_geom"
+        'GEOMETRY_NAME=the_geom'
       end #the_geom_name_option
 
       def dimension_option
-        "DIM=2"
+        'DIM=2'
       end #dimension_option
 
       def precision_option
-        "PRECISION=NO"
+        'PRECISION=NO'
       end #precision_option
 
       def new_layer_type_option
-        "-nlt PROMOTE_TO_MULTI"
+        '-nlt PROMOTE_TO_MULTI'
       end #new_layer_type_option
 
       def osm_indexing_option
-        "OSM_USE_CUSTOM_INDEXING=NO"
+        'OSM_USE_CUSTOM_INDEXING=NO'
       end
     end # Ogr2ogr
   end # Importer2

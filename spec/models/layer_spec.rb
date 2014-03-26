@@ -101,7 +101,7 @@ describe Layer do
 
         key = @layer.affected_tables.first.varnish_key
         CartoDB::Varnish.any_instance.expects(:purge).times(1)
-          .with("obj.http.X-Cache-Channel ~ #{key}").returns(true)
+          .with("#{key}").returns(true)
 
         @layer.save
       end

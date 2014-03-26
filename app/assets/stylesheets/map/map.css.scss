@@ -64,8 +64,9 @@ div.map {
         @include size(30px);
         margin: 0 5px 0 0;
         @include border-radius(2px);
+
         // Set nokia basemap as default
-        background-image: url("https://maps.nlp.nokia.com/maptiler/v2/maptile/newest/normal.day/6/30/24/256/png8?lg=spa&token=A7tBPacePg9Mj_zghvKt9Q&app_id=KuYppsdXZznpffJsKT24");
+        background-image: url("https://1.maps.nlp.nokia.com/maptile/2.1/maptile/newest/normal.day/6/30/24/256/png?token=A7tBPacePg9Mj_zghvKt9Q&app_id=KuYppsdXZznpffJsKT24");
         background-size: 34px;
         background-color: rgba(0, 0, 0, 0);
         background-position: 50% 50%;
@@ -272,6 +273,10 @@ div.map {
             &:before { border: 1px solid rgba(0,0,0, 0.5); }
           }
 
+        }
+
+        &.nokia_day .thumb {
+          background-image: url("https://1.maps.nlp.nokia.com/maptile/2.1/maptile/newest/normal.day/6/30/24/256/png?token=A7tBPacePg9Mj_zghvKt9Q&app_id=KuYppsdXZznpffJsKT24")!Important;
         }
 
         &.dark_roadmap .thumb {

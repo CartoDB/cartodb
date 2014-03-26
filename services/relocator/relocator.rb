@@ -1,41 +1,58 @@
-# encoding: utf-8
-require_relative '../data-repository/filesystem/s3/backend'
-require_relative '../data-repository/filesystem/local'
+require 'pg'
+require 'erb'
+require 'redis'
 
-Encoding.default_external = "utf-8"
-
+require_relative 'relocator/dumper'
+require_relative 'relocator/queue_consumer'
+require_relative 'relocator/dumper'
+require_relative 'relocator/trigger_loader'
 module CartoDB
   module Relocator
-      include DataRepository::Filesystem
+    class Relocation
+      include CartoDB::Relocator::Connections
 
-      SIMPLE_TABLES     = %w{ api_keys assets client_applications data_imports
-                              layers_users maps oauth_tokens tags user_tables 
-                              visualizations overlays }
-      COMPLEX_TABLES    = %w{ layers layers_maps users layers_user_tables }
-      REDIS_DATA        = %w{ thresholds_metadata api_credentials_metadata
-                              tables_metadata users_metadata
-                              map_styles_metadata visualization_stats 
-                              map_views_metadata }
-      TABLES            = SIMPLE_TABLES + COMPLEX_TABLES
-      REDIS_DATABASES   = {
-                            tables_metadata:      0,
-                            map_style:            0,
-                            threshold:            2,
-                            api_credentials:      3,
-                            users_metadata:       5,
-                            map_views:            5,
-                            visualization_stats:  5
-                          }
-      TMP_DIR           = File.join(File.dirname(__FILE__), '..', '..',
-                          'tmp', 'relocator')
+      def initialize(config = {})
+        @dbname = ARGV[0] || ""
+        default_config = {
+          :dbname => @dbname,
+          :username => @dbname.gsub(/_db$/, ""),
+          :redis => {:host => '127.0.0.1', :port => 6379, :db => 10},
+          :source => {
+            :conn => {:dbname => @dbname, :host => '127.0.0.1', :port => '5432'},
+          },
+          :target => {
+            :conn => {:dbname => @dbname, :host => '127.0.0.1', :port => '5432'},
+          },
+          :create => true, :add_roles => true}
 
-      def self.default_local
-        Local.new(TMP_DIR)
-      end # self.default_local
+        @config = Utils.deep_merge(default_config, config)
 
-      def self.default_remote
-        S3::Backend.new
-      end # self.default_remote
-  end # Relocator
-end # CartoDB
+        #@source_db = PG.connect(@config[:source][:conn])
+        #@target_db = PG.connect(@config[:target][:conn])
+
+        @trigger_loader = TriggerLoader.new(config: @config)
+        @dumper = Dumper.new(config: @config)
+        @consumer = QueueConsumer.new(config: @config)
+      end
+
+      def migrate
+        @trigger_loader.load_triggers
+        @dumper.migrate
+        @trigger_loader.unload_triggers(target_db)
+        @consumer.redis_migrator_loop
+      end
+
+      def finalize
+        @consumer.redis_migrator_loop
+        @trigger_loader.unload_triggers
+      end
+
+
+      def rollback
+        @trigger_loader.unload_triggers
+        @consumer.empty_queue
+      end
+    end
+  end
+end
 

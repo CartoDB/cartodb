@@ -1,0 +1,37 @@
+
+CREATE OR REPLACE LANGUAGE plpythonu;
+
+CREATE OR REPLACE FUNCTION queue_event() RETURNS trigger AS
+$$
+import redis
+
+redis = redis.Redis(host='<%= redis[:host] %>', port=<%= redis[:port] %>, db=<%= redis[:db] %>) 
+
+table_name = TD["table_name"]
+redis.lpush('<%= queue %>', plpy.execute('SELECT current_query()')[0]['current_query'])
+
+$$
+LANGUAGE 'plpythonu';
+
+CREATE OR REPLACE FUNCTION queue_event_ddl_py(query text) RETURNS void AS
+$$
+import redis
+
+redis = redis.Redis(host='<%= redis[:host] %>', port=<%= redis[:port] %>, db=<%= redis[:db] %>) 
+
+redis.lpush('<%= queue %>', plpy.execute('SELECT current_query()')[0]['current_query'])
+
+$$
+LANGUAGE 'plpythonu';
+CREATE OR REPLACE FUNCTION queue_event_ddl() RETURNS event_trigger AS
+$$
+DECLARE
+  q text;
+BEGIN
+  SELECT current_query() INTO q;
+  PERFORM queue_event_ddl_py(q);
+END;
+$$
+LANGUAGE plpgsql;
+
+

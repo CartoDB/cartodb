@@ -6,7 +6,7 @@ module CartoDB
     class Importer
       ORIGIN_SCHEMA       = 'cdb_importer'
       DESTINATION_SCHEMA  = 'public'
-      MAX_RENAME_RETRIES  = 5
+      MAX_RENAME_RETRIES  = 20
 
       attr_accessor :table
 

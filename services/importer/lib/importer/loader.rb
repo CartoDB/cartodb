@@ -34,6 +34,7 @@ module CartoDB
         job.log "Using database connection with #{job.concealed_pg_options}"
         ogr2ogr.run
 
+        job.log "ogr2ogr call:      #{ogr2ogr.command}"
         job.log "ogr2ogr output:    #{ogr2ogr.command_output}"
         job.log "ogr2ogr exit code: #{ogr2ogr.exit_code}"
 

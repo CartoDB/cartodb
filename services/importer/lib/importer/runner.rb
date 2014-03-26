@@ -49,7 +49,7 @@ module CartoDB
         log.append exception.backtrace
         @results.push(Result.new(
             error_code: error_for(exception.class),
-            log_trace:  report()
+            log_trace:  report
           ))
       end #run
       
@@ -77,7 +77,7 @@ module CartoDB
       end #import
 
       def report
-        log.to_s
+        "Log Report: #{log.to_s}"
       end #report
 
       def db
@@ -106,6 +106,7 @@ module CartoDB
         downloader.checksum
       end
 
+      # If not specified, fake
       def tracker
         @tracker || lambda { |state| state }
       end #tracker
@@ -132,7 +133,8 @@ module CartoDB
           last_modified:  source_file.last_modified,
           tables:         table_names,
           success:        job.success_status,
-          error_code:     error_for(exception_klass)
+          error_code:     error_for(exception_klass),
+          log_trace:      job.logger.to_s
         )
       end #results
 

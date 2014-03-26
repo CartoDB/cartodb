@@ -11,9 +11,26 @@ body {
   min-width: 100%;
 }
 
+/*body:after {
+  @include box-sizing(border-box);
+  content: '';
+  background: rgba(red, .8);
+  color: #fff;
+  padding: 7px;
+  position:fixed;
+  top: 0;
+  left: 50%;
+  width: 80px;
+  margin-left: -40px;
+  text-align:center;
+  z-index: 1000;
+  @include simple-transition(all);
+  @include border-radius(0 0 3px 3px);
+}*/
+
 .content {
   @include background(image-url("layout/bkg.jpg") repeat 0 0);
-  
+
   padding: 50px 0 0 0;
 
   .inner{
@@ -222,6 +239,10 @@ header {
     @include translate3d(0,0,10px);
     overflow:hidden;
 
+    &.headless {
+      @include border-radius(5px 5px 5px 5px);
+    }
+
     .backdrop {
       position:absolute;
       top: 0;
@@ -258,7 +279,7 @@ header {
       z-index: 40;
 
       h3 {
-        margin: 0 0 5px 0;
+        margin: 0;
 
         color: #fff;
         font-family: 'ProximaNova-Semibold', Helvetica, sans-serif;
@@ -267,6 +288,7 @@ header {
       }
 
       p {
+        margin: 5px 0 0 0;
         font-size:15px;
         color: #DDDDDD;
       }
@@ -419,24 +441,6 @@ header {
 
 } // .prev, .next
 
-body:after {
-  @include box-sizing(border-box);
-  content: '';
-  background: rgba(red, .8);
-  color: #fff;
-  padding: 7px;
-  position:fixed;
-  top: 0;
-  left: 50%;
-  width: 80px;
-  margin-left: -40px;
-  text-align:center;
-  z-index: 1000;
-  @include simple-transition(all);
-  @include border-radius(0 0 3px 3px);
-  
-}
-
 a.button.green:hover {
   background: #749C33;
   background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #94be42), color-stop(100%, #799e33));
@@ -504,9 +508,7 @@ only screen and (                min-resolution: 2dppx) {
 
 @media only screen and (max-width: 350px) {
 
-  body:after {
-    content: 'small';
-  }
+  /*body:after { content: 'small'; }*/
 
   header {
     .inner {
@@ -581,9 +583,7 @@ only screen and (                min-resolution: 2dppx) {
 
 @media only screen and (min-width: 351px) and (max-width: 710px) {
 
-  body:after {
-    content: 'medium';
-  }
+  /*body:after { content: 'medium'; }*/
 
   header {
     .inner {
@@ -644,9 +644,7 @@ only screen and (                min-resolution: 2dppx) {
 
 @media only screen and (min-width: 981px) and (max-width: 1035px) {
 
-  body:after {
-    content: 'big 1';
-  }
+  /*body:after { content: 'big 1'; }*/
 
   header {
     .inner {
@@ -703,9 +701,7 @@ only screen and (                min-resolution: 2dppx) {
 
 @media only screen and (min-width: 711px) and (max-width: 980px) {
 
-  body:after {
-    content: 'big';
-  }
+  /*body:after { content: 'big'; }*/
 
   header {
     .inner {

@@ -394,31 +394,24 @@ class Table < Sequel::Model(:user_tables)
   end #before_save
 
   def after_save
-    had_errors = false
     super
     manage_tags
-    begin
-      update_name_changes
-    rescue CartoDB::BaseCartoDBError
-      had_errors = true
+    update_name_changes
+
+    self.map.save
+
+    manager = CartoDB::Table::PrivacyManager.new(self)
+    manager.set_private if privacy == PRIVATE
+    manager.set_public  if privacy == PUBLIC
+    manager.propagate_to(table_visualization)
+    if privacy_changed?
+      manager.propagate_to_redis_and_varnish
+      update_cdb_tablemetadata
     end
 
-    unless had_errors
-      self.map.save
-
-      manager = CartoDB::Table::PrivacyManager.new(self)
-      manager.set_private if privacy == PRIVATE
-      manager.set_public  if privacy == PUBLIC
-      manager.propagate_to(table_visualization)
-      if privacy_changed?
-        manager.propagate_to_redis_and_varnish
-        update_cdb_tablemetadata
-      end
-
-      affected_visualizations.each { |visualization|
-        manager.propagate_to(visualization)
-      }
-    end
+    affected_visualizations.each { |visualization|
+      manager.propagate_to(visualization)
+    }
   end
 
   def propagate_namechange_to_table_vis

@@ -18,19 +18,37 @@
     $(function() {
 
       $.ajax({ 
+        dataType: "json",
         type: "GET",
-        url: "/api/v1/viz",
-        complete: function(request) {
+        url: "/api/v1/get_authenticated_users",
+        complete: function(response) {
 
-          if (request.status == 200) {
+          var users = JSON.parse(response.responseText);
 
-            $("a.signin").text("Logout");
-            $("a.signin").attr("href", "/logout");
-            $("a.signin").attr("title", "Logout");
+          if (response.status == 200 && users && users.length > 0) {
+
+            url = "http://" + users[0] + ".cartodb.com/login";
+
+            var $dashboard = $("li.dashboard");
+
+            $dashboard.find("a").text("Welcome, " + users[0]);
+            $dashboard.find("a").attr("href", url);
+            $dashboard.find("a").attr("title", "Welcome, " + users[0]);
+            $dashboard.removeClass("hide");
+
+            var $signin = $("a.signin");
+
+            url = "http://" + users[0] + ".cartodb.com/logout";
+
+            $signin.text("Logout");
+            $signin.attr("href", url);
+            $signin.attr("title", "Logout");
 
           }
 
-        }});
+        }
+      });
+
       });
   </script>
 

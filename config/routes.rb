@@ -102,6 +102,7 @@ CartoDB::Application.routes.draw do
     namespace CartoDB::API::VERSION_1, :format => :json, :module => 'api/json' do
       get    '/column_types'                                    => 'meta#column_types'
 
+      get '/get_authenticated_users'                         => 'users#get_authenticated_users'
 
       resources :tables, :only => [:create, :show, :update] do
         collection do

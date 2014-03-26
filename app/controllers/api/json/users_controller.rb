@@ -8,4 +8,9 @@ class Api::Json::UsersController < Api::ApplicationController
     user = current_user
     render :json => user.data
   end
+
+  def get_authenticated_users
+    render :json => request.session.select {|k,v| k.start_with?("warden.user")}.values
+  end
+
 end

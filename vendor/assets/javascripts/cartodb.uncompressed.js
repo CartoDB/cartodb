@@ -1,6 +1,6 @@
-// cartodb.js version: 3.8.05-dev
+// cartodb.js version: 3.8.06-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: 9c36b23a91fcee49aab1b67d21de3526c1498e86
+// sha: 01ac31da93c14ecbb9e448ed3fbc6d38dc8c47ad
 (function() {
   var root = this;
 
@@ -20686,7 +20686,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.8.05-dev';
+    cdb.VERSION = '3.8.06-dev';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -21088,6 +21088,7 @@ Profiler.get = function(name) {
     avg: 0,
     total: 0,
     count: 0,
+    last: 0,
     history: typeof(Float32Array) !== 'undefined' ? new Float32Array(MAX_HISTORY) : []
   };
 };
@@ -21096,11 +21097,10 @@ Profiler.backend = function (_) {
   Profiler._backend = _;
 }
 
-Profiler.new_value = function (name, value, type) {
+Profiler.new_value = function (name, value, type, defer) {
   type =  type || 'i';
   var t = Profiler.metrics[name] = Profiler.get(name);
 
-  Profiler._backend && Profiler._backend([type, name, value]);
 
   t.max = Math.max(t.max, value);
   t.min = Math.min(t.min, value);
@@ -21108,6 +21108,17 @@ Profiler.new_value = function (name, value, type) {
   ++t.count;
   t.avg = t.total / t.count;
   t.history[t.count%MAX_HISTORY] = value;
+
+  if (!defer) {
+    Profiler._backend && Profiler._backend([type, name, value]);
+  } else {
+    var n = new Date().getTime()
+    // don't allow to send stats quick
+    if (n - t.last > 1000) {
+      Profiler._backend && Profiler._backend([type, name, t.avg]);
+      t.last = n;
+    }
+  }
 };
 
 Profiler.print_stats = function () {
@@ -21148,9 +21159,9 @@ Metric.prototype = {
   // ``start`` should be called first, if not this 
   // function does not take effect
   //
-  end: function() {
+  end: function(defer) {
     if (this.t0 !== null) {
-      Profiler.new_value(this.name, this._elapsed(), 't');
+      Profiler.new_value(this.name, this._elapsed(), 't', defer);
       this.t0 = null;
     }
   },
@@ -26336,13 +26347,17 @@ NamedMap.prototype = _.extend({}, Map.prototype, {
   // for named maps attributes are fetch from attributes service
   fetchAttributes: function(layer_index, feature_id, columnNames, callback) {
     var ajax = this.options.ajax;
+    var loadingTime = cartodb.core.Profiler.metric('cartodb-js.named_map.attributes.time').start();
     ajax({
       dataType: 'jsonp',
       url: this._attributesUrl(layer_index, feature_id),
       success: function(data) {
+        loadingTime.end()
         callback(data);
       },
       error: function(data) {
+        loadingTime.end()
+        cartodb.core.Profiler.metric('cartodb-js.named_map.attributes.error').inc();
         callback(null);
       }
     });
@@ -26378,7 +26393,14 @@ NamedMap.prototype = _.extend({}, Map.prototype, {
 
   addLayer: function(def, layer) {
     throw new Error("sublayers are read-only in Named Maps");
-  }
+  },
+
+  // for named maps the layers are always the same (i.e they are
+  // not removed to hide) so the number does not change
+  getLayerIndexByNumber: function(number) {
+    return +number;
+  },
+
 
 });
 
@@ -26553,18 +26575,22 @@ LayerDefinition.prototype = _.extend({}, Map.prototype, {
       return "\"" + n + "\"";
     }).join(',');
 
+    var loadingTime = cartodb.core.Profiler.metric('cartodb-js.layergroup.attributes.time').start();
     // execute the sql
     sql.execute('select {{{ fields }}} from ({{{ sql }}}) as _cartodbjs_alias where cartodb_id = {{{ cartodb_id }}}', {
       fields: columnNames,
       cartodb_id: feature_id,
       sql: layer.options.sql
     }).done(function(interact_data) {
+      loadingTime.end();
       if (interact_data.rows.length === 0 ) {
         callback(null);
         return;
       }
       callback(interact_data.rows[0]);
     }).error(function() {
+      loadingTime.end();
+      cartodb.core.Profiler.metric('cartodb-js.layergroup.attributes.error').inc();
       callback(null);
     });
   }

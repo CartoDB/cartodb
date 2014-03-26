@@ -22,7 +22,7 @@ class Admin::PagesController < ApplicationController
     @tags       = viewed_user.tags
 
     @username   = viewed_user.username
-    @avatar_url = viewed_user.gravatar
+    @avatar_url = viewed_user.gravatar(128)
 
     @tables_num = viewed_user.tables.count
     @vis_num    = viewed_user.visualization_count

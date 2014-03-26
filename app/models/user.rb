@@ -355,9 +355,9 @@ $$
     Table.filter(:user_id => self.id).order(:id).reverse
   end
 
-  def gravatar(size = 128)
+  def gravatar(size = 128, default_image = "http://cartodb.s3.amazonaws.com/static/public_dashboard_default_avatar.png")
     digest = Digest::MD5.hexdigest(email.downcase)
-    "http://www.gravatar.com/avatar/#{digest}?s=#{size}&d=http%3A%2F%2Fcartodb.s3.amazonaws.com%2Fstatic%2Fmap-avatar-03.png"
+    "http://www.gravatar.com/avatar/#{digest}?s=#{size}&d=#{URI.encode(default_image)}"
   end #gravatar
 
   # Retrive list of user tables from database catalogue

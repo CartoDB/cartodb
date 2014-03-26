@@ -14,21 +14,20 @@ module CartoDB
     end #all
 
     def add(service, token)
-      new_oauth = SynchronizationOauth.new
-
-      new_oauth.user_id = @owner.id
-      new_oauth.service = service
-      new_oauth.token = token
-
-      raise StandardError unless (new_oauth.valid? && new_oauth.save)
-
-      debugger
-
-      new_oauth
+      new_oauth = SynchronizationOauth.create(
+          user_id:  @owner.id,
+          service:  service,
+          token:    token
+      )
+      @owner.add_synchronization_oauth(new_oauth)
+      self
     end
 
     def remove(service)
-      raise StandardError, "Pending implementation"
+      oauth = SynchronizationOauth.where(service: service, user_id: @owner.id).first
+      oauth.delete unless oauth.nil?
+      @owner.reload
+      self
     end
 
   end #OAuths

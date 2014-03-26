@@ -29,8 +29,7 @@ class SynchronizationOauth < Sequel::Model
       existing_oauth = SynchronizationOauth.filter(
           id:  id
       ).first
-      errors.add(:id, ' cannot change user or service, only token') unless
-          (existing_oauth.service == service && existing_oauth.user_id == user_id)
+      errors.add(:id, ' cannot change user or service, only token') unless (existing_oauth.service == service && existing_oauth.user_id == user_id)
     end
   end #validate
 
@@ -38,7 +37,6 @@ class SynchronizationOauth < Sequel::Model
     super  
     self.updated_at = Time.now
   end #before_save
-
 
 
   def ==(oauth_object)

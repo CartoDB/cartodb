@@ -4,6 +4,7 @@ describe SynchronizationOauth do
 
   before(:all) do
     @user = create_user(:quota_in_bytes => 500.megabytes, :table_quota => 500)
+    @user.reload
   end
 
   after(:all) do
@@ -69,6 +70,44 @@ describe SynchronizationOauth do
             token: UUIDTools::UUID.timestamp_create
         )
       }.to raise_exception Sequel::ValidationFailed
+    end
+  end
+
+  context '#deletion' do
+    it 'tests deletion of items' do
+      another_uuid = UUIDTools::UUID.timestamp_create.to_s
+      service_name = 'testtest'
+      service_name_2 = '123456'
+      token_value = 'qv2345q235erfaweerfdsdfsds'
+      token_value_2 = 'aaaaaaaaaaaaaaaaaaaaaaaa'
+
+      SynchronizationOauth.create(
+          user_id: @user.id,
+          service: service_name,
+          token: token_value
+      )
+      SynchronizationOauth.create(
+          user_id: @user.id,
+          service: service_name_2,
+          token: token_value_2
+      )
+      SynchronizationOauth.create(
+          user_id: another_uuid,
+          service: service_name_2,
+          token: token_value_2
+      )
+
+      @user.synchronization_oauths.size.should eq 2
+
+      oauth = SynchronizationOauth.where(user_id: @user.id, service: service_name).first
+      oauth.destroy
+      @user.reload
+      @user.synchronization_oauths.size.should eq 1
+
+      oauth = SynchronizationOauth.where(user_id: @user.id, service: service_name_2).first
+      oauth.destroy
+      @user.reload
+      @user.synchronization_oauths.size.should eq 0
     end
   end
 

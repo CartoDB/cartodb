@@ -38,9 +38,8 @@
 
 <%= content_for(:css) do %>
   <%= stylesheet_link_tag :common, :dashboard, :public %>
-  <link rel="stylesheet" href="//libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.css" />
+  <link rel="stylesheet" href="//cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/themes/css/cartodb.css" />
   <!--[if lte IE 8]>
-  <link rel="stylesheet" href="//libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.ie.css" />
   <%= stylesheet_link_tag :public_ie %>
   <![endif]-->
 <% end %>

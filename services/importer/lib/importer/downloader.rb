@@ -11,6 +11,7 @@ require_relative './url_translator/github'
 require_relative './url_translator/google_maps'
 require_relative './url_translator/google_docs'
 require_relative './url_translator/kimono_labs'
+require_relative './unp'
 
 module CartoDB
   module Importer2
@@ -204,12 +205,7 @@ module CartoDB
 
       def temporary_directory
         return @temporary_directory if @temporary_directory
-        tempfile              = Tempfile.new('')
-        @temporary_directory  = tempfile.path
-
-        tempfile.close!
-        Dir.mkdir(temporary_directory)
-        @temporary_directory
+        @temporary_directory = Unp.new.generate_temporary_directory.temporary_directory
       end #temporary_directory
 
       def gdrive_deny_in?(headers)

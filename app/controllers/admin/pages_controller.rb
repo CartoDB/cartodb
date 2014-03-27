@@ -33,8 +33,8 @@ class Admin::PagesController < ApplicationController
       privacy:  Visualization::Member::PRIVACY_PUBLIC,
       page:     params[:page].nil? ? 1 : params[:page],
       per_page: VISUALIZATIONS_PER_PAGE,
-      order:    'created_at',
-      o:        {created_at: :desc},
+      order:    'updated_at',
+      o:        {updated_at: :desc},
       tags:     params[:tag]
     })
 

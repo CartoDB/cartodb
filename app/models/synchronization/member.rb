@@ -207,7 +207,8 @@ module CartoDB
           .merge(
             user:     user.database_username,
             password: user.database_password,
-            database: user.database_name
+            database: user.database_name,
+	    host:     user.user_database_host
           )
       end 
 

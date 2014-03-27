@@ -1,5 +1,5 @@
-// version: 3.8.05
-// sha: f6a209b2a09d93e96386282271d70ab2daa5cbd9
+// version: 3.8.06
+// sha: c8764f4c80b002e9a62fa80890f516ebdc13843b
 ;(function() {
   this.cartodb = {};
   var Backbone = {};
@@ -1141,7 +1141,7 @@ var Mustache;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.8.05';
+    cdb.VERSION = '3.8.06';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -2123,6 +2123,18 @@ Map.prototype = {
 
   setLayer: function(layer, def) {
     if(layer < this.getLayerCount() && layer >= 0) {
+      if (def.options.hidden) {
+        var i = this.interactionEnabled[layer];
+        if (i) {
+          def.interaction = true
+          this.setInteraction(layer, false);
+        }
+      } else {
+        if (this.layers[layer].interaction) {
+          this.setInteraction(layer, true);
+          delete this.layers[layer].interaction;
+        }
+      }
       this.layers[layer] = _.clone(def);
     }
     this.invalidate();

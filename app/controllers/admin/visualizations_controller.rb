@@ -146,7 +146,7 @@ class Admin::VisualizationsController < ApplicationController
     email  = vis.user.email.strip.downcase
     digest = Digest::MD5.hexdigest(email)
 
-    "http://www.gravatar.com/avatar/#{digest}?s=#{size}&d=http%3A%2F%2Fcartodb.s3.amazonaws.com%2Fstatic%2Fmap-avatar-03.png"
+    "//www.gravatar.com/avatar/#{digest}?s=#{size}&d=http%3A%2F%2Fcartodb.s3.amazonaws.com%2Fstatic%2Fmap-avatar-03.png"
 
   end
 

@@ -1,3 +1,5 @@
+- fixed layer interaction is not disabled when sublayer is hidden
+
 3.8.05 (25//03/2014)
 - update torque library
 - fixed interaction with naned maps when there is a hidden layer

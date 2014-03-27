@@ -116,11 +116,11 @@ module CartoDB
         results.select(&:success?).length > 0
       end
 
-      attr_reader :results
+      attr_reader :results, :log
 
       private
  
-      attr_reader :downloader, :pg_options, :unpacker, :available_quota, :log
+      attr_reader :downloader, :pg_options, :unpacker, :available_quota
       attr_writer :results, :tracker
 
       def result_for(job, source_file, table_names, exception_klass=nil)

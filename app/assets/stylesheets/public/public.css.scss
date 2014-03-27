@@ -101,6 +101,9 @@ header {
     padding: 17px 0;
     border-bottom: 1px solid #ddd;
     border-bottom: 1px solid rgba(#BBBBBB, .2);
+    color: #BABABA;
+
+    a { line-height:normal; }
 
     &:first-child { padding-top: 0; }
     &:last-child  { border:none; }
@@ -291,6 +294,10 @@ header {
         margin: 5px 0 0 0;
         font-size:15px;
         color: #DDDDDD;
+
+        a { color: #fff; text-decoration: underline;}
+        a:hover  { color: #f1f1f1; }
+
       }
     }
   }
@@ -338,6 +345,7 @@ header {
       background: #FFD24D;
       background: rgba(#FFD24D, .50);
 
+      margin: 0 0 10px 0;
 
       color: #545454;
       font-family: 'ProximaNova-Bold', Helvetica, sans-serif;

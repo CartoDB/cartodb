@@ -89,8 +89,14 @@
         <li><strong>Browse by tag</strong></li>
 
         <% @tags.each_with_index do |tag, i| %>
-          <li<%= " class='#{i == 0 ? "first" : "last" }'" if i == 0 || i == @tags.size - 1 %>><%= link_to tag.capitalize, public_tag_url(tag) %>
+          <li<%= " class='#{i == 0 ? "first" : "last" }'" if i == 0 || i == @tags.size - 1 %>>
+            <% if params[:tag] && params[:tag] == tag %>
+            <%= tag.capitalize.truncate(40) %>
+              <% else %>
+            <%= link_to tag.capitalize.truncate(40), public_tag_url(tag) %>
         <% end %>
+        <% end %>
+
       </ul>
     <% end %>
 
@@ -107,8 +113,8 @@
               <div id="map_<%= i %>" class="map"></div>
 
               <div class="title">
-                <h3><%= vis[:title] %></h3>
-                <p><%= vis[:description] %></p>
+                <h3><%= vis[:title].truncate(50) %></h3>
+                <p><%= raw (vis[:description] ? vis[:description].truncate(200) : "") %></p>
               </div>
               <div class="gradient"></div>
             </div>

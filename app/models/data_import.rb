@@ -196,11 +196,11 @@ class DataImport < Sequel::Model
 
   # A stuck job shouldn't be finished, so it's state should not
   # be complete nor failed, it should have been in the queue
-  # for more than 30 minutes and it shouldn't be currently
+  # for more than 5 minutes and it shouldn't be currently
   # processed by any active worker
   def stuck?
     !['complete', 'failure'].include?(self.state) &&
-    self.created_at < 30.minutes.ago              &&
+    self.created_at < 5.minutes.ago              &&
     !running_import_ids.include?(self.id)
   end
 

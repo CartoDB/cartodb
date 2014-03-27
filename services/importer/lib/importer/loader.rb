@@ -39,7 +39,7 @@ module CartoDB
         job.log "ogr2ogr exit code: #{ogr2ogr.exit_code}"
 
         raise InvalidGeoJSONError if ogr2ogr.command_output =~ /nrecognized GeoJSON/
-        raise LoadError(job.fetch) if ogr2ogr.exit_code != 0
+        raise LoadError(job.id.to_s) if ogr2ogr.exit_code != 0
         job.log 'Georeferencing...'
         georeferencer.run
         job.log 'Georeferenced'

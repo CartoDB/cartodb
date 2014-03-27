@@ -30,6 +30,7 @@ class Admin::PagesController < ApplicationController
     visualizations = Visualization::Collection.new.fetch({
       map_id:   viewed_user.maps.map(&:id),
       type:     Visualization::Member::DERIVED_TYPE,
+      privacy:  Visualization::Member::PRIVACY_PUBLIC,
       page:     params[:page].nil? ? 1 : params[:page],
       per_page: VISUALIZATIONS_PER_PAGE,
       order:    'created_at',

@@ -523,6 +523,7 @@ only screen and (                min-resolution: 2dppx) {
       width: 100%;
       padding: 24px 15px;
 
+      .dashboard { display: none; }
       .learn_more { display: none; }
 
     }
@@ -561,12 +562,14 @@ only screen and (                min-resolution: 2dppx) {
 
   .visualizations ul li .header {
 
+    padding: 17px 15px;
+
     .tags {
       float:none;
       width: 100%;
       margin: 0 0 10px 0;
 
-      li { margin: 0 0 7px 0; }
+      li { margin: 0 0 0px 0; }
 
     }
 
@@ -660,6 +663,7 @@ only screen and (                min-resolution: 2dppx) {
       width: 100%;
       padding: 24px 15px;
 
+      .dashboard { display: none; }
       .learn_more { display: none; }
     }
   }
@@ -696,10 +700,12 @@ only screen and (                min-resolution: 2dppx) {
 
     ul li .header {
 
+      padding: 17px 15px;
+
       .tags {
         width: 400px;
 
-        li { margin: 0 0 7px 0; }
+        li { margin: 0 0 0 0; }
 
       }
     }
@@ -760,7 +766,12 @@ and (orientation : portrait) {
     .inner {
       width: 100%;
     }
+
   }
+
+  .info  ul.tags { display: none; }
+  footer nav a.signup,
+  footer nav span { display:none; }
 
 }
 
@@ -769,5 +780,7 @@ and (orientation : portrait) {
 and (min-device-width : 320px)
 and (max-device-width : 480px)
 and (orientation : landscape) {
+
+  .info  ul.tags { display: none; }
 
 }

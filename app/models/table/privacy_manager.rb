@@ -22,7 +22,7 @@ module CartoDB
       end #set_private
 
       def set_from(visualization)
-        set_public  if visualization.public?
+        set_public  if (visualization.public? || public_with_link?)
         set_private if visualization.private?
         table.update(privacy: privacy)
         self

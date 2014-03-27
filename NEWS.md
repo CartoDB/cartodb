@@ -1,3 +1,16 @@
+2.11.2 (2014-03-27)
+-------------------
+* Bugs Fixed
+  * Public map is not loaded using https.
+  * Public table fails on order by.
+  * Clear view raises wrong sql query.
+  * Ugly error on Table name change.
+  * Increase map height in the public_map page.
+  * Torque layer raises an exception in google maps.
+  * Normal sync tables do not properly log errors.
+  * All rows returned at once from queries written in the SQL pane.
+  * In the layer selector, if you unselect all the layers, and then only activates one, the infowindow is neither appearing nor working.
+
 2.11.1 (2014-03-20)
 -------------------
 * Improvements

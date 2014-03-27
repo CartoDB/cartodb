@@ -17,7 +17,9 @@
 
     $(function() {
 
-      $.getJSON("/api/v1/get_authenticated_users", {},
+      var url = "//" + window.location.host  + "/api/v1/get_authenticated_users";
+
+      $.getJSON(url, {},
         function(users, status, response) {
 
           if (response.status == 200 && users && users.length > 0) {

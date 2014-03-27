@@ -39,6 +39,7 @@ module CartoDB
         job.log "ogr2ogr exit code: #{ogr2ogr.exit_code}"
 
         raise InvalidGeoJSONError if ogr2ogr.command_output =~ /nrecognized GeoJSON/
+        raise UnsupportedFormatError if (ogr2ogr.exit_code == 256 && ogr2ogr.command_output =~ /Unable to open(.*)with the following drivers/)
         raise LoadError(job.fetch) if ogr2ogr.exit_code != 0
         job.log 'Georeferencing...'
         georeferencer.run

@@ -28,12 +28,10 @@ if test $? -ne 0; then exit 1; fi
 
 # # Allow user to create private tables in addition to public
 # echo "--- Allowing private tables creation"
-# bundle exec rake \
-#  cartodb:db:set_user_private_tables_enabled["${SUBDOMAIN}",'true']
+# bundle exec rake cartodb:db:set_user_private_tables_enabled["${SUBDOMAIN}",'true']
 # if test $? -ne 0; then exit 1; fi
 
 # # Set the account type
 # echo "--- Setting cartodb account type"
-# bundle exec rake \
-#  cartodb:db:set_user_account_type["${SUBDOMAIN}",'[DEDICATED]']
+# bundle exec rake cartodb:db:set_user_account_type["${SUBDOMAIN}",'[DEDICATED]']
 # if test $? -ne 0; then exit 1; fi

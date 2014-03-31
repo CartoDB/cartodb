@@ -170,7 +170,23 @@ describe Table do
     it "should have a privacy associated and it should be private by default" do
       table = create_table :user_id => @user.id
       table.should be_private
-      $tables_metadata.hget(table.key,"privacy").to_i.should == Table::PRIVACY_PRIVATE
+      $tables_metadata.hget(table.key,'privacy').to_i.should == Table::PRIVACY_PRIVATE
+    end
+
+    it 'changes to and from public-with-link privacy' do
+      table = create_table :user_id => @user.id
+
+      table.privacy = Table::PRIVACY_LINK
+      table.save
+      table.reload
+      table.should be_public_with_link_only
+      table.table_visualization.should be_public_with_link
+
+      table.privacy = Table::PRIVACY_PUBLIC
+      table.save
+      table.reload
+      table                           .should be_public
+      table.table_visualization       .should be_public
     end
 
     it 'propagates privacy changes to the associated visualization' do
@@ -202,27 +218,65 @@ describe Table do
       rehydrated.table_visualization  .should be_private
     end
 
-    it 'propagates changes to affected visualizations
-    if privacy set to PRIVATE' do
+    it 'propagates changes to affected visualizations if privacy set to PRIVATE' do
       # Need to at least have this decorated in the user data or checks before becoming private will raise an error
       CartoDB::Visualization::Member.any_instance.stubs(:supports_private_maps?).returns(true)
 
       table = create_table(user_id: @user.id)
       table.should be_private
       table.table_visualization.should be_private
-      derived = CartoDB::Visualization::Copier.new(
+      derived_vis = CartoDB::Visualization::Copier.new(
         @user, table.table_visualization
       ).copy
 
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:create).returns(true)
+      derived_vis.store
+      table.reload
+
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
       table.privacy = Table::PRIVACY_PUBLIC
       table.save
 
-      table.affected_visualizations.first.public?.should == true
+      table.affected_visualizations.map { |vis|
+        vis.public?.should == vis.table?
+      }
 
       table.privacy = Table::PRIVACY_PRIVATE
       table.save
 
-      table.affected_visualizations.first.private?.should == true
+      table.affected_visualizations.map { |vis|
+        vis.private?.should == true
+      }
+    end
+
+    it "doesn't propagates changes to affected visualizations if privacy set to public with link" do
+      # Need to at least have this decorated in the user data or checks before becoming private will raise an error
+      CartoDB::Visualization::Member.any_instance.stubs(:supports_private_maps?).returns(true)
+
+      table = create_table(user_id: @user.id)
+
+      table.privacy = Table::PRIVACY_PUBLIC
+      table.save
+      derived_vis = CartoDB::Visualization::Copier.new(
+          @user, table.table_visualization
+      ).copy
+
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:create).returns(true)
+      derived_vis.store
+      table.reload
+
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
+      table.privacy = Table::PRIVACY_LINK
+      table.save
+      table.reload
+
+      table.affected_visualizations.map { |vis|
+        vis.public?.should == vis.derived?  # Derived kept public
+        vis.private?.should == false
+        vis.public_with_link?.should == vis.table?  # Table/canonical changed
+      }
+
+      table.affected_visualizations.first.public_with_link?.should == false
     end
 
     it 'receives privacy changes from the associated visualization' do

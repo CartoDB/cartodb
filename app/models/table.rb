@@ -1348,7 +1348,8 @@ TRIGGER
         exception_to_raise = CartoDB::BaseCartoDBError.new(
             "Table update_name_changes(): '#{@name_changed_from}','#{key}' renaming metadata", exception)
         CartoDB::notify_exception(exception_to_raise, user: owner)
-        raise exception_to_raise
+
+        #raise exception_to_raise
       end
 
       begin
@@ -1359,7 +1360,7 @@ TRIGGER
         CartoDB::notify_exception(exception_to_raise, user: owner)
         raise exception_to_raise
       end
-      propagate_name_change_to_table_visualization
+      propagate_namechange_to_table_vis
 
       if layers.blank?
         exception_to_raise = CartoDB::TableError.new("Attempt to rename table without layers #{self.name}")

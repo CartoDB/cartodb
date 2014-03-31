@@ -152,7 +152,6 @@ module CartoDB
         privacy == PRIVACY_PUBLIC
       end #public?
 
-      # TODO: Unused yet
       def public_with_link?
         privacy == PRIVACY_LINK
       end #public_with_link?

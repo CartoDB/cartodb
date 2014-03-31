@@ -1,3 +1,5 @@
+- fixed maps api request when all the layers are hidden
+- fixed error in gmaps when tile loading raises an error
 - fixed panBy on leaflet when torque layers are used
 3.8.06 (27//03//2014)
 - fixed layer interaction is not disabled when sublayer is hidden

@@ -38,6 +38,7 @@ class Admin::VisualizationsController < ApplicationController
     respond_to do |format|
       format.html { render 'public', layout: 'application_public' }
     end
+
   end #public
 
   def public_map

@@ -33,6 +33,13 @@ body:after {
 
   padding: 50px 0 0 0;
 
+  &.empty {
+    .inner {
+      .datasets, .visualizations { width: 739px; }
+      .info { margin-right: 0; }
+    }
+  }
+
   .inner{
     width: 1022px;
     margin: 0 auto;
@@ -227,7 +234,7 @@ header {
   } // .username
 } // .user-info
 
-.empty {
+.empty_placeholder {
   @include inline-block();
   padding: 17px 30px;
   margin: 175px auto 0 auto;
@@ -635,8 +642,7 @@ only screen and (                min-resolution: 2dppx) {
     .inner { width: 100%; }
   }
 
-  .empty {
-    margin: 40px auto;
+  .empty_placeholder {
     font-size: 18px;
     padding: 18px;
   }
@@ -662,6 +668,16 @@ only screen and (                min-resolution: 2dppx) {
   .user-info ul {
     width: 100%;
     li { width: 50%; }
+  }
+
+  .content { 
+
+    &.empty .inner {
+
+      .datasets, .visualizations { width: 100%; }
+      .info { margin-right: 0; }
+    }
+
   }
 
   .datasets > ul > li {
@@ -727,7 +743,7 @@ only screen and (                min-resolution: 2dppx) {
     .inner { width: 100%; }
   }
 
-  .empty {
+  .empty_placeholder {
     margin: 50px auto;
   }
 
@@ -739,7 +755,19 @@ only screen and (                min-resolution: 2dppx) {
     width: 100%;
   }
 
-  .content .inner { padding: 0 15px; width: 100%; }
+  .content { 
+
+    .inner {
+      padding: 0 15px;
+      width: 100%;
+    }
+
+    &.empty .inner {
+      .datasets, .visualizations { width: 100%; }
+      .info { margin-right: 0; }
+    }
+
+  }
 
   .user-info,
   .user-info .avatar,
@@ -751,11 +779,7 @@ only screen and (                min-resolution: 2dppx) {
 
   .user-info ul {
     width: 100%;
-  }
-
-  .user-info ul li {
-
-    width: 50%;
+    li { width: 50%; }
   }
 
   .user-info .tags { margin-bottom: 10px; }
@@ -814,7 +838,16 @@ only screen and (                min-resolution: 2dppx) {
     .inner { width: 100%; }
   }
 
-  .content .inner { padding: 0 15px; width: 100%; }
+  .content {
+
+    .inner { overflow:hidden; padding: 0 15px; width: 100%; }
+
+    &.empty .inner {
+      .datasets, .visualizations { width: 100%; }
+      .info { margin-right: 0; }
+    }
+
+  }
 
   .info {
     float:left;
@@ -822,7 +855,7 @@ only screen and (                min-resolution: 2dppx) {
     width: 283px + 29px;
   }
 
-  .empty {
+  .empty_placeholder {
     margin-right: 283px + 29px;
   }
 
@@ -870,7 +903,16 @@ only screen and (                min-resolution: 2dppx) {
     .inner { width: 100%; }
   }
 
-  .empty {
+  .content { 
+
+    &.empty .inner {
+
+      .datasets, .visualizations { margin: auto;; }
+    }
+
+  }
+
+  .empty_placeholder {
     margin: 50px auto;
   }
 
@@ -902,11 +944,58 @@ only screen and (                min-resolution: 2dppx) {
 
 }
 
+
+/* iPad portrait */
+@media only screen 
+and (min-device-width : 768px) 
+and (max-device-width : 1024px) 
+and (orientation : portrait) {
+
+  body:after { content: 'ipad portrait'; width: 160px; margin-left: -80px;  }
+
+  .empty_placeholder {
+    margin: 0 auto 50px auto;
+    /*font-size: 26px;*/
+  }
+
+}
+
+/* iPad landscape */
+@media only screen 
+and (min-device-width : 768px) 
+and (max-device-width : 1024px) 
+and (orientation : landscape) {
+
+  body:after { content: 'ipad portrait'; width: 160px; margin-left: -80px;  }
+
+  .content {
+    padding: 35px 0 0 0;
+    .inner { padding: 0 35px; width: 100%; }
+  }
+
+  header .inner {
+    padding: 24px 35px;
+  }
+  footer {
+    padding: 44px 35px;
+    .inner { width: 100%; }
+  }
+
+  .empty_placeholder {
+    /*margin: 0 auto 50px auto;*/
+    /*font-size: 26px;*/
+  }
+
+}
+
+
 /* iPhone portrait */
 @media only screen
 and (min-device-width : 320px)
 and (max-device-width : 480px)
 and (orientation : portrait) {
+
+  body:after { content: 'iphone small portrait'; width: 160px; margin-left: -80px;  }
 
   header {
     .inner {
@@ -915,9 +1004,21 @@ and (orientation : portrait) {
 
   }
 
+  .empty_placeholder {
+    margin: 0 auto 50px auto;
+    font-size: 16px;
+    padding: 16px;
+  }
+
   .info  ul.tags { display: none; }
+
   footer nav a.signup,
   footer nav span { display:none; }
+
+
+  footer {
+    padding: 24px 15px 34px 15px;
+  }
 
 }
 
@@ -927,6 +1028,18 @@ and (min-device-width : 320px)
 and (max-device-width : 480px)
 and (orientation : landscape) {
 
+  body:after { content: 'iphone small landscape'; width: 200px; margin-left: -100px;  }
+
+  .empty_placeholder {
+    margin: 0 auto 50px auto;
+    font-size: 16px;
+    padding: 16px;
+  }
+
   .info  ul.tags { display: none; }
+
+  footer {
+    padding: 24px 15px 34px 15px;
+  }
 
 }

@@ -17,9 +17,11 @@ class Admin::PagesController < ApplicationController
 
   def datasets
 
-    user = CartoDB.extract_subdomain(request)
-    viewed_user = User.where(username: user.strip.downcase).first
-    return render_404 if viewed_user.nil?
+    viewed_user = user = User.all.last
+
+    #user = CartoDB.extract_subdomain(request)
+    #viewed_user = User.where(username: user.strip.downcase).first
+    #return render_404 if viewed_user.nil?
 
     @tags       = viewed_user.tags
 
@@ -55,15 +57,17 @@ class Admin::PagesController < ApplicationController
     end
 
     respond_to do |format|
-      format.html { render 'datasets', layout: 'application_public' }
+      format.html { render 'datasets', layout: 'application_public_dashboard' }
     end
 
   end #datasets
 
   def public
-    user = CartoDB.extract_subdomain(request)
-    viewed_user = User.where(username: user.strip.downcase).first
-    return render_404 if viewed_user.nil?
+
+    viewed_user = user = User.all.last
+    #user = CartoDB.extract_subdomain(request)
+    #viewed_user = User.where(username: user.strip.downcase).first
+    #return render_404 if viewed_user.nil?
 
     @tags       = viewed_user.tags
 
@@ -100,7 +104,7 @@ class Admin::PagesController < ApplicationController
     end
 
     respond_to do |format|
-      format.html { render 'public', layout: 'application_public' }
+      format.html { render 'public', layout: 'application_public_dashboard' }
     end
 
   end #public

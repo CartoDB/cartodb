@@ -62,7 +62,7 @@
   <![endif]-->
 <% end %>
 
-<div class="content">
+<div class="content<%= " empty" if @datasets.size == 0 %>">
 
   <div class="inner">
 
@@ -107,8 +107,8 @@
   <div class="datasets">
 
     <% if @datasets.size == 0 %>
-      <div class="empty">
-        <%= @username %> doesn't have any public dataset
+      <div class="empty_placeholder">
+        <%= @username %> doesn't have any public datasets
       </div>
     <% end %>
 

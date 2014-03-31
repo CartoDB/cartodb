@@ -62,7 +62,7 @@
   <![endif]-->
 <% end %>
 
-<div class="content">
+<div class="content<%= " empty" if @visualizations.size == 0 %>">
 
   <div class="inner">
 
@@ -107,8 +107,8 @@
 
   <div class="visualizations">
     <% if @visualizations.size == 0 %>
-      <div class="empty">
-        <%= @username %> doesn't have any public map
+      <div class="empty_placeholder">
+        <%= @username %> doesn't have any public maps
       </div>
     <% end %>
 

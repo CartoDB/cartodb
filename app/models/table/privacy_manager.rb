@@ -21,9 +21,21 @@ module CartoDB
         self
       end #set_private
 
+      def set_from_table_privacy(table_privacy)
+        case table_privacy
+          when ::Table::PRIVACY_PUBLIC
+            set_public
+          when ::Table::PRIVACY_LINK
+            set_public_with_link_only
+          else
+            set_private
+        end
+      end #set_from_table_privacy
+
       def set_from(visualization)
         set_public  if visualization.public?
         set_private if visualization.private?
+        # Visualizations can't set tables to 'with link'
         table.update(privacy: privacy)
         self
       end #set_from
@@ -35,7 +47,6 @@ module CartoDB
 
       def propagate_to_redis_and_varnish
         raise 'table privacy cannot be nil' unless privacy
-
         $tables_metadata.hset redis_key, 'privacy', privacy
         invalidate_varnish_cache
         self
@@ -45,6 +56,11 @@ module CartoDB
 
       attr_reader   :table
       attr_accessor :privacy
+
+      def set_public_with_link_only
+        self.privacy = ::Table::PRIVACY_LINK
+        set_database_permissions(grant_query)
+      end #set_public_with_link_only
 
       def owner
         @owner ||= User.where(id: table.user_id).first
@@ -81,7 +97,14 @@ module CartoDB
       end #redis_key
 
       def privacy_text
-        privacy == ::Table::PRIVACY_PUBLIC ? 'public' : 'private'
+        case privacy
+          when ::Table::PRIVACY_PUBLIC
+            ::Table::PRIVACY_PUBLIC_TEXT
+          when ::Table::PRIVACY_LINK
+            ::Table::PRIVACY_LINK_TEXT
+          else
+            ::Table::PRIVACY_PRIVATE_TEXT
+        end
       end #privacy_text
     end # PrivacyManager
   end # Table

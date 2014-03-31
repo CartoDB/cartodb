@@ -84,6 +84,13 @@
         z-index:0;
       }
 
+      &.syncing {
+        span.point {
+          @include background(linear-gradient(#FFFF73,#D9D900));
+          border-color:rgba(black, .75);
+        }
+      }
+
       &.failure {
         span.point {
           @include background(linear-gradient(#FFFF4D,#D18400));

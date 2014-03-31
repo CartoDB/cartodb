@@ -106,6 +106,12 @@
   </div>
 
   <div class="visualizations">
+    <% if @visualizations.size == 0 %>
+      <div class="empty">
+        <%= @username %> doesn't have any public map
+      </div>
+    <% end %>
+
     <% if @visualizations.size > 0 %>
       <ul>
         <% @visualizations.each_with_index do |vis, i| %>

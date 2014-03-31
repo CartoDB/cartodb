@@ -222,8 +222,25 @@ header {
   } // .username
 } // .user-info
 
+.empty {
+  @include inline-block();
+  padding: 24px 30px;
+  margin: 175px auto 0 auto;
+  font-size: 21px;
+  color: #CCCCCC;
+  font-family: 'ProximaNova-Semibold', Helvetica, sans-serif;
+  font-weight: 200;
+  background: #F5F5F5;
+  text-align:center;
+  line-height: 125%;
+}
+
 .datasets,
-.visualizations { float:left; }
+.visualizations { 
+  float:left;
+  width: 700px;
+  text-align:center;
+}
 
 .datasets > ul > li {
 
@@ -284,6 +301,8 @@ header {
   .map-wrapper {
     height: 300px;
     position:relative;
+
+    text-align:left;
 
     overflow:hidden;
     @include translateZ(10px);
@@ -359,6 +378,8 @@ header {
   .header {
     padding: 30px 34px;
     min-height: 89px;
+
+    text-align:left;
 
     border: 1px solid #BBBBBB;
     border-top: none;
@@ -609,6 +630,12 @@ only screen and (                min-resolution: 2dppx) {
     .inner { width: 100%; }
   }
 
+  .empty {
+    margin: 40px auto;
+    font-size: 18px;
+    padding: 18px;
+  }
+
   .info,
   .datasets,
   .visualizations  {
@@ -641,7 +668,7 @@ only screen and (                min-resolution: 2dppx) {
     padding: 17px 0;
 
     .title {
-      a { font-size: 18px; float:left; @include text-overflow(); width: 100%; }
+      a { font-size: 18px; float:left; @include text-overflow(); width: 100%; text-align: left; }
       span.date { top: 0; float:left; margin: 5px 0 0 0; display:block; margin: 0 0 15px 0; }
       p { margin: 5px 0 0 0; }
     }
@@ -699,6 +726,10 @@ only screen and (                min-resolution: 2dppx) {
     .inner { width: 100%; }
   }
 
+  .empty {
+    margin: 50px auto;
+  }
+
   .info,
   .datasets,
   .visualizations  {
@@ -731,7 +762,7 @@ only screen and (                min-resolution: 2dppx) {
   .datasets > ul > li {
 
     .title {
-      a { float:left; @include text-overflow(); width: 100%; }
+      a { float:left; @include text-overflow(); width: 100%; text-align:left; }
       span.date { float: left; display:block; margin: 0 0 15px 0; }
     }
 
@@ -790,6 +821,10 @@ only screen and (                min-resolution: 2dppx) {
     width: 283px + 29px;
   }
 
+  .empty {
+    margin-right: 283px + 29px;
+  }
+
   .datasets,
   .visualizations {
     float: left;
@@ -832,6 +867,10 @@ only screen and (                min-resolution: 2dppx) {
   footer {
     padding: 44px 15px;
     .inner { width: 100%; }
+  }
+
+  .empty {
+    margin: 50px auto;
   }
 
   .info,

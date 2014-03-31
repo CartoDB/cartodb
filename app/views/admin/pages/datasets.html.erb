@@ -105,6 +105,13 @@
   </div>
 
   <div class="datasets">
+
+    <% if @datasets.size == 0 %>
+      <div class="empty">
+        <%= @username %> doesn't have any public dataset
+      </div>
+    <% end %>
+
     <% if @datasets.size > 0 %>
       <ul>
         <% @datasets.each_with_index do |dataset, i| %>

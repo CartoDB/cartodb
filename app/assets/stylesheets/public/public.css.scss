@@ -11,7 +11,7 @@ body {
   min-width: 100%;
 }
 
-/*body:after {
+body:after {
   @include box-sizing(border-box);
   content: '';
   background: rgba(red, .8);
@@ -26,7 +26,7 @@ body {
   z-index: 1000;
   @include simple-transition(all);
   @include border-radius(0 0 3px 3px);
-}*/
+}
 
 .content {
   @include background(image-url("layout/bkg.jpg") repeat 0 0);
@@ -72,9 +72,11 @@ header {
     @include clearfix();
     @include box-sizing(border-box);
 
-    h1 { 
+    h1 {
+
       margin-top: 0;
-      a { 
+
+      a {
         display: block;
         width: 93px;
         height: 18px;
@@ -220,8 +222,54 @@ header {
   } // .username
 } // .user-info
 
-.visualizations {
-  float:left;
+.datasets,
+.visualizations { float:left; }
+
+.datasets > ul > li {
+
+  @include box-sizing(border-box);
+  @include clearfix();
+
+  width: 700px;
+  margin: 0;
+  border-bottom: 1px solid #D1D1D1;
+
+  padding: 27px 0;
+
+  .title {
+    margin: 0 0 0 0;
+    @include clearfix();
+  }
+
+  span.date {
+    top: 10px;
+    position:relative;
+    float:right;
+    font-size:15px;
+    font-family: 'ProximaNova-Semibold', Helvetica, sans-serif;
+    color: #CCCCCC;
+    font-weight: 200;
+  }
+
+  .title a {
+    float:left;
+    display:block;
+
+    font-size: 25px;
+    font-family: 'ProximaNova-Semibold', Helvetica, sans-serif;
+    font-weight: 200;
+  }
+
+  .title p {
+    margin: 7px 0 0 0;
+    float:left;
+
+    clear:both;
+    color: #858585;
+    font-size: 15px;
+    line-height: normal;
+  }
+
 }
 
 .visualizations > ul > li {
@@ -237,10 +285,10 @@ header {
     height: 300px;
     position:relative;
 
+    overflow:hidden;
     @include translateZ(10px);
     @include border-radius(5px 5px 0 0);
     @include translate3d(0,0,10px);
-    overflow:hidden;
 
     &.headless {
       @include border-radius(5px 5px 5px 5px);
@@ -295,12 +343,18 @@ header {
         font-size:15px;
         color: #DDDDDD;
 
-        a { color: #fff; text-decoration: underline;}
-        a:hover  { color: #f1f1f1; }
+        a { 
+          color: #fff;
+          text-decoration: underline;
 
-      }
-    }
-  }
+          &:hover  { color: #f1f1f1; }
+        }
+
+      } // p
+
+    } // title
+
+  } // map-wrapper
 
   .header {
     padding: 30px 34px;
@@ -326,10 +380,36 @@ header {
     color: #CCCCCC;
   }
 
+} // .visualizations .vis
+
+.visualizations > ul > li .tags {
+  float:left;
+  width: 480px;
+}
+
+.visualizations > ul > li .tags li a {
+  padding: 6px 9px;
+}
+
+.datasets > ul > li {
+  p {
+    margin: 0 0 3px 0;
+  }
   .tags {
 
+    clear:both;
     float:left;
-    width: 480px;
+    margin: 7px 0 0 0;
+
+    li a {
+      padding: 3px 6px;
+    }
+
+  }
+}
+
+.datasets > ul > li .tags,
+.visualizations > ul > li .tags {
 
     li {
       @include inline-block();
@@ -339,7 +419,6 @@ header {
     }
 
     a {
-      padding: 6px 9px;
       display: block;
 
       background: #FFD24D;
@@ -363,7 +442,6 @@ header {
 
   } // .tags
 
-} // .visualizations .vis
 
 .pagination {
 
@@ -501,9 +579,6 @@ a.button.green {
   zoom: 1; *display: inline;
 }
 
-
-
-
 @media
 only screen and (-webkit-min-device-pixel-ratio: 2),
 only screen and (   min--moz-device-pixel-ratio: 2),
@@ -516,7 +591,7 @@ only screen and (                min-resolution: 2dppx) {
 
 @media only screen and (max-width: 350px) {
 
-  /*body:after { content: 'small'; }*/
+  body:after { content: 'small'; }
 
   header {
     .inner {
@@ -534,8 +609,8 @@ only screen and (                min-resolution: 2dppx) {
     .inner { width: 100%; }
   }
 
-
   .info,
+  .datasets,
   .visualizations  {
     float:none;
     display:block;
@@ -547,6 +622,7 @@ only screen and (                min-resolution: 2dppx) {
   .user-info,
   .user-info .avatar,
   .user-info .username,
+  .datasets > ul > li,
   .visualizations > ul > li {
     width: 100%;
   }
@@ -560,6 +636,20 @@ only screen and (                min-resolution: 2dppx) {
     width: 50%;
   }
 
+  .datasets > ul > li {
+
+    padding: 17px 0;
+
+    .title {
+      a { font-size: 18px; float:left; @include text-overflow(); width: 100%; }
+      span.date { top: 0; float:left; margin: 5px 0 0 0; display:block; margin: 0 0 15px 0; }
+      p { margin: 5px 0 0 0; }
+    }
+
+    .tags { margin: 15px 0 0 0; }
+
+  }
+
   .visualizations ul li .header {
 
     padding: 17px 15px;
@@ -569,7 +659,7 @@ only screen and (                min-resolution: 2dppx) {
       width: 100%;
       margin: 0 0 10px 0;
 
-      li { margin: 0 0 0px 0; }
+      li { margin: 0 0 7px 0; }
 
     }
 
@@ -595,7 +685,7 @@ only screen and (                min-resolution: 2dppx) {
 
 @media only screen and (min-width: 351px) and (max-width: 710px) {
 
-  /*body:after { content: 'medium'; }*/
+  body:after { content: 'medium'; }
 
   header {
     .inner {
@@ -610,6 +700,7 @@ only screen and (                min-resolution: 2dppx) {
   }
 
   .info,
+  .datasets,
   .visualizations  {
     float:none;
     display:block;
@@ -621,6 +712,7 @@ only screen and (                min-resolution: 2dppx) {
   .user-info,
   .user-info .avatar,
   .user-info .username,
+  .datasets > ul > li,
   .visualizations > ul > li {
     width: 100%;
   }
@@ -632,6 +724,19 @@ only screen and (                min-resolution: 2dppx) {
   .user-info ul li {
 
     width: 50%;
+  }
+
+  .user-info .tags { margin-bottom: 10px; }
+
+  .datasets > ul > li {
+
+    .title {
+      a { float:left; @include text-overflow(); width: 100%; }
+      span.date { float: left; display:block; margin: 0 0 15px 0; }
+    }
+
+    /*.tags { margin: 10px 0 0 0; }*/
+
   }
 
   .visualizations ul li .header {
@@ -656,7 +761,7 @@ only screen and (                min-resolution: 2dppx) {
 
 @media only screen and (min-width: 981px) and (max-width: 1035px) {
 
-  /*body:after { content: 'big 1'; }*/
+  body:after { content: 'big 1'; }
 
   header {
     .inner {
@@ -677,16 +782,15 @@ only screen and (                min-resolution: 2dppx) {
     .inner { width: 100%; }
   }
 
-
   .content .inner { padding: 0 15px; width: 100%; }
 
   .info {
     float:left;
     margin-right: 0;
     width: 283px + 29px;
-
   }
 
+  .datasets,
   .visualizations {
     float: left;
     width: 100%;
@@ -705,7 +809,7 @@ only screen and (                min-resolution: 2dppx) {
       .tags {
         width: 400px;
 
-        li { margin: 0 0 0 0; }
+        li { margin: 0 0 10px 0; }
 
       }
     }
@@ -716,7 +820,7 @@ only screen and (                min-resolution: 2dppx) {
 
 @media only screen and (min-width: 711px) and (max-width: 980px) {
 
-  /*body:after { content: 'big'; }*/
+  body:after { content: 'big'; }
 
   header {
     .inner {
@@ -731,6 +835,7 @@ only screen and (                min-resolution: 2dppx) {
   }
 
   .info,
+  .datasets,
   .visualizations  {
     float:none;
     display:block;
@@ -742,6 +847,7 @@ only screen and (                min-resolution: 2dppx) {
   .user-info,
   .user-info .avatar,
   .user-info .username,
+  .datasets > ul > li,
   .visualizations > ul > li {
     width: 100%;
   }

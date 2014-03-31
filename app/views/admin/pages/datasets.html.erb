@@ -70,7 +70,7 @@
 
     <div class="user-info">
 
-      <a href="/" class="avatar">
+      <a href="/datasets" class="avatar">
         <div class="circle">
           <img src="<%= @avatar_url %>" />
         </div>
@@ -81,8 +81,8 @@
       </div>
 
       <ul>
-        <li><a href="/datasets"><strong><%= @tables_num %></strong>dataset<%= @tables_num == 1 ? '' : 's' %></a></li>
-        <li><strong><%= @vis_num %></strong>visualization<%= @vis_num == 1 ? '' : 's' %></li>
+        <li><strong><%= @tables_num %></strong>dataset<%= @tables_num == 1 ? '' : 's' %></li>
+        <li><a href="/"><strong><%= @vis_num %></strong>visualization<%= @vis_num == 1 ? '' : 's' %></a></li>
       </ul>
 
     </div>
@@ -102,44 +102,36 @@
 
       </ul>
     <% end %>
-
   </div>
 
-  <div class="visualizations">
-    <% if @visualizations.size > 0 %>
+  <div class="datasets">
+    <% if @datasets.size > 0 %>
       <ul>
-        <% @visualizations.each_with_index do |vis, i| %>
+        <% @datasets.each_with_index do |dataset, i| %>
           <li>
-            <div class="map-wrapper<%= " headless" if vis[:tags].size == 0 %>">
 
-              <a href="/viz/<%= vis[:id] %>/public_map" class="backdrop"></a>
-              <div id="map_<%= i %>" class="map"></div>
-
-              <div class="title">
-                <h3><%= vis[:title].truncate(50) %></h3>
-                <p><%= raw (vis[:description] ? vis[:description].truncate(200) : "") %></p>
-              </div>
-              <div class="gradient"></div>
+            <div class="title">
+              <span class="date"><%= dataset[:updated_at].strftime("%m/%d/%Y") %></span>
+              <a href="/tables/<%= dataset[:title] %>/public" title="<%= dataset[:title].capitalize %>"><%= dataset[:title].capitalize.truncate(40) %></a>
+              <p><%= raw (dataset[:description] ? dataset[:description].truncate(80) : "") %></p>
             </div>
 
-            <% if vis[:tags].size > 0 %>
-            <div class="header">
-              <% if vis[:tags].size > 0 %>
+            <% if dataset[:tags].size > 0 %>
+              <% if dataset[:tags].size > 0 %>
                 <ul class="tags">
-                  <% vis[:tags].each do |tag| %>
-                    <li><%= link_to tag, public_tag_url(tag) %></li>
+                  <% dataset[:tags].each do |tag| %>
+                    <li><%= link_to tag, dataset_public_tag_url(tag) %></li>
                   <% end %>
                 </ul>
               <% end %>
-              <div class="mapviews"><%= vis[:mapviews] %> Map views</div>
-            </div>
+              <!-- <div class="mapviews"><%= dataset[:mapviews] %> Map views</div> -->
             <% end %>
           </li>
         <% end %>
       </ul>
     <% end %>
 
-    <% if @visualizations.length > 0 %>
+    <% if @datasets.length > 0 %>
       <div class="pagination">
         <% if @pages > 1 %>
 
@@ -180,23 +172,3 @@
 </div>
 </div>
 
-<script>
-
-  $(function() {
-
-    var options = {
-      zoomControl: false,
-      cartodb_logo: false,
-      scrollwheel: false,
-      legends: false,
-      time_slider: false
-    };
-
-    var urls = <%= raw @visualizations.map {|v| "//#{request.env['HTTP_HOST']}/api/v2/viz/#{v[:id]}/viz.json" }.to_json %>;
-
-    _.each(urls, function(url, i) {
-      cartodb.createVis('map_' + i , url, options);
-    });
-
-  });
-</script>

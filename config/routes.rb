@@ -3,6 +3,8 @@
 CartoDB::Application.routes.draw do
   root :to => 'admin/pages#public'
 
+  get   '/datasets' => 'admin/pages#datasets'
+
   get   '/login' => 'sessions#new', :as => :login
   get   '/logout' => 'sessions#destroy', :as => :logout
   match '/sessions/create' => 'sessions#create', :as => :create_session
@@ -52,6 +54,10 @@ CartoDB::Application.routes.draw do
     get '/page/:page'               => 'pages#public'
     get '/tag/:tag'                 => 'pages#public', :as => :public_tag
     get '/tag/:tag/:page'           => 'pages#public'
+
+    get '/datasets/page/:page'      => 'pages#datasets'
+    get '/datasets/tag/:tag'        => 'pages#datasets', :as => :dataset_public_tag
+    get '/datasets/tag/:tag/:page'  => 'pages#datasets'
 
     get '/tables/track_embed'       => 'visualizations#track_embed'
     get '/tables/embed_forbidden'   => 'visualizations#embed_forbidden'

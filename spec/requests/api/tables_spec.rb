@@ -41,7 +41,7 @@ describe "Tables API" do
       table = create_table(
         user_id:      @user.id,
         name:         'My table #1',
-        privacy:      Table::PRIVATE,
+        privacy:      Table::PRIVACY_PRIVATE,
         tags:         "tag 1, tag 2,tag 3, tag 3",
         description:  'Testing is awesome'
       )
@@ -66,10 +66,10 @@ describe "Tables API" do
 
   context "when having some tables" do
     before(:each) do
-      @table1 = create_table user_id: @user.id,         name: 'My table #1', privacy: Table::PRIVATE, tags: "tag 1, tag 2,tag 3, tag 3", description: 'Testing is awesome'
-      @table2 = create_table user_id: @user.id,         name: 'My table #2', privacy: Table::PRIVATE
-      @table3 = create_table user_id: @another_user.id, name: 'Another table #3', privacy: Table::PRIVATE
-      @table4 = create_table user_id: @user.id,         name: 'My table #3', privacy: Table::PRIVATE, tags: "tag 1"
+      @table1 = create_table user_id: @user.id,         name: 'My table #1', privacy: Table::PRIVACY_PRIVATE, tags: "tag 1, tag 2,tag 3, tag 3", description: 'Testing is awesome'
+      @table2 = create_table user_id: @user.id,         name: 'My table #2', privacy: Table::PRIVACY_PRIVATE
+      @table3 = create_table user_id: @another_user.id, name: 'Another table #3', privacy: Table::PRIVACY_PRIVATE
+      @table4 = create_table user_id: @user.id,         name: 'My table #3', privacy: Table::PRIVACY_PRIVATE, tags: "tag 1"
     end
 
     it "gets current user tables" do
@@ -308,7 +308,7 @@ describe "Tables API" do
     put_json v1_table_url(table1.name, params.merge(
         name: "my_table_2", 
         tags: "bars,disco", 
-        privacy: Table::PRIVATE, 
+        privacy: Table::PRIVACY_PRIVATE,
         description: "Testing is awesome")) do |response|
       response.status.should be_success
       response.body[:id].should == table1.id
@@ -336,7 +336,7 @@ describe "Tables API" do
   end
 
   it "deletes a table of the user currently logged in" do
-    table1 = create_table :user_id => @user.id, :name => 'My table #1', :privacy => Table::PRIVATE, :tags => "tag 1, tag 2,tag 3, tag 3"
+    table1 = create_table :user_id => @user.id, :name => 'My table #1', :privacy => Table::PRIVACY_PRIVATE, :tags => "tag 1, tag 2,tag 3, tag 3"
 
     delete_json v1_table_url(table1.name, params) do |response|
       response.status.should == 204
@@ -345,7 +345,7 @@ describe "Tables API" do
 
   it "doesn't delete a table of another user" do
     another_user = create_user
-    table1 = create_table :user_id => another_user.id, :name => 'My table #1', :privacy => Table::PRIVATE, :tags => "tag 1, tag 2,tag 3, tag 3"
+    table1 = create_table :user_id => another_user.id, :name => 'My table #1', :privacy => Table::PRIVACY_PRIVATE, :tags => "tag 1, tag 2,tag 3, tag 3"
 
     delete_json v1_table_url(table1.name, params) do |response|
       response.status.should == 404
@@ -353,7 +353,7 @@ describe "Tables API" do
   end
 
   it "updates a table and sets the lat and long columns" do
-    table = Table.new :privacy => Table::PRIVATE, :name => 'Madrid Bars',
+    table = Table.new :privacy => Table::PRIVACY_PRIVATE, :name => 'Madrid Bars',
                       :tags => 'movies, personal'
     table.user_id = @user.id
     table.force_schema = "name varchar, address varchar, latitude float, longitude float"

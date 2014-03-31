@@ -112,7 +112,7 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
       }
 
       table = create_table( user_id: @user.id )
-      table.privacy = Table::PUBLIC
+      table.privacy = Table::PRIVACY_PUBLIC
       table.save()
       derived_vis = CartoDB::Visualization::Copier.new(@user, table.table_visualization).copy()
 
@@ -158,7 +158,7 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
   describe 'public_table' do
     it 'public map with public visualization does not create a named map' do
       table = create_table( user_id: @user.id )
-      table.privacy = Table::PUBLIC
+      table.privacy = Table::PRIVACY_PUBLIC
       table.save()
       table.should be_public
       table.table_visualization.privacy.should eq CartoDB::Visualization::Member::PRIVACY_PUBLIC
@@ -373,7 +373,7 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
                 Typhoeus::Response.new( code: 204, body: "" )
               )
 
-      table.privacy = Table::PUBLIC
+      table.privacy = Table::PRIVACY_PUBLIC
       table.save()
       table.reload()  # Will trigger a DELETE
     end

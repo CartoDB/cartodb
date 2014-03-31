@@ -22,7 +22,7 @@ module CartoDB
               type: "table", 
               description: table.description,
               tags: table.tags.to_s.split(','),
-              privacy: (table.privacy == ::Table::PUBLIC ? 'public' : 'private')
+              privacy: (table.privacy == ::Table::PRIVACY_PUBLIC ? 'public' : 'private')
             ).store
 
             migrated!(table)

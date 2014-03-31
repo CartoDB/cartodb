@@ -10,8 +10,9 @@ class Table < Sequel::Model(:user_tables)
   extend Forwardable
 
   # Table constants
-  PRIVATE = 0
-  PUBLIC  = 1
+  PRIVACY_PRIVATE = 0
+  PRIVACY_PUBLIC = 1
+  PRIVACY_LINK = 2
   CARTODB_COLUMNS = %W{ cartodb_id created_at updated_at the_geom }
   THE_GEOM_WEBMERCATOR = :the_geom_webmercator
   THE_GEOM = :the_geom
@@ -112,19 +113,19 @@ class Table < Sequel::Model(:user_tables)
     ) if self.name == 'layergroup'
 
     # privacy setting must be a sane value
-    errors.add(:privacy, 'has an invalid value') if privacy != PRIVATE && privacy != PUBLIC
+    errors.add(:privacy, 'has an invalid value') if privacy != PRIVACY_PRIVATE && privacy != PRIVACY_PUBLIC
 
     # Branch if owner dows not have private table privileges
     unless self.owner.try(:private_tables_enabled)
 
       # If it's a new table and the user is trying to make it private
-      if self.new? && privacy == PRIVATE
+      if self.new? && privacy == PRIVACY_PRIVATE
         errors.add(:privacy, 'unauthorized to create private tables')
       end
 
       # if the table exists, is private, but the owner no longer has private privalidges
       # basically, this should never happen.
-      if !self.new? && privacy == PRIVATE && self.changed_columns.include?(:privacy)
+      if !self.new? && privacy == PRIVACY_PRIVATE && self.changed_columns.include?(:privacy)
         errors.add(:privacy, 'unauthorized to modify privacy status to private')
       end
     end
@@ -133,7 +134,7 @@ class Table < Sequel::Model(:user_tables)
   # runs before each validation phase on create and update
   def before_validation
     # ensure privacy variable is set to one of the constants. this is bad.
-    self.privacy ||= owner.private_tables_enabled ? PRIVATE : PUBLIC
+    self.privacy ||= owner.private_tables_enabled ? PRIVACY_PRIVATE : PRIVACY_PUBLIC
     super
   end
 
@@ -401,8 +402,8 @@ class Table < Sequel::Model(:user_tables)
     self.map.save
 
     manager = CartoDB::Table::PrivacyManager.new(self)
-    manager.set_private if privacy == PRIVATE
-    manager.set_public  if privacy == PUBLIC
+    manager.set_private if privacy == PRIVACY_PRIVATE
+    manager.set_public  if privacy == PRIVACY_PUBLIC
     manager.propagate_to(table_visualization)
     if privacy_changed?
       manager.propagate_to_redis_and_varnish
@@ -503,7 +504,7 @@ class Table < Sequel::Model(:user_tables)
       type:         CartoDB::Visualization::Member::CANONICAL_TYPE,
       description:  self.description,
       tags:         (tags.split(',') if tags),
-      privacy:      (self.privacy == PUBLIC ? 'public' : 'private')
+      privacy:      (self.privacy == PRIVACY_PUBLIC ? 'public' : 'private')
     ).store
   end
 
@@ -665,7 +666,7 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def private?
-    $tables_metadata.hget(key, 'privacy').to_i == PRIVATE
+    $tables_metadata.hget(key, 'privacy').to_i == PRIVACY_PRIVATE
   end
 
   def public?
@@ -673,16 +674,16 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def set_default_table_privacy
-    self.privacy ||= self.owner.try(:private_tables_enabled) ? PRIVATE : PUBLIC
+    self.privacy ||= self.owner.try(:private_tables_enabled) ? PRIVACY_PRIVATE : PRIVACY_PUBLIC
     save
   end
 
   # enforce standard format for this field
   def privacy=(value)
-    if value == 'PRIVATE' || value == PRIVATE || value == PRIVATE.to_s
-      self[:privacy] = PRIVATE
-    elsif value == 'PUBLIC' || value == PUBLIC || value == PUBLIC.to_s
-      self[:privacy] = PUBLIC
+    if value == 'PRIVATE' || value == PRIVACY_PRIVATE || value == PRIVACY_PRIVATE.to_s
+      self[:privacy] = PRIVACY_PRIVATE
+    elsif value == 'PUBLIC' || value == PRIVACY_PUBLIC || value == PRIVACY_PUBLIC.to_s
+      self[:privacy] = PRIVACY_PUBLIC
     end
   end
 

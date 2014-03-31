@@ -170,7 +170,7 @@ describe Table do
     it "should have a privacy associated and it should be private by default" do
       table = create_table :user_id => @user.id
       table.should be_private
-      $tables_metadata.hget(table.key,"privacy").to_i.should == Table::PRIVATE
+      $tables_metadata.hget(table.key,"privacy").to_i.should == Table::PRIVACY_PRIVATE
     end
 
     it 'propagates privacy changes to the associated visualization' do
@@ -181,7 +181,7 @@ describe Table do
       table.should be_private
       table.table_visualization.should be_private
 
-      table.privacy = Table::PUBLIC
+      table.privacy = Table::PRIVACY_PUBLIC
       table.save
       table.reload
       table                           .should be_public
@@ -191,7 +191,7 @@ describe Table do
       rehydrated                      .should be_public
       rehydrated.table_visualization  .should be_public
 
-      table.privacy = Table::PRIVATE
+      table.privacy = Table::PRIVACY_PRIVATE
       table.save
       table.reload
       table                           .should be_private
@@ -214,12 +214,12 @@ describe Table do
         @user, table.table_visualization
       ).copy
 
-      table.privacy = Table::PUBLIC
+      table.privacy = Table::PRIVACY_PUBLIC
       table.save
 
       table.affected_visualizations.first.public?.should == true
 
-      table.privacy = Table::PRIVATE
+      table.privacy = Table::PRIVACY_PRIVATE
       table.save
 
       table.affected_visualizations.first.private?.should == true
@@ -258,14 +258,14 @@ describe Table do
       @user.private_tables_enabled = false
       @user.save
       table = create_table(:user_id => @user.id)
-      table.privacy.should == Table::PUBLIC
+      table.privacy.should == Table::PRIVACY_PUBLIC
     end
 
     it "should be private if it's creating user has the ability to make private tables" do
       @user.private_tables_enabled = true
       @user.save
       table = create_table(:user_id => @user.id)
-      table.privacy.should == Table::PRIVATE
+      table.privacy.should == Table::PRIVACY_PRIVATE
     end
 
     it "should be able to make private tables if the user gets the ability to do it" do
@@ -273,13 +273,13 @@ describe Table do
       @user.save
 
       table = create_table(:user_id => @user.id)
-      table.privacy.should == Table::PUBLIC
+      table.privacy.should == Table::PRIVACY_PUBLIC
 
       @user.private_tables_enabled = true
       @user.save
 
       table = create_table(:user_id => @user.id)
-      table.privacy.should == Table::PRIVATE
+      table.privacy.should == Table::PRIVACY_PRIVATE
     end
 
     it "should only be able to make public tables if the user is stripped of permissions" do
@@ -287,13 +287,13 @@ describe Table do
       @user.save
 
       table = create_table(:user_id => @user.id)
-      table.privacy.should == Table::PRIVATE
+      table.privacy.should == Table::PRIVACY_PRIVATE
 
       @user.private_tables_enabled = false
       @user.save
 
       table = create_table(:user_id => @user.id)
-      table.privacy.should == Table::PUBLIC
+      table.privacy.should == Table::PRIVACY_PUBLIC
     end
 
     it "should still be able to edit the private table if the user is stripped of permissions" do
@@ -301,7 +301,7 @@ describe Table do
       @user.save
 
       table = create_table(:user_id => @user.id)
-      table.privacy.should == Table::PRIVATE
+      table.privacy.should == Table::PRIVACY_PRIVATE
 
       @user.private_tables_enabled = false
       @user.save
@@ -315,12 +315,12 @@ describe Table do
       @user.save
 
       table = create_table(:user_id => @user.id)
-      table.privacy.should == Table::PRIVATE
+      table.privacy.should == Table::PRIVACY_PRIVATE
 
       @user.private_tables_enabled = false
       @user.save
 
-      table.privacy = Table::PUBLIC
+      table.privacy = Table::PRIVACY_PUBLIC
       table.save.should be_true
     end
 
@@ -329,9 +329,9 @@ describe Table do
       @user.save
 
       table = create_table(:user_id => @user.id)
-      table.privacy.should == Table::PUBLIC
+      table.privacy.should == Table::PRIVACY_PUBLIC
 
-      table.privacy = Table::PRIVATE
+      table.privacy = Table::PRIVACY_PRIVATE
       expect {
         table.save
       }.to raise_error(Sequel::ValidationFailed)
@@ -342,16 +342,16 @@ describe Table do
       @user.save
 
       table = create_table(:user_id => @user.id)
-      table.privacy.should == Table::PRIVATE
+      table.privacy.should == Table::PRIVACY_PRIVATE
 
       @user.private_tables_enabled = false
       @user.save
 
-      table.privacy = Table::PUBLIC
+      table.privacy = Table::PRIVACY_PUBLIC
       table.save
       table.owner.reload # this is because the ORM is stupid
 
-      table.privacy = Table::PRIVATE
+      table.privacy = Table::PRIVACY_PRIVATE
       expect {
         table.save
       }.to raise_error(Sequel::ValidationFailed)
@@ -375,16 +375,16 @@ describe Table do
       table = create_table(:user_id => @user.id)
 
       table.should be_private
-      $tables_metadata.hget(table.key,"privacy").to_i.should == Table::PRIVATE
+      $tables_metadata.hget(table.key,"privacy").to_i.should == Table::PRIVACY_PRIVATE
 
-      table.privacy = Table::PUBLIC
+      table.privacy = Table::PRIVACY_PUBLIC
       table.save
 
       expect {
         @user.in_database(:as => :public_user).run("select * from #{table.name}")
       }.to_not raise_error
 
-      $tables_metadata.hget(table.key,"privacy").to_i.should == Table::PUBLIC
+      $tables_metadata.hget(table.key,"privacy").to_i.should == Table::PRIVACY_PUBLIC
     end
 
     it "should be associated to a database table" do
@@ -560,7 +560,7 @@ describe Table do
       CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get).returns(nil)
       @user.private_tables_enabled = true
       @user.save
-      table = create_table(user_id: @user.id, name: "varnish_privacy", privacy: Table::PRIVATE)
+      table = create_table(user_id: @user.id, name: "varnish_privacy", privacy: Table::PRIVACY_PRIVATE)
       
       id = table.table_visualization.id
       CartoDB::Varnish.any_instance.expects(:purge)
@@ -570,7 +570,7 @@ describe Table do
 
       CartoDB::Table::PrivacyManager.any_instance
         .expects(:propagate_to_redis_and_varnish)
-      table.privacy = Table::PUBLIC
+      table.privacy = Table::PRIVACY_PUBLIC
       table.save
     end
   end

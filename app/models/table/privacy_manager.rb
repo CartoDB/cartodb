@@ -10,13 +10,13 @@ module CartoDB
       end #initialize
 
       def set_public
-        self.privacy = ::Table::PUBLIC
+        self.privacy = ::Table::PRIVACY_PUBLIC
         set_database_permissions(grant_query)
         self
       end #set_public
 
       def set_private
-        self.privacy = ::Table::PRIVATE
+        self.privacy = ::Table::PRIVACY_PRIVATE
         set_database_permissions(revoke_query)
         self
       end #set_private
@@ -81,7 +81,7 @@ module CartoDB
       end #redis_key
 
       def privacy_text
-        privacy == ::Table::PUBLIC ? 'public' : 'private'
+        privacy == ::Table::PRIVACY_PUBLIC ? 'public' : 'private'
       end #privacy_text
     end # PrivacyManager
   end # Table

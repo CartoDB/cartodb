@@ -141,18 +141,6 @@ class Admin::VisualizationsController < ApplicationController
     embed_forbidden
   end #embed_map
 
-<<<<<<< HEAD
-  def get_avatar(vis, size = 128)
-
-    email  = vis.user.email.strip.downcase
-    digest = Digest::MD5.hexdigest(email)
-
-    "//www.gravatar.com/avatar/#{digest}?s=#{size}&d=http%3A%2F%2Fcartodb.s3.amazonaws.com%2Fstatic%2Fmap-avatar-03.png"
-
-  end
-
-=======
->>>>>>> CDB-2050
   # Renders input password view
   def embed_protected
     render 'embed_map_password', :layout => false

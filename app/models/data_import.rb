@@ -81,7 +81,7 @@ class DataImport < Sequel::Model
   def mark_as_failed_if_stuck!    
     return false unless stuck?
 
-    log.append 'Import timed out'
+    log.append "Import timed out. Id:#{self.id} State:#{self.state} Created at:#{self.created_at} Running imports:#{running_import_ids}"
 
     self.success  = false
     self.state    = 'failure'
@@ -195,12 +195,12 @@ class DataImport < Sequel::Model
   end
 
   # A stuck job shouldn't be finished, so it's state should not
-  # be 'complete' nor 'failed'. It should have been in the queue
+  # be complete nor failed, it should have been in the queue
   # for more than 5 minutes and it shouldn't be currently
   # processed by any active worker
   def stuck?
     !['complete', 'failure'].include?(self.state) &&
-    self.created_at < 5.minutes.ago               &&
+    self.created_at < 5.minutes.ago              &&
     !running_import_ids.include?(self.id)
   end
 

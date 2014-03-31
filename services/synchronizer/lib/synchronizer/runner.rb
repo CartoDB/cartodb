@@ -21,7 +21,7 @@ module CartoDB
         EventMachine.run do
           EventMachine::PeriodicTimer.new(tick_time_in_secs) do
             stop_if_max_ticks_reached
-            puts 'fetching job_collection'
+            puts Time.now.utc.iso8601 + ': Fetching job_collection'
             job_collection.fetch
           end
         end

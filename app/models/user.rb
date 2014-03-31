@@ -244,6 +244,10 @@ $$
     crypted_password + database_username
   end
 
+  def user_database_host
+    self.database_host
+  end
+
   def in_database(options = {}, &block)
     configuration = get_db_configuration_for(options[:as])
     connection = $pool.fetch(configuration) do

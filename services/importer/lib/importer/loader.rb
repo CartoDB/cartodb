@@ -34,11 +34,13 @@ module CartoDB
         job.log "Using database connection with #{job.concealed_pg_options}"
         ogr2ogr.run
 
+        job.log "ogr2ogr call:      #{ogr2ogr.command}"
         job.log "ogr2ogr output:    #{ogr2ogr.command_output}"
         job.log "ogr2ogr exit code: #{ogr2ogr.exit_code}"
 
         raise InvalidGeoJSONError if ogr2ogr.command_output =~ /nrecognized GeoJSON/
-        raise LoadError(job.fetch) if ogr2ogr.exit_code != 0
+        raise UnsupportedFormatError if (ogr2ogr.exit_code == 256 && ogr2ogr.command_output =~ /Unable to open(.*)with the following drivers/)
+        raise LoadError(job.id.to_s) if ogr2ogr.exit_code != 0
         job.log 'Georeferencing...'
         georeferencer.run
         job.log 'Georeferenced'

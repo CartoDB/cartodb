@@ -345,10 +345,24 @@ $$
     end
   end
 
+  # List all public visualization tags of the user
+  def tags
+    require_relative './visualization/tags'
+    CartoDB::Visualization::Tags.new(self).names({
+      type: CartoDB::Visualization::Member::DERIVED_TYPE,
+      privacy: CartoDB::Visualization::Member::PRIVACY_PUBLIC
+    })
+  end #tags
+
 
   def tables
     Table.filter(:user_id => self.id).order(:id).reverse
   end
+
+  def gravatar(size = 128, default_image = "http://cartodb.s3.amazonaws.com/static/public_dashboard_default_avatar.png")
+    digest = Digest::MD5.hexdigest(email.downcase)
+    "http://www.gravatar.com/avatar/#{digest}?s=#{size}&d=#{URI.encode(default_image)}"
+  end #gravatar
 
   # Retrive list of user tables from database catalogue
   #
@@ -358,7 +372,7 @@ $$
   # NOTE: this currently returns all public tables, can be
   #       improved to skip "service" tables
   #
-  def tables_effective()
+  def tables_effective
     in_database do |user_database|
       user_database.synchronize do |conn|
         query = "select table_name::text from information_schema.tables where table_schema = 'public'"
@@ -681,8 +695,10 @@ $$
   end
 
   def visualization_count
+    # could also be retrieved querying count of visualizations type derived
+    # one map per visualization - each table visualization (canonical visualization)
     maps.count - table_count
-  end
+  end #visualization_count
 
   def last_visualization_created_at
     Rails::Sequel.connection.fetch("SELECT created_at FROM visualizations WHERE " +

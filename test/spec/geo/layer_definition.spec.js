@@ -337,10 +337,14 @@ describe("LayerDefinition", function() {
     expect(layerDefinition.getLayerNumberByIndex(0)).toEqual(0);
     expect(layerDefinition.getLayerNumberByIndex(1)).toEqual(1);
 
+    expect(layerDefinition.getLayerIndexByNumber(0)).toEqual(0);
+    expect(layerDefinition.getLayerIndexByNumber(1)).toEqual(1);
+
     layerDefinition.getSubLayer(0).hide();
     expect(layerDefinition.getLayerNumberByIndex(0)).toEqual(1);
-
     expect(layerDefinition.getLayerNumberByIndex(1)).toEqual(-1);
+
+    expect(layerDefinition.getLayerIndexByNumber(1)).toEqual(0);
   }),
 
   describe("sublayers", function() {
@@ -389,6 +393,23 @@ describe("LayerDefinition", function() {
       expect(layerDefinition.toJSON().layers.length).toEqual(2);
       expect(layerDefinition.getSubLayerCount()).toEqual(2);
     });
+
+    it("hide should remove interaction", function() {
+      var interaction =  layerDefinition.interactionEnabled = {}
+      layerDefinition.setInteraction = function(layer, value) {
+        layerDefinition.interactionEnabled[layer] = value;
+      };
+      layerDefinition.getSubLayer(0).setInteraction(true);
+      expect(interaction[0]).toEqual(true);
+      layerDefinition.getSubLayer(0).hide();
+      expect(interaction[0]).toEqual(false);
+      layerDefinition.getSubLayer(0).show();
+      expect(interaction[0]).toEqual(true);
+      layerDefinition.getSubLayer(1).hide();
+      layerDefinition.getSubLayer(1).show();
+      expect(interaction[1]).toEqual(undefined);
+
+    })
 
     it("should be the same object for the same sublayer", function() {
       expect(layerDefinition.getSubLayer(0)).toBe(layerDefinition.getSubLayer(0));
@@ -676,6 +697,11 @@ describe("NamedMap", function() {
     } catch(e) {
       expect(e.message).toEqual("https must be used when auth_token is set");
     }
+  });
+
+  it("should return layer by index", function() {
+    expect(namedMap.getLayerIndexByNumber(0)).toEqual(0);
+    expect(namedMap.getLayerIndexByNumber(1)).toEqual(1);
   });
 
 

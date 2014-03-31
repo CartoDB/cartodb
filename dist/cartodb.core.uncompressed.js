@@ -1,5 +1,5 @@
-// version: 3.8.03
-// sha: 53ea848b1165176cc396f1be9d4e2860d03908d4
+// version: 3.8.06
+// sha: c8764f4c80b002e9a62fa80890f516ebdc13843b
 ;(function() {
   this.cartodb = {};
   var Backbone = {};
@@ -1141,7 +1141,7 @@ var Mustache;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.8.03';
+    cdb.VERSION = '3.8.06';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -1961,6 +1961,9 @@ Map.prototype = {
   _requestPOST: function(params, callback) {
     var self = this;
     var ajax = this.options.ajax;
+
+    var loadingTime = cartodb.core.Profiler.metric('cartodb-js.layergroup.post.time').start();
+
     ajax({
       crossOrigin: true,
       type: 'POST',
@@ -1970,6 +1973,7 @@ Map.prototype = {
       url: this._tilerHost() + this.endPoint + (params.length ? "?" + params.join('&'): ''),
       data: JSON.stringify(this.toJSON()),
       success: function(data) {
+        loadingTime.end();
         // discard previous calls when there is another call waiting
         if(0 === self._queue.length) {
           callback(data);
@@ -1977,6 +1981,8 @@ Map.prototype = {
         self._requestFinished();
       },
       error: function(xhr) {
+        loadingTime.end();
+        cartodb.core.Profiler.metric('cartodb-js.layergroup.post.error').inc();
         var err = { errors: ['unknow error'] };
         if (xhr.status === 0) {
           err = { errors: ['connection error'] };
@@ -2024,13 +2030,16 @@ Map.prototype = {
     var endPoint = self.JSONPendPoint || self.endPoint;
     compressor(json, 3, function(encoded) {
       params.push(encoded);
+      var loadingTime = cartodb.core.Profiler.metric('cartodb-js.layergroup.get.time').start();
       ajax({
         dataType: 'jsonp',
         url: self._tilerHost() + endPoint + '?' + params.join('&'),
         success: function(data) {
+          loadingTime.end();
           if(0 === self._queue.length) {
             // check for errors
             if (data.error) {
+              cartodb.core.Profiler.metric('cartodb-js.layergroup.get.error').inc();
               callback(null, data.error);
             } else {
               callback(data);
@@ -2039,6 +2048,8 @@ Map.prototype = {
           self._requestFinished();
         },
         error: function(data) {
+          loadingTime.end();
+          cartodb.core.Profiler.metric('cartodb-js.layergroup.get.error').inc();
           var err = { errors: ['unknow error'] };
           try {
             err = JSON.parse(xhr.responseText);
@@ -2112,6 +2123,18 @@ Map.prototype = {
 
   setLayer: function(layer, def) {
     if(layer < this.getLayerCount() && layer >= 0) {
+      if (def.options.hidden) {
+        var i = this.interactionEnabled[layer];
+        if (i) {
+          def.interaction = true
+          this.setInteraction(layer, false);
+        }
+      } else {
+        if (this.layers[layer].interaction) {
+          this.setInteraction(layer, true);
+          delete this.layers[layer].interaction;
+        }
+      }
       this.layers[layer] = _.clone(def);
     }
     this.invalidate();
@@ -2398,13 +2421,17 @@ NamedMap.prototype = _.extend({}, Map.prototype, {
   // for named maps attributes are fetch from attributes service
   fetchAttributes: function(layer_index, feature_id, columnNames, callback) {
     var ajax = this.options.ajax;
+    var loadingTime = cartodb.core.Profiler.metric('cartodb-js.named_map.attributes.time').start();
     ajax({
       dataType: 'jsonp',
       url: this._attributesUrl(layer_index, feature_id),
       success: function(data) {
+        loadingTime.end()
         callback(data);
       },
       error: function(data) {
+        loadingTime.end()
+        cartodb.core.Profiler.metric('cartodb-js.named_map.attributes.error').inc();
         callback(null);
       }
     });
@@ -2419,7 +2446,7 @@ NamedMap.prototype = _.extend({}, Map.prototype, {
   },
 
   setLayer: function(layer, def) {
-    var not_allowed_attrs = {'sql': 1, 'cartocss': 1 };
+    var not_allowed_attrs = {'sql': 1, 'cartocss': 1, 'interactivity': 1 };
 
     for(var k in def.options) {
       if (k in not_allowed_attrs) {
@@ -2440,7 +2467,14 @@ NamedMap.prototype = _.extend({}, Map.prototype, {
 
   addLayer: function(def, layer) {
     throw new Error("sublayers are read-only in Named Maps");
-  }
+  },
+
+  // for named maps the layers are always the same (i.e they are
+  // not removed to hide) so the number does not change
+  getLayerIndexByNumber: function(number) {
+    return +number;
+  },
+
 
 });
 
@@ -2615,18 +2649,22 @@ LayerDefinition.prototype = _.extend({}, Map.prototype, {
       return "\"" + n + "\"";
     }).join(',');
 
+    var loadingTime = cartodb.core.Profiler.metric('cartodb-js.layergroup.attributes.time').start();
     // execute the sql
     sql.execute('select {{{ fields }}} from ({{{ sql }}}) as _cartodbjs_alias where cartodb_id = {{{ cartodb_id }}}', {
       fields: columnNames,
       cartodb_id: feature_id,
       sql: layer.options.sql
     }).done(function(interact_data) {
+      loadingTime.end();
       if (interact_data.rows.length === 0 ) {
         callback(null);
         return;
       }
       callback(interact_data.rows[0]);
     }).error(function() {
+      loadingTime.end();
+      cartodb.core.Profiler.metric('cartodb-js.layergroup.attributes.error').inc();
       callback(null);
     });
   }

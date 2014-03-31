@@ -175,7 +175,12 @@ header {
     li {
       width: 140px;
       float:left;
-      padding: 25px 0;
+      padding: 0;
+
+      .count { 
+        padding: 25px 0;
+        display: block;
+      }
 
       @include box-sizing(border-box);
 
@@ -224,7 +229,7 @@ header {
 
 .empty {
   @include inline-block();
-  padding: 24px 30px;
+  padding: 17px 30px;
   margin: 175px auto 0 auto;
   font-size: 21px;
   color: #CCCCCC;
@@ -656,11 +661,7 @@ only screen and (                min-resolution: 2dppx) {
 
   .user-info ul {
     width: 100%;
-  }
-
-  .user-info ul li {
-
-    width: 50%;
+    li { width: 50%; }
   }
 
   .datasets > ul > li {

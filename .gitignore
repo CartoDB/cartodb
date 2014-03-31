@@ -29,4 +29,5 @@ services/importer/spec/factories/database.json
 .ruby-version
 cartodb.sublime-workspace
 cartodb.sublime-project
+.rvmrc
 .ruby-gemset

@@ -14,7 +14,7 @@ class ApplicationController < ActionController::Base
   rescue_from NoHTML5Compliant, :with => :no_html5_compliant
   rescue_from RecordNotFound,   :with => :render_404
 
-  # this disables SSL requirement in non-production environments
+  # this disables SSL requirement in non-production environments (add "|| Rails.env.development?" for local https)
   unless Rails.env.production? || Rails.env.staging?
     def self.ssl_required(*splat)
       false
@@ -33,14 +33,14 @@ class ApplicationController < ActionController::Base
 
   def allow_cross_domain_access
     unless Rails.env.production? || Rails.env.staging?
-      response.headers["Access-Control-Allow-Origin"] = "*"
-      response.headers["Access-Control-Allow-Methods"] = "*"
+      response.headers['Access-Control-Allow-Origin'] = '*'
+      response.headers['Access-Control-Allow-Methods'] = '*'
     end
   end
 
   def render_403
     respond_to do |format|
-      format.html { render :file => "public/403.html", :status => 403, :layout => false }
+      format.html { render :file => 'public/403.html', :status => 403, :layout => false }
       format.all  { head :forbidden }
     end
   end
@@ -48,7 +48,7 @@ class ApplicationController < ActionController::Base
   def render_404
     respond_to do |format|
       format.html do
-        render :file => "public/404.html", :status => 404, :layout => false
+        render :file => 'public/404.html', :status => 404, :layout => false
       end
       format.json do
         head :not_found
@@ -58,7 +58,7 @@ class ApplicationController < ActionController::Base
 
   def render_500
     format.html do
-      render :file => "public/500.html", :status => 500, :layout => false
+      render :file => 'public/500.html', :status => 500, :layout => false
     end
     format.json do
       render :status => 500
@@ -89,7 +89,7 @@ class ApplicationController < ActionController::Base
     if table.is_a?(Table)
       table.privacy_text
     elsif table.is_a?(Hash)
-      table["privacy"]
+      table['privacy']
     end
   end
   helper_method :table_privacy_text

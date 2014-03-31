@@ -184,6 +184,20 @@ describe("LayerDefinition", function() {
     })
   });
 
+  it("should return null token when there are no layers", function() {
+
+      layerDefinition.getSubLayer(0).hide();
+      layerDefinition.getSubLayer(1).hide();
+      var tk = 'test'
+      layerDefinition._getLayerToken(function(a) {
+        tk =  a;
+      })
+      waits(100);
+      runs(function() {
+        expect(tk).toEqual(null);
+      });
+  });
+
   it("should return values for the latest query", function() {
     tokens = [];
     layerDefinition.options.ajax = function(p) { 
@@ -314,6 +328,22 @@ describe("LayerDefinition", function() {
       expect(tiles.tiles[0].indexOf('map_key=testapikey')).not.toEqual(-1)
       expect(tiles.tiles[0].indexOf('should_not')).toEqual(-1)
     });
+  });
+
+  it("getTiles should use empty gif there there is no layers", function() {
+      layerDefinition.getSubLayer(0).hide();
+      layerDefinition.getSubLayer(1).hide();
+      layerDefinition.getLayerToken = function (callback) {
+        callback(null);
+      }
+
+      layerDefinition.getTiles(function(t) {
+        urls = t;
+      })
+      waits (100);
+      runs(function() {
+        expect(urls.tiles[0]).toEqual(Map.EMPTY_GIF);
+      })
   });
 
   it("should set refresh timer after being updated", function() {
@@ -548,6 +578,12 @@ describe("NamedMap", function() {
 
   it("should enable/disable layers", function() {
     var params;
+    namedMap.layers.push({
+      options:  {},
+        infowindow: {
+          fields: [ { title:'test', value:true, position:0, index:0 } ]
+        }
+    });
     namedMap.options.ajax = function(p) { 
       params = p;
       p.success({ layergroupid: 'test' });
@@ -561,13 +597,26 @@ describe("NamedMap", function() {
       var config ="config=" + encodeURIComponent(JSON.stringify({color: 'red', layer0: 0}));
       expect(params.url.indexOf(config)).not.toEqual(-1);
     });
+
+    var token = 'test';
+    runs(function() {
+      namedMap.getSubLayer(1).hide();
+      namedMap._getLayerToken(function(d) {
+        token = d;
+      });
+    });
+    waits(100);
+    runs(function() {
+      expect(token).toEqual(null);
+    })
+    waits(100);
     runs(function() {
       namedMap.getSubLayer(0).show();
       namedMap._getLayerToken();
     });
-    waits(100);
+    waits(200);
     runs(function() {
-      var config ="config=" + encodeURIComponent(JSON.stringify({color: 'red'}));
+      var config ="config=" + encodeURIComponent(JSON.stringify({color: 'red', layer1: 0}));
       expect(params.url.indexOf(config)).not.toEqual(-1);
     });
   });

@@ -12,6 +12,8 @@ module CartoDB
         @table           = options[:table] || visualization.table
         @synchronization = options[:synchronization]
         @rows_and_sizes  = options[:rows_and_sizes] || {}
+        # Expose real privacy (used for normal JSON purposes)
+        @real_privacy    = options[:real_privacy] || false
       end #initialize
 
       def to_poro
@@ -41,6 +43,7 @@ module CartoDB
 
       # Simplify certain privacy values for the vizjson
       def privacy_for_vizjson(visualization)
+        return visualization.privacy if @real_privacy
         case visualization.privacy
           when Member::PRIVACY_PUBLIC, Member::PRIVACY_LINK
             Member::PRIVACY_PUBLIC

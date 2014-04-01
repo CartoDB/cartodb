@@ -165,7 +165,7 @@ module CartoDB
       end #password_protected?
 
       def to_hash(options={})
-        Presenter.new(self, options).to_poro
+        Presenter.new(self, options.merge(real_privacy: true)).to_poro
       end #to_hash
 
       def to_vizjson

@@ -43,7 +43,7 @@ grunt --environment production release
 ```
 
 This should be done before the rails deploy
-the manifest is located at http://libs.cartocdn.com/cartodbui/manifest-<%= commit_sha %>.yml
+the manifest is located at http://libs.cartocdn.com/cartodbui/manifest_<%= commit_sha %>.yml
 
 ### custom installs
 you need to follow steps in README.md and use the right ``asset_host`` variable in order to point to

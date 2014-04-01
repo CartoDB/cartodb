@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+require_relative './member'
+
 module CartoDB
   module Visualization
     class Presenter
@@ -21,7 +23,7 @@ module CartoDB
           type:             visualization.type,
           tags:             visualization.tags,
           description:      visualization.description,
-          privacy:          visualization.privacy_for_vizjson.upcase,
+          privacy:          privacy_for_vizjson(visualization),
           stats:            visualization.stats(user),
           created_at:       visualization.created_at,
           updated_at:       visualization.updated_at
@@ -36,6 +38,18 @@ module CartoDB
 
       attr_reader :visualization, :options, :user, :table, :synchronization,
                   :rows_and_sizes
+
+      # Simplify certain privacy values for the vizjson
+      def privacy_for_vizjson(visualization)
+        case visualization.privacy
+          when Member::PRIVACY_PUBLIC, Member::PRIVACY_LINK
+            Member::PRIVACY_PUBLIC
+          when Member::PRIVACY_PRIVATE
+            Member::PRIVACY_PRIVATE
+          when Member::PRIVACY_PROTECTED
+            Member::PRIVACY_PROTECTED
+        end
+      end #privacy_for_vizjson
 
       def related
         { related_tables:   related_tables }

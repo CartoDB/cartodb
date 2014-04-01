@@ -10,7 +10,13 @@ different usecases.
 ## development
 
 If you are developing cartodb frontend you need to follow the steps in README file, every time you
-change javascript or css you need to compile it.
+change javascript or css you need to compile it. You can use watch task:
+
+```
+grunt watch:js
+```
+
+so every time javascript is changed the files are compiled
 
 If you are developing something not related to frontend you don't need to compile anything, just:
 

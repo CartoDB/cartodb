@@ -651,6 +651,11 @@
           &:hover {background:rgba(146,188,65,0.8)}
         }
 
+        &.link {
+          background:rgba(255,166,77,0.5);
+          &:hover {background:rgba(255,166,77,0.8)}
+        }
+
         &.private {
           background:rgba(255,0,0,0.5);
           &:hover {background:rgba(255,0,0,0.8)}

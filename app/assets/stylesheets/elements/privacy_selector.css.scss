@@ -48,6 +48,8 @@
           font-size:13px;
           font-weight:normal;
 
+          line-height: 125%;
+
           &.public {
             color:#83AD3A;
             span {
@@ -58,6 +60,19 @@
             }
             &:hover {
               span {border-color:#83AD3A;}
+            }
+          }
+
+          &.link {
+            color:rgba(255,166,77,0.8);
+            span {
+              border-color:rgba(255,166,77,0.8);
+              &:before {
+                background:rgba(255,166,77,0.8);
+              }
+            }
+            &:hover {
+              span {border-color:rgba(255,166,77,0.8);}
             }
           }
 

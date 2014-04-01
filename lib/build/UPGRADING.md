@@ -27,7 +27,7 @@ and change in ``confg/app_config.yml``
 
 and reload rails server
 
-## deployement
+## deployment
 
 ### in the cloud
 assets dont' need to be precompiled by rails, it's done by release task:

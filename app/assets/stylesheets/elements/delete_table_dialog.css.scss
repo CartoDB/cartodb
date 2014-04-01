@@ -36,7 +36,7 @@
         @include border-radius(3px);
       }
 
-      &.link a i { background: rgba(#FFA64D, .5) sprite( $table-sprites, lock_key, $offset-x: 5px, $offset-y: 4px) no-repeat; }
+      &.link a i { background: rgba(#FFA64D, .5) sprite( $table-sprites, lock_open, $offset-x: 5px, $offset-y: 4px) no-repeat; }
       &.private a i { background: rgba(#FF7373, .5) sprite( $table-sprites, lock_closed, $offset-x: 5px, $offset-y: 4px) no-repeat; }
 
     }

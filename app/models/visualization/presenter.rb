@@ -25,7 +25,7 @@ module CartoDB
           type:             visualization.type,
           tags:             visualization.tags,
           description:      visualization.description,
-          privacy:          privacy_for_vizjson(visualization).upcase,
+          privacy:          privacy_for_vizjson.upcase,
           stats:            visualization.stats(user),
           created_at:       visualization.created_at,
           updated_at:       visualization.updated_at
@@ -42,9 +42,9 @@ module CartoDB
                   :rows_and_sizes
 
       # Simplify certain privacy values for the vizjson
-      def privacy_for_vizjson(visualization)
-        return visualization.privacy if @real_privacy
-        case visualization.privacy
+      def privacy_for_vizjson
+        return @visualization.privacy if @real_privacy
+        case @visualization.privacy
           when Member::PRIVACY_PUBLIC, Member::PRIVACY_LINK
             Member::PRIVACY_PUBLIC
           when Member::PRIVACY_PRIVATE

@@ -322,6 +322,41 @@ describe Visualization::Member do
     end
   end
 
+  describe '#validation_for_link_privacy' do
+    it 'checks that only users with private tables enabled can set LINK privacy' do
+
+      visualization = Visualization::Member.new(
+          privacy: Visualization::Member::PRIVACY_PUBLIC,
+          name: 'test',
+          type: Visualization::Member::CANONICAL_TYPE
+      )
+      visualization.user_data = { actions: { private_maps: true } }
+
+      # Careful, do a user mock after touching user_data as it does some checks about user too
+      user_mock = mock
+      user_mock.stubs(:private_tables_enabled).returns(true)
+      Visualization::Member.any_instance.stubs(:user).returns(user_mock)
+
+      visualization.valid?.should eq true
+
+      visualization.privacy = Visualization::Member::PRIVACY_PRIVATE
+      visualization.valid?.should eq true
+
+
+      visualization.privacy = Visualization::Member::PRIVACY_LINK
+      visualization.valid?.should eq true
+
+      visualization.privacy = Visualization::Member::PRIVACY_PUBLIC
+
+      user_mock.stubs(:private_tables_enabled).returns(false)
+
+      visualization.valid?.should eq true
+
+      visualization.privacy = Visualization::Member::PRIVACY_LINK
+      visualization.valid?.should eq false
+    end
+  end
+
   def random_attributes(attributes={})
     random = UUIDTools::UUID.timestamp_create.to_s
     {

@@ -88,9 +88,7 @@ module CartoDB
         end
 
         if privacy == PRIVACY_LINK
-          validator.validate_expected_value(
-              {private_tables_enabled: user.private_tables_enabled}, true, user.private_tables_enabled
-          )
+          validator.validate_expected_value(:private_tables_enabled, true, user.private_tables_enabled)
         end
 
         validator.valid?

@@ -1,11 +1,11 @@
 
 # upgrading to new assets pipeline
 
-We have removed the rails assets pipeline to a custom one in order to take control and save
+We have changed the rails assets pipeline to a custom one in order to take control and save
 development and deployement time.
 
-There are a few things that change related to deployement and development, here are described the
-different usecases.
+There are a few things that change related to deployment and development, below you can find the
+different use cases.
 
 ## development
 
@@ -21,8 +21,10 @@ so every time javascript is changed the files are compiled
 If you are developing something not related to frontend you don't need to compile anything, just:
 
 ```
-curl http://libs.cartocdn.com/cartodbui/manifest.yml > public/assets
+make cartodbui
 ```
+
+this downloads the required manifest
 
 and change in ``confg/app_config.yml``
 

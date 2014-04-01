@@ -1343,12 +1343,11 @@ TRIGGER
       # update metadata records
       reload
       begin
-        $tables_metadata.rename(Table.key(database_name,@name_changed_from), key)
+        $tables_metadata.rename(Table.key(owner.database_name,@name_changed_from), key)
       rescue StandardError => exception
         exception_to_raise = CartoDB::BaseCartoDBError.new(
             "Table update_name_changes(): '#{@name_changed_from}','#{key}' renaming metadata", exception)
         CartoDB::notify_exception(exception_to_raise, user: owner)
-
         #raise exception_to_raise
       end
 
@@ -1358,14 +1357,14 @@ TRIGGER
         exception_to_raise = CartoDB::BaseCartoDBError.new(
             "Table update_name_changes(): '#{@name_changed_from}' doesn't exist", exception)
         CartoDB::notify_exception(exception_to_raise, user: owner)
-        raise exception_to_raise
+        #raise exception_to_raise
       end
       propagate_namechange_to_table_vis
 
       if layers.blank?
         exception_to_raise = CartoDB::TableError.new("Attempt to rename table without layers #{self.name}")
         CartoDB::notify_exception(exception_to_raise, user: owner)
-        raise exception_to_raise
+        #raise exception_to_raise
       end
 
       layers.each do |layer|

@@ -275,8 +275,6 @@ describe Table do
         vis.private?.should == false
         vis.public_with_link?.should == vis.table?  # Table/canonical changed
       }
-
-      table.affected_visualizations.first.public_with_link?.should == false
     end
 
     it 'receives privacy changes from the associated visualization' do

@@ -25,7 +25,7 @@ module CartoDB
           type:             visualization.type,
           tags:             visualization.tags,
           description:      visualization.description,
-          privacy:          privacy_for_vizjson(visualization),
+          privacy:          privacy_for_vizjson(visualization).upcase,
           stats:            visualization.stats(user),
           created_at:       visualization.created_at,
           updated_at:       visualization.updated_at

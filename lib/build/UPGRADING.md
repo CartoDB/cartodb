@@ -28,7 +28,7 @@ and change in ``confg/app_config.yml``
 
 ```
   app_assets:
-    asset_host: 'http://libs.cartocdn.com/cartodbui'
+    asset_host: '//cartodb-libs.global.ssl.fastly.net/cartodbui'
 ```
 
 and reload rails server

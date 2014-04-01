@@ -168,6 +168,18 @@ module CartoDB
         Presenter.new(self, options).to_poro
       end #to_hash
 
+      # Simplify certain privacy values for the vizjson
+      def privacy_for_vizjson
+        case privacy
+          when PRIVACY_PUBLIC, PRIVACY_LINK
+            PRIVACY_PUBLIC
+          when PRIVACY_PRIVATE
+            PRIVACY_PRIVATE
+          when PRIVACY_PROTECTED
+            PRIVACY_PROTECTED
+        end
+      end #privacy_for_vizjson
+
       def to_vizjson
         options = {
           full: false,

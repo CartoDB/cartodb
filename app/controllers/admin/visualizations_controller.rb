@@ -52,11 +52,11 @@ class Admin::VisualizationsController < ApplicationController
     response.headers['X-Cache-Channel'] = "#{@visualization.varnish_key}:vizjson"
     response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
 
-    @avatar_url           = @visualization.user.gravatar(64)
-    @disqus_shortname     = @visualization.user.disqus_shortname.presence || 'cartodb'
-    @visualization_count  = @visualization.user.visualization_count
-    @related_tables       = @visualization.related_tables
-    @private_tables_count = @related_tables.select{|p| p.privacy_text == 'PRIVATE' }.count 
+    @avatar_url             = @visualization.user.gravatar(64)
+    @disqus_shortname       = @visualization.user.disqus_shortname.presence || 'cartodb'
+    @visualization_count    = @visualization.user.visualization_count
+    @related_tables         = @visualization.related_tables
+    @nonpublic_tables_count = @related_tables.select{|p| p.privacy != ::Table::PRIVACY_PUBLIC }.count
 
     respond_to do |format|
       format.html { render layout: false }
@@ -86,10 +86,10 @@ class Admin::VisualizationsController < ApplicationController
 
     @avatar_url = @visualization.user.gravatar(64)
 
-    @disqus_shortname     = @visualization.user.disqus_shortname || 'cartodb'
-    @visualization_count  = @visualization.user.visualization_count
-    @related_tables       = @visualization.related_tables
-    @private_tables_count = @related_tables.select{|p| p.privacy_text == 'PRIVATE' }.count 
+    @disqus_shortname       = @visualization.user.disqus_shortname || 'cartodb'
+    @visualization_count    = @visualization.user.visualization_count
+    @related_tables         = @visualization.related_tables
+    @nonpublic_tables_count = @related_tables.select{|p| p.privacy != ::Table::PRIVACY_PUBLIC }.count
 
     respond_to do |format|
       format.html { render 'public_map', layout: false }

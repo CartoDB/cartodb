@@ -1321,6 +1321,15 @@ TRIGGER
     end
   end #privacy_text
 
+  # Simplify certain privacy values for the vizjson
+  def privacy_text_for_vizjson
+    if (privacy == PRIVACY_LINK)
+      PRIVACY_PUBLIC_TEXT.upcase
+    else
+      privacy_text
+    end
+  end #privacy_text_for_vizjson
+
   def relator
     @relator ||= CartoDB::Table::Relator.new(Rails::Sequel.connection, self)
   end #relator

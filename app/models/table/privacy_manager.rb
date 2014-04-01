@@ -33,7 +33,7 @@ module CartoDB
       end #set_from_table_privacy
 
       def set_from(visualization)
-        set_public  if (visualization.public? || public_with_link?)
+        set_public  if (visualization.public? || visualization.public_with_link?)
         set_private if visualization.private?
         # Visualizations can't set tables to 'with link'
         table.update(privacy: privacy)

@@ -285,7 +285,7 @@ describe Table do
       table.should be_private
       table.table_visualization.should be_private
 
-      table.table_visualization.privacy = 'public'
+      table.table_visualization.privacy = CartoDB::Visualization::Member::PRIVACY_PUBLIC
       table.table_visualization.store
       table.reload
       table                           .should be_public
@@ -295,7 +295,7 @@ describe Table do
       rehydrated                      .should be_public
       rehydrated.table_visualization  .should be_public
 
-      table.table_visualization.privacy = 'private'
+      table.table_visualization.privacy = CartoDB::Visualization::Member::PRIVACY_PRIVATE
       table.table_visualization.store
       table.reload
       table                           .should be_private

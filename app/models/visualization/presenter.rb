@@ -21,7 +21,7 @@ module CartoDB
           type:             visualization.type,
           tags:             visualization.tags,
           description:      visualization.description,
-          privacy:          visualization.privacy.upcase,
+          privacy:          visualization.privacy_for_vizjson.upcase,
           stats:            visualization.stats(user),
           created_at:       visualization.created_at,
           updated_at:       visualization.updated_at
@@ -49,7 +49,7 @@ module CartoDB
         }
 
         table_data.merge!(
-          privacy:      table.privacy_text,
+          privacy:      table.privacy_text_for_vizjson,
           updated_at:   table.updated_at
         ) #if options.fetch(:table_data, true)
 

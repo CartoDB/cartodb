@@ -93,7 +93,7 @@ describe Visualization::Member do
       member.store
 
       member.expects(:invalidate_varnish_cache)
-      member.privacy = 'private'
+      member.privacy = Visualization::Member::PRIVACY_PRIVATE
       member.store
     end
 
@@ -153,10 +153,10 @@ describe Visualization::Member do
       visualization = Visualization::Member.new(privacy: 'public')
       visualization.public?.should == true
 
-      visualization.privacy = 'private'
+      visualization.privacy = Visualization::Member::PRIVACY_PRIVATE
       visualization.public?.should == false
 
-      visualization.privacy = 'public'
+      visualization.privacy = Visualization::Member::PRIVACY_PUBLIC
       visualization.public?.should == true
     end
   end #public?

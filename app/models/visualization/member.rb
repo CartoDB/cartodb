@@ -208,8 +208,7 @@ module CartoDB
 
       def invalidate_cache_and_refresh_named_map
         invalidate_varnish_cache
-
-        if type != CANONICAL_TYPE   
+        if type != CANONICAL_TYPE
           save_named_map
         end
       end #invalidate_cache_and_refresh_named_map
@@ -438,7 +437,8 @@ module CartoDB
       end #generate_salt
 
       def secure_digest(*args)
-        Digest::SHA256.hexdigest(args.flatten().join())
+        #noinspection RubyArgCount
+        Digest::SHA256.hexdigest(args.flatten.join)
       end #secure_digest
 
     end # Member

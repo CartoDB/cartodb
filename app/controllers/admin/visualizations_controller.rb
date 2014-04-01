@@ -32,12 +32,13 @@ class Admin::VisualizationsController < ApplicationController
 
     return(pretty_404) if @visualization.nil? || @visualization.private?
     return(redirect_to public_map_url_for(id)) if @visualization.derived?
-    
+
     @vizjson = @visualization.to_vizjson
 
     respond_to do |format|
       format.html { render 'public', layout: 'application_public' }
     end
+
   end #public
 
   def public_map
@@ -51,7 +52,7 @@ class Admin::VisualizationsController < ApplicationController
     response.headers['X-Cache-Channel'] = "#{@visualization.varnish_key}:vizjson"
     response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
 
-    @avatar_url           = get_avatar(@visualization, 64)
+    @avatar_url           = @visualization.user.gravatar(64)
     @disqus_shortname     = @visualization.user.disqus_shortname.presence || 'cartodb'
     @visualization_count  = @visualization.user.visualization_count
     @related_tables       = @visualization.related_tables
@@ -83,7 +84,7 @@ class Admin::VisualizationsController < ApplicationController
 
     @protected_map_token = @visualization.get_auth_token()
 
-    @avatar_url = get_avatar(@visualization, 64)
+    @avatar_url = @visualization.user.gravatar(64)
 
     @disqus_shortname     = @visualization.user.disqus_shortname || 'cartodb'
     @visualization_count  = @visualization.user.visualization_count
@@ -140,15 +141,6 @@ class Admin::VisualizationsController < ApplicationController
   rescue
     embed_forbidden
   end #embed_map
-
-  def get_avatar(vis, size = 128)
-
-    email  = vis.user.email.strip.downcase
-    digest = Digest::MD5.hexdigest(email)
-
-    "//www.gravatar.com/avatar/#{digest}?s=#{size}&d=http%3A%2F%2Fcartodb.s3.amazonaws.com%2Fstatic%2Fmap-avatar-03.png"
-
-  end
 
   # Renders input password view
   def embed_protected

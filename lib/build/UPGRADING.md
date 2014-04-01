@@ -29,9 +29,16 @@ and reload rails server
 
 ## deployement
 
-## in the cloud
-assets dont' need to be precompiled and the manifest is located at http://libs.cartocdn.com/cartodbui/manifest.yml
+### in the cloud
+assets dont' need to be precompiled by rails, it's done by release task:
 
-## custom installs
+```
+grunt --environment production release
+```
+
+This should be done before the rails deploy
+the manifest is located at http://libs.cartocdn.com/cartodbui/manifest.yml
+
+### custom installs
 you need to follow steps in README.md and use the right ``asset_host`` variable in order to point to
 local assets

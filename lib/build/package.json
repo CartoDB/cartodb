@@ -31,7 +31,6 @@
     "grunt-contrib-sass": "~0.7.3",
     "grunt-contrib-compass": "~0.7.2",
     "grunt-contrib-clean": "~0.5.0",
-    "grunt-concurrent": "~0.5.0",
     "load-grunt-tasks": "~0.2.0",
     "grunt-contrib-uglify": "~0.4.0",
     "grunt-contrib-compress": "~0.7.0",

@@ -1,5 +1,6 @@
 # encoding: utf-8
 
+require_relative '../../models/table'
 require_relative '../../models/visualization/member'
 require_relative '../../models/visualization/collection'
 
@@ -28,7 +29,7 @@ class Admin::PagesController < ApplicationController
     @username   = viewed_user.username
     @avatar_url = viewed_user.gravatar(128)
 
-    @tables_num = viewed_user.tables.count
+    @tables_num = viewed_user.table_count(::Table::PRIVACY_PUBLIC)
     @vis_num    = viewed_user.visualization_count
 
     datasets = Visualization::Collection.new.fetch({
@@ -74,7 +75,7 @@ class Admin::PagesController < ApplicationController
     @username   = viewed_user.username
     @avatar_url = viewed_user.gravatar(128)
 
-    @tables_num = viewed_user.tables.count
+    @tables_num = viewed_user.table_count(::Table::PRIVACY_PUBLIC)
     @vis_num    = viewed_user.visualization_count
 
     visualizations = Visualization::Collection.new.fetch({

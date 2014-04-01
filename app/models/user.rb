@@ -678,9 +678,13 @@ $$
     end
   end
 
-  def table_count
-    Table.filter({:user_id => self.id}).count
-  end
+  def table_count(privacy_filter=nil)
+    filter = {
+        user_id: self.id
+    }
+    filter[:privacy] = privacy_filter unless privacy_filter.nil?
+    Table.filter(filter).count
+  end #table_count
 
   def failed_import_count
     DataImport.where(user_id: self.id, state: 'failure').count

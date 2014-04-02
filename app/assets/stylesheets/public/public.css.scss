@@ -11,7 +11,7 @@ body {
   min-width: 100%;
 }
 
-body:after {
+_body:after {
   @include box-sizing(border-box);
   content: '';
   background: rgba(red, .8);
@@ -26,6 +26,24 @@ body:after {
   z-index: 1000;
   @include simple-transition(all);
   @include border-radius(0 0 3px 3px);
+}
+
+.announcement {
+
+  padding: 15px 0;
+  border-bottom: 1px solid rgba(204,204,204,0.5);
+  line-height: 120%;
+
+  color: #333333;
+  background: rgba(255,229,153,0.35);
+
+  a { color:#397DB8; text-decoration: underline; }
+
+  .inner {
+    width: 100%;
+    text-align: center;
+  }
+
 }
 
 .content {

@@ -58,16 +58,16 @@
   <![endif]-->
 <% end %>
 
+<%= render(:partial => 'announcement') %>
+
 <div class="content<%= " empty" if @datasets.size == 0 %>">
 
   <div class="inner">
 
-  <div class="info">
-
     <%= render(:partial => 'user_info') %>
     <%= render(:partial => 'tags', :locals => {:collection => @tags }) %>
 
-  </div>
+    </div>
 
   <div class="datasets">
 

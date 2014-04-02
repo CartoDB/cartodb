@@ -1089,3 +1089,12 @@ and (orientation : landscape) {
   }
 
 }
+
+#cartodb-gmaps-attribution,
+.gmnoprint.gm-style-cc,
+.gm-style-cc,
+.leaflet-container .leaflet-control-attribution, .leaflet-container .leaflet-control-scale,
+.leaflet-control-attribution .leaflet-control {
+  display:none!important;
+}
+

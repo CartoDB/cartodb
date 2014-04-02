@@ -6,8 +6,21 @@
       <li<%= " class='#{i == 0 ? "first" : "last" }'" if i == 0 || i == @tags.size - 1 %>>
         <% if params[:tag] && params[:tag] == tag %>
           <%= tag.capitalize.truncate(40) %>
+
+          <% if action_name == 'datasets' %>
+          <%= link_to "x", "/datasets", { :class => "close" } %>
+          <% else %>
+          <%= link_to "x", "/", { :class => "close" } %>
+        <% end %>
+
         <% else %>
+
+          <% if action_name == 'datasets' %>
+          <%= link_to tag.capitalize.truncate(40), dataset_public_tag_url(tag) %>
+          <% else %>
           <%= link_to tag.capitalize.truncate(40), public_tag_url(tag) %>
+          <% end %>
+
         <% end %>
       <% end %>
 

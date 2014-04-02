@@ -134,6 +134,8 @@ header {
 
     a { line-height:normal; }
 
+    .close { float:right; margin: 0 3px 0 0; }
+
     &:first-child { padding-top: 0; }
     &:last-child  { border:none; }
 

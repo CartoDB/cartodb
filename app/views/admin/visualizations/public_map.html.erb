@@ -3,7 +3,7 @@
   <head>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
     <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
-    <%= favicon_link_tag "favicon.ico" %>
+    <%= favicon_link_tag "/favicons/favicon.ico" %>
     <title><%= @visualization.name.gsub(/_/," ") %> | CartoDB</title>
     <meta name="description" content="<%= @visualization.description || @visualization.name.gsub(/_/," ") %>">
     <meta name="keywords" content="Map,cartodb,<%= @visualization.name.gsub(/_/,",").gsub(/ /,",") %>">

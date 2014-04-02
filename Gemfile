@@ -37,7 +37,16 @@ group :production, :staging do
 end
 
 group :assets do
-  gem "compass",               "0.12.3"
+  gem 'asset_sync',            "~> 1.0.0"
+  gem 'fog',                   "1.15.0"
+  gem 'sass-rails',            "~> 3.2.6"
+  gem 'uglifier',              "~> 1.3.0"
+  gem 'therubyracer',          "~> 0.9.10"
+  # gem 'compass',               "0.12.2"
+  gem 'compass-rails',         "~> 1.0.3"
+  gem 'chunky_png',            "~> 1.2.9"
+  gem 'oily_png',              "~> 1.1.0"
+  gem 'mustache-trimmer',      git: 'https://github.com/josh/mustache-trimmer.git'
 end
 
 # Importer

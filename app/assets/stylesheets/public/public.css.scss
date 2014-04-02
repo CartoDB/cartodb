@@ -11,7 +11,8 @@ body {
   min-width: 100%;
 }
 
-_body:after {
+body:after {
+  display:none!Important;
   @include box-sizing(border-box);
   content: '';
   background: rgba(red, .8);

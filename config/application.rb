@@ -53,7 +53,7 @@ module CartoDB
     ::Sequel.extension(:pagination)
 
     # Enable the asset pipeline
-    config.assets.enabled = true
+    config.assets.enabled = false
 
     # Default setting is [/\w+\.(?!js|css).+/, /application.(css|js)$/]
     config.assets.precompile = %w( dashboard.js application.js cdb.js common_data.js keys.js login.js models.js organization.js table.js table_public.js models.js templates.js templates_mustache.js respond.js tipsy.js)

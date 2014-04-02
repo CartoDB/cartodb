@@ -46,3 +46,4 @@ lib/build/dist
 lib/build/node_modules
 public/assets
 lib/build/grunt-aws.json
+lib/build/app_config.js

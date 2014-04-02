@@ -119,10 +119,8 @@ module CartoDB
         if importer.success?
           set_success_state_from(importer)
         elsif retried_times < 3
-          @log_trace = importer.runner_log_trace
           set_retry_state_from(importer)
         else
-          @log_trace = importer.runner_log_trace
           set_failure_state_from(importer)
         end
 
@@ -137,7 +135,7 @@ module CartoDB
 
       def set_success_state_from(importer)
         self.log            << '******** synchronization succeeded ********'
-        self.log_trace      = nil
+        self.log_trace      = importer.runner_log_trace
         self.state          = STATE_SUCCESS
         self.etag           = importer.etag
         self.checksum       = importer.checksum
@@ -150,15 +148,6 @@ module CartoDB
       rescue
         self
       end
-
-      # Tries to run automatic geocoding if present
-      def geocode_table
-        return unless table && table.automatic_geocoding
-        self.log << 'Running automatic geocoding...'
-        table.automatic_geocoding.run
-      rescue => e
-        self.log << "Error while running automatic geocoding: #{e.message}" 
-      end # geocode_table
 
       def set_retry_state_from(importer)
         self.log            << '******** synchronization failed, will retry ********'
@@ -179,6 +168,15 @@ module CartoDB
         self.error_message  = importer.error_message
         self.retried_times  = self.retried_times + 1
       end
+
+      # Tries to run automatic geocoding if present
+      def geocode_table
+        return unless table && table.automatic_geocoding
+        self.log << 'Running automatic geocoding...'
+        table.automatic_geocoding.run
+      rescue => e
+        self.log << "Error while running automatic geocoding: #{e.message}"
+      end # geocode_table
 
       def to_hash
         attributes.to_hash
@@ -216,7 +214,8 @@ module CartoDB
           .merge(
             user:     user.database_username,
             password: user.database_password,
-            database: user.database_name
+            database: user.database_name,
+	    host:     user.user_database_host
           )
       end 
 

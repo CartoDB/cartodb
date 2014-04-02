@@ -26,4 +26,14 @@ module Cartodb
     file_hash = YAML.load_file("#{Rails.root}/config/error_codes.yml")
     @error_codes ||= file_hash["cartodb_errors"].try(:to_options!)
   end    
+
+  def self.asset_path
+    return @asset_path if @asset_path
+    if Cartodb.config[:app_assets]
+      @asset_path = (Cartodb.config[:app_assets]['asset_host'] + '/assets/' +
+        YAML::load(File.read(Rails.root.join('config', 'frontend.yml'))))
+    else
+      @asset_path=nil
+    end
+  end
 end

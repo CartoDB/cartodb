@@ -1,6 +1,6 @@
-// cartodb.js version: 3.8.07-dev
+// cartodb.js version: 3.8.05-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: 3e16cb29545c1b46c5b16d1bd8140de27249ba30
+// sha: cbf786eab4a2ad3262057306e5b5e2d6be713a96
 (function() {
   var root = this;
 
@@ -20686,7 +20686,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.8.07-dev';
+    cdb.VERSION = '3.8.05-dev';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -26061,18 +26061,6 @@ Map.prototype = {
 
   setLayer: function(layer, def) {
     if(layer < this.getLayerCount() && layer >= 0) {
-      if (def.options.hidden) {
-        var i = this.interactionEnabled[layer];
-        if (i) {
-          def.interaction = true
-          this.setInteraction(layer, false);
-        }
-      } else {
-        if (this.layers[layer].interaction) {
-          this.setInteraction(layer, true);
-          delete this.layers[layer].interaction;
-        }
-      }
       this.layers[layer] = _.clone(def);
     }
     this.invalidate();

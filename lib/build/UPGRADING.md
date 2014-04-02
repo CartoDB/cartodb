@@ -18,15 +18,7 @@ grunt watch:js
 
 so every time javascript is changed the files are compiled
 
-If you are developing something not related to frontend you don't need to compile anything, just:
-
-```
-make cartodbui
-```
-
-this downloads the required manifest
-
-and change in ``confg/app_config.yml``
+**If you are developing something not related to frontend** you don't need to compile anything, change your ``confg/app_config.yml``
 
 ```
   app_assets:
@@ -44,9 +36,15 @@ assets dont' need to be precompiled by rails, it's done by release task:
 grunt --environment production release
 ```
 
-This should be done before the rails deploy
-the manifest is located at http://libs.cartocdn.com/cartodbui/manifest_<%= commit_sha %>.yml
 
 ### custom installs
-you need to follow steps in README.md and use the right ``asset_host`` variable in order to point to
-local assets
+
+just follow steps in README.md and then:
+
+```
+grunt release
+```
+
+config/enviorment/staging.rb need to remove ``app_assets`` from ``config/app_config.yml`` so assets
+are loaded from local
+

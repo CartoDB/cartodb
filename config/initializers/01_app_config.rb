@@ -30,10 +30,9 @@ module Cartodb
   def self.asset_path
     return @asset_path if @asset_path
     if Cartodb.config[:app_assets]
-      @asset_path = (Cartodb.config[:app_assets]['asset_host'] + '/assets/' +
-        YAML::load(File.read(Rails.root.join('config', 'frontend.yml'))))
+      @asset_path = Cartodb.config[:app_assets]['asset_host']
     else
-      @asset_path=nil
+      @asset_path = nil
     end
   end
 end

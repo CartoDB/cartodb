@@ -663,6 +663,12 @@ only screen and (                min-resolution: 2dppx) {
     }
   }
 
+  .announcement {
+    padding: 15px;
+    line-height: 125%;
+    font-size: 13px;
+  }
+
   footer {
     padding: 44px 15px;
     .inner { width: 100%; }
@@ -682,7 +688,12 @@ only screen and (                min-resolution: 2dppx) {
     width: 100%;
   }
 
-  .content .inner { padding: 0 15px; width: 100%; }
+  .content {
+
+    padding-top: 30px;
+
+    .inner { padding: 0 15px; width: 100%; }
+  }
 
   .user-info,
   .user-info .avatar,
@@ -762,7 +773,15 @@ only screen and (                min-resolution: 2dppx) {
     .inner {
       width: 100%;
       padding: 24px 15px;
+
+      .learn_more { display: none; }
     }
+  }
+
+  .announcement {
+    padding: 15px;
+    line-height: 125%;
+    font-size: 14px;
   }
 
   footer {
@@ -783,6 +802,8 @@ only screen and (                min-resolution: 2dppx) {
   }
 
   .content { 
+
+    padding-top: 30px;
 
     .inner {
       padding: 0 15px;
@@ -848,9 +869,6 @@ only screen and (                min-resolution: 2dppx) {
     .inner {
       width: 100%;
       padding: 24px 15px;
-
-      .dashboard { display: none; }
-      .learn_more { display: none; }
     }
   }
 
@@ -864,6 +882,8 @@ only screen and (                min-resolution: 2dppx) {
   }
 
   .content {
+
+    padding-top: 30px;
 
     .inner { overflow:hidden; padding: 0 15px; width: 100%; }
 
@@ -929,6 +949,8 @@ only screen and (                min-resolution: 2dppx) {
   }
 
   .content { 
+
+    padding-top: 30px;
 
     &.empty .inner {
       .datasets, .visualizations { margin: auto;; }

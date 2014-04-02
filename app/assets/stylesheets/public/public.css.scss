@@ -108,6 +108,7 @@ header {
   li  {
 
     padding: 17px 0;
+
     border-bottom: 1px solid #ddd;
     border-bottom: 1px solid rgba(#BBBBBB, .2);
     color: #BABABA;
@@ -266,7 +267,7 @@ header {
   padding: 27px 0;
 
   .title {
-    margin: 0 0 0 0;
+    margin: 0;
     @include clearfix();
   }
 
@@ -358,32 +359,38 @@ header {
       bottom: 28px;
       left: 42px;
 
+      right: 42px;
+
       z-index: 40;
+    }
 
-      h3 {
-        margin: 0;
+    .title h3 {
+      margin: 0;
 
+      color: #fff;
+      font-family: 'ProximaNova-Semibold', Helvetica, sans-serif;
+      font-weight: 400;
+      font-size: 27px;
+      @include text-overflow();
+      width: 100%;
+
+    }
+
+    .title p {
+      margin: 5px 0 0 0;
+      font-size:15px;
+      color: #DDDDDD;
+      @include text-overflow();
+      width: 100%;
+
+      a { 
         color: #fff;
-        font-family: 'ProximaNova-Semibold', Helvetica, sans-serif;
-        font-weight: 400;
-        font-size: 27px;
+        text-decoration: underline;
+
+        &:hover  { color: #f1f1f1; }
       }
 
-      p {
-        margin: 5px 0 0 0;
-        font-size:15px;
-        color: #DDDDDD;
-
-        a { 
-          color: #fff;
-          text-decoration: underline;
-
-          &:hover  { color: #f1f1f1; }
-        }
-
-      } // p
-
-    } // title
+    } // p
 
   } // map-wrapper
 
@@ -418,10 +425,12 @@ header {
 .visualizations > ul > li .tags {
   float:left;
   width: 480px;
+  margin-top: -5px;
 }
 
 .visualizations > ul > li .tags li a {
   padding: 6px 9px;
+  margin-top: 5px;
 }
 
 .datasets > ul > li {
@@ -436,6 +445,7 @@ header {
 
     li a {
       padding: 3px 6px;
+      margin: 0 0 10px 0;
     }
 
   }
@@ -456,8 +466,6 @@ header {
 
       background: #FFD24D;
       background: rgba(#FFD24D, .50);
-
-      margin: 0 0 10px 0;
 
       color: #545454;
       font-family: 'ProximaNova-Bold', Helvetica, sans-serif;
@@ -645,6 +653,7 @@ only screen and (                min-resolution: 2dppx) {
   .empty_placeholder {
     font-size: 18px;
     padding: 18px;
+    margin: 5px auto 50px auto;
   }
 
   .info,
@@ -744,7 +753,7 @@ only screen and (                min-resolution: 2dppx) {
   }
 
   .empty_placeholder {
-    margin: 50px auto;
+    margin: 15px auto 60px auto;
   }
 
   .info,
@@ -791,8 +800,6 @@ only screen and (                min-resolution: 2dppx) {
       span.date { float: left; display:block; margin: 0 0 15px 0; }
     }
 
-    /*.tags { margin: 10px 0 0 0; }*/
-
   }
 
   .visualizations ul li .header {
@@ -800,9 +807,9 @@ only screen and (                min-resolution: 2dppx) {
     .tags {
       float:none;
       width: 100%;
-      margin: 0 0 10px 0;
 
-      li { margin: 0 0 7px 0; }
+      /*margin: 0 0 10px 0;*/
+      /*li { margin: 0 0 7px 0; }*/
 
     }
 
@@ -906,14 +913,13 @@ only screen and (                min-resolution: 2dppx) {
   .content { 
 
     &.empty .inner {
-
       .datasets, .visualizations { margin: auto;; }
     }
 
   }
 
   .empty_placeholder {
-    margin: 50px auto;
+    margin: 15px auto 60px auto;
   }
 
   .info,
@@ -955,7 +961,6 @@ and (orientation : portrait) {
 
   .empty_placeholder {
     margin: 0 auto 50px auto;
-    /*font-size: 26px;*/
   }
 
 }

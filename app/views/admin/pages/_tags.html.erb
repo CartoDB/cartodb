@@ -1,0 +1,15 @@
+<% if @tags.size > 0 %>
+  <ul class="tags">
+    <li><strong>Browse by tag</strong></li>
+
+    <% @tags.each_with_index do |tag, i| %>
+      <li<%= " class='#{i == 0 ? "first" : "last" }'" if i == 0 || i == @tags.size - 1 %>>
+        <% if params[:tag] && params[:tag] == tag %>
+          <%= tag.capitalize.truncate(40) %>
+        <% else %>
+          <%= link_to tag.capitalize.truncate(40), public_tag_url(tag) %>
+        <% end %>
+      <% end %>
+
+    </ul>
+  <% end %>

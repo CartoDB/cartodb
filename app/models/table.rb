@@ -696,6 +696,8 @@ class Table < Sequel::Model(:user_tables)
         self[:privacy] = PRIVACY_LINK
       when PRIVACY_PRIVATE_TEXT.upcase, PRIVACY_PRIVATE, PRIVACY_PRIVATE.to_s
         self[:privacy] = PRIVACY_PRIVATE
+      else
+        raise "Invalid privacy value '#{value}'"
     end
   end #privacy=
 
@@ -727,7 +729,7 @@ class Table < Sequel::Model(:user_tables)
 
   def rows_estimated(user=nil)
     user ||= self.owner
-    user.in_database["SELECT reltuples::integer FROM pg_class WHERE oid = '#{self.name}'::regclass"].first[:reltuples];
+    user.in_database["SELECT reltuples::integer FROM pg_class WHERE oid = '#{self.name}'::regclass"].first[:reltuples]
   end
 
   def rows_counted
@@ -742,7 +744,7 @@ class Table < Sequel::Model(:user_tables)
 
   def self.table_size(name, options)
     options[:connection]['SELECT pg_total_relation_size(?) AS size', name].first[:size] / 2
-  rescue Sequel::DatabaseError => e
+  rescue Sequel::DatabaseError
     nil
   end
 
@@ -797,23 +799,26 @@ class Table < Sequel::Model(:user_tables)
         message = e.message.split("\n")[0]
         raise message if message =~ /Quota exceeded by/
 
+        invalid_column = nil
+
         # If the type don't match the schema of the table is modified for the next valid type
         invalid_value = (m = message.match(/"([^"]+)"$/)) ? m[1] : nil
-        invalid_column = if invalid_value
-          attributes.invert[invalid_value] # which is the column of the name that raises error
+        if invalid_value
+          invalid_column = attributes.invert[invalid_value] # which is the column of the name that raises error
         else
-          if m = message.match(/PGError: ERROR:  value too long for type (.+)$/)
-            if candidate = schema(cartodb_types: false).select{ |c| c[1].to_s == m[1].to_s }.first
-              candidate[0]
+          m = message.match(/PGError: ERROR:  value too long for type (.+)$/)
+          if m
+            candidate = schema(cartodb_types: false).select{ |c| c[1].to_s == m[1].to_s }.first
+            if candidate
+              invalid_column = candidate[0]
             end
           end
         end
 
-        new_column_type = get_new_column_type(invalid_column)
-
         if invalid_column.nil?
           raise e
         else
+          new_column_type = get_new_column_type(invalid_column)
           user_database.set_column_type(self.name, invalid_column.to_sym, new_column_type)
           retry
         end
@@ -850,8 +855,8 @@ class Table < Sequel::Model(:user_tables)
           invalid_value = (m = message.match(/"([^"]+)"$/)) ? m[1] : nil
           if invalid_value
             invalid_column = attributes.invert[invalid_value] # which is the column of the name that raises error
-
-            if new_column_type = get_new_column_type(invalid_column)
+            new_column_type = get_new_column_type(invalid_column)
+            if new_column_type
               user_database.set_column_type self.name, invalid_column.to_sym, new_column_type
               retry
             end
@@ -951,7 +956,7 @@ class Table < Sequel::Model(:user_tables)
     mode = (options[:mode] || 'asc').downcase == 'asc' ? 'ASC' : 'DESC NULLS LAST'
 
     filters = options.slice(:filter_column, :filter_value).reject{|k,v| v.blank?}.values
-    where = "WHERE (#{filters.first})|| '' ILIKE '%#{filters.second}%'" if filters.present?
+    where = filters.present? ? "WHERE (#{filters.first})|| '' ILIKE '%#{filters.second}%'" : ''
 
     owner.in_database do |user_database|
       columns_sql_builder = <<-SQL
@@ -1045,7 +1050,7 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def run_query(query)
-    v = owner.run_query(query)
+    owner.run_query(query)
   end
 
   def georeference_from!(options = {})
@@ -1328,11 +1333,7 @@ TRIGGER
 
   # Simplify certain privacy values for the vizjson
   def privacy_text_for_vizjson
-    if (privacy == PRIVACY_LINK)
-      PRIVACY_PUBLIC_TEXT.upcase
-    else
-      privacy_text
-    end
+    privacy == PRIVACY_LINK ? PRIVACY_PUBLIC_TEXT.upcase : privacy_text
   end #privacy_text_for_vizjson
 
   def relator
@@ -1491,7 +1492,7 @@ TRIGGER
     end
 
     #if the geometry is LINESTRING or POLYGON we convert it to MULTILINESTRING and MULTIPOLYGON resp.
-    if ['linestring','polygon'].include?(type.to_s.downcase)
+    if %w(linestring polygon).include?(type.to_s.downcase)
       owner.in_database do |user_database|
         if type.to_s.downcase == 'polygon'
           user_database.run("SELECT AddGeometryColumn('#{self.name}','the_geom_simple',4326, 'MULTIPOLYGON', 2);")
@@ -1655,6 +1656,7 @@ SQL
         extra_delete_headers = {'Depth' => 'Infinity'}
         http_res = http_req.delete(request_uri, request_headers.merge(extra_delete_headers))
       else
+        http_res = nil
     end
     raise "#{http_res.inspect}" unless http_res.is_a?(Net::HTTPOK)
     http_res

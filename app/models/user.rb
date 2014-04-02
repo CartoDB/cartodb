@@ -1,5 +1,7 @@
 # coding: UTF-8
 require_relative './user/user_decorator'
+require_relative './visualization/member'
+require_relative './visualization/collection'
 
 class User < Sequel::Model
   include CartoDB::MiniSequel
@@ -354,12 +356,21 @@ $$
     })
   end #tags
 
+  # List all public map tags of the user
+  def map_tags
+    require_relative './visualization/tags'
+    CartoDB::Visualization::Tags.new(self).names({
+       type: CartoDB::Visualization::Member::CANONICAL_TYPE,
+       privacy: CartoDB::Visualization::Member::PRIVACY_PUBLIC
+    })
+  end #map_tags
 
   def tables
     Table.filter(:user_id => self.id).order(:id).reverse
   end
 
   def gravatar(size = 128, default_image = "http://cartodb.s3.amazonaws.com/static/public_dashboard_default_avatar.png")
+    #noinspection RubyArgCount
     digest = Digest::MD5.hexdigest(email.downcase)
     "http://www.gravatar.com/avatar/#{digest}?s=#{size}&d=#{URI.encode(default_image)}"
   end #gravatar
@@ -698,10 +709,20 @@ $$
     DataImport.where(user_id: self.id).count
   end
 
-  def visualization_count
-    # could also be retrieved querying count of visualizations type derived
-    # one map per visualization - each table visualization (canonical visualization)
-    maps.count - table_count
+  # Get the count of public visualizations
+  def public_visualization_count
+    visualization_count(CartoDB::Visualization::Member::DERIVED_TYPE, CartoDB::Visualization::Member::PRIVACY_PUBLIC)
+  end #public_visualization_count
+
+  # Get a count of visualizations with optional type and privacy filters
+  def visualization_count(type_filter=nil, privacy_filter=nil)
+    parameters = {
+        map_id:   maps.map(&:id)
+    }
+    parameters[:type] = type_filter unless type_filter.nil?
+    parameters[:privacy] = privacy_filter unless privacy_filter.nil?
+
+    CartoDB::Visualization::Collection.new.fetch(parameters).count
   end #visualization_count
 
   def last_visualization_created_at

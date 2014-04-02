@@ -222,7 +222,7 @@ describe Visualization::Member do
   end # validations
 
   describe '#derived?' do
-    it "returns true if type is derived" do
+    it 'returns true if type is derived' do
       visualization = Visualization::Member.new(type: Visualization::Member::DERIVED_TYPE)
       visualization.derived?.should be_true
       visualization.table?.should be_false
@@ -272,7 +272,7 @@ describe Visualization::Member do
       visualization.is_password_valid?(password_value).should be_false
 
       # Test removing the password, should work
-      visualization.remove_password()
+      visualization.remove_password
       visualization.has_password?.should be_false
       lambda { 
         visualization.is_password_valid?(password_value)

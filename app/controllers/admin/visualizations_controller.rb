@@ -54,7 +54,7 @@ class Admin::VisualizationsController < ApplicationController
 
     @avatar_url             = @visualization.user.gravatar(64)
     @disqus_shortname       = @visualization.user.disqus_shortname.presence || 'cartodb'
-    @visualization_count    = @visualization.user.visualization_count
+    @visualization_count    = @visualization.user.public_visualization_count
     @related_tables         = @visualization.related_tables
     @nonpublic_tables_count = @related_tables.select{|p| p.privacy != ::Table::PRIVACY_PUBLIC }.count
 
@@ -87,7 +87,7 @@ class Admin::VisualizationsController < ApplicationController
     @avatar_url = @visualization.user.gravatar(64)
 
     @disqus_shortname       = @visualization.user.disqus_shortname || 'cartodb'
-    @visualization_count    = @visualization.user.visualization_count
+    @visualization_count    = @visualization.user.public_visualization_count
     @related_tables         = @visualization.related_tables
     @nonpublic_tables_count = @related_tables.select{|p| p.privacy != ::Table::PRIVACY_PUBLIC }.count
 

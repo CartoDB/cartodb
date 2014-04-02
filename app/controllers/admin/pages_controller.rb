@@ -24,13 +24,13 @@ class Admin::PagesController < ApplicationController
     viewed_user = User.where(username: user.strip.downcase).first
     return render_404 if viewed_user.nil?
 
-    @tags       = viewed_user.tags
+    @tags       = viewed_user.map_tags
 
     @username   = viewed_user.username
     @avatar_url = viewed_user.gravatar(128)
 
     @tables_num = viewed_user.table_count(::Table::PRIVACY_PUBLIC)
-    @vis_num    = viewed_user.visualization_count
+    @vis_num    = viewed_user.public_visualization_count
 
     datasets = Visualization::Collection.new.fetch({
       map_id:   viewed_user.maps.map(&:id),
@@ -77,7 +77,7 @@ class Admin::PagesController < ApplicationController
     @avatar_url = viewed_user.gravatar(128)
 
     @tables_num = viewed_user.table_count(::Table::PRIVACY_PUBLIC)
-    @vis_num    = viewed_user.visualization_count
+    @vis_num    = viewed_user.public_visualization_count
 
     visualizations = Visualization::Collection.new.fetch({
       map_id:   viewed_user.maps.map(&:id),

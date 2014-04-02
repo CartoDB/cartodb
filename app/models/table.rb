@@ -133,6 +133,11 @@ class Table < Sequel::Model(:user_tables)
       if !self.new? && privacy == PRIVACY_PRIVATE && self.changed_columns.include?(:privacy)
         errors.add(:privacy, 'unauthorized to modify privacy status to private')
       end
+
+      if privacy == PRIVACY_LINK
+        errors.add(:privacy, 'unauthorized to create link privacy tables')
+      end
+
     end
   end
 

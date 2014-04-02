@@ -1821,4 +1821,41 @@ describe Table do
       table.name.should == 'new_name'
     end
   end #name=
+
+  describe '#validation_for_link_privacy' do
+    it 'checks that only users with private tables enabled can set LINK privacy' do
+      user_mock = mock
+      user_mock.stubs(:private_tables_enabled).returns(true)
+      user_mock.stubs(:database_name).returns(nil)
+
+      ::Table.any_instance.stubs(:get_valid_name).returns('test')
+      ::Table.any_instance.stubs(:owner).returns(user_mock)
+      CartoDB::Table::PrivacyManager.any_instance.stubs(:owner).returns(user_mock)
+      table = Table.new
+
+      table.user_id = UUIDTools::UUID.timestamp_create.to_s
+      table.privacy = Table::PRIVACY_PUBLIC
+      table.name = 'test'
+      table.validate
+      table.errors.size.should eq 0
+
+      table.privacy = Table::PRIVACY_PRIVATE
+      table.validate
+      table.errors.size.should eq 0
+
+      table.privacy = Table::PRIVACY_LINK
+      table.validate
+      table.errors.size.should eq 0
+
+      table.privacy = Table::PRIVACY_PUBLIC
+      user_mock.stubs(:private_tables_enabled).returns(false)
+
+      table.privacy = Table::PRIVACY_LINK
+      table.validate
+      table.errors.size.should eq 1
+      expected_errors_hash = { privacy: ['unauthorized to create link privacy tables'] }
+      table.errors.should eq expected_errors_hash
+    end
+  end #validation_for_link_privacy
+
 end

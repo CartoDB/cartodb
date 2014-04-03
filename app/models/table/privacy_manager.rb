@@ -33,15 +33,15 @@ module CartoDB
       end #set_from_table_privacy
 
       def set_from(visualization)
-        set_public  if visualization.public?
-        set_public_with_link_only  if visualization.public_with_link?
-        set_private if visualization.private?
+        set_public                if visualization.public?
+        set_public_with_link_only if visualization.public_with_link?
+        set_private               if visualization.private?
         table.update(privacy: privacy)
         self
       end #set_from
 
       def propagate_to(visualization)
-        visualization.store_using_table(privacy_text)
+        visualization.store_using_table(::Table::PRIVACY_VALUES_TO_TEXTS[privacy])
         self
       end #propagate_to
 
@@ -95,17 +95,6 @@ module CartoDB
       def redis_key
         "rails:#{table.owner.database_name}:#{table.name}"
       end #redis_key
-
-      def privacy_text
-        case privacy
-          when ::Table::PRIVACY_PUBLIC
-            ::Table::PRIVACY_PUBLIC_TEXT
-          when ::Table::PRIVACY_LINK
-            ::Table::PRIVACY_LINK_TEXT
-          else
-            ::Table::PRIVACY_PRIVATE_TEXT
-        end
-      end #privacy_text
     end # PrivacyManager
   end # Table
 end # CartoDB

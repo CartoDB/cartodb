@@ -1,6 +1,6 @@
-// cartodb.js version: 3.8.06
+// cartodb.js version: 3.8.07
 // uncompressed version: cartodb.uncompressed.js
-// sha: c8764f4c80b002e9a62fa80890f516ebdc13843b
+// sha: 66c8dc8771d256714860ebb763fb54d97cf874cd
 (function() {
   var root = this;
 
@@ -20686,7 +20686,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.8.06';
+    cdb.VERSION = '3.8.07';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -25704,6 +25704,7 @@ function Map(options) {
 }
 
 Map.BASE_URL = '/api/v1/map';
+Map.EMPTY_GIF = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
 
 function NamedMap(named_map, options) {
   var self = this;
@@ -25818,6 +25819,18 @@ Map.prototype = {
     }
     return +layers[index];
   },
+
+  visibleLayers: function() {
+    var layers = [];
+    for(var i = 0; i < this.layers.length; ++i) {
+      var layer = this.layers[i];
+      if(!layer.options.hidden) {
+        layers.push(layer);
+      }
+    }
+    return layers;
+  },
+
 
   // ie7 btoa,
   // from http://phpjs.org/functions/base64_encode/
@@ -26013,6 +26026,11 @@ Map.prototype = {
 
     this._queue = [];
 
+    if (this.visibleLayers().length === 0) {
+      callback(null);
+      return;
+    }
+
     // setup params
     var extra_params = this.options.extra_params || {};
     var api_key = this.options.map_key || this.options.api_key || extra_params.map_key || extra_params.api_key;
@@ -26098,6 +26116,13 @@ Map.prototype = {
         self.urls = self._layerGroupTiles(data.layergroupid, self.options.extra_params);
         callback && callback(self.urls);
       } else {
+        if (self.visibleLayers().length === 0) {
+          callback && callback({
+            tiles: [Map.EMPTY_GIF],
+            grids: []
+          });
+          return;
+        } 
         callback && callback(null, err);
       }
     });
@@ -26435,19 +26460,18 @@ LayerDefinition.prototype = _.extend({}, Map.prototype, {
       obj.stat_tag = this.stat_tag;
     }
     obj.layers = [];
-    for(var i = 0; i < this.layers.length; ++i) {
+    var layers = this.visibleLayers();
+    for(var i = 0; i < layers.length; ++i) {
       var layer = this.layers[i];
-      if(!layer.options.hidden) {
-        obj.layers.push({
-          type: 'cartodb',
-          options: {
-            sql: layer.options.sql,
-            cartocss: layer.options.cartocss,
-            cartocss_version: layer.options.cartocss_version || '2.1.0',
-            interactivity: this._cleanInteractivity(layer.options.interactivity)
-          }
-        });
-      }
+      obj.layers.push({
+        type: 'cartodb',
+        options: {
+          sql: layer.options.sql,
+          cartocss: layer.options.cartocss,
+          cartocss_version: layer.options.cartocss_version || '2.1.0',
+          interactivity: this._cleanInteractivity(layer.options.interactivity)
+        }
+      });
     }
     return obj;
   },
@@ -28473,7 +28497,7 @@ CartoDBLayerGroupBase.prototype.getTile = function(coord, zoom, ownerDocument) {
   im.onload = finished;
   im.onerror = function() {
     cartodb.core.Profiler.metric('cartodb-js.tile.png.error').inc();
-    finish();
+    finished();
   }
 
 

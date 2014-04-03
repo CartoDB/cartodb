@@ -157,7 +157,7 @@ CartoDBLayerGroupBase.prototype.getTile = function(coord, zoom, ownerDocument) {
   im.onload = finished;
   im.onerror = function() {
     cartodb.core.Profiler.metric('cartodb-js.tile.png.error').inc();
-    finish();
+    finished();
   }
 
 

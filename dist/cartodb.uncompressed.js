@@ -1,6 +1,6 @@
-// cartodb.js version: 3.8.07
+// cartodb.js version: 3.8.08
 // uncompressed version: cartodb.uncompressed.js
-// sha: 66c8dc8771d256714860ebb763fb54d97cf874cd
+// sha: cf230554a11ccafb6f5e0da2b4268aecb9c0dbd1
 (function() {
   var root = this;
 
@@ -20686,7 +20686,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.8.07';
+    cdb.VERSION = '3.8.08';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -26462,7 +26462,7 @@ LayerDefinition.prototype = _.extend({}, Map.prototype, {
     obj.layers = [];
     var layers = this.visibleLayers();
     for(var i = 0; i < layers.length; ++i) {
-      var layer = this.layers[i];
+      var layer = layers[i];
       obj.layers.push({
         type: 'cartodb',
         options: {

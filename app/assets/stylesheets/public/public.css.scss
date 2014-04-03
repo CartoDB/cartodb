@@ -32,11 +32,11 @@ body:after {
 .announcement {
 
   padding: 15px 0;
-  border-bottom: 1px solid rgba(204,204,204,0.5);
+  border-bottom: 1px solid #E5E0D3;
   line-height: 120%;
 
   color: #333333;
-  background: rgba(255,229,153,0.35);
+  background: #FEF5DA;
 
   a { color:#397DB8; text-decoration: underline; }
 
@@ -87,6 +87,7 @@ header {
   $bkgColor: #428AC6;
   height: auto;
   padding: 0;
+  min-height: 36px;
 
   background: image-url('layout/gradient.png') repeat center 0 $bkgColor; // IE
   @include background(image-url("layout/gradient.png") repeat center 0 $bkgColor);
@@ -302,7 +303,7 @@ header {
     font-weight: 200;
   }
 
-  .title a {
+  .title > a {
     float:left;
     display:block;
 
@@ -319,9 +320,15 @@ header {
     color: #858585;
     font-size: 15px;
     line-height: normal;
-  }
 
-}
+    a { 
+      text-decoration: underline;
+      font-size: 15px;
+      &:hover  { color: #333; }
+    }
+  } // .title p
+
+} // .datasets ul li
 
 .visualizations > ul > li {
 
@@ -355,7 +362,7 @@ header {
       height: 100%;
       @include opacity(0);
       background:#fff;
-      z-index: 20;
+      z-index: 50;
     }
 
     .map {
@@ -416,7 +423,7 @@ header {
   } // map-wrapper
 
   .header {
-    padding: 30px 34px;
+    padding: 0 34px;
     min-height: 89px;
 
     text-align:left;
@@ -447,6 +454,7 @@ header {
   float:left;
   width: 480px;
   margin-top: -5px;
+  padding: 30px 0;
 }
 
 .visualizations > ul > li .tags li a {

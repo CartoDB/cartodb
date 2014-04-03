@@ -782,7 +782,7 @@ LayerDefinition.prototype = _.extend({}, Map.prototype, {
     obj.layers = [];
     var layers = this.visibleLayers();
     for(var i = 0; i < layers.length; ++i) {
-      var layer = this.layers[i];
+      var layer = layers[i];
       obj.layers.push({
         type: 'cartodb',
         options: {

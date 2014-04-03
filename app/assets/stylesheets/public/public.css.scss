@@ -734,7 +734,7 @@ only screen and (                min-resolution: 2dppx) {
     padding: 17px 0;
 
     .title {
-      a { font-size: 18px; float:left; @include text-overflow(); width: 100%; text-align: left; }
+      & > a { font-size: 18px; float:left; @include text-overflow(); width: 100%; text-align: left; }
       span.date { top: 0; float:left; margin: 5px 0 0 0; display:block; margin: 0 0 15px 0; }
       p { margin: 5px 0 0 0; }
     }
@@ -846,7 +846,7 @@ only screen and (                min-resolution: 2dppx) {
   .datasets > ul > li {
 
     .title {
-      a { float:left; @include text-overflow(); width: 100%; text-align:left; }
+      & > a { float:left; @include text-overflow(); width: 100%; text-align:left; }
       span.date { float: left; display:block; margin: 0 0 15px 0; }
     }
 

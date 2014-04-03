@@ -1,3 +1,6 @@
+3.8.08 (03//04/2014)
+- fixed layer visibility
+
 3.8.07 (03//04/2014)
 - fixed attribution position for gmaps
 - fixed maps api request when all the layers are hidden

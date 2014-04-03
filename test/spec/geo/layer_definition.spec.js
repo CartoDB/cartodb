@@ -103,6 +103,21 @@ describe("LayerDefinition", function() {
        }
       ]
     });
+    layerDefinition.getSubLayer(0).hide();
+    expect(layerDefinition.toJSON()).toEqual({
+      version: '1.0.0',
+      stat_tag: 'vis_id',
+      layers: [{
+         type: 'cartodb', 
+         options: {
+           sql: "select * from european_countries_export",
+           cartocss: '#layer { polygon-fill: #000; polygon-opacity: 0.8;}',
+           cartocss_version: '2.0.0',
+           interactivity: ['test2', 'cartodb_id2']
+         }
+       }
+      ]
+    });
   });
 
   it("should generate url for tiles", function() {

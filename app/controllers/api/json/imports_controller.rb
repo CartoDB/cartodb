@@ -1,4 +1,7 @@
 #encoding: UTF-8
+
+require_relative '../../../../services/datasources/lib/datasources'
+
 class Api::Json::ImportsController < Api::ApplicationController
   ssl_required :index, :show, :create
 
@@ -16,13 +19,20 @@ class Api::Json::ImportsController < Api::ApplicationController
   def create
     file_uri = params[:url].present? ? params[:url] : _upload_file
 
-    options = { user_id: current_user.id,
-                table_name:  params[:table_name].presence,
-                data_source: file_uri.presence,
-                table_id:    params[:table_id].presence,
-                append:      (params[:append].presence == 'true'),
-                table_copy:  params[:table_copy].presence,
-                from_query:  params[:sql].presence }
+    service_name = params[:service_name].present? ? params[:service_name] : CartoDB::Datasources::Url::PublicUrl::DATASOURCE_NAME
+    service_item_id = params[:service_item_id].present? ? params[:service_item_id] : params[:url].presence
+
+    options = {
+        user_id:          current_user.id,
+        table_name:       params[:table_name].presence,
+        data_source:      file_uri.presence,
+        table_id:         params[:table_id].presence,
+        append:           (params[:append].presence == 'true'),
+        table_copy:       params[:table_copy].presence,
+        from_query:       params[:sql].presence,
+        service_name:     service_name.presence,
+        service_item_id:  service_item_id.presence
+    }
       
     data_import = DataImport.create(options)
     Resque.enqueue(Resque::ImporterJobs, job_id: data_import.id)
@@ -37,8 +47,6 @@ class Api::Json::ImportsController < Api::ApplicationController
   end
 
   def _upload_file
-    filename = filedata = nil
-
     case
     when params[:filename].present? && request.body.present?
       filename = params[:filename].original_filename rescue params[:filename].to_s

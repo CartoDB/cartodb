@@ -165,7 +165,8 @@ module CartoDB
         last_modified
       end
 
-      attr_reader :source_file, :url, :etag, :last_modified
+      attr_reader   :source_file, :etag, :last_modified
+      attr_accessor :url
 
       private
       

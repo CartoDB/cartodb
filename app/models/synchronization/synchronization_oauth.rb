@@ -38,7 +38,6 @@ class SynchronizationOauth < Sequel::Model
     self.updated_at = Time.now
   end #before_save
 
-
   def ==(oauth_object)
     self.id == oauth_object.id
   end #==

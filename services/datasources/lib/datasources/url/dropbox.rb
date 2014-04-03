@@ -54,11 +54,17 @@ module CartoDB
           return new(config, user)
         end #get_new
 
+        # If will provide a url to download the resource, or requires calling get_resource()
+        # @return bool
+        def providers_download_url?
+          false
+        end
+
         # Return the url to be displayed or sent the user to to authenticate and get authorization code
         # @throws AuthError
         def get_auth_url
           @auth_flow = DropboxOAuth2FlowNoRedirect.new(@app_key, @app_secret)
-          @auth_flow.start()
+          @auth_flow.start
         rescue DropboxError, ArgumentError
           raise AuthError.new('get_auth_url()', DATASOURCE_NAME)
         end #get_auth_url
@@ -117,40 +123,33 @@ module CartoDB
         # @return mixed
         # @throws DownloadError
         def get_resource(id)
-          contents, metadata = @client.get_file_and_metadata(id)
+          contents,  = @client.get_file_and_metadata(id)
           return contents
         rescue DropboxError, ArgumentError
           raise DownloadError.new("get_resource() #{id}", DATASOURCE_NAME)
         end #get_resource
 
-        # Stores a sync table entry
         # @param id string
-        # @param {} sync_options
-        # @return bool
-        # @throws DownloadError
-        def store_resource(id, sync_options={})
-          item_data = nil
+        # @return Hash
+        def get_resource_metadata(id)
           response = @client.metadata(id)
           item_data = format_item_data(response)
 
-          #TODO: Store
-          puts item_data.to_hash
-          true
+          item_data.to_hash
         rescue DropboxError, ArgumentError
-          raise DownloadError.new("store_resource() #{id}", DATASOURCE_NAME)
-        end #store_resource
+          raise DownloadError.new("get_resource_metadata() #{id}", DATASOURCE_NAME)
+        end #get_resource_metadata
 
         # Checks if a specific resource has been modified
         # @param id string
         # @return bool
         # @throws DownloadError
         def resource_modified?(id)
-          new_item_data = nil
           response = @client.metadata(id)
           new_item_data = format_item_data(response)
 
           #TODO: check against stored checksum
-          puts item_data.to_hash
+          puts new_item_data.to_hash
           false
         rescue DropboxError, ArgumentError
           raise DownloadError.new("resource_modified?() #{id}", DATASOURCE_NAME)
@@ -167,7 +166,7 @@ module CartoDB
         def filter=(filter_data=[])
           @formats = []
           FORMATS_TO_SEARCH_QUERIES.each do |id, queries|
-            if (filter_data.empty? || filter_data.include?(id))
+            if filter_data.empty? || filter_data.include?(id)
               queries.each do |query|
                 @formats = @formats.push(query)
               end
@@ -187,21 +186,22 @@ module CartoDB
         # @param item_data Hash : Single item returned from Dropbox API
         # @return { :id, :title, :url, :service }
         def format_item_data(item_data)
-          data =
-            {
-              id:       item_data.fetch('path'),
-              title:    item_data.fetch('path'),
-              url:      '',
-              service:  DATASOURCE_NAME,
-              checksum: checksum_of(item_data.fetch('rev'))
-            }
-          data
+          filename = item_data.fetch('path').split('/').last
+
+          {
+            id:       item_data.fetch('path'),
+            title:    item_data.fetch('path'),
+            filename: filename,
+            service:  DATASOURCE_NAME,
+            checksum: checksum_of(item_data.fetch('rev'))
+          }
         end #format_item_data
 
         # Calculates a checksum of given input
         # @param origin string
         # @return string
         def checksum_of(origin)
+          #noinspection RubyArgCount
           Zlib::crc32(origin).to_s
         end #checksum_of
 

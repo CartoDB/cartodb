@@ -13,6 +13,12 @@ module CartoDB
       @owner.synchronization_oauths
     end #all
 
+    # @param service string
+    # @return SynchronizationOauth
+    def select(service)
+      SynchronizationOauth.where(service: service, user_id: @owner.id).first
+    end #select
+
     def add(service, token)
       new_oauth = SynchronizationOauth.create(
           user_id:  @owner.id,

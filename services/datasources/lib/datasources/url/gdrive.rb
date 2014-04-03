@@ -12,7 +12,7 @@ module CartoDB
 
         OAUTH_SCOPE = 'https://www.googleapis.com/auth/drive'
         REDIRECT_URI = 'urn:ietf:wg:oauth:2.0:oob'
-        FIELDS_TO_RETRIEVE = 'items(downloadUrl,exportLinks,id,modifiedDate,title)'
+        FIELDS_TO_RETRIEVE = 'items(downloadUrl,exportLinks,id,modifiedDate,title,fileExtension)'
 
         # Specific of this provider
         FORMATS_TO_MIME_TYPES = {
@@ -59,13 +59,19 @@ module CartoDB
         # @param user User
         # @return CartoDB::Synchronizer::FileProviders::GDrive
         def self.get_new(config, user)
-          return new(config, user)
+          new(config, user)
         end #get_new
+
+        # If will provide a url to download the resource, or requires calling get_resource()
+        # @return bool
+        def providers_download_url?
+          false
+        end
 
         # Return the url to be displayed or sent the user to to authenticate and get authorization code
         # @return string | nil
         def get_auth_url
-          return @client.authorization.authorization_uri
+          @client.authorization.authorization_uri
         end #get_auth_url
 
         # Validate authorization code and store token
@@ -156,26 +162,20 @@ module CartoDB
           raise DownloadError.new("downloading file #{id}", DATASOURCE_NAME)
         end #get_resource
 
-        # Stores a sync table entry
         # @param id string
-        # @param sync_type
-        # @return bool
+        # @return Hash
         # @throws DownloadError
         # @throws AuthError
-        def store_resource(id, sync_type)
+        def get_resource_metadata(id)
           result = @client.execute( api_method: @drive.files.get, parameters: { fileId: id } )
           raise DownloadError.new("(#{result.status}) retrieving file #{id} metadata: #{result.data['error']['message']}", DATASOURCE_NAME) if result.status != 200
-
           item_data = format_item_data(result.data.to_hash)
-
-          #TODO: Store
-          puts item_data.to_hash
-          true
+          return item_data.to_hash
         rescue Google::APIClient::InvalidIDTokenError
           raise AuthError.new('Invalid token', DATASOURCE_NAME)
         rescue Google::APIClient::TransmissionError
-          raise DownloadError.new("storing file #{id}", DATASOURCE_NAME)
-        end #store_resource
+          raise DownloadError.new("get_resource_metadata() #{id}", DATASOURCE_NAME)
+        end #get_resource_metadata
 
         # Checks if a file has been modified
         # @param id string
@@ -208,13 +208,19 @@ module CartoDB
         def filter=(filter_data=[])
           @formats = []
           FORMATS_TO_MIME_TYPES.each do |id, mime_types|
-            if (filter_data.empty? || filter_data.include?(id))
+            if filter_data.empty? || filter_data.include?(id)
               mime_types.each do |mime_type|
                 @formats = @formats.push(mime_type)
               end
             end
           end
         end #filter=
+
+        # Just return datasource name
+        # @return string
+        def to_s
+          DATASOURCE_NAME
+        end
 
         private
 
@@ -230,10 +236,14 @@ module CartoDB
               checksum:     checksum_of(item_data.fetch('modifiedDate')),
             }
           if item_data.include?('exportLinks')
+            # Native spreadsheets  have no format nor direct download links
             data[:url] = item_data.fetch('exportLinks').first.last
             data[:url] = data[:url][0..data[:url].rindex('=')] + 'csv'
+            data[:filename] = clean_filename(item_data.fetch('title')) + '.csv'
           else
             data[:url] = item_data.fetch('downloadUrl')
+            # For Drive files, title == filename + extension
+            data[:filename] = item_data.fetch('title')
           end
           data
         end #format_item_data
@@ -242,14 +252,19 @@ module CartoDB
         # @param origin string
         # @return string
         def checksum_of(origin)
+          #noinspection RubyArgCount
           Zlib::crc32(origin).to_s
         end #checksum_of
 
-        # Just return datasource name
-        # @return string
-        def to_s
-          DATASOURCE_NAME
-        end
+        def clean_filename(name)
+          clean_name = ''
+          name.gsub(' ','_').scan(/([a-zA-Z0-9_]+)/).flatten.map { |match|
+            clean_name << match
+          }
+          clean_name = name if clean_name.size == 0
+
+          clean_name
+        end #clean_filename
 
       end #GDrive
     end #FileProviders

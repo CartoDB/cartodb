@@ -24,7 +24,7 @@ class DataImport < Sequel::Model
 
   PUBLIC_ATTRIBUTES = %W{ id user_id table_id data_type table_name state
     error_code queue_id get_error_text tables_created_count 
-    synchronization_id }
+    synchronization_id service_name service_item_id }
 
   def after_initialize
     instantiate_log
@@ -300,15 +300,23 @@ class DataImport < Sequel::Model
       ) {|key, o, n| n.nil? || n.empty? ? o : n}
   end #pg_options
 
-  def new_importer(datasource_name=nil)
+  def new_importer
     log.append 'new_importer()'
+
+    if !service_name.nil? && service_name.size > 0
+      datasource_name = service_name
+    else
+      # Legacy support, treat all existing stuff as pure URL datasources
+      datasource_name = CartoDB::Datasources::Url::PublicUrl::DATASOURCE_NAME
+    end
 
     datasource_provider = get_datasource(datasource_name)
 
     tracker       = lambda { |state| self.state = state; save }
     downloader    = CartoDB::Importer2::Downloader.new(data_source)
     runner        = CartoDB::Importer2::Runner.new(
-                      pg_options, downloader, log, current_user.remaining_quota, nil, datasource_provider
+                      pg_options, downloader, log, current_user.remaining_quota, nil,
+                      datasource_provider, service_item_id
                     )
     registrar     = CartoDB::TableRegistrar.new(current_user, Table)
     quota_checker = CartoDB::QuotaChecker.new(current_user)
@@ -378,14 +386,18 @@ class DataImport < Sequel::Model
   end
 
   def get_datasource(datasource_name)
+    oauth = current_user.oauths.select(datasource_name)
+    # TODO: Error handling
     begin
-      DatasourcesFactory.get_datasource(datasource_name, current_user)
+      datasource = DatasourcesFactory.get_datasource(datasource_name, current_user)
+      datasource.token = oauth.token unless oauth.nil?
     rescue MissingConfigurationError => exception
-      nil
       log.append "Exception: #{exception.to_s}"
       log.append exception.backtrace
       Rollbar.report_message('Import error: ', 'error', error_info: exception.to_s + exception.backtrace.join)
+      datasource = nil
     end
+    datasource
   end #get_datasource
 
   def set_merge_error(error_code)

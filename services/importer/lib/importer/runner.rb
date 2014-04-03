@@ -8,6 +8,8 @@ require_relative './column'
 require_relative './exceptions'
 require_relative './result'
 
+require_relative './datasource_downloader'
+
 module CartoDB
   module Importer2
     class Runner
@@ -17,37 +19,59 @@ module CartoDB
       DEFAULT_LOADER          = Loader
       UNKNOWN_ERROR_CODE      = 99999
 
-      def initialize(pg_options, downloader, log=nil, available_quota=nil, unpacker=nil, datasource=nil)
-        @pg_options       = pg_options
-        @downloader       = downloader
-        @log              = log             || TrackRecord::Log.new
-        @available_quota  = available_quota || DEFAULT_AVAILABLE_QUOTA
-        @unpacker         = unpacker        || Unp.new
-        @results          = []
-        @datasource       = datasource      || nil
+      # @param pg_options Hash
+      # @param downloader CartoDB::Importer2::Downloader
+      # @param log TrackRecord::Log|nil
+      # @param available_quota int|nil
+      # @param unpacker Unp|nil
+      # @param datasource CartoDB::Datasources::Base|nil
+      # @param datasource_item_id int|nil
+      def initialize(pg_options, downloader, log=nil, available_quota=nil, unpacker=nil,
+                     datasource=nil, datasource_item_id=nil)
+        @pg_options         = pg_options
+        @downloader         = downloader
+        @log                = log             || TrackRecord::Log.new
+        @available_quota    = available_quota || DEFAULT_AVAILABLE_QUOTA
+        @unpacker           = unpacker        || Unp.new
+        @results            = []
+        @datasource         = datasource
+        @datasource_item_id = datasource_item_id
       end #initialize
 
       def run(&tracker_block)
         @tracker = tracker_block
         tracker.call('uploading')
 
-        if !@datasource.nil?
-          log.append "Fetching datasource #{@datasource.to_s}"
-
+        metadata = nil
+        unless @datasource.nil?
+          if @datasource_item_id.nil?
+            log.append "Datasource #{@datasource.to_s} without item id specified"
+          else
+            log.append "Fetching datasource #{@datasource.to_s} metadata for item id #{@datasource_item_id}"
+            metadata = @datasource.get_resource_metadata(@datasource_item_id)
+            @downloader.url = metadata[:url] if metadata[:url].present? && @datasource.providers_download_url?
+          end
         end
 
-        log.append "Getting file from #{downloader.url}"
-        downloader.run(available_quota)
+        if metadata.nil? || @datasource.providers_download_url?
+          log.append "Getting file from #{@downloader.url}"
+        else
+          #TODO: Extract this out and inject
+          log.append 'Downloading file data from datasource'
+          @downloader = DatasourceDownloader.new(@datasource, metadata)
+       end
+
+        @downloader.run(available_quota)
 
         return self unless remote_data_updated?
 
-        log.append "Starting import for #{downloader.source_file.fullpath}"
-        log.append "Unpacking #{downloader.source_file.fullpath}"
+        log.append "Starting import for #{@downloader.source_file.fullpath}"
+        log.append "Unpacking #{@downloader.source_file.fullpath}"
 
         raise_if_over_storage_quota
 
         tracker.call('unpacking')
-        unpacker.run(downloader.source_file.fullpath)
+        unpacker.run(@downloader.source_file.fullpath)
         unpacker.source_files.each { |source_file| import(source_file) }
         unpacker.clean_up
         self
@@ -98,19 +122,19 @@ module CartoDB
       end #loader_for
 
       def remote_data_updated?
-        downloader.modified?
+        @downloader.modified?
       end
 
       def last_modified
-        downloader.last_modified
+        @downloader.last_modified
       end
 
       def etag
-        downloader.etag
+        @downloader.etag
       end
 
       def checksum
-        downloader.checksum
+        @downloader.checksum
       end
 
       # If not specified, fake
@@ -127,7 +151,7 @@ module CartoDB
 
       private
  
-      attr_reader :downloader, :pg_options, :unpacker, :available_quota
+      attr_reader :pg_options, :unpacker, :available_quota
       attr_writer :results, :tracker
 
       def result_for(job, source_file, table_names, exception_klass=nil)
@@ -151,7 +175,7 @@ module CartoDB
       end #error_for
 
       def raise_if_over_storage_quota
-        file_size   = File.size(downloader.source_file.fullpath)
+        file_size   = File.size(@downloader.source_file.fullpath)
         over_quota  = available_quota < QUOTA_MAGIC_NUMBER * file_size
         raise StorageQuotaExceededError if over_quota
         self

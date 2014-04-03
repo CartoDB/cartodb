@@ -24,6 +24,12 @@ module CartoDB
         raise 'To be implemented in child classes'
       end
 
+      # If will provide a url to download the resource, or requires calling get_resource()
+      # @return bool
+      def providers_download_url?
+        raise  'To be implemented in child classes'
+      end
+
       # Perform the listing and return results
       # @param filter Array : (Optional) filter to specify which resources to retrieve. Leave empty for all supported.
       # @return [ { :id, :title, :url, :service } ]
@@ -38,13 +44,11 @@ module CartoDB
         raise 'To be implemented in child classes'
       end
 
-      # Stores a sync table entry
       # @param id string
-      # @param {} sync_options
-      # @return bool
-      def store_resource(id, sync_options={})
+      # @return Hash
+      def get_resource_metadata(id)
         raise 'To be implemented in child classes'
-      end
+      end #get_resource_metadata
 
       # Checks if a specific resource has been modified
       # @param id string

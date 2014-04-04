@@ -16,7 +16,7 @@
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
 
     <%= yield :css %>
-    <!--[if gt IE 8]><%= stylesheet_link_tag :fonts_ie %><![endif]-->
+    <!--[if gt IE 8]><%= stylesheet_link_tag "fonts_ie" %><![endif]-->
     <%= insert_rollbar() %>
     <%= insert_google_analytics('primary') %>
     <%= yield :js %>

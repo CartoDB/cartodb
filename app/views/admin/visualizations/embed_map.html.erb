@@ -3,17 +3,17 @@
   <head>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
     <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
-    <link rel="shortcut icon" href="/favicons/favicon.ico" />
+    <%= favicon_link_tag "/favicons/favicon.ico" %>
     <title><%= @visualization.name.gsub(/_/," ") %> | CartoDB</title>
     <meta name="description" content="<%= @visualization.description || @visualization.name.gsub(/_/," ") %>">
     <meta name="keywords" content="Map,cartodb,<%= @visualization.name.gsub(/_/,",").gsub(/ /,",") %>">
     <meta name="author" content="CartoDB">
     <meta name="DC.title" content="<%= @visualization.description %> | CartoDB">
     <meta property="og:title" content="<%= @visualization.name.gsub(/_/," ") %> | CartoDB"/>
-    <meta property="og:description" content="<%= @visualization.description || @visualization.name.gsub(/_/," ") %>"/> 
+    <meta property="og:description" content="<%= @visualization.description || @visualization.name.gsub(/_/," ") %>"/>
     <meta property="og:type" content="Visualization"/>
     <meta property="og:url" content="<%= request.fullpath %>" />
-    <meta property="og:image" content="<%= asset_path "layout/cartofante_blue.png" %>"/>
+    <meta property="og:image" content="<%= image_path "layout/cartofante_blue.png" %>"/>
 
     <style type="text/css">
       html, body, #map {height: 100%; padding: 0; margin: 0;}
@@ -27,9 +27,9 @@
       #not_supported_dialog ul li {float:left; margin:0; padding:0; border-right:1px solid #D9D9D9;}
       #not_supported_dialog ul li a {display:block; width:118px; height:74px; background-repeat:no-repeat; background-position:center center; font-size:0; line-height:0; text-indent:-9999px;}
       #not_supported_dialog ul li.last {border:none;}
-      #not_supported_dialog a.safari {background-image:url('/assets/layout/safari.png');}
-      #not_supported_dialog a.chrome {background-image:url('/assets/layout/chrome.png');}
-      #not_supported_dialog a.firefox {background-image:url('/assets/layout/firefox.png');}
+      #not_supported_dialog a.safari {background-image:url('<%= image_path "layout/safari.png" %>');}
+      #not_supported_dialog a.chrome {background-image:url('<%= image_path "layout/chrome.png" %>');}
+      #not_supported_dialog a.firefox {background-image:url('<%= image_path "layout/firefox.png" %>');}
 
       /* Styles showing up new cartodb text */
       <% if @visualization.user.remove_logo? && !Cartodb.config[:cartodb_com_hosted].present? %>
@@ -45,7 +45,7 @@
     </style>
 
     <% if !Rails.env.production? %>
-      <%= stylesheet_link_tag 'cdb/themes/css/cartodb' %>
+      <%= stylesheet_link_tag 'embeds.css' %>
     <% else %>
         <link rel="stylesheet" href="//cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/themes/css/cartodb.css" />
     <% end %>
@@ -76,12 +76,9 @@
     <% end %>
 
     <% if !Rails.env.production? %>
-      <%= javascript_include_tag :cdb %>
-      <script type="text/javascript"><%= raw Rails.application.assets['statsc.min.js'].to_s %></script>
+      <%= javascript_include_tag 'cdb.js' %>
     <% else %>
-        <script src="//cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/cartodb.js"></script>
-        <!-- inline statsc -->
-        <script type="text/javascript"><%= raw Rails.application.assets['statsc.min.js'].to_s %></script>
+      <script src="//cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/cartodb.js"></script>
     <% end %>
 
     <script>
@@ -139,15 +136,6 @@
 
       $(document).ready(function(){
 
-        <% if Cartodb.config[:graphite_public] %>
-            if (location.protocol.indexOf('https') === -1) {
-                statsc.connect('http://<%= Cartodb.config[:graphite_public]['host'] %>:<%= Cartodb.config[:graphite_public]['port'] %>/');
-                cartodb.core.Profiler.backend(function () {
-                  statsc.send.apply(statsc, arguments);
-                })
-            }
-        <% end %>
-
         var bool_fn = function(v) { return v == 'true' }
         , is_custom_install = <%= Cartodb.config[:cartodb_com_hosted].present? %>
         , logo_fn  = function(v) { return ( <%= !@visualization.user.remove_logo? %> || is_custom_install ) ? true : v == 'true' }
@@ -188,7 +176,7 @@
           cartodb_attributions: "CartoDB <a href='http://cartodb.com/attributions?utm_source=Footer_Link&utm_medium=referral&utm_campaign=Embed_v1&utm_content=Attributions&utm_term=<%= @visualization.user.username %>' target='_blank'>attribution</a>",
           cartodb_logo_link: "http://www.cartodb.com?utm_source=Footer_Link&utm_medium=referral&utm_campaign=Embed_v1&utm_content=Logo"
         })
-        
+
         var loadingTime = cartodb.core.Profiler.metric('cartodb-js.embed.time_full_loaded').start();
         var visReadyTime = cartodb.core.Profiler.metric('cartodb-js.embed.time_vis_loaded').start();
 
@@ -203,9 +191,20 @@
           stats();
         }).on('error', manageError);
       });
+      //<!-- load stats -->
+      <% if Cartodb.config[:graphite_public] %>
+        if (location.protocol.indexOf('https') === -1) {
+          jQuery.getScript('<%= javascript_path "statsc.js" %>', function(ready) {
+            statsc.connect('http://<%= Cartodb.config[:graphite_public]['host'] %>:<%= Cartodb.config[:graphite_public]['port'] %>/');
+              cartodb.core.Profiler.backend(function () {
+              statsc.send.apply(statsc, arguments);
+            })
+          })
+        }
+      <% end %>
 
     </script>
-    <%= render partial: 'shared/analytics', locals: { 
+    <%= render partial: 'shared/analytics', locals: {
       ua:     Cartodb.config[:google_analytics]['embeds'],
       domain: Cartodb.config[:google_analytics]['domain'],
       page_owner: @visualization.user

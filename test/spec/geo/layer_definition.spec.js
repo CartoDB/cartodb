@@ -526,6 +526,32 @@ describe("NamedMap", function() {
     });
   });
 
+  it("should instance named_map with no layers", function() {
+    var named_map = {
+      name: 'testing'
+    };
+    var nm = new NamedMap(named_map, {
+      tiler_domain:   "cartodb.com",
+      tiler_port:     "8081",
+      tiler_protocol: "http",
+      user_name: 'rambo',
+      no_cdn: true,
+      subdomains: [null]
+    });
+    var params;
+    nm.options.ajax = function(p) { 
+      params = p;
+      p.success({ layergroupid: 'test' });
+    };
+    runs(function() {
+      nm._getLayerToken();
+    });
+    waits(100);
+    runs(function() {
+      expect(params.dataType).toEqual('jsonp');
+    });
+  });
+
   it("should instance named_map", function() {
     var params;
     namedMap.options.ajax = function(p) { 
@@ -622,7 +648,7 @@ describe("NamedMap", function() {
     });
     waits(100);
     runs(function() {
-      expect(token).toEqual(null);
+      expect(token).not.toEqual(null);
     })
     waits(100);
     runs(function() {

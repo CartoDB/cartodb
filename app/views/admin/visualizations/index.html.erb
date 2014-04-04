@@ -3,7 +3,7 @@
 <% end %>
 
 <%= content_for(:js) do %>
-  <%= javascript_include_tag :cdb, :application, :dashboard %>
+  <%= javascript_include_tag 'cdb.js', 'models.js', 'templates.js', 'application.js', 'dashboard.js' %>
   <script type="text/javascript" src="https://www.google.com/jsapi?key=<%= Cartodb.config[:gdrive]['api_key'] %>"></script>
   <script type="text/javascript" id="dropboxjs" src="//www.dropbox.com/static/api/1/dropins.js" data-app-key="<%= Cartodb.config[:dropbox_api_key] %>"></script>
   <script type="text/javascript">
@@ -20,7 +20,7 @@
   </script>
 <% end %>
 <%= content_for(:css) do %>
-  <%= stylesheet_link_tag :common, :dashboard, :media => 'all' %>
+  <%= stylesheet_link_tag 'common.css', 'dashboard.css', :media => 'all' %>
 <% end %>
 
 <%= render 'admin/shared/subheader' %>

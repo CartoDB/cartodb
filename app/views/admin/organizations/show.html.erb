@@ -2,7 +2,7 @@
   Your organization |
 <% end %>
 <%= content_for(:js) do %>
-  <%= javascript_include_tag :cdb, :application, :organization %>
+  <%= javascript_include_tag 'cdb.js', 'application.js', 'models.js', 'organization.js', 'templates.js' %>
   <script type="text/javascript">
     var username = "<%= current_user.username %>"
       , type = "oauth"
@@ -13,8 +13,8 @@
         }
       , organization_users = <%= raw @users.map { |u| {
           id: u.id,
-          username: u.username, 
-          quota_in_bytes: u.quota_in_bytes, 
+          username: u.username,
+          quota_in_bytes: u.quota_in_bytes,
           remaining_quota: u.remaining_quota,
           organization_owner: u.organization_owner
         }}.to_json -%>
@@ -22,7 +22,7 @@
   </script>
 <% end %>
 <%= content_for(:css) do %>
-  <%= stylesheet_link_tag :common, :organization, :media => 'all' %>
+  <%= stylesheet_link_tag 'common.css', 'organization.css', :media => 'all' %>
 <% end %>
 
 <%= content_for(:account_settings) do %>

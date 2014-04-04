@@ -1,4 +1,6 @@
-
+language: node_js
+node_js:
+  - "0.10"
 before_install:
   - lsb_release -a
   - sudo mv /etc/apt/sources.list.d/pgdg-source.list* /tmp
@@ -20,6 +22,9 @@ before_install:
   - sudo su postgres -c "psql -f /usr/share/postgresql/9.3/contrib/postgis-2.1/spatial_ref_sys.sql template_postgis"
   - sudo su postgres -c "echo 'SELECT POSTGIS_FULL_VERSION();' | psql template_postgis"
 
+before_script:
+  - npm install -g grunt-cli
+
 install:
   - gdal-config --version
   - ruby --version
@@ -32,11 +37,13 @@ install:
   # Needs fixing first some tests:
   #- cp services/importer/spec/factories/database.json.sample services/importer/spec/factories/database.json
   - cat python_requirements.txt | grep -v gdal | sudo pip install -r /dev/stdin
+  - cd lib/build && npm install && cd ../..
 
 script:
   - make prepare-test-db
   - make check-prepared
   # check list of database names
+  - cd lib/build && grunt test && cd ../..
   - sudo su postgres -c "echo 'select datname from pg_database;' | psql template_postgis"
 
 env:

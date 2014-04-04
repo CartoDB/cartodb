@@ -3,19 +3,19 @@
   <head>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
     <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
-    <link rel="shortcut icon" href="/favicons/favicon.ico" />
+    <%= favicon_link_tag "/favicons/favicon.ico" %>
     <title><%= @visualization.name.gsub(/_/," ") %> | CartoDB</title>
     <meta name="description" content="<%= @visualization.description || @visualization.name.gsub(/_/," ") %>">
     <meta name="keywords" content="Map,cartodb,<%= @visualization.name.gsub(/_/,",").gsub(/ /,",") %>">
     <meta name="author" content="CartoDB">
     <meta name="DC.title" content="<%= @visualization.description %> | CartoDB">
     <meta property="og:title" content="<%= @visualization.name.gsub(/_/," ") %> | CartoDB"/>
-    <meta property="og:description" content="<%= @visualization.description || @visualization.name.gsub(/_/," ") %>"/> 
+    <meta property="og:description" content="<%= @visualization.description || @visualization.name.gsub(/_/," ") %>"/>
     <meta property="og:type" content="Visualization"/>
     <meta property="og:url" content="<%= request.fullpath %>" />
-    <meta property="og:image" content="<%= asset_path "layout/cartofante_blue.png" %>"/>
+    <meta property="og:image" content="<%= image_path "layout/cartofante_blue.png" %>"/>
 
-    <%= stylesheet_link_tag 'embeds/public_map' %>
+    <%= stylesheet_link_tag 'embeds/public_map.css' %>
 
     <style type="text/css">
       /* Styles showing up new cartodb text */
@@ -30,7 +30,7 @@
     </style>
 
     <% if !Rails.env.production? %>
-      <%= stylesheet_link_tag 'cdb/themes/css/cartodb' %>
+      <%= stylesheet_link_tag 'embeds.css' %>
     <% else %>
       <link rel="stylesheet" href="//cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/themes/css/cartodb.css" />
     <% end %>
@@ -38,7 +38,7 @@
     <%= insert_rollbar() %>
 
     <!--[if lt IE 9]>
-    <%= javascript_include_tag :"respond" %>
+    <%= javascript_include_tag "respond.js" %>
     <![endif]-->
 
   </head>
@@ -171,12 +171,9 @@
     <% end %>
 
     <% if !Rails.env.production? %>
-      <%= javascript_include_tag :cdb %>
-      <script type="text/javascript"><%= raw Rails.application.assets['statsc.min.js'].to_s %></script>
+      <%= javascript_include_tag 'cdb.js' %>
     <% else %>
       <script src="//cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/cartodb.js"></script>
-      <!-- inline statsc -->
-      <script type="text/javascript"><%= raw Rails.application.assets['statsc.min.js'].to_s %></script>
     <% end %>
 
 
@@ -247,14 +244,6 @@
 
       $(document).ready(function(){
 
-        <% if Cartodb.config[:graphite_public] %>
-            if (location.protocol.indexOf('https') === -1) {
-              statsc.connect('http://<%= Cartodb.config[:graphite_public]['host'] %>:<%= Cartodb.config[:graphite_public]['port'] %>/');
-                cartodb.core.Profiler.backend(function () {
-                statsc.send.apply(statsc, arguments);
-              })
-            }
-          <% end %>
 
         var bool_fn = function(v) { return v == 'true' }
           , is_custom_install = <%= Cartodb.config[:cartodb_com_hosted].present? %>
@@ -355,7 +344,6 @@
             if (animated) {
               $("#map").animate({ height: height }, { easing: "easeInQuad", duration: 150 }); 
             } else {
-
               if (mobileDevice) {
                 $("#map").css({ height: height, opacity: 1 }); 
               }
@@ -394,7 +382,7 @@
 
             if (!mobileDevice) {
               $(window).on("resize", onResize);
-            } 
+            }
 
             setupMapDimensions(mobileDevice);
 
@@ -406,11 +394,22 @@
             }
 
           }).on('error', manageError);
+
+          <% if Cartodb.config[:graphite_public] %>
+            if (location.protocol.indexOf('https') === -1) {
+              jQuery.getScript('<%= javascript_path "statsc.js" %>', function(ready) {
+                statsc.connect('http://<%= Cartodb.config[:graphite_public]['host'] %>:<%= Cartodb.config[:graphite_public]['port'] %>/');
+                  cartodb.core.Profiler.backend(function () {
+                  statsc.send.apply(statsc, arguments);
+                })
+              })
+            }
+          <% end %>
       });
 
     </script>
 
-    <%= javascript_include_tag :"jquery.tipsy" %>
+    <%= javascript_include_tag "tipsy.js" %>
 
     <script type="text/javascript">
       $(function() {

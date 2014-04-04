@@ -7,6 +7,7 @@ class Admin::VisualizationsController < ApplicationController
   ssl_required :index, :show, :protected_embed_map, :protected_public_map, :show_protected_public_map
   before_filter :login_required, only: [:index]
   skip_before_filter :browser_is_html5_compliant?, only: [:public_map, :embed_map, :track_embed, :show_protected_embed_map, :show_protected_public_map]
+  skip_before_filter :verify_authenticity_token, only: [:show_protected_public_map, :show_protected_embed_map]
 
   def index
     @tables_count  = current_user.tables.count
@@ -88,12 +89,12 @@ class Admin::VisualizationsController < ApplicationController
     @disqus_shortname     = @visualization.user.disqus_shortname.presence || 'cartodb'
     @visualization_count  = @visualization.user.visualization_count
     @related_tables       = @visualization.related_tables
-    @private_tables_count = @related_tables.select{|p| p.privacy_text == 'PRIVATE' }.count 
+    @private_tables_count = @related_tables.select{|p| p.privacy_text == 'PRIVATE' }.count
 
     respond_to do |format|
       format.html { render 'public_map', layout: false }
     end    
-  rescue => exception
+  rescue
     public_map_protected
   end #show_protected_public_map
 
@@ -118,7 +119,7 @@ class Admin::VisualizationsController < ApplicationController
     respond_to do |format|
       format.html { render 'embed_map', layout: false }
     end    
-  rescue => exception
+  rescue
     embed_protected
   end #show_protected_embed_map
 
@@ -144,6 +145,7 @@ class Admin::VisualizationsController < ApplicationController
   def get_avatar(vis, size = 128)
 
     email  = vis.user.email.strip.downcase
+    #noinspection RubyArgCount
     digest = Digest::MD5.hexdigest(email)
 
     "//www.gravatar.com/avatar/#{digest}?s=#{size}&d=http%3A%2F%2Fcartodb.s3.amazonaws.com%2Fstatic%2Fmap-avatar-03.png"

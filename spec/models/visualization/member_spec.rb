@@ -325,6 +325,8 @@ describe Visualization::Member do
   describe '#validation_for_link_privacy' do
     it 'checks that only users with private tables enabled can set LINK privacy' do
 
+      Visualization::Member.any_instance.stubs(:named_maps)
+
       visualization = Visualization::Member.new(
           privacy: Visualization::Member::PRIVACY_PUBLIC,
           name: 'test',
@@ -354,8 +356,42 @@ describe Visualization::Member do
 
       visualization.privacy = Visualization::Member::PRIVACY_LINK
       visualization.valid?.should eq false
+
+      # "Reset"
+      visualization = Visualization::Member.new(
+          privacy: Visualization::Member::PRIVACY_LINK,
+          name: 'test',
+          type: Visualization::Member::CANONICAL_TYPE
+      )
+      visualization.user_data = { actions: { private_maps: false } }
+      # Unchanged visualizations could be
+      visualization.valid?.should eq true
+
+      # Simulate editing the privacy
+      visualization.stubs(:privacy_changed).returns(true)
+      # Now it can't
+      visualization.valid?.should eq false
     end
   end
+
+  describe '#default_privacy_values' do
+    it 'Checks deault privacies for visualizations' do
+      user_mock = mock
+
+      # We don't care about values, just want an instance
+      visualization = Visualization::Member.new(
+          privacy: Visualization::Member::PRIVACY_PUBLIC,
+          name: 'test',
+          type: Visualization::Member::CANONICAL_TYPE
+      )
+
+      user_mock.stubs(:private_tables_enabled).returns(true)
+      visualization.default_privacy(user_mock).should eq  Visualization::Member::PRIVACY_LINK
+
+      user_mock.stubs(:private_tables_enabled).returns(false)
+      visualization.default_privacy(user_mock).should eq  Visualization::Member::PRIVACY_PUBLIC
+    end
+  end #default_privacy_values
 
   def random_attributes(attributes={})
     random = UUIDTools::UUID.timestamp_create.to_s

@@ -7,6 +7,7 @@
 @import "compass/css3/opacity";
 @import "compass/css3/border-radius";
 @import "compass/css3/inline-block";
+@import "compass/css3/images";
 @import "compass/css3/transform";
 @import "../common/vars";
 @import "../common/fonts";
@@ -486,7 +487,7 @@ div.cartodb-public-header a.button.green {
 }
 
 div.cartodb-public-header .inner .logo {
-  background: url('/assets/layout/cartodb.png') no-repeat;
+  @include background(image-url('layout/cartodb.png') no-repeat);
   margin: 23px 0;
   display: block;
   width: 93px;
@@ -508,7 +509,7 @@ div.cartodb-public-header {
   -webkit-box-shadow: rgba(0, 0, 0, 0.1) 0 6px 4px -2px;
   -moz-box-shadow: rgba(0, 0, 0, 0.1) 0 6px 4px -2px;
   box-shadow: rgba(0, 0, 0, 0.1) 0 6px 4px -2px;
-  background: url('/assets/layout/gradient.png') repeat-x center center;
+  @include background(image-url('layout/gradient.png') repeat-x center center);
   margin:0;
   font-family: 'Helvetica Neue', Helvetica, sans-serif;
   z-index: 10;

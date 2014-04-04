@@ -2,15 +2,15 @@
   Your apps |
 <% end %>
 <%= content_for(:js) do %>
-  <%= javascript_include_tag :cdb, :application, :keys %>
   <script type="text/javascript">
     var username = "<%= current_user.username %>"
       , config = <%=raw frontend_config.html_safe %>
       , user_data = <%= raw current_user.data.to_json.html_safe %>;
   </script>
+  <%= javascript_include_tag 'cdb.js', 'application.js', 'models.js', 'keys.js', 'templates.js' %>
 <% end %>
 <%= content_for(:css) do %>
-  <%= stylesheet_link_tag :common, :keys, :media => 'all' %>
+  <%= stylesheet_link_tag 'common.css', 'keys.css', :media => 'all' %>
 <% end %>
 
 <article class="api_key">
@@ -28,7 +28,7 @@
           <li>
             <form>
               <div class="column left-column">
-                
+
                 <div class="row">
                   <div class="field copy field-1">
                     <label>YOUR API KEY</label>
@@ -57,7 +57,7 @@
                   <p>Learn more about <%= link_to "using your simple app key", Cartodb.config[:developers_host] + "/documentation/apis-overview.html" %> in CartoDB</p>
                 </div>
               </div>
-            </form>    
+            </form>
           </li>
         </ul>
       </div>
@@ -85,7 +85,7 @@
           <li>
             <form>
               <div class="column left-column">
-                
+
                 <div class="row">
                   <div class="field copy field-1 copy">
                     <label>CONSUMER KEY</label>

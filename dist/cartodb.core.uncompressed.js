@@ -1,5 +1,5 @@
-// version: 3.8.08
-// sha: cf230554a11ccafb6f5e0da2b4268aecb9c0dbd1
+// version: 3.8.09
+// sha: 78b6f928887112d02bd91c8baedf19922ff2bd32
 ;(function() {
   this.cartodb = {};
   var Backbone = {};
@@ -1141,7 +1141,7 @@ var Mustache;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.8.08';
+    cdb.VERSION = '3.8.09';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -2088,7 +2088,9 @@ Map.prototype = {
 
     this._queue = [];
 
-    if (this.visibleLayers().length === 0) {
+    // when it's a named map the number of layers is not known
+    // so fetch the map
+    if (!this.named_map && this.visibleLayers().length === 0) {
       callback(null);
       return;
     }

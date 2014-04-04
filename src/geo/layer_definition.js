@@ -346,7 +346,9 @@ Map.prototype = {
 
     this._queue = [];
 
-    if (this.visibleLayers().length === 0) {
+    // when it's a named map the number of layers is not known
+    // so fetch the map
+    if (!this.named_map && this.visibleLayers().length === 0) {
       callback(null);
       return;
     }

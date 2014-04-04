@@ -1,3 +1,12 @@
+2.12.0 (2014-04-04)
+-------------------
+* Improvements
+  * Frontend code (JS) is now no longer compiled using the assets pipeline. You can
+    use the asset_host setting on app_conflg.yml to point to assets on our own CDN 
+    or to your own ones if you compile them manually using Grunt.
+    For more details, look at lib/build/UPGRADING.md.
+  * Automate frontend unit tests
+
 2.11.2 (2014-03-27)
 -------------------
 * Bugs Fixed

@@ -12,6 +12,7 @@ require_relative '../../config/initializers/redis'
 require_relative '../../services/importer/lib/importer'
 require_relative '../connectors/importer'
 
+require_relative '../../services/importer/lib/importer/datasource_downloader'
 require_relative '../../services/datasources/lib/datasources'
 include CartoDB::Datasources
 
@@ -68,8 +69,7 @@ class DataImport < Sequel::Model
   end
 
   def get_error_text
-    return CartoDB::IMPORTER_ERROR_CODES[99999] if self.error_code.blank? 
-    return CartoDB::IMPORTER_ERROR_CODES[self.error_code]
+    self.error_code.blank? ? CartoDB::IMPORTER_ERROR_CODES[99999] : CartoDB::IMPORTER_ERROR_CODES[self.error_code]
   end
 
   def raise_over_table_quota_error
@@ -93,7 +93,7 @@ class DataImport < Sequel::Model
       CartoDB::Importer2::GenericImportError.new('Import timed out'),
       user: current_user
     )
-    return true
+    true
   end
 
   def data_source=(data_source)
@@ -166,9 +166,9 @@ class DataImport < Sequel::Model
 
   def valid_uuid?(text)
     !!UUIDTools::UUID.parse(text)
-  rescue TypeError => exception
+  rescue TypeError
     false
-  rescue ArgumentError => exception
+  rescue ArgumentError
     false
   end #instantiate_log
 
@@ -202,8 +202,8 @@ class DataImport < Sequel::Model
   # for more than 5 minutes and it shouldn't be currently
   # processed by any active worker
   def stuck?
-    !['complete', 'failure'].include?(self.state) &&
-    self.created_at < 5.minutes.ago              &&
+    !%w(complete failure).include?(self.state) &&
+    self.created_at < 5.minutes.ago            &&
     !running_import_ids.include?(self.id)
   end
 
@@ -303,20 +303,11 @@ class DataImport < Sequel::Model
   def new_importer
     log.append 'new_importer()'
 
-    if !service_name.nil? && service_name.size > 0
-      datasource_name = service_name
-    else
-      # Legacy support, treat all existing stuff as pure URL datasources
-      datasource_name = CartoDB::Datasources::Url::PublicUrl::DATASOURCE_NAME
-    end
-
-    datasource_provider = get_datasource(datasource_name)
+    downloader = get_downloader
 
     tracker       = lambda { |state| self.state = state; save }
-    downloader    = CartoDB::Importer2::Downloader.new(data_source)
     runner        = CartoDB::Importer2::Runner.new(
-                      pg_options, downloader, log, current_user.remaining_quota, nil,
-                      datasource_provider, service_item_id
+                      pg_options, downloader, log, current_user.remaining_quota
                     )
     registrar     = CartoDB::TableRegistrar.new(current_user, Table)
     quota_checker = CartoDB::QuotaChecker.new(current_user)
@@ -354,6 +345,29 @@ class DataImport < Sequel::Model
     importer.success?
   end
 
+  def get_downloader
+    datasource_name = (service_name.nil? || service_name.size == 0) ? CartoDB::Datasources::Url::PublicUrl::DATASOURCE_NAME : service_name
+    service_item_id = data_source if (service_item_id.nil? || service_item_id.size == 0)
+
+    datasource_provider = get_datasource(datasource_name)
+    raise CartoDB::DataSourceError.new("Datasource #{datasource_name} without item id") if !datasource_provider.nil? && service_item_id.nil?
+
+    log.append "Fetching datasource #{datasource_provider.to_s} metadata for item id #{service_item_id}"
+    metadata = datasource_provider.get_resource_metadata(service_item_id)
+
+    if datasource_provider.providers_download_url?
+      downloader = CartoDB::Importer2::Downloader.new(
+          (metadata[:url].present? && datasource_provider.providers_download_url?) ? metadata[:url] : data_source
+      )
+      log.append "File will be downloaded from #{downloader.url}"
+    else
+      log.append 'Downloading file data from datasource'
+      downloader = CartoDB::Importer2::DatasourceDownloader.new(datasource_provider, metadata)
+    end
+
+    downloader
+  end #get_downloader
+
   def current_user
     @current_user ||= User[user_id]
   end
@@ -385,6 +399,7 @@ class DataImport < Sequel::Model
     payload
   end
 
+  # @return mixed|nil
   def get_datasource(datasource_name)
     oauth = current_user.oauths.select(datasource_name)
     # TODO: Error handling

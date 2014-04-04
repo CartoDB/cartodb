@@ -10,6 +10,8 @@ module CartoDB
         # Required for all datasources
         DATASOURCE_NAME = 'public_url'
 
+        URL_REGEXP = %r{://}
+
         # Constructor (hidden)
         # @param config
         # [ ]
@@ -66,25 +68,17 @@ module CartoDB
           }
         end #get_resource_metadata
 
-        # Checks if a specific resource has been modified
-        # @param id string
-        # @return bool
-        def resource_modified?(id)
-          fetch_headers(id)
-          new_checksum = checksum_of(id, etag_header, last_modified_header)
-
-          #TODO: check against stored checksum
-          puts id + ' ' + etag_header + ' ' + last_modified_header + new_checksum
-          false
-        end #resource_modified?
-
         # Fetches the headers for a given url
         # @throws DownloadError
         def fetch_headers(url)
-          @headers = nil  # In case of error, always leave empty the headers
-          response = Typhoeus.head(url, http_options)
-          raise DownloadError.new("Fetching headers of #{url}", DATASOURCE_NAME) unless response.code.to_s =~ /\A[23]\d+/
-          @headers = response.headers
+          if url =~ URL_REGEXP
+            @headers = nil  # In case of error, always leave empty the headers
+            response = Typhoeus.head(url, http_options)
+            raise DownloadError.new("Fetching headers of #{url}", DATASOURCE_NAME) unless response.code.to_s =~ /\A[23]\d+/
+            @headers = response.headers
+          else
+            @headers = {}
+          end
         end #fetch_headers
 
         # Get the etag header if present

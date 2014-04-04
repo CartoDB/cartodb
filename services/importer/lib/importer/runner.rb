@@ -8,8 +8,6 @@ require_relative './column'
 require_relative './exceptions'
 require_relative './result'
 
-require_relative './datasource_downloader'
-
 module CartoDB
   module Importer2
     class Runner
@@ -20,46 +18,22 @@ module CartoDB
       UNKNOWN_ERROR_CODE      = 99999
 
       # @param pg_options Hash
-      # @param downloader CartoDB::Importer2::Downloader
+      # @param downloader CartoDB::Datasources::Base|CartoDB::Importer2::Downloader
       # @param log TrackRecord::Log|nil
       # @param available_quota int|nil
       # @param unpacker Unp|nil
-      # @param datasource CartoDB::Datasources::Base|nil
-      # @param datasource_item_id int|nil
-      def initialize(pg_options, downloader, log=nil, available_quota=nil, unpacker=nil,
-                     datasource=nil, datasource_item_id=nil)
+      def initialize(pg_options, downloader, log=nil, available_quota=nil, unpacker=nil)
         @pg_options         = pg_options
         @downloader         = downloader
         @log                = log             || TrackRecord::Log.new
         @available_quota    = available_quota || DEFAULT_AVAILABLE_QUOTA
         @unpacker           = unpacker        || Unp.new
         @results            = []
-        @datasource         = datasource
-        @datasource_item_id = datasource_item_id
       end #initialize
 
       def run(&tracker_block)
         @tracker = tracker_block
         tracker.call('uploading')
-
-        metadata = nil
-        unless @datasource.nil?
-          if @datasource_item_id.nil?
-            log.append "Datasource #{@datasource.to_s} without item id specified"
-          else
-            log.append "Fetching datasource #{@datasource.to_s} metadata for item id #{@datasource_item_id}"
-            metadata = @datasource.get_resource_metadata(@datasource_item_id)
-            @downloader.url = metadata[:url] if metadata[:url].present? && @datasource.providers_download_url?
-          end
-        end
-
-        if metadata.nil? || @datasource.providers_download_url?
-          log.append "Getting file from #{@downloader.url}"
-        else
-          #TODO: Extract this out and inject
-          log.append 'Downloading file data from datasource'
-          @downloader = DatasourceDownloader.new(@datasource, metadata)
-       end
 
         @downloader.run(available_quota)
 
@@ -143,6 +117,7 @@ module CartoDB
       end #tracker
 
       def success?
+        # TODO: Change this, "runner" can be ok even if no data has changed, should expose "data_changed" attribute
         return true unless remote_data_updated?
         results.select(&:success?).length > 0
       end

@@ -177,26 +177,6 @@ module CartoDB
           raise DownloadError.new("get_resource_metadata() #{id}", DATASOURCE_NAME)
         end #get_resource_metadata
 
-        # Checks if a file has been modified
-        # @param id string
-        # @return bool
-        # @throws DownloadError
-        # @throws AuthError
-        def resource_modified?(id)
-          result = @client.execute( api_method: @drive.files.get, parameters: { fileId: id } )
-          raise DownloadError.new("(#{result.status}) retrieving file #{id} metadata: #{result.data['error']['message']}", DATASOURCE_NAME) if result.status != 200
-
-          new_item_data = format_item_data(result.data.to_hash)
-
-          #TODO: check against stored checksum
-          puts new_item_data.to_hash
-          false
-        rescue Google::APIClient::InvalidIDTokenError
-          raise AuthError.new('Invalid token', DATASOURCE_NAME)
-        rescue Google::APIClient::TransmissionError
-          raise DownloadError.new("checking if file #{id} has been modified", DATASOURCE_NAME)
-        end #resource_modified?
-
         # Retrieves current filters
         # @return {}
         def filter

@@ -98,6 +98,9 @@ module CartoDB
         self.log_id   = log.id
         store
 
+        # TODO: Add Datasource downloader here (@see data_import.rb new_importer())
+
+
         downloader    = CartoDB::Importer2::Downloader.new(
                           url,
                           etag:             etag,

@@ -140,21 +140,6 @@ module CartoDB
           raise DownloadError.new("get_resource_metadata() #{id}", DATASOURCE_NAME)
         end #get_resource_metadata
 
-        # Checks if a specific resource has been modified
-        # @param id string
-        # @return bool
-        # @throws DownloadError
-        def resource_modified?(id)
-          response = @client.metadata(id)
-          new_item_data = format_item_data(response)
-
-          #TODO: check against stored checksum
-          puts new_item_data.to_hash
-          false
-        rescue DropboxError, ArgumentError
-          raise DownloadError.new("resource_modified?() #{id}", DATASOURCE_NAME)
-        end #resource_modified?
-
         # Retrieves current filters
         # @return {}
         def filter

@@ -8,9 +8,12 @@ module CartoDB
   module Importer2
     class DatasourceDownloader
 
-      def initialize(datasource, item_metadata, repository=nil)
+      def initialize(datasource, item_metadata, options={}, repository=nil)
+        @checksum = nil
+
         @datasource     = datasource
         @item_metadata  = item_metadata
+        @options = options
         raise UploadError if datasource.nil?
 
         @repository   = repository || DataRepository::Filesystem::Local.new(temporary_directory)
@@ -19,11 +22,12 @@ module CartoDB
       def run(available_quota_in_bytes=nil)
         set_downloaded_source_file(available_quota_in_bytes)
         self
-      end
+      end #run
 
       def set_downloaded_source_file(available_quota_in_bytes=nil)
+        @checksum = @item_metadata[:checksum]
+        return self unless modified?
 
-        #TODO: Don't download if not changed
         resource_data = @datasource.get_resource(@item_metadata[:id])
 
         data = StringIO.new(resource_data)
@@ -35,17 +39,21 @@ module CartoDB
 
         repository.store(source_file.path, data)
         self
-      end
+      end #set_downloaded_source_file
 
       def raise_if_over_storage_quota(size, available_quota_in_bytes=nil)
         return self unless available_quota_in_bytes
         raise StorageQuotaExceededError if size > available_quota_in_bytes.to_i
-      end
+      end #raise_if_over_storage_quota
 
       def modified?
-        # TODO: Implement
-        true
-      end
+        previous_checksum = @options.fetch(:checksum, false)
+        checksum          = @checksum.nil? ? false : @checksum
+
+        return true unless (previous_checksum)
+        return true if previous_checksum && checksum && previous_checksum != checksum
+        false
+      end #modified?
 
       attr_reader  :source_file
 
@@ -62,7 +70,7 @@ module CartoDB
         return @temporary_directory if @temporary_directory
         @temporary_directory = Unp.new.generate_temporary_directory.temporary_directory
       end #temporary_directory
-    end # Downloader
+    end # DatasourceDownloader
   end # Importer2
 end # CartoDB
 

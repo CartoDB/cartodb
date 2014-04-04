@@ -50,13 +50,6 @@ module CartoDB
         raise 'To be implemented in child classes'
       end #get_resource_metadata
 
-      # Checks if a specific resource has been modified
-      # @param id string
-      # @return bool
-      def resource_modified?(id)
-        raise 'To be implemented in child classes'
-      end
-
       # Retrieves current filters
       # @return {}
       def filter

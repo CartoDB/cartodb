@@ -85,8 +85,7 @@ module CartoDB
 
         self.source_file  = SourceFile.new(filepath(name), name)
         repository.store(source_file.path, data)
-        @checksum = 
-          Open3.capture2e(md5_command_for(source_file.fullpath)).first
+        @checksum = Open3.capture2e(md5_command_for(source_file.fullpath)).first
         self.source_file  = nil unless modified?
         self
       end

@@ -1,3 +1,6 @@
+3.8.09 (04//04/2014)
+- fixed map instanciation when named map has no layer information
+
 3.8.08 (03//04/2014)
 - fixed layer visibility
 

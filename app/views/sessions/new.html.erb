@@ -1,5 +1,5 @@
 <%= content_for(:js) do %>
-  <%= javascript_include_tag :cdb, :application, :login %>
+  <%= javascript_include_tag 'cdb.js', 'application.js', 'login.js' %>
 <% end %>
 
 <section class="sessions shadow">
@@ -10,9 +10,9 @@
         <% @error = @login_error %>
         <% if @error %>
           <div class="field_with_errors">
-        <% end %>          
+        <% end %>
         <%= text_field_tag :email, CartoDB.extract_subdomain(request), :title => "Email or username", :'data-label' => "Email or username", :class => (flash[:alert] || @error ? 'error' : nil) %>
-        <% if @error %>  
+        <% if @error %>
           </div>
           <div class="field_error"><%= @error %></div>
         <% end %>
@@ -20,9 +20,9 @@
       <div class="field margin20">
         <% if @error %>
           <div class="field_with_errors">
-        <% end %>          
+        <% end %>
         <%= password_field_tag :password, '', :title => "Password", :'data-label' => "Password", :class => (flash[:alert] || @error ? 'error' : nil) %>
-        <% if @error %>  
+        <% if @error %>
           </div>
           <div class="field_error"><%= @error %></div>
         <% end %>

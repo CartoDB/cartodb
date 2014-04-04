@@ -24,7 +24,7 @@
     @include size(65px, auto);
     letter-spacing:0;
     @include border-left-radius(4px);
-    @include single-box-shadow(rgba(black,0.03), -4px, 0, 5px, 0, true);
+    @include single-box-shadow( -4px, 0, 5px, 0, rgba(black,0.03), true);
     z-index:6;
 
     nav {

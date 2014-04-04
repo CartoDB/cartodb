@@ -367,10 +367,7 @@
         margin: 0 0 27px 0;
         padding: 19px 7px 30px 0;
 
-        // TODO: review because precompile is
-        // throwing a warning message with this
-        // extend.
-        @extend .clearfix;
+        @include clearfix();
 
         h2 i {
           @include inline-block();

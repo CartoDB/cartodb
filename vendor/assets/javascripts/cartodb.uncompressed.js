@@ -1,6 +1,6 @@
-// cartodb.js version: 3.8.05-dev
+// cartodb.js version: 3.8.10-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: cbf786eab4a2ad3262057306e5b5e2d6be713a96
+// sha: a1420b8895d50d475492100e14c2ced22fb235d4
 (function() {
   var root = this;
 
@@ -20686,7 +20686,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.8.05-dev';
+    cdb.VERSION = '3.8.10-dev';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -25704,6 +25704,7 @@ function Map(options) {
 }
 
 Map.BASE_URL = '/api/v1/map';
+Map.EMPTY_GIF = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
 
 function NamedMap(named_map, options) {
   var self = this;
@@ -25818,6 +25819,18 @@ Map.prototype = {
     }
     return +layers[index];
   },
+
+  visibleLayers: function() {
+    var layers = [];
+    for(var i = 0; i < this.layers.length; ++i) {
+      var layer = this.layers[i];
+      if(!layer.options.hidden) {
+        layers.push(layer);
+      }
+    }
+    return layers;
+  },
+
 
   // ie7 btoa,
   // from http://phpjs.org/functions/base64_encode/
@@ -26013,6 +26026,13 @@ Map.prototype = {
 
     this._queue = [];
 
+    // when it's a named map the number of layers is not known
+    // so fetch the map
+    if (!this.named_map && this.visibleLayers().length === 0) {
+      callback(null);
+      return;
+    }
+
     // setup params
     var extra_params = this.options.extra_params || {};
     var api_key = this.options.map_key || this.options.api_key || extra_params.map_key || extra_params.api_key;
@@ -26061,6 +26081,18 @@ Map.prototype = {
 
   setLayer: function(layer, def) {
     if(layer < this.getLayerCount() && layer >= 0) {
+      if (def.options.hidden) {
+        var i = this.interactionEnabled[layer];
+        if (i) {
+          def.interaction = true
+          this.setInteraction(layer, false);
+        }
+      } else {
+        if (this.layers[layer].interaction) {
+          this.setInteraction(layer, true);
+          delete this.layers[layer].interaction;
+        }
+      }
       this.layers[layer] = _.clone(def);
     }
     this.invalidate();
@@ -26086,6 +26118,13 @@ Map.prototype = {
         self.urls = self._layerGroupTiles(data.layergroupid, self.options.extra_params);
         callback && callback(self.urls);
       } else {
+        if (self.visibleLayers().length === 0) {
+          callback && callback({
+            tiles: [Map.EMPTY_GIF],
+            grids: []
+          });
+          return;
+        } 
         callback && callback(null, err);
       }
     });
@@ -26423,19 +26462,18 @@ LayerDefinition.prototype = _.extend({}, Map.prototype, {
       obj.stat_tag = this.stat_tag;
     }
     obj.layers = [];
-    for(var i = 0; i < this.layers.length; ++i) {
-      var layer = this.layers[i];
-      if(!layer.options.hidden) {
-        obj.layers.push({
-          type: 'cartodb',
-          options: {
-            sql: layer.options.sql,
-            cartocss: layer.options.cartocss,
-            cartocss_version: layer.options.cartocss_version || '2.1.0',
-            interactivity: this._cleanInteractivity(layer.options.interactivity)
-          }
-        });
-      }
+    var layers = this.visibleLayers();
+    for(var i = 0; i < layers.length; ++i) {
+      var layer = layers[i];
+      obj.layers.push({
+        type: 'cartodb',
+        options: {
+          sql: layer.options.sql,
+          cartocss: layer.options.cartocss,
+          cartocss_version: layer.options.cartocss_version || '2.1.0',
+          interactivity: this._cleanInteractivity(layer.options.interactivity)
+        }
+      });
     }
     return obj;
   },
@@ -28461,7 +28499,7 @@ CartoDBLayerGroupBase.prototype.getTile = function(coord, zoom, ownerDocument) {
   im.onload = finished;
   im.onerror = function() {
     cartodb.core.Profiler.metric('cartodb-js.tile.png.error').inc();
-    finish();
+    finished();
   }
 
 
@@ -33138,7 +33176,7 @@ function PointView(geometryModel) {
       //TODO: create marker depending on the visualizacion options
       var p = L.marker(latLng,{
         icon: L.icon({
-          iconUrl: '/assets/layout/default_marker.png',
+          iconUrl: cdb.config.get('assets_url') + '/images/layout/default_marker.png',
           iconAnchor: [11, 11]
         })
       });
@@ -33297,7 +33335,7 @@ function PointView(geometryModel) {
     geometryModel.get('geojson'),
     {
       icon: {
-          url: '/assets/layout/default_marker.png',
+          url: cdb.config.get('assets_url') + '/images/layout/default_marker.png',
           anchor: {x: 10, y: 10}
       },
       raiseOnDrag: false,

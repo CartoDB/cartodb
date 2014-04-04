@@ -3,9 +3,9 @@
   <head>
     <meta charset='utf-8' />
     <title><%= yield :page_title %>CartoDB</title>
-    <link id="favicon" rel="shortcut icon" href="/favicons/favicon.ico" />
+    <%= favicon_link_tag "/favicons/favicon.ico" %>
     <%= yield :css %>
-    <!--[if gt IE 8]><%= stylesheet_link_tag :fonts_ie %><![endif]-->
+    <!--[if gt IE 8]><%= stylesheet_link_tag 'fonts_ie.css' %><![endif]-->
     <%= insert_rollbar() %>
     <%= insert_google_analytics('primary') %>
     <%= render 'shared/mixpanel' %>

@@ -1,3 +1,5 @@
+REV=$(shell git rev-parse HEAD)
+
 PENDING_SPECS = \
   spec/lib/varnish_spec.rb (#321) \
   $(NULL)
@@ -55,10 +57,12 @@ update_cdb:
 	cp $(CDB_PATH)/dist/cartodb.mod.torque.uncompressed.js vendor/assets/javascripts
 	cp $(CDB_PATH)/dist/cartodb.css vendor/assets/stylesheets/cartodb.css
 
-develop_cdb:
-	while true; do make update_cdb 1>/dev/null; sleep 2; done
 
-.PHONY: develop_cdb
+cartodbui:
+	curl http://libs.cartocdn.com/cartodbui/manifest_$(REV).yml > public/assets/manifest.yml
+
+
+.PHONY: develop_cdb cartodbui
 
 
 

@@ -93,6 +93,11 @@ file](https://github.com/CartoDB/cartodb20/archive/develop.zip).
 
 ## Add CartoDB PPAs ##
 
+Add CartoDB Base PPA
+```bash
+sudo add-apt-repository ppa:cartodb/base
+```
+
 Add CartoDB GIS PPA
 ```bash
 sudo add-apt-repository ppa:cartodb/gis

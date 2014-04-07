@@ -681,15 +681,15 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def private?
-    $tables_metadata.hget(key, 'privacy').to_i == PRIVACY_PRIVATE
+    self.privacy == PRIVACY_PRIVATE
   end #private?
 
   def public?
-    $tables_metadata.hget(key, 'privacy').to_i == PRIVACY_PUBLIC
+    self.privacy == PRIVACY_PUBLIC
   end #public?
 
   def public_with_link_only?
-    $tables_metadata.hget(key, 'privacy').to_i == PRIVACY_LINK
+    self.privacy == PRIVACY_LINK
   end #public_with_link_only?
 
   def set_default_table_privacy

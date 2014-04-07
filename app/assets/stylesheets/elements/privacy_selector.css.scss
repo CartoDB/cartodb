@@ -10,7 +10,7 @@
 
   .privacy_selector {
     position:absolute;
-    width:190px;
+    width:220px;
     border:1px solid #999999;
     @include border-radius(3px);
     @include box-shadow(rgba(0,0,0,0.2) 0 0 4px 1px);
@@ -48,6 +48,8 @@
           font-size:13px;
           font-weight:normal;
 
+          line-height: 125%;
+
           &.public {
             color:#83AD3A;
             span {
@@ -58,6 +60,19 @@
             }
             &:hover {
               span {border-color:#83AD3A;}
+            }
+          }
+
+          &.link {
+            color:rgba(255,166,77,0.8);
+            span {
+              border-color:rgba(255,166,77,0.8);
+              &:before {
+                background:rgba(255,166,77,0.8);
+              }
+            }
+            &:hover {
+              span {border-color:rgba(255,166,77,0.8);}
             }
           }
 

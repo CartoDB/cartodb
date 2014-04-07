@@ -43,7 +43,7 @@
 
   </head>
   <body>
-    <% if @visualization.public? || @visualization.password_protected? %>
+    <% if @visualization.public? || @visualization.public_with_link? || @visualization.password_protected? %>
 
       <div class="cartodb-public-wrapper">
         <div class="cartodb-public-header">
@@ -86,13 +86,13 @@
             </div>
 
             <div class="user embed-right-col">
-              <div class="content">
+              <a href="/" title="Maps by <%= @visualization.user.username %>" class="content">
                 <div class="user-info">
                   <h4>by <%= @visualization.user.username.truncate(20) %></h4>
                   <h5><%= "#{@visualization_count} #{@visualization_count != 1 ? "maps" :"map"} created" %></h5>
                 </div>
                 <img src="<%= @avatar_url %>" class="avatar" />
-              </div>
+              </a>
             </div>
 
           </div>
@@ -113,8 +113,8 @@
                     <% end %>
                   <% end %>
 
-                  <% if (@private_tables_count > 0) %>
-                    <li class="private"><%= @private_tables_count %> private dataset<%= @private_tables_count != 1 ? 's' : '' %><span class="help" original-title="This map contains <%= @private_tables_count %> dataset<%= @private_tables_count != 1 ? 's' : '' %> made private by the publisher">(?)</span></li>
+                  <% if (@nonpublic_tables_count > 0) %>
+                    <li class="private"><%= @nonpublic_tables_count %> private dataset<%= @nonpublic_tables_count != 1 ? 's' : '' %><span class="help" original-title="This map contains <%= @nonpublic_tables_count %> dataset<%= @nonpublic_tables_count != 1 ? 's' : '' %> made private by the publisher">(?)</span></li>
                   <% end %>
                 </ul>
 
@@ -175,7 +175,6 @@
     <% else %>
       <script src="//cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/cartodb.js"></script>
     <% end %>
-
 
     <script>
 

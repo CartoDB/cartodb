@@ -93,7 +93,7 @@ describe Visualization::Member do
       member.store
 
       member.expects(:invalidate_varnish_cache)
-      member.privacy = 'private'
+      member.privacy = Visualization::Member::PRIVACY_PRIVATE
       member.store
     end
 
@@ -153,10 +153,10 @@ describe Visualization::Member do
       visualization = Visualization::Member.new(privacy: 'public')
       visualization.public?.should == true
 
-      visualization.privacy = 'private'
+      visualization.privacy = Visualization::Member::PRIVACY_PRIVATE
       visualization.public?.should == false
 
-      visualization.privacy = 'public'
+      visualization.privacy = Visualization::Member::PRIVACY_PUBLIC
       visualization.public?.should == true
     end
   end #public?
@@ -222,7 +222,7 @@ describe Visualization::Member do
   end # validations
 
   describe '#derived?' do
-    it "returns true if type is derived" do
+    it 'returns true if type is derived' do
       visualization = Visualization::Member.new(type: Visualization::Member::DERIVED_TYPE)
       visualization.derived?.should be_true
       visualization.table?.should be_false
@@ -272,7 +272,7 @@ describe Visualization::Member do
       visualization.is_password_valid?(password_value).should be_false
 
       # Test removing the password, should work
-      visualization.remove_password()
+      visualization.remove_password
       visualization.has_password?.should be_false
       lambda { 
         visualization.is_password_valid?(password_value)
@@ -319,6 +319,41 @@ describe Visualization::Member do
 
       # Canonical visualizations can always be private
       visualization.store
+    end
+  end
+
+  describe '#validation_for_link_privacy' do
+    it 'checks that only users with private tables enabled can set LINK privacy' do
+
+      visualization = Visualization::Member.new(
+          privacy: Visualization::Member::PRIVACY_PUBLIC,
+          name: 'test',
+          type: Visualization::Member::CANONICAL_TYPE
+      )
+      visualization.user_data = { actions: { private_maps: true } }
+
+      # Careful, do a user mock after touching user_data as it does some checks about user too
+      user_mock = mock
+      user_mock.stubs(:private_tables_enabled).returns(true)
+      Visualization::Member.any_instance.stubs(:user).returns(user_mock)
+
+      visualization.valid?.should eq true
+
+      visualization.privacy = Visualization::Member::PRIVACY_PRIVATE
+      visualization.valid?.should eq true
+
+
+      visualization.privacy = Visualization::Member::PRIVACY_LINK
+      visualization.valid?.should eq true
+
+      visualization.privacy = Visualization::Member::PRIVACY_PUBLIC
+
+      user_mock.stubs(:private_tables_enabled).returns(false)
+
+      visualization.valid?.should eq true
+
+      visualization.privacy = Visualization::Member::PRIVACY_LINK
+      visualization.valid?.should eq false
     end
   end
 

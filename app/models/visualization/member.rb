@@ -87,6 +87,10 @@ module CartoDB
             )
         end
 
+        if privacy == PRIVACY_LINK
+          validator.validate_expected_value(:private_tables_enabled, true, user.private_tables_enabled)
+        end
+
         validator.valid?
       end #valid?
 
@@ -152,7 +156,6 @@ module CartoDB
         privacy == PRIVACY_PUBLIC
       end #public?
 
-      # TODO: Unused yet
       def public_with_link?
         privacy == PRIVACY_LINK
       end #public_with_link?
@@ -166,7 +169,7 @@ module CartoDB
       end #password_protected?
 
       def to_hash(options={})
-        Presenter.new(self, options).to_poro
+        Presenter.new(self, options.merge(real_privacy: true)).to_poro
       end #to_hash
 
       def to_vizjson
@@ -209,8 +212,7 @@ module CartoDB
 
       def invalidate_cache_and_refresh_named_map
         invalidate_varnish_cache
-
-        if type != CANONICAL_TYPE   
+        if type != CANONICAL_TYPE
           save_named_map
         end
       end #invalidate_cache_and_refresh_named_map
@@ -218,7 +220,7 @@ module CartoDB
       def has_private_tables?
         has_private_tables = false
         related_tables.each { |table|
-          has_private_tables |= (table.privacy == ::Table::PRIVATE)
+          has_private_tables |= (table.privacy == ::Table::PRIVACY_PRIVATE)
         }
         has_private_tables
       end #has_private_tables
@@ -439,7 +441,8 @@ module CartoDB
       end #generate_salt
 
       def secure_digest(*args)
-        Digest::SHA256.hexdigest(args.flatten().join())
+        #noinspection RubyArgCount
+        Digest::SHA256.hexdigest(args.flatten.join)
       end #secure_digest
 
     end # Member

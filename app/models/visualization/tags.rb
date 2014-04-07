@@ -1,15 +1,29 @@
 # encoding: utf-8
 
+require_relative './member'
+
 module CartoDB
   module Visualization
-    class TagCounter
+    class Tags
       DEFAULT_LIMIT = 500
 
       def initialize(user)
         @user = user
       end #initialize
 
-      def count(params)
+      def names(params={})
+        Tag.fetch(%Q{
+            SELECT DISTINCT (unnest(tags)) as name
+            FROM visualizations
+            WHERE map_id IN ?
+            AND type IN ?
+            AND privacy IN ?
+            LIMIT ?
+          }, map_ids_for(user), types_from(params), privacy_from(params), limit_from(params)
+        ).map{ |tag| tag.name}
+      end #names
+
+      def count(params={})
         Tag.fetch(%Q{
             WITH tags as (
               SELECT unnest(tags) as name
@@ -24,7 +38,7 @@ module CartoDB
             ORDER BY count(*)
           }, map_ids_for(user), types_from(params), limit_from(params)
         ).all.map(&:values)
-      end # tag_counts
+      end #count
 
       private
       
@@ -34,17 +48,20 @@ module CartoDB
         user.maps.map(&:id)
       end #map_ids
 
+      def privacy_from(params={})
+        privacy = params.fetch(:privacy, nil)
+        (privacy.nil? || privacy.empty?) ? Member::PRIVACY_VALUES : [privacy]
+      end #privacy_from
+
       def types_from(params={})
-        default = %w{ table derived }
         type    = params.fetch(:type, nil)
-        return default if type.nil? || type.empty?
-        [type]
+        (type.nil? || type.empty?) ? [Member::CANONICAL_TYPE, Member::DERIVED_TYPE] : [type]
       end #type_filter_from
 
       def limit_from(params={})
         (params.fetch(:limit, DEFAULT_LIMIT) || DEFAULT_LIMIT).to_i
       end #limit_from
-    end # TagCounter
+    end # Tags
   end # Visualization   
 end # CartoDB
 

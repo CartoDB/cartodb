@@ -18,8 +18,16 @@
     <%= yield :css %>
     <!--[if gt IE 8]><%= stylesheet_link_tag "fonts_ie" %><![endif]-->
     <%= insert_rollbar() %>
-    <%= insert_google_analytics('primary') %>
+
     <%= yield :js %>
+
+    <%= render partial: 'shared/analytics', locals: {
+      ua:     Cartodb.config[:google_analytics]['primary'],
+      domain: Cartodb.config[:google_analytics]['domain'],
+      page_owner: @username,
+      public_pages: "Home"
+    } %>
+
     <%= csrf_meta_tag %>
   </head>
   <body>

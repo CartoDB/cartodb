@@ -8,7 +8,9 @@ module CartoDB
         UNKNOWN_SERVICE = 'UKNOWN'
 
         def initialize(message = 'General error', service = UNKNOWN_SERVICE)
-          super("#{message} @ #{service}")
+          message = "#{message}"
+          message << " @ #{service}" if service != UNKNOWN_SERVICE
+          super(message)
         end #initialize
       end #DatasourceBaseError
 

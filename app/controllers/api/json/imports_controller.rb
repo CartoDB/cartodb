@@ -82,8 +82,9 @@ class Api::Json::ImportsController < Api::ApplicationController
 
   def get_service_auth_url
     oauth = current_user.oauths.select(params[:id])
-    raise CartoDB::Datasources::AuthError.new("No oauth set for service #{params[:id]}") if oauth.nil?
-    datasource = oauth.get_service_datasource
+    raise CartoDB::Datasources::AuthError.new("OAuth already set for service #{params[:id]}") unless oauth.nil?
+
+    datasource = CartoDB::Datasources::DatasourcesFactory.get_datasource(params[:id], current_user)
     raise CartoDB::Datasources::AuthError.new("Couldn't fetch datasource for service #{params[:id]}") if datasource.nil?
     raise CartoDB::Datasources::InvalidServiceError.new("Datasource #{params[:id]} does not support OAuth") unless datasource.kind_of? CartoDB::Datasources::BaseOAuth
 
@@ -100,8 +101,9 @@ class Api::Json::ImportsController < Api::ApplicationController
     success = false
 
     oauth = current_user.oauths.select(params[:id])
-    raise CartoDB::Datasources::AuthError.new("No oauth set for service #{params[:id]}") if oauth.nil?
-    datasource = oauth.get_service_datasource
+    raise CartoDB::Datasources::AuthError.new("OAuth already set for service #{params[:id]}") unless oauth.nil?
+
+    datasource = CartoDB::Datasources::DatasourcesFactory.get_datasource(params[:id], current_user)
     raise CartoDB::Datasources::AuthError.new("Couldn't fetch datasource for service #{params[:id]}") if datasource.nil?
     raise CartoDB::Datasources::InvalidServiceError.new("Datasource #{params[:id]} does not support OAuth") unless datasource.kind_of? CartoDB::Datasources::BaseOAuth
 

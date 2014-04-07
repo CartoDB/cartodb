@@ -18,7 +18,7 @@ describe Url::PublicUrl do
 
       expect {
         url_provider.get_resource(invalid_url)
-      }.to raise_exception DownloadError
+      }.to raise_exception DataDownloadError
 
       url_provider.fetch_headers(file_url)
       url_provider.etag_header.empty?.should eq false
@@ -26,7 +26,7 @@ describe Url::PublicUrl do
       expect {
         url_provider.fetch_headers(invalid_url)
       }.to raise_exception DownloadError
-
+      Data
       expect {
         url_provider.etag_header
       }.to raise_exception UninitializedError

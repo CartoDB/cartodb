@@ -28,6 +28,12 @@ module CartoDB
         raise 'To be implemented in child classes'
       end #token
 
+      # Checks if token is still valid or has been revoked
+      # @return bool
+      def token_valid?
+        raise 'To be implemented in child classes'
+      end #token_valid?
+
       private_class_method :new
 
     end #Base

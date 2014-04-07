@@ -44,13 +44,13 @@ module CartoDB
         # Retrieves a resource and returns its contents
         # @param id string
         # @return mixed
-        # @throws DownloadError
+        # @throws DataDownloadError
         def get_resource(id)
           response = Typhoeus.get(id, http_options)
           while response.headers['location']
             response = Typhoeus.get(id, http_options)
           end
-          raise DownloadError.new("get_resource() #{id}", DATASOURCE_NAME) unless response.code.to_s =~ /\A[23]\d+/
+          raise DataDownloadError.new("get_resource() #{id}", DATASOURCE_NAME) unless response.code.to_s =~ /\A[23]\d+/
           response.response_body
         end #get_resource
 
@@ -69,12 +69,12 @@ module CartoDB
         end #get_resource_metadata
 
         # Fetches the headers for a given url
-        # @throws DownloadError
+        # @throws DataDownloadError
         def fetch_headers(url)
           if url =~ URL_REGEXP
             @headers = nil  # In case of error, always leave empty the headers
             response = Typhoeus.head(url, http_options)
-            raise DownloadError.new("Fetching headers of #{url}", DATASOURCE_NAME) unless response.code.to_s =~ /\A[23]\d+/
+            raise DataDownloadError.new("Fetching headers of #{url}", DATASOURCE_NAME) unless response.code.to_s =~ /\A[23]\d+/
             @headers = response.headers
           else
             @headers = {}

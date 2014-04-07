@@ -105,8 +105,12 @@ CartoDB::Application.routes.draw do
       end
 
       # imports
-      resources :uploads, :only                     => :create
-      resources :imports, :only                     => [:create, :show, :index]
+      resources :uploads, :only                         => :create
+      resources :imports, :only                         => [:create, :show, :index]
+      get   '/imports/service/:id/token_valid'          => 'imports#service_token_valid?'
+      get   '/imports/service/:id/list_files'           => 'imports#list_files_for_service'
+      get   '/imports/service/:id/auth_url'             => 'imports#get_service_auth_url'
+      get   '/imports/service/:id/validate_code/:code'  => 'imports#validate_service_oauth_code'
 
       # Dashboard
       resources :users, :only                       => [:show] do

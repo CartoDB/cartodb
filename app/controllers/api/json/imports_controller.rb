@@ -40,6 +40,77 @@ class Api::Json::ImportsController < Api::ApplicationController
     render_jsonp({ item_queue_id: data_import.id, success: true })
   end
 
+  def service_token_valid?
+    oauth = current_user.oauths.select(params[:id])
+
+    return render_jsonp({ oauth_valid: valid, success: true }) if oauth.nil?
+    datasource = oauth.get_service_datasource
+    return render_jsonp({ oauth_valid: valid, success: true }) if datasource.nil?
+    raise CartoDB::Datasources::InvalidServiceError.new("Datasource #{params[:id]} does not support OAuth") unless datasource.kind_of? CartoDB::Datasources::BaseOAuth
+
+    begin
+      valid = datasource.token_valid?
+    rescue CartoDB::Datasources::DataDownloadError
+      valid = false
+    end
+
+    render_jsonp({ oauth_valid: valid, success: true })
+  rescue => ex
+    render_jsonp({ errors: { imports: ex } }, 400)
+  end #service_token_valid?
+
+  def list_files_for_service
+    oauth = current_user.oauths.select(params[:id])
+    raise CartoDB::Datasources::AuthError.new("No oauth set for service #{params[:id]}") if oauth.nil?
+    datasource = oauth.get_service_datasource
+    raise CartoDB::Datasources::AuthError.new("Couldn't fetch datasource for service #{params[:id]}") if datasource.nil?
+
+    render_jsonp({ files: datasource.get_resources_list, success: true })
+  rescue => ex
+    render_jsonp({ errors: { imports: ex } }, 400)
+  end #list_files_for_service
+
+  def get_service_auth_url
+    oauth = current_user.oauths.select(params[:id])
+    raise CartoDB::Datasources::AuthError.new("No oauth set for service #{params[:id]}") if oauth.nil?
+    datasource = oauth.get_service_datasource
+    raise CartoDB::Datasources::AuthError.new("Couldn't fetch datasource for service #{params[:id]}") if datasource.nil?
+    raise CartoDB::Datasources::InvalidServiceError.new("Datasource #{params[:id]} does not support OAuth") unless datasource.kind_of? CartoDB::Datasources::BaseOAuth
+
+    render_jsonp({ url: datasource.get_auth_url, success: true })
+  rescue => ex
+    render_jsonp({ errors: { imports: ex.to_s } }, 400)
+  end #get_service_auth_url
+
+  # Only of use if service is set to work in authorization code mode. Ignore for callback-based oauths
+  def validate_service_oauth_code
+    success = false
+
+    oauth = current_user.oauths.select(params[:id])
+    raise CartoDB::Datasources::AuthError.new("No oauth set for service #{params[:id]}") if oauth.nil?
+    datasource = oauth.get_service_datasource
+    raise CartoDB::Datasources::AuthError.new("Couldn't fetch datasource for service #{params[:id]}") if datasource.nil?
+    raise CartoDB::Datasources::InvalidServiceError.new("Datasource #{params[:id]} does not support OAuth") unless datasource.kind_of? CartoDB::Datasources::BaseOAuth
+
+    raise "Missing oauth verification code for service #{params[:id]}" unless params[:code].present?
+
+    begin
+      auth_token = datasource.validate_auth_code(params[:code])
+      current_user.oauths.add(params[:id],auth_token)
+      success = true
+    rescue CartoDB::Datasources::AuthError
+      # No need to re-raise
+    end
+
+    render_jsonp({ success: success })
+  rescue => ex
+    render_jsonp({ errors: { imports: ex.to_s } }, 400)
+  end #validate_service_oauth_code
+
+  def service_oauth_callback
+    # TODO
+  end #service_oauth_callback
+
   protected
 
   def synchronous_import?

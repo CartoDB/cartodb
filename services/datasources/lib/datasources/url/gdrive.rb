@@ -71,7 +71,7 @@ module CartoDB
         # Return the url to be displayed or sent the user to to authenticate and get authorization code
         # @return string | nil
         def get_auth_url
-          @client.authorization.authorization_uri
+          @client.authorization.authorization_uri.to_s
         end #get_auth_url
 
         # Validate authorization code and store token
@@ -82,7 +82,6 @@ module CartoDB
           @client.authorization.code = auth_code
           @client.authorization.fetch_access_token!
           @refresh_token = @client.authorization.refresh_token
-          # TODO: Store token in backend
         rescue Google::APIClient::InvalidIDTokenError, Signet::AuthorizationError
           raise AuthError.new('validating auth code', DATASOURCE_NAME)
         end #validate_auth_code
@@ -108,13 +107,13 @@ module CartoDB
         # Perform the listing and return results
         # @param filter Array : (Optional) filter to specify which resources to retrieve. Leave empty for all supported.
         # @return [ { :id, :title, :url, :service } ]
-        # @throws DownloadError
+        # @throws DataDownloadError
         def get_resources_list(filter=[])
           all_results = []
           self.filter = filter
 
           batch_request = Google::APIClient::BatchRequest.new do |result|
-            raise DownloadError.new("get_resources_list() #{result.data['error']['message']} (#{result.status})", DATASOURCE_NAME) if result.status != 200
+            raise DataDownloadError.new("get_resources_list() #{result.data['error']['message']} (#{result.status})", DATASOURCE_NAME) if result.status != 200
             data = result.data.to_hash
             if data.include? 'items'
               data['items'].each do |item|
@@ -139,42 +138,42 @@ module CartoDB
         rescue Google::APIClient::InvalidIDTokenError
           raise AuthError.new('Invalid token', DATASOURCE_NAME)
         rescue Google::APIClient::BatchError, Google::APIClient::TransmissionError
-          raise DownloadError.new('getting resources', DATASOURCE_NAME)
+          raise DataDownloadError.new('getting resources', DATASOURCE_NAME)
         end #get_resources_list
 
         # Retrieves a resource and returns its contents
         # @param id string
         # @return mixed
-        # @throws DownloadError
+        # @throws DataDownloadError
         # @throws AuthError
         def get_resource(id)
           result = @client.execute( api_method: @drive.files.get, parameters: { fileId: id } )
-          raise DownloadError.new("(#{result.status}) retrieving file #{id} metadata for download: #{result.data['error']['message']}", DATASOURCE_NAME) if result.status != 200
+          raise DataDownloadError.new("(#{result.status}) retrieving file #{id} metadata for download: #{result.data['error']['message']}", DATASOURCE_NAME) if result.status != 200
 
           item_data = format_item_data(result.data.to_hash)
 
           result = @client.execute(uri: item_data.fetch(:url))
-          raise DownloadError.new("(#{result.status}) downloading file #{id}: #{result.data['error']['message']}", DATASOURCE_NAME) if result.status != 200
+          raise DataDownloadError.new("(#{result.status}) downloading file #{id}: #{result.data['error']['message']}", DATASOURCE_NAME) if result.status != 200
           result.body
         rescue Google::APIClient::InvalidIDTokenError
           raise AuthError.new('Invalid token', DATASOURCE_NAME)
         rescue Google::APIClient::TransmissionError
-          raise DownloadError.new("downloading file #{id}", DATASOURCE_NAME)
+          raise DataDownloadError.new("downloading file #{id}", DATASOURCE_NAME)
         end #get_resource
 
         # @param id string
         # @return Hash
-        # @throws DownloadError
+        # @throws DataDownloadError
         # @throws AuthError
         def get_resource_metadata(id)
           result = @client.execute( api_method: @drive.files.get, parameters: { fileId: id } )
-          raise DownloadError.new("(#{result.status}) retrieving file #{id} metadata: #{result.data['error']['message']}", DATASOURCE_NAME) if result.status != 200
+          raise DataDownloadError.new("(#{result.status}) retrieving file #{id} metadata: #{result.data['error']['message']}", DATASOURCE_NAME) if result.status != 200
           item_data = format_item_data(result.data.to_hash)
           return item_data.to_hash
         rescue Google::APIClient::InvalidIDTokenError
           raise AuthError.new('Invalid token', DATASOURCE_NAME)
         rescue Google::APIClient::TransmissionError
-          raise DownloadError.new("get_resource_metadata() #{id}", DATASOURCE_NAME)
+          raise DataDownloadError.new("get_resource_metadata() #{id}", DATASOURCE_NAME)
         end #get_resource_metadata
 
         # Retrieves current filters
@@ -201,6 +200,19 @@ module CartoDB
         def to_s
           DATASOURCE_NAME
         end
+
+        # Checks if token is still valid or has been revoked
+        # @return bool
+        # @throws DataDownloadError
+        def token_valid?
+          # Any call would do, we just want to see if communicates or refuses the token
+          result = @client.execute( api_method: @drive.about.get )
+          !result.nil?
+        rescue Google::APIClient::InvalidIDTokenError
+          false
+        rescue Google::APIClient::TransmissionError
+          raise DataDownloadError.new("token_valid?() #{id}", DATASOURCE_NAME)
+        end #token_valid?
 
         private
 

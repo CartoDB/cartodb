@@ -78,7 +78,7 @@ module CartoDB
           @access_token = data[0] # Only keep the access token
           @auth_flow = nil
           @client = DropboxClient.new(@access_token)
-          # TODO: Store token in backend
+          @access_token
         rescue DropboxError, ArgumentError
           raise AuthError.new('validate_auth_code()', DATASOURCE_NAME)
         end #validate_auth_code
@@ -102,7 +102,7 @@ module CartoDB
         # Perform the listing and return results
         # @param filter Array : (Optional) filter to specify which resources to retrieve. Leave empty for all supported.
         # @return [ { :id, :title, :url, :service } ]
-        # @throws DownloadError
+        # @throws DataDownloadError
         def get_resources_list(filter=[])
           all_results = []
           self.filter = filter
@@ -115,29 +115,30 @@ module CartoDB
           end
           all_results
         rescue DropboxError, ArgumentError
-          raise DownloadError.new('get_resources_list()', DATASOURCE_NAME)
+          raise DataDownloadError.new('get_resources_list()', DATASOURCE_NAME)
         end #get_resources_list
 
         # Retrieves a resource and returns its contents
         # @param id string
         # @return mixed
-        # @throws DownloadError
+        # @throws DataDownloadError
         def get_resource(id)
           contents,  = @client.get_file_and_metadata(id)
           return contents
         rescue DropboxError, ArgumentError
-          raise DownloadError.new("get_resource() #{id}", DATASOURCE_NAME)
+          raise DataDownloadError.new("get_resource() #{id}", DATASOURCE_NAME)
         end #get_resource
 
         # @param id string
         # @return Hash
+        # @throws DataDownloadError
         def get_resource_metadata(id)
           response = @client.metadata(id)
           item_data = format_item_data(response)
 
           item_data.to_hash
         rescue DropboxError, ArgumentError
-          raise DownloadError.new("get_resource_metadata() #{id}", DATASOURCE_NAME)
+          raise DataDownloadError.new("get_resource_metadata() #{id}", DATASOURCE_NAME)
         end #get_resource_metadata
 
         # Retrieves current filters
@@ -164,6 +165,18 @@ module CartoDB
         def to_s
           DATASOURCE_NAME
         end
+
+        # Checks if token is still valid or has been revoked
+        # @return bool
+        def token_valid?
+        # Any call would do, we just want to see if communicates or refuses the token
+          @client.account_info
+          true
+        rescue DropboxError => ex
+          error_code = ex.http_response.code.to_i
+          raise unless (error_code == 401 || error_code == 403)
+          false
+        end #token_valid?
 
         private
 

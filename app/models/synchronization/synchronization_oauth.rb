@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+require_relative '../../../services/datasources/lib/datasources'
+
 # @see DB table 'synchronization_oauths'
 class SynchronizationOauth < Sequel::Model
 
@@ -41,5 +43,12 @@ class SynchronizationOauth < Sequel::Model
   def ==(oauth_object)
     self.id == oauth_object.id
   end #==
+
+
+  def get_service_datasource
+    datasource = CartoDB::Datasources::DatasourcesFactory.get_datasource(service, User.where(id: user_id))
+    datasource.token = token unless datasource.nil?
+    datasource
+  end #get_service_datasource
 
 end

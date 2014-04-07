@@ -9,14 +9,14 @@ module CartoDB
 
         def initialize(message = 'General error', service = UNKNOWN_SERVICE)
           super("#{message} @ #{service}")
-        end
-      end
+        end #initialize
+      end #DatasourceBaseError
 
-      class DownloadError         < DatasourceBaseError; end
-      class AuthError             < DatasourceBaseError; end
-      class MissingConfigurationError    < DatasourceBaseError; end
-      class UninitializedError    < DatasourceBaseError; end
+      class AuthError                   < DatasourceBaseError; end
+      class InvalidServiceError         < DatasourceBaseError; end
+      class DataDownloadError           < DatasourceBaseError; end
+      class MissingConfigurationError   < DatasourceBaseError; end
+      class UninitializedError          < DatasourceBaseError; end
 
   end #Datasources
 end #CartoDB
-

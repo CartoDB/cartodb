@@ -45,9 +45,19 @@ module CartoDB
         self
       end #propagate_to
 
+      def privacy_for_redis
+        case table_privacy
+          when ::Table::PRIVACY_PUBLIC, ::Table::PRIVACY_LINK
+            ::Table::PRIVACY_PUBLIC
+          else
+            ::Table::PRIVACY_PRIVATE
+        end
+      end #privacy_for_redis
+
       def propagate_to_redis_and_varnish
         raise 'table privacy cannot be nil' unless privacy
-        $tables_metadata.hset redis_key, 'privacy', privacy
+        # TODO: Improve this, hack because tiler checks it
+        $tables_metadata.hset redis_key, 'privacy', privacy_for_redis
         invalidate_varnish_cache
         self
       end #propagate_to_redis_and_varnish

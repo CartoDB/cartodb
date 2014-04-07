@@ -272,7 +272,8 @@ describe Table do
 
       table.affected_visualizations.map { |vis|
         vis.public?.should == vis.derived?  # Derived kept public
-        vis.private?.should == false
+        vis.private?.should == false  # None changed to private
+        vis.password_protected?.should == false  # None changed to password protected
         vis.public_with_link?.should == vis.table?  # Table/canonical changed
       }
     end
@@ -1824,14 +1825,25 @@ describe Table do
 
   describe '#validation_for_link_privacy' do
     it 'checks that only users with private tables enabled can set LINK privacy' do
+      table_id = UUIDTools::UUID.timestamp_create.to_s
+
       user_mock = mock
       user_mock.stubs(:private_tables_enabled).returns(true)
       user_mock.stubs(:database_name).returns(nil)
+      user_mock.stubs(:over_table_quota?).returns(false)
 
       ::Table.any_instance.stubs(:get_valid_name).returns('test')
       ::Table.any_instance.stubs(:owner).returns(user_mock)
+      ::Table.any_instance.stubs(:create_table_in_database!)
+      ::Table.any_instance.stubs(:set_table_id).returns(table_id)
+      ::Table.any_instance.stubs(:set_the_geom_column!).returns(true)
+      ::Table.any_instance.stubs(:after_create)
+      ::Table.any_instance.stubs(:after_save)
       CartoDB::Table::PrivacyManager.any_instance.stubs(:owner).returns(user_mock)
       table = Table.new
+
+      # A user who can create private tables has by default private tables
+      table.default_privacy_values.should eq ::Table::PRIVACY_PRIVATE
 
       table.user_id = UUIDTools::UUID.timestamp_create.to_s
       table.privacy = Table::PRIVACY_PUBLIC
@@ -1850,11 +1862,25 @@ describe Table do
       table.privacy = Table::PRIVACY_PUBLIC
       user_mock.stubs(:private_tables_enabled).returns(false)
 
+      # Anybody can "keep" a table being type link if it is new or hasn't changed (changed meaning had a previous privacy value)
+      table.privacy = Table::PRIVACY_LINK
+      table.validate
+      table.errors.size.should eq 0
+
+      # Save so privacy changes instead of being "new"
+      table.privacy = Table::PRIVACY_PUBLIC
+      table.save
+
       table.privacy = Table::PRIVACY_LINK
       table.validate
       table.errors.size.should eq 1
-      expected_errors_hash = { privacy: ['unauthorized to create link privacy tables'] }
+      expected_errors_hash = { privacy: ['unauthorized to modify privacy status to pubic with link'] }
       table.errors.should eq expected_errors_hash
+
+      table = Table.new
+      # A user who cannot create private tables has by default public
+      table.default_privacy_values.should eq ::Table::PRIVACY_PUBLIC
+
     end
   end #validation_for_link_privacy
 

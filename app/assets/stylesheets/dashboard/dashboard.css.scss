@@ -689,6 +689,10 @@
             @include opacity(1);
             @include simple-transition(background, 10ms);
 
+            &.locked .table_info hgroup.shadow:after {
+              display:none;
+            }
+
             &.disabled {
               @include simple-transition(opacity, 100ms);
               background-color: #e1e1e1;

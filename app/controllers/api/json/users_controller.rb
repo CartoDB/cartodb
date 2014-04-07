@@ -1,5 +1,6 @@
 class Api::Json::UsersController < Api::ApplicationController
   skip_before_filter :api_authorization_required, only: [:get_authenticated_users]
+  ssl_required :get_authenticated_users
 
   if Rails.env.production? || Rails.env.staging?
     ssl_required :show

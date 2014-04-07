@@ -80,7 +80,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     end
 
     # Make public by default
-    member.privacy = Visualization::Member::PRIVACY_PUBLIC
+    member.privacy = member.default_privacy(current_user)
 
     member.store
     collection  = Visualization::Collection.new.fetch

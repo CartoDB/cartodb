@@ -17,6 +17,12 @@ class Table < Sequel::Model(:user_tables)
   PRIVACY_PUBLIC_TEXT = 'public'
   PRIVACY_LINK_TEXT = 'link'
 
+  PRIVACY_VALUES_TO_TEXTS = {
+      PRIVACY_PRIVATE => PRIVACY_PRIVATE_TEXT,
+      PRIVACY_PUBLIC => PRIVACY_PUBLIC_TEXT,
+      PRIVACY_LINK => PRIVACY_LINK_TEXT
+  }
+
   CARTODB_COLUMNS = %W{ cartodb_id created_at updated_at the_geom }
   THE_GEOM_WEBMERCATOR = :the_geom_webmercator
   THE_GEOM = :the_geom
@@ -58,6 +64,10 @@ class Table < Sequel::Model(:user_tables)
 
     Hash[selected_attrs.map{ |k, v| [k, (self.send(v) rescue self[v].to_s)] }]
   end
+
+  def default_privacy_values
+    self.owner.try(:private_tables_enabled) ? PRIVACY_PRIVATE : PRIVACY_PUBLIC
+  end #default_privacy_values
 
   def geometry_types
     owner.in_database[ %Q{
@@ -128,14 +138,14 @@ class Table < Sequel::Model(:user_tables)
         errors.add(:privacy, 'unauthorized to create private tables')
       end
 
-      # if the table exists, is private, but the owner no longer has private privalidges
-      # basically, this should never happen.
+      # if the table exists, is private, but the owner no longer has private privilidges
       if !self.new? && privacy == PRIVACY_PRIVATE && self.changed_columns.include?(:privacy)
         errors.add(:privacy, 'unauthorized to modify privacy status to private')
       end
 
-      if privacy == PRIVACY_LINK
-        errors.add(:privacy, 'unauthorized to create link privacy tables')
+      # cannot change any existing table to 'with link'
+      if !self.new? && privacy == PRIVACY_LINK && self.changed_columns.include?(:privacy)
+        errors.add(:privacy, 'unauthorized to modify privacy status to pubic with link')
       end
 
     end
@@ -510,7 +520,7 @@ class Table < Sequel::Model(:user_tables)
       type:         CartoDB::Visualization::Member::CANONICAL_TYPE,
       description:  self.description,
       tags:         (tags.split(',') if tags),
-      privacy:      (self.privacy == PRIVACY_PUBLIC ? PRIVACY_PUBLIC_TEXT : PRIVACY_PRIVATE_TEXT)
+      privacy:      PRIVACY_VALUES_TO_TEXTS[default_privacy_values]
     ).store
   end
 
@@ -683,7 +693,7 @@ class Table < Sequel::Model(:user_tables)
   end #public_with_link_only?
 
   def set_default_table_privacy
-    self.privacy ||= (self.owner.try(:private_tables_enabled) ? PRIVACY_PRIVATE : PRIVACY_PUBLIC)
+    self.privacy ||= default_privacy_values
     save
   end
 
@@ -1321,14 +1331,7 @@ TRIGGER
   end
 
   def privacy_text
-    case self.privacy
-      when PRIVACY_PUBLIC
-        PRIVACY_PUBLIC_TEXT.upcase
-      when PRIVACY_LINK
-        PRIVACY_LINK_TEXT.upcase
-      else
-        PRIVACY_PRIVATE_TEXT.upcase
-    end
+    PRIVACY_VALUES_TO_TEXTS[self.privacy].upcase
   end #privacy_text
 
   # Simplify certain privacy values for the vizjson

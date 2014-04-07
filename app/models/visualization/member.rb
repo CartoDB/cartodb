@@ -59,6 +59,10 @@ module CartoDB
         @user_data      = nil
       end #initialize
 
+      def default_privacy(owner)
+        owner.try(:private_tables_enabled) ? PRIVACY_LINK : PRIVACY_PUBLIC
+      end #default_privacy
+
       def store
         raise CartoDB::InvalidMember unless self.valid?
         do_store
@@ -87,7 +91,8 @@ module CartoDB
             )
         end
 
-        if privacy == PRIVACY_LINK
+        # Allow only "maintaining" privacy link for everyone but not setting it
+        if privacy == PRIVACY_LINK && privacy_changed
           validator.validate_expected_value(:private_tables_enabled, true, user.private_tables_enabled)
         end
 
@@ -297,7 +302,7 @@ module CartoDB
           remove_password
         end
 
-        # Warning, imports create by default private canonical visualizations
+        # Warning: imports create by default private canonical visualizations
         if type != CANONICAL_TYPE && @privacy == PRIVACY_PRIVATE && privacy_changed && !supports_private_maps?
           raise CartoDB::InvalidMember
         end

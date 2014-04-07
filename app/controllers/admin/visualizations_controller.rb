@@ -91,7 +91,7 @@ class Admin::VisualizationsController < ApplicationController
     @visualization_count    = @visualization.user.public_visualization_count
     @related_tables         = @visualization.related_tables
     @nonpublic_tables_count = @related_tables.select{|p| p.privacy != ::Table::PRIVACY_PUBLIC }.count
-    
+
     respond_to do |format|
       format.html { render 'public_map', layout: false }
     end    
@@ -143,19 +143,6 @@ class Admin::VisualizationsController < ApplicationController
     embed_forbidden
   end #embed_map
 
-<<<<<<< HEAD
-  def get_avatar(vis, size = 128)
-
-    email  = vis.user.email.strip.downcase
-    #noinspection RubyArgCount
-    digest = Digest::MD5.hexdigest(email)
-
-    "//www.gravatar.com/avatar/#{digest}?s=#{size}&d=http%3A%2F%2Fcartodb.s3.amazonaws.com%2Fstatic%2Fmap-avatar-03.png"
-
-  end
-
-=======
->>>>>>> origin/CDB-2566
   # Renders input password view
   def embed_protected
     render 'embed_map_password', :layout => false

@@ -7,6 +7,9 @@
       <% unless defined? page_owner -%> 
       _gaq.push(['_setCustomVar', 1, 'Member Type', '<%= stringified_member_type %>', 1]);
       <% end -%>
+      <% unless defined? public_pages -%> 
+      _gaq.push(['_setCustomVar', 1, 'Public Pages', '<%= public_pages %>', 3]);
+      <% end -%>
       
       _gaq.push(['_trackPageview']);
 

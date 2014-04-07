@@ -1,108 +1,41 @@
-<% content_for(:page_title) do %>
-  <%#= current_user.username %> |
-<% end %>
-
 <%= content_for(:js) do %>
 
   <script type="text/javascript" src="//maps.google.com/maps/api/js?sensor=false&v=3.12"></script>
 
-  <%= javascript_include_tag :cdb, :application %>
+    <% if !Rails.env.production? %>
+      <%= javascript_include_tag 'cdb.js', 'public_dashboard' %>
+    <% else %>
+      <script src="//cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/cartodb.js"></script>
+    <% end %>
+
   <!--[if lt IE 9]>
-  <%= javascript_include_tag :"respond" %>
+  <%= javascript_include_tag "respond" %>
   <script>
     document.createElement('header');
     document.createElement('nav');
     document.createElement('footer');
   </script>
   <![endif]-->
-
-  <script type="text/javascript">
-
-    $(function() {
-
-      var url = "//" + window.location.host  + "/api/v1/get_authenticated_users";
-
-      $.getJSON(url, {},
-        function(users, status, response) {
-
-          if (response.status == 200 && users && users.length > 0) {
-
-            url = "http://" + users[0] + ".cartodb.com/login";
-
-            var $dashboard = $("li.dashboard");
-
-            $dashboard.find("a").text("Your dashboard");
-            $dashboard.find("a").attr("href", url);
-            $dashboard.find("a").attr("title", "Your dashboard");
-            $dashboard.removeClass("hide");
-
-            var $signin = $("a.signin");
-
-            url = "http://" + users[0] + ".cartodb.com/logout";
-
-            $signin.text("Logout");
-            $signin.attr("href", url);
-            $signin.attr("title", "Logout");
-
-          }
-
-        }
-      );
-
-      });
-  </script>
-
 <% end %>
 
 <%= content_for(:css) do %>
-  <%= stylesheet_link_tag :common, :dashboard, :public %>
+  <%= stylesheet_link_tag "common", "dashboard", "public_dashboard" %>
   <link rel="stylesheet" href="//cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/themes/css/cartodb.css" />
   <!--[if lte IE 8]>
-  <%= stylesheet_link_tag :public_ie %>
+  <%= stylesheet_link_tag "public_dashboard_ie" %>
   <![endif]-->
 <% end %>
+
+<%= render(:partial => 'announcement') %>
 
 <div class="content<%= " empty" if @datasets.size == 0 %>">
 
   <div class="inner">
 
-  <div class="info">
-
-    <div class="user-info">
-
-      <a href="/datasets" class="avatar">
-        <div class="circle">
-          <img src="<%= @avatar_url %>" />
-        </div>
-      </a>
-
-      <div class="username">
-        <h2><%= @username %></h2>
-      </div>
-
-      <ul>
-        <li><div class="count"><strong><%= @tables_num %></strong>dataset<%= @tables_num == 1 ? '' : 's' %></div></li>
-        <li><a href="/" class="count"><strong><%= @vis_num %></strong>visualization<%= @vis_num == 1 ? '' : 's' %></a></li>
-      </ul>
+    <%= render(:partial => 'user_info') %>
+    <%= render(:partial => 'tags', :locals => {:collection => @tags }) %>
 
     </div>
-
-    <% if @tags.size > 0 %>
-      <ul class="tags">
-        <li><strong>Browse by tag</strong></li>
-
-        <% @tags.each_with_index do |tag, i| %>
-          <li<%= " class='#{i == 0 ? "first" : "last" }'" if i == 0 || i == @tags.size - 1 %>>
-            <% if params[:tag] && params[:tag] == tag %>
-            <%= tag.capitalize.truncate(40) %>
-              <% else %>
-            <%= link_to tag.capitalize.truncate(40), public_tag_url(tag) %>
-        <% end %>
-        <% end %>
-
-      </ul>
-    <% end %>
-  </div>
 
   <div class="datasets">
 

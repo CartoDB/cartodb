@@ -12,6 +12,7 @@ body {
 }
 
 body:after {
+  display:none!Important;
   @include box-sizing(border-box);
   content: '';
   background: rgba(red, .8);
@@ -26,6 +27,24 @@ body:after {
   z-index: 1000;
   @include simple-transition(all);
   @include border-radius(0 0 3px 3px);
+}
+
+.announcement {
+
+  padding: 15px 0;
+  border-bottom: 1px solid #E5E0D3;
+  line-height: 120%;
+
+  color: #333333;
+  background: #FEF5DA;
+
+  a { color:#397DB8; text-decoration: underline; }
+
+  .inner {
+    width: 100%;
+    text-align: center;
+  }
+
 }
 
 .content {
@@ -68,6 +87,7 @@ header {
   $bkgColor: #428AC6;
   height: auto;
   padding: 0;
+  min-height: 36px;
 
   background: image-url('layout/gradient.png') repeat center 0 $bkgColor; // IE
   @include background(image-url("layout/gradient.png") repeat center 0 $bkgColor);
@@ -108,11 +128,14 @@ header {
   li  {
 
     padding: 17px 0;
+
     border-bottom: 1px solid #ddd;
     border-bottom: 1px solid rgba(#BBBBBB, .2);
     color: #BABABA;
 
     a { line-height:normal; }
+
+    .close { float:right; margin: 0 3px 0 0; }
 
     &:first-child { padding-top: 0; }
     &:last-child  { border:none; }
@@ -266,7 +289,7 @@ header {
   padding: 27px 0;
 
   .title {
-    margin: 0 0 0 0;
+    margin: 0;
     @include clearfix();
   }
 
@@ -280,7 +303,7 @@ header {
     font-weight: 200;
   }
 
-  .title a {
+  .title > a {
     float:left;
     display:block;
 
@@ -297,9 +320,15 @@ header {
     color: #858585;
     font-size: 15px;
     line-height: normal;
-  }
 
-}
+    a { 
+      text-decoration: underline;
+      font-size: 15px;
+      &:hover  { color: #333; }
+    }
+  } // .title p
+
+} // .datasets ul li
 
 .visualizations > ul > li {
 
@@ -333,7 +362,7 @@ header {
       height: 100%;
       @include opacity(0);
       background:#fff;
-      z-index: 20;
+      z-index: 50;
     }
 
     .map {
@@ -358,37 +387,43 @@ header {
       bottom: 28px;
       left: 42px;
 
+      right: 42px;
+
       z-index: 40;
+    }
 
-      h3 {
-        margin: 0;
+    .title h3 {
+      margin: 0;
 
+      color: #fff;
+      font-family: 'ProximaNova-Semibold', Helvetica, sans-serif;
+      font-weight: 400;
+      font-size: 27px;
+      @include text-overflow();
+      width: 100%;
+
+    }
+
+    .title p {
+      margin: 5px 0 0 0;
+      font-size:15px;
+      color: #DDDDDD;
+      @include text-overflow();
+      width: 100%;
+
+      a { 
         color: #fff;
-        font-family: 'ProximaNova-Semibold', Helvetica, sans-serif;
-        font-weight: 400;
-        font-size: 27px;
+        text-decoration: underline;
+
+        &:hover  { color: #f1f1f1; }
       }
 
-      p {
-        margin: 5px 0 0 0;
-        font-size:15px;
-        color: #DDDDDD;
-
-        a { 
-          color: #fff;
-          text-decoration: underline;
-
-          &:hover  { color: #f1f1f1; }
-        }
-
-      } // p
-
-    } // title
+    } // p
 
   } // map-wrapper
 
   .header {
-    padding: 30px 34px;
+    padding: 0 34px;
     min-height: 89px;
 
     text-align:left;
@@ -418,10 +453,13 @@ header {
 .visualizations > ul > li .tags {
   float:left;
   width: 480px;
+  margin-top: -5px;
+  padding: 30px 0;
 }
 
 .visualizations > ul > li .tags li a {
   padding: 6px 9px;
+  margin-top: 5px;
 }
 
 .datasets > ul > li {
@@ -436,6 +474,7 @@ header {
 
     li a {
       padding: 3px 6px;
+      margin: 0 0 10px 0;
     }
 
   }
@@ -456,8 +495,6 @@ header {
 
       background: #FFD24D;
       background: rgba(#FFD24D, .50);
-
-      margin: 0 0 10px 0;
 
       color: #545454;
       font-family: 'ProximaNova-Bold', Helvetica, sans-serif;
@@ -637,6 +674,12 @@ only screen and (                min-resolution: 2dppx) {
     }
   }
 
+  .announcement {
+    padding: 15px;
+    line-height: 125%;
+    font-size: 13px;
+  }
+
   footer {
     padding: 44px 15px;
     .inner { width: 100%; }
@@ -645,6 +688,7 @@ only screen and (                min-resolution: 2dppx) {
   .empty_placeholder {
     font-size: 18px;
     padding: 18px;
+    margin: 5px auto 50px auto;
   }
 
   .info,
@@ -655,7 +699,12 @@ only screen and (                min-resolution: 2dppx) {
     width: 100%;
   }
 
-  .content .inner { padding: 0 15px; width: 100%; }
+  .content {
+
+    padding-top: 30px;
+
+    .inner { padding: 0 15px; width: 100%; }
+  }
 
   .user-info,
   .user-info .avatar,
@@ -685,7 +734,7 @@ only screen and (                min-resolution: 2dppx) {
     padding: 17px 0;
 
     .title {
-      a { font-size: 18px; float:left; @include text-overflow(); width: 100%; text-align: left; }
+      & > a { font-size: 18px; float:left; @include text-overflow(); width: 100%; text-align: left; }
       span.date { top: 0; float:left; margin: 5px 0 0 0; display:block; margin: 0 0 15px 0; }
       p { margin: 5px 0 0 0; }
     }
@@ -735,7 +784,15 @@ only screen and (                min-resolution: 2dppx) {
     .inner {
       width: 100%;
       padding: 24px 15px;
+
+      .learn_more { display: none; }
     }
+  }
+
+  .announcement {
+    padding: 15px;
+    line-height: 125%;
+    font-size: 14px;
   }
 
   footer {
@@ -744,7 +801,7 @@ only screen and (                min-resolution: 2dppx) {
   }
 
   .empty_placeholder {
-    margin: 50px auto;
+    margin: 15px auto 60px auto;
   }
 
   .info,
@@ -756,6 +813,8 @@ only screen and (                min-resolution: 2dppx) {
   }
 
   .content { 
+
+    padding-top: 30px;
 
     .inner {
       padding: 0 15px;
@@ -787,11 +846,9 @@ only screen and (                min-resolution: 2dppx) {
   .datasets > ul > li {
 
     .title {
-      a { float:left; @include text-overflow(); width: 100%; text-align:left; }
+      & > a { float:left; @include text-overflow(); width: 100%; text-align:left; }
       span.date { float: left; display:block; margin: 0 0 15px 0; }
     }
-
-    /*.tags { margin: 10px 0 0 0; }*/
 
   }
 
@@ -800,9 +857,9 @@ only screen and (                min-resolution: 2dppx) {
     .tags {
       float:none;
       width: 100%;
-      margin: 0 0 10px 0;
 
-      li { margin: 0 0 7px 0; }
+      /*margin: 0 0 10px 0;*/
+      /*li { margin: 0 0 7px 0; }*/
 
     }
 
@@ -823,9 +880,6 @@ only screen and (                min-resolution: 2dppx) {
     .inner {
       width: 100%;
       padding: 24px 15px;
-
-      .dashboard { display: none; }
-      .learn_more { display: none; }
     }
   }
 
@@ -839,6 +893,8 @@ only screen and (                min-resolution: 2dppx) {
   }
 
   .content {
+
+    padding-top: 30px;
 
     .inner { overflow:hidden; padding: 0 15px; width: 100%; }
 
@@ -905,15 +961,16 @@ only screen and (                min-resolution: 2dppx) {
 
   .content { 
 
-    &.empty .inner {
+    padding-top: 30px;
 
+    &.empty .inner {
       .datasets, .visualizations { margin: auto;; }
     }
 
   }
 
   .empty_placeholder {
-    margin: 50px auto;
+    margin: 15px auto 60px auto;
   }
 
   .info,
@@ -955,7 +1012,6 @@ and (orientation : portrait) {
 
   .empty_placeholder {
     margin: 0 auto 50px auto;
-    /*font-size: 26px;*/
   }
 
 }
@@ -1043,3 +1099,12 @@ and (orientation : landscape) {
   }
 
 }
+
+#cartodb-gmaps-attribution,
+.gmnoprint.gm-style-cc,
+.gm-style-cc,
+.leaflet-container .leaflet-control-attribution, .leaflet-container .leaflet-control-scale,
+.leaflet-control-attribution .leaflet-control {
+  display:none!important;
+}
+

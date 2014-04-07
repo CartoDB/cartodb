@@ -16,7 +16,7 @@ module CartoDB
         raise 'To be implemented in child classes'
       end #validate_auth_code
 
-      # Store token
+      # Set token
       # @param token string
       def token=(token)
         raise 'To be implemented in child classes'

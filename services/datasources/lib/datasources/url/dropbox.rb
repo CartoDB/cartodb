@@ -65,7 +65,9 @@ module CartoDB
         def get_auth_url
           @auth_flow = DropboxOAuth2FlowNoRedirect.new(@app_key, @app_secret)
           @auth_flow.start
-        rescue DropboxError, ArgumentError
+        rescue DropboxError => ex
+          raise AuthError.new(ex.to_s)
+        rescue ArgumentError
           raise AuthError.new('get_auth_url()', DATASOURCE_NAME)
         end #get_auth_url
 
@@ -74,26 +76,37 @@ module CartoDB
         # @return string : Access token
         # @throws AuthError
         def validate_auth_code(auth_code)
+          @auth_flow = DropboxOAuth2FlowNoRedirect.new(@app_key, @app_secret)
           data = @auth_flow.finish(auth_code)
           @access_token = data[0] # Only keep the access token
           @auth_flow = nil
           @client = DropboxClient.new(@access_token)
           @access_token
-        rescue DropboxError, ArgumentError
+        rescue DropboxError => ex
+            raise AuthError.new(ex.to_s)
+        rescue ArgumentError
           raise AuthError.new('validate_auth_code()', DATASOURCE_NAME)
         end #validate_auth_code
 
-        # Store token
+        # Set the token
         # @param token string
+        # @throws TokenExpiredOrInvalidError
         # @throws AuthError
         def token=(token)
           @access_token = token
           @client = DropboxClient.new(@access_token)
-        rescue DropboxError, ArgumentError
+        rescue DropboxError => ex
+          error_code = ex.http_response.code.to_i
+          if error_code == 401 || error_code == 403
+            raise TokenExpiredOrInvalidError.new(DATASOURCE_NAME)
+          else
+            raise AuthError.new(ex.to_s)
+          end
+        rescue ArgumentError
           raise AuthError.new('token=', DATASOURCE_NAME)
         end #token=
 
-        # Retrieve token
+        # Retrieve set token
         # @return string | nil
         def token
           @access_token
@@ -102,6 +115,8 @@ module CartoDB
         # Perform the listing and return results
         # @param filter Array : (Optional) filter to specify which resources to retrieve. Leave empty for all supported.
         # @return [ { :id, :title, :url, :service } ]
+        # @throws TokenExpiredOrInvalidError
+        # @throws AuthError
         # @throws DataDownloadError
         def get_resources_list(filter=[])
           all_results = []
@@ -114,30 +129,56 @@ module CartoDB
             end
           end
           all_results
-        rescue DropboxError, ArgumentError
+
+        rescue DropboxError => ex
+          error_code = ex.http_response.code.to_i
+          if error_code == 401 || error_code == 403
+            raise TokenExpiredOrInvalidError.new(DATASOURCE_NAME)
+          else
+            raise AuthError.new(ex.to_s)
+          end
+        rescue ArgumentError
           raise DataDownloadError.new('get_resources_list()', DATASOURCE_NAME)
         end #get_resources_list
 
         # Retrieves a resource and returns its contents
         # @param id string
         # @return mixed
+        # @throws TokenExpiredOrInvalidError
+        # @throws AuthError
         # @throws DataDownloadError
         def get_resource(id)
           contents,  = @client.get_file_and_metadata(id)
-          return contents
-        rescue DropboxError, ArgumentError
+          contents
+        rescue DropboxError => ex
+          error_code = ex.http_response.code.to_i
+          if error_code == 401 || error_code == 403
+            raise TokenExpiredOrInvalidError.new(DATASOURCE_NAME)
+          else
+            raise AuthError.new(ex.to_s)
+          end
+        rescue ArgumentError
           raise DataDownloadError.new("get_resource() #{id}", DATASOURCE_NAME)
         end #get_resource
 
         # @param id string
         # @return Hash
+        # @throws TokenExpiredOrInvalidError
+        # @throws AuthError
         # @throws DataDownloadError
         def get_resource_metadata(id)
           response = @client.metadata(id)
           item_data = format_item_data(response)
 
           item_data.to_hash
-        rescue DropboxError, ArgumentError
+        rescue DropboxError => ex
+          error_code = ex.http_response.code.to_i
+          if error_code == 401 || error_code == 403
+            raise TokenExpiredOrInvalidError.new(DATASOURCE_NAME)
+          else
+            raise AuthError.new(ex.to_s)
+          end
+        rescue ArgumentError
           raise DataDownloadError.new("get_resource_metadata() #{id}", DATASOURCE_NAME)
         end #get_resource_metadata
 
@@ -168,13 +209,14 @@ module CartoDB
 
         # Checks if token is still valid or has been revoked
         # @return bool
+        # @throws AuthError
         def token_valid?
         # Any call would do, we just want to see if communicates or refuses the token
           @client.account_info
           true
         rescue DropboxError => ex
           error_code = ex.http_response.code.to_i
-          raise unless (error_code == 401 || error_code == 403)
+          raise AuthError.new(ex.to_s) unless (error_code == 401 || error_code == 403)
           false
         end #token_valid?
 

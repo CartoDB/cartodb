@@ -13,6 +13,8 @@ module CartoDB
       end #DatasourceBaseError
 
       class AuthError                   < DatasourceBaseError; end
+      # This exception is ONLY throwed if oauth token is wrong or expired, and should be deleted if exists
+      class TokenExpiredOrInvalidError  < AuthError; end
       class InvalidServiceError         < DatasourceBaseError; end
       class DataDownloadError           < DatasourceBaseError; end
       class MissingConfigurationError   < DatasourceBaseError; end

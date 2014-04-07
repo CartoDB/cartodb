@@ -5,6 +5,8 @@ require_relative '../../../../services/datasources/lib/datasources'
 class Api::Json::ImportsController < Api::ApplicationController
   ssl_required :index, :show, :create
 
+  INVALID_TOKEN_MESSAGE = 'OAuth token invalid or expired'
+
   def index
     imports = current_user.importing_jobs
     render json: { imports: imports.map(&:id), success: true }
@@ -40,6 +42,8 @@ class Api::Json::ImportsController < Api::ApplicationController
     render_jsonp({ item_queue_id: data_import.id, success: true })
   end
 
+  # ----------- OAuths -----------
+
   def service_token_valid?
     oauth = current_user.oauths.select(params[:id])
 
@@ -55,6 +59,9 @@ class Api::Json::ImportsController < Api::ApplicationController
     end
 
     render_jsonp({ oauth_valid: valid, success: true })
+  rescue CartoDB::Datasources::TokenExpiredOrInvalidError
+    current_user.oauts.remove(oauth.service)
+    render_jsonp({ errors: { imports: INVALID_TOKEN_MESSAGE } }, 401)
   rescue => ex
     render_jsonp({ errors: { imports: ex } }, 400)
   end #service_token_valid?
@@ -66,6 +73,9 @@ class Api::Json::ImportsController < Api::ApplicationController
     raise CartoDB::Datasources::AuthError.new("Couldn't fetch datasource for service #{params[:id]}") if datasource.nil?
 
     render_jsonp({ files: datasource.get_resources_list, success: true })
+  rescue CartoDB::Datasources::TokenExpiredOrInvalidError
+    current_user.oauts.remove(oauth.service)
+    render_jsonp({ errors: { imports: INVALID_TOKEN_MESSAGE } }, 401)
   rescue => ex
     render_jsonp({ errors: { imports: ex } }, 400)
   end #list_files_for_service
@@ -78,6 +88,9 @@ class Api::Json::ImportsController < Api::ApplicationController
     raise CartoDB::Datasources::InvalidServiceError.new("Datasource #{params[:id]} does not support OAuth") unless datasource.kind_of? CartoDB::Datasources::BaseOAuth
 
     render_jsonp({ url: datasource.get_auth_url, success: true })
+  rescue CartoDB::Datasources::TokenExpiredOrInvalidError
+    current_user.oauts.remove(oauth.service)
+    render_jsonp({ errors: { imports: INVALID_TOKEN_MESSAGE } }, 401)
   rescue => ex
     render_jsonp({ errors: { imports: ex.to_s } }, 400)
   end #get_service_auth_url
@@ -103,6 +116,9 @@ class Api::Json::ImportsController < Api::ApplicationController
     end
 
     render_jsonp({ success: success })
+  rescue CartoDB::Datasources::TokenExpiredOrInvalidError
+    current_user.oauts.remove(oauth.service)
+    render_jsonp({ errors: { imports: INVALID_TOKEN_MESSAGE } }, 401)
   rescue => ex
     render_jsonp({ errors: { imports: ex.to_s } }, 400)
   end #validate_service_oauth_code

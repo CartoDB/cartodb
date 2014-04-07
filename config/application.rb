@@ -56,7 +56,7 @@ module CartoDB
     config.assets.enabled = false
 
     # Default setting is [/\w+\.(?!js|css).+/, /application.(css|js)$/]
-    config.assets.precompile = %w( dashboard.js application.js cdb.js common_data.js keys.js login.js models.js organization.js table.js table_public.js models.js templates.js templates_mustache.js respond.js tipsy.js)
+    config.assets.precompile = %w( dashboard.js application.js cdb.js common_data.js keys.js login.js models.js organization.js table.js table_public.js models.js templates.js templates_mustache.js respond.js tipsy.js statsc.js)
     config.assets.precompile += %w( cdb.css common.css dashboard.css front.css keys.css leaflet.css map.css organization.css pages.css table.css embeds.css fonts_ie.css embeds/public_map.css )
     config.assets.precompile += %w( *.jpg *.ico *.gif *.png *.eot *.otf *.svg *.woff *.ttf *.swf )
 

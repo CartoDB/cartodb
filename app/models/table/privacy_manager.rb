@@ -46,7 +46,7 @@ module CartoDB
       end #propagate_to
 
       def privacy_for_redis
-        case self.privacy
+        case @table.privacy
           when ::Table::PRIVACY_PUBLIC, ::Table::PRIVACY_LINK
             ::Table::PRIVACY_PUBLIC
           else

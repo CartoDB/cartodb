@@ -8,7 +8,6 @@ WORKING_SPECS = \
   spec/models/table_spec.rb \
   spec/models/user_spec.rb \
   spec/models/layer_spec.rb \
-  spec/models/tag_spec.rb \
   spec/models/map_spec.rb \
   spec/models/visualization/ \
   spec/models/named_maps_spec.rb \

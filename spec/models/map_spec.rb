@@ -78,7 +78,7 @@ describe Map do
     end
 
     it "recalculates bounds" do
-      table = Table.new :privacy => Table::PRIVATE, :name => 'Madrid Bars',
+      table = Table.new :privacy => Table::PRIVACY_PRIVATE, :name => 'Madrid Bars',
                         :tags => 'movies, personal'
       table.user_id = @user.id
       table.force_schema = "name text, address text, latitude float, longitude float"
@@ -193,9 +193,9 @@ describe Map do
       derived.store
 
       derived.layers(:cartodb).length.should == 1
-      @table1.privacy = 1
+      @table1.privacy = Table::PRIVACY_PUBLIC
       @table1.save
-      derived.privacy = 'public'
+      derived.privacy = CartoDB::Visualization::Member::PRIVACY_PUBLIC
       derived.store
 
       derived.fetch.private?.should be_false

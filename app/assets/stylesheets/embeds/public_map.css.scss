@@ -17,14 +17,33 @@
 html, body {height: 100%; padding: 0; margin: 0;}
 
 #map { 
-@include opacity(0);
-height: 100%;
-padding: 0;
-margin: 0;
-height:627px\9; /* IE8 and below */
-*height:627px; /* IE7 and below */
+  @include opacity(0);
+  height: 100%;
+  padding: 0;
+  margin: 0;
+  height:627px\9; *height:627px; /* IE7 and below */
 }
 
+.announcement {
+
+  padding: 15px 0;
+  border-bottom: 1px solid rgba(204,204,204,0.5);
+  line-height: 120%;
+
+  background: rgba(255,229,153,0.35);
+
+  color: #333333;
+  font-size:15px;
+  font-family: "Helvetica Neue","Helvetica",Arial;
+
+  a { color:#397DB8; text-decoration: underline; }
+
+  .inner {
+    width: 100%;
+    text-align: center;
+  }
+
+}
 
 .cartodb-text {position:absolute; display:none; bottom:0; left:0; right:0; margin:0; padding:0 10px; background:white; font:normal 11px "Helvetica",Arial; color:#999999; border-top:1px solid #CCC; border-top:1px solid rgba(0,0,0,0); box-shadow:rgba(0,0,0,0.6) 0 0 1px 0; -webkit-box-shadow:rgba(0,0,0,0.6) 0 0 1px 0; -moz-box-shadow:rgba(0,0,0,0.6) 0 0 1px 0; -o-box-shadow:rgba(0,0,0,0.6) 0 0 1px 0; line-height:29px; z-index:2; }
 .cartodb-text a {color:#397DB8; text-decoration:underline;}
@@ -283,6 +302,16 @@ div.cartodb-info .inner .user .avatar {
   border-radius: 100px;
 }
 
+
+div.cartodb-info .inner .user .content {
+  text-decoration:none;
+
+  &:hover .user-info h5 {
+    text-decoration: underline;
+  }
+
+}
+
 div.cartodb-info .inner .user .user-info {
   margin: 5px 8px 0 0;
   text-align:right;
@@ -291,7 +320,8 @@ div.cartodb-info .inner .user .user-info {
 }
 
 div.cartodb-info .inner .user h4,
-div.cartodb-info .inner .user h5 {
+div.cartodb-info .inner .user h5,
+div.cartodb-info .inner .user .count {
   margin: 0; padding: 0;
   font-family: 'ProximaNova-Semibold', Helvetica, sans-serif;
   font-weight: normal;

@@ -83,7 +83,7 @@ describe Admin::VisualizationsController do
 
   describe 'GET /viz/:id/public' do
     it 'returns public data for a table visualization' do
-      id = table_factory(privacy: ::Table::PUBLIC).table_visualization.id
+      id = table_factory(privacy: ::Table::PRIVACY_PUBLIC).table_visualization.id
 
       get "/viz/#{id}/public", {}, @headers
       last_response.status.should == 200
@@ -98,7 +98,7 @@ describe Admin::VisualizationsController do
     end
 
     it "redirects to embed_map if visualization is 'derived'" do
-      id                = table_factory(privacy: ::Table::PUBLIC).table_visualization.id
+      id                = table_factory(privacy: ::Table::PRIVACY_PUBLIC).table_visualization.id
       payload           = { source_visualization_id: id }
 
       post "/api/v1/viz?api_key=#{@api_key}", 
@@ -118,7 +118,7 @@ describe Admin::VisualizationsController do
 
   describe 'GET /viz/:name/embed_map' do
     it 'renders the view by passing a visualization name' do
-      table = table_factory(privacy: ::Table::PUBLIC)
+      table = table_factory(privacy: ::Table::PRIVACY_PUBLIC)
       name = table.table_visualization.name
 
       get "/viz/#{URI::encode(name)}/embed_map", {}, @headers
@@ -129,7 +129,7 @@ describe Admin::VisualizationsController do
     end
 
     it 'renders embed_map.js' do
-      id                = table_factory(privacy: ::Table::PUBLIC).table_visualization.id
+      id                = table_factory(privacy: ::Table::PRIVACY_PUBLIC).table_visualization.id
       payload           = { source_visualization_id: id }
 
       post "/api/v1/viz?api_key=#{@api_key}", 

@@ -1,3 +1,36 @@
+2.13.0 (2014-04-08)
+-------------------
+NOTE: This version introduces another kind of privacy setting: "Link-only".
+Now visualizations and tables which are public are listed by default on user pages.
+Due to this, you may want to turn all your Public tables and visualizations to
+"Link-only" state. To do this, just run the following SQL query on your metadata 
+database:
+
+```
+UPDATE visualizations
+SET privacy='link'
+WHERE privacy='public';
+UPDATE user_tables
+SET privacy=2
+WHERE privacy=1;
+```
+
+* New features
+  * Public User Pages: now users have a public dashboard on their CartoDB homepage
+    which will show all the public visualizations and tables on their account.
+  * Add new "link-only" privacy status for tables.
+
+* Improvements
+  * New endpoint to extract user information
+
+* Fixed bugs
+  * Using CartoDB.js, if you create a layer from a viz.json url, and then try to
+    hide it, its interaction still works
+  * Fixes in session handling when multuple users are logged at the same time
+  * Run a update to change all paid users public visualizations from public to link
+  * Torque layer offsets when several layers in public page
+
+
 2.12.0 (2014-04-04)
 -------------------
 * Improvements

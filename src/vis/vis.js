@@ -617,25 +617,36 @@ var Vis = cdb.core.View.extend({
     }
 
     // if bounds are present zoom and center will not taken into account
-    if (opt.zoom !== undefined) {
-      vizjson.zoom = parseFloat(opt.zoom);
+    var zoom = parseInt(opt.zoom);
+    if (!isNaN(zoom)) {
+      vizjson.zoom = zoom;
       vizjson.bounds = null;
     }
 
-    if (opt.center_lat !== undefined) {
-      vizjson.center = [parseFloat(opt.center_lat), parseFloat(opt.center_lon)];
+    // Center coordinates?
+    var center_lat = parseFloat(opt.center_lat);
+    var center_lon = parseFloat(opt.center_lon);
+    if ( !isNaN(center_lat) && !isNaN(center_lon) ) {
+      vizjson.center = [center_lat, center_lon];
       vizjson.bounds = null;
     }
 
+    // Center object
     if (opt.center !== undefined) {
       vizjson.center = opt.center;
       vizjson.bounds = null;
     }
 
-    if (opt.sw_lat !== undefined) {
+    // Bounds?
+    var sw_lat = parseFloat(opt.sw_lat);
+    var sw_lon = parseFloat(opt.sw_lon);
+    var ne_lat = parseFloat(opt.ne_lat);
+    var ne_lon = parseFloat(opt.ne_lon);
+
+    if ( !isNaN(sw_lat) && !isNaN(sw_lon) && !isNaN(ne_lat) && !isNaN(ne_lon) ) {
       vizjson.bounds = [
-        [parseFloat(opt.sw_lat), parseFloat(opt.sw_lon)],
-        [parseFloat(opt.ne_lat), parseFloat(opt.ne_lon)],
+        [ sw_lat, sw_lon ],
+        [ ne_lat, ne_lon ]
       ];
     }
 

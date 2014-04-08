@@ -66,7 +66,7 @@ module CartoDB
         # @throws AuthError
         def get_auth_url(use_callback_flow=false)
           if use_callback_flow
-            @auth_flow = DropboxOAuth2Flow.new(@app_key, @app_secret, @callback_url, {id:@user.id}, :dropbox_auth_csrf_token)
+            @auth_flow = DropboxOAuth2Flow.new(@app_key, @app_secret, @callback_url, {}, :csrf_token)
           else
             @auth_flow = DropboxOAuth2FlowNoRedirect.new(@app_key, @app_secret)
           end
@@ -74,7 +74,7 @@ module CartoDB
         rescue DropboxError => ex
           raise AuthError.new(ex.to_s)
         rescue ArgumentError
-          raise AuthError.new('get_auth_url()', DATASOURCE_NAME)
+          raise AuthError.new("get_auth_url(#{use_callback_flow})", DATASOURCE_NAME)
         end #get_auth_url
 
         # Validate authorization code and store token
@@ -93,6 +93,22 @@ module CartoDB
         rescue ArgumentError
           raise AuthError.new('validate_auth_code()', DATASOURCE_NAME)
         end #validate_auth_code
+
+        # Validates the authorization callback
+        # @param params : mixed
+        def validate_callback(params)
+          session = {csrf_token: params[:state].split('|').first.presence }
+          @auth_flow = DropboxOAuth2Flow.new(@app_key, @app_secret, @callback_url, session, :csrf_token)
+          data = @auth_flow.finish(params)
+          @access_token = data[0] # Only keep the access token
+          @auth_flow = nil
+          @client = DropboxClient.new(@access_token)
+          @access_token
+        rescue DropboxError => ex
+          raise AuthError.new(ex.to_s)
+        rescue ArgumentError
+          raise AuthError.new("validate_callback(#{params.inspect})", DATASOURCE_NAME)
+        end #validate_callback
 
         # Set the token
         # @param token string

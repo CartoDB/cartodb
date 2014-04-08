@@ -123,6 +123,7 @@
 
   $(function() {
 
+
     var options = {
       zoomControl: false,
       cartodb_logo: false,
@@ -131,11 +132,26 @@
       time_slider: false
     };
 
-    var urls = <%= raw @visualizations.map {|v| "//#{request.env['HTTP_HOST']}/api/v2/viz/#{v[:id]}/viz.json" }.to_json %>;
+    <% if !Rails.env.production? %>
+        options.no_cdn = true;
+    <% end %>
 
-    _.each(urls, function(url, i) {
-      cartodb.createVis('map_' + i , url, options);
-    });
+    <% urls = [] %>
+
+    <% @visualizations.map do |v| 
+      urls.push(
+        :url => "//#{request.env['HTTP_HOST']}/api/v2/viz/#{v[:id]}/viz.json",
+        :layer_visibility => v[:layers].map{ |layer| { visible: layer.options["visible"] ? true : false } },
+      )
+    end %>
+
+  var urls = <%= raw urls.to_json %>;
+
+  _.each(urls, function(url, i) {
+    options.sublayer_options =  url.layer_visibility
+    cartodb.createVis('map_' + i , url.url, options);
+  });
 
   });
+
 </script>

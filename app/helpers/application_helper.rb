@@ -68,6 +68,8 @@ module ApplicationHelper
       dropbox_api_key:     Cartodb.config[:dropbox_api_key],
       gdrive_api_key:      Cartodb.config[:gdrive]['api_key'],
       gdrive_app_id:       Cartodb.config[:gdrive]['app_id'],
+      oauth_dropbox:       Cartodb.config[:oauth][:dropbox]['app_key'],
+      oauth_gdrive:        Cartodb.config[:oauth][:gdrive]['client_id'],
       max_asset_file_size: Cartodb.config[:assets]["max_file_size"]
     }
 

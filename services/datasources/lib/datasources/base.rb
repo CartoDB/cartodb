@@ -32,7 +32,7 @@ module CartoDB
 
       # Perform the listing and return results
       # @param filter Array : (Optional) filter to specify which resources to retrieve. Leave empty for all supported.
-      # @return [ { :id, :title, :url, :service, :filename, :checksum } ]
+      # @return [ { :id, :title, :url, :service, :filename, :checksum, :size } ]
       def get_resources_list(filter={})
         raise 'To be implemented in child classes'
       end

@@ -30,25 +30,26 @@ module CartoDB
         # @throws UninitializedError
         # @throws MissingConfigurationError
         def initialize(config, user)
+
+          raise UninitializedError.new('missing user instance', DATASOURCE_NAME)            if user.nil?
+          raise MissingConfigurationError.new('missing app_key', DATASOURCE_NAME)           unless config.include?('app_key')
+          raise MissingConfigurationError.new('missing app_secret', DATASOURCE_NAME)        unless config.include?('app_secret')
+          raise MissingConfigurationError.new('missing callback_url', DATASOURCE_NAME)      unless config.include?('callback_url')
+
+          @user               = user
+          @app_key            = config.fetch('app_key')
+          @app_secret         = config.fetch('app_secret')
+          @callback_url       = config.fetch('callback_url')
+
+          self.filter   = []
           @access_token = nil
-
-          raise UninitializedError.new('missing user instance', DATASOURCE_NAME) if user.nil?
-          raise MissingConfigurationError.new('missing app_key', DATASOURCE_NAME) unless config.include?('app_key')
-          raise MissingConfigurationError.new('missing app_secret', DATASOURCE_NAME) unless config.include?('app_secret')
-
-          @app_key = config.fetch('app_key')
-          @app_secret = config.fetch('app_secret')
-          @user = user
-
-          self.filter=[]
-          @client = nil
-          @auth_flow = nil
-
+          @auth_flow    = nil
+          @client       = nil
         end #initialize
 
         # Factory method
-        # @param config {}
-        # @param user User
+        # @param config : {}
+        # @param user : User
         # @return CartoDB::Synchronizer::FileProviders::Dropbox
         def self.get_new(config, user)
           return new(config, user)
@@ -61,14 +62,19 @@ module CartoDB
         end
 
         # Return the url to be displayed or sent the user to to authenticate and get authorization code
+        # @param use_callback_flow : bool
         # @throws AuthError
-        def get_auth_url
-          @auth_flow = DropboxOAuth2FlowNoRedirect.new(@app_key, @app_secret)
-          @auth_flow.start
+        def get_auth_url(use_callback_flow=false)
+          if use_callback_flow
+            @auth_flow = DropboxOAuth2Flow.new(@app_key, @app_secret, @callback_url, {}, :csrf_token)
+          else
+            @auth_flow = DropboxOAuth2FlowNoRedirect.new(@app_key, @app_secret)
+          end
+          @auth_flow.start(CALLBACK_STATE_DATA_PLACEHOLDER.sub('user', @user.username).sub('service', DATASOURCE_NAME))
         rescue DropboxError => ex
           raise AuthError.new(ex.to_s)
         rescue ArgumentError
-          raise AuthError.new('get_auth_url()', DATASOURCE_NAME)
+          raise AuthError.new("get_auth_url(#{use_callback_flow})", DATASOURCE_NAME)
         end #get_auth_url
 
         # Validate authorization code and store token
@@ -87,6 +93,22 @@ module CartoDB
         rescue ArgumentError
           raise AuthError.new('validate_auth_code()', DATASOURCE_NAME)
         end #validate_auth_code
+
+        # Validates the authorization callback
+        # @param params : mixed
+        def validate_callback(params)
+          session = {csrf_token: params[:state].split('|').first.presence }
+          @auth_flow = DropboxOAuth2Flow.new(@app_key, @app_secret, @callback_url, session, :csrf_token)
+          data = @auth_flow.finish(params)
+          @access_token = data[0] # Only keep the access token
+          @auth_flow = nil
+          @client = DropboxClient.new(@access_token)
+          @access_token
+        rescue DropboxError => ex
+          raise AuthError.new(ex.to_s)
+        rescue ArgumentError
+          raise AuthError.new("validate_callback(#{params.inspect})", DATASOURCE_NAME)
+        end #validate_callback
 
         # Set the token
         # @param token string
@@ -224,7 +246,7 @@ module CartoDB
 
         # Formats all data to comply with our desired format
         # @param item_data Hash : Single item returned from Dropbox API
-        # @return { :id, :title, :url, :service }
+        # @return { :id, :title, :url, :service, :size }
         def format_item_data(item_data)
           filename = item_data.fetch('path').split('/').last
 
@@ -233,7 +255,8 @@ module CartoDB
             title:    item_data.fetch('path'),
             filename: filename,
             service:  DATASOURCE_NAME,
-            checksum: checksum_of(item_data.fetch('rev'))
+            checksum: checksum_of(item_data.fetch('rev')),
+            size:     item_data.fetch('bytes').to_i
           }
         end #format_item_data
 

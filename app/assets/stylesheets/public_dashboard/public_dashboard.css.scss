@@ -342,13 +342,10 @@ header {
   .map-wrapper {
     height: 300px;
     position:relative;
-
     text-align:left;
-
     overflow:hidden;
-    @include translateZ(10px);
     @include border-radius(5px 5px 0 0);
-    @include translate3d(0,0,10px);
+    @include browsers_transform(translate3d(0,0,10px) translateZ(10px), none, none);
 
     &.headless {
       @include border-radius(5px 5px 5px 5px);
@@ -471,6 +468,7 @@ header {
     clear:both;
     float:left;
     margin: 7px 0 0 0;
+    text-align:left;
 
     li a {
       padding: 3px 6px;
@@ -519,6 +517,7 @@ header {
 
   clear:both;
   overflow:hidden;
+  position:relative;
 
   text-align: center;
 
@@ -533,7 +532,7 @@ header {
   }
 
   ul {
-    position:relative;
+    position:absolute;
     float:left;
     width: 100%;
     margin-right: 60px;
@@ -1101,6 +1100,7 @@ and (orientation : landscape) {
 }
 
 #cartodb-gmaps-attribution,
+.map > div a,
 .gmnoprint.gm-style-cc,
 .gm-style-cc,
 .leaflet-container .leaflet-control-attribution, .leaflet-container .leaflet-control-scale,

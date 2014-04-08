@@ -758,7 +758,7 @@ NamedMap.prototype = _.extend({}, Map.prototype, {
   // not removed to hide) so the number does not change
   getLayerIndexByNumber: function(number) {
     return +number;
-  },
+  }
 
 
 });

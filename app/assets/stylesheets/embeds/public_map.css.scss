@@ -55,9 +55,9 @@ html, body {height: 100%; padding: 0; margin: 0;}
 #not_supported_dialog ul li {float:left; margin:0; padding:0; border-right:1px solid #D9D9D9;}
 #not_supported_dialog ul li a {display:block; width:118px; height:74px; background-repeat:no-repeat; background-position:center center; font-size:0; line-height:0; text-indent:-9999px;}
 #not_supported_dialog ul li.last {border:none;}
-#not_supported_dialog a.safari  { @include background(image-url('layout/safari.png'); }
-#not_supported_dialog a.chrome  { @include background(image-url('layout/chrome.png'); }
-#not_supported_dialog a.firefox { @include background(image-url('layout/firefox.png'); }
+#not_supported_dialog a.safari  { @include background(image-url('layout/safari.png')); }
+#not_supported_dialog a.chrome  { @include background(image-url('layout/chrome.png')); }
+#not_supported_dialog a.firefox { @include background(image-url('layout/firefox.png')); }
 
 
 @media

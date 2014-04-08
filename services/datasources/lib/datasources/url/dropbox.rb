@@ -230,7 +230,7 @@ module CartoDB
 
         # Formats all data to comply with our desired format
         # @param item_data Hash : Single item returned from Dropbox API
-        # @return { :id, :title, :url, :service }
+        # @return { :id, :title, :url, :service, :size }
         def format_item_data(item_data)
           filename = item_data.fetch('path').split('/').last
 
@@ -239,7 +239,8 @@ module CartoDB
             title:    item_data.fetch('path'),
             filename: filename,
             service:  DATASOURCE_NAME,
-            checksum: checksum_of(item_data.fetch('rev'))
+            checksum: checksum_of(item_data.fetch('rev')),
+            size:     item_data.fetch('bytes').to_i
           }
         end #format_item_data
 

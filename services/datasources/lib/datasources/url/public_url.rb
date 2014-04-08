@@ -63,8 +63,9 @@ module CartoDB
               title:    id,
               url:      id,
               service:  DATASOURCE_NAME,
-              checksum: checksum_of(id, etag_header, last_modified_header)
-              # No need to use :filename
+              checksum: checksum_of(id, etag_header, last_modified_header),
+              size:     0
+              # No need to use :filename nor file
           }
         end #get_resource_metadata
 

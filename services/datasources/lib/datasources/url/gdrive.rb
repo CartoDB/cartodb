@@ -12,7 +12,7 @@ module CartoDB
 
         OAUTH_SCOPE = 'https://www.googleapis.com/auth/drive'
         REDIRECT_URI = 'urn:ietf:wg:oauth:2.0:oob'
-        FIELDS_TO_RETRIEVE = 'items(downloadUrl,exportLinks,id,modifiedDate,title,fileExtension)'
+        FIELDS_TO_RETRIEVE = 'items(downloadUrl,exportLinks,id,modifiedDate,title,fileExtension,fileSize)'
 
         # Specific of this provider
         FORMATS_TO_MIME_TYPES = {
@@ -227,24 +227,27 @@ module CartoDB
 
         # Formats all data to comply with our desired format
         # @param item_data Hash : Single item returned from GDrive API
-        # @return { :id, :title, :url, :service, :checksum }
+        # @return { :id, :title, :url, :service, :checksum, :size }
         def format_item_data(item_data)
           data =
             {
               id:           item_data.fetch('id'),
               title:        item_data.fetch('title'),
               service:      DATASOURCE_NAME,
-              checksum:     checksum_of(item_data.fetch('modifiedDate')),
+              checksum:     checksum_of(item_data.fetch('modifiedDate'))
+
             }
           if item_data.include?('exportLinks')
             # Native spreadsheets  have no format nor direct download links
             data[:url] = item_data.fetch('exportLinks').first.last
             data[:url] = data[:url][0..data[:url].rindex('=')] + 'csv'
             data[:filename] = clean_filename(item_data.fetch('title')) + '.csv'
+            data[:size] = 0
           else
             data[:url] = item_data.fetch('downloadUrl')
             # For Drive files, title == filename + extension
             data[:filename] = item_data.fetch('title')
+            data[:size] = item_data.fetch('fileSize').to_i
           end
           data
         end #format_item_data

@@ -342,13 +342,10 @@ header {
   .map-wrapper {
     height: 300px;
     position:relative;
-
     text-align:left;
-
     overflow:hidden;
-    @include translateZ(10px);
     @include border-radius(5px 5px 0 0);
-    @include translate3d(0,0,10px);
+    @include browsers_transform(translate3d(0,0,10px) translateZ(10px), none, none);
 
     &.headless {
       @include border-radius(5px 5px 5px 5px);

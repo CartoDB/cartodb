@@ -125,10 +125,12 @@ CartoDBLayerGroupBase.prototype.getTile = function(coord, zoom, ownerDocument) {
   var EMPTY_GIF = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
 
   var self = this;
+  var ie = 'ActiveXObject' in window,
+      ielt9 = ie && !document.addEventListener;
 
   this.options.added = true;
 
-  if(this.tilejson == null) {
+  if(this.tilejson === null) {
     var key = zoom + '/' + coord.x + '/' + coord.y;
     var i = this.cache[key] = new Image(256, 256);
     i.src = EMPTY_GIF;
@@ -139,6 +141,10 @@ CartoDBLayerGroupBase.prototype.getTile = function(coord, zoom, ownerDocument) {
 
   var im = wax.g.connector.prototype.getTile.call(this, coord, zoom, ownerDocument);
 
+  // in IE8 semi transparency does not work and needs filter
+  if( ielt9 ) {
+    im.style['filter'] = "progid:DXImageTransform.Microsoft.gradient(startColorstr=#00FFFFFF,endColorstr=#00FFFFFF)";
+  }
   if (this.tiles === 0) {
     this.loading && this.loading();
   }

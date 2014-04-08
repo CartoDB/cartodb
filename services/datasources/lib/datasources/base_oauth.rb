@@ -4,8 +4,11 @@ module CartoDB
   module Datasources
     class BaseOAuth < Base
 
+      CALLBACK_STATE_DATA_PLACEHOLDER = '__user__service__'
+
       # Return the url to be displayed or sent the user to to authenticate and get authorization code
-      def get_auth_url
+      # @param use_callback_flow : bool
+      def get_auth_url(use_callback_flow=false)
         raise 'To be implemented in child classes'
       end #get_auth_url
 
@@ -15,6 +18,12 @@ module CartoDB
       def validate_auth_code(auth_code)
         raise 'To be implemented in child classes'
       end #validate_auth_code
+
+      # Validates the authorization callback
+      # @param params : mixed
+      def validate_callback(params)
+        raise 'To be implemented in child classes'
+      end #validate_callback
 
       # Set token
       # @param token string

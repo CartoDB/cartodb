@@ -5,6 +5,9 @@ require_relative '../../../../services/datasources/lib/datasources'
 class Api::Json::ImportsController < Api::ApplicationController
   ssl_required :index, :show, :create
 
+  # NOTE: When/If OAuth tokens management is built into the UI, remove this to send and check CSRF
+  skip_before_filter :verify_authenticity_token, only: [:invalidate_service_token, :service_oauth_callback]
+
   INVALID_TOKEN_MESSAGE = 'OAuth token invalid or expired'
 
   def index
@@ -88,7 +91,10 @@ class Api::Json::ImportsController < Api::ApplicationController
     raise CartoDB::Datasources::AuthError.new("Couldn't fetch datasource for service #{params[:id]}") if datasource.nil?
     raise CartoDB::Datasources::InvalidServiceError.new("Datasource #{params[:id]} does not support OAuth") unless datasource.kind_of? CartoDB::Datasources::BaseOAuth
 
-    render_jsonp({ url: datasource.get_auth_url, success: true })
+    render_jsonp({
+                   url: datasource.get_auth_url(true),
+                   success: true
+                 })
   rescue CartoDB::Datasources::TokenExpiredOrInvalidError
     current_user.oauts.remove(oauth.service)
     render_jsonp({ errors: { imports: INVALID_TOKEN_MESSAGE } }, 401)
@@ -125,8 +131,34 @@ class Api::Json::ImportsController < Api::ApplicationController
     render_jsonp({ errors: { imports: ex.to_s } }, 400)
   end #validate_service_oauth_code
 
+  def invalidate_service_token
+    oauth = current_user.oauths.select(params[:id])
+    raise CartoDB::Datasources::AuthError.new("No oauth set for service #{params[:id]}") if oauth.nil?
+
+    current_user.oauths.remove(oauth.service)
+    render_jsonp({ success: true })
+  rescue => ex
+    render_jsonp({ errors: { imports: ex.to_s } }, 400)
+  end #invalidate_service_token
+
   def service_oauth_callback
-    # TODO
+    oauth = current_user.oauths.select(params[:id])
+    raise CartoDB::Datasources::AuthError.new("OAuth already set for service #{params[:id]}") unless oauth.nil?
+
+    datasource = CartoDB::Datasources::DatasourcesFactory.get_datasource(params[:id], current_user)
+    raise CartoDB::Datasources::AuthError.new("Couldn't fetch datasource for service #{params[:id]}") if datasource.nil?
+    raise CartoDB::Datasources::InvalidServiceError.new("Datasource #{params[:id]} does not support OAuth") unless datasource.kind_of? CartoDB::Datasources::BaseOAuth
+
+    #TODO: Improve error handling
+    token = datasource.validate_callback(params)
+
+    current_user.oauths.add(params[:id], token)
+    render_jsonp({ success: true })
+  rescue CartoDB::Datasources::TokenExpiredOrInvalidError
+    current_user.oauts.remove(oauth.service)
+    render_jsonp({ errors: { imports: INVALID_TOKEN_MESSAGE } }, 401)
+  rescue => ex
+    render_jsonp({ errors: { imports: ex.to_s } }, 400)
   end #service_oauth_callback
 
   protected
@@ -169,4 +201,5 @@ class Api::Json::ImportsController < Api::ApplicationController
       file.path[/(\/uploads\/.*)/, 1]
     end
   end
+
 end

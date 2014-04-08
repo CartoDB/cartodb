@@ -69,8 +69,10 @@ module CartoDB
         end
 
         # Return the url to be displayed or sent the user to to authenticate and get authorization code
+        # @param use_callback_flow : bool
         # @return string | nil
-        def get_auth_url
+        def get_auth_url(use_callback_flow=false)
+          # TODO: Implement scenario of using callback
           @client.authorization.authorization_uri.to_s
         end #get_auth_url
 

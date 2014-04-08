@@ -30,25 +30,26 @@ module CartoDB
         # @throws UninitializedError
         # @throws MissingConfigurationError
         def initialize(config, user)
+
+          raise UninitializedError.new('missing user instance', DATASOURCE_NAME)            if user.nil?
+          raise MissingConfigurationError.new('missing app_key', DATASOURCE_NAME)           unless config.include?('app_key')
+          raise MissingConfigurationError.new('missing app_secret', DATASOURCE_NAME)        unless config.include?('app_secret')
+          raise MissingConfigurationError.new('missing callback_url', DATASOURCE_NAME)      unless config.include?('callback_url')
+
+          @user               = user
+          @app_key            = config.fetch('app_key')
+          @app_secret         = config.fetch('app_secret')
+          @callback_url       = config.fetch('callback_url')
+
+          self.filter   = []
           @access_token = nil
-
-          raise UninitializedError.new('missing user instance', DATASOURCE_NAME) if user.nil?
-          raise MissingConfigurationError.new('missing app_key', DATASOURCE_NAME) unless config.include?('app_key')
-          raise MissingConfigurationError.new('missing app_secret', DATASOURCE_NAME) unless config.include?('app_secret')
-
-          @app_key = config.fetch('app_key')
-          @app_secret = config.fetch('app_secret')
-          @user = user
-
-          self.filter=[]
-          @client = nil
-          @auth_flow = nil
-
+          @auth_flow    = nil
+          @client       = nil
         end #initialize
 
         # Factory method
-        # @param config {}
-        # @param user User
+        # @param config : {}
+        # @param user : User
         # @return CartoDB::Synchronizer::FileProviders::Dropbox
         def self.get_new(config, user)
           return new(config, user)
@@ -61,10 +62,15 @@ module CartoDB
         end
 
         # Return the url to be displayed or sent the user to to authenticate and get authorization code
+        # @param use_callback_flow : bool
         # @throws AuthError
-        def get_auth_url
-          @auth_flow = DropboxOAuth2FlowNoRedirect.new(@app_key, @app_secret)
-          @auth_flow.start
+        def get_auth_url(use_callback_flow=false)
+          if use_callback_flow
+            @auth_flow = DropboxOAuth2Flow.new(@app_key, @app_secret, @callback_url, {id:@user.id}, :dropbox_auth_csrf_token)
+          else
+            @auth_flow = DropboxOAuth2FlowNoRedirect.new(@app_key, @app_secret)
+          end
+          @auth_flow.start(CALLBACK_STATE_DATA_PLACEHOLDER.sub('user', @user.username).sub('service', DATASOURCE_NAME))
         rescue DropboxError => ex
           raise AuthError.new(ex.to_s)
         rescue ArgumentError

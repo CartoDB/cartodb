@@ -42,6 +42,7 @@ var default_options = {
   subdomains:     null
 };
 
+var OPACITY_FILTER = "progid:DXImageTransform.Microsoft.gradient(startColorstr=#00FFFFFF,endColorstr=#00FFFFFF)";
 
 var CartoDBNamedMap = function(opts) {
 
@@ -113,8 +114,12 @@ CartoDBLayerGroupBase.prototype.setOpacity = function(opacity) {
   for(var key in this.cache) {
     var img = this.cache[key];
     img.style.opacity = opacity;
-    img.style.filter = "alpha(opacity=" + (opacity*100) + ");"
-    //img.setAttribute("style","opacity: " + opacity + "; filter: alpha(opacity="+(opacity*100)+");");
+    var v = Math.round(opacity*100);
+    if (v >= 99) {
+      img.style.filter = OPACITY_FILTER;
+    } else {
+      img.style.filter = "alpha(opacity=" + (opacity) + ");";
+    }
   }
 
 };
@@ -143,7 +148,7 @@ CartoDBLayerGroupBase.prototype.getTile = function(coord, zoom, ownerDocument) {
 
   // in IE8 semi transparency does not work and needs filter
   if( ielt9 ) {
-    im.style['filter'] = "progid:DXImageTransform.Microsoft.gradient(startColorstr=#00FFFFFF,endColorstr=#00FFFFFF)";
+    im.style['filter'] = OPACITY_FILTER;
   }
   if (this.tiles === 0) {
     this.loading && this.loading();

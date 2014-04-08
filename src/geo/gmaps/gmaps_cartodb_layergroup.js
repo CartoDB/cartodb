@@ -104,6 +104,15 @@ var CartoDBLayerGroup = function(opts) {
   this.update();
 };
 
+function setImageOpacityIE8(img, opacity) {
+    var v = Math.round(opacity*100);
+    if (v >= 99) {
+      img.style.filter = OPACITY_FILTER;
+    } else {
+      img.style.filter = "alpha(opacity=" + (opacity) + ");";
+    }
+}
+
 function CartoDBLayerGroupBase() {}
 
 CartoDBLayerGroupBase.prototype.setOpacity = function(opacity) {
@@ -114,12 +123,7 @@ CartoDBLayerGroupBase.prototype.setOpacity = function(opacity) {
   for(var key in this.cache) {
     var img = this.cache[key];
     img.style.opacity = opacity;
-    var v = Math.round(opacity*100);
-    if (v >= 99) {
-      img.style.filter = OPACITY_FILTER;
-    } else {
-      img.style.filter = "alpha(opacity=" + (opacity) + ");";
-    }
+    setImageOpacityIE8(img, opacity);
   }
 
 };
@@ -148,8 +152,9 @@ CartoDBLayerGroupBase.prototype.getTile = function(coord, zoom, ownerDocument) {
 
   // in IE8 semi transparency does not work and needs filter
   if( ielt9 ) {
-    im.style['filter'] = OPACITY_FILTER;
+    setImageOpacityIE8(im, this.options.opacity);
   }
+  im.style.opacity = this.options.opacity;
   if (this.tiles === 0) {
     this.loading && this.loading();
   }

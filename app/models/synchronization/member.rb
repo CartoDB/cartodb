@@ -50,15 +50,18 @@ module CartoDB
       def initialize(attributes={}, repository=Synchronization.repository)
         super(attributes)
 
-        self.log_trace      = nil
-        @repository         = repository
-        self.id             ||= @repository.next_id
-        self.state          ||= STATE_CREATED
-        self.ran_at         ||= Time.now
-        self.interval       ||= 3600
-        self.run_at         ||= Time.now + interval
-        self.retried_times  ||= 0
-        self.log_id         ||= log.id
+        self.log_trace        = nil
+        @repository           = repository
+        self.id               ||= @repository.next_id
+        self.state            ||= STATE_CREATED
+        self.ran_at           ||= Time.now
+        self.interval         ||= 3600
+        self.run_at           ||= Time.now + interval
+        self.retried_times    ||= 0
+        self.log_id           ||= log.id
+        self.service_name     ||= nil
+        self.service_item_id  ||= nil
+        self.checksum         ||= ''
       end
 
       def interval=(seconds=3600)
@@ -96,10 +99,7 @@ module CartoDB
       def run
         self.state    = STATE_SYNCING
 
-        log           = TrackRecord::Log.new(
-                          prefix:     REDIS_LOG_KEY_PREFIX,
-                          expiration: REDIS_LOG_EXPIRATION_IN_SECS
-                        )
+        log           = TrackRecord::Log.new(prefix: REDIS_LOG_KEY_PREFIX, expiration: REDIS_LOG_EXPIRATION_IN_SECS)
         self.log_id   = log.id
         store
 
@@ -107,8 +107,7 @@ module CartoDB
 
         runner        = CartoDB::Importer2::Runner.new(pg_options, downloader, log, user.remaining_quota)
         database      = user.in_database
-        importer      = CartoDB::Synchronization::Adapter
-                          .new(name, runner, database, user)
+        importer      = CartoDB::Synchronization::Adapter.new(name, runner, database, user)
 
         importer.run
         self.ran_at   = Time.now
@@ -131,13 +130,16 @@ module CartoDB
         store
       end
 
-
       def get_downloader
         datasource_name = (service_name.nil? || service_name.size == 0) ? Url::PublicUrl::DATASOURCE_NAME : service_name
         service_item_id = url if (service_item_id.nil? || service_item_id.size == 0)
 
         datasource_provider = get_datasource(datasource_name)
-        if !datasource_provider.nil? && service_item_id.nil?
+        if datasource_provider.nil?
+          raise CartoDB::DataSourceError.new("Datasource #{datasource_name} could not be instantiated")
+        end
+
+        if service_item_id.nil?
           raise CartoDB::DataSourceError.new("Datasource #{datasource_name} without item id")
         end
 
@@ -155,7 +157,9 @@ module CartoDB
           self.log << "File will be downloaded from #{downloader.url}"
         else
           self.log << 'Downloading file data from datasource'
-          downloader = CartoDB::Importer2::DatasourceDownloader.new(datasource_provider, metadata)
+          downloader = CartoDB::Importer2::DatasourceDownloader.new(datasource_provider, metadata,
+            checksum: checksum,
+          )
         end
 
         downloader
@@ -267,6 +271,20 @@ module CartoDB
       rescue ArgumentError
         false
       end
+
+      # @return mixed|nil
+      def get_datasource(datasource_name)
+        begin
+          oauth = user.oauths.select(datasource_name)
+          datasource = DatasourcesFactory.get_datasource(datasource_name, user)
+          datasource.token = oauth.token unless oauth.nil?
+        rescue => ex
+          log.append "Exception: #{ex.message}"
+          log.append ex.backtrace
+          datasource = nil
+        end
+        datasource
+      end #get_datasource
 
       attr_reader :repository
 

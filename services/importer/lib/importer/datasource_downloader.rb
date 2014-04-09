@@ -48,7 +48,7 @@ module CartoDB
 
       def modified?
         previous_checksum = @options.fetch(:checksum, false)
-        checksum          = @checksum.nil? ? false : @checksum
+        checksum          = (@checksum.nil? || @checksum.size == 0) ? false : @checksum
 
         return true unless (previous_checksum)
         return true if previous_checksum && checksum && previous_checksum != checksum

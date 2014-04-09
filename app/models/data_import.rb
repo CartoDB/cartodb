@@ -352,7 +352,12 @@ class DataImport < Sequel::Model
     service_item_id = data_source if (service_item_id.nil? || service_item_id.size == 0)
 
     datasource_provider = get_datasource(datasource_name)
-    raise CartoDB::DataSourceError.new("Datasource #{datasource_name} without item id") if !datasource_provider.nil? && service_item_id.nil?
+    if datasource_provider.nil?
+      raise CartoDB::DataSourceError.new("Datasource #{datasource_name} could not be instantiated")
+    end
+    if service_item_id.nil?
+      raise CartoDB::DataSourceError.new("Datasource #{datasource_name} without item id")
+    end
 
     log.append "Fetching datasource #{datasource_provider.to_s} metadata for item id #{service_item_id}"
     metadata = datasource_provider.get_resource_metadata(service_item_id)
@@ -403,15 +408,15 @@ class DataImport < Sequel::Model
 
   # @return mixed|nil
   def get_datasource(datasource_name)
-    oauth = current_user.oauths.select(datasource_name)
-    # TODO: Error handling
     begin
+      # TODO: Error handling
+      oauth = current_user.oauths.select(datasource_name)
       datasource = DatasourcesFactory.get_datasource(datasource_name, current_user)
       datasource.token = oauth.token unless oauth.nil?
-    rescue MissingConfigurationError => exception
-      log.append "Exception: #{exception.to_s}"
-      log.append exception.backtrace
-      Rollbar.report_message('Import error: ', 'error', error_info: exception.to_s + exception.backtrace.join)
+    rescue => ex
+      log.append "Exception: #{ex.message}"
+      log.append ex.backtrace
+      Rollbar.report_message('Import error: ', 'error', error_info: ex.message + ex.backtrace.join)
       datasource = nil
     end
     datasource

@@ -67,15 +67,14 @@
         display:block;
       }
 
-      .dialog-tabs li {
-        border-bottom:none;
-      }
+      .dialog-tabs li { border-bottom:none }
+      li.dialog-tab { margin-bottom:25px }
 
       .dialog-pane {display:none; margin-left:20px;}
-      .dialog-tab.active .dialog-pane {display:block}
+      .dialog-tab.active .dialog-pane { display:block }
 
       .dialog-upload-pane {
-        margin-bottom:50px;
+        // margin-bottom:50px;
       }
     }
 

@@ -14,136 +14,118 @@
 
 
   .import-service-pane {
+    position:relative;
+    margin-bottom:30px!important;
     display:block;
 
-    // States
+    a.service-button, a.change {
+      @include inline-block();
+      margin:0;
+      padding:4px 7px;
+      font-size:12px;
+      font-weight:bold;
+      letter-spacing:0;
+    }
 
-    .service-state {
+    a.change { display:none }
+
+    p {
+      &.msg { display:none }
+      &.filename { width:335px!important }
+    }
+
+    span.loader {
+      position:absolute;
       display:none;
-      padding-bottom:20px;
-      border-bottom:1px solid #ccc;
-
-      div.loader {
-        margin:20px 0;
-
-        span.loader {
-          display:block;
-          width:100%;
-          height:50px;
-          background:image-url("layout/loader-white.gif") no-repeat center center;
-        }
-
-        p {
-          display:block;
-          text-align: center;
-        }
-      }
-
-      
-
+      top:15px;
+      right:10px;
+      width:38px;
+      height:16px;
+      background:image-url("layout/loader.gif") no-repeat center center;
     }
 
-    // Token / Oauth
-    .service-state.token {
-      display:block;
-    }
+    ul {
+      display:none;
+      max-height:240px;
+      overflow:auto;
 
-    // Error
-    .service-state.error {
-      padding:15px 0 30px;
-      text-align: center;
-
-      p, a {
-        color:rgba(red,0.5);
-      }
-      a {
-        text-decoration: underline;
-        &:hover { color:rgba(red,0.7) } 
-      }
-    }
-
-    // List
-    .service-state.list {
-
-      .render { display:none }
-      .loading { display:block }
-
-      ul {
-        display:block;
-        max-height:240px;
-        overflow:auto;
-        border-top:1px solid #DDD;
-
-        li {
-          position:relative;
-          padding:10px 0;
-          border-top:1px solid #DDD;
-          
-          &:last-child,
-          &:first-child { border:none }
-        }
-
-        p {
-          display:block;
-          width:420px;
-          max-width:420px;
-          @include text-overflow();
-        }
-
-        a {
-          position: absolute;
-          right:0;
-          top:12px;
-        }
-      }
-    }
-
-
-    // Input 
-    .service-state.input {
-      position:relative;
-      margin:20px 0 20px 5px;
-        
-      div.upload {
+      li {
         position:relative;
-        height:22px;
-        padding:11px 10px;
-        border:1px solid #CCCCCC;
-        background:white;
-        @include border-radius(4px);
-        z-index:2;
+        padding:10px 0;
+        border-top:1px solid #DDD;
+        
+        &:last-child,
+        &:first-child { border:none }
 
-        p.filename {
-          float:left;
-          @include inline-block();
-          display:none;
-          width:285px;
-          margin:2px 0 0 4px;
-          font-size:15px;
-          font-style:italic;
-          color:#666;
-          @include text-overflow();
+        &.empty {
+          padding:30px 90px;
+          text-align:center;
+          color:#999;
+          line-height:18px;
         }
       }
 
-      div.infobox {
-        @include default-form-info();
-        z-index:2;
-        div.info {
-          position:relative;
-          z-index:1;
-        }
+      p {
+        display:block;
+        width:420px;
+        max-width:420px;
+        @include text-overflow();
       }
 
-      // When a value is selected, let's add
-      // this class and move buttons and filename
-      &.value-selected {
-        div.upload {
-          .gdrive-chooser, .dropbox-dropin-btn { float:right!important }
-          p.filename { display:block }
-        } 
+      a {
+        position: absolute;
+        right:15px;
+        top:12px;
       }
+    }
+      
+      
+    div.upload {
+      position:relative;
+      height:22px;
+      padding:11px 10px;
+      border:1px solid #CCCCCC;
+      background:white;
+      @include border-radius(4px);
+      z-index:2;
 
+      p.filename {
+        float:left;
+        @include inline-block();
+        display:none;
+        width:285px;
+        margin:2px 0 0 4px;
+        font-size:15px;
+        font-style:italic;
+        color:#666;
+        @include text-overflow();
+      }
+    }
+
+    div.infobox {
+      @include default-form-info();
+      z-index:2;
+      div.info {
+        position:relative;
+        z-index:1;
+      }
+    }
+
+    span.scroll {
+      position:absolute;
+      left:0;
+      right:5px;
+      width:100%;
+      height:30px;
+      background:transparent;
+      padding:0;
+      margin:0;
+      @include border-radius(0);
+      pointer-events:none;
+      z-index:10;
+
+      &.top {top:0; @include background(linear-gradient(rgba(white,1), rgba(white,0)));}
+      &.bottom {bottom:0px; @include background(linear-gradient(rgba(white,0), rgba(white,1)));}
     }
   }
 

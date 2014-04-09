@@ -185,6 +185,10 @@
 
 .georeference_dialog {
 
+  .foot {
+    display:none;
+  }
+
   // option container
   .cont {
     display:none;
@@ -192,6 +196,23 @@
   }
 
   .geocoder_stats { display: none; }
+
+  .aside {
+    @include box-sizing(border-box);
+
+    position:absolute;
+    background: #F2F2F2;
+    top: 0;
+    left: 570px;
+    width: 221px;
+    height: 100%;
+    color: #777777;
+    z-index: 100;
+    padding: 40px 37px;
+
+    p { width: 143px; font-size: 13px; margin: 0 0 15px 0; }
+    a { position:absolute; bottom: 39px; }
+  }
 
   .inner {
     width: 2000px;
@@ -210,7 +231,7 @@
 
   // Dialog styles
   div.content {
-    width: 532px;
+    width: 792px;
     padding: 0!Important;
 
     clear:both;

@@ -102,7 +102,7 @@ class Api::Json::ImportsController < Api::ApplicationController
     raise CartoDB::Datasources::InvalidServiceError.new("Datasource #{params[:id]} does not support OAuth") unless datasource.kind_of? CartoDB::Datasources::BaseOAuth
 
     render_jsonp({
-                   url: datasource.get_auth_url(true),
+                   url: datasource.get_auth_url,
                    success: true
                  })
   rescue CartoDB::Datasources::TokenExpiredOrInvalidError
@@ -166,14 +166,10 @@ class Api::Json::ImportsController < Api::ApplicationController
     token = datasource.validate_callback(params)
 
     current_user.oauths.add(params[:id], token)
-    if success
-      request.format = 'html'
-      respond_to do |format|
-        format.all  { render text: '<script>window.close();</script>', content_type: 'text/html' }
-      end
-      return
-    else
-      render_jsonp({ success: true })
+
+    request.format = 'html'
+    respond_to do |format|
+      format.all  { render text: '<script>window.close();</script>', content_type: 'text/html' }
     end
   rescue CartoDB::Datasources::TokenExpiredOrInvalidError
     current_user.oauths.remove(oauth.service)

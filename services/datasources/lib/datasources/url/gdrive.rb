@@ -11,6 +11,7 @@ module CartoDB
         DATASOURCE_NAME = 'gdrive'
 
         OAUTH_SCOPE = 'https://www.googleapis.com/auth/drive'
+        # For when using authorization code instead of callback with token
         REDIRECT_URI = 'urn:ietf:wg:oauth:2.0:oob'
         FIELDS_TO_RETRIEVE = 'items(downloadUrl,exportLinks,id,modifiedDate,title,fileExtension,fileSize)'
 
@@ -35,14 +36,17 @@ module CartoDB
         # @throws UninitializedError
         # @throws MissingConfigurationError
         def initialize(config, user)
-          raise UninitializedError.new('missing user instance', DATASOURCE_NAME) if user.nil?
-          raise MissingConfigurationError.new('missing application_name', DATASOURCE_NAME) unless config.include?('application_name')
-          raise MissingConfigurationError.new('missing client_id', DATASOURCE_NAME) unless config.include?('client_id')
-          raise MissingConfigurationError.new('missing client_secret', DATASOURCE_NAME) unless config.include?('client_secret')
+          raise UninitializedError.new('missing user instance', DATASOURCE_NAME)            if user.nil?
+          raise MissingConfigurationError.new('missing application_name', DATASOURCE_NAME)  unless config.include?('application_name')
+          raise MissingConfigurationError.new('missing client_id', DATASOURCE_NAME)         unless config.include?('client_id')
+          raise MissingConfigurationError.new('missing client_secret', DATASOURCE_NAME)     unless config.include?('client_secret')
+          raise MissingConfigurationError.new('missing callback_url', DATASOURCE_NAME)      unless config.include?('callback_url')
 
           self.filter=[]
           @refresh_token = nil
 
+          @user = user
+          @callback_url = config.fetch('callback_url')
           @client = Google::APIClient.new ({
               application_name: config.fetch('application_name')
           })
@@ -51,7 +55,8 @@ module CartoDB
           @client.authorization.client_id = config.fetch('client_id')
           @client.authorization.client_secret = config.fetch('client_secret')
           @client.authorization.scope = OAUTH_SCOPE
-          @client.authorization.redirect_uri = REDIRECT_URI
+          # By default assume callback with token flow
+          @client.authorization.redirect_uri = @callback_url
         end #initialize
 
         # Factory method
@@ -71,22 +76,44 @@ module CartoDB
         # Return the url to be displayed or sent the user to to authenticate and get authorization code
         # @param use_callback_flow : bool
         # @return string | nil
-        def get_auth_url(use_callback_flow=false)
-          # TODO: Implement scenario of using callback
+        def get_auth_url(use_callback_flow=true)
+          if use_callback_flow
+            @client.authorization.state = CALLBACK_STATE_DATA_PLACEHOLDER.sub('user', @user.username).sub('service', DATASOURCE_NAME)
+          else
+            @client.authorization.redirect_uri = REDIRECT_URI
+          end
           @client.authorization.authorization_uri.to_s
         end #get_auth_url
 
         # Validate authorization code and store token
         # @param auth_code : string
+        # @param use_callback_flow : bool
         # @return string : Access token
         # @throws AuthError
-        def validate_auth_code(auth_code)
+        def validate_auth_code(auth_code, use_callback_flow=true)
+          unless use_callback_flow
+            @client.authorization.redirect_uri = REDIRECT_URI
+          end
           @client.authorization.code = auth_code
           @client.authorization.fetch_access_token!
           @refresh_token = @client.authorization.refresh_token
-        rescue Google::APIClient::InvalidIDTokenError, Signet::AuthorizationError
-          raise AuthError.new('validating auth code', DATASOURCE_NAME)
+        rescue Google::APIClient::InvalidIDTokenError, Signet::AuthorizationError => ex
+          raise AuthError.new("validating auth code: #{ex.message}", DATASOURCE_NAME)
         end #validate_auth_code
+
+        # Validates the authorization callback
+        # @param params : mixed
+        def validate_callback(params)
+          if params[:error].present?
+            raise AuthError.new("validate_callback: #{params[:error]}", DATASOURCE_NAME)
+          end
+
+          if params[:code]
+            validate_auth_code(params[:code])
+          else
+            raise AuthError.new('validate_callback: Missing authorization code', DATASOURCE_NAME)
+          end
+        end #validate_callback
 
         # Store token
         # Triggers generation of a valid access token for the lifetime of this instance
@@ -97,8 +124,8 @@ module CartoDB
           @client.authorization.update_token!( { refresh_token: @refresh_token } )
           @client.authorization.fetch_access_token!
         rescue Google::APIClient::InvalidIDTokenError, Signet::AuthorizationError, Google::APIClient::ClientError, \
-               Google::APIClient::ServerError, Google::APIClient::BatchError, Google::APIClient::TransmissionError
-          raise AuthError.new('setting token', DATASOURCE_NAME)
+               Google::APIClient::ServerError, Google::APIClient::BatchError, Google::APIClient::TransmissionError => ex
+          raise AuthError.new("setting token: #{ex.message}", DATASOURCE_NAME)
           #
         end #token=
 
@@ -140,11 +167,11 @@ module CartoDB
 
           @client.execute(batch_request)
           all_results
-        rescue Google::APIClient::InvalidIDTokenError
-          raise TokenExpiredOrInvalidError.new('Invalid token', DATASOURCE_NAME)
+        rescue Google::APIClient::InvalidIDTokenError => ex
+          raise TokenExpiredOrInvalidError.new("Invalid token: #{ex.message}", DATASOURCE_NAME)
         rescue Google::APIClient::BatchError, Google::APIClient::TransmissionError, Google::APIClient::ClientError, \
-               Google::APIClient::ServerError
-          raise DataDownloadError.new('getting resources', DATASOURCE_NAME)
+               Google::APIClient::ServerError => ex
+          raise DataDownloadError.new("getting resources: #{ex.message}", DATASOURCE_NAME)
         end #get_resources_list
 
         # Retrieves a resource and returns its contents
@@ -161,11 +188,11 @@ module CartoDB
           result = @client.execute(uri: item_data.fetch(:url))
           raise DataDownloadError.new("(#{result.status}) downloading file #{id}: #{result.data['error']['message']}", DATASOURCE_NAME) if result.status != 200
           result.body
-        rescue Google::APIClient::InvalidIDTokenError
-          raise TokenExpiredOrInvalidError.new('Invalid token', DATASOURCE_NAME)
+        rescue Google::APIClient::InvalidIDTokenError => ex
+          raise TokenExpiredOrInvalidError.new("Invalid token: #{ex.message}", DATASOURCE_NAME)
         rescue Google::APIClient::BatchError, Google::APIClient::TransmissionError, Google::APIClient::ClientError, \
-               Google::APIClient::ServerError
-          raise DataDownloadError.new("downloading file #{id}", DATASOURCE_NAME)
+               Google::APIClient::ServerError => ex
+          raise DataDownloadError.new("downloading file #{id}: #{ex.message}", DATASOURCE_NAME)
         end #get_resource
 
         # @param id string
@@ -219,8 +246,8 @@ module CartoDB
         rescue Google::APIClient::InvalidIDTokenError
           false
         rescue Google::APIClient::BatchError, Google::APIClient::TransmissionError, Google::APIClient::ClientError, \
-               Google::APIClient::ServerError
-          raise AuthError.new("token_valid?() #{id}", DATASOURCE_NAME)
+               Google::APIClient::ServerError => ex
+          raise AuthError.new("token_valid?() #{id}: #{ex.message}", DATASOURCE_NAME)
         end #token_valid?
 
         private

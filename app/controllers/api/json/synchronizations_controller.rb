@@ -2,6 +2,7 @@
 require 'json'
 require_relative '../../../models/synchronization/member'
 require_relative '../../../models/synchronization/collection'
+require_relative '../../../../services/datasources/lib/datasources'
 
 class Api::Json::SynchronizationsController < Api::ApplicationController
   include CartoDB
@@ -24,15 +25,25 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
         user_id:    current_user.id,
         state:      Synchronization::Member::STATE_CREATED
     )
-    member_attributes = member_attributes.merge(sync_file_provider_params) if from_sync_file_provider?
+
+    if from_sync_file_provider?
+      member_attributes = member_attributes.merge(sync_file_provider_params)
+      service_name = sync_file_provider_params[:service_name]
+      service_item_id = sync_file_provider_params[:service_item_id]
+    else
+      service_name = CartoDB::Datasources::Url::PublicUrl::DATASOURCE_NAME
+      service_item_id = params[:url].presence
+    end
 
     member = Synchronization::Member.new(member_attributes)
 
-    options = { 
+    options = {
       user_id:            current_user.id,
       table_name:         params[:table_name].presence,
       data_source:        params[:url],
-      synchronization_id: member.id
+      synchronization_id: member.id,
+      service_name:       service_name,
+      service_item_id:    service_item_id
     }
       
     data_import = DataImport.create(options)
@@ -75,9 +86,9 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
     member.attributes = payload
     member.store.fetch
     render_jsonp(member)
-  rescue KeyError => exception
+  rescue KeyError
     head(404)
-  rescue CartoDB::InvalidMember => exception
+  rescue CartoDB::InvalidMember
     render_jsonp({ errors: member.full_errors }, 400)
   end
 

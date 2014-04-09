@@ -1,6 +1,7 @@
 3.8.10 (XX//XX/2014)
 - fixed problem parsing map viz options when values are not valid
 - fixed interaction in IE8
+- getCartoCSS and getSQL raise an exception for named maps
 
 3.8.09 (04//04/2014)
 - fixed map instanciation when named map has no layer information

@@ -174,10 +174,6 @@ class Api::Json::ImportsController < Api::ApplicationController
     token = datasource.validate_callback(params)
 
     current_user.oauths.add(params[:id], token)
-<<<<<<< HEAD
-=======
-
->>>>>>> 67dcdfe889a63caae6b729dd4e2916c0d6613faf
     request.format = 'html'
     respond_to do |format|
       format.all  { render text: '<script>window.close();</script>', content_type: 'text/html' }

@@ -349,7 +349,9 @@ class DataImport < Sequel::Model
 
   def get_downloader
     datasource_name = (service_name.nil? || service_name.size == 0) ? Url::PublicUrl::DATASOURCE_NAME : service_name
-    service_item_id = data_source if (service_item_id.nil? || service_item_id.size == 0)
+    if service_item_id.nil? || service_item_id.size == 0
+      self.service_item_id = data_source
+    end
 
     datasource_provider = get_datasource(datasource_name)
     if datasource_provider.nil?
@@ -409,7 +411,6 @@ class DataImport < Sequel::Model
   # @return mixed|nil
   def get_datasource(datasource_name)
     begin
-      # TODO: Error handling
       oauth = current_user.oauths.select(datasource_name)
       datasource = DatasourcesFactory.get_datasource(datasource_name, current_user)
       datasource.token = oauth.token unless oauth.nil?

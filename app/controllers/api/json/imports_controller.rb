@@ -41,7 +41,7 @@ class Api::Json::ImportsController < Api::ApplicationController
         service_name:     service_name.presence,
         service_item_id:  service_item_id.presence
     }
-      
+
     data_import = DataImport.create(options)
     Resque.enqueue(Resque::ImporterJobs, job_id: data_import.id)
 

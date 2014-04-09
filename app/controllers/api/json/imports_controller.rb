@@ -11,6 +11,8 @@ class Api::Json::ImportsController < Api::ApplicationController
 
   INVALID_TOKEN_MESSAGE = 'OAuth token invalid or expired'
 
+  # -------- Import process -------
+
   def index
     imports = current_user.importing_jobs
     render json: { imports: imports.map(&:id), success: true }
@@ -46,7 +48,7 @@ class Api::Json::ImportsController < Api::ApplicationController
     render_jsonp({ item_queue_id: data_import.id, success: true })
   end
 
-  # ----------- OAuths -----------
+  # ----------- Import OAuths Management -----------
 
   def service_token_valid?
     oauth = current_user.oauths.select(params[:id])
@@ -67,20 +69,27 @@ class Api::Json::ImportsController < Api::ApplicationController
     current_user.oauths.remove(oauth.service)
     render_jsonp({ errors: { imports: INVALID_TOKEN_MESSAGE } }, 401)
   rescue => ex
-    render_jsonp({ errors: { imports: ex } }, 400)
+    CartoDB::Logger.info('Error: service_token_valid?', "#{ex.message} #{ex.backtrace.inspect}")
+    render_jsonp({ errors: { imports: ex.message } }, 400)
   end #service_token_valid?
 
   def list_files_for_service
+    # @see CartoDB::Datasources::Base::FORMAT_xxxx constants
+    filter = params[:filter].present? ? params[:filter] : []
+
     oauth = current_user.oauths.select(params[:id])
     raise CartoDB::Datasources::AuthError.new("No oauth set for service #{params[:id]}") if oauth.nil?
     datasource = oauth.get_service_datasource
     raise CartoDB::Datasources::AuthError.new("Couldn't fetch datasource for service #{params[:id]}") if datasource.nil?
 
-    render_jsonp({ files: datasource.get_resources_list, success: true })
+    results = datasource.get_resources_list(filter)
+
+    render_jsonp({ files: results, success: true })
   rescue CartoDB::Datasources::TokenExpiredOrInvalidError
     current_user.oauths.remove(oauth.service)
     render_jsonp({ errors: { imports: INVALID_TOKEN_MESSAGE } }, 401)
   rescue => ex
+    CartoDB::Logger.info('Error: list_files_for_service', "#{ex.message} #{ex.backtrace.inspect}")
     render_jsonp({ errors: { imports: ex.message } }, 400)
   end #list_files_for_service
 
@@ -99,8 +108,9 @@ class Api::Json::ImportsController < Api::ApplicationController
   rescue CartoDB::Datasources::TokenExpiredOrInvalidError
     current_user.oauths.remove(oauth.service)
     render_jsonp({ errors: { imports: INVALID_TOKEN_MESSAGE } }, 401)
-  #rescue => ex
-  #  render_jsonp({ errors: { imports: ex.to_s } }, 400)
+  rescue => ex
+    CartoDB::Logger.info('Error: get_service_auth_url', "#{ex.message} #{ex.backtrace.inspect}")
+    render_jsonp({ errors: { imports: ex.message } }, 400)
   end #get_service_auth_url
 
   # Only of use if service is set to work in authorization code mode. Ignore for callback-based oauths
@@ -121,6 +131,7 @@ class Api::Json::ImportsController < Api::ApplicationController
       current_user.oauths.add(params[:id],auth_token)
       success = true
     rescue CartoDB::Datasources::AuthError
+      CartoDB::Logger.info('Error: validate_service_oauth_code', "Couldn't add oauth from service #{params[:id]} for user #{current_user.username}")
       # No need to re-raise
     end
 
@@ -129,7 +140,8 @@ class Api::Json::ImportsController < Api::ApplicationController
     current_user.oauths.remove(oauth.service)
     render_jsonp({ errors: { imports: INVALID_TOKEN_MESSAGE } }, 401)
   rescue => ex
-    render_jsonp({ errors: { imports: ex.to_s } }, 400)
+    CartoDB::Logger.info('Error: validate_service_oauth_code', "#{ex.message} #{ex.backtrace.inspect}")
+    render_jsonp({ errors: { imports: ex.message } }, 400)
   end #validate_service_oauth_code
 
   def invalidate_service_token
@@ -139,7 +151,8 @@ class Api::Json::ImportsController < Api::ApplicationController
     current_user.oauths.remove(oauth.service)
     render_jsonp({ success: true })
   rescue => ex
-    render_jsonp({ errors: { imports: ex.to_s } }, 400)
+    CartoDB::Logger.info('Error: invalidate_service_token', "#{ex.message} #{ex.backtrace.inspect}")
+    render_jsonp({ errors: { imports: ex.message } }, 400)
   end #invalidate_service_token
 
   def service_oauth_callback
@@ -150,7 +163,6 @@ class Api::Json::ImportsController < Api::ApplicationController
     raise CartoDB::Datasources::AuthError.new("Couldn't fetch datasource for service #{params[:id]}") if datasource.nil?
     raise CartoDB::Datasources::InvalidServiceError.new("Datasource #{params[:id]} does not support OAuth") unless datasource.kind_of? CartoDB::Datasources::BaseOAuth
 
-    #TODO: Improve error handling
     token = datasource.validate_callback(params)
 
     current_user.oauths.add(params[:id], token)
@@ -167,7 +179,8 @@ class Api::Json::ImportsController < Api::ApplicationController
     current_user.oauths.remove(oauth.service)
     render_jsonp({ errors: { imports: INVALID_TOKEN_MESSAGE } }, 401)
   rescue => ex
-    render_jsonp({ errors: { imports: ex.to_s } }, 400)
+    CartoDB::Logger.info('Error: service_oauth_callback', "#{ex.message} #{ex.backtrace.inspect}")
+    render_jsonp({ errors: { imports: ex.message } }, 400)
   end #service_oauth_callback
 
   protected

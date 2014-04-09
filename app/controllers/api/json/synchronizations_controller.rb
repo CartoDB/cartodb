@@ -106,15 +106,13 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
 
   def sync_file_provider_params
     {
-      url:              params[:url],
-      service_name:     params[:service],
-      service_item_id:  params[:id],
-      checksum:         params[:checksum]
+      service_name:     params[:service_name],
+      service_item_id:  params[:service_item_id]
     }
   end #sync_file_provider_params
 
   def from_sync_file_provider?
-    (params.include?(:url) && params.include?(:id) && params.include?(:service) && params.include?(:checksum))
+    params.include?(:service_name) && params.include?(:service_item_id)
   end #from_sync_file_provider?
 
   def payload

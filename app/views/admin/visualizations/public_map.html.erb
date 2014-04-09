@@ -333,7 +333,7 @@
               if (windowHeight > 670) {
                 h = 180;
               } else { // iPhone, etc.
-                h = 120;
+                h = 200;
               }
 
             } else {
@@ -346,11 +346,13 @@
             if (animated) {
               $("#map").animate({ height: height }, { easing: "easeInQuad", duration: 150 }); 
             } else {
+
               if (mobileDevice) {
                 $("#map").css({ height: height, opacity: 1 }); 
               }
 
               $("#map").trigger("resize");
+
             }
 
             window.vis.mapView.invalidateSize()

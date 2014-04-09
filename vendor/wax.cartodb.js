@@ -1,4 +1,4 @@
-/* wax - 7.0.0dev10 - v6.0.4-151-g87ab6b1 */
+/* wax - 7.0.0dev10 - v6.0.4-154-ge12d473 */
 
 
 !function (name, context, definition) {
@@ -3053,7 +3053,7 @@ wax.interaction = function() {
             bean.fire(interaction, 'off');
             // Touch moves invalidate touches
             bean.add(parent(), touchEnds);
-        } else if (e.originalEvent.type === "MSPointerDown" && e.originalEvent.touches.length === 1) {
+        } else if (e.originalEvent.type === "MSPointerDown" && e.originalEvent.touches && e.originalEvent.touches.length === 1) {
           // Don't make the user click close if they hit another tooltip
             bean.fire(interaction, 'off');
             // Touch moves invalidate touches

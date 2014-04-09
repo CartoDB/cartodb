@@ -43,6 +43,11 @@ module CartoDB
         raise 'To be implemented in child classes'
       end #token_valid?
 
+      # Revokes current set token
+      def revoke_token
+        raise 'To be implemented in child classes'
+      end #revoke_token
+
       private_class_method :new
 
     end #Base

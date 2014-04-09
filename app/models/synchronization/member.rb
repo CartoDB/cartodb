@@ -4,6 +4,11 @@ require_relative 'adapter'
 require_relative '../../../services/importer/lib/importer' 
 require_relative '../../../services/track_record/track_record/log'
 
+require_relative '../../../services/importer/lib/importer/datasource_downloader'
+require_relative '../../../services/datasources/lib/datasources'
+include CartoDB::Datasources
+
+
 module CartoDB
   module Synchronization
     class << self
@@ -98,19 +103,9 @@ module CartoDB
         self.log_id   = log.id
         store
 
-        # TODO: Add Datasource downloader here (@see data_import.rb new_importer())
+        downloader    = get_downloader
 
-
-        downloader    = CartoDB::Importer2::Downloader.new(
-                          url,
-                          etag:             etag,
-                          last_modified:    modified_at,
-                          checksum:         checksum,
-                          verify_ssl_cert:  false
-                        )
-        runner        = CartoDB::Importer2::Runner.new(
-                          pg_options, downloader, log, user.remaining_quota
-                        )
+        runner        = CartoDB::Importer2::Runner.new(pg_options, downloader, log, user.remaining_quota)
         database      = user.in_database
         importer      = CartoDB::Synchronization::Adapter
                           .new(name, runner, database, user)
@@ -135,6 +130,36 @@ module CartoDB
         set_failure_state_from(importer)
         store
       end
+
+
+      def get_downloader
+        datasource_name = (service_name.nil? || service_name.size == 0) ? Url::PublicUrl::DATASOURCE_NAME : service_name
+        service_item_id = url if (service_item_id.nil? || service_item_id.size == 0)
+
+        datasource_provider = get_datasource(datasource_name)
+        if !datasource_provider.nil? && service_item_id.nil?
+          raise CartoDB::DataSourceError.new("Datasource #{datasource_name} without item id")
+        end
+
+        self.log << "Fetching datasource #{datasource_provider.to_s} metadata for item id #{service_item_id}"
+        metadata = datasource_provider.get_resource_metadata(service_item_id)
+
+        if datasource_provider.providers_download_url?
+          downloader    = CartoDB::Importer2::Downloader.new(
+              (metadata[:url].present? && datasource_provider.providers_download_url?) ? metadata[:url] : url,
+              etag:             etag,
+              last_modified:    modified_at,
+              checksum:         checksum,
+              verify_ssl_cert:  false
+          )
+          self.log << "File will be downloaded from #{downloader.url}"
+        else
+          self.log << 'Downloading file data from datasource'
+          downloader = CartoDB::Importer2::DatasourceDownloader.new(datasource_provider, metadata)
+        end
+
+        downloader
+      end #get_downloader
 
       def set_success_state_from(importer)
         self.log            << '******** synchronization succeeded ********'
@@ -245,7 +270,7 @@ module CartoDB
 
       attr_reader :repository
 
-      attr_accessor :log_trace
+      attr_accessor :log_trace, :service_name, :service_item_id
 
     end # Member
   end # Synchronization

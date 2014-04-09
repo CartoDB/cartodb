@@ -4,6 +4,8 @@ require 'fileutils'
 require 'uuidtools'
 require_relative './user'
 require_relative './table'
+require_relative './table_registrar'
+require_relative './quota_checker'
 require_relative '../../lib/cartodb/errors'
 require_relative '../../lib/cartodb/metrics'
 require_relative '../../lib/cartodb_stats'
@@ -346,7 +348,7 @@ class DataImport < Sequel::Model
   end
 
   def get_downloader
-    datasource_name = (service_name.nil? || service_name.size == 0) ? CartoDB::Datasources::Url::PublicUrl::DATASOURCE_NAME : service_name
+    datasource_name = (service_name.nil? || service_name.size == 0) ? Url::PublicUrl::DATASOURCE_NAME : service_name
     service_item_id = data_source if (service_item_id.nil? || service_item_id.size == 0)
 
     datasource_provider = get_datasource(datasource_name)

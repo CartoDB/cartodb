@@ -250,6 +250,16 @@ module CartoDB
           raise AuthError.new("token_valid?() #{id}: #{ex.message}", DATASOURCE_NAME)
         end #token_valid?
 
+        # Revokes current set token
+        def revoke_token
+          # TODO: Implement correctly, Ruby Google API does not support it
+          # and https://developers.google.com/accounts/docs/OAuth2WebServer#tokenrevoke just points to a url
+          # that throws an invalid request
+          true
+        rescue => ex
+          raise AuthError.new("revoke_token: #{ex.message}", DATASOURCE_NAME)
+        end #revoke_token
+
         private
 
         # Formats all data to comply with our desired format

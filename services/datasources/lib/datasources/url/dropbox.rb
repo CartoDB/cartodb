@@ -207,6 +207,14 @@ module CartoDB
           false
         end #token_valid?
 
+        # Revokes current set token
+        def revoke_token
+          @client.disable_access_token
+          true
+        rescue => ex
+          raise AuthError.new("revoke_token: #{ex.message}", DATASOURCE_NAME)
+        end #revoke_token
+
         private
 
         # Handles

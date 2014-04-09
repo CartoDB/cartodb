@@ -148,7 +148,15 @@ class Api::Json::ImportsController < Api::ApplicationController
     oauth = current_user.oauths.select(params[:id])
     raise CartoDB::Datasources::AuthError.new("No oauth set for service #{params[:id]}") if oauth.nil?
 
-    current_user.oauths.remove(oauth.service)
+    datasource = oauth.get_service_datasource
+    raise CartoDB::Datasources::AuthError.new("Couldn't fetch datasource for service #{params[:id]}") if datasource.nil?
+    raise CartoDB::Datasources::InvalidServiceError.new("Datasource #{params[:id]} does not support OAuth") unless datasource.kind_of? CartoDB::Datasources::BaseOAuth
+
+    result = datasource.revoke_token
+    if result
+      current_user.oauths.remove(oauth.service)
+    end
+
     render_jsonp({ success: true })
   rescue => ex
     CartoDB::Logger.info('Error: invalidate_service_token', "#{ex.message} #{ex.backtrace.inspect}")

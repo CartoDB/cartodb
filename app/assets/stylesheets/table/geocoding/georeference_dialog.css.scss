@@ -197,7 +197,7 @@
 
   .geocoder_stats { display: none; }
 
-  .aside {
+  .content .aside {
     @include box-sizing(border-box);
 
     position:absolute;
@@ -212,6 +212,8 @@
 
     p { width: 143px; font-size: 13px; margin: 0 0 15px 0; }
     a { position:absolute; bottom: 39px; }
+
+    .message { display: block; }
   }
 
   .inner {
@@ -539,6 +541,11 @@
       &.active {
         div.cont {display:block}
       }
+
+      &.ip {
+        select, .select2-container { float: right; }
+      }
+
     }
   }
 

@@ -66,6 +66,14 @@ class Api::Json::ImportsController < Api::ApplicationController
       valid = false
     end
 
+    unless valid
+      begin
+        current_user.oauths.remove(params[:id])
+      rescue
+        # Just remove it if was present, no need to do anything
+      end
+    end
+
     render_jsonp({ oauth_valid: valid, success: true })
   rescue CartoDB::Datasources::TokenExpiredOrInvalidError => ex
     current_user.oauths.remove(ex.service_name)

@@ -47,6 +47,10 @@ check-prepared:
 	bundle exec rspec $(WORKING_SPECS)
 
 check: prepare-test-db check-prepared
+check-frontend:
+	cd lib/build && grunt test
+
+travis: check-frontend check
 
 
 # update cartodb.js submodule files

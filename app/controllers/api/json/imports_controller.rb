@@ -4,6 +4,8 @@ require_relative '../../../../services/datasources/lib/datasources'
 
 class Api::Json::ImportsController < Api::ApplicationController
   ssl_required :index, :show, :create
+  ssl_allowed :service_token_valid?, :list_files_for_service, :get_service_auth_url, :validate_service_oauth_code, \
+                :invalidate_service_token, :service_oauth_callback
   respond_to :html, only: [:get_service_auth_url]
 
   # NOTE: When/If OAuth tokens management is built into the UI, remove this to send and check CSRF

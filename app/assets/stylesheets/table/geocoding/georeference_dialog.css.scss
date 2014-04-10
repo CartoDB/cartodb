@@ -16,7 +16,7 @@
   text-align: center;
 
   h4 { margin: 0 0 10px 0; padding: 0; font-size: 17px; line-height:normal; }
-  p  { font-size: 15px; color: #666666; line-height:normal; }
+  p  { font-size: 15px; color: #666; line-height:normal; }
 
   .mamufas .block.modal a.close {
     right: -18px;
@@ -209,8 +209,21 @@
     z-index: 100;
     padding: 40px 37px;
 
-    p { width: 143px; font-size: 13px; margin: 0 0 15px 0; }
-    a { position:absolute; bottom: 39px; }
+    p {
+      width: 143px;
+      margin: 0 0 15px 0;
+      line-height: 120%; 
+      font-size: 13px;
+      color: #999;
+    }
+
+    .button { 
+      $width: 141px;
+      position:absolute;
+      bottom: 39px;
+      left: 50%;
+      margin-left: -$width/2;
+    }
 
     .message { display: block; }
   }

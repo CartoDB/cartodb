@@ -13,19 +13,13 @@
     position:relative;
     display:block;
 
-    /*padding:25px 40px;*/
-    /*background:#F2F2F2;*/
-    /*border-top:1px solid #DFDFDF;*/
-    /*border-bottom:1px solid #DFDFDF;*/
-
-    p, a {font-size:13px;}
-
     a { text-decoration:underline; font-weight:bold; }
 
     div.progress {
       display:block;
       height:8px;
-      margin-top:9px;
+      margin: 9px 0;
+
       @include border-radius(8px);
       background:#E2E2E2;
       overflow:hidden;

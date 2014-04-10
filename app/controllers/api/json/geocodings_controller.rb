@@ -58,4 +58,18 @@ class Api::Json::GeocodingsController < Api::ApplicationController
             .fetch("SELECT distinct(pol.name) iso3, pol.name FROM country_decoder pol ORDER BY pol.name ASC")
     render json: rows
   end
+
+  def estimation_for
+    dataset = current_user.in_database.select.from(params[:table_name])
+    dataset = dataset.where(cartodb_georef_status: nil) if dataset.columns.include?(:cartodb_georef_status)
+    total_rows = 1200
+    render json: { 
+      rows:       total_rows,
+      blocks:     total_rows / User::GEOCODING_BLOCK_SIZE,
+      estimation: current_user.geocoding_block_price.to_i * (total_rows / User::GEOCODING_BLOCK_SIZE)
+    }
+  rescue => e
+    render_jsonp( { description: e.message }, 500)
+  end
+
 end

@@ -39,7 +39,7 @@ describe "Geocodings API" do
       post_json v1_geocodings_url(payload) do |response|
         response.status.should eq 200
         response.body[:id].should_not be_nil
-        response.body[:formatter].should eq 'name'
+        response.body[:formatter].should eq '{name}'
       end
     end
 
@@ -117,9 +117,9 @@ describe "Geocodings API" do
 
   describe 'GET /api/v1/geocodings/country_data_for/:country_code' do
     it 'returns the available services for that country code' do
-      api_response = [{"service"=>"postal_codes", "iso3"=>"ESP"}]
+      api_response = [{"service"=>"point"}, {"service"=>"polygon"}]
       ::CartoDB::SQLApi.any_instance.stubs(:fetch).returns(api_response)
-      expected_response = { admin0: ["polygon"], admin1: ["polygon"], namedplace: ["point"], postalcode: ["polygon"] }
+      expected_response = { admin1: ["polygon"], namedplace: ["point"], postalcode: ["point", "polygon"] }
 
       get_json country_data_v1_geocodings_url(params.merge(country_code: 'ESP')) do |response|
         response.status.should be_success
@@ -139,5 +139,38 @@ describe "Geocodings API" do
         response.body.should eq api_response
       end
     end
+  end
+
+
+  describe 'GET /api/v1/geocodings/estimation_for' do
+    let(:table) { create_table(user_id: @user.id) }
+
+    it 'returns the estimated geocoding cost for the specified table' do
+      2.times { @user.in_database.run("insert into #{table.name} (name) values ('')") }
+      get_json estimation_for_v1_geocodings_url(params.merge(table_name: table.name)) do |response|
+        response.status.should be_success
+        response.body.should == {:rows=>2, :blocks=>0, :estimation=>0}
+      end
+      
+      @user.in_database.run("alter table #{table.name} add column cartodb_georef_status boolean default null")
+      get_json estimation_for_v1_geocodings_url(params.merge(table_name: table.name)) do |response|
+        response.status.should be_success
+        response.body.should == {:rows=>2, :blocks=>0, :estimation=>0}
+      end
+      
+      @user.in_database.run("update #{table.name} set cartodb_georef_status = true")
+      get_json estimation_for_v1_geocodings_url(params.merge(table_name: table.name)) do |response|
+        response.status.should be_success
+        response.body.should == {:rows=>0, :blocks=>0, :estimation=>0}
+      end
+    end
+
+    it 'returns 500 if the table does not exist' do
+      get_json estimation_for_v1_geocodings_url(params.merge(table_name: 'me_not_exist')) do |response|
+        response.status.should eq 500
+        response.body[:description].should_not be_blank
+      end
+    end
+
   end
 end

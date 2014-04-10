@@ -41,6 +41,7 @@ class User < Sequel::Model
 
   SYSTEM_TABLE_NAMES = %w( spatial_ref_sys geography_columns geometry_columns raster_columns raster_overviews cdb_tablemetadata )
   SCHEMAS = %w( public cdb_importer )
+  GEOCODING_BLOCK_SIZE = 1000
 
   self.raise_on_typecast_failure = false
   self.raise_on_save_failure = false

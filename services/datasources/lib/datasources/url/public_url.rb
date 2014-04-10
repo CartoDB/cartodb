@@ -75,7 +75,13 @@ module CartoDB
           if url =~ URL_REGEXP
             @headers = nil  # In case of error, always leave empty the headers
             response = Typhoeus.head(url, http_options)
-            raise DataDownloadError.new("Fetching headers of #{url}", DATASOURCE_NAME) unless response.code.to_s =~ /\A[23]\d+/
+            if response.code.to_s =~ /\A[23]\d+/
+              @headers = response.headers
+            else
+              @headers = {}
+            end
+            # TODO: Check why Amazon S3 throws 403 trying to do a HEAD call but not get, etc.
+            #raise DataDownloadError.new("Fetching headers of #{url}", DATASOURCE_NAME) unless response.code.to_s =~ /\A[23]\d+/
             @headers = response.headers
           else
             @headers = {}

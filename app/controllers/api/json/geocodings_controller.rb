@@ -62,11 +62,15 @@ class Api::Json::GeocodingsController < Api::ApplicationController
   def estimation_for
     dataset = current_user.in_database.select.from(params[:table_name])
     dataset = dataset.where(cartodb_georef_status: nil) if dataset.columns.include?(:cartodb_georef_status)
-    total_rows = 1200
+    total_rows       = dataset.count
+    remaining_blocks = (current_user.geocoding_quota - current_user.get_geocoding_calls) / User::GEOCODING_BLOCK_SIZE
+    remaining_blocks = (remaining_blocks > 0 ? remaining_blocks : 0)
+    needed_blocks    = (total_rows / User::GEOCODING_BLOCK_SIZE) - remaining_blocks
+    needed_blocks    = (needed_blocks > 0 ? needed_blocks : 0)
     render json: { 
       rows:       total_rows,
-      blocks:     total_rows / User::GEOCODING_BLOCK_SIZE,
-      estimation: current_user.geocoding_block_price.to_i * (total_rows / User::GEOCODING_BLOCK_SIZE)
+      blocks:     needed_blocks,
+      estimation: current_user.geocoding_block_price.to_i * needed_blocks
     }
   rescue => e
     render_jsonp( { description: e.message }, 500)

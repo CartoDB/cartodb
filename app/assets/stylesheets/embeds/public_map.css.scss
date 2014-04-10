@@ -77,10 +77,6 @@ only screen and (                min-resolution: 2dppx) {
 
 @media only screen and (max-width: 350px) {
 
-  div.cartodb-public-header .inner .options .create-map {
-    display:none!important;
-  }
-
 }
 
 @media only screen and (max-width: 710px) {
@@ -147,9 +143,6 @@ and (orientation : portrait) {
     padding-right: 0px;
   }
 
-  div.cartodb-public-header .inner .options .create-map {
-    display:none;
-  }
   .cartodb-public-wrapper  .announcement {
     padding: 10px 5px;
     font-size: 13px;

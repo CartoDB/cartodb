@@ -64,6 +64,12 @@ module CartoDB
         self.checksum         ||= ''
       end
 
+      def to_s
+        "<CartoDB::Synchronization::Member id:\"#{@id}\" state:\"#{@state}\" ran_at:\"#{@ran_at}\" " \
+        "run_at:\"#{@run_at}\" interval:\"#{@interval}\" retried_times:\"#{@retried_times}\" log_id:\"#{@log_id}\" " \
+        "service_name:\"#{@service_name}\" service_item_id:\"#{@service_item_id}\" checksum:\"#{@checksum}\">"
+      end #to_s
+
       def interval=(seconds=3600)
         super(seconds.to_i)
         if seconds

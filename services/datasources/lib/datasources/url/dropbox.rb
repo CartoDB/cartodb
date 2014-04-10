@@ -246,7 +246,7 @@ module CartoDB
 
           {
             id:       item_data.fetch('path'),
-            title:    item_data.fetch('path'),
+            title:    filename,
             filename: filename,
             service:  DATASOURCE_NAME,
             checksum: checksum_of(item_data.fetch('rev')),

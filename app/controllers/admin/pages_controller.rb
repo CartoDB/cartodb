@@ -8,7 +8,7 @@ class Admin::PagesController < ApplicationController
   include CartoDB
 
   DATASETS_PER_PAGE = 10
-  VISUALIZATIONS_PER_PAGE = 3
+  VISUALIZATIONS_PER_PAGE = 5
   USER_TAGS_LIMIT = 100
 
   ssl_required :common_data, :public, :datasets

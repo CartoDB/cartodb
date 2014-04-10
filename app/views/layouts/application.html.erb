@@ -22,7 +22,7 @@
     <% end %>
     <%= yield %>
     <% if ( ( controller_name != "visualizations" && controller_name != "tables" ) || action_name != "show" ) %>
-      <%= render 'admin/shared/public_footer' %>
+      <%= render 'admin/shared/footer' %>
     <% end %>
   </body>
 </html>

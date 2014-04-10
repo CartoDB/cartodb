@@ -71,16 +71,16 @@
         width:420px;
         max-width:420px;
         @include text-overflow();
+
+        &.small { margin-top:2px }
       }
 
       a {
         position: absolute;
         right:15px;
-        top:12px;
+        top:13px;
       }
     }
-
-    div.msg { height:33px }
       
     div.upload {
       position:relative;

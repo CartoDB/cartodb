@@ -27,7 +27,10 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
     )
 
     if from_sync_file_provider?
-      member_attributes = member_attributes.merge(sync_file_provider_params)
+      member_attributes = member_attributes.merge({
+              service_name: params[:service_name],
+              service_item_id: params[:service_item_id]
+          })
       service_name = params[:service_name]
       service_item_id = params[:service_item_id]
     else

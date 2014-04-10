@@ -32,8 +32,9 @@ module CartoDB
       def run
         return self unless File.exists?(filepath)
 
-        sanitized_filepath = remove_newlines(temporary_filepath('nl_'))
-        File.rename(sanitized_filepath, filepath)
+        # TODO: Removed because .each_char takes too long to process big CSVs
+        #sanitized_filepath = remove_newlines(temporary_filepath('nl_'))
+        #File.rename(sanitized_filepath, filepath)
 
         detect_delimiter
 

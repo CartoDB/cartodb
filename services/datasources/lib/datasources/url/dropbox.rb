@@ -227,7 +227,7 @@ module CartoDB
           if original_exception.kind_of? DropboxError
             error_code = original_exception.http_response.code.to_i
             if error_code == 401 || error_code == 403
-              raise TokenExpiredOrInvalidError.new(DATASOURCE_NAME)
+              raise TokenExpiredOrInvalidError.new(message, DATASOURCE_NAME)
             else
               raise AuthError.new(message)
             end

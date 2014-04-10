@@ -49,7 +49,19 @@ class DataImport < Sequel::Model
 
   def run_import!
     log.append 'Before dispatch'
-    success = !!dispatch
+
+    begin
+      success = !!dispatch
+    rescue TokenExpiredOrInvalidError => ex
+      success = false
+      begin
+        current_user.oauths.remove(ex.service_name)
+      rescue => ex
+        log.append "Exception removing OAuth: #{ex.message}"
+        log.append ex.backtrace
+      end
+    end
+
     log.append 'After dispatch'
     if self.results.empty?
       self.error_code = 1002

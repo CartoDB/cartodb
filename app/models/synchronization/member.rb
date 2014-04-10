@@ -128,12 +128,23 @@ module CartoDB
         end
 
         store
-        self
       rescue => exception
-        puts exception.to_s
+        log.append exception.message
+        log.append exception.backtrace
+        puts exception.message
         puts exception.backtrace
         set_failure_state_from(importer)
         store
+
+        if exception.kind_of?(TokenExpiredOrInvalidError)
+          begin
+            user.oauths.remove(exception.service_name)
+          rescue => ex
+            log.append "Exception removing OAuth: #{ex.message}"
+            log.append ex.backtrace
+          end
+        end
+        self
       end
 
       def get_downloader

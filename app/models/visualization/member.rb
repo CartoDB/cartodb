@@ -18,7 +18,7 @@ module CartoDB
   module Visualization
     class Member
       extend Forwardable
-      include Virtus
+      include Virtus.model
 
       PRIVACY_PUBLIC    = 'public'    # published and listable in public user profile
       PRIVACY_PRIVATE   = 'private'   # not published (viz.json and embed_map should return 404)

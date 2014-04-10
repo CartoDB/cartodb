@@ -173,6 +173,18 @@ defaults: &defaults
     api_key: ""
     app_id: ""
   enforce_non_empty_layer_css: true
+  oauth:
+    # If the client_id/app_key is not set won't appear at the UI. @see application_helper.rb -> frontend_config
+    # Must be the same as CartoDB::Datasources::xxxx DATASOURCE_NAME constants
+    gdrive:
+      application_name:     ''
+      client_id:            ''
+      client_secret:        ''
+      callback_url:         ''
+    dropbox:
+      app_key:              ''
+      app_secret:           ''
+      callback_url:         ''
 
 development:
   <<: *defaults

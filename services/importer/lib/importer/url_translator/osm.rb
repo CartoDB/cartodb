@@ -7,13 +7,13 @@ module CartoDB
       class OSM
         URL_REGEX               = %r{openstreetmap.org.*lat.*}
         TRANSLATED_URL_REGEX    = /api.openstreetmap.org/
-        URL_TEMPLATE  = "http://api.openstreetmap.org/api/0.6/map?bbox="
-        DW = 1200.0/2.0
-        DH = 1000.0/2.0
+        URL_TEMPLATE  = 'http://api.openstreetmap.org/api/0.6/map?bbox='
+        DEFW = 1200.0/2.0
+        DEFH = 1000.0/2.0
 
         def translate(url)
           return url if !supported?(url) || translated?(url) 
-          return "#{URL_TEMPLATE}#{bounding_box_for(url)}"
+          "#{URL_TEMPLATE}#{bounding_box_for(url)}"
         end #translate
 
         def bounding_box_for(url)
@@ -27,10 +27,10 @@ module CartoDB
           res   = 180 / 256.0 / 2**zoom
           py    = (90 + lat) / res
           px    = (180 + lon) / res
-          lpx   = px - DW
-          lpy   = py - DH
-          upx   = px + DW
-          upy   = py + DH
+          lpx   = px - DEFW
+          lpy   = py - DEFH
+          upx   = px + DEFW
+          upy   = py + DEFH
 
           lon1  = (res * lpx) - 180
           lat1  = (res * lpy) - 90

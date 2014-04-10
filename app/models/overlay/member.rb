@@ -5,7 +5,7 @@ require_relative './collection'
 module CartoDB
   module Overlay
     class Member
-      include Virtus
+      include Virtus.model
 
       attribute :id,                String
       attribute :order,             Integer

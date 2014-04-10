@@ -1,5 +1,7 @@
 # coding: UTF-8
 require_relative './user/user_decorator'
+require_relative './user/oauths'
+require_relative '../models/synchronization/synchronization_oauth'
 require_relative './visualization/member'
 require_relative './visualization/collection'
 
@@ -9,7 +11,8 @@ class User < Sequel::Model
   self.strict_param_setting = false
 
   one_to_one :client_application
-  plugin :association_dependencies, :client_application => :destroy
+  # @param synchronization_oauths
+  one_to_many :synchronization_oauths
   one_to_many :tokens, :class => :OauthToken
   one_to_many :maps
   one_to_many :assets
@@ -22,6 +25,7 @@ class User < Sequel::Model
   }
 
   # Sequel setup & plugins
+  plugin :association_dependencies, :client_application => :destroy, :synchronization_oauths => :destroy
   plugin :validation_helpers
   plugin :json_serializer
   plugin :dirty
@@ -393,6 +397,12 @@ $$
     end
   end
 
+  # Gets the list of OAuth accounts the user has (currently only used for synchronization)
+  # @return CartoDB::OAuths
+  def oauths
+    @oauths ||= CartoDB::OAuths.new(self)
+  end
+
   def trial_ends_at
     if account_type.to_s.downcase == 'magellan' && upgraded_at && upgraded_at + 15.days > Date.today
       upgraded_at + 15.days
@@ -546,6 +556,7 @@ $$
     conn = ::Sequel.connect(connection_params)
     conn[:pg_database].filter(:datname => database_name).all.any?
   end
+
   private :database_exists?
 
   # This method is innaccurate and understates point based tables (the /2 is to account for the_geom_webmercator)

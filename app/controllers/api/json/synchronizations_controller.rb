@@ -28,8 +28,8 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
 
     if from_sync_file_provider?
       member_attributes = member_attributes.merge(sync_file_provider_params)
-      service_name = sync_file_provider_params[:service_name]
-      service_item_id = sync_file_provider_params[:service_item_id]
+      service_name = params[:service_name]
+      service_item_id = params[:service_item_id]
     else
       service_name = CartoDB::Datasources::Url::PublicUrl::DATASOURCE_NAME
       service_item_id = params[:url].presence
@@ -103,13 +103,6 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
   end
 
   private
-
-  def sync_file_provider_params
-    {
-      service_name:     params[:service_name],
-      service_item_id:  params[:service_item_id]
-    }
-  end #sync_file_provider_params
 
   def from_sync_file_provider?
     params.include?(:service_name) && params.include?(:service_item_id)

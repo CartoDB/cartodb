@@ -39,8 +39,10 @@
       display:none;
       top:15px;
       right:10px;
-      width:38px;
+      width:38px!important;
       height:16px;
+      margin:0!important;
+      padding:0!important;
       background:image-url("layout/loader.gif") no-repeat center center;
     }
 
@@ -54,7 +56,6 @@
         padding:10px 0;
         border-top:1px solid #DDD;
         
-        &:last-child,
         &:first-child { border:none }
 
         &.empty {
@@ -78,7 +79,8 @@
         top:12px;
       }
     }
-      
+
+    div.msg { height:33px }
       
     div.upload {
       position:relative;

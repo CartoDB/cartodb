@@ -48,8 +48,8 @@ script:
 
 env:
 
-notifications:
-  irc:
-    channels:
-      - "irc.freenode.org#cartodb"
-    use_notice: true
+#notifications:
+#  irc:
+#    channels:
+#      - "irc.freenode.org#cartodb"
+#    use_notice: true

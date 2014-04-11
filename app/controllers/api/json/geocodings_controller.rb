@@ -60,9 +60,8 @@ class Api::Json::GeocodingsController < Api::ApplicationController
   end
 
   def estimation_for
-    dataset = current_user.in_database.select.from(params[:table_name])
-    dataset = dataset.where(cartodb_georef_status: nil) if dataset.columns.include?(:cartodb_georef_status)
-    total_rows       = dataset.count
+    table = current_user.tables.where(name: params[:table_name]).first
+    total_rows       = Geocoding.processable_rows(table)
     remaining_blocks = (current_user.geocoding_quota - current_user.get_geocoding_calls) / User::GEOCODING_BLOCK_SIZE
     remaining_blocks = (remaining_blocks > 0 ? remaining_blocks : 0)
     needed_blocks    = (total_rows / User::GEOCODING_BLOCK_SIZE) - remaining_blocks

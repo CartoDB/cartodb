@@ -85,8 +85,7 @@ module CartoDB
 
         self.source_file  = SourceFile.new(filepath(name), name)
         repository.store(source_file.path, data)
-        @checksum = 
-          Open3.capture2e(md5_command_for(source_file.fullpath)).first
+        @checksum = Open3.capture2e(md5_command_for(source_file.fullpath)).first
         self.source_file  = nil unless modified?
         self
       end
@@ -165,7 +164,8 @@ module CartoDB
         last_modified
       end
 
-      attr_reader :source_file, :url, :etag, :last_modified
+      attr_reader   :source_file, :etag, :last_modified
+      attr_accessor :url
 
       private
       

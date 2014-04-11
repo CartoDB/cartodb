@@ -6,7 +6,7 @@
     <%= favicon_link_tag "/favicons/favicon.ico" %>
     <%= yield :css %>
     <!--[if gt IE 8]><%= stylesheet_link_tag 'fonts_ie.css' %><![endif]-->
-    <%= insert_rollbar() %>
+    <%= insert_trackjs() %>
     <%= insert_google_analytics('primary') %>
     <%= yield :js %>
     <%= csrf_meta_tag %>

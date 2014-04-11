@@ -1,3 +1,27 @@
+2.13.1 (2014-04-11)
+-------------------
+* New Features
+  * Add Midnight commander basemap
+  * oAuth-based Google Drive and Dropbox integration
+
+* Bugs and improvements
+  * When georeferencing by lon/lat columns, convert strings to number first
+  * Missing fonts in account assets
+  * Map views graph display error
+  * Color picker bindings still persist after it is cleaned
+  * Sql query editor no longer breaks if you add '\'
+  * Review last used colors functionality on color picker.
+  * Proxima Nova and SEGOE UI fonts are not being loaded using IE9 in Windows 7
+  * Typo on "No georeferenced data on your table" window
+  * Fixed crash when user wants to delete a layer from a visualization
+  * Public dashboard footer no longer gets rendered in private dashboard
+  * Logged-in detection in public pages
+  * "CartoDB" link points to your public profile page
+  * Fix sublayer_options sharing in the public_dashboard
+  * Error when creating public vizz
+  * Fix line-height of the tags in the public dashboard
+
+
 2.13.0 (2014-04-08)
 -------------------
 NOTE: This version introduces another kind of privacy setting: "Link-only".

@@ -124,18 +124,6 @@
   $(function() {
 
 
-    var options = {
-      zoomControl: false,
-      cartodb_logo: false,
-      scrollwheel: false,
-      legends: false,
-      time_slider: false
-    };
-
-    <% if !Rails.env.production? %>
-        options.no_cdn = true;
-    <% end %>
-
     <% urls = [] %>
 
     <% @visualizations.map do |v| 
@@ -148,7 +136,20 @@
   var urls = <%= raw urls.to_json %>;
 
   _.each(urls, function(url, i) {
-    options.sublayer_options =  url.layer_visibility
+
+    var options = {
+      zoomControl:  false,
+      cartodb_logo: false,
+      scrollwheel:  false,
+      legends:      false,
+      time_slider:  false,
+      sublayer_options: url.layer_visibility
+    };
+
+    <% if !Rails.env.production? %>
+        options.no_cdn = true;
+    <% end %>
+
     cartodb.createVis('map_' + i , url.url, options);
   });
 

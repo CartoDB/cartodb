@@ -27,11 +27,12 @@ WORKING_SPECS = \
   spec/requests/api/geocodings_spec.rb \
   services/importer/spec/unit/url_translator/osm_spec.rb \
   services/importer/spec/unit/url_translator/osm2_spec.rb \
-	spec/requests/api/assets_spec.rb \
+  spec/requests/api/assets_spec.rb \
   spec/requests/api/user_layers_spec.rb \
   spec/requests/api/map_layers_spec.rb \
   spec/requests/api/records_spec.rb \
   services/geocoder/spec/geocoder_spec.rb \
+  spec/models/synchronization/synchronization_oauth_spec.rb \
   $(NULL)
 
 CDB_PATH=lib/assets/javascripts/cdb
@@ -47,6 +48,10 @@ check-prepared:
 	bundle exec rspec $(WORKING_SPECS)
 
 check: prepare-test-db check-prepared
+check-frontend:
+	cd lib/build && grunt test
+
+travis: check-frontend check
 
 
 # update cartodb.js submodule files

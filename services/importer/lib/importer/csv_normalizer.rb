@@ -10,6 +10,7 @@ require_relative './unp'
 module CartoDB
   module Importer2
     class CsvNormalizer
+
       LINE_SIZE_FOR_CLEANING = 5000
       LINES_FOR_DETECTION   = 100       # How many lines to read?
       SAMPLE_READ_LIMIT     = 500000   # Read big enough sample bytes for the encoding sampling

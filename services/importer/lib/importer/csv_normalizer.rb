@@ -29,16 +29,17 @@ module CartoDB
         @delimiter = nil
       end #initialize
 
+      # @throws MalformedCSVException
       def run
         return self unless File.exists?(filepath)
 
-        # TODO: Removed because .each_char takes too long to process big CSVs
-        #sanitized_filepath = remove_newlines(temporary_filepath('nl_'))
-        #File.rename(sanitized_filepath, filepath)
-
         detect_delimiter
 
-        return self unless needs_normalization?
+        begin
+          return self unless needs_normalization?
+        rescue CSV::MalformedCSVError => ex
+          raise MalformedCSVException.new(ex.message)
+        end
 
         normalize(temporary_filepath)
         release
@@ -211,42 +212,6 @@ module CartoDB
       def stream
         @stream ||= File.open(filepath, 'rb')
       end #stream
-
-      # Attempts to 
-      def remove_newlines(temporary_filepath)
-        sanitized_file = File.open(temporary_filepath, 'wb')
-
-        aggregated_line = ''
-        opened_quotes = 0
-        File.open(filepath, 'rb')
-            .each_line(line_delimiter) { |line| 
-
-          if line.size < LINE_SIZE_FOR_CLEANING
-            line.each_char { |character|
-              if character == "\""
-                opened_quotes += 1
-              end
-              if character != "\n"
-                aggregated_line += character
-              end
-            }
-            if opened_quotes % 2 == 0
-              sanitized_file << (aggregated_line + "\n")
-              aggregated_line = ''
-              opened_quotes = 0
-            end
-          else
-            # Line too big for processing, so just adding it
-            sanitized_file << line
-            aggregated_line = ''
-            opened_quotes = 0
-          end
-        }
-
-        sanitized_file.close
-
-        temporary_filepath
-      end
 
       attr_reader   :filepath
       alias_method  :converted_filepath, :filepath

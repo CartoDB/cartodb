@@ -20,7 +20,11 @@ module CartoDB
         result = runner.results.select(&:success?).first
 
         if runner.remote_data_updated?
-          raise ("Expecting success data for table '#{table_name}'.Results:" + runner.results.to_s) if result.nil?
+          if result.nil?
+            data_for_exception = "Expecting success data for table '#{table_name}'\nResults:#{runner.results.to_s}\n"
+            data_for_exception << "1st result:#{runner.results.first.inspect}"
+            raise data_for_exception
+          end
           copy_privileges("public.#{table_name}", result.qualified_table_name)
           copy_indexes("public.#{table_name}", result.qualified_table_name)
           overwrite(table_name, result)

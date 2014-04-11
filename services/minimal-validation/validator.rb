@@ -42,6 +42,10 @@ module MinimalValidator
       self.errors.store(attribute.to_sym, 'is already taken') unless available
     end #validate_uniqueness_of
 
+    def validate_expected_value(attribute, expected_value, actual_value)
+      self.errors.store(attribute.to_sym, 'has invalid value') unless actual_value == expected_value
+    end #validate_expected_value
+
     def full_errors
       errors.map { |attribute, message| "#{attribute} #{message}" }
     end #full_errors

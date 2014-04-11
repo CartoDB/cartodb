@@ -1,5 +1,9 @@
 # coding: UTF-8
 require_relative './user/user_decorator'
+require_relative './user/oauths'
+require_relative '../models/synchronization/synchronization_oauth'
+require_relative './visualization/member'
+require_relative './visualization/collection'
 
 class User < Sequel::Model
   include CartoDB::MiniSequel
@@ -7,7 +11,8 @@ class User < Sequel::Model
   self.strict_param_setting = false
 
   one_to_one :client_application
-  plugin :association_dependencies, :client_application => :destroy
+  # @param synchronization_oauths
+  one_to_many :synchronization_oauths
   one_to_many :tokens, :class => :OauthToken
   one_to_many :maps
   one_to_many :assets
@@ -20,6 +25,7 @@ class User < Sequel::Model
   }
 
   # Sequel setup & plugins
+  plugin :association_dependencies, :client_application => :destroy, :synchronization_oauths => :destroy
   plugin :validation_helpers
   plugin :json_serializer
   plugin :dirty
@@ -244,6 +250,10 @@ $$
     crypted_password + database_username
   end
 
+  def user_database_host
+    self.database_host
+  end
+
   def in_database(options = {}, &block)
     configuration = get_db_configuration_for(options[:as])
     connection = $pool.fetch(configuration) do
@@ -341,10 +351,33 @@ $$
     end
   end
 
+  # List all public visualization tags of the user
+  def tags
+    require_relative './visualization/tags'
+    CartoDB::Visualization::Tags.new(self).names({
+      type: CartoDB::Visualization::Member::DERIVED_TYPE,
+      privacy: CartoDB::Visualization::Member::PRIVACY_PUBLIC
+    })
+  end #tags
+
+  # List all public map tags of the user
+  def map_tags
+    require_relative './visualization/tags'
+    CartoDB::Visualization::Tags.new(self).names({
+       type: CartoDB::Visualization::Member::CANONICAL_TYPE,
+       privacy: CartoDB::Visualization::Member::PRIVACY_PUBLIC
+    })
+  end #map_tags
 
   def tables
     Table.filter(:user_id => self.id).order(:id).reverse
   end
+
+  def gravatar(size = 128, default_image = "//cartodb.s3.amazonaws.com/static/public_dashboard_default_avatar.png")
+    #noinspection RubyArgCount
+    digest = Digest::MD5.hexdigest(email.downcase)
+    "//www.gravatar.com/avatar/#{digest}?s=#{size}&d=#{URI.encode(default_image)}"
+  end #gravatar
 
   # Retrive list of user tables from database catalogue
   #
@@ -354,7 +387,7 @@ $$
   # NOTE: this currently returns all public tables, can be
   #       improved to skip "service" tables
   #
-  def tables_effective()
+  def tables_effective
     in_database do |user_database|
       user_database.synchronize do |conn|
         query = "select table_name::text from information_schema.tables where table_schema = 'public'"
@@ -362,6 +395,12 @@ $$
         return tables
       end
     end
+  end
+
+  # Gets the list of OAuth accounts the user has (currently only used for synchronization)
+  # @return CartoDB::OAuths
+  def oauths
+    @oauths ||= CartoDB::OAuths.new(self)
   end
 
   def trial_ends_at
@@ -517,6 +556,7 @@ $$
     conn = ::Sequel.connect(connection_params)
     conn[:pg_database].filter(:datname => database_name).all.any?
   end
+
   private :database_exists?
 
   # This method is innaccurate and understates point based tables (the /2 is to account for the_geom_webmercator)
@@ -660,9 +700,13 @@ $$
     end
   end
 
-  def table_count
-    Table.filter({:user_id => self.id}).count
-  end
+  def table_count(privacy_filter=nil)
+    filter = {
+        user_id: self.id
+    }
+    filter[:privacy] = privacy_filter unless privacy_filter.nil?
+    Table.filter(filter).count
+  end #table_count
 
   def failed_import_count
     DataImport.where(user_id: self.id, state: 'failure').count
@@ -676,9 +720,21 @@ $$
     DataImport.where(user_id: self.id).count
   end
 
-  def visualization_count
-    maps.count - table_count
-  end
+  # Get the count of public visualizations
+  def public_visualization_count
+    visualization_count(CartoDB::Visualization::Member::DERIVED_TYPE, CartoDB::Visualization::Member::PRIVACY_PUBLIC)
+  end #public_visualization_count
+
+  # Get a count of visualizations with optional type and privacy filters
+  def visualization_count(type_filter=nil, privacy_filter=nil)
+    parameters = {
+        map_id:   maps.map(&:id)
+    }
+    parameters[:type] = type_filter unless type_filter.nil?
+    parameters[:privacy] = privacy_filter unless privacy_filter.nil?
+
+    CartoDB::Visualization::Collection.new.fetch(parameters).count
+  end #visualization_count
 
   def last_visualization_created_at
     Rails::Sequel.connection.fetch("SELECT created_at FROM visualizations WHERE " +

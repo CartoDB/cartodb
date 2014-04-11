@@ -32,7 +32,7 @@ if Rails.env.development?
     t.save
   end
 
-  table = Table.new :privacy => Table::PUBLIC, :name => 'Foursq check-ins',
+  table = Table.new :privacy => Table::PRIVACY_PUBLIC, :name => 'Foursq check-ins',
                     :tags => '4sq, personal'
   table.user_id = user.id
   table.force_schema = "name text, surname text, address text, city text, country text, nif text, age integer, twitter_account text, postal_code integer"
@@ -44,7 +44,7 @@ if Rails.env.development?
     end
   end
 
-  table = Table.new :privacy => Table::PRIVATE, :name => 'Madrid Bars',
+  table = Table.new :privacy => Table::PRIVACY_PRIVATE, :name => 'Madrid Bars',
                     :tags => 'movies, personal'
   table.user_id = user.id
   table.force_schema = "name text, address text, latitude float, longitude float"

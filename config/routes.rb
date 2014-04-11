@@ -1,7 +1,9 @@
 # encoding: utf-8
 
 CartoDB::Application.routes.draw do
-  root :to => redirect("/login")
+  root :to => 'admin/pages#public'
+
+  get   '/datasets' => 'admin/pages#datasets'
 
   get   '/login' => 'sessions#new', :as => :login
   get   '/logout' => 'sessions#destroy', :as => :logout
@@ -11,7 +13,7 @@ CartoDB::Application.routes.draw do
 
   get   '/test' => 'test#index', :as => :test
 
-  scope :module => "admin" do
+  scope :module => 'admin' do
     get '/dashboard/'                         => 'visualizations#index', :as => :dashboard
 
     resource :organization, only: [:show] do
@@ -43,7 +45,19 @@ CartoDB::Application.routes.draw do
     # Tags
     get '/dashboard/tag/:tag'                       => 'visualizations#index'
 
+    # Private dashboard
+    get '/dashboard'                => 'visualizations#index'
     get '/dashboard/common_data'    => 'pages#common_data'
+
+    # Public dashboard
+    # root goes to 'pages#public'
+    get '/page/:page'               => 'pages#public'
+    get '/tag/:tag'                 => 'pages#public', :as => :public_tag
+    get '/tag/:tag/:page'           => 'pages#public'
+
+    get '/datasets/page/:page'      => 'pages#datasets'
+    get '/datasets/tag/:tag'        => 'pages#datasets', :as => :dataset_public_tag
+    get '/datasets/tag/:tag/:page'  => 'pages#datasets'
 
     get '/tables/track_embed'       => 'visualizations#track_embed'
     get '/tables/embed_forbidden'   => 'visualizations#embed_forbidden'
@@ -90,10 +104,11 @@ CartoDB::Application.routes.draw do
     get   '/identity'       => 'sessions#show'
   end
 
-  scope "/api" do
-    namespace CartoDB::API::VERSION_1, :format => :json, :module => "api/json" do
+  scope '/api' do
+    namespace CartoDB::API::VERSION_1, :format => :json, :module => 'api/json' do
       get    '/column_types'                                    => 'meta#column_types'
 
+      get '/get_authenticated_users'                         => 'users#get_authenticated_users'
 
       resources :tables, :only => [:create, :show, :update] do
         collection do
@@ -105,8 +120,15 @@ CartoDB::Application.routes.draw do
       end
 
       # imports
-      resources :uploads, :only                     => :create
-      resources :imports, :only                     => [:create, :show, :index]
+      resources :uploads, :only                           => :create
+      resources :imports, :only                           => [:create, :show, :index]
+      get     '/imports/service/:id/token_valid'          => 'imports#service_token_valid?'
+      get     '/imports/service/:id/list_files'           => 'imports#list_files_for_service'
+      get     '/imports/service/:id/auth_url'             => 'imports#get_service_auth_url'
+      get     '/imports/service/:id/validate_code/:code'  => 'imports#validate_service_oauth_code'
+      delete  '/imports/service/:id/invalidate_token'     => 'imports#invalidate_service_token'
+      # Must be GET verb
+      get     '/imports/service/:id/oauth_callback/'  => 'imports#service_oauth_callback'
 
       # Dashboard
       resources :users, :only                       => [:show] do

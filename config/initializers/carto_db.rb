@@ -108,7 +108,7 @@ module CartoDB
       what_about: "The remote URL returned an error. Please verify your file is available at that URL."
     },
     1002 => {
-      title: 'Unsupported file type',
+      title: 'Unsupported/Unrecognized file type',
       what_about: "Should we support this filetype? Let us know in our <a href='mailto:support-suggestions@cartodb.com'>support email</a>!"
     },
     1003 => {

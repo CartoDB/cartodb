@@ -1,6 +1,6 @@
-// cartodb.js version: 3.8.05-dev
+// cartodb.js version: 3.8.10-dev
 // uncompressed version: cartodb.uncompressed.js
-// sha: 9c36b23a91fcee49aab1b67d21de3526c1498e86
+// sha: 95a4c9b1d3699ae5ab874aa9d5f5ee00522d8302
 (function() {
   var root = this;
 
@@ -20686,7 +20686,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.8.05-dev';
+    cdb.VERSION = '3.8.10-dev';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -21088,6 +21088,7 @@ Profiler.get = function(name) {
     avg: 0,
     total: 0,
     count: 0,
+    last: 0,
     history: typeof(Float32Array) !== 'undefined' ? new Float32Array(MAX_HISTORY) : []
   };
 };
@@ -21096,11 +21097,10 @@ Profiler.backend = function (_) {
   Profiler._backend = _;
 }
 
-Profiler.new_value = function (name, value, type) {
+Profiler.new_value = function (name, value, type, defer) {
   type =  type || 'i';
   var t = Profiler.metrics[name] = Profiler.get(name);
 
-  Profiler._backend && Profiler._backend([type, name, value]);
 
   t.max = Math.max(t.max, value);
   t.min = Math.min(t.min, value);
@@ -21108,6 +21108,17 @@ Profiler.new_value = function (name, value, type) {
   ++t.count;
   t.avg = t.total / t.count;
   t.history[t.count%MAX_HISTORY] = value;
+
+  if (!defer) {
+    Profiler._backend && Profiler._backend([type, name, value]);
+  } else {
+    var n = new Date().getTime()
+    // don't allow to send stats quick
+    if (n - t.last > 1000) {
+      Profiler._backend && Profiler._backend([type, name, t.avg]);
+      t.last = n;
+    }
+  }
 };
 
 Profiler.print_stats = function () {
@@ -21148,9 +21159,9 @@ Metric.prototype = {
   // ``start`` should be called first, if not this 
   // function does not take effect
   //
-  end: function() {
+  end: function(defer) {
     if (this.t0 !== null) {
-      Profiler.new_value(this.name, this._elapsed(), 't');
+      Profiler.new_value(this.name, this._elapsed(), 't', defer);
       this.t0 = null;
     }
   },
@@ -25693,6 +25704,7 @@ function Map(options) {
 }
 
 Map.BASE_URL = '/api/v1/map';
+Map.EMPTY_GIF = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
 
 function NamedMap(named_map, options) {
   var self = this;
@@ -25807,6 +25819,18 @@ Map.prototype = {
     }
     return +layers[index];
   },
+
+  visibleLayers: function() {
+    var layers = [];
+    for(var i = 0; i < this.layers.length; ++i) {
+      var layer = this.layers[i];
+      if(!layer.options.hidden) {
+        layers.push(layer);
+      }
+    }
+    return layers;
+  },
+
 
   // ie7 btoa,
   // from http://phpjs.org/functions/base64_encode/
@@ -26002,6 +26026,13 @@ Map.prototype = {
 
     this._queue = [];
 
+    // when it's a named map the number of layers is not known
+    // so fetch the map
+    if (!this.named_map && this.visibleLayers().length === 0) {
+      callback(null);
+      return;
+    }
+
     // setup params
     var extra_params = this.options.extra_params || {};
     var api_key = this.options.map_key || this.options.api_key || extra_params.map_key || extra_params.api_key;
@@ -26050,6 +26081,18 @@ Map.prototype = {
 
   setLayer: function(layer, def) {
     if(layer < this.getLayerCount() && layer >= 0) {
+      if (def.options.hidden) {
+        var i = this.interactionEnabled[layer];
+        if (i) {
+          def.interaction = true
+          this.setInteraction(layer, false);
+        }
+      } else {
+        if (this.layers[layer].interaction) {
+          this.setInteraction(layer, true);
+          delete this.layers[layer].interaction;
+        }
+      }
       this.layers[layer] = _.clone(def);
     }
     this.invalidate();
@@ -26075,6 +26118,13 @@ Map.prototype = {
         self.urls = self._layerGroupTiles(data.layergroupid, self.options.extra_params);
         callback && callback(self.urls);
       } else {
+        if (self.visibleLayers().length === 0) {
+          callback && callback({
+            tiles: [Map.EMPTY_GIF],
+            grids: []
+          });
+          return;
+        } 
         callback && callback(null, err);
       }
     });
@@ -26336,13 +26386,17 @@ NamedMap.prototype = _.extend({}, Map.prototype, {
   // for named maps attributes are fetch from attributes service
   fetchAttributes: function(layer_index, feature_id, columnNames, callback) {
     var ajax = this.options.ajax;
+    var loadingTime = cartodb.core.Profiler.metric('cartodb-js.named_map.attributes.time').start();
     ajax({
       dataType: 'jsonp',
       url: this._attributesUrl(layer_index, feature_id),
       success: function(data) {
+        loadingTime.end()
         callback(data);
       },
       error: function(data) {
+        loadingTime.end()
+        cartodb.core.Profiler.metric('cartodb-js.named_map.attributes.error').inc();
         callback(null);
       }
     });
@@ -26378,7 +26432,14 @@ NamedMap.prototype = _.extend({}, Map.prototype, {
 
   addLayer: function(def, layer) {
     throw new Error("sublayers are read-only in Named Maps");
-  }
+  },
+
+  // for named maps the layers are always the same (i.e they are
+  // not removed to hide) so the number does not change
+  getLayerIndexByNumber: function(number) {
+    return +number;
+  },
+
 
 });
 
@@ -26401,19 +26462,18 @@ LayerDefinition.prototype = _.extend({}, Map.prototype, {
       obj.stat_tag = this.stat_tag;
     }
     obj.layers = [];
-    for(var i = 0; i < this.layers.length; ++i) {
-      var layer = this.layers[i];
-      if(!layer.options.hidden) {
-        obj.layers.push({
-          type: 'cartodb',
-          options: {
-            sql: layer.options.sql,
-            cartocss: layer.options.cartocss,
-            cartocss_version: layer.options.cartocss_version || '2.1.0',
-            interactivity: this._cleanInteractivity(layer.options.interactivity)
-          }
-        });
-      }
+    var layers = this.visibleLayers();
+    for(var i = 0; i < layers.length; ++i) {
+      var layer = layers[i];
+      obj.layers.push({
+        type: 'cartodb',
+        options: {
+          sql: layer.options.sql,
+          cartocss: layer.options.cartocss,
+          cartocss_version: layer.options.cartocss_version || '2.1.0',
+          interactivity: this._cleanInteractivity(layer.options.interactivity)
+        }
+      });
     }
     return obj;
   },
@@ -26553,18 +26613,22 @@ LayerDefinition.prototype = _.extend({}, Map.prototype, {
       return "\"" + n + "\"";
     }).join(',');
 
+    var loadingTime = cartodb.core.Profiler.metric('cartodb-js.layergroup.attributes.time').start();
     // execute the sql
     sql.execute('select {{{ fields }}} from ({{{ sql }}}) as _cartodbjs_alias where cartodb_id = {{{ cartodb_id }}}', {
       fields: columnNames,
       cartodb_id: feature_id,
       sql: layer.options.sql
     }).done(function(interact_data) {
+      loadingTime.end();
       if (interact_data.rows.length === 0 ) {
         callback(null);
         return;
       }
       callback(interact_data.rows[0]);
     }).error(function() {
+      loadingTime.end();
+      cartodb.core.Profiler.metric('cartodb-js.layergroup.attributes.error').inc();
       callback(null);
     });
   }
@@ -28435,7 +28499,7 @@ CartoDBLayerGroupBase.prototype.getTile = function(coord, zoom, ownerDocument) {
   im.onload = finished;
   im.onerror = function() {
     cartodb.core.Profiler.metric('cartodb-js.tile.png.error').inc();
-    finish();
+    finished();
   }
 
 
@@ -30817,25 +30881,36 @@ var Vis = cdb.core.View.extend({
     }
 
     // if bounds are present zoom and center will not taken into account
-    if (opt.zoom !== undefined) {
-      vizjson.zoom = parseFloat(opt.zoom);
+    var zoom = parseInt(opt.zoom);
+    if (!isNaN(zoom)) {
+      vizjson.zoom = zoom;
       vizjson.bounds = null;
     }
 
-    if (opt.center_lat !== undefined) {
-      vizjson.center = [parseFloat(opt.center_lat), parseFloat(opt.center_lon)];
+    // Center coordinates?
+    var center_lat = parseFloat(opt.center_lat);
+    var center_lon = parseFloat(opt.center_lon);
+    if ( !isNaN(center_lat) && !isNaN(center_lon) ) {
+      vizjson.center = [center_lat, center_lon];
       vizjson.bounds = null;
     }
 
+    // Center object
     if (opt.center !== undefined) {
       vizjson.center = opt.center;
       vizjson.bounds = null;
     }
 
-    if (opt.sw_lat !== undefined) {
+    // Bounds?
+    var sw_lat = parseFloat(opt.sw_lat);
+    var sw_lon = parseFloat(opt.sw_lon);
+    var ne_lat = parseFloat(opt.ne_lat);
+    var ne_lon = parseFloat(opt.ne_lon);
+
+    if ( !isNaN(sw_lat) && !isNaN(sw_lon) && !isNaN(ne_lat) && !isNaN(ne_lon) ) {
       vizjson.bounds = [
-        [parseFloat(opt.sw_lat), parseFloat(opt.sw_lon)],
-        [parseFloat(opt.ne_lat), parseFloat(opt.ne_lon)],
+        [ sw_lat, sw_lon ],
+        [ ne_lat, ne_lon ]
       ];
     }
 
@@ -33112,7 +33187,7 @@ function PointView(geometryModel) {
       //TODO: create marker depending on the visualizacion options
       var p = L.marker(latLng,{
         icon: L.icon({
-          iconUrl: '/assets/layout/default_marker.png',
+          iconUrl: cdb.config.get('assets_url') + '/images/layout/default_marker.png',
           iconAnchor: [11, 11]
         })
       });
@@ -33271,7 +33346,7 @@ function PointView(geometryModel) {
     geometryModel.get('geojson'),
     {
       icon: {
-          url: '/assets/layout/default_marker.png',
+          url: cdb.config.get('assets_url') + '/images/layout/default_marker.png',
           anchor: {x: 10, y: 10}
       },
       raiseOnDrag: false,

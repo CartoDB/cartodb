@@ -1,3 +1,82 @@
+2.13.1 (2014-04-11)
+-------------------
+* New Features
+  * Add Midnight commander basemap
+  * oAuth-based Google Drive and Dropbox integration
+
+* Bugs and improvements
+  * When georeferencing by lon/lat columns, convert strings to number first
+  * Missing fonts in account assets
+  * Map views graph display error
+  * Color picker bindings still persist after it is cleaned
+  * Sql query editor no longer breaks if you add '\'
+  * Review last used colors functionality on color picker.
+  * Proxima Nova and SEGOE UI fonts are not being loaded using IE9 in Windows 7
+  * Typo on "No georeferenced data on your table" window
+  * Fixed crash when user wants to delete a layer from a visualization
+  * Public dashboard footer no longer gets rendered in private dashboard
+  * Logged-in detection in public pages
+  * "CartoDB" link points to your public profile page
+  * Fix sublayer_options sharing in the public_dashboard
+  * Error when creating public vizz
+  * Fix line-height of the tags in the public dashboard
+
+
+2.13.0 (2014-04-08)
+-------------------
+NOTE: This version introduces another kind of privacy setting: "Link-only".
+Now visualizations and tables which are public are listed by default on user pages.
+Due to this, you may want to turn all your Public tables and visualizations to
+"Link-only" state. To do this, just run the following SQL query on your metadata 
+database:
+
+```
+UPDATE visualizations
+SET privacy='link'
+WHERE privacy='public';
+UPDATE user_tables
+SET privacy=2
+WHERE privacy=1;
+```
+
+* New features
+  * Public User Pages: now users have a public dashboard on their CartoDB homepage
+    which will show all the public visualizations and tables on their account.
+  * Add new "link-only" privacy status for tables.
+
+* Improvements
+  * New endpoint to extract user information
+
+* Fixed bugs
+  * Using CartoDB.js, if you create a layer from a viz.json url, and then try to
+    hide it, its interaction still works
+  * Fixes in session handling when multuple users are logged at the same time
+  * Run a update to change all paid users public visualizations from public to link
+  * Torque layer offsets when several layers in public page
+
+
+2.12.0 (2014-04-04)
+-------------------
+* Improvements
+  * Frontend code (JS) is now no longer compiled using the assets pipeline. You can
+    use the asset_host setting on app_conflg.yml to point to assets on our own CDN 
+    or to your own ones if you compile them manually using Grunt.
+    For more details, look at lib/build/UPGRADING.md.
+  * Automate frontend unit tests
+
+2.11.2 (2014-03-27)
+-------------------
+* Bugs Fixed
+  * Public map is not loaded using https.
+  * Public table fails on order by.
+  * Clear view raises wrong sql query.
+  * Ugly error on Table name change.
+  * Increase map height in the public_map page.
+  * Torque layer raises an exception in google maps.
+  * Normal sync tables do not properly log errors.
+  * All rows returned at once from queries written in the SQL pane.
+  * In the layer selector, if you unselect all the layers, and then only activates one, the infowindow is neither appearing nor working.
+
 2.11.1 (2014-03-20)
 -------------------
 * Improvements

@@ -24,6 +24,8 @@ module CartoDB
           DateTime  :run_at
           DateTime  :ran_at
           Integer   :retried_times
+          String    :service_name
+          Stringe   :service_item_id
         end
       end #migrate
 

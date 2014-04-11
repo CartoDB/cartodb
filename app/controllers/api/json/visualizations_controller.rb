@@ -80,7 +80,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     end
 
     # Make public by default
-    member.privacy = Visualization::Member::PRIVACY_PUBLIC
+    member.privacy = member.default_privacy(current_user)
 
     member.store
     collection  = Visualization::Collection.new.fetch
@@ -204,11 +204,11 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   end #scope_for
 
   def allow_vizjson_v1_for?(table)
-    table && (table.public? || current_user_is_owner?(table))
+    table && (table.public? || table.public_with_link_only? || current_user_is_owner?(table))
   end #allow_vizjson_v1_for?
 
   def allow_vizjson_v2_for?(visualization)
-    visualization && visualization.public?
+    visualization && (visualization.public? || visualization.public_with_link?)
   end #allow_vizjson_v2_for?
 
   def current_user_is_owner?(table)

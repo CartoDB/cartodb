@@ -2,7 +2,7 @@
   <%= page_title %> |
 <% end %>
 <%= content_for(:js) do %>
-  <%= javascript_include_tag :application, :cdb %>
+  <%= javascript_include_tag 'application.js', 'cdb.js' %>
   <script type="text/javascript">
     var username = "<%= current_user.username %>"
       , type = "key"
@@ -10,5 +10,5 @@
   </script>
 <% end %>
 <%= content_for(:css) do %>
-  <%= stylesheet_link_tag :common, :keys, :media => 'all' %>
+  <%= stylesheet_link_tag 'common.css', :keys, :media => 'all' %>
 <% end %>

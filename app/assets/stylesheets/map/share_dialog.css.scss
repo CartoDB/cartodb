@@ -414,6 +414,9 @@
           background-position: 50%;
         }
 
+        &.disabled {
+         &.link i { background-color: rgba(#CCC, .5); }
+        }
 
         &.link     i { background: rgba(#FFA64D, .5) sprite( $table-sprites, lock_open,   $offset-x: 5px, $offset-y: 4px) no-repeat; }
 

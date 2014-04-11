@@ -1,0 +1,3 @@
+<% unless customer.blank? || Rails.env.development? %>
+  <script type="text/javascript" src="//dl1d2m8ri9v3j.cloudfront.net/releases/1.2.2/tracker.js" data-customer="<%= customer %>"></script>
+<% end %>

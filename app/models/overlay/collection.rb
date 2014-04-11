@@ -14,7 +14,7 @@ module CartoDB
     end
     
     class Collection
-      include Virtus
+      include Virtus.model
       include Aequitas
 
       attribute :visualization_id,  String

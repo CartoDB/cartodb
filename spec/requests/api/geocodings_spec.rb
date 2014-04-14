@@ -64,7 +64,7 @@ describe "Geocodings API" do
   describe 'GET /api/v1/geocodings' do
     it 'returns every geocoding belonging to current_user' do
       FactoryGirl.create(:geocoding, table_name: 'a', formatter: 'b', user: @user, state: 'wadus')
-      FactoryGirl.create(:geocoding, table_name: 'a', formatter: 'b', user_id: @user.id+1)
+      FactoryGirl.create(:geocoding, table_name: 'a', formatter: 'b', user_id: UUIDTools::UUID.timestamp_create.to_s)
       get_json v1_geocodings_url(params) do |response|
         response.status.should be_success
         response.body[:geocodings].size.should == 1
@@ -74,8 +74,8 @@ describe "Geocodings API" do
 
   describe 'GET /api/v1/geocodings/:id' do
     it 'returns a geocoding' do
-      geocoding = FactoryGirl.create(:geocoding, table_id: 1, formatter: 'b', user: @user)
-      FactoryGirl.create(:geocoding, table_id: 2, formatter: 'b', user_id: @user.id+1)
+      geocoding = FactoryGirl.create(:geocoding, table_id: UUIDTools::UUID.timestamp_create.to_s, formatter: 'b', user: @user)
+      FactoryGirl.create(:geocoding, table_id: UUIDTools::UUID.timestamp_create.to_s, formatter: 'b', user_id: UUIDTools::UUID.timestamp_create.to_s)
 
       get_json v1_geocoding_url(params.merge(id: geocoding.id)) do |response|
         response.status.should be_success
@@ -84,7 +84,7 @@ describe "Geocodings API" do
     end
 
     it 'does not return a geocoding owned by another user' do
-      geocoding = FactoryGirl.create(:geocoding, table_id: 1, formatter: 'b', user_id: @user.id + 1)
+      geocoding = FactoryGirl.create(:geocoding, table_id: UUIDTools::UUID.timestamp_create.to_s, formatter: 'b', user_id: UUIDTools::UUID.timestamp_create.to_s)
 
       get_json v1_geocoding_url(params.merge(id: geocoding.id)) do |response|
         response.status.should eq 404
@@ -94,7 +94,7 @@ describe "Geocodings API" do
 
   describe 'PUT /api/v1/geocodings/:id' do
     it 'cancels a geocoding job' do
-      geocoding = FactoryGirl.create(:geocoding, table_id: 2, formatter: 'b', user: @user)
+      geocoding = FactoryGirl.create(:geocoding, table_id: UUIDTools::UUID.timestamp_create.to_s, formatter: 'b', user: @user)
       Geocoding.any_instance.stubs(:cancel).returns(true)
 
       put_json v1_geocoding_url(params.merge(id: geocoding.id)), { state: 'cancelled' } do |response|
@@ -105,7 +105,7 @@ describe "Geocodings API" do
     end
 
     it 'fails gracefully on job cancel failure' do
-      geocoding = FactoryGirl.create(:geocoding, table_id: 1, formatter: 'b', user: @user)
+      geocoding = FactoryGirl.create(:geocoding, table_id: UUIDTools::UUID.timestamp_create.to_s, formatter: 'b', user: @user)
       Geocoding.any_instance.stubs(:cancel).raises('wadus')
 
       put_json v1_geocoding_url(params.merge(id: geocoding.id)), { state: 'cancelled' } do |response|

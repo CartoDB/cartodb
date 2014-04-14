@@ -53,7 +53,7 @@
         pointer-events:none;
 
         &.top {
-          top:0px;
+          top:58px;
           @include background(linear-gradient(white, rgba(white,0)));
         }
         &.bottom {
@@ -73,9 +73,7 @@
         overflow: hidden;
         background: image-url("layout/loader_transparent_small.gif") no-repeat center;
 
-        &:nth-child(13n) {
-          margin-right:0;
-        }
+        &:nth-child(16n) { margin-right:0 } 
 
         a.image {
           @include inline-block();
@@ -145,6 +143,19 @@
             a.delete {display:none}
           }
         }
+
+
+        // different asset types
+
+        // -> simple icons
+        &.simpleicon a {
+          background-size: auto 24px!important;
+        }
+
+        // -> pin maps
+        &.pin-maps a {
+          background-size: auto 24px!important;
+        }
       }
     }
 
@@ -167,8 +178,7 @@
 
     .disclaimer {
       display:block;
-      padding:10px 0;
-      margin:0;
+      margin:20px 0 5px 5px;
       color:#666666;
       @include border-radius(3px);
       font-size:13px;

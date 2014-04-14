@@ -18,12 +18,18 @@
   h4 { margin: 0 0 10px 0; padding: 0; font-size: 17px; line-height:normal; }
   p  { font-size: 15px; color: #666; line-height:normal; }
 
+
   .mamufas .block.modal a.close {
     right: -18px;
     top: -18px;
   }
 
-  .mamufas .block.modal div.content { padding: 40px; }
+  .mamufas .block.modal div.content { 
+    padding: 40px;
+  }
+
+  section.block p { margin: 0 0 15px 0;}
+
   .mamufas .block.modal div.foot { overflow: visible; padding: 0px 40px 48px 40px; }
   .mamufas .block.modal div.foot a { padding: 12px 32px; }
 

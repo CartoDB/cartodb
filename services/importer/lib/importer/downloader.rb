@@ -125,7 +125,11 @@ module CartoDB
 
       def name_from(headers, url, custom=nil)
         name =  custom || name_from_http(headers) || name_in(url)
-        random_name if (name == nil || name == '')
+        if name == nil || name == ''
+          random_name
+        else
+          name
+        end
       end #filename_from
 
       def content_length_from(headers)

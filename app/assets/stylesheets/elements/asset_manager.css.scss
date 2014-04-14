@@ -53,7 +53,7 @@
         pointer-events:none;
 
         &.top {
-          top:58px;
+          top:33px;
           @include background(linear-gradient(white, rgba(white,0)));
         }
         &.bottom {
@@ -73,7 +73,7 @@
         overflow: hidden;
         background: image-url("layout/loader_transparent_small.gif") no-repeat center;
 
-        &:nth-child(16n) { margin-right:0 } 
+        &:nth-child(14n) { margin-right:0 } 
 
         a.image {
           @include inline-block();

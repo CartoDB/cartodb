@@ -468,7 +468,7 @@ $$
   def get_geocoding_calls(options = {})
     date_to = (options[:to] ? options[:to].to_date : Date.today)
     date_from = (options[:from] ? options[:from].to_date : self.last_billing_cycle)
-    Geocoding.where('user_id = ? AND created_at >= ? and created_at <= ? and remote_id IS NOT NULL', self.id, date_from, date_to + 1.days)
+    self.geocodings_dataset.where(kind: 'high-resolution').where('created_at >= ? and created_at <= ?', date_from, date_to + 1.days)
       .sum("processed_rows + cache_hits".lit).to_i
   end # get_geocoding_calls
 

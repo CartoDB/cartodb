@@ -132,9 +132,9 @@ module ApplicationHelper
     current_user.present? ? current_user.account_type.to_s.upcase : 'UNAUTHENTICATED'
   end
 
-  def insert_google_analytics(track)
+  def insert_google_analytics(track, custom_vars = {})
     if not Cartodb.config[:google_analytics].blank? and not Cartodb.config[:google_analytics][track].blank? and not Cartodb.config[:google_analytics]["domain"].blank?
-      render(:partial => 'shared/analytics', :locals => {ua: Cartodb.config[:google_analytics][track], domain: Cartodb.config[:google_analytics]["domain"]})
+      render(:partial => 'shared/analytics', :locals => { ua: Cartodb.config[:google_analytics][track], domain: Cartodb.config[:google_analytics]["domain"], custom_vars: custom_vars })
     end
   end
 

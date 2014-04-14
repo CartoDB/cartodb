@@ -18,8 +18,7 @@
     <%= yield :css %>
     <!--[if gt IE 8]><%= stylesheet_link_tag "fonts_ie" %><![endif]-->
     <%= insert_rollbar() %>
-    <%= insert_google_analytics('primary') %>
-
+    <%= insert_google_analytics('primary', [{title: "Public Pages", value: action_name == "datasets" ? "Other" : "Home", num: 3}] ) %>
     <%= yield :js %>
     <%= csrf_meta_tag %>
   </head>

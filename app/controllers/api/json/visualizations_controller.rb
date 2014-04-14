@@ -114,7 +114,9 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     # This is far from perfect, but works without messing with table-vis sync and their two backends
     if member.table?
       old_vis_name = member.name
-      member.attributes = payload  
+
+      payload.delete(:url_options) if payload[:url_options].present?
+      member.attributes = payload
       new_vis_name = member.name
       old_table_name = member.table.name
       member.store.fetch

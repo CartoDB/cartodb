@@ -28,7 +28,7 @@ module CartoDB
       get_cache_results
       create_temp_table
       load_results_to_temp_table
-      @hits = connection.select.from(temp_table_name).count.to_i
+      @hits = connection.select.from(temp_table_name).where('longitude is not null and latitude is not null').count.to_i
       copy_results_to_table
     rescue => e
       handle_cache_exception e

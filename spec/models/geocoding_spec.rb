@@ -3,7 +3,7 @@ require 'spec_helper'
 
 describe Geocoding do
   before(:all) do
-    @user  = create_user(geocoding_quota: 200)
+    @user  = create_user(geocoding_quota: 200, geocoding_block_price: 1500)
     @table = FactoryGirl.create(:table, user_id: @user.id)
   end
 
@@ -31,14 +31,12 @@ describe Geocoding do
     end
 
     it 'returns an instance of InternalGeocoder when kind is not high-resolution' do
-      pending 'To be fixed'
-      geocoding = FactoryGirl.build(:geocoding, user: @user, table: @table, kind: 'admin0')
+      geocoding = FactoryGirl.build(:geocoding, user: @user, table: @table, kind: 'admin0', geometry_type: 'point')
       geocoding.table_geocoder.should be_kind_of(CartoDB::InternalGeocoder)
     end
 
     it 'memoizes' do
-      pending 'To be fixed'
-      geocoding = FactoryGirl.build(:geocoding, user: @user, table: @table, kind: 'admin0')
+      geocoding = FactoryGirl.build(:geocoding, user: @user, table: @table, kind: 'admin0', geometry_type: 'point')
       geocoder = geocoding.table_geocoder
       geocoder.should be_kind_of(CartoDB::InternalGeocoder)
       geocoder.should eq geocoding.table_geocoder
@@ -49,11 +47,13 @@ describe Geocoding do
     let(:geocoding) { FactoryGirl.build(:geocoding, user: @user, table: @table) }
 
     it 'validates formatter' do
+      geocoding.raise_on_save_failure = true
       expect { geocoding.save }.to raise_error(Sequel::ValidationFailed)
       geocoding.errors[:formatter].join(',').should match /is not present/
     end
 
     it 'validates kind' do
+      geocoding.raise_on_save_failure = true
       geocoding.kind = 'nonsense'
       expect { geocoding.save }.to raise_error(Sequel::ValidationFailed)
       geocoding.errors[:kind].join(',').should match /is not in range or set/
@@ -85,7 +85,7 @@ describe Geocoding do
   end
 
   describe '#run!' do
-    it 'updates processed_rows, cache_hits and state' do
+    it 'updates geocoding stats' do
       geocoding = FactoryGirl.create(:geocoding, user: @user, table: @table, formatter: 'b')
       geocoding.table_geocoder.stubs(:run).returns true
       geocoding.table_geocoder.stubs(:cache).returns  OpenStruct.new(hits: 5)
@@ -136,11 +136,10 @@ describe Geocoding do
     let(:geocoding) { FactoryGirl.build(:geocoding, user: @user) }
 
     it 'returns the remaining quota if the user has hard limit' do
-      pending 'To be fixed'
       @user.stubs('hard_geocoding_limit?').returns(true)
       delete_user_data @user
       geocoding.max_geocodable_rows.should eq 200
-      FactoryGirl.create(:geocoding, user: @user, processed_rows: 100)
+      FactoryGirl.create(:geocoding, user: @user, processed_rows: 100, remote_id: 'wadus')
       geocoding.max_geocodable_rows.should eq 100
     end
 
@@ -163,6 +162,47 @@ describe Geocoding do
       CartoDB.expects(:notify_exception).times(1)
       geocoding.table_geocoder.expects(:cancel).times(5).raises("error")
       geocoding.cancel
+    end
+  end
+
+  describe '#calculate_used_credits' do
+    before(:each) do
+      @user.geocodings_dataset.delete
+    end
+
+    it 'returns 0 when the geocode is not high-resolution' do
+      geocoding = FactoryGirl.create(:geocoding, user: @user, kind: 'admin0', processed_rows: 10500)
+      geocoding.calculate_used_credits.should eq 0
+    end
+
+    it 'returns 0 when the user has enough quota' do
+      # User has 200 geocoding credits, so geocoding 200 strings should take 0 credits
+      geocoding = FactoryGirl.create(:geocoding, user: @user, processed_rows: 0, cache_hits: 200, kind: 'high-resolution')
+      geocoding.calculate_used_credits.should eq 0
+    end
+
+    it 'returns the used credits when the user is over geocoding quota' do
+      geocoding = FactoryGirl.create(:geocoding, user: @user, processed_rows: 0, cache_hits: 100, kind: 'high-resolution')
+      # 100 total (user has 200) => 0 used credits
+      geocoding.calculate_used_credits.should eq 0
+      geocoding = FactoryGirl.create(:geocoding, user: @user, processed_rows: 0, cache_hits: 150, kind: 'high-resolution')
+      # 250 total => 50 used credits
+      geocoding.calculate_used_credits.should eq 50
+      geocoding = FactoryGirl.create(:geocoding, user: @user, processed_rows: 100, cache_hits: 0, kind: 'high-resolution')
+      # 350 total => 100 used credits
+      geocoding.calculate_used_credits.should eq 100
+    end
+  end
+
+  describe '#price' do
+    it 'returns 0 when the job used no credits' do
+      geocoding = FactoryGirl.create(:geocoding, user: @user, used_credits: 0)
+      geocoding.price.should eq 0
+    end
+
+    it 'returns the expected price when the geocoding used some credits' do
+      geocoding = FactoryGirl.create(:geocoding, user: @user, used_credits: 100)
+      geocoding.price.should eq 150
     end
   end
 

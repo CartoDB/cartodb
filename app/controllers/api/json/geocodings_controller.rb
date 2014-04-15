@@ -44,7 +44,7 @@ class Api::Json::GeocodingsController < Api::ApplicationController
   end
 
   def country_data_for
-    response = { admin1: ["polygon"], namedplace: ["point"] }
+    response = { admin1: ["polygon"] }
     rows     = CartoDB::SQLApi.new(username: 'geocoding')
                  .fetch("SELECT service FROM postal_code_coverage WHERE iso3 = (SELECT iso3 FROM country_decoder WHERE name = '#{params[:country_code]}')")
                  .map { |i| i['service'] }
@@ -58,4 +58,21 @@ class Api::Json::GeocodingsController < Api::ApplicationController
             .fetch("SELECT distinct(pol.name) iso3, pol.name FROM country_decoder pol ORDER BY pol.name ASC")
     render json: rows
   end
+
+  def estimation_for
+    table = current_user.tables.where(name: params[:table_name]).first
+    total_rows       = Geocoding.processable_rows(table)
+    remaining_blocks = (current_user.geocoding_quota - current_user.get_geocoding_calls) / User::GEOCODING_BLOCK_SIZE
+    remaining_blocks = (remaining_blocks > 0 ? remaining_blocks : 0)
+    needed_blocks    = (total_rows / User::GEOCODING_BLOCK_SIZE) - remaining_blocks
+    needed_blocks    = (needed_blocks > 0 ? needed_blocks : 0)
+    render json: { 
+      rows:       total_rows,
+      blocks:     needed_blocks,
+      estimation: current_user.geocoding_block_price.to_i * needed_blocks
+    }
+  rescue => e
+    render_jsonp( { description: e.message }, 500)
+  end
+
 end

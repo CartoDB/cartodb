@@ -74,12 +74,14 @@ describe "Geocodings API" do
 
   describe 'GET /api/v1/geocodings/:id' do
     it 'returns a geocoding' do
-      geocoding = FactoryGirl.create(:geocoding, table_id: UUIDTools::UUID.timestamp_create.to_s, formatter: 'b', user: @user)
-      FactoryGirl.create(:geocoding, table_id: UUIDTools::UUID.timestamp_create.to_s, formatter: 'b', user_id: UUIDTools::UUID.timestamp_create.to_s)
+      geocoding = FactoryGirl.create(:geocoding, table_id: UUIDTools::UUID.timestamp_create.to_s, formatter: 'b', user: @user, used_credits: 100, processed_rows: 100, kind: 'high-resolution')
 
       get_json v1_geocoding_url(params.merge(id: geocoding.id)) do |response|
         response.status.should be_success
         response.body[:id].should eq geocoding.id
+        response.body[:used_credits].should eq 100
+        response.body[:price].should eq 150
+        response.body[:remaining_quota].should eq 900
       end
     end
 

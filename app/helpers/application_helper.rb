@@ -68,6 +68,8 @@ module ApplicationHelper
       dropbox_api_key:     Cartodb.config[:dropbox_api_key],
       gdrive_api_key:      Cartodb.config[:gdrive]['api_key'],
       gdrive_app_id:       Cartodb.config[:gdrive]['app_id'],
+      oauth_dropbox:       Cartodb.config[:oauth]['dropbox']['app_key'],
+      oauth_gdrive:        Cartodb.config[:oauth]['gdrive']['client_id'],
       max_asset_file_size: Cartodb.config[:assets]["max_file_size"]
     }
 
@@ -139,6 +141,12 @@ module ApplicationHelper
   def insert_rollbar()
     if not Cartodb.config[:rollbar].blank? and not Cartodb.config[:rollbar]['token'].blank?
       render(:partial => 'shared/rollbar', :locals => { token: Cartodb.config[:rollbar]['token'] })
+    end
+  end
+
+  def insert_trackjs()
+    if not Cartodb.config[:trackjs].blank? and not Cartodb.config[:trackjs]['customer'].blank?
+      render(:partial => 'shared/trackjs', :locals => { customer: Cartodb.config[:trackjs]['customer'] })
     end
   end
 

@@ -11,7 +11,7 @@
     <%= favicon_link_tag "/favicons/favicon.ico" %>
     <%= stylesheet_link_tag 'common.css', 'front.css', :media => 'all' %>
     <!--[if gt IE 8]><%= stylesheet_link_tag 'fonts_ie.css' %><![endif]-->
-    <%= insert_rollbar() %>
+    <%= insert_trackjs() %>
     <%= insert_google_analytics('primary') %>
     <%= yield :js %>
     <noscript><meta http-equiv="refresh" content="0;url=/no_javascript.html"></noscript>

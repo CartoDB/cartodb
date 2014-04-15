@@ -1,0 +1,133 @@
+
+  /**
+   *  Styles for import service pane.
+   *
+   *  - Services that requires oauth calls,...
+   *  - Loading states.
+   *  - Display lists.
+   *  - Error in the process.
+   *  - Final input file.
+   */
+
+  @import "common/mixins";
+  @import "common/form-elements";
+
+
+  .import-service-pane {
+    position:relative;
+    margin-bottom:30px!important;
+    display:block;
+
+    a.service-button, a.change {
+      @include inline-block();
+      margin:0;
+      padding:4px 7px;
+      font-size:12px;
+      font-weight:bold;
+      letter-spacing:0;
+    }
+
+    a.change { display:none }
+
+    p {
+      &.msg { display:none }
+      &.filename { width:335px!important }
+    }
+
+    span.loader {
+      position:absolute;
+      display:none;
+      top:15px;
+      right:10px;
+      width:38px!important;
+      height:16px;
+      margin:0!important;
+      padding:0!important;
+      background:image-url("layout/loader.gif") no-repeat center center;
+    }
+
+    ul {
+      display:none;
+      max-height:240px;
+      overflow:auto;
+
+      li {
+        position:relative;
+        padding:10px 0;
+        border-top:1px solid #DDD;
+        
+        &:first-child { border:none }
+
+        &.empty {
+          padding:30px 90px;
+          text-align:center;
+          color:#999;
+          line-height:18px;
+        }
+      }
+
+      p {
+        display:block;
+        width:420px;
+        max-width:420px;
+        @include text-overflow();
+
+        &.small { margin-top:2px }
+      }
+
+      a {
+        position: absolute;
+        right:15px;
+        top:13px;
+      }
+    }
+      
+    div.upload {
+      position:relative;
+      height:22px;
+      padding:11px 10px;
+      border:1px solid #CCCCCC;
+      background:white;
+      @include border-radius(4px);
+      z-index:2;
+
+      p.filename {
+        float:left;
+        @include inline-block();
+        display:none;
+        width:285px;
+        margin:2px 0 0 4px;
+        font-size:15px;
+        font-style:italic;
+        color:#666;
+        @include text-overflow();
+      }
+    }
+
+    div.infobox {
+      @include default-form-info();
+      z-index:2;
+      div.info {
+        position:relative;
+        z-index:1;
+      }
+    }
+
+    span.scroll {
+      position:absolute;
+      left:0;
+      right:5px;
+      width:100%;
+      height:30px;
+      background:transparent;
+      padding:0;
+      margin:0;
+      @include border-radius(0);
+      pointer-events:none;
+      z-index:10;
+
+      &.top {top:0; @include background(linear-gradient(rgba(white,1), rgba(white,0)));}
+      &.bottom {bottom:0px; @include background(linear-gradient(rgba(white,0), rgba(white,1)));}
+    }
+  }
+

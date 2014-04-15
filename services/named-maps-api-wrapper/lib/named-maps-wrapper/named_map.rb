@@ -114,7 +114,7 @@ module CartoDB
 
             layer_placeholder = "layer#{layer_num}"
             layer_num += 1
-            layer_options[:sql] = "WITH wrapped_query AS (#{layer[:options][:sql]}) SELECT * from wrapped_query where <%= #{layer_placeholder} %>=1"
+            layer_options[:sql] = "SELECT * FROM (#{layer[:options][:sql]}) AS wrapped_query WHERE <%= #{layer_placeholder} %>=1"
 
             template_data[:placeholders][layer_placeholder.to_sym()] = {
               type:     'number',

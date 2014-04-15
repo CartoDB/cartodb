@@ -40,16 +40,12 @@ install:
   - cd lib/build && npm install && cd ../..
 
 script:
-  - make prepare-test-db
-  - make check-prepared
-  # check list of database names
-  - cd lib/build && grunt test && cd ../..
-  - sudo su postgres -c "echo 'select datname from pg_database;' | psql template_postgis"
+  - make travis
 
 env:
 
-notifications:
-  irc:
-    channels:
-      - "irc.freenode.org#cartodb"
-    use_notice: true
+#notifications:
+#  irc:
+#    channels:
+#      - "irc.freenode.org#cartodb"
+#    use_notice: true

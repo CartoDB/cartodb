@@ -6,7 +6,7 @@
     <%= favicon_link_tag "/favicons/favicon.ico" %>
     <%= yield :css %>
     <!--[if gt IE 8]><%= stylesheet_link_tag 'fonts_ie.css' %><![endif]-->
-    <%= insert_rollbar() %>
+    <%= insert_trackjs() %>
     <%= insert_google_analytics('primary') %>
     <%= render 'shared/mixpanel' %>
     <%= yield :js %>
@@ -22,7 +22,7 @@
     <% end %>
     <%= yield %>
     <% if ( ( controller_name != "visualizations" && controller_name != "tables" ) || action_name != "show" ) %>
-      <%= render 'admin/shared/public_footer' %>
+      <%= render 'admin/shared/footer' %>
     <% end %>
   </body>
 </html>

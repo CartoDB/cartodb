@@ -183,7 +183,7 @@ module CartoDB
               puts statement.inspect
             database.run(statement)
           rescue => exception
-            puts exception.to_s + exception.backtrace.join("\n")
+            puts "copy_indexes(#{origin_table_name},#{destination_table_name}) ERROR: #{exception.to_s}"
           end
         end
       end

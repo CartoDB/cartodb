@@ -18,6 +18,8 @@ module CartoDB
     class Member
       include Virtus.model
 
+      MAX_RETRIES     = 5
+
       STATE_CREATED   = 'created'
       STATE_SYNCING   = 'syncing'
       STATE_SUCCESS   = 'success'
@@ -65,9 +67,11 @@ module CartoDB
       end
 
       def to_s
-        "<CartoDB::Synchronization::Member id:\"#{@id}\" state:\"#{@state}\" ran_at:\"#{@ran_at}\" " \
-        "run_at:\"#{@run_at}\" interval:\"#{@interval}\" retried_times:\"#{@retried_times}\" log_id:\"#{@log_id}\" " \
-        "service_name:\"#{@service_name}\" service_item_id:\"#{@service_item_id}\" checksum:\"#{@checksum}\">"
+        "<CartoDB::Synchronization::Member id:\"#{@id}\" name:\"#{@name}\" ran_at:\"#{@ran_at}\" run_at:\"#{@run_at}\" " \
+        "interval:\"#{@interval}\" state:\"#{@state}\" retried_times:\"#{@retried_times}\" log_id:\"#{@log_id}\" " \
+        "service_name:\"#{@service_name}\" service_item_id:\"#{@service_item_id}\" checksum:\"#{@checksum}\" " \
+        "url:\"#{@url}\" error_code:\"#{@error_code}\" error_message:\"#{@error_message}\" modified_at:\"#{@modified_at}\" " \
+        " user_id:\"#{@user_id}\" >"
       end #to_s
 
       def interval=(seconds=3600)
@@ -121,7 +125,7 @@ module CartoDB
 
         if importer.success?
           set_success_state_from(importer)
-        elsif retried_times < 3
+        elsif retried_times < MAX_RETRIES
           set_retry_state_from(importer)
         else
           set_failure_state_from(importer)
@@ -266,7 +270,7 @@ module CartoDB
             user:     user.database_username,
             password: user.database_password,
             database: user.database_name,
-	    host:     user.user_database_host
+	          host:     user.user_database_host
           )
       end 
 

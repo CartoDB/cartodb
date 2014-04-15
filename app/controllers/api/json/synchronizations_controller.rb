@@ -10,7 +10,7 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
   ssl_required :index, :show, :create, :update, :destroy
 
   def index
-    collection = Synchronization::Collection.new.fetch
+    collection = Synchronization::Collection.new.fetch(user_id: current_user.id)
     representation = collection.map(&:to_hash)
     response  = {
       synchronizations: representation,

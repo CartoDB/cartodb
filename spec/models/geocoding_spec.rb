@@ -88,7 +88,7 @@ describe Geocoding do
     it 'updates geocoding stats' do
       geocoding = FactoryGirl.create(:geocoding, user: @user, table: @table, formatter: 'b')
       geocoding.table_geocoder.stubs(:run).returns true
-      geocoding.table_geocoder.stubs(:cache).returns  OpenStruct.new(hits: 5)
+      geocoding.table_geocoder.stubs(:cache).returns  OpenStruct.new(hits: 5000)
       geocoding.table_geocoder.stubs(:process_results).returns true
       CartoDB::Geocoder.any_instance.stubs(:status).returns 'completed'
       CartoDB::Geocoder.any_instance.stubs(:update_status).returns true
@@ -96,7 +96,8 @@ describe Geocoding do
       geocoding.run!
       geocoding.processed_rows.should eq 10
       geocoding.state.should eq 'finished'
-      geocoding.cache_hits.should eq 5
+      geocoding.cache_hits.should eq 5000
+      geocoding.used_credits.should eq 4810
     end
 
     it 'marks the geocoding as failed if the geocoding job fails' do

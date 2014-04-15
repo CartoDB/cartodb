@@ -80,7 +80,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     end
 
     # Make public by default
-    member.privacy = Visualization::Member::PRIVACY_PUBLIC
+    member.privacy = member.default_privacy(current_user)
 
     member.store
     collection  = Visualization::Collection.new.fetch
@@ -165,7 +165,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   end #stats
 
   def vizjson1
-    visualization, table = locator.get(params.fetch(:id), CartoDB.extract_subdomain(request))
+    visualization,  = locator.get(params.fetch(:id), CartoDB.extract_subdomain(request))
     return(head 404) unless visualization
     return(head 403) unless allow_vizjson_v1_for?(visualization.table)
     set_vizjson_response_headers_for(visualization)
@@ -175,10 +175,13 @@ class Api::Json::VisualizationsController < Api::ApplicationController
       Cartodb.config, 
       CartoDB::Logger
     ).to_poro)
+  rescue => exception
+    CartoDB.notify_exception(exception)
+    raise exception
   end #vizjson1
 
   def vizjson2
-    visualization, table = locator.get(params.fetch(:id), CartoDB.extract_subdomain(request))
+    visualization,  = locator.get(params.fetch(:id), CartoDB.extract_subdomain(request))
     return(head 404) unless visualization
     return(head 403) unless allow_vizjson_v2_for?(visualization)
     set_vizjson_response_headers_for(visualization)
@@ -186,11 +189,17 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   rescue KeyError => exception
     render(text: exception.message, status: 403)
   rescue CartoDB::NamedMapsWrapper::HTTPResponseError => exception
+    CartoDB.notify_exception(exception)
     render_jsonp({ errors: { named_maps_api: "Communication error with tiler API. HTTP Code: #{exception.message}" } }, 400)
   rescue CartoDB::NamedMapsWrapper::NamedMapDataError => exception
-    render_jsonp({ errors: { named_map: exception } }, 400)
+    CartoDB.notify_exception(exception)
+    render_jsonp({ errors: { named_map: exception.message } }, 400)
   rescue CartoDB::NamedMapsWrapper::NamedMapsDataError => exception
-    render_jsonp({ errors: { named_maps: exception } }, 400)
+    CartoDB.notify_exception(exception)
+    render_jsonp({ errors: { named_maps: exception.message } }, 400)
+  rescue => exception
+    CartoDB.notify_exception(exception)
+    raise exception
   end #vizjson
 
   private
@@ -204,11 +213,11 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   end #scope_for
 
   def allow_vizjson_v1_for?(table)
-    table && (table.public? || current_user_is_owner?(table))
+    table && (table.public? || table.public_with_link_only? || current_user_is_owner?(table))
   end #allow_vizjson_v1_for?
 
   def allow_vizjson_v2_for?(visualization)
-    visualization && visualization.public?
+    visualization && (visualization.public? || visualization.public_with_link?)
   end #allow_vizjson_v2_for?
 
   def current_user_is_owner?(table)

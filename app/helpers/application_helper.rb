@@ -68,6 +68,8 @@ module ApplicationHelper
       dropbox_api_key:     Cartodb.config[:dropbox_api_key],
       gdrive_api_key:      Cartodb.config[:gdrive]['api_key'],
       gdrive_app_id:       Cartodb.config[:gdrive]['app_id'],
+      oauth_dropbox:       Cartodb.config[:oauth]['dropbox']['app_key'],
+      oauth_gdrive:        Cartodb.config[:oauth]['gdrive']['client_id'],
       max_asset_file_size: Cartodb.config[:assets]["max_file_size"]
     }
 
@@ -142,6 +144,12 @@ module ApplicationHelper
     end
   end
 
+  def insert_trackjs()
+    if not Cartodb.config[:trackjs].blank? and not Cartodb.config[:trackjs]['customer'].blank?
+      render(:partial => 'shared/trackjs', :locals => { customer: Cartodb.config[:trackjs]['customer'] })
+    end
+  end
+
   ##
   # Checks that the precompile list contains this file or raises an error, in dev only
   # Note: You will need to move config.assets.precompile to application.rb from production.rb
@@ -182,12 +190,12 @@ module ApplicationHelper
 
   def v2_vizjson_url(visualization)
     "/api/v2/viz/#{visualization.id}/viz"
-  end #v2_vizjon_url
+  end #v2_vizjson_url
 
   # TODO reactivate in order to allow CartoDB plugins
-  # to inject content into the CartoDB admin UI 
+  # to inject content into the CartoDB admin UI
   # def content_from_plugins_for(hook)
-  #   ::CartoDB::Plugin.registered.map do |plugin| 
+  #   ::CartoDB::Plugin.registered.map do |plugin|
   #     hook_name = "#{plugin.name.underscore}_#{hook}_hook"
   #     send(hook_name) if defined?(hook_name)
   #   end.join('').html_safe

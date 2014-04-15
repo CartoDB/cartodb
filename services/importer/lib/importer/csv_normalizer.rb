@@ -10,6 +10,7 @@ require_relative './unp'
 module CartoDB
   module Importer2
     class CsvNormalizer
+      LINE_SIZE_FOR_CLEANING = 5000
       LINES_FOR_DETECTION   = 100       # How many lines to read?
       SAMPLE_READ_LIMIT     = 500000   # Read big enough sample bytes for the encoding sampling
       COMMON_DELIMITERS     = [',', "\t", ' ', ';']
@@ -31,8 +32,9 @@ module CartoDB
       def run
         return self unless File.exists?(filepath)
 
-        sanitized_filepath = remove_newlines(temporary_filepath('nl_'))
-        File.rename(sanitized_filepath, filepath)
+        # TODO: Removed because .each_char takes too long to process big CSVs
+        #sanitized_filepath = remove_newlines(temporary_filepath('nl_'))
+        #File.rename(sanitized_filepath, filepath)
 
         detect_delimiter
 
@@ -53,7 +55,7 @@ module CartoDB
 
         lines_for_detection = Array.new
 
-        LINES_FOR_DETECTION.times { 
+        LINES_FOR_DETECTION.times {
           line = stream.gets 
           lines_for_detection << line unless line.nil?
         }
@@ -219,17 +221,23 @@ module CartoDB
         File.open(filepath, 'rb')
             .each_line(line_delimiter) { |line| 
 
-          line.each_char { |character|
-            if character == "\""
-              opened_quotes += 1
+          if line.size < LINE_SIZE_FOR_CLEANING
+            line.each_char { |character|
+              if character == "\""
+                opened_quotes += 1
+              end
+              if character != "\n"
+                aggregated_line += character
+              end
+            }
+            if opened_quotes % 2 == 0
+              sanitized_file << (aggregated_line + "\n")
+              aggregated_line = ''
+              opened_quotes = 0
             end
-            if character != "\n"
-              aggregated_line += character
-            end
-          }
-
-          if opened_quotes % 2 == 0
-            sanitized_file << (aggregated_line + "\n")
+          else
+            # Line too big for processing, so just adding it
+            sanitized_file << line
             aggregated_line = ''
             opened_quotes = 0
           end

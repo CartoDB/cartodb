@@ -27,12 +27,12 @@ class Api::Json::TablesController < Api::ApplicationController
       @table = Table.where(id: @table.id).first
       render_jsonp(@table.public_values, 200, { location: "/tables/#{@table.id}" })
     else
-      CartoDB::Logger.info "Error on tables#create", @table.errors.full_messages
+      CartoDB::Logger.info 'Error on tables#create', @table.errors.full_messages
       render_jsonp( { :description => @table.errors.full_messages,
                       :stack => @table.errors.full_messages
                     }, 400)
     end
-  rescue CartoDB::QuotaExceeded => exception
+  rescue CartoDB::QuotaExceeded
     render_jsonp({ errors: [TABLE_QUOTA_REACHED_TEXT]}, 400)
   end
 
@@ -81,9 +81,9 @@ class Api::Json::TablesController < Api::ApplicationController
     end
 
     @table.set_except(params, :name)
-    if params.keys.include?("latitude_column") && params.keys.include?("longitude_column")
-      latitude_column  = params[:latitude_column]  == "nil" ? nil : params[:latitude_column].try(:to_sym)
-      longitude_column = params[:longitude_column] == "nil" ? nil : params[:longitude_column].try(:to_sym)
+    if params.keys.include?('latitude_column') && params.keys.include?('longitude_column')
+      latitude_column  = params[:latitude_column]  == 'nil' ? nil : params[:latitude_column].try(:to_sym)
+      longitude_column = params[:longitude_column] == 'nil' ? nil : params[:longitude_column].try(:to_sym)
       @table.georeference_from!(:latitude_column => latitude_column, :longitude_column => longitude_column)
       render_jsonp(@table.public_values.merge(warnings: warnings)) and return
     end
@@ -120,7 +120,7 @@ class Api::Json::TablesController < Api::ApplicationController
     @table = Table.find_by_subdomain(CartoDB.extract_subdomain(request), params[:id])
     if @table.present? && (@table.public? || (current_user.present? && @table.owner.id == current_user.id))
       response.headers['X-Cache-Channel'] = "#{@table.varnish_key}:vizjson"
-      response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
+      response.headers['Cache-Control']   = 'no-cache,max-age=86400,must-revalidate, public'
       render_jsonp({})
     else
       head :forbidden
@@ -132,7 +132,7 @@ class Api::Json::TablesController < Api::ApplicationController
   def load_table
     rx = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/
     if rx.match(params[:id])
-      @table = Table.where("user_id = ? AND (name = ? OR id = ?)", current_user.id, params[:id], params[:id]).first
+      @table = Table.where('user_id = ? AND (name = ? OR id = ?)', current_user.id, params[:id], params[:id]).first
     else
       @table = Table.where(:name => params[:id], :user_id => current_user.id).first
     end

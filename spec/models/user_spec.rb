@@ -281,7 +281,7 @@ describe User do
 
   it "should have many tables" do
     @user2.tables.should be_empty
-    create_table :user_id => @user2.id, :name => 'My first table', :privacy => Table::PUBLIC
+    create_table :user_id => @user2.id, :name => 'My first table', :privacy => Table::PRIVACY_PUBLIC
     @user2.reload
     @user2.tables.all.should == [Table.first(:user_id => @user2.id)]
   end
@@ -291,7 +291,7 @@ describe User do
   it "should update remaining quotas when adding or removing tables" do
     initial_quota = @user2.remaining_quota
 
-    expect { create_table :user_id => @user2.id, :privacy => Table::PUBLIC }
+    expect { create_table :user_id => @user2.id, :privacy => Table::PRIVACY_PUBLIC }
       .to change { @user2.remaining_table_quota }.by(-1)
 
     table = Table.filter(:user_id => @user2.id).first
@@ -577,7 +577,7 @@ describe User do
 
   it "should remove its database and database user after deletion" do
     doomed_user = create_user :email => 'doomed1@example.com', :username => 'doomed1', :password => 'doomed123'
-    create_table :user_id => doomed_user.id, :name => 'My first table', :privacy => Table::PUBLIC
+    create_table :user_id => doomed_user.id, :name => 'My first table', :privacy => Table::PRIVACY_PUBLIC
     doomed_user.reload
     Rails::Sequel.connection["select count(*) from pg_catalog.pg_database where datname = '#{doomed_user.database_name}'"]
       .first[:count].should == 1

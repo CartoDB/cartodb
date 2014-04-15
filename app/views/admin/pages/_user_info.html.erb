@@ -1,0 +1,24 @@
+<div class="info">
+
+  <div class="user-info">
+
+    <a href="/" class="avatar">
+      <div class="circle">
+        <img src="<%= @avatar_url %>" />
+      </div>
+    </a>
+
+    <div class="username">
+      <h2><%= @username %></h2>
+    </div>
+    <ul>
+      <% if action_name == 'datasets' %>
+        <li><div class="count"><strong><%= @tables_num %></strong>dataset<%= @tables_num == 1 ? '' : 's' %></div></li>
+        <li><a href="/" class="count"><strong><%= @vis_num %></strong>visualization<%= @vis_num == 1 ? '' : 's' %></a></li>
+      <% else %>
+        <li><a href="/datasets" class="count"><strong><%= @tables_num %></strong>dataset<%= @tables_num == 1 ? '' : 's' %></a></li>
+        <li><div class="count"><strong><%= @vis_num %></strong>visualization<%= @vis_num == 1 ? '' : 's' %></div></li>
+      <% end %>
+    </ul>
+
+  </div>

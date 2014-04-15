@@ -3,10 +3,10 @@
   <head>
     <meta charset='utf-8' />
     <title><%= yield :page_title %>CartoDB</title>
-    <link id="favicon" rel="shortcut icon" href="/favicons/favicon.ico" />
+    <%= favicon_link_tag "/favicons/favicon.ico" %>
     <%= yield :css %>
-    <!--[if gt IE 8]><%= stylesheet_link_tag :fonts_ie %><![endif]-->
-    <%= insert_rollbar() %>
+    <!--[if gt IE 8]><%= stylesheet_link_tag 'fonts_ie.css' %><![endif]-->
+    <%= insert_trackjs() %>
     <%= insert_google_analytics('primary') %>
     <%= yield :js %>
     <%= csrf_meta_tag %>

@@ -7,9 +7,8 @@ module CartoDB
     class Raster2Pgsql
       SCHEMA        = 'cdb_importer'
       DEFAULT_SRID  = 4326
-      BLOCKSIZE     = "256x256"
-      NORMALIZER_RELATIVE_PATH = 
-        "../../../../../lib/importer/misc/shp_normalizer.py"
+      BLOCKSIZE     = '256x256'
+      NORMALIZER_RELATIVE_PATH = '../../../../../lib/importer/misc/shp_normalizer.py'
 
       def initialize(table_name, filepath, pg_options)
         self.filepath   = filepath
@@ -22,9 +21,11 @@ module CartoDB
         self.command_output     = stdout + stderr
         self.exit_code          = status.to_i
 
-        raise UnknownSridError          if command_output =~ /invalid SRID/
-        raise TiffToSqlConversionError  if exit_code != 0
-        raise TiffToSqlConversionError  if command_output =~ /failure/
+        output_message = "(#{exit_code}) |#{command_output}| Command: #{command}"
+
+        raise UnknownSridError.new(output_message)          if command_output =~ /invalid SRID/
+        raise TiffToSqlConversionError.new(output_message)  if exit_code != 0
+        raise TiffToSqlConversionError.new(output_message)  if command_output =~ /failure/
         self
       end #run
 
@@ -57,7 +58,7 @@ module CartoDB
       end #statement_timeout
 
       def pg_copy_option
-        "PG_USE_COPY=YES"
+        'PG_USE_COPY=YES'
       end #pg_copy_option
 
       def psql_command

@@ -64,7 +64,6 @@ module CartoDB
       def default_pg_options
         configuration = YAML.load_file(DATABASE_CONFIG_YAML)
         options       = configuration[ENV['RAILS_ENV'] || 'development']
-
         {
           host:       options.fetch('host'),
           port:       options.fetch('port'),

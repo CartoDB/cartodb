@@ -107,7 +107,7 @@ module CartoDB
         UPDATE #{table_name} AS dest
         SET the_geom = orig.the_geom, cartodb_georef_status = orig.cartodb_georef_status
         FROM #{temp_table_name} AS orig
-        WHERE #{column_name} = orig.geocode_string AND cartodb_georef_status IS NULL
+        WHERE #{column_name} = orig.geocode_string AND dest.cartodb_georef_status IS NULL
       })
     end # copy_results_to_table
 

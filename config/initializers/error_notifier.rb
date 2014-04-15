@@ -14,9 +14,12 @@ Rollbar.configure do |config|
 end
 
 module CartoDB
-  def self.notify_exception(e, extra)
+  def self.notify_exception(e, extra={})
     user = extra.delete(:user)
     request = extra.delete(:request)
     Rollbar.report_exception(e, request, user)
+  rescue
+    # If Rollbar fails, bubble up the exception
+    raise e
   end
 end

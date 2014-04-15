@@ -25,7 +25,6 @@ describe Url::Dropbox do
         pending('This test requires manual run, opening the url in a browser, grabbing the code and setting "input" to it')
         puts dropbox_datasource.get_auth_url
         input = ''
-        debugger
         dropbox_datasource.validate_auth_code(input)
         puts dropbox_datasource.token
       end

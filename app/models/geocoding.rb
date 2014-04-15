@@ -107,12 +107,12 @@ class Geocoding < Sequel::Model
     remaining_quota  = user.geocoding_quota + total_rows - user.get_geocoding_calls
     remaining_quota  = (remaining_quota > 0 ? remaining_quota : 0)
     used_credits     = total_rows - remaining_quota
-    used_credits > 0 ? used_credits : 0
+    (used_credits > 0 ? used_credits : 0)
   end # calculate_used_credits
 
   def price
     return 0 unless used_credits.to_i > 0
-    (user.geocoding_block_price * used_credits) / User::GEOCODING_BLOCK_SIZE
+    (user.geocoding_block_price * used_credits) / User::GEOCODING_BLOCK_SIZE.to_f
   end # price
 
   def remaining_quota

@@ -44,7 +44,7 @@ class Api::Json::GeocodingsController < Api::ApplicationController
   end
 
   def country_data_for
-    response = { admin1: ["polygon"] }
+    response = { admin1: ["polygon"], namedplace: ["point"] }
     rows     = CartoDB::SQLApi.new(username: 'geocoding')
                  .fetch("SELECT service FROM postal_code_coverage WHERE iso3 = (SELECT iso3 FROM country_decoder WHERE name = '#{params[:country_code]}')")
                  .map { |i| i['service'] }

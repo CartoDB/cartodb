@@ -2,8 +2,8 @@
 require 'tempfile'
 require 'fileutils'
 require 'open3'
-require_relative '../importer'
 require_relative './exceptions'
+require_relative './source_file'
 require_relative './kml_splitter'
 require_relative './osm_splitter'
 

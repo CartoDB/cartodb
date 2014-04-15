@@ -68,7 +68,7 @@ class Api::Json::GeocodingsController < Api::ApplicationController
     used_credits     = (used_credits > 0 ? used_credits : 0)
     render json: { 
       rows:       total_rows,
-      estimation: (current_user.geocoding_block_price.to_i * used_credits) / User::GEOCODING_BLOCK_SIZE
+      estimation: (current_user.geocoding_block_price.to_i * used_credits) / User::GEOCODING_BLOCK_SIZE.to_f
     }
   rescue => e
     render_jsonp( { description: e.message }, 500)

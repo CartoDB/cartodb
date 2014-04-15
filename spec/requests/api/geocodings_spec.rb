@@ -158,6 +158,11 @@ describe "Geocodings API" do
         response.status.should be_success
         response.body.should == {:rows=>1400, :estimation=>600}
       end
+      Geocoding.stubs(:processable_rows).returns(1001)
+      get_json estimation_for_v1_geocodings_url(params.merge(table_name: table.name)) do |response|
+        response.status.should be_success
+        response.body.should == {:rows=>1001, :estimation=>1.5}
+      end
     end
 
     it 'returns 500 if the table does not exist' do

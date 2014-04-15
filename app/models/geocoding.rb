@@ -112,7 +112,7 @@ class Geocoding < Sequel::Model
 
   def price
     return 0 unless used_credits.to_i > 0
-    (user.geocoding_block_price * used_credits) / User::GEOCODING_BLOCK_SIZE
+    (user.geocoding_block_price * used_credits) / User::GEOCODING_BLOCK_SIZE.to_f
   end # price
 
   def remaining_quota

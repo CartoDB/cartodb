@@ -203,6 +203,8 @@ describe Geocoding do
     it 'returns the expected price when the geocoding used some credits' do
       geocoding = FactoryGirl.create(:geocoding, user: @user, used_credits: 100)
       geocoding.price.should eq 150
+      geocoding = FactoryGirl.create(:geocoding, user: @user, used_credits: 3)
+      geocoding.price.should eq 4.5
     end
   end
 

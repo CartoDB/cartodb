@@ -92,7 +92,7 @@
               <a href="/" title="Maps by <%= @visualization.user.username %>" class="content">
                 <div class="user-info">
                   <h4>by <%= @visualization.user.username.truncate(20) %></h4>
-                  <h5><%= "#{@public_tables_count} #{@public_tables_count != 1 ? "maps" :"map"} created" %></h5>
+                  <h5><%= "#{@visualization_count} #{@visualization_count != 1 ? "maps" :"map"} created" %></h5>
                 </div>
                 <img src="<%= @avatar_url %>" class="avatar" />
               </a>

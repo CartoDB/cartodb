@@ -62,14 +62,13 @@ class Api::Json::GeocodingsController < Api::ApplicationController
   def estimation_for
     table = current_user.tables.where(name: params[:table_name]).first
     total_rows       = Geocoding.processable_rows(table)
-    remaining_blocks = (current_user.geocoding_quota - current_user.get_geocoding_calls) / User::GEOCODING_BLOCK_SIZE
-    remaining_blocks = (remaining_blocks > 0 ? remaining_blocks : 0)
-    needed_blocks    = (total_rows / User::GEOCODING_BLOCK_SIZE) - remaining_blocks
-    needed_blocks    = (needed_blocks > 0 ? needed_blocks : 0)
+    remaining_quota  = current_user.geocoding_quota - current_user.get_geocoding_calls
+    remaining_quota  = (remaining_quota > 0 ? remaining_quota : 0)
+    used_credits     = total_rows - remaining_quota
+    used_credits     = (used_credits > 0 ? used_credits : 0)
     render json: { 
       rows:       total_rows,
-      blocks:     needed_blocks,
-      estimation: current_user.geocoding_block_price.to_i * needed_blocks
+      estimation: (current_user.geocoding_block_price.to_i * used_credits) / User::GEOCODING_BLOCK_SIZE
     }
   rescue => e
     render_jsonp( { description: e.message }, 500)

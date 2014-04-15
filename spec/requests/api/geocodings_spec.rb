@@ -148,22 +148,15 @@ describe "Geocodings API" do
     let(:table) { create_table(user_id: @user.id) }
 
     it 'returns the estimated geocoding cost for the specified table' do
-      2.times { @user.in_database.run("insert into #{table.name} (name) values ('')") }
+      Geocoding.stubs(:processable_rows).returns(2)
       get_json estimation_for_v1_geocodings_url(params.merge(table_name: table.name)) do |response|
         response.status.should be_success
-        response.body.should == {:rows=>2, :blocks=>0, :estimation=>0}
+        response.body.should == {:rows=>2, :estimation=>0}
       end
-      
-      @user.in_database.run("alter table #{table.name} add column cartodb_georef_status boolean default null")
+      Geocoding.stubs(:processable_rows).returns(1400)
       get_json estimation_for_v1_geocodings_url(params.merge(table_name: table.name)) do |response|
         response.status.should be_success
-        response.body.should == {:rows=>2, :blocks=>0, :estimation=>0}
-      end
-      
-      @user.in_database.run("update #{table.name} set cartodb_georef_status = true")
-      get_json estimation_for_v1_geocodings_url(params.merge(table_name: table.name)) do |response|
-        response.status.should be_success
-        response.body.should == {:rows=>0, :blocks=>0, :estimation=>0}
+        response.body.should == {:rows=>1400, :estimation=>600}
       end
     end
 

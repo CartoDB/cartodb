@@ -426,9 +426,11 @@
       });
     </script>
 
+
     <%= render partial: 'shared/analytics', locals: { 
       ua:     Cartodb.config[:google_analytics]['primary'],
       domain: Cartodb.config[:google_analytics]['domain'],
+      custom_vars: [{title: "Public Pages", value: "Other", num: 3}],
       page_owner: @visualization.user
     } %>
 

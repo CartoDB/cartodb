@@ -227,13 +227,16 @@ class Api::Json::ImportsController < Api::ApplicationController
 
     s3_config = Cartodb.config[:importer]['s3']
     if s3_config && s3_config['access_key_id'] && s3_config['secret_access_key']
-      AWS.config(access_key_id: Cartodb.config[:importer]['s3']['access_key_id'], secret_access_key: Cartodb.config[:importer]['s3']['secret_access_key'])
+      AWS.config(
+        access_key_id: Cartodb.config[:importer]['s3']['access_key_id'],
+        secret_access_key: Cartodb.config[:importer]['s3']['secret_access_key']
+      )
       s3 = AWS::S3.new
       s3_bucket = s3.buckets[s3_config['bucket_name']]
 
       path = "#{random_token}/#{File.basename(filename)}"
       o = s3_bucket.objects[path]
-      o.write(filedata, { acl: :public_read })
+      o.write(filedata, { acl: :authenticated_read })
 
       o.url_for(:get, expires: s3_config['url_ttl']).to_s
     else

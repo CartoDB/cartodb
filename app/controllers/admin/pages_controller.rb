@@ -101,7 +101,8 @@ class Admin::PagesController < ApplicationController
           id:           vis.id,
           tags:         vis.tags,
           layers:       vis.layers(:carto_and_torque),
-          mapviews:     vis.stats.values.reduce(:+) # Sum last 30 days stats, for now only approach
+          mapviews:     vis.stats.values.reduce(:+), # Sum last 30 days stats, for now only approach
+          url_options:  vis.url_options
         }
       )
     end

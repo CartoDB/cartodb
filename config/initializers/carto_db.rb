@@ -147,6 +147,10 @@ module CartoDB
       title: 'Encoding detection error',
       what_about: "We couldn't detect the encoding of your file. Please <a href='mailto:support@cartodb?subject=Encoding error in import'>contact us</a> and we will help you to load your data."
     },
+    2003 => {
+      title: 'Malformed CSV',
+      what_about: "The CSV or converted XLS/XLSX to CSV file contains malformed or invalid characters. Some reasons for this error can be for example multiline header fields."
+    },
     3007 => {
       title: 'JSON may not be valid GeoJSON',
       what_about: "We can only import GeoJSON formated JSON files. See if the source of this data supports GeoJSON or another file format for download."

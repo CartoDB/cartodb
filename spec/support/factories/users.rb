@@ -31,6 +31,7 @@ module CartoDB
       user.user_timeout          = attributes[:user_timeout] || 300000
       user.database_timeout      = attributes[:database_timeout] || 300000
       user.geocoding_quota       = attributes[:geocoding_quota] || 1000
+      user.geocoding_block_price = attributes[:geocoding_block_price] || 1500
       user
     end
 

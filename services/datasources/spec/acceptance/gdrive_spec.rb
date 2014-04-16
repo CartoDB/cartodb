@@ -25,7 +25,6 @@ describe Url::GDrive do
         pending('If config unset, this test requires manual running. Check its source code to see what to do')
         puts gdrive_datasource.get_auth_url
         input = ''
-        debugger
         gdrive_datasource.validate_auth_code(input)
         puts gdrive_datasource.token
       end

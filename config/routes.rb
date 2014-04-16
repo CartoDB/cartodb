@@ -95,6 +95,7 @@ CartoDB::Application.routes.draw do
 
   namespace :superadmin do
     resources :users
+    resources :synchronizations
   end
 
   scope :oauth, :path => :oauth do

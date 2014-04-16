@@ -124,7 +124,12 @@ module CartoDB
       end
 
       def name_from(headers, url, custom=nil)
-        custom || name_from_http(headers) || name_in(url)
+        name =  custom || name_from_http(headers) || name_in(url)
+        if name == nil || name == ''
+          random_name
+        else
+          name
+        end
       end #filename_from
 
       def content_length_from(headers)
@@ -202,6 +207,15 @@ module CartoDB
       def name_in(url)
         url.split('/').last.split('?').first
       end #name_in
+
+      def random_name
+        random_generator = Random.new
+        name = ''
+        10.times {
+          name << (random_generator.rand*10).to_i.to_s
+        }
+        name
+      end #random_name
 
       def temporary_directory
         return @temporary_directory if @temporary_directory

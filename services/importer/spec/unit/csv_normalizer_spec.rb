@@ -2,14 +2,12 @@
 require 'fileutils'
 require_relative '../../lib/importer/csv_normalizer'
 
-include CartoDB::Importer2
-
-describe CsvNormalizer do
+describe CartoDB::Importer2::CsvNormalizer do
   
   describe '#run' do
     it 'transforms the file using a proper comma delimiter' do
       fixture = tab_delimiter_factory
-      csv     = CsvNormalizer.new(fixture)
+      csv     = CartoDB::Importer2::CsvNormalizer.new(fixture)
 
       csv.detect_delimiter
 
@@ -22,7 +20,7 @@ describe CsvNormalizer do
   describe '#detect_delimiter' do
     it 'detects the delimiter' do
       fixture = tab_delimiter_factory
-      csv     = CsvNormalizer.new(fixture)
+      csv     = CartoDB::Importer2::CsvNormalizer.new(fixture)
       csv.detect_delimiter.should eq "\t"
 
       FileUtils.rm(fixture)
@@ -32,7 +30,7 @@ describe CsvNormalizer do
   describe '#encoding' do
     it 'guesses the encoding' do
       fixture = utf16le_factory
-      csv     = CsvNormalizer.new(fixture)
+      csv     = CartoDB::Importer2::CsvNormalizer.new(fixture)
       csv.encoding.should eq 'ISO-8859-1'
 
       FileUtils.rm(fixture)
@@ -42,7 +40,7 @@ describe CsvNormalizer do
   describe '#encoding_utf8' do
     it 'guesses UTF-8 encoding' do
       fixture = utf8_factory
-      csv     = CsvNormalizer.new(fixture)
+      csv     = CartoDB::Importer2::CsvNormalizer.new(fixture)
       csv.encoding.should eq 'UTF-8'
 
       FileUtils.rm(fixture)
@@ -52,13 +50,13 @@ describe CsvNormalizer do
   describe '#single_column?' do
     it 'returns true if CSV header has only one column' do
       fixture = single_column_factory
-      csv     = CsvNormalizer.new(fixture)
+      csv     = CartoDB::Importer2::CsvNormalizer.new(fixture)
       csv.detect_delimiter
 
       csv.single_column?.should eq true
 
       fixture = tab_delimiter_factory
-      csv     = CsvNormalizer.new(fixture)
+      csv     = CartoDB::Importer2::CsvNormalizer.new(fixture)
       csv.detect_delimiter
 
       csv.single_column?.should eq false
@@ -69,23 +67,23 @@ describe CsvNormalizer do
     it 'returns the passed row if it has more than one cell' do
       fixture = tab_delimiter_factory
       row     = ['bogus', 'wadus']
-      csv     = CsvNormalizer.new(fixture)
+      csv     = CartoDB::Importer2::CsvNormalizer.new(fixture)
       csv.multiple_column(row).should eq row
     end
 
     it 'adds an empty cell to the row if it has a single cell' do
       fixture = tab_delimiter_factory
       row     = ['bogus', 'wadus']
-      csv     = CsvNormalizer.new(fixture)
+      csv     = CartoDB::Importer2::CsvNormalizer.new(fixture)
       csv.multiple_column(row).should eq (row << nil)
     end
   end #multiple_column
 
   describe '#spaces_and_commas_delimiter_detector' do
     it 'properly detects delimiter on a CSV containing many spaces and commas' do
-      # Also tests that detector is able to load a file with less rows than CsvNormalizer::LINES_FOR_DETECTION
+      # Also tests that detector is able to load a file with less rows than CartoDB::Importer2::CsvNormalizer::LINES_FOR_DETECTION
       fixture = spaces_and_commas_factory
-      csv     = CsvNormalizer.new(fixture)
+      csv     = CartoDB::Importer2::CsvNormalizer.new(fixture)
 
       csv.detect_delimiter.should eq ","
 
@@ -95,18 +93,13 @@ describe CsvNormalizer do
 
   describe '#remove_newlines' do
     it 'tests the cleaning of non row-separating newlines inside CSVs' do
-      fixture_filepath, expected_content = newlines_factory()
+      fixture_filepath = newlines_factory
 
-      csv = CsvNormalizer.new(fixture_filepath)
+      csv = CartoDB::Importer2::CsvNormalizer.new(fixture_filepath)
 
-      temporary_filepath = csv.remove_newlines(get_temp_csv_fullpath())
-
-      line_num = 0
-      File.open(temporary_filepath, 'r')
-          .each_line { |line| 
-            line.should eq expected_content[line_num]
-            line_num += 1
-      }
+      expect {
+        csv.run
+      }.to raise_exception CartoDB::Importer2::MalformedCSVException
 
       FileUtils.rm(fixture_filepath)
     end
@@ -116,16 +109,15 @@ describe CsvNormalizer do
   # Helpers
 
   def newlines_factory
-    invalid_content = "field1,field2,field3\na,b,c\na2,\"b\n2\",c2\na3,b3,c3\na4,\"\nb\n4\n\",\"c\n4\""
-    valid_content = [ "field1,field2,field3\n", "a,b,c\n", "a2,\"b2\",c2\n", "a3,b3,c3\n", "a4,\"b4\",\"c4\"\n" ]
+    invalid_content = "field1,\"field\n2\",field3\na,b,c\na2,\"b\n2\",c2\na3,b3,c3\na4,\"\nb\n4\n\",\"c\n4\""
 
-    filepath = get_temp_csv_fullpath()
+    filepath = get_temp_csv_fullpath
 
     File.open(filepath, 'wb') do |f2|  
       f2.puts invalid_content
     end  
 
-    return filepath, valid_content
+    return filepath
   end #newlines_factory
 
   def utf8_factory
@@ -195,5 +187,5 @@ describe CsvNormalizer do
     "/var/tmp/#{Time.now.to_f}-#{rand(999)}.csv"
   end #get_temp_csv_fullpath
 
-end # CsvNormalizer
+end # CartoDB::Importer2::CsvNormalizer
 

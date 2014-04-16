@@ -1,3 +1,35 @@
+2.13.2 (2014-04-16)
+-------------------
+* Improvements
+  * Fix problem when the geocoding cache API is slow
+  * [Geocoder] Do not use external APIs to geocode latitude/longitude
+  * Geocoding window to allow IP Address geocode
+  * New icon sets on the UI
+  * Embeds in public page
+
+* Bugs
+  * Refactor column type change to date
+  * Equal interval is actually doing another Quantile
+  * Add success message on georeference
+  * master branch tests stabilization after uuids migration
+  * Give (more)/better info when georeferencing with admin regions fails
+  * Failing sync tables from Dropbox Public folder
+  * Create a default color for null values within cloropeths visualization
+  * Unselecting all the fields in the filter widget produces an ugly query
+  * When being a view mode warn that you cannot operate in contextual menus
+  * tags are align-center instead of align left on the public tables list
+  * Avoid each_char in CSV normalization but detect wrong multilines
+  * When a geocode process fails, the background geocoder (the bar at the left bottom) is still visible
+  * Fix error when creating organization users
+  * Incorrect map count in map page
+  * Retrieve more data in the geocoding response
+  * Provide a default random name for url-based imports
+  * "Map doesn't exist or private" for free user with public map
+  * Change privacy button for dropdown doesn't work
+  * Amazon S3 throws 403 on HEAD verb
+  * Setup the backend to store the visualizations params
+  * _setCustomVar for public pages
+
 2.13.1 (2014-04-11)
 -------------------
 * New Features

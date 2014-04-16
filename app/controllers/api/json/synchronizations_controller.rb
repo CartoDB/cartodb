@@ -99,7 +99,7 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
     member = Synchronization::Member.new(id: params[:id]).fetch
     return head(401) unless member.authorize?(current_user)
 
-    render_jsonp( { synchronization: member.to_hash } )
+    render_jsonp( { state: member.state } )
   rescue KeyError => exception
     puts exception.message + "\n" + exception.backtrace
     head(404)

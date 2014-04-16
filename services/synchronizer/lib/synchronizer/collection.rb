@@ -27,28 +27,38 @@ module CartoDB
         @db       = PG::EM::Client.new(pg_options)
         @relation = relation
         @records  = [] 
-      end
+      end #initialize
 
       def run
         fetch
         process
-      end
 
-      def fetch(success=nil, error=nil)
+        puts 'Pass finished'
+      end #run
+
+      def fetch
+        puts 'fetching...'
         query = db.query(%Q(
           SELECT * FROM #{relation}
           WHERE EXTRACT(EPOCH FROM run_at) < #{Time.now.utc.to_f}
           AND state = 'success'
         ))
 
-        query.errback   { |errors| puts errors.inspect }
-        query.callback  { |records| hydrate(records).each(&:enqueue) }
+        query.errback   { |errors|
+          puts 'Error fetching:'
+          puts errors.inspect
+        }
+        query.callback  { |records|
+          puts "Populating #{records.size} records"
+          hydrate(records).each(&:enqueue)
+        }
         self
-      end
+      end #fetch
 
       def process(members=@members)
+        puts "Processing #{members.size} records"
         members.each(&:enqueue)
-      end
+      end #process
 
       attr_reader :records, :members
 
@@ -59,7 +69,7 @@ module CartoDB
 
       def hydrate(records)
         @members = records.map { |record| CartoDB::Synchronization::Member.new(record) }
-      end
+      end #hydrate
 
       def default_pg_options
         configuration = YAML.load_file(DATABASE_CONFIG_YAML)
@@ -71,7 +81,7 @@ module CartoDB
           password:   options.fetch('password'),
           database:   options.fetch('database')
         }
-      end
+      end #default_pg_options
     end # Collection
   end # Synchronizer
 end # CartoDB

@@ -13,7 +13,13 @@ class Superadmin::SynchronizationsController < Superadmin::SuperadminController
 
   def index
     collection = Synchronization::Collection.new.fetch
-    representation = collection.map(&:to_hash)
+    if params[:pending_syncs].present?
+      representation = collection.map { |sync|
+        sync.should_auto_sync? ? sync.to_hash : nil
+      }.compact
+    else
+      representation = collection.map(&:to_hash)
+    end
     response  = {
         synchronizations: representation,
         total_entries:    collection.total_entries

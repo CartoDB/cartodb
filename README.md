@@ -218,7 +218,7 @@ path to each SQL file is correct:
 
 ```bash
 #!/usr/bin/env bash
-POSTGIS_SQL_PATH='pg_config --sharedir'/contrib/postgis-2.0
+POSTGIS_SQL_PATH=`pg_config --sharedir`/contrib/postgis-2.0
 createdb -E UTF8 template_postgis
 createlang -d template_postgis plpgsql
 psql -d postgres -c \

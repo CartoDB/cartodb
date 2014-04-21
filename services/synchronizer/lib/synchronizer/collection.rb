@@ -36,15 +36,22 @@ module CartoDB
         puts 'Pass finished'
       end #run
 
-      def fetch
+      # @param force_all_syncs bool
+      def fetch(force_all_syncs=false)
         puts 'fetching...'
 
         begin
-          query = db.query(%Q(
-            SELECT * FROM #{relation}
-            WHERE EXTRACT(EPOCH FROM run_at) < #{Time.now.utc.to_f}
-            AND state = 'success'
-          ))
+          if force_all_syncs
+            query = db.query(%Q(
+              SELECT * FROM #{relation} WHERE state = 'success'
+            ))
+          else
+            query = db.query(%Q(
+              SELECT * FROM #{relation}
+              WHERE EXTRACT(EPOCH FROM run_at) < #{Time.now.utc.to_f}
+              AND state = 'success'
+            ))
+          end
 
           success = true
         rescue Exception => e

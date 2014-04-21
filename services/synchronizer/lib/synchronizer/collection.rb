@@ -38,26 +38,38 @@ module CartoDB
 
       def fetch
         puts 'fetching...'
-        query = db.query(%Q(
-          SELECT * FROM #{relation}
-          WHERE EXTRACT(EPOCH FROM run_at) < #{Time.now.utc.to_f}
-          AND state = 'success'
-        ))
 
-        query.errback   { |errors|
-          puts 'Error fetching:'
-          puts errors.inspect
-        }
-        query.callback  { |records|
-          puts "Populating #{records.size} records"
-          hydrate(records).each(&:enqueue)
-        }
+        begin
+          query = db.query(%Q(
+            SELECT * FROM #{relation}
+            WHERE EXTRACT(EPOCH FROM run_at) < #{Time.now.utc.to_f}
+            AND state = 'success'
+          ))
+
+          success = true
+        rescue Exception => e
+          success = false
+          puts "ERROR fetching sync tables: #{e.message}, #{e.backtrace}"
+        end
+
+        if success
+          puts "Populating #{query.count} records after fetch"
+          hydrate(query).each { |record|
+            puts "Enqueueing #{record.name} (#{record.id})"
+           record.enqueue
+          }
+        end
+
         self
       end #fetch
 
+      # This is probably for testing purposes only, as fetch also does the processing
       def process(members=@members)
         puts "Processing #{members.size} records"
-        members.each(&:enqueue)
+        members.each { |member|
+          puts "Enqueueing #{member.name} (#{member.id})"
+          member.enqueue
+        }
       end #process
 
       attr_reader :records, :members

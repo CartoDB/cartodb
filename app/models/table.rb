@@ -758,7 +758,6 @@ class Table < Sequel::Model(:user_tables)
     nil
   end
 
-  # TODO: make predictable. Alphabetical would be better
   def schema(options = {})
     first_columns     = []
     middle_columns    = []

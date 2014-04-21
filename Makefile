@@ -23,12 +23,12 @@ dist/cartodb.full.uncompressed.js: dist_folder
 dist/cartodb.js: dist/cartodb.uncompressed.js
 	$(UGLIFYJS) dist/cartodb.uncompressed.js > dist/cartodb.js
 
-dist/cartodb.core.js:  vendor/mustache.js vendor/underscore-min.js vendor/mustache.js vendor/reqwest.min.js src/cartodb.js src/api/core_lib.js src/api/sql.js src/api/tiles.js src/geo/layer_definition.js
+dist/cartodb.core.js:  vendor/mustache.js vendor/underscore-min.js vendor/mustache.js vendor/reqwest.min.js src/cartodb.js src/api/core_lib.js src/core/profiler.js src/api/sql.js src/api/tiles.js src/geo/layer_definition.js
 	node scripts/get.js header > dist/cartodb.core.uncompressed.js
 	cat scripts/core_header.js >> dist/cartodb.core.uncompressed.js
 	cat vendor/underscore-min.js  >> dist/cartodb.core.uncompressed.js
 	echo "\nvar _ = this._; _.noConflict();" >> dist/cartodb.core.uncompressed.js
-	cat vendor/mustache.js vendor/reqwest.min.js src/cartodb.js src/api/core_lib.js src/api/sql.js src/geo/layer_definition.js src/api/tiles.js >> dist/cartodb.core.uncompressed.js
+	cat vendor/mustache.js vendor/reqwest.min.js src/cartodb.js src/api/core_lib.js src/core/profiler.js src/api/sql.js src/geo/layer_definition.js src/api/tiles.js >> dist/cartodb.core.uncompressed.js
 	cat scripts/core_footer.js >> dist/cartodb.core.uncompressed.js
 	$(UGLIFYJS) dist/cartodb.core.uncompressed.js > dist/cartodb.core.js
 

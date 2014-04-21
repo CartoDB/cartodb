@@ -693,6 +693,11 @@ describe("NamedMap", function() {
     }).toThrow(new Error("sublayers are read-only in Named Maps"));
   });
 
+  it("should raise errors when try to get sql or cartocss", function() {
+    expect(function() { namedMap.getCartoCSS('test') }).toThrow(new Error("cartocss can't be accessed in NamedMaps"));
+    expect(function() { namedMap.getSQL('sql') }).toThrow(new Error("SQL can't be accessed in NamedMaps"));
+  })
+
   it("should send auth_token when it's provided", function() {
     var tiles;
     var named_map = {

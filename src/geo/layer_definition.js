@@ -730,6 +730,14 @@ NamedMap.prototype = _.extend({}, Map.prototype, {
     throw new Error("cartocss is read-only in NamedMaps");
   },
 
+  getCartoCSS: function() {
+    throw new Error("cartocss can't be accessed in NamedMaps");
+  },
+
+  getSQL: function() {
+    throw new Error("SQL can't be accessed in NamedMaps");
+  },
+
   setLayer: function(layer, def) {
     var not_allowed_attrs = {'sql': 1, 'cartocss': 1, 'interactivity': 1 };
 
@@ -758,7 +766,7 @@ NamedMap.prototype = _.extend({}, Map.prototype, {
   // not removed to hide) so the number does not change
   getLayerIndexByNumber: function(number) {
     return +number;
-  },
+  }
 
 
 });

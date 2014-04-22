@@ -43,14 +43,23 @@ module CartoDB
         return false unless runner.remote_data_updated?
 
         temporary_name = temporary_name_for(result.table_name)
-        move_to_schema(result)
 
+        # The relation might (and probably will) already exist in the user public schema
+        # as source table is a synchronization and those keep same ID along their life
+        # (and the geom index uses table id as base for its name),
+        # so first we need to remove old table, then change schema of the imported one
+        # and finally rename newly moved table to original name
         database.transaction do
           rename(table_name, temporary_name) if exists?(table_name)
-          rename(result.table_name, table_name)
           drop(temporary_name) if exists?(temporary_name)
+          move_to_schema(result)
+          rename(result.table_name, table_name)
         end
-      rescue
+      rescue => exception
+        stacktrace = "Sync overwrite ERROR: #{exception.message}: #{exception.backtrace.join}"
+        puts stacktrace
+        Rollbar.report_message('Sync overwrite error', 'error', error_info: stacktrace)
+        debugger
         drop(result.table_name) if exists?(result.table_name)
       end
 
@@ -75,7 +84,7 @@ module CartoDB
         update_cdb_tablemetadata(table.name)
         database.run("UPDATE #{table_name} SET updated_at = NOW() WHERE cartodb_id IN (SELECT MAX(cartodb_id) from #{table_name})")
       rescue => exception
-        stacktrace = exception.to_s + exception.backtrace.join
+        stacktrace = "Sync cartodbfy ERROR: #{exception.message}: #{exception.backtrace.join}"
         puts stacktrace
         Rollbar.report_message('Sync cartodbfy error', 'error', error_info: stacktrace)
         table.send(:invalidate_varnish_cache)
@@ -174,7 +183,6 @@ module CartoDB
           WHERE schemaname = '#{origin_schema}'
           AND tablename = '#{origin_table_name}'
         )].each do |record|
-          puts record.inspect
           begin
               statement = record.fetch(:indexdef).gsub(
                 /ON #{origin_table_name}/,

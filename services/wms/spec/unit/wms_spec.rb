@@ -73,7 +73,7 @@ describe Proxy do
       proxy.run
       proxy.layers.length.should eq 3
 
-      url = "http://www2.demis.nl/worldmap/wms.asp?request=GetCapabilities&version=1.0.0"
+      url = "http://wms.jpl.nasa.gov/wms.cgi?Service=WMS&Version=1.1.1&Request=GetCapabilities"
       proxy = Proxy.new(url)
       proxy.run
       proxy.layers.empty?.should eq false

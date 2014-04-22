@@ -129,6 +129,19 @@ module CartoDB
         downloader    = get_downloader
 
         runner        = CartoDB::Importer2::Runner.new(pg_options, downloader, log, user.remaining_quota)
+
+        runner.include_additional_errors_mapping(
+          {
+              AuthError                   => 1011,
+              DataDownloadError           => 1011,
+              TokenExpiredOrInvalidError  => 1012,
+              DatasourceBaseError         => 1012,
+              InvalidServiceError         => 1012,
+              MissingConfigurationError   => 1012,
+              UninitializedError          => 1012
+          }
+        )
+
         database      = user.in_database
         importer      = CartoDB::Synchronization::Adapter.new(name, runner, database, user)
 

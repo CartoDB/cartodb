@@ -4,6 +4,11 @@ require_relative 'adapter'
 require_relative '../../../services/importer/lib/importer' 
 require_relative '../../../services/track_record/track_record/log'
 
+require_relative '../../../services/importer/lib/importer/datasource_downloader'
+require_relative '../../../services/datasources/lib/datasources'
+include CartoDB::Datasources
+
+
 module CartoDB
   module Synchronization
     class << self
@@ -11,7 +16,14 @@ module CartoDB
     end
 
     class Member
-      include Virtus
+      include Virtus.model
+
+      MAX_RETRIES     = 5
+
+      STATE_CREATED   = 'created'
+      STATE_SYNCING   = 'syncing'
+      STATE_SUCCESS   = 'success'
+      STATE_FAILURE   = 'failure'
 
       STATES                        = %w{ success failure syncing }
       REDIS_LOG_KEY_PREFIX          = 'synchronization'
@@ -21,7 +33,7 @@ module CartoDB
       attribute :name,            String
       attribute :interval,        Integer,  default: 3600
       attribute :url,             String
-      attribute :state,           String,   default: 'created'
+      attribute :state,           String,   default: STATE_CREATED
       attribute :user_id,         String
       attribute :created_at,      Time
       attribute :updated_at,      Time
@@ -34,20 +46,33 @@ module CartoDB
       attribute :error_code,      Integer
       attribute :error_message,   String
       attribute :retried_times,   Integer,  default: 0
+      attribute :service_name,    String
+      attribute :service_item_id, String
 
       def initialize(attributes={}, repository=Synchronization.repository)
         super(attributes)
 
-        self.log_trace      = nil
-        @repository         = repository
-        self.id             ||= @repository.next_id
-        self.state          ||= 'created'
-        self.ran_at         ||= Time.now
-        self.interval       ||= 3600
-        self.run_at         ||= Time.now + interval
-        self.retried_times  ||= 0
-        self.log_id         ||= log.id
+        self.log_trace        = nil
+        @repository           = repository
+        self.id               ||= @repository.next_id
+        self.state            ||= STATE_CREATED
+        self.ran_at           ||= Time.now
+        self.interval         ||= 3600
+        self.run_at           ||= Time.now + interval
+        self.retried_times    ||= 0
+        self.log_id           ||= log.id
+        self.service_name     ||= nil
+        self.service_item_id  ||= nil
+        self.checksum         ||= ''
       end
+
+      def to_s
+        "<CartoDB::Synchronization::Member id:\"#{@id}\" name:\"#{@name}\" ran_at:\"#{@ran_at}\" run_at:\"#{@run_at}\" " \
+        "interval:\"#{@interval}\" state:\"#{@state}\" retried_times:\"#{@retried_times}\" log_id:\"#{@log_id}\" " \
+        "service_name:\"#{@service_name}\" service_item_id:\"#{@service_item_id}\" checksum:\"#{@checksum}\" " \
+        "url:\"#{@url}\" error_code:\"#{@error_code}\" error_message:\"#{@error_message}\" modified_at:\"#{@modified_at}\" " \
+        " user_id:\"#{@user_id}\" >"
+      end #to_s
 
       def interval=(seconds=3600)
         super(seconds.to_i)
@@ -82,28 +107,17 @@ module CartoDB
       end
 
       def run
-        self.state    = 'syncing'
+        self.state    = STATE_SYNCING
 
-        log           = TrackRecord::Log.new(
-                          prefix:     REDIS_LOG_KEY_PREFIX,
-                          expiration: REDIS_LOG_EXPIRATION_IN_SECS
-                        )
+        log           = TrackRecord::Log.new(prefix: REDIS_LOG_KEY_PREFIX, expiration: REDIS_LOG_EXPIRATION_IN_SECS)
         self.log_id   = log.id
         store
 
-        downloader    = CartoDB::Importer2::Downloader.new(
-                          url,
-                          etag:             etag,
-                          last_modified:    modified_at,
-                          checksum:         checksum,
-                          verify_ssl_cert:  false
-                        )
-        runner        = CartoDB::Importer2::Runner.new(
-                          pg_options, downloader, log, user.remaining_quota
-                        )
+        downloader    = get_downloader
+
+        runner        = CartoDB::Importer2::Runner.new(pg_options, downloader, log, user.remaining_quota)
         database      = user.in_database
-        importer      = CartoDB::Synchronization::Adapter
-                          .new(name, runner, database, user)
+        importer      = CartoDB::Synchronization::Adapter.new(name, runner, database, user)
 
         importer.run
         self.ran_at   = Time.now
@@ -111,25 +125,73 @@ module CartoDB
 
         if importer.success?
           set_success_state_from(importer)
-        elsif retried_times < 3
+        elsif retried_times < MAX_RETRIES
           set_retry_state_from(importer)
         else
           set_failure_state_from(importer)
         end
 
         store
-        self
       rescue => exception
-        puts exception.to_s
+        log.append exception.message
+        log.append exception.backtrace
+        puts exception.message
         puts exception.backtrace
         set_failure_state_from(importer)
         store
+
+        if exception.kind_of?(TokenExpiredOrInvalidError)
+          begin
+            user.oauths.remove(exception.service_name)
+          rescue => ex
+            log.append "Exception removing OAuth: #{ex.message}"
+            log.append ex.backtrace
+          end
+        end
+        self
       end
+
+      def get_downloader
+        datasource_name = (service_name.nil? || service_name.size == 0) ? Url::PublicUrl::DATASOURCE_NAME : service_name
+        if service_item_id.nil? || service_item_id.size == 0
+          self.service_item_id = url
+        end
+
+        datasource_provider = get_datasource(datasource_name)
+        if datasource_provider.nil?
+          raise CartoDB::DataSourceError.new("Datasource #{datasource_name} could not be instantiated")
+        end
+
+        if service_item_id.nil?
+          raise CartoDB::DataSourceError.new("Datasource #{datasource_name} without item id")
+        end
+
+        self.log << "Fetching datasource #{datasource_provider.to_s} metadata for item id #{service_item_id}"
+        metadata = datasource_provider.get_resource_metadata(service_item_id)
+
+        if datasource_provider.providers_download_url?
+          downloader    = CartoDB::Importer2::Downloader.new(
+              (metadata[:url].present? && datasource_provider.providers_download_url?) ? metadata[:url] : url,
+              etag:             etag,
+              last_modified:    modified_at,
+              checksum:         checksum,
+              verify_ssl_cert:  false
+          )
+          self.log << "File will be downloaded from #{downloader.url}"
+        else
+          self.log << 'Downloading file data from datasource'
+          downloader = CartoDB::Importer2::DatasourceDownloader.new(datasource_provider, metadata,
+            checksum: checksum,
+          )
+        end
+
+        downloader
+      end #get_downloader
 
       def set_success_state_from(importer)
         self.log            << '******** synchronization succeeded ********'
         self.log_trace      = importer.runner_log_trace
-        self.state          = 'success'
+        self.state          = STATE_SUCCESS
         self.etag           = importer.etag
         self.checksum       = importer.checksum
         self.error_code     = nil
@@ -146,7 +208,7 @@ module CartoDB
         self.log            << '******** synchronization failed, will retry ********'
         self.log_trace      = importer.runner_log_trace
         self.log            << "*** Runner log: #{self.log_trace} \n***" unless self.log_trace.nil?
-        self.state          = 'success'
+        self.state          = STATE_SUCCESS
         self.error_code     = importer.error_code
         self.error_message  = importer.error_message
         self.retried_times  = self.retried_times + 1
@@ -156,7 +218,7 @@ module CartoDB
         self.log            << '******** synchronization failed ********'
         self.log_trace      = importer.runner_log_trace
         self.log            << "*** Runner log: #{self.log_trace} \n***" unless self.log_trace.nil?
-        self.state          = 'failure'
+        self.state          = STATE_FAILURE
         self.error_code     = importer.error_code
         self.error_message  = importer.error_message
         self.retried_times  = self.retried_times + 1
@@ -208,7 +270,7 @@ module CartoDB
             user:     user.database_username,
             password: user.database_password,
             database: user.database_name,
-	    host:     user.user_database_host
+	          host:     user.user_database_host
           )
       end 
 
@@ -233,9 +295,23 @@ module CartoDB
         false
       end
 
+      # @return mixed|nil
+      def get_datasource(datasource_name)
+        begin
+          oauth = user.oauths.select(datasource_name)
+          datasource = DatasourcesFactory.get_datasource(datasource_name, user)
+          datasource.token = oauth.token unless oauth.nil?
+        rescue => ex
+          log.append "Exception: #{ex.message}"
+          log.append ex.backtrace
+          datasource = nil
+        end
+        datasource
+      end #get_datasource
+
       attr_reader :repository
 
-      attr_accessor :log_trace
+      attr_accessor :log_trace, :service_name, :service_item_id
 
     end # Member
   end # Synchronization

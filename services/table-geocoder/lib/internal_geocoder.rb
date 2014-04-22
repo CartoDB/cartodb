@@ -41,10 +41,10 @@ module CartoDB
 
     def run
       @state = 'processing'
+      add_georef_status_column
       download_results
       create_temp_table
       load_results_to_temp_table
-      add_georef_status_column
       copy_results_to_table
       @state = 'completed'
     rescue => e
@@ -78,6 +78,7 @@ module CartoDB
       connection.fetch(%Q{
           SELECT DISTINCT(quote_nullable(#{column_name})) AS searchtext
           FROM #{table_name}
+          WHERE cartodb_georef_status IS NULL
           LIMIT #{@batch_size} OFFSET #{page * @batch_size}
       }).all.map { |r| r[:searchtext] }
     end # get_search_terms
@@ -106,7 +107,7 @@ module CartoDB
         UPDATE #{table_name} AS dest
         SET the_geom = orig.the_geom, cartodb_georef_status = orig.cartodb_georef_status
         FROM #{temp_table_name} AS orig
-        WHERE #{column_name} = orig.geocode_string
+        WHERE #{column_name} = orig.geocode_string AND dest.cartodb_georef_status IS NULL
       })
     end # copy_results_to_table
 

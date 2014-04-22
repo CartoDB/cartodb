@@ -9256,7 +9256,8 @@ L.CanvasLayer = L.Class.extend({
     if (this.options.zoomAnimation) {
       map.on({
         'zoomanim': this._animateZoom,
-        'zoomend': this._endZoomAnim
+        'zoomend': this._endZoomAnim,
+        'moveend': this._reset
       }, this);
     }
 
@@ -9326,6 +9327,7 @@ L.CanvasLayer = L.Class.extend({
     map.off({
       'viewreset': this._reset,
       'move': this._render,
+      'moveend': this._reset,
       'resize': this._reset,
       'zoomanim': this._animateZoom,
       'zoomend': this._endZoomAnim

@@ -23,6 +23,7 @@ module CartoDB
           DateTime  :updated_at, null: false
           String    :encrypted_password
           String    :password_salt
+          String    :url_options
         end
 
         @db.run(%Q{

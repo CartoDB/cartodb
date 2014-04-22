@@ -1,7 +1,6 @@
 require 'mixpanel'
 require 'json'
 require 'rollbar'
-require_relative 'github_reporter'
 
 module CartoDB
   class Metrics
@@ -26,7 +25,6 @@ module CartoDB
     end
 
     def report_failure(metric_payload)
-      GitHubReporter.new.report_failed_import(metric_payload)
       mixpanel_event("Import failed", mixpanel_payload(metric_payload))
       ducksboard_report_failed(metric_payload[:extension])
       Rollbar.report_message("Failed import", "error", error_info: metric_payload)

@@ -69,6 +69,15 @@ defaults: &defaults
     app_id: ''
     token:  ''
     mailto: ''
+    base_url: ''
+    non_batch_base_url: ''
+    internal:
+      username: ''
+      api_key: ''
+    cache:
+      base_url: ''
+      api_key: ''
+      table_name: ''
   importer:
     s3:
       access_key_id:
@@ -158,6 +167,16 @@ defaults: &defaults
     api_key: ""
     app_id: ""
   enforce_non_empty_layer_css: false
+  oauth:
+    # Must be the same as FileProvider SERVICE constant
+    gdrive:
+      application_name: ''
+      client_id: ''
+      client_secret: ''
+    dropbox:
+      app_key:  ''
+      app_secret: ''
+
 
 development:
   <<: *defaults

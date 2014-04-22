@@ -68,6 +68,8 @@ module ApplicationHelper
       dropbox_api_key:     Cartodb.config[:dropbox_api_key],
       gdrive_api_key:      Cartodb.config[:gdrive]['api_key'],
       gdrive_app_id:       Cartodb.config[:gdrive]['app_id'],
+      oauth_dropbox:       Cartodb.config[:oauth]['dropbox']['app_key'],
+      oauth_gdrive:        Cartodb.config[:oauth]['gdrive']['client_id'],
       max_asset_file_size: Cartodb.config[:assets]["max_file_size"]
     }
 
@@ -130,15 +132,21 @@ module ApplicationHelper
     current_user.present? ? current_user.account_type.to_s.upcase : 'UNAUTHENTICATED'
   end
 
-  def insert_google_analytics(track)
+  def insert_google_analytics(track, custom_vars = {})
     if not Cartodb.config[:google_analytics].blank? and not Cartodb.config[:google_analytics][track].blank? and not Cartodb.config[:google_analytics]["domain"].blank?
-      render(:partial => 'shared/analytics', :locals => {ua: Cartodb.config[:google_analytics][track], domain: Cartodb.config[:google_analytics]["domain"]})
+      render(:partial => 'shared/analytics', :locals => { ua: Cartodb.config[:google_analytics][track], domain: Cartodb.config[:google_analytics]["domain"], custom_vars: custom_vars })
     end
   end
 
   def insert_rollbar()
     if not Cartodb.config[:rollbar].blank? and not Cartodb.config[:rollbar]['token'].blank?
       render(:partial => 'shared/rollbar', :locals => { token: Cartodb.config[:rollbar]['token'] })
+    end
+  end
+
+  def insert_trackjs()
+    if not Cartodb.config[:trackjs].blank? and not Cartodb.config[:trackjs]['customer'].blank?
+      render(:partial => 'shared/trackjs', :locals => { customer: Cartodb.config[:trackjs]['customer'] })
     end
   end
 
@@ -182,12 +190,12 @@ module ApplicationHelper
 
   def v2_vizjson_url(visualization)
     "/api/v2/viz/#{visualization.id}/viz"
-  end #v2_vizjon_url
+  end #v2_vizjson_url
 
   # TODO reactivate in order to allow CartoDB plugins
-  # to inject content into the CartoDB admin UI 
+  # to inject content into the CartoDB admin UI
   # def content_from_plugins_for(hook)
-  #   ::CartoDB::Plugin.registered.map do |plugin| 
+  #   ::CartoDB::Plugin.registered.map do |plugin|
   #     hook_name = "#{plugin.name.underscore}_#{hook}_hook"
   #     send(hook_name) if defined?(hook_name)
   #   end.join('').html_safe

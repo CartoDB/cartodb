@@ -15,7 +15,8 @@ module CartoDB
         @max_ticks          = options.fetch(:max_ticks, RUN_FOREVER)
         @tick_time_in_secs  = options.fetch(:tick_time_in_secs, TICK_TIME_IN_SECS)
         @ticks              = 0
-      end
+        puts "max_ticks:#{@max_ticks} tick_time_in_secs:#{@tick_time_in_secs}"
+      end #initialize
 
       def run
         EventMachine.run do
@@ -25,7 +26,7 @@ module CartoDB
             job_collection.fetch
           end
         end
-      end
+      end #run
 
       private
 
@@ -33,8 +34,11 @@ module CartoDB
         return self if max_ticks == RUN_FOREVER
 
         self.ticks = ticks + 1
-        EventMachine.stop if ticks >= max_ticks
-      end
+        if ticks >= max_ticks
+          puts "Max ticks (#{max_ticks}) reached, stopping"
+          EventMachine.stop
+        end
+      end #stop_if_max_ticks_reached
 
       attr_reader :max_ticks, :tick_time_in_secs, :job_collection
       attr_writer :ticks

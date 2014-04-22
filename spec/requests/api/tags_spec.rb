@@ -23,19 +23,19 @@ describe "API 1.0 tags management" do
       table1 = create_table(
         user_id:  @user.id,
         name:     'My table #1',
-        privacy:  Table::PUBLIC,
+        privacy:  Table::PRIVACY_PUBLIC,
         tags:     "tag 1,tag 2,tag 3,tag 3"
       )
       table2 = create_table(
         user_id:  @user.id,
         name:     'My table #2',
-        privacy:  Table::PRIVATE,
+        privacy:  Table::PRIVACY_PRIVATE,
         tags:     "tag 3"
       )
       table3 = create_table(
         user_id:  create_user.id,
         name:     'Another table #3',
-        privacy:  Table::PRIVATE
+        privacy:  Table::PRIVACY_PRIVATE
       )
 
       get "/api/v1/tags?api_key=#{@api_key}", {}, @headers

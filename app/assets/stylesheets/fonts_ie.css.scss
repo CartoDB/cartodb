@@ -3,3 +3,7 @@
 /*SEGOE UI*/
 @include font-face("Segoe UI Bold", font-files("SEGOEUIB.woff", "SEGOEUIB.ttf"), "SEGOEUIB.eot", bold, normal);
 @include font-face("Segoe UI Bold Italic", font-files("SEGOEUIZ.woff", "SEGOEUIZ.ttf"), "SEGOEUIZ.eot", bold, italic);
+
+/*ProximaNova*/
+@include font-face("ProximaNova", font-files("ProximaNova-Regular.woff", "ProximaNova-Regular.ttf"), "ProximaNova-Regular.eot", bold, normal);
+@include font-face("ProximaNova-Semibold", font-files("ProximaNova-Semibold.woff", "ProximaNova-Semibold.ttf"), "ProximaNova-Semibold.eot", bold, normal);

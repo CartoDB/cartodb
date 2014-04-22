@@ -1,3 +1,101 @@
+2.13.2 (2014-04-16)
+-------------------
+* Improvements
+  * Fix problem when the geocoding cache API is slow
+  * [Geocoder] Do not use external APIs to geocode latitude/longitude
+  * Geocoding window to allow IP Address geocode
+  * New icon sets on the UI
+  * Embeds in public page
+
+* Bugs
+  * Refactor column type change to date
+  * Equal interval is actually doing another Quantile
+  * Add success message on georeference
+  * master branch tests stabilization after uuids migration
+  * Give (more)/better info when georeferencing with admin regions fails
+  * Failing sync tables from Dropbox Public folder
+  * Create a default color for null values within cloropeths visualization
+  * Unselecting all the fields in the filter widget produces an ugly query
+  * When being a view mode warn that you cannot operate in contextual menus
+  * tags are align-center instead of align left on the public tables list
+  * Avoid each_char in CSV normalization but detect wrong multilines
+  * When a geocode process fails, the background geocoder (the bar at the left bottom) is still visible
+  * Fix error when creating organization users
+  * Incorrect map count in map page
+  * Retrieve more data in the geocoding response
+  * Provide a default random name for url-based imports
+  * "Map doesn't exist or private" for free user with public map
+  * Change privacy button for dropdown doesn't work
+  * Amazon S3 throws 403 on HEAD verb
+  * Setup the backend to store the visualizations params
+  * _setCustomVar for public pages
+
+2.13.1 (2014-04-11)
+-------------------
+* New Features
+  * Add Midnight commander basemap
+  * oAuth-based Google Drive and Dropbox integration
+
+* Bugs and improvements
+  * When georeferencing by lon/lat columns, convert strings to number first
+  * Missing fonts in account assets
+  * Map views graph display error
+  * Color picker bindings still persist after it is cleaned
+  * Sql query editor no longer breaks if you add '\'
+  * Review last used colors functionality on color picker.
+  * Proxima Nova and SEGOE UI fonts are not being loaded using IE9 in Windows 7
+  * Typo on "No georeferenced data on your table" window
+  * Fixed crash when user wants to delete a layer from a visualization
+  * Public dashboard footer no longer gets rendered in private dashboard
+  * Logged-in detection in public pages
+  * "CartoDB" link points to your public profile page
+  * Fix sublayer_options sharing in the public_dashboard
+  * Error when creating public vizz
+  * Fix line-height of the tags in the public dashboard
+
+
+2.13.0 (2014-04-08)
+-------------------
+NOTE: This version introduces another kind of privacy setting: "Link-only".
+Now visualizations and tables which are public are listed by default on user pages.
+Due to this, you may want to turn all your Public tables and visualizations to
+"Link-only" state. To do this, just run the following SQL query on your metadata 
+database:
+
+```
+UPDATE visualizations
+SET privacy='link'
+WHERE privacy='public';
+UPDATE user_tables
+SET privacy=2
+WHERE privacy=1;
+```
+
+* New features
+  * Public User Pages: now users have a public dashboard on their CartoDB homepage
+    which will show all the public visualizations and tables on their account.
+  * Add new "link-only" privacy status for tables.
+
+* Improvements
+  * New endpoint to extract user information
+
+* Fixed bugs
+  * Using CartoDB.js, if you create a layer from a viz.json url, and then try to
+    hide it, its interaction still works
+  * Fixes in session handling when multuple users are logged at the same time
+  * Run a update to change all paid users public visualizations from public to link
+  * Torque layer offsets when several layers in public page
+
+
+2.12.0 (2014-04-04)
+-------------------
+* Improvements
+  * Frontend code (JS) is now no longer compiled using the assets pipeline. You can
+    use the asset_host setting on app_conflg.yml to point to assets on our own CDN 
+    or to your own ones if you compile them manually using Grunt.
+    For more details, look at lib/build/UPGRADING.md.
+  * Automate frontend unit tests
+
 2.11.2 (2014-03-27)
 -------------------
 * Bugs Fixed

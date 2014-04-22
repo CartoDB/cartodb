@@ -20,6 +20,9 @@ module CartoDB
 
       MAX_RETRIES     = 5
 
+      # Seconds required between manual sync now
+      SYNC_NOW_TIMESPAN = 900
+
       STATE_CREATED   = 'created'
       STATE_SYNCING   = 'syncing'
       STATE_SUCCESS   = 'success'
@@ -105,6 +108,16 @@ module CartoDB
       def enqueue
         Resque.enqueue(Resque::SynchronizationJobs, job_id: id)
       end
+
+      # @return bool
+      def can_manually_sync?
+        self.state == STATE_SUCCESS && (self.ran_at + SYNC_NOW_TIMESPAN < Time.now)
+      end #can_manually_sync?
+
+      # @return bool
+      def should_auto_sync?
+        self.state == STATE_SUCCESS && (self.run_at < Time.now)
+      end #should_run?
 
       def run
         self.state    = STATE_SYNCING

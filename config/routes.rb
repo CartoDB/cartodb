@@ -165,11 +165,13 @@ CartoDB::Application.routes.draw do
       # Tags
       resources :tags, :only                                    => [:index]
       # Synchronizations
-      get     'synchronizations'      => 'synchronizations#index'
-      post    'synchronizations'      => 'synchronizations#create'
-      get     'synchronizations/:id'  => 'synchronizations#show'
-      put     'synchronizations/:id'  => 'synchronizations#update'
-      delete  'synchronizations/:id'  => 'synchronizations#destroy'
+      get     'synchronizations'              => 'synchronizations#index'
+      post    'synchronizations'              => 'synchronizations#create'
+      get     'synchronizations/:id'          => 'synchronizations#show'
+      put     'synchronizations/:id'          => 'synchronizations#update'
+      delete  'synchronizations/:id'          => 'synchronizations#destroy'
+      get     'synchronizations/sync_now/:id' => 'synchronizations#syncing?'
+      put     'synchronizations/sync_now/:id' => 'synchronizations#sync_now'
     end
 
     get '/v2/viz/:id/viz'    => 'api/json/visualizations#vizjson2', as: :vizjson

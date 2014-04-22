@@ -71,6 +71,40 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
     puts exception.backtrace
   end
 
+  def sync(from_sync_now=false)
+    enqueued = false
+    member = Synchronization::Member.new(id: params[:id]).fetch
+    return head(401) unless member.authorize?(current_user)
+
+    if member.should_auto_sync? || (from_sync_now && member.can_manually_sync?)
+      enqueued = true
+      member.enqueue
+    end
+
+    render_jsonp( { enqueued: enqueued, synchronization_id: member.id})
+  rescue KeyError => exception
+    puts exception.message + "\n" + exception.backtrace
+    head(404)
+  rescue => exception
+    CartoDB.notify_exception(exception)
+    puts exception.message + "\n" + exception.backtrace
+    head(404)
+  end #sync
+
+  def sync_now
+    return sync(true)
+  end #sync_now
+
+  def syncing?
+    member = Synchronization::Member.new(id: params[:id]).fetch
+    return head(401) unless member.authorize?(current_user)
+
+    render_jsonp( { state: member.state } )
+  rescue KeyError => exception
+    puts exception.message + "\n" + exception.backtrace
+    head(404)
+  end #syncing?
+
   def show
     member = Synchronization::Member.new(id: params[:id]).fetch
 

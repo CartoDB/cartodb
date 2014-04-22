@@ -53,9 +53,10 @@ module CartoDB
         log.append exception.to_s
         log.append exception.backtrace
         @results.push(Result.new(
-            error_code: error_for(exception.class),
-            log_trace:  report
-          ))
+          error_code: error_for(exception.class),
+          log_trace:  report
+        ))
+        raise exception
       end #run
       
       def import(source_file, job=nil, loader=nil)

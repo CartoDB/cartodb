@@ -18,7 +18,7 @@ module CartoDB
     class Member
       include Virtus.model
 
-      MAX_RETRIES     = 5
+      MAX_RETRIES     = 3
 
       # Seconds required between manual sync now
       SYNC_NOW_TIMESPAN = 900

@@ -31,6 +31,14 @@ module CartoDB
         @results            = []
       end #initialize
 
+      def include_additional_errors_mapping(additional_errors)
+        @additional_errors = additional_errors
+      end #include_additional_errors_mapping
+
+      def errors_to_code_mapping
+        @additional_errors.nil? ? ERRORS_MAP : ERRORS_MAP.merge(@additional_errors)
+      end #errors_to_code_mapping
+
       def run(&tracker_block)
         @tracker = tracker_block
         tracker.call('uploading')
@@ -53,9 +61,9 @@ module CartoDB
         log.append exception.to_s
         log.append exception.backtrace
         @results.push(Result.new(
-            error_code: error_for(exception.class),
-            log_trace:  report
-          ))
+          error_code: error_for(exception.class),
+          log_trace:  report
+        ))
       end #run
       
       def import(source_file, job=nil, loader=nil)
@@ -146,7 +154,7 @@ module CartoDB
 
       def error_for(exception_klass=nil)
         return nil unless exception_klass
-        ERRORS_MAP.fetch(exception_klass, UNKNOWN_ERROR_CODE)
+        errors_to_code_mapping.fetch(exception_klass, UNKNOWN_ERROR_CODE)
       end #error_for
 
       def raise_if_over_storage_quota

@@ -56,10 +56,8 @@ module CartoDB
           rename(result.table_name, table_name)
         end
       rescue => exception
-        stacktrace = "Sync overwrite ERROR: #{exception.message}: #{exception.backtrace.join}"
-        puts stacktrace
-        Rollbar.report_message('Sync overwrite error', 'error', error_info: stacktrace)
-        debugger
+        puts "Sync overwrite ERROR: #{exception.message}: #{exception.backtrace.join}"
+        Rollbar.report_exception(exception)
         drop(result.table_name) if exists?(result.table_name)
       end
 
@@ -84,9 +82,8 @@ module CartoDB
         update_cdb_tablemetadata(table.name)
         database.run("UPDATE #{table_name} SET updated_at = NOW() WHERE cartodb_id IN (SELECT MAX(cartodb_id) from #{table_name})")
       rescue => exception
-        stacktrace = "Sync cartodbfy ERROR: #{exception.message}: #{exception.backtrace.join}"
-        puts stacktrace
-        Rollbar.report_message('Sync cartodbfy error', 'error', error_info: stacktrace)
+        puts "Sync cartodbfy ERROR: #{exception.message}: #{exception.backtrace.join}"
+        Rollbar.report_exception(exception)
         table.send(:invalidate_varnish_cache)
       end
 

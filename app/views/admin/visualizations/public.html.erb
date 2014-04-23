@@ -1,35 +1,275 @@
-  <% content_for(:page_title) do %>
-    <%= @visualization.name %> |
-  <% end %>
+<% content_for(:page_title) do %>
+  <%= @visualization.name %> |
+<% end %>
 
-  <% content_for(:css) do %>
-    <%= stylesheet_link_tag 'embeds.css' %>
-    <%= stylesheet_link_tag 'common.css', 'table.css', 'map.css', :media => 'all' %>
-  <% end %>
+<% content_for(:css) do %>
+  <%= stylesheet_link_tag 'embeds.css', 'common.css', 'map.css', :media => 'all' %>
+  <%= stylesheet_link_tag 'table.css' %>
+  <%= stylesheet_link_tag 'embeds/footer.css' %>
+  <!--[if gt IE 8]><%= stylesheet_link_tag "fonts_ie" %><![endif]-->
+<% end %>
 
-  <script>
-    var table_name = '<%= @table.name %>'
-      , table_id = '<%= @table.id %>'
-      , schema = <%=raw @table.schema.to_json %>
-      , user_name = '<%=raw @table.owner.username %>'
-      , map = <%=raw @table.map.to_json %>
-      , config = <%=raw frontend_config_public.html_safe %>
-      , vizjson = <%=raw @vizjson.to_json %>
-  </script>
-  <script>
-    var debug = false;
-    <% if Rails.env.development? %>
+<script>
+  var table_name = '<%= @table.name %>';
+  var table_id   = '<%= @table.id %>';
+  var schema     = <%=raw @table.schema.to_json %>;
+  var user_name  = '<%=raw @table.owner.username %>';
+  var map        = <%=raw @table.map.to_json %>;
+  var config     = <%=raw frontend_config_public.html_safe %>;
+  var vizjson    = <%=raw @vizjson.to_json %>;
+</script>
+
+<script>
+  var debug = false;
+  <% if Rails.env.development? %>
       debug = true;
-    <% end %>
-    cdb.config.set('debug', debug);
-  </script>
+  <% end %>
+  cdb.config.set('debug', debug);
+</script>
 
   <% content_for(:js) do %>
-      <script type="text/javascript"
-          src="https://maps.google.com/maps/api/js?sensor=false&v=3.12">
-      </script>
-    <%= javascript_include_tag 'cdb.js', 'application.js', 'models.js', 'table_public.js', 'templates.js' %>
+    <script type="text/javascript"
+      src="https://maps.google.com/maps/api/js?sensor=false&v=3.12">
+    </script>
+    <%= javascript_include_tag 'cdb.js', 'application.js', 'models.js', 'table_public.js', 'templates.js', 'public_dashboard' %>
   <% end %>
 
   <div class="globalerror"></div>
   <div class="panes"></div>
+
+  <% if @visualization.public? || @visualization.public_with_link? || @visualization.password_protected? %>
+
+    <div class="separator top"></div>
+
+    <div id="not_supported_dialog" style="display: none">
+      <h2>CartoDB</h2>
+      <p>This visualization only works in modern browsers. Upgrade yours and enjoy.</p>
+      <ul>
+        <li><a href="http://www.apple.com/safari/" class="safari">Safari</a></li>
+        <li><a href="https://www.google.com/chrome/" class="chrome">Chrome</a></li>
+        <li class="last"><a href="http://www.mozilla.org/en-US/firefox/all/‎" class="firefox">Firefox</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="separator bottom"></div>
+  <div class="cartodb-map-data">
+    <div class="cartodb-info">
+      <div class="inner">
+
+        <div class="details embed-left-col">
+          <div class="content">
+            <h1><%= @visualization.name %></h1>
+            <p><%= @visualization.description %></p>
+
+            <div class="export_options">
+              <div class="row_count"><%= @table.rows_counted %> row<%= @table.rows_counted != 1 ? 's' : '' %></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="user embed-right-col">
+          <a href="/" title="Maps by <%= @visualization.user.username %>" class="content">
+            <div class="user-info">
+              <h4>by <%= @visualization.user.username.truncate(20) %></h4>
+              <h5><%= "#{@visualization_count} #{@visualization_count != 1 ? "maps" :"map"} created" %></h5>
+            </div>
+            <img src="<%= @avatar_url %>" class="avatar" />
+          </a>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="cartodb-body">
+      <div class="inner">
+
+        <div class="map-info embed-right-col">
+          <div class="content">
+
+            <h2>Visualizations using this data</h2>
+            <ul>
+
+              <% @dependent_visualizations.each do |vis| %>
+                <% if (vis.privacy == "public") %>
+                  <li><a href="/tables/<%= vis.name %>/public" title="<%= vis.name.gsub(/_/," ") %>"><%= vis.name.gsub(/_/, " ") %></a></li>
+                <% end %>
+              <% end %>
+
+              <% if (@nonpublic_vis_count > 0) %>
+
+                <li class="private"><%= @nonpublic_vis_count %> private visualization<%= @nonpublic_vis_count != 1 ? 's' : '' %><span class="help" original-title="This table is used in <%= @nonpublic_vis_count %> map<%= @nonpublic_vis_count != 1 ? 's' : '' %> made private by the publisher">(?)</span></li>
+              <% end %>
+            </ul>
+
+          </div>
+        </div>
+
+        <div class="comments embed-left-col">
+          <div class="content">
+            <div id="disqus_thread"></div>
+            <script type="text/javascript">
+
+              var disqus_shortname  = '<%= @disqus_shortname %>';
+              var disqus_identifier = '<%= @table.id %>';
+
+              (function() {
+                var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+              })();
+
+            </script>
+            <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript" class="no_script">comments powered by Disqus.</a></noscript>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="cartodb-footer">
+      <div class="inner">
+
+        <div class="copyright embed-left-col">
+          <div class="content">
+            &copy; <%= Time.now.year %> CartoDB - <a href="https://cartodb.com/signup" title="Create your own maps with CartoDB">Create your own maps</a>
+          </div>
+        </div>
+
+        <div class="terms embed-right-col">
+          <div class="content">
+            <a href="http://cartodb.com/terms" title="CartoDB's Terms of service">Terms of Service</a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+<% end %>
+
+<% if @visualization.map.provider == 'googlemaps' %>
+  <script type="text/javascript" src="//maps.google.com/maps/api/js?sensor=false&v=3.12"></script>
+<% else %>
+  <!-- if you are using google maps, uncomment the following line -->
+  <!-- <script type="text/javascript" src="//maps.google.com/maps/api/js?sensor=false"></script> -->
+<% end %>
+
+<script>
+
+
+  reset_disqus = function() {
+    DISQUS.reset({
+      reload: true
+    });
+  };
+
+  if (!window.addEventListener) {
+    window.attachEvent('orientationchange', reset_disqus, this);
+  } else {
+    window.addEventListener('orientationchange', reset_disqus);
+  }
+
+  $(document).ready(function(){
+
+
+    var dlg = window.dlg = new cdb.admin.ExportTableOptions({
+      model: table.table,
+      config: config,
+      sql: table_name,
+      force_http: true
+    });
+
+    $(".export_options").append(dlg.render().el);
+
+    function resizeWindow() {
+    
+      var top = 0;
+      var tableHeight  = $("table").outerHeight(true);
+      var windowHeight = $(window).height();
+
+      if (tableHeight < windowHeight) {
+        top = tableHeight;
+      } else {
+        top = windowHeight - $(".cartodb-info").outerHeight(true) - $(".cartodb-public-header").outerHeight(true);
+      }
+
+      console.log(top, $(window).height(), $(".cartodb-info").height());
+      $(".cartodb-map-data").css({ top: top }); 
+
+    }
+
+    var onResize = function() {
+      resizeWindow();
+    };
+
+    var setupMapDimensions;
+
+    var doOnOrientationChange = function() {
+
+      switch(window.orientation)
+      {
+        case -90:
+          case 90: setupMapDimensions(true, true);
+        break;
+        default: setupMapDimensions(true, true);
+        break;
+      }
+
+    };
+
+    $.extend( $.easing, {
+      easeInQuad: function (x, t, b, c, d) {
+        return c*(t/=d)*t + b;
+      }
+    })
+
+    var mobileDevice = /Android|webOS|iPad|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+    if (!mobileDevice) {
+      $(window).on("resize", onResize);
+    }
+
+    setTimeout(function() {
+      resizeWindow(mobileDevice);
+    }, 250)
+
+    // recalculate map position on orientation change
+    if (!window.addEventListener) {
+      window.attachEvent('orientationchange', doOnOrientationChange);
+    } else {
+      window.addEventListener('orientationchange', _.bind(doOnOrientationChange));
+    }
+
+
+    <% if Cartodb.config[:graphite_public] %>
+        if (location.protocol.indexOf('https') === -1) {
+          jQuery.getScript('<%= javascript_path "statsc.js" %>', function(ready) {
+            statsc.connect('http://<%= Cartodb.config[:graphite_public]['host'] %>:<%= Cartodb.config[:graphite_public]['port'] %>/');
+              cartodb.core.Profiler.backend(function () {
+              statsc.send.apply(statsc, arguments);
+            })
+          })
+        }
+      <% end %>
+  });
+
+</script>
+
+<%= javascript_include_tag "tipsy.js" %>
+
+<script type="text/javascript">
+  $(function() {
+    $("span.help").tipsy({ gravity: $.fn.tipsy.autoBounds(250, 's'), fade: true });
+
+    if ($.browser.msie && parseInt($.browser.version) == 7 ) {
+      $(".comments .content").html("<p>Your browser doesn't support comments.</p>")
+    }
+  });
+</script>
+
+<%= render partial: 'shared/analytics', locals: { 
+  ua:     Cartodb.config[:google_analytics]['primary'],
+  domain: Cartodb.config[:google_analytics]['domain'],
+  custom_vars: [{title: "Public Pages", value: "Other", num: 3}],
+  page_owner: @visualization.user
+} %>

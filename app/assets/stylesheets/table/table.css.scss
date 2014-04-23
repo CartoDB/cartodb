@@ -8,11 +8,76 @@
   @import "../table/table-sprite";
   @import "../elements/progress-bar";
 
-
   // Table/vis options menu
   .dropdown.table-options {
     @include progress-bar(4px, 4px, true, 3px);
     div.progress-bar { margin-top:10px }
+  }
+
+  body.public { /* Public table CSS */
+
+    min-width: inherit;
+
+    .cartodb-public-header { 
+      -webkit-box-shadow: none;
+      -moz-box-shadow: none;
+      box-shadow: none;
+    }
+
+    .cartodb-map-data {
+      position: relative;
+      top: 300px;
+      z-index: 100;
+    }
+
+    .export_options {
+      border-top: 1px solid #E5E5E5;
+      padding: 13px 0 0 0;
+      margin: 30px 0 0 0;
+
+      .row_count {
+        @include inline-block();
+        vertical-align: middle;
+        margin-right: 17px;
+        color: #858585;
+        font-size: 15px;
+      }
+
+      .download_options {
+
+        @include inline-block();
+        vertical-align: middle;
+
+        a { 
+          @include inline-block();
+          margin: 0 0 0 0;
+          padding: 7px 8px;
+          font-size: 11px;
+          text-transform: uppercase;
+          font-weight: bold;
+        }
+
+      }
+
+      .generating {
+        display: block;
+      }
+
+    }
+
+    div.panes {
+      top:68px;
+
+      overflow-y:hidden;
+      overflow-x:scroll;
+      clear:both;
+
+      div.shadow { display:none; }
+
+      div.table table thead tr th > div > div {
+        position:relative;
+      }
+    }
   }
 
   div.panes {

@@ -1,31 +1,12 @@
-<header class="vis">
-  <div class="inner">
+<div class="cartodb-public-wrapper">
+  <div class="cartodb-public-header">
+    <div class="inner">
 
-    <div class="header_content">
-      <div class="left">
-        <ul class="actions">
-          <li><h1><%= link_to "CartoDB", "http://cartodb.com", :class => "logo" %></h1></li>
-          <li><h2></h2></li>
-          <li><span class="author"></span></li>
-        </ul>
-        <div class="description">
-          <p class="public"></p>
-        </div>
+      <a class="logo" href="http://www.cartodb.com">CartoDB</a>
+
+      <div class="options">
+        <a href="http://www.cartodb.com/login" class="signin green button" title="Sign In">Sign In</a>
       </div>
-      <div class="right">
-        <ul class="options">
-          <li><a class="button_header rounded white data_download"><span class="icon"></span>download this data</a></li>
-          <li><%= link_to "sign in", login_path %></li>
-        </ul>
-      </div>
-    </div>
 
-    <div class="vis_navigation">
-      <nav>
-        <%= link_to "Table",    "#/table", :class => "smaller strong tab selected" %>
-        <%= link_to "Map view", "#/map",   :class => "smaller strong tab" %>
-      </nav>
     </div>
-
   </div>
-</header>

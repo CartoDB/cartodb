@@ -36,6 +36,18 @@ class Admin::VisualizationsController < ApplicationController
 
     @vizjson = @visualization.to_vizjson
 
+    @avatar_url             = @visualization.user.gravatar(64)
+    @disqus_shortname       = @visualization.user.disqus_shortname.presence || 'cartodb'
+    @visualization_count    = @visualization.user.public_visualization_count
+    @related_tables         = @visualization.related_tables
+
+    @dependent_visualizations = @table.dependent_visualizations
+
+    #@public_tables_count    = @visualization.user.table_count(::Table::PRIVACY_PUBLIC)
+    #@nonpublic_tables_count = @related_tables.select{|p| p.privacy != ::Table::PRIVACY_PUBLIC }.count
+
+    @nonpublic_vis_count = @table.dependent_visualizations.select{ |vis| vis.privacy != CartoDB::Visualization::Member::PRIVACY_PUBLIC }.count
+
     respond_to do |format|
       format.html { render 'public', layout: 'application_public' }
     end

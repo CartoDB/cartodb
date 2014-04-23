@@ -149,18 +149,17 @@ if (!window.addEventListener) {
 
 $(document).ready(function(){
 
-
   var dlg = window.dlg = new cdb.admin.ExportTableOptions({
     model: table.table,
     config: config,
-    sql: table_name,
-    force_http: true
+    sql: 'SELECT * FROM ' + table_name,
+    force_http: location.protocol.indexOf('https') === -1 ? false : true
   });
 
   $(".export_options").append(dlg.render().el);
 
   function resizeWindow() {
-  
+
     var top = 0;
     var tableHeight  = $("table").outerHeight(true);
     var windowHeight = $(window).height();
@@ -175,7 +174,7 @@ $(document).ready(function(){
     $(".separator").css({ top: top - 1}); 
     $(".separator_shadow").css({ top: top }); 
 
-    }
+  }
 
     var onResize = function() {
       resizeWindow();

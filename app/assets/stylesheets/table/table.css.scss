@@ -39,6 +39,14 @@
       z-index: 100;
     }
 
+    div.table table thead tr th>div label.interactuable a.coloptions:after {
+      display:none;
+    }
+
+    div.table table thead tr th>div p.auto {
+      @include opacity(0);
+    }
+
     .cartodb-map-data {
       position: relative;
       top: 300px;

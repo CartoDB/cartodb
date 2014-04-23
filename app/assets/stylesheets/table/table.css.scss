@@ -24,6 +24,21 @@
       box-shadow: none;
     }
 
+    div.separator.bottom {
+      position: relative;
+      width: 100%;
+      border-top: 1px solid #E5E5E5;
+    }
+
+    div.separator_shadow {
+      position: relative;
+      height: 20px;
+      margin-top: -20px;
+      width: 100%;
+      @extend .black-gradient-shadow-bottom;
+      z-index: 100;
+    }
+
     .cartodb-map-data {
       position: relative;
       top: 300px;

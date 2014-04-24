@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset='utf-8' />
+    <title><%= yield :page_title %>CartoDB</title>
+    <%= favicon_link_tag "/favicons/favicon.ico" %>
+    <%= yield :css %>
+    <!--[if gt IE 8]><%= stylesheet_link_tag 'fonts_ie.css' %><![endif]-->
+    <%= insert_trackjs() %>
+    <%= insert_google_analytics('primary') %>
+    <%= yield :js %>
+    <%= csrf_meta_tag %>
+  </head>
+  <body class="public">
+    <%= render 'admin/shared/public_table_header' %>
+    <%= yield %>
+  </body>
+</html>

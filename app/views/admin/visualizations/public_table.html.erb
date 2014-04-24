@@ -31,16 +31,18 @@
     <script type="text/javascript"
       src="https://maps.google.com/maps/api/js?sensor=false&v=3.12">
     </script>
-    <%= javascript_include_tag 'cdb.js', 'application.js', 'models.js', 'table_public.js', 'templates.js', 'public_dashboard' %>
+    <%= javascript_include_tag 'cdb.js', 'application.js', 'models.js', 'table_public.js', 'templates.js', 'public_dashboard', 'tipsy' %>
   <% end %>
 
   <div class="globalerror"></div>
   <div class="panes"></div>
 
-  <ul class="navigation">
-    <li class="selected"><a href="#">Table view</a></li>
-    <li><a href="#">Map view</a></li>
-  </ul>
+  <div class="navigation">
+    <ul>
+      <li class="selected"><%= link_to "Table view", public_table_path(@visualization.id) %></li>
+      <li><%= link_to "Map view", public_table_map_path(@visualization.id) %></li>
+    </ul>
+  </div>
 
   <div class="separator_shadow"></div>
   <div class="separator bottom"></div>
@@ -141,100 +143,9 @@
     </div>
   </div>
 
-<script>
 
-
-reset_disqus = function() {
-  DISQUS.reset({
-    reload: true
-  });
-};
-
-if (!window.addEventListener) {
-  window.attachEvent('orientationchange', reset_disqus, this);
-} else {
-  window.addEventListener('orientationchange', reset_disqus);
-}
-
-$(document).ready(function(){
-
-  function renderExportOptions() {
-
-    var exportOptions = new cdb.admin.ExportTableOptions({
-      model: table.table,
-      config: config,
-      sql: 'SELECT * FROM ' + table_name,
-      force_http: location.protocol.indexOf('https') === -1 ? false : true
-    });
-
-    $(".export_options").append(exportOptions.render().el);
-
-  
-  }
-  function resizeWindow() {
-
-    var top = 0;
-    var tableHeight  = $("table").outerHeight(true);
-    var windowHeight = $(window).height();
-
-    if (tableHeight < windowHeight) {
-      top = tableHeight;
-    } else {
-      top = windowHeight - $(".cartodb-info").outerHeight(true) - $(".cartodb-public-header").outerHeight(true);
-    }
-
-    $(".cartodb-map-data").css({ top: top }); 
-    $(".separator").css({ top: top - 1}); 
-    $(".separator_shadow").css({ top: top }); 
-    $(".navigation").css({ top: top - 18 }); 
-
-  }
-
-    var onResize = function() {
-      resizeWindow();
-    };
-
-    var setupMapDimensions;
-
-    var doOnOrientationChange = function() {
-
-      switch(window.orientation)
-      {
-        case -90:
-          case 90: setupMapDimensions(true, true);
-        break;
-        default: setupMapDimensions(true, true);
-        break;
-      }
-
-    };
-
-    $.extend( $.easing, {
-      easeInQuad: function (x, t, b, c, d) {
-        return c*(t/=d)*t + b;
-      }
-    })
-
-    var mobileDevice = /Android|webOS|iPad|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-
-    if (!mobileDevice) {
-      $(window).on("resize", onResize);
-    }
-
-    renderExportOptions();
-
-    setTimeout(function() {
-      resizeWindow(mobileDevice);
-    }, 250)
-
-    // recalculate map position on orientation change
-    if (!window.addEventListener) {
-      window.attachEvent('orientationchange', doOnOrientationChange);
-    } else {
-      window.addEventListener('orientationchange', _.bind(doOnOrientationChange));
-    }
-
-
+  <script>
+  $(document).ready(function(){
     <% if Cartodb.config[:graphite_public] %>
         if (location.protocol.indexOf('https') === -1) {
           jQuery.getScript('<%= javascript_path "statsc.js" %>', function(ready) {
@@ -247,18 +158,6 @@ $(document).ready(function(){
       <% end %>
   });
 
-</script>
-
-<%= javascript_include_tag "tipsy.js" %>
-
-<script type="text/javascript">
-  $(function() {
-    $("span.help").tipsy({ gravity: $.fn.tipsy.autoBounds(250, 's'), fade: true });
-
-    if ($.browser.msie && parseInt($.browser.version) == 7 ) {
-      $(".comments .content").html("<p>Your browser doesn't support comments.</p>")
-    }
-  });
 </script>
 
 <%= render partial: 'shared/analytics', locals: { 

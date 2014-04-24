@@ -37,7 +37,7 @@ class Admin::VisualizationsController < ApplicationController
     @vizjson = @visualization.to_vizjson
 
     respond_to do |format|
-      format.html { render 'public', layout: 'application_public' }
+      format.html { render 'public_table_map', layout: 'application_table_map_public' }
     end
 
   end #public_table_map
@@ -64,7 +64,7 @@ class Admin::VisualizationsController < ApplicationController
     @nonpublic_vis_count = @table.dependent_visualizations.select{ |vis| vis.privacy != CartoDB::Visualization::Member::PRIVACY_PUBLIC }.count
 
     respond_to do |format|
-      format.html { render 'public', layout: 'application_public' }
+      format.html { render 'public_table', layout: 'application_table_public' }
     end
 
   end #public_table

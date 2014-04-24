@@ -65,9 +65,9 @@ CartoDB::Application.routes.draw do
     get '/tables/:id'               => 'visualizations#show'
     get '/tables/:id/map'           => 'visualizations#show'
     get '/tables/:id/table'         => 'visualizations#show'
-    get '/tables/:id/public'        => 'visualizations#public_table'
+    get '/tables/:id/public'        => 'visualizations#public_table', :as => :public_table
     get '/tables/:id/public/table'  => 'visualizations#public_table'
-    get '/tables/:id/public/map'    => 'visualizations#public_table_map'
+    get '/tables/:id/public/map'    => 'visualizations#public_table_map', :as => :public_table_map
     get '/tables/:id/embed_map'     => 'visualizations#embed_map'
 
     get '/viz'                      => 'visualizations#index'
@@ -76,7 +76,7 @@ CartoDB::Application.routes.draw do
     get '/viz/:id'                  => 'visualizations#show'
     get '/viz/:id/map'              => 'visualizations#show'
     get '/viz/:id/table'            => 'visualizations#show'
-    get '/viz/:id/public'           => 'visualizations#public'
+    get '/viz/:id/public'           => 'visualizations#public_table'
     get '/viz/:id/embed_map'        => 'visualizations#embed_map'
     get '/viz/:id/public_map'       => 'visualizations#public_map'
 

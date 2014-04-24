@@ -43,7 +43,9 @@ class Admin::VisualizationsController < ApplicationController
   end #public_table_map
 
   def public_table
+
     id = params.fetch(:id)
+    #@visualization, @table = locator.get(id, "development") # TODO: change this
     @visualization, @table = locator.get(id, CartoDB.extract_subdomain(request))
 
     return(pretty_404) if @visualization.nil? || @visualization.private?

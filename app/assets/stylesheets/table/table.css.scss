@@ -39,10 +39,52 @@
       z-index: 100;
     }
 
-    div.table table thead tr th>div label.interactuable a.coloptions:after {
+    div.table table thead tr th>div label.interactuable .coloptions:after {
       display:none;
     }
 
+
+    .navigation {
+
+      @include clearfix();
+      position:relative;
+      z-index: 100;
+      left: 129px;
+
+      li {
+      
+        float: left;
+        list-style:none;
+        margin: 0 1px 0 0;
+
+        &.selected a { 
+          text-decoration: none;
+          color: rgba(#fff, .7);
+        } 
+
+        &:first-child a { @include border-radius(2px 0 0 2px); }
+        &:last-child  a { @include border-radius(0 2px 2px 0); }
+
+        a {
+
+          font-family: helvetica;
+          text-decoration: underline;
+
+          font-family:"Helvetica Neue", "Helvetica", Arial;
+
+          display:block;
+          padding: 10px;
+          background: rgba(#000000, .7);
+          font-size: 11px;
+          font-weight:bold;
+          color: #FFFFFF;
+          text-transform: uppercase;
+        }
+
+      }
+      
+    }
+    
     div.table table thead tr th>div p.auto {
       @include opacity(0);
     }
@@ -263,7 +305,7 @@
                 }
 
                 &.interactuable {
-                  a {
+                  div, a {
                     @include inline-block();
                     margin:6px 0 5px 5px;
                     color:#7C7C7C;

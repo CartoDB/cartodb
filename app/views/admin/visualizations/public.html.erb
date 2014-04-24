@@ -37,6 +37,11 @@
   <div class="globalerror"></div>
   <div class="panes"></div>
 
+  <ul class="navigation">
+    <li class="selected"><a href="#">Table view</a></li>
+    <li><a href="#">Map view</a></li>
+  </ul>
+
   <div class="separator_shadow"></div>
   <div class="separator bottom"></div>
   <div class="cartodb-map-data">
@@ -76,9 +81,13 @@
             <h2>Visualizations using this data</h2>
             <ul>
 
+              <% if (@dependent_visualizations.count == 0 && @nonpublic_vis_count == 0) %>
+                <li class="private">This dataset is not used in any map</li>
+              <% end %>
+
               <% @dependent_visualizations.each do |vis| %>
                 <% if (vis.privacy == "public") %>
-                  <li><a href="/tables/<%= vis.name %>/public" title="<%= vis.name.gsub(/_/," ") %>"><%= vis.name.gsub(/_/, " ") %></a></li>
+                  <li><a href="/viz/<%= vis.id %>/public_map?<%= vis.url_options.presence %>" title="<%= vis.name.gsub(/_/," ") %>"><%= vis.name.gsub(/_/, " ") %></a></li>
                 <% end %>
               <% end %>
 
@@ -149,15 +158,19 @@ if (!window.addEventListener) {
 
 $(document).ready(function(){
 
-  var dlg = window.dlg = new cdb.admin.ExportTableOptions({
-    model: table.table,
-    config: config,
-    sql: 'SELECT * FROM ' + table_name,
-    force_http: location.protocol.indexOf('https') === -1 ? false : true
-  });
+  function renderExportOptions() {
 
-  $(".export_options").append(dlg.render().el);
+    var exportOptions = new cdb.admin.ExportTableOptions({
+      model: table.table,
+      config: config,
+      sql: 'SELECT * FROM ' + table_name,
+      force_http: location.protocol.indexOf('https') === -1 ? false : true
+    });
 
+    $(".export_options").append(exportOptions.render().el);
+
+  
+  }
   function resizeWindow() {
 
     var top = 0;
@@ -173,6 +186,7 @@ $(document).ready(function(){
     $(".cartodb-map-data").css({ top: top }); 
     $(".separator").css({ top: top - 1}); 
     $(".separator_shadow").css({ top: top }); 
+    $(".navigation").css({ top: top - 18 }); 
 
   }
 
@@ -206,6 +220,8 @@ $(document).ready(function(){
     if (!mobileDevice) {
       $(window).on("resize", onResize);
     }
+
+    renderExportOptions();
 
     setTimeout(function() {
       resizeWindow(mobileDevice);

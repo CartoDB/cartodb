@@ -36,6 +36,7 @@ services/importer/spec/factories/database.json
 .ruby-version
 cartodb.sublime-workspace
 cartodb.sublime-project
+.rvmrc
 lib/build/dist
 lib/build/node_modules
 app/assets/images/sprites/*.png
@@ -44,6 +45,5 @@ npm-debug.log
 .ruby-gemset
 lib/build/dist
 lib/build/node_modules
-public/assets
 lib/build/grunt-aws.json
 lib/build/app_config.js

@@ -67,6 +67,7 @@ module CartoDB
         ).to_poro
       end #layer_group_for
 
+
       def other_layers_for(visualization, named_maps_presenter = nil)
         layer_index = visualization.layers(:cartodb).size
 
@@ -77,6 +78,7 @@ module CartoDB
             decoration_data_to_apply = named_maps_presenter.get_decoration_for_layer(layer.kind, layer_index)
           end
           layer_index += 1
+          #noinspection RubyArgCount
           Layer::Presenter.new(layer, options, configuration, decoration_data_to_apply).to_vizjson_v2
         end
       end #other_layers_for
@@ -87,7 +89,8 @@ module CartoDB
 
       def bounds_from(map)
         ::JSON.parse("[#{map.view_bounds_sw}, #{map.view_bounds_ne}]")
-      rescue => exception
+      rescue
+        # Do nothing
       end #bounds_from
 
       def layers_for(visualization)
@@ -101,7 +104,7 @@ module CartoDB
             api_key: options.delete(:user_api_key)
           }
           named_maps_presenter = CartoDB::NamedMapsWrapper::Presenter.new(visualization, presenter_options, configuration)
-          layers_data.push( named_maps_presenter.to_poro() )
+          layers_data.push( named_maps_presenter.to_poro )
         else
           named_maps_presenter = nil
           layers_data.push( layer_group_for(visualization) )
@@ -116,7 +119,7 @@ module CartoDB
         end
       end #base_layers_for
 
-      def overlays_for(map)
+      def overlays_for(visualization)
         ordered_overlays_for(visualization).map do |overlay|
           Overlay::Presenter.new(overlay).to_poro
         end
@@ -132,14 +135,14 @@ module CartoDB
 
       def zoom_overlay
         OpenStruct.new(
-          type: "zoom",
+          type: 'zoom',
           template: '<a class="zoom_in">+</a><a class="zoom_out">-</a>'
         )
       end #zoom_overlay
 
       def loader_overlay
         OpenStruct.new(
-          type: "loader",
+          type: 'loader',
           template: '<div class="loader"></div>'
         )
       end #loader_overlay

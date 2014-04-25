@@ -59,6 +59,8 @@ module CartoDB
     end  
   end
 
+  class DataSourceError < BaseCartoDBError; end
+
 
   # database errors
   class DbError < StandardError

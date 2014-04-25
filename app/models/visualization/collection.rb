@@ -6,7 +6,7 @@ require_relative '../../../services/data-repository/structures/collection'
 module CartoDB
   module Visualization
     SIGNATURE           = 'visualizations'
-    AVAILABLE_FILTERS   = %w{ name type description map_id }
+    AVAILABLE_FILTERS   = %w{ name type description map_id privacy }
     PARTIAL_MATCH_QUERY = %Q{
       to_tsvector(
         'english', coalesce(name, '') || ' ' 
@@ -98,6 +98,7 @@ module CartoDB
       def order_params_from(criteria)
         criteria.map { |key, order| Sequel.send(order.to_sym, key.to_sym) }
       end #order_params_from
+
     end # Collection
   end # Visualization
 end # CartoDB

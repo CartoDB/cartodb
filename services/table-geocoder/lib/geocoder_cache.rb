@@ -28,7 +28,7 @@ module CartoDB
       get_cache_results
       create_temp_table
       load_results_to_temp_table
-      @hits = connection.select.from(temp_table_name).count.to_i
+      @hits = connection.select.from(temp_table_name).where('longitude is not null and latitude is not null').count.to_i
       copy_results_to_table
     rescue => e
       handle_cache_exception e
@@ -55,14 +55,33 @@ module CartoDB
     def store
       begin
         count = count + 1 rescue 0
-        sql   = "INSERT INTO #{sql_api[:table_name]} (geocode_string, the_geom) VALUES "
+        sql   = %Q{
+           WITH 
+            -- write the new values
+           n(searchtext, the_geom) AS (
+              VALUES %%VALUES%%
+           ),
+            -- update existing rows
+           upsert AS (
+              UPDATE #{sql_api[:table_name]} o
+              SET updated_at = NOW()
+              FROM n WHERE o.geocode_string = n.searchtext
+              RETURNING o.geocode_string
+           )
+           -- insert missing rows
+           INSERT INTO #{sql_api[:table_name]} (geocode_string,the_geom)
+           SELECT n.searchtext, n.the_geom FROM n
+           WHERE n.searchtext NOT IN (
+            SELECT geocode_string FROM upsert
+           );
+        }
         rows = connection.fetch(%Q{
           SELECT DISTINCT(quote_nullable(#{formatter})) AS searchtext, the_geom 
           FROM #{table_name} AS orig
-          WHERE orig.cartodb_georef_status IS NOT NULL AND #{formatter} NOT IN (SELECT geocode_string FROM #{temp_table_name} WHERE geocode_string IS NOT NULL)
+          WHERE orig.cartodb_georef_status IS NOT NULL
           LIMIT #{@batch_size} OFFSET #{count * @batch_size}
         }).all
-        sql << rows.map { |r| "(#{r[:searchtext]}, #{(r[:the_geom] == nil ? 'NULL' : "'#{r[:the_geom]}'")})" }.join(',')
+        sql.gsub! '%%VALUES%%', rows.map { |r| "(#{r[:searchtext]}, #{(r[:the_geom] == nil ? 'NULL' : "'#{r[:the_geom]}'")})" }.join(',')
         run_query(sql) if rows && rows.size > 0
       end while rows.size >= @batch_size
     rescue => e

@@ -8,6 +8,7 @@ require_relative './json2csv'
 require_relative './xlsx2csv'
 require_relative './xls2csv'
 require_relative './georeferencer'
+require_relative './exceptions'
 
 module CartoDB
   module Importer2
@@ -35,6 +36,7 @@ module CartoDB
         job.log "Using database connection with #{job.concealed_pg_options}"
         ogr2ogr.run
 
+        job.log "ogr2ogr call:      #{ogr2ogr.command}"
         job.log "ogr2ogr output:    #{ogr2ogr.command_output}"
         job.log "ogr2ogr exit code: #{ogr2ogr.exit_code}"
 
@@ -44,6 +46,9 @@ module CartoDB
               (ogr2ogr.exit_code == 35584 && ogr2ogr.command_output =~ /Segmentation fault/)
             raise FileTooBigError.new(job.logger.fetch)
           end
+	  if (ogr2ogr.exit_code == 256 && ogr2ogr.command_output =~ /Unable to open(.*)with the following drivers/)
+		raise UnsupportedFormatError.new
+	  end
           raise LoadError.new(job.logger.fetch)
         end
         job.log 'Georeferencing...'

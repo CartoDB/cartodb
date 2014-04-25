@@ -17,30 +17,43 @@ module CartoDB
       DEFAULT_LOADER          = Loader
       UNKNOWN_ERROR_CODE      = 99999
 
+      # @param pg_options Hash
+      # @param downloader CartoDB::Datasources::Base|CartoDB::Importer2::Downloader
+      # @param log TrackRecord::Log|nil
+      # @param available_quota int|nil
+      # @param unpacker Unp|nil
       def initialize(pg_options, downloader, log=nil, available_quota=nil, unpacker=nil)
-        @pg_options       = pg_options
-        @downloader       = downloader
-        @log              = log             || TrackRecord::Log.new
-        @available_quota  = available_quota || DEFAULT_AVAILABLE_QUOTA
-        @unpacker         = unpacker        || Unp.new
-        @results          = []
+        @pg_options         = pg_options
+        @downloader         = downloader
+        @log                = log             || TrackRecord::Log.new
+        @available_quota    = available_quota || DEFAULT_AVAILABLE_QUOTA
+        @unpacker           = unpacker        || Unp.new
+        @results            = []
       end #initialize
+
+      def include_additional_errors_mapping(additional_errors)
+        @additional_errors = additional_errors
+      end #include_additional_errors_mapping
+
+      def errors_to_code_mapping
+        @additional_errors.nil? ? ERRORS_MAP : ERRORS_MAP.merge(@additional_errors)
+      end #errors_to_code_mapping
 
       def run(&tracker_block)
         @tracker = tracker_block
         tracker.call('uploading')
-        log.append "Getting file from #{downloader.url}"
-        downloader.run(available_quota)
+
+        @downloader.run(available_quota)
 
         return self unless remote_data_updated?
 
-        log.append "Starting import for #{downloader.source_file.fullpath}"
-        log.append "Unpacking #{downloader.source_file.fullpath}"
+        log.append "Starting import for #{@downloader.source_file.fullpath}"
+        log.append "Unpacking #{@downloader.source_file.fullpath}"
 
         raise_if_over_storage_quota
 
         tracker.call('unpacking')
-        unpacker.run(downloader.source_file.fullpath)
+        unpacker.run(@downloader.source_file.fullpath)
         unpacker.source_files.each { |source_file| import(source_file) }
         unpacker.clean_up
         self
@@ -48,9 +61,9 @@ module CartoDB
         log.append exception.to_s
         log.append exception.backtrace
         @results.push(Result.new(
-            error_code: error_for(exception.class),
-            log_trace:  report()
-          ))
+          error_code: error_for(exception.class),
+          log_trace:  report
+        ))
       end #run
       
       def import(source_file, job=nil, loader=nil)
@@ -77,7 +90,7 @@ module CartoDB
       end #import
 
       def report
-        log.to_s
+        "Log Report: #{log.to_s}"
       end #report
 
       def db
@@ -91,35 +104,37 @@ module CartoDB
       end #loader_for
 
       def remote_data_updated?
-        downloader.modified?
+        @downloader.modified?
       end
 
       def last_modified
-        downloader.last_modified
+        @downloader.last_modified
       end
 
       def etag
-        downloader.etag
+        @downloader.etag
       end
 
       def checksum
-        downloader.checksum
+        @downloader.checksum
       end
 
+      # If not specified, fake
       def tracker
         @tracker || lambda { |state| state }
       end #tracker
 
       def success?
+        # TODO: Change this, "runner" can be ok even if no data has changed, should expose "data_changed" attribute
         return true unless remote_data_updated?
         results.select(&:success?).length > 0
       end
 
-      attr_reader :results
+      attr_reader :results, :log
 
       private
  
-      attr_reader :downloader, :pg_options, :unpacker, :available_quota, :log
+      attr_reader :pg_options, :unpacker, :available_quota
       attr_writer :results, :tracker
 
       def result_for(job, source_file, table_names, exception_klass=nil)
@@ -132,17 +147,18 @@ module CartoDB
           last_modified:  source_file.last_modified,
           tables:         table_names,
           success:        job.success_status,
-          error_code:     error_for(exception_klass)
+          error_code:     error_for(exception_klass),
+          log_trace:      job.logger.to_s
         )
       end #results
 
       def error_for(exception_klass=nil)
         return nil unless exception_klass
-        ERRORS_MAP.fetch(exception_klass, UNKNOWN_ERROR_CODE)
+        errors_to_code_mapping.fetch(exception_klass, UNKNOWN_ERROR_CODE)
       end #error_for
 
       def raise_if_over_storage_quota
-        file_size   = File.size(downloader.source_file.fullpath)
+        file_size   = File.size(@downloader.source_file.fullpath)
         over_quota  = available_quota < QUOTA_MAGIC_NUMBER * file_size
         raise StorageQuotaExceededError if over_quota
         self

@@ -9,9 +9,20 @@ require_relative './visualization/member'
 class Table < Sequel::Model(:user_tables)
   extend Forwardable
 
-  # Table constants
-  PRIVATE = 0
-  PUBLIC  = 1
+  PRIVACY_PRIVATE = 0
+  PRIVACY_PUBLIC = 1
+  PRIVACY_LINK = 2
+
+  PRIVACY_PRIVATE_TEXT = 'private'
+  PRIVACY_PUBLIC_TEXT = 'public'
+  PRIVACY_LINK_TEXT = 'link'
+
+  PRIVACY_VALUES_TO_TEXTS = {
+      PRIVACY_PRIVATE => PRIVACY_PRIVATE_TEXT,
+      PRIVACY_PUBLIC => PRIVACY_PUBLIC_TEXT,
+      PRIVACY_LINK => PRIVACY_LINK_TEXT
+  }
+
   CARTODB_COLUMNS = %W{ cartodb_id created_at updated_at the_geom }
   THE_GEOM_WEBMERCATOR = :the_geom_webmercator
   THE_GEOM = :the_geom
@@ -53,6 +64,10 @@ class Table < Sequel::Model(:user_tables)
 
     Hash[selected_attrs.map{ |k, v| [k, (self.send(v) rescue self[v].to_s)] }]
   end
+
+  def default_privacy_values
+    self.owner.try(:private_tables_enabled) ? PRIVACY_PRIVATE : PRIVACY_PUBLIC
+  end #default_privacy_values
 
   def geometry_types
     owner.in_database[ %Q{
@@ -112,28 +127,34 @@ class Table < Sequel::Model(:user_tables)
     ) if self.name == 'layergroup'
 
     # privacy setting must be a sane value
-    errors.add(:privacy, 'has an invalid value') if privacy != PRIVATE && privacy != PUBLIC
+    if privacy != PRIVACY_PRIVATE && privacy != PRIVACY_PUBLIC && privacy != PRIVACY_LINK
+      errors.add(:privacy, "has an invalid value '#{privacy}'")
+    end
 
-    # Branch if owner dows not have private table privileges
+    # Branch if owner does not have private table privileges
     unless self.owner.try(:private_tables_enabled)
-
       # If it's a new table and the user is trying to make it private
-      if self.new? && privacy == PRIVATE
+      if self.new? && privacy == PRIVACY_PRIVATE
         errors.add(:privacy, 'unauthorized to create private tables')
       end
 
-      # if the table exists, is private, but the owner no longer has private privalidges
-      # basically, this should never happen.
-      if !self.new? && privacy == PRIVATE && self.changed_columns.include?(:privacy)
+      # if the table exists, is private, but the owner no longer has private privilidges
+      if !self.new? && privacy == PRIVACY_PRIVATE && self.changed_columns.include?(:privacy)
         errors.add(:privacy, 'unauthorized to modify privacy status to private')
       end
+
+      # cannot change any existing table to 'with link'
+      if !self.new? && privacy == PRIVACY_LINK && self.changed_columns.include?(:privacy)
+        errors.add(:privacy, 'unauthorized to modify privacy status to pubic with link')
+      end
+
     end
   end
 
   # runs before each validation phase on create and update
   def before_validation
     # ensure privacy variable is set to one of the constants. this is bad.
-    self.privacy ||= owner.private_tables_enabled ? PRIVATE : PUBLIC
+    self.privacy ||= (owner.try(:private_tables_enabled) ? PRIVACY_PRIVATE : PRIVACY_PUBLIC)
     super
   end
 
@@ -394,31 +415,23 @@ class Table < Sequel::Model(:user_tables)
   end #before_save
 
   def after_save
-    had_errors = false
     super
     manage_tags
-    begin
-      update_name_changes
-    rescue CartoDB::BaseCartoDBError
-      had_errors = true
+    update_name_changes
+
+    self.map.save
+
+    manager = CartoDB::Table::PrivacyManager.new(self)
+    manager.set_from_table_privacy(privacy)
+    manager.propagate_to(table_visualization)
+    if privacy_changed?
+      manager.propagate_to_redis_and_varnish
+      update_cdb_tablemetadata
     end
 
-    unless had_errors
-      self.map.save
-
-      manager = CartoDB::Table::PrivacyManager.new(self)
-      manager.set_private if privacy == PRIVATE
-      manager.set_public  if privacy == PUBLIC
-      manager.propagate_to(table_visualization)
-      if privacy_changed?
-        manager.propagate_to_redis_and_varnish
-        update_cdb_tablemetadata
-      end
-
-      affected_visualizations.each { |visualization|
-        manager.propagate_to(visualization)
-      }
-    end
+    affected_visualizations.each { |visualization|
+      manager.propagate_to(visualization)
+    }
   end
 
   def propagate_namechange_to_table_vis
@@ -462,9 +475,6 @@ class Table < Sequel::Model(:user_tables)
         update_table_pg_stats
 
         # Set default triggers
-        #owner.add_python
-        #owner.create_function_invalidate_varnish
-        #owner.create_trigger_function_update_timestamp
         set_triggers
       rescue => e
         self.handle_creation_error(e)
@@ -510,7 +520,7 @@ class Table < Sequel::Model(:user_tables)
       type:         CartoDB::Visualization::Member::CANONICAL_TYPE,
       description:  self.description,
       tags:         (tags.split(',') if tags),
-      privacy:      (self.privacy == PUBLIC ? 'public' : 'private')
+      privacy:      PRIVACY_VALUES_TO_TEXTS[default_privacy_values]
     ).store
   end
 
@@ -569,7 +579,6 @@ class Table < Sequel::Model(:user_tables)
   ##
   # This method removes all the vanish cached objects for the table,
   # tiles included. Use with care O:-)
-
   def invalidate_varnish_cache
     CartoDB::Varnish.new.purge("#{varnish_key}")
     invalidate_cache_for(affected_visualizations) if id && table_visualization
@@ -672,26 +681,35 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def private?
-    $tables_metadata.hget(key, 'privacy').to_i == PRIVATE
-  end
+    self.privacy == PRIVACY_PRIVATE
+  end #private?
 
   def public?
-    !private?
-  end
+    self.privacy == PRIVACY_PUBLIC
+  end #public?
+
+  def public_with_link_only?
+    self.privacy == PRIVACY_LINK
+  end #public_with_link_only?
 
   def set_default_table_privacy
-    self.privacy ||= self.owner.try(:private_tables_enabled) ? PRIVATE : PUBLIC
+    self.privacy ||= default_privacy_values
     save
   end
 
   # enforce standard format for this field
   def privacy=(value)
-    if value == 'PRIVATE' || value == PRIVATE || value == PRIVATE.to_s
-      self[:privacy] = PRIVATE
-    elsif value == 'PUBLIC' || value == PUBLIC || value == PUBLIC.to_s
-      self[:privacy] = PUBLIC
+    case value
+      when PRIVACY_PUBLIC_TEXT.upcase, PRIVACY_PUBLIC, PRIVACY_PUBLIC.to_s
+        self[:privacy] = PRIVACY_PUBLIC
+      when PRIVACY_LINK_TEXT.upcase, PRIVACY_LINK, PRIVACY_LINK.to_s
+        self[:privacy] = PRIVACY_LINK
+      when PRIVACY_PRIVATE_TEXT.upcase, PRIVACY_PRIVATE, PRIVACY_PRIVATE.to_s
+        self[:privacy] = PRIVACY_PRIVATE
+      else
+        raise "Invalid privacy value '#{value}'"
     end
-  end
+  end #privacy=
 
   def privacy_changed?
     previous_changes.keys.include?(:privacy)
@@ -721,7 +739,7 @@ class Table < Sequel::Model(:user_tables)
 
   def rows_estimated(user=nil)
     user ||= self.owner
-    user.in_database["SELECT reltuples::integer FROM pg_class WHERE oid = '#{self.name}'::regclass"].first[:reltuples];
+    user.in_database["SELECT reltuples::integer FROM pg_class WHERE oid = '#{self.name}'::regclass"].first[:reltuples]
   end
 
   def rows_counted
@@ -736,11 +754,10 @@ class Table < Sequel::Model(:user_tables)
 
   def self.table_size(name, options)
     options[:connection]['SELECT pg_total_relation_size(?) AS size', name].first[:size] / 2
-  rescue Sequel::DatabaseError => e
+  rescue Sequel::DatabaseError
     nil
   end
 
-  # TODO: make predictable. Alphabetical would be better
   def schema(options = {})
     first_columns     = []
     middle_columns    = []
@@ -791,23 +808,26 @@ class Table < Sequel::Model(:user_tables)
         message = e.message.split("\n")[0]
         raise message if message =~ /Quota exceeded by/
 
+        invalid_column = nil
+
         # If the type don't match the schema of the table is modified for the next valid type
         invalid_value = (m = message.match(/"([^"]+)"$/)) ? m[1] : nil
-        invalid_column = if invalid_value
-          attributes.invert[invalid_value] # which is the column of the name that raises error
+        if invalid_value
+          invalid_column = attributes.invert[invalid_value] # which is the column of the name that raises error
         else
-          if m = message.match(/PGError: ERROR:  value too long for type (.+)$/)
-            if candidate = schema(cartodb_types: false).select{ |c| c[1].to_s == m[1].to_s }.first
-              candidate[0]
+          m = message.match(/PGError: ERROR:  value too long for type (.+)$/)
+          if m
+            candidate = schema(cartodb_types: false).select{ |c| c[1].to_s == m[1].to_s }.first
+            if candidate
+              invalid_column = candidate[0]
             end
           end
         end
 
-        new_column_type = get_new_column_type(invalid_column)
-
         if invalid_column.nil?
           raise e
         else
+          new_column_type = get_new_column_type(invalid_column)
           user_database.set_column_type(self.name, invalid_column.to_sym, new_column_type)
           retry
         end
@@ -844,8 +864,8 @@ class Table < Sequel::Model(:user_tables)
           invalid_value = (m = message.match(/"([^"]+)"$/)) ? m[1] : nil
           if invalid_value
             invalid_column = attributes.invert[invalid_value] # which is the column of the name that raises error
-
-            if new_column_type = get_new_column_type(invalid_column)
+            new_column_type = get_new_column_type(invalid_column)
+            if new_column_type
               user_database.set_column_type self.name, invalid_column.to_sym, new_column_type
               retry
             end
@@ -945,7 +965,7 @@ class Table < Sequel::Model(:user_tables)
     mode = (options[:mode] || 'asc').downcase == 'asc' ? 'ASC' : 'DESC NULLS LAST'
 
     filters = options.slice(:filter_column, :filter_value).reject{|k,v| v.blank?}.values
-    where = "WHERE (#{filters.first})|| '' ILIKE '%#{filters.second}%'" if filters.present?
+    where = filters.present? ? "WHERE (#{filters.first})|| '' ILIKE '%#{filters.second}%'" : ''
 
     owner.in_database do |user_database|
       columns_sql_builder = <<-SQL
@@ -1039,7 +1059,7 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def run_query(query)
-    v = owner.run_query(query)
+    owner.run_query(query)
   end
 
   def georeference_from!(options = {})
@@ -1310,14 +1330,13 @@ TRIGGER
   end
 
   def privacy_text
-    self.private? ? 'PRIVATE' : 'PUBLIC'
-  end
+    PRIVACY_VALUES_TO_TEXTS[self.privacy].upcase
+  end #privacy_text
 
-  #def visualization_ids
-  #  affected_visualization_records.select(:id).map do |visualization|
-  #    visualization.fetch(:id)
-  #  end
-  #end #visualization_ids
+  # Simplify certain privacy values for the vizjson
+  def privacy_text_for_vizjson
+    privacy == PRIVACY_LINK ? PRIVACY_PUBLIC_TEXT.upcase : privacy_text
+  end #privacy_text_for_vizjson
 
   def relator
     @relator ||= CartoDB::Table::Relator.new(Rails::Sequel.connection, self)
@@ -1341,12 +1360,12 @@ TRIGGER
       # update metadata records
       reload
       begin
-        $tables_metadata.rename(Table.key(database_name,@name_changed_from), key)
+        $tables_metadata.rename(Table.key(owner.database_name,@name_changed_from), key)
       rescue StandardError => exception
         exception_to_raise = CartoDB::BaseCartoDBError.new(
             "Table update_name_changes(): '#{@name_changed_from}','#{key}' renaming metadata", exception)
         CartoDB::notify_exception(exception_to_raise, user: owner)
-        raise exception_to_raise
+        #raise exception_to_raise
       end
 
       begin
@@ -1355,64 +1374,18 @@ TRIGGER
         exception_to_raise = CartoDB::BaseCartoDBError.new(
             "Table update_name_changes(): '#{@name_changed_from}' doesn't exist", exception)
         CartoDB::notify_exception(exception_to_raise, user: owner)
-        raise exception_to_raise
+        #raise exception_to_raise
       end
-      propagate_name_change_to_table_visualization
+      propagate_namechange_to_table_vis
 
       if layers.blank?
         exception_to_raise = CartoDB::TableError.new("Attempt to rename table without layers #{self.name}")
         CartoDB::notify_exception(exception_to_raise, user: owner)
-        raise exception_to_raise
+        #raise exception_to_raise
       end
 
       layers.each do |layer|
         layer.rename_table(@name_changed_from, name).save
-      end
-    end
-    @name_changed_from = nil
-  end
-
-  def update_name_changes
-    if @name_changed_from.present? && @name_changed_from != name
-      # update metadata records
-      reload
-      begin
-        $tables_metadata.rename(Table.key(owner.database_name,@name_changed_from), key)
-      rescue
-        # Do nothing
-      end
-      begin
-        owner.in_database.rename_table(@name_changed_from, name)
-      rescue
-        puts "Error attempting to rename table in DB: #{@name_changed_from} doesn't exist"
-      end
-      propagate_namechange_to_table_vis
-
-      require_relative '../../services/importer/lib/importer/exceptions'
-      CartoDB::notify_exception(
-          CartoDB::Importer2::GenericImportError.new("Attempt to rename table without layers #{self.name}"),
-          user: owner
-      ) if layers.blank?
-
-      layers.each do |layer|
-        layer.rename_table(@name_changed_from, name).save
-      end
-
-      # update tile styles
-      begin
-        # get old tile style
-        #old_style = tile_request('GET', "/tiles/#{@name_changed_from}/style?map_key=#{owner.api_key}").try(:body)
-
-        # parse old CartoCSS style out
-        #old_style = JSON.parse(old_style).with_indifferent_access[:style]
-
-        # rename common table name based variables
-        #old_style.gsub!(@name_changed_from, self.name)
-
-        # post new style
-        #tile_request('POST', "/tiles/#{self.name}/style?map_key=#{owner.api_key}", {"style" => old_style})
-      rescue => e
-        CartoDB::Logger.info 'tilestyle#rename error for', "#{e.inspect}"
       end
     end
     @name_changed_from = nil
@@ -1425,7 +1398,6 @@ TRIGGER
       INSERT INTO cdb_tablemetadata (tabname, updated_at)
       VALUES ('#{table_id}', NOW())
     })
-    #updated_at) VALUES ('#{name}'::regclass::oid, NOW())
   rescue Sequel::DatabaseError
     owner.in_database(as: :superuser).run(%Q{
       UPDATE cdb_tablemetadata
@@ -1522,7 +1494,7 @@ TRIGGER
     end
 
     #if the geometry is LINESTRING or POLYGON we convert it to MULTILINESTRING and MULTIPOLYGON resp.
-    if ['linestring','polygon'].include?(type.to_s.downcase)
+    if %w(linestring polygon).include?(type.to_s.downcase)
       owner.in_database do |user_database|
         if type.to_s.downcase == 'polygon'
           user_database.run("SELECT AddGeometryColumn('#{self.name}','the_geom_simple',4326, 'MULTIPOLYGON', 2);")
@@ -1686,6 +1658,7 @@ SQL
         extra_delete_headers = {'Depth' => 'Infinity'}
         http_res = http_req.delete(request_uri, request_headers.merge(extra_delete_headers))
       else
+        http_res = nil
     end
     raise "#{http_res.inspect}" unless http_res.is_a?(Net::HTTPOK)
     http_res

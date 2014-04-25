@@ -8,7 +8,6 @@
 @import "../../common/form-elements";
 @import "../../common/mixins";
 
-
 .tipsy {
   line-height: 120%;
 }
@@ -17,14 +16,20 @@
   text-align: center;
 
   h4 { margin: 0 0 10px 0; padding: 0; font-size: 17px; line-height:normal; }
-  p  { font-size: 15px; color: #666666; line-height:normal; }
+  p  { font-size: 15px; color: #666; line-height:normal; }
+
 
   .mamufas .block.modal a.close {
     right: -18px;
     top: -18px;
   }
 
-  .mamufas .block.modal div.content { padding: 40px; }
+  .mamufas .block.modal div.content { 
+    padding: 40px;
+  }
+
+  section.block p { margin: 0 0 15px 0;}
+
   .mamufas .block.modal div.foot { overflow: visible; padding: 0px 40px 48px 40px; }
   .mamufas .block.modal div.foot a { padding: 12px 32px; }
 
@@ -185,6 +190,10 @@
 
 .georeference_dialog {
 
+  .foot {
+    display:none;
+  }
+
   // option container
   .cont {
     display:none;
@@ -193,14 +202,47 @@
 
   .geocoder_stats { display: none; }
 
+  .content .aside {
+    @include box-sizing(border-box);
+
+    position:absolute;
+    background: #F2F2F2;
+    top: 0;
+    left: 570px;
+    width: 221px;
+    height: 100%;
+    color: #777777;
+    z-index: 100;
+    padding: 40px 37px;
+
+    p {
+      width: 143px;
+      margin: 0 0 15px 0;
+      line-height: 120%; 
+      font-size: 13px;
+      color: #999;
+    }
+
+    .button { 
+      $width: 141px;
+      position:absolute;
+      bottom: 39px;
+      left: 50%;
+      margin-left: -$width/2;
+    }
+
+    .message { display: block; }
+  }
+
   .inner {
-    width: 2000px;
+    width: 1045px;
     clear:both;
     overflow:hidden;
     padding:40px 40px 40px 40px;
   }
 
   &.no_data {
+    div.foot { display: block; }
     div.content, div.content .inner { overflow: visible; }
     div.content, div.content .inner { width: auto; }
     div.content div.inner {
@@ -210,7 +252,7 @@
 
   // Dialog styles
   div.content {
-    width: 532px;
+    width: 792px;
     padding: 0!Important;
 
     clear:both;
@@ -221,13 +263,15 @@
     ul.options {
       width: 492px;
       float:left;
-      margin-right: 60px;
+      /*margin-right: 60px;*/
     }
 
     .georeference_styles {
 
       float:left;
       width: 493px;
+      position:absolute;
+      left: 591px;
 
       -webkit-transform: translate3d(0,0,0);
       -moz-transform: translate3d(0,0,0);
@@ -518,6 +562,11 @@
       &.active {
         div.cont {display:block}
       }
+
+      &.ip {
+        select, .select2-container { float: right; width: 158px; }
+      }
+
     }
   }
 
@@ -599,6 +648,28 @@
       font-size: 13px;
       color: #999999;
       margin: 6px 0 0 0;
+    }
+
+    div.hint {
+      position:relative;
+      width:472px;
+      margin-top:15px;
+      background:image-url('layout/hint_line_bkg.png') repeat 0 -3px;
+
+      p {
+        @include inline-block();
+        vertical-align:top;
+        width:415px;
+        line-height:18px;
+      }
+
+      span {
+        @include inline-block();
+        vertical-align:top;
+        margin:4px 10px 0 14px;
+        font:bold 11px $text-fonts2;
+        color:#333333;
+      }
     }
 
   }

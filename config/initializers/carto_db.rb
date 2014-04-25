@@ -108,7 +108,7 @@ module CartoDB
       what_about: "The remote URL returned an error. Please verify your file is available at that URL."
     },
     1002 => {
-      title: 'Unsupported file type',
+      title: 'Unsupported/Unrecognized file type',
       what_about: "Should we support this filetype? Let us know in our <a href='mailto:support-suggestions@cartodb.com'>support email</a>!"
     },
     1003 => {
@@ -139,6 +139,14 @@ module CartoDB
       title: 'Private Google Spreadsheet',
       what_about: "This spreadsheet seems to be private. Please check in Goolge Spreadsheet sharing options that the file is public or accessible for those who know the link"
     },
+    1011 => {
+        title: 'Error retrieving data from datasource',
+        what_about: "There was an error retrieving data from the datasource. Check that the file is still present."
+    },
+    1012 => {
+        title: 'Error connecting to datasource',
+        what_about: "There was an error trying to connect to the datasource. This might be caused due to a configuration problem, revoked access token or similar cause."
+    },
     2001 => {
       title: 'Unable to load data',
       what_about: "We couldn't load data from your file into the database.  Please <a href='mailto:support@cartodb.com?subject=Import load error'>contact us</a> and we will help you to load your data."
@@ -146,6 +154,10 @@ module CartoDB
     2002 => {
       title: 'Encoding detection error',
       what_about: "We couldn't detect the encoding of your file. Please <a href='mailto:support@cartodb?subject=Encoding error in import'>contact us</a> and we will help you to load your data."
+    },
+    2003 => {
+      title: 'Malformed CSV',
+      what_about: "The CSV or converted XLS/XLSX to CSV file contains malformed or invalid characters. Some reasons for this error can be for example multiline header fields."
     },
     3007 => {
       title: 'JSON may not be valid GeoJSON',

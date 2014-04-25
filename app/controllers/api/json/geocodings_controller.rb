@@ -2,7 +2,7 @@
 require Rails.root.join('services', 'sql-api', 'sql_api')
 
 class Api::Json::GeocodingsController < Api::ApplicationController
-  ssl_required :index, :show, :create, :update, :country_data_for, :get_countries
+  ssl_required :index, :show, :create, :update, :country_data_for, :get_countries, :estimation_for
 
   def index
     geocodings = Geocoding.where("user_id = ? AND (state NOT IN ?)", current_user.id, ['failed', 'finished', 'cancelled'])
@@ -58,4 +58,20 @@ class Api::Json::GeocodingsController < Api::ApplicationController
             .fetch("SELECT distinct(pol.name) iso3, pol.name FROM country_decoder pol ORDER BY pol.name ASC")
     render json: rows
   end
+
+  def estimation_for
+    table = current_user.tables.where(name: params[:table_name]).first
+    total_rows       = Geocoding.processable_rows(table)
+    remaining_quota  = current_user.geocoding_quota - current_user.get_geocoding_calls
+    remaining_quota  = (remaining_quota > 0 ? remaining_quota : 0)
+    used_credits     = total_rows - remaining_quota
+    used_credits     = (used_credits > 0 ? used_credits : 0)
+    render json: { 
+      rows:       total_rows,
+      estimation: (current_user.geocoding_block_price.to_i * used_credits) / User::GEOCODING_BLOCK_SIZE.to_f
+    }
+  rescue => e
+    render_jsonp( { description: e.message }, 500)
+  end
+
 end

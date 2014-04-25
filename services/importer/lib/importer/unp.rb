@@ -2,8 +2,8 @@
 require 'tempfile'
 require 'fileutils'
 require 'open3'
-require_relative '../importer'
 require_relative './exceptions'
+require_relative './source_file'
 require_relative './kml_splitter'
 require_relative './osm_splitter'
 
@@ -20,7 +20,9 @@ module CartoDB
       }
       SPLITTERS             = [KmlSplitter, OsmSplitter]
 
-      attr_reader :source_files
+      IMPORTER_TMP_SUBFOLDER = '/tmp/imports/'
+
+      attr_reader :source_files, :temporary_directory
 
       def initialize
         @source_files = []
@@ -29,7 +31,7 @@ module CartoDB
       def run(path)
         return without_unpacking(path) unless compressed?(path)
         extract(path)
-        crawl(temporary_directory).each { |path| process(path) }
+        crawl(temporary_directory).each { |dir_path| process(dir_path) }
         @source_files = split(source_files)
         self
       rescue => exception
@@ -96,8 +98,8 @@ module CartoDB
       end #source_file_for
 
       def command_for(path)
-        stdout, stderr, status  = Open3.capture3("which unp")
-        if (status != 0)
+        stdout, stderr, status  = Open3.capture3('which unp')
+        if status != 0
           puts "Cannot find command 'unp' (required for import task) #{stderr}"
           raise InstallError # TODO: use InstallError instead ! See #310
         end
@@ -140,7 +142,7 @@ module CartoDB
       end #clean_up
 
       def generate_temporary_directory
-        tempfile                  = Tempfile.new("")
+        tempfile                  = temporary_file
         self.temporary_directory  = tempfile.path
 
         tempfile.close!
@@ -155,6 +157,12 @@ module CartoDB
       def unp_failure?(output, exit_code)
         !!(output =~ UNP_READ_ERROR_REGEX) || (exit_code != 0)
       end #unp_failure?
+
+      # Return a new temporary file contained inside a tmp subfolder
+      def temporary_file
+        FileUtils.mkdir_p(IMPORTER_TMP_SUBFOLDER) unless File.directory?(IMPORTER_TMP_SUBFOLDER)
+        Tempfile.new('', IMPORTER_TMP_SUBFOLDER)
+      end #temporary_file
 
       def temporary_directory
         generate_temporary_directory unless @temporary_directory

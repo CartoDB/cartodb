@@ -6,12 +6,14 @@ module CartoDB
     class Importer
       ORIGIN_SCHEMA       = 'cdb_importer'
       DESTINATION_SCHEMA  = 'public'
-      MAX_RENAME_RETRIES  = 5
+      MAX_RENAME_RETRIES  = 20
 
       attr_accessor :table
 
-      def initialize(runner, table_registrar, quota_checker, database,
-      data_import_id)
+      # @param runner CartoDB::Importer2::Runner
+      # @param table_registrar CartoDB::TableRegistrar
+      # @param, quota_checker CartoDB::QuotaChecker
+      def initialize(runner, table_registrar, quota_checker, database, data_import_id)
         @runner           = runner
         @table_registrar  = table_registrar
         @quota_checker    = quota_checker
@@ -23,9 +25,11 @@ module CartoDB
         runner.run(&tracker)
 
         if quota_checker.will_be_over_table_quota?(results.length)
+          runner.log.append('Results would set overquota')
           self.aborted = true
           drop(results)
         else
+          runner.log.append('Proceeding to register')
           results.select(&:success?).each { |result| register(result) }
         end
 
@@ -33,9 +37,13 @@ module CartoDB
       end
 
       def register(result)
+        runner.log.append('Before renaming')
         name = rename(result.table_name, result.name)
+        runner.log.append('Before moving schema')
         move_to_schema(name, ORIGIN_SCHEMA, DESTINATION_SCHEMA)
+        runner.log.append('Before persisting metadata')
         persist_metadata(name, data_import_id)
+        runner.log.append('Table registered')
       rescue
       end
 
@@ -110,8 +118,7 @@ module CartoDB
 
       private
 
-      attr_reader :runner, :table_registrar, :quota_checker, :database,
-      :data_import_id
+      attr_reader :runner, :table_registrar, :quota_checker, :database, :data_import_id
       attr_accessor :aborted
     end # Importer
   end # Connector

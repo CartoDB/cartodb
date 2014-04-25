@@ -18,7 +18,7 @@ module CartoDB
   module Visualization
     class Member
       extend Forwardable
-      include Virtus
+      include Virtus.model
 
       PRIVACY_PUBLIC    = 'public'    # published and listable in public user profile
       PRIVACY_PRIVATE   = 'private'   # not published (viz.json and embed_map should return 404)
@@ -45,6 +45,7 @@ module CartoDB
       attribute :updated_at,          Time
       attribute :encrypted_password,  String, default: nil
       attribute :password_salt,       String, default: nil
+      attribute :url_options,         String, default: nil
 
       def_delegators :validator,    :errors, :full_errors
       def_delegators :relator,      *Relator::INTERFACE
@@ -58,6 +59,10 @@ module CartoDB
         @named_maps     = nil
         @user_data      = nil
       end #initialize
+
+      def default_privacy(owner)
+        owner.try(:private_tables_enabled) ? PRIVACY_LINK : PRIVACY_PUBLIC
+      end #default_privacy
 
       def store
         raise CartoDB::InvalidMember unless self.valid?
@@ -85,6 +90,11 @@ module CartoDB
             { encrypted_password: encrypted_password, password_salt: password_salt },
             "password can't be blank"
             )
+        end
+
+        # Allow only "maintaining" privacy link for everyone but not setting it
+        if privacy == PRIVACY_LINK && privacy_changed
+          validator.validate_expected_value(:private_tables_enabled, true, user.private_tables_enabled)
         end
 
         validator.valid?
@@ -152,7 +162,6 @@ module CartoDB
         privacy == PRIVACY_PUBLIC
       end #public?
 
-      # TODO: Unused yet
       def public_with_link?
         privacy == PRIVACY_LINK
       end #public_with_link?
@@ -166,7 +175,7 @@ module CartoDB
       end #password_protected?
 
       def to_hash(options={})
-        Presenter.new(self, options).to_poro
+        Presenter.new(self, options.merge(real_privacy: true)).to_poro
       end #to_hash
 
       def to_vizjson
@@ -209,8 +218,7 @@ module CartoDB
 
       def invalidate_cache_and_refresh_named_map
         invalidate_varnish_cache
-
-        if type != CANONICAL_TYPE   
+        if type != CANONICAL_TYPE
           save_named_map
         end
       end #invalidate_cache_and_refresh_named_map
@@ -218,7 +226,7 @@ module CartoDB
       def has_private_tables?
         has_private_tables = false
         related_tables.each { |table|
-          has_private_tables |= (table.privacy == ::Table::PRIVATE)
+          has_private_tables |= (table.privacy == ::Table::PRIVACY_PRIVATE)
         }
         has_private_tables
       end #has_private_tables
@@ -295,7 +303,7 @@ module CartoDB
           remove_password
         end
 
-        # Warning, imports create by default private canonical visualizations
+        # Warning: imports create by default private canonical visualizations
         if type != CANONICAL_TYPE && @privacy == PRIVACY_PRIVATE && privacy_changed && !supports_private_maps?
           raise CartoDB::InvalidMember
         end
@@ -439,7 +447,8 @@ module CartoDB
       end #generate_salt
 
       def secure_digest(*args)
-        Digest::SHA256.hexdigest(args.flatten().join())
+        #noinspection RubyArgCount
+        Digest::SHA256.hexdigest(args.flatten.join)
       end #secure_digest
 
     end # Member

@@ -12,7 +12,7 @@
 
   @import "compass/css3/border-radius";
   @import "compass/css3/images";
-  @import "../../common/mixins";
+  @import "../common/mixins";
 
 
   @mixin progress-bar($h, $r, $grad, $min) {

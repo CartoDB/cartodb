@@ -16,20 +16,28 @@ describe "Assets API" do
 
   let(:params) { { :api_key => @user.api_key } }
 
-  it "creates a new asset" do
-    Asset.any_instance.stubs("use_s3?").returns(false)    
-    post_json v1_user_assets_url(@user, params.merge(
-      kind: 'wadus',
-      filename: Rack::Test::UploadedFile.new(Rails.root.join('spec/support/data/cartofante_blue.png'), 'image/png').path)
-    ) do |response|
-      response.status.should be_success
-      response.body[:public_url].should =~ /\/test\/test\/assets\/\d+cartofante_blue/
-      response.body[:kind].should == 'wadus'
-      @user.reload
-      @user.assets.count.should == 1
-      asset = @user.assets.first
-      asset.public_url.should =~ /\/test\/test\/assets\/\d+cartofante_blue/
-      asset.kind.should == 'wadus'
+  it 'creates a new asset' do
+    Asset.any_instance.stubs('use_s3?').returns(false)
+
+    file_path = Rails.root.join('spec', 'support','data', 'cartofante_blue.png')
+    if File.exist?(file_path) && File.file?(file_path)
+      uploaded_file = Rack::Test::UploadedFile.new(file_path, 'image/png')
+
+      post_json v1_user_assets_url(@user, params.merge(
+        kind: 'wadus',
+        filename: uploaded_file.path)
+      ) do |response|
+        response.status.should be_success
+        response.body[:public_url].should =~ /\/test\/test\/assets\/\d+cartofante_blue/
+        response.body[:kind].should == 'wadus'
+        @user.reload
+        @user.assets.count.should == 1
+        asset = @user.assets.first
+        asset.public_url.should =~ /\/test\/test\/assets\/\d+cartofante_blue/
+        asset.kind.should == 'wadus'
+      end
+    else
+      pending("Required spec asset '#{file_path}' not found, test can't properly execute")
     end
   end
 

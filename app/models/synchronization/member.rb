@@ -18,7 +18,10 @@ module CartoDB
     class Member
       include Virtus.model
 
-      MAX_RETRIES     = 5
+      MAX_RETRIES     = 3
+
+      # Seconds required between manual sync now
+      SYNC_NOW_TIMESPAN = 900
 
       STATE_CREATED   = 'created'
       STATE_SYNCING   = 'syncing'
@@ -106,6 +109,16 @@ module CartoDB
         Resque.enqueue(Resque::SynchronizationJobs, job_id: id)
       end
 
+      # @return bool
+      def can_manually_sync?
+        self.state == STATE_SUCCESS && (self.ran_at + SYNC_NOW_TIMESPAN < Time.now)
+      end #can_manually_sync?
+
+      # @return bool
+      def should_auto_sync?
+        self.state == STATE_SUCCESS && (self.run_at < Time.now)
+      end #should_run?
+
       def run
         self.state    = STATE_SYNCING
 
@@ -116,6 +129,19 @@ module CartoDB
         downloader    = get_downloader
 
         runner        = CartoDB::Importer2::Runner.new(pg_options, downloader, log, user.remaining_quota)
+
+        runner.include_additional_errors_mapping(
+          {
+              AuthError                   => 1011,
+              DataDownloadError           => 1011,
+              TokenExpiredOrInvalidError  => 1012,
+              DatasourceBaseError         => 1012,
+              InvalidServiceError         => 1012,
+              MissingConfigurationError   => 1012,
+              UninitializedError          => 1012
+          }
+        )
+
         database      = user.in_database
         importer      = CartoDB::Synchronization::Adapter.new(name, runner, database, user)
 
@@ -152,6 +178,7 @@ module CartoDB
       end
 
       def get_downloader
+
         datasource_name = (service_name.nil? || service_name.size == 0) ? Url::PublicUrl::DATASOURCE_NAME : service_name
         if service_item_id.nil? || service_item_id.size == 0
           self.service_item_id = url
@@ -298,9 +325,11 @@ module CartoDB
       # @return mixed|nil
       def get_datasource(datasource_name)
         begin
-          oauth = user.oauths.select(datasource_name)
           datasource = DatasourcesFactory.get_datasource(datasource_name, user)
-          datasource.token = oauth.token unless oauth.nil?
+          if datasource.kind_of? BaseOAuth
+            oauth = user.oauths.select(datasource_name)
+            datasource.token = oauth.token unless oauth.nil?
+          end
         rescue => ex
           log.append "Exception: #{ex.message}"
           log.append ex.backtrace

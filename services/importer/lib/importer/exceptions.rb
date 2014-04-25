@@ -29,6 +29,8 @@ module CartoDB
     class XLSXFormatError                       < StandardError; end
     class MalformedCSVException                 < GenericImportError; end
 
+    # @see also app/models/synchronization/member.rb for more error codes
+    # @see config/initializers/carto_db.rb For the texts
     ERRORS_MAP = {
       InstallError                          => 0001,
       UploadError                           => 1000,

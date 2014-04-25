@@ -4,7 +4,7 @@
  *  Styles for basemap chooser dialog
  */
 
-
+@import "compass/css3/inline-block";
 @import "../common/vars";
 @import "../common/form-elements";
 @import "../common/mixins";
@@ -216,3 +216,33 @@
 }
 
 .basemap_chooser_dialog .mamufas section.modal.compressed div.content { padding-bottom: 0; }
+
+
+// NASA basemap pane
+
+.basemap-pane.nasa-pane {
+  
+  p.disclaimer {
+    padding:0 0 15px 15px;
+    font-size:13px;
+  }
+
+  div.date {
+    float:right;
+    @include inline-block();
+    margin-top:1px;
+  }
+
+  div.type {
+    float:left;
+    @include inline-block();
+    margin-top:1px;
+  }
+
+  input.url { display:none!important }
+  
+  div.column {
+    @include inline-block();
+    &.time_field { display:none }
+  }
+}

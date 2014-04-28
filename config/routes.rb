@@ -95,6 +95,7 @@ CartoDB::Application.routes.draw do
 
   namespace :superadmin do
     resources :users
+    resources :synchronizations
   end
 
   scope :oauth, :path => :oauth do
@@ -144,6 +145,7 @@ CartoDB::Application.routes.draw do
       # Geocoder
       resources :geocodings, :only                  => [:create, :show, :index, :update] do
         get 'country_data_for/:country_code', to: 'geocodings#country_data_for', on: :collection, as: 'country_data'
+        get 'estimation_for/:table_name',     to: 'geocodings#estimation_for',   on: :collection, as: 'estimation_for'
         get 'get_countries',                  to: 'geocodings#get_countries',    on: :collection, as: 'get_countries'
       end
 
@@ -164,11 +166,12 @@ CartoDB::Application.routes.draw do
       # Tags
       resources :tags, :only                                    => [:index]
       # Synchronizations
-      get     'synchronizations'      => 'synchronizations#index'
-      post    'synchronizations'      => 'synchronizations#create'
-      get     'synchronizations/:id'  => 'synchronizations#show'
-      put     'synchronizations/:id'  => 'synchronizations#update'
-      delete  'synchronizations/:id'  => 'synchronizations#destroy'
+      get     'synchronizations'          => 'synchronizations#index'
+      post    'synchronizations'          => 'synchronizations#create'
+      get     'synchronizations/:id'      => 'synchronizations#show'
+      put     'synchronizations/:id/sync' => 'synchronizations#sync'
+      put     'synchronizations/:id'      => 'synchronizations#update'
+      delete  'synchronizations/:id'      => 'synchronizations#destroy'
     end
 
     get '/v2/viz/:id/viz'    => 'api/json/visualizations#vizjson2', as: :vizjson

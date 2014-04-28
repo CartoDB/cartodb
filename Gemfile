@@ -28,6 +28,9 @@ gem 'aws-sdk',                 '1.8.5'
 gem 'addressable',             '2.3.2', require: 'addressable/uri'
 
 gem 'ejs',                     '~> 1.1.1'
+gem 'execjs',                  '~> 0.4' # Required by ejs
+gem 'therubyracer'                      # Required by ejs
+
 
 group :production, :staging do
   gem 'unicorn',               '4.8.2'

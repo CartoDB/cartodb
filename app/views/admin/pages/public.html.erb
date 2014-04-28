@@ -29,8 +29,6 @@
   <![endif]-->
 <% end %>
 
-<%= render(:partial => 'announcement') %>
-
 <div class="content<%= " empty" if @visualizations.size == 0 %>">
 
   <div class="inner">
@@ -51,7 +49,7 @@
           <li>
             <div class="map-wrapper<%= " headless" if vis[:tags].size == 0 %>">
 
-              <a href="/viz/<%= vis[:id] %>/public_map" class="backdrop"></a>
+              <a href="/viz/<%= vis[:id] %>/public_map?<%= vis[:url_options].presence %>" class="backdrop"></a>
               <div id="map_<%= i %>" class="map"></div>
 
               <div class="title">
@@ -122,7 +120,6 @@
 <script>
 
   $(function() {
-
 
     <% urls = [] %>
 

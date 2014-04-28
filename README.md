@@ -26,13 +26,13 @@ etc) using a web form and then make it public or private.
 
 After it is uploaded, you can visualize it in a table or on a map, search
 it using SQL, and apply map styles using CartoCSS. You can even access it
-using the CartoDB [Maps API](http://developers.cartodb.com/api/maps.html)
-and [SQL API](http://developers.cartodb.com/api/sql.html), or export it
+using the CartoDB [API OVERVIEW](http://developers.cartodb.com/documentation/apis-overview.html)
+and [SQL API](http://developers.cartodb.com/documentation/sql-api.html), or export it
 to a file.
 
 In other words, with CartoDB you can make awesome maps and build
 powerful geospatial applications! Definitely check out the [CartoDB
-Maps](http://cartodb.com/maps) gallery for interactive examples
+Develop](http://cartodb.com/develop) for interactive examples
 and code.
 
 <img src="http://cartodb.s3.amazonaws.com/github/mapWizard.png" width="900px"/>
@@ -89,9 +89,14 @@ $ git clone --recursive https://github.com/CartoDB/cartodb.git
 ```
 
 Or you can just [download the CartoDB zip
-file](https://github.com/CartoDB/cartodb20/archive/develop.zip).
+file](https://github.com/CartoDB/cartodb/archive/master.zip).
 
 ## Add CartoDB PPAs ##
+
+Add CartoDB Base PPA
+```bash
+sudo add-apt-repository ppa:cartodb/base
+```
 
 Add CartoDB GIS PPA
 ```bash
@@ -218,7 +223,7 @@ path to each SQL file is correct:
 
 ```bash
 #!/usr/bin/env bash
-POSTGIS_SQL_PATH='pg_config --sharedir'/contrib/postgis-2.0
+POSTGIS_SQL_PATH=`pg_config --sharedir`/contrib/postgis-2.0
 createdb -E UTF8 template_postgis
 createlang -d template_postgis plpgsql
 psql -d postgres -c \

@@ -10,7 +10,7 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
   ssl_required :index, :show, :create, :update, :destroy
 
   def index
-    collection = Synchronization::Collection.new.fetch
+    collection = Synchronization::Collection.new.fetch(user_id: current_user.id)
     representation = collection.map(&:to_hash)
     response  = {
       synchronizations: representation,
@@ -70,6 +70,26 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
     puts exception.to_s
     puts exception.backtrace
   end
+
+  def sync
+    did_run = false
+    member = Synchronization::Member.new(id: params[:id]).fetch
+    return head(401) unless member.authorize?(current_user)
+
+    if member.should_auto_sync? || (params[:sync_now].present? && member.can_manually_sync?)
+      did_run = true
+      member.run
+    end
+
+    render_jsonp( { run: did_run, synchronization: member.fetch})
+  rescue KeyError => exception
+    puts exception.message + "\n" + exception.backtrace
+    head(404)
+  rescue => exception
+    CartoDB.notify_exception(exception)
+    puts exception.message + "\n" + exception.backtrace
+    head(404)
+  end #sync
 
   def show
     member = Synchronization::Member.new(id: params[:id]).fetch

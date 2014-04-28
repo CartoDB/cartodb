@@ -27,28 +27,57 @@ module CartoDB
         @db       = PG::EM::Client.new(pg_options)
         @relation = relation
         @records  = [] 
-      end
+      end #initialize
 
       def run
         fetch
         process
-      end
 
-      def fetch(success=nil, error=nil)
-        query = db.query(%Q(
-          SELECT * FROM #{relation}
-          WHERE EXTRACT(EPOCH FROM run_at) < #{Time.now.utc.to_f}
-          AND state = 'success'
-        ))
+        puts 'Pass finished'
+      end #run
 
-        query.errback   { |errors| puts errors.inspect }
-        query.callback  { |records| hydrate(records).each(&:enqueue) }
+      # @param force_all_syncs bool
+      def fetch(force_all_syncs=false)
+        puts 'fetching...'
+
+        begin
+          if force_all_syncs
+            query = db.query(%Q(
+              SELECT * FROM #{relation} WHERE state = 'success'
+            ))
+          else
+            query = db.query(%Q(
+              SELECT * FROM #{relation}
+              WHERE EXTRACT(EPOCH FROM run_at) < #{Time.now.utc.to_f}
+              AND state = 'success'
+            ))
+          end
+
+          success = true
+        rescue Exception => e
+          success = false
+          puts "ERROR fetching sync tables: #{e.message}, #{e.backtrace}"
+        end
+
+        if success
+          puts "Populating #{query.count} records after fetch"
+          hydrate(query).each { |record|
+            puts "Enqueueing #{record.name} (#{record.id})"
+           record.enqueue
+          }
+        end
+
         self
-      end
+      end #fetch
 
+      # This is probably for testing purposes only, as fetch also does the processing
       def process(members=@members)
-        members.each(&:enqueue)
-      end
+        puts "Processing #{members.size} records"
+        members.each { |member|
+          puts "Enqueueing #{member.name} (#{member.id})"
+          member.enqueue
+        }
+      end #process
 
       attr_reader :records, :members
 
@@ -59,12 +88,11 @@ module CartoDB
 
       def hydrate(records)
         @members = records.map { |record| CartoDB::Synchronization::Member.new(record) }
-      end
+      end #hydrate
 
       def default_pg_options
         configuration = YAML.load_file(DATABASE_CONFIG_YAML)
         options       = configuration[ENV['RAILS_ENV'] || 'development']
-
         {
           host:       options.fetch('host'),
           port:       options.fetch('port'),
@@ -72,7 +100,7 @@ module CartoDB
           password:   options.fetch('password'),
           database:   options.fetch('database')
         }
-      end
+      end #default_pg_options
     end # Collection
   end # Synchronizer
 end # CartoDB

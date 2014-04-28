@@ -7,6 +7,7 @@ require_relative './json2csv'
 require_relative './xlsx2csv'
 require_relative './xls2csv'
 require_relative './georeferencer'
+require_relative './exceptions'
 
 module CartoDB
   module Importer2

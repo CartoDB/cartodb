@@ -13,12 +13,13 @@ describe DataRepository::Backend::Sequel do
       String    :name
       String    :description
       String    :tags
-      String   :map_id
-      String   :active_layer_id
+      String    :map_id
+      String    :active_layer_id
       String    :type
       String    :privacy
       String    :encrypted_password
       String    :password_salt
+      String    :url_options
     end
 
     db.create_table :overlays do

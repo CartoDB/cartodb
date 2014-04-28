@@ -42,7 +42,7 @@ module CartoDB
     def run
       return if nothing_to_do
       user_database.transaction do straight_cast(@new_type.convert_to_db_type) end
-    rescue => exception
+    rescue
       # attempt various lossy conversions by regex nullifying 
       # unmatching data and retrying conversion.
       #
@@ -95,24 +95,11 @@ module CartoDB
     end #string_to_number
 
     def string_to_datetime
-      raise(
-        CartoDB::NonConvertibleData, 'Timestamp format not supported'
-      ) unless convertible_to_datetime?(table_name, column_name)
-      straight_cast("timestamptz", cast: "to_timestamp(#{column_name}::bigint)")
-    rescue => exception
-      straight_cast("timestamptz", cast: "CDB_StringToDate(#{column_name})")
+      straight_cast('timestamptz', cast: "CDB_StringToDate(#{column_name})")
     end #string_to_datetime
 
-    def convertible_to_datetime?(table_name, column_name)
-      !user_database[table_name.to_sym].with_sql(%Q{
-        SELECT CDB_StringToDate(#{column_name})
-        FROM #{table_name}
-        AS convertible
-      }).empty?
-    end #convertible_to_datetime?
-
     def string_to_boolean
-      falsy = "0|f|false"
+      falsy = '0|f|false'
 
       normalize_empty_string_to_null
 
@@ -181,7 +168,7 @@ module CartoDB
     end #number_to_boolean
 
     def date_to_number
-      straight_cast("double precision", cast: "CDB_DateToNumber(#{column_name})")
+      straight_cast('double precision', cast: "CDB_DateToNumber(#{column_name})")
     end
 
     def date_to_boolean

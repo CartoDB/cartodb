@@ -199,6 +199,10 @@ module CartoDB
       title: 'Merge with unmatching column types',
       what_about: "The columns you have chosen don't have the same column type in both tables. Please change the types so the columns will have the same type and try again."
     },
+    6666 => {
+      title: 'Dataset too big',
+      what_about: "The dataset you tried to import is too big and cannot be processed. You can try splitting it into smaller files and then using the 'Merge Tables' functionality."
+    },
     99999 => {
       title: 'Unknown',
       what_about: "Sorry, something went wrong and we're not sure what. Try

@@ -24,7 +24,7 @@ class Admin::PagesController < ApplicationController
     viewed_user = User.where(username: user.strip.downcase).first
     return render_404 if viewed_user.nil?
 
-    @tags       = viewed_user.map_tags
+    @tags       = viewed_user.map_tags.sort_by{ |m| m.downcase }
 
     @username   = viewed_user.username
     @avatar_url = viewed_user.gravatar(128)
@@ -52,7 +52,7 @@ class Admin::PagesController < ApplicationController
           title:        dataset.name,
           description:  dataset.description,
           updated_at:   dataset.updated_at,
-          tags:         dataset.tags
+          tags:         dataset.tags.sort_by{ |m| m.downcase }
         }
       )
     end
@@ -71,7 +71,7 @@ class Admin::PagesController < ApplicationController
     viewed_user = User.where(username: user.strip.downcase).first
     return render_404 if viewed_user.nil?
 
-    @tags       = viewed_user.tags
+    @tags       = viewed_user.map_tags.sort_by{ |m| m.downcase }
 
     @username   = viewed_user.username
     @avatar_url = viewed_user.gravatar(128)

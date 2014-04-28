@@ -26,7 +26,7 @@
     z-index:1;
 
     &.failure {
-      background: url('/assets/layout/sync_error_bkg.png') repeat-x 0 0;
+      background: image-url('layout/sync_error_bkg.png') repeat-x 0 0;
       border-top:1px solid rgba(black, .2);
     }
 
@@ -82,6 +82,13 @@
         @include border-radius(20px);
         opacity: 0.0;
         z-index:0;
+      }
+
+      &.syncing {
+        span.point {
+          @include background(linear-gradient(#FFFF73,#D9D900));
+          border-color:rgba(black, .75);
+        }
       }
 
       &.failure {

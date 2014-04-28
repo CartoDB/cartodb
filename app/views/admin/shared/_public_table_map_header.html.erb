@@ -22,8 +22,8 @@
 
     <div class="vis_navigation">
       <nav>
-        <%= link_to "Table",  public_table_path(@visualization.id), :class => "smaller strong tab selected" %>
-        <%= link_to "Map view", public_table_map_path(@visualization.id),   :class => "smaller strong tab" %>
+        <%= link_to "Table",  public_table_path(@visualization.id), :class => "smaller strong tab" %>
+        <%= link_to "Map view", public_table_map_path(@visualization.id), :class => "selected" %>
       </nav>
     </div>
 

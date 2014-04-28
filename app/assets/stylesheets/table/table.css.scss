@@ -16,6 +16,9 @@
 
   body.public { /* Public table CSS */
 
+    &.table .panes { top:68px; }
+    &.map .panes   { top:0px; }
+
     min-width: inherit;
 
     .dialog {
@@ -139,7 +142,7 @@
           margin: 0 1px 0 0;
           pointer-events:all;
 
-          &.selected a { 
+          a.selected { 
             text-decoration: none;
             color: rgba(#fff, .7);
           }
@@ -218,8 +221,6 @@
     }
 
     div.panes {
-      top:68px;
-
       overflow-y:hidden;
       overflow-x:scroll;
       clear:both;

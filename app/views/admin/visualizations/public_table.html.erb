@@ -39,8 +39,8 @@
 
   <div class="navigation">
     <ul>
-      <li class="selected"><%= link_to "Table view", public_table_path(@visualization.id) %></li>
-      <li><%= link_to "Map view", public_table_map_path(@visualization.id) %></li>
+      <li><%= link_to "Table view", "#/table", :class => 'smaller strong tab selected' %></li>
+      <li><%= link_to "Map view", "#/map"%></li>
     </ul>
   </div>
 

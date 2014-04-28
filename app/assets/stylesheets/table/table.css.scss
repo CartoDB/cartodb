@@ -18,6 +18,74 @@
 
     min-width: inherit;
 
+    .dialog {
+
+      position:relative;
+      z-index: 10000;
+
+      .block.modal.api {
+
+        .content {
+          padding: 0;
+          position:relative;
+        }
+
+        .inner {
+          padding: 28px 40px 0 40px;
+          position:relative;
+        }
+
+        .shadow {
+          position: absolute;
+          height: 60px;
+          bottom: 0;
+          width: 100%;
+          @extend .white-gradient-shadow-bottom;
+        }
+
+        code {
+          color: #666666;
+          font-size: 13px;
+          line-height: 120%;
+        }
+
+        .sample {
+          padding: 23px 40px;
+          background: #F2F2F2;
+          border-bottom: 1px solid #E5E5E5;
+
+          p {
+            font-size: 13px;
+            color: #999999;
+          }
+
+        }
+
+        h4 {
+          margin: 0 0 5px 0;
+          color: #666666;
+          text-transform: uppercase;
+          font-family:"Helvetica Neue", "Helvetica", Arial;
+          font-size:11px;
+        }
+
+        .foot {
+
+          padding: 38px;
+
+          p {
+            float:left;
+            width: 357px;
+            color: #666666;
+            font-size: 13px;
+            line-height: 120%;
+            padding: 5px 0;
+            a { text-decoration: underline; }
+          }
+        }
+      }
+    }
+
     .cartodb-public-header { 
       -webkit-box-shadow: none;
       -moz-box-shadow: none;
@@ -25,12 +93,14 @@
     }
 
     div.separator.bottom {
+      display:none;
       position: relative;
       width: 100%;
       border-top: 1px solid #E5E5E5;
     }
 
     div.separator_shadow {
+      display:none;
       position: relative;
       height: 20px;
       margin-top: -20px;

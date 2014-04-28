@@ -60,8 +60,6 @@
           </div>
         </div>
 
-        <%= render(:partial => 'admin/pages/announcement') %>
-
         <div class="separator top"></div>
 
           <div id="map"></div>
@@ -300,7 +298,7 @@
           var visReadyTime = cartodb.core.Profiler.metric('cartodb-js.embed.time_vis_loaded').start();
 
           var onResize = function() {
-            $("#map").css({ height: $(window).height() - 194 - 50 }); 
+            $("#map").css({ height: $(window).height() - 194 }); 
             $("#map").delay(500).animate({ opacity: 1 }, 250); 
           };
 
@@ -343,7 +341,7 @@
             }
 
             height = windowHeight - h;
-            top    = windowHeight - (h - 67 - 50);
+            top    = windowHeight - (h - 67);
 
             if (animated) {
               $("#map").animate({ height: height }, { easing: "easeInQuad", duration: 150 }); 

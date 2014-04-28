@@ -27,8 +27,6 @@
   <![endif]-->
 <% end %>
 
-<%= render(:partial => 'announcement') %>
-
 <div class="content<%= " empty" if @datasets.size == 0 %>">
 
   <div class="inner">
@@ -79,18 +77,18 @@
           <% if @pages > 1 && params[:page].to_i > 1 %>
             <% p = params[:page] || 1 %>
             <% if params[:tag] %>
-              <a class="prev" href="/tag/<%= "#{params[:tag]}" if params[:tag] %>/<%= p.to_i - 1 %>">Prev</a>
+              <a class="prev" href="/datasets/tag/<%= "#{params[:tag]}" if params[:tag] %>/<%= p.to_i - 1 %>">Prev</a>
             <% else %>
-              <a class="prev" href="/page/<%= p.to_i - 1 %>">Prev</a>
+              <a class="prev" href="/datasets/page/<%= p.to_i - 1 %>">Prev</a>
             <% end %>
           <% end %>
 
           <ul>
             <% @pages.times do |i| %>
               <% if params[:tag] %>
-                <li <%= "class='selected'" if ((!params[:page] && i == 0) || (params[:page].to_i - 1) == i) %>><a href="/tag/<%= params[:tag] %>/<%= i + 1 %>"></a></li>
+                <li <%= "class='selected'" if ((!params[:page] && i == 0) || (params[:page].to_i - 1) == i) %>><a href="/datasets/tag/<%= params[:tag] %>/<%= i + 1 %>"></a></li>
               <% else %>
-                <li <%= "class='selected'" if ((!params[:page] && i == 0) || (params[:page].to_i - 1) == i) %>><a href="/page/<%= i + 1 %>"></a></li>
+                <li <%= "class='selected'" if ((!params[:page] && i == 0) || (params[:page].to_i - 1) == i) %>><a href="/datasets/page/<%= i + 1 %>"></a></li>
               <% end %>
             <% end %>
           </ul>
@@ -98,9 +96,9 @@
           <% if @pages > 1 && (params[:page].to_i < @pages) %>
             <% p = params[:page] || 1 %>
             <% if params[:tag] %>
-              <a class="next" href="/tag/<%= "#{params[:tag]}" if params[:tag] %>/<%= p.to_i + 1 %>">Next</a>
+              <a class="next" href="/datasets/tag/<%= "#{params[:tag]}" if params[:tag] %>/<%= p.to_i + 1 %>">Next</a>
             <% else %>
-              <a class="next" href="/page/<%= p.to_i + 1 %>">Next</a>
+              <a class="next" href="/datasets/page/<%= p.to_i + 1 %>">Next</a>
             <% end %>
           <% end %>
 

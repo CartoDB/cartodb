@@ -1,6 +1,6 @@
-// cartodb.js version: 3.8.10
+// cartodb.js version: 3.8.11
 // uncompressed version: cartodb.uncompressed.js
-// sha: 49909aeebad7946234256b46320a5494a0f8e98d
+// sha: a8b6c7333585ad5d913a025eb718d7963d6d894c
 (function() {
   var root = this;
 
@@ -20686,7 +20686,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.8.10';
+    cdb.VERSION = '3.8.11';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -31572,6 +31572,7 @@ cdb.vis.Overlay.register('share', function(data, vis) {
               <ul>\
                 <li><a class="facebook" target="_blank" href="{{ facebook_url }}">Share on Facebook</a></li>\
                 <li><a class="twitter" href="{{ twitter_url }}" target="_blank">Share on Twitter</a></li>\
+                <li><a class="link" href="{{ public_map_url }}" target="_blank">Link to this map</a></li>\
               </ul>\
             </div><div class="embed_code">\
              <h4>Embed this map</h4>\
@@ -31588,6 +31589,8 @@ cdb.vis.Overlay.register('share', function(data, vis) {
 
   url = url.replace("public_map", "embed_map");
 
+  var public_map_url = url.replace("embed_map", "public_map"); // TODO: get real URL
+
   var code = "<iframe width='100%' height='520' frameborder='0' src='" + url + "'></iframe>";
 
   var dialog = new cdb.ui.common.ShareDialog({
@@ -31596,6 +31599,7 @@ cdb.vis.Overlay.register('share', function(data, vis) {
     model: vis.map,
     code: code,
     url: data.url,
+    public_map_url: public_map_url,
     share_url: data.share_url,
     template: template,
     target: $(".cartodb-share a"),

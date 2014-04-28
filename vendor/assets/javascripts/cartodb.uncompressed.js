@@ -1,6 +1,6 @@
-// cartodb.js version: 3.8.10-dev
+// cartodb.js version: 3.8.10
 // uncompressed version: cartodb.uncompressed.js
-// sha: 695cc51c18303ee37c3b20b852a4ccd5bbae098a
+// sha: 3dffff5bc9d67d37e74e494024e1d010784d5f1d
 (function() {
   var root = this;
 
@@ -20686,7 +20686,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.8.10-dev';
+    cdb.VERSION = '3.8.10';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -31686,7 +31686,8 @@ var HTTPS_TO_HTTP = {
   'https://dnv9my2eseobd.cloudfront.net/': 'http://a.tiles.mapbox.com/',
   'https://maps.nlp.nokia.com/': 'http://maps.nlp.nokia.com/',
   'https://tile.stamen.com/': 'http://tile.stamen.com/',
-  "https://{s}.maps.nlp.nokia.com/": "http://{s}.maps.nlp.nokia.com/"
+  "https://{s}.maps.nlp.nokia.com/": "http://{s}.maps.nlp.nokia.com/",
+  "https://cartocdn_{s}.global.ssl.fastly.net/": "http://{s}.api.cartocdn.com/"
 };
 
 function transformToHTTP(tilesTemplate) {

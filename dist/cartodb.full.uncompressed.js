@@ -1,6 +1,6 @@
-// cartodb.js version: 3.8.04
+// cartodb.js version: 3.8.11
 // uncompressed version: cartodb.uncompressed.js
-// sha: cf86d034e88f8c2f9ce07a8aa3f87d93a6e64452
+// sha: a8b6c7333585ad5d913a025eb718d7963d6d894c
 (function() {
   var root = this;
 
@@ -11110,7 +11110,7 @@ L.Map.include({
 });
 
 
-}(window, document));/* wax - 7.0.0dev10 - v6.0.4-151-g87ab6b1 */
+}(window, document));/* wax - 7.0.0dev10 - v6.0.4-154-ge12d473 */
 
 
 !function (name, context, definition) {
@@ -14165,7 +14165,7 @@ wax.interaction = function() {
             bean.fire(interaction, 'off');
             // Touch moves invalidate touches
             bean.add(parent(), touchEnds);
-        } else if (e.originalEvent.type === "MSPointerDown" && e.originalEvent.touches.length === 1) {
+        } else if (e.originalEvent.type === "MSPointerDown" && e.originalEvent.touches && e.originalEvent.touches.length === 1) {
           // Don't make the user click close if they hit another tooltip
             bean.fire(interaction, 'off');
             // Touch moves invalidate touches
@@ -20686,7 +20686,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.8.04';
+    cdb.VERSION = '3.8.11';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -21088,6 +21088,7 @@ Profiler.get = function(name) {
     avg: 0,
     total: 0,
     count: 0,
+    last: 0,
     history: typeof(Float32Array) !== 'undefined' ? new Float32Array(MAX_HISTORY) : []
   };
 };
@@ -21096,11 +21097,10 @@ Profiler.backend = function (_) {
   Profiler._backend = _;
 }
 
-Profiler.new_value = function (name, value, type) {
+Profiler.new_value = function (name, value, type, defer) {
   type =  type || 'i';
   var t = Profiler.metrics[name] = Profiler.get(name);
 
-  Profiler._backend && Profiler._backend([type, name, value]);
 
   t.max = Math.max(t.max, value);
   t.min = Math.min(t.min, value);
@@ -21108,6 +21108,17 @@ Profiler.new_value = function (name, value, type) {
   ++t.count;
   t.avg = t.total / t.count;
   t.history[t.count%MAX_HISTORY] = value;
+
+  if (!defer) {
+    Profiler._backend && Profiler._backend([type, name, value]);
+  } else {
+    var n = new Date().getTime()
+    // don't allow to send stats quick
+    if (n - t.last > 1000) {
+      Profiler._backend && Profiler._backend([type, name, t.avg]);
+      t.last = n;
+    }
+  }
 };
 
 Profiler.print_stats = function () {
@@ -21148,9 +21159,9 @@ Metric.prototype = {
   // ``start`` should be called first, if not this 
   // function does not take effect
   //
-  end: function() {
+  end: function(defer) {
     if (this.t0 !== null) {
-      Profiler.new_value(this.name, this._elapsed(), 't');
+      Profiler.new_value(this.name, this._elapsed(), 't', defer);
       this.t0 = null;
     }
   },
@@ -25693,6 +25704,7 @@ function Map(options) {
 }
 
 Map.BASE_URL = '/api/v1/map';
+Map.EMPTY_GIF = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
 
 function NamedMap(named_map, options) {
   var self = this;
@@ -25807,6 +25819,18 @@ Map.prototype = {
     }
     return +layers[index];
   },
+
+  visibleLayers: function() {
+    var layers = [];
+    for(var i = 0; i < this.layers.length; ++i) {
+      var layer = this.layers[i];
+      if(!layer.options.hidden) {
+        layers.push(layer);
+      }
+    }
+    return layers;
+  },
+
 
   // ie7 btoa,
   // from http://phpjs.org/functions/base64_encode/
@@ -26002,6 +26026,13 @@ Map.prototype = {
 
     this._queue = [];
 
+    // when it's a named map the number of layers is not known
+    // so fetch the map
+    if (!this.named_map && this.visibleLayers().length === 0) {
+      callback(null);
+      return;
+    }
+
     // setup params
     var extra_params = this.options.extra_params || {};
     var api_key = this.options.map_key || this.options.api_key || extra_params.map_key || extra_params.api_key;
@@ -26050,6 +26081,18 @@ Map.prototype = {
 
   setLayer: function(layer, def) {
     if(layer < this.getLayerCount() && layer >= 0) {
+      if (def.options.hidden) {
+        var i = this.interactionEnabled[layer];
+        if (i) {
+          def.interaction = true
+          this.setInteraction(layer, false);
+        }
+      } else {
+        if (this.layers[layer].interaction) {
+          this.setInteraction(layer, true);
+          delete this.layers[layer].interaction;
+        }
+      }
       this.layers[layer] = _.clone(def);
     }
     this.invalidate();
@@ -26075,6 +26118,13 @@ Map.prototype = {
         self.urls = self._layerGroupTiles(data.layergroupid, self.options.extra_params);
         callback && callback(self.urls);
       } else {
+        if (self.visibleLayers().length === 0) {
+          callback && callback({
+            tiles: [Map.EMPTY_GIF],
+            grids: []
+          });
+          return;
+        } 
         callback && callback(null, err);
       }
     });
@@ -26336,13 +26386,17 @@ NamedMap.prototype = _.extend({}, Map.prototype, {
   // for named maps attributes are fetch from attributes service
   fetchAttributes: function(layer_index, feature_id, columnNames, callback) {
     var ajax = this.options.ajax;
+    var loadingTime = cartodb.core.Profiler.metric('cartodb-js.named_map.attributes.time').start();
     ajax({
       dataType: 'jsonp',
       url: this._attributesUrl(layer_index, feature_id),
       success: function(data) {
+        loadingTime.end()
         callback(data);
       },
       error: function(data) {
+        loadingTime.end()
+        cartodb.core.Profiler.metric('cartodb-js.named_map.attributes.error').inc();
         callback(null);
       }
     });
@@ -26354,6 +26408,14 @@ NamedMap.prototype = _.extend({}, Map.prototype, {
 
   setCartoCSS: function(sql) {
     throw new Error("cartocss is read-only in NamedMaps");
+  },
+
+  getCartoCSS: function() {
+    throw new Error("cartocss can't be accessed in NamedMaps");
+  },
+
+  getSQL: function() {
+    throw new Error("SQL can't be accessed in NamedMaps");
   },
 
   setLayer: function(layer, def) {
@@ -26378,7 +26440,14 @@ NamedMap.prototype = _.extend({}, Map.prototype, {
 
   addLayer: function(def, layer) {
     throw new Error("sublayers are read-only in Named Maps");
+  },
+
+  // for named maps the layers are always the same (i.e they are
+  // not removed to hide) so the number does not change
+  getLayerIndexByNumber: function(number) {
+    return +number;
   }
+
 
 });
 
@@ -26401,19 +26470,18 @@ LayerDefinition.prototype = _.extend({}, Map.prototype, {
       obj.stat_tag = this.stat_tag;
     }
     obj.layers = [];
-    for(var i = 0; i < this.layers.length; ++i) {
-      var layer = this.layers[i];
-      if(!layer.options.hidden) {
-        obj.layers.push({
-          type: 'cartodb',
-          options: {
-            sql: layer.options.sql,
-            cartocss: layer.options.cartocss,
-            cartocss_version: layer.options.cartocss_version || '2.1.0',
-            interactivity: this._cleanInteractivity(layer.options.interactivity)
-          }
-        });
-      }
+    var layers = this.visibleLayers();
+    for(var i = 0; i < layers.length; ++i) {
+      var layer = layers[i];
+      obj.layers.push({
+        type: 'cartodb',
+        options: {
+          sql: layer.options.sql,
+          cartocss: layer.options.cartocss,
+          cartocss_version: layer.options.cartocss_version || '2.1.0',
+          interactivity: this._cleanInteractivity(layer.options.interactivity)
+        }
+      });
     }
     return obj;
   },
@@ -26553,18 +26621,22 @@ LayerDefinition.prototype = _.extend({}, Map.prototype, {
       return "\"" + n + "\"";
     }).join(',');
 
+    var loadingTime = cartodb.core.Profiler.metric('cartodb-js.layergroup.attributes.time').start();
     // execute the sql
     sql.execute('select {{{ fields }}} from ({{{ sql }}}) as _cartodbjs_alias where cartodb_id = {{{ cartodb_id }}}', {
       fields: columnNames,
       cartodb_id: feature_id,
       sql: layer.options.sql
     }).done(function(interact_data) {
+      loadingTime.end();
       if (interact_data.rows.length === 0 ) {
         callback(null);
         return;
       }
       callback(interact_data.rows[0]);
     }).error(function() {
+      loadingTime.end();
+      cartodb.core.Profiler.metric('cartodb-js.layergroup.attributes.error').inc();
       callback(null);
     });
   }
@@ -26717,7 +26789,7 @@ CartoDBLayerCommon.prototype = {
   show: function() {
     this.setOpacity(this.options.previous_opacity === undefined ? 0.99: this.options.previous_opacity);
     delete this.options.previous_opacity;
-    this.setInteraction(true);
+    this._interactionDisabled = false;
   },
 
   hide: function() {
@@ -26725,7 +26797,8 @@ CartoDBLayerCommon.prototype = {
       this.options.previous_opacity = this.options.opacity;
     }
     this.setOpacity(0);
-    this.setInteraction(false);
+    // disable here interaction for all the layers
+    this._interactionDisabled = true;
   },
 
   /**
@@ -26775,10 +26848,12 @@ CartoDBLayerCommon.prototype = {
           .map(this.options.map)
           .tilejson(tilejson)
           .on('on', function(o) {
+            if (self._interactionDisabled) return;
             o.layer = +layer;
             self._manageOnEvents(self.options.map, o);
           })
           .on('off', function(o) {
+            if (self._interactionDisabled) return;
             o = o || {}
             o.layer = +layer;
             self._manageOffEvents(self.options.map, o);
@@ -28320,6 +28395,7 @@ var default_options = {
   subdomains:     null
 };
 
+var OPACITY_FILTER = "progid:DXImageTransform.Microsoft.gradient(startColorstr=#00FFFFFF,endColorstr=#00FFFFFF)";
 
 var CartoDBNamedMap = function(opts) {
 
@@ -28381,6 +28457,15 @@ var CartoDBLayerGroup = function(opts) {
   this.update();
 };
 
+function setImageOpacityIE8(img, opacity) {
+    var v = Math.round(opacity*100);
+    if (v >= 99) {
+      img.style.filter = OPACITY_FILTER;
+    } else {
+      img.style.filter = "alpha(opacity=" + (opacity) + ");";
+    }
+}
+
 function CartoDBLayerGroupBase() {}
 
 CartoDBLayerGroupBase.prototype.setOpacity = function(opacity) {
@@ -28391,8 +28476,7 @@ CartoDBLayerGroupBase.prototype.setOpacity = function(opacity) {
   for(var key in this.cache) {
     var img = this.cache[key];
     img.style.opacity = opacity;
-    img.style.filter = "alpha(opacity=" + (opacity*100) + ");"
-    //img.setAttribute("style","opacity: " + opacity + "; filter: alpha(opacity="+(opacity*100)+");");
+    setImageOpacityIE8(img, opacity);
   }
 
 };
@@ -28403,10 +28487,12 @@ CartoDBLayerGroupBase.prototype.getTile = function(coord, zoom, ownerDocument) {
   var EMPTY_GIF = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
 
   var self = this;
+  var ie = 'ActiveXObject' in window,
+      ielt9 = ie && !document.addEventListener;
 
   this.options.added = true;
 
-  if(this.tilejson == null) {
+  if(this.tilejson === null) {
     var key = zoom + '/' + coord.x + '/' + coord.y;
     var i = this.cache[key] = new Image(256, 256);
     i.src = EMPTY_GIF;
@@ -28417,6 +28503,11 @@ CartoDBLayerGroupBase.prototype.getTile = function(coord, zoom, ownerDocument) {
 
   var im = wax.g.connector.prototype.getTile.call(this, coord, zoom, ownerDocument);
 
+  // in IE8 semi transparency does not work and needs filter
+  if( ielt9 ) {
+    setImageOpacityIE8(im, this.options.opacity);
+  }
+  im.style.opacity = this.options.opacity;
   if (this.tiles === 0) {
     this.loading && this.loading();
   }
@@ -28435,7 +28526,7 @@ CartoDBLayerGroupBase.prototype.getTile = function(coord, zoom, ownerDocument) {
   im.onload = finished;
   im.onerror = function() {
     cartodb.core.Profiler.metric('cartodb-js.tile.png.error').inc();
-    finish();
+    finished();
   }
 
 
@@ -30817,25 +30908,36 @@ var Vis = cdb.core.View.extend({
     }
 
     // if bounds are present zoom and center will not taken into account
-    if (opt.zoom !== undefined) {
-      vizjson.zoom = parseFloat(opt.zoom);
+    var zoom = parseInt(opt.zoom);
+    if (!isNaN(zoom)) {
+      vizjson.zoom = zoom;
       vizjson.bounds = null;
     }
 
-    if (opt.center_lat !== undefined) {
-      vizjson.center = [parseFloat(opt.center_lat), parseFloat(opt.center_lon)];
+    // Center coordinates?
+    var center_lat = parseFloat(opt.center_lat);
+    var center_lon = parseFloat(opt.center_lon);
+    if ( !isNaN(center_lat) && !isNaN(center_lon) ) {
+      vizjson.center = [center_lat, center_lon];
       vizjson.bounds = null;
     }
 
+    // Center object
     if (opt.center !== undefined) {
       vizjson.center = opt.center;
       vizjson.bounds = null;
     }
 
-    if (opt.sw_lat !== undefined) {
+    // Bounds?
+    var sw_lat = parseFloat(opt.sw_lat);
+    var sw_lon = parseFloat(opt.sw_lon);
+    var ne_lat = parseFloat(opt.ne_lat);
+    var ne_lon = parseFloat(opt.ne_lon);
+
+    if ( !isNaN(sw_lat) && !isNaN(sw_lon) && !isNaN(ne_lat) && !isNaN(ne_lon) ) {
       vizjson.bounds = [
-        [parseFloat(opt.sw_lat), parseFloat(opt.sw_lon)],
-        [parseFloat(opt.ne_lat), parseFloat(opt.ne_lon)],
+        [ sw_lat, sw_lon ],
+        [ ne_lat, ne_lon ]
       ];
     }
 
@@ -31470,6 +31572,7 @@ cdb.vis.Overlay.register('share', function(data, vis) {
               <ul>\
                 <li><a class="facebook" target="_blank" href="{{ facebook_url }}">Share on Facebook</a></li>\
                 <li><a class="twitter" href="{{ twitter_url }}" target="_blank">Share on Twitter</a></li>\
+                <li><a class="link" href="{{ public_map_url }}" target="_blank">Link to this map</a></li>\
               </ul>\
             </div><div class="embed_code">\
              <h4>Embed this map</h4>\
@@ -31486,6 +31589,8 @@ cdb.vis.Overlay.register('share', function(data, vis) {
 
   url = url.replace("public_map", "embed_map");
 
+  var public_map_url = url.replace("embed_map", "public_map"); // TODO: get real URL
+
   var code = "<iframe width='100%' height='520' frameborder='0' src='" + url + "'></iframe>";
 
   var dialog = new cdb.ui.common.ShareDialog({
@@ -31494,6 +31599,7 @@ cdb.vis.Overlay.register('share', function(data, vis) {
     model: vis.map,
     code: code,
     url: data.url,
+    public_map_url: public_map_url,
     share_url: data.share_url,
     template: template,
     target: $(".cartodb-share a"),
@@ -31580,7 +31686,8 @@ var HTTPS_TO_HTTP = {
   'https://dnv9my2eseobd.cloudfront.net/': 'http://a.tiles.mapbox.com/',
   'https://maps.nlp.nokia.com/': 'http://maps.nlp.nokia.com/',
   'https://tile.stamen.com/': 'http://tile.stamen.com/',
-  "https://{s}.maps.nlp.nokia.com/": "http://{s}.maps.nlp.nokia.com/"
+  "https://{s}.maps.nlp.nokia.com/": "http://{s}.maps.nlp.nokia.com/",
+  "https://cartocdn_{s}.global.ssl.fastly.net/": "http://{s}.api.cartocdn.com/"
 };
 
 function transformToHTTP(tilesTemplate) {
@@ -33112,7 +33219,7 @@ function PointView(geometryModel) {
       //TODO: create marker depending on the visualizacion options
       var p = L.marker(latLng,{
         icon: L.icon({
-          iconUrl: '/assets/layout/default_marker.png',
+          iconUrl: cdb.config.get('assets_url') + '/images/layout/default_marker.png',
           iconAnchor: [11, 11]
         })
       });
@@ -33271,7 +33378,7 @@ function PointView(geometryModel) {
     geometryModel.get('geojson'),
     {
       icon: {
-          url: '/assets/layout/default_marker.png',
+          url: cdb.config.get('assets_url') + '/images/layout/default_marker.png',
           anchor: {x: 10, y: 10}
       },
       raiseOnDrag: false,

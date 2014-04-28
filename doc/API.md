@@ -56,9 +56,6 @@ To start using CartoDB.js just paste this piece of code within the HEAD tags of 
 <div class="code_title">Linking cartodb.js on your html file</div>
   ``` html
     <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.css" />
-    <!--[if lte IE 8]>
-      <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.ie.css" />
-    <![endif]-->
     <script src="http://libs.cartocdn.com/cartodb.js/v3/cartodb.js"></script>
   ```
 <div class="margin20"></div>
@@ -1036,24 +1033,13 @@ If you want to use [Leaflet](http://leafletjs.com) it gets even easier, CartoDB.
   ```
 <div class="margin20"></div>
 
-##### IE support
-
-We have worked hard to support Internet Explorer with CartoDB.js. It currently works for IE7 through IE10. The biggest change you should note is that for the CSS you will need to include an additional IE CSS document we have made available. Your <head> tag should now house links to three documents, as follows:
-
-<div class="margin20"></div>
-<div class="code_title">IE support</div>
-  ``` html
-    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.css" />
-    <!--[if lte IE 8]>
-      <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.ie.css" />
-    <![endif]-->
-    <script src="http://libs.cartocdn.com/cartodb.js/v3/cartodb.js"></script>
-  ```
-<div class="margin20"></div>
-
 ##### HTTPS support
 
 You can use all the functionality of cartodb.js with HTTPs support. Be sure to add use https when importing both the JS library and the CSS file. Next, you will specify HTTPs for your Viz.JSON URL and as a parameter when you initialize your visualizaiton.
+
+<link rel="stylesheet" href="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/themes/css/cartodb.css" />
+
+<script src="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/cartodb.js"></script>
 
 <div class="margin20"></div>
 <div class="code_title">HTTPS support</div>

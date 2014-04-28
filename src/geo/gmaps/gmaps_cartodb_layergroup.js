@@ -42,6 +42,7 @@ var default_options = {
   subdomains:     null
 };
 
+var OPACITY_FILTER = "progid:DXImageTransform.Microsoft.gradient(startColorstr=#00FFFFFF,endColorstr=#00FFFFFF)";
 
 var CartoDBNamedMap = function(opts) {
 
@@ -103,6 +104,15 @@ var CartoDBLayerGroup = function(opts) {
   this.update();
 };
 
+function setImageOpacityIE8(img, opacity) {
+    var v = Math.round(opacity*100);
+    if (v >= 99) {
+      img.style.filter = OPACITY_FILTER;
+    } else {
+      img.style.filter = "alpha(opacity=" + (opacity) + ");";
+    }
+}
+
 function CartoDBLayerGroupBase() {}
 
 CartoDBLayerGroupBase.prototype.setOpacity = function(opacity) {
@@ -113,8 +123,7 @@ CartoDBLayerGroupBase.prototype.setOpacity = function(opacity) {
   for(var key in this.cache) {
     var img = this.cache[key];
     img.style.opacity = opacity;
-    img.style.filter = "alpha(opacity=" + (opacity*100) + ");"
-    //img.setAttribute("style","opacity: " + opacity + "; filter: alpha(opacity="+(opacity*100)+");");
+    setImageOpacityIE8(img, opacity);
   }
 
 };
@@ -125,10 +134,12 @@ CartoDBLayerGroupBase.prototype.getTile = function(coord, zoom, ownerDocument) {
   var EMPTY_GIF = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
 
   var self = this;
+  var ie = 'ActiveXObject' in window,
+      ielt9 = ie && !document.addEventListener;
 
   this.options.added = true;
 
-  if(this.tilejson == null) {
+  if(this.tilejson === null) {
     var key = zoom + '/' + coord.x + '/' + coord.y;
     var i = this.cache[key] = new Image(256, 256);
     i.src = EMPTY_GIF;
@@ -139,6 +150,11 @@ CartoDBLayerGroupBase.prototype.getTile = function(coord, zoom, ownerDocument) {
 
   var im = wax.g.connector.prototype.getTile.call(this, coord, zoom, ownerDocument);
 
+  // in IE8 semi transparency does not work and needs filter
+  if( ielt9 ) {
+    setImageOpacityIE8(im, this.options.opacity);
+  }
+  im.style.opacity = this.options.opacity;
   if (this.tiles === 0) {
     this.loading && this.loading();
   }
@@ -157,7 +173,7 @@ CartoDBLayerGroupBase.prototype.getTile = function(coord, zoom, ownerDocument) {
   im.onload = finished;
   im.onerror = function() {
     cartodb.core.Profiler.metric('cartodb-js.tile.png.error').inc();
-    finish();
+    finished();
   }
 
 

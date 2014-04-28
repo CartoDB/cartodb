@@ -1,5 +1,5 @@
-// version: 3.8.04
-// sha: cf86d034e88f8c2f9ce07a8aa3f87d93a6e64452
+// version: 3.8.11
+// sha: a8b6c7333585ad5d913a025eb718d7963d6d894c
 ;(function() {
   this.cartodb = {};
   var Backbone = {};
@@ -1141,7 +1141,7 @@ var Mustache;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.8.04';
+    cdb.VERSION = '3.8.11';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -1434,6 +1434,171 @@ var Mustache;
 
 
 })();
+/*
+# metrics profiler
+
+## timing
+
+```
+ var timer = Profiler.metric('resource:load')
+ time.start();
+ ...
+ time.end();
+```
+
+## counters
+
+```
+ var counter = Profiler.metric('requests')
+ counter.inc();   // 1
+ counter.inc(10); // 11
+ counter.dec()    // 10
+ counter.dec(10)  // 0
+```
+
+## Calls per second
+```
+  var fps = Profiler.metric('fps')
+  function render() {
+    fps.mark();
+  }
+```
+*/
+(function(exports) {
+
+var MAX_HISTORY = 1024;
+function Profiler() {}
+Profiler.metrics = {};
+Profiler._backend = null;
+
+Profiler.get = function(name) {
+  return Profiler.metrics[name] || {
+    max: 0,
+    min: Number.MAX_VALUE,
+    avg: 0,
+    total: 0,
+    count: 0,
+    last: 0,
+    history: typeof(Float32Array) !== 'undefined' ? new Float32Array(MAX_HISTORY) : []
+  };
+};
+
+Profiler.backend = function (_) {
+  Profiler._backend = _;
+}
+
+Profiler.new_value = function (name, value, type, defer) {
+  type =  type || 'i';
+  var t = Profiler.metrics[name] = Profiler.get(name);
+
+
+  t.max = Math.max(t.max, value);
+  t.min = Math.min(t.min, value);
+  t.total += value;
+  ++t.count;
+  t.avg = t.total / t.count;
+  t.history[t.count%MAX_HISTORY] = value;
+
+  if (!defer) {
+    Profiler._backend && Profiler._backend([type, name, value]);
+  } else {
+    var n = new Date().getTime()
+    // don't allow to send stats quick
+    if (n - t.last > 1000) {
+      Profiler._backend && Profiler._backend([type, name, t.avg]);
+      t.last = n;
+    }
+  }
+};
+
+Profiler.print_stats = function () {
+  for (k in Profiler.metrics) {
+    var t = Profiler.metrics[k];
+    console.log(" === " + k + " === ");
+    console.log(" max: " + t.max);
+    console.log(" min: " + t.min);
+    console.log(" avg: " + t.avg);
+    console.log(" count: " + t.count);
+    console.log(" total: " + t.total);
+  }
+};
+
+function Metric(name) {
+  this.t0 = null;
+  this.name = name;
+  this.count = 0;
+}
+
+Metric.prototype = {
+
+  //
+  // start a time measurement
+  //
+  start: function() {
+    this.t0 = +new Date();
+    return this;
+  },
+
+  // elapsed time since start was called
+  _elapsed: function() {
+    return +new Date() - this.t0;
+  },
+
+  //
+  // finish a time measurement and register it
+  // ``start`` should be called first, if not this 
+  // function does not take effect
+  //
+  end: function(defer) {
+    if (this.t0 !== null) {
+      Profiler.new_value(this.name, this._elapsed(), 't', defer);
+      this.t0 = null;
+    }
+  },
+
+  //
+  // increments the value 
+  // qty: how many, default = 1
+  //
+  inc: function(qty) {
+    qty = qty === undefined ? 1: qty;
+    Profiler.new_value(this.name, qty, 'i');
+  },
+
+  //
+  // decrements the value 
+  // qty: how many, default = 1
+  //
+  dec: function(qty) {
+    qty = qty === undefined ? 1: qty;
+    Profiler.new_value(this.name, qty, 'd');
+  },
+
+  //
+  // measures how many times per second this function is called
+  //
+  mark: function() {
+    ++this.count;
+    if(this.t0 === null) {
+      this.start();
+      return;
+    }
+    var elapsed = this._elapsed();
+    if(elapsed > 1) {
+      Profiler.new_value(this.name, this.count);
+      this.count = 0;
+      this.start();
+    }
+  }
+};
+
+Profiler.metric = function(name) {
+  return new Metric(name);
+};
+
+exports.Profiler = Profiler;
+
+})(cdb.core);
 
 ;(function() {
 
@@ -1766,6 +1931,7 @@ function Map(options) {
 }
 
 Map.BASE_URL = '/api/v1/map';
+Map.EMPTY_GIF = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
 
 function NamedMap(named_map, options) {
   var self = this;
@@ -1880,6 +2046,18 @@ Map.prototype = {
     }
     return +layers[index];
   },
+
+  visibleLayers: function() {
+    var layers = [];
+    for(var i = 0; i < this.layers.length; ++i) {
+      var layer = this.layers[i];
+      if(!layer.options.hidden) {
+        layers.push(layer);
+      }
+    }
+    return layers;
+  },
+
 
   // ie7 btoa,
   // from http://phpjs.org/functions/base64_encode/
@@ -2075,6 +2253,13 @@ Map.prototype = {
 
     this._queue = [];
 
+    // when it's a named map the number of layers is not known
+    // so fetch the map
+    if (!this.named_map && this.visibleLayers().length === 0) {
+      callback(null);
+      return;
+    }
+
     // setup params
     var extra_params = this.options.extra_params || {};
     var api_key = this.options.map_key || this.options.api_key || extra_params.map_key || extra_params.api_key;
@@ -2123,6 +2308,18 @@ Map.prototype = {
 
   setLayer: function(layer, def) {
     if(layer < this.getLayerCount() && layer >= 0) {
+      if (def.options.hidden) {
+        var i = this.interactionEnabled[layer];
+        if (i) {
+          def.interaction = true
+          this.setInteraction(layer, false);
+        }
+      } else {
+        if (this.layers[layer].interaction) {
+          this.setInteraction(layer, true);
+          delete this.layers[layer].interaction;
+        }
+      }
       this.layers[layer] = _.clone(def);
     }
     this.invalidate();
@@ -2148,6 +2345,13 @@ Map.prototype = {
         self.urls = self._layerGroupTiles(data.layergroupid, self.options.extra_params);
         callback && callback(self.urls);
       } else {
+        if (self.visibleLayers().length === 0) {
+          callback && callback({
+            tiles: [Map.EMPTY_GIF],
+            grids: []
+          });
+          return;
+        } 
         callback && callback(null, err);
       }
     });
@@ -2409,13 +2613,17 @@ NamedMap.prototype = _.extend({}, Map.prototype, {
   // for named maps attributes are fetch from attributes service
   fetchAttributes: function(layer_index, feature_id, columnNames, callback) {
     var ajax = this.options.ajax;
+    var loadingTime = cartodb.core.Profiler.metric('cartodb-js.named_map.attributes.time').start();
     ajax({
       dataType: 'jsonp',
       url: this._attributesUrl(layer_index, feature_id),
       success: function(data) {
+        loadingTime.end()
         callback(data);
       },
       error: function(data) {
+        loadingTime.end()
+        cartodb.core.Profiler.metric('cartodb-js.named_map.attributes.error').inc();
         callback(null);
       }
     });
@@ -2427,6 +2635,14 @@ NamedMap.prototype = _.extend({}, Map.prototype, {
 
   setCartoCSS: function(sql) {
     throw new Error("cartocss is read-only in NamedMaps");
+  },
+
+  getCartoCSS: function() {
+    throw new Error("cartocss can't be accessed in NamedMaps");
+  },
+
+  getSQL: function() {
+    throw new Error("SQL can't be accessed in NamedMaps");
   },
 
   setLayer: function(layer, def) {
@@ -2451,7 +2667,14 @@ NamedMap.prototype = _.extend({}, Map.prototype, {
 
   addLayer: function(def, layer) {
     throw new Error("sublayers are read-only in Named Maps");
+  },
+
+  // for named maps the layers are always the same (i.e they are
+  // not removed to hide) so the number does not change
+  getLayerIndexByNumber: function(number) {
+    return +number;
   }
+
 
 });
 
@@ -2474,19 +2697,18 @@ LayerDefinition.prototype = _.extend({}, Map.prototype, {
       obj.stat_tag = this.stat_tag;
     }
     obj.layers = [];
-    for(var i = 0; i < this.layers.length; ++i) {
-      var layer = this.layers[i];
-      if(!layer.options.hidden) {
-        obj.layers.push({
-          type: 'cartodb',
-          options: {
-            sql: layer.options.sql,
-            cartocss: layer.options.cartocss,
-            cartocss_version: layer.options.cartocss_version || '2.1.0',
-            interactivity: this._cleanInteractivity(layer.options.interactivity)
-          }
-        });
-      }
+    var layers = this.visibleLayers();
+    for(var i = 0; i < layers.length; ++i) {
+      var layer = layers[i];
+      obj.layers.push({
+        type: 'cartodb',
+        options: {
+          sql: layer.options.sql,
+          cartocss: layer.options.cartocss,
+          cartocss_version: layer.options.cartocss_version || '2.1.0',
+          interactivity: this._cleanInteractivity(layer.options.interactivity)
+        }
+      });
     }
     return obj;
   },
@@ -2626,18 +2848,22 @@ LayerDefinition.prototype = _.extend({}, Map.prototype, {
       return "\"" + n + "\"";
     }).join(',');
 
+    var loadingTime = cartodb.core.Profiler.metric('cartodb-js.layergroup.attributes.time').start();
     // execute the sql
     sql.execute('select {{{ fields }}} from ({{{ sql }}}) as _cartodbjs_alias where cartodb_id = {{{ cartodb_id }}}', {
       fields: columnNames,
       cartodb_id: feature_id,
       sql: layer.options.sql
     }).done(function(interact_data) {
+      loadingTime.end();
       if (interact_data.rows.length === 0 ) {
         callback(null);
         return;
       }
       callback(interact_data.rows[0]);
     }).error(function() {
+      loadingTime.end();
+      cartodb.core.Profiler.metric('cartodb-js.layergroup.attributes.error').inc();
       callback(null);
     });
   }

@@ -103,6 +103,21 @@ describe("LayerDefinition", function() {
        }
       ]
     });
+    layerDefinition.getSubLayer(0).hide();
+    expect(layerDefinition.toJSON()).toEqual({
+      version: '1.0.0',
+      stat_tag: 'vis_id',
+      layers: [{
+         type: 'cartodb', 
+         options: {
+           sql: "select * from european_countries_export",
+           cartocss: '#layer { polygon-fill: #000; polygon-opacity: 0.8;}',
+           cartocss_version: '2.0.0',
+           interactivity: ['test2', 'cartodb_id2']
+         }
+       }
+      ]
+    });
   });
 
   it("should generate url for tiles", function() {
@@ -182,6 +197,20 @@ describe("LayerDefinition", function() {
     runs(function() {
       expect(layerDefinition._host()).toEqual('https://cdn.testhttps.com/rambo');
     })
+  });
+
+  it("should return null token when there are no layers", function() {
+
+      layerDefinition.getSubLayer(0).hide();
+      layerDefinition.getSubLayer(1).hide();
+      var tk = 'test'
+      layerDefinition._getLayerToken(function(a) {
+        tk =  a;
+      })
+      waits(100);
+      runs(function() {
+        expect(tk).toEqual(null);
+      });
   });
 
   it("should return values for the latest query", function() {
@@ -316,6 +345,22 @@ describe("LayerDefinition", function() {
     });
   });
 
+  it("getTiles should use empty gif there there is no layers", function() {
+      layerDefinition.getSubLayer(0).hide();
+      layerDefinition.getSubLayer(1).hide();
+      layerDefinition.getLayerToken = function (callback) {
+        callback(null);
+      }
+
+      layerDefinition.getTiles(function(t) {
+        urls = t;
+      })
+      waits (100);
+      runs(function() {
+        expect(urls.tiles[0]).toEqual(Map.EMPTY_GIF);
+      })
+  });
+
   it("should set refresh timer after being updated", function() {
     layerDefinition.options.refreshTime = 10;
     layerDefinition.options.ajax = function(p) { 
@@ -337,10 +382,14 @@ describe("LayerDefinition", function() {
     expect(layerDefinition.getLayerNumberByIndex(0)).toEqual(0);
     expect(layerDefinition.getLayerNumberByIndex(1)).toEqual(1);
 
+    expect(layerDefinition.getLayerIndexByNumber(0)).toEqual(0);
+    expect(layerDefinition.getLayerIndexByNumber(1)).toEqual(1);
+
     layerDefinition.getSubLayer(0).hide();
     expect(layerDefinition.getLayerNumberByIndex(0)).toEqual(1);
-
     expect(layerDefinition.getLayerNumberByIndex(1)).toEqual(-1);
+
+    expect(layerDefinition.getLayerIndexByNumber(1)).toEqual(0);
   }),
 
   describe("sublayers", function() {
@@ -389,6 +438,23 @@ describe("LayerDefinition", function() {
       expect(layerDefinition.toJSON().layers.length).toEqual(2);
       expect(layerDefinition.getSubLayerCount()).toEqual(2);
     });
+
+    it("hide should remove interaction", function() {
+      var interaction =  layerDefinition.interactionEnabled = {}
+      layerDefinition.setInteraction = function(layer, value) {
+        layerDefinition.interactionEnabled[layer] = value;
+      };
+      layerDefinition.getSubLayer(0).setInteraction(true);
+      expect(interaction[0]).toEqual(true);
+      layerDefinition.getSubLayer(0).hide();
+      expect(interaction[0]).toEqual(false);
+      layerDefinition.getSubLayer(0).show();
+      expect(interaction[0]).toEqual(true);
+      layerDefinition.getSubLayer(1).hide();
+      layerDefinition.getSubLayer(1).show();
+      expect(interaction[1]).toEqual(undefined);
+
+    })
 
     it("should be the same object for the same sublayer", function() {
       expect(layerDefinition.getSubLayer(0)).toBe(layerDefinition.getSubLayer(0));
@@ -460,6 +526,32 @@ describe("NamedMap", function() {
     });
   });
 
+  it("should instance named_map with no layers", function() {
+    var named_map = {
+      name: 'testing'
+    };
+    var nm = new NamedMap(named_map, {
+      tiler_domain:   "cartodb.com",
+      tiler_port:     "8081",
+      tiler_protocol: "http",
+      user_name: 'rambo',
+      no_cdn: true,
+      subdomains: [null]
+    });
+    var params;
+    nm.options.ajax = function(p) { 
+      params = p;
+      p.success({ layergroupid: 'test' });
+    };
+    runs(function() {
+      nm._getLayerToken();
+    });
+    waits(100);
+    runs(function() {
+      expect(params.dataType).toEqual('jsonp');
+    });
+  });
+
   it("should instance named_map", function() {
     var params;
     namedMap.options.ajax = function(p) { 
@@ -527,6 +619,12 @@ describe("NamedMap", function() {
 
   it("should enable/disable layers", function() {
     var params;
+    namedMap.layers.push({
+      options:  {},
+        infowindow: {
+          fields: [ { title:'test', value:true, position:0, index:0 } ]
+        }
+    });
     namedMap.options.ajax = function(p) { 
       params = p;
       p.success({ layergroupid: 'test' });
@@ -540,13 +638,26 @@ describe("NamedMap", function() {
       var config ="config=" + encodeURIComponent(JSON.stringify({color: 'red', layer0: 0}));
       expect(params.url.indexOf(config)).not.toEqual(-1);
     });
+
+    var token = 'test';
+    runs(function() {
+      namedMap.getSubLayer(1).hide();
+      namedMap._getLayerToken(function(d) {
+        token = d;
+      });
+    });
+    waits(100);
+    runs(function() {
+      expect(token).not.toEqual(null);
+    })
+    waits(100);
     runs(function() {
       namedMap.getSubLayer(0).show();
       namedMap._getLayerToken();
     });
-    waits(100);
+    waits(200);
     runs(function() {
-      var config ="config=" + encodeURIComponent(JSON.stringify({color: 'red'}));
+      var config ="config=" + encodeURIComponent(JSON.stringify({color: 'red', layer1: 0}));
       expect(params.url.indexOf(config)).not.toEqual(-1);
     });
   });
@@ -581,6 +692,11 @@ describe("NamedMap", function() {
       namedMap.addLayer();
     }).toThrow(new Error("sublayers are read-only in Named Maps"));
   });
+
+  it("should raise errors when try to get sql or cartocss", function() {
+    expect(function() { namedMap.getCartoCSS('test') }).toThrow(new Error("cartocss can't be accessed in NamedMaps"));
+    expect(function() { namedMap.getSQL('sql') }).toThrow(new Error("SQL can't be accessed in NamedMaps"));
+  })
 
   it("should send auth_token when it's provided", function() {
     var tiles;
@@ -676,6 +792,11 @@ describe("NamedMap", function() {
     } catch(e) {
       expect(e.message).toEqual("https must be used when auth_token is set");
     }
+  });
+
+  it("should return layer by index", function() {
+    expect(namedMap.getLayerIndexByNumber(0)).toEqual(0);
+    expect(namedMap.getLayerIndexByNumber(1)).toEqual(1);
   });
 
 

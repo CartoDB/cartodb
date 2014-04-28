@@ -1,3 +1,33 @@
+3.8.11 (28//04/2014)
+- adds new link to the visualization in the share dialog.
+
+3.8.10 (21//04/2014)
+- fixed problem parsing map viz options when values are not valid
+- fixed interaction in IE8
+- getCartoCSS and getSQL raise an exception for named maps
+- fixed core library
+- added url translation for https for cartodb basemaps
+
+3.8.09 (04//04/2014)
+- fixed map instanciation when named map has no layer information
+
+3.8.08 (03//04/2014)
+- fixed layer visibility
+
+3.8.07 (03//04/2014)
+- fixed attribution position for gmaps
+- fixed maps api request when all the layers are hidden
+- fixed error in gmaps when tile loading raises an error
+- fixed panBy on leaflet when torque layers are used
+
+3.8.06 (27//03//2014)
+- fixed layer interaction is not disabled when sublayer is hidden
+
+3.8.05 (25//03/2014)
+- update torque library
+- fixed interaction with naned maps when there is a hidden layer
+- added multiple metrics
+
 3.8.04 (20//03//2014)
 - prevent the scrolling of the map when the user scrolls the infowindow content.
 - enables the scrollwheel when the user enters in the fullscreen model.

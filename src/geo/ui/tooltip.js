@@ -6,10 +6,15 @@ cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
   className: 'cartodb-tooltip',
 
   initialize: function() {
-    this.options.template = this.options.template || defaultTemplate;
+    this.options.template = this.options.template || this.defaultTemplate;
     this.options.position = 'none';
     this.options.width = null;
     cdb.geo.ui.InfoBox.prototype.initialize.call(this);
+  },
+
+  setLayer: function(layer) {
+    this.options.layer = layer;
+    return this;
   },
 
   enable: function() {
@@ -21,6 +26,13 @@ cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
         .on('featureOut', function() {
           this.hide();
         }, this);
+      this.add_related_model(this.options.layer);
+    }
+  },
+
+  disable: function() {
+    if(this.options.layer) {
+      this.options.layer.unbind(null, null, this);
     }
   },
 

@@ -560,6 +560,7 @@ var Vis = cdb.core.View.extend({
     }
 
     this.infowindow = opt.infowindow;
+    this.tooltip = opt.tooltip;
 
     if(opt.https) {
       this.https = true;
@@ -705,6 +706,18 @@ var Vis = cdb.core.View.extend({
     return sql;
   },
 
+  addTooltip: function(layerView) {
+    for(var i = 0; i < layerView.getLayerCount(); ++i) {
+      var t = layerView.getTooltipData(i);
+      var tooltip = new cdb.geo.ui.Tooltip({
+        layer: layerView,
+        template: t.template
+      });
+      layerView.tooltip = tooltip;
+      this.mapView.addOverlay(tooltip);
+    }
+  },
+
   addInfowindow: function(layerView) {
 
     if(!layerView.containInfowindow || !layerView.containInfowindow()) {
@@ -795,6 +808,10 @@ var Vis = cdb.core.View.extend({
     // add the associated overlays
     if(layerView && this.infowindow && layerView.containInfowindow && layerView.containInfowindow()) {
       this.addInfowindow(layerView);
+    }
+
+    if(layerView && this.tooltip && layerView.containTooltip && layerView.containTooltip()) {
+      this.addTooltip(layerView);
     }
 
     if (layerView) {

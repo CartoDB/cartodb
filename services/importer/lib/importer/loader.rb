@@ -1,5 +1,6 @@
 # encoding: utf-8
 require_relative './ogr2ogr'
+require_relative './exceptions'
 require_relative './format_linter'
 require_relative './csv_normalizer'
 require_relative './shp_normalizer'
@@ -40,8 +41,16 @@ module CartoDB
         job.log "ogr2ogr exit code: #{ogr2ogr.exit_code}"
 
         raise InvalidGeoJSONError if ogr2ogr.command_output =~ /nrecognized GeoJSON/
-        raise UnsupportedFormatError if (ogr2ogr.exit_code == 256 && ogr2ogr.command_output =~ /Unable to open(.*)with the following drivers/)
-        raise LoadError(job.id.to_s) if ogr2ogr.exit_code != 0
+        if ogr2ogr.exit_code != 0
+          if (ogr2ogr.exit_code == 256 && ogr2ogr.command_output =~ /calloc failed/) || \
+              (ogr2ogr.exit_code == 35584 && ogr2ogr.command_output =~ /Segmentation fault/)
+            raise FileTooBigError.new(job.logger.fetch)
+          end
+	  if (ogr2ogr.exit_code == 256 && ogr2ogr.command_output =~ /Unable to open(.*)with the following drivers/)
+		raise UnsupportedFormatError.new
+	  end
+          raise LoadError.new(job.logger.fetch)
+        end
         job.log 'Georeferencing...'
         georeferencer.run
         job.log 'Georeferenced'

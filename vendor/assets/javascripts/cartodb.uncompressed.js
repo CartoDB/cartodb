@@ -1,6 +1,6 @@
-// cartodb.js version: 3.8.10-dev
+// cartodb.js version: 3.8.10
 // uncompressed version: cartodb.uncompressed.js
-// sha: 95a4c9b1d3699ae5ab874aa9d5f5ee00522d8302
+// sha: ca67c4be1888a590e1ae9697a21d20d81c77dbc2
 (function() {
   var root = this;
 
@@ -11110,7 +11110,7 @@ L.Map.include({
 });
 
 
-}(window, document));/* wax - 7.0.0dev10 - v6.0.4-151-g87ab6b1 */
+}(window, document));/* wax - 7.0.0dev10 - v6.0.4-154-ge12d473 */
 
 
 !function (name, context, definition) {
@@ -14165,7 +14165,7 @@ wax.interaction = function() {
             bean.fire(interaction, 'off');
             // Touch moves invalidate touches
             bean.add(parent(), touchEnds);
-        } else if (e.originalEvent.type === "MSPointerDown" && e.originalEvent.touches.length === 1) {
+        } else if (e.originalEvent.type === "MSPointerDown" && e.originalEvent.touches && e.originalEvent.touches.length === 1) {
           // Don't make the user click close if they hit another tooltip
             bean.fire(interaction, 'off');
             // Touch moves invalidate touches
@@ -20686,7 +20686,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.8.10-dev';
+    cdb.VERSION = '3.8.10';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -25543,10 +25543,15 @@ cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
   className: 'cartodb-tooltip',
 
   initialize: function() {
-    this.options.template = this.options.template || defaultTemplate;
+    this.options.template = this.options.template || this.defaultTemplate;
     this.options.position = 'none';
     this.options.width = null;
     cdb.geo.ui.InfoBox.prototype.initialize.call(this);
+  },
+
+  setLayer: function(layer) {
+    this.options.layer = layer;
+    return this;
   },
 
   enable: function() {
@@ -25558,12 +25563,19 @@ cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
         .on('featureOut', function() {
           this.hide();
         }, this);
+      this.add_related_model(this.options.layer);
+    }
+  },
+
+  disable: function() {
+    if(this.options.layer) {
+      this.options.layer.unbind(null, null, this);
     }
   },
 
   show: function(pos, data) {
     this.render(data);
-    this.elder('show');
+    this.elder('show', pos, data);
     this.$el.css({
       'left': (pos.x - this.$el.width()/2),
       'top': (pos.y - (this.options.offset_top || this.DEFAULT_OFFSET_TOP))
@@ -26264,6 +26276,10 @@ Map.prototype = {
     }
   },
 
+  getTooltipData: function(layer) {
+    return this.layers[layer].tooltip;
+  },
+
   getInfowindowData: function(layer) {
     var lyr;
     var infowindow = this.layers[layer].infowindow;
@@ -26281,6 +26297,17 @@ Map.prototype = {
     for(var i = 0; i < layers.length; ++i) {
       var infowindow = layers[i].infowindow;
       if (infowindow && infowindow.fields && infowindow.fields.length > 0) {
+        return true;
+      }
+    }
+    return false;
+  },
+
+  containTooltip: function() {
+    var layers =  this.options.layer_definition.layers;
+    for(var i = 0; i < layers.length; ++i) {
+      var tooltip = layers[i].tooltip;
+      if (tooltip) {
         return true;
       }
     }
@@ -26410,6 +26437,14 @@ NamedMap.prototype = _.extend({}, Map.prototype, {
     throw new Error("cartocss is read-only in NamedMaps");
   },
 
+  getCartoCSS: function() {
+    throw new Error("cartocss can't be accessed in NamedMaps");
+  },
+
+  getSQL: function() {
+    throw new Error("SQL can't be accessed in NamedMaps");
+  },
+
   setLayer: function(layer, def) {
     var not_allowed_attrs = {'sql': 1, 'cartocss': 1, 'interactivity': 1 };
 
@@ -26438,7 +26473,7 @@ NamedMap.prototype = _.extend({}, Map.prototype, {
   // not removed to hide) so the number does not change
   getLayerIndexByNumber: function(number) {
     return +number;
-  },
+  }
 
 
 });
@@ -26781,7 +26816,7 @@ CartoDBLayerCommon.prototype = {
   show: function() {
     this.setOpacity(this.options.previous_opacity === undefined ? 0.99: this.options.previous_opacity);
     delete this.options.previous_opacity;
-    this.setInteraction(true);
+    this._interactionDisabled = false;
   },
 
   hide: function() {
@@ -26789,7 +26824,8 @@ CartoDBLayerCommon.prototype = {
       this.options.previous_opacity = this.options.opacity;
     }
     this.setOpacity(0);
-    this.setInteraction(false);
+    // disable here interaction for all the layers
+    this._interactionDisabled = true;
   },
 
   /**
@@ -26839,10 +26875,12 @@ CartoDBLayerCommon.prototype = {
           .map(this.options.map)
           .tilejson(tilejson)
           .on('on', function(o) {
+            if (self._interactionDisabled) return;
             o.layer = +layer;
             self._manageOnEvents(self.options.map, o);
           })
           .on('off', function(o) {
+            if (self._interactionDisabled) return;
             o = o || {}
             o.layer = +layer;
             self._manageOffEvents(self.options.map, o);
@@ -28384,6 +28422,7 @@ var default_options = {
   subdomains:     null
 };
 
+var OPACITY_FILTER = "progid:DXImageTransform.Microsoft.gradient(startColorstr=#00FFFFFF,endColorstr=#00FFFFFF)";
 
 var CartoDBNamedMap = function(opts) {
 
@@ -28445,6 +28484,15 @@ var CartoDBLayerGroup = function(opts) {
   this.update();
 };
 
+function setImageOpacityIE8(img, opacity) {
+    var v = Math.round(opacity*100);
+    if (v >= 99) {
+      img.style.filter = OPACITY_FILTER;
+    } else {
+      img.style.filter = "alpha(opacity=" + (opacity) + ");";
+    }
+}
+
 function CartoDBLayerGroupBase() {}
 
 CartoDBLayerGroupBase.prototype.setOpacity = function(opacity) {
@@ -28455,8 +28503,7 @@ CartoDBLayerGroupBase.prototype.setOpacity = function(opacity) {
   for(var key in this.cache) {
     var img = this.cache[key];
     img.style.opacity = opacity;
-    img.style.filter = "alpha(opacity=" + (opacity*100) + ");"
-    //img.setAttribute("style","opacity: " + opacity + "; filter: alpha(opacity="+(opacity*100)+");");
+    setImageOpacityIE8(img, opacity);
   }
 
 };
@@ -28467,10 +28514,12 @@ CartoDBLayerGroupBase.prototype.getTile = function(coord, zoom, ownerDocument) {
   var EMPTY_GIF = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
 
   var self = this;
+  var ie = 'ActiveXObject' in window,
+      ielt9 = ie && !document.addEventListener;
 
   this.options.added = true;
 
-  if(this.tilejson == null) {
+  if(this.tilejson === null) {
     var key = zoom + '/' + coord.x + '/' + coord.y;
     var i = this.cache[key] = new Image(256, 256);
     i.src = EMPTY_GIF;
@@ -28481,6 +28530,11 @@ CartoDBLayerGroupBase.prototype.getTile = function(coord, zoom, ownerDocument) {
 
   var im = wax.g.connector.prototype.getTile.call(this, coord, zoom, ownerDocument);
 
+  // in IE8 semi transparency does not work and needs filter
+  if( ielt9 ) {
+    setImageOpacityIE8(im, this.options.opacity);
+  }
+  im.style.opacity = this.options.opacity;
   if (this.tiles === 0) {
     this.loading && this.loading();
   }
@@ -30798,6 +30852,7 @@ var Vis = cdb.core.View.extend({
       layer_selector: false,
       searchControl: false,
       infowindow: true,
+      tooltip: true,
       legends: true,
       time_slider: true
     });
@@ -30824,6 +30879,7 @@ var Vis = cdb.core.View.extend({
     }
 
     this.infowindow = opt.infowindow;
+    this.tooltip = opt.tooltip;
 
     if(opt.https) {
       this.https = true;
@@ -30969,6 +31025,18 @@ var Vis = cdb.core.View.extend({
     return sql;
   },
 
+  addTooltip: function(layerView) {
+    for(var i = 0; i < layerView.getLayerCount(); ++i) {
+      var t = layerView.getTooltipData(i);
+      var tooltip = new cdb.geo.ui.Tooltip({
+        layer: layerView,
+        template: t.template
+      });
+      layerView.tooltip = tooltip;
+      this.mapView.addOverlay(tooltip);
+    }
+  },
+
   addInfowindow: function(layerView) {
 
     if(!layerView.containInfowindow || !layerView.containInfowindow()) {
@@ -31059,6 +31127,10 @@ var Vis = cdb.core.View.extend({
     // add the associated overlays
     if(layerView && this.infowindow && layerView.containInfowindow && layerView.containInfowindow()) {
       this.addInfowindow(layerView);
+    }
+
+    if(layerView && this.tooltip && layerView.containTooltip && layerView.containTooltip()) {
+      this.addTooltip(layerView);
     }
 
     if (layerView) {
@@ -31655,7 +31727,8 @@ var HTTPS_TO_HTTP = {
   'https://dnv9my2eseobd.cloudfront.net/': 'http://a.tiles.mapbox.com/',
   'https://maps.nlp.nokia.com/': 'http://maps.nlp.nokia.com/',
   'https://tile.stamen.com/': 'http://tile.stamen.com/',
-  "https://{s}.maps.nlp.nokia.com/": "http://{s}.maps.nlp.nokia.com/"
+  "https://{s}.maps.nlp.nokia.com/": "http://{s}.maps.nlp.nokia.com/",
+  "https://cartocdn_{s}.global.ssl.fastly.net/": "http://{s}.api.cartocdn.com/"
 };
 
 function transformToHTTP(tilesTemplate) {

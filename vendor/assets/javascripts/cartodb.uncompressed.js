@@ -1,6 +1,10 @@
-// cartodb.js version: 3.8.10-dev
+// cartodb.js version: 3.8.10
 // uncompressed version: cartodb.uncompressed.js
+<<<<<<< HEAD
 // sha: 695cc51c18303ee37c3b20b852a4ccd5bbae098a
+=======
+// sha: 3dffff5bc9d67d37e74e494024e1d010784d5f1d
+>>>>>>> master
 (function() {
   var root = this;
 
@@ -20686,7 +20690,7 @@ this.LZMA = LZMA;
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = '3.8.10-dev';
+    cdb.VERSION = '3.8.10';
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -31572,6 +31576,7 @@ cdb.vis.Overlay.register('share', function(data, vis) {
               <ul>\
                 <li><a class="facebook" target="_blank" href="{{ facebook_url }}">Share on Facebook</a></li>\
                 <li><a class="twitter" href="{{ twitter_url }}" target="_blank">Share on Twitter</a></li>\
+                <li><a class="link" href="{{ public_map_url }}" target="_blank">Link to this map</a></li>\
               </ul>\
             </div><div class="embed_code">\
              <h4>Embed this map</h4>\
@@ -31588,6 +31593,8 @@ cdb.vis.Overlay.register('share', function(data, vis) {
 
   url = url.replace("public_map", "embed_map");
 
+  var public_map_url = url.replace("embed_map", "public_map"); // TODO: get real URL
+
   var code = "<iframe width='100%' height='520' frameborder='0' src='" + url + "'></iframe>";
 
   var dialog = new cdb.ui.common.ShareDialog({
@@ -31596,6 +31603,7 @@ cdb.vis.Overlay.register('share', function(data, vis) {
     model: vis.map,
     code: code,
     url: data.url,
+    public_map_url: public_map_url,
     share_url: data.share_url,
     template: template,
     target: $(".cartodb-share a"),
@@ -31682,7 +31690,8 @@ var HTTPS_TO_HTTP = {
   'https://dnv9my2eseobd.cloudfront.net/': 'http://a.tiles.mapbox.com/',
   'https://maps.nlp.nokia.com/': 'http://maps.nlp.nokia.com/',
   'https://tile.stamen.com/': 'http://tile.stamen.com/',
-  "https://{s}.maps.nlp.nokia.com/": "http://{s}.maps.nlp.nokia.com/"
+  "https://{s}.maps.nlp.nokia.com/": "http://{s}.maps.nlp.nokia.com/",
+  "https://cartocdn_{s}.global.ssl.fastly.net/": "http://{s}.api.cartocdn.com/"
 };
 
 function transformToHTTP(tilesTemplate) {

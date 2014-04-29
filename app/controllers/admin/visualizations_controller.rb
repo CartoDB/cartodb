@@ -6,7 +6,7 @@ class Admin::VisualizationsController < ApplicationController
   ssl_allowed :embed_map, :public_map, :show_protected_embed_map
   ssl_required :index, :show, :protected_embed_map, :protected_public_map, :show_protected_public_map
   before_filter :login_required, only: [:index]
-  skip_before_filter :browser_is_html5_compliant?, only: [:public_map, :embed_map, :track_embed, :show_protected_embed_map, :show_protected_public_map]
+  skip_before_filter :browser_is_html5_compliant?, only: [:public_table, :public_map, :embed_map, :track_embed, :show_protected_embed_map, :show_protected_public_map]
   skip_before_filter :verify_authenticity_token, only: [:show_protected_public_map, :show_protected_embed_map]
 
   def index

@@ -1,3 +1,30 @@
+2.13.3 (2014-04-29)
+-------------------
+* Improvements
+  * Add 'sync now' link on the sync tables
+  * Create a default options modal window
+  * When a layer is selected and the user clicks on the layer name, show a tipsy telling that double click allows to rename it
+  * Add button for going to public page on the "SHARE" window (embed map)
+  * Possibility to filter by different values in the same column [TABLE FILTERS]
+  * Mock WMS call in tests
+  * Take the new icons window a bit higher when opening
+
+* Bugs
+  * use maker-fill-opacity instead marker-opacity in wizards
+  * WMS base layer not working with GeoServer w/ proper projection
+  * Adding an empty description to a table prevents for changing it later
+  * Close infowindow when other wizard is selected
+  * Equal interval is actually doing another Quantile
+  * polygon-opacity:undefined when adding a pattern-fill to a polygon
+  * Add a link in the public view pointing to embed map page
+  * Properly report long import timeouts messages
+  * Sync Tables loses CartoCSS when sync
+  * line-width: 0 render lines with width > 0 in torque
+  * column options show "clear view" when you have no query applied
+  * change filter in frontend to use new sql api params
+  * Improve sync tables exception bubbling
+  * improve compass compiling in development
+
 2.13.2 (2014-04-16)
 -------------------
 * Improvements

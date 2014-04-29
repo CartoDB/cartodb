@@ -93,14 +93,23 @@ class Layer < Sequel::Model
     "rails:layer_styles:#{self.id}"
   end
 
-  def template_path
+  def infowindow_template_path 
     if self.infowindow.present? && self.infowindow['template_name'].present?
       template_name = TEMPLATES_MAP.fetch(self.infowindow['template_name'], self.infowindow['template_name'])
       Rails.root.join("lib/assets/javascripts/cartodb/table/views/infowindow/templates/#{template_name}.jst.mustache")
     else
       nil
     end
-  end
+  end #infowindow_template_path
+
+  def tooltip_template_path 
+    if self.tooltip.present? && self.tooltip['template_name'].present?
+      template_name = TEMPLATES_MAP.fetch(self.tooltip['template_name'], self.tooltip['template_name'])
+      Rails.root.join("lib/assets/javascripts/cartodb/table/views/tooltip/templates/#{template_name}.jst.mustache")
+    else
+      nil
+    end
+  end #tooltip_template_path
 
   def copy
     attributes = public_values.select { |k, v| k != 'id' }

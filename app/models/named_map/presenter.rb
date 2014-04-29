@@ -99,6 +99,11 @@ module CartoDB
             data[:infowindow] = layer_vizjson[:infowindow]
           end
 
+          if layer_vizjson.include?(:tooltip) && !layer_vizjson[:tooltip].nil? &&
+               layer_vizjson[:tooltip].fetch('fields').size > 0
+            data[:tooltip] = layer_vizjson[:tooltip]
+          end
+
           if layer_vizjson.include?(:legend) && !layer_vizjson[:legend].nil? &&
                layer_vizjson[:legend].fetch('type') != 'none'
             data[:legend] = layer_vizjson[:legend]

@@ -16,7 +16,11 @@ class Api::Json::TablesController < Api::ApplicationController
   def create
     @table = Table.new
     @table.user_id        = current_user.id
-    @table.name           = params[:name]          if params[:name]
+    if params[:name]
+      @table.name = params[:name]
+    else
+      @table.name = Table.get_valid_table_name('', {  connection: current_user.in_database })
+    end
     @table.description    = params[:description]   if params[:description]
     @table.the_geom_type  = params[:the_geom_type] if params[:the_geom_type]
     @table.force_schema   = params[:schema]        if params[:schema]

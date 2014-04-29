@@ -7584,9 +7584,9 @@ exports.Profiler = Profiler;
 
       var canvas = document.createElement('canvas');
       var ctx = canvas.getContext('2d');
-      ctx.width = canvas.width = Math.ceil(canvasSize);
+      var w = ctx.width = canvas.width = Math.ceil(canvasSize);
       ctx.height = canvas.height = Math.ceil(canvasSize);
-      ctx.translate(canvasSize/2, canvasSize/2);
+      ctx.translate(w/2, w/2);
       if(st['point-file'] || st['marker-file']) {
         torque.cartocss.renderSprite(ctx, st);
       } else {

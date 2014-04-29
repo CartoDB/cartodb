@@ -139,6 +139,14 @@ module CartoDB
       title: 'Private Google Spreadsheet',
       what_about: "This spreadsheet seems to be private. Please check in Goolge Spreadsheet sharing options that the file is public or accessible for those who know the link"
     },
+    1011 => {
+        title: 'Error retrieving data from datasource',
+        what_about: "There was an error retrieving data from the datasource. Check that the file is still present."
+    },
+    1012 => {
+        title: 'Error connecting to datasource',
+        what_about: "There was an error trying to connect to the datasource. This might be caused due to a configuration problem, revoked access token or similar cause."
+    },
     2001 => {
       title: 'Unable to load data',
       what_about: "We couldn't load data from your file into the database.  Please <a href='mailto:support@cartodb.com?subject=Import load error'>contact us</a> and we will help you to load your data."
@@ -190,6 +198,10 @@ module CartoDB
     8004 => {
       title: 'Merge with unmatching column types',
       what_about: "The columns you have chosen don't have the same column type in both tables. Please change the types so the columns will have the same type and try again."
+    },
+    6666 => {
+      title: 'Dataset too big',
+      what_about: "The dataset you tried to import is too big and cannot be processed. You can try splitting it into smaller files and then using the 'Merge Tables' functionality."
     },
     99999 => {
       title: 'Unknown',

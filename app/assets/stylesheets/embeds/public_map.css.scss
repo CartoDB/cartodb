@@ -244,7 +244,28 @@ and (orientation : landscape) {
 }
 
 .embed-left-col.details .content {
+
   min-height: 46px;
+
+  p.options {
+
+    margin: 5px 0 0 0;
+    color: #868686;
+    font-size: 15px;
+
+    a {
+      font-family: 'Helvetica Neue', Helvetica, sans-serif;
+      color: #397DB8;
+      text-decoration:none;
+      font-size: 15px;
+      line-height: 120%;
+
+      &:hover {
+        text-decoration: underline;
+        color: #333;
+      }
+    }
+  }
 }
 
 .cartodb-footer .embed-left-col .content { border-right: none; }
@@ -258,7 +279,6 @@ div.cartodb-map-data {
 div.cartodb-info {
   background: #F6F6F6;
   border-bottom: 1px solid #D1D1D1;
-  /*border-top: 1px solid #D1D1D1;*/
   padding: 38px 0 36px 0;
 }
 

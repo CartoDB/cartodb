@@ -14,6 +14,67 @@
     div.progress-bar { margin-top:10px }
   }
 
+/*@media only screen and (max-width: 350px) {
+
+  body:after {
+    content: '350';
+    position: absolute;
+    top: 67px;
+    left: 50%;
+    width: 100px;
+    margin-left: -50px;
+    background: red;
+    padding: 10px;
+    z-index: 100000;
+    text-align: center;
+  }
+
+}
+
+@media only screen and (max-width: 710px) {
+
+  body:after {
+    content: '710';
+    position: absolute;
+    top: 67px;
+    left: 50%;
+    width: 100px;
+    margin-left: -50px;
+    background: red;
+    padding: 10px;
+    z-index: 100000;
+    text-align: center;
+  }
+
+  body.public .export_options .download_options {
+    clear:both;
+    display:block;
+    margin: 10px 0 20px 0!Important;
+  }
+}
+
+@media only screen and (min-width: 711px) and (max-width: 1035px) {
+  body:after {
+    content: '711';
+    position: absolute;
+    top: 67px;
+    left: 50%;
+    width: 100px;
+    margin-left: -50px;
+    background: red;
+    padding: 10px;
+    z-index: 100000;
+    text-align: center;
+  }
+
+  body.public .export_options .download_options {
+    background:blue;
+    clear:both;
+    display:block;
+    margin: 10px 0 20px 0!Important;
+  }
+}*/
+
   body.public { /* Public table CSS */
 
     &.table .panes { top:68px; }

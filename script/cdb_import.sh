@@ -12,6 +12,9 @@ CDB_USER=$1
 API_KEY=$2
 IMPORT_FILE=$3
 NOTIFICATION_EMAIL=$4
+PROTOCOL=https
+DEBUG=true
+ITEM_ID_REGEX='\"([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})\"'
 
 if [[ -z $CDB_USER ]]
 then
@@ -29,37 +32,49 @@ then
   exit 1
 fi
 
+function log {
+  if [[ ${DEBUG} == true ]]
+  then
+    echo $1
+  fi
+}
+
 v1=$(uname)
 
-echo "Sending file '${IMPORT_FILE}'"
+log "Sending file '${IMPORT_FILE}'"
+
 if [[ "$v1" = Darwin ]];
 then
-  job_id=`curl -s -F file=@${IMPORT_FILE} "https://${CDB_USER}.cartodb.com/api/v1/imports/?api_key=${API_KEY}" | sed -E 's/\{\"item_queue_id\":\"([^"]+)\".*/\1/'`
+  job_id=`curl -s -F file=@${IMPORT_FILE} "${PROTOCOL}://${CDB_USER}.cartodb.com/api/v1/imports/?api_key=${API_KEY}" | sed -E "s/\{\"item_queue_id\":${ITEM_ID_REGEX}.*/\1/"`
 else
-  job_id=`curl -s -F file=@${IMPORT_FILE} "https://${CDB_USER}.cartodb.com/api/v1/imports/?api_key=${API_KEY}" | sed -r 's/\{\"item_queue_id\":\"([^"]+)\".*/\1/'`
+  job_id=`curl -s -F file=@${IMPORT_FILE} "${PROTOCOL}://${CDB_USER}.cartodb.com/api/v1/imports/?api_key=${API_KEY}" | sed -r "s/\{\"item_queue_id\":${ITEM_ID_REGEX}.*/\1/"`
 fi
 
-echo "Waiting for job '${job_id}' to be completed"
+log "Waiting for job '${job_id}' to be completed"
 
 while true
 do
   if [[ "$v1" = Darwin ]];
   then
-    status=`curl -s "https://${CDB_USER}.cartodb.com/api/v1/imports/${job_id}?api_key=${API_KEY}" | sed -E 's/(.*)\"state\":\"([a-z]+)\"(.*)/\2/'`
+    status=`curl -s "${PROTOCOL}://${CDB_USER}.cartodb.com/api/v1/imports/${job_id}?api_key=${API_KEY}" | sed -E 's/(.*)\"state\":\"([a-z]+)\"(.*)/\2/'`
   else
-    status=`curl -s "https://${CDB_USER}.cartodb.com/api/v1/imports/${job_id}?api_key=${API_KEY}" | sed -r 's/(.*)\"state\":\"([a-z]+)\"(.*)/\2/'`
+    status=`curl -s "${PROTOCOL}://${CDB_USER}.cartodb.com/api/v1/imports/${job_id}?api_key=${API_KEY}" | sed -r 's/(.*)\"state\":\"([a-z]+)\"(.*)/\2/'`
   fi
-  echo "JOB '${job_id}' STATE: ${status}"
+  log "JOB '${job_id}' STATE: ${status}"
+
+  if [[ -n $NOTIFICATION_EMAIL ]]
+  then
+    log "${PROTOCOL}://${CDB_USER}.cartodb.com" | mail -s "CartoDB import finished: ${IMPORT_FILE}" "${NOTIFICATION_EMAIL}"
+  fi
+
   if [[ $status == 'complete' ]]
   then
-    echo "Import successful"
-    if [[ -n $NOTIFICATION_EMAIL ]]
-    then
-      echo "https://${CDB_USER}.cartodb.com" | mail -s "CartoDB import finished: ${IMPORT_FILE}" "${NOTIFICATION_EMAIL}"
-    fi
-    break
+    log "Import successful"
+    exit 0
+  elif [[ $status == 'failure' ]]
+  then
+    log "Failed import"
+    exit 1
   fi
   sleep 2
 done
-
-echo "Finished"

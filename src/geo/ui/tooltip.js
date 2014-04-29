@@ -38,7 +38,7 @@ cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
 
   show: function(pos, data) {
     this.render(data);
-    this.elder('show');
+    this.elder('show', pos, data);
     this.$el.css({
       'left': (pos.x - this.$el.width()/2),
       'top': (pos.y - (this.options.offset_top || this.DEFAULT_OFFSET_TOP))

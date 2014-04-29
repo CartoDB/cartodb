@@ -26,6 +26,7 @@
       padding:10px 0 0 8px;
       @include border-top-left-radius(3px);
       background: image-url('layout/linen.png') repeat 0 0;
+      z-index:2;
       
       &:after {
         content: '';
@@ -46,7 +47,7 @@
           width:99px;
           line-height:41px;
           text-align:center;
-          @include border-top-radius(2px);
+          @include border-top-radius(3px);
           background:white;
 
           &.selected {
@@ -85,9 +86,8 @@
 
       h3  {
         float:left;
-        padding: 0!important;
+        padding: 0;
         border:0;
-        color:#CCCCCC;
       }
 
       .form_combo  { position:absolute; right:18px; }
@@ -146,15 +146,15 @@
 
           a { display: block; }
 
-          &.editor       { float: left; }
+          &.editor { float: left }
 
           &.title_editor,
-          &.html_editor  { float: right; }
+          &.html_editor { float: right }
 
-          &.html_editor  { margin-right: 2px; }
-
-          /*&.html_editor:before { height: 16px; content: ''; position:absolute; left: -10px; top: -3px; border-left: 1px solid rgba(#ccc, .5); }*/
-          &.html_editor { position:relative; }
+          &.html_editor {
+            position:relative;
+            margin-right: 2px;
+          }
 
           &.editor       a { @include size(17px, 17px); @include table-sprite(infowindow_panel_icons, $offset-x:0, $offset-y:0); }
           &.title_editor a { @include size(20px, 17px); @include table-sprite(infowindow_panel_icons, $offset-x:-40, $offset-y:0); }

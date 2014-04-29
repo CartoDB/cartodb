@@ -1,3 +1,4 @@
+//= require modernizr-min
 //= require codemirror
 //= require select2.min
 //= require jquery.faviconNotify

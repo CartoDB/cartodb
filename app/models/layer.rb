@@ -3,11 +3,11 @@
 require_relative 'layer/presenter'
 
 class Layer < Sequel::Model
-  plugin :serialization, :json, :options, :infowindow
+  plugin :serialization, :json, :options, :infowindow, :tooltip
   
   ALLOWED_KINDS = %W{ carto tiled background gmapsbase torque wms }
   BASE_LAYER_KINDS  = %w(tiled background gmapsbase wms)
-  PUBLIC_ATTRIBUTES = %W{ options kind infowindow id order }
+  PUBLIC_ATTRIBUTES = %W{ options kind infowindow tooltip id order }
   TEMPLATES_MAP = {
     'table/views/infowindow_light' =>               'infowindow_light',
     'table/views/infowindow_dark' =>                'infowindow_dark',
@@ -63,7 +63,8 @@ class Layer < Sequel::Model
   def to_json(*args)
     public_values.merge(
       infowindow: JSON.parse(self.values[:infowindow]),
-      options:    JSON.parse(self.values[:options])
+      tooltip: JSON.parse(self.values[:tooltip]),
+      options: JSON.parse(self.values[:options])
     ).to_json(*args)
   end
 

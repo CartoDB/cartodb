@@ -510,6 +510,8 @@ class Table < Sequel::Model(:user_tables)
     data_layer.options['tile_style'] = "##{self.name} #{Cartodb.config[:layer_opts]['default_tile_styles'][self.the_geom_type]}"
     data_layer.infowindow ||= {}
     data_layer.infowindow['fields'] = []
+    data_layer.tooltip ||= {}
+    data_layer.tooltip['fields'] = []
     m.add_layer(data_layer)
   end
 

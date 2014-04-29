@@ -36,7 +36,7 @@
 body.public { /* Public table CSS */
 
   &.table .panes { top:68px; }
-  &.map .panes   { top:0px; }
+  &.map .panes   { top:0px; overflow-x: hidden; }
 
   min-width: inherit;
 
@@ -178,7 +178,7 @@ body.public { /* Public table CSS */
           font-family:"Helvetica Neue", "Helvetica", Arial;
 
           display:block;
-          padding: 9px 10px 11px;
+          padding: 9px 10px 10px 10px;
           background: rgba(#000000, .7);
           font-size: 11px;
           font-weight:bold;

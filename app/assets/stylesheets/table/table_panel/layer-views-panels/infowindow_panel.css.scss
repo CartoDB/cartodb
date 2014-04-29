@@ -47,7 +47,7 @@
           width:99px;
           line-height:41px;
           text-align:center;
-          @include border-top-radius(2px);
+          @include border-top-radius(3px);
           background:white;
 
           &.selected {

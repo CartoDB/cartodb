@@ -534,6 +534,7 @@ var Vis = cdb.core.View.extend({
       layer_selector: false,
       searchControl: false,
       infowindow: true,
+      tooltip: true,
       legends: true,
       time_slider: true
     });

@@ -193,15 +193,17 @@
       .row_count {
         @include inline-block();
         vertical-align: middle;
-        margin-right: 17px;
         color: #858585;
         font-size: 15px;
       }
 
       .download_options {
 
+        @include clearfix();
         @include inline-block();
         vertical-align: middle;
+        margin: 0 0 0 7px;
+        
 
         a { 
           @include inline-block();

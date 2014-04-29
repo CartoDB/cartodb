@@ -3,9 +3,7 @@
 <% end %>
 
 <% content_for(:css) do %>
-  <%= stylesheet_link_tag 'embeds.css', 'common.css', 'map.css', :media => 'all' %>
-  <%= stylesheet_link_tag 'table.css' %>
-  <%= stylesheet_link_tag 'embeds/footer.css' %>
+  <%= stylesheet_link_tag 'embeds.css', 'common.css', 'map.css', 'table.css', 'embeds/public_info.css', :media => 'all' %>
   <!--[if gt IE 8]><%= stylesheet_link_tag "fonts_ie" %><![endif]-->
 <% end %>
 
@@ -72,7 +70,9 @@
         </div>
 
         <div class="export_options">
-          <div class="row_count"><%= number_with_delimiter(@table.rows_counted) %> row<%= @table.rows_counted != 1 ? 's' : '' %></div>
+          <div class="row_count"><%= number_with_delimiter(@table.rows_counted) %> row<%= @table.rows_counted != 1 ? 's' : '' %> &middot; download</div>
+          <div class="download_options">
+          </div>
         </div>
 
       </div>

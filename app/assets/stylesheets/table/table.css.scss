@@ -206,6 +206,10 @@ body.public { /* Public table CSS */
     padding: 13px 0 0 0;
     margin: 30px 0 0 0;
     @include clearfix();
+    
+    &.disabled {
+      display:none;
+    }
 
     border-top: 1px solid #E5E5E5;
 

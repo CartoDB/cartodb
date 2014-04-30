@@ -20,6 +20,9 @@
   body.public .export_options .download_options {
     display:block!important;
     margin: 10px 0 20px 0!Important;
+
+    .download { display: none!important; }
+
   }
 
 }
@@ -29,6 +32,9 @@
   body.public .export_options .download_options {
     display:block!important;
     margin: 10px 0 20px 0!Important;
+
+    .download { display: none!important; }
+
   }
 
 }
@@ -37,6 +43,10 @@ body.public { /* Public table CSS */
 
   &.table .panes { top:68px; }
   &.map .panes   { top:0px; overflow-x: hidden; }
+
+  .panes .emptyTableContainer {
+    position:relative;
+  }
 
   min-width: inherit;
 
@@ -225,8 +235,31 @@ body.public { /* Public table CSS */
       @include clearfix();
       @include inline-block();
       vertical-align: middle;
-      margin: 0 0 0 7px;
+      margin: 0 0 0 5px;
 
+      .download {
+        @include inline-block();
+        vertical-align: middle;
+        color: #858585;
+        font-size: 15px;
+        margin: 0 5px 0 3px;
+
+        &:after {
+          content: '·';
+          position: relative;
+          float: left;
+          margin-right: 9px;
+        }
+
+      }
+
+      .loading {
+        @include inline-block();
+        vertical-align: middle;
+        color: #858585;
+        font-size: 15px;
+        img { margin: 0 5px 0 0; vertical-align: middle; }
+      }
 
       a { 
         @include inline-block();

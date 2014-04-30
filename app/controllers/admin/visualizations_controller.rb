@@ -41,9 +41,13 @@ class Admin::VisualizationsController < ApplicationController
     @disqus_shortname       = @visualization.user.disqus_shortname.presence || 'cartodb'
     @public_tables_count    = @visualization.user.table_count(::Table::PRIVACY_PUBLIC)
 
-    @dependent_visualizations = @table.dependent_visualizations
+    @non_dependent_visualizations = @table.non_dependent_visualizations.select{ |vis| vis.privacy == CartoDB::Visualization::Member::PRIVACY_PUBLIC }
 
-    @nonpublic_vis_count = @table.dependent_visualizations.select{ |vis| vis.privacy != CartoDB::Visualization::Member::PRIVACY_PUBLIC }.count
+    @dependent_visualizations = @table.dependent_visualizations.select{ |vis| vis.privacy == CartoDB::Visualization::Member::PRIVACY_PUBLIC }
+
+    @total_visualizations  = @non_dependent_visualizations + @dependent_visualizations
+    
+    @total_nonpublic_total_vis_count = @table.non_dependent_visualizations.select{ |vis| vis.privacy != CartoDB::Visualization::Member::PRIVACY_PUBLIC }.count + @table.dependent_visualizations.select{ |vis| vis.privacy != CartoDB::Visualization::Member::PRIVACY_PUBLIC }.count
 
     respond_to do |format|
       format.html { render 'public_table', layout: 'application_table_public' }

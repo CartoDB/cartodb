@@ -43,13 +43,15 @@ module CartoDB
         begin
           if force_all_syncs
             query = db.query(%Q(
-              SELECT * FROM #{relation} WHERE state = 'success'
+              SELECT * FROM #{relation} WHERE
+              state = '#{CartoDB::Synchronization::Member::STATE_SUCCESS}'
+              OR state = '#{CartoDB::Synchronization::Member::STATE_SYNCING}'
             ))
           else
             query = db.query(%Q(
               SELECT * FROM #{relation}
               WHERE EXTRACT(EPOCH FROM run_at) < #{Time.now.utc.to_f}
-              AND state = 'success'
+              AND state = '#{CartoDB::Synchronization::Member::STATE_SUCCESS}'
             ))
           end
 

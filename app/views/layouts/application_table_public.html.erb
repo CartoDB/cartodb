@@ -2,6 +2,8 @@
 <html lang="en">
   <head>
     <meta charset='utf-8' />
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
     <title><%= yield :page_title %>CartoDB</title>
     <%= favicon_link_tag "/favicons/favicon.ico" %>
     <%= yield :css %>
@@ -11,8 +13,8 @@
     <%= yield :js %>
     <%= csrf_meta_tag %>
   </head>
-  <body>
-    <%= render 'admin/shared/public_vis_header' %>
+  <body class="public">
+    <%= render 'admin/shared/public_table_header' %>
     <%= yield %>
   </body>
 </html>

@@ -85,7 +85,6 @@ module CartoDB
 
         self.source_file  = SourceFile.new(filepath(name), name)
         repository.store(source_file.path, data)
-        @checksum = Open3.capture2e(md5_command_for(source_file.fullpath)).first
         self.source_file  = nil unless modified?
         self
       end
@@ -139,15 +138,12 @@ module CartoDB
       def modified?
         previous_etag           = http_options.fetch(:etag, false)
         previous_last_modified  = http_options.fetch(:last_modified, false)
-        previous_checksum       = http_options.fetch(:checksum, false)
         etag                    = etag_from(headers)
         last_modified           = last_modified_from(headers)
-        checksum                = (defined?(@checksum) ? @checksum : false)
 
         return true unless (previous_etag || previous_last_modified) 
         return true if previous_etag && etag && previous_etag != etag
         return true if previous_last_modified && last_modified && previous_last_modified.to_i < last_modified.to_i
-        return true if previous_checksum && checksum && previous_checksum != checksum
         false
       rescue
         false

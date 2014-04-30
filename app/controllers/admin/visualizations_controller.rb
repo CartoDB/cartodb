@@ -3,7 +3,7 @@ require_relative '../../models/map/presenter'
 require_relative '../../models/visualization/locator'
 
 class Admin::VisualizationsController < ApplicationController
-  ssl_allowed :embed_map, :public_map, :show_protected_embed_map
+  ssl_allowed :embed_map, :public_map, :show_protected_embed_map, :public_table
   ssl_required :index, :show, :protected_embed_map, :protected_public_map, :show_protected_public_map
   before_filter :login_required, only: [:index]
   skip_before_filter :browser_is_html5_compliant?, only: [:public_map, :embed_map, :track_embed, :show_protected_embed_map, :show_protected_public_map]
@@ -27,7 +27,8 @@ class Admin::VisualizationsController < ApplicationController
     update_user_last_activity
   end #show
 
-  def public
+  def public_table
+
     id = params.fetch(:id)
     @visualization, @table = locator.get(id, CartoDB.extract_subdomain(request))
 
@@ -36,11 +37,19 @@ class Admin::VisualizationsController < ApplicationController
 
     @vizjson = @visualization.to_vizjson
 
+    @avatar_url             = @visualization.user.gravatar(64)
+    @disqus_shortname       = @visualization.user.disqus_shortname.presence || 'cartodb'
+    @public_tables_count    = @visualization.user.table_count(::Table::PRIVACY_PUBLIC)
+
+    @dependent_visualizations = @table.dependent_visualizations
+
+    @nonpublic_vis_count = @table.dependent_visualizations.select{ |vis| vis.privacy != CartoDB::Visualization::Member::PRIVACY_PUBLIC }.count
+
     respond_to do |format|
-      format.html { render 'public', layout: 'application_public' }
+      format.html { render 'public_table', layout: 'application_table_public' }
     end
 
-  end #public
+  end #public_table
 
   def public_map
     id = params.fetch(:id)
@@ -66,7 +75,7 @@ class Admin::VisualizationsController < ApplicationController
     end
   rescue
     embed_forbidden
-  end #embed_map
+  end #public_map
 
   def show_protected_public_map
     id = params.fetch(:id)

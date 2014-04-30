@@ -1,0 +1,172 @@
+<% content_for(:page_title) do %>
+  <%= @visualization.name %> |
+<% end %>
+
+<% content_for(:css) do %>
+  <%= stylesheet_link_tag 'embeds.css', 'common.css', 'map.css', 'table.css', 'embeds/public_info.css', :media => 'all' %>
+  <!--[if gt IE 8]><%= stylesheet_link_tag "fonts_ie" %><![endif]-->
+<% end %>
+
+<script>
+  var table_name = '<%= @table.name %>';
+  var table_id   = '<%= @table.id %>';
+  var schema     = <%=raw @table.schema.to_json %>;
+  var user_name  = '<%=raw @table.owner.username %>';
+  var map        = <%=raw @table.map.to_json %>;
+  var config     = <%=raw frontend_config_public.html_safe %>;
+  var vizjson    = <%=raw @vizjson.to_json %>;
+</script>
+
+<script>
+  var debug = false;
+  <% if Rails.env.development? %>
+      debug = true;
+  <% end %>
+  cdb.config.set('debug', debug);
+</script>
+
+  <% content_for(:js) do %>
+    <script type="text/javascript"
+      src="https://maps.google.com/maps/api/js?sensor=false&v=3.12">
+    </script>
+    <%= javascript_include_tag 'cdb.js', 'application.js', 'models.js', 'table_public.js', 'templates.js', 'public_dashboard' %>
+  <% end %>
+
+  <div class="globalerror"></div>
+  <div class="panes"></div>
+
+  <div class="navigation">
+    <ul>
+      <li><%= link_to "Table view", "#/table", :class => 'smaller strong tab selected' %></li>
+      <li><%= link_to "Map view", "#/map"%></li>
+    </ul>
+  </div>
+
+  <div class="separator_shadow"></div>
+  <div class="separator bottom"></div>
+  <div class="cartodb-map-data">
+    <div class="cartodb-info">
+      <div class="inner">
+
+        <div class="user_details">
+          <div class="details embed-left-col">
+            <div class="content">
+              <h1><%= @visualization.name %></h1>
+              <p><%= @visualization.description %></p>
+
+            </div>
+
+          </div>
+
+          <div class="user embed-right-col">
+            <a href="/datasets" title="Datasets by <%= @visualization.user.username %>" class="content">
+              <div class="user-info">
+                <h4>by <%= @visualization.user.username.truncate(20) %></h4>
+                <h5><%= "#{@public_tables_count} #{@public_tables_count != 1 ? "tables" :"table"} created" %></h5>
+              </div>
+              <img src="<%= @avatar_url %>" class="avatar" />
+            </a>
+          </div>
+        </div>
+
+        <div class="export_options">
+          <div class="row_count"><%= number_with_delimiter(@table.rows_counted) %> row<%= @table.rows_counted != 1 ? 's' : '' %> <span class="download">&middot; download</span></div>
+          <div class="download_options">
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="cartodb-body">
+      <div class="inner">
+
+        <div class="map-info embed-right-col">
+          <div class="content">
+
+            <h2>Visualizations using this data</h2>
+            <ul>
+
+              <% if (@dependent_visualizations.count == 0 && @nonpublic_vis_count == 0) %>
+                <li class="private">This dataset is not used in any map</li>
+              <% end %>
+
+              <% @dependent_visualizations.each do |vis| %>
+                <% if (vis.privacy == "public") %>
+                  <li><a href="/viz/<%= vis.id %>/public_map?<%= vis.url_options.presence %>" title="<%= vis.name.gsub(/_/," ") %>"><%= vis.name.gsub(/_/, " ") %></a></li>
+                <% end %>
+              <% end %>
+
+              <% if (@nonpublic_vis_count > 0) %>
+
+                <li class="private"><%= @nonpublic_vis_count %> private visualization<%= @nonpublic_vis_count != 1 ? 's' : '' %><span class="help" original-title="This table is used in <%= @nonpublic_vis_count %> map<%= @nonpublic_vis_count != 1 ? 's' : '' %> made private by the publisher">(?)</span></li>
+              <% end %>
+            </ul>
+
+          </div>
+        </div>
+
+        <div class="comments embed-left-col">
+          <div class="content">
+            <div id="disqus_thread"></div>
+            <script type="text/javascript">
+
+              var disqus_shortname  = '<%= @disqus_shortname %>';
+              var disqus_identifier = '<%= @table.id %>';
+
+              (function() {
+                var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+              })();
+
+            </script>
+            <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript" class="no_script">comments powered by Disqus.</a></noscript>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="cartodb-footer">
+      <div class="inner">
+
+        <div class="copyright embed-left-col">
+          <div class="content">
+            &copy; <%= Time.now.year %> CartoDB - <a href="https://cartodb.com/signup" title="Create your own maps with CartoDB">Create your own maps</a>
+          </div>
+        </div>
+
+        <div class="terms embed-right-col">
+          <div class="content">
+            <a href="http://cartodb.com/terms" title="CartoDB's Terms of service">Terms of Service</a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+
+  <script>
+  $(document).ready(function(){
+    <% if Cartodb.config[:graphite_public] %>
+        if (location.protocol.indexOf('https') === -1) {
+          jQuery.getScript('<%= javascript_path "statsc.js" %>', function(ready) {
+            statsc.connect('http://<%= Cartodb.config[:graphite_public]['host'] %>:<%= Cartodb.config[:graphite_public]['port'] %>/');
+              cartodb.core.Profiler.backend(function () {
+              statsc.send.apply(statsc, arguments);
+            })
+          })
+        }
+      <% end %>
+  });
+
+</script>
+
+<%= render partial: 'shared/analytics', locals: { 
+  ua:     Cartodb.config[:google_analytics]['primary'],
+  domain: Cartodb.config[:google_analytics]['domain'],
+  custom_vars: [{title: "Public Pages", value: "Other", num: 3}],
+  page_owner: @visualization.user
+} %>

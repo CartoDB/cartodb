@@ -38,6 +38,26 @@ describe Synchronization::Collection do
     end
   end
 
+  describe '#fetch_many' do
+    it 'fetches many members of the collection to see that paging works' do
+      for idx in 1..400
+        Synchronization::Member.new(random_attributes(name: "sync_#{idx}")).store
+      end
+
+      collection = Synchronization::Collection.new
+      records = collection.fetch
+      records.first.name.should == 'sync_1'
+      records.to_a.last.name.should == 'sync_300'
+      records.count.should == 300
+
+      records = collection.fetch(per_page: 900)
+      records.first.name.should == 'sync_1'
+      records.to_a.last.name.should == 'sync_400'
+      records.count.should == 400
+    end
+  end
+
+
   def random_attributes(attributes={})
     random = rand(999)
     {

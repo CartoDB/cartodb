@@ -12,7 +12,7 @@ class Superadmin::SynchronizationsController < Superadmin::SuperadminController
   layout 'application'
 
   def index
-    collection = Synchronization::Collection.new.fetch
+    collection = Synchronization::Collection.new.fetch(per_page:99999)
     if params[:pending_syncs].present?
       representation = collection.map { |sync|
         sync.should_auto_sync? ? sync.to_hash : nil

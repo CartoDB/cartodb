@@ -29,9 +29,10 @@ module CartoDB
       end
 
       def fetch(filters={})
+        per_page_filter = filters.delete(:per_page)
         dataset = repository.collection(filters, [])
         self.total_entries = dataset.count
-        dataset = repository.paginate(dataset, [])
+        dataset = repository.paginate(dataset, per_page_filter.present? ? {per_page:per_page_filter} : {})
 
         collection.storage = Set.new(dataset.map { |attributes|
           Synchronization::Member.new(attributes)

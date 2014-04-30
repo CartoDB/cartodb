@@ -33,6 +33,7 @@ WORKING_SPECS = \
   spec/requests/api/records_spec.rb \
   services/geocoder/spec/geocoder_spec.rb \
   spec/models/synchronization/synchronization_oauth_spec.rb \
+  spec/models/synchronization/collection_spec.rb \
   $(NULL)
 
 CDB_PATH=lib/assets/javascripts/cdb

@@ -712,7 +712,8 @@ var Vis = cdb.core.View.extend({
       var t = layerView.getTooltipData(i);
       var tooltip = new cdb.geo.ui.Tooltip({
         layer: layerView,
-        template: t.template
+        template: t.template,
+        wrapdata: true
       });
       layerView.tooltip = tooltip;
       this.mapView.addOverlay(tooltip);

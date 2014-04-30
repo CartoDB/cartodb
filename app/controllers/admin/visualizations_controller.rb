@@ -6,7 +6,7 @@ class Admin::VisualizationsController < ApplicationController
   ssl_allowed :embed_map, :public_map, :show_protected_embed_map
   ssl_required :index, :show, :protected_embed_map, :protected_public_map, :show_protected_public_map
   before_filter :login_required, only: [:index]
-  skip_before_filter :browser_is_html5_compliant?, only: [:public_table, :public_map, :embed_map, :track_embed, :show_protected_embed_map, :show_protected_public_map]
+  skip_before_filter :browser_is_html5_compliant?, only: [:public_map, :embed_map, :track_embed, :show_protected_embed_map, :show_protected_public_map]
   skip_before_filter :verify_authenticity_token, only: [:show_protected_public_map, :show_protected_embed_map]
 
   def index
@@ -40,8 +40,7 @@ class Admin::VisualizationsController < ApplicationController
 
     @avatar_url             = @visualization.user.gravatar(64)
     @disqus_shortname       = @visualization.user.disqus_shortname.presence || 'cartodb'
-    @visualization_count    = @visualization.user.public_visualization_count
-    @related_tables         = @visualization.related_tables
+    @public_tables_count    = @visualization.user.table_count(::Table::PRIVACY_PUBLIC)
 
     @dependent_visualizations = @table.dependent_visualizations
 
@@ -77,7 +76,7 @@ class Admin::VisualizationsController < ApplicationController
     end
   rescue
     embed_forbidden
-  end #embed_map
+  end #public_map
 
   def show_protected_public_map
     id = params.fetch(:id)

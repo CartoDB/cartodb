@@ -392,6 +392,12 @@
 
             setupMapDimensions(mobileDevice);
 
+            // Disables the table link temporarily for IE<10
+            if ($.browser.msie && parseInt($.browser.version) < 10) {
+              $(".map-info.embed-right-col a").removeAttr("href");
+              $(".map-info.embed-right-col a").addClass("disabled");
+            }
+
             // recalculate map position on orientation change
             if (!window.addEventListener) {
               window.attachEvent('orientationchange', doOnOrientationChange);

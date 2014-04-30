@@ -234,6 +234,19 @@ and (orientation : landscape) {
   min-height: 46px;
 }
 
+.embed-left-col.details .content p.options a {
+  font-family: 'Helvetica Neue', Helvetica, sans-serif;
+  color: #397DB8;
+  text-decoration: none;
+  font-size: 15px;
+  line-height: 120%;
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+}
+
 .cartodb-footer .embed-left-col .content { border-right: none; }
 
 div.cartodb-map-data {
@@ -382,6 +395,12 @@ div.cartodb-body .inner .map-info ul li a {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+div.cartodb-body .inner .map-info ul li .disabled {
+  color: #333;
+  @include opacity(.5);
+  &:hover { text-decoration:none; color: #333; }
 }
 
 div.cartodb-body .inner .map-info ul li a:hover {

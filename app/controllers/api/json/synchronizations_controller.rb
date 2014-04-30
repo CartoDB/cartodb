@@ -7,7 +7,7 @@ require_relative '../../../../services/datasources/lib/datasources'
 class Api::Json::SynchronizationsController < Api::ApplicationController
   include CartoDB
 
-  ssl_required :index, :show, :create, :update, :destroy
+  ssl_required :index, :show, :create, :update, :destroy, :sync_now, :syncing?
 
   def index
     collection = Synchronization::Collection.new.fetch(user_id: current_user.id)
